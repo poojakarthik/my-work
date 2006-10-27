@@ -91,6 +91,51 @@
 	}
  }
  
+//----------------------------------------------------------------------------//
+// DatabaseAccess
+//----------------------------------------------------------------------------//
+/**
+ * DatabaseAccess
+ *
+ * Database Access Abstract Base Class
+ *
+ * Database Access Abstract Base Class
+ *
+ *
+ * @prefix		db
+ *
+ * @package		framework
+ * @class		DatabaseAccess 
+ */
+ abstract class DatabaseAccess
+ {
+ 	//------------------------------------------------------------------------//
+	// DatabaseAccess() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * DatabaseAccess()
+	 *
+	 * Constructor for DatabaseAccess
+	 *
+	 * Constructor for DatabaseAccess
+
+	 * @return		void
+	 *
+	 * @method
+	 */ 
+	function __construct()
+	{
+		// connect to database if not already connected
+		if (!$_GLOBALS['dbaDatabase'] || !is_a($_GLOBALS['dbaDatabase'], "DataAccess"))
+		{
+			$_GLOBALS['dbaDatabase'] = "hi world";
+			//$_GLOBALS['dbaDatabase'] = new DataAccess();
+		}
+		
+		// make global database object available
+		$this->db = &$_GLOBALS['dbaDatabase'];
+	}
+ }
  
 //----------------------------------------------------------------------------//
 // Statement
@@ -108,7 +153,7 @@
  * @package		framework
  * @class		Statement
  */
- abstract class Statement
+ abstract class Statement extends DatabaseAccess
  {
   	//------------------------------------------------------------------------//
 	// stmtSqlStatement	
@@ -145,7 +190,8 @@
 	 function __construct()
 	 {
 	 	// TODO: Make custom AbstractException()
-	 	throw new Exception();
+	 	//throw new Exception();
+		parent::__construct();
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -265,6 +311,7 @@
 	 */ 
 	function __construct($arrTables, $mixColumns, $strWhere, $strOrder, $strLimit)
 	{
+		parent::__construct();
 		// Compile the query from our passed info
 	 	$strQuery = "SELECT ";
 	 	
@@ -273,7 +320,7 @@
 	 		// $mixColumns is just a string, therefore only one column selected
 	 		$strQuery .= $mixColumns . "\n";
 	 	}
- 		elseif (IsAssociativeArray($mixColumns))
+ 		elseif ($this->IsAssociativeArray($mixColumns))
  		{
 			// If arrColumns is associative, then add keys and values with "AS" between them
 			reset($mixColumns);
@@ -299,7 +346,7 @@
  		else
  		{
  			// We have an invalid type, so throw an exception
- 			throw new InvalidTypeException();
+ 			//throw new InvalidTypeException();
  		}
 
 	 	// Add the FROM line
