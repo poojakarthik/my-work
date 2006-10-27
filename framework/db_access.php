@@ -364,7 +364,7 @@
                         $strAutoIndex = "";
                     }
                     
-                    $strQuery .= "    {$arrColumn['Name']} {$arrColumn['Type']} {$arrColumn['Attributes']} $strNull $strAutoIndex {$arrColumn['Default']},\n";
+                    $strQuery .= "    {$arrColumn['Name']} {$arrColumn['SqlType']} {$arrColumn['Attributes']} $strNull $strAutoIndex {$arrColumn['Default']},\n";
                 }
                  
                 // index
@@ -623,6 +623,7 @@
 	 */ 
 	function GetDBInputType($mixData) 
 	{
+		//print_r($mixData);
 		if (is_int($mixData))
  		{
  			// It's an integer
@@ -956,11 +957,11 @@
 
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
-	 	
+	 	echo("$strQuery <br>");
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
-			echo($strQuery);
-			echo Mysqli_error($this->db->refMysqliConnection);
+			//echo($strQuery);
+			//echo Mysqli_error($this->db->refMysqliConnection);
 	 		// There was problem preparing the statment
 	 		throw new Exception();
 	 	}
@@ -989,15 +990,23 @@
 	 {
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	
-	 	for ($i = 0; $i < count($this->db->arrTableDefine[$this->_strTable]["Column"]); $i++)
+	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 	 	{
 	 		// FIXME: Use the Database definition to find type when Flame is done with it
 	 		//$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
-			$x = $this->GetDBInputType($arrData[$i]);
+			/*$x = $this->GetDBInputType($arrData[$i]);
 			$z = $arrData[$i];
 			echo("$x  : $z  <br>");
-			$this->_stmtSqlStatment->bind_param($x, $z);
+			*/
+			$x .= $arrColumnValue['Type'];
+			$arrParams[] = $arrData[$strColumnName];
+			echo("$x  : {$arrData[$strColumnName]}  <br>");
+			
 	 	}
+		//exit();
+		array_unshift($arrParams, $x);
+		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
+		//$this->_stmtSqlStatment->bind_param($x, $z);
 	 	
 	 	// Run the Statement
 	 	$this->_stmtSqlStatment->execute();

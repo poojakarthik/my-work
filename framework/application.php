@@ -44,12 +44,12 @@
 	
 	// Define Columns
 	$strName = "Id";
-		$arrDefine['Column'][$strName]['Type'] 			= "Bigint";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "i";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "Bigint";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 	$strName = "TestColumn";
-		$arrDefine['Column'][$strName]['Type'] 			= "varchar(5)";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "s";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(5)";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		//$arrDefine['Column'][$strName]['Default'] 		= "";
 		//$arrDefine['Column'][$strName]['Attributes'] 	= "";
@@ -62,16 +62,18 @@
 	$bolReturn = $crqQuery->Execute("TestTable");
 	if ($bolReturn === FALSE)
 	{
-		echo "false";
+		//echo "false";
 	}
 	elseif ($bolReturn === TRUE)
 	{
-		echo "true";
+		//echo "true";
 	}
 
 // insert into the table
+
+	$data['TestColumn'] = "String of test data";
 	$insInsertStatment = new StatementInsert("TestTable");
-	if ($insInsertStatment->Execute("String of test data"))
+	if ($insInsertStatment->Execute($data))
 	{
 		echo("Insert Successful!");
 	}
