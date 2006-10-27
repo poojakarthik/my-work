@@ -769,7 +769,7 @@
 	 	}
 	 	
 	 	// Init and Prepare the mysqli_stmt
-	 	$this->_stmtSqlStatment = $this->refMysqliConnection->stmt_init();
+	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
@@ -947,8 +947,7 @@
 	 	$this->_strTable = $strTable;
 	 				
 		// Create a ? placeholder for every column
-		
-	 	for ($i = 0; $i < (count($this->arrTableDefine[$strTable]["Column"]) - 1); $i++)
+	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$strTable]["Column"]) - 1); $i++)
 	 	{
 	 		$strQuery .= "?, ";
 	 	}
@@ -956,10 +955,12 @@
 	 	$strQuery .= "?)";
 
 	 	// Init and Prepare the mysqli_stmt
-	 	$this->_stmtSqlStatment = $this->refMysqliConnection->stmt_init();
+	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
+			echo($strQuery);
+			echo Mysqli_error($this->db->refMysqliConnection);
 	 		// There was problem preparing the statment
 	 		throw new Exception();
 	 	}
@@ -988,10 +989,14 @@
 	 {
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	
-	 	for ($i = 0; $i < count($this->arrTableDefine[$this->_strTable]["Column"]); $i++)
+	 	for ($i = 0; $i < count($this->db->arrTableDefine[$this->_strTable]["Column"]); $i++)
 	 	{
 	 		// FIXME: Use the Database definition to find type when Flame is done with it
-	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
+	 		//$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
+			$x = $this->GetDBInputType($arrData[$i]);
+			$z = $arrData[$i];
+			echo("$x  : $z  <br>");
+			$this->_stmtSqlStatment->bind_param($x, $z);
 	 	}
 	 	
 	 	// Run the Statement
@@ -1050,14 +1055,14 @@
 	 	$this->strTable = $strTable;
 	 	
 	 	// Retrieve columns from the Table definition arrays
-	 	reset($this->arrTableDefine[$this->_strTable]["Column"]);
-	 	for ($i = 0; $i < (count($this->arrTableDefine[$this->_strTable]["Column"]) - 1); $i++)
+	 	reset($this->db->arrTableDefine[$this->_strTable]["Column"]);
+	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$this->_strTable]["Column"]) - 1); $i++)
 	 	{
-	 		$strQuery .= key($this->arrTableDefine[$this->_strTable]["Column"]) . " = ?, ";
+	 		$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?, ";
 	 		next();
 	 	}
 	 	// Last column is different
-	 	$strQuery .= key($this->arrTableDefine[$this->_strTable]["Column"]) . " = ?)\n";
+	 	$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?)\n";
 
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")
@@ -1074,7 +1079,7 @@
 	 	}
 	 	
 	 	// Init and Prepare the mysqli_stmt
-	 	$this->_stmtSqlStatment = $this->refMysqliConnection->stmt_init();
+	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
@@ -1109,7 +1114,7 @@
 	 function Execute($arrData, $arrWhere)
 	 {
 	 	// Bind the VALUES data to our mysqli_stmt
-	 	for ($i = 0; $i < count($this->arrTableDefine[$this->_strTable]["Column"]); $i++)
+	 	for ($i = 0; $i < count($this->db->arrTableDefine[$this->_strTable]["Column"]); $i++)
 	 	{
 	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
 	 	}
