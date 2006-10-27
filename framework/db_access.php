@@ -416,7 +416,7 @@
 	 * Finds aliases in a string
 	 *
 	 * Searches a string, and pulls out an array of aliases bounded by <>'s.
-	 * Replaces the string
+	 * Replaces the string with a ?
 	 *
 	 * @param		string	$strColumn		ColumnName to be checked
 	 * 
