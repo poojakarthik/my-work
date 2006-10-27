@@ -321,6 +321,7 @@
 	 		$strQuery .= $mixColumns . "\n";
 	 	}
  		elseif ($this->IsAssociativeArray($mixColumns))
+
  		{
 			// If arrColumns is associative, then add keys and values with "AS" between them
 			reset($mixColumns);
@@ -371,11 +372,7 @@
  		else
  		{
  			// We have an invalid type, so throw an exception
-<<<<<<< .mine
  			throw new Exception();
-=======
- 			//throw new InvalidTypeException();
->>>>>>> .r3
  		}
 
 
