@@ -604,9 +604,12 @@
 	 	
 	 	// First parameter for bind_result is the statment
 	 	$arrFields[0] = &$this->_stmtSqlStatment;
+	 	
+	 	// Create a parameter list for bind_result()
 	 	$i = 1;
 	 	while ($fldField = $this->_stmtSqlStatment->fetch_field())
 	 	{
+	 		// Each parameter is a reference to an index in the result array (key is the Field name)
 	 		$arrFields[$i] = &$arrResults[$fldField->name];
 	 		$i++;
 	 	}
@@ -626,6 +629,8 @@
 	 * Fetches the resultset
 	 *
 	 * Fetches the entire resultset as an Indexed array of Associated arrays
+	 * NOTE: 	If you have previously called Fetch(), then FetchAll() will only
+	 * 			return the remaining rows in the resultset, not all.
 	 *
 	 * @return		array					Indexed array of Associated arrays
 	 * 										Associative arrays of columns and values
@@ -635,13 +640,30 @@
 	 */ 
 	function FetchAll()
 	{
-	 	// TODO
+	 	// Retrieve the remaining rows of data from the resultset
+	 	$arrResults = Array();
+	 	$arrRow = Array();
+	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
 	 	
-	 	/*
+		// First parameter for bind_result is the statment
+		$arrFields[0] = &$this->_stmtSqlStatment;
+
 	 	for ($i = 0; $i < $this->_stmtSqlStatment->num_rows(); $i++)
 	 	{
-	 		call_user_func_array($this->_stmtSqlStatment->bind_result, );
-	 	}*/
+		 	// Create a parameter list for bind_result()
+		 	$i = 1;
+		 	while ($fldField = $this->_stmtSqlStatment->fetch_field())
+		 	{
+		 		// Each parameter is a reference to an index in the result array (key is the Field name)
+		 		$arrFields[$i] = &$arrRow[$fldField->name];
+		 		$i++;
+		 	}
+
+	 		call_user_func_array($this->_stmtSqlStatment->bind_result, $arrFields);
+	 		$arrResults[] = $arrRow;
+	 	}
+	 	
+ 		return $arrResults;
 	}
  }
  
@@ -683,7 +705,85 @@
 	 */ 
 	 function __construct($strTable)
 	 {
-	 	// TODO
+		parent::__construct();
+		// Compile the query from our passed info
+	 	$strQuery = "UPDATE ";
+	 	
+	 	if (is_string($mixColumns))
+	 	{
+	 		// $mixColumns is just a string, therefore only one column selected
+	 		$strQuery .= $mixColumns . "\n";
+	 	}
+ 		elseif ($this->IsAssociativeArray($mixColumns))
+ 		{
+			// If arrColumns is associative, then add keys and values with "AS" between them
+			reset($mixColumns);
+			
+		 	// Add the columns 	
+		 	while (key($mixColumns) != null)
+		 	{
+		 		$strQuery .= key($mixColumns);
+		 		
+		 		// If this column has an AS alias
+		 		if (current($mixColumns) != "")
+		 		{
+		 			$strQuery .= "";
+		 		}
+		 		
+				next($mixColumns);
+		 	}
+ 		}
+ 		elseif (is_array($mixColumns))
+ 		{
+ 			// If it's an indexed array
+ 		}
+ 		else
+ 		{
+ 			// We have an invalid type, so throw an exception
+ 			//throw new InvalidTypeException();
+ 		}
+
+	 	// Add the FROM line
+	 	$strQuery .= "FROM ";
+	 	// Add the tables into the query
+	 	for ($i = 0; $i < (count($arrTables) - 1); $i++)
+	 	{
+	 		$strQuery .= $arrTables[$i] . ", ";
+	 	}
+	 	// Add the last table name (is different from the rest)
+	 	$strQuery .= $arrTables[count($arrTables)] . "\n";
+	 	
+	 	$strQuery .= "\n";
+	 	
+	 	// Add the WHERE clause
+	 	if ($strWhere != "")
+	 	{
+	 		// Find and replace the aliases in $strWhere
+	 		$this->_arrWhereAliases = FindAlias($strWhere);
+	 		
+			$strQuery .= "WHERE " . $strWhere . "\n";
+	 	}
+	 	
+	 	// Add the ORDER BY clause
+	 	if ($strOrder != "")
+	 	{
+			$strQuery .= "ORDER BY " . $strOrder . "\n";	
+	 	}
+	 	
+	 	// Add the LIMIT clause
+	 	if ($strLimit != "")
+	 	{
+			$strQuery .= "LIMIT " . $strLimit . "\n";	
+	 	}
+	 	
+	 	// Init and Prepare the mysqli_stmt
+	 	$this->_stmtSqlStatment = $this->refMysqliConnection->stmt_init();
+	 	
+	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
+	 	{
+	 		// There was problem preparing the statment
+	 		throw new Exception();
+	 	}
 	 }
 	 
 	//------------------------------------------------------------------------//
