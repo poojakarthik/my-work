@@ -117,16 +117,18 @@ class ErrorHandler
 	 */
 	function RecordError($strErrorCode, $strUser, $strErrorLevel, $strLocation, $strDescription)
 	{
-		// Write to database
-		// TODO
+		// Insert into to database
+		$insInsertStatement = new StatementInsert(DATABASE_ERROR_TABLE);
+		$arrData = Array();
+		// TODO: Fill $arrData with error information
+		$insInsertStatement->Execute($arrData);
 		
 		// If we're writing a report, then append the error
 		if (isset(this->_rptReport))
 		{
-			$strMessage = date("D/M/Y\@H:M:S");
-			$strMessage .= " -- " . $strUser . "caused a " . $strErrorLevel
-						. " Error (Code: " . $strErrorCode . " in module " . $strLocation . ".\n";
-			$strMessage .= "\t\"" . $strDescription . "\"\n";
+			$strMessage = date("D/M/Y\@H:M:S") . " -- " . $strUser . "caused a " . $strErrorLevel
+						. " Error (Code: " . $strErrorCode . " in module " . $strLocation . ".\n"
+						. "\t\"" . $strDescription . "\"\n";
 			
 			this->_rptReport->AddMessage($strMessage);
 		}

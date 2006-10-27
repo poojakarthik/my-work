@@ -59,14 +59,30 @@
 	$crqQuery->Execute("TestTable");
 
 // insert into the table
-
+	$insInsertStatment = new StatementInsert("TestTable");
+	if ($insInsertStatment->Execute("String of test data"))
+	{
+		echo("Insert Successful!");
+	}
+	else
+	{
+		echo("Insert Failed!");
+	}
 
 // select from the table
-
+	$selSelectStatement = new StatementSelect("TestTable", "*");
+	print_r($arrSelectTest = $selSelectStatement->Execute());
 
 // update the table
-
-
+	$updUpdateStatement = new StatementUpdate("TestTable", "TestColumn LIKE <testcol>");
+	if ($updUpdateStatement->Execute(Array("TestColumn"), Array("testcol" => "Changed test text")))
+	{
+		echo("Update Successful!");
+	}
+	else
+	{
+		echo("Update Failed!");
+	}
  
 // oh, and say hello world while we are at it 
 echo "hello world";

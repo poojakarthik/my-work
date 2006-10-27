@@ -706,7 +706,7 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	 function Execute($arrData)
+	 function Execute($arrData = Array())
 	 {
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	reset($this->_arrWhereAliases);
@@ -1001,9 +1001,8 @@
 	 *
 	 * Executes the StatementUpdate, with a new set of values
 	 *
-	 * @param		array	arrData			Associative array of data to be entered.
-	 * 										Key is the Column name, value is the value
-	 * 										to update with
+	 * @param		array	arrData			Indexed array of data to be entered.
+	 * 										Assumed that data is in order
 	 * @param		array	arrWhere		Associative array of parameters for the WHERE clause.
 	 * 										MUST use the same aliases as used when the object was
 	 * 										created.  Key string is the alias (ignoring the <>'s)
