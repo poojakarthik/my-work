@@ -46,6 +46,22 @@
  class DataAccess
  {
  	//------------------------------------------------------------------------//
+	// arrTableDefine
+	//------------------------------------------------------------------------//
+	/**
+	 * arrTableDefine
+	 *
+	 * Database table Definitions
+	 *
+	 * Database table Definitions
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
+	public $arrTableDefine;
+	
+	//------------------------------------------------------------------------//
 	// refMysqliConnection	
 	//------------------------------------------------------------------------//
 	/**
@@ -58,7 +74,6 @@
 	 * @type		Reference
 	 *
 	 * @property
-	 * @see			<MethodName()||typePropertyName>
 	 */
 	public $refMysqliConnection;
 	
@@ -80,7 +95,7 @@
 	function __construct()
 	{
 		// Connect to MySQL database
-		$refMysqliConnection = new mysqli(DATABASE_URL, DATABASE_USER, DATABASE_PWORD, DATABASE_NAME);
+		$this->refMysqliConnection = new mysqli(DATABASE_URL, DATABASE_USER, DATABASE_PWORD, DATABASE_NAME);
 		
 		// Make sure the connection was successful
 		if(mysqli_connect_errno())
@@ -88,6 +103,9 @@
 			// TODO: Make custom DatabaseException();
 			throw new Exception();
 		}
+		
+		// make global database definitions available
+		$this->arrTableDefine = &$_GLOBALS['arrDatabaseTableDefine'];
 	}
  }
  
@@ -136,7 +154,127 @@
 		$this->db = &$_GLOBALS['dbaDatabase'];
 	}
  }
- 
+
+//----------------------------------------------------------------------------//
+// Query
+//----------------------------------------------------------------------------//
+/**
+ * Statement
+ *
+ * Query Class
+ *
+ * Query Class
+ *
+ *
+ * @prefix		qry
+ *
+ * @package		framework
+ * @class		Query
+ */
+ class Query extends DatabaseAccess
+ {
+ 	//------------------------------------------------------------------------//
+	// Query() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * Query()
+	 *
+	 * Constructor for Query
+	 *
+	 * Constructor for Query Class
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 */ 
+	 function __construct()
+	 {
+		parent::__construct();
+	 }
+ }
+
+//----------------------------------------------------------------------------//
+// QueryCreate
+//----------------------------------------------------------------------------//
+/**
+ * QueryCreate
+ *
+ * CREATE Query
+ *
+ * Implements a CREATE query using mysqli
+ *
+ *
+ * @prefix		cre
+ *
+ * @package		framework
+ * @class		QueryCreate
+ */
+ class QueryCreate extends Query
+ {
+ 	function __construct()
+	{
+		parent::__construct();
+	}
+		
+ 	//------------------------------------------------------------------------//
+	// Execute()
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Executes the Query
+	 *
+	 * Executes the Query
+	 *
+	 * @param		mixed	mixTable		string containing name of the table to create
+	 * 										or an array of table names to create.
+	 * 
+	 * @return		bool
+	 * @method
+	 */ 
+	 function Execute($mixTable)
+	 {
+	 	// check what we were given
+		if (!$mixTable)
+		{
+			return FALSE;
+		}
+		elseif (is_string($mixTable))
+		{
+			// convert string to array
+			$arrayTable = Array(mixTable);
+		}
+		elseif (is_array($mixTable))
+		{
+			$arrayTables = $mixTable;
+		}
+		else
+		{
+			return FALSE;
+		}
+		
+		$bolReturn = TRUE;
+		
+		// create tables
+		foreach($arrayTables as $strTableName)
+		{
+			// check that table def exists
+			if (is_array($this->db->arrTableDefine[$strTableName]))
+			{
+				// create table
+				// TODO!!!!
+			}
+			else
+			{
+				// we will retfrn false
+				$bolReturn = FALSE;
+			}
+		}
+		
+		return $bolReturn;
+	 }
+ }
+
 //----------------------------------------------------------------------------//
 // Statement
 //----------------------------------------------------------------------------//
@@ -197,17 +335,14 @@
 	 *
 	 * Constructor for Statement
 	 *
-	 * Constructor for Statement Abstract Base Class - This should never run!
-
+	 * Constructor for Statement Abstract Base Class
+	 *
 	 * @return		void
 	 *
 	 * @method
-	 * @see			<MethodName()||typePropertyName>
 	 */ 
 	 function __construct()
 	 {
-	 	// TODO: Make custom AbstractException()
-	 	//throw new Exception();
 		parent::__construct();
 	 }
 	 
@@ -325,7 +460,7 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function __construct($arrTables, $mixColumns, $strWhere = "", $strOrder = "", $strLimit = "")
+	function __construct($arrTables, $mixColumns, $strWhere, $strOrder, $strLimit)
 	{
 		parent::__construct();
 		// Compile the query from our passed info
@@ -337,7 +472,6 @@
 	 		$strQuery .= $mixColumns . "\n";
 	 	}
  		elseif ($this->IsAssociativeArray($mixColumns))
-
  		{
 			// If arrColumns is associative, then add keys and values with "AS" between them
 			reset($mixColumns);
@@ -350,69 +484,33 @@
 		 		// If this column has an AS alias
 		 		if (current($mixColumns) != "")
 		 		{
-		 			$strQuery .= " AS " . current($mixColumns);
-		 		}
-		 				 		
-		 		next($mixColumns);
-		 		
-		 		// If this isn't the last item in the array, add a comma
-		 		if (key($mixColumns) != null)
-		 		{
-		 			$strQuery .= ", ";
+		 			$strQuery .= "";
 		 		}
 		 		
-		 		$strQuery .= "\n";
+				next($mixColumns);
 		 	}
  		}
  		elseif (is_array($mixColumns))
  		{
  			// If it's an indexed array
- 			reset($mixColumns);
- 			
-		 	// Add the columns 	
-		 	while (key($mixColumns) != null)
-		 	{
-		 		$strQuery .= current($mixColumns);
-	 		
-		 		next($mixColumns);
-		 		
-		 		// If this isn't the last item in the array, add a comma
-		 		if (key($mixColumns) != null)
-		 		{
-		 			$strQuery .= ", ";
-		 		}
-		 	}
-		 	
-		 	$strQuery .= "\n";
  		}
  		else
  		{
  			// We have an invalid type, so throw an exception
- 			throw new Exception();
+ 			//throw new InvalidTypeException();
  		}
-
-
 
 	 	// Add the FROM line
 	 	$strQuery .= "FROM ";
-	 	reset($arrTables);
 	 	// Add the tables into the query
-	 	while (key($arrTables) != null)
+	 	for ($i = 0; $i < (count($arrTables) - 1); $i++)
 	 	{
-	 		$strQuery .= current($arrTables);
- 		
-	 		next($arrTables);
-	 		
-	 		// If this isn't the last item in the array, add a comma
-	 		if (key($arrTables) != null)
-	 		{
-	 			$strQuery .= ", ";
-	 		}
+	 		$strQuery .= $arrTables[$i] . ", ";
 	 	}
+	 	// Add the last table name (is different from the rest)
+	 	$strQuery .= $arrTables[count($arrTables)] . "\n";
 	 	
 	 	$strQuery .= "\n";
-	 	
-	 	
 	 	
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")

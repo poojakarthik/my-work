@@ -86,7 +86,52 @@
 	 	set_error_handler($errErrorHandler, "PHPErrorCatcher");
 	 }
 	 
-	 
+
+//----------------------------------------------------------------------------//
+// ApplicationBaseClass
+//----------------------------------------------------------------------------//
+/**
+ * ApplicationBaseClass
+ *
+ * Abstract Base Class for Application Classes
+ *
+ * Use this class as a base for all application classes
+ *
+ *
+ * @prefix		app
+ *
+ * @package		framework
+ * @class		DatabaseAccess 
+ */
+ abstract class ApplicationBaseClass
+ {
+ 	//------------------------------------------------------------------------//
+	// ApplicationBaseClass() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * ApplicationBaseClass()
+	 *
+	 * Constructor for ApplicationBaseClass
+	 *
+	 * Constructor for ApplicationBaseClass
+
+	 * @return		void
+	 *
+	 * @method
+	 */ 
+	function __construct()
+	{
+		// connect to database if not already connected
+		if (!$_GLOBALS['dbaDatabase'] || !is_a($_GLOBALS['dbaDatabase'], "DataAccess"))
+		{
+			$_GLOBALS['dbaDatabase'] = "hi world";
+			//$_GLOBALS['dbaDatabase'] = new DataAccess();
+		}
+		
+		// make global database object available
+		$this->db = &$_GLOBALS['dbaDatabase'];
+	}
+ }
 
  }
 ?>
