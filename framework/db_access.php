@@ -261,7 +261,9 @@
 			//echo($strTableName);
 			// check that table def exists
 			if (is_array($this->db->arrTableDefine[$strTableName]))
-			{	
+			{
+				$arrTableDefine = $this->db->arrTableDefine[$strTableName];
+				
 				/* CREATE TABLE `{$structure['name']}` (
 				 *		`{$structure['serial']}`	bigint	NOT NULL	auto_increment,
 				 *		`{$column['name']}` {$column['type']} {$column['attributes']} {$column['null']} DEFAULT '{$column['default']}',
@@ -292,7 +294,93 @@
 				unset($strIndex);
 				unset($strUnique);
 
-				//echo $strQuery;
+				// set defaults primary index
+                if (empty($arrTableDefine['Id']))
+                {
+                    $arrTableDefine['Id'] = 'Id';
+                }
+                
+                // set default table type
+                if (empty($structure['Type']))
+                {
+                    $arrTableDefine['Type'] = 'MYISAM';
+                }
+                 
+                // build index string
+                if (is_array($arrTableDefine['Index']))
+                {
+                    foreach($arrTableDefine['Index'] as $strIndexValue)
+                    {
+                        $strIndex .= "$strIndexValue,";
+                    }
+                    $strIndex = substr($strIndex, 0, -1);
+                }
+                 
+                // build unique string
+                if (is_array($arrTableDefine['Unique']))
+                {
+                    foreach($arrTableDefine['Unique'] as $strUniqueValue)
+                    {
+                        $strUnique .= "$strUniqueValue,";
+                    }
+                    $strUnique = substr($strUnique, 0, -1);
+                }
+                
+                // build the CREATE query
+                $strQuery  = "CREATE TABLE $strTableName (\n";
+                 
+                // columns
+                foreach($arrTableDefine['Column'] as $strColumnKey=>$arrColumn)
+                {
+                    // use the key if we don't have a column name
+                    if (empty($arrColumn['Name']))
+                    {
+                        $arrColumn['Name'] = $strColumnKey;
+                    }
+                    
+                    // null, defaults to not null
+                    if ($arrColumn['Null'] === TRUE)
+                    {
+                        $strNull = '';
+                    }
+                    else
+                    {
+                        $strNull = 'NOT NULL';
+                    }
+                    
+                    // default
+                    if($arrColumn['Default'])
+                    {
+                        $arrColumn['Default'] = "DEFAULT '{$arrColumn['Default']}'";
+                    }
+                    
+                    // autoindex (Id column)
+                    if ($arrColumn['Name'] == $arrTableDefine['Id'])
+                    {
+                        $strAutoIndex = "auto_increment";
+                    }
+                    else
+                    {
+                        $strAutoIndex = "";
+                    }
+                    
+                    $strQuery .= "    {$arrColumn['Name']} {$arrColumn['Type']} {$arrColumn['Attributes']} $strNull $strAutoIndex {$arrColumn['Default']},\n";
+                }
+                 
+                // index
+                if ($strIndex)
+                {
+                    $strQuery .= "    INDEX    ($strIndex),\n";
+                }
+                // unique
+                if ($strUnique)
+                {
+                    $strQuery .= "    UNIQUE    ($strUnique),\n";
+                }
+                // primary key & table type
+                $strQuery .= "    PRIMARY KEY    ({$arrTableDefine['Id']})\n";
+                $strQuery .= ") TYPE = {$arrTableDefine['Type']}\n";
+				
 				// run query
 				$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
 				//echo (mysqli_error($this->db->refMysqliConnection));
@@ -859,7 +947,8 @@
 	 	$this->_strTable = $strTable;
 	 				
 		// Create a ? placeholder for every column
-	 	for ($i = 0; $i < (count(this->arrTableDefine[$strTable]["Column"]) - 1); $i++)
+		
+	 	for ($i = 0; $i < (count($this->arrTableDefine[$strTable]["Column"]) - 1); $i++)
 	 	{
 	 		$strQuery .= "?, ";
 	 	}
@@ -899,7 +988,7 @@
 	 {
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	
-	 	for ($i = 0; $i < count(this->arrTableDefine[$this->_strTable]["Column"]); $i++)
+	 	for ($i = 0; $i < count($this->arrTableDefine[$this->_strTable]["Column"]); $i++)
 	 	{
 	 		// FIXME: Use the Database definition to find type when Flame is done with it
 	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
@@ -961,14 +1050,14 @@
 	 	$this->strTable = $strTable;
 	 	
 	 	// Retrieve columns from the Table definition arrays
-	 	reset(this->arrTableDefine[$this->_strTable]["Column"]);
-	 	for ($i = 0; $i < (count(this->arrTableDefine[$this->_strTable]["Column"]) - 1); $i++)
+	 	reset($this->arrTableDefine[$this->_strTable]["Column"]);
+	 	for ($i = 0; $i < (count($this->arrTableDefine[$this->_strTable]["Column"]) - 1); $i++)
 	 	{
-	 		$strQuery .= key(this->arrTableDefine[$this->_strTable]["Column"]) . " = ?, ";
+	 		$strQuery .= key($this->arrTableDefine[$this->_strTable]["Column"]) . " = ?, ";
 	 		next();
 	 	}
 	 	// Last column is different
-	 	$strQuery .= key(this->arrTableDefine[$this->_strTable]["Column"]) . " = ?)\n";
+	 	$strQuery .= key($this->arrTableDefine[$this->_strTable]["Column"]) . " = ?)\n";
 
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")
@@ -1020,7 +1109,7 @@
 	 function Execute($arrData, $arrWhere)
 	 {
 	 	// Bind the VALUES data to our mysqli_stmt
-	 	for ($i = 0; $i < count(this->arrTableDefine[$this->_strTable]["Column"]); $i++)
+	 	for ($i = 0; $i < count($this->arrTableDefine[$this->_strTable]["Column"]); $i++)
 	 	{
 	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
 	 	}
