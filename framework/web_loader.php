@@ -62,7 +62,7 @@ $strConfigFile		= "";
  * @variable
  * @package	framework
  */
-$strDefinitionFile	= "";
+$strDefinitionFile	= "definitions.php";
 
 //----------------------------------------------------------------//
 // strDatabaseDefinitionFile
@@ -78,7 +78,7 @@ $strDefinitionFile	= "";
  * @variable
  * @package	framework
  */
-$strDatabaseDefinitionFile	= "";
+$strDatabaseDefinitionFile	= "database_define.php";
 
 //----------------------------------------------------------------//
 // strFrameworkFile
@@ -96,6 +96,21 @@ $strDatabaseDefinitionFile	= "";
  */
 $strFrameworkFile	= "framework.php";
 
+//----------------------------------------------------------------//
+// strApplicationFile
+//----------------------------------------------------------------//
+/**
+ * strApplicationFile
+ *
+ * full path to the application file
+ *
+ * full path to the application file
+ *
+ * @type	string
+ * @variable
+ * @package	framework
+ */
+$strApplicationFile	= "application.php";
 
 
 //----------------------------------------------------------------------------//
@@ -106,18 +121,19 @@ $strFrameworkFile	= "framework.php";
 // require_once($strConfigFile);
  
 // load definition file
-// require_once($strDefinitionFile);
+require_once($strDefinitionFile);
 
 // load database define file
-// require_once($strDatabaseDefinitionFile);
+require_once($strDatabaseDefinitionFile);
 
 // load framework
 require_once($strFrameworkFile);
+require_once("db_access.php");
 
 // create a framework instance
 //fwkFramework = new Framework();
 
 // load application 
-// require_once($strDatabaseDefinitionFile);
+require_once($strApplicationFile);
  
  ?>

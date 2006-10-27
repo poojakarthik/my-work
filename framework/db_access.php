@@ -204,7 +204,7 @@
  * Implements a CREATE query using mysqli
  *
  *
- * @prefix		cre
+ * @prefix		crq
  *
  * @package		framework
  * @class		QueryCreate
@@ -242,11 +242,11 @@
 		elseif (is_string($mixTable))
 		{
 			// convert string to array
-			$arrayTable = Array(mixTable);
+			$arrTables = Array(mixTable);
 		}
 		elseif (is_array($mixTable))
 		{
-			$arrayTables = $mixTable;
+			$arrTables = $mixTable;
 		}
 		else
 		{
@@ -257,7 +257,7 @@
 		$bolReturn = TRUE;
 		
 		// create tables
-		foreach($arrayTables as $strTableName)
+		foreach($arrTables as $strTableName)
 		{
 			// check that table def exists
 			if (is_array($this->db->arrTableDefine[$strTableName]))
