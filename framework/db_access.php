@@ -262,8 +262,9 @@
 			// check that table def exists
 			if (is_array($this->db->arrTableDefine[$strTableName]))
 			{
-				
-				$arrTableDefine = $this->db->arrTableDefine[$strTableName];
+				// build query
+				$strQuery = "";
+				//TODO!!!!
 				
 				/* CREATE TABLE `{$structure['name']}` (
 				 *		`{$structure['serial']}`	bigint	NOT NULL	auto_increment,
@@ -272,115 +273,22 @@
 				 *
 				 * INDEX	(`{$index[n]}`, `{$index[n++]}`),
 				 * UNIQUE	(`{$unique[n]}`, `{$unique[n++]}`),
-				 * PRIMARY KEY	(`{$structure['id']}`)
+				 * PRIMARY KEY	(`{$structure['serial']}`)
 				 * ) TYPE = {$structure['type']}
-		 		 */
-				 /*
-				 	$define['Name']		= "";			// table name
-				 	$define['Type']		= "MYISAM";		// defaults to	'MYISAM'
-					$define['Id']		= "Id";			// defaults to	'Id'
-					
-					$define['Index'][] 		= "";
-					$define['Unique'][] 	= "";
-					
-					$define['Column'][$strName]['Type'] 		= "";			// Validation type: s, i etc
-					$define['Column'][$strName]['SqlType'] 		= "";			// Sql Type: Char, Int etc
-					$define['Column'][$strName]['Null'] 		= TRUE|FALSE;	// optional, defaults to FALSE (NOT NULL)
-					$define['Column'][$strName]['Default'] 		= "";			// optional default value
-					$define['Column'][$strName]['Attributes'] 	= "";			// optional attributes
-				 
-				 */
-				 
-				// clean reused variables 
-				unset($strIndex);
-				unset($strUnique);
+				 *
+				 * $structure['id']		defaults to	'id'
+				 * $structure['type']		defaults to	'MYISAM'
+				 *
+				 * $structure['name'] 				= 'table_name';
+				 * $structure['colmn'][n]['name'] 	= 'colmn1';
+				 * $structure['colmn'][n]['type'] 	= 'varchar(10)';
+				 * $structure['colmn'][n]['null'] 	= TRUE;
+				 * $structure['sql'][]	 			= SQL QUERY;
+				 * $structure['data']				= standard data array to be inserted
+		 */
 				
-				// set defaults primary index
-				if (empty($arrTableDefine['Id']))
-				{
-					$arrTableDefine['Id'] = 'Id';
-				}
 				
-				// set default table type
-				if (empty($structure['Type']))
-				{
-					$arrTableDefine['Type'] = 'MYISAM';
-				}
-				 
-				// build index string
-				if (is_array($arrTableDefine['Index']))
-				{
-					foreach($arrTableDefine['Index'] as $strIndexValue)
-					{
-						$strIndex .= "$strIndexValue,";
-					}
-					$strIndex = substr($strIndex, 0, -1);
-				}
-				 
-				// build unique string
-				if (is_array($arrTableDefine['Unique']))
-				{
-					foreach($arrTableDefine['Unique'] as $strUniqueValue)
-					{
-						$strUnique .= "$strUniqueValue,";
-					}
-					$strUnique = substr($strUnique, 0, -1);
-				}
 				
-				// build the CREATE query
-				$strQuery  = "CREATE TABLE $strTableName (\n";
-				 
-				// columns
-				foreach($arrTableDefine['Column'] as $strColumnKey=>$arrColumn)
-				{
-					// use the key if we don't have a column name
-					if (empty($arrColumn['Name']))
-					{
-						$arrColumn['Name'] = $strColumnKey;
-					}
-					
-					// null, defaults to not null
-					if ($arrColumn['Null'] === TRUE)
-					{
-						$strNull = '';
-					}
-					else
-					{
-						$strNull = 'NOT NULL';
-					}
-					
-					// default
-					if($arrColumn['Default'])
-					{
-						$arrColumn['Default'] = "DEFAULT '{$arrColumn['Default']}'";
-					}
-					
-					// autoindex (Id column)
-					if ($arrColumn['Name'] == $arrTableDefine['Id'])
-					{
-						$strAutoIndex = "auto_increment";
-					}
-					else
-					{
-						$strAutoIndex = "";
-					}
-					
-					$strQuery .= "	{$arrColumn['Name']} {$arrColumn['Type']} {$arrColumn['Attributes']} $strNull $strAutoIndex {$arrColumn['Default']},\n";
-				}
-				 
-				// index
-				if ($strIndex)
-				{
-					$strQuery .= "	INDEX	($strIndex),\n";
-				}
-				// unique
-				if ($strUnique)
-				{
-					$strQuery .= "	UNIQUE	($strUnique),\n";
-				}
-				// primary key & table type
-				$strQuery .= "	PRIMARY KEY	({$arrTableDefine['Id']})\n";
-				$strQuery .= ") TYPE = {$arrTableDefine['Type']}\n";
 				
 				// run query
 				$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
@@ -454,6 +362,23 @@
 	 * @see			<MethodName()||typePropertyName>
 	 */
 	private $_arrWhereAliases;
+	
+	//------------------------------------------------------------------------//
+	// strTable	
+	//------------------------------------------------------------------------//
+	/**
+	 * strTable
+	 *
+	 * Name of the table we're working with (if UPDATE or INSERT)
+	 *
+	 * Name of the table we're working with (if UPDATE or INSERT)
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 * @see			<MethodName()||typePropertyName>
+	 */
+	private $_strTable;
 
  	//------------------------------------------------------------------------//
 	// Statement() - Constructor
@@ -530,10 +455,101 @@
 		return $arrAliases;
 	}
 	
+	//------------------------------------------------------------------------//
+	// StripTable()
+	//------------------------------------------------------------------------//
+	/**
+	 * StripTable()
+	 *
+	 * Strips the table from a string in "TableName.ColumnName" format
+	 *
+	 * Strips the table from a string in "TableName.ColumnName" format
+	 *
+	 * @param		string	$strText		String to parse
+	 * 
+	 * @return		string					Stripped table name
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function StripTable($strText) 
+	{
+		$strText = substr($strText, 0, (strpos($strText, ".") + 1));
+		if ($strText == "")
+		{
+			// There was no table name
+			return false;
+		}
+		return $strText;
+	}
 	
+	//------------------------------------------------------------------------//
+	// IsAssociativeArray()
+	//------------------------------------------------------------------------//
+	/**
+	 * IsAssociativeArray()
+	 *
+	 * Determines if a passed array is associative or not
+	 *
+	 * Determines if a passed array is associative or not
+	 *
+	 * @param		array	$arrArray		Array to be checked
+	 * 
+	 * @return		boolean					true	: Associative array
+	 * 										false	: Indexed array
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
 	function IsAssociativeArray($arrArray) 
 	{
-	   return (is_array($arrArray) && !is_numeric(implode(array_keys($arrArray))));
+		return (is_array($arrArray) && !is_numeric(implode(array_keys($arrArray))));
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// GetDBInputType()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetDBInputType()
+	 *
+	 * Determines the type of a passed variable
+	 *
+	 * Determines the type of a passed variable.
+	 * Returns:		"s" - String
+	 * 				"i" - Integer
+	 * 				"d" - Float/Double
+	 * 				"b" - Binary
+	 *
+	 * @param		mixed	$mixData		Data to be checked
+	 * 
+	 * @return		string					"s" : String
+	 * 										"i" : Integer
+	 * 										"d" : Float/Double
+	 * 										"b" : Binary
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function GetDBInputType($mixData) 
+	{
+		if (is_int($mixData))
+ 		{
+ 			// It's an integer
+ 			return "i";
+ 		}
+ 		elseif (is_float($mixData))
+ 		{
+ 			// It's a float/double
+ 			return "d";
+ 		}
+ 		elseif (is_scalar($mixData))
+ 		{
+ 			// It's a binary object
+ 			return "b";
+ 		}
+ 		
+ 		// Else, it's a string
+ 		return "s";
 	}
  }
 
@@ -697,8 +713,7 @@
 	 	
 	 	while (key($this->_arrWhereAliases) != null)
 	 	{
-	 		// FIXME: Use the Database definition to find type when Flame is done with it
-	 		$this->_stmtSqlStatment->bind_param("s", $arrData[current($this->_arrWhereAliases)]);
+	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[current($this->_arrWhereAliases)]), $arrData[current($this->_arrWhereAliases)]);
  			next($this->_arrWhereAliases);
 	 	}
 	 	
@@ -838,9 +853,10 @@
 	 	$strQuery = "INSERT INTO " . $strTable . "\n" .
 	 				"VALUES (";
 	 				
-	 	// FIXME: When Flame is done with Table definition arrays, we will be able
-	 	//		 to tell how many ?'s we will need
-	 	for ($i = 0; $i < (count(FLAME_TABLE_DEF_COLUMNS) - 1); $i++)
+	 	$this->_strTable = $strTable;
+	 				
+		// Create a ? placeholder for every column
+	 	for ($i = 0; $i < (count(this->arrTableDefine[$strTable]["Column"]) - 1); $i++)
 	 	{
 	 		$strQuery .= "?, ";
 	 	}
@@ -880,10 +896,10 @@
 	 {
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	
-	 	for ($i = 0; $i < count(FLAME_TABLE_DEF_COLUMNS); $i++)
+	 	for ($i = 0; $i < count(this->arrTableDefine[$this->_strTable]["Column"]); $i++)
 	 	{
 	 		// FIXME: Use the Database definition to find type when Flame is done with it
-	 		$this->_stmtSqlStatment->bind_param(FLAME_TABLE_DEF_COLUMN_TYPE, $arrData[$i]);
+	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
 	 	}
 	 	
 	 	// Run the Statement
@@ -938,14 +954,18 @@
 		// Compile the query from our passed infos
 	 	$strQuery = "UPDATE " . $strTable . "\n" .
 	 				"SET ";
+	 				
+	 	$this->strTable = $strTable;
 	 	
 	 	// Retrieve columns from the Table definition arrays
-	 	for ($i = 0; $i < (count(FLAME_TABLE_DEF) - 1); $i++)
+	 	reset(this->arrTableDefine[$this->_strTable]["Column"]);
+	 	for ($i = 0; $i < (count(this->arrTableDefine[$this->_strTable]["Column"]) - 1); $i++)
 	 	{
-	 		$strQuery .= FLAME_TABLE_DEF_COLUMN_NAME . " = ?, ";
+	 		$strQuery .= key(this->arrTableDefine[$this->_strTable]["Column"]) . " = ?, ";
+	 		next();
 	 	}
 	 	// Last column is different
-	 	$strQuery .= FLAME_TABLE_DEF_COLUMN_NAME . " = ?)\n";
+	 	$strQuery .= key(this->arrTableDefine[$this->_strTable]["Column"]) . " = ?)\n";
 
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")
@@ -998,18 +1018,16 @@
 	 function Execute($arrData, $arrWhere)
 	 {
 	 	// Bind the VALUES data to our mysqli_stmt
-	 	for ($i = 0; $i < count(FLAME_TABLE_DEF_COLUMNS); $i++)
+	 	for ($i = 0; $i < count(this->arrTableDefine[$this->_strTable]["Column"]); $i++)
 	 	{
-	 		// FIXME: Use the Database definition to find type when Flame is done with it
-	 		$this->_stmtSqlStatment->bind_param(FLAME_TABLE_DEF_COLUMN_TYPE, $arrData[$i]);
+	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
 	 	}
 	 	
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	reset($this->_arrWhereAliases);
 	 	while (key($this->_arrWhereAliases) != null)
 	 	{
-	 		// FIXME: Use the Database definition to find type when Flame is done with it
-	 		$this->_stmtSqlStatment->bind_param("s", $arrData[current($this->_arrWhereAliases)]);
+	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[current($this->_arrWhereAliases)]), $arrData[current($this->_arrWhereAliases)]);
  			next($this->_arrWhereAliases);
 	 	}
 	 	
