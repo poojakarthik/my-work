@@ -743,75 +743,18 @@
 	 {
 		parent::__construct();
 		// Compile the query from our passed info
-	 	$strQuery = "UPDATE ";
-	 	
-	 	if (is_string($mixColumns))
+	 	$strQuery = "INSERT INTO " . $strTable . "\n" .
+	 				"VALUES (";
+	 				
+	 	// FIXME: When Flame is done with Table definition arrays, we will be able
+	 	//		 to tell how many ?'s we will need
+	 	for ($i = 0; $i < (count(FLAME_TABLE_DEF_COLUMNS) - 1); $i++)
 	 	{
-	 		// $mixColumns is just a string, therefore only one column selected
-	 		$strQuery .= $mixColumns . "\n";
+	 		$strQuery .= "?, ";
 	 	}
- 		elseif ($this->IsAssociativeArray($mixColumns))
- 		{
-			// If arrColumns is associative, then add keys and values with "AS" between them
-			reset($mixColumns);
-			
-		 	// Add the columns 	
-		 	while (key($mixColumns) != null)
-		 	{
-		 		$strQuery .= key($mixColumns);
-		 		
-		 		// If this column has an AS alias
-		 		if (current($mixColumns) != "")
-		 		{
-		 			$strQuery .= "";
-		 		}
-		 		
-				next($mixColumns);
-		 	}
- 		}
- 		elseif (is_array($mixColumns))
- 		{
- 			// If it's an indexed array
- 		}
- 		else
- 		{
- 			// We have an invalid type, so throw an exception
- 			//throw new InvalidTypeException();
- 		}
+	 	// Last ? is different
+	 	$strQuery .= "?)";
 
-	 	// Add the FROM line
-	 	$strQuery .= "FROM ";
-	 	// Add the tables into the query
-	 	for ($i = 0; $i < (count($arrTables) - 1); $i++)
-	 	{
-	 		$strQuery .= $arrTables[$i] . ", ";
-	 	}
-	 	// Add the last table name (is different from the rest)
-	 	$strQuery .= $arrTables[count($arrTables)] . "\n";
-	 	
-	 	$strQuery .= "\n";
-	 	
-	 	// Add the WHERE clause
-	 	if ($strWhere != "")
-	 	{
-	 		// Find and replace the aliases in $strWhere
-	 		$this->_arrWhereAliases = FindAlias($strWhere);
-	 		
-			$strQuery .= "WHERE " . $strWhere . "\n";
-	 	}
-	 	
-	 	// Add the ORDER BY clause
-	 	if ($strOrder != "")
-	 	{
-			$strQuery .= "ORDER BY " . $strOrder . "\n";	
-	 	}
-	 	
-	 	// Add the LIMIT clause
-	 	if ($strLimit != "")
-	 	{
-			$strQuery .= "LIMIT " . $strLimit . "\n";	
-	 	}
-	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->refMysqliConnection->stmt_init();
 	 	
@@ -843,7 +786,16 @@
 	 */ 
 	 function Execute($arrData)
 	 {
-	 	// TODO
+	 	// Bind the VALUES data to our mysqli_stmt
+	 	
+	 	for ($i = 0; $i < count(FLAME_TABLE_DEF_COLUMNS); $i++)
+	 	{
+	 		// FIXME: Use the Database definition to find type when Flame is done with it
+	 		$this->_stmtSqlStatment->bind_param(FLAME_TABLE_DEF_COLUMN_TYPE, $arrData[$i]);
+	 	}
+	 	
+	 	// Run the Statement
+	 	$this->_stmtSqlStatment->execute();
 	 }
  }
 
@@ -888,9 +840,43 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	 function __construct($strTable)
+	 function __construct($strTable, $strWhere)
 	 {
-	 	// TODO
+		parent::__construct();
+		// Compile the query from our passed infos
+	 	$strQuery = "UPDATE " . $strTable . "\n" .
+	 				"SET ";
+	 	
+	 	// Retrieve columns from the Table definition arrays
+	 	for ($i = 0; $i < (count(FLAME_TABLE_DEF) - 1); $i++)
+	 	{
+	 		$strQuery .= FLAME_TABLE_DEF_COLUMN_NAME . " = ?, ";
+	 	}
+	 	// Last column is different
+	 	$strQuery .= FLAME_TABLE_DEF_COLUMN_NAME . " = ?)\n";
+
+	 	// Add the WHERE clause
+	 	if ($strWhere != "")
+	 	{
+	 		// Find and replace the aliases in $strWhere
+	 		$this->_arrWhereAliases = FindAlias($strWhere);
+	 		
+			$strQuery .= "WHERE " . $strWhere . "\n";
+	 	}
+	 	else
+	 	{
+	 		// We MUST have a WHERE clause
+	 		throw new Exception();
+	 	}
+	 	
+	 	// Init and Prepare the mysqli_stmt
+	 	$this->_stmtSqlStatment = $this->refMysqliConnection->stmt_init();
+	 	
+	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
+	 	{
+	 		// There was problem preparing the statment
+	 		throw new Exception();
+	 	}
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -917,9 +903,26 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	 function Execute($arrWhere)
+	 function Execute($arrData, $arrWhere)
 	 {
-	 	// TODO
+	 	// Bind the VALUES data to our mysqli_stmt
+	 	for ($i = 0; $i < count(FLAME_TABLE_DEF_COLUMNS); $i++)
+	 	{
+	 		// FIXME: Use the Database definition to find type when Flame is done with it
+	 		$this->_stmtSqlStatment->bind_param(FLAME_TABLE_DEF_COLUMN_TYPE, $arrData[$i]);
+	 	}
+	 	
+	 	// Bind the WHERE data to our mysqli_stmt
+	 	reset($this->_arrWhereAliases);
+	 	while (key($this->_arrWhereAliases) != null)
+	 	{
+	 		// FIXME: Use the Database definition to find type when Flame is done with it
+	 		$this->_stmtSqlStatment->bind_param("s", $arrData[current($this->_arrWhereAliases)]);
+ 			next($this->_arrWhereAliases);
+	 	}
+	 	
+	 	// Run the Statement
+	 	$this->_stmtSqlStatment->execute();
 	 }
  }
 ?>
