@@ -171,6 +171,23 @@
 	 * @see			<MethodName()||typePropertyName>
 	 */
 	private $_stmtSqlStatment;
+	
+	//------------------------------------------------------------------------//
+	// arrWhereAliases	
+	//------------------------------------------------------------------------//
+	/**
+	 * arrWhereAliases
+	 *
+	 * Stores the WHERE aliases
+	 *
+	 * Stores the WHERE aliases
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 * @see			<MethodName()||typePropertyName>
+	 */
+	private $_arrWhereAliases;
 
  	//------------------------------------------------------------------------//
 	// Statement() - Constructor
@@ -237,7 +254,7 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function FindAlias($strString)
+	function FindAlias(&$strString)
 	{
 		$arrAliases = array();
 
@@ -276,7 +293,6 @@
  */
  class StatementSelect extends Statement
  {
- 
 	//------------------------------------------------------------------------//
 	// StatementSelect() - Constructor
 	//------------------------------------------------------------------------//
@@ -398,16 +414,35 @@
 	 	
 	 	
 	 	
-	 	// Add the WHERE line
+	 	// Add the WHERE clause
 	 	if ($strWhere != "")
 	 	{
-	 		//
-	 		if (!strcasecmp(substr($strWhere, 0, 5)))
-	 		{
-	 			
-	 		}
+	 		// Find and replace the aliases in $strWhere
+	 		$this->_arrWhereAliases = FindAlias($strWhere);
+	 		
+			$strQuery .= "WHERE " . $strWhere . "\n";
 	 	}
 	 	
+	 	// Add the ORDER BY clause
+	 	if ($strOrder != "")
+	 	{
+			$strQuery .= "ORDER BY " . $strOrder . "\n";	
+	 	}
+	 	
+	 	// Add the LIMIT clause
+	 	if ($strLimit != "")
+	 	{
+			$strQuery .= "LIMIT " . $strLimit . "\n";	
+	 	}
+	 	
+	 	// Init and Prepare the mysqli_stmt
+	 	$this->_stmtSqlStatment = $this->refMysqliConnection->stmt_init();
+	 	
+	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
+	 	{
+	 		// There was problem preparing the statment
+	 		throw new Exception();
+	 	}
 	}
 
 	//------------------------------------------------------------------------//
@@ -431,7 +466,21 @@
 	 */ 
 	 function Execute($arrData)
 	 {
-	 	// TODO
+	 	// Bind the WHERE data to our mysqli_stmt
+	 	reset($this->_arrWhereAliases);
+	 	
+	 	while (key($this->_arrWhereAliases) != null)
+	 	{
+	 		// FIXME: Use the Database definition to find type when Flame is done with it
+	 		$this->_stmtSqlStatment->bind_param("s", $arrData[current($this->_arrWhereAliases)]);
+ 			next($this->_arrWhereAliases);
+	 	}
+	 	
+	 	// Run the Statement
+	 	$this->_stmtSqlStatment->execute();
+	 	
+	 	// Store the results (required for num_rows())
+	 	$this->_stmtSqlStatment->store_result();
 	 }
 
 	//------------------------------------------------------------------------//
@@ -451,7 +500,22 @@
 	 */ 
 	function Fetch()
 	{
-	 	// TODO
+	 	// Retrieve the next row of data from the resultset
+	 	$arrResults = Array();
+	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
+	 	
+	 	// First parameter for bind_result is the statment
+	 	$arrFields[0] = &$this->_stmtSqlStatment;
+	 	$i = 1;
+	 	while ($fldField = $this->_stmtSqlStatment->fetch_field())
+	 	{
+	 		$arrFields[$i] = &$arrResults[$fldField->name];
+	 		$i++;
+	 	}
+	 		
+ 		call_user_func_array($this->_stmtSqlStatment->bind_result, $arrFields);
+ 		
+ 		return $arrResults;
 	}
 	
 	
@@ -474,6 +538,12 @@
 	function FetchAll()
 	{
 	 	// TODO
+	 	
+	 	/*
+	 	for ($i = 0; $i < $this->_stmtSqlStatment->num_rows(); $i++)
+	 	{
+	 		call_user_func_array($this->_stmtSqlStatment->bind_result, );
+	 	}*/
 	}
  }
  
