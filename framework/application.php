@@ -75,7 +75,7 @@
 
 // update the table
 	$updUpdateStatement = new StatementUpdate("TestTable", "TestColumn LIKE <testcol>");
-	if ($updUpdateStatement->Execute(Array("TestColumn"), Array("testcol" => "Changed test text")))
+	if ($updUpdateStatement->Execute(Array("Changed test text"), Array("testcol" => "%test%")))
 	{
 		echo("Update Successful!");
 	}
