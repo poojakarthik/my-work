@@ -309,7 +309,7 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function __construct($arrTables, $mixColumns, $strWhere, $strOrder, $strLimit)
+	function __construct($arrTables, $mixColumns, $strWhere = "", $strOrder = "", $strLimit = "")
 	{
 		parent::__construct();
 		// Compile the query from our passed info
@@ -333,31 +333,83 @@
 		 		// If this column has an AS alias
 		 		if (current($mixColumns) != "")
 		 		{
-		 			$strQuery .= "";
+		 			$strQuery .= " AS " . current($mixColumns);
+		 		}
+		 				 		
+		 		next($mixColumns);
+		 		
+		 		// If this isn't the last item in the array, add a comma
+		 		if (key($mixColumns) != null)
+		 		{
+		 			$strQuery .= ", ";
 		 		}
 		 		
-				next($mixColumns);
+		 		$strQuery .= "\n";
 		 	}
  		}
  		elseif (is_array($mixColumns))
  		{
  			// If it's an indexed array
+ 			reset($mixColumns);
+ 			
+		 	// Add the columns 	
+		 	while (key($mixColumns) != null)
+		 	{
+		 		$strQuery .= current($mixColumns);
+	 		
+		 		next($mixColumns);
+		 		
+		 		// If this isn't the last item in the array, add a comma
+		 		if (key($mixColumns) != null)
+		 		{
+		 			$strQuery .= ", ";
+		 		}
+		 	}
+		 	
+		 	$strQuery .= "\n";
  		}
  		else
  		{
  			// We have an invalid type, so throw an exception
+<<<<<<< .mine
+ 			throw new Exception();
+=======
  			//throw new InvalidTypeException();
+>>>>>>> .r3
  		}
+
+
 
 	 	// Add the FROM line
 	 	$strQuery .= "FROM ";
+	 	reset($arrTables);
 	 	// Add the tables into the query
-	 	for ($i = 0; $i < (count($arrTables) - 1); $i++)
+	 	while (key($arrTables) != null)
 	 	{
-	 		$strQuery .= $arrTables[$i] . ", ";
+	 		$strQuery .= current($arrTables);
+ 		
+	 		next($arrTables);
+	 		
+	 		// If this isn't the last item in the array, add a comma
+	 		if (key($arrTables) != null)
+	 		{
+	 			$strQuery .= ", ";
+	 		}
 	 	}
-	 	// Add the last table name (is different from the rest)
-	 	$strQuery .= $arrTables[count($arrTables)] . "\n";
+	 	
+	 	$strQuery .= "\n";
+	 	
+	 	
+	 	
+	 	// Add the WHERE line
+	 	if ($strWhere != "")
+	 	{
+	 		//
+	 		if (!strcasecmp(substr($strWhere, 0, 5)))
+	 		{
+	 			
+	 		}
+	 	}
 	 	
 	}
 
