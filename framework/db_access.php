@@ -262,9 +262,8 @@
 			// check that table def exists
 			if (is_array($this->db->arrTableDefine[$strTableName]))
 			{
-				// build query
-				$strQuery = "";
-				//TODO!!!!
+				
+				$arrTableDefine = $this->db->arrTableDefine[$strTableName];
 				
 				/* CREATE TABLE `{$structure['name']}` (
 				 *		`{$structure['serial']}`	bigint	NOT NULL	auto_increment,
@@ -273,22 +272,115 @@
 				 *
 				 * INDEX	(`{$index[n]}`, `{$index[n++]}`),
 				 * UNIQUE	(`{$unique[n]}`, `{$unique[n++]}`),
-				 * PRIMARY KEY	(`{$structure['serial']}`)
+				 * PRIMARY KEY	(`{$structure['id']}`)
 				 * ) TYPE = {$structure['type']}
-				 *
-				 * $structure['id']		defaults to	'id'
-				 * $structure['type']		defaults to	'MYISAM'
-				 *
-				 * $structure['name'] 				= 'table_name';
-				 * $structure['colmn'][n]['name'] 	= 'colmn1';
-				 * $structure['colmn'][n]['type'] 	= 'varchar(10)';
-				 * $structure['colmn'][n]['null'] 	= TRUE;
-				 * $structure['sql'][]	 			= SQL QUERY;
-				 * $structure['data']				= standard data array to be inserted
-		 */
+		 		 */
+				 /*
+				 	$define['Name']		= "";			// table name
+				 	$define['Type']		= "MYISAM";		// defaults to	'MYISAM'
+					$define['Id']		= "Id";			// defaults to	'Id'
+					
+					$define['Index'][] 		= "";
+					$define['Unique'][] 	= "";
+					
+					$define['Column'][$strName]['Type'] 		= "";			// Validation type: s, i etc
+					$define['Column'][$strName]['SqlType'] 		= "";			// Sql Type: Char, Int etc
+					$define['Column'][$strName]['Null'] 		= TRUE|FALSE;	// optional, defaults to FALSE (NOT NULL)
+					$define['Column'][$strName]['Default'] 		= "";			// optional default value
+					$define['Column'][$strName]['Attributes'] 	= "";			// optional attributes
+				 
+				 */
+				 
+				// clean reused variables 
+				unset($strIndex);
+				unset($strUnique);
 				
+				// set defaults primary index
+				if (empty($arrTableDefine['Id']))
+				{
+					$arrTableDefine['Id'] = 'Id';
+				}
 				
+				// set default table type
+				if (empty($structure['Type']))
+				{
+					$arrTableDefine['Type'] = 'MYISAM';
+				}
+				 
+				// build index string
+				if (is_array($arrTableDefine['Index']))
+				{
+					foreach($arrTableDefine['Index'] as $strIndexValue)
+					{
+						$strIndex .= "$strIndexValue,";
+					}
+					$strIndex = substr($strIndex, 0, -1);
+				}
+				 
+				// build unique string
+				if (is_array($arrTableDefine['Unique']))
+				{
+					foreach($arrTableDefine['Unique'] as $strUniqueValue)
+					{
+						$strUnique .= "$strUniqueValue,";
+					}
+					$strUnique = substr($strUnique, 0, -1);
+				}
 				
+				// build the CREATE query
+				$strQuery  = "CREATE TABLE $strTableName (\n";
+				 
+				// columns
+				foreach($arrTableDefine['Column'] as $strColumnKey=>$arrColumn)
+				{
+					// use the key if we don't have a column name
+					if (empty($arrColumn['Name']))
+					{
+						$arrColumn['Name'] = $strColumnKey;
+					}
+					
+					// null, defaults to not null
+					if ($arrColumn['Null'] === TRUE)
+					{
+						$strNull = '';
+					}
+					else
+					{
+						$strNull = 'NOT NULL';
+					}
+					
+					// default
+					if($arrColumn['Default'])
+					{
+						$arrColumn['Default'] = "DEFAULT '{$arrColumn['Default']}'";
+					}
+					
+					// autoindex (Id column)
+					if ($arrColumn['Name'] == $arrTableDefine['Id'])
+					{
+						$strAutoIndex = "auto_increment";
+					}
+					else
+					{
+						$strAutoIndex = "";
+					}
+					
+					$strQuery .= "	{$arrColumn['Name']} {$arrColumn['Type']} {$arrColumn['Attributes']} $strNull $strAutoIndex {$arrColumn['Default']},\n";
+				}
+				 
+				// index
+				if ($strIndex)
+				{
+					$strQuery .= "	INDEX	($strIndex),\n";
+				}
+				// unique
+				if ($strUnique)
+				{
+					$strQuery .= "	UNIQUE	($strUnique),\n";
+				}
+				// primary key & table type
+				$strQuery .= "	PRIMARY KEY	({$arrTableDefine['Id']})\n";
+				$strQuery .= ") TYPE = {$arrTableDefine['Type']}\n";
 				
 				// run query
 				$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
