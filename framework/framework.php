@@ -85,7 +85,7 @@
 	 	
 	 	set_error_handler($errErrorHandler, "PHPErrorCatcher");
 	 }
-	 
+ }
 
 //----------------------------------------------------------------------------//
 // ApplicationBaseClass
@@ -131,7 +131,5 @@
 		// make global database object available
 		$this->db = &$_GLOBALS['dbaDatabase'];
 	}
- }
-
  }
 ?>
