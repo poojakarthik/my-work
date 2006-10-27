@@ -253,6 +253,7 @@
 			return FALSE;
 		}
 		
+		// by default we return TRUE
 		$bolReturn = TRUE;
 		
 		// create tables
@@ -261,12 +262,47 @@
 			// check that table def exists
 			if (is_array($this->db->arrTableDefine[$strTableName]))
 			{
-				// create table
-				// TODO!!!!
+				// build query
+				$strQuery = "";
+				//TODO!!!!
+				
+				/* CREATE TABLE `{$structure['name']}` (
+				 *		`{$structure['serial']}`	bigint	NOT NULL	auto_increment,
+				 *		`{$colmn['name']}` {$colmn['type']} {$colmn['attributes']} {$colmn['null']} DEFAULT '{$colmn['default']}',
+				 *		...
+				 *
+				 * INDEX	(`{$index[n]}`, `{$index[n++]}`),
+				 * UNIQUE	(`{$unique[n]}`, `{$unique[n++]}`),
+				 * PRIMARY KEY	(`{$structure['serial']}`)
+				 * ) TYPE = {$structure['type']}
+				 *
+				 * $structure['id']		defaults to	'id'
+				 * $structure['type']		defaults to	'MYISAM'
+				 *
+				 * $structure['name'] 				= 'table_name';
+				 * $structure['colmn'][n]['name'] 	= 'colmn1';
+				 * $structure['colmn'][n]['type'] 	= 'varchar(10)';
+				 * $structure['colmn'][n]['null'] 	= TRUE;
+				 * $structure['sql'][]	 			= SQL QUERY;
+				 * $structure['data']				= standard data array to be inserted
+		 */
+				
+				
+				
+				
+				// run query
+				$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+				
+				// check result
+				if ($mixReturn !== TRUE)
+				{
+					// we will return false
+					$bolReturn = FALSE;
+				}
 			}
 			else
 			{
-				// we will retfrn false
+				// we will return false
 				$bolReturn = FALSE;
 			}
 		}
