@@ -60,7 +60,7 @@
 	 * @property
 	 * @see			<MethodName()||typePropertyName>
 	 */
-	private $_refMysqliConnection;
+	public $refMysqliConnection;
 	
  	//------------------------------------------------------------------------//
 	// DataAccess() - Constructor
@@ -80,7 +80,7 @@
 	function __construct()
 	{
 		// Connect to MySQL database
-		$_refMysqliConnection = new mysqli(DATABASE_URL, DATABASE_USER, DATABASE_PWORD, DATABASE_NAME);
+		$refMysqliConnection = new mysqli(DATABASE_URL, DATABASE_USER, DATABASE_PWORD, DATABASE_NAME);
 		
 		// Make sure the connection was successful
 		if(mysqli_connect_errno())
@@ -263,20 +263,43 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function __construct($arrTables, $arrColumns, $strWhere, $strOrder, $strLimit)
+	function __construct($arrTables, $mixColumns, $strWhere, $strOrder, $strLimit)
 	{
 		// Compile the query from our passed info
 	 	$strQuery = "SELECT ";
 	 	
-	 	
- 		// If arrColumns is associative, then add keys and values with "AS" between them
- 		if (IsAssociativeArray($arrColumns))
+	 	if (is_string($mixColumns))
+	 	{
+	 		// $mixColumns is just a string, therefore only one column selected
+	 		$strQuery .= $mixColumns . "\n";
+	 	}
+ 		elseif (IsAssociativeArray($mixColumns))
  		{
+			// If arrColumns is associative, then add keys and values with "AS" between them
+			reset($mixColumns);
+			
 		 	// Add the columns 	
-		 	for ($i = 0; $i < (count($arrColumns) - 1); $i++)
+		 	while (key($mixColumns) != null)
 		 	{
-					//TODO
+		 		$strQuery .= key($mixColumns);
+		 		
+		 		// If this column has an AS alias
+		 		if (current($mixColumns) != "")
+		 		{
+		 			$strQuery .= "";
+		 		}
+		 		
+				next($mixColumns);
 		 	}
+ 		}
+ 		elseif (is_array($mixColumns))
+ 		{
+ 			// If it's an indexed array
+ 		}
+ 		else
+ 		{
+ 			// We have an invalid type, so throw an exception
+ 			throw new InvalidTypeException();
  		}
 
 	 	// Add the FROM line
