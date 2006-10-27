@@ -105,7 +105,7 @@
 		}
 		
 		// make global database definitions available
-		$this->arrTableDefine = &$_GLOBALS['arrDatabaseTableDefine'];
+		$this->arrTableDefine = &$GLOBALS['arrDatabaseTableDefine'];
 	}
  }
  
@@ -144,14 +144,13 @@
 	function __construct()
 	{
 		// connect to database if not already connected
-		if (!$_GLOBALS['dbaDatabase'] || !is_a($_GLOBALS['dbaDatabase'], "DataAccess"))
+		if (!$GLOBALS['dbaDatabase'] || !is_a($GLOBALS['dbaDatabase'], "DataAccess"))
 		{
-			$_GLOBALS['dbaDatabase'] = "hi world";
-			//$_GLOBALS['dbaDatabase'] = new DataAccess();
+			$GLOBALS['dbaDatabase'] = new DataAccess();
 		}
 		
 		// make global database object available
-		$this->db = &$_GLOBALS['dbaDatabase'];
+		$this->db = &$GLOBALS['dbaDatabase'];
 	}
  }
 
@@ -242,7 +241,7 @@
 		elseif (is_string($mixTable))
 		{
 			// convert string to array
-			$arrTables = Array(mixTable);
+			$arrTables = Array($mixTable);
 		}
 		elseif (is_array($mixTable))
 		{
@@ -255,44 +254,48 @@
 		
 		// by default we return TRUE
 		$bolReturn = TRUE;
-		
+
 		// create tables
 		foreach($arrTables as $strTableName)
 		{
+			//echo($strTableName);
 			// check that table def exists
 			if (is_array($this->db->arrTableDefine[$strTableName]))
-			{
-				// build query
-				$strQuery = "";
-				//TODO!!!!
-				
+			{	
 				/* CREATE TABLE `{$structure['name']}` (
 				 *		`{$structure['serial']}`	bigint	NOT NULL	auto_increment,
-				 *		`{$colmn['name']}` {$colmn['type']} {$colmn['attributes']} {$colmn['null']} DEFAULT '{$colmn['default']}',
+				 *		`{$column['name']}` {$column['type']} {$column['attributes']} {$column['null']} DEFAULT '{$column['default']}',
 				 *		...
 				 *
 				 * INDEX	(`{$index[n]}`, `{$index[n++]}`),
 				 * UNIQUE	(`{$unique[n]}`, `{$unique[n++]}`),
 				 * PRIMARY KEY	(`{$structure['serial']}`)
 				 * ) TYPE = {$structure['type']}
-				 *
-				 * $structure['id']		defaults to	'id'
-				 * $structure['type']		defaults to	'MYISAM'
-				 *
-				 * $structure['name'] 				= 'table_name';
-				 * $structure['colmn'][n]['name'] 	= 'colmn1';
-				 * $structure['colmn'][n]['type'] 	= 'varchar(10)';
-				 * $structure['colmn'][n]['null'] 	= TRUE;
-				 * $structure['sql'][]	 			= SQL QUERY;
-				 * $structure['data']				= standard data array to be inserted
-		 */
-				
-				
-				
-				
+		 		 */
+				 /*
+				 	$define['Name']		= "";			// table name
+				 	$define['Type']		= "MYISAM";		// defaults to	'MYISAM'
+					$define['Id']		= "Id";			// defaults to	'Id'
+					
+					$define['Index'][] 		= "";
+					$define['Unique'][] 	= "";
+					
+					$define['Column'][$strName]['Type'] 		= "";			// Validation type: s, i etc
+					$define['Column'][$strName]['SqlType'] 		= "";			// Sql Type: Varchar(5), Int etc
+					$define['Column'][$strName]['Null'] 		= TRUE|FALSE;	// optional, defaults to FALSE (NOT NULL)
+					$define['Column'][$strName]['Default'] 		= "";			// optional default value
+					$define['Column'][$strName]['Attributes'] 	= "";			// optional attributes
+				 
+				 */
+				 
+				// clean reused variables 
+				unset($strIndex);
+				unset($strUnique);
+
+				//echo $strQuery;
 				// run query
 				$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
-				
+				//echo (mysqli_error($this->db->refMysqliConnection));
 				// check result
 				if ($mixReturn !== TRUE)
 				{

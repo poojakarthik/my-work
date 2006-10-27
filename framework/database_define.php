@@ -40,7 +40,7 @@
 	$arrDefine['Unique'][] 		= "";
 	
 	$arrDefine['Column'][$strName]['Type'] 			= "";			// Validation type: s, i etc
-	$arrDefine['Column'][$strName]['SqlType'] 		= "";			// Sql Type: Char, Int etc
+	$arrDefine['Column'][$strName]['SqlType'] 		= "";			// Sql Type: Varchar(5), Int etc
 	$arrDefine['Column'][$strName]['Null'] 			= TRUE|FALSE;	// optional, defaults to FALSE (NOT NULL)
 	$arrDefine['Column'][$strName]['Default'] 		= "";			// optional default value
 	$arrDefine['Column'][$strName]['Attributes'] 	= "";			// optional attributes

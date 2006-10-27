@@ -43,20 +43,31 @@
 	//$arrDefine['Unique'][] 		= "";
 	
 	// Define Columns
+	$strName = "Id";
+		$arrDefine['Column'][$strName]['Type'] 			= "Bigint";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "i";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 	$strName = "TestColumn";
-		$arrDefine['Column'][$strName]['Type'] 			= "string";
+		$arrDefine['Column'][$strName]['Type'] 			= "varchar(5)";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "s";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		//$arrDefine['Column'][$strName]['Default'] 		= "";
 		//$arrDefine['Column'][$strName]['Attributes'] 	= "";
 	
 	// Save Table Define
-	$_GLOBALS['arrDatabaseTableDefine'][$define['Name']] = $define;
-
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
 
 // create the table
 	$crqQuery = new QueryCreate();
-	$crqQuery->Execute("TestTable");
+	$bolReturn = $crqQuery->Execute("TestTable");
+	if ($bolReturn === FALSE)
+	{
+		echo "false";
+	}
+	elseif ($bolReturn === TRUE)
+	{
+		echo "true";
+	}
 
 // insert into the table
 	$insInsertStatment = new StatementInsert("TestTable");
@@ -85,7 +96,7 @@
 	}
  
 // oh, and say hello world while we are at it 
-echo "hello world";
+//echo "hello world";
 
 
 ?>
