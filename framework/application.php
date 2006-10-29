@@ -43,10 +43,6 @@
 	//$arrDefine['Unique'][] 		= "";
 	
 	// Define Columns
-	$strName = "Id";
-		$arrDefine['Column'][$strName]['Type'] 			= "i";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "Bigint";
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 	$strName = "TestColumn";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(5)";

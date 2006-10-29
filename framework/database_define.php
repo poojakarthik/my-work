@@ -32,13 +32,14 @@
 // database table define format
 //----------------------------------------------------------------------------//
  /*
-	$arrDefine['Name']		= "";			// table name
-	$arrDefine['Type']		= "MYISAM";		// defaults to	'MYISAM'
-	$arrDefine['Id']		= "Id";			// defaults to	'Id'
+	$arrDefine['Name']		= "";			// Table name
+	$arrDefine['Type']		= "MYISAM";		// optional Table type, defaults to	'MYISAM'
+	$arrDefine['Id']		= "Id";			// optional Primary auto index column name, defaults to	'Id'
 	
-	$arrDefine['Index'][] 		= "";
-	$arrDefine['Unique'][] 		= "";
+	$arrDefine['Index'][] 		= "";		// optional array of index column names
+	$arrDefine['Unique'][] 		= "";		// optional array of unique column names
 	
+	// DO NOT Define the ID column here ! it will be added automatically
 	$arrDefine['Column'][$strName]['Type'] 			= "";			// Validation type: s, i etc
 	$arrDefine['Column'][$strName]['SqlType'] 		= "";			// Sql Type: Varchar(5), Int etc
 	$arrDefine['Column'][$strName]['Null'] 			= TRUE|FALSE;	// optional, defaults to FALSE (NOT NULL)

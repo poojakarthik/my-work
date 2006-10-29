@@ -264,15 +264,15 @@
 			{
 				$arrTableDefine = $this->db->arrTableDefine[$strTableName];
 				
-				/* CREATE TABLE `{$structure['name']}` (
-				 *		`{$structure['serial']}`	bigint	NOT NULL	auto_increment,
+				/* CREATE TABLE `{$define['Name']}` (
+				 *		`{$define['Id']}`	bigint	NOT NULL	auto_increment,
 				 *		`{$column['name']}` {$column['type']} {$column['attributes']} {$column['null']} DEFAULT '{$column['default']}',
 				 *		...
 				 *
 				 * INDEX	(`{$index[n]}`, `{$index[n++]}`),
 				 * UNIQUE	(`{$unique[n]}`, `{$unique[n++]}`),
-				 * PRIMARY KEY	(`{$structure['serial']}`)
-				 * ) TYPE = {$structure['type']}
+				 * PRIMARY KEY	(`{$define['Id']}`)
+				 * ) TYPE = {$define['Type']}
 		 		 */
 				 /*
 				 	$define['Name']		= "";			// table name
@@ -328,7 +328,10 @@
                 
                 // build the CREATE query
                 $strQuery  = "CREATE TABLE $strTableName (\n";
-                 
+                
+				// autoindex (Id column)
+				$strQuery .= "    {$arrTableDefine['Id']} bigint NOT NULL auto_increment,\n";
+				
                 // columns
                 foreach($arrTableDefine['Column'] as $strColumnKey=>$arrColumn)
                 {
@@ -354,17 +357,7 @@
                         $arrColumn['Default'] = "DEFAULT '{$arrColumn['Default']}'";
                     }
                     
-                    // autoindex (Id column)
-                    if ($arrColumn['Name'] == $arrTableDefine['Id'])
-                    {
-                        $strAutoIndex = "auto_increment";
-                    }
-                    else
-                    {
-                        $strAutoIndex = "";
-                    }
-                    
-                    $strQuery .= "    {$arrColumn['Name']} {$arrColumn['SqlType']} {$arrColumn['Attributes']} $strNull $strAutoIndex {$arrColumn['Default']},\n";
+                    $strQuery .= "    {$arrColumn['Name']} {$arrColumn['SqlType']} {$arrColumn['Attributes']} $strNull {$arrColumn['Default']},\n";
                 }
                  
                 // index
