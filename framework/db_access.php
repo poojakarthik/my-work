@@ -840,6 +840,8 @@
 	 	// First parameter for bind_result is the statment
 	 	$arrFields[0] = &$this->_stmtSqlStatment;
 	 	
+		
+		// MOVE TO EXEQUTE
 	 	// Create a parameter list for bind_result()
 	 	$i = 1;
 	 	while ($fldField = $this->_stmtSqlStatment->fetch_field())
@@ -977,8 +979,7 @@
 	 *
 	 * Executes the StatementInsert, with a new set of values
 	 *
-	 * @param		array	arrData			Indexed array of the data to be inserted
-	 * 										Assumed that this data is in the correct order
+	 * @param		array	arrData			Associative array of the data to be inserted
 	 * 
 	 * @return		boolean					true	: Insert successful
 	 * 										false	: Insert failed
