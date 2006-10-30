@@ -939,12 +939,23 @@
 	 function __construct($strTable)
 	 {
 		parent::__construct();
+			 	
+	 	$this->_strTable = $strTable;
 		// Compile the query from our passed info
 	 	$strQuery = "INSERT INTO " . $strTable . "\n" .
-	 				"VALUES (";
-	 				
-	 	$this->_strTable = $strTable;
-	 				
+	 				"(";
+	 	
+	 	reset($this->db->arrTableDefine[$strTable]["Column"]);
+	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$strTable]["Column"]) - 1); $i++)
+	 	{
+	 		$strQuery .= current($strQuery .= $this->db->arrTableDefine[$strTable]["Column"]) . ", ";
+	 		next();
+	 	}
+	 	// Last column is different
+	 	$strQuery .= current($strQuery .= $this->db->arrTableDefine[$strTable]["Column"]) . ")\n";
+	 	
+	 	$strQuery .= "VALUES(";
+
 		// Create a ? placeholder for every column
 	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$strTable]["Column"]) - 1); $i++)
 	 	{
