@@ -797,8 +797,6 @@
 	 		// There was problem preparing the statment
 	 		throw new Exception();
 	 	}
-	 	
-	 	echo($strQuery . "\n");
 	}
 
 	//------------------------------------------------------------------------//
@@ -985,7 +983,6 @@
 
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
-	 	echo("$strQuery <br>");
 		
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
@@ -1161,8 +1158,7 @@
 	 	
 	 	array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
-		
-	
+			
 	 	// Run the Statement
 	 	return $this->_stmtSqlStatment->execute();
 	 }
