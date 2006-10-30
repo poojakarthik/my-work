@@ -24,8 +24,6 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
-require_once("report.php");
 
 //----------------------------------------------------------------------------//
 // ErrorHandler
@@ -106,7 +104,6 @@ class ErrorHandler
 	 *
 	 * @param	string		$strErrorCode		The Code of the error being reported
 	 * @param	string		$strUser			User who forced the error
-	 * @param	string		$strErrorLevel		The level of importance of error
 	 * @param	string		$strLocation		Where the error occurred (page or module)
 	 * @param	string		$strDescription		PHP Description of error
 	 * @return	void
@@ -115,7 +112,7 @@ class ErrorHandler
 	 * @see	this->_rptReport
 	 * @see Report
 	 */
-	function RecordError($strErrorCode, $strUser, $strErrorLevel, $strLocation, $strDescription)
+	function RecordError($strErrorCode, $strUser, $strLocation, $strDescription)
 	{
 		// Insert into to database
 		$insInsertStatement = new StatementInsert(DATABASE_ERROR_TABLE);
@@ -127,7 +124,7 @@ class ErrorHandler
 		if (isset($this->_rptReport))
 		{
 			$strMessage = date("D/M/Y\@H:M:S") . " -- " . $strUser . "caused a " . $strErrorLevel
-						. " Error (Code: " . $strErrorCode . " in module " . $strLocation . ".\n"
+						. " Error (Code: " . $strErrorCode . " in module " . $strLocation . ".\n\n"
 						. "\t\"" . $strDescription . "\"\n";
 			
 			$this->_rptReport->AddMessage($strMessage);
@@ -199,14 +196,14 @@ class ErrorHandler
 	}
 
 	//------------------------------------------------------------------------//
-	// PHPErrorCatcher
+	// PHPExceptionCatcher
 	//------------------------------------------------------------------------//
 	/**
-	 * PHPErrorCatcher()
+	 * PHPExceptionCatcher()
 	 *
-	 * Catches all PHP Errors
+	 * Catches all PHP Exceptions
 	 *
-	 * Catches all PHP Errors, filters informations, then passes to the
+	 * Catches all PHP Exceptions, filters informations, then passes to the
 	 * ErrorHandler object
 	 *
 	 * @param	<type>	<$name>	<description>
@@ -215,9 +212,15 @@ class ErrorHandler
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	 function PHPErrorCatcher()
+	 function PHPExceptionCatcher(Exception $excException)
 	 {
-	 	// TODO
+	 	// TODO: How on earth do we get the user?  Is this meant to be passed to us?  Session variable?
+	 	$strUser 		= "TESTING";
+	 	$strLocation 	= $excException->getFile() . " (Line " .  $excException->getLine() . ")";
+	 	$strMessage		= $excException->getMessage() . "\n\t\t" . $excException.getTraceAsString() . "\n";
+	 	
+	 	// Redirect to RecordError
+	 	$this->RecordError($excException->getCode(), $strUser, $strLocation, $strMessage);
 	 }
 }
 
