@@ -717,7 +717,6 @@
 	 	{
 	 		// $mixColumns is just a string, therefore only one column selected
 	 		$strQuery .= $mixColumns . "\n";
-	 		$this->_arrBoundResults[] = $mixColumns;
 	 	}
  		elseif ($this->IsAssociativeArray($mixColumns))
  		{
@@ -734,7 +733,6 @@
 		 		{
 		 			$strQuery .= " AS ";
 		 			$strQuery .= current($mixColumns);
-		 			$this->_arrBoundResults[] = current($mixColumns);
 		 		}
 		 		
 				next($mixColumns);
@@ -749,7 +747,6 @@
 		 	while (key($mixColumns) != null)
 		 	{
 		 		$strQuery .= current($mixColumns);
-	 			$this->_arrBoundResults[] = current($mixColumns);
 				next($mixColumns);
 		 	}
  		}
@@ -834,22 +831,20 @@
 	 	// Store the results (required for num_rows())
 	 	$this->_stmtSqlStatment->store_result();
 	 	
-	 	// Retrieve the next row of data from the resultset
+	 	// Retrieve the metatdata from the resultset
 	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
 	 	
 	 	// First parameter for bind_result is the statment
 	 	$arrFields[0] = &$this->_stmtSqlStatment;
 	 	
 		// Create a parameter list for bind_result()
-	 	reset($this->_arrBoundResults);
-	 	while (current(_arrBoundResults))
+	 	while ($fldField = $datMetaData->fetch_field())
 	 	{
 	 		// Each parameter is a reference to an index in the result array (key is the Field name)
-	 		$arrFields[] = $this->_arrBoundResults[$fldField->name];
-	 		next($this->_arrBoundResults);
+	 		$arrFields[] = &$this->_arrBoundResults[$fldField->name];
 	 	}
 	 	
- 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $this->_stmtSqlStatment->bind_result, $arrFields);
+ 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
 	 }
 
 	//------------------------------------------------------------------------//
