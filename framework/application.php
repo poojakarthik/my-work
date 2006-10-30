@@ -58,40 +58,39 @@
 	$bolReturn = $crqQuery->Execute("TestTable");
 	if ($bolReturn === FALSE)
 	{
-		//echo "false";
+		echo "Create Table Failed<br>\n";
 	}
 	elseif ($bolReturn === TRUE)
 	{
-		//echo "true";
+		echo "Creat Table Successful<br>\n";
 	}
 
 // insert into the table
-
 	$data['TestColumn'] = "String of test data";
 	$insInsertStatment = new StatementInsert("TestTable");
 	if ($insInsertStatment->Execute($data))
 	{
-		echo("Insert Successful!\n");
+		echo("Insert Successful!<br>\n");
 	}
 	else
 	{
-		echo("Insert Failed!\n");
+		echo("Insert Failed!<br>\n");
 	}
 
 // select from the table
 	$selSelectStatement = new StatementSelect("TestTable", "*");
 	$selSelectStatement->Execute();
-	print_r($selSelectStatement->FetchAll());
+	//print_r($selSelectStatement->FetchAll());
 
 // update the table
 	$updUpdateStatement = new StatementUpdate("TestTable", "TestColumn LIKE <testcol>");
 	if ($updUpdateStatement->Execute(Array("Changed test text"), Array("testcol" => "%test%")))
 	{
-		echo("Update Successful!");
+		echo("Update Successful!<br>\n");
 	}
 	else
 	{
-		echo("Update Failed!");
+		echo("Update Failed!<br>\n");
 	}
  
 // oh, and say hello world while we are at it 

@@ -33,107 +33,70 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------//
-// strConfigFile
+// strFrameworkDir
 //----------------------------------------------------------------//
 /**
- * strConfigFile
+ * strFrameworkDir
  *
- * full path to the config file
+ * full path to the framework directory
  *
- * full path to the config file
+ * full path to the framework directory, including trailing slash /
  *
  * @type	string
  * @variable
  * @package	framework
  */
-$strConfigFile		= ""; 
+ $strFrameworkDir		= ""; 
+ 
+//----------------------------------------------------------------//
+// strApplicationDir
+//----------------------------------------------------------------//
+/**
+ * strApplicationDir
+ *
+ * full path to the application directory
+ *
+ * full path to the application directory, including trailing slash /
+ *
+ * @type	string
+ * @variable
+ * @package	framework
+ */
+ $strApplicationDir		= "application/"; 
+ 
+//----------------------------------------------------------------//
+// strWebDir
+//----------------------------------------------------------------//
+/**
+ * strWebDir
+ *
+ * full path to the application web directory
+ *
+ * full path to the application web directory, including trailing slash /
+ *
+ * @type	string
+ * @variable
+ * @package	framework
+ */
+ $strWebDir		= ""; 
 
-//----------------------------------------------------------------//
-// strDefinitionFile
-//----------------------------------------------------------------//
-/**
- * strDefinitionFile
- *
- * full path to the definition file
- *
- * full path to the definition file
- *
- * @type	string
- * @variable
- * @package	framework
- */
-$strDefinitionFile	= "definitions.php";
-
-//----------------------------------------------------------------//
-// strDatabaseDefinitionFile
-//----------------------------------------------------------------//
-/**
- * strDatabaseDefinitionFile
- *
- * full path to the database table definition file
- *
- * full path to the database table definition file
- *
- * @type	string
- * @variable
- * @package	framework
- */
-$strDatabaseDefinitionFile	= "database_define.php";
-
-//----------------------------------------------------------------//
-// strFrameworkFile
-//----------------------------------------------------------------//
-/**
- * strFrameworkFile
- *
- * full path to the framework file
- *
- * full path to the framework file
- *
- * @type	string
- * @variable
- * @package	framework
- */
-$strFrameworkFile	= "framework.php";
-
-//----------------------------------------------------------------//
-// strApplicationFile
-//----------------------------------------------------------------//
-/**
- * strApplicationFile
- *
- * full path to the application file
- *
- * full path to the application file
- *
- * @type	string
- * @variable
- * @package	framework
- */
-$strApplicationFile	= "application.php";
 
 
 //----------------------------------------------------------------------------//
 // LOGIC
 //----------------------------------------------------------------------------//
 
-// load config file
-// require_once($strConfigFile);
- 
-// load definition file
-require_once($strDefinitionFile);
-
-// load database define file
-require_once($strDatabaseDefinitionFile);
-
 // load framework
-require_once($strFrameworkFile);
-require_once("db_access.php");
-
-// create a framework instance
-//fwkFramework = new Framework();
+require_once($strFrameworkDir."definitions.php");
+require_once($strFrameworkDir."config.php");
+require_once($strFrameworkDir."database_define.php");
+require_once($strFrameworkDir."db_access.php");
+require_once($strFrameworkDir."error.php");
 
 // load application 
-require_once($strApplicationFile);
+require_once($strApplicationDir."definitions.php");
+require_once($strApplicationDir."config.php");
+require_once($strApplicationDir."database_define.php");
+require_once($strApplicationDir."application.php");
  
  ?>
