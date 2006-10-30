@@ -820,16 +820,18 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	 function Execute($arrData = Array())
+	 function Execute($arrWhere = Array())
 	 {
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	if (isset($this->_arrWhereAliases))
 	 	{
-			reset($this->_arrWhereAliases);
-		 	while (key($this->_arrWhereAliases) != null)
+	 		$i = 0;
+		 	// Bind the WHERE data to our mysqli_stmt
+		 	foreach ($this->_arrWhereAliases as $strAlias)
 		 	{
-		 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[current($this->_arrWhereAliases)]), $arrData[current($this->_arrWhereAliases)]);
-	 			next($this->_arrWhereAliases);
+		 		$strType .= $this->GetDBInputType($arrWhere[$i]);
+		 		$arrParams[] = $arrWhere[$strAlias];
+	 			$i++;
 		 	}
 	 	}
 	 	
@@ -1102,8 +1104,6 @@
 	 		throw new Exception();
 	 	}
 	 	
-	 	echo($strQuery . "\n");
-	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	
@@ -1147,7 +1147,6 @@
 	 	{
 			$strType .= $arrColumnValue['Type'];
 			$arrParams[] = $arrData[$i];
-			echo($arrData[$i]);
 			$i++;
 	 	}
  	
@@ -1163,11 +1162,7 @@
 	 	array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
-		print_r($arrParams);
-		print_r($arrData);
-		print_r($arrWhere);
-		print_r($this->_arrWhereAliases);
-		
+	
 	 	// Run the Statement
 	 	return $this->_stmtSqlStatment->execute();
 	 }
