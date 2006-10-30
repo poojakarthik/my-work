@@ -835,14 +835,18 @@
 	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
 	 	
 	 	// First parameter for bind_result is the statment
-	 	$arrFields[0] = &$this->_stmtSqlStatment;
+	 	$arrFields[0] = $this->_stmtSqlStatment;
 	 	
 		// Create a parameter list for bind_result()
 	 	while ($fldField = $datMetaData->fetch_field())
 	 	{
 	 		// Each parameter is a reference to an index in the result array (key is the Field name)
 	 		$arrFields[] = &$this->_arrBoundResults[$fldField->name];
+	 		//$arrFields[] = "&$this->_arrBoundResults[$fldField->name]";
 	 	}
+	 	
+	 	print_r($arrFields);
+	 	echo("\n");
 	 	
  		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
 	 }
