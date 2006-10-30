@@ -762,7 +762,7 @@
  		{
  			// We have an invalid type, so throw an exception
  			//throw new InvalidTypeException();
- 			echo("Invalid Type!  Line 767\n");
+ 			echo("Invalid Type!  Line 765\n");
  		}
 
 	 	// Add the FROM line
@@ -772,7 +772,7 @@
 	 	if ($strWhere != "")
 	 	{
 	 		// Find and replace the aliases in $strWhere
-	 		$this->_arrWhereAliases = FindAlias($strWhere);
+	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
 	 		
 			$strQuery .= "WHERE " . $strWhere . "\n";
 	 	}
@@ -791,7 +791,7 @@
 	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
-	 	
+
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
 	 		// There was problem preparing the statment
@@ -832,6 +832,9 @@
 	 			$i++;
 		 	}
 	 	}
+
+	 	array_unshift($arrParams, $strType);
+		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 	 	
 	 	// Run the Statement
 	 	$this->_stmtSqlStatment->execute();
