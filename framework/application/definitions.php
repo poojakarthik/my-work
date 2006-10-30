@@ -14,7 +14,7 @@
  *
  * Global Definitions
  *
- * This file exclusively declares global constants
+ * This file exclusively declares application constants
  *
  * @file		definitions.php
  * @language	PHP
@@ -29,22 +29,7 @@
  
 //----------------------------------------------------------------------------//
 // CONSTANTS
-//--------------------------------------------------------------------------
-
- 
-// Reporting constants
-define("AUTOMATED_REPORT_HEADER", 	"===================================\n" .
-									"THIS IS AN AUTOMATED REPORT MESSAGE\n" .
-									"===================================\n\n");
-									
-define("AUTOMATED_REPORT_FOOTER", 	"\n -- END OF REPORT --\n");
+//----------------------------------------------------------------------------//
 
 
-// Data Access constants
-define("DATABASE_URL", "10.11.12.13");
-define("DATABASE_NAME", "richdavis");
-define("DATABASE_USER", "richdavis");
-define("DATABASE_PWORD", "rich");
-
-define("DATABASE_ERROR_TABLE", "Error")
 ?>

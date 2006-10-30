@@ -7,19 +7,19 @@
 
 
 //----------------------------------------------------------------------------//
-// DEFINITIONS
+// functions
 //----------------------------------------------------------------------------//
 /**
- * DEFINITIONS
+ * functions
  *
- * Global Definitions
+ * Global Functions
  *
- * This file exclusively declares global constants
+ * This file exclusively declares global functions
  *
- * @file		definitions.php
+ * @file		functions.php
  * @language	PHP
  * @package		framework
- * @author		Rich Davis
+ * @author		Jared 'flame' Herbohn
  * @version		6.10
  * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -28,7 +28,8 @@
  
  
 //----------------------------------------------------------------------------//
-// CONSTANTS
+// FUNCTIONS
 //----------------------------------------------------------------------------//
+
 
 ?>
