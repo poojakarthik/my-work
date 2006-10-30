@@ -658,6 +658,23 @@
  class StatementSelect extends Statement
  {
 	//------------------------------------------------------------------------//
+	// arrBoundResults
+	//------------------------------------------------------------------------//
+	/**
+	 * arrBoundResults
+	 *
+	 * Stores the temporary bound results
+	 *
+	 * Stores the temporary bound results, so we only have to call bind_restults once
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+ 	private $_arrBoundResults = Array();	
+ 
+	//------------------------------------------------------------------------//
 	// StatementSelect() - Constructor
 	//------------------------------------------------------------------------//
 	/**
@@ -667,10 +684,10 @@
 	 *
 	 * Constructor for StatementSelect object
 	 *
-	 * @param		array	arrTables		Indexed array of tables to select from.
-	 * 										Format of each of the strings is
-	 * 										"TableName [JOIN Table2Name ON... etc.]"
-	 * @param		array	arrColumns		Can be either associative or indexed array.
+	 * @param		string	strTables		String of tables, like in an SQL FROM clause,
+	 * 										ignoring the  FROM keyword.
+	 * 										(eg. "TableName[, Table2Name JOIN Table3Name...]")
+	 * @param		mixed	mixColumns		Can be either associative or indexed array.
 	 * 										Use indexed for normal column referencing.
 	 * 										Use associated arrays for either renaming of
 	 * 										columns (eg. ["ColumnName"] = "ColumnAlias") and
@@ -689,7 +706,7 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function __construct($arrTables, $mixColumns, $strWhere, $strOrder, $strLimit)
+	function __construct($strTables, $mixColumns, $strWhere, $strOrder, $strLimit)
 	{
 		parent::__construct();
 		// Compile the query from our passed info
@@ -730,17 +747,8 @@
  		}
 
 	 	// Add the FROM line
-	 	$strQuery .= "FROM ";
-	 	// Add the tables into the query
-	 	for ($i = 0; $i < (count($arrTables) - 1); $i++)
-	 	{
-	 		$strQuery .= $arrTables[$i] . ", ";
-	 	}
-	 	// Add the last table name (is different from the rest)
-	 	$strQuery .= $arrTables[count($arrTables)] . "\n";
-	 	
-	 	$strQuery .= "\n";
-	 	
+	 	$strQuery .= "FROM " . $strTables . "\n";
+
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")
 	 	{
@@ -807,6 +815,23 @@
 	 	
 	 	// Store the results (required for num_rows())
 	 	$this->_stmtSqlStatment->store_result();
+	 	
+	 	// Retrieve the next row of data from the resultset
+	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
+	 	
+	 	// First parameter for bind_result is the statment
+	 	$arrFields[0] = &$this->_stmtSqlStatment;
+	 	
+		// Create a parameter list for bind_result()
+	 	$i = 1;
+	 	while ($fldField = $this->_stmtSqlStatment->fetch_field())
+	 	{
+	 		// Each parameter is a reference to an index in the result array (key is the Field name)
+	 		$arrFields[$i] = &$this->_arrBoundResults[$fldField->name];
+	 		$i++;
+	 	}
+	 		
+ 		call_user_func_array($this->_stmtSqlStatment->bind_result, $arrFields);
 	 }
 
 	//------------------------------------------------------------------------//
@@ -819,34 +844,21 @@
 	 *
 	 * Fetches the next row of data from the resultset as an Associative Array
 	 *
-	 * @return		array					Associative array of columns and values
+	 * @return		mixed					Associative array of columns and values
 	 * 										Key is the ColumnName, value is its value
+	 * 										or FALSE if there was no next row
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
 	function Fetch()
 	{
-	 	// Retrieve the next row of data from the resultset
-	 	$arrResults = Array();
-	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
-	 	
-	 	// First parameter for bind_result is the statment
-	 	$arrFields[0] = &$this->_stmtSqlStatment;
-	 	
+		if($this->_stmtSqlStatment->fetch())
+		{
+ 			return $this->_arrBoundResults;
+		}
 		
-		// MOVE TO EXEQUTE
-	 	// Create a parameter list for bind_result()
-	 	$i = 1;
-	 	while ($fldField = $this->_stmtSqlStatment->fetch_field())
-	 	{
-	 		// Each parameter is a reference to an index in the result array (key is the Field name)
-	 		$arrFields[$i] = &$arrResults[$fldField->name];
-	 		$i++;
-	 	}
-	 		
- 		call_user_func_array($this->_stmtSqlStatment->bind_result, $arrFields);
- 		
- 		return $arrResults;
+		// If there was no result, then return false
+		return false;
 	}
 	
 	
@@ -878,19 +890,10 @@
 		// First parameter for bind_result is the statment
 		$arrFields[0] = &$this->_stmtSqlStatment;
 
-	 	for ($i = 0; $i < $this->_stmtSqlStatment->num_rows(); $i++)
+		// Add the results to our huge array
+	 	while($this->_stmtSqlStatment->fetch())
 	 	{
-		 	// Create a parameter list for bind_result()
-		 	$i = 1;
-		 	while ($fldField = $this->_stmtSqlStatment->fetch_field())
-		 	{
-		 		// Each parameter is a reference to an index in the result array (key is the Field name)
-		 		$arrFields[$i] = &$arrRow[$fldField->name];
-		 		$i++;
-		 	}
-
-	 		call_user_func_array($this->_stmtSqlStatment->bind_result, $arrFields);
-	 		$arrResults[] = $arrRow;
+	 		$arrResults[] = $this->_arrBoundResults;
 	 	}
 	 	
  		return $arrResults;
