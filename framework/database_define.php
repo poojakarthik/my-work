@@ -70,13 +70,15 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['Attributes'] 	= "";
-	
+		
 	// Save Table Define
 	$_GLOBALS['arrDatabaseTableDefine'][$define['Name']] = $define;
 	
 */
- 
- 
+
+
+column	type	type
+
  
  
  

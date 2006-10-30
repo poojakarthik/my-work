@@ -31,6 +31,12 @@
 
 // TEST
 
+// start a report
+
+$rptReport = New Report('flame', 'flame@telcoblue.com.au', 'bash');
+$rptReport->AddMessage('this is a test message');
+$rptReport->Finish();
+
 // define a database table
 	// clean reused temporary array
 	unset($arrDefine);

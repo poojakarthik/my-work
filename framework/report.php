@@ -90,9 +90,9 @@ class Report
 	/**
 	 * _strEmailAddressee
 	 *
-	 * Who the report will be emailed to
+	 * Address the report will be emailed to
 	 *
-	 * The person/organisation/location to which this report will be emailed
+	 * The email address to which this report will be sent
 	 *
 	 * @type	string
 	 *
@@ -100,7 +100,25 @@ class Report
 	 * @see	this->Report()
 	 * @see	this->Finish()
 	 */
-	private	$_strEmailAddressee = "";
+	private	$_strEmailAddressee = "flame@telcoblue.com.au";
+	
+	//------------------------------------------------------------------------//
+	// _strEmailFrom
+	//------------------------------------------------------------------------//
+	/**
+	 * _strEmailFrom
+	 *
+	 * Who the report will be emailed from
+	 *
+	 * The email address from which this report will be emailed
+	 *
+	 * @type	string
+	 *
+	 * @property
+	 * @see	this->Report()
+	 * @see	this->Finish()
+	 */
+	private	$_strEmailFrom = "flame@telcoblue.com.au";
 	
 	
 	//------------------------------------------------------------------------//
@@ -118,17 +136,27 @@ class Report
 	 * Creates and intanciates a Report object
 	 * 
 	 * @param	string		$strReportTitle			A title for the report
-	 * @param	string		$strEmailAddressee		Person who will receive
-	 * 															 the report
+	 * @param	mixed		$mixEmailAddressee		Address that will receive
+	 * 													the report (string or array)
+	 * @param	string		$strEmailFrom			optional Address to send the report
+	 * 													from
 	 * @return	void
 	 * 
 	 * @see		this->_strTitle
 	 */
-	public function __construct($strReportTitle, $strEmailAddressee)
+	public function __construct($strReportTitle, $mixEmailAddressee, $strEmailFrom = '')
 	{
 		// Assign passed parameters to member variables
 		$this->_strTitle = $strReportTitle;
-		$this->_strEmailAddressee = $strEmailAddressee;
+		if (is_array($mixEmailAddressee))
+		{
+			$this->_arrEmailAddressee = $mixEmailAddressee;
+		}
+		else
+		{
+			$this->_arrEmailAddressee = Array($mixEmailAddressee);
+		}
+		$this->_strEmailFrom = $mixEmailFrom;
 	}
 
 	//------------------------------------------------------------------------//
@@ -164,11 +192,14 @@ class Report
 		
 		$strEmailMessage .= AUTOMATED_REPORT_FOOTER;
 		
-		// TODO - Once we can connect to the DB, retrieve email address list
-		$strEmailAddress = "flame@telcoblue.com.au";
+		// set sender address
+		$strMailHeaders = "From: {$this->_strEmailFrom}";
 		
-		// Send the email
-		return mail($strEmailAddress, $this->_strTitle . "(Automated Report)", $strEmailMessage);
+		foreach($this->_arrEmailAddressee as $strEmailAddressee)
+		{
+			// Send the email
+			return mail($strEmailAddressee, $this->_strTitle . "(Automated Report)", $strEmailMessage, $strMailHeaders);
+		}
 	}
 
 	//------------------------------------------------------------------------//
