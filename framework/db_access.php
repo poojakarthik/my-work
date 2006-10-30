@@ -536,6 +536,14 @@
 		// String replace all aliases with ?'s
 		$strString = ereg_replace("<[0-9a-zA-Z]*>", "?", $strString);
 		
+		// Remove <>'s from alias names
+		$i = 0;
+		foreach ($arrAliases as $strAlias)
+		{
+			$arrAliases[$i] = substr($strAlias, 1, -1);
+			$i++;
+		}
+		
 		return $arrAliases;
 	}
 	
@@ -1094,6 +1102,8 @@
 	 		throw new Exception();
 	 	}
 	 	
+	 	echo($strQuery . "\n");
+	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	
@@ -1131,26 +1141,35 @@
 	 {
 	 	$arrBoundVariables = Array();
 	 	
-	 	
+	 	$i = 0;
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 	 	{
 			$strType .= $arrColumnValue['Type'];
-			$arrParams[] = $arrData[$strColumnName];
+			$arrParams[] = $arrData[$i];
+			echo($arrData[$i]);
+			$i++;
 	 	}
  	
+ 		$i = 0;
 	 	// Bind the WHERE data to our mysqli_stmt
-	 	/*foreach ($this->_arrWhereAliases as )
+	 	foreach ($this->_arrWhereAliases as $strAlias)
 	 	{
-	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[current($this->_arrWhereAliases)]), $arrData[current($this->_arrWhereAliases)]);
- 			next($this->_arrWhereAliases);
-	 	}*/
-	 		 	
+	 		$strType .= $this->GetDBInputType($arrWhere[$i]);
+	 		$arrParams[] = $arrWhere[$strAlias];
+ 			$i++;
+	 	}
+	 	
 	 	array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
+		print_r($arrParams);
+		print_r($arrData);
+		print_r($arrWhere);
+		print_r($this->_arrWhereAliases);
+		
 	 	// Run the Statement
-	 	$this->_stmtSqlStatment->execute();
+	 	return $this->_stmtSqlStatment->execute();
 	 }
  }
 ?>
