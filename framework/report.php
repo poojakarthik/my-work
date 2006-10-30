@@ -127,8 +127,8 @@ class Report
 	public function __construct($strReportTitle, $strEmailAddressee)
 	{
 		// Assign passed parameters to member variables
-		this->_strTitle = $strReportTitle;
-		this->_strEmailAddressee = $strEmailAddressee;
+		$this->_strTitle = $strReportTitle;
+		$this->_strEmailAddressee = $strEmailAddressee;
 	}
 
 	//------------------------------------------------------------------------//
@@ -157,9 +157,9 @@ class Report
 				
 		// Loop through _arrLines, appending each line to the email.
 		// Using "for" loop instead of "foreach" for improved performance
-		for ($i = 0; $i < count(this->_arrLines); $i++)
+		for ($i = 0; $i < count($this->_arrLines); $i++)
 		{
-			$strEmailMessage .= this->_arrLines[$i];
+			$strEmailMessage .= $this->_arrLines[$i];
 		}
 		
 		$strEmailMessage .= AUTOMATED_REPORT_FOOTER;
@@ -168,7 +168,7 @@ class Report
 		$strEmailAddress = "flame@telcoblue.com.au";
 		
 		// Send the email
-		return mail($strEmailAddress, this->_strTitle . "(Automated Report)", $strEmailMessage);
+		return mail($strEmailAddress, $this->_strTitle . "(Automated Report)", $strEmailMessage);
 	}
 
 	//------------------------------------------------------------------------//
@@ -193,7 +193,7 @@ class Report
 		$strMessage .= "\n";
 		
 		// Append the message to the end of the message array
-		this->_arrLines[] = $strMessage;
+		$this->_arrLines[] = $strMessage;
 	}	
 	
 }

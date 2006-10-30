@@ -91,7 +91,7 @@ class ErrorHandler
 	 */
 	function __construct()
 	{
-		unset(this->_rptReport);
+		unset($this->_rptReport);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -124,13 +124,13 @@ class ErrorHandler
 		$insInsertStatement->Execute($arrData);
 		
 		// If we're writing a report, then append the error
-		if (isset(this->_rptReport))
+		if (isset($this->_rptReport))
 		{
 			$strMessage = date("D/M/Y\@H:M:S") . " -- " . $strUser . "caused a " . $strErrorLevel
 						. " Error (Code: " . $strErrorCode . " in module " . $strLocation . ".\n"
 						. "\t\"" . $strDescription . "\"\n";
 			
-			this->_rptReport->AddMessage($strMessage);
+			$this->_rptReport->AddMessage($strMessage);
 		}
 	}
 	
@@ -154,7 +154,7 @@ class ErrorHandler
 	function StartReport($strTitle, $strEmailAddressee)
 	{
 		// Initialise _rptReport
-		this->_rptReport = new Report($strTitle, $strEmailAddressee);
+		$this->_rptReport = new Report($strTitle, $strEmailAddressee);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -175,7 +175,7 @@ class ErrorHandler
 	 */
 	function EndReport()
 	{
-		return this->_rptReport->Finish();
+		return $this->_rptReport->Finish();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -195,7 +195,7 @@ class ErrorHandler
 	 */
 	function DestroyReport()
 	{
-		unset(this->_rptReport);
+		unset($this->_rptReport);
 	}
 
 	//------------------------------------------------------------------------//
