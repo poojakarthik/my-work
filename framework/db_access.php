@@ -673,6 +673,7 @@
 	 * @see	<MethodName()||typePropertyName>
 	 */
  	private $_arrBoundResults = Array();	
+
  
 	//------------------------------------------------------------------------//
 	// StatementSelect() - Constructor
@@ -692,13 +693,13 @@
 	 * 										Use associated arrays for either renaming of
 	 * 										columns (eg. ["ColumnName"] = "ColumnAlias") and
 	 * 										special SQL funcion calls (eg. ["NOW()"] = "NowAlias")
-	 * @param		string	strWhere		A full SQL WHERE clause, minus the keyword.
+	 * @param		string	strWhere		optional A full SQL WHERE clause, minus the keyword.
 	 * 										Paramaters should be aliased in a meaningful
 	 * 										fashion enclosed in <>'s
 	 * 										(eg. "FooBar = <FooBar>")
-	 * @param		string	strOrder		A full SQL ORDER BY clause, minus the keywords
+	 * @param		string	strOrder		optional A full SQL ORDER BY clause, minus the keywords
 	 * 										(eg. "ColumnName ASC, Column2Name")
-	 * @param		string	strLimit		SQL LIMIT clause, minus the keyword
+	 * @param		string	strLimit		optional SQL LIMIT clause, minus the keyword
 	 * 										(eg. "5") - Return first 5 rows
 	 * 										(eg. "5,10") - Return rows 6-15
 	 * @return		void
@@ -706,7 +707,7 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function __construct($strTables, $mixColumns, $strWhere, $strOrder, $strLimit)
+	function __construct($strTables, $mixColumns, $strWhere = "", $strOrder = "", $strLimit = "")
 	{
 		parent::__construct();
 		// Compile the query from our passed info
@@ -716,6 +717,7 @@
 	 	{
 	 		// $mixColumns is just a string, therefore only one column selected
 	 		$strQuery .= $mixColumns . "\n";
+	 		$this->_arrBoundResults[] = $mixColumns;
 	 	}
  		elseif ($this->IsAssociativeArray($mixColumns))
  		{
@@ -730,7 +732,9 @@
 		 		// If this column has an AS alias
 		 		if (current($mixColumns) != "")
 		 		{
-		 			$strQuery .= "";
+		 			$strQuery .= " AS ";
+		 			$strQuery .= current($mixColumns);
+		 			$this->_arrBoundResults[] = current($mixColumns);
 		 		}
 		 		
 				next($mixColumns);
@@ -739,11 +743,21 @@
  		elseif (is_array($mixColumns))
  		{
  			// If it's an indexed array
+			reset($mixColumns);
+			
+		 	// Add the columns 	
+		 	while (key($mixColumns) != null)
+		 	{
+		 		$strQuery .= current($mixColumns);
+	 			$this->_arrBoundResults[] = current($mixColumns);
+				next($mixColumns);
+		 	}
  		}
  		else
  		{
  			// We have an invalid type, so throw an exception
  			//throw new InvalidTypeException();
+ 			echo("Invalid Type!  Line 767\n");
  		}
 
 	 	// Add the FROM line
@@ -778,6 +792,8 @@
 	 		// There was problem preparing the statment
 	 		throw new Exception();
 	 	}
+	 	
+	 	echo($strQuery . "\n");
 	}
 
 	//------------------------------------------------------------------------//
@@ -802,12 +818,14 @@
 	 function Execute($arrData = Array())
 	 {
 	 	// Bind the WHERE data to our mysqli_stmt
-	 	reset($this->_arrWhereAliases);
-	 	
-	 	while (key($this->_arrWhereAliases) != null)
+	 	if (isset($this->_arrWhereAliases))
 	 	{
-	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[current($this->_arrWhereAliases)]), $arrData[current($this->_arrWhereAliases)]);
- 			next($this->_arrWhereAliases);
+			reset($this->_arrWhereAliases);
+		 	while (key($this->_arrWhereAliases) != null)
+		 	{
+		 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[current($this->_arrWhereAliases)]), $arrData[current($this->_arrWhereAliases)]);
+	 			next($this->_arrWhereAliases);
+		 	}
 	 	}
 	 	
 	 	// Run the Statement
@@ -823,15 +841,15 @@
 	 	$arrFields[0] = &$this->_stmtSqlStatment;
 	 	
 		// Create a parameter list for bind_result()
-	 	$i = 1;
-	 	while ($fldField = $this->_stmtSqlStatment->fetch_field())
+	 	reset($this->_arrBoundResults);
+	 	while (current(_arrBoundResults))
 	 	{
 	 		// Each parameter is a reference to an index in the result array (key is the Field name)
-	 		$arrFields[$i] = &$this->_arrBoundResults[$fldField->name];
-	 		$i++;
+	 		$arrFields[] = $this->_arrBoundResults[$fldField->name];
+	 		next($this->_arrBoundResults);
 	 	}
-	 		
- 		call_user_func_array($this->_stmtSqlStatment->bind_result, $arrFields);
+	 	
+ 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $this->_stmtSqlStatment->bind_result, $arrFields);
 	 }
 
 	//------------------------------------------------------------------------//
@@ -942,17 +960,16 @@
 			 	
 	 	$this->_strTable = $strTable;
 		// Compile the query from our passed info
-	 	$strQuery = "INSERT INTO " . $strTable . "\n" .
-	 				"(";
+	 	$strQuery = "INSERT INTO " . $strTable . " (";
 	 	
 	 	reset($this->db->arrTableDefine[$strTable]["Column"]);
 	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$strTable]["Column"]) - 1); $i++)
 	 	{
-	 		$strQuery .= current($strQuery .= $this->db->arrTableDefine[$strTable]["Column"]) . ", ";
+	 		$strQuery .= key($this->db->arrTableDefine[$strTable]["Column"]) . ", ";
 	 		next();
 	 	}
 	 	// Last column is different
-	 	$strQuery .= current($strQuery .= $this->db->arrTableDefine[$strTable]["Column"]) . ")\n";
+	 	$strQuery .= key($this->db->arrTableDefine[$strTable]["Column"]) . ")\n";
 	 	
 	 	$strQuery .= "VALUES(";
 
@@ -997,27 +1014,17 @@
 	 function Execute($arrData)
 	 {
 	 	// Bind the VALUES data to our mysqli_stmt
-	 	
 	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 	 	{
-	 		// FIXME: Use the Database definition to find type when Flame is done with it
-	 		//$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
-			/*$x = $this->GetDBInputType($arrData[$i]);
-			$z = $arrData[$i];
-			echo("$x  : $z  <br>");
-			*/
-			$x .= $arrColumnValue['Type'];
+			$strType .= $arrColumnValue['Type'];
 			$arrParams[] = $arrData[$strColumnName];
-			echo("$x  : {$arrData[$strColumnName]}  <br>");
-			
+			//echo("$strType:{$arrData[$strColumnName]}  <br>");
 	 	}
-		//exit();
-		array_unshift($arrParams, $x);
+		array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
-		//$this->_stmtSqlStatment->bind_param($x, $z);
 	 	
 	 	// Run the Statement
-	 	$this->_stmtSqlStatment->execute();
+	 	return $this->_stmtSqlStatment->execute();
 	 }
  }
 
@@ -1085,7 +1092,7 @@
 	 	if ($strWhere != "")
 	 	{
 	 		// Find and replace the aliases in $strWhere
-	 		$this->_arrWhereAliases = FindAlias($strWhere);
+	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
 	 		
 			$strQuery .= "WHERE " . $strWhere . "\n";
 	 	}
