@@ -534,7 +534,7 @@
 		ereg("<[0-9a-zA-Z]*>", $strString, $arrAliases);
 
 		// String replace all aliases with ?'s
-		ereg_replace("<[0-9a-zA-Z]*>", "?", $strString);
+		$strString = ereg_replace("<[0-9a-zA-Z]*>", "?", $strString);
 		
 		return $arrAliases;
 	}
@@ -1011,7 +1011,6 @@
 	 	{
 			$strType .= $arrColumnValue['Type'];
 			$arrParams[] = $arrData[$strColumnName];
-			//echo("$strType:{$arrData[$strColumnName]}  <br>");
 	 	}
 		array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
@@ -1069,7 +1068,7 @@
 	 	$strQuery = "UPDATE " . $strTable . "\n" .
 	 				"SET ";
 	 				
-	 	$this->strTable = $strTable;
+	 	$this->_strTable = $strTable;
 	 	
 	 	// Retrieve columns from the Table definition arrays
 	 	reset($this->db->arrTableDefine[$this->_strTable]["Column"]);
@@ -1079,7 +1078,7 @@
 	 		next();
 	 	}
 	 	// Last column is different
-	 	$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?)\n";
+	 	$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?\n";
 
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")
@@ -1130,20 +1129,26 @@
 	 */ 
 	 function Execute($arrData, $arrWhere)
 	 {
-	 	// Bind the VALUES data to our mysqli_stmt
-	 	for ($i = 0; $i < count($this->db->arrTableDefine[$this->_strTable]["Column"]); $i++)
-	 	{
-	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[$i]), $arrData[$i]);
-	 	}
+	 	$arrBoundVariables = Array();
 	 	
+	 	
+	 	// Bind the VALUES data to our mysqli_stmt
+	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
+	 	{
+			$strType .= $arrColumnValue['Type'];
+			$arrParams[] = $arrData[$strColumnName];
+	 	}
+ 	
 	 	// Bind the WHERE data to our mysqli_stmt
-	 	reset($this->_arrWhereAliases);
-	 	while (key($this->_arrWhereAliases) != null)
+	 	/*foreach ($this->_arrWhereAliases as )
 	 	{
 	 		$this->_stmtSqlStatment->bind_param($this->GetDBInputType($arrData[current($this->_arrWhereAliases)]), $arrData[current($this->_arrWhereAliases)]);
  			next($this->_arrWhereAliases);
-	 	}
-	 	
+	 	}*/
+	 		 	
+	 	array_unshift($arrParams, $strType);
+		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
+		
 	 	// Run the Statement
 	 	$this->_stmtSqlStatment->execute();
 	 }
