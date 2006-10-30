@@ -71,16 +71,17 @@
 	$insInsertStatment = new StatementInsert("TestTable");
 	if ($insInsertStatment->Execute($data))
 	{
-		echo("Insert Successful!");
+		echo("Insert Successful!\n");
 	}
 	else
 	{
-		echo("Insert Failed!");
+		echo("Insert Failed!\n");
 	}
 
 // select from the table
 	$selSelectStatement = new StatementSelect("TestTable", "*");
-	print_r($arrSelectTest = $selSelectStatement->Execute());
+	$selSelectStatement->Execute();
+	print_r($selSelectStatement->FetchAll());
 
 // update the table
 	$updUpdateStatement = new StatementUpdate("TestTable", "TestColumn LIKE <testcol>");
