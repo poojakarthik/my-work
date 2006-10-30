@@ -77,14 +77,19 @@
 		echo("Insert Failed!<br>\n");
 	}
 
-// select from the table
+// select * from the table
 	$selSelectStatement = new StatementSelect("TestTable", "*");
 	$selSelectStatement->Execute();
-	//print_r($selSelectStatement->FetchAll());
+	print_r($selSelectStatement->FetchAll());
+	
+// select * with where from the table
+	$selSelectStatement = new StatementSelect("TestTable", "*", "TestColumn LIKE <testalias>");
+	$selSelectStatement->Execute(Array("testalias" => "%r%"));
+	print_r($selSelectStatement->FetchAll());
 
 // update the table
 	$updUpdateStatement = new StatementUpdate("TestTable", "TestColumn LIKE <testcol>");
-	if ($updUpdateStatement->Execute(Array("Changed test text"), Array("testcol" => "%test%")))
+	if ($updUpdateStatement->Execute(Array("Changed test text"), Array("testcol" => "%tr%")))
 	{
 		echo("Update Successful!<br>\n");
 	}
