@@ -898,7 +898,12 @@
 		// Add the results to our huge array of results
 	 	while($this->_stmtSqlStatment->fetch())
 	 	{
-	 		$arrResults[] = $this->_arrBoundResults;
+			unset($arrTemp);
+			foreach($this->_arrBoundResults as $strKey=>$mixValue)
+			{
+				$arrTemp[$strKey] = $mixValue;
+			}
+			$arrResults[] = $arrTemp;
 	 	}
 	 	
  		return $arrResults;
@@ -971,6 +976,7 @@
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	echo("$strQuery <br>");
+		
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
 			//echo($strQuery);
