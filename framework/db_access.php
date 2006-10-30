@@ -828,25 +828,18 @@
 	 	// Run the Statement
 	 	$this->_stmtSqlStatment->execute();
 	 	
-	 	// Store the results (required for num_rows())
+	 	// Store the results (required for result_metadata())
 	 	$this->_stmtSqlStatment->store_result();
 	 	
 	 	// Retrieve the metatdata from the resultset
 	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
-	 	
-	 	// First parameter for bind_result is the statment
-	 	$arrFields[0] = $this->_stmtSqlStatment;
 	 	
 		// Create a parameter list for bind_result()
 	 	while ($fldField = $datMetaData->fetch_field())
 	 	{
 	 		// Each parameter is a reference to an index in the result array (key is the Field name)
 	 		$arrFields[] = &$this->_arrBoundResults[$fldField->name];
-	 		//$arrFields[] = "&$this->_arrBoundResults[$fldField->name]";
 	 	}
-	 	
-	 	print_r($arrFields);
-	 	echo("\n");
 	 	
  		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
 	 }
@@ -901,13 +894,8 @@
 	{
 	 	// Retrieve the remaining rows of data from the resultset
 	 	$arrResults = Array();
-	 	$arrRow = Array();
-	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
-	 	
-		// First parameter for bind_result is the statment
-		$arrFields[0] = &$this->_stmtSqlStatment;
 
-		// Add the results to our huge array
+		// Add the results to our huge array of results
 	 	while($this->_stmtSqlStatment->fetch())
 	 	{
 	 		$arrResults[] = $this->_arrBoundResults;
