@@ -1010,6 +1010,7 @@
 	 * Executes the StatementInsert, with a new set of values
 	 *
 	 * @param		array	arrData			Associative array of the data to be inserted
+	 * 										If a field is not set, it is assumed to be null
 	 * 
 	 * @return		boolean					true	: Insert successful
 	 * 										false	: Insert failed
@@ -1022,8 +1023,19 @@
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 	 	{
-			$strType .= $arrColumnValue['Type'];
-			$arrParams[] = $arrData[$strColumnName];
+			if ($arrData[$strColumnName])
+			{
+				$strType .= $arrColumnValue['Type'];
+				$arrParams[] = $arrData[$strColumnName];
+			}
+			else
+			{
+				// Assumes that blank fields are supposed to be null
+				// We say the type is an integer, so that the word NULL
+				// does not get preescaped
+				$strType .= "i";
+				$arrParams[] = NULL;
+			}
 	 	}
 		array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
