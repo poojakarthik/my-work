@@ -76,20 +76,6 @@
 	
 */
 
-
-column	type	type
-
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
  
  

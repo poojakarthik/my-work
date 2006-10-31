@@ -31,4 +31,11 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
+
+// ERROR TABLE
+define("FATAL_ERROR_LEVEL", 10000);
+
+define("NON_FATAL_TEST_EXCEPTION", 1337);
+define("FATAL_TEST_EXCEPTION", 80085);
+
 ?>

@@ -208,21 +208,53 @@ class ErrorHandler
 	 * Catches all PHP Exceptions, filters informations, then passes to the
 	 * ErrorHandler object
 	 *
-	 * @param	<type>	<$name>	<description>
-	 * @return	<type>
+	 * @param	Exception	$excException		The exception object to be handled
+	 * @return	void
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	 function PHPExceptionCatcher(Exception $excException)
+	 function PHPExceptionCatcher($excException)
 	 {
-	 	// TODO: How on earth do we get the user?  Is this meant to be passed to us?  Session variable?
-	 	$strUser 		= "TESTING";
+	 	$strUser 		= USER_NAME;
 	 	$strLocation 	= $excException->getFile() . " (Line " .  $excException->getLine() . ")";
-	 	$strMessage		= $excException->getMessage() . "\n\t\t" . $excException.getTraceAsString() . "\n";
+	 	$strMessage		= $excException->getMessage() . "\n\t\t" . $excException->getTraceAsString() . "\n";
 	 	
 	 	// Redirect to RecordError
 	 	$this->RecordError($excException->getCode(), $strUser, $strLocation, $strMessage);
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// PHPErrorCatcher
+	//------------------------------------------------------------------------//
+	/**
+	 * PHPErrorCatcher()
+	 *
+	 * Catches PHP Errors
+	 *
+	 * Catches PHP Errors, filters informations, then passes to the
+	 * ErrorHandler object
+	 *
+	 * @param	<type>	<$name>	<description>
+	 * @return	void
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	 function PHPErrorCatcher($intErrorNo, $strErrorMessage, $strErrorFile, $intErrorLine)
+	 {
+	 	$strUser 		= USER_NAME;
+	 	$strLocation 	= $strErrorFile . " (Line " .  $intErrorLine . ")";
+	 	$strMessage		= $strErrorMessage . "\n\t\t";
+	 	$arrTrace = debug_backtrace();
+	 	foreach ($arrTrace as $strKey => $mixTraceData)
+	 	{
+	 		$strMessage .= $strKey . ": " . $mixTraceData . "\n\t\t";
+	 	}
+	 	$strMessage .= "\n";
+	 	
+	 	// Redirect to RecordError
+	 	$this->RecordError($intErrorNo, $strUser, $strLocation, $strMessage);
 	 }
 }
 

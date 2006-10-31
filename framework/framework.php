@@ -59,7 +59,7 @@
 	 * @property
 	 * @see			ErrorHandler
 	 */
-	private $errErrorHandler;
+	public $errErrorHandler;
 
 	//------------------------------------------------------------------------//
 	// Framework - Constructor
@@ -79,11 +79,9 @@
 	 */
 	 function __construct()
 	 {
-	 	// TODO
-	 	require_once("error.php");
 	 	$errErrorHandler = new ErrorHandler(); 	
-	 	
 	 	set_error_handler($errErrorHandler, "PHPErrorCatcher");
+	 	set_exception_handler($errErrorHandler, "PHPExceptionCatcher");
 	 }
  }
 

@@ -836,6 +836,9 @@
 	 	array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 	 	
+	 	// Free any previous results
+	 	$this->_stmtSqlStatment->free_result();
+	 	
 	 	// Run the Statement
 	 	$this->_stmtSqlStatment->execute();
 	 	
@@ -1124,8 +1127,7 @@
 	 *
 	 * Executes the StatementUpdate, with a new set of values
 	 *
-	 * @param		array	arrData			Indexed array of data to be entered.
-	 * 										Assumed that data is in order
+	 * @param		array	arrData			Associative array of data to be entered.
 	 * @param		array	arrWhere		Associative array of parameters for the WHERE clause.
 	 * 										MUST use the same aliases as used when the object was
 	 * 										created.  Key string is the alias (ignoring the <>'s)
@@ -1145,11 +1147,11 @@
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 	 	{
-			$strType .= $arrColumnValue['Type'];
-			$arrParams[] = $arrData[$i];
+			$strType .= $arrColumnValue["Type"];
+			$arrParams[] = $arrData[$strColumnName];
 			$i++;
 	 	}
- 	
+ 		
  		$i = 0;
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	foreach ($this->_arrWhereAliases as $strAlias)

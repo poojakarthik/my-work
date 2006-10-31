@@ -103,6 +103,32 @@ $rptReport->Finish();
 	{
 		echo("Update Failed!<br>\n");
 	}
+	
+	$errErrorHandler = new ErrorHandler();
+	
+	// Non-fatal ExceptionVixen
+	try
+	{
+		throw new ExceptionVixen("Just an exception test ;)!~~~", $errErrorHandler, NON_FATAL_TEST_EXCEPTION);
+	}
+	catch(ExceptionVixen $exvException)
+	{
+		echo("Caught Exception: " . $exvException->getMessage() . "\n");
+	}
+	/*
+	// Fatal ExceptionVixen
+	try
+	{
+		throw new ExceptionVixen("Fatal exception test ;)!~~~", $errErrorHandler, FATAL_TEST_EXCEPTION);
+	}
+	catch(ExceptionVixen $exvException)
+	{
+		// Should this run?
+		echo("Caught Exception: " . $exvException->getMessage() . "\n");
+	}*/
+	
+	// Fatal exception
+	throw new Exception("Fatal exception test", FATAL_TEST_EXCEPTION);
  
 // oh, and say hello world while we are at it 
 //echo "hello world";
