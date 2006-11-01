@@ -107,18 +107,19 @@ die();
 	// arrNormaliseReportCount
 	//------------------------------------------------------------------------//
 	/**
-	 * arrDelinquents
+	 * arrNormaliseReportCount
 	 *
-	 * Delinquent phone numbers
+	 * Counts the different types of report messages
 	 *
-	 * Delinquent phone numbers.  Is a set, so a phone number can only appear once.
+	 * Counts the different types of report messages.  Associative array where the
+	 * key is the message type and the
 	 *
 	 * @type		array
 	 *
 	 * @property
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	public $_arrDelinquents;
+	public $_arrNormaliseReportCount;
  	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -282,8 +283,10 @@ die();
 	 *
 	 * Adds a message to the normalisation report
 	 *
-	 * @param	integer		$intErrorType		The message type - use constants
-	 * 											from definition.php
+	 * @param	integer		$strErrorType		The message type - use constants
+	 * 											from definition.php.
+	 * 											Make sure you supply the NAME of the
+	 * 											constant encapsulated in ""s
 	 * @param	string		$strFailedOn		The name of the object on which the
 	 * 											message is reporting
 	 * @param	string		$strReason			optional Reason why the operation
@@ -293,21 +296,14 @@ die();
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
- 	function AddToNormalisationReport($intErrorType, $strFailedOn, $strReason = "")
+ 	function AddToNormalisationReport($strErrorType, $strFailedOn, $strReason = "")
  	{
- 		$strMessage = str_replace("<reason>", $strReason, constant($intErrorType));
+ 		$strMessage = str_replace("<reason>", $strReason, constant($strErrorType));
  		$strMessage = str_replace("<object>", $strFailedOn, $strMessage);
  		$this->_rptNormalisationReport->AddMessage($strMessage);
  		
- 		switch ($intErrorType)
- 		{
- 			case CDR_NORMALISE_SUCCESS:
- 			case CDR_NORMALISE_FAILED:
- 			case CDR_FILE_NORMALISE_FAIL:
- 			case CDR_FILE_NORMALISE_SUCCESS:
- 			case CDR_FILE_IMPORT_FAIL:
- 			case CDR_FILE_IMPORT_SUCCESS:
- 		}
+ 		// Increment the number of times this message has occurred
+ 		$this->_arrNormaliseReportCount[$strErrorType]++;
  	}
 
 	//------------------------------------------------------------------------//
@@ -327,7 +323,28 @@ die();
 	 */
  	function Normalise()
  	{
- 		// TODO
+ 		// Select all CDRs ready to be Normalised
+ 		$selSelectCDRs = new StatementSelect("CDR", "*", $strWhere = "Status = <status>");
+ 		$selSelectCDRs->Execute(Array("status" => CDR_READY));
+ 		$arrCDRList = $selSelectCDRs->FetchAll();
+ 		
+ 		foreach ($arrCDRList as $arrCDR)
+ 		{
+ 			// TODO
+ 			
+ 			// Is there a normalisation module for this type?  If not, report an error
+ 			
+ 			// Use normalisation module to normalise CDR
+ 			
+ 			// Apply ownership to the CDR
+ 			
+ 			// Save CDR back to the DB
+ 		}
+ 		
+ 		// TODO: Update any CDR File entries that have been fully normalised
+		$selSelectCDRFiles = new StatementSelect("FileImport", "*", "Status = <status>");
+		$selSelectCDRFiles->Execute(Array("status" => CDRFILE_IMPORTED));
+		$arrCDRFiles = $selSelectCDRFiles->FetchAll();	
  	}
  }
 ?>
