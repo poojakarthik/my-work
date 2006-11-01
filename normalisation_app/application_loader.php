@@ -46,7 +46,7 @@
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= "../"; 
+ $strFrameworkDir		= "../framework"; 
  
 //----------------------------------------------------------------//
 // strApplicationDir

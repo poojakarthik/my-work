@@ -67,6 +67,58 @@ die();
 	 * @see	<MethodName()||typePropertyName>
 	 */
 	public $_errErrorHandler;
+	
+	//------------------------------------------------------------------------//
+	// rptNormalisationReport
+	//------------------------------------------------------------------------//
+	/**
+	 * rptNormalisationReport
+	 *
+	 * Normalisation report
+	 *
+	 * Normalisation Report, including information on errors, failed import
+	 * and normalisations, and a total of each
+	 *
+	 * @type		Report
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	public $_rptNormalisationReport;
+	
+	//------------------------------------------------------------------------//
+	// arrDelinquents
+	//------------------------------------------------------------------------//
+	/**
+	 * arrDelinquents
+	 *
+	 * Delinquent phone numbers
+	 *
+	 * Delinquent phone numbers.  Is a set, so a phone number can only appear once.
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	public $_arrDelinquents;
+	
+	//------------------------------------------------------------------------//
+	// arrNormaliseReportCount
+	//------------------------------------------------------------------------//
+	/**
+	 * arrDelinquents
+	 *
+	 * Delinquent phone numbers
+	 *
+	 * Delinquent phone numbers.  Is a set, so a phone number can only appear once.
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	public $_arrDelinquents;
  	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -113,6 +165,9 @@ die();
 				new ExceptionVixen("Specified CDR File doesn't exist", $this->_errErrorHandler, CDR_FILE_DOESNT_EXIST);
 				$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
 				$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
+				
+				// Add to the Normalisation report
+				$this->AddToNormalisationReport(CDR_FILE_IMPORT_FAIL, $arrCDRFile["Location"], $strReason = "File Not Found");
 				continue;
 			}
 			
@@ -130,15 +185,8 @@ die();
 				case default:
 					new ExceptionVixen("Unexpected CDR File Status", $this->_errErrorHandler, UNEXPECTED_CDRFILE_STATUS);
 			}
-			
 		}
  	}
- 	
- 	function Normalise()
- 	{
- 		// TODO
- 	}
- 	
  	
 	//------------------------------------------------------------------------//
 	// CascadeDeleteCDRs
@@ -210,16 +258,76 @@ die();
 			$arrCDRFile["Status"]		= CDRFILE_IMPORTED;
 			$arrCDRFile["ImportedOn"]	= "NOW()";
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
+			$this->AddToNormalisationReport(CDR_FILE_IMPORT_SUCCESS, $arrCDRFile["Location"]);
 		}
 		catch (ExceptionVixen $exvException)
 		{
 			$errErrorHandler->PHPExceptionCatcher($exvException);
 			
-			// Set the File status to "Fucked"
+			// Set the File status to "Failed"
 			$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
+			
+			$this->AddToNormalisationReport(CDR_FILE_IMPORT_FAIL, $arrCDRFile["Location"], $strReason = "File corrupted");
 		}
  	}
- }
+ 
+ 	//------------------------------------------------------------------------//
+	// AddToNormalisationReport
+	//------------------------------------------------------------------------//
+	/**
+	 * AddToNormalisationReport()
+	 *
+	 * Adds a message to the normalisation report
+	 *
+	 * Adds a message to the normalisation report
+	 *
+	 * @param	integer		$intErrorType		The message type - use constants
+	 * 											from definition.php
+	 * @param	string		$strFailedOn		The name of the object on which the
+	 * 											message is reporting
+	 * @param	string		$strReason			optional Reason why the operation
+	 * 											failed
+	 * @return	<type>
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+ 	function AddToNormalisationReport($intErrorType, $strFailedOn, $strReason = "")
+ 	{
+ 		$strMessage = str_replace("<reason>", $strReason, constant($intErrorType));
+ 		$strMessage = str_replace("<object>", $strFailedOn, $strMessage);
+ 		$this->_rptNormalisationReport->AddMessage($strMessage);
+ 		
+ 		switch ($intErrorType)
+ 		{
+ 			case CDR_NORMALISE_SUCCESS:
+ 			case CDR_NORMALISE_FAILED:
+ 			case CDR_FILE_NORMALISE_FAIL:
+ 			case CDR_FILE_NORMALISE_SUCCESS:
+ 			case CDR_FILE_IMPORT_FAIL:
+ 			case CDR_FILE_IMPORT_SUCCESS:
+ 		}
+ 	}
 
+	//------------------------------------------------------------------------//
+	// Normalise
+	//------------------------------------------------------------------------//
+	/**
+	 * Normalise()
+	 *
+	 * Normalises new CDRs
+	 *
+	 * Normalises new CDRs
+	 *
+	 * @return	<type>
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+ 	function Normalise()
+ 	{
+ 		// TODO
+ 	}
+ }
 ?>
