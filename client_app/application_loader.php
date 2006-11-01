@@ -18,8 +18,9 @@
  *
  * @file		application_loader.php
  * @language	PHP
- * @package		framework
+ * @package		client_app
  * @author		Jared 'flame' Herbohn
+ * 				Bashkim 'bash' Isai
  * @version		6.10
  * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -46,7 +47,7 @@
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= "../"; 
+ $strFrameworkDir		= "../framework/"; 
  
 //----------------------------------------------------------------//
 // strApplicationDir
@@ -94,11 +95,12 @@ require_once($strFrameworkDir."database_define.php");
 require_once($strFrameworkDir."db_access.php");
 require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
+require_once($strFrameworkDir."framework.php");
 
 // load application 
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");
 require_once($strApplicationDir."database_define.php");
 require_once($strApplicationDir."application.php");
- 
- ?>
+
+?>

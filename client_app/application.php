@@ -17,95 +17,39 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		framework
- * @author		Jared 'flame' Herbohn
+ * @package		client_app
+ * @author		Bashkim 'bash' Isai
  * @version		6.10
  * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+// load the authentication module
+require_once($strApplicationDir."classes/auth/auth.php");
+// load the XSLT stylesheet module
+require_once($strApplicationDir."classes/style/style.php");
 
+// load the object library oblib
+require_once($strApplicationDir."classes/oblib/data.abstract.php");
+// load the oblib primitives
+require_once($strApplicationDir."classes/oblib/dataPrimitive/dataPrimitive.abstract.php");
+require_once($strApplicationDir."classes/oblib/dataPrimitive/dataBoolean.class.php");
+require_once($strApplicationDir."classes/oblib/dataPrimitive/dataCDATA.class.php");
+require_once($strApplicationDir."classes/oblib/dataPrimitive/dataFloat.class.php");
+require_once($strApplicationDir."classes/oblib/dataPrimitive/dataInteger.class.php");
+require_once($strApplicationDir."classes/oblib/dataPrimitive/dataString.class.php");
+// load the oblib objects
+require_once($strApplicationDir."classes/oblib/dataObject/dataObject.abstract.php");
+require_once($strApplicationDir."classes/oblib/dataObject/dataDate.class.php");
+// load the oblib multiples
+require_once($strApplicationDir."classes/oblib/dataMultiple/dataArray.class.php");
+require_once($strApplicationDir."classes/oblib/dataMultiple/dataCollation.abstract.php");
+require_once($strApplicationDir."classes/oblib/dataMultiple/dataCollection.abstract.php");
+require_once($strApplicationDir."classes/oblib/dataMultiple/dataEnumerative.abstract.php");
+require_once($strApplicationDir."classes/oblib/dataMultiple/dataSample.class.php");
 
+$objAuthentication = new Authentication ();
 
-
-
-// TEST
-
-// start a report
-
-$rptReport = New Report('flame', 'flame@telcoblue.com.au', 'bash');
-$rptReport->AddMessage('this is a test message');
-$rptReport->Finish();
-
-// define a database table
-	// clean reused temporary array
-	unset($arrDefine);
-	
-	// Define Table
-	$arrDefine['Name']		= "TestTable";
-	$arrDefine['Type']		= "MYISAM";
-	$arrDefine['Id']		= "Id";
-	//$arrDefine['Index'][] 		= "";
-	//$arrDefine['Unique'][] 		= "";
-	
-	// Define Columns
-	$strName = "TestColumn";
-		$arrDefine['Column'][$strName]['Type'] 			= "s";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(5)";
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
-		//$arrDefine['Column'][$strName]['Default'] 		= "";
-		//$arrDefine['Column'][$strName]['Attributes'] 	= "";
-	
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-
-// create the table
-	$crqQuery = new QueryCreate();
-	$bolReturn = $crqQuery->Execute("TestTable");
-	if ($bolReturn === FALSE)
-	{
-		echo "Create Table Failed<br>\n";
-	}
-	elseif ($bolReturn === TRUE)
-	{
-		echo "Creat Table Successful<br>\n";
-	}
-
-// insert into the table
-	$data['TestColumn'] = "String of test data";
-	$insInsertStatment = new StatementInsert("TestTable");
-	if ($insInsertStatment->Execute($data))
-	{
-		echo("Insert Successful!<br>\n");
-	}
-	else
-	{
-		echo("Insert Failed!<br>\n");
-	}
-
-// select * from the table
-	$selSelectStatement = new StatementSelect("TestTable", "*");
-	$selSelectStatement->Execute();
-	print_r($selSelectStatement->FetchAll());
-	
-// select * with where from the table
-	$selSelectStatement = new StatementSelect("TestTable", "*", "TestColumn LIKE <testalias>");
-	$selSelectStatement->Execute(Array("testalias" => "%r%"));
-	print_r($selSelectStatement->FetchAll());
-
-// update the table
-	$updUpdateStatement = new StatementUpdate("TestTable", "TestColumn LIKE <testcol>");
-	if ($updUpdateStatement->Execute(Array("Changed test text"), Array("testcol" => "%tr%")))
-	{
-		echo("Update Successful!<br>\n");
-	}
-	else
-	{
-		echo("Update Failed!<br>\n");
-	}
- 
-// oh, and say hello world while we are at it 
-//echo "hello world";
-
+$Style = new Style ($strApplicationDir);
 
 ?>

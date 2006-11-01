@@ -1,0 +1,21 @@
+<?php
+
+	require ("application_loader.php");
+	
+/*
+	if ($objAuthentication->getAuthentication ())
+	{
+		header ("Location: console.php");
+		exit;
+	}
+*/
+	
+
+$Style->attachObject (new dataString ("test", "test"));
+$Style->attachObject (new dataString ("test", "test"));
+$Style->attachObject (new dataString ("test", "test"));
+$Style->attachObject (new dataString ("test", "test"));
+
+	$Style->Output ("xsl/content/login.xsl");
+	
+?>
