@@ -25,7 +25,7 @@
  *
  */
 // load the authentication module
-require_once($strApplicationDir."classes/auth/auth.php");
+require_once($strApplicationDir."classes/authentication/authentication.php");
 // load the XSLT stylesheet module
 require_once($strApplicationDir."classes/style/style.php");
 
