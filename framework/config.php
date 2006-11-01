@@ -42,9 +42,9 @@ define("AUTOMATED_REPORT_FOOTER", 	"\n -- END OF REPORT --\n");
 
 // Data Access constants
 define("DATABASE_URL", "10.11.12.13");
-define("DATABASE_NAME", "richdavis");
-define("DATABASE_USER", "richdavis");
-define("DATABASE_PWORD", "rich");
+define("DATABASE_NAME", "bash");
+define("DATABASE_USER", "bash");
+define("DATABASE_PWORD", "bash");
 
 define("DATABASE_ERROR_TABLE", "Error");
 ?>
