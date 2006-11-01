@@ -18,6 +18,18 @@
 						<input type="text" name="UserName" />
 					</td>
 				</tr>
+				<tr>
+					<td>Password:</td>
+					<td>
+						<input type="password" name="PassWord" />
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<input type="submit" value="Continue &#0187;" />
+					</td>
+				</tr>
 			</table>
 		</form>
 	</xsl:template>

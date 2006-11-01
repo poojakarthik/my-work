@@ -2,20 +2,26 @@
 
 	require ("application_loader.php");
 	
-/*
-	if ($objAuthentication->getAuthentication ())
+	if ($athAuthentication->getAuthentication ())
 	{
 		header ("Location: console.php");
 		exit;
 	}
-*/
 	
-
-$Style->attachObject (new dataString ("test", "$400.00"));
-$Style->attachObject (new dataString ("test", "$500.00"));
-$Style->attachObject (new dataString ("test", "$600.00"));
-$Style->attachObject (new dataString ("test", "$700.00"));
-
+	if (
+	isset ($_POST ['UserName']) &&
+	isset ($_POST ['PassWord']) &&
+	!empty ($_POST ['UserName']) &&
+	!empty ($_POST ['PassWord'])
+	)
+	{
+		if ($athAuthentication->contactLogin ($_POST ['UserName'], $_POST ['PassWord']))
+		{
+			header ("Location: console.php");
+			exit;
+		}
+	}
+	
 	$Style->Output ("xsl/content/login.xsl");
 	
 ?>

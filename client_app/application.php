@@ -48,7 +48,7 @@ require_once($strApplicationDir."classes/oblib/dataMultiple/dataCollection.abstr
 require_once($strApplicationDir."classes/oblib/dataMultiple/dataEnumerative.abstract.php");
 require_once($strApplicationDir."classes/oblib/dataMultiple/dataSample.class.php");
 
-$objAuthentication = new Authentication ();
+$athAuthentication = new Authentication ();
 
 $Style = new Style ($strApplicationDir);
 

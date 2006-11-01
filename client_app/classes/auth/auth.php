@@ -48,13 +48,28 @@
 		
 		private $strAuthenticatedUser;
 		
+ 		//------------------------------------------------------------------------//
+		// Authentication() - Constructor
+		//------------------------------------------------------------------------//
+		/**
+		 * Authentication()
+		 *
+		 * Constructor for Authentication
+	 	 *
+		 * Constructor for Authentication
+		 *
+		 * @return		void
+		 *
+		 * @method
+		 */ 
+		
 		function __construct ()
 		{
 			if (isset ($_COOKIE ['SessionID']) && isset ($_COOKIE ['Id']))
 			{
 				$selAuthenticated = new StatementUpdate ("Contact", "count(*)", "Id LIKE <Id> AND SessionID = <SessionID>");
 				
-				if ($selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "Id" => $_COOKIE ['Id'])))
+				if ($selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId'])))
 				{
 					throw new Exception ("You are logged in :)");
 				} else {
@@ -66,6 +81,25 @@
 		public function getAuthentication ()
 		{
 			return $this->strAuthenticatedUser !== null;
+		}
+		
+		public function contactLogin ($UserName, $PassWord)
+		{
+			$SessionId = md5 (uniqid (rand (), true));
+			
+			// update the table
+			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = <PassWord>");
+			if ($updUpdateStatement->Execute(Array("SessionId" => "Changed test text"), Array("UserName" => $UserName, "PassWord" => $PassWord)))
+			{
+				
+				echo("Update Successful!<br>\n");
+			}
+			else
+			{
+				echo("Update Failed!<br>\n");
+			}
+			
+			return false;
 		}
 	}
 	
