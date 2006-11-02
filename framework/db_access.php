@@ -628,7 +628,11 @@
 		
 		
 		//print_r($mixData);
-		if (is_int($mixData))
+		if ($mixData instanceOf MySQLFunction)
+		{
+			return "i";
+		}
+		elseif (is_int($mixData))
  		{
  			// It's an integer
  			return "i";
@@ -1154,7 +1158,9 @@
 	 * @see	<MethodName()||typePropertyName>
 	 */
 	private $intAffectedRows = false;
-	 
+	
+	private $_arrColumns;
+	
 	//------------------------------------------------------------------------//
 	// StatementUpdate() - Constructor
 	//------------------------------------------------------------------------//
@@ -1184,25 +1190,31 @@
 	 {
 		parent::__construct();
 		// Compile the query from our passed infos
-	 	$strQuery = "UPDATE " . $strTable . "\n" .
-	 				"SET ";
-	 				
+	 	$strQuery = "UPDATE " . $strTable . "\n" . "SET ";
+	 			
 	 	$this->_strTable = $strTable;
 	 	
 	 	// Determine if it's a partial or full update
 	 	if ($arrColumns)
 	 	{
+			$this->_arrColumns = $arrColumns;
+			
 	 		// Partial Update, so use $arrColumns
 	 		$this->_bolIsPartialUpdate = true;
 	 		
-	 		reset($arrColumns);
-	 		for ($i = 0; $i < count($arrColumns) - 1; $i++)
-	 		{
-		 		$strQuery .= key($arrColumns) . " = ?, ";
-		 		next($arrColumns);
+			foreach ($this->_arrColumns as $mixKey => $mixColumn)
+			{
+				if ($mixColumn instanceOf MySQLFunction)
+				{
+					$strQuery .= $mixKey . " = " . $mixColumn->Prepare () . ", ";
+				}
+				else
+				{
+			 		$strQuery .= $mixKey . " = ?, ";
+				}
 	 		}
-	 		// Last column is different
-		 	$strQuery .= key($arrColumns) . " = ?\n";
+			
+			$strQuery = substr ($strQuery, 0, -2) . " ";
 	 	}
 	 	else
 	 	{
@@ -1236,6 +1248,7 @@
 	 	
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
+			echo $strQuery;
 	 		// There was problem preparing the statment
 	 		throw new Exception();
 	 	}
@@ -1270,36 +1283,62 @@
 	 	$arrBoundVariables = Array();
 	 	$strType = "";
 	 	
+		unset ($arrParams);
+		
 	 	if ($this->_bolIsPartialUpdate)
 	 	{
-	 		foreach ($arrData AS $mixItems)
-	 		{
-	 			$strType .= $this->GetDBInputType($mixItems);
-	 			$arrParams[] = $mixItems;
+			foreach ($this->_arrColumns as $mixKey => $mixColumn)
+			{
+				if ($mixColumn instanceOf MySQLFunction)
+				{
+					if (!($arrData [$mixKey] instanceOf MySQLFunction))
+					{
+						throw new Exception ("Dead :-("); // TODO: Fix that ...
+					}
+					
+					$mixColumn->Execute ($strType, $arrParams, $arrData [$mixKey]->getParameters ());
+				}
+				else
+				{
+					$strType .= $this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"];
+		 			$arrParams[] = $arrData [$mixKey];
+				}
 	 		}
 	 	}
 	 	else
 	 	{
-		 	$i = 0;
 		 	// Bind the VALUES data to our mysqli_stmt
 		 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 		 	{
 				$strType .= $arrColumnValue["Type"];
 				$arrParams[] = $arrData[$strColumnName];
-				$i++;
-		 	}	 		
+		 	}		
 	 	}
 		
- 		$i = 0;
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	foreach ($this->_arrWhereAliases as $strAlias)
 	 	{
-	 		$strType .= $this->GetDBInputType($arrWhere[$i]);
-	 		$arrParams[] = $arrWhere[$strAlias];
- 			$i++;
+	 		$strType .= $this->GetDBInputType($arrWhere[$strAlias]);
+			
+			$strParam = "";
+			
+			if ($arrWhere[$strAlias] instanceOf MySQLFunction)
+			{
+				$strParam = $arrWhere[$strAlias]->getFunction ();
+			}
+			else
+			{
+				$strParam = $arrWhere[$strAlias];
+			}
+			
+	 		$arrParams[] = $strParam;
 	 	}
 	 	
 	 	array_unshift($arrParams, $strType);
+			
+			echo "<pre>";
+			print_r ($arrParams);
+			exit;
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
 	 	// Run the Statement
@@ -1318,19 +1357,116 @@
  }
 
 
-
-
-
-
-
-
-
-
-
+//----------------------------------------------------------------------------//
+// MySQLFunction
+//----------------------------------------------------------------------------//
+/**
+ * MySQLFunction
+ *
+ * For Functions in MySQL
+ *
+ * Allows the usage of MySQL Functions in Queries
+ *
+ *
+ * @prefix		fnc
+			("MySQL Function")
+ *
+ * @package		framework
+ * @class		MySQLFunction
+ */
 class MySQLFunction
 {
-	private $_strFunction;
-}
 
+ 	//------------------------------------------------------------------------//
+	// strFunction
+	//------------------------------------------------------------------------//
+	/**
+	 * strFunction
+	 *
+	 * The function we wish to pass to MySQL
+	 *
+	 * The function we wish to pass to MySQL
+	 *
+	 * @type	<type>
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	private $_strFunction;
+	private $_arrParams;
+	private $_arrOrderedParams;
+	
+	//------------------------------------------------------------------------//
+	// MySQLFunction() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * MySQLFunction()
+	 *
+	 * Constructor for MySQLFunction object
+	 *
+	 * Constructor for MySQLFunction object
+	 *
+	 * @param		string	strFunction		The function we are passing, represented as a string
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	
+	function __construct ($strFunction, $arrParams=null)
+	{
+		$this->_strFunction = $strFunction;
+		$this->_arrParams = $arrParams;
+	}
+	
+	//------------------------------------------------------------------------//
+	// getFunction()
+	//------------------------------------------------------------------------//
+	/**
+	 * getFunction()
+	 *
+	 * Gets the value of the function
+	 *
+	 * Gets the value of the function
+	 *
+	 * @return		string							The value of the MySQL Function
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+
+	public function getFunction ()
+	{
+		return $this->_strFunction;
+	}
+	
+	public function getParameters ()
+	{
+		return $this->_arrParams;
+	}
+	
+	public function setParameters ($arrParams)
+	{
+		$this->_arrParams = $arrParams;
+	}
+	
+	public function Prepare ()
+	{
+		$strFunction = $this->_strFunction;
+		$this->_arrOrderedParams = Statement::FindAlias ($strFunction);
+		
+		return $strFunction;
+	}
+	
+	public function Execute (&$strType, &$arrParams, $arrData)
+	{
+		foreach ($this->_arrOrderedParams as $mixKey => $mixColumn)
+		{
+			$strType .= Statement::GetDBInputType ($arrData [$mixKey]);
+			$arrParams [] = $arrData [$mixKey];
+		}
+	}
+}
 
 ?>

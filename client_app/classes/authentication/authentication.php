@@ -67,7 +67,6 @@
 		{
 			if (isset ($_COOKIE ['SessionID']) && isset ($_COOKIE ['Id']))
 			{
-				/*
 				$selAuthenticated = new StatementSelect ("Contact", "count(*)", "Id LIKE <Id> AND SessionID = <SessionID>");
 				
 				if ($selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId'])))
@@ -76,7 +75,6 @@
 				} else {
 					throw new Exception ("You are not logged in :(");
 				}
-				*/
 			}
 			
 			parent::__construct ("authentication");
@@ -103,23 +101,23 @@
 				return false;
 			}
 			
+			// Generate a new session ID
 			$SessionId = md5(uniqid(rand(), true));
-			$Update = Array("SessionId" => $SessionId, "SessionExpire" => date ("Y-m-d h:i:s", strtotime ("+30 minutes")));
+			
+			// Updating information
+			$Update = Array("SessionId" => $SessionId, "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
 			
 			// update the table
 			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)", $Update);
-			if ($updUpdateStatement->Execute($Update, Array("UserName" => $UserName, "PassWord" => $PassWord)))
+			if ($updUpdateStatement->Execute($Update, Array("UserName" => $UserName, "PassWord" => $PassWord)) == 1)
 			{
 				setCookie ("Id", $SessionId);
 				setCookie ("SessionId", $SessionId);
-				
-				echo "Update Successful!<br>\n";
-				exit;
+				return true;
 			}
 			else
 			{
-				echo "Update Failed!<br>\n";
-				exit;
+				return false;
 			}
 		}
 	}
