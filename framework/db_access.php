@@ -25,6 +25,8 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+
+// TODO: Add Functionality for MySQL Function in INSERT + SELECT
  
  
 //----------------------------------------------------------------------------//
@@ -1299,6 +1301,11 @@
 				}
 				else
 				{
+					if (!isset ($this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"]))
+					{
+						throw new Exception ("Could not find data type: " . $this->_strTable . "." . $mixKey);
+					}
+					
 					$strType .= $this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"];
 		 			$arrParams[] = $arrData [$mixKey];
 				}
@@ -1334,10 +1341,6 @@
 	 	}
 	 	
 	 	array_unshift($arrParams, $strType);
-			
-			echo "<pre>";
-			print_r ($arrParams);
-			exit;
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
 	 	// Run the Statement
