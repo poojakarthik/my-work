@@ -4,21 +4,7 @@
 	<xsl:template match="/">
 		<html>
 			<head>
-				<style type="text/css">
-					
-					input.userName {
-						background-color: #FF00FF;
-					}
-					
-table tr.odd td {
-	background-color: #FF00FF;
-}
-
-table tr.even td {
-	background-color: #00FF00;
-}
-	
-				</style>
+				<link rel="stylesheet" type="text/css" href="/client_app/css/default.css" media="screen" />
 			</head>
 			<body>
 				<h1>VOIPTEL</h1>

@@ -43,7 +43,7 @@
 	 * @class		Authentication
 	 */
 	
-	class Authentication extends ApplicationBaseClass
+	class Authentication extends dataObject
 	{
 		
 		private $strAuthenticatedUser;
@@ -76,6 +76,10 @@
 					throw new Exception ("You are not logged in :(");
 				}
 			}
+			
+			$this->Push (new dataString ("username", "identity"));
+			
+			parent::__construct ("authentication");
 		}
 		
 		public function getAuthentication ()
@@ -85,21 +89,22 @@
 		
 		public function contactLogin ($UserName, $PassWord)
 		{
-			$SessionId = md5 (uniqid (rand (), true));
+			$SessionId = md5(uniqid(rand(), true));
+			
+			$Update = Array("SessionId" => $SessionId, "SessionExpire" => strtotime ("+30 minutes"));
 			
 			// update the table
-			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = <PassWord>");
-			if ($updUpdateStatement->Execute(Array("SessionId" => "Changed test text"), Array("UserName" => $UserName, "PassWord" => $PassWord)))
+			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = <PassWord>", $Update);
+			if ($updUpdateStatement->Execute($Update, Array("UserName" => $UserName, "PassWord" => $PassWord)))
 			{
-				
-				echo("Update Successful!<br>\n");
+				echo "Update Successful!<br>\n";
+				exit;
 			}
 			else
 			{
-				echo("Update Failed!<br>\n");
+				echo "Update Failed!<br>\n";
+				exit;
 			}
-			
-			return false;
 		}
 	}
 	

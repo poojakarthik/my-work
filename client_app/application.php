@@ -24,11 +24,6 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
-// load the authentication module
-require_once($strApplicationDir."classes/authentication/authentication.php");
-// load the XSLT stylesheet module
-require_once($strApplicationDir."classes/style/style.php");
-
 // load the object library oblib
 require_once($strApplicationDir."classes/oblib/data.abstract.php");
 // load the oblib primitives
@@ -47,6 +42,11 @@ require_once($strApplicationDir."classes/oblib/dataMultiple/dataCollation.abstra
 require_once($strApplicationDir."classes/oblib/dataMultiple/dataCollection.abstract.php");
 require_once($strApplicationDir."classes/oblib/dataMultiple/dataEnumerative.abstract.php");
 require_once($strApplicationDir."classes/oblib/dataMultiple/dataSample.class.php");
+
+// load the authentication module
+require_once($strApplicationDir."classes/authentication/authentication.php");
+// load the XSLT stylesheet module
+require_once($strApplicationDir."classes/style/style.php");
 
 $athAuthentication = new Authentication ();
 
