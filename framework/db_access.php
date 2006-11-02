@@ -638,11 +638,14 @@
  			// It's a float/double
  			return "d";
  		}
+		/*
+		 * this was commented on nov. 2 2006 because of conflicts with string
  		elseif (!is_scalar($mixData))
  		{
  			// It's a binary object
  			return "b";
  		}
+		*/
  		
  		// Else, it's a string
  		return "s";
@@ -1269,10 +1272,10 @@
 	 	
 	 	if ($this->_bolIsPartialUpdate)
 	 	{
-	 		while (next($arrData))
+	 		foreach ($arrData AS $mixItems)
 	 		{
-	 			$strType .= $this->GetDBInputType(current($arrData));
-	 			$arrParams[] = current($arrData);
+	 			$strType .= $this->GetDBInputType($mixItems);
+	 			$arrParams[] = $mixItems;
 	 		}
 	 	}
 	 	else
@@ -1286,7 +1289,7 @@
 				$i++;
 		 	}	 		
 	 	}
- 		
+		
  		$i = 0;
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	foreach ($this->_arrWhereAliases as $strAlias)

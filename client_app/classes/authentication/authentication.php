@@ -94,19 +94,20 @@
 			// if no rows are returned, we have do not have 
 			// a correct authentication
 			
-			$selSelectStatement = new StatementSelect("Contact", "Id", "UserName = <UserName> AND PassWord = <PassWord>");
+			$selSelectStatement = new StatementSelect("Contact", "Id", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)");
 			$selSelectStatement->Execute(Array("UserName"=>$UserName, "PassWord"=>$PassWord));
 			
+			// No match? Then you're not authenticated!
 			if ($selSelectStatement->Count () <> 1)
 			{
 				return false;
 			}
 			
 			$SessionId = md5(uniqid(rand(), true));
-			$Update = Array("SessionId" => $SessionId, "SessionExpire" => strtotime ("+30 minutes"));
+			$Update = Array("SessionId" => $SessionId, "SessionExpire" => date ("Y-m-d h:i:s", strtotime ("+30 minutes")));
 			
 			// update the table
-			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = <PassWord>", $Update);
+			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)", $Update);
 			if ($updUpdateStatement->Execute($Update, Array("UserName" => $UserName, "PassWord" => $PassWord)))
 			{
 				setCookie ("Id", $SessionId);
