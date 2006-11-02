@@ -96,8 +96,11 @@
 			
 			$selSelectStatement = new StatementSelect("Contact", "Id", "UserName = <UserName> AND PassWord = <PassWord>");
 			$selSelectStatement->Execute(Array("UserName"=>$UserName, "PassWord"=>$PassWord));
-			print_r($selSelectStatement->FetchAll());
-			exit;
+			
+			if ($selSelectStatement->Count () <> 1)
+			{
+				return false;
+			}
 			
 			$SessionId = md5(uniqid(rand(), true));
 			$Update = Array("SessionId" => $SessionId, "SessionExpire" => strtotime ("+30 minutes"));

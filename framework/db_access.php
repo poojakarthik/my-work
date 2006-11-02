@@ -859,7 +859,29 @@
 	 	}
 		
  		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
-	 }
+		
+		return $this->_stmtSqlStatment->num_rows;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Count()
+	//------------------------------------------------------------------------//
+	/**
+	 * Count()
+	 *
+	 * Counts how many rows were returned by the last execution
+	 *
+	 * Counts how many rows were returned by the last execution
+	 *
+	 * @return		integer							Returns a number (0..*) with the number of 
+	 *										rows returned by this query
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function Count()
+	{
+		return $this->_stmtSqlStatment->num_rows;
+	}
 
 	//------------------------------------------------------------------------//
 	// Fetch()
@@ -945,7 +967,24 @@
  */
  class StatementInsert extends Statement
  {
- 
+ 	
+ 	//------------------------------------------------------------------------//
+	// intInsertId
+	//------------------------------------------------------------------------//
+	/**
+	 * intInsertId
+	 *
+	 * Keeps the Id of the last execution made on the statement
+	 *
+	 * Keeps the Id of the last execution made on the statement
+	 *
+	 * @type	<type>
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	private $intInsertId;
+	
 	//------------------------------------------------------------------------//
 	// StatementInsert() - Constructor
 	//------------------------------------------------------------------------//
@@ -1044,7 +1083,18 @@
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 	 	
 	 	// Run the Statement
-	 	return $this->_stmtSqlStatment->execute();
+	 	if ($this->_stmtSqlStatment->execute())
+		{
+			// If the execution worked, we want to get the insert id for this statement
+			$this->intInsertId = $this->db->refMysqliConnection->insert_id;	
+			return $this->intInsertId;
+		}
+		else
+		{
+			// If the execution failed, return a "false" boolean
+			$this->intInsertId = false;
+			return false;
+		}
 	 }
  }
 
@@ -1084,6 +1134,23 @@
 	 * @see	<MethodName()||typePropertyName>
 	 */
 	private $_bolIsPartialUpdate = false;
+	
+ 	//------------------------------------------------------------------------//
+	// intAffectedRows
+	//------------------------------------------------------------------------//
+	/**
+	 * intAffectedRows
+	 *
+	 * Keeps a count of the number of affected rows in the version query 
+	 *
+	 * Keeps a count of the number of affected rows in the version query 
+	 *
+	 * @type	<type>
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	private $intAffectedRows = false;
 	 
 	//------------------------------------------------------------------------//
 	// StatementUpdate() - Constructor
@@ -1233,7 +1300,17 @@
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
 	 	// Run the Statement
-	 	return $this->_stmtSqlStatment->execute();
+	 	if ($this->_stmtSqlStatment->execute())
+		{
+			// If it was successful, we want to store the number of affected rows
+			$this->intAffectedRows = $this->db->refMysqliConnection->affected_rows;
+			return $this->intAffectedRows;
+		}
+		else
+		{
+			$this->intAffectedRows = false;
+			return false;
+		}
 	 }
  }
 
