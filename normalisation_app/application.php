@@ -330,9 +330,22 @@ die();
  		
  		foreach ($arrCDRList as $arrCDR)
  		{
- 			// TODO
- 			
  			// Is there a normalisation module for this type?  If not, report an error
+ 			switch ($arrCDR["Carrier"])
+ 			{
+ 				case CARRIER_RSLCOM:
+ 					// TODO
+ 					break;
+ 				case CARRIER_COMMANDERMOB:
+ 					// TODO
+ 				case OPTUS:
+ 					// TODO
+ 				case AAPT:
+ 					// TODO
+ 				case default:
+ 					new ExceptionVixen("No normalisation module for carrier" . $arrCDR["Carrier"] . ".", $this->_errErrorHandler, NO_NORMALISATION_MODULE);
+					$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDRFilename"] . "(" . $arrCDR["SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
+ 			}
  			
  			// Use normalisation module to normalise CDR
  			

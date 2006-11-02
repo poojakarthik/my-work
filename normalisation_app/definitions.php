@@ -59,6 +59,7 @@ define("CDRFILE_NORMALISED"			, 207);
 define("INVALID_CDRFILE_STATUS"		, 5000);
 define("UNEXPECTED_CDRFILE_STATUS"	, 5001);
 define("CDR_FILE_DOESNT_EXIST"		, 5002);
+define("NO_NORMALISATION_MODULE"	, 5003);
 
 // Fatal Exceptions
 
