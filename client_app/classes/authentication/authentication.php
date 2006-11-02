@@ -67,7 +67,8 @@
 		{
 			if (isset ($_COOKIE ['SessionID']) && isset ($_COOKIE ['Id']))
 			{
-				$selAuthenticated = new StatementUpdate ("Contact", "count(*)", "Id LIKE <Id> AND SessionID = <SessionID>");
+				/*
+				$selAuthenticated = new StatementSelect ("Contact", "count(*)", "Id LIKE <Id> AND SessionID = <SessionID>");
 				
 				if ($selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId'])))
 				{
@@ -75,9 +76,8 @@
 				} else {
 					throw new Exception ("You are not logged in :(");
 				}
+				*/
 			}
-			
-			$this->Push (new dataString ("username", "identity"));
 			
 			parent::__construct ("authentication");
 		}
@@ -89,14 +89,26 @@
 		
 		public function contactLogin ($UserName, $PassWord)
 		{
-			$SessionId = md5(uniqid(rand(), true));
+			// get the ID of the person who we want to login as
+			// (identified by UserName + PassWord)
+			// if no rows are returned, we have do not have 
+			// a correct authentication
 			
+			$selSelectStatement = new StatementSelect("Contact", "Id", "UserName = <UserName> AND PassWord = <PassWord>");
+			$selSelectStatement->Execute(Array("UserName"=>$UserName, "PassWord"=>$PassWord));
+			print_r($selSelectStatement->FetchAll());
+			exit;
+			
+			$SessionId = md5(uniqid(rand(), true));
 			$Update = Array("SessionId" => $SessionId, "SessionExpire" => strtotime ("+30 minutes"));
 			
 			// update the table
 			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = <PassWord>", $Update);
 			if ($updUpdateStatement->Execute($Update, Array("UserName" => $UserName, "PassWord" => $PassWord)))
 			{
+				setCookie ("Id", $SessionId);
+				setCookie ("SessionId", $SessionId);
+				
 				echo "Update Successful!<br>\n";
 				exit;
 			}

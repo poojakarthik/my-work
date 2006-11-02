@@ -78,6 +78,7 @@
  
  
  		
+		
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -384,7 +385,7 @@
 	// Define Columns
 	$strName = "FNN";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "char(11)";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(25)";
 		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
@@ -2925,7 +2926,7 @@
 	// Define Columns
 	$strName = "FNN";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "char(11)";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(25)";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
@@ -3235,5 +3236,7 @@
 		
 	// Save Table Define
 	$_GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+				
+				
 	
 ?>

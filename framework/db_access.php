@@ -529,22 +529,22 @@
 	function FindAlias(&$strString)
 	{
 		$arrAliases = array();
+		$arrMatches = array();
 
 		// Find Aliases
-		ereg("<[0-9a-zA-Z]*>", $strString, $arrAliases);
-
+		preg_match_all ("/<([\d\w]+)>/misU", $strString, $arrAliases, PREG_SET_ORDER);
+		
 		// String replace all aliases with ?'s
-		$strString = ereg_replace("<[0-9a-zA-Z]*>", "?", $strString);
+		$strString = preg_replace("/<([\d\w]+)>/misU", "?", $strString);
 		
 		// Remove <>'s from alias names
 		$i = 0;
-		foreach ($arrAliases as $strAlias)
+		foreach ($arrAliases as $arrAlias)
 		{
-			$arrAliases[$i] = substr($strAlias, 1, -1);
-			$i++;
+			$arrMatches[$i++] = $arrAlias [1];
 		}
 		
-		return $arrAliases;
+		return $arrMatches;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -830,7 +830,7 @@
 		 	// Bind the WHERE data to our mysqli_stmt
 		 	foreach ($this->_arrWhereAliases as $strAlias)
 		 	{
-		 		$strType .= $this->GetDBInputType($arrWhere[$i]);
+		 		$strType .= $this->GetDBInputType($arrWhere[$strAlias]);
 		 		$arrParams[] = $arrWhere[$strAlias];
 	 			$i++;
 		 	}
@@ -838,7 +838,7 @@
 
 	 	array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
-	 	
+		
 	 	// Free any previous results
 	 	$this->_stmtSqlStatment->free_result();
 	 	
@@ -857,7 +857,7 @@
 	 		// Each parameter is a reference to an index in the result array (key is the Field name)
 	 		$arrFields[] = &$this->_arrBoundResults[$fldField->name];
 	 	}
-	 	
+		
  		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
 	 }
 

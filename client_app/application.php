@@ -51,5 +51,6 @@ require_once($strApplicationDir."classes/style/style.php");
 $athAuthentication = new Authentication ();
 
 $Style = new Style ($strApplicationDir);
+$Style->attachObject ($athAuthentication);
 
 ?>
