@@ -72,7 +72,7 @@
 		$arrDefine['Column'][$strName]['Attributes'] 	= "";
 	
 	// Save Table Define
-	$_GLOBALS['arrDatabaseTableDefine'][$define['Name']] = $define;
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
 	
 */
  

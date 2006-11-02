@@ -843,6 +843,7 @@
 		 	}
 	 	}
 
+		//TODO !!!! - this will error if $arrParams is not an array
 	 	array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
@@ -1155,7 +1156,6 @@
 	 * @type	<type>
 	 *
 	 * @property
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	private $intAffectedRows = false;
 	
@@ -1184,7 +1184,6 @@
 	 * @return		void
 	 *
 	 * @method
-	 * @see			<MethodName()||typePropertyName>
 	 */ 
 	 function __construct($strTable, $strWhere, $arrColumns = null)
 	 {
