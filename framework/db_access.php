@@ -624,6 +624,9 @@
 	 */ 
 	function GetDBInputType($mixData) 
 	{
+		// Special case for mysql functions
+		
+		
 		//print_r($mixData);
 		if (is_int($mixData))
  		{
@@ -635,7 +638,7 @@
  			// It's a float/double
  			return "d";
  		}
- 		elseif (is_scalar($mixData))
+ 		elseif (!is_scalar($mixData))
  		{
  			// It's a binary object
  			return "b";
@@ -972,7 +975,7 @@
 	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$strTable]["Column"]) - 1); $i++)
 	 	{
 	 		$strQuery .= key($this->db->arrTableDefine[$strTable]["Column"]) . ", ";
-	 		next();
+	 		next($this->db->arrTableDefine[$strTable]["Column"]);
 	 	}
 	 	// Last column is different
 	 	$strQuery .= key($this->db->arrTableDefine[$strTable]["Column"]) . ")\n";
@@ -1064,7 +1067,24 @@
  */
  class StatementUpdate extends Statement
  {
- 
+ 	//------------------------------------------------------------------------//
+	// bolIsPartialUpdate
+	//------------------------------------------------------------------------//
+	/**
+	 * bolIsPartialUpdate
+	 *
+	 * Determines whether the UPDATE is partial or complete
+	 *
+	 * Determines whether the UPDATE is partial or complete		true	: Partial
+	 * 															false	: Full
+	 *
+	 * @type	<type>
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	private $_bolIsPartialUpdate = false;
+	 
 	//------------------------------------------------------------------------//
 	// StatementUpdate() - Constructor
 	//------------------------------------------------------------------------//
@@ -1080,13 +1100,17 @@
 	 * 										Paramaters should be aliased in a meaningful
 	 * 										fashion enclosed in <>'s
 	 * 										(eg. "FooBar = <FooBar>")
+	 * @param		array	arrColumns		optional Associative array of the columns 
+	 * 										you want to update, where the keys are the column names.
+	 * 										If you want to update everything, ignore
+	 * 										this parameter
 	 *
 	 * @return		void
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	 function __construct($strTable, $strWhere)
+	 function __construct($strTable, $strWhere, $arrColumns = null)
 	 {
 		parent::__construct();
 		// Compile the query from our passed infos
@@ -1095,15 +1119,33 @@
 	 				
 	 	$this->_strTable = $strTable;
 	 	
-	 	// Retrieve columns from the Table definition arrays
-	 	reset($this->db->arrTableDefine[$this->_strTable]["Column"]);
-	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$this->_strTable]["Column"]) - 1); $i++)
+	 	// Determine if it's a partial or full update
+	 	if ($arrColumns)
 	 	{
-	 		$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?, ";
-	 		next();
+	 		// Partial Update, so use $arrColumns
+	 		$this->_bolIsPartialUpdate = true;
+	 		
+	 		reset($arrColumns);
+	 		for ($i = 0; $i < count($arrColumns) - 1; $i++)
+	 		{
+		 		$strQuery .= key($arrColumns) . " = ?, ";
+		 		next($arrColumns);
+	 		}
+	 		// Last column is different
+		 	$strQuery .= key($arrColumns) . " = ?\n";
 	 	}
-	 	// Last column is different
-	 	$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?\n";
+	 	else
+	 	{
+		 	// Full Update, so retrieve columns from the Table definition arrays
+		 	reset($this->db->arrTableDefine[$this->_strTable]["Column"]);
+		 	for ($i = 0; $i < (count($this->db->arrTableDefine[$this->_strTable]["Column"]) - 1); $i++)
+		 	{
+		 		$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?, ";
+		 		next($this->db->arrTableDefine[$this->_strTable]["Column"]);
+		 	}
+		 	// Last column is different
+		 	$strQuery .= key($this->db->arrTableDefine[$this->_strTable]["Column"]) . " = ?\n";
+	 	}
 
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")
@@ -1139,7 +1181,9 @@
 	 *
 	 * Executes the StatementUpdate, with a new set of values
 	 *
-	 * @param		array	arrData			Associative array of data to be entered.
+	 * @param		array	arrData			Associative array of data to be entered.  If this is
+	 * 										for a partial update, make sure that it is the exact same
+	 * 										array passed to the constructor (the elements must be in the same order)
 	 * @param		array	arrWhere		Associative array of parameters for the WHERE clause.
 	 * 										MUST use the same aliases as used when the object was
 	 * 										created.  Key string is the alias (ignoring the <>'s)
@@ -1154,14 +1198,26 @@
 	 function Execute($arrData, $arrWhere)
 	 {
 	 	$arrBoundVariables = Array();
+	 	$strType = "";
 	 	
-	 	$i = 0;
-	 	// Bind the VALUES data to our mysqli_stmt
-	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
+	 	if ($this->_bolIsPartialUpdate)
 	 	{
-			$strType .= $arrColumnValue["Type"];
-			$arrParams[] = $arrData[$strColumnName];
-			$i++;
+	 		while (next($arrData))
+	 		{
+	 			$strType .= $this->GetDBInputType(current($arrData));
+	 			$arrParams[] = current($arrData);
+	 		}
+	 	}
+	 	else
+	 	{
+		 	$i = 0;
+		 	// Bind the VALUES data to our mysqli_stmt
+		 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
+		 	{
+				$strType .= $arrColumnValue["Type"];
+				$arrParams[] = $arrData[$strColumnName];
+				$i++;
+		 	}	 		
 	 	}
  		
  		$i = 0;
@@ -1175,9 +1231,26 @@
 	 	
 	 	array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
-			
+		
 	 	// Run the Statement
 	 	return $this->_stmtSqlStatment->execute();
 	 }
  }
+
+
+
+
+
+
+
+
+
+
+
+class MySQLFunction
+{
+	private $_strFunction;
+}
+
+
 ?>
