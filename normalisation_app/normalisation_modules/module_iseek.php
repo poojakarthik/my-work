@@ -92,7 +92,7 @@ class NormalisationModuleIseek extends NormalisationModule
 	 * @param	array		arrCDR		Array returned from SELECT query on CDR
 	 *
 	 * @return	mixed					Normalised Data (Array, ready for direct UPDATE
-	 * 									into DB. Returns FALSE if record fails validation
+	 * 									into DB. Returns an error code (constant) on failure
 	 *
 	 * @method
 	 */	
@@ -129,7 +129,7 @@ class NormalisationModuleIseek extends NormalisationModule
 		$this->_AppendCDR('FNN', $mixValue);
 		
 		// CarrierRef
-		$mixValue = $this->_FetchRawCDR('Service');
+		$mixValue = $this->_GenerateUID($arrCDR["FileName"], $arrCDR["CDR.SequenceNo"]);
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime

@@ -7,16 +7,16 @@
 
 
 //----------------------------------------------------------------------------//
-// module_skel
+// module_aapt
 //----------------------------------------------------------------------------//
 /**
- * module_skel.php
+ * module_aapt.php
  *
- * Skeleton Normalisation module for batch files
+ * Normalisation module for AAPT batch files
  *
- * Skeleton Normalisation module for batch files
+ * Normalisation module for AAPT batch files
  *
- * @file			module_skel.php
+ * @file			module_aapt.php
  * @language		PHP
  * @package			vixen
  * @author			Jared 'flame' Herbohn
@@ -28,22 +28,21 @@
 
 
 //----------------------------------------------------------------------------//
-// NormalisationModuleSkel
+// NormalisationModuleAAPT
 //----------------------------------------------------------------------------//
 /**
- * NormalisationModuleSkel
+ * NormalisationModuleAAPT
  *
- * Skeleton Normalisation module for batch files
+ * Normalisation module for AAPT batch files
  *
- * Skeleton Normalisation module for batch files
- * Use this as a base to create new normalisation modules
+ * Normalisation module for AAPT batch files
  *
  * @prefix			nrm
  *
  * @package			vixen
- * @class			NormalisationModuleSkel
+ * @class			NormalisationModuleAAPT
  */
-class NormalisationModuleSkel extends NormalisationModule
+class NormalisationModuleAAPT extends NormalisationModule
 {
 	
 	//------------------------------------------------------------------------//
@@ -69,44 +68,42 @@ class NormalisationModuleSkel extends NormalisationModule
 		//##----------------------------------------------------------------##//
 		
 		// define row start (account for header rows)
-		// Row numbers start at 1
-		// for a file without any header row, set this to 1
-		// for a file with 1 header row, set this to 2
-		$this->_intStartRow = 2;
-		
-		//####################################################################//
-		// USE FOR DELIMITED FILE  ###########################################//
+		$this->_intStartRow = 1;
 		
 		// define the column delimiter
-		$this->_strDelimiter = "";
+		$this->_strDelimiter = "\t";
 		
 		// define the carrier CDR format
-		$arrDefine ['ColumnName1']	['Index']		= 0; // index of the column
-		$arrDefine ['ColumnName1']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
+		$arrDefine ['CC']				['Index']		= 0;	// record type indicator
+		$arrDefine ['OriginatingCLI']	['Index']		= 1;	// Blank or 10 digit  number
+		$arrDefine ['OriginatingCSI']	['Index']		= 2;	// Up to 10 digit numeric
+		$arrDefine ['OriginatingCity']	['Index']		= 3;	// 1-13 characters
+		$arrDefine ['OriginatingState']	['Index']		= 4;	// 2-3 characters
 		
-		$arrDefine ['ColumnName2']	['Index']	= 1;
-		$arrDefine ['ColumnName2']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
+		$arrDefine ['CallDetails']		['Index']		= 5;	// Contains:
+		$arrDefine ['CallTime']			['Index']		= 5;	// 	HHMMSS
+		$arrDefine ['CallTime']			['Start']		= 0;
+		$arrDefine ['CallTime']			['Length']		= 6;
+		$arrDefine ['RatePeriod']		['Index']		= 5;	// 	peak/off peak flag
+		$arrDefine ['RatePeriod']		['Start']		= 6;
+		$arrDefine ['RatePeriod']		['Length']		= 1;
+		$arrDefine ['RevenueCallType']	['Index']		= 5;	// 	3 Character  right justified space filled
+		$arrDefine ['RevenueCallType']	['Start']		= 7;
+		$arrDefine ['RevenueCallType']	['Length']		= 3;
+																
+		$arrDefine ['LocatiotCallType']	['Index']		= 6;	// 3 digits
+		$arrDefine ['RateTable']		['Index']		= 7;	// 2-5 digits
+		$arrDefine ['Destination']		['Index']		= 8;	// city called
+		$arrDefine ['NumberDialed']		['Index']		= 9;	// digits dialled by customer
+		$arrDefine ['Duration']			['Index']		= 10;	// HHHH:MM:SS
+		$arrDefine ['CallCharge']		['Index']		= 11;	// DDDDDDDDCC
+		$arrDefine ['BandStep']			['Index']		= 12;	// 4 digit distance step code  
+		$arrDefine ['GSTFlag']			['Index']		= 13;	// One Character flag contains “N”o or “Y”es
+		$arrDefine ['RateDate']			['Index']		= 14;	// DD/MM/CCYY
 		
-		//...
+		//$arrDefine ['']	['Validate']	= "";
 		
 		$this->_arrDefineCarrier = $arrDefine;
-		
-		// OR   ##############################################################//
-		// USE FOR FIXED WIDTH FILE  #########################################//
-		
-		// define the carrier CDR format
-		$arrDefine ['ColumnName1']	['Start']		= 0; // start position of the column
-		$arrDefine ['ColumnName1']	['Length']		= 5; // length of the column
-		$arrDefine ['ColumnName1']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
-		
-		$arrDefine ['ColumnName2']	['Start']		= 5; // start position of the column
-		$arrDefine ['ColumnName2']	['Length']		= 20; // length of the column
-		$arrDefine ['ColumnName2']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
-		
-		//...
-		
-		$this->_arrDefineCarrier = $arrDefine;
-		//####################################################################//
 		
 		//##----------------------------------------------------------------##//
 	}
@@ -142,7 +139,14 @@ class NormalisationModuleSkel extends NormalisationModule
 		
 		// covert CDR string to array
 		$this->_SplitRawCDR($arrCDR["CDR.CDR"]);
-	
+
+		// ignore non-CDR rows
+		$intRowType = (int)$this->_FetchRawCDR('CC');
+		if ($intRowType != 3)
+		{
+			return CDR_CANT_NORMALISE_NON_CDR;
+		}
+
 		// validation of Raw CDR
 		if (!$this->_ValidateRawCDR())
 		{
@@ -161,7 +165,8 @@ class NormalisationModuleSkel extends NormalisationModule
 		//--------------------------------------------------------//
 		
 		// FNN
-		$mixValue = $this->_FetchRawCDR('ColumnName1');
+		// TODO !!!! - where do we get this from ????
+		$mixValue = $this->_FetchRawCDR('');
 		$this->_AppendCDR('FNN', $mixValue);
 		
 		// CarrierRef
@@ -169,23 +174,26 @@ class NormalisationModuleSkel extends NormalisationModule
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime
-		$mixValue = $this->_FetchRawCDR('ColumnName2');
-		$this->_AppendCDR('StartDatetime', $mixValue);
+		$mixValue = $this->_FetchRawCDR('');
+		//$this->_AppendCDR('StartDatetime', $mixValue);
 		
 		// Units
-		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('Units', $mixValue);
+		//TODO !!!! - this will only work with timed items (like calls)
+		$arrValue = explode(':', $this->_FetchRawCDR('Duration'));
+		$intValue = ((int)$arrValue[0] * 3600) + ((int)$arrValue[1] * 60) + (int)$arrValue[2]; 
+		$this->_AppendCDR('Units', $intValue);
 		
 		// Description
 		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('Description', $mixValue);
+		//$this->_AppendCDR('Description', $mixValue);
 		
 		// RecordType
 		$mixValue = $this->_FetchRawCDR(''); // needs to match database
-		$this->_AppendCDR('RecordType', $mixValue);
+		//$this->_AppendCDR('RecordType', $mixValue);
 		
 		// ServiceType
-		$mixValue = $this->_FetchRawCDR('');
+		//TODO !!!! - need to account for inbound services
+		$mixValue = SERVICE_TYPE_LAND_LINE;
 		$this->_AppendCDR('ServiceType', $mixValue);
 
 		//--------------------------------------------------------//
@@ -194,23 +202,23 @@ class NormalisationModuleSkel extends NormalisationModule
 
 		// Source
 		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('Source', $mixValue);
+		//$this->_AppendCDR('Source', $mixValue);
 		
 		// Destination
 		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('Destination', $mixValue);
+		//$this->_AppendCDR('Destination', $mixValue);
 		
 		// EndDatetime
 		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('EndDatetime', $mixValue);
+		//$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Cost
 		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('Cost', $mixValue);
+		//$this->_AppendCDR('Cost', $mixValue);
 		
 		// DestinationCode
 		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('DestinationCode', $mixValue);
+		//$this->_AppendCDR('DestinationCode', $mixValue);
 
 		//##----------------------------------------------------------------##//
 		
@@ -223,6 +231,4 @@ class NormalisationModuleSkel extends NormalisationModule
 	// Constants for NormalisationModuleSkel
 	//------------------------------------------------------------------------//
 	
-	// define any constants here that will only ever be used internaly by 
-	// the module. Prefix the constants with the module name.
 ?>

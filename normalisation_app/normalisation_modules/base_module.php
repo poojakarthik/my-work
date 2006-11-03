@@ -364,6 +364,11 @@ abstract class NormalisationModule
 			foreach($this->_arrDefineCarrier as $strKey=>$strValue)
 			{
 				$this->_arrRawData[$strKey] = $arrRawData[$strValue['Index']];
+				// delimited fields may have fixed width contents
+				if (isset($strValue['Start']) && $strValue['Length'])
+				{
+					$this->_arrRawData[$strKey] = substr($this->_arrRawData[$strKey], $strValue['Start'], $strValue['Length']);
+				}
 			}
 		}
 		else
@@ -489,6 +494,28 @@ abstract class NormalisationModule
 	 protected function _OutputCDR()
 	 {
 	 	return $this->_arrNormalisedData;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _GenerateUID
+	//------------------------------------------------------------------------//
+	/**
+	 * _GenerateUID()
+	 *
+	 * Generate a Unique ID for a CDR record
+	 *
+	 * Generate a Unique ID for a CDR record
+	 * 
+	 * @param	int		strFileName		Name of CDR file
+	 * @param	int		intSequenceNo	Sequence no. of CDR record
+	 *
+	 * @return	string					
+	 *
+	 * @method
+	 */
+	 protected function _GenerateUID($strFileName, $intSequenceNo)
+	 {
+	 	return "UID_{$strFileName}_{$intSequenceNo}";
 	 }
 	 
 	
