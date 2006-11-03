@@ -78,7 +78,52 @@ abstract class NormalisationModule
 	 * @see	<MethodName()||typePropertyName>
 	 */
 	protected $_arrNormalisedData; 
+	
+	//------------------------------------------------------------------------//
+	// rptNormalisationReport
+	//------------------------------------------------------------------------//
+	/**
+	 * rptNormalisationReport
+	 *
+	 * Normalisation report
+	 *
+	 * Normalisation Report, including information on errors, failed import
+	 * and normalisations, and a total of each
+	 *
+	 * @type		Report
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	protected $_rptNormalisationReport;
 
+ 	//------------------------------------------------------------------------//
+	// errErrorHandler
+	//------------------------------------------------------------------------//
+	/**
+	 * errErrorHandler
+	 *
+	 * Application Error Handler instance
+	 *
+	 * Application Error Handler instance
+	 *
+	 * @type		ErrorHandler
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	protected $_errErrorHandler;
+	
+	function __construct($errErrorHandler, $rptNormalisationReport)
+	{
+		// The purpose of this is to have a generic constructor for all Normalisation
+		// modules.  It will never be called to instanciate an object of type
+		// NormalisationModule, though
+		
+		$this->_errErrorHander 			= $errErrorHandler;
+		$this->_rptNormalisationReport 	= $rptNormalisationReport;
+	} 
+	
 	//------------------------------------------------------------------------//
 	// Validate
 	//------------------------------------------------------------------------//
