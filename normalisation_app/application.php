@@ -238,9 +238,9 @@ die();
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 			
 			// Set fields that are consistent over all CDRs for this file
-			$arrCDRLine["CDRFileName"]	= $arrCDRFile["Filename"];
+			$arrCDRLine["File"]			= $arrCDRFile["Id"];
 			$arrCDRLine["Carrier"]		= $arrCDRFile["Carrier"];
-						
+
 			// Insert every CDR Line into the database
 			$fileCDRFile = fopen($arrCDRFile["Location"], "r");
 			$intSequence = 0;
@@ -324,32 +324,43 @@ die();
  	function Normalise()
  	{
  		// Select all CDRs ready to be Normalised
- 		$selSelectCDRs = new StatementSelect("CDR", "*", $strWhere = "Status = <status>");
+ 		$selSelectCDRs = new StatementSelect("CDR INNER JOIN FileImport ON CDR.File = FileImport.Id", Array("CDR.*" => "", "FileImport.FileType" => "FileType"), $strWhere = "Status = <status>");
  		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
+ 		// Create an instance of each Normalisation module
+ 		$nrmRSLCOM = new NormalisationModuleRSLCOM();
+ 		/*$nrmRSLCOM = new NormalisationModuleISeek();
+ 		$nrmRSLCOM = new NormalisationModuleCommander();
+ 		$nrmRSLCOM = new NormalisationModuleAAPT();
+ 		$nrmRSLCOM = new NormalisationModuleOptus();*/
+ 		
  		foreach ($arrCDRList as $arrCDR)
  		{
- 			// Is there a normalisation module for this type?  If not, report an error
- 			switch ($arrCDR["Carrier"])
+ 			// Is there a normalisation module for this type?  If not, report an error.  If so, then normalise.
+ 			switch ($arrCDR["FileType"])
  			{
- 				case CARRIER_RSLCOM:
+ 				case CDR_UNTIEL_RSLCOM:
  					// TODO
  					break;
- 				case CARRIER_COMMANDERMOB:
+ 				case CDR_UNTIEL_COMMANDER:
  					// TODO
- 				case OPTUS:
+ 					break;
+ 				case CDR_OPTUS_STANDARD:
  					// TODO
- 				case AAPT:
+ 					break;
+ 				case CDR_AAPT_STANDARD:
  					// TODO
+ 					break;
+ 				case CDR_ISEEK_STANDARD:
+ 					// TODO
+ 					break;
  				case default:
- 					new ExceptionVixen("No normalisation module for carrier" . $arrCDR["Carrier"] . ".", $this->_errErrorHandler, NO_NORMALISATION_MODULE);
-					$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDRFilename"] . "(" . $arrCDR["SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
+ 					new ExceptionVixen("No normalisation module for carrier" . $arrCDR["CDR.Carrier"] . ".", $this->_errErrorHandler, NO_NORMALISATION_MODULE);
+					$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDR.CDRFilename"] . "(" . $arrCDR["CDR.SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
  			}
  			
- 			// Use normalisation module to normalise CDR
- 			
- 			// Apply ownership to the CDR
+ 			// Apply ownership to the CDR.  What does this mean exacly?  Link up FNNs?
  			
  			// Save CDR back to the DB
  		}
@@ -357,7 +368,12 @@ die();
  		// TODO: Update any CDR File entries that have been fully normalised
 		$selSelectCDRFiles = new StatementSelect("FileImport", "*", "Status = <status>");
 		$selSelectCDRFiles->Execute(Array("status" => CDRFILE_IMPORTED));
-		$arrCDRFiles = $selSelectCDRFiles->FetchAll();	
+		$arrCDRFiles = $selSelectCDRFiles->FetchAll();
+		$updUpdateFileStatus = new StatementUpdate();
+		foreach ($arrCDRFiles as $arrFile)
+		{
+			
+		}
  	}
  }
 ?>
