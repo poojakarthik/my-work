@@ -63,7 +63,7 @@
  * @variable
  * @package	framework
  */
- $strApplicationDir		= ""; 
+ $strApplicationDir		= "config/"; 
  
 //----------------------------------------------------------------//
 // strWebDir

@@ -19,7 +19,7 @@
 	!empty ($_POST ['UserName']) && !empty ($_POST ['PassWord']))
 	{
 		// Check Crudentials
-		if ($athAuthentication->contactLogin ($_POST ['UserName'], $_POST ['PassWord']))
+		if ($athAuthentication->Login ($_POST ['UserName'], $_POST ['PassWord']))
 		{
 			// If the person is logged in successfully, we want to
 			// redirect them to the "Console" page.

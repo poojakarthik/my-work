@@ -1,6 +1,6 @@
 <?php
 	
-	require ("application_loader.php");
+	require ("config/application_loader.php");
 	
 	// Check if the person is currently logged in. If they are logged in, 
 	// we want to redirect them to the "Console" page.
