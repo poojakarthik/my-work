@@ -12,6 +12,17 @@
 			<body>
 				<h1>VOIPTEL</h1>
 				
+				<xsl:choose>
+					<xsl:when test="/Response/Authentication/User">
+						You are currently logged in as 
+						<xsl:value-of select="/Response/Authentication/User/UserName" />.
+						<a href="logout.php">Logout</a>
+					</xsl:when>
+					<xsl:otherwise>
+						You are not logged in
+					</xsl:otherwise>
+				</xsl:choose>
+				
 				<div id="Content">
 					<xsl:call-template name="Content" />
 				</div>

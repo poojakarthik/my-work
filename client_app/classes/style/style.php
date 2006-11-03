@@ -34,7 +34,7 @@
  		function __construct (&$strApplicationDir)
  		{
  			$this->strApplicationDir =& $strApplicationDir;
- 			$this->xslContent = new dataArray ("response");
+ 			$this->xslContent = new dataArray ("Response");
  		}
  		
  		public function attachObject (&$dataObject)

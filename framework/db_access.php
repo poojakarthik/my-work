@@ -129,6 +129,22 @@
  */
  abstract class DatabaseAccess
  {
+	//------------------------------------------------------------------------//
+	// bolObLib	
+	//------------------------------------------------------------------------//
+	/**
+	 * bolObLib
+	 *
+	 * Boolean for using ObLib
+	 *
+	 * Boolean to define whether or not we want to automatically convert to ObLib objects from the database
+	 *
+	 * @type		Boolean
+	 * @static
+	 * @property
+	 */
+	public static $bolObLib = false;
+	
  	//------------------------------------------------------------------------//
 	// DatabaseAccess() - Constructor
 	//------------------------------------------------------------------------//
@@ -692,7 +708,24 @@
 	 * @property
 	 * @see	<MethodName()||typePropertyName>
 	 */
- 	private $_arrBoundResults = Array();	
+ 	private $_arrBoundResults = Array();
+	
+	//------------------------------------------------------------------------//
+	// datMetaData
+	//------------------------------------------------------------------------//
+	/**
+	 * datMetaData
+	 *
+	 * Stores the meta data for the response
+	 *
+	 * Stores the meta data for the response, so we can use it for oblib later
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+ 	private $_datMetaData = Array();	
 
  
 	//------------------------------------------------------------------------//
@@ -859,16 +892,16 @@
 	 	$this->_stmtSqlStatment->store_result();
 	 	
 	 	// Retrieve the metatdata from the resultset
-	 	$datMetaData = $this->_stmtSqlStatment->result_metadata();
+	 	$this->_datMetaData = $this->_stmtSqlStatment->result_metadata();
 	 	
 		// Create a parameter list for bind_result()
-	 	while ($fldField = $datMetaData->fetch_field())
+	 	while ($fldField = $this->_datMetaData->fetch_field())
 	 	{
 	 		// Each parameter is a reference to an index in the result array (key is the Field name)
 	 		$arrFields[] = &$this->_arrBoundResults[$fldField->name];
 	 	}
 		
- 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
+		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
 		
 		return $this->_stmtSqlStatment->num_rows;
 	}
@@ -909,11 +942,61 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function Fetch()
+	function Fetch($strObLibTagName=null)
 	{
+		// Firstly, if we have a row to pull ... pull it (and put it into $this->_arrBoundResults)
 		if($this->_stmtSqlStatment->fetch())
 		{
- 			return $this->_arrBoundResults;
+			// If we are using ObLib, we want to turn everything into an oblib object
+			if (DatabaseAccess::$bolObLib === true)
+			{
+				// We're up to here which means that we're using ObLib ...
+				
+				// Because we're using ObLib, we need the first parameter to be called.
+				// In this instance, this means we need $strObLibTagName to be a string and not empty
+				if (!is_string ($strObLibTagName) || empty ($strObLibTagName))
+				{
+					throw new Exception (
+						'You are using Oblib ... Therefore you must have ' .
+						'1 parameter (string $strObLibTagName) with the name of the returning tag'
+					);
+				}
+				
+				// oblarr = ObLib Array. Eveythough results (rows) are hypothetically objects, 
+				// we need the functionality of an array here.
+				$oblarrArray = new dataArray ($strObLibTagName);
+				
+				// Start at 0 and loop through all the fields in the meta data
+				$i=0;
+				while ($fldField = @$this->_datMetaData->fetch_field_direct ($i++))
+				{
+					// Because Id is not defined in our database definitions, we
+					// can have to specify that Id fields are Integers
+					if ($fldField->name == "Id")
+					{
+						$oblarrArray->Push (new dataInteger ("Id", $this->_arrBoundResults ["Id"]));
+					}
+					else
+					{
+						// Create a new instance of an oblib object using the ObLib parameter of the database definition
+						$oblarrArray->Push
+						(
+							new $this->db->arrTableDefine[$fldField->table]["Column"][$fldField->name]["ObLib"]
+							(
+								$fldField->name, $this->_arrBoundResults [$fldField->name]
+							)
+						);
+					}
+				}
+				
+				// Return the oblib array
+				return $oblarrArray;
+			}
+			else
+			{
+				// If we're not using oblib, return an associative array
+ 				return $this->_arrBoundResults;
+			}
 		}
 		
 		// If there was no result, then return false

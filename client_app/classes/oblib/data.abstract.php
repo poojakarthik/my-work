@@ -10,6 +10,7 @@
 		{
 			$this->_DOMDocument = new DOMDocument ();
 			$this->_DOMElement = new DOMElement ($nodeTag);
+			$this->_DOMDocument->formatOutput = true;
 			
 			$this->_DOMDocument->appendChild
 			(

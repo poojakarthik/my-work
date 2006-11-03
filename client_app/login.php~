@@ -1,5 +1,5 @@
 <?php
-
+	
 	require ("application_loader.php");
 	
 	// Check if the person is currently logged in. If they are logged in, 

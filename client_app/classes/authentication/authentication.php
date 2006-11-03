@@ -46,7 +46,7 @@
 	class Authentication extends dataObject
 	{
 		
-		private $strAuthenticatedUser;
+		private $oblarrAuthenticatedUser;
 		
  		//------------------------------------------------------------------------//
 		// Authentication() - Constructor
@@ -65,28 +65,66 @@
 		
 		function __construct ()
 		{
-			if (isset ($_COOKIE ['SessionID']) && isset ($_COOKIE ['Id']))
+			parent::__construct ("Authentication");
+			
+			// If the authentication wants to see if it can come through ...
+			if (isset ($_COOKIE ['Id']) && isset ($_COOKIE ['SessionId']))
 			{
-				$selAuthenticated = new StatementSelect ("Contact", "count(*)", "Id LIKE <Id> AND SessionID = <SessionID>");
+				// Check their session is valid ...
+				$selAuthenticated = new StatementSelect (
+					"Contact", "*", 
+					"Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW()"
+				);
 				
-				if ($selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId'])))
+				$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
+				
+				// If the session is valid - revalidate the session so they can have another 20 minutes
+				if ($selAuthenticated->Count () == 1)
 				{
-					throw new Exception ("You are logged in :)");
+					$this->oblarrAuthenticatedUser = $this->Push ($selAuthenticated->Fetch ("User"));
+					
+					// Updating information
+					$Update = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
+					
+					// update the table
+					$updUpdateStatement = new StatementUpdate("Contact", "Id = <Id>", $Update);
+					$updUpdateStatement->Execute($Update, Array("Id" => $_COOKIE ['Id']));
+					
+					setCookie ("Id", $_COOKIE ['Id'], time () + (60 * 20), "/");
+					setCookie ("SessionId", $_COOKIE ['SessionId'], time () + (60 * 20), "/");
 				} else {
-					throw new Exception ("You are not logged in :(");
+					// Unset the cookies so we don't have to bother with them
+					setCookie ("Id", "", time () - 3600);
+					setCookie ("SessionId", "", time () - 3600);
 				}
 			}
-			
-			parent::__construct ("authentication");
 		}
 		
+ 		//------------------------------------------------------------------------//
+		// getAuthentication ()
+		//------------------------------------------------------------------------//
+		/**
+		 * getAuthentication ()
+		 *
+		 * Get the status of authentication
+	 	 *
+		 * Get the status of authentication
+		 *
+		 * @return		boolean					true:	if they are logged in
+		 *								false:	they are not logged in
+		 *
+		 * @method
+		 */ 
 		public function getAuthentication ()
 		{
-			return $this->strAuthenticatedUser !== null;
+			return $this->oblarrAuthenticatedUser !== null;
 		}
 		
-		public function contactLogin ($UserName, $PassWord)
+		public function Login ($UserName, $PassWord)
 		{
+			// turn off oblib so we can treat this as an array
+			DatabaseAccess::$bolObLib = false;
+			
 			// get the ID of the person who we want to login as
 			// (identified by UserName + PassWord)
 			// if no rows are returned, we have do not have 
@@ -101,8 +139,16 @@
 				return false;
 			}
 			
+			// If we're up to here, we are authenticated
+			// So store the person's ID in a field
+			$arrFetch = $selSelectStatement->Fetch ();
+			$Id = $arrFetch ['Id'];
+			
+			// Turn ObLib back on
+			DatabaseAccess::$bolObLib = true;
+			
 			// Generate a new session ID
-			$SessionId = md5(uniqid(rand(), true));
+			$SessionId = sha1(uniqid(rand(), true));
 			
 			// Updating information
 			$Update = Array("SessionId" => $SessionId, "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
@@ -111,14 +157,29 @@
 			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)", $Update);
 			if ($updUpdateStatement->Execute($Update, Array("UserName" => $UserName, "PassWord" => $PassWord)) == 1)
 			{
-				setCookie ("Id", $SessionId);
-				setCookie ("SessionId", $SessionId);
+				setCookie ("Id", $Id, time () + (60 * 20), "/");
+				setCookie ("SessionId", $SessionId, time () + (60 * 20), "/");
 				return true;
 			}
 			else
 			{
 				return false;
 			}
+		}
+		
+		public function Logout ()
+		{
+			// Kill the cookies ...
+			setCookie ("Id", "", time () - 3600, "/");
+			setCookie ("SessionId", "", time () - 3600, "/");
+			
+			// Update the database to reflect nobody being logged in
+			// Updating information
+			$Update = Array("SessionExpire" => new MySQLFunction ("NOW()"));
+			
+			// update the table
+			$updUpdateStatement = new StatementUpdate("Contact", "Id = <Id>", $Update);
+			$updUpdateStatement->Execute($Update, Array("Id" => $_COOKIE ['Id']));
 		}
 	}
 	
