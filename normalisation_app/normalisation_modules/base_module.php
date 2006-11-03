@@ -188,7 +188,7 @@ abstract class NormalisationModule
 		
 		$this->_errErrorHander 			= $errErrorHandler;
 		$this->_rptNormalisationReport 	= $rptNormalisationReport;
-	} 
+	}
 	
 	//------------------------------------------------------------------------//
 	// Validate
@@ -332,8 +332,7 @@ abstract class NormalisationModule
 	 */	
 	protected function IsValidFNN($strFNN)
 	{
-		return (preg_match("0\d\d\d\d\d\d\d\d\d[i]", $strFNN) || preg_match("0\d\d\d\d\d\d\d\d\d", $strFNN) ||
-				preg_match("13\d\d\d\d", $strFNN) || preg_match("1[89]00\d\d\d\d\d\d", $strFNN));
+		return preg_match("^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$");
 	}
 	
 	//------------------------------------------------------------------------//

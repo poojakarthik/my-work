@@ -79,6 +79,61 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 	//protected $_arrNormalisedData; */
 
 	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for the Normalising Module
+	 *
+	 * Constructor for the Normalising Module
+	 *
+	 *
+	 * @method
+	 */
+	function __construct()
+	{
+		// call parent constructor
+		parent::__construct();
+		
+		// define the column delimiter
+		$this->_strDelimiter = ",";
+		
+		// define row start (account for header rows)
+		$this->_intStartRow = 1;
+		
+		// define the carrier CDR format
+		$arrDefine ['EventId']			['Index']		= 0;
+		$arrDefine ['RecordType']		['Index']		= 1;
+		$arrDefine ['DateTime']			['Index']		= 2;
+		$arrDefine ['Duration']			['Index']		= 3;
+		$arrDefine ['OriginNo']			['Index']		= 4;
+		$arrDefine ['DestinationNo']	['Index']		= 5;
+		$arrDefine ['ChargedParty']		['Index']		= 6;
+		$arrDefine ['Currency']			['Index']		= 7;
+		$arrDefine ['Price']			['Index']		= 8;
+		$arrDefine ['PlanId']			['Index']		= 9;
+		$arrDefine ['Distance']			['Index']		= 10;
+		$arrDefine ['IsLocal']			['Index']		= 11;
+		$arrDefine ['CallType']			['Index']		= 12;
+		$arrDefine ['BeginDate']		['Index']		= 13;
+		$arrDefine ['EndDate']			['Index']		= 14;
+		$arrDefine ['Description']		['Index']		= 15;
+		$arrDefine ['ItemCount']		['Index']		= 16;
+		$arrDefine ['CarrierId']		['Index']		= 17;
+		$arrDefine ['RateId']			['Index']		= 18;
+		
+		$arrDefine ['EventId']			['Validation']	= "^\d+$";
+		$arrDefine ['RecordType']		['Validation']	= "^[178]$";
+		$arrDefine ['DateTime']			['Validation']	= "^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$";
+		$arrDefine ['Currency']			['Validation']	= "^AUD$";
+		$arrDefine ['Price']			['Validation']	= "^\d+\.\d\d?$";
+		
+
+		$this->_arrDefineCarrier = $arrDefine;
+	}
+
+	//------------------------------------------------------------------------//
 	// ValidateRaw
 	//------------------------------------------------------------------------//
 	/**
@@ -125,30 +180,6 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		// Explode the string on commas into an indexed array
 		$this->_arrRawData = explode(",", rtrim($arrCDR["CDR"], "\n"));
 		
-		/*
-		 *  RSLCOM File Format
-		 * 
-		 * 	0	Event ID			Unique Identifier
-		 * 	1	Record Type			1: Usage; 7: S&E; 8: OC&C
-		 * 	2	Date/Time			Start of session
-		 * 	3	Duration			In seconds
-		 * 	4	Originating #		Calling number
-		 * 	5	Terminating #		Called number
-		 * 	6	Charged Party		Service Number to be billed
-		 * 	7	Currency			Usually AUD (otherwise report and dont process)
-		 * 	8	Price				Charged to TelcoBlue
-		 * 	9	Plan ID				RSLCOM's rate plan ID
-		 * 	10	Distance			KM
-		 * 	12	Is Local			1: Local; 0: Non-Local
-		 * 	13	Type of Call		... See list?
-		 * 	14	Begin Date			Starting date of charge (Rec Type 7+8 only)
-		 * 	15	End Date			Ending date of charge (Rec Type 7+8 only)
-		 * 	16	Description			Rec Type 7+8 only... See list?
-		 * 	17	Number of Items		Rec Type 7+8 only
-		 * 	18	Carrier ID			1: Telstra; 2: Optus; 3: RSLCOM
-		 *  19	Rate ID				RSLCOM's Rate ID
-		 */
-		 
 		// $arrCDR["Id"];
 		$arrCDR["FNN"]					= $this->RemoveAusCode($this->_arrRawData[6]);
 		// $arrCDR["CDRFilename"];

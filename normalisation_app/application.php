@@ -243,7 +243,7 @@ die();
 
 			// Insert every CDR Line into the database
 			$fileCDRFile = fopen($arrCDRFile["Location"], "r");
-			$intSequence = 0;
+			$intSequence = 1;
 			while (!feof($fileCDRFile))
 			{
 				$arrCDRLine["CDR"]			= fgets($fileCDRFile);
