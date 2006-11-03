@@ -112,7 +112,7 @@ abstract class NormalisationModule
 	 *
 	 * @property
 	 */
-	protected $_strDelimiter
+	protected $_strDelimiter;
 	
 	//------------------------------------------------------------------------//
 	// _arrDefineCarrier
@@ -128,7 +128,7 @@ abstract class NormalisationModule
 	 *
 	 * @property
 	 */
-	protected $_arrDefineCarrier
+	protected $_arrDefineCarrier;
 	
 	//------------------------------------------------------------------------//
 	// _arrDefineCarrier
@@ -144,7 +144,7 @@ abstract class NormalisationModule
 	 *
 	 * @property
 	 */
-	protected $_arrDefineOutput
+	protected $_arrDefineOutput;
 	
 	//------------------------------------------------------------------------//
 	// errErrorHandler
@@ -299,7 +299,11 @@ abstract class NormalisationModule
 	 *
 	 * Checks if FNN is valid
 	 *
-	 * Checks if FNN is valid
+	 * Checks if FNN is valid.  Valid FNN examples are:	0734581649	(Landlines and Mobiles)
+	 * 													0246784194i (ADSL numbers)
+	 * 													131888		(13-numbers)
+	 * 													1800513454	(1800-numbers)
+	 * 													1900451354	(1900-numbers)
 	 * 
 	 * @param	string		$strFNN		FNN to be parsed
 	 *
@@ -311,7 +315,8 @@ abstract class NormalisationModule
 	 */	
 	protected function IsValidFNN($strFNN)
 	{
-		return preg_match("", $strFNN);
+		return (preg_match("0\d\d\d\d\d\d\d\d\d[i]", $strFNN) || preg_match("0\d\d\d\d\d\d\d\d\d", $strFNN) ||
+				preg_match("13\d\d\d\d", $strFNN) || preg_match("1[89]00\d\d\d\d\d\d", $strFNN));
 	}
 	
 	//------------------------------------------------------------------------//
