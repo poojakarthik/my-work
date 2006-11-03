@@ -324,16 +324,16 @@ die();
  	function Normalise()
  	{
  		// Select all CDRs ready to be Normalised
- 		$selSelectCDRs = new StatementSelect("CDR INNER JOIN FileImport ON CDR.File = FileImport.Id", Array("CDR.*" => "", "FileImport.FileType" => "FileType"), $strWhere = "Status = <status>");
+ 		$selSelectCDRs = new StatementSelect("CDR INNER JOIN FileImport ON CDR.File = FileImport.Id", Array("CDR.*" => "", "FileImport.FileType" => "FileType", "FileImport.FileName" => "FileName"), $strWhere = "Status = <status>");
  		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
  		// Create an instance of each Normalisation module
- 		$nrmRSLCOM = new NormalisationModuleRSLCOM();
- 		/*$nrmRSLCOM = new NormalisationModuleISeek();
- 		$nrmRSLCOM = new NormalisationModuleCommander();
- 		$nrmRSLCOM = new NormalisationModuleAAPT();
- 		$nrmRSLCOM = new NormalisationModuleOptus();*/
+ 		$nrmRSLCOM		= new NormalisationModuleRSLCOM();
+ 		$nrmIseek		= new NormalisationModuleIseek();
+ 		$nrmCommander	= new NormalisationModuleCommander();
+ 		$nrmAAPT		= new NormalisationModuleAAPT();
+ 		$nrmOptus		= new NormalisationModuleOptus();
  		
  		foreach ($arrCDRList as $arrCDR)
  		{

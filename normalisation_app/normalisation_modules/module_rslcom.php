@@ -69,25 +69,25 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$this->_intStartRow = 1;
 		
 		// define the carrier CDR format
-		$arrDefine ['EventId']			['Index']		= 0;
-		$arrDefine ['RecordType']		['Index']		= 1;
-		$arrDefine ['DateTime']			['Index']		= 2;
-		$arrDefine ['Duration']			['Index']		= 3;
-		$arrDefine ['OriginNo']			['Index']		= 4;
-		$arrDefine ['DestinationNo']	['Index']		= 5;
-		$arrDefine ['ChargedParty']		['Index']		= 6;
-		$arrDefine ['Currency']			['Index']		= 7;
-		$arrDefine ['Price']			['Index']		= 8;
-		$arrDefine ['PlanId']			['Index']		= 9;
-		$arrDefine ['Distance']			['Index']		= 10;
-		$arrDefine ['IsLocal']			['Index']		= 11;
-		$arrDefine ['CallType']			['Index']		= 12;
-		$arrDefine ['BeginDate']		['Index']		= 13;
-		$arrDefine ['EndDate']			['Index']		= 14;
-		$arrDefine ['Description']		['Index']		= 15;
-		$arrDefine ['ItemCount']		['Index']		= 16;
-		$arrDefine ['CarrierId']		['Index']		= 17;
-		$arrDefine ['RateId']			['Index']		= 18;
+		$arrDefine ['EventId']			['Index']		= 0;	// Unique Identifier
+		$arrDefine ['RecordType']		['Index']		= 1;	// 1 = Usage; 7 = S&E; 8 = OC&C
+		$arrDefine ['DateTime']			['Index']		= 2;	// Starting Datetime of the call
+		$arrDefine ['Duration']			['Index']		= 3;	// Duration in seconds
+		$arrDefine ['OriginNo']			['Index']		= 4;	// Originating phone number
+		$arrDefine ['DestinationNo']	['Index']		= 5;	// Destination phone number
+		$arrDefine ['ChargedParty']		['Index']		= 6;	// Charged phone number
+		$arrDefine ['Currency']			['Index']		= 7;	// Usually AUD
+		$arrDefine ['Price']			['Index']		= 8;	// Price charged to VOIPTel
+		$arrDefine ['PlanId']			['Index']		= 9;	// Unitel Plan ID
+		$arrDefine ['Distance']			['Index']		= 10;	// Distance in KM travelled by call
+		$arrDefine ['IsLocal']			['Index']		= 11;	// 1 = Local Call; 0 = Non-Local
+		$arrDefine ['CallType']			['Index']		= 12;	// Unitel Call Type ID
+		$arrDefine ['BeginDate']		['Index']		= 13;	// Starting Date (RecordType 7&8 Only)
+		$arrDefine ['EndDate']			['Index']		= 14;	// Ending Date (RecordType 7&8 Only)
+		$arrDefine ['Description']		['Index']		= 15;	// Description (RecordType 7&8 Only)
+		$arrDefine ['ItemCount']		['Index']		= 16;	// Item Count (RecordType 7&8 Only)
+		$arrDefine ['CarrierId']		['Index']		= 17;	// 1 = Telstra; 2 = Optus; 3 = Unitel
+		$arrDefine ['RateId']			['Index']		= 18;	// Unitel's Rate ID
 		
 		$arrDefine ['EventId']			['Validate']	= "^\d+$";
 		$arrDefine ['RecordType']		['Validate']	= "^[178]$";
@@ -153,18 +153,18 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		if ($mixValue == "1")
 		{
 		 	// For normal usage CDRs
-		 	$mixValue					= $this->_FetchRawCDR('Datetime');
+		 	$mixValue					= ConvertTime($this->_FetchRawCDR('Datetime'));
 		 	$this->_AppendCDR('StartDateTime', $mixValue);
 		 	
-		 	$mixValue					= strtotime("+" . $this->_FetchRawCDR('Duration') . "seconds", $this->_FetchRawCDR('Datetime'));
+		 	$mixValue					= date("Y-m-d H:i:s", strtotime($this->_FetchRawCDR('Datetime') . " +" . $this->_FetchRawCDR('Duration') . "seconds"));
 			$this->_AppendCDR('EndDateTime', $mixValue);
 		}
 		else
 		{
 		 	// For S&E and OC&C CDRs
-		 	$mixValue					=  $this->_FetchRawCDR('BeginDate');
+		 	$mixValue					=  ConvertTime($this->_FetchRawCDR('BeginDate'));
 		 	$this->_AppendCDR('StartDateTime', $mixValue);
-		 	$mixValue					=  $this->_FetchRawCDR('EndDate');
+		 	$mixValue					=  ConvertTime($this->_FetchRawCDR('EndDate'));
 		 	$this->_AppendCDR('EndDateTime', $mixValue);
 		}
 		
@@ -174,13 +174,13 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		{
 		 	// For normal usage CDRs
 		 	$mixValue					= $this->_FetchRawCDR('Duration');
-		 	$this->_AppendCDR('Units', $mixValue);
+		 	$this->_AppendCDR('Units', (int)$mixValue);
 		}
 		else
 		{
 		 	// For S&E and OC&C CDRs
 		 	$mixValue					=  $this->_FetchRawCDR('ItemCount');
-		 	$this->_AppendCDR('Units', $mixValue);
+		 	$this->_AppendCDR('Units', (int)$mixValue);
 		}
 		
 		// Description
@@ -188,7 +188,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		{
 		 	// For normal usage CDRs
 		 	$mixValue					= $this->_FetchRawCDR('CallType');	// TODO: Link to Call Type List/Table
-		 	$this->_AppendCDR('Description', $mixValue);
+		 	$this->_AppendCDR('Description', (int)$mixValue);
 		}
 		else
 		{
@@ -205,16 +205,37 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$mixValue = SERVICE_TYPE_LAND_LINE;
 		$this->_AppendCDR('ServiceType', $mixValue);
 
+		// Cost
+		$mixValue						=  $this->_FetchRawCDR('Price');
+		$this->_AppendCDR('ServiceType', (float)$mixValue);
+
 
 		//--------------------------------------------------------------------//
 		
+		if (!$this->ApplyOwnership())
+		{
+			$this->_AppendCDR('Status', CDR_BAD_OWNER);
+		}
+		
+		// Validation of Normalised data
+		$this->Validate();
+		
 		// return output array
 		return $this->_OutputCDR();
+	}
+	
+	function ConvertTime($strTime)
+	{
+		$strReturn 	= substr($strTime, 6, 4);				// Year
+		$strReturn .=  "-" . substr($strTime, 3, 2);		// Month
+		$strReturn .=  "-" . substr($strTime, 0, 2);		// Day
+		$strReturn .=  substr($strTime, 11, 18);			// Time
+		
+		return $strReturn;
 	}
 }
 	
 	//------------------------------------------------------------------------//
 	// Constants for NormalisationModuleRSLCOM
 	//------------------------------------------------------------------------//
-	
 ?>

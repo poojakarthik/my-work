@@ -212,34 +212,52 @@ abstract class NormalisationModule
 		$arrValid = Array();
 		
 		// $this->_arrNormalisedData["Id"];
-		$arrValid[] = IsValidFNN($this->_arrNormalisedData["FNN"]);
-		// $this->_arrNormalisedData["CDRFilename"];
-		// $this->_arrNormalisedData["Carrier"];
-		$arrValid[] = $this->_arrNormalisedData["CarrierRef"];
-		$arrValid[] = $this->_arrNormalisedData["Source"];
-		$arrValid[] = $this->_arrNormalisedData["Destination"];
-		$arrValid[] = $this->_arrNormalisedData["StartDatetime"];
-		$arrValid[] = $this->_arrNormalisedData["EndDatetime"];
-		$arrValid[] = $this->_arrNormalisedData["Units"];
-		$arrValid[] = $this->_arrNormalisedData["AccountGroup"];
-		$arrValid[] = $this->_arrNormalisedDatarCDR["Account"];
-		$arrValid[] = $this->_arrNormalisedData["Service"];
-		$arrValid[] = $this->_arrNormalisedData["Cost"];
-		// $this->_arrNormalisedData["Status"];
-		// $this->_arrNormalisedData["CDR"];
-		$arrValid[] = $this->_arrNormalisedData["Description"];
-		$arrValid[] = $this->_arrNormalisedData["DestinationCode"];
-		$arrValid[] = $this->_arrNormalisedData["RecordType"];
-		$arrValid[] = $this->_arrNormalisedData["ServiceType"];
-		// $this->_arrNormalisedData["Charge"];
-		$arrValid[] = $this->_arrNormalisedData["Rate"];
-		// $this->_arrNormalisedData["NormalisedOn"];
-		// $this->_arrNormalisedData["RatedOn"];
-		// $this->_arrNormalisedData["Invoice"];
-		// $this->_arrNormalisedData["SequenceNo"];
+		$arrValid[] = preg_match("^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$", 	$this->_arrNormalisedData["FNN"]);
+		$arrValid[] = ($this->_arrNormalisedData["CarrierRef"] != "");
 		
-		// Now call the ValidateRaw() class, implemented by the the child
-		$this->ValidateRaw();
+		if ($this->_arrNormalisedData["Source"] != "")
+		{
+			$arrValid[] = preg_match("^\+?\d+$", 	$this->_arrNormalisedData["Source"]);
+		}
+		else
+		{
+			$arrValid[] = true;
+		}
+		
+		if ($this->_arrNormalisedData["Destination"] != "")
+		{
+			$arrValid[] = preg_match("^\+?\d+$", 	$this->_arrNormalisedData["Destination"]);
+		}
+		else
+		{
+			$arrValid[] = true;
+		}
+
+		$arrValid[] = preg_match("^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$",	$this->_arrNormalisedData["StartDatetime"]);
+
+		if ($this->_arrNormalisedData["EndDatetime"] != "")
+		{
+			$arrValid[] = preg_match("^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$", 	$this->_arrNormalisedData["EndDatetime"]);
+		}
+		else
+		{
+			$arrValid[] = true;
+		}
+
+		$arrValid[] = ((is_int($this->_arrNormalisedData["Units"])) && ($this->_arrNormalisedData["Units"] != 0));
+		$arrValid[] = is_float($this->_arrNormalisedData["Cost"]);
+		$arrValid[] = ($this->_arrNormalisedData["Description"] != "");
+		$arrValid[] = (strlen($this->_arrNormalisedData["DestinationCode"]) <= 3);
+		
+		foreach ($arrValid as $bolValid)
+		{
+			if(!$bolValid)
+			{
+				return false;
+			}
+		}
+		
+		return true;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -496,6 +514,40 @@ abstract class NormalisationModule
 	 	return $this->_arrNormalisedData;
 	 }
 	 
+
+	//------------------------------------------------------------------------//
+	// ApplyOwnership
+	//------------------------------------------------------------------------//
+	/**
+	 * ApplyOwnership()
+	 *
+	 * Applies ownership based on the FNN
+	 *
+	 * Applies ownership based on the FNN
+	 * 
+	 * @param	
+	 *
+	 * @return	array					
+	 *
+	 * @method
+	 */
+	 protected function ApplyOwnership()
+	 {
+	 	$selLinkAccounts = new StatmentSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>");
+	 	$arrResult = $selLinkAccount->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
+	 	
+	 	if ($arrResult == 1)
+	 	{
+	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
+	 		$this->_arrNormalisedData['Account']		= $arrResult['Account'];
+	 		$this->_arrNormalisedData['Service']		= $arrResult['Id'];
+	 		return true;
+	 	}
+	 	
+		// Return false if there was no match, or more than one match
+	 	return false;
+	 }
+
 	//------------------------------------------------------------------------//
 	// _GenerateUID
 	//------------------------------------------------------------------------//
@@ -518,7 +570,6 @@ abstract class NormalisationModule
 	 	return "UID_{$strFileName}_{$intSequenceNo}";
 	 }
 	 
-	
 }
 
 ?>

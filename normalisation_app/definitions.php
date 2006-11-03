@@ -47,6 +47,7 @@ define("CDR_CANT_NORMALISE_RAW"			, 103);
 define("CDR_CANT_NORMALISE_BAD_SEQ_NO"	, 104);
 define("CDR_CANT_NORMALISE_HEADER"		, 105);
 define("CDR_CANT_NORMALISE_NON_CDR"		, 106);
+define("CDR_BAD_OWNER"					, 107);
 define("CDR_IGNORE"						, 110);
 
 
