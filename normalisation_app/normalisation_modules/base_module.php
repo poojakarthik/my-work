@@ -377,6 +377,37 @@ abstract class NormalisationModule
 		}
 
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// _ValidateRawCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * _ValidateRawCDR()
+	 *
+	 * Validate contents of Raw CDR record
+	 *
+	 * Validate contents of Raw CDR record
+	 * 
+	 *
+	 * @return	bool	TRUE if record is valid, FALSE otherwise				
+	 *
+	 * @method
+	 */
+	 protected function _ValidateRawCDR()
+	 {
+	 	foreach($this->_arrDefineCarrier as $strKey=>$strValue)
+		{
+			if ($strValue['Validate'])
+			{
+				if (!preg_match($strValue['Validate'], $this->_arrRawData[$strKey]))
+				{
+					return FALSE;
+				}
+			}
+			return TRUE;
+		}
+		return FALSE;
+	 }
 	
 	//------------------------------------------------------------------------//
 	// _FetchRawCDR
@@ -460,6 +491,8 @@ abstract class NormalisationModule
 	 {
 	 	return $this->_arrNormalisedData;
 	 }
+	 
+	
 }
 
 ?>

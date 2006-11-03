@@ -40,10 +40,14 @@ define("CDR_NORMALISE_SUCCESS"			, "NORMALISATION SUCCESSFUL : CDR <object> was 
 define("CDR_NORMALISE_FAILED"			, "NORMALISATION FAILED		: CDR <object> failed to normalise.  Reason: <reason>");
 
 // CDR Handling (Range is 100-199)
-define("CDR_READY"					, 100);
-define("CDR_NORMALISED"				, 101);
-define("CDR_CANT_NORMALISE"			, 102); // TODO: Expand to a define specific reasons for failed processing
-define("CDR_IGNORE"					, 110);
+define("CDR_READY"						, 100);
+define("CDR_NORMALISED"					, 101);
+define("CDR_CANT_NORMALISE"				, 102); // TODO: Expand to a define specific reasons for failed processing
+define("CDR_CANT_NORMALISE_RAW"			, 103);
+define("CDR_CANT_NORMALISE_BAD_SEQ_NO"	, 104);
+define("CDR_CANT_NORMALISE_HEADER"		, 105);
+define("CDR_IGNORE"						, 110);
+
 
 // CDR File Handling (Range is 200-299)
 define("CDRFILE_WAITING"			, 200);
@@ -62,6 +66,12 @@ define("CDR_FILE_DOESNT_EXIST"		, 5002);
 define("NO_NORMALISATION_MODULE"	, 5003);
 
 // Fatal Exceptions
+
+// Service Types
+define("SERVICE_TYPE_ADSL"			, 100);
+define("SERVICE_TYPE_MOBILE"		, 101);
+define("SERVICE_TYPE_LAND_LINE"		, 102);
+define("SERVICE_TYPE_INBOUND"		, 103);
 
 
 ?>

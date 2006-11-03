@@ -80,29 +80,6 @@ class NormalisationModuleIseek extends NormalisationModule
 	}
 
 	//------------------------------------------------------------------------//
-	// ValidateRaw
-	//------------------------------------------------------------------------//
-	/**
-	 * Validate()
-	 *
-	 * Validate Raw Data against file desctriptions
-	 *
-	 * Validate Raw Data against file desctriptions
-	 *
-	 * @return	boolean				true	: Data matches
-	 * 								false	: Data doesn't match
-	 *
-	 * @method
-	 */
-	function ValidateRaw()
-	{
-		// TODO
-		
-		// Return true for now
-		return true;
-	}
-
-	//------------------------------------------------------------------------//
 	// Normalise
 	//------------------------------------------------------------------------//
 	/**
@@ -114,31 +91,84 @@ class NormalisationModuleIseek extends NormalisationModule
 	 * 
 	 * @param	array		arrCDR		Array returned from SELECT query on CDR
 	 *
-	 * @return	array					Normalised Data, ready for direct UPDATE
-	 * 									into DB
+	 * @return	mixed					Normalised Data (Array, ready for direct UPDATE
+	 * 									into DB. Returns FALSE if record fails validation
 	 *
 	 * @method
 	 */	
 	function Normalise($arrCDR)
 	{
-	
+		// ignore header rows
+		if ((int)$arrCDR["CDR.SequenceNo"] < 1)
+		{
+			return CDR_CANT_NORMALISE_BAD_SEQ_NO;
+		}
+		elseif ((int)$arrCDR["CDR.SequenceNo"] < $this->_intStartRow)
+		{
+			return CDR_CANT_NORMALISE_HEADER;
+		}
+		
 		// covert CDR string to array
 		$this->_SplitRawCDR($arrCDR["CDR.CDR"]);
 	
+		// validation of Raw CDR
+		if (!$this->_ValidateRawCDR())
+		{
+			return CDR_CANT_NORMALISE_RAW;
+		}
+		
 		// build a new output CDR
 		$this->_NewCDR();
 		
+		//--------------------------------------------------------------------//
+		// add fields to CDR
+		//--------------------------------------------------------------------//
 		
-		// add field to CDR
-		$this->_AppendCDR($strName, $mixValue);
+		// FNN
+		$mixValue = $this->_FetchRawCDR('Service');
+		$this->_AppendCDR('FNN', $mixValue);
+		
+		// CarrierRef
+		$mixValue = $this->_FetchRawCDR('Service');
+		$this->_AppendCDR('CarrierRef', $mixValue);
+		
+		// StartDatetime
+		$mixValue = $this->_FetchRawCDR('DateStart');
+		$this->_AppendCDR('StartDatetime', $mixValue);
+		
+		// EndDatetime
+		$mixValue = $this->_FetchRawCDR('DateEnd');
+		$this->_AppendCDR('EndDatetime', $mixValue);
+		
+		// Units
+		$mixValue = (int)($this->_FetchRawCDR('Megabytes') / 1024);
+		$this->_AppendCDR('Units', $mixValue);
+		
+		// Description
+		$mixValue = ISEEK_ADSL_USAGE;
+		$this->_AppendCDR('Description', $mixValue);
+		
+		// RecordType
+		//$mixValue = ; // needs to match database
+		$this->_AppendCDR('RecordType', $mixValue);
+		
+		// ServiceType
+		$mixValue = SERVICE_TYPE_ADSL;
+		$this->_AppendCDR('ServiceType', $mixValue);
 
+
+		//--------------------------------------------------------------------//
+		
 		// return output array
 		return $this->_OutputCDR();
 	}
 	
+	
 	//------------------------------------------------------------------------//
 	// Constants for NormalisationModuleIseek
 	//------------------------------------------------------------------------//
-	// TODO
+	
+	define("ISEEK_ADSL_USAGE_DESCRIPTION"		, "ADSL Usage");
+	
 }
 ?>
