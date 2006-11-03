@@ -123,38 +123,20 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$arrDefine ['CarrierId']		['Index']		= 17;
 		$arrDefine ['RateId']			['Index']		= 18;
 		
-		$arrDefine ['EventId']			['Validation']	= "^\d+$";
-		$arrDefine ['RecordType']		['Validation']	= "^[178]$";
-		$arrDefine ['DateTime']			['Validation']	= "^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$";
-		$arrDefine ['Currency']			['Validation']	= "^AUD$";
-		$arrDefine ['Price']			['Validation']	= "^\d+\.\d\d?$";
+		$arrDefine ['EventId']			['Validate']	= "^\d+$";
+		$arrDefine ['RecordType']		['Validate']	= "^[178]$";
+		$arrDefine ['DateTime']			['Validate']	= "^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$";
+		$arrDefine ['Duration']			['Validate']	= "^\d+$";
+		$arrDefine ['OriginNo']			['Validate']	= "^\+?\d+$";
+		$arrDefine ['DestinationNo']	['Validate']	= "^\+?\d+$";
+		$arrDefine ['ChargedParty']		['Validate']	= "^\+?\d+$";
+		$arrDefine ['Currency']			['Validate']	= "^AUD$";
+		$arrDefine ['Price']			['Validate']	= "^\d+\.\d\d?$";
+		$arrDefine ['CallType']			['Validate']	= "^\d+$";
+		$arrDefine ['RateId']			['Validate']	= "^\d+$";
 		
 
 		$this->_arrDefineCarrier = $arrDefine;
-	}
-
-	//------------------------------------------------------------------------//
-	// ValidateRaw
-	//------------------------------------------------------------------------//
-	/**
-	 * Validate()
-	 *
-	 * Validate Raw Data against file desctriptions
-	 *
-	 * Validate Raw Data against file desctriptions
-	 *
-	 * @return	boolean				true	: Data matches
-	 * 								false	: Data doesn't match
-	 *
-	 * @method
-	 * @see	<MethodName()||typePropertyName>
-	 */
-	function ValidateRaw()
-	{
-		// TODO
-		
-		// Return true for now
-		return true;
 	}
 
 	//------------------------------------------------------------------------//
@@ -177,66 +159,98 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 	 */	
 	function Normalise($arrCDR)
 	{
-		// Explode the string on commas into an indexed array
-		$this->_arrRawData = explode(",", rtrim($arrCDR["CDR"], "\n"));
+
+		// covert CDR string to array
+		$this->_SplitRawCDR($arrCDR["CDR.CDR"]);
+	
+		// validation of Raw CDR
+		if (!$this->_ValidateRawCDR())
+		{
+			return CDR_CANT_NORMALISE_RAW;
+		}
 		
-		// $arrCDR["Id"];
-		$arrCDR["FNN"]					= $this->RemoveAusCode($this->_arrRawData[6]);
-		// $arrCDR["CDRFilename"];
-		// $arrCDR["Carrier"];
-		$arrCDR["CarrierRef"]			= $this->_arrRawData[0];
-		$arrCDR["Source"]				= $this->_arrRawData[4];
-		$arrCDR["Destination"]			= $this->_arrRawData[5];
+		// build a new output CDR
+		$this->_NewCDR();
 		
-		if ($this->_arrRawData[1] == "1")
+		//--------------------------------------------------------------------//
+		// add fields to CDR
+		//--------------------------------------------------------------------//
+		
+		// FNN
+		$mixValue = $this->_FetchRawCDR('ChargedParty');
+		$this->_AppendCDR('FNN', $this->RemoveAusCode($mixValue));
+		
+		// CarrierRef
+		$mixValue = $this->_FetchRawCDR('EventId');
+		$this->_AppendCDR('CarrierRef', $mixValue);
+
+		// StartDateTime & EndDateTime
+		if ($mixValue == "1")
 		{
 		 	// For normal usage CDRs
-		 	$arrCDR["StartDatetime"]	= $this->_arrRawData[2];
-		 	$dttDateTime				= strtotime("+" . $this->_arrRawData[3] . "seconds", $this->_arrRawData[2]);
-			$arrCDR["EndDatetime"]		= $dttDateTime;
+		 	$mixValue					= $this->_FetchRawCDR('Datetime');
+		 	$this->_AppendCDR('StartDateTime', $mixValue);
+		 	
+		 	$mixValue					= strtotime("+" . $this->_FetchRawCDR('Duration') . "seconds", $this->_FetchRawCDR('Datetime'));
+			$this->_AppendCDR('EndDateTime', $mixValue);
 		}
 		else
 		{
 		 	// For S&E and OC&C CDRs
-		 	$arrCDR["StartDatetime"]	= $this->_arrRawData[14];
-		 	$arrCDR["EndDatetime"]		= $this->_arrRawData[15];
+		 	$mixValue					=  $this->_FetchRawCDR('BeginDate');
+		 	$this->_AppendCDR('StartDateTime', $mixValue);
+		 	$mixValue					=  $this->_FetchRawCDR('EndDate');
+		 	$this->_AppendCDR('EndDateTime', $mixValue);
 		}
-
-		$arrCDR["Units"]				= $this->_arrRawData[3];
 		
-		$selSelectStatement				= new StatementSelect("Service", "Id, Account, AccountGroup", "FNN = <FNN>");
-		$selSelectStatement->Execute(Array("FNN" => $this->_arrRawData[6]));
-		$arrAccountInfo					= $selSelectStatement->Fetch();
 		
-		$arrCDR["AccountGroup"]			= $arrAccountInfo["AccountGroup"];
-		$arrCDR["Account"]				= $arrAccountInfo["Account"];
-		$arrCDR["Service"]				= $arrAccountInfo["Id"];
-		$arrCDR["Cost"]					= $this->_arrRawData[8];
-		// $arrCDR["Status"];											// Only after data is validated
-		// $arrCDR["CDR"];
-		
-		// Only add a Description if its S&E or OC&C
-		if ($this->_arrRawData[1] == "7" || $this->_arrRawData[1] == "8")
+		// Units
+		if ($this->_FetchRawCDR('EventId') == "1")
 		{
-			$arrCDR["Description"]		= $this->_arrRawData[16];		// TODO: Find list!!  Is this an index or text!?
+		 	// For normal usage CDRs
+		 	$mixValue					= $this->_FetchRawCDR('Duration');
+		 	$this->_AppendCDR('Units', $mixValue);
+		}
+		else
+		{
+		 	// For S&E and OC&C CDRs
+		 	$mixValue					=  $this->_FetchRawCDR('ItemCount');
+		 	$this->_AppendCDR('Units', $mixValue);
+		}
+		
+		// Description
+		if ($this->_FetchRawCDR('EventId') == "1")
+		{
+		 	// For normal usage CDRs
+		 	$mixValue					= $this->_FetchRawCDR('CallType');	// TODO: Link to Call Type List/Table
+		 	$this->_AppendCDR('Description', $mixValue);
+		}
+		else
+		{
+		 	// For S&E and OC&C CDRs
+		 	$mixValue					=  $this->_FetchRawCDR('Description');
+		 	$this->_AppendCDR('Description', $mixValue);
 		}
 
-		// $arrCDR["DestinationCode"];									// Unitel doesn't tell us this
-		// $arrCDR["RecordType"];										// TODO: How to convert!?
-		$arrCDR["ServiceType"]			= constant($this->_arrRawData[13]);
-		// $arrCDR["Charge"];											// Done in Rating engine
-		$arrCDR["Rate"];												// Need Rate table
-		// $arrCDR["NormalisedOn"];										// Only do when we commit to database
-		// $arrCDR["RatedOn"];
-		// $arrCDR["Invoice"];
-		// $arrCDR["SequenceNo"];
+		// RecordType
+		//$mixValue = ; // needs to match database
+		$this->_AppendCDR('RecordType', $mixValue);
 		
-		$this->_arrNormalisedData = $arrCDR;
+		// ServiceType
+		$mixValue = SERVICE_TYPE_LAND_LINE;
+		$this->_AppendCDR('ServiceType', $mixValue);
+
+
+		//--------------------------------------------------------------------//
+		
+		// return output array
+		return $this->_OutputCDR();
 	}
+}
 	
 	//------------------------------------------------------------------------//
 	// Constants for NormalisationModuleRSLCOM
 	//------------------------------------------------------------------------//
 	// TODO
-}
+	
 ?>
