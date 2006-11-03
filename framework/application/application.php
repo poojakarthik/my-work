@@ -59,9 +59,6 @@ $rptReport->Finish();
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
 
-echo "<pre>";
-print_r($GLOBALS['arrDatabaseTableDefine']);
-echo "</pre>";
 
 // create the table
 	$crqQuery = new QueryCreate();

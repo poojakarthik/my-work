@@ -46,7 +46,7 @@
 abstract class NormalisationModule
 {
 	//------------------------------------------------------------------------//
-	// arrRawData
+	// _arrRawData
 	//------------------------------------------------------------------------//
 	/**
 	 * arrRawData
@@ -63,7 +63,7 @@ abstract class NormalisationModule
 	protected $_arrRawData; 
 
 	//------------------------------------------------------------------------//
-	// arrNormalisedData
+	// _arrNormalisedData
 	//------------------------------------------------------------------------//
 	/**
 	 * arrNormalisedData
@@ -97,7 +97,56 @@ abstract class NormalisationModule
 	 */
 	protected $_rptNormalisationReport;
 
- 	//------------------------------------------------------------------------//
+ 	
+	//------------------------------------------------------------------------//
+	// _strDelimiter
+	//------------------------------------------------------------------------//
+	/**
+	 * _strDelimiter
+	 *
+	 * Delimiter for delimited CDR files
+	 *
+	 * Delimiter for delimited CDR files
+	 *
+	 * @type	string
+	 *
+	 * @property
+	 */
+	protected $_strDelimiter
+	
+	//------------------------------------------------------------------------//
+	// _arrDefineCarrier
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrDefineCarrier
+	 *
+	 * Defines the Carrier CDR format
+	 *
+	 * Defines the Carrier CDR format
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 */
+	protected $_arrDefineCarrier
+	
+	//------------------------------------------------------------------------//
+	// _arrDefineCarrier
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrDefineCarrier
+	 *
+	 * Defines the Output CDR format
+	 *
+	 * Defines the Output CDR format
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 */
+	protected $_arrDefineOutput
+	
+	//------------------------------------------------------------------------//
 	// errErrorHandler
 	//------------------------------------------------------------------------//
 	/**
@@ -264,6 +313,48 @@ abstract class NormalisationModule
 	{
 		return preg_match("", $strFNN);
 	}
+	
+	//------------------------------------------------------------------------//
+	// Split CDR record
+	//------------------------------------------------------------------------//
+	/**
+	 * _SplitCDR()
+	 *
+	 * Split a CDR record into an array
+	 *
+	 * Split a CDR record into an array
+	 * 
+	 * @param	string		strCDR		CDR record
+	 *
+	 * @return	VOID					
+	 *
+	 * @method
+	 */
+	 protected function _SplitCDR($strCDR)
+	 {
+	 	// clean the array
+		$this->_arrRawData = array();
+		
+		// build the array
+	 	if ($this->_strDelimiter)
+		{
+			// delimited record
+			$arrRawData = explode($this->_strDelimiter, rtrim($strCDR, "\n"));
+			foreach($this->_arrDefineCarrier as $strKey=>$strValue)
+			{
+				$this->_arrRawData[$strKey] = $arrRawData[$strValue['Index']];
+			}
+		}
+		else
+		{
+			// fixed width record
+			foreach($this->_arrDefineCarrier as $strKey=>$strValue)
+			{
+				$this->_arrRawData[$strKey] = substr($strCDR, $strValue['Start'], $strValue['Length']);
+			}
+		}
+
+	 }
 }
 
 ?>
