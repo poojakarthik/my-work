@@ -123,7 +123,7 @@ class NormalisationModuleIseek extends NormalisationModule
 	{
 	
 		// covert CDR string to array
-		$this->_SplitCDR($arrCDR["CDR.CDR"]);
+		$this->_SplitRawCDR($arrCDR["CDR.CDR"]);
 	
 		// build a new output CDR
 		$this->_NewCDR();

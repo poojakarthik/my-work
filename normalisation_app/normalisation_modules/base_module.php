@@ -337,14 +337,14 @@ abstract class NormalisationModule
 	}
 	
 	//------------------------------------------------------------------------//
-	// _SplitCDR
+	// _SplitRawCDR
 	//------------------------------------------------------------------------//
 	/**
-	 * _SplitCDR()
+	 * _SplitRawCDR()
 	 *
-	 * Split a CDR record into an array
+	 * Split a Raw CDR record into an array
 	 *
-	 * Split a CDR record into an array
+	 * Split a Raw CDR record into an array
 	 * 
 	 * @param	string		strCDR		CDR record
 	 *
@@ -376,6 +376,27 @@ abstract class NormalisationModule
 			}
 		}
 
+	 }
+	
+	//------------------------------------------------------------------------//
+	// _FetchRawCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * _FetchRawCDR()
+	 *
+	 * Fetch a field from the raw CDR
+	 *
+	 * Fetch a field from the raw CDR
+	 * 
+	 * @param	string		strKey		field key
+	 *
+	 * @return	VOID					
+	 *
+	 * @method
+	 */
+	 protected function _FetchRawCDR($strKey)
+	 {
+	 	return $this->_arrRawData[$strKey];
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -418,6 +439,26 @@ abstract class NormalisationModule
 	 protected function _AppendCDR($strKey, $mixValue)
 	 {
 	 	$this->_arrNormalisedData[$strKey] = $mixValue;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _OutputCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * _OutputCDR()
+	 *
+	 * Output CDR
+	 *
+	 * Output CDR
+	 * 
+	 *
+	 * @return	array					
+	 *
+	 * @method
+	 */
+	 protected function _OutputCDR()
+	 {
+	 	return $this->_arrNormalisedData;
 	 }
 }
 
