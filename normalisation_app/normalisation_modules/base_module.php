@@ -115,6 +115,23 @@ abstract class NormalisationModule
 	protected $_strDelimiter;
 	
 	//------------------------------------------------------------------------//
+	// _intStartRow
+	//------------------------------------------------------------------------//
+	/**
+	 * _intStartRow
+	 *
+	 * First row of file that contains CDR data
+	 *
+	 * First row of file that contains CDR data
+	 * Row numbers start at 1
+	 *
+	 * @type	int
+	 *
+	 * @property
+	 */
+	protected $_intStartRow;
+	
+	//------------------------------------------------------------------------//
 	// _arrDefineCarrier
 	//------------------------------------------------------------------------//
 	/**
@@ -320,7 +337,7 @@ abstract class NormalisationModule
 	}
 	
 	//------------------------------------------------------------------------//
-	// Split CDR record
+	// _SplitCDR
 	//------------------------------------------------------------------------//
 	/**
 	 * _SplitCDR()
@@ -359,6 +376,48 @@ abstract class NormalisationModule
 			}
 		}
 
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _NewCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * _NewCDR()
+	 *
+	 * Create a new default CDR record
+	 *
+	 * Create a new default CDR record
+	 * 
+	 *
+	 * @return	VOID					
+	 *
+	 * @method
+	 */
+	 protected function _NewCDR()
+	 {
+	 	$this->_arrNormalisedData = Array();
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _AppendCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * _AppendCDR()
+	 *
+	 * Add a field to the output CDR
+	 *
+	 * Add a field to the output CDR
+	 * 
+	 * @param	string		strKey		field key
+	 * @param	mixed		mixValue	field value
+	 *
+	 * @return	VOID					
+	 *
+	 * @method
+	 */
+	 protected function _AppendCDR($strKey, $mixValue)
+	 {
+	 	$this->_arrNormalisedData[$strKey] = $mixValue;
 	 }
 }
 

@@ -63,7 +63,20 @@ class NormalisationModuleIseek extends NormalisationModule
 		// call parent constructor
 		parent::__construct();
 		
-		// define 
+		// define the column delimiter
+		$this->_strDelimiter = "\t";
+		
+		// define row start (account for header rows)
+		$this->_intStartRow = 2;
+		
+		// define the carrier CDR format
+		$arrDefine ['RecordType']	['Index']	= 0;
+		$arrDefine ['Service']		['Index']	= 1;
+		$arrDefine ['Megabytes']	['Index']	= 2;
+		$arrDefine ['DateStart']	['Index']	= 3;
+		$arrDefine ['DateEnd']		['Index']	= 4;
+		
+		$this->_arrDefineCarrier = $arrDefine;
 	}
 
 	//------------------------------------------------------------------------//
@@ -112,9 +125,15 @@ class NormalisationModuleIseek extends NormalisationModule
 		// covert CDR string to array
 		$this->_SplitCDR($arrCDR["CDR.CDR"]);
 	
-		// covert CDR array to our format
-		$this->_FormatCDR();
+		// build a new output CDR
+		$this->_NewCDR();
+		
+		
+		// add field to CDR
+		$this->_AppendCDR($strName, $mixValue);
 
+		// return output array
+		return $this->_OutputCDR();
 	}
 	
 	//------------------------------------------------------------------------//
