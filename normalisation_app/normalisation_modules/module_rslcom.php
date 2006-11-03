@@ -26,7 +26,6 @@
  *
  */
 
-
 //----------------------------------------------------------------------------//
 // NormalisationModuleRSLCOM
 //----------------------------------------------------------------------------//
@@ -44,39 +43,6 @@
  */
 class NormalisationModuleRSLCOM extends NormalisationModule
 {
-	//------------------------------------------------------------------------//
-	// arrRawData
-	//------------------------------------------------------------------------//
-	/**
-	 * arrRawData
-	 *
-	 * Stores the split raw data from the CDR
-	 *
-	 * Stores the split raw data from the CDR
-	 *
-	 * @type	array
-	 *
-	 * @property
-	 * @see	<MethodName()||typePropertyName>
-	 */
-	//protected $_arrRawData; 
-
-	//------------------------------------------------------------------------//
-	// arrNormalisedData
-	//------------------------------------------------------------------------//
-	/**
-	 * arrNormalisedData
-	 *
-	 * Stores the normalised data from the CDR
-	 *
-	 * Stores the normalised raw data from the CDR
-	 *
-	 * @type	array
-	 *
-	 * @property
-	 * @see	<MethodName()||typePropertyName>
-	 */
-	//protected $_arrNormalisedData; */
 
 	//------------------------------------------------------------------------//
 	// __construct
@@ -135,7 +101,6 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$arrDefine ['CallType']			['Validate']	= "^\d+$";
 		$arrDefine ['RateId']			['Validate']	= "^\d+$";
 		
-
 		$this->_arrDefineCarrier = $arrDefine;
 	}
 
@@ -251,6 +216,5 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 	//------------------------------------------------------------------------//
 	// Constants for NormalisationModuleRSLCOM
 	//------------------------------------------------------------------------//
-	// TODO
 	
 ?>
