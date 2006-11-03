@@ -10,13 +10,13 @@
 // module_optus
 //----------------------------------------------------------------------------//
 /**
- * module_skel.php
+ * module_optus.php
  *
- * Skeleton Normalisation module for batch files
+ * Normalisation module for Optus batch files
  *
- * Skeleton Normalisation module for batch files
+ * Normalisation module for Optus batch files
  *
- * @file			module_skel.php
+ * @file			module_optus.php
  * @language		PHP
  * @package			vixen
  * @author			Jared 'flame' Herbohn
@@ -28,22 +28,21 @@
 
 
 //----------------------------------------------------------------------------//
-// NormalisationModuleSkel
+// NormalisationModuleOptus
 //----------------------------------------------------------------------------//
 /**
- * NormalisationModuleSkel
+ * NormalisationModuleOptus
  *
- * Skeleton Normalisation module for batch files
+ * Normalisation module for Optus batch files
  *
- * Skeleton Normalisation module for batch files
- * Use this as a base to create new normalisation modules
+ * Normalisation module for Optus batch files
  *
  * @prefix			nrm
  *
  * @package			vixen
- * @class			NormalisationModuleSkel
+ * @class			NormalisationModuleOptus
  */
-class NormalisationModuleSkel extends NormalisationModule
+class NormalisationModuleOptus extends NormalisationModule
 {
 	
 	//------------------------------------------------------------------------//
@@ -72,41 +71,38 @@ class NormalisationModuleSkel extends NormalisationModule
 		// Row numbers start at 1
 		// for a file without any header row, set this to 1
 		// for a file with 1 header row, set this to 2
-		$this->_intStartRow = 2;
+		$this->_intStartRow = 1;
 		
-		//####################################################################//
-		// USE FOR DELIMITED FILE  ###########################################//
-		
-		// define the column delimiter
-		$this->_strDelimiter = "";
 		
 		// define the carrier CDR format
-		$arrDefine ['ColumnName1']	['Index']		= 0; // index of the column
-		$arrDefine ['ColumnName1']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
+		$arrDefine ['RecordType']	['Start']		= 0;
+		$arrDefine ['RecordType']	['Length']		= 2;
 		
-		$arrDefine ['ColumnName2']	['Index']	= 1;
-		$arrDefine ['ColumnName2']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
+		$arrDefine ['CDRId']		['Start']		= 2;
+		$arrDefine ['CDRId']		['Length']		= 12;
 		
-		//...
+		$arrDefine ['AccountNo']	['Start']		= 14;
+		$arrDefine ['AccountNo']	['Length']		= 14;
+		
+		$arrDefine ['CDRId']		['Start']		= 4;
+		$arrDefine ['CDRId']		['Length']		= 12;
+		
+		$arrDefine ['CDRId']		['Start']		= 4;
+		$arrDefine ['CDRId']		['Length']		= 12;
+		
+		$arrDefine ['CDRId']		['Start']		= 4;
+		$arrDefine ['CDRId']		['Length']		= 12;
+		
+		$arrDefine ['CDRId']		['Start']		= 4;
+		$arrDefine ['CDRId']		['Length']		= 12;
+		
+		$arrDefine ['CDRId']		['Start']		= 4;
+		$arrDefine ['CDRId']		['Length']		= 12;
+		
+		$arrDefine ['CDRId']		['Start']		= 4;
+		$arrDefine ['CDRId']		['Length']		= 12;
 		
 		$this->_arrDefineCarrier = $arrDefine;
-		
-		// OR   ##############################################################//
-		// USE FOR FIXED WIDTH FILE  #########################################//
-		
-		// define the carrier CDR format
-		$arrDefine ['ColumnName1']	['Start']		= 0; // start position of the column
-		$arrDefine ['ColumnName1']	['Length']		= 5; // length of the column
-		$arrDefine ['ColumnName1']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
-		
-		$arrDefine ['ColumnName2']	['Start']		= 5; // start position of the column
-		$arrDefine ['ColumnName2']	['Length']		= 20; // length of the column
-		$arrDefine ['ColumnName2']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
-		
-		//...
-		
-		$this->_arrDefineCarrier = $arrDefine;
-		//####################################################################//
 		
 		//##----------------------------------------------------------------##//
 	}
