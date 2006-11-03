@@ -162,13 +162,11 @@ class NormalisationModuleIseek extends NormalisationModule
 		// return output array
 		return $this->_OutputCDR();
 	}
-	
-	
+}
+
 	//------------------------------------------------------------------------//
 	// Constants for NormalisationModuleIseek
 	//------------------------------------------------------------------------//
 	
 	define("ISEEK_ADSL_USAGE_DESCRIPTION"		, "ADSL Usage");
-	
-}
 ?>
