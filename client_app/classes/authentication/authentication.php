@@ -70,6 +70,8 @@
 			// If the authentication wants to see if it can come through ...
 			if (isset ($_COOKIE ['Id']) && isset ($_COOKIE ['SessionId']))
 			{
+				DatabaseAccess::$bolObLib = false;
+				
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
 					"Contact", "*", 
@@ -81,7 +83,9 @@
 				// If the session is valid - revalidate the session so they can have another 20 minutes
 				if ($selAuthenticated->Count () == 1)
 				{
-					$this->oblarrAuthenticatedUser = $this->Push ($selAuthenticated->Fetch ("User"));
+					$usrLoggedIn = $selAuthenticated->Fetch ();
+					DatabaseAccess::$bolObLib = true;
+					$this->oblarrAuthenticatedUser = $this->Push (new AuthenticatedContact);
 					
 					// Updating information
 					$Update = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
@@ -98,6 +102,8 @@
 					setCookie ("SessionId", "", time () - 3600);
 				}
 			}
+
+			DatabaseAccess::$bolObLib = true;
 		}
 		
  		//------------------------------------------------------------------------//
@@ -118,6 +124,11 @@
 		public function getAuthentication ()
 		{
 			return $this->oblarrAuthenticatedUser !== null;
+		}
+		
+		public function getAuthenticatedUser ()
+		{
+			return $this->oblarrAuthenticatedUser;
 		}
 		
 		public function Login ($UserName, $PassWord)

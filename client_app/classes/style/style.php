@@ -50,6 +50,11 @@
  			
  			return $this->xslContent->Push ($dataObject);
  		}
+		
+		public function __toString ()
+		{
+			return '<pre>' . htmlentities ($this->xslContent->Output ()->SaveXML ()) . '</pre>';
+		}
  		
  		public function Output ($strXSLFilename)
  		{

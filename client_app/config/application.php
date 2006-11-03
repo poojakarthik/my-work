@@ -48,8 +48,11 @@ require_once($strWebDir."classes/oblib/dataMultiple/dataSample.class.php");
 // By default, we want ObLib on for this application
 DatabaseAccess::$bolObLib = true;
 
+// load accounts
+require_once($strWebDir."classes/account/account.php");
 // load the authentication module
 require_once($strWebDir."classes/authentication/authentication.php");
+require_once($strWebDir."classes/contact/authenticatedcontact.php");
 // load the XSLT stylesheet module
 require_once($strWebDir."classes/style/style.php");
 
