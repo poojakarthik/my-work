@@ -72,7 +72,7 @@ die();
 	 * @property
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	public $_errErrorHandler;
+	public $errErrorHandler;
 	
 	//------------------------------------------------------------------------//
 	// rptNormalisationReport
@@ -90,7 +90,7 @@ die();
 	 * @property
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	public $_rptNormalisationReport;
+	public $rptNormalisationReport;
 	
 	//------------------------------------------------------------------------//
 	// arrDelinquents
@@ -161,7 +161,8 @@ die();
  	function __construct()
  	{
 	 	// Initialise framework components
-		$this->_errErrorHandler = new ErrorHandler();
+		$this->rptNormalisationReport = new Report("","");
+		$this->errErrorHandler = new ErrorHandler();
 		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
@@ -348,9 +349,9 @@ die();
 	 */
  	function AddToNormalisationReport($strErrorType, $strFailedOn, $strReason = "")
  	{
- 		$strMessage = str_replace("<reason>", $strReason, constant($strErrorType));
+ 		$strMessage = str_replace("<reason>", $strReason, $strErrorType);
  		$strMessage = str_replace("<object>", $strFailedOn, $strMessage);
- 		$this->_rptNormalisationReport->AddMessage($strMessage);
+ 		$this->rptNormalisationReport->AddMessage($strMessage);
  		
  		// Increment the number of times this message has occurred
  		$this->_arrNormaliseReportCount[$strErrorType]++;
@@ -374,7 +375,7 @@ die();
  	function Normalise()
  	{
  		// Select all CDRs ready to be Normalised
- 		$selSelectCDRs = new StatementSelect("CDR INNER JOIN FileImport ON CDR.File = FileImport.Id", Array("CDR.*" => "", "FileImport.FileType" => "FileType", "FileImport.FileName" => "FileName"), $strWhere = "Status = <status>");
+ 		$selSelectCDRs = new StatementSelect("CDR INNER JOIN FileImport ON CDR.File = FileImport.Id", Array("CDR.*" => "", "FileImport.FileType" => "FileType", "FileImport.FileName" => "FileName"), $strWhere = "CDR.Status = <status>");
  		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
@@ -383,14 +384,12 @@ die();
 
  		foreach ($arrCDRList as $arrCDR)
  		{
-			// clean normalised array
-			$arrNormalisedCDR = array();
 			
  			// Is there a normalisation module for this type?
 			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
 			{
 				// normalise
-				$arrNormalisedCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
+				$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
 			}
 			else
 			{
@@ -398,13 +397,13 @@ die();
  				new ExceptionVixen("No normalisation module for carrier" . $arrCDR["CDR.Carrier"] . ".", $this->_errErrorHandler, NO_NORMALISATION_MODULE);
 				$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDR.CDRFilename"] . "(" . $arrCDR["CDR.SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
 				// set the CDR status
-				$arrNormalisedCDR = array("Status" => CDR_CANT_NORMALISE_NO_MODULE);
+				$arrCDR['Status'] = CDR_CANT_NORMALISE_NO_MODULE;
 			}
 			
-			$arrNormalisedCDR['NormalisedOn'] = new MySQLFunction("NOW()");
-			
+			$arrCDR['NormalisedOn'] = new MySQLFunction("NOW()");
+			Debug($arrCDR);
  			// Save CDR back to the DB
-			$updUpdateCDRs->Execute($arrNormalisedCDR); 
+			$updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['CDR.Id'])); 
  		}
  	}
  }

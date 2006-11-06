@@ -844,7 +844,6 @@
 
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
-			echo $strQuery;
 	 		// There was problem preparing the statment
 	 		throw new Exception();
 	 	}
@@ -1419,7 +1418,16 @@
 					}
 					
 					$strType .= $this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"];
-		 			$arrParams[] = $arrData [$mixKey];
+		 			
+					// account for table.column key names
+					if (isset($arrData [$mixKey]))
+					{
+						$arrParams[] = $arrData [$mixKey];
+					}
+					else
+					{
+						$arrParams[] = $arrData [$this->_strTable.".".$mixKey];
+					}
 				}
 	 		}
 	 	}

@@ -31,6 +31,9 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
+// debug mode
+define("DEBUG_MODE"					, TRUE);
+
 // CDR TYPES
 define("CDR_UNTIEL_RSLCOM"			, 1);
 define("CDR_UNTIEL_COMMANDER"		, 2);
@@ -43,5 +46,8 @@ define("FATAL_ERROR_LEVEL"			, 10000);
 
 define("NON_FATAL_TEST_EXCEPTION"	, 1337);
 define("FATAL_TEST_EXCEPTION"		, 80085);
+
+// CDR status
+define("CDR_RATED"						, 201);
 
 ?>

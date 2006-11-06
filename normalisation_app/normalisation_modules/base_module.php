@@ -440,13 +440,14 @@ abstract class NormalisationModule
 	 * Create a new default CDR record
 	 * 
 	 *
+	  * @param	array		arrCDR	CDR array
 	 * @return	VOID					
 	 *
 	 * @method
 	 */
-	 protected function _NewCDR()
+	 protected function _NewCDR($arrCDR)
 	 {
-	 	$this->_arrNormalisedData = Array();
+	 	$this->_arrNormalisedData = $arrCDR;
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -492,10 +493,10 @@ abstract class NormalisationModule
 	 }
 	 
 	//------------------------------------------------------------------------//
-	// _OutputCDR
+	// _ErrorCDR
 	//------------------------------------------------------------------------//
 	/**
-	 * _OutputCDR()
+	 * _ErrorCDR()
 	 *
 	 * Output an error CDR
 	 *
@@ -509,7 +510,8 @@ abstract class NormalisationModule
 	 */
 	 protected function _ErrorCDR($intStatus)
 	 {
-	 	return array("Status" => $intStatus);
+	 	$this->_arrNormalisedData['Status'] = $intStatus;
+		return $this->_arrNormalisedData;
 	 }
 	 
 
