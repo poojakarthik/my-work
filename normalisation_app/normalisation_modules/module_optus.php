@@ -176,7 +176,30 @@ class NormalisationModuleOptus extends NormalisationModule
 		
 		$arrDefine ['CDRStatus']	['Start']		= 340;
 		$arrDefine ['CDRStatus']	['Length']		= 3;
-
+		
+		
+		$arrDefine ['ServiceNo']	['Validate']	= "^\+?\d+$";
+		$arrDefine ['CDRId']		['Validate']	= "^\d+$";
+		$arrDefine ['CallDate']		['Validate']	= "^\d{14}$";
+		$arrDefine ['Units']		['Validate']	= "^\d+$";
+		$arrDefine ['RecordType']	['Validate']	= "^50$";
+		$arrDefine ['PointOrigin']	['Validate']	= "^\d+$";
+		$arrDefine ['PointTarget']	['Validate']	= "^\d+$";
+		$arrDefine ['Amount']		['Validate']	= "^\d+$";
+		
+		/*
+		$arrDefine ['EventId']			['Validate']	= "^\d+$";
+		$arrDefine ['RecordType']		['Validate']	= "^[178]$";
+		$arrDefine ['DateTime']			['Validate']	= "^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$";
+		$arrDefine ['Duration']			['Validate']	= "^\d+$";
+		$arrDefine ['OriginNo']			['Validate']	= "^\+?\d+$";
+		$arrDefine ['DestinationNo']	['Validate']	= "^\+?\d+$";
+		$arrDefine ['ChargedParty']		['Validate']	= "^\+?\d+$";
+		$arrDefine ['Currency']			['Validate']	= "^AUD$";
+		$arrDefine ['Price']			['Validate']	= "^\d+\.\d\d?$";
+		$arrDefine ['CallType']			['Validate']	= "^\d+$";
+		$arrDefine ['RateId']			['Validate']	= "^\d+$";
+		*/
 		
 		$this->_arrDefineCarrier = $arrDefine;
 		
@@ -290,6 +313,14 @@ class NormalisationModuleOptus extends NormalisationModule
 		//$this->_AppendCDR('DestinationCode', $mixValue);
 
 		//##----------------------------------------------------------------##//
+		
+		if (!$this->ApplyOwnership())
+		{
+			$this->_AppendCDR('Status', CDR_BAD_OWNER);
+		}
+		
+		// Validation of Normalised data
+		$this->Validate();
 		
 		// return output array
 		return $this->_OutputCDR();
