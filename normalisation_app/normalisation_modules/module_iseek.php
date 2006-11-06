@@ -101,11 +101,11 @@ class NormalisationModuleIseek extends NormalisationModule
 		// ignore header rows
 		if ((int)$arrCDR["CDR.SequenceNo"] < 1)
 		{
-			return CDR_CANT_NORMALISE_BAD_SEQ_NO;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_BAD_SEQ_NO);
 		}
 		elseif ((int)$arrCDR["CDR.SequenceNo"] < $this->_intStartRow)
 		{
-			return CDR_CANT_NORMALISE_HEADER;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_HEADER);
 		}
 		
 		// covert CDR string to array
@@ -114,7 +114,7 @@ class NormalisationModuleIseek extends NormalisationModule
 		// validation of Raw CDR
 		if (!$this->_ValidateRawCDR())
 		{
-			return CDR_CANT_NORMALISE_RAW;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_RAW);
 		}
 		
 		// build a new output CDR

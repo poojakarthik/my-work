@@ -145,7 +145,7 @@ class NormalisationModuleSkel extends NormalisationModule
 	 * @param	array		arrCDR		Array returned from SELECT query on CDR
 	 *
 	 * @return	mixed					Normalised Data (Array, ready for direct UPDATE
-	 * 									into DB. Returns an error code (constant) on failure
+	 * 									into DB.
 	 *
 	 * @method
 	 */	
@@ -154,11 +154,11 @@ class NormalisationModuleSkel extends NormalisationModule
 		// ignore header rows
 		if ((int)$arrCDR["CDR.SequenceNo"] < 1)
 		{
-			return CDR_CANT_NORMALISE_BAD_SEQ_NO;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_BAD_SEQ_NO);
 		}
 		elseif ((int)$arrCDR["CDR.SequenceNo"] < $this->_intStartRow)
 		{
-			return CDR_CANT_NORMALISE_HEADER;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_HEADER);
 		}
 		
 		// covert CDR string to array
@@ -167,7 +167,7 @@ class NormalisationModuleSkel extends NormalisationModule
 		// validation of Raw CDR
 		if (!$this->_ValidateRawCDR())
 		{
-			return CDR_CANT_NORMALISE_RAW;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_RAW);
 		}
 		
 		// build a new output CDR
@@ -241,7 +241,10 @@ class NormalisationModuleSkel extends NormalisationModule
 		}
 		
 		// Validation of Normalised data
-		$this->Validate();
+		if (!$this->Validate())
+		{
+			$this->_AppendCDR('Status', CDR_CANT_NORMALISE_INVALID);
+		}
 		
 		// return output array
 		return $this->_OutputCDR();

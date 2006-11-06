@@ -121,13 +121,30 @@ class NormalisationModuleCommander extends NormalisationModule
 	function Normalise($arrCDR)
 	{
 
+		// ignore header rows
+		if ((int)$arrCDR["CDR.SequenceNo"] < 1)
+		{
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_BAD_SEQ_NO);
+		}
+		elseif ((int)$arrCDR["CDR.SequenceNo"] < $this->_intStartRow)
+		{
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_HEADER);
+		}
+		
 		// covert CDR string to array
 		$this->_SplitRawCDR($arrCDR["CDR.CDR"]);
-	
+
+		// ignore non-CDR rows
+		$intRowType = (int)$this->_FetchRawCDR('CC');
+		if ($intRowType != 3)
+		{
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+		}
+
 		// validation of Raw CDR
 		if (!$this->_ValidateRawCDR())
 		{
-			return CDR_CANT_NORMALISE_RAW;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_RAW);
 		}
 		
 		// build a new output CDR
@@ -197,7 +214,10 @@ class NormalisationModuleCommander extends NormalisationModule
 		}
 		
 		// Validation of Normalised data
-		$this->Validate();
+		if (!$this->Validate())
+		{
+			$this->_AppendCDR('Status', CDR_CANT_NORMALISE_INVALID);
+		}
 		
 		// return output array
 		return $this->_OutputCDR();

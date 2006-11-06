@@ -214,17 +214,17 @@ class NormalisationModuleOptus extends NormalisationModule
 		// ignore header rows
 		if ((int)$arrCDR["CDR.SequenceNo"] < 1)
 		{
-			return CDR_CANT_NORMALISE_BAD_SEQ_NO;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_BAD_SEQ_NO);
 		}
 		elseif ((int)$arrCDR["CDR.SequenceNo"] < $this->_intStartRow)
 		{
-			return CDR_CANT_NORMALISE_HEADER;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_HEADER);
 		}
 		
 		// Make sure the record is a CDR
 		if ((int)$this->_FetchRawCDR('RecordType') != 50)
 		{
-			return CDR_CANT_NORMALISE_NON_CDR;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 		
 		// covert CDR string to array
@@ -233,7 +233,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		// validation of Raw CDR
 		if (!$this->_ValidateRawCDR())
 		{
-			return CDR_CANT_NORMALISE_RAW;
+			return $this->ErrorCDR(CDR_CANT_NORMALISE_RAW);
 		}
 		
 		// build a new output CDR
@@ -306,7 +306,10 @@ class NormalisationModuleOptus extends NormalisationModule
 		}
 		
 		// Validation of Normalised data
-		$this->Validate();
+		if (!$this->Validate())
+		{
+			$this->_AppendCDR('Status', CDR_CANT_NORMALISE_INVALID);
+		}
 		
 		// return output array
 		return $this->_OutputCDR();
