@@ -214,6 +214,14 @@ class NormalisationModuleSkel extends NormalisationModule
 
 		//##----------------------------------------------------------------##//
 		
+		if (!$this->ApplyOwnership())
+		{
+			$this->_AppendCDR('Status', CDR_BAD_OWNER);
+		}
+		
+		// Validation of Normalised data
+		$this->Validate();
+		
 		// return output array
 		return $this->_OutputCDR();
 	}
