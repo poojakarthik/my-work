@@ -278,16 +278,16 @@ class NormalisationModuleOptus extends NormalisationModule
 		$this->_AppendCDR('Destination', $mixValue);
 		
 		// EndDatetime
-		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('EndDatetime', $mixValue);
+		$mixValue = date("Y-m-d H:i:s", strtotime($this->_FetchRawCDR('CallDate') . " +" . $this->_FetchRawCDR('Units') . "seconds"));
+		$this->_AppendCDR('EndDateTime', $mixValue);
 		
 		// Cost
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue = ((float)$this->_FetchRawCDR('Amount') / 100);
 		$this->_AppendCDR('Cost', $mixValue);
 		
 		// DestinationCode
-		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('DestinationCode', $mixValue);
+		//$mixValue = $this->_FetchRawCDR('');
+		//$this->_AppendCDR('DestinationCode', $mixValue);
 
 		//##----------------------------------------------------------------##//
 		
@@ -295,6 +295,21 @@ class NormalisationModuleOptus extends NormalisationModule
 		return $this->_OutputCDR();
 	}
 	
+	//------------------------------------------------------------------------//
+	// ConvertTime
+	//------------------------------------------------------------------------//
+	/**
+	 * ConvertTime()
+	 *
+	 * Convert time format
+	 *
+	 * Converts a datetime string from carrier's format to our own
+	 *
+	 * @param	string	$strTime	Datetime string to be converted
+	 * @return	string				Converted Datetime string
+	 *
+	 * @method
+	 */
 	function ConvertTime($strTime)
 	{
 		$strReturn 	= substr($strTime, 0, 4);				// Year
