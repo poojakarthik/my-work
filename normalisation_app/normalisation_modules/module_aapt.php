@@ -44,6 +44,40 @@
  */
 class NormalisationModuleAAPT extends NormalisationModule
 {
+	//------------------------------------------------------------------------//
+	// _strFNN
+	//------------------------------------------------------------------------//
+	/**
+	 * _strFNN
+	 *
+	 * The current FNN
+	 *
+	 * The current FNN being applied in the pre-processor
+	 *
+	 * @type	string
+	 *
+	 * @property
+	 * @see	Preprocessor()
+	 */
+	private $_strFNN;
+	
+	//------------------------------------------------------------------------//
+	// _strCallDate
+	//------------------------------------------------------------------------//
+	/**
+	 * _strCallDate
+	 *
+	 * The current Call date
+	 *
+	 * The current Call date being applied in the pre-processor
+	 *
+	 * @type	string
+	 *
+	 * @property
+	 * @see	Preprocessor()
+	 */
+	private $_strCallDate;
+	
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -235,6 +269,44 @@ class NormalisationModuleAAPT extends NormalisationModule
 		
 		// return output array
 		return $this->_OutputCDR();
+	}
+
+	//------------------------------------------------------------------------//
+	// Preprocessor
+	//------------------------------------------------------------------------//
+	/**
+	 * Preprocessor()
+	 *
+	 * Preprocess raw data from the CDR
+	 *
+	 * Preprocess raw data from the CDR
+	 * 
+	 * @param	string		strCDR		CDR line
+	 *
+	 * @return	string					returns original or modified CDR line
+	 *
+	 * @method
+	 */	
+	function Preprocessor($strCDR)
+	{
+		// Determine the type of row
+		if (preg_match("^1", $strCDR))
+		{
+			// FNN Row
+			$this->_strFNN = substr($strCDR, 1, 10);
+		}
+		elseif (preg_match("^2", $strCDR))
+		{
+			// Date Row
+			$this->_strCallDate = substr($strCDR, 1, 10);
+		}
+		elseif (preg_match("^3", $strCDR))
+		{
+			// CDR Row
+			$strCDR .= $this->_strDelimiter . $this->_strFNN . $this->_strDelimiter . $this->_strCallDate;		
+		}
+		
+		return $strCDR;
 	}
 }
 
