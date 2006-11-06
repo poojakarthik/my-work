@@ -110,6 +110,27 @@ class NormalisationModuleSkel extends NormalisationModule
 		
 		//##----------------------------------------------------------------##//
 	}
+	
+	//------------------------------------------------------------------------//
+	// Preprocessor
+	//------------------------------------------------------------------------//
+	/**
+	 * Preprocessor()
+	 *
+	 * Preprocess raw data from the CDR
+	 *
+	 * Preprocess raw data from the CDR
+	 * 
+	 * @param	string		strCDR		CDR line
+	 *
+	 * @return	string					returns original or modified CDR line
+	 *
+	 * @method
+	 */	
+	function Preprocessor($strCDR)
+	{
+		return $strCDR;
+	}
 
 	//------------------------------------------------------------------------//
 	// Normalise

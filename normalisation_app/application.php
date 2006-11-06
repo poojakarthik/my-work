@@ -122,6 +122,22 @@ die();
 	public $_arrNormaliseReportCount;
  	
 	//------------------------------------------------------------------------//
+	// _arrNormalisationModule
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrNormalisationModule
+	 *
+	 * Array of normalisation modules
+	 *
+	 * Array of normalisation modules
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
+	private $_arrNormalisationModule;
+	
+	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -142,6 +158,14 @@ die();
 		$this->_errErrorHandler = new ErrorHandler();
 		set_exception_handler($this->_errErrorHandler, "PHPExceptionCatcher");
 		set_error_handler($this->_errErrorHandler, "PHPErrorCatcher");
+		
+		// Create an instance of each Normalisation module
+ 		$this->_arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
+ 		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
+ 		$this->_arrNormalisationModule[CDR_UNTIEL_COMMANDER]	= new NormalisationModuleCommander();
+ 		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
+ 		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
+		
  	}
  	
  	function Import()
@@ -240,7 +264,24 @@ die();
 			// Set fields that are consistent over all CDRs for this file
 			$arrCDRLine["File"]			= $arrCDRFile["Id"];
 			$arrCDRLine["Carrier"]		= $arrCDRFile["Carrier"];
-
+			
+			// check for a preprocessor
+			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
+			{
+				if (method_exists ($this->_arrNormalisationModule[$arrCDR["FileType"]], "Preprocessor" ))
+				{
+					$bolPreprocessor = TRUE;
+				}
+				else
+				{
+					$bolPreprocessor = FALSE;
+				}
+			}
+			else
+			{
+				$bolPreprocessor = FALSE;
+			}
+			
 			// Insert every CDR Line into the database
 			$fileCDRFile = fopen($arrCDRFile["Location"], "r");
 			$intSequence = 1;
@@ -249,6 +290,16 @@ die();
 				$arrCDRLine["CDR"]			= fgets($fileCDRFile);
 				$arrCDRLine["SequenceNo"]	= $intSequence;
 				$arrCDRLine["Status"]		= CDR_READY;
+				
+				// run Preprocessor
+				if ($bolPreprocessor)
+				{
+					$arrCDRLine["CDR"]		= fgets($fileCDRFile);
+				}
+				else
+				{
+					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDR["FileType"]]->Preprocessor(fgets($fileCDRFile);
+				}
 				
 				$insInsertCDRLine->Execute($arrCDRLine);
 				$intSequence++;
@@ -328,12 +379,7 @@ die();
  		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
- 		// Create an instance of each Normalisation module
- 		$nrmRSLCOM		= new NormalisationModuleRSLCOM();
- 		$nrmIseek		= new NormalisationModuleIseek();
- 		$nrmCommander	= new NormalisationModuleCommander();
- 		$nrmAAPT		= new NormalisationModuleAAPT();
- 		$nrmOptus		= new NormalisationModuleOptus();
+ 		
  		
  		foreach ($arrCDRList as $arrCDR)
  		{
