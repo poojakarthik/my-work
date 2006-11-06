@@ -1,0 +1,16 @@
+	
+	body
+	{
+		background-color:		#FFFFFF;
+		color:				#006599;
+		font-family:			"Arial", "Lucida Grande", "Serif";
+	}
+	
+	#Content
+	{
+		border-style:			solid;
+		border-color:			#CC0000;
+		border-width:			1px;
+		
+		padding:			20px;
+	}
