@@ -45,10 +45,9 @@ require_once($strWebDir."classes/oblib/dataMultiple/dataCollection.abstract.php"
 require_once($strWebDir."classes/oblib/dataMultiple/dataEnumerative.abstract.php");
 require_once($strWebDir."classes/oblib/dataMultiple/dataSample.class.php");
 
-// By default, we want ObLib on for this application
-DatabaseAccess::$bolObLib = true;
-
 // load accounts
+require_once($strWebDir."classes/service/service.php");
+require_once($strWebDir."classes/invoice/invoiceservice.php");
 require_once($strWebDir."classes/invoice/invoice.php");
 require_once($strWebDir."classes/account/account.php");
 // load the authentication module

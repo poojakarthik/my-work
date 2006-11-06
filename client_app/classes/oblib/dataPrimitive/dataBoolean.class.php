@@ -11,7 +11,7 @@
 		
 		public function setValue ($nodeValue)
 		{
-			parent::setValue (($nodeValue == true) ? "true" : "false");
+			parent::setValue (($nodeValue == true) ? TRUE : FALSE);
 		}
 		
 		public function setTrue ()
@@ -22,6 +22,16 @@
 		public function setFalse ()
 		{
 			$this->setValue (false);
+		}
+		
+		public function isTrue ()
+		{
+			return $this->getValue () == TRUE;
+		}
+		
+		public function isFalse ()
+		{
+			return $this->getValue () == FALSE;
 		}
 	}
 	

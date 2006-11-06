@@ -129,22 +129,6 @@
  */
  abstract class DatabaseAccess
  {
-	//------------------------------------------------------------------------//
-	// bolObLib	
-	//------------------------------------------------------------------------//
-	/**
-	 * bolObLib
-	 *
-	 * Boolean for using ObLib
-	 *
-	 * Boolean to define whether or not we want to automatically convert to ObLib objects from the database
-	 *
-	 * @type		Boolean
-	 * @static
-	 * @property
-	 */
-	public static $bolObLib = false;
-	
  	//------------------------------------------------------------------------//
 	// DatabaseAccess() - Constructor
 	//------------------------------------------------------------------------//
@@ -726,6 +710,25 @@
 	 * @see	<MethodName()||typePropertyName>
 	 */
  	private $_datMetaData = Array();	
+	
+	//------------------------------------------------------------------------//
+	// _bolObLib
+	//------------------------------------------------------------------------//
+	/**
+	 * _bolObLib
+	 *
+	 * Evaluates whether or not we want oblib objects or an array returned
+	 *
+	 * Evaluates whether or not we want oblib objects returned or if we would
+	 * prefer to use an array. In order to set this value as "TRUE", you need
+	 * to call useObLib (TRUE). By default, we do not want to use ObLib
+	 *
+	 * @type	boolean
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+ 	private $_bolObLib = FALSE;
 
  
 	//------------------------------------------------------------------------//
@@ -843,6 +846,28 @@
 	 		throw new Exception();
 	 	}
 	}
+	
+	//------------------------------------------------------------------------//
+	// useObLib()
+	//------------------------------------------------------------------------//
+	/**
+	 * useObLib()
+	 *
+	 * Changes our ObLib status
+	 *
+	 * Changes our flag to specify whether or not we are using ObLib
+	 *
+	 * @param		boolean	bolObLib		TRUE: We are using ObLib
+	 *										FALSE: We are not using ObLib
+	 * 
+	 * @return		void
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	 public function useObLib ($bolObLib)
+	 {
+	 	$this->_bolObLib = ($bolObLib === TRUE);
+	 }
 
 	//------------------------------------------------------------------------//
 	// Execute()
@@ -936,35 +961,37 @@
 	 *
 	 * Fetches the next row of data from the resultset as an Associative Array
 	 *
+	 * @param		data	&oblobjPushObject	An object that is inherited from `data` which
+	 *											contains the method "Push". This will be used
+	 *											to insert information into the object
+	 *
 	 * @return		mixed					Associative array of columns and values
 	 * 										Key is the ColumnName, value is its value
 	 * 										or FALSE if there was no next row
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function Fetch($strObLibTagName=null)
+	function Fetch (&$oblobjPushObject=null)
 	{
 		// Firstly, if we have a row to pull ... pull it (and put it into $this->_arrBoundResults)
 		if($this->_stmtSqlStatment->fetch())
 		{
 			// If we are using ObLib, we want to turn everything into an oblib object
-			if (DatabaseAccess::$bolObLib === true)
+			if ($this->_bolObLib === TRUE)
 			{
 				// We're up to here which means that we're using ObLib ...
 				
 				// Because we're using ObLib, we need the first parameter to be called.
-				// In this instance, this means we need $strObLibTagName to be a string and not empty
-				if (!is_string ($strObLibTagName) || empty ($strObLibTagName))
+				// In this instance, this means we need $oblobjPushObject to be an
+				// inheritance of `data` and contain the method "Push"
+				if (!is_subclass_of ($oblobjPushObject, 'data') || !method_exists ($oblobjPushObject, 'Push'))
 				{
 					throw new Exception (
 						'You are using Oblib ... Therefore you must have ' .
-						'1 parameter (string $strObLibTagName) with the name of the returning tag'
+						'1 parameter ([inherited of] data $oblobjPushObject) ' .
+						'with a method named `Push` where the information will be returned'
 					);
 				}
-				
-				// oblarr = ObLib Array. Eveythough results (rows) are hypothetically objects, 
-				// we need the functionality of an array here.
-				$oblarrArray = new dataArray ($strObLibTagName);
 				
 				// Start at 0 and loop through all the fields in the meta data
 				$i=0;
@@ -974,12 +1001,12 @@
 					// can have to specify that Id fields are Integers
 					if ($fldField->name == "Id")
 					{
-						$oblarrArray->Push (new dataInteger ("Id", $this->_arrBoundResults ["Id"]));
+						$oblobjPushObject->Push (new dataInteger ("Id", $this->_arrBoundResults ["Id"]));
 					}
 					else
 					{
 						// Create a new instance of an oblib object using the ObLib parameter of the database definition
-						$oblarrArray->Push
+						$oblobjPushObject->Push
 						(
 							new $this->db->arrTableDefine[$fldField->table]["Column"][$fldField->name]["ObLib"]
 							(
@@ -989,8 +1016,7 @@
 					}
 				}
 				
-				// Return the oblib array
-				return $oblarrArray;
+				return true;
 			}
 			else
 			{

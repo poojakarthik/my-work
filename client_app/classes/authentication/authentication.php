@@ -70,8 +70,6 @@
 			// If the authentication wants to see if it can come through ...
 			if (isset ($_COOKIE ['Id']) && isset ($_COOKIE ['SessionId']))
 			{
-				DatabaseAccess::$bolObLib = false;
-				
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
 					"Contact", "*", 
@@ -84,7 +82,6 @@
 				if ($selAuthenticated->Count () == 1)
 				{
 					$usrLoggedIn = $selAuthenticated->Fetch ();
-					DatabaseAccess::$bolObLib = true;
 					$this->oblarrAuthenticatedUser = $this->Push (new AuthenticatedContact);
 					
 					// Updating information
@@ -102,8 +99,6 @@
 					setCookie ("SessionId", "", time () - 3600);
 				}
 			}
-
-			DatabaseAccess::$bolObLib = true;
 		}
 		
  		//------------------------------------------------------------------------//
@@ -133,9 +128,6 @@
 		
 		public function Login ($UserName, $PassWord)
 		{
-			// turn off oblib so we can treat this as an array
-			DatabaseAccess::$bolObLib = false;
-			
 			// get the ID of the person who we want to login as
 			// (identified by UserName + PassWord)
 			// if no rows are returned, we have do not have 
@@ -154,9 +146,6 @@
 			// So store the person's ID in a field
 			$arrFetch = $selSelectStatement->Fetch ();
 			$Id = $arrFetch ['Id'];
-			
-			// Turn ObLib back on
-			DatabaseAccess::$bolObLib = true;
 			
 			// Generate a new session ID
 			$SessionId = sha1(uniqid(rand(), true));

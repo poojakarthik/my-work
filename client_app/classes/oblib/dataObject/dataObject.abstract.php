@@ -10,7 +10,7 @@
 			parent::__construct ($nodeName);
 		}
 		
-		protected function Push (data &$nodeItem)
+		public function Push (data &$nodeItem)
 		{
 			if (!is_object ($nodeItem))
 			{
@@ -32,12 +32,12 @@
 			return $this->_DATA [$nodeItem->tagName ()];
 		}
 		
-		protected function Pop (data $nodeItem)
+		public function Pop (data $nodeItem)
 		{
 			unset ($this->_DATA [$nodeItem->tagName ()]);
 		}
 		
-		protected function Pull ($indexID)
+		public function Pull ($indexID)
 		{
 			return (isset ($this->_DATA [$indexID]) ? $this->_DATA [$indexID] : null);
 		}

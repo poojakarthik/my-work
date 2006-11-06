@@ -58,6 +58,11 @@
 					$_FIELD ['RefType'] = "i";
 					$_FIELD ['ObLib'] = "dataInteger";
 				}
+				
+				if (preg_match ("/tinyint\(1\)/", $_FIELD ['Type'])) {
+					$_FIELD ['RefType'] = "i";
+					$_FIELD ['ObLib'] = "dataBoolean";
+				}
 
 				if (preg_match ("/float/", $_FIELD ['Type'])) {
 					$_FIELD ['RefType'] = "d";
