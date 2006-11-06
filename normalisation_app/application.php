@@ -27,8 +27,14 @@
 
 // Application entry point - create an instance of the application object
 $appNormalise = new ApplicationNormalise();
+
+// Import lines from CDR files into the database
 $appNormalise->Import();
+
+// Normalise CDR records in the database
 $appNormalise->Normalise();
+
+// finished
 echo("\n-- End of Normalisation --\n");
 die();
 
@@ -266,20 +272,13 @@ die();
 			$arrCDRLine["Carrier"]		= $arrCDRFile["Carrier"];
 			
 			// check for a preprocessor
+			$bolPreprocessor = FALSE;
 			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
 			{
 				if (method_exists ($this->_arrNormalisationModule[$arrCDR["FileType"]], "Preprocessor" ))
 				{
 					$bolPreprocessor = TRUE;
 				}
-				else
-				{
-					$bolPreprocessor = FALSE;
-				}
-			}
-			else
-			{
-				$bolPreprocessor = FALSE;
 			}
 			
 			// Insert every CDR Line into the database
@@ -379,36 +378,28 @@ die();
  		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
- 		
- 		
  		foreach ($arrCDRList as $arrCDR)
  		{
- 			// Is there a normalisation module for this type?  If not, report an error.  If so, then normalise.
- 			switch ($arrCDR["FileType"])
- 			{
- 				case CDR_UNTIEL_RSLCOM:
- 					// TODO
- 					break;
- 				case CDR_UNTIEL_COMMANDER:
- 					// TODO
- 					break;
- 				case CDR_OPTUS_STANDARD:
- 					// TODO
- 					break;
- 				case CDR_AAPT_STANDARD:
- 					// TODO
- 					break;
- 				case CDR_ISEEK_STANDARD:
- 					// TODO
- 					break;
- 				case default:
- 					new ExceptionVixen("No normalisation module for carrier" . $arrCDR["CDR.Carrier"] . ".", $this->_errErrorHandler, NO_NORMALISATION_MODULE);
-					$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDR.CDRFilename"] . "(" . $arrCDR["CDR.SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
- 			}
- 			
- 			// Apply ownership to the CDR.  What does this mean exacly?  Link up FNNs?
- 			
+			// clean normalised array
+			$arrNormalisedCDR = array();
+			
+ 			// Is there a normalisation module for this type?
+			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
+			{
+				// normalise
+				$arrNormalisedCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR)();
+			}
+			else
+			{
+				// there a normalisation module for this type, report an error
+ 				new ExceptionVixen("No normalisation module for carrier" . $arrCDR["CDR.Carrier"] . ".", $this->_errErrorHandler, NO_NORMALISATION_MODULE);
+				$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDR.CDRFilename"] . "(" . $arrCDR["CDR.SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
+				// set the CDR status
+				$arrNormalisedCDR = array("Status" => CDR_CANT_NORMALISE_NO_MODULE);
+			}
+			
  			// Save CDR back to the DB
+			// TODO!!!!
  		}
  		
  		// TODO: Update any CDR File entries that have been fully normalised

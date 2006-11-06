@@ -514,6 +514,27 @@ abstract class NormalisationModule
 	 	return $this->_arrNormalisedData;
 	 }
 	 
+	//------------------------------------------------------------------------//
+	// _OutputCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * _OutputCDR()
+	 *
+	 * Output an error CDR
+	 *
+	 * Output an error CDR
+	 * 
+	 * @param	int		intStatus		status to set in CDR
+	 *
+	 * @return	array					
+	 *
+	 * @method
+	 */
+	 protected function _ErrorCDR($intStatus)
+	 {
+	 	return array("Status" => $intStatus);
+	 }
+	 
 
 	//------------------------------------------------------------------------//
 	// ApplyOwnership
