@@ -307,7 +307,7 @@ class NormalisationModuleOptus extends NormalisationModule
 }
 
 	//------------------------------------------------------------------------//
-	// Constants for NormalisationModuleSkel
+	// Constants for NormalisationModuleOptus
 	//------------------------------------------------------------------------//
 	
 	// define any constants here that will only ever be used internaly by 
