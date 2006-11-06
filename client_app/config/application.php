@@ -49,6 +49,7 @@ require_once($strWebDir."classes/oblib/dataMultiple/dataSample.class.php");
 DatabaseAccess::$bolObLib = true;
 
 // load accounts
+require_once($strWebDir."classes/invoice/invoice.php");
 require_once($strWebDir."classes/account/account.php");
 // load the authentication module
 require_once($strWebDir."classes/authentication/authentication.php");
