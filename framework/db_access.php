@@ -790,9 +790,10 @@
 		 			$strQuery .= " AS ";
 		 			$strQuery .= current($mixColumns);
 		 		}
-		 		
+		 		$strQuery .= ", ";
 				next($mixColumns);
 		 	}
+			$strQuery = substr($strQuery, 0, -2);
  		}
  		elseif (is_array($mixColumns))
  		{
@@ -802,9 +803,10 @@
 		 	// Add the columns 	
 		 	while (key($mixColumns) != null)
 		 	{
-		 		$strQuery .= current($mixColumns);
+		 		$strQuery .= current($mixColumns).", ";
 				next($mixColumns);
 		 	}
+			$strQuery = substr($strQuery, 0, -2);
  		}
  		else
  		{
@@ -814,7 +816,7 @@
  		}
 
 	 	// Add the FROM line
-	 	$strQuery .= "FROM " . $strTables . "\n";
+	 	$strQuery .= " FROM " . $strTables . "\n";
 
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")
@@ -842,6 +844,7 @@
 
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
+			echo $strQuery;
 	 		// There was problem preparing the statment
 	 		throw new Exception();
 	 	}

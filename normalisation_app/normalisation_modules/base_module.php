@@ -180,7 +180,7 @@ abstract class NormalisationModule
 	 */
 	protected $_errErrorHandler;
 	
-	function __construct($errErrorHandler, $rptNormalisationReport)
+	function __construct($errErrorHandler=NULL, $rptNormalisationReport=NULL)
 	{
 		// The purpose of this is to have a generic constructor for all Normalisation
 		// modules.  It will never be called to instanciate an object of type
@@ -260,26 +260,6 @@ abstract class NormalisationModule
 		return true;
 	}
 	
-	//------------------------------------------------------------------------//
-	// ValidateRaw
-	//------------------------------------------------------------------------//
-	/**
-	 * ValidateRaw()
-	 *
-	 * Validate Raw Data against file desctriptions
-	 *
-	 * Validate Raw Data against file desctriptions
-	 *
-	 * @return	boolean				true	: Data matches
-	 * 								false	: Data doesn't match
-	 *
-	 * @method
-	 * @see	<MethodName()||typePropertyName>
-	 */
-	abstract function ValidateRaw()
-	{
-		// Abstract methods don't have an implementation 
-	}
 
 	//------------------------------------------------------------------------//
 	// Normalise
@@ -299,10 +279,7 @@ abstract class NormalisationModule
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */	
-	abstract function Normalise($arrCDR)
-	{
-		// Abstract methods don't have an implementation
-	}
+	abstract function Normalise($arrCDR);
 	
 	//------------------------------------------------------------------------//
 	// RemoveAusCode

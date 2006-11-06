@@ -162,15 +162,15 @@ die();
  	{
 	 	// Initialise framework components
 		$this->_errErrorHandler = new ErrorHandler();
-		set_exception_handler($this->_errErrorHandler, "PHPExceptionCatcher");
-		set_error_handler($this->_errErrorHandler, "PHPErrorCatcher");
+		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
+		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
 		// Create an instance of each Normalisation module
- 		$this->_arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
+ 		//$this->_arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
  		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
- 		$this->_arrNormalisationModule[CDR_UNTIEL_COMMANDER]	= new NormalisationModuleCommander();
- 		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
- 		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
+ 		//$this->_arrNormalisationModule[CDR_UNTIEL_COMMANDER]	= new NormalisationModuleCommander();
+ 		//$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
+ 		//$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
 		
  	}
  	
@@ -213,7 +213,7 @@ die();
 					$this->InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles);
 
 					break;
-				case default:
+				default:
 					new ExceptionVixen("Unexpected CDR File Status", $this->_errErrorHandler, UNEXPECTED_CDRFILE_STATUS);
 			}
 		}
@@ -293,11 +293,11 @@ die();
 				// run Preprocessor
 				if ($bolPreprocessor)
 				{
-					$arrCDRLine["CDR"]		= fgets($fileCDRFile);
+					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDR["FileType"]]->Preprocessor(fgets($fileCDRFile));
 				}
 				else
 				{
-					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDR["FileType"]]->Preprocessor(fgets($fileCDRFile));
+					$arrCDRLine["CDR"]		= fgets($fileCDRFile);
 				}
 				
 				$insInsertCDRLine->Execute($arrCDRLine);

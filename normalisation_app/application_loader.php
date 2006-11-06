@@ -46,7 +46,7 @@
  * @variable
  * @package	framework
  */
- $strFrameworkDir		= "../framework"; 
+ $strFrameworkDir		= "../framework/"; 
  
 //----------------------------------------------------------------//
 // strApplicationDir
@@ -96,10 +96,21 @@ require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 
+// load application modules
+require_once($strApplicationDir."normalisation_modules/base_module.php");
+//require_once($strApplicationDir."normalisation_modules/module_aapt.php");
+//require_once($strApplicationDir."normalisation_modules/module_commander.php");
+require_once($strApplicationDir."normalisation_modules/module_iseek.php");
+//require_once($strApplicationDir."normalisation_modules/module_optus.php");
+//require_once($strApplicationDir."normalisation_modules/module_rslcom.php");
+
+
 // load application 
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");
 require_once($strApplicationDir."database_define.php");
 require_once($strApplicationDir."application.php");
+
+
  
  ?>
