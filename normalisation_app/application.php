@@ -297,7 +297,7 @@ die();
 				}
 				else
 				{
-					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDR["FileType"]]->Preprocessor(fgets($fileCDRFile);
+					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDR["FileType"]]->Preprocessor(fgets($fileCDRFile));
 				}
 				
 				$insInsertCDRLine->Execute($arrCDRLine);
@@ -305,8 +305,8 @@ die();
 			}
 			fclose($fileCDRFile);
 			
-			// Set the File status to "Imported"
-			$arrCDRFile["Status"]		= CDRFILE_IMPORTED;
+			// Set the File status to "Normalised"
+			$arrCDRFile["Status"]		= CDRFILE_NORMALISED;
 			$arrCDRFile["ImportedOn"]	= "NOW()";
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 			$this->AddToNormalisationReport(CDR_FILE_IMPORT_SUCCESS, $arrCDRFile["Location"]);
@@ -378,6 +378,9 @@ die();
  		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
+ 		$updUpdateCDRs = new StatementUpdate("CDR", "Id = <CdrId>"); 		
+
+
  		foreach ($arrCDRList as $arrCDR)
  		{
 			// clean normalised array
@@ -387,7 +390,7 @@ die();
 			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
 			{
 				// normalise
-				$arrNormalisedCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR)();
+				$arrNormalisedCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
 			}
 			else
 			{
@@ -398,19 +401,11 @@ die();
 				$arrNormalisedCDR = array("Status" => CDR_CANT_NORMALISE_NO_MODULE);
 			}
 			
- 			// Save CDR back to the DB
-			// TODO!!!!
- 		}
- 		
- 		// TODO: Update any CDR File entries that have been fully normalised
-		$selSelectCDRFiles = new StatementSelect("FileImport", "*", "Status = <status>");
-		$selSelectCDRFiles->Execute(Array("status" => CDRFILE_IMPORTED));
-		$arrCDRFiles = $selSelectCDRFiles->FetchAll();
-		$updUpdateFileStatus = new StatementUpdate();
-		foreach ($arrCDRFiles as $arrFile)
-		{
+			$arrNormalisedCDR['NormalisedOn'] = new MySQLFunction("NOW()");
 			
-		}
+ 			// Save CDR back to the DB
+			$updUpdateCDRs->Execute($arrNormalisedCDR); 
+ 		}
  	}
  }
 ?>
