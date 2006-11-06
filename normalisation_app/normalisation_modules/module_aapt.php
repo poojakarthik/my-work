@@ -79,7 +79,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['OriginatingCSI']	['Index']		= 2;	// Up to 10 digit numeric
 		$arrDefine ['OriginatingCity']	['Index']		= 3;	// 1-13 characters
 		$arrDefine ['OriginatingState']	['Index']		= 4;	// 2-3 characters
-		
+
 		$arrDefine ['CallDetails']		['Index']		= 5;	// Contains:
 		$arrDefine ['CallTime']			['Index']		= 5;	// 	HHMMSS
 		$arrDefine ['CallTime']			['Start']		= 0;
@@ -90,16 +90,18 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['RevenueCallType']	['Index']		= 5;	// 	3 Character  right justified space filled
 		$arrDefine ['RevenueCallType']	['Start']		= 7;
 		$arrDefine ['RevenueCallType']	['Length']		= 3;
-																
+
 		$arrDefine ['LocatiotCallType']	['Index']		= 6;	// 3 digits
 		$arrDefine ['RateTable']		['Index']		= 7;	// 2-5 digits
 		$arrDefine ['Destination']		['Index']		= 8;	// city called
-		$arrDefine ['NumberDialed']		['Index']		= 9;	// digits dialled by customer
+		$arrDefine ['NumberDialled']	['Index']		= 9;	// digits dialled by customer
 		$arrDefine ['Duration']			['Index']		= 10;	// HHHH:MM:SS
 		$arrDefine ['CallCharge']		['Index']		= 11;	// DDDDDDDDCC
 		$arrDefine ['BandStep']			['Index']		= 12;	// 4 digit distance step code  
 		$arrDefine ['GSTFlag']			['Index']		= 13;	// One Character flag contains “N”o or “Y”es
 		$arrDefine ['RateDate']			['Index']		= 14;	// DD/MM/CCYY
+		$arrDefine ['FNN']				['Index']		= 15;	// FNN (added by pre-processor)
+		$arrDefine ['CallDate']			['Index']		= 16;	// Call Date (added by pre-processor)
 		
 		//$arrDefine ['']	['Validate']	= "";
 		
@@ -165,8 +167,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		//--------------------------------------------------------//
 		
 		// FNN
-		// TODO !!!! - where do we get this from ????
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue = $this->_FetchRawCDR('FNN');
 		$this->_AppendCDR('FNN', $mixValue);
 		
 		// CarrierRef
@@ -174,9 +175,15 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime
-		$mixValue = $this->_FetchRawCDR('');
-		//$this->_AppendCDR('StartDatetime', $mixValue);
+		$mixValue = $this->_FetchRawCDR('CallDate');
+		$mixValue .= $this->_FetchRawCDR('CallTime');
+		$mixValue = ConvertTime($mixValue);
+		$this->_AppendCDR('StartDateTime', $mixValue);
 		
+		// EndDateTime
+	 	$mixValue = date("Y-m-d H:i:s", strtotime($mixValue . " +" . $this->_FetchRawCDR('Duration') . "seconds"));
+		$this->_AppendCDR('EndDateTime', $mixValue);
+	
 		// Units
 		//TODO !!!! - this will only work with timed items (like calls)
 		$arrValue = explode(':', $this->_FetchRawCDR('Duration'));
@@ -184,8 +191,8 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$this->_AppendCDR('Units', $intValue);
 		
 		// Description
-		$mixValue = $this->_FetchRawCDR('');
-		//$this->_AppendCDR('Description', $mixValue);
+		$mixValue = $this->_FetchRawCDR('OriginatingCity') . " to " . $this->_FetchRawCDR('Destination');
+		$this->_AppendCDR('Description', $mixValue);
 		
 		// RecordType
 		$mixValue = $this->_FetchRawCDR(''); // needs to match database
@@ -201,26 +208,26 @@ class NormalisationModuleAAPT extends NormalisationModule
 		//--------------------------------------------------------//
 
 		// Source
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue = $this->_FetchRawCDR('OriginatingCLI');
 		//$this->_AppendCDR('Source', $mixValue);
 		
 		// Destination
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue = $this->_FetchRawCDR('NumberDialled');
 		//$this->_AppendCDR('Destination', $mixValue);
 		
-		// EndDatetime
-		$mixValue = $this->_FetchRawCDR('');
-		//$this->_AppendCDR('EndDatetime', $mixValue);
-		
 		// Cost
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue = $this->_FetchRawCDR('CallCharge');
 		//$this->_AppendCDR('Cost', $mixValue);
-		
-		// DestinationCode
-		$mixValue = $this->_FetchRawCDR('');
-		//$this->_AppendCDR('DestinationCode', $mixValue);
 
 		//##----------------------------------------------------------------##//
+		
+		if (!$this->ApplyOwnership())
+		{
+			$this->_AppendCDR('Status', CDR_BAD_OWNER);
+		}
+		
+		// Validation of Normalised data
+		$this->Validate();
 		
 		// return output array
 		return $this->_OutputCDR();
