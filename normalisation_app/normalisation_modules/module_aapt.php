@@ -290,17 +290,17 @@ class NormalisationModuleAAPT extends NormalisationModule
 	function Preprocessor($strCDR)
 	{
 		// Determine the type of row
-		if (preg_match("^1", $strCDR))
+		if (preg_match(ROW_FNN, $strCDR))
 		{
 			// FNN Row
 			$this->_strFNN = substr($strCDR, 1, 10);
 		}
-		elseif (preg_match("^2", $strCDR))
+		elseif (preg_match(ROW_DATE, $strCDR))
 		{
 			// Date Row
 			$this->_strCallDate = substr($strCDR, 1, 10);
 		}
-		elseif (preg_match("^3", $strCDR))
+		elseif (preg_match(ROW_CDR, $strCDR))
 		{
 			// CDR Row
 			$strCDR .= $this->_strDelimiter . $this->_strFNN . $this->_strDelimiter . $this->_strCallDate;		
@@ -311,7 +311,9 @@ class NormalisationModuleAAPT extends NormalisationModule
 }
 
 	//------------------------------------------------------------------------//
-	// Constants for NormalisationModuleSkel
+	// Constants for NormalisationModuleAAPT
 	//------------------------------------------------------------------------//
-	
+	define("ROW_FNN",	"^1");
+	define("ROW_DATE",	"^2");
+	define("ROW_CDR",	"^3");
 ?>
