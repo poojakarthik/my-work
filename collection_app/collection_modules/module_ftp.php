@@ -91,6 +91,21 @@
 	 */
 	private $_arrFileListing;
  	
+	//------------------------------------------------------------------------//
+	// _selFileExists
+	//------------------------------------------------------------------------//
+	/**
+	 * _selFileExists
+	 *
+	 * StatementSelect used to tell if file is already downloaded
+	 *
+	 * StatementSelect used to tell if file is already downloaded
+	 *
+	 * @type		StatementSelect
+	 *
+	 * @property
+	 */
+ 	private $_selFileExists;
  	
  	//------------------------------------------------------------------------//
 	// __construct
@@ -108,7 +123,7 @@
 	 */
  	function __construct()
  	{
- 		// TODO
+ 		$this->selFileExists = new StatementSelect("FileDownload", "Id", "FileName = <filename>");
  	}
  	
  	//------------------------------------------------------------------------//
@@ -208,20 +223,29 @@
 			$arrCurrent = current($this->_arrFileListing);
 			if ($arrCurrent['Type'] == "-")
 			{
-				// We have a usable file, so download and return the filename
-				ftp_get($this->_resConnection, current($arrDefine['Dir']).key($this->_arrFileListing), key($this->_arrFileListing));
-				return key($this->_arrFileListing);
+				// Check that we don't already have this file
+				if(!$this->_selFileExists->Execute(Array('filename' => key($this->_arrFileListing))))
+				{
+					// We have a usable file, so download and return the filename
+					ftp_get($this->_resConnection, current($this->arrDefine['Dir']).key($this->_arrFileListing), key($this->_arrFileListing));
+					return key($this->_arrFileListing);					
+				}
+				else
+				{
+					// If the file is already downloaded, call Download() again
+					$this->Download($strDestination);
+				}
 			}
 			else
 			{
 				// Recursively call Download() until a usable file is found
-				return Download($strDestination);
+				return $this->Download($strDestination);
 			}
 		}
 		elseif (next($this->_arrDefine['Dir']))
 		{
 			// Change to the next directory and call Download() again
-			return Download($strDestination);
+			return $this->Download($strDestination);
 		}
 		else
 		{
