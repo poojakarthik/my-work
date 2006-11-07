@@ -112,7 +112,11 @@ die();
 		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
-		// Create an instance of each Collection module
+		// instanciate collection downloaders
+		$this->_arrDownloader[COLLECTION_TYPE_FTP] = new FtpDownloadModule();
+		
+		// Define Collection Targets
+		$this->_arrCollectionModule["Unitel"]	["Name"]		= "Unitel";
  		$this->_arrCollectionModule["Unitel"]	["Type"]		= COLLECTION_TYPE_FTP;
  		$this->_arrCollectionModule["Unitel"]	["Server"]		= UNITEL_SERVER;
  		$this->_arrCollectionModule["Unitel"]	["Username"]	= UNITEL_USER;
@@ -122,6 +126,7 @@ die();
 		/*
 		 * Skeleton Collection Definition
 		 * 
+		 *	$this->_arrCollectionModule["MODULE"]	["Name"]				= "Friendly Name";
 		 *  $this->_arrCollectionModule["MODULE"]	["Type"]				= COLLECTION_TYPE;
  		 *	$this->_arrCollectionModule["MODULE"]	["Server"]				= SERVER;
  		 *	$this->_arrCollectionModule["MODULE"]	["Username"]			= USERNAME;
@@ -148,36 +153,256 @@ die();
 	 */
  	function Collect()
  	{
- 		// create FTP downloader
-		$ftpDownloader = new FtpDownloadModule();
-		
 		// For each file definition...
  		foreach ($this->_arrCollectionModule as $arrModule)
  		{
-			// set current connection
-			$this->_arrCurrentConnection = $arrModule;
+			// set current module
+			$this->_arrCurrentModule = $arrModule;
 			
-			// connect
-			$ftpDownloader->Connect($arrModule);
-			
-			// download
-			while($strFilename = $ftpDownloader->Download(TEMP_DOWNLOAD_DIR)) // returns false once all files have been downloaded 
+			// set download module
+			$dldDownloader = $this->_arrDownloader[$arrModule['Type']];
+			if (!$dldDownloader)
 			{
-				// record download in db FileDownload
-				// TODO
-				
-				// unzip files
-				$arrFiles = $this->Unzip($strFilename); // returns array of file locations
-				
-				// import files 
-				$this->Import($arrFiles);
+				// no collection module
+				// TODO!!!!
+				// report
+				//TODO!!!! "MISSING COLLECTION MODULE : {$arrModule['Name']}"
+				continue;
 			}
 			
-			// disconnect
-			$ftpDownloader->Disconnect();
+			// connect
+			if(!$dldDownloader->Connect($arrModule))
+			{
+				// report
+				//TODO!!!! "CONNECTION FAILED : {$arrModule['Name']}"
+			}
+			else
+			{
+				// report
+				//TODO!!!! "Connected to : {$arrModule['Name']}"
+				
+				// download
+				$intCounter = 0;
+				while($strFileLocation = $dldDownloader->Download(TEMP_DOWNLOAD_DIR)) 
+				{
+					// set current download file
+					$this->_arrCurrentDownloadFile = Array("Location" => $strFileLocation, "Status" => RAWFILE_DOWNLOADED);
+						
+					// unzip files
+					$arrFiles = $this->Unzip($strFilename); // always returns array of file locations (or FALSE)
+					
+					// record download in db (FileDownload)
+					// TODO!!!!
+					
+					// import files 
+					$this->Import($arrFiles);
+					
+					// record download in db (FileDownload)
+					// TODO!!!! Status = downloaded
+					
+					// increment counter
+					$intCounter++;
+				}
+				
+				// report
+				//TODO!!!! "$intCounter files downloaded from : {$arrModule['Name']}"
+				
+				// disconnect
+				$dldDownloader->Disconnect();
+			}
+		}
+	}
+
+ 	//------------------------------------------------------------------------//
+	// Import
+	//------------------------------------------------------------------------//
+	/**
+	 * Import()
+	 *
+	 * Import Downloaded CDR Files
+	 *
+	 * Copies file to permanent storage, determine file type & uniqueness
+	 * 
+	 * @param	array	$arrFiles		Files to be imported
+	 * 
+	 * @method
+	 */
+	function Import($arrFiles)
+	{
+		if (is_array($arrFiles))
+		{
+			foreach ($arrFiles as $strFileLocation => $strFileName)
+			{				
+				// set current import file
+				$this->_arrCurrentImportFile = Array("Location" => $strFileLocation,"FileName" => $strFileName);
+				
+				// set status to imported (any errors will change this later)
+				$this->_arrCurrentImportFile['Status'] = CDRFILE_WAITING;
+				
+				// copy file to final location
+				$strFileLocation = $this->_StoreImportFile();
+				
+				// find file type
+				$strFileType = $this->_FileType();
+				
+				// check uniqueness
+				$strHash = $this->_IsUnique();
+				
+				// save db record FileImport
+				//TODO!!!!
+			}
+			// set status of downloaded file
+			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORTED;
+		}
+		else
+		{
+			// set status of downloaded file
+			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
+			return FALSE;
 		}
 	}
 	
+	function _StoreImportFile()
+	{
+		// get file details
+		$strFileName 		= $this->_arrCurrentImportFile['Filename'];
+		$strFileLocation 	= $this->_arrCurrentImportFile['Location'];
+		$arrCollectionModule	= $this->_arrCollectionModule;
+		
+		// copy file to final location
+		//TODO!!!!
+		// set status on error
+		$this->_arrCurrentImportFile['Status'] = CDRFILE_MOVE_FAILED;
+		
+		// set file details
+		//TODO!!!!
+		//$this->_arrCurrentImportFile['Filename'] =;
+		//$this->_arrCurrentImportFile['Location'] =;
+	}
+	
+	function _FileType()
+	{
+		// get file details
+		$strFileName 	= $this->_arrCurrentImportFile['Filename'];
+		$arrFileType	= $this->_arrCollectionModule["FileType"];
+		
+		// Find file type
+		//TODO!!!!
+		// set status on error
+		$this->_arrCurrentImportFile['Status'] = CDRFILE_BAD_TYPE;
+		
+		// set file details
+		//TODO!!!!
+		//$this->_arrCurrentImportFile['FileType'] =;
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsUnique
+	//------------------------------------------------------------------------//
+	/**
+	 * IsUnique()
+	 *
+	 * Test if a file is unique on the system
+	 *
+	 * Test if a file is unique on the system
+	 * 
+	 * @param	string	$strFileName	Downloaded file name
+	 *
+	 * @return	string	unique SHA1 hash of the file. returns FALSE if file is
+	 * 					not unique
+	 * 
+	 * @method
+	 */
+	function _IsUnique($strFileName)
+	{
+		// get SHA1 hash
+		//TODO!!!!
+		// $strHash = 
+		
+		// set file details
+		$this->_arrCurrentImportFile['SHA1'] = $strHash;
+		
+		// check name & SHA1 hash in the database (check only this carrier!)
+		//TODO!!!!
+		if ()//TODO!!!!
+		{
+			// file is unique
+			return $strHash;
+		}
+		else
+		{
+			// file is not uhique, set status
+			$this->_arrCurrentImportFile['Status'] = CDRFILE_NOT_UNIQUE;
+			return FALSE;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// Unzip
+	//------------------------------------------------------------------------//
+	/**
+	 * Unzip()
+	 *
+	 * Unzip Downloaded CDR File
+	 *
+	 * Unzip Downloaded CDR File, also sets the filename in _arrCurrentDownloadFile
+	 * 
+	 * @param	string	$strFile		Downloaded file
+	 *
+	 * @return	mixed	array	key = file location, value = file name
+	 *					bool	FALSE if passed an invalid (empty) file name
+	 * 
+	 * @method
+	 */
+	function Unzip($strFile)
+	{
+		// get filename
+		$strFileName = basename($strFile);
+		$this->_arrCurrentDownloadFile['FileName'] = $strFileName;
+			
+		$strFile = trim($strFile);
+		if (!$strFile || !$strFileName)
+		{
+			// no file
+			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_DOWNLOAD_FAILED;
+			return FALSE;
+		}
+		if (strtolower(substr($strFile, -3)) != "zip")
+		{
+			// not a zip file, return array of 1 file
+			return Array($strFile => $strFileName);
+		}
+		else
+		{
+			// add line to report
+			//TODO!!!! "Unziping File : $strFile"
+			
+			// clean unzip dir
+			// TODO!!!!
+			
+			// unzip files
+			// TODO!!!!
+			
+			// get list of files (full path)
+			//TODO!!!!
+			// $arrFileList =
+			
+			// build output
+			$arrFiles = Array();
+			foreach ($arrFileList as $strUnzipedFile)
+			{
+				// add unziped file name to report
+				//TODO!!!! "	Extracted File : $strUnzipedFile"
+				
+				// build return array
+				$strFileName = basename($strUnzipedFile);
+				$arrFiles[$strUnzipedFile] = $strFileName;
+			}
+			return $arrFiles;
+		}
+	}
+}
+
 /*
 		
 		// Clean predefined temp downloads dir
@@ -262,7 +487,7 @@ die();
 	 * 
 	 * @method
 	 */
- 	function ProcessDirectory($strDirectory)
+/* 	function ProcessDirectory($strDirectory)
  	{
 		$arrFileList = ftp_nlist($this->_resConnection, $strDirectory);
 		
@@ -294,35 +519,7 @@ die();
 			}
 		}
  	}
+	
+*/
 
-
- 	//------------------------------------------------------------------------//
-	// ProcessFile
-	//------------------------------------------------------------------------//
-	/**
-	 * ProcessFile()
-	 *
-	 * Processes CDR Files
-	 *
-	 * Copies file to permanent storage, determine file type, returning data to
-	 * be directly inserted into the DB.
-	 * 
-	 * @param	file	$filFile		File to be processed
-	 * 
-	 * @method
-	 */
-	function Import($arrFiles)
-	{
-		foreach ($arrFiles as $strFile)
-		{
-			// copy file to final location
-			
-			// find file type
-			
-			// check uniqueness
-			
-			// save db record FileImport
-		}
-	}
-}
 ?>
