@@ -36,7 +36,7 @@
  * FTP Collection Module
  *
  *
- * @prefix		clt
+ * @prefix		ftp
  *
  * @package		vixen
  * @class		CollectionModuleFTP
@@ -139,19 +139,24 @@
 			return FALSE;
 		}
 		
+		// Set private copy of arrDefine
+		$this->_arrDefine = $arrDefine;
+
 		// If the directory passed to us is just a string, convert it to an array so we can
 		// handle directories uniformly
-		if (is_string($arrDefine['Dir']))
+		if (is_string($this->_arrDefine['Dir']))
 		{
-			$arrDefine['Dir'] = Array($arrDefine['Dir']);
+			$this->_arrDefine['Dir'] = Array($this->_arrDefine['Dir']);
 		}
 		
 		// Set the directory
-		reset($arrDefine['Dir']);
-		ftp_chdir($this->_resConnection, current($arrDefine['Dir']));
+		reset($this->_arrDefine['Dir']);
+		ftp_chdir($this->_resConnection, current($this->_arrDefine['Dir']));
 		
-		// Set private copy of arrDefine
-		$this->_arrDefine = $arrDefine;
+		// Get our first list of files
+		$this->_arrFileListing = ParseRawlist(ftp_rawlist($this->_resConnection, "."));
+		
+		return TRUE;
  	}
  	
   	//------------------------------------------------------------------------//
@@ -198,9 +203,72 @@
 		}
 		
 		// Download the next file
-		
+		if (next($this->_arrFileListing))
+		{
+			$arrCurrent = current($this->_arrFileListing);
+			if ($arrCurrent['Type'] == "-")
+			{
+				// We have a usable file, so download and return the filename
+				ftp_get($this->_resConnection, current($arrDefine['Dir']).key($this->_arrFileListing), key($this->_arrFileListing));
+				return key($this->_arrFileListing);
+			}
+			else
+			{
+				// Recursively call Download() until a usable file is found
+				return Download($strDestination);
+			}
+		}
+		elseif (next($this->_arrDefine['Dir']))
+		{
+			// Change to the next directory and call Download() again
+			return Download($strDestination);
+		}
+		else
+		{
+			// There are no more files to download
+			return FALSE;
+		}
 		
  	}
- }
+ 	
+  	//------------------------------------------------------------------------//
+	// ParseRawList
+	//------------------------------------------------------------------------//
+	/**
+	 * ParseRawList()
+	 *
+	 * Parses ftp_rawlist()
+	 *
+	 * Parses an array containing results from ftp_rawlist()
+	 *
+	 * @param		array		$arrRawList			Array to parse
+	 * 
+	 * @return		array							Cleaned array
+	 *
+	 * @method
+	 */
+	function ParseRawlist($arrRawList)
+	{
+		foreach($arrRawList as $strFile)
+			{
+			$arrFile = array();
+			$arrSplit = preg_split("[ ]", $strFile, 9);
+	
+			$arrFile['Type']				= $arrSplit[0]{0};
+			$arrFile['Permissions']			= $arrSplit[0];
+			$arrFile['Number']				= $arrSplit[1];
+			$arrFile['Owner']				= $arrSplit[2];
+			$arrFile['Group']				= $arrSplit[3];
+			$arrFile['Size']				= $arrSplit[4];
+			$arrFile['Month']				= $arrSplit[5];
+			$arrFile['Day']					= $arrSplit[6];
+			$arrFile['TimeYear']			= $arrSplit[7];
+			$arrFile['Raw']					= $strFile;
+			$arrFile['Name']				= $arrSplit[8];
+			$arrCleanList[$arrFile['Name']]	= $arrFile;
+		}
+		return $arrCleanList;
+	}
+}
 
 ?>
