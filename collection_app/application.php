@@ -87,21 +87,7 @@ die();
 	 */
 	private $_rptCollectionReport;
  	
-	//------------------------------------------------------------------------//
-	// _resCollection
-	//------------------------------------------------------------------------//
-	/**
-	 * _resCollection
-	 *
-	 * FTP Connection
-	 *
-	 * FTP Connection
-	 *
-	 * @type		resource
-	 *
-	 * @property
-	 */
-	private $_resConnection;
+
 	
 	//------------------------------------------------------------------------//
 	// __construct
