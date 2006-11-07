@@ -10,7 +10,7 @@
 			
 			function __construct ($nodeName, $nodeType='data', $collationLength)
 				{
-					parent::__construct ($collationName);
+					parent::__construct ($nodeName);
 					
 					if (!is_numeric ($collationLength))
 						{

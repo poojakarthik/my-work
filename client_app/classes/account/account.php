@@ -38,6 +38,34 @@
 			
 			return $oblarrInvoices;
 		}
+		
+		public function getServices ()
+		{
+			$oblarrServices = new dataArray ("Services", "Service");
+			
+			if ($this->_cntContact->Pull ("CustomerContact")->isTrue ())
+			{
+				$selServices = new StatementSelect ("Service", "Id", "AccountGroup = <AccountGroup>");
+				$selServices->Execute(Array("AccountGroup" => $this->Pull ("AccountGroup")->getValue ()));
+			}
+			else
+			{
+				$selServices = new StatementSelect ("Service", "Id", "Account = <Account>");
+				$selServices->Execute(Array("Account" => $this->Pull ("Account")->getValue ()));
+			}
+			
+			while ($arrService = $selServices->Fetch ())
+			{
+				$oblarrServices->Push (new Service ($this->_cntContact, $arrService ['Id']));
+			}
+			
+			return $oblarrServices;
+		}
+		
+		public function getService ($Id)
+		{
+			return new Service ($this->_cntContact, $Id);
+		}
 	}
 	
 ?>

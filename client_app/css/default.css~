@@ -17,8 +17,8 @@
 	
 	table tr.odd td
 	{
-		background-color:		#CCCCCC;
-		color:				#000000;
+		background-color:		#CC0000;
+		color:				#FFFFFF;
 	}
 	
 	table tr.even td

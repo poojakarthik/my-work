@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
+	<xsl:import href="../../lib/date-time.xsl" />
+	<xsl:import href="../../template/default.xsl" />
+	<xsl:template name="Content">
+		<h2>
+			Invoice #<xsl:value-of select="/Response/Invoice/Id" />
+		</h2>
+		
+		<h3>Service Details</h3>
+		<p>
+			Information about a services that appears on a particular invoice.
+		</p>
+		
+		<table border="1" cellpadding="3" cellspacing="0">
+			<tr>
+				<th>Service Number:</th>
+				<td>
+					<xsl:value-of select="/Response/InvoiceService/FNN" />
+				</td>
+			</tr>
+		</table>
+		
+		<h3>Call Information</h3>
+		
+		<table border="1" cellpadding="3" cellspacing="0">
+			<tr>
+				<th>Date</th>
+				<th>Time</th>
+				<th>Called Party</th>
+				<th>Duration</th>
+				<th>Charge</th>
+			</tr>
+			<xsl:for-each select="/Response/InvoiceService/InvoiceServiceLine/CDR">
+				<tr>
+					<td>
+						<xsl:call-template name="dt:format-date-time">
+							<xsl:with-param name="year"		select="./StartDatetime/year" />
+							<xsl:with-param name="month"	select="./StartDatetime/month" />
+							<xsl:with-param name="day"		select="./StartDatetime/day" />
+							<xsl:with-param name="hour"		select="0" />
+							<xsl:with-param name="minute"	select="0" />
+							<xsl:with-param name="second"	select="0" />
+							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+						</xsl:call-template>
+					</td>
+					<td>
+						<xsl:call-template name="dt:format-date-time">
+							<xsl:with-param name="year"		select="0" />
+							<xsl:with-param name="month"	select="0" />
+							<xsl:with-param name="day"		select="0" />
+							<xsl:with-param name="hour"		select="./StartDatetime/hour" />
+							<xsl:with-param name="minute"	select="./StartDatetime/minute" />
+							<xsl:with-param name="second"	select="./StartDatetime/second" />
+							<xsl:with-param name="format"	select="'%I:%M:%S %P'"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+			</xsl:for-each>
+		</table>
+	</xsl:template>
+</xsl:stylesheet>

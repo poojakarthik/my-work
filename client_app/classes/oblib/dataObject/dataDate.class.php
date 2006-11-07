@@ -22,6 +22,18 @@
 			$this->setValue ($nodeValue);
 		}
 		
+		public function getValue ()
+		{
+			return mktime (
+				0,
+				0,
+				0,
+				$this->Pull ("month")->getValue (),
+				$this->Pull ("day")->getValue (),
+				$this->Pull ("year")->getValue ()
+			);
+		}
+		
 		public function setValue ($nodeValue)
 		{
 			if (!is_string ($nodeValue))

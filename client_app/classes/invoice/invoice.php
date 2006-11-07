@@ -55,7 +55,7 @@
 			
 			while ($arrService = $selServices->Fetch ())
 			{
-				$oblarrInvoiceServices->Push (new InvoiceService ($this->_cntContact, $arrService ['Invoice'], $arrService ['Service']));
+				$oblarrInvoiceServices->Push (new InvoiceService ($this->_cntContact, $this, $arrService ['Service']));
 			}
 			
 			return $oblarrInvoiceServices;
@@ -73,7 +73,7 @@
 			
 			$arrService = $selService->Fetch ();
 			
-			return new InvoiceService ($this->_cntContact, $arrService ['Invoice'], $arrService ['Service']);
+			return new InvoiceService ($this->_cntContact, $this, $arrService ['Service']);
 		}
 	}
 	
