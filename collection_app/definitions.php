@@ -31,11 +31,16 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
+// Diectories
+define("TEMP_DOWNLOAD_DIR",				"/tmp/vixen_download");
+define("TEMP_DOWNLOAD_DIR_PERMISSIONS",	0777);
+
+// Collection Types
+define("COLLECTION_TYPE_FTP",			100);
+
 // Non-Fatal Exceptions
 
 
 // Fatal Exceptions
-
-
 
 ?>
