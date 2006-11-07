@@ -162,7 +162,51 @@ die();
 	 */
  	function Collect()
  	{
- 		// Clean predefined temp downloads dir
+ 		// create FTP downloader
+		$ftpDownloader = new FtpDownloadModule();
+		
+		// For each file definition...
+ 		foreach ($this->_arrCollectionModule as $arrModule)
+ 		{
+			// set current connection
+			$this->_arrCurrentConnection = $arrModule;
+			
+			// connect
+			$ftpDownloader->Connect($arrModule);
+			
+			// download
+			while($strFilename = $ftpDownloader->Download(TEMP_DOWNLOAD_DIR)) // returns false once all files have been downloaded 
+			{
+				// record download in db FileDownload
+				// TODO
+				
+				// unzip files
+				$arrFiles = $this->Unzip($strFilename); // returns array of file locations
+				
+				// import files 
+				$this->Import($arrFiles);
+			}
+			
+			// disconnect
+			$ftpDownloader->Disconnect();
+		}
+	}
+	
+	function Import($arrFiles)
+	{
+		foreach ($arrFiles as $strFile)
+		{
+			// copy file to final location
+			
+			// find file type
+			
+			// check uniqueness
+			
+			// save db record FileImport
+		}
+	}
+		
+		// Clean predefined temp downloads dir
  		RemoveDir(TEMP_DOWNLOAD_DIR);
  		mkdir(TEMP_DOWNLOAD_DIR, TEMP_DOWNLOAD_DIR_PERMISSIONS);
  		
@@ -194,6 +238,7 @@ die();
  				$arrFileList = ftp_nlist($resConnection, $arrModule["Dir"]);
  			}
  			
+			
  			// For each file
  			foreach ($arrFileList as $strFileName)
  			{
