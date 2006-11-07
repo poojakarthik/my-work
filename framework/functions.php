@@ -31,6 +31,37 @@
 // FUNCTIONS
 //----------------------------------------------------------------------------//
 
+
+ 	//------------------------------------------------------------------------//
+	// RemoveDir
+	//------------------------------------------------------------------------//
+	/**
+	 * RemoveDir()
+	 *
+	 * Removes a directory
+	 *
+	 * Removes a directory and all of its files
+	 * 
+	 * @param	string	$strDirectory		Directory to flush
+	 * 
+	 * @method
+	 */
+ 	function RemoveDir($strDirectory)
+ 	{
+		$arrContents = scandir($strDirectory);
+		foreach ($arrContents as $strItem) {
+			if (is_dir($strDirectory.$strItem) && $strItem != '.' && $strItem != '..')
+			{
+				RemoveDir($strDirectory.$strItem.'/');
+			}
+			elseif ((file_exists($strDirectory.$strItem)) && ($strItem != '.') && ($strItem != '..'))
+			{
+				unlink($strDirectory.$strItem);
+			}
+		}
+		rmdir($strDirectory);
+	}
+
 //------------------------------------------------------------------------//
 // Debug
 //------------------------------------------------------------------------//
@@ -119,11 +150,6 @@ function DebugBacktrace($strMode="html")
 	}
 	return TRUE;
 }
-
-
-
-
-
 
 
 
