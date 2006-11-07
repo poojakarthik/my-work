@@ -25,14 +25,19 @@
  *
  */
 
+// set addresses for report
+$mixEmailAddress = 'flame@telcoblue.com.au';
+
 // Application entry point - create an instance of the application object
-$appNormalise = new ApplicationNormalise();
+$appNormalise = new ApplicationNormalise($mixEmailAddress);
 
 // Import lines from CDR files into the database
 $appNormalise->Import();
+Debug($framework->uptime());
 
 // Normalise CDR records in the database
 $appNormalise->Normalise();
+Debug($framework->uptime());
 
 // finished
 echo("\n-- End of Normalisation --\n");
@@ -55,7 +60,7 @@ die();
  * @package		normalisation_application
  * @class		ApplicationNormalise
  */
- class ApplicationNormalise
+ class ApplicationNormalise extends ApplicationBaseClass
  {
  	//------------------------------------------------------------------------//
 	// errErrorHandler
@@ -153,25 +158,28 @@ die();
 	 *
 	 * Constructor for the Normalising Application
 	 *
+	 * @param	mixed	$$mixEmailAddress	Array or string of Addresse(s) to send report to
 	 * @return		ApplicationNormalise
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
- 	function __construct()
+ 	function __construct($mixEmailAddress)
  	{
+		parent::__construct();
+		
 	 	// Initialise framework components
-		$this->rptNormalisationReport = new Report("","");
+		$this->rptNormalisationReport = new Report(NORMALISATION_REPORT_TITLE, $mixEmailAddress);
 		$this->errErrorHandler = new ErrorHandler();
 		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
 		// Create an instance of each Normalisation module
- 		//$this->_arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
+ 		$this->_arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
  		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
- 		//$this->_arrNormalisationModule[CDR_UNTIEL_COMMANDER]	= new NormalisationModuleCommander();
- 		//$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
- 		//$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
+ 		$this->_arrNormalisationModule[CDR_UNTIEL_COMMANDER]	= new NormalisationModuleCommander();
+ 		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
+ 		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
 		
  	}
  	
@@ -255,7 +263,7 @@ die();
 	 *
 	 * @param	array		$arrCDRFile			Associative array of data returned
 	 * 											from a SELECT * statement on this file
-	 * @return	<type>
+	 * @return	void
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
@@ -287,7 +295,6 @@ die();
 			$intSequence = 1;
 			while (!feof($fileCDRFile))
 			{
-				$arrCDRLine["CDR"]			= fgets($fileCDRFile);
 				$arrCDRLine["SequenceNo"]	= $intSequence;
 				$arrCDRLine["Status"]		= CDR_READY;
 				
@@ -301,8 +308,16 @@ die();
 					$arrCDRLine["CDR"]		= fgets($fileCDRFile);
 				}
 				
-				$insInsertCDRLine->Execute($arrCDRLine);
+				if (trim($arrCDRLine["CDR"]))
+				{
+					$insInsertCDRLine->Execute($arrCDRLine);
+				}
 				$intSequence++;
+				//REMOVE THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				if ($intSequence > 1000)
+				{
+					return;
+				}
 			}
 			fclose($fileCDRFile);
 			
@@ -375,11 +390,20 @@ die();
  	function Normalise()
  	{
  		// Select all CDRs ready to be Normalised
- 		$selSelectCDRs = new StatementSelect("CDR INNER JOIN FileImport ON CDR.File = FileImport.Id", Array("CDR.*" => "", "FileImport.FileType" => "FileType", "FileImport.FileName" => "FileName"), $strWhere = "CDR.Status = <status>");
- 		$selSelectCDRs->Execute(Array("status" => CDR_READY));
+		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
+		$mixColumns	= Array("CDR.*" => "", "FileImport.FileType" => "FileType", "FileImport.FileName" => "FileName");
+		$strWhere	= "CDR.Status = <status>";
+		$strOrder	= "";
+		$strLimit	= "1000";
+ 		$selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
+		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
- 		$updUpdateCDRs = new StatementUpdate("CDR", "Id = <CdrId>"); 		
+		
+		// setup update query
+		$arrDefine = $this->db->FetchClean("CDR");
+		$arrDefine['NormalisedOn'] = new MySQLFunction("NOW()");
+ 		$updUpdateCDRs = new StatementUpdate("CDR", "Id = <CdrId>", $arrDefine); 		
 
 
  		foreach ($arrCDRList as $arrCDR)
@@ -388,6 +412,9 @@ die();
  			// Is there a normalisation module for this type?
 			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
 			{
+				// set status to normalised
+				$arrCDR['Status'] = CDR_NORMALISED;
+				
 				// normalise
 				$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
 			}
@@ -401,9 +428,9 @@ die();
 			}
 			
 			$arrCDR['NormalisedOn'] = new MySQLFunction("NOW()");
-			Debug($arrCDR);
+			//Debug($arrCDR);
  			// Save CDR back to the DB
-			$updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['CDR.Id'])); 
+			$updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])); 
  		}
  	}
  }

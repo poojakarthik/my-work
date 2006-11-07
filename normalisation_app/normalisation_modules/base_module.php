@@ -212,12 +212,12 @@ abstract class NormalisationModule
 		$arrValid = Array();
 		
 		// $this->_arrNormalisedData["Id"];
-		$arrValid[] = preg_match("^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$", 	$this->_arrNormalisedData["FNN"]);
+		$arrValid[] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", 	$this->_arrNormalisedData["FNN"]);
 		$arrValid[] = ($this->_arrNormalisedData["CarrierRef"] != "");
 		
 		if ($this->_arrNormalisedData["Source"] != "")
 		{
-			$arrValid[] = preg_match("^\+?\d+$", 	$this->_arrNormalisedData["Source"]);
+			$arrValid[] = preg_match("/^\+?\d+$/", 	$this->_arrNormalisedData["Source"]);
 		}
 		else
 		{
@@ -226,18 +226,18 @@ abstract class NormalisationModule
 		
 		if ($this->_arrNormalisedData["Destination"] != "")
 		{
-			$arrValid[] = preg_match("^\+?\d+$", 	$this->_arrNormalisedData["Destination"]);
+			$arrValid[] = preg_match("/^\+?\d+$/", 	$this->_arrNormalisedData["Destination"]);
 		}
 		else
 		{
 			$arrValid[] = true;
 		}
 
-		$arrValid[] = preg_match("^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$",	$this->_arrNormalisedData["StartDatetime"]);
+		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
 
 		if ($this->_arrNormalisedData["EndDatetime"] != "")
 		{
-			$arrValid[] = preg_match("^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$", 	$this->_arrNormalisedData["EndDatetime"]);
+			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", 	$this->_arrNormalisedData["EndDatetime"]);
 		}
 		else
 		{
@@ -253,6 +253,7 @@ abstract class NormalisationModule
 		{
 			if(!$bolValid)
 			{
+				$this->_arrNormalisedData['Status']	= CDR_CANT_NORMALISE_INVALID;
 				return false;
 			}
 		}
@@ -346,7 +347,7 @@ abstract class NormalisationModule
 	 *
 	 * @method
 	 */
-	 protected function _SplitCDR($strCDR)
+	 protected function _SplitRawCDR($strCDR)
 	 {
 	 	// clean the array
 		$this->_arrRawData = array();
@@ -533,10 +534,10 @@ abstract class NormalisationModule
 	 */
 	 protected function ApplyOwnership()
 	 {
-	 	$selLinkAccounts = new StatmentSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>");
-	 	$arrResult = $selLinkAccount->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
-	 	
-	 	if ($arrResult == 1)
+	 	$selLinkAccount = new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>");
+	 	$intResult = $selLinkAccount->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
+		
+	 	if ($arrResult = $selLinkAccount->fetch())
 	 	{
 	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
 	 		$this->_arrNormalisedData['Account']		= $arrResult['Account'];
@@ -545,6 +546,7 @@ abstract class NormalisationModule
 	 	}
 	 	
 		// Return false if there was no match, or more than one match
+		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
 	 	return false;
 	 }
 
@@ -558,16 +560,14 @@ abstract class NormalisationModule
 	 *
 	 * Generate a Unique ID for a CDR record
 	 * 
-	 * @param	int		strFileName		Name of CDR file
-	 * @param	int		intSequenceNo	Sequence no. of CDR record
 	 *
 	 * @return	string					
 	 *
 	 * @method
 	 */
-	 protected function _GenerateUID($strFileName, $intSequenceNo)
+	 protected function _GenerateUID()
 	 {
-	 	return "UID_{$strFileName}_{$intSequenceNo}";
+	 	return "UID_{$this->_arrNormalisedData["FileName"]}_{$this->_arrNormalisedData["SequenceNo"]}";
 	 }
 	 
 }

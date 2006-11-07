@@ -215,11 +215,11 @@ class NormalisationModuleOptus extends NormalisationModule
 		$this->_NewCDR($arrCDR);
 		
 		// ignore header rows
-		if ((int)$arrCDR["CDR.SequenceNo"] < 1)
+		if ((int)$arrCDR["SequenceNo"] < 1)
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_BAD_SEQ_NO);
 		}
-		elseif ((int)$arrCDR["CDR.SequenceNo"] < $this->_intStartRow)
+		elseif ((int)$arrCDR["SequenceNo"] < $this->_intStartRow)
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_HEADER);
 		}
@@ -231,7 +231,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		}
 		
 		// covert CDR string to array
-		$this->_SplitRawCDR($arrCDR["CDR.CDR"]);
+		$this->_SplitRawCDR($arrCDR["CDR"]);
 	
 		// validation of Raw CDR
 		if (!$this->_ValidateRawCDR())

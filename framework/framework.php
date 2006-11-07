@@ -79,9 +79,18 @@
 	 */
 	 function __construct()
 	 {
-	 	$errErrorHandler = new ErrorHandler(); 	
-	 	set_error_handler($errErrorHandler, "PHPErrorCatcher");
-	 	set_exception_handler($errErrorHandler, "PHPExceptionCatcher");
+	 	//$errErrorHandler = new ErrorHandler(); 	
+	 	//set_error_handler($errErrorHandler, "PHPErrorCatcher");
+	 	//set_exception_handler($errErrorHandler, "PHPExceptionCatcher");
+		
+		// start timing
+		$this->_intStartTime = microtime(TRUE);
+	 }
+	 
+	 function Uptime()
+	 {
+	 	$intTime = microtime(TRUE);
+	 	return round($intTime - $this->_intStartTime, 4);
 	 }
  }
 
@@ -120,14 +129,14 @@
 	function __construct()
 	{
 		// connect to database if not already connected
-		if (!$_GLOBALS['dbaDatabase'] || !is_a($_GLOBALS['dbaDatabase'], "DataAccess"))
+		if (!$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
 		{
-			$_GLOBALS['dbaDatabase'] = "hi world";
+			$GLOBALS['dbaDatabase'] = "hi world";
 			//$_GLOBALS['dbaDatabase'] = new DataAccess();
 		}
 		
 		// make global database object available
-		$this->db = &$_GLOBALS['dbaDatabase'];
+		$this->db = &$GLOBALS['dbaDatabase'];
 	}
  }
 ?>

@@ -89,17 +89,17 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$arrDefine ['CarrierId']		['Index']		= 17;	// 1 = Telstra; 2 = Optus; 3 = Unitel
 		$arrDefine ['RateId']			['Index']		= 18;	// Unitel's Rate ID
 		
-		$arrDefine ['EventId']			['Validate']	= "^\d+$";
-		$arrDefine ['RecordType']		['Validate']	= "^[178]$";
-		$arrDefine ['DateTime']			['Validate']	= "^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$";
-		$arrDefine ['Duration']			['Validate']	= "^\d+$";
-		$arrDefine ['OriginNo']			['Validate']	= "^\+?\d+$";
-		$arrDefine ['DestinationNo']	['Validate']	= "^\+?\d+$";
-		$arrDefine ['ChargedParty']		['Validate']	= "^\+?\d+$";
-		$arrDefine ['Currency']			['Validate']	= "^AUD$";
-		$arrDefine ['Price']			['Validate']	= "^\d+\.\d\d?$";
-		$arrDefine ['CallType']			['Validate']	= "^\d+$";
-		$arrDefine ['RateId']			['Validate']	= "^\d+$";
+		$arrDefine ['EventId']			['Validate']	= "/^\d+$/";
+		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
+		$arrDefine ['DateTime']			['Validate']	= "/^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$/";
+		$arrDefine ['Duration']			['Validate']	= "/^\d+$/";
+		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
+		$arrDefine ['DestinationNo']	['Validate']	= "/^\+?\d+$/";
+		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
+		$arrDefine ['Currency']			['Validate']	= "/^AUD$/";
+		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d?$/";
+		$arrDefine ['CallType']			['Validate']	= "/^\d+$/";
+		$arrDefine ['RateId']			['Validate']	= "/^\d+$/";
 		
 		$this->_arrDefineCarrier = $arrDefine;
 	}
@@ -128,23 +128,23 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$this->_NewCDR($arrCDR);
 		
 		// ignore header rows
-		if ((int)$arrCDR["CDR.SequenceNo"] < 1)
+		if ((int)$arrCDR["SequenceNo"] < 1)
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_BAD_SEQ_NO);
 		}
-		elseif ((int)$arrCDR["CDR.SequenceNo"] < $this->_intStartRow)
+		elseif ((int)$arrCDR["SequenceNo"] < $this->_intStartRow)
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_HEADER);
 		}
 		
 		// covert CDR string to array
-		$this->_SplitRawCDR($arrCDR["CDR.CDR"]);
+		$this->_SplitRawCDR($arrCDR["CDR"]);
 
 		// ignore non-CDR rows
-		$intRowType = (int)$this->_FetchRawCDR('CC');
-		if ($intRowType != 3)
+		$intRowType = (int)$this->_FetchRawCDR('RecordType');
+		if ($intRowType != 3 && $intRowType != 7 && $intRowType != 8)
 		{
-			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+			//return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 
 		// validation of Raw CDR

@@ -109,6 +109,66 @@
 		// make global database definitions available
 		$this->arrTableDefine = &$GLOBALS['arrDatabaseTableDefine'];
 	}
+	
+	//------------------------------------------------------------------------//
+	// FetchTableDefine
+	//------------------------------------------------------------------------//
+	/**
+	 * FetchTableDefine()
+	 *
+	 * return the definition for a table
+	 *
+	 * return the definition for a table
+	 *
+	 * @param		string	name of the table
+	 * @return		mixed	array table definition or FALSE if table doesn't exist
+	 *
+	 * @method
+	 */ 
+	function FetchTableDefine($strTableName)
+	{
+		if($this->arrTableDefine[$strTableName])
+		{
+			return $this->arrTableDefine[$strTableName];
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// FetchClean
+	//------------------------------------------------------------------------//
+	/**
+	 * FetchClean()
+	 *
+	 * return an empty record from a database table
+	 *
+	 * return an empty record from a database table
+	 * uses the database define to create the record
+	 * does not talk to the database at all
+	 *
+	 * @param		string	name of the table
+	 * @return		mixed	array record or FALSE if table doesn't exist
+	 *
+	 * @method
+	 */ 
+	function FetchClean($strTableName)
+	{
+		if($this->arrTableDefine[$strTableName])
+		{
+			foreach($this->arrTableDefine[$strTableName]['Column'] as $strKey => $strValue)
+			{
+				$arrClean[$strKey] = '';
+			}
+			return $arrClean;
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
  }
  
 //----------------------------------------------------------------------------//
@@ -146,7 +206,7 @@
 	function __construct()
 	{
 		// connect to database if not already connected
-		if (!$GLOBALS['dbaDatabase'] || !is_a($GLOBALS['dbaDatabase'], "DataAccess"))
+		if (!$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
 		{
 			$GLOBALS['dbaDatabase'] = new DataAccess();
 		}
@@ -886,7 +946,7 @@
 	 * 										created.  Key string is the alias (ignoring the <>'s)
 	 * 										, and the Value is the value to be inserted.
 	 * 
-	 * @return		void
+	 * @return		int		number of rows
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
@@ -1310,6 +1370,9 @@
 	 	if ($arrColumns)
 	 	{
 			$this->_arrColumns = $arrColumns;
+			
+			// remove the index column
+			unset($this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]);
 			
 	 		// Partial Update, so use $arrColumns
 	 		$this->_bolIsPartialUpdate = true;

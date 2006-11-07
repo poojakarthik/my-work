@@ -102,17 +102,17 @@ class NormalisationModuleIseek extends NormalisationModule
 		$this->_NewCDR($arrCDR);
 		
 		// ignore header rows
-		if ((int)$arrCDR["CDR.SequenceNo"] < 1)
+		if ((int)$arrCDR["SequenceNo"] < 1)
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_BAD_SEQ_NO);
 		}
-		elseif ((int)$arrCDR["CDR.SequenceNo"] < $this->_intStartRow)
+		elseif ((int)$arrCDR["SequenceNo"] < $this->_intStartRow)
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_HEADER);
 		}
 		
 		// covert CDR string to array
-		$this->_SplitRawCDR($arrCDR["CDR.CDR"]);
+		$this->_SplitRawCDR($arrCDR["CDR"]);
 	
 		// validation of Raw CDR
 		if (!$this->_ValidateRawCDR())
@@ -129,23 +129,23 @@ class NormalisationModuleIseek extends NormalisationModule
 		$this->_AppendCDR('FNN', $mixValue);
 		
 		// CarrierRef
-		$mixValue = $this->_GenerateUID($arrCDR["FileName"], $arrCDR["CDR.SequenceNo"]);
+		$mixValue = $this->_GenerateUID();
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime
-		$mixValue = $this->_FetchRawCDR('DateStart');
+		$mixValue = $this->ConvertTime($this->_FetchRawCDR('DateStart'));
 		$this->_AppendCDR('StartDatetime', $mixValue);
 		
 		// EndDatetime
-		$mixValue = $this->_FetchRawCDR('DateEnd');
+		$mixValue = $this->ConvertTime($this->_FetchRawCDR('DateEnd'));
 		$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Units
-		$mixValue = (int)($this->_FetchRawCDR('Megabytes') / 1024);
+		$mixValue = (int)($this->_FetchRawCDR('Megabytes') * 1024);
 		$this->_AppendCDR('Units', $mixValue);
 		
 		// Description
-		$mixValue = ISEEK_ADSL_USAGE;
+		$mixValue = ISEEK_ADSL_USAGE_DESCRIPTION;
 		$this->_AppendCDR('Description', $mixValue);
 		
 		// RecordType
@@ -159,8 +159,38 @@ class NormalisationModuleIseek extends NormalisationModule
 
 		//--------------------------------------------------------------------//
 		
+		// apply ownership
+		$this->ApplyOwnership();
+		
+		// Validation of Normalised data
+		//$this->Validate();
+		
 		// return output array
 		return $this->_OutputCDR();
+	}
+	
+	//------------------------------------------------------------------------//
+	// ConvertTime
+	//------------------------------------------------------------------------//
+	/**
+	 * ConvertTime()
+	 *
+	 * Convert time format
+	 *
+	 * Converts a datetime string from carrier's format to our own
+	 *
+	 * @param	string	$strTime	Datetime string to be converted
+	 * @return	string				Converted Datetime string
+	 *
+	 * @method
+	 */
+	function ConvertTime($strTime)
+	{
+		$strReturn 	= substr($strTime, 6, 4);				// Year
+		$strReturn .=  "-" . substr($strTime, 3, 2);		// Month
+		$strReturn .=  "-" . substr($strTime, 0, 2);		// Day
+		
+		return $strReturn;
 	}
 }
 
