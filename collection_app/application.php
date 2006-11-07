@@ -192,13 +192,14 @@ die();
 					$arrFiles = $this->Unzip($strFilename); // always returns array of file locations (or FALSE)
 					
 					// record download in db (FileDownload)
-					// TODO!!!!
+					// TODO!!!! - get insert ID
 					
 					// import files 
 					$this->Import($arrFiles);
 					
-					// record download in db (FileDownload)
-					// TODO!!!! Status = downloaded
+					// record download in db (FileDownload) - status has now been changed
+					// UpdateById
+					// TODO!!!!
 					
 					// increment counter
 					$intCounter++;
@@ -224,6 +225,7 @@ die();
 	 * Copies file to permanent storage, determine file type & uniqueness
 	 * 
 	 * @param	array	$arrFiles		Files to be imported
+	 * @return	bool
 	 * 
 	 * @method
 	 */
@@ -253,6 +255,7 @@ die();
 			}
 			// set status of downloaded file
 			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORTED;
+			return TRUE;
 		}
 		else
 		{

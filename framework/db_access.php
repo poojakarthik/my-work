@@ -1129,7 +1129,7 @@
  		return $arrResults;
 	}
  }
- 
+
 //----------------------------------------------------------------------------//
 // StatementInsert
 //----------------------------------------------------------------------------//
@@ -1279,6 +1279,80 @@
 	 }
  }
 
+
+//----------------------------------------------------------------------------//
+// StatementUpdateById
+//----------------------------------------------------------------------------//
+/**
+ * StatementUpdateById
+ *
+ * UPDATE by Id Query
+ *
+ * Implements an UPDATE by Id query using mysqli statements
+ *
+ *
+ * @prefix		ubi
+ *
+ * @package		framework
+ * @class		UpdateByIdStatement
+ */
+ class StatementUpdateById extends StatementUpdate
+ {
+ 	//------------------------------------------------------------------------//
+	// StatementUpdateById() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * StatementUpdateById()
+	 *
+	 * Constructor for StatementUpdateById object
+	 *
+	 * Constructor for StatementUpdateById object
+	 *
+	 * @param		string	strTable		Name of the table to update
+	 * @param		array	arrColumns		optional Associative array of the columns 
+	 * 										you want to update, where the keys are the column names.
+	 * 										If you want to update everything, ignore
+	 * 										this parameter
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 */ 
+ 	function __construct($strTable, $arrColumns = null)
+	{
+		$strId = $this->db->_arrTableDefine[$strTable]['Id'];
+		$where = "$strId = <$strId>";
+		parent::__construct($strTable, $strWhere, $arrColumns = null);
+	}
+	
+	//------------------------------------------------------------------------//
+	// Execute()
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Executes the StatementUpdateById, with a new set of values
+	 *
+	 * Executes the StatementUpdateById, with a new set of values
+	 *
+	 * @param		array	arrData			Associative array of data to be entered.  If this is
+	 * 										for a partial update, make sure that it is the exact same
+	 * 										array passed to the constructor (the elements must be in the same order)
+	 * 
+	 * @return		mixed					int			: number of Affected Rows
+	 * 										bool FALSE	: Update failed
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	 function Execute($arrData)
+	 {
+	 	$strId = $this->db->arrTableDefine[$this->_strTable]['Id'];
+		$intId = $arrData[$strId];
+		$arrWhere = Array($strId => $intId);
+	 	parent::Execute($arrData, $arrWhere);
+	 }
+ }
 
 //----------------------------------------------------------------------------//
 // StatementUpdate
@@ -1447,8 +1521,8 @@
 	 * 										created.  Key string is the alias (ignoring the <>'s)
 	 * 										, and the Value is the value to be inserted.
 	 * 
-	 * @return		boolean					true	: Insert successful
-	 * 										false	: Insert failed
+	 * @return		mixed					int			: number of Affected Rows
+	 * 										bool FALSE	: Update failed
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
