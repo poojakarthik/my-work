@@ -88,20 +88,20 @@ die();
 	private $_rptCollectionReport;
  	
 	//------------------------------------------------------------------------//
-	// _arrCollectionModule
+	// _resCollection
 	//------------------------------------------------------------------------//
 	/**
-	 * _arrCollectionModulevv
+	 * _resCollection
 	 *
-	 * Array of collection modules
+	 * FTP Connection
 	 *
-	 * Array of collection modules
+	 * FTP Connection
 	 *
-	 * @type		array
+	 * @type		resource
 	 *
 	 * @property
 	 */
-	private $_arrNormalisationModule;
+	private $_resConnection;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -192,53 +192,45 @@ die();
 		}
 	}
 	
-	function Import($arrFiles)
-	{
-		foreach ($arrFiles as $strFile)
-		{
-			// copy file to final location
-			
-			// find file type
-			
-			// check uniqueness
-			
-			// save db record FileImport
-		}
-	}
+/*
 		
 		// Clean predefined temp downloads dir
  		RemoveDir(TEMP_DOWNLOAD_DIR);
  		mkdir(TEMP_DOWNLOAD_DIR, TEMP_DOWNLOAD_DIR_PERMISSIONS);
  		
- 		
- 		
  		// For each file definition...
  		foreach ($this->_arrCollectionModule as $arrModule)
  		{
- 			// Get list of files from remote server
- 			if ($resConnection = ftp_connect($arrModule["Server"]) === FALSE)
+ 			
+ 			if ($arrModule["Type"] != COLLECTION_TYPE_FTP)
+ 			{
+				throw new Exception("Undefined Collection Module");
+ 			}
+ 			
+ 			// Connect to the remote server
+ 			if ($this->_resConnection = ftp_connect($arrModule["Server"]) === FALSE)
  			{
  				throw new Exception ("Can't connect to FTP server ".$arrModule["Server"]);
  			}
- 			
- 			if (!ftp_login($resConnection, $arrModule["Username"], $arrModule["PWord"]))
+ 			if (!ftp_login($this->_resConnection, $arrModule["Username"], $arrModule["PWord"]))
  			{
  				throw new Exception ("Bad FTP login info");
  			}
  			
+ 			// If we have a list of directories, call ProcessDirectory for each one
  			if (is_array($arrModule["Dir"]))
  			{
  				foreach ($arrModule["Dir"] as $strDir)
  				{
- 					$arrFileList = array_merge(arrFileList, ftp_nlist($resConnection, $strDir));
+ 					$this->ProcessDirectory($strDir);
  				}
  			}
  			else
  			{
- 				$arrFileList = ftp_nlist($resConnection, $arrModule["Dir"]);
+ 				$this->ProcessDirectory($arrModule["Dir"]);
  			}
  			
-			
+
  			// For each file
  			foreach ($arrFileList as $strFileName)
  			{
@@ -266,14 +258,63 @@ die();
  			}
  		}
  					 					
- 		// Send report
+ 		// TODO: Send report
  	}
 
+*/
  	//------------------------------------------------------------------------//
-	// Process
+	// ProcessDirectory
 	//------------------------------------------------------------------------//
 	/**
-	 * Process()
+	 * ProcessDirectory()
+	 *
+	 * Retrieves CDR Files
+	 *
+	 * Retrieves CDR Files, then sends them to be processed
+	 * 
+	 * @param	string	$strDirectory		Directory to be processed
+	 * 
+	 * @method
+	 */
+ 	function ProcessDirectory($strDirectory)
+ 	{
+		$arrFileList = ftp_nlist($this->_resConnection, $strDirectory);
+		
+		// For each file
+		foreach ($arrFileList as $strFileName)
+		{
+			// Make sure we're dealing with a file and not a directory
+				
+			// Is the file new??
+			///if (IS_NEW($strFileName))
+			{
+				// Download from remote server
+				
+				// Is it a zip file??
+				if (IS_ZIP_FILE($strFileName))
+				{
+					// Unzip file to predefined dir ("/tmp/vixen_download") 
+					
+					// For each file
+					foreach ($arrZipFileList as $strZipFile)
+					{
+						Process($filFile);
+					}
+				}
+				else
+				{
+					Process($filFile);
+				}
+			}
+		}
+ 	}
+
+
+ 	//------------------------------------------------------------------------//
+	// ProcessFile
+	//------------------------------------------------------------------------//
+	/**
+	 * ProcessFile()
 	 *
 	 * Processes CDR Files
 	 *
@@ -284,16 +325,18 @@ die();
 	 * 
 	 * @method
 	 */
- 	function Process($filFile)
- 	{
- 		// Copy file to permanent storage
- 		
- 		// Determine filetype by regex
- 		
- 		// Check if in the system (SHA-1)
- 		
- 		// Write to DB
- 	}
- 	
+	function Import($arrFiles)
+	{
+		foreach ($arrFiles as $strFile)
+		{
+			// copy file to final location
+			
+			// find file type
+			
+			// check uniqueness
+			
+			// save db record FileImport
+		}
+	}
 }
 ?>
