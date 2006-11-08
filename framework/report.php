@@ -156,7 +156,7 @@ class Report
 		{
 			$this->_arrEmailAddressee = Array($mixEmailAddressee);
 		}
-		$this->_strEmailFrom = $mixEmailFrom;
+		$this->_strEmailFrom = $strEmailFrom;
 	}
 
 	//------------------------------------------------------------------------//
@@ -213,15 +213,20 @@ class Report
 	 * Appends a new message line to the end of the report
 	 * 
 	 * @param	string		$strMessage			The new message line to be added
+	 * @param	boolean		$bolNewLine			optional Whether the message will be on a new line
+	 * 											Defaults to TRUE
 	 * @return	void
 	 * 
 	 * @method
 	 * @see		this->_arrLines
 	 */
-	public function AddMessage($strMessage)
+	public function AddMessage($strMessage, $bolNewLine = TRUE)
 	{
 		// Add a new line character to the end of the message
-		$strMessage .= "\n";
+		if ($bolNewLine)
+		{
+			$strMessage .= "\n";
+		}
 		
 		// Append the message to the end of the message array
 		$this->_arrLines[] = $strMessage;
