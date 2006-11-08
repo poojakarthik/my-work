@@ -435,30 +435,30 @@ die();
 	 *
 	 * Unzip Downloaded CDR File, also sets the filename in _arrCurrentDownloadFile
 	 * 
-	 * @param	string	$strFile		Downloaded file
+	 * @param	string	$strFileLocation		Downloaded file
 	 *
 	 * @return	mixed	array	key = file location, value = file name
 	 *					bool	FALSE if passed an invalid (empty) file name
 	 * 
 	 * @method
 	 */
-	function Unzip($strFile)
+	function Unzip($strFileLocation)
 	{
 		// get filename
-		$strFileName = basename($strFile);
+		$strFileName = basename($strFileLocation);
 		$this->_arrCurrentDownloadFile['FileName'] = $strFileName;
 		
-		$strFile = trim($strFile);
-		if (!$strFile || !$strFileName)
+		$strFileLocation = trim($strFileLocation);
+		if (!$strFileLocation || !$strFileName)
 		{
 			// no file
 			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_DOWNLOAD_FAILED;
 			return FALSE;
 		}
-		if (strtolower(substr($strFile, -3)) != "zip")
+		if (strtolower(substr($strFileLocation, -3)) != "zip")
 		{
 			// not a zip file, return array of 1 file
-			return Array($strFile => $strFileName);
+			return Array($strFileLocation => $strFileName);
 		}
 		else
 		{
@@ -469,13 +469,21 @@ die();
 			// TODO!!!!
 			
 			// set password
-			if ($this->_arrCurrentModule[ZipPword])
+			if ($this->_arrCurrentModule['ZipPword'])
 			{
-				$strPassword = "-p {$this->_arrCurrentModule[ZipPword]}"
+				$strPassword = "-p {$this->_arrCurrentModule['ZipPword']}"
+			}
+			else
+			{
+				$strPassword = '';
 			}
 			
+			// set output dir
+			//TODO!!!!
+			//$strOutputDir = ;
+			
 			// unzip files
-			$strCommand = "unzip $strPassword $strFile -d $strOutputDir";
+			$strCommand = "unzip $strPassword $strFileLocation -d $strOutputDir";
 			exec($strCommand);
 			
 			// get list of files (full path)
