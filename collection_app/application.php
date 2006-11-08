@@ -86,9 +86,39 @@ die();
 	 * @property
 	 */
 	private $_rptCollectionReport;
- 	
 
+	//------------------------------------------------------------------------//
+	// _insFileImport
+	//------------------------------------------------------------------------//
+	/**
+	 * _insFileImport
+	 *
+	 * Used to add files to the FileImport table
+	 *
+	 * Used to add files to the FileImport table
+	 *
+	 * @type		StatementInsert
+	 *
+	 * @property
+	 */
+	private $_insFileImport;
 	
+	//------------------------------------------------------------------------//
+	// _selIsUnique
+	//------------------------------------------------------------------------//
+	/**
+	 * _selIsUnique
+	 *
+	 * Used to check if a file isnt in the DB already
+	 *
+	 * Used to check if a file isnt in the DB already
+	 *
+	 * @type		StatementSelect
+	 *
+	 * @property
+	 */
+	private $_selIsUnique;
+ 	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -112,16 +142,21 @@ die();
 		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
+		$this->_insFileImport("FileImport");
+		$this->_selIsUnique = new StatementSelect("FileImport", "Id", "Carrier = <carrier>");
+		
 		// instanciate collection downloaders
 		$this->_arrDownloader[COLLECTION_TYPE_FTP] = new FtpDownloadModule();
 		
 		// Define Collection Targets
 		$this->_arrCollectionModule["Unitel"]	["Name"]		= "Unitel";
+		$this->_arrCollectionModule["Unitel"]	["Carrier"]		= CARRIER_UNITEL;
  		$this->_arrCollectionModule["Unitel"]	["Type"]		= COLLECTION_TYPE_FTP;
  		$this->_arrCollectionModule["Unitel"]	["Server"]		= UNITEL_SERVER;
  		$this->_arrCollectionModule["Unitel"]	["Username"]	= UNITEL_USER;
  		$this->_arrCollectionModule["Unitel"]	["PWord"]		= UNITEL_PWORD;
  		$this->_arrCollectionModule["Unitel"]	["Dir"]			= UNITEL_DIR;
+ 		$this->_arrCollectionModule["Unitel"]	["FinalDir"]	= UNTIEL_FINAL_DIR;
 
 		/*
 		 * Skeleton Collection Definition
@@ -153,6 +188,11 @@ die();
 	 */
  	function Collect()
  	{
+		$insFileDownload = new StatementInsert("FileDownload");
+		$ubiFileDownload = new StatementUpdateById("FileDownload");	// FIXME
+		$selFileDownload = new StatementSelect("FileDownload", "*");				// FIXME
+		
+		
 		// For each file definition...
  		foreach ($this->_arrCollectionModule as $arrModule)
  		{
@@ -185,42 +225,71 @@ die();
 						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
 						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
 						
-				// Downloading from...
-				$this->AddToCollectionReport(MSG_CONNECTED, Array(
-						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
-						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
+				// Downloading from report message
+				$this->AddToCollectionReport(MSG_DOWNLOADING_FROM);
+				foreach ($this->_arrCurrentModule['Dir'] as $strDir)
+				{
+					$this->AddToCollectionReport(MSG_DIRS, Array('<Dir>' => $strDir));
+				}
 				
 				// download
 				$intCounter = 0;
 				while($strFileLocation = $dldDownloader->Download(TEMP_DOWNLOAD_DIR)) 
 				{
+					// Add to report that we're downloading the file
+					$this->AddToCollectionReport(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation));
+					
 					// set current download file
 					$this->_arrCurrentDownloadFile = Array("Location" => $strFileLocation, "Status" => RAWFILE_DOWNLOADED);
-						
+					
 					// unzip files
-					$arrFiles = $this->Unzip($strFilename); // always returns array of file locations (or FALSE)
+					$arrFiles = $this->Unzip($strFileLocation); // always returns array of file locations (or FALSE)
+					
+					// Add to report that we've unzipped files (provided we actually unzipped)
+					if (count($arrFiles) > 1)
+					{
+						$this->AddToCollectionReport(MSG_UNZIPPED_FILES);
+						
+						foreach ($arrFiles as $strFilename)
+						{
+							$this->AddToCollectionReport(MSG_UNZIPPED_FILE, Array('<FileName>' => $strFilename));
+						}
+					}
 					
 					// record download in db (FileDownload)
-					// TODO!!!! - get insert ID
+					$this->_arrCurrentDownloadFile['FileName'] 		= basename($strFileLocation);
+					$this->_arrCurrentDownloadFile['Carrier']		= $this->_arrCurrentModule['Carrier'];
+					$this->_arrCurrentDownloadFile['CollectedOn']	= "NOW()";
+					$intId = $insFileDownload->Execute($this->_arrCurrentDownloadFile);
 					
-					// import files 
-					$this->Import($arrFiles);
+					// import files
+					if (!$this->Import($arrFiles))
+					{
+						$this->AddToCollectionReport(MSG_IMPORT_FAILED, Array('<Reason>' => "We need a reason to fail?"));
+					}
+					else
+					{
+						// Add to report that we've imported
+						$this->AddToCollectionReport(MSG_IMPORTED);							
+					}
 					
 					// record download in db (FileDownload) - status has now been changed
-					// UpdateById
-					// TODO!!!!
-					
+					$ubiFileDownload->Execute($this->_arrCurrentDownloadFile);
+									
 					// increment counter
 					$intCounter++;
 				}
 				
-				// report
-				//TODO!!!! "$intCounter files downloaded from : {$arrModule['Name']}"
+				// End the Report, and send it off
+				$this->AddToCollectionReport(MSG_TOTALS, Array('<TotalFiles>' => $intCounter));
+				$this->_rptCollectionReport->Finish();
 				
 				// disconnect
 				$dldDownloader->Disconnect();
 			}
 		}
+		
+		
 	}
 
  	//------------------------------------------------------------------------//
@@ -260,7 +329,8 @@ die();
 				$strHash = $this->_IsUnique();
 				
 				// save db record FileImport
-				//TODO!!!!
+				$this->_arrCurrentImportFile['Carrier']	= $this->_arrCurrentModule['Carrier'];
+				$this->_insFileImport->Execute($this->_arrCurrentImportFile);
 			}
 			// set status of downloaded file
 			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORTED;
@@ -277,19 +347,19 @@ die();
 	function _StoreImportFile()
 	{
 		// get file details
-		$strFileName 		= $this->_arrCurrentImportFile['Filename'];
-		$strFileLocation 	= $this->_arrCurrentImportFile['Location'];
+		$strFileName			= $this->_arrCurrentImportFile['Filename'];
+		$strFileLocation		= $this->_arrCurrentImportFile['Location'];
 		$arrCollectionModule	= $this->_arrCollectionModule;
 		
 		// copy file to final location
-		//TODO!!!!
-		// set status on error
-		$this->_arrCurrentImportFile['Status'] = CDRFILE_MOVE_FAILED;
+		if (!copy($strFileLocation, $this->_arrCollectionModule["FinalDir"]))
+		{
+			// set status on error
+			$this->_arrCurrentImportFile['Status'] = CDRFILE_MOVE_FAILED;	
+		}
 		
-		// set file details
-		//TODO!!!!
-		//$this->_arrCurrentImportFile['Filename'] =;
-		//$this->_arrCurrentImportFile['Location'] =;
+		// set new file details
+		$this->_arrCurrentImportFile['Location'] = $this->_arrCollectionModule["FinalDir"] . "/" .$strFileName;
 	}
 	
 	function _FileType()
@@ -299,13 +369,19 @@ die();
 		$arrFileType	= $this->_arrCollectionModule["FileType"];
 		
 		// Find file type
-		//TODO!!!!
-		// set status on error
-		$this->_arrCurrentImportFile['Status'] = CDRFILE_BAD_TYPE;
-		
-		// set file details
-		//TODO!!!!
-		//$this->_arrCurrentImportFile['FileType'] =;
+		if (preg_match(FILE_PREG_RSLCOM))
+		{
+			$this->_arrCurrentImportFile['FileType'] = CDR_UNTIEL_RSLCOM;
+		}
+		/*elseif (preg_match())
+		{
+			
+		}*/
+		else
+		{
+			// set status on error
+			$this->_arrCurrentImportFile['Status'] = CDRFILE_BAD_TYPE;
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -328,15 +404,13 @@ die();
 	function _IsUnique($strFileName)
 	{
 		// get SHA1 hash
-		//TODO!!!!
-		// $strHash = 
+		$strHash = sha1_file($strFileName);
 		
 		// set file details
 		$this->_arrCurrentImportFile['SHA1'] = $strHash;
 		
 		// check name & SHA1 hash in the database (check only this carrier!)
-		//TODO!!!!
-		if ()//TODO!!!!
+		if (!$this->_selIsUnique->Execute(Array('carrier' => $this->_arrCurrentModule['Carrier'])))
 		{
 			// file is unique
 			return $strHash;
@@ -371,7 +445,7 @@ die();
 		// get filename
 		$strFileName = basename($strFile);
 		$this->_arrCurrentDownloadFile['FileName'] = $strFileName;
-			
+		
 		$strFile = trim($strFile);
 		if (!$strFile || !$strFileName)
 		{
@@ -413,7 +487,6 @@ die();
 			return $arrFiles;
 		}
 	}
-}
 
  	//------------------------------------------------------------------------//
 	// AddToCollectionReport
@@ -443,124 +516,6 @@ die();
  		
  		$this->rptCollectionReport->AddMessage($strMessage, FALSE);
  	}
-
-/*
-		
-		// Clean predefined temp downloads dir
- 		RemoveDir(TEMP_DOWNLOAD_DIR);
- 		mkdir(TEMP_DOWNLOAD_DIR, TEMP_DOWNLOAD_DIR_PERMISSIONS);
- 		
- 		// For each file definition...
- 		foreach ($this->_arrCollectionModule as $arrModule)
- 		{
- 			
- 			if ($arrModule["Type"] != COLLECTION_TYPE_FTP)
- 			{
-				throw new Exception("Undefined Collection Module");
- 			}
- 			
- 			// Connect to the remote server
- 			if ($this->_resConnection = ftp_connect($arrModule["Server"]) === FALSE)
- 			{
- 				throw new Exception ("Can't connect to FTP server ".$arrModule["Server"]);
- 			}
- 			if (!ftp_login($this->_resConnection, $arrModule["Username"], $arrModule["PWord"]))
- 			{
- 				throw new Exception ("Bad FTP login info");
- 			}
- 			
- 			// If we have a list of directories, call ProcessDirectory for each one
- 			if (is_array($arrModule["Dir"]))
- 			{
- 				foreach ($arrModule["Dir"] as $strDir)
- 				{
- 					$this->ProcessDirectory($strDir);
- 				}
- 			}
- 			else
- 			{
- 				$this->ProcessDirectory($arrModule["Dir"]);
- 			}
- 			
-
- 			// For each file
- 			foreach ($arrFileList as $strFileName)
- 			{
- 				// Is the file new??
- 				if (IS_NEW($strFileName))
- 				{
- 					// Download from remote server
- 					
- 					// Is it a zip file??
- 					if (IS_ZIP_FILE($strFileName))
- 					{
- 						// Unzip file to predefined dir ("/tmp/vixen_download") 
- 						
- 						// For each file
- 						foreach ($arrZipFileList as $strZipFile)
- 						{
- 							Process($filFile);
- 						}
- 					}
- 					else
- 					{
-						Process($filFile);
- 					}
- 				}
- 			}
- 		}
- 					 					
- 		// TODO: Send report
- 	}
-
-*/
- 	//------------------------------------------------------------------------//
-	// ProcessDirectory
-	//------------------------------------------------------------------------//
-	/**
-	 * ProcessDirectory()
-	 *
-	 * Retrieves CDR Files
-	 *
-	 * Retrieves CDR Files, then sends them to be processed
-	 * 
-	 * @param	string	$strDirectory		Directory to be processed
-	 * 
-	 * @method
-	 */
-/* 	function ProcessDirectory($strDirectory)
- 	{
-		$arrFileList = ftp_nlist($this->_resConnection, $strDirectory);
-		
-		// For each file
-		foreach ($arrFileList as $strFileName)
-		{
-			// Make sure we're dealing with a file and not a directory
-				
-			// Is the file new??
-			///if (IS_NEW($strFileName))
-			{
-				// Download from remote server
-				
-				// Is it a zip file??
-				if (IS_ZIP_FILE($strFileName))
-				{
-					// Unzip file to predefined dir ("/tmp/vixen_download") 
-					
-					// For each file
-					foreach ($arrZipFileList as $strZipFile)
-					{
-						Process($filFile);
-					}
-				}
-				else
-				{
-					Process($filFile);
-				}
-			}
-		}
- 	}
-	
-*/
+ }
 
 ?>

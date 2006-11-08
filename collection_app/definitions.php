@@ -71,6 +71,12 @@ define("MSG_IMPORTED"				, "\t[Imported OK]\n\n");
 define("MSG_IMPORT_FAILED"			, "\t[Import FAILED]\n\t[Reason : <Reason>]\n\n");
 define("MSG_TOTALS"					, MSG_HORIZONTAL_RULE."Total files Imported\t: <TotalFiles>".MSG_HORIZONTAL_RULE);
 
+// TODO: Filetype PREG Strings
+define("FILE_PREG_RSLCOM"			, "");
+define("FILE_PREG_COMMANDER"		, "");
+define("FILE_PREG_OPTUS"			, "");
+define("FILE_PREG_AAPT"				, "");
+define("FILE_PREG_ISEEK"			, "");
 
 // Non-Fatal Exceptions
 
