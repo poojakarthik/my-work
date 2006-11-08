@@ -43,8 +43,7 @@
  			{
  				throw new Exception
 				(
-					"The parameter passed to attach an object to transform was not inherited from `data`." .
-					"<pre>" . print_r ($dataObject, TRUE)
+					"Attaching Object on `Style` object failed because object is not inherit from `data`."
 				);
  			}
  			

@@ -13,9 +13,9 @@
 				<h1>VOIPTEL</h1>
 				
 				<xsl:choose>
-					<xsl:when test="/Response/Authentication/User">
+					<xsl:when test="/Response/Authentication/Contact">
 						You are currently logged in as 
-						<xsl:value-of select="/Response/Authentication/User/UserName" />.
+						<xsl:value-of select="/Response/Authentication/Contact/UserName" />.
 						<a href="logout.php">Logout</a>
 					</xsl:when>
 					<xsl:otherwise>

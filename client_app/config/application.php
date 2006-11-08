@@ -61,6 +61,8 @@ require_once($strWebDir."classes/account/account.php");
 // load the authentication module
 require_once($strWebDir."classes/authentication/authentication.php");
 require_once($strWebDir."classes/contact/authenticatedcontact.php");
+require_once($strWebDir."classes/contact/contact.php");
+require_once($strWebDir."classes/contact/contacts.php");
 // load the XSLT stylesheet module
 require_once($strWebDir."classes/style/style.php");
 

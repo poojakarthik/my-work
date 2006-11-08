@@ -5,7 +5,7 @@
 		
 		function __construct ()
 		{
-			parent::__construct ("Contact");
+			parent::__construct ("AuthenticatedContact");
 			
 			// Check their session is valid ...
 			$selAuthenticated = new StatementSelect (
@@ -93,6 +93,26 @@
 		public function getInvoice ($intInvoice)
 		{
 			return new Invoice ($this, $intInvoice);
+		}
+		
+		public function getContacts ()
+		{
+			if (!$this->isCustomerContact ())
+			{
+				return false;
+			}
+			
+			return new Contacts ($this);
+		}
+		
+		public function getContact ($Id)
+		{
+			if (!$this->isCustomerContact () && $Id <> $this->Pull ("Id")->getValue ())
+			{
+				throw new Exception ("No access to Contact");
+			}
+			
+			return new Contact ($this, $Id);
 		}
 	}
 	

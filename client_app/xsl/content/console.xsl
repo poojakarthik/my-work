@@ -6,21 +6,18 @@
 		<h2>Console</h2>
 		
 		<p>
-			Welcome, <strong><xsl:value-of select="/Response/Authentication/Contact/UserName" /></strong>.
+			Welcome, <strong><xsl:value-of select="/Response/Authentication/AuthenticatedContact/UserName" /></strong>.
 			You are currently logged into your account.
 		</p>
 		
 		<ul>
 			<xsl:choose>
-				<xsl:when test="/Response/Authentication/Contact/CustomerContact = 1">
-					<li>
-						<a href="accounts.php">View my Accounts</a>
-					</li>
+				<xsl:when test="/Response/Authentication/AuthenticatedContact/CustomerContact = 1">
+					<li><a href="contacts.php">List my Contacts</a></li>
+					<li><a href="accounts.php">View my Accounts</a></li>
 				</xsl:when>
 			</xsl:choose>
-			<li>
-				<a href="account.php">View my Primary Account</a>
-			</li>
+			<li><a href="account.php">View my Primary Account</a></li>
 		</ul>
 	</xsl:template>
 </xsl:stylesheet>

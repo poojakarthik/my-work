@@ -1532,7 +1532,7 @@
 	 	$arrBoundVariables = Array();
 	 	$strType = "";
 	 	
-		unset ($arrParams);
+		$arrParams = array();
 		
 	 	if ($this->_bolIsPartialUpdate)
 	 	{
@@ -1720,10 +1720,10 @@ class MySQLFunction
 	
 	public function Execute (&$strType, &$arrParams, $arrData)
 	{
-		foreach ($this->_arrOrderedParams as $mixKey => $mixColumn)
+		foreach ($this->_arrOrderedParams as $mixColumn)
 		{
-			$strType .= Statement::GetDBInputType ($arrData [$mixKey]);
-			$arrParams [] = $arrData [$mixKey];
+			$strType .= Statement::GetDBInputType ($arrData [$mixColumn]);
+			$arrParams [] = $arrData [$mixColumn];
 		}
 	}
 }
