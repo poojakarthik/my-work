@@ -390,21 +390,23 @@ die();
 	/**
 	 * IsUnique()
 	 *
-	 * Test if a file is unique on the system
+	 * Test if the import file is unique on the system
 	 *
-	 * Test if a file is unique on the system
+	 * Test if the import file is unique on the system
 	 * 
-	 * @param	string	$strFileName	Downloaded file name
 	 *
 	 * @return	string	unique SHA1 hash of the file. returns FALSE if file is
 	 * 					not unique
 	 * 
 	 * @method
 	 */
-	function _IsUnique($strFileName)
+	function _IsUnique()
 	{
+		// get file details
+		$strFileLocation = $this->_arrCurrentImportFile['Location'];
+		
 		// get SHA1 hash
-		$strHash = sha1_file($strFileName);
+		$strHash = sha1_file($strFileLocation); 
 		
 		// set file details
 		$this->_arrCurrentImportFile['SHA1'] = $strHash;
@@ -461,13 +463,20 @@ die();
 		else
 		{
 			// add line to report
-			//TODO!!!! "Unziping File : $strFile"
+			//TODO!!!! "Unziping File : $strFileName"
 			
 			// clean unzip dir
 			// TODO!!!!
 			
+			// set password
+			if ($this->_arrCurrentModule[ZipPword])
+			{
+				$strPassword = "-p {$this->_arrCurrentModule[ZipPword]}"
+			}
+			
 			// unzip files
-			// TODO!!!!
+			$strCommand = "unzip $strPassword $strFile -d $strOutputDir";
+			exec($strCommand);
 			
 			// get list of files (full path)
 			//TODO!!!!
