@@ -23,6 +23,24 @@
 			$rowContact = $selAuthenticated->Fetch ($this);
 		}
 		
+		public function checkPassword ($strPassWord)
+		{
+			$selPasswordMatch = new StatementSelect (
+				"Contact", "count(*) AS Matches", "Id = <Id> AND PassWord = SHA1(<PassWord>)"
+			);
+			
+			$selPasswordMatch->Execute (
+				Array (
+					"Id" => 		$this->Pull ("Id")->getValue (),
+					"PassWord" =>	$strPassWord
+				)
+			);
+			
+			$arrLength = $selPasswordMatch->Fetch ();
+			
+			return $arrLength ['Matches'] == 1;
+		}
+		
 		public function isCustomerContact ()
 		{
 			return $this->Pull ("CustomerContact")->getValue () == 1;

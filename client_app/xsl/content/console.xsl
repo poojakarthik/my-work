@@ -18,6 +18,7 @@
 				</xsl:when>
 			</xsl:choose>
 			<li><a href="account.php">View my Primary Account</a></li>
+			<li><a href="contact.php">View my Profile</a></li>
 		</ul>
 	</xsl:template>
 </xsl:stylesheet>

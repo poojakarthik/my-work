@@ -94,7 +94,7 @@
 					setCookie ("Id", $_COOKIE ['Id'], time () + (60 * 20), "/");
 					setCookie ("SessionId", $_COOKIE ['SessionId'], time () + (60 * 20), "/");
 				} else {
-					// Unset the cookies so we don't have to bother with them
+					// Unset the cookies so we don't have to bother checking them
 					setCookie ("Id", "", time () - 3600);
 					setCookie ("SessionId", "", time () - 3600);
 				}
