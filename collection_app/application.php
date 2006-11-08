@@ -163,23 +163,32 @@ die();
 			$dldDownloader = $this->_arrDownloader[$arrModule['Type']];
 			if (!$dldDownloader)
 			{
-				// no collection module
-				// TODO!!!!
-				// report
-				//TODO!!!! "MISSING COLLECTION MODULE : {$arrModule['Name']}"
+				// No collection module - append to report
+				$this->AddToCollectionReport(MSG_NO_COLLECTION_MODULE, Array(
+						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
+						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
 				continue;
 			}
 			
 			// connect
 			if(!$dldDownloader->Connect($arrModule))
 			{
-				// report
-				//TODO!!!! "CONNECTION FAILED : {$arrModule['Name']}"
+				// Connection failed
+				$this->AddToCollectionReport(MSG_CONNECTION_FAILED, Array(
+						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
+						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
 			}
 			else
 			{
-				// report
-				//TODO!!!! "Connected to : {$arrModule['Name']}"
+				// Connection successful
+				$this->AddToCollectionReport(MSG_CONNECTED, Array(
+						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
+						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
+						
+				// Downloading from...
+				$this->AddToCollectionReport(MSG_CONNECTED, Array(
+						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
+						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
 				
 				// download
 				$intCounter = 0;
@@ -405,6 +414,35 @@ die();
 		}
 	}
 }
+
+ 	//------------------------------------------------------------------------//
+	// AddToCollectionReport
+	//------------------------------------------------------------------------//
+	/**
+	 * AddToCollectionReport()
+	 *
+	 * Adds a message to the collection report
+	 *
+	 * Adds a message to the collection report
+	 *
+	 * @param	string		$strMessage			The message - use constants
+	 * 											from definition.php.
+	 * @param	array		$arrAliases			Associative array of alises.
+	 * 											MUST use the same aliases as used in the 
+	 * 											constant being used.  Key is the alias (including the <>'s)
+	 * 											, and the Value is the value to be inserted.
+	 * 
+	 * @method
+	 */
+ 	function AddToCollectionReport($strMessage, $arrAliases = Array())
+ 	{
+ 		foreach ($arrAliases as $arrAlias => $arrValue)
+ 		{
+ 			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
+ 		}
+ 		
+ 		$this->rptCollectionReport->AddMessage($strMessage, FALSE);
+ 	}
 
 /*
 		

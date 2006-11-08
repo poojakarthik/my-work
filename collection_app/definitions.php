@@ -57,6 +57,14 @@ define("CDRFILE_IMPORT_FAILED"		, 205);
 define("CDRFILE_NORMALISE_FAILED"	, 206);
 define("CDRFILE_NORMALISED"			, 207);
 
+// Collection Report Messages
+define("MSG_HORIZONTAL_RULE"		, "================================================================================\n");
+define("MSG_NO_COLLECTION_MODULE"	, "NO COLLECTION MODULE\t: <FriendlyName> (<Type>)\n\n");
+define("MSG_CONNECTION_FAILED"		, "CONNECTION FAILED\t: <FriendlyName> (<Type>)\n\n");
+define("MSG_CONNECTED"				, MSG_HORIZONTAL_RULE."CONNECTED TO\t\t: <FriendlyName> (<Type>)\n".MSG_HORIZONTAL_RULE);
+define("MSG_DOWNLOADING_FROM"		, "");
+
+
 // Non-Fatal Exceptions
 
 
