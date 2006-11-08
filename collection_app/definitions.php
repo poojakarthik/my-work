@@ -62,7 +62,14 @@ define("MSG_HORIZONTAL_RULE"		, "===============================================
 define("MSG_NO_COLLECTION_MODULE"	, "NO COLLECTION MODULE\t: <FriendlyName> (<Type>)\n\n");
 define("MSG_CONNECTION_FAILED"		, "CONNECTION FAILED\t: <FriendlyName> (<Type>)\n\n");
 define("MSG_CONNECTED"				, MSG_HORIZONTAL_RULE."CONNECTED TO\t\t: <FriendlyName> (<Type>)\n".MSG_HORIZONTAL_RULE);
-define("MSG_DOWNLOADING_FROM"		, "");
+define("MSG_DOWNLOADING_FROM"		, "Downloading from:\n");
+define("MSG_DIRS"					, "\t<Dir>\n");
+define("MSG_GRABBING_FILE"			, "Grabbing File\t: <FileName>\n");
+define("MSG_UNZIPPED_FILES"			, "\t\tUnzipped Files:\n");
+define("MSG_UNZIPPED_FILE"			, "\t\t\t<FileName>\n");
+define("MSG_IMPORTED"				, "\t[Imported OK]\n\n");
+define("MSG_IMPORT_FAILED"			, "\t[Import FAILED]\n\t[Reason : <Reason>]\n\n");
+define("MSG_TOTALS"					, MSG_HORIZONTAL_RULE."Total files Imported\t: <TotalFiles>".MSG_HORIZONTAL_RULE);
 
 
 // Non-Fatal Exceptions
