@@ -41,6 +41,12 @@ define("CDR_OPTUS_STANDARD"			, 3);
 define("CDR_AAPT_STANDARD"			, 4);
 define("CDR_ISEEK_STANDARD"			, 5);
 
+// Carriers
+define("CARRIER_UNITEL"	, 1);
+define("CARRIER_OPTUS"	, 2);
+define("CARRIER_AAPT"	, 3);
+define("CARRIER_ISEEK"	, 4);
+
 // ERROR TABLE
 define("FATAL_ERROR_LEVEL"			, 10000);
 
