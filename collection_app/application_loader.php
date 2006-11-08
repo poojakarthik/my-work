@@ -87,6 +87,7 @@
 //----------------------------------------------------------------------------//
 
 // load framework
+require_once($strFrameworkDir."framework.php");
 require_once($strFrameworkDir."functions.php");
 require_once($strFrameworkDir."definitions.php");
 require_once($strFrameworkDir."config.php");

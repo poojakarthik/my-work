@@ -26,7 +26,7 @@
  */
 
 // Application entry point - create an instance of the application object
-$appNormalise = new ApplicationCollection();
+$appCollection = new ApplicationCollection();
 
 
 
