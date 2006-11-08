@@ -32,11 +32,12 @@
 //----------------------------------------------------------------------------//
 
 // Diectories
-define("TEMP_DOWNLOAD_DIR",				"/tmp/vixen_download");
-define("TEMP_DOWNLOAD_DIR_PERMISSIONS",	0777);
+define("TEMP_DOWNLOAD_DIR"				, "/tmp/vixen_download");
+define("TEMP_DOWNLOAD_DIR_PERMISSIONS"	, 0777);
+define("UNZIP_DIR"						, TEMP_DOWNLOAD_DIR."/unzip");
 
 // Collection Types
-define("COLLECTION_TYPE_FTP",			100);
+define("COLLECTION_TYPE_FTP"		, 100);
 
 // CDR File Handling (Range is 200-299)
 define("RAWFILE_DOWNLOADED"			, 250);

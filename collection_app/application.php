@@ -462,41 +462,31 @@ die();
 		}
 		else
 		{
-			// add line to report
-			//TODO!!!! "Unziping File : $strFileName"
-			
-			// clean unzip dir
-			// TODO!!!!
-			
 			// set password
 			if ($this->_arrCurrentModule['ZipPword'])
 			{
-				$strPassword = "-p {$this->_arrCurrentModule['ZipPword']}"
+				$strPassword = "-p {$this->_arrCurrentModule['ZipPword']}";
 			}
 			else
 			{
 				$strPassword = '';
 			}
 			
-			// set output dir
-			//TODO!!!!
-			//$strOutputDir = ;
+			// set and clean output dir
+			$strOutputDir = UNZIP_DIR;
+			CleanDir($strOutputDir);
 			
 			// unzip files
 			$strCommand = "unzip $strPassword $strFileLocation -d $strOutputDir";
 			exec($strCommand);
 			
 			// get list of files (full path)
-			//TODO!!!!
-			// $arrFileList =
+			$arrFileList = glob("*");
 			
 			// build output
 			$arrFiles = Array();
 			foreach ($arrFileList as $strUnzipedFile)
 			{
-				// add unziped file name to report
-				//TODO!!!! "	Extracted File : $strUnzipedFile"
-				
 				// build return array
 				$strFileName = basename($strUnzipedFile);
 				$arrFiles[$strUnzipedFile] = $strFileName;
