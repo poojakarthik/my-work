@@ -282,9 +282,9 @@ die();
 			
 			// check for a preprocessor
 			$bolPreprocessor = FALSE;
-			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
+			if ($this->_arrNormalisationModule[$arrCDRFile["FileType"]])
 			{
-				if (method_exists ($this->_arrNormalisationModule[$arrCDR["FileType"]], "Preprocessor" ))
+				if (method_exists ($this->_arrNormalisationModule[$arrCDRFile["FileType"]], "Preprocessor" ))
 				{
 					$bolPreprocessor = TRUE;
 				}
@@ -301,7 +301,7 @@ die();
 				// run Preprocessor
 				if ($bolPreprocessor)
 				{
-					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDR["FileType"]]->Preprocessor(fgets($fileCDRFile));
+					$arrCDRLine["CDR"]		= $this->_arrNormalisationModule[$arrCDRFile["FileType"]]->Preprocessor(fgets($fileCDRFile));
 				}
 				else
 				{
