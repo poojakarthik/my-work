@@ -36,6 +36,36 @@
 	// RemoveDir
 	//------------------------------------------------------------------------//
 	/**
+	 * CleanDir()
+	 *
+	 * Cleans a directory
+	 *
+	 * Cleans a directory recursively
+	 * 
+	 * @param	string	$strDirectory		Directory to flush
+	 * 
+	 * @method
+	 */
+ 	function CleanDir($strDirectory)
+ 	{
+		$arrContents = scandir($strDirectory);
+		foreach ($arrContents as $strItem) {
+			if (is_dir($strDirectory.$strItem) && $strItem != '.' && $strItem != '..')
+			{
+				RemoveDir($strDirectory.$strItem.'/');
+				rmdir($strDirectory.$strItem);
+			}
+			elseif ((file_exists($strDirectory.$strItem)) && ($strItem != '.') && ($strItem != '..'))
+			{
+				unlink($strDirectory.$strItem);
+			}
+		}
+	}
+	
+ 	//------------------------------------------------------------------------//
+	// RemoveDir
+	//------------------------------------------------------------------------//
+	/**
 	 * RemoveDir()
 	 *
 	 * Removes a directory
@@ -48,18 +78,8 @@
 	 */
  	function RemoveDir($strDirectory)
  	{
-		$arrContents = scandir($strDirectory);
-		foreach ($arrContents as $strItem) {
-			if (is_dir($strDirectory.$strItem) && $strItem != '.' && $strItem != '..')
-			{
-				RemoveDir($strDirectory.$strItem.'/');
-			}
-			elseif ((file_exists($strDirectory.$strItem)) && ($strItem != '.') && ($strItem != '..'))
-			{
-				unlink($strDirectory.$strItem);
-			}
-		}
-		rmdir($strDirectory);
+		CleanDir($strDirectory);
+		rmdir($strDirectory);		
 	}
 
 //------------------------------------------------------------------------//
