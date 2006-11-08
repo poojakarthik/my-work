@@ -189,10 +189,8 @@ die();
  	function Collect()
  	{
 		$insFileDownload = new StatementInsert("FileDownload");
-		$ubiFileDownload = new StatementUpdateById("FileDownload");	// FIXME
-		$selFileDownload = new StatementSelect("FileDownload", "*");				// FIXME
-		
-		
+		$ubiFileDownload = new StatementUpdateById("FileDownload");
+			
 		// For each file definition...
  		foreach ($this->_arrCollectionModule as $arrModule)
  		{
@@ -224,7 +222,7 @@ die();
 				$this->AddToCollectionReport(MSG_CONNECTED, Array(
 						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
 						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
-						
+				
 				// Downloading from report message
 				$this->AddToCollectionReport(MSG_DOWNLOADING_FROM);
 				foreach ($this->_arrCurrentModule['Dir'] as $strDir)
