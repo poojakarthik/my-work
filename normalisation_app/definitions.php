@@ -31,6 +31,9 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
+// user name
+define("USER_NAME"						, "Normilisation_app");
+
 // Normalisation Report Messages
 define("CDR_FILE_IMPORT_SUCCESS"		, "IMPORT SUCCESSFUL		: CDR File <object> was imported successfully");
 define("CDR_FILE_IMPORT_FAIL"			, "IMPORT FAILED			: CDR File <object> failed to import.  Reason: <reason>");

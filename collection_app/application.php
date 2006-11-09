@@ -518,7 +518,7 @@ die();
  			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
  		}
  		
- 		$this->rptCollectionReport->AddMessage($strMessage, FALSE);
+ 		$this->_rptCollectionReport->AddMessage($strMessage, FALSE);
  	}
  }
 

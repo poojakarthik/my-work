@@ -31,6 +31,9 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
+// user name
+define("USER_NAME"						, "Collection_app");
+
 // Diectories
 define("TEMP_DOWNLOAD_DIR"				, "/tmp/vixen_download");
 define("TEMP_DOWNLOAD_DIR_PERMISSIONS"	, 0777);

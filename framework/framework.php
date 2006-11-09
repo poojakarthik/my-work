@@ -80,6 +80,10 @@
 	 function __construct()
 	 {
 	 	ob_start();
+		if (DEBUG_MODE == FALSE)
+		{
+			error_reporting(0);
+		}
 	 	$this->_errErrorHandler = new ErrorHandler(); 	
 		set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));

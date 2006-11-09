@@ -1320,7 +1320,15 @@
 	 */ 
  	function __construct($strTable, $arrColumns = null)
 	{
-		$strId = $this->db->_arrTableDefine[$strTable]['Id'];
+		// make global database object available
+		$this->db = &$GLOBALS['dbaDatabase'];
+		
+		$strId = $this->db->arrTableDefine[$strTable]['Id'];
+		if (!$strId)
+		{
+			throw new Exception("Missing Table Id");
+		}
+		
 		$strWhere = "$strId = <$strId>";
 		parent::__construct($strTable, $strWhere, $arrColumns = null);
 	}

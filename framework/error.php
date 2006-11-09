@@ -263,11 +263,7 @@ class ErrorHandler
 	 */
 	 function PHPErrorCatcher($intErrorNo, $strErrorMessage, $strErrorFile, $intErrorLine)
 	 {
-	 	if ($intErrorNo != ERROR_LEVEL)
-		{
-			return FALSE;
-		}
-		
+	 	// build error msg
 	 	$strUser 		= USER_NAME;
 	 	$strLocation 	= $strErrorFile . " (Line " .  $intErrorLine . ")";
 	 	$strMessage		= $strErrorMessage . "\n\t\t";
@@ -278,8 +274,31 @@ class ErrorHandler
 	 	}
 	 	$strMessage .= "\n";
 	 	
-	 	// Redirect to RecordError
-	 	$this->RecordError($intErrorNo, $strUser, $strLocation, $strMessage);
+		switch ($intErrorNo)
+		{
+			case E_WARNING:
+			case E_NOTICE:
+			case E_CORE_WARNING:
+			case E_COMPILE_WARNING:
+			case E_USER_WARNING:
+			case E_USER_NOTICE:
+			case E_STRICT:
+				if (DEBUG_MODE === TRUE)
+				{
+					return FALSE;
+				}
+				else
+				{
+					// ignore these errors
+					return TRUE;
+				}
+				break;
+				
+			default:
+				// Fatal Error : Redirect to RecordError
+	 			$this->RecordError($intErrorNo, $strUser, $strLocation, $strMessage);
+				die();
+		}
 	 }
 }
 

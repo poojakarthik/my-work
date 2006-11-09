@@ -34,9 +34,6 @@
 // debug mode
 define("DEBUG_MODE"					, FALSE);
 
-// error level
-define("ERROR_LEVEL"				, E_ERROR);
-
 // friendly error msg
 define("ERROR_MESSAGE"				, "an error occured... sucks to be you");
 
