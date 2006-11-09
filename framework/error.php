@@ -122,6 +122,26 @@ class ErrorHandler
 		$insInsertStatement->Execute($arrData);
 		*/
 		
+		// build error msg
+		$strMessage = date("Y-m-d H:i:s") . " -- " . $strUser . " caused an Error "
+		. "(Code: " . $strErrorCode . ") in module " . $strLocation . ".\n"
+		. $strDescription . "\n";
+		
+		// output error message
+		if (DEBUG_MODE === TRUE)
+		{
+			// output debug message
+			echo (nl2br("\n $strMessage \n\n"));
+		}
+		else
+		{
+			// output user "friendly" error msg
+			// TODO!!!! - add error Id from db
+			ob_clean();
+			echo (ERROR_MESSAGE);
+			
+		}
+		
 		// If we're writing a report, then append the error
 		if (isset($this->_rptReport))
 		{
@@ -243,6 +263,11 @@ class ErrorHandler
 	 */
 	 function PHPErrorCatcher($intErrorNo, $strErrorMessage, $strErrorFile, $intErrorLine)
 	 {
+	 	if ($intErrorNo != ERROR_LEVEL)
+		{
+			return FALSE;
+		}
+		
 	 	$strUser 		= USER_NAME;
 	 	$strLocation 	= $strErrorFile . " (Line " .  $intErrorLine . ")";
 	 	$strMessage		= $strErrorMessage . "\n\t\t";

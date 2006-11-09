@@ -1321,7 +1321,7 @@
  	function __construct($strTable, $arrColumns = null)
 	{
 		$strId = $this->db->_arrTableDefine[$strTable]['Id'];
-		$where = "$strId = <$strId>";
+		$strWhere = "$strId = <$strId>";
 		parent::__construct($strTable, $strWhere, $arrColumns = null);
 	}
 	

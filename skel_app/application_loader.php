@@ -97,6 +97,10 @@ require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 
+// create framework instance
+$GLOBALS['fwkFramework'] = new Framework();
+$framework = $GLOBALS['fwkFramework'];
+
 // load application 
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");

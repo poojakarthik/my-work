@@ -32,7 +32,13 @@
 //----------------------------------------------------------------------------//
 
 // debug mode
-define("DEBUG_MODE"					, TRUE);
+define("DEBUG_MODE"					, FALSE);
+
+// error level
+define("ERROR_LEVEL"				, E_ERROR);
+
+// friendly error msg
+define("ERROR_MESSAGE"				, "an error occured... sucks to be you");
 
 // CDR TYPES
 define("CDR_UNTIEL_RSLCOM"			, 1);

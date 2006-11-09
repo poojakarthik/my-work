@@ -28,7 +28,8 @@
 // Application entry point - create an instance of the application object
 $appCollection = new ApplicationCollection();
 
-
+// run the thing
+$appCollection->Collect();
 
 // finished
 echo("\n-- End of Collection --\n");
@@ -139,8 +140,6 @@ die();
 	 	// Initialise framework components
 		$this->_errErrorHandler = new ErrorHandler();
 		$this->_rptCollectionReport = new Report("Collection Report for " . date("Y-m-d"), "flame@telcoblue.com.au");
-		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
-		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
 		$this->_insFileImport = new statementInsert("FileImport");
 		$this->_selIsUnique = new StatementSelect("FileImport", "Id", "Carrier = <carrier>");

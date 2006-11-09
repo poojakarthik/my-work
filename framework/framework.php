@@ -79,12 +79,18 @@
 	 */
 	 function __construct()
 	 {
-	 	//$errErrorHandler = new ErrorHandler(); 	
-	 	//set_error_handler($errErrorHandler, "PHPErrorCatcher");
-	 	//set_exception_handler($errErrorHandler, "PHPExceptionCatcher");
+	 	ob_start();
+	 	$this->_errErrorHandler = new ErrorHandler(); 	
+		set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
+		set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
 		// start timing
 		$this->_intStartTime = microtime(TRUE);
+	 }
+	 
+	 function Render()
+	 {
+	 	ob_flush();
 	 }
 	 
 	 function Uptime()
