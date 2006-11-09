@@ -42,6 +42,13 @@ define("UNZIP_DIR"						, TEMP_DOWNLOAD_DIR."/unzip");
 // Collection Types
 define("COLLECTION_TYPE_FTP"		, 100);
 
+// Filename Regex's
+define("REGEX_OPTUS"				, "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_s\.dat$/");
+define("REGEX_AAPT"					, "/^W\d{7}\.[A-La-l][0-3]\d$/");
+define("REGEX_RSLCOM"				, "/^[A-Za-z]\d{7}$\.csv$/");
+define("REGEX_COMMANDER"			, "");
+define("REGEX_ISEEK"				, "");
+
 // CDR File Handling (Range is 200-299)
 define("RAWFILE_DOWNLOADED"			, 250);
 define("RAWFILE_DOWNLOAD_FAILED"	, 251);
@@ -74,13 +81,6 @@ define("MSG_UNZIPPED_FILE"			, "\t\t\t<FileName>\n");
 define("MSG_IMPORTED"				, "\t[Imported OK]\n\n");
 define("MSG_IMPORT_FAILED"			, "\t[Import FAILED]\n\t[Reason : <Reason>]\n\n");
 define("MSG_TOTALS"					, MSG_HORIZONTAL_RULE."Total files Imported\t: <TotalFiles>".MSG_HORIZONTAL_RULE);
-
-// TODO: Filetype PREG Strings
-define("FILE_PREG_RSLCOM"			, "");
-define("FILE_PREG_COMMANDER"		, "");
-define("FILE_PREG_OPTUS"			, "");
-define("FILE_PREG_AAPT"				, "");
-define("FILE_PREG_ISEEK"			, "");
 
 // Non-Fatal Exceptions
 
