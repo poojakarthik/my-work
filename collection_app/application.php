@@ -138,15 +138,15 @@ die();
  	{
 	 	// Initialise framework components
 		$this->_errErrorHandler = new ErrorHandler();
-		$this->_rptCollectionReport = new Report("Collection Report for " . now(), "flame@telcoblue.com.au");
+		$this->_rptCollectionReport = new Report("Collection Report for " . date("Y-m-d"), "flame@telcoblue.com.au");
 		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
-		$this->_insFileImport("FileImport");
+		$this->_insFileImport = new statementInsert("FileImport");
 		$this->_selIsUnique = new StatementSelect("FileImport", "Id", "Carrier = <carrier>");
 		
 		// instanciate collection downloaders
-		$this->_arrDownloader[COLLECTION_TYPE_FTP] = new FtpDownloadModule();
+		$this->_arrDownloader[COLLECTION_TYPE_FTP] = new CollectionModuleFTP();
 		
 		// Define Collection Targets
 		$this->_arrCollectionModule["Unitel"]	["Name"]		= "Unitel";

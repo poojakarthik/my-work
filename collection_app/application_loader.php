@@ -98,7 +98,7 @@ require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 
 // load collection modules
-//require_once($strApplicationDir."normalisation_modules/base_module.php");
+require_once($strApplicationDir."collection_modules/module_ftp.php");
 
 
 // load application 
