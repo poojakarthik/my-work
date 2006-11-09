@@ -88,6 +88,7 @@
 //----------------------------------------------------------------------------//
 
 // load framework
+require_once($strFrameworkDir."framework.php");
 require_once($strFrameworkDir."functions.php");
 require_once($strFrameworkDir."definitions.php");
 require_once($strFrameworkDir."config.php");
@@ -95,7 +96,11 @@ require_once($strFrameworkDir."database_define.php");
 require_once($strFrameworkDir."db_access.php");
 require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
-require_once($strFrameworkDir."framework.php");
+require_once($strFrameworkDir."exception_vixen.php");
+
+// create framework instance
+$GLOBALS['fwkFramework'] = new Framework();
+$framework = $GLOBALS['fwkFramework'];
 
 // load application 
 require_once($strApplicationDir."definitions.php");

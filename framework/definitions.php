@@ -32,7 +32,7 @@
 //----------------------------------------------------------------------------//
 
 // debug mode
-define("DEBUG_MODE"					, FALSE);
+define("DEBUG_MODE"					, TRUE);
 
 // friendly error msg
 define("ERROR_MESSAGE"				, "an error occured... sucks to be you");

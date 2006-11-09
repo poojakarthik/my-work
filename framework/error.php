@@ -131,7 +131,7 @@ class ErrorHandler
 		if (DEBUG_MODE === TRUE)
 		{
 			// output debug message
-			echo (nl2br("\n $strMessage \n\n"));
+			echo ("<pre>\n $strMessage \n\n</pre>");
 		}
 		else
 		{
@@ -145,10 +145,6 @@ class ErrorHandler
 		// If we're writing a report, then append the error
 		if (isset($this->_rptReport))
 		{
-			$strMessage = date("D/M/Y\@H:M:S") . " -- " . $strUser . "caused an Error "
-						. "(Code: " . $strErrorCode . ") in module " . $strLocation . ".\n\n"
-						. "\t\"" . $strDescription . "\"\n";
-			
 			$this->_rptReport->AddMessage($strMessage);
 		}
 	}
@@ -238,7 +234,7 @@ class ErrorHandler
 	 {
 	 	$strUser 		= USER_NAME;
 	 	$strLocation 	= $excException->getFile() . " (Line " .  $excException->getLine() . ")";
-	 	$strMessage		= $excException->getMessage() . "\n\t\t" . $excException->getTraceAsString() . "\n";
+	 	$strMessage		= $excException->getMessage() . "\n" . $excException->getTraceAsString() . "\n";
 	 	
 	 	// Redirect to RecordError
 	 	$this->RecordError($excException->getCode(), $strUser, $strLocation, $strMessage);
@@ -266,11 +262,11 @@ class ErrorHandler
 	 	// build error msg
 	 	$strUser 		= USER_NAME;
 	 	$strLocation 	= $strErrorFile . " (Line " .  $intErrorLine . ")";
-	 	$strMessage		= $strErrorMessage . "\n\t\t";
+	 	$strMessage		= $strErrorMessage . "\n";
 	 	$arrTrace = debug_backtrace();
 	 	foreach ($arrTrace as $strKey => $mixTraceData)
 	 	{
-	 		$strMessage .= $strKey . ": " . $mixTraceData . "\n\t\t";
+	 		$strMessage .= $strKey . ": " . $mixTraceData . "\n";
 	 	}
 	 	$strMessage .= "\n";
 	 	
