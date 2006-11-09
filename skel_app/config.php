@@ -14,7 +14,7 @@
  *
  * ApplicationConfig Definitions
  *
- * This file exclusively declares application config constants
+ * This file exclusively declares application config
  *
  * @file		config.php
  * @language	PHP
