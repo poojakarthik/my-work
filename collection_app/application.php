@@ -26,7 +26,7 @@
  */
 
 // Application entry point - create an instance of the application object
-$appCollection = new ApplicationCollection();
+$appCollection = new ApplicationCollection($config);
 
 // run the thing
 $appCollection->Collect();
@@ -147,41 +147,8 @@ die();
 		// instanciate collection downloaders
 		$this->_arrDownloader[COLLECTION_TYPE_FTP] = new CollectionModuleFTP();
 		
-		// Define Collection Targets
-		/*$this->_arrCollectionModule["Unitel"]	["Name"]		= "Unitel";
-		$this->_arrCollectionModule["Unitel"]	["Carrier"]		= CARRIER_UNITEL;
- 		$this->_arrCollectionModule["Unitel"]	["Type"]		= COLLECTION_TYPE_FTP;
- 		$this->_arrCollectionModule["Unitel"]	["Server"]		= UNITEL_SERVER;
- 		$this->_arrCollectionModule["Unitel"]	["Username"]	= UNITEL_USER;
- 		$this->_arrCollectionModule["Unitel"]	["PWord"]		= UNITEL_PWORD;
- 		$this->_arrCollectionModule["Unitel"]	["Dir"]			= UNITEL_DIR;
- 		$this->_arrCollectionModule["Unitel"]	["FinalDir"]	= UNTIEL_FINAL_DIR;
-		*/
-		$this->_arrCollectionModule["Bash"]	["Name"]		= "Unitel";
-		$this->_arrCollectionModule["Bash"]	["Carrier"]		= CARRIER_UNITEL;
- 		$this->_arrCollectionModule["Bash"]	["Type"]		= COLLECTION_TYPE_FTP;
- 		$this->_arrCollectionModule["Bash"]	["Server"]		= '10.11.12.212';
- 		$this->_arrCollectionModule["Bash"]	["Username"]	= 'flame';
- 		$this->_arrCollectionModule["Bash"]	["PWord"]		= 'flame';
- 		$this->_arrCollectionModule["Bash"]	["Dir"]			= '';
- 		$this->_arrCollectionModule["Bash"]	["FinalDir"]	= '/tmp/bash/';
-		$this->_arrCollectionModule["Bash"]	["FileType"][REGEX_RSLCOM]	= CDR_UNTIEL_RSLCOM;
-		$this->_arrCollectionModule["Bash"]	["FileType"]['/test.txt/']	= CDR_UNTIEL_RSLCOM;
-		
-		/*
-		 * Skeleton Collection Definition
-		 * 
-		 *	$this->_arrCollectionModule["MODULE"]	["Name"]				= "Friendly Name";
-		 *  $this->_arrCollectionModule["MODULE"]	["Type"]				= COLLECTION_TYPE;
- 		 *	$this->_arrCollectionModule["MODULE"]	["Server"]				= SERVER;
- 		 *	$this->_arrCollectionModule["MODULE"]	["Username"]			= USERNAME;
- 		 *	$this->_arrCollectionModule["MODULE"]	["PWord"]				= PWORD;
- 		 *	$this->_arrCollectionModule["MODULE"]	["Dir"]		[]			= DIR_1;
- 		 *	$this->_arrCollectionModule["MODULE"]	["Dir"]		[]			= DIR_2;
- 		 *	$this->_arrCollectionModule["MODULE"]	["ZipPword"]			= ZIP_PWORD;
- 		 *	$this->_arrCollectionModule["MODULE"]	["FileType"]["REGEX_1"]	= CONSTANT_1;
- 		 *	$this->_arrCollectionModule["MODULE"]	["FileType"]["REGEX_2"]	= CONSTANT_2;
-		 */
+		// module config
+		$this->_arrCollectionModule = $config['Define'];
  	}
 
  	//------------------------------------------------------------------------//
