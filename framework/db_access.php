@@ -716,6 +716,11 @@
  		// Else, it's a string
  		return "s";
 	}
+	
+	function Error()
+	{
+		return mysqli_error($this->db->refMysqliConnection);
+	}
  }
 
 
@@ -1235,7 +1240,7 @@
 	 * @param		array	arrData			Associative array of the data to be inserted
 	 * 										If a field is not set, it is assumed to be null
 	 * 
-	 * @return		boolean					true	: Insert successful
+	 * @return		mixed					int	: Insert Id
 	 * 										false	: Insert failed
 	 *
 	 * @method
@@ -1246,14 +1251,14 @@
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 	 	{
-			if ($arrData[$strColumnName])
+			if (isset ($arrData[$strColumnName]))
 			{
 				$strType .= $arrColumnValue['Type'];
 				$arrParams[] = $arrData[$strColumnName];
 			}
 			else
 			{
-				// Assumes that blank fields are supposed to be null
+				// Assumes that missing fields are supposed to be null
 				// We say the type is an integer, so that the word NULL
 				// does not get preescaped
 				$strType .= "i";
@@ -1276,6 +1281,7 @@
 			$this->intInsertId = false;
 			return false;
 		}
+		
 	 }
  }
 

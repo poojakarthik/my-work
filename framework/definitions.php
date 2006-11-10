@@ -38,6 +38,7 @@ define("DEBUG_MODE"					, TRUE);
 define("ERROR_MESSAGE"				, "an error occured... sucks to be you");
 
 // CDR TYPES
+define("CDR_UNKNOWN"				, 0);
 define("CDR_UNTIEL_RSLCOM"			, 1);
 define("CDR_UNTIEL_COMMANDER"		, 2);
 define("CDR_OPTUS_STANDARD"			, 3);

@@ -142,13 +142,13 @@ die();
 		$this->_rptCollectionReport = new Report("Collection Report for " . date("Y-m-d"), "flame@telcoblue.com.au");
 		
 		$this->_insFileImport = new statementInsert("FileImport");
-		$this->_selIsUnique = new StatementSelect("FileImport", "Id", "Carrier = <carrier>");
+		$this->_selIsUnique = new StatementSelect("FileImport", "Id", "Carrier = <Carrier> AND (SHA1 = <SHA1> OR FileName = <FileName>)");
 		
 		// instanciate collection downloaders
 		$this->_arrDownloader[COLLECTION_TYPE_FTP] = new CollectionModuleFTP();
 		
 		// Define Collection Targets
-		$this->_arrCollectionModule["Unitel"]	["Name"]		= "Unitel";
+		/*$this->_arrCollectionModule["Unitel"]	["Name"]		= "Unitel";
 		$this->_arrCollectionModule["Unitel"]	["Carrier"]		= CARRIER_UNITEL;
  		$this->_arrCollectionModule["Unitel"]	["Type"]		= COLLECTION_TYPE_FTP;
  		$this->_arrCollectionModule["Unitel"]	["Server"]		= UNITEL_SERVER;
@@ -156,7 +156,18 @@ die();
  		$this->_arrCollectionModule["Unitel"]	["PWord"]		= UNITEL_PWORD;
  		$this->_arrCollectionModule["Unitel"]	["Dir"]			= UNITEL_DIR;
  		$this->_arrCollectionModule["Unitel"]	["FinalDir"]	= UNTIEL_FINAL_DIR;
-
+		*/
+		$this->_arrCollectionModule["Bash"]	["Name"]		= "Unitel";
+		$this->_arrCollectionModule["Bash"]	["Carrier"]		= CARRIER_UNITEL;
+ 		$this->_arrCollectionModule["Bash"]	["Type"]		= COLLECTION_TYPE_FTP;
+ 		$this->_arrCollectionModule["Bash"]	["Server"]		= '10.11.12.212';
+ 		$this->_arrCollectionModule["Bash"]	["Username"]	= 'flame';
+ 		$this->_arrCollectionModule["Bash"]	["PWord"]		= 'flame';
+ 		$this->_arrCollectionModule["Bash"]	["Dir"]			= '';
+ 		$this->_arrCollectionModule["Bash"]	["FinalDir"]	= '/tmp/bash/';
+		$this->_arrCollectionModule["Bash"]	["FileType"][REGEX_RSLCOM]	= CDR_UNTIEL_RSLCOM;
+		$this->_arrCollectionModule["Bash"]	["FileType"]['/test.txt/']	= CDR_UNTIEL_RSLCOM;
+		
 		/*
 		 * Skeleton Collection Definition
 		 * 
@@ -193,17 +204,18 @@ die();
 		// For each file definition...
  		foreach ($this->_arrCollectionModule as $arrModule)
  		{
-			// set current module
+			// set current module def
 			$this->_arrCurrentModule = $arrModule;
 			
-			// set download module
+			// set download module object
 			$dldDownloader = $this->_arrDownloader[$arrModule['Type']];
+			
 			if (!$dldDownloader)
 			{
 				// No collection module - append to report
 				$this->AddToCollectionReport(MSG_NO_COLLECTION_MODULE, Array(
-						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
-						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
+						'<FriendlyName>' 	=> $this->_arrCurrentModule['Name'],
+						'<Type>'			=> $this->_arrCurrentModule['Type']));
 				continue;
 			}
 			
@@ -212,27 +224,31 @@ die();
 			{
 				// Connection failed
 				$this->AddToCollectionReport(MSG_CONNECTION_FAILED, Array(
-						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
-						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
+						'<FriendlyName>' 	=> $this->_arrCurrentModule['Name'],
+						'<Type>'			=> $this->_arrCurrentModule['Type']));
 			}
 			else
 			{
 				// Connection successful
 				$this->AddToCollectionReport(MSG_CONNECTED, Array(
-						'<FriendlyName>' 	=> $this->_arrDownloader[$arrModule['FriendlyName']],
-						'<Type>'			=> $this->_arrDownloader[$arrModule['Type']]));
+						'<FriendlyName>' 	=> $this->_arrCurrentModule['Name'],
+						'<Type>'			=> $this->_arrCurrentModule['Type']));
 				
 				// Downloading from report message
 				$this->AddToCollectionReport(MSG_DOWNLOADING_FROM);
-				foreach ($this->_arrCurrentModule['Dir'] as $strDir)
+				//TODO!!!!
+				/*foreach ($this->_arrCurrentModule['Dir'] as $strDir)
 				{
 					$this->AddToCollectionReport(MSG_DIRS, Array('<Dir>' => $strDir));
-				}
+				}*/
+				
 				
 				// download
 				$intCounter = 0;
-				while($strFileLocation = $dldDownloader->Download(TEMP_DOWNLOAD_DIR)) 
+				while($strFile = $dldDownloader->Download(TEMP_DOWNLOAD_DIR)) 
 				{
+					$strFileLocation = TEMP_DOWNLOAD_DIR.$strFile;
+					
 					// Add to report that we're downloading the file
 					$this->AddToCollectionReport(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation));
 					
@@ -243,32 +259,28 @@ die();
 					$arrFiles = $this->Unzip($strFileLocation); // always returns array of file locations (or FALSE)
 					
 					// Add to report that we've unzipped files (provided we actually unzipped)
-					if (count($arrFiles) > 1)
+					if (!$arrFiles || count($arrFiles) < 1)
+					{
+						$this->AddToCollectionReport(MSG_BAD_FILE);
+					}
+					elseif (count($arrFiles) > 1)
 					{
 						$this->AddToCollectionReport(MSG_UNZIPPED_FILES);
 						
-						foreach ($arrFiles as $strFilename)
+						foreach ($arrFiles as $strFileName)
 						{
-							$this->AddToCollectionReport(MSG_UNZIPPED_FILE, Array('<FileName>' => $strFilename));
+							$this->AddToCollectionReport(MSG_UNZIPPED_FILE, Array('<FileName>' => $strFileName));
 						}
 					}
 					
 					// record download in db (FileDownload)
 					$this->_arrCurrentDownloadFile['FileName'] 		= basename($strFileLocation);
 					$this->_arrCurrentDownloadFile['Carrier']		= $this->_arrCurrentModule['Carrier'];
-					$this->_arrCurrentDownloadFile['CollectedOn']	= "NOW()";
+					$this->_arrCurrentDownloadFile['CollectedOn']	= New MySQLFunction("NOW()");
 					$intId = $insFileDownload->Execute($this->_arrCurrentDownloadFile);
 					
 					// import files
-					if (!$this->Import($arrFiles))
-					{
-						$this->AddToCollectionReport(MSG_IMPORT_FAILED, Array('<Reason>' => "We need a reason to fail?"));
-					}
-					else
-					{
-						// Add to report that we've imported
-						$this->AddToCollectionReport(MSG_IMPORTED);							
-					}
+					$this->Import($arrFiles);
 					
 					// record download in db (FileDownload) - status has now been changed
 					$ubiFileDownload->Execute($this->_arrCurrentDownloadFile);
@@ -306,7 +318,18 @@ die();
 	 */
 	function Import($arrFiles)
 	{
-		if (is_array($arrFiles))
+		// set status of downloaded file
+		$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORTED;
+		$bolReturn = TRUE;
+		if (!is_array($arrFiles) || count($arrFiles) < 1)
+		{
+			// set status of downloaded file
+			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
+			// Add to report that import failed
+			$this->AddToCollectionReport(MSG_IMPORT_FAILED, Array('<Reason>' => "Missing File(s)"));
+			return FALSE;
+		}
+		else
 		{
 			foreach ($arrFiles as $strFileLocation => $strFileName)
 			{				
@@ -317,68 +340,79 @@ die();
 				$this->_arrCurrentImportFile['Status'] = CDRFILE_WAITING;
 				
 				// copy file to final location
-				$strFileLocation = $this->_StoreImportFile();
+				if (!$strFileLocation = $this->_StoreImportFile())
+				{
+					$this->AddToCollectionReport(MSG_MOVE_FILE_FAILED, Array('<FileName>' => $strFileName));
+				}
 				
 				// find file type
-				$strFileType = $this->_FileType();
+				if ($this->_FileType() == CDR_UNKNOWN)
+				{
+					$this->AddToCollectionReport(MSG_UNKNOWN_FILETYPE, Array('<FileName>' => $strFileName));
+				}
 				
 				// check uniqueness
-				$strHash = $this->_IsUnique();
+				if (!$strHash = $this->_IsUnique())
+				{
+					$this->AddToCollectionReport(MSG_NOT_UNIQUE, Array('<FileName>' => $strFileName));
+				}
+				
 				
 				// save db record FileImport
 				$this->_arrCurrentImportFile['Carrier']	= $this->_arrCurrentModule['Carrier'];
-				$this->_insFileImport->Execute($this->_arrCurrentImportFile);
+				$this->_arrCurrentImportFile['ImportedOn'] = new MySQLFunction("Now()");
+				if(!$this->_insFileImport->Execute($this->_arrCurrentImportFile))
+				{
+					$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
+					$this->AddToCollectionReport(MSG_IMPORT_FAILED, Array('<Reason>' => "Database Failure"));
+					$bolReturn = FALSE;
+				}
 			}
-			// set status of downloaded file
-			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORTED;
-			return TRUE;
-		}
-		else
-		{
-			// set status of downloaded file
-			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
-			return FALSE;
+			// Add to report that we've imported
+			$this->AddToCollectionReport(MSG_IMPORTED);
+			return $bolReturn;
 		}
 	}
 	
 	function _StoreImportFile()
 	{
 		// get file details
-		$strFileName			= $this->_arrCurrentImportFile['Filename'];
+		$strFileName			= $this->_arrCurrentImportFile['FileName'];
 		$strFileLocation		= $this->_arrCurrentImportFile['Location'];
-		$arrCollectionModule	= $this->_arrCollectionModule;
-		
+		$arrCollectionModule	= $this->_arrCurrentModule;
+		$strUID 				= uniqid();
 		// copy file to final location
-		if (!copy($strFileLocation, $this->_arrCollectionModule["FinalDir"]))
+		if (!copy($strFileLocation, $arrCollectionModule["FinalDir"].$strUID."_".$strFileName))
 		{
 			// set status on error
-			$this->_arrCurrentImportFile['Status'] = CDRFILE_MOVE_FAILED;	
+			$this->_arrCurrentImportFile['Status'] = CDRFILE_MOVE_FAILED;
+			return FALSE;
 		}
 		
 		// set new file details
-		$this->_arrCurrentImportFile['Location'] = $this->_arrCollectionModule["FinalDir"] . "/" .$strFileName;
+		$this->_arrCurrentImportFile['Location'] = $arrCollectionModule["FinalDir"].$strUID."_".$strFileName;
+		return TRUE;
 	}
 	
 	function _FileType()
 	{
 		// get file details
-		$strFileName 	= $this->_arrCurrentImportFile['Filename'];
-		$arrFileType	= $this->_arrCollectionModule["FileType"];
+		$strFileName 	= $this->_arrCurrentImportFile['FileName'];
+		$arrFileType	= $this->_arrCurrentModule["FileType"];
 		
 		// Find file type
-		if (preg_match(FILE_PREG_RSLCOM))
+		foreach($arrFileType as $strRegEx => $intFileType)
 		{
-			$this->_arrCurrentImportFile['FileType'] = CDR_UNTIEL_RSLCOM;
+			if (preg_match($strRegEx, $strFileName))
+			{
+				$this->_arrCurrentImportFile['FileType'] = $intFileType;
+				return $intFileType;
+			}
 		}
-		/*elseif (preg_match())
-		{
-			
-		}*/
-		else
-		{
-			// set status on error
-			$this->_arrCurrentImportFile['Status'] = CDRFILE_BAD_TYPE;
-		}
+		// set status on error
+		$this->_arrCurrentImportFile['Status'] = CDRFILE_BAD_TYPE;
+		$this->_arrCurrentImportFile['FileType'] = CDR_UNKNOWN;
+		return FALSE;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -401,6 +435,7 @@ die();
 	{
 		// get file details
 		$strFileLocation = $this->_arrCurrentImportFile['Location'];
+		$strFileName = $this->_arrCurrentImportFile['FileName'];
 		
 		// get SHA1 hash
 		$strHash = sha1_file($strFileLocation); 
@@ -408,8 +443,12 @@ die();
 		// set file details
 		$this->_arrCurrentImportFile['SHA1'] = $strHash;
 		
-		// check name & SHA1 hash in the database (check only this carrier!)
-		if (!$this->_selIsUnique->Execute(Array('carrier' => $this->_arrCurrentModule['Carrier'])))
+		// check name & SHA1 hash in the database (check only against this carrier!)
+		$arrWhere = Array();
+		$arrWhere['Carrier']	= $this->_arrCurrentModule['Carrier'];
+		$arrWhere['FileName']	= $strFileName;
+		$arrWhere['SHA1']		= $strHash;
+		if (!$this->_selIsUnique->Execute($arrWhere))
 		{
 			// file is unique
 			return $strHash;
@@ -478,7 +517,7 @@ die();
 			exec($strCommand);
 			
 			// get list of files (full path)
-			$arrFileList = glob("*");
+			$arrFileList = glob("$strOutputDir*");
 			
 			// build output
 			$arrFiles = Array();
@@ -487,6 +526,10 @@ die();
 				// build return array
 				$strFileName = basename($strUnzipedFile);
 				$arrFiles[$strUnzipedFile] = $strFileName;
+			}
+			if (count($arrFiles) < 1)
+			{
+				$this->_arrCurrentDownloadFile['Status'] = RAWFILE_UNZIP_FAILED;
 			}
 			return $arrFiles;
 		}

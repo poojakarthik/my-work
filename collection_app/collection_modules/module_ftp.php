@@ -123,7 +123,7 @@
 	 */
  	function __construct()
  	{
- 		$this->selFileExists = new StatementSelect("FileDownload", "Id", "FileName = <filename>");
+ 		$this->_selFileExists = new StatementSelect("FileDownload", "Id", "FileName = <filename>");
  	}
  	
  	//------------------------------------------------------------------------//
@@ -166,11 +166,12 @@
 		
 		// Set the directory
 		reset($this->_arrDefine['Dir']);
-		ftp_chdir($this->_resConnection, current($this->_arrDefine['Dir']));
-		
+		if (current($this->_arrDefine['Dir']))
+		{
+			ftp_chdir($this->_resConnection, current($this->_arrDefine['Dir']));
+		}
 		// Get our first list of files
-		$this->_arrFileListing = ParseRawlist(ftp_rawlist($this->_resConnection, "."));
-		
+		$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."));
 		return TRUE;
  	}
  	
@@ -226,14 +227,25 @@
 				// Check that we don't already have this file
 				if(!$this->_selFileExists->Execute(Array('filename' => key($this->_arrFileListing))))
 				{
+					// set download mode
+					if(strtolower(substr(key($this->_arrFileListing), -3)) == "zip")
+					{
+						$intMode = FTP_BINARY;
+					}
+					else
+					{
+						$intMode = FTP_ASCII;
+					}
+
 					// We have a usable file, so download and return the filename
-					ftp_get($this->_resConnection, current($this->arrDefine['Dir']).key($this->_arrFileListing), key($this->_arrFileListing));
+					//Debug(Array($this->_resConnection, TEMP_DOWNLOAD_DIR.key($this->_arrFileListing), key($this->_arrFileListing), $intMode));
+					ftp_get($this->_resConnection, TEMP_DOWNLOAD_DIR.key($this->_arrFileListing), key($this->_arrFileListing), $intMode);
 					return key($this->_arrFileListing);					
 				}
 				else
 				{
 					// If the file is already downloaded, call Download() again
-					$this->Download($strDestination);
+					return $this->Download($strDestination);
 				}
 			}
 			else
@@ -245,6 +257,9 @@
 		elseif (next($this->_arrDefine['Dir']))
 		{
 			// Change to the next directory and call Download() again
+			ftp_chdir($this->_resConnection, current($this->_arrDefine['Dir']));
+			// Get our new list of files
+			$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."));
 			return $this->Download($strDestination);
 		}
 		else
@@ -276,7 +291,7 @@
 		foreach($arrRawList as $strFile)
 			{
 			$arrFile = array();
-			$arrSplit = preg_split("[ ]", $strFile, 9);
+			$arrSplit = preg_split("/[ ]+/", $strFile, 9);
 	
 			$arrFile['Type']				= $arrSplit[0]{0};
 			$arrFile['Permissions']			= $arrSplit[0];
@@ -288,10 +303,13 @@
 			$arrFile['Day']					= $arrSplit[6];
 			$arrFile['TimeYear']			= $arrSplit[7];
 			$arrFile['Raw']					= $strFile;
-			$arrFile['Name']				= $arrSplit[8];
+			$arrFile['FullName']			= $arrSplit[8];
+			$arrFile['Name']				= array_shift(explode(' -> ', $arrSplit[8]));
 			$arrCleanList[$arrFile['Name']]	= $arrFile;
 		}
+		array_unshift($arrCleanList, FALSE);
 		return $arrCleanList;
+		
 	}
 }
 

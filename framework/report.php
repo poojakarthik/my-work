@@ -169,8 +169,7 @@ class Report
 	 * 
 	 * Closes the report, and delivers it to the specified email address
 	 * 
-	 * @return	boolean							true	: email sent
-	 * 											false	: email failed
+	 * @return	int								no of emails sent
 	 * 
 	 * @method
 	 * @see		this->_strTitle
@@ -198,8 +197,14 @@ class Report
 		foreach($this->_arrEmailAddressee as $strEmailAddressee)
 		{
 			// Send the email
-			return mail($strEmailAddressee, $this->_strTitle . "(Automated Report)", $strEmailMessage, $strMailHeaders);
+			$bolSent += mail($strEmailAddressee, $this->_strTitle . "(Automated Report)", $strEmailMessage, $strMailHeaders);
 		}
+
+		// debug report
+		Debug($strEmailMessage);
+		
+		// return
+		return (int)$bolSent;
 	}
 
 	//------------------------------------------------------------------------//

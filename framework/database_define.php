@@ -1455,18 +1455,6 @@
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
 				
-								
-	// Define Columns
-	$strName = "FileType";
-		$arrDefine['Column'][$strName]['Type'] 			= "i";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned";
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
-		$arrDefine['Column'][$strName]['Default'] 		= "";
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
-		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 						
 	unset($arrDefine);
 	

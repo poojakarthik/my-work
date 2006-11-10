@@ -84,12 +84,13 @@
 		$arrDefine['Column'][$strName]['Default'] 		= <?=(($_FIELD ['Default'] === null) ? "null" : "\"" . $_FIELD ['Default'] . "\"")?>;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "<?=$_FIELD ['ObLib']?>";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 				<?
 			}
 		}
+	?>	
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+	<?
 	}
 	
 ?>
