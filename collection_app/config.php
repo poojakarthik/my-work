@@ -32,15 +32,63 @@
 //----------------------------------------------------------------------------//
 
 		/* Skeleton
-		$config['Define']["Skeleton"]	["Name"]		= "Skeleton";
-		$config['Define']["Skeleton"]	["Carrier"]		= CARRIER_UNITEL;
- 		$config['Define']["Skeleton"]	["Type"]		= COLLECTION_TYPE_FTP;
- 		$config['Define']["Skeleton"]	["Server"]		= DEFAULT_FTP_SERVER;
- 		$config['Define']["Skeleton"]	["Username"]	= DEFAULT_FTP_USERNAME;
- 		$config['Define']["Skeleton"]	["PWord"]		= DEFAULT_FTP_PASSWORD;
- 		$config['Define']["Skeleton"]	["Dir"][]		= 'skeleton/';
- 		$config['Define']["Skeleton"]	["FinalDir"]	= DESTINATION_ROOT.'/skeleton/';
-		$config['Define']["Skeleton"]	["FileType"][REGEX_SKELETON]	= CDR_SKELETON;
-		$config['Define']["Skeleton"]	["FileType"]['/test.txt/']		= CDR_SKELETON;
+		$arrConfig['Define']["Skeleton"]	["Name"]		= "Skeleton";
+		$arrConfig['Define']["Skeleton"]	["Carrier"]		= CARRIER_UNITEL;
+ 		$arrConfig['Define']["Skeleton"]	["Type"]		= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["Skeleton"]	["Server"]		= DEFAULT_FTP_SERVER;
+ 		$arrConfig['Define']["Skeleton"]	["Username"]	= DEFAULT_FTP_USERNAME;
+ 		$arrConfig['Define']["Skeleton"]	["PWord"]		= DEFAULT_FTP_PASSWORD;
+ 		$arrConfig['Define']["Skeleton"]	["Dir"][]		= 'skeleton/';
+ 		$arrConfig['Define']["Skeleton"]	["FinalDir"]	= DESTINATION_ROOT.'/skeleton/';
+		$arrConfig['Define']["Skeleton"]	["FileType"][REGEX_SKELETON]	= CDR_SKELETON;
+		$arrConfig['Define']["Skeleton"]	["FileType"]['/test.txt/']		= CDR_SKELETON;
 		*/
+		
+		// Unitel Definition
+		$arrConfig['Define']["Unitel"]	["Name"]						= "Unitel";
+		$arrConfig['Define']["Unitel"]	["Carrier"]						= CARRIER_UNITEL;
+ 		$arrConfig['Define']["Unitel"]	["Type"]						= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["Unitel"]	["Server"]						= DEFAULT_FTP_SERVER;				// FIXME
+ 		$arrConfig['Define']["Unitel"]	["Username"]					= DEFAULT_FTP_USERNAME;				// FIXME
+ 		$arrConfig['Define']["Unitel"]	["PWord"]						= DEFAULT_FTP_PASSWORD;				// FIXME
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]						= 'dir1/';							// FIXME
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]						= 'dir2/';							// FIXME
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]						= 'dir3/';							// FIXME
+ 		$arrConfig['Define']["Unitel"]	["FinalDir"]					= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]		= CDR_UNTIEL_RSLCOM;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]	= CDR_UNTIEL_COMMANDER;
+		
+		// Optus Definition
+		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
+		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
+ 		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["Optus"]	["Server"]						= DEFAULT_FTP_SERVER;				// FIXME
+ 		$arrConfig['Define']["Optus"]	["Username"]					= DEFAULT_FTP_USERNAME;				// FIXME
+ 		$arrConfig['Define']["Optus"]	["PWord"]						= DEFAULT_FTP_PASSWORD;				// FIXME
+ 		$arrConfig['Define']["Optus"]	["Dir"][]						= 'dir1/';							// FIXME
+ 		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT.'optus/';
+		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
+		
+		// AAPT Definition
+		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
+		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;
+ 		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["AAPT"]	["Server"]						= DEFAULT_FTP_SERVER;				// FIXME
+ 		$arrConfig['Define']["AAPT"]	["Username"]					= DEFAULT_FTP_USERNAME;				// FIXME
+ 		$arrConfig['Define']["AAPT"]	["PWord"]						= DEFAULT_FTP_PASSWORD;				// FIXME
+ 		$arrConfig['Define']["AAPT"]	["ZipPword"]					= "flame";							// FIXME
+ 		$arrConfig['Define']["AAPT"]	["Dir"][]						= 'dir1/';							// FIXME
+ 		$arrConfig['Define']["AAPT"]	["FinalDir"]					= DESTINATION_ROOT.'aapt/';
+		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT]		= CDR_AAPT_STANDARD;
+		
+		// iSeek Definition
+		$arrConfig['Define']["iSeek"]	["Name"]						= "iSeek";
+		$arrConfig['Define']["iSeek"]	["Carrier"]						= CARRIER_ISEEK;
+ 		$arrConfig['Define']["iSeek"]	["Type"]						= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["iSeek"]	["Server"]						= DEFAULT_FTP_SERVER;				// FIXME
+ 		$arrConfig['Define']["iSeek"]	["Username"]					= DEFAULT_FTP_USERNAME;				// FIXME
+ 		$arrConfig['Define']["iSeek"]	["PWord"]						= DEFAULT_FTP_PASSWORD;				// FIXME
+ 		$arrConfig['Define']["iSeek"]	["Dir"][]						= 'dir1/';							// FIXME
+ 		$arrConfig['Define']["iSeek"]	["FinalDir"]					= DESTINATION_ROOT.'iseek/';
+		$arrConfig['Define']["iSeek"]	["FileType"][REGEX_ISEEK]		= CDR_ISEEK_STANDARD;
 ?>

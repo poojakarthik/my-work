@@ -26,7 +26,7 @@
  */
 
 // Application entry point - create an instance of the application object
-$appCollection = new ApplicationCollection($config);
+$appCollection = new ApplicationCollection($arrConfig);
 
 // run the thing
 $appCollection->Collect();
@@ -129,13 +129,15 @@ die();
 	 * Constructor for the Collection Application
 	 *
 	 * Constructor for the Collection Application
+	 * 
+	 * @param	array	$arrConfig				Configuration array
 	 *
-	 * @return		ApplicationCollection
+	 * @return			ApplicationCollection
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
- 	function __construct()
+ 	function __construct($arrConfig)
  	{
 	 	// Initialise framework components
 		$this->_errErrorHandler = new ErrorHandler();
@@ -148,7 +150,7 @@ die();
 		$this->_arrDownloader[COLLECTION_TYPE_FTP] = new CollectionModuleFTP();
 		
 		// module config
-		$this->_arrCollectionModule = $config['Define'];
+		$this->_arrCollectionModule = $arrConfig['Define'];
  	}
 
  	//------------------------------------------------------------------------//

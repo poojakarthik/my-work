@@ -35,9 +35,15 @@
 define("USER_NAME"						, "Collection_app");
 
 // Diectories
-define("TEMP_DOWNLOAD_DIR"				, "/tmp/vixen_download/");
+define("TEMP_DOWNLOAD_DIR"				, "/home/richdavis/tmp/vixen_download/");
 define("TEMP_DOWNLOAD_DIR_PERMISSIONS"	, 0777);
 define("UNZIP_DIR"						, TEMP_DOWNLOAD_DIR."/unzip/");
+define("DESTINATION_ROOT"				, "/home/richdavis/vixen_download/");
+
+// FTP Defaults
+define("DEFAULT_FTP_SERVER"				, "10.11.12.212");
+define("DEFAULT_FTP_USERNAME"			, "flame");
+define("DEFAULT_FTP_PWORD"				, "flame");
 
 // Collection Types
 define("COLLECTION_TYPE_FTP"		, 100);
