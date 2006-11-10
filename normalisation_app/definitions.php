@@ -35,12 +35,20 @@
 define("USER_NAME"						, "Normilisation_app");
 
 // Normalisation Report Messages
-define("CDR_FILE_IMPORT_SUCCESS"		, "IMPORT SUCCESSFUL		: CDR File <object> was imported successfully");
-define("CDR_FILE_IMPORT_FAIL"			, "IMPORT FAILED			: CDR File <object> failed to import.  Reason: <reason>");
-define("CDR_FILE_NORMALISE_SUCCESS"		, "NORMALISATION SUCCESSFUL	: CDR File <object> was normalised successfully");
-define("CDR_FILE_NORMALISE_FAIL"		, "NORMALISATION FAILED		: CDR File <object> failed to normalise.  Reason: <reason>");
-define("CDR_NORMALISE_SUCCESS"			, "NORMALISATION SUCCESSFUL : CDR <object> was normalised successfully");
-define("CDR_NORMALISE_FAILED"			, "NORMALISATION FAILED		: CDR <object> failed to normalise.  Reason: <reason>");
+define("CDR_FILE_IMPORT_SUCCESS"		, "\tIMPORT SUCCESSFUL\t\t\t: CDR File <object> was imported successfully");
+define("CDR_FILE_IMPORT_FAIL"			, "\tIMPORT FAILED\t\t\t\t: CDR File <object> failed to import.  Reason: <reason>");
+define("CDR_FILE_NORMALISE_SUCCESS"		, "\tNORMALISATION SUCCESSFUL\t: CDR File <object> was normalised successfully");
+define("CDR_FILE_NORMALISE_FAIL"		, "\tNORMALISATION FAILED\t\t: CDR File <object> failed to normalise.  Reason: <reason>");
+define("CDR_NORMALISE_SUCCESS"			, "\tNORMALISATION SUCCESSFUL\t: CDR <object> was normalised successfully");
+define("CDR_NORMALISE_FAILED"			, "\tNORMALISATION FAILED\t\t: CDR <object> failed to normalise.  Reason: <reason>");
+
+define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
+define("MSG_NO_NORMALISATION_MODULE"	, "NO NORMALISATION MODULE\t: <FriendlyName> (<Type>)\n\n");
+define("MSG_START_IMPORT"				, "\n[ STARTING IMPORT ]\n");
+define("MSG_START_NORMALISET"			, "\n[ STARTING NORMALISATION ]\n");
+define("MSG_NORMALISE_TOTALS"			, MSG_HORIZONTAL_RULE."Total files Normalised\t: <TotalFiles>\n".MSG_HORIZONTAL_RULE);
+define("MSG_IMPORTING_TOTALS"			, MSG_HORIZONTAL_RULE."Total files Imported\t: <TotalFiles>\n".MSG_HORIZONTAL_RULE);
+
 
 // CDR Handling (Range is 100-199)
 define("CDR_READY"						, 100);

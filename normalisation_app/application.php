@@ -169,7 +169,7 @@ die();
 		parent::__construct();
 		
 	 	// Initialise framework components
-		$this->rptNormalisationReport = new Report(NORMALISATION_REPORT_TITLE, $mixEmailAddress);
+		$this->rptNormalisationReport = new Report("Collection Report for " . date("Y-m-d"), $mixEmailAddress);
 		$this->errErrorHandler = new ErrorHandler();
 		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
@@ -185,6 +185,8 @@ die();
  	
  	function Import()
  	{
+		//TODO: $this->AddToNormalisationReport();
+		
 		// Retrieve list of CDR Files marked as either ready to process, or failed process
 		$strWhere			= "Status = <status1> OR Status = <status2>";
 		$arrWhere[status1]	= CDRFILE_WAITING;
@@ -207,7 +209,7 @@ die();
 				$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 				
 				// Add to the Normalisation report
-				$this->AddToNormalisationReport(CDR_FILE_IMPORT_FAIL, $arrCDRFile["Location"], $strReason = "File Not Found");
+				//TODO: $this->AddToNormalisationReport(CDR_FILE_IMPORT_FAIL, $arrCDRFile["Location"], $strReason = "File Not Found");
 				continue;
 			}
 			
@@ -325,7 +327,7 @@ die();
 			$arrCDRFile["Status"]		= CDRFILE_NORMALISED;
 			$arrCDRFile["ImportedOn"]	= "NOW()";
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
-			$this->AddToNormalisationReport(CDR_FILE_IMPORT_SUCCESS, $arrCDRFile["Location"]);
+			//TODO: $this->AddToNormalisationReport(CDR_FILE_IMPORT_SUCCESS, $arrCDRFile["Location"]);
 		}
 		catch (ExceptionVixen $exvException)
 		{
@@ -335,7 +337,7 @@ die();
 			$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 			
-			$this->AddToNormalisationReport(CDR_FILE_IMPORT_FAIL, $arrCDRFile["Location"], $strReason = "File corrupted");
+			//TODO: $this->AddToNormalisationReport(CDR_FILE_IMPORT_FAIL, $arrCDRFile["Location"], $strReason = "File corrupted");
 		}
  	}
  
@@ -349,27 +351,23 @@ die();
 	 *
 	 * Adds a message to the normalisation report
 	 *
-	 * @param	integer		$strErrorType		The message type - use constants
+	 * @param	string		$strMessage			The message - use constants
 	 * 											from definition.php.
-	 * 											Make sure you supply the NAME of the
-	 * 											constant encapsulated in ""s
-	 * @param	string		$strFailedOn		The name of the object on which the
-	 * 											message is reporting
-	 * @param	string		$strReason			optional Reason why the operation
-	 * 											failed
-	 * @return	<type>
-	 *
+	 * @param	array		$arrAliases			Associative array of alises.
+	 * 											MUST use the same aliases as used in the 
+	 * 											constant being used.  Key is the alias (including the <>'s)
+	 * 											, and the Value is the value to be inserted.
+	 * 
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
- 	function AddToNormalisationReport($strErrorType, $strFailedOn, $strReason = "")
+ 	function AddToCollectionReport($strMessage, $arrAliases = Array())
  	{
- 		$strMessage = str_replace("<reason>", $strReason, $strErrorType);
- 		$strMessage = str_replace("<object>", $strFailedOn, $strMessage);
- 		$this->rptNormalisationReport->AddMessage($strMessage);
+ 		foreach ($arrAliases as $arrAlias => $arrValue)
+ 		{
+ 			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
+ 		}
  		
- 		// Increment the number of times this message has occurred
- 		$this->_arrNormaliseReportCount[$strErrorType]++;
+ 		$this->_rptCollectionReport->AddMessage($strMessage, FALSE);
  	}
 
 	//------------------------------------------------------------------------//
