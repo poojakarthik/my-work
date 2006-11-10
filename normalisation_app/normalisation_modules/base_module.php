@@ -179,6 +179,38 @@ abstract class NormalisationModule
 	 * @see	<MethodName()||typePropertyName>
 	 */
 	protected $_errErrorHandler;
+
+	//------------------------------------------------------------------------//
+	// _selFindOwner
+	//------------------------------------------------------------------------//
+	/**
+	 * _selFindOwner
+	 *
+	 * Used to associate FNN with account
+	 *
+	 * Used to associate FNN with account
+	 *
+	 * @type		StatementSelect
+	 *
+	 * @property
+	 */	
+	protected $_selFindOwner;
+
+	//------------------------------------------------------------------------//
+	// _selFindOwnerIndial100
+	//------------------------------------------------------------------------//
+	/**
+	 * _selFindOwnerIndial100
+	 *
+	 * Used to associate FNN with account, including Indial100 numbers
+	 *
+	 * Used to associate FNN with account, including Indial100 numbers
+	 *
+	 * @type		StatementSelect
+	 *
+	 * @property
+	 */
+	protected $_selFindOwnerIndial100;
 	
 	function __construct($errErrorHandler=NULL, $rptNormalisationReport=NULL)
 	{
@@ -188,6 +220,9 @@ abstract class NormalisationModule
 		
 		$this->_errErrorHander 			= $errErrorHandler;
 		$this->_rptNormalisationReport 	= $rptNormalisationReport;
+		
+		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>");
+		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -534,15 +569,28 @@ abstract class NormalisationModule
 	 */
 	 protected function ApplyOwnership()
 	 {
-	 	$selLinkAccount = new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>");
-	 	$intResult = $selLinkAccount->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
+
+	 	$intResult = _selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
 		
-	 	if ($arrResult = $selLinkAccount->fetch())
+	 	if ($arrResult = _selFindOwner->Fetch())
 	 	{
 	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
 	 		$this->_arrNormalisedData['Account']		= $arrResult['Account'];
 	 		$this->_arrNormalisedData['Service']		= $arrResult['Id'];
 	 		return true;
+	 	}
+	 	else
+	 	{
+	 		$arrParams['fnn'] = substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
+	 		
+	 		$intResult = _selFindOwnerIndial100->Execute($arrParams);
+	 		if(($arrResult = _selFindOwnerIndial100->Fetch()))
+	 		{
+	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
+	 			$this->_arrNormalisedData['Account']		= $arrResult['Account'];
+	 			$this->_arrNormalisedData['Service']		= $arrResult['Id'];
+	 			return true;
+	 		}
 	 	}
 	 	
 		// Return false if there was no match, or more than one match
