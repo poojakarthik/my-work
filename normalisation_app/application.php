@@ -528,6 +528,9 @@ die();
 		$arrReportLine['<Pass>']		= $intNormalisePassed;	// TODO FIXME
 		$arrReportLine['<Fail>']		= $intNormaliseFailed;	// TODO FIXME
 		$this->AddToNormalisationReport(MSG_REPORT."\n".MSG_HORIZONTAL_RULE, $arrReportLine);
+		
+		// Deliver the report
+		$this->rptNormalisationReport->Finish();
  	}
  }
 ?>
