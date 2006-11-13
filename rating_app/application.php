@@ -188,6 +188,7 @@ die();
 		$fltCharge = $this->_ZeemusMagicRatingFormular();
 		
 		// set the current charge
+		// $this->_arrCurrentCDR['Charge'] =
 		//TODO!!!!
 		
 		// return the charge amount
@@ -218,6 +219,7 @@ die();
 			$fltCharge = $this->_ZeemusMagicRatingFormular();
 			
 			// set the current charge
+			// $this->_arrCurrentCDR['Charge'] =
 			//TODO!!!!
 		}
 		else
