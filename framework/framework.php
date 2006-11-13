@@ -60,6 +60,9 @@
 	 * @see			ErrorHandler
 	 */
 	public $errErrorHandler;
+	
+	private $_intStopwatchTime;
+	private $_intLapTime;
 
 	//------------------------------------------------------------------------//
 	// Framework - Constructor
@@ -89,7 +92,9 @@
 		set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
 		// start timing
-		$this->_intStartTime = microtime(TRUE);
+		$this->_intStartTime		= microtime(TRUE);
+		$this->_intStopwatchTime	= microtime(TRUE);
+		$this->_intLapTime			= microtime(TRUE);
 	 }
 	 
 	 function Render()
@@ -101,6 +106,23 @@
 	 {
 	 	$intTime = microtime(TRUE);
 	 	return round($intTime - $this->_intStartTime, 4);
+	 }
+	 
+	 function StartWatch()
+	 {
+	 	$this->_intStopwatchTime = microtime(TRUE);
+	 }
+	 
+	 function SplitWatch()
+	 {
+	 	return round(microtime(TRUE) - $this->_intStopwatchTime, 4);
+	 }
+	 
+	 function LapWatch()
+	 {
+	 	$intOldLapTime		= $this->_intLapTime;
+	 	$this->_intLapTime	= microtime(TRUE);
+	 	return round($this->_intLapTime - $intOldLapTime, 4);
 	 }
  }
 
