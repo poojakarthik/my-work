@@ -26,7 +26,7 @@
  */
 
 // Application entry point - create an instance of the application object
-$appRating- = new ApplicationRating();
+$appRating = new ApplicationRating();
 
 // run the thing
 $appRating->Rate();
@@ -70,8 +70,9 @@ die();
 	 function Rate()
 	 {
 	 	// get list of CDRs to rate (limit results to 1000)
-		//TODO!!!!
-		// $arrCDR =
+	 	$selGetCDRs = new StatementSelect("CDR", "*", "Status = ".CDR_NORMALISED, null, "1000");
+	 	$selGetCDRs->Execute();
+		$arrCDRList = $selGetCDRs->FetchAll();
 		
 		// Loop through each CDR
 		foreach($arrCDRList as $arrCDR)
@@ -185,7 +186,7 @@ die();
 	 function _CalculateCharge()
 	 {
 	 	// call Zeemus magic rating formular
-		$fltCharge = $this->_ZeemusMagicRatingFormular();
+		$fltCharge = $this->_ZeemusMagicRatingFormula();
 		
 		// set the current charge
 		// $this->_arrCurrentCDR['Charge'] =
@@ -216,7 +217,7 @@ die();
 		if () //TODO!!!!
 		{
 			// call Zeemus magic rating formular
-			$fltCharge = $this->_ZeemusMagicRatingFormular();
+			$fltCharge = $this->_ZeemusMagicRatingFormula();
 			
 			// set the current charge
 			// $this->_arrCurrentCDR['Charge'] =
@@ -292,10 +293,10 @@ die();
 	 }
 	 
 	//------------------------------------------------------------------------//
-	// _ZeemusMagicRatingFormular
+	// _ZeemusMagicRatingFormula
 	//------------------------------------------------------------------------//
 	/**
-	 * _ZeemusMagicRatingFormular()
+	 * _ZeemusMagicRatingFormula()
 	 *
 	 * Calculate the charge for the current CDR Record
 	 *
@@ -309,7 +310,7 @@ die();
 	 *
 	 * @method
 	 */
-	 private _ZeemusMagicRatingFormular()
+	 private function _ZeemusMagicRatingFormula()
 	 {
 	 	// select details of the rate to use
 		//TODO !!!!

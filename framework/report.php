@@ -242,6 +242,39 @@ class Report
 		Debug($strMessage);
 	}	
 	
+	//------------------------------------------------------------------------//
+	// AddMessageVariables()
+	//------------------------------------------------------------------------//
+	/**
+	 * AddMessageVariables()
+	 * 
+	 * Add a new message line with string replaced variables
+	 * 
+	 * Add a new message line with string replaced variables
+	 * 
+	 * @param	string		$strMessage			The new message line to be added
+	 * @param	array		$arrAliases			Associative array of alises.
+	 * 											MUST use the same aliases as used in the 
+	 * 											constant being used.  Key is the alias (including the <>'s)
+	 * 											, and the Value is the value to be inserted.
+	 * @param	boolean		$bolNewLine			optional Whether the message will be on a new line
+	 * 											Defaults to TRUE
+	 * @return	void
+	 * 
+	 * @method
+	 * @see		this->_arrLines
+	 */
+	public function AddMessageVariables($strMessage, $arrAliases, $bolNewLine = TRUE)
+	{
+ 		foreach ($arrAliases as $arrAlias => $arrValue)
+ 		{
+ 			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
+ 		}
+ 		
+ 		$this->AddMessage($strMessage, FALSE);
+	}	
+		
+	
 }
 
 ?>
