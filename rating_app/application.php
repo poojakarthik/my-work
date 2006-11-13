@@ -157,7 +157,7 @@ die();
 	 * 					bool	FALSE if rate not found
 	 * @method
 	 */
-	 function _FindRate()
+	 private function _FindRate()
 	 {
 	 	// find the appropriate rate
 		//TODO!!!!
@@ -183,9 +183,9 @@ die();
 	 * 					bool	FALSE if charge could not be calculated
 	 * @method
 	 */
-	 function _CalculateCharge()
+	 private function _CalculateCharge()
 	 {
-	 	// call Zeemus magic rating formular
+	 	// call Zeemus magic rating formula
 		$fltCharge = $this->_ZeemusMagicRatingFormula();
 		
 		// set the current charge
@@ -211,7 +211,7 @@ die();
 	 *
 	 * @method
 	 */
-	 function _CalculateCap()
+	 private function _CalculateCap()
 	 {
 	 	// is this a capped charge
 		if () //TODO!!!!
@@ -248,7 +248,7 @@ die();
 	 *
 	 * @method
 	 */
-	 function _CalculateProrate()
+	 private function _CalculateProrate()
 	 {
 	 	// is this a prorate charge
 		if () //TODO!!!!
@@ -283,7 +283,7 @@ die();
 	 *
 	 * @method
 	 */
-	 function _UpdateTotals()
+	 private function _UpdateTotals()
 	 {
 	 	// update service totals
 		//TODO!!!!
@@ -301,25 +301,74 @@ die();
 	 * Calculate the charge for the current CDR Record
 	 *
 	 * Calculate the charge for the current CDR Record
-	 * This is where the actual work of applying the magic Zeemu rating formular
+	 * This is where the actual work of applying the magic Zeemu rating formula
 	 * is done.
 	 *
-	 * @param	bool	$ TODO!!!!
-	 * @return	mixed	float	charge amount
-	 * 					bool	FALSE if charge could not be calculated
+	 * @param	string	$strType	Rate type to use, 'Std' or 'Ext'
+	 *	 
+	 * @return	mixed	float : charge amount
+	 * 					FALSE if charge could not be calculated
 	 *
 	 * @method
 	 */
-	 private function _ZeemusMagicRatingFormula()
+	 private function _ZeemusMagicRatingFormula($strType = 'Std')
 	 {
-	 	// select details of the rate to use
-		//TODO !!!!
+	 	// select rate type to use (Std or Ext
+		if ($strType != 'Std' && $strType != 'Ext')
+		{
+			return FALSE;
+		}
 		
+		// ------------------------------------------------ //
+		// rate details
+		// ------------------------------------------------ //
+		// a rate should never have a per unit rate & a markup
+		// as it would be redundant (the rate should be set as a
+		// $ markup rather then a rate)
+		$r	= $this->_CurrentRate[$strType.'RatePerUnit'];	// rate per unit
+		$f	= $this->_CurrentRate[$strType.'Flagfall'];		// flagfall
+		$p	= $this->_CurrentRate[$strType.'Percentage'];	// percentage markup
+		$d	= $this->_CurrentRate[$strType.'Markup'];		// dollar markup per unit
+		$u	= $this->_CurrentRate[$strType.'Units'];		// units to charge in
+		
+		// ------------------------------------------------ //
+		
+		// ------------------------------------------------ //
+		// CDR details
+		// ------------------------------------------------ //
+		$c	= $this->_CurrentCDR['Cost'];		// our cost (total)
+		$q	= $this->_CurrentCDR['Units'];		// number of units (total)
+		
+		// ------------------------------------------------ //
+		
+		// calculate number of units to charge
+		$n = $q / $u;
+		
+		// ------------------------------------------------ //
 		// apply the rate
-		//TODO!!!!
+		// ------------------------------------------------ //
 		
-		// return something
-		//TODO!!!!
+		$fltCharge = 0;
+		
+		// apply per unit rate & flagfall
+		// always applied, will equate to zero if there is
+		// no per unit rate and no flagfall
+		$fltCharge = ($n * $r + $f);
+		
+		// apply % and $ markup
+		// only applied if the rate has a markup on cost
+		// this will add our cost + markup to the charge
+		// if there is no cost and no $ markup this will
+		// equate to zero
+		if ($p || $d)
+		{
+			$fltCharge += ($c + $p * $c / 100 + $n * $d);
+		}
+		
+		// ------------------------------------------------ //
+		
+		// return the charge
+		return $fltCharge;
 	 }
 	 
  }
