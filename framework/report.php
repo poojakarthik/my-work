@@ -201,7 +201,7 @@ class Report
 		}
 
 		// debug report
-		Debug($strEmailMessage);
+		//Debug($strEmailMessage);
 		
 		// return
 		return (int)$bolSent;
@@ -235,6 +235,9 @@ class Report
 		
 		// Append the message to the end of the message array
 		$this->_arrLines[] = $strMessage;
+		
+		// Debug the line
+		Debug($strMessage);
 	}	
 	
 }

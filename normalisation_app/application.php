@@ -522,11 +522,11 @@ die();
  		}
  		
 	 	// Report totals
-		$arrReportLine['<Action>']		= "Imported";
+		$arrReportLine['<Action>']		= "Normalised";
 		$arrReportLine['<Total>']		= $intNormalisePassed + $intNormaliseFailed;
 		$arrReportLine['<Time>']		= $this->SplitWatch();
-		$arrReportLine['<Pass>']		= $intNormalisePassed;	// TODO FIXME
-		$arrReportLine['<Fail>']		= $intNormaliseFailed;	// TODO FIXME
+		$arrReportLine['<Pass>']		= $intNormalisePassed;
+		$arrReportLine['<Fail>']		= $intNormaliseFailed;
 		$this->AddToNormalisationReport(MSG_REPORT."\n".MSG_HORIZONTAL_RULE, $arrReportLine);
 		
 		// Deliver the report
