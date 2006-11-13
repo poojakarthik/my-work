@@ -171,6 +171,55 @@ function DebugBacktrace($strMode="html")
 	return TRUE;
 }
 
+//------------------------------------------------------------------------//
+// TruncateName
+//------------------------------------------------------------------------//
+/**
+ * TruncateName()
+ *
+ * Truncates a filename
+ *
+ * Truncates a filename to the specified number of characters
+ * (eg. Input: "/tmp/really_long_filename.txt" Output: "/tmp/really_lo...name.txt")
+ *
+ * @param	string		$strText	Text to truncate
+ * @param	integer		$intLength	Number of characters to limit to (must be > 10)
+ * 
+ * @return	mixed					string	: Truncated filename
+ * 									FALSE	: Invalid filename
+ *
+ * @method
+ * @package	framework
+ */
+function TruncateName($strText, $intLength)
+{
+	// Get the basename
+	$strBase		= basename($strText);
+	$intMaxLength	= $intLength - 4;
+	
+	if (strlen($strText) <= $intLength)
+	{
+		// If the whole path can be displayed
+		// Pad the remaining gaps
+		return str_pad($strText, $intLength);
+	}
+	elseif (strlen($strBase) > $intMaxLength)
+	{
+		// If the basename is too long to be displayed in full
+		$strTruncated = substr($strText, floor(($intLength - 3) / 3));
+		$strTruncated .= "...";
+		$strTruncated .= substr($strBase, 0 - (floor(($intLength - 3) / 3) * 2));
+	}
+	elseif (strlen($strText) > $intMaxLength)
+	{
+		// If the whole path is too long to be displayed in full
+		$strTruncated = substr($strText, $intLength - 3 - strlen($strBase));
+		$strTruncated .= "...";
+		$strTruncated .= $strBase;
+	}
+	return str_pad($strTruncated, $intLength);
+}
+
 
 
 ?>
