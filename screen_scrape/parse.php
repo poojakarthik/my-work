@@ -146,11 +146,11 @@
 					}
 				}
 			}
-			else if (preg_match ("/^sn\[(\d)\]$/", $item->getAttribute ("name"), $_MATCHES))
+			else if (preg_match ("/^sn\[(\d+)\]$/", $item->getAttribute ("name"), $_MATCHES))
 			{
 				$Customer ['sn'][$_MATCHES [1]]['Number'] = $item->getAttribute ("value");
 			}
-			else if (preg_match ("/^snac\[(\d)\]$/", $item->getAttribute ("name"), $_MATCHES))
+			else if (preg_match ("/^snac\[(\d+)\]$/", $item->getAttribute ("name"), $_MATCHES))
 			{
 				$Customer ['sn'][$_MATCHES [1]]['AreaCode'] = $item->getAttribute ("value");
 			}
@@ -186,9 +186,14 @@
 			}
 		}
 		
-		print_r ($Customer);
+		$sql = "UPDATE Scrapes SET ";
+		$sql .= "ParseResponse='" . mysql_real_escape_string (serialize ($Customer)) . "' ";
+		$sql .= "WHERE CustomerId='" . mysql_real_escape_string ($row ['CustomerId']) . "'";
+		$updQuery = mysql_query ($sql);
 		
-		break;
+		?>
+		
++	<?=sprintf ("%06d", $i + 1)?>		<?=$row ['CustomerId']?>	PARSED AND NORMALISED<?php
 	}
 	
 ?>

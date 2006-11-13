@@ -109,10 +109,10 @@
 		 *
 		 * Get the status of authentication
 	 	 *
-		 * Get the status of authentication
+		 * Get the status of authentication. Used to identify whether or not someone is logged in
 		 *
 		 * @return		boolean					true:	if they are logged in
-		 *								false:	they are not logged in
+		 *										false:	they are not logged in
 		 *
 		 * @method
 		 */ 
@@ -121,12 +121,47 @@
 			return $this->oblarrAuthenticatedUser !== null;
 		}
 		
+ 		//------------------------------------------------------------------------//
+		// getAuthenticatedUser ()
+		//------------------------------------------------------------------------//
+		/**
+		 * getAuthenticatedUser ()
+		 *
+		 * Get the object of the Authenticated User
+	 	 *
+		 * Get the object of the person who is currently logged in to the identifed session
+		 *
+		 * @return		mixed					AuthenticatedUser:	if the session is authenticated with a user
+		 *										NULL:				if the session does not have an authenticated user
+		 *
+		 * @method
+		 */
+		 
 		public function getAuthenticatedUser ()
 		{
 			return $this->oblarrAuthenticatedUser;
 		}
 		
-		public function Login ($UserName, $PassWord)
+		//------------------------------------------------------------------------//
+		// Login
+		//------------------------------------------------------------------------//
+		/**
+		 * Login()
+		 *
+		 * Logs a user into the system, if they authenticate
+		 *
+		 * Allows a user to attempt an authentication into the system
+		 *
+		 * @param	String	$strUserName	The user name we are using to log into the system
+		 * @param	String	$strPassWord	The pass word we are using to log into the system
+		 *
+		 * @return	boolean				TRUE:		If the user Authenticates
+		 *								FALSE:		If Authentication Fails
+		 *
+		 * @method
+		 */
+		
+		public function Login ($strUserName, $strPassWord)
 		{
 			// get the ID of the person who we want to login as
 			// (identified by UserName + PassWord)
@@ -134,7 +169,7 @@
 			// a correct authentication
 			
 			$selSelectStatement = new StatementSelect("Contact", "Id", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)");
-			$selSelectStatement->Execute(Array("UserName"=>$UserName, "PassWord"=>$PassWord));
+			$selSelectStatement->Execute(Array("UserName"=>$strUserName, "PassWord"=>$strPassWord));
 			
 			// No match? Then you're not authenticated!
 			if ($selSelectStatement->Count () <> 1)
@@ -155,18 +190,35 @@
 			
 			// update the table
 			$updUpdateStatement = new StatementUpdate("Contact", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)", $Update);
-			if ($updUpdateStatement->Execute($Update, Array("UserName" => $UserName, "PassWord" => $PassWord)) == 1)
+			
+			// If we successfully update the database table
+			if ($updUpdateStatement->Execute($Update, Array("UserName" => $strUserName, "PassWord" => $strPassWord)) == 1)
 			{
+				// Set the cookies and return a nice big smilie faqe :-D
 				setCookie ("Id", $Id, time () + (60 * 20), "/");
 				setCookie ("SessionId", $SessionId, time () + (60 * 20), "/");
 				return true;
 			}
 			else
 			{
+				// For some reason, we failed
 				return false;
 			}
 		}
 		
+		//------------------------------------------------------------------------//
+		// Logout
+		//------------------------------------------------------------------------//
+		/**
+		 * Logout()
+		 *
+		 * Logs a user out of the system
+		 *
+		 * Removes the session from the user and logs them out of the system
+		 *
+		 * @method
+		 */
+		 
 		public function Logout ()
 		{
 			// Kill the cookies ...

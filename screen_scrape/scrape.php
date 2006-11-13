@@ -33,7 +33,7 @@
 		require_once ("functions/connection.php");
 		
 		// STEP 1 - Read Customers
-		$customerFp = fopen ("customers_short.csv", "r");
+		$customerFp = fopen ("customers.csv", "r");
 		
 		while (!FEOF ($customerFp))
 		{
@@ -65,13 +65,18 @@
 		
 		?>
 		
->	DATABASE CONNECTION HAS BEEN ESTABISHED<?php
+>	DATABASE CONNECTION HAS BEEN ESTABISHED
+<?php
 		flush ();
 		
 		// STEP 4 - Pull Each Page
 		
+		$rowID = 0;
+		
 		foreach ($customerList AS $customerID)
 		{
+			++$rowID;
+			
 			$indivStart = microtime (TRUE);
 			
 			$Response = Connection_Transmit (
@@ -102,13 +107,13 @@
 				{
 					?>
 					
-+	<?=$customerID?> (<?=substr ($indivLength, 0, 8)?>) SCRAPED AND INSERTED<?php
++	<?=sprintf ("%06d", $rowID)?>.		<?=$customerID?>	(<?=substr ($indivLength, 0, 8)?>)	SCRAPED AND INSERTED<?php
 				}
 				else
 				{
 					?>
 					
-!	<?=$customerID?> (<?=substr ($indivLength, 0, 8)?>) ERROR INSERTING INTO DATABASE<?php
+!	<?=sprintf ("%06d", $rowID)?>.		<?=$customerID?>	(<?=substr ($indivLength, 0, 8)?>)	ERROR INSERTING INTO DATABASE<?php
 					system ("printf \"\\a\"");
 				}
 			}
@@ -119,7 +124,7 @@
 		// STEP 5 - Close
 		mysql_close ();
 		?>
-		
+		<?="\n"?><?="\n"?>
 >	DATABASE CONNECTION CLOSED<?php
 		
 		Connection_Logout ();
