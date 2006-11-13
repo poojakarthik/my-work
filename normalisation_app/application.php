@@ -185,7 +185,9 @@ die();
  	
  	function Import()
  	{
-		//TODO: $this->AddToNormalisationReport();
+		$this->AddToNormalisationReport("\n\n".MSG_HORIZONTAL_RULE);
+		$this->AddToNormalisationReport(MSG_IMPORTING_TITLE);
+		
 		
 		// Retrieve list of CDR Files marked as either ready to process, or failed process
 		$strWhere			= "Status = <status1> OR Status = <status2>";
@@ -196,6 +198,8 @@ die();
 		$insInsertCDRLine	= new StatementInsert("CDR");
 		
 		$selSelectCDRFiles->Execute($arrWhere);
+		
+		$intCount = 0;
 
 		// Loop through the CDR File entries
 		while ($arrCDRFile = $selSelectCDRFiles->Fetch())
@@ -209,7 +213,7 @@ die();
 				$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 				
 				// Add to the Normalisation report
-				//TODO: $this->AddToNormalisationReport(CDR_FILE_IMPORT_FAIL, $arrCDRFile["Location"], $strReason = "File Not Found");
+				$this->AddToNormalisationReport(MSG_FAIL_FILE_MISSING, Array());
 				continue;
 			}
 			
@@ -227,7 +231,17 @@ die();
 				default:
 					new ExceptionVixen("Unexpected CDR File Status", $this->_errErrorHandler, UNEXPECTED_CDRFILE_STATUS);
 			}
+			
+			$intCount++;
 		}
+		
+		// Report totals
+		$arrReportLine['<Action>']		= "Imported";
+		$arrReportLine['<Total>']		= $intCount;
+		$arrReportLine['<Time>']		= 0;	// TODO FIXME
+		$arrReportLine['<Pass>']		= 0;	// TODO FIXME
+		$arrReportLine['<Fail>']		= 0;	// TODO FIXME
+		$this->AddToNormalisationReport(MSG_IMPORT_REPORT, $arrReportLine);
  	}
  	
 	//------------------------------------------------------------------------//
@@ -265,7 +279,8 @@ die();
 	 *
 	 * @param	array		$arrCDRFile			Associative array of data returned
 	 * 											from a SELECT * statement on this file
-	 * @return	void
+	 * 
+	 * @return	integer							Number of CDRs imported
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
@@ -297,6 +312,12 @@ die();
 			$intSequence = 1;
 			while (!feof($fileCDRFile))
 			{
+				// Add to report <Action> CDR <SeqNo> from <FileName>...");
+				$arrReportLine['<Action>']		= "Importing";
+				$arrReportLine['<SeqNo>']		= $intSequence;
+				$arrReportLine['<FileName>']	= TruncateName($arrCDRFile['FileName'], MSG_MAX_FILENAME_LENGTH);
+				$this->AddToNormalisationReport(MSG_LINE, $arrReportLine);
+				
 				$arrCDRLine["SequenceNo"]	= $intSequence;
 				$arrCDRLine["Status"]		= CDR_READY;
 				
@@ -315,10 +336,14 @@ die();
 					$insInsertCDRLine->Execute($arrCDRLine);
 				}
 				$intSequence++;
+				
+				// Report
+				$this->AddToNormalisationReport(MSG_OK);
+				
 				//REMOVE THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				if ($intSequence > 1000)
 				{
-					return;
+					return $intSequence;
 				}
 			}
 			fclose($fileCDRFile);
@@ -327,7 +352,8 @@ die();
 			$arrCDRFile["Status"]		= CDRFILE_NORMALISED;
 			$arrCDRFile["ImportedOn"]	= "NOW()";
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
-			//TODO: $this->AddToNormalisationReport(CDR_FILE_IMPORT_SUCCESS, $arrCDRFile["Location"]);
+			
+			return $intSequence;
 		}
 		catch (ExceptionVixen $exvException)
 		{
@@ -337,7 +363,10 @@ die();
 			$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 			
-			//TODO: $this->AddToNormalisationReport(CDR_FILE_IMPORT_FAIL, $arrCDRFile["Location"], $strReason = "File corrupted");
+			// Report
+			$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_CORRUPT);
+			
+			return $intSequence;
 		}
  	}
  
@@ -360,14 +389,14 @@ die();
 	 * 
 	 * @method
 	 */
- 	function AddToCollectionReport($strMessage, $arrAliases = Array())
+ 	function AddToNormalisationReport($strMessage, $arrAliases = Array())
  	{
  		foreach ($arrAliases as $arrAlias => $arrValue)
  		{
  			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
  		}
  		
- 		$this->_rptCollectionReport->AddMessage($strMessage, FALSE);
+ 		$this->_rptNormalisationReport->AddMessage($strMessage, FALSE);
  	}
 
 	//------------------------------------------------------------------------//

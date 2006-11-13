@@ -35,19 +35,21 @@
 define("USER_NAME"						, "Normilisation_app");
 
 // Normalisation Report Messages
-define("CDR_FILE_IMPORT_SUCCESS"		, "\tIMPORT SUCCESSFUL\t\t\t: CDR File <object> was imported successfully");
-define("CDR_FILE_IMPORT_FAIL"			, "\tIMPORT FAILED\t\t\t\t: CDR File <object> failed to import.  Reason: <reason>");
-define("CDR_FILE_NORMALISE_SUCCESS"		, "\tNORMALISATION SUCCESSFUL\t: CDR File <object> was normalised successfully");
-define("CDR_FILE_NORMALISE_FAIL"		, "\tNORMALISATION FAILED\t\t: CDR File <object> failed to normalise.  Reason: <reason>");
-define("CDR_NORMALISE_SUCCESS"			, "\tNORMALISATION SUCCESSFUL\t: CDR <object> was normalised successfully");
-define("CDR_NORMALISE_FAILED"			, "\tNORMALISATION FAILED\t\t: CDR <object> failed to normalise.  Reason: <reason>");
-
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
 define("MSG_NO_NORMALISATION_MODULE"	, "NO NORMALISATION MODULE\t: <FriendlyName> (<Type>)\n\n");
-define("MSG_START_IMPORT"				, "\n[ STARTING IMPORT ]\n");
-define("MSG_START_NORMALISET"			, "\n[ STARTING NORMALISATION ]\n");
-define("MSG_NORMALISE_TOTALS"			, MSG_HORIZONTAL_RULE."Total files Normalised\t: <TotalFiles>\n".MSG_HORIZONTAL_RULE);
-define("MSG_IMPORTING_TOTALS"			, MSG_HORIZONTAL_RULE."Total files Imported\t: <TotalFiles>\n".MSG_HORIZONTAL_RULE);
+define("MSG_IMPORTING_TITLE"			, "\n[ Importing CDRs ]\n\n");
+define("MSG_NORMALISATION_TITLE"		, "\n[ Normalising CDRs ]\n\n");
+define("MSG_LINE"						, "\t+ <Action> CDR <SeqNo> from <FileName>");
+define("MSG_OK"							, "\t[   OK   ]\n");
+define("MSG_FAILED"						, "\t[ FAILED ]\n");
+define("MSG_FAIL_CORRUPT"				, "\t\t- File is corrupt\n");
+define("MSG_FAIL_RAW"					, "\t\t- Raw Data Invalid\n");
+define("MSG_FAIL_NORM"					, "\t\t- Normalised Data Invalid\n");
+define("MSG_FAIL_MODULE"				, "\t\t- Missing Normalisation Module: <Module>\n");
+define("MSG_FAIL_FILE_MISSING"			, "\t- File not found: <Path>\n");
+define("MSG_IMPORT_REPORT"				, "\n\t<Action> <Total> CDRs in <Time> seconds.  <Pass> passed, <Fail> failed.\n");
+define("MSG_FOOTER"						, "\nNormalisation completed in a total of <Time> seconds.");
+define("MSG_MAX_FILENAME_LENGTH"		, 30);
 
 
 // CDR Handling (Range is 100-199)
