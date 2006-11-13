@@ -190,7 +190,7 @@ die();
  	{
 		$this->AddToNormalisationReport("\n\n".MSG_HORIZONTAL_RULE);
 		$this->AddToNormalisationReport(MSG_IMPORTING_TITLE);
-		$this->StartWatch();
+		$this->Framework->StartWatch();
 		
 		// Retrieve list of CDR Files marked as either ready to process, or failed process
 		$strWhere			= "Status = <status1> OR Status = <status2>";
@@ -241,7 +241,7 @@ die();
 		// Report totals
 		$arrReportLine['<Action>']		= "Imported";
 		$arrReportLine['<Total>']		= $this->_intImportPass + $this->_intImportFail;
-		$arrReportLine['<Time>']		= $this->SplitWatch();
+		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
 		$arrReportLine['<Pass>']		= $this->_intImportPass;
 		$arrReportLine['<Fail>']		= $this->_intImportFail;
 		$this->AddToNormalisationReport(MSG_REPORT, $arrReportLine);
@@ -403,7 +403,7 @@ die();
  			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
  		}
  		
- 		$this->_rptNormalisationReport->AddMessage($strMessage, FALSE);
+ 		$this->rptNormalisationReport->AddMessage($strMessage, FALSE);
  	}
 
 	//------------------------------------------------------------------------//
@@ -442,7 +442,7 @@ die();
 		// Report
 		$this->rptNormalisationReport->AddMessage(MSG_NORMALISATION_TITLE);
 		
-		$this->StartWatch();
+		$this->Framework->StartWatch();
 		
 		$intNormalisePassed = 0;
 		$intNormaliseFailed = 0;
@@ -524,9 +524,9 @@ die();
 	 	// Report totals
 		$arrReportLine['<Action>']		= "Normalised";
 		$arrReportLine['<Total>']		= $intNormalisePassed + $intNormaliseFailed;
-		$arrReportLine['<Time>']		= $this->SplitWatch();
-		$arrReportLine['<Pass>']		= $intNormalisePassed;
-		$arrReportLine['<Fail>']		= $intNormaliseFailed;
+		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
+		$arrReportLine['<Pass>']		= (int)$intNormalisePassed;
+		$arrReportLine['<Fail>']		= (int)intNormaliseFailed;
 		$this->AddToNormalisationReport(MSG_REPORT."\n".MSG_HORIZONTAL_RULE, $arrReportLine);
 		
 		// Deliver the report

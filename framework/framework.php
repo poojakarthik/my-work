@@ -169,6 +169,9 @@
 		
 		// make global database object available
 		$this->db = &$GLOBALS['dbaDatabase'];
+		
+		// make global framework object available
+		$this->Framework = &$GLOBALS['fwkFramework'];
 	}
  }
 ?>
