@@ -282,7 +282,41 @@ die();
 	 */
 	 function _UpdateTotals()
 	 {
+	 	// update service totals
+		//TODO!!!!
+		
+		// update account totals
+		//TODO!!!!
+	 }
 	 
+	//------------------------------------------------------------------------//
+	// _ZeemusMagicRatingFormular
+	//------------------------------------------------------------------------//
+	/**
+	 * _ZeemusMagicRatingFormular()
+	 *
+	 * Calculate the charge for the current CDR Record
+	 *
+	 * Calculate the charge for the current CDR Record
+	 * This is where the actual work of applying the magic Zeemu rating formular
+	 * is done.
+	 *
+	 * @param	bool	$ TODO!!!!
+	 * @return	mixed	float	charge amount
+	 * 					bool	FALSE if charge could not be calculated
+	 *
+	 * @method
+	 */
+	 private _ZeemusMagicRatingFormular()
+	 {
+	 	// select details of the rate to use
+		//TODO !!!!
+		
+		// apply the rate
+		//TODO!!!!
+		
+		// return something
+		//TODO!!!!
 	 }
 	 
  }
