@@ -154,6 +154,9 @@
 			return FALSE;
 		}
 		
+		// get connection type
+		$this->_strConnectionType = ftp_systype($this->_resConnection);
+		
 		// Set private copy of arrDefine
 		$this->_arrDefine = $arrDefine;
 
@@ -171,7 +174,7 @@
 			ftp_chdir($this->_resConnection, current($this->_arrDefine['Dir']));
 		}
 		// Get our first list of files
-		$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."));
+		$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."), $this->_strConnectionType);
 		return TRUE;
  	}
  	
@@ -259,7 +262,7 @@
 			// Change to the next directory and call Download() again
 			ftp_chdir($this->_resConnection, current($this->_arrDefine['Dir']));
 			// Get our new list of files
-			$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."));
+			$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."), $this->_strConnectionType);
 			return $this->Download($strDestination);
 		}
 		else
@@ -281,30 +284,66 @@
 	 * Parses an array containing results from ftp_rawlist()
 	 *
 	 * @param		array		$arrRawList			Array to parse
+	 * @param		string		$strType			connection type
 	 * 
 	 * @return		array							Cleaned array
 	 *
 	 * @method
 	 */
-	function ParseRawlist($arrRawList)
+	function ParseRawlist($arrRawList, $strType = 'Unix')
 	{
 		foreach($arrRawList as $strFile)
+		{
+			switch ($strType)
 			{
-			$arrFile = array();
-			$arrSplit = preg_split("/[ ]+/", $strFile, 9);
-	
-			$arrFile['Type']				= $arrSplit[0]{0};
-			$arrFile['Permissions']			= $arrSplit[0];
-			$arrFile['Number']				= $arrSplit[1];
-			$arrFile['Owner']				= $arrSplit[2];
-			$arrFile['Group']				= $arrSplit[3];
-			$arrFile['Size']				= $arrSplit[4];
-			$arrFile['Month']				= $arrSplit[5];
-			$arrFile['Day']					= $arrSplit[6];
-			$arrFile['TimeYear']			= $arrSplit[7];
-			$arrFile['Raw']					= $strFile;
-			$arrFile['FullName']			= $arrSplit[8];
-			$arrFile['Name']				= array_shift(explode(' -> ', $arrSplit[8]));
+				case "Windows_NT":
+					ereg("([0-9]{2})-([0-9]{2})-([0-9]{2}) +([0-9]{2}):([0-9]{2})(AM|PM) +([0-9]+|<DIR>) +(.+)", $strFile, $arrSplit);
+					if (is_array($arrSplit))
+					{
+						// 4digit year fix
+						if ($arrSplit[3]<70)
+						{
+							$arrSplit[3]+=2000;
+						}
+						else
+						{
+							$arrSplit[3]+=1900;
+						} 
+						
+						// type
+						if ($arrSplit[7]=="<DIR>")
+						{
+							$arrFile['Type']	= 'd';
+						}
+						else
+						{
+							$arrFile['Type']	= '-';
+						}
+						$arrFile['Size']		= $arrSplit[7];
+						$arrFile['Month']		= $arrSplit[1];
+						$arrFile['Day']			= $arrSplit[2];
+						$arrFile['TimeYear']	= $arrSplit[3];
+						$arrFile['Name']		= $arrSplit[8];
+					}
+					break;
+					
+				default:
+					$arrFile = array();
+					$arrSplit = preg_split("/[ ]+/", $strFile, 9);
+			
+					$arrFile['Type']				= $arrSplit[0]{0};
+					$arrFile['Permissions']			= $arrSplit[0];
+					$arrFile['Number']				= $arrSplit[1];
+					$arrFile['Owner']				= $arrSplit[2];
+					$arrFile['Group']				= $arrSplit[3];
+					$arrFile['Size']				= $arrSplit[4];
+					$arrFile['Month']				= $arrSplit[5];
+					$arrFile['Day']					= $arrSplit[6];
+					$arrFile['TimeYear']			= $arrSplit[7];
+					$arrFile['Raw']					= $strFile;
+					$arrFile['FullName']			= $arrSplit[8];
+					$arrFile['Name']				= array_shift(explode(' -> ', $arrSplit[8]));
+			}
 			$arrCleanList[$arrFile['Name']]	= $arrFile;
 		}
 		array_unshift($arrCleanList, FALSE);

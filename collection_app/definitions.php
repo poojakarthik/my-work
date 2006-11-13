@@ -35,10 +35,10 @@
 define("USER_NAME"						, "Collection_app");
 
 // Diectories
-define("TEMP_DOWNLOAD_DIR"				, "/home/richdavis/tmp/vixen_download/");
+define("TEMP_DOWNLOAD_DIR"				, "/home/vixen_download/");
 define("TEMP_DOWNLOAD_DIR_PERMISSIONS"	, 0777);
-define("UNZIP_DIR"						, TEMP_DOWNLOAD_DIR."/unzip/");
-define("DESTINATION_ROOT"				, "/home/richdavis/vixen_download/");
+define("UNZIP_DIR"						, TEMP_DOWNLOAD_DIR."unzip/");
+define("DESTINATION_ROOT"				, "/home/vixen_import/");
 
 // FTP Defaults
 define("DEFAULT_FTP_SERVER"				, "10.11.12.212");
@@ -51,8 +51,8 @@ define("COLLECTION_TYPE_FTP"		, 100);
 // Filename Regex's
 define("REGEX_OPTUS"				, "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_s\.dat$/");
 define("REGEX_AAPT"					, "/^W\d{7}\.[A-La-l][0-3]\d$/");
-define("REGEX_RSLCOM"				, "/^[A-Za-z]\d{7}$\.csv$/");
-define("REGEX_COMMANDER"			, "");
+define("REGEX_RSLCOM"				, "/^[A-Za-z]\d{7}\.csv$/");
+define("REGEX_COMMANDER"			, "/^xxxxxxxxxxxxxxxxxxx$/");
 define("REGEX_ISEEK"				, "");
 
 // CDR File Handling (Range is 200-299)

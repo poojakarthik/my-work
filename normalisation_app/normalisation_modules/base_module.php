@@ -570,9 +570,9 @@ abstract class NormalisationModule
 	 protected function ApplyOwnership()
 	 {
 
-	 	$intResult = _selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
+	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
 		
-	 	if ($arrResult = _selFindOwner->Fetch())
+	 	if ($arrResult = $this->_selFindOwner->Fetch())
 	 	{
 	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
 	 		$this->_arrNormalisedData['Account']		= $arrResult['Account'];
@@ -583,8 +583,8 @@ abstract class NormalisationModule
 	 	{
 	 		$arrParams['fnn'] = substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
 	 		
-	 		$intResult = _selFindOwnerIndial100->Execute($arrParams);
-	 		if(($arrResult = _selFindOwnerIndial100->Fetch()))
+	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
+	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
 	 		{
 	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
 	 			$this->_arrNormalisedData['Account']		= $arrResult['Account'];

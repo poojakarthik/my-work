@@ -178,9 +178,9 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		else
 		{
 		 	// For S&E and OC&C CDRs
-		 	$mixValue					=  ConvertTime($this->_FetchRawCDR('BeginDate'));
+		 	$mixValue					=  $this->ConvertTime($this->_FetchRawCDR('BeginDate'));
 		 	$this->_AppendCDR('StartDateTime', $mixValue);
-		 	$mixValue					=  ConvertTime($this->_FetchRawCDR('EndDate'));
+		 	$mixValue					=  $this->ConvertTime($this->_FetchRawCDR('EndDate'));
 		 	$this->_AppendCDR('EndDateTime', $mixValue);
 		}
 		
