@@ -343,6 +343,20 @@ die();
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// _StoreImportFile
+	//------------------------------------------------------------------------//
+	/**
+	 * _StoreImportFile()
+	 *
+	 * Copies CDR file to permanent storage
+	 *
+	 * Copies CDR file to permanent storage
+	 * 
+	 * @return	boolean		TRUE : Copy successful; FALSE: copy failed
+	 * 
+	 * @method
+	 */
 	function _StoreImportFile()
 	{
 		// get file details
@@ -363,6 +377,21 @@ die();
 		return TRUE;
 	}
 	
+	//------------------------------------------------------------------------//
+	// _FileType
+	//------------------------------------------------------------------------//
+	/**
+	 * _FileType()
+	 *
+	 * Determines the CDR File's type
+	 *
+	 * Determines the CDR File's type based on the filename
+	 * 
+	 * @return	mixed	integer	: the type of CDR File
+	 * 					FALSE	: unknown CDR file type
+	 * 
+	 * @method
+	 */
 	function _FileType()
 	{
 		// get file details

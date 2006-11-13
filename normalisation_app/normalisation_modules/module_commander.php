@@ -221,7 +221,22 @@ class NormalisationModuleCommander extends NormalisationModule
 		// return output array
 		return $this->_OutputCDR();
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// ConvertTime
+	//------------------------------------------------------------------------//
+	/**
+	 * ConvertTime()
+	 *
+	 * Convert time format
+	 *
+	 * Converts a datetime string from carrier's format to our own
+	 *
+	 * @param	string	$strTime	Datetime string to be converted
+	 * @return	string				Converted Datetime string
+	 *
+	 * @method
+	 */
 	function ConvertTime($strTime)
 	{
 		$strReturn 	= substr($strTime, 6, 4);				// Year

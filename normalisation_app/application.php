@@ -110,7 +110,6 @@ die();
 	 * @type		array
 	 *
 	 * @property
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	public $_arrDelinquents;
 	
@@ -128,7 +127,6 @@ die();
 	 * @type		array
 	 *
 	 * @property
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	public $_arrNormaliseReportCount;
  	
@@ -148,7 +146,36 @@ die();
 	 */
 	private $_arrNormalisationModule;
 	
+	//------------------------------------------------------------------------//
+	// _intImportPass
+	//------------------------------------------------------------------------//
+	/**
+	 * _intImportPass
+	 *
+	 * Number of imports that passed
+	 *
+	 * Number of imports that passed
+	 *
+	 * @type		integer
+	 *
+	 * @property
+	 */
 	private $_intImportPass;
+	
+	//------------------------------------------------------------------------//
+	// _intImportFail
+	//------------------------------------------------------------------------//
+	/**
+	 * _intImportFail
+	 *
+	 * Number of imports that failed
+	 *
+	 * Number of imports that failed
+	 *
+	 * @type		integer
+	 *
+	 * @property
+	 */
 	private $_intImportFail;
 	
 	//------------------------------------------------------------------------//
@@ -165,7 +192,6 @@ die();
 	 * @return		ApplicationNormalise
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
  	function __construct($mixEmailAddress)
  	{
@@ -185,7 +211,22 @@ die();
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
 		
  	}
- 	
+
+
+	//------------------------------------------------------------------------//
+	// Import
+	//------------------------------------------------------------------------//
+	/**
+	 * Import()
+	 *
+	 * Imports CDRs from CDR Files
+	 *
+	 * Imports CDRs from CDR Files
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 */
  	function Import()
  	{
 		$this->AddToNormalisationReport("\n\n".MSG_HORIZONTAL_RULE);
@@ -261,7 +302,6 @@ die();
 	 * @return	<type>
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
  	function CascadeDeleteCDRs()
  	{
@@ -286,7 +326,6 @@ die();
 	 * @return	integer							Number of CDRs imported
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
  	function InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles)
  	{

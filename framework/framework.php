@@ -61,7 +61,36 @@
 	 */
 	public $errErrorHandler;
 	
+	//------------------------------------------------------------------------//
+	// _intStopwatchTime
+	//------------------------------------------------------------------------//
+	/**
+	 * _intStopwatchTime
+	 *
+	 * When the stopwatch started
+	 *
+	 * When the stopwatch started
+	 *
+	 * @type		integer
+	 *
+	 * @property
+	 */
 	private $_intStopwatchTime;
+	
+	//------------------------------------------------------------------------//
+	// _intLapTime
+	//------------------------------------------------------------------------//
+	/**
+	 * _intLapTime
+	 *
+	 * Time of last LapWatch() call
+	 *
+	 * Time of last LapWatch() call
+	 *
+	 * @type		integer
+	 *
+	 * @property
+	 */
 	private $_intLapTime;
 
 	//------------------------------------------------------------------------//
@@ -97,27 +126,88 @@
 		$this->_intLapTime			= microtime(TRUE);
 	 }
 	 
+	//------------------------------------------------------------------------//
+	// Render
+	//------------------------------------------------------------------------//
+	/**
+	 * Render()
+	 *
+	 * Flushes the output buffer
+	 *
+	 * Flushes the output buffer
+	 *
+	 * @method
+	 */
 	 function Render()
 	 {
 	 	ob_flush();
 	 }
-	 
+
+	//------------------------------------------------------------------------//
+	// Uptime
+	//------------------------------------------------------------------------//
+	/**
+	 * Uptime()
+	 *
+	 * How long the process has been running
+	 *
+	 * How long the process has been running
+	 *
+	 * @method
+	 */
 	 function Uptime()
 	 {
 	 	$intTime = microtime(TRUE);
 	 	return round($intTime - $this->_intStartTime, 4);
 	 }
-	 
+
+	//------------------------------------------------------------------------//
+	// StartWatch
+	//------------------------------------------------------------------------//
+	/**
+	 * StartWatch()
+	 *
+	 * Resets and starts stopwatch
+	 *
+	 * Resets and starts stopwatch
+	 *
+	 * @method
+	 */
 	 function StartWatch()
 	 {
-	 	$this->_intStopwatchTime = microtime(TRUE);
+	 	$this->_intStopwatchTime	= microtime(TRUE);
+	 	$this->_intLapTime			= $this->_intStopwatchTime;
 	 }
-	 
+
+	//------------------------------------------------------------------------//
+	// SplitWatch
+	//------------------------------------------------------------------------//
+	/**
+	 * SplitWatch()
+	 *
+	 * How long the stopwatch has been running
+	 *
+	 * How long the stopwatch has been running
+	 *
+	 * @method
+	 */
 	 function SplitWatch()
 	 {
 	 	return round(microtime(TRUE) - $this->_intStopwatchTime, 4);
 	 }
-	 
+
+	//------------------------------------------------------------------------//
+	// LapWatch
+	//------------------------------------------------------------------------//
+	/**
+	 * LapWatch()
+	 *
+	 * Time since the last LapWatch() call
+	 *
+	 * Time since the last LapWatch() call
+	 *
+	 * @method
+	 */
 	 function LapWatch()
 	 {
 	 	$intOldLapTime		= $this->_intLapTime;
@@ -144,6 +234,39 @@
  */
  abstract class ApplicationBaseClass
  {
+ 	//------------------------------------------------------------------------//
+	// db
+	//------------------------------------------------------------------------//
+	/**
+	 * db
+	 *
+	 * Instance of the DataAccess class
+	 *
+	 * Instance of the DataAccess class
+	 *
+	 * @type		DataAccess
+	 *
+	 * @property
+	 */
+	 public $db;
+ 	
+ 	//------------------------------------------------------------------------//
+	// Framework
+	//------------------------------------------------------------------------//
+	/**
+	 * Framework
+	 *
+	 * Instance of the Framework class
+	 *
+	 * Instance of the Framework class
+	 *
+	 * @type		Framework
+	 *
+	 * @property
+	 */
+	 public $Framework;
+ 	
+ 	
  	//------------------------------------------------------------------------//
 	// ApplicationBaseClass() - Constructor
 	//------------------------------------------------------------------------//
