@@ -43,11 +43,10 @@ define("MSG_LINE"						, "\t+ <Action> CDR <SeqNo> from <FileName>");
 define("MSG_OK"							, "\t[   OK   ]\n");
 define("MSG_FAILED"						, "\t[ FAILED ]\n");
 define("MSG_FAIL_CORRUPT"				, "\t\t- File is corrupt\n");
-define("MSG_FAIL_RAW"					, "\t\t- Raw Data Invalid\n");
-define("MSG_FAIL_NORM"					, "\t\t- Normalised Data Invalid\n");
+define("MSG_FAIL_LINE"					, "\t\t- <Reason>\n");
 define("MSG_FAIL_MODULE"				, "\t\t- Missing Normalisation Module: <Module>\n");
 define("MSG_FAIL_FILE_MISSING"			, "\t- File not found: <Path>\n");
-define("MSG_IMPORT_REPORT"				, "\n\t<Action> <Total> CDRs in <Time> seconds.  <Pass> passed, <Fail> failed.\n");
+define("MSG_REPORT"						, "\n\t<Action> <Total> CDRs in <Time> seconds.  <Pass> passed, <Fail> failed.\n");
 define("MSG_FOOTER"						, "\nNormalisation completed in a total of <Time> seconds.");
 define("MSG_MAX_FILENAME_LENGTH"		, 30);
 

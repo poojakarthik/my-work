@@ -148,6 +148,9 @@ die();
 	 */
 	private $_arrNormalisationModule;
 	
+	private $_intImportPass;
+	private $_intImportFail;
+	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -187,7 +190,7 @@ die();
  	{
 		$this->AddToNormalisationReport("\n\n".MSG_HORIZONTAL_RULE);
 		$this->AddToNormalisationReport(MSG_IMPORTING_TITLE);
-		
+		$this->StartWatch();
 		
 		// Retrieve list of CDR Files marked as either ready to process, or failed process
 		$strWhere			= "Status = <status1> OR Status = <status2>";
@@ -213,7 +216,7 @@ die();
 				$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 				
 				// Add to the Normalisation report
-				$this->AddToNormalisationReport(MSG_FAIL_FILE_MISSING, Array());
+				$this->AddToNormalisationReport(MSG_FAIL_FILE_MISSING, Array('<Path>' => $arrCDRFile["Location"]));
 				continue;
 			}
 			
@@ -237,11 +240,11 @@ die();
 		
 		// Report totals
 		$arrReportLine['<Action>']		= "Imported";
-		$arrReportLine['<Total>']		= $intCount;
-		$arrReportLine['<Time>']		= 0;	// TODO FIXME
-		$arrReportLine['<Pass>']		= 0;	// TODO FIXME
-		$arrReportLine['<Fail>']		= 0;	// TODO FIXME
-		$this->AddToNormalisationReport(MSG_IMPORT_REPORT, $arrReportLine);
+		$arrReportLine['<Total>']		= $this->_intImportPass + $this->_intImportFail;
+		$arrReportLine['<Time>']		= $this->SplitWatch();
+		$arrReportLine['<Pass>']		= $this->_intImportPass;
+		$arrReportLine['<Fail>']		= $this->_intImportFail;
+		$this->AddToNormalisationReport(MSG_REPORT, $arrReportLine);
  	}
  	
 	//------------------------------------------------------------------------//
@@ -340,6 +343,8 @@ die();
 				// Report
 				$this->AddToNormalisationReport(MSG_OK);
 				
+				$this->_intImportPass++;
+				
 				//REMOVE THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				if ($intSequence > 1000)
 				{
@@ -365,6 +370,8 @@ die();
 			
 			// Report
 			$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_CORRUPT);
+			
+			$this->_intImportFail++;
 			
 			return $intSequence;
 		}
@@ -432,9 +439,21 @@ die();
 		$arrDefine['NormalisedOn'] = new MySQLFunction("NOW()");
  		$updUpdateCDRs = new StatementUpdate("CDR", "Id = <CdrId>", $arrDefine); 		
 
+		// Report
+		$this->rptNormalisationReport->AddMessage(MSG_NORMALISATION_TITLE);
+		
+		$this->StartWatch();
+		
+		$intNormalisePassed = 0;
+		$intNormaliseFailed = 0;
 
  		foreach ($arrCDRList as $arrCDR)
  		{
+			// Report
+			$arrReportLine['<Action>']		= "Normalising";
+			$arrReportLine['<SeqNo>']		= $arrCDR['SequenceNo'];
+			$arrReportLine['<FileName>']	= TruncateName($arrCDR['FileName'], MSG_MAX_FILENAME_LENGTH);
+			$this->rptNormalisationReport->AddMessage(MSG_LINE, $arrReportLine);
 			
  			// Is there a normalisation module for this type?
 			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
@@ -444,6 +463,9 @@ die();
 				
 				// normalise
 				$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
+				
+				// Report
+				$this->rptNormalisationReport->AddMessage(MSG_OK);
 			}
 			else
 			{
@@ -452,13 +474,60 @@ die();
 				$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDR.CDRFilename"] . "(" . $arrCDR["CDR.SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
 				// set the CDR status
 				$arrCDR['Status'] = CDR_CANT_NORMALISE_NO_MODULE;
+				
+				// Report
+			}
+			
+			// Report
+			switch ($arrCDR['Status'])
+			{
+				case CDR_CANT_NORMALISE_NO_MODULE:
+					$this->AddToNormalisationReport(MSG_FAIL_MODULE, Array('<Module>' => $arrCDR["FileType"]));
+					$intNormaliseFailed++;
+					break;
+				case CDR_CANT_NORMALISE_BAD_SEQ_NO:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Bad Sequence Number"));
+					$intNormaliseFailed++;
+					break;
+				case CDR_CANT_NORMALISE_HEADER:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Header Row"));
+					$intNormaliseFailed++;
+					break;
+				case CDR_CANT_NORMALISE_NON_CDR:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Non-CDR"));
+					$intNormaliseFailed++;
+					break;
+				case CDR_BAD_OWNER:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Cannot match owner"));
+					$intNormaliseFailed++;
+					break;
+				case CDR_CANT_NORMALISE_INVALID:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Normalised Data Invalid"));
+					$intNormaliseFailed++;
+					break;
+				case CDR_CANT_NORMALISE_RAW:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Raw Data Invalid"));
+					$intNormaliseFailed++;
+					break;
+				default:
+					// Normalised OK
+					$this->AddToNormalisationReport(MSG_OK);
+					$intNormalisePassed++;
+					break;
 			}
 			
 			$arrCDR['NormalisedOn'] = new MySQLFunction("NOW()");
-			//Debug($arrCDR);
  			// Save CDR back to the DB
 			$updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])); 
  		}
+ 		
+	 	// Report totals
+		$arrReportLine['<Action>']		= "Imported";
+		$arrReportLine['<Total>']		= $intNormalisePassed + $intNormaliseFailed;
+		$arrReportLine['<Time>']		= $this->SplitWatch();
+		$arrReportLine['<Pass>']		= $intNormalisePassed;	// TODO FIXME
+		$arrReportLine['<Fail>']		= $intNormaliseFailed;	// TODO FIXME
+		$this->AddToNormalisationReport(MSG_REPORT."\n".MSG_HORIZONTAL_RULE, $arrReportLine);
  	}
  }
 ?>
