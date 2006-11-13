@@ -163,8 +163,7 @@
 		// connect to database if not already connected
 		if (!$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
 		{
-			$GLOBALS['dbaDatabase'] = "hi world";
-			//$_GLOBALS['dbaDatabase'] = new DataAccess();
+			$_GLOBALS['dbaDatabase'] = new DataAccess();
 		}
 		
 		// make global database object available
