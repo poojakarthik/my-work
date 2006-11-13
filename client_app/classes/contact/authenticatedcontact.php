@@ -206,6 +206,7 @@
 				(
 					Array
 					(
+						// If we have an Id, use that - otherwise use the Primary Account
 						"Id" => (($Id !== null) ? $Id : $this->Pull ("Account")->getValue ()),
 						"AccountGroup" => $this->Pull ("AccountGroup")->getValue ()
 					)
@@ -218,21 +219,47 @@
 				(
 					Array
 					(
+						// If we have an Id, use that - otherwise use the Primary Account
 						"Id" 		=> ($Id === null) ? $this->Pull ("Account")->getValue () : $Id,
 						"Account"	=> $this->Pull ("Account")->getValue ()
 					)
 				);
 			}
 			
+			// If we did not find an account
+			// Or we don't have access to the account we want
+			// Throw an Exception
 			if ($selAccount->Count () == 0)
 			{
 				throw new Exception ("The account you requested could not be found");
 			}
 			
+			// We've made it up to here - we're good
+			
+			// Return the Fields in an Array
 			$arrAccount = $selAccount->Fetch ();
 			
+			// Return the Account we want
 			return new Account ($this, $arrAccount ['Id']);
 		}
+		
+		//------------------------------------------------------------------------//
+		// getInvoice
+		//------------------------------------------------------------------------//
+		/**
+		 * getInvoice()
+		 *
+		 * Shortcut for retrieving an Invoice
+		 *
+		 * Shortcut method.
+		 *
+		 * @param	String	$strPassWord	The password we want to check is correct
+		 *
+		 * @return	Boolean					TRUE:	If the PassWord is correct
+		 *									FALSE:	If the PassWord is incorrect
+		 *
+		 * @method
+		 */
 		
 		public function getInvoice ($intInvoice)
 		{

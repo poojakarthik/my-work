@@ -79,6 +79,7 @@
 		
 		
 		
+		
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -100,9 +101,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "TradingName";
@@ -112,9 +110,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ABN";
@@ -124,9 +119,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ACN";
@@ -136,9 +128,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Address1";
@@ -148,9 +137,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Address2";
@@ -160,9 +146,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Suburb";
@@ -172,9 +155,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Postcode";
@@ -184,9 +164,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "State";
@@ -196,9 +173,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Country";
@@ -208,9 +182,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "BillingType";
@@ -220,9 +191,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CustomerGroup";
@@ -232,9 +200,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreditCard";
@@ -244,9 +209,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "AccountGroup";
@@ -256,9 +218,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "LastBilled";
@@ -268,9 +227,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "BillingDate";
@@ -280,9 +236,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "1";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "BillingFreq";
@@ -292,9 +245,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "1";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "BillingFreqType";
@@ -304,9 +254,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "BillingMethod";
@@ -316,10 +263,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -341,9 +288,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedOn";
@@ -353,9 +297,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ManagedBy";
@@ -365,10 +306,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -390,9 +331,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "File";
@@ -402,9 +340,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Carrier";
@@ -414,9 +349,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CarrierRef";
@@ -426,9 +358,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Source";
@@ -438,9 +367,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Destination";
@@ -450,9 +376,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "StartDatetime";
@@ -462,9 +385,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "EndDatetime";
@@ -474,9 +394,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Units";
@@ -486,9 +403,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "AccountGroup";
@@ -498,9 +412,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -510,9 +421,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Service";
@@ -522,9 +430,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Cost";
@@ -534,9 +439,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Status";
@@ -546,9 +448,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CDR";
@@ -558,9 +457,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Description";
@@ -570,9 +466,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "DestinationCode";
@@ -582,9 +475,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecordType";
@@ -594,9 +484,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ServiceType";
@@ -606,9 +493,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Charge";
@@ -618,9 +502,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Rate";
@@ -630,9 +511,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "NormalisedOn";
@@ -642,9 +520,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RatedOn";
@@ -654,9 +529,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Invoice";
@@ -666,9 +538,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "SequenceNo";
@@ -678,10 +547,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -703,9 +572,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -715,9 +581,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Service";
@@ -727,9 +590,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Invoice";
@@ -739,9 +599,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedBy";
@@ -751,9 +608,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedOn";
@@ -763,9 +617,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ChargeType";
@@ -775,9 +626,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Description";
@@ -787,9 +635,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ChargedOn";
@@ -799,9 +644,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Nature";
@@ -811,9 +653,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Amount";
@@ -823,10 +662,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -848,9 +687,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Description";
@@ -860,9 +696,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Nature";
@@ -872,9 +705,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Fixed";
@@ -884,9 +714,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Amount";
@@ -896,10 +723,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -921,9 +748,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Title";
@@ -933,9 +757,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "FirstName";
@@ -945,9 +766,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "LastName";
@@ -957,9 +775,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "DOB";
@@ -969,9 +784,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "JobTitle";
@@ -981,9 +793,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Email";
@@ -993,9 +802,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -1005,9 +811,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CustomerContact";
@@ -1017,9 +820,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Phone";
@@ -1029,9 +829,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Mobile";
@@ -1041,9 +838,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Fax";
@@ -1053,9 +847,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "UserName";
@@ -1065,9 +856,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "PassWord";
@@ -1077,9 +865,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "SessionId";
@@ -1089,9 +874,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "SessionExpire";
@@ -1101,10 +883,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1126,9 +908,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CardType";
@@ -1138,9 +917,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Name";
@@ -1150,9 +926,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CardNumber";
@@ -1162,9 +935,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ExpMonth";
@@ -1174,9 +944,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ExpYear";
@@ -1186,9 +953,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CVV";
@@ -1198,10 +962,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1223,9 +987,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "LastName";
@@ -1235,9 +996,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "UserName";
@@ -1247,9 +1005,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "PassWord";
@@ -1259,10 +1014,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1284,9 +1039,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ErrorMessage";
@@ -1296,9 +1048,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ErrorCode";
@@ -1308,9 +1057,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "File";
@@ -1320,9 +1066,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Line";
@@ -1332,9 +1075,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Trace";
@@ -1344,9 +1084,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "AbendedOn";
@@ -1356,9 +1093,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Bug";
@@ -1368,10 +1102,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1393,9 +1127,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Location";
@@ -1405,9 +1136,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Carrier";
@@ -1417,9 +1145,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CollectedOn";
@@ -1429,9 +1154,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ImportedOn";
@@ -1441,9 +1163,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Status";
@@ -1453,10 +1172,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1478,9 +1197,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Location";
@@ -1490,9 +1206,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Carrier";
@@ -1502,9 +1215,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ImportedOn";
@@ -1514,9 +1224,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "NormalisedOn";
@@ -1526,9 +1233,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Status";
@@ -1538,9 +1242,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "FileType";
@@ -1550,9 +1251,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "SHA1";
@@ -1562,10 +1260,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1587,9 +1285,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -1599,9 +1294,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedOn";
@@ -1611,9 +1303,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "DueOn";
@@ -1623,9 +1312,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "SettledOn";
@@ -1635,9 +1321,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Credits";
@@ -1647,9 +1330,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Debits";
@@ -1659,9 +1339,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Total";
@@ -1671,9 +1348,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Tax";
@@ -1683,9 +1357,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Balance";
@@ -1695,9 +1366,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Status";
@@ -1707,10 +1375,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1732,9 +1400,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Payment";
@@ -1744,9 +1409,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Amount";
@@ -1756,10 +1418,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1781,9 +1443,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "AccountGroup";
@@ -1793,9 +1452,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Contact";
@@ -1805,9 +1461,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -1817,9 +1470,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Service";
@@ -1829,9 +1479,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Employee";
@@ -1841,9 +1488,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Datetime";
@@ -1853,10 +1497,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1878,9 +1522,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "PaidOn";
@@ -1890,9 +1531,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "PaymentType";
@@ -1902,9 +1540,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Amount";
@@ -1914,9 +1549,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "TXNReference";
@@ -1926,9 +1558,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "EnteredBy";
@@ -1938,10 +1567,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1963,9 +1592,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Description";
@@ -1975,9 +1601,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecordType";
@@ -1987,9 +1610,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ServiceType";
@@ -1999,9 +1619,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "StdUnits";
@@ -2011,9 +1628,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "StdRatePerUnit";
@@ -2023,9 +1637,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "StdFlagfall";
@@ -2035,9 +1646,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "StdPercentage";
@@ -2047,9 +1655,15 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
+								
+	// Define Columns
+	$strName = "StdMarkup";
+		$arrDefine['Column'][$strName]['Type'] 			= "d";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
 								
 	// Define Columns
 	$strName = "StdMinCharge";
@@ -2059,9 +1673,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ExsUnits";
@@ -2071,9 +1682,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ExsRatePerUnit";
@@ -2083,9 +1691,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ExsFlagfall";
@@ -2095,9 +1700,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ExsPercentage";
@@ -2107,9 +1709,15 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
+								
+	// Define Columns
+	$strName = "ExsMarkup";
+		$arrDefine['Column'][$strName]['Type'] 			= "d";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
 								
 	// Define Columns
 	$strName = "StartTime";
@@ -2119,9 +1727,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataTime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "EndTime";
@@ -2131,9 +1736,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataTime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Monday";
@@ -2143,9 +1745,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Tuesday";
@@ -2155,9 +1754,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Wednesday";
@@ -2167,9 +1763,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Thursday";
@@ -2179,9 +1772,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Friday";
@@ -2191,9 +1781,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Saturday";
@@ -2203,9 +1790,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Sunday";
@@ -2215,9 +1799,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Destination";
@@ -2227,9 +1808,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CapUnits";
@@ -2239,9 +1817,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CapCost";
@@ -2251,9 +1826,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CapUsage";
@@ -2263,9 +1835,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CapLimit";
@@ -2275,9 +1844,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Prorate";
@@ -2287,9 +1853,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Fleet";
@@ -2299,9 +1862,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Uncapped";
@@ -2311,10 +1871,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2336,9 +1896,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Description";
@@ -2348,9 +1905,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecordType";
@@ -2360,9 +1914,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ServiceType";
@@ -2372,10 +1923,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2397,9 +1948,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Rate";
@@ -2409,10 +1957,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2434,9 +1982,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Description";
@@ -2446,9 +1991,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ServiceType";
@@ -2458,9 +2000,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "MinMonthly";
@@ -2470,9 +2009,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ChargeCap";
@@ -2482,9 +2018,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "UsageCap";
@@ -2494,10 +2027,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2519,9 +2052,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RateGroup";
@@ -2531,10 +2061,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2556,9 +2086,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecurringCharge";
@@ -2568,10 +2095,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2593,9 +2120,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -2605,9 +2129,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Service";
@@ -2617,9 +2138,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedBy";
@@ -2629,9 +2147,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ChargeType";
@@ -2641,9 +2156,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Description";
@@ -2653,9 +2165,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Nature";
@@ -2665,9 +2174,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedOn";
@@ -2677,9 +2183,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecurringFreqType";
@@ -2689,9 +2192,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecurringDate";
@@ -2701,9 +2201,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "MinCharge";
@@ -2713,9 +2210,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecursionCharge";
@@ -2725,9 +2219,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CancellationFee";
@@ -2737,9 +2228,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Continuable";
@@ -2749,9 +2237,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "TotalPaid";
@@ -2761,9 +2246,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "TotalRecursions";
@@ -2773,10 +2255,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2798,9 +2280,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Description";
@@ -2810,9 +2289,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Nature";
@@ -2822,9 +2298,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Fixed";
@@ -2834,9 +2307,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecurringFreqType";
@@ -2846,9 +2316,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecurringDate";
@@ -2858,9 +2325,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "MinCharge";
@@ -2870,9 +2334,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecursionCharge";
@@ -2882,9 +2343,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CancellationFee";
@@ -2894,9 +2352,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Continuable";
@@ -2906,10 +2361,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2931,9 +2386,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ScrapeResponse";
@@ -2943,9 +2395,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ParseResponse";
@@ -2955,10 +2404,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2980,9 +2429,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ServiceType";
@@ -2992,9 +2438,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Indial100";
@@ -3004,9 +2447,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "MinMonthly";
@@ -3016,9 +2456,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "ChargeCap";
@@ -3028,9 +2465,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "UsageCap";
@@ -3040,9 +2474,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "AccountGroup";
@@ -3052,9 +2483,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -3064,9 +2492,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CappedCharge";
@@ -3076,9 +2501,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "UncappedCharge";
@@ -3088,10 +2510,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -3113,9 +2535,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RateGroup";
@@ -3125,9 +2544,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedBy";
@@ -3137,9 +2553,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedOn";
@@ -3149,9 +2562,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "StartDatetime";
@@ -3161,9 +2571,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "EndDatetime";
@@ -3173,10 +2580,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -3198,9 +2605,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RatePlan";
@@ -3210,9 +2614,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedBy";
@@ -3222,9 +2623,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedOn";
@@ -3234,10 +2632,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -3259,9 +2657,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecurringCharge";
@@ -3271,9 +2666,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedBy";
@@ -3283,9 +2675,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CreatedOn";
@@ -3295,10 +2684,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -3320,9 +2709,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "AccountGroup";
@@ -3332,9 +2718,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -3344,9 +2727,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Service";
@@ -3356,9 +2736,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Invoice";
@@ -3368,9 +2745,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecordType";
@@ -3380,9 +2754,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "CappedCharge";
@@ -3392,9 +2763,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "UncappedCharge";
@@ -3404,9 +2772,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "TotalCharge";
@@ -3416,10 +2781,10 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
-						
+			
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -3441,9 +2806,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "AccountGroup";
@@ -3453,9 +2815,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Account";
@@ -3465,9 +2824,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Service";
@@ -3477,9 +2833,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Invoice";
@@ -3489,9 +2842,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "RecordType";
@@ -3501,9 +2851,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Charge";
@@ -3513,9 +2860,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
-	// Save Table Define
-	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-				
 								
 	// Define Columns
 	$strName = "Units";
@@ -3525,8 +2869,8 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-	
 	
 ?>
