@@ -98,7 +98,28 @@ die();
 		$this->_rptRatingReport->AddMessage("\n".MSG_HORIZONTAL_RULE.MSG_RATING_TITLE, FALSE);
 		
 		// Init Statements
-		$this->_ubiServiceTotals = new StatementUpdateById("Service");
+		$this->_ubiServiceTotals	= new StatementUpdateById("Service");
+		
+		// Init Rate finding (aka Dirty Huge Donkey) Query
+		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
+										"RateGroup JOIN RateGroupRate ON RateGroup.Id = RateGroupRate.RateGroup, " .
+										"ServiceRateGroup JOIN RateGroup ON ServiceRateGroup.RateGroup = RateGroup.Id";
+		$strWhere					=	"ServiceRateGroup.Service 		= <Service> AND " .
+										"ServiceRateGroup.StartDateTime	<= <DateTime> AND " .
+										"ServiceRateGroup.EndDateTime	>= <DateTime> AND " .
+										"Rate.RecordType				= <RecordType> AND " .
+										"( ( Rate.Destination IS NULL AND <Destination> IS NULL ) OR " .
+										"(Rate.Destination = <Destination>) ) " .
+										"Rate.StartTime					<= <Time> AND " .
+										"Rate.EndTime					>= <Time> AND " .
+										"( Rate.Monday					= <Monday> OR " .
+										"Rate.Tuesday					= <Tuesday> OR " .
+										"Rate.Wednesday					= <Wednesday> OR " .
+										"Rate.Thursday					= <Thursday> OR " .
+										"Rate.Friday					= <Friday> OR " .
+										"Rate.Saturday					= <Saturday> OR " .
+										"Rate.Sunday					= <Sunday> )";
+		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
  	}
  	
  	
@@ -270,7 +291,26 @@ die();
 	 private function _FindRate()
 	 {
 	 	// find the appropriate rate
-		//TODO!!!!
+	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
+	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
+	 	$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
+	 	$strAliases['DateTime']		= $this->_arrCurrentCDR['StartDateTime'];
+	 	$strAliases['Time']			= new MySQLFunction("TIME(".$this->_arrCurrentCDR['StartDateTime'].")");
+	 	$intTime					= strtotime($this->_arrCurrentCDR['StartDateTime']);
+	 	$strDay						= date("l", $intTime);
+	 	$strAliases['Monday']		= ($strDay == "Monday") ? TRUE : DONKEY;
+	 	$strAliases['Tuesday']		= ($strDay == "Tuesday") ? TRUE : DONKEY;
+	 	$strAliases['Wednesday']	= ($strDay == "Wednesday") ? TRUE : DONKEY;
+	 	$strAliases['Thursday']		= ($strDay == "Thursday") ? TRUE : DONKEY;
+	 	$strAliases['Friday']		= ($strDay == "Friday") ? TRUE : DONKEY;
+	 	$strAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
+	 	$strAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
+		$this->_selFindRate->Execute($strAliases);
+		
+		if (!($arrRate = $this->_selFindRate->Fetch()))
+		{
+			return FALSE;
+		}
 		
 		/* DIRTY HUGE DONKEY QUERY
 		 * 
@@ -299,7 +339,7 @@ die();
 		 * 
 		 * LIMIT 1
 		 */
-		
+		 	
 		// set the current rate
 		$this->_arrCurrentRate = $arrRate;
 		
