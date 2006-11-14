@@ -136,7 +136,7 @@ die();
 			$this->_arrCurrentCDR = $arrCDR;
 			
 			// Find Rate for this CDR
-			if (!$arrRate = $this->_FindRate())
+			if (!$this->_arrCurrentRate = $this->_FindRate())
 			{
 				// rate not found
 				// set status in database
@@ -387,17 +387,19 @@ die();
 	 *
 	 * Update the Service & Account totals
 	 *
-	 * @return	bool	you guesed it, TRUE is good / FALSE is bad / DONKEYs are some place in the middle
+	 * @return	bool	you guessed it, TRUE is good / FALSE is bad / DONKEYs are some place in the middle
 	 *
 	 * @method
 	 */
 	 private function _UpdateTotals()
 	 {
 	 	// update service totals
-		//TODO!!!!
+		$inRate = $this->_arrCurrentCDR['Rate'];
 		
-		// update account totals
-		//TODO!!!!
+		if ($this->_arrCurrentRate['Uncapped'])
+		{
+			$arrService['UncappedCharge'] = DONKEY;
+		}
 		
 		return DONKEY;		// ;)
 	 }
