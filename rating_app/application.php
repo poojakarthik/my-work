@@ -313,6 +313,15 @@ die();
 	 *
 	 * Calculate the cap charge for the current CDR Record
 	 *
+	 * Cap can be set in $ (CapCost) or units (CapUnits) but not both*.
+	 * Cap Limit can be set in $ (CapLimit) or units (CapUsage) but not both*.
+	 * *If both are specified, units will be used.
+	 * The type of Cap & Cap Limit can be mixed, eg. Cap in $, Cap Limit in Units.
+	 *
+	 * if CapLimit is set ($ limit to capping) then only the standard rate will
+	 * be used to calculate the charge. If CapUsage is set then the excess rate
+	 * will be used to calculate the over cap charge.
+	 *
 	 * @return	mixed	float	charge amount
 	 * 					bool	FALSE if charge could not be calculated
 	 *function 
@@ -320,22 +329,60 @@ die();
 	 */
 	 private function _CalculateCap()
 	 {
+	 	// get cap details
+	 	$intCapUnits	= $this->_arrCurrentRate['CapUnits'];
+		$fltCapCost		= $this->_arrCurrentRate['CapCost'];
+		$intCapUsage	= $this->_arrCurrentRate['CapUsage'];
+		$fltCapLimit	= $this->_arrCurrentRate['CapLimit'];
+		
+		// get CDR details
+		$fltCharge		= $this->_arrCurrentCDR['Charge'];
+		$fltFullCharge	= $fltCharge;
+		$intUnits		= $this->_arrCurrentCDR['Units'];
+		
 	 	// is this a capped charge
-		if (false) //TODO!!!!
+		if (!$intCapUnits && !$fltCapCost && !$intCapUsage && !$fltCapLimit)
 		{
-			// call Zeemus magic rating formular
-			//TODO!!!!
-			$fltCharge = $this->_ZeemusMagicRatingFormula();
-			
-			// set the current charge
-			$this->_arrCurrentCDR['Charge'] = $fltCharge;
+			// not a capped rate, don't do anything
+		}
+		elseif ($fltCharge <= $fltCapCost || $intUnits <= $intCapUnits)
+		{
+			// under the cap, don't do anything
 		}
 		else
 		{
-			// not a capped charge, we will return the existing charge amount
-			$fltCharge = $this->_arrCurrentCDR['Charge'];
+			// calculate cap charge
+			if ($intUnits > $intCapUnits)
+			{
+				// over cap units, cap at cap units
+				//resend to Zeemus magic rating formular with less units
+				$fltCharge = $this->_ZeemusMagicRatingFormula('Std', $intCapUnits);
+			}
+			elseif ($fltCharge > $fltCapCost)
+			{
+				// over cap cost, cap at cap cost
+				$fltCharge = $fltCapCost;
+			}
+		
+			// calculate over cap limit charges
+			if ($intUnits > $intCapUsage)
+			{
+				// calculate excess units
+				$intExsUnits = $intUnits - $intCapUsage;
+				
+				// resend to Zeemus magic rating formular with excess units
+				$fltCharge += $this->_ZeemusMagicRatingFormula('Ext', $intExsUnits);
+			}
+			elseif ($fltFullCharge > $fltCapLimit)
+			{
+				// calculate excess charge
+				$fltCharge += ($fltFullCharge - $fltCapLimit)
+			}
 		}
 		
+		// set the current charge
+		$this->_arrCurrentCDR['Charge'] = $fltCharge;
+			
 		// return the charge amount
 		return $fltCharge;
 	 }
@@ -417,14 +464,15 @@ die();
 	 * This is where the actual work of applying the magic Zeemu rating formula
 	 * is done.
 	 *
-	 * @param	string	$strType	Rate type to use, 'Std' or 'Ext'
+	 * @param	string	$strType	optional Rate type to use, 'Std' or 'Ext'
+	 * @param	int		$intUnits	optional units to use when calculating ($q)
 	 *	 
 	 * @return	mixed	float : charge amount
 	 * 					FALSE if charge could not be calculated
 	 *
 	 * @method
 	 */
-	 private function _ZeemusMagicRatingFormula($strType = 'Std')
+	 private function _ZeemusMagicRatingFormula($strType = 'Std', $intUnits = 0)
 	 {
 	 	// select rate type to use (Std or Ext
 		if ($strType != 'Std' && $strType != 'Ext')
@@ -451,6 +499,16 @@ die();
 		// ------------------------------------------------ //
 		$c	= $this->_CurrentCDR['Cost'];		// our cost (total)
 		$q	= $this->_CurrentCDR['Units'];		// number of units (total)
+		
+		// ------------------------------------------------ //
+		
+		// ------------------------------------------------ //
+		// Units Passed to Method
+		// ------------------------------------------------ //
+		if ((int)$intUnits > 0)
+		{
+			$q = (int)$intUnits;
+		}
 		
 		// ------------------------------------------------ //
 		
