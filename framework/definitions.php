@@ -85,4 +85,7 @@ define("CDRFILE_IMPORT_FAILED"		, 205);
 define("CDRFILE_NORMALISE_FAILED"	, 206);
 define("CDRFILE_NORMALISED"			, 207);
 
+// DONKEY (neither TRUE nor FALSE)
+define("DONKEY"						, -1);
+
 ?>
