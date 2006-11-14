@@ -19,7 +19,7 @@
  * @language	PHP
  * @package		Skeleton_application
  * @author		Jared 'flame' Herbohn
- * @version		6.10
+ * @version		6.11
  * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -56,6 +56,50 @@ die();
  class ApplicationRating extends ApplicationBaseClass
  {
  	//------------------------------------------------------------------------//
+	// _rptRatingReport
+	//------------------------------------------------------------------------//
+	/**
+	 * _rptRatingReport
+	 *
+	 * Rating report
+	 *
+	 * Rating Report, including information on errors, failed ratings,
+	 * and a total of each
+	 *
+	 * @type		Report
+	 *
+	 * @property
+	 */
+	private $_rptRatingReport;	
+ 	
+ 	
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for the Rating Application
+	 *
+	 * Constructor for the Rating Application
+	 * 
+	 * @param	array	$arrConfig				Configuration array
+	 *
+	 * @return			ApplicationCollection
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+ 	function __construct($arrConfig)
+ 	{
+	 	// Initialise framework components
+		$this->_rptRatingReport = new Report("Rating Report for " . date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
+		
+		$this->_rptRatingReport->AddMessage("\n".MSG_HORIZONTAL_RULE.MSG_RATING_TITLE, FALSE);
+ 	}
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
 	// Rate
 	//------------------------------------------------------------------------//
 	/**
@@ -74,9 +118,20 @@ die();
 	 	$selGetCDRs->Execute();
 		$arrCDRList = $selGetCDRs->FetchAll();
 		
+		$updSaveCDR = new StatementUpdateById("CDR");
+		
+		$this->Framework->StartWatch();
+		
+		$intPassed = 0;
+		$intFailed = 0;
+		
 		// Loop through each CDR
 		foreach($arrCDRList as $arrCDR)
 		{
+			// Report
+			$arrAlises['<SeqNo>'] = str_pad($arrCDR['SequenceNo'], 60, " ");
+			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises, FALSE);
+			
 			// set current CDR
 			$this->_arrCurrentCDR = $arrCDR;
 			
@@ -85,10 +140,16 @@ die();
 			{
 				// rate not found
 				// set status in database
-				//TODO!!!!
+				$arrCDR['Status']	= CDR_RATING_NOT_FOUND;
+				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+				$updSaveCDR->Execute($arrCDR);
 				
 				// add to report
-				//TODO!!!!
+				$arrAlises['<Reason>'] = "Rate not found";
+				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+				
+				$intFailed++;
+				continue;
 			}
 			
 			// Calculate Charge
@@ -97,8 +158,17 @@ die();
 			{
 				// Charge calculation failed
 				// THIS SHOULD NEVER HAPPEN
-				// report the error
-				//TODO!!!!
+
+				$arrCDR['Status'] = CDR_UNABLE_TO_RATE;
+				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+				$updSaveCDR->Execute($arrCDR);
+				
+				// add to report
+				$arrAlises['<Reason>'] = "Base charge calculation failed";
+				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+				
+				$intFailed++;
+				continue;
 			}
 			
 			// Calculate Cap Rate
@@ -107,8 +177,17 @@ die();
 			{
 				// Charge calculation failed
 				// THIS SHOULD NEVER HAPPEN
-				// report the error
-				//TODO!!!!
+
+				$arrCDR['Status'] = CDR_UNABLE_TO_CAP;
+				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+				$updSaveCDR->Execute($arrCDR);
+				
+				// add to report
+				$arrAlises['<Reason>'] = "Unable to cap CDR";
+				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+				
+				$intFailed++;
+				continue;
 			}
 			
 			// Calculate Prorate
@@ -117,8 +196,17 @@ die();
 			{
 				// Charge calculation failed
 				// THIS SHOULD NEVER HAPPEN
-				// report the error
-				//TODO!!!!
+
+				$arrCDR['Status'] = CDR_UNABLE_TO_PRORATE;
+				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+				$updSaveCDR->Execute($arrCDR);
+				
+				// add to report
+				$arrAlises['<Reason>'] = "ProRating failed";
+				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+				
+				$intFailed++;
+				continue;
 			}
 			
 			// Update Service & Account Totals
@@ -126,10 +214,16 @@ die();
 			{
 				// problem updating totals
 				// set status in database
-				//TODO!!!!
+				$arrCDR['Status'] = CDR_TOTALS_UPDATE_FAILED;
+				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+				$updSaveCDR->Execute($arrCDR);
 				
 				// add to report
-				//TODO!!!!
+				$arrAlises['<Reason>'] = "Totals updating failed";
+				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+				
+				$intFailed++;
+				continue;
 			}
 			
 			// Check for overlimit accounts
@@ -137,10 +231,23 @@ die();
 			// Check if an account is over its limit and do something if it is
 			// implement this some time in the future
 			
+			// Report
+			$this->_rptRatingReport->AddMessage(MSG_OK, FALSE);
+			
 			// save CDR back to database
-			//TODO!!!!
-		
+			$arrCDR['Status'] = CDR_RATED;
+			$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+			$updSaveCDR->Execute($arrCDR);
+			
+			$intPassed++;
 		}
+		
+		// Report footer
+		$arrAliases['<Total>']	= $intFailed + $intPassed;
+		$arrAliases['<Time>']	= $this->Framework->SplitWatch();
+		$arrAliases['<Pass>']	= $intPassed;
+		$arrAliases['<Fail>']	= $intFailed;
+		$this->_rptRatingReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE.MSG_REPORT, $arrAlises, FALSE);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -167,6 +274,7 @@ die();
 		
 		// return something
 		//TODO!!!!
+		return true;
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -214,7 +322,7 @@ die();
 	 private function _CalculateCap()
 	 {
 	 	// is this a capped charge
-		if () //TODO!!!!
+		if (false) //TODO!!!!
 		{
 			// call Zeemus magic rating formular
 			$fltCharge = $this->_ZeemusMagicRatingFormula();
@@ -251,7 +359,7 @@ die();
 	 private function _CalculateProrate()
 	 {
 	 	// is this a prorate charge
-		if () //TODO!!!!
+		if (false) //TODO!!!!
 		{
 			// Yes it is, NFI what to do now
 			//TODO!!!!
@@ -279,7 +387,7 @@ die();
 	 *
 	 * Update the Service & Account totals
 	 *
-	 * @return	bool	you guesed it, TRUE is good / FALSE is bad / DONKEYS are some place in the middle
+	 * @return	bool	you guesed it, TRUE is good / FALSE is bad / DONKEYs are some place in the middle
 	 *
 	 * @method
 	 */
@@ -290,6 +398,8 @@ die();
 		
 		// update account totals
 		//TODO!!!!
+		
+		return DONKEY;		// ;)
 	 }
 	 
 	//------------------------------------------------------------------------//
