@@ -324,7 +324,6 @@ die();
 	 private function _CalculateCharge()
 	 {
 	 	// call Zeemus magic rating formula
-		//TODO!!!!
 		$fltCharge = $this->_ZeemusMagicRatingFormula();
 		
 		// set the current charge
