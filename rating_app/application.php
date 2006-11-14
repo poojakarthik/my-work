@@ -96,6 +96,9 @@ die();
 		$this->_rptRatingReport = new Report("Rating Report for " . date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
 		
 		$this->_rptRatingReport->AddMessage("\n".MSG_HORIZONTAL_RULE.MSG_RATING_TITLE, FALSE);
+		
+		// Init Statements
+		$this->_ubiServiceTotals = new StatementUpdateById("Service");
  	}
  	
  	
@@ -269,6 +272,34 @@ die();
 	 	// find the appropriate rate
 		//TODO!!!!
 		
+		/* DIRTY HUGE DONKEY QUERY
+		 * 
+		 * SELECT	Rate.*
+		 *
+		 * FROM		Rate INNER JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate,
+		 * 			RateGroup INNER JOIN RateGroupRate ON RateGroup.Id = RateGroupRate.RateGroup,
+		 * 			ServiceRateGroup INNER JOIN RateGroup ON ServiceRateGroup = RateGroup.Id
+		 * 
+		 * WHERE	ServiceRateGroup.Service		= <Service>			AND
+		 * 			Rate.RecordType					= <RecordType>		AND
+		 * 			Rate.Destination				LIKE <Destination>	AND
+		 * 			ServiceRateGroup.StartDateTime	<= <DateTime>		AND
+		 * 			ServiceRateGroup.EndDateTime	>= <DateTime>		AND
+		 * 			Rate.StartTime					<= <Time>			AND
+		 * 			Rate.EndTime					>= <Time>			AND
+		 * 				( Rate.Monday 				= <Monday>			OR
+		 * 				  Rate.Tuesday				= <Tuesday>			OR
+		 * 				  Rate.Wednesday			= <Wednesday>		OR
+		 * 				  Rate.Thursday				= <Thursday>		OR
+		 * 				  Rate.Friday				= <Friday>			OR
+		 * 				  Rate.Saturday				= <Saturday>		OR
+		 * 				  Rate.Sunday				= <Sunday> )
+		 * 
+		 * ORDER BY ServiceRateGroup.CreatedOn DESC
+		 * 
+		 * LIMIT 1
+		 */
+		
 		// set the current rate
 		$this->_arrCurrentRate = $arrRate;
 		
@@ -440,16 +471,20 @@ die();
 	 private function _UpdateTotals()
 	 {
 	 	// update service totals
-		$inRate = $this->_arrCurrentCDR['Rate'];
-		// = $this->_arrCurrentCDR['Charge'];
-		// $this->_arrCurrentRate['Uncapped']
+		$fltCharge = $this->_arrCurrentCDR['Charge'];
 
 		if ($this->_arrCurrentRate['Uncapped'])
 		{
-			$arrService['UncappedCharge'] = DONKEY;
+			$this->_arrCurrentService['UncappedCharge']	= new MySQLFunction("UncappedCharge + ".$fltCharge);
+			$this->_arrCurrentService['CappedCharge']	= new MySQLFunction("CappedCharge");
+		}
+		else
+		{
+			$this->_arrCurrentService['UncappedCharge']	= new MySQLFunction("UncappedCharge");
+			$this->_arrCurrentService['CappedCharge']	= new MySQLFunction("CappedCharge + ".$fltCharge);
 		}
 		
-		return DONKEY;		// ;)
+		return $this->_ubiServiceTotals->Execute($this->_arrCurrentService);
 	 }
 	 
 	//------------------------------------------------------------------------//
