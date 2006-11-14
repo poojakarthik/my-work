@@ -270,11 +270,10 @@ die();
 		//TODO!!!!
 		
 		// set the current rate
-		//TODO!!!!
+		$this->_arrCurrentRate = $arrRate;
 		
 		// return something
-		//TODO!!!!
-		return true;
+		return $arrRate;
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -294,11 +293,11 @@ die();
 	 private function _CalculateCharge()
 	 {
 	 	// call Zeemus magic rating formula
+		//TODO!!!!
 		$fltCharge = $this->_ZeemusMagicRatingFormula();
 		
 		// set the current charge
-		// $this->_arrCurrentCDR['Charge'] =
-		//TODO!!!!
+		$this->_arrCurrentCDR['Charge'] = $fltCharge;
 		
 		// return the charge amount
 		return $fltCharge;
@@ -316,7 +315,7 @@ die();
 	 *
 	 * @return	mixed	float	charge amount
 	 * 					bool	FALSE if charge could not be calculated
-	 *
+	 *function 
 	 * @method
 	 */
 	 private function _CalculateCap()
@@ -325,11 +324,11 @@ die();
 		if (false) //TODO!!!!
 		{
 			// call Zeemus magic rating formular
+			//TODO!!!!
 			$fltCharge = $this->_ZeemusMagicRatingFormula();
 			
 			// set the current charge
-			// $this->_arrCurrentCDR['Charge'] =
-			//TODO!!!!
+			$this->_arrCurrentCDR['Charge'] = $fltCharge;
 		}
 		else
 		{
@@ -365,7 +364,7 @@ die();
 			//TODO!!!!
 			
 			// set the current charge
-			//TODO!!!!
+			$this->_arrCurrentCDR['Charge'] = $fltCharge;
 		}
 		else
 		{
@@ -395,7 +394,9 @@ die();
 	 {
 	 	// update service totals
 		$inRate = $this->_arrCurrentCDR['Rate'];
-		
+		// = $this->_arrCurrentCDR['Charge'];
+		// $this->_arrCurrentRate['Uncapped']
+
 		if ($this->_arrCurrentRate['Uncapped'])
 		{
 			$arrService['UncappedCharge'] = DONKEY;
