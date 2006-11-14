@@ -446,7 +446,7 @@ die();
 			elseif ($fltFullCharge > $fltCapLimit)
 			{
 				// calculate excess charge
-				$fltCharge += ($fltFullCharge - $fltCapLimit)
+				$fltCharge += ($fltFullCharge - $fltCapLimit);
 			}
 		}
 		
@@ -560,19 +560,19 @@ die();
 		// a rate should never have a per unit rate & a markup
 		// as it would be redundant (the rate should be set as a
 		// $ markup rather then a rate)
-		$r	= $this->_CurrentRate[$strType.'RatePerUnit'];	// rate per unit
-		$f	= $this->_CurrentRate[$strType.'Flagfall'];		// flagfall
-		$p	= $this->_CurrentRate[$strType.'Percentage'];	// percentage markup
-		$d	= $this->_CurrentRate[$strType.'Markup'];		// dollar markup per unit
-		$u	= $this->_CurrentRate[$strType.'Units'];		// units to charge in
+		$r	= $this->_arrCurrentRate[$strType.'RatePerUnit'];	// rate per unit
+		$f	= $this->_arrCurrentRate[$strType.'Flagfall'];		// flagfall
+		$p	= $this->_arrCurrentRate[$strType.'Percentage'];	// percentage markup
+		$d	= $this->_arrCurrentRate[$strType.'Markup'];		// dollar markup per unit
+		$u	= $this->_arrCurrentRate[$strType.'Units'];		// units to charge in
 		
 		// ------------------------------------------------ //
 		
 		// ------------------------------------------------ //
 		// CDR details
 		// ------------------------------------------------ //
-		$c	= $this->_CurrentCDR['Cost'];		// our cost (total)
-		$q	= $this->_CurrentCDR['Units'];		// number of units (total)
+		$c	= $this->_arrCurrentCDR['Cost'];		// our cost (total)
+		$q	= $this->_arrCurrentCDR['Units'];		// number of units (total)
 		
 		// ------------------------------------------------ //
 		
