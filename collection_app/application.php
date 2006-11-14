@@ -141,7 +141,7 @@ die();
  	{
 	 	// Initialise framework components
 		$this->_errErrorHandler = new ErrorHandler();
-		$this->_rptCollectionReport = new Report("Collection Report for " . date("Y-m-d"), "flame@telcoblue.com.au");
+		$this->_rptCollectionReport = new Report("Collection Report for " . date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
 		
 		$this->_insFileImport = new statementInsert("FileImport");
 		$this->_selIsUnique = new StatementSelect("FileImport", "Id", "Carrier = <Carrier> AND (SHA1 = <SHA1> OR FileName = <FileName>)");
