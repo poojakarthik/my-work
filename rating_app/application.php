@@ -481,18 +481,26 @@ die();
 		if ($this->_arrCurrentRate['Prorate'])
 		{
 			// Yes it is...
-			// is StartDate -> EndDate a whole month
-			endday = floor(strtotime(end)/86400)
-			startday = floor(strtotime(start)/86400)
-			x = floor(strtotime("$startdate + 1 month)/86400)))
-			intDaysInMonth = x - startday 
-			// if endday < x - 1
-				// No, calculate prorate
-				$intDaysInCharge = endday - startday
-				fltCharge = (charge / intDaysInMonth ) * intDaysInCharge		
+			$intEndDay		= floor(strtotime($this->_arrCurrentCDR['EndDateTime'])/86400);
+			$intStartDay	= floor(strtotime($this->_arrCurrentCDR['StartDateTime'])/86400);
+			$intEndMonth	= floor((strtotime("+ 1 month", $intStartDay)/86400) - 1);
+			$intDaysInMonth = $intEndMonth - $intStartDay;
 			
-			// set the current charge
-			$this->_arrCurrentCDR['Charge'] = $fltCharge;
+			// is StartDate -> EndDate a whole month
+			if ($intEndDay < $intEndMonth)
+			{
+				// No, calculate prorate
+				$intDaysInCharge = $intEndDay - $intStartDay;
+				try
+				{
+					$fltCharge = ($fltCharge / $intDaysInMonth ) * $intDaysInCharge;
+				}
+				catch (Exception $excException)
+				{
+					// Divide by zero
+					return FALSE;
+				}	
+			}
 		}
 		
 		// return the charge amount
