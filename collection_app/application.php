@@ -221,7 +221,8 @@ die();
 					$strFileLocation = TEMP_DOWNLOAD_DIR.$strFile;
 					
 					// Add to report that we're downloading the file
-					$this->AddToCollectionReport(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation));
+					$intFileSize = filesize($strFileLocation) / 1024;
+					$this->AddToCollectionReport(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation, '<FileSize>' => $intFileSize));
 					
 					// set current download file
 					$this->_arrCurrentDownloadFile = Array("Location" => $strFileLocation, "Status" => RAWFILE_DOWNLOADED);
