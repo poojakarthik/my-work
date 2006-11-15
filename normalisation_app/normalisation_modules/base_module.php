@@ -430,17 +430,21 @@ abstract class NormalisationModule
 	 */
 	 protected function _ValidateRawCDR()
 	 {
-	 	foreach($this->_arrDefineCarrier as $strKey=>$strValue)
+	 	if (is_array($this->_arrDefineCarrier))
 		{
-			if ($strValue['Validate'])
+			foreach($this->_arrDefineCarrier as $strKey=>$strValue)
 			{
-				if (!preg_match($strValue['Validate'], $this->_arrRawData[$strKey]))
+				if ($strValue['Validate'])
 				{
-					return FALSE;
+					if (!preg_match($strValue['Validate'], $this->_arrRawData[$strKey]))
+					{
+						return FALSE;
+					}
 				}
 			}
 			return TRUE;
 		}
+		// retfrn false if there is no define array for the carrier (should never happen)
 		return FALSE;
 	 }
 	
