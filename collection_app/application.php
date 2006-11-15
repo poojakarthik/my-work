@@ -139,6 +139,8 @@ die();
 	 */
  	function __construct($arrConfig)
  	{
+		parent::__construct();
+		
 	 	// Initialise framework components
 		$this->_errErrorHandler = new ErrorHandler();
 		$this->_rptCollectionReport = new Report("Collection Report for " . date("Y-m-d H:i:s"), "flame@telcoblue.com.au");

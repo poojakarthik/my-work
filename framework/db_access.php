@@ -910,7 +910,8 @@
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
 	 		// There was problem preparing the statment
-	 		throw new Exception();
+	 		//throw new Exception("Could not prepare statement : $strQuery\n");
+			throw new Exception($this->Error());
 	 	}
 	}
 	
@@ -969,10 +970,11 @@
 	 			$i++;
 		 	}
 	 	}
-
-		//TODO !!!! - this will error if $arrParams is not an array
-	 	array_unshift($arrParams, $strType);
-		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
+		if (is_array($arrParams))
+		{
+	 		array_unshift($arrParams, $strType);
+			call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
+		}
 		
 	 	// Free any previous results
 	 	$this->_stmtSqlStatment->free_result();
@@ -1328,15 +1330,14 @@
 	{
 		// make global database object available
 		$this->db = &$GLOBALS['dbaDatabase'];
-		
 		$strId = $this->db->arrTableDefine[$strTable]['Id'];
 		if (!$strId)
 		{
-			throw new Exception("Missing Table Id");
+			throw new Exception("Missing Table Id for : $strTable");
 		}
 		
 		$strWhere = "$strId = <$strId>";
-		parent::__construct($strTable, $strWhere, $arrColumns = null);
+		parent::__construct($strTable, $strWhere, $arrColumns);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1364,7 +1365,7 @@
 	 	$strId = $this->db->arrTableDefine[$this->_strTable]['Id'];
 		$intId = $arrData[$strId];
 		$arrWhere = Array($strId => $intId);
-	 	parent::Execute($arrData, $arrWhere);
+	 	return parent::Execute($arrData, $arrWhere);
 	 }
  }
 

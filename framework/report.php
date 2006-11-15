@@ -266,12 +266,14 @@ class Report
 	 */
 	public function AddMessageVariables($strMessage, $arrAliases, $bolNewLine = TRUE)
 	{
- 		foreach ($arrAliases as $arrAlias => $arrValue)
- 		{
- 			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
- 		}
- 		
- 		$this->AddMessage($strMessage, FALSE);
+		if (is_array($arrAliases))
+		{
+			foreach ($arrAliases as $arrAlias => $arrValue)
+			{
+				$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
+			}
+		}
+			$this->AddMessage($strMessage, FALSE);
 	}	
 		
 	

@@ -286,7 +286,7 @@
 		// connect to database if not already connected
 		if (!$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
 		{
-			$_GLOBALS['dbaDatabase'] = new DataAccess();
+			$GLOBALS['dbaDatabase'] = new DataAccess();
 		}
 		
 		// make global database object available
@@ -294,6 +294,9 @@
 		
 		// make global framework object available
 		$this->Framework = &$GLOBALS['fwkFramework'];
+		
+		// make global error handler available
+		$this->_errErrorHandler = $this->Framework->_errErrorHandler;
 	}
  }
 ?>

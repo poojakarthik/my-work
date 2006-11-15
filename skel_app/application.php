@@ -26,7 +26,7 @@
  */
 
 // Application entry point - create an instance of the application object
-$appSkel = new ApplicationSkel();
+$appSkel = new ApplicationSkel($arrConfig);
 
 // finished
 echo("\n-- End of Skeleton --\n");
@@ -52,7 +52,26 @@ die();
  */
  class ApplicationSkel extends ApplicationBaseClass
  {
- 
+ 	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for the Application
+	 *
+	 * Constructor for the Application
+	 * 
+	 * @param	array	$arrConfig				Configuration array
+	 *
+	 * @return			ApplicationCollection
+	 *
+	 * @method
+	 */
+ 	function __construct($arrConfig)
+ 	{
+		parent::__construct();
+	}
  }
 
 

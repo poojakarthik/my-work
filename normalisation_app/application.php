@@ -198,7 +198,7 @@ die();
 		parent::__construct();
 		
 	 	// Initialise framework components
-		$this->rptNormalisationReport = new Report("Collection Report for " . date("Y-m-d"), $mixEmailAddress);
+		$this->rptNormalisationReport = new Report("Normalisation Report for " . date("Y-m-d H:i:s"), $mixEmailAddress);
 		$this->errErrorHandler = new ErrorHandler();
 		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));

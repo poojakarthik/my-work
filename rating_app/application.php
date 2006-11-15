@@ -26,7 +26,7 @@
  */
 
 // Application entry point - create an instance of the application object
-$appRating = new ApplicationRating();
+$appRating = new ApplicationRating($arrConfig);
 
 // run the thing
 $appRating->Rate();
@@ -92,33 +92,40 @@ die();
 	 */
  	function __construct($arrConfig)
  	{
+		parent::__construct();
+		
 	 	// Initialise framework components
 		$this->_rptRatingReport = new Report("Rating Report for " . date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
 		
 		$this->_rptRatingReport->AddMessage("\n".MSG_HORIZONTAL_RULE.MSG_RATING_TITLE, FALSE);
 		
-		// Init Statements
-		$this->_ubiServiceTotals	= new StatementUpdateById("Service");
+		// Init Statement
+		$ServiceTotalsColumns['UncappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
+		$ServiceTotalsColumns['CappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
+		$this->_ubiServiceTotals	= new StatementUpdateById("Service", $ServiceTotalsColumns);
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
 		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
-										"RateGroup JOIN RateGroupRate ON RateGroup.Id = RateGroupRate.RateGroup, " .
-										"ServiceRateGroup JOIN RateGroup ON ServiceRateGroup.RateGroup = RateGroup.Id";
-		$strWhere					=	"ServiceRateGroup.Service 		= <Service> AND " .
-										"ServiceRateGroup.StartDateTime	<= <DateTime> AND " .
-										"ServiceRateGroup.EndDateTime	>= <DateTime> AND " .
-										"Rate.RecordType				= <RecordType> AND " .
-										"( ( Rate.Destination IS NULL AND <Destination> IS NULL ) OR " .
-										"(Rate.Destination = <Destination>) ) " .
-										"Rate.StartTime					<= <Time> AND " .
-										"Rate.EndTime					>= <Time> AND " .
-										"( Rate.Monday					= <Monday> OR " .
-										"Rate.Tuesday					= <Tuesday> OR " .
-										"Rate.Wednesday					= <Wednesday> OR " .
-										"Rate.Thursday					= <Thursday> OR " .
-										"Rate.Friday					= <Friday> OR " .
-										"Rate.Saturday					= <Saturday> OR " .
-										"Rate.Sunday					= <Sunday> )";
+										"RateGroup JOIN RateGroupRate AS RateGroupRate2 ON RateGroup.Id = RateGroupRate2.RateGroup, " .
+										"ServiceRateGroup JOIN RateGroup AS RateGroup2 ON ServiceRateGroup.RateGroup = RateGroup2.Id";
+										
+		$strWhere					=	"RateGroupRate.Id 				= RateGroupRate2.Id AND \n" .
+										"RateGroup.Id 					= RateGroup2.Id AND \n" .
+										"ServiceRateGroup.Service 		= <Service> AND \n" .
+										"ServiceRateGroup.StartDateTime	<= <DateTime> AND \n" .
+										"ServiceRateGroup.EndDateTime	>= <DateTime> AND \n" .
+										"Rate.RecordType				= <RecordType> AND \n" .
+										"( ( Rate.Destination IS NULL AND <Destination> IS NULL ) OR \n" .
+										"(Rate.Destination = <Destination>) ) AND \n" .
+										"Rate.StartTime					<= TIME(<Time>) AND \n" .
+										"Rate.EndTime 					>= <Time> AND \n" .
+										"( Rate.Monday					= <Monday> OR \n" .
+										"Rate.Tuesday					= <Tuesday> OR \n" .
+										"Rate.Wednesday					= <Wednesday> OR \n" .
+										"Rate.Thursday					= <Thursday> OR \n" .
+										"Rate.Friday					= <Friday> OR \n" .
+										"Rate.Saturday					= <Saturday> OR \n" .
+										"Rate.Sunday					= <Sunday> ) \n";
 		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
  	}
  	
@@ -259,10 +266,11 @@ die();
 			$this->_rptRatingReport->AddMessage(MSG_OK, FALSE);
 			
 			// save CDR back to database
+			$arrCDR['Rate'] = $this->_arrCurrentCDR['Rate'];
+			$arrCDR['Charge'] = $this->_arrCurrentCDR['Charge'];
 			$arrCDR['Status'] = CDR_RATED;
 			$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
 			$updSaveCDR->Execute($arrCDR);
-			
 			$intPassed++;
 		}
 		
@@ -271,7 +279,7 @@ die();
 		$arrAliases['<Time>']	= $this->Framework->SplitWatch();
 		$arrAliases['<Pass>']	= $intPassed;
 		$arrAliases['<Fail>']	= $intFailed;
-		$this->_rptRatingReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE.MSG_REPORT, $arrAlises, FALSE);
+		$this->_rptRatingReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE.MSG_REPORT, $arrAliases, FALSE);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -294,9 +302,9 @@ die();
 	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
 	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 	 	$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
-	 	$strAliases['DateTime']		= $this->_arrCurrentCDR['StartDateTime'];
-	 	$strAliases['Time']			= new MySQLFunction("TIME(".$this->_arrCurrentCDR['StartDateTime'].")");
-	 	$intTime					= strtotime($this->_arrCurrentCDR['StartDateTime']);
+	 	$strAliases['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
+	 	$strAliases['Time']			= $this->_arrCurrentCDR['StartDatetime'];
+	 	$intTime					= strtotime($this->_arrCurrentCDR['StartDatetime']);
 	 	$strDay						= date("l", $intTime);
 	 	$strAliases['Monday']		= ($strDay == "Monday") ? TRUE : DONKEY;
 	 	$strAliases['Tuesday']		= ($strDay == "Tuesday") ? TRUE : DONKEY;
@@ -306,7 +314,6 @@ die();
 	 	$strAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
 	 	$strAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
 		$this->_selFindRate->Execute($strAliases);
-		
 		if (!($arrRate = $this->_selFindRate->Fetch()))
 		{
 			return FALSE;
@@ -489,7 +496,7 @@ die();
 			// is StartDate -> EndDate a whole month
 			if ($intEndDay < $intEndMonth)
 			{
-				// No, calculate prorate
+				// calculate prorate
 				$intDaysInCharge = $intEndDay - $intStartDay;
 				try
 				{
@@ -526,18 +533,28 @@ die();
 	 	// update service totals
 		$fltCharge = $this->_arrCurrentCDR['Charge'];
 
+		// don't update totals (or fail) if charge is zero
+		if ($fltCharge == 0)
+		{
+			return 1;
+		}
+		
 		if ($this->_arrCurrentRate['Uncapped'])
 		{
-			$this->_arrCurrentService['UncappedCharge']	= new MySQLFunction("UncappedCharge + ".$fltCharge);
-			$this->_arrCurrentService['CappedCharge']	= new MySQLFunction("CappedCharge");
+			$arrService['UncappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)", Array("ExistingCharge" => "UncappedCharge","AddCharge" => $fltCharge));
+			$arrService['CappedCharge']		= new MySQLFunction("(<ExistingCharge> + <AddCharge>)", Array("ExistingCharge" => "CappedCharge","AddCharge" => 0));
 		}
 		else
 		{
-			$this->_arrCurrentService['UncappedCharge']	= new MySQLFunction("UncappedCharge");
-			$this->_arrCurrentService['CappedCharge']	= new MySQLFunction("CappedCharge + ".$fltCharge);
+			$arrService['UncappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)", Array("ExistingCharge" => "UncappedCharge","AddCharge" => 0));
+			$arrService['CappedCharge']		= new MySQLFunction("(<ExistingCharge> + <AddCharge>)", Array("ExistingCharge" => "CappedCharge","AddCharge" => $fltCharge));
+			
 		}
 		
-		return $this->_ubiServiceTotals->Execute($this->_arrCurrentService);
+		// set service Id
+		$arrService['Id'] = $this->_arrCurrentCDR['Service'];
+		
+		return $this->_ubiServiceTotals->Execute($arrService);
 	 }
 	 
 	//------------------------------------------------------------------------//
