@@ -7,11 +7,11 @@
 		
 		<p>
 			Contained below is a list of all the people in your account group.
-			Click on them for further information.
+			Click on a Contact for more information.
 		</p>
 		
-		<table border="1" cellpadding="3" cellspacing="0">
-			<tr>
+		<table border="0" cellpadding="5" cellspacing="0">
+			<tr class="first">
 				<th>User Name</th>
 				<th>First Name</th>
 				<th>Last Name</th>
@@ -19,14 +19,23 @@
 			</tr>
 			<xsl:for-each select="/Response/Contacts/rangeSample/Contact">
 				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					<xsl:attribute name="onclick">
+						<xsl:text>window.location='contact.php?Id=</xsl:text>
+						<xsl:value-of select="./Id" />
+						<xsl:text>'</xsl:text>
+					</xsl:attribute>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>contact.php?Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:value-of select="./UserName" />
-						</a>
+						<xsl:value-of select="./UserName" />
 					</td>
 					<td>
 						<xsl:value-of select="./FirstName" />

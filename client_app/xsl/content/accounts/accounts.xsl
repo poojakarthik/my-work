@@ -7,28 +7,37 @@
 		
 		<p>
 			Contained below is a list of all your accounts. Click on an 
-			account to view further details.
+			Account for view further details.
 		</p>
 		
-		<table border="1" cellpadding="3" cellspacing="0">
-			<tr>
-				<th>Account Number</th>
+		<table border="0" cellpadding="5" cellspacing="0">
+			<tr class="first">
+				<th>Account #</th>
 				<th>Business Name</th>
 				<th>Trading Name</th>
 			</tr>
 			<xsl:for-each select="/Response/Accounts/Account">
 				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					<xsl:attribute name="onclick">
+						<xsl:text>window.location='account.php?Id=</xsl:text>
+						<xsl:value-of select="./Id" />
+						<xsl:text>'</xsl:text>
+					</xsl:attribute>
 					<td>
 						<xsl:value-of select="Id" />
 					</td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>account.php?Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:value-of select="./BusinessName" />
-						</a>
+						<xsl:value-of select="./BusinessName" />
 					</td>
 					<td>
 						<xsl:value-of select="./TradingName" />

@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<title>Test AutoLogin</title>
+	</head>
+	<body>
+		<h1>Response:</h1>
+		
+		<?php
+			
+			echo "<pre>";
+			require_once ("functions/connection.php");
+			echo htmlentities (Connection_Login ());
+			echo "</pre>";
+			
+		?>
+	</body>
+</html>

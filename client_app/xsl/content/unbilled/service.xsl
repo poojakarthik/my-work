@@ -22,46 +22,55 @@
 		
 		<xsl:if test="/Response/Service/UnbilledCalls/rangePage = 1">
 			<h3>Service Charges</h3>
-			<table border="1" cellpadding="3" cellspacing="0">
-				<tr>
+			<table border="0" cellpadding="5" cellspacing="0">
+				<tr class="first">
 					<th>Charged On</th>
 					<th>Ref.</th>
 					<th>Description</th>
 					<th>Amount</th>
 				</tr>
-				<xsl:for-each select="/Response/Service/UnbilledCharges/rangeSample/Charge">
-					<tr>
-						<xsl:attribute name="class">
-							<xsl:choose>
-								<xsl:when test="position() mod 2 = 1">
-									<xsl:text>odd</xsl:text>
-								</xsl:when>
-								<xsl:otherwise>
-									<xsl:text>even</xsl:text>
-								</xsl:otherwise>
-							</xsl:choose>
-						</xsl:attribute>
-						
-						<td>
-							<xsl:call-template name="dt:format-date-time">
-								<xsl:with-param name="year"		select="./ChargedOn/year" />
-								<xsl:with-param name="month"	select="./ChargedOn/month" />
-								<xsl:with-param name="day"		select="./ChargedOn/day" />
-								<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-							</xsl:call-template>
-						</td>
-						<td><xsl:value-of select="./ChargeType" /></td>
-						<td><xsl:value-of select="./Description" /></td>
-						<td><xsl:value-of select="./Amount" /> <xsl:value-of select="./Nature" /></td>
-					</tr>
-				</xsl:for-each>
+				<xsl:choose>
+					<xsl:when test="count(/Response/Service/UnbilledCharges/rangeSample/Charge) = 0">
+						<tr class="odd">
+							<td colspan="4">There are no charges in this list.</td>
+						</tr>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:for-each select="/Response/Service/UnbilledCharges/rangeSample/Charge">
+							<tr>
+								<xsl:attribute name="class">
+									<xsl:choose>
+										<xsl:when test="position() mod 2 = 1">
+											<xsl:text>odd</xsl:text>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:text>even</xsl:text>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:attribute>
+								
+								<td>
+									<xsl:call-template name="dt:format-date-time">
+										<xsl:with-param name="year"		select="./ChargedOn/year" />
+										<xsl:with-param name="month"	select="./ChargedOn/month" />
+										<xsl:with-param name="day"		select="./ChargedOn/day" />
+										<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+									</xsl:call-template>
+								</td>
+								<td><xsl:value-of select="./ChargeType" /></td>
+								<td><xsl:value-of select="./Description" /></td>
+								<td><xsl:value-of select="./Amount" /> <xsl:value-of select="./Nature" /></td>
+							</tr>
+						</xsl:for-each>
+					</xsl:otherwise>
+				</xsl:choose>
 			</table>
 		</xsl:if>
 		
 		<h3>Call Information</h3>
 		
-		<table border="1" cellpadding="3" cellspacing="0" width="100%">
-			<tr>
+		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+			<tr class="first">
 				<th>#</th>
 				<th>Date</th>
 				<th>Time</th>

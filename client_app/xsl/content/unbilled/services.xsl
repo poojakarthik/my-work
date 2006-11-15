@@ -11,13 +11,23 @@
 			Click a service to view call details for the particular service.
 		</p>
 		
-		<table border="1" cellpadding="3" cellspacing="0">
-			<tr>
+		<table border="0" cellpadding="5" cellspacing="0">
+			<tr class="first">
 				<th>Service Number</th>
 				<th>Unbilled Charges</th>
 			</tr>
 			<xsl:for-each select="/Response/Services/Service">
 				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
 					<td>
 						<a>
 							<xsl:attribute name="href">

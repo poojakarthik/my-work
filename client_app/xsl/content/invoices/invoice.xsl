@@ -66,28 +66,33 @@
 		</table>
 
 		<h3>Services</h3>
-		<p>
-			Click a service to view call details for the particular service.
-		</p>
-
-		<table border="1" cellpadding="3" cellspacing="0">
-			<tr>
+		<p>Click a service to view call details for the particular service.</p>
+		
+		<table border="0" cellpadding="5" cellspacing="0">
+			<tr class="first">
 				<th>Service Number</th>
 				<th>Total Charges</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoice/InvoiceServices/InvoiceService">
 				<tr>
-					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>invoice_service.php?Invoice=</xsl:text>
-								<xsl:value-of select="/Response/Invoice/Id" />
-								<xsl:text>&amp;Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:value-of select="./FNN" />
-						</a>
-					</td>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					<xsl:attribute name="onclick">
+						<xsl:text>window.location='invoice_service.php?Invoice=</xsl:text>
+						<xsl:value-of select="/Response/Invoice/Id" />
+						<xsl:text>&amp;Id=</xsl:text>
+						<xsl:value-of select="./Id" />
+						<xsl:text>'</xsl:text>
+					</xsl:attribute>
+					<td><xsl:value-of select="./FNN" /></td>
 					<td><xsl:value-of select="./TotalCharge" /></td>
 				</tr>
 			</xsl:for-each>

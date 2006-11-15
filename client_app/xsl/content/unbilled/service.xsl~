@@ -20,17 +20,16 @@
 			</tr>
 		</table>
 		
-<!--
-		<xsl:if test="/Response/Service/InvoiceServiceCalls/rangePage = 1">
+		<xsl:if test="/Response/Service/UnbilledCalls/rangePage = 1">
 			<h3>Service Charges</h3>
-			<table border="1" cellpadding="3" cellspacing="0">
-				<tr>
+			<table border="0" cellpadding="5" cellspacing="0">
+				<tr class="first">
 					<th>Charged On</th>
 					<th>Ref.</th>
 					<th>Description</th>
 					<th>Amount</th>
 				</tr>
-				<xsl:for-each select="/Response/InvoiceService/InvoiceServiceCharges/rangeSample/InvoiceServiceCharge">
+				<xsl:for-each select="/Response/Service/UnbilledCharges/rangeSample/Charge">
 					<tr>
 						<xsl:attribute name="class">
 							<xsl:choose>
@@ -58,12 +57,11 @@
 				</xsl:for-each>
 			</table>
 		</xsl:if>
--->
 		
 		<h3>Call Information</h3>
 		
-		<table border="1" cellpadding="3" cellspacing="0" width="100%">
-			<tr>
+		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+			<tr class="first">
 				<th>#</th>
 				<th>Date</th>
 				<th>Time</th>
@@ -135,9 +133,9 @@
 						</xsl:if>
 					</td>
 					<td width="34%" align="center">
-						Page <xsl:value-of select="/Response/InvoiceService/InvoiceServiceCalls/rangePage" />
-						of <xsl:value-of select="/Response/InvoiceService/InvoiceServiceCalls/rangePages" /><br />
-						(Results Per Page: <xsl:value-of select="/Response/InvoiceService/InvoiceServiceCalls/rangeLength" />)
+						Page <xsl:value-of select="/Response/Service/UnbilledCalls/rangePage" />
+						of <xsl:value-of select="/Response/Service/UnbilledCalls/rangePages" /><br />
+						(Results Per Page: <xsl:value-of select="/Response/Service/UnbilledCalls/rangeLength" />)
 					</td>
 					<td width="33%" align="right">
 						<xsl:if test="/Response/Service/UnbilledCalls/rangePage &lt; /Response/Service/UnbilledCalls/rangePages">

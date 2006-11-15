@@ -10,15 +10,42 @@
 			You are currently logged into your account.
 		</p>
 		
-		<ul>
-			<xsl:choose>
-				<xsl:when test="/Response/Authentication/AuthenticatedContact/CustomerContact = 1">
-					<li><a href="contacts.php">List my Contacts</a></li>
-					<li><a href="accounts.php">View my Accounts</a></li>
-				</xsl:when>
-			</xsl:choose>
-			<li><a href="account.php">View my Primary Account</a></li>
-			<li><a href="contact.php">View my Profile</a></li>
-		</ul>
+		<table border="0" cellpadding="10" cellspacing="0">
+			<tr>
+				<td><a href="contacts.php"><img src="img/contacts.png" border="0" /></a></td>
+				<td>
+					<a href="contacts.php">List Company Contacts</a><br />
+					Let's you edit Contacts who are associated with your Company.
+				</td>
+			</tr>
+			<tr>
+				<td><a href="contact.php"><img src="img/contact.png" border="0" /></a></td>
+				<td>
+					<a href="contact.php">View My Profile</a><br />
+					Allows you to edit your Person Profile.
+				</td>
+			</tr>
+			<tr>
+				<td><a href="accounts.php"><img src="img/accounts.png" border="0" /></a></td>
+				<td>
+					<a href="accounts.php">List All Accounts</a><br />
+					List all the Accounts associated with your Company.
+				</td>
+			</tr>
+			<tr>
+				<td><a href="account.php"><img src="img/account.png" border="0" /></a></td>
+				<td>
+					<a href="account.php">View My Account</a><br />
+					View details relating to your Primary Account.
+				</td>
+			</tr>
+			<tr>
+				<td><a href="logout.php"><img src="img/logout.png" border="0" /></a></td>
+				<td>
+					<a href="logout.php">Logout of Account</a><br />
+					Logout of your TelcoBlue Internet Account.
+				</td>
+			</tr>
+		</table>
 	</xsl:template>
 </xsl:stylesheet>

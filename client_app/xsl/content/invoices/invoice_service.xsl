@@ -24,8 +24,8 @@
 		
 		<xsl:if test="/Response/InvoiceService/InvoiceServiceCalls/rangePage = 1">
 			<h3>Service Charges</h3>
-			<table border="1" cellpadding="3" cellspacing="0">
-				<tr>
+			<table border="0" cellpadding="5" cellspacing="0">
+				<tr class="first">
 					<th>Charged On</th>
 					<th>Ref.</th>
 					<th>Description</th>
@@ -62,8 +62,8 @@
 		
 		<h3>Call Information</h3>
 		
-		<table border="1" cellpadding="3" cellspacing="0" width="100%">
-			<tr>
+		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+			<tr class="first">
 				<th>#</th>
 				<th>Date</th>
 				<th>Time</th>

@@ -76,13 +76,31 @@
 		
 		<h3>Invoices</h3>
 		<table border="1" cellpadding="5" cellspacing="0">
-			<tr>
+			<tr class="first">
 				<th>Id</th>
 				<th>Created On</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoices/Invoice">
 				<tr>
-					<td>#<xsl:value-of select="./Id" /></td>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					<td>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>invoice.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							#<xsl:value-of select="./Id" />
+						</a>
+					</td>
 					<td>
 						<xsl:call-template name="dt:format-date-time">
 							<xsl:with-param name="year"	select="./CreatedOn/year" />

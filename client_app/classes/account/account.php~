@@ -1,0 +1,57 @@
+<?php
+	
+	class Account extends dataObject
+	{
+		
+		function __construct ($intAccount)
+		{
+			parent::__construct ("Account");
+			
+			DatabaseAccess::$bolObLib = true;
+			
+			// Check their session is valid ...
+			$selAccounts = new StatementSelect ("Account", "*", "Id = <Id>");
+			$selAccounts->Execute(Array("Id" => $intAccount));
+			
+			if ($selAccounts->Count () <> 1)
+			{
+				throw new Exception ("Class Account could not be instantiated because it could not be found in the database");
+			}
+			
+			$rowContact = $selAccounts->Fetch ("Account");
+			
+			$i=0;
+			foreach ($rowContact as $fldInformation)
+			{
+				$field [$i] = $fldInformation;
+				$this->Push ($field [$i]);
+				++$i;
+			}
+			
+			DatabaseAccess::$bolObLib = false;
+		}
+		
+		public function getInvoices ()
+		{
+			$selInvoices = new StatementSelect ("Invoice", "Id", "Account = <Account>");
+			$selInvoices->Execute(Array("Account" => $this->Pull ("Id")->getValue ()));
+			
+			$oblarrInvoices = new dataArray ("Invoices", "Invoice");
+			
+			$Invoice = array();
+			
+			$i=0;
+			while ($arrInvoice = $selInvoices->Fetch ())
+			{
+				$Invoice [$i] = new Invoice ($arrInvoice ['Id']);
+				$oblarrInvoices->Push ($Invoice [$i]);
+				++$i;
+			}
+			
+			echo $oblarrInvoices;
+			
+			return $oblarrInvoices;
+		}
+	}
+	
+?>

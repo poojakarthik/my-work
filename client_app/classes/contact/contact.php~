@@ -1,0 +1,18 @@
+<?php
+	
+	class AuthenticatedContact extends dataObject
+	{
+		
+		function __construct ($Id)
+		{
+			$selSelectStatement = new StatementSelect("Contact", "*", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)");
+			$selSelectStatement->Execute(Array("UserName"=>$UserName, "PassWord"=>$PassWord));
+		}
+		
+		public function isCustomerContact ()
+		{
+			
+		}
+	}
+	
+?>

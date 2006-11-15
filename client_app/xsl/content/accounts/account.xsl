@@ -75,13 +75,23 @@
 		</ul>
 		
 		<h3>Invoices</h3>
-		<table border="1" cellpadding="5" cellspacing="0">
-			<tr>
+		<table border="0" cellpadding="5" cellspacing="0">
+			<tr class="first">
 				<th>Id</th>
 				<th>Created On</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoices/Invoice">
 				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
 					<td>
 						<a>
 							<xsl:attribute name="href">
