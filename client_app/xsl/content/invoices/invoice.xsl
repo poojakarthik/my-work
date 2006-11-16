@@ -109,7 +109,7 @@
 						<xsl:text>window.location='invoice_service.php?Invoice=</xsl:text>
 						<xsl:value-of select="/Response/Invoice/Id" />
 						<xsl:text>&amp;Id=</xsl:text>
-						<xsl:value-of select="./Id" />
+						<xsl:value-of select="./Service" />
 						<xsl:text>'</xsl:text>
 					</xsl:attribute>
 					<td><xsl:value-of select="./FNN" /></td>

@@ -84,7 +84,7 @@
 	{
 		margin-right:                  25px;
 		margin-bottom:                 25px;
-		height:                        100px;
+		height:                        95px;
 	}
 	
 	div#Logo img
@@ -95,8 +95,10 @@
 	div#Links
 	{
 		background-color:              #FF9900;
-		width:                         575px;
-		height:                        100px;
+		width:                         218px;
+		height:                        85px;
+		
+		padding:                       5px;
 	}
 	
 	div#Dash

@@ -19,11 +19,15 @@
 					<div class="pageContainer">
 						<div id="Header" class="sectionContainer">
 							<div id="Logo" class="Left sectionContent">
-								<a href="/"><img src="img/sky.jpg" width="250" height="100" /></a>
+								<a href="index.php"><img src="img/header.jpg" width="597" height="95" /></a>
 							</div>
 							
 							<div id="Links" class="Right sectionContent">
-								.
+								<span style="font-size:20pt; color:#FFFFFF;">News</span><br />
+								<span style="color:#FFFFFF;">
+									TelcoBlue have released their new website - aimed at 
+									better Customer Experience and Service.
+								</span>
 							</div>
 							<div class="clear"></div>
 						</div>
@@ -53,13 +57,13 @@
 						<div id="Page" class="sectionContainer">
 							<div id="Navigation" class="Left sectionContent">
 								<ul>
-									<li><a href="/">Homepage</a></li>
-									<li><a href="/">Mobile Services</a></li>
-									<li><a href="/">Landline Services</a></li>
-									<li><a href="/">ADSL Services</a></li>
-									<li><a href="/">About TelcoBlue</a></li>
-									<li><a href="/">Opertunities</a></li>
-									<li><a href="/">Company News</a></li>
+									<li><a href="index.php">Homepage</a></li>
+									<li><a href="http://www.telcoblue.com.au/content/blogcategory/0/93/">Mobile Services</a></li>
+									<li><a href="http://www.telcoblue.com.au/content/blogcategory/0/72/">Landline Services</a></li>
+									<li><a href="http://www.telcoblue.com.au/content/blogcategory/0/66/">ADSL Services</a></li>
+									<li><a href="http://www.telcoblue.com.au/content/blogcategory/0/61/">About TelcoBlue</a></li>
+									<li><a href="http://www.telcoblue.com.au/content/blogcategory/0/57/">Opportunities</a></li>
+									<li><a href="http://www.telcoblue.com.au/content/blogcategory/120/117/">Company News</a></li>
 								</ul>
 								
 								<div id="Console" class="Left sectionContent">

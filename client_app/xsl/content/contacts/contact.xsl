@@ -4,7 +4,8 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h2>Contact: <xsl:value-of select="/Response/Contact/UserName" /></h2>
+		<h2>Contact: <xsl:value-of select="/Response/Contact/FirstName" />
+		<xsl:text> </xsl:text><xsl:value-of select="/Response/Contact/LastName" /></h2>
 		
 		<h3>Contact Details</h3>
 		<p>

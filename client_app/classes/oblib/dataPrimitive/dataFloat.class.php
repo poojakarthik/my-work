@@ -16,7 +16,7 @@
 				return;
 			}
 			
-			return parent::setValue	(sprintf ("%f", floatval ($nodeValue)));
+			return parent::setValue	("$" . sprintf ("%0.2f", floatval ($nodeValue)));
 		}
 	}
 	

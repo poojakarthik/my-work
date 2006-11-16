@@ -22,7 +22,7 @@
 		
 		<xsl:if test="/Response/Service/UnbilledCalls/rangePage = 1">
 			<h3>Service Charges</h3>
-			<table border="0" cellpadding="5" cellspacing="0">
+			<table border="0" cellpadding="5" cellspacing="0" width="100%">
 				<tr class="first">
 					<th>Charged On</th>
 					<th>Ref.</th>
@@ -125,9 +125,9 @@
 					</xsl:for-each>
 				</xsl:when>
 				<xsl:otherwise>
-					<tr>
+					<tr class="odd">
 						<td colspan="6">
-							There are currently no calls 
+							There are currently no calls in your unbilled charges for this service.
 						</td>
 					</tr>
 				</xsl:otherwise>
