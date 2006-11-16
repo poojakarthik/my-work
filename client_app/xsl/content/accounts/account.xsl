@@ -6,7 +6,9 @@
 	<xsl:template name="Content">
 		<h2>
 			Account: <xsl:value-of select="/Response/Account/BusinessName" />
-			[<xsl:value-of select="/Response/Account/TradingName" />]
+			<xsl:if test="/Response/Account/TradingName != ''">
+				[<xsl:value-of select="/Response/Account/TradingName" />]
+			</xsl:if>
 		</h2>
 		
 		<h3>Account Details</h3>
@@ -75,10 +77,18 @@
 		</ul>
 		
 		<h3>Invoices</h3>
-		<table border="0" cellpadding="5" cellspacing="0">
+		<p>
+			Listed below are a list of all the invoices that have been 
+			issued to you in the past. Click on an invoice to view 
+			further information.
+		</p>
+		
+		<table border="0" cellpadding="5" cellspacing="0" width="100%">
 			<tr class="first">
-				<th>Id</th>
-				<th>Created On</th>
+				<th>Invoice Number</th>
+				<th>Issued On</th>
+				<th>Settled On</th>
+				<th class="Currency">Invoice Total</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoices/Invoice">
 				<tr>
@@ -92,26 +102,39 @@
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:attribute>
-					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>invoice.php?Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							#<xsl:value-of select="./Id" />
-						</a>
-					</td>
+					<xsl:attribute name="onclick">
+						<xsl:text>window.location='invoice.php?Id=</xsl:text>
+						<xsl:value-of select="./Id" />
+						<xsl:text>'</xsl:text>
+					</xsl:attribute>
+					<td>#<xsl:value-of select="./Id" /></td>
 					<td>
 						<xsl:call-template name="dt:format-date-time">
 							<xsl:with-param name="year"	select="./CreatedOn/year" />
 							<xsl:with-param name="month"	select="./CreatedOn/month" />
 							<xsl:with-param name="day"	select="./CreatedOn/day" />
- 							<xsl:with-param name="hour"	select="0" />
-							<xsl:with-param name="minute"	select="0" />
-							<xsl:with-param name="second"	select="0" />
 							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 						</xsl:call-template>
 					</td>
+					<td>
+						<xsl:choose>
+							<xsl:when test="/Response/Invoice/SettledOn/year = ''">
+								<xsl:call-template name="dt:format-date-time">
+									<xsl:with-param name="year"	select="/Response/Invoice/SettledOn/year" />
+									<xsl:with-param name="month"	select="/Response/Invoice/SettledOn/month" />
+									<xsl:with-param name="day"	select="/Response/Invoice/SettledOn/day" />
+									<xsl:with-param name="hour"	select="0" />
+									<xsl:with-param name="minute"	select="0" />
+									<xsl:with-param name="second"	select="0" />
+									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<span style="color: #CC0000">Not Settled</span>
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
+					<td class="Currency"><xsl:value-of select="./Total" /></td>
 				</tr>
 			</xsl:for-each>
 		</table>

@@ -323,3 +323,13 @@
 		color:                         #FF6600;
 		border-bottom:                 dashed 1px #FF6600;
 	}
+	
+	th
+	{
+		text-align:                    left;
+	}
+	
+	.Currency
+	{
+		text-align:                    right;
+	}

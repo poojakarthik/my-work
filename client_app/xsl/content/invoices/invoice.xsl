@@ -64,14 +64,34 @@
 				</td>
 			</tr>
 		</table>
+		
+		<h3>Invoice Charges</h3>
+		<table border="1" cellpadding="3" cellspacing="0">
+			<tr>
+				<th>Total Debits:</th>
+				<td class="Currency"><xsl:value-of select="/Response/Invoice/Debits" /></td>
+			</tr>
+			<tr>
+				<th>Total Credits:</th>
+				<td class="Currency"><xsl:value-of select="/Response/Invoice/Credits" /></td>
+			</tr>
+			<tr>
+				<th>Invoice Total:</th>
+				<td class="Currency"><xsl:value-of select="/Response/Invoice/Total" /></td>
+			</tr>
+			<tr>
+				<th>Total Tax:</th>
+				<td class="Currency"><xsl:value-of select="/Response/Invoice/Tax" /></td>
+			</tr>
+		</table>
 
 		<h3>Services</h3>
 		<p>Click a service to view call details for the particular service.</p>
 		
-		<table border="0" cellpadding="5" cellspacing="0">
+		<table border="0" cellpadding="5" cellspacing="0" width="100%">
 			<tr class="first">
 				<th>Service Number</th>
-				<th>Total Charges</th>
+				<th class="Currency">Total Charges</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoice/InvoiceServices/InvoiceService">
 				<tr>
@@ -93,7 +113,7 @@
 						<xsl:text>'</xsl:text>
 					</xsl:attribute>
 					<td><xsl:value-of select="./FNN" /></td>
-					<td><xsl:value-of select="./TotalCharge" /></td>
+					<td class="Currency"><xsl:value-of select="./TotalCharge" /></td>
 				</tr>
 			</xsl:for-each>
 		</table>
