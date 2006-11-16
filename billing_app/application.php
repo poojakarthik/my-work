@@ -71,6 +71,8 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
+		
+		$this->_rptBillingReport = new Report("Billing Report for ".date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -93,9 +95,22 @@ die();
 	 */
  	function Execute()
  	{
+		// Report header
+		$this->_rptBillingReport->AddMessage("\n".MSG_HORIZONTAL_RULE);
+		
 		// Empty the temporary invoice table
 		// This is safe, because there should be no CDRs with CDR_TEMP_INVOICE status anyway
-		$this->Revoke();
+		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
+		if (!$this->Revoke())
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n");
+			
+			//return;		// TODO: FIXME - Should we return if this fails??
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK."\n");
+		}
 				
 		// Init Statements
 		$arrCDRCols['Status']	= CDR_TEMP_INVOICE;
@@ -104,10 +119,19 @@ die();
 		
 		// get a list of all accounts that require billing today
 		//TODO!!!!
+		
+		// Report
+		$this->_rptBillingReport->AddMessage(MSG_BUILD_TEMP_INVOICES."\n");
+		
 		foreach ($arrAccounts as $arrAccount)
 		{
 			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
-			$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id']));
+			if(!$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id'])))
+			{
+				// Report and fail out
+				$this->_rptBillingReport->AddMessageVariables(MSG_FAILED.MSG_LINE_FAILED, Array('Reason' => "Cannot link CDRs"));
+				continue;
+			}
 			
 			// calculate totals
 			//TODO!!!
@@ -125,10 +149,13 @@ die();
 			$arrInvoiceData['Balance']		= 0.0; // TODO: wtfmate?!
 			$arrInvoiceData['Status']		= INVOICE_WTF_MATE; // TODO: wtfmate?!
 			
-			$insTempInvoice->Execute($arrInvoiceData);
-			
 			// report error or success
-			//TODO!!!!	
+			if(!$insTempInvoice->Execute($arrInvoiceData))
+			{
+				// Report and fail out
+				$this->_rptBillingReport->AddMessageVariables(MSG_FAILED.MSG_LINE_FAILED, Array('Reason' => "Unable to create temporary invoice"));
+				continue;
+			}
 			
 			// build output
 			//TODO!!! - LATER
@@ -157,21 +184,37 @@ die();
  	function Commit()
  	{
 		// copy temporary invoices to invoice table
+		$this->_rptBillingReport->AddMessageVariables(MSG_COMMIT_TEMP_INVOICES, FALSE);
 		$siqInvoice = new QuerySelectInto();
-		$siqInvoice->Execute('Invoice', 'InvoiceTemp');
-		
-		// report error
-		//TODO!!!!
+		if(!$siqInvoice->Execute('Invoice', 'InvoiceTemp'))
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessageVariables(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessageVariables(MSG_OK);
+		}
 		
 		// apply invoice no. to all CDRs for this invoice
 		$strQuery = "UPDATE CDR INNER JOIN Invoice using (Account) SET CDR.Invoice = Invoice.Id WHERE CDR.Status = {CDR_TEMP_INVOICE} AND Invoice.Status = {INVOICE_TEMP}";
+		$this->_rptBillingReport->AddMessageVariables(MSG_UPDATE_CDRS, FALSE);
 		// also set the created on, due on & status
 		//TODO!!!!
 		$qryCDRInvoice = new Query();
-		$qryCDRInvoice->Execute($strQuery);
-		
-		// report error
-		//TODO!!!!	
+		if(!$qryCDRInvoice->Execute($strQuery))
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessageVariables(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessageVariables(MSG_OK);
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -205,6 +248,8 @@ die();
 		
 		// report error
 		//TODO!!!!	
+		
+		return TRUE;
 	}
  }
 
