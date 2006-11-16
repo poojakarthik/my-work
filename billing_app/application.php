@@ -26,7 +26,13 @@
  */
 
 // Application entry point - create an instance of the application object
-$appSkel = new ApplicationBilling($arrConfig);
+$appBilling = new ApplicationBilling($arrConfig);
+
+$appBilling->Execute();
+//$appBilling->Commit();
+//$appBilling->Revoke();
+
+$appBilling->FinaliseReport();
 
 // finished
 echo("\n-- End of Billing --\n");
@@ -95,27 +101,26 @@ die();
 	 */
  	function Execute()
  	{
+		// Start the stopwatch
+		$this->Framework->StartWatch();
+		
 		// Report header
 		$this->_rptBillingReport->AddMessage("\n".MSG_HORIZONTAL_RULE);
 		
 		// Empty the temporary invoice table
 		// This is safe, because there should be no CDRs with CDR_TEMP_INVOICE status anyway
-		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
 		if (!$this->Revoke())
 		{
-			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n");
-			
-			//return;		// TODO: FIXME - Should we return if this fails??
-		}
-		else
-		{
-			$this->_rptBillingReport->AddMessage(MSG_OK."\n");
+			return;		// TODO: FIXME - Should we return if this fails??
 		}
 				
 		// Init Statements
 		$arrCDRCols['Status']	= CDR_TEMP_INVOICE;
 		$updCDRs				= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
 		$insTempInvoice			= new StatementInsert("InvoiceTemp");
+		
+		$intPassed = 0;
+		$intFailed = 0;
 		
 		// get a list of all accounts that require billing today
 		//TODO!!!!
@@ -130,6 +135,7 @@ die();
 			{
 				// Report and fail out
 				$this->_rptBillingReport->AddMessageVariables(MSG_FAILED.MSG_LINE_FAILED, Array('Reason' => "Cannot link CDRs"));
+				$intFailed++;
 				continue;
 			}
 			
@@ -154,6 +160,7 @@ die();
 			{
 				// Report and fail out
 				$this->_rptBillingReport->AddMessageVariables(MSG_FAILED.MSG_LINE_FAILED, Array('Reason' => "Unable to create temporary invoice"));
+				$intFailed++;
 				continue;
 			}
 			
@@ -162,7 +169,15 @@ die();
 			
 			// write to billing file
 			//TODO!!! - LATER
+			
+			$intPassed++;
 		}
+		
+		$arrReportLines['<Total>']	= $intPassed + $intFailed;
+		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
+		$arrReportLines['<Pass>']	= $intPassed;
+		$arrReportLines['<Fail>']	= $intFailed;
+		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -184,21 +199,22 @@ die();
  	function Commit()
  	{
 		// copy temporary invoices to invoice table
-		$this->_rptBillingReport->AddMessageVariables(MSG_COMMIT_TEMP_INVOICES, FALSE);
+		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
 		$siqInvoice = new QuerySelectInto();
 		if(!$siqInvoice->Execute('Invoice', 'InvoiceTemp'))
 		{
 			// Report and fail out
-			$this->_rptBillingReport->AddMessageVariables(MSG_FAILED);
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
 		}
 		else
 		{
 			// Report and continue
-			$this->_rptBillingReport->AddMessageVariables(MSG_OK);
+			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
 		// apply invoice no. to all CDRs for this invoice
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS, FALSE);
 		$strQuery  = "UPDATE CDR INNER JOIN Invoice using (Account)";
 		$strQuery .= " SET CDR.Invoice = Invoice.Id, CDR.Status = {CDR_INVOICED}";
 		$strQuery .= " WHERE CDR.Status = {CDR_TEMP_INVOICE} AND Invoice.Status = {INVOICE_TEMP}";
@@ -206,13 +222,12 @@ die();
 		if(!$qryCDRInvoice->Execute($strQuery))
 		{
 			// Report and fail out
-			$this->_rptBillingReport->AddMessageVariables(MSG_FAILED);
-			return;
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 		}
 		else
 		{
 			// Report and continue
-			$this->_rptBillingReport->AddMessageVariables(MSG_OK);
+			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 	}
 	
@@ -235,20 +250,60 @@ die();
  	function Revoke()
  	{
 		// empty temp invoice table
+		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
 		$trqTruncateTempTable = new QueryTruncate();
-		$trqTruncateTempTable->Execute("InvoiceTemp");
-		
-		// report error
-		//TODO!!!!	
+		if(!$trqTruncateTempTable->Execute("InvoiceTemp"))
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return FALSE;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
 		
 		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
+		$this->_rptBillingReport->AddMessage(MSG_REVERT_CDRS, FALSE);
 		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, Array('Status' => CDR_RATED));
-		$updCDRStatus->Execute(Array('Status' => CDR_RATED), Array());
-		
-		// report error
-		//TODO!!!!	
+		if($updCDRStatus->Execute(Array('Status' => CDR_RATED), Array()) === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return FALSE;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
 		
 		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// FinaliseReport
+	//------------------------------------------------------------------------//
+	/**
+	 * FinaliseReport()
+	 *
+	 * Finalises the Billing Report
+	 *
+	 * Adds a footer to the report and sends it off
+	 * 
+	 *
+	 * @return		integer		No of emails sent
+	 *
+	 * @method
+	 */
+ 	function FinaliseReport()
+ 	{
+		// Add Footer
+		$this->_rptBillingReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE."\n".MSG_BILLING_FOOTER, Array('<Time>' => $this->Framework->SplitWatch()));
+		
+		// Send off the report
+		return $this->_rptBillingReport->Finish();
 	}
  }
 
