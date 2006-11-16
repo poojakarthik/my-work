@@ -157,7 +157,7 @@ die();
  	{
 		// copy temporary invoices to invoice table
 		// INSERT INTO
-		//TODO!!!!
+		$strTableDestination, 'Inv', $strWhere
 		
 		// apply invoice no. to all CDRs for this invoice
 		// UPDATE CDR INNER JOIN Invoice using (Account) SET CDR.Invoice = Invoice.Id WHERE ...
