@@ -71,8 +71,6 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
-		
-		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, Array('Status' => CDR_RATED));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -189,6 +187,7 @@ die();
 		$trqTruncateTempTable->Execute("InvoiceTemp");
 		
 		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
+		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, Array('Status' => CDR_RATED));
 		$updCDRStatus->Execute(Array('Status' => CDR_RATED), Array());
 	}
  }
