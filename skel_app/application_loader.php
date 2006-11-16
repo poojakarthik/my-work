@@ -7,12 +7,12 @@
 
 
 //----------------------------------------------------------------------------//
-// web_loader
+// application_loader
 //----------------------------------------------------------------------------//
 /**
- * web_loader
+ * application_loader
  *
- * Handles web based loading of applications
+ * Handles loading of applications
  *
  * Loads the base classes and sets up the application framework
  *
