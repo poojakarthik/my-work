@@ -252,6 +252,27 @@
 	 {
 		parent::__construct();
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// Execute()
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Executes the Query
+	 *
+	 * Executes the Query
+	 *
+	 * @param		string	strQuery		string containing a full SQL query
+	 * 
+	 * @return		bool
+	 * @method
+	 */ 
+	 function Execute($strQuery)
+	 {
+	 	// run query
+		return mysqli_query($this->db->refMysqliConnection, $strQuery);
+	 }
  }
 
 //----------------------------------------------------------------------------//
@@ -501,7 +522,7 @@
 	 * @return		bool
 	 * @method
 	 */ 
-	 function Execute($strTableDestination, $strTableSource, $strWhere = NUll)
+	 function Execute($strTableDestination, $strTableSource, $strWhere = NULL)
 	 {
 		// check that table defs exists
 		if (is_array($this->db->arrTableDefine[$strTableDestination]) && is_array($this->db->arrTableDefine[$strTableSource]))

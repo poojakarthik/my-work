@@ -127,6 +127,9 @@ die();
 			
 			$insTempInvoice->Execute($arrInvoiceData);
 			
+			// report error or success
+			//TODO!!!!	
+			
 			// build output
 			//TODO!!! - LATER
 			
@@ -154,14 +157,21 @@ die();
  	function Commit()
  	{
 		// copy temporary invoices to invoice table
-		// INSERT INTO
-		$strTableDestination, 'Inv', $strWhere
+		$siqInvoice = new QuerySelectInto();
+		$siqInvoice->Execute('Invoice', 'InvoiceTemp');
+		
+		// report error
+		//TODO!!!!
 		
 		// apply invoice no. to all CDRs for this invoice
-		// UPDATE CDR INNER JOIN Invoice using (Account) SET CDR.Invoice = Invoice.Id WHERE ...
+		$strQuery = "UPDATE CDR INNER JOIN Invoice using (Account) SET CDR.Invoice = Invoice.Id WHERE ...";
 		// also set the created on, due on & status
 		//TODO!!!!
-			
+		$qryCDRInvoice = new Query();
+		$qryCDRInvoice->Execute($strQuery);
+		
+		// report error
+		//TODO!!!!	
 	}
 	
 	//------------------------------------------------------------------------//
@@ -186,9 +196,15 @@ die();
 		$trqTruncateTempTable = new QueryTruncate();
 		$trqTruncateTempTable->Execute("InvoiceTemp");
 		
+		// report error
+		//TODO!!!!	
+		
 		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
 		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, Array('Status' => CDR_RATED));
 		$updCDRStatus->Execute(Array('Status' => CDR_RATED), Array());
+		
+		// report error
+		//TODO!!!!	
 	}
  }
 
