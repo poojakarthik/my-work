@@ -17,40 +17,40 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		Skeleton_application
- * @author		Jared 'flame' Herbohn
- * @version		6.10
+ * @package		Billing
+ * @author		Jared 'flame' Herbohn, Rich "Waste" Davis
+ * @version		6.11
  * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
 
 // Application entry point - create an instance of the application object
-$appSkel = new ApplicationSkel($arrConfig);
+$appSkel = new ApplicationBilling($arrConfig);
 
 // finished
-echo("\n-- End of Skeleton --\n");
+echo("\n-- End of Billing --\n");
 die();
 
 
 
 //----------------------------------------------------------------------------//
-// ApplicationSkel
+// ApplicationBilling
 //----------------------------------------------------------------------------//
 /**
- * ApplicationSkel
+ * ApplicationBilling
  *
- * Skeleton Module
+ * Billing Module
  *
- * Skeleton Module
+ * Billing Module
  *
  *
  * @prefix		app
  *
- * @package		skeleton_application
- * @class		ApplicationSkel
+ * @package		billing_app
+ * @class		ApplicationBilling
  */
- class ApplicationSkel extends ApplicationBaseClass
+ class ApplicationBilling extends ApplicationBaseClass
  {
  	//------------------------------------------------------------------------//
 	// __construct
@@ -71,6 +71,8 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
+		
+		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, Array('Status' => CDR_RATED));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -94,25 +96,45 @@ die();
  	function Execute()
  	{
 		// Empty the temporary invoice table
-		//TODO!!!!
+		// This is safe, because there should be no CDRs with CDR_TEMP_INVOICE status anyway
+		$this->Revoke();
+				
+		// Init Statements
+		$arrCDRCols['Status']	= CDR_TEMP_INVOICE;
+		$updCDRs				= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
+		$insTempInvoice			= new StatementInsert("InvoiceTemp");
 		
 		// get a list of all accounts that require billing today
 		//TODO!!!!
-			
+		foreach ($arrAccounts as $arrAccount)
+		{
 			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
-			//TODO!!!!
+			$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id']));
 			
 			// calculate totals
 			//TODO!!!
+			$fltTotal = 0.0;
 			
 			// write to temporary invoice table
-			//TODO!!!
+			$arrInvoiceData['AccountGroup']	= $arrAccount['AccountGroup'];
+			$arrInvoiceData['Account']		= $arrAccount['Id'];
+			$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
+			$arrInvoiceData['DueOn']		= ""; // TODO: wtfmate?!
+			$arrInvoiceData['Credits']		= 0.0; // TODO: wtfmate?!
+			$arrInvoiceData['Debits']		= 0.0; // TODO: wtfmate?!
+			$arrInvoiceData['Total']		= $fltTotal;
+			$arrInvoiceData['Tax']			= $fltTotal + ($fltTotal / 10); // TODO: is this right?
+			$arrInvoiceData['Balance']		= 0.0; // TODO: wtfmate?!
+			$arrInvoiceData['Status']		= INVOICE_WTF_MATE; // TODO: wtfmate?!
+			
+			$insTempInvoice->Execute($arrInvoiceData);
 			
 			// build output
 			//TODO!!! - LATER
 			
 			// write to billing file
 			//TODO!!! - LATER
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -163,10 +185,11 @@ die();
  	function Revoke()
  	{
 		// empty temp invoice table
-		//TODO!!!!
+		$trqTruncateTempTable = new QueryTruncate();
+		$trqTruncateTempTable->Execute("InvoiceTemp");
 		
 		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
-		//TODO!!!!
+		$updCDRStatus->Execute(Array('Status' => CDR_RATED), Array());
 	}
  }
 

@@ -456,6 +456,73 @@
 		return $bolReturn;
 	 }
  }
+ 
+
+//----------------------------------------------------------------------------//
+// QueryTruncate
+//----------------------------------------------------------------------------//
+/**
+ * QueryTruncate
+ *
+ * TRUNCATE Query
+ *
+ * Implements a TRUNCATE query using mysqli
+ *
+ *
+ * @prefix		trq
+ *
+ * @package		framework
+ * @class		QueryTruncate
+ */
+ class QueryTruncate extends Query
+ {
+ 	function __construct()
+	{
+		parent::__construct();
+	}
+		
+ 	//------------------------------------------------------------------------//
+	// Execute()
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Executes the Query
+	 *
+	 * Executes the Query
+	 *
+	 * @param		string	strTable		string containing name of the table to truncate
+	 * 
+	 * @return		bool
+	 * @method
+	 */ 
+	 function Execute($strTable)
+	 {
+	 	// check what we were given
+		if (!is_string($strTable))
+		{
+			return FALSE;
+		}
+		
+		// by default we return TRUE
+		$bolReturn = TRUE;
+
+		// create query
+		$strQuery = "TRUNCATE TABLE ".strTable;
+		
+		// run query
+		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+		// check result
+		if ($mixReturn !== TRUE)
+		{
+			// we will return false
+			$bolReturn = FALSE;
+		}
+		
+		return $bolReturn;
+	 }
+ }
+
 
 //----------------------------------------------------------------------------//
 // Statement
