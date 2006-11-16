@@ -199,10 +199,9 @@ die();
 		}
 		
 		// apply invoice no. to all CDRs for this invoice
-		$strQuery = "UPDATE CDR INNER JOIN Invoice using (Account) SET CDR.Invoice = Invoice.Id WHERE CDR.Status = {CDR_TEMP_INVOICE} AND Invoice.Status = {INVOICE_TEMP}";
-		$this->_rptBillingReport->AddMessageVariables(MSG_UPDATE_CDRS, FALSE);
-		// also set the created on, due on & status
-		//TODO!!!!
+		$strQuery  = "UPDATE CDR INNER JOIN Invoice using (Account)";
+		$strQuery .= " SET CDR.Invoice = Invoice.Id, CDR.Status = {CDR_INVOICED}";
+		$strQuery .= " WHERE CDR.Status = {CDR_TEMP_INVOICE} AND Invoice.Status = {INVOICE_TEMP}";
 		$qryCDRInvoice = new Query();
 		if(!$qryCDRInvoice->Execute($strQuery))
 		{
