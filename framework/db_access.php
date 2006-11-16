@@ -544,7 +544,7 @@
 			// check if we have matchinc columns
 			if (empty($arrColumns))
 			{
-				retfrn FALSE;
+				return FALSE;
 			}
 			
 			// build columns string
