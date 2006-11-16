@@ -47,7 +47,7 @@
 			}
 			else 
 			{
-				$fltTotalCharge = floatval ($this->Pull ("CappedCharge")->getValue (), $this->Pull ("UncappedCharge")->getValue ());
+				$fltTotalCharge = floatval ($this->Pull ("CappedCharge")->getValue () + $this->Pull ("UncappedCharge")->getValue ());
 			}
 			
 			$this->Push (new dataFloat ("TotalCharge", $fltTotalCharge));

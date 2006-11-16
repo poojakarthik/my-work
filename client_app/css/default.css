@@ -3,6 +3,8 @@
 	{
 		margin:                        20px;
 		
+		font-size:                     10pt;
+		
 		background-color:              #006599;
 	}
 	
@@ -107,11 +109,24 @@
 		padding-left:                  17px;
 		padding-right:                 17px;
 		padding-bottom:                8px;
+		
+		color:                         #FFFFFF;
 	}
 	
 	div#Page
 	{
 		padding-top:                   25px;
+	}
+
+	div#Login
+	{
+	}
+	
+	div#Login a
+	{
+		color:                         #FFCC00;
+		
+		text-decoration:               none;
 	}
 	
 	div#Navigation
@@ -200,14 +215,11 @@
 	div#Footer
 	{
 		margin-top:                    20px;
-		margin-left:                   0;
-		margin-right:                  0;
+		margin-left:                   25px;
+		margin-right:                  25px;
 		margin-bottom:                 20px;
 		
 		color:                         #FFFFFF;
-		
-		font-size:                     10pt;
-		font-family:                   "Nimbus Sans L";
 	}
 	
 	div#Footer ul
@@ -229,9 +241,12 @@
 	{
 		color:                         #FFFFFF;
 		text-decoration:               none;
-		
-		font-size:                     10pt;
-		font-family:                   "Nimbus Sans L";
+	}
+	
+	div#Footer ul li a:hover
+	{
+		color:                         #FF6600;
+		text-decoration:               none;
 	}
 	
 	span.Blue
@@ -293,4 +308,18 @@
 	{
 		cursor:                        pointer;
 		background-color:              #ccE9FF;
+	}
+	
+	a.link
+	{
+		text-decoration:               none;
+		color:                         #006599;
+		border-bottom:                 dashed 1px #006599;
+	}
+	
+	a.link:hover
+	{
+		text-decoration:               none;
+		color:                         #FF6600;
+		border-bottom:                 dashed 1px #FF6600;
 	}

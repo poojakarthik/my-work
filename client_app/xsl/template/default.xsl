@@ -31,7 +31,7 @@
 						
 						<div id="Dash" class="sectionContainer">
 							<div id="Crumbs" class="Left sectionContent">
-								Telco<span class="Blue">Blue</span>.com.au: You know who!
+								Telco<span class="Blue">Blue</span> - You know who!
 							</div>
 							
 							<div id="Login" class="Right sectionContent">
@@ -67,6 +67,7 @@
 										<xsl:when test="/Response/Authentication/AuthenticatedContact">
 											<p class="sectionHeading">My Account</p>
 											<ul>
+												<li><a href="console.php">My Console</a></li>
 												<xsl:if test="/Response/Authentication/AuthenticatedContact/CustomerContact = 1">
 													<li><a href="contacts.php">All Contact Details</a></li>
 												</xsl:if>

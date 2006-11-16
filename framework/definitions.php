@@ -85,6 +85,18 @@ define("CDRFILE_IMPORT_FAILED"		, 205);
 define("CDRFILE_NORMALISE_FAILED"	, 206);
 define("CDRFILE_NORMALISED"			, 207);
 
+// Customer Group Constants
+define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
+define("CUSTOMER_GROUP_VOICETALK"	, 2);
+define("CUSTOMER_GROUP_IMAGINE"		, 3);
+
+// Credit Card Constants
+define("CREDIT_CARD_VISA"			, 1);
+define("CREDIT_CARD_MASTERCARD"		, 2);
+define("CREDIT_CARD_BANKCARD"		, 3);
+define("CREDIT_CARD_AMEX"			, 4);
+define("CREDIT_CARD_DINERS"			, 5);
+
 // DONKEY (neither TRUE nor FALSE)
 define("DONKEY"						, -1);
 

@@ -31,18 +31,18 @@
 						
 						<div id="Dash" class="sectionContainer">
 							<div id="Crumbs" class="Left sectionContent">
-								Telco<span class="Blue">Blue</span>.com.au: You know who!
+								Telco<span class="Blue">Blue</span>: You know who!
 							</div>
 							
 							<div id="Login" class="Right sectionContent">
 								<xsl:choose>
-									<xsl:when test="Not /Response/Authentication/AuthenticatedContact">
-										Welcome, Guest (<a href="login.php">Login</a>)
-									</xsl:when>
-									<xsl:otherwise>
+									<xsl:when test="/Response/Authentication/AuthenticatedContact">
 										Welcome, 
 										<xsl:value-of select="/Response/Authentication/AuthenticatedContact/FirstName" />
 										(<a href="console.php">Console</a>)
+									</xsl:when>
+									<xsl:otherwise>
+										Welcome, Guest (<a href="login.php">Login</a>)
 									</xsl:otherwise>
 								</xsl:choose>
 							</div>
@@ -80,23 +80,25 @@
 										</xsl:when>
 										<xsl:otherwise>
 											<p class="sectionHeading">Customer Login</p>
-											<table border="0" cellpadding="0" cellspacing="0">
-												<tr>
-													<td>Username:</td>
-												</tr>
-												<tr>
-													<td><input type="text" name="UserName" class="text" /></td>
-												</tr>
-												<tr>
-													<td>Password:</td>
-												</tr>
-												<tr>
-													<td><input type="password" name="PassWord" class="text" /></td>
-												</tr>
-												<tr>
-													<td><input type="submit" value="Login" class="button" /></td>
-												</tr>
-											</table>
+											<form method="post" action="login.php">
+												<table border="0" cellpadding="0" cellspacing="0">
+													<tr>
+														<td>Username:</td>
+													</tr>
+													<tr>
+														<td><input type="text" name="UserName" class="text" /></td>
+													</tr>
+													<tr>
+														<td>Password:</td>
+													</tr>
+													<tr>
+														<td><input type="password" name="PassWord" class="text" /></td>
+													</tr>
+													<tr>
+														<td><input type="submit" value="Login" class="button" /></td>
+													</tr>
+												</table>
+											</form>
 										</xsl:otherwise>
 									</xsl:choose>
 								</div>
