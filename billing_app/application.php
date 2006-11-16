@@ -164,7 +164,7 @@ die();
 		//TODO!!!!
 		
 		// apply invoice no. to all CDRs for this invoice
-		$strQuery = "UPDATE CDR INNER JOIN Invoice using (Account) SET CDR.Invoice = Invoice.Id WHERE ...";
+		$strQuery = "UPDATE CDR INNER JOIN Invoice using (Account) SET CDR.Invoice = Invoice.Id WHERE CDR.Status = {CDR_TEMP_INVOICE} AND Invoice.Status = {INVOICE_TEMP}";
 		// also set the created on, due on & status
 		//TODO!!!!
 		$qryCDRInvoice = new Query();

@@ -576,6 +576,7 @@
 		}
 		
 		return TRUE;
+		//TODO!!!! - return something usefull, rows inserted?
 	 }
  }
 

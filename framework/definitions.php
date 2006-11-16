@@ -63,7 +63,7 @@ define("FATAL_TEST_EXCEPTION"		, 80085);
 // CDR Handling (Range is 100-199)
 define("CDR_READY"						, 100);
 define("CDR_NORMALISED"					, 101);
-define("CDR_CANT_NORMALISE"				, 102); // TODO: Expand to a define specific reasons for failed processing
+define("CDR_CANT_NORMALISE"				, 102); // TODO: Expand to define specific reasons for failed processing
 define("CDR_CANT_NORMALISE_RAW"			, 103);
 define("CDR_CANT_NORMALISE_BAD_SEQ_NO"	, 104);
 define("CDR_CANT_NORMALISE_HEADER"		, 105);
@@ -73,7 +73,8 @@ define("CDR_CANT_NORMALISE_NO_MODULE"	, 108);
 define("CDR_CANT_NORMALISE_INVALID"		, 109);
 define("CDR_IGNORE"						, 110);
 define("CDR_RATED"						, 111);
-
+define("CDR_TEMP_INVOICE"				, 198);
+define("CDR_INVOICED"					, 199);
 
 // CDR File Handling (Range is 200-299)
 define("CDRFILE_WAITING"			, 200);
@@ -84,6 +85,12 @@ define("CDRFILE_IGNORE"				, 204);
 define("CDRFILE_IMPORT_FAILED"		, 205);
 define("CDRFILE_NORMALISE_FAILED"	, 206);
 define("CDRFILE_NORMALISED"			, 207);
+
+// Invoice Status
+define("INVOICE_TEMP"				, 100);
+define("INVOICE_COMMITED"			, 101);
+define("INVOICE_DISPUTED"			, 102);
+define("INVOICE_SETTLED"			, 103);
 
 // Customer Group Constants
 define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
@@ -99,5 +106,11 @@ define("CREDIT_CARD_DINERS"			, 5);
 
 // DONKEY (neither TRUE nor FALSE)
 define("DONKEY"						, -1);
+
+// Service Types
+define("SERVICE_TYPE_ADSL"			, 100);
+define("SERVICE_TYPE_MOBILE"		, 101);
+define("SERVICE_TYPE_LAND_LINE"		, 102);
+define("SERVICE_TYPE_INBOUND"		, 103);
 
 ?>

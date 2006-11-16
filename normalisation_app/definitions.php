@@ -58,11 +58,7 @@ define("NO_NORMALISATION_MODULE"	, 5003);
 
 // Fatal Exceptions
 
-// Service Types
-define("SERVICE_TYPE_ADSL"			, 100);
-define("SERVICE_TYPE_MOBILE"		, 101);
-define("SERVICE_TYPE_LAND_LINE"		, 102);
-define("SERVICE_TYPE_INBOUND"		, 103);
+
 
 
 ?>

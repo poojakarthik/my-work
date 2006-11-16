@@ -81,11 +81,11 @@ class NormalisationModuleSkel extends NormalisationModule
 		$this->_strDelimiter = "";
 		
 		// define the carrier CDR format
-		$arrDefine ['ColumnName1']	['Index']		= 0; // index of the column
-		$arrDefine ['ColumnName1']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
+		$arrDefine ['ColumnName1']	['Index']		= 0; 		// index of the column
+		$arrDefine ['ColumnName1']	['Validate']	= "^\d+$";	// optional RegEx for validation of the column
 		
-		$arrDefine ['ColumnName2']	['Index']	= 1;
-		$arrDefine ['ColumnName2']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
+		$arrDefine ['ColumnName2']	['Index']		= 1;
+		$arrDefine ['ColumnName2']	['Validate']	= "^\d+$";	// optional RegEx for validation of the column
 		
 		//...
 		
@@ -95,13 +95,13 @@ class NormalisationModuleSkel extends NormalisationModule
 		// USE FOR FIXED WIDTH FILE  #########################################//
 		
 		// define the carrier CDR format
-		$arrDefine ['ColumnName1']	['Start']		= 0; // start position of the column
-		$arrDefine ['ColumnName1']	['Length']		= 5; // length of the column
-		$arrDefine ['ColumnName1']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
+		$arrDefine ['ColumnName1']	['Start']		= 0;		// start position of the column
+		$arrDefine ['ColumnName1']	['Length']		= 5;		// length of the column
+		$arrDefine ['ColumnName1']	['Validate']	= "^\d+$";	// optional RegEx for validation of the column
 		
-		$arrDefine ['ColumnName2']	['Start']		= 5; // start position of the column
-		$arrDefine ['ColumnName2']	['Length']		= 20; // length of the column
-		$arrDefine ['ColumnName2']	['Validate']	= "^\d+$"; // optional RegEx for validation of the column
+		$arrDefine ['ColumnName2']	['Start']		= 5;		// start position of the column
+		$arrDefine ['ColumnName2']	['Length']		= 20;		// length of the column
+		$arrDefine ['ColumnName2']	['Validate']	= "^\d+$";	// optional RegEx for validation of the column
 		
 		//...
 		
