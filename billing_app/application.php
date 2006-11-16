@@ -171,6 +171,9 @@ die();
 			//TODO!!! - LATER
 			
 			$intPassed++;
+			
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
 		$arrReportLines['<Total>']	= $intPassed + $intFailed;
