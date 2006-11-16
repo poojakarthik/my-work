@@ -78,6 +78,7 @@
 
 		
 		
+		
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -257,6 +258,15 @@
 	$strName = "BillingMethod";
 		$arrDefine['Column'][$strName]['Type'] 			= "i";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "PaymentTerms";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(11)";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
@@ -964,7 +974,7 @@
 	// Define Columns
 	$strName = "CVV";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(3)";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(3)";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
@@ -1476,6 +1486,121 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: InvoiceTemp
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "InvoiceTemp";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "AccountGroup";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "Account";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "CreatedOn";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
+		
+								
+	// Define Columns
+	$strName = "DueOn";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
+		
+								
+	// Define Columns
+	$strName = "SettledOn";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
+		
+								
+	// Define Columns
+	$strName = "Credits";
+		$arrDefine['Column'][$strName]['Type'] 			= "d";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
+								
+	// Define Columns
+	$strName = "Debits";
+		$arrDefine['Column'][$strName]['Type'] 			= "d";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
+								
+	// Define Columns
+	$strName = "Total";
+		$arrDefine['Column'][$strName]['Type'] 			= "d";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
+								
+	// Define Columns
+	$strName = "Tax";
+		$arrDefine['Column'][$strName]['Type'] 			= "d";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
+								
+	// Define Columns
+	$strName = "Balance";
+		$arrDefine['Column'][$strName]['Type'] 			= "d";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
+								
+	// Define Columns
+	$strName = "Status";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
 					
 	// Save Table Define
@@ -2501,10 +2626,10 @@
 	// Define Columns
 	$strName = "Indial100";
 		$arrDefine['Column'][$strName]['Type'] 			= "i";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(4)";
-		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
-		$arrDefine['Column'][$strName]['Default'] 		= null;
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
 								
 	// Define Columns

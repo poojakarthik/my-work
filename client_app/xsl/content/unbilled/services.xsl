@@ -14,6 +14,7 @@
 		<table border="0" cellpadding="5" cellspacing="0" width="100%">
 			<tr class="first">
 				<th>Service Number</th>
+				<th>Service Type</th>
 				<th class="Currency">Unbilled Charges</th>
 			</tr>
 			<xsl:for-each select="/Response/Services/Service">
@@ -33,12 +34,14 @@
 						<xsl:value-of select="/Response/Account/Id" />
 						<xsl:text>&amp;Service=</xsl:text>
 						<xsl:value-of select="./Id" />
-						<xsl:text>/</xsl:text>
+						<xsl:text>'</xsl:text>
 					</xsl:attribute>
 					<td>
 						<xsl:value-of select="./FNN" />
+					</td>
+					<td>
 						<xsl:if test="./Indial100 = '1'">
-							(Indial Number Range)
+							Indial Number
 						</xsl:if>
 					</td>
 					<td class="Currency"><xsl:value-of select="./TotalCharge" /></td>
