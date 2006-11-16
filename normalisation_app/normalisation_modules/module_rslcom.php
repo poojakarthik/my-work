@@ -91,13 +91,13 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		
 		$arrDefine ['EventId']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
-		$arrDefine ['DateTime']			['Validate']	= "/^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$/";
+		$arrDefine ['DateTime']			['Validate']	= "/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/";
 		$arrDefine ['Duration']			['Validate']	= "/^\d+$/";
 		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['DestinationNo']	['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['Currency']			['Validate']	= "/^AUD$/";
-		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d?$/";
+		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d*$/";
 		$arrDefine ['CallType']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RateId']			['Validate']	= "/^\d+$/";
 		
@@ -164,29 +164,32 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		// CarrierRef
 		$mixValue = $this->_FetchRawCDR('EventId');
 		$this->_AppendCDR('CarrierRef', $mixValue);
-
+		
+		$mixValue = $this->_FetchRawCDR('RecordType');
 		// StartDateTime & EndDateTime
 		if ($mixValue == "1")
 		{
 		 	// For normal usage CDRs
-		 	$mixValue					= ConvertTime($this->_FetchRawCDR('Datetime'));
+		 	$mixValue	= $this->_FetchRawCDR('DateTime');
 		 	$this->_AppendCDR('StartDateTime', $mixValue);
 		 	
-		 	$mixValue					= date("Y-m-d H:i:s", strtotime($this->_FetchRawCDR('Datetime') . " +" . $this->_FetchRawCDR('Duration') . "seconds"));
+		 	$intStart	= strtotime($this->_FetchRawCDR('DateTime'));
+		 	$intEnd		= strtotime(" +" . $this->_FetchRawCDR('Duration') . "seconds", $intStart);
+		 	$mixValue	= date("Y-m-d H:i:s", $intEnd);
 			$this->_AppendCDR('EndDateTime', $mixValue);
 		}
 		else
 		{
 		 	// For S&E and OC&C CDRs
-		 	$mixValue					=  $this->ConvertTime($this->_FetchRawCDR('BeginDate'));
+		 	$mixValue					= $this->_FetchRawCDR('BeginDate');
 		 	$this->_AppendCDR('StartDateTime', $mixValue);
-		 	$mixValue					=  $this->ConvertTime($this->_FetchRawCDR('EndDate'));
+		 	$mixValue					=  $this->_FetchRawCDR('EndDate');
 		 	$this->_AppendCDR('EndDateTime', $mixValue);
 		}
 		
 		
 		// Units
-		if ($this->_FetchRawCDR('EventId') == "1")
+		if ($this->_FetchRawCDR('RecordType') == "1")
 		{
 		 	// For normal usage CDRs
 		 	$mixValue					= $this->_FetchRawCDR('Duration');
@@ -200,7 +203,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		}
 		
 		// Description
-		if ($this->_FetchRawCDR('EventId') == "1")
+		if ($this->_FetchRawCDR('RecordType') == "1")
 		{
 		 	// For normal usage CDRs
 		 	$mixValue					= $this->_FetchRawCDR('CallType');	// TODO: Link to Call Type List/Table
@@ -214,16 +217,16 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		}
 
 		// RecordType
-		//$mixValue = ; // needs to match database
+		$mixValue = 0; 							// TODO: FIXME - needs to match database
 		$this->_AppendCDR('RecordType', $mixValue);
 		
 		// ServiceType
-		$mixValue = SERVICE_TYPE_LAND_LINE;
+		$mixValue = SERVICE_TYPE_LAND_LINE;		// TODO: FIXME - needs to match constants
 		$this->_AppendCDR('ServiceType', $mixValue);
 
 		// Cost
 		$mixValue						=  $this->_FetchRawCDR('Price');
-		$this->_AppendCDR('ServiceType', (float)$mixValue);
+		$this->_AppendCDR('Cost', (float)$mixValue);
 
 
 		//--------------------------------------------------------------------//

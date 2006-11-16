@@ -81,7 +81,7 @@ define("MSG_CONNECTION_FAILED"		, "CONNECTION FAILED\t: <FriendlyName> (<Type>)\
 define("MSG_CONNECTED"				, MSG_HORIZONTAL_RULE."CONNECTED TO\t\t: <FriendlyName> (<Type>)\n".MSG_HORIZONTAL_RULE);
 define("MSG_DOWNLOADING_FROM"		, "Downloading from:\n");
 define("MSG_DIRS"					, "\t<Dir>\n");
-define("MSG_GRABBING_FILE"			, "Grabbing File\t: <FileName>\t(<FileSize>KB)\n");
+define("MSG_GRABBING_FILE"			, "Grabbing File\t: <FileName> (<FileSize> KB)\n");
 define("MSG_UNZIPPED_FILES"			, "\t\tUnzipped Files:\n");
 define("MSG_UNZIPPED_FILE"			, "\t\t\t<FileName>\n");
 define("MSG_IMPORTED"				, "\t[Imported OK]\n\n");

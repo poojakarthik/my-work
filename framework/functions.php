@@ -117,6 +117,12 @@ function Debug($mixOutput, $strMode="html")
 			print_r($mixOutput);
 			echo "\n";
 			break;
+		case 'report':
+		case 'rpt':
+			echo "<pre>";
+			print_r($mixOutput);
+			echo "</pre>";
+			break;
 			
 		default:
 			echo "\n<pre>\n";

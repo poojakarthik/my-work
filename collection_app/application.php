@@ -221,7 +221,7 @@ die();
 					$strFileLocation = TEMP_DOWNLOAD_DIR.$strFile;
 					
 					// Add to report that we're downloading the file
-					$intFileSize = filesize($strFileLocation) / 1024;
+					$intFileSize = ceil(filesize($strFileLocation) / 1024);
 					$this->AddToCollectionReport(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation, '<FileSize>' => $intFileSize));
 					
 					// set current download file

@@ -148,7 +148,7 @@ class Report
 	{
 		// Assign passed parameters to member variables
 		$this->_strTitle = $strReportTitle;
-		Debug($strReportTitle);
+		Debug($strReportTitle, "rpt");
 		
 		if (is_array($mixEmailAddressee))
 		{
@@ -239,7 +239,7 @@ class Report
 		$this->_arrLines[] = $strMessage;
 		
 		// Debug the line
-		Debug($strMessage);
+		Debug($strMessage, "rpt");
 	}	
 	
 	//------------------------------------------------------------------------//

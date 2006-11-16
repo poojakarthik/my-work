@@ -268,27 +268,30 @@ abstract class NormalisationModule
 			$arrValid[] = true;
 		}
 
-		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
+		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDateTime"]);
 
-		if ($this->_arrNormalisedData["EndDatetime"] != "")
+		if ($this->_arrNormalisedData["EndDateTime"] != "")
 		{
-			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", 	$this->_arrNormalisedData["EndDatetime"]);
+			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", 	$this->_arrNormalisedData["EndDateTime"]);
 		}
 		else
 		{
 			$arrValid[] = true;
 		}
 
-		$arrValid[] = ((is_int($this->_arrNormalisedData["Units"])) && ($this->_arrNormalisedData["Units"] != 0));
-		$arrValid[] = is_float($this->_arrNormalisedData["Cost"]);
+		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);
+		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);
 		$arrValid[] = ($this->_arrNormalisedData["Description"] != "");
 		$arrValid[] = (strlen($this->_arrNormalisedData["DestinationCode"]) <= 3);
 		
+		$i = 0;
 		foreach ($arrValid as $bolValid)
 		{
+			$i++;
 			if(!$bolValid)
 			{
 				$this->_arrNormalisedData['Status']	= CDR_CANT_NORMALISE_INVALID;
+				Debug((string)$i);
 				return false;
 			}
 		}
@@ -438,6 +441,7 @@ abstract class NormalisationModule
 				{
 					if (!preg_match($strValue['Validate'], $this->_arrRawData[$strKey]))
 					{
+						Debug("'".$this->_arrRawData[$strKey]."' != '".$strValue['Validate']."'");
 						return FALSE;
 					}
 				}
