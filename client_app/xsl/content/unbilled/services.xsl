@@ -4,7 +4,7 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h2>Unbilled Charges</h2>
+		<h2 class="Invoice">Unbilled Charges</h2>
 		
 		<h3>Services</h3>
 		<p>
@@ -37,11 +37,12 @@
 						<xsl:text>'</xsl:text>
 					</xsl:attribute>
 					<td>
-						<xsl:value-of select="./FNN" />
+						<xsl:value-of select="./FNN" disable-output-escaping="yes" />
 					</td>
 					<td>
+						<xsl:value-of select="./NamedServiceType" />
 						<xsl:if test="./Indial100 = '1'">
-							Indial Number
+							(100 Indial Numbers)
 						</xsl:if>
 					</td>
 					<td class="Currency"><xsl:value-of select="./TotalCharge" /></td>

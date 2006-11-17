@@ -48,6 +48,7 @@ require_once($strWebDir."classes/oblib/dataMultiple/dataSample.class.php");
 
 // load accounts
 require_once($strWebDir."classes/cdr/cdr.php");
+require_once($strWebDir."classes/service/servicetype.php");
 require_once($strWebDir."classes/service/service.php");
 require_once($strWebDir."classes/unbilled/unbilledcalls.php");
 require_once($strWebDir."classes/unbilled/unbilledcharges.php");

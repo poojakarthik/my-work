@@ -11,6 +11,21 @@
 	// Record the start time of the script
 	$startTime = microtime (TRUE);
 	
+	$MonthAbbr = Array (
+		"Jan"	=> "1",
+		"Feb"	=> "2",
+		"Mar"	=> "3",
+		"Apr"	=> "4",
+		"May"	=> "5",
+		"Jun"	=> "6",
+		"Jul"	=> "7",
+		"Aug"	=> "8",
+		"Sep"	=> "9",
+		"Oct"	=> "10",
+		"Nov"	=> "11",
+		"Dec"	=> "12"
+	);
+	
 	// connect
 	mysql_connect ("10.11.12.13", "bash", "bash");
 	mysql_select_db ("bash");
@@ -162,7 +177,7 @@
 				$sql .= "'" . mysql_escape_string ($Customer ['title']) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['firstname']) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['lastname']) . "', ";
-				$sql .= "'" . mktime (0, 0, 0, (int) $Customer ['dob_month'], (int) $Customer ['dob_day'], (int) $Customer ['dob_year']) . "', ";
+				$sql .= "'" . sprintf ("%04d", intval ($Customer ['dob_year'])) . "-" . sprintf ("%02d", intval ($MonthAbbr [trim ($Customer ['dob_month'])])) . "-" . sprintf ("%02d", intval ($Customer ['dob_day'])) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['position']) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['admin_email']) . "', ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";

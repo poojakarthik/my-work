@@ -51,6 +51,8 @@
 			}
 			
 			$this->Push (new dataFloat ("TotalCharge", $fltTotalCharge));
+			
+			$this->Push (new ServiceType ("NamedServiceType", $this->Pull ("ServiceType")->getValue ()));
 		}
 		
 		public function getCharges ($rangePage=1, $rangeLength=10)

@@ -25,8 +25,8 @@
 							<div id="Links" class="Right sectionContent">
 								<span style="font-size:20pt; color:#FFFFFF;">News</span><br />
 								<span style="color:#FFFFFF;">
-									TelcoBlue have released their new website - aimed at 
-									better Customer Experience and Service.
+									TelcoBlue have released their new website - aimed to 
+									deliver better Services to you.
 								</span>
 							</div>
 							<div class="clear"></div>

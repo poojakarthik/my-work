@@ -4,10 +4,10 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h2>
-			Account: <xsl:value-of select="/Response/Account/BusinessName" />
+		<h2 class="Account">
+			Account: <xsl:value-of select="/Response/Account/BusinessName" disable-output-escaping="yes" />
 			<xsl:if test="/Response/Account/TradingName != ''">
-				[<xsl:value-of select="/Response/Account/TradingName" />]
+				[<xsl:value-of select="/Response/Account/TradingName" disable-output-escaping="yes" />]
 			</xsl:if>
 		</h2>
 		
@@ -16,18 +16,18 @@
 			Details about this particular account.
 		</p>
 		
-		<table border="1" cellpadding="3" cellspacing="0">
+		<table border="0" cellpadding="5" cellspacing="0">
 			<tr>
 				<th>Account Number:</th>
 				<td><xsl:value-of select="/Response/Account/Id" /></td>
 			</tr>
 			<tr>
 				<th>Business Name:</th>
-				<td><xsl:value-of select="/Response/Account/BusinessName" /></td>
+				<td><xsl:value-of select="/Response/Account/BusinessName" disable-output-escaping="yes" /></td>
 			</tr>
 			<tr>
 				<th>Trading Name:</th>
-				<td><xsl:value-of select="/Response/Account/TradingName" /></td>
+				<td><xsl:value-of select="/Response/Account/TradingName" disable-output-escaping="yes" /></td>
 			</tr>
 			<tr>
 				<th>ABN:</th>
@@ -39,15 +39,17 @@
 			</tr>
 			<tr>
 				<th>Address:</th>
-				<td><xsl:value-of select="/Response/Account/Address1" /></td>
+				<td><xsl:value-of select="/Response/Account/Address1" disable-output-escaping="yes" /></td>
 			</tr>
-			<tr>
-				<th></th>
-				<td><xsl:value-of select="/Response/Account/Address2" /></td>
-			</tr>
+			<xsl:if test="/Response/Account/Address2 != ''">
+				<tr>
+					<th></th>
+					<td><xsl:value-of select="/Response/Account/Address2" disable-output-escaping="yes" /></td>
+				</tr>
+			</xsl:if>
 			<tr>
 				<th>Suburb:</th>
-				<td><xsl:value-of select="/Response/Account/Suburb" /></td>
+				<td><xsl:value-of select="/Response/Account/Suburb" disable-output-escaping="yes" /></td>
 			</tr>
 			<tr>
 				<th>Postcode:</th>
@@ -55,18 +57,20 @@
 			</tr>
 			<tr>
 				<th>State:</th>
-				<td><xsl:value-of select="/Response/Account/State" /></td>
+				<td><xsl:value-of select="/Response/Account/State" disable-output-escaping="yes" /></td>
 			</tr>
 			<tr>
 				<th>Country:</th>
-				<td><xsl:value-of select="/Response/Account/Country" /></td>
+				<td><xsl:value-of select="/Response/Account/Country" disable-output-escaping="yes" /></td>
 			</tr>
 		</table>
+		
+		<hr style="margin-top: 20px; margin-bottom: 20px" />
 		
 		<h3>Account Charges</h3>
 		<ul>
 			<li>
-				<a>
+				<a class="link">
 					<xsl:attribute name="href">
 						<xsl:text>unbilled.php?Account=</xsl:text>
 						<xsl:value-of select="/Response/Account/Id" />

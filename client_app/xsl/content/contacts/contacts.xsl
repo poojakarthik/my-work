@@ -3,14 +3,14 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h2>List of Account Group Contacts</h2>
+		<h2 class="Contacts">List of All Company Contacts</h2>
 		
 		<p>
 			Contained below is a list of all the people in your account group.
 			Click on a Contact for more information.
 		</p>
 		
-		<table border="0" cellpadding="5" cellspacing="0">
+		<table border="0" cellpadding="5" cellspacing="0" width="100%">
 			<tr class="first">
 				<th>User Name</th>
 				<th>First Name</th>
@@ -35,13 +35,13 @@
 						<xsl:text>'</xsl:text>
 					</xsl:attribute>
 					<td>
-						<xsl:value-of select="./UserName" />
+						<xsl:value-of select="./UserName" disable-output-escaping="yes" />
 					</td>
 					<td>
-						<xsl:value-of select="./FirstName" />
+						<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
 					</td>
 					<td>
-						<xsl:value-of select="./LastName" />
+						<xsl:value-of select="./LastName" disable-output-escaping="yes" />
 					</td>
 					<td>
 						<xsl:choose>

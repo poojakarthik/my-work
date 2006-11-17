@@ -28,6 +28,20 @@
 		}
 	}
 	
+	// If there was an attempt to login that failed
+	// Return the UserName to the screen. The presence
+	// of /Response/AuthenticationAttempt flags that
+	// the previous login attempt had failed.
+	if (isset ($_POST ['UserName']))
+	{
+		$oblarrAuthenticationAttempt = new dataArray ("AuthenticationAttempt");
+		$oblarrAuthenticationAttempt->Push (
+			new dataString ("UserName", $_POST ['UserName'])
+		);
+		
+		$Style->attachObject ($oblarrAuthenticationAttempt);
+	}
+	
 	// If we're up to here, we are not logged in.
 	// :. we want to sure the login XSLT
 	

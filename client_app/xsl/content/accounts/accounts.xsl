@@ -3,7 +3,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h2>List of All Accounts</h2>
+		<h2 class="Accounts">List of All Accounts</h2>
 		
 		<p>
 			Contained below is a list of all your accounts. Click on an 
@@ -37,10 +37,10 @@
 						<xsl:value-of select="Id" />
 					</td>
 					<td>
-						<xsl:value-of select="./BusinessName" />
+						<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
 					</td>
 					<td>
-						<xsl:value-of select="./TradingName" />
+						<xsl:value-of select="./TradingName" disable-output-escaping="yes" />
 					</td>
 				</tr>
 			</xsl:for-each>

@@ -4,8 +4,7 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h2>Contact: <xsl:value-of select="/Response/Contact/FirstName" />
-		<xsl:text> </xsl:text><xsl:value-of select="/Response/Contact/LastName" /></h2>
+		<h2 class="Contact">Viewing Contact Information</h2>
 		
 		<h3>Contact Details</h3>
 		<p>
@@ -19,11 +18,11 @@
 					<xsl:value-of select="/Response/Contact/Id" />
 				</xsl:attribute>
 			</input>
-			<table border="1" cellpadding="3" cellspacing="0">
+			<table border="0" cellpadding="5" cellspacing="0">
 				<tr>
 					<th>Title:</th>
 					<td>
-						<input type="text" name="Title">
+						<input type="text" name="Title" class="text">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
 								<xsl:value-of select="/Response/Contact/Title" />
@@ -34,7 +33,7 @@
 				<tr>
 					<th>First Name:</th>
 					<td>
-						<input type="text" name="FirstName">
+						<input type="text" name="FirstName" class="text">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
 								<xsl:value-of select="/Response/Contact/FirstName" />
@@ -45,7 +44,7 @@
 				<tr>
 					<th>Last Name:</th>
 					<td>
-						<input type="text" name="LastName">
+						<input type="text" name="LastName" class="text">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
 								<xsl:value-of select="/Response/Contact/LastName" />
@@ -85,7 +84,7 @@
 				<tr>
 					<th>Job Title:</th>
 					<td>
-						<input type="text" name="JobTitle">
+						<input type="text" name="JobTitle" class="text">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
 								<xsl:value-of select="/Response/Contact/JobTitle" />
@@ -96,7 +95,7 @@
 				<tr>
 					<th>Email Address:</th>
 					<td>
-						<input type="text" name="Email">
+						<input type="text" name="Email" class="text">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
 								<xsl:value-of select="/Response/Contact/Email" />
@@ -107,7 +106,7 @@
 				<tr>
 					<th>Phone:</th>
 					<td>
-						<input type="text" name="Phone">
+						<input type="text" name="Phone" class="text">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
 								<xsl:value-of select="/Response/Contact/Phone" />
@@ -118,7 +117,7 @@
 				<tr>
 					<th>Mobile:</th>
 					<td>
-						<input type="text" name="Mobile">
+						<input type="text" name="Mobile" class="text">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
 								<xsl:value-of select="/Response/Contact/Mobile" />
@@ -129,7 +128,7 @@
 				<tr>
 					<th>Fax:</th>
 					<td>
-						<input type="text" name="Fax">
+						<input type="text" name="Fax" class="text">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
 								<xsl:value-of select="/Response/Contact/Fax" />
@@ -140,9 +139,11 @@
 			</table>
 			
 			<p>
-				<input type="submit" value="Change Profile" />
+				<input type="submit" value="Change Profile &#0187;" class="button" />
 			</p>
 		</form>
+		
+		<hr style="margin-top: 20px; margin-bottom: 20px;" />
 		
 		<h3>Change Password</h3>
 		<p>
@@ -157,29 +158,29 @@
 				</xsl:attribute>
 			</input>
 			
-			<table border="1" cellpadding="3" cellspacing="0">
+			<table border="0" cellpadding="5" cellspacing="0">
 				<tr>
-					<td>UserName:</td>
+					<th>UserName:</th>
 					<td><xsl:value-of select="/Response/Contact/UserName" /></td>
 				</tr>
 				<tr>
-					<td>* Your Password:</td>
-					<td><input type="password" name="My_PassWord" /></td>
+					<th>* Your Password:</th>
+					<td><input type="password" name="My_PassWord" class="text" /></td>
 				</tr>
 				<tr>
-					<td>New Password:</td>
-					<td><input type="password" name="New_PassWord[0]" /></td>
+					<th>New Password:</th>
+					<td><input type="password" name="New_PassWord[0]" class="text" /></td>
 				</tr>
 				<tr>
-					<td>Repeat Password:</td>
-					<td><input type="password" name="New_PassWord[1]" /></td>
+					<th>Repeat Password:</th>
+					<td><input type="password" name="New_PassWord[1]" class="text" /></td>
 				</tr>
 			</table>
 			
-			<p>* - Your current password you use to login to VOIPTEL.</p>
+			<p>* - Your current password you use to login to TecloBlue.</p>
 			
 			<p>
-				<input type="submit" value="Change Password" />
+				<input type="submit" value="Change Password &#0187;" class="button" />
 			</p>
 		</form>
 	</xsl:template>

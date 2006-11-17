@@ -4,9 +4,7 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h2>
-			Invoice #<xsl:value-of select="/Response/Invoice/Id" />
-		</h2>
+		<h2 class="Invoice">Invoice #<xsl:value-of select="/Response/Invoice/Id" /></h2>
 		
 		<h3>Invoice Details</h3>
 		<p>

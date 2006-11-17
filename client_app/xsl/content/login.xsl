@@ -10,24 +10,31 @@
 			please enter your account crudentials into the fields below.
 		</p>
 		
+		<xsl:if test="/Response/AuthenticationAttempt">
+			<div class="MsgError">
+				The Username and Password that you entered were incorrect. Please try
+				again.
+			</div>
+		</xsl:if>
+		
 		<form method="post" action="./login.php">
 			<table border="0" cellpadding="5" cellspacing="0">
 				<tr>
 					<th>Username:</th>
 					<td>
-						<input type="text" name="UserName" />
+						<input type="text" name="UserName" class="text" />
 					</td>
 				</tr>
 				<tr>
 					<th>Password:</th>
 					<td>
-						<input type="password" name="PassWord" />
+						<input type="password" name="PassWord" class="text" />
 					</td>
 				</tr>
 				<tr>
 					<td></td>
 					<td>
-						<input type="submit" value="Continue &#0187;" />
+						<input type="submit" value="Continue &#0187;" class="button" />
 					</td>
 				</tr>
 			</table>

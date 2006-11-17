@@ -87,7 +87,7 @@
 		height:                        95px;
 	}
 	
-	div#Logo img
+	img
 	{
 		border:                        0;
 	}
@@ -177,7 +177,7 @@
 		padding-bottom:                0;
 	}
 	
-	div#Console input.text
+	input.text
 	{
 		border:                        solid 1px #006599;
 		padding-top:                   2px;
@@ -334,4 +334,64 @@
 	.Currency
 	{
 		text-align:                    right;
+	}
+	
+	div.MsgNotice
+	{
+		border:                        solid 1px #000000;
+		background-color:              #FFFFC0;
+		
+		padding:                       5px;
+		
+		margin-bottom:                 10px;
+	}
+	
+	div.MsgError
+	{
+		border:                        solid 1px #CC0000;
+		background-color:              #e26e6e;
+		
+		padding:                       5px;
+		
+		margin-bottom:                 10px;
+	}
+	
+	h2.Accounts,
+	h2.Account,
+	h2.Contacts,
+	h2.Contact,
+	h2.Invoice
+	{
+		background-repeat:             no-repeat;
+		background-position:           top left;
+		
+		padding-top:                   10px;
+		padding-left:                  70px;
+		
+		height:                        50px;
+	}
+	
+	h2.Contacts
+	{
+		background-image:              url('../img/contacts.png');
+	}
+	
+	h2.Contact
+	{
+		background-image:              url('../img/contact.png');
+	}
+	
+	h2.Accounts
+	{
+		background-image:              url('../img/accounts.png');
+	}
+	
+	h2.Account
+	{
+		background-image:              url('../img/account.png');
+	}
+	
+	h2.Invoice
+	{
+		background-image:              url('../img/invoice.png');
 	}

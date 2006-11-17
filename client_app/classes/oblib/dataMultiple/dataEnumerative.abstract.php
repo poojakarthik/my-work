@@ -12,7 +12,7 @@
 			
 			protected function Select (&$selectedItem)
 				{
-					if ($this->Pull ($selectedItem))
+					if (!$this->Pull ($selectedItem))
 						{
 							return null;
 						}
