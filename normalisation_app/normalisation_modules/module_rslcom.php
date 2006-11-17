@@ -161,6 +161,14 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$mixValue = $this->_FetchRawCDR('ChargedParty');
 		$this->_AppendCDR('FNN', $this->RemoveAusCode($mixValue));
 		
+		// Source
+		$mixValue = $this->_FetchRawCDR('OriginNo');
+		$this->_AppendCDR('Source', $this->RemoveAusCode($mixValue));
+		
+		// Destination
+		$mixValue = $this->_FetchRawCDR('DestinationNo');
+		$this->_AppendCDR('Destination', $this->RemoveAusCode($mixValue));
+		
 		// CarrierRef
 		$mixValue = $this->_FetchRawCDR('EventId');
 		$this->_AppendCDR('CarrierRef', $mixValue);
