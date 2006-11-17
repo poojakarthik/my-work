@@ -265,7 +265,7 @@ die();
 				}
 				
 				// End the Report, and send it off
-				$this->AddToCollectionReport(MSG_TOTALS, Array('<TotalFiles>' => $intCounter));
+				$this->AddToCollectionReport(MSG_TOTALS, Array('<TotalFiles>' => $intCounter, '<Time>' => $this->Framework->Uptime()));
 				$this->_rptCollectionReport->Finish();
 				
 				// disconnect
