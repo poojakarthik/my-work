@@ -171,20 +171,20 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		{
 		 	// For normal usage CDRs
 		 	$mixValue	= $this->_FetchRawCDR('DateTime');
-		 	$this->_AppendCDR('StartDateTime', $mixValue);
+		 	$this->_AppendCDR('StartDatetime', $mixValue);
 		 	
 		 	$intStart	= strtotime($this->_FetchRawCDR('DateTime'));
 		 	$intEnd		= strtotime(" +" . $this->_FetchRawCDR('Duration') . "seconds", $intStart);
 		 	$mixValue	= date("Y-m-d H:i:s", $intEnd);
-			$this->_AppendCDR('EndDateTime', $mixValue);
+			$this->_AppendCDR('EndDatetime', $mixValue);
 		}
 		else
 		{
 		 	// For S&E and OC&C CDRs
 		 	$mixValue					= $this->_FetchRawCDR('BeginDate');
-		 	$this->_AppendCDR('StartDateTime', $mixValue);
+		 	$this->_AppendCDR('StartDatetime', $mixValue);
 		 	$mixValue					=  $this->_FetchRawCDR('EndDate');
-		 	$this->_AppendCDR('EndDateTime', $mixValue);
+		 	$this->_AppendCDR('EndDatetime', $mixValue);
 		}
 		
 		

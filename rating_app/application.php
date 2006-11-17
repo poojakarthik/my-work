@@ -129,7 +129,12 @@ die();
 										"Rate.Friday					= <Friday> OR \n" .
 										"Rate.Saturday					= <Saturday> OR \n" .
 										"Rate.Sunday					= <Sunday> ) \n";
-		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
+										
+		//TODO!!!! - FAKE IT FOR NOW
+		$strTables = "Rate";
+		$strWhere  = "1 = 1";
+		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "", 1);
+		//$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
  	}
  	
  	
@@ -316,7 +321,9 @@ die();
 	 	$strAliases['Friday']		= ($strDay == "Friday") ? TRUE : DONKEY;
 	 	$strAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
 	 	$strAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
-		$this->_selFindRate->Execute($strAliases);
+		//$this->_selFindRate->Execute($strAliases);
+		//TODO!!!! - FAKE IT FOR NOW
+		$this->_selFindRate->Execute();
 		if (!($arrRate = $this->_selFindRate->Fetch()))
 		{
 			return FALSE;

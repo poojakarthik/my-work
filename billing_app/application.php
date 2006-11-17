@@ -375,6 +375,8 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		//TODO!!!! - clean up Service total & Service type total table 
+		
 		return TRUE;
 	}
 	

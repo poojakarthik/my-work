@@ -268,11 +268,11 @@ abstract class NormalisationModule
 			$arrValid[] = true;
 		}
 
-		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDateTime"]);
+		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
 
-		if ($this->_arrNormalisedData["EndDateTime"] != "")
+		if ($this->_arrNormalisedData["EndDatetime"] != "")
 		{
-			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", 	$this->_arrNormalisedData["EndDateTime"]);
+			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", 	$this->_arrNormalisedData["EndDatetime"]);
 		}
 		else
 		{
