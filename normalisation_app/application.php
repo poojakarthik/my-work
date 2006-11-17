@@ -24,6 +24,8 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+ 
+echo "<pre>";
 
 // set addresses for report
 $mixEmailAddress = 'flame@telcoblue.com.au';
@@ -33,14 +35,13 @@ $appNormalise = new ApplicationNormalise($mixEmailAddress);
 
 // Import lines from CDR files into the database
 $appNormalise->Import();
-Debug($framework->uptime());
 
 // Normalise CDR records in the database
 $appNormalise->Normalise();
-Debug($framework->uptime());
 
 // finished
 echo("\n-- End of Normalisation --\n");
+echo "</pre>";
 die();
 
 
@@ -283,8 +284,8 @@ die();
 		$arrReportLine['<Action>']		= "Imported";
 		$arrReportLine['<Total>']		= $this->_intImportPass + $this->_intImportFail;
 		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
-		$arrReportLine['<Pass>']		= $this->_intImportPass;
-		$arrReportLine['<Fail>']		= $this->_intImportFail;
+		$arrReportLine['<Pass>']		= (int)$this->_intImportPass;
+		$arrReportLine['<Fail>']		= (int)$this->_intImportFail;
 		$this->AddToNormalisationReport(MSG_REPORT, $arrReportLine);
  	}
  	
@@ -564,8 +565,11 @@ die();
 		$arrReportLine['<Fail>']		= (int)$intNormaliseFailed;
 		$this->AddToNormalisationReport(MSG_REPORT."\n".MSG_HORIZONTAL_RULE, $arrReportLine);
 		
+		$this->AddToNormalisationReport("Normalisation module completed in ".$this->Framework->uptime()." seconds");
+
 		// Deliver the report
 		$this->rptNormalisationReport->Finish();
+		
  	}
  }
 ?>

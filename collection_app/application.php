@@ -25,6 +25,8 @@
  *
  */
 
+echo "<pre>";
+
 // Application entry point - create an instance of the application object
 $appCollection = new ApplicationCollection($arrConfig);
 
@@ -33,6 +35,7 @@ $appCollection->Collect();
 
 // finished
 echo("\n-- End of Collection --\n");
+echo "</pre>";
 die();
 
 

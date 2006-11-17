@@ -119,9 +119,7 @@ function Debug($mixOutput, $strMode="html")
 			break;
 		case 'report':
 		case 'rpt':
-			echo "<pre>";
 			echo $mixOutput;
-			echo "</pre>";
 			break;
 			
 		default:

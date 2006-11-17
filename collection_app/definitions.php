@@ -87,7 +87,7 @@ define("MSG_UNZIPPED_FILE"			, "\t\t\t<FileName>\n");
 define("MSG_IMPORTED"				, "\t[Imported OK]\n\n");
 define("MSG_BAD_FILE"				, "\t[File Corrupt]\n");
 define("MSG_IMPORT_FAILED"			, "\t[Import FAILED]\n\t[Reason : <Reason>]\n\n");
-define("MSG_TOTALS"					, MSG_HORIZONTAL_RULE."Total files Imported\t: <TotalFiles>\n".MSG_HORIZONTAL_RULE);
+define("MSG_TOTALS"					, MSG_HORIZONTAL_RULE."Imported <TotalFiles> in <Time> seconds.\n".MSG_HORIZONTAL_RULE);
 define("MSG_MOVE_FILE_FAILED"		, "\t\t[File Move FAILED]\n\t\t\t<FileName>\n");
 define("MSG_UNKNOWN_FILETYPE"		, "\t\t[Unknown File Type]\n\t\t\t<FileName>\n");
 define("MSG_NOT_UNIQUE"				, "\t\t[File Not Unique]\n\t\t\t<FileName>\n");
