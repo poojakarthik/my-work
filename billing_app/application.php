@@ -24,6 +24,8 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+ 
+ echo "<pre>";
 
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
@@ -36,6 +38,7 @@ $appBilling->FinaliseReport();
 
 // finished
 echo("\n-- End of Billing --\n");
+echo "</pre>";
 die();
 
 

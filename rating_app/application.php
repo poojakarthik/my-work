@@ -25,6 +25,8 @@
  *
  */
 
+echo "<pre>";
+
 // Application entry point - create an instance of the application object
 $appRating = new ApplicationRating($arrConfig);
 
@@ -33,6 +35,7 @@ $appRating->Rate();
 
 // finished
 echo("\n-- End of Rating --\n");
+echo "</pre>";
 die();
 
 

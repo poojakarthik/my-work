@@ -24,12 +24,15 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+ 
+echo "<pre>";
 
 // Application entry point - create an instance of the application object
 $appSkel = new ApplicationSkel($arrConfig);
 
 // finished
 echo("\n-- End of Skeleton --\n");
+echo "</pre>";
 die();
 
 
