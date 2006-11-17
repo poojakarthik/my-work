@@ -130,6 +130,10 @@ function Debug($mixOutput, $strMode="html")
 			echo "\n</pre>\n";
 
 	}
+	
+	// Flush the output to screen/client
+	ob_flush();
+	
 	return TRUE;
 }
 
