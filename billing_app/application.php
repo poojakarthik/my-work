@@ -162,41 +162,53 @@ die();
 					// servicetotal = max(servicetotal, MinMonthly)
 				// $fltDebits += servicetotal
 
-			if ($arrAccount['ChargeCap'] > 0)
-			{
-				// If we have a charge cap, apply it
-				$fltTotalCharge = floatval (min ($arrAccount['CappedCharge'], $arrAccount['ChargeCap'] + $arrAccount['UnCappedCharge']));
-				
-				if ($arrAccount['UsageCap'] > 0 && $arrAccount['UsageCap'] < $arrAccount['CappedCharge'])
-				{
-					$fltTotalCharge += floatval ($arrAccount['UncappedCharge'] - $arrAccount['UsageCap']);
-				}
-			}
-			else
-			{
-				$fltTotalCharge = floatval ($arrAccount['CappedCharge'] + $arrAccount['UncappedCharge']);
-			}
 
-			// TODO!!!! - insert into servicetotal & service type total
+			// for each service belonging to this account
+			// TODO!!!! - get list of services & do foreach
+				if ($arrAccount['ChargeCap'] > 0)
+				{
+					// If we have a charge cap, apply it
+					$fltTotalCharge = floatval (min ($arrAccount['CappedCharge'], $arrAccount['ChargeCap'] + $arrAccount['UnCappedCharge']));
+					
+					if ($arrAccount['UsageCap'] > 0 && $arrAccount['UsageCap'] < $arrAccount['CappedCharge'])
+					{
+						$fltTotalCharge += floatval ($arrAccount['UncappedCharge'] - $arrAccount['UsageCap']);
+					}
+				}
+				else
+				{
+					$fltTotalCharge = floatval ($arrAccount['CappedCharge'] + $arrAccount['UncappedCharge']);
+				}
+
+				// If there is a minimum monthly charge, apply it
+				if ($arrAccount['MinMonthly'] > 0)
+				{
+					$fltTotalCharge = floatval(max($arrAccount['MinMonthly'], $fltTotalCharge));
+				}
+				
+				// service totals
+				$fltServiceCredits	= 0.0; 						//TODO!!!! - IGNORE FOR NOW
+				$fltServiceDebits = $fltTotalCharge;
+				$fltServiceTotal	= $fltTotalCharge - $fltServiceCredits;
+				
+				// TODO!!!! - insert into servicetotal & service type total
+				
+				// add to invoice totals
+				$fltTotalDebits += $fltServiceDebits;
+				$fltTotalCredits += $fltServiceCredits;
 			
-			$fltCredits	= 0.0; 						//TODO!!!! - IGNORE FOR NOW
-			$fltTotal	= $fltTotalCharge - $fltCredits;
+			// calculate invoice total
+			$fltTotal = $fltServiceDebits - $fltTotalCredits;
 			$fltBalance	= $fltTotal; 				//TODO!!!! - FAKE FOR NOW
 			
-			// If there is a minimum monthly charge, apply it
-			if ($arrAccount['MinMonthly'] > 0)
-			{
-				$fltTotalCharge = floatval(max($arrAccount['MinMonthly'], $fltTotalCharge));
-			}
-
 			// write to temporary invoice table
 			$arrInvoiceData = Array();
 			$arrInvoiceData['AccountGroup']	= $arrAccount['AccountGroup'];
 			$arrInvoiceData['Account']		= $arrAccount['Id'];
 			//$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
 			//$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
-			$arrInvoiceData['Credits']		= $fltCredits;
-			$arrInvoiceData['Debits']		= $fltTotalCharge;
+			$arrInvoiceData['Credits']		= $fltTotalCredits;
+			$arrInvoiceData['Debits']		= $fltTotalDebits;
 			$arrInvoiceData['Total']		= $fltTotal;
 			$arrInvoiceData['Tax']			= $fltTotal / TAX_RATE_GST; // TODO: is this right?
 			$arrInvoiceData['Balance']		= $fltBalance;
