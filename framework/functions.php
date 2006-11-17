@@ -120,7 +120,7 @@ function Debug($mixOutput, $strMode="html")
 		case 'report':
 		case 'rpt':
 			echo "<pre>";
-			print_r($mixOutput);
+			echo $mixOutput;
 			echo "</pre>";
 			break;
 			
