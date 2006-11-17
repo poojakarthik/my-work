@@ -249,7 +249,7 @@ die();
 			}
 			
 			// Update Service & Account Totals
-			if (!$this->_UpdateTotals())
+			if (!$this->_UpdateTotals($arrCDR['Service']))
 			{
 				// problem updating totals
 				// set status in database
@@ -538,7 +538,7 @@ die();
 	 *
 	 * @method
 	 */
-	 private function _UpdateTotals()
+	 private function _UpdateTotals($arrService)
 	 {
 	 	// update service totals
 		$fltCharge = $this->_arrCurrentCDR['Charge'];
