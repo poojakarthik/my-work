@@ -114,21 +114,29 @@ die();
 			return;		// TODO: FIXME - Should we return if this fails??
 		}
 				
-		// Init Statements
+		// Init Select Statements
+		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
+		$selAccounts					= new StatementSelect("Account", "*");	// TODO: Should have a WHERE clause in final version
+		
+		// Init Update Statements
 		$arrCDRCols['Status']			= CDR_TEMP_INVOICE;
 		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
+		
+		// Init Insert Statements
 		$arrInvoiceData 				= Array();
 		$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
 		$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY");
 		$insTempInvoice					= new StatementInsert("InvoiceTemp", $arrInvoiceData);
-		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
+		$insServiceTotal				= new StatementInsert("ServiceTotal");
 		
 		$intPassed = 0;
 		$intFailed = 0;
 		
 		// get a list of all accounts that require billing today
-		//TODO!!!!
-		
+		// TODO: FIXME - Faking for now...
+		$selAccounts->Execute();
+		$arrAccounts = $selAccounts->FetchAll();
+
 		// Report
 		$this->_rptBillingReport->AddMessage(MSG_BUILD_TEMP_INVOICES."\n");
 		
@@ -202,13 +210,17 @@ die();
 				
 				// TODO!!!! - insert into servicetotal & service type total
 				$arrServiceTotal = Array();
-				$arrServiceTotal['InvoiceRun']	= $strInvoiceRun;
-				$arrServiceTotal['']	= ;
-				$arrServiceTotal['']	= ;
-				$arrServiceTotal['']	= ;
-				$arrServiceTotal['']	= ;
-				$arrServiceTotal['']	= ;
-				// TODO!!!! - save this
+				$arrServiceTotal['InvoiceRun']		= $strInvoiceRun;
+				$arrServiceTotal['FNN']				= $arrService['FNN'];
+				$arrServiceTotal['AccountGroup']	= $arrService['AccountGroup'];
+				$arrServiceTotal['Account']			= $arrService['Account'];
+				$arrServiceTotal['Service']			= $arrService['Id'];
+				$arrServiceTotal['RecordType']		= $arrService['RecordType'];
+				$arrServiceTotal['CappedCharge']	= $arrService['CappedCharge'];
+				$arrServiceTotal['UncappedCharge']	= $arrService['UncappedCharge'];
+				$arrServiceTotal['TotalCharge']		= $fltServiceTotal;
+				// save this
+				$insServiceTotal->Execute($arrServiceTotal);
 				
 				// add to invoice totals
 				$fltTotalDebits		+= $fltServiceDebits;
@@ -228,7 +240,7 @@ die();
 			$arrInvoiceData['Credits']		= $fltTotalCredits;
 			$arrInvoiceData['Debits']		= $fltTotalDebits;
 			$arrInvoiceData['Total']		= $fltTotal;
-			$arrInvoiceData['Tax']			= $fltTotal / TAX_RATE_GST; // TODO: is this right?
+			$arrInvoiceData['Tax']			= $fltTotal / TAX_RATE_GST;
 			$arrInvoiceData['Balance']		= $fltBalance;
 			$arrInvoiceData['Status']		= INVOICE_TEMP;
 			$arrInvoiceData['InvoiceRun']	= $strInvoiceRun;
