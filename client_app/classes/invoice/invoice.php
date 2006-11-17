@@ -30,7 +30,6 @@
 				$selInvoice->Execute(Array("Id" => $intInvoice, "Account" => $this->_cntContact->Pull ("Account")->getValue ()));				
 			}
 			
-			
 			// Use ObLib and set all this information in the object
 			$selInvoice->useObLib (TRUE);
 			
@@ -50,8 +49,8 @@
 			
 			$oblarrInvoiceServices = new dataArray ("InvoiceServices", "InvoiceService");
 			
-			$selServices = new StatementSelect ("ServiceTotal", "Service, Invoice", "Invoice = <Invoice>");
-			$selServices->Execute(Array("Invoice" => $this->Pull ("Id")->getValue ()));
+			$selServices = new StatementSelect ("ServiceTotal", "Service, InvoiceRun", "InvoiceRun = <InvoiceRun>");
+			$selServices->Execute(Array("InvoiceRun" => $this->Pull ("InvoiceRun")->getValue ()));
 			
 			while ($arrService = $selServices->Fetch ())
 			{
@@ -63,8 +62,8 @@
 		
 		public function getService ($Id)
 		{
-			$selService = new StatementSelect ("ServiceTotal", "Invoice, Service", "Invoice = <Invoice> AND Service = <Service>");
-			$selService->Execute(Array("Invoice" => $this->Pull ("Id")->getValue (), "Service" => $Id));
+			$selService = new StatementSelect ("ServiceTotal", "InvoiceRun, Service", "InvoiceRun = <InvoiceRun> AND Service = <Service>");
+			$selService->Execute(Array("InvoiceRun" => $this->Pull ("InvoiceRun")->getValue (), "Service" => $Id));
 			
 			if ($selService->Count () <> 1)
 			{

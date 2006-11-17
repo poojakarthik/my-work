@@ -13,12 +13,18 @@
 			$this->_invInvoice =& $invInvoice;
 			$this->_srvService =& $srvService;
 			
-			$selCDRLength = new StatementSelect("CDR", "count(*) AS collationLength", "Invoice = <Invoice> AND Service = <Service> AND Status = <Status>");
+			$selCDRLength = new StatementSelect(
+				"CDR", 
+				"count(*) AS collationLength", 
+				"Invoice = <Invoice> AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)"
+			);
+			
 			$selCDRLength->Execute(
 				Array(
 					"Invoice"	=> $this->_invInvoice->Pull ("Id")->getValue (), 
 					"Service"	=> $this->_srvService->Pull ("Id")->getValue (),
-					"Status"	=> CDR_RATED
+					"Status1"	=> CDR_RATED,
+					"Status2"	=> INVOICE_TEMP
 				)
 			);
 			

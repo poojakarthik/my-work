@@ -10,7 +10,7 @@
 		
 		private $_oblcoaCalls;
 		
-		function __construct (&$cntContact, &$invInvoice, $intService)
+		function __construct (&$cntContact, $invInvoice, $intService)
 		{
 			parent::__construct ("InvoiceService");
 			
@@ -22,8 +22,8 @@
 			// do this through the account group variable. Otherwise this must
 			// be authenticated through the user's Account.
 			
-			$selServiceDetails = new StatementSelect ("ServiceTotal", "*", "Invoice = <Invoice> AND Service = <Service>");
-			$selServiceDetails->Execute(Array("Invoice" => $this->_invInvoice->Pull ("Id")->getValue (), "Service" => $intService));
+			$selServiceDetails = new StatementSelect ("ServiceTotal", "*", "InvoiceRun = <InvoiceRun> AND Service = <Service>");
+			$selServiceDetails->Execute(Array("InvoiceRun" => $invInvoice->Pull ("InvoiceRun")->getValue (), "Service" => $intService));
 			
 			// Use ObLib and set all this information in the object
 			$selServiceDetails->useObLib (TRUE);
