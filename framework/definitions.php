@@ -113,4 +113,7 @@ define("SERVICE_TYPE_MOBILE"		, 101);
 define("SERVICE_TYPE_LAND_LINE"		, 102);
 define("SERVICE_TYPE_INBOUND"		, 103);
 
+// TAX RATES
+define("TAX_RATE_GST"				, 10);
+
 ?>

@@ -117,7 +117,10 @@ die();
 		// Init Statements
 		$arrCDRCols['Status']	= CDR_TEMP_INVOICE;
 		$updCDRs				= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
-		$insTempInvoice			= new StatementInsert("InvoiceTemp");
+		$arrInvoiceData = Array();
+		$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
+		$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY"
+		$insTempInvoice			= new StatementInsert("InvoiceTemp", $arrInvoiceData);
 		
 		$intPassed = 0;
 		$intFailed = 0;
@@ -140,6 +143,25 @@ die();
 			}
 			
 			// calculate totals
+			$fltDebits = 0;
+			//TODO!!!
+			// this comes from adding up the service totals
+
+			// for each service belonging to this account
+				// if ChargeCap
+					// if CappedCharge > UsageCap
+						// captotal = CappedCharge - UsageCap
+					// else
+						// captotal = min(ChargeCap, CappedCharge)
+				// else
+					// captotal = CappedCharge
+					
+				// servicetotal = captotal + UncappedCharge
+				
+				// if MinMonthly
+					// servicetotal = max(servicetotal, MinMonthly)
+				// $fltDebits += servicetotal
+
 			if ($arrAccount['ChargeCap'] > 0)
 			{
 				// If we have a charge cap, apply it
@@ -154,6 +176,12 @@ die();
 			{
 				$fltTotalCharge = floatval ($arrAccount['CappedCharge'] + $arrAccount['UncappedCharge']);
 			}
+
+			// TODO!!!! - insert into servicetotal & service type total
+			
+			$fltCredits	= 0.0; 						//TODO!!!! - IGNORE FOR NOW
+			$fltTotal	= $fltTotalCharge - $fltCredits;
+			$fltBalance	= $fltTotal; 				//TODO!!!! - FAKE FOR NOW
 			
 			// If there is a minimum monthly charge, apply it
 			if ($arrAccount['MinMonthly'] > 0)
@@ -161,18 +189,18 @@ die();
 				$fltTotalCharge = floatval(max($arrAccount['MinMonthly'], $fltTotalCharge));
 			}
 
-			
 			// write to temporary invoice table
+			$arrInvoiceData = Array();
 			$arrInvoiceData['AccountGroup']	= $arrAccount['AccountGroup'];
 			$arrInvoiceData['Account']		= $arrAccount['Id'];
-			$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
-			$arrInvoiceData['DueOn']		= ""; // TODO: wtfmate?!
-			$arrInvoiceData['Credits']		= 0.0; // TODO: wtfmate?!
-			$arrInvoiceData['Debits']		= 0.0; // TODO: wtfmate?!
-			$arrInvoiceData['Total']		= $fltTotalCharge;
-			$arrInvoiceData['Tax']			= $fltTotalCharge + ($fltTotalCharge / 10); // TODO: is this right?
-			$arrInvoiceData['Balance']		= 0.0; // TODO: wtfmate?!
-			$arrInvoiceData['Status']		= INVOICE_WTF_MATE; // TODO: wtfmate?!
+			//$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
+			//$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
+			$arrInvoiceData['Credits']		= $fltCredits;
+			$arrInvoiceData['Debits']		= $fltTotalCharge;
+			$arrInvoiceData['Total']		= $fltTotal;
+			$arrInvoiceData['Tax']			= $fltTotal / TAX_RATE_GST; // TODO: is this right?
+			$arrInvoiceData['Balance']		= $fltBalance;
+			$arrInvoiceData['Status']		= INVOICE_TEMP;
 			
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))

@@ -1379,7 +1379,7 @@
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	 function __construct($strTable)
+	 function __construct($strTable, $arrColumns = NULL)
 	 {
 		parent::__construct();
 			 	
