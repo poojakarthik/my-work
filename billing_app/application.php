@@ -115,12 +115,13 @@ die();
 		}
 				
 		// Init Statements
-		$arrCDRCols['Status']	= CDR_TEMP_INVOICE;
-		$updCDRs				= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
-		$arrInvoiceData = Array();
+		$arrCDRCols['Status']			= CDR_TEMP_INVOICE;
+		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
+		$arrInvoiceData 				= Array();
 		$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
-		$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY"
-		$insTempInvoice			= new StatementInsert("InvoiceTemp", $arrInvoiceData);
+		$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY");
+		$insTempInvoice					= new StatementInsert("InvoiceTemp", $arrInvoiceData);
+		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
 		
 		$intPassed = 0;
 		$intFailed = 0;
@@ -162,28 +163,32 @@ die();
 					// servicetotal = max(servicetotal, MinMonthly)
 				// $fltDebits += servicetotal
 
+			// Retrieve list of services for this account
+			$selServices->Execute(Array('Account' => $arrAccount['Id']));
+			$arrServices = $selServices->FetchAll();
 
 			// for each service belonging to this account
-			// TODO!!!! - get list of services & do foreach
-				if ($arrAccount['ChargeCap'] > 0)
+			foreach ($arrServices as $arrService)
+			{
+				if ($arrService['ChargeCap'] > 0)
 				{
 					// If we have a charge cap, apply it
-					$fltTotalCharge = floatval (min ($arrAccount['CappedCharge'], $arrAccount['ChargeCap'] + $arrAccount['UnCappedCharge']));
+					$fltTotalCharge = floatval (min ($arrService['CappedCharge'], $arrService['ChargeCap'] + $arrService['UnCappedCharge']));
 					
-					if ($arrAccount['UsageCap'] > 0 && $arrAccount['UsageCap'] < $arrAccount['CappedCharge'])
+					if ($arrService['UsageCap'] > 0 && $arrService['UsageCap'] < $arrService['CappedCharge'])
 					{
-						$fltTotalCharge += floatval ($arrAccount['UncappedCharge'] - $arrAccount['UsageCap']);
+						$fltTotalCharge += floatval ($arrService['UncappedCharge'] - $arrService['UsageCap']);
 					}
 				}
 				else
 				{
-					$fltTotalCharge = floatval ($arrAccount['CappedCharge'] + $arrAccount['UncappedCharge']);
+					$fltTotalCharge = floatval ($arrService['CappedCharge'] + $arrService['UncappedCharge']);
 				}
 
 				// If there is a minimum monthly charge, apply it
-				if ($arrAccount['MinMonthly'] > 0)
+				if ($arrService['MinMonthly'] > 0)
 				{
-					$fltTotalCharge = floatval(max($arrAccount['MinMonthly'], $fltTotalCharge));
+					$fltTotalCharge = floatval(max($arrService['MinMonthly'], $fltTotalCharge));
 				}
 				
 				// service totals
@@ -196,6 +201,7 @@ die();
 				// add to invoice totals
 				$fltTotalDebits += $fltServiceDebits;
 				$fltTotalCredits += $fltServiceCredits;
+			}
 			
 			// calculate invoice total
 			$fltTotal = $fltServiceDebits - $fltTotalCredits;
