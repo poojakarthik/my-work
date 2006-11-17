@@ -148,7 +148,7 @@ class Report
 	{
 		// Assign passed parameters to member variables
 		$this->_strTitle = $strReportTitle;
-		Debug($strReportTitle, "rpt");
+		Debug($strReportTitle."\n\n", "rpt");
 		
 		if (is_array($mixEmailAddressee))
 		{
