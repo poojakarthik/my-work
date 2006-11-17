@@ -98,12 +98,13 @@
 			else
 			{
 				// This AuthenticatedContact is not a CustomerContact ... :. check the CDR against the account
-				$selCDR = new StatementSelect("CDR", "*", "Id = <Id> AND Account = <Account> AND Status = <Status>");
+				$selCDR = new StatementSelect("CDR", "*", "Id = <Id> AND Account = <Account> AND (Status = <Status1> OR Status = <Status2>");
 				$selCDR->Execute(
 					Array(
 						"Id"			=> $intId, 
 						"Account"		=> $this->_cntContact->Pull ("Account")->getValue (),
-						"Status"		=> CDR_RATED
+						"Status1"		=> CDR_RATED,
+						"Status2"		=> INVOICE_TEMP
 					)
 				);
 			}

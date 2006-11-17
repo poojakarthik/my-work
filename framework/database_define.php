@@ -1444,6 +1444,15 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
+								
+	// Define Columns
+	$strName = "InvoiceRun";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(13)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
@@ -1601,6 +1610,15 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "InvoiceRun";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(13)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
 					
 	// Save Table Define
@@ -2922,12 +2940,12 @@
 		
 								
 	// Define Columns
-	$strName = "Invoice";
-		$arrDefine['Column'][$strName]['Type'] 			= "i";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+	$strName = "InvoiceRun";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(13)";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
 								
 	// Define Columns
@@ -3056,5 +3074,6 @@
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+	
 	
 ?>
