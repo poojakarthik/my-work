@@ -140,8 +140,27 @@ die();
 			}
 			
 			// calculate totals
-			//TODO!!!
-			$fltTotal = 0.0;
+			if ($arrAccount['ChargeCap'] > 0)
+			{
+				// If we have a charge cap, apply it
+				$fltTotalCharge = floatval (min ($arrAccount['CappedCharge'], $arrAccount['ChargeCap'] + $arrAccount['UnCappedCharge']));
+				
+				if ($arrAccount['UsageCap'] > 0 && $arrAccount['UsageCap'] < $arrAccount['CappedCharge'])
+				{
+					$fltTotalCharge += floatval ($arrAccount['UncappedCharge'] - $arrAccount['UsageCap']);
+				}
+			}
+			else
+			{
+				$fltTotalCharge = floatval ($arrAccount['CappedCharge'] + $arrAccount['UncappedCharge']);
+			}
+			
+			// If there is a minimum monthly charge, apply it
+			if ($arrAccount['MinMonthly'] > 0)
+			{
+				$fltTotalCharge = floatval(max($arrAccount['MinMonthly'], $fltTotalCharge));
+			}
+
 			
 			// write to temporary invoice table
 			$arrInvoiceData['AccountGroup']	= $arrAccount['AccountGroup'];
@@ -150,8 +169,8 @@ die();
 			$arrInvoiceData['DueOn']		= ""; // TODO: wtfmate?!
 			$arrInvoiceData['Credits']		= 0.0; // TODO: wtfmate?!
 			$arrInvoiceData['Debits']		= 0.0; // TODO: wtfmate?!
-			$arrInvoiceData['Total']		= $fltTotal;
-			$arrInvoiceData['Tax']			= $fltTotal + ($fltTotal / 10); // TODO: is this right?
+			$arrInvoiceData['Total']		= $fltTotalCharge;
+			$arrInvoiceData['Tax']			= $fltTotalCharge + ($fltTotalCharge / 10); // TODO: is this right?
 			$arrInvoiceData['Balance']		= 0.0; // TODO: wtfmate?!
 			$arrInvoiceData['Status']		= INVOICE_WTF_MATE; // TODO: wtfmate?!
 			
