@@ -145,13 +145,15 @@ die();
 		
 		foreach ($arrAccounts as $arrAccount)
 		{
+			$this->_rptBillingReport->AddMessageVariables(MSG_LINE, Array('<AccountId>' => $arrAccount['Id']), FALSE);
+			
 			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
 			if(!$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id'])))
 			{
 				// Report and fail out
-				$this->_rptBillingReport->AddMessageVariables(MSG_FAILED.MSG_LINE_FAILED, Array('Reason' => "Cannot link CDRs"));
-				$intFailed++;
-				continue;
+				$this->_rptBillingReport->AddMessageVariables(MSG_WARNING.MSG_LINE_FAILED, Array('<Reason>' => "Cannot link CDRs"), FALSE);
+				//$intFailed++;
+				//continue;
 			}
 			
 			// generate an InvoiceRun Id
@@ -239,7 +241,9 @@ die();
 			$arrInvoiceData['AccountGroup']	= $arrAccount['AccountGroup'];
 			$arrInvoiceData['Account']		= $arrAccount['Id'];
 			//$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
+			$arrInvoiceData['CreatedOn']	= date("Y-m-d H:i:s", time());
 			//$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
+			$arrInvoiceData['DueOn']		= date("Y-m-d H:i:s", time());
 			$arrInvoiceData['Credits']		= $fltTotalCredits;
 			$arrInvoiceData['Debits']		= $fltTotalDebits;
 			$arrInvoiceData['Total']		= $fltTotal;
@@ -251,8 +255,9 @@ die();
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))
 			{
+				Debug($insTempInvoice->Error());
 				// Report and fail out
-				$this->_rptBillingReport->AddMessageVariables(MSG_FAILED.MSG_LINE_FAILED, Array('Reason' => "Unable to create temporary invoice"));
+				$this->_rptBillingReport->AddMessageVariables(MSG_FAILED.MSG_LINE_FAILED, Array('<Reason>' => "Unable to create temporary invoice"));
 				$intFailed++;
 				continue;
 			}
@@ -345,6 +350,8 @@ die();
 	 */
  	function Revoke()
  	{
+		return TRUE;	// DEBUG
+		
 		// empty temp invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
 		$trqTruncateTempTable = new QueryTruncate();

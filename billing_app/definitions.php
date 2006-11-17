@@ -36,8 +36,9 @@ define("USER_NAME"						, "Skell_app");
 
 // Reporting Messages
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
-define("MSG_OK"							, "[   OK   ]");
-define("MSG_FAILED"						, "[ FAILED ]");
+define("MSG_OK"							, "\t\t\t\t[   OK   ]");
+define("MSG_FAILED"						, "\t\t\t\t[ FAILED ]");
+define("MSG_WARNING"					, "\t\t\t\t[  WARN  ]");
 define("MSG_CLEAR_TEMP_TABLE"			, "Clearing Temporary Invoice Table\t\t\t\t");
 define("MSG_BUILD_TEMP_INVOICES"		, "[ Building Temporary Invoices ]");
 define("MSG_LINE"						, "\t+ Billing Account #<AccountNo>...\t\t\t\t");
