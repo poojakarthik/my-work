@@ -143,6 +143,10 @@ die();
 				continue;
 			}
 			
+			// generate an InvoiceRun Id
+			$strInvoiceRun = uniqid();
+			
+			
 			// calculate totals
 			$fltDebits = 0;
 			//TODO!!!
@@ -193,18 +197,26 @@ die();
 				
 				// service totals
 				$fltServiceCredits	= 0.0; 						//TODO!!!! - IGNORE FOR NOW
-				$fltServiceDebits = $fltTotalCharge;
+				$fltServiceDebits	= $fltTotalCharge;
 				$fltServiceTotal	= $fltTotalCharge - $fltServiceCredits;
 				
 				// TODO!!!! - insert into servicetotal & service type total
+				$arrServiceTotal = Array();
+				$arrServiceTotal['InvoiceRun']	= $strInvoiceRun;
+				$arrServiceTotal['']	= ;
+				$arrServiceTotal['']	= ;
+				$arrServiceTotal['']	= ;
+				$arrServiceTotal['']	= ;
+				$arrServiceTotal['']	= ;
+				// TODO!!!! - save this
 				
 				// add to invoice totals
-				$fltTotalDebits += $fltServiceDebits;
-				$fltTotalCredits += $fltServiceCredits;
+				$fltTotalDebits		+= $fltServiceDebits;
+				$fltTotalCredits	+= $fltServiceCredits;
 			}
 			
 			// calculate invoice total
-			$fltTotal = $fltServiceDebits - $fltTotalCredits;
+			$fltTotal	= $fltServiceDebits - $fltTotalCredits;
 			$fltBalance	= $fltTotal; 				//TODO!!!! - FAKE FOR NOW
 			
 			// write to temporary invoice table
@@ -219,6 +231,7 @@ die();
 			$arrInvoiceData['Tax']			= $fltTotal / TAX_RATE_GST; // TODO: is this right?
 			$arrInvoiceData['Balance']		= $fltBalance;
 			$arrInvoiceData['Status']		= INVOICE_TEMP;
+			$arrInvoiceData['InvoiceRun']	= $strInvoiceRun;
 			
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))
