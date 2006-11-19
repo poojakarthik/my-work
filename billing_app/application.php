@@ -116,10 +116,10 @@ die();
 		{
 			return;		// TODO: FIXME - Should we return if this fails??
 		}
-				
+		
 		// Init Select Statements
 		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
-		$selAccounts					= new StatementSelect("Account", "*");	// TODO: Should have a WHERE clause in final version
+		$selAccounts					= new StatementSelect("Account", "*", "Id = 1000158426");	// TODO: Should have a WHERE clause in final version
 		
 		// Init Update Statements
 		$arrCDRCols['Status']			= CDR_TEMP_INVOICE;
@@ -145,40 +145,26 @@ die();
 		
 		foreach ($arrAccounts as $arrAccount)
 		{
-			$this->_rptBillingReport->AddMessageVariables(MSG_LINE, Array('<AccountId>' => $arrAccount['Id']), FALSE);
+			$this->_rptBillingReport->AddMessageVariables(MSG_LINE, Array('<AccountNo>' => $arrAccount['Id']), FALSE);
 			
 			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
 			if(!$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id'])))
 			{
+				// DEBUG
+				Debug($updCDRs->Error());
+				
 				// Report and fail out
-				$this->_rptBillingReport->AddMessageVariables(MSG_WARNING.MSG_LINE_FAILED, Array('<Reason>' => "Cannot link CDRs"), FALSE);
+				$this->_rptBillingReport->AddMessageVariables(MSG_LINE_FAILED, Array('<Reason>' => "WARNING: Cannot link CDRs"), FALSE);
 				//$intFailed++;
 				//continue;
 			}
 			
 			// generate an InvoiceRun Id
 			$strInvoiceRun = uniqid();
-			
-			
+						
 			// calculate totals
 			$fltDebits = 0;
-			//TODO!!!
-			// this comes from adding up the service totals
-
-			// for each service belonging to this account
-				// if ChargeCap
-					// if CappedCharge > UsageCap
-						// captotal = CappedCharge - UsageCap
-					// else
-						// captotal = min(ChargeCap, CappedCharge)
-				// else
-					// captotal = CappedCharge
-					
-				// servicetotal = captotal + UncappedCharge
-				
-				// if MinMonthly
-					// servicetotal = max(servicetotal, MinMonthly)
-				// $fltDebits += servicetotal
+			$fltTotalCharge = 0;
 
 			// Retrieve list of services for this account
 			$selServices->Execute(Array('Account' => $arrAccount['Id']));
@@ -189,11 +175,16 @@ die();
 			{
 				if ($arrService['ChargeCap'] > 0)
 				{
+					// DEBUG
+					Debug("There is a charge cap");
+					
 					// If we have a charge cap, apply it
 					$fltTotalCharge = floatval (min ($arrService['CappedCharge'], $arrService['ChargeCap'] + $arrService['UnCappedCharge']));
 					
 					if ($arrService['UsageCap'] > 0 && $arrService['UsageCap'] < $arrService['CappedCharge'])
 					{
+						// DEBUG
+						Debug("Gone over cap");
 						$fltTotalCharge += floatval ($arrService['UncappedCharge'] - $arrService['UsageCap']);
 					}
 				}
@@ -205,6 +196,8 @@ die();
 				// If there is a minimum monthly charge, apply it
 				if ($arrService['MinMonthly'] > 0)
 				{
+					// DEBUG
+					Debug("There is a minimum monthly");
 					$fltTotalCharge = floatval(max($arrService['MinMonthly'], $fltTotalCharge));
 				}
 				
@@ -350,7 +343,7 @@ die();
 	 */
  	function Revoke()
  	{
-		return TRUE;	// DEBUG
+		
 		
 		// empty temp invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
