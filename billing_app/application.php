@@ -161,7 +161,7 @@ die();
 			
 			// generate an InvoiceRun Id
 			$strInvoiceRun = uniqid();
-						
+
 			// calculate totals
 			$fltDebits = 0;
 			$fltTotalCharge = 0;
@@ -343,8 +343,6 @@ die();
 	 */
  	function Revoke()
  	{
-		
-		
 		// empty temp invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
 		$trqTruncateTempTable = new QueryTruncate();

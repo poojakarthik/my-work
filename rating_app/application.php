@@ -540,6 +540,7 @@ die();
 	 */
 	 private function _UpdateTotals($arrService)
 	 {
+	 	return TRUE;
 	 	// update service totals
 		$fltCharge = $this->_arrCurrentCDR['Charge'];
 
