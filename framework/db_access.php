@@ -630,7 +630,7 @@
 		$bolReturn = TRUE;
 
 		// create query
-		$strQuery = "TRUNCATE TABLE ".strTable;
+		$strQuery = "TRUNCATE TABLE ".$strTable;
 		
 		// run query
 		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
@@ -639,6 +639,9 @@
 		{
 			// we will return false
 			$bolReturn = FALSE;
+			
+			// DEBUG
+			Debug(mysqli_error($this->db->refMysqliConnection));
 		}
 		
 		return $bolReturn;
