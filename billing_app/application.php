@@ -312,7 +312,7 @@ die();
 		//TODO!!!! - add where status
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
 		$siqInvoice = new QuerySelectInto();
-		if(!$siqInvoice->Execute('Invoice', 'InvoiceTemp'))
+		if(!$siqInvoice->Execute('Invoice', 'InvoiceTemp', "Status = ".INVOICE_TEMP))
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
