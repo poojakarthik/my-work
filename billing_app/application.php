@@ -315,7 +315,7 @@ die();
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			//return;
+			return;
 		}
 		else
 		{
@@ -331,7 +331,7 @@ die();
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			//return;
+			return;
 		}
 		else
 		{
@@ -349,6 +349,7 @@ die();
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
 		}
 		else
 		{
@@ -364,7 +365,7 @@ die();
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			//return;
+			return;
 		}
 		else
 		{
