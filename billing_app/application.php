@@ -226,7 +226,7 @@ die();
 			}
 			
 			// calculate invoice total
-			$fltTotal	= $fltServiceDebits - $fltTotalCredits;
+			$fltTotal	= $fltTotalDebits - $fltTotalCredits;
 			$fltBalance	= $fltTotal; 				//TODO!!!! - FAKE FOR NOW
 			
 			// write to temporary invoice table
