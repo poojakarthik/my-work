@@ -48,39 +48,39 @@
 		$arrConfig['Define']["Unitel"]	["Name"]						= "Unitel";
 		$arrConfig['Define']["Unitel"]	["Carrier"]						= CARRIER_UNITEL;
  		$arrConfig['Define']["Unitel"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Unitel"]	["Server"]						= 'rslcom.com.au';
- 		$arrConfig['Define']["Unitel"]	["Username"]					= 'sp058';
- 		$arrConfig['Define']["Unitel"]	["PWord"]						= 'BuzzaBee06*#';
- 		$arrConfig['Define']["Unitel"]	["Dir"][]						= 'cdrbatches/';
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]						= 'cdrbatchesoffnet/';
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]						= 'mobilecdrbatches/';
+ 		$arrConfig['Define']["Unitel"]	["Server"]						= "rslcom.com.au";
+ 		$arrConfig['Define']["Unitel"]	["Username"]					= "sp058";
+ 		$arrConfig['Define']["Unitel"]	["PWord"]						= "BuzzaBee06*#";
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]						= "cdrbatches/";
+ 		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "cdrbatchesoffnet/";
+ 		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "mobilecdrbatches/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]					= DESTINATION_ROOT.'unitel/';
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]		= CDR_UNTIEL_RSLCOM;
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]	= CDR_UNTIEL_COMMANDER;
-		/*
+
 		// Optus Definition
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Optus"]	["Server"]						= DEFAULT_FTP_SERVER;				// FIXME
- 		$arrConfig['Define']["Optus"]	["Username"]					= DEFAULT_FTP_USERNAME;				// FIXME
- 		$arrConfig['Define']["Optus"]	["PWord"]						= DEFAULT_FTP_PASSWORD;				// FIXME
- 		$arrConfig['Define']["Optus"]	["Dir"][]						= 'dir1/';							// FIXME
- 		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT.'optus/';
+ 		$arrConfig['Define']["Optus"]	["Server"]						= "cyrene";				// FIXME
+ 		$arrConfig['Define']["Optus"]	["Username"]					= "flame";				// FIXME
+ 		$arrConfig['Define']["Optus"]	["PWord"]						= "flame";				// FIXME
+ 		$arrConfig['Define']["Optus"]	["Dir"][]						= "optustest/";			// FIXME
+ 		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/";
 		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
-		
+
 		// AAPT Definition
 		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
 		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;
  		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["AAPT"]	["Server"]						= DEFAULT_FTP_SERVER;				// FIXME
- 		$arrConfig['Define']["AAPT"]	["Username"]					= DEFAULT_FTP_USERNAME;				// FIXME
- 		$arrConfig['Define']["AAPT"]	["PWord"]						= DEFAULT_FTP_PASSWORD;				// FIXME
- 		$arrConfig['Define']["AAPT"]	["ZipPword"]					= "flame";							// FIXME
- 		$arrConfig['Define']["AAPT"]	["Dir"][]						= 'dir1/';							// FIXME
- 		$arrConfig['Define']["AAPT"]	["FinalDir"]					= DESTINATION_ROOT.'aapt/';
+ 		$arrConfig['Define']["AAPT"]	["Server"]						= "cyrene";				// FIXME
+ 		$arrConfig['Define']["AAPT"]	["Username"]					= "flame";				// FIXME
+ 		$arrConfig['Define']["AAPT"]	["PWord"]						= "flame";				// FIXME
+ 		$arrConfig['Define']["AAPT"]	["ZipPword"]					= "flame";				// FIXME
+ 		$arrConfig['Define']["AAPT"]	["Dir"][]						= "aapttest/";			// FIXME
+ 		$arrConfig['Define']["AAPT"]	["FinalDir"]					= DESTINATION_ROOT."aapt/";
 		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT]		= CDR_AAPT_STANDARD;
-		
+		/*
 		// iSeek Definition
 		$arrConfig['Define']["iSeek"]	["Name"]						= "iSeek";
 		$arrConfig['Define']["iSeek"]	["Carrier"]						= CARRIER_ISEEK;

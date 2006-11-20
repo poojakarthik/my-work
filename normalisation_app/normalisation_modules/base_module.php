@@ -247,10 +247,10 @@ abstract class NormalisationModule
 		$arrValid = Array();
 		
 		// $this->_arrNormalisedData["Id"];
-		$arrValid[] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", 	$this->_arrNormalisedData["FNN"]);
-		$arrValid[] = ($this->_arrNormalisedData["CarrierRef"] != "");
+		$arrValid[] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", 	$this->_arrNormalisedData["FNN"]);	// 0
+		$arrValid[] = ($this->_arrNormalisedData["CarrierRef"] != "");											// 1
 		
-		if ($this->_arrNormalisedData["Source"] != "")
+		if ($this->_arrNormalisedData["Source"] != "")															// 2
 		{
 			$arrValid[] = preg_match("/^\d+$/", 	$this->_arrNormalisedData["Source"]);
 		}
@@ -259,7 +259,7 @@ abstract class NormalisationModule
 			$arrValid[] = true;
 		}
 		
-		if ($this->_arrNormalisedData["Destination"] != "")
+		if ($this->_arrNormalisedData["Destination"] != "")														// 3
 		{
 			$arrValid[] = preg_match("/^\d+$/", 	$this->_arrNormalisedData["Destination"]);
 		}
@@ -267,22 +267,23 @@ abstract class NormalisationModule
 		{
 			$arrValid[] = true;
 		}
-
+																												// 4
 		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
 
-		if ($this->_arrNormalisedData["EndDatetime"] != "")
+		if ($this->_arrNormalisedData["EndDatetime"] != "")														// 5
 		{
-			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", 	$this->_arrNormalisedData["EndDatetime"]);
+			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", $this->_arrNormalisedData["EndDatetime"]);
+			Debug($this->_arrNormalisedData["EndDatetime"]);
 		}
 		else
 		{
 			$arrValid[] = true;
 		}
 
-		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);
-		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);
-		$arrValid[] = ($this->_arrNormalisedData["Description"] != "");
-		$arrValid[] = (strlen($this->_arrNormalisedData["DestinationCode"]) <= 3);
+		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);											// 6
+		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);											// 7
+		$arrValid[] = ($this->_arrNormalisedData["Description"] != "");											// 8
+		$arrValid[] = (strlen($this->_arrNormalisedData["DestinationCode"]) <= 3);								// 9
 		
 		$i = 0;
 		foreach ($arrValid as $bolValid)

@@ -214,7 +214,7 @@ function TruncateName($strText, $intLength)
 	elseif (strlen($strBase) > $intMaxLength)
 	{
 		// If the basename is too long to be displayed in full
-		$strTruncated = substr($strText, floor(($intLength - 3) / 3));
+		$strTruncated = substr($strText, 0, floor(($intLength - 3) / 3));
 		$strTruncated .= "...";
 		$strTruncated .= substr($strBase, 0 - (floor(($intLength - 3) / 3) * 2));
 	}

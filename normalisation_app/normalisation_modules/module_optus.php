@@ -178,14 +178,14 @@ class NormalisationModuleOptus extends NormalisationModule
 		$arrDefine ['CDRStatus']	['Length']		= 3;
 		
 		
-		$arrDefine ['ServiceNo']	['Validate']	= "^\+?\d+$";
-		$arrDefine ['CDRId']		['Validate']	= "^\d+$";
-		$arrDefine ['CallDate']		['Validate']	= "^\d{14}$";
-		$arrDefine ['Units']		['Validate']	= "^\d+$";
-		$arrDefine ['RecordType']	['Validate']	= "^50$";
-		$arrDefine ['PointOrigin']	['Validate']	= "^\d+$";
-		$arrDefine ['PointTarget']	['Validate']	= "^\d+$";
-		$arrDefine ['Amount']		['Validate']	= "^\d+$";
+		$arrDefine ['ServiceNo']	['Validate']	= "/^\+?\d+$/";
+		$arrDefine ['CDRId']		['Validate']	= "/^\d+$/";
+		$arrDefine ['CallDate']		['Validate']	= "/^\d{14}$/";
+		$arrDefine ['Units']		['Validate']	= "/^\d+$/";
+		$arrDefine ['RecordType']	['Validate']	= "/^50$/";
+		$arrDefine ['PointOrigin']	['Validate']	= "/^\d+$/";
+		$arrDefine ['PointTarget']	['Validate']	= "/^\d+$/";
+		$arrDefine ['Amount']		['Validate']	= "/^\d+$/";
 		
 		$this->_arrDefineCarrier = $arrDefine;
 		
@@ -223,15 +223,15 @@ class NormalisationModuleOptus extends NormalisationModule
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_HEADER);
 		}
-		
+	
+		// covert CDR string to array
+		$this->_SplitRawCDR($arrCDR["CDR"]);
+
 		// Make sure the record is a CDR
-		if ((int)$this->_FetchRawCDR('RecordType') != 50)
+		if ($this->_FetchRawCDR('RecordType') != "50")
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
-		
-		// covert CDR string to array
-		$this->_SplitRawCDR($arrCDR["CDR"]);
 	
 		// validation of Raw CDR
 		if (!$this->_ValidateRawCDR())
@@ -256,7 +256,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime
-		$mixValue = ConvertTime($this->_FetchRawCDR('CallDate'));
+		$mixValue = $this->ConvertTime($this->_FetchRawCDR('CallDate'));
 		$this->_AppendCDR('StartDatetime', $mixValue);
 		
 		// Units
@@ -287,8 +287,8 @@ class NormalisationModuleOptus extends NormalisationModule
 		$this->_AppendCDR('Destination', $mixValue);
 		
 		// EndDatetime
-		$mixValue = date("Y-m-d H:i:s", strtotime($this->_FetchRawCDR('CallDate') . " +" . $this->_FetchRawCDR('Units') . "seconds"));
-		$this->_AppendCDR('EndDateTime', $mixValue);
+		$mixValue = date("Y-m-d H:i:s", strtotime(" +" . $this->_FetchRawCDR('Units') . "seconds", strtotime($this->_FetchRawCDR('CallDate'))));
+		$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Cost
 		$mixValue = ((float)$this->_FetchRawCDR('Amount') / 100);
