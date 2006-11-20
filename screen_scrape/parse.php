@@ -22,6 +22,9 @@
 	$row = mysql_fetch_assoc ($query);
 	$records = $row ['records'];
 	
+	// set up DOM Document
+	$_DOMDoc = new DOMDocument ("1.0", "utf-8");
+	
 	// Loop through each Scrape
 	for ($i=0; $i < $records; ++$i)
 	{
@@ -31,14 +34,14 @@
 		$sql .= "LIMIT " . $i . ", 1";
 		$query = mysql_query ($sql);
 		$row = mysql_fetch_assoc ($query);
+		mysql_free_result($query);
 		
 		// Put the info into a DOM Object
-		$_DOMDoc = new DOMDocument ("1.0", "utf-8");
 		@$_DOMDoc->LoadHTML ($row ['ScrapeResponse']);		// Is silent because ETECH has no idea about W3C XHTML
 		
 		// Read the DOMDocument as a DOMXPath so we can perform operations on it
+		unset($_DOMXPath);
 		$_DOMXPath = new DOMXPath ($_DOMDoc);
-		
 		
 		$Customer = Array (
 			"operator"				=> "",
