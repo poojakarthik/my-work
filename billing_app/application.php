@@ -30,8 +30,8 @@
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
 
-$appBilling->Execute();
-//$appBilling->Commit();
+//$appBilling->Execute();
+$appBilling->Commit();
 //$appBilling->Revoke();
 
 $appBilling->FinaliseReport();
@@ -143,6 +143,9 @@ die();
 		// Report
 		$this->_rptBillingReport->AddMessage(MSG_BUILD_TEMP_INVOICES."\n");
 		
+		// generate an InvoiceRun Id
+		$strInvoiceRun = uniqid();
+		
 		foreach ($arrAccounts as $arrAccount)
 		{
 			$this->_rptBillingReport->AddMessageVariables(MSG_LINE, Array('<AccountNo>' => $arrAccount['Id']), FALSE);
@@ -159,9 +162,6 @@ die();
 				//continue;
 			}
 			
-			// generate an InvoiceRun Id
-			$strInvoiceRun = uniqid();
-
 			// calculate totals
 			$fltDebits = 0;
 			$fltTotalCharge = 0;
@@ -292,7 +292,11 @@ die();
 	 */
  	function Commit()
  	{
+		// FAIL if there are temporary invoices in the invoice table
+		//TODO!!!! & report
+		
 		// copy temporary invoices to invoice table
+		//TODO!!!! - add where status
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
 		$siqInvoice = new QuerySelectInto();
 		if(!$siqInvoice->Execute('Invoice', 'InvoiceTemp'))
@@ -307,11 +311,14 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		// change status of invoices in the temp invoice table
+		//TODO!!!! & report
+		
 		// apply invoice no. to all CDRs for this invoice
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS, FALSE);
 		$strQuery  = "UPDATE CDR INNER JOIN Invoice using (Account)";
-		$strQuery .= " SET CDR.Invoice = Invoice.Id, CDR.Status = {CDR_INVOICED}";
-		$strQuery .= " WHERE CDR.Status = {CDR_TEMP_INVOICE} AND Invoice.Status = {INVOICE_TEMP}";
+		$strQuery .= " SET CDR.Invoice = Invoice.Id, CDR.Status = ".CDR_INVOICED;
+		$strQuery .= " WHERE CDR.Status = ".CDR_TEMP_INVOICE." AND Invoice.Status = ".INVOICE_TEMP;
 		$qryCDRInvoice = new Query();
 		if(!$qryCDRInvoice->Execute($strQuery))
 		{
@@ -323,6 +330,11 @@ die();
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
+		
+		// update invoice status
+		//TODO!!!! & report
+		
+		
 	}
 	
 	//------------------------------------------------------------------------//
