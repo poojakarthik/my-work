@@ -639,9 +639,6 @@
 		{
 			// we will return false
 			$bolReturn = FALSE;
-			
-			// DEBUG
-			Debug(mysqli_error($this->db->refMysqliConnection));
 		}
 		
 		return $bolReturn;

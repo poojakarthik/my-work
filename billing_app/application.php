@@ -82,6 +82,9 @@ die();
 		parent::__construct();
 		
 		$this->_rptBillingReport = new Report("Billing Report for ".date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
+		
+		// Report header
+		$this->_rptBillingReport->AddMessage(MSG_HORIZONTAL_RULE);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -106,9 +109,6 @@ die();
  	{
 		// Start the stopwatch
 		$this->Framework->StartWatch();
-		
-		// Report header
-		$this->_rptBillingReport->AddMessage("\n".MSG_HORIZONTAL_RULE);
 		
 		// Empty the temporary invoice table
 		// This is safe, because there should be no CDRs with CDR_TEMP_INVOICE status anyway
@@ -293,8 +293,21 @@ die();
  	function Commit()
  	{
 		// FAIL if there are temporary invoices in the invoice table
-		//TODO!!!! & report
-		
+		$this->_rptBillingReport->AddMessage(MSG_CHECK_TEMP_INVOICES, FALSE);
+		$selCheckTempInvoices = new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP);
+		$selCheckTempInvoices->Execute();
+		if($selCheckTempInvoices->Fetch() !== FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+				
 		// copy temporary invoices to invoice table
 		//TODO!!!! - add where status
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
@@ -312,7 +325,20 @@ die();
 		}
 		
 		// change status of invoices in the temp invoice table
-		//TODO!!!! & report
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_TEMP_INVOICE_STATUS, FALSE);
+		$arrUpdateData['Status'] = INVOICE_COMMITTED;
+		$updTempInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_TEMP, $arrUpdateData);
+		if($updTempInvoiceStatus->Execute($arrUpdateData) === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
 		
 		// apply invoice no. to all CDRs for this invoice
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS, FALSE);
@@ -332,7 +358,20 @@ die();
 		}
 		
 		// update invoice status
-		//TODO!!!! & report
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
+		$arrUpdateData['Status'] = INVOICE_COMMITTED;
+		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_TEMP, $arrUpdateData);
+		if($updInvoiceStatus->Execute($arrUpdateData) === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
 		
 		
 	}

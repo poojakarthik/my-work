@@ -32,7 +32,7 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"						, "Skell_app");
+define("USER_NAME"						, "Billing_app");
 
 // Reporting Messages
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
@@ -47,5 +47,8 @@ define("MSG_BILLING_FOOTER"				, "\nBilling completed in <Time> seconds.");
 define("MSG_COMMIT_TEMP_INVOICES"		, "\nCommitting Temporary Invoices...\t\t\t\t");
 define("MSG_UPDATE_CDRS"				, "Linking CDRs to Invoices...\t\t\t\t");
 define("MSG_REVERT_CDRS"				, "Reverting CDR status...\t\t\t");
+define("MSG_CHECK_TEMP_INVOICES"		, "Checking for failed invoices...\t\t");
+define("MSG_UPDATE_TEMP_INVOICE_STATUS"	, "Updating status on temporary invoices...\t");
+define("MSG_UPDATE_INVOICE_STATUS"		, "Updating status on committed invoices...\t");
 
 ?>

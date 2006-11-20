@@ -88,7 +88,7 @@ define("CDRFILE_NORMALISED"			, 207);
 
 // Invoice Status
 define("INVOICE_TEMP"				, 100);
-define("INVOICE_COMMITED"			, 101);
+define("INVOICE_COMMITTED"			, 101);
 define("INVOICE_DISPUTED"			, 102);
 define("INVOICE_SETTLED"			, 103);
 
