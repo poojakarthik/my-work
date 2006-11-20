@@ -30,14 +30,26 @@
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
 
-//$appBilling->Execute();
-$appBilling->Commit();
-//$appBilling->Revoke();
+// Use GET variables to select which action to take
+switch ($_GET['action'])
+{
+	case "commit":
+		$appBilling->Commit();
+		break;
+	case "revoke":
+		$appBilling->Revoke();
+		break;
+	case "execute":
+	default:
+		// By default, run Execute()
+		$appBilling->Execute();
+		break;
+}
 
 $appBilling->FinaliseReport();
 
 // finished
-echo("\n-- End of Billing --\n");
+echo("\n\n-- End of Billing --\n");
 echo "</pre>";
 die();
 
@@ -140,8 +152,8 @@ die();
 		$selAccounts->Execute();
 		$arrAccounts = $selAccounts->FetchAll();
 
-		// Report
-		$this->_rptBillingReport->AddMessage(MSG_BUILD_TEMP_INVOICES."\n");
+		// Report Title
+		$this->_rptBillingReport->AddMessage("\n".MSG_BILLING_TITLE."\n");
 		
 		// generate an InvoiceRun Id
 		$strInvoiceRun = uniqid();
@@ -153,13 +165,8 @@ die();
 			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
 			if(!$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id'])))
 			{
-				// DEBUG
-				Debug($updCDRs->Error());
-				
-				// Report and fail out
+				// Report and warn
 				$this->_rptBillingReport->AddMessageVariables(MSG_LINE_FAILED, Array('<Reason>' => "WARNING: Cannot link CDRs"), FALSE);
-				//$intFailed++;
-				//continue;
 			}
 			
 			// calculate totals
@@ -248,7 +255,6 @@ die();
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))
 			{
-				Debug($insTempInvoice->Error());
 				// Report and fail out
 				$this->_rptBillingReport->AddMessageVariables(MSG_FAILED.MSG_LINE_FAILED, Array('<Reason>' => "Unable to create temporary invoice"));
 				$intFailed++;
@@ -292,6 +298,9 @@ die();
 	 */
  	function Commit()
  	{
+		// Report Title
+		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TITLE."\n");
+		
 		// FAIL if there are temporary invoices in the invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CHECK_TEMP_INVOICES, FALSE);
 		$selCheckTempInvoices = new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP);
@@ -394,6 +403,9 @@ die();
 	 */
  	function Revoke()
  	{
+		// Report Title
+		$this->_rptBillingReport->AddMessage(MSG_REVOKE_TITLE."\n");
+		
 		// empty temp invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
 		$trqTruncateTempTable = new QueryTruncate();
@@ -447,7 +459,7 @@ die();
  	function FinaliseReport()
  	{
 		// Add Footer
-		$this->_rptBillingReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE."\n".MSG_BILLING_FOOTER, Array('<Time>' => $this->Framework->SplitWatch()));
+		$this->_rptBillingReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE.MSG_BILLING_FOOTER, Array('<Time>' => $this->Framework->SplitWatch()));
 		
 		// Send off the report
 		return $this->_rptBillingReport->Finish();
