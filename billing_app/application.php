@@ -309,7 +309,6 @@ die();
 		}
 		
 		// copy temporary invoices to invoice table
-		//TODO!!!! - add where status
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
 		$siqInvoice = new QuerySelectInto();
 		if(!$siqInvoice->Execute('Invoice', 'InvoiceTemp', "Status = ".INVOICE_TEMP))
@@ -424,7 +423,7 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		//TODO!!!! - clean up Service total & Service type total table 
+		//TODO!!!! - Future: clean up Service total & Service type total table 
 		
 		return TRUE;
 	}
