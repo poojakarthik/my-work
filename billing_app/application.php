@@ -299,7 +299,7 @@ die();
 		if($selCheckTempInvoices->Fetch() !== FALSE)
 		{
 			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => ""));
 			return;
 		}
 		else
@@ -307,7 +307,7 @@ die();
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-				
+		
 		// copy temporary invoices to invoice table
 		//TODO!!!! - add where status
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
@@ -316,7 +316,7 @@ die();
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return;
+			//return;
 		}
 		else
 		{
@@ -328,11 +328,11 @@ die();
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_TEMP_INVOICE_STATUS, FALSE);
 		$arrUpdateData['Status'] = INVOICE_COMMITTED;
 		$updTempInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_TEMP, $arrUpdateData);
-		if($updTempInvoiceStatus->Execute($arrUpdateData) === FALSE)
+		if($updTempInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return;
+			//return;
 		}
 		else
 		{
@@ -361,11 +361,11 @@ die();
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData['Status'] = INVOICE_COMMITTED;
 		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_TEMP, $arrUpdateData);
-		if($updInvoiceStatus->Execute($arrUpdateData) === FALSE)
+		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return;
+			//return;
 		}
 		else
 		{
