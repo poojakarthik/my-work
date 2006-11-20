@@ -410,7 +410,7 @@ abstract class NormalisationModule
 			// fixed width record
 			foreach($this->_arrDefineCarrier as $strKey=>$strValue)
 			{
-				$this->_arrRawData[$strKey] = substr($strCDR, $strValue['Start'], $strValue['Length']);
+				$this->_arrRawData[$strKey] = trim(substr($strCDR, $strValue['Start'], $strValue['Length']));
 			}
 		}
 
