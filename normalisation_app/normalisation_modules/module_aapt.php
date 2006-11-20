@@ -109,9 +109,9 @@ class NormalisationModuleAAPT extends NormalisationModule
 		
 		// define the carrier CDR format
 		$arrDefine ['CC']				['Index']		= 0;	// record type indicator
-		$arrDefine ['CC']				['Validate']	= "^3$";
+		$arrDefine ['CC']				['Validate']	= "/^3$/";
 		$arrDefine ['OriginatingCLI']	['Index']		= 1;	// Blank or 10 digit  number
-		$arrDefine ['OriginatingCLI']	['Validate']	= "^$|^\d{10}$";
+		$arrDefine ['OriginatingCLI']	['Validate']	= "/^$|^\d{10}$/";
 		$arrDefine ['OriginatingCSI']	['Index']		= 2;	// Up to 10 digit numeric
 		$arrDefine ['OriginatingCity']	['Index']		= 3;	// 1-13 characters
 		$arrDefine ['OriginatingState']	['Index']		= 4;	// 2-3 characters
@@ -120,7 +120,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['CallTime']			['Index']		= 5;	// 	HHMMSS
 		$arrDefine ['CallTime']			['Start']		= 0;
 		$arrDefine ['CallTime']			['Length']		= 6;
-		$arrDefine ['CallTime']			['Validate']	= "^[0-2]\d[0-5]\d[0-5]\d$";
+		$arrDefine ['CallTime']			['Validate']	= "/^[0-2]\d[0-5]\d[0-5]\d$/";
 		$arrDefine ['RatePeriod']		['Index']		= 5;	// 	peak/off peak flag
 		$arrDefine ['RatePeriod']		['Start']		= 6;
 		$arrDefine ['RatePeriod']		['Length']		= 1;
@@ -133,7 +133,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['Destination']		['Index']		= 8;	// city called
 		$arrDefine ['NumberDialled']	['Index']		= 9;	// digits dialled by customer
 		$arrDefine ['Duration']			['Index']		= 10;	// HHHH:MM:SS
-		$arrDefine ['Duration']			['Validate']	= "^\d{1-4}:[0-5]\d:[0-5]\d$";
+		$arrDefine ['Duration']			['Validate']	= "/^\d{1-4}:[0-5]\d:[0-5]\d$/";
 		$arrDefine ['CallCharge']		['Index']		= 11;	// DDDDDDDDCC
 		$arrDefine ['BandStep']			['Index']		= 12;	// 4 digit distance step code  
 		$arrDefine ['GSTFlag']			['Index']		= 13;	// One Character flag contains “N”o or “Y”es
@@ -317,7 +317,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 	//------------------------------------------------------------------------//
 	// Constants for NormalisationModuleAAPT
 	//------------------------------------------------------------------------//
-	define("ROW_FNN",	"^1");
-	define("ROW_DATE",	"^2");
-	define("ROW_CDR",	"^3");
+	define("ROW_FNN",	"/^1/");
+	define("ROW_DATE",	"/^2/");
+	define("ROW_CDR",	"/^3/");
 ?>

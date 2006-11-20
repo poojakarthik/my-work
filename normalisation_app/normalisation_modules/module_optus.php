@@ -335,7 +335,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		$strReturn 	= substr($strTime, 0, 4);				// Year
 		$strReturn .=  "-" . substr($strTime, 4, 2);		// Month
 		$strReturn .=  "-" . substr($strTime, 6, 2);		// Day
-		$strReturn .=  substr($strTime, 8, 2) . ":" . substr($strTime, 10, 2) . ":" . substr($strTime, 12, 2);			// Time
+		$strReturn .=  " ".substr($strTime, 8, 2) . ":" . substr($strTime, 10, 2) . ":" . substr($strTime, 12, 2);			// Time
 		
 		return $strReturn;
 	}

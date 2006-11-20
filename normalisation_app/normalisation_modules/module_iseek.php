@@ -163,7 +163,7 @@ class NormalisationModuleIseek extends NormalisationModule
 		$this->ApplyOwnership();
 		
 		// Validation of Normalised data
-		//$this->Validate();
+		$this->Validate();
 		
 		// return output array
 		return $this->_OutputCDR();
