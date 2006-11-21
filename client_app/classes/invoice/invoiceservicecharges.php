@@ -34,6 +34,7 @@
 	 * @prefix	sch
 	 *
 	 * @package	client_app
+	 * @class	InvoiceServiceCharges
 	 * @extends	dataObject
 	 */
 

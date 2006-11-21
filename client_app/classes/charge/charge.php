@@ -35,6 +35,7 @@
 	 * @prefix	crg
 	 *
 	 * @package	client_app
+	 * @class	Charge
 	 * @extends	dataObject
 	 */
 	

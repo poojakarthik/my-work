@@ -34,7 +34,7 @@
 	 * @prefix	act
 	 *
 	 * @package	client_app
-	 * @class	<ClassName||InstanceName>
+	 * @class	Account
 	 * @extends	dataObject
 	 */
 	

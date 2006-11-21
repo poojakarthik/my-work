@@ -37,6 +37,7 @@
 	 *
 	 * @package	client_app
 	 * @extends	dataCollation
+	 * @class	Contacts
 	 */
 
 	class Contacts extends dataCollation

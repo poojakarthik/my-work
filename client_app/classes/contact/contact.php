@@ -37,6 +37,7 @@
 	 *
 	 * @package	client_app
 	 * @extends	dataObject
+	 * @class	Contact
 	 */
 
 	class Contact extends dataObject

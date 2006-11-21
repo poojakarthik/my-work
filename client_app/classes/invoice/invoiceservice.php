@@ -34,6 +34,7 @@
 	 * @prefix	ivs
 	 *
 	 * @package	client_app
+	 * @class	InvoiceService
 	 * @extends	dataObject
 	 */
 	

@@ -35,6 +35,7 @@
 	 *
 	 * @package	client_app
 	 * @extends	dataObject
+	 * @class	AuthenticatedContact
 	 */
 	
 	class AuthenticatedContact extends dataObject

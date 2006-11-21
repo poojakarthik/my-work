@@ -35,6 +35,7 @@
 	 * @prefix	cdr
 	 *
 	 * @package	client_app
+	 * @class	CDR
 	 * @extends	dataObject
 	 */
 	

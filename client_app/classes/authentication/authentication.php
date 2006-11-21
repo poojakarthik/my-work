@@ -37,10 +37,11 @@
 	 * Provides a system for authenticating user login
 	 *
 	 *
-	 * @prefix		ath
+	 * @prefix	ath
 	 *
-	 * @package		client_app
-	 * @class		Authentication
+	 * @package	client_app
+	 * @class	Authentication
+	 * @extends	dataObject
 	 */
 	
 	class Authentication extends dataObject

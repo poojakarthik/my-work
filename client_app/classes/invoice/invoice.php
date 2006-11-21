@@ -34,6 +34,7 @@
 	 * @prefix	inv
 	 *
 	 * @package	client_app
+	 * @class	Invoice
 	 * @extends	dataObject
 	 */
 	
