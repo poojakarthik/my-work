@@ -17,7 +17,7 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		Skeleton_application
+ * @package		Provisioning_application
  * @author		Jared 'flame' Herbohn
  * @version		6.10
  * @copyright	2006 VOIPTEL Pty Ltd
@@ -28,32 +28,32 @@
 echo "<pre>";
 
 // Application entry point - create an instance of the application object
-$appSkel = new ApplicationSkel($arrConfig);
+$appSkel = new ApplicationProvisioning($arrConfig);
 
 // finished
-echo("\n-- End of Skeleton --\n");
+echo("\n-- End of Provisioning --\n");
 echo "</pre>";
 die();
 
 
 
 //----------------------------------------------------------------------------//
-// ApplicationSkel
+// ApplicationProvisioning
 //----------------------------------------------------------------------------//
 /**
- * ApplicationSkel
+ * ApplicationProvisioning
  *
- * Skeleton Module
+ * Provisioning Module
  *
- * Skeleton Module
+ * Provisioning Module
  *
  *
  * @prefix		app
  *
- * @package		skeleton_application
- * @class		ApplicationSkel
+ * @package		Provisioning_application
+ * @class		ApplicationProvisioning
  */
- class ApplicationSkel extends ApplicationBaseClass
+ class ApplicationProvisioning extends ApplicationBaseClass
  {
  	//------------------------------------------------------------------------//
 	// __construct
@@ -74,6 +74,91 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
+	}
+	
+	//------------------------------------------------------------------------//
+	// Import
+	//------------------------------------------------------------------------//
+	/**
+	 * Import()
+	 *
+	 * Import provisioning files into the system
+	 *
+	 * Import provisioning files into the system
+	 * 
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+	function Import()
+	{
+		// get list of provisioning files
+		//TODO!!!!
+		
+		// for each file
+		//TODO!!!!
+		
+			// set status of file
+			//TODO!!!!
+			
+			// read in file line by line
+			//TODO!!!!
+			
+			// for each line
+			//TODO!!!!
+			
+				// find service & current status
+				//TODO!!!!
+			
+				// work out the new status
+				//TODO!!!!
+				
+				// if status has changed
+				//TODO!!!!
+				
+					// set status of service
+					//TODO!!!!
+				
+					// add to status changelog
+					//TODO!!!!
+	}
+	
+	//------------------------------------------------------------------------//
+	// Export
+	//------------------------------------------------------------------------//
+	/**
+	 * Export()
+	 *
+	 * Export provisioning files from the system
+	 *
+	 * Export provisioning files from the system
+	 * 
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+	function Export()
+	{
+		// set up export module objects
+		//TODO!!!!
+		
+		// get a list of requests from the DB
+		//TODO!!!!
+		
+		// for each request
+		//TODO!!!!
+		
+			// build request (use module)
+			//TODO!!!!
+			
+			// send request (use module)
+			//TODO!!!!
+			
+			// set status of request in db
+			//TODO!!!!			
+		
 	}
  }
 
