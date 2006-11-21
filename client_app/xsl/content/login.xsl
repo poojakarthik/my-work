@@ -22,7 +22,14 @@
 				<tr>
 					<th>Username:</th>
 					<td>
-						<input type="text" name="UserName" class="text" />
+						<input type="text" name="UserName" class="text">
+							<xsl:attribute name="value">
+								<xsl:text></xsl:text>
+								<xsl:if test="/Response/AuthenticationAttempt">
+									<xsl:value-of select="/Response/AuthenticationAttempt/UserName" />
+								</xsl:if>
+							</xsl:attribute>
+						</input>
 					</td>
 				</tr>
 				<tr>

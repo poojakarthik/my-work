@@ -102,8 +102,8 @@
 			$Customer ['cc_type'] = null;
 		}
 		
-		$sql = "INSERT INTO AccountGroup (Id) ";
-		$sql .= "VALUES ('" . mysql_escape_string ($row ['CustomerId']) . "')";
+		$sql = "INSERT INTO AccountGroup (Id, Archived) ";
+		$sql .= "VALUES ('" . mysql_escape_string ($row ['CustomerId']) . "', " . ($Customer ['archived'] ? "TRUE" : "FALSE") . ")";
 		$insQuery = mysql_query ($sql);
 			
 		if (!$insQuery)
@@ -139,7 +139,7 @@
 		$sql = "INSERT INTO Account ";
 		$sql .= "(Id, BusinessName, TradingName, ABN, ACN, ";
 		$sql .= "Address1, Address2, Suburb, Postcode, State, Country, ";
-		$sql .= "CustomerGroup, CreditCard, AccountGroup) ";
+		$sql .= "CustomerGroup, CreditCard, AccountGroup, Archived) ";
 		$sql .= "VALUES (";
 			$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
 			$sql .= "'" . mysql_escape_string ($Customer ['businessname']) . "', ";
@@ -154,7 +154,8 @@
 			$sql .= "'AU', ";
 			$sql .= "'" . mysql_escape_string ($Customer ['customer_group']) . "', ";
 			$sql .= "" . (isset ($Customer ['cc_id']) ? "'" . mysql_escape_string ($Customer ['cc_id']) . "'" : "NULL") . ", ";
-			$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "'";
+			$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
+			$sql .= ($Customer ['archived'] ? "TRUE" : "FALSE");
 		$sql .= ")";
 		$insQuery = mysql_query ($sql);
 		
@@ -171,13 +172,13 @@
 		) {
 			$sql = "INSERT INTO Contact ";
 			$sql .= "(AccountGroup, Title, FirstName, LastName, DOB, ";
-			$sql .= "JobTitle, Email, Account, CustomerContact, Phone, Mobile, Fax, UserName, PassWord) ";
+			$sql .= "JobTitle, Email, Account, CustomerContact, Phone, Mobile, Fax, UserName, PassWord, Archived) ";
 			$sql .= "VALUES (";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['title']) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['firstname']) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['lastname']) . "', ";
-				$sql .= "'" . sprintf ("%04d", intval ($Customer ['dob_year'])) . "-" . sprintf ("%02d", intval ($MonthAbbr [trim ($Customer ['dob_month'])])) . "-" . sprintf ("%02d", intval ($Customer ['dob_day'])) . "', ";
+				$sql .= "'" . sprintf ("%04d", intval ($Customer ['dob_year'])) . "-" . sprintf ("%02d", ($Customer ['dob_month'] != "") ? intval ($MonthAbbr [trim ($Customer ['dob_month'])]) : "0") . "-" . sprintf ("%02d", intval ($Customer ['dob_day'])) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['position']) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['admin_email']) . "', ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
@@ -186,7 +187,8 @@
 				$sql .= "'" . mysql_escape_string ($Customer ['mobile']) . "', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['fax']) . "', ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= "SHA1('" . mysql_escape_string ("password") . "') ";
+				$sql .= "SHA1('" . mysql_escape_string ("password") . "'), ";
+				$sql .= ($Customer ['archived'] ? "TRUE" : "FALSE");
 			$sql .= ")";
 			$insQuery = mysql_query ($sql);
 			
@@ -200,14 +202,17 @@
 		
 		if ($Customer ['billing_email'] == "" && $Customer ['admin_email'] != $Customer ['billing_email']) {
 			$sql = "INSERT INTO Contact ";
-			$sql .= "(AccountGroup, FirstName, JobTitle, Email, Account, CustomerContact) ";
+			$sql .= "(AccountGroup, FirstName, JobTitle, Email, Account, CustomerContact, UserName, PassWord, Archived) ";
 			$sql .= "VALUES (";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
 				$sql .= "'Anonymous Billing Contact', ";
 				$sql .= "'Billing Contact', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['billing_email']) . "', ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= "0";
+				$sql .= "0, ";
+				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "-1', ";
+				$sql .= "SHA1('" . mysql_escape_string ("password") . "'), ";
+				$sql .= ($Customer ['archived'] ? "TRUE" : "FALSE");
 			$sql .= ")";
 			$insQuery = mysql_query ($sql);
 			
@@ -221,14 +226,17 @@
 		
 		if ($Customer ['billing_email_2'] == "" && $Customer ['admin_email'] != $Customer ['billing_email_2'] && $Customer ['billing_email'] != $Customer ['billing_email_2']) {
 			$sql = "INSERT INTO Contact ";
-			$sql .= "(AccountGroup, FirstName, JobTitle, Email, Account, CustomerContact) ";
+			$sql .= "(AccountGroup, FirstName, JobTitle, Email, Account, CustomerContact, UserName, Password, Archived) ";
 			$sql .= "VALUES (";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
 				$sql .= "'Anonymous Billing Contact', ";
 				$sql .= "'Billing Contact', ";
 				$sql .= "'" . mysql_escape_string ($Customer ['billing_email']) . "', ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= "0";
+				$sql .= "0, ";
+				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "-1', ";
+				$sql .= "SHA1('" . mysql_escape_string ("password") . "'), ";
+				$sql .= ($Customer ['archived'] ? "TRUE" : "FALSE");
 			$sql .= ")";
 			$insQuery = mysql_query ($sql);
 			
@@ -270,13 +278,14 @@
 		foreach ($Indials as $IndialRange => $IndialNumbers)
 		{
 			$sql = "INSERT INTO Service ";
-			$sql .= "(FNN, ServiceType, Indial100, AccountGroup, Account) ";
+			$sql .= "(FNN, ServiceType, Indial100, AccountGroup, Account, Archived) ";
 			$sql .= "VALUES (";
 				$sql .= "'" . mysql_escape_string ($IndialRange . "00") . "', ";
 				$sql .= "0, ";
 				$sql .= "1, ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "'";
+				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
+				$sql .= ($Customer ['archived'] ? "TRUE" : "FALSE");
 			$sql .= ")";
 			$insQuery = mysql_query ($sql);
 			
@@ -291,13 +300,14 @@
 		foreach ($Customer ['sn'] as $sn_id => $_SN)
 		{
 			$sql = "INSERT INTO Service ";
-			$sql .= "(FNN, ServiceType, Indial100, AccountGroup, Account) ";
+			$sql .= "(FNN, ServiceType, Indial100, AccountGroup, Account, Archived) ";
 			$sql .= "VALUES (";
 				$sql .= "'" . mysql_escape_string ($_SN ['AreaCode'] . $_SN ['Number']) . "', ";
 				$sql .= "0, ";
 				$sql .= "0, ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "'";
+				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
+				$sql .= ($Customer ['archived'] ? "TRUE" : "FALSE");
 			$sql .= ")";
 			$insQuery = mysql_query ($sql);
 			

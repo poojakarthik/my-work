@@ -1,12 +1,96 @@
 <?php
 	
+//----------------------------------------------------------------------------//
+// invoice.php
+//----------------------------------------------------------------------------//
+/**
+ * invoice.php
+ *
+ * Access to Invoices
+ *
+ * Provides Access to Invoices
+ *
+ * @file	invoice.php
+ * @language	PHP
+ * @package	client_app
+ * @author	Bashkim Isai
+ * @version	6.10
+ * @copyright	2006 VOIPTEL Pty Ltd
+ * @license	NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+	
+	//----------------------------------------------------------------------------//
+	// Invoice
+	//----------------------------------------------------------------------------//
+	/**
+	 * Invoice
+	 *
+	 * Provides an Invoice system to allow 
+	 *
+	 * Outlet for someone who is logged into the system to view Invoices which they have access to
+	 *
+	 *
+	 * @prefix	inv
+	 *
+	 * @package	client_app
+	 * @extends	dataObject
+	 */
+	
 	class Invoice extends dataObject
 	{
 		
-		private $_cntContact;
-		private $_actAccount;
+		//------------------------------------------------------------------------//
+		// _cntContact
+		//------------------------------------------------------------------------//
+		/**
+		 * _cntContact
+		 *
+		 * The AuthenticatedContact which the User currently Holds
+		 *
+		 * The AuthenticatedContact object which a user holds that can be used to
+		 * identify their login status.
+		 *
+		 * @type	AuthenticatedContact
+		 *
+		 * @property
+		 */
 		
+		private $_cntContact;
+		
+		//------------------------------------------------------------------------//
+		// _oblarrInvoiceServices
+		//------------------------------------------------------------------------//
+		/**
+		 * _oblarrInvoiceServices
+		 *
+		 * An ObLib Array containing Invoice Services
+		 *
+		 * An ObLib Array that contains a list of services that 
+		 * are attached to this invoice
+		 *
+		 * @type	dataArray
+		 *
+		 * @property
+		 */
+		 
 		private $_oblarrInvoiceServices;
+		
+		//------------------------------------------------------------------------//
+		// Invoice
+		//------------------------------------------------------------------------//
+		/**
+		 * Invoice()
+		 *
+		 * The constructor for Invoices
+		 *
+		 * The constructor for a new Invoice Representation
+		 *
+		 * @param	AuthenticatedContact	$cntContact		The Authenticated Contact logged into the System
+		 * @param	Integer					$intInvoice		The Id of the Invoice being requested
+		 *
+		 * @method
+		 */
 		
 		function __construct (AuthenticatedContact $cntContact, $intInvoice)
 		{
@@ -43,6 +127,21 @@
 			$this->Push ($this->getServices ());
 		}
 		
+		//------------------------------------------------------------------------//
+		// getServices
+		//------------------------------------------------------------------------//
+		/**
+		 * getServices()
+		 *
+		 * Gets a lits of Services that are Specifically Associated with this Invoice
+		 *
+		 * Gets a lits of Services that are Specifically Associated with this Invoice
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
 		public function getServices ()
 		{
 			// Get all the information about services that were charged to this invoice
@@ -59,6 +158,23 @@
 			
 			return $oblarrInvoiceServices;
 		}
+		
+		//------------------------------------------------------------------------//
+		// getService
+		//------------------------------------------------------------------------//
+		/**
+		 * getService()
+		 *
+		 * Gets a Service that is Specifically Associated with this Invoice
+		 *
+		 * Gets a Service that is Specifically Associated with this Invoice
+		 *
+		 * @param	Integer		$Id			The ID of the Service in the Invoice being Viewed
+		 *
+		 * @return	InvoiceService
+		 *
+		 * @method
+		 */
 		
 		public function getService ($Id)
 		{

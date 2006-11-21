@@ -43,7 +43,7 @@
 									<xsl:when test="/Response/Authentication/AuthenticatedContact">
 										Welcome, 
 										<xsl:value-of select="/Response/Authentication/AuthenticatedContact/FirstName" />
-										(<a href="console.php">Console</a>)
+										(<a href="logout.php">Logout</a>)
 									</xsl:when>
 									<xsl:otherwise>
 										Welcome, Guest (<a href="login.php">Login</a>)

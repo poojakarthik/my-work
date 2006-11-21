@@ -249,14 +249,14 @@
 		/**
 		 * getInvoice()
 		 *
-		 * Shortcut for retrieving an Invoice
+		 * Retrieves an invoice.
 		 *
-		 * Shortcut method.
+		 * Returns an Invoice Object of a particular Invoice.
 		 *
-		 * @param	String	$strPassWord	The password we want to check is correct
+		 * @param	String	$intInvoice		The number of the Invoice wishing to be viewed
 		 *
-		 * @return	Boolean					TRUE:	If the PassWord is correct
-		 *									FALSE:	If the PassWord is incorrect
+		 * @return	Invoice					The invoice wishing to be viewed (Authentication
+		 * 									is handed in the Invoice Object.
 		 *
 		 * @method
 		 */
@@ -266,24 +266,65 @@
 			return new Invoice ($this, $intInvoice);
 		}
 		
+		//------------------------------------------------------------------------//
+		// getContacts
+		//------------------------------------------------------------------------//
+		/**
+		 * getContacts()
+		 *
+		 * Retrieves Contacts.
+		 *
+		 * Returns a list of Contacts in the System if the User is a Customer Contact.
+		 *
+		 * @return	mixed					IF: The the AuthenticatedContact is Not a Customer Contact, Return False
+		 *									ELSE: Return the Contacts Object
+		 *
+		 * @method
+		 */
+		
 		public function getContacts ()
 		{
+			// If the person is not a Customer Contact
 			if (!$this->isCustomerContact ())
 			{
+				// Do not return the Contacts object
 				return false;
 			}
 			
+			// We are authenticated - so return the Contacts object
 			return new Contacts ($this);
 		}
 		
-		public function getContact ($Id)
-		{
-			if (!$this->isCustomerContact () && $Id <> $this->Pull ("Id")->getValue ())
+		//------------------------------------------------------------------------//
+		// getContact
+		//------------------------------------------------------------------------//
+		/**
+		 * getContact()
+		 *
+		 * Retrieves Contacts.
+		 *
+		 * Returns a list of Contacts in the System if the User is a Customer Contact.
+		 *
+		 * @param	Integer	$intInvoice		The number of the Invoice wishing to be viewed
+		 *
+		 * @return	mixed					IF: The the AuthenticatedContact is Not a Customer Contact, Return False
+		 *									ELSE: Return the Contacts Object
+		 *
+		 * @method
+		 */
+		
+		public function getContact ($intId)
+		{	
+			// If the person is not a customer contact 
+			// And they are wishing to view a customer which is not themselves
+			if (!$this->isCustomerContact () && $intId <> $this->Pull ("Id")->getValue ())
 			{
-				throw new Exception ("No access to Contact");
+				// Return false because they do not have access to their profile
+				return false;
 			}
 			
-			return new Contact ($this, $Id);
+			// Otherwise Return the Contact wishing to be viewed
+			return new Contact ($this, $intId);
 		}
 	}
 	
