@@ -86,6 +86,13 @@ define("CDRFILE_IMPORT_FAILED"		, 205);
 define("CDRFILE_NORMALISE_FAILED"	, 206);
 define("CDRFILE_NORMALISED"			, 207);
 
+// Provisioning File Handling
+define("PROVFILE_WAITING"			, 250);
+define("PROVFILE_READING"			, 251);
+define("PROVFILE_IGNORE"			, 252);
+define("PROVFILE_COMPLETE"			, 253);
+
+
 // Invoice Status
 define("INVOICE_TEMP"				, 100);
 define("INVOICE_COMMITTED"			, 101);
@@ -115,5 +122,8 @@ define("SERVICE_TYPE_INBOUND"		, 103);
 
 // TAX RATES
 define("TAX_RATE_GST"				, 10);
+
+// Report Messages
+define("MSG_HORIZONTAL_RULE"		, "\n================================================================================\n");
 
 ?>

@@ -74,6 +74,16 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
+		
+		$this->_rptProvisioningReport = new Report("Provisioning Report for ".date("Y-m-d H:i:s", time()), "rich@voiptelsystems.com.au");
+		$this->_rptProvisioningReport->AddMessage(MSG_HORIZONTAL_RULE);
+		
+		/*
+		$this->_arrProvisioningModule[PROV_UNTIEL_STATUS]	= new ProvisioningModuleUnitelStatus();
+		$this->_arrProvisioningModule[PROV_UNTIEL_REJECT]	= new ProvisioningModuleUnitelStatus();
+ 		$this->_arrProvisioningModule[PROV_AAPT_ALL]		= new ProvisioningModuleAAPT();
+ 		$this->_arrProvisioningModule[PROV_OPTUS_ALL]		= new ProvisioningModuleOptus();
+ 		*/
 	}
 	
 	//------------------------------------------------------------------------//
@@ -93,35 +103,70 @@ die();
 	 */
 	function Import()
 	{
+		// Init Statements
+		$selGetFiles		= new StatementSelect("FileImport", "*", "Status = ".PROVFILE_WAITING);
+		$ubiSetFileStatus	= new StatementUpdateById("FileImport", Array('Status' => NULL));
+		$selGetLineStatus	= new StatementSelect("Service", "*", "FNN = <FNN>");
+		$ubiSetLineStatus	= new StatementUpdateById("Service", Array('Status' => NULL));
+		
+		// Report header
+		
+		
 		// get list of provisioning files
-		//TODO!!!!
+		$selGetFiles->Execute();
+		$arrFiles = $selGetFiles->FetchAll();
 		
 		// for each file
-		//TODO!!!!
-		
+		foreach ($arrFiles as $arrFile)
+		{		
 			// set status of file
-			//TODO!!!!
+			$arrStatusData['Status']	= PROVFILE_READING;
+			$arrStatusData['Id']		= $arrFile['Id'];
+			$ubiSetFileStatus->Execute($arrStatusData);
 			
 			// read in file line by line
-			//TODO!!!!
+			$resFile 		= fopen($arrFile['Location'], "r");
+			$arrFileData	= Array();
+			while (!feof($resFile))
+			{
+				// read the data into an indexed array
+				$this->_prvCurrentModule->Add(fgets($resFile));
+			}
+			fclose($resFile);
 			
 			// for each line
-			//TODO!!!!
-			
+			while ($arrLineData = $this->_prvCurrentModule->GetLine())
+			{			
 				// find service & current status
-				//TODO!!!!
-			
+				$arrWhere['FNN'] = $arrLineData['FNN'];
+				$selGetLineStatus->Execute($arrWhere);
+				if(!$arrStatus = $selGetLineStatus->Fetch())
+				{
+					// No FNN match, Report
+					// TODO
+				}
+				
 				// work out the new status
 				//TODO!!!!
+				$intStatus = 0;
 				
 				// if status has changed
-				//TODO!!!!
-				
+				if ($intStatus != $arrStatus['Status'])
+				{				
 					// set status of service
-					//TODO!!!!
+					$ubiSetLineStatus->Execute();
+					$arrStatusData['Status']	= $intStatus;
+					$arrStatusData['Id']		= $arrStatus['Id'];
 				
 					// add to status changelog
 					//TODO!!!!
+				}
+			
+			// set status of file
+			$arrStatusData['Status']	= PROVFILE_COMPLETED;
+			$ubiSetFileStatus->Execute($arrStatusData);
+			}
+		}
 	}
 	
 	//------------------------------------------------------------------------//

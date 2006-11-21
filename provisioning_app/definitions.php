@@ -32,6 +32,11 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"						, "Skell_app");
+define("USER_NAME"						, "Provisioning_app");
+
+// Reporting messages
+define("MSG_PROV_IMPORT"				, "[ Importing Provisioning Files ]\n");
+define("MSG_IMPORT_LINE"				, "Importing <Filename>...");
+define("MSG_IMPORT_REPORT"				, "\nImported <Total> files in <Time> seconds.  <Pass> passed, <Fail> failed.");
 
 ?>
