@@ -53,9 +53,25 @@
 	// input locations
 	$file[] = '';
 	$file[] = '/home/flame/vixen/framework';
+	$file[] = '/home/flame/vixen/collection_app';
+	$file[] = '/home/flame/vixen/collection_app/collection_modules';
 	$file[] = '/home/flame/vixen/normalisation_app';
 	$file[] = '/home/flame/vixen/normalisation_app/normalisation_modules';
+	$file[] = '/home/flame/vixen/rating_app';
+	$file[] = '/home/flame/vixen/billing_app';
+	$file[] = '/home/flame/vixen/provisioning_app';
 	$file[] = '/home/flame/vixen/client_app';
+	$file[] = '/home/flame/vixen/client_app/classes';
+	$file[] = '/home/flame/vixen/client_app/classes/account';
+	$file[] = '/home/flame/vixen/client_app/classes/authentication';
+	$file[] = '/home/flame/vixen/client_app/classes/cdr';
+	$file[] = '/home/flame/vixen/client_app/classes/charge';
+	$file[] = '/home/flame/vixen/client_app/classes/contact';
+	$file[] = '/home/flame/vixen/client_app/classes/invoice';
+	$file[] = '/home/flame/vixen/client_app/classes/oblib';
+	$file[] = '/home/flame/vixen/client_app/classes/service';
+	$file[] = '/home/flame/vixen/client_app/classes/style';
+	$file[] = '/home/flame/vixen/client_app/classes/unbilled';
 
 	// output location (include trailing slash)
 	$output = '/home/flame/vixen/documentation/content/reference/';
@@ -104,7 +120,11 @@
 						{
 							if (is_file($value.'/'.$file))
 							{
-								$read[] = $value.'/'.$file;
+								// ignore backup files
+								if (substr($file, -1,1) != '~')
+								{
+									$read[] = $value.'/'.$file;
+								}
 							}
 						}
 					}
@@ -125,10 +145,17 @@
 				echo "file not found : $value<br>";
 				continue;
 			}
-			foreach($read as $rkey=>$file)
+			if(is_array($read))
 			{
-				$doc_files[] = docu_read_file($file);
-				echo "reading : $file<br>";
+				foreach($read as $rkey=>$file)
+				{
+					$doc_files[] = docu_read_file($file);
+					echo "reading : $file<br>";
+				}
+			}
+			else
+			{
+				echo "empty directory<br>";
 			}
 			echo "DONE<br>";
 		}

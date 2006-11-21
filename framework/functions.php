@@ -44,7 +44,7 @@
 	 * 
 	 * @param	string	$strDirectory		Directory to flush
 	 * 
-	 * @method
+	 * @function
 	 */
  	function CleanDir($strDirectory)
  	{
@@ -74,7 +74,7 @@
 	 * 
 	 * @param	string	$strDirectory		Directory to flush
 	 * 
-	 * @method
+	 * @function
 	 */
  	function RemoveDir($strDirectory)
  	{
@@ -96,7 +96,7 @@
  * @param	string	$strMode	optional mode, html (default) or txt 
  * @return	bool
  *
- * @method
+ * @function
  * @package	framework
  */
 function Debug($mixOutput, $strMode="html")
@@ -148,7 +148,7 @@ function Debug($mixOutput, $strMode="html")
  * @param	string	$strMode	optional mode, html (default) or txt 
  * @return	bool
  *
- * @method
+ * @function
  * @package	framework
  */
 function DebugBacktrace($strMode="html")
@@ -196,7 +196,7 @@ function DebugBacktrace($strMode="html")
  * @return	mixed					string	: Truncated filename
  * 									FALSE	: Invalid filename
  *
- * @method
+ * @function
  * @package	framework
  */
 function TruncateName($strText, $intLength)
