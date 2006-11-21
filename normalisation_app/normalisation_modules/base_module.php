@@ -252,7 +252,7 @@ abstract class NormalisationModule
 		
 		if ($this->_arrNormalisedData["Source"] != "")															// 3
 		{
-			$arrValid[] = preg_match("/^\d+$/", 	$this->_arrNormalisedData["Source"]);
+			$arrValid[] = preg_match("/^\d+$|^\+\d+$/", 	$this->_arrNormalisedData["Source"]);
 		}
 		else
 		{
@@ -261,7 +261,8 @@ abstract class NormalisationModule
 		
 		if ($this->_arrNormalisedData["Destination"] != "")														// 4
 		{
-			$arrValid[] = preg_match("/^\d+$/", 	$this->_arrNormalisedData["Destination"]);
+			$arrValid[] = preg_match("/^\d+$|^\+\d+$/", 	$this->_arrNormalisedData["Destination"]);
+			
 		}
 		else
 		{
@@ -278,7 +279,7 @@ abstract class NormalisationModule
 		{
 			$arrValid[] = true;
 		}
-
+		
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);											// 7
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
 		$arrValid[] = ($this->_arrNormalisedData["Description"] != "");											// 9

@@ -168,7 +168,7 @@ die();
 		foreach($arrCDRList as $arrCDR)
 		{
 			// Report
-			$arrAlises['<SeqNo>'] = str_pad($arrCDR['SequenceNo'], 60, " ");
+			$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
 			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises, FALSE);
 			
 			// set current CDR

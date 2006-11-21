@@ -111,7 +111,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['CC']				['Index']		= 0;	// record type indicator
 		$arrDefine ['CC']				['Validate']	= "/^3$/";
 		$arrDefine ['OriginatingCLI']	['Index']		= 1;	// Blank or 10 digit  number
-		$arrDefine ['OriginatingCLI']	['Validate']	= "/^$|^\d{10}$/";
+		$arrDefine ['OriginatingCLI']	['Validate']	= "/^ $|^\d{10}$/";
 		$arrDefine ['OriginatingCSI']	['Index']		= 2;	// Up to 10 digit numeric
 		$arrDefine ['OriginatingCity']	['Index']		= 3;	// 1-13 characters
 		$arrDefine ['OriginatingState']	['Index']		= 4;	// 2-3 characters
@@ -133,7 +133,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['Destination']		['Index']		= 8;	// city called
 		$arrDefine ['NumberDialled']	['Index']		= 9;	// digits dialled by customer
 		$arrDefine ['Duration']			['Index']		= 10;	// HHHH:MM:SS
-		$arrDefine ['Duration']			['Validate']	= "/^\d{1-4}:[0-5]\d:[0-5]\d$/";
+		$arrDefine ['Duration']			['Validate']	= "/^\d+:[0-5]\d:[0-5]\d$/";
 		$arrDefine ['CallCharge']		['Index']		= 11;	// DDDDDDDDCC
 		$arrDefine ['BandStep']			['Index']		= 12;	// 4 digit distance step code  
 		$arrDefine ['GSTFlag']			['Index']		= 13;	// One Character flag contains “N”o or “Y”es
@@ -215,19 +215,20 @@ class NormalisationModuleAAPT extends NormalisationModule
 		// StartDatetime
 		$mixValue = $this->_FetchRawCDR('CallDate');
 		$mixValue .= $this->_FetchRawCDR('CallTime');
-		$mixValue = ConvertTime($mixValue);
-		$this->_AppendCDR('StartDateTime', $mixValue);
+		$mixValue = $this->ConvertTime($mixValue);
+		$strStartDatetime = $mixValue;
+		$this->_AppendCDR('StartDatetime', $mixValue);
 		
-		// EndDateTime
-	 	$mixValue = date("Y-m-d H:i:s", strtotime($mixValue . " +" . $this->_FetchRawCDR('Duration') . "seconds"));
-		$this->_AppendCDR('EndDateTime', $mixValue);
-	
 		// Units
 		//TODO !!!! - this will only work with timed items (like calls)
 		$arrValue = explode(':', $this->_FetchRawCDR('Duration'));
 		$intValue = ((int)$arrValue[0] * 3600) + ((int)$arrValue[1] * 60) + (int)$arrValue[2]; 
 		$this->_AppendCDR('Units', $intValue);
-		
+
+		// EndDateTime
+	 	$mixValue = date("Y-m-d H:i:s", strtotime("+ " . $intValue . " seconds", strtotime($strStartDatetime)));
+		$this->_AppendCDR('EndDatetime', $mixValue);
+	
 		// Description
 		$mixValue = $this->_FetchRawCDR('OriginatingCity') . " to " . $this->_FetchRawCDR('Destination');
 		$this->_AppendCDR('Description', $mixValue);
@@ -255,7 +256,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		
 		// Cost
 		$mixValue = $this->_FetchRawCDR('CallCharge');
-		//$this->_AppendCDR('Cost', $mixValue);
+		$this->_AppendCDR('Cost', $mixValue);
 
 		//##----------------------------------------------------------------##//
 		
@@ -311,6 +312,34 @@ class NormalisationModuleAAPT extends NormalisationModule
 		}
 		
 		return $strCDR;
+	}
+
+	//------------------------------------------------------------------------//
+	// ConvertTime
+	//------------------------------------------------------------------------//
+	/**
+	 * ConvertTime()
+	 *
+	 * Convert time format
+	 *
+	 * Converts a datetime string from carrier's format to our own
+	 *
+	 * @param	string	$strTime	Datetime string to be converted
+	 * @return	string				Converted Datetime string
+	 *
+	 * @method
+	 */
+	function ConvertTime($strTime)
+	{
+		$strReturn 	= substr($strTime, 6, 4);			// Year
+		$strReturn .= "-" . substr($strTime, 3, 2);		// Month
+		$strReturn .= "-" . substr($strTime, 0, 2);		// Day
+		$strReturn .= " ";
+		$strReturn .= substr($strTime, 10, 2).":";		// Hour
+		$strReturn .= substr($strTime, 12, 2).":";		// Mins
+		$strReturn .= substr($strTime, 14, 2);			// Secs
+		
+		return $strReturn;
 	}
 }
 
