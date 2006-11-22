@@ -148,7 +148,13 @@ die();
 				
 				// work out the new status
 				//TODO!!!!
-				$intStatus = 0;
+				$intStatus = $this->_prvCurrentModule->_CalculateStatus();
+					// look at provisioning requests (output)
+					// if status from line = churn to $carrier
+						// look for prov req for preselection to $carrier
+					// maybe just look last req?
+					
+				
 				
 				// if status has changed
 				if ($intStatus != $arrStatus['Status'])
