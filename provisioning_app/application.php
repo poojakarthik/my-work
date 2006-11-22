@@ -18,8 +18,8 @@
  * @file		application.php
  * @language	PHP
  * @package		Provisioning_application
- * @author		Jared 'flame' Herbohn
- * @version		6.10
+ * @author		Jared 'flame' Herbohn, Rich "Waste" Davis
+ * @version		6.11
  * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -78,12 +78,13 @@ die();
 		$this->_rptProvisioningReport = new Report("Provisioning Report for ".date("Y-m-d H:i:s", time()), "rich@voiptelsystems.com.au");
 		$this->_rptProvisioningReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
-		/*
-		$this->_arrProvisioningModule[PROV_UNTIEL_STATUS]	= new ProvisioningModuleUnitelStatus();
-		$this->_arrProvisioningModule[PROV_UNTIEL_REJECT]	= new ProvisioningModuleUnitelStatus();
- 		$this->_arrProvisioningModule[PROV_AAPT_ALL]		= new ProvisioningModuleAAPT();
- 		$this->_arrProvisioningModule[PROV_OPTUS_ALL]		= new ProvisioningModuleOptus();
- 		*/
+		// Init Provisioning Modules (handle both input and output)
+		$this->_arrProvisioningModule[PROV_UNTIEL_REJECT]	= new ProvisioningModuleUnitelReject(&$this->db);
+		//$this->_arrProvisioningModule[PROV_UNTIEL_STATUS]	= new ProvisioningModuleUnitelStatus(&$this->db);
+		//$this->_arrProvisioningModule[PROV_UNTIEL_OUTPUT]	= new ProvisioningModuleUnitelOutput(&$this->db);
+ 		//$this->_arrProvisioningModule[PROV_AAPT_ALL]		= new ProvisioningModuleAAPT(&$this->db);
+ 		//$this->_arrProvisioningModule[PROV_OPTUS_ALL]		= new ProvisioningModuleOptus(&$this->db);
+ 		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -104,13 +105,15 @@ die();
 	function Import()
 	{
 		// Init Statements
-		$selGetFiles		= new StatementSelect("FileImport", "*", "Status = ".PROVFILE_WAITING);
-		$ubiSetFileStatus	= new StatementUpdateById("FileImport", Array('Status' => NULL));
-		$selGetLineStatus	= new StatementSelect("Service", "*", "FNN = <FNN>");
-		$ubiSetLineStatus	= new StatementUpdateById("Service", Array('Status' => NULL));
+		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".PROVFILE_WAITING);
+		$ubiSetFileStatus		= new StatementUpdateById("FileImport", Array('Status' => NULL));
+		$selGetLineStatus		= new StatementSelect("Service", "*", "FNN = <FNN>");
+		$updSetLineStatus		= new StatementUpdate("Service", "FNN = <FNN>", Array('Status' => NULL));
+		$updUpdateRequestsGain	= new StatementUpdate("Requests", "FNN = <FNN> AND Carrier = <Carrier> AND RequestType = ".REQUEST_GAIN, Array('GainDate' => NULL));
+		$updUpdateRequestsLoss	= new StatementUpdate("Requests", "FNN = <FNN> AND Carrier = <Carrier> AND RequestType = ".REQUEST_LOSS, Array('LossDate' => NULL));
 		
 		// Report header
-		
+		// TODO
 		
 		// get list of provisioning files
 		$selGetFiles->Execute();
@@ -135,6 +138,19 @@ die();
 			fclose($resFile);
 			
 			// for each line
+			while ($this->_prvCurrentModule->NextLine() !== FALSE)
+			{
+				// update requests table
+				$this->_prvCurrentModule->UpdateRequests();
+
+
+
+				
+				// update service table
+				$this->_prvCurrentModule->UpdateService();				
+			}
+			
+			/*
 			while ($arrLineData = $this->_prvCurrentModule->GetLine())
 			{			
 				// find service & current status
@@ -153,25 +169,12 @@ die();
 					// if status from line = churn to $carrier
 						// look for prov req for preselection to $carrier
 					// maybe just look last req?
+			}		
+			*/
 					
-				
-				
-				// if status has changed
-				if ($intStatus != $arrStatus['Status'])
-				{				
-					// set status of service
-					$ubiSetLineStatus->Execute();
-					$arrStatusData['Status']	= $intStatus;
-					$arrStatusData['Id']		= $arrStatus['Id'];
-				
-					// add to status changelog
-					//TODO!!!!
-				}
-			
 			// set status of file
 			$arrStatusData['Status']	= PROVFILE_COMPLETED;
 			$ubiSetFileStatus->Execute($arrStatusData);
-			}
 		}
 	}
 	
@@ -192,25 +195,42 @@ die();
 	 */
 	function Export()
 	{
-		// set up export module objects
-		//TODO!!!!
+		// Init prepared statements
+		$selGetRequests		= new StatementSelect("Request", "*", "Status = ".REQUEST_WAITING);
+		$ubiUpdateRequest	= new StatementUpdateById("Request");
 		
 		// get a list of requests from the DB
-		//TODO!!!!
+		$arrRequests = $selGetRequests->Execute();
 		
 		// for each request
-		//TODO!!!!
-		
-			// build request (use module)
-			//TODO!!!!
+		foreach($arrRequests as $arrRequest)
+		{
+			switch ($arrRequest['Carrier'])
+			{
+				case CARRIER_UNITEL:
+					$this->_prvCurrentModule = $this->_arrProvisioningModule[PROV_UNTIEL_OUTPUT];
+					break;
+				case CARRIER_OPTUS:
+					$this->_prvCurrentModule = $this->_arrProvisioningModule[PROV_OPTUS_ALL];
+					break;
+				case CARRIER_AAPT:
+					$this->_prvCurrentModule = $this->_arrProvisioningModule[PROV_AAPT_ALL];
+					break;
+				default:
+					// There is a problem, Report
+			}
+			
+			// build request
+			$this->_prvCurrentModule()->BuildRequest();
 			
 			// send request (use module)
-			//TODO!!!!
+			$this->_prvCurrentModule()->SendRequest();
 			
 			// set status of request in db
-			//TODO!!!!
-		
-		
+			$arrRequest['Status']		= REQUEST_SENT;
+			$arrRequest['RequestDate']	= date("Y-m-d H:i:s");
+			$ubiUpdateRequest->Execute($arrRequest);
+		}		
 	}
  }
 

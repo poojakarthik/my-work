@@ -78,6 +78,22 @@
  * @package	framework
  */
  $strWebDir		= ""; 
+ 
+//----------------------------------------------------------------//
+// strModuleDir
+//----------------------------------------------------------------//
+/**
+ * strModuleDir
+ *
+ * full path to the provisioning module web directory
+ *
+ * full path to the provisioning module web directory, including trailing slash /
+ *
+ * @type	string
+ * @variable
+ * @package	framework
+ */
+ $strModuleDir		= strApplicationDir."/modules/"; 
 
 
 
@@ -99,6 +115,13 @@ require_once($strFrameworkDir."exception_vixen.php");
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
+
+// load modules
+require_once($strModuleDir."base_module.php");
+require_once($strModuleDir."module_unitel_reject.php");
+require_once($strModuleDir."module_unitel_status.php");
+require_once($strModuleDir."module_optus.php");
+require_once($strModuleDir."module_aapt.php");
 
 // load application 
 require_once($strApplicationDir."definitions.php");
