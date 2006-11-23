@@ -6,16 +6,16 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// module_unitel_reject
+// module_unitel
 //----------------------------------------------------------------------------//
 /**
- * module_unitel_reject
+ * module_unitel
  *
- * Unitel Rejection Module for the provisioning engine
+ * Unitel Module for the provisioning engine
  *
- * Unitel Rejection Module for the provisioning engine
+ * Unitel Module for the provisioning engine
  *
- * @file		module_unitel_reject.php
+ * @file		module_unitel.php
  * @language	PHP
  * @package		provisioning
  * @author		Rich "Waste" Davis
