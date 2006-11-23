@@ -134,19 +134,15 @@ die();
 			{
 				// read the data into an indexed array
 				$this->_prvCurrentModule->Add(fgets($resFile));
-			}
-			fclose($resFile);
-			
-			// for each line
-			while ($this->_prvCurrentModule->NextLine() !== FALSE)
-			{
+				
 				// update requests table
 				$this->_prvCurrentModule->UpdateRequests();
 				
 				// update service table
-				$this->_prvCurrentModule->UpdateService();				
+				$this->_prvCurrentModule->UpdateService();	
 			}
-			
+			fclose($resFile);
+
 			// set status of file
 			$arrStatusData['Status']	= PROVFILE_COMPLETED;
 			$ubiSetFileStatus->Execute($arrStatusData);
@@ -172,7 +168,7 @@ die();
 	{
 		// Init prepared statements
 		$selGetRequests		= new StatementSelect("Request", "*", "Status = ".REQUEST_WAITING);
-		$ubiUpdateRequest	= new StatementUpdateById("Request");
+		$ubiUpdateRequest	= new StatementUpdateById("Request", Array("Status" => " "));
 		
 		// get a list of requests from the DB
 		$arrRequests = $selGetRequests->Execute();
@@ -196,16 +192,21 @@ die();
 			}
 			
 			// build request
-			$this->_prvCurrentModule()->BuildRequest();
-			
-			// send request
-			$this->_prvCurrentModule()->SendRequest();
-			
-			// set status of request in db
-			$arrRequest['Status']		= REQUEST_SENT;
-			$arrRequest['RequestDate']	= date("Y-m-d H:i:s");	// FIXME
+			if(!$this->_prvCurrentModule()->BuildRequest($arrRequest))
+			{
+				//TODO!!!! - log error & set status
+			}
+			else
+			{
+				// set status of request in db
+				$arrRequest['Status']		= REQUEST_SENT;
+			}
 			$ubiUpdateRequest->Execute($arrRequest);
-		}		
+		}
+		//for each carrier
+		//TODO!!!!
+				// send request
+				$this->_prvCurrentModule()->SendRequest();
 	}
  }
 
