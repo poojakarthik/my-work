@@ -45,6 +45,15 @@ define("CDR_OPTUS_STANDARD"			, 3);
 define("CDR_AAPT_STANDARD"			, 4);
 define("CDR_ISEEK_STANDARD"			, 5);
 
+// Provisioning Types
+define("PRV_UNITEL_DAILY_ORDER_RPT"		, 100);
+define("PRV_UNITEL_DAILY_STATUS_RPT"	, 101);
+define("PRV_UNITEL_BASKETS_RPT"			, 102);
+define("PRV_UNITEL_OUT"					, 103);
+define("PRV_OPTUS_ALL"					, 104);
+define("PRV_AAPT_ALL"					, 105);
+
+
 // Carriers
 define("CARRIER_UNITEL"	, 1);
 define("CARRIER_OPTUS"	, 2);
