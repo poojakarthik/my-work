@@ -336,7 +336,6 @@ abstract class NormalisationModule
 	 * @return	string					Modified FNN
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */	
 	protected function RemoveAusCode($strFNN)
 	{

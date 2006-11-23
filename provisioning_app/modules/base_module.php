@@ -43,6 +43,9 @@
  */
  abstract class ProvisioningModule
  {
+	protected $_arrData;
+	protected $_arrDefineInput;
+	
 	//------------------------------------------------------------------------//
 	// __construct()
 	//------------------------------------------------------------------------//
@@ -61,6 +64,9 @@
  	{
 		// Set up this->db
 		$this->db = $ptrDB;
+		
+		// Default delimeter is NULL (fixedwidth)
+		$this->_strDelimiter;
  	}
  	
  	//------------------------------------------------------------------------//
@@ -98,6 +104,22 @@
 		return next($this->_arrLines);
  	}
 
+ 	//------------------------------------------------------------------------//
+	// NewFile()
+	//------------------------------------------------------------------------//
+	/**
+	 * NewFile()
+	 *
+	 * Clears the FileData array
+	 *
+	 * Clears the FileData array
+	 *
+	 * @method
+	 */
+ 	function NewFile()
+ 	{
+		$this->_arrData = Array();
+ 	}
 
  	//------------------------------------------------------------------------//
 	// UpdateRequests()
@@ -163,8 +185,51 @@
 	 * @method
 	 */
  	abstract function SendRequest();	 	
+
+
+	//------------------------------------------------------------------------//
+	// _SplitLine
+	//------------------------------------------------------------------------//
+	/**
+	 * _SplitLine()
+	 *
+	 * Split a Line into an array
+	 *
+	 * Split a Line into an array
+	 * 
+	 * @param	string		strLine		Line to split
+	 *
+	 * @return	array					Split data					
+	 *
+	 * @method
+	 */
+	 protected function _SplitLine($strLine)
+	 {
+		// build the array
+	 	if ($this->_strDelimiter)
+		{
+			// delimited record
+			$arrRawData = explode($this->_strDelimiter, rtrim($strLine, "\n"));
+			foreach($this->_arrDefineInput as $strKey=>$strValue)
+			{
+				$_arrData[$strKey] = $arrRawData[$strValue['Index']];
+				// delimited fields may have fixed width contents
+				if (isset($strValue['Start']) && $strValue['Length'])
+				{
+					$_arrData[$strKey] = substr($_arrData[$strKey], $strValue['Start'], $strValue['Length']);
+				}
+			}
+		}
+		else
+		{
+			// fixed width record
+			foreach($this->_arrDefineInput as $strKey=>$strValue)
+			{
+				$_arrData[$strKey] = trim(substr($strLine, $strValue['Start'], $strValue['Length']));
+			}
+		}
+		
+		return $_arrData;
+	 }
  }
-
-
-
 ?>

@@ -228,6 +228,25 @@ function TruncateName($strText, $intLength)
 	return str_pad($strTruncated, $intLength);
 }
 
-
+//------------------------------------------------------------------------//
+// RemoveAusCode
+//------------------------------------------------------------------------//
+/**
+ * RemoveAusCode()
+ *
+ * Removes +61 from FNNs
+ *
+ * Removes the +61 from the start of an FNN, replacing it with a 0
+ * 
+ * @param	string		$strFNN		FNN to be parsed
+ *
+ * @return	string					Modified FNN
+ *
+ * @method
+ */	
+function RemoveAusCode($strFNN)
+{
+	return str_replace("+61", "0", $strFNN);
+}
 
 ?>

@@ -39,4 +39,10 @@ define("MSG_PROV_IMPORT"				, "[ Importing Provisioning Files ]\n");
 define("MSG_IMPORT_LINE"				, "Importing <Filename>...");
 define("MSG_IMPORT_REPORT"				, "\nImported <Total> files in <Time> seconds.  <Pass> passed, <Fail> failed.");
 
+// Success/Failure codes
+define("PRV_SUCCESS"					, 100);
+define("PRV_TRAILER_RECORD"				, 101);
+define("PRV_HEADER_RECORD"				, 102);
+
+
 ?>

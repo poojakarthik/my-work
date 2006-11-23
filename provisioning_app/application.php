@@ -79,12 +79,9 @@ die();
 		$this->_rptProvisioningReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Init Provisioning Modules (handle both input and output)
-		$this->_arrProvisioningModule[PROV_UNTIEL_REJECT]	= new ProvisioningModuleUnitelReject(&$this->db);
-		//$this->_arrProvisioningModule[PROV_UNTIEL_STATUS]	= new ProvisioningModuleUnitelStatus(&$this->db);
-		//$this->_arrProvisioningModule[PROV_UNTIEL_OUTPUT]	= new ProvisioningModuleUnitelOutput(&$this->db);
- 		//$this->_arrProvisioningModule[PROV_AAPT_ALL]		= new ProvisioningModuleAAPT(&$this->db);
- 		//$this->_arrProvisioningModule[PROV_OPTUS_ALL]		= new ProvisioningModuleOptus(&$this->db);
- 		
+		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_STATUS_RPT]	= new ProvisioningModuleUnitel(&$this->db);
+ 		//$this->_arrProvisioningModules[PROV_AAPT_ALL]				= new ProvisioningModuleAAPT(&$this->db);
+ 		//$this->_arrProvisioningModules[PROV_OPTUS_ALL]				= new ProvisioningModuleOptus(&$this->db);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -127,6 +124,9 @@ die();
 			$arrStatusData['Id']		= $arrFile['Id'];
 			$ubiSetFileStatus->Execute($arrStatusData);
 			
+			// Set current module
+			$this->_prvCurrentModule = $this->_arrProvisioningModules[$arrFile['FileType']];
+			
 			// read in file line by line
 			$resFile 		= fopen($arrFile['Location'], "r");
 			$arrFileData	= Array();
@@ -142,36 +142,11 @@ die();
 			{
 				// update requests table
 				$this->_prvCurrentModule->UpdateRequests();
-
-
-
 				
 				// update service table
 				$this->_prvCurrentModule->UpdateService();				
 			}
 			
-			/*
-			while ($arrLineData = $this->_prvCurrentModule->GetLine())
-			{			
-				// find service & current status
-				$arrWhere['FNN'] = $arrLineData['FNN'];
-				$selGetLineStatus->Execute($arrWhere);
-				if(!$arrStatus = $selGetLineStatus->Fetch())
-				{
-					// No FNN match, Report
-					// TODO
-				}
-				
-				// work out the new status
-				//TODO!!!!
-				$intStatus = $this->_prvCurrentModule->_CalculateStatus();
-					// look at provisioning requests (output)
-					// if status from line = churn to $carrier
-						// look for prov req for preselection to $carrier
-					// maybe just look last req?
-			}		
-			*/
-					
 			// set status of file
 			$arrStatusData['Status']	= PROVFILE_COMPLETED;
 			$ubiSetFileStatus->Execute($arrStatusData);
@@ -208,13 +183,13 @@ die();
 			switch ($arrRequest['Carrier'])
 			{
 				case CARRIER_UNITEL:
-					$this->_prvCurrentModule = $this->_arrProvisioningModule[PROV_UNTIEL_OUTPUT];
+					$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_UNITEL_OUT];
 					break;
 				case CARRIER_OPTUS:
-					$this->_prvCurrentModule = $this->_arrProvisioningModule[PROV_OPTUS_ALL];
+					$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_OPTUS_ALL];
 					break;
 				case CARRIER_AAPT:
-					$this->_prvCurrentModule = $this->_arrProvisioningModule[PROV_AAPT_ALL];
+					$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_AAPT_ALL];
 					break;
 				default:
 					// There is a problem, Report
@@ -223,12 +198,12 @@ die();
 			// build request
 			$this->_prvCurrentModule()->BuildRequest();
 			
-			// send request (use module)
+			// send request
 			$this->_prvCurrentModule()->SendRequest();
 			
 			// set status of request in db
 			$arrRequest['Status']		= REQUEST_SENT;
-			$arrRequest['RequestDate']	= date("Y-m-d H:i:s");
+			$arrRequest['RequestDate']	= date("Y-m-d H:i:s");	// FIXME
 			$ubiUpdateRequest->Execute($arrRequest);
 		}		
 	}
