@@ -78,6 +78,8 @@
 
 		
 		
+		
+		
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1041,6 +1043,15 @@
 		
 								
 	// Define Columns
+	$strName = "Label";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
 	$strName = "Title";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(100)";
@@ -1108,6 +1119,24 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "SessionId";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(40)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "SessionExpire";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
 					
 	// Save Table Define
@@ -2747,6 +2776,15 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
 		
+								
+	// Define Columns
+	$strName = "CreatedOn";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
+		
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
@@ -3109,5 +3147,6 @@
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+	
 	
 ?>

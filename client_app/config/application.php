@@ -25,26 +25,28 @@
  *
  */
 // load the object library oblib
-require_once($strWebDir."classes/oblib/data.abstract.php");
+require_once($strObLibDir."data.abstract.php");
 // load the oblib primitives
-require_once($strWebDir."classes/oblib/dataPrimitive/dataPrimitive.abstract.php");
-require_once($strWebDir."classes/oblib/dataPrimitive/dataBoolean.class.php");
-require_once($strWebDir."classes/oblib/dataPrimitive/dataCDATA.class.php");
-require_once($strWebDir."classes/oblib/dataPrimitive/dataFloat.class.php");
-require_once($strWebDir."classes/oblib/dataPrimitive/dataInteger.class.php");
-require_once($strWebDir."classes/oblib/dataPrimitive/dataString.class.php");
-require_once($strWebDir."classes/oblib/dataPrimitive/dataDuration.class.php");
+require_once($strObLibDir."dataPrimitive/dataPrimitive.abstract.php");
+require_once($strObLibDir."dataPrimitive/dataBoolean.class.php");
+require_once($strObLibDir."dataPrimitive/dataCDATA.class.php");
+require_once($strObLibDir."dataPrimitive/dataFloat.class.php");
+require_once($strObLibDir."dataPrimitive/dataInteger.class.php");
+require_once($strObLibDir."dataPrimitive/dataString.class.php");
+require_once($strObLibDir."dataPrimitive/dataDuration.class.php");
 // load the oblib objects
-require_once($strWebDir."classes/oblib/dataObject/dataObject.abstract.php");
-require_once($strWebDir."classes/oblib/dataObject/dataDate.class.php");
-require_once($strWebDir."classes/oblib/dataObject/dataTime.class.php");
-require_once($strWebDir."classes/oblib/dataObject/dataDatetime.class.php");
+require_once($strObLibDir."dataObject/dataObject.abstract.php");
+require_once($strObLibDir."dataObject/dataDate.class.php");
+require_once($strObLibDir."dataObject/dataTime.class.php");
+require_once($strObLibDir."dataObject/dataDatetime.class.php");
 // load the oblib multiples
-require_once($strWebDir."classes/oblib/dataMultiple/dataArray.class.php");
-require_once($strWebDir."classes/oblib/dataMultiple/dataCollation.abstract.php");
-require_once($strWebDir."classes/oblib/dataMultiple/dataCollection.abstract.php");
-require_once($strWebDir."classes/oblib/dataMultiple/dataEnumerative.abstract.php");
-require_once($strWebDir."classes/oblib/dataMultiple/dataSample.class.php");
+require_once($strObLibDir."dataMultiple/dataArray.class.php");
+require_once($strObLibDir."dataMultiple/dataCollation.abstract.php");
+require_once($strObLibDir."dataMultiple/dataCollection.abstract.php");
+require_once($strObLibDir."dataMultiple/dataEnumerative.abstract.php");
+require_once($strObLibDir."dataMultiple/dataSample.class.php");
+// load the ObLib XSLT stylesheet module
+require_once($strObLibDir."style.php");
 
 // load accounts
 require_once($strWebDir."classes/cdr/cdr.php");
@@ -64,8 +66,6 @@ require_once($strWebDir."classes/authentication/authentication.php");
 require_once($strWebDir."classes/contact/authenticatedcontact.php");
 require_once($strWebDir."classes/contact/contact.php");
 require_once($strWebDir."classes/contact/contacts.php");
-// load the XSLT stylesheet module
-require_once($strWebDir."classes/style/style.php");
 
 $athAuthentication = new Authentication ();
 

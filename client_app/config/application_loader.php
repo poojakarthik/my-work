@@ -66,6 +66,22 @@
  $strApplicationDir		= "config/"; 
  
 //----------------------------------------------------------------//
+// strObLibDir
+//----------------------------------------------------------------//
+/**
+ * strObLibDir
+ *
+ * full path to the oblib class directory
+ *
+ * full path to the oblib class directory, including trailing slash /
+ *
+ * @type	string
+ * @variable
+ * @package	framework
+ */
+ $strObLibDir		= "../oblib/"; 
+ 
+//----------------------------------------------------------------//
 // strWebDir
 //----------------------------------------------------------------//
 /**
