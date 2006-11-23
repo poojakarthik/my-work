@@ -113,7 +113,7 @@
 	 *
 	 * @method
 	 */
- 	abstract function NextLine();
+ 	abstract function UpdateRequests();
  	
  	//------------------------------------------------------------------------//
 	// UpdateService()
@@ -129,8 +129,40 @@
 	 *
 	 * @method
 	 */
- 	abstract function NextLine();
- 	 	
+ 	abstract function UpdateService();
+ 
+ 
+  	//------------------------------------------------------------------------//
+	// BuildRequest()
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildRequest()
+	 *
+	 * Builds a request file
+	 *
+	 * Builds a request file to be sent off, based on info from the DB
+	 *
+	 * @return		boolean
+	 *
+	 * @method
+	 */
+ 	abstract function BuildRequest();
+ 	
+  	//------------------------------------------------------------------------//
+	// SendRequest()
+	//------------------------------------------------------------------------//
+	/**
+	 * SendRequest()
+	 *
+	 * Sends the current request
+	 *
+	 * Sends the current request
+	 *
+	 * @return		boolean
+	 *
+	 * @method
+	 */
+ 	abstract function SendRequest();	 	
  }
 
 
