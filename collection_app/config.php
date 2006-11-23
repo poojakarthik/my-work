@@ -45,18 +45,21 @@
 		*/
 		
 		// Unitel Definition
-		$arrConfig['Define']["Unitel"]	["Name"]						= "Unitel";
-		$arrConfig['Define']["Unitel"]	["Carrier"]						= CARRIER_UNITEL;
- 		$arrConfig['Define']["Unitel"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Unitel"]	["Server"]						= "rslcom.com.au";
- 		$arrConfig['Define']["Unitel"]	["Username"]					= "sp058";
- 		$arrConfig['Define']["Unitel"]	["PWord"]						= "BuzzaBee06*#";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]						= "cdrbatches/";
+		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel";
+		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
+ 		$arrConfig['Define']["Unitel"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["Unitel"]	["Server"]							= "rslcom.com.au";
+ 		$arrConfig['Define']["Unitel"]	["Username"]						= "sp058";
+ 		$arrConfig['Define']["Unitel"]	["PWord"]							= "BuzzaBee06*#";
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "cdrbatchesoffnet/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "mobilecdrbatches/";
- 		$arrConfig['Define']["Unitel"]	["FinalDir"]					= DESTINATION_ROOT.'unitel/';
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]		= CDR_UNTIEL_RSLCOM;
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]	= CDR_UNTIEL_COMMANDER;
+ 		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNTIEL_RSLCOM;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNTIEL_COMMANDER;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
 
 		// Optus Definition
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
