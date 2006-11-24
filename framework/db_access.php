@@ -429,12 +429,7 @@
 				$strOperator		= $strDefaultOperator;
 				
 				// check & modify value
-				if ($this->intSQLMode == SQL_STATEMENT)
-				{
-					// prepared statement constructors don't use the value
-					$strValue		= "<$strKey>";
-				}
-				elseif (is_array($strValue))
+				if (is_array($strValue))
 				{
 					// we may have been passed an array as value
 					if ($strValue['Operator'])
@@ -443,7 +438,12 @@
 					}
 					$strValue		= $strValue['Value'];
 				}
-				
+				if ($this->intSQLMode == SQL_STATEMENT)
+				{
+					// prepared statement constructors don't use the value
+					$strValue		= "<$strKey>";
+				}
+			
 				// add element
 				$arrWhere[] = "$strKey $strOperator $strValue";
 			}
