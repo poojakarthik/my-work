@@ -449,7 +449,10 @@
 			}
 			
 			// join elements
-			$strWhere = implode($strJoiner, $arrWhere);
+			if (is_array($arrWhere))
+			{
+				$strWhere = implode($strJoiner, $arrWhere);
+			}
 		}
 		else
 		{
