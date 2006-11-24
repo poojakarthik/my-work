@@ -65,45 +65,29 @@
 		// Set up this->db
 		$this->db = $ptrDB;
 		
+		$this->_selMatchRequest = new StatementSelect("Request", "*",
+			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "Date DESC", "1");
+		
 		// Default delimeter is NULL (fixedwidth)
 		$this->_strDelimiter;
  	}
  	
  	//------------------------------------------------------------------------//
-	// Add()
+	// Normalise()
 	//------------------------------------------------------------------------//
 	/**
-	 * Add()
+	 * Normalise()
 	 *
-	 * Adds a line to the module from a file
+	 * Normalises a line
 	 *
-	 * Parses and adds a "line" to the module from a line status file.
+	 * Normalises a line, and sets it as the "current" line
 	 *
 	 * @return		boolean
 	 *
 	 * @method
 	 */
- 	abstract function Add($strLine);
+ 	abstract function Normalise($strLine);
  	
- 	//------------------------------------------------------------------------//
-	// NextLine()
-	//------------------------------------------------------------------------//
-	/**
-	 * NextLine()
-	 *
-	 * Advances to next "line" in the module
-	 *
-	 * Advances to next "line" in the module
-	 *
-	 * @return		boolean
-	 *
-	 * @method
-	 */
- 	function NextLine()
- 	{
-		return next($this->_arrLines);
- 	}
-
  	//------------------------------------------------------------------------//
 	// NewFile()
 	//------------------------------------------------------------------------//

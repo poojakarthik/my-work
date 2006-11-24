@@ -117,20 +117,20 @@
  	}
 
  	//------------------------------------------------------------------------//
-	// Add()
+	// Normalise()
 	//------------------------------------------------------------------------//
 	/**
-	 * Add()
+	 * Normalise()
 	 *
-	 * Adds a line to the module from a file
+	 * Normalises a line
 	 *
-	 * Parses and adds a "line" to the module from a line status file.
+	 * Normalises a line, and sets it as the "current" line
 	 *
-	 * @return		int				Success/Failure code
+	 * @return		int				Error/Success Code
 	 *
 	 * @method
 	 */
- 	function Add($strLine)
+ 	function Normalise($strLine)
 	{
 		// Split the line
 		$arrLineData = $this->_SplitLine($strLine);
@@ -146,16 +146,91 @@
 		}
 		
 		// Line Status
-		$arrParsedData['LineStatus']	= $this->_DetermineStatus($arrLineData['RecordType']);
+		$arrRequestData	['LineStatus']	= $this->_DetermineStatus($arrLineData['RecordType']);
 		
-		// FNN
-		$arrParsedData['FNN']			= RemoveAusCode($arrLineData['ServiceNo']);
+		// ServiceId
+		$arrRequestData	['ServiceId']	= $this->_GetServiceId(RemoveAusCode($arrLineData['ServiceNo']));
+		$arrLogData		['ServiceId']	= $arrRequestData['ServiceId'];
 		
 		// Date
-		$arrParsedData['Date']			= $arrLineData['EffectiveDate'];
+		$arrRequestData	['Date']		= $this->_ConvertDate($arrLineData['EffectiveDate']);
+		$arrLogData		['Date']		= date("Y-m-d");
 		
+		// Carrier
+		$arrLogData		['Carrier']		= CARRIER_UNITEL;
+		$arrRequestData	['Carrier']		= CARRIER_UNITEL;
+		$arrServiceData	['Carrier']		= CARRIER_UNITEL;
+		
+		// Request Type
+		switch ($arrLineData['OrderType'])
+		{
+			case "11":	// Migration Request
+			case "12":	// Churn to eBill
+				$arrRequestData['RequestType']	= REQUEST_FULL_SERVICE;		// FIXME: Undefined
+				break;
+			case "13":	// Virtual PreSelection
+				$arrRequestData['RequestType']	= REQUEST_PRESELECTION;		// FIXME: Undefined
+				break;
+			case "00":
+			default:
+				// Either unhandled or not required
+				break;
+		}
+		
+		// Default value for Log's Type field is "Other"
+		$arrLogData['Type']						= LINE_ACTION_OTHER;		// FIXME: Undefined
+		
+		switch ($arrLineData['RecordType'])
+		{
+			case "S":	// Gain - new service
+			case "G":	// Gain - reversal
+				$arrRequestData	['RequestType']	= REQUEST_FULL_SERVICE;		// FIXME: Undefined
+				$arrServiceData	['LineStatus']	= LINE_ACTIVE;				// FIXME: Undefined
+				$arrLogData		['Type']		= LINE_ACTION_GAIN;			// FIXME: Undefined
+				
+				// Attempt to match request
+				break;
+			case "E":	// Loss - commercial churn
+			case "O":	// Loss - other ASD
+			case "L":	// Loss - other CSP
+				$arrServiceData	['LineStatus']	= LINE_ACTIVE;				// FIXME: Undefined
+				$arrLogData		['Type']		= LINE_ACTION_LOSS;			// FIXME: Undefined
+				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);	// FIXME: Undefined
+				
+				// Attempt to match request
+				break;
+			case "X":	// Loss - cancellation
+				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;			// FIXME: Undefined
+				$arrLogData		['Type']		= LINE_ACTION_LOSS;			// FIXME: Undefined
+				$arrLogData		['Description']	= DESCRIPTION_CANCELLED;	// FIXME: Undefined
+				break;
+			case "N":	// Change - number
+			case "M":	// Change - address
+			case "B":	// Change - number & address
+				$arrLogData		['Type']		= LINE_ACTION_OTHER;		// FIXME: Undefined
+				break;
+			case "P":	// Order pending with Telstra
+			case "W":	// Order waiting to be processed
+			case "A":	// Order actioned by WeBill
+				$arrRequestData	['Status']		= REQUEST_STATUS_PENDING;	// FIXME: Undefined
+				break;
+			case "D":	// Order disqualified by WeBill
+			case "R":	// Order rejected by Telstra
+				$arrRequestData	['Status']		= REQUEST_STATUS_REJECTED;	// FIXME: Undefined
+				break;
+			case "C":	// Order completed by Telstra
+				$arrRequestData	['Status']		= REQUEST_STATUS_COMPLETED;	// FIXME: Undefined
+				break;
+			default:	// Unknown Record Type
+				return PRV_BAD_RECORD_TYPE;									// FIXME: Undefined
+		}
+				
 		// Add split line to File data array
-		$this->_arrFileData[] = $arrParsedData;
+		$this->_arrRequest	= $arrRequestData;
+		$this->_arrService	= $arrServiceData;
+		$this->_arrLog		= $arrLogData;
+		
+		return PRV_SUCCESS;
 	} 	
 
  	//------------------------------------------------------------------------//
@@ -174,7 +249,18 @@
 	 */
  	function UpdateRequests()
 	{
-		// TODO
+		// Try to match a request
+		$arrData['Service']		= $this->_arrRequest['Service'];
+		$arrData['RequestType']	= $this->_arrRequest['RequestType'];
+		$arrData['Carrier']		= CARRIER_UNITEL;
+		$this->_selMatchRequest->Execute();
+		
+		// Is there a request match?
+		if ($arrResult = $this->_selMatchRequest->Fetch())
+		{
+			// Found a match, so update
+			// TODO
+		}
 	} 	
  	
  	//------------------------------------------------------------------------//

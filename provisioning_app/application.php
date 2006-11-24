@@ -132,8 +132,8 @@ die();
 			$arrFileData	= Array();
 			while (!feof($resFile))
 			{
-				// read the data into an indexed array
-				$this->_prvCurrentModule->Add(fgets($resFile));
+				// normalise this line
+				$this->_prvCurrentModule->Normalise(fgets($resFile));
 				
 				// update requests table
 				$this->_prvCurrentModule->UpdateRequests();
