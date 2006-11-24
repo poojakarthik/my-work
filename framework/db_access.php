@@ -1445,7 +1445,6 @@ class MySQLFunction
 		 	{
 				if (is_array($arrWhere[$strAlias]))
 				{
-					Die();
 					$strParam = $arrWhere[$strAlias]['Value'];
 				}
 				else
@@ -1453,7 +1452,7 @@ class MySQLFunction
 					$strParam = $arrWhere[$strAlias];
 				}
 		 		$strType .= $this->GetDBInputType($strParam);
-		 		$arrParams[] = $arrWhere[$strParam];
+		 		$arrParams[] = $strParam;
 	 			$i++;
 		 	}
 	 	}
