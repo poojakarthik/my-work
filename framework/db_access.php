@@ -429,7 +429,7 @@
 				$strOperator		= $strDefaultOperator;
 				
 				// check & modify value
-				if ($this->intSQLMode === SQL_STATEMENT)
+				if ($this->intSQLMode == SQL_STATEMENT)
 				{
 					// prepared statement constructors don't use the value
 					$strValue		= "<$strKey>";
@@ -564,7 +564,7 @@
 	 */ 
 	 function __construct()
 	 {
-	 	$this->strSQLMode =SQL_STATEMENT;
+	 	$this->intSQLMode =SQL_STATEMENT;
 		parent::__construct();
 	 }
 	 
@@ -663,7 +663,7 @@
 	 */ 
 	 function __construct()
 	 {
-	 	$this->strSQLMode =SQL_QUERY;
+	 	$this->intSQLMode =SQL_QUERY;
 		parent::__construct();
 	 }
 	 
