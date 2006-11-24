@@ -429,7 +429,7 @@
 				$strOperator		= $strDefaultOperator;
 				
 				// check & modify value
-				if ($this->intSQLMode == SQL_STATEMENT)
+				if ($this->intSQLMode === SQL_STATEMENT)
 				{
 					// prepared statement constructors don't use the value
 					$strValue		= "<$strKey>";
@@ -1912,10 +1912,14 @@ class MySQLFunction
 	 * Constructor for StatementUpdate object
 	 *
 	 * @param		string	strTable		Name of the table to update
-	 * @param		string	strWhere		A full SQL WHERE clause, minus the keyword.
+	 * @param		mixed	mixWhere		A full SQL WHERE clause, minus the keyword.
 	 * 										Paramaters should be aliased in a meaningful
 	 * 										fashion enclosed in <>'s
 	 * 										(eg. "FooBar = <FooBar>")
+	 *										Can also be passed as an associative array (eg. the same
+	 *										array as passed to the execute method), to produce a
+	 *										WHERE clause like "Foo = <Foo> AND Bar = <Bar>" using
+	 *										the array keys.
 	 * @param		array	arrColumns		optional Associative array of the columns 
 	 * 										you want to update, where the keys are the column names.
 	 * 										If you want to update everything, ignore
@@ -1925,9 +1929,13 @@ class MySQLFunction
 	 *
 	 * @method
 	 */ 
-	 function __construct($strTable, $strWhere, $arrColumns = null)
+	 function __construct($strTable, $mixWhere, $arrColumns = null)
 	 {
 		parent::__construct();
+		
+		// prepare the WHERE clause
+		$strWhere = $this->PrepareWhere($mixWhere);
+		
 		// Compile the query from our passed infos
 	 	$strQuery = "UPDATE " . $strTable . "\n" . "SET ";
 	 			
@@ -1977,7 +1985,7 @@ class MySQLFunction
 	 		// Find and replace the aliases in $strWhere
 	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
 	 		
-			$strQuery .= "WHERE " . $strWhere . "\n";
+			$strQuery .= $strWhere . "\n";
 	 	}
 	 	else
 	 	{
