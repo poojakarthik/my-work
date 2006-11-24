@@ -451,7 +451,7 @@
 			// join elements
 			if (is_array($arrWhere))
 			{
-				$strWhere = implode($strJoiner, $arrWhere);
+				$strWhere = implode(" $strJoiner ", $arrWhere);
 			}
 		}
 		else
