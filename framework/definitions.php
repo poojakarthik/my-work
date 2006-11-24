@@ -135,4 +135,8 @@ define("TAX_RATE_GST"				, 10);
 // Report Messages
 define("MSG_HORIZONTAL_RULE"		, "\n================================================================================\n");
 
+// SQL Modes
+define("SQL_QUERY"				, 1);
+define("SQL_STATEMENT"			, 2);
+
 ?>

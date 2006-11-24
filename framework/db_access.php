@@ -180,6 +180,8 @@
  * Database Access Abstract Base Class
  *
  * Database Access Abstract Base Class
+ * All database access classes (querys and statements) are based on
+ * this class
  *
  *
  * @prefix		db
@@ -189,6 +191,22 @@
  */
  abstract class DatabaseAccess
  {
+ 	//------------------------------------------------------------------------//
+	// intSQLMode	
+	//------------------------------------------------------------------------//
+	/**
+	 * intSQLMode
+	 *
+	 * Stores the SQL mode
+	 *
+	 * Stores the SQL mode, SQL_QUERY or SQL_STATEMENT
+	 *
+	 * @type		int
+	 *
+	 * @property
+	 */
+	public $intSQLMode;
+	
  	//------------------------------------------------------------------------//
 	// DatabaseAccess() - Constructor
 	//------------------------------------------------------------------------//
@@ -214,6 +232,398 @@
 		// make global database object available
 		$this->db = &$GLOBALS['dbaDatabase'];
 	}
+	
+	//------------------------------------------------------------------------//
+	// IsColumnName()
+	//------------------------------------------------------------------------//
+	/**
+	 * IsColumnName()
+	 *
+	 * Checks validity of ColumnName
+	 *
+	 * Checks validity of ColumnName.  Used to tell if string is a standard
+	 * column name or something else (eg. SQL function or alias)
+	 *
+	 * @param		string	$strColumn		ColumnName to be checked
+	 * 
+	 * @return		boolean					true	: string is a ColumnName
+	 * 										false	: string is not a ColumnName
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function IsColumnName($strColumn)
+	{
+		return (eregi("A-Z0-9", $strColumn) == strlen($strColumn)) ? true : false;
+	}
+	
+
+	//------------------------------------------------------------------------//
+	// FindAlias()
+	//------------------------------------------------------------------------//
+	/**
+	 * FindAlias()
+	 *
+	 * Finds aliases in a string
+	 *
+	 * Searches a string, and pulls out an array of aliases bounded by <>'s.
+	 * Replaces the string with a ?
+	 *
+	 * @param		string	$strColumn		ColumnName to be checked
+	 * 
+	 * @return		array					Indexed Array of aliases.
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function FindAlias(&$strString)
+	{
+		$arrAliases = array();
+		$arrMatches = array();
+
+		// Find Aliases
+		preg_match_all ("/<([\d\w]+)>/misU", $strString, $arrAliases, PREG_SET_ORDER);
+		
+		// String replace all aliases with ?'s
+		$strString = preg_replace("/<([\d\w]+)>/misU", "?", $strString);
+		
+		// Remove <>'s from alias names
+		$i = 0;
+		foreach ($arrAliases as $arrAlias)
+		{
+			$arrMatches[$i++] = $arrAlias [1];
+		}
+		
+		return $arrMatches;
+	}
+	
+	//------------------------------------------------------------------------//
+	// StripTable()
+	//------------------------------------------------------------------------//
+	/**
+	 * StripTable()
+	 *
+	 * Strips the table from a string in "TableName.ColumnName" format
+	 *
+	 * Strips the table from a string in "TableName.ColumnName" format
+	 *
+	 * @param		string	$strText		String to parse
+	 * 
+	 * @return		string					Stripped table name
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function StripTable($strText) 
+	{
+		$strText = substr($strText, 0, (strpos($strText, ".") + 1));
+		if ($strText == "")
+		{
+			// There was no table name
+			return false;
+		}
+		return $strText;
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsAssociativeArray()
+	//------------------------------------------------------------------------//
+	/**
+	 * IsAssociativeArray()
+	 *
+	 * Determines if a passed array is associative or not
+	 *
+	 * Determines if a passed array is associative or not
+	 *
+	 * @param		array	$arrArray		Array to be checked
+	 * 
+	 * @return		boolean					true	: Associative array
+	 * 										false	: Indexed array
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function IsAssociativeArray($arrArray) 
+	{
+		return (is_array($arrArray) && !is_numeric(implode(array_keys($arrArray))));
+	}
+	
+	//------------------------------------------------------------------------//
+	// Error()
+	//------------------------------------------------------------------------//
+	/**
+	 * Error()
+	 *
+	 * Return an SQL error message
+	 *
+	 * Returns the latest SQL error message
+	 *
+	 * @return		string					SQL Error Message
+	 *
+	 * @method
+	 */ 
+	function Error()
+	{
+		return mysqli_error($this->db->refMysqliConnection);
+	}
+	
+	//------------------------------------------------------------------------//
+	// PrepareWhere()
+	//------------------------------------------------------------------------//
+	/**
+	 * PrepareWhere()
+	 *
+	 * Prepare an SQL WHERE clause
+	 *
+	 * Prepare an SQL WHERE clause
+	 *
+	 * @param		mixed	$mixWhere		string, array or object containing
+	 *										details of the where clause
+	 *
+	 * @param		string	$strJoiner		optional joiner 'AND' or 'OR'. defaults to 'AND'
+	 *										If $mixWhere is an array, $strJoiner
+	 *										is used to join the array elements					 
+	 *
+	 * @param		string	$strOperator	optional operator '=', '<', '>', 'LIKE' etc. defaults to '='
+	 *										If $mixWhere is an array, $strOperator
+	 *										is used as an operator with the array elements					 
+	 *
+	 * @return		string					SQL WHERE clause (including the WHERE keyword)
+	 *
+	 * @method
+	 */ 
+	function PrepareWhere($mixWhere, $strJoiner = 'AND', $strOperator = '=')
+	{
+		// set default operator
+		$strDefaultOperator = $strOperator;
+		
+		// make a string
+		if (is_string($mixWhere))
+		{
+			// input is a string
+			// trim the WHERE keyword
+			$strWhere = trim($mixWhere);
+			if (strtolower(substr($strWhere, 0, 5)) == "where")
+			{
+				$strWhere = substr($strWhere, 6);
+			}
+		}
+		elseif( is_array($mixWhere) || is_object($mixWhere))
+		{
+			// input is an array or object
+			if (is_object($mixWhere))
+			{
+				// we can only use objects with an 'Iterator' interface
+				$arrImplements = class_implements($mixWhere);
+				if (!$arrImplements['Iterator'])
+				{
+					// return nothing
+					return "";
+				}
+			}
+			
+			// add each element
+			foreach($mixWhere as $strKey=>$strValue)
+			{
+				// set orerator to default value
+				$strOperator		= $strDefaultOperator;
+				
+				// check & modify value
+				if ($this->intSQLMode == SQL_STATEMENT)
+				{
+					// prepared statement constructors don't use the value
+					$strValue		= "<$strKey>";
+				}
+				elseif (is_array($strValue))
+				{
+					// we may have been passed an array as value
+					if ($strValue['Operator'])
+					{
+						$strOperator	= $strValue['Operator'];
+					}
+					$strValue		= $strValue['Value'];
+				}
+				
+				// add element
+				$arrWhere[] = "$strKey $strOperator $strValue";
+			}
+			
+			// join elements
+			$strWhere = implode($strJoiner, $arrWhere);
+		}
+		else
+		{
+			// return an empty string if we have nothing
+			return "";
+		}
+		
+		// trim the WHERE clause string
+		$strWhere = trim($strWhere);
+		
+		// return an empty string if we have nothing
+		if (!$strWhere)
+		{
+			return "";
+		}
+		
+		// add the WHERE keyword
+		$strWhere = " WHERE $strWhere ";
+		
+		// return the WHERE clause
+		return $strWhere;
+	}
+	
+ }
+ 
+
+//----------------------------------------------------------------------------//
+// Statement
+//----------------------------------------------------------------------------//
+/**
+ * Statement
+ *
+ * Statement Abstract Base Class
+ *
+ * Statement Abstract Base Class
+ *
+ *
+ * @prefix		bst
+ *
+ * @package		framework
+ * @class		Statement
+ */
+ abstract class Statement extends DatabaseAccess
+ {
+  	//------------------------------------------------------------------------//
+	// stmtSqlStatement	
+	//------------------------------------------------------------------------//
+	/**
+	 * stmtSqlStatement
+	 *
+	 * Stores our statement
+	 *
+	 * Stores our statement
+	 *
+	 * @type		mysql_stmt
+	 *
+	 * @property
+	 * @see			<MethodName()||typePropertyName>
+	 */
+	private $_stmtSqlStatment;
+	
+	//------------------------------------------------------------------------//
+	// arrWhereAliases	
+	//------------------------------------------------------------------------//
+	/**
+	 * arrWhereAliases
+	 *
+	 * Stores the WHERE aliases
+	 *
+	 * Stores the WHERE aliases
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 * @see			<MethodName()||typePropertyName>
+	 */
+	private $_arrWhereAliases;
+	
+	//------------------------------------------------------------------------//
+	// strTable	
+	//------------------------------------------------------------------------//
+	/**
+	 * strTable
+	 *
+	 * Name of the table we're working with (if UPDATE or INSERT)
+	 *
+	 * Name of the table we're working with (if UPDATE or INSERT)
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 * @see			<MethodName()||typePropertyName>
+	 */
+	private $_strTable;
+
+ 	//------------------------------------------------------------------------//
+	// Statement() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * Statement()
+	 *
+	 * Constructor for Statement
+	 *
+	 * Constructor for Statement Abstract Base Class
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 */ 
+	 function __construct()
+	 {
+	 	$this->strSQLMode =SQL_STATEMENT;
+		parent::__construct();
+	 }
+	 
+	
+	
+	//------------------------------------------------------------------------//
+	// GetDBInputType()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetDBInputType()
+	 *
+	 * Determines the type of a passed variable
+	 *
+	 * Determines the type of a passed variable.
+	 * Returns:		"s" - String
+	 * 				"i" - Integer
+	 * 				"d" - Float/Double
+	 * 				"b" - Binary
+	 *
+	 * @param		mixed	$mixData		Data to be checked
+	 * 
+	 * @return		string					"s" : String
+	 * 										"i" : Integer
+	 * 										"d" : Float/Double
+	 * 										"b" : Binary
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	function GetDBInputType($mixData) 
+	{
+		// Special case for mysql functions
+		
+		
+		//print_r($mixData);
+		if ($mixData instanceOf MySQLFunction)
+		{
+			return "i";
+		}
+		elseif (is_int($mixData))
+ 		{
+ 			// It's an integer
+ 			return "i";
+ 		}
+ 		elseif (is_float($mixData))
+ 		{
+ 			// It's a float/double
+ 			return "d";
+ 		}
+		/*
+		 * this was commented on nov. 2 2006 because of conflicts with string
+ 		elseif (!is_scalar($mixData))
+ 		{
+ 			// It's a binary object
+ 			return "b";
+ 		}
+		*/
+ 		
+ 		// Else, it's a string
+ 		return "s";
+	}
+	
+
  }
 
 //----------------------------------------------------------------------------//
@@ -250,6 +660,7 @@
 	 */ 
 	 function __construct()
 	 {
+	 	$this->strSQLMode =SQL_QUERY;
 		parent::__construct();
 	 }
 	 
@@ -274,6 +685,130 @@
 		return mysqli_query($this->db->refMysqliConnection, $strQuery);
 	 }
  }
+
+
+//----------------------------------------------------------------------------//
+// MySQLFunction
+//----------------------------------------------------------------------------//
+/**
+ * MySQLFunction
+ *
+ * For Functions in MySQL
+ *
+ * Allows the usage of MySQL Functions in Queries
+ *
+ *
+ * @prefix		fnc
+			("MySQL Function")
+ *
+ * @package		framework
+ * @class		MySQLFunction
+ */
+class MySQLFunction
+{
+
+ 	//------------------------------------------------------------------------//
+	// strFunction
+	//------------------------------------------------------------------------//
+	/**
+	 * strFunction
+	 *
+	 * The function we wish to pass to MySQL
+	 *
+	 * The function we wish to pass to MySQL
+	 *
+	 * @type	<type>
+	 *
+	 * @property
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	private $_strFunction;
+	private $_arrParams;
+	private $_arrOrderedParams;
+	
+	//------------------------------------------------------------------------//
+	// MySQLFunction() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * MySQLFunction()
+	 *
+	 * Constructor for MySQLFunction object
+	 *
+	 * Constructor for MySQLFunction object
+	 *
+	 * @param		string	strFunction		The function we are passing, represented as a string
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	
+	function __construct ($strFunction, $arrParams=null)
+	{
+		$this->_strFunction = $strFunction;
+		$this->_arrParams = $arrParams;
+	}
+	
+	//------------------------------------------------------------------------//
+	// getFunction()
+	//------------------------------------------------------------------------//
+	/**
+	 * getFunction()
+	 *
+	 * Gets the value of the function
+	 *
+	 * Gets the value of the function
+	 *
+	 * @return		string							The value of the MySQL Function
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+
+	public function getFunction ()
+	{
+		return $this->_strFunction;
+	}
+	
+	public function getParameters ()
+	{
+		return $this->_arrParams;
+	}
+	
+	public function setParameters ($arrParams)
+	{
+		$this->_arrParams = $arrParams;
+	}
+	
+	public function Prepare ()
+	{
+		$strFunction = $this->_strFunction;
+		$this->_arrOrderedParams = Statement::FindAlias ($strFunction);
+		
+		return $strFunction;
+	}
+	
+	public function Execute (&$strType, &$arrParams, $arrData)
+	{
+		foreach ($this->_arrOrderedParams as $mixColumn)
+		{
+			$strType .= Statement::GetDBInputType ($arrData [$mixColumn]);
+			$arrParams [] = $arrData [$mixColumn];
+		}
+	}
+}
+
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// QUERY CLASSES
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+
 
 //----------------------------------------------------------------------------//
 // QueryCreate
@@ -647,270 +1182,14 @@
 
 
 //----------------------------------------------------------------------------//
-// Statement
 //----------------------------------------------------------------------------//
-/**
- * Statement
- *
- * Statement Abstract Base Class
- *
- * Statement Abstract Base Class
- *
- *
- * @prefix		bst
- *
- * @package		framework
- * @class		Statement
- */
- abstract class Statement extends DatabaseAccess
- {
-  	//------------------------------------------------------------------------//
-	// stmtSqlStatement	
-	//------------------------------------------------------------------------//
-	/**
-	 * stmtSqlStatement
-	 *
-	 * Stores our statement
-	 *
-	 * Stores our statement
-	 *
-	 * @type		mysql_stmt
-	 *
-	 * @property
-	 * @see			<MethodName()||typePropertyName>
-	 */
-	private $_stmtSqlStatment;
-	
-	//------------------------------------------------------------------------//
-	// arrWhereAliases	
-	//------------------------------------------------------------------------//
-	/**
-	 * arrWhereAliases
-	 *
-	 * Stores the WHERE aliases
-	 *
-	 * Stores the WHERE aliases
-	 *
-	 * @type		array
-	 *
-	 * @property
-	 * @see			<MethodName()||typePropertyName>
-	 */
-	private $_arrWhereAliases;
-	
-	//------------------------------------------------------------------------//
-	// strTable	
-	//------------------------------------------------------------------------//
-	/**
-	 * strTable
-	 *
-	 * Name of the table we're working with (if UPDATE or INSERT)
-	 *
-	 * Name of the table we're working with (if UPDATE or INSERT)
-	 *
-	 * @type		string
-	 *
-	 * @property
-	 * @see			<MethodName()||typePropertyName>
-	 */
-	private $_strTable;
-
- 	//------------------------------------------------------------------------//
-	// Statement() - Constructor
-	//------------------------------------------------------------------------//
-	/**
-	 * Statement()
-	 *
-	 * Constructor for Statement
-	 *
-	 * Constructor for Statement Abstract Base Class
-	 *
-	 * @return		void
-	 *
-	 * @method
-	 */ 
-	 function __construct()
-	 {
-		parent::__construct();
-	 }
-	 
-	//------------------------------------------------------------------------//
-	// IsColumnName()
-	//------------------------------------------------------------------------//
-	/**
-	 * IsColumnName()
-	 *
-	 * Checks validity of ColumnName
-	 *
-	 * Checks validity of ColumnName.  Used to tell if string is a standard
-	 * column name or something else (eg. SQL function or alias)
-	 *
-	 * @param		string	$strColumn		ColumnName to be checked
-	 * 
-	 * @return		boolean					true	: string is a ColumnName
-	 * 										false	: string is not a ColumnName
-	 *
-	 * @method
-	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	function IsColumnName($strColumn)
-	{
-		return (eregi("A-Z0-9", $strColumn) == strlen($strColumn)) ? true : false;
-	}
-	
-
-	//------------------------------------------------------------------------//
-	// FindAlias()
-	//------------------------------------------------------------------------//
-	/**
-	 * FindAlias()
-	 *
-	 * Finds aliases in a string
-	 *
-	 * Searches a string, and pulls out an array of aliases bounded by <>'s.
-	 * Replaces the string with a ?
-	 *
-	 * @param		string	$strColumn		ColumnName to be checked
-	 * 
-	 * @return		array					Indexed Array of aliases.
-	 *
-	 * @method
-	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	function FindAlias(&$strString)
-	{
-		$arrAliases = array();
-		$arrMatches = array();
-
-		// Find Aliases
-		preg_match_all ("/<([\d\w]+)>/misU", $strString, $arrAliases, PREG_SET_ORDER);
-		
-		// String replace all aliases with ?'s
-		$strString = preg_replace("/<([\d\w]+)>/misU", "?", $strString);
-		
-		// Remove <>'s from alias names
-		$i = 0;
-		foreach ($arrAliases as $arrAlias)
-		{
-			$arrMatches[$i++] = $arrAlias [1];
-		}
-		
-		return $arrMatches;
-	}
-	
-	//------------------------------------------------------------------------//
-	// StripTable()
-	//------------------------------------------------------------------------//
-	/**
-	 * StripTable()
-	 *
-	 * Strips the table from a string in "TableName.ColumnName" format
-	 *
-	 * Strips the table from a string in "TableName.ColumnName" format
-	 *
-	 * @param		string	$strText		String to parse
-	 * 
-	 * @return		string					Stripped table name
-	 *
-	 * @method
-	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	function StripTable($strText) 
-	{
-		$strText = substr($strText, 0, (strpos($strText, ".") + 1));
-		if ($strText == "")
-		{
-			// There was no table name
-			return false;
-		}
-		return $strText;
-	}
-	
-	//------------------------------------------------------------------------//
-	// IsAssociativeArray()
-	//------------------------------------------------------------------------//
-	/**
-	 * IsAssociativeArray()
-	 *
-	 * Determines if a passed array is associative or not
-	 *
-	 * Determines if a passed array is associative or not
-	 *
-	 * @param		array	$arrArray		Array to be checked
-	 * 
-	 * @return		boolean					true	: Associative array
-	 * 										false	: Indexed array
-	 *
-	 * @method
-	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	function IsAssociativeArray($arrArray) 
-	{
-		return (is_array($arrArray) && !is_numeric(implode(array_keys($arrArray))));
-	}
-	
-	
-	//------------------------------------------------------------------------//
-	// GetDBInputType()
-	//------------------------------------------------------------------------//
-	/**
-	 * GetDBInputType()
-	 *
-	 * Determines the type of a passed variable
-	 *
-	 * Determines the type of a passed variable.
-	 * Returns:		"s" - String
-	 * 				"i" - Integer
-	 * 				"d" - Float/Double
-	 * 				"b" - Binary
-	 *
-	 * @param		mixed	$mixData		Data to be checked
-	 * 
-	 * @return		string					"s" : String
-	 * 										"i" : Integer
-	 * 										"d" : Float/Double
-	 * 										"b" : Binary
-	 * @method
-	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	function GetDBInputType($mixData) 
-	{
-		// Special case for mysql functions
-		
-		
-		//print_r($mixData);
-		if ($mixData instanceOf MySQLFunction)
-		{
-			return "i";
-		}
-		elseif (is_int($mixData))
- 		{
- 			// It's an integer
- 			return "i";
- 		}
- 		elseif (is_float($mixData))
- 		{
- 			// It's a float/double
- 			return "d";
- 		}
-		/*
-		 * this was commented on nov. 2 2006 because of conflicts with string
- 		elseif (!is_scalar($mixData))
- 		{
- 			// It's a binary object
- 			return "b";
- 		}
-		*/
- 		
- 		// Else, it's a string
- 		return "s";
-	}
-	
-	function Error()
-	{
-		return mysqli_error($this->db->refMysqliConnection);
-	}
- }
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+// STATEMENT CLASSES
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 
 
 //----------------------------------------------------------------------------//
@@ -1003,10 +1282,14 @@
 	 * 										Use associated arrays for either renaming of
 	 * 										columns (eg. ["ColumnName"] = "ColumnAlias") and
 	 * 										special SQL funcion calls (eg. ["NOW()"] = "NowAlias")
-	 * @param		string	strWhere		optional A full SQL WHERE clause, minus the keyword.
+	 * @param		mixed	mixWhere		optional A full SQL WHERE clause, minus the keyword.
 	 * 										Paramaters should be aliased in a meaningful
 	 * 										fashion enclosed in <>'s
 	 * 										(eg. "FooBar = <FooBar>")
+	 *										Can also be passed as an associative array (eg. the same
+	 *										array as passed to the execute method), to produce a
+	 *										WHERE clause like "Foo = <Foo> AND Bar = <Bar>" using
+	 *										the array keys.
 	 * @param		string	strOrder		optional A full SQL ORDER BY clause, minus the keywords
 	 * 										(eg. "ColumnName ASC, Column2Name")
 	 * @param		string	strLimit		optional SQL LIMIT clause, minus the keyword
@@ -1015,11 +1298,14 @@
 	 * @return		void
 	 *
 	 * @method
-	 * @see			<MethodName()||typePropertyName>
 	 */ 
-	function __construct($strTables, $mixColumns, $strWhere = "", $strOrder = "", $strLimit = "")
+	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "")
 	{
 		parent::__construct();
+		
+		// prepare the WHERE clause
+		$strWhere = $this->PrepareWhere($mixWhere);
+		
 		// Compile the query from our passed info
 	 	$strQuery = "SELECT ";
 	 	
@@ -1078,7 +1364,7 @@
 	 		// Find and replace the aliases in $strWhere
 	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
 	 		
-			$strQuery .= "WHERE " . $strWhere . "\n";
+			$strQuery .= $strWhere . "\n";
 	 	}
 	 	
 	 	// Add the ORDER BY clause
@@ -1820,116 +2106,5 @@
  }
 
 
-//----------------------------------------------------------------------------//
-// MySQLFunction
-//----------------------------------------------------------------------------//
-/**
- * MySQLFunction
- *
- * For Functions in MySQL
- *
- * Allows the usage of MySQL Functions in Queries
- *
- *
- * @prefix		fnc
-			("MySQL Function")
- *
- * @package		framework
- * @class		MySQLFunction
- */
-class MySQLFunction
-{
-
- 	//------------------------------------------------------------------------//
-	// strFunction
-	//------------------------------------------------------------------------//
-	/**
-	 * strFunction
-	 *
-	 * The function we wish to pass to MySQL
-	 *
-	 * The function we wish to pass to MySQL
-	 *
-	 * @type	<type>
-	 *
-	 * @property
-	 * @see	<MethodName()||typePropertyName>
-	 */
-	private $_strFunction;
-	private $_arrParams;
-	private $_arrOrderedParams;
-	
-	//------------------------------------------------------------------------//
-	// MySQLFunction() - Constructor
-	//------------------------------------------------------------------------//
-	/**
-	 * MySQLFunction()
-	 *
-	 * Constructor for MySQLFunction object
-	 *
-	 * Constructor for MySQLFunction object
-	 *
-	 * @param		string	strFunction		The function we are passing, represented as a string
-	 *
-	 * @return		void
-	 *
-	 * @method
-	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	
-	function __construct ($strFunction, $arrParams=null)
-	{
-		$this->_strFunction = $strFunction;
-		$this->_arrParams = $arrParams;
-	}
-	
-	//------------------------------------------------------------------------//
-	// getFunction()
-	//------------------------------------------------------------------------//
-	/**
-	 * getFunction()
-	 *
-	 * Gets the value of the function
-	 *
-	 * Gets the value of the function
-	 *
-	 * @return		string							The value of the MySQL Function
-	 *
-	 * @method
-	 * @see			<MethodName()||typePropertyName>
-	 */ 
-
-	public function getFunction ()
-	{
-		return $this->_strFunction;
-	}
-	
-	public function getParameters ()
-	{
-		return $this->_arrParams;
-	}
-	
-	public function setParameters ($arrParams)
-	{
-		$this->_arrParams = $arrParams;
-	}
-	
-	public function Prepare ()
-	{
-		$strFunction = $this->_strFunction;
-		$this->_arrOrderedParams = Statement::FindAlias ($strFunction);
-		
-		return $strFunction;
-	}
-	
-	public function Execute (&$strType, &$arrParams, $arrData)
-	{
-		foreach ($this->_arrOrderedParams as $mixColumn)
-		{
-			$strType .= Statement::GetDBInputType ($arrData [$mixColumn]);
-			$arrParams [] = $arrData [$mixColumn];
-		}
-	}
-}
 
 ?>
