@@ -1443,8 +1443,16 @@ class MySQLFunction
 		 	// Bind the WHERE data to our mysqli_stmt
 		 	foreach ($this->_arrWhereAliases as $strAlias)
 		 	{
-		 		$strType .= $this->GetDBInputType($arrWhere[$strAlias]);
-		 		$arrParams[] = $arrWhere[$strAlias];
+				if (is_array($arrWhere[$strAlias]))
+				{
+					$strParam = $arrWhere[$strAlias]['Value'];
+				}
+				else
+				{
+					$strParam = $arrWhere[$strAlias];
+				}
+		 		$strType .= $this->GetDBInputType($strParam);
+		 		$arrParams[] = $arrWhere[$strParam];
 	 			$i++;
 		 	}
 	 	}
