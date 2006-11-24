@@ -1445,6 +1445,7 @@ class MySQLFunction
 		 	{
 				if (is_array($arrWhere[$strAlias]))
 				{
+					Die();
 					$strParam = $arrWhere[$strAlias]['Value'];
 				}
 				else
