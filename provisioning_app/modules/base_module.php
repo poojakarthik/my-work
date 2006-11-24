@@ -65,8 +65,9 @@
 		// Set up this->db
 		$this->db = $ptrDB;
 		
-		$this->_selMatchRequest = new StatementSelect("Request", "*",
+		$this->_selMatchRequest	= new StatementSelect("Request", "*",
 			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "Date DESC", "1");
+		this->_ubiRequest		= new StatementUpdateById("Request");
 		
 		// Default delimeter is NULL (fixedwidth)
 		$this->_strDelimiter;
@@ -170,6 +171,26 @@
 	 */
  	abstract function SendRequest();	 	
 
+	//------------------------------------------------------------------------//
+	// AddToLog
+	//------------------------------------------------------------------------//
+	/**
+	 * AddToLog()
+	 *
+	 * Adds the record to the log
+	 *
+	 * Adds the record to the log
+	 * 
+	 * @return	boolean					
+	 *
+	 * @method
+	 */
+	 protected function AddToLog($strLine)
+	 {
+		// TODO
+		
+		return true;
+	 }
 
 	//------------------------------------------------------------------------//
 	// _SplitLine

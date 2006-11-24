@@ -140,6 +140,9 @@ die();
 				
 				// update service table
 				$this->_prvCurrentModule->UpdateService();	
+				
+				// add to the log table
+				$this->_prvCurrentModule->AddToLog();
 			}
 			fclose($resFile);
 

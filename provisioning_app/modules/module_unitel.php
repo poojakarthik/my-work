@@ -145,9 +145,6 @@
 			return PRV_HEADER_RECORD;
 		}
 		
-		// Line Status
-		$arrRequestData	['LineStatus']	= $this->_DetermineStatus($arrLineData['RecordType']);
-		
 		// ServiceId
 		$arrRequestData	['ServiceId']	= $this->_GetServiceId(RemoveAusCode($arrLineData['ServiceNo']));
 		$arrLogData		['ServiceId']	= $arrRequestData['ServiceId'];
@@ -196,8 +193,6 @@
 				$arrServiceData	['LineStatus']	= LINE_ACTIVE;				// FIXME: Undefined
 				$arrLogData		['Type']		= LINE_ACTION_LOSS;			// FIXME: Undefined
 				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);	// FIXME: Undefined
-				
-				// Attempt to match request
 				break;
 			case "X":	// Loss - cancellation
 				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;			// FIXME: Undefined
@@ -259,9 +254,10 @@
 		if ($arrResult = $this->_selMatchRequest->Fetch())
 		{
 			// Found a match, so update
-			// TODO
+			$arrResult['Status']	= $this->_arrRequest['Status'];
+			$this->_ubiRequest->Execute($arrResult);
 		}
-	} 	
+	}
  	
  	//------------------------------------------------------------------------//
 	// UpdateService()
