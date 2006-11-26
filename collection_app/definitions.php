@@ -54,9 +54,9 @@ define("REGEX_AAPT"					, "/^W\d{9}\.[A-La-l][0-3]\d$/");
 define("REGEX_RSLCOM"				, "/^[A-Za-z]\d{7}\.csv$/");
 define("REGEX_COMMANDER"			, "/^xxxxxxxxxxxxxxxxxxx$/");
 define("REGEX_ISEEK"				, "");
-define("REGEX_RSL_ORDER_RPT"		, "^rsl\d{3}w\d{4}\d{4}[01]\d[0-3]\d.txt$");
-define("REGEX_RSL_STATUS_RPT"		, "^rsl\d{3}d\d{4}[01]\d[0-3]\d[0-2]\d[0-5]\d[0-5]\d.txt$");
-define("REGEX_RSL_BASKETS"			, "^rsl\d{3}a\d{4}\d{4}[01]\d[0-3]\d.txt$");
+define("REGEX_RSL_ORDER_RPT"		, "/^rsl\d{3}w\d{4}\d{4}[01]\d[0-3]\d.txt$/");
+define("REGEX_RSL_STATUS_RPT"		, "/^rsl\d{3}d\d{4}[01]\d[0-3]\d[0-2]\d[0-5]\d[0-5]\d.txt$/");
+define("REGEX_RSL_BASKETS"			, "/^rsl\d{3}a\d{4}\d{4}[01]\d[0-3]\d.txt$/");
 
 // CDR File Handling (Range is 200-299)
 define("RAWFILE_DOWNLOADED"			, 250);
@@ -81,7 +81,7 @@ define("CDRFILE_NORMALISED"			, 207);
 define("MSG_HORIZONTAL_RULE"		, "================================================================================\n");
 define("MSG_NO_COLLECTION_MODULE"	, "NO COLLECTION MODULE\t: <FriendlyName> (<Type>)\n\n");
 define("MSG_CONNECTION_FAILED"		, "CONNECTION FAILED\t: <FriendlyName> (<Type>)\n\n");
-define("MSG_CONNECTED"				, MSG_HORIZONTAL_RULE."CONNECTED TO\t\t: <FriendlyName> (<Type>)\n".MSG_HORIZONTAL_RULE);
+define("MSG_CONNECTED"				, MSG_HORIZONTAL_RULE."CONNECTED TO\t\t: <FriendlyName> (<Type>)".MSG_HORIZONTAL_RULE);
 define("MSG_DOWNLOADING_FROM"		, "Downloading from:\n");
 define("MSG_DIRS"					, "\t<Dir>\n");
 define("MSG_GRABBING_FILE"			, "Grabbing File\t: <FileName> (<FileSize> KB)\n");
