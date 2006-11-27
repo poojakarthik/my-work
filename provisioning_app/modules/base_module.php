@@ -68,6 +68,9 @@
 		$this->_selMatchRequest	= new StatementSelect("Request", "*",
 			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "RequestDate DESC", "1");
 		$this->_ubiRequest		= new StatementUpdateById("Request");
+		$this->_selMatchService = new StatementSelect("Service", "*", "FNN = <FNN>", "Date DESC", "1");
+		$this->_ubiService		= new StatementUpdateById("Service");
+		$this->_selMatchLog		= new StatementSelect("ProvisioningLog", "Id", "Date > <Date>");
 		
 		// Default delimeter is NULL (fixedwidth)
 		$this->_strDelimiter	= NULL;

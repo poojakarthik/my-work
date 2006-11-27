@@ -219,6 +219,9 @@
 			default:	// Unknown Record Type
 				return PRV_BAD_RECORD_TYPE;
 		}
+		
+		// Basket
+		$arrServiceData['Basket']	= (int)$arrLineData['Basket'];
 				
 		// Add split line to File data array
 		$this->_arrRequest	= $arrRequestData;
@@ -255,8 +258,23 @@
 		{
 			// Found a match, so update
 			$arrResult['Status']	= $this->_arrRequest['Status'];
-			$this->_ubiRequest->Execute($arrResult);
+			
+			// If we've gained/lost then update the appropriate field
+			if ($this->arrLog['Type'] == LINE_ACTION_GAIN)
+			{
+				$arrResult['GainDate'] = $this->_arrRequest['Date'];
+			}
+			elseif ($this->arrLog['Type'] == LINE_ACTION_LOSS)
+			{
+				$arrResult['LossDate'] = $this->_arrRequest['Date'];
+			}
+			
+			// Run the query
+			return $this->_ubiRequest->Execute($arrResult);
 		}
+		
+		// There is no match, so return TRUE
+		return TRUE;
 	}
  	
  	//------------------------------------------------------------------------//
@@ -275,7 +293,49 @@
 	 */
  	function UpdateService()
 	{
-		// TODO
+		$arrData['FNN']	= $this->_arrService['ServiceId'];
+		$this->_selMatchService->Execute();
+		
+		if($arrResult = $this->_selMatchService->Fetch())
+		{
+			// Make sure our status is up to date
+			$arrData = Array('Date' => $this->_arrRequest['Date']);
+			$this->_selMatchLog->Execute($arrData);
+			
+			// If this is the most up to date status
+			if (!$this->_selMatchLog->Fetch())
+			{
+				// Actually update the service
+				$arrResult['LineStatus'] = $this->_arrService['LineStatus'];
+				
+				// Update the Carrier/CarrierPreselect fields if necessary
+				if ($this->_arrLog['Type'] == LINE_ACTION_GAIN)
+				{
+					switch ($this->_arrService['Basket'])
+					{
+						case BASKET_PRESELECT:
+							$arrResult['CarrierPreselect']	= CARRIER_UNITEL;
+							break;
+						default:
+							$arrResult['Carrier']			= CARRIER_UNITEL;
+							break;
+					}
+				}
+				
+				// Run the query
+				return $this->_ubiService->Execute();
+			}
+			else
+			{
+				// Our status is old, so lets just return TRUE
+				return TRUE;
+			}
+		}
+		else
+		{
+			// We have received a status for a status that doesn't belong to us
+			return FALSE;
+		}
 	}
  
  
