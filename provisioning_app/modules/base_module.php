@@ -68,7 +68,7 @@
 		$this->_selMatchRequest	= new StatementSelect("Request", "*",
 			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "RequestDate DESC", "1");
 		$this->_ubiRequest		= new StatementUpdateById("Request");
-		$this->_selMatchService = new StatementSelect("Service", "*", "FNN = <FNN>", "Date DESC", "1");
+		$this->_selMatchService = new StatementSelect("Service", "*", "FNN = <FNN>", "CreatedOn DESC", "1");
 		$this->_ubiService		= new StatementUpdateById("Service");
 		$this->_selMatchLog		= new StatementSelect("ProvisioningLog", "Id", "Date > <Date>");
 		
@@ -86,7 +86,8 @@
 	 *
 	 * Normalises a line, and sets it as the "current" line
 	 *
-	 * @return		boolean
+	 * @return		mixed				TRUE: pass
+	 * 									int	: Error code
 	 *
 	 * @method
 	 */
@@ -152,11 +153,14 @@
 	 *
 	 * Builds a request file to be sent off, based on info from the DB
 	 *
+	 * @param		array		$arrRequest		Array of information on the request to generate
+	 * 											Taken straight from the DB
+	 *
 	 * @return		boolean
 	 *
 	 * @method
 	 */
- 	abstract function BuildRequest();
+ 	abstract function BuildRequest($arrRequest);
  	
   	//------------------------------------------------------------------------//
 	// SendRequest()
@@ -188,7 +192,7 @@
 	 *
 	 * @method
 	 */
-	 protected function AddToLog($strLine)
+	 function AddToLog()
 	 {
 		// TODO
 		
@@ -239,5 +243,6 @@
 		
 		return $_arrData;
 	 }
+	 
  }
 ?>

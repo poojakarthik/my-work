@@ -126,7 +126,8 @@
 	 *
 	 * Normalises a line, and sets it as the "current" line
 	 *
-	 * @return		int				Error/Success Code
+	 * @return		mixed				TRUE: pass
+	 * 									int	: Error code
 	 *
 	 * @method
 	 */
@@ -146,7 +147,7 @@
 		}
 		
 		// ServiceId
-		$arrRequestData	['ServiceId']	= $this->_GetServiceId(RemoveAusCode($arrLineData['ServiceNo']));
+		$arrRequestData	['ServiceId']	= RemoveAusCode($arrLineData['ServiceNo']);
 		$arrLogData		['ServiceId']	= $arrRequestData['ServiceId'];
 		
 		// Date
@@ -228,7 +229,7 @@
 		$this->_arrService	= $arrServiceData;
 		$this->_arrLog		= $arrLogData;
 		
-		return PRV_SUCCESS;
+		return TRUE;
 	} 	
 
  	//------------------------------------------------------------------------//
@@ -257,7 +258,7 @@
 		if ($arrResult = $this->_selMatchRequest->Fetch())
 		{
 			// Found a match, so update
-			$arrResult['Status']	= $this->_arrRequest['Status'];
+			$arrResult['LineStatus']	= $this->_arrRequest['LineStatus'];
 			
 			// If we've gained/lost then update the appropriate field
 			if ($this->arrLog['Type'] == LINE_ACTION_GAIN)
@@ -293,9 +294,10 @@
 	 */
  	function UpdateService()
 	{
-		$arrData['FNN']	= $this->_arrService['ServiceId'];
-		$this->_selMatchService->Execute();
+		$arrData['FNN']	= $this->_arrRequest['ServiceId'];
+		$this->_selMatchService->Execute($arrData);
 		
+		// Match to an entry in the Service table
 		if($arrResult = $this->_selMatchService->Fetch())
 		{
 			// Make sure our status is up to date
@@ -322,8 +324,23 @@
 					}
 				}
 				
+				// <DEBUG>
+				// A hack to get around the fact that next to no services have a Line Status atm
+				if (!$arrResult['LineStatus'])
+				{
+					$arrResult['LineStatus'] = LINE_ACTIVE;
+				}
+				// </DEBUG>
+
 				// Run the query
-				return $this->_ubiService->Execute();
+				if($this->_ubiService->Execute($arrResult) === FALSE)
+				{
+					return FALSE;
+				}
+				else
+				{
+					return TRUE;
+				}
 			}
 			else
 			{
@@ -334,7 +351,7 @@
 		else
 		{
 			// We have received a status for a status that doesn't belong to us
-			return FALSE;
+			return PRV_NO_SERVICE;
 		}
 	}
  
@@ -349,13 +366,27 @@
 	 *
 	 * Builds a request file to be sent off, based on info from the DB
 	 *
+	 * @param		array		$arrRequest		Array of information on the request to generate
+	 * 											Taken straight from the DB
+	 *
 	 * @return		boolean
 	 *
 	 * @method
 	 */
- 	function BuildRequest()
+ 	function BuildRequest($arrRequest)
 	{
-		// TODO
+		switch ($arrRequest['RequestType'])
+		{
+			case REQUEST_FULL_SERVICE:
+				// TODO
+				break;
+			case REQUEST_PRESELECTION:
+				// TODO
+				break;
+			default:
+				// Unhandled Request type -> error
+				return FALSE;
+		}
 	} 	
  	
   	//------------------------------------------------------------------------//
@@ -374,8 +405,64 @@
 	 */
  	function SendRequest()
 	{
+		// Build Header Row
+		$strFilename = "058rslw".str_pad(TODO_GET_SEQUENCE_NUMBER, 4, "0", STR_PAD_LEFT).date("Ymd").".txt";
+		$strHeaderRow = "01".$strFilename;
+		
+		// Build Footer Row
+		$strFooterRow = "99".str_pad(count($this->_arrRequests), 7, "0", STR_PAD_LEFT);
+		
+		// Write text file
+		// TODO
+		
+		// Upload to FTP
 		// TODO
 	} 	
+	
+	//------------------------------------------------------------------------//
+	// _ConvertDate()
+	//------------------------------------------------------------------------//
+	/**
+	 * _ConvertDate()
+	 *
+	 * Converts from Unitel to Internal date format
+	 *
+	 * Converts from YYYYMMDD to YYYY-MM-DD format
+	 *
+	 * @param		string		$strDate		Date to convert
+	 *
+	 * @return		string
+	 *
+	 * @method
+	 */
+ 	function _ConvertDate($strDate)
+	{
+		$strReturn = substr($strDate, 0, 4)."-".substr($strDate, 3, 2)."-".substr($strDate, 5, 2);
+		return $strReturn;
+	} 
+
+	//------------------------------------------------------------------------//
+	// _GetCarrierName()
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetCarrierName()
+	 *
+	 * Gets the name of a carrier from a carrier code
+	 *
+	 * Gets the name of a carrier from a carrier code
+	 *
+	 * @param		string		$strCode		Code to match
+	 *
+	 * @return		string
+	 *
+	 * @method
+	 */
+ 	function _GetCarrierName($strCode)
+	{
+		// TODO: waiting for codes from Scott
+		return "Undefined Carrier (Internal Code: ".$strCode.")";
+	} 
+	
  }
 
 ?>

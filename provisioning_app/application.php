@@ -121,9 +121,16 @@ die();
 		$selGetFiles->Execute();
 		$arrFiles = $selGetFiles->FetchAll();
 		
+		$intLinesPassed	= 0;
+		$intLinesFailed = 0;
+		$intFilesFailed = 0;
+		$intFilesPassed = 0;
+		
 		// for each file
 		foreach ($arrFiles as $arrFile)
 		{		
+			$this->_rptProvisioningReport->AddMessageVariables(MSG_IMPORT_LINE, Array("<Filename>" => $arrFile['FileName']), FALSE);
+			
 			// set status of file
 			$arrStatusData['Status']	= PROVFILE_READING;
 			$arrStatusData['Id']		= $arrFile['Id'];
@@ -134,31 +141,115 @@ die();
 			if (!$this->_prvCurrentModule)
 			{
 				// Report error: no module
+				$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED.MSG_ERROR_LINE_SHALLOW, Array('<Reason>' => "No Provisioning module found!"));
+				$intFilesFailed++;
+				continue;
+			}
+			else
+			{
+				$this->_rptProvisioningReport->AddMessage("");
 			}
 			
 			// read in file line by line
 			$resFile 		= fopen($arrFile['Location'], "r");
 			$arrFileData	= Array();
+			
+			$i = 0;
 			while (!feof($resFile))
 			{
+				$i++;
+				
+				// Report
+				$this->_rptProvisioningReport->AddMessageVariables(MSG_READING_LINE, Array('<LineNo>' => $i));
+				
 				// normalise this line
-				$this->_prvCurrentModule->Normalise(fgets($resFile));
+				if(($intError = $this->_prvCurrentModule->Normalise(fgets($resFile))) !== TRUE)
+				{
+					// Report on error
+					switch ($intError)
+					{
+						case PRV_TRAILER_RECORD:
+							$strReason = "Trailer Record";
+							break;
+						case PRV_HEADER_RECORD:
+							$strReason = "Header Record";
+							break;
+						case PRV_BAD_RECORD_TYPE:
+							$strReason = "Unkown Record Type";
+							break;
+						default:
+							$strReason = "Unknown Error";
+							break;
+					}
+					
+					$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
+					
+					$intLinesFailed++;
+					continue;
+				}
 				
 				// update requests table
-				$this->_prvCurrentModule->UpdateRequests();
+				if(!$this->_prvCurrentModule->UpdateRequests())
+				{
+					// Report on error
+					$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => "Updating Request table failed"));
+					
+					$intLinesFailed++;
+					continue;
+				}
 				
 				// update service table
-				$this->_prvCurrentModule->UpdateService();	
+				if(($mixError = $this->_prvCurrentModule->UpdateService()) !== TRUE)
+				{
+					// Report on error
+					if ($mixError == PRV_NO_SERVICE)
+					{
+						$strReason = "Cannot match to a service";
+					}
+					else
+					{
+						$strReason = "Updating Service table failed";
+					}
+					
+					$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
+					
+					$intLinesFailed++;
+					continue;
+				}
 				
 				// add to the log table
-				$this->_prvCurrentModule->AddToLog();
+				if(!$this->_prvCurrentModule->AddToLog())
+				{
+					// Report on error
+					$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => "Updating Log table failed"));
+					
+					$intLinesFailed++;
+					continue;
+				}
+				
+				// Add "OK" to report
+				$this->_rptProvisioningReport->AddMessage(MSG_OK);
+				
+				$intLinesPassed++;
 			}
 			fclose($resFile);
-
+			
+			$intFilesPassed++;
+			
 			// set status of file
-			$arrStatusData['Status']	= PROVFILE_COMPLETED;
+			$arrStatusData['Status']	= CDRFILE_WAITING;
 			$ubiSetFileStatus->Execute($arrStatusData);
 		}
+		
+		// Report
+		$arrMessageData['<Lines>']			= $intLinesPassed + $intLinesFailed;
+		$arrMessageData['<Files>']			= $intFilesPassed + $intFilesFailed;
+		$arrMessageData['<LinesPassed>']	= $intLinesPassed;
+		$arrMessageData['<LinesFailed>']	= $intLinesFailed;
+		$arrMessageData['<FilesPassed>']	= $intFilesPassed;
+		$arrMessageData['<FilesFailed>']	= $intFilesFailed;
+		$arrMessageData['<Time>']			= $this->Framework->LapWatch();
+		$this->_rptProvisioningReport->AddMessageVariables(MSG_IMPORT_REPORT, $arrMessageData);
 	}
 	
 	//------------------------------------------------------------------------//

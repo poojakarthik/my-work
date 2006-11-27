@@ -38,21 +38,24 @@ define("USER_NAME"						, "Provisioning_app");
 define("MSG_PROV_IMPORT"				, "[ Importing Provisioning Files ]\n");
 define("MSG_PROV_BUILD"					, "[ Building Provisioning Requests ]\n");
 define("MSG_PROV_SEND"					, "[ Sending Provisioning Requests ]\n");
-define("MSG_IMPORT_LINE"				, "\t+ Importing <Filename>...");
-define("MSG_READING_LINE"				, "\t\t+ Reading Line <LineNo>...");
-define("MSG_BUILDING_LINE"				, "\t+ Building request #<RequestId>...");
-define("MSG_SENDING_LINE"				, "\t+ Sending requests for <Carrier>...");
+define("MSG_IMPORT_LINE"				, "\t+ Importing <Filename>...\t\t\t\t");
+define("MSG_READING_LINE"				, "\t\t+ Reading Line <LineNo>...\t\t\t\t");
+define("MSG_BUILDING_LINE"				, "\t+ Building request #<RequestId>...\t\t\t\t");
+define("MSG_SENDING_LINE"				, "\t+ Sending requests for <Carrier>...\t\t\t\t");
 define("MSG_ERROR_LINE_SHALLOW"			, "\t\t- <Reason>");
-define("MSG_ERROR_LINE_DEEP"			, "\t\t\t- <Reason>");
+define("MSG_ERROR_LINE_DEEP"			, "\t\t\t- <Reason>\n");
 define("MSG_IMPORT_REPORT"				, "\n\tImported <Lines> lines (<Files> files) in <Time> seconds.\n\tLines: <LinesPassed> passed, <LinesFailed> failed; Files: <FilesPassed> passed, <FilesFailed> failed.\n");
 define("MSG_REPORT"						, "\n<Action> <Total> files in <Time> seconds.  <Pass> passed, <Fail> failed.");
 define("MSG_PROVISIONING_FOOTER"		, "\nProvisioning completed in <Time> seconds.");
+define("MSG_OK"							, "[   OK   ]");
+define("MSG_FAILED"						, "[ FAILED ]");
 
 // Success/Failure codes
 define("PRV_SUCCESS"					, 100);
 define("PRV_TRAILER_RECORD"				, 101);
 define("PRV_HEADER_RECORD"				, 102);
 define("PRV_BAD_RECORD_TYPE"			, 103);
+define("PRV_NO_SERVICE"					, 104);
 
 // Request Types
 define("REQUEST_FULL_SERVICE"			, 900);
@@ -77,5 +80,7 @@ define("REQUEST_STATUS_PENDING"			, 300);
 define("REQUEST_STATUS_REJECTED"		, 301);
 define("REQUEST_STATUS_COMPLETED"		, 302);
 
+// File Status
+define("PROV_COMPLETED"					, 999);
 
 ?>
