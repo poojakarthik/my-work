@@ -46,6 +46,8 @@ define("CDR_AAPT_STANDARD"			, 4);
 define("CDR_ISEEK_STANDARD"			, 5);
 
 // Provisioning Types
+define("PRV_TYPE_RANGE_MIN"				, 100);
+define("PRV_TYPE_RANGE_MAX"				, 199);
 define("PRV_UNITEL_DAILY_ORDER_RPT"		, 100);
 define("PRV_UNITEL_DAILY_STATUS_RPT"	, 101);
 define("PRV_UNITEL_BASKETS_RPT"			, 102);

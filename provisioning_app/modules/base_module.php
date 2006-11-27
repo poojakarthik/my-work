@@ -66,11 +66,11 @@
 		$this->db = $ptrDB;
 		
 		$this->_selMatchRequest	= new StatementSelect("Request", "*",
-			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "Date DESC", "1");
-		this->_ubiRequest		= new StatementUpdateById("Request");
+			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "RequestDate DESC", "1");
+		$this->_ubiRequest		= new StatementUpdateById("Request");
 		
 		// Default delimeter is NULL (fixedwidth)
-		$this->_strDelimiter;
+		$this->_strDelimiter	= NULL;
  	}
  	
  	//------------------------------------------------------------------------//

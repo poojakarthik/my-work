@@ -41,7 +41,7 @@
  * @package		provisioning
  * @class		ProvisioningModuleUnitel
  */
- class ProvisioningModuleUnitel
+ class ProvisioningModuleUnitel extends ProvisioningModule
  {
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -163,10 +163,10 @@
 		{
 			case "11":	// Migration Request
 			case "12":	// Churn to eBill
-				$arrRequestData['RequestType']	= REQUEST_FULL_SERVICE;		// FIXME: Undefined
+				$arrRequestData['RequestType']	= REQUEST_FULL_SERVICE;
 				break;
 			case "13":	// Virtual PreSelection
-				$arrRequestData['RequestType']	= REQUEST_PRESELECTION;		// FIXME: Undefined
+				$arrRequestData['RequestType']	= REQUEST_PRESELECTION;
 				break;
 			case "00":
 			default:
@@ -175,49 +175,49 @@
 		}
 		
 		// Default value for Log's Type field is "Other"
-		$arrLogData['Type']						= LINE_ACTION_OTHER;		// FIXME: Undefined
+		$arrLogData['Type']						= LINE_ACTION_OTHER;
 		
 		switch ($arrLineData['RecordType'])
 		{
 			case "S":	// Gain - new service
 			case "G":	// Gain - reversal
-				$arrRequestData	['RequestType']	= REQUEST_FULL_SERVICE;		// FIXME: Undefined
-				$arrServiceData	['LineStatus']	= LINE_ACTIVE;				// FIXME: Undefined
-				$arrLogData		['Type']		= LINE_ACTION_GAIN;			// FIXME: Undefined
+				$arrRequestData	['RequestType']	= REQUEST_FULL_SERVICE;
+				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
+				$arrLogData		['Type']		= LINE_ACTION_GAIN;
 				
 				// Attempt to match request
 				break;
 			case "E":	// Loss - commercial churn
 			case "O":	// Loss - other ASD
 			case "L":	// Loss - other CSP
-				$arrServiceData	['LineStatus']	= LINE_ACTIVE;				// FIXME: Undefined
-				$arrLogData		['Type']		= LINE_ACTION_LOSS;			// FIXME: Undefined
-				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);	// FIXME: Undefined
+				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
+				$arrLogData		['Type']		= LINE_ACTION_LOSS;
+				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);
 				break;
 			case "X":	// Loss - cancellation
-				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;			// FIXME: Undefined
-				$arrLogData		['Type']		= LINE_ACTION_LOSS;			// FIXME: Undefined
-				$arrLogData		['Description']	= DESCRIPTION_CANCELLED;	// FIXME: Undefined
+				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;
+				$arrLogData		['Type']		= LINE_ACTION_LOSS;
+				$arrLogData		['Description']	= DESCRIPTION_CANCELLED;
 				break;
 			case "N":	// Change - number
 			case "M":	// Change - address
 			case "B":	// Change - number & address
-				$arrLogData		['Type']		= LINE_ACTION_OTHER;		// FIXME: Undefined
+				$arrLogData		['Type']		= LINE_ACTION_OTHER;
 				break;
 			case "P":	// Order pending with Telstra
 			case "W":	// Order waiting to be processed
 			case "A":	// Order actioned by WeBill
-				$arrRequestData	['Status']		= REQUEST_STATUS_PENDING;	// FIXME: Undefined
+				$arrRequestData	['Status']		= REQUEST_STATUS_PENDING;
 				break;
 			case "D":	// Order disqualified by WeBill
 			case "R":	// Order rejected by Telstra
-				$arrRequestData	['Status']		= REQUEST_STATUS_REJECTED;	// FIXME: Undefined
+				$arrRequestData	['Status']		= REQUEST_STATUS_REJECTED;
 				break;
 			case "C":	// Order completed by Telstra
-				$arrRequestData	['Status']		= REQUEST_STATUS_COMPLETED;	// FIXME: Undefined
+				$arrRequestData	['Status']		= REQUEST_STATUS_COMPLETED;
 				break;
 			default:	// Unknown Record Type
-				return PRV_BAD_RECORD_TYPE;									// FIXME: Undefined
+				return PRV_BAD_RECORD_TYPE;
 		}
 				
 		// Add split line to File data array
@@ -276,7 +276,7 @@
  	function UpdateService()
 	{
 		// TODO
-	} 	
+	}
  
  
   	//------------------------------------------------------------------------//

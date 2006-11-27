@@ -28,7 +28,12 @@
 echo "<pre>";
 
 // Application entry point - create an instance of the application object
-$appSkel = new ApplicationProvisioning($arrConfig);
+$appProvisioining = new ApplicationProvisioning($arrConfig);
+
+$appProvisioining->Import();
+//$appProvisioining->Export();
+
+$appProvisioining->FinaliseReport();
 
 // finished
 echo("\n-- End of Provisioning --\n");
@@ -82,6 +87,8 @@ die();
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_STATUS_RPT]	= new ProvisioningModuleUnitel(&$this->db);
  		//$this->_arrProvisioningModules[PROV_AAPT_ALL]				= new ProvisioningModuleAAPT(&$this->db);
  		//$this->_arrProvisioningModules[PROV_OPTUS_ALL]				= new ProvisioningModuleOptus(&$this->db);
+ 		
+ 		$this->Framework->StartWatch();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -102,15 +109,13 @@ die();
 	function Import()
 	{
 		// Init Statements
-		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".PROVFILE_WAITING);
+		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".CDRFILE_WAITING." AND FileType >= ".PRV_TYPE_RANGE_MIN." AND FileType <= ".PRV_TYPE_RANGE_MAX);
 		$ubiSetFileStatus		= new StatementUpdateById("FileImport", Array('Status' => NULL));
 		$selGetLineStatus		= new StatementSelect("Service", "*", "FNN = <FNN>");
-		$updSetLineStatus		= new StatementUpdate("Service", "FNN = <FNN>", Array('Status' => NULL));
-		$updUpdateRequestsGain	= new StatementUpdate("Requests", "FNN = <FNN> AND Carrier = <Carrier> AND RequestType = ".REQUEST_GAIN, Array('GainDate' => NULL));
-		$updUpdateRequestsLoss	= new StatementUpdate("Requests", "FNN = <FNN> AND Carrier = <Carrier> AND RequestType = ".REQUEST_LOSS, Array('LossDate' => NULL));
-		
+		$updSetLineStatus		= new StatementUpdate("Service", "FNN = <FNN>", Array('LineStatus' => NULL));
+
 		// Report header
-		// TODO
+		$this->_rptProvisioningReport->AddMessage(MSG_PROV_IMPORT);
 		
 		// get list of provisioning files
 		$selGetFiles->Execute();
@@ -126,6 +131,10 @@ die();
 			
 			// Set current module
 			$this->_prvCurrentModule = $this->_arrProvisioningModules[$arrFile['FileType']];
+			if (!$this->_prvCurrentModule)
+			{
+				// Report error: no module
+			}
 			
 			// read in file line by line
 			$resFile 		= fopen($arrFile['Location'], "r");
@@ -206,10 +215,37 @@ die();
 			}
 			$ubiUpdateRequest->Execute($arrRequest);
 		}
-		//for each carrier
-		//TODO!!!!
-				// send request
-				$this->_prvCurrentModule()->SendRequest();
+
+		// Send off requests for each module		
+		foreach ($this->_arrProvisioningModule as $prvModule)
+		{
+			// send request
+			$prvModule->SendRequest();
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// FinaliseReport
+	//------------------------------------------------------------------------//
+	/**
+	 * FinaliseReport()
+	 *
+	 * Finalises the Billing Report
+	 *
+	 * Adds a footer to the report and sends it off
+	 * 
+	 *
+	 * @return		integer		No of emails sent
+	 *
+	 * @method
+	 */
+ 	function FinaliseReport()
+ 	{
+		// Add Footer
+		$this->_rptProvisioningReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE.MSG_PROVISIONING_FOOTER, Array('<Time>' => $this->Framework->SplitWatch()));
+		
+		// Send off the report
+		return $this->_rptProvisioningReport->Finish();
 	}
  }
 

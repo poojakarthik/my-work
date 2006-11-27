@@ -52,6 +52,7 @@
  		$arrConfig['Define']["Unitel"]	["Username"]						= "sp058";
  		$arrConfig['Define']["Unitel"]	["PWord"]							= "BuzzaBee06*#";
  		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "cdrbatchesoffnet/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "mobilecdrbatches/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';

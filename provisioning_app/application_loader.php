@@ -93,7 +93,7 @@
  * @variable
  * @package	framework
  */
- $strModuleDir		= strApplicationDir."/modules/"; 
+ $strModuleDir		= $strApplicationDir."modules/"; 
 
 
 
@@ -118,10 +118,9 @@ $framework = $GLOBALS['fwkFramework'];
 
 // load modules
 require_once($strModuleDir."base_module.php");
-require_once($strModuleDir."module_unitel_reject.php");
-require_once($strModuleDir."module_unitel_status.php");
-require_once($strModuleDir."module_optus.php");
-require_once($strModuleDir."module_aapt.php");
+require_once($strModuleDir."module_unitel.php");
+//require_once($strModuleDir."module_optus.php");
+//require_once($strModuleDir."module_aapt.php");
 
 // load application 
 require_once($strApplicationDir."definitions.php");
