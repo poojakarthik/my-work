@@ -60,6 +60,12 @@ define("PRV_NO_SERVICE"					, 104);
 // Request Types
 define("REQUEST_FULL_SERVICE"			, 900);
 define("REQUEST_PRESELECTION"			, 901);
+define("REQUEST_BAR"					, 902);
+define("REQUEST_UNBAR"					, 903);
+define("REQUEST_ACTIVATION"				, 904);
+define("REQUEST_DEACTIVATION"			, 905);
+define("REQUEST_PRESELECTION_REVERSE"	, 906);
+define("REQUEST_FULL_SERVICE_REVERSE"	, 907);
 
 // Line actions (Log)
 define("LINE_ACTION_OTHER"				, 600);
@@ -76,11 +82,15 @@ define("DESCRIPTION_LOST_TO"			, "Service lost to ");
 define("DESCRIPTION_CANCELLED"			, "Service cancelled");
 
 // Request Status
-define("REQUEST_STATUS_PENDING"			, 300);
-define("REQUEST_STATUS_REJECTED"		, 301);
-define("REQUEST_STATUS_COMPLETED"		, 302);
+define("REQUEST_STATUS_WAITING"			, 300);
+define("REQUEST_STATUS_PENDING"			, 301);
+define("REQUEST_STATUS_REJECTED"		, 302);
+define("REQUEST_STATUS_COMPLETED"		, 303);
 
 // File Status
 define("PROV_COMPLETED"					, 999);
+
+// Sequence number starts
+define("SEQUENCE_START_UNITEL"			, 1);
 
 ?>

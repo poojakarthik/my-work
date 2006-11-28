@@ -399,24 +399,105 @@
 	 *
 	 * Sends the current request
 	 *
-	 * @return		boolean
+	 * @return		integer						Number of requests sent in the file
 	 *
 	 * @method
 	 */
  	function SendRequest()
 	{
+		// Get the latest Sequence Number
+		$this->_selGetSequence->Execute(Array('Carrier' => CARRIER_UNITEL));
+		if ($arrResult = $this->_selGetSequence->Fetch())
+		{
+			// Increment the  sequence number by 1
+			$intSequence = $arrResult['Sequence'] + 1;
+		}
+		else
+		{
+			// No entries, so start sequence from scratch
+			$intSequence = SEQUENCE_START_UNITEL;
+		}
+				
 		// Build Header Row
-		$strFilename = "058rslw".str_pad(TODO_GET_SEQUENCE_NUMBER, 4, "0", STR_PAD_LEFT).date("Ymd").".txt";
+		$strFilename = "058rslw".str_pad($intSequence, 4, "0", STR_PAD_LEFT).date("Ymd").".txt";
 		$strHeaderRow = "01".$strFilename;
 		
 		// Build Footer Row
 		$strFooterRow = "99".str_pad(count($this->_arrRequests), 7, "0", STR_PAD_LEFT);
 		
-		// Write text file
-		// TODO
-		
-		// Upload to FTP
-		// TODO
+		// Get list of requests to generate
+		$this->_selGetFullServiceRequests->Execute(Array('Carrier' => CARRIER_UNITEL));
+		$arrResults = $this->_selGetRequests->FetchAll();
+		if($arrResults)
+		{		
+			$arrRequest = Array();
+			
+			// Generate File
+			foreach ($arrResults as $arrResult)
+			{
+				switch ($arrResult['RequestType'])
+				{
+					case REQUEST_FULL_SERVICE:
+						$arrRequest['RecordType']				= "12";
+						$arrRequest['RecordSequence']			= "000000000";
+						$arrRequest['ServiceNumber']			= str_pad($arrResult['FNN'], 17, " ", STR_PAD_RIGHT);
+						$arrRequest['BasketNumber']				= "000";
+						$arrRequest['CASignedDate']				= "        ";
+						$arrRequest['BillName']					= str_pad($arrAddress['BillName'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['BillAddress1']				= str_pad($arrAddress['BillAddress1'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['BillAddress2']				= str_pad($arrAddress['BillAddress2'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['BillLocality']				= str_pad($arrAddress['BillLocality'], 23, " ", STR_PAD_RIGHT);
+						$arrRequest['BillPostcode']				= $arrAddress['BillPostcode'];
+						$arrRequest['EndUserTitle']				= str_pad($arrAddress['EndUserTitle'], 4, " ", STR_PAD_RIGHT);
+						$arrRequest['EndUserGivenName']			= str_pad($arrAddress['EndUserGivenName'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['EndUserLastName']			= str_pad($arrAddress['EndUserFamilyName'], 50, " ", STR_PAD_RIGHT);
+						$arrRequest['EndUserCompany']			= str_pad($arrAddress['EndUserCompany'], 50, " ", STR_PAD_RIGHT);
+						$arrRequest['DateOfBirth']				= $arrAddress['DateOfBirth'];
+						$arrRequest['Employer']					= str_pad($arrAddress['Employer'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['Occupation']				= str_pad($arrAddress['Occupation'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['ABN']						= str_pad($arrAddress['ABN'], 11, " ", STR_PAD_RIGHT);
+						$arrRequest['TradingName']				= str_pad($arrAddress['TradingName'], 50, " ", STR_PAD_RIGHT);
+						$arrRequest['ServiceAddressType']		= str_pad($arrAddress['ServiceAddressType'], 3, " ", STR_PAD_RIGHT);
+						$arrRequest['ServiceAddressTypeNo']		= str_pad($arrAddress['ServiceAddressTypeNumber'], 5, "0", STR_PAD_LEFT);
+						$arrRequest['ServiceAddressTypeSuffix']	= str_pad($arrAddress['ServiceAddressTypeSuffix'], 2, " ", STR_PAD_RIGHT);
+						$arrRequest['ServiceStreetNumberStart']	= str_pad($arrAddress['ServiceStreetNumberStart'], 5, "0", STR_PAD_LEFT);
+						$arrRequest['ServiceStreetNumberEnd']	= str_pad($arrAddress['ServiceStreetNumberEnd'], 5, "0", STR_PAD_LEFT);
+						$arrRequest['ServiceStreetNoSuffix']	= str_pad($arrAddress['ServiceStreetNumberSuffix'], 1, " ", STR_PAD_RIGHT);
+						$arrRequest['ServiceStreetName']		= str_pad($arrAddress['ServiceStreetName'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['ServiceStreetType']		= str_pad($arrAddress['ServiceStreetType'], 4, " ", STR_PAD_RIGHT);
+						$arrRequest['ServiceStreetTypeSuffix']	= str_pad($arrAddress['ServiceStreetTypeSuffix'], 2, " ", STR_PAD_RIGHT);
+						$arrRequest['ServicePropertyName']		= str_pad($arrAddress['ServicePropertyName'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['ServiceLocality']			= str_pad($arrAddress['ServiceLocality'], 30, " ", STR_PAD_RIGHT);
+						$arrRequest['ServiceState']				= str_pad($arrAddress['ServiceState'], 3, " ", STR_PAD_RIGHT);
+						$arrRequest['ServicePostcode']			= $arrAddress['ServicePostcode'];
+						
+						// Make a record for each of the baskets
+						for ($i = 1; $i < 6; $i++)
+						{
+							$intSequence++;
+							$arrRequest['BasketNumber']			= "00".$i;
+							$arrRequest['RecordSequence']		= str_pad($intSequence, 9, "0", STR_PAD_LEFT);
+						}
+						
+						break;
+					case REQUEST_PRESELECTION:
+						break;
+				}
+			}
+			
+			// Upload to FTP
+			// TODO
+		}
+		elseif($arrResult === FALSE)
+		{
+			// There was an error, return FALSE
+			return FALSE;
+		}
+		else
+		{
+			// There were no requests to send, return 0
+			return 0;
+		}
 	} 	
 	
 	//------------------------------------------------------------------------//
