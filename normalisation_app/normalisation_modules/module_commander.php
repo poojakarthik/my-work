@@ -70,7 +70,7 @@ class NormalisationModuleCommander extends NormalisationModule
 		
 		// define the carrier CDR format
 		$arrDefine ['EventId']			['Index']		= 0;	// Unique Identifier
-		$arrDefine ['RecordType']		['Index']		= 1;	// 1 = Usage; 7 = S&E; 8 = OC&C
+		$arrDefine ['RecordType']		['Index']		= 1;	//
 		$arrDefine ['DateTime']			['Index']		= 2;	// Starting Datetime of the call
 		$arrDefine ['Duration']			['Index']		= 3;	// Duration in seconds
 		$arrDefine ['OriginNo']			['Index']		= 4;	// Originating phone number

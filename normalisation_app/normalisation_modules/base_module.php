@@ -569,13 +569,58 @@ abstract class NormalisationModule
 	 *
 	 * Applies ownership based on the FNN
 	 * 
-	 * @param	
 	 *
-	 * @return	array					
+	 * @return	bool					
 	 *
 	 * @method
 	 */
 	 protected function ApplyOwnership()
+	 {
+
+	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
+		
+	 	if ($arrResult = $this->_selFindOwner->Fetch())
+	 	{
+	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
+	 		$this->_arrNormalisedData['Account']		= $arrResult['Account'];
+	 		$this->_arrNormalisedData['Service']		= $arrResult['Id'];
+	 		return true;
+	 	}
+	 	else
+	 	{
+	 		$arrParams['fnn'] = substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
+	 		
+	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
+	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
+	 		{
+	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
+	 			$this->_arrNormalisedData['Account']		= $arrResult['Account'];
+	 			$this->_arrNormalisedData['Service']		= $arrResult['Id'];
+	 			return true;
+	 		}
+	 	}
+	 	
+		// Return false if there was no match, or more than one match
+		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
+	 	return false;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// FindRecordType
+	//------------------------------------------------------------------------//
+	/**
+	 * FindRecordType()
+	 *
+	 * Find the record type for the current CDR
+	 *
+	 * Find the record type for the current CDR
+	 * 
+	 *
+	 * @return	bool					
+	 *
+	 * @method
+	 */
+	 protected function FindRecordType()
 	 {
 
 	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));

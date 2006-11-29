@@ -1932,12 +1932,13 @@ class MySQLFunction
 	 * 										you want to update, where the keys are the column names.
 	 * 										If you want to update everything, ignore
 	 * 										this parameter
+	 * @param		int		intLimit		optional LIMIT
 	 *
 	 * @return		void
 	 *
 	 * @method
 	 */ 
-	 function __construct($strTable, $mixWhere, $arrColumns = null)
+	 function __construct($strTable, $mixWhere, $arrColumns = null, $intLimit = null)
 	 {
 		parent::__construct();
 		
@@ -2001,6 +2002,12 @@ class MySQLFunction
 	 		throw new Exception();
 	 	}
 	 	
+		// Add the LIMIT clause
+	 	if ((int)$intLimit)
+	 	{
+			$strQuery .= " LIMIT ".(int)$intLimit;
+		}
+		
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	

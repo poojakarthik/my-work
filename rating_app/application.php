@@ -17,7 +17,7 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		Skeleton_application
+ * @package		rating_application
  * @author		Jared 'flame' Herbohn
  * @version		6.11
  * @copyright	2006 VOIPTEL Pty Ltd
@@ -30,8 +30,16 @@ echo "<pre>";
 // Application entry point - create an instance of the application object
 $appRating = new ApplicationRating($arrConfig);
 
-// run the thing
-$appRating->Rate();
+// run the Rate method until there is nothing left to rate
+while ($appRating->Rate())
+{
+	//REMOVE FOR LIVE SYSTEM
+	// break here to only rate 1000 CDRs
+	break;
+}
+
+
+//TODO!!!! - send the report
 
 // finished
 echo("\n-- End of Rating --\n");
@@ -147,7 +155,9 @@ die();
 	 * Rate CDR Records
 	 *
 	 * Rates CDR Records
+	 * Rates the next batch of 1000 normalised ready to rate CDRs in the database
 	 *
+	 * @return	bool	returns true untill all CDRs have been rated
 	 * @method
 	 */
 	 function Rate()
@@ -156,6 +166,9 @@ die();
 	 	$selGetCDRs = new StatementSelect("CDR", "*", "Status = ".CDR_NORMALISED, null, "1000");
 	 	$selGetCDRs->Execute();
 		$arrCDRList = $selGetCDRs->FetchAll();
+		
+		// we will return FALSE if there are no CDRs to rate
+		$bolReturn = FALSE;
 		
 		$updSaveCDR = new StatementUpdateById("CDR");
 		
@@ -167,6 +180,9 @@ die();
 		// Loop through each CDR
 		foreach($arrCDRList as $arrCDR)
 		{
+			// return FALSE if we have rated (or tried to rate) any CDRs
+			$bolReturn = TRUE;
+		
 			// Report
 			$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
 			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises, FALSE);
@@ -288,8 +304,60 @@ die();
 		$arrAliases['<Pass>']	= $intPassed;
 		$arrAliases['<Fail>']	= $intFailed;
 		$this->_rptRatingReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE.MSG_REPORT, $arrAliases, FALSE);
+		
+		// Return TRUE or FALSE
+		return $bolReturn;
 	 }
-	 
+	
+	//------------------------------------------------------------------------//
+	// DeRate
+	//------------------------------------------------------------------------//
+	/**
+	 * DeRate()
+	 *
+	 * DeRate CDR Records
+	 *
+	 * DeRate CDR Records
+	 * DeRate un-invoiced CDRs
+	 *
+	 * @param	mixed	$mixWhere	array to be used as a WHERE clause when selecting
+	 *								CDRs to derate. Most usefull would be;
+	 *								$arrWhere['Account']	Id of account
+	 *								$arrWhere['Service']	Id of service
+	 *								$arrWhere['File']		Id of file
+	 *								can also be a string WHERE clause
+	 *
+	 * @return	int		number of records derated
+	 * @method
+	 */
+	 function DeRate($mixWhere)
+	 {
+	 	// convert the WHERE clause to a string
+		// NOTE !!!! - this will break if $this->_selFindRate is ever not instanciated in the constructor
+		$strWhere = $this->_selFindRate->PrepareWhere($mixWhere);
+		
+		// don't derate invoiced or temp invoiced CDRs
+		if ($strWhere)
+		{
+			$strWhere .= " AND Status <> ".CDR_INVOICED." AND Status <> ".CDR_TEMP_INVOICE." ";
+		}
+		else
+		{
+			$strWhere .= " Status <> ".CDR_INVOICED." AND Status <> ".CDR_TEMP_INVOICE." ";
+		}
+		
+		// set up derating database object
+		//TODO!!!!
+		// $updDeRate = new ....
+		
+		// run the update query
+		//TODO!!!!
+		//$updDeRate->Execute($arrData, $arrWhere);
+		
+		// return the number of affected Rows
+		// TODO!!!!
+	 }
+	
 	//------------------------------------------------------------------------//
 	// _FindRate
 	//------------------------------------------------------------------------//
@@ -452,7 +520,7 @@ die();
 			}
 		
 			// calculate over cap limit charges
-			if ($intUnits > $intCapUsage)
+			if ($intCapUsage && $intUnits > $intCapUsage)
 			{
 				// calculate excess units
 				$intExsUnits = $intUnits - $intCapUsage;
@@ -460,7 +528,7 @@ die();
 				// resend to Zeemus magic rating formular with excess units
 				$fltCharge += $this->_ZeemusMagicRatingFormula('Exs', $intExsUnits);
 			}
-			elseif ($fltFullCharge > $fltCapLimit)
+			elseif ($fltCapLimit && $fltFullCharge > $fltCapLimit)
 			{
 				// calculate excess charge
 				$fltCharge += ($fltFullCharge - $fltCapLimit);

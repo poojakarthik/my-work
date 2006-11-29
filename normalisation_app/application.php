@@ -17,7 +17,7 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		framework
+ * @package		normalisation_application
  * @author		Rich Davis
  * @version		6.11
  * @copyright	2006 VOIPTEL Pty Ltd

@@ -128,7 +128,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['RevenueCallType']	['Start']		= 7;
 		$arrDefine ['RevenueCallType']	['Length']		= 3;
 
-		$arrDefine ['LocatiotCallType']	['Index']		= 6;	// 3 digits
+		$arrDefine ['LocationCallType']	['Index']		= 6;	// 3 digits
 		$arrDefine ['RateTable']		['Index']		= 7;	// 2-5 digits
 		$arrDefine ['Destination']		['Index']		= 8;	// city called
 		$arrDefine ['NumberDialled']	['Index']		= 9;	// digits dialled by customer
