@@ -57,6 +57,7 @@ define("REGEX_ISEEK"				, "");
 define("REGEX_RSL_ORDER_RPT"		, "/^rsl\d{3}w\d{4}\d{4}[01]\d[0-3]\d.txt$/");
 define("REGEX_RSL_STATUS_RPT"		, "/^rsl\d{3}d\d{4}[01]\d[0-3]\d\_[0-2]\d[0-5]\d[0-5]\d.txt$/");
 define("REGEX_RSL_BASKETS"			, "/^rsl\d{3}a\d{4}\d{4}[01]\d[0-3]\d.txt$/");
+define("REGEX_RSL_PRESELECTION"		, "/^rssaw\d{4}\d{4}[01]\d[0-3]\d$/");
 
 // CDR File Handling (Range is 200-299)
 define("RAWFILE_DOWNLOADED"			, 250);

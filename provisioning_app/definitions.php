@@ -66,6 +66,7 @@ define("REQUEST_ACTIVATION"				, 904);
 define("REQUEST_DEACTIVATION"			, 905);
 define("REQUEST_PRESELECTION_REVERSE"	, 906);
 define("REQUEST_FULL_SERVICE_REVERSE"	, 907);
+define("REQUEST_PRESELECTION_REVERSAL"	, 908);
 
 // Line actions (Log)
 define("LINE_ACTION_OTHER"				, 600);
@@ -92,5 +93,9 @@ define("PROV_COMPLETED"					, 999);
 
 // Sequence number starts
 define("SEQUENCE_START_UNITEL"			, 1);
+
+// File Directories (incl trailing "/")
+define("UNITEL_DAILY_ORDER_DIR"			, "/home/vixen_upload/unitel/dailyorderfiles/");
+define("UNITEL_PRESELECTION_DIR"		, "/home/vixen_upload/unitel/preselectionfiles/");
 
 ?>

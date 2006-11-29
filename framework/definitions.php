@@ -34,6 +34,13 @@
 // debug mode
 define("DEBUG_MODE"					, TRUE);
 
+// Applications
+define("APPLICATION_COLLECTION"		, 0);
+define("APPLICATION_NORMALISATION"	, 1);
+define("APPLICATION_RATING"			, 2);
+define("APPLICATION_BILLING"		, 3);
+define("APPLICATION_PROVISIONING"	, 4);
+
 // friendly error msg
 define("ERROR_MESSAGE"				, "an error occured... sucks to be you");
 
@@ -46,15 +53,16 @@ define("CDR_AAPT_STANDARD"			, 4);
 define("CDR_ISEEK_STANDARD"			, 5);
 
 // Provisioning Types
-define("PRV_TYPE_RANGE_MIN"				, 100);
-define("PRV_TYPE_RANGE_MAX"				, 199);
 define("PRV_UNITEL_DAILY_ORDER_RPT"		, 100);
 define("PRV_UNITEL_DAILY_STATUS_RPT"	, 101);
 define("PRV_UNITEL_BASKETS_RPT"			, 102);
 define("PRV_UNITEL_OUT"					, 103);
 define("PRV_OPTUS_ALL"					, 104);
 define("PRV_AAPT_ALL"					, 105);
+define("PRV_UNITEL_PRESELECTION_RPT"	, 106);
 
+define("PRV_TYPE_RANGE_MIN"				, 100);
+define("PRV_TYPE_RANGE_MAX"				, 199);
 
 // Carriers
 define("CARRIER_UNITEL"	, 1);
