@@ -61,8 +61,11 @@ define("PRV_OPTUS_ALL"					, 104);
 define("PRV_AAPT_ALL"					, 105);
 define("PRV_UNITEL_PRESELECTION_RPT"	, 106);
 
-define("PRV_TYPE_RANGE_MIN"				, 100);
-define("PRV_TYPE_RANGE_MAX"				, 199);
+define("PRV_UNITEL_PRESELECTION_EXP"	, 150);
+define("PRV_UNITEL_DAILY_ORDER_EXP"		, 151);
+
+define("PRV_IMPORT_RANGE_MIN"			, 100);
+define("PRV_IMPORT_RANGE_MAX"			, 149);
 
 // Carriers
 define("CARRIER_UNITEL"	, 1);

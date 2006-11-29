@@ -86,35 +86,8 @@
 		$arrDefine ['Sequence']		['Start']		= 1;
 		$arrDefine ['Sequence']		['Length']		= 5;
 		
-		$arrDefine ['OrderId']		['Start']		= 6;
-		$arrDefine ['OrderId']		['Length']		= 9;
-
-		$arrDefine ['OrderType']	['Start']		= 15;
-		$arrDefine ['OrderType']	['Length']		= 2;
-		
-		$arrDefine ['OrderDate']	['Start']		= 17;
-		$arrDefine ['OrderDate']	['Length']		= 8;
-		
-		$arrDefine ['ServiceNo']	['Start']		= 25;
-		$arrDefine ['ServiceNo']	['Length']		= 29;
-		
-		$arrDefine ['Basket']		['Start']		= 54;
-		$arrDefine ['Basket']		['Length']		= 3;
-		
-		$arrDefine ['EffectiveDate']['Start']		= 57;
-		$arrDefine ['EffectiveDate']['Length']		= 8;
-		
-		$arrDefine ['NewNo']		['Start']		= 65;
-		$arrDefine ['NewNo']		['Length']		= 29;
-		
-		$arrDefine ['ReasonCode']	['Start']		= 94;
-		$arrDefine ['ReasonCode']	['Length']		= 3;
-		
-		$arrDefine ['LostTo']		['Start']		= 97;
-		$arrDefine ['LostTo']		['Length']		= 3;
-		
-		$arrDefine ['RSLReference']	['Start']		= 100;
-		$arrDefine ['RSLReference']	['Length']		= 9;					
+		$arrDefine ['Description']	['Start']		= 6;
+		$arrDefine ['Description']	['Length']		= 9;
 		
 		$this->_arrDefineInput = $arrDefine;
 		
@@ -152,88 +125,8 @@
 			return PRV_HEADER_RECORD;
 		}
 		
-		// ServiceId
-		$arrRequestData	['ServiceId']	= RemoveAusCode($arrLineData['ServiceNo']);
-		$arrLogData		['ServiceId']	= $arrRequestData['ServiceId'];
-		
-		// Date
-		$arrRequestData	['Date']		= $this->_ConvertDate($arrLineData['EffectiveDate']);
-		$arrLogData		['Date']		= date("Y-m-d");
-		
-		// Carrier
-		$arrLogData		['Carrier']		= CARRIER_UNITEL;
-		$arrRequestData	['Carrier']		= CARRIER_UNITEL;
-		$arrServiceData	['Carrier']		= CARRIER_UNITEL;
-		
-		// Request Type
-		switch ($arrLineData['OrderType'])
-		{
-			case "11":	// Migration Request
-			case "12":	// Churn to eBill
-				$arrRequestData['RequestType']	= REQUEST_FULL_SERVICE;
-				break;
-			case "13":	// Virtual PreSelection
-				$arrRequestData['RequestType']	= REQUEST_PRESELECTION;
-				break;
-			case "00":
-			default:
-				// Either unhandled or not required
-				break;
-		}
-		
-		// Default value for Log's Type field is "Other"
-		$arrLogData['Type']						= LINE_ACTION_OTHER;
-		
-		switch ($arrLineData['RecordType'])
-		{
-			case "S":	// Gain - new service
-			case "G":	// Gain - reversal
-				$arrRequestData	['RequestType']	= REQUEST_FULL_SERVICE;
-				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
-				$arrLogData		['Type']		= LINE_ACTION_GAIN;
-				
-				// Attempt to match request
-				break;
-			case "E":	// Loss - commercial churn
-			case "O":	// Loss - other ASD
-			case "L":	// Loss - other CSP
-				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
-				$arrLogData		['Type']		= LINE_ACTION_LOSS;
-				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);
-				break;
-			case "X":	// Loss - cancellation
-				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;
-				$arrLogData		['Type']		= LINE_ACTION_LOSS;
-				$arrLogData		['Description']	= DESCRIPTION_CANCELLED;
-				break;
-			case "N":	// Change - number
-			case "M":	// Change - address
-			case "B":	// Change - number & address
-				$arrLogData		['Type']		= LINE_ACTION_OTHER;
-				break;
-			case "P":	// Order pending with Telstra
-			case "W":	// Order waiting to be processed
-			case "A":	// Order actioned by WeBill
-				$arrRequestData	['Status']		= REQUEST_STATUS_PENDING;
-				break;
-			case "D":	// Order disqualified by WeBill
-			case "R":	// Order rejected by Telstra
-				$arrRequestData	['Status']		= REQUEST_STATUS_REJECTED;
-				break;
-			case "C":	// Order completed by Telstra
-				$arrRequestData	['Status']		= REQUEST_STATUS_COMPLETED;
-				break;
-			default:	// Unknown Record Type
-				return PRV_BAD_RECORD_TYPE;
-		}
-		
-		// Basket
-		$arrServiceData['Basket']	= (int)$arrLineData['Basket'];
-				
-		// Add split line to File data array
-		$this->_arrRequest	= $arrRequestData;
-		$this->_arrService	= $arrServiceData;
-		$this->_arrLog		= $arrLogData;
+		// Grab the data we need from the line
+		// TODO
 		
 		return TRUE;
 	} 	
