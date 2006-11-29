@@ -83,10 +83,18 @@ die();
 		$this->_rptProvisioningReport = new Report("Provisioning Report for ".date("Y-m-d H:i:s", time()), "rich@voiptelsystems.com.au");
 		$this->_rptProvisioningReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
-		// Init Provisioning Modules (handle both input and output)
-		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_STATUS_RPT]	= new ProvisioningModuleUnitel(&$this->db);
- 		//$this->_arrProvisioningModules[PROV_AAPT_ALL]				= new ProvisioningModuleAAPT(&$this->db);
- 		//$this->_arrProvisioningModules[PROV_OPTUS_ALL]				= new ProvisioningModuleOptus(&$this->db);
+		// Init Provisioning Import Modules
+		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_STATUS_RPT]	= new ProvisioningModuleImportUnitelStatus(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_RPT]	= new ProvisioningModuleImportUnitelPreselection(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_RPT]	= new ProvisioningModuleImportUnitelOrder(&$this->db);
+ 		//$this->_arrProvisioningModules[PROV_AAPT_IMPORT]			= new ProvisioningModuleAAPT(&$this->db);
+ 		//$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleOptus(&$this->db);
+ 		
+ 		// Init Provisioning Export Modules
+		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
+ 		//$this->_arrProvisioningModules[PROV_AAPT_EXPORT]			= new ProvisioningModuleAAPT(&$this->db);
+ 		//$this->_arrProvisioningModules[PROV_OPTUS_EXPORT]			= new ProvisioningModuleOptus(&$this->db);
  		
  		$this->Framework->StartWatch();
 	}
@@ -109,7 +117,7 @@ die();
 	function Import()
 	{
 		// Init Statements
-		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".CDRFILE_WAITING." AND FileType >= ".PRV_TYPE_RANGE_MIN." AND FileType <= ".PRV_TYPE_RANGE_MAX);
+		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".CDRFILE_WAITING." AND FileType >= ".PRV_IMPORT_RANGE_MIN." AND FileType <= ".PRV_IMPORT_RANGE_MAX);
 		$ubiSetFileStatus		= new StatementUpdateById("FileImport", Array('Status' => NULL));
 		$selGetLineStatus		= new StatementSelect("Service", "*", "FNN = <FNN>");
 		$updSetLineStatus		= new StatementUpdate("Service", "FNN = <FNN>", Array('LineStatus' => NULL));
@@ -282,13 +290,21 @@ die();
 			switch ($arrRequest['Carrier'])
 			{
 				case CARRIER_UNITEL:
-					$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_UNITEL_OUT];
+					switch ($arrRequest['RequestType'])
+					{
+						case REQUEST_FULL_SERVICE:
+							$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_UNITEL_DAILY_ORDER_EXP];
+							break;
+						default:
+							$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_UNITEL_PRESELECTION_EXP];
+							break;
+					}
 					break;
 				case CARRIER_OPTUS:
-					$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_OPTUS_ALL];
+					//$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_OPTUS_ALL];
 					break;
 				case CARRIER_AAPT:
-					$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_AAPT_ALL];
+					//$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_AAPT_ALL];
 					break;
 				default:
 					// There is a problem, Report
