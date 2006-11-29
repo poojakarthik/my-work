@@ -425,6 +425,9 @@
 			// add each element
 			foreach($mixWhere as $strKey=>$strValue)
 			{
+				// set column to key
+				$strColumn = $strKey;
+				
 				// set orerator to default value
 				$strOperator		= $strDefaultOperator;
 				
@@ -437,10 +440,10 @@
 						// get the operator if available
 						$strOperator	= $strValue['Operator'];
 					}
-					if ($strValue['Key'])
+					if ($strValue['Column'])
 					{
 						// get the key if available
-						$strKey	= $strValue['Key'];
+						$strColumn	= $strValue['Column'];
 					}
 					$strValue		= $strValue['Value'];
 				}
@@ -451,7 +454,7 @@
 				}
 			
 				// add element
-				$arrWhere[] = "$strKey $strOperator $strValue";
+				$arrWhere[] = "$strColumn $strOperator $strValue";
 			}
 			
 			// join elements
