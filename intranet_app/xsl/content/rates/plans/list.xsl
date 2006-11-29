@@ -71,7 +71,7 @@
 							<td><xsl:value-of select="position()" />.</td>
 							<td><xsl:value-of select="./Id" /></td>
 							<td><xsl:value-of select="./Name" /></td>
-							<td><xsl:value-of select="./NamedServiceType" /></td>
+							<td><xsl:value-of select="./NamedServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 							<td>
 								<xsl:choose>
 									<xsl:when test="./Archived = 1">
@@ -90,7 +90,17 @@
 										<xsl:text>&amp;constraint[RatePlan][Value]=</xsl:text>
 										<xsl:value-of select="./Id" />
 									</xsl:attribute>
-									View Associated Rate Groups
+									View Rate Plan Details
+								</a>
+								|
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>rates_group_list.php</xsl:text>
+										<xsl:text>?constraint[RatePlan][Operator]=EQUALS</xsl:text>
+										<xsl:text>&amp;constraint[RatePlan][Value]=</xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+									View Rate Groups
 								</a>
 							</td>
 						</tr>

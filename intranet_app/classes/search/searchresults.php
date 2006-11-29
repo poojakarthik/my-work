@@ -86,7 +86,8 @@
 			
 			foreach ($oblarrConstraints AS $Item)
 			{
-				$this->_arrConditions [$Item->getName ()] = Array (
+				$this->_arrConditions [uniqid ()] = Array (
+					'Column'	=> $Item->getName (),
 					'Operator'	=> $Item->getOperator (),
 					'Value'		=> $Item->getValue ()
 				);

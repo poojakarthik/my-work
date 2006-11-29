@@ -3,6 +3,7 @@
 	require ("config/application_loader.php");
 	
 	$docDocumentation->Explain ("Rate");
+	$docDocumentation->Explain ("Service");
 	
 	// If the User is not logged into the system
 	if (!$athAuthentication->isAuthenticated ())

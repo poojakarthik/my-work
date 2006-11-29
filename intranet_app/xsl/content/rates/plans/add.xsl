@@ -7,6 +7,21 @@
 		<h1>Add New Rate Plan</h1>
 		
 		<form method="POST" action="rates_plan_add.php">
+			<xsl:if test="/Response/RatePlan/Error != ''">
+				<div class="MsgError">
+					<xsl:choose>
+						<xsl:when test="/Response/RatePlan/Error = 'Blank'">
+							Your Plan Name and your ServiceType must not be Blank.
+							Please choose a name for your Plan and Try Again.
+						</xsl:when>
+						<xsl:when test="/Response/RatePlan/Error = 'Exists'">
+							The Plan Name that you entered already exists in the System.
+							Please choose another Plan Name.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
@@ -17,7 +32,14 @@
 									<xsl:with-param name="field" select="string('Name')" />
 								</xsl:call-template>
 							</th>
-							<td><input type="text" name="Name" class="input-string" /></td>
+							<td>
+								<input type="text" name="Name" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/RatePlan/Name" />
+									</xsl:attribute>
+								</input>
+							</td>
 						</tr>
 						<tr>
 							<th class="JustifiedWidth" valign="top">
@@ -28,12 +50,17 @@
 							</th>
 							<td>
 								<select name="ServiceType">
-									<xsl:for-each select="/Response/NamedServiceTypes/ServiceType">
+									<xsl:for-each select="/Response/RatePlan/NamedServiceTypes/ServiceType">
 										<option>
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
+											<xsl:if test="@selected='selected'">
+												<xsl:attribute name="selected">
+													<xsl:text>selected</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
 											<xsl:value-of select="./Name" />
 										</option>
 									</xsl:for-each>

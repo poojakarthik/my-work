@@ -38,7 +38,7 @@
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Rate')" />
+									<xsl:with-param name="entity" select="string('Service')" />
 									<xsl:with-param name="field" select="string('ServiceType')" />
 								</xsl:call-template>
 							</th>

@@ -445,6 +445,7 @@
 						// get the key if available
 						$strColumn	= $strValue['Column'];
 					}
+					
 					$strValue		= $strValue['Value'];
 				}
 				if ($this->intSQLMode == SQL_STATEMENT)

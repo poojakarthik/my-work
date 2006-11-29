@@ -151,13 +151,18 @@
 			$this->_LAND_LINE	= $this->Push (new ServiceType (SERVICE_TYPE_LAND_LINE,	"Land Line Telephone"));
 			$this->_INBOUND		= $this->Push (new ServiceType (SERVICE_TYPE_INBOUND,	"Inbound Call Number"));
 			
+			$this->setValue ($intServiceType);
+		}
+		
+		public function setValue ($intServiceType)
+		{
 			// Select the value
 			switch ($intServiceType)
 			{
-				case SERVICE_TYPE_ADSL:		$this->Select ($this->_ADSL);		break;
-				case SERVICE_TYPE_MOBILE:	$this->Select ($this->_MOBILE);		break;
+				case SERVICE_TYPE_ADSL:			$this->Select ($this->_ADSL);		break;
+				case SERVICE_TYPE_MOBILE:		$this->Select ($this->_MOBILE);		break;
 				case SERVICE_TYPE_LAND_LINE:	$this->Select ($this->_LAND_LINE);	break;
-				case SERVICE_TYPE_INBOUND:	$this->Select ($this->_INBOUND);	break;
+				case SERVICE_TYPE_INBOUND:		$this->Select ($this->_INBOUND);	break;
 			}
 		}
 	}

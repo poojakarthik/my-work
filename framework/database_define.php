@@ -77,6 +77,7 @@
 */
 
 		
+		
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -755,6 +756,58 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: Config
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "Config";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "Application";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(11)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "Module";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "text";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "Name";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "text";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "Value";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "text";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
 					
 	// Save Table Define
@@ -2487,6 +2540,58 @@
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
+	// Table: RecordType
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "RecordType";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "Name";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "Description";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceType";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "Required";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
 	// Table: RecurringCharge
 	//----------------------------------------------------------------------------//
 	
@@ -2958,6 +3063,15 @@
 		
 								
 	// Define Columns
+	$strName = "ServiceAddress";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
 	$strName = "CappedCharge";
 		$arrDefine['Column'][$strName]['Type'] 			= "d";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
@@ -3018,6 +3132,265 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: ServiceAddress
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ServiceAddress";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "BillName";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "BillAddress1";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "BillAddress2";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "BillLocality";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(23)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "BillPostcode";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(4)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "EndUserTitle";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(4)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "EndUserGivenName";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "EndUserFamilyName";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(50)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "EndUserCompanyName";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(50)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "DateOfBirth";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(8)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "Employer";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "Occupation";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ABN";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(11)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "TradingName";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(50)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceAddressType";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(3)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceAddressTypeNumber";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(5)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceAddressTypeSuffix";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(2)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceStreetNumberStart";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(5)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceStreetNumberEnd";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(5)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceStreetNumberSuffix";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(1)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceStreetName";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceStreetType";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(4)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceStreetTypeSuffix";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(2)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServicePropertyName";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceLocality";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(30)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServiceState";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(3)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "ServicePostcode";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(4)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
 					
 	// Save Table Define
@@ -3381,5 +3754,6 @@
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+	
 	
 ?>

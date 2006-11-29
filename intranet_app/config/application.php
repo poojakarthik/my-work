@@ -74,6 +74,9 @@ require ("classes/rates/rates.php");
 //service information
 require ("classes/service/servicetype.php");
 require ("classes/service/namedservicetype.php");
+//record type information
+require ("classes/recordtype/recordtype.php");
+require ("classes/recordtype/recordtypesearch.php");
 //documentation
 require ("classes/documentation/documentation.php");
 require ("classes/documentation/documentationentity.php");

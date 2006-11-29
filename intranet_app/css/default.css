@@ -264,3 +264,10 @@
 		width:               150px;
 	}
 	
+	tr.Required th,
+	tr.Required td
+	{
+		background-color:    #FFFFC0;
+		padding:             3px;
+	}
+	
