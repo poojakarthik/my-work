@@ -434,7 +434,13 @@
 					// we may have been passed an array as value
 					if ($strValue['Operator'])
 					{
+						// get the operator if available
 						$strOperator	= $strValue['Operator'];
+					}
+					if ($strValue['Key'])
+					{
+						// get the key if available
+						$strKey	= $strValue['Key'];
 					}
 					$strValue		= $strValue['Value'];
 				}
