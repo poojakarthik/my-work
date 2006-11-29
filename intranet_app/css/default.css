@@ -1,0 +1,266 @@
+	
+	@import "weekly_planner.css";
+	
+	body
+	{
+		margin:               0px;
+		
+		font-family:          "Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height:          18pt;
+		font-size:            10pt;
+	}
+	
+	.Left
+	{
+		float:                left;
+	}
+	
+	.Right
+	{
+		float:                right;
+	}
+	
+	.Clear
+	{
+		clear:                both;
+	}
+	
+	.Seperator
+	{
+		height:               10px;
+	}
+	
+	div#Header
+	{
+		background-color:     #000000;
+		color:                #FFFFFF;
+		
+		padding:              10px;
+		
+		background-image:     url('../img/template/background.png');
+		background-repeat:    repeat-x;
+	}
+	
+	div#Header a
+	{
+		color:                #FFFFFF;
+	}
+	
+	.sectionContainer
+	{
+	}
+	
+	.sectionContent
+	{
+		margin:               auto;
+	}
+	
+	div#Controller
+	{
+		margin:               10px;
+	}
+	
+	div#Content
+	{
+		padding:              10px;
+	}
+	
+	h1
+	{
+		color:                #006599;
+		
+		font-size:            18pt;
+	}
+	
+	form
+	{
+		margin:               0;
+	}
+	
+	th
+	{
+		text-align:          left;
+	}
+	
+	div.MsgNotice
+	{
+		border:              solid 1px #868735;
+		background-color:    #FFFFC0;
+		
+		background-image:    url('../img/template/MsgNotice.png');
+		background-repeat:   no-repeat;
+		background-position: left;
+		
+		padding-top:         5px;
+		padding-left:        40px;
+		padding-right:       5px;
+		padding-bottom:      5px;
+		
+		height:              25px;
+		
+		line-height:         25px;
+		
+		margin-bottom:       10px;
+	}
+	
+	div.MsgError
+	{
+		border:              solid 1px #CC0000;
+		background-color:    #f2dbdb;
+		
+		background-image:    url('../img/template/MsgError.png');
+		background-repeat:   no-repeat;
+		background-position: left;
+		
+		padding-top:         5px;
+		padding-left:        40px;
+		padding-right:       5px;
+		padding-bottom:      5px;
+		
+		height:              25px;
+		
+		line-height:         25px;
+		
+		margin-bottom:       10px;
+	}
+	
+	input.input-string
+	{
+		border:              solid 1px #919191;
+		
+		padding:             3px;
+	}
+	
+	input.input-label
+	{
+		border:              solid 1px #868735;
+		background-color:    #FFFFC0;
+		padding:             3px;
+	}
+	
+	input.input-submit
+	{
+		background-image:    url('../img/template/button_background.png');
+		background-repeat:   repeat-x;
+		
+		border:              solid 1px #07548e;
+		
+		color:               #FFFFFF;
+		background-color:    #07548e;
+		
+		font-weight:         bold;
+		
+		padding-top:         3px;
+		padding-left:        6px;
+		padding-right:       6px;
+		padding-bottom:      3px;
+	}
+	
+	div#Notices
+	{
+		border-left:         solid 1px #999999;
+		
+		padding-top:         0;
+		padding-left:        20px;
+		padding-right:       0;
+		padding-bottom:      0;
+		
+		width:               350px;
+	}
+	
+	h2
+	{
+		margin:              0;
+		font-size:           12pt;
+	}
+	
+	.Filter-Form
+	{
+		margin:              0;
+		padding:             10px;
+		
+		border:              solid 1px #D1D1D1;
+		background-color:    #F3F3F3;
+	}
+	
+	.Filter-Form-Content
+	{
+		margin-right:        20px;
+	}
+	
+	label
+	{
+		cursor:              pointer;
+	}
+	
+	table.Listing
+	{
+		border:              solid 1px #C1C1C1;
+	}
+	
+	table.Listing tr.First th
+	{
+		border-bottom:       solid 1px #C1C1C1;
+		
+		background-repeat:   repeat-x;
+		background-image:    url('../img/template/table_first_bg.png');
+		
+		background-color:    #45a0f3;
+		color:               #FFFFFF;
+	}
+	
+	table.Listing .Icon
+	{
+		width:               20px;
+	}
+	
+	table.Listing tr.First th a
+	{
+		color:               #FFFFFF;
+		text-decoration:     none;
+	}
+	
+	table.Listing tr.Odd td
+	{
+		background-color:    #FFFFFF;
+	}
+	
+	table.Listing tr.Even td
+	{
+		background-color:    #D5E0F8;
+	}
+	
+	a.Label:Link,
+	a.Label:Visited
+	{
+		color:               #45a0f3;
+		border-bottom:       dashed 1px #45a0f3;
+		text-decoration:     none;
+		cursor:              help;
+	}
+	
+	a:Link
+	{
+		color:               #3366cc;
+	}
+	
+	a:Visited
+	{
+		color:               #45a0f3;
+	}
+	
+	input.time
+	{
+		width:               50px;
+	}
+	
+	.Somebody_doesn_t_know_about_spacing th
+	{
+		padding-right: 10px;
+	}
+	
+	th.JustifiedWidth
+	{
+		width:               150px;
+	}
+	

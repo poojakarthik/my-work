@@ -458,7 +458,7 @@ die();
 				$intExsUnits = $intUnits - $intCapUsage;
 				
 				// resend to Zeemus magic rating formular with excess units
-				$fltCharge += $this->_ZeemusMagicRatingFormula('Ext', $intExsUnits);
+				$fltCharge += $this->_ZeemusMagicRatingFormula('Exs', $intExsUnits);
 			}
 			elseif ($fltFullCharge > $fltCapLimit)
 			{
@@ -580,7 +580,7 @@ die();
 	 * This is where the actual work of applying the magic Zeemu rating formula
 	 * is done.
 	 *
-	 * @param	string	$strType	optional Rate type to use, 'Std' or 'Ext'
+	 * @param	string	$strType	optional Rate type to use, 'Std' or 'Exs'
 	 * @param	int		$intUnits	optional units to use when calculating ($q)
 	 *	 
 	 * @return	mixed	float : charge amount
@@ -590,8 +590,8 @@ die();
 	 */
 	 private function _ZeemusMagicRatingFormula($strType = 'Std', $intUnits = 0)
 	 {
-	 	// select rate type to use (Std or Ext
-		if ($strType != 'Std' && $strType != 'Ext')
+	 	// select rate type to use (Std or Exs
+		if ($strType != 'Std' && $strType != 'Exs')
 		{
 			return FALSE;
 		}
