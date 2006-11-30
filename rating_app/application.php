@@ -332,6 +332,10 @@ die();
 	 */
 	 function DeRate($mixWhere)
 	 {
+	 
+	 	// TODO !!!! - implament this in the GUI, Bash needs to implement an update similar to the
+		// generic data miner
+		//
 	 	// convert the WHERE clause to a string
 		// NOTE !!!! - this will break if $this->_selFindRate is ever not instanciated in the constructor
 		$strWhere = $this->_selFindRate->PrepareWhere($mixWhere);
