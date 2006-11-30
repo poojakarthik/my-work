@@ -59,13 +59,15 @@
 	 */
  	function  __construct($ptrDB)
  	{
-		$this->_strModuleName = "Unitel";
+		$this->_strModuleName 					= "Unitel";
+		$this->_strDelimiter					= "\t";
 		
 		parent::__construct($ptrDB);
 		
 		$this->_updPreselectSequence			= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'PreselectionFileSequence'", "Value");
 		$this->_updFullServiceFileSequence		= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceFileSequence'", "Value");
 		$this->_updFullServiceRecordSequence	= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceRecordSequence'", "Value");
+		$this->_selPreselectCarrier				= new StatementSelect("Service", "CarrierPreselect", "FNN = <FNN>", "Date DESC", "1");
 		
 				
 		//##----------------------------------------------------------------##//
@@ -76,46 +78,18 @@
 		// Row numbers start at 1
 		// for a file without any header row, set this to 1
 		// for a file with 1 header row, set this to 2
-		$this->_intStartRow = 2;
+		$this->_intStartRow = 1;
 		
 		
 		// define the carrier input format
-		$arrDefine ['RecordType']	['Start']		= 0;
-		$arrDefine ['RecordType']	['Length']		= 1;
+		$arrDefine ['FNN']			['Index']		= 0;
 		
-		$arrDefine ['Sequence']		['Start']		= 1;
-		$arrDefine ['Sequence']		['Length']		= 5;
+		$arrDefine ['Action']		['Index']		= 1;
 		
-		$arrDefine ['OrderId']		['Start']		= 6;
-		$arrDefine ['OrderId']		['Length']		= 9;
+		$arrDefine ['Failed']		['Index']		= 2;	// 0 is pass, 1 is fail
 
-		$arrDefine ['OrderType']	['Start']		= 15;
-		$arrDefine ['OrderType']	['Length']		= 2;
-		
-		$arrDefine ['OrderDate']	['Start']		= 17;
-		$arrDefine ['OrderDate']	['Length']		= 8;
-		
-		$arrDefine ['ServiceNo']	['Start']		= 25;
-		$arrDefine ['ServiceNo']	['Length']		= 29;
-		
-		$arrDefine ['Basket']		['Start']		= 54;
-		$arrDefine ['Basket']		['Length']		= 3;
-		
-		$arrDefine ['EffectiveDate']['Start']		= 57;
-		$arrDefine ['EffectiveDate']['Length']		= 8;
-		
-		$arrDefine ['NewNo']		['Start']		= 65;
-		$arrDefine ['NewNo']		['Length']		= 29;
-		
-		$arrDefine ['ReasonCode']	['Start']		= 94;
-		$arrDefine ['ReasonCode']	['Length']		= 3;
-		
-		$arrDefine ['LostTo']		['Start']		= 97;
-		$arrDefine ['LostTo']		['Length']		= 3;
-		
-		$arrDefine ['RSLReference']	['Start']		= 100;
-		$arrDefine ['RSLReference']	['Length']		= 9;					
-		
+		$arrDefine ['Description']	['Index']		= 3;
+
 		$this->_arrDefineInput = $arrDefine;
 		
 		//##----------------------------------------------------------------##//
@@ -143,97 +117,54 @@
 		$arrLineData = $this->_SplitLine($strLine);
 		
 		// Ignore header and trailer line
-		if($arrLineData['RecordType'] == "T")
+		if($arrLineData['FNN'] == "RecCount =")
 		{
 			return PRV_TRAILER_RECORD;
 		}
-		elseif($arrLineData['RecordType'] == "H")
+		
+		$this->_arrRequest['FNN']		= $arrLineData['FNN'];
+		$this->_arrRequest['Status']	= ((int)$arrLineData['Failed'] == 0) ? REQUEST_STATUS_REJECTED : REQUEST_STATUS_COMPLETED;
+		
+		switch ($arrLineData['Action'])
 		{
-			return PRV_HEADER_RECORD;
-		}
-		
-		// ServiceId
-		$arrRequestData	['ServiceId']	= RemoveAusCode($arrLineData['ServiceNo']);
-		$arrLogData		['ServiceId']	= $arrRequestData['ServiceId'];
-		
-		// Date
-		$arrRequestData	['Date']		= $this->_ConvertDate($arrLineData['EffectiveDate']);
-		$arrLogData		['Date']		= date("Y-m-d");
-		
-		// Carrier
-		$arrLogData		['Carrier']		= CARRIER_UNITEL;
-		$arrRequestData	['Carrier']		= CARRIER_UNITEL;
-		$arrServiceData	['Carrier']		= CARRIER_UNITEL;
-		
-		// Request Type
-		switch ($arrLineData['OrderType'])
-		{
-			case "11":	// Migration Request
-			case "12":	// Churn to eBill
-				$arrRequestData['RequestType']	= REQUEST_FULL_SERVICE;
+			case "Bar":
+				$this->_arrService['LineStatus']			= LINE_SOFT_BARRED;
+				$this->_arrRequest['RequestType']			= REQUEST_BAR;
 				break;
-			case "13":	// Virtual PreSelection
-				$arrRequestData['RequestType']	= REQUEST_PRESELECTION;
-				break;
-			case "00":
-			default:
-				// Either unhandled or not required
-				break;
-		}
-		
-		// Default value for Log's Type field is "Other"
-		$arrLogData['Type']						= LINE_ACTION_OTHER;
-		
-		switch ($arrLineData['RecordType'])
-		{
-			case "S":	// Gain - new service
-			case "G":	// Gain - reversal
-				$arrRequestData	['RequestType']	= REQUEST_FULL_SERVICE;
-				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
-				$arrLogData		['Type']		= LINE_ACTION_GAIN;
 				
-				// Attempt to match request
+			case "UnBar":
+				$this->_arrService['LineStatus']			= LINE_ACTIVE;
+				$this->_arrRequest['RequestType']			= REQUEST_UNBAR;
 				break;
-			case "E":	// Loss - commercial churn
-			case "O":	// Loss - other ASD
-			case "L":	// Loss - other CSP
-				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
-				$arrLogData		['Type']		= LINE_ACTION_LOSS;
-				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);
+				
+			case "Preselect":
+				$this->_arrService['CarrierPreselect']		= CARRIER_UNITEL;
+				$this->_arrRequest['RequestType']			= REQUEST_PRESELECTION;
 				break;
-			case "X":	// Loss - cancellation
-				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;
-				$arrLogData		['Type']		= LINE_ACTION_LOSS;
-				$arrLogData		['Description']	= DESCRIPTION_CANCELLED;
+				
+			case "PSReversal":
+				$this->_selPreselectCarrier->Execute(Array('FNN' => $arrLineData['FNN']));
+				if ($this->_selPreselectCarrier->Fetch() == CARRIER_UNITEL)
+				{
+					$this->_arrService['CarrierPreselect']	= NULL;
+				}
+				$this->_arrRequest['RequestType']			= REQUEST_PRESELECTION_REVERSE;
 				break;
-			case "N":	// Change - number
-			case "M":	// Change - address
-			case "B":	// Change - number & address
-				$arrLogData		['Type']		= LINE_ACTION_OTHER;
+				
+			case "Activate":
+				// TODO: Possibly at a later date
+				$this->_arrRequest['RequestType']			= REQUEST_ACTIVATION;
 				break;
-			case "P":	// Order pending with Telstra
-			case "W":	// Order waiting to be processed
-			case "A":	// Order actioned by WeBill
-				$arrRequestData	['Status']		= REQUEST_STATUS_PENDING;
+				
+			case "Deactivate":
+				// TODO: Possibly at a later date
+				$this->_arrRequest['RequestType']			= REQUEST_DEACTIVATION;
 				break;
-			case "D":	// Order disqualified by WeBill
-			case "R":	// Order rejected by Telstra
-				$arrRequestData	['Status']		= REQUEST_STATUS_REJECTED;
-				break;
-			case "C":	// Order completed by Telstra
-				$arrRequestData	['Status']		= REQUEST_STATUS_COMPLETED;
-				break;
-			default:	// Unknown Record Type
+				
+			default:
+				// Unknown Record Type
 				return PRV_BAD_RECORD_TYPE;
 		}
-		
-		// Basket
-		$arrServiceData['Basket']	= (int)$arrLineData['Basket'];
-				
-		// Add split line to File data array
-		$this->_arrRequest	= $arrRequestData;
-		$this->_arrService	= $arrServiceData;
-		$this->_arrLog		= $arrLogData;
 		
 		return TRUE;
 	} 	
@@ -264,19 +195,7 @@
 		if ($arrResult = $this->_selMatchRequest->Fetch())
 		{
 			// Found a match, so update
-			$arrResult['LineStatus']	= $this->_arrRequest['LineStatus'];
-			
-			// If we've gained/lost then update the appropriate field
-			if ($this->arrLog['Type'] == LINE_ACTION_GAIN)
-			{
-				$arrResult['GainDate'] = $this->_arrRequest['Date'];
-			}
-			elseif ($this->arrLog['Type'] == LINE_ACTION_LOSS)
-			{
-				$arrResult['LossDate'] = $this->_arrRequest['Date'];
-			}
-			
-			// Run the query
+			$arrResult = array_merge($arrResult, $this->_arrRequest);
 			return $this->_ubiRequest->Execute($arrResult);
 		}
 		
@@ -300,7 +219,7 @@
 	 */
  	function UpdateService()
 	{
-		$arrData['FNN']	= $this->_arrRequest['ServiceId'];
+		$arrData['FNN']	= $this->_arrRequest['FNN'];
 		$this->_selMatchService->Execute($arrData);
 		
 		// Match to an entry in the Service table
@@ -314,21 +233,7 @@
 			if (!$this->_selMatchLog->Fetch())
 			{
 				// Actually update the service
-				$arrResult['LineStatus'] = $this->_arrService['LineStatus'];
-				
-				// Update the Carrier/CarrierPreselect fields if necessary
-				if ($this->_arrLog['Type'] == LINE_ACTION_GAIN)
-				{
-					switch ($this->_arrService['Basket'])
-					{
-						case BASKET_PRESELECT:
-							$arrResult['CarrierPreselect']	= CARRIER_UNITEL;
-							break;
-						default:
-							$arrResult['Carrier']			= CARRIER_UNITEL;
-							break;
-					}
-				}
+				$arrResult = array_merge($arrResult, $this->_arrService);
 				
 				// <DEBUG>
 				// A hack to get around the fact that next to no services have a Line Status atm

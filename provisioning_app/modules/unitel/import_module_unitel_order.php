@@ -66,7 +66,8 @@
 		$this->_updPreselectSequence			= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'PreselectionFileSequence'", "Value");
 		$this->_updFullServiceFileSequence		= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceFileSequence'", "Value");
 		$this->_updFullServiceRecordSequence	= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceRecordSequence'", "Value");
-		
+		$this->_selGetRequest					= new StatementSelect("Request JOIN ProvisioningExport ON Request.ExportFile = ProvisioningExport.Id", "Request.Sequence = <Sequence> AND ProvisioningExport.Location = <Location>", NULL, "1");
+		$this->_ubiRequest						= new StatementUpdateById("Request");
 				
 		//##----------------------------------------------------------------##//
 		// Define File Format
@@ -118,15 +119,49 @@
 		// Ignore header and trailer line
 		if($arrLineData['RecordType'] == "T")
 		{
+			// Make sure we NULLify the referenced file
+			$this->_strReferencedFile = NULL;
 			return PRV_TRAILER_RECORD;
 		}
 		elseif($arrLineData['RecordType'] == "H")
 		{
+			// Find out which daily order file we're referencing
+			$this->_strReferencedFile = substr($strLine, 25, 23);
 			return PRV_HEADER_RECORD;
+		}
+		elseif(!$this->_strReferencedFile)
+		{
+			// We don't have reference to a Daily Order File
+			return PRV_HEADER_EXPECTED;
 		}
 		
 		// Grab the data we need from the line
-		// TODO
+		$arrData['Sequence']	= (int)$this->_arrDefineInput['Sequence'];
+		$arrData['Location']	= UNITEL_DAILY_ORDER_DIR.$this->_strReferencedFile;
+		$this->_selGetRequest->Execute($arrData);
+		
+		if ($arrResult = $this->_selGetRequest->Fetch())
+		{
+			$arrResult['Reason']		= $this->_arrDefineInput['Description'];
+			
+			// Update to say if the file has been accepted/rejected
+			if(stripos($this->_arrDefineInput['Description'], "accept"))
+			{
+				$arrResult['Status']	= PRV_FILE_ACCEPTED;
+			}
+			else
+			{
+				$arrResult['Status']	= PRV_FILE_REJECTED;
+			}
+			
+			// Commit the changes back to the database
+			$this->_ubiRequest->Execute($arrResult);
+		}
+		else
+		{
+			// No match - ERR0R
+			return PRV_MISSING_REQUEST;
+		}
 		
 		return TRUE;
 	} 	
@@ -147,33 +182,7 @@
 	 */
  	function UpdateRequests()
 	{
-		// Try to match a request
-		$arrData['Service']		= $this->_arrRequest['Service'];
-		$arrData['RequestType']	= $this->_arrRequest['RequestType'];
-		$arrData['Carrier']		= CARRIER_UNITEL;
-		$this->_selMatchRequest->Execute();
-		
-		// Is there a request match?
-		if ($arrResult = $this->_selMatchRequest->Fetch())
-		{
-			// Found a match, so update
-			$arrResult['LineStatus']	= $this->_arrRequest['LineStatus'];
-			
-			// If we've gained/lost then update the appropriate field
-			if ($this->arrLog['Type'] == LINE_ACTION_GAIN)
-			{
-				$arrResult['GainDate'] = $this->_arrRequest['Date'];
-			}
-			elseif ($this->arrLog['Type'] == LINE_ACTION_LOSS)
-			{
-				$arrResult['LossDate'] = $this->_arrRequest['Date'];
-			}
-			
-			// Run the query
-			return $this->_ubiRequest->Execute($arrResult);
-		}
-		
-		// There is no match, so return TRUE
+		// We don't implement this method, so return TRUE
 		return TRUE;
 	}
  	
@@ -193,65 +202,8 @@
 	 */
  	function UpdateService()
 	{
-		$arrData['FNN']	= $this->_arrRequest['ServiceId'];
-		$this->_selMatchService->Execute($arrData);
-		
-		// Match to an entry in the Service table
-		if($arrResult = $this->_selMatchService->Fetch())
-		{
-			// Make sure our status is up to date
-			$arrData = Array('Date' => $this->_arrRequest['Date']);
-			$this->_selMatchLog->Execute($arrData);
-			
-			// If this is the most up to date status
-			if (!$this->_selMatchLog->Fetch())
-			{
-				// Actually update the service
-				$arrResult['LineStatus'] = $this->_arrService['LineStatus'];
-				
-				// Update the Carrier/CarrierPreselect fields if necessary
-				if ($this->_arrLog['Type'] == LINE_ACTION_GAIN)
-				{
-					switch ($this->_arrService['Basket'])
-					{
-						case BASKET_PRESELECT:
-							$arrResult['CarrierPreselect']	= CARRIER_UNITEL;
-							break;
-						default:
-							$arrResult['Carrier']			= CARRIER_UNITEL;
-							break;
-					}
-				}
-				
-				// <DEBUG>
-				// A hack to get around the fact that next to no services have a Line Status atm
-				if (!$arrResult['LineStatus'])
-				{
-					$arrResult['LineStatus'] = LINE_ACTIVE;
-				}
-				// </DEBUG>
-
-				// Run the query
-				if($this->_ubiService->Execute($arrResult) === FALSE)
-				{
-					return FALSE;
-				}
-				else
-				{
-					return TRUE;
-				}
-			}
-			else
-			{
-				// Our status is old, so lets just return TRUE
-				return TRUE;
-			}
-		}
-		else
-		{
-			// We have received a status for a status that doesn't belong to us
-			return PRV_NO_SERVICE;
-		}
+		// We don't implement this method, so return TRUE
+		return TRUE;
 	}
  
  	//------------------------------------------------------------------------//

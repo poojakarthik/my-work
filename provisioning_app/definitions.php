@@ -66,7 +66,7 @@ define("REQUEST_ACTIVATION"				, 904);
 define("REQUEST_DEACTIVATION"			, 905);
 define("REQUEST_PRESELECTION_REVERSE"	, 906);
 define("REQUEST_FULL_SERVICE_REVERSE"	, 907);
-define("REQUEST_PRESELECTION_REVERSAL"	, 908);
+define("REQUEST_PRESELECTION_REVERSAL"	, REQUEST_PRESELECTION_REVERSE);
 
 // Line actions (Log)
 define("LINE_ACTION_OTHER"				, 600);
@@ -77,6 +77,8 @@ define("LINE_ACTION_LOSS"				, 602);
 define("LINE_ACTIVE"					, 400);
 define("LINE_DEACTIVATED"				, 401);
 define("LINE_PENDING"					, 402);
+define("LINE_SOFT_BARRED"				, 403);
+define("LINE_HARD_BARRED"				, 404);
 
 // Log Descriptions
 define("DESCRIPTION_LOST_TO"			, "Service lost to ");
