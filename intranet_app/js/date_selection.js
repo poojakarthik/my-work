@@ -111,7 +111,13 @@
 				startMinute = (Math.floor (intX / intSnap) * 15) % 60;
 				
 				durationHours = Math.floor (Math.ceil (intW / intSnap * 15) / 60);
-				durationMinutes = (Math.floor (intW / intSnap) * 15) % 60;
+				durationMinutes = ((Math.floor (intW / intSnap) * 15) % 60) - 1;
+				
+				if (durationMinutes == -1)
+				{
+					durationHours -= 1;
+					durationMinutes = 59;
+				}
 				
 				ceaseHour = Math.floor (((startHour * 60) + (durationHours * 60) + startMinute + durationMinutes) / 60);
 				ceaseMinute = Math.floor (((startHour * 60) + (durationHours * 60) + startMinute + durationMinutes) % 60)
@@ -351,6 +357,31 @@
 						function (e)
 						{
 							document.getElementById ("CapLimit").style.display = ((e.target.value == "") ? "none" : "block");
+						},
+						true
+					);
+				}
+				else if (elm.getAttribute ("name") == "CapLimiting")
+				{
+					if (elm.checked === true)
+					{
+						document.getElementById ("Excess").style.display = ((elm.value != "CapUsage") ? "none" : "block");
+					}
+					
+					elm.addEventListener (
+						"keyup",
+						function (e)
+						{
+							document.getElementById ("Excess").style.display = ((e.target.value != "CapUsage") ? "none" : "block");
+						},
+						true
+					);
+					
+					elm.addEventListener (
+						"click",
+						function (e)
+						{
+							document.getElementById ("Excess").style.display = ((e.target.value != "CapUsage") ? "none" : "block");
 						},
 						true
 					);

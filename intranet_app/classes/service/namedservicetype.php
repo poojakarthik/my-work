@@ -159,10 +159,11 @@
 			// Select the value
 			switch ($intServiceType)
 			{
-				case SERVICE_TYPE_ADSL:			$this->Select ($this->_ADSL);		break;
-				case SERVICE_TYPE_MOBILE:		$this->Select ($this->_MOBILE);		break;
-				case SERVICE_TYPE_LAND_LINE:	$this->Select ($this->_LAND_LINE);	break;
-				case SERVICE_TYPE_INBOUND:		$this->Select ($this->_INBOUND);	break;
+				case SERVICE_TYPE_ADSL:			$this->Select ($this->_ADSL);		return true;
+				case SERVICE_TYPE_MOBILE:		$this->Select ($this->_MOBILE);		return true;
+				case SERVICE_TYPE_LAND_LINE:	$this->Select ($this->_LAND_LINE);	return true;
+				case SERVICE_TYPE_INBOUND:		$this->Select ($this->_INBOUND);	return true;
+				default:						return false;
 			}
 		}
 	}

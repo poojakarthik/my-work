@@ -124,6 +124,11 @@
 		margin-bottom:       10px;
 	}
 	
+	input, select
+	{
+		font-family:         "Nimbus Sans NL", Tahoma, sans-serif;
+	}
+	
 	input.input-string
 	{
 		border:              solid 1px #919191;
@@ -269,5 +274,10 @@
 	{
 		background-color:    #FFFFC0;
 		padding:             3px;
+	}
+	
+	.Indent
+	{
+		margin-left:         25px;
 	}
 	
