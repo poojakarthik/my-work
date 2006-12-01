@@ -6,16 +6,16 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// module_export_unitel_preselection
+// module_export_aapt_preselection
 //----------------------------------------------------------------------------//
 /**
- * module_export_unitel_preselection
+ * module_export_aapt_preselection
  *
- * Unitel Export Module for the provisioning engine (Preselection)
+ * AAPT Export Module for the provisioning engine (Preselection)
  *
- * Unitel Export Module for the provisioning engine (Preselection)
+ * AAPT Export Module for the provisioning engine (Preselection)
  *
- * @file		module_export_unitel_preselection.php
+ * @file		module_export_aapt_preselection.php
  * @language	PHP
  * @package		provisioning
  * @author		Rich "Waste" Davis
@@ -27,21 +27,21 @@
 
 
 //----------------------------------------------------------------------------//
-// ProvisioningModuleExportUnitelPreselection
+// ProvisioningModuleExportAAPTPreselection
 //----------------------------------------------------------------------------//
 /**
- * ProvisioningModuleExportUnitelPreselection
+ * ProvisioningModuleExportAAPTPreselection
  *
- * Unitel Export Module for the provisioning engine (Preselection)
+ * AAPT Export Module for the provisioning engine (Preselection)
  *
- * Unitel Export Module for the provisioning engine. (Preselection)
+ * AAPT Export Module for the provisioning engine. (Preselection)
  *
  * @prefix		prv
  *
  * @package		provisioning
- * @class		ProvisioningModuleExportUnitelPreselection
+ * @class		ProvisioningModuleExportAAPTPreselection
  */
- class ProvisioningModuleExportUnitelPreselection extends ProvisioningModuleExport
+ class ProvisioningModuleExportAAPTPreselection extends ProvisioningModuleExport
  {
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -49,17 +49,17 @@
 	/**
 	 * __construct()
 	 *
-	 * Constructor method for ProvisioningModuleExportUnitel
+	 * Constructor method for ProvisioningModuleExportAAPTPreselection
 	 *
-	 * Constructor method for ProvisioningModuleExportUnitel
+	 * Constructor method for ProvisioningModuleExportAAPTPreselection
 	 *
-	 * @return		ProvisioningModuleExportUnitel
+	 * @return		ProvisioningModuleExportAAPTPreselection
 	 *
 	 * @method
 	 */
  	function  __construct($ptrDB)
  	{
-		$this->_strModuleName = "Unitel";
+		$this->_strModuleName = "AAPT";
 		
 		parent::__construct($ptrDB);
 		
@@ -90,7 +90,10 @@
 	{
 		// Clean the request array
 		$arrBuiltRequest = Array();
-				
+		
+		$arrBuiltRequest['ReturnCondition']				= " ";				// 1 char
+		$arrBuiltRequest['FNN']							= $FNN;
+		
 		switch ($arrRequest['RequestType'])
 		{
 			case REQUEST_PRESELECTION:
