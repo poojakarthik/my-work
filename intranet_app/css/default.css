@@ -281,3 +281,45 @@
 		margin-left:         25px;
 	}
 	
+	.LargeSelection
+	{
+		width:               300px;
+	}
+	
+	select
+	{
+		border:              solid 1px #919191;
+		
+		padding:             3px;
+	}
+	
+	table.summary-table
+	{
+		border:              solid 1px #000000;
+	}
+	
+	td.summary-blank
+	{
+		background-color:    #FFFFFF;
+	}
+	
+	td.summary-single
+	{
+		background-color:    #45a0f3;
+	}
+	
+	td.summary-overlap
+	{
+		background-color:    #CC0000;
+	}
+	
+	td.cell-0
+	{
+		border-left:         solid 1px #000000;
+	}
+	
+	.black-border-top
+	{
+		border-top:          solid 1px #000000;
+	}
+	

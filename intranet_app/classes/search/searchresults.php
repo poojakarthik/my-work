@@ -112,13 +112,6 @@
 		
 		public function ItemId ($intId)
 		{
-			$Item = $this->Pull ($intId);
-			
-			if ($Item !== null)
-			{
-				return $Item;
-			}
-			
 			return new $this->_strResultClass ($intId);
 		}
 		
