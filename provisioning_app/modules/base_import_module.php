@@ -176,6 +176,7 @@
 				{
 					$_arrData[$strKey] = substr($_arrData[$strKey], $strValue['Start'], $strValue['Length']);
 				}
+				$_arrData[$strKey] = trim($_arrData[$strKey]);
 			}
 		}
 		else

@@ -60,9 +60,15 @@ define("PRV_UNITEL_OUT"					, 103);
 define("PRV_OPTUS_ALL"					, 104);
 define("PRV_AAPT_ALL"					, 105);
 define("PRV_UNITEL_PRESELECTION_RPT"	, 106);
+define("PRV_AAPT_EOE_RETURN"			, 107);
+define("PRV_AAPT_LSD"					, 108);
+define("PRV_AAPT_REJECT"				, 109);
+define("PRV_AAPT_LOSS"					, 110);
+
 
 define("PRV_UNITEL_PRESELECTION_EXP"	, 150);
 define("PRV_UNITEL_DAILY_ORDER_EXP"		, 151);
+define("PRV_AAPT_EOE"					, 152);
 
 define("PRV_IMPORT_RANGE_MIN"			, 100);
 define("PRV_IMPORT_RANGE_MAX"			, 149);
