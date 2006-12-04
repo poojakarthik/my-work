@@ -19,6 +19,12 @@
 					<xsl:value-of select="/Response/Rate/NamedServiceTypes/ServiceType[@selected='selected']/Id" disable-output-escaping="yes" />
 				</xsl:attribute>
 			</input>
+			<input type="hidden" name="RecordType">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/Rate/RecordType/Id" disable-output-escaping="yes" />
+				</xsl:attribute>
+			</input>
 			
 			<xsl:if test="/Response/Rate/Error != ''">
 				<div class="MsgError">
@@ -122,27 +128,12 @@
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Rate')" />
+									<xsl:with-param name="entity" select="string('Record Type')" />
 									<xsl:with-param name="field" select="string('RecordType')" />
 								</xsl:call-template>
 							</th>
 							<td>
-								<select name="RecordType">
-									<xsl:for-each select="/Response/Rate/RecordTypeSearch/Results/rangeSample/RecordType">
-										<option>
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="./Id" />
-											</xsl:attribute>
-											<xsl:if test="@selected='selected'">
-												<xsl:attribute name="selected">
-													<xsl:text>selected</xsl:text>
-												</xsl:attribute>
-											</xsl:if>
-											<xsl:value-of select="./Name" />
-										</option>
-									</xsl:for-each>
-								</select>
+								<xsl:value-of select="/Response/Rate/RecordType/Name" />
 							</td>
 						</tr>
 					</table>

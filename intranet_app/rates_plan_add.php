@@ -10,6 +10,7 @@
 	}
 	
 	$docDocumentation->Explain ("Rate Plan");
+	$docDocumentation->Explain ("Record Type");
 	$docDocumentation->Explain ("Service");
 	
 	$oblarrRatePlan		= $Style->attachObject (new dataArray ('RatePlan'));

@@ -3,6 +3,7 @@
 	require ("config/application_loader.php");
 	
 	$docDocumentation->Explain ("Rate");
+	$docDocumentation->Explain ("Record Type");
 	$docDocumentation->Explain ("Service");
 	
 	// If the User is not logged into the system
@@ -26,6 +27,8 @@
 	if (isset ($_POST ['Name']) && isset ($_POST ['ServiceType']))
 	{
 		$oblstrName->setValue ($_POST ['Name']);
+		
+		$rctRecordType		= $oblarrRate->Push (new RecordType ($_POST ['RecordType']));
 		
 		// If the Name is Empty (or it equals '0'), there's a problem
 		if (empty ($_POST ['Name']))
@@ -65,7 +68,7 @@
 			
 			$oblstrCapCalculation	= $oblarrRate->Push (new dataString		('CapCalculation',	''));
 			
-			if (isset ($_POST ['RecordType']))
+			if (isset ($_POST ['StartTime']) && isset ($_POST ['EndTime']))
 			{
 				// Do some error checking.
 				
@@ -158,12 +161,6 @@
 					exit;
 				}
 			}
-			
-			$rtsRecordTypes = new RecordTypeSearch ();
-			$rtsRecordTypes->Constrain ('ServiceType', 'EQUALS', $_POST ['ServiceType']);
-			$rtsRecordTypes->Order ('Name', TRUE);
-			$rtsRecordTypes->Sample ();
-			$oblarrRate->Push ($rtsRecordTypes);
 			
 			$Style->Output ("xsl/content/rates/rates/select.xsl");
 			exit;

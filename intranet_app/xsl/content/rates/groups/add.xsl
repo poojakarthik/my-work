@@ -7,6 +7,8 @@
 		<h1>Add New Rate Group</h1>
 		
 		<form method="POST" action="rates_group_add.php">
+			<script language="javascript" src="servicetype_recordtype.php"></script>
+			
 			<xsl:if test="/Response/RateGroup/Error != ''">
 				<div class="MsgError">
 					<xsl:choose>
@@ -53,7 +55,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<select name="ServiceType">
+								<select name="ServiceType" id="ServiceType">
 									<xsl:for-each select="/Response/RateGroup/NamedServiceTypes/ServiceType">
 										<option>
 											<xsl:attribute name="value">
@@ -68,6 +70,18 @@
 											<xsl:value-of select="./Name" />
 										</option>
 									</xsl:for-each>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth" valign="top">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Record Type')" />
+									<xsl:with-param name="field" select="string('RecordType')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<select name="RecordType" id="RecordType">
 								</select>
 							</td>
 						</tr>

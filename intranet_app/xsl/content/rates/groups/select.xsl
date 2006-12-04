@@ -24,6 +24,12 @@
 					<xsl:value-of select="/Response/RateGroup/NamedServiceTypes/ServiceType[@selected='selected']/Id" disable-output-escaping="yes" />
 				</xsl:attribute>
 			</input>
+			<input type="hidden" name="RecordType">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/RateGroup/RecordType/Id" disable-output-escaping="yes" />
+				</xsl:attribute>
+			</input>
 			
 			<xsl:if test="/Response/RateGroup/Error != ''">
 				<div class="MsgError">
@@ -59,6 +65,17 @@
 							</th>
 							<td>
 								<xsl:value-of select="/Response/RateGroup/NamedServiceTypes/ServiceType[@selected='selected']/Name" disable-output-escaping="yes" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth" valign="top">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Record Type')" />
+									<xsl:with-param name="field" select="string('RecordType')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:value-of select="/Response/RateGroup/RecordType/Name" disable-output-escaping="yes" />
 							</td>
 						</tr>
 						<tr>

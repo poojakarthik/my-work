@@ -134,7 +134,7 @@ function showSelectedRatesTable ()
 	var newWindow = window.open (
 		"",
 		"newWindow",
-		"width=1000, height=450, scrollbars=yes"
+		"width=1000, height=500, scrollbars=yes"
 	);
 	
 	newForm.target = "newWindow";

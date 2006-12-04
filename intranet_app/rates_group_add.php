@@ -12,6 +12,7 @@
 	$rglRateGroups = new RateGroups ();
 	
 	$docDocumentation->Explain ("Rate Group");
+	$docDocumentation->Explain ("Record Type");
 	$docDocumentation->Explain ("Service");
 	
 	$oblarrRateGroup	= $Style->attachObject (new dataArray ('RateGroup'));
@@ -44,6 +45,9 @@
 			// If we're here, we only have to set the name because the ServiceType
 			// was set in the IF gaurd about 2 statements ago
 			$oblstrName->setValue ($_POST ['Name']);
+			
+			// Also - set the Record Type
+			$rtyRecordType = $oblarrRateGroup->Push (new RecordType ($_POST ['RecordType']));
 			
 			// If we have selected rates in the post, we want to try to add the stuff 
 			// to the database.
@@ -86,7 +90,7 @@
 							"Name"			=> $_POST ['Name'],
 							"Description"	=> $_POST ['Description'],
 							"ServiceType"	=> $_POST ['ServiceType'],
-							"RecordType"	=> 1,
+							"RecordType"	=> $_POST ['RecordType'],
 							"Archived"		=> 0
 						),
 						$_POST ['SelectedRates']

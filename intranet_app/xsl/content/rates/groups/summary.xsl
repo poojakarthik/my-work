@@ -46,11 +46,28 @@
 						</tr>
 					</xsl:for-each>
 				</table>
+				
+				<div class="Seperator"></div>
+				
+				<table border="0" cellpadding="0" cellspacing="5" class="Right">
+					<tr>
+						<td class="summary-blank black-border" width="25" height="25"></td>
+						<td>Unallocated</td>
+					</tr>
+					<tr>
+						<td class="summary-single black-border" width="25" height="25"></td>
+						<td>Allocated Correctly</td>
+					</tr>
+					<tr>
+						<td class="summary-overlap black-border" width="25" height="25"></td>
+						<td>Over Allocated</td>
+					</tr>
+				</table>
 			</xsl:when>
 			<xsl:otherwise>
 				<p>
-					You must select at least one rate to view the availability of. Please close this
-					window and select atleast one rate.
+					You must select at least one rate to view an allocation summary. 
+					Please close this window and select atleast one rate.
 				</p>
 			</xsl:otherwise>
 		</xsl:choose>
