@@ -158,6 +158,9 @@ die();
 		// generate an InvoiceRun Id
 		$strInvoiceRun = uniqid();
 		
+		// open & prepare (header) billing file
+		//TODO!!!
+		
 		foreach ($arrAccounts as $arrAccount)
 		{
 			$this->_rptBillingReport->AddMessageVariables(MSG_LINE, Array('<AccountNo>' => $arrAccount['Id']), FALSE);
@@ -262,7 +265,8 @@ die();
 			}
 			
 			// build output
-			//TODO!!! - LATER
+			$this->_bilBilling->AddInvoice
+			
 			
 			// write to billing file
 			//TODO!!! - LATER
@@ -272,6 +276,9 @@ die();
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
+		
+		// finalise (footer) & close billing file
+		//TODO!!!
 		
 		$arrReportLines['<Total>']	= $intPassed + $intFailed;
 		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
