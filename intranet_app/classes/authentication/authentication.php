@@ -209,6 +209,47 @@
 			
 			return false;
 		}
+		
+		//------------------------------------------------------------------------//
+		// Logout
+		//------------------------------------------------------------------------//
+		/**
+		 * Logout()
+		 *
+		 * Removes Session Information
+		 *
+		 * Removes Session Information
+		 *
+		 * @return	Boolean
+		 *
+		 * @method
+		 */
+		 
+		 public function Logout ()
+		 {
+		 	// Check if the person is logged in because we don't want unauthenticated users
+		 	// to try logging authenticated users out
+		 	
+		 	if (!$this->isAuthenticated ())
+		 	{
+		 		return false;
+		 	}
+		 	
+			// Updating information
+			$Update = Array("SessionExpire" => new MySQLFunction ("NOW()"));
+			
+			// update the table
+			$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id> AND SessionId = <SessionId>", $Update);
+			
+			// If we successfully update the database table
+			$updUpdateStatement->Execute($Update, Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
+			
+			// Unset the cookies so we don't have to bother checking them
+			setCookie ("Id", "", time () - 3600);
+			setCookie ("SessionId", "", time () - 3600);
+			
+			return true;
+		 }
 	}
 	
 ?>

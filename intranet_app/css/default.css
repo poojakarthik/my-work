@@ -328,3 +328,24 @@
 		border:              solid 1px #000000;
 	}
 	
+	div#Navigation
+	{
+		width:               250px;
+	}
+	
+	ul#Navigation-Root
+	{
+		margin-left:         0;
+		padding-left:        0;
+	}
+	
+	ul#Navigation-Root li
+	{
+		list-style-type:     none;
+	}
+	
+	ul#Navigation-Root > li
+	{
+		margin-bottom:       20px;
+	}
+	

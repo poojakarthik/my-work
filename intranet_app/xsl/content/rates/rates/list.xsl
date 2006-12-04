@@ -100,7 +100,7 @@
 				</xsl:choose>
 				
 				<p>
-					<a href="rate_rate_add.php">Add a New Rate</a>
+					<a href="rates_rate_add.php">Add a New Rate</a>
 				</p>
 			</div>
 		</div>

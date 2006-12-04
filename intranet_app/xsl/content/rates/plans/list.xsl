@@ -83,6 +83,7 @@
 								</xsl:choose>
 							</td>
 							<td>
+								<!--
 								<a>
 									<xsl:attribute name="href">
 										<xsl:text>rates_group_list.php</xsl:text>
@@ -102,6 +103,7 @@
 									</xsl:attribute>
 									View Rate Groups
 								</a>
+								-->
 							</td>
 						</tr>
 					</xsl:for-each>
@@ -121,7 +123,7 @@
 				</xsl:choose>
 				
 				<p>
-					<a href="rate_plan_add.php">Add a New Rate Plan</a>
+					<a href="rates_plan_add.php">Add a New Rate Plan</a>
 				</p>
 			</div>
 		</div>

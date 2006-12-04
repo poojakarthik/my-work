@@ -1,40 +1,93 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="../template/default.xsl" />
-	<xsl:template name="Content">
-		<h1>Employee Login</h1>
-		<p>
-			Please enter your Employee Login Crudentials in order to log into the Internet Management System.
-		</p>
-		
-		<form method="post" action="login.php">
-			<xsl:if test="/Response/AuthenticationAttempt">
-				<div class="MsgNotice">
-					The Username and Password that you entered were incorrect. Please try again.
+	<xsl:template match="/">
+		<html xmlns="http://www.w3.org/1999/xhtml">
+			<head>
+			  <title>TelcoBlue.com.au Internal Systems Login</title>
+				<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+			</head>
+			<style type="text/css" media="screen">
+				
+				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; }
+			    #topContainer { padding-top: 16em; background: #FFF; }
+			    #logoImage {width:300px; height:91px; float: left; }
+			    #loginContainer{padding: 0px 0px 18em 210px;}
+			    #loginForm {float:left;xheight: 400px;width:500px; border-left: 1px solid #CCCCCC; padding:0px 8px 8px 30px;text-align:left;}
+			    h3 { margin: 0; }
+			    
+			    div.Seperator { height: 5px; }
+			    .Right { float: right; }
+			    
+			    .LoginBox { width: 200px; border: solid 1px #666666; padding: 3px; font-family: "Nimbus Sans L", "Tahoma"; height: 25px; }
+			    
+			    h1 { font-size: 14pt; color: #006599; font-family: "Nimbus Sans L", "Tahoma"; }
+			    
+			    label { font-size: 10pt; }
+			    
+			    .MsgError {
+					border:              solid 1px #CC0000;
+					background-color:    #f2dbdb;
+					
+					background-image:    url('img/template/MsgError.png');
+					background-repeat:   no-repeat;
+					background-position: left;
+					
+					padding-top:         5px;
+					padding-left:        40px;
+					padding-right:       5px;
+					padding-bottom:      5px;
+					
+					height:              25px;
+					
+					font-size: 10pt;
+					
+					line-height:         25px;
+					
+					margin-bottom:       10px;
+			    }
+			    
+			    
+			</style>
+			<body>
+				<div id="topContainer">
+					<div id="loginContainer">
+						<div id="logoImage">
+							<img src="img/login/TCB_Logo.png" width="300" height="91" />
+						</div>
+						<div id="loginForm">
+							<h1>TelcoBlue Internal System</h1>
+							
+							<div class="Seperator"></div>
+							
+							<xsl:if test="/Response/AuthenticationAttempt">
+								<div class="MsgError">
+									You did not enter correct login crudentials. Please try again.
+								</div>
+							</xsl:if>
+							
+							<form method="POST" action="login.php">
+								<table>
+									<tr>
+										<td><label for="UserName">Username:</label></td>
+										<td><input type="text" name="UserName" class="LoginBox" /></td>
+									</tr>
+									<tr>
+										<td><label for="PassWord">Password:</label></td>
+										<td><input type="password" name="PassWord" class="LoginBox" /></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td><input type="submit" value="Continue &#0187;" class="Right" /></td>
+									</tr>
+								</table>
+							</form>
+						</div>
+						
+						<div class="Clear"></div>
+					</div>
 				</div>
-			</xsl:if>
-			
-			<table border="0" cellpadding="5" cellspacing="0">
-				<tr>
-					<th>Username:</th>
-					<td>
-						<input type="text" name="UserName" class="input-string">
-							<xsl:attribute name="value">
-								<xsl:text></xsl:text>
-								<xsl:if test="/Response/AuthenticationAttempt">
-									<xsl:value-of select="/Response/AuthenticationAttempt/UserName" />
-								</xsl:if>
-							</xsl:attribute>
-						</input>
-					</td>
-				</tr>
-				<tr>
-					<th>Password:</th>
-					<td><input type="password" name="PassWord" class="input-string" /></td>
-					<td><input type="submit" value="Login &#0187;" class="input-submit" /></td>
-				</tr>
-			</table>
-		</form>
+			</body>
+		</html>	
 	</xsl:template>
 </xsl:stylesheet>
