@@ -117,8 +117,20 @@ $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
 // load modules
-require_once($strModuleDir."base_module.php");
-require_once($strModuleDir."module_unitel.php");
+require_once($strModuleDir."base_import_module.php");
+require_once($strModuleDir."base_export_module.php");
+
+require_once($strModuleDir."unitel/export_module_unitel_order.php");
+require_once($strModuleDir."unitel/export_module_unitel_preselection.php");
+require_once($strModuleDir."unitel/import_module_unitel_order.php");
+require_once($strModuleDir."unitel/import_module_unitel_preselection.php");
+require_once($strModuleDir."unitel/import_module_unitel_status.php");
+
+require_once($strModuleDir."aapt/export_module_aapt_eoe.php");
+require_once($strModuleDir."aapt/import_module_aapt_eoe.php");
+require_once($strModuleDir."aapt/import_module_aapt_lsd.php");
+require_once($strModuleDir."aapt/import_module_aapt_reject.php");
+
 //require_once($strModuleDir."module_optus.php");
 //require_once($strModuleDir."module_aapt.php");
 

@@ -6,16 +6,16 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// module_import_aapt_lsd
+// module_import_aapt_reject
 //----------------------------------------------------------------------------//
 /**
- * module_import_aapt_lsd
+ * module_import_aapt_reject
  *
- * AAPT Import Module for the provisioning engine (LSD)
+ * AAPT Import Module for the provisioning engine (Reject)
  *
- * AAPT Import Module for the provisioning engine (LSD)
+ * AAPT Import Module for the provisioning engine (Reject)
  *
- * @file		module_import_aapt_lsd.php
+ * @file		module_import_aapt_reject.php
  * @language	PHP
  * @package		provisioning
  * @author		Rich "Waste" Davis
@@ -27,21 +27,21 @@
 
 
 //----------------------------------------------------------------------------//
-// ProvisioningModuleImportAAPTLSD
+// ProvisioningModuleImportAAPTReject
 //----------------------------------------------------------------------------//
 /**
- * ProvisioningModuleImportAAPTLSD
+ * ProvisioningModuleImportAAPTReject
  *
- * Unitel Module for the provisioning engine (LSD)
+ * Unitel Module for the provisioning engine (Reject)
  *
- * Unitel Module for the provisioning engine.  (LSD)
+ * Unitel Module for the provisioning engine.  (Reject)
  *
  * @prefix		prv
  *
  * @package		provisioning
- * @class		ProvisioningModuleImportAAPTLSD
+ * @class		ProvisioningModuleImportAAPTReject
  */
- class ProvisioningModuleImportAAPTLSD extends ProvisioningModuleImport
+ class ProvisioningModuleImportAAPTReject extends ProvisioningModuleImport
  {
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -49,11 +49,11 @@
 	/**
 	 * __construct()
 	 *
-	 * Constructor method for ProvisioningModuleImportAAPTLSD
+	 * Constructor method for ProvisioningModuleImportAAPTReject
 	 *
-	 * Constructor method for ProvisioningModuleImportAAPTLSD
+	 * Constructor method for ProvisioningModuleImportAAPTReject
 	 *
-	 * @return		ProvisioningModuleImportAAPTLSD
+	 * @return		ProvisioningModuleImportAAPTReject
 	 *
 	 * @method
 	 */
@@ -64,9 +64,9 @@
 		
 		parent::__construct($ptrDB);
 		
-		$this->_updPreselectSequence			= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'PreselectionFileSequence'", "Value");
-		$this->_updFullServiceFileSequence		= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceFileSequence'", "Value");
-		$this->_updFullServiceRecordSequence	= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceRecordSequence'", "Value");
+		$this->_updPreselectSequence			= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'PreselectionFileSequence'", Array('Value' => NULL));
+		$this->_updFullServiceFileSequence		= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceFileSequence'", Array('Value' => NULL));
+		$this->_updFullServiceRecordSequence	= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceRecordSequence'", Array('Value' => NULL));
 		$this->_selPreselectCarrier				= new StatementSelect("Service", "CarrierPreselect", "FNN = <FNN>", "Date DESC", "1");
 		
 				

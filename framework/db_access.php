@@ -1965,8 +1965,18 @@ class MySQLFunction
 	 	{
 			$this->_arrColumns = $arrColumns;
 			
-			// remove the index column
-			unset($this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]);
+			if (!is_string($arrColumns))
+			{
+				// remove the index column
+				unset($this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]);
+			}
+			else
+			{
+				// For some reason arrColumns is a string
+				Debug($arrColumns);
+				DebugBacktrace();
+				Die();	// Die in the ass
+			}
 			
 	 		// Partial Update, so use $arrColumns
 	 		$this->_bolIsPartialUpdate = true;

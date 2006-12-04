@@ -63,9 +63,9 @@
 		
 		parent::__construct($ptrDB);
 		
-		$this->_updPreselectSequence			= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'PreselectionFileSequence'", "Value");
-		$this->_updFullServiceFileSequence		= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceFileSequence'", "Value");
-		$this->_updFullServiceRecordSequence	= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceRecordSequence'", "Value");
+		$this->_updPreselectSequence			= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'PreselectionFileSequence'", Array('Value' => NULL));
+		$this->_updFullServiceFileSequence		= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceFileSequence'", Array('Value' => NULL));
+		$this->_updFullServiceRecordSequence	= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceRecordSequence'", Array('Value' => NULL));
 		
 				
 		//##----------------------------------------------------------------##//
@@ -267,11 +267,11 @@
 			$arrResult['LineStatus']	= $this->_arrRequest['LineStatus'];
 			
 			// If we've gained/lost then update the appropriate field
-			if ($this->arrLog['Type'] == LINE_ACTION_GAIN)
+			if ($this->_arrLog['Type'] == LINE_ACTION_GAIN)
 			{
 				$arrResult['GainDate'] = $this->_arrRequest['Date'];
 			}
-			elseif ($this->arrLog['Type'] == LINE_ACTION_LOSS)
+			elseif ($this->_arrLog['Type'] == LINE_ACTION_LOSS)
 			{
 				$arrResult['LossDate'] = $this->_arrRequest['Date'];
 			}
@@ -357,6 +357,13 @@
 		else
 		{
 			// We have received a status for a status that doesn't belong to us
+			
+			// DEBUG - Output some details here
+			$arrDebug['FNN']			= $arrData['FNN'];
+			$arrDebug['RequestType']	= $this->_arrRequest['RequestType'];
+			$arrDebug['Action']			= $this->_arrLog['Type'];
+			//Debug($arrDebug);
+			
 			return PRV_NO_SERVICE;
 		}
 	}
