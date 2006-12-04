@@ -61,6 +61,7 @@ define("REGEX_RSL_PRESELECTION"		, "/^rssaw\d{4}\d{4}[01]\d[0-3]\d$/");
 define("REGEX_AAPT_EOE"				, "/^..\d{6}\.\d{3}$/");
 define("REGEX_AAPT_EOE_RETURN"		, "/^..\d{6}\.\d{2}$/");
 define("REGEX_AAPT_LSD"				, "/^\d{8}\.(LSD|lsd)$/");
+define("REGEX_AAPT_REJECT"			, "/^R\d{9}\.\d{5}$/");
 
 // CDR File Handling (Range is 200-299)
 define("RAWFILE_DOWNLOADED"			, 250);

@@ -24,7 +24,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
+
 echo "<pre>";
 
 // Application entry point - create an instance of the application object
@@ -87,13 +87,13 @@ die();
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_STATUS_RPT]	= new ProvisioningModuleImportUnitelStatus(&$this->db);
 		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_RPT]	= new ProvisioningModuleImportUnitelPreselection(&$this->db);
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_RPT]	= new ProvisioningModuleImportUnitelOrder(&$this->db);
- 		//$this->_arrProvisioningModules[PROV_AAPT_IMPORT]			= new ProvisioningModuleAAPT(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_AAPT_LSD]				= new ProvisioningModuleImportAAPTLSD(&$this->db);
  		//$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleOptus(&$this->db);
  		
  		// Init Provisioning Export Modules
 		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
- 		//$this->_arrProvisioningModules[PROV_AAPT_EXPORT]			= new ProvisioningModuleAAPT(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_AAPT_EOE]				= new ProvisioningModuleExportAAPTEOE(&$this->db);
  		//$this->_arrProvisioningModules[PROV_OPTUS_EXPORT]			= new ProvisioningModuleOptus(&$this->db);
  		
  		$this->Framework->StartWatch();
@@ -304,7 +304,7 @@ die();
 					//$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_OPTUS_ALL];
 					break;
 				case CARRIER_AAPT:
-					//$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_AAPT_ALL];
+					$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_AAPT_EOE];
 					break;
 				default:
 					// There is a problem, Report

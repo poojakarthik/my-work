@@ -6,16 +6,16 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// module_export_aapt_preselection
+// export_module_aapt_eoe
 //----------------------------------------------------------------------------//
 /**
- * module_export_aapt_preselection
+ * export_module_aapt_eoe
  *
- * AAPT Export Module for the provisioning engine (Preselection)
+ * AAPT Export Module for the provisioning engine (EOE)
  *
- * AAPT Export Module for the provisioning engine (Preselection)
+ * AAPT Export Module for the provisioning engine (EOE)
  *
- * @file		module_export_aapt_preselection.php
+ * @file		export_module_aapt_eoe.php
  * @language	PHP
  * @package		provisioning
  * @author		Rich "Waste" Davis
@@ -27,21 +27,21 @@
 
 
 //----------------------------------------------------------------------------//
-// ProvisioningModuleExportAAPTPreselection
+// ProvisioningModuleExportAAPTEOE
 //----------------------------------------------------------------------------//
 /**
- * ProvisioningModuleExportAAPTPreselection
+ * ProvisioningModuleExportAAPTEOE
  *
- * AAPT Export Module for the provisioning engine (Preselection)
+ * AAPT Export Module for the provisioning engine (EOE)
  *
- * AAPT Export Module for the provisioning engine. (Preselection)
+ * AAPT Export Module for the provisioning engine. (EOE)
  *
  * @prefix		prv
  *
  * @package		provisioning
- * @class		ProvisioningModuleExportAAPTPreselection
+ * @class		ProvisioningModuleExportAAPTEOE
  */
- class ProvisioningModuleExportAAPTPreselection extends ProvisioningModuleExport
+ class ProvisioningModuleExportAAPTEOE extends ProvisioningModuleExport
  {
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -49,11 +49,11 @@
 	/**
 	 * __construct()
 	 *
-	 * Constructor method for ProvisioningModuleExportAAPTPreselection
+	 * Constructor method for ProvisioningModuleExportAAPTEOE
 	 *
-	 * Constructor method for ProvisioningModuleExportAAPTPreselection
+	 * Constructor method for ProvisioningModuleExportAAPTEOE
 	 *
-	 * @return		ProvisioningModuleExportAAPTPreselection
+	 * @return		ProvisioningModuleExportAAPTEOE
 	 *
 	 * @method
 	 */
@@ -88,6 +88,9 @@
 	 */
  	function BuildRequest($arrRequest)
 	{
+		// TODO: WAITING FOR FILE FROM AAPT
+		
+		
 		// Clean the request array
 		$arrBuiltRequest = Array();
 		
