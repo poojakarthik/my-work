@@ -95,7 +95,7 @@
 		$arrBuiltRequest = Array();
 		
 		$arrBuiltRequest['ReturnCondition']				= " ";				// 1 char
-		$arrBuiltRequest['FNN']							= $FNN;
+		$arrBuiltRequest['FNN']							= NULL;		// FIXME later
 		
 		switch ($arrRequest['RequestType'])
 		{
