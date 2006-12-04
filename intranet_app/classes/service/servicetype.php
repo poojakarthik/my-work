@@ -1,24 +1,24 @@
 <?php
 
-//----------------------------------------------------------------------------//
-// servicetype.php
-//----------------------------------------------------------------------------//
-/**
- * servicetype.php
- *
- * Contains the ServiceType object
- *
- * Contains the ServiceType object
- *
- * @file		servicetype.php
- * @language	PHP
- * @package		intranet_app
- * @author		Bashkim 'Bash' Isai
- * @version		6.11
- * @copyright	2006 VOIPTEL Pty Ltd
- * @license		NOT FOR EXTERNAL DISTRIBUTION
- *
- */
+	//----------------------------------------------------------------------------//
+	// servicetype.php
+	//----------------------------------------------------------------------------//
+	/**
+	 * servicetype.php
+	 *
+	 * Contains the ServiceType object
+	 *
+	 * Contains the ServiceType object
+	 *
+	 * @file		servicetype.php
+	 * @language	PHP
+	 * @package		intranet_app
+	 * @author		Bashkim 'Bash' Isai
+	 * @version		6.11
+	 * @copyright	2006 VOIPTEL Pty Ltd
+	 * @license		NOT FOR EXTERNAL DISTRIBUTION
+	 *
+	 */
 	
 	//----------------------------------------------------------------------------//
 	// ServiceType
@@ -31,7 +31,7 @@
 	 * Allows Textual (named) Representation of the Constants which form Service Types
 	 *
 	 *
-	 * @prefix	svt
+	 * @prefix	srt
 	 *
 	 * @package	intranet_app
 	 * @class	ServiceType
@@ -93,7 +93,7 @@
 		
 		function __construct ($intId, $strName)
 		{
-			parent::__construct ("ServiceType");
+			parent::__construct ('ServiceType', $intId);
 			
 			$this->intId		= $this->Push (new dataInteger	('Id',		$intId));
 			$this->strName		= $this->Push (new dataString	('Name',	$strName));

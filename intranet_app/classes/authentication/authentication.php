@@ -1,24 +1,24 @@
 <?php
 
-//----------------------------------------------------------------------------//
-// authentication.php
-//----------------------------------------------------------------------------//
-/**
- * authentication.php
- *
- * Contains the Authentication Class
- *
- * Contains the Class which Manages Authentication within the System
- *
- * @file	authentication.php
- * @language	PHP
- * @package	intranet_app
- * @author	Bashkim 'Bash' Isai
- * @version	6.10
- * @copyright	2006 VOIPTEL Pty Ltd
- * @license	NOT FOR EXTERNAL DISTRIBUTION
- *
- */
+	//----------------------------------------------------------------------------//
+	// authentication.php
+	//----------------------------------------------------------------------------//
+	/**
+	 * authentication.php
+	 *
+	 * Contains the Authentication Class
+	 *
+	 * Contains the Class which Manages Authentication within the System
+	 *
+	 * @file	authentication.php
+	 * @language	PHP
+	 * @package	intranet_app
+	 * @author	Bashkim 'Bash' Isai
+	 * @version	6.10
+	 * @copyright	2006 VOIPTEL Pty Ltd
+	 * @license	NOT FOR EXTERNAL DISTRIBUTION
+	 *
+	 */
 	
 	//----------------------------------------------------------------------------//
 	// Authentication

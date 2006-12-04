@@ -48,6 +48,12 @@
 												<li><a href="rates_rate_add.php">Create Rate</a></li>
 											</ul>
 										</li>
+										<li>
+											My Account
+											<ul>
+												<li><a href="logout.php">Logout</a></li>
+											</ul>
+										</li>
 									</ul>
 								</div>
 							</td>

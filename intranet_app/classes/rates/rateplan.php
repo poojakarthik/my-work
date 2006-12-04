@@ -7,16 +7,16 @@
 		{
 			parent::__construct ('RatePlan', $intId);
 			
-			$selAccount = new StatementSelect (
+			$selRatePlan = new StatementSelect (
 				'RatePlan', 
 				'*', 
 				'Id = <Id>'
 			);
 			
-			$selAccount->useObLib (TRUE);
-			$selAccount->Execute (Array ('Id' => $intId));
+			$selRatePlan->useObLib (TRUE);
+			$selRatePlan->Execute (Array ('Id' => $intId));
 			
-			$selAccount->Fetch ($this);
+			$selRatePlan->Fetch ($this);
 			
 			$this->Push (new NamedServiceType ($this->Pull ('ServiceType')->getValue ()));
 		}

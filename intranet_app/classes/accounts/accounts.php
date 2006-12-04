@@ -1,16 +1,16 @@
 <?php
-	
+
 	//----------------------------------------------------------------------------//
-	// account.php
+	// accounts.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * account.php
+	 * accounts.php
 	 *
-	 * File containing Account Class
+	 * Contains the Class that Controls Account Searching
 	 *
-	 * File containing Account Class
+	 * Contains the Class that Controls Account Searching
 	 *
-	 * @file		account.php
+	 * @file		accounts.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,51 +21,41 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// Account
+	// Accounts
 	//----------------------------------------------------------------------------//
 	/**
-	 * Account
+	 * Accounts
 	 *
-	 * An account in the Database
+	 * Controls Searching for an existing account
 	 *
-	 * An account in the Database
+	 * Controls Searching for an existing account
 	 *
 	 *
-	 * @prefix	act
+	 * @prefix		acs
 	 *
 	 * @package		intranet_app
-	 * @class		Account
+	 * @class		AccountSearch
 	 * @extends		dataObject
 	 */
 	
-	class Account extends dataObject
+	class AccountSearch extends Search
 	{
-		
 		//------------------------------------------------------------------------//
 		// __construct
 		//------------------------------------------------------------------------//
 		/**
 		 * __construct()
 		 *
-		 * Constructor for a new Account
+		 * Constructs an Account Searching Routine
 		 *
-		 * Constructor for a new Account
-		 *
-		 * @param	Integer		$intId		The Id of the Account being Retrieved
+		 * Constructs an Account Searching Routine
 		 *
 		 * @method
 		 */
-		
-		function __construct ($intId)
+		 
+		function __construct ()
 		{
-			// Pull all the account information and Store it ...
-			$selAccount = new StatementSelect ('Account', '*', 'Id = <Id>');
-			$selAccount->useObLib (TRUE);
-			$selAccount->Execute (Array ('Id' => $intId));
-			$selAccount->Fetch ($this);
-			
-			// Construct the object
-			parent::__construct ('Account', $this->Pull ('Id')->getValue ());
+			parent::__construct ('AccountSearch', 'Account', 'Account');
 		}
 	}
 	

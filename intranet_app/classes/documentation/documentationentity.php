@@ -42,14 +42,45 @@
 	class DocumentationEntity extends dataObject
 	{
 		
-		private $_oblarrFields;
+		//------------------------------------------------------------------------//
+		// _oblstrName
+		//------------------------------------------------------------------------//
+		/**
+		 * _oblstrName
+		 *
+		 * The name of the Entity
+		 *
+		 * The name of the Entity
+		 *
+		 * @type	dataString
+		 *
+		 * @property
+		 */
+		
 		private $_oblstrName;
 		
 		//------------------------------------------------------------------------//
-		// DocumentationEntity
+		// _oblarrFields
 		//------------------------------------------------------------------------//
 		/**
-		 * DocumentationEntity()
+		 * _oblarrFields
+		 *
+		 * Fields associated with an Entity
+		 *
+		 * Fields associated with an Entity
+		 *
+		 * @type	dataArray
+		 *
+		 * @property
+		 */
+		 
+		private $_oblarrFields;
+		
+		//------------------------------------------------------------------------//
+		// __construct
+		//------------------------------------------------------------------------//
+		/**
+		 * __construct()
 		 *
 		 * Constructs a DocumentationEntity Container
 		 *
@@ -68,14 +99,8 @@
 			$this->_oblarrFields = $this->Push (new dataArray ('Fields', 'DocumentationField'));
 			
 			// Get each Field for this Entity
-			$selEntities = new StatementSelect (
-				"Documentation",
-				"Entity, Field", 
-				"Entity = <Entity>"
-			);
-			
+			$selEntities = new StatementSelect ("Documentation", "Entity, Field", "Entity = <Entity>");
 			$selEntities->Execute(Array("Entity" => $strEntity));
-			
 			
 			// Put all the related fields for this entity on the Object
 			while ($arrEntity = $selEntities->Fetch ())

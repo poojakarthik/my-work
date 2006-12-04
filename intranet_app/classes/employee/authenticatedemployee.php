@@ -1,24 +1,24 @@
 <?php
 
-//----------------------------------------------------------------------------//
-// authenticatedemployee.php
-//----------------------------------------------------------------------------//
-/**
- * authenticatedemployee.php
- *
- * File for the AuthenticatedEmployee Class
- *
- * A file which contains the PHP code for an AuthenticatedEmployee
- *
- * @file	authenticatedemployee.php
- * @language	PHP
- * @package	intranet_app
- * @author	Bashkim 'bash' Isai
- * @version	6.11
- * @copyright	2006 VOIPTEL Pty Ltd
- * @license	NOT FOR EXTERNAL DISTRIBUTION
- *
- */
+	//----------------------------------------------------------------------------//
+	// authenticatedemployee.php
+	//----------------------------------------------------------------------------//
+	/**
+	 * authenticatedemployee.php
+	 *
+	 * File for the AuthenticatedEmployee Class
+	 *
+	 * A file which contains the PHP code for an AuthenticatedEmployee
+	 *
+	 * @file	authenticatedemployee.php
+	 * @language	PHP
+	 * @package	intranet_app
+	 * @author	Bashkim 'bash' Isai
+	 * @version	6.11
+	 * @copyright	2006 VOIPTEL Pty Ltd
+	 * @license	NOT FOR EXTERNAL DISTRIBUTION
+	 *
+	 */
  
 	//----------------------------------------------------------------------------//
 	// AuthenticatedEmployee
@@ -42,15 +42,15 @@
 	{
 		
 		//------------------------------------------------------------------------//
-		// AuthenticatedEmployee
+		// __construct
 		//------------------------------------------------------------------------//
 		/**
-		 * AuthenticatedEmployee()
+		 * __construct()
 		 *
-		 * Constructor method
+		 * Created a new AuthenticatedEmployee
 		 *
 		 * Creates a new AuthenticatedEmployee based on the Cookie Variables
-		 * (to help prevent against possible hacking).
+		 * (to help prevent against possible hacking)
 		 *
 		 * @method
 		 */

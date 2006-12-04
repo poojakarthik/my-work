@@ -1,35 +1,34 @@
 <?php
 
-//----------------------------------------------------------------------------//
-// namedservicetype.php
-//----------------------------------------------------------------------------//
-/**
- * servicetype.php
- *
- * Contains the ServiceType object
- *
- * Contains the ServiceType object
- *
- * @file		namedservicetype.php
- * @language	PHP
- * @package		intranet_app
- * @author		Bashkim 'Bash' Isai
- * @version		6.11
- * @copyright	2006 VOIPTEL Pty Ltd
- * @license		NOT FOR EXTERNAL DISTRIBUTION
- *
- */
-	
 	//----------------------------------------------------------------------------//
-	// NamedServiceType
+	// servicetypes.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * NameServiceType
+	 * servicetypes.php
+	 *
+	 * Contains the ServiceType object
+	 *
+	 * Contains the ServiceType object
+	 *
+	 * @file		servicetypes.php
+	 * @language	PHP
+	 * @package		intranet_app
+	 * @author		Bashkim 'Bash' Isai
+	 * @version		6.11
+	 * @copyright	2006 VOIPTEL Pty Ltd
+	 * @license		NOT FOR EXTERNAL DISTRIBUTION
+	 *
+	 */
+	
+	//----------------------------------------------------------------------------//
+	// ServiceTypes
+	//----------------------------------------------------------------------------//
+	/**
+	 * ServiceTypes
+	 *
+	 * Textual Service Types
 	 *
 	 * Allows Textual (named) Representation of the Constants which form Service Types
-	 *
-	 * Allows Textual (named) Representation of the Constants which form Service Types
-	 *
 	 *
 	 * @prefix	svt
 	 *
@@ -38,25 +37,8 @@
 	 * @extends	dataEnumerative
 	 */
 	
-	class NamedServiceType extends dataEnumerative
+	class ServiceType extends dataEnumerative
 	{
-		
-		//------------------------------------------------------------------------//
-		// _UNKNOWN
-		//------------------------------------------------------------------------//
-		/**
-		 * _UNKNOWN
-		 *
-		 * Used when the ServiceType can not be distinguished
-		 *
-		 * Used when the ServiceType can not be distinguished
-		 *
-		 * @type	dataString
-		 *
-		 * @property
-		 */
-		
-		private $_UNKNOWN;
 		
 		//------------------------------------------------------------------------//
 		// _ADSL
@@ -127,10 +109,10 @@
 		private $_INBOUND;
 		
 		//------------------------------------------------------------------------//
-		// NamedServiceType
+		// __construct
 		//------------------------------------------------------------------------//
 		/**
-		 * NamedServiceType()
+		 * __construct()
 		 *
 		 * Controls a List of ServiceType
 		 *
@@ -153,6 +135,22 @@
 			
 			$this->setValue ($intServiceType);
 		}
+		
+		//------------------------------------------------------------------------//
+		// setValue
+		//------------------------------------------------------------------------//
+		/**
+		 * setValue()
+		 *
+		 * Change the Selected Service Type
+		 *
+		 * Change the Selected Service Type to another Service Type
+		 *
+		 * @param	Integer		$intServiceType		The value of the ServiceType Constant wishing to be set
+		 * @return	Boolean							Whether or not the Select succeeded
+		 *
+		 * @method
+		 */
 		
 		public function setValue ($intServiceType)
 		{

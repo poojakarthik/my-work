@@ -137,6 +137,7 @@
 				<div class="Filter-Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<xsl:for-each select="/Response/RatePlan/RecordTypeSearch/Results/rangeSample/RecordType">
+							<xsl:variable name="RecordType" select="./Id" />
 							<tr>
 								<xsl:if test="./Required = 1">
 									<xsl:attribute name="class">
@@ -155,7 +156,7 @@
 											<xsl:text>]</xsl:text>
 										</xsl:attribute>
 										<option selected="selected" value=""></option>
-										<xsl:for-each select="/Response/RatePlan/RateGroups/Results/rangeSample/RateGroup[RecordType=./Id]">
+										<xsl:for-each select="/Response/RatePlan/RateGroups/Results/rangeSample/RateGroup[RecordType=$RecordType]">
 											<option>
 												<xsl:attribute name="value">
 													<xsl:text></xsl:text>

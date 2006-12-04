@@ -17,6 +17,8 @@
 			$selAccount->Execute (Array ('Id' => $intId));
 			
 			$selAccount->Fetch ($this);
+			
+			$this->Push (new NamedServiceType ($this->Pull ('ServiceType')->getValue ()));
 		}
 	}
 	

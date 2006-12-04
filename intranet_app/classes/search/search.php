@@ -1,25 +1,25 @@
 <?php
 
-//----------------------------------------------------------------------------//
-// search.php
-//----------------------------------------------------------------------------//
-/**
- * search.php
- *
- * Contains the Abstract Class that Controls Data Searching
- *
- * This file contains the Abstract Class that is used for Searching or Filtering
- * Information in the Database.
- *
- * @file	search.php
- * @language	PHP
- * @package	intranet_app
- * @author	Bashkim 'bash' Isai
- * @version	6.11
- * @copyright	2006 VOIPTEL Pty Ltd
- * @license	NOT FOR EXTERNAL DISTRIBUTION
- *
- */
+	//----------------------------------------------------------------------------//
+	// search.php
+	//----------------------------------------------------------------------------//
+	/**
+	 * search.php
+	 *
+	 * Contains the Abstract Class that Controls Data Searching
+	 *
+	 * This file contains the Abstract Class that is used for Searching or Filtering
+	 * Information in the Database.
+	 *
+	 * @file		search.php
+	 * @language	PHP
+	 * @package		intranet_app
+	 * @author		Bashkim 'bash' Isai
+	 * @version		6.11
+	 * @copyright	2006 VOIPTEL Pty Ltd
+	 * @license		NOT FOR EXTERNAL DISTRIBUTION
+	 *
+	 */
 	
 	//----------------------------------------------------------------------------//
 	// Search
@@ -31,16 +31,46 @@
 	 *
 	 * Abstraction for searching the Database
 	 *
-	 * @package	intranet_app
-	 * @class	Search
-	 * @extends	dataObject
+	 * @package		intranet_app
+	 * @class		Search
+	 * @extends		dataObject
 	 */
 	
 	class Search extends dataObject
 	{
 		
+		//------------------------------------------------------------------------//
+		// _strTable
+		//------------------------------------------------------------------------//
+		/**
+		 * _strTable
+		 *
+		 * The table name
+		 *
+		 * The name of the Table information is being retrieved from
+		 *
+		 * @type	String
+		 *
+		 * @property
+		 */
+		 
 		private $_strTable;
 		
+		//------------------------------------------------------------------------//
+		// _strResultClass
+		//------------------------------------------------------------------------//
+		/**
+		 * _strResultClass
+		 *
+		 * The result class
+		 *
+		 * The class to instantiate when we have a result
+		 *
+		 * @type	String
+		 *
+		 * @property
+		 */
+		 
 		private $_strResultClass;
 	
 		//------------------------------------------------------------------------//
@@ -113,42 +143,71 @@
 		 *
 		 * Defines what constrains will be applied to the Search Request.
 		 *
+		 * @param	String		$strFieldName			The name of the Field (Antecedent)
+		 * @param	String		$strFieldConstraint		The type of Constraint to apply (Operator)
+		 * @param	Mixed		$mixFieldValue			The value of the Field (Consequent)
+		 *
+		 * @return	void
+		 *
 		 * @method
 		 */
 		
-		public function Constrain ($fieldName, $fieldConstraint, $fieldValue)
+		public function Constrain ($strFieldName, $strFieldConstraint, $mixFieldValue)
 		{
 			$scoConstraintObject = null;
 			
-			if ($fieldName == 'Id')
+			// If the Name of the Field is Id, we won't find it in our array but 
+			// it is still valid - so set it as a dataInteger
+			if ($strFieldName == 'Id')
 			{
 				$scoConstraintObject = new SearchConstraint
 				(
 					'Id',
 					'EQUALS',
 					'dataInteger',
-					$fieldValue
+					$mixFieldValue
 				);
 			}
 			else
 			{
-				if (!isset ($GLOBALS['arrDatabaseTableDefine'][$this->_strTable]['Column'][$fieldName]))
+				// Make sure the Field Exists
+				if (!isset ($GLOBALS['arrDatabaseTableDefine'][$this->_strTable]['Column'][$strFieldName]))
 				{
 					throw new Exception ('Field not exists.');
 				}
 				
-				$arrDefinition = $GLOBALS['arrDatabaseTableDefine'][$this->_strTable]['Column'][$fieldName];
+				// Get the definition and set the Constaint
+				$arrDefinition = $GLOBALS['arrDatabaseTableDefine'][$this->_strTable]['Column'][$strFieldName];
+				
 				$scoConstraintObject = new SearchConstraint 
 				(
-					$fieldName,
-					$fieldConstraint,
+					$strFieldName,
+					$strFieldConstraint,
 					$arrDefinition ['ObLib'],
-					$fieldValue
+					$mixFieldValue
 				);
 			}
 			
 			$this->_oblarrConstraints->Push ($scoConstraintObject);
 		}
+		
+		//------------------------------------------------------------------------//
+		// Order
+		//------------------------------------------------------------------------//
+		/**
+		 * Order()
+		 *
+		 * Orders Results
+		 *
+		 * Set the flag for ordering results
+		 *
+		 * @param	String		$strOrderColumn	The name of the Column to order by
+		 * @param	Boolean		$bolOrderMethod		Whether to Sort by Ascending (TRUE) or Descending (FALSE)
+		 *
+		 * @return	void
+		 *
+		 * @method
+		 */
 		
 		public function Order ($strOrderColumn, $bolOrderMethod=TRUE)
 		{
@@ -163,6 +222,24 @@
 				$this->_seoOrder->setDescending ();
 			}
 		}
+		
+		//------------------------------------------------------------------------//
+		// Sample
+		//------------------------------------------------------------------------//
+		/**
+		 * Sample()
+		 *
+		 * Attaches a Sample
+		 *
+		 * Attaches a result set to the search with items that fall between two values of records for the search
+		 *
+		 * @param	Integer		$intPage		The Page number Searched for (1, 2, 3, ...)
+		 * @param	Integer		$intLength		The number of Items per Page (10, 20, 50, 100, ... )
+		 *
+		 * @return	void
+		 *
+		 * @method
+		 */
 		
 		public function Sample ($intPage=1, $intLength=NULL)
 		{
