@@ -145,7 +145,7 @@
 					}
 				}
 				
-				$rtsRecordTypes = new RecordTypeSearch ();
+				$rtsRecordTypes = new RecordTypes ();
 				$rtsRecordTypes->Constrain ('ServiceType', 'EQUALS', $_POST ['ServiceType']);
 				$rtsRecordTypes->Order ('Name', TRUE);
 				$rtsRecordTypes->Sample ();

@@ -13,7 +13,7 @@
 			    #topContainer { padding-top: 16em; background: #FFF; }
 			    #logoImage {width:300px; height:91px; float: left; }
 			    #loginContainer{padding: 0px 0px 18em 210px;}
-			    #loginForm {float:left;xheight: 400px;width:500px; border-left: 1px solid #CCCCCC; padding:0px 8px 8px 30px;text-align:left;}
+			    #loginForm {float:left;height: 150px;width:500px; border-left: 1px solid #CCCCCC; padding:0px 8px 8px 30px;text-align:left;}
 			    h3 { margin: 0; }
 			    
 			    div.Seperator { height: 5px; }

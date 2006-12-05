@@ -29,7 +29,7 @@
 										<input type="text" name="constraint[Id][Value]" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/AccountSearch/Constraints/Constraint[Name=string('Id')]/Value" />
+												<xsl:value-of select="/Response/Accounts/Constraints/Constraint[Name=string('Id')]/Value" />
 											</xsl:attribute>
 										</input>
 									</td>
@@ -50,7 +50,7 @@
 									<td><input type="text" name="constraint[BusinessName][Value]" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/AccountSearch/Constraints/Constraint[Name=string('BusinessName')]/Value" />
+												<xsl:value-of select="/Response/Accounts/Constraints/Constraint[Name=string('BusinessName')]/Value" />
 											</xsl:attribute>
 										</input>
 									</td>
@@ -71,7 +71,7 @@
 									<td><input type="text" name="constraint[TradingName][Value]" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/AccountSearch/Constraints/Constraint[Name=string('TradingName')]/Value" />
+												<xsl:value-of select="/Response/Accounts/Constraints/Constraint[Name=string('TradingName')]/Value" />
 											</xsl:attribute>
 										</input>
 									</td>
@@ -93,7 +93,7 @@
 											<tr>
 												<td>
 													<input type="radio" name="constraint[Archived][Value]" id="Archived:FALSE" value="0">
-														<xsl:if test="number(/Response/AccountSearch/Constraints/Constraint[Name=string('Archived')]/Value) = 0">
+														<xsl:if test="number(/Response/Accounts/Constraints/Constraint[Name=string('Archived')]/Value) = 0">
 
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
@@ -108,7 +108,7 @@
 											<tr>
 												<td>
 													<input type="radio" name="constraint[Archived][Value]" id="Archived:TRUE" value="1">
-														<xsl:if test="number(/Response/AccountSearch/Constraints/Constraint[Name=string('Archived')]/Value) = 1">
+														<xsl:if test="number(/Response/Accounts/Constraints/Constraint[Name=string('Archived')]/Value) = 1">
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
 															</xsl:attribute>
@@ -122,7 +122,7 @@
 											<tr>
 												<td>
 													<input type="radio" name="constraint[Archived][Value]" id="Archived:DONKEY" value="">
-														<xsl:if test="not(/Response/AccountSearch/Constraints/Constraint[Name=string('Archived')])">
+														<xsl:if test="not(/Response/Accounts/Constraints/Constraint[Name=string('Archived')])">
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
 															</xsl:attribute>
@@ -149,9 +149,9 @@
 											<option selected="selected">
 												<xsl:attribute name="value">
 													<xsl:text></xsl:text>
-													<xsl:value-of select="/Response/AccountSearch/Results/rangeLength" />
+													<xsl:value-of select="/Response/Accounts/Results/rangeLength" />
 												</xsl:attribute>
-												<xsl:value-of select="/Response/AccountSearch/Results/rangeLength" />
+												<xsl:value-of select="/Response/Accounts/Results/rangeLength" />
 												<option disabled="disabled">-------</option>
 												<option value="10">10</option>
 												<option value="20">20</option>
@@ -184,21 +184,21 @@
 									<xsl:text>account_list.php</xsl:text>
 									<xsl:text>?Order[Column]=Id</xsl:text>
 									
-									<xsl:if test="/Response/AccountSearch/Order/Column = string('Id')">
+									<xsl:if test="/Response/Accounts/Order/Column = string('Id')">
 										<xsl:choose>
-											<xsl:when test="/Response/AccountSearch/Order/Method = 0">
+											<xsl:when test="/Response/Accounts/Order/Method = 0">
 												<xsl:text>&amp;Order[Method]=1</xsl:text>
 											</xsl:when>
-											<xsl:when test="/Response/AccountSearch/Order/Method = 1">
+											<xsl:when test="/Response/Accounts/Order/Method = 1">
 												<xsl:text>&amp;Order[Method]=0</xsl:text>
 											</xsl:when>
 										</xsl:choose>
 									</xsl:if>
 									
 									<xsl:text>&amp;rangeLength=</xsl:text>
-									<xsl:value-of select="/Response/AccountSearch/Results/rangeLength" />
+									<xsl:value-of select="/Response/Accounts/Results/rangeLength" />
 									
-									<xsl:for-each select="/Response/AccountSearch/Constraints/Constraint">
+									<xsl:for-each select="/Response/Accounts/Constraints/Constraint">
 										<xsl:text>&amp;constraint[</xsl:text>
 										<xsl:value-of select="./Name" />
 										<xsl:text>][Value]=</xsl:text>
@@ -219,21 +219,21 @@
 									<xsl:text>account_list.php</xsl:text>
 									<xsl:text>?Order[Column]=BusinessName</xsl:text>
 									
-									<xsl:if test="/Response/AccountSearch/Order/Column = string('BusinessName')">
+									<xsl:if test="/Response/Accounts/Order/Column = string('BusinessName')">
 										<xsl:choose>
-											<xsl:when test="/Response/AccountSearch/Order/Method = 0">
+											<xsl:when test="/Response/Accounts/Order/Method = 0">
 												<xsl:text>&amp;Order[Method]=1</xsl:text>
 											</xsl:when>
-											<xsl:when test="/Response/AccountSearch/Order/Method = 1">
+											<xsl:when test="/Response/Accounts/Order/Method = 1">
 												<xsl:text>&amp;Order[Method]=0</xsl:text>
 											</xsl:when>
 										</xsl:choose>
 									</xsl:if>
 									
 									<xsl:text>&amp;rangeLength=</xsl:text>
-									<xsl:value-of select="/Response/AccountSearch/Results/rangeLength" />
+									<xsl:value-of select="/Response/Accounts/Results/rangeLength" />
 									
-									<xsl:for-each select="/Response/AccountSearch/Constraints/Constraint">
+									<xsl:for-each select="/Response/Accounts/Constraints/Constraint">
 										<xsl:text>&amp;constraint[</xsl:text>
 										<xsl:value-of select="./Name" />
 										<xsl:text>][Value]=</xsl:text>
@@ -254,16 +254,16 @@
 									<xsl:text>account_list.php</xsl:text>
 									<xsl:text>?Order[Column]=TradingName</xsl:text>
 									
-									<xsl:if test="/Response/AccountSearch/Order/Column = string('TradingName')">
-										<xsl:if test="/Response/AccountSearch/Order/Method = 1">
+									<xsl:if test="/Response/Accounts/Order/Column = string('TradingName')">
+										<xsl:if test="/Response/Accounts/Order/Method = 1">
 											<xsl:text>&amp;Order[Method]=0</xsl:text>
 										</xsl:if>
 									</xsl:if>
 									
 									<xsl:text>&amp;rangeLength=</xsl:text>
-									<xsl:value-of select="/Response/AccountSearch/Results/rangeLength" />
+									<xsl:value-of select="/Response/Accounts/Results/rangeLength" />
 									
-									<xsl:for-each select="/Response/AccountSearch/Constraints/Constraint">
+									<xsl:for-each select="/Response/Accounts/Constraints/Constraint">
 										<xsl:text>&amp;constraint[</xsl:text>
 										<xsl:value-of select="./Name" />
 										<xsl:text>][Value]=</xsl:text>
@@ -280,7 +280,7 @@
 						</th>
 						<th>Actions</th>
 					</tr>
-					<xsl:for-each select="/Response/AccountSearch/Results/rangeSample/Account">
+					<xsl:for-each select="/Response/Accounts/Results/rangeSample/Account">
 						<tr>
 							<xsl:attribute name="class">
 								<xsl:choose>
@@ -293,7 +293,7 @@
 								</xsl:choose>
 							</xsl:attribute>
 							<td>
-								<xsl:value-of select="/Response/AccountSearch/Results/rangeStart + position()" />.
+								<xsl:value-of select="/Response/Accounts/Results/rangeStart + position()" />.
 							</td>
 							<td>
 								<a>
@@ -316,42 +316,42 @@
 				</table>
 				
 				<xsl:choose>
-					<xsl:when test="/Response/AccountSearch/Results/collationLength = 0">
+					<xsl:when test="/Response/Accounts/Results/collationLength = 0">
 						<div class="MsgError">
 							There are no Accounts with the Search Criteria that you Specified.
 						</div>
 					</xsl:when>
-					<xsl:when test="count(/Response/AccountSearch/Results/rangeSample/Account) = 0">
+					<xsl:when test="count(/Response/Accounts/Results/rangeSample/Account) = 0">
 						<div class="MsgNotice">
 							There are no Records for the Range that you Searched for.
 						</div>
 					</xsl:when>
 				</xsl:choose>
 				
-				<xsl:if test="/Response/AccountSearch/Results/rangePages != 0">
+				<xsl:if test="/Response/Accounts/Results/rangePages != 0">
 					<p>
 						<table border="0" cellpadding="3" cellspacing="0" width="100%">
 							<tr>
 								<td width="33%" align="left">
-									<xsl:if test="/Response/AccountSearch/Results/rangePage &gt; 1">
+									<xsl:if test="/Response/Accounts/Results/rangePage &gt; 1">
 										<a>
 											<xsl:attribute name="href">
 												<xsl:text>account_list.php</xsl:text>
 												
 												<xsl:text>?rangeLength=</xsl:text>
-												<xsl:value-of select="/Response/AccountSearch/Results/rangeLength" />
+												<xsl:value-of select="/Response/Accounts/Results/rangeLength" />
 												
 												<xsl:text>&amp;rangePage=</xsl:text>
-												<xsl:value-of select="/Response/AccountSearch/Results/rangePage - 1" />
+												<xsl:value-of select="/Response/Accounts/Results/rangePage - 1" />
 												
 												
-												<xsl:if test="/Response/AccountSearch/Order/Column != ''">
+												<xsl:if test="/Response/Accounts/Order/Column != ''">
 													<xsl:text>&amp;Order[Column]=</xsl:text>
-													<xsl:value-of select="/Response/AccountSearch/Order/Column" />
+													<xsl:value-of select="/Response/Accounts/Order/Column" />
 												</xsl:if>
 												
 												<xsl:choose>
-													<xsl:when test="/Response/AccountSearch/Order/Method = 1">
+													<xsl:when test="/Response/Accounts/Order/Method = 1">
 														<xsl:text>&amp;Order[Ascending]=1</xsl:text>
 													</xsl:when>
 													<xsl:otherwise>
@@ -359,7 +359,7 @@
 													</xsl:otherwise>
 												</xsl:choose>
 												
-												<xsl:for-each select="/Response/AccountSearch/Constraints/Constraint">
+												<xsl:for-each select="/Response/Accounts/Constraints/Constraint">
 													<xsl:text>&amp;constraint[</xsl:text>
 													<xsl:value-of select="./Name" />
 													<xsl:text>][Value]=</xsl:text>
@@ -376,34 +376,34 @@
 									</xsl:if>
 								</td>
 								<td width="34%" align="center">
-									Page <xsl:value-of select="/Response/AccountSearch/Results/rangePage" />
-									of <xsl:value-of select="/Response/AccountSearch/Results/rangePages" /><br />
+									Page <xsl:value-of select="/Response/Accounts/Results/rangePage" />
+									of <xsl:value-of select="/Response/Accounts/Results/rangePages" /><br />
 									Showing  
-									<xsl:value-of select="/Response/AccountSearch/Results/rangeStart + 1" />
+									<xsl:value-of select="/Response/Accounts/Results/rangeStart + 1" />
 									to
-									<xsl:value-of select="/Response/AccountSearch/Results/rangeStart + /Response/AccountSearch/Results/rangeLength" />
+									<xsl:value-of select="/Response/Accounts/Results/rangeStart + /Response/Accounts/Results/rangeLength" />
 									of
-									<xsl:value-of select="/Response/AccountSearch/Results/collationLength" />
+									<xsl:value-of select="/Response/Accounts/Results/collationLength" />
 								</td>
 								<td width="33%" align="right">
-									<xsl:if test="/Response/AccountSearch/Results/rangePage &lt; /Response/AccountSearch/Results/rangePages">
+									<xsl:if test="/Response/Accounts/Results/rangePage &lt; /Response/Accounts/Results/rangePages">
 										<a>
 											<xsl:attribute name="href">
 												<xsl:text>account_list.php</xsl:text>
 												
 												<xsl:text>?rangeLength=</xsl:text>
-												<xsl:value-of select="/Response/AccountSearch/Results/rangeLength" />
+												<xsl:value-of select="/Response/Accounts/Results/rangeLength" />
 												
 												<xsl:text>&amp;rangePage=</xsl:text>
-												<xsl:value-of select="/Response/AccountSearch/Results/rangePage + 1" />
+												<xsl:value-of select="/Response/Accounts/Results/rangePage + 1" />
 												
-												<xsl:if test="/Response/AccountSearch/Order/Column != ''">
+												<xsl:if test="/Response/Accounts/Order/Column != ''">
 													<xsl:text>&amp;Order[Column]=</xsl:text>
-													<xsl:value-of select="/Response/AccountSearch/Order/Column" />
+													<xsl:value-of select="/Response/Accounts/Order/Column" />
 												</xsl:if>
 												
 												<xsl:choose>
-													<xsl:when test="/Response/AccountSearch/Order/Method = 1">
+													<xsl:when test="/Response/Accounts/Order/Method = 1">
 														<xsl:text>&amp;Order[Ascending]=1</xsl:text>
 													</xsl:when>
 													<xsl:otherwise>
@@ -411,7 +411,7 @@
 													</xsl:otherwise>
 												</xsl:choose>
 												
-												<xsl:for-each select="/Response/AccountSearch/Constraints/Constraint">
+												<xsl:for-each select="/Response/Accounts/Constraints/Constraint">
 													<xsl:text>&amp;constraint[</xsl:text>
 													<xsl:value-of select="./Name" />
 													<xsl:text>][Value]=</xsl:text>

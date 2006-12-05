@@ -23,7 +23,27 @@
 				</tr>
 				<tr>
 					<td>Service Type:</td>
-					<td><xsl:value-of select="/Response/RateGroupDetails/RateGroup/NamedServiceTypes/ServiceType[@selected='selected']/Name" /></td>
+					<td><xsl:value-of select="/Response/RateGroupDetails/RateGroup/ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
+				</tr>
+				<tr>
+					<td>Archive Status:</td>
+					<td>
+						<xsl:choose>
+							<xsl:when test="/Response/RateGroupDetails/RateGroup/Archived = 0">
+								Currently Available 
+									[<a>
+										<xsl:attribute name="href">
+											<xsl:text>rates_group_archive.php?Id=</xsl:text>
+											<xsl:value-of select="/Response/RateGroupDetails/RateGroup/Id" />
+										</xsl:attribute>
+										<xsl:text>Archive Rate Group</xsl:text>
+									</a>]
+							</xsl:when>
+							<xsl:otherwise>
+								
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
 				</tr>
 			</table>
 			<div class="Clear"></div>
