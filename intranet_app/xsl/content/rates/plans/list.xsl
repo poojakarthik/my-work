@@ -6,6 +6,8 @@
 	<xsl:template name="Content">
 		<h1>Rate Plans</h1>
 		
+		<script language="javascript" src="js/rates_plan_list.js"></script>
+		
 		<form method="GET" action="rates_plan_list.php">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
@@ -54,7 +56,7 @@
 						<th>Rate Plan Name</th>
 						<th>Service Type</th>
 						<th>Archive</th>
-						<th>Options</th>
+						<th>Actions</th>
 					</tr>
 					<xsl:for-each select="/Response/RatePlans/Results/rangeSample/RatePlan">
 						<tr>
@@ -83,27 +85,18 @@
 								</xsl:choose>
 							</td>
 							<td>
-								<!--
 								<a>
 									<xsl:attribute name="href">
-										<xsl:text>rates_group_list.php</xsl:text>
-										<xsl:text>?constraint[RatePlan][Operator]=EQUALS</xsl:text>
-										<xsl:text>&amp;constraint[RatePlan][Value]=</xsl:text>
+										<xsl:text>rates_plan_view.php?Id=</xsl:text>
 										<xsl:value-of select="./Id" />
 									</xsl:attribute>
-									View Rate Plan Details
-								</a>
-								|
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>rates_group_list.php</xsl:text>
-										<xsl:text>?constraint[RatePlan][Operator]=EQUALS</xsl:text>
-										<xsl:text>&amp;constraint[RatePlan][Value]=</xsl:text>
+									<xsl:attribute name="onclick">
+										<xsl:text>return ViewRatePlanDetails ('</xsl:text>
 										<xsl:value-of select="./Id" />
+										<xsl:text>')</xsl:text>
 									</xsl:attribute>
-									View Rate Groups
+									<xsl:text>View Details</xsl:text>
 								</a>
-								-->
 							</td>
 						</tr>
 					</xsl:for-each>

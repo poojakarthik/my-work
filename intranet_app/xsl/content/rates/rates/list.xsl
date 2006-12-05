@@ -6,6 +6,8 @@
 	<xsl:template name="Content">
 		<h1>Rates</h1>
 		
+		<script language="javascript" src="js/rates_rate_list.js"></script>
+		
 		<form method="GET" action="rates_rate_list.php">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
@@ -81,6 +83,18 @@
 								</xsl:choose>
 							</td>
 							<td>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>rates_rate_view.php?Id=</xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+									<xsl:attribute name="onclick">
+										<xsl:text>return ViewRateDetails ('</xsl:text>
+										<xsl:value-of select="./Id" />
+										<xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:text>View Details</xsl:text>
+								</a>
 							</td>
 						</tr>
 					</xsl:for-each>

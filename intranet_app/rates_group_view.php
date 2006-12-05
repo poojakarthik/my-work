@@ -8,8 +8,6 @@
 	
 	require ("config/application_loader.php");
 	
-	$docDocumentation->Explain ("Rate Group");
-	
 	// If the User is not logged into the system
 	if (!$athAuthentication->isAuthenticated ())
 	{
@@ -20,9 +18,11 @@
 	// Check that there is an Id we're wishing to retrieve
 	if (!isset ($_GET ['Id']))
 	{
-		// If there aren't any - just die
-		exit;
+		// If there aren't any - go away
+		header ("Location: console.php"); exit;
 	}
+	
+	$docDocumentation->Explain ("Rate Group");
 	
 	// Create a Base Object
 	$oblarrDetails	= $Style->attachObject (new dataArray ('RateGroupDetails'));
@@ -52,7 +52,6 @@
 		$oblarrPlans->Push (new RatePlan ($arrPlan ['RatePlan']));
 	}
 	
-	// Output ...
 	$Style->Output ("xsl/content/rates/groups/view.xsl");
 	
 ?>

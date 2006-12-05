@@ -66,6 +66,9 @@
 			$selRate->Fetch ($this);
 			
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
+			
+			$intRecordType = $this->Pop ("RecordType")->getValue ();
+			$this->Push (new RecordType ($intRecordType));
 		}
 	}
 	
