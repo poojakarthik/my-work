@@ -37,7 +37,7 @@
 	 * @extends	dataEnumerative
 	 */
 	
-	class ServiceType extends dataEnumerative
+	class ServiceTypes extends dataEnumerative
 	{
 		
 		//------------------------------------------------------------------------//
@@ -125,13 +125,13 @@
 		
 		function __construct ($intServiceType=null)
 		{
-			parent::__construct ("NamedServiceTypes");
+			parent::__construct ('ServiceTypes');
 			
 			// Instantiate the Variable Values for possible selection
-			$this->_ADSL		= $this->Push (new ServiceType (SERVICE_TYPE_ADSL,		"ADSL Connection"));
-			$this->_MOBILE		= $this->Push (new ServiceType (SERVICE_TYPE_MOBILE,	"Mobile Telephone"));
-			$this->_LAND_LINE	= $this->Push (new ServiceType (SERVICE_TYPE_LAND_LINE,	"Land Line Telephone"));
-			$this->_INBOUND		= $this->Push (new ServiceType (SERVICE_TYPE_INBOUND,	"Inbound Call Number"));
+			$this->_ADSL		= $this->Push (new ServiceType (SERVICE_TYPE_ADSL,		'ADSL Connection'));
+			$this->_MOBILE		= $this->Push (new ServiceType (SERVICE_TYPE_MOBILE,	'Mobile Telephone'));
+			$this->_LAND_LINE	= $this->Push (new ServiceType (SERVICE_TYPE_LAND_LINE,	'Land Line Telephone'));
+			$this->_INBOUND		= $this->Push (new ServiceType (SERVICE_TYPE_INBOUND,	'Inbound Call Number'));
 			
 			$this->setValue ($intServiceType);
 		}

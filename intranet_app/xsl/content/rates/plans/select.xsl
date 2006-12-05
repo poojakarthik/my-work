@@ -16,7 +16,7 @@
 			<input type="hidden" name="ServiceType">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/RatePlan/NamedServiceTypes/ServiceType[@selected='selected']/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/RatePlan/ServiceTypes/ServiceType[@selected='selected']/Id" disable-output-escaping="yes" />
 				</xsl:attribute>
 			</input>
 			
@@ -56,7 +56,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/RatePlan/NamedServiceTypes/ServiceType[@selected='selected']/Name" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/RatePlan/ServiceTypes/ServiceType[@selected='selected']/Name" disable-output-escaping="yes" />
 							</td>
 						</tr>
 						<tr>
@@ -136,7 +136,7 @@
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
-						<xsl:for-each select="/Response/RatePlan/RecordTypeSearch/Results/rangeSample/RecordType">
+						<xsl:for-each select="/Response/RatePlan/RecordTypes/Results/rangeSample/RecordType">
 							<xsl:variable name="RecordType" select="./Id" />
 							<tr>
 								<xsl:if test="./Required = 1">

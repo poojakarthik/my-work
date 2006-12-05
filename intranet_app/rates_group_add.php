@@ -1,5 +1,11 @@
 <?php
 	
+	//----------------------------------------------------------------------------//
+	// (c) copyright 2006 VOIPTEL Pty Ltd
+	//
+	// NOT FOR EXTERNAL DISTRIBUTION
+	//----------------------------------------------------------------------------//
+	
 	require ("config/application_loader.php");
 	
 	// If the User is not logged into the system
@@ -18,7 +24,7 @@
 	$oblarrRateGroup	= $Style->attachObject (new dataArray ('RateGroup'));
 	
 	$oblstrName			= $oblarrRateGroup->Push (new dataString ('Name', ''));
-	$svtServiceType		= $oblarrRateGroup->Push (new NamedServiceType);
+	$svtServiceType		= $oblarrRateGroup->Push (new ServiceTypes);
 	
 	$oblstrError 		= $oblarrRateGroup->Push (new dataString ('Error', ''));
 	

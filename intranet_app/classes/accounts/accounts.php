@@ -34,11 +34,11 @@
 	 * @prefix		acs
 	 *
 	 * @package		intranet_app
-	 * @class		AccountSearch
+	 * @class		Accounts
 	 * @extends		dataObject
 	 */
 	
-	class AccountSearch extends Search
+	class Accounts extends Search
 	{
 		//------------------------------------------------------------------------//
 		// __construct
@@ -55,7 +55,7 @@
 		 
 		function __construct ()
 		{
-			parent::__construct ('AccountSearch', 'Account', 'Account');
+			parent::__construct ('Accounts', 'Account', 'Account');
 		}
 	}
 	

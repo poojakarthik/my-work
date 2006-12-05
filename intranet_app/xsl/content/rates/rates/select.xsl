@@ -16,7 +16,7 @@
 			<input type="hidden" name="ServiceType">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Rate/NamedServiceTypes/ServiceType[@selected='selected']/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/Rate/ServiceTypes/ServiceType[@selected='selected']/Id" disable-output-escaping="yes" />
 				</xsl:attribute>
 			</input>
 			<input type="hidden" name="RecordType">
@@ -122,7 +122,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Rate/NamedServiceTypes/ServiceType[@selected='selected']/Name" />
+								<xsl:value-of select="/Response/Rate/ServiceTypes/ServiceType[@selected='selected']/Name" />
 							</td>
 						</tr>
 						<tr>

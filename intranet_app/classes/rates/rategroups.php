@@ -1,12 +1,80 @@
 <?php
 	
+	//----------------------------------------------------------------------------//
+	// rategroups.php
+	//----------------------------------------------------------------------------//
+	/**
+	 * rategroups.php
+	 *
+	 * File that contains a Controller for Rate Groups
+	 *
+	 * File that contains a Controller for Rate Groups
+	 *
+	 * @file		rategroups.php
+	 * @language	PHP
+	 * @package		intranet_app
+	 * @author		Bashkim 'bash' Isai
+	 * @version		6.11
+	 * @copyright	2006 VOIPTEL Pty Ltd
+	 * @license		NOT FOR EXTERNAL DISTRIBUTION
+	 *
+	 */
+	 
+	//----------------------------------------------------------------------------//
+	// RateGroups
+	//----------------------------------------------------------------------------//
+	/**
+	 * RateGroups
+	 *
+	 * Rate Group Searching
+	 *
+	 * Class for Searching and Evaluating Multiple Rate Groups
+	 *
+	 *
+	 * @prefix		rgl
+	 *
+	 * @package		intranet_app
+	 * @class		RateGroups
+	 * @extends		Search
+	 */
+	
 	class RateGroups extends Search
 	{
+		
+		//------------------------------------------------------------------------//
+		// __construct
+		//------------------------------------------------------------------------//
+		/**
+		 * __construct()
+		 *
+		 * Constructs a new Rate Group Searching Object
+		 *
+		 * Constructs a new Rate Group Searching Object
+		 *
+		 * @method
+		 */
 		
 		function __construct ()
 		{
 			parent::__construct ('RateGroups', 'RateGroup', 'RateGroup');
 		}
+		
+		//------------------------------------------------------------------------//
+		// UnarchivedNameExists
+		//------------------------------------------------------------------------//
+		/**
+		 * UnarchivedNameExists()
+		 *
+		 * Check for Name Availability
+		 *
+		 * Check to see whether or not a particular Name exists for an Unarchived Item.
+		 * This is used mainly for Adding new Items without Duplicate Names
+		 *
+		 * @param	String		$strName		The name of the Unarchived Item being searched for
+		 * @return	Boolean
+		 *
+		 * @method
+		 */
 		
 		public function UnarchivedNameExists ($strName)
 		{
@@ -22,11 +90,30 @@
 			return $arrLength ['Length'] <> 0;
 		}
 		
+		//------------------------------------------------------------------------//
+		// Add
+		//------------------------------------------------------------------------//
+		/**
+		 * Add()
+		 *
+		 * Add a new Rate Group
+		 *
+		 * Add a new Rate Group to the Database
+		 *
+		 * @param	Array		$arrRateGroup		Contains database information for a new Rate Group
+		 * @param	Array		$arrRates			Contains an Indexed array of Rates in the Rate Group
+		 * @return	Integer							The Id of the New Rate Group
+		 *
+		 * @method
+		 */
+		
 		public function Add ($arrRateGroup, $arrRates)
 		{
+			// Insert the Rate Group
 			$insRateGroup = new StatementInsert ("RateGroup");
 			$intRateGroup = $insRateGroup->Execute ($arrRateGroup);
 			
+			// Add the Rates
 			foreach ($arrRates AS $intRate)
 			{
 				$arrRate = Array (
@@ -38,8 +125,28 @@
 				$intRate = $insRate->Execute ($arrRate);
 			}
 			
+			// Return the Id of the new Group
 			return $intRateGroup;
 		}
+		
+		//------------------------------------------------------------------------//
+		// RateAvailability
+		//------------------------------------------------------------------------//
+		/**
+		 * RateAvailability()
+		 *
+		 * Returns Cross Referencing for Rates
+		 *
+		 * This method is specifically used to figure out if specifically where
+		 * Rates have or have not been applied, but also where rates are applied
+		 * and overlap ontop of eachother. The presentation of this information is
+		 * done in XSLT.
+		 *
+		 * @param	Array		$arrSelectedRate		An indexed array of Rates we wish to 
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
 		
 		public function RateAvailability ($arrSelectedRates)
 		{

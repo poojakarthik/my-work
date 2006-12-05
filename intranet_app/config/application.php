@@ -62,7 +62,7 @@ require ("classes/search/searchorder.php");
 require ("classes/search/searchresults.php");
 //accounts
 require ("classes/accounts/account.php");
-require ("classes/accounts/accountsearch.php");
+require ("classes/accounts/accounts.php");
 //rates, rate groups and rate plans
 require ("classes/rates/rate.php");
 require ("classes/rates/rategroup.php");
@@ -73,10 +73,10 @@ require ("classes/rates/rategroups.php");
 require ("classes/rates/rates.php");
 //service information
 require ("classes/service/servicetype.php");
-require ("classes/service/namedservicetype.php");
+require ("classes/service/servicetypes.php");
 //record type information
 require ("classes/recordtype/recordtype.php");
-require ("classes/recordtype/recordtypesearch.php");
+require ("classes/recordtype/recordtypes.php");
 //documentation
 require ("classes/documentation/documentation.php");
 require ("classes/documentation/documentationentity.php");

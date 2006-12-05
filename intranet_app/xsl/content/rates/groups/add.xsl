@@ -56,7 +56,7 @@
 							</th>
 							<td>
 								<select name="ServiceType" id="ServiceType">
-									<xsl:for-each select="/Response/RateGroup/NamedServiceTypes/ServiceType">
+									<xsl:for-each select="/Response/RateGroup/ServiceTypes/ServiceType">
 										<option>
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>

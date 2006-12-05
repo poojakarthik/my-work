@@ -1,5 +1,11 @@
 <?php
 	
+	//----------------------------------------------------------------------------//
+	// (c) copyright 2006 VOIPTEL Pty Ltd
+	//
+	// NOT FOR EXTERNAL DISTRIBUTION
+	//----------------------------------------------------------------------------//
+	
 	require ("config/application_loader.php");
 	
 	$docDocumentation->Explain ("Rate Plan");

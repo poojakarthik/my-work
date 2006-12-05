@@ -1,5 +1,11 @@
 <?php
 	
+	//----------------------------------------------------------------------------//
+	// (c) copyright 2006 VOIPTEL Pty Ltd
+	//
+	// NOT FOR EXTERNAL DISTRIBUTION
+	//----------------------------------------------------------------------------//
+	
 	require ("config/application_loader.php");
 	
 	$docDocumentation->Explain ("Rate");
@@ -18,7 +24,7 @@
 	$oblarrRate			= $Style->attachObject (new dataArray ('Rate'));
 	
 	$oblstrName			= $oblarrRate->Push (new dataString ('Name', ''));
-	$svtServiceType		= $oblarrRate->Push (new NamedServiceType);
+	$svtServiceType		= $oblarrRate->Push (new ServiceTypes);
 	
 	$oblstrError 		= $oblarrRate->Push (new dataString ('Error', ''));
 	

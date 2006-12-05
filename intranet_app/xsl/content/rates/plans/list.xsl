@@ -71,7 +71,7 @@
 							<td><xsl:value-of select="position()" />.</td>
 							<td><xsl:value-of select="./Id" /></td>
 							<td><xsl:value-of select="./Name" /></td>
-							<td><xsl:value-of select="./NamedServiceTypes/ServiceType[@selected='selected']/Name" /></td>
+							<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 							<td>
 								<xsl:choose>
 									<xsl:when test="./Archived = 1">

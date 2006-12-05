@@ -6,12 +6,12 @@
 		
 		var RecordTypes = new Array ();
 		
-		<xsl:for-each select="/Response/Types/NamedServiceTypes/ServiceType">
+		<xsl:for-each select="/Response/Types/ServiceTypes/ServiceType">
 			<xsl:variable name="ServiceType" select="./Id" />
 			
 			RecordTypes [<xsl:value-of select="$ServiceType" />] = new Array ();
 			
-			<xsl:for-each select="/Response/Types/RecordTypeSearch/Results/rangeSample/RecordType[ServiceType=$ServiceType]">
+			<xsl:for-each select="/Response/Types/RecordTypes/Results/rangeSample/RecordType[ServiceType=$ServiceType]">
 				
 				RecordTypes [<xsl:value-of select="$ServiceType" />] [<xsl:value-of select="position () - 1" />] = new Option (
 					"<xsl:value-of select="Name" />",
