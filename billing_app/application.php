@@ -97,6 +97,9 @@ die();
 		
 		// Report header
 		$this->_rptBillingReport->AddMessage(MSG_HORIZONTAL_RULE);
+		
+		// Construct the Bill Output objects
+		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -265,7 +268,7 @@ die();
 			}
 			
 			// build output
-			$this->_bilBilling->AddInvoice
+			$this->_bilBilling->AddInvoice();
 			
 			
 			// write to billing file

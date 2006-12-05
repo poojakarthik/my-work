@@ -57,9 +57,10 @@
 	 *
 	 * @method
 	 */
- 	function __construct()
+ 	function __construct($ptrThisDB)
  	{
-		// TODO
+		// Set up the database reference
+		$this->db = $ptrThisDB;
  	}
  	
 	//------------------------------------------------------------------------//
