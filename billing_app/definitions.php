@@ -54,4 +54,15 @@ define("MSG_BILLING_TITLE"				, "[ GENERATING INVOICES ]");
 define("MSG_REVOKE_TITLE"				, "[ REVOKING INVOICES ]");
 define("MSG_COMMIT_TITLE"				, "[ COMMITTING INVOICES ]");
 
+// Data Types for Bill Printing
+define("BILL_TYPE_INTEGER"				, 700);
+define("BILL_TYPE_CHAR"					, 701);
+define("BILL_TYPE_SHORTDATE"			, 702);
+define("BILL_TYPE_LONGDATE"				, 703);
+define("BILL_TYPE_TIME"					, 704);
+define("BILL_TYPE_DURATION"				, 705);
+define("BILL_TYPE_LONGCURRENCY"			, 706);
+define("BILL_TYPE_SHORTCURRENCY"		, 707);
+
+
 ?>
