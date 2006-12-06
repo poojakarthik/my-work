@@ -63,6 +63,9 @@ require ("classes/search/searchresults.php");
 //accounts
 require ("classes/accounts/account.php");
 require ("classes/accounts/accounts.php");
+//contacts
+require ("classes/contacts/contact.php");
+require ("classes/contacts/contacts.php");
 //rates, rate groups and rate plans
 require ("classes/rates/rate.php");
 require ("classes/rates/rategroup.php");

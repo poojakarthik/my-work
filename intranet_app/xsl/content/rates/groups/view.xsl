@@ -37,17 +37,9 @@
 							<xsl:choose>
 								<xsl:when test="/Response/RateGroupDetails/RateGroup/Archived = 0">
 									<strong><span class="Green">Currently Available</span></strong>
-									
-										[<a>
-											<xsl:attribute name="href">
-												<xsl:text>rates_group_archive.php?Id=</xsl:text>
-												<xsl:value-of select="/Response/RateGroupDetails/RateGroup/Id" />
-											</xsl:attribute>
-											<xsl:text>Archive Rate Group</xsl:text>
-										</a>]
 								</xsl:when>
 								<xsl:otherwise>
-									
+									<strong><span class="Red">Currently Archived</span></strong>
 								</xsl:otherwise>
 							</xsl:choose>
 						</td>

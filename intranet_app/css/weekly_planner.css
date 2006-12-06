@@ -67,7 +67,6 @@ table.bevelledHeading th
 table.bevelledHeading td 
 {
 	width:30px;
-	background-color: #FFFFFF;
 	border: 1px outset buttonface;
 	height:25px;
 	font-size: 8pt;

@@ -161,6 +161,48 @@
 		padding-bottom:      3px;
 	}
 	
+	input.input-ABN
+	{
+		border:              solid 1px #89b100;
+		background-color:    #f1f7e1;
+		padding:             3px;
+	}
+	
+	input.input-ABN-incomplete
+	{
+		border:              solid 1px #868735;
+		background-color:    #FFFFC0;
+		padding:             3px;
+	}
+	
+	input.input-ABN-invalid
+	{
+		border:              solid 1px #CC0000;
+		background-color:    #f2dbdb;
+		padding:             3px;
+	}
+	
+	input.input-ACN
+	{
+		border:              solid 1px #89b100;
+		background-color:    #f1f7e1;
+		padding:             3px;
+	}
+	
+	input.input-ACN-incomplete
+	{
+		border:              solid 1px #868735;
+		background-color:    #FFFFC0;
+		padding:             3px;
+	}
+	
+	input.input-ACN-invalid
+	{
+		border:              solid 1px #CC0000;
+		background-color:    #f2dbdb;
+		padding:             3px;
+	}
+	
 	div#Notices
 	{
 		border-left:         solid 1px #999999;
@@ -352,4 +394,9 @@
 	.Green
 	{
 		color:               #008000;
+	}
+
+	.Red
+	{
+		color:               #CC0000;
 	}

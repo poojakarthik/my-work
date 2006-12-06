@@ -65,10 +65,30 @@
 			$selRate->Execute (Array ('Id' => $intId));
 			$selRate->Fetch ($this);
 			
+			// Get Named ServiceType information
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
 			
-			$intRecordType = $this->Pop ("RecordType")->getValue ();
+			// Get Named RecordType Information
+			$intRecordType = $this->Pop ('RecordType')->getValue ();
 			$this->Push (new RecordType ($intRecordType));
+			
+			
+			
+			// Work out what Quarter Hour the Rate lies between
+			// This next section deals with the calculations of
+			// 1. The Number of the First Time Quarter
+			// 2. The Number of Quarter Hours that there are in the Time Equasion
+			
+			$intStartTime = ($this->Pull ('StartTime')->Pull ('hour')->getValue () * 60) + ($this->Pull ('StartTime')->Pull ('minute')->getValue ());
+			$intEndTime = ($this->Pull ('EndTime')->Pull ('hour')->getValue () * 60) + ($this->Pull ('EndTime')->Pull ('minute')->getValue () + 1);
+			
+			// (1) Location of First Quarter
+			$this->Push (new dataInteger ('quarter-first',  
+				($this->Pull ('StartTime')->Pull ('hour')->getValue () * 4) + ($this->Pull ('StartTime')->Pull ('minute')->getValue () / 15)
+			));
+			
+			// (2) Number of Quarters
+			$this->Push (new dataInteger ('quarter-length', ($intEndTime - $intStartTime) / 15));
 		}
 	}
 	
