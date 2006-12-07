@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// accounts.php
+	// notes.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * accounts.php
+	 * notes.php
 	 *
-	 * Contains the Class that Controls Account Searching
+	 * Contains the Class that Controls Note Searching
 	 *
-	 * Contains the Class that Controls Account Searching
+	 * Contains the Class that Controls Note Searching
 	 *
-	 * @file		accounts.php
+	 * @file		notes.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// Accounts
+	// Notes
 	//----------------------------------------------------------------------------//
 	/**
-	 * Accounts
+	 * Notes
 	 *
-	 * Controls Searching for an existing account
+	 * Controls Searching for an existing Note
 	 *
-	 * Controls Searching for an existing account
+	 * Controls Searching for an existing Note
 	 *
 	 *
-	 * @prefix		acs
+	 * @prefix		nos
 	 *
 	 * @package		intranet_app
-	 * @class		Accounts
+	 * @class		Notes
 	 * @extends		dataObject
 	 */
 	
-	class Accounts extends Search
+	class Notes extends Search
 	{
 		//------------------------------------------------------------------------//
 		// __construct
@@ -46,16 +46,16 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructs an Account Searching Routine
+		 * Constructs an Note Searching Routine
 		 *
-		 * Constructs an Account Searching Routine
+		 * Constructs an Note Searching Routine
 		 *
 		 * @method
 		 */
 		 
 		function __construct ()
 		{
-			parent::__construct ('Accounts', 'Account', 'Account');
+			parent::__construct ('Notes', 'Note', 'Note');
 		}
 	}
 	

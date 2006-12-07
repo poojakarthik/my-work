@@ -1,16 +1,16 @@
 <?php
 	
 	//----------------------------------------------------------------------------//
-	// account.php
+	// note.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * account.php
+	 * note.php
 	 *
-	 * File containing Account Class
+	 * File containing the Note Class
 	 *
-	 * File containing Account Class
+	 * File containing the Note Class
 	 *
-	 * @file		account.php
+	 * @file		note.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// Account
+	// Note
 	//----------------------------------------------------------------------------//
 	/**
-	 * Account
+	 * Note
 	 *
-	 * An account in the Database
+	 * A Note in the Database
 	 *
-	 * An account in the Database
+	 * A Note in the Database
 	 *
 	 *
-	 * @prefix	act
+	 * @prefix		not
 	 *
 	 * @package		intranet_app
-	 * @class		Account
+	 * @class		Note
 	 * @extends		dataObject
 	 */
 	
-	class Account extends dataObject
+	class Note extends dataObject
 	{
 		
 		//------------------------------------------------------------------------//
@@ -47,25 +47,25 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructor for a new Account
+		 * Constructor for a new Note
 		 *
-		 * Constructor for a new Account
+		 * Constructor for a new Note
 		 *
-		 * @param	Integer		$intId		The Id of the Account being Retrieved
+		 * @param	Integer		$intId		The Id of the Note being Retrieved
 		 *
 		 * @method
 		 */
 		
 		function __construct ($intId)
 		{
-			// Pull all the account information and Store it ...
-			$selAccount = new StatementSelect ('Account', '*', 'Id = <Id>');
-			$selAccount->useObLib (TRUE);
-			$selAccount->Execute (Array ('Id' => $intId));
-			$selAccount->Fetch ($this);
+			// Pull all the Note information and Store it ...
+			$selNote = new StatementSelect ('Note', '*', 'Id = <Id>');
+			$selNote->useObLib (TRUE);
+			$selNote->Execute (Array ('Id' => $intId));
+			$selNote->Fetch ($this);
 			
 			// Construct the object
-			parent::__construct ('Account', $this->Pull ('Id')->getValue ());
+			parent::__construct ('Note', $this->Pull ('Id')->getValue ());
 		}
 	}
 	
