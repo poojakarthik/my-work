@@ -42,6 +42,23 @@
 	{
 		
 		//------------------------------------------------------------------------//
+		// _aeaAudit
+		//------------------------------------------------------------------------//
+		/**
+		 * _aeaAudit
+		 *
+		 * Audit Trail
+		 *
+		 * An object which controls that Auditing of Information within the System
+		 *
+		 * @type	dataArray
+		 *
+		 * @property
+		 */
+		 
+		private $_aeaAudit;
+		
+		//------------------------------------------------------------------------//
 		// __construct
 		//------------------------------------------------------------------------//
 		/**
@@ -78,6 +95,14 @@
 			}
 			
 			$selAuthenticated->Fetch ($this);
+			
+			// Push an Audit Trail onto the Object
+			$this->_aeaAudit =& $this->Push (new AuthenticatedEmployeeAudit ($this));
+		}
+		
+		public function Audit ()
+		{
+			return $this->_aeaAudit;
 		}
 	}
 	
