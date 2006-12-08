@@ -55,11 +55,11 @@
 		 
 		function __construct ()
 		{
-			parent::__construct ('NotesTypes', 'NoteType');
+			parent::__construct ('NoteTypes', 'NoteType');
 			
-			// Pull all the Note information and Store it ...
-			$selNoteTypes = new StatementSelect ('NoteType', 'Id');
-			$selNoteTypes->Execute ();
+			// Pull all the NoteTypes and attach them
+			$selNoteTypes = new StatementSelect ('NoteType', 'Id', '');
+			$selNoteTypes->Execute (Array ());
 			
 			foreach ($selNoteTypes->FetchAll () as $arrNoteType)
 			{

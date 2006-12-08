@@ -15,20 +15,12 @@
 		header ('Location: login.php'); exit;
 	}
 	
+	// Get the Account
+	$actAccount = $Style->attachObject (new Account ($_GET ['Id']));
+	
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('Account');
 	
-	
-	// Get information about Note Types
-	$ntsNoteTypes	= $Style->attachObject (new NoteTypes ());
-	
-	// Get the Account
-	$actAccount		= $Style->attachObject (new Account ($_GET ['Id']));	
-	
-	// Record a request to view an Account in the Audit
-	$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
-	
-	// Output the Account View
-	$Style->Output ('xsl/content/account/view.xsl');
+	$Style->Output ('xsl/content/account/edit.xsl');
 	
 ?>

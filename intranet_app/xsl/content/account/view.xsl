@@ -179,6 +179,23 @@
 					Type new notes for this account in the field below:
 					<textarea name="Note" class="input-summary" rows="6" />
 					
+					<select name="NoteType">
+						<xsl:for-each select="/Response/NoteTypes/NoteType">
+							<xsl:variable name="NoteType" select="." />
+							<option>
+								<xsl:attribute name="style">
+									<xsl:text>background-color: #</xsl:text>
+									<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BackgroundColor" />
+									<xsl:text>;</xsl:text>
+									<xsl:text>border: solid 1px #</xsl:text>
+									<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BorderColor" />
+									<xsl:text>;</xsl:text>
+								</xsl:attribute>
+								<xsl:value-of select="./TypeLabel" />
+							</option>
+						</xsl:for-each>
+					</select>
+					
 					<div class="Right">
 						<input type="submit" value="Create Note &#0187;" class="input-submit" />
 					</div>
@@ -200,22 +217,23 @@
 					</a>.
 					<div class="Seperator"></div>
 					<xsl:for-each select="/Response/Account/Notes/Results/rangeSample/Note">
+						<xsl:variable name="Note" select="." />
 						<div class="Note">
 							<xsl:attribute name="style">
-								<xsl:text>background-color: #</xsl:text><xsl:value-of select="./NoteType/BackgroundColor" /><xsl:text>;</xsl:text>
-								<xsl:text>border: solid 1px #</xsl:text><xsl:value-of select="./NoteType/BorderColor" /><xsl:text>;</xsl:text>
+								<xsl:text>background-color: #</xsl:text><xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" /><xsl:text>;</xsl:text>
+								<xsl:text>border: solid 1px #</xsl:text><xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" /><xsl:text>;</xsl:text>
 							</xsl:attribute>
 							
 							<!--
 							<xsl:value-of select="date:difference('2006-01-01', '2006-12-31')" />
-							-->
-							
+
 							<xsl:variable name="Difference">
 								<xsl:call-template name="date:difference">
 									<xsl:with-param name="start" select="./Datetime/timestamp" />
 									<xsl:with-param name="end" select="/Response/Now/timestamp" />
 								</xsl:call-template>
 							</xsl:variable>
+							-->
 							
 							<div class="small">
 								Created on 
