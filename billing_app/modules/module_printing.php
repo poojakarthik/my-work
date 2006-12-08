@@ -627,7 +627,22 @@
 	 */
  	function BuildOutput()
  	{
+		// Retrieve all of the invoices from the InvoiceOutput table
+		$arrInvoices = $this->_selGetInvoices->Execute();
+		
 		// TODO
+		
+		
+		$strFilename = "tbl".date("Y-m-d").".bof";
+		
+		$ptrOutputFile = fopen(BILL_OUTPUT_DIR.$strFilename, "w");
+		
+		foreach ($arrInvoices as $arrInvoice)
+		{
+			$strLine = $arrInvoice['Data'];
+			
+			fwrite($ptrOutputFile, $strLine."\n");
+		}
  	}
  	
  	//------------------------------------------------------------------------//

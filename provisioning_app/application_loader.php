@@ -111,6 +111,7 @@ require_once($strFrameworkDir."db_access.php");
 require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
+require_once($strFrameworkDir."excel_export.php");
 
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
