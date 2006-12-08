@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// notes.php
+	// notetypes.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * notes.php
+	 * notetypes.php
 	 *
-	 * Contains the Class that Controls Note Searching
+	 * Contains the Class that Controls Note Type Listing
 	 *
-	 * Contains the Class that Controls Note Searching
+	 * Contains the Class that Controls Note Type Listing
 	 *
-	 * @file		notes.php
+	 * @file		notetypes.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// Notes
+	// NoteTypes
 	//----------------------------------------------------------------------------//
 	/**
-	 * Notes
+	 * NoteTypes
 	 *
-	 * Controls Searching for an existing Note
+	 * Controls Listing of existing Note Types
 	 *
-	 * Controls Searching for an existing Note
+	 * Controls Listing of existing Note Types
 	 *
 	 *
-	 * @prefix		nos
+	 * @prefix		nts
 	 *
 	 * @package		intranet_app
-	 * @class		Notes
-	 * @extends		Search
+	 * @class		NoteTypes
+	 * @extends		dataCollection
 	 */
 	
-	class Notes extends Search
+	class NoteTypes extends dataCollection
 	{
 		//------------------------------------------------------------------------//
 		// __construct
@@ -46,16 +46,25 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructs an Note Searching Routine
+		 * Constructs a list of all NoteTypes
 		 *
-		 * Constructs an Note Searching Routine
+		 * Constructs a list of all NoteTypes
 		 *
 		 * @method
 		 */
 		 
 		function __construct ()
 		{
-			parent::__construct ('Notes', 'Note', 'Note');
+			parent::__construct ('NotesTypes', 'NoteType');
+			
+			// Pull all the Note information and Store it ...
+			$selNoteTypes = new StatementSelect ('NoteType', 'Id');
+			$selNoteTypes->Execute ();
+			
+			while ($selNoteTypes->FetchAll () as $arrNoteType)
+			{
+				$this->Push (new NoteType ($arrNoteType ['Id']));
+			}
 		}
 	}
 	

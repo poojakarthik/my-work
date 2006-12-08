@@ -18,39 +18,30 @@
 	$docDocumentation->Explain ("Account");
 	$docDocumentation->Explain ("Contact");
 	
-	// Start a new Contact Search
-	$cosContacts = new Contacts ();
-	
-	if (isset ($_GET ['constraint']))
+	// If the account is set then we want to look for a contact
+	if (isset ($_POST ['Id']))
 	{
-		foreach ($_GET ['constraint'] as $strConstraintName => $arrConstraintRules)
-		{
-			if ($arrConstraintRules ['Value'] != "")
-			{
-				$cosContacts->Constrain (
-					$strConstraintName,
-					$arrConstraintRules ['Operator'],
-					$arrConstraintRules ['Value']
-				);
-			}
-		}
+		$actAccount = $Style->attachObject (new Account ($_POST ['Id']));
 		
-		if (isset ($_GET ['Order']['Column']))
-		{
-			$cosContacts->Order (
-				$_GET ['Order']['Column'],
-				isset ($_GET ['Order']['Method']) ? $_GET ['Order']['Method'] == 1 : TRUE
-			);
-		}
+		$Style->Output ("xsl/content/contact/list_account.xsl");
+	}
+	// If we have at least one of the following fields:
+	// Account ID, Business Name, Trading Name, ABN, ACN
+	else if ($_POST ['BusinessName'] || $_POST ['TradingName'] || $_POST ['ABN'] && $_POST ['ACN'])
+	{
+		// Start a new Account Search
+		$acsAccounts = $Style->attachObject (new Accounts ());
+		$acsAccounts->Order ('BusinessName', FALSE);
 		
-		$cosContacts->Sample (
-			isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
-			isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
-		);
+		if ($_POST ['Id'])				{ $acsAccounts->Constrain ('Id',			'EQUALS',	$_POST ['Id']); }
+		if ($_POST ['BusinessName'])	{ $acsAccounts->Constrain ('BusinessName',	'LIKE',		$_POST ['BusinessName']); }
+		if ($_POST ['TradingName'])	{ $acsAccounts->Constrain ('TradingName',	'LIKE',		$_POST ['TradingName']); }
+		if ($_POST ['ABN'])				{ $acsAccounts->Constrain ('ABN',			'EQUALS',	$_POST ['ABN']); }
+		if ($_POST ['ACN'])				{ $acsAccounts->Constrain ('ACN',			'EQUALS',	$_POST ['ACN']); }
 		
-		$Style->attachObject ($cosContacts);
+		$acsAccounts->Sample ();
 		
-		$Style->Output ("xsl/content/contact/list_results.xsl");
+		$Style->Output ("xsl/content/contact/list_accounts.xsl");
 	}
 	else
 	{

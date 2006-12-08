@@ -55,14 +55,24 @@ require_once($strObLibDir."style.php");
 require ("classes/authentication/authentication.php");
 //employee
 require ("classes/employee/authenticatedemployee.php");
+require ("classes/employee/authenticatedemployeeaudit.php");
+//audit
+require ("classes/audit/accountcontactaudit.php");
 //searching
 require ("classes/search/search.php");
 require ("classes/search/searchconstraint.php");
 require ("classes/search/searchorder.php");
 require ("classes/search/searchresults.php");
 //accounts
+require ("classes/accounts/ABN.php");
+require ("classes/accounts/ACN.php");
 require ("classes/accounts/account.php");
 require ("classes/accounts/accounts.php");
+//accounts
+require ("classes/notes/note.php");
+require ("classes/notes/notes.php");
+require ("classes/notes/notetype.php");
+require ("classes/notes/notetypes.php");
 //contacts
 require ("classes/contacts/contact.php");
 require ("classes/contacts/contacts.php");

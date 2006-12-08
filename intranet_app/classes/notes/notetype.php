@@ -59,7 +59,7 @@
 		function __construct ($intId)
 		{
 			// Pull all the Note Type information and Store it ...
-			$selNoteType = new StatementSelect ('Note', '*', 'Id = <Id>');
+			$selNoteType = new StatementSelect ('NoteType', '*', 'Id = <Id>');
 			$selNoteType->useObLib (TRUE);
 			$selNoteType->Execute (Array ('Id' => $intId));
 			$selNoteType->Fetch ($this);

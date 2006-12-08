@@ -6,6 +6,26 @@
 	
 <?php
 	
+	
+require_once("../framework/framework.php");
+require_once("../framework/functions.php");
+require_once("../framework/definitions.php");
+require_once("../framework/config.php");
+require_once("../framework/database_define.php");
+require_once("../framework/db_access.php");
+require_once("../framework/report.php");
+require_once("../framework/error.php");
+require_once("../framework/exception_vixen.php");
+
+// create framework instance
+$GLOBALS['fwkFramework'] = new Framework();
+$framework = $GLOBALS['fwkFramework'];
+
+	require ("../oblib/data.abstract.php");
+	require ("../oblib/dataPrimitive/dataPrimitive.abstract.php");
+	require ("../intranet_app/classes/accounts/ABN.php");
+	require ("../intranet_app/classes/accounts/ACN.php");
+	
 	set_time_limit (0);
 	
 	// Record the start time of the script
@@ -136,6 +156,12 @@
 			unset ($insQuery);
 		}
 		
+		$Customer ['abn'] = new ABN ('ABN', $Customer ['abn_acn']);
+		$Customer ['abn'] = $Customer ['abn']->getValue ();
+		
+		$Customer ['acn'] = new ACN ('ACN', $Customer ['abn_acn']);
+		$Customer ['acn'] = $Customer ['acn']->getValue ();
+		
 		$sql = "INSERT INTO Account ";
 		$sql .= "(Id, BusinessName, TradingName, ABN, ACN, ";
 		$sql .= "Address1, Address2, Suburb, Postcode, State, Country, ";
@@ -144,8 +170,8 @@
 			$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
 			$sql .= "'" . mysql_escape_string ($Customer ['businessname']) . "', ";
 			$sql .= "'" . mysql_escape_string ($Customer ['tradingname']) . "', ";
-			$sql .= "'" . mysql_escape_string ($Customer ['abn_acn']) . "', ";
-			$sql .= "'" . mysql_escape_string ($Customer ['abn_acn']) . "', ";
+			$sql .= "'" . mysql_escape_string ($Customer ['abn']) . "', ";
+			$sql .= "'" . mysql_escape_string ($Customer ['acn']) . "', ";
 			$sql .= "'" . mysql_escape_string ($Customer ['address1']) . "', ";
 			$sql .= "'" . mysql_escape_string ($Customer ['address2']) . "', ";
 			$sql .= "'" . mysql_escape_string (strtoupper ($Customer ['suburb'])) . "', ";

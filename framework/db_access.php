@@ -1647,7 +1647,7 @@ class MySQLFunction
  * @prefix		ins
  *
  * @package		framework
- * @class		InsertStatement
+ * @class		StatementInsert
  */
  class StatementInsert extends Statement
  {

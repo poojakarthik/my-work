@@ -72,6 +72,21 @@
 		font-size:            18pt;
 	}
 	
+	h2
+	{
+		margin:              0;
+		font-size:           12pt;
+	}
+	
+	h3
+	{
+		margin-top:          20px;
+		margin-left:         0;
+		margin-right:        0;
+		margin-bottom:       0;
+		font-size:           12pt;
+	}
+	
 	form
 	{
 		margin:               0;
@@ -129,6 +144,15 @@
 		font-family:         "Nimbus Sans NL", Tahoma, sans-serif;
 	}
 	
+	textarea.input-summary
+	{
+		border:              solid 1px #919191;
+		
+		width:               100%;
+		
+		padding:             3px;
+	}
+	
 	input.input-string
 	{
 		border:              solid 1px #919191;
@@ -143,15 +167,10 @@
 		padding:             3px;
 	}
 	
-	input.input-submit
+	input.input-submit,
+	input.input-submit-disabled
 	{
-		background-image:    url('../img/template/button_background.png');
 		background-repeat:   repeat-x;
-		
-		border:              solid 1px #07548e;
-		
-		color:               #FFFFFF;
-		background-color:    #07548e;
 		
 		font-weight:         bold;
 		
@@ -159,6 +178,26 @@
 		padding-left:        6px;
 		padding-right:       6px;
 		padding-bottom:      3px;
+	}
+	
+	input.input-submit
+	{
+		background-image:    url('../img/template/button_background.png');
+		
+		border:              solid 1px #07548e;
+		
+		color:               #FFFFFF;
+		background-color:    #07548e;
+	}
+	
+	input.input-submit-disabled
+	{
+		background-image:    url('../img/template/button_background_disabled.png');
+		
+		border:              solid 1px #434343;
+		
+		color:               #FFFFFF;
+		background-color:    #434343;
 	}
 	
 	input.input-ABN
@@ -215,12 +254,6 @@
 		width:               350px;
 	}
 	
-	h2
-	{
-		margin:              0;
-		font-size:           12pt;
-	}
-	
 	.Filter-Form
 	{
 		margin:              0;
@@ -267,11 +300,13 @@
 		text-decoration:     none;
 	}
 	
+	table.Listing tr.Odd th,
 	table.Listing tr.Odd td
 	{
 		background-color:    #FFFFFF;
 	}
 	
+	table.Listing tr.Even th,
 	table.Listing tr.Even td
 	{
 		background-color:    #D5E0F8;
@@ -372,7 +407,7 @@
 	
 	div#Navigation
 	{
-		width:               250px;
+		width:               280px;
 	}
 	
 	ul#Navigation-Root
@@ -381,7 +416,7 @@
 		padding-left:        0;
 	}
 	
-	ul#Navigation-Root li
+	ul#Navigation-Root > li
 	{
 		list-style-type:     none;
 	}
@@ -400,3 +435,14 @@
 	{
 		color:               #CC0000;
 	}
+	
+	.Note
+	{
+		padding:            5px;
+	}
+	
+	.small
+	{
+		font-size:          smaller;
+	}
+	

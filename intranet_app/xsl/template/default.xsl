@@ -28,13 +28,51 @@
 				<div id="Controller" class="sectionContainer">
 					<table border="0" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
-							<td valign="top" width="250">
+							<td valign="top" width="300">
 								<div id="Navigation" class="Left sectionContent">
 									<ul id="Navigation-Root">
 										<li>
 											Accounts
 											<ul>
-												<li><a href="account_list.php">List Accounts</a></li>
+												<li><a href="account_list.php">Find an Account</a></li>
+												<li>Recently Viewed
+													<ul>
+														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/AuditList/AuditItem/Account">
+															<li>
+																<a>
+																	<xsl:attribute name="href">
+																		<xsl:text>account_view.php?Id=</xsl:text>
+																		<xsl:value-of select="./Id" />
+																	</xsl:attribute>
+																	<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
+																</a>
+															</li>
+														</xsl:for-each>
+													</ul>
+												</li>
+											</ul>
+										</li>
+										<li>
+											Contacts
+											<ul>
+												<li><a href="contact_list.php">Find a Contact</a></li>
+												<li>Recently Viewed
+													<ul>
+														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/AuditList/AuditItem/Contact">
+															<li>
+																<a>
+																	<xsl:attribute name="href">
+																		<xsl:text>contact_view.php?Id=</xsl:text>
+																		<xsl:value-of select="./Id" />
+																	</xsl:attribute>
+																	<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
+																	<xsl:text> </xsl:text>
+																	<xsl:value-of select="./LastName" disable-output-escaping="yes" />
+																</a>
+															</li>
+														</xsl:for-each>
+													</ul>
+												</li>
 											</ul>
 										</li>
 										<li>

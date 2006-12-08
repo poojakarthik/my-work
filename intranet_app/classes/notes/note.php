@@ -66,6 +66,14 @@
 			
 			// Construct the object
 			parent::__construct ('Note', $this->Pull ('Id')->getValue ());
+			
+			$intNoteType = $this->Pop ('NoteType')->getValue ();
+			$this->Push (new NoteType ($intNoteType));
+			
+			/*
+			$intEmployee = $this->Pop ('Employee')->getValue ();
+			$this->Push (new Employee ($intEmployee));
+			*/
 		}
 	}
 	

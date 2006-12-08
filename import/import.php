@@ -74,6 +74,16 @@
 					$_FIELD ['ObLib'] = "dataString";
 				}
 				
+				if ($_FIELD ['Field'] == "ABN") {
+					$_FIELD ['RefType'] = "s";
+					$_FIELD ['ObLib'] = "ABN";
+				}
+				
+				if ($_FIELD ['Field'] == "ACN") {
+					$_FIELD ['RefType'] = "s";
+					$_FIELD ['ObLib'] = "ACN";
+				}
+				
 				?>
 				
 	// Define Columns

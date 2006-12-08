@@ -6,6 +6,9 @@
 	<xsl:template name="Content">
 		<h1>Account Listing</h1>
 		
+		<script language="javascript" src="js/ABN.js"></script>
+		<script language="javascript" src="js/ACN.js"></script>
+		
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<form method="GET" action="account_list.php">
@@ -72,6 +75,48 @@
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/Accounts/Constraints/Constraint[Name=string('TradingName')]/Value" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th valign="top">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('ABN')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:call-template name="ConstraintOperator">
+											<xsl:with-param name="Name" select="string('constraint[ABN][Operator]')" />
+											<xsl:with-param name="DataType" select="string('ABN')" />
+										</xsl:call-template>
+									</td>
+									<td><input type="text" name="constraint[ABN][Value]" class="input-ABN">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Accounts/Constraints/Constraint[Name=string('ABN')]/Value" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th valign="top">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('ACN')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:call-template name="ConstraintOperator">
+											<xsl:with-param name="Name" select="string('constraint[ACN][Operator]')" />
+											<xsl:with-param name="DataType" select="string('ACN')" />
+										</xsl:call-template>
+									</td>
+									<td><input type="text" name="constraint[ACN][Value]" class="input-ACN">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Accounts/Constraints/Constraint[Name=string('ACN')]/Value" />
 											</xsl:attribute>
 										</input>
 									</td>

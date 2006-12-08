@@ -24,6 +24,22 @@
 		<xsl:choose>
 			<xsl:when test="$DataType = 'Id'">
 			</xsl:when>
+			<xsl:when test="$DataType = 'ABN'">
+				<input type="hidden" value="EQUALS">
+					<xsl:attribute name="name">
+						<xsl:text></xsl:text>
+						<xsl:value-of select="$Name" />
+					</xsl:attribute>
+				</input>
+			</xsl:when>
+			<xsl:when test="$DataType = 'ACN'">
+				<input type="hidden" value="EQUALS">
+					<xsl:attribute name="name">
+						<xsl:text></xsl:text>
+						<xsl:value-of select="$Name" />
+					</xsl:attribute>
+				</input>
+			</xsl:when>
 			<xsl:when test="$DataType = 'String'">
 				<select>
 					<xsl:attribute name="name">
