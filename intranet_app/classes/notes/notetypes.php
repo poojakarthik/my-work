@@ -61,7 +61,7 @@
 			$selNoteTypes = new StatementSelect ('NoteType', 'Id');
 			$selNoteTypes->Execute ();
 			
-			while ($selNoteTypes->FetchAll () as $arrNoteType)
+			foreach ($selNoteTypes->FetchAll () as $arrNoteType)
 			{
 				$this->Push (new NoteType ($arrNoteType ['Id']));
 			}
