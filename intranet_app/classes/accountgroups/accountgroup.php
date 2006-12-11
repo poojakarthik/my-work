@@ -59,9 +59,15 @@
 		function __construct ($intId)
 		{
 			// Pull all the account information and Store it ...
-			$selAccountGroup = new StatementSelect ('AccountGroup', '*', 'Id = <Id>');
+			$selAccountGroup = new StatementSelect ('AccountGroup', '*', 'Id = <Id>', null, '1');
 			$selAccountGroup->useObLib (TRUE);
 			$selAccountGroup->Execute (Array ('Id' => $intId));
+			
+			if ($selAccountGroup->Count () != 1)
+			{
+				throw new Exception ('No such Account Group');
+			}
+			
 			$selAccountGroup->Fetch ($this);
 			
 			// Construct the object

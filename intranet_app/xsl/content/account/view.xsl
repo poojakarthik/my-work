@@ -228,7 +228,7 @@
 					notes for this account, visit the
 					<a>
 						<xsl:attribute name="href">
-							<xsl:text>notes.php?Account=</xsl:text>
+							<xsl:text>note_list.php?Account=</xsl:text>
 							<xsl:value-of select="/Response/Account/Id" />
 						</xsl:attribute>
 						<xsl:text>Note Archive</xsl:text>
