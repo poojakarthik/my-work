@@ -67,6 +67,26 @@
 			// Construct the object
 			parent::__construct ('Service', $this->Pull ('Id')->getValue ());
 		}
+		
+		//------------------------------------------------------------------------//
+		// getAccount
+		//------------------------------------------------------------------------//
+		/**
+		 * getAccount()
+		 *
+		 * Get Associated Account
+		 *
+		 * Get an Account Object which is the Associated Accound for this Service
+		 *
+		 * @return	Account
+		 *
+		 * @method
+		 */
+		 
+		 public function getAccount ()
+		 {
+		 	return new Account ($this->Pull ('Account')->getValue ());
+		 }
 	}
 	
 ?>

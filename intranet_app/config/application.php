@@ -87,9 +87,12 @@ require ("classes/rates/rateplan.php");
 require ("classes/rates/rateplans.php");
 require ("classes/rates/rategroups.php");
 require ("classes/rates/rates.php");
-//service information
+//service types
 require ("classes/service/servicetype.php");
 require ("classes/service/servicetypes.php");
+//service
+require ("classes/service/service.php");
+require ("classes/service/services.php");
 //record type information
 require ("classes/recordtype/recordtype.php");
 require ("classes/recordtype/recordtypes.php");

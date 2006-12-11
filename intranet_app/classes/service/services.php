@@ -57,6 +57,40 @@
 		{
 			parent::__construct ('Services', 'Service', 'Service');
 		}
+		
+		//------------------------------------------------------------------------//
+		// UnarchivedFNN
+		//------------------------------------------------------------------------//
+		/**
+		 * UnarchivedFNN()
+		 *
+		 * Retrieves an Unarchived Service based on its FNN
+		 *
+		 * Retrieves an Unarchived Service based on its FNN
+		 *
+		 * @param	String		$strFNN		The Full National Number of the Service
+		 * @return	Service
+		 *
+		 * @method
+		 */
+		
+		public static function UnarchivedFNN ($strFNN)
+		{
+			// Search for the Serivce
+			$selService = new StatementSelect ('Service', 'Id', 'FNN = <FNN> AND Archived = 0');
+			$selService->Execute (Array ('FNN' => $strFNN));
+			
+			// If it wasn't found - throw an error
+			if ($selService->Count () == 0)
+			{
+				throw new Exception ('Service not found');
+			}
+			
+			$arrService = $selService->Fetch ();
+			
+			// Return the Service that was Found
+			return new Service ($arrService ['Id']);
+		}
 	}
 	
 ?>
