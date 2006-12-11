@@ -212,5 +212,104 @@
 		return $_arrData;
 	 }
 	 
+	//------------------------------------------------------------------------//
+	// _GetErrorDescription
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetErrorDescription()
+	 *
+	 * Gets a description for an error code
+	 *
+	 * Returns a string desription of an error, based on the error code passed.
+	 * Assumes error code meets "Australian Communications Industry Forum,
+	 * Industry Code - Pre-Selection - Single Basket/Multi Service Deliverer,
+	 * ACIF C515 June 1999 (the Code)" standards.
+	 * 
+	 * 
+	 * @param	mixed	mixRejectCode		Error code to evaluate
+	 *
+	 * @return	string						Error description				
+	 *
+	 * @method
+	 */
+	 protected function _GetErrorDescription($mixRejectCode)
+	 {
+		// TODO~~~~~~~
+		
+		// Check against known error codes
+		switch ((int)$mixRejectCode)
+		{
+			case 1:
+				// Service number not found
+				break;
+			case 2:
+				// Service number on diversion
+				break;
+			case 3:
+				// Inactive Service
+				break;
+			case 4:
+				// Disconnected Service
+				break;
+			case 5:
+				// Incompatable Service
+				break;
+			case 6:
+				// Enhanced Service found
+				break;
+			case 7:
+				// Real-Time Metering found
+				break;
+			case 8:
+				// Entire number block not present in Churn Notification Order file
+				break;
+			case 9:
+				// Preselection already enabled
+				break;
+			case 10:
+				// Service ported to another ASD
+				break;
+			case 11:
+				// Requested service is owned by the ASD
+				break;
+			case 12:
+				// Restricted access service
+				break;
+			case 13:
+				// Point of presence not valid
+				break;
+			case 14:
+				// Enhanced Service - ISDN
+				break;
+			case 16:
+				// Incorrect ASD nominated
+				break;
+			case 21:
+				// Reversal Error (Cannot find old PSD)
+				break;
+			case 25:
+				// Indial Service
+				break;
+			case 26:
+				// Incorrect PSD code submitted
+				break;
+			case 31:
+				// Outside Allowable Timeframe
+				break;
+			case 40:
+				// Dual Notification Same Day - Different PSD
+				break;
+			case 48:
+				// Reversal Rejected Subsequent Churn
+				break;
+			default:
+				// Unkown Error Code
+				$strErrorDescription = "Unknown Error";
+				break;
+		}
+		
+		return $strErrorDescription;
+	 }
+	 
  }
 ?>

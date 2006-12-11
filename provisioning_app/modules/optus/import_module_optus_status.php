@@ -135,25 +135,35 @@
 		// Select the correct FNN
 		if ($arrLineData['NewFNN'])
 		{
-			$this->_arrRequest['FNN']	= $arrLineData['NewFNN'];
+			$this->_arrRequest['FNN']	= str_replace(" ", "", $arrLineData['NewFNN']);
 		}
 		else
 		{
-			$this->_arrRequest['FNN']	= $arrLineData['FNN'];
+			$this->_arrRequest['FNN']	= str_replace(" ", "", $arrLineData['FNN']);
 		}
 		
-		switch ($arrLineData['Status'])
+		switch (strtoupper($arrLineData['Status']))
 		{
-			case "Successful":
+			case "SUCCESSFUL":
 				// We've gained a service
-				$this->_arrRequest['GainDate']		= $arrLineData['ConfirmDate'];
+				$this->_arrRequest['GainDate']		= $this->_ConvertDate($arrLineData['ConfirmDate']);
 				$this->_arrRequest['Status']		= REQUEST_STATUS_COMPLETED;
 				$this->_arrService['LineStatus']	= LINE_ACTIVE;
 				break;
-			case "Pending":
+			case "PENDING":
 				// Service activation is pending
 				$this->_arrService['LineStatus']	= LINE_PENDING;
 				$this->_arrRequest['Status']		= REQUEST_STATUS_PENDING;
+				break;
+			case "":
+				// Line activated, but not churned to Optus, and no churn history
+				// TODO: What to do?
+				break;
+			default:
+				// The request has been rejected
+				
+				// Get the error description
+				$this->_arrLog['Description'] = $this->_GetErrorDescription($arrLineData['RejectCode']);
 				break;
 		}
 
