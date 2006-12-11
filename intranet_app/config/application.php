@@ -68,6 +68,9 @@ require ("classes/accounts/ABN.php");
 require ("classes/accounts/ACN.php");
 require ("classes/accounts/account.php");
 require ("classes/accounts/accounts.php");
+//account groups
+require ("classes/accountgroups/accountgroup.php");
+require ("classes/accountgroups/accountgroups.php");
 //accounts
 require ("classes/notes/note.php");
 require ("classes/notes/notes.php");

@@ -57,6 +57,30 @@
 		{
 			parent::__construct ('Notes', 'Note', 'Note');
 		}
+		
+		//------------------------------------------------------------------------//
+		// Add
+		//------------------------------------------------------------------------//
+		/**
+		 * Add()
+		 *
+		 * Add a new Note to the Database
+		 *
+		 * Add a new Note to the Database
+		 *
+		 *
+		 * @param	Array	$arrNote		An associative array with the Note information contained.
+		 *
+		 * @method
+		 */
+		 
+		function Add ($arrNote)
+		{
+			$insNote = new StatementInsert ('Note');
+			$intNote = $insNote->Execute ($arrNote);
+			
+			return new Note ($intNote);
+		}
 	}
 	
 ?>

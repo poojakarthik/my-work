@@ -176,29 +176,47 @@
 					<h2>Account Notes</h2>
 					<div class="Seperator"></div>
 					
-					Type new notes for this account in the field below:
-					<textarea name="Note" class="input-summary" rows="6" />
-					
-					<select name="NoteType">
-						<xsl:for-each select="/Response/NoteTypes/NoteType">
-							<xsl:variable name="NoteType" select="." />
-							<option>
-								<xsl:attribute name="style">
-									<xsl:text>background-color: #</xsl:text>
-									<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BackgroundColor" />
-									<xsl:text>;</xsl:text>
-									<xsl:text>border: solid 1px #</xsl:text>
-									<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BorderColor" />
-									<xsl:text>;</xsl:text>
-								</xsl:attribute>
-								<xsl:value-of select="./TypeLabel" />
-							</option>
-						</xsl:for-each>
-					</select>
-					
-					<div class="Right">
-						<input type="submit" value="Create Note &#0187;" class="input-submit" />
-					</div>
+					<form method="post" action="note_add.php">
+						<input type="hidden" name="AccountGroup">
+							<xsl:attribute name="value">
+								<xsl:text></xsl:text>
+								<xsl:value-of select="/Response/Account/AccountGroup" />
+							</xsl:attribute>
+						</input>
+						<input type="hidden" name="Account">
+							<xsl:attribute name="value">
+								<xsl:text></xsl:text>
+								<xsl:value-of select="/Response/Account/Id" />
+							</xsl:attribute>
+						</input>
+						Type new notes for this account in the field below:
+						<textarea name="Note" class="input-summary" rows="6" />
+						
+						<select name="NoteType">
+							<xsl:for-each select="/Response/NoteTypes/NoteType">
+								<xsl:variable name="NoteType" select="." />
+								<option>
+									<xsl:attribute name="style">
+										<xsl:text>background-color: #</xsl:text>
+										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BackgroundColor" />
+										<xsl:text>;</xsl:text>
+										<xsl:text>border: solid 1px #</xsl:text>
+										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BorderColor" />
+										<xsl:text>;</xsl:text>
+									</xsl:attribute>
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+									<xsl:value-of select="./TypeLabel" />
+								</option>
+							</xsl:for-each>
+						</select>
+						
+						<div class="Right">
+							<input type="submit" value="Create Note &#0187;" class="input-submit" />
+						</div>
+					</form>
 					
 					<div class="Clear"></div>
 					
@@ -259,6 +277,7 @@
 							
 							<xsl:value-of select="./Note" />
 						</div>
+						<div class="Seperator"></div>
 					</xsl:for-each>
 				</td>
 			</tr>

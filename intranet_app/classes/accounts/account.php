@@ -88,7 +88,7 @@
 			$this->_nosNotes = $this->Push (new Notes ());
 			$this->_nosNotes->Constrain ('Account', 'EQUALS', $this->Pull ('Id')->getValue ());
 			$this->_nosNotes->Order ('Datetime', FALSE);
-			$this->_nosNotes->Sample ();
+			$this->_nosNotes->Sample (1, 10);
 		}
 	}
 	
