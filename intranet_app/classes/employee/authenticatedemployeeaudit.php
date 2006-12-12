@@ -28,7 +28,8 @@
 	 *
 	 * Authenticated Employee Audit Information
 	 *
-	 * Contains information about the most recently viewed Accounts and Contacts
+	 * Contains information about the Accounts and Contacts that the Authenticated
+	 * Employee has Access to
 	 *
 	 *
 	 * @prefix		aea
@@ -66,8 +67,9 @@
 		 *
 		 * Object for Personal Audit Trails
 		 *
-		 * Pulls a list of the last 5 Accounts and Contacts from the Auditing Trail
-		 * for the AuthenticatedEmployee
+		 * Firstly, cleans up the Audit Trail to remove expired Audits, then
+		 * pulls a list of the Accounts and Contacts in the audit trail that
+		 * the AuthenticatedEmployee has access to
 		 *
 		 * @method
 		 */
@@ -82,7 +84,7 @@
 			// Get the values of the Auditing Trail ...
 			$selAuditTrail = new StatementSelect (
 				"EmployeeAccountAudit",
-				"MAX(RequestedOn) AS Latest, Account, RequestedOn", 
+				"MAX(RequestedOn) AS Latest, Account, Contact, RequestedOn", 
 				"Employee = <Employee> GROUP BY Account",
 				"Latest DESC",
 				5
@@ -117,7 +119,7 @@
 		 *
 		 * Record a Request to Access an Account
 		 *
-		 * @param	Integer			$intId		The Id of the Account being Accessed
+		 * @param	Account			$actAccount		The Account being Accessed
 		 * @return	Void
 		 *
 		 * @method
@@ -129,6 +131,36 @@
 			$arrAudit = Array (
 				'Employee'		=> $this->_aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				'Account'		=> $actAccount->Pull ('Id')->getValue (), 
+				'RequestedOn'	=> date ('Y-m-d H:i:s', mktime ())
+			);
+			
+			$insAudit = new StatementInsert ("EmployeeAccountAudit");
+			$insAudit->Execute ($arrAudit);
+		}
+		
+		//------------------------------------------------------------------------//
+		// RecordContact
+		//------------------------------------------------------------------------//
+		/**
+		 * RecordContact()
+		 *
+		 * Record Contact Audit
+		 *
+		 * Record a Request to Access a Contact
+		 *
+		 * @param	Contact			$cntContact		The Contact being Accessed
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function RecordContact (Contact $cntContact)
+		{
+			// Insert the Audit
+			$arrAudit = Array (
+				'Employee'		=> $this->_aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'Account'		=> $cntContact->Pull ('Account')->getValue (), 
+				'Contact'		=> $cntContact->Pull ('Id')->getValue (), 
 				'RequestedOn'	=> date ('Y-m-d H:i:s', mktime ())
 			);
 			

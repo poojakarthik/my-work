@@ -84,6 +84,11 @@
 					$_FIELD ['ObLib'] = "ACN";
 				}
 				
+				if ($_TABLE [0] == "Employee" && $_FIELD ['Field'] == "Session") {
+					$_FIELD ['RefType'] = "s";
+					$_FIELD ['ObLib'] = "dataCDATA";
+				}
+				
 				?>
 				
 	// Define Columns

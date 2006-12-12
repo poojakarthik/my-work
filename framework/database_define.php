@@ -77,8 +77,6 @@
 */
 
 		
-		
-		
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -1274,6 +1272,15 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
+		
+								
+	// Define Columns
+	$strName = "Session";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataCDATA";
 		
 					
 	// Save Table Define
@@ -4033,6 +4040,5 @@
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-	
 	
 ?>

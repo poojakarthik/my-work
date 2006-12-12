@@ -446,3 +446,10 @@
 		font-size:          smaller;
 	}
 	
+	.Attention
+	{
+		color:               #CC0000;
+		border-bottom:       dashed 1px #CC0000;
+		font-weight:         bold;
+	}
+	

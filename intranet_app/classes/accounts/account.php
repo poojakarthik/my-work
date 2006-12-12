@@ -76,9 +76,15 @@
 		function __construct ($intId)
 		{
 			// Pull all the account information and Store it ...
-			$selAccount = new StatementSelect ('Account', '*', 'Id = <Id>');
+			$selAccount = new StatementSelect ('Account', '*', 'Id = <Id>', null, 1);
 			$selAccount->useObLib (TRUE);
 			$selAccount->Execute (Array ('Id' => $intId));
+			
+			if ($selAccount->Count () <> 1)
+			{
+				throw new Exception ('Account does not exist.');
+			}
+			
 			$selAccount->Fetch ($this);
 			
 			// Construct the object

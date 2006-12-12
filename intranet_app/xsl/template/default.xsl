@@ -65,9 +65,9 @@
 																		<xsl:text>contact_view.php?Id=</xsl:text>
 																		<xsl:value-of select="./Id" />
 																	</xsl:attribute>
-																	<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
-																	<xsl:text> </xsl:text>
 																	<xsl:value-of select="./LastName" disable-output-escaping="yes" />
+																	<xsl:text>, </xsl:text>
+																	<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
 																</a>
 															</li>
 														</xsl:for-each>

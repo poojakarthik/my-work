@@ -100,11 +100,12 @@ require ("classes/recordtype/recordtypes.php");
 require ("classes/documentation/documentation.php");
 require ("classes/documentation/documentationentity.php");
 require ("classes/documentation/documentationfield.php");
+//style (intranet-specific)
+require ("classes/style/intranetstyle.php");
 
 $athAuthentication = new Authentication ();
 
-$Style = new Style ($strWebDir);
-$Style->attachObject ($athAuthentication);
+$Style = new IntranetStyle ($strWebDir, $athAuthentication);
 
 $docDocumentation = new Documentation ();
 $docDocumentation = $Style->attachObject ($docDocumentation);
