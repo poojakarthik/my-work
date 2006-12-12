@@ -57,12 +57,22 @@ define("MSG_COMMIT_TITLE"				, "[ COMMITTING INVOICES ]");
 // Data Types for Bill Printing
 define("BILL_TYPE_INTEGER"				, 700);
 define("BILL_TYPE_CHAR"					, 701);
+define("BILL_TYPE_BINARY"				, 708);
+define("BILL_TYPE_FLOAT"				, 709);
 define("BILL_TYPE_SHORTDATE"			, 702);
 define("BILL_TYPE_LONGDATE"				, 703);
 define("BILL_TYPE_TIME"					, 704);
 define("BILL_TYPE_DURATION"				, 705);
-define("BILL_TYPE_LONGCURRENCY"			, 706);
 define("BILL_TYPE_SHORTCURRENCY"		, 707);
+
+// Bill Designs for Bill Printing
+define("BILL_DESIGN_TELCOBLUE"			, 1);
+define("BILL_DESIGN_VOICETALK"			, 2);
+
+// Delivery methods for Bill Printing
+define("BILL_DESIGN_PRINT"				, 0);
+define("BILL_DESIGN_EMAIL"				, 1);
+define("BILL_DESIGN_BOTH"				, 2);
 
 
 ?>
