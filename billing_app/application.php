@@ -124,7 +124,7 @@ die();
  	{
 		// Start the stopwatch
 		$this->Framework->StartWatch();
-		
+
 		// Empty the temporary invoice table
 		// This is safe, because there should be no CDRs with CDR_TEMP_INVOICE status anyway
 		if (!$this->Revoke())
@@ -137,6 +137,7 @@ die();
 		$selAccounts					= new StatementSelect("Account", "*", "Id = 1000158426");	// TODO: Should have a WHERE clause in final version
 		
 		// Init Update Statements
+		$arrCDRCols = Array();
 		$arrCDRCols['Status']			= CDR_TEMP_INVOICE;
 		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
 		
@@ -344,6 +345,7 @@ die();
 		
 		// change status of invoices in the temp invoice table
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_TEMP_INVOICE_STATUS, FALSE);
+		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_COMMITTED;
 		$updTempInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_TEMP, $arrUpdateData);
 		if($updTempInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
@@ -378,6 +380,7 @@ die();
 		
 		// update invoice status
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
+		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_COMMITTED;
 		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_TEMP, $arrUpdateData);
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
