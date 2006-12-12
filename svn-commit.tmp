@@ -1,8 +1,0 @@
-
---This line, and those below, will be ignored--
-
-M    intranet_app/rates_plan_add.php
-M    intranet_app/css/default.css
-M    intranet_app/classes/search/searchresults.php
-M    intranet_app/classes/rates/rategroups.php
-M    framework/database_define.php
