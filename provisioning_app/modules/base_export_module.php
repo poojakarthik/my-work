@@ -65,15 +65,25 @@
 		// Set up this->db
 		$this->db = $ptrDB;
 		
-		$this->_selMatchRequest				= new StatementSelect("Request", "*",
+		$arrRequestColumns['ExportFile']		= NULL;
+		$arrRequestColumns['GainDate']			= NULL;
+		$arrRequestColumns['LossDate']			= NULL;
+		$arrRequestColumns['Status']			= NULL;
+		$arrServiceColumns['LineStatus']	 	= NULL;
+		$arrServiceColumns['Carrier']		 	= NULL;
+		$arrServiceColumns['CarrierPreselect']	= NULL;
+				
+		$this->_selMatchRequest					= new StatementSelect("Request", "*",
 			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "RequestDate DESC", "1");
-		$this->_ubiRequest					= new StatementUpdateById("Request");
-		$this->_selMatchService 			= new StatementSelect("Service", "*", "FNN = <FNN>", "CreatedOn DESC", "1");
-		$this->_ubiService					= new StatementUpdateById("Service");
-		$this->_selMatchLog					= new StatementSelect("ProvisioningLog", "Id", "Date > <Date>");
-		$this->_selGetSequence				= new StatementSelect("Config", "Name, Value", "Application = ".APPLICATION_PROVISIONING." AND Module = <Module>");
-		$this->_selGetFullServiceRequests	= new StatementSelect("Request JOIN Service ON Request.Service = Service.Id", "Request.*, Service.FNN", "Request.Carrier = <Carrier> AND Request.Status = ".REQUEST_STATUS_WAITING." AND Request.RequestType = ".REQUEST_FULL_SERVICE);
-		$this->_selGetPreselectRequests		= new StatementSelect("Request JOIN Service ON Request.Service = Service.Id", "Request.*, Service.FNN", "Request.Carrier = <Carrier> AND Request.Status = ".REQUEST_STATUS_WAITING." AND Request.RequestType = ".REQUEST_PRESELECTION);
+		$this->_ubiRequest						= new StatementUpdateById("Request", $arrRequestColumns);
+		$this->_selMatchService 				= new StatementSelect("Service", "*", "FNN = <FNN>", "CreatedOn DESC", "1");
+		$this->_ubiService						= new StatementUpdateById("Service", $arrServiceColumns);
+		$this->_selMatchLog						= new StatementSelect("ProvisioningLog", "Id", "Date > <Date>");
+		$this->_selGetSequence					= new StatementSelect("Config", "Name, Value", "Application = ".APPLICATION_PROVISIONING." AND Module = <Module>");
+		$this->_selGetFullServiceRequests		= new StatementSelect("Request JOIN Service ON Request.Service = Service.Id", "Request.*, Service.FNN", "Request.Carrier = <Carrier> AND Request.Status = ".REQUEST_STATUS_WAITING." AND Request.RequestType = ".REQUEST_FULL_SERVICE);
+		$this->_selGetPreselectRequests			= new StatementSelect("Request JOIN Service ON Request.Service = Service.Id", "Request.*, Service.FNN", "Request.Carrier = <Carrier> AND Request.Status = ".REQUEST_STATUS_WAITING." AND Request.RequestType = ".REQUEST_PRESELECTION);
+		
+
 		
 		// Default delimeter is NULL (fixedwidth)
 		$this->_strDelimiter	= NULL;

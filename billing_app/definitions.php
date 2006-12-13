@@ -74,5 +74,12 @@ define("BILL_DESIGN_PRINT"				, 0);
 define("BILL_DESIGN_EMAIL"				, 1);
 define("BILL_DESIGN_BOTH"				, 2);
 
+// Graph Types for Bill Printing
+define("GRAPH_TYPE_VERTICALBAR"				, "01");
+define("GRAPH_TYPE_VERTICALBARBREAKDOWN"	, "02");
+define("GRAPH_TYPE_HORIZONTALBARSPLIT"		, "03");
+define("GRAPH_TYPE_LINEXY"					, "04");
+define("GRAPH_TYPE_LINEXYZ"					, "05");
+
 
 ?>

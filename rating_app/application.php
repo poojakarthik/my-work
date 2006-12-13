@@ -113,7 +113,7 @@ die();
 		// Init Statement
 		$ServiceTotalsColumns['UncappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
 		$ServiceTotalsColumns['CappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
-		$this->_ubiServiceTotals	= new StatementUpdateById("Service", $ServiceTotalsColumns);
+		$this->_ubiServiceTotals	= new StatementUpdateById("Service", NULL, $ServiceTotalsColumns);
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
 		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .

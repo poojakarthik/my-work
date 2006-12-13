@@ -98,15 +98,15 @@ $arrDefine['InvoiceDetails']	['AddressLine1']	['Length']	= 60;
 $arrDefine['InvoiceDetails']	['AddressLine1']	['Type']	= BILL_TYPE_CHAR;
 
 $arrDefine['InvoiceDetails']	['Suburb']			['Start']	= 309;
-$arrDefine['InvoiceDetails']	['Suburb']			['Length']	= 60;
+$arrDefine['InvoiceDetails']	['Suburb']			['Length']	= 30;
 $arrDefine['InvoiceDetails']	['Suburb']			['Type']	= BILL_TYPE_CHAR;
 
 $arrDefine['InvoiceDetails']	['State']			['Start']	= 339;
-$arrDefine['InvoiceDetails']	['State']			['Length']	= 60;
+$arrDefine['InvoiceDetails']	['State']			['Length']	= 3;
 $arrDefine['InvoiceDetails']	['State']			['Type']	= BILL_TYPE_CHAR;
 
 $arrDefine['InvoiceDetails']	['Postcode']		['Start']	= 342;
-$arrDefine['InvoiceDetails']	['Postcode']		['Length']	= 60;
+$arrDefine['InvoiceDetails']	['Postcode']		['Length']	= 4;
 $arrDefine['InvoiceDetails']	['Postcode']		['Type']	= BILL_TYPE_INTEGER;
 
 $arrDefine['InvoiceDetails']	['PaymentDueDate']	['Start']	= 346;
@@ -141,7 +141,7 @@ $arrDefine['GraphHeader']		['ZTitle']			['Length']	= 20;
 $arrDefine['GraphHeader']		['ZTitle']			['Type']	= BILL_TYPE_CHAR;
 
 $arrDefine['GraphHeader']		['Description']		['Start']	= 54;
-$arrDefine['GraphHeader']		['Description']		['Length']	= 20;
+$arrDefine['GraphHeader']		['Description']		['Length']	= 100;
 $arrDefine['GraphHeader']		['Description']		['Type']	= BILL_TYPE_CHAR;
 
 
@@ -311,11 +311,11 @@ $arrDefine['PaymentData']		['AddressLine2']	['Length']	= 60;
 $arrDefine['PaymentData']		['AddressLine2']	['Type']	= BILL_TYPE_CHAR;
 
 $arrDefine['PaymentData']		['SpecialOffer1']	['Start']	= 347;
-$arrDefine['PaymentData']		['SpecialOffer1']	['Length']	= 120;
+$arrDefine['PaymentData']		['SpecialOffer1']	['Length']	= 250;
 $arrDefine['PaymentData']		['SpecialOffer1']	['Type']	= BILL_TYPE_CHAR;
 
-$arrDefine['PaymentData']		['SpecialOffer2']	['Start']	= 467;
-$arrDefine['PaymentData']		['SpecialOffer2']	['Length']	= 120;
+$arrDefine['PaymentData']		['SpecialOffer2']	['Start']	= 597;
+$arrDefine['PaymentData']		['SpecialOffer2']	['Length']	= 250;
 $arrDefine['PaymentData']		['SpecialOffer2']	['Type']	= BILL_TYPE_CHAR;
 
 
@@ -399,7 +399,7 @@ $arrDefine['ItemCallTypeHeader']['RecordType']		['Type']	= BILL_TYPE_INTEGER;
 $arrDefine['ItemCallTypeHeader']['RecordType']		['Value']	= "90";
 
 $arrDefine['ItemCallTypeHeader']['CallType']		['Start']	= 2;
-$arrDefine['ItemCallTypeHeader']['CallType']		['Length']	= 20;
+$arrDefine['ItemCallTypeHeader']['CallType']		['Length']	= 40;
 $arrDefine['ItemCallTypeHeader']['CallType']		['Type']	= BILL_TYPE_CHAR;
 
 
@@ -437,10 +437,10 @@ $arrDefine['ItemisedDataS&E']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
 $arrDefine['ItemisedDataS&E']	['RecordType']		['Value']	= "92";
 
 $arrDefine['ItemisedDataS&E']	['Description']		['Start']	= 2;
-$arrDefine['ItemisedDataS&E']	['Description']		['Length']	= 50;
+$arrDefine['ItemisedDataS&E']	['Description']		['Length']	= 100;
 $arrDefine['ItemisedDataS&E']	['Description']		['Type']	= BILL_TYPE_CHAR;
 
-$arrDefine['ItemisedDataS&E']	['Charge']			['Start']	= 52;
+$arrDefine['ItemisedDataS&E']	['Charge']			['Start']	= 102;
 $arrDefine['ItemisedDataS&E']	['Charge']			['Length']	= 11;
 $arrDefine['ItemisedDataS&E']	['Charge']			['Type']	= BILL_TYPE_SHORTCURRENCY;
 
@@ -548,7 +548,7 @@ $arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 	$arrFileData[] = $arrDefine['ChargeTotal'];
 	$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "National Calls";
 	$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= 25.25;
-	$arrFileData[] = $arrDefine['ChargeTotals'];
+	$arrFileData[] = $arrDefine['ChargeTotal'];
 	$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Calls to Mobiles";
 	$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= 12.12;
 	$arrFileData[] = $arrDefine['ChargeTotal'];
@@ -575,7 +575,7 @@ $arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 	$arrFileData[] = $arrDefine['ChargeTotal'];
 	$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
 	$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= 65.54;
-	$arrFileData[] = $arrDefine['ChargeTotals'];
+	$arrFileData[] = $arrDefine['ChargeTotal'];
 // Charge Totals Footer record
 $arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= 655.35;
 $arrFileData[] = $arrDefine['ChargeTotalsFooter'];
@@ -640,7 +640,6 @@ $arrFileData[] = $arrDefine['SvcSummaryHeader'];
 	$arrDefine['SvcSummSvcFooter']	['TotalCharge']		['Value']	= 50.50;
 	$arrFileData[] = $arrDefine['SvcSummSvcFooter'];
 // Service Summary Footer Record
-$arrDefine['SvcSummaryFooter']	['TotalServices']		['Value']	= 2;
 $arrFileData[] = $arrDefine['SvcSummaryFooter'];
 
 
@@ -706,6 +705,8 @@ $arrFileData[] = $arrDefine['ItemisedHeader'];
 // Itemised Call Footer record
 $arrFileData[] = $arrDefine['ItemisedFooter'];
 
+$arrFileData[] = $arrDefine['InvoiceFooter'];
+
 
 //----------------------------------------------------------------------------//
 // Process and implode the data to a giant ass string
@@ -716,10 +717,26 @@ $strFileContents = "";
 // Loop through Records
 foreach ($arrFileData as $arrRecord)
 {
+	$i++;
+	$t = 0;
+	
 	// Loop through Fields
 	foreach ($arrRecord as $arrField)
 	{
 		$strValue = $arrField['Value'];
+		
+		$t++;
+		
+		if(!isset($strValue))
+		{
+			echo "Continuing on $i--$t...<BR />";
+			continue;
+		}
+		
+		if (strlen($strValue) > $arrField['Length'])
+		{
+			echo "Field $i--$t is too long! (".strlen($strValue)." > ".$arrField['Length'].") -> $strValue<BR />";
+		}
 		
 		switch ($arrField['Type'])
 		{
@@ -753,6 +770,8 @@ foreach ($arrFileData as $arrRecord)
 				break;
 			default:
 				// Unknown Data Type
+				echo "<BR /><BR />DEATH on $i--$t<BR /><BR />";
+				print_r($arrField);
 				Die(); 
 		}
 		
@@ -769,6 +788,7 @@ foreach ($arrFileData as $arrRecord)
 
 echo "<pre>";
 print_r($strFileContents);
+echo "\n\n\n".sha1_file("/home/richdavis/donkey1.gif");
 echo "</pre>";
 
 ?>

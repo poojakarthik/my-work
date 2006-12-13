@@ -57,38 +57,9 @@ define("PRV_HEADER_RECORD"				, 102);
 define("PRV_BAD_RECORD_TYPE"			, 103);
 define("PRV_NO_SERVICE"					, 104);
 
-// Request Types
-define("REQUEST_FULL_SERVICE"			, 900);
-define("REQUEST_PRESELECTION"			, 901);
-define("REQUEST_BAR"					, 902);
-define("REQUEST_UNBAR"					, 903);
-define("REQUEST_ACTIVATION"				, 904);
-define("REQUEST_DEACTIVATION"			, 905);
-define("REQUEST_PRESELECTION_REVERSE"	, 906);
-define("REQUEST_FULL_SERVICE_REVERSE"	, 907);
-define("REQUEST_PRESELECTION_REVERSAL"	, REQUEST_PRESELECTION_REVERSE);
-
-// Line actions (Log)
-define("LINE_ACTION_OTHER"				, 600);
-define("LINE_ACTION_GAIN"				, 601);
-define("LINE_ACTION_LOSS"				, 602);
-
-// Serivce Status
-define("LINE_ACTIVE"					, 400);
-define("LINE_DEACTIVATED"				, 401);
-define("LINE_PENDING"					, 402);
-define("LINE_SOFT_BARRED"				, 403);
-define("LINE_HARD_BARRED"				, 404);
-
 // Log Descriptions
 define("DESCRIPTION_LOST_TO"			, "Service lost to ");
 define("DESCRIPTION_CANCELLED"			, "Service cancelled");
-
-// Request Status
-define("REQUEST_STATUS_WAITING"			, 300);
-define("REQUEST_STATUS_PENDING"			, 301);
-define("REQUEST_STATUS_REJECTED"		, 302);
-define("REQUEST_STATUS_COMPLETED"		, 303);
 
 // File Status
 define("PROV_COMPLETED"					, 999);
