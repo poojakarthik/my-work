@@ -128,10 +128,10 @@
 			parent::__construct ('ServiceTypes');
 			
 			// Instantiate the Variable Values for possible selection
-			$this->_ADSL		= $this->Push (new ServiceType (SERVICE_TYPE_ADSL,		'ADSL Connection'));
-			$this->_MOBILE		= $this->Push (new ServiceType (SERVICE_TYPE_MOBILE,	'Mobile Telephone'));
-			$this->_LAND_LINE	= $this->Push (new ServiceType (SERVICE_TYPE_LAND_LINE,	'Land Line Telephone'));
-			$this->_INBOUND		= $this->Push (new ServiceType (SERVICE_TYPE_INBOUND,	'Inbound Call Number'));
+			$this->_ADSL		= $this->Push (new ServiceType (SERVICE_TYPE_ADSL));
+			$this->_MOBILE		= $this->Push (new ServiceType (SERVICE_TYPE_MOBILE));
+			$this->_LAND_LINE	= $this->Push (new ServiceType (SERVICE_TYPE_LAND_LINE));
+			$this->_INBOUND		= $this->Push (new ServiceType (SERVICE_TYPE_INBOUND));
 			
 			$this->setValue ($intServiceType);
 		}

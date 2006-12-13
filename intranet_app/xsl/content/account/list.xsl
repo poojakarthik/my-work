@@ -128,7 +128,7 @@
 								<tr>
 									<th valign="top">
 										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="entity" select="string('Archive')" />
 											<xsl:with-param name="field" select="string('Archived')" />
 										</xsl:call-template>
 									</th>

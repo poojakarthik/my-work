@@ -20,6 +20,7 @@
 	
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Archive');
 	
 	$Style->Output ('xsl/content/account/edit.xsl');
 	

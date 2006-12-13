@@ -42,10 +42,10 @@
 	{
 		
 		//------------------------------------------------------------------------//
-		// _intId
+		// _oblintType
 		//------------------------------------------------------------------------//
 		/**
-		 * _intId
+		 * _oblintType
 		 *
 		 * The Id of the Service Type
 		 *
@@ -56,13 +56,13 @@
 		 * @property
 		 */
 		
-		private $_intId;
+		private $_oblintType;
 		
 		//------------------------------------------------------------------------//
-		// _strName
+		// _oblstrName
 		//------------------------------------------------------------------------//
 		/**
-		 * _strName
+		 * _oblstrName
 		 *
 		 * The name of the Service Type
 		 *
@@ -73,7 +73,7 @@
 		 * @property
 		 */
 		
-		private $_strName;
+		private $_oblstrName;
 		
 		//------------------------------------------------------------------------//
 		// ServiceType
@@ -85,18 +85,38 @@
 		 *
 		 * Holds Service Type Constant Information
 		 *
-		 * @param	Integer		$intId			The Id of the Service Type (Constant Value)
-		 * @param	String		$strName		The Name of the Service Type
+		 * @param	Integer		$intType			The Id of the Service Type (Constant Value)
 		 *
 		 * @method
 		 */
 		
-		function __construct ($intId, $strName)
+		function __construct ($intType)
 		{
-			parent::__construct ('ServiceType', $intId);
+			parent::__construct ('ServiceType');
 			
-			$this->intId		= $this->Push (new dataInteger	('Id',		$intId));
-			$this->strName		= $this->Push (new dataString	('Name',	$strName));
+			$strName = 'Unknown';
+			
+			switch ($intType)
+			{
+				case SERVICE_TYPE_ADSL:
+					$strName = 'ADSL Connection';
+					break;
+					
+				case SERVICE_TYPE_MOBILE:
+					$strName = 'Mobile Telephone';
+					break;
+					
+				case SERVICE_TYPE_LAND_LINE:
+					$strName = 'Land Line Telephone';
+					break;
+					
+				case SERVICE_TYPE_INBOUND:
+					$strName = 'Inbound Call Number';
+					break;
+			}
+			
+			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));
+			$this->oblstrName		= $this->Push (new dataString	('Name',	$strName));
 		}
 	}
 	

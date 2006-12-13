@@ -21,7 +21,7 @@
 	// Authenticate the Note Type
 	$ntyNoteType = new NoteType ($_POST ['NoteType']);
 	
-	if (!isset ($_POST ['Note']))
+	if (!$_POST ['Note'])
 	{
 		header ("Location: index.php");
 		exit;
@@ -51,41 +51,33 @@
 			header ("Location: index.php");
 			exit;
 		}
-		
-		
-		
-		
-		// You must have an Account to add a Note for a Contact or a Service
-		// Therefor:
-		
-		// If we have a Contact, Authenticate it
-		if ($_POST ['Contact'])
+	}
+	
+	// If we have a Contact, Authenticate it
+	if ($_POST ['Contact'])
+	{
+		try
 		{
-			try
-			{
-				$cntContact = $actAccount->getContact ($_POST ['Contact']);
-			}
-			catch (Exception $e)
-			{
-				header ("Location: index.php");
-				exit;
-			}
+			$cntContact = new Contact ($_POST ['Contact']);
 		}
-		
-		
-		
-		// If we have a Service, Authenticate it
-		if ($_POST ['Service'])
+		catch (Exception $e)
 		{
-			try
-			{
-				$srvService = $actAccount->getService ($_POST ['Service']);
-			}
-			catch (Exception $e)
-			{
-				header ("Location: index.php");
-				exit;
-			}
+			header ("Location: index.php");
+			exit;
+		}
+	}
+	
+	// If we have a Service, Authenticate it
+	if ($_POST ['Service'])
+	{
+		try
+		{
+			$srvService = new Service ($_POST ['Service']);
+		}
+		catch (Exception $e)
+		{
+			header ("Location: index.php");
+			exit;
 		}
 	}
 	

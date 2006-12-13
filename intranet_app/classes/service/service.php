@@ -66,6 +66,8 @@
 			
 			// Construct the object
 			parent::__construct ('Service', $this->Pull ('Id')->getValue ());
+			
+			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
 		}
 		
 		//------------------------------------------------------------------------//

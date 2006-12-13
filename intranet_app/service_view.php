@@ -15,34 +15,28 @@
 		header ('Location: login.php'); exit;
 	}
 	
-	// Pull documentation information for an Account
-	$docDocumentation->Explain ('Account');
+	// Pull documentation information for a Service and an Account
 	$docDocumentation->Explain ('Archive');
+	$docDocumentation->Explain ('Service');
+	$docDocumentation->Explain ('Account');
 	
 	
+	// Get the Service
+	$srvService		= $Style->attachObject (new Service ($_GET ['Id']));
 	
 	// Get the Account
-	$actAccount		= $Style->attachObject (new Account ($_GET ['Id']));	
-	
-	// Get Associated Services
-	$svsServices	= $Style->attachObject (new Services ());
-	$svsServices->Constrain ('Account', '=', $_GET ['Id']);
-	$svsServices->Order ('FNN', TRUE);
-	$svsServices->Sample ();
+	$srvService		= $Style->attachObject (new Account ($srvService->Pull ('Account')->getValue ()));
 	
 	// Get information about Note Types
 	$ntsNoteTypes	= $Style->attachObject (new NoteTypes ());
 	
 	// Get Associated Notes
 	$nosNotes		= $Style->attachObject (new Notes ());
-	$nosNotes->Constrain ('Account', '=', $_GET ['Id']);
+	$nosNotes->Constrain ('Service', '=', $_GET ['Id']);
 	$nosNotes->Order ('Datetime', FALSE);
 	$nosNotes->Sample ();
 	
-	// Record a request to view an Account in the Audit
-	$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
-	
 	// Output the Account View
-	$Style->Output ('xsl/content/account/view.xsl');
+	$Style->Output ('xsl/content/service/view.xsl');
 	
 ?>

@@ -97,9 +97,26 @@
 		}
 	}
 	
-	
-	// TODO: Add constraint against a service because we haven't done 
-	// the Service Class yet.
+	// If we have a Service Specified, then 
+	// pull information about the Service
+	// and Constrain against the Id
+	if ($_GET ['Service'])
+	{
+		try
+		{
+			// Pull:
+			$srvService = new Service ($_GET ['Service']);
+			$Style->attachObject ($srvService);
+			
+			// Constrain:
+			$nosNotes->Constrain ('Service', '=', $srvService->Pull ('Id')->getValue ());
+		}
+		catch (Exception $e)
+		{
+			header ('Location: index.php');
+			exit;
+		}
+	}
 	
 	// Order by Newest First
 	$nosNotes->Order ('Datetime', FALSE);

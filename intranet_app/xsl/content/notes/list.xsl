@@ -5,7 +5,7 @@
 	xmlns:func="http://exslt.org/functions" xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date">
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
-	<xsl:import href="../../template/default.xsl" />
+	<xsl:import href="../../template/popup.xsl" />
 	
 	<xsl:import href="../../lib/date-difference/date.difference.function.xsl"/>
 	<xsl:import href="../../lib/date-difference/date.difference.template.xsl"/>

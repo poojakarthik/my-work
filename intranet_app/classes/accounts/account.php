@@ -42,23 +42,6 @@
 	{
 		
 		//------------------------------------------------------------------------//
-		// _nosNotes
-		//------------------------------------------------------------------------//
-		/**
-		 * _nosNotes
-		 *
-		 * Notes Search
-		 *
-		 * A list of Notes that are associated with this Account
-		 *
-		 * @type	Notes
-		 *
-		 * @property
-		 */
-		
-		private $_nosNotes;
-		
-		//------------------------------------------------------------------------//
 		// __construct
 		//------------------------------------------------------------------------//
 		/**
@@ -89,12 +72,6 @@
 			
 			// Construct the object
 			parent::__construct ('Account', $this->Pull ('Id')->getValue ());
-			
-			// Construct the Notes
-			$this->_nosNotes = $this->Push (new Notes ());
-			$this->_nosNotes->Constrain ('Account', 'EQUALS', $this->Pull ('Id')->getValue ());
-			$this->_nosNotes->Order ('Datetime', FALSE);
-			$this->_nosNotes->Sample (1, 10);
 		}
 	}
 	
