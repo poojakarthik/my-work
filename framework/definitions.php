@@ -158,4 +158,33 @@ define("MSG_HORIZONTAL_RULE"		, "\n=============================================
 define("SQL_QUERY"				, 100);
 define("SQL_STATEMENT"			, 200);
 
+// Provisioning Request Status
+define("REQUEST_STATUS_WAITING"			, 300);
+define("REQUEST_STATUS_PENDING"			, 301);
+define("REQUEST_STATUS_REJECTED"		, 302);
+define("REQUEST_STATUS_COMPLETED"		, 303);
+
+// Serivce Line Status
+define("LINE_ACTIVE"					, 400);
+define("LINE_DEACTIVATED"				, 401);
+define("LINE_PENDING"					, 402);
+define("LINE_SOFT_BARRED"				, 403);
+define("LINE_HARD_BARRED"				, 404);
+
+// Provisioning Request Types
+define("REQUEST_FULL_SERVICE"			, 900);
+define("REQUEST_PRESELECTION"			, 901);
+define("REQUEST_BAR_SOFT"				, 902);
+define("REQUEST_UNBAR"					, 903);
+define("REQUEST_ACTIVATION"				, 904);
+define("REQUEST_DEACTIVATION"			, 905);
+define("REQUEST_PRESELECTION_REVERSE"	, 906);
+define("REQUEST_FULL_SERVICE_REVERSE"	, 907);
+define("REQUEST_PRESELECTION_REVERSAL"	, REQUEST_PRESELECTION_REVERSE);
+define("REQUEST_BAR_HARD"				, 908);
+
+// Provisioning Line Actions (Log)
+define("LINE_ACTION_OTHER"				, 600);
+define("LINE_ACTION_GAIN"				, 601);
+define("LINE_ACTION_LOSS"				, 602);
 ?>
