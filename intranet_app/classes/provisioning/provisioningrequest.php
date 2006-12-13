@@ -80,6 +80,38 @@
 			// Construct the object
 			parent::__construct ('ProvisioningRequest', $this->Pull ('Id')->getValue ());
 		}
+		
+		//------------------------------------------------------------------------//
+		// Cancel
+		//------------------------------------------------------------------------//
+		/**
+		 * Cancel()
+		 *
+		 * Cancels the Provisioning Request
+		 *
+		 * Cancels the Provisioning Request
+		 *
+		 * @return	Boolean		[TRUE/FALSE] Depending on whether the Status allows us to cancel the Request
+		 *
+		 * @method
+		 */
+		 
+		public function Cancel ()
+		{
+			if ($this->Pull ('Status')->getValue () != REQUEST_STATUS_WAITING)
+			{
+				return false;
+			}
+			
+			$arrNewStatus = Array (
+				"Status"		=> REQUEST_STATUS_CANCELLED
+			);
+			
+			$updUpdate = new StatementUpdate ('Request', 'Id = <Id> AND Status = <Status>', $arrNewStatus);
+			$updUpdate->Execute ($arrNewStatus, Array ('Id' => $this->Pull ('Id')->getValue (), 'Status' => REQUEST_STATUS_WAITING));
+			
+			return true;
+		}
 	}
 	
 ?>
