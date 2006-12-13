@@ -8,7 +8,7 @@
 	<xsl:import href="../../template/popup.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Processed Provisioning</h1>
+		<h1>Provisioning Requests</h1>
 		<div class="Seperator"></div>
 		
 		<h2>Account/Service Information</h2>
@@ -57,19 +57,19 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<h2>Processed Provisioning</h2>
+		<h2>Provisioning Requests</h2>
 		<div class="Seperator"></div>
 		
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>I/O</th>
 				<th>Date</th>
 				<th>Carrier</th>
 				<th>Type</th>
-				<th>Description</th>
+				<th>Probable Response</th>
+				<th>Options</th>
 			</tr>
-			<xsl:for-each select="/Response/ProvisioningLog/Results/rangeSample/ProvisioningRecord">
+			<xsl:for-each select="/Response/ProvisioningRequests/Results/rangeSample/ProvisioningRequest">
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>
@@ -84,22 +84,10 @@
 					
 					<td><xsl:value-of select="position()" />.</td>
 					<td>
-						<xsl:choose>
-							<xsl:when test="./Direction = 1">
-								<img src="img/template/icon_moveup.png" title="Information was Sent to the Carrier" 
-								alt="Information was Sent to the Carrier" />
-							</xsl:when>
-							<xsl:otherwise>
-								<img src="img/template/icon_movedown.png" title="Information was Received from the Carrier" 
-								alt="Information was Received from the Carrier" />
-							</xsl:otherwise>
-						</xsl:choose>
-					</td>
-					<td>
 						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"	select="./Date/year" />
-							<xsl:with-param name="month"	select="./Date/month" />
-							<xsl:with-param name="day"		select="./Date/day" />
+							<xsl:with-param name="year"	select="./RequestDate/year" />
+							<xsl:with-param name="month"	select="./RequestDate/month" />
+							<xsl:with-param name="day"		select="./RequestDate/day" />
 							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 						</xsl:call-template>
 					</td>
@@ -107,10 +95,42 @@
 						<xsl:value-of select="./Carrier/Name" />
 					</td>
 					<td>
-						<xsl:value-of select="./ProvisioningResponseType/Name" />
+						<xsl:value-of select="./ProvisioningRequestType/Name" />
 					</td>
 					<td>
-						<xsl:value-of select="./Description" />
+						<xsl:choose>
+							<xsl:when test="./ProvisioningRequestResponse/Id = 300">
+								<strong><span class="Blue">Unprocessed</span></strong>
+							</xsl:when>
+							<xsl:when test="./ProvisioningRequestResponse/Id = 301">
+								<strong><span class="Blue">Pending</span></strong>
+							</xsl:when>
+							<xsl:when test="./ProvisioningRequestResponse/Id = 302">
+								<strong><span class="Red">Failed</span></strong>
+							</xsl:when>
+							<xsl:when test="./ProvisioningRequestResponse/Id = 303">
+								<strong><span class="Green">Processed</span></strong>
+							</xsl:when>
+							<xsl:when test="./ProvisioningRequestResponse/Id = 304">
+								<strong><span class="Blue">Cancelled</span></strong>
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><span class="Red">Unknown</span></strong>
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
+					<td>
+						<xsl:choose>
+							<xsl:when test="./ProvisioningRequestResponse/Id = 300">
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>provisioning_request_cancel.php?Id=</xsl:text>
+										<xsl:value-of select="Id" />
+									</xsl:attribute>
+									<xsl:text>Cancel</xsl:text>
+								</a>
+							</xsl:when>
+						</xsl:choose>
 					</td>
 				</tr>
 			</xsl:for-each>

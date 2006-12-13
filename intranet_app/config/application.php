@@ -110,6 +110,7 @@ require ("classes/service/services.php");
 //provisioning requests
 require ("classes/provisioning/provisioningrequest.php");
 require ("classes/provisioning/provisioningrequests.php");
+require ("classes/provisioning/provisioningrequestresponse.php");
 
 //provisioning request types
 require ("classes/provisioning/provisioningrequesttype.php");

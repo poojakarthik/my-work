@@ -51,7 +51,7 @@
 		 *
 		 * Constructor for a new Provisioning Record
 		 *
-		 * @param	Integer		$intId		The Id of the Provisioning Record being Retrieved from the ProvisioningLog
+		 * @param	Integer		$intId		The Id of the Provisioning Request being Retrieved from the Provisioning Requests
 		 *
 		 * @method
 		 */
@@ -59,7 +59,7 @@
 		function __construct ($intId)
 		{
 			// Pull all the ProvisioningRequest information and Store it ...
-			$selProvisioningRequest = new StatementSelect ('ProvisioningLog', '*', 'Id = <Id>', null, 1);
+			$selProvisioningRequest = new StatementSelect ('Request', '*', 'Id = <Id>', null, 1);
 			$selProvisioningRequest->useObLib (TRUE);
 			$selProvisioningRequest->Execute (Array ('Id' => $intId));
 			
@@ -70,9 +70,9 @@
 			
 			$selProvisioningRequest->Fetch ($this);
 			
-			
 			// Name the Provisioning Request Type
-			$this->Push (new ProvisioningRequestType ($this->Pull ('Type')->getValue ()));
+			$this->Push (new ProvisioningRequestType ($this->Pull ('RequestType')->getValue ()));
+			$this->Push (new ProvisioningRequestResponse ($this->Pull ('Status')->getValue ()));
 			
 			// Name the Carrier
 			$this->Push (new Carrier ($this->Pop ('Carrier')->getValue ()));

@@ -194,7 +194,7 @@
 								</a><br />
 								... <a>
 									<xsl:attribute name="href">
-										<xsl:text>javascript:provisioning_popup_unprocessed ('</xsl:text>
+										<xsl:text>javascript:provisioning_popup_requests ('</xsl:text>
 										<xsl:value-of select="/Response/Service/Id" />
 										<xsl:text>')</xsl:text>
 									</xsl:attribute>

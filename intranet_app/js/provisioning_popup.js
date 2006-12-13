@@ -9,10 +9,10 @@
 		);
 	}
 	
-	function provisioning_popup_unprocessed (Service)
+	function provisioning_popup_requests (Service)
 	{
 		var ProvisioningWindow = window.open (
-			"provisioning_unprocessed.php?" +
+			"provisioning_requests.php?" +
 			((Service != "") ? "Service=" + Service : ""),
 			"",
 			"width=750, height=550, scrollbars=yes, resize=yes"
