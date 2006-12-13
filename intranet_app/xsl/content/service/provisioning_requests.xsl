@@ -85,9 +85,9 @@
 					<td><xsl:value-of select="position()" />.</td>
 					<td>
 						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"	select="./RequestDate/year" />
-							<xsl:with-param name="month"	select="./RequestDate/month" />
-							<xsl:with-param name="day"		select="./RequestDate/day" />
+							<xsl:with-param name="year"	select="./RequestDateTime/year" />
+							<xsl:with-param name="month"	select="./RequestDateTime/month" />
+							<xsl:with-param name="day"		select="./RequestDateTime/day" />
 							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 						</xsl:call-template>
 					</td>

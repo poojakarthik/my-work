@@ -79,7 +79,7 @@
 			parent::__construct ('ProvisioningRequests', 'Request', 'ProvisioningRequest');
 			
 			// By default - put it in reverse chronological order ...
-			$this->Order ('RequestDate', FALSE);
+			$this->Order ('RequestDateTime', FALSE);
 		}
 	}
 	

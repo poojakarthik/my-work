@@ -163,6 +163,12 @@ define("REQUEST_STATUS_WAITING"			, 300);
 define("REQUEST_STATUS_PENDING"			, 301);
 define("REQUEST_STATUS_REJECTED"		, 302);
 define("REQUEST_STATUS_COMPLETED"		, 303);
+define("REQUEST_STATUS_CANCELLED"		, 304);
+
+// Provisioning Request Status
+define("REQUEST_DIRECTION_OUTGOING"		, 0);
+define("REQUEST_DIRECTION_INCOMMING"	, 1);
+
 
 // Serivce Line Status
 define("LINE_ACTIVE"					, 400);

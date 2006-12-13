@@ -86,12 +86,12 @@
 					<td>
 						<xsl:choose>
 							<xsl:when test="./Direction = 1">
-								<img src="img/template/icon_moveup.png" title="Information was Sent to the Carrier" 
-								alt="Information was Sent to the Carrier" />
-							</xsl:when>
-							<xsl:otherwise>
 								<img src="img/template/icon_movedown.png" title="Information was Received from the Carrier" 
 								alt="Information was Received from the Carrier" />
+							</xsl:when>
+							<xsl:otherwise>
+								<img src="img/template/icon_moveup.png" title="Information was Sent to the Carrier" 
+								alt="Information was Sent to the Carrier" />
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>

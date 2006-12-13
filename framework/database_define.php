@@ -2221,6 +2221,24 @@
 		
 								
 	// Define Columns
+	$strName = "Request";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "Direction";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
+		
+								
+	// Define Columns
 	$strName = "Date";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "date";
@@ -3155,6 +3173,15 @@
 		
 								
 	// Define Columns
+	$strName = "Employee";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
 	$strName = "RequestType";
 		$arrDefine['Column'][$strName]['Type'] 			= "i";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned";
@@ -3164,12 +3191,12 @@
 		
 								
 	// Define Columns
-	$strName = "RequestDate";
+	$strName = "RequestDateTime";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "date";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime";
 		
 								
 	// Define Columns
@@ -3185,8 +3212,8 @@
 	$strName = "Sequence";
 		$arrDefine['Column'][$strName]['Type'] 			= "i";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "int(11)";
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
-		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
 								

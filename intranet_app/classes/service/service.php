@@ -106,23 +106,25 @@
 		 *
 		 * Create a new Provisioning Request to be Processed Later
 		 *
-		 * @param	Integer		$intCarrier						The Carrier Constant Value where the Request is routed to
-		 * @param	Integer		$intProvisioningRequestType		The Provisioning Request Type Constant Value which is being requested
+		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmployee		The Current Authenticated Employee
+		 * @param	Integer					$intCarrier						The Carrier Constant Value where the Request is routed to
+		 * @param	Integer					$intProvisioningRequestType		The Provisioning Request Type Constant Value which is being requested
 		 * @return	Void
 		 *
 		 * @method
 		 */
 		 
-		 public function CreateNewProvisioningRequest ($intCarrier, $intProvisioningRequestType)
+		 public function CreateNewProvisioningRequest ($aemAuthenticatedEmployee, $intCarrier, $intProvisioningRequestType)
 		 {
 		 	$insProvisioningRequest = new StatementInsert ('Request');
 		 	$insProvisioningRequest->Execute (
 		 		Array (
-			 		'Carrier'		=> $intCarrier,
-			 		'Service'		=> $this->Pull ('Id')->getValue (),
-			 		'RequestType'	=> $intProvisioningRequestType,
-			 		'RequestDate'	=> date ('Y-m-d'),
-			 		'Status'		=> REQUEST_STATUS_WAITING
+			 		'Carrier'			=> $intCarrier,
+			 		'Service'			=> $this->Pull ('Id')->getValue (),
+			 		'Employee'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+			 		'RequestType'		=> $intProvisioningRequestType,
+			 		'RequestDateTime'	=> date ('Y-m-d H:i:s'),
+			 		'Status'			=> REQUEST_STATUS_WAITING
 			 	)
 		 	);
 		 }
