@@ -198,7 +198,7 @@
 										<xsl:value-of select="/Response/Service/Id" />
 										<xsl:text>')</xsl:text>
 									</xsl:attribute>
-									<xsl:text>View Unprocessed Provisioning Requests for this Service</xsl:text>
+									<xsl:text>View Provisioning Requests on this Service</xsl:text>
 								</a><br />
 							</div>
 						</div>

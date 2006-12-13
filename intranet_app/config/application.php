@@ -107,6 +107,10 @@ require ("classes/carrier/carriers.php");
 require ("classes/service/service.php");
 require ("classes/service/services.php");
 
+//provisioning requests
+require ("classes/provisioning/provisioningrequest.php");
+require ("classes/provisioning/provisioningrequests.php");
+
 //provisioning request types
 require ("classes/provisioning/provisioningrequesttype.php");
 require ("classes/provisioning/provisioningrequesttypes.php");
