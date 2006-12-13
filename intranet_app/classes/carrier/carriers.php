@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// servicetypes.php
+	// carriers.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * servicetypes.php
+	 * carriers.php
 	 *
-	 * Contains the ServiceType object
+	 * Contains the Carriers object
 	 *
-	 * Contains the ServiceType object
+	 * Contains the Carriers object
 	 *
-	 * @file		servicetypes.php
+	 * @file		carriers.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'Bash' Isai
@@ -21,92 +21,92 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// ServiceTypes
+	// Carriers
 	//----------------------------------------------------------------------------//
 	/**
-	 * ServiceTypes
+	 * Carriers
 	 *
-	 * Textual Service Types
+	 * Textual Carriers Types
 	 *
-	 * Allows Textual (named) Representation of the Constants which form Service Types
+	 * Allows Textual (named) Representation of the Constants which form Carrier Types
 	 *
-	 * @prefix	svt
+	 * @prefix	cas
 	 *
 	 * @package	intranet_app
-	 * @class	ServiceType
+	 * @class	Carriers
 	 * @extends	dataEnumerative
 	 */
 	
-	class ServiceTypes extends dataEnumerative
+	class Carriers extends dataEnumerative
 	{
 		
 		//------------------------------------------------------------------------//
-		// _ADSL
+		// _UNITEL
 		//------------------------------------------------------------------------//
 		/**
-		 * _ADSL
+		 * _UNITEL
 		 *
-		 * Used when the ServiceType is an ADSL line
+		 * Used when the Carrier is Unitel
 		 *
-		 * Used when the ServiceType is an ADSL line
+		 * Used when the Carrier is Unitel
 		 *
-		 * @type	dataString
+		 * @type	Carrier
 		 *
 		 * @property
 		 */
 		
-		private $_ADSL;
+		private $_UNITEL;
 		
 		//------------------------------------------------------------------------//
-		// _MOBILE
+		// _OPTUS
 		//------------------------------------------------------------------------//
 		/**
-		 * _MOBILE
+		 * _OPTUS
 		 *
-		 * Used when the ServiceType is a Mobile Number
+		 * Used when the Carrier is Optus
 		 *
-		 * Used when the ServiceType is a Mobile Number
+		 * Used when the Carrier is Optus
 		 *
-		 * @type	dataString
+		 * @type	Carrier
 		 *
 		 * @property
 		 */
 		
-		private $_MOBLE;
+		private $_OPTUS;
 		
 		//------------------------------------------------------------------------//
-		// _LAND_LINE
+		// _AAPT
 		//------------------------------------------------------------------------//
 		/**
 		 * _LAND_LINE
 		 *
-		 * Used when the ServiceType is a Land Line Number
+		 * Used when the Carrier is AAPT
 		 *
-		 * Used when the ServiceType is a Land Line Number
+		 * Used when the Carrier is AAPT
 		 *
-		 * @type	dataString
+		 * @type	Carrier
 		 *
 		 * @property
 		 */
 		
-		private $_LAND_LINE;
+		private $_AAPT;
 		
 		//------------------------------------------------------------------------//
-		// _INBOUND
+		// _ISEEK
 		//------------------------------------------------------------------------//
 		/**
-		 * _INBOUND
+		 * _ISEEK
 		 *
-		 * Used when the ServiceType is an Inbound (13/1300/1800) number
+		 * Used when the Carrier is ISEEK
 		 *
-		 * Used when the ServiceType is an Inbound (13/1300/1800) number
+		 * Used when the Carrier is ISEEK
 		 *
-		 * @type	dataString
+		 * @type	Carrier
 		 *
 		 * @property
 		 */
 		
-		private $_INBOUND;
+		private $_ISEEK;
 		
 		//------------------------------------------------------------------------//
 		// __construct
@@ -114,26 +114,26 @@
 		/**
 		 * __construct()
 		 *
-		 * Controls a List of ServiceType
+		 * Controls a List of Carrier Objects
 		 *
-		 * Controls a List of ServiceType
+		 * Controls a List of Carrier Objects
 		 *
-		 * @param	Integer		$intServiceType			[Optional] An Integer representation of a Service type which matches a Constant
+		 * @param	Integer		$intCarrier			[Optional] An Integer representation of the default Carrier
 		 *
 		 * @method
 		 */
 		
-		function __construct ($intServiceType=null)
+		function __construct ($intCarrier=null)
 		{
-			parent::__construct ('ServiceTypes');
+			parent::__construct ('Carriers');
 			
 			// Instantiate the Variable Values for possible selection
-			$this->_ADSL		= $this->Push (new ServiceType (SERVICE_TYPE_ADSL));
-			$this->_MOBILE		= $this->Push (new ServiceType (SERVICE_TYPE_MOBILE));
-			$this->_LAND_LINE	= $this->Push (new ServiceType (SERVICE_TYPE_LAND_LINE));
-			$this->_INBOUND		= $this->Push (new ServiceType (SERVICE_TYPE_INBOUND));
+			$this->_UNITEL		= $this->Push (new Carrier (CARRIER_UNITEL));
+			$this->_OPTUS		= $this->Push (new Carrier (CARRIER_OPTUS));
+			$this->_AAPT		= $this->Push (new Carrier (CARRIER_AAPT));
+			$this->_ISEEK		= $this->Push (new Carrier (CARRIER_ISEEK));
 			
-			$this->setValue ($intServiceType);
+			$this->setValue ($intCarrier);
 		}
 		
 		//------------------------------------------------------------------------//
@@ -142,26 +142,26 @@
 		/**
 		 * setValue()
 		 *
-		 * Change the Selected Service Type
+		 * Change the Selected Carrier
 		 *
-		 * Change the Selected Service Type to another Service Type
+		 * Change the Selected Carrier
 		 *
-		 * @param	Integer		$intServiceType		The value of the ServiceType Constant wishing to be set
-		 * @return	Boolean							Whether or not the Select succeeded
+		 * @param	Integer		$intCarrier			The value of the new Carrier Constant
+		 * @return	Boolean
 		 *
 		 * @method
 		 */
 		
-		public function setValue ($intServiceType)
+		public function setValue ($intCarrier)
 		{
 			// Select the value
-			switch ($intServiceType)
+			switch ($intCarrier)
 			{
-				case SERVICE_TYPE_ADSL:			$this->Select ($this->_ADSL);		return true;
-				case SERVICE_TYPE_MOBILE:		$this->Select ($this->_MOBILE);		return true;
-				case SERVICE_TYPE_LAND_LINE:	$this->Select ($this->_LAND_LINE);	return true;
-				case SERVICE_TYPE_INBOUND:		$this->Select ($this->_INBOUND);	return true;
-				default:						return false;
+				case CARRIER_UNITEL:	$this->Select ($this->_UNITEL);	return true;
+				case CARRIER_OPTUS:		$this->Select ($this->_OPTUS);	return true;
+				case CARRIER_AAPT:		$this->Select ($this->_AAPT);	return true;
+				case CARRIER_ISEEK:		$this->Select ($this->_ISEEK);	return true;
+				default:												return false;
 			}
 		}
 	}

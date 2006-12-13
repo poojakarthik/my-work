@@ -71,7 +71,7 @@
 					
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
-							<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+							<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -168,6 +168,81 @@
 						</div>
 					</div>
 					<div class="Clear"></div>
+					
+					<div class="Seperator"></div>
+					
+					<h2>Provisioning Requests</h2>
+					<div class="Seperator"></div>
+					
+					<form method="POST" action="provisioning_request.php">
+						<input type="hidden" name="Service">
+							<xsl:attribute name="value">
+								<xsl:text></xsl:text>
+								<xsl:value-of select="/Response/Service/Id" />
+							</xsl:attribute>
+						</input>
+						<div class="Filter-Form">
+							<div class="Filter-Form-Content">
+								<table border="0" cellpadding="1" cellspacing="0">
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Carrier')" />
+												<xsl:with-param name="field" select="string('CarrierName')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<select name="Carrier">
+												<option value=""></option>
+												<xsl:for-each select="/Response/Carriers/Carrier">
+													<option>
+														<xsl:attribute name="value">
+															<xsl:text></xsl:text>
+															<xsl:value-of select="./Id" />
+														</xsl:attribute>
+														<xsl:value-of select="./Name" />
+													</option>
+												</xsl:for-each>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Provisioning')" />
+												<xsl:with-param name="field" select="string('ProvisioningRequestType')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<select name="RequestType">
+												<option value=""></option>
+												<xsl:for-each select="/Response/ProvisioningRequestTypes/ProvisioningRequestType">
+													<option>
+														<xsl:attribute name="value">
+															<xsl:text></xsl:text>
+															<xsl:value-of select="./Id" />
+														</xsl:attribute>
+														<xsl:value-of select="./Name" />
+													</option>
+												</xsl:for-each>
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td colspan="2">
+											<div class="Seperator"></div>
+										</td>
+									</tr>
+									<tr>
+										<th></th>
+										<td>
+											<input type="submit" value="Perform Request &#0187;" class="input-submit" />
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</form>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">

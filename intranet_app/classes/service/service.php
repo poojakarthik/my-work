@@ -89,6 +89,37 @@
 		 {
 		 	return new Account ($this->Pull ('Account')->getValue ());
 		 }
+		 
+		//------------------------------------------------------------------------//
+		// CreateNewProvisioningRequest
+		//------------------------------------------------------------------------//
+		/**
+		 * CreateNewProvisioningRequest()
+		 *
+		 * Create a new Provisioning Request
+		 *
+		 * Create a new Provisioning Request to be Processed Later
+		 *
+		 * @param	Integer		$intCarrier						The Carrier Constant Value where the Request is routed to
+		 * @param	Integer		$intProvisioningRequestType		The Provisioning Request Type Constant Value which is being requested
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		 
+		 public function CreateNewProvisioningRequest ($intCarrier, $intProvisioningRequestType)
+		 {
+		 	$insProvisioningRequest = new StatementInsert ('Request');
+		 	$insProvisioningRequest->Execute (
+		 		Array (
+			 		'Carrier'		=> $intCarrier,
+			 		'Service'		=> $this->Pull ('Id')->getValue (),
+			 		'RequestType'	=> $intProvisioningRequestType,
+			 		'RequestDate'	=> date ('Y-m-d'),
+			 		'Status'		=> REQUEST_STATUS_WAITING
+			 	)
+		 	);
+		 }
 	}
 	
 ?>

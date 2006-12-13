@@ -90,6 +90,12 @@ require ("classes/rates/rates.php");
 //service types
 require ("classes/service/servicetype.php");
 require ("classes/service/servicetypes.php");
+//carriers
+require ("classes/carrier/carrier.php");
+require ("classes/carrier/carriers.php");
+//provisioning request types
+require ("classes/provisioning/provisioningrequesttype.php");
+require ("classes/provisioning/provisioningrequesttypes.php");
 //service
 require ("classes/service/service.php");
 require ("classes/service/services.php");

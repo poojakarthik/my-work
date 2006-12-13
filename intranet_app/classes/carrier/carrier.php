@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// servicetype.php
+	// carrier.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * servicetype.php
+	 * carrier.php
 	 *
-	 * Contains the ServiceType object
+	 * Contains the Carrier object
 	 *
-	 * Contains the ServiceType object
+	 * Contains the Carrier object
 	 *
-	 * @file		servicetype.php
+	 * @file		carrier.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'Bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// ServiceType
+	// Carrier
 	//----------------------------------------------------------------------------//
 	/**
-	 * ServiceType
+	 * Carrier
 	 *
-	 * Allows Textual (named) Representation of the Constants which form Service Types
+	 * Allows Textual (named) Representation of the Constants which form a Carrier
 	 *
-	 * Allows Textual (named) Representation of the Constants which form Service Types
+	 * Allows Textual (named) Representation of the Constants which form a Carrier
 	 *
 	 *
-	 * @prefix	srt
+	 * @prefix	car
 	 *
 	 * @package	intranet_app
-	 * @class	ServiceType
+	 * @class	Carrier
 	 * @extends	dataEnumerative
 	 */
 	
-	class ServiceType extends dataObject
+	class Carrier extends dataObject
 	{
 		
 		//------------------------------------------------------------------------//
@@ -47,9 +47,9 @@
 		/**
 		 * _oblintType
 		 *
-		 * The Id of the Service Type
+		 * The Id of the Carrier
 		 *
-		 * The Id of the Service Type
+		 * The Id of the Carrier
 		 *
 		 * @type	dataInteger
 		 *
@@ -64,9 +64,9 @@
 		/**
 		 * _oblstrName
 		 *
-		 * The name of the Service Type
+		 * The name of the Carrier
 		 *
-		 * The name of the Service Type
+		 * The name of the Carrier
 		 *
 		 * @type	dataString
 		 *
@@ -76,42 +76,42 @@
 		private $_oblstrName;
 		
 		//------------------------------------------------------------------------//
-		// ServiceType
+		// __construct
 		//------------------------------------------------------------------------//
 		/**
-		 * ServiceType()
+		 * __construct()
 		 *
-		 * Holds Service Type Constant Information
+		 * Holds Carrier Constant Information
 		 *
-		 * Holds Service Type Constant Information
+		 * Holds Carrier Constant Information
 		 *
-		 * @param	Integer		$intType			The Id of the Service Type (Constant Value)
+		 * @param	Integer		$intType			The Id of the Carrier (Constant Value)
 		 *
 		 * @method
 		 */
 		
 		function __construct ($intType)
 		{
-			parent::__construct ('ServiceType');
+			parent::__construct ('Carrier');
 			
 			$strName = 'Unknown';
 			
 			switch ($intType)
 			{
-				case SERVICE_TYPE_ADSL:
-					$strName = 'ADSL Connection';
+				case CARRIER_UNITEL:
+					$strName = 'Unitel';
 					break;
 					
-				case SERVICE_TYPE_MOBILE:
-					$strName = 'Mobile Telephone';
+				case CARRIER_OPTUS:
+					$strName = 'Optus';
 					break;
 					
-				case SERVICE_TYPE_LAND_LINE:
-					$strName = 'Land Line Telephone';
+				case CARRIER_AAPT:
+					$strName = 'AAPT';
 					break;
 					
-				case SERVICE_TYPE_INBOUND:
-					$strName = 'Inbound Call Number';
+				case CARRIER_ISEEK:
+					$strName = 'iSeek';
 					break;
 			}
 			
