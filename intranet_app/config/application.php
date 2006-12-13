@@ -53,59 +53,80 @@ require_once($strObLibDir."style.php");
 
 //authentication
 require ("classes/authentication/authentication.php");
+
 //employee
 require ("classes/employee/authenticatedemployee.php");
 require ("classes/employee/authenticatedemployeeaudit.php");
+
 //audit
 require ("classes/audit/accountcontactaudit.php");
+
 //searching
 require ("classes/search/search.php");
 require ("classes/search/searchconstraint.php");
 require ("classes/search/searchorder.php");
 require ("classes/search/searchresults.php");
+
 //accounts
 require ("classes/accounts/ABN.php");
 require ("classes/accounts/ACN.php");
 require ("classes/accounts/account.php");
 require ("classes/accounts/accounts.php");
+
 //account groups
 require ("classes/accountgroups/accountgroup.php");
 require ("classes/accountgroups/accountgroups.php");
+
 //accounts
 require ("classes/notes/note.php");
 require ("classes/notes/notes.php");
 require ("classes/notes/notetype.php");
 require ("classes/notes/notetypes.php");
+
 //contacts
 require ("classes/contacts/contact.php");
 require ("classes/contacts/contacts.php");
+
 //rates, rate groups and rate plans
 require ("classes/rates/rate.php");
 require ("classes/rates/rategroup.php");
 require ("classes/rates/rateplan.php");
-
 require ("classes/rates/rateplans.php");
 require ("classes/rates/rategroups.php");
 require ("classes/rates/rates.php");
+
 //service types
 require ("classes/service/servicetype.php");
 require ("classes/service/servicetypes.php");
+
 //carriers
 require ("classes/carrier/carrier.php");
 require ("classes/carrier/carriers.php");
-//provisioning request types
-require ("classes/provisioning/provisioningrequesttype.php");
-require ("classes/provisioning/provisioningrequesttypes.php");
+
 //service
 require ("classes/service/service.php");
 require ("classes/service/services.php");
+
+//provisioning request types
+require ("classes/provisioning/provisioningrequesttype.php");
+require ("classes/provisioning/provisioningrequesttypes.php");
+
+//provisioning response types
+require ("classes/provisioning/provisioningresponsetype.php");
+
+//service provisioning log
+require ("classes/provisioning/provisioninglog.php");
+require ("classes/provisioning/provisioningrecord.php");
+
 //record type information
 require ("classes/recordtype/recordtype.php");
 require ("classes/recordtype/recordtypes.php");
+
 //documentation
 require ("classes/documentation/documentation.php");
 require ("classes/documentation/documentationentity.php");
 require ("classes/documentation/documentationfield.php");
+
 //style (intranet-specific)
 require ("classes/style/intranetstyle.php");
 

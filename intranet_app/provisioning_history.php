@@ -24,27 +24,22 @@
 	
 	
 	// Get the Service
-	$srvService		= $Style->attachObject (new Service ($_GET ['Id']));
+	$srvService		= $Style->attachObject (new Service ($_GET ['Service']));
 	
 	// Get the Account
-	$actAccount		= $Style->attachObject (new Account ($srvService->Pull ('Account')->getValue ()));
+	$actAccount		= $Style->attachObject ($srvService->getAccount ());
 	
-	// Get information about Note Types
-	$ntsNoteTypes	= $Style->attachObject (new NoteTypes ());
-	
-	// Get Associated Notes
-	$nosNotes		= $Style->attachObject (new Notes ());
-	$nosNotes->Constrain ('Service', '=', $_GET ['Id']);
-	$nosNotes->Order ('Datetime', FALSE);
-	$nosNotes->Sample ();
+	// Get Associated Provisioning Requests
+	$pllProvision	= $Style->attachObject (new ProvisioningLog ($srvService));
+	$pllProvision->Sample ();
 	
 	// Load the List of Carrier Objects
 	$calCarriers	= $Style->attachObject (new Carriers ());
 	
 	// Load the List of Provisioning Request Type Objects
-	$calCarriers	= $Style->attachObject (new ProvisioningRequestTypes ());
+	$prtProvisioningRequestType	= $Style->attachObject (new ProvisioningRequestTypes ());
 	
 	// Output the Account View
-	$Style->Output ('xsl/content/service/view.xsl');
+	$Style->Output ('xsl/content/service/provisioning_history.xsl');
 	
 ?>

@@ -59,9 +59,15 @@
 		function __construct ($intId)
 		{
 			// Pull all the Service information and Store it ...
-			$selService = new StatementSelect ('Service', '*', 'Id = <Id>');
+			$selService = new StatementSelect ('Service', '*', 'Id = <Id>', null, '1');
 			$selService->useObLib (TRUE);
 			$selService->Execute (Array ('Id' => $intId));
+			
+			if ($selService->Count () <> 1)
+			{
+				throw new Exception ('Service Not Found');
+			}
+			
 			$selService->Fetch ($this);
 			
 			// Construct the object

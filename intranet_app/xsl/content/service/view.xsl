@@ -11,6 +11,7 @@
 		<h1>View Service Details</h1>
 		
 		<script language="javascript" src="js/notes_popup.js"></script>
+		<script language="javascript" src="js/provisioning_popup.js"></script>
 		
 		<div class="MsgNotice">
 			<h2>Account Information</h2>
@@ -171,7 +172,7 @@
 					
 					<div class="Seperator"></div>
 					
-					<h2>Provisioning Requests</h2>
+					<h2>Provisioning</h2>
 					<div class="Seperator"></div>
 					
 					<form method="POST" action="provisioning_request.php">
@@ -181,6 +182,29 @@
 								<xsl:value-of select="/Response/Service/Id" />
 							</xsl:attribute>
 						</input>
+						<div class="Filter-Form">
+							<div class="Filter-Form-Content">
+								... <a>
+									<xsl:attribute name="href">
+										<xsl:text>javascript:provisioning_popup_history ('</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" />
+										<xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:text>View Provisioning Requests and Responses for this Service</xsl:text>
+								</a><br />
+								... <a>
+									<xsl:attribute name="href">
+										<xsl:text>javascript:provisioning_popup_unprocessed ('</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" />
+										<xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:text>View Unprocessed Provisioning Requests for this Service</xsl:text>
+								</a><br />
+							</div>
+						</div>
+						
+						<div class="Seperator"></div>
+						
 						<div class="Filter-Form">
 							<div class="Filter-Form-Content">
 								<table border="0" cellpadding="1" cellspacing="0">
