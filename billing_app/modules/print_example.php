@@ -480,7 +480,7 @@ $arrDefine['InvoiceFooter']		['RecordType']		['Length']	= 2;
 $arrDefine['InvoiceFooter']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
 $arrDefine['InvoiceFooter']		['RecordType']		['Value']	= "19";
 
-$arrDefine['InvoiceFooter']		['Delivery']		['Start']	= 0;
+$arrDefine['InvoiceFooter']		['Delivery']		['Start']	= 2;
 $arrDefine['InvoiceFooter']		['Delivery']		['Length']	= 1;
 $arrDefine['InvoiceFooter']		['Delivery']		['Type']	= BILL_TYPE_INTEGER;
 

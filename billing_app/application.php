@@ -162,8 +162,11 @@ die();
 		// generate an InvoiceRun Id
 		$strInvoiceRun = uniqid();
 		
-		// open & prepare (header) billing file
-		//TODO!!!
+		// prepare (clean) billing files
+		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
+		{
+			$this->_arrBillOutput[$strKey]->clean();
+		}
 		
 		foreach ($arrAccounts as $arrAccount)
 		{
@@ -220,7 +223,7 @@ die();
 				$fltServiceDebits	= $fltTotalCharge;
 				$fltServiceTotal	= $fltTotalCharge - $fltServiceCredits;
 				
-				// TODO!!!! - insert into servicetotal & service type total
+				// insert into ServiceTotal
 				$arrServiceTotal = Array();
 				$arrServiceTotal['InvoiceRun']		= $strInvoiceRun;
 				$arrServiceTotal['FNN']				= $arrService['FNN'];
@@ -231,8 +234,18 @@ die();
 				$arrServiceTotal['CappedCharge']	= $arrService['CappedCharge'];
 				$arrServiceTotal['UncappedCharge']	= $arrService['UncappedCharge'];
 				$arrServiceTotal['TotalCharge']		= $fltServiceTotal;
-				// save this
 				$insServiceTotal->Execute($arrServiceTotal);
+				
+				// insert into ServiceTypeTotal
+				//TODO!!!!
+				// select with GROUP BY from CDR table
+				// SELECT FNN, AccountGroup, Account, Service, "$strInvoiceRun", RecordType, SUM(Charge), COUNT(Charge)
+				// FROM CDR
+				// WHERE FNN IS NOT NULL
+				// GROUP BY FNN, RecordType
+				
+				// $strQuery = "INSERT INTO $strTableDestination ($strColumns) SELECT $strColumns FROM $strTableSource ";
+				// save each record into the table
 				
 				// add to invoice totals
 				$fltTotalDebits		+= $fltServiceDebits;
@@ -268,12 +281,12 @@ die();
 				continue;
 			}
 			
-			// build output
-			$this->_bilBilling->AddInvoice();
+			// work out the bill printing target
+			// TODO - LATER : fake it for now
+			$intPrintTarget = BILL_PRINT;
 			
-			
-			// write to billing file
-			//TODO!!! - LATER
+			// build billing output for this invoice
+			$this->_arrBillOutput[$intPrintTarget]->AddInvoice($arrInvoiceData);
 			
 			$intPassed++;
 			
@@ -281,8 +294,17 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		// finalise (footer) & close billing file
-		//TODO!!!
+		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
+		{
+			// build billing output sample
+			$this->_arrBillOutput[$strKey]->BuildSample();
+			
+			// send billig output sample
+			$this->_arrBillOutput[$strKey]->SendSample();
+			
+			// REPORTING
+			//TODO!!!!
+		}
 		
 		$arrReportLines['<Total>']	= $intPassed + $intFailed;
 		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
@@ -393,6 +415,18 @@ die();
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
+		{
+			// build billing output
+			$this->_arrBillOutput[$strKey]->BuildOutput();
+			
+			// send billig output
+			$this->_arrBillOutput[$strKey]->SendOutput();
+			
+			// REPORTING
+			//TODO!!!!
 		}
 		
 		
