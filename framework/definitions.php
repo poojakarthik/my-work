@@ -147,6 +147,7 @@ define("SERVICE_TYPE_ADSL"			, 100);
 define("SERVICE_TYPE_MOBILE"		, 101);
 define("SERVICE_TYPE_LAND_LINE"		, 102);
 define("SERVICE_TYPE_INBOUND"		, 103);
+define("SERVICE_TYPE_DIALUP"		, 104);
 
 // TAX RATES
 define("TAX_RATE_GST"				, 10);

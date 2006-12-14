@@ -45,6 +45,7 @@
  {
 	protected $_arrData;
 	protected $_arrDefineInput;
+	protected $_arrLog;
 	
 	//------------------------------------------------------------------------//
 	// __construct()
@@ -140,9 +141,22 @@
 	 */
 	 function AddToLog()
 	 {
-		// TODO
+		// If there is an FNN and no Service specified, then attempt to match
+		if (isset($this->_arrLog['FNN']) && !isset($this->_arrLog['Service']))
+		{
+			$this->_selMatchService->Execute(Array('FNN' => $this->_arrLog['FNN']));
+			if (!$this->_arrLog['Service'] = $this->_selMatchService->Fetch())
+			{
+				// This request doesn't belong to us
+				return FALSE;
+			}
+		}
 		
-		return true;
+		// Write to the Provisioning Log
+		$this->_arrLog['Carrier']	= $this->_strModuleName;
+		$this->_arrLog['Direction']	= REQUEST_DIRECTION_OUTGOING;
+		$this->_arrLog['Date']		= date("Y-m-d");
+		return $this->_insAddToLog->Execute($this->_arrLog);
 	 }
 
 	//------------------------------------------------------------------------//

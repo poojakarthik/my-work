@@ -1684,7 +1684,6 @@ class MySQLFunction
 	 * @return		void
 	 *
 	 * @method
-	 * @see			<MethodName()||typePropertyName>
 	 */ 
 	 function __construct($strTable, $arrColumns = NULL)
 	 {

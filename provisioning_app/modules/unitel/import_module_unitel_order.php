@@ -135,6 +135,9 @@
 			return PRV_HEADER_EXPECTED;
 		}
 		
+		// Set the Log date
+		$this->_arrLog['Date']	= date("Y-m-d");
+		
 		// Grab the data we need from the line
 		$arrData['Sequence']	= (int)$this->_arrDefineInput['Sequence'];
 		$arrData['Location']	= UNITEL_DAILY_ORDER_DIR.$this->_strReferencedFile;
@@ -142,6 +145,12 @@
 		
 		if ($arrResult = $this->_selGetRequest->Fetch())
 		{
+			// Set the request for this entry in the Log array
+			$this->_arrLog['Request']		= $arrResult['Id'];
+			$this->_arrLog['Description']	= $this->_arrDefineInput['Description'];
+			$this->_arrLog['Type']			= $arrResult['Type'];
+			$this->_arrLog['Service']		= $arrResult['Service'];
+			
 			$arrResult['Reason']		= $this->_arrDefineInput['Description'];
 			
 			// Update to say if the file has been accepted/rejected

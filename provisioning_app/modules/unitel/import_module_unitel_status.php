@@ -154,7 +154,7 @@
 		
 		// ServiceId
 		$arrRequestData	['ServiceId']	= RemoveAusCode($arrLineData['ServiceNo']);
-		$arrLogData		['ServiceId']	= $arrRequestData['ServiceId'];
+		$arrLogData		['FNN']			= $arrRequestData['ServiceId'];
 		
 		// Date
 		$arrRequestData	['Date']		= $this->_ConvertDate($arrLineData['EffectiveDate']);
@@ -191,6 +191,7 @@
 				$arrRequestData	['RequestType']	= REQUEST_FULL_SERVICE;
 				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
 				$arrLogData		['Type']		= LINE_ACTION_GAIN;
+				$arrLogData		['Description']	= "Service Gained";
 				
 				// Attempt to match request
 				break;
@@ -210,18 +211,22 @@
 			case "M":	// Change - address
 			case "B":	// Change - number & address
 				$arrLogData		['Type']		= LINE_ACTION_OTHER;
+				$arrLogData		['Description']	= "Address Changed";
 				break;
 			case "P":	// Order pending with Telstra
 			case "W":	// Order waiting to be processed
 			case "A":	// Order actioned by WeBill
 				$arrRequestData	['Status']		= REQUEST_STATUS_PENDING;
+				$arrLogData		['Description']	= "Order accepted by Unitel";
 				break;
 			case "D":	// Order disqualified by WeBill
 			case "R":	// Order rejected by Telstra
 				$arrRequestData	['Status']		= REQUEST_STATUS_REJECTED;
+				$arrLogData		['Description']	= "Order Rejected by Telstra";
 				break;
 			case "C":	// Order completed by Telstra
 				$arrRequestData	['Status']		= REQUEST_STATUS_COMPLETED;
+				$arrLogData		['Description']	= "Order completed by Telstra";
 				break;
 			default:	// Unknown Record Type
 				return PRV_BAD_RECORD_TYPE;
@@ -229,7 +234,7 @@
 		
 		// Basket
 		$arrServiceData['Basket']	= (int)$arrLineData['Basket'];
-				
+		
 		// Add split line to File data array
 		$this->_arrRequest	= $arrRequestData;
 		$this->_arrService	= $arrServiceData;
@@ -264,6 +269,7 @@
 		if ($arrResult = $this->_selMatchRequest->Fetch())
 		{
 			// Found a match, so update
+			$this->_arrLog['Request']	= $arrResult['Id'];
 			$arrResult['LineStatus']	= $this->_arrRequest['LineStatus'];
 			
 			// If we've gained/lost then update the appropriate field

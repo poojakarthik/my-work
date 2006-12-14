@@ -153,6 +153,11 @@
 		
 		// Update the database
 		$this->_updFullServiceRecordSequence->Execute(Array('Value' => "$intFullServiceRecordSequence"));
+		
+		// Add additional logging data
+		$this->_arrLog['Request']	= $arrRequest['Id'];
+		$this->_arrLog['Service']	= $arrRequest['Service'];
+		$this->_arrLog['Type']		= $arrRequest['Type'];
 	} 	
  	
   	//------------------------------------------------------------------------//

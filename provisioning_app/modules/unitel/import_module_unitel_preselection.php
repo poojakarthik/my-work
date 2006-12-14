@@ -122,24 +122,35 @@
 			return PRV_TRAILER_RECORD;
 		}
 		
-		$this->_arrRequest['FNN']		= $arrLineData['FNN'];
-		$this->_arrRequest['Status']	= ((int)$arrLineData['Failed'] == 0) ? REQUEST_STATUS_REJECTED : REQUEST_STATUS_COMPLETED;
+		// Grab data for request, service and log updates
+		$this->_arrLog['Description']		= $arrLineData['Description'];
+		$this->_arrRequest['FNN']			= $arrLineData['FNN'];
+		$this->_arrRequest['Status']		= ((int)$arrLineData['Failed'] == 0) ? REQUEST_STATUS_REJECTED : REQUEST_STATUS_COMPLETED;
+		$this->_selMatchService->Execute(Array('FNN' => $arrLineData['FNN']));
+		if (!$this->_arrRequest['Service']	= $this->_selMatchService->Fetch())
+		{
+			// This FNN doesn't belong to us
+			return PRV_NO_SERVICE;
+		}
 		
 		switch ($arrLineData['Action'])
 		{
 			case "Bar":
 				$this->_arrService['LineStatus']			= LINE_SOFT_BARRED;
-				$this->_arrRequest['RequestType']			= REQUEST_BAR;
+				$this->_arrRequest['RequestType']			= REQUEST_BAR_SOFT;
+				$this->_arrLog['Type']						= REQUEST_BAR_SOFT;
 				break;
 				
 			case "UnBar":
 				$this->_arrService['LineStatus']			= LINE_ACTIVE;
-				$this->_arrRequest['RequestType']			= REQUEST_UNBAR;
+				$this->_arrRequest['RequestType']			= REQUEST_UNBAR_SOFT;
+				$this->_arrLog['Type']						= REQUEST_UNBAR_SOFT;
 				break;
 				
 			case "Preselect":
 				$this->_arrService['CarrierPreselect']		= CARRIER_UNITEL;
 				$this->_arrRequest['RequestType']			= REQUEST_PRESELECTION;
+				$this->_arrLog['Type']						= REQUEST_PRESELECTION;
 				break;
 				
 			case "PSReversal":
@@ -149,16 +160,19 @@
 					$this->_arrService['CarrierPreselect']	= NULL;
 				}
 				$this->_arrRequest['RequestType']			= REQUEST_PRESELECTION_REVERSE;
+				$this->_arrLog['Type']						= REQUEST_PRESELECTION_REVERSE;
 				break;
 				
 			case "Activate":
 				// TODO: Possibly at a later date
 				$this->_arrRequest['RequestType']			= REQUEST_ACTIVATION;
+				$this->_arrLog['Type']						= REQUEST_ACTIVATION;
 				break;
 				
 			case "Deactivate":
 				// TODO: Possibly at a later date
 				$this->_arrRequest['RequestType']			= REQUEST_DEACTIVATION;
+				$this->_arrLog['Type']						= REQUEST_DEACTIVATION;
 				break;
 				
 			default:
@@ -191,12 +205,20 @@
 		$arrData['Carrier']		= CARRIER_UNITEL;
 		$this->_selMatchRequest->Execute();
 		
+		$this->_arrLog['Service']	= $this->_arrRequest['Service'];
+		$this->_arrLog['Date']		= date("Y-m-d");
+		
 		// Is there a request match?
 		if ($arrResult = $this->_selMatchRequest->Fetch())
 		{
 			// Found a match, so update
+			$this->_arrLog['Request']	= $arrResult['Id'];
 			$arrResult = array_merge($arrResult, $this->_arrRequest);
 			return $this->_ubiRequest->Execute($arrResult);
+		}
+		else
+		{
+			// There is no request, but there is a service match
 		}
 		
 		// There is no match, so return TRUE
@@ -219,9 +241,6 @@
 	 */
  	function UpdateService()
 	{
-		$arrData['FNN']	= $this->_arrRequest['FNN'];
-		$this->_selMatchService->Execute($arrData);
-		
 		// Match to an entry in the Service table
 		if($arrResult = $this->_selMatchService->Fetch())
 		{
