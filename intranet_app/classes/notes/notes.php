@@ -56,6 +56,9 @@
 		function __construct ()
 		{
 			parent::__construct ('Notes', 'Note', 'Note');
+			
+			// By default - Order notes by Datetime Descending
+			$this->Order ('Datetime', FALSE);
 		}
 		
 		//------------------------------------------------------------------------//

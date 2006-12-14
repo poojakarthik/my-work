@@ -196,17 +196,19 @@ class Report
 		// set sender address
 		$strMailHeaders = "From: {$this->_strEmailFrom}";
 		
+		$intSent = 0;
+		
 		foreach($this->_arrEmailAddressee as $strEmailAddressee)
 		{
 			// Send the email
-			$bolSent += mail($strEmailAddressee, $this->_strTitle . "(Automated Report)", $strEmailMessage, $strMailHeaders);
+			$intSent += mail($strEmailAddressee, $this->_strTitle . "(Automated Report)", $strEmailMessage, $strMailHeaders);
 		}
 
 		// debug report
 		//Debug($strEmailMessage);
 		
 		// return
-		return (int)$bolSent;
+		return (int)$intSent;
 	}
 
 	//------------------------------------------------------------------------//

@@ -67,6 +67,42 @@
 			// Construct the object
 			parent::__construct ('Contact', $this->Pull ('Id')->getValue ());
 		}
+		
+		//------------------------------------------------------------------------//
+		// getAccounts
+		//------------------------------------------------------------------------//
+		/**
+		 * getAccounts()
+		 *
+		 * Accessible Accounts
+		 *
+		 * Gets a list of Accounts that the Contact has access to
+		 *
+		 * @return	Accounts	Account listing of Accessible Accounts
+		 *
+		 * @method
+		 */
+		
+		function getAccounts ()
+		{
+			// Start an Account Search
+			$acsAccounts = new Accounts ();
+			
+			// If the Contact is a Customer Contact, get all the Accounts that
+			// are in their Account Group. Otherwise get only the single Account
+			// they have access to
+			
+			if ($this->Pull ('CustomerContact')->getValue () == 1)
+			{
+				$acsAccounts->Constrain ('AccountGroup', 'EQUALS', $this->Pull ('AccountGroup')->getValue ());
+			}
+			else
+			{
+				$acsAccounts->Constrain ('Account', 'EQUALS', $this->Pull ('Account')->getValue ());
+			}
+			
+			return $acsAccounts;
+		}
 	}
 	
 ?>

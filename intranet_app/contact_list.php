@@ -179,7 +179,7 @@
 						$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordContact ($cntContact);
 						
 						// Redirect to the Contact's Page
-						header ("Location: /contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());
+						header ("Location: contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());
 						exit;
 					}
 				}

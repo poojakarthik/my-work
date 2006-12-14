@@ -224,7 +224,7 @@
 	function __construct()
 	{
 		// connect to database if not already connected
-		if (!$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
+		if (!isset ($GLOBALS['dbaDatabase']) || !$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
 		{
 			$GLOBALS['dbaDatabase'] = new DataAccess();
 		}
@@ -1446,6 +1446,8 @@ class MySQLFunction
 	 */ 
 	 function Execute($arrWhere = Array())
 	 {
+	 	$strType = "";
+	 	
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	if (isset($this->_arrWhereAliases))
 	 	{
@@ -1745,6 +1747,8 @@ class MySQLFunction
 	 */ 
 	 function Execute($arrData)
 	 {
+	 	$strType = "";
+	 	
 	 	// Bind the VALUES data to our mysqli_stmt
 	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 	 	{

@@ -2309,6 +2309,15 @@
 		
 								
 	// Define Columns
+	$strName = "PassThrough";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
+		
+								
+	// Define Columns
 	$strName = "StdUnits";
 		$arrDefine['Column'][$strName]['Type'] 			= "i";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
@@ -3250,10 +3259,10 @@
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
-	// Table: Scrapes
+	// Table: ScrapeAccount
 	//----------------------------------------------------------------------------//
 	
-	$arrDefine['Name']		= "Scrapes";
+	$arrDefine['Name']		= "ScrapeAccount";
 	$arrDefine['Type']		= "InnoDB";
 	$arrDefine['Id']		= "Id";
 	$arrDefine['Index'][] 		= "";
@@ -3270,7 +3279,7 @@
 		
 								
 	// Define Columns
-	$strName = "ScrapeResponse";
+	$strName = "DataOriginal";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
@@ -3279,7 +3288,93 @@
 		
 								
 	// Define Columns
-	$strName = "ParseResponse";
+	$strName = "DataSerialized";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: ScrapeNoteSys
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ScrapeNoteSys";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "CustomerId";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "DataOriginal";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "DataSerialized";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: ScrapeNoteUser
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ScrapeNoteUser";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "CustomerId";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "DataOriginal";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "DataSerialized";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
@@ -4030,12 +4125,12 @@
 		
 								
 	// Define Columns
-	$strName = "Invoice";
-		$arrDefine['Column'][$strName]['Type'] 			= "i";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+	$strName = "InvoiceRun";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(13)";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
 								
 	// Define Columns

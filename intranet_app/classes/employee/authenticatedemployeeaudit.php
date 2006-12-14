@@ -167,6 +167,27 @@
 			$insAudit = new StatementInsert ("EmployeeAccountAudit");
 			$insAudit->Execute ($arrAudit);
 		}
+		
+		//------------------------------------------------------------------------//
+		// RetrieveContact
+		//------------------------------------------------------------------------//
+		/**
+		 * RetrieveContact()
+		 *
+		 * Retrieve a Contact
+		 *
+		 * Retrieves a Contact that we have been Authenticated to View
+		 *
+		 * @param	Integer			$intId		The Id of the Contact wishing to be Retrieved
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function RetrieveContact ($intId)
+		{
+			return new Contact ($intId);
+		}
 	}
 	
 ?>

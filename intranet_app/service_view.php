@@ -35,7 +35,6 @@
 	// Get Associated Notes
 	$nosNotes		= $Style->attachObject (new Notes ());
 	$nosNotes->Constrain ('Service', '=', $_GET ['Id']);
-	$nosNotes->Order ('Datetime', FALSE);
 	$nosNotes->Sample ();
 	
 	// Load the List of Carrier Objects

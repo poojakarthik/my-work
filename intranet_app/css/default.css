@@ -454,3 +454,44 @@
 		font-weight:         bold;
 	}
 	
+	
+	h2.Accounts,
+	h2.Account,
+	h2.Contacts,
+	h2.Contact,
+	h2.Invoice
+	{
+		background-repeat:             no-repeat;
+		background-position:           top left;
+		
+		padding-top:                   10px;
+		padding-left:                  70px;
+		
+		height:                        50px;
+	}
+	
+	h2.Contacts
+	{
+		background-image:              url('../img/template/contacts.png');
+	}
+	
+	h2.Contact
+	{
+		background-image:              url('../img/template/contact.png');
+	}
+	
+	h2.Accounts
+	{
+		background-image:              url('../img/template/accounts.png');
+	}
+	
+	h2.Account
+	{
+		background-image:              url('../img/template/account.png');
+	}
+	
+	h2.Invoice
+	{
+		background-image:              url('../img/template/invoice.png');
+	}
+	

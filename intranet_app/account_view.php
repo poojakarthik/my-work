@@ -36,7 +36,6 @@
 	// Get Associated Notes
 	$nosNotes		= $Style->attachObject (new Notes ());
 	$nosNotes->Constrain ('Account', '=', $_GET ['Id']);
-	$nosNotes->Order ('Datetime', FALSE);
 	$nosNotes->Sample ();
 	
 	// Record a request to view an Account in the Audit
