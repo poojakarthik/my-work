@@ -1467,12 +1467,13 @@ class MySQLFunction
 		 		$arrParams[] = $strParam;
 	 			$i++;
 		 	}
+		 	
+			if (is_array($arrParams))
+			{
+		 		array_unshift($arrParams, $strType);
+				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
+			}
 	 	}
-		if (is_array($arrParams))
-		{
-	 		array_unshift($arrParams, $strType);
-			call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
-		}
 		
 	 	// Free any previous results
 	 	$this->_stmtSqlStatment->free_result();

@@ -56,8 +56,7 @@
 		// Insert the Information into the Database
 		$arrScrape = Array (
 			'CustomerId'		=> $intCustomerId,
-			'DataOriginal'		=> $strResponse,
-			'DataSerialized'	=> ''
+			'DataOriginal'		=> $strResponse
 		);
 		
 		$insScrape->Execute ($arrScrape);

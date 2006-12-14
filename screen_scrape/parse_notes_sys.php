@@ -8,7 +8,7 @@
 	
 	// Create a new Report Object
 	$rptReport = new Report (
-		"+	ETECH CUSTOMER USER NOTE CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
+		"+	ETECH CUSTOMER SYSTEM NOTE CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
 		"bash@voiptelsystems.com.au"
 	);
 	
@@ -21,18 +21,6 @@
 	
 	
 	
-	// Load all the Note Types
-	$selNoteTypes = new StatementSelect ('NoteType', '*');
-	$selNoteTypes->Execute (Array ());
-	
-	$arrNoteTypes = Array ();
-	foreach ($selNoteTypes->FetchAll () as $arrNoteType)
-	{
-		$arrNoteTypes [$arrNoteType ['TypeLabel']] = $arrNoteType ['Id'];
-	}
-	
-	// Also - set up the statement incase we have to add a new note type
-	$insNoteType = new StatementInsert ('NoteType');
 	
 	
 	
@@ -67,7 +55,7 @@
 	$intCurrentRow = 0;
 	
 	// Setup the MySQLi Insert Query
-	$selScrape = new StatementSelect ('ScrapeNoteUser', 'DataOriginal', 'CustomerId = <CustomerId>', null, '1');
+	$selScrape = new StatementSelect ('ScrapeNoteSys', 'DataOriginal', 'CustomerId = <CustomerId>', null, '1');
 	
 	// Also - set up the statement incase we have to add a new note type
 	$insNote = new StatementInsert ('Note');
@@ -95,20 +83,9 @@
 		
 		//-----------------------------------------------
 		//	Ok - Freeze Frame.
-		//	We want to do the following
-		//	
-		//	1.	Get the second table in the page (because that's where the data resides)
-		//	2.	Get the Third Row in the table and make sure it doesn't state that the
-		//		table is empty
-		//	3.	If the Third Row does not State that there are no rows
-		//		1.	Get Each Row After the Third Row EXCEPT the last row
 		//-----------------------------------------------
 		
-		// 1.	Get the second table in the page
-		//	2.	Get the Third Row in the table and make sure it doesn't state that the
-		//		table is empty
-		
-		$dncNotes = $dxpPath->Query ("//table[2]/tr[position() >= 3 and position() mod 2 = 1]");
+		$dncNotes = $dxpPath->Query ("//table[1]/tr[position() >= 4 and position() mod 2 = 0]");
 		
 		// Check if we are told there are "No Results"
 		if ($dncNotes->length == 1)
@@ -149,66 +126,12 @@
 			
 			$xpaRow = new DOMXPath ($domRow);
 			
-			// Date/time
-			$strDatetime = $xpaRow->Query ("/tr/td[1]")->item (0)->nodeValue;
-			$arrDatetime = preg_split ("/\s+/", $strDatetime);
-			
-			$arrMonths = Array (
-				"January"		=> 1,
-				"February"		=> 2,
-				"March"			=> 3,
-				"April"			=> 4,
-				"May"			=> 5,
-				"June"			=> 6,
-				"July"			=> 7,
-				"August"		=> 8,
-				"September"	=> 9,
-				"October"		=> 10,
-				"November"		=> 11,
-				"December"		=> 12
-			);
-			
-			$arrTime = preg_split ("/\:/", $arrDatetime [4]);
-			
-			$intDatetime = mktime (
-				$arrTime [0],
-				$arrTime [1],
-				0,
-				$arrMonths [$arrDatetime [0]],
-				substr ($arrDatetime [1], 0, -1),
-				$arrDatetime [2]
-			);
-			
-			
-			// Note Type
-			$strNoteType = preg_replace ("/\W/", "", $xpaRow->Query ("/tr/td[3]")->item (0)->nodeValue);
-			
-			$intNoteType = 0;
-			
-			if (isset ($arrNoteTypes [$strNoteType]))
-			{
-				$intNoteType = $arrNoteTypes [$strNoteType];
-			}
-			else
-			{
-				$intNoteType = $insNoteType->Execute (
-					Array (
-						'TypeLabel'			=> $strNoteType,
-						'BorderColor'		=> '',
-						'BackgroundColor'	=> '',
-						'TextColor'			=> ''
-					)
-				);
-				
-				$arrNoteTypes [$strNoteType] = $intNoteType;
-			}
-			
 			
 			// Employee
-			$strEmployee = preg_replace ("/\\\\/", "", $xpaRow->Query ("/tr/td[4]")->item (0)->nodeValue);
+			$strEmployee = preg_replace ("/^\W+/", "", $xpaRow->Query ("/tr/td[3]")->item (0)->nodeValue);
 			$intEmployee = null;
 			
-			if ($strEmployee == "Automatic Process")
+			if ($strEmployee == "System")
 			{
 				$intEmployee = null;
 			}
@@ -240,9 +163,9 @@
 					'AccountGroup'	=>	$intCustomerId,
 					'Account'		=>	$intCustomerId,
 					'Employee'		=>	($intEmployee == null) ? null : $intEmployee,
-					'NoteType'		=>	$intNoteType,
+					'NoteType'		=>	7,
 					'Note'			=>	$xpaRow->Query ("/tr/td[2]")->item (0)->nodeValue,
-					'Datetime'		=>	date ("Y-m-d H:i:s", $intDatetime)
+					'Datetime'		=>	$xpaRow->Query ("/tr/td[1]")->item (0)->nodeValue
 				)
 			);
 			
@@ -253,7 +176,7 @@
 					"<CurrentRow>"		=> $intCurrentRow,
 					"<TotalTime>"		=> sprintf ("%1.6f", microtime (TRUE) - $fltStartTime),
 					"<CustomerID>"		=> $intCustomerId,
-					"<Response>"		=> "USER NOTE HAS BEEN CACHED"
+					"<Response>"		=> "SYSTEM NOTE HAS BEEN CACHED"
 				)
 			);
 		}
