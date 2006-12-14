@@ -455,6 +455,9 @@ die();
 	 	// call Zeemus magic rating formula
 		$fltCharge = $this->_ZeemusMagicRatingFormula();
 		
+		// apply minimum charge
+		$fltCharge = Max($fltCharge, $this->_arrCurrentRate['StdMinCharge']);
+		
 		// set the current charge
 		$this->_arrCurrentCDR['Charge'] = $fltCharge;
 		
@@ -535,7 +538,7 @@ die();
 			elseif ($fltCapLimit && $fltFullCharge > $fltCapLimit)
 			{
 				// calculate excess charge
-				$fltCharge += ($fltFullCharge - $fltCapLimit);
+				$fltCharge += ($fltFullCharge - $fltCapLimit) + $this->_arrCurrentRate['ExsFlagfall'];
 			}
 		}
 		
@@ -701,7 +704,7 @@ die();
 		// ------------------------------------------------ //
 		
 		// calculate number of units to charge
-		$n = $q / $u;
+		$n = ceil($q / $u);
 		
 		// ------------------------------------------------ //
 		// apply the rate
