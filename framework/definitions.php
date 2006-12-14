@@ -168,7 +168,7 @@ define("REQUEST_STATUS_CANCELLED"		, 304);
 
 // Provisioning Request Status
 define("REQUEST_DIRECTION_OUTGOING"		, 0);
-define("REQUEST_DIRECTION_INCOMMING"	, 1);
+define("REQUEST_DIRECTION_INCOMING"		, 1);
 
 
 // Serivce Line Status

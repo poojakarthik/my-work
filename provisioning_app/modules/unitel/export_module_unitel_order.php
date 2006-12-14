@@ -158,7 +158,7 @@
 		$this->_arrLog['Request']	= $arrRequest['Id'];
 		$this->_arrLog['Service']	= $arrRequest['Service'];
 		$this->_arrLog['Type']		= $arrRequest['Type'];
-	} 	
+	} 
  	
   	//------------------------------------------------------------------------//
 	// SendRequest()

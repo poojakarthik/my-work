@@ -69,7 +69,7 @@
 		$this->_updFullServiceRecordSequence	= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceRecordSequence'", Array('Value' => NULL));
 		$this->_selPreselectCarrier				= new StatementSelect("Service", "CarrierPreselect", "FNN = <FNN>", "CreatedOn DESC", "1");
 		
-				
+		
 		//##----------------------------------------------------------------##//
 		// Define File Format
 		//##----------------------------------------------------------------##//

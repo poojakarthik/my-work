@@ -314,6 +314,7 @@ die();
 			if(!$this->_prvCurrentModule()->BuildRequest($arrRequest))
 			{
 				//TODO!!!! - log error & set status
+				$this->_prvCurrentModule()->AddToLog();
 			}
 			else
 			{

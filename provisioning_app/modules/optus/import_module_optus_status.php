@@ -145,28 +145,52 @@
 		switch (strtoupper($arrLineData['Status']))
 		{
 			case "SUCCESSFUL":
+			case "SUCCESSFUL*":
 				// We've gained a service
-				$this->_arrRequest['GainDate']		= $this->_ConvertDate($arrLineData['ConfirmDate']);
-				$this->_arrRequest['Status']		= REQUEST_STATUS_COMPLETED;
-				$this->_arrService['LineStatus']	= LINE_ACTIVE;
+				$this->_arrRequest['GainDate']			= $this->_ConvertDate($arrLineData['ConfirmDate']);
+				$this->_arrRequest['Status']			= REQUEST_STATUS_COMPLETED;
+				$this->_arrService['CarrierPreselect']	= CARRIER_OPTUS;
+				$this->_arrLog['Type']					= LINE_ACTION_GAIN; 
 				break;
 			case "PENDING":
 				// Service activation is pending
 				$this->_arrService['LineStatus']	= LINE_PENDING;
 				$this->_arrRequest['Status']		= REQUEST_STATUS_PENDING;
+				$this->_arrLog['Type']				= LINE_ACTION_GAIN; 
+				break;
+			case "UNSUCCESSFUL":
+				$this->_arrLog['Type']			= LINE_ACTION_LOSS; 
+				$this->_arrRequest['LossDate']	= $this->_ConvertDate($arrLineData['EndDate']);
+				switch((int)$arrLineData['LossCode'])
+				{
+					case 1:
+						$this->_arrLog['Description']	= "Churned to another Provider";
+					case 2:
+						$this->_arrLog['Description']	= "Service has been cancelled";
+					case 3:
+						$this->_arrLog['Description']	= "Unable to be provisioned";
+					case 4: 
+						$this->_arrLog['Description']	= "Loss due to Reversal";
+					default:
+						// Unknown loss code
+						$this->_arrLog['Description']	= "Lost for unknown reason";
+				}
 				break;
 			case "":
 				// Line activated, but not churned to Optus, and no churn history
-				// TODO: What to do?
+				// FIXME: Just setting status to other and "PENDING" for the time being
 				break;
 			default:
-				// The request has been rejected
-				
-				// Get the error description
-				$this->_arrLog['Description'] = $this->_GetErrorDescription($arrLineData['RejectCode']);
+				// Pre-MCP request (very old request)
+				// TODO: What to do?  Can't find any instances so far in example files
 				break;
 		}
+		
 
+		
+		// Additional logging data
+		$this->_arrLog['Date']	= $this->_ConvertDate($arrLineData['ReportDate']);
+		$this->_arrLog['FNN']	= $this->_arrRequest['FNN'];
 		
 		return TRUE;
 	} 	
@@ -197,6 +221,7 @@
 		if ($arrResult = $this->_selMatchRequest->Fetch())
 		{
 			// Found a match, so update
+			$this->_arrLog['Request']	= $arrResult['Id'];
 			$arrResult = array_merge($arrResult, $this->_arrRequest);
 			return $this->_ubiRequest->Execute($arrResult);
 		}
@@ -286,8 +311,12 @@
 	 */
  	function _ConvertDate($strDate)
 	{
-		$strReturn = substr($strDate, 0, 4)."-".substr($strDate, 3, 2)."-".substr($strDate, 5, 2);
-		return $strReturn;
+		if($strDate != "00000000")
+		{
+			$strReturn = substr($strDate, 0, 4)."-".substr($strDate, 3, 2)."-".substr($strDate, 5, 2);	
+			return $strReturn;
+		}
+		return "";
 	} 
 
 	//------------------------------------------------------------------------//
