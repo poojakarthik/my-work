@@ -71,4 +71,7 @@ define("SEQUENCE_START_UNITEL"			, 1);
 define("UNITEL_DAILY_ORDER_DIR"			, "/home/vixen_upload/unitel/dailyorderfiles/");
 define("UNITEL_PRESELECTION_DIR"		, "/home/vixen_upload/unitel/preselectionfiles/");
 
+// Additional Preselection Constants
+define("CUSTOMER_NUMBER_OPTUS"			,"23139716000139");
+
 ?>

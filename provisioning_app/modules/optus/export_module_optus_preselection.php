@@ -63,10 +63,7 @@
 		
 		parent::__construct($ptrDB);
 		
-		$this->_updPreselectSequence			= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'PreselectionFileSequence'", Array('Value' => NULL));
-		$this->_updFullServiceFileSequence		= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceFileSequence'", Array('Value' => NULL));
-		$this->_updFullServiceRecordSequence	= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceRecordSequence'", Array('Value' => NULL));
-
+		$this->_selGetRequests	= new StatementSelect("Requests", "*", "Carrier = ".CARRIER_OPTUS." AND RequestType = ".REQUEST_PRESELECTION."Status = ".REQUEST_STATUS_WAITING);
  	}
 
   	//------------------------------------------------------------------------//
@@ -90,64 +87,26 @@
 	{
 		// Clean the request array
 		$arrBuiltRequest = Array();
-				
-		switch ($arrRequest['RequestType'])
+		
+		$this->_selGetSequenceNo->Execute();
+		if(!$this->_intSequenceNo = $this->_selGetSequenceNo->Fetch())
 		{
-			case REQUEST_PRESELECTION:
-				$arrBuiltRequest['RecordType']			= "11";
-				$arrBuiltRequest['ServiceNumber']		= $arrRequest['FNN'];
-				$arrBuiltRequest['AgreementDate']		= date("Ymd");
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
-				break;
-				
-			case REQUEST_BAR:
-				$arrBuiltRequest['RecordType']			= "55";
-				$arrBuiltRequest['ServiceNumber']		= $arrRequest['FNN'];
-				$arrBuiltRequest['Action']				= "1";
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
-				break;
-				
-			case REQUEST_UNBAR:
-				$arrBuiltRequest['RecordType']			= "55";
-				$arrBuiltRequest['ServiceNumber']		= $arrRequest['FNN'];
-				$arrBuiltRequest['Action']				= "0";
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
-				break;
-				
-			case REQUEST_ACTIVATION:
-				$arrBuiltRequest['RecordType']			= "10";
-				$arrBuiltRequest['ServiceNumber']			= $arrRequest['FNN'];
-				$arrBuiltRequest['AgreementDate']		= date("Ymd");
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
-				break;
-			
-			case REQUEST_DEACTIVATION:
-				$arrBuiltRequest['RecordType']			= "20";
-				$arrBuiltRequest['ServiceNumber']		= $arrRequest['FNN'];
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
-				break;
-			
-			case REQUEST_PRESELECTION_REVERSAL:
-				$arrRequest['RecordType']				= "21";
-				$arrRequest['ServiceNumber']			= $arrRequest['FNN'];
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
-				break;
-			default:
-				// Unhandled Request type -> error
-				return FALSE;
+			// Sequence number should be set to 1
+			$this->_intSequenceNo = 1;
 		}
+		
+		// Build the request Array
+		$arrBuiltRequest['BatchNo']				= $this->_intSequenceNo;
+		$arrBuiltRequest['IdNo']				= "12";
+		$arrBuiltRequest['SPName']				= "Telco Blue";
+		$arrBuiltRequest['SPCassNo']			= CUSTOMER_NUMBER_OPTUS;
+		$arrBuiltRequest['ServiceNo']			= $arrRequest['FNN'];
+		$arrBuiltRequest['CADate']				= date("d/m/Y");
+		$arrBuiltRequest['CARequired']			= "n";
+		$arrBuiltRequest['Lessee']				= "n";
+		
+		// Append this request
+		$this->_arrPreselectionRecords[]		= implode(",", $arrBuiltRequest);
 	} 	
  	
   	//------------------------------------------------------------------------//
@@ -166,61 +125,34 @@
 	 */
  	function SendRequest()
 	{
-		// Get the latest Sequence Numbers
-		$this->_selGetSequence->Execute(Array('Module' => "Unitel"));
-		if(!($arrResult = $this->_selGetSequence->FetchAll()))
-		{
-			// Missing config definitions
-			return FALSE;
-		}
-		
-		$intPreselectionFileSequence	= ((int)$arrResult['PreselectionFileSequence']) + 1;
-		
 		// Build Header Row
-		$strPreselectionFilename	= "sarsw".str_pad($intPreselectionFileSequence, 4, "0", STR_PAD_LEFT).".txt";
-		$strPreselectionHeaderRow	= "01".date("Ymd").str_pad($intPreselectionFileSequence, 4, "0", STR_PAD_LEFT)."sarsw";
+		$strPreselectionFilename	= date("Y-m-d_Hi").".xls";	// Is actually a CSV, but try to fool Optus :P
+		$strPreselectionHeaderRow	= "Batch No,ID No,SP Name,SP CASS A/C No,Service No with area code,CA Date dd/mm/yyy,CA Required,Lessee Yes/No";
 		
 		// Get list of requests to generate
 		$arrResults = $this->_selGetRequests->FetchAll();
 			
 		$intNumPreselectionRecords	= count($this->_arrPreselectionRecords);
 	
-		// Build Footer Rows
-		$strPreselectionFooterRow	= "99".str_pad($intNumPreselectionRecords, 7, "0", STR_PAD_LEFT);
-		
 		// Create Local Preselection File
 		if($intNumPreselectionRecords > 0)
 		{
 			// Only do this if there are records to write
-			$resPreselectionFile = fopen(UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
+			$resPreselectionFile = fopen(OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
 			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\n");
 			
 			foreach($this->_arrPreselectionRecords as $strRecord)
 			{
 				fwrite($resPreselectionFile, $strRecord."\n");
 			}
-			
-			fwrite($resPreselectionFile, $strPreselectionFooterRow."\n");
 			fclose($resPreselectionFile);
 		}
 		
-		// Upload to FTP
-		/* TODO: Uncomment this later on
-		$resFTPConnection = ftp_connect(UNITEL_PROVISIONING_SERVER);
-		ftp_login($resFTPConnection, UNITEL_PROVISIONING_USERNAME, UNITEL_PROVISIONING_PASSWORD);
-		
-		if(file_exists(UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename))
-		{
-			// Upload the Preselection File
-			ftp_chdir($resFTPConnection, UNITEL_REMOTE_PRESELECTION_DIR);
-			ftp_put($resFTPConnection, $strPreselectionFilename, UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-		}
-		
-		ftp_close($resFTPConnection);
-		*/
+		// TODO: Email to Optus (as an attachement)
+		//mail("long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File");
 		
 		// Update database (Request & Config tables)
-		$this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence"));
+		$this->_updSequenceNo->Execute(Array('Value' => "$intPreselectionFileSequence"));
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;
