@@ -236,17 +236,6 @@ die();
 				$arrServiceTotal['TotalCharge']		= $fltServiceTotal;
 				$insServiceTotal->Execute($arrServiceTotal);
 				
-				// insert into ServiceTypeTotal
-				//TODO!!!!
-				// select with GROUP BY from CDR table
-				// SELECT FNN, AccountGroup, Account, Service, "$strInvoiceRun", RecordType, SUM(Charge), COUNT(Charge)
-				// FROM CDR
-				// WHERE FNN IS NOT NULL
-				// GROUP BY FNN, RecordType
-				
-				// $strQuery = "INSERT INTO $strTableDestination ($strColumns) SELECT $strColumns FROM $strTableSource ";
-				// save each record into the table
-				
 				// add to invoice totals
 				$fltTotalDebits		+= $fltServiceDebits;
 				$fltTotalCredits	+= $fltServiceCredits;
@@ -294,6 +283,26 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		// SERVICE TYPE TOTALS
+		
+		// build query
+		$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
+		$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$strInvoiceRun."' AS InvoiceRun,";
+		$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
+		$strQuery .= " FROM CDR";
+		$strQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
+		$strQuery .= " AND Status = ".CDR_TEMP_INVOICE;
+		$strQuery .= " GROUP BY Service, RecordType";
+		
+		// run query
+		$qryServiceTypeTotal = new Query();
+		$qryServiceTypeTotal->Execute($strQuery);
+		
+		// BILLING VALIDATION
+		// Make shure all of our totals add up
+		//TODO!!!!
+		
+		// BILLING OUTPUT
 		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
 		{
 			// build billing output sample

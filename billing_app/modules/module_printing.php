@@ -127,7 +127,29 @@
 		// 
 		$arrCustomerDetails = $this->_selCustomerDetails->Execute();
 		
+		// HEADER
+		// get details from ivoice & customer
+		// build output
+		
+		// SUMMARY CHARGES
+		// get details from servicetype totals
+		// build output
+		
+		// SUMMARY SERVICES
+		// get details from servicetype totals
+		// build output
+		
+		// DETAILS
+		// get list of CDRs grouped by record type
+		// ignoring any record types that do not get itemised
+		// for each record
+			// if new type
+		
 		// for each service type
+			// for each service
+				// for each record type (except the ones we don't itemise)
+					// get details from CDR
+					// build output
 		
 		
  	}
