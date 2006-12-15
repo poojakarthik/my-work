@@ -140,18 +140,22 @@
 		// build output
 		
 		// DETAILS
-		// get list of CDRs grouped by record type
+		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
+		// reset counters
+		// add start record (70)
 		// for each record
+			// if new service
+				// if old service exists
+					// add service total record (89)
+				// add service record (80)
 			// if new type
-		
-		// for each service type
-			// for each service
-				// for each record type (except the ones we don't itemise)
-					// get details from CDR
-					// build output
-		
-		
+				// if old type exists
+					// build type total record (99)
+				// build header record (90)
+				// reset counters
+			// build charge record (91 || 92)
+		// add end record (79)
  	}
  	
  	//------------------------------------------------------------------------//
