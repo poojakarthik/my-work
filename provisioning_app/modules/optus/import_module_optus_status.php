@@ -192,6 +192,14 @@
 		$this->_arrLog['Date']	= $this->_ConvertDate($arrLineData['ReportDate']);
 		$this->_arrLog['FNN']	= $this->_arrRequest['FNN'];
 		
+		// Check if this is already in our database...
+		$this->_selLogExists->Execute();
+		if ($this->_selLogExists->Fetch())
+		{
+			// This entry is already in the log, so we can ignore the record completely
+			return PRV_OLD_STATUS;
+		}
+
 		return TRUE;
 	} 	
 

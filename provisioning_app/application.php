@@ -173,6 +173,9 @@ die();
 				// normalise this line
 				if(($intError = $this->_prvCurrentModule->Normalise(fgets($resFile))) !== TRUE)
 				{
+					// By default we assume its an error, not an ignore
+					$bolError = TRUE;
+					
 					// Report on error
 					switch ($intError)
 					{
@@ -183,16 +186,29 @@ die();
 							$strReason = "Header Record";
 							break;
 						case PRV_BAD_RECORD_TYPE:
-							$strReason = "Unkown Record Type";
+							$strReason = "Unknown Record Type";
+							break;
+						case PRV_OLD_STATUS:
+							$bolError = FALSE;
 							break;
 						default:
 							$strReason = "Unknown Error";
 							break;
 					}
 					
-					$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
-					
-					$intLinesFailed++;
+					if ($bolError)
+					{
+						// It's an error, so give a reason
+						$this->_rptProvisioningReport->AddMessageVariables(MSG_ERROR."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
+						$intLinesFailed++;
+					}
+					else
+					{
+						// It's an Ignore, so print this instead
+						$this->_rptProvisioningReport->AddMessage(MSG_IGNORE);
+						$intLinesPassed++;
+					}
+										
 					continue;
 				}
 				

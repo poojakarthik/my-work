@@ -49,6 +49,7 @@ define("MSG_REPORT"						, "\n<Action> <Total> files in <Time> seconds.  <Pass> 
 define("MSG_PROVISIONING_FOOTER"		, "\nProvisioning completed in <Time> seconds.");
 define("MSG_OK"							, "[   OK   ]");
 define("MSG_FAILED"						, "[ FAILED ]");
+define("MSG_IGNORE"						, "[ IGNORE ]");
 
 // Success/Failure codes
 define("PRV_SUCCESS"					, 100);
@@ -56,6 +57,7 @@ define("PRV_TRAILER_RECORD"				, 101);
 define("PRV_HEADER_RECORD"				, 102);
 define("PRV_BAD_RECORD_TYPE"			, 103);
 define("PRV_NO_SERVICE"					, 104);
+define("PRV_OLD_STATUS"					, 105);
 
 // Log Descriptions
 define("DESCRIPTION_LOST_TO"			, "Service lost to ");
