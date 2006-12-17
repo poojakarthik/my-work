@@ -8,10 +8,10 @@
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
-		
-		<div class="Filter-Form">
-			<div class="Filter-Form-Content">
-				<form method="POST" action="account_edit.php">
+
+		<form method="POST" action="account_edit.php">
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content">
 					<input type="hidden" name="Id">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>
@@ -186,58 +186,90 @@
 							</td>
 						</tr>
 					</table>
-				</form>
+				</div>
 			</div>
-		</div>
-		
-		<div class="Seperator"></div>
-		
-		<h2>Archive Status</h2>
-		<div class="Seperator"></div>
-		
-		<div class="Filter-Form">
-			<div class="Filter-Form-Content">
-				<xsl:choose>
-					<xsl:when test="/Response/Account/Archived = 0">
-						This Account is <strong><span class="Green">Currently Available</span></strong>.
-						If you would like to make this Account Archived, please click the button below:
-						
-						<div class="Seperator"></div>
-						
-						<table border="0" cellpadding="5" cellspacing="0">
-							<tr>
-								<td><input type="checkbox" name="Confirm" value="1" id="Confirm_Archive" /></td>
-								<td><label for="Confirm_Archive">Yes, Archive this Account and the Services associated with it.</label></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>
-									<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
-								</td>
-							</tr>
-						</table>
-					</xsl:when>
-					<xsl:otherwise>
-						This Account is <strong><span class="Red">Currently Archived</span></strong>.
-						If you would like to make this Account Available, please click the button below:
-						
-						<div class="Seperator"></div>
-						
-						<table border="0" cellpadding="5" cellspacing="0">
-							<tr>
-								<td><input type="checkbox" name="Confirm" value="1" id="Confirm_Unarchive" /></td>
-								<td><label for="Confirm_Unarchive">Yes, Unarchive this Account and take me to a place where I can add Services.</label></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>
-									<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
-								</td>
-							</tr>
-						</table>
-					</xsl:otherwise>
-				</xsl:choose>
+			
+			<div class="Seperator"></div>
+			
+			<h2>Archive Status</h2>
+			<div class="Seperator"></div>
+			
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content">
+					<xsl:choose>
+						<xsl:when test="/Response/Account/Archived = 0">
+							This Account is <strong><span class="Green">Currently Available</span></strong>.
+							If you would like to make this Account Archived, please click the button below:
+							
+							<div class="Seperator"></div>
+							
+							<table border="0" cellpadding="5" cellspacing="0">
+								<tr>
+									<td><input type="checkbox" name="Confirm" value="1" id="Confirm_Archive" /></td>
+									<td><label for="Confirm_Archive">Yes, Archive this Account and the Services associated with it.</label></td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>
+										<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+									</td>
+								</tr>
+							</table>
+						</xsl:when>
+						<xsl:otherwise>
+							This Account is <strong><span class="Red">Currently Archived</span></strong>.
+							If you would like to make this Account Available, please click the button below:
+							
+							<div class="Seperator"></div>
+							
+							<table border="0" cellpadding="5" cellspacing="0">
+								<tr>
+									<td>
+										<input type="radio" name="Archived" value="0" id="Archive:FALSE">
+											<xsl:choose>
+												<xsl:when test="/Response/Account/Archived = 0">
+													<xsl:attribute name="checked">
+														<xsl:text>checked</xsl:text>
+													</xsl:attribute>
+												</xsl:when>
+											</xsl:choose>
+										</input>
+									</td>
+									<td>
+										<label for="Archive:FALSE">
+											Make this account <strong><span class="Green">Available</span></strong> and active
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<input type="radio" name="Archived" value="1" id="Archive:TRUE">
+											<xsl:choose>
+												<xsl:when test="/Response/Account/Archived = 1">
+													<xsl:attribute name="checked">
+														<xsl:text>checked</xsl:text>
+													</xsl:attribute>
+												</xsl:when>
+											</xsl:choose>
+										</input>
+									</td>
+									<td>
+										<label for="Archive:TRUE">
+											Make this account <strong><span class="Red">Archived</span></strong> and unavailable
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>
+										<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+									</td>
+								</tr>
+							</table>
+						</xsl:otherwise>
+					</xsl:choose>
+				</div>
 			</div>
-		</div>
+		</form>
 	</xsl:template>
 </xsl:stylesheet>

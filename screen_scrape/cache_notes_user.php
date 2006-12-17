@@ -15,7 +15,7 @@
 	
 	
 	// Read the Customers CSV File
-	$cstCustomers = new Parser_CSV ('data/customers_short.csv');
+	$cstCustomers = new Parser_CSV ('data/customers.csv');
 	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
 	
 	// Open a Connection/Session to ETECH

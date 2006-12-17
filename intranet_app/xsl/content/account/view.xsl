@@ -171,6 +171,17 @@
 							</form>
 						</div>
 					</div>
+					
+					<div class="Seperator"></div>
+					
+					<a>
+						<xsl:attribute name="href">
+							<xsl:text>account_edit.php?Id=</xsl:text>
+							<xsl:value-of select="/Response/Account/Id" />
+						</xsl:attribute>
+						<xsl:text>Edit Account</xsl:text>
+					</a>
+					
 					<div class="Clear"></div>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
@@ -225,7 +236,7 @@
 					<div class="Seperator"></div>
 					<h3>Recent Notes</h3>
 					<div class="Seperator"></div>
-					Listed below are the 10 most recent notes
+					Listed below are the 5 most recent notes
 					that are associated with this Account. To view more
 					notes for this account, visit the
 					<a>

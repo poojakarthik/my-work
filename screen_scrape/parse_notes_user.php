@@ -15,7 +15,7 @@
 	
 	
 	// Read the Customers CSV File
-	$cstCustomers = new Parser_CSV ('data/customers_short.csv');
+	$cstCustomers = new Parser_CSV ('data/customers.csv');
 	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
 	$rptReport->AddMessage (MSG_HORIZONTAL_RULE);
 	
@@ -33,7 +33,6 @@
 	
 	// Also - set up the statement incase we have to add a new note type
 	$insNoteType = new StatementInsert ('NoteType');
-	
 	
 	
 	
@@ -179,6 +178,7 @@
 				$arrDatetime [2]
 			);
 			
+			$strNoteValue = $xpaRow->Query ("/tr/td[2]")->item (0)->nodeValue;
 			
 			// Note Type
 			$strNoteType = preg_replace ("/\W/", "", $xpaRow->Query ("/tr/td[3]")->item (0)->nodeValue);
@@ -205,7 +205,7 @@
 			
 			
 			// Employee
-			$strEmployee = preg_replace ("/\\\\/", "", $xpaRow->Query ("/tr/td[4]")->item (0)->nodeValue);
+			$strEmployee = preg_replace ("/^\W/", "", $xpaRow->Query ("/tr/td[4]")->item (0)->nodeValue);
 			$intEmployee = null;
 			
 			if ($strEmployee == "Automatic Process")
@@ -220,17 +220,8 @@
 				}
 				else
 				{
-					$rptReport->AddMessageVariables (
-						"-	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>\n",
-						Array (
-							"<CurrentRow>"		=> $intCurrentRow,
-							"<TotalTime>"		=> sprintf ("%1.6f", microtime (TRUE) - $fltStartTime),
-							"<CustomerID>"		=> $intCustomerId,
-							"<Response>"		=> "EMPLOYEE NOT FOUND: " . $strEmployee
-						)
-					);
-					
-					continue;
+					$intEmployee = null;
+					$strNoteValue = "Originally entered by: " . $strEmployee . "\n\n" . $strNoteValue;
 				}
 			}
 			
@@ -241,7 +232,7 @@
 					'Account'		=>	$intCustomerId,
 					'Employee'		=>	($intEmployee == null) ? null : $intEmployee,
 					'NoteType'		=>	$intNoteType,
-					'Note'			=>	$xpaRow->Query ("/tr/td[2]")->item (0)->nodeValue,
+					'Note'			=>	$strNoteValue,
 					'Datetime'		=>	date ("Y-m-d H:i:s", $intDatetime)
 				)
 			);

@@ -330,7 +330,7 @@
 					<div class="Seperator"></div>
 					<h3>Recent Notes</h3>
 					<div class="Seperator"></div>
-					Listed below are the 10 most recent notes
+					Listed below are the 5 most recent notes
 					that are associated with this Service. To view more
 					notes for this Service, visit the
 					<a>

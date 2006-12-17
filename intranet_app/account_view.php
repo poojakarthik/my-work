@@ -36,7 +36,7 @@
 	// Get Associated Notes
 	$nosNotes		= $Style->attachObject (new Notes ());
 	$nosNotes->Constrain ('Account', '=', $_GET ['Id']);
-	$nosNotes->Sample ();
+	$nosNotes->Sample (1, 5);
 	
 	// Record a request to view an Account in the Audit
 	$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);

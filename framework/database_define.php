@@ -1980,8 +1980,8 @@
 	$strName = "Employee";
 		$arrDefine['Column'][$strName]['Type'] 			= "i";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
-		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE;
+		$arrDefine['Column'][$strName]['Default'] 		= null;
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
 								
@@ -2039,6 +2039,15 @@
 								
 	// Define Columns
 	$strName = "BackgroundColor";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(6)";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+								
+	// Define Columns
+	$strName = "TextColor";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(6)";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
@@ -3329,15 +3338,6 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
 		
-								
-	// Define Columns
-	$strName = "DataSerialized";
-		$arrDefine['Column'][$strName]['Type'] 			= "s";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
-		$arrDefine['Column'][$strName]['Default'] 		= "";
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
-		
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
@@ -3366,15 +3366,6 @@
 								
 	// Define Columns
 	$strName = "DataOriginal";
-		$arrDefine['Column'][$strName]['Type'] 			= "s";
-		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
-		$arrDefine['Column'][$strName]['Default'] 		= "";
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
-		
-								
-	// Define Columns
-	$strName = "DataSerialized";
 		$arrDefine['Column'][$strName]['Type'] 			= "s";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
@@ -4153,6 +4144,15 @@
 								
 	// Define Columns
 	$strName = "Units";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "Records";
 		$arrDefine['Column'][$strName]['Type'] 			= "i";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;

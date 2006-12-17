@@ -15,7 +15,7 @@
 	
 	
 	// Read the Customers CSV File
-	$cstCustomers = new Parser_CSV ('data/customers_short.csv');
+	$cstCustomers = new Parser_CSV ('data/customers.csv');
 	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
 	$rptReport->AddMessage (MSG_HORIZONTAL_RULE);
 	
@@ -126,6 +126,7 @@
 			
 			$xpaRow = new DOMXPath ($domRow);
 			
+			$strNoteValue = $xpaRow->Query ("/tr/td[2]")->item (0)->nodeValue;
 			
 			// Employee
 			$strEmployee = preg_replace ("/^\W+/", "", $xpaRow->Query ("/tr/td[3]")->item (0)->nodeValue);
@@ -143,17 +144,8 @@
 				}
 				else
 				{
-					$rptReport->AddMessageVariables (
-						"-	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>\n",
-						Array (
-							"<CurrentRow>"		=> $intCurrentRow,
-							"<TotalTime>"		=> sprintf ("%1.6f", microtime (TRUE) - $fltStartTime),
-							"<CustomerID>"		=> $intCustomerId,
-							"<Response>"		=> "EMPLOYEE NOT FOUND: " . $strEmployee
-						)
-					);
-					
-					continue;
+					$intEmployee = null;
+					$strNoteValue = "Originally entered by: " . $strEmployee . "\n\n" . $strNoteValue;
 				}
 			}
 			
@@ -164,7 +156,7 @@
 					'Account'		=>	$intCustomerId,
 					'Employee'		=>	($intEmployee == null) ? null : $intEmployee,
 					'NoteType'		=>	7,
-					'Note'			=>	$xpaRow->Query ("/tr/td[2]")->item (0)->nodeValue,
+					'Note'			=>	$strNoteValue,
 					'Datetime'		=>	$xpaRow->Query ("/tr/td[1]")->item (0)->nodeValue
 				)
 			);
