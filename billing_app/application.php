@@ -153,7 +153,7 @@ die();
 		
 		// get a list of all accounts that require billing today
 		// TODO: FIXME - Faking for now...
-		$selAccounts->Execute();
+		$selAccounts->Execute(Array("Archived" => FALSE));
 		$arrAccounts = $selAccounts->FetchAll();
 
 		// Report Title
@@ -250,9 +250,9 @@ die();
 			$arrInvoiceData['AccountGroup']	= $arrAccount['AccountGroup'];
 			$arrInvoiceData['Account']		= $arrAccount['Id'];
 			//$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
-			$arrInvoiceData['CreatedOn']	= date("Y-m-d H:i:s", time());
+			$arrInvoiceData['CreatedOn']	= date("Y-m-d H:i:s", time()); //TODO!!!!
 			//$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
-			$arrInvoiceData['DueOn']		= date("Y-m-d H:i:s", time());
+			$arrInvoiceData['DueOn']		= date("Y-m-d H:i:s", time()); //TODO!!!!
 			$arrInvoiceData['Credits']		= $fltTotalCredits;
 			$arrInvoiceData['Debits']		= $fltTotalDebits;
 			$arrInvoiceData['Total']		= $fltTotal;
