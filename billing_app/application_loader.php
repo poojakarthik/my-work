@@ -79,6 +79,22 @@
  * @package	framework
  */
  $strWebDir		= ""; 
+ 
+//----------------------------------------------------------------//
+// strModuleDir
+//----------------------------------------------------------------//
+/**
+ * strModuleDir
+ *
+ * full path to the application module directory
+ *
+ * full path to the application module directory, including trailing slash /
+ *
+ * @type	string
+ * @variable
+ * @package	framework
+ */
+ $strModuleDir	= $strApplicationDir."modules/"; 
 
 
 
@@ -96,6 +112,9 @@ require_once($strFrameworkDir."db_access.php");
 require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
+
+// load modules
+require_once($strModuleDir."module_printing.php");
 
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();

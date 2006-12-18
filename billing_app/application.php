@@ -93,10 +93,13 @@ die();
  	{
 		parent::__construct();
 		
-		$this->_rptBillingReport = new Report("Billing Report for ".date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
+		// Initiate Reports
+		$this->_rptBillingReport 	= new Report("Billing Report for ".date("Y-m-d H:i:s"), "flame@telcoblue.com.au", FALSE);
+		$this->_rptAuditReport		= new Report("Bill Audit Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		
-		// Report header
+		// Report headers
 		$this->_rptBillingReport->AddMessage(MSG_HORIZONTAL_RULE);
+		$this->_rptAuditReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Construct the Bill Output objects
 		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db);
@@ -250,9 +253,9 @@ die();
 			$arrInvoiceData['AccountGroup']	= $arrAccount['AccountGroup'];
 			$arrInvoiceData['Account']		= $arrAccount['Id'];
 			//$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
-			$arrInvoiceData['CreatedOn']	= date("Y-m-d H:i:s", time()); //TODO!!!!
+			$arrInvoiceData['CreatedOn']	= date("Y-m-d H:i:s");
 			//$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
-			$arrInvoiceData['DueOn']		= date("Y-m-d H:i:s", time()); //TODO!!!!
+			$arrInvoiceData['DueOn']		= date("Y-m-d H:i:s", strtotime("+ ". $arrAccount['PaymentTerms'] ." days"));
 			$arrInvoiceData['Credits']		= $fltTotalCredits;
 			$arrInvoiceData['Debits']		= $fltTotalDebits;
 			$arrInvoiceData['Total']		= $fltTotal;
@@ -299,7 +302,7 @@ die();
 		$qryServiceTypeTotal->Execute($strQuery);
 		
 		// BILLING VALIDATION
-		// Make shure all of our totals add up
+		// Make sure all of our totals add up
 		//TODO!!!!
 		
 		// BILLING OUTPUT
@@ -315,11 +318,99 @@ die();
 			//TODO!!!!
 		}
 		
+		// Finish off Billing Report
 		$arrReportLines['<Total>']	= $intPassed + $intFailed;
 		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
 		$arrReportLines['<Pass>']	= $intPassed;
 		$arrReportLines['<Fail>']	= $intFailed;
-		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);		
+		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);	
+		
+		// Retrieve data for use in the audit report
+		$arrInvoiceColumns['TotalInvoices']			= "COUNT(DISTINCT InvoiceTemp.Id)";
+		$arrInvoiceColumns['TotalInvoicedExGST']	= "SUM(InvoiceTemp.Total)";
+		$arrInvoiceColumns['TotalInvoicedIncGST']	= "SUM(InvoiceTemp.Total) + SUM(InvoiceTemp.Tax)";
+		$arrInvoiceColumns['TotalCDRCost']			= "SUM(CDR.Cost)";
+		$arrInvoiceColumns['TotalRated']			= "SUM(CDR.Charge)";
+		$arrInvoiceColumns['TotalCDRs']				= "COUNT(DISTINCT CDR.Id)";
+		$selInvoiceSummary	= new StatementSelect(	"InvoiceTemp, CDR",
+													$arrInvoiceColumns,
+													/*"CDR.Status = ".CDR_TEMP_INVOICE*/ NULL,
+													NULL,
+													NULL,
+													"InvoiceTemp.InvoiceRun");
+		$selInvoiceSummary->Execute();
+		if (!$arrInvoiceSummary = $selInvoiceSummary->Fetch())
+		{
+			// TODO: Error
+		}
+		else
+		{
+			// TODO: Append to report
+			//Debug($arrInvoiceSummary);
+		}
+		
+		$arrCarrierColumns['CarrierId']				= "CDR.Carrier";
+		$arrCarrierColumns['TotalCost']				= "SUM(CDR.Cost)";
+		$arrCarrierColumns['TotalRated']			= "SUM(CDR.Charge)";
+		$arrCarrierColumns['TotalCDRs']				= "COUNT(CDR.Id)";
+		$selCarrierSummary = new StatementSelect(	"CDR",
+													$arrCarrierColumns,
+													/*"CDR.Status = ".CDR_TEMP_INVOICE*/NULL,
+													"CDR.Carrier, CDR.RecordType",
+													NULL,
+													"CDR.Carrier, CDR.RecordType");
+		$selCarrierSummary->Execute();
+		if (!$arrCarrierSummarys = $selCarrierSummary->FetchAll())
+		{
+			// TODO: Error
+		}
+		else
+		{
+			//Debug($arrCarrierSummarys);	
+		}
+		
+		$arrServiceTypeColumns['ServiceType']			= "CDR.ServiceType";
+		$arrServiceTypeColumns['RecordType']			= "RecordType.Name";
+		$arrServiceTypeColumns['TotalCost']				= "SUM(CDR.Cost)";
+		$arrServiceTypeColumns['TotalRated']			= "SUM(CDR.Charge)";
+		$arrServiceTypeColumns['TotalCDRs']				= "COUNT(CDR.Id)";
+		$selServiceTypeSummary = new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id",
+														$arrServiceTypeColumns,
+														/*"CDR.Status = ".CDR_TEMP_INVOICE*/NULL,
+														"CDR.ServiceType, CDR.RecordType",
+														NULL,
+														"CDR.ServiceType, CDR.RecordType");
+		$selServiceTypeSummary->Execute();
+		if (!$arrServiceTypeSummarys = $selServiceTypeSummary->FetchAll())
+		{
+			// TODO: Error
+		}
+		else
+		{
+			//Debug($arrServiceTypeSummarys);	
+		}
+		
+		// Generate the the Audit Report
+		$arrInvoiceSummaryVars['<TotalInvoices>']		= number_format((int)$arrInvoiceSummary['TotalInvoices']);
+		$arrInvoiceSummaryVars['<TotalInvoicedExGST>']	= number_format((float)$arrInvoiceSummary['TotalInvoicedExGST'], 2);
+		$arrInvoiceSummaryVars['<TotalInvoicedIncGST>']	= number_format((float)$arrInvoiceSummary['TotalInvoicedIncGST'], 2);
+		$arrInvoiceSummaryVars['<TotalCDRCost>']		= number_format((float)$arrInvoiceSummary['TotalCDRCost'], 2);
+		$arrInvoiceSummaryVars['<TotalRated>']			= number_format((float)$arrInvoiceSummary['TotalRated'], 2);
+		$arrInvoiceSummaryVars['<TotalCDRs>']			= number_format((int)$arrInvoiceSummary['TotalCDRs']);
+		$this->_rptAuditReport->AddMessageVariables(MSG_INVOICE_SUMMARY, $arrInvoiceSummaryVars);
+		
+		$strSummaries = "";
+		foreach($arrCarrierSummarys as $arrCarrierSummary)
+		{
+			$arrInvoiceSummaryVars['<Carrier>']			= GetCarrierName($arrCarrierSummary['CarrierId']);
+			$arrInvoiceSummaryVars['<TotalCDRCost>']	= number_format((float)$arrCarrierSummary['TotalCDRCost'], 2);
+			$arrInvoiceSummaryVars['<TotalRated>']		= number_format((float)$arrCarrierSummary['TotalRated'], 2);
+			$arrInvoiceSummaryVars['<TotalCDRs>']		= number_format((int)$arrCarrierSummary['TotalCDRs']);
+			$strSummaries .= ReplaceAliases(MSG_CARRIER_BREAKDOWN, $arrInvoiceSummaryVars);
+		}
+		
+		$this->_rptAuditReport->AddMessageVariables(MSG_CARRIER_SUMMARY, Array('<Summaries>' => $strSummaries));
+		
 	}
 	
 	//------------------------------------------------------------------------//

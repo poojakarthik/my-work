@@ -144,11 +144,16 @@ class Report
 	 * 
 	 * @see		this->_strTitle
 	 */
-	public function __construct($strReportTitle, $mixEmailAddressee, $strEmailFrom = '')
+	public function __construct($strReportTitle, $mixEmailAddressee, $bolDebugPrint = TRUE, $strEmailFrom = '')
 	{
 		// Assign passed parameters to member variables
-		$this->_strTitle = $strReportTitle;
-		Debug($strReportTitle."\n\n", "rpt");
+		$this->_strTitle		= $strReportTitle;
+		$this->_bolDebugPrint	= $bolDebugPrint;
+		
+		if($bolDebugPrint)
+		{
+			Debug($strReportTitle."\n", "rpt");	
+		}
 		
 		if (is_array($mixEmailAddressee))
 		{
@@ -204,9 +209,6 @@ class Report
 			$intSent += mail($strEmailAddressee, $this->_strTitle . "(Automated Report)", $strEmailMessage, $strMailHeaders);
 		}
 
-		// debug report
-		//Debug($strEmailMessage);
-		
 		// return
 		return (int)$intSent;
 	}
@@ -241,7 +243,10 @@ class Report
 		$this->_arrLines[] = $strMessage;
 		
 		// Debug the line
-		Debug($strMessage, "rpt");
+		if($this->_bolDebugPrint)
+		{		
+			Debug($strMessage, "rpt");
+		}
 	}	
 	
 	//------------------------------------------------------------------------//

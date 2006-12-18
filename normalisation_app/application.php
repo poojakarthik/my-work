@@ -465,7 +465,7 @@ die();
  	{
  		// Select all CDRs ready to be Normalised
 		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
-		$mixColumns	= Array("CDR.*" => "", "FileImport.FileType" => "FileType", "FileImport.FileName" => "FileName");
+		$mixColumns	= Array("" => "CDR.*", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
 		$strWhere	= "CDR.Status = <status>";
 		$strOrder	= "";
 		$strLimit	= "1000";

@@ -125,7 +125,7 @@
 		//TODO!!!!
 		// Account Details
 		// 
-		$arrCustomerDetails = $this->_selCustomerDetails->Execute();
+		//$arrCustomerDetails = $this->_selCustomerDetails->Execute();
 		
 		// HEADER
 		// get details from ivoice & customer

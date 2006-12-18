@@ -53,6 +53,32 @@ define("MSG_UPDATE_INVOICE_STATUS"		, "Updating status on committed invoices..."
 define("MSG_BILLING_TITLE"				, "[ GENERATING INVOICES ]");
 define("MSG_REVOKE_TITLE"				, "[ REVOKING INVOICES ]");
 define("MSG_COMMIT_TITLE"				, "[ COMMITTING INVOICES ]");
+define("MSG_INVOICE_SUMMARY"			, "[ INVOICE SUMMARY ]\n\n" .
+										  "\tTotal Invoices\t\t\t: <TotalInvoices>\n" .
+										  "\tTotal \$ Invoiced (Ex GST)\t: \$<TotalInvoicedExGST>\n" .
+										  "\tTotal \$ Invoiced (Inc GST)\t: \$<TotalInvoicedIncGST>\n" .
+										  "\tTotal Cost of CDRs\t\t: \$<TotalCDRCost>\n" .
+										  "\tTotal \$ Rated\t\t\t: \$<TotalRated>\n" .
+										  "\tTotal No. of CDRs\t\t: <TotalCDRs>\n\n");
+define("MSG_CARRIER_SUMMARY"			, "[ CARRIER SUMMARY ]\n\n" .
+										  "<Summaries>");
+define("MSG_CARRIER_BREAKDOWN"			, "\t[ <Carrier> ]\n" .
+										  "\t\tTotal Cost of CDRs\t: \$<TotalCDRCost>\n" .
+										  "\t\tTotal \$ Rated\t\t: \$<TotalRated>\n" .
+										  "\t\tTotal No. of CDRs\t: <TotalCDRs>\n\n" .
+										  "<RecordTypes>\n");
+define("MSG_RECORD_TYPES"				, "\t\t- <RecordType>\n" .
+										  "\t\t\tTotal Cost of CDRs\t: \$<TotalCDRCost>\n" .
+										  "\t\t\tTotal \$ Rated\t\t: \$<TotalRated>\n" .
+										  "\t\t\tTotal No. of CDRs\t: <TotalCDRs>\n");
+define("MSG_SERVICE_TYPE_SUMMARY"		, "[ SERVICE TYPE SUMMARY ]\n\n" .
+										  "<Summaries>");
+define("MSG_SERVICE_TYPE_BREAKDOWN"		, "\t[ <ServiceType> ]\n" .
+										  "\t\tTotal Cost of CDRs\t: \$<TotalCDRCost>\n" .
+										  "\t\tTotal \$ Rated\t\t: \$<TotalRated>\n" .
+										  "\t\tTotal \$ Charged\t\t: \$<TotalCharged>\n" .
+										  "\t\tTotal No. of CDRs\t: <TotalCDRs>\n\n" .
+										  "<RecordTypes>\n");
 
 // Data Types for Bill Printing
 define("BILL_TYPE_INTEGER"				, 700);

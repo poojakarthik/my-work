@@ -249,4 +249,70 @@ function RemoveAusCode($strFNN)
 	return str_replace("+61", "0", $strFNN);
 }
 
+//------------------------------------------------------------------------//
+// ReplaceAliases()
+//------------------------------------------------------------------------//
+/**
+ * ReplaceAliases()
+ * 
+ * Returns a string with string replaced variables
+ * 
+ * Returns a string with string replaced variables
+ * 
+ * @param	string		$strMessage			The new message line to be added
+ * @param	array		$arrAliases			Associative array of alises.
+ * 											MUST use the same aliases as used in the 
+ * 											constant being used.  Key is the alias (including the <>'s)
+ * 											, and the Value is the value to be inserted.
+ * @return	string
+ * 
+ * @method
+ */
+function ReplaceAliases($strMessage, $arrAliases)
+{
+	if (is_array($arrAliases))
+	{
+		foreach ($arrAliases as $arrAlias => $arrValue)
+		{
+			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
+		}
+	}
+	return $strMessage;
+}	
+
+//------------------------------------------------------------------------//
+// GetCarrierName()
+//------------------------------------------------------------------------//
+/**
+ * GetCarrierName()
+ * 
+ * Convert a Carrier ID to a Carrier Name
+ * 
+ * Convert a Carrier ID to a Carrier Name
+ * 
+ * @param	integer		$intCarrier			Carrier code to convert
+ *
+ * @return	mixed							string: Carrier name
+ * 											FALSE: Unknown carrier code
+ * 
+ * @method
+ */
+function GetCarrierName($intCarrier)
+{
+	switch($intCarrier)
+	{
+		case CARRIER_UNITEL:
+			return "Unitel";
+		case CARRIER_OPTUS:
+			return "Optus";
+		case CARRIER_AAPT:
+			return "AAPT";
+		case CARRIER_ISEEK:
+			return "iSeek";
+		default:
+			return FALSE;
+	}
+}	
+
+
 ?>
