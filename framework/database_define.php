@@ -3311,6 +3311,108 @@
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
+	// Table: ScrapeAccountAdditional
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ScrapeAccountAdditional";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "CustomerId";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "DataOriginal";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: ScrapeFileStore
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ScrapeFileStore";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "CustomerId";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "DataOriginal";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: ScrapeInvoice
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ScrapeInvoice";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "CustomerId";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "DataOriginal";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
 	// Table: ScrapeNoteSys
 	//----------------------------------------------------------------------------//
 	
@@ -3349,6 +3451,108 @@
 	//----------------------------------------------------------------------------//
 	
 	$arrDefine['Name']		= "ScrapeNoteUser";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "CustomerId";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "DataOriginal";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: ScrapeServiceInbound
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ScrapeServiceInbound";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "CustomerId";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "DataOriginal";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: ScrapeServiceLandLine
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ScrapeServiceLandLine";
+	$arrDefine['Type']		= "InnoDB";
+	$arrDefine['Id']		= "Id";
+	$arrDefine['Index'][] 		= "";
+	$arrDefine['Unique'][] 		= "";
+		
+						
+	// Define Columns
+	$strName = "CustomerId";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
+		
+								
+	// Define Columns
+	$strName = "DataOriginal";
+		$arrDefine['Column'][$strName]['Type'] 			= "s";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString";
+		
+					
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+			
+	unset($arrDefine);
+	
+	//----------------------------------------------------------------------------//
+	// Table: ScrapeServiceMobile
+	//----------------------------------------------------------------------------//
+	
+	$arrDefine['Name']		= "ScrapeServiceMobile";
 	$arrDefine['Type']		= "InnoDB";
 	$arrDefine['Id']		= "Id";
 	$arrDefine['Index'][] 		= "";
@@ -4162,5 +4366,5 @@
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-	
+
 ?>

@@ -48,6 +48,21 @@
 							</td>
 						</tr>
 						<tr>
+							<th></th>
+							<td width="500">
+								<strong><span class="Attention">Attention</span> :</strong>
+								You can only identify by a Line Number if the Line Number itself
+								is currently unarchived. Otherwise the customer is required to 
+								identify themselves by quoting their Account Number printed on 
+								the top of all their bills.
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
 							<td></td>
 							<td>
 								<input type="submit" class="input-submit" value="Find Contact &#0187;" />

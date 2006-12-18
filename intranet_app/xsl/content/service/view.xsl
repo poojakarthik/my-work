@@ -10,6 +10,7 @@
 	<xsl:template name="Content">
 		<h1>View Service Details</h1>
 		
+		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/notes_popup.js"></script>
 		<script language="javascript" src="js/provisioning_popup.js"></script>
 		
@@ -172,101 +173,579 @@
 					
 					<div class="Seperator"></div>
 					
-					<h2>Provisioning</h2>
-					<div class="Seperator"></div>
-					
-					<form method="POST" action="provisioning_request.php">
-						<input type="hidden" name="Service">
-							<xsl:attribute name="value">
-								<xsl:text></xsl:text>
-								<xsl:value-of select="/Response/Service/Id" />
-							</xsl:attribute>
-						</input>
-						<div class="Filter-Form">
-							<div class="Filter-Form-Content">
-								... <a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:provisioning_popup_history ('</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-										<xsl:text>')</xsl:text>
-									</xsl:attribute>
-									<xsl:text>View Provisioning Requests and Responses for this Service</xsl:text>
-								</a><br />
-								... <a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:provisioning_popup_requests ('</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-										<xsl:text>')</xsl:text>
-									</xsl:attribute>
-									<xsl:text>View Provisioning Requests on this Service</xsl:text>
-								</a><br />
-							</div>
-						</div>
-						
+					<xsl:if test="/Response/Service/ServiceType = 102">
+						<h2>Provisioning</h2>
 						<div class="Seperator"></div>
 						
-						<div class="Filter-Form">
-							<div class="Filter-Form-Content">
-								<table border="0" cellpadding="1" cellspacing="0">
-									<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Carrier')" />
-												<xsl:with-param name="field" select="string('CarrierName')" />
-											</xsl:call-template>
-										</th>
-										<td>
-											<select name="Carrier">
-												<option value=""></option>
-												<xsl:for-each select="/Response/Carriers/Carrier">
-													<option>
-														<xsl:attribute name="value">
-															<xsl:text></xsl:text>
-															<xsl:value-of select="./Id" />
-														</xsl:attribute>
-														<xsl:value-of select="./Name" />
-													</option>
-												</xsl:for-each>
-											</select>
-										</td>
-									</tr>
-									<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Provisioning')" />
-												<xsl:with-param name="field" select="string('ProvisioningRequestType')" />
-											</xsl:call-template>
-										</th>
-										<td>
-											<select name="RequestType">
-												<option value=""></option>
-												<xsl:for-each select="/Response/ProvisioningRequestTypes/ProvisioningRequestType">
-													<option>
-														<xsl:attribute name="value">
-															<xsl:text></xsl:text>
-															<xsl:value-of select="./Id" />
-														</xsl:attribute>
-														<xsl:value-of select="./Name" />
-													</option>
-												</xsl:for-each>
-											</select>
-										</td>
-									</tr>
-									<tr>
-										<td colspan="2">
-											<div class="Seperator"></div>
-										</td>
-									</tr>
-									<tr>
-										<th></th>
-										<td>
-											<input type="submit" value="Perform Request &#0187;" class="input-submit" />
-										</td>
-									</tr>
-								</table>
+						<form method="POST" action="provisioning_request.php">
+							<input type="hidden" name="Service">
+								<xsl:attribute name="value">
+									<xsl:text></xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+							</input>
+							<div class="Filter-Form">
+								<div class="Filter-Form-Content">
+									... <a>
+										<xsl:attribute name="href">
+											<xsl:text>javascript:provisioning_popup_history ('</xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+											<xsl:text>')</xsl:text>
+										</xsl:attribute>
+										<xsl:text>View Provisioning Requests and Responses for this Service</xsl:text>
+									</a><br />
+									... <a>
+										<xsl:attribute name="href">
+											<xsl:text>javascript:provisioning_popup_requests ('</xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+											<xsl:text>')</xsl:text>
+										</xsl:attribute>
+										<xsl:text>View Provisioning Requests on this Service</xsl:text>
+									</a><br />
+								</div>
 							</div>
+							
+							<div class="Seperator"></div>
+							
+							<div class="Filter-Form">
+								<div class="Filter-Form-Content">
+									<table border="0" cellpadding="1" cellspacing="0">
+										<tr>
+											<th class="JustifiedWidth">
+												<xsl:call-template name="Label">
+													<xsl:with-param name="entity" select="string('Carrier')" />
+													<xsl:with-param name="field" select="string('CarrierName')" />
+												</xsl:call-template>
+											</th>
+											<td>
+												<select name="Carrier">
+													<option value=""></option>
+													<xsl:for-each select="/Response/Carriers/Carrier">
+														<option>
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="./Id" />
+															</xsl:attribute>
+															<xsl:value-of select="./Name" />
+														</option>
+													</xsl:for-each>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<th class="JustifiedWidth">
+												<xsl:call-template name="Label">
+													<xsl:with-param name="entity" select="string('Provisioning')" />
+													<xsl:with-param name="field" select="string('ProvisioningRequestType')" />
+												</xsl:call-template>
+											</th>
+											<td>
+												<select name="RequestType">
+													<option value=""></option>
+													<xsl:for-each select="/Response/ProvisioningRequestTypes/ProvisioningRequestType">
+														<option>
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="./Id" />
+															</xsl:attribute>
+															<xsl:value-of select="./Name" />
+														</option>
+													</xsl:for-each>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td colspan="2">
+												<div class="Seperator"></div>
+											</td>
+										</tr>
+										<tr>
+											<th></th>
+											<td>
+												<input type="submit" value="Perform Request &#0187;" class="input-submit" />
+											</td>
+										</tr>
+									</table>
+								</div>
+							</div>
+						</form>
+					</xsl:if>
+					
+					<div class="Seperator"></div>
+					
+					<h2>Service Address Information</h2>
+					<div class="Seperator"></div>
+					
+					<div class="Filter-Form">
+						<div class="Filter-Form-Content">
+							<xsl:if test="not(/Response/Service/ServiceAddress)">
+								<strong><span class="Attention">Attention</span> :</strong>
+								This service does not have any Service Address details 
+								associated with it.
+							</xsl:if>
+							
+							<div class="Seperator"></div>
+							
+							<table border="0" cellpadding="1" cellspacing="0">
+								<!-- Bill Information -->
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('BillName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="BillName" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/BillName" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('BillAddress1')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="BillAddress1" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/BillAddress1" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('BillAddress2')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="BillAddress2" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/BillAddress2" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('BillLocality')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="BillLocality" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/BillLocality" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('BillPostcode')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="BillPostcode" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/BillPostcode" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<div class="Seperator"></div>
+									</td>
+								</tr>
+								
+								<!-- End User Information -->
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('EndUserTitle')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="EndUserTitle" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/EndUserTitle" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('EndUserGivenName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="EndUserGivenName" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/EndUserGivenName" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('EndUserFamilyName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="EndUserFamilyName" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/EndUserFamilyName" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('EndUserCompanyName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="EndUserCompanyName" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/EndUserCompanyName" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('DateOfBirth')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<select name="DateOfBirth[year]">
+											<xsl:call-template name="Date_Loop">
+												<xsl:with-param name="start" select="number (1900)" />
+												<xsl:with-param name="cease" select="number (1990)" />
+												<xsl:with-param name="steps" select="number (1)" />
+												<xsl:with-param name="select" select="substring (/Response/Service/ServiceAddress/DateOfBirth, 1, 4)" />
+											</xsl:call-template>
+										</select> -
+										<select name="DateOfBirth[month]">
+											<xsl:call-template name="Date_Loop">
+												<xsl:with-param name="start" select="number (1)" />
+												<xsl:with-param name="cease" select="number (12)" />
+												<xsl:with-param name="steps" select="number (1)" />
+												<xsl:with-param name="select" select="substring (/Response/Service/ServiceAddress/DateOfBirth, 5, 2)" />
+											</xsl:call-template>
+										</select> -
+										<select name="DateOfBirth[day]">
+											<xsl:call-template name="Date_Loop">
+												<xsl:with-param name="start" select="number (1)" />
+												<xsl:with-param name="cease" select="number (31)" />
+												<xsl:with-param name="steps" select="number (1)" />
+												<xsl:with-param name="select" select="substring (/Response/Service/ServiceAddress/DateOfBirth, 7, 2)" />
+											</xsl:call-template>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('Employer')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="Employer" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/Employer" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('Occupation')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="Occupation" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/Occupation" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<div class="Seperator"></div>
+									</td>
+								</tr>
+								
+								<!-- Company Information -->
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ABN')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ABN" class="input-ABN">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ABN" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="TradingName" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/TradingName" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2">
+										<div class="Seperator"></div>
+									</td>
+								</tr>
+								
+								<!-- Service Information -->
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceAddressType')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceAddressType" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceAddressType" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceAddressTypeNumber')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceAddressTypeNumber" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceAddressTypeNumber" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceAddressTypeSuffix')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceAddressTypeSuffix" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceAddressTypeSuffix" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceStreetNumberStart')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceStreetNumberStart" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceStreetNumberStart" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceStreetNumberEnd')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceStreetNumberEnd" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceStreetNumberEnd" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceStreetNumberSuffix')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceStreetNumberSuffix" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceStreetNumberSuffix" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceStreetName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceStreetName" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceStreetName" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceStreetType')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceStreetType" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceStreetType" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServicePropertyName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServicePropertyName" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServicePropertyName" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceLocality')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceLocality" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceLocality" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceState')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServiceState" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceState" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServicePostcode')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="ServicePostcode" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/ServiceAddress/ServicePostcode" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+							</table>
 						</div>
-					</form>
+					</div>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">
@@ -382,5 +861,44 @@
 		<div class="Clear"></div>
 		<div class="Seperator"></div>
 		<div class="Seperator"></div>
+	</xsl:template>
+	
+	
+	
+	<xsl:template name="Date_Loop">
+		<xsl:param name="start">1</xsl:param>
+		<xsl:param name="cease">0</xsl:param>
+		<xsl:param name="steps">1</xsl:param>
+		<xsl:param name="count">0</xsl:param>
+		
+		<xsl:param name="select">0</xsl:param>
+		
+		<xsl:if test="number($start) + number($count) &lt;= number($cease)">
+			<option>
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="$start + $count" />
+				</xsl:attribute>
+				
+				<xsl:choose>
+					<xsl:when test="$select = $start + $count">
+						<xsl:attribute name="selected">
+							<xsl:text>selected</xsl:text>
+						</xsl:attribute>
+					</xsl:when>
+					<xsl:otherwise>
+					</xsl:otherwise>
+				</xsl:choose>
+				
+				<xsl:value-of select="$start + $count" />
+			</option>
+			<xsl:call-template name="Date_Loop">
+				<xsl:with-param name="start" select="$start" />
+				<xsl:with-param name="cease" select="$cease" />
+				<xsl:with-param name="steps" select="$steps" />
+				<xsl:with-param name="count" select="$count + $steps" />
+				<xsl:with-param name="select" select="$select" />
+			</xsl:call-template>
+		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

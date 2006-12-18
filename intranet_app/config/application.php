@@ -104,6 +104,7 @@ require ("classes/carrier/carrier.php");
 require ("classes/carrier/carriers.php");
 
 //service
+require ("classes/service/serviceaddress.php");
 require ("classes/service/service.php");
 require ("classes/service/services.php");
 

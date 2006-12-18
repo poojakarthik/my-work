@@ -18,6 +18,7 @@
 	// Pull documentation information for a Service and an Account
 	$docDocumentation->Explain ('Archive');
 	$docDocumentation->Explain ('Service');
+	$docDocumentation->Explain ('Service Address');
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Carrier');
 	$docDocumentation->Explain ('Provisioning');
@@ -41,7 +42,7 @@
 	$calCarriers	= $Style->attachObject (new Carriers ());
 	
 	// Load the List of Provisioning Request Type Objects
-	$calCarriers	= $Style->attachObject (new ProvisioningRequestTypes ());
+	$prtPRQTypes	= $Style->attachObject (new ProvisioningRequestTypes ());
 	
 	// Output the Account View
 	$Style->Output ('xsl/content/service/view.xsl');

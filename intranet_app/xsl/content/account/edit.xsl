@@ -199,51 +199,31 @@
 					<xsl:choose>
 						<xsl:when test="/Response/Account/Archived = 0">
 							This Account is <strong><span class="Green">Currently Available</span></strong>.
-							If you would like to make this Account Archived, please click the button below:
-							
-							<div class="Seperator"></div>
-							
-							<table border="0" cellpadding="5" cellspacing="0">
-								<tr>
-									<td><input type="checkbox" name="Confirm" value="1" id="Confirm_Archive" /></td>
-									<td><label for="Confirm_Archive">Yes, Archive this Account and the Services associated with it.</label></td>
-								</tr>
-								<tr>
-									<td></td>
-									<td>
-										<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
-									</td>
-								</tr>
-							</table>
 						</xsl:when>
 						<xsl:otherwise>
 							This Account is <strong><span class="Red">Currently Archived</span></strong>.
-							If you would like to make this Account Available, please click the button below:
-							
-							<div class="Seperator"></div>
-							
-							<table border="0" cellpadding="5" cellspacing="0">
+						</xsl:otherwise>
+					</xsl:choose>
+					
+					If you would like to make this Account Archived, please click the button below:
+					<div class="Seperator"></div>
+					
+					<table border="0" cellpadding="5" cellspacing="0">
+						<xsl:choose>
+							<xsl:when test="/Response/Account/Archived = 1">
 								<tr>
-									<td>
-										<input type="radio" name="Archived" value="0" id="Archive:FALSE">
-											<xsl:choose>
-												<xsl:when test="/Response/Account/Archived = 0">
-													<xsl:attribute name="checked">
-														<xsl:text>checked</xsl:text>
-													</xsl:attribute>
-												</xsl:when>
-											</xsl:choose>
-										</input>
-									</td>
+									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
 									<td>
 										<label for="Archive:FALSE">
 											Make this account <strong><span class="Green">Available</span></strong> and active
 										</label>
 									</td>
 								</tr>
+							</xsl:when>
+							<xsl:otherwise>
 								<tr>
 									<td>
-										<input type="radio" name="Archived" value="1" id="Archive:TRUE">
+										<input type="checkbox" name="Archived" value="1" id="Archive:TRUE">
 											<xsl:choose>
 												<xsl:when test="/Response/Account/Archived = 1">
 													<xsl:attribute name="checked">
@@ -259,15 +239,15 @@
 										</label>
 									</td>
 								</tr>
-								<tr>
-									<td></td>
-									<td>
-										<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
-									</td>
-								</tr>
-							</table>
-						</xsl:otherwise>
-					</xsl:choose>
+							</xsl:otherwise>
+						</xsl:choose>
+						<tr>
+							<td></td>
+							<td>
+								<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+							</td>
+						</tr>
+					</table>
 				</div>
 			</div>
 		</form>

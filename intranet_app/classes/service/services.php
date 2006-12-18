@@ -81,7 +81,7 @@
 			$selService->Execute (Array ('FNN' => $strFNN));
 			
 			// If it wasn't found - throw an error
-			if ($selService->Count () == 0)
+			if ($selService->Count () <> 1)
 			{
 				throw new Exception ('Service not found');
 			}

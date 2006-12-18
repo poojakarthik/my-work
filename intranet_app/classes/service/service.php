@@ -74,6 +74,12 @@
 			parent::__construct ('Service', $this->Pull ('Id')->getValue ());
 			
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
+			
+			$oblintServiceAddress = $this->Pop ('ServiceAddress');
+			if ($oblintServiceAddress !== null)
+			{
+				$this->Push (new ServiceAddress ($oblintServiceAddress->getValue ()));
+			}
 		}
 		
 		//------------------------------------------------------------------------//
@@ -91,10 +97,10 @@
 		 * @method
 		 */
 		 
-		 public function getAccount ()
-		 {
-		 	return new Account ($this->Pull ('Account')->getValue ());
-		 }
+		public function getAccount ()
+		{
+			return new Account ($this->Pull ('Account')->getValue ());
+		}
 		 
 		//------------------------------------------------------------------------//
 		// CreateNewProvisioningRequest
@@ -114,11 +120,11 @@
 		 * @method
 		 */
 		 
-		 public function CreateNewProvisioningRequest ($aemAuthenticatedEmployee, $intCarrier, $intProvisioningRequestType)
-		 {
-		 	$insProvisioningRequest = new StatementInsert ('Request');
-		 	$insProvisioningRequest->Execute (
-		 		Array (
+		public function CreateNewProvisioningRequest ($aemAuthenticatedEmployee, $intCarrier, $intProvisioningRequestType)
+		{
+			$insProvisioningRequest = new StatementInsert ('Request');
+			$insProvisioningRequest->Execute (
+				Array (
 			 		'Carrier'			=> $intCarrier,
 			 		'Service'			=> $this->Pull ('Id')->getValue (),
 			 		'Employee'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
@@ -126,8 +132,8 @@
 			 		'RequestDateTime'	=> date ('Y-m-d H:i:s'),
 			 		'Status'			=> REQUEST_STATUS_WAITING
 			 	)
-		 	);
-		 }
+			);
+		}
 	}
 	
 ?>
