@@ -1293,8 +1293,8 @@ class MySQLFunction
 	 * @param		mixed	mixColumns		Can be either associative or indexed array.
 	 * 										Use indexed for normal column referencing.
 	 * 										Use associated arrays for either renaming of
-	 * 										columns (eg. ["ColumnName"] = "ColumnAlias") and
-	 * 										special SQL funcion calls (eg. ["NOW()"] = "NowAlias")
+	 * 										columns (eg. ["ColumnAlias"] = "ColumnName") and
+	 * 										special SQL funcion calls (eg. ["NowAlias"] = "NOW()")
 	 * @param		mixed	mixWhere		optional A full SQL WHERE clause, minus the keyword.
 	 * 										Paramaters should be aliased in a meaningful
 	 * 										fashion enclosed in <>'s
@@ -1308,11 +1308,13 @@ class MySQLFunction
 	 * @param		string	strLimit		optional SQL LIMIT clause, minus the keyword
 	 * 										(eg. "5") - Return first 5 rows
 	 * 										(eg. "5,10") - Return rows 6-15
+	 * @param		string	strGroupBy		optional a full SQL GROUP BY clause, minus the keywords
+	 * 										(eg. "")
 	 * @return		void
 	 *
 	 * @method
 	 */ 
-	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "")
+	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "", $strGroupBy = "")
 	{
 		parent::__construct();
 		
@@ -1333,15 +1335,15 @@ class MySQLFunction
 			reset($mixColumns);
 			
 		 	// Add the columns 	
-		 	while (key($mixColumns) != null)
+		 	while (current($mixColumns) != null)
 		 	{
-		 		$strQuery .= key($mixColumns);
+		 		$strQuery .= current($mixColumns);
 		 		
 		 		// If this column has an AS alias
-		 		if (current($mixColumns) != "")
+		 		if (key($mixColumns) != "")
 		 		{
 		 			$strQuery .= " AS ";
-		 			$strQuery .= current($mixColumns);
+		 			$strQuery .= key($mixColumns);
 		 		}
 		 		$strQuery .= ", ";
 				next($mixColumns);
@@ -1378,6 +1380,12 @@ class MySQLFunction
 	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
 	 		
 			$strQuery .= $strWhere . "\n";
+	 	}
+	 	
+	 	// Add the GROUP BY clause
+	 	if ($strGroupBy != "")
+	 	{
+			$strQuery .= "GROUP BY " . $strGroupBy . "\n";	
 	 	}
 	 	
 	 	// Add the ORDER BY clause
