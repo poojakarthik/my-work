@@ -318,23 +318,31 @@ die();
 			
 			// calculate invoice total
 			$fltTotal	= $fltTotalDebits - $fltTotalCredits;
-			$fltBalance	= $fltTotal; 				//TODO!!!! - FAKE FOR NOW
+			$fltTax		= $fltTotal / TAX_RATE_GST
+			$fltBalance	= $fltTotal + $fltTax;
+			
+			// calculate account balance
+			//TODO!!!!
+			// SELECT SUM(Balance) FROM Invoice WHERE Status = INVOICE_COMMITTED
+			// $fltAccountBalance = 
+			//TODO!!!!
 			
 			// write to temporary invoice table
 			$arrInvoiceData = Array();
-			$arrInvoiceData['AccountGroup']	= $arrAccount['AccountGroup'];
-			$arrInvoiceData['Account']		= $arrAccount['Id'];
-			//$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
-			$arrInvoiceData['CreatedOn']	= date("Y-m-d H:i:s");
-			//$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
-			$arrInvoiceData['DueOn']		= date("Y-m-d H:i:s", strtotime("+ ". $arrAccount['PaymentTerms'] ." days"));
-			$arrInvoiceData['Credits']		= $fltTotalCredits;
-			$arrInvoiceData['Debits']		= $fltTotalDebits;
-			$arrInvoiceData['Total']		= $fltTotal;
-			$arrInvoiceData['Tax']			= $fltTotal / TAX_RATE_GST;
-			$arrInvoiceData['Balance']		= $fltBalance;
-			$arrInvoiceData['Status']		= INVOICE_TEMP;
-			$arrInvoiceData['InvoiceRun']	= $strInvoiceRun;
+			$arrInvoiceData['AccountGroup']		= $arrAccount['AccountGroup'];
+			$arrInvoiceData['Account']			= $arrAccount['Id'];
+			//$arrInvoiceData['CreatedOn']		= new MySQLFunction("NOW()");
+			$arrInvoiceData['CreatedOn']		= date("Y-m-d H:i:s");
+			//$arrInvoiceData['DueOn']			= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
+			$arrInvoiceData['DueOn']			= date("Y-m-d H:i:s", strtotime("+ ". $arrAccount['PaymentTerms'] ." days"));
+			$arrInvoiceData['Credits']			= $fltTotalCredits;
+			$arrInvoiceData['Debits']			= $fltTotalDebits;
+			$arrInvoiceData['Total']			= $fltTotal;
+			$arrInvoiceData['Tax']				= $fltTax;
+			$arrInvoiceData['Balance']			= $fltBalance;
+			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
+			$arrInvoiceData['Status']			= INVOICE_TEMP;
+			$arrInvoiceData['InvoiceRun']		= $strInvoiceRun;
 			
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))
