@@ -74,6 +74,10 @@
 			parent::__construct ('ServiceAddress', $this->Pull ('Id')->getValue ());
 			
 			$this->Push (new ServiceAddressTypes ($this->Pull ("ServiceAddressType")->getValue ()));
+			$this->Push (new ServiceStreetTypes ($this->Pull ("ServiceStreetType")->getValue ()));
+			$this->Push (new ServiceStreetSuffixTypes ($this->Pull ("ServiceStreetTypeSuffix")->getValue ()));
+			$this->Push (new ServiceEndUserTitleTypes ($this->Pull ("EndUserTitle")->getValue ()));
+			$this->Push (new ServiceStateTypes ($this->Pull ("ServiceState")->getValue ()));
 		}
 	}
 	

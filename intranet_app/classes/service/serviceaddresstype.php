@@ -279,7 +279,7 @@
 					break;
 					
 				case SERVICE_ADDR_TYPE_PIER:
-					$strName = "PIER";
+					$strName = "Pier";
 					break;
 					
 				case SERVICE_ADDR_TYPE_PO_BOX:

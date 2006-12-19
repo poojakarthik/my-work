@@ -73,15 +73,8 @@
 			// Construct the object
 			parent::__construct ('Service', $this->Pull ('Id')->getValue ());
 			
-			// Pull the Service Address
+			// Pull the Service Type(s)
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
-			
-			$oblintServiceAddress = $this->Pop ('ServiceAddress');
-			
-			if ($oblintServiceAddress->getValue () != null)
-			{
-				$this->Push (new ServiceAddress ($oblintServiceAddress->getValue ()));
-			}
 		}
 		
 		//------------------------------------------------------------------------//
@@ -102,6 +95,34 @@
 		public function getAccount ()
 		{
 			return new Account ($this->Pull ('Account')->getValue ());
+		}
+		
+		//------------------------------------------------------------------------//
+		// ServiceAddress
+		//------------------------------------------------------------------------//
+		/**
+		 * ServiceAddress()
+		 *
+		 * Pull the Associated Service Address Information
+		 *
+		 * Pull the Associated Service Address Information. This is a seperate function
+		 * because of memory leakings that have been occurring
+		 *
+		 * @return	ServiceAddress
+		 *
+		 * @method
+		 */
+		 
+		public function ServiceAddress ()
+		{
+			$oblintServiceAddress = $this->Pop ('ServiceAddress');
+			
+			if ($oblintServiceAddress->getValue () != null)
+			{
+				return $this->Push (new ServiceAddress ($oblintServiceAddress->getValue ()));
+			}
+			
+			return null;
 		}
 		 
 		//------------------------------------------------------------------------//

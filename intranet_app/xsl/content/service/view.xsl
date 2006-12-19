@@ -383,12 +383,24 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="EndUserTitle" class="input-string">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/Service/ServiceAddress/EndUserTitle" />
-											</xsl:attribute>
-										</input>
+										<select name="EndUserTitle">
+											<option></option>
+											<xsl:for-each select="/Response/Service/ServiceAddress/ServiceEndUserTitleTypes/ServiceEndUserTitleType">
+												<option>
+													<xsl:attribute name="value">
+														<xsl:text></xsl:text>
+														<xsl:value-of select="./Id" />
+													</xsl:attribute>
+													<xsl:if test="@selected='selected'">
+														<xsl:attribute name="selected">
+															<xsl:text>selected</xsl:text>
+														</xsl:attribute>
+													</xsl:if>
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Name" />
+												</option>
+											</xsl:for-each>
+										</select>
 									</td>
 								</tr>
 								<tr>
@@ -683,12 +695,52 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceStreetType" class="input-string">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceStreetType" />
-											</xsl:attribute>
-										</input>
+										<select name="ServiceStreetType">
+											<option></option>
+											<xsl:for-each select="/Response/Service/ServiceAddress/ServiceStreetTypes/ServiceStreetType">
+												<option>
+													<xsl:attribute name="value">
+														<xsl:text></xsl:text>
+														<xsl:value-of select="./Id" />
+													</xsl:attribute>
+													<xsl:if test="@selected='selected'">
+														<xsl:attribute name="selected">
+															<xsl:text>selected</xsl:text>
+														</xsl:attribute>
+													</xsl:if>
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Name" />
+												</option>
+											</xsl:for-each>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('ServiceStreetTypeSuffix')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<select name="ServiceStreetSuffixType">
+											<option></option>
+											<xsl:for-each select="/Response/Service/ServiceAddress/ServiceStreetSuffixTypes/ServiceStreetSuffixType">
+												<option>
+													<xsl:attribute name="value">
+														<xsl:text></xsl:text>
+														<xsl:value-of select="./Id" />
+													</xsl:attribute>
+													<xsl:if test="@selected='selected'">
+														<xsl:attribute name="selected">
+															<xsl:text>selected</xsl:text>
+														</xsl:attribute>
+													</xsl:if>
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Name" />
+												</option>
+											</xsl:for-each>
+										</select>
 									</td>
 								</tr>
 								<tr>
@@ -731,12 +783,24 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceState" class="input-string">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceState" />
-											</xsl:attribute>
-										</input>
+										<select name="ServiceState">
+											<option></option>
+											<xsl:for-each select="/Response/Service/ServiceAddress/ServiceStateTypes/ServiceStateType">
+												<option>
+													<xsl:attribute name="value">
+														<xsl:text></xsl:text>
+														<xsl:value-of select="./Id" />
+													</xsl:attribute>
+													<xsl:if test="@selected='selected'">
+														<xsl:attribute name="selected">
+															<xsl:text>selected</xsl:text>
+														</xsl:attribute>
+													</xsl:if>
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Name" />
+												</option>
+											</xsl:for-each>
+										</select>
 									</td>
 								</tr>
 								<tr>

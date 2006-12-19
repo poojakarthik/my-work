@@ -203,6 +203,16 @@
 				 
 				 
 	// Define Columns 
+	$strName = "PrimaryContact"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
 	$strName = "CustomerGroup"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "int(20) unsigned"; 
@@ -2108,7 +2118,7 @@
 				 
 				 
 	// Define Columns 
-	$strName = "AcountBalance"; 
+	$strName = "AccountBalance"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "float"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
@@ -3136,6 +3146,16 @@
 	$arrDefine['Unique'][] 		= ""; 
 		 
 		 
+				 
+	// Define Columns 
+	$strName = "Code"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(25)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+				 
 				 
 	// Define Columns 
 	$strName = "Name"; 

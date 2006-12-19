@@ -41,74 +41,6 @@
 	{
 		
 		//------------------------------------------------------------------------//
-		// _ADSL
-		//------------------------------------------------------------------------//
-		/**
-		 * _ADSL
-		 *
-		 * Used when the ServiceType is an ADSL line
-		 *
-		 * Used when the ServiceType is an ADSL line
-		 *
-		 * @type	dataString
-		 *
-		 * @property
-		 */
-		
-		private $_ADSL;
-		
-		//------------------------------------------------------------------------//
-		// _MOBILE
-		//------------------------------------------------------------------------//
-		/**
-		 * _MOBILE
-		 *
-		 * Used when the ServiceType is a Mobile Number
-		 *
-		 * Used when the ServiceType is a Mobile Number
-		 *
-		 * @type	dataString
-		 *
-		 * @property
-		 */
-		
-		private $_MOBLE;
-		
-		//------------------------------------------------------------------------//
-		// _LAND_LINE
-		//------------------------------------------------------------------------//
-		/**
-		 * _LAND_LINE
-		 *
-		 * Used when the ServiceType is a Land Line Number
-		 *
-		 * Used when the ServiceType is a Land Line Number
-		 *
-		 * @type	dataString
-		 *
-		 * @property
-		 */
-		
-		private $_LAND_LINE;
-		
-		//------------------------------------------------------------------------//
-		// _INBOUND
-		//------------------------------------------------------------------------//
-		/**
-		 * _INBOUND
-		 *
-		 * Used when the ServiceType is an Inbound (13/1300/1800) number
-		 *
-		 * Used when the ServiceType is an Inbound (13/1300/1800) number
-		 *
-		 * @type	dataString
-		 *
-		 * @property
-		 */
-		
-		private $_INBOUND;
-		
-		//------------------------------------------------------------------------//
 		// __construct
 		//------------------------------------------------------------------------//
 		/**
@@ -301,7 +233,7 @@
 				case SERVICE_ADDR_TYPE_VILLA:						$this->Select ($this->_VILLA);						return true;
 				case SERVICE_ADDR_TYPE_WARD:						$this->Select ($this->_WARD);						return true;
 				case SERVICE_ADDR_TYPE_WHARF:						$this->Select ($this->_WHARF);						return true;
-				default:						return false;
+				default:																								return false;
 			}
 		}
 	}

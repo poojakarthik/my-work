@@ -241,7 +241,7 @@
 	}
 	else
 	{
-		$strFileLocation = "/home/richdavis/vixen/framework/database_define.php";
+		$strFileLocation = "../framework/database_define.php";
 	}
 	
 	if (file_exists($strFileLocation))
@@ -269,6 +269,10 @@
 		echo "Unable to write file.\n\n".$e;
 		die();
 	}
+	
+	chmod ($strFileLocation, 0777);
+	chmod ($strFileLocation . ".bak", 0777);
+	
 	echo "File successfully written!";
 	
 	?>

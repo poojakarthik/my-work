@@ -105,8 +105,22 @@ require ("classes/carrier/carriers.php");
 
 //service
 require ("classes/service/serviceaddress.php");
+
 require ("classes/service/serviceaddresstype.php");
 require ("classes/service/serviceaddresstypes.php");
+
+require ("classes/service/servicestreettype.php");
+require ("classes/service/servicestreettypes.php");
+
+require ("classes/service/servicestreetsuffixtype.php");
+require ("classes/service/servicestreetsuffixtypes.php");
+
+require ("classes/service/serviceendusertitletype.php");
+require ("classes/service/serviceendusertitletypes.php");
+
+require ("classes/service/servicestatetype.php");
+require ("classes/service/servicestatetypes.php");
+
 require ("classes/service/service.php");
 require ("classes/service/services.php");
 

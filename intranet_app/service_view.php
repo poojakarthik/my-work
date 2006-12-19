@@ -27,6 +27,9 @@
 	// Get the Service
 	$srvService		= $Style->attachObject (new Service ($_GET ['Id']));
 	
+	// Get the Service Address Information
+	$srvService->ServiceAddress ();
+	
 	// Get the Account
 	$actAccount		= $Style->attachObject (new Account ($srvService->Pull ('Account')->getValue ()));
 	

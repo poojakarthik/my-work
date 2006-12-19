@@ -279,7 +279,7 @@ define("SERVICE_ADDR_TYPE_SHOP_2"					, "SP");
 define("SERVICE_ADDR_TYPE_SITE"						, "SIT");
 define("SERVICE_ADDR_TYPE_STALL"					, "SL");
 define("SERVICE_ADDR_TYPE_STALL_2"					, "STL");
-define("SERVICE_ADDR_TYPE_STU"						, "STU");
+define("SERVICE_ADDR_TYPE_STUDIO"					, "STU");
 define("SERVICE_ADDR_TYPE_SUITE"					, "STE");
 define("SERVICE_ADDR_TYPE_TIER"						, "TR");
 define("SERVICE_ADDR_TYPE_TOWER"					, "TW");
@@ -608,13 +608,13 @@ define("END_USER_TITLE_TYPE_MS"						, "MS");
 define("END_USER_TITLE_TYPE_PROFESSOR"				, "PROF");
 
 // Service State Type
-define("SERVICE_STATE_TYPE_AUSTRALIAN_CAPITAL_TERRITORY"	, "ACT");
-define("SERVICE_STATE_TYPE_NEW_SOUTH_WALES"					, "NSW");
-define("SERVICE_STATE_TYPE_NORTHERN_TERRITORY"				, "NT");
-define("SERVICE_STATE_TYPE_QUEENSLAND"						, "QLD");
-define("SERVICE_STATE_TYPE_SOUTH_AUSTRALIA"					, "SA");
-define("SERVICE_STATE_TYPE_TASMANIA"						, "TAS");
-define("SERVICE_STATE_TYPE_VICTORIA"						, "VIC");
-define("SERVICE_STATE_TYPE_WESTERN_AUSTRALIA"				, "WA");
+define("SERVICE_STATE_TYPE_ACT"		, "ACT");
+define("SERVICE_STATE_TYPE_NSW"		, "NSW");
+define("SERVICE_STATE_TYPE_NT"		, "NT");
+define("SERVICE_STATE_TYPE_QLD"		, "QLD");
+define("SERVICE_STATE_TYPE_SA"		, "SA");
+define("SERVICE_STATE_TYPE_TAS"		, "TAS");
+define("SERVICE_STATE_TYPE_VIC"		, "VIC");
+define("SERVICE_STATE_TYPE_WA"		, "WA");
 
 ?>
