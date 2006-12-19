@@ -78,6 +78,7 @@
 
 		
 		
+		
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2928,7 +2929,7 @@
 		
 								
 	// Define Columns
-	$strName = "group";
+	$strName = "Group";
 		$arrDefine['Column'][$strName]['Type'] 			= "i";
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
@@ -4421,4 +4422,5 @@
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
+	
 ?>
