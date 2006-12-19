@@ -233,13 +233,20 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$mixValue = $this->_FetchRawCDR('OriginatingCity') . " to " . $this->_FetchRawCDR('Destination');
 		$this->_AppendCDR('Description', $mixValue);
 		
+		// Work out Service Type
+		//TODO !!!! - need to account for inbound services
+		$intServiceType = SERVICE_TYPE_LAND_LINE;
+		
+		// Work out Record Type
+		//TODO !!!! - work this out
+		$strRecordCode = '';
+		
 		// RecordType
-		$mixValue = $this->_FetchRawCDR(''); // needs to match database
-		//$this->_AppendCDR('RecordType', $mixValue);
+		$mixValue = $this->FindRecordType($intServiceType, $strRecordCode); 
+		$this->_AppendCDR('RecordType', $mixValue);
 		
 		// ServiceType
-		//TODO !!!! - need to account for inbound services
-		$mixValue = SERVICE_TYPE_LAND_LINE;
+		$mixValue = $intServiceType;
 		$this->_AppendCDR('ServiceType', $mixValue);
 
 		//--------------------------------------------------------//

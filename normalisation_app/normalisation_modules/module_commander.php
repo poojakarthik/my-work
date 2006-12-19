@@ -187,8 +187,12 @@ class NormalisationModuleCommander extends NormalisationModule
 	 	$mixValue						= $this->_FetchRawCDR('CallType');	// TODO: Link to Call Type List/Table
 	 	$this->_AppendCDR('Description', (int)$mixValue);
 
+		// Work out Record Type
+		//TODO !!!! - work this out
+		$strRecordCode = '';
+		
 		// RecordType
-		//$mixValue = ; // needs to match database
+		$mixValue = $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 		
 		// ServiceType
@@ -200,7 +204,7 @@ class NormalisationModuleCommander extends NormalisationModule
 		$this->_AppendCDR('ServiceType', (float)$mixValue);
 		
 		// Destination Code
-		// FIXME: Convert to codes
+		// TODO!!! - Convert to codes
 		$mixValue = $this->_FetchRawCDR('');
 		$this->_AppendCDR('DestinationCode', $mixValue);
 

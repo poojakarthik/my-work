@@ -102,10 +102,11 @@ define("CDR_CANT_NORMALISE_BAD_SEQ_NO"	, 104);
 define("CDR_CANT_NORMALISE_HEADER"		, 105);
 define("CDR_CANT_NORMALISE_NON_CDR"		, 106);
 define("CDR_BAD_OWNER"					, 107);
-define("CDR_CANT_NORMALISE_NO_MODULE"	, 108);
-define("CDR_CANT_NORMALISE_INVALID"		, 109);
-define("CDR_IGNORE"						, 110);
-define("CDR_RATED"						, 111);
+define("CDR_BAD_RECORD_TYPE"			, 108);
+define("CDR_CANT_NORMALISE_NO_MODULE"	, 109);
+define("CDR_CANT_NORMALISE_INVALID"		, 110);
+define("CDR_IGNORE"						, 140);
+define("CDR_RATED"						, 150);
 define("CDR_TEMP_INVOICE"				, 198);
 define("CDR_INVOICED"					, 199);
 

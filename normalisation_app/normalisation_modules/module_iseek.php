@@ -149,7 +149,7 @@ class NormalisationModuleIseek extends NormalisationModule
 		$this->_AppendCDR('Description', $mixValue);
 		
 		// RecordType
-		//$mixValue = ; // needs to match database
+		$mixValue = $this->FindRecordType(SERVICE_TYPE_ADSL, 'MonthlyUsage'); 
 		$this->_AppendCDR('RecordType', $mixValue);
 		
 		// ServiceType

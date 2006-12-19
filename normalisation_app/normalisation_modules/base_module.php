@@ -222,6 +222,7 @@ abstract class NormalisationModule
 		$this->_rptNormalisationReport 	= $rptNormalisationReport;
 		
 		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>", "CreatedOn DESC", "1");
+		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
 	}
 	
@@ -616,38 +617,24 @@ abstract class NormalisationModule
 	 * Find the record type for the current CDR
 	 * 
 	 *
-	 * @return	bool					
+	 * @param	int		intServiceType		Service Type Constant
+	 * @param	string	strRecordCode		Record Type code
+	 * @return	int		Record Type Id					
 	 *
 	 * @method
 	 */
-	 protected function FindRecordType()
+	 protected function FindRecordType($intServiceType, $strRecordCode)
 	 {
 
-	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
+	 	$intResult = $this->_selFindRecordType->Execute(Array("ServiceType" => $intServiceType, "Code" => $strRecordCode));
 		
-	 	if ($arrResult = $this->_selFindOwner->Fetch())
+	 	if ($arrResult = $this->_selFindRecordType->Fetch())
 	 	{
-	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
-	 		$this->_arrNormalisedData['Account']		= $arrResult['Account'];
-	 		$this->_arrNormalisedData['Service']		= $arrResult['Id'];
-	 		return true;
-	 	}
-	 	else
-	 	{
-	 		$arrParams['fnn'] = substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
-	 		
-	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
-	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
-	 		{
-	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
-	 			$this->_arrNormalisedData['Account']		= $arrResult['Account'];
-	 			$this->_arrNormalisedData['Service']		= $arrResult['Id'];
-	 			return true;
-	 		}
+	 		return $arrResult['Id'];
 	 	}
 	 	
-		// Return false if there was no match, or more than one match
-		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
+		// Return false if there was no match
+		$this->_arrNormalisedData['Status']	= CDR_BAD_RECORD_TYPE;
 	 	return false;
 	 }
 
