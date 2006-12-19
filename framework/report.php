@@ -280,7 +280,7 @@ class Report
 				$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
 			}
 		}
-			$this->AddMessage($strMessage, FALSE);
+		$this->AddMessage($strMessage, $bolNewLine);
 	}	
 		
 	
