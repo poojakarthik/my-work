@@ -4266,6 +4266,15 @@
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
 		
+								
+	// Define Columns
+	$strName = "Credit";
+		$arrDefine['Column'][$strName]['Type'] 			= "d";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat";
+		
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
@@ -4366,6 +4375,5 @@
 					
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine;
-	
 
 ?>
