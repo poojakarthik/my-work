@@ -356,9 +356,9 @@ die();
 		$selCarrierSummary = new StatementSelect(	"CDR",
 													$arrCarrierColumns,
 													/*"CDR.Status = ".CDR_TEMP_INVOICE*/NULL,
-													"CDR.Carrier, CDR.RecordType",
+													"CDR.Carrier",
 													NULL,
-													"CDR.Carrier, CDR.RecordType");
+													"CDR.Carrier");
 		$selCarrierSummary->Execute();
 		if (!$arrCarrierSummarys = $selCarrierSummary->FetchAll())
 		{
@@ -369,17 +369,16 @@ die();
 			//Debug($arrCarrierSummarys);	
 		}
 		
-		$arrServiceTypeColumns['ServiceType']			= "CDR.ServiceType";
-		$arrServiceTypeColumns['RecordType']			= "RecordType.Name";
-		$arrServiceTypeColumns['TotalCost']				= "SUM(CDR.Cost)";
-		$arrServiceTypeColumns['TotalRated']			= "SUM(CDR.Charge)";
-		$arrServiceTypeColumns['TotalCDRs']				= "COUNT(CDR.Id)";
-		$selServiceTypeSummary = new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id",
+		$arrServiceTypeColumns['ServiceType']			= "ServiceType";
+		$arrServiceTypeColumns['TotalCost']				= "SUM(Cost)";
+		$arrServiceTypeColumns['TotalRated']			= "SUM(Charge)";
+		$arrServiceTypeColumns['TotalCDRs']				= "COUNT(Id)";
+		$selServiceTypeSummary = new StatementSelect(	"CDR",
 														$arrServiceTypeColumns,
 														/*"CDR.Status = ".CDR_TEMP_INVOICE*/NULL,
-														"CDR.ServiceType, CDR.RecordType",
+														"ServiceType",
 														NULL,
-														"CDR.ServiceType, CDR.RecordType");
+														"ServiceType");
 		$selServiceTypeSummary->Execute();
 		if (!$arrServiceTypeSummarys = $selServiceTypeSummary->FetchAll())
 		{
@@ -390,6 +389,17 @@ die();
 			//Debug($arrServiceTypeSummarys);	
 		}
 		
+		$arrCarrierRecordTypeColumns['RecordType']		= "RecordType.Name";
+		$arrCarrierRecordTypeColumns['TotalCost']		= "SUM(CDR.Cost)";
+		$arrCarrierRecordTypeColumns['TotalRated']		= "SUM(CDR.Charge)";
+		$arrCarrierRecordTypeColumns['TotalCDRs']		= "COUNT(CDR.Id)";
+		$selRecordTypes 			= new StatementSelect("CDR JOIN RecordType ON CDR.RecordType = RecordType.Id",
+														  $arrCarrierRecordTypeColumns,
+														  "CDR.Carrier = <Carrier> OR CDR.ServiceType = <ServiceType>",
+														  "RecordType.Name",
+														  NULL,
+														  "CDR.RecordType");
+		
 		// Generate the the Audit Report
 		$arrInvoiceSummaryVars['<TotalInvoices>']		= number_format((int)$arrInvoiceSummary['TotalInvoices']);
 		$arrInvoiceSummaryVars['<TotalInvoicedExGST>']	= number_format((float)$arrInvoiceSummary['TotalInvoicedExGST'], 2);
@@ -399,17 +409,64 @@ die();
 		$arrInvoiceSummaryVars['<TotalCDRs>']			= number_format((int)$arrInvoiceSummary['TotalCDRs']);
 		$this->_rptAuditReport->AddMessageVariables(MSG_INVOICE_SUMMARY, $arrInvoiceSummaryVars);
 		
+		// Generate Carrier Summaries
 		$strSummaries = "";
 		foreach($arrCarrierSummarys as $arrCarrierSummary)
 		{
 			$arrInvoiceSummaryVars['<Carrier>']			= GetCarrierName($arrCarrierSummary['CarrierId']);
-			$arrInvoiceSummaryVars['<TotalCDRCost>']	= number_format((float)$arrCarrierSummary['TotalCDRCost'], 2);
+			$arrInvoiceSummaryVars['<TotalCDRCost>']	= number_format((float)$arrCarrierSummary['TotalCost'], 2);
 			$arrInvoiceSummaryVars['<TotalRated>']		= number_format((float)$arrCarrierSummary['TotalRated'], 2);
 			$arrInvoiceSummaryVars['<TotalCDRs>']		= number_format((int)$arrCarrierSummary['TotalCDRs']);
+			
+			// Generate Carrier's Record Type Breakdowns
+			$strRecordTypes = "";
+			$selRecordTypes->Execute(Array('Carrier' => $arrCarrierSummary['CarrierId'], 'ServiceType' => DONKEY));
+			while($arrRecordType = $selRecordTypes->Fetch())
+			{
+				$arrRecordTypeVars['<RecordType>']		= $arrRecordType['RecordType'];
+				$arrRecordTypeVars['<TotalCDRCost>']	= number_format((float)$arrRecordType['TotalCost'], 2);
+				$arrRecordTypeVars['<TotalRated>']		= number_format((float)$arrRecordType['TotalRated'], 2);
+				$arrRecordTypeVars['<TotalCDRs>']		= number_format((int)$arrRecordType['TotalCDRs']);
+				
+				$strRecordTypes .= ReplaceAliases(MSG_RECORD_TYPES, $arrRecordTypeVars);
+			}
+			
+			$arrInvoiceSummaryVars['<RecordTypes>']		= $strRecordTypes;
+			
 			$strSummaries .= ReplaceAliases(MSG_CARRIER_BREAKDOWN, $arrInvoiceSummaryVars);
 		}
 		
 		$this->_rptAuditReport->AddMessageVariables(MSG_CARRIER_SUMMARY, Array('<Summaries>' => $strSummaries));
+		
+		// Generate Service Type Summaries
+		$strSummaries = "";
+		foreach($arrServiceTypeSummarys as $arrServiceTypeSummary)
+		{
+			$arrServiceTypeSummaryVars['<ServiceType>']		= $GLOBALS['ServiceTypes'][$arrServiceTypeSummary['ServiceType']];
+			$arrServiceTypeSummaryVars['<TotalCDRCost>']	= number_format((float)$arrServiceTypeSummary['TotalCost'], 2);
+			$arrServiceTypeSummaryVars['<TotalRated>']		= number_format((float)$arrServiceTypeSummary['TotalRated'], 2);
+			$arrServiceTypeSummaryVars['<TotalCDRs>']		= number_format((int)$arrServiceTypeSummary['TotalCDRs']);
+			
+			// Generate Carrier's Record Type Breakdowns
+			$strRecordTypes = "";
+			$selRecordTypes->Execute(Array('Carrier' => DONKEY, 'ServiceType' => $arrServiceTypeSummary['ServiceType']));
+			while($arrRecordType = $selRecordTypes->Fetch())
+			{
+				$arrRecordTypeVars['<RecordType>']		= $arrRecordType['RecordType'];
+				$arrRecordTypeVars['<TotalCDRCost>']	= number_format((float)$arrRecordType['TotalCost'], 2);
+				$arrRecordTypeVars['<TotalRated>']		= number_format((float)$arrRecordType['TotalRated'], 2);
+				$arrRecordTypeVars['<TotalCDRs>']		= number_format((int)$arrRecordType['TotalCDRs']);
+				
+				$strRecordTypes .= ReplaceAliases(MSG_RECORD_TYPES, $arrRecordTypeVars);
+			}
+			
+			$arrServiceTypeSummaryVars['<RecordTypes>']		= $strRecordTypes;
+			
+			$strSummaries .= ReplaceAliases(MSG_SERVICE_TYPE_BREAKDOWN, $arrServiceTypeSummaryVars);
+		}
+	
+		$this->_rptAuditReport->AddMessageVariables(MSG_SERVICE_TYPE_SUMMARY, Array('<Summaries>' => $strSummaries));
+		
 		
 	}
 	

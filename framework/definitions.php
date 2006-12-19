@@ -74,10 +74,15 @@ define("PRV_IMPORT_RANGE_MIN"			, 100);
 define("PRV_IMPORT_RANGE_MAX"			, 149);
 
 // Carriers
-define("CARRIER_UNITEL"	, 1);
-define("CARRIER_OPTUS"	, 2);
-define("CARRIER_AAPT"	, 3);
-define("CARRIER_ISEEK"	, 4);
+define("CARRIER_UNITEL"			, 1);
+define("CARRIER_OPTUS"			, 2);
+define("CARRIER_AAPT"			, 3);
+define("CARRIER_ISEEK"			, 4);
+$arrCarriers[CARRIER_UNITEL]	= "Unitel";
+$arrCarriers[CARRIER_OPTUS]		= "Optus";
+$arrCarriers[CARRIER_AAPT]		= "AAPT";
+$arrCarriers[CARRIER_ISEEK]		= "iSeek";
+$GLOBALS['Carriers'] = $arrCarriers;
 
 // ERROR TABLE
 define("FATAL_ERROR_LEVEL"			, 10000);
@@ -148,6 +153,12 @@ define("SERVICE_TYPE_MOBILE"		, 101);
 define("SERVICE_TYPE_LAND_LINE"		, 102);
 define("SERVICE_TYPE_INBOUND"		, 103);
 define("SERVICE_TYPE_DIALUP"		, 104);
+$arrServiceTypes[SERVICE_TYPE_ADSL]			= "ADSL";
+$arrServiceTypes[SERVICE_TYPE_MOBILE]		= "Mobile";
+$arrServiceTypes[SERVICE_TYPE_LAND_LINE]	= "Land Line";
+$arrServiceTypes[SERVICE_TYPE_INBOUND]		= "Inbound";
+$arrServiceTypes[SERVICE_TYPE_DIALUP]		= "Dialup";
+$GLOBALS['ServiceTypes']	= $arrServiceTypes;
 
 // TAX RATES
 define("TAX_RATE_GST"				, 10);
