@@ -221,10 +221,29 @@ die();
 					$fltTotalCharge = floatval(max($arrService['MinMonthly'], $fltTotalCharge));
 				}
 				
-				// service totals
-				$fltServiceCredits	= 0.0; 						//TODO!!!! - IGNORE FOR NOW
-				$fltServiceDebits	= $fltTotalCharge;
-				$fltServiceTotal	= $fltTotalCharge - $fltServiceCredits;
+				// Charges and Recurring Charges (Credits and Debits) are not included
+				// in caps or minimum monthlys (above)
+				
+				// Add Recurring Charges
+				// this is done in the Recurring Charges engine, so there is nothing to do here
+				
+				// Mark Credits and Debits to this Invoice Run
+				//TODO!!!!
+				$arrUpdateCharges = Array();
+				$arrUpdateCharges['InvoiceRun']		= $strInvoiceRun;
+				$arrUpdateCharges['Status']		= CHARGE_TEMP_INVOICE;
+				// WHERE Status = CHARGE_TEMP_INVOICE OR Status = CHARGE_READY
+				
+				// Calculate Debit and Credit Totals
+				//TODO!!!!
+				// SELECT SUM(Amount) AS Amount FROM Charge
+				// WHERE Service = $arrService['Id'] AND Status = CHARGE_TEMP_INVOICE AND InvoiceRun = $strInvoiceRun
+				// GROUP BY Nature
+				// $fltServiceDebits	=
+				// $fltServiceCredits	=
+				
+				// service total
+				//$fltServiceTotal	= $fltTotalCharge + $fltServiceDebits - $fltServiceCredits;
 				
 				// insert into ServiceTotal
 				$arrServiceTotal = Array();
@@ -233,10 +252,11 @@ die();
 				$arrServiceTotal['AccountGroup']	= $arrService['AccountGroup'];
 				$arrServiceTotal['Account']			= $arrService['Account'];
 				$arrServiceTotal['Service']			= $arrService['Id'];
-				$arrServiceTotal['RecordType']		= $arrService['RecordType'];
 				$arrServiceTotal['CappedCharge']	= $arrService['CappedCharge'];
 				$arrServiceTotal['UncappedCharge']	= $arrService['UncappedCharge'];
-				$arrServiceTotal['TotalCharge']		= $fltServiceTotal;
+				$arrServiceTotal['TotalCharge']		= $fltTotalCharge;
+				$arrServiceTotal['Credit']			= $fltServiceCredits;
+				$arrServiceTotal['Debit']			= $fltServiceDebits;
 				$insServiceTotal->Execute($arrServiceTotal);
 				
 				// add to invoice totals

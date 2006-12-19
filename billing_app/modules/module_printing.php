@@ -66,7 +66,7 @@
 		// Define the file format
 		//----------------------------------------------------------------------------//
 		
-		//TODO!!!!
+		//TODO!!!! - Include the billprint define file
 		$this->_arrDefine = $arrDefine;
 		
 		//----------------------------------------------------------------------------//
@@ -119,7 +119,7 @@
 	 */
  	function AddInvoice($arrInvoiceDetails)
  	{
-		// TODO	
+		//TODO!!!!
 	
 		// Retrieve the data we'll need to do the invoice 
 		//TODO!!!!
