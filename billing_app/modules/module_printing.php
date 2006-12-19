@@ -18,7 +18,7 @@
  * @file		module_printing.php
  * @language	PHP
  * @package		billing
- * @author		Jared 'flame' Herbohn
+ * @author		Jared 'flame' Herbohn, Rich 'Waste' Davis
  * @version		6.12
  * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -57,7 +57,7 @@
 	 *
 	 * @method
 	 */
- 	function __construct($ptrThisDB)
+ 	function __construct($ptrThisDB, $arrConfig)
  	{
 		// Set up the database reference
 		$this->db = $ptrThisDB;
@@ -67,7 +67,7 @@
 		//----------------------------------------------------------------------------//
 		
 		//TODO!!!! - Include the billprint define file
-		$this->_arrDefine = $arrDefine;
+		$this->_arrDefine = $arrConfig['BillPrintDefine'];
 		
 		//----------------------------------------------------------------------------//
 
@@ -119,17 +119,45 @@
 	 */
  	function AddInvoice($arrInvoiceDetails)
  	{
-		//TODO!!!!
+		$arrDefine = $this->_arrDefine;
 	
 		// Retrieve the data we'll need to do the invoice 
 		//TODO!!!!
 		// Account Details
-		// 
-		//$arrCustomerDetails = $this->_selCustomerDetails->Execute();
+		$arrCustomerData = $this->_selCustomerDetails->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$arrLastBill = $this->_selLastBill->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		
 		// HEADER
-		// get details from ivoice & customer
+		// get details from invoice & customer
 		// build output
+		$arrDefine['InvoiceDetails']	['BillType']		['Value']	= $arrCustomerData['CustomerGroup'];
+		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
+		$arrDefine['InvoiceDetails']	['InvoiceNo']		['Value']	= "<Invoice#>";							// Temporary value that is str_replace'd in Commit()
+		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month"));	// FIXME: At a later date.  This is fine for now.
+		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
+		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrCustomerData['Account.Id'];
+		$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrLastBill['Total'] + $arrLastBill['Tax'];						
+		$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrLastBill['Balance'];				// TODO: Get last bill
+		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= $arrInvoiceDetails['Credits'];
+		$arrDefine['InvoiceDetails']	['Balance']			['Value']	= $arrInvoiceDetails['AccountBalance'];
+		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
+		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ($arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax']) - $arrInvoiceDetails['Credits'];
+		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['Contact.FirstName']." ".$arrCustomerData['Contact.LastName'];
+		if($arrCustomerData['Account.Address2'])
+		{
+			$arrDefine['InvoiceDetails']	['PropertyName']	['Value']	= $arrCustomerData['AddressLine1'];
+			$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['AddressLine2'];
+		}
+		else
+		{
+			$arrDefine['InvoiceDetails']	['PropertyName']	['Value']	= "";
+			$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['AddressLine1'];
+		}
+		$arrDefine['InvoiceDetails']	['Suburb']			['Value']	= $arrCustomerData['Suburb'];
+		$arrDefine['InvoiceDetails']	['State']			['Value']	= $arrCustomerData['State'];
+		$arrDefine['InvoiceDetails']	['Postcode']		['Value']	= $arrCustomerData['Postcode'];
+		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
+		$this->_arrFileData[] = $arrDefine['InvoiceDetails'];
 		
 		// SUMMARY CHARGES
 		// get details from servicetype totals

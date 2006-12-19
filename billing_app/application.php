@@ -102,7 +102,7 @@ die();
 		$this->_rptAuditReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Construct the Bill Output objects
-		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db);
+		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db, $arrConfig);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -318,7 +318,7 @@ die();
 			
 			// calculate invoice total
 			$fltTotal	= $fltTotalDebits - $fltTotalCredits;
-			$fltTax		= $fltTotal / TAX_RATE_GST
+			$fltTax		= $fltTotal / TAX_RATE_GST;
 			$fltBalance	= $fltTotal + $fltTax;
 			
 			// calculate account balance
