@@ -73,10 +73,12 @@
 			// Construct the object
 			parent::__construct ('Service', $this->Pull ('Id')->getValue ());
 			
+			// Pull the Service Address
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
 			
 			$oblintServiceAddress = $this->Pop ('ServiceAddress');
-			if ($oblintServiceAddress !== null)
+			
+			if ($oblintServiceAddress->getValue () != null)
 			{
 				$this->Push (new ServiceAddress ($oblintServiceAddress->getValue ()));
 			}

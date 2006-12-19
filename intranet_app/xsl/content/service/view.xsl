@@ -559,12 +559,24 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceAddressType" class="input-string">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/Service/ServiceAddress/ServiceAddressType" />
-											</xsl:attribute>
-										</input>
+										<select name="ServiceAddressType">
+											<option></option>
+											<xsl:for-each select="/Response/Service/ServiceAddress/ServiceAddressTypes/ServiceAddressType">
+												<option>
+													<xsl:attribute name="value">
+														<xsl:text></xsl:text>
+														<xsl:value-of select="./Id" />
+													</xsl:attribute>
+													<xsl:if test="@selected='selected'">
+														<xsl:attribute name="selected">
+															<xsl:text>selected</xsl:text>
+														</xsl:attribute>
+													</xsl:if>
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Name" />
+												</option>
+											</xsl:for-each>
+										</select>
 									</td>
 								</tr>
 								<tr>

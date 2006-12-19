@@ -72,6 +72,8 @@
 			
 			// Construct the object
 			parent::__construct ('ServiceAddress', $this->Pull ('Id')->getValue ());
+			
+			$this->Push (new ServiceAddressTypes ($this->Pull ("ServiceAddressType")->getValue ()));
 		}
 	}
 	
