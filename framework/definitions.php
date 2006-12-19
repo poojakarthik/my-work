@@ -132,6 +132,13 @@ define("INVOICE_COMMITTED"			, 101);
 define("INVOICE_DISPUTED"			, 102);
 define("INVOICE_SETTLED"			, 103);
 
+// Charge Status
+define("CHARGE_WAITING"				, 100);
+define("CHARGE_APPROVED"			, 101);
+define("CHARGE_DECLINED"			, 101);
+define("CHARGE_TEMP_INVOICE"		, 102);
+define("CHARGE_INVOICED"			, 103);
+
 // Customer Group Constants
 define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
 define("CUSTOMER_GROUP_VOICETALK"	, 2);

@@ -229,11 +229,22 @@ die();
 				// this is done in the Recurring Charges engine, so there is nothing to do here
 				
 				// Mark Credits and Debits to this Invoice Run
-				//TODO!!!!
-				$arrUpdateCharges = Array();
-				$arrUpdateCharges['InvoiceRun']		= $strInvoiceRun;
-				$arrUpdateCharges['Status']		= CHARGE_TEMP_INVOICE;
-				// WHERE Status = CHARGE_TEMP_INVOICE OR Status = CHARGE_READY
+				//TODO!!!! - Reporting
+				$arrUpdateData = Array();
+				$arrUpdateData['InvoiceRun']	= $strInvoiceRun;
+				$arrUpdateData['Status']		= CHARGE_TEMP_INVOICE;
+				$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED, $arrUpdateData);
+				if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
+				{
+					// Report and fail out
+					$this->_rptBillingReport->AddMessage(MSG_FAILED);
+					return;
+				}
+				else
+				{
+					// Report and continue
+					$this->_rptBillingReport->AddMessage(MSG_OK);
+				}
 				
 				// Calculate Debit and Credit Totals
 				//TODO!!!!
@@ -458,7 +469,44 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		// update invoice status
+		// update Account LastBilled date
+		//TODO!!!! - Reporting
+		//$this->_rptBillingReport->AddMessage(MSG_UPDATE_????, FALSE);
+		$strQuery  = "UPDATE Account INNER JOIN Invoice on (Account.Id = Invoice.Account)";
+		$strQuery .= " SET Account.LastBilled = Now()";
+		$strQuery .= " WHERE Invoice.Status = ".INVOICE_TEMP;
+		$qryAccountLastBilled = new Query();
+		if(!$qryAccountLastBilled->Execute($strQuery))
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// update Charge Status
+		//TODO!!!! - Reporting
+		//$this->_rptBillingReport->AddMessage(MSG_UPDATE_????, FALSE);
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = CHARGE_INVOICED;
+		$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE, $arrUpdateData);
+		if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// update Invoice Status
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_COMMITTED;
@@ -475,6 +523,8 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		
+		// BILLING OUTPUT
 		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
 		{
 			// build billing output
