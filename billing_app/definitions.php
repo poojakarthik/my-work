@@ -38,6 +38,7 @@ define("USER_NAME"						, "Billing_app");
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
 define("MSG_OK"							, "\t\t\t\t[   OK   ]");
 define("MSG_FAILED"						, "\t\t\t\t[ FAILED ]");
+define("MSG_IGNORE"						, "\t\t\t\t[ IGNORE ]");
 define("MSG_CLEAR_TEMP_TABLE"			, "Clearing Temporary Invoice Table...\t");
 define("MSG_BUILD_TEMP_INVOICES"		, "\n[ Building Temporary Invoices ]");
 define("MSG_LINE"						, "\t+ Billing Account #<AccountNo>...");
@@ -53,6 +54,7 @@ define("MSG_UPDATE_INVOICE_STATUS"		, "Updating status on committed invoices..."
 define("MSG_BILLING_TITLE"				, "[ GENERATING INVOICES ]");
 define("MSG_REVOKE_TITLE"				, "[ REVOKING INVOICES ]");
 define("MSG_COMMIT_TITLE"				, "[ COMMITTING INVOICES ]");
+define("MSG_GENERATE_AUDIT"				, "[ GENERATE AUDIT REPORT ]\t\t");
 define("MSG_INVOICE_SUMMARY"			, "[ INVOICE SUMMARY ]\n\n" .
 										  "\tTotal Invoices\t\t\t\t: <TotalInvoices>\n" .
 										  "\tTotal \$ Invoiced (Ex GST)\t\t: \$<TotalInvoicedExGST>\n" .
@@ -106,6 +108,9 @@ define("GRAPH_TYPE_VERTICALBARBREAKDOWN"	, "02");
 define("GRAPH_TYPE_HORIZONTALBARSPLIT"		, "03");
 define("GRAPH_TYPE_LINEXY"					, "04");
 define("GRAPH_TYPE_LINEXYZ"					, "05");
+
+// Error Codes
+define("ERROR_NO_INVOICE_DATA"				, -1);
 
 
 ?>
