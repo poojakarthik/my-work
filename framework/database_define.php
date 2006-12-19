@@ -77,6 +77,7 @@
 */
 
 		
+		
 	unset($arrDefine);
 	
 	//----------------------------------------------------------------------------//
@@ -2924,6 +2925,15 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
 		$arrDefine['Column'][$strName]['Default'] 		= "";
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean";
+		
+								
+	// Define Columns
+	$strName = "group";
+		$arrDefine['Column'][$strName]['Type'] 			= "i";
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned";
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE;
+		$arrDefine['Column'][$strName]['Default'] 		= "";
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger";
 		
 					
 	// Save Table Define
