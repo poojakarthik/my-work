@@ -134,7 +134,7 @@
 				'RequestedOn'	=> date ('Y-m-d H:i:s', mktime ())
 			);
 			
-			$insAudit = new StatementInsert ("EmployeeAccountAudit");
+			$insAudit = new StatementInsert ('EmployeeAccountAudit', $arrAudit);
 			$insAudit->Execute ($arrAudit);
 		}
 		

@@ -117,14 +117,7 @@
 	\$GLOBALS['arrDatabaseTableDefine'][\$arrDefine['Name']] = \$arrDefine; 
  	
 */ 
- 
- 		
- 		
-	unset(\$arrDefine);";
-	
-	
-	
-	
+	";
 	
 	$_DATABASE = "bash";
 	
@@ -140,6 +133,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ".$_TABLE [0] . "\n".
 "	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset(\$arrDefine);
 	 
 	\$arrDefine['Name']		= \"".$_TABLE[0]."\"; 
 	\$arrDefine['Type']		= \"InnoDB\"; 

@@ -1731,7 +1731,9 @@ class MySQLFunction
 			//echo($strQuery);
 			//echo Mysqli_error($this->db->refMysqliConnection);
 	 		// There was problem preparing the statment
-	 		throw new Exception();
+	 		throw new Exception(
+	 			"An error occurred : " . Mysqli_error($this->db->refMysqliConnection) . "\n" . $strQuery . "\n\n"
+	 		);
 	 	}
 	 }
 	 

@@ -75,14 +75,16 @@
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
  	
 */ 
- 
- 		
- 		
-	unset($arrDefine); 
+	 
  	
 	//----------------------------------------------------------------------------// 
 	// Table: Account
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Account"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -319,6 +321,11 @@
 	// Table: AccountGroup
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "AccountGroup"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -373,6 +380,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: CDR
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "CDR"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -639,6 +651,11 @@
 	// Table: Charge
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "Charge"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -784,6 +801,11 @@
 	// Table: ChargeType
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ChargeType"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -849,6 +871,11 @@
 	// Table: Config
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "Config"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -903,6 +930,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: Contact
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Contact"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -1089,6 +1121,11 @@
 	// Table: CreditCard
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "CreditCard"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -1174,6 +1211,11 @@
 	// Table: DestinationCode
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "DestinationCode"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -1219,6 +1261,11 @@
 	// Table: DestinationTranslation
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "DestinationTranslation"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -1263,6 +1310,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: Documentation
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Documentation"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -1328,6 +1380,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: Employee
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Employee"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -1434,6 +1491,11 @@
 	// Table: EmployeeAccountAudit
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "EmployeeAccountAudit"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -1488,6 +1550,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ErrorLog
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "ErrorLog"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -1584,6 +1651,11 @@
 	// Table: FileDownload
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "FileDownload"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -1658,6 +1730,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: FileImport
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "FileImport"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -1753,6 +1830,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: Invoice
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Invoice"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -1909,6 +1991,11 @@
 	// Table: InvoiceOutput
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "InvoiceOutput"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -1954,6 +2041,11 @@
 	// Table: InvoicePayment
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "InvoicePayment"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -1998,6 +2090,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: InvoiceTemp
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "InvoiceTemp"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -2154,6 +2251,11 @@
 	// Table: Note
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "Note"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -2249,6 +2351,11 @@
 	// Table: NoteType
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "NoteType"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -2303,6 +2410,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: Payment
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Payment"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -2379,6 +2491,11 @@
 	// Table: ProvisioningExport
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ProvisioningExport"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -2443,6 +2560,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ProvisioningLog
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "ProvisioningLog"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -2528,6 +2650,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: Rate
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Rate"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -2884,6 +3011,11 @@
 	// Table: RateGroup
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "RateGroup"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -2949,6 +3081,11 @@
 	// Table: RateGroupRate
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "RateGroupRate"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -2983,6 +3120,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: RatePlan
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "RatePlan"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -3069,6 +3211,11 @@
 	// Table: RatePlanRateGroup
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "RatePlanRateGroup"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3104,6 +3251,11 @@
 	// Table: RatePlanRecurringCharge
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "RatePlanRecurringCharge"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3138,6 +3290,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: RecordType
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "RecordType"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -3233,6 +3390,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: RecurringCharge
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "RecurringCharge"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -3409,6 +3571,11 @@
 	// Table: RecurringChargeType
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "RecurringChargeType"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3523,6 +3690,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: Request
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Request"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -3639,6 +3811,11 @@
 	// Table: ScrapeAccount
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ScrapeAccount"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3684,6 +3861,11 @@
 	// Table: ScrapeAccountAdditional
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ScrapeAccountAdditional"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3718,6 +3900,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ScrapeFileStore
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "ScrapeFileStore"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -3754,6 +3941,11 @@
 	// Table: ScrapeInvoice
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ScrapeInvoice"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3788,6 +3980,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ScrapeNoteSys
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "ScrapeNoteSys"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -3824,6 +4021,11 @@
 	// Table: ScrapeNoteUser
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ScrapeNoteUser"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3858,6 +4060,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ScrapeServiceInbound
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "ScrapeServiceInbound"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -3894,6 +4101,11 @@
 	// Table: ScrapeServiceLandLine
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ScrapeServiceLandLine"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3929,6 +4141,11 @@
 	// Table: ScrapeServiceMobile
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ScrapeServiceMobile"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -3963,6 +4180,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: Service
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "Service"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -4138,6 +4360,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ServiceAddress
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "ServiceAddress"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -4424,6 +4651,11 @@
 	// Table: ServiceRateGroup
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ServiceRateGroup"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -4499,6 +4731,11 @@
 	// Table: ServiceRatePlan
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ServiceRatePlan"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -4554,6 +4791,11 @@
 	// Table: ServiceRecurringCharge
 	//----------------------------------------------------------------------------// 
 	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
 	$arrDefine['Name']		= "ServiceRecurringCharge"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
@@ -4608,6 +4850,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ServiceTotal
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "ServiceTotal"; 
 	$arrDefine['Type']		= "InnoDB"; 
@@ -4723,6 +4970,11 @@
 	//----------------------------------------------------------------------------// 
 	// Table: ServiceTypeTotal
 	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
 	 
 	$arrDefine['Name']		= "ServiceTypeTotal"; 
 	$arrDefine['Type']		= "InnoDB"; 
