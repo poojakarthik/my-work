@@ -171,6 +171,7 @@ $GLOBALS['ServiceTypes']	= $arrServiceTypes;
 
 // Context
 define("CONTEXT_NORMAL"			, 0);
+define("CONTEXT_IDD"			, 1);
 
 // TAX RATES
 define("TAX_RATE_GST"				, 10);
