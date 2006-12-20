@@ -237,7 +237,7 @@ abstract class NormalisationModule
 		$this->_errErrorHander 			= $errErrorHandler;
 		$this->_rptNormalisationReport 	= $rptNormalisationReport;
 		
-		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>", "CreatedOn DESC", "1");
+		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn)", "CreatedOn DESC", "1");
 		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
@@ -606,7 +606,7 @@ abstract class NormalisationModule
 	 protected function ApplyOwnership()
 	 {
 
-	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
+	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN'], "date" => (string)$this->_arrNormalisedData['StartDateTime']));
 		
 	 	if ($arrResult = $this->_selFindOwner->Fetch())
 	 	{
