@@ -109,6 +109,47 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// Contacts
+		//------------------------------------------------------------------------//
+		/**
+		 * Contacts()
+		 *
+		 * Retrieves Contact List
+		 *
+		 * Retrieves Contact List
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		 
+		public function Contacts ()
+		{
+			$oblarrContacts = new dataArray ('Contacts', 'Contact');
+			
+			$selContacts = new StatementSelect (
+				'Contact', 
+				'Id', 
+				'(AccountGroup = <AccountGroup> AND CustomerContact = 1)' .
+				'OR (Account = <Account> AND CustomerContact = 0)'
+			);
+			
+			$selContacts->Execute (
+				Array (
+					'AccountGroup'	=> $this->Pull ('AccountGroup')->getValue (),
+					'Account'		=> $this->Pull ('Id')->getValue ()
+				)
+			);
+			
+			foreach ($selContacts->FetchAll () as $arrContact)
+			{
+				$oblarrContacts->Push (new Contact ($arrContact ['Id']));
+			}
+			
+			return $oblarrContacts;
+		}
+		
+		//------------------------------------------------------------------------//
 		// ArchiveStatus
 		//------------------------------------------------------------------------//
 		/**

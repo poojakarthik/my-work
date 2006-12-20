@@ -346,7 +346,7 @@
 					$strName = "Stall";
 					break;
 					
-				case SERVICE_ADDR_TYPE_STU:
+				case SERVICE_ADDR_TYPE_STUDIO:
 					$strName = "Studio";
 					break;
 					

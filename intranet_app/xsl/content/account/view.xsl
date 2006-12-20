@@ -18,7 +18,7 @@
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
-					<h2>Account Information</h2>
+					<h2 class="Account">Account Information</h2>
 					<div class="Seperator"></div>
 					
 					<div class="Filter-Form">
@@ -183,6 +183,57 @@
 					</a>
 					
 					<div class="Clear"></div>
+					<div class="Seperator"></div>
+					
+					<h2 class="Contacts">Associated Active Contacts</h2>
+					
+					<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+						<tr class="First">
+							<th></th>
+							<th>Contact Information</th>
+							<th>Options</th>
+						</tr>
+						<xsl:for-each select="/Response/Contacts/Contact">
+							<tr>
+								<xsl:attribute name="class">
+									<xsl:choose>
+										<xsl:when test="position() mod 2 = 1">
+											<xsl:text>Odd</xsl:text>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:text>Even</xsl:text>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:attribute>
+								<td width="50"><img src="img/template/contact.png" /></td>
+								<td>
+									<strong>
+										<xsl:value-of select="./FirstName" />
+										<xsl:text> </xsl:text>
+										<xsl:value-of select="./LastName" />
+									</strong><br />
+									<xsl:value-of select="./UserName" />
+								</td>
+								<td>
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>contact_view.php?Id=</xsl:text>
+											<xsl:value-of select="./Id" />
+										</xsl:attribute>
+										<xsl:text>View</xsl:text>
+									</a>
+								</td>
+							</tr>
+						</xsl:for-each>
+					</table>
+					
+					<a>
+						<xsl:attribute name="href">
+							<xsl:text>contact_add.php?Account=</xsl:text>
+							<xsl:value-of select="/Response/Account/Id" />
+						</xsl:attribute>
+						<xsl:text>Add Contact</xsl:text>
+					</a>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">

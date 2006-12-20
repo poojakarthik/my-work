@@ -70,7 +70,10 @@
 			$this->_DOCTOR		= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_DOCTOR));
 			$this->_PROFESSOR	= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_PROFESSOR));
 			
-			$this->setValue ($strId);
+			if ($strId !== null)
+			{
+				$this->setValue ($strId);
+			}
 		}
 		
 		//------------------------------------------------------------------------//

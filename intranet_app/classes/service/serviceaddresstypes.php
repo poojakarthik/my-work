@@ -122,7 +122,7 @@
 			$this->_SITE						= $this->Push (new ServiceAddressType (SERVICE_ADDR_TYPE_SITE));
 			$this->_STALL						= $this->Push (new ServiceAddressType (SERVICE_ADDR_TYPE_STALL));
 			$this->_STALL_2						= $this->Push (new ServiceAddressType (SERVICE_ADDR_TYPE_STALL_2));
-			$this->_STUDIO						= $this->Push (new ServiceAddressType (SERVICE_ADDR_TYPE_STU));
+			$this->_STUDIO						= $this->Push (new ServiceAddressType (SERVICE_ADDR_TYPE_STUDIO));
 			$this->_SUITE						= $this->Push (new ServiceAddressType (SERVICE_ADDR_TYPE_SUITE));
 			$this->_TIER						= $this->Push (new ServiceAddressType (SERVICE_ADDR_TYPE_TIER));
 			$this->_TOWER						= $this->Push (new ServiceAddressType (SERVICE_ADDR_TYPE_TOWER));

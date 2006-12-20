@@ -59,10 +59,16 @@
 		function __construct ($intId)
 		{
 			// Pull all the contact information and Store it ...
-			$selAccount = new StatementSelect ('Contact', '*', 'Id = <Id>');
-			$selAccount->useObLib (TRUE);
-			$selAccount->Execute (Array ('Id' => $intId));
-			$selAccount->Fetch ($this);
+			$selContact = new StatementSelect ('Contact', '*', 'Id = <Id>', null, 1);
+			$selContact->useObLib (TRUE);
+			$selContact->Execute (Array ('Id' => $intId));
+			
+			if ($selContact->Count () <> 1)
+			{
+				throw new Exception ('Contact not found');
+			}
+			
+			$selContact->Fetch ($this);
 			
 			// Construct the object
 			parent::__construct ('Contact', $this->Pull ('Id')->getValue ());
@@ -98,7 +104,7 @@
 			}
 			else
 			{
-				$acsAccounts->Constrain ('Account', 'EQUALS', $this->Pull ('Account')->getValue ());
+				$acsAccounts->Constrain ('Id', 'EQUALS', $this->Pull ('Account')->getValue ());
 			}
 			
 			return $acsAccounts;

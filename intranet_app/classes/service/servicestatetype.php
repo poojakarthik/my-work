@@ -42,21 +42,21 @@
 	{
 		
 		//------------------------------------------------------------------------//
-		// _oblintType
+		// _oblstrType
 		//------------------------------------------------------------------------//
 		/**
-		 * _oblintType
+		 * _oblstrType
 		 *
 		 * The Id of the Service Type
 		 *
 		 * The Id of the Service Type
 		 *
-		 * @type	dataInteger
+		 * @type	dataString
 		 *
 		 * @property
 		 */
 		
-		private $_oblintType;
+		private $_oblstrType;
 		
 		//------------------------------------------------------------------------//
 		// _oblstrName
@@ -90,13 +90,13 @@
 		 * @method
 		 */
 		
-		function __construct ($intType)
+		function __construct ($strId)
 		{
 			parent::__construct ('ServiceStateType');
 			
 			$strName = 'Unknown';
 			
-			switch ($intType)
+			switch ($strId)
 			{
 				case SERVICE_STATE_TYPE_ACT:
 					$strName = 'ACT - Australian Capital Territory';
@@ -132,7 +132,7 @@
 					
 			}
 			
-			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));
+			$this->oblstrType		= $this->Push (new dataString	('Id',		$strId));
 			$this->oblstrName		= $this->Push (new dataString	('Name',	$strName));
 		}
 	}

@@ -99,9 +99,6 @@
 		)
 	);
 	
-	// Pull documentation information for an Account
-	$docDocumentation->Explain ('Account');
-	
 	header ('Location: note_added.php');
 	exit;
 	
