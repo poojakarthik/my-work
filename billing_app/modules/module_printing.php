@@ -61,6 +61,81 @@
  	{
 		// Set up the database reference
 		$this->db = $ptrThisDB;
+		
+		// Init database statements
+		$arrColumns['CustomerGroup']	= "Account.CustomerGroup";
+		$arrColumns['Account']			= "Account.Id";
+		$arrColumns['PaymentTerms']		= "Account.PaymentTerms";
+		$arrColumns['FirstName']		= "Contact.FirstName";
+		$arrColumns['LastName']			= "Contact.LastName";
+		$arrColumns['Suburb']			= "Contact.Suburb";
+		$arrColumns['State']			= "Contact.State";
+		$arrColumns['Postcode']			= "Contact.Postcode";
+		$arrColumns['AddressLine1']		= "Contact.AddressLine1";
+		$arrColumns['AddressLine2']		= "Contact.AddressLine2";
+		$this->_selCustomerDetails		= new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
+																$arrColumns,
+																"Account.Id = <Account>");
+		
+		$arrColumns = Array();
+		$arrColumns[]					= "Total";
+		$arrColumns[]					= "Tax";
+		$arrColumns[]					= "Balance";
+		$arrColumns[]					= "CreatedOn";
+		$this->_selLastBills			= new StatementSelect(	"Invoice",
+																$arrColumns,
+																"Account = <Account>",
+																"CreatedOn DESC",
+																BILL_PRINT_HISTORY_LIMIT);
+																
+		$arrColumns = Array();
+		$arrColumns['RecordTypeName']	= "RecordType.Name";
+		$arrColumns['Charge']			= "ServiceTypeTotals.Charge";
+		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotals JOIN RecordType ON ServiceTypeTotals.RecordType = RecordType.Id, " .
+																"RecordType JOIN RecordType RType ON RecordType.Group = RType.Id," .
+																"ServiceTypeTotals STypeTotals JOIN Service ON STypeTotals.Service = Service.Id",
+																$arrColumns,
+																"Account = <Account> AND InvoiceRun = <InvoiceRun> AND STypeTotals.Id = ServiceTypeTotals.Id",
+																"Service.ServiceType, Service.FNN");
+		
+		$this->_selServices				= new StatementSelect(	"Service",
+																"FNN",
+																"Account = <Account> AND Archived = 0");
+		
+		$arrColumns = Array();
+		$arrColumns['RecordTypeName']	= "RecordType.Name";
+		$arrColumns['Charge']			= "SUM(CDR.Charge)";
+		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
+																"RecordType JOIN RecordType RType ON RecordType.Group = RType.Id",
+																$arrColumns,
+																"CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND ISNULL(CDR.Invoice)",
+																"RType.Name",
+																NULL,
+																"RType.Id\n" .
+																"HAVING SUM(CDR.Charge) > 0.0");
+		
+		$arrColumns = Array();
+		$arrColumns['Charge']			= "CDR.Charge";
+		$arrColumns['FNN']				= "Service.FNN";
+		$arrColumns['Source']			= "CDR.Source";
+		$arrColumns['Destination']		= "CDR.Destination";
+		$arrColumns['StartDateTime']	= "CDR.StartDatetime";
+		$arrColumns['EndDateTime']		= "CDR.EndDatetime";
+		$arrColumns['Units']			= "CDR.Units";
+		$arrColumns['Description']		= "CDR.Description";
+		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
+		$arrColumns['RecordType']		= "RType.Name";
+		$arrColumns['DisplayType']		= "RType.DisplayType";
+		$arrColumns['RecordTypeTotal']	= "SUM(CDR.Charge)";
+		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
+																"RecordType JOIN RecordType RType ON RecordType.Group = RType.Id," .
+																"Service JOIN CDR ON Service.Id = CDR.Service",
+																$arrColumns,
+																"RType.Itemised = 1 AND Service.Account = <Account>",
+																"Service.FNN, RType.Name",
+																NULL,
+																"Service.Id, RType.Id");
+		
 				
 		//----------------------------------------------------------------------------//
 		// Define the file format
@@ -128,21 +203,21 @@
 		// HEADER
 		// get details from invoice & customer
 		$arrCustomerData = $this->_selCustomerDetails->Execute(Array('Account' => $arrInvoiceDetails['Account']));
-		$arrLastBill = $this->_selLastBill->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$arrLastBill = $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		
 		// build output
 		$arrDefine['InvoiceDetails']	['BillType']		['Value']	= $arrCustomerData['CustomerGroup'];
 		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
 		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month"));	// FIXME: At a later date.  This is fine for now.
 		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
-		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrCustomerData['Account.Id'];
+		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrCustomerData['Account'];
 		$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrLastBill['Total'] + $arrLastBill['Tax'];						
 		$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrLastBill['Balance'];				// TODO: Get last bill
 		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= $arrInvoiceDetails['Credits'];
 		$arrDefine['InvoiceDetails']	['Balance']			['Value']	= $arrInvoiceDetails['AccountBalance'];
 		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
 		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ($arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax']) - $arrInvoiceDetails['Credits'];
-		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['Contact.FirstName']." ".$arrCustomerData['Contact.LastName'];
+		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		if($arrCustomerData['Account.Address2'])
 		{
 			// There are 2 components to the address line
@@ -181,7 +256,7 @@
 		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
 		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
 		$arrFileData[] = $arrDefine['ChargeTotal'];
-		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrTotal['BillTotal'];
+		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
 		$arrFileData[] = $arrDefine['ChargeTotalsFooter'];
 		
 		// PAYMENT DETAILS

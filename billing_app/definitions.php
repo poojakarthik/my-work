@@ -119,6 +119,9 @@ define("GRAPH_TYPE_HORIZONTALBARSPLIT"		, "03");
 define("GRAPH_TYPE_LINEXY"					, "04");
 define("GRAPH_TYPE_LINEXYZ"					, "05");
 
+// Miscellaneous Bill Printing Constants
+define("BILL_PRINT_HISTORY_LIMIT"			, 6);
+
 // Error Codes
 define("ERROR_NO_INVOICE_DATA"				, -1);
 
