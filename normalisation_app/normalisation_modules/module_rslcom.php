@@ -159,7 +159,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		
 		// FNN
 		$strFNN 						= $this->_FetchRawCDR('ChargedParty');
-		$strFNN							= $this->RemoveAusCode($strFNN)
+		$strFNN							= $this->RemoveAusCode($strFNN);
 		$this->_AppendCDR('FNN', $strFNN);
 
 		// ServiceType
@@ -184,8 +184,8 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
 		if ($arrDestinationCode)
 		{
-			$this->_AppendCDR('DestinationCode', $arrDestination['Code']);
-			$this->_AppendCDR('Description', $arrDestination['Description']);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+			$this->_AppendCDR('Description', $arrDestinationCode['Description']);
 		}
 		
 		// CarrierRef
