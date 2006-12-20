@@ -124,15 +124,15 @@
 		// Retrieve the data we'll need to do the invoice 
 		//TODO!!!!
 		// Account Details
-		$arrCustomerData = $this->_selCustomerDetails->Execute(Array('Account' => $arrInvoiceDetails['Account']));
-		$arrLastBill = $this->_selLastBill->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		
 		// HEADER
 		// get details from invoice & customer
+		$arrCustomerData = $this->_selCustomerDetails->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$arrLastBill = $this->_selLastBill->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		
 		// build output
 		$arrDefine['InvoiceDetails']	['BillType']		['Value']	= $arrCustomerData['CustomerGroup'];
 		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
-		$arrDefine['InvoiceDetails']	['InvoiceNo']		['Value']	= "<Invoice#>";							// Temporary value that is str_replace'd in Commit()
 		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month"));	// FIXME: At a later date.  This is fine for now.
 		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
 		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrCustomerData['Account.Id'];
@@ -145,11 +145,13 @@
 		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['Contact.FirstName']." ".$arrCustomerData['Contact.LastName'];
 		if($arrCustomerData['Account.Address2'])
 		{
+			// There are 2 components to the address line
 			$arrDefine['InvoiceDetails']	['PropertyName']	['Value']	= $arrCustomerData['AddressLine1'];
 			$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['AddressLine2'];
 		}
 		else
 		{
+			// There is 1 component to the address line
 			$arrDefine['InvoiceDetails']	['PropertyName']	['Value']	= "";
 			$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['AddressLine1'];
 		}
@@ -159,31 +161,135 @@
 		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
 		$this->_arrFileData[] = $arrDefine['InvoiceDetails'];
 		
+		// MONTHLY COMPARISON BAR GRAPH
+		// TODO: get details from invoice table
+		// TODO: build output
+		
 		// SUMMARY CHARGES
 		// get details from servicetype totals
+		$arrServiceTypeTotalVars['Account']		= $arrInvoiceDetails['Account'];
+		$arrServiceTypeTotalVars['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+		$arrServiceTypeTotals = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
 		// build output
+		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
+		foreach($arrServiceTypeTotals as $arrTotal)
+		{
+			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrTotal['RecordType'];
+			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrTotal['Charge'];
+			$arrFileData[] = $arrDefine['ChargeTotal'];
+		}
+		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
+		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
+		$arrFileData[] = $arrDefine['ChargeTotal'];
+		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrTotal['BillTotal'];
+		$arrFileData[] = $arrDefine['ChargeTotalsFooter'];
+		
+		// PAYMENT DETAILS
+		// TODO: get details from account table
+		// TODO: build output
 		
 		// SUMMARY SERVICES
 		// get details from servicetype totals
+		$this->_selServices->Execute();
+		$arrServiceSummaries = $this->_selServices->FetchAll();
 		// build output
+		$strCurrentService = "";
+		$arrServices = $this->_selServices->FetchAll();
+		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
+		foreach($arrServices as $arrService)
+		{
+			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
+			$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
+			
+			// The individual RecordTypes for each Service
+			$this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id']));
+			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
+			foreach($arrServiceSummaries as $arrServiceSummary)
+			{
+				$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordType'];
+				$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['Records'];
+				$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Charge'];
+				$arrFileData[] = $arrDefine['SvcSummaryData'];
+			}
+			
+			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $arrService['TotalCharge'];
+			$arrFileData[] = $arrDefine['SvcSummSvcFooter'];
+		}
+		$arrFileData[] = $arrDefine['SvcSummaryFooter'];
 		
 		// DETAILS
 		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
 		// reset counters
+		$strCurrentService		= "";
+		$strCurrentRecordType	= "";
 		// add start record (70)
+		$arrFileData[] = $arrDefine['ItemisedHeader'];
 		// for each record
+		foreach($arrItemisedCalls as $arrData)
+		{
 			// if new service
+			if($arrData['FNN'] != $strCurrentService)
+			{
 				// if old service exists
+				if ($strCurrentService != "")
+				{
 					// add service total record (89)
+					$arrDefine['ItemSvcFooter']		['TotalCharge']		['Value']	= 23.00;
+					$arrFileData[] = $arrDefine['ItemSvcFooter'];					
+				}
 				// add service record (80)
+				$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= "0408295199";
+				$arrFileData[] = $arrDefine['ItemSvcHeader'];
+				
+				$strCurrentService = $arrData['FNN'];
+			}
 			// if new type
+			if($arrData['RecordTypeName'] != $strCurrentRecordType)
+			{
 				// if old type exists
-					// build type total record (99)
+				if($strCurrentRecordType == "")
+				{
+					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= 13.00;
+					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+				}
 				// build header record (90)
+				$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= "Mobile to Mobile";
+				$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
 				// reset counters
-			// build charge record (91 || 92)
+				$strCurrentRecordType = $arrData['RecordTypeName'];
+			}
+			// build charge record
+			switch($arrData['DisplayType'])
+			{
+				// Type 91
+				case RECORD_DISPLAY_CALL:
+					// TODO
+					break;
+				// Type 92
+				case RECORD_DISPLAY_S_AND_E:
+					// TODO
+					break;
+				// Type 93
+				case RECORD_DISPLAY_DATA:
+					// TODO
+					break;
+				// Type 94
+				case RECORD_DISPLAY_SMS:
+					// TODO
+					break;
+				// Unknown Record Type (should never happen)
+				default:
+					// TODO
+					break;
+			}
+		}
+		$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= 13.00;
+		$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
 		// add end record (79)
+		$arrFileData[] = $arrDefine['ItemisedFooter'];
+		// add invoice footer (19)		
+		$arrFileData[] = $arrDefine['InvoiceFooter'];
  	}
  	
  	//------------------------------------------------------------------------//

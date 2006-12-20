@@ -31,11 +31,18 @@
 // CONFIG
 //----------------------------------------------------------------------------//
 
-		$arrDefine['InvoiceDetails']	['RecordType']		['Start']	= 0;
+// BILL OUTPUT FILE DEFINITION
+
+		// The RecordType and InvoiceNo fields will be added by an SQL query later on
+/*		$arrDefine['InvoiceDetails']	['RecordType']		['Start']	= 0;
 		$arrDefine['InvoiceDetails']	['RecordType']		['Length']	= 2;
 		$arrDefine['InvoiceDetails']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
 		$arrDefine['InvoiceDetails']	['RecordType']		['Value']	= "10";
 		
+		$arrDefine['InvoiceDetails']	['InvoiceNo']		['Start']	= 10;
+		$arrDefine['InvoiceDetails']	['InvoiceNo']		['Length']	= 10;
+		$arrDefine['InvoiceDetails']	['InvoiceNo']		['Type']	= BILL_TYPE_INTEGER;
+		*/
 		$arrDefine['InvoiceDetails']	['BillType']		['Start']	= 2;
 		$arrDefine['InvoiceDetails']	['BillType']		['Length']	= 2;
 		$arrDefine['InvoiceDetails']	['BillType']		['Type']	= BILL_TYPE_INTEGER;
@@ -43,10 +50,6 @@
 		$arrDefine['InvoiceDetails']	['Inserts']			['Start']	= 4;
 		$arrDefine['InvoiceDetails']	['Inserts']			['Length']	= 6;
 		$arrDefine['InvoiceDetails']	['Inserts']			['Type']	= BILL_TYPE_BINARY;
-		
-		$arrDefine['InvoiceDetails']	['InvoiceNo']		['Start']	= 10;
-		$arrDefine['InvoiceDetails']	['InvoiceNo']		['Length']	= 10;
-		$arrDefine['InvoiceDetails']	['InvoiceNo']		['Type']	= BILL_TYPE_INTEGER;
 		
 		$arrDefine['InvoiceDetails']	['BillPeriod']		['Start']	= 20;
 		$arrDefine['InvoiceDetails']	['BillPeriod']		['Length']	= 12;
