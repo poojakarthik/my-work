@@ -154,11 +154,30 @@ class NormalisationModuleCommander extends NormalisationModule
 		//--------------------------------------------------------------------//
 		
 		// FNN
-		$mixValue = $this->_FetchRawCDR('ChargedParty');
+		$mixValue 						= $this->_FetchRawCDR('ChargedParty');
 		$this->_AppendCDR('FNN', $this->RemoveAusCode($mixValue));
 		
+		// ServiceType
+		$intServiceType = SERVICE_TYPE_MOBILE;
+		$this->_AppendCDR('ServiceType', $intServiceType);
+		
+		// RecordType
+		$mixCarrierCode					= $this->_FetchRawCDR('CallType');
+		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
+		$this->_AppendCDR('RecordType', $mixValue);
+		
+		// Destination Code
+		$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
+		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+		if ($arrDestinationCode)
+		{
+			$this->_AppendCDR('DestinationCode', $arrDestination['Code']);
+			$this->_AppendCDR('Description', $arrDestination['Description']);
+		}
+		
 		// CarrierRef
-		$mixValue = $this->_FetchRawCDR('EventId');
+		$mixValue 						= $this->_FetchRawCDR('EventId');
 		$this->_AppendCDR('CarrierRef', $mixValue);
 
 		// StartDateTime & EndDateTime
@@ -169,7 +188,7 @@ class NormalisationModuleCommander extends NormalisationModule
 		$this->_AppendCDR('EndDateTime', $mixValue);
 		
 		// Units
-		// FIXME: Is this correct!?!?!
+		//TODO!!!! - Is this correct!?!?!
 		if ($this->_FetchRawCDR('CallType') == "336")
 		{
 		 	// For Data calls
@@ -184,31 +203,25 @@ class NormalisationModuleCommander extends NormalisationModule
 		}
 		
 		// Description
-	 	$mixValue						= $this->_FetchRawCDR('CallType');	// TODO: Link to Call Type List/Table
-	 	$this->_AppendCDR('Description', (int)$mixValue);
-
-		// Work out Record Type
-		//TODO !!!! - work this out
-		$strRecordCode = '';
-		
-		// RecordType
-		$mixValue = $this->FindRecordType($intServiceType, $strRecordCode); 
-		$this->_AppendCDR('RecordType', $mixValue);
-		
-		// ServiceType
-		$mixValue = SERVICE_TYPE_MOBILE;
-		$this->_AppendCDR('ServiceType', $mixValue);
+		unset($strDescription);
+		//TODO-LATER !!!! - add description
+		if ($strDescription)
+		{
+			$this->_AppendCDR('Description', $strDescription);
+		}
 
 		// Cost
 		$mixValue						=  $this->_FetchRawCDR('Price');
 		$this->_AppendCDR('ServiceType', (float)$mixValue);
+
+		// Source
+		$mixValue 						= $this->_FetchRawCDR('OriginNo');
+		$this->_AppendCDR('Source', $this->RemoveAusCode($mixValue));
 		
-		// Destination Code
-		// TODO!!! - Convert to codes
-		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('DestinationCode', $mixValue);
-
-
+		// Destination
+		$mixValue = $this->_FetchRawCDR('DestinationNo');
+		$this->_AppendCDR('Destination', $this->RemoveAusCode($mixValue));
+		
 		//--------------------------------------------------------------------//
 		
 		if (!$this->ApplyOwnership())

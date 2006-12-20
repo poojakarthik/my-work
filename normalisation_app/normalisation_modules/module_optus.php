@@ -248,55 +248,75 @@ class NormalisationModuleOptus extends NormalisationModule
 		//--------------------------------------------------------//
 		
 		// FNN
-		$mixValue = $this->_FetchRawCDR('ServiceNo');
-		$this->_AppendCDR('FNN', $mixValue);
+		$strFNN 						= $this->_FetchRawCDR('ServiceNo');
+		$this->_AppendCDR('FNN', $strFNN);
+		
+		// ServiceType
+		if ($this->_IsInbound($strFNN))
+		{
+			$intServiceType 			= SERVICE_TYPE_INBOUND;
+		}
+		else
+		{
+			$intServiceType 			= SERVICE_TYPE_LAND_LINE;
+		}
+		$this->_AppendCDR('ServiceType', $intServiceType);
+		
+		// RecordType
+		$mixCarrierCode					= $this->_FetchRawCDR('TypeIdUsage');
+		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
+		$this->_AppendCDR('RecordType', $mixValue);
+		
+		// DestinationCode
+		$mixCarrierCode 				= $this->_FetchRawCDR('Jurisdiction');
+		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+		if ($arrDestinationCode)
+		{
+			$this->_AppendCDR('DestinationCode', $arrDestination['Code']);
+			$this->_AppendCDR('Description', $arrDestination['Description']);
+		}
 		
 		// CarrierRef
-		$mixValue = $this->_FetchRawCDR('CDRId');
+		$mixValue 						= $this->_FetchRawCDR('CDRId');
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime
-		$mixValue = $this->ConvertTime($this->_FetchRawCDR('CallDate'));
+		$mixValue 						= $this->ConvertTime($this->_FetchRawCDR('CallDate'));
 		$this->_AppendCDR('StartDatetime', $mixValue);
 		
 		// Units
-		$mixValue = $this->_FetchRawCDR('Units');
+		$mixValue 						= $this->_FetchRawCDR('Units');
 		$this->_AppendCDR('Units', $mixValue);
 		
 		// Description
-		$mixValue = $this->_FetchRawCDR('TypeIdUsage');				// Need to dereference
-		$this->_AppendCDR('Description', $mixValue);
-		
-		// RecordType
-		//$mixValue = $this->_FetchRawCDR('');						// needs to match database
-		$this->_AppendCDR('RecordType', $mixValue);
-		
-		// ServiceType
-		$this->_AppendCDR('ServiceType', SERVICE_TYPE_LAND_LINE);
+		unset($strDescription);
+		//TODO-LATER !!!! - add description
+		if ($strDescription)
+		{
+			$this->_AppendCDR('Description', $strDescription);
+		}
 
 		//--------------------------------------------------------//
 		// Optional Fields
 		//--------------------------------------------------------//
 
 		// Source
-		$mixValue = $this->_FetchRawCDR('PointOrigin');
+		$mixValue 						= $this->_FetchRawCDR('PointOrigin');
 		$this->_AppendCDR('Source', $mixValue);
 		
 		// Destination
-		$mixValue = $this->_FetchRawCDR('PointTarget');
+		$mixValue 						= $this->_FetchRawCDR('PointTarget');
 		$this->_AppendCDR('Destination', $mixValue);
 		
 		// EndDatetime
-		$mixValue = date("Y-m-d H:i:s", strtotime(" +" . $this->_FetchRawCDR('Units') . "seconds", strtotime($this->_FetchRawCDR('CallDate'))));
+		$intTimestamp					= strtotime(" +" . $this->_FetchRawCDR('Units') . "seconds", strtotime($this->_FetchRawCDR('CallDate')));
+		$mixValue 						= date("Y-m-d H:i:s", $intTimestamp);
 		$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Cost
-		$mixValue = ((float)$this->_FetchRawCDR('Amount') / 100);
+		$mixValue 						= ((float)$this->_FetchRawCDR('Amount') / 100);
 		$this->_AppendCDR('Cost', $mixValue);
-		
-		// DestinationCode
-		//$mixValue = $this->_FetchRawCDR('');
-		//$this->_AppendCDR('DestinationCode', $mixValue);
 
 		//##----------------------------------------------------------------##//
 		

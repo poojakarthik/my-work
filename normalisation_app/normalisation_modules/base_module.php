@@ -46,10 +46,26 @@
 abstract class NormalisationModule
 {
 	//------------------------------------------------------------------------//
+	// _intContext
+	//------------------------------------------------------------------------//
+	/**
+	 * _intContext
+	 *
+	 * Context of the current CDR
+	 *
+	 * Context of the current CDR
+	 *
+	 * @type	int
+	 *
+	 * @property
+	 */
+	protected $_intContext; 
+	
+	//------------------------------------------------------------------------//
 	// _arrRawData
 	//------------------------------------------------------------------------//
 	/**
-	 * arrRawData
+	 * _arrRawData
 	 *
 	 * Stores the split raw data from the CDR
 	 *
@@ -66,7 +82,7 @@ abstract class NormalisationModule
 	// _arrNormalisedData
 	//------------------------------------------------------------------------//
 	/**
-	 * arrNormalisedData
+	 * _arrNormalisedData
 	 *
 	 * Stores the normalised data from the CDR
 	 *
@@ -148,10 +164,10 @@ abstract class NormalisationModule
 	protected $_arrDefineCarrier;
 	
 	//------------------------------------------------------------------------//
-	// _arrDefineCarrier
+	// _arrDefineOutput
 	//------------------------------------------------------------------------//
 	/**
-	 * _arrDefineCarrier
+	 * _arrDefineOutput
 	 *
 	 * Defines the Output CDR format
 	 *
@@ -223,7 +239,15 @@ abstract class NormalisationModule
 		
 		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>", "CreatedOn DESC", "1");
 		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
+		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
+	
+		//TODO!!!! - will this query even work ????
+		$strTables						= "DestinationCode INNER JOIN DestinationTranslation using (Code, Context)";
+		$strData						= "DestinationCode.Code AS Code, DestinationCode.Description AS Description";
+		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND DestinationCode.Context = <Context>";
+		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
+	
 	}
 	
 	//------------------------------------------------------------------------//
@@ -492,7 +516,11 @@ abstract class NormalisationModule
 	 */
 	 protected function _NewCDR($arrCDR)
 	 {
+	 	// set CDR
 	 	$this->_arrNormalisedData = $arrCDR;
+		
+		// set Default Context
+		$this->_intContext = 0;
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -605,20 +633,51 @@ abstract class NormalisationModule
 		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
 	 	return false;
 	 }
-	 
+	
+	//------------------------------------------------------------------------//
+	// FindRecordCode
+	//------------------------------------------------------------------------//
+	/**
+	 * FindRecordCode()
+	 *
+	 * Find the Vixen record type from a Carrier Record type code
+	 *
+	 * Find the Vixen record type from a Carrier Record type code
+	 * 
+	 *
+	 * @param	mixed	mixCarrierCode		Carrier Record type code
+	 * @return	string	Record Type Code					
+	 *
+	 * @method
+	 */
+	 protected function FindRecordCode($mixCarrierCode)
+	 {
+
+	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->_arrNormalisedData["Carrier"], "CarrierCode" => $mixCarrierCode));
+		
+	 	if ($arrResult = $this->_selFindRecordCode->Fetch())
+	 	{
+	 		return $arrResult['Code'];
+	 	}
+	 	
+		// Return false if there was no match
+		$this->_arrNormalisedData['Status']	= CDR_BAD_RECORD_TYPE;
+	 	return false;
+	 }
+	
 	//------------------------------------------------------------------------//
 	// FindRecordType
 	//------------------------------------------------------------------------//
 	/**
 	 * FindRecordType()
 	 *
-	 * Find the record type for the current CDR
+	 * Find the record type from a Service Type & Record Code
 	 *
-	 * Find the record type for the current CDR
+	 * Find the record type from a Service Type & Record Code
 	 * 
 	 *
 	 * @param	int		intServiceType		Service Type Constant
-	 * @param	string	strRecordCode		Record Type code
+	 * @param	string	strRecordCode		Vixen Record Type Code
 	 * @return	int		Record Type Id					
 	 *
 	 * @method
@@ -630,11 +689,44 @@ abstract class NormalisationModule
 		
 	 	if ($arrResult = $this->_selFindRecordType->Fetch())
 	 	{
+			$this->_intContext = $arrResult['Context'];
 	 		return $arrResult['Id'];
 	 	}
 	 	
 		// Return false if there was no match
 		$this->_arrNormalisedData['Status']	= CDR_BAD_RECORD_TYPE;
+	 	return false;
+	 }
+	 
+
+	//------------------------------------------------------------------------//
+	// FindDestination
+	//------------------------------------------------------------------------//
+	/**
+	 * FindDestination()
+	 *
+	 * Find the Destination Details from a Carrier Destination code
+	 *
+	 * Find the Destination Details from a Carrier Destination code
+	 * 
+	 *
+	 * @param	mixed	mixCarrierCode		Carrier Destination code
+	 * @return	array	Destination Details, Code & Description		
+	 *
+	 * @method
+	 */
+	 protected function FindDestination($mixCarrierCode)
+	 {
+	 	$arrData = Array("Carrier" => $this->_arrNormalisedData["Carrier"], "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
+		$intResult = $this->_selFindDestination->Execute($arrData);
+		
+	 	if ($arrResult = $this->_selFindDestination->Fetch())
+	 	{
+	 		return $arrResult;
+	 	}
+	 	
+		// Return false if there was no match
+		$this->_arrNormalisedData['Status']	= CDR_BAD_DESTINATION;
 	 	return false;
 	 }
 
@@ -656,6 +748,31 @@ abstract class NormalisationModule
 	 protected function _GenerateUID()
 	 {
 	 	return "UID_{$this->_arrNormalisedData["FileName"]}_{$this->_arrNormalisedData["SequenceNo"]}";
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _IsInbound
+	//------------------------------------------------------------------------//
+	/**
+	 * _IsInbound()
+	 *
+	 * Check if an FNN is an Inbound Service
+	 *
+	 * Check if an FNN is an Inbound Service
+	 * 
+	 * @param	string	strFNN		FNN to check
+	 * @return	bool					
+	 *
+	 * @method
+	 */
+	 protected function _IsInbound($strFNN)
+	 {
+	 	$strPrefix = substr(trim($strFNN), 0, 2);
+	 	if ($strPrefix === '13' || $strPrefix === '18')
+		{
+			return TRUE;
+		}
+		return FALSE;
 	 }
 	 
 }

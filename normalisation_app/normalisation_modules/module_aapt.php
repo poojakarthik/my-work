@@ -138,6 +138,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDefine ['BandStep']			['Index']		= 12;	// 4 digit distance step code  
 		$arrDefine ['GSTFlag']			['Index']		= 13;	// One Character flag contains “N”o or “Y”es
 		$arrDefine ['RateDate']			['Index']		= 14;	// DD/MM/CCYY
+		
 		$arrDefine ['FNN']				['Index']		= 15;	// FNN (added by pre-processor)
 		$arrDefine ['CallDate']			['Index']		= 16;	// Call Date (added by pre-processor)
 		
@@ -205,64 +206,81 @@ class NormalisationModuleAAPT extends NormalisationModule
 		//--------------------------------------------------------//
 		
 		// FNN
-		$mixValue = $this->_FetchRawCDR('FNN');
-		$this->_AppendCDR('FNN', $mixValue);
+		$strFNN 						= $this->_FetchRawCDR('FNN');
+		$this->_AppendCDR('FNN', $strFNN);
+		
+		// ServiceType
+		if ($this->_IsInbound($strFNN))
+		{
+			$intServiceType 			= SERVICE_TYPE_INBOUND;
+		}
+		else
+		{
+			$intServiceType 			= SERVICE_TYPE_LAND_LINE;
+		}
+		$this->_AppendCDR('ServiceType', $intServiceType);
+		
+		// RecordType
+		$mixCarrierCode					= $this->_FetchRawCDR('BandStep');
+		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
+		$this->_AppendCDR('RecordType', $mixValue);
+		
+		// Destination Code
+		$mixCarrierCode 				= $this->_FetchRawCDR('RateTable');
+		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+		if ($arrDestinationCode)
+		{
+			$this->_AppendCDR('DestinationCode', $arrDestination['Code']);
+			$this->_AppendCDR('Description', $arrDestination['Description']);
+		}
 		
 		// CarrierRef
-		$mixValue = $this->_GenerateUID($arrCDR["FileName"], $arrCDR["SequenceNo"]);
+		$mixValue 						= $this->_GenerateUID($arrCDR["FileName"], $arrCDR["SequenceNo"]);
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime
-		$mixValue = $this->_FetchRawCDR('CallDate');
-		$mixValue .= $this->_FetchRawCDR('CallTime');
-		$mixValue = $this->ConvertTime($mixValue);
-		$strStartDatetime = $mixValue;
+		$mixValue 						 = $this->_FetchRawCDR('CallDate');
+		$mixValue 						.= $this->_FetchRawCDR('CallTime');
+		$mixValue 						 = $this->ConvertTime($mixValue);
+		$strStartDatetime 				= $mixValue;
 		$this->_AppendCDR('StartDatetime', $mixValue);
 		
 		// Units
-		//TODO !!!! - this will only work with timed items (like calls)
-		$arrValue = explode(':', $this->_FetchRawCDR('Duration'));
-		$intValue = ((int)$arrValue[0] * 3600) + ((int)$arrValue[1] * 60) + (int)$arrValue[2]; 
+		//TODO-LATER !!!! - this will only work with timed items (like calls)
+		$arrValue 						= explode(':', $this->_FetchRawCDR('Duration'));
+		$intValue 						= ((int)$arrValue[0] * 3600) + ((int)$arrValue[1] * 60) + (int)$arrValue[2]; 
 		$this->_AppendCDR('Units', $intValue);
 
 		// EndDateTime
-	 	$mixValue = date("Y-m-d H:i:s", strtotime("+ " . $intValue . " seconds", strtotime($strStartDatetime)));
+		$intTimestamp					= strtotime("+ " . $intValue . " seconds", strtotime($strStartDatetime));
+	 	$mixValue 						= date("Y-m-d H:i:s", $intTimestamp);
 		$this->_AppendCDR('EndDatetime', $mixValue);
 	
 		// Description
-		$mixValue = $this->_FetchRawCDR('OriginatingCity') . " to " . $this->_FetchRawCDR('Destination');
-		$this->_AppendCDR('Description', $mixValue);
-		
-		// Work out Service Type
-		//TODO !!!! - need to account for inbound services
-		$intServiceType = SERVICE_TYPE_LAND_LINE;
-		
-		// Work out Record Type
-		//TODO !!!! - work this out
-		$strRecordCode = '';
-		
-		// RecordType
-		$mixValue = $this->FindRecordType($intServiceType, $strRecordCode); 
-		$this->_AppendCDR('RecordType', $mixValue);
-		
-		// ServiceType
-		$mixValue = $intServiceType;
-		$this->_AppendCDR('ServiceType', $mixValue);
+		unset($strDescription);
+		//TODO-LATER !!!! - add description
+		if ($strDescription)
+		{
+			$this->_AppendCDR('Description', $strDescription);
+		}
 
 		//--------------------------------------------------------//
 		// Optional Fields
 		//--------------------------------------------------------//
-
+		
 		// Source
-		$mixValue = $this->_FetchRawCDR('OriginatingCLI');
-		//$this->_AppendCDR('Source', $mixValue);
+		$mixValue 						= $this->_FetchRawCDR('OriginatingCLI');
+		$this->_AppendCDR('Source', $mixValue);
+		//TODO!!!! - why was this commented out ????
 		
 		// Destination
-		$mixValue = $this->_FetchRawCDR('NumberDialled');
-		//$this->_AppendCDR('Destination', $mixValue);
+		$mixValue 						= $this->_FetchRawCDR('NumberDialled');
+		$this->_AppendCDR('Destination', $mixValue);
+		//TODO!!!! - why was this commented out ????
 		
 		// Cost
-		$mixValue = $this->_FetchRawCDR('CallCharge');
+		$mixValue 						= $this->_FetchRawCDR('CallCharge');
 		$this->_AppendCDR('Cost', $mixValue);
 
 		//##----------------------------------------------------------------##//

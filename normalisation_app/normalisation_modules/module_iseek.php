@@ -125,37 +125,36 @@ class NormalisationModuleIseek extends NormalisationModule
 		//--------------------------------------------------------------------//
 		
 		// FNN
-		$mixValue = $this->_FetchRawCDR('Service');
+		$mixValue 						= $this->_FetchRawCDR('Service');
 		$this->_AppendCDR('FNN', $mixValue);
 		
 		// CarrierRef
-		$mixValue = $this->_GenerateUID();
+		$mixValue 						= $this->_GenerateUID();
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime
-		$mixValue = $this->ConvertTime($this->_FetchRawCDR('DateStart'));
+		$mixValue 						= $this->ConvertTime($this->_FetchRawCDR('DateStart'));
 		$this->_AppendCDR('StartDatetime', $mixValue);
 		
 		// EndDatetime
-		$mixValue = $this->ConvertTime($this->_FetchRawCDR('DateEnd'));
+		$mixValue 						= $this->ConvertTime($this->_FetchRawCDR('DateEnd'));
 		$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Units
-		$mixValue = (int)($this->_FetchRawCDR('Megabytes') * 1024);
+		$mixValue 						= (int)($this->_FetchRawCDR('Megabytes') * 1024);
 		$this->_AppendCDR('Units', $mixValue);
 		
 		// Description
-		$mixValue = ISEEK_ADSL_USAGE_DESCRIPTION;
+		$mixValue 						= ISEEK_ADSL_USAGE_DESCRIPTION;
 		$this->_AppendCDR('Description', $mixValue);
 		
-		// RecordType
-		$mixValue = $this->FindRecordType(SERVICE_TYPE_ADSL, 'MonthlyUsage'); 
-		$this->_AppendCDR('RecordType', $mixValue);
-		
 		// ServiceType
-		$mixValue = SERVICE_TYPE_ADSL;
-		$this->_AppendCDR('ServiceType', $mixValue);
-
+		$intServiceType 				= SERVICE_TYPE_ADSL;
+		$this->_AppendCDR('ServiceType', $intServiceType);
+		
+		// RecordType
+		$mixValue 						= $this->FindRecordType($intServiceType, 'MonthlyUsage'); 
+		$this->_AppendCDR('RecordType', $mixValue);
 
 		//--------------------------------------------------------------------//
 		

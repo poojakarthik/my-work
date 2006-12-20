@@ -103,8 +103,9 @@ define("CDR_CANT_NORMALISE_HEADER"		, 105);
 define("CDR_CANT_NORMALISE_NON_CDR"		, 106);
 define("CDR_BAD_OWNER"					, 107);
 define("CDR_BAD_RECORD_TYPE"			, 108);
-define("CDR_CANT_NORMALISE_NO_MODULE"	, 109);
-define("CDR_CANT_NORMALISE_INVALID"		, 110);
+define("CDR_BAD_DESTINATION"			, 109);
+define("CDR_CANT_NORMALISE_NO_MODULE"	, 110);
+define("CDR_CANT_NORMALISE_INVALID"		, 111);
 define("CDR_IGNORE"						, 140);
 define("CDR_RATED"						, 150);
 define("CDR_TEMP_INVOICE"				, 198);
@@ -167,6 +168,9 @@ $arrServiceTypes[SERVICE_TYPE_LAND_LINE]	= "Land Line";
 $arrServiceTypes[SERVICE_TYPE_INBOUND]		= "Inbound";
 $arrServiceTypes[SERVICE_TYPE_DIALUP]		= "Dialup";
 $GLOBALS['ServiceTypes']	= $arrServiceTypes;
+
+// Context
+define("CONTEXT_NORMAL"			, 0);
 
 // TAX RATES
 define("TAX_RATE_GST"				, 10);

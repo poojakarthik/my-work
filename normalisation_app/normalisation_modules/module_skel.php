@@ -182,56 +182,64 @@ class NormalisationModuleSkel extends NormalisationModule
 		//--------------------------------------------------------//
 		
 		// FNN
-		$mixValue = $this->_FetchRawCDR('ColumnName1');
+		$mixValue 						= $this->_FetchRawCDR('ColumnName1');
 		$this->_AppendCDR('FNN', $mixValue);
 		
 		// CarrierRef
-		$mixValue = $this->_GenerateUID($arrCDR["FileName"], $arrCDR["SequenceNo"]);
+		$mixValue 						= $this->_GenerateUID($arrCDR["FileName"], $arrCDR["SequenceNo"]);
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
 		// StartDatetime
-		$mixValue = $this->_FetchRawCDR('ColumnName2');
+		$mixValue 						= $this->_FetchRawCDR('ColumnName2');
 		$this->_AppendCDR('StartDatetime', $mixValue);
 		
 		// Units
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue 						= $this->_FetchRawCDR('');
 		$this->_AppendCDR('Units', $mixValue);
 		
-		// Description
-		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('Description', $mixValue);
+		// ServiceType
+		$intServiceType 				= $this->_FetchRawCDR('');
+		$this->_AppendCDR('ServiceType', $intServiceType);
 		
 		// RecordType
-		$mixValue = $this->_FetchRawCDR(''); // needs to match database
+		$mixCarrierCode					= $this->_FetchRawCDR('');
+		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 		
-		// ServiceType
-		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('ServiceType', $mixValue);
 
 		//--------------------------------------------------------//
 		// Optional Fields
 		//--------------------------------------------------------//
 
+		// Description
+		$mixValue 						= $this->_FetchRawCDR('');
+		$this->_AppendCDR('Description', $mixValue);
+		
 		// Source
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue 						= $this->_FetchRawCDR('');
 		$this->_AppendCDR('Source', $mixValue);
 		
 		// Destination
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue 						= $this->_FetchRawCDR('');
 		$this->_AppendCDR('Destination', $mixValue);
 		
 		// EndDatetime
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue 						= $this->_FetchRawCDR('');
 		$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Cost
-		$mixValue = $this->_FetchRawCDR('');
+		$mixValue 						= $this->_FetchRawCDR('');
 		$this->_AppendCDR('Cost', $mixValue);
 		
 		// DestinationCode
-		$mixValue = $this->_FetchRawCDR('');
-		$this->_AppendCDR('DestinationCode', $mixValue);
+		$mixCarrierCode 				= $this->_FetchRawCDR('');
+		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+		if ($arrDestinationCode)
+		{
+			$this->_AppendCDR('DestinationCode', $arrDestination['Code']);
+			$this->_AppendCDR('Description', $arrDestination['Description']);
+		}
 
 		//##----------------------------------------------------------------##//
 		

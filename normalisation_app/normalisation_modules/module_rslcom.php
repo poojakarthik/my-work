@@ -158,32 +158,53 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		//--------------------------------------------------------------------//
 		
 		// FNN
-		$mixValue = $this->_FetchRawCDR('ChargedParty');
-		$this->_AppendCDR('FNN', $this->RemoveAusCode($mixValue));
+		$strFNN 						= $this->_FetchRawCDR('ChargedParty');
+		$strFNN							= $this->RemoveAusCode($strFNN)
+		$this->_AppendCDR('FNN', $strFNN);
+
+		// ServiceType
+		if ($this->_IsInbound($strFNN))
+		{
+			$intServiceType 			= SERVICE_TYPE_INBOUND;
+		}
+		else
+		{
+			$intServiceType 			= SERVICE_TYPE_LAND_LINE;
+		}
+		$this->_AppendCDR('ServiceType', $intServiceType);
 		
-		// Source
-		$mixValue = $this->_FetchRawCDR('OriginNo');
-		$this->_AppendCDR('Source', $this->RemoveAusCode($mixValue));
-		
-		// Destination
-		$mixValue = $this->_FetchRawCDR('DestinationNo');
-		$this->_AppendCDR('Destination', $this->RemoveAusCode($mixValue));
+		// RecordType
+		$mixCarrierCode					= $this->_FetchRawCDR('CallType');
+		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
+		$this->_AppendCDR('RecordType', $mixValue);
+
+		// Destination Code & Description
+		$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
+		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+		if ($arrDestinationCode)
+		{
+			$this->_AppendCDR('DestinationCode', $arrDestination['Code']);
+			$this->_AppendCDR('Description', $arrDestination['Description']);
+		}
 		
 		// CarrierRef
-		$mixValue = $this->_FetchRawCDR('EventId');
+		$mixValue 						= $this->_FetchRawCDR('EventId');
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
-		$mixValue = $this->_FetchRawCDR('RecordType');
+		// Carrier Record Type
+		$intCarrierRecordType 			= (int)$this->_FetchRawCDR('RecordType');
+		
 		// StartDateTime & EndDateTime
-		if ($mixValue == "1")
+		if ($intCarrierRecordType == "1")
 		{
 		 	// For normal usage CDRs
-		 	$mixValue	= $this->_FetchRawCDR('DateTime');
+		 	$mixValue					= $this->_FetchRawCDR('DateTime');
 		 	$this->_AppendCDR('StartDatetime', $mixValue);
 		 	
-		 	$intStart	= strtotime($this->_FetchRawCDR('DateTime'));
-		 	$intEnd		= strtotime(" +" . $this->_FetchRawCDR('Duration') . "seconds", $intStart);
-		 	$mixValue	= date("Y-m-d H:i:s", $intEnd);
+		 	$intStart					= strtotime($this->_FetchRawCDR('DateTime'));
+		 	$intEnd						= strtotime(" +" . $this->_FetchRawCDR('Duration') . "seconds", $intStart);
+		 	$mixValue					= date("Y-m-d H:i:s", $intEnd);
 			$this->_AppendCDR('EndDatetime', $mixValue);
 		}
 		else
@@ -195,9 +216,8 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		 	$this->_AppendCDR('EndDatetime', $mixValue);
 		}
 		
-		
 		// Units
-		if ($this->_FetchRawCDR('RecordType') == "1")
+		if ($intCarrierRecordType == "1")
 		{
 		 	// For normal usage CDRs
 		 	$mixValue					= $this->_FetchRawCDR('Duration');
@@ -211,31 +231,44 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		}
 		
 		// Description
-		if ($this->_FetchRawCDR('RecordType') == "1")
+		unset($strDescription);
+		if ($intCarrierRecordType == "1")
 		{
 		 	// For normal usage CDRs
-		 	$mixValue					= $this->_FetchRawCDR('CallType');	// TODO: Link to Call Type List/Table
-		 	$this->_AppendCDR('Description', (int)$mixValue);
+			//TODO!!!! - Work out description
+			if ($intServiceType === SERVICE_TYPE_INBOUND)
+			{
+				// inbound service
+				//TODO-LATER !!!! - set this to the state or city the call originated from
+				$strDescription			= "Call from ".$this->_FetchRawCDR('OriginNo');
+			}
+			else
+			{
+		 		//TODO-LATER !!!! - more desrciptions
+			}
 		}
 		else
 		{
 		 	// For S&E and OC&C CDRs
-		 	$mixValue					=  $this->_FetchRawCDR('Description');
-		 	$this->_AppendCDR('Description', $mixValue);
+		 	$strDescription				 =  $this->_FetchRawCDR('Description');
+			$strDescription				.=  " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
 		}
-
-		// RecordType
-		$mixValue = 0; 							// TODO: FIXME - needs to match database
-		$this->_AppendCDR('RecordType', $mixValue);
+		if ($strDescription)
+		{
+			$this->_AppendCDR('Description', $strDescription);
+		}
 		
-		// ServiceType
-		$mixValue = SERVICE_TYPE_LAND_LINE;		// TODO: FIXME - needs to match constants
-		$this->_AppendCDR('ServiceType', $mixValue);
-
 		// Cost
 		$mixValue						=  $this->_FetchRawCDR('Price');
 		$this->_AppendCDR('Cost', (float)$mixValue);
-
+		
+		// Source
+		$mixValue 						= $this->_FetchRawCDR('OriginNo');
+		$this->_AppendCDR('Source', $this->RemoveAusCode($mixValue));
+		
+		// Destination
+		$mixValue = $this->_FetchRawCDR('DestinationNo');
+		$this->_AppendCDR('Destination', $this->RemoveAusCode($mixValue));
 
 		//--------------------------------------------------------------------//
 		
