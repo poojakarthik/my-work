@@ -62,6 +62,10 @@
 		// Set up the database reference
 		$this->db = $ptrThisDB;
 		
+		// Init member variables
+		$this->_strFilename		= NULL;
+		$this->_strSampleFile	= NULL;
+		
 		// Init database statements
 		$arrColumns['CustomerGroup']	= "Account.CustomerGroup";
 		$arrColumns['Account']			= "Account.Id";
@@ -612,7 +616,6 @@
 	 */
  	function SendSample()
  	{
-		// Upload to FTP server
 		return $this->SendOutput(TRUE);
  	}
  }

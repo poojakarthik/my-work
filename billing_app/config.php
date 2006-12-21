@@ -414,9 +414,9 @@
 		$arrDefine['ItemSvcFooter']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
 		$arrDefine['ItemSvcFooter']		['RecordType']		['Value']	= "89";
 		
-		$arrDefine['ItemSvcFooter']		['TotalCharge']		['Start']	= 2;
+/*		$arrDefine['ItemSvcFooter']		['TotalCharge']		['Start']	= 2;
 		$arrDefine['ItemSvcFooter']		['TotalCharge']		['Length']	= 11;
-		$arrDefine['ItemSvcFooter']		['TotalCharge']		['Type']	= BILL_TYPE_SHORTCURRENCY;
+		$arrDefine['ItemSvcFooter']		['TotalCharge']		['Type']	= BILL_TYPE_SHORTCURRENCY;*/
 		
 		$arrDefine['ItemisedFooter']	['RecordType']		['Start']	= 0;
 		$arrDefine['ItemisedFooter']	['RecordType']		['Length']	= 2;

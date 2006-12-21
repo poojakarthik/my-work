@@ -121,6 +121,14 @@ define("GRAPH_TYPE_LINEXYZ"					, "05");
 
 // Miscellaneous Bill Printing Constants
 define("BILL_PRINT_HISTORY_LIMIT"			, 6);
+define("BILL_PRINT_SAMPLE_LIMIT"			, 10);
+
+// Bill Printing FTP data
+define("BILL_PRINT_HOST"					, "");	// TODO
+define("BILL_PRINT_USERNAME"				, "");	// TODO
+define("BILL_PRINT_PASSWORD"				, "");	// TODO
+define("BILL_PRINT_REMOTE_DIR"				, "");	// TODO
+define("BILL_PRINT_REMOTE_DIR_SAMPLE"		, "");	// TODO
 
 // Error Codes
 define("ERROR_NO_INVOICE_DATA"				, -1);
