@@ -283,7 +283,6 @@
 		$arrFileData[] = $arrDefine['ChargeTotalsFooter'];
 		
 		// PAYMENT DETAILS
-		// TODO: get details from account table
 		// build output
 		$arrDefine['PaymentData']		['BillExpRef']		['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
 		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
@@ -434,9 +433,7 @@
 		// add invoice footer (19)		
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		
-		// DEBUG
 		Debug($arrFileData);
-		// DEBUG
  	}
  	
  	//------------------------------------------------------------------------//
@@ -449,29 +446,82 @@
 	 *
 	 * Builds the bill file
 	 *
-	 * @return		string	filename
+	 * @param		string		strInvoiceRun	The Invoice Run to build from
+	 * @param		boolean		bolSample		optional This is a sample billing file
+	 *
+	 * @return		string						filename
 	 *
 	 * @method
 	 */
- 	function BuildOutput()
+ 	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
  	{
+		$selMetadata = new StatementSelect("InvoiceTemp", "COUNT(Id) AS Invoices");
+		$selMetaData->Execute();
+		$arrMetaData = $selMetadata->Fetch();
+
 		// generate filename
-		$strFilename = "tbl".date("Y-m-d").".bof";
+		if($bolSample)
+		{
+			$strFilename	= "sample".date("Y-m-d").".vbf";
+			$strMetaName	= "sample".date("Y-m-d").".vbm";
+			$strZipName		= "sample".date("Y-m-d").".zip";
+		}
+		else
+		{
+			$strFilename	= date("Y-m-d").".vbf";
+			$strMetaName	= date("Y-m-d").".vbm";
+			$strZipName		= date("Y-m-d").".zip";
+		}
 		
 		// Use a MySQL select into file Query to generate the file
-		//TODO!!!!
+		$qryBuildFile	= new Query();
+		$strColumns		= "CONCAT('10', LPAD(CAST(Invoice.Id AS CHAR(10)), 10, ' '), InvoiceOutput.Data)";
+		$strWhere		= "InvoiceRun = '$strInvoiceRun'";
+		$strQuery		=	"SELECT $strColumns INTO OUTFILE '".BILLING_LOCAL_PATH."$strFilename'\n" .
+							"FROM InvoiceOutput JOIN Invoice USING (Account)\n" .
+							"WHERE $strWhere\n";
+		if($bolSample)
+		{
+			$strQuery .= rand(0, (int)$arrMetaData['Invoices']).", ".BILL_PRINT_SAMPLE_LIMIT;
+		}
+		$qryBuildFile->Execute($strQuery);
 		
 		// create metadata file
-		// TODO!!!!
+		$ptrMetaFile	= fopen(BILLING_LOCAL_PATH.$strMetaName, "0777");
+		// TODO - get actual insert ids for this billing run
+		$strLine		= 	date("Y-m-d").
+							$strFilename.
+							str_pad($arrMetaData['Invoices'], 10, " ", STR_PAD_LEFT).
+							sha1_file(BILLING_LOCAL_PATH.$strFilename).
+							str_pad(1, 10, " ", STR_PAD_LEFT).
+							str_pad(2, 10, " ", STR_PAD_LEFT).
+							str_pad(3, 10, " ", STR_PAD_LEFT).
+							str_pad(4, 10, " ", STR_PAD_LEFT).
+							str_pad(5, 10, " ", STR_PAD_LEFT).
+							str_pad(6, 10, " ", STR_PAD_LEFT);
+		fwrite($ptrMetaFile, $strLine);
+		fclose($ptrMetaFile);
 		
 		// zip files
-		//TODO!!!!
+		$ptrZipFile = new ZipArchive;
+		if($ptrZipFile->open(BILLING_LOCAL_PATH.$strZipName))
+		{
+			// add the files to our new zip archive
+			$ptrZipFile->addFile(BILLING_LOCAL_PATH.$strFilename, $strFilename);
+			$ptrZipFile->addFile(BILLING_LOCAL_PATH.$strMetaName, $strMetaName);
+			$ptrZipFile->close();
+		}
+		else
+		{
+			// ERROR
+			return FALSE;
+		}
 		
 		// set filename internally
-		//TODO!!!!
+		$this->_strFilename = BILLING_LOCAL_PATH.$strZipName;
 		
-		// return filename
-		return $strFilename;
+		// return zip's filename
+		return $strZipName;
  	}
  	
  	//------------------------------------------------------------------------//
@@ -484,14 +534,45 @@
 	 *
 	 * Sends the bill file
 	 *
+	 * @param		boolean		bolSample		optional This is a sample billing file
+	 *
 	 * @return		boolean
 	 *
 	 * @method
 	 */
- 	function SendOutput()
+ 	function SendOutput($bolSample)
  	{
-		// Upload to FTP server
-		//TODO!!!!
+		// Set the remote directory
+		if ($bolSample)
+		{
+			$strRemoteDir	= BILL_PRINT_REMOTE_DIR_SAMPLE;
+			$strFile		= $this->_strSampleFile;
+		}
+		else
+		{
+			$strRemoteDir	= BILL_PRINT_REMOTE_DIR;
+			$strFile		= $this->Filename;
+		}
+		
+		// Connect to FTP
+		$ptrFTP = ftp_connect(BILL_PRINT_HOST);
+		if (!ftp_login($ptrFTP, BILL_PRINT_USERNAME, BILL_PRINT_PASSWORD))
+		{
+			// Log in failed
+			return FALSE;
+		}
+		ftp_chdir($ptrFTP, $strRemoteDir);
+		
+		// Upload file
+		if(!ftp_put($ptrFTP, basename($strFile), $strFile, FTP_ASCII))
+		{
+			return FALSE;
+		}
+		
+		// Close the FTP connection
+		ftp_close($ptrFTP);
+		
+		return TRUE;
  	}
 	
 	//------------------------------------------------------------------------//
@@ -504,29 +585,15 @@
 	 *
 	 * Builds a sample bill file
 	 *
-	 * @return		string	filename
+ 	 * @param		string		strInvoiceRun	The Invoice Run to build from
+ 	 * 
+	 * @return		string						filename
 	 *
 	 * @method
 	 */
- 	function BuildSample()
+ 	function BuildSample($strInvoiceRun)
  	{
-		// generate filename
-		$strFilename = "tbl".date("Y-m-d").".bof";
-		
-		// Use a MySQL select into file Query to generate the file
-		//TODO!!!!
-		
-		// create metadata file
-		// TODO!!!!
-		
-		// zip files
-		//TODO!!!!
-		
-		// set filename internally
-		//TODO!!!!
-		
-		// return filename
-		return $strFilename;
+		return $this->BuildOutput($strInvoiceRun, TRUE);
  	}
  	
  	//------------------------------------------------------------------------//
@@ -546,7 +613,7 @@
  	function SendSample()
  	{
 		// Upload to FTP server
-		//TODO!!!!
+		return $this->SendOutput(TRUE);
  	}
  }
 
