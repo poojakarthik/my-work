@@ -86,7 +86,7 @@
 																$arrColumns,
 																"Account = <Account>",
 																"CreatedOn DESC",
-																BILL_PRINT_HISTORY_LIMIT);
+																BILL_PRINT_HISTORY_LIMIT - 1);
 																
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RecordType.Name";
@@ -119,8 +119,8 @@
 		$arrColumns['FNN']				= "Service.FNN";
 		$arrColumns['Source']			= "CDR.Source";
 		$arrColumns['Destination']		= "CDR.Destination";
-		$arrColumns['StartDateTime']	= "CDR.StartDatetime";
-		$arrColumns['EndDateTime']		= "CDR.EndDatetime";
+		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
+		$arrColumns['EndDatetime']		= "CDR.EndDatetime";
 		$arrColumns['Units']			= "CDR.Units";
 		$arrColumns['Description']		= "CDR.Description";
 		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
@@ -141,7 +141,6 @@
 		// Define the file format
 		//----------------------------------------------------------------------------//
 		
-		//TODO!!!! - Include the billprint define file
 		$this->_arrDefine = $arrConfig['BillPrintDefine'];
 		
 		//----------------------------------------------------------------------------//
@@ -196,14 +195,12 @@
  	{
 		$arrDefine = $this->_arrDefine;
 	
-		// Retrieve the data we'll need to do the invoice 
-		//TODO!!!!
-		// Account Details
-		
 		// HEADER
 		// get details from invoice & customer
-		$arrCustomerData = $this->_selCustomerDetails->Execute(Array('Account' => $arrInvoiceDetails['Account']));
-		$arrLastBill = $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$this->_selCustomerDetails->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$bolHasBillHistory = $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account'])) ? TRUE : FALSE;
+		$arrCustomerData	= $this->_selCustomerDetails->Fetch();
+		$arrBillHistory		= $this->_selLastBills->FetchAll();
 		
 		// build output
 		$arrDefine['InvoiceDetails']	['BillType']		['Value']	= $arrCustomerData['CustomerGroup'];
@@ -211,8 +208,18 @@
 		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month"));	// FIXME: At a later date.  This is fine for now.
 		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
 		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrCustomerData['Account'];
-		$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrLastBill['Total'] + $arrLastBill['Tax'];						
-		$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrLastBill['Balance'];				// TODO: Get last bill
+		if($bolHasBillHistory)
+		{
+			// Display the previous bill details
+			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];						
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrBillHistory[0]['Balance'];
+		}
+		else
+		{
+			// There is no previous bill
+			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= 0;						
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= 0;
+		}
 		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= $arrInvoiceDetails['Credits'];
 		$arrDefine['InvoiceDetails']	['Balance']			['Value']	= $arrInvoiceDetails['AccountBalance'];
 		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
@@ -237,8 +244,24 @@
 		$this->_arrFileData[] = $arrDefine['InvoiceDetails'];
 		
 		// MONTHLY COMPARISON BAR GRAPH
-		// TODO: get details from invoice table
-		// TODO: build output
+		// build output
+		$arrDefine['GraphHeader']		['GraphType']		['Value']	= GRAPH_TYPE_VERTICALBAR;
+		$arrDefine['GraphHeader']		['GraphTitle']		['Value']	= "Account History";
+		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
+		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "\$ Value";
+		$arrDefine['GraphData']			['Title']			['Value']	= date("M y", strtotime("-$intCount months"));
+		$arrDefine['GraphData']			['Value']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
+		$arrFileData[] = $arrDefine['GraphData'];
+		$intCount = 0;
+		foreach($arrBillHistory as $arrBill)
+		{
+			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime("-$intCount months"));
+			$arrDefine['GraphData']		['Value']			['Value']	= $arrBill['Total'] + $arrBill['Tax'];
+			$arrFileData[] = $arrDefine['GraphData'];
+			$intCount++;
+		}
+		$arrDefine['GraphFooter']		['TotalSamples']	['Value']	= $intCount + 1;
+		$arrFileData[] = $arrDefine['GraphFooter'];
 		
 		// SUMMARY CHARGES
 		// get details from servicetype totals
@@ -261,11 +284,31 @@
 		
 		// PAYMENT DETAILS
 		// TODO: get details from account table
-		// TODO: build output
+		// build output
+		$arrDefine['PaymentData']		['BillExpRef']		['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
+		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
+		$arrDefine['PaymentData']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
+		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
+		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ($arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax']) - $arrInvoiceDetails['Credits'];
+		$arrDefine['PaymentData']		['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
+		$arrDefine['PaymentData']		['PropertyName']	['Value']	= $arrDefine['InvoiceDetails']['PropertyName']['Value'];
+		$arrDefine['PaymentData']		['AddressLine1']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine1']['Value'];
+		$arrDefine['PaymentData']		['AddressLine2']	['Value']	= "{$arrDefine['Suburb']}   {$arrDefine['State']}   {$arrDefine['Postcode']}";
+		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= "FREE One Month Trial for our unlimited " .
+																		  "Dial Up Internet. Call customer care to " .
+																		  "get connected.";
+		$arrDefine['PaymentData']		['SpecialOffer2']	['Value']	= "View your bill online, simply go to " .
+																		  "www.telcoblue.com.au click on " .
+																		  "Customer Login, and use your " .
+																		  "supplied username and password. " .
+																		  "See calls made in the last few days plus " .
+																		  "your local calls itemised, or copy all your " .
+																		  "calls to a spreadsheet for analysis.";
+		$arrFileData[] = $arrDefine['PaymentData'];
 		
 		// SUMMARY SERVICES
 		// get details from servicetype totals
-		$this->_selServices->Execute();
+		$this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		$arrServiceSummaries = $this->_selServices->FetchAll();
 		// build output
 		$strCurrentService = "";
@@ -295,6 +338,8 @@
 		// DETAILS
 		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
+		$this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
 		// reset counters
 		$strCurrentService		= "";
 		$strCurrentRecordType	= "";
@@ -310,11 +355,10 @@
 				if ($strCurrentService != "")
 				{
 					// add service total record (89)
-					$arrDefine['ItemSvcFooter']		['TotalCharge']		['Value']	= 23.00;
 					$arrFileData[] = $arrDefine['ItemSvcFooter'];					
 				}
 				// add service record (80)
-				$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= "0408295199";
+				$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= $arrData['FNN'];
 				$arrFileData[] = $arrDefine['ItemSvcHeader'];
 				
 				$strCurrentService = $arrData['FNN'];
@@ -325,11 +369,11 @@
 				// if old type exists
 				if($strCurrentRecordType == "")
 				{
-					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= 13.00;
+					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $arrData['RecordTypeTotal'];
 					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
 				}
 				// build header record (90)
-				$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= "Mobile to Mobile";
+				$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= $arrData['RecordTypeName'];
 				$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
 				// reset counters
 				$strCurrentRecordType = $arrData['RecordTypeName'];
@@ -337,34 +381,62 @@
 			// build charge record
 			switch($arrData['DisplayType'])
 			{
+				// Unknown Record Type (should never happen) - just display as a normal Call
+				default:
 				// Type 91
 				case RECORD_DISPLAY_CALL:
-					// TODO
+					$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
+					$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
+					$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+					$intHours		= floor((int)$arrData['Units'] / 3600);
+					$strDuration	= "$intHours:".date("i:s", (int)$arrData['Units']);
+					$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
+					$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrData['Description'];
+					$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrData['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataCall'];
 					break;
 				// Type 92
 				case RECORD_DISPLAY_S_AND_E:
-					// TODO
+					$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";
+					$arrDefine['ItemisedDataS&E']	['Description']		['Value']	= $strDescription;
+					$arrDefine['ItemisedDataS&E']	['Items']			['Value']	= (int)$arrData['Units'];
+					$arrDefine['ItemisedDataS&E']	['Charge']			['Value']	= $arrData['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataCall'];
 					break;
 				// Type 93
 				case RECORD_DISPLAY_DATA:
-					// TODO
+					$arrDefine['ItemisedDataKB']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
+					$arrDefine['ItemisedDataKB']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
+					$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+					$arrDefine['ItemisedDataKB']	['DataTransfer']	['Value']	= (int)$arrData['Units'];
+					$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrData['Description'];
+					$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrData['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataKB'];
 					break;
 				// Type 94
 				case RECORD_DISPLAY_SMS:
-					// TODO
-					break;
-				// Unknown Record Type (should never happen)
-				default:
-					// TODO
+					$arrDefine['ItemisedDataSMS']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
+					$arrDefine['ItemisedDataSMS']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
+					$arrDefine['ItemisedDataSMS']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+					$arrDefine['ItemisedDataSMS']	['Items']			['Value']	= (int)$arrData['Units'];
+					$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrData['Description'];
+					$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrData['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataSMS'];
 					break;
 			}
 		}
-		$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= 13.00;
+		$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $arrData['RecordTypeTotal'];
 		$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+		// add service total record (89)
+		$arrFileData[] = $arrDefine['ItemSvcFooter'];	
 		// add end record (79)
 		$arrFileData[] = $arrDefine['ItemisedFooter'];
 		// add invoice footer (19)		
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
+		
+		// DEBUG
+		Debug($arrFileData);
+		// DEBUG
  	}
  	
  	//------------------------------------------------------------------------//
@@ -395,7 +467,7 @@
 		// zip files
 		//TODO!!!!
 		
-		// set filename internaly
+		// set filename internally
 		//TODO!!!!
 		
 		// return filename
@@ -450,7 +522,7 @@
 		// zip files
 		//TODO!!!!
 		
-		// set filename internaly
+		// set filename internally
 		//TODO!!!!
 		
 		// return filename
