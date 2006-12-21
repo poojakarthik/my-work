@@ -157,7 +157,7 @@
 									</th>
 									<td>
 										<xsl:choose>
-											<xsl:when test="/Response/Contact/CustomerContact">
+											<xsl:when test="/Response/Contact/CustomerContact = 1">
 												<strong><span class="Green">Account Group Contact</span></strong>
 											</xsl:when>
 											<xsl:otherwise>
@@ -187,32 +187,18 @@
 							</table>
 						</div>
 					</div>
+					<div class="Seperator"></div>
+					
+					<a>
+						<xsl:attribute name="href">
+							<xsl:text>contact_edit.php?Id=</xsl:text>
+							<xsl:value-of select="/Response/Contact/Id" />
+						</xsl:attribute>
+						<xsl:text>Edit Contact</xsl:text>
+					</a>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td width="300" valign="top">
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 					<h2>Contact Notes</h2>
 					<div class="Seperator"></div>
 					
@@ -308,24 +294,6 @@
 						</div>
 						<div class="Seperator"></div>
 					</xsl:for-each>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 				</td>
 			</tr>
 		</table>

@@ -3295,7 +3295,7 @@
 				 
 				 
 	// Define Columns 
-	$strName = "RecurringCharge"; 
+	$strName = "RecurringChargeType"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 

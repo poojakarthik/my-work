@@ -156,7 +156,7 @@
 											<xsl:text>]</xsl:text>
 										</xsl:attribute>
 										<option selected="selected" value=""></option>
-										<xsl:for-each select="/Response/RatePlan/RateGroups/Results/rangeSample/RateGroup[RecordType=$RecordType]">
+										<xsl:for-each select="/Response/RatePlan/RateGroups/Results/rangeSample/RateGroup[RecordType/Id=$RecordType]">
 											<option>
 												<xsl:attribute name="value">
 													<xsl:text></xsl:text>

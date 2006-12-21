@@ -222,17 +222,7 @@
 							</xsl:when>
 							<xsl:otherwise>
 								<tr>
-									<td>
-										<input type="checkbox" name="Archived" value="1" id="Archive:TRUE">
-											<xsl:choose>
-												<xsl:when test="/Response/Account/Archived = 1">
-													<xsl:attribute name="checked">
-														<xsl:text>checked</xsl:text>
-													</xsl:attribute>
-												</xsl:when>
-											</xsl:choose>
-										</input>
-									</td>
+									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
 									<td>
 										<label for="Archive:TRUE">
 											Make this account <strong><span class="Red">Archived</span></strong> and unavailable
