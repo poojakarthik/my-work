@@ -382,8 +382,12 @@
 		$arrDefine['ItemisedDataCall']	['Duration']		['Start']	= 50;
 		$arrDefine['ItemisedDataCall']	['Duration']		['Length']	= 9;
 		$arrDefine['ItemisedDataCall']	['Duration']		['Type']	= BILL_TYPE_DURATION;
-		
-		$arrDefine['ItemisedDataCall']	['Charge']			['Start']	= 59;
+
+		$arrDefine['ItemisedDataCall']	['Description']		['Start']	= 59;
+		$arrDefine['ItemisedDataCall']	['Description']		['Length']	= 100;
+		$arrDefine['ItemisedDataCall']	['Description']		['Type']	= BILL_TYPE_CHAR;
+				
+		$arrDefine['ItemisedDataCall']	['Charge']			['Start']	= 159;
 		$arrDefine['ItemisedDataCall']	['Charge']			['Length']	= 11;
 		$arrDefine['ItemisedDataCall']	['Charge']			['Type']	= BILL_TYPE_SHORTCURRENCY;
 		
@@ -396,9 +400,71 @@
 		$arrDefine['ItemisedDataS&E']	['Description']		['Length']	= 100;
 		$arrDefine['ItemisedDataS&E']	['Description']		['Type']	= BILL_TYPE_CHAR;
 		
-		$arrDefine['ItemisedDataS&E']	['Charge']			['Start']	= 102;
+		$arrDefine['ItemisedDataS&E']	['Items']			['Start']	= 102;
+		$arrDefine['ItemisedDataS&E']	['Items']			['Length']	= 10;
+		$arrDefine['ItemisedDataS&E']	['Items']			['Type']	= BILL_TYPE_INTEGER;
+		
+		$arrDefine['ItemisedDataS&E']	['Charge']			['Start']	= 112;
 		$arrDefine['ItemisedDataS&E']	['Charge']			['Length']	= 11;
 		$arrDefine['ItemisedDataS&E']	['Charge']			['Type']	= BILL_TYPE_SHORTCURRENCY;
+		
+		$arrDefine['ItemisedDataKB']	['RecordType']		['Start']	= 0;
+		$arrDefine['ItemisedDataKB']	['RecordType']		['Length']	= 2;
+		$arrDefine['ItemisedDataKB']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
+		$arrDefine['ItemisedDataKB']	['RecordType']		['Value']	= "93";
+		
+		$arrDefine['ItemisedDataKB']	['Date']			['Start']	= 2;
+		$arrDefine['ItemisedDataKB']	['Date']			['Length']	= 10;
+		$arrDefine['ItemisedDataKB']	['Date']			['Type']	= BILL_TYPE_SHORTDATE;
+		
+		$arrDefine['ItemisedDataKB']	['Time']			['Start']	= 12;
+		$arrDefine['ItemisedDataKB']	['Time']			['Length']	= 8;
+		$arrDefine['ItemisedDataKB']	['Time']			['Type']	= BILL_TYPE_TIME;
+		
+		$arrDefine['ItemisedDataKB']	['CalledParty']		['Start']	= 20;
+		$arrDefine['ItemisedDataKB']	['CalledParty']		['Length']	= 30;
+		$arrDefine['ItemisedDataKB']	['CalledParty']		['Type']	= BILL_TYPE_CHAR;
+		
+		$arrDefine['ItemisedDataKB']	['DataTransfered']	['Start']	= 50;
+		$arrDefine['ItemisedDataKB']	['DataTransfered']	['Length']	= 10;
+		$arrDefine['ItemisedDataKB']	['DataTransfered']	['Type']	= BILL_TYPE_INTEGER;
+
+		$arrDefine['ItemisedDataKB']	['Description']		['Start']	= 60;
+		$arrDefine['ItemisedDataKB']	['Description']		['Length']	= 100;
+		$arrDefine['ItemisedDataKB']	['Description']		['Type']	= BILL_TYPE_CHAR;
+				
+		$arrDefine['ItemisedDataKB']	['Charge']			['Start']	= 160;
+		$arrDefine['ItemisedDataKB']	['Charge']			['Length']	= 11;
+		$arrDefine['ItemisedDataKB']	['Charge']			['Type']	= BILL_TYPE_SHORTCURRENCY;
+		
+		$arrDefine['ItemisedDataSMS']	['RecordType']		['Start']	= 0;
+		$arrDefine['ItemisedDataSMS']	['RecordType']		['Length']	= 2;
+		$arrDefine['ItemisedDataSMS']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
+		$arrDefine['ItemisedDataSMS']	['RecordType']		['Value']	= "94";
+		
+		$arrDefine['ItemisedDataSMS']	['Date']			['Start']	= 2;
+		$arrDefine['ItemisedDataSMS']	['Date']			['Length']	= 10;
+		$arrDefine['ItemisedDataSMS']	['Date']			['Type']	= BILL_TYPE_SHORTDATE;
+		
+		$arrDefine['ItemisedDataSMS']	['Time']			['Start']	= 12;
+		$arrDefine['ItemisedDataSMS']	['Time']			['Length']	= 8;
+		$arrDefine['ItemisedDataSMS']	['Time']			['Type']	= BILL_TYPE_TIME;
+		
+		$arrDefine['ItemisedDataSMS']	['CalledParty']		['Start']	= 20;
+		$arrDefine['ItemisedDataSMS']	['CalledParty']		['Length']	= 30;
+		$arrDefine['ItemisedDataSMS']	['CalledParty']		['Type']	= BILL_TYPE_CHAR;
+		
+		$arrDefine['ItemisedDataSMS']	['Items']			['Start']	= 50;
+		$arrDefine['ItemisedDataSMS']	['Items']			['Length']	= 10;
+		$arrDefine['ItemisedDataSMS']	['Items']			['Type']	= BILL_TYPE_INTEGER;
+
+		$arrDefine['ItemisedDataSMS']	['Description']		['Start']	= 60;
+		$arrDefine['ItemisedDataSMS']	['Description']		['Length']	= 100;
+		$arrDefine['ItemisedDataSMS']	['Description']		['Type']	= BILL_TYPE_CHAR;
+				
+		$arrDefine['ItemisedDataSMS']	['Charge']			['Start']	= 160;
+		$arrDefine['ItemisedDataSMS']	['Charge']			['Length']	= 11;
+		$arrDefine['ItemisedDataSMS']	['Charge']			['Type']	= BILL_TYPE_SHORTCURRENCY;
 		
 		$arrDefine['ItemCallTypeFooter']['RecordType']		['Start']	= 0;
 		$arrDefine['ItemCallTypeFooter']['RecordType']		['Length']	= 2;

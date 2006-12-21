@@ -67,6 +67,8 @@
 		$this->_strSampleFile	= NULL;
 		
 		// Init database statements
+		$this->_insInvoiceOutput		= new StatementInsert("InvoiceOutput");
+		
 		$arrColumns['CustomerGroup']	= "Account.CustomerGroup";
 		$arrColumns['Account']			= "Account.Id";
 		$arrColumns['PaymentTerms']		= "Account.PaymentTerms";
@@ -411,7 +413,7 @@
 					$arrDefine['ItemisedDataKB']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
 					$arrDefine['ItemisedDataKB']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
 					$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrData['CalledParty'];
-					$arrDefine['ItemisedDataKB']	['DataTransfer']	['Value']	= (int)$arrData['Units'];
+					$arrDefine['ItemisedDataKB']	['DataTransfered']	['Value']	= (int)$arrData['Units'];
 					$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrData['Description'];
 					$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrData['Charge'];
 					$arrFileData[] = $arrDefine['ItemisedDataKB'];
@@ -437,7 +439,76 @@
 		// add invoice footer (19)		
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		
+		// DEBUG: This can be removed later
 		Debug($arrFileData);
+		
+		// Process and implode the data so it can be inserted into the DB
+		$strFileContents = "";
+		$i = 0;
+		// Loop through Records
+		foreach ($arrFileData as $arrRecord)
+		{
+			$i++;
+			$t = 0;
+			
+			// Loop through Fields
+			foreach ($arrRecord as $arrField)
+			{
+				$strValue = $arrField['Value'];
+				$t++;
+				
+				// Process the field
+				switch ($arrField['Type'])
+				{
+					case BILL_TYPE_INTEGER:
+						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_CHAR:
+						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_RIGHT);
+						break;
+					case BILL_TYPE_BINARY:
+						$strValue = str_pad($strValue, 11, "0", STR_PAD_RIGHT);
+						break;
+					case BILL_TYPE_FLOAT:
+						$strValue = str_pad((float)$strValue, 11, " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_SHORTDATE:
+						$strValue = str_pad($strValue, 10, " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_LONGDATE:
+						$strValue = str_pad($strValue, 11, " ", STR_PAD_RIGHT);
+						break;
+					case BILL_TYPE_TIME:
+						$strValue = str_pad($strValue, 8, " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_DURATION:
+						$strValue = str_pad($strValue, 7, " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_SHORTCURRENCY:
+						$strTemp = sprintf("%1.2f", ((float)$strValue));
+						$strValue = str_pad($strTemp, 11, " ", STR_PAD_LEFT);
+						break;
+					default:
+						// Unknown Data Type
+						return FALSE;
+				}
+				
+				$strFileContents .= $strValue;
+			}
+			
+			$strFileContents .= "\n";
+		}
+		
+		// Insert into InvoiceOutput table
+		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+		$arrWhere['Account']	= $arrInvoiceDetails['Account'];
+		$arrWhere['Data']		= $strFileContents;
+		if (!$this->_insInvoiceOutput->Execute($arrWhere))
+		{
+			// Error
+			return FALSE;			
+		}
+		return TRUE;
  	}
  	
  	//------------------------------------------------------------------------//
