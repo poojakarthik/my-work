@@ -57,6 +57,77 @@
 		{
 			parent::__construct ('Accounts', 'Account', 'Account');
 		}
+		
+		//------------------------------------------------------------------------//
+		// Add
+		//------------------------------------------------------------------------//
+		/**
+		 * Add()
+		 *
+		 * Creates a new Account
+		 *
+		 * Creates a new Account
+		 *
+		 *
+		 * @param	AccountGroup	$acgAccountGroup	[optional] The AccountGroup Object which this Account will be added to.
+		 *												If this is null, then it is assumed a new account group will be created
+		 * @param	Array			$arrDetails			The details of the new account (Tainted)
+		 * @return	Account
+		 *
+		 * @method
+		 */
+		
+		public function Add ($acgAccountGroup, $arrDetails)
+		{
+			$abnABN = new ABN ('ABN', '');
+			if (!$abnABN->setValue ($arrDetails ['ABN']))
+			{
+				throw new Exception ('ABN');
+			}
+			
+			$acnACN = new ACN ('ACN', '');
+			if (!$acnACN->setValue ($arrDetails ['ACN']))
+			{
+				throw new Exception ('ACN');
+			}
+			
+			$bmeBillingMethods = new BillingMethods ();
+			if (!$bmeBillingMethods->setValue ($arrDetails ['BillingMethod']))
+			{
+				throw new Exception ('BillingMethod');
+			}
+			
+			$arrData = Array (
+				"BusinessName"		=> $arrDetails ['BusinessName'],
+				"TradingName"		=> $arrDetails ['TradingName'],
+				"ABN"				=> $abnABN->getValue (),
+				"ACN"				=> $acnACN->getValue (),
+				"Address1"			=> $arrDetails ['Address1'],
+				"Address2"			=> $arrDetails ['Address2'],
+				"Suburb"			=> $arrDetails ['Suburb'],
+				"Postcode"			=> $arrDetails ['Postcode'],
+				"State"				=> $arrDetails ['State'],
+				"Country"			=> "AU",
+
+				
+				
+				"BillingType"		=> "",
+//PrimaryContact
+//CustomerGroup
+				"CreditCard"		=> "", 
+				"AccountGroup"		=> "",
+				"LastBilled"		=> null,
+				"BillingDate"		=> "", 
+				"BillingFreq"		=> "",
+				"BillingFreqType"	=> "",
+				"BillingMethod"		=> $arrDetails ['BillingMethod'],
+				"PaymentTerms"		=> PAYMENT_TERMS_DEFAULT,
+				"Archived"			=> 0
+			);
+			
+			debug ($arrData);
+			exit;
+		}
 	}
 	
 ?>

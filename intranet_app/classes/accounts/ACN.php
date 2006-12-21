@@ -85,7 +85,7 @@
 		 * Change the Value of the ACN
 		 *
 		 * @param	String		$strACN			The value of the ACN being set
-		 * @return	Void
+		 * @return	Boolean						Whether the Number is Valid or not. Invalid numbers are not subscribed.
 		 *
 		 * @method
 		 */
@@ -96,13 +96,13 @@
 			
 			if (strlen ($strACN) == 0)
 			{
-				return;
+				return true;
 			}
 			
 			// 2. Check that the item has only Numbers and Spaces
 			if (preg_match ("/[^\d\s]/", $strACN))
 			{
-				return;
+				return false;
 			}
 			
 			$strACN = preg_replace ("/[^\d]/", "", $strACN);
@@ -110,7 +110,7 @@
 			// 3. Check there are 9 integers
 			if (strlen ($strACN) != 9)
 			{
-				return;
+				return false;
 			}
 			
 			// 1. Apply weighting to digits 1 to 8
@@ -142,12 +142,14 @@
 			// 5. Check the calculated check digit equals actual check digit
 			if (substr ($strACN, 8, 1) != $intComplement)
 			{
-				return;
+				return false;
 			}
 			
 			parent::setValue (
 				substr ($strACN, 0, 3) . " " . substr ($strACN, 3, 3) . " " . substr ($strACN, 6, 3)
 			);
+			
+			return true;
 		}
 	}
 	

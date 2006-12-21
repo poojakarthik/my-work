@@ -218,6 +218,11 @@
 				
 				<div class="Seperator"></div>
 				
+				<a href="account_add.php">
+					Create a new Account
+				</a>
+				
+				<div class="Seperator"></div>
 				<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 					<tr class="First">
 						<th width="30">

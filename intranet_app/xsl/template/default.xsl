@@ -9,6 +9,7 @@
 			<head>
 				<title>Employee Intranet System</title>
 				<link rel="stylesheet" type="text/css" href="css/default.css" />
+				<script language="javascript" src="js/init.js"></script>
 			</head>
 			<body>
 				<div id="Header" class="sectionContainer">
@@ -19,6 +20,15 @@
 						
 						<div class="Right">
 							Version 6.11
+							
+							<xsl:if test="/Response/SystemDebug">
+								<script language="javascript" src="js/system_debug.js"></script>
+								<div id="Debug_Button">
+									<a href="javascript:showDebug()">
+										<img src="img/template/debug.png" border="0" />
+									</a>
+								</div>
+							</xsl:if>
 						</div>
 						
 						<div class="Clear"></div>

@@ -237,6 +237,31 @@
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">
+					<h2>Account Options</h2>
+					<ul>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>account_history.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>Cashflow Information</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>account_edit.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>Edit Account Information</xsl:text>
+							</a>
+						</li>
+					</ul>
+					
+					<div class="Seperator"></div>
+					
+					
 					<h2>Account Notes</h2>
 					<div class="Seperator"></div>
 					

@@ -495,3 +495,13 @@
 		background-image:              url('../img/template/invoice.png');
 	}
 	
+	#Debug_Button
+	{
+		display:                       inline;
+		
+		margin-left:                   30px;
+		
+		line-height:                   20px;
+		vertical-align:                bottom;
+	}
+	

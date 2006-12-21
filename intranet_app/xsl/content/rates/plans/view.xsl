@@ -87,5 +87,39 @@
 		
 		<div class="Seperator"></div>
 		
+		<h2>Associated Recurring Charges</h2>
+		<div class="Seperator"></div>
+		
+		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+			<tr class="First">
+				<th width="30">#</th>
+				<th>Code</th>
+				<th>Description</th>
+				<th>Actions</th>
+			</tr>
+			<xsl:for-each select="/Response/RatePlanDetails/RecurringChargeTypes/RecurringChargeType">
+				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>Odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>Even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					<td><xsl:value-of select="position()" />.</td>
+					<td><xsl:value-of select="./ChargeType" /></td>
+					<td><xsl:value-of select="./Description" /></td>
+					<td>
+						
+					</td>
+				</tr>
+			</xsl:for-each>
+		</table>
+		
+		<div class="Seperator"></div>
+		
 	</xsl:template>
 </xsl:stylesheet>

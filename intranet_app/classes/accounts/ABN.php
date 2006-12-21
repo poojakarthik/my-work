@@ -90,7 +90,7 @@
 		 * Change the Value of the ABN
 		 *
 		 * @param	String		$strABN			The value of the ABN being set
-		 * @return	Void
+		 * @return	Boolean						Whether the Number is Valid or not. Invalid numbers are not subscribed.
 		 *
 		 * @method
 		 */
@@ -101,13 +101,13 @@
 			
 			if (strlen ($strABN) == 0)
 			{
-				return;
+				return true;
 			}
 			
 			// 2. Check that the item has only Numbers and Spaces
 			if (preg_match ('/[^\d\s]/', $strABN))
 			{
-				return;
+				return false;
 			}
 			
 			$strABN = preg_replace ('/\s/', '', $strABN);
@@ -115,7 +115,7 @@
 			// 3. Check there are 11 integers
 			if (strlen ($strABN) != 11)
 			{
-				return;
+				return false;
 			}
 			
 			
@@ -147,12 +147,14 @@
 			//   5. If the remainder is zero the number is valid
 			if ($intNumberSum % 89 != 0)
 			{
-				return;
+				return false;
 			}
 			
 			parent::setValue (
 				substr ($strABN, 0, 2) . " " . substr ($strABN, 2, 3) . " " . substr ($strABN, 5, 3) . " " . substr ($strABN, 8, 3)
 			);
+			
+			return true;
 		}
 	}
 	

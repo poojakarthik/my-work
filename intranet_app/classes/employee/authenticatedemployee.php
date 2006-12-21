@@ -49,14 +49,31 @@
 		 *
 		 * Audit Trail
 		 *
-		 * An object which controls that Auditing of Information within the System
+		 * An object which controls the Auditing of Information within the System
 		 *
-		 * @type	dataArray
+		 * @type	AuthenticatedEmployeeAudit
 		 *
 		 * @property
 		 */
 		 
 		private $_aeaAudit;
+		
+		//------------------------------------------------------------------------//
+		// _aepPriviledges
+		//------------------------------------------------------------------------//
+		/**
+		 * _aepPriviledges
+		 *
+		 * Priviledge Management
+		 *
+		 * An object which controls the Priviledge Management in the System
+		 *
+		 * @type	AuthenticatedEmployeePriviledges
+		 *
+		 * @property
+		 */
+		 
+		private $_aepPriviledges;
 		
 		//------------------------------------------------------------------------//
 		// __construct
@@ -91,6 +108,8 @@
 			$selAuthenticated->Fetch ($this);
 			
 			
+			
+			
 			// Get the Serialized session and pop it from the
 			// Object so we can reconsititute it
 			$strSession = $this->Pop ('Session')->getValue ();
@@ -119,6 +138,10 @@
 			
 			// Push an Audit Trail onto the Object
 			$this->_aeaAudit =& $this->Push (new AuthenticatedEmployeeAudit ($this));
+			
+			
+			// Start hte Priviledges System
+			$this->_aepPriviledges = $this->Push (new AuthenticatedEmployeePriviledges ($this));
 		}
 		
 		//------------------------------------------------------------------------//
@@ -139,6 +162,26 @@
 		public function Audit ()
 		{
 			return $this->_aeaAudit;
+		}
+		
+		//------------------------------------------------------------------------//
+		// Priviledges
+		//------------------------------------------------------------------------//
+		/**
+		 * Priviledges()
+		 *
+		 * Return the Priviledges Object
+		 *
+		 * Return the Priviledges Object
+		 *
+		 * @return	AuthenticatedEmployeePriviledges
+		 *
+		 * @method
+		 */
+		
+		public function Priviledges ()
+		{
+			return $this->_aepPriviledges;
 		}
 		
 		//------------------------------------------------------------------------//

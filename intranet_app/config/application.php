@@ -57,6 +57,7 @@ require ("classes/authentication/authentication.php");
 //employee
 require ("classes/employee/authenticatedemployee.php");
 require ("classes/employee/authenticatedemployeeaudit.php");
+require ("classes/employee/authenticatedemployeepriviledges.php");
 
 //audit
 require ("classes/audit/accountcontactaudit.php");
@@ -83,9 +84,17 @@ require ("classes/notes/notes.php");
 require ("classes/notes/notetype.php");
 require ("classes/notes/notetypes.php");
 
+//billing
+require ("classes/billing/billingmethod.php");
+require ("classes/billing/billingmethods.php");
+
 //contacts
 require ("classes/contacts/contact.php");
 require ("classes/contacts/contacts.php");
+
+//charges
+require ("classes/charges/recurringchargetype.php");
+require ("classes/charges/recurringchargetypes.php");
 
 //rates, rate groups and rate plans
 require ("classes/rates/rate.php");

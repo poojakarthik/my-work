@@ -30,9 +30,11 @@
 	// Create a Base Object
 	$oblarrDetails	= $Style->attachObject (new dataArray ('RatePlanDetails'));
 	
-	// Add the details for the Rate Group
-	$rrgRateGroup	= $oblarrDetails->Push (new RatePlan ($_GET ['Id']));
+	// Add the details for the Rate Plan
+	$rplRatePlans	= $oblarrDetails->Push (new RatePlan ($_GET ['Id']));
 	
+	// Include the Recurring Charge Types that are Associated with this Rate Plan
+	$oblarrRecurringCharges		= $oblarrDetails->Push ($rplRatePlans->RecurringChargeTypes ());
 	
 	
 	// Include the associated Rates for this Rate Plan
@@ -45,6 +47,7 @@
 	{
 		$oblarrGroups->Push (new RateGroup ($arrRate ['RateGroup']));
 	}
+	
 	
 	$Style->Output ("xsl/content/rates/plans/view.xsl");
 	

@@ -67,6 +67,40 @@
 			
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
 		}
+		
+		//------------------------------------------------------------------------//
+		// RecurringChargeTypes
+		//------------------------------------------------------------------------//
+		/**
+		 * RecurringChargeTypes()
+		 *
+		 * Pulls a list of Associated Recurring Charge Types
+		 *
+		 * Pulls a list of Associated Recurring Charge Types
+		 *
+		 * @return	dataArray [RecurringChargeType]
+		 *
+		 * @method
+		 */
+		 
+		public function RecurringChargeTypes ()
+		{
+			$oblarrRecurringChargeTypes = new dataArray ('RecurringChargeTypes', 'RecurringChargeType');
+			
+			$selRatePlannRecurringChargeTypes = new StatementSelect ('RatePlanRecurringChargeType', 'RecurringChargeType', 'RatePlan = <RatePlan>');
+			$selRatePlannRecurringChargeTypes->Execute (Array ('RatePlan' => $this->Pull ('Id')->getValue ()));
+			
+			foreach ($selRatePlannRecurringChargeTypes->FetchAll () as $arrRatePlannRecurringChargeTypes)
+			{
+				$oblarrRecurringChargeTypes->Push (
+					new RecurringChargeType (
+						$arrRatePlannRecurringChargeTypes ['RecurringChargeType']
+					)
+				);
+			}
+			
+			return $oblarrRecurringChargeTypes;
+		}
 	}
 	
 ?>

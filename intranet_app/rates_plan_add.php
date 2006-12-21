@@ -97,9 +97,6 @@
 							
 							if ($arrLength ['Length'] <> 1)
 							{
-								// Log error
-								// TODO!!!!
-								
 								$oblstrError->setValue ('Mishandled');
 								break;
 							}
@@ -107,40 +104,72 @@
 						
 						if ($oblstrError->getValue () == "")
 						{
-							// If we're up to here, we want to insert the information into the database
-							// because it's all valid
-							
-							// Insert the New Rate Plan into the Database and get its InsertID
-							
-							$arrPlan = Array (
-								'Name'			=> $_POST ['Name'],
-								'Description'	=> $_POST ['Description'] ,
-								'ServiceType'	=> $_POST ['ServiceType'],
-								'MinMonthly'	=> $_POST ['MinMonthly'],
-								'ChargeCap'		=> $_POST ['ChargeCap'],
-								'UsageCap'		=> $_POST ['UsageCap'],
-								'Archived'		=> FALSE
-							);
-							
-							$insInsertRatePlan	= new StatementInsert("RatePlan");
-							$intRatePlanId		= $insInsertRatePlan->Execute ($arrPlan);
-							
-							// Foreach RecordType that is Not Blank
-							foreach ($_POST ['RecordType'] AS $intRecordType => $intRateGroup)
+							// If there is a list of Selected Recurring Charges, make sure they all exist.
+							foreach ($_POST ['SelectedRecurringChargeTypes'] as $intRecurringChargeType)
 							{
-								// Insert the RecordType in to the Database
-								
-								$arrRatePlanRateGroup = Array (
-									'RatePlan'		=> $intRatePlanId,
-									'RateGroup'		=> $intRateGroup
-								);
-								
-								$insInsertRatePlanRateGroup	= new StatementInsert("RatePlanRateGroup");
-								$insInsertRatePlanRateGroup->Execute ($arrRatePlanRateGroup);
+								try
+								{
+									$rctRecurringChargeType = new RecurringChargeType ($intRecurringChargeType);
+								}
+								catch (Exception $e)
+								{
+									$oblstrError->setValue ('SelectedRecurringChargeType');
+									break;
+								}
 							}
 							
-							header ("Location: rates_plan_added.php");
-							exit;
+							if ($oblstrError->getValue () == "")
+							{
+								// If we're up to here, we want to insert the information into the database
+								// because it's all valid
+								
+								// Insert the New Rate Plan into the Database and get its InsertID
+								
+								$arrPlan = Array (
+									'Name'			=> $_POST ['Name'],
+									'Description'	=> $_POST ['Description'] ,
+									'ServiceType'	=> $_POST ['ServiceType'],
+									'MinMonthly'	=> $_POST ['MinMonthly'],
+									'ChargeCap'		=> $_POST ['ChargeCap'],
+									'UsageCap'		=> $_POST ['UsageCap'],
+									'Archived'		=> FALSE
+								);
+								
+								$insInsertRatePlan	= new StatementInsert("RatePlan");
+								$intRatePlanId		= $insInsertRatePlan->Execute ($arrPlan);
+								
+								// Foreach RecordType that is Not Blank
+								foreach ($_POST ['RecordType'] AS $intRecordType => $intRateGroup)
+								{
+									// Insert the RecordType in to the Database
+									
+									$arrRatePlanRateGroup = Array (
+										'RatePlan'		=> $intRatePlanId,
+										'RateGroup'		=> $intRateGroup
+									);
+									
+									$insInsertRatePlanRateGroup	= new StatementInsert("RatePlanRateGroup");
+									$insInsertRatePlanRateGroup->Execute ($arrRatePlanRateGroup);
+								}
+								
+								// Foreach Selected Recurring Charge
+								foreach ($_POST ['SelectedRecurringChargeTypes'] as $intRecurringChargeType)
+								{
+									// Insert the Selected Recurring Charge in to the Database
+									
+									$arrRatePlanRecurringChargeType = Array (
+										'RatePlan'				=> $intRatePlanId,
+										'RecurringChargeType'	=> $intRecurringChargeType
+									);
+									
+									$insRatePlanRecurringChargeType	= new StatementInsert("RatePlanRecurringChargeType");
+									$insRatePlanRecurringChargeType->Execute ($arrRatePlanRecurringChargeType);
+								}
+								
+								
+								header ("Location: rates_plan_added.php");
+								exit;
+							}
 						}
 					}
 				}
@@ -156,6 +185,11 @@
 				$rtsRateGroups->Order ('Name', TRUE);
 				$rtsRateGroups->Sample ();
 				$oblarrRatePlan->Push ($rtsRateGroups);
+				
+				$rclRecurringChargeTypes = new RecurringChargeTypes ();
+				$rclRecurringChargeTypes->Order ('Description', TRUE);
+				$rclRecurringChargeTypes->Sample ();
+				$oblarrRatePlan->Push ($rclRecurringChargeTypes);
 				
 				$Style->Output ("xsl/content/rates/plans/select.xsl");
 				exit;

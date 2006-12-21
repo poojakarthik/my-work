@@ -6,7 +6,13 @@
 	<xsl:template name="Content">
 		<h1>Add New Rate Plan</h1>
 		
+		<script language="javascript" src="js/rates_plan_add.js"></script>
+		
 		<form method="POST" action="rates_plan_add.php">
+			<xsl:attribute name="onsubmit">
+				<xsl:text>return selIt()</xsl:text>
+			</xsl:attribute>
+			
 			<input type="hidden" name="Name">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
@@ -132,6 +138,7 @@
 			<div class="Seperator"></div>
 			
 			<h2>Record Types</h2>
+			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
@@ -176,7 +183,67 @@
 				
 				<div class="Clear"></div>
 			</div>
+			<div class="Seperator"></div>
 			
+			<h2>Recurring Changes</h2>
+			<div class="Seperator"></div>
+			
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content Left">
+					Select multiple Recurring Charges by holding the CTRL key while you click options from
+					either of the lists.
+					
+					<div class="Seperator"></div>
+					
+					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+						<tr>
+							<th>Available Recurring Charges :</th>
+							<td></td>
+							<th>Selected Recurring Charges :</th>
+						</tr>
+						<tr>
+							<td>
+								<select id="AvailableOptions" name="AvailableRecurringChargeTypes[]" size="20" class="LargeSelection" multiple="multiple">
+									<xsl:for-each select="/Response/RatePlan/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:value-of select="./Description" />
+											(<xsl:value-of select="./RecursionCharge" />)
+										</option>
+									</xsl:for-each>
+								</select>
+							</td>
+							<td>
+								<div>
+									<input type="button" value="&#0187;">
+										<xsl:attribute name="onclick">
+											<xsl:text>addIt ()</xsl:text>
+										</xsl:attribute>
+									</input>
+								</div>
+								<div class="Seperator"></div>
+								<div>
+									<input type="button" value="&#0171;">
+										<xsl:attribute name="onclick">
+											<xsl:text>delIt ()</xsl:text>
+										</xsl:attribute>
+									</input>
+								</div>
+							</td>
+							<td>
+								<select id="SelectedOptions" name="SelectedRecurringChargeTypes[]" size="20" class="LargeSelection" multiple="multiple" />
+							</td>
+						</tr>
+					</table>
+					
+					<div class="Clear"></div>
+				</div>
+				
+				<div class="Clear"></div>
+			</div>
 			<div class="Seperator"></div>
 			
 			<input type="submit" value="Create Plan &#0187;" class="input-submit" />
