@@ -138,11 +138,12 @@ die();
 										"Rate.Saturday					= <Saturday> OR \n" .
 										"Rate.Sunday					= <Sunday> ) \n";
 										
-		//TODO!!!! - FAKE IT FOR NOW
-		$strTables = "Rate";
-		$strWhere  = "1 = 1";
-		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "", 1);
-		//$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
+		//FAKE : for testing only
+		//$strTables = "Rate";
+		//$strWhere  = "1 = 1";
+		//$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "", 1);
+		
+		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
  	}
  	
  	
@@ -180,7 +181,7 @@ die();
 		// Loop through each CDR
 		foreach($arrCDRList as $arrCDR)
 		{
-			// return FALSE if we have rated (or tried to rate) any CDRs
+			// return TRUE if we have rated (or tried to rate) any CDRs
 			$bolReturn = TRUE;
 		
 			// Report
@@ -393,9 +394,11 @@ die();
 	 	$strAliases['Friday']		= ($strDay == "Friday") ? TRUE : DONKEY;
 	 	$strAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
 	 	$strAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
-		//$this->_selFindRate->Execute($strAliases);
-		//TODO!!!! - FAKE IT FOR NOW
-		$this->_selFindRate->Execute();
+		$this->_selFindRate->Execute($strAliases);
+		
+		//FAKE : For testing only
+		//$this->_selFindRate->Execute();
+		
 		if (!($arrRate = $this->_selFindRate->Fetch()))
 		{
 			return FALSE;

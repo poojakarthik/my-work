@@ -137,7 +137,7 @@ die();
 		
 		// Init Select Statements
 		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
-		$selAccounts					= new StatementSelect("Account", "*", "Id = 1000158426");	// TODO: Should have a WHERE clause in final version
+		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "SUM(Amount) AS Amount",
 															  "Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
@@ -161,8 +161,8 @@ die();
 		$intFailed = 0;
 		
 		// get a list of all accounts that require billing today
-		// TODO: FIXME - Faking for now...
-		$selAccounts->Execute(Array("Archived" => FALSE));
+		//TODO-LATER : Make this work with daily and 1/2 monthly billing
+		$selAccounts->Execute();
 		$arrAccounts = $selAccounts->FetchAll();
 
 		// Report Title
