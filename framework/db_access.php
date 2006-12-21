@@ -1066,11 +1066,12 @@ class MySQLFunction
 	 * @param		string	strTableDestination		name of the table to insert into
 	 * @param		string	strTableSource			name of the table to select from
 	 * @param		string	strWhere				optional A full SQL WHERE clause, minus the keyword.
+	 * @param		string	strLimit				optional A full SQL LIMIT Clause, minus the keyword.
 	 * 
 	 * @return		bool
 	 * @method
 	 */ 
-	 function Execute($strTableDestination, $strTableSource, $strWhere = NULL)
+	 function Execute($strTableDestination, $strTableSource, $strWhere = NULL, $strLimit = NULL)
 	 {
 		// check that table defs exists
 		if (is_array($this->db->arrTableDefine[$strTableDestination]) && is_array($this->db->arrTableDefine[$strTableSource]))
@@ -1089,7 +1090,7 @@ class MySQLFunction
 				}
 			}
 			
-			// check if we have matchinc columns
+			// check if we have matching columns
 			if (empty($arrColumns))
 			{
 				return FALSE;
@@ -1105,6 +1106,12 @@ class MySQLFunction
 			if ($strWhere)
 			{
 				$strQuery .= "WHERE " . $strWhere . "\n";
+			}
+			
+			// add limit clause
+			if ($strLimit)
+			{
+				$strQuery .= "LIMIT " . $strLimit . "\n";
 			}
 			
 			// run query
