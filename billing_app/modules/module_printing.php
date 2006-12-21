@@ -217,8 +217,8 @@
 		if($bolHasBillHistory)
 		{
 			// Display the previous bill details
-			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];						
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrBillHistory[0]['Balance'];
+			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'];						
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= 0 - ($arrInvoiceDetails['AccountBalance'] - $arrBillHistory[0]['AccountBalance']);
 		}
 		else
 		{
@@ -228,8 +228,8 @@
 		}
 		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= $arrInvoiceDetails['Credits'];
 		$arrDefine['InvoiceDetails']	['Balance']			['Value']	= $arrInvoiceDetails['AccountBalance'];
-		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
-		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ($arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax']) - $arrInvoiceDetails['Credits'];
+		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
+		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ($arrInvoiceDetails['Balance'] + $arrInvoiceDetails['AccountBalance']) - $arrInvoiceDetails['Credits'];
 		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		if($arrCustomerData['Account.Address2'])
 		{
@@ -256,7 +256,7 @@
 		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
 		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "\$ Value";
 		$arrDefine['GraphData']			['Title']			['Value']	= date("M y", strtotime("-$intCount months"));
-		$arrDefine['GraphData']			['Value']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
+		$arrDefine['GraphData']			['Value']			['Value']	= $arrInvoiceDetails['Balance'];
 		$arrFileData[] = $arrDefine['GraphData'];
 		$intCount = 0;
 		foreach($arrBillHistory as $arrBill)
@@ -285,7 +285,7 @@
 		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
 		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
 		$arrFileData[] = $arrDefine['ChargeTotal'];
-		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
+		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
 		$arrFileData[] = $arrDefine['ChargeTotalsFooter'];
 		
 		// PAYMENT DETAILS
@@ -294,7 +294,7 @@
 		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
 		$arrDefine['PaymentData']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
-		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ($arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax']) - $arrInvoiceDetails['Credits'];
+		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ($arrInvoiceDetails['Balance'] + $arrInvoiceDetails['AccountBalance']) - $arrInvoiceDetails['Credits'];
 		$arrDefine['PaymentData']		['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		$arrDefine['PaymentData']		['PropertyName']	['Value']	= $arrDefine['InvoiceDetails']['PropertyName']['Value'];
 		$arrDefine['PaymentData']		['AddressLine1']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine1']['Value'];
