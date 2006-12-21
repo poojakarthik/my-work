@@ -138,6 +138,7 @@ die();
 		// Init Select Statements
 		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
 		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0");
+		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance)", "Status = INVOICE_COMMITTED AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "SUM(Amount) AS Amount",
 															  "Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
@@ -322,10 +323,8 @@ die();
 			$fltBalance	= $fltTotal + $fltTax;
 			
 			// calculate account balance
-			//TODO!!!!
-			// SELECT SUM(Balance) FROM Invoice WHERE Status = INVOICE_COMMITTED
-			// $fltAccountBalance = 
-			//TODO!!!!
+			$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id']));
+			$fltAccountBalance = $selCalcAccountBalance->Fetch(); 
 			
 			// write to temporary invoice table
 			$arrInvoiceData = Array();
