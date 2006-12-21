@@ -622,4 +622,10 @@ define("SERVICE_STATE_TYPE_TAS"		, "TAS");
 define("SERVICE_STATE_TYPE_VIC"		, "VIC");
 define("SERVICE_STATE_TYPE_WA"		, "WA");
 
+// Record Type Display Types
+define("RECORD_DISPLAY_CALL"		, 65535);
+define("RECORD_DISPLAY_S_AND_E"		, 65536);
+define("RECORD_DISPLAY_DATA"		, 65537);
+define("RECORD_DISPLAY_SMS"			, 65538);
+
 ?>

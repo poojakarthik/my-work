@@ -537,22 +537,22 @@
 		// generate filename
 		if($bolSample)
 		{
-			$strFilename	= "sample".date("Y-m-d").".vbf";
-			$strMetaName	= "sample".date("Y-m-d").".vbm";
-			$strZipName		= "sample".date("Y-m-d").".zip";
+			$strFilename	= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbf";
+			$strMetaName	= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbm";
+			$strZipName		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".zip";
 		}
 		else
 		{
-			$strFilename	= date("Y-m-d").".vbf";
-			$strMetaName	= date("Y-m-d").".vbm";
-			$strZipName		= date("Y-m-d").".zip";
+			$strFilename	= BILLING_LOCAL_PATH.date("Y-m-d").".vbf";
+			$strMetaName	= BILLING_LOCAL_PATH.date("Y-m-d").".vbm";
+			$strZipName		= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
 		}
 		
 		// Use a MySQL select into file Query to generate the file
 		$qryBuildFile	= new Query();
 		$strColumns		= "CONCAT('10', LPAD(CAST(Invoice.Id AS CHAR(10)), 10, ' '), InvoiceOutput.Data)";
 		$strWhere		= "InvoiceRun = '$strInvoiceRun'";
-		$strQuery		=	"SELECT $strColumns INTO OUTFILE '".BILLING_LOCAL_PATH."$strFilename'\n" .
+		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename'\n" .
 							"FROM InvoiceOutput JOIN Invoice USING (Account)\n" .
 							"WHERE $strWhere\n";
 		if($bolSample)
@@ -562,12 +562,12 @@
 		$qryBuildFile->Execute($strQuery);
 		
 		// create metadata file
-		$ptrMetaFile	= fopen(BILLING_LOCAL_PATH.$strMetaName, "0777");
+		$ptrMetaFile	= fopen($strMetaName, "0777");
 		// TODO - get actual insert ids for this billing run
 		$strLine		= 	date("Y-m-d").
 							$strFilename.
 							str_pad($arrMetaData['Invoices'], 10, " ", STR_PAD_LEFT).
-							sha1_file(BILLING_LOCAL_PATH.$strFilename).
+							sha1_file($strFilename).
 							str_pad(1, 10, " ", STR_PAD_LEFT).
 							str_pad(2, 10, " ", STR_PAD_LEFT).
 							str_pad(3, 10, " ", STR_PAD_LEFT).
@@ -579,11 +579,11 @@
 		
 		// zip files
 		$ptrZipFile = new ZipArchive;
-		if($ptrZipFile->open(BILLING_LOCAL_PATH.$strZipName))
+		if($ptrZipFile->open($strZipName))
 		{
 			// add the files to our new zip archive
-			$ptrZipFile->addFile(BILLING_LOCAL_PATH.$strFilename, $strFilename);
-			$ptrZipFile->addFile(BILLING_LOCAL_PATH.$strMetaName, $strMetaName);
+			$ptrZipFile->addFile($strFilename, $strFilename);
+			$ptrZipFile->addFile($strMetaName, $strMetaName);
 			$ptrZipFile->close();
 		}
 		else
@@ -593,7 +593,7 @@
 		}
 		
 		// set filename internally
-		$this->_strFilename = BILLING_LOCAL_PATH.$strZipName;
+		$this->_strFilename = $strZipName;
 		
 		// return zip's filename
 		return $strZipName;
