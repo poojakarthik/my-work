@@ -232,6 +232,13 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
+											<xsl:choose>
+												<xsl:when test="@selected='selected'">
+													<xsl:attribute name="selected">
+														<xsl:text>selected</xsl:text>
+													</xsl:attribute>
+												</xsl:when>
+											</xsl:choose>
 											<xsl:value-of select="./Name" disable-output-escaping="yes" />
 										</option>
 									</xsl:for-each>
@@ -264,6 +271,13 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
+											<xsl:choose>
+												<xsl:when test="@selected='selected'">
+													<xsl:attribute name="selected">
+														<xsl:text>selected</xsl:text>
+													</xsl:attribute>
+												</xsl:when>
+											</xsl:choose>
 											<xsl:text></xsl:text>
 											<xsl:value-of select="./Name" />
 										</option>
@@ -322,7 +336,12 @@
 														</xsl:call-template>
 													</th>
 													<td>
-														<input type="text" name="DDR[BankName]" />
+														<input type="text" name="DDR[BankName]" class="input-string">
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="/Response/DirectDebit/BankName" disable-output-escaping="yes" />
+															</xsl:attribute>
+														</input>
 													</td>
 												</tr>
 												<tr>
@@ -333,7 +352,12 @@
 														</xsl:call-template>
 													</th>
 													<td>
-														<input type="text" name="DDR[BSB]" />
+														<input type="text" name="DDR[BSB]" class="input-string">
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="/Response/DirectDebit/BSB" disable-output-escaping="yes" />
+															</xsl:attribute>
+														</input>
 													</td>
 												</tr>
 												<tr>
@@ -344,7 +368,12 @@
 														</xsl:call-template>
 													</th>
 													<td>
-														<input type="text" name="DDR[AccountNumber]" />
+														<input type="text" name="DDR[AccountNumber]" class="input-string">
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="/Response/DirectDebit/AccountNumber" disable-output-escaping="yes" />
+															</xsl:attribute>
+														</input>
 													</td>
 												</tr>
 												<tr>
@@ -355,7 +384,12 @@
 														</xsl:call-template>
 													</th>
 													<td>
-														<input type="text" name="DDR[AccountName]" />
+														<input type="text" name="DDR[AccountName]" class="input-string">
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="/Response/DirectDebit/AccountName" disable-output-escaping="yes" />
+															</xsl:attribute>
+														</input>
 													</td>
 												</tr>
 											</table>
@@ -388,7 +422,22 @@
 													</th>
 													<td>
 														<select name="CC[CardType]">
-														
+															<xsl:for-each select="/Response/CreditCardTypes/CreditCardType">
+																<option>
+																	<xsl:attribute name="value">
+																		<xsl:text></xsl:text>
+																		<xsl:value-of select="./Id" />
+																	</xsl:attribute>
+																	<xsl:choose>
+																		<xsl:when test="@selected='selected'">
+																			<xsl:attribute name="selected">
+																				<xsl:text>selected</xsl:text>
+																			</xsl:attribute>
+																		</xsl:when>
+																	</xsl:choose>
+																	<xsl:value-of select="./Name" />
+																</option>
+															</xsl:for-each>
 														</select>
 													</td>
 												</tr>
@@ -400,7 +449,12 @@
 														</xsl:call-template>
 													</th>
 													<td>
-														<input type="text" name="CC[Name]" />
+														<input type="text" name="CC[Name]" class="input-string">
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="/Response/CreditCard/Name" disable-output-escaping="yes" />
+															</xsl:attribute>
+														</input>
 													</td>
 												</tr>
 												<tr>
@@ -411,7 +465,12 @@
 														</xsl:call-template>
 													</th>
 													<td>
-														<input type="text" name="CC[CardNumber]" />
+														<input type="text" name="CC[CardNumber]" class="input-string">
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="/Response/CreditCard/CardNumber" disable-output-escaping="yes" />
+															</xsl:attribute>
+														</input>
 													</td>
 												</tr>
 												<tr>
@@ -422,8 +481,20 @@
 														</xsl:call-template>
 													</th>
 													<td>
-														<select name="ExpMonth"></select> /
-														<select name="ExpYear"></select>
+														<select name="CC[ExpMonth]">
+															<xsl:call-template name="Date_Loop">
+																<xsl:with-param name="start" select="1" />
+																<xsl:with-param name="cease" select="12" />
+																<xsl:with-param name="select" select="/Response/CreditCard/ExpMonth" />
+															</xsl:call-template>
+														</select> /
+														<select name="CC[ExpYear]">
+															<xsl:call-template name="Date_Loop">
+																<xsl:with-param name="start" select="6" />
+																<xsl:with-param name="cease" select="15" />
+																<xsl:with-param name="select" select="/Response/CreditCard/ExpYear" />
+															</xsl:call-template>
+														</select>
 													</td>
 												</tr>
 											</table>
@@ -497,7 +568,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[Title]" class="input-string" />
+								<input type="text" name="Contact[Title]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/Title" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -508,7 +584,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[FirstName]" class="input-string" />
+								<input type="text" name="Contact[FirstName]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/FirstName" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -519,12 +600,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[LastName]" class="input-string" />
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2">
-								<div class="Seperator"></div>
+								<input type="text" name="Contact[LastName]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/LastName" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -540,7 +621,32 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								... ... ...
+								<select name="Contact[DOB][year]">
+									<option value="">YYYY</option>
+									<xsl:call-template name="Date_Loop">
+										<xsl:with-param name="start" select="1900" />
+										<xsl:with-param name="cease" select="1990" />
+										<xsl:with-param name="select" select="/Response/Contact/DOB-year" />
+									</xsl:call-template>
+								</select>
+								-
+								<select name="Contact[DOB][month]">
+									<option value="">MM</option>
+									<xsl:call-template name="Date_Loop">
+										<xsl:with-param name="start" select="1" />
+										<xsl:with-param name="cease" select="12" />
+										<xsl:with-param name="select" select="/Response/Contact/DOB-month" />
+									</xsl:call-template>
+								</select>
+								-
+								<select name="Contact[DOB][day]">
+									<option value="">DD</option>
+									<xsl:call-template name="Date_Loop">
+										<xsl:with-param name="start" select="1" />
+										<xsl:with-param name="cease" select="31" />
+										<xsl:with-param name="select" select="/Response/Contact/DOB-day" />
+									</xsl:call-template>
+								</select>
 							</td>
 						</tr>
 						<tr>
@@ -551,7 +657,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[JobTitle]" class="input-string" />
+								<input type="text" name="Contact[JobTitle]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/JobTitle" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -567,7 +678,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[Email]" class="input-string" />
+								<input type="text" name="Contact[Email]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/Email" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -578,7 +694,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[Phone]" class="input-string" />
+								<input type="text" name="Contact[Phone]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/Phone" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -589,7 +710,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[Mobile]" class="input-string" />
+								<input type="text" name="Contact[Mobile]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/Mobile" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -600,7 +726,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[Fax]" class="input-string" />
+								<input type="text" name="Contact[Fax]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/Fax" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -616,7 +747,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[UserName]" class="input-string" />
+								<input type="text" name="Contact[UserName]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/UserName" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -627,7 +763,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Contact[PassWord]" class="input-string" />
+								<input type="text" name="Contact[PassWord]" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Contact/PassWord" disable-output-escaping="yes" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 					</table>
@@ -637,5 +778,46 @@
 			
 			<input type="submit" value="Create Account &#0187;" class="input-submit" />
 		</form>
+	</xsl:template>
+	
+	
+	
+	
+	
+	<xsl:template name="Date_Loop">
+		<xsl:param name="start">1</xsl:param>
+		<xsl:param name="cease">0</xsl:param>
+		<xsl:param name="steps">1</xsl:param>
+		<xsl:param name="count">0</xsl:param>
+		
+		<xsl:param name="select">0</xsl:param>
+		
+		<xsl:if test="number($start) + number($count) &lt;= number($cease)">
+			<option>
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="$start + $count" />
+				</xsl:attribute>
+				
+				<xsl:choose>
+					<xsl:when test="$select = $start + $count">
+						<xsl:attribute name="selected">
+							<xsl:text>selected</xsl:text>
+						</xsl:attribute>
+					</xsl:when>
+					<xsl:otherwise>
+					</xsl:otherwise>
+				</xsl:choose>
+				
+				<xsl:value-of select="$start + $count" />
+			</option>
+			<xsl:call-template name="Date_Loop">
+				<xsl:with-param name="start" select="$start" />
+				<xsl:with-param name="cease" select="$cease" />
+				<xsl:with-param name="steps" select="$steps" />
+				<xsl:with-param name="count" select="$count + $steps" />
+				<xsl:with-param name="select" select="$select" />
+			</xsl:call-template>
+		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

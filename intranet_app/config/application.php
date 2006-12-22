@@ -82,6 +82,10 @@ require ("classes/accountgroups/accountgroups.php");
 require ("classes/customergroup/customergroup.php");
 require ("classes/customergroup/customergroups.php");
 
+//credit cards
+require ("classes/creditcard/creditcardtype.php");
+require ("classes/creditcard/creditcardtypes.php");
+
 //accounts
 require ("classes/notes/note.php");
 require ("classes/notes/notes.php");

@@ -98,16 +98,24 @@
 			
 			switch ($intType)
 			{
-				case CUSTOMER_GROUP_TELCOBLUE:
-					$strName = 'Telco Blue';
+				case CREDIT_CARD_VISA:
+					$strName = 'Visa';
 					break;
 					
-				case CUSTOMER_GROUP_VOICETALK:
-					$strName = 'Voice Talk';
+				case CREDIT_CARD_MASTERCARD:
+					$strName = 'MasterCard';
 					break;
 					
-				case CUSTOMER_GROUP_IMAGINE:
-					$strName = 'Imagine';
+				case CREDIT_CARD_BANKCARD:
+					$strName = 'Bank Card';
+					break;
+					
+				case CREDIT_CARD_AMEX:
+					$strName = 'American Express';
+					break;
+					
+				case CREDIT_CARD_DINERS:
+					$strName = 'Diners Club';
 					break;
 			}
 			

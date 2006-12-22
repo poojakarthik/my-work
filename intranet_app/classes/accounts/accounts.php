@@ -112,8 +112,8 @@
 				
 				
 				"BillingType"		=> "",
-//PrimaryContact
-//CustomerGroup
+				"PrimaryContact"	=> "",
+				"CustomerGroup"	=> "",
 				"CreditCard"		=> "", 
 				"AccountGroup"		=> "",
 				"LastBilled"		=> null,
