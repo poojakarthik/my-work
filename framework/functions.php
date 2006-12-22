@@ -180,6 +180,29 @@ function DebugBacktrace($strMode="html")
 }
 
 //------------------------------------------------------------------------//
+// SystemDebug
+//------------------------------------------------------------------------//
+/**
+ * SystemDebug()
+ *
+ * Returns system debug details
+ *
+ * Returns system debug details
+ *
+ * @return	string
+ *
+ * @function
+ * @package	framework
+ */
+function SystemDebug()
+{
+	$strDebug = "Pablo Says 'WTF?'";
+	
+	// return string
+	return $strDebug;
+}
+
+//------------------------------------------------------------------------//
 // TruncateName
 //------------------------------------------------------------------------//
 /**

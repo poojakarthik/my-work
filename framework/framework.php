@@ -140,6 +140,13 @@
 	 */
 	 function Render()
 	 {
+	 	// render the debug help window
+		if (DEBUG_MODE === TRUE)
+		{
+			//DebugWindow();
+		}
+		
+	 	// flush the output buffer
 	 	ob_flush();
 	 }
 

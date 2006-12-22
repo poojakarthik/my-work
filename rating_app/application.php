@@ -379,6 +379,8 @@ die();
 	 */
 	 private function _FindRate()
 	 {
+	 	//TODO!!!! - fleet rating
+		
 	 	// find the appropriate rate
 	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
 	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
