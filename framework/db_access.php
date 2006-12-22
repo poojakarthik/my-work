@@ -234,6 +234,25 @@
 	}
 	
 	//------------------------------------------------------------------------//
+	// DatabaseAccess() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * DatabaseAccess()
+	 *
+	 * Constructor for DatabaseAccess
+	 *
+	 * Constructor for DatabaseAccess
+
+	 * @return		void
+	 *
+	 * @method
+	 */ 
+	function Trace($strString)
+	{
+		return Trace($strString, 'MySQL');
+	}
+	
+	//------------------------------------------------------------------------//
 	// IsColumnName()
 	//------------------------------------------------------------------------//
 	/**
@@ -574,7 +593,7 @@
 	 */ 
 	 function __construct()
 	 {
-	 	$this->intSQLMode =SQL_STATEMENT;
+	 	$this->intSQLMode = SQL_STATEMENT;
 		parent::__construct();
 	 }
 	 
@@ -1324,6 +1343,10 @@ class MySQLFunction
 	function __construct($strTables, $mixColumns, $mixWhere = "", $strOrder = "", $strLimit = "", $strGroupBy = "")
 	{
 		parent::__construct();
+		
+		// Trace
+		//TODO!!!!
+		$this->Trace("StatementSelect($strTables, $mixColumns, $mixWhere, $strOrder, $strLimit, $strGroupBy)");
 		
 		// prepare the WHERE clause
 		$strWhere = $this->PrepareWhere($mixWhere);

@@ -199,15 +199,40 @@ function SystemDebug()
 	// set up debug string
 	$strDebug = "";
 	
-	// backtrace
-	$strDebug .= "";
-	$strDebug .= Backtrace();
+	// trace log
+	$strDebug .= $GLOBALS['TraceLog']['Debug'];
 	
 	// MySQL
+	$strDebug .= $GLOBALS['TraceLog']['MySQL'];
 	
 	// return string
 	return $strDebug;
 }
+
+
+//------------------------------------------------------------------------//
+// Trace
+//------------------------------------------------------------------------//
+/**
+ * Trace()
+ *
+ * Adds a record to the trace log
+ *
+ * Adds a record to the trace log
+ *
+ * @param	string	$strString	record to add to the trace log
+ * @param	string	$strLogname	optional name of log to add trace to
+ * @return	bool
+ *
+ * @function
+ * @package	framework
+ */
+function Trace($strString, $strLogname = 'Debug')
+{
+	$GLOBALS['TraceLog'][$strLogname] .= $strString."\n";
+	return TRUE;
+}
+
 
 //------------------------------------------------------------------------//
 // Backtrace
