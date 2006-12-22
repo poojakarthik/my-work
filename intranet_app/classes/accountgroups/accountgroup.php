@@ -85,6 +85,7 @@
 		 * Get an Account if it is Located in this Account Group
 		 *
 		 * @param	Integer		$intId		The Id of the Account being Retrieved
+		 * @return	Account
 		 *
 		 * @method
 		 */
@@ -101,6 +102,38 @@
 			}
 			
 			return null;
+		}
+		
+		//------------------------------------------------------------------------//
+		// getContacts
+		//------------------------------------------------------------------------//
+		/**
+		 * getContacts()
+		 *
+		 * Get all associated Contacts
+		 *
+		 * Get all the contacts associated with this account group
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		function getContacts ()
+		{
+			// Start the array
+			$oblarrContacts = new dataArray ('Contacts', 'Contact');
+			
+			// Pull all the active contacts ...
+			$selContacts = new StatementSelect ('Contact', 'Id', 'AccountGroup = <AccountGroup> AND Archived = 0');
+			$selContacts->Execute (Array ('AccountGroup' => $this->Pull ('Id')->getValue ()));
+			
+			foreach ($selContacts->FetchAll () as $arrContact)
+			{
+				$oblarrContacts->Push (new Contact ($arrContact ['Id']));
+			}
+			
+			return $oblarrContacts;
 		}
 	}
 	

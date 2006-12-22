@@ -15,13 +15,41 @@
 		header ('Location: login.php'); exit;
 	}
 	
-
-
-
+	
+	try
+	{
+		if ($_GET ['AccountGroup'])
+		{
+			$acgAccountGroup = $Style->attachObject (new AccountGroup ($_GET ['AccountGroup']));
+		}
+		else if ($_POST ['AccountGroup'])
+		{
+			$acgAccountGroup = $Style->attachObject (new AccountGroup ($_POST ['AccountGroup']));
+		}
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/accountgroup/notfound.xsl');
+		exit;
+	}
+	
+	if ($acgAccountGroup)
+	{
+		$ctsContacts = $Style->attachObject ($acgAccountGroup->getContacts ());
+	}
+	
+	$Style->attachObject (new CustomerGroups ());
+	
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('AccountGroup');
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archive');
+	$docDocumentation->Explain ('Contact');
+	$docDocumentation->Explain ('CustomerGroup');
+	$docDocumentation->Explain ('Billing');
+	$docDocumentation->Explain ('Payment');
+	$docDocumentation->Explain ('Direct Debit');
+	$docDocumentation->Explain ('Credit Card');
 	
 	// Setup the BillingMethod
 	$bmeBillingMethod = $Style->attachObject (new BillingMethods ());
@@ -32,7 +60,6 @@
 	if ($_SERVER ['REQUEST_METHOD'] == "POST")
 	{
 		$acsAccounts = new Accounts ();
-		
 		$acsAccounts->Add (
 			null,
 			Array (

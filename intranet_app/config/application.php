@@ -78,6 +78,10 @@ require ("classes/accounts/accounts.php");
 require ("classes/accountgroups/accountgroup.php");
 require ("classes/accountgroups/accountgroups.php");
 
+//account groups
+require ("classes/customergroup/customergroup.php");
+require ("classes/customergroup/customergroups.php");
+
 //accounts
 require ("classes/notes/note.php");
 require ("classes/notes/notes.php");

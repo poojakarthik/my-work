@@ -31,7 +31,7 @@
 								
 								<div id="windowcontent" style="display: none">
 									<div id="windowcontentmain">
-										<textarea readonly="readonly"><xsl:value-of select="/Response/SystemDebug" /></textarea>
+										<textarea readonly="readonly"><xsl:value-of select="/Response/SystemDebug" disable-output-escaping="yes" /></textarea>
 									</div>
 								</div>
 							</xsl:if>
@@ -50,6 +50,7 @@
 										<li>
 											Accounts
 											<ul>
+												<li><a href="account_add.php">Create an Account</a></li>
 												<li><a href="account_list.php">Find an Account</a></li>
 												<li>Recently Viewed
 													<ul>

@@ -213,14 +213,46 @@
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2">
+							<td coslpan="2">
 								<div class="Seperator"></div>
 							</td>
 						</tr>
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="entity" select="string('CustomerGroup')" />
+									<xsl:with-param name="field" select="string('CustomerGroup')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<select name="CustomerGroup">
+									<xsl:for-each select="/Response/CustomerGroups/CustomerGroup">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:value-of select="./Name" disable-output-escaping="yes" />
+										</option>
+									</xsl:for-each>
+								</select>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="Seperator"></div>
+			
+			<h2>Billing Method</h2>
+			<div class="Seperator"></div>
+			
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content">
+					<table border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Billing')" />
 									<xsl:with-param name="field" select="string('BillingMethod')" />
 								</xsl:call-template>
 							</th>
@@ -247,14 +279,31 @@
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="entity" select="string('Payment')" />
 									<xsl:with-param name="field" select="string('PaymentMethod')" />
 								</xsl:call-template>
 							</th>
 							<td>
+							</td>
+						</tr>
+					</table>
+					
+					<div class="Seperator"></div>
+					
+					<table border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td>
 								<table border="0" cellpadding="5" cellspacing="0">
 									<tr>
-										<td><input type="radio" name="PaymentMethod" value="2" id="PaymentMethod:DDR" /></td>
+										<td><input type="radio" name="PaymentMethod" value="AC" id="PaymentMethod:AC" /></td>
+										<th>
+											<label for="PaymentMethod:AC">
+												Make charges against an Account
+											</label>
+										</th>
+									</tr>
+									<tr>
+										<td><input type="radio" name="PaymentMethod" value="DDR" id="PaymentMethod:DDR" /></td>
 										<th>
 											<label for="PaymentMethod:DDR">
 												Pay this account via Direct Debit
@@ -268,7 +317,7 @@
 												<tr>
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
-															<xsl:with-param name="entity" select="string('DirectDebit')" />
+															<xsl:with-param name="entity" select="string('Direct Debit')" />
 															<xsl:with-param name="field" select="string('BankName')" />
 														</xsl:call-template>
 													</th>
@@ -279,7 +328,7 @@
 												<tr>
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
-															<xsl:with-param name="entity" select="string('DirectDebit')" />
+															<xsl:with-param name="entity" select="string('Direct Debit')" />
 															<xsl:with-param name="field" select="string('BSB')" />
 														</xsl:call-template>
 													</th>
@@ -290,7 +339,7 @@
 												<tr>
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
-															<xsl:with-param name="entity" select="string('DirectDebit')" />
+															<xsl:with-param name="entity" select="string('Direct Debit')" />
 															<xsl:with-param name="field" select="string('AccountNumber')" />
 														</xsl:call-template>
 													</th>
@@ -301,7 +350,7 @@
 												<tr>
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
-															<xsl:with-param name="entity" select="string('DirectDebit')" />
+															<xsl:with-param name="entity" select="string('Direct Debit')" />
 															<xsl:with-param name="field" select="string('AccountName')" />
 														</xsl:call-template>
 													</th>
@@ -319,7 +368,7 @@
 									</tr>
 									
 									<tr>
-										<td><input type="radio" name="PaymentMethod" value="2" id="PaymentMethod:CC" /></td>
+										<td><input type="radio" name="PaymentMethod" value="CC" id="PaymentMethod:CC" /></td>
 										<th>
 											<label for="PaymentMethod:CC">
 												Pay this account via Credit Card
@@ -333,7 +382,7 @@
 												<tr>
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
-															<xsl:with-param name="entity" select="string('CreditCard')" />
+															<xsl:with-param name="entity" select="string('Credit Card')" />
 															<xsl:with-param name="field" select="string('CardType')" />
 														</xsl:call-template>
 													</th>
@@ -346,7 +395,7 @@
 												<tr>
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
-															<xsl:with-param name="entity" select="string('CreditCard')" />
+															<xsl:with-param name="entity" select="string('Credit Card')" />
 															<xsl:with-param name="field" select="string('Name')" />
 														</xsl:call-template>
 													</th>
@@ -357,7 +406,7 @@
 												<tr>
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
-															<xsl:with-param name="entity" select="string('CreditCard')" />
+															<xsl:with-param name="entity" select="string('Credit Card')" />
 															<xsl:with-param name="field" select="string('CardNumber')" />
 														</xsl:call-template>
 													</th>
@@ -368,7 +417,7 @@
 												<tr>
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
-															<xsl:with-param name="entity" select="string('CreditCard')" />
+															<xsl:with-param name="entity" select="string('Credit Card')" />
 															<xsl:with-param name="field" select="string('ExpirationDate')" />
 														</xsl:call-template>
 													</th>
@@ -388,17 +437,205 @@
 								<div class="Seperator"></div>
 							</td>
 						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="Seperator"></div>
+			
+			<h2>Primary Contact Information</h2>
+			<div class="Seperator"></div>
+			
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content">
+					<xsl:if test="/Response/Contacts">
+						<table border="0" cellpadding="5" cellspacing="0">
+							<tr>
+								<td><input type="radio" name="Select_Contact" value="1" id="Select_Contact:TRUE" /></td>
+								<th>
+									<label for="Select_Contact:TRUE">
+										Select an existing contact from the list below:
+									</label>
+								</th>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<select name="Contact[Id]">
+										<xsl:for-each select="/Response/Contacts/Contact">
+											<option>
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Id" />
+												</xsl:attribute>
+												<xsl:value-of select="./Title" />
+												<xsl:text> </xsl:text>
+												<xsl:value-of select="./FirstName" />
+												<xsl:text> </xsl:text>
+												<xsl:value-of select="./LastName" />
+											</option>
+										</xsl:for-each>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td><input type="radio" name="Select_Contact" value="0" id="Select_Contact:FALSE" /></td>
+								<th>
+									<label for="Select_Contact:FALSE">
+										Create a new Contact using the following information:
+									</label>
+								</th>
+							</tr>
+						</table>
+					</xsl:if>
+					
+					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
-							<td></td>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('Title')" />
+								</xsl:call-template>
+							</th>
 							<td>
-								<input type="submit" value="Create Account &#0187;" class="input-submit" />
+								<input type="text" name="Contact[Title]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('FirstName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[FirstName]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('LastName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[LastName]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('DOB')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								... ... ...
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('JobTitle')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[JobTitle]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('Email')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[Email]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('Phone')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[Phone]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('Mobile')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[Mobile]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('Fax')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[Fax]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('UserName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[UserName]" class="input-string" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('PassWord')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Contact[PassWord]" class="input-string" />
 							</td>
 						</tr>
 					</table>
 				</div>
 			</div>
-			
 			<div class="Seperator"></div>
+			
+			<input type="submit" value="Create Account &#0187;" class="input-submit" />
 		</form>
 	</xsl:template>
 </xsl:stylesheet>
