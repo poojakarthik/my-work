@@ -249,7 +249,7 @@
 	 */ 
 	function Trace($strString)
 	{
-		return Trace($strString, 'MySQL');
+		return Trace("(".get_class($this).")\n".$strString, 'MySQL');
 	}
 	
 	//------------------------------------------------------------------------//
@@ -713,6 +713,8 @@
 	 */ 
 	 function Execute($strQuery)
 	 {
+	 	$this->Trace($strQuery);
+	 	
 	 	// run query
 		return mysqli_query($this->db->refMysqliConnection, $strQuery);
 	 }
@@ -883,6 +885,9 @@ class MySQLFunction
 	 */ 
 	 function Execute($mixTable)
 	 {
+		// Trace
+		$this->Trace("Input: $mixTable");
+	 	
 	 	// check what we were given
 		if (!$mixTable)
 		{
@@ -1023,6 +1028,9 @@ class MySQLFunction
                 // primary key & table type
                 $strQuery .= "    PRIMARY KEY    ({$arrTableDefine['Id']})\n";
                 $strQuery .= ") TYPE = {$arrTableDefine['Type']}\n";
+                
+                // Trace
+                $this->Trace("Query: ".$strQuery);
 				
 				// run query
 				$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
@@ -1031,6 +1039,8 @@ class MySQLFunction
 				if ($mixReturn !== TRUE)
 				{
 					// we will return false
+					// Trace
+					$this->Trace("Failed: ".$this->Error());
 					$bolReturn = FALSE;
 				}
 			}
@@ -1092,6 +1102,9 @@ class MySQLFunction
 	 */ 
 	 function Execute($strTableDestination, $strTableSource, $strWhere = NULL, $strLimit = NULL)
 	 {
+		// Trace
+		$this->Trace("Input: $strTableDestination, $strTableSource, $strWhere, $strLimit");
+		
 		// check that table defs exists
 		if (is_array($this->db->arrTableDefine[$strTableDestination]) && is_array($this->db->arrTableDefine[$strTableSource]))
 		{
@@ -1133,6 +1146,9 @@ class MySQLFunction
 				$strQuery .= "LIMIT " . $strLimit . "\n";
 			}
 			
+			// Trace
+			$this->Trace("Query: ".$strQuery);
+			
 			// run query
 			$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
 			//echo (mysqli_error($this->db->refMysqliConnection));
@@ -1140,6 +1156,8 @@ class MySQLFunction
 			if ($mixReturn !== TRUE)
 			{
 				// query failed
+				// Trace
+				$this->Trace("Failed: ".$this->Error());
 				return FALSE;
 			}
 		}
@@ -1194,6 +1212,9 @@ class MySQLFunction
 	 */ 
 	 function Execute($strTable)
 	 {
+		// Trace
+		$this->Trace("Input: $strTable");
+
 	 	// check what we were given
 		if (!is_string($strTable))
 		{
@@ -1206,12 +1227,17 @@ class MySQLFunction
 		// create query
 		$strQuery = "TRUNCATE TABLE ".$strTable;
 		
+		// Trace
+		$this->Trace("Query: $strQuery");
+		
 		// run query
 		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
 		// check result
 		if ($mixReturn !== TRUE)
 		{
 			// we will return false
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
 			$bolReturn = FALSE;
 		}
 		
@@ -1345,8 +1371,7 @@ class MySQLFunction
 		parent::__construct();
 		
 		// Trace
-		//TODO!!!!
-		$this->Trace("StatementSelect($strTables, $mixColumns, $mixWhere, $strOrder, $strLimit, $strGroupBy)");
+		$this->Trace("Input: $strTables, $mixColumns, $mixWhere, $strOrder, $strLimit, $strGroupBy");
 		
 		// prepare the WHERE clause
 		$strWhere = $this->PrepareWhere($mixWhere);
@@ -1430,6 +1455,9 @@ class MySQLFunction
 			$strQuery .= "LIMIT " . $strLimit . "\n";	
 	 	}
 	 	
+		// Trace
+		$this->Trace("Query: $strQuery");
+	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 
@@ -1437,7 +1465,9 @@ class MySQLFunction
 	 	{
 	 		// There was problem preparing the statment
 	 		//throw new Exception("Could not prepare statement : $strQuery\n");
-			throw new Exception($this->Error());
+			// Trace
+			$this->Trace("Error: ".$this->Error());
+			//throw new Exception($this->Error());
 	 	}
 	}
 	
@@ -1484,6 +1514,9 @@ class MySQLFunction
 	 */ 
 	 function Execute($arrWhere = Array())
 	 {
+	 	// Trace
+		$this->Trace("Execute($strQuery)");
+	 	
 	 	$strType = "";
 	 	
 	 	// Bind the WHERE data to our mysqli_stmt
@@ -1517,7 +1550,11 @@ class MySQLFunction
 	 	$this->_stmtSqlStatment->free_result();
 	 	
 	 	// Run the Statement
-	 	$this->_stmtSqlStatment->execute();
+	 	if(!$this->_stmtSqlStatment->execute())
+	 	{
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
+	 	}
 	 	
 	 	// Store the results (required for result_metadata())
 	 	$this->_stmtSqlStatment->store_result();
@@ -1729,6 +1766,9 @@ class MySQLFunction
 	 function __construct($strTable, $arrColumns = NULL)
 	 {
 		parent::__construct();
+		
+		// Trace
+		$this->Trace("Input: $strTable, $arrColumns");
 			 	
 	 	$this->_strTable = $strTable;
 		// Compile the query from our passed info
@@ -1755,12 +1795,17 @@ class MySQLFunction
 
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
+	 	
+		// Trace
+		$this->Trace("Query: $strQuery");
 		
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
 			//echo($strQuery);
 			//echo Mysqli_error($this->db->refMysqliConnection);
 	 		// There was problem preparing the statment
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
 	 		throw new Exception(
 	 			"An error occurred : " . Mysqli_error($this->db->refMysqliConnection) . "\n" . $strQuery . "\n\n"
 	 		);
@@ -1788,6 +1833,9 @@ class MySQLFunction
 	 */ 
 	 function Execute($arrData)
 	 {
+		// Trace
+		$this->Trace("Execute($arrData)");
+	 	
 	 	$strType = "";
 	 	
 	 	// Bind the VALUES data to our mysqli_stmt
@@ -1819,6 +1867,9 @@ class MySQLFunction
 		}
 		else
 		{
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
+			
 			// If the execution failed, return a "false" boolean
 			$this->intInsertId = false;
 			return false;
@@ -1996,6 +2047,9 @@ class MySQLFunction
 	 {
 		parent::__construct();
 		
+		// Trace
+		$this->Trace("Input: $strTable, $mixWhere, $arrColumns, $intLimit");
+		
 		// prepare the WHERE clause
 		$strWhere = $this->PrepareWhere($mixWhere);
 		
@@ -2072,12 +2126,16 @@ class MySQLFunction
 			$strQuery .= " LIMIT ".(int)$intLimit;
 		}
 		
+		// Trace
+		$this->Trace("Query: $strQuery");
+		
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
-			echo $strQuery;
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
 	 		// There was problem preparing the statment
 	 		throw new Exception();
 	 	}
@@ -2109,6 +2167,9 @@ class MySQLFunction
 	 */ 
 	 function Execute($arrData, $arrWhere)
 	 {
+		// Trace
+		$this->Trace("Execute($arData. $arrWhere)");
+	 	
 	 	$arrBoundVariables = Array();
 	 	$strType = "";
 	 	
@@ -2180,8 +2241,10 @@ class MySQLFunction
 	 	array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
+		$mixResult = $this->_stmtSqlStatment->execute();
+		
 	 	// Run the Statement
-	 	if ($this->_stmtSqlStatment->execute())
+	 	if ($mixResult)
 		{
 			// If it was successful, we want to store the number of affected rows
 			$this->intAffectedRows = $this->db->refMysqliConnection->affected_rows;
@@ -2189,6 +2252,12 @@ class MySQLFunction
 		}
 		else
 		{
+			if ($mixResult === FALSE)
+			{
+				// Trace
+				$this->Trace("Failed: ".$this->Error());
+			}
+			
 			$this->intAffectedRows = false;
 			return false;
 		}
