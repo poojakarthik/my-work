@@ -108,12 +108,7 @@
 			
 			if (DEBUG_MODE == TRUE)
 			{
-//				$arrSystemDebug = SystemDebug ();
-				$arrSystemDebug = Array ('Title' => 'Demo Title', 'Data' => 'Demo Text');
-				
-				$oblarrSystemDebug = $this->attachObject (new dataArray ('SystemDebug'));
-				$oblarrSystemDebug->Push (new dataString ('Title', $arrSystemDebug ['Title']));
-				$oblarrSystemDebug->Push (new dataString ('Data', $arrSystemDebug ['Data']));
+				$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
 			}
 			
 			parent::Output ($strXSLFilename);

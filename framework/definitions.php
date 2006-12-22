@@ -622,6 +622,22 @@ define("SERVICE_STATE_TYPE_TAS"		, "TAS");
 define("SERVICE_STATE_TYPE_VIC"		, "VIC");
 define("SERVICE_STATE_TYPE_WA"		, "WA");
 
+// Billing Methods
+define("BILLING_METHOD_POST"		, 1);
+define("BILLING_METHOD_EMAIL"		, 2);
+
+// Billing Methods
+define("BILLING_TYPE_DIRECT_DEBIT"		, 1);
+define("BILLING_TYPE_CREDIT_CARD"		, 2);
+
+// Payment Terms
+define("PAYMENT_TERMS_DEFAULT"			, 30);
+
+// Billing Frequency Constants
+define("BILLING_FREQ_DAY"				, 1);
+define("BILLING_FREQ_MONTH"				, 2);
+define("BILLING_FREQ_HALF_MONTH"		, 3);
+
 // Record Type Display Types
 define("RECORD_DISPLAY_CALL"		, 65535);
 define("RECORD_DISPLAY_S_AND_E"		, 65536);

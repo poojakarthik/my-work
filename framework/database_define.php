@@ -1502,6 +1502,16 @@
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
 		 
+				 
+				 
+	// Define Columns 
+	$strName = "Priviledges"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
 					 
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
@@ -3268,7 +3278,7 @@
 	 
  	
 	//----------------------------------------------------------------------------// 
-	// Table: RatePlanRecurringCharge
+	// Table: RatePlanRecurringChargeType
 	//----------------------------------------------------------------------------// 
 	 
  
@@ -3276,7 +3286,7 @@
  		
 	unset($arrDefine);
 	 
-	$arrDefine['Name']		= "RatePlanRecurringCharge"; 
+	$arrDefine['Name']		= "RatePlanRecurringChargeType"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
 	$arrDefine['Index'][] 		= ""; 

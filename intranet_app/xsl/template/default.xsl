@@ -22,11 +22,17 @@
 							Version 6.11
 							
 							<xsl:if test="/Response/SystemDebug">
-								<script language="javascript" src="js/system_debug.js"></script>
+								<script language="javascript" src="js/dimmingdiv.js"></script>
 								<div id="Debug_Button">
-									<a href="javascript:showDebug()">
+									<a href="javascript:displayDebugWindow()">
 										<img src="img/template/debug.png" border="0" />
 									</a>
+								</div>
+								
+								<div id="windowcontent" style="display: none">
+									<div id="windowcontentmain">
+										<textarea readonly="readonly"><xsl:value-of select="/Response/SystemDebug" /></textarea>
+									</div>
 								</div>
 							</xsl:if>
 						</div>

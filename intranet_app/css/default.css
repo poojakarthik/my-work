@@ -505,3 +505,96 @@
 		vertical-align:                bottom;
 	}
 	
+	div.dimmer 
+	{
+		visibility: hidden;
+		position:absolute;
+		left:0px;
+		top:0px;
+		font-family:verdana;
+		font-weight:bold;
+		padding:40px;
+		
+		background-image:url('../img/template/gray.png');
+		/* ieWin only stuff */
+		_background-image:none;
+		_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale src='honey.png');
+	}
+
+
+	div.dimming {
+		font-family: Verdana, Arial, Helvetica, sans-serif;
+		font-size: 11px;
+		font-style: normal;
+		background-color: #ffffff;
+		position:absolute;
+		/* set z-index higher than possible */
+		z-index:10000;
+		visibility: hidden;
+		
+		border-style: none;
+		border-color: #000000;
+		border-width: 1px;
+
+	}
+
+	table.floatingHeader
+	{
+		background-color:     #000000;
+		color:                #FFFFFF;
+		
+		padding-top:          4px;
+		padding-left:         10px;
+		padding-bottom:       4px;
+		
+		background-image:     url('../img/template/background.png');
+		background-repeat:    repeat-x;
+		
+		font-weight:          bold;
+		
+		height: 35px;
+		
+		border: solid 0px #000000;
+	}
+	
+	#windowcontent
+	{
+		width: 550px;
+		height: 300px;
+		
+		border: solid 1px #000000;
+	}
+	
+	#windowcontentmain
+	{
+		width: 100%;
+		height: 100%;
+	}	
+	
+	#windowcontent textarea
+	{
+		margin: 0;
+		
+		border: none;
+		line-height: 20px;
+		
+		width: 540px;
+		height: 255px;
+		
+		padding: 5px;
+		
+		background-color: #FFFFFF;
+		
+		background-image:   url('../img/template/translucent_donkey.png');
+		background-repeat:  no-repeat;
+		background-position: bottom right;
+	}
+	
+	.closewindow
+	{
+		vertical-align:     middle;
+		line-height:        25px;
+		
+		padding-right:        10px;
+	}
+	
