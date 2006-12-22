@@ -196,10 +196,86 @@ function DebugBacktrace($strMode="html")
  */
 function SystemDebug()
 {
-	$strDebug = "Pablo Says 'WTF?'";
+	// set up debug string
+	$strDebug = "";
+	
+	// backtrace
+	$strDebug .= "";
+	$strDebug .= Backtrace();
+	
+	// MySQL
 	
 	// return string
 	return $strDebug;
+}
+
+//------------------------------------------------------------------------//
+// Backtrace
+//------------------------------------------------------------------------//
+/**
+ * Backtrace()
+ *
+ * Returns formated backtrace string
+ *
+ * Returns formated backtrace string
+ *
+ * @return	string
+ *
+ * @function
+ * @package	framework
+ */
+function Backtrace()
+{
+	$output = "";
+	$backtrace = debug_backtrace();
+	
+	if (is_array($bt['args']))
+	{
+		foreach ($backtrace as $bt)
+		{
+			$args = '';
+			foreach ($bt['args'] as $a)
+			{
+				if (!empty($args))
+				{
+					$args .= ', ';
+				}
+				switch (gettype($a))
+				{
+					case 'integer':
+					case 'double':
+						$args .= $a;
+						break;
+					case 'string':
+						$a = htmlspecialchars(substr($a, 0, 64)).((strlen($a) > 64) ? '...' : '');
+						$args .= "\"$a\"";
+						break;
+					case 'array':
+						$args .= 'Array('.count($a).')';
+						break;
+					case 'object':
+						$args .= 'Object('.get_class($a).')';
+						break;
+					case 'resource':
+						$args .= 'Resource('.strstr($a, '#').')';
+						break;
+					case 'boolean':
+						$args .= $a ? 'TRUE' : 'FALSE';
+						break;
+					case 'NULL':
+						$args .= 'NULL';
+						break;
+					default:
+						$args .= 'Unknown';
+				}
+			}
+			$output .= "\n";
+			$output .= "file: {$bt['line']} - {$bt['file']}\n";
+			$output .= "call: {$bt['class']}{$bt['type']}{$bt['function']}($args)\n";
+		}
+	}
+	$output .= "\n";
+	return $output;
 }
 
 //------------------------------------------------------------------------//
