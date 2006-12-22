@@ -227,13 +227,12 @@ function SystemDebug()
 function Backtrace()
 {
 	$output = "";
-	$backtrace = debug_backtrace();
-	
-	if (is_array($bt['args']))
+	debug_print_backtrace();
+	foreach ($backtrace as $key=>$bt)
 	{
-		foreach ($backtrace as $bt)
+		$args = '';
+		if (is_array($bt['args']))
 		{
-			$args = '';
 			foreach ($bt['args'] as $a)
 			{
 				if (!empty($args))
@@ -269,10 +268,9 @@ function Backtrace()
 						$args .= 'Unknown';
 				}
 			}
-			$output .= "\n";
-			$output .= "file: {$bt['line']} - {$bt['file']}\n";
-			$output .= "call: {$bt['class']}{$bt['type']}{$bt['function']}($args)\n";
 		}
+		$output .= "#{$key}  {$bt['class']}{$bt['type']}{$bt['function']}($args) called at [{$bt['file']}:{$bt['line']}]";
+		$output .= "\n";
 	}
 	$output .= "\n";
 	return $output;
