@@ -227,7 +227,7 @@ function SystemDebug()
 function Backtrace()
 {
 	$output = "";
-	debug_print_backtrace();
+	$backtrace = debug_backtrace();
 	foreach ($backtrace as $key=>$bt)
 	{
 		$args = '';
