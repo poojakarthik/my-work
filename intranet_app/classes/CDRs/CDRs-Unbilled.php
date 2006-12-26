@@ -1,30 +1,30 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// CDRs.php
+	// CDRs_Unbilled.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * unbilledcalls.php
+	 * CDRs_Unbilled.php
 	 *
-	 * Contains Unbilled Calls Class
+	 * Contains unbilled CDR Records for a Service
 	 *
-	 * Contains the Class for the collation of Unbilled Calls
+	 * Contains unbilled CDR Records for a Service
 	 *
-	 * @file		unbilledcalls.php
+	 * @file		CDRs-Unbilled.php
 	 * @language	PHP
-	 * @package		client_app
+	 * @package		intranet_app
 	 * @author		Bashkim 'Bash' Isai
-	 * @version		6.10
+	 * @version		6.12
 	 * @copyright	2006 VOIPTEL Pty Ltd
 	 * @license		NOT FOR EXTERNAL DISTRIBUTION
 	 *
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// UnbilledCalls
+	// CDRs_Unbilled
 	//----------------------------------------------------------------------------//
 	/**
-	 * UnbilledCalls
+	 * CDRs_Unbilled
 	 *
 	 * Holds a collation of Unbilled Calls
 	 *
@@ -38,7 +38,7 @@
 	 * @extends	dataCollation
 	 */
 	
-	class UnbilledCalls extends dataCollation
+	class CDRs_Unbilled extends dataCollation
 	{
 		
 		//------------------------------------------------------------------------//
