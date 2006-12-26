@@ -379,7 +379,24 @@ die();
 	 */
 	 private function _FindRate()
 	 {
-	 	//TODO!!!! - fleet rating
+	 	// is this a fleet service
+		$intSourceFleetAccount = $this->_FindFleetAccount($this->_arrCurrentCDR['Service']);
+		if ($intSourceFleetAccount)
+		{
+			// get the destination service Id
+			$intDestinationService = $this->_FindServiceByFNN($this->_arrCurrentCDR['Destination']);
+			
+			// is the destination a fleet account
+			$intDestinationFleetAccount = $this->_FindFleetAccount($intDestinationService);
+			if ($intDestinationFleetAccount)
+			{
+				// are both fleet services on the same account
+				if ($intSourceFleetAccount === $intDestinationFleetAccount)
+				{
+					$bolFleet = TRUE;
+				}
+			}
+		}
 		
 	 	// find the appropriate rate
 	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
@@ -396,11 +413,26 @@ die();
 	 	$strAliases['Friday']		= ($strDay == "Friday") ? TRUE : DONKEY;
 	 	$strAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
 	 	$strAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
-		$this->_selFindRate->Execute($strAliases);
+		if ($bolFleet === TRUE)
+		{
+			// look for a fleet rate
+			$this->_selFindFleetRate->Execute($strAliases);
+			if (!($arrRate = $this->_selFindFleetRate->Fetch()))
+			{
+				// no fleet rate, look for a normal rate
+				$this->_selFindRate->Execute($strAliases);
+			}
+		}
+		else
+		{
+			// look for a normal rate
+			$this->_selFindRate->Execute($strAliases);
+		}
 		
 		//FAKE : For testing only
 		//$this->_selFindRate->Execute();
 		
+		// check if we found a rate
 		if (!($arrRate = $this->_selFindRate->Fetch()))
 		{
 			return FALSE;
@@ -440,6 +472,89 @@ die();
 		// return something
 		return $arrRate;
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// _FindFleetAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * _FindFleetAccount()
+	 *
+	 * Find the Fleet Account for a Service
+	 *
+	 * Find the Fleet Account for a Service
+	 * Checks if there is a fleet rate plan attached to this service and returns
+	 * the Account Id for the service if a fleet rate is found.
+	 *
+	 * @param	int		$intService		Id of the service
+	 *
+	 * @return	mixed	int				Account Id
+	 * 					bool			FALSE if Account not found
+	 * @method
+	 */
+	 private function _FindFleetAccount($intService)
+	 {
+	 	// return FALSE if invalid Service
+		if ((int)$intService == 0)
+		{
+			return FALSE; 
+		}
+		
+		//TODO!!!! - add 'Fleet' column (tinyint) to RateGroup in the database
+		//add between ServiceType & Archived. Documentation has already been updated
+		
+		// find fleet RateGroup attached to this service for this record type & service type
+		//TODO!!!!
+		// join RateGroup to ServiceRateGroup on ServiceRateGroup.RateGroup = RateGroup.Id
+		// WHERE ServiceRateGroup.Service = $intService AND RateGroup.Fleet = 1
+		// AND = RateGroup.RecordType $this->_arrCurrentCDR['RecordType']
+		// AND = RateGroup.ServiceType $this->_arrCurrentCDR['ServiceType']
+		
+			// get the Account Id for this service
+			//TODO!!!!
+			
+			// return the Account Id
+			//TODO!!!!
+			
+		// return FALSE if fleet rate not found
+		return FALSE;
+			
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _FindServiceByFNN
+	//------------------------------------------------------------------------//
+	/**
+	 * _FindServiceByFNN()
+	 *
+	 * Find the Id for a Service (by FNN)
+	 *
+	 * Find the Id for a Service (by FNN)
+	 *
+	 * @param	str		$strFNN		Service FNN
+	 *	 
+	 * @return	mixed	int			Service Id
+	 * 					bool		FALSE if Service not found
+	 * @method
+	 */
+	 private function _FindServiceByFNN($strFNN)
+	 {
+	 	// return FALSE if invalid FNN
+		if ((int)$strFNN == 0)
+		{
+			return FALSE; 
+		}
+		
+	 	// find Service (ignore achived services)
+	 	//TODO!!!!
+		
+			// return Service Id
+			//TODO!!!!
+		
+		// return FALSE if Account not found
+		return FALSE;
+	 }
+	 
+	 
 	 
 	//------------------------------------------------------------------------//
 	// _CalculateCharge
