@@ -208,13 +208,16 @@ die();
 				continue;
 			}
 			
-			// Calculate Passthrough
+			
 			if ($this->_arrCurrentRate['PassThrough'])
 			{
+				// Calculate Passthrough rate
 				$fltCharge = $this->_CalculatePassThrough();
 			}
 			else
 			{
+				// Calculate other rate types
+				
 				// Calculate Charge
 				$fltCharge = $this->_CalculateCharge();
 				if ($fltCharge === FALSE)
