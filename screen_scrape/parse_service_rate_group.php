@@ -50,37 +50,52 @@ require_once($strFrameworkDir."exception_vixen.php");
 	);
 	
 	// Rates
-$arrRates['localrate']['Local 14/13c (T3CC)'] = intRateId;
-$arrRates['localrate']['Local 14/11c (tb fleet, t3 local)'] = intRateId;
-$arrRates['localrate']['Local 10c (VV)'] = intRateId;
-$arrRates['localrate']['Local 13 (B39c)'] = intRateId;
-$arrRates['localrate']['Local 16/14 (VT, BSC,T3CTM)'] = intRateId;
-$arrRates['localrate']['Local 12c (B15ctm)'] = intRateId;
-$arrRates['localrate']['VoiceTalk'] = intRateId;
-$arrRates['localrate']['Tier 3 corporate Local Saver'] = intRateId;
-$arrRates['localrate']['Local 17c (nat16)'] = intRateId;
-$arrRates['localrate']['Local 11/11c'] = intRateId;
-$arrRates['localrate']['Local 16.36 (res 18c gst)'] = intRateId;
-$arrRates['localrate']['Tier 3 corporate Long Distance'] = intRateId;
-$arrRates['localrate']['Local 18c'] = intRateId;
-$arrRates['natrate']['Tier 3 corporate capped (6ff,8cpm)'] = intRateId;
-$arrRates['natrate']['Tier 3 corporate Local (6ff,8cpm)'] = intRateId;
-$arrRates['natrate']['Blue V.VOIP (0ff,10cpcall)'] = intRateId;
-$arrRates['natrate']['39cent cap (6ff,8cpm)'] = intRateId;
-$arrRates['natrate']['Bus. Saver Capped (7ff,9cpm)'] = intRateId;
-$arrRates['natrate']['Blue 15c CTM  (6ff,6cpm)'] = intRateId;
-$arrRates['natrate']['VoiceTalk (10 ff/12cpm) cap'] = intRateId;
-$arrRates['natrate']['National 16'] = intRateId;
-$arrRates['natrate']['Tier 3 corporate Mobile Saver (6.5ff,9cpm)'] = intRateId;
-$arrRates['natrate']['Tier 3 corp. L D (0 ff,10cpm)'] = intRateId;
-$arrRates['natrate']['7.5cpm no flag'] = intRateId;
-$arrRates['natrate']['True Blue Fleet (6ff,9cpm)'] = intRateId;
-$arrRates['natrate']['National 8c no ff'] = intRateId;
-$arrRates['natrate']['5.5cpm no flag'] = intRateId;
-$arrRates['natrate']['Residential (20ff,18cpm)'] = intRateId;
-$arrRates['natrate']['Pinnacle (13c per call)'] = intRateId;
-$arrRates['natrate']['7cpm 0 flag'] = intRateId;
-$arrRates['natrate']['6 cpm 0 flag'] = intRateId;
+$arrRates['localrate']	['Local 14/13c (T3CC)']					[17]	= 67;			// Local
+$arrRates['localrate']	['Local 14/13c (T3CC)']					[18]	= 70;			// Programmed Local
+$arrRates['localrate']	['Local 14/11c (tb fleet, t3 local)']	[17]	= 66;
+$arrRates['localrate']	['Local 14/11c (tb fleet, t3 local)']	[18]	= 74;
+$arrRates['localrate']	['Local 10c (VV)']						[17]	= 65;
+$arrRates['localrate']	['Local 10c (VV)']						[18]	= 72;
+$arrRates['localrate']	['Local 13 (B39c)']						[17]	= 63;
+$arrRates['localrate']	['Local 13 (B39c)']						[18]	= 70;
+$arrRates['localrate']	['Local 16/14 (VT, BSC,T3CTM)']			[17]	= 66;
+$arrRates['localrate']	['Local 16/14 (VT, BSC,T3CTM)']			[18]	= 73;
+$arrRates['localrate']	['Local 12c (B15ctm)']					[17]	= 64;
+$arrRates['localrate']	['Local 12c (B15ctm)']					[18]	= 71;
+$arrRates['localrate']	['VoiceTalk']							[17]	= 66;
+$arrRates['localrate']	['VoiceTalk']							[18]	= 73;
+$arrRates['localrate']	['Tier 3 corporate Local Saver']		[17]	= 67;
+$arrRates['localrate']	['Tier 3 corporate Local Saver']		[18]	= 74;
+$arrRates['localrate']	['Local 17c (nat16)']					[17]	= 68;
+$arrRates['localrate']	['Local 17c (nat16)']					[18]	= 75;
+$arrRates['localrate']	['Local 11/11c']						[17]	= /* NO MATCH*/null;
+$arrRates['localrate']	['Local 11/11c']						[18]	= 74;
+$arrRates['localrate']	['Local 16.36 (res 18c gst)']			[17]	= 69;
+$arrRates['localrate']	['Local 16.36 (res 18c gst)']			[18]	= 76;
+$arrRates['localrate']	['Tier 3 corporate Long Distance']		[17]	= /* PLAN DOESN'T EXIST ANYMORE */null;
+$arrRates['localrate']	['Tier 3 corporate Long Distance']		[18]	= /* PLAN DOESN'T EXIST ANYMORE */null;
+$arrRates['localrate']	['Local 18c']							[17]	= /* PLAN DOESN'T EXIST ANYMORE */null;
+$arrRates['localrate']	['Local 18c']							[18]	= /* PLAN DOESN'T EXIST ANYMORE */null;
+
+$arrRates['natrate']	['Tier 3 corporate capped (6ff,8cpm)']			= 81;
+$arrRates['natrate']	['Tier 3 corporate Local (6ff,8cpm)']			= 86;
+$arrRates['natrate']	['Blue V.VOIP (0ff,10cpcall)']					= 79;
+$arrRates['natrate']	['39cent cap (6ff,8cpm)']						= 77;
+$arrRates['natrate']	['Bus. Saver Capped (7ff,9cpm)']				= 80;
+$arrRates['natrate']	['Blue 15c CTM  (6ff,6cpm)']					= 78;
+$arrRates['natrate']	['VoiceTalk (10 ff/12cpm) cap']					= 84;
+$arrRates['natrate']	['National 16']									= 83;
+$arrRates['natrate']	['Tier 3 corporate Mobile Saver (6.5ff,9cpm)']	= 87;
+$arrRates['natrate']	['Tier 3 corp. L D (0 ff,10cpm)']				= /* PLAN DOESN'T EXIST ANYMORE */null;
+$arrRates['natrate']	['7.5cpm no flag']								= /* NO MATCH*/null;
+$arrRates['natrate']	['True Blue Fleet (6ff,9cpm)']					= 82;
+$arrRates['natrate']	['National 8c no ff']							= /* NO MATCH*/null;
+$arrRates['natrate']	['5.5cpm no flag']								= /* NO MATCH*/null;
+$arrRates['natrate']	['Residential (20ff,18cpm)']					= /* PLAN FOUND, INCORRECT RATE */null;
+$arrRates['natrate']	['Pinnacle (13c per call)']						= 88;
+$arrRates['natrate']	['7cpm 0 flag']									= /* NO MATCH*/null;
+$arrRates['natrate']	['6 cpm 0 flag']								= /* NO MATCH*/null;
+
 $arrRates['mobrate']['Tier 3 corporate capped(27cpm, 20c min)'] = intRateId;
 $arrRates['mobrate']['Tier 3 corporate Local Saver (9ff, 26cpm)'] = intRateId;
 $arrRates['mobrate']['Virtual VOIP (30cpm, 30c min)'] = intRateId;
@@ -102,6 +117,7 @@ $arrRates['mobrate']['Residential (20ff, 27.27cpm)'] = intRateId;
 $arrRates['mobrate']['CTM 25c 0 flag'] = intRateId;
 $arrRates['mobrate']['CTM 24c 0 flag'] = intRateId;
 $arrRates['mobrate']['CTM 25pm 8ff'] = intRateId;
+
 $arrRates['intrate']['Blue 15c CTM'] = intRateId;
 $arrRates['intrate']['Tier 3 corporate capped'] = intRateId;
 $arrRates['intrate']['Blue Virtual VOIP'] = intRateId;
@@ -112,6 +128,7 @@ $arrRates['intrate']['Tier 3 corporate Long Distance'] = intRateId;
 $arrRates['intrate']['Mobile Zero Plan'] = intRateId;
 $arrRates['intrate']['Tier 3 corporate Mobile Saver'] = intRateId;
 $arrRates['intrate']['Residential'] = intRateId;
+
 $arrRates['service_equip_rate']['Tier 3 Corporate Capped'] = intRateId;
 $arrRates['service_equip_rate']['Tier 3 Corporate Local Saver'] = intRateId;
 $arrRates['service_equip_rate']['Blue Virtual VOIP'] = intRateId;
@@ -124,45 +141,56 @@ $arrRates['service_equip_rate']['Tier 3 Corporate Mobile Saver'] = intRateId;
 $arrRates['service_equip_rate']['True Blue Fleet'] = intRateId;
 $arrRates['service_equip_rate']['Residential'] = intRateId;
 $arrRates['service_equip_rate']['Pinnacle ($33.00)'] = intRateId;
+
 $arrRates['mobileunitel']['Mobile Zero Plan'] = intRateId;
 $arrRates['mobileunitel']['Fleet Mobile 60'] = intRateId;
 $arrRates['mobileunitel']['Pinnacle'] = intRateId;
 $arrRates['mobileunitel']['Fleet Mobile Peter K Special'] = intRateId;
 $arrRates['mobileunitel']['Fleet Mobile 30'] = intRateId;
 $arrRates['mobileunitel']['Blue Shared 500'] = intRateId;
+
 $arrRates['mobiletelstra']['Mobile Zero Plan'] = intRateId;
 $arrRates['mobiletelstra']['Fleet Mobile 60'] = intRateId;
 $arrRates['mobiletelstra']['Pinnacle'] = intRateId;
 $arrRates['mobiletelstra']['Fleet Mobile 30'] = intRateId;
 $arrRates['mobiletelstra']['Blue Shared 500'] = intRateId;
+
 $arrRates['mobileother']['Mobile Zero Plan'] = intRateId;
 $arrRates['mobileother']['Fleet Mobile 60'] = intRateId;
 $arrRates['mobileother']['Pinnacle'] = intRateId;
 $arrRates['mobileother']['Fleet Mobile 30'] = intRateId;
 $arrRates['mobileother']['Blue Shared 500'] = intRateId;
 $arrRates['mobileother']['Fleet Mobile Peter K Special'] = intRateId;
+
 $arrRates['mobilenational']['Mobile Zero Plan'] = intRateId;
 $arrRates['mobilenational']['Fleet Mobile 60'] = intRateId;
 $arrRates['mobilenational']['Pinnacle'] = intRateId;
 $arrRates['mobilenational']['Fleet Mobile 30'] = intRateId;
 $arrRates['mobilenational']['Blue Shared 500'] = intRateId;
 $arrRates['mobilenational']['Fleet Mobile Peter K special'] = intRateId;
+
 $arrRates['mobile1800']['Mobile Zero Plan'] = intRateId;
 $arrRates['mobile1800']['Fleet Mobile 60'] = intRateId;
 $arrRates['mobile1800']['Pinnacle'] = intRateId;
 $arrRates['mobile1800']['Fleet Mobile 30'] = intRateId;
 $arrRates['mobile1800']['Blue Shared 500'] = intRateId;
+
 $arrRates['mobilevoicemail']['Voicemail Retrievals'] = intRateId;
 $arrRates['mobilevoicemail']['Pinnacle'] = intRateId;
+
 $arrRates['mobilediverted']['DiversionAll'] = intRateId;
 $arrRates['mobilediverted']['Pinnacle'] = intRateId;
+
 $arrRates['mobilesms']['25c inc SMS'] = intRateId;
 $arrRates['mobilesms']['Pinnacle 18c ex'] = intRateId;
 $arrRates['mobilesms']['22c inc SMS'] = intRateId;
+
 $arrRates['mobilemms']['MMS 75c inc (68.2 ex)'] = intRateId;
+
 $arrRates['mobiledata']['GPRS 2c ex (BS100,Fleet 30, Zero)'] = intRateId;
 $arrRates['mobiledata']['GPRS 1.5c ex (BS500, Fleet 60)'] = intRateId;
 $arrRates['mobiledata']['GPRS 1.8c ex (BS250)'] = intRateId;
+
 $arrRates['mobileinternational']['Mobile Zero Plan'] = intRateId;
 
 
