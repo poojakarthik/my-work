@@ -308,6 +308,11 @@
 		background-color:    #D5E0F8;
 	}
 	
+	table.Listing .Currency
+	{
+		text-align:          right;
+	}
+	
 	a.Label:Link,
 	a.Label:Visited
 	{
@@ -342,11 +347,10 @@
 		width:               150px;
 	}
 	
-	tr.Required th,
-	tr.Required td
+	tr.Required th
 	{
-		background-color:    #FFFFC0;
-		padding:             3px;
+		background-color:    #ae4545;
+		color:               #FFFFFF;
 	}
 	
 	.Indent

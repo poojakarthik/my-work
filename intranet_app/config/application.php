@@ -86,6 +86,14 @@ require ("classes/customergroup/customergroups.php");
 require ("classes/creditcard/creditcardtype.php");
 require ("classes/creditcard/creditcardtypes.php");
 
+//charges
+require ("classes/charges/charge.php");
+require ("classes/charges/charges.php");
+
+//CDRs
+require ("classes/CDRs/CDR.php");
+require ("classes/CDRs/CDRs_Unbilled.php");
+
 //accounts
 require ("classes/notes/note.php");
 require ("classes/notes/notes.php");
@@ -96,6 +104,9 @@ require ("classes/notes/notetypes.php");
 require ("classes/billing/billingmethod.php");
 require ("classes/billing/billingmethods.php");
 
+require ("classes/billing/billingtype.php");
+require ("classes/billing/billingtypes.php");
+
 //contacts
 require ("classes/contacts/contact.php");
 require ("classes/contacts/contacts.php");
@@ -103,6 +114,9 @@ require ("classes/contacts/contacts.php");
 //charges
 require ("classes/charges/recurringchargetype.php");
 require ("classes/charges/recurringchargetypes.php");
+
+require ("classes/charges/chargetype.php");
+require ("classes/charges/chargetypes.php");
 
 //rates, rate groups and rate plans
 require ("classes/rates/rate.php");
@@ -115,6 +129,10 @@ require ("classes/rates/rates.php");
 //service types
 require ("classes/service/servicetype.php");
 require ("classes/service/servicetypes.php");
+
+//invoices
+require ("classes/invoices/invoice.php");
+require ("classes/invoices/invoices.php");
 
 //carriers
 require ("classes/carrier/carrier.php");

@@ -204,6 +204,7 @@
 			{
 				setCookie ("Id", $Id, time () + (60 * 20), "/");
 				setCookie ("SessionId", $SessionId, time () + (60 * 20), "/");
+				
 				return true;
 			}
 			

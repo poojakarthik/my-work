@@ -49,20 +49,38 @@
 				
 				<div class="Seperator"></div>
 				
-				<table border="0" cellpadding="0" cellspacing="5" class="Right">
-					<tr>
-						<td class="summary-blank black-border" width="25" height="25"></td>
-						<td>Unallocated</td>
-					</tr>
-					<tr>
-						<td class="summary-single black-border" width="25" height="25"></td>
-						<td>Allocated Correctly</td>
-					</tr>
-					<tr>
-						<td class="summary-overlap black-border" width="25" height="25"></td>
-						<td>Over Allocated</td>
-					</tr>
-				</table>
+				<div class="Left">
+					<table border="0" cellpadding="2" cellspacing="0">
+						<tr>
+							<td>
+								<a href="javascript:window.close()">
+									<img src="img/template/close.png" style="vertical-align: middle" border="0" />
+								</a>
+							</td>
+							<td>
+								<a href="javascript:window.close()">
+									Close Window
+								</a>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="Right">
+					<table border="0" cellpadding="0" cellspacing="5">
+						<tr>
+							<td class="summary-blank black-border" width="25" height="25"></td>
+							<td>Unallocated</td>
+						</tr>
+						<tr>
+							<td class="summary-single black-border" width="25" height="25"></td>
+							<td>Allocated Correctly</td>
+						</tr>
+						<tr>
+							<td class="summary-overlap black-border" width="25" height="25"></td>
+							<td>Over Allocated</td>
+						</tr>
+					</table>
+				</div>
 			</xsl:when>
 			<xsl:otherwise>
 				<p>

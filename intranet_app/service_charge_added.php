@@ -21,9 +21,9 @@
 	}
 	catch (Exception $e)
 	{
-		header ("Location: index.php"); exit;
+		header ("Location: console.php"); exit;
 	}
 	
-	$Style->Output ("xsl/content/service/provisioning_confirm.xsl");
+	$Style->Output ("xsl/content/service/charges_charge_added.xsl");
 	
 ?>

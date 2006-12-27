@@ -31,33 +31,15 @@
 	 * Holds a collation of Unbilled Calls
 	 *
 	 *
-	 * @prefix	uca
+	 * @prefix		ubc
 	 *
-	 * @package	client_app
-	 * @class	UnbilledCalls
-	 * @extends	dataCollation
+	 * @package		intranet_app
+	 * @class		CDRs_Unbilled
+	 * @extends		dataCollation
 	 */
 	
 	class CDRs_Unbilled extends dataCollation
 	{
-		
-		//------------------------------------------------------------------------//
-		// _cntContact
-		//------------------------------------------------------------------------//
-		/**
-		 * _cntContact
-		 *
-		 * The AuthenticatedContact which the User currently Holds
-		 *
-		 * The AuthenticatedContact object which a user holds that can be used to
-		 * identify their login status.
-		 *
-		 * @type	AuthenticatedContact
-		 *
-		 * @property
-		 */
-		
-		private $_cntContact;
 		
 		//------------------------------------------------------------------------//
 		// _srvService
@@ -77,44 +59,42 @@
 		private $_srvService;
 		
 		//------------------------------------------------------------------------//
-		// UnbilledCalls
+		// __construct
 		//------------------------------------------------------------------------//
 		/**
-		 * UnbilledCalls()
+		 * __construct()
 		 *
 		 * Constructor to create a new UnbilledCalls collation
 		 *
 		 * Constructor to create a new UnbilledCalls collation
 		 *
-		 * @param	AuthenticatedContact	$cntContact	The AuthenticatedContact wishing to view unbilled calls
-		 * @param	Service			$srvService	A Service Object containing information about which calls to view
+		 * @param	Service			$srvService			A Service Object containing information about which calls to view
 		 *
 		 * @method
 		 */
 		
-		function __construct (&$cntContact, &$srvService)
+		function __construct (&$srvService)
 		{
-			$this->_cntContact =& $cntContact;
 			$this->_srvService =& $srvService;
 			
 			$selUnbilledCalls = new StatementSelect(
-				"CDR", 
-				"count(*) AS collationLength", 
-				"Invoice IS NULL AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)"
+				'CDR', 
+				'count(*) AS collationLength', 
+				'Service = <Service> AND (Status = <Status1> OR Status = <Status2>)'
 			);
 			
 			$selUnbilledCalls->Execute(
 				Array(
-					"Service"	=> $this->_srvService->Pull ("Id")->getValue (),
-					"Status1"	=> CDR_RATED,
-					"Status2"	=> INVOICE_TEMP
+					'Service'	=> $this->_srvService->Pull ('Id')->getValue (),
+					'Status1'	=> CDR_RATED,
+					'Status2'	=> CDR_TEMP_INVOICE
 				)
 			);
 			
-			$intLength = $selUnbilledCalls->Fetch ();
+			$arrLength = $selUnbilledCalls->Fetch ();
 			
 			// Construct the collation with the number of CDRs that are unbilled
-			parent::__construct ("UnbilledCalls", "CDR", $intLength ['collationLength']);
+			parent::__construct ('CDRs-Unbilled', 'CDR', $arrLength ['collationLength']);
 		}
 		
 		//------------------------------------------------------------------------//
@@ -136,7 +116,7 @@
 
 		public function ItemId ($intId)
 		{
-			return new CDR ($this->_cntContact, $intId);
+			return new CDR ($intId);
 		}
 		
 		//------------------------------------------------------------------------//
@@ -160,29 +140,78 @@
 		{
 			// Get the Actual Id of the CDR, rather than an Index
 			
-			$selCDRId = new StatementSelect (
-				"CDR", 
-				"Id", 
-				"Invoice IS NULL AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)",
-				null, 
-				$intIndex . ", 1"
+			$selCDR = new StatementSelect (
+				'CDR', 
+				'Id', 
+				'Service = <Service> AND (Status = <Status1> OR Status = <Status2>)',
+				'StartDatetime DESC', 
+				$intIndex . ', 1'
 			);
 			
-			$selCDRId->Execute(
+			$selCDR->Execute(
 				Array( 
-					"Service"	=> $this->_srvService->Pull ("Id")->getValue (),
-					"Status1"	=> CDR_RATED,
-					"Status2"	=> INVOICE_TEMP
+					'Service'	=> $this->_srvService->Pull ('Id')->getValue (),
+					'Status1'	=> CDR_RATED,
+					'Status2'	=> CDR_TEMP_INVOICE
 				)
 			);
 			
 			// If the CDR could not be found by Index, we've reached past the end of the list. So return null.
-			if (!$arrCDRId = $selCDRId->Fetch ())
+			if (!$arrCDR = $selCDR->Fetch ())
 			{
 				return null;
 			}
 			
-			return $this->ItemId ($arrCDRId ['Id']);
+			return $this->ItemId ($arrCDR ['Id']);
+		}
+		
+		
+		//------------------------------------------------------------------------//
+		// ItemList
+		//------------------------------------------------------------------------//
+		/**
+		 * ItemList()
+		 *
+		 * Return a list of results
+		 *
+		 * Return a list of results that are pagination controlled
+		 *
+		 * @param	Integer		$intStart 		The number of the Starting Index
+		 * @param	Integer		$intLength 		The number of results to return
+		 * @return	Array
+		 *
+		 * @method
+		 */
+		
+		public function ItemList ($intStart, $intLength)
+		{
+			$_DATA = Array ();
+			
+			// Pull all Id values which match against the Constraints
+			// that are within the page limit
+			$selCDRS = new StatementSelect (
+				'CDR', 
+				'Id', 
+				'Service = <Service> AND (Status = <Status1> OR Status = <Status2>)',
+				'StartDatetime DESC', 
+				$intStart . ', ' . $intLength
+			);
+			
+			$selCDRS->Execute (
+				Array( 
+					'Service'	=> $this->_srvService->Pull ('Id')->getValue (),
+					'Status1'	=> CDR_RATED,
+					'Status2'	=> CDR_TEMP_INVOICE
+				)
+			);
+			
+			// Store the Results as Objects in an array
+			while ($Item = $selCDRS->Fetch ())
+			{
+				$_DATA [] = $this->Push ($this->ItemId ($Item ['Id']));
+			}
+			
+			return $_DATA;
 		}
 	}
 	

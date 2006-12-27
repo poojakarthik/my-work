@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// accounts.php
+	// chargetypes.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * accounts.php
+	 * chargetypes.php
 	 *
-	 * Contains the Class that Controls Account Searching
+	 * Contains the Class that Controls ChargeType Searching
 	 *
-	 * Contains the Class that Controls Account Searching
+	 * Contains the Class that Controls ChargeType Searching
 	 *
-	 * @file		accounts.php
+	 * @file		chargetypes.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// Accounts
+	// ChargeTypes
 	//----------------------------------------------------------------------------//
 	/**
-	 * Accounts
+	 * ChargeTypes
 	 *
-	 * Controls Searching for an existing account
+	 * Controls Searching for an existing ChargeType
 	 *
-	 * Controls Searching for an existing account
+	 * Controls Searching for an existing ChargeType
 	 *
 	 *
-	 * @prefix		acs
+	 * @prefix		ocl
 	 *
 	 * @package		intranet_app
-	 * @class		Accounts
+	 * @class		ChargeTypes
 	 * @extends		dataObject
 	 */
 	
-	class Accounts extends Search
+	class ChargeTypes extends Search
 	{
 		//------------------------------------------------------------------------//
 		// __construct
@@ -46,16 +46,16 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructs an Account Searching Routine
+		 * Constructs a ChargeType Searching Routine
 		 *
-		 * Constructs an Account Searching Routine
+		 * Constructs a ChargeType Searching Routine
 		 *
 		 * @method
 		 */
 		 
 		function __construct ()
 		{
-			parent::__construct ('Accounts', 'Account', 'Account');
+			parent::__construct ('ChargeTypes', 'ChargeType', 'ChargeType');
 		}
 	}
 	

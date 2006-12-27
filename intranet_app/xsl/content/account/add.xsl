@@ -309,7 +309,7 @@
 							<td>
 								<table border="0" cellpadding="5" cellspacing="0">
 									<tr>
-										<td><input type="radio" name="PaymentMethod" value="AC" id="PaymentMethod:AC" /></td>
+										<td><input type="radio" name="BillingType" value="3" id="PaymentMethod:AC" /></td>
 										<th>
 											<label for="PaymentMethod:AC">
 												Make charges against an Account
@@ -317,7 +317,7 @@
 										</th>
 									</tr>
 									<tr>
-										<td><input type="radio" name="PaymentMethod" value="DDR" id="PaymentMethod:DDR" /></td>
+										<td><input type="radio" name="BillingType" value="1" id="PaymentMethod:DDR" /></td>
 										<th>
 											<label for="PaymentMethod:DDR">
 												Pay this account via Direct Debit
@@ -402,7 +402,7 @@
 									</tr>
 									
 									<tr>
-										<td><input type="radio" name="PaymentMethod" value="CC" id="PaymentMethod:CC" /></td>
+										<td><input type="radio" name="BillingType" value="2" id="PaymentMethod:CC" /></td>
 										<th>
 											<label for="PaymentMethod:CC">
 												Pay this account via Credit Card

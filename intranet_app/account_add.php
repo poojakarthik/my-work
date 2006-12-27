@@ -124,21 +124,62 @@
 		else
 		{
 			// if we're up to here ... make the account
-			$acsAccounts = new Accounts ();
-			$intAccount = $acsAccounts->Add (
-				null,
+			
+			if ($_POST ['Select_Contact']) {
+				$cntContact = new Contact ($_POST ['Contact']['Id']);
+			}
+			
+			$agsAccountGroups = new AccountGroups ();
+			
+			$intAccount = $agsAccountGroups->Add (
+				(($acgAccountGroup) ? $acgAccountGroup : null),
+				(($cntContact) ? $cntContact : null),
 				Array (
-					"BusinessName"		=> $_POST ['BusinessName'],
-					"TradingName"		=> $_POST ['TradingName'],
-					"ABN"				=> $_POST ['ABN'],
-					"ACN"				=> $_POST ['ACN'],
-					"Address1"			=> $_POST ['Address1'],
-					"Address2"			=> $_POST ['Address2'],
-					"Suburb"			=> $_POST ['Suburb'],
-					"Postcode"			=> $_POST ['Postcode'],
-					"State"				=> $_POST ['State'],
-					"CustomerGroup"	=> $_POST ['CustomerGroup'],
-					"BillingMethod"		=> $_POST ['BillingMethod']
+					"Account"		=> Array (
+						"BusinessName"		=> $_POST ['BusinessName'],
+						"TradingName"		=> $_POST ['TradingName'],
+						"ABN"				=> $_POST ['ABN'],
+						"ACN"				=> $_POST ['ACN'],
+						"Address1"			=> $_POST ['Address1'],
+						"Address2"			=> $_POST ['Address2'],
+						"Suburb"			=> $_POST ['Suburb'],
+						"Postcode"			=> $_POST ['Postcode'],
+						"State"				=> $_POST ['State'],
+						"CustomerGroup"	=> $_POST ['CustomerGroup'],
+						"BillingType"		=> $_POST ['BillingType'],
+						"BillingMethod"		=> $_POST ['BillingMethod']
+					),
+					
+					"CreditCard"	=> Array (
+						"CardType"			=> $_POST ['CC']['CardType'],
+						"Name"				=> $_POST ['CC']['Name'],
+						"CardNumber"		=> $_POST ['CC']['CardNumber'],
+						"ExpMonth"			=> $_POST ['CC']['ExpMonth'],
+						"ExpYear"			=> $_POST ['CC']['ExpYear'],
+					),
+					
+					"DirectDebit"	=> Array (
+						"BankName"			=> $_POST ['DDR']['BankName'],
+						"BSB"				=> $_POST ['DDR']['BSB'],
+						"AccountNumber"	=> $_POST ['DDR']['AccountNumber'],
+						"AccountName"		=> $_POST ['DDR']['AccountName'],
+					),
+					
+					"Contact"		=> Array (
+						"Title"				=> $_POST ['Contact']['Title'],
+						"FirstName"		=> $_POST ['Contact']['FirstName'],
+						"LastName"			=> $_POST ['Contact']['LastName'],
+						"DOB:year"			=> $_POST ['Contact']['DOB']['year'],
+						"DOB:month"		=> $_POST ['Contact']['DOB']['month'],
+						"DOB:day"			=> $_POST ['Contact']['DOB']['day'],
+						"JobTitle"			=> $_POST ['Contact']['JobTitle'],
+						"Email"			=> $_POST ['Contact']['Email'],
+						"Phone"				=> $_POST ['Contact']['Phone'],
+						"Mobile"			=> $_POST ['Contact']['Mobile'],
+						"Fax"				=> $_POST ['Contact']['Fax'],
+						"UserName"			=> $_POST ['Contact']['UserName'],
+						"PassWord"			=> $_POST ['Contact']['PassWord']
+					)
 				)
 			);
 			

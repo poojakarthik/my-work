@@ -79,26 +79,29 @@
 					{
 						foreach ($_POST ['RecordType'] AS $intRecordType => $intRateGroup)
 						{
-							// Do a check on the Rate Group to see if it exists
-							$selRatePlanName = new StatementSelect (
-								"RateGroup", 
-								"count(*) AS Length", 
-								"Id = <Id> AND Archived = 0 AND ServiceType = <ServiceType>"
-							);
-							
-							$selRatePlanName->Execute (
-								Array (
-									"Id"			=> $intRateGroup,
-									"ServiceType"	=> $_POST ['ServiceType']
-								)
-							);
-							
-							$arrLength = $selRatePlanName->Fetch ();
-							
-							if ($arrLength ['Length'] <> 1)
+							if (!empty ($intRateGroup))
 							{
-								$oblstrError->setValue ('Mishandled');
-								break;
+								// Do a check on the Rate Group to see if it exists
+								$selRatePlanName = new StatementSelect (
+									"RateGroup", 
+									"count(*) AS Length", 
+									"Id = <Id> AND Archived = 0 AND ServiceType = <ServiceType>"
+								);
+								
+								$selRatePlanName->Execute (
+									Array (
+										"Id"			=> $intRateGroup,
+										"ServiceType"	=> $_POST ['ServiceType']
+									)
+								);
+								
+								$arrLength = $selRatePlanName->Fetch ();
+								
+								if ($arrLength ['Length'] <> 1)
+								{
+									$oblstrError->setValue ('Mishandled');
+									break;
+								}
 							}
 						}
 						
@@ -141,15 +144,18 @@
 								// Foreach RecordType that is Not Blank
 								foreach ($_POST ['RecordType'] AS $intRecordType => $intRateGroup)
 								{
-									// Insert the RecordType in to the Database
-									
-									$arrRatePlanRateGroup = Array (
-										'RatePlan'		=> $intRatePlanId,
-										'RateGroup'		=> $intRateGroup
-									);
-									
-									$insInsertRatePlanRateGroup	= new StatementInsert("RatePlanRateGroup");
-									$insInsertRatePlanRateGroup->Execute ($arrRatePlanRateGroup);
+									if (!empty ($intRateGroup))
+									{
+										// Insert the RecordType in to the Database
+										
+										$arrRatePlanRateGroup = Array (
+											'RatePlan'		=> $intRatePlanId,
+											'RateGroup'		=> $intRateGroup
+										);
+										
+										$insInsertRatePlanRateGroup	= new StatementInsert("RatePlanRateGroup");
+										$insInsertRatePlanRateGroup->Execute ($arrRatePlanRateGroup);
+									}
 								}
 								
 								// Foreach Selected Recurring Charge

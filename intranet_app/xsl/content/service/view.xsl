@@ -178,13 +178,20 @@
 					
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_unbilled.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>View Unbilled Charges</xsl:text>
-							</a>
+							<div class="Left">
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>service_unbilled.php?Id=</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" />
+									</xsl:attribute>
+									<xsl:text>Current Unbilled Charges</xsl:text>
+								</a> :
+							</div>
+							<div class="Right">
+								<xsl:value-of select="/Response/Service/UnbilledCharges-Cost-Current" />
+							</div>
+							
+							<div class="Clear"></div>
 						</div>
 					</div>
 					
@@ -967,12 +974,106 @@
 						</div>
 						<div class="Seperator"></div>
 					</xsl:for-each>
+					<div class="Seperator"></div>
+
+					<h2>Add Account Charges</h2>
+					<div class="Seperator"></div>
+					<div class="Filter-Form">
+						<div class="Filter-Form-Content">
+							<h2>Single Charge</h2>
+							<xsl:choose>
+								<xsl:when test="count(/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType) = 0">
+									No charge types are defined to add against an account.
+								</xsl:when>
+								<xsl:otherwise>
+									<form method="post" action="service_charge_add.php">
+										<input type="hidden" name="Service">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/Id" />
+											</xsl:attribute>
+										</input>
+										
+										<table border="0" cellpadding="5" cellspacing="0">
+											<tr>
+												<td>
+													<select name="ChargeType">
+														<xsl:for-each select="/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType">
+															<option>
+																<xsl:attribute name="value">
+																	<xsl:text></xsl:text>
+																	<xsl:value-of select="./Id" />
+																</xsl:attribute>
+																<xsl:value-of select="./Description" />
+															</option>
+														</xsl:for-each>
+													</select>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<input type="submit" value="Assign Charge &#0187;" class="input-submit" />
+												</td>
+											</tr>
+										</table>
+									</form>
+								</xsl:otherwise>
+							</xsl:choose>
+						</div>
+						<br />
+						
+						<div class="Seperator"></div>
+						
+						<div class="Filter-Form-Content">
+							<h2>Recurring Charge</h2>
+							<xsl:choose>
+								<xsl:when test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
+									No recurring charge types are defined to add against an account.
+								</xsl:when>
+								<xsl:otherwise>
+									<form method="post" action="service_recurringcharge_add.php">
+										<input type="hidden" name="Service">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Service/Id" />
+											</xsl:attribute>
+										</input>
+										
+										<table border="0" cellpadding="5" cellspacing="0">
+											<tr>
+												<td>
+													<select name="RecurringChargeType">
+														<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
+															<option>
+																<xsl:attribute name="value">
+																	<xsl:text></xsl:text>
+																	<xsl:value-of select="./Id" />
+																</xsl:attribute>
+																<xsl:value-of select="./Description" />
+															</option>
+														</xsl:for-each>
+													</select>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<input type="submit" value="Assign Recurring Charge &#0187;" class="input-submit" />
+												</td>
+											</tr>
+										</table>
+									</form>
+								</xsl:otherwise>
+							</xsl:choose>
+						</div>
+						
+						<div class="Clear"></div>
+					</div>
+					
+					<div class="Seperator"></div>
 				</td>
 			</tr>
 		</table>
 		<div class="Clear"></div>
-		<div class="Seperator"></div>
-		<div class="Seperator"></div>
 	</xsl:template>
 	
 	

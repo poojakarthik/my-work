@@ -16,6 +16,14 @@
 					element.tabIndex = ++tabIndex;
 				}
 			}
+			
+			if (document.forms[0])
+			{
+				if (document.forms[0].elements[0])
+				{
+					document.forms[0].elements[0].focus ();
+				}
+			}
 		},
 		true
 	);

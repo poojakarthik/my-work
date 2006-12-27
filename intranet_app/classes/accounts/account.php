@@ -150,6 +150,28 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// Invoices
+		//------------------------------------------------------------------------//
+		/**
+		 * Invoices()
+		 *
+		 * Retrieves Invoice List
+		 *
+		 * Retrieves Invoice List
+		 *
+		 * @return	Invoices
+		 *
+		 * @method
+		 */
+		 
+		public function Invoices ()
+		{
+			$ivlInvoices = new Invoices ();
+			$ivlInvoices->Constrain ('Account', '=', $this->Pull ('Id')->getValue ());
+			return $ivlInvoices;
+		}
+		
+		//------------------------------------------------------------------------//
 		// ArchiveStatus
 		//------------------------------------------------------------------------//
 		/**

@@ -126,7 +126,7 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
-											<xsl:value-of select="./Name" />
+											<xsl:value-of select="./Name" disable-output-escaping="yes" />
 										</option>
 									</xsl:for-each>
 								</select>

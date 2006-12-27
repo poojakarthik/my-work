@@ -157,6 +157,118 @@
 			 	)
 			);
 		}
+		
+		//------------------------------------------------------------------------//
+		// UnbilledCharges
+		//------------------------------------------------------------------------//
+		/**
+		 * UnbilledCharges()
+		 *
+		 * List of unbilled charges
+		 *
+		 * Returns a list of all unbilled charges associated with this service
+		 *
+		 * @return	CDRs
+		 *
+		 * @method
+		 */
+		
+		public function UnbilledCharges ()
+		{
+			return new CDRs_Unbilled ($this);
+		}
+		
+		//------------------------------------------------------------------------//
+		// UnbilledChargeCostCurrent
+		//------------------------------------------------------------------------//
+		/**
+		 * UnbilledChargeCostCurrent()
+		 *
+		 * How much is currently charges against this service?
+		 *
+		 * How much is currently charges against this service?
+		 *
+		 * @return	Float
+		 *
+		 * @method
+		 */
+		
+		public function UnbilledChargeCostCurrent ()
+		{
+			$selCost = new StatementSelect (
+				'CDR', 
+				'SUM(Charge) AS totalCost',
+				'Service = <Service> AND (Status = <Status1> OR Status = <Status2>)'
+			);
+			
+			$selCost->Execute (
+				Array (
+					'Service'		=> $this->Pull ('Id')->getValue (),
+					'Status1'		=> CDR_RATED,
+					'Status2'		=> CDR_TEMP_INVOICE
+				)
+			);
+			
+			$arrCost = $selCost->Fetch ();
+			
+			$this->Push (new dataFloat ('UnbilledCharges-Cost-Current', $arrCost ['totalCost']));
+		}
+		
+		//------------------------------------------------------------------------//
+		// ChargeAdd
+		//------------------------------------------------------------------------//
+		/**
+		 * ChargeAdd()
+		 *
+		 * Add a charge against a Service
+		 *
+		 * Add a charge against a Service
+		 *
+		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmploee	The person who is adding this charge to the database
+		 * @param	ChargeType				$chgChargeType				The Type of Charge to Assign
+		 * @param	String					$strAmount					The amount to charge against. If the charge type is fixed, this value is ignored
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function ChargeAdd (AuthenticatedEmployee $aemAuthenticatedEmployee, ChargeType $chgChargeType, $strAmount)
+		{
+			$fltAmount = 0;
+			
+			if ($chgChargeType->Pull ('Fixed')->isTrue ())
+			{
+				$fltAmount = $chgChargeType->Pull ('Amount')->getValue ();
+			}
+			else
+			{
+				$fltAmount = $strAmount;
+				$fltAmount = preg_replace ('/\$/', '', $fltAmount);
+				$fltAmount = preg_replace ('/\s/', '', $fltAmount);
+				$fltAmount = preg_replace ('/\,/', '', $fltAmount);
+				
+				if (!preg_match ('/^([\d]*)(\.[\d]+){0,1}$/', $fltAmount))
+				{
+					throw new Exception ('Invalid Amount');
+				}
+			}
+			
+			$arrCharge = Array (
+				 "AccountGroup"			=> $this->Pull ('AccountGroup')->getValue (),
+				 "Account"				=> $this->Pull ('Account')->getValue (),
+				 "Service"				=> $this->Pull ('Id')->getValue (),
+				 "CreatedBy"			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				 "CreatedOn"			=> date ('Y-m-d'),
+				 "ChargeType"			=> $chgChargeType->Pull ('ChargeType')->getValue (),
+				 "Description"			=> $chgChargeType->Pull ('Description')->getValue (),
+				 "Nature"				=> $chgChargeType->Pull ('Nature')->getValue (),
+				 "Amount"				=> $fltAmount,
+				 "Status"				=> CHARGE_WAITING
+			);
+			
+			$insCharge = new StatementInsert ('Charge');
+			$insCharge->Execute ($arrCharge);
+		}
 	}
 	
 ?>

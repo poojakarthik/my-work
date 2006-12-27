@@ -142,6 +142,12 @@
 			
 			// Start hte Priviledges System
 			$this->_aepPriviledges = $this->Push (new AuthenticatedEmployeePriviledges ($this));
+			
+			// If Karma ...
+			if ($this->Pull ('Karma')->getValue () <> 0)
+			{
+				sleep ($this->Pull ('Karma')->getValue ());
+			}
 		}
 		
 		//------------------------------------------------------------------------//

@@ -21,7 +21,6 @@ function initIt() {
     selectOptions[0].selected = true;  // Set first selected on load
     selectOptions[0].defaultSelected = true;  // In case of reset/reload
   }
-  selectList.focus();  // Set focus on the selectlist
 }
 
 // Adds a selected item into the picklist

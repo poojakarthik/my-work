@@ -42,7 +42,7 @@
 								<input type="text" name="Name" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/RateGroup/Name" />
+										<xsl:value-of select="/Response/RateGroup/Name" disable-output-escaping="yes" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -67,7 +67,7 @@
 													<xsl:text>selected</xsl:text>
 												</xsl:attribute>
 											</xsl:if>
-											<xsl:value-of select="./Name" />
+											<xsl:value-of select="./Name" disable-output-escaping="yes" />
 										</option>
 									</xsl:for-each>
 								</select>

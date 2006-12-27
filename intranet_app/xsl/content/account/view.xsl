@@ -242,10 +242,10 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>account_history.php?Id=</xsl:text>
+									<xsl:text>account_ledger.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>Cashflow Information</xsl:text>
+								<xsl:text>Account Ledger</xsl:text>
 							</a>
 						</li>
 						<li>

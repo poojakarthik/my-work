@@ -11,7 +11,8 @@
 		</p>
 		
 		<p>
-			Continue to <a href="rates_group_list.php">List Rate Groups</a>.
+			Continue to <a href="rates_group_list.php">List Rate Groups</a>
+			or <a href="rates_group_add.php">Create Another New Rate Group</a>.
 		</p>
 	</xsl:template>
 </xsl:stylesheet>

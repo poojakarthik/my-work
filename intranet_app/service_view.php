@@ -26,6 +26,7 @@
 	
 	// Get the Service
 	$srvService		= $Style->attachObject (new Service ($_GET ['Id']));
+	$srvService->UnbilledChargeCostCurrent ();
 	
 	// Get the Service Address Information
 	$srvService->ServiceAddress ();
@@ -46,6 +47,15 @@
 	
 	// Load the List of Provisioning Request Type Objects
 	$prtPRQTypes	= $Style->attachObject (new ProvisioningRequestTypes ());
+	
+	// ChargeType and RecurringChargeType
+	$tctCharges = $Style->attachObject (new dataArray ('TemplateChargeTypes'));
+	
+	$rclRecurringChargeTypes	= $tctCharges->Push (new RecurringChargeTypes ());
+	$rclRecurringChargeTypes->Sample ();
+	
+	$octChargeTypes				= $tctCharges->Push (new ChargeTypes ());
+	$octChargeTypes->Sample ();
 	
 	// Output the Account View
 	$Style->Output ('xsl/content/service/view.xsl');

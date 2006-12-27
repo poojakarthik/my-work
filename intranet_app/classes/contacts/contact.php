@@ -135,7 +135,7 @@
 			}
 			
 			// Check that the DOB Date actually Exists
-			if (!checkdate ($arrDetails ['DOB-month'], $arrDetails ['DOB-day'], $arrDetails ['DOB-year']))
+			if (!checkdate (intval ($arrDetails ['DOB-month']), intval ($arrDetails ['DOB-day']), intval ($arrDetails ['DOB-year'])))
 			{
 				throw new Exception ('DOB');
 			}

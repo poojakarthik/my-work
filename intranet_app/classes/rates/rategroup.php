@@ -65,6 +65,11 @@
 			$selRateGroup->Execute (Array ('Id' => $intId));
 			$selRateGroup->Fetch ($this);
 			
+			if ($selRateGroup->Count () <> 1)
+			{
+				throw new Exception ('Rate Group Not Found: ' . $intId);
+			}
+			
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
 			
 			$intRecordType = $this->Pop ("RecordType")->getValue ();

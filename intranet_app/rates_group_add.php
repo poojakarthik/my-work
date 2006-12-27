@@ -109,6 +109,7 @@
 			
 			$rrlRates = new Rates ();
 			$rrlRates->Constrain ('ServiceType', 'EQUALS', $_POST ['ServiceType']);
+			$rrlRates->Constrain ('RecordType', 'EQUALS', $_POST ['RecordType']);
 			$rrlRates->Constrain ('Archived', 'EQUALS', 0);
 			$rrlRates->Order ('Name', TRUE);
 			$rrlRates->Sample ();

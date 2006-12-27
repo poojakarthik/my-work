@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// accounts.php
+	// Invoices.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * accounts.php
+	 * Invoices.php
 	 *
-	 * Contains the Class that Controls Account Searching
+	 * Contains the Class that Controls Invoice Searching
 	 *
-	 * Contains the Class that Controls Account Searching
+	 * Contains the Class that Controls Invoice Searching
 	 *
-	 * @file		accounts.php
+	 * @file		Invoices.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// Accounts
+	// Invoices
 	//----------------------------------------------------------------------------//
 	/**
-	 * Accounts
+	 * Invoices
 	 *
-	 * Controls Searching for an existing account
+	 * Controls Searching for an existing Invoice
 	 *
-	 * Controls Searching for an existing account
+	 * Controls Searching for an existing Invoice
 	 *
 	 *
 	 * @prefix		acs
 	 *
 	 * @package		intranet_app
-	 * @class		Accounts
+	 * @class		Invoices
 	 * @extends		dataObject
 	 */
 	
-	class Accounts extends Search
+	class Invoices extends Search
 	{
 		//------------------------------------------------------------------------//
 		// __construct
@@ -46,16 +46,17 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructs an Account Searching Routine
+		 * Constructs an Invoice Searching Routine
 		 *
-		 * Constructs an Account Searching Routine
+		 * Constructs an Invoice Searching Routine
 		 *
 		 * @method
 		 */
 		 
 		function __construct ()
 		{
-			parent::__construct ('Accounts', 'Account', 'Account');
+			parent::__construct ('Invoices', 'Invoice', 'Invoice');
+			$this->Order ('CreatedOn', FALSE);
 		}
 	}
 	

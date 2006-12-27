@@ -44,7 +44,7 @@
 				<div class="Filter-Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
-							<th class="JustifiedWidth" valign="top">
+							<th valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('Name')" />
@@ -55,7 +55,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th class="JustifiedWidth" valign="top">
+							<th valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
 									<xsl:with-param name="field" select="string('ServiceType')" />
@@ -66,7 +66,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th class="JustifiedWidth" valign="top">
+							<th valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('Description')" />
@@ -95,7 +95,7 @@
 				<div class="Filter-Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
-							<th class="JustifiedWidth" valign="top">
+							<th valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('MinMonthly')" />
@@ -106,7 +106,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th class="JustifiedWidth" valign="top">
+							<th valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('ChargeCap')" />
@@ -117,7 +117,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th class="JustifiedWidth" valign="top">
+							<th valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('UsageCap')" />
@@ -152,7 +152,7 @@
 									</xsl:attribute>
 								</xsl:if>
 								
-								<th class="JustifiedWidth" valign="top">
+								<th valign="top">
 									<xsl:value-of select="./Name" /> :
 								</th>
 								<td>
@@ -180,6 +180,17 @@
 					
 					<div class="Clear"></div>
 				</div>
+				<div class="Clear"></div>
+				<div class="Seperator"></div>
+				
+				<table border="0" cellpadding="5" cellspacing="0">
+					<tr class="Required">
+						<th width="30"></th>
+						<td>
+							<strong>Required Record Types</strong>
+						</td>
+					</tr>
+				</table>
 				
 				<div class="Clear"></div>
 			</div>

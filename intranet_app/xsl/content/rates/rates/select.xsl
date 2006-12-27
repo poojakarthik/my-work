@@ -55,11 +55,11 @@
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'CapCalculationSelection'">
 							You must enter a value for your selected Cap type. Please
-							fill this feel and resubmit your Rate.
+							fill this field and resubmit your Rate.
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'CapLimitingSelection'">
 							You must enter a value for your selected Cap Limits type. Please
-							fill this feel and resubmit your Rate.
+							fill this field and resubmit your Rate.
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'ExcessRateSelection'">
 							You must select and enter a valid Excess Rate. Please correct this
@@ -382,7 +382,7 @@
 							<td></td>
 						</tr>
 						<tr>
-							<td><input type="radio" name="CapCalculation" value="StdCapUnits" /></td>
+							<td><input type="radio" name="CapCalculation" value="CapUnits" /></td>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate')" />
@@ -394,7 +394,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td><input type="radio" name="CapCalculation" value="StdCapCost" /></td>
+							<td><input type="radio" name="CapCalculation" value="CapCost" /></td>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate')" />
