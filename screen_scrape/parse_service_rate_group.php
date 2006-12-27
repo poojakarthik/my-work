@@ -34,7 +34,7 @@
 	
 	// Rates
 	//TODO!!!!
-	$arrRates['x'] = "";
+	$arrRates['x'] = intRateId;
 	$GLOBALS['arrRates'] = $arrRates;
 	
 	
@@ -95,7 +95,7 @@
 		$arrRates = Array();
 		
 		// for each RecordType
-		foreach ($GLOBALS['arrRecordTypes'] AS $strName=>$intRecordType )
+		foreach ($GLOBALS['arrRecordTypes'] AS $strName=>$intServiceType )
 		{
 			// if we have a rate for this RecordType
 			if ($arrScrapeAccount[$strName])
@@ -103,10 +103,12 @@
 				//if we have a conversion name for this rate
 				if ($GLOBALS['arrRates'][$arrScrapeAccount[$strName]])
 				{
-					$arrRates[$intRecordType] = $arrScrapeAccount[$strName];
+					$intRateGroup = $GLOBALS['arrRates'][$arrScrapeAccount[$strName]];
 					
 					// insert record
 					//TODO!!!!
+					// for each service of $intServiceType
+						// insert into ServiceRateGroup
 					
 				}
 				else
