@@ -565,6 +565,10 @@ die();
 		{
 			return $arrService['Id'];
 		}
+		
+		// find Service : InDial100 (ignore achived services)
+		//TODO!!!!
+		
 		// return FALSE if Account not found
 		return FALSE;
 	 }
