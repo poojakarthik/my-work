@@ -7,6 +7,20 @@
 	
 <?php
 	
+// load framework
+$strFrameworkDir = "../framework/";
+require_once($strFrameworkDir."framework.php");
+require_once($strFrameworkDir."functions.php");
+require_once($strFrameworkDir."definitions.php");
+require_once($strFrameworkDir."config.php");
+require_once($strFrameworkDir."database_define.php");
+require_once($strFrameworkDir."db_access.php");
+require_once($strFrameworkDir."report.php");
+require_once($strFrameworkDir."error.php");
+require_once($strFrameworkDir."exception_vixen.php");
+
+	
+	
 	// set up global defs
 	
 	// Record Types
@@ -80,6 +94,7 @@
 		while ($row = mysql_fetch_assoc ($query))
 		{
 			$arrScrapeAccount = unserialize($row['DataSerialized']);
+			$arrScrapeAccount['AccountId'] = (int)$row['CustomerId'];
 			Decode($arrScrapeAccount);
 		}
 	}
@@ -93,6 +108,11 @@
 		}
 		
 		$arrRates = Array();
+				
+		$insServiceRateGroup	= new StatementInsert("ServiceRateGroup");
+		$selServicesByType		= new StatementInsert(	"Service",
+														"Id",
+														"Account = {$arrScrapeAccount['AccountId']} AND ServiceType = <ServiceType>");
 		
 		// for each RecordType
 		foreach ($GLOBALS['arrRecordTypes'] AS $strName=>$intServiceType )
@@ -106,10 +126,20 @@
 					$intRateGroup = $GLOBALS['arrRates'][$arrScrapeAccount[$strName]];
 					
 					// insert record
-					//TODO!!!!
+					$selServicesByType->Execute(Array('ServiceType' => $intServiceType));
+					$arrServices = $selServicesByType->FetchAll();
 					// for each service of $intServiceType
+					foreach($arrServices as $arrService)
+					{
 						// insert into ServiceRateGroup
-					
+						$arrData['Service']			= "";
+						$arrData['RateGroup']		= $intRateGroup;
+						$arrData['CreatedBy']		= 22;	// Rich ;)
+						$arrData['CreatedOn']		= date("Y-m-d");
+						$arrData['StartDatetime']	= "2006-01-01 11:57:40";
+						$arrData['EndDatetime']		= "2030-11-30 11:57:45";
+						$insServiceRateGroup->Execute($arrData);
+					}
 				}
 				else
 				{
