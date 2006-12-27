@@ -242,10 +242,9 @@ abstract class NormalisationModule
 		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
 	
-		//TODO!!!! - will this query even work ????
-		$strTables						= "DestinationCode INNER JOIN DestinationTranslation using (Code, Context)";
-		$strData						= "DestinationCode.Code AS Code, DestinationCode.Description AS Description";
-		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND DestinationCode.Context = <Context>";
+		$strTables						= "DestinationCode";
+		$strData						= "Id, Code, Description";
+		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND Context = <Context>";
 		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
 	
 	}
@@ -308,7 +307,7 @@ abstract class NormalisationModule
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);											// 7
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
 		$arrValid[] = ($this->_arrNormalisedData["Description"] != "");											// 9
-		$arrValid[] = (strlen($this->_arrNormalisedData["DestinationCode"]) <= 3);								// 10
+		$arrValid[] = is_numeric($this->_arrNormalisedData["DestinationCode"]);									// 10
 		
 		$i = 0;
 		foreach ($arrValid as $bolValid)
