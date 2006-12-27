@@ -124,7 +124,8 @@ die();
 															
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
-															"FNN = <FNN> AND Archived = 0");
+															"(FNN = <FNN> AND Archived = 0)" .
+															"OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__')");
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
 		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
@@ -559,15 +560,12 @@ die();
 			return FALSE; 
 		}
 		
-	 	// find Service (ignore achived services)
+	 	// find Service (ignores achived services, accounts for Indial 100s)
 	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN));
 		if ($arrService = $this->_selServiceByFNN->Fetch())
 		{
 			return $arrService['Id'];
 		}
-		
-		// find Service : InDial100 (ignore achived services)
-		//TODO!!!!
 		
 		// return FALSE if Account not found
 		return FALSE;
