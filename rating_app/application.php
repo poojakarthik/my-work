@@ -115,6 +115,17 @@ die();
 		$ServiceTotalsColumns['CappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
 		$this->_ubiServiceTotals	= new StatementUpdateById("Service", NULL, $ServiceTotalsColumns);
 		
+		$this->_selFleetAccount		= new StatementSelect(	"RateGroup JOIN ServiceRateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup" .
+															"Service.Account AS Account",
+															"ServiceRateGroup.Service = <Service>" .
+															"AND RateGroup.RecordType = <RecordType>" .
+															"AND RateGroup.ServiceType = <ServiceType>" .
+															"AND Service.Id = ServiceRateGroup.Service");
+															
+		$this->_selServiceByFNN		= new StatementSelect(	"Service",
+															"Id",
+															"FNN = <FNN> AND Archived = 0");
+		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
 		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
 										"RateGroup JOIN RateGroupRate AS RateGroupRate2 ON RateGroup.Id = RateGroupRate2.RateGroup, " .
@@ -509,22 +520,15 @@ die();
 			return FALSE; 
 		}
 		
-		//TODO!!!! - add 'Fleet' column (tinyint) to RateGroup in the database
-		//add between ServiceType & Archived. Documentation has already been updated
-		
 		// find fleet RateGroup attached to this service for this record type & service type
-		//TODO!!!!
-		// join RateGroup to ServiceRateGroup on ServiceRateGroup.RateGroup = RateGroup.Id
-		// WHERE ServiceRateGroup.Service = $intService AND RateGroup.Fleet = 1
-		// AND = RateGroup.RecordType $this->_arrCurrentCDR['RecordType']
-		// AND = RateGroup.ServiceType $this->_arrCurrentCDR['ServiceType']
-		
-			// get the Account Id for this service
-			//TODO!!!!
-			
-			// return the Account Id
-			//TODO!!!!
-			
+		$arrWhere['Service']		= $intService;
+		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
+		$arrWhere['ServiceType']	= $this->_arrCurrentCDR['ServiceType'];
+		$this->_selFleetAccount->Execute($arrWhere);
+		if($arrAccount = $this->_selFleetAccount->Fetch())
+		{
+			return $arrAccount['Account'];
+		}
 		// return FALSE if fleet rate not found
 		return FALSE;
 			
@@ -538,7 +542,8 @@ die();
 	 *
 	 * Find the Id for a Service (by FNN)
 	 *
-	 * Find the Id for a Service (by FNN)
+	 * Find the Id for a Service (by FNN).  Returns the most recently created service
+	 * with the specified FNN.
 	 *
 	 * @param	str		$strFNN		Service FNN
 	 *	 
@@ -555,11 +560,11 @@ die();
 		}
 		
 	 	// find Service (ignore achived services)
-	 	//TODO!!!!
-		
-			// return Service Id
-			//TODO!!!!
-		
+	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN));
+		if ($arrService = $this->_selServiceByFNN->Fetch())
+		{
+			return $arrService['Id'];
+		}
 		// return FALSE if Account not found
 		return FALSE;
 	 }
@@ -620,7 +625,7 @@ die();
 			$fltCharge = $this->_arrCurrentCDR['Charge'];
 			
 			// add the flagfall
-			$fltCharge += $this->_arrCurrentRate['StdFlagfall']
+			$fltCharge += $this->_arrCurrentRate['StdFlagfall'];
 			
 			// apply minimum charge
 			$fltCharge = Max($fltCharge, $this->_arrCurrentRate['StdMinCharge']);
