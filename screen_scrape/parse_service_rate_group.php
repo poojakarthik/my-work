@@ -250,14 +250,15 @@ $arrRates['mobileinternational']['Mobile Zero Plan'] = intRateId;
 			if ($arrScrapeAccount[$strName])
 			{
 				//if we have a conversion name for this rate
-				if ($GLOBALS['arrRates'][$arrScrapeAccount[$strName]])
+				if ($GLOBALS['arrRates'][$strName][$arrScrapeAccount[$strName]])
 				{
 					// add to rate report
 					$GLOBALS['arrRateReport'][$strName][$arrScrapeAccount[$strName]] = $intRateGroup;
 				
-					$intRateGroup = $GLOBALS['arrRates'][$arrScrapeAccount[$strName]];
+					$intRateGroup = $GLOBALS['arrRates'][$strName][$arrScrapeAccount[$strName]];
 					
 					// insert record
+					/*
 					$selServicesByType->Execute(Array('ServiceType' => $intServiceType));
 					$arrServices = $selServicesByType->FetchAll();
 					// for each service of $intServiceType
@@ -272,6 +273,7 @@ $arrRates['mobileinternational']['Mobile Zero Plan'] = intRateId;
 						$arrData['EndDatetime']		= "2030-11-30 11:57:45";
 						$insServiceRateGroup->Execute($arrData);
 					}
+					*/
 				}
 				else
 				{
