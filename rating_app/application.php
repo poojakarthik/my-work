@@ -208,63 +208,70 @@ die();
 				continue;
 			}
 			
-			// Calculate Charge
-			$fltCharge = $this->_CalculateCharge();
-			if ($fltCharge === FALSE)
+			// Calculate Passthrough
+			if ($this->_arrCurrentRate['PassThrough'])
 			{
-				// Charge calculation failed
-				// THIS SHOULD NEVER HAPPEN
-
-				$arrCDR['Status'] = CDR_UNABLE_TO_RATE;
-				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-				$updSaveCDR->Execute($arrCDR);
-				
-				// add to report
-				$arrAlises['<Reason>'] = "Base charge calculation failed";
-				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
-				
-				$intFailed++;
-				continue;
+				$fltCharge = $this->_CalculatePassThrough();
 			}
-			
-			// Calculate Cap Rate
-			$fltCharge = $this->_CalculateCap();
-			if ($fltCharge === FALSE)
+			else
 			{
-				// Charge calculation failed
-				// THIS SHOULD NEVER HAPPEN
-
-				$arrCDR['Status'] = CDR_UNABLE_TO_CAP;
-				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-				$updSaveCDR->Execute($arrCDR);
-				
-				// add to report
-				$arrAlises['<Reason>'] = "Unable to cap CDR";
-				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
-				
-				$intFailed++;
-				continue;
-			}
+				// Calculate Charge
+				$fltCharge = $this->_CalculateCharge();
+				if ($fltCharge === FALSE)
+				{
+					// Charge calculation failed
+					// THIS SHOULD NEVER HAPPEN
+	
+					$arrCDR['Status'] = CDR_UNABLE_TO_RATE;
+					$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+					$updSaveCDR->Execute($arrCDR);
+					
+					// add to report
+					$arrAlises['<Reason>'] = "Base charge calculation failed";
+					$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+					
+					$intFailed++;
+					continue;
+				}
 			
-			// Calculate Prorate
-			$fltCharge = $this->_CalculateProrate();
-			if ($fltCharge === FALSE)
-			{
-				// Charge calculation failed
-				// THIS SHOULD NEVER HAPPEN
-
-				$arrCDR['Status'] = CDR_UNABLE_TO_PRORATE;
-				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-				$updSaveCDR->Execute($arrCDR);
+				// Calculate Cap Rate
+				$fltCharge = $this->_CalculateCap();
+				if ($fltCharge === FALSE)
+				{
+					// Charge calculation failed
+					// THIS SHOULD NEVER HAPPEN
+	
+					$arrCDR['Status'] = CDR_UNABLE_TO_CAP;
+					$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+					$updSaveCDR->Execute($arrCDR);
+					
+					// add to report
+					$arrAlises['<Reason>'] = "Unable to cap CDR";
+					$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+					
+					$intFailed++;
+					continue;
+				}
 				
-				// add to report
-				$arrAlises['<Reason>'] = "ProRating failed";
-				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
-				
-				$intFailed++;
-				continue;
+				// Calculate Prorate
+				$fltCharge = $this->_CalculateProrate();
+				if ($fltCharge === FALSE)
+				{
+					// Charge calculation failed
+					// THIS SHOULD NEVER HAPPEN
+	
+					$arrCDR['Status'] = CDR_UNABLE_TO_PRORATE;
+					$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
+					$updSaveCDR->Execute($arrCDR);
+					
+					// add to report
+					$arrAlises['<Reason>'] = "ProRating failed";
+					$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+					
+					$intFailed++;
+					continue;
+				}
 			}
-			
 			// Update Service & Account Totals
 			if (!$this->_UpdateTotals($arrCDR['Service']))
 			{
@@ -580,6 +587,44 @@ die();
 		
 		// set the current charge
 		$this->_arrCurrentCDR['Charge'] = $fltCharge;
+		
+		// return the charge amount
+		return $fltCharge;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _CalculatePassThrough
+	//------------------------------------------------------------------------//
+	/**
+	 * _CalculatePassThrough()
+	 *
+	 * Calculate the Pass Through charge for the current CDR Record
+	 *
+	 * Calculate the Pass Through charge for the current CDR Record
+	 *
+	 * @return	mixed	float	charge amount
+	 * 					bool	FALSE if charge could not be calculated
+	 * @method
+	 */
+	 private function _CalculatePassThrough()
+	 {
+	 	// get the current charge
+		$fltCharge		= $this->_arrCurrentCDR['Charge'];
+		
+	 	if ($this->_arrCurrentRate['PassThrough'])
+		{
+			// add the charge
+			$fltCharge = $this->_arrCurrentCDR['Charge'];
+			
+			// add the flagfall
+			$fltCharge += $this->_arrCurrentRate['StdFlagfall']
+			
+			// apply minimum charge
+			$fltCharge = Max($fltCharge, $this->_arrCurrentRate['StdMinCharge']);
+			
+			// set the current charge
+			$this->_arrCurrentCDR['Charge'] = $fltCharge;
+		}
 		
 		// return the charge amount
 		return $fltCharge;
