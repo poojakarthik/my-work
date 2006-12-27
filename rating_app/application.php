@@ -849,7 +849,7 @@ die();
 		$f	= $this->_arrCurrentRate[$strType.'Flagfall'];		// flagfall
 		$p	= $this->_arrCurrentRate[$strType.'Percentage'];	// percentage markup
 		$d	= $this->_arrCurrentRate[$strType.'Markup'];		// dollar markup per unit
-		$u	= $this->_arrCurrentRate[$strType.'Units'];		// units to charge in
+		$u	= $this->_arrCurrentRate[$strType.'Units'];			// units to charge in
 		
 		// ------------------------------------------------ //
 		
