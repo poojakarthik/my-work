@@ -137,7 +137,7 @@ define("INVOICE_SETTLED"			, 103);
 // Charge Status
 define("CHARGE_WAITING"				, 100);
 define("CHARGE_APPROVED"			, 101);
-define("CHARGE_DECLINED"			, 101);
+define("CHARGE_DECLINED"			, 104);
 define("CHARGE_TEMP_INVOICE"		, 102);
 define("CHARGE_INVOICED"			, 103);
 
@@ -629,6 +629,7 @@ define("BILLING_METHOD_EMAIL"		, 2);
 // Billing Methods
 define("BILLING_TYPE_DIRECT_DEBIT"		, 1);
 define("BILLING_TYPE_CREDIT_CARD"		, 2);
+define("BILLING_TYPE_ACCOUNT"			, 3);
 
 // Payment Terms
 define("PAYMENT_TERMS_DEFAULT"			, 30);
@@ -637,6 +638,11 @@ define("PAYMENT_TERMS_DEFAULT"			, 30);
 define("BILLING_FREQ_DAY"				, 1);
 define("BILLING_FREQ_MONTH"				, 2);
 define("BILLING_FREQ_HALF_MONTH"		, 3);
+
+// Set the defaults for Billing (Once every Month on the First)
+define("BILLING_DEFAULT_DATE"			, 1);
+define("BILLING_DEFAULT_FREQ"			, 1);
+define("BILLING_DEFAULT_FREQ_TYPE"		, BILLING_FREQ_MONTH);
 
 // Record Type Display Types
 define("RECORD_DISPLAY_CALL"		, 65535);

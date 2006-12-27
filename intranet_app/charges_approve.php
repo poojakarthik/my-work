@@ -15,7 +15,9 @@
 		header ("Location: login.php"); exit;
 	}
 	
-	// If the Employee is Authenticated, show the Console
-	$Style->Output ("xsl/content/console.xsl");
+	$uchUnapprovedCharges = $Style->attachObject (new Charges_Unapproved ());
+	$uchUnapprovedCharges->Sample ();
+	
+	$Style->Output ('xsl/content/charges/approve.xsl');
 	
 ?>

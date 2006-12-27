@@ -386,20 +386,6 @@
 			// build charge record
 			switch($arrData['DisplayType'])
 			{
-				// Unknown Record Type (should never happen) - just display as a normal Call
-				default:
-				// Type 91
-				case RECORD_DISPLAY_CALL:
-					$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-					$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-					$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['CalledParty'];
-					$intHours		= floor((int)$arrData['Units'] / 3600);
-					$strDuration	= "$intHours:".date("i:s", (int)$arrData['Units']);
-					$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
-					$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrData['Description'];
-					$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrData['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataCall'];
-					break;
 				// Type 92
 				case RECORD_DISPLAY_S_AND_E:
 					$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";
@@ -427,6 +413,20 @@
 					$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrData['Description'];
 					$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrData['Charge'];
 					$arrFileData[] = $arrDefine['ItemisedDataSMS'];
+					break;
+				// Type 91
+				case RECORD_DISPLAY_CALL:
+				// Unknown Record Type (should never happen) - just display as a normal Call
+				default:
+					$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
+					$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
+					$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+					$intHours		= floor((int)$arrData['Units'] / 3600);
+					$strDuration	= "$intHours:".date("i:s", (int)$arrData['Units']);
+					$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
+					$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrData['Description'];
+					$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrData['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataCall'];
 					break;
 			}
 		}

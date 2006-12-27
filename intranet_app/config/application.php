@@ -89,6 +89,7 @@ require ("classes/creditcard/creditcardtypes.php");
 //charges
 require ("classes/charges/charge.php");
 require ("classes/charges/charges.php");
+require ("classes/charges/charges_unapproved.php");
 
 //CDRs
 require ("classes/CDRs/CDR.php");
