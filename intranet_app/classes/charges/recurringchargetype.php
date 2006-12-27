@@ -72,6 +72,8 @@
 			
 			// Construct the object
 			parent::__construct ('RecurringChargeType', $this->Pull ('Id')->getValue ());
+			
+			$this->Push (new BillingFreqTypes ($this->Pull ('RecurringFreqType')->getValue ()));
 		}
 	}
 	

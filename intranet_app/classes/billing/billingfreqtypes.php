@@ -88,9 +88,9 @@
 			// Select the value
 			switch ($intBillingFreqType)
 			{
-				case BILLING_TYPE_DAY:				$this->Select ($this->_DAY);			return true;
-				case BILLING_TYPE_MONTH:			$this->Select ($this->_MONTH);			return true;
-				case BILLING_TYPE_HALF_MONTH:		$this->Select ($this->_HALF_MONTH);		return true;
+				case BILLING_FREQ_DAY:				$this->Select ($this->_DAY);			return true;
+				case BILLING_FREQ_MONTH:			$this->Select ($this->_MONTH);			return true;
+				case BILLING_FREQ_HALF_MONTH:		$this->Select ($this->_HALF_MONTH);		return true;
 				default:							return false;
 			}
 		}

@@ -107,6 +107,9 @@ require ("classes/billing/billingmethods.php");
 require ("classes/billing/billingtype.php");
 require ("classes/billing/billingtypes.php");
 
+require ("classes/billing/billingfreqtype.php");
+require ("classes/billing/billingfreqtypes.php");
+
 //contacts
 require ("classes/contacts/contact.php");
 require ("classes/contacts/contacts.php");

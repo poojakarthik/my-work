@@ -254,20 +254,83 @@
 			}
 			
 			$arrCharge = Array (
-				 "AccountGroup"			=> $this->Pull ('AccountGroup')->getValue (),
-				 "Account"				=> $this->Pull ('Account')->getValue (),
-				 "Service"				=> $this->Pull ('Id')->getValue (),
-				 "CreatedBy"			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				 "CreatedOn"			=> date ('Y-m-d'),
-				 "ChargeType"			=> $chgChargeType->Pull ('ChargeType')->getValue (),
-				 "Description"			=> $chgChargeType->Pull ('Description')->getValue (),
-				 "Nature"				=> $chgChargeType->Pull ('Nature')->getValue (),
-				 "Amount"				=> $fltAmount,
-				 "Status"				=> CHARGE_WAITING
+				"AccountGroup"			=> $this->Pull ('AccountGroup')->getValue (),
+				"Account"				=> $this->Pull ('Account')->getValue (),
+				"Service"				=> $this->Pull ('Id')->getValue (),
+				"CreatedBy"				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				"CreatedOn"				=> date ('Y-m-d'),
+				"ChargeType"			=> $chgChargeType->Pull ('ChargeType')->getValue (),
+				"Description"			=> $chgChargeType->Pull ('Description')->getValue (),
+				"Nature"				=> $chgChargeType->Pull ('Nature')->getValue (),
+				"Amount"				=> $fltAmount,
+				"Status"				=> CHARGE_WAITING
 			);
 			
 			$insCharge = new StatementInsert ('Charge');
 			$insCharge->Execute ($arrCharge);
+		}
+		
+		//------------------------------------------------------------------------//
+		// RecurringChargeAdd
+		//------------------------------------------------------------------------//
+		/**
+		 * RecurringChargeAdd()
+		 *
+		 * Add a RecurringCharge against a Service
+		 *
+		 * Add a RecurringCharge against a Service
+		 *
+		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmploee	The person who is adding this charge to the database
+		 * @param	ChargeType				$chgChargeType				The Type of RecurringCharge to Assign
+		 * @param	String					$strAmount					The amount to charge against. If the charge type is fixed, this value is ignored
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function RecurringChargeAdd (AuthenticatedEmployee $aemAuthenticatedEmployee, RecurringChargeType $rctRecurringChargeType, $strAmount)
+		{
+			$fltAmount = 0;
+			
+			if ($rctRecurringChargeType->Pull ('Fixed')->isTrue ())
+			{
+				$fltAmount = $rctRecurringChargeType->Pull ('RecursionCharge')->getValue ();
+			}
+			else
+			{
+				$fltAmount = $strAmount;
+				$fltAmount = preg_replace ('/\$/', '', $fltAmount);
+				$fltAmount = preg_replace ('/\s/', '', $fltAmount);
+				$fltAmount = preg_replace ('/\,/', '', $fltAmount);
+				
+				if (!preg_match ('/^([\d]*)(\.[\d]+){0,1}$/', $fltAmount))
+				{
+					throw new Exception ('Invalid Amount');
+				}
+			}
+			
+			$arrRecurringCharge = Array (
+				"AccountGroup"			=> $this->Pull ('AccountGroup')->getValue (),
+				"Account"				=> $this->Pull ('Account')->getValue (),
+				"Service"				=> $this->Pull ('Id')->getValue (),
+				"CreatedBy"				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				"CreatedOn"				=> date ('Y-m-d'),
+				"ChargeType"			=> $rctRecurringChargeType->Pull ('ChargeType')->getValue (),
+				"Description"			=> $rctRecurringChargeType->Pull ('Description')->getValue (),
+				"Nature"				=> $rctRecurringChargeType->Pull ('Nature')->getValue (),
+				"RecurringFreqType"		=> $rctRecurringChargeType->Pull ('RecurringFreqType')->getValue (),
+				"RecurringDate"			=> $rctRecurringChargeType->Pull ('RecurringDate')->getValue (),
+				"MinCharge"				=> $rctRecurringChargeType->Pull ('MinCharge')->getValue (),
+				"RecursionCharge"		=> $fltAmount,
+				"CancellationFee"		=> $rctRecurringChargeType->Pull ('CancellationFee')->getValue (),
+				"Continuable"			=> $rctRecurringChargeType->Pull ('Continuable')->getValue (),
+				"TotalPaid"				=> 0,
+				"TotalRecursions"		=> 0,
+				"Status"				=> CHARGE_WAITING
+			);
+			
+			$insRecurringCharge = new StatementInsert ('RecurringCharge');
+			$insRecurringCharge->Execute ($arrRecurringCharge);
 		}
 	}
 	
