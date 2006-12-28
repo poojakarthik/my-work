@@ -289,7 +289,7 @@ $GLOBALS['arrRates'] = $arrRates;
 		$arrRates = Array();
 				
 		$insServiceRateGroup	= new StatementInsert("ServiceRateGroup");
-		$selServicesByType		= new StatementInsert(	"Service",
+		$selServicesByType		= new StatementSelect(	"Service",
 														"Id",
 														"Account = {$arrScrapeAccount['AccountId']} AND ServiceType = <ServiceType>");
 		
@@ -317,14 +317,14 @@ $GLOBALS['arrRates'] = $arrRates;
 					foreach($arrRateGroup as $intRateGroup)
 					{
 						// insert record
-						/*
+						
 						$selServicesByType->Execute(Array('ServiceType' => $intServiceType));
 						$arrServices = $selServicesByType->FetchAll();
 						// for each service of $intServiceType
 						foreach($arrServices as $arrService)
 						{
 							// insert into ServiceRateGroup
-							$arrData['Service']			= "";
+							$arrData['Service']			= $arrService['Id'];
 							$arrData['RateGroup']		= $intRateGroup;
 							$arrData['CreatedBy']		= 22;	// Rich ;)
 							$arrData['CreatedOn']		= date("Y-m-d");
@@ -332,7 +332,7 @@ $GLOBALS['arrRates'] = $arrRates;
 							$arrData['EndDatetime']		= "2030-11-30 11:57:45";
 							$insServiceRateGroup->Execute($arrData);
 						}
-						*/
+						
 					}
 				}
 				else
