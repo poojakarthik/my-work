@@ -57,6 +57,90 @@
 		{
 			parent::__construct ('ChargeTypes', 'ChargeType', 'ChargeType');
 		}
+		
+		//------------------------------------------------------------------------//
+		// UnarchivedChargeType
+		//------------------------------------------------------------------------//
+		/**
+		 * UnarchivedChargeType()
+		 *
+		 * Attempts to pull an Unarchived Charge Type
+		 *
+		 * Attempts to pull an Unarchived Charge Type
+		 *
+		 * @param	String		$strChargeType			The value of the Charge Type Name
+		 * @return	Integer
+		 *
+		 * @method
+		 */
+		
+		public function UnarchivedChargeType ($strChargeType)
+		{
+			$selChargeType = new StatementSelect ('ChargeType', 'Id', 'Archived = 0 AND ChargeType = <ChargeType>');
+			$selChargeType->Execute (Array ('ChargeType' => $strChargeType));
+			
+			if ($selChargeType->Count () == 0)
+			{
+				return false;
+			}
+			
+			$arrChargeId = $selChargeType->Fetch ();
+			
+			return $arrChargeId ['Id'];
+		}
+		
+		//------------------------------------------------------------------------//
+		// Add
+		//------------------------------------------------------------------------//
+		/**
+		 * Add()
+		 *
+		 * Create a new ChargeType
+		 *
+		 * Create a new ChargeType
+		 *
+		 * @param	Array		$arrDetails			Associative Array of ChargeType Information
+		 * @return	Integer
+		 *
+		 * @method
+		 */
+		
+		public function Add ($arrDetails)
+		{
+			if (!$arrDetails ['ChargeType'])
+			{
+				return false;
+			}
+			
+			if (!$arrDetails ['Description'])
+			{
+				return false;
+			}
+			
+			$fltAmount = $arrDetails ['Amount'];
+			$fltAmount = preg_replace ('/\$/', '', $fltAmount);
+			$fltAmount = preg_replace ('/\s/', '', $fltAmount);
+			$fltAmount = preg_replace ('/\,/', '', $fltAmount);
+			
+			if (!preg_match ('/^([\d]+)(\.[\d]+){0,1}$/', $fltAmount))
+			{
+				throw new Exception ('Amount Invalid');
+			}
+			
+			$arrData = Array (
+				"ChargeType"			=> $arrDetails ['ChargeType'],
+				"Description"			=> $arrDetails ['Description'],
+				"Amount"				=> $fltAmount,
+				"Nature"				=> $arrDetails ['Nature'],
+				"Fixed"					=> $arrDetails ['Fixed'],
+				"Archived"				=> 0
+			);
+			
+			$insChargeType = new StatementInsert ('ChargeType');
+			$intChargeType = $insChargeType->Execute ($arrData);
+			
+			return $intChargeType;
+		}
 	}
 	
 ?>

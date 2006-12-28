@@ -4,7 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Recurring Charge Types</h1>
+		<h1>Charge Types</h1>
 		<div class="Seperator"></div>
 		
 		<div class="sectionContainer">
@@ -15,10 +15,10 @@
 						<th>Code</th>
 						<th>Description</th>
 						<th>Amount</th>
-						<th>Recursion</th>
 						<th>Options</th>
 					</tr>
-					<xsl:for-each select="/Response/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
+					
+					<xsl:for-each select="/Response/ChargeTypes/Results/rangeSample/ChargeType">
 						<tr>
 							<xsl:attribute name="class">
 								<xsl:choose>
@@ -35,15 +35,9 @@
 							<td><xsl:value-of select="./ChargeType" /></td>
 							<td><xsl:value-of select="./Description" /></td>
 							<td>
-								<xsl:value-of select="./RecursionCharge" />
+								<xsl:value-of select="./Amount" />
 								<xsl:text> </xsl:text>
 								<xsl:value-of select="./Nature" />
-							</td>
-							<td>
-								<xsl:text>Every </xsl:text>
-								<xsl:value-of select="./RecurringDate" />
-								<xsl:text> </xsl:text>
-								<xsl:value-of select="./BillingFreqTypes/BillingFreqType[@selected='selected']/Name" />
 							</td>
 							<td>
 								<a>
@@ -52,7 +46,7 @@
 									</xsl:attribute>
 									<xsl:attribute name="onclick">
 										<xsl:text>return openPopup(</xsl:text>
-											<xsl:text>'charges_recurringcharge_view.php?Id=</xsl:text>
+											<xsl:text>'charges_charge_view.php?Id=</xsl:text>
 											<xsl:value-of select="./Id" />
 											<xsl:text>'</xsl:text>
 										<xsl:text>)</xsl:text>
@@ -65,20 +59,20 @@
 				</table>
 				
 				<xsl:choose>
-					<xsl:when test="/Response/RecurringChargeTypes/Results/collationLength = 0">
+					<xsl:when test="/Response/ChargeTypes/Results/collationLength = 0">
 						<div class="MsgError">
-							No Recurring Charge Types were found with the criteria you searched for.
+							No Charge Types were found with the criteria you searched for.
 						</div>
 					</xsl:when>
-					<xsl:when test="count(/Response/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
+					<xsl:when test="count(/Response/ChargeTypes/Results/rangeSample/ChargeType) = 0">
 						<div class="MsgNotice">
-							There are no Recurring Charge Types in the Range that you wish to display.
+							There are no Charge Types in the Range that you wish to display.
 						</div>
 					</xsl:when>
 				</xsl:choose>
 				
 				<p>
-					<a href="charges_recurringcharge_add.php">Add a New Recurring Charge</a>
+					<a href="charges_charge_add.php">Add a New Charge Type</a>
 				</p>
 			</div>
 		</div>

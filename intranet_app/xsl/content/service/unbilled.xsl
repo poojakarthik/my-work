@@ -56,6 +56,12 @@
 					<td class="Currency">
 						<a>
 							<xsl:attribute name="href">
+								<xsl:text>javascript:nohref()</xsl:text>
+							</xsl:attribute>
+							<xsl:attribute name="onclick">
+								<xsl:text>return openPopup(</xsl:text>
+									<xsl:text>'cdr_view.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>'</xsl:text>
+								<xsl:text>)</xsl:text>
 							</xsl:attribute>
 							View CDR Record
 						</a>

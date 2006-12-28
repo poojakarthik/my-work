@@ -16,11 +16,14 @@
 	}
 	
 	
-	// Start a new Account Search
-	$rclRecurringChargeTypes = $Style->attachObject (new RecurringChargeTypes ());
-	$rclRecurringChargeTypes->Order ('ChargeType', TRUE);
-	$rclRecurringChargeTypes->Sample ();
+	// Explain the Fundamentals
+	$docDocumentation->Explain ('Charge Type');
 	
-	$Style->Output ('xsl/content/charges/recurringcharges/list.xsl');
+	// Start a new Account Search
+	$rclChargeTypes = $Style->attachObject (new ChargeTypes ());
+	$rclChargeTypes->Order ('ChargeType', TRUE);
+	$rclChargeTypes->Sample ();
+	
+	$Style->Output ('xsl/content/charges/charges/list.xsl');
 	
 ?>

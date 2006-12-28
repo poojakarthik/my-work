@@ -15,12 +15,16 @@
 		header ('Location: login.php'); exit;
 	}
 	
+	// Pull documentation information
+	$docDocumentation->Explain ('CDR');
+	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Service');
+	$docDocumentation->Explain ('Carrier');
 	
-	
-	// Get the RecurringCharge
+	// Get the CDR
 	try
 	{
-		$rctRecurringChargeType		= $Style->attachObject (new RecurringChargeType ($_GET ['Id']));
+		$cdrCDR = $Style->attachObject (new CDR ($_GET ['Id']));
 	}
 	catch (Exception $e)
 	{
@@ -28,7 +32,9 @@
 		exit;
 	}
 	
+	$Style->attachObject (new Carriers);
+	
 	// Output the Account View
-	$Style->Output ('xsl/content/charges/recurringcharges/view.xsl');
+	$Style->Output ('xsl/content/CDR/view.xsl');
 	
 ?>

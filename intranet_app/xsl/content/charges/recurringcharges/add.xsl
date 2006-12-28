@@ -4,7 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Add New Recurring Charge</h1>
+		<h1>Add New Recurring Charge Type</h1>
 		
 		<form method="POST" action="charges_recurringcharge_add.php">
 			<xsl:if test="/Response/Error != ''">

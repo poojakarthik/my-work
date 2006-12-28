@@ -15,6 +15,6 @@
 		header ("Location: login.php"); exit;
 	}
 	
-	$Style->Output ("xsl/content/charges/recurringcharges/confirm.xsl");
+	$Style->Output ("xsl/content/charges/charges/confirm.xsl");
 	
 ?>
