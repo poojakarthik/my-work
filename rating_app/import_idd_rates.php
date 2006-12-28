@@ -52,7 +52,7 @@ foreach($arrRates as $arrRate)
 {
 	// Generate RateGroup name
 	$arrName = explode(" : ", $arrRate['Name']);
-	$strRateGroupName = "IDD : " . $arrName[0] . " : " . $arrName[1];
+	$strRateGroupName = "IDD : " . $arrName[0];
 	
 	// Add to RateGroup array
 	$arrRateGroups[$strRateGroupName][] = $arrRate;
@@ -63,8 +63,6 @@ foreach($arrRates as $arrRate)
 
 foreach($arrRateGroups as $strName=>$arrRate)
 {	
-	echo $strName." = ".$arrOutput[$strName]."\n";
-	continue;
 	
 	$arrName = explode(" : ", $strName);
 
