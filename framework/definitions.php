@@ -46,11 +46,14 @@ define("ERROR_MESSAGE"				, "an error occured... sucks to be you");
 
 // CDR TYPES
 define("CDR_UNKNOWN"				, 0);
-define("CDR_UNTIEL_RSLCOM"			, 1);
-define("CDR_UNTIEL_COMMANDER"		, 2);
+define("CDR_UNITEL_RSLCOM"			, 1);
+define("CDR_UNITEL_COMMANDER"		, 2);
 define("CDR_OPTUS_STANDARD"			, 3);
 define("CDR_AAPT_STANDARD"			, 4);
 define("CDR_ISEEK_STANDARD"			, 5);
+define("CDR_UNITEL_SE"				, 6);
+define("CDR_UNTIEL_RSLCOM"			, CDR_UNITEL_RSLCOM);		// Backwards Compatability
+define("CDR_UNTIEL_COMMANDER"		, CDR_UNITEL_COMMANDER);	// Backwards Compatability
 
 // Provisioning Types
 define("PRV_UNITEL_DAILY_ORDER_RPT"		, 100);

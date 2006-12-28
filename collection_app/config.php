@@ -43,7 +43,7 @@
 		$arrConfig['Define']["Skeleton"]	["FileType"][REGEX_SKELETON]	= CDR_SKELETON;
 		$arrConfig['Define']["Skeleton"]	["FileType"]['/test.txt/']		= CDR_SKELETON;
 		*/
-		
+		/* TODO: UNCOMMENT THIS WHEN WE GO LIVE
 		// Unitel Definition
 		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel";
 		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
@@ -56,8 +56,8 @@
  		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "cdrbatchesoffnet/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "mobilecdrbatches/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNTIEL_RSLCOM;
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNTIEL_COMMANDER;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
@@ -88,6 +88,8 @@
 		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
 		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
+		*/
+		
 		/*
 		// iSeek Definition
 		$arrConfig['Define']["iSeek"]	["Name"]						= "iSeek";
@@ -100,4 +102,62 @@
  		$arrConfig['Define']["iSeek"]	["FinalDir"]					= DESTINATION_ROOT.'iseek/';
 		$arrConfig['Define']["iSeek"]	["FileType"][REGEX_ISEEK]		= CDR_ISEEK_STANDARD;
 		*/
+		
+		
+		
+		
+		
+		// TESTING DEFINITIONS
+		$strTestUsername	= "download";
+		$strTestPassword	= "password";
+		$strTestDir			= "/home/CDR/";
+		$strTestServer		= "10.11.12.13";
+		
+		// Unitel Definition
+		$strUnitelTestDir = "2006/dec/";
+		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel";
+		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
+ 		$arrConfig['Define']["Unitel"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["Unitel"]	["Server"]							= $strTestServer;
+ 		$arrConfig['Define']["Unitel"]	["Username"]						= $strTestUsername;
+ 		$arrConfig['Define']["Unitel"]	["PWord"]							= $strTestPassword;
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= $strTestDir."unitel/cdrbatches/".$strUnitelTestDir;
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= $strTestDir."unitel/cdrbatchesoffnet/".$strUnitelTestDir;
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= $strTestDir."unitel/mobilecdrbatches/".$strUnitelTestDir;
+ 		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_SE;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
+		
+		// Optus Definition
+		$strOptusTestDir = "Dec 06";
+		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
+		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
+ 		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["Optus"]	["Server"]						= $strTestServer;
+ 		$arrConfig['Define']["Optus"]	["Username"]					= $strTestUsername;
+ 		$arrConfig['Define']["Optus"]	["PWord"]						= $strTestPassword;
+ 		$arrConfig['Define']["Optus"]	["Dir"][]						= $strTestDir."optus/";
+ 		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/".$strOptusTestDir;
+		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
+		
+		// AAPT Definition
+		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
+		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;
+ 		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["AAPT"]	["Server"]						= $strTestServer;
+ 		$arrConfig['Define']["AAPT"]	["Username"]					= $strTestUsername;
+ 		$arrConfig['Define']["AAPT"]	["PWord"]						= $strTestPassword;
+ 		$arrConfig['Define']["AAPT"]	["Dir"][]						= $strTestDir."aapt/";
+ 		$arrConfig['Define']["AAPT"]	["FinalDir"]					= DESTINATION_ROOT."aapt/".$strOptusTestDir;
+		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT]		= CDR_AAPT_STANDARD;
+		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
+		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
+		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
+		
+		
 ?>
