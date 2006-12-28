@@ -217,9 +217,14 @@ require_once($strFrameworkDir."exception_vixen.php");
 	
 	$arrRates['mobileinternational']	['Mobile Zero Plan']				= intRateId;
 
-// set global rate array
-$GLOBALS['arrRates'] = $arrRates;
+	// set global rate array
+	$GLOBALS['arrRates'] = $arrRates;
 	
+	// database things
+	$GLOBALS['insServiceRateGroup']	= new StatementInsert("ServiceRateGroup");
+	$GLOBALS['selServicesByType']		= new StatementSelect(	"Service",
+														"Id",
+														"Account = <Account> AND ServiceType = <ServiceType>");
 	
 	set_time_limit (0);
 	
@@ -288,10 +293,8 @@ $GLOBALS['arrRates'] = $arrRates;
 		
 		$arrRates = Array();
 				
-		$insServiceRateGroup	= new StatementInsert("ServiceRateGroup");
-		$selServicesByType		= new StatementSelect(	"Service",
-														"Id",
-														"Account = {$arrScrapeAccount['AccountId']} AND ServiceType = <ServiceType>");
+		$insServiceRateGroup	= $GLOBALS['insServiceRateGroup'];
+		$selServicesByType		= $GLOBALS['selServicesByType'];
 		
 		// for each RecordType
 		foreach ($GLOBALS['arrRecordTypes'] AS $strName=>$intServiceType )
@@ -316,9 +319,10 @@ $GLOBALS['arrRates'] = $arrRates;
 					
 					foreach($arrRateGroup as $intRateGroup)
 					{
+						//echo $intRateGroup."\n";
 						// insert record
 						
-						$selServicesByType->Execute(Array('ServiceType' => $intServiceType));
+						$selServicesByType->Execute(Array('ServiceType' => $intServiceType, 'Account' => $arrScrapeAccount['AccountId']));
 						$arrServices = $selServicesByType->FetchAll();
 						// for each service of $intServiceType
 						foreach($arrServices as $arrService)
@@ -330,9 +334,11 @@ $GLOBALS['arrRates'] = $arrRates;
 							$arrData['CreatedOn']		= date("Y-m-d");
 							$arrData['StartDatetime']	= "2006-01-01 11:57:40";
 							$arrData['EndDatetime']		= "2030-11-30 11:57:45";
-							$insServiceRateGroup->Execute($arrData);
+							//$insServiceRateGroup->Execute($arrData);
+							echo $arrService['Id']."\n";
 						}
-						
+						echo $arrScrapeAccount['AccountId']."\n";
+						Die();
 					}
 				}
 				else
