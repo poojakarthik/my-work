@@ -75,6 +75,58 @@
 			
 			$this->Push (new Service ($this->Pop ('Service')->getValue ()));
 		}
+		
+		//------------------------------------------------------------------------//
+		// Approve
+		//------------------------------------------------------------------------//
+		/**
+		 * Approve()
+		 *
+		 * Changes the Status to Approved
+		 *
+		 * Changes the Status to Approved, only if it is currently in a "Waiting" status
+		 *
+		 * @param		AuthenticatedEmployee		$aemAuthenticatedEmployee		The employee logged into the system
+		 *
+		 * @method
+		 */
+		
+		public function Approve ($aemAuthenticatedEmployee)
+		{
+			$arrApproval = Array (
+				'ApprovedBy'	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'Status'		=> CHARGE_APPROVED
+			);
+			
+			$updApproval = new StatementUpdate ('Charge', 'Id = <Id> AND Status = ' . CHARGE_WAITING, $arrApproval);
+			$updApproval->Execute ($arrApproval, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
+		
+		//------------------------------------------------------------------------//
+		// Decline
+		//------------------------------------------------------------------------//
+		/**
+		 * Decline()
+		 *
+		 * Changes the Status to Decline
+		 *
+		 * Changes the Status to Decline, only if it is currently in a "Waiting" status
+		 *
+		 * @param		AuthenticatedEmployee		$aemAuthenticatedEmployee		The employee logged into the system
+		 *
+		 * @method
+		 */
+		
+		public function Decline ($aemAuthenticatedEmployee)
+		{
+			$arrApproval = Array (
+				'ApprovedBy'	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'Status'		=> CHARGE_DECLINED
+			);
+			
+			$updApproval = new StatementUpdate ('Charge', 'Id = <Id> AND Status = ' . CHARGE_WAITING, $arrApproval);
+			$updApproval->Execute ($arrApproval, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
 	}
 	
 ?>

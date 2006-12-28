@@ -10,45 +10,59 @@
 		<h1>Approve Charges</h1>
 		<div class="Seperator"></div>
 		
-		<h2>Unapporived Charges</h2>
-		<div class="Seperator"></div>
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
-			<tr class="First">
-				<th width="30">#</th>
-				<th>Description</th>
-				<th>Amount</th>
-				<th>Entered By</th>
-				<th>Entered On</th>
-				<th>Options</th>
-			</tr>
-			<xsl:for-each select="/Response/Charges-Unapproved/Results/rangeSample/Charge">
-				<tr>
-					<td><xsl:value-of select="position()" /></td>
-					<td><xsl:value-of select="./Description" /></td>
-					<td><xsl:value-of select="./Amount" /></td>
-					<td><xsl:value-of select="./CreatedBy" /></td>
-					<td>
-						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"	select="./CreatedOn/year" />
-							<xsl:with-param name="month"	select="./CreatedOn/month" />
-							<xsl:with-param name="day"		select="./CreatedOn/day" />
-							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-						</xsl:call-template>
-					</td>
-					<td>
-						<select>
-							<xsl:attribute name="name">
-								<xsl:text>charge[</xsl:text>
-								<xsl:value-of select="./Id" />
-								<xsl:text>]</xsl:text>
-							</xsl:attribute>
-							<option selected="selected" value="-1">No Changes</option>
-							<option value="0">Decline Request</option>
-							<option value="1">Approve Request</option>
-						</select>
-					</td>
+		<form method="post" action="charges_approve.php">
+			<h2>Unapproved Charges</h2>
+			<div class="Seperator"></div>
+			<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+				<tr class="First">
+					<th width="30">#</th>
+					<th>Description</th>
+					<th>Amount</th>
+					<th>Entered By</th>
+					<th>Entered On</th>
+					<th>Options</th>
 				</tr>
-			</xsl:for-each>
-		</table>
+				<xsl:for-each select="/Response/Charges-Unapproved/Results/rangeSample/Charge">
+					<tr>
+						<td><xsl:value-of select="position()" />.</td>
+						<td><xsl:value-of select="./Description" /></td>
+						<td><xsl:value-of select="./Amount" /></td>
+						<td><xsl:value-of select="./CreatedBy" /></td>
+						<td>
+							<xsl:call-template name="dt:format-date-time">
+								<xsl:with-param name="year"	select="./CreatedOn/year" />
+								<xsl:with-param name="month"	select="./CreatedOn/month" />
+								<xsl:with-param name="day"		select="./CreatedOn/day" />
+								<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+							</xsl:call-template>
+						</td>
+						<td>
+							<select>
+								<xsl:attribute name="name">
+									<xsl:text>charge[</xsl:text>
+									<xsl:value-of select="./Id" />
+									<xsl:text>]</xsl:text>
+								</xsl:attribute>
+								<option value="-1" style="background-color:#FFCC00;font-weight: bold;" selected="selected">No Changes</option>
+								<option value="0" style="background-color:#CC0000; color:#FFFFFF;">Decline Request</option>
+								<option value="1" style="background-color:#008000; color:#FFFFFF;">Approve Request</option>
+							</select>
+						</td>
+					</tr>
+				</xsl:for-each>
+			</table>
+			
+			<xsl:choose>
+				<xsl:when test="/Response/Charges-Unapproved/Results/collationLength = 0">
+					<div class="MsgNotice">
+						There are currently no requests for Debits or Credits to be processed.
+					</div>
+				</xsl:when>
+			</xsl:choose>
+			
+			<div class="Seperator"></div>
+			
+			<input type="submit" value="Delegate Approvals &#0187;" class="input-submit" />
+		</form>
 	</xsl:template>
 </xsl:stylesheet>

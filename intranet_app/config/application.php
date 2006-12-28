@@ -111,6 +111,9 @@ require ("classes/billing/billingtypes.php");
 require ("classes/billing/billingfreqtype.php");
 require ("classes/billing/billingfreqtypes.php");
 
+require ("classes/charges/nature.php");
+require ("classes/charges/natures.php");
+
 //contacts
 require ("classes/contacts/contact.php");
 require ("classes/contacts/contacts.php");

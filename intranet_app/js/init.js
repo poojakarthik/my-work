@@ -28,3 +28,31 @@
 		true
 	);
 	
+	function openPopup (address, width, height)
+	{
+		if (width == undefined)
+		{
+			width = 800;
+		}
+		
+		if (height == undefined)
+		{
+			height = 400;
+		}
+		
+		window.open (
+			address,
+			"",
+			"width=" + width + ", " +
+			"height=" + height + ", " +
+			"scrollbars=yes, " +
+			"resize=yes, " +
+			"channelmode=no, " +
+			"directories=no, " +
+			"location=no, " +
+			"menubar=no, " +
+			"titlebar=no "
+		);
+		
+		return false;
+	}

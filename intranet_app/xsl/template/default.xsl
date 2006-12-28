@@ -19,7 +19,7 @@
 						</div>
 						
 						<div class="Right">
-							Version 6.11
+							Version 7.01
 							
 							<xsl:if test="/Response/SystemDebug">
 								<script language="javascript" src="js/dimmingdiv.js"></script>
@@ -101,6 +101,15 @@
 												<li><a href="rates_group_add.php">Create Rate Group</a></li>
 												<li><a href="rates_rate_list.php">List Rates</a></li>
 												<li><a href="rates_rate_add.php">Create Rate</a></li>
+											</ul>
+										</li>
+										<li>
+											Charges
+											<ul>
+												<li><a href="charges_recurringcharge_add.php">Add Recurring Charge Type</a></li>
+												<li><a href="charges_recurringcharge_list.php">List Recurring Charge Types</a></li>
+												<li><a href="charges_charge_add.php">Add Single Charge Type</a></li>
+												<li><a href="charges_charge_add.php">List Single Charge Types</a></li>
 											</ul>
 										</li>
 										<li>

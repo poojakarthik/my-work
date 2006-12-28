@@ -303,7 +303,7 @@ define("POSTAL_ADDR_TYPE_POST_OFFICE"				, "PO");
 define("POSTAL_ADDR_TYPE_PRIVATE_BAG"				, "BAG");
 define("POSTAL_ADDR_TYPE_COMMUNITY_MAIL_AGENT"		, "CMA");
 define("POSTAL_ADDR_TYPE_COMMUNITY_MAIL_BAG"		, "CMB");
-define("POSTAL_ADDR_TYPE_PRIVATE_BAG"				, "PB");
+define("POSTAL_ADDR_TYPE_PRIVATE_BAG_2"				, "PB");
 define("POSTAL_ADDR_TYPE_GPO_BOX"					, "GPO");
 define("POSTAL_ADDR_TYPE_MAIL_SERVICE"				, "MS");
 define("POSTAL_ADDR_TYPE_RURAL_MAIL_DELIVERY"		, "RMD");
@@ -649,5 +649,9 @@ define("RECORD_DISPLAY_CALL"		, 65535);
 define("RECORD_DISPLAY_S_AND_E"		, 65536);
 define("RECORD_DISPLAY_DATA"		, 65537);
 define("RECORD_DISPLAY_SMS"			, 65538);
+
+// Debit and Credit
+define("NATURE_CR"					, 'CR');
+define("NATURE_DR"					, 'DR');
 
 ?>

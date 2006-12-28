@@ -1515,7 +1515,7 @@ class MySQLFunction
 	 function Execute($arrWhere = Array())
 	 {
 	 	// Trace
-		$this->Trace("Execute($strQuery)");
+//		$this->Trace("Execute($strQuery)");
 	 	
 	 	$strType = "";
 	 	
@@ -2168,7 +2168,7 @@ class MySQLFunction
 	 function Execute($arrData, $arrWhere)
 	 {
 		// Trace
-		$this->Trace("Execute($arData. $arrWhere)");
+		$this->Trace("Execute($arrData. $arrWhere)");
 	 	
 	 	$arrBoundVariables = Array();
 	 	$strType = "";

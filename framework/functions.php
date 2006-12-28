@@ -229,6 +229,16 @@ function SystemDebug()
  */
 function Trace($strString, $strLogname = 'Debug')
 {
+	if (!$GLOBALS['TraceLog'])
+	{
+		$GLOBALS['TraceLog'] = Array ();
+	}
+	
+	if (!$GLOBALS['TraceLog'][$strLogname])
+	{
+		$GLOBALS['TraceLog'][$strLogname] = "";
+	}
+	
 	$GLOBALS['TraceLog'][$strLogname] .= $strString."\n";
 	return TRUE;
 }
