@@ -332,6 +332,96 @@
 			$insRecurringCharge = new StatementInsert ('RecurringCharge');
 			$insRecurringCharge->Execute ($arrRecurringCharge);
 		}
+		
+		//------------------------------------------------------------------------//
+		// Plan
+		//------------------------------------------------------------------------//
+		/**
+		 * Plan()
+		 *
+		 * Determine the current Plan
+		 *
+		 * Determine the current Plan
+		 *
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function Plan ()
+		{
+			$selCurrentPlan = new StatementSelect ('ServiceRatePlan', 'RatePlan', 'Now() BETWEEN StartDatetime AND EndDatetime', 'CreatedOn DESC', 1);
+			$selCurrentPlan->Execute (Array ());
+			
+			if ($selCurrentPlan->Count () == 1)
+			{
+				$arrPlan = $selCurrentPlan->Fetch ();
+				
+				$this->Push (new RatePlan ($arrPlan ['RatePlan']));
+			}
+		}
+		
+		//------------------------------------------------------------------------//
+		// PlanSelect
+		//------------------------------------------------------------------------//
+		/**
+		 * PlanSelect()
+		 *
+		 * Change the Plan
+		 *
+		 * Change the Plan for the Service
+		 * TODO: In the future, add implementation for time constraints
+		 *
+		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmployee		The person making the Change
+		 * @param	RatePlan				$rplRatePlan					The new [unarchived] Rate Plan to attach to
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function PlanSelect (AuthenticatedEmployee $aemAuthenticatedEmployee, RatePlan $rplRatePlan)
+		{
+			// Prepare each Rate Group
+			$insServiceRateGroup = new StatementInsert ('ServiceRateGroup');
+			
+			// Start the Skeleton
+			$arrServiceRateGroup = Array (
+				'Service'			=> $this->Pull ('Id')->getValue (),
+				'RateGroup'			=> '',
+				'CreatedBy'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'CreatedOn'			=> date ('Y-m-d H:i:s'),
+				'StartDatetime'	=> date ('Y-m-d H:i:s'),
+				'EndDatetime'		=> '9999-12-31 23:59:59'
+			);
+			
+			// Loop through each of the Rate Groups and add them against the Service
+			foreach ($rplRatePlan->RateGroups () as $rgrRateGroup)
+			{
+				// Assign the appropriate Rate Group
+				$arrServiceRateGroup ['RateGroup'] = $rgrRateGroup->Pull ('Id')->getValue ();
+				
+				// Insert the Rate Group
+				$insServiceRateGroup->Execute ($arrServiceRateGroup);
+			}
+			
+			
+			
+			
+			
+			// Start the Rate Plan Skeleton
+			$arrServiceRatePlan = Array (
+				'Service'			=> $this->Pull ('Id')->getValue (),
+				'RatePlan'			=> $rplRatePlan->Pull ('Id')->getValue (),
+				'CreatedBy'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'CreatedOn'			=> date ('Y-m-d H:i:s'),
+				'StartDatetime'	=> date ('Y-m-d H:i:s'),
+				'EndDatetime'		=> '9999-12-31 23:59:59'
+			);
+			
+			// Insert the Rate Plan against the Service
+			$insServiceRatePlan = new StatementInsert ('ServiceRatePlan');
+			$insServiceRatePlan->Execute ($arrServiceRatePlan);
+		}
 	}
 	
 ?>

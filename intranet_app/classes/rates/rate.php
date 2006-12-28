@@ -60,9 +60,15 @@
 		{
 			parent::__construct ('Rate', $intId);
 			
-			$selRate = new StatementSelect ('Rate', '*', 'Id = <Id>');
+			$selRate = new StatementSelect ('Rate', '*', 'Id = <Id>', null, 1);
 			$selRate->useObLib (TRUE);
 			$selRate->Execute (Array ('Id' => $intId));
+			
+			if ($selRate->Count () <> 1)
+			{
+				throw new Exception ('Rate Not Found: ' . $intId);
+			}
+			
 			$selRate->Fetch ($this);
 			
 			// Get Named ServiceType information
@@ -89,6 +95,36 @@
 			
 			// (2) Number of Quarters
 			$this->Push (new dataInteger ('quarter-length', ($intEndTime - $intStartTime) / 15));
+		}
+		
+		//------------------------------------------------------------------------//
+		// RateGroups
+		//------------------------------------------------------------------------//
+		/**
+		 * RateGroups()
+		 *
+		 * Pulls a list of Rate Groups which use this Rate
+		 *
+		 * Pulls a list of Rate Groups which use this Rate
+		 *
+		 * @return 		dataArray [RateGroup]
+		 *
+		 * @method
+		 */
+		
+		public function RateGroups ()
+		{
+			$oblarrGroups	= new dataArray ('RateGroups', 'RateGroup');
+			
+			$selRateGroups	= new StatementSelect ('RateGroupRate', 'RateGroup', 'Rate = <Rate>');
+			$selRateGroups->Execute (Array ('Rate' => $this->Pull ('Id')->getValue ()));
+			
+			foreach ($selRateGroups->FetchAll () as $arrRate)
+			{
+				$oblarrGroups->Push (new RateGroup ($arrRate ['RateGroup']));
+			}
+			
+			return $oblarrGroups;
 		}
 	}
 	

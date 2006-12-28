@@ -60,20 +60,81 @@
 		{
 			parent::__construct ('RateGroup', $intId);
 			
-			$selRateGroup = new StatementSelect ('RateGroup', '*', 'Id = <Id>');
+			$selRateGroup = new StatementSelect ('RateGroup', '*', 'Id = <Id>', null, 1);
 			$selRateGroup->useObLib (TRUE);
 			$selRateGroup->Execute (Array ('Id' => $intId));
-			$selRateGroup->Fetch ($this);
 			
 			if ($selRateGroup->Count () <> 1)
 			{
 				throw new Exception ('Rate Group Not Found: ' . $intId);
 			}
 			
+			$selRateGroup->Fetch ($this);
+			
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
 			
 			$intRecordType = $this->Pop ("RecordType")->getValue ();
 			$this->Push (new RecordType ($intRecordType));
+		}
+		
+		//------------------------------------------------------------------------//
+		// Rates
+		//------------------------------------------------------------------------//
+		/**
+		 * Rates()
+		 *
+		 * Gets the Rates in this Rate Group
+		 *
+		 * Gets the Rates in this Rate Group
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function Rates ()
+		{
+			$selRates = new StatementSelect ('RateGroupRate', 'Rate', 'RateGroup = <RateGroup>');
+			$selRates->Execute (Array ('RateGroup' => $this->Pull ('Id')->getValue ()));
+			
+			$oblarrRates = new dataArray ('Rates', 'Rate');
+			
+			foreach ($selRates->FetchAll () as $arrRate)
+			{
+				$oblarrRates->Push (new Rate ($arrRate ['Rate']));
+			}
+			
+			return $oblarrRates;
+		}
+		
+		//------------------------------------------------------------------------//
+		// RatePlans
+		//------------------------------------------------------------------------//
+		/**
+		 * RatePlans()
+		 *
+		 * Gets the RatePlans that use this Rate Group
+		 *
+		 * Gets the RatePlans that use this Rate Group
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function RatePlans ()
+		{
+			$selPlans = new StatementSelect ('RatePlanRateGroup', 'RatePlan', 'RateGroup = <RateGroup>');
+			$selPlans->Execute (Array ('RateGroup' => $this->Pull ('Id')->getValue ()));
+
+			$oblarrPlans = new dataArray ('RatePlans', 'RatePlan');
+
+			foreach ($selPlans->FetchAll () as $arrPlan)
+			{
+				$oblarrPlans->Push (new RatePlan ($arrPlan ['RatePlan']));
+			}
+			
+			return $oblarrPlans;
 		}
 	}
 	

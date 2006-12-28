@@ -22,7 +22,7 @@
 		header ("Location: console.php"); exit;
 	}
 	
-	$docDocumentation->Explain ("Rate Group");
+	
 	
 	// Create a Base Object
 	$oblarrDetails	= $Style->attachObject (new dataArray ('RateGroupDetails'));
@@ -30,27 +30,17 @@
 	// Add the details for the Rate Group
 	$rrgRateGroup	= $oblarrDetails->Push (new RateGroup ($_GET ['Id']));
 	
+	
+	
 	// Include the associated Rates for this Rate Group
-	$selRates = new StatementSelect ('RateGroupRate', 'Rate', 'RateGroup = <RateGroup>');
-	$selRates->Execute (Array ('RateGroup' => $_GET ['Id']));
-	
-	$oblarrRates 	= $oblarrDetails->Push (new dataArray ('Rates'));
-	
-	foreach ($selRates->FetchAll () as $arrRate)
-	{
-		$oblarrRates->Push (new Rate ($arrRate ['Rate']));
-	}
+	$oblarrDetails->Push ($rrgRateGroup->Rates ());
 	
 	// Include the Rate Plans that use this Rate Group
-	$selPlans = new StatementSelect ('RatePlanRateGroup', 'RatePlan', 'RateGroup = <RateGroup>');
-	$selPlans->Execute (Array ('RateGroup' => $_GET ['Id']));
+	$oblarrDetails->Push ($rrgRateGroup->RatePlans ());
 	
-	$oblarrPlans 	= $oblarrDetails->Push (new dataArray ('RatePlans'));
 	
-	foreach ($selPlans->FetchAll () as $arrPlan)
-	{
-		$oblarrPlans->Push (new RatePlan ($arrPlan ['RatePlan']));
-	}
+	// Documentation for a Rate Group
+	$docDocumentation->Explain ("Rate Group");
 	
 	$Style->Output ("xsl/content/rates/groups/view.xsl");
 	

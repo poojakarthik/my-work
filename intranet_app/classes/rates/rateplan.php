@@ -63,6 +63,12 @@
 			$selRatePlan = new StatementSelect ('RatePlan', '*', 'Id = <Id>');
 			$selRatePlan->useObLib (TRUE);
 			$selRatePlan->Execute (Array ('Id' => $intId));
+			
+			if ($selRatePlan->Count () <> 1)
+			{
+				throw new Exception ('Rate Plan Not Found: ' . $intId);
+			}
+			
 			$selRatePlan->Fetch ($this);
 			
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
@@ -100,6 +106,36 @@
 			}
 			
 			return $oblarrRecurringChargeTypes;
+		}
+		
+		//------------------------------------------------------------------------//
+		// RateGroups
+		//------------------------------------------------------------------------//
+		/**
+		 * RateGroups()
+		 *
+		 * Pulls a list of Associated RateGroups
+		 *
+		 * Pulls a list of Associated RateGroups
+		 *
+		 * @return	dataArray [RateGroup]
+		 *
+		 * @method
+		 */
+		
+		public function RateGroups ()
+		{
+			$oblarrGroups	= new dataArray ('RateGroups', 'RateGroup');
+			
+			$selRateGroups	= new StatementSelect ('RatePlanRateGroup', 'RateGroup', 'RatePlan = <RatePlan>');
+			$selRateGroups->Execute (Array ('RatePlan' => $this->Pull ('Id')->getValue ()));
+			
+			foreach ($selRateGroups->FetchAll () as $arrRate)
+			{
+				$oblarrGroups->Push (new RateGroup ($arrRate ['RateGroup']));
+			}
+			
+			return $oblarrGroups;
 		}
 	}
 	

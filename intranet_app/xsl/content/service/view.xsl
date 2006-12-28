@@ -195,6 +195,27 @@
 						</div>
 					</div>
 					
+					<div class="Seperator"></div>
+					
+					<h2>Service Plan</h2>
+					<div class="Seperator"></div>
+					
+					<div class="Filter-Form">
+						<div class="Filter-Form-Content">
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_plan.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+								<xsl:text>Current Plan Information</xsl:text>
+							</a>
+							
+							<div class="Clear"></div>
+						</div>
+					</div>
+					
+					<div class="Seperator"></div>
+					
 					<xsl:if test="/Response/Service/ServiceType = 102">
 						<h2>Provisioning</h2>
 						<div class="Seperator"></div>

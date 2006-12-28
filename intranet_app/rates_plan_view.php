@@ -37,16 +37,8 @@
 	$oblarrRecurringCharges		= $oblarrDetails->Push ($rplRatePlans->RecurringChargeTypes ());
 	
 	
-	// Include the associated Rates for this Rate Plan
-	$oblarrGroups	= $oblarrDetails->Push (new dataArray ('RateGroups'));
-	
-	$selRateGroups	= new StatementSelect ('RatePlanRateGroup', 'RateGroup', 'RatePlan = <RatePlan>');
-	$selRateGroups->Execute (Array ('RatePlan' => $_GET ['Id']));
-	
-	foreach ($selRateGroups->FetchAll () as $arrRate)
-	{
-		$oblarrGroups->Push (new RateGroup ($arrRate ['RateGroup']));
-	}
+	// Include the associated Rate Groups for this Rate Plan
+	$oblarrDetails->Push ($rplRatePlans->RateGroups ());
 	
 	
 	$Style->Output ("xsl/content/rates/plans/view.xsl");

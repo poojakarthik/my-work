@@ -22,9 +22,6 @@
 		header ("Location: console.php"); exit;
 	}
 	
-	$docDocumentation->Explain ("Rate");
-	
-	
 	
 	
 	// Create a Base Object
@@ -33,18 +30,11 @@
 	// Add the details for the Rate Group
 	$rrrRate		= $oblarrDetails->Push (new Rate ($_GET ['Id']));
 	
-	
-	
 	// Include a list of Rate Groups that use this Rate
-	$oblarrGroups	= $oblarrDetails->Push (new dataArray ('RateGroups'));
+	$oblarrDetails->Push ($rrrRate->RateGroups ());
 	
-	$selRateGroups	= new StatementSelect ('RateGroupRate', 'RateGroup', 'Rate = <Rate>');
-	$selRateGroups->Execute (Array ('Rate' => $_GET ['Id']));
 	
-	foreach ($selRateGroups->FetchAll () as $arrRate)
-	{
-		$oblarrGroups->Push (new RateGroup ($arrRate ['RateGroup']));
-	}
+	$docDocumentation->Explain ("Rate");
 	
 	$Style->Output ("xsl/content/rates/rates/view.xsl");
 	
