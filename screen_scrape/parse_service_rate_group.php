@@ -118,16 +118,16 @@ require_once($strFrameworkDir."exception_vixen.php");
 	$arrRates['mobrate']	['CTM 24c 0 flag']									= /* NO MATCH*/null;
 	$arrRates['mobrate']	['CTM 25pm 8ff']									= /* NO MATCH*/null;
 	
-	$arrRates['intrate']['Blue 15c CTM'] 									= intRateId;
-	$arrRates['intrate']['Tier 3 corporate capped'] 						= intRateId;
-	$arrRates['intrate']['Blue Virtual VOIP'] 								= intRateId;
-	$arrRates['intrate']['39c Cap Intl'] 									= intRateId;
-	$arrRates['intrate']['VoiceTalk'] 										= intRateId;
-	$arrRates['intrate']['National 16'] 									= intRateId;
-	$arrRates['intrate']['Tier 3 corporate Long Distance'] 					= intRateId;
-	$arrRates['intrate']['Mobile Zero Plan'] 								= intRateId;
-	$arrRates['intrate']['Tier 3 corporate Mobile Saver'] 					= intRateId;
-	$arrRates['intrate']['Residential'] 									= intRateId;
+	$arrRates['intrate']	['Blue 15c CTM'] 									= 192;
+	$arrRates['intrate']	['Tier 3 corporate capped'] 						= 197;
+	$arrRates['intrate']	['Blue Virtual VOIP'] 								= 193;
+	$arrRates['intrate']	['39c Cap Intl'] 									= 191;
+	$arrRates['intrate']	['VoiceTalk'] 										= 201;
+	$arrRates['intrate']	['National 16'] 									= 195;
+	$arrRates['intrate']	['Tier 3 corporate Long Distance'] 					= 198;
+	$arrRates['intrate']	['Mobile Zero Plan'] 								= 194;
+	$arrRates['intrate']	['Tier 3 corporate Mobile Saver'] 					= 199;
+	$arrRates['intrate']	['Residential'] 									= 196;
 	
 	$arrRates['service_equip_rate']	['Tier 3 Corporate Capped']			[21]	= 103;
 	$arrRates['service_equip_rate']	['Tier 3 Corporate Capped']			[22]	= 107;
