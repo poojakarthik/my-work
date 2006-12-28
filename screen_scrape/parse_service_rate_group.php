@@ -223,7 +223,7 @@ require_once($strFrameworkDir."exception_vixen.php");
 	// database things
 	$GLOBALS['insServiceRateGroup']	= new StatementInsert("ServiceRateGroup");
 	$GLOBALS['selServicesByType']		= new StatementSelect(	"Service",
-														"Id",
+														"Id, FNN",
 														"Account = <Account> AND ServiceType = <ServiceType>");
 	
 	set_time_limit (0);
@@ -299,6 +299,8 @@ require_once($strFrameworkDir."exception_vixen.php");
 		// for each RecordType
 		foreach ($GLOBALS['arrRecordTypes'] AS $strName=>$intServiceType )
 		{
+			//echo $intServiceType."\n";
+			
 			// if we have a rate for this RecordType
 			if ($arrScrapeAccount[$strName])
 			{
@@ -335,10 +337,9 @@ require_once($strFrameworkDir."exception_vixen.php");
 							$arrData['StartDatetime']	= "2006-01-01 11:57:40";
 							$arrData['EndDatetime']		= "2030-11-30 11:57:45";
 							//$insServiceRateGroup->Execute($arrData);
-							echo $arrService['Id']."\n";
+							//echo "{$arrService['Id']} - {$arrService['FNN']}\n";
 						}
-						echo $arrScrapeAccount['AccountId']."\n";
-						Die();
+						//echo $arrScrapeAccount['AccountId']."\n";
 					}
 				}
 				else
