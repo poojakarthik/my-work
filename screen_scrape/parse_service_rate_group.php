@@ -336,7 +336,7 @@ require_once($strFrameworkDir."exception_vixen.php");
 							$arrData['CreatedOn']		= date("Y-m-d");
 							$arrData['StartDatetime']	= "2006-01-01 11:57:40";
 							$arrData['EndDatetime']		= "2030-11-30 11:57:45";
-							//$insServiceRateGroup->Execute($arrData);
+							$insServiceRateGroup->Execute($arrData);
 							//echo "{$arrService['Id']} - {$arrService['FNN']}\n";
 						}
 						//echo $arrScrapeAccount['AccountId']."\n";
