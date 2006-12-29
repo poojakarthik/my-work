@@ -604,7 +604,7 @@ abstract class NormalisationModule
 	 protected function ApplyOwnership()
 	 {
 
-	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN'], "date" => (string)$this->_arrNormalisedData['StartDateTime']));
+	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN'], "date" => (string)$this->_arrNormalisedData['StartDatetime']));
 		
 	 	if ($arrResult = $this->_selFindOwner->Fetch())
 	 	{
