@@ -629,6 +629,7 @@ abstract class NormalisationModule
 	 	
 		// Return false if there was no match, or more than one match
 		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
+		Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
 	 	return false;
 	 }
 	
