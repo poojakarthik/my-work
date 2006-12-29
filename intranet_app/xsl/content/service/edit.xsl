@@ -35,7 +35,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Service/ServiceTypes/ServiceType/Name" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Service/ServiceTypes/ServiceType[@selected='selected']/Name" disable-output-escaping="yes" />
 							</td>
 						</tr>
 						<tr>
@@ -57,12 +57,9 @@
 						<tr>
 							<th class="JustifiedWidth"></th>
 							<td>
-								<input type="text" name="FNN" class="input-string">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Service/FNN" disable-output-escaping="yes" />
-									</xsl:attribute>
-								</input>
+								<strong><span class="Attention">Attention</span> :</strong>
+								The line number you enter above must of the same Service Type
+								listed above.
 							</td>
 						</tr>
 					</table>
@@ -85,22 +82,12 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					
-					If you would like to make this Service Archived, please click the button below:
-					<div class="Seperator"></div>
+					<xsl:choose>
+						<xsl:when test="/Response/Service/Archived = 0">
+							If you would like to make this Service Archived, please click the button below:
+							<div class="Seperator"></div>
 					
-					<table border="0" cellpadding="5" cellspacing="0">
-						<xsl:choose>
-							<xsl:when test="/Response/Service/Archived = 1">
-								<tr>
-									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
-									<td>
-										<label for="Archive:FALSE">
-											Make this Service <strong><span class="Green">Available</span></strong> and active
-										</label>
-									</td>
-								</tr>
-							</xsl:when>
-							<xsl:otherwise>
+							<table border="0" cellpadding="5" cellspacing="0">
 								<tr>
 									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
 									<td>
@@ -109,15 +96,18 @@
 										</label>
 									</td>
 								</tr>
-							</xsl:otherwise>
-						</xsl:choose>
-						<tr>
-							<td></td>
-							<td>
-								<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
-							</td>
-						</tr>
-					</table>
+								<tr>
+									<td></td>
+									<td>
+										<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+									</td>
+								</tr>
+							</table>
+						</xsl:when>
+						<xsl:otherwise>
+							<p>Services can not be unarchived. Instead - add a new service with the same number.</p>
+						</xsl:otherwise>
+					</xsl:choose>
 				</div>
 			</div>
 		</form>

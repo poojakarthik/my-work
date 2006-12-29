@@ -169,7 +169,7 @@
 									<td colspan="2"><div class="Seperator"></div></td>
 								</tr>
 								<tr>
-									<th>
+									<th class="JustifiedWidth">
 										<strong>Edit Details :</strong>
 									</th>
 									<td>
@@ -188,19 +188,19 @@
 									</td>
 								</tr>
 								<tr>
-									<th>
+									<th class="JustifiedWidth">
 										<strong>Change Lessee :</strong>
 									</th>
 									<td>
 										<a>
 											<xsl:attribute name="href">
-												<xsl:text>service_lessee.php?Id=</xsl:text>
+												<xsl:text>service_lessee.php?Service=</xsl:text>
 												<xsl:value-of select="/Response/Service/Id" />
 											</xsl:attribute>
 											<xsl:attribute name="onclick">
-												<xsl:text>return openPopup('service_lessee.php?Id=</xsl:text>
+												<xsl:text>return openPopup('service_lessee.php?Service=</xsl:text>
 												<xsl:value-of select="/Response/Service/Id" />
-												<xsl:text>')</xsl:text>
+												<xsl:text>', 450, 650)</xsl:text>
 											</xsl:attribute>
 											<xsl:text>Change of Lessee</xsl:text>
 										</a>
