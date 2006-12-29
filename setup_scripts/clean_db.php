@@ -78,7 +78,7 @@ echo "\n";
 echo TruncateName(" + Zeroing Out Fields...", 60);
 $arrZeroOut['CappedCharge']	= 0;
 $arrZeroOut['UncappedCharge']	= 0;
-$updZeroOut = new StatementUpdate("CDR", $arrZeroOut);
+$updZeroOut = new StatementUpdate("CDR", "1", $arrZeroOut);
 if (($mixResults = $updZeroOut->Execute()) === FALSE)
 {
 	// ERROR
