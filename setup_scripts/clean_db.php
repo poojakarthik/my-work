@@ -77,10 +77,8 @@ echo "\n";
 
 // Zero-out fields
 echo TruncateName(" + Zeroing Out Fields...", 60);
-$arrZeroOut['CappedCharge']	= 0;
-$arrZeroOut['UncappedCharge']	= 0;
-$updZeroOut = new StatementUpdate("CDR", "1", $arrZeroOut);
-if (($mixResults = $updZeroOut->Execute()) === FALSE)
+$qryUpdate = new Query();
+if (($mixResults = $qryUpdate->Execute("UPDATE Service SET CappedCharge = 0, UncappedCharge = 0")) === FALSE)
 {
 	// ERROR
 	echo "[ FAILED ]\n\tReason: ".$updZeroOut->Error()."\n";
