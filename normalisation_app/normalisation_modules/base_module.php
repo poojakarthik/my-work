@@ -306,7 +306,7 @@ abstract class NormalisationModule
 		
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);											// 7
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
-		$arrValid[] = is_numeric($this->_arrNormalisedData["DestinationCode"]);									// 9
+		$arrValid[] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
 		
 		$i = 0;
 		foreach ($arrValid as $bolValid)
