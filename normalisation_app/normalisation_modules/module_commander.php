@@ -180,7 +180,7 @@ class NormalisationModuleCommander extends NormalisationModule
 		$this->_AppendCDR('CarrierRef', $mixValue);
 
 		// StartDateTime & EndDateTime
-	 	$mixValue						= ConvertTime($this->_FetchRawCDR('Datetime'));
+	 	$mixValue						= $this->_FetchRawCDR('Datetime');
 	 	$this->_AppendCDR('StartDateTime', $mixValue);
 		 	
 	 	$mixValue						= date("Y-m-d H:i:s", strtotime($this->_FetchRawCDR('Datetime') . " +" . $this->_FetchRawCDR('Duration') . "seconds"));
