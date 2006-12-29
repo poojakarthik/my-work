@@ -211,7 +211,7 @@ class NormalisationModuleCommander extends NormalisationModule
 
 		// Cost
 		$mixValue						=  $this->_FetchRawCDR('Price');
-		$this->_AppendCDR('ServiceType', (float)$mixValue);
+		$this->_AppendCDR('Cost', (float)$mixValue);
 
 		// Source
 		$mixValue 						= $this->_FetchRawCDR('OriginNo');
