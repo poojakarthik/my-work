@@ -137,8 +137,8 @@ class NormalisationModuleCommander extends NormalisationModule
 		$this->_SplitRawCDR($arrCDR["CDR"]);
 
 		// ignore non-CDR rows
-		$intRowType = (int)$this->_FetchRawCDR('CC');
-		if ($intRowType != 3)
+		$intRowType = (int)$this->_FetchRawCDR('RecordType');
+		if ($intRowType != 1 && $intRowType != 7 && $intRowType != 8)
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}

@@ -142,9 +142,9 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 
 		// ignore non-CDR rows
 		$intRowType = (int)$this->_FetchRawCDR('RecordType');
-		if ($intRowType != 3 && $intRowType != 7 && $intRowType != 8)
+		if ($intRowType != 1 && $intRowType != 7 && $intRowType != 8)
 		{
-			//return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
+			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
 
 		// validation of Raw CDR
