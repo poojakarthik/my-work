@@ -260,7 +260,16 @@
 		elseif (next($this->_arrDefine['Dir']))
 		{
 			// Change to the next directory and call Download() again
-			ftp_chdir($this->_resConnection, "../".current($this->_arrDefine['Dir']));
+			$strDir = $this->_arrDefine['Dir'];
+
+			// Account for nested directories
+			$intDepth = count(explode("/", $strDir));
+			for ($i = 0; $i <= $intDepth; $i++)
+			{
+				$strDotDotSlash .= "../";
+			}
+			ftp_chdir($this->_resConnection, $strDotDotSlash.$strDir);
+			
 			// Get our new list of files
 			$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."), $this->_strConnectionType);
 			return $this->Download($strDestination);
