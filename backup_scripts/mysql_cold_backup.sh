@@ -32,7 +32,7 @@ DATABASE_NAME='vixen'
 BACKUP_NAME=`date +%Y-%m-%d_%H\:%M\:%S`
 
 # Make Directory for this backup
-echo $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
+#echo $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
 mkdir -pm 700 $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
 
 # Shut down your MySQL server and make sure that it shuts down without errors.
