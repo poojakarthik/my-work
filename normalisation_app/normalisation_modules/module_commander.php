@@ -92,7 +92,7 @@ class NormalisationModuleCommander extends NormalisationModule
 		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['Currency']			['Validate']	= "/^AUD$/";
-		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d?$/";
+		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d*$/";
 		$arrDefine ['CallType']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RateId']			['Validate']	= "/^\d+$/";
 		$arrDefine ['Feedcode']			['Validate']	= "/^5$/";
