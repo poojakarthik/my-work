@@ -263,10 +263,14 @@
 			$strDir = $this->_arrDefine['Dir'];
 
 			// Account for nested directories
-			$intDepth = count(explode("/", $strDir));
-			for ($i = 0; $i <= $intDepth; $i++)
+			$strDotDotSlash = "";
+			if ($strDir{0} != "/")
 			{
-				$strDotDotSlash .= "../";
+				$intDepth = count(explode("/", $strDir));
+				for ($i = 0; $i <= $intDepth; $i++)
+				{
+					$strDotDotSlash .= "../";
+				}
 			}
 			ftp_chdir($this->_resConnection, $strDotDotSlash.$strDir);
 			
