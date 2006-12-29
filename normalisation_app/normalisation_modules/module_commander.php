@@ -87,7 +87,7 @@ class NormalisationModuleCommander extends NormalisationModule
 
 		$arrDefine ['EventId']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
-		$arrDefine ['DateTime']			['Validate']	= "/^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$/";
+		$arrDefine ['DateTime']			['Validate']	= "/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/";
 		$arrDefine ['Duration']			['Validate']	= "/^\d+$/";
 		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
@@ -172,8 +172,8 @@ class NormalisationModuleCommander extends NormalisationModule
 		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
 		if ($arrDestinationCode)
 		{
-			$this->_AppendCDR('DestinationCode', $arrDestination['Code']);
-			$this->_AppendCDR('Description', $arrDestination['Description']);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+			$this->_AppendCDR('Description', $arrDestinationCode['Description']);
 		}
 		
 		// CarrierRef
