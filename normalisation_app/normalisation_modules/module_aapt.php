@@ -231,8 +231,8 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
 		if ($arrDestinationCode)
 		{
-			$this->_AppendCDR('DestinationCode', $arrDestination['Code']);
-			$this->_AppendCDR('Description', $arrDestination['Description']);
+			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+			$this->_AppendCDR('Description', $arrDestinationCode['Description']);
 		}
 		
 		// CarrierRef
