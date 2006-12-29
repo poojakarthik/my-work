@@ -470,27 +470,8 @@
 		 * @method
 		 */
 		
-		public function Update ($arrDetails)
+		public function Archive ()
 		{
-			if (!$arrDetails ['FNN'])
-			{
-				return null;
-			}
-			
-			$strFNN = $arrDetails ['FNN'];
-			$strFNN = preg_replace ('/\s/', '', $strFNN);
-			
-			if (!isValidFNN ($strFNN))
-			{
-				return null;
-			}
-			
-			$arrData = Array (
-				"FNN"			=> $strFNN
-			);
-			
-			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrData);
-			$updService->Execute ($arrData, Array ('Id' => $this->Pull ('Id')->getValue ()));
 		}
 	}
 	
