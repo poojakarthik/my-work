@@ -463,7 +463,7 @@ function GetCarrierName($intCarrier)
  * @method
  */
 
-public function isValidFNN ($strFNN)
+function isValidFNN ($strFNN)
 {
 	return preg_match ("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $strFNN);
 }
