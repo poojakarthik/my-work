@@ -211,6 +211,7 @@ die();
  		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
 		
+		$this->_arrDelinquents = Array();
  	}
 
 
@@ -486,6 +487,8 @@ die();
 		
 		$intNormalisePassed = 0;
 		$intNormaliseFailed = 0;
+		
+		$intDelinquents = 0;
 
  		foreach ($arrCDRList as $arrCDR)
  		{
@@ -493,7 +496,7 @@ die();
 			$arrReportLine['<Action>']		= "Normalising";
 			$arrReportLine['<SeqNo>']		= $arrCDR['SequenceNo'];
 			$arrReportLine['<FileName>']	= TruncateName($arrCDR['FileName'], MSG_MAX_FILENAME_LENGTH);
-			$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine);
+			$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
 			
  			// Is there a normalisation module for this type?
 			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
@@ -535,6 +538,8 @@ die();
 					break;
 				case CDR_BAD_OWNER:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Cannot match owner"));
+					$arrDelinquents[$this->_arrNormalisationModule[$arrCDR["FileType"]]->strFNN]++;
+					$intDelinquents++;
 					$intNormaliseFailed++;
 					break;
 				case CDR_CANT_NORMALISE_INVALID:
@@ -563,12 +568,18 @@ die();
 		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
 		$arrReportLine['<Pass>']		= (int)$intNormalisePassed;
 		$arrReportLine['<Fail>']		= (int)$intNormaliseFailed;
-		$this->AddToNormalisationReport(MSG_REPORT."\n".MSG_HORIZONTAL_RULE, $arrReportLine);
+		$this->AddToNormalisationReport(MSG_REPORT."\tThere were ".count($arrDelinquents)." delinquent FNNs.\n\n".MSG_HORIZONTAL_RULE, $arrReportLine);
 		
 		$this->AddToNormalisationReport("Normalisation module completed in ".$this->Framework->uptime()." seconds");
 
 		// Deliver the report
 		$this->rptNormalisationReport->Finish();
+		
+		echo "\n\nDelinquent FNNs\n========================\n\n";
+		foreach($arrDelinquents as $strKey=>$strValue)
+		{
+			echo "$strKey was hit $strValue time(s)\n";
+		}
 		
  	}
  }

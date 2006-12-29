@@ -228,6 +228,8 @@ abstract class NormalisationModule
 	 */
 	protected $_selFindOwnerIndial100;
 	
+	public $strFNN;
+	
 	function __construct($errErrorHandler=NULL, $rptNormalisationReport=NULL)
 	{
 		// The purpose of this is to have a generic constructor for all Normalisation
@@ -464,7 +466,7 @@ abstract class NormalisationModule
 				{
 					if (!preg_match($strValue['Validate'], $this->_arrRawData[$strKey]))
 					{
-						Debug("'".$this->_arrRawData[$strKey]."' != '".$strValue['Validate']."'");
+						Debug("$strKey: '".$this->_arrRawData[$strKey]."' != '".$strValue['Validate']."'");
 						return FALSE;
 					}
 				}
@@ -629,7 +631,8 @@ abstract class NormalisationModule
 	 	
 		// Return false if there was no match, or more than one match
 		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
-		Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
+		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
+		$this->strFNN = $this->_arrNormalisedData['FNN'];
 	 	return false;
 	 }
 	

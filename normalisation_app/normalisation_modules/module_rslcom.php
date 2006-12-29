@@ -91,15 +91,15 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		
 		$arrDefine ['EventId']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
-		$arrDefine ['DateTime']			['Validate']	= "/^(\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d|\d{2}\/\d{2}\/\d{4})$/";
-		$arrDefine ['Duration']			['Validate']	= "/^\d+$/";
-		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
-		$arrDefine ['DestinationNo']	['Validate']	= "/^\+?\d+$/";
-		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
-		$arrDefine ['Currency']			['Validate']	= "/^AUD$/";
-		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d*$/";
-		$arrDefine ['CallType']			['Validate']	= "/^\d+$/";
-		$arrDefine ['RateId']			['Validate']	= "/^\d+$/";
+		$arrDefine ['DateTime']			['Validate']	= "/^((\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d)|(\"\d{2}\/\d{2}\/\d{4})\")$/";
+		$arrDefine ['Duration']			['Validate']	= "/^(\d+|)$/";
+		$arrDefine ['OriginNo']			['Validate']	= "/^(\+?\d+|)$/";
+		$arrDefine ['DestinationNo']	['Validate']	= "/^(\+?\d+|)$/";
+		$arrDefine ['ChargedParty']		['Validate']	= "/^\"?\+?\d+\"?$/";
+		$arrDefine ['Currency']			['Validate']	= "/^(AUD|\"AUD\\$\")$/";
+		$arrDefine ['Price']			['Validate']	= "/^-?\\$?\d+\.\d\d*$/";
+		$arrDefine ['CallType']			['Validate']	= "/^(\d+|)$/";
+		$arrDefine ['RateId']			['Validate']	= "/^(\d+|)$/";
 		
 		$this->_arrDefineCarrier = $arrDefine;
 	}
@@ -139,7 +139,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		
 		// covert CDR string to array
 		$this->_SplitRawCDR($arrCDR["CDR"]);
-
+		
 		// ignore non-CDR rows
 		$intRowType = (int)$this->_FetchRawCDR('RecordType');
 		if ($intRowType != 1 && $intRowType != 7 && $intRowType != 8)
@@ -157,9 +157,15 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		// add fields to CDR
 		//--------------------------------------------------------------------//
 		
+		// Remove double-quotes from fields
+		foreach($this->_arrRawData as $strKey=>$strField)
+		{
+			$this->_arrRawData[$strKey] = str_replace("\"", "", $strField);
+		}
+		
 		// FNN
-		$strFNN 						= $this->_FetchRawCDR('ChargedParty');
-		$strFNN							= $this->RemoveAusCode($strFNN);
+		$strFNN = $this->_FetchRawCDR('ChargedParty');
+		$strFNN	= $this->RemoveAusCode($strFNN);
 		$this->_AppendCDR('FNN', $strFNN);
 
 		// ServiceType
@@ -210,9 +216,9 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		else
 		{
 		 	// For S&E and OC&C CDRs
-		 	$mixValue					= $this->_FetchRawCDR('BeginDate');
+		 	$mixValue					= $this->ConvertTime($this->_FetchRawCDR('BeginDate'));
 		 	$this->_AppendCDR('StartDatetime', $mixValue);
-		 	$mixValue					=  $this->_FetchRawCDR('EndDate');
+		 	$mixValue					=  $this->ConvertTime($this->_FetchRawCDR('EndDate'));
 		 	$this->_AppendCDR('EndDatetime', $mixValue);
 		}
 		
@@ -307,8 +313,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$strReturn 	= substr($strTime, 6, 4);				// Year
 		$strReturn .=  "-" . substr($strTime, 3, 2);		// Month
 		$strReturn .=  "-" . substr($strTime, 0, 2);		// Day
-		$strReturn .=  substr($strTime, 11, 18);			// Time
-		
+		$strReturn .=  " 00:00:00";							// Time
 		return $strReturn;
 	}
 }
