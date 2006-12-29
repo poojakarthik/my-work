@@ -75,14 +75,24 @@
 							<td><xsl:value-of select="./Name" /></td>
 							<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 							<td>
-								<xsl:choose>
-									<xsl:when test="./Archived = 1">
-										<xsl:text>Unassignable</xsl:text>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:text>Available</xsl:text>
-									</xsl:otherwise>
-								</xsl:choose>
+								<strong>
+									<span>
+										<xsl:choose>
+											<xsl:when test="./Archived = 1">
+												<xsl:attribute name="class">
+													<xsl:text>Red</xsl:text>
+												</xsl:attribute>
+												<xsl:text>Archived</xsl:text>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:attribute name="class">
+													<xsl:text>Green</xsl:text>
+												</xsl:attribute>
+												<xsl:text>Available</xsl:text>
+											</xsl:otherwise>
+										</xsl:choose>
+									</span>
+								</strong>
 							</td>
 							<td>
 								<a>

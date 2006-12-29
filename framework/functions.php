@@ -446,5 +446,26 @@ function GetCarrierName($intCarrier)
 	}
 }	
 
+//------------------------------------------------------------------------//
+// isValidFNN()
+//------------------------------------------------------------------------//
+/**
+ * isValidFNN()
+ * 
+ * Check if an FNN is valid
+ * 
+ * Check if an FNN is valid
+ * 
+ * @param	string		$strFNN				The FNN number to check for validity
+ *
+ * @return	boolean							TRUE/FALSE: Depending on whether the FNN is a valid Australian Full National Number
+ * 
+ * @method
+ */
+
+public function isValidFNN ($strFNN)
+{
+	return preg_match ("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $strFNN);
+}
 
 ?>

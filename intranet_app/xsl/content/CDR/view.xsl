@@ -163,7 +163,7 @@
 						<td>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>Service_view.php?Id=</xsl:text>
+									<xsl:text>service_view.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/CDR/Service" />
 								</xsl:attribute>
 								<xsl:text>Open Service</xsl:text>

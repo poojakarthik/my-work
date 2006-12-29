@@ -9,6 +9,8 @@
 	require ("config/application_loader.php");
 	
 	$docDocumentation->Explain ("Rate");
+	$docDocumentation->Explain ("Service");
+	$docDocumentation->Explain ("Archive");
 	
 	// If the User is not logged into the system
 	if (!$athAuthentication->isAuthenticated ())
@@ -42,9 +44,17 @@
 		);
 	}
 	
-	$rrlRates->Sample ();
+	$Style->attachObject (new ServiceTypes);
 	
-	$Style->attachObject ($rrlRates);
+	if (isset ($_GET ['constraint']['ServiceType']))
+	{
+		$rrlRates->Sample (
+			$_GET ['rangePage']		&& is_numeric ($_GET ['rangePage'])	? $_GET ['rangePage']	: 1		, 
+			$_GET ['rangeLength']	&& is_numeric ($_GET ['rangeLength'])	? $_GET ['rangeLength']	: 30
+		);
+		
+		$Style->attachObject ($rrlRates);
+	}
 	
 	$Style->Output ("xsl/content/rates/rates/list.xsl");
 	

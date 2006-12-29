@@ -62,7 +62,7 @@
 							
 							<xsl:if test="/Response/AuthenticationAttempt">
 								<div class="MsgError">
-									You did not enter correct login crudentials. Please try again.
+									You did not enter correct login credentials. Please try again.
 								</div>
 							</xsl:if>
 							

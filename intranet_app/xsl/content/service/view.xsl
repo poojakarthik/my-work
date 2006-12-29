@@ -14,10 +14,10 @@
 		<script language="javascript" src="js/notes_popup.js"></script>
 		<script language="javascript" src="js/provisioning_popup.js"></script>
 		
-		<div class="MsgNotice">
+		<div class="Filter-Form">
 			<h2>Account Information</h2>
 			
-			<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+			<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 				<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
@@ -73,7 +73,7 @@
 					
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
-							<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+							<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -98,9 +98,6 @@
 									<td><xsl:value-of select="/Response/Service/FNN" disable-output-escaping="yes" /></td>
 								</tr>
 								<tr>
-									<td colspan="2"><div class="Seperator"></div></td>
-								</tr>
-								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service')" />
@@ -111,24 +108,26 @@
 										<xsl:value-of select="/Response/Service/ServiceTypes/ServiceType[@selected='selected']/Name" />
 									</td>
 								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('Indial100')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:choose>
-											<xsl:when test="/Response/Service/Indial100 = 1">
-												<strong><span class="Green">Indial 100 Support</span></strong>
-											</xsl:when>
-											<xsl:otherwise>
-												<strong><span class="Red">No Indial 100 Support</span></strong>
-											</xsl:otherwise>
-										</xsl:choose>
-									</td>
-								</tr>
+								<xsl:if test="/Response/Service/ServiceType = 102">
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Service')" />
+												<xsl:with-param name="field" select="string('Indial100')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:choose>
+												<xsl:when test="/Response/Service/Indial100 = 1">
+													<strong><span class="Green">Indial 100 Support</span></strong>
+												</xsl:when>
+												<xsl:otherwise>
+													<strong><span class="Red">No Indial 100 Support</span></strong>
+												</xsl:otherwise>
+											</xsl:choose>
+										</td>
+									</tr>
+								</xsl:if>
 								<tr>
 									<td colspan="2"><div class="Seperator"></div></td>
 								</tr>
@@ -164,6 +163,47 @@
 												<strong><span class="Red">Currently Archived</span></strong>
 											</xsl:otherwise>
 										</xsl:choose>
+									</td>
+								</tr>
+								<tr>
+									<td colspan="2"><div class="Seperator"></div></td>
+								</tr>
+								<tr>
+									<th>
+										<strong>Edit Details :</strong>
+									</th>
+									<td>
+										<a>
+											<xsl:attribute name="href">
+												<xsl:text>service_edit.php?Id=</xsl:text>
+												<xsl:value-of select="/Response/Service/Id" />
+											</xsl:attribute>
+											<xsl:attribute name="onclick">
+												<xsl:text>return openPopup('service_edit.php?Id=</xsl:text>
+												<xsl:value-of select="/Response/Service/Id" />
+												<xsl:text>')</xsl:text>
+											</xsl:attribute>
+											<xsl:text>Edit Service</xsl:text>
+										</a>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<strong>Change Lessee :</strong>
+									</th>
+									<td>
+										<a>
+											<xsl:attribute name="href">
+												<xsl:text>service_lessee.php?Id=</xsl:text>
+												<xsl:value-of select="/Response/Service/Id" />
+											</xsl:attribute>
+											<xsl:attribute name="onclick">
+												<xsl:text>return openPopup('service_lessee.php?Id=</xsl:text>
+												<xsl:value-of select="/Response/Service/Id" />
+												<xsl:text>')</xsl:text>
+											</xsl:attribute>
+											<xsl:text>Change of Lessee</xsl:text>
+										</a>
 									</td>
 								</tr>
 							</table>

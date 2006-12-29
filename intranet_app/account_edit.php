@@ -53,8 +53,7 @@
 				"Address2"			=> $_POST ['Address2'],
 				"Suburb"			=> $_POST ['Suburb'],
 				"Postcode"			=> $_POST ['Postcode'],
-				"State"				=> $_POST ['State'],
-				"Archived"			=> $_POST ['Archived']
+				"State"				=> $_POST ['State']
 			)
 		);
 		
