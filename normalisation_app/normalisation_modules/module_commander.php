@@ -95,7 +95,6 @@ class NormalisationModuleCommander extends NormalisationModule
 		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d*$/";
 		$arrDefine ['CallType']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RateId']			['Validate']	= "/^\d+$/";
-		$arrDefine ['Feedcode']			['Validate']	= "/^5$/";
 		
 		$this->_arrDefineCarrier = $arrDefine;
 	}
