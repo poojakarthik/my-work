@@ -468,7 +468,7 @@ die();
 		$mixColumns	= Array("" => "CDR.*", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
 		$strWhere	= "CDR.Status = <status>";
 		$strOrder	= "";
-		$strLimit	= "1000";
+		$strLimit	= "5000";
  		$selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
 		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
