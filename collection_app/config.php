@@ -134,15 +134,15 @@
 		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 		
 		// Optus Definition
-		$strOptusTestDir = "Dec 06";
+		$strOptusTestDir = "Dec 06/";
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["Optus"]	["Server"]						= $strTestServer;
  		$arrConfig['Define']["Optus"]	["Username"]					= $strTestUsername;
  		$arrConfig['Define']["Optus"]	["PWord"]						= $strTestPassword;
- 		$arrConfig['Define']["Optus"]	["Dir"][]						= $strTestDir."optus/";
- 		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/".$strOptusTestDir;
+ 		$arrConfig['Define']["Optus"]	["Dir"][]						= $strTestDir."optus/".$strOptusTestDir."Speedi Files/";
+ 		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/";
 		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
 		
 		// AAPT Definition
@@ -152,8 +152,8 @@
  		$arrConfig['Define']["AAPT"]	["Server"]						= $strTestServer;
  		$arrConfig['Define']["AAPT"]	["Username"]					= $strTestUsername;
  		$arrConfig['Define']["AAPT"]	["PWord"]						= $strTestPassword;
- 		$arrConfig['Define']["AAPT"]	["Dir"][]						= $strTestDir."aapt/";
- 		$arrConfig['Define']["AAPT"]	["FinalDir"]					= DESTINATION_ROOT."aapt/".$strOptusTestDir;
+ 		$arrConfig['Define']["AAPT"]	["Dir"][]						= $strTestDir."aapt/".$strOptusTestDir;
+ 		$arrConfig['Define']["AAPT"]	["FinalDir"]					= DESTINATION_ROOT."aapt/";
 		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT]		= CDR_AAPT_STANDARD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
