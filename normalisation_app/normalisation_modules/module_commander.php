@@ -71,7 +71,7 @@ class NormalisationModuleCommander extends NormalisationModule
 		// define the carrier CDR format
 		$arrDefine ['EventId']			['Index']		= 0;	// Unique Identifier
 		$arrDefine ['RecordType']		['Index']		= 1;	//
-		$arrDefine ['DateTime']			['Index']		= 2;	// Starting Datetime of the call
+		$arrDefine ['Datetime']			['Index']		= 2;	// Starting Datetime of the call
 		$arrDefine ['Duration']			['Index']		= 3;	// Duration in seconds
 		$arrDefine ['OriginNo']			['Index']		= 4;	// Originating phone number
 		$arrDefine ['DestinationNo']	['Index']		= 5;	// Destination phone number
@@ -87,7 +87,7 @@ class NormalisationModuleCommander extends NormalisationModule
 
 		$arrDefine ['EventId']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
-		$arrDefine ['DateTime']			['Validate']	= "/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/";
+		$arrDefine ['Datetime']			['Validate']	= "/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/";
 		$arrDefine ['Duration']			['Validate']	= "/^\d+$/";
 		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
@@ -181,10 +181,10 @@ class NormalisationModuleCommander extends NormalisationModule
 
 		// StartDateTime & EndDateTime
 	 	$mixValue						= $this->_FetchRawCDR('Datetime');
-	 	$this->_AppendCDR('StartDateTime', $mixValue);
+	 	$this->_AppendCDR('StartDatetime', $mixValue);
 		 	
 	 	$mixValue						= date("Y-m-d H:i:s", strtotime($this->_FetchRawCDR('Datetime') . " +" . $this->_FetchRawCDR('Duration') . "seconds"));
-		$this->_AppendCDR('EndDateTime', $mixValue);
+		$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Units
 		//TODO!!!! - Is this correct!?!?!
