@@ -85,17 +85,17 @@ class NormalisationModuleCommander extends NormalisationModule
 		$arrDefine ['Location']			['Index']		= 13;	// "Loose" location of call
 		$arrDefine ['TotalKB']			['Index']		= 14;	// Total KB of transfer (CallType 336 only)
 
-		$arrDefine ['EventId']			['Validate']	= "^\d+$";
-		$arrDefine ['RecordType']		['Validate']	= "^[178]$";
-		$arrDefine ['DateTime']			['Validate']	= "^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$";
-		$arrDefine ['Duration']			['Validate']	= "^\d+$";
-		$arrDefine ['OriginNo']			['Validate']	= "^\+?\d+$";
-		$arrDefine ['ChargedParty']		['Validate']	= "^\+?\d+$";
-		$arrDefine ['Currency']			['Validate']	= "^AUD$";
-		$arrDefine ['Price']			['Validate']	= "^\d+\.\d\d?$";
-		$arrDefine ['CallType']			['Validate']	= "^\d+$";
-		$arrDefine ['RateId']			['Validate']	= "^\d+$";
-		$arrDefine ['Feedcode']			['Validate']	= "^5$";
+		$arrDefine ['EventId']			['Validate']	= "/^\d+$/";
+		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
+		$arrDefine ['DateTime']			['Validate']	= "/^[0-3]\d/[01]\d/\d{4} [0-2]\d:[0-5]\d:[0-5]\d$/";
+		$arrDefine ['Duration']			['Validate']	= "/^\d+$/";
+		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
+		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
+		$arrDefine ['Currency']			['Validate']	= "/^AUD$/";
+		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d?$/";
+		$arrDefine ['CallType']			['Validate']	= "/^\d+$/";
+		$arrDefine ['RateId']			['Validate']	= "/^\d+$/";
+		$arrDefine ['Feedcode']			['Validate']	= "/^5$/";
 		
 		$this->_arrDefineCarrier = $arrDefine;
 	}
