@@ -123,6 +123,4 @@ require_once($strApplicationDir."config.php");
 require_once($strApplicationDir."database_define.php");
 require_once($strApplicationDir."application.php");
 
-// debug
-Debug(SystemDebug());
  ?>
