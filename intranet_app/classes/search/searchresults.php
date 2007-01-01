@@ -257,10 +257,10 @@
 			// Store the Results as Objects in an array
 			while ($Item = $selSearchResults->Fetch ())
 			{
-				$this->Push ($this->ItemId ($Item ['Id']));
+				$_DATA [] = $this->Push ($this->ItemId ($Item ['Id']));
 			}
 			
-			return $this->_DATA;
+			return $_DATA;
 		}
 	}
 	
