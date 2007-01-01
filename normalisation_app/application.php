@@ -515,7 +515,7 @@ die();
 				$arrCDR['Status'] = CDR_CANT_NORMALISE_NO_MODULE;
 			}
 			
-			if ($arrCDR['Status'] !== TRUE )
+			if ($arrCDR['Status'] != CDR_NORMALISED)
 			{
 				$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
 			}
