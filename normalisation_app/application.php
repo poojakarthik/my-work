@@ -496,7 +496,6 @@ die();
 			$arrReportLine['<Action>']		= "Normalising";
 			$arrReportLine['<SeqNo>']		= $arrCDR['SequenceNo'];
 			$arrReportLine['<FileName>']	= TruncateName($arrCDR['FileName'], MSG_MAX_FILENAME_LENGTH);
-			$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
 			
  			// Is there a normalisation module for this type?
 			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
@@ -514,6 +513,11 @@ die();
 				$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDR.CDRFilename"] . "(" . $arrCDR["CDR.SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
 				// set the CDR status
 				$arrCDR['Status'] = CDR_CANT_NORMALISE_NO_MODULE;
+			}
+			
+			if ($arrCDR['Status'] !== TRUE )
+			{
+				$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
 			}
 			
 			// Report
@@ -552,7 +556,7 @@ die();
 					break;
 				default:
 					// Normalised OK
-					$this->AddToNormalisationReport(MSG_OK);
+					//$this->AddToNormalisationReport(MSG_OK);
 					$intNormalisePassed++;
 					break;
 			}
