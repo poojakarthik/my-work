@@ -1539,14 +1539,18 @@ class MySQLFunction
 	 			$i++;
 		 	}
 		 	
+		 	if (count($this->_arrWhereAliases) != count($arrParams))
+		 	{
+		 		Debug("Number of Aliases doesn't match variables");
+		 		Debug($this->_arrWhereAliases);
+		 		Debug($arrParams);
+		 		DebugBacktrace();
+		 	}
+		 	
 			if (is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
-			}
-			else
-			{
-				DebugBacktrace();
 			}
 	 	}
 		
