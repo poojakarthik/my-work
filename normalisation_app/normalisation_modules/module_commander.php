@@ -166,7 +166,7 @@ class NormalisationModuleCommander extends NormalisationModule
 		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 		echo "$mixCarrierCode => $strRecordCode\n";
-		
+		echo $this->_FetchRawCDR('RecordType')." --> ".$this->_FetchRawCDR('RateId')."\n";
 		// Destination Code
 		$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
 		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
