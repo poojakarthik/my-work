@@ -113,7 +113,7 @@ die();
 		// Init Statement
 		$ServiceTotalsColumns['UncappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
 		$ServiceTotalsColumns['CappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
-		$this->_ubiServiceTotals	= new StatementUpdateById("Service", NULL, $ServiceTotalsColumns);
+		$this->_ubiServiceTotals	= new StatementUpdateById("Service", $ServiceTotalsColumns);
 		
 		$this->_selFleetAccount		= new StatementSelect(	"RateGroup JOIN ServiceRateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup" .
 															"Service.Account AS Account",
