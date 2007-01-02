@@ -526,10 +526,10 @@ die();
 		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
 		$arrWhere['ServiceType']	= $this->_arrCurrentCDR['ServiceType'];
 		$this->_selFleetAccount->Execute($arrWhere);
-		/*if($arrAccount = $this->_selFleetAccount->Fetch())
+		if($arrAccount = $this->_selFleetAccount->Fetch())
 		{
 			return $arrAccount['Account'];
-		}*/
+		}
 		// return FALSE if fleet rate not found
 		return FALSE;
 			
@@ -563,10 +563,10 @@ die();
 		
 	 	// find Service (ignores achived services, accounts for Indial 100s)
 	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
-		if ($arrService = $this->_selServiceByFNN->Fetch())
+		/*if ($arrService = $this->_selServiceByFNN->Fetch())
 		{
 			return $arrService['Id'];
-		}
+		}*/
 		
 		// return FALSE if Account not found
 		return FALSE;
