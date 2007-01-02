@@ -221,11 +221,10 @@ class NormalisationModuleAAPT extends NormalisationModule
 		$this->_AppendCDR('ServiceType', $intServiceType);
 		
 		// RecordType
-		$mixCarrierCode					= $this->_FetchRawCDR('BandStep');
+		$mixCarrierCode					= (int)$this->_FetchRawCDR('BandStep');
 		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
 		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
-		echo "$mixCarrierCode => $strRecordCode\n";
 				
 		// Destination Code
 		$mixCarrierCode 				= $this->_FetchRawCDR('RateTable');
