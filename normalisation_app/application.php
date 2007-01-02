@@ -490,6 +490,7 @@ die();
 		$intNormaliseFailed = 0;
 		
 		$intDelinquents = 0;
+		$arrDelinquents = Array();
 
  		foreach ($arrCDRList as $arrCDR)
  		{
