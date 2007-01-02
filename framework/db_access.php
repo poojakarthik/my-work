@@ -302,7 +302,7 @@
 
 		// Find Aliases
 		preg_match_all ("/<([\d\w]+)>/misU", $strString, $arrAliases, PREG_SET_ORDER);
-		
+		Debug($arrAliases);
 		// String replace all aliases with ?'s
 		$strString = preg_replace("/<([\d\w]+)>/misU", "?", $strString);
 		
