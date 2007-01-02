@@ -121,11 +121,12 @@ die();
 															"AND RateGroup.RecordType = <RecordType>" .
 															"AND RateGroup.ServiceType = <ServiceType>" .
 															"AND Service.Id = ServiceRateGroup.Service");
-															
+								
+		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>)";
+		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))"		
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
-															"(FNN = <FNN> AND Archived = 0)" .
-															"OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__')");
+															$strWhere, 'CreatedOn DESC', '1');
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
 		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
@@ -543,16 +544,17 @@ die();
 	 *
 	 * Find the Id for a Service (by FNN)
 	 *
-	 * Find the Id for a Service (by FNN).  Returns the most recently created service
+	 * Find the Id for a Service (by FNN).  Returns the most recently created service as of $Date
 	 * with the specified FNN.
 	 *
 	 * @param	str		$strFNN		Service FNN
+	 * @param	str		$strDate	Date to check on
 	 *	 
 	 * @return	mixed	int			Service Id
 	 * 					bool		FALSE if Service not found
 	 * @method
 	 */
-	 private function _FindServiceByFNN($strFNN)
+	 private function _FindServiceByFNN($strFNN, $strDate)
 	 {
 	 	// return FALSE if invalid FNN
 		if ((int)$strFNN == 0)
@@ -561,7 +563,7 @@ die();
 		}
 		
 	 	// find Service (ignores achived services, accounts for Indial 100s)
-	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN));
+	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
 		if ($arrService = $this->_selServiceByFNN->Fetch())
 		{
 			return $arrService['Id'];
