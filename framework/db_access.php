@@ -1542,6 +1542,8 @@ class MySQLFunction
 			if (is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
+				Debug("-------------------------");
+				Debug($arrParams);
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 			}
 	 	}
