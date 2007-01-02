@@ -38,7 +38,7 @@ while ($appRating->Rate())
 {
 	//REMOVE FOR LIVE SYSTEM
 	// break here to only rate 1000 CDRs
-	break;
+	//break;
 }
 
 //TODO!!!! - send the report
