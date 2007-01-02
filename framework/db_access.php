@@ -1550,9 +1550,7 @@ class MySQLFunction
 		 		DebugBacktrace();
 		 	}
 		 	
-		 	$intQuestionCount = preg_match_all("/\?/", $this->strQuery, $arrMatches);
-		 	
-		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; ?'s: $intQuestionCount");
+		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Query: $this->strQuery");
 		 	
 			if (is_array($arrParams))
 			{
