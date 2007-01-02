@@ -30,6 +30,9 @@ echo "<pre>";
 // Application entry point - create an instance of the application object
 $appRating = new ApplicationRating($arrConfig);
 
+// Change status of all CDRs with missing rate 
+$appRating->ReRate(CDR_RATE_NOT_FOUND);
+
 // run the Rate method until there is nothing left to rate
 while ($appRating->Rate())
 {
@@ -37,7 +40,6 @@ while ($appRating->Rate())
 	// break here to only rate 1000 CDRs
 	break;
 }
-
 
 //TODO!!!! - send the report
 
@@ -180,7 +182,7 @@ die();
 	 function Rate()
 	 {
 	 	// get list of CDRs to rate (limit results to 1000)
-	 	$selGetCDRs = new StatementSelect("CDR", "*", "Status = ".CDR_NORMALISED, null, "1000");
+	 	$selGetCDRs = new StatementSelect("CDR", "*", "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
 	 	$selGetCDRs->Execute();
 		$arrCDRList = $selGetCDRs->FetchAll();
 		

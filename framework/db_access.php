@@ -1432,8 +1432,6 @@ class MySQLFunction
 	 	{
 	 		// Find and replace the aliases in $strWhere
 	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
-	 		Debug($this->_arrWhereAliases);
-			
 			$strQuery .= $strWhere . "\n";
 	 	}
 	 	
