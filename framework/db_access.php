@@ -1541,16 +1541,16 @@ class MySQLFunction
 		 		$arrParams[] = $strParam;
 	 			$i++;
 		 	}
-		 	
+		 	/*
 		 	if (count($this->_arrWhereAliases) != count($arrParams))
 		 	{
 		 		Debug("Number of Aliases doesn't match variables");
 		 		Debug($this->_arrWhereAliases);
 		 		Debug($arrParams);
 		 		DebugBacktrace();
-		 	}
+		 	}*/
 		 	
-		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Query: ".$this->_strQuery);
+		 	//Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Query: ".$this->_strQuery);
 		 	
 			if (is_array($arrParams))
 			{

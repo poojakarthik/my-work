@@ -141,7 +141,7 @@ die();
 										"Rate.RecordType				= <RecordType> AND \n" .
 										"( ( Rate.Destination IS NULL AND <Destination> IS NULL ) OR \n" .
 										"(Rate.Destination = <Destination>) ) AND \n" .
-										"Rate.StartTime					<= TIME(<Time>) AND \n" .
+										"Rate.StartTime					<= <Time> AND \n" .
 										"Rate.EndTime 					>= <Time> AND \n" .
 										"( Rate.Monday					= <Monday> OR \n" .
 										"Rate.Tuesday					= <Tuesday> OR \n" .
@@ -183,7 +183,6 @@ die();
 		
 		// we will return FALSE if there are no CDRs to rate
 		$bolReturn = FALSE;
-		
 		$updSaveCDR = new StatementUpdateById("CDR");
 		
 		$this->Framework->StartWatch();
@@ -425,8 +424,8 @@ die();
 	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 	 	$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
 	 	$strAliases['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
-	 	$strAliases['Time']			= $this->_arrCurrentCDR['StartDatetime'];
 	 	$intTime					= strtotime($this->_arrCurrentCDR['StartDatetime']);
+	 	$strAliases['Time']			= date("H:i:s", $intTime);
 	 	$strDay						= date("l", $intTime);
 	 	$strAliases['Monday']		= ($strDay == "Monday") ? TRUE : DONKEY;
 	 	$strAliases['Tuesday']		= ($strDay == "Tuesday") ? TRUE : DONKEY;
