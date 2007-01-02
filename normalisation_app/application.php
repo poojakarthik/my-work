@@ -199,8 +199,9 @@ die();
 		parent::__construct();
 		
 	 	// Initialise framework components
-		$this->rptNormalisationReport = new Report("Normalisation Report for " . date("Y-m-d H:i:s"), $mixEmailAddress);
-		$this->errErrorHandler = new ErrorHandler();
+		$this->rptNormalisationReport	= new Report("Normalisation Report for " . date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", FALSE);
+		$this->rptDelinquentsReport		= new Report("Delinquents Report for ". date("Y-m-d H:i:s"), $$mixEmailAddress);
+		$this->errErrorHandler			= new ErrorHandler();
 		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
 		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
@@ -577,31 +578,37 @@ die();
 			$updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])); 
  		}
  		
-	 	// Report totals
+ 		// Generate Delinquent Report
+		$strDelinquentText = "\n[ Delinquent FNNs ]\n\n";
+		if (is_array($arrDelinquents))
+		{
+			foreach($arrDelinquents as $strKey=>$strValue)
+			{
+				$strDelinquentText .= "\t+ $strKey was referenced $strValue time(s)\n";
+			}
+			$strDelinquentText .= "\n\tThere were ".count($arrDelinquents)." delinquent FNNs in this run.\n";
+		}
+		else
+		{
+			$strDelinquentText .= "\n\tThere were no deliquent FNNs in this run.\n\n";
+		}
+		$this->rptDelinquentsReport->AddMessage(MSG_HORIZONTAL_RULE.$strDelinquentText.MSG_HORIZONTAL_RULE);
+		
+ 		
+	 	// Normalisation Report totals
 		$arrReportLine['<Action>']		= "Normalised";
 		$arrReportLine['<Total>']		= $intNormalisePassed + $intNormaliseFailed;
 		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
 		$arrReportLine['<Pass>']		= (int)$intNormalisePassed;
 		$arrReportLine['<Fail>']		= (int)$intNormaliseFailed;
-		$this->AddToNormalisationReport(MSG_REPORT."\tThere were ".count($arrDelinquents)." delinquent FNNs.\n\n".MSG_HORIZONTAL_RULE, $arrReportLine);
-		
+		$this->AddToNormalisationReport(MSG_REPORT, $arrReportLine);
+		$this->AddToNormalisationReport($strDelinquentText);
+		$this->AddToNormalisationReport(MSG_HORIZONTAL_RULE);
 		$this->AddToNormalisationReport("Normalisation module completed in ".$this->Framework->uptime()." seconds");
 
-		// Deliver the report
+		// Deliver the reports
 		$this->rptNormalisationReport->Finish();
-		
-		echo "\n\nDelinquent FNNs\n========================\n\n";
-		if (is_array($arrDelinquents))
-		{
-			foreach($arrDelinquents as $strKey=>$strValue)
-			{
-				echo "+ $strKey was referenced $strValue time(s)\n";
-			}
-		}
-		else
-		{
-			echo "There were no deliquent FNNs in this run.\n";
-		}
+		$this->rptDelinquentsReport->Finish();
  	}
  }
 ?>
