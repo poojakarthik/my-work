@@ -1550,7 +1550,7 @@ class MySQLFunction
 		 		DebugBacktrace();
 		 	}*/
 		 	
-		 	//Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Query: ".$this->_strQuery);
+		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Query: ".$this->_strQuery);
 		 	
 			if (is_array($arrParams))
 			{
