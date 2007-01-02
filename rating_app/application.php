@@ -203,7 +203,7 @@ die();
 			
 			// set current CDR
 			$this->_arrCurrentCDR = $arrCDR;
-			echo "1";
+
 			// Find Rate for this CDR
 			if (!$this->_arrCurrentRate = $this->_FindRate())
 			{
@@ -221,7 +221,6 @@ die();
 				continue;
 			}
 			
-			echo "2";
 			if ($this->_arrCurrentRate['PassThrough'])
 			{
 				// Calculate Passthrough rate
@@ -402,6 +401,7 @@ die();
 	 */
 	 private function _FindRate()
 	 {
+	 	echo "a";
 	 	// is this a fleet service
 		$intSourceFleetAccount = $this->_FindFleetAccount($this->_arrCurrentCDR['Service']);
 		if ($intSourceFleetAccount)
@@ -420,7 +420,7 @@ die();
 				}
 			}
 		}
-		
+		echo "b";
 	 	// find the appropriate rate
 	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
 	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
