@@ -118,9 +118,9 @@ die();
 		$this->_selFleetAccount		= new StatementSelect(	"RateGroup JOIN ServiceRateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup",
 															"Service.Account AS Account",
 															"ServiceRateGroup.Service = <Service>" .
-															"AND RateGroup.RecordType = <RecordType>" .
-															"AND RateGroup.ServiceType = <ServiceType>" .
-															"AND Service.Id = ServiceRateGroup.Service");
+															" AND RateGroup.RecordType = <RecordType>" .
+															" AND RateGroup.ServiceType = <ServiceType>" .
+															" AND Service.Id = ServiceRateGroup.Service");
 								
 		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
 		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))";	
@@ -522,10 +522,11 @@ die();
 		}
 		
 		// find fleet RateGroup attached to this service for this record type & service type
+		$arrWhere = Array();
 		$arrWhere['Service']		= $intService;
 		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
 		$arrWhere['ServiceType']	= $this->_arrCurrentCDR['ServiceType'];
-		//$this->_selFleetAccount->Execute($arrWhere);
+		$this->_selFleetAccount->Execute($arrWhere);
 		if($arrAccount = $this->_selFleetAccount->Fetch())
 		{
 			return $arrAccount['Account'];
