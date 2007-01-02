@@ -1565,9 +1565,6 @@ class MySQLFunction
 	 	
 	 	// Retrieve the metatdata from the resultset
 	 	$this->_datMetaData = $this->_stmtSqlStatment->result_metadata();
-	 	
-		Echo SystemDebug();
-		Die();
 		
 		// Create a parameter list for bind_result()
 	 	while ($fldField = $this->_datMetaData->fetch_field())
