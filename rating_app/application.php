@@ -526,6 +526,7 @@ die();
 		$arrWhere['Service']		= $intService;
 		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
 		$arrWhere['ServiceType']	= $this->_arrCurrentCDR['ServiceType'];
+		Debug($arrWhere);
 		$this->_selFleetAccount->Execute($arrWhere);
 		if($arrAccount = $this->_selFleetAccount->Fetch())
 		{
