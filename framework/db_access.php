@@ -302,7 +302,6 @@
 
 		// Find Aliases
 		preg_match_all ("/<([\d\w]+)>/misU", $strString, $arrAliases, PREG_SET_ORDER);
-		Debug($arrAliases);
 		// String replace all aliases with ?'s
 		$strString = preg_replace("/<([\d\w]+)>/misU", "?", $strString);
 		
@@ -1541,6 +1540,7 @@ class MySQLFunction
 		 	
 			if (is_array($arrParams))
 			{
+				Debug($arrParams);
 		 		array_unshift($arrParams, $strType);
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 			}
