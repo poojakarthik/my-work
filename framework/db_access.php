@@ -1457,6 +1457,7 @@ class MySQLFunction
 	 	
 		// Trace
 		$this->Trace("Query: $strQuery");
+		Debug($strQuery);
 	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
