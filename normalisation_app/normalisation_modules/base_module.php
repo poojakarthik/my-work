@@ -278,7 +278,7 @@ abstract class NormalisationModule
 		
 		if ($this->_arrNormalisedData["Source"] != "")															// 3
 		{
-			$arrValid[] = preg_match("/^\d+$|^\+\d+$/", 	$this->_arrNormalisedData["Source"]);
+			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X|\d| )+$/", 	$this->_arrNormalisedData["Source"]);
 		}
 		else
 		{
@@ -287,8 +287,7 @@ abstract class NormalisationModule
 		
 		if ($this->_arrNormalisedData["Destination"] != "")														// 4
 		{
-			$arrValid[] = preg_match("/^\d+$|^\+\d+$/", 	$this->_arrNormalisedData["Destination"]);
-			
+			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X|\d| )+$/", 	$this->_arrNormalisedData["Destination"]);
 		}
 		else
 		{

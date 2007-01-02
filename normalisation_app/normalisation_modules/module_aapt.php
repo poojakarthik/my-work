@@ -271,13 +271,19 @@ class NormalisationModuleAAPT extends NormalisationModule
 		
 		// Source
 		$mixValue 						= $this->_FetchRawCDR('OriginatingCLI');
+		if ($mixValue = " ")
+		{
+			$mixValue = NULL;
+		}
 		$this->_AppendCDR('Source', $mixValue);
-		//TODO!!!! - why was this commented out ????
 		
 		// Destination
 		$mixValue 						= $this->_FetchRawCDR('NumberDialled');
+		if ($mixValue = " ")
+		{
+			$mixValue = NULL;
+		}
 		$this->_AppendCDR('Destination', $mixValue);
-		//TODO!!!! - why was this commented out ????
 		
 		// Cost
 		$mixValue 						= $this->_FetchRawCDR('CallCharge');

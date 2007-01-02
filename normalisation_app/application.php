@@ -585,10 +585,13 @@ die();
 		{
 			foreach($arrDelinquents as $strKey=>$strValue)
 			{
-				echo "$strKey was hit $strValue time(s)\n";
+				echo "+ $strKey was referenced $strValue time(s)\n";
 			}
 		}
-		
+		else
+		{
+			echo "There were no deliquent FNNs in this run.\n";
+		}
  	}
  }
 ?>
