@@ -115,37 +115,37 @@
 		
 		// Unitel Landline and S&E Definition
 		$strUnitelTestDir = "2006/dec/";
-		$arrConfig['Define']["Unitel"]	["Name"]							= "RSLCOM";
-		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
- 		$arrConfig['Define']["Unitel"]	["Type"]							= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Unitel"]	["Server"]							= $strTestServer;
- 		$arrConfig['Define']["Unitel"]	["Username"]						= $strTestUsername;
- 		$arrConfig['Define']["Unitel"]	["PWord"]							= $strTestPassword;
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= $strTestDir."unitel/cdrbatches/".$strUnitelTestDir;
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= $strTestDir."unitel/cdrbatchesoffnet/".$strUnitelTestDir;
- 		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_SE;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
+		$arrConfig['Define']["RSLCOM"]	["Name"]							= "RSLCOM";
+		$arrConfig['Define']["RSLCOM"]	["Carrier"]							= CARRIER_UNITEL;
+ 		$arrConfig['Define']["RSLCOM"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["RSLCOM"]	["Server"]							= $strTestServer;
+ 		$arrConfig['Define']["RSLCOM"]	["Username"]						= $strTestUsername;
+ 		$arrConfig['Define']["RSLCOM"]	["PWord"]							= $strTestPassword;
+ 		$arrConfig['Define']["RSLCOM"]	["Dir"][]							= $strTestDir."unitel/cdrbatches/".$strUnitelTestDir;
+ 		$arrConfig['Define']["RSLCOM"]	["Dir"][]							= $strTestDir."unitel/cdrbatchesoffnet/".$strUnitelTestDir;
+ 		$arrConfig['Define']["RSLCOM"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
+		$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_SE;
+		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
+		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
+		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
+		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 
 		// Unitel Landline and S&E Definition
 		$strUnitelTestDir = "2006/dec/";
-		$arrConfig['Define']["Unitel"]	["Name"]							= "Commander";
-		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
- 		$arrConfig['Define']["Unitel"]	["Type"]							= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Unitel"]	["Server"]							= $strTestServer;
- 		$arrConfig['Define']["Unitel"]	["Username"]						= $strTestUsername;
- 		$arrConfig['Define']["Unitel"]	["PWord"]							= $strTestPassword;
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= $strTestDir."unitel/mobilecdrbatches/".$strUnitelTestDir;
- 		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
+		$arrConfig['Define']["Commander"]	["Name"]							= "Commander";
+		$arrConfig['Define']["Commander"]	["Carrier"]							= CARRIER_UNITEL;
+ 		$arrConfig['Define']["Commander"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["Commander"]	["Server"]							= $strTestServer;
+ 		$arrConfig['Define']["Commander"]	["Username"]						= $strTestUsername;
+ 		$arrConfig['Define']["Commander"]	["PWord"]							= $strTestPassword;
+ 		$arrConfig['Define']["Commander"]	["Dir"][]							= $strTestDir."unitel/mobilecdrbatches/".$strUnitelTestDir;
+ 		$arrConfig['Define']["Commander"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["Commander"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
+		//$arrConfig['Define']["Commander"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
+		//$arrConfig['Define']["Commander"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
+		//$arrConfig['Define']["Commander"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
+		//$arrConfig['Define']["Commander"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 		
 
 		// Optus Definition
