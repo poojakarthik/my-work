@@ -139,8 +139,7 @@ die();
 										"ServiceRateGroup.StartDateTime	<= <DateTime> AND \n" .
 										"ServiceRateGroup.EndDateTime	>= <DateTime> AND \n" .
 										"Rate.RecordType				= <RecordType> AND \n" .
-										"( ( Rate.Destination IS NULL AND <Destination> IS NULL ) OR \n" .
-										"(Rate.Destination = <Destination>) ) AND \n" .
+										"Rate.Destination 				= <Destination> AND \n" .
 										"Rate.StartTime					<= <Time> AND \n" .
 										"Rate.EndTime 					>= <Time> AND \n" .
 										"( Rate.Monday					= <Monday> OR \n" .
