@@ -525,7 +525,7 @@ die();
 		$arrWhere['Service']		= $intService;
 		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
 		$arrWhere['ServiceType']	= $this->_arrCurrentCDR['ServiceType'];
-		$this->_selFleetAccount->Execute($arrWhere);
+		//$this->_selFleetAccount->Execute($arrWhere);
 		if($arrAccount = $this->_selFleetAccount->Fetch())
 		{
 			return $arrAccount['Account'];
@@ -562,7 +562,7 @@ die();
 		}
 		
 	 	// find Service (ignores achived services, accounts for Indial 100s)
-	 	//$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
+	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
 		if ($arrService = $this->_selServiceByFNN->Fetch())
 		{
 			return $arrService['Id'];
