@@ -923,6 +923,30 @@ die();
 		return $fltCharge;
 	 }
 	 
+	 
+	//------------------------------------------------------------------------//
+	// ReRate()
+	//------------------------------------------------------------------------//
+	/**
+	 * ReRate()
+	 *
+	 * Changes CDR Status from specified value to CDR_RERATE
+	 *
+	 * Changes CDR Status from specified value to CDR_RERATE
+	 *
+	 * @param	integer		$intStatus			Status to look for
+	 *	 
+	 * @return	integer							Number of CDRs affected
+	 *
+	 * @method
+	 */
+	 function ReRate($intStatus)
+	 {
+	 	$arrColumns['Status']	= CDR_RERATE;
+	 	$updReRate = new StatementUpdate("CDR", "Status = $intStatus", $arrColumns);
+	 	$mixReturn = $updReRate->Execute($arrColumns, NULL);
+	 	return (int)$mixReturn;
+	 }
  }
 
 
