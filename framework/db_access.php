@@ -1544,6 +1544,10 @@ class MySQLFunction
 		 		array_unshift($arrParams, $strType);
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 			}
+			else
+			{
+				DebugBacktrace();
+			}
 	 	}
 		
 	 	// Free any previous results
