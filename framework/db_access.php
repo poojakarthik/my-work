@@ -1554,8 +1554,7 @@ class MySQLFunction
 	 	{
 			// Trace
 			$this->Trace("Failed: ".$this->Error());
-			echo SystemDebug();
-			Die;
+			//TODO!!!! - return error or something
 	 	}
 	 	
 	 	// Store the results (required for result_metadata())
