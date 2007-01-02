@@ -121,7 +121,6 @@ die();
 															" AND RateGroup.RecordType = <RecordType>" .
 															" AND RateGroup.ServiceType = <ServiceType>" .
 															" AND Service.Id = ServiceRateGroup.Service");
-		Debug($this->_selFleetAccount->error());
 								
 		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
 		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))";	
@@ -565,7 +564,7 @@ die();
 		}
 		
 	 	// find Service (ignores achived services, accounts for Indial 100s)
-	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
+	 	//$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
 		if ($arrService = $this->_selServiceByFNN->Fetch())
 		{
 			return $arrService['Id'];
