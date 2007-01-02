@@ -408,7 +408,6 @@ die();
 			// get the destination service Id
 			$intDestinationService = $this->_FindServiceByFNN($this->_arrCurrentCDR['Destination'], $this->_arrCurrentCDR['StartDatetime']);
 			
-			
 			// is the destination a fleet account
 			$intDestinationFleetAccount = $this->_FindFleetAccount($intDestinationService);
 			if ($intDestinationFleetAccount)
@@ -549,7 +548,7 @@ die();
 	 * with the specified FNN.
 	 *
 	 * @param	str		$strFNN		Service FNN
-	 * @param	str		$strDate	Date to check on
+	 * @param	str		$strDate	optional Date to check on
 	 *	 
 	 * @return	mixed	int			Service Id
 	 * 					bool		FALSE if Service not found
@@ -563,9 +562,15 @@ die();
 			return FALSE; 
 		}
 		
+		// correct missing date
+		if ((int)$strDate == 0)
+		{
+			$strDate = "0000-00-00 00:00:00"; 
+		}
+		
 	 	// find Service (ignores achived services, accounts for Indial 100s)
 	Debug("'$strFNN' : '$strDate'");
-	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
+	 	//$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
 		if ($arrService = $this->_selServiceByFNN->Fetch())
 		{
 			return $arrService['Id'];
