@@ -361,7 +361,7 @@ die();
 				$arrReportLine['<Action>']		= "Importing";
 				$arrReportLine['<SeqNo>']		= $intSequence;
 				$arrReportLine['<FileName>']	= TruncateName($arrCDRFile['FileName'], MSG_MAX_FILENAME_LENGTH);
-				$this->AddToNormalisationReport(MSG_LINE, $arrReportLine);
+				//$this->AddToNormalisationReport(MSG_LINE, $arrReportLine);
 				
 				$arrCDRLine["SequenceNo"]	= $intSequence;
 				$arrCDRLine["Status"]		= CDR_READY;
@@ -383,7 +383,7 @@ die();
 				$intSequence++;
 				
 				// Report
-				$this->AddToNormalisationReport(MSG_OK);
+				//$this->AddToNormalisationReport(MSG_OK);
 				
 				$this->_intImportPass++;
 				
