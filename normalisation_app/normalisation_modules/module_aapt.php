@@ -271,7 +271,7 @@ class NormalisationModuleAAPT extends NormalisationModule
 		
 		// Source
 		$mixValue 						= $this->_FetchRawCDR('OriginatingCLI');
-		if ($mixValue = " ")
+		if ($mixValue == " ")
 		{
 			$mixValue = NULL;
 		}
@@ -279,14 +279,14 @@ class NormalisationModuleAAPT extends NormalisationModule
 		
 		// Destination
 		$mixValue 						= $this->_FetchRawCDR('NumberDialled');
-		if ($mixValue = " ")
+		if ($mixValue == " ")
 		{
 			$mixValue = NULL;
 		}
 		$this->_AppendCDR('Destination', $mixValue);
 		
 		// Cost
-		$mixValue 						= $this->_FetchRawCDR('CallCharge');
+		$mixValue 						= ((int)$this->_FetchRawCDR('CallCharge')) / 100.0;
 		$this->_AppendCDR('Cost', $mixValue);
 
 		//##----------------------------------------------------------------##//
