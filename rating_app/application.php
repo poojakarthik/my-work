@@ -157,6 +157,10 @@ die();
 		//$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "", 1);
 		
 		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
+		
+		// fleet rate query
+		$strWhere					.=	"Rate.Fleet 				= 1 \n";
+		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
  	}
  	
  	
