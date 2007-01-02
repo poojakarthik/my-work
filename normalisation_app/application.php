@@ -508,7 +508,7 @@ die();
 			}
 			else
 			{
-				// there a normalisation module for this type, report an error
+				// there is no normalisation module for this type, report an error
  				new ExceptionVixen("No normalisation module for carrier" . $arrCDR["CDR.Carrier"] . ".", $this->_errErrorHandler, NO_NORMALISATION_MODULE);
 				$this->AddToNormalisationReport(CDR_NORMALISATION_FAIL, $arrCDR["CDR.CDRFilename"] . "(" . $arrCDR["CDR.SequenceNo"] . ")", $strReason = "No normalisation module for carrierNo normalisation module for carrierNo normalisation module for carrier");
 				// set the CDR status
@@ -517,7 +517,7 @@ die();
 			
 			if ($arrCDR['Status'] != CDR_NORMALISED)
 			{
-				$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
+				//$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
 			}
 			
 			// Report
