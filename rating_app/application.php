@@ -121,6 +121,7 @@ die();
 															" AND RateGroup.RecordType = <RecordType>" .
 															" AND RateGroup.ServiceType = <ServiceType>" .
 															" AND Service.Id = ServiceRateGroup.Service");
+		Debug($this->_selFleetAccount->error());
 								
 		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
 		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))";	
