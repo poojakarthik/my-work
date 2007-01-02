@@ -1558,8 +1558,7 @@ class MySQLFunction
 			new Exception($this->Error());
 	 	}
 	 	
-		$this->Error();
-		Die();
+		
 		
 	 	// Store the results (required for result_metadata())
 	 	$this->_stmtSqlStatment->store_result();
@@ -1567,6 +1566,9 @@ class MySQLFunction
 	 	// Retrieve the metatdata from the resultset
 	 	$this->_datMetaData = $this->_stmtSqlStatment->result_metadata();
 	 	
+		$this->Error();
+		Die();
+		
 		// Create a parameter list for bind_result()
 	 	while ($fldField = $this->_datMetaData->fetch_field())
 	 	{
