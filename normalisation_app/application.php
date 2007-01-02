@@ -557,6 +557,7 @@ die();
 				default:
 					// Normalised OK
 					//$this->AddToNormalisationReport(MSG_OK);
+					echo $arrCDR['Status'];
 					$intNormalisePassed++;
 					break;
 			}
