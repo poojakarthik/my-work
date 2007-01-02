@@ -401,7 +401,6 @@ die();
 	 */
 	 private function _FindRate()
 	 {
-	 	echo "a";
 	 	// is this a fleet service
 		$intSourceFleetAccount = $this->_FindFleetAccount($this->_arrCurrentCDR['Service']);
 		if ($intSourceFleetAccount)
@@ -420,7 +419,7 @@ die();
 				}
 			}
 		}
-		echo "b";
+
 	 	// find the appropriate rate
 	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
 	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
@@ -527,10 +526,10 @@ die();
 		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
 		$arrWhere['ServiceType']	= $this->_arrCurrentCDR['ServiceType'];
 		$this->_selFleetAccount->Execute($arrWhere);
-		if($arrAccount = $this->_selFleetAccount->Fetch())
+		/*if($arrAccount = $this->_selFleetAccount->Fetch())
 		{
 			return $arrAccount['Account'];
-		}
+		}*/
 		// return FALSE if fleet rate not found
 		return FALSE;
 			
