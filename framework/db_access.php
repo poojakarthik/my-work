@@ -1547,6 +1547,8 @@ class MySQLFunction
 		 		DebugBacktrace();
 		 	}
 		 	
+		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams));
+		 	
 			if (is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
