@@ -180,8 +180,23 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$this->_AppendCDR('ServiceType', $intServiceType);
 		
 		// RecordType
-		$mixCarrierCode					= $this->_FetchRawCDR('CallType');
-		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+		if ($intCarrierRecordType == "7")
+		{
+			// S&E
+			$strRecordCode 				= 'S&E';
+						
+		}
+		elseif ($intCarrierRecordType == "8")
+		{
+			// OC&C
+			$strRecordCode 				= 'OC&C';
+		}
+		else
+		{
+			// normal calls
+			$mixCarrierCode				= $this->_FetchRawCDR('CallType');
+			$strRecordCode 				= $this->FindRecordCode($mixCarrierCode);
+		}
 		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 		
