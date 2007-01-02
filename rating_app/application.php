@@ -115,7 +115,7 @@ die();
 		$ServiceTotalsColumns['CappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
 		$this->_ubiServiceTotals	= new StatementUpdateById("Service", $ServiceTotalsColumns);
 		
-		$this->_selFleetAccount		= new StatementSelect(	"RateGroup JOIN ServiceRateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup" .
+		$this->_selFleetAccount		= new StatementSelect(	"RateGroup JOIN ServiceRateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup",
 															"Service.Account AS Account",
 															"ServiceRateGroup.Service = <Service>" .
 															"AND RateGroup.RecordType = <RecordType>" .
@@ -123,8 +123,7 @@ die();
 															"AND Service.Id = ServiceRateGroup.Service");
 								
 		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
-		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))";
-		$strWhere = "1";		
+		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))";	
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
 															$strWhere, 'CreatedOn DESC', '1');
