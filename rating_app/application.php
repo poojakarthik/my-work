@@ -562,11 +562,11 @@ die();
 		}
 		
 	 	// find Service (ignores achived services, accounts for Indial 100s)
-	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
-		/*if ($arrService = $this->_selServiceByFNN->Fetch())
+	 	//$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
+		if ($arrService = $this->_selServiceByFNN->Fetch())
 		{
 			return $arrService['Id'];
-		}*/
+		}
 		
 		// return FALSE if Account not found
 		return FALSE;
