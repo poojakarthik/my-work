@@ -317,7 +317,7 @@ die();
 			$this->_rptRatingReport->AddMessage(MSG_OK, FALSE);
 			
 			// save CDR back to database
-			$arrCDR['Rate'] = $this->_arrCurrentCDR['Rate'];
+			$arrCDR['Rate'] = $this->_arrCurrentRate['Id'];
 			$arrCDR['Charge'] = $this->_arrCurrentCDR['Charge'];
 			$arrCDR['Status'] = CDR_RATED;
 			$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
