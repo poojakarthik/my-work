@@ -1457,6 +1457,9 @@ class MySQLFunction
 	 	
 		// Trace
 		$this->Trace("Query: $strQuery");
+		
+		// DEBUG
+		$this->_strQuery = $strQuery;
 	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
@@ -1547,7 +1550,9 @@ class MySQLFunction
 		 		DebugBacktrace();
 		 	}
 		 	
-		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams));
+		 	$intQuestionCount = preg_match_all("/\?/", $this->strQuery);
+		 	
+		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; ?'s: $intQuestionCount");
 		 	
 			if (is_array($arrParams))
 			{
