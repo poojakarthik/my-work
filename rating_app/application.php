@@ -406,7 +406,7 @@ die();
 		if ($intSourceFleetAccount)
 		{
 			// get the destination service Id
-			$intDestinationService = $this->_FindServiceByFNN($this->_arrCurrentCDR['Destination'], $this->_arrCurrentCDR['StartDate']);
+			$intDestinationService = $this->_FindServiceByFNN($this->_arrCurrentCDR['Destination'], $this->_arrCurrentCDR['StartDateTime']);
 			
 			// is the destination a fleet account
 			$intDestinationFleetAccount = $this->_FindFleetAccount($intDestinationService);
