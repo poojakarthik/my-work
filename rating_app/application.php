@@ -123,7 +123,7 @@ die();
 															"AND Service.Id = ServiceRateGroup.Service");
 								
 		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
-		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))";	
+		//$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))";	
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
 															$strWhere, 'CreatedOn DESC', '1');
