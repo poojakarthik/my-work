@@ -389,7 +389,7 @@ die();
 				$this->_intImportPass++;
 				
 				//REMOVE THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				if ($intSequence > 1000)
+				if ($intSequence > 100)
 				{
 					return $intSequence;
 				}
