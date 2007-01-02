@@ -168,6 +168,9 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$strFNN	= $this->RemoveAusCode($strFNN);
 		$this->_AppendCDR('FNN', $strFNN);
 
+		// Carrier Record Type
+		$intCarrierRecordType 			= (int)$this->_FetchRawCDR('RecordType');
+		
 		// ServiceType
 		if ($this->_IsInbound($strFNN))
 		{
@@ -215,8 +218,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$mixValue 						= $this->_FetchRawCDR('EventId');
 		$this->_AppendCDR('CarrierRef', $mixValue);
 		
-		// Carrier Record Type
-		$intCarrierRecordType 			= (int)$this->_FetchRawCDR('RecordType');
+		
 		
 		// StartDateTime & EndDateTime
 		if ($intCarrierRecordType == "1")
