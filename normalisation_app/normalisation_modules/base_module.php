@@ -726,8 +726,10 @@ abstract class NormalisationModule
 	 		return $arrResult;
 	 	}
 	 	
+		// Do not set an error status, let the module decide if a missing destination is an error
+		//$this->_arrNormalisedData['Status']	= CDR_BAD_DESTINATION;
+		
 		// Return false if there was no match
-		$this->_arrNormalisedData['Status']	= CDR_BAD_DESTINATION;
 	 	return false;
 	 }
 

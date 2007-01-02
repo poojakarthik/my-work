@@ -517,7 +517,7 @@ die();
 			
 			if ($arrCDR['Status'] != CDR_NORMALISED)
 			{
-				//$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
+				$this->rptNormalisationReport->AddMessageVariables(MSG_LINE, $arrReportLine, FALSE);
 			}
 			
 			// Report
@@ -557,7 +557,7 @@ die();
 				default:
 					// Normalised OK
 					//$this->AddToNormalisationReport(MSG_OK);
-					echo $arrCDR['Status'];
+					//echo $arrCDR['Status'];
 					$intNormalisePassed++;
 					break;
 			}
