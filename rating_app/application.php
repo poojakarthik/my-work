@@ -123,7 +123,7 @@ die();
 															" AND Service.Id = ServiceRateGroup.Service");
 								
 		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
-		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE CONCAT(SUBSTRING(<FNN>, -2, 2)), '__'))";	
+		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE '<Prefix>'))";	
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
 															$strWhere, 'CreatedOn DESC', '1');
@@ -568,8 +568,11 @@ die();
 			$strDate = "0000-00-00 00:00:00"; 
 		}
 		
+		// set prefix
+		$strPrefix = substr($strFNN, 0, -2).'__';
+		
 	 	// find Service (ignores achived services, accounts for Indial 100s)
-	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate));
+	 	$this->_selServiceByFNN->Execute(Array('FNN' => $strFNN, 'Date' => $strDate, 'Prefix' => $strPrefix));
 		if ($arrService = $this->_selServiceByFNN->Fetch())
 		{
 			return $arrService['Id'];

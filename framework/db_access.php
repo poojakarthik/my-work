@@ -1457,7 +1457,6 @@ class MySQLFunction
 	 	
 		// Trace
 		$this->Trace("Query: $strQuery");
-		Debug($strQuery);
 	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
@@ -1543,8 +1542,6 @@ class MySQLFunction
 			if (is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
-				Debug("-------------------------");
-				Debug($arrParams);
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 			}
 	 	}
