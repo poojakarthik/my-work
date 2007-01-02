@@ -1432,7 +1432,8 @@ class MySQLFunction
 	 	{
 	 		// Find and replace the aliases in $strWhere
 	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
-	 		
+	 		Debug($this->_arrWhereAliases);
+			
 			$strQuery .= $strWhere . "\n";
 	 	}
 	 	
@@ -1541,7 +1542,6 @@ class MySQLFunction
 			if (is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
-				Debug($arrParams);
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 			}
 	 	}
