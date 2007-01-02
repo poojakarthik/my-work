@@ -554,11 +554,21 @@ die();
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Raw Data Invalid"));
 					$intNormaliseFailed++;
 					break;
-				default:
+				case CDR_BAD_DESTINATION:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Destination not found"));
+					$intNormaliseFailed++;
+					break;
+				case CDR_BAD_RECORD_TYPE:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Record Type Invalid"));
+					$intNormaliseFailed++;
+					break;
+				case CDR_NORMALISED:
 					// Normalised OK
-					//$this->AddToNormalisationReport(MSG_OK);
-					//echo $arrCDR['Status'];
 					$intNormalisePassed++;
+					break;
+				default:
+					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Unknown Error"));
+					$intNormaliseFailed++;
 					break;
 			}
 			
