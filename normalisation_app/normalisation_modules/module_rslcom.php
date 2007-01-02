@@ -184,7 +184,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
 		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
-		if ($mixValue == 0)
+		if (!$mixValue)
 		{
 			echo "$mixCarrierCode => $strRecordCode\n";
 		}
