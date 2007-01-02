@@ -1558,6 +1558,9 @@ class MySQLFunction
 			new Exception($this->Error());
 	 	}
 	 	
+		$this->_stmtSqlStatment->Error();
+		Die();
+		
 	 	// Store the results (required for result_metadata())
 	 	$this->_stmtSqlStatment->store_result();
 	 	
