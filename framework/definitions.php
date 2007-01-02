@@ -111,6 +111,12 @@ define("CDR_CANT_NORMALISE_NO_MODULE"	, 110);
 define("CDR_CANT_NORMALISE_INVALID"		, 111);
 define("CDR_IGNORE"						, 140);
 define("CDR_RATED"						, 150);
+define("CDR_RATE_NOT_FOUND"				, 151);
+define("CDR_UNABLE_TO_RATE"				, 152);
+define("CDR_UNABLE_TO_CAP"				, 153);
+define("CDR_UNABLE_TO_PRORATE"			, 154);
+define("CDR_TOTALS_UPDATE_FAILED"		, 155);
+
 define("CDR_TEMP_INVOICE"				, 198);
 define("CDR_INVOICED"					, 199);
 

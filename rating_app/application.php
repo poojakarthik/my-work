@@ -211,7 +211,7 @@ die();
 			{
 				// rate not found
 				// set status in database
-				$arrCDR['Status']	= CDR_RATING_NOT_FOUND;
+				$arrCDR['Status']	= CDR_RATE_NOT_FOUND;
 				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
 				$updSaveCDR->Execute($arrCDR);
 				
