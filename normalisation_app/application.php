@@ -580,9 +580,12 @@ die();
 		$this->rptNormalisationReport->Finish();
 		
 		echo "\n\nDelinquent FNNs\n========================\n\n";
-		foreach($arrDelinquents as $strKey=>$strValue)
+		if (is_array($arrDelinquents))
 		{
-			echo "$strKey was hit $strValue time(s)\n";
+			foreach($arrDelinquents as $strKey=>$strValue)
+			{
+				echo "$strKey was hit $strValue time(s)\n";
+			}
 		}
 		
  	}
