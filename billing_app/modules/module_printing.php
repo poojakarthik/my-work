@@ -135,9 +135,9 @@
 		$arrColumns['RecordTypeTotal']	= "SUM(CDR.Charge)";
 		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
 																"RecordType AS RType, " .
-																"Service JOIN CDR ON Service.Id = CDR.Service",
+																"Service",
 																$arrColumns,
-																"RType.Itemised = 1 AND Service.Account = <Account> AND RecordType.Group = RType.Id",
+																"RType.Itemised = 1 AND Service.Account = <Account> AND RecordType.Group = RType.Id AND Service.Id = CDR.Service",
 																"Service.FNN, RType.Name",
 																NULL,
 																"Service.Id, RType.Id");
