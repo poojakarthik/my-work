@@ -580,9 +580,7 @@
 		{
 			unlink($strFilename);
 		}
-		Debug($strQuery);
 		$qryBuildFile->Execute($strQuery);
-		Debug($qryBuildFile->Error());
 		
 		// create metadata file
 		$ptrMetaFile	= fopen($strMetaName, "w");
