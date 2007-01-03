@@ -36,8 +36,13 @@ $appNormalise = new ApplicationNormalise($mixEmailAddress);
 // Import lines from CDR files into the database
 $appNormalise->Import();
 
-// Normalise CDR records in the database
-$appNormalise->Normalise();
+// run the Rate method until there is nothing left to rate
+while ($appNormalise->Normalise())
+{
+	//REMOVE FOR LIVE SYSTEM
+	// break here to only rate 1000 CDRs
+	//break;
+}
 
 // finished
 echo("\n-- End of Normalisation --\n");
@@ -459,7 +464,7 @@ die();
 	 *
 	 * Normalises new CDRs
 	 *
-	 * @return	<type>
+	 * @return	bool	returns true untill all CDRs have been normalised
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
@@ -471,11 +476,13 @@ die();
 		$mixColumns	= Array("" => "CDR.*", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
 		$strWhere	= "CDR.Status = <status>";
 		$strOrder	= "";
-		$strLimit	= "5000";
+		$strLimit	= "1000";
  		$selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
 		$selSelectCDRs->Execute(Array("status" => CDR_READY));
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
+		// we will return FALSE if there are no CDRs to normalise
+		$bolReturn = FALSE;
 		
 		// setup update query
 		$arrDefine = $this->db->FetchClean("CDR");
@@ -495,6 +502,9 @@ die();
 
  		foreach ($arrCDRList as $arrCDR)
  		{
+			// return TRUE if we have normalised (or tried to normalise) any CDRs
+			$bolReturn = TRUE;
+			
 			// Report
 			$arrReportLine['<Action>']		= "Normalising";
 			$arrReportLine['<SeqNo>']		= $arrCDR['SequenceNo'];
@@ -611,6 +621,9 @@ die();
 		// Deliver the reports
 		$this->rptNormalisationReport->Finish();
 		$this->rptDelinquentsReport->Finish();
+		
+		// Return TRUE or FALSE
+		return $bolReturn;
  	}
  }
 ?>
