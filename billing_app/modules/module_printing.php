@@ -80,8 +80,8 @@
 		$arrColumns['AddressLine1']		= "Contact.AddressLine1";
 		$arrColumns['AddressLine2']		= "Contact.AddressLine2";
 		$this->_selCustomerDetails		= new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
-																$arrColumns,
-																"Account.Id = <Account>");
+																$arrColumns/*,
+																"Account.Id = <Account>"*/);
 		
 		$arrColumns = Array();
 		$arrColumns[]					= "Total";
@@ -204,7 +204,7 @@
 		// HEADER
 		// get details from invoice & customer
 		$arrWhere['Account']	= $arrInvoiceDetails['Account'];
-		$this->_selCustomerDetails->Execute($arrWhere);
+		$this->_selCustomerDetails->Execute(/*$arrWhere*/);
 		$bolHasBillHistory	= $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account'])) ? TRUE : FALSE;
 		$arrCustomerData	= $this->_selCustomerDetails->Fetch();
 		$arrBillHistory		= $this->_selLastBills->FetchAll();
