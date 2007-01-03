@@ -106,7 +106,7 @@
 		
 		$this->_selServices				= new StatementSelect(	"Service",
 																"FNN",
-																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW()");
+																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW())");
 		
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RecordType.Name";
