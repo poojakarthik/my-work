@@ -203,7 +203,7 @@
 	
 		// HEADER
 		// get details from invoice & customer
-		$arrWhere['abcdef'] = 0;
+		$arrWhere['abcddfgef'] = 0;
 		$this->_selCustomerDetails->Execute($arrWhere);
 		$bolHasBillHistory	= $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account'])) ? TRUE : FALSE;
 		$arrCustomerData	= $this->_selCustomerDetails->Fetch();
