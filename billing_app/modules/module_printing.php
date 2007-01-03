@@ -112,7 +112,7 @@
 		$arrColumns['RecordTypeName']	= "RecordType.Name";
 		$arrColumns['Charge']			= "SUM(CDR.Charge)";
 		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, " .
-																"RecordType RType",
+																"RecordType AS RType",
 																$arrColumns,
 																"RecordType.Group = RType.Id AND CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND ISNULL(CDR.Invoice)",
 																"RType.Name",
