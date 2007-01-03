@@ -424,6 +424,8 @@ die();
 		$arrReportLines['<Fail>']	= $intFailed;
 		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
 		
+		return;
+		
 		// Generate the Bill Audit Report
 		$this->_rptBillingReport->AddMessage(MSG_GENERATE_AUDIT, FALSE);
 		$mixResponse = $this->_GenerateBillAudit();

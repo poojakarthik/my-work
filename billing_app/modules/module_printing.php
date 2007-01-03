@@ -577,6 +577,7 @@
 			$strQuery .= rand(0, (int)$arrMetaData['Invoices']).", ".BILL_PRINT_SAMPLE_LIMIT;
 		}
 		$qryBuildFile->Execute($strQuery);
+		Debug($qryBuildFile->Error());
 		
 		// create metadata file
 		$ptrMetaFile	= fopen($strMetaName, "w");
