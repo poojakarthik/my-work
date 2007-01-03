@@ -77,8 +77,8 @@
 		$arrColumns['Suburb']			= "Account.Suburb";
 		$arrColumns['State']			= "Account.State";
 		$arrColumns['Postcode']			= "Account.Postcode";
-		$arrColumns['AddressLine1']		= "Account.AddressLine1";
-		$arrColumns['AddressLine2']		= "Account.AddressLine2";
+		$arrColumns['AddressLine1']		= "Account.Address1";
+		$arrColumns['AddressLine2']		= "Account.Address2";
 		$this->_selCustomerDetails		= new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
 																$arrColumns,
 																"Account.Id = <Account>");
