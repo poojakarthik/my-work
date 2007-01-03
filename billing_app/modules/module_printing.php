@@ -627,6 +627,7 @@
 			$strFile		= $this->Filename;
 		}
 		
+		/*
 		// Connect to FTP
 		$ptrFTP = ftp_connect(BILL_PRINT_HOST);
 		if (!ftp_login($ptrFTP, BILL_PRINT_USERNAME, BILL_PRINT_PASSWORD))
@@ -644,7 +645,7 @@
 		
 		// Close the FTP connection
 		ftp_close($ptrFTP);
-		
+		*/
 		return TRUE;
  	}
 	
