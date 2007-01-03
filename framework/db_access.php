@@ -1468,6 +1468,7 @@ class MySQLFunction
 	 		//throw new Exception("Could not prepare statement : $strQuery\n");
 			// Trace
 			$this->Trace("Error: ".$this->Error());
+			Debug($this->Error());
 			//throw new Exception($this->Error());
 	 	}
 	}
