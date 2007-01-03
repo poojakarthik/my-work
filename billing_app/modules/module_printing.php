@@ -84,10 +84,10 @@
 																"Account.Id = <Account>");
 		
 		$arrColumns = Array();
-		$arrColumns["Total"]					= "Total";
-		$arrColumns["Tax"]					= "Tax";
-		$arrColumns["Balance"]					= "Balance";
-		$arrColumns["CreatedOn"]					= "CreatedOn";
+		$arrColumns[]				= "Total";
+		$arrColumns[]					= "Tax";
+		$arrColumns[]				= "Balance";
+		$arrColumns[]			= "CreatedOn";
 		$this->_selLastBills			= new StatementSelect(	"Invoice",
 																$arrColumns,
 																"Account = <Account>",
