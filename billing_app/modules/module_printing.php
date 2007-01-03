@@ -576,6 +576,10 @@
 		{
 			$strQuery .= "LIMIT ".rand(0, (int)$arrMetaData['Invoices']).", ".BILL_PRINT_SAMPLE_LIMIT;
 		}
+		if (file_exists($strFilename))
+		{
+			unlink($strFilename);
+		}
 		$qryBuildFile->Execute($strQuery);
 		Debug($qryBuildFile->Error());
 		
