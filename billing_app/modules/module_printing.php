@@ -541,7 +541,7 @@
  	{
 		$selMetaData = new StatementSelect("InvoiceTemp", "COUNT(Id) AS Invoices");
 		$selMetaData->Execute();
-		$arrMetaData = $selMetadata->Fetch();
+		$arrMetaData = $selMetaData->Fetch();
 
 		// generate filename
 		if($bolSample)
