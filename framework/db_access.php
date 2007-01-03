@@ -1457,7 +1457,6 @@ class MySQLFunction
 		
 		// DEBUG
 		$this->_strQuery = $strQuery;
-		Debug($strQuery);
 	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
@@ -1548,9 +1547,9 @@ class MySQLFunction
 		 		Debug($arrParams);
 		 		DebugBacktrace();
 		 	}
-		 	*/
+		 	*//*
 		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
-		 	DebugBacktrace();
+		 	DebugBacktrace();*/
 		 	
 			if (is_array($arrParams))
 			{
