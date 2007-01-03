@@ -597,6 +597,7 @@
 		
 		// zip files
 		$strCommand = "zip $strZipName $strFilename $strMetaName";
+		Debug($strCommand);
 		exec($strCommand);
 		
 		// set filename internally
