@@ -101,7 +101,7 @@
 																"RecordType RType," .
 																"Service",
 																$arrColumns,
-																"RecordType.Group = RType.Id AND Account = <Account> AND InvoiceRun = <InvoiceRun> AND ServiceTypeTotal.Service = Service.Id",
+																"RecordType.Group = RType.Id AND Service.Account = <Account> AND InvoiceRun = <InvoiceRun> AND ServiceTypeTotal.Service = Service.Id",
 																"Service.ServiceType, Service.FNN");
 		
 		$this->_selServices				= new StatementSelect(	"Service",
