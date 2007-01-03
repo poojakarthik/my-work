@@ -212,7 +212,7 @@
 		// build output
 		$arrDefine['InvoiceDetails']	['BillType']		['Value']	= $arrCustomerData['CustomerGroup'];
 		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
-		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month"));	// FIXME: At a later date.  This is fine for now.
+		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month"), time());	// FIXME: At a later date.  This is fine for now.
 		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
 		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrCustomerData['Account'];
 		if($bolHasBillHistory)
@@ -256,6 +256,7 @@
 		$arrDefine['GraphHeader']		['GraphTitle']		['Value']	= "Account History";
 		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
 		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "\$ Value";
+		$arrFileData[] = $arrDefine['GraphHeader'];
 		$arrDefine['GraphData']			['Title']			['Value']	= date("M y", strtotime("-$intCount months"));
 		$arrDefine['GraphData']			['Value']			['Value']	= $arrInvoiceDetails['Balance'];
 		$arrFileData[] = $arrDefine['GraphData'];
@@ -499,6 +500,7 @@
 						break;
 					default:
 						// Unknown Data Type
+						Debug("BIG FLOPPY DONKEY DICK (Unknown Bill Printing Data Type)");
 						return FALSE;
 				}
 				
@@ -580,7 +582,11 @@
 		{
 			unlink($strFilename);
 		}
-		$qryBuildFile->Execute($strQuery);
+		if (!$qryBuildFile->Execute($strQuery))
+		{
+			Debug($qryBuildFile->Error());
+		}
+
 		
 		// create metadata file
 		$ptrMetaFile	= fopen($strMetaName, "w");
