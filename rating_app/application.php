@@ -815,16 +815,16 @@ die();
 		}
 		
 		// set service Id
-		$arrService['Id'] = $this->_arrCurrentCDR['Service'];
+		$arrData['Id'] = $this->_arrCurrentCDR['Service'];
 		
 		if ($this->_arrCurrentRate['Uncapped'])
 		{
-			$arrService['UncappedCharge'] = $fltCharge;
+			$arrData['UncappedCharge'] = $fltCharge;
 			return $this->_ubiServiceTotalsUncapped->Execute($arrService);
 		}
 		else
 		{
-			$arrService['CappedCharge'] = $fltCharge;
+			$arrData['CappedCharge'] = $fltCharge;
 			return $this->_ubiServiceTotalsCapped->Execute($arrService);
 		}
 	 }
