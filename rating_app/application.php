@@ -308,10 +308,6 @@ die();
 				$intFailed++;
 				continue;
 			}
-			else
-			{
-				Debug($mixResult);
-			}
 			
 			// Check for overlimit accounts
 			// TODO!!! - FUTURE
@@ -810,7 +806,6 @@ die();
 	 */
 	 private function _UpdateTotals($arrService)
 	 {
-	 	return TRUE;
 	 	// update service totals
 		$fltCharge = $this->_arrCurrentCDR['Charge'];
 
