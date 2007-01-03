@@ -292,7 +292,11 @@ die();
 			}
 			// Update Service & Account Totals
 			$mixResult = $this->_UpdateTotals($arrCDR['Service']);
-			if (!$mixResult)
+			if ($mixResult === FALSE)
+			{
+				Debug($this->_UpdateTotals->Error());
+			}
+			elseif (!$mixResult)
 			{
 				// problem updating totals
 				// set status in database
@@ -819,13 +823,13 @@ die();
 		
 		if ($this->_arrCurrentRate['Uncapped'])
 		{
-			$arrData['UncappedCharge'] = $fltCharge;
-			return $this->_ubiServiceTotalsUncapped->Execute($arrService);
+			$arrData['UncappedCharge'] = (float)$arrService['UncappedCharge'] + $fltCharge;
+			return $this->_ubiServiceTotalsUncapped->Execute($arrData);
 		}
 		else
 		{
-			$arrData['CappedCharge'] = $fltCharge;
-			return $this->_ubiServiceTotalsCapped->Execute($arrService);
+			$arrData['CappedCharge'] = (float)$arrService['CappedCharge'] + $fltCharge;
+			return $this->_ubiServiceTotalsCapped->Execute($arrData);
 		}
 	 }
 	 
