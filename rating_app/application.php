@@ -113,9 +113,8 @@ die();
 		$this->_rptRatingReport->AddMessage("\n".MSG_HORIZONTAL_RULE.MSG_RATING_TITLE, FALSE);
 		
 		// Init Statement
-		$ServiceTotalsColumns['UncappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
-		$ServiceTotalsColumns['CappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)");
-		$this->_ubiServiceTotals	= new StatementUpdateById("Service", $ServiceTotalsColumns);
+		$this->_ubiServiceTotalsCapped		= new StatementUpdateById("Service", Array('CappedCharge' => NULL));
+		$this->_ubiServiceTotalsUncapped	= new StatementUpdateById("Service", Array('UncappedCharge' => NULL));
 		
 		$this->_selFleetAccount		= new StatementSelect(	"RateGroup JOIN ServiceRateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup, Service",
 															"Service.Account AS Account",
@@ -815,22 +814,19 @@ die();
 			return 1;
 		}
 		
-		if ($this->_arrCurrentRate['Uncapped'])
-		{
-			$arrService['UncappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)", Array("ExistingCharge" => "UncappedCharge","AddCharge" => $fltCharge));
-			$arrService['CappedCharge']		= new MySQLFunction("(<ExistingCharge> + <AddCharge>)", Array("ExistingCharge" => "CappedCharge","AddCharge" => 0));
-		}
-		else
-		{
-			$arrService['UncappedCharge']	= new MySQLFunction("(<ExistingCharge> + <AddCharge>)", Array("ExistingCharge" => "UncappedCharge","AddCharge" => 0));
-			$arrService['CappedCharge']		= new MySQLFunction("(<ExistingCharge> + <AddCharge>)", Array("ExistingCharge" => "CappedCharge","AddCharge" => $fltCharge));
-			
-		}
-		
 		// set service Id
 		$arrService['Id'] = $this->_arrCurrentCDR['Service'];
 		
-		return $this->_ubiServiceTotals->Execute($arrService);
+		if ($this->_arrCurrentRate['Uncapped'])
+		{
+			$arrService['UncappedCharge'] = $fltCharge;
+			return $this->_ubiServiceTotalsUncapped->Execute($arrService);
+		}
+		else
+		{
+			$arrService['CappedCharge'] = $fltCharge;
+			return $this->_ubiServiceTotalsCapped->Execute($arrService);
+		}
 	 }
 	 
 	//------------------------------------------------------------------------//
