@@ -1547,10 +1547,10 @@ class MySQLFunction
 		 		Debug($arrParams);
 		 		DebugBacktrace();
 		 	}
-		 	
+		 	*/
 		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Query: ".$this->_strQuery);
 		 	DebugBacktrace();
-		 	*/
+		 	
 			if (is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
@@ -1814,6 +1814,7 @@ class MySQLFunction
 	 	
 		// Trace
 		$this->Trace("Query: $strQuery");
+		$this->_strQuery = $strQuery;
 		
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
