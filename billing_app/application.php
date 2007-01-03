@@ -315,7 +315,7 @@ die();
 					Debug($insServiceTotal->Error());
 					continue;
 				}
-				
+				$this->_rptBillingReport->AddMessage(MSG_OK);
 				// add to invoice totals
 				$fltTotalDebits		+= $fltServiceDebits;
 				$fltTotalCredits	+= $fltServiceCredits;
