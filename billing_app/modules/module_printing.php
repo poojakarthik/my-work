@@ -587,19 +587,8 @@
 		fclose($ptrMetaFile);
 		
 		// zip files
-		$ptrZipFile = new ZipArchive;
-		if($ptrZipFile->open($strZipName))
-		{
-			// add the files to our new zip archive
-			$ptrZipFile->addFile($strFilename, $strFilename);
-			$ptrZipFile->addFile($strMetaName, $strMetaName);
-			$ptrZipFile->close();
-		}
-		else
-		{
-			// ERROR
-			return FALSE;
-		}
+		$strCommand = "zip $strZipName $strFilename $strMetaName";
+		exec($strCommand);
 		
 		// set filename internally
 		$this->_strFilename = $strZipName;
