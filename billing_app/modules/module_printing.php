@@ -96,7 +96,7 @@
 																
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RecordType.Name";
-		$arrColumns['Charge']			= "ServiceTypeTotals.Charge";
+		$arrColumns['Charge']			= "ServiceTypeTotal.Charge";
 		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, " .
 																"RecordType RType," .
 																"Service",
