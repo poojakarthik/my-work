@@ -152,11 +152,24 @@ die();
 		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
 		
 		// Init Insert Statements
-		$arrInvoiceData 				= Array();
-		$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
-		$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY");
-		$insTempInvoice					= new StatementInsert("InvoiceTemp", NULL);
-		$insServiceTotal				= new StatementInsert("ServiceTotal");
+		$arrInvoiceData 					= Array();
+		$arrInvoiceData['CreatedOn']		= /*new MySQLFunction("NOW()")*/NULL;
+		$arrInvoiceData['DueOn']			= /*new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY")*/NULL;
+		$arrInvoiceData['AccountGroup']		= NULL;
+		$arrInvoiceData['Account']			= NULL;
+		$arrInvoiceData['CreatedOn']		= NULL;
+		$arrInvoiceData['DueOn']			= NULL;
+		$arrInvoiceData['Credits']			= NULL;
+		$arrInvoiceData['Debits']			= NULL;
+		$arrInvoiceData['Total']			= NULL;
+		$arrInvoiceData['Tax']				= NULL;
+		$arrInvoiceData['Balance']			= NULL;
+		$arrInvoiceData['AccountBalance']	= NULL;
+		$arrInvoiceData['Status']			= NULL;
+		$arrInvoiceData['InvoiceRun']		= NULL;
+		$arrInvoiceData['Disputed']			= NULL;
+		$insTempInvoice						= new StatementInsert("InvoiceTemp", $arrInvoiceData);
+		$insServiceTotal					= new StatementInsert("ServiceTotal");
 		
 		$intPassed = 0;
 		$intFailed = 0;
