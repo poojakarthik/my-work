@@ -277,7 +277,7 @@
 		$arrServiceTypeTotals = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
 		if ($arrServiceTypeTotals === FALSE)
 		{
-			Debug($arrServiceTypeTotals->Error());
+			Debug($this->_selServiceTypeTotals->Error());
 		}
 		// build output
 		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
