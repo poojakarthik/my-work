@@ -432,6 +432,10 @@ die();
 	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
 	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 	 	$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
+		if (!$this->_arrCurrentCDR['DestinationCode'])
+		{
+			$strAliases['Destination']	= 0;
+		}
 	 	$strAliases['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
 	 	$intTime					= strtotime($this->_arrCurrentCDR['StartDatetime']);
 	 	$strAliases['Time']			= date("H:i:s", $intTime);
