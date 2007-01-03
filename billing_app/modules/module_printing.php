@@ -74,14 +74,14 @@
 		$arrColumns['PaymentTerms']		= "Account.PaymentTerms";
 		$arrColumns['FirstName']		= "Contact.FirstName";
 		$arrColumns['LastName']			= "Contact.LastName";
-		$arrColumns['Suburb']			= "Contact.Suburb";
-		$arrColumns['State']			= "Contact.State";
-		$arrColumns['Postcode']			= "Contact.Postcode";
-		$arrColumns['AddressLine1']		= "Contact.AddressLine1";
-		$arrColumns['AddressLine2']		= "Contact.AddressLine2";
+		$arrColumns['Suburb']			= "Account.Suburb";
+		$arrColumns['State']			= "Account.State";
+		$arrColumns['Postcode']			= "Account.Postcode";
+		$arrColumns['AddressLine1']		= "Account.AddressLine1";
+		$arrColumns['AddressLine2']		= "Account.AddressLine2";
 		$this->_selCustomerDetails		= new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
 																$arrColumns,
-																"Account.Id = <abcdef>");
+																"Account.Id = <Account>");
 		
 		$arrColumns = Array();
 		$arrColumns[]					= "Total";
@@ -203,7 +203,7 @@
 	
 		// HEADER
 		// get details from invoice & customer
-		$arrWhere['abcddfgef'] = 0;
+		$arrWhere['Account'] = $arrInvoiceDetails['Account'];
 		$this->_selCustomerDetails->Execute($arrWhere);
 		$bolHasBillHistory	= $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account'])) ? TRUE : FALSE;
 		$arrCustomerData	= $this->_selCustomerDetails->Fetch();
