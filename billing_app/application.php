@@ -140,7 +140,7 @@ die();
 		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0");
 		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance)", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
-															  "SUM(Amount) AS Amount",
+															  "Nature, SUM(Amount) AS Amount",
 															  "Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
 															  NULL,
 															  "2",
@@ -266,24 +266,26 @@ die();
 				
 				// Calculate Debit and Credit Totals
 				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
-				if($selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $this->_strInvoiceRun)) != 2)
+				$mixResult = $selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $this->_strInvoiceRun));
+				if($mixResult > 2 || $mixResult === FALSE)
 				{
-					// Incorrect number of rows returned
+					// Incorrect number of rows returned or an error
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
 					continue;
 				}
 				else
 				{
 					$arrDebitsCredits = $selDebitsCredits->FetchAll();
-					if ($arrDebitsCredits[0]['Nature'] == "DR")
+					foreach($arrDebitsCredits as $arrCharge)
 					{
-						$fltServiceDebits	= $arrDebitsCredits[0];
-						$fltServiceCredits	= $arrDebitsCredits[1];
-					}
-					else
-					{
-						$fltServiceDebits	= $arrDebitsCredits[1];
-						$fltServiceCredits	= $arrDebitsCredits[0];
+						if ($arrCharge['Nature'] == "DR")
+						{
+							$fltServiceDebits	= $arrCharge['Amount'];
+						}
+						else
+						{
+							$fltServiceCredits	= $arrCharge['Amount'];
+						}
 					}
 					$this->_rptBillingReport->AddMessage(MSG_OK);
 				}
