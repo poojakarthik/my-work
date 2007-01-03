@@ -122,7 +122,7 @@ define("GRAPH_TYPE_LINEXYZ"					, "05");
 // Miscellaneous Bill Printing Constants
 define("BILL_PRINT_HISTORY_LIMIT"			, 6);
 define("BILL_PRINT_SAMPLE_LIMIT"			, 10);
-define("BILLING_LOCAL_PATH"					, "/home/vixen/bill_output/");
+define("BILLING_LOCAL_PATH"					, "/home/vixen_bills/");
 define("BILLING_LOCAL_PATH_SAMPLE"			, BILLING_LOCAL_PATH."samples");
 
 // Bill Printing FTP data
