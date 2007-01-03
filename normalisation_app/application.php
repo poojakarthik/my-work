@@ -40,7 +40,7 @@ $appNormalise->Import();
 while ($appNormalise->Normalise())
 {
 	//REMOVE FOR LIVE SYSTEM
-	// break here to only rate 1000 CDRs
+	// break here to only normalise 1000 CDRs
 	//break;
 }
 
@@ -385,6 +385,7 @@ die();
 				if (trim($arrCDRLine["CDR"]))
 				{
 					$insInsertCDRLine->Execute($arrCDRLine);
+					Debug($insInsertCDRLine->Error());
 				}
 				$intSequence++;
 				
