@@ -535,7 +535,7 @@
 	 */
  	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
  	{
-		$selMetadata = new StatementSelect("InvoiceTemp", "COUNT(Id) AS Invoices");
+		$selMetaData = new StatementSelect("InvoiceTemp", "COUNT(Id) AS Invoices");
 		$selMetaData->Execute();
 		$arrMetaData = $selMetadata->Fetch();
 
