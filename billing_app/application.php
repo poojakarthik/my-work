@@ -310,6 +310,7 @@ die();
 				if (!$insServiceTotal->Execute($arrServiceTotal))
 				{
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
+					Debug($insServiceTotal->Error());
 					continue;
 				}
 				
