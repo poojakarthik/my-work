@@ -275,6 +275,10 @@
 		$arrServiceTypeTotalVars['Account']		= $arrInvoiceDetails['Account'];
 		$arrServiceTypeTotalVars['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 		$arrServiceTypeTotals = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
+		if ($arrServiceTypeTotals === FALSE)
+		{
+			Debug($arrServiceTypeTotals->Error());
+		}
 		// build output
 		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 		foreach($arrServiceTypeTotals as $arrTotal)
