@@ -307,7 +307,19 @@ abstract class NormalisationModule
 		
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);											// 7
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
-		$arrValid[] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
+		
+		// DestinationCode is required for any record type with a context
+		if ($this->_intContext > 0)
+		{
+			// requires a destination
+			$arrValid[] = is_numeric($this->_arrNormalisedData["DestinationCode"]);	// 9
+		}
+		else
+		{
+			// doesn't require a destination
+			$arrValid[] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
+		}
+		
 		
 		$i = 0;
 		foreach ($arrValid as $bolValid)
@@ -691,9 +703,10 @@ abstract class NormalisationModule
 	 	if ($arrResult = $this->_selFindRecordType->Fetch())
 	 	{
 			$this->_intContext = $arrResult['Context'];
+			Debug("{$arrResult['Id']} => {$arrResult['Context']}");
 	 		return $arrResult['Id'];
 	 	}
-	 	
+		
 		// Return false if there was no match
 		$this->_arrNormalisedData['Status']	= CDR_BAD_RECORD_TYPE;
 	 	return false;
@@ -723,9 +736,12 @@ abstract class NormalisationModule
 		
 	 	if ($arrResult = $this->_selFindDestination->Fetch())
 	 	{
+			Debug("Destination : {$arrResult['Description']}");
 	 		return $arrResult;
 	 	}
 	 	
+		Debug("No Destination Found for {$this->_arrNormalisedData["Carrier"]} : $mixCarrierCode");
+		
 		// Do not set an error status, let the module decide if a missing destination is an error
 		//$this->_arrNormalisedData['Status']	= CDR_BAD_DESTINATION;
 		

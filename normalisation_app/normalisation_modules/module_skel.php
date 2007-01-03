@@ -232,15 +232,18 @@ class NormalisationModuleSkel extends NormalisationModule
 		$mixValue 						= $this->_FetchRawCDR('');
 		$this->_AppendCDR('Cost', $mixValue);
 		
-		// DestinationCode
-		$mixCarrierCode 				= $this->_FetchRawCDR('');
-		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
-		if ($arrDestinationCode)
+		// Destination Code & Description (only if we have a context)
+		// $this->FindRecordType() must be run firs to set the context ($this->_intContext)
+		if ($this->_intContext > 0)
 		{
-			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
-			$this->_AppendCDR('Description', $arrDestinationCode['Description']);
+			$mixCarrierCode 				= $this->_FetchRawCDR('');
+			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+			if ($arrDestinationCode)
+			{
+				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+				$this->_AppendCDR('Description', $arrDestinationCode['Description']);
+			}
 		}
-
 		//##----------------------------------------------------------------##//
 		
 		if (!$this->ApplyOwnership())

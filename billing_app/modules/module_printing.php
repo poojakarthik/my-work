@@ -557,6 +557,10 @@
 			$strZipName		= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
 		}
 		
+		// cleanup so mysql can create its file
+		$strCommand = "RM -f $strFilename";
+		exec($strCommand);
+		
 		// Use a MySQL select into file Query to generate the file
 		if($bolSample)
 		{
@@ -601,7 +605,6 @@
 		
 		// zip files
 		$strCommand = "zip $strZipName $strFilename $strMetaName";
-		Debug($strCommand);
 		exec($strCommand);
 		
 		// set filename internally

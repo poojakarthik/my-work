@@ -166,13 +166,16 @@ class NormalisationModuleCommander extends NormalisationModule
 		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 
-		// Destination Code
-		$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
-		$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
-		if ($arrDestinationCode)
+		// Destination Code & Description (only if we have a context)
+		if ($this->_intContext > 0)
 		{
-			$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
-			$this->_AppendCDR('Description', $arrDestinationCode['Description']);
+			$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
+			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+			if ($arrDestinationCode)
+			{
+				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+				$this->_AppendCDR('Description', $arrDestinationCode['Description']);
+			}
 		}
 		
 		// CarrierRef
