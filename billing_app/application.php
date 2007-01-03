@@ -138,7 +138,7 @@ die();
 		// Init Select Statements
 		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
 		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0");
-		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance)", "Status = INVOICE_COMMITTED AND Account = <Account>");
+		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance)", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "SUM(Amount) AS Amount",
 															  "Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
@@ -266,7 +266,7 @@ die();
 				
 				// Calculate Debit and Credit Totals
 				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
-				if($selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => "'{$this->_strInvoiceRun}'")) != 2)
+				if($selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $this->_strInvoiceRun)) != 2)
 				{
 					// Incorrect number of rows returned
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
