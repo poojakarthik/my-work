@@ -1425,7 +1425,7 @@ class MySQLFunction
  		}
 
 	 	// Add the FROM line
-	 	$strQuery .= " FROM " . $strTables . "\n";
+	 	$strQuery .= "\n FROM " . $strTables . "\n";
 
 	 	// Add the WHERE clause
 	 	if ($strWhere != "")
@@ -1548,7 +1548,7 @@ class MySQLFunction
 		 		DebugBacktrace();
 		 	}
 		 	*/
-		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Query: ".$this->_strQuery);
+		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Query: \n".$this->_strQuery);
 		 	DebugBacktrace();
 		 	
 			if (is_array($arrParams))
