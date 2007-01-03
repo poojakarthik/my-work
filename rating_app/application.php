@@ -292,7 +292,8 @@ die();
 				}
 			}
 			// Update Service & Account Totals
-			if (!$this->_UpdateTotals($arrCDR['Service']))
+			$mixResult = $this->_UpdateTotals($arrCDR['Service']);
+			if (!$mixResult)
 			{
 				// problem updating totals
 				// set status in database
@@ -306,6 +307,10 @@ die();
 				
 				$intFailed++;
 				continue;
+			}
+			else
+			{
+				Debug($mixResult);
 			}
 			
 			// Check for overlimit accounts
