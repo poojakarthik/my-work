@@ -408,7 +408,7 @@ die();
 		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
 		{
 			// build billing output sample
-			$this->_arrBillOutput[$strKey]->BuildSample();
+			$this->_arrBillOutput[$strKey]->BuildSample($strInvoiceRun);
 			
 			// send billig output sample
 			$this->_arrBillOutput[$strKey]->SendSample();
