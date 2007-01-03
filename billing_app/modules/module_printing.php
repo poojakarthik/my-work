@@ -558,11 +558,19 @@
 		}
 		
 		// Use a MySQL select into file Query to generate the file
+		if($bolSample)
+		{
+			$strInvoiceTable = 'InvoiceTemp';
+		}
+		else
+		{
+			$strInvoiceTable = 'Invoice';
+		}
 		$qryBuildFile	= new Query();
-		$strColumns		= "CONCAT('10', LPAD(CAST(Invoice.Id AS CHAR(10)), 10, ' '), InvoiceOutput.Data)";
-		$strWhere		= "InvoiceRun = '$strInvoiceRun'";
+		$strColumns		= "CONCAT('10', LPAD(CAST($strInvoiceTable.Id AS CHAR(10)), 10, ' '), InvoiceOutput.Data)";
+		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun'";
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename'\n" .
-							"FROM InvoiceOutput JOIN Invoice USING (Account)\n" .
+							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
 							"WHERE $strWhere\n";
 		if($bolSample)
 		{
@@ -571,7 +579,7 @@
 		$qryBuildFile->Execute($strQuery);
 		
 		// create metadata file
-		$ptrMetaFile	= fopen($strMetaName, "0777");
+		$ptrMetaFile	= fopen($strMetaName, "w");
 		// TODO - get actual insert ids for this billing run
 		$strLine		= 	date("Y-m-d").
 							$strFilename.
