@@ -352,7 +352,8 @@ die();
 			if(!$insTempInvoice->Execute($arrInvoiceData))
 			{
 				// Report and fail out
-				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n");
+				Debug($insTempInvoice->Error());
 				$intFailed++;
 				continue;
 			}
@@ -367,7 +368,7 @@ die();
 			$intPassed++;
 			
 			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK);
+			$this->_rptBillingReport->AddMessage(MSG_OK."\n");
 		}
 		
 		// SERVICE TYPE TOTALS
