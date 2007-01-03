@@ -299,7 +299,7 @@
 		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
 		$arrDefine['PaymentData']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
-		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ($arrInvoiceDetails['Balance'] + $arrInvoiceDetails['AccountBalance']) - $arrInvoiceDetails['Credits'];
+		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
 		$arrDefine['PaymentData']		['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		$arrDefine['PaymentData']		['PropertyName']	['Value']	= $arrDefine['InvoiceDetails']['PropertyName']['Value'];
 		$arrDefine['PaymentData']		['AddressLine1']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine1']['Value'];
