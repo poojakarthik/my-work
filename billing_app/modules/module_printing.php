@@ -567,9 +567,9 @@
 			$strInvoiceTable = 'Invoice';
 		}
 		$qryBuildFile	= new Query();
-		$strColumns		= "CONCAT('10', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, ' '), InvoiceOutput.Data)";
+		$strColumns		= "'10', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, ' '), InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun'";
-		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename' FIELDS TERMINATED BY '' FIELDS ESCAPED BY '' \n" .
+		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename' FIELDS TERMINATED BY '' FIELDS ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
 							"WHERE $strWhere\n";
 		if($bolSample)
