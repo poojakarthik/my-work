@@ -279,6 +279,10 @@
 		{
 			Debug($this->_selServiceTypeTotals->Error());
 		}
+		elseif(!is_array($arrServiceTypeTotals))
+		{
+			$arrServiceTypeTotals = Array();
+		}
 		// build output
 		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 		foreach($arrServiceTypeTotals as $arrTotal)
@@ -445,7 +449,7 @@
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		
 		// DEBUG: This can be removed later
-		Debug($arrFileData);
+		//Debug($arrFileData);
 		
 		// Process and implode the data so it can be inserted into the DB
 		$strFileContents = "";
