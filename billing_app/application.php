@@ -201,7 +201,7 @@ die();
 			if(!$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id'])))
 			{
 				// Report and continue
-				$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_FAILED.MSG_LINE_FAILED, Array('<Reason>' => "Cannot link CDRs"));
+				$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
 				continue;
 			}
 			else
