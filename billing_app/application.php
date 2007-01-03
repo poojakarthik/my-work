@@ -347,6 +347,7 @@ die();
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
 			$arrInvoiceData['Status']			= INVOICE_TEMP;
 			$arrInvoiceData['InvoiceRun']		= $strInvoiceRun;
+			$arrInvoiceData['Disputed']			= 0;
 			
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))
