@@ -21,11 +21,11 @@ mkdir -m 700 /home/vixen_upload/aapt
 mkdir -m 700 /home/vixen_upload/optus
 mkdir -m 700 /home/vixen_upload/iseek
 
-mkdir -m 700 /home/vixen_bill_output
-mkdir -m 700 /home/vixen_bill_output/sample
+mkdir -m 770 /home/vixen_bill_output
+mkdir -m 770 /home/vixen_bill_output/sample
 
 # chown dirs
 chown -R www-data.www-data /home/vixen_download
 chown -R www-data.www-data /home/vixen_import
 chown -R www-data.www-data /home/vixen_upload
-chown -R www-data.www-data /home/vixen_bill_output
+chown -R www-data.mysql /home/vixen_bill_output
