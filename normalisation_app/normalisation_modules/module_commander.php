@@ -170,7 +170,9 @@ class NormalisationModuleCommander extends NormalisationModule
 		if ($this->_intContext > 0)
 		{
 			$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
+			Debug($mixCarrierCode);
 			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+			Debug($arrDestinationCode['Description']);
 			if ($arrDestinationCode)
 			{
 				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
