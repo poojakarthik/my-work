@@ -703,7 +703,6 @@ abstract class NormalisationModule
 	 	if ($arrResult = $this->_selFindRecordType->Fetch())
 	 	{
 			$this->_intContext = $arrResult['Context'];
-			Debug("{$arrResult['Id']} => {$arrResult['Context']}");
 	 		return $arrResult['Id'];
 	 	}
 		
@@ -736,14 +735,13 @@ abstract class NormalisationModule
 		
 	 	if ($arrResult = $this->_selFindDestination->Fetch())
 	 	{
-			Debug("Destination : {$arrResult['Description']}");
 	 		return $arrResult;
 	 	}
 	 	
-		Debug("No Destination Found for {$this->_arrNormalisedData["Carrier"]} : $mixCarrierCode");
-		
-		// Do not set an error status, let the module decide if a missing destination is an error
-		//$this->_arrNormalisedData['Status']	= CDR_BAD_DESTINATION;
+		//TODO!!!! - add this to a report so we can see any missing destinations
+
+		// Set an error status
+		$this->_arrNormalisedData['Status']	= CDR_BAD_DESTINATION;
 		
 		// Return false if there was no match
 	 	return false;
