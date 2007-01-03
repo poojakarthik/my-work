@@ -569,6 +569,7 @@
 		$qryBuildFile	= new Query();
 		$strColumns		= "'10', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, ' '), InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun'";
+		$strColumns = "'x'";
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename' FIELDS TERMINATED BY '' FIELDS ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
 							"WHERE $strWhere\n";
@@ -580,6 +581,7 @@
 		{
 			unlink($strFilename);
 		}
+		Debug($strQuery);
 		$qryBuildFile->Execute($strQuery);
 		Debug($qryBuildFile->Error());
 		
