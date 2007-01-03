@@ -84,10 +84,10 @@
 																"Account.Id = <Account>");
 		
 		$arrColumns = Array();
-		$arrColumns[]				= "Total";
+		$arrColumns[]					= "Total";
 		$arrColumns[]					= "Tax";
-		$arrColumns[]				= "Balance";
-		$arrColumns[]			= "CreatedOn";
+		$arrColumns[]					= "Balance";
+		$arrColumns[]					= "CreatedOn";
 		$this->_selLastBills			= new StatementSelect(	"Invoice",
 																$arrColumns,
 																"Account = <Account>",
@@ -106,15 +106,15 @@
 		
 		$this->_selServices				= new StatementSelect(	"Service",
 																"FNN",
-																"Account = <Account> AND Archived = 0");
+																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW()");
 		
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RecordType.Name";
 		$arrColumns['Charge']			= "SUM(CDR.Charge)";
-		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
-																"RecordType JOIN RecordType RType ON RecordType.Group = RType.Id",
+		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, " .
+																"RecordType RType",
 																$arrColumns,
-																"CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND ISNULL(CDR.Invoice)",
+																"RecordType.Group = RType.Id AND CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND ISNULL(CDR.Invoice)",
 																"RType.Name",
 																NULL,
 																"RType.Id\n" .
