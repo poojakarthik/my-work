@@ -1410,10 +1410,9 @@ class MySQLFunction
 			reset($mixColumns);
 			
 		 	// Add the columns 	
-		 	while (key($mixColumns) != null)
+		 	foreach($mixColumns as $strColumn)
 		 	{
-		 		$strQuery .= current($mixColumns).", ";
-				next($mixColumns);
+		 		$strQuery .= "$strColumn, ";
 		 	}
 			$strQuery = substr($strQuery, 0, -2);
  		}
@@ -1458,6 +1457,7 @@ class MySQLFunction
 		
 		// DEBUG
 		$this->_strQuery = $strQuery;
+		Debug($strQuery);
 	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
