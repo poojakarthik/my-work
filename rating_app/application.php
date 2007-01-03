@@ -295,9 +295,6 @@ die();
 			if ($mixResult === FALSE)
 			{
 				Debug($this->_UpdateTotals->Error());
-			}
-			elseif (!$mixResult)
-			{
 				// problem updating totals
 				// set status in database
 				$arrCDR['Status'] = CDR_TOTALS_UPDATE_FAILED;
@@ -310,6 +307,12 @@ die();
 				
 				$intFailed++;
 				continue;
+			}
+			elseif (!$mixResult)
+			{
+				// add to report
+				$arrAlises['<Reason>'] = "Totals didn't change";
+				$this->_rptRatingReport->AddMessageVariables(MSG_IGNORE.MSG_FAIL_LINE, $arrAlises, FALSE);
 			}
 			
 			// Check for overlimit accounts
