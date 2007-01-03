@@ -155,7 +155,7 @@ die();
 		$arrInvoiceData 				= Array();
 		$arrInvoiceData['CreatedOn']	= new MySQLFunction("NOW()");
 		$arrInvoiceData['DueOn']		= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY");
-		$insTempInvoice					= new StatementInsert("InvoiceTemp", $arrInvoiceData);
+		$insTempInvoice					= new StatementInsert("InvoiceTemp", NULL);
 		$insServiceTotal				= new StatementInsert("ServiceTotal");
 		
 		$intPassed = 0;
