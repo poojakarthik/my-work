@@ -98,10 +98,10 @@
 		$arrColumns['RecordTypeName']	= "RecordType.Name";
 		$arrColumns['Charge']			= "ServiceTypeTotals.Charge";
 		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotals JOIN RecordType ON ServiceTypeTotals.RecordType = RecordType.Id, " .
-																"RecordType JOIN RecordType RType ON RecordType.Group = RType.Id," .
-																"ServiceTypeTotals STypeTotals JOIN Service ON STypeTotals.Service = Service.Id",
+																"RecordType RType," .
+																"Service",
 																$arrColumns,
-																"Account = <Account> AND InvoiceRun = <InvoiceRun> AND STypeTotals.Id = ServiceTypeTotals.Id",
+																"RecordType.Group = RType.Id AND Account = <Account> AND InvoiceRun = <InvoiceRun> AND ServiceTypeTotals.Service = Service.Id",
 																"Service.ServiceType, Service.FNN");
 		
 		$this->_selServices				= new StatementSelect(	"Service",
