@@ -377,7 +377,7 @@ die();
 			$intPrintTarget = BILL_PRINT;
 			
 			// build billing output for this invoice
-			$this->_arrBillOutput[$intPrintTarget]->AddInvoice($arrInvoiceData);
+			//$this->_arrBillOutput[$intPrintTarget]->AddInvoice($arrInvoiceData);
 			
 			$intPassed++;
 			
