@@ -51,7 +51,7 @@ define("MSG_UPDATE_CHARGES"				, "\t\t+ Updating Charges...\t");
 define("MSG_DEBITS_CREDITS"				, "\t\t+ Calculating DRs and CRs...");
 define("MSG_GET_SERVICES"				, "\t+ Retrieving Service Data...\t");
 define("MSG_SERVICE_TITLE"				, "\t-> <FNN>");
-define("MSG_TEMP_INVOICE"				, "\t* Generating Temporary Invoice...");
+define("MSG_TEMP_INVOICE"				, "\t* Generating Temporary Invoice...\t\t");
 define("MSG_LINE_FAILED"				, "\n\t\t- <Reason>");
 define("MSG_BUILD_REPORT"				, "\n\tGenerated <Total> Invoices in <Time> seconds.  <Pass> passed, <Fail> failed.\n\n");
 define("MSG_BILLING_FOOTER"				, "\nBilling completed in <Time> seconds.");
