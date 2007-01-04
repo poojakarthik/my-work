@@ -200,7 +200,7 @@
  	function AddInvoice($arrInvoiceDetails)
  	{
 		$arrDefine = $this->_arrDefine;
-	
+		
 		// HEADER
 		// get details from invoice & customer
 		$arrWhere['Account'] = $arrInvoiceDetails['Account'];
@@ -214,7 +214,7 @@
 		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
 		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month", time()));	// FIXME: At a later date.  This is fine for now.
 		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
-		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrCustomerData['Account'];
+		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		if($bolHasBillHistory)
 		{
 			// Display the previous bill details
@@ -247,7 +247,7 @@
 		$arrDefine['InvoiceDetails']	['Suburb']			['Value']	= $arrCustomerData['Suburb'];
 		$arrDefine['InvoiceDetails']	['State']			['Value']	= $arrCustomerData['State'];
 		$arrDefine['InvoiceDetails']	['Postcode']		['Value']	= $arrCustomerData['Postcode'];
-		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
+		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days", time()));
 		
 		Debug($arrDefine['InvoiceDetails']);
 		die;
