@@ -249,8 +249,8 @@
 		$arrDefine['InvoiceDetails']	['Postcode']		['Value']	= $arrCustomerData['Postcode'];
 		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days", time()));
 		
-		Debug($arrDefine['InvoiceDetails']);
-		die;
+//		Debug($arrDefine['InvoiceDetails']);
+//		die;
 		
 		$this->_arrFileData[] = $arrDefine['InvoiceDetails'];
 		
@@ -550,8 +550,8 @@
 			$strFileContents .= "\n";
 		}
 		
-		Debug($strFileContents);
-		die;
+//		Debug($strFileContents);
+//		die;
 		
 		// Insert into InvoiceOutput table
 		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
