@@ -67,7 +67,7 @@ die();
 	 * 
 	 * @param	array	$arrConfig				Configuration array
 	 *
-	 * @return			ApplicationCollection
+	 * @return			Application
 	 *
 	 * @method
 	 */
