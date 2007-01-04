@@ -546,12 +546,12 @@ die();
 					$intNormaliseFailed++;
 					break;
 				case CDR_CANT_NORMALISE_HEADER:
-					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Header Row"));
-					$intNormaliseFailed++;
+					//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Header Row"));
+					//$intNormaliseFailed++;
 					break;
 				case CDR_CANT_NORMALISE_NON_CDR:
-					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Non-CDR"));
-					$intNormaliseFailed++;
+					//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Non-CDR"));
+					//$intNormaliseFailed++;
 					break;
 				case CDR_BAD_OWNER:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Cannot match owner"));
