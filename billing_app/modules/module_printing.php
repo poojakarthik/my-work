@@ -248,6 +248,10 @@
 		$arrDefine['InvoiceDetails']	['State']			['Value']	= $arrCustomerData['State'];
 		$arrDefine['InvoiceDetails']	['Postcode']		['Value']	= $arrCustomerData['Postcode'];
 		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
+		
+		Debug($arrDefine['InvoiceDetails']);
+		die;
+		
 		$this->_arrFileData[] = $arrDefine['InvoiceDetails'];
 		
 		// MONTHLY COMPARISON BAR GRAPH
