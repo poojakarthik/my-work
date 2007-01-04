@@ -396,7 +396,7 @@ die();
 				//REMOVE THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				if ($intSequence > 100)
 				{
-					return $intSequence;
+					break;
 				}
 			}
 			fclose($fileCDRFile);

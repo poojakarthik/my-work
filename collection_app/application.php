@@ -262,11 +262,15 @@ die();
 					$this->_arrCurrentDownloadFile['CollectedOn']	= New MySQLFunction("NOW()");
 					$intId = $insFileDownload->Execute($this->_arrCurrentDownloadFile);
 					
+					// set current file Id
+					$this->_arrCurrentDownloadFile['Id'] = $intId;
+					
 					// import files
 					$this->Import($arrFiles);
 					
 					// record download in db (FileDownload) - status has now been changed
 					$ubiFileDownload->Execute($this->_arrCurrentDownloadFile);
+		Debug($ubiFileDownload->Error(););
 									
 					// increment counter
 					$intCounter++;
