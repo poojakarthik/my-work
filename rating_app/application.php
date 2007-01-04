@@ -42,7 +42,7 @@ while ($appRating->Rate())
 }
 
 // Empty the Donkey Account
-Debug("Donkey Account = $".$appRating->__DonkeyAccount);
+Debug("Donkey Account = $".$appRating->_DonkeyAccount);
 
 //TODO!!!! - send the report
 
