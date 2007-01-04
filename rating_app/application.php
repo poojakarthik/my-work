@@ -820,7 +820,7 @@ die();
 	 *
 	 * @method
 	 */
-	 private function _UpdateTotals($arrService)
+	 private function _UpdateTotals()
 	 {
 	 	// update service totals
 		$fltCharge = $this->_arrCurrentCDR['Charge'];
@@ -836,12 +836,12 @@ die();
         
 		if ($this->_arrCurrentRate['Uncapped'])
 		{
-			$arrService['UncappedCharge']    = new MySQLFunction("(UncappedCharge + <AddCharge>)", Array("AddCharge" => $fltCharge));
+			$arrData['UncappedCharge']    = new MySQLFunction("(UncappedCharge + <AddCharge>)", Array("AddCharge" => $fltCharge));
 			return $this->_ubiServiceTotalsUncapped->Execute($arrData);
 		}
 		else
 		{
-			$arrService['CappedCharge']        = new MySQLFunction("(CappedCharge + <AddCharge>)", Array("AddCharge" => $fltCharge));
+			$arrData['CappedCharge']        = new MySQLFunction("(CappedCharge + <AddCharge>)", Array("AddCharge" => $fltCharge));
 			return $this->_ubiServiceTotalsCapped->Execute($arrData);
 		}		
 	 }
