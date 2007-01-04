@@ -79,7 +79,7 @@
 		$arrColumns['Postcode']			= "Account.Postcode";
 		$arrColumns['AddressLine1']		= "Account.Address1";
 		$arrColumns['AddressLine2']		= "Account.Address2";
-		$this->_selCustomerDetails		= new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
+		$this->_selCustomerDetails		= new StatementSelect(	"Account LEFT OUTER JOIN Contact ON Account.PrimaryContact = Contact.Id",
 																$arrColumns,
 																"Account.Id = <Account>");
 		
