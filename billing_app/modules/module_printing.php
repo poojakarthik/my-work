@@ -479,7 +479,7 @@
 						{
 							$strValue = "0";
 						};
-						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_LEFT);
+						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_CHAR:
 						if (!$strValue)
@@ -500,7 +500,7 @@
 						{
 							$strValue = "0";
 						};
-						$strValue = str_pad((float)$strValue, 11, " ", STR_PAD_LEFT);
+						$strValue = str_pad((float)$strValue, 11, "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTDATE:
 						if (!$strValue)
@@ -528,12 +528,12 @@
 						{
 							$strValue = "DURFUCK";
 						};
-						$strValue = str_pad($strValue, 7, " ", STR_PAD_LEFT);
+						$strValue = str_pad($strValue, 9, "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTCURRENCY:
 						if (!$strValue)
 						{
-							$strValue = "-99999999";
+							$strValue = "-9999999.99";
 						};
 						$strTemp = sprintf("%1.2f", ((float)$strValue));
 						$strValue = str_pad($strTemp, 11, " ", STR_PAD_LEFT);
