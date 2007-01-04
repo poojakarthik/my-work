@@ -212,7 +212,7 @@
 		// build output
 		$arrDefine['InvoiceDetails']	['BillType']		['Value']	= $arrCustomerData['CustomerGroup'];
 		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
-		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month"), time());	// FIXME: At a later date.  This is fine for now.
+		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month", time()));	// FIXME: At a later date.  This is fine for now.
 		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
 		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrCustomerData['Account'];
 		if($bolHasBillHistory)
