@@ -193,7 +193,13 @@ die();
 		
 		// we will return FALSE if there are no CDRs to rate
 		$bolReturn = FALSE;
-		$updSaveCDR = new StatementUpdateById("CDR");
+		
+		// set up the update query
+		$arrDefine = Array();
+		$arrDefine['Status'] = TRUE;
+		$arrDefine['Charge'] = TRUE;
+		$arrDefine['RatedOn'] = new MySQLFunction("NOW()");
+		$updSaveCDR = new StatementUpdateById("CDR", $arrDefine);
 		
 		$this->Framework->StartWatch();
 		

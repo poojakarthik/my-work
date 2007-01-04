@@ -1774,6 +1774,10 @@ class MySQLFunction
 	 * Constructor for StatementInsert object
 	 *
 	 * @param		string	strTable		Name of the table to insert into
+	 * @param		array	arrColumns		optional Associative array of the columns 
+	 * 										you want to insert, where the keys are the column names.
+	 * 										If you want to insert everything, ignore
+	 * 										this parameter
 	 *
 	 * @return		void
 	 *
@@ -1787,28 +1791,53 @@ class MySQLFunction
 		$this->Trace("Input: $strTable, $arrColumns");
 			 	
 	 	$this->_strTable = $strTable;
-		// Compile the query from our passed info
-	 	$strQuery = "INSERT INTO " . $strTable . " (";
 	 	
-	 	reset($this->db->arrTableDefine[$strTable]["Column"]);
-	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$strTable]["Column"]) - 1); $i++)
+		// Determine if it's a partial or full insert
+	 	if ($arrColumns)
 	 	{
-	 		$strQuery .= key($this->db->arrTableDefine[$strTable]["Column"]) . ", ";
-	 		next($this->db->arrTableDefine[$strTable]["Column"]);
-	 	}
-	 	// Last column is different
-	 	$strQuery .= key($this->db->arrTableDefine[$strTable]["Column"]) . ")\n";
-	 	
-	 	$strQuery .= "VALUES(";
-
-		// Create a ? placeholder for every column
-	 	for ($i = 0; $i < (count($this->db->arrTableDefine[$strTable]["Column"]) - 1); $i++)
-	 	{
-	 		$strQuery .= "?, ";
-	 	}
-	 	// Last ? is different
-	 	$strQuery .= "?)";
-
+			$this->_arrColumns = $arrColumns;
+			
+			if (!is_string($arrColumns))
+			{
+				// remove the index column
+				unset($this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]);
+			}
+			else
+			{
+				// For some reason arrColumns is a string
+				Debug($arrColumns);
+				DebugBacktrace();
+				Die();	// Die in the ass
+			}
+			
+	 		// Partial Update, so use $arrColumns
+	 		$this->_bolIsPartialInsert = TRUE;
+		}
+		else
+		{
+			// Full Insert, so retrieve columns from the Table definition array
+			$this->_arrColumns = $this->db->arrTableDefine[$strTable]["Column"];
+		}
+		
+		// Work out the keys and values
+		$arrInsertValues	= Array();
+		$strInsertKeys 		= implode(',', array_keys($this->_arrColumns));
+		foreach ($this->_arrColumns as $mixKey => $mixColumn)
+		{
+			if ($mixColumn instanceOf MySQLFunction)
+			{
+				$arrInsertValues[]	= $mixColumn->Prepare();
+			}
+			else
+			{
+				$arrInsertValues[]	= '?';
+			}
+		}	
+		$strInsertValues 	= implode(',', $arrInsertValues);
+		
+		// Compile the query
+		$strQuery 			= "INSERT INTO " . $strTable . " ($strInsertKeys) VALUES($strInsertValues)";
+		
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
 	 	
@@ -1853,25 +1882,65 @@ class MySQLFunction
 		// Trace
 		$this->Trace("Execute($arrData)");
 	 	
+		// Bind the VALUES data to our mysqli_stmt
 	 	$strType = "";
-	 	
-	 	// Bind the VALUES data to our mysqli_stmt
-	 	foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
+		$arrParams = array();
+	 	if ($this->_bolIsPartialInsert)
 	 	{
-			if (isset ($arrData[$strColumnName]))
+			// partial insert
+			foreach ($this->_arrColumns as $mixKey => $mixColumn)
 			{
-				$strType .= $arrColumnValue['Type'];
-				$arrParams[] = $arrData[$strColumnName];
-			}
-			else
-			{
-				// Assumes that missing fields are supposed to be null
-				// We say the type is an integer, so that the word NULL
-				// does not get preescaped
-				$strType .= "i";
-				$arrParams[] = NULL;
-			}
+				if ($mixColumn instanceOf MySQLFunction)
+				{
+					if (!($arrData [$mixKey] instanceOf MySQLFunction))
+					{
+						throw new Exception ("Dead :-("); // TODO: Fix that ...
+					}
+					
+					$mixColumn->Execute ($strType, $arrParams, $arrData[$mixKey]->getParameters());
+				}
+				else
+				{
+					if (!isset ($this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"]))
+					{
+						throw new Exception ("Could not find data type: " . $this->_strTable . "." . $mixKey);
+					}
+					
+					$strType .= $this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"];
+		 			
+					// account for table.column key names
+					if (isset($arrData [$mixKey]))
+					{
+						$arrParams[] = $arrData [$mixKey];
+					}
+					else
+					{
+						$arrParams[] = $arrData [$this->_strTable.".".$mixKey];
+					}
+				}
+	 		}
 	 	}
+	 	else
+		{
+			// full insert	
+			foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
+			{
+				if (isset ($arrData[$strColumnName]))
+				{
+					$strType .= $arrColumnValue['Type'];
+					$arrParams[] = $arrData[$strColumnName];
+				}
+				else
+				{
+					// Assumes that missing fields are supposed to be null
+					// We say the type is an integer, so that the word NULL
+					// does not get preescaped
+					$strType .= "i";
+					$arrParams[] = NULL;
+				}
+			}
+		}
+		
 		array_unshift($arrParams, $strType);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 	 	

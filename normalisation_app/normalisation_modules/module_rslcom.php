@@ -275,8 +275,8 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		else
 		{
 		 	// For S&E and OC&C CDRs
-		 	$strDescription				 =  $this->_FetchRawCDR('Description');
-			$strDescription				.=  " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
+		 	$strDescription				 = $this->_FetchRawCDR('Description');
+			$strDescription				.= " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
 		}
 		if ($strDescription)
 		{
@@ -284,7 +284,8 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		}
 		
 		// Cost
-		$mixValue						=  $this->_FetchRawCDR('Price');
+		$mixValue						= $this->_FetchRawCDR('Price');
+		$mixValue						= str_replace($mixValue, '$','');
 		$this->_AppendCDR('Cost', (float)$mixValue);
 		
 		// Source

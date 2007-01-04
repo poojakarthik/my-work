@@ -148,7 +148,9 @@ die();
 		$this->_errErrorHandler = new ErrorHandler();
 		$this->_rptCollectionReport = new Report("Collection Report for " . date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
 		
-		$this->_insFileImport = new statementInsert("FileImport");
+		$arrDefine = $this->db->FetchClean("FileImport");
+		$arrDefine['ImportedOn'] = new MySQLFunction("NOW()");
+		$this->_insFileImport = new statementInsert("FileImport", $arrDefine);
 		$this->_selIsUnique = new StatementSelect("FileImport", "Id", "Carrier = <Carrier> AND (SHA1 = <SHA1> OR FileName = <FileName>)");
 		
 		// instanciate collection downloaders
@@ -172,8 +174,14 @@ die();
 	 */
  	function Collect()
  	{
-		$insFileDownload = new StatementInsert("FileDownload");
-		$ubiFileDownload = new StatementUpdateById("FileDownload");
+		$arrDefine = $this->db->FetchClean("FileDownload");
+		$arrDefine['CollectedOn'] = new MySQLFunction("NOW()");
+		$insFileDownload = new StatementInsert("FileDownload", $arrDefine);
+		
+		$arrColumns = Array();
+		$arrColumns['Status'] 		= TRUE;
+		$arrColumns['ImportedOn']	= New MySQLFunction("NOW()");
+		$ubiFileDownload = new StatementUpdateById("FileDownload", $arrColumns);
 			
 		// For each file definition...
  		foreach ($this->_arrCollectionModule as $arrModule)
@@ -294,7 +302,9 @@ die();
 	function Import($arrFiles)
 	{
 		// set status of downloaded file
-		$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORTED;
+		$this->_arrCurrentDownloadFile['Status'] 		= RAWFILE_IMPORTED;
+		$this->_arrCurrentDownloadFile['ImportedOn']	= New MySQLFunction("NOW()");
+		
 		$bolReturn = TRUE;
 		if (!is_array($arrFiles) || count($arrFiles) < 1)
 		{

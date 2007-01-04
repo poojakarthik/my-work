@@ -163,8 +163,8 @@ class NormalisationModuleCommander extends NormalisationModule
 		// RecordType
 		$mixCarrierCode					= $this->_FetchRawCDR('CallType');
 		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
-		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
-		$this->_AppendCDR('RecordType', $mixValue);
+		$intRecordType 					= $this->FindRecordType($intServiceType, $strRecordCode); 
+		$this->_AppendCDR('RecordType', $intRecordType);
 
 		// Destination Code & Description (only if we have a context)
 		if ($this->_intContext > 0)
@@ -195,14 +195,19 @@ class NormalisationModuleCommander extends NormalisationModule
 		{
 		 	// For Data calls
 		 	$mixValue					= $this->_FetchRawCDR('TotalKB');
-		 	$this->_AppendCDR('Units', (int)$mixValue);
+		}
+		elseif($intRecordType == 10 || $intRecordType == 15)
+		{
+			// SMS & MMS have nothing to specify units <<STUPID!!!!!!!>>
+			$mixValue					=  1;
 		}
 		else
 		{
 		 	// For normal calls
 		 	$mixValue					=  $this->_FetchRawCDR('Duration');
-		 	$this->_AppendCDR('Units', (int)$mixValue);
+		 	
 		}
+		$this->_AppendCDR('Units', (int)$mixValue);
 		
 		// Description
 		unset($strDescription);
