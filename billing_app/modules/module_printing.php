@@ -475,30 +475,66 @@
 				switch ($arrField['Type'])
 				{
 					case BILL_TYPE_INTEGER:
+						if (!$strValue)
+						{
+							$strValue = "0";
+						};
 						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_CHAR:
+						if (!$strValue)
+						{
+							$strValue = "";
+						};
 						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_RIGHT);
 						break;
 					case BILL_TYPE_BINARY:
+						if (!$strValue)
+						{
+							$strValue = "0";
+						};
 						$strValue = str_pad($strValue, 11, "0", STR_PAD_RIGHT);
 						break;
 					case BILL_TYPE_FLOAT:
+						if (!$strValue)
+						{
+							$strValue = "0";
+						};
 						$strValue = str_pad((float)$strValue, 11, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTDATE:
+						if (!$strValue)
+						{
+							$strValue = "00/00/0000";
+						};
 						$strValue = str_pad($strValue, 10, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_LONGDATE:
+						if (!$strValue)
+						{
+							$strValue = "DATEISFUCKD";
+						};
 						$strValue = str_pad($strValue, 11, " ", STR_PAD_RIGHT);
 						break;
 					case BILL_TYPE_TIME:
+						if (!$strValue)
+						{
+							$strValue = "TIMEFUCK";
+						};
 						$strValue = str_pad($strValue, 8, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_DURATION:
+						if (!$strValue)
+						{
+							$strValue = "DURFUCK";
+						};
 						$strValue = str_pad($strValue, 7, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTCURRENCY:
+						if (!$strValue)
+						{
+							$strValue = "-99999999";
+						};
 						$strTemp = sprintf("%1.2f", ((float)$strValue));
 						$strValue = str_pad($strTemp, 11, " ", STR_PAD_LEFT);
 						break;
