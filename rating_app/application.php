@@ -113,8 +113,14 @@ die();
 		$this->_rptRatingReport->AddMessage("\n".MSG_HORIZONTAL_RULE.MSG_RATING_TITLE, FALSE);
 		
 		// Init Statement
-		$this->_ubiServiceTotalsCapped		= new StatementUpdateById("Service", Array('CappedCharge' => NULL));
-		$this->_ubiServiceTotalsUncapped	= new StatementUpdateById("Service", Array('UncappedCharge' => NULL));
+		
+		$ServiceTotalsColumns = Array();
+		$ServiceTotalsColumns['UncappedCharge']		= new MySQLFunction("(UncappedCharge + <AddCharge>)");
+        $this->_ubiServiceTotalsUnCapped    		= new StatementUpdateById("Service", $ServiceTotalsColumns);
+		
+		$ServiceTotalsColumns = Array();
+		$ServiceTotalsColumns['CappedCharge']		= new MySQLFunction("(CappedCharge + <AddCharge>)");
+		$this->_ubiServiceTotalsCapped    			= new StatementUpdateById("Service", $ServiceTotalsColumns);
 		
 		$this->_selFleetAccount		= new StatementSelect(	"RateGroup JOIN ServiceRateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup, Service",
 															"Service.Account AS Account",
@@ -294,7 +300,6 @@ die();
 			$mixResult = $this->_UpdateTotals($arrCDR['Service']);
 			if ($mixResult === FALSE)
 			{
-				Debug($this->_UpdateTotals->Error());
 				// problem updating totals
 				// set status in database
 				$arrCDR['Status'] = CDR_TOTALS_UPDATE_FAILED;
@@ -437,6 +442,7 @@ die();
 	 	$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
 		if (!$this->_arrCurrentCDR['DestinationCode'])
 		{
+			// TODO!!!! - Context
 			$strAliases['Destination']	= 0;
 		}
 	 	$strAliases['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
@@ -827,17 +833,17 @@ die();
 		
 		// set service Id
 		$arrData['Id'] = $this->_arrCurrentCDR['Service'];
-		
+        
 		if ($this->_arrCurrentRate['Uncapped'])
 		{
-			$arrData['UncappedCharge'] = (float)$arrService['UncappedCharge'] + $fltCharge;
+			$arrService['UncappedCharge']    = new MySQLFunction("(UncappedCharge + <AddCharge>)", Array("AddCharge" => $fltCharge));
 			return $this->_ubiServiceTotalsUncapped->Execute($arrData);
 		}
 		else
 		{
-			$arrData['CappedCharge'] = (float)$arrService['CappedCharge'] + $fltCharge;
+			$arrService['CappedCharge']        = new MySQLFunction("(CappedCharge + <AddCharge>)", Array("AddCharge" => $fltCharge));
 			return $this->_ubiServiceTotalsCapped->Execute($arrData);
-		}
+		}		
 	 }
 	 
 	//------------------------------------------------------------------------//
