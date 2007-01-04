@@ -41,6 +41,9 @@ while ($appRating->Rate())
 	//break;
 }
 
+// Empty the Donkey Account
+Debug("Donkey Account = $".$appRating->__DonkeyAccount);
+
 //TODO!!!! - send the report
 
 // finished
@@ -301,6 +304,10 @@ die();
 					$intFailed++;
 					continue;
 				}
+				
+				// Rounding
+				$fltCharge = $this->_Rounding();
+				
 			}
 			// Update Service & Account Totals
 			$mixResult = $this->_UpdateTotals($arrCDR['Service']);
@@ -610,6 +617,39 @@ die();
 	 }
 	 
 	 
+	//------------------------------------------------------------------------//
+	// _Rounding
+	//------------------------------------------------------------------------//
+	/**
+	 * _Rounding()
+	 *
+	 * Calculate Rounding for the current CDR Record
+	 *
+	 * Calculate Rounding for the current CDR Record
+	 *
+	 * @return		VOID
+	 * @method
+	 */
+	 private function _Rounding()
+	 {
+	 	// get the current charge (in $)
+		$fltCharge = $this->_arrCurrentCDR['Charge'];
+		
+		// calculate rounded charge in cents
+		$intRoundedCharge = Ceil($fltCharge * 100);
+		
+		// calculate rounded charge in $
+		$fltRoundedCharge = $intRoundedCharge / 100;
+		
+		// take the difference and deposit into an offshore bank account ;)
+		$this->_DonkeyAccount = ($fltRoundedCharge - $fltCharge) + $this->_DonkeyAccount;
+		
+		// set the current charge
+		$this->_arrCurrentCDR['Charge'] = $fltRoundedCharge;
+		
+		// return the charge amount
+		return;
+	 }
 	 
 	//------------------------------------------------------------------------//
 	// _CalculateCharge
