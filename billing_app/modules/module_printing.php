@@ -584,7 +584,7 @@
 	 */
  	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
  	{
-		$selMetaData = new StatementSelect("InvoiceTemp", "COUNT(Id) AS Invoices");
+		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
 		$selMetaData->Execute();
 		$arrMetaData = $selMetaData->Fetch();
 
@@ -619,7 +619,7 @@
 							"WHERE $strWhere\n";
 		if($bolSample)
 		{
-			$strQuery .= "LIMIT ".rand(0, (int)$arrMetaData['Invoices']).", ".BILL_PRINT_SAMPLE_LIMIT;
+			$strQuery .= "LIMIT ".rand((int)$arrMetaData['MinId'] , (int)$arrMetaData['MaxId'] - BILL_PRINT_SAMPLE_LIMIT).", ".BILL_PRINT_SAMPLE_LIMIT;
 		}
 		if (file_exists($strFilename))
 		{
