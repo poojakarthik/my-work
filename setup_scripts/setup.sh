@@ -23,6 +23,7 @@ mkdir -m 700 /home/vixen_upload/iseek
 
 mkdir -m 770 /home/vixen_bill_output
 mkdir -m 770 /home/vixen_bill_output/sample
+mkdir -m 770 /home/vixen_bill_output/sample/pdf
 
 # chown dirs
 chown -R www-data.www-data /home/vixen_download
