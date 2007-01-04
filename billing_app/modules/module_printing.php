@@ -510,6 +510,9 @@
 			$strFileContents .= "\n";
 		}
 		
+		Debug($strFileContents);
+		die;
+		
 		// Insert into InvoiceOutput table
 		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 		$arrWhere['Account']	= $arrInvoiceDetails['Account'];
