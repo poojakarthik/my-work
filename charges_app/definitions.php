@@ -32,19 +32,6 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"						, "_Master");
-
-// State
-define("STATE_INIT"						, 1);
-define("STATE_RUN"						, 2);
-define("STATE_SCRIPT_RUN"				, 3);
-define("STATE_SLEEP"					, 4);
-define("STATE_HALT"						, 99);
-
-// instructions
-define("INSTRUCTION_COMMAND"			, 1);
-define("INSTRUCTION_WAIT"				, 2);
-define("INSTRUCTION_RESUME"				, 3);
-define("INSTRUCTION_HALT"				, 99);
+define("USER_NAME"						, "Skell_app");
 
 ?>

@@ -10,41 +10,25 @@
 // DEFINITIONS
 //----------------------------------------------------------------------------//
 /**
- * DEFINITIONS
+ * config
  *
- * Global Definitions
+ * ApplicationConfig Definitions
  *
- * This file exclusively declares application constants
+ * This file exclusively declares application config
  *
- * @file		definitions.php
+ * @file		config.php
  * @language	PHP
  * @package		framework
- * @author		Rich Davis
- * @version		6.10
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @author		Jared 'flame' Herbohn
+ * @version		7.01
+ * @copyright	2006-2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
  
  
 //----------------------------------------------------------------------------//
-// CONSTANTS
+// CONFIG
 //----------------------------------------------------------------------------//
-
-// user name
-define("USER_NAME"						, "_Master");
-
-// State
-define("STATE_INIT"						, 1);
-define("STATE_RUN"						, 2);
-define("STATE_SCRIPT_RUN"				, 3);
-define("STATE_SLEEP"					, 4);
-define("STATE_HALT"						, 99);
-
-// instructions
-define("INSTRUCTION_COMMAND"			, 1);
-define("INSTRUCTION_WAIT"				, 2);
-define("INSTRUCTION_RESUME"				, 3);
-define("INSTRUCTION_HALT"				, 99);
 
 ?>

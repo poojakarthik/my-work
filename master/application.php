@@ -24,7 +24,23 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
+
+//TODO!!!!
+/*
+Make db tables
+	MasterState
+		Datetime
+		State		(long text) => serialised array
+	MasterInstructions
+		Datetime
+		Instruction		int
+		Command			long text
+		
+connect to db to read and write (see internal TODOs)
+
+
+*/
+
 // Application entry point - create an instance of the application object
 $appSkel = new ApplicationSkel($arrConfig);
 
@@ -124,6 +140,9 @@ $appSkel->Run();
 				$i--;
 			}
 			
+			// write state to database
+			$this->_WriteState(STATE_SLEEP);
+			
 			// pause between runs
 			sleep ($this->_arrConfig['Sleep']);
 		}
@@ -162,22 +181,42 @@ $appSkel->Run();
 				$strCommand = $arrScript['Config']['Command'];
 				if ($strCommand)
 				{
+					// write state to database
+					$this->_arrState['CurrentScript'] = $strScriptName;
+					$this->_arrState['CurrentRunTime'] = $intTimeNow;
+					$this->_WriteState(STATE_SCRIPT_RUN);
+				
 					$this->_arrState['LastReturn'] = shell_exec($strCommand);
 					$this->_arrState['LastScript'] = $strScriptName;
 					$this->_arrState['LastRunTime'] = $intTimeNow;
 				}
 				
+				// set last run time for the script
+				$this->_arrScript[$strScriptName]['LastRun'] = $intTimeNow;
+				
 				// calculate next run time for the script
 				$intNextRun = $this->_CalculateNextRun($arrScript);
 				$this->_arrScript[$strScriptName]['NextRun'] = $intNextRun;
-				
-				// write state to database
-				$this->_WriteState(STATE_SCRIPT_RUN);
-				
 			}
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// _WriteState
+	//------------------------------------------------------------------------//
+	/**
+	 * _WriteState()
+	 *
+	 * Write current state details to the database
+	 *
+	 * Write current state details to the database
+	 * 
+	 *
+	 * @param	int		intState	Current State
+	 * @return	VOID
+	 *
+	 * @method
+	 */
 	function _WriteState($intState)
 	{
 		// write our current state to the database
@@ -189,6 +228,21 @@ $appSkel->Run();
 		//TODO!!!! - write to database
 	}
 	
+	//------------------------------------------------------------------------//
+	// _ReadState
+	//------------------------------------------------------------------------//
+	/**
+	 * _ReadState()
+	 *
+	 * Read previous state details from the database
+	 *
+	 * Read previous state details from the database
+	 * 
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
 	function _ReadState()
 	{
 		// read our current state from the database
@@ -224,6 +278,21 @@ $appSkel->Run();
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// _ReadInstructions
+	//------------------------------------------------------------------------//
+	/**
+	 * _ReadInstructions()
+	 *
+	 * Read instructions from the database
+	 *
+	 * Read instructions from the database
+	 * 
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
 	function _ReadInstructions()
 	{
 		// read any instructions from the database
@@ -237,7 +306,7 @@ $appSkel->Run();
 			{
 				// command
 				case INSTRUCTION_COMMAND:
-					//TODO-LATER
+					//TODO-LATER !!!!
 					break;
 				
 				// wait
@@ -266,21 +335,68 @@ $appSkel->Run();
 		
 	}
 	
+	//------------------------------------------------------------------------//
+	// _ClearInstructions
+	//------------------------------------------------------------------------//
+	/**
+	 * _ClearInstructions()
+	 *
+	 * Clear all instructions from the database
+	 *
+	 * Clear all instructions from the database
+	 * 
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
 	function _ClearInstructions()
 	{
-		// clear any instructions from the database
+		// clear all instructions from the database
 		//TODO!!!! - truncate table
 	}
 	
+	//------------------------------------------------------------------------//
+	// Halt
+	//------------------------------------------------------------------------//
+	/**
+	 * Halt()
+	 *
+	 * Shutdown this application
+	 *
+	 * Shutdown this application
+	 * 
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
 	function Halt()
 	{
-		// set status in DB (STATE_HALT)
-		//TODO!!!!
+		// set state in DB
+		$this->_WriteState(STATE_HALT);
 		
 		// Stop
 		Die();
 	}
 	
+	//------------------------------------------------------------------------//
+	// Debug
+	//------------------------------------------------------------------------//
+	/**
+	 * Debug()
+	 *
+	 * Write Debug output to the console
+	 *
+	 * Write Debug output to the console
+	 * will only display output if config option Verbose = TRUE
+	 * 
+	 *
+	 * @param	str		$strText	Text to be output
+	 * @return			VOID
+	 *
+	 * @method
+	 */
 	function Debug($strText)
 	{
 		if ($this->_arrConfig['Verbose'] == TRUE)
@@ -289,9 +405,85 @@ $appSkel->Run();
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// _CalculateNextRun
+	//------------------------------------------------------------------------//
+	/**
+	 * _CalculateNextRun()
+	 *
+	 * Calculate the next run time for a script
+	 *
+	 * Calculate the next run time for a script
+	 * 
+	 *
+	 * @param	array	$arrScript	Script details array
+	 * @return	int		Timestamp of next scheduled run time
+	 *
+	 * @method
+	 */
 	function _CalculateNextRun($arrScript)
 	{
-		//TODO!!!!
+		// get current time
+		$intTimeNow = Time();
+		
+		// calculate zero time today
+		$intZeroTime = floor($intTimeNow / 86400) * 86400);
+		
+		// calculate day based timestamp
+		$intDayTimeStamp = $intTimeNow - $intZeroTime;
+		
+		// get first run time for today
+		$intFirstRun = (int)$arrScript['Config']['StartTime'] + $intZeroTime;
+		
+		// get final run time for today
+		$intFinalRun = (int)$arrScript['Config']['FinishTime'] + $intZeroTime;
+		if ($intFinalRun == $intZeroTime)
+		{
+			// set last run to midnight
+			$intFinalRun =  $intZeroTime + 86400;
+		}
+		
+		// get interval
+		$intInterval = (int)$arrScript['Config']['Interval'];
+		if (!$intInterval)
+		{
+			// default interval is 1 hour
+			$intInterval = 3600;
+		}
+		
+		// get actual time last run
+		//$intLastRun = (int)$arrScript['LastRun'];
+		
+		// get time last scheduled to run
+		$intLastSchedualedRun = (int)$arrScript['NextRun'];
+		if ($intLastSchedualedRun)
+		{
+			// schedule next run based on previous schedule
+			$intNextRun = $intLastSchedualedRun + $intInterval;
+			
+			// check run time constraints
+			if ($intFirstRun > $intNextRun)
+			{
+				// if next run is earlier then first run...
+				// run at first run time
+				$intNextRun = $intFirstRun;
+			}
+			elseif ($intFinalRun < $intNextRun)
+			{
+				// if next run is later then last run...
+				// run at first run time tomorrow
+				$intNextRun = $intFirstRun + 86400;
+			}
+		}
+		else
+		{
+			// if no previous scheduled run
+			// schedule next run for first run time
+			$intNextRun = $intFirstRun + $intZeroTime;
+		}
+		
+		// Return Next Run TimeStamp
+		return $intNextRun;
 	}
  }
 
