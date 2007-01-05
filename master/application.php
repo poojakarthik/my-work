@@ -182,9 +182,9 @@ $appSkel->Run();
 	{
 		// write our current state to the database
 		$this->_arrState['Run'] 	= $this->_intCurrentRun;
-		$this->_arrState['State'] 	= $intState
-		$this->_arrState['Time'] 	= time()
-		$this->_arrState['Wait'] 	= $this->_bolWait
+		$this->_arrState['State'] 	= $intState;
+		$this->_arrState['Time'] 	= time();
+		$this->_arrState['Wait'] 	= $this->_bolWait;
 		$this->_arrState['Script']	= $this->_arrScript;
 		//TODO!!!! - write to database
 	}
@@ -241,12 +241,12 @@ $appSkel->Run();
 					break;
 				
 				// wait
-				INSTRUCTION_WAIT:
+				case INSTRUCTION_WAIT:
 					$this->_bolWait = TRUE;
 					break;
 					
 				// wait
-				INSTRUCTION_RESUME:
+				case INSTRUCTION_RESUME:
 					$this->_bolWait = FALSE;
 					break;
 					

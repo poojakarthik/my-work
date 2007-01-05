@@ -27,7 +27,7 @@
  */
 $strFrameworkDir	= "../../framework/";
 $strPDFDir			= $strFrameworkDir."pdf/";
- 
+
 // load framework
 require_once($strFrameworkDir."framework.php");
 require_once($strFrameworkDir."functions.php");
@@ -96,7 +96,23 @@ foreach ($arrFileContents as $strLine)
 			$arrTableData['ACCOUNT NUMBER']		= $mixResult['AccountNo'];
 			$pdf->ezTable($arrTableData);
 			
-			// TODO - CONTINUE HERE!~~~~~~
+			$arrTableData = Array();
+			$arrTableData['Opening Balance']	= $mixResult['OpeningBalance'];
+			$arrTableData['We Received']		= $mixResult['WeReceived'];
+			$arrTableData['Adjustments']		= $mixResult['Adjustments'];
+			$arrTableData['Balance']			= $mixResult['Balance'];
+			$arrTableData['Total of this Bill'] = $mixResult['BillTotal'];
+			$arrTableData['Total Owing']		= $mixResult['TotalOwing'];
+			$pdf->ezTable($arrTableData);
+			
+			$arrTableData = Array();
+			$arrTableData['Opening Balance']	= $mixResult['OpeningBalance'];
+			$arrTableData['We Received']		= $mixResult['WeReceived'];
+			$arrTableData['Adjustments']		= $mixResult['Adjustments'];
+			$arrTableData['Balance']			= $mixResult['Balance'];
+			$arrTableData['Total of this Bill'] = $mixResult['BillTotal'];
+			$arrTableData['Total Owing']		= $mixResult['TotalOwing'];
+			$pdf->ezTable($arrTableData);
 			break;
 		case 19:
 			// Invoice Footer
