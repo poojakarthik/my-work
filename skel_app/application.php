@@ -17,10 +17,10 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		Skeleton_application
+ * @package		skeleton_application
  * @author		Jared 'flame' Herbohn
- * @version		6.10
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @version		7.01
+ * @copyright	2006-2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -29,6 +29,9 @@ echo "<pre>";
 
 // Application entry point - create an instance of the application object
 $appSkel = new ApplicationSkel($arrConfig);
+
+// Execute the application
+$appSkel->Execute();
 
 // finished
 echo("\n-- End of Skeleton --\n");
@@ -74,6 +77,25 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
+	}
+	
+	//------------------------------------------------------------------------//
+	// Execute
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Execute the application
+	 *
+	 * Execute the application
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
+ 	function Execute()
+ 	{
+		
 	}
  }
 

@@ -17,10 +17,10 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		Skeleton_application
+ * @package		charge_application
  * @author		Jared 'flame' Herbohn
- * @version		6.10
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @version		7.01
+ * @copyright	2006-2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -28,32 +28,35 @@
 echo "<pre>";
 
 // Application entry point - create an instance of the application object
-$appSkel = new ApplicationSkel($arrConfig);
+$appCharge = new ApplicationCharge($arrConfig);
+
+// Execute the application
+$appCharge->Execute();
 
 // finished
-echo("\n-- End of Skeleton --\n");
+echo("\n-- End of Charges --\n");
 echo "</pre>";
 die();
 
 
 
 //----------------------------------------------------------------------------//
-// ApplicationSkel
+// ApplicationCharge
 //----------------------------------------------------------------------------//
 /**
- * ApplicationSkel
+ * ApplicationCharge
  *
- * Skeleton Module
+ * Charge Module
  *
- * Skeleton Module
+ * Charge Module
  *
  *
  * @prefix		app
  *
- * @package		skeleton_application
+ * @package		charge_application
  * @class		ApplicationSkel
  */
- class ApplicationSkel extends ApplicationBaseClass
+ class ApplicationCharge extends ApplicationBaseClass
  {
  	//------------------------------------------------------------------------//
 	// __construct
@@ -74,6 +77,114 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
+	}
+	
+	//------------------------------------------------------------------------//
+	// Execute
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Execute the application
+	 *
+	 * Execute the application
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
+ 	function Execute()
+ 	{
+		// Get list of charges that need to be generated (1000 at a time)
+		While($arrCharges = $this->_GetCharges())
+		{
+			// for each charge
+			foreach ($arrCharges as $arrCharge)
+			{
+				// Calculate partial charge if needed
+				if (!$arrCharge['Continuable'] && ($arrCharge['TotalCharged'] + $arrCharge['RecursionCharge']) > $arrCharge['MinCharge'])
+				{
+					// final (partial) charge for a non-continuable charge
+					$arrCharge['RecursionCharge'] = $arrCharge['MinCharge'] - $arrCharge['TotalCharged'];
+				}
+				
+				// Add Charge details to Charges Table
+				//TODO!!!!
+				
+				// update RecuringCharge Table
+				//TODO!!!!
+					// TotalCharged
+					// LastChargedOn * date charge is for, not todays date !!!!
+					// TotalRecursions
+					
+				// add to report
+				//TODO!!!!
+			}
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// _GetCharges
+	//------------------------------------------------------------------------//
+	/**
+	 * _GetCharges()
+	 *
+	 * Get a list of recurring charges that need to be generated
+	 *
+	 * Get a list of recurring charges that need to be generated
+	 * List is limited to 1000
+	 *
+	 * @return		Mixed	Array	Charges that need to be generated
+	 *						bol		FALSE if there are no charges to be generated		 
+	 *
+	 * @method
+	 */
+	function _GetCharges()
+	{
+		// get the next 1000 charges that need to be added
+		//TODO!!!!
+		// Select * FROM RecurringCharge WHERE
+		/*
+		Archived = 0
+		AND
+		(
+			Continuable = 1
+			OR
+			(Continuable = 0 AND MinCharge > TotalCharged)
+		)
+		AND
+		(
+			(
+				RecurringFreqType = BILLING_FREQ_DAY
+				AND
+				date_today >= LastChargedOn + RecurringFreq days
+			)
+			OR
+			(
+				RecurringFreqType = BILLING_FREQ_MONTH
+				AND
+				date_today >= LastChargedOn + RecurringFreq months
+			)
+			OR
+			(
+				RecurringFreqType = BILLING_FREQ_HALF_MONTH
+				AND
+				(
+					(
+						DATE_FORMAT(LastChargedOn, %e) < 15
+						AND
+						date_today >= LastChargedOn + 14 days
+					)
+					OR
+					(
+						DATE_FORMAT(LastChargedOn, %e) > 14
+						AND
+						date_today >= LastChargedOn - 14 days + 1 month
+					)
+				)
+			)		
+		)
+		*/
 	}
  }
 

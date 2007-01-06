@@ -17,7 +17,7 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		Skeleton_application
+ * @package		master
  * @author		Jared 'flame' Herbohn
  * @version		7.01
  * @copyright	2006-2007 VOIPTEL Pty Ltd
@@ -42,28 +42,28 @@ connect to db to read and write (see internal TODOs)
 */
 
 // Application entry point - create an instance of the application object
-$appSkel = new ApplicationSkel($arrConfig);
+$appMaster = new ApplicationMaster($arrConfig);
 
 // Run the application
-$appSkel->Run();
+$appMaster->Run();
 
 //----------------------------------------------------------------------------//
-// ApplicationSkel
+// ApplicationMaster
 //----------------------------------------------------------------------------//
 /**
- * ApplicationSkel
+ * ApplicationMaster
  *
- * Skeleton Module
+ * Master Application
  *
- * Skeleton Module
+ * Executes all back-end scripts
  *
  *
  * @prefix		app
  *
- * @package		skeleton_application
+ * @package		master
  * @class		ApplicationSkel
  */
- class ApplicationSkel extends ApplicationBaseClass
+ class ApplicationMaster extends ApplicationBaseClass
  {
  	//------------------------------------------------------------------------//
 	// __construct
