@@ -121,6 +121,9 @@ die();
 				//TODO!!!!
 			}
 		}
+		
+		// Send Report
+		//TODO!!!!
 	}
 	
 	//------------------------------------------------------------------------//
@@ -146,6 +149,8 @@ die();
 		// Select * FROM RecurringCharge WHERE
 		/*
 		Archived = 0
+		AND
+		StartedOn <= date_today
 		AND
 		(
 			Continuable = 1
