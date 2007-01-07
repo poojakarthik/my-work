@@ -25,22 +25,6 @@
  *
  */
 
-//TODO!!!!
-/*
-Make db tables
-	MasterState
-		Datetime
-		State		(long text) => serialised array
-	MasterInstructions
-		Datetime
-		Instruction		int
-		Command			long text
-		
-connect to db to read and write (see internal TODOs)
-
-
-*/
-
 // Application entry point - create an instance of the application object
 $appMaster = new ApplicationMaster($arrConfig);
 
@@ -87,6 +71,10 @@ $appMaster->Run();
 		
 		// store the config
 		$this->_arrConfig = $arrConfig;
+		
+		$arrColumns['Datetime']	= new MySQLFunction("NOW()");
+		$arrColumns['State']	= NULL;
+		$this->_updMasterState	= new StatementUpdate("MasterState", "1", $arrColumns, 1);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -225,7 +213,11 @@ $appMaster->Run();
 		$this->_arrState['Time'] 	= time();
 		$this->_arrState['Wait'] 	= $this->_bolWait;
 		$this->_arrState['Script']	= $this->_arrScript;
-		//TODO!!!! - write to database
+		
+		$arrData['Datetime']	= new MySQLFunction("NOW()");
+		$arrData['State']		= Serialize($this->_arrState);
+		// write to database
+		$this->_updMasterState->Execute($arrData, NULL);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -427,7 +419,7 @@ $appMaster->Run();
 		$intTimeNow = Time();
 		
 		// calculate zero time today
-		$intZeroTime = floor($intTimeNow / 86400) * 86400);
+		$intZeroTime = floor(($intTimeNow / 86400) * 86400);
 		
 		// calculate day based timestamp
 		$intDayTimeStamp = $intTimeNow - $intZeroTime;
