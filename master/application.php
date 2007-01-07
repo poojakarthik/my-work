@@ -74,7 +74,12 @@ $appMaster->Run();
 		
 		$arrColumns['Datetime']	= new MySQLFunction("NOW()");
 		$arrColumns['State']	= NULL;
-		$this->_updMasterState	= new StatementUpdate("MasterState", "1", $arrColumns, 1);
+		$this->_updMasterState	= new StatementUpdate("MasterState", "1", $arrColumns, "1");
+		
+		$this->_selGetState				= new StatementSelect("MasterState", "*", "1", NULL, "1");
+		$this->_selGetInstructions		= new StatementSelect("MasterInstructions", "*", "1", "Datetime ASC");
+		$this->_qryDeleteInstruction	= new Query();
+		$this->_qryTruncate				= new QueryTruncate();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -238,8 +243,9 @@ $appMaster->Run();
 	function _ReadState()
 	{
 		// read our current state from the database
-		//TODO!!!! - read from database
-		//$this->_arrState = 
+		$this->_selGetState->Execute();
+		$arrResult = $this->_selGetState->Fetch();
+		$this->_arrState = Unserialize($arrResult['State']); 
 		
 		// setup scripts array
 		$this->_arrScript = Array();
@@ -270,6 +276,7 @@ $appMaster->Run();
 		}
 	}
 	
+	
 	//------------------------------------------------------------------------//
 	// _ReadInstructions
 	//------------------------------------------------------------------------//
@@ -288,8 +295,8 @@ $appMaster->Run();
 	function _ReadInstructions()
 	{
 		// read any instructions from the database
-		//TODO!!!!
-		//$arrInstructions = 
+		$this->_selGetInstructions->Execute();
+		$arrInstructions = $this->_selGetInstructions->FetchAll();
 		
 		foreach ($arrInstructions as $arrInstruction)
 		{
@@ -322,7 +329,7 @@ $appMaster->Run();
 			}
 			
 			// clear instruction from db
-			//TODO!!!!
+			$this->_qryDeleteInstruction->Execute("DELETE FROM MasterInstruction WHERE Id = ".$arrInstruction['Id']);
 		}
 		
 	}
@@ -345,7 +352,7 @@ $appMaster->Run();
 	function _ClearInstructions()
 	{
 		// clear all instructions from the database
-		//TODO!!!! - truncate table
+		$this->_qryTruncate->Execute("MasterInstruction");
 	}
 	
 	//------------------------------------------------------------------------//
