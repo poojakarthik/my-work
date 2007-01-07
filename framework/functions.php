@@ -229,12 +229,12 @@ function SystemDebug()
  */
 function Trace($strString, $strLogname = 'Debug')
 {
-	if (!$GLOBALS['TraceLog'])
+	if (!isset ($GLOBALS['TraceLog']))
 	{
 		$GLOBALS['TraceLog'] = Array ();
 	}
 	
-	if (!$GLOBALS['TraceLog'][$strLogname])
+	if (!isset ($GLOBALS['TraceLog'][$strLogname]))
 	{
 		$GLOBALS['TraceLog'][$strLogname] = "";
 	}

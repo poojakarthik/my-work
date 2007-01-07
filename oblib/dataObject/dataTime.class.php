@@ -25,9 +25,9 @@
 		public function getValue ()
 		{
 			return mktime (
-				$this->Pull ("hour")->getValue (),
-				$this->Pull ("minute")->getValue (),
-				$this->Pull ("second")->getValue ()
+				$this->Hour->getValue (),
+				$this->Minute->getValue (),
+				$this->Second->getValue ()
 			);
 		}
 		

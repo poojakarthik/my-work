@@ -75,6 +75,29 @@
 			
 			// Pull the Service Type(s)
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
+			
+			// Set a Archived Boolean
+			$this->Push (
+				new dataBoolean (
+					'Archived', 
+					(
+						!(
+							($this->Pull ('ClosedOn')->Pull ('year')->getValue () == 0) &&
+							($this->Pull ('ClosedOn')->Pull ('month')->getValue () == 0) &&
+							($this->Pull ('ClosedOn')->Pull ('day')->getValue () == 0)
+						)
+					)
+					||
+					(
+						mktime (
+							0, 0, 0,
+							$this->Pull ('ClosedOn')->Pull ('month')->getValue (),
+							$this->Pull ('ClosedOn')->Pull ('day')->getValue (),
+							$this->Pull ('ClosedOn')->Pull ('year')->getValue ()
+						) > mktime (0, 0, 0)
+					)
+				)
+			);
 		}
 		
 		//------------------------------------------------------------------------//
@@ -441,13 +464,11 @@
 		
 		public function Update ($arrDetails)
 		{
-			if (!$arrDetails ['FNN'])
-			{
-				return null;
-			}
+			$strFNN = $arrDetails ['FNN'];
+			$strFNN = preg_replace ('/\s/', '', $strFNN);
 			
 			$arrData = Array (
-				"FNN"			=> $arrDetails ['FNN']
+				'FNN'			=> $strFNN
 			);
 			
 			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrData);
@@ -455,23 +476,70 @@
 		}
 		
 		//------------------------------------------------------------------------//
-		// Archive
+		// ArchiveStatus
 		//------------------------------------------------------------------------//
 		/**
-		 * Archive()
+		 * ArchiveStatus()
 		 *
-		 * Archive a Service
+		 * Update Service Archive Status
 		 *
-		 * Archive a Service
+		 * Update Service Archive Status.
 		 *
-		 * @param	Array			$arrDetails		Associative array of possibly tainted service details
+		 * @param	Boolean		$bolArchive		TRUE:	Archive this Service
+		 *										FALSE:	Nothing Happens
 		 * @return	Void
 		 *
 		 * @method
 		 */
 		
-		public function Archive ()
+		public function ArchiveStatus ($bolArchive)
 		{
+			// Archive must be true
+			if ($bolArchive !== true)
+			{
+				return;
+			}
+			
+			// Set up an Archive SET clause
+			$arrArchive = Array (
+				"ClosedOn"	=>	($bolArchive == true) ? date ('Y-m-d') : null
+			);
+			
+			// Cascade down to include the Services
+			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrArchive);
+			$updService->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
+		
+		//------------------------------------------------------------------------//
+		// LesseePassthrough
+		//------------------------------------------------------------------------//
+		/**
+		 * LesseePassthrough()
+		 *
+		 * Revokes the Service from the Account and Passes the Line to another Account
+		 *
+		 * Revokes the Service from the Account and Passes the Line to another Account
+		 *
+		 * @param	Account		$actAccount			The account to receive the Line
+		 * @param	Array		$arrDetailsDate		The day which the service will come to the new person
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function LesseePassthrough (Account $actAccount, $arrDetailsDate)
+		{
+			$intDate = mktime (0, 0, 0, $arrDetailsDate ['month'], $arrDetailsDate ['day'], $arrDetailsDate ['year']);
+			
+			// Cancel the Service on this specific date
+			$arrClose = Array (
+				"ClosedOn"		=>	date ("Y-m-d", strtotime ("-1 day", $intDate))
+			);
+			
+			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrClose);
+//			$updService->Execute ($arrClose, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			
+			$actAccount->LesseeReceive ($this, $arrDetailsDate);
 		}
 	}
 	

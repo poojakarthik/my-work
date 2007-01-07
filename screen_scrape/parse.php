@@ -13,10 +13,10 @@
 	
 	// connect
 	mysql_connect ("10.11.12.13", "bash", "bash");
-	mysql_select_db ("bash");
+	mysql_select_db ("vixen");
 	
 	// How many scrapes do we have?
-	$sql = "SELECT count(*) AS records FROM Scrapes ";
+	$sql = "SELECT count(*) AS records FROM ScrapeAccount";
 	$query = mysql_query ($sql);
 	
 	$row = mysql_fetch_assoc ($query);
@@ -43,14 +43,14 @@
 		global $i;
 		
 		// Get the information about the scrape
-		$sql = "SELECT * FROM Scrapes ";
+		$sql = "SELECT * FROM ScrapeAccount ";
 		$sql .= "LIMIT " . ($start * 100) . ", 100";
 		$query = mysql_query ($sql);
 		
 		while ($row = mysql_fetch_assoc ($query))
 		{
 			// Put the info into a DOM Object
-			@$_DOMDoc->LoadHTML ($row ['ScrapeResponse']);		// Is silent because ETECH has no idea about W3C XHTML
+			@$_DOMDoc->LoadHTML ($row ['DataOriginal']);		// Is silent because ETECH has no idea about W3C XHTML
 			
 			// Read the DOMDocument as a DOMXPath so we can perform operations on it
 			$_DOMXPath = new DOMXPath ($_DOMDoc);
@@ -123,11 +123,6 @@
 				"inv_type"				=> "",
 				"sn"					=> Array ()
 			);
-			
-			
-			/////////////////////////////////////
-			// DIRTY STUFF
-			/////////////////////////////////////
 			
 			
 			/////////////////////////////////////
@@ -205,8 +200,31 @@
 				unset ($_DOMSubXPath);
 			}
 			
-			$sql = "UPDATE Scrapes SET ";
-			$sql .= "ParseResponse='" . mysql_real_escape_string (serialize ($Customer)) . "' ";
+			/////////////////////////////////////
+			// Id 4 service
+			
+			$intServiceId = 0;
+			
+			$dnoNodes = $_DOMXPath->Query ("//a[@href='javascript:;']");
+			foreach ($dnoNodes as $intId => $dnoNode)
+			{
+				if ($dnoNode->nodeValue == "edit")
+				{
+					// strip the fucker out ...
+					$strUrl = $dnoNode->getAttribute ('onclick');
+					$strUrl = substr ($strUrl, strlen ("MM_openBrWindow('editNum.php?"));
+					$strUrl = substr ($strUrl, 0, strpos ($strUrl, "','sNumEdit'"));
+					
+					parse_str ($strUrl, $arrUrl);
+					
+					$Customer ['sn'][$intServiceId]['Id'] = $arrUrl ['sNumID'];
+					
+					++$intServiceId;
+				}
+			}
+			
+			$sql = "UPDATE ScrapeAccount SET ";
+			$sql .= "DataSerialized='" . mysql_real_escape_string (serialize ($Customer)) . "' ";
 			$sql .= "WHERE CustomerId='" . mysql_real_escape_string ($row ['CustomerId']) . "' ";
 			$sql .= "LIMIT 1";
 			$updQuery = mysql_query ($sql);
@@ -216,7 +234,7 @@
 		
 		?>
 		
-+	<?=sprintf ("%06d", $i + 1)?>	(<?=substr (microtime (TRUE) - $groupTime, 0, 7)?>)	PARSED AND NORMALISED<?php
++	<?=sprintf ("%06d", $i + 1)?>		(<?=substr (microtime (TRUE) - $groupTime, 0, 7)?>)	PARSED AND NORMALISED<?php
 		$groupTime = microtime (TRUE);
 	}
 	

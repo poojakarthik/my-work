@@ -107,13 +107,17 @@
 				}
 			}
 			
-			$rrlRates = new Rates ();
-			$rrlRates->Constrain ('ServiceType', 'EQUALS', $_POST ['ServiceType']);
-			$rrlRates->Constrain ('RecordType', 'EQUALS', $_POST ['RecordType']);
-			$rrlRates->Constrain ('Archived', 'EQUALS', 0);
-			$rrlRates->Order ('Name', TRUE);
-			$rrlRates->Sample ();
-			$oblarrRateGroup->Push ($rrlRates);
+			$selRates = new StatementSelect ('Rate', 'Id, Name', 'ServiceType = <ServiceType> AND RecordType = <RecordType> AND Archived = 0', 'Name');
+			$selRates->Execute (Array ('ServiceType' => $_POST ['ServiceType'], 'RecordType' => $_POST ['RecordType']));
+			
+			$oblarrRates = $oblarrRateGroup->Push (new dataArray ('Rates'));
+			
+			while ($arrRate = $selRates->Fetch ())
+			{
+				$oblarrRate = $oblarrRates->Push (new dataArray ('Rate'));
+				$oblarrRate->Push (new dataInteger	('Id',		$arrRate ['Id']));
+				$oblarrRate->Push (new dataString	('Name',	$arrRate ['Name']));
+			}
 			
 			$Style->Output ("xsl/content/rates/groups/select.xsl");
 			

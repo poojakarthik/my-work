@@ -232,7 +232,7 @@ class ErrorHandler
 	 */
 	 function PHPExceptionCatcher($excException)
 	 {
-	 	$strUser 		= USER_NAME;
+	 	$strUser 		= "";
 	 	$strLocation 	= $excException->getFile() . " (Line " .  $excException->getLine() . ")";
 	 	$strMessage		= $excException->getMessage() . "\n" . $excException->getTraceAsString() . "\n";
 	 	

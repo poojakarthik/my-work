@@ -84,23 +84,23 @@
 			{
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
-					"Employee", "*", 
+					"Employee", "count(*) as length", 
 					"Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW()"
 				);
 				
 				$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
+				$arrAuthentication = $selAuthenticated->Fetch ();
 				
 				// If the session is valid
-				if ($selAuthenticated->Count () == 1)
+				if ($arrAuthentication ['length'] == 1)
 				{
 					// Mark the Session as Authenticated
-					$usrLoggedIn = $selAuthenticated->Fetch ();
 					$this->aemAuthenticatedEmployee = $this->Push (new AuthenticatedEmployee);
 					
 					// Revalidate the session so they can have another 20 minutes
-					$Update = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
-					$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $Update);
-					$updUpdateStatement->Execute($Update, Array("Id" => $_COOKIE ['Id']));
+					$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
+					$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
+					$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE ['Id']));
 					
 					setCookie ("Id", $_COOKIE ['Id'], time () + (60 * 20), "/intranet_app/");
 					setCookie ("SessionId", $_COOKIE ['SessionId'], time () + (60 * 20), "/intranet_app/");

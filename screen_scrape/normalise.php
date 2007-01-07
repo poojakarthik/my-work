@@ -6,26 +6,6 @@
 	
 <?php
 	
-	
-require_once("../framework/framework.php");
-require_once("../framework/functions.php");
-require_once("../framework/definitions.php");
-require_once("../framework/config.php");
-require_once("../framework/database_define.php");
-require_once("../framework/db_access.php");
-require_once("../framework/report.php");
-require_once("../framework/error.php");
-require_once("../framework/exception_vixen.php");
-
-// create framework instance
-$GLOBALS['fwkFramework'] = new Framework();
-$framework = $GLOBALS['fwkFramework'];
-
-	require ("../oblib/data.abstract.php");
-	require ("../oblib/dataPrimitive/dataPrimitive.abstract.php");
-	require ("../intranet_app/classes/accounts/ABN.php");
-	require ("../intranet_app/classes/accounts/ACN.php");
-	
 	set_time_limit (0);
 	
 	// Record the start time of the script
@@ -48,7 +28,7 @@ $framework = $GLOBALS['fwkFramework'];
 	
 	// connect
 	mysql_connect ("10.11.12.13", "bash", "bash");
-	mysql_select_db ("bash");
+	mysql_select_db ("vixen");
 	
 	$sql = "TRUNCATE TABLE Account";
 	$query = mysql_query ($sql);
@@ -66,7 +46,7 @@ $framework = $GLOBALS['fwkFramework'];
 	$query = mysql_query ($sql);
 	
 	// How many scrapes do we have?
-	$sql = "SELECT count(*) AS records FROM Scrapes ";
+	$sql = "SELECT count(*) AS records FROM ScrapeAccount ";
 	$query = mysql_query ($sql);
 	
 	$row = mysql_fetch_assoc ($query);
@@ -77,12 +57,12 @@ $framework = $GLOBALS['fwkFramework'];
 	{
 	
 		// Get the information about the scrape
-		$sql = "SELECT CustomerId, ParseResponse FROM Scrapes ";
+		$sql = "SELECT CustomerId, DataSerialized FROM ScrapeAccount ";
 		$sql .= "LIMIT " . $i . ", 1";
 		$query = mysql_query ($sql);
 		$row = mysql_fetch_assoc ($query);
 		
-		$Customer = unserialize ($row ['ParseResponse']);
+		$Customer = unserialize ($row ['DataSerialized']);
 		
 		if ($Customer ['customer_group'] == "TelcoBlue")
 		{
@@ -156,11 +136,8 @@ $framework = $GLOBALS['fwkFramework'];
 			unset ($insQuery);
 		}
 		
-		$Customer ['abn'] = new ABN ('ABN', $Customer ['abn_acn']);
-		$Customer ['abn'] = $Customer ['abn']->getValue ();
-		
-		$Customer ['acn'] = new ACN ('ACN', $Customer ['abn_acn']);
-		$Customer ['acn'] = $Customer ['acn']->getValue ();
+		$Customer ['abn'] = (strlen (preg_replace ("/\D/", "", $Customer ['abn_acn'])) == 11) ? $Customer ['abn_acn'] : "";
+		$Customer ['acn'] = (strlen (preg_replace ("/\D/", "", $Customer ['abn_acn'])) == 9) ? $Customer ['abn_acn'] : "";
 		
 		$sql = "INSERT INTO Account ";
 		$sql .= "(Id, BusinessName, TradingName, ABN, ACN, ";
@@ -304,14 +281,13 @@ $framework = $GLOBALS['fwkFramework'];
 		foreach ($Indials as $IndialRange => $IndialNumbers)
 		{
 			$sql = "INSERT INTO Service ";
-			$sql .= "(FNN, ServiceType, Indial100, AccountGroup, Account, Archived) ";
+			$sql .= "(FNN, ServiceType, Indial100, AccountGroup, Account) ";
 			$sql .= "VALUES (";
 				$sql .= "'" . mysql_escape_string ($IndialRange . "00") . "', ";
 				$sql .= "0, ";
 				$sql .= "1, ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= ($Customer ['archived'] ? "TRUE" : "FALSE");
+				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "' ";
 			$sql .= ")";
 			$insQuery = mysql_query ($sql);
 			
@@ -326,14 +302,14 @@ $framework = $GLOBALS['fwkFramework'];
 		foreach ($Customer ['sn'] as $sn_id => $_SN)
 		{
 			$sql = "INSERT INTO Service ";
-			$sql .= "(FNN, ServiceType, Indial100, AccountGroup, Account, Archived) ";
+			$sql .= "(EtechId, FNN, ServiceType, Indial100, AccountGroup, Account) ";
 			$sql .= "VALUES (";
+				$sql .= "'" . mysql_escape_string ($_SN ['Id']) . "', ";
 				$sql .= "'" . mysql_escape_string ($_SN ['AreaCode'] . $_SN ['Number']) . "', ";
 				$sql .= "0, ";
 				$sql .= "0, ";
 				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "', ";
-				$sql .= ($Customer ['archived'] ? "TRUE" : "FALSE");
+				$sql .= "'" . mysql_escape_string ($row ['CustomerId']) . "'";
 			$sql .= ")";
 			$insQuery = mysql_query ($sql);
 			

@@ -1,27 +1,27 @@
 <?php
 	
-	system ("clear;");
+	system ('clear;');
 	
-	require ("config/application_loader.php");
+	require ('config/application_loader.php');
 	
 	
 	
 	// Create a new Report Object
 	$rptReport = new Report (
-		"+	ETECH CUSTOMER ACCOUNT ADDITIONAL INFORMATION CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
-		"bash@voiptelsystems.com.au"
+		'+	ETECH CUSTOMER INBOUND SERVICE CACHE RUNNER: ' . date ('Y-m-d h:i:s A'),
+		'bash@voiptelsystems.com.au'
 	);
 	
 	
-	
-	// Read the Customers CSV File
-	$cstCustomers = new Parser_CSV ('data/customers_short.csv');
-	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
-	
 	// Open a Connection/Session to ETECH
 	$cnnConnection = new Connection ();	
-	$rptReport->AddMessage ("+	COMMUNICATION WITH ETECH ESTABLISHED\n");
+	$rptReport->AddMessage ('+	COMMUNICATION WITH ETECH ESTABLISHED\n');
 	
+	
+	// Read the Services
+	$selCustomers = new StatementSelect ('Service', 'Id, Account, FNN', 'ServiceType = <ServiceType>');
+	$selCustomers->Execute (Array ('ServiceType' => SERVICE_TYPE_INBOUND));
+	$rptReport->AddMessage ('+	SERVICE QUERY HAS BEEN EXECUTED');
 	
 	
 	
@@ -32,30 +32,28 @@
 	$intCurrentRow = 1;
 	
 	// Setup the MySQLi Insert Query
-	$insScrape = new StatementInsert ('ScrapeAccountAdditional');
+	$insScrape = new StatementInsert ('ScrapeServiceInbound');
 	
 	
 	
 	// Loop through each of the Customers
-	foreach ($cstCustomers->CustomerList () AS $intCustomerId)
+	foreach ($selCustomers->FetchAll () AS $arrService)
 	{
-		
 		// Start a Timer for this Request
 		$fltStartTime = microtime (TRUE);
 		
 		// Pull the Information from ETECH
 		$strResponse = $cnnConnection->Transmit (
-			"GET",
-			"https://sp.teleconsole.com.au/sp/customers/extrainfo.php?customer_id=" . $intCustomerId
+			'GET',
+			'https://sp.teleconsole.com.au/sp/customers/viewdetails.php?customer_id=' . $arrService ['Account'] . '&id=' . $arrService ['Id'] . '&editInbound'
 		);
 		
 		// Count the Total Time
 		$fltTotalTime = microtime (TRUE) - $fltStartTime;
 		
-		
 		// Insert the Information into the Database
 		$arrScrape = Array (
-			'CustomerId'		=> $intCustomerId,
+			'ServiceId'			=> $intServiceId,
 			'DataOriginal'		=> $strResponse,
 			'DataSerialized'	=> ''
 		);
@@ -64,12 +62,12 @@
 		
 		// Add something to the Report
 		$rptReport->AddMessageVariables (
-			"+	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>\n",
+			'+	<CurrentRow>		<TotalTime>	<ServiceId>	<Response>',
 			Array (
-				"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
-				"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),
-				"<CustomerID>"		=> $intCustomerId,
-				"<Response>"		=> "PAGE HAS BEEN CACHED"
+				'<CurrentRow>'		=> sprintf ('%06d',	$intCurrentRow),
+				'<TotalTime>'		=> sprintf ('%1.6f', $fltTotalTime),
+				'<ServiceId>'		=> $intServiceId,
+				'<Response>'		=> $insScrape->Error ()
 			)
 		);
 		
@@ -80,7 +78,7 @@
 		flush ();
 	}
 	
-	echo "\n\n";
+	echo '\n\n';
 	
 	$rptReport->Finish ();
 	

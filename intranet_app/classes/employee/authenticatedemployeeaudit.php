@@ -36,28 +36,62 @@
 	 *
 	 * @package		intranet_app
 	 * @class		AuthenticatedEmployeeAudit
-	 * @extends		dataCollection
+	 * @extends		dataArray
 	 */
 	
-	class AuthenticatedEmployeeAudit extends dataCollection
+	class AuthenticatedEmployeeAudit extends dataArray
 	{
 		
 		//------------------------------------------------------------------------//
-		// _aemAuthenticatedEmployee
+		// _oblintEmployee
 		//------------------------------------------------------------------------//
 		/**
-		 * _aemAuthenticatedEmployee
+		 * _oblintEmployee
 		 *
-		 * Current Authenticated Employee
+		 * Current Employee Id
 		 *
-		 * The current Authenticated Employee that the Audit belongs to
+		 * Current Employee Id
+		 *
+		 * @type	AuthenticatedEmployeeSession
+		 *
+		 * @property
+		 */
+		
+		private $_oblintEmployee;
+		
+		//------------------------------------------------------------------------//
+		// _oblarrAccounts
+		//------------------------------------------------------------------------//
+		/**
+		 * _oblarrAccounts
+		 *
+		 * The Audit Trail for Accounts
+		 *
+		 * The Audit Trail for Accounts
 		 *
 		 * @type	dataArray
 		 *
 		 * @property
 		 */
 		
-		private $_aemAuthenticatedEmployee;
+		private $_oblarrAccounts;
+		
+		//------------------------------------------------------------------------//
+		// _oblarrContacts
+		//------------------------------------------------------------------------//
+		/**
+		// _oblarrContacts
+		 *
+		 * The Audit Trail for Contacts
+		 *
+		 * The Audit Trail for Contacts
+		 *
+		 * @type	dataArray
+		 *
+		 * @property
+		 */
+		
+		private $_oblarrContacts;
 		
 		//------------------------------------------------------------------------//
 		// __construct
@@ -74,38 +108,17 @@
 		 * @method
 		 */
 		
-		function __construct (AuthenticatedEmployee &$aemAuthenticatedEmployee)
+		function __construct ($intEmployee)
 		{
-			// Store the Authenticated Employee
-			$this->_aemAuthenticatedEmployee =& $aemAuthenticatedEmployee;
-			
 			parent::__construct ('AuditList');
 			
-			// Get the values of the Auditing Trail ...
-			$selAuditTrail = new StatementSelect (
-				"EmployeeAccountAudit",
-				"MAX(RequestedOn) AS Latest, Account, Contact, RequestedOn", 
-				"Employee = <Employee> GROUP BY Account",
-				"Latest DESC",
-				5
-			);
+			// Store the Authenticated Employee
+			$this->_oblintEmployee = $this->Push (new dataInteger ('Employee', $intEmployee));
 			
-			$selAuditTrail->Execute (
-				Array (
-					"Employee" => $this->_aemAuthenticatedEmployee->Pull ('Id')->getValue ()
-				)
-			);
-			
-			// Loop through each item
-			foreach ($selAuditTrail->FetchAll () AS $arrAudit)
+			if (!$this->_oblarrAccounts && !$this->_oblarrContacts)
 			{
-				// Make an item in the array
-				$oblarrAuditItem = $this->Push (
-					new AccountContactAudit (
-						new Account ($arrAudit ['Account']),
-						($arrAudit ['Contact']) ? new Contact ($arrAudit ['Contact']) : null
-					)
-				);
+				$this->_oblarrAccounts = $this->Push (new dataArray ('Accounts'));
+				$this->_oblarrContacts = $this->Push (new dataArray ('Contacts'));
 			}
 		}
 		
@@ -117,7 +130,8 @@
 		 *
 		 * Record Account Request
 		 *
-		 * Record a Request to Access an Account
+		 * Record a Request to Access an Account. This is not used as much as
+		 * RecordContact
 		 *
 		 * @param	Account			$actAccount		The Account being Accessed
 		 * @return	Void
@@ -129,13 +143,15 @@
 		{
 			// Insert the Audit
 			$arrAudit = Array (
-				'Employee'		=> $this->_aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'Employee'		=> $this->_oblintEmployee->getValue (),
 				'Account'		=> $actAccount->Pull ('Id')->getValue (), 
 				'RequestedOn'	=> date ('Y-m-d H:i:s', mktime ())
 			);
 			
 			$insAudit = new StatementInsert ('EmployeeAccountAudit', $arrAudit);
 			$insAudit->Execute ($arrAudit);
+			
+			$this->_oblarrAccounts->Push (new dataString ('Account', $actAccount->Pull ('Id')->getValue ()));
 		}
 		
 		//------------------------------------------------------------------------//
@@ -158,35 +174,51 @@
 		{
 			// Insert the Audit
 			$arrAudit = Array (
-				'Employee'		=> $this->_aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'Employee'		=> $this->_oblintEmployee->getValue (),
 				'Account'		=> $cntContact->Pull ('Account')->getValue (), 
 				'Contact'		=> $cntContact->Pull ('Id')->getValue (), 
 				'RequestedOn'	=> date ('Y-m-d H:i:s', mktime ())
 			);
 			
-			$insAudit = new StatementInsert ("EmployeeAccountAudit");
+			$insAudit = new StatementInsert ('EmployeeAccountAudit');
 			$insAudit->Execute ($arrAudit);
+			
+			$this->_oblarrContacts->Push (new dataString ('Contact', $cntContact->Pull ('Id')->getValue ()));
 		}
 		
 		//------------------------------------------------------------------------//
-		// RetrieveContact
+		// Output
 		//------------------------------------------------------------------------//
 		/**
-		 * RetrieveContact()
+		 * Output()
 		 *
-		 * Retrieve a Contact
+		 * Outputs the Data for XSLT
 		 *
-		 * Retrieves a Contact that we have been Authenticated to View
+		 * Outputs the Data for XSLT
 		 *
-		 * @param	Integer			$intId		The Id of the Contact wishing to be Retrieved
-		 * @return	Void
+		 * @return	DOMDocument
 		 *
 		 * @method
 		 */
 		
-		public function RetrieveContact ($intId)
+		public function Output ()
 		{
-			return new Contact ($intId);
+			$oblarrBase = new dataArray ('AuditList');
+			
+			$oblarrAccounts = $oblarrBase->Push (new dataArray ('Accounts', 'Account'));
+			$oblarrContacts = $oblarrBase->Push (new dataArray ('Contacts', 'Contact'));
+			
+			foreach ($this->_oblarrAccounts as $oblstrAccount)
+			{
+				$oblarrAccounts->Push (new Account ($oblstrAccount->getValue ()));
+			}
+			
+			foreach ($this->_oblarrContacts as $oblstrContact)
+			{
+				$oblarrContacts->Push (new Account ($oblstrContact->getValue ()));
+			}
+			
+			return $oblarrBase->Output ();
 		}
 	}
 	

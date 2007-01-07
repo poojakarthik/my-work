@@ -54,7 +54,7 @@
 												<li><a href="account_list.php">Find an Account</a></li>
 												<li>Recently Viewed
 													<ul>
-														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/AuditList/AuditItem/Account">
+														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Accounts/Account">
 															<li>
 																<a>
 																	<xsl:attribute name="href">

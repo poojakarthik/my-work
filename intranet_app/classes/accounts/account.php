@@ -192,16 +192,18 @@
 			// If we want to Archive the Account
 			if ($bolStatus == 1)
 			{
+				$arrArchiveService = Array (
+					"ClosedOn"	=>	date ('Y-m-d')
+				);
+				
+				// Cascade down to include the Services
+				$updService = new StatementUpdate ('Service', 'Account = <Account>', $arrArchiveService);
+				$updService->Execute ($arrArchiveService, Array ('Account' => $this->Pull ('Id')->getValue ()));
+				
 				// Set up an Archive SET clause
 				$arrArchive = Array (
 					"Archived"	=>	1
 				);
-				
-
-				// Cascade down to include the Services
-				$updAccount = new StatementUpdate ('Service', 'Account = <Account>', $arrArchive);
-				$updAccount->Execute ($arrArchive, Array ('Account' => $this->Pull ('Id')->getValue ()));
-				
 				
 				// Now we want to include the Contacts
 				
@@ -257,6 +259,52 @@
 				$updAccount = new StatementUpdate ('Account', 'Id = <Id>', $arrArchive, 1);
 				$updAccount->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
 			}
+		}
+		
+		//------------------------------------------------------------------------//
+		// LesseeReceive
+		//------------------------------------------------------------------------//
+		/**
+		 * LesseeReceive()
+		 *
+		 * Receives a Service to Take Ownership
+		 *
+		 * Receives a Service to Take Ownership
+		 *
+		 * @param	Service		$srvService			Boolean representing whether to Archive (true) or unarchive (false)
+		 * @param	Array		$arrDetailsDate		The date which this service will begin
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function LesseeReceive (Service $srvService, $arrDetailsDate)
+		{
+			$intDate = mktime (0, 0, 0, $arrDetailsDate ['month'], $arrDetailsDate ['day'], $arrDetailsDate ['year']);
+			
+			// Cancel the Service on this specific date
+			$arrService = Array (
+				"FNN"				=>	$srvService->Pull ('FNN')->getValue (),
+				"ServiceType"		=>	$srvService->Pull ('ServiceType')->getValue (),
+				"Indial100"			=>	$srvService->Pull ('Indial100')->getValue (),
+				"MinMonthly"		=>	0,
+				"ChargeCap"			=>	0,
+				"UsageCap"			=>	0,
+				"AccountGroup"		=>	$this->Pull ('AccountGroup')->getValue (),
+				"Account"			=>	$this->Pull ('Id')->getValue (),
+				"ServiceAddress"	=>	$srvService->Pull ('ServiceAddress')->getValue (),
+				"CappedCharge"		=>	0,
+				"UncappedCharge"	=>	0,
+				"CreatedOn"			=>	date ("Y-m-d", $intDate),
+				"Carrier"			=>	$srvService->Pull ('Carrier')->getValue (),
+				"CarrierPreselect"	=>	$srvService->Pull ('CarrierPreselect')->getValue (),
+				"LineStatus"		=>	$srvService->Pull ('LineStatus')->getValue ()
+			);
+			
+			$insService = new StatementInsert ('Service');
+			$insService->Execute ($arrService);
+			echo $insService->Error ();
+			exit;
 		}
 	}
 	

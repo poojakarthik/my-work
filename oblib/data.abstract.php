@@ -1,6 +1,6 @@
 <?
 	
-	abstract class data extends ApplicationBaseClass
+	abstract class data
 	{
 		
 		protected $_DOMDocument;
@@ -16,8 +16,6 @@
 			(
 				$this->_DOMElement
 			);
-			
-			parent::__construct ();
 		}
 		
 		public function tagName ()

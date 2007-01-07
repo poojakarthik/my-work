@@ -15,7 +15,7 @@
 	
 	
 	// Read the Customers CSV File
-	$cstCustomers = new Parser_CSV ('data/customers_short.csv');
+	$cstCustomers = new Parser_CSV ('data/customers.csv');
 	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
 	
 	// Open a Connection/Session to ETECH
@@ -32,7 +32,7 @@
 	$intCurrentRow = 1;
 	
 	// Setup the MySQLi Insert Query
-	$insScrape = new StatementInsert ('ScrapeAccountAdditional');
+	$insAdditionalScrape = new StatementInsert ('ScrapeAccountAdditional');
 	
 	
 	
@@ -56,15 +56,15 @@
 		// Insert the Information into the Database
 		$arrScrape = Array (
 			'CustomerId'		=> $intCustomerId,
-			'DataOriginal'		=> $strResponse,
-			'DataSerialized'	=> ''
+			'DataOriginal'		=> $strResponse
 		);
 		
-		$insScrape->Execute ($arrScrape);
+		$insAdditionalScrape->Execute ($arrScrape);
+		echo $insAdditionalScrape->Error ();
 		
 		// Add something to the Report
 		$rptReport->AddMessageVariables (
-			"+	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>\n",
+			"+	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>",
 			Array (
 				"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
 				"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),

@@ -42,21 +42,21 @@
 	{
 		
 		//------------------------------------------------------------------------//
-		// _aeaAudit
+		// _oblarrSession
 		//------------------------------------------------------------------------//
 		/**
-		 * _aeaAudit
+		 * _oblarrSession
 		 *
-		 * Audit Trail
+		 * Session Information
 		 *
-		 * An object which controls the Auditing of Information within the System
+		 * Session Information
 		 *
-		 * @type	AuthenticatedEmployeeAudit
+		 * @type	dataArray
 		 *
 		 * @property
 		 */
 		 
-		private $_aeaAudit;
+		private $_oblarrSession;
 		
 		//------------------------------------------------------------------------//
 		// _aepPriviledges
@@ -119,28 +119,37 @@
 			// then we have to reconstitute it
 			if ($strSession == "")
 			{
-				$this->Push (new dataArray ('Session'));
+				$this->_oblarrSession = $this->Push (new dataArray ('Session'));
 			}
 			else
 			{
 				// Reconsititute the Session (Unserialize)
 				$oblobjSession = unserialize ($strSession);
 				
-				// If the base Tag Name is not 'Session', then something is Wrong
-				if ($oblobjSession->tagName () <> 'Session')
+				// If we are not using an Authenticated Employee session - die
+				if (!($oblobjSession instanceOf dataArray) && !$oblobjSession != null)
 				{
 					throw new Exception ('Possible hacking attempt');
 				}
 				
 				// Save the Session Information to the Object
-				$this->Push ($oblobjSession);
+				$this->_oblarrSession = $this->Push ($oblobjSession);
+				
+				foreach ($this->_oblarrSession as &$mixSessionItem)
+				{
+					if ($mixSessionItem instanceOf AuthenticatedEmployeeAudit)
+					{
+						$this->_aeaAudit =& $mixSessionItem;
+					}
+				}
 			}
 			
-			// Push an Audit Trail onto the Object
-			$this->_aeaAudit =& $this->Push (new AuthenticatedEmployeeAudit ($this));
+			if ($this->_aeaAudit == null)
+			{
+				$this->_aeaAudit = $this->_oblarrSession->Push (new AuthenticatedEmployeeAudit ($this->Pull ('Id')->getValue ()));
+			}
 			
-			
-			// Start hte Priviledges System
+			// Start the Priviledges System
 			$this->_aepPriviledges = $this->Push (new AuthenticatedEmployeePriviledges ($this));
 			
 			// If Karma ...
@@ -210,7 +219,7 @@
 			// Create an Array of the Fields we want to update ...
 			// Which is only the Session Information in the Employee Table
 			$arrEmployeeSession = Array (
-				'Session'	=> serialize ($this->Pull ('Session'))
+				'Session'	=> serialize ($this->_oblarrSession)
 			);
 			
 			// Now that we can update the employees profile to include this information

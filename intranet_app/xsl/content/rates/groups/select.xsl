@@ -120,7 +120,7 @@
 						<tr>
 							<td>
 								<select id="AvailableRates" name="AvailableRates[]" size="20" class="LargeSelection" multiple="multiple">
-									<xsl:for-each select="/Response/RateGroup/Rates/Results/rangeSample/Rate">
+									<xsl:for-each select="/Response/RateGroup/Rates/Rate">
 										<option>
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>

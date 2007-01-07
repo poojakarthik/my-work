@@ -88,7 +88,12 @@
 				$this->_sleepTagName
 			);
 			
-			$this->_DATA = $this->_sleepObjectData;
+			$this->_DATA = Array ();
+			
+			if ($this->_sleepObjectData)
+			{
+				$this->_DATA = $this->_sleepObjectData;
+			}
 			
 			unset ($this->_sleepTagName);
 			unset ($this->_sleepObjectData);

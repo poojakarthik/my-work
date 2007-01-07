@@ -32,7 +32,7 @@
 	$intCurrentRow = 1;
 	
 	// Setup the MySQLi Insert Query
-	$insScrape = new StatementInsert ('ScrapeAccountAdditional');
+	$insScrape = new StatementInsert ('ScrapeServiceLandLine');
 	
 	
 	

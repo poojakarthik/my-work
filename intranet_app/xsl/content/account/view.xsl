@@ -417,5 +417,14 @@
 				</tr>
 			</xsl:for-each>
 		</table>
+		<div class="Seperator"></div>
+		
+		<a>
+			<xsl:attribute name="href">
+				<xsl:text>service_add.php?Account=</xsl:text>
+				<xsl:value-of select="/Response/Account/Id" />
+			</xsl:attribute>
+			Add Service
+		</a>
 	</xsl:template>
 </xsl:stylesheet>

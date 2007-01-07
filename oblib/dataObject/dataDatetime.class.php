@@ -33,12 +33,12 @@
 		public function getValue ()
 		{
 			return mktime (
-				$this->Pull ("hour")->getValue (),
-				$this->Pull ("minute")->getValue (),
-				$this->Pull ("second")->getValue (),
-				$this->Pull ("month")->getValue (),
-				$this->Pull ("day")->getValue (),
-				$this->Pull ("year")->getValue ()
+				$this->Hour->getValue (),
+				$this->Minute->getValue (),
+				$this->Second->getValue (),
+				$this->Month->getValue (),
+				$this->Day->getValue (),
+				$this->Year->getValue ()
 			);
 		}
 		

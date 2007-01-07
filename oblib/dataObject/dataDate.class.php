@@ -13,9 +13,9 @@
 		{
 			parent::__construct ($nodeName, $nodeName);
 			
-			$this->Year 		= $this->Push (new dataString ("year", "00"));
-			$this->Month 		= $this->Push (new dataString ("month", "00"));
-			$this->Day			= $this->Push (new dataString ("day", "00"));
+			$this->Year 		= $this->Push (new dataString ("year", 0));
+			$this->Month 		= $this->Push (new dataString ("month", 0));
+			$this->Day			= $this->Push (new dataString ("day", 0));
 			
 			$this->Timestamp	= $this->Push (new dataString ("timestamp", ""));
 			
@@ -28,9 +28,9 @@
 				0,
 				0,
 				0,
-				$this->Pull ("month")->getValue (),
-				$this->Pull ("day")->getValue (),
-				$this->Pull ("year")->getValue ()
+				$this->Month->getValue (),
+				$this->Day->getValue (),
+				$this->Year->getValue ()
 			);
 		}
 		

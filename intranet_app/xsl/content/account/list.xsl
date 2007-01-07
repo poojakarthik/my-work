@@ -223,6 +223,7 @@
 				</a>
 				
 				<div class="Seperator"></div>
+				
 				<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 					<tr class="First">
 						<th width="30">
@@ -330,42 +331,49 @@
 						</th>
 						<th>Actions</th>
 					</tr>
-					<xsl:for-each select="/Response/Accounts/Results/rangeSample/Account">
-						<tr>
-							<xsl:attribute name="class">
-								<xsl:choose>
-									<xsl:when test="position() mod 2 = 1">
-										<xsl:text>Odd</xsl:text>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:text>Even</xsl:text>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:attribute>
-							<td>
-								<xsl:value-of select="/Response/Accounts/Results/rangeStart + position()" />.
-							</td>
-							<td>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>account_view.php</xsl:text>
-										<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
-									</xsl:attribute>
-									<xsl:value-of select="./Id" disable-output-escaping="yes" />
-								</a>
-							</td>
-							<td>
-								<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
-							</td>
-							<td>
-								<xsl:value-of select="./TradingName" disable-output-escaping="yes" />
-							</td>
-							<td></td>
-						</tr>
-					</xsl:for-each>
+					<xsl:if test="/Response/Accounts/Results/collationLength &lt;= 80">
+						<xsl:for-each select="/Response/Accounts/Results/rangeSample/Account">
+							<tr>
+								<xsl:attribute name="class">
+									<xsl:choose>
+										<xsl:when test="position() mod 2 = 1">
+											<xsl:text>Odd</xsl:text>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:text>Even</xsl:text>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:attribute>
+								<td>
+									<xsl:value-of select="/Response/Accounts/Results/rangeStart + position()" />.
+								</td>
+								<td>
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>account_view.php</xsl:text>
+											<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
+										</xsl:attribute>
+										<xsl:value-of select="./Id" disable-output-escaping="yes" />
+									</a>
+								</td>
+								<td>
+									<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
+								</td>
+								<td>
+									<xsl:value-of select="./TradingName" disable-output-escaping="yes" />
+								</td>
+								<td></td>
+							</tr>
+						</xsl:for-each>
+					</xsl:if>
 				</table>
 				
 				<xsl:choose>
+					<xsl:when test="/Response/Accounts/Results/collationLength &gt; 80">
+						<div class="MsgError">
+							There are too many results to display. Please refine your search and try again.
+						</div>
+					</xsl:when>
 					<xsl:when test="/Response/Accounts/Results/collationLength = 0">
 						<div class="MsgError">
 							There are no Accounts with the Search Criteria that you Specified.
@@ -378,7 +386,7 @@
 					</xsl:when>
 				</xsl:choose>
 				
-				<xsl:if test="/Response/Accounts/Results/rangePages != 0">
+				<xsl:if test="/Response/Accounts/Results/rangePages != 0 and /Response/Accounts/Results/collationLength &lt;= 80">
 					<p>
 						<table border="0" cellpadding="3" cellspacing="0" width="100%">
 							<tr>

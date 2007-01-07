@@ -103,7 +103,7 @@
 			$selEntities->Execute(Array("Entity" => $strEntity));
 			
 			// Put all the related fields for this entity on the Object
-			while ($arrEntity = $selEntities->Fetch ())
+			foreach ($selEntities->FetchAll () AS $arrEntity)
 			{
 				$this->_oblarrFields->Push (new DocumentationField ($arrEntity ['Entity'], $arrEntity ['Field']));
 			}
