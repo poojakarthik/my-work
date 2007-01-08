@@ -6,12 +6,20 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Documentation: <xsl:value-of select="/Response/DocumentationDetails/Field/Label" /></h1>
+		<h1>Documentation Details</h1>
+		<h2>
+			<xsl:value-of select="/Response/DocumentationDetails/Field/Entity" /> : 
+			<xsl:value-of select="/Response/DocumentationDetails/Field/Field" />
+		</h2>
 		
-		<h2><xsl:value-of select="/Response/DocumentationDetails/Field/Title" /></h2>
 		<div class="Seperator"></div>
-		<div class="Filter-Form">
-			<pre style="line-height: 100%;"><xsl:value-of select="/Response/DocumentationDetails/Field/Description" /></pre>
+		<div class="Pablo-Section">
+			<div class="Pablo-Section-Container">
+				<div class="Pablo-Section-Content">
+					<h2><xsl:value-of select="/Response/DocumentationDetails/Field/Title" /></h2>
+					<pre style="line-height: 100%;"><xsl:value-of select="/Response/DocumentationDetails/Field/Description" /></pre>
+				</div>
+			</div>
 		</div>
 	</xsl:template>
 </xsl:stylesheet>
