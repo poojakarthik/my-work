@@ -1391,7 +1391,7 @@ class MySQLFunction
 	 	// add report data to the statement
 		if (is_array($this->_arrReportData))
 		{
-			foreach($this->_arrReportData AS $strKey=$arrValue)
+			foreach($this->_arrReportData AS $strKey=>$arrValue)
 			{
 				if (!$arrWhere[$strKey])
 				{
