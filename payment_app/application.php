@@ -129,7 +129,7 @@ die();
 	 {
 	 	//TODO!!!!
 	 	// Make this work just like the Normalise->Import Method
-		// Status = PAYMENT_IMPORTED
+		// Payment.Status = PAYMENT_IMPORTED
 	 }
 	
 	//------------------------------------------------------------------------//
