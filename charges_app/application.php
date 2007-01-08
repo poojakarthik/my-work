@@ -150,6 +150,7 @@ die();
 		$this->_rptRecurringChargesReport->AddMessage(MSG_GENERATE_CHARGES);
 		$intPassed = 0;
 		$intTotal = 0;
+		$intNonUnique = 0;
 		$this->StartWatch();
 		
 		// Get list of charges that need to be generated (1000 at a time)
@@ -215,6 +216,41 @@ die();
 				{
 					$arrData['Status']			= CHARGE_WAITING;
 				}
+				
+				// is this a unique charge
+				if ($arrCharge['Unique'])
+				{
+					// check if a charge of this type already exists for this billing period
+					//TODO!!!! -- check in the db
+					/*
+					SELECT Id FROM charge WHERE
+					ChargeType 			= $arrData['ChargeType']
+					AND AccountGroup 	= $arrData['AccountGroup']
+					AND Account 		= $arrData['Account']
+					AND Nature			= $arrData['Nature']
+					AND Status			!= CHARGE_DECLINED
+					AND Status			!= CHARGE_INVOICED
+					LIMIT 1
+					*/
+					//$intNotUnique =
+					if ($intNotUnique)
+					{
+						// update RecuringCharge Table
+						$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
+						$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
+						$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0));
+						$this->_ubiRecurringCharge->Execute($arrCharge);
+						
+						// add to report
+						//TODO!!!! - different message (non-unique charge skipped)
+						$this->_rptRecurringChargesReport->AddMessage(MSG_OK);
+		
+						$intNonUnique++;
+						
+						continue;
+					}
+				}
+
 				$this->_insAddToChargesTable->Execute($arrData);
 				
 				// update RecuringCharge Table
@@ -225,7 +261,7 @@ die();
 				
 				// add to report
 				$this->_rptRecurringChargesReport->AddMessage(MSG_OK);
-				
+
 				$intPassed++;
 			}
 		}
