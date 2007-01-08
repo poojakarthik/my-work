@@ -1415,6 +1415,9 @@ class MySQLFunction
 	 * Format the results of StatementSelectReport into a CSV
 	 * CSV will then be available as $this->Report
 	 * 
+	 * @param		str		strSeperator	optional field seperator, defaults to ;
+	 * @param		str		strTerminator	optional line terminator, defaults to \n
+	 *
 	 * @return		VOID
 	 * @method
 	 */ 
@@ -1439,7 +1442,7 @@ class MySQLFunction
 				unset($arrTemp);
 				foreach($this->_arrBoundResults as $strKey=>$mixValue)
 				{
-					$arrTemp[$strKey] = $mixValue;
+					$arrTemp[$strKey] = '"'.$this->_stmtSqlStatment->real_escape_string($mixValue).'"';
 				}
 				// add line to CSV
 				$this->Report .= implode($strSeperator, $arrTemp).$strTerminator;

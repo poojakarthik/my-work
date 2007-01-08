@@ -142,6 +142,8 @@ define("INVOICE_TEMP"				, 100);
 define("INVOICE_COMMITTED"			, 101);
 define("INVOICE_DISPUTED"			, 102);
 define("INVOICE_SETTLED"			, 103);
+define("INVOICE_DISPUTED_SETTLED"	, 104); // undisputed portion paid in full
+
 
 // Charge Status
 define("CHARGE_WAITING"				, 100);
