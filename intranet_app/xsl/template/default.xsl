@@ -112,6 +112,7 @@
 												<li><a href="charges_recurringcharge_list.php">List Recurring Charge Types</a></li>
 												<li><a href="charges_charge_add.php">Add Single Charge Type</a></li>
 												<li><a href="charges_charge_list.php">List Single Charge Types</a></li>
+												<li><a href="charges_approve.php">Approve Unbilled Charges</a></li>
 											</ul>
 										</li>
 										<li>

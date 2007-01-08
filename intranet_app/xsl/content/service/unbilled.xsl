@@ -112,7 +112,16 @@
 							Showing  
 							<xsl:value-of select="/Response/CDRs-Unbilled/rangeStart + 1" />
 							to
-							<xsl:value-of select="/Response/CDRs-Unbilled/rangeStart + /Response/CDRs-Unbilled/rangeLength" />
+							
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Unbilled/rangeLength + /Response/CDRs-Unbilled/rangeStart &gt; /Response/CDRs-Unbilled/collationLength">
+									<xsl:value-of select="/Response/CDRs-Unbilled/collationLength" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="/Response/CDRs-Unbilled/rangeStart + /Response/CDRs-Unbilled/rangeLength" />
+								</xsl:otherwise>
+							</xsl:choose>
+							
 							of
 							<xsl:value-of select="/Response/CDRs-Unbilled/collationLength" />
 						</td>

@@ -17,11 +17,11 @@
 					</tr>
 					<tr>
 						<th>Rate Name:</th>
-						<td><xsl:value-of select="/Response/RateDetails/Rate/Name" /></td>
+						<td><xsl:value-of select="/Response/RateDetails/Rate/Name" disable-output-escaping="yes" /></td>
 					</tr>
 					<tr>
 						<th>Rate Description:</th>
-						<td><xsl:value-of select="/Response/RateDetails/Rate/Description" /></td>
+						<td><xsl:value-of select="/Response/RateDetails/Rate/Description" disable-output-escaping="yes" /></td>
 					</tr>
 					<tr>
 						<th>Service Type:</th>
@@ -29,7 +29,7 @@
 					</tr>
 					<tr>
 						<th>Record Type:</th>
-						<td><xsl:value-of select="/Response/RateDetails/Rate/RecordType/Name" /></td>
+						<td><xsl:value-of select="/Response/RateDetails/Rate/RecordType/Name" disable-output-escaping="yes" /></td>
 					</tr>
 					<tr>
 						<th>Archive Status:</th>

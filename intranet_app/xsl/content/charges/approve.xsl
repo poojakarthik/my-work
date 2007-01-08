@@ -18,6 +18,7 @@
 					<th width="30">#</th>
 					<th>Description</th>
 					<th>Amount</th>
+					<th>Account</th>
 					<th>Entered By</th>
 					<th>Entered On</th>
 					<th>Options</th>
@@ -27,6 +28,15 @@
 						<td><xsl:value-of select="position()" />.</td>
 						<td><xsl:value-of select="./Description" /></td>
 						<td><xsl:value-of select="./Amount" /></td>
+						<td>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>account_view.php?Id=</xsl:text>
+									<xsl:value-of select="./Account" />
+								</xsl:attribute>
+								<xsl:text>View Account</xsl:text>
+							</a>
+						</td>
 						<td><xsl:value-of select="./CreatedBy" /></td>
 						<td>
 							<xsl:call-template name="dt:format-date-time">

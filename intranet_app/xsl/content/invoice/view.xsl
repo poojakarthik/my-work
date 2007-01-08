@@ -238,7 +238,14 @@
 							Showing  
 							<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeStart + 1" />
 							to
-							<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeStart + /Response/CDRs-Invoiced/Results/rangeLength" />
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Invoiced/Results/rangeLength + /Response/CDRs-Invoiced/Results/rangeStart &gt; /Response/CDRs-Invoiced/Results/collationLength">
+									<xsl:value-of select="/Response/CDRs-Invoiced/Results/collationLength" />
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeStart + /Response/CDRs-Invoiced/Results/rangeLength" />
+								</xsl:otherwise>
+							</xsl:choose>
 							of
 							<xsl:value-of select="/Response/CDRs-Invoiced/Results/collationLength" />
 						</td>

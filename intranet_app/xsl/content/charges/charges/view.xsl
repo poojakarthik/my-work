@@ -41,19 +41,14 @@
 						<th class="JustifiedWidth">Nature:</th>
 						<td>
 							<strong>
-								<span>
-									<xsl:attribute name="class">
-										<xsl:choose>
-											<xsl:when test="/Response/ChargeType/Nature = 'DR'">
-												<xsl:text>Blue</xsl:text>
-											</xsl:when>
-											<xsl:when test="/Response/ChargeType/Nature = 'CR'">
-												<xsl:text>Green</xsl:text>
-											</xsl:when>
-										</xsl:choose>
-									</xsl:attribute>
-									<xsl:value-of select="/Response/ChargeType/Nature" />
-								</span>
+								<xsl:choose>
+									<xsl:when test="/Response/ChargeType/Nature = 'DR'">
+										<span class="Blue">Debit</span>
+									</xsl:when>
+									<xsl:when test="/Response/ChargeType/Nature = 'CR'">
+										<span class="Green">Credit</span>
+									</xsl:when>
+								</xsl:choose>
 							</strong>
 						</td>
 					</tr>

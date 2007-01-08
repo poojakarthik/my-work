@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time"
-	xmlns:func="http://exslt.org/functions" xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
-	
-	<xsl:import href="../../lib/date-difference/date.difference.function.xsl"/>
-	<xsl:import href="../../lib/date-difference/date.difference.template.xsl"/>
 	
 	<xsl:template name="Content">
 		<h1>View Account Details</h1>
@@ -255,6 +251,15 @@
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>Edit Account Information</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>account_add.php?AccountGroup=</xsl:text>
+									<xsl:value-of select="/Response/Account/AccountGroup" />
+								</xsl:attribute>
+								<xsl:text>Add Associated Account</xsl:text>
 							</a>
 						</li>
 					</ul>

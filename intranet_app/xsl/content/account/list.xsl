@@ -439,7 +439,14 @@
 									Showing  
 									<xsl:value-of select="/Response/Accounts/Results/rangeStart + 1" />
 									to
-									<xsl:value-of select="/Response/Accounts/Results/rangeStart + /Response/Accounts/Results/rangeLength" />
+									<xsl:choose>
+										<xsl:when test="/Response/Accounts/Results/rangeLength + /Response/Accounts/Results/rangeStart &gt; /Response/Accounts/Results/collationLength">
+											<xsl:value-of select="/Response/Accounts/Results/collationLength" />
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:value-of select="/Response/Accounts/Results/rangeStart + /Response/Accounts/Results/rangeLength" />
+										</xsl:otherwise>
+									</xsl:choose>
 									of
 									<xsl:value-of select="/Response/Accounts/Results/collationLength" />
 								</td>

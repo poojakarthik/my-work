@@ -21,7 +21,7 @@
 					<div class="Clear"></div>
 				</div>
 				<div id="Controller" class="sectionContainer">
-					<div id="Content" class="Left sectionContent">
+					<div id="Content" class="sectionContent">
 						<xsl:call-template name="Content" />
 					</div>
 				</div>
