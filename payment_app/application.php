@@ -77,6 +77,15 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
+		
+		$this->_rptPaymentReport = new Report("Payments Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
+		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
+		
+		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", "Status = ".PAYMENT_WAITING);
+		
+		$arrColumns['Id']			= NULL;
+		$arrColumns['Status']		= NULL;
+		$this->_ubiPaymentFile		= new StatementUpdateById("FileImport", $arrColumns);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -99,13 +108,13 @@ die();
 		$this->Import();
 		
 		// normalise payments
-		While($this->Normalise())
+		while($this->Normalise())
 		{
 		
 		}
 		
 		// process payments
-		While($this->Process())
+		while($this->Process())
 		{
 		
 		}
@@ -127,9 +136,53 @@ die();
 	 */
 	 function Import()
 	 {
-	 	//TODO!!!!
-	 	// Make this work just like the Normalise->Import Method
-		// Payment.Status = PAYMENT_IMPORTED
+		$this->_rptPaymentReport->AddMessage(MSG_IMPORTING_TITLE);
+		$this->Framework->StartWatch();
+	
+		// Loop through the CDR File entries
+		$intCount	= 0;
+		$intPassed	= 0;
+		$this->_selGetPaymentFiles->Execute();
+		while ($arrFile = $selSelectCDRFiles->Fetch())
+		{
+			$intCount++;
+			// Make sure the file exists
+			if (!file_exists($arrFile['Location']))
+			{
+				// Report the error, and UPDATE the database with a new status, then move to the next file
+				$arrColumns['Id']		= $arrFile['Id'];
+				$arrColumns['Status']	= PAYMENT_BAD_IMPORT;
+				$this->_ubiPaymentFile->Execute($arrFile);
+				
+				// Add to the Normalisation report
+				$this->_rptPaymentReport->AddMessageVariables(MSG_FAIL_FILE_MISSING, Array('<Path>' => $arrFile['Location']));
+				continue;
+			}
+
+			// Import
+			$ptrFile		= fopen($arrFile['Location'], "r");
+			$intSequence	= 1;
+			while (!feof($ptrFile))
+			{
+				// Read line
+				$arrData['Payment']		= fgets($ptrFile);
+				$arrData['SequenceNo']	= $intSequence;
+				$arrData['File']		= $arrFile['Id'];
+				$arrData['Status']		= PAYMENT_IMPORTED;
+				$this->_insPayment->Execute($arrData);
+				
+				// Increment sequence number
+				$intSequence++;
+			}
+			$intPassed++;
+		}
+		
+		// Report totals
+		$arrReportLine['<Total>']		= $intCount;
+		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
+		$arrReportLine['<Pass>']		= $intPassed;
+		$arrReportLine['<Fail>']		= $intCount - $intPassed;
+		$this->AddToNormalisationReport(MSG_IMPORT_FOOTER, $arrReportLine);
 	 }
 	
 	//------------------------------------------------------------------------//
