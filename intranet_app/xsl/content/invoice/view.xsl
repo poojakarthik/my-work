@@ -140,7 +140,7 @@
 				<th>Calling Party</th>
 				<th>Start Date/Time</th>
 				<th class="Currency">Duration</th>
-				<th class="Currency">Cost</th>
+				<th class="Currency">Amount</th>
 				<th class="Currency">Options</th>
 			</tr>
 			<xsl:for-each select="/Response/CDRs-Invoiced/Results/rangeSample/CDR">

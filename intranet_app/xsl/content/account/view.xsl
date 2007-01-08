@@ -241,7 +241,7 @@
 									<xsl:text>account_ledger.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>Account Ledger</xsl:text>
+								<xsl:text>Invoices + Payments</xsl:text>
 							</a>
 						</li>
 						<li>
@@ -417,6 +417,14 @@
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
 							<xsl:text>Service Details</xsl:text>
+						</a>
+						<xsl:text>, </xsl:text>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>service_unbilled.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:text>Unbilled Charges</xsl:text>
 						</a>
 					</td>
 				</tr>

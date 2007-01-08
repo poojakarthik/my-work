@@ -12,28 +12,36 @@
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
 				<h2>Current Allocation</h2>
-				<p>
-					The service you are currently viewing is connected to the following plan:<br />
-					<strong><xsl:value-of select="/Response/Service/RatePlan/Name" /></strong>
-				</p>
 				
-				<div class="Seperator"></div>
-				
-				<ul>
-					<li>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>javascript:nohref()</xsl:text>
-							</xsl:attribute>
-							<xsl:attribute name="onclick">
-								<xsl:text>return openPopup(</xsl:text>
-									<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="/Response/Service/RatePlan/Id" /><xsl:text>'</xsl:text>
-								<xsl:text>)</xsl:text>
-							</xsl:attribute>
-							View Plan Details
-						</a>
-					</li>
-				</ul>
+				<xsl:choose>
+					<xsl:when test="/Response/Service/RatePlan/Name">
+						<p>
+							The service you are currently viewing is connected to the following plan:<br />
+							<strong><xsl:value-of select="/Response/Service/RatePlan/Name" /></strong>
+						</p>
+						
+						<div class="Seperator"></div>
+						
+						<ul>
+							<li>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>javascript:nohref()</xsl:text>
+									</xsl:attribute>
+									<xsl:attribute name="onclick">
+										<xsl:text>return openPopup(</xsl:text>
+											<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="/Response/Service/RatePlan/Id" /><xsl:text>'</xsl:text>
+										<xsl:text>)</xsl:text>
+									</xsl:attribute>
+									View Plan Details
+								</a>
+							</li>
+						</ul>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:text>This service is currently not on a plan. Please select a plan.</xsl:text>
+					</xsl:otherwise>
+				</xsl:choose>
 			</div>
 		</div>
 		

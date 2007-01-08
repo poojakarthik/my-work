@@ -373,8 +373,15 @@
 		
 		public function Plan ()
 		{
-			$selCurrentPlan = new StatementSelect ('ServiceRatePlan', 'RatePlan', 'Now() BETWEEN StartDatetime AND EndDatetime', 'CreatedOn DESC', 1);
-			$selCurrentPlan->Execute (Array ());
+			$selCurrentPlan = new StatementSelect (
+				'ServiceRatePlan', 
+				'RatePlan', 
+				'Service = <Service> AND Now() BETWEEN StartDatetime AND EndDatetime', 
+				'CreatedOn DESC',
+				1
+			);
+			
+			$selCurrentPlan->Execute (Array ('Service' => $this->Pull ('Id')->getValue ()));
 			
 			if ($selCurrentPlan->Count () == 1)
 			{
