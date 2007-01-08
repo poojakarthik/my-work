@@ -468,4 +468,43 @@ function isValidFNN ($strFNN)
 	return preg_match ("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $strFNN);
 }
 
+//------------------------------------------------------------------------//
+// EvalReturn()
+//------------------------------------------------------------------------//
+/**
+ * EvalReturn()
+ * 
+ * Eval php code and return the result
+ * 
+ * Eval php code and return the result
+ * 
+ * @param	string		$strCode			PHP code to be evaled
+ *
+ * @return	mixed							return value of the php code
+ * 
+ * @method
+ */
+function EvalReturn ($strCode)
+{
+	if (!trim($strCode))
+	{
+		return FALSE;
+	}
+	
+	// by default we return FALSE
+	$return = FALSE;
+	
+	$code = "$return = $strCode;"
+	try
+	{
+		eval($code);
+	}
+	catch(Exception $e)
+	{
+		$return = FALSE;
+	}
+	
+	return $return; 
+}
+
 ?>

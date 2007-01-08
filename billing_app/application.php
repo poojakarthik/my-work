@@ -342,7 +342,15 @@ die();
 			
 			// calculate account balance
 			$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id']));
-			$fltAccountBalance = $selCalcAccountBalance->Fetch(); 
+			$fltAccountBalance = $selCalcAccountBalance->Fetch();
+			
+			// AccountGroup.CreditBalance
+			//TODO!!!!
+			// add temp InvoicePayments ????
+			//TODO!!!!
+			
+			// Account.CreditBalance
+			//TODO!!!!
 			
 			// write to temporary invoice table
 			$arrInvoiceData = Array();
