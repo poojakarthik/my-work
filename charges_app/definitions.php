@@ -32,6 +32,12 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"						, "Skell_app");
+define("USER_NAME"						, "Charges_app");
 
+define("MSG_GENERATE_CHARGES"			, "[ Generating Charges ]\n");
+define("MSG_LINE"						, " + Generating charge for #<Id>...");
+define("MSG_OK"							, "\t\t\t\t[   OK   ]");
+define("MSG_FAIL"						, "\t\t\t\t[ FAILED ]");
+define("MSG_REASON"						, "\t Reason: ");
+define("MSG_FOOTER"						, "\tGenerated <Total> charges in <Time> seconds.  <Passed> passed, <Failed> failed.\n".MSG_HORIZONTAL_RULE);
 ?>

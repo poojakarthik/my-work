@@ -77,6 +77,64 @@ die();
  	function __construct($arrConfig)
  	{
 		parent::__construct();
+		
+		// Get Charges Select Statement
+		$arrWhere				= "StartedOn <= NOW() " .
+								  "AND Archived = 0 " .
+								  "AND " .
+								  "(" .
+								  "		Continuable = 1 " .
+								  "		OR " .
+								  "		(Continuable = 0 AND MinCharge > TotalCharged)" .
+								  ") " .
+								  "AND " .
+								  "(" .
+								  "		(" .
+								  "			RecurringFreqType = ".BILLING_FREQ_DAY." " .
+								  "			AND " .
+								  "			NOW() >= ADDDATE(LastChargedOn, INTERVAL RecurringFreq DAY)" .
+								  "		)" .
+								  "		OR" .
+								  "		(" .
+								  "			RecurringFreqType = ".BILLING_FREQ_MONTH." " .
+								  "			AND " .
+								  "			NOW() >= ADDDATE(LastChargedOn, INTERVAL RecurringFreq MONTH)" .
+								  "		)" .
+								  "		OR" .
+								  "		(" .
+								  "			RecurringFreqType = ".BILLING_FREQ_HALF_MONTH." " .
+								  "			AND " .
+								  "			(" .
+								  "				(" .
+								  "					DATE_FORMAT(LastChargedOn, %e) < 15 " .
+								  "					AND " .
+								  "					NOW() >= ADDDATE(LastChargedOn, INTERVAL 14 DAY)" .
+								  "				) " .
+								  "				OR " .
+								  "				(" .
+								  "					DATE_FORMAT(LastChargedOn, %e) > 14" .
+								  "					AND " .
+								  "					NOW() >= ADDDATE(SUBDATE(LastChargedOn, INTERVAL 14 DAY), INTERVAL 1 MONTH)" .
+								  "				)" .
+								  "			)" .
+								  "		)" .
+								  ")";
+		$this->_selGetCharges	= new StatementSelect("RecurringCharge", "*", $arrWhere, NULL, "1000");
+		
+		$arrColumns['TotalRecursions']				= new MySQLFunction("TotalRecursions + 1");
+		$arrColumns['TotalCharged']					= new MySQLFunction("TotalCharged + <Charge>");
+		$arrColumns['LastChargedOn']				= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL RecurringFreq DAY)");
+		$this->_ubiRecurringChargeDay				= new StatementUpdateById("RecurringCharge", $arrColumns);
+		$arrColumns['LastChargedOn']				= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL RecurringFreq MONTH)");
+		$this->_ubiRecurringChargeMonth				= new StatementUpdateById("RecurringCharge", $arrColumns);
+		$arrColumns['LastChargedOn']				= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL 14 DAY)");
+		$this->_ubiRecurringChargeFirstHalfMonth	= new StatementUpdateById("RecurringCharge", $arrColumns);
+		$arrColumns['LastChargedOn']				= new MySQLFunction("ADDDATE(SUBDATE(LastChargedOn, INTERVAL 14 DAY), INTERVAL 1 MONTH)");
+		$this->_ubiRecurringChargeSecondHalfMonth	= new StatementUpdateById("RecurringCharge", $arrColumns);
+		
+		// Init Report
+		$this->_rptRecurringChargesReport	= new Report("Recurring Charges Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
+		$this->_rptRecurringChargesReport->AddMessage(MSG_HORIZONTAL_RULE);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -95,12 +153,20 @@ die();
 	 */
  	function Execute()
  	{
+		$this->_rptRecurringChargesReport->AddMessage(MSG_GENERATE_CHARGES);
+		$intPassed = 0;
+		$intTotal = 0;
+		$this->StartWatch();
+		
 		// Get list of charges that need to be generated (1000 at a time)
-		While($arrCharges = $this->_GetCharges())
+		while($arrCharges = $this->_GetCharges())
 		{
 			// for each charge
 			foreach ($arrCharges as $arrCharge)
 			{
+				$intTotal++;
+				$this->_rptRecurringChargesReport->AddMessageVariables(MSG_LINE, Array('<Id>' => $arrCharge['Id']));
+				
 				// Calculate partial charge if needed
 				if (!$arrCharge['Continuable'] && ($arrCharge['TotalCharged'] + $arrCharge['RecursionCharge']) > $arrCharge['MinCharge'])
 				{
@@ -109,21 +175,72 @@ die();
 				}
 				
 				// Add Charge details to Charges Table
-				//TODO!!!!
+				$arrData['AccountGroup']	= $arrCharge['AccountGroup'];
+				$arrData['Account']			= $arrCharge['Account'];
+				$arrData['Service']			= $arrCharge['Service'];
+				$arrData['CreatedBy']		= $arrCharge['CreatedBy'];
+				$arrData['CreatedOn']		= $arrCharge['CreatedOn'];
+				$arrData['ApprovedBy']		= $arrCharge['ApprovedBy'];
+				$arrData['ChargeType']		= $arrCharge['ChargeType'];
+				$arrData['Description']		= $arrCharge['Description'];
+				$arrData['ChargedOn']		= new MySQLFunction("NOW()"); // FIXME
+				$arrData['Nature']			= $arrCharge['Nature'];
+				$arrData['Amount']			= $arrCharge['RecursionCharge'];
+				if ($arrData['ApprovedBy'])
+				{
+					$arrData['Status']			= CHARGE_APPROVED;
+				}
+				else
+				{
+					$arrData['Status']			= CHARGE_WAITING;
+				}
+				$this->_insAddToChargesTable->Execute($arrData);
 				
 				// update RecuringCharge Table
-				//TODO!!!!
-					// TotalCharged
-					// LastChargedOn * date charge is for, not todays date !!!!
-					// TotalRecursions
-					
+				$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
+				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
+				switch ($arrCharge['RecurringFreqType'])
+				{
+					case BILLING_FREQ_DAY:
+						$arrColumns['LastChargedOn']		= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL RecurringFreq DAY)");
+						$this->_ubiRecurringChargeDay->Execute($arrCharge);
+						break;
+					case BILLING_FREQ_MONTH:
+						$arrColumns['LastChargedOn']		= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL RecurringFreq MONTH)");
+						$this->_ubiRecurringChargeMonth->Execute($arrCharge);
+						break;
+					case BILLING_FREQ_HALF_MONTH:
+						if ((int)date("d", strtotime($arrCharge['LastChargedOn'])) > 14)
+						{
+							$arrColumns['LastChargedOn']	= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL 14 DAY)");
+							$this->_ubiRecurringChargeFirstHalfMonth->Execute($arrCharge);
+						}
+						else
+						{
+							$arrColumns['LastChargedOn']	= new MySQLFunction("ADDDATE(SUBDATE(LastChargedOn, INTERVAL 14 DAY), INTERVAL 1 MONTH)");
+							$this->_ubiRecurringChargeSecondHalfMonth->Execute($arrCharge);
+						}
+						break;
+					default:
+						$this->_rptRecurringChargesReport->AddMessage(MSG_FAIL.MSG_REASON."Invalid RecurringFreqType ".$arrCharge['RecurringFreqType']);
+						continue;
+				}
 				// add to report
-				//TODO!!!!
+				$this->_rptRecurringChargesReport->AddMessage(MSG_OK);
+				
+				$intPassed++;
 			}
 		}
 		
+		// TODO: Report footer
+		$arrData['<Total>']		= $intTotal;
+		$arrData['<Time>']		= $this->SplitWatch();
+		$arrData['<Passed>']	= $intPassed;
+		$arrData['<Failed>']	= $intTotal - $intPassed;
+		$this->_rptRecurringChargesReport->AddMessageVariables(MSG_FOOTER, $arrData);
+		
 		// Send Report
-		//TODO!!!!
+		$this->_rptRecurringChargesReport->Finish();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -145,51 +262,8 @@ die();
 	function _GetCharges()
 	{
 		// get the next 1000 charges that need to be added
-		//TODO!!!!
-		// Select * FROM RecurringCharge WHERE
-		/*
-		Archived = 0
-		AND
-		StartedOn <= date_today
-		AND
-		(
-			Continuable = 1
-			OR
-			(Continuable = 0 AND MinCharge > TotalCharged)
-		)
-		AND
-		(
-			(
-				RecurringFreqType = BILLING_FREQ_DAY
-				AND
-				date_today >= LastChargedOn + RecurringFreq days
-			)
-			OR
-			(
-				RecurringFreqType = BILLING_FREQ_MONTH
-				AND
-				date_today >= LastChargedOn + RecurringFreq months
-			)
-			OR
-			(
-				RecurringFreqType = BILLING_FREQ_HALF_MONTH
-				AND
-				(
-					(
-						DATE_FORMAT(LastChargedOn, %e) < 15
-						AND
-						date_today >= LastChargedOn + 14 days
-					)
-					OR
-					(
-						DATE_FORMAT(LastChargedOn, %e) > 14
-						AND
-						date_today >= LastChargedOn - 14 days + 1 month
-					)
-				)
-			)		
-		)
-		*/
+		$this->_selGetCharges->Execute();
+		return $this->_selGetCharges->FetchAll();
 	}
  }
 
