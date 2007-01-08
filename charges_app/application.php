@@ -121,17 +121,11 @@ die();
 								  ")";
 		$this->_selGetCharges	= new StatementSelect("RecurringCharge", "*", $arrWhere, NULL, "1000");
 		
-		$arrColumns['TotalRecursions']				= new MySQLFunction("TotalRecursions + 1");
-		$arrColumns['TotalCharged']					= new MySQLFunction("TotalCharged + <Charge>");
-		$arrColumns['LastChargedOn']				= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL RecurringFreq DAY)");
-		$this->_ubiRecurringChargeDay				= new StatementUpdateById("RecurringCharge", $arrColumns);
-		$arrColumns['LastChargedOn']				= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL RecurringFreq MONTH)");
-		$this->_ubiRecurringChargeMonth				= new StatementUpdateById("RecurringCharge", $arrColumns);
-		$arrColumns['LastChargedOn']				= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL 14 DAY)");
-		$this->_ubiRecurringChargeFirstHalfMonth	= new StatementUpdateById("RecurringCharge", $arrColumns);
-		$arrColumns['LastChargedOn']				= new MySQLFunction("ADDDATE(SUBDATE(LastChargedOn, INTERVAL 14 DAY), INTERVAL 1 MONTH)");
-		$this->_ubiRecurringChargeSecondHalfMonth	= new StatementUpdateById("RecurringCharge", $arrColumns);
-		
+		$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
+		$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>");
+		$arrColumns['LastChargedOn']	= NULL;
+		$this->_ubiRecurringCharge		= new StatementUpdateById("RecurringCharge", $arrColumns);
+
 		// Init Report
 		$this->_rptRecurringChargesReport	= new Report("Recurring Charges Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->_rptRecurringChargesReport->AddMessage(MSG_HORIZONTAL_RULE);
@@ -174,6 +168,33 @@ die();
 					$arrCharge['RecursionCharge'] = $arrCharge['MinCharge'] - $arrCharge['TotalCharged'];
 				}
 				
+				// Calculate the charge date
+				$strDate = $arrCharge['LastChargedOn'];
+				switch ($arrCharge['RecurringFreqType'])
+				{
+					case BILLING_FREQ_DAY:
+						$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." days", strtotime($arrCharge['LastChargedOn'])));
+						break;
+					case BILLING_FREQ_MONTH:
+						$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." months", strtotime($arrCharge['LastChargedOn'])));
+						break;
+					case BILLING_FREQ_HALF_MONTH:
+						if ((int)date("d", strtotime($arrCharge['LastChargedOn'])) > 14)
+						{
+							$strDate	= date("Y-m-d", strtotime("+14 days", strtotime($arrCharge['LastChargedOn'])));
+						}
+						else
+						{
+							$strDate	= date("Y-m-d", strtotime("-14 days", strtotime($arrCharge['LastChargedOn'])));
+							$strDate	= date("Y-m-d", strtotime("+1 month", strtotime($strDate)));
+						}
+						break;
+					default:
+						$this->_rptRecurringChargesReport->AddMessage(MSG_FAIL.MSG_REASON."Invalid RecurringFreqType ".$arrCharge['RecurringFreqType']);
+						continue;
+				}
+				$arrCharge['LastChargedOn'] = $strDate;
+				
 				// Add Charge details to Charges Table
 				$arrData['AccountGroup']	= $arrCharge['AccountGroup'];
 				$arrData['Account']			= $arrCharge['Account'];
@@ -197,34 +218,11 @@ die();
 				$this->_insAddToChargesTable->Execute($arrData);
 				
 				// update RecuringCharge Table
+				$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
 				$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
-				switch ($arrCharge['RecurringFreqType'])
-				{
-					case BILLING_FREQ_DAY:
-						$arrColumns['LastChargedOn']		= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL RecurringFreq DAY)");
-						$this->_ubiRecurringChargeDay->Execute($arrCharge);
-						break;
-					case BILLING_FREQ_MONTH:
-						$arrColumns['LastChargedOn']		= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL RecurringFreq MONTH)");
-						$this->_ubiRecurringChargeMonth->Execute($arrCharge);
-						break;
-					case BILLING_FREQ_HALF_MONTH:
-						if ((int)date("d", strtotime($arrCharge['LastChargedOn'])) > 14)
-						{
-							$arrColumns['LastChargedOn']	= new MySQLFunction("ADDDATE(LastChargedOn, INTERVAL 14 DAY)");
-							$this->_ubiRecurringChargeFirstHalfMonth->Execute($arrCharge);
-						}
-						else
-						{
-							$arrColumns['LastChargedOn']	= new MySQLFunction("ADDDATE(SUBDATE(LastChargedOn, INTERVAL 14 DAY), INTERVAL 1 MONTH)");
-							$this->_ubiRecurringChargeSecondHalfMonth->Execute($arrCharge);
-						}
-						break;
-					default:
-						$this->_rptRecurringChargesReport->AddMessage(MSG_FAIL.MSG_REASON."Invalid RecurringFreqType ".$arrCharge['RecurringFreqType']);
-						continue;
-				}
+				$this->_ubiRecurringCharge->Execute($arrCharge);
+				
 				// add to report
 				$this->_rptRecurringChargesReport->AddMessage(MSG_OK);
 				
