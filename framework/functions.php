@@ -494,7 +494,7 @@ function EvalReturn ($strCode)
 	// by default we return FALSE
 	$return = FALSE;
 	
-	$code = "$return = $strCode;"
+	$code = "$return = $strCode;";
 	try
 	{
 		eval($code);
