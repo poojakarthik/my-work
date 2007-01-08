@@ -38,25 +38,25 @@
 	 * @extends		dataCollation
 	 */
 	
-	class CDRs_Invoiced extends dataCollation
+	class CDRs_Invoiced extends Search
 	{
 		
 		//------------------------------------------------------------------------//
-		// _srvService
+		// _invInvoice
 		//------------------------------------------------------------------------//
 		/**
-		 * _srvService
+		 * _invInvoice
 		 *
-		 * The Service object for CDRs that we wish to View
+		 * The Invoice object for CDRs that we wish to View
 		 *
-		 * The Service Object which tells us what CDRs to retrieve
+		 * The Invoice object for CDRs that we wish to View
 		 *
-		 * @type	Service
+		 * @type	Invoice
 		 *
 		 * @property
 		 */
 		
-		private $_srvService;
+		private $_invInvoice;
 		
 		//------------------------------------------------------------------------//
 		// __construct
@@ -68,33 +68,18 @@
 		 *
 		 * Constructor to create a new Invoiced Calls collation
 		 *
-		 * @param	Service			$srvService			A Service Object containing information about which calls to view
+		 * @param	Invoice			$invInvoice			An Invoice Object containing information about which calls to view
 		 *
 		 * @method
 		 */
 		
-		function __construct (&$srvService)
+		function __construct (Invoice &$invInvoice)
 		{
-			$this->_srvService =& $srvService;
+			$this->_invInvoice =& $invInvoice;
 			
-			$selInvoicedCalls = new StatementSelect(
-				'CDR', 
-				'count(*) AS collationLength', 
-				'Service = <Service> AND (Status = <Status1> OR Status = <Status2>)'
-			);
+			parent::__construct ('CDRs-Invoiced', 'CDR', 'CDR');
 			
-			$selInvoicedCalls->Execute(
-				Array(
-					'Service'	=> $this->_srvService->Pull ('Id')->getValue (),
-					'Status1'	=> CDR_RATED,
-					'Status2'	=> CDR_TEMP_INVOICE
-				)
-			);
-			
-			$arrLength = $selInvoicedCalls->Fetch ();
-			
-			// Construct the collation with the number of CDRs that are Invoiced
-			parent::__construct ('CDRs-Invoiced', 'CDR', $arrLength ['collationLength']);
+			$this->Constrain ('Invoice', '=', $invInvoice->Pull ('Id')->getValue ());
 		}
 		
 		//------------------------------------------------------------------------//

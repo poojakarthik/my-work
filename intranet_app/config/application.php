@@ -94,6 +94,7 @@ require ("classes/charges/charges_unapproved.php");
 //CDRs
 require ("classes/CDRs/CDR.php");
 require ("classes/CDRs/CDRs_Unbilled.php");
+require ("classes/CDRs/CDRs_Invoiced.php");
 
 //accounts
 require ("classes/notes/note.php");

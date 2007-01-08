@@ -25,16 +25,21 @@
 	// Get the Account the Invoice was Charged to
 	$actAccount		= $Style->attachObject ($invInvoice->Account ());
 	
-	// Get the Charges the Invoice has
-	$cgsCharges		= $Style->attachObject ($invInvoice->Charges ());
-	$cgsCharges->Sample ();
+	if (!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1)
+	{
+		// Get the Charges the Invoice has
+		$cgsCharges		= $Style->attachObject ($invInvoice->Charges ());
+		$cgsCharges->Sample ();
+	}
 	
 	// Get the CDRs the Invoice has
 	$cdrCDRs		= $Style->attachObject ($invInvoice->CDRs ());
 	$cdrCDRs->Constrain ('Invoice', '=', $invInvoice->Pull ('Id')->getValue ());
-	$cdrCDRs->Sample ();
 	
-	echo $Style; exit;
+	$cdrCDRs->Sample (
+		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1,
+		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 30
+	);
 	
 	// Output the Account View
 	$Style->Output ('xsl/content/invoice/view.xsl');
