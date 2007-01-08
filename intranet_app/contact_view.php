@@ -28,7 +28,7 @@
 	}
 	
 	// Pull the Information about the Contact
-	$cntContact = $Style->attachObject ($athAuthentication->AuthenticatedEmployee ()->Audit ()->RetrieveContact ($_GET ['Id']));
+	$cntContact = $Style->attachObject (new Contact ($_GET ['Id']));
 	
 	// Pull the Accounts that the Contact has Access to
 	$acsAccounts = $Style->attachObject ($cntContact->getAccounts ());

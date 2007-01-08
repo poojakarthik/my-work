@@ -117,6 +117,7 @@
 			// If the string is empty, then we don't have anything to reconstitute
 			// So we can just start an empty array. Otherwise if the string is filled, 
 			// then we have to reconstitute it
+			
 			if ($strSession == "")
 			{
 				$this->_oblarrSession = $this->Push (new dataArray ('Session'));
@@ -153,9 +154,9 @@
 			$this->_aepPriviledges = $this->Push (new AuthenticatedEmployeePriviledges ($this));
 			
 			// If Karma ...
-			if ($this->Pull ('Karma')->getValue () <> 0)
+			if ($this->Pull ('Karma')->getValue () < 0)
 			{
-				sleep ($this->Pull ('Karma')->getValue ());
+				sleep (abs ($this->Pull ('Karma')->getValue ()));
 			}
 		}
 		

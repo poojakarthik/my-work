@@ -29,6 +29,13 @@
 	$cgsCharges		= $Style->attachObject ($invInvoice->Charges ());
 	$cgsCharges->Sample ();
 	
+	// Get the CDRs the Invoice has
+	$cdrCDRs		= $Style->attachObject ($invInvoice->CDRs ());
+	$cdrCDRs->Constrain ('Invoice', '=', $invInvoice->Pull ('Id')->getValue ());
+	$cdrCDRs->Sample ();
+	
+	echo $Style; exit;
+	
 	// Output the Account View
 	$Style->Output ('xsl/content/invoice/view.xsl');
 	

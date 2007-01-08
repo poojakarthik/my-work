@@ -177,6 +177,7 @@
 					{
 						// Record a request to view a Contact/Account in the Audit
 						$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordContact ($cntContact);
+						$athAuthentication->AuthenticatedEmployee ()->Save ();
 						
 						// Redirect to the Contact's Page
 						header ("Location: contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());

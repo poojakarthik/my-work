@@ -52,7 +52,7 @@
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Invoice #</th>
+				<th>Invoice Number</th>
 				<th class="Currency" width="120">Overdue</th>
 				<th class="Currency" width="120">Credits</th>
 				<th class="Currency" width="120">Debits</th>
@@ -79,7 +79,7 @@
 								<xsl:text>invoice_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
-							<xsl:value-of select="./Id" />
+							Invoice #<xsl:value-of select="./Id" />
 						</a>
 					</td>
 					<td class="Currency"><xsl:value-of select="./AccountBalance" /></td>

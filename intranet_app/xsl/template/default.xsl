@@ -55,6 +55,7 @@
 												<li>Recently Viewed
 													<ul>
 														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Accounts/Account">
+															<xsl:sort order="descending" />
 															<li>
 																<a>
 																	<xsl:attribute name="href">
@@ -75,16 +76,17 @@
 												<li><a href="contact_list.php">Find a Contact</a></li>
 												<li>Recently Viewed
 													<ul>
-														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/AuditList/AuditItem/Contact">
+														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
+															<xsl:sort order="descending" />
 															<li>
 																<a>
 																	<xsl:attribute name="href">
 																		<xsl:text>contact_view.php?Id=</xsl:text>
 																		<xsl:value-of select="./Id" />
 																	</xsl:attribute>
-																	<xsl:value-of select="./LastName" disable-output-escaping="yes" />
-																	<xsl:text>, </xsl:text>
 																	<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
+																	<xsl:text> </xsl:text>
+																	<xsl:value-of select="./LastName" disable-output-escaping="yes" />
 																</a>
 															</li>
 														</xsl:for-each>

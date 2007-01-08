@@ -115,11 +115,8 @@
 			// Store the Authenticated Employee
 			$this->_oblintEmployee = $this->Push (new dataInteger ('Employee', $intEmployee));
 			
-			if (!$this->_oblarrAccounts && !$this->_oblarrContacts)
-			{
-				$this->_oblarrAccounts = $this->Push (new dataArray ('Accounts'));
-				$this->_oblarrContacts = $this->Push (new dataArray ('Contacts'));
-			}
+			$this->_oblarrAccounts = $this->Push (new dataArray ('Accounts'));
+			$this->_oblarrContacts = $this->Push (new dataArray ('Contacts'));
 		}
 		
 		//------------------------------------------------------------------------//
@@ -150,6 +147,14 @@
 			
 			$insAudit = new StatementInsert ('EmployeeAccountAudit', $arrAudit);
 			$insAudit->Execute ($arrAudit);
+			
+			foreach ($this->_oblarrAccounts as &$oblstrAccount)
+			{
+				if ($oblstrAccount->getValue () == $actAccount->Pull ('Id')->getValue ())
+				{
+					$this->_oblarrAccounts->Pop ($oblstrAccount);
+				}
+			}
 			
 			$this->_oblarrAccounts->Push (new dataString ('Account', $actAccount->Pull ('Id')->getValue ()));
 		}
@@ -183,6 +188,14 @@
 			$insAudit = new StatementInsert ('EmployeeAccountAudit');
 			$insAudit->Execute ($arrAudit);
 			
+			foreach ($this->_oblarrContacts as $oblstrContact)
+			{
+				if ($oblstrContact->getValue () == $cntContact->Pull ('Id')->getValue ())
+				{
+					$this->_oblarrContacts->Pop ($oblstrContact);
+				}
+			}
+			
 			$this->_oblarrContacts->Push (new dataString ('Contact', $cntContact->Pull ('Id')->getValue ()));
 		}
 		
@@ -215,10 +228,82 @@
 			
 			foreach ($this->_oblarrContacts as $oblstrContact)
 			{
-				$oblarrContacts->Push (new Account ($oblstrContact->getValue ()));
+				$oblarrContacts->Push (new Contact ($oblstrContact->getValue ()));
 			}
 			
 			return $oblarrBase->Output ();
+		}
+		
+		//------------------------------------------------------------------------//
+		// __sleep
+		//------------------------------------------------------------------------//
+		/**
+		 * __sleep()
+		 *
+		 * Specific function for sleeping the Audit
+		 *
+		 * Specific function for sleeping the Audit
+		 *
+		 * @return	Array
+		 *
+		 * @method
+		 */
+		
+		public function __sleep ()
+		{
+			$this->_sleepEmployee = $this->_oblintEmployee->getValue ();
+			$this->_sleepAccounts = Array ();
+			$this->_sleepContacts = Array ();
+			
+			foreach ($this->_oblarrAccounts as $oblstrAccount)
+			{
+				$this->_sleepAccounts [] = $oblstrAccount->getValue ();
+			}
+			
+			foreach ($this->_oblarrContacts as $oblstrContact)
+			{
+				$this->_sleepContacts [] = $oblstrContact->getValue ();
+			}
+			
+			return Array (
+				"_sleepEmployee", 
+				"_sleepAccounts",
+				"_sleepContacts"
+			);
+		}
+		
+		//------------------------------------------------------------------------//
+		// __wakeup
+		//------------------------------------------------------------------------//
+		/**
+		 * __wakeup()
+		 *
+		 * Specific function for restarting the Audit
+		 *
+		 * Specific function for restarting the Audit
+		 *
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function __wakeup ()
+		{
+			$this->__construct ($this->_sleepEmployee);
+			
+			foreach ($this->_sleepAccounts as $strAccount)
+			{
+				$this->_oblarrAccounts->Push (new dataString ('Account', $strAccount));
+			}
+			
+			foreach ($this->_sleepContacts as $strContact)
+			{
+				$this->_oblarrContacts->Push (new dataString ('Contact', $strContact));
+			}
+			
+			unset ($this->_sleepEmployee);
+			unset ($this->_sleepAccounts);
+			unset ($this->_sleepContacts);
 		}
 	}
 	

@@ -116,6 +116,26 @@
 			$cgsCharges->Constrain ('InvoiceRun'	, '=', $this->Pull ('InvoiceRun')->getValue ());
 			return $cgsCharges;
 		}
+		
+		//------------------------------------------------------------------------//
+		// CDRs
+		//------------------------------------------------------------------------//
+		/**
+		 * CDRs()
+		 *
+		 * Get the CDRs the Invoice has
+		 *
+		 * Get the CDRs the Invoice has
+		 *
+		 * @return	CDRs_Invoiced
+		 *
+		 * @method
+		 */
+		
+		public function CDRs ()
+		{
+			return new CDRs_Invoiced ($this);
+		}
 	}
 	
 ?>

@@ -56,7 +56,7 @@
 		<div class="Seperator"></div>
 		
 		<xsl:if test="/Response/Charges">
-			<h2>Charges</h2>
+			<h2>Credits + Debits</h2>
 			<div class="Seperator"></div>
 			
 			<xsl:choose>
@@ -133,6 +133,7 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</xsl:if>
+		<div class="Seperator"></div>
 		
 		<h2>Charges</h2>
 		<div class="Seperator"></div>
