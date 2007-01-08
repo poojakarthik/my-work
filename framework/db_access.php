@@ -1357,7 +1357,7 @@ class MySQLFunction
 		$this->_arrReportData = Array();
 		if (is_array($arrDefine))
 		{
-			foreach($arrDefine AS $strKey=$arrValue)
+			foreach($arrDefine AS $strKey=>$arrValue)
 			{
 				if ($arrValue['Command'])
 				{
