@@ -2682,6 +2682,56 @@
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
 		 
+				 
+				 
+	// Define Columns 
+	$strName = "Payment"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "File"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "SequenceNo"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Balance"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "float"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataFloat"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Status"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
 					 
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 

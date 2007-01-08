@@ -8,7 +8,7 @@
 		<html>
 			<head>
 				<title>Welcome to TelcoBlue.com.au</title>
-				<link rel="stylesheet" type="text/css" href="/client_app/css/default.css" media="screen" />
+				<link rel="stylesheet" type="text/css" href="./css/default.css" media="screen" />
 			</head>
 			<body>
 				<div id="Document" class="documentContainer">
