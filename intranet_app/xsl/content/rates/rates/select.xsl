@@ -10,19 +10,19 @@
 			<input type="hidden" name="Name">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Rate/Name" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/Rate/Name" />
 				</xsl:attribute>
 			</input>
 			<input type="hidden" name="ServiceType">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Rate/ServiceTypes/ServiceType[@selected='selected']/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/Rate/ServiceTypes/ServiceType[@selected='selected']/Id" />
 				</xsl:attribute>
 			</input>
 			<input type="hidden" name="RecordType">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Rate/RecordType/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/Rate/RecordType/Id" />
 				</xsl:attribute>
 			</input>
 			
@@ -89,7 +89,7 @@
 									<xsl:with-param name="field" select="string('Name')" />
 								</xsl:call-template>
 							</th>
-							<td><xsl:value-of select="/Response/Rate/Name" disable-output-escaping="yes" /></td>
+							<td><xsl:value-of select="/Response/Rate/Name" /></td>
 						</tr>
 						<tr>
 							<th class="JustifiedWidth" valign="top">
@@ -102,7 +102,7 @@
 								<input type="text" name="Description" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Rate/Name" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Rate/Name" />
 									</xsl:attribute>
 								</input>
 							</td>

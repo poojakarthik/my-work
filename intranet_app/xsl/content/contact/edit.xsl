@@ -10,7 +10,7 @@
 			<input type="hidden" name="Id">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Contact/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/Contact/Id" />
 				</xsl:attribute>
 			</input>
 			

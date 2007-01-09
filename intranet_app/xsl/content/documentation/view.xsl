@@ -14,7 +14,7 @@
 				<div class="Pablo-Section-Content">
 					<h2><xsl:value-of select="/Response/DocumentationDetails/Field/Title" /></h2>
 					<p style="line-height: 200%; font-family: monospace;">
-						<xsl:value-of select="/Response/DocumentationDetails/Field/Description" disable-output-escaping="yes" />
+						<xsl:value-of select="/Response/DocumentationDetails/Field/Description" />
 					</p>
 				</div>
 			</div>

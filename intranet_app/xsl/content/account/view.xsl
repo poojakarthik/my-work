@@ -23,7 +23,7 @@
 								<input type="hidden" name="Id">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Id" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Id" />
 									</xsl:attribute>
 								</input>
 								<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
@@ -35,7 +35,7 @@
 											</xsl:call-template>
 										</th>
 										<td>
-											<xsl:value-of select="/Response/Account/Id" disable-output-escaping="yes" />
+											<xsl:value-of select="/Response/Account/Id" />
 										</td>
 									</tr>
 									<tr>
@@ -48,7 +48,7 @@
 												<xsl:with-param name="field" select="string('BusinessName')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/BusinessName" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/BusinessName" /></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -57,7 +57,7 @@
 												<xsl:with-param name="field" select="string('TradingName')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/TradingName" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/TradingName" /></td>
 									</tr>
 									<tr>
 										<td colspan="2"><div class="Seperator"></div></td>
@@ -69,7 +69,7 @@
 												<xsl:with-param name="field" select="string('ABN')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/ABN" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/ABN" /></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -78,7 +78,7 @@
 												<xsl:with-param name="field" select="string('ACN')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/ACN" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/ACN" /></td>
 									</tr>
 									<tr>
 										<td colspan="2"><div class="Seperator"></div></td>
@@ -90,7 +90,7 @@
 												<xsl:with-param name="field" select="string('Address1')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/Address1" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/Address1" /></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -99,7 +99,7 @@
 												<xsl:with-param name="field" select="string('Address2')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/Address2" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/Address2" /></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -108,7 +108,7 @@
 												<xsl:with-param name="field" select="string('Suburb')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/Suburb" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/Suburb" /></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -117,7 +117,7 @@
 												<xsl:with-param name="field" select="string('Postcode')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/Postcode" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/Postcode" /></td>
 									</tr>
 									<tr>
 										<td colspan="2"><div class="Seperator"></div></td>
@@ -129,7 +129,7 @@
 												<xsl:with-param name="field" select="string('State')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/State" disable-output-escaping="yes" /></td>
+										<td><xsl:value-of select="/Response/Account/State" /></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -139,7 +139,7 @@
 											</xsl:call-template>
 										</th>
 										<td>
-											<xsl:value-of select="/Response/Account/Country" disable-output-escaping="yes" />
+											<xsl:value-of select="/Response/Account/Country" />
 										</td>
 									</tr>
 									<tr>
@@ -397,9 +397,9 @@
 					</xsl:attribute>
 					
 					<td><xsl:value-of select="/Response/Services/Results/rangeStart + position()" />.</td>
-					<td><xsl:value-of select="./Id" disable-output-escaping="yes" /></td>
-					<td><xsl:value-of select="./FNN" disable-output-escaping="yes" /></td>
-					<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" disable-output-escaping="yes" /></td>
+					<td><xsl:value-of select="./Id" /></td>
+					<td><xsl:value-of select="./FNN" /></td>
+					<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 					<td>
 						<xsl:choose>
 							<xsl:when test="./Archived = 0">

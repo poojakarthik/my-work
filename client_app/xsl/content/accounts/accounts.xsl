@@ -37,10 +37,10 @@
 						<xsl:value-of select="Id" />
 					</td>
 					<td>
-						<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
+						<xsl:value-of select="./BusinessName"  />
 					</td>
 					<td>
-						<xsl:value-of select="./TradingName" disable-output-escaping="yes" />
+						<xsl:value-of select="./TradingName"  />
 					</td>
 				</tr>
 			</xsl:for-each>

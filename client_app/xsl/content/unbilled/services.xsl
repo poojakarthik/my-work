@@ -37,7 +37,7 @@
 						<xsl:text>'</xsl:text>
 					</xsl:attribute>
 					<td>
-						<xsl:value-of select="./FNN" disable-output-escaping="yes" />
+						<xsl:value-of select="./FNN"  />
 					</td>
 					<td>
 						<xsl:value-of select="./NamedServiceType/NamedServiceType[@selected='selected']" />

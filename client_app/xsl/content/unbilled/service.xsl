@@ -55,8 +55,8 @@
 										<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 									</xsl:call-template>
 								</td>
-								<td><xsl:value-of select="./ChargeType" disable-output-escaping="yes" /></td>
-								<td><xsl:value-of select="./Description" disable-output-escaping="yes" /></td>
+								<td><xsl:value-of select="./ChargeType"  /></td>
+								<td><xsl:value-of select="./Description"  /></td>
 								<td><xsl:value-of select="./Amount" /> <xsl:value-of select="./Nature" /></td>
 							</tr>
 						</xsl:for-each>

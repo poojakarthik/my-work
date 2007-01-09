@@ -33,7 +33,7 @@
 								
 								<div id="windowcontent" style="display: none">
 									<div id="windowcontentmain">
-										<textarea readonly="readonly"><xsl:value-of select="/Response/SystemDebug" disable-output-escaping="yes" /></textarea>
+										<textarea readonly="readonly"><xsl:value-of select="/Response/SystemDebug" /></textarea>
 									</div>
 								</div>
 							</xsl:if>
@@ -65,7 +65,7 @@
 																				<xsl:text>account_view.php?Id=</xsl:text>
 																				<xsl:value-of select="./Id" />
 																			</xsl:attribute>
-																			<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
+																			<xsl:value-of select="./BusinessName" />
 																		</a>
 																	</li>
 																</xsl:for-each>
@@ -87,9 +87,9 @@
 																				<xsl:text>contact_view.php?Id=</xsl:text>
 																				<xsl:value-of select="./Id" />
 																			</xsl:attribute>
-																			<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
+																			<xsl:value-of select="./FirstName" />
 																			<xsl:text> </xsl:text>
-																			<xsl:value-of select="./LastName" disable-output-escaping="yes" />
+																			<xsl:value-of select="./LastName" />
 																		</a>
 																	</li>
 																</xsl:for-each>

@@ -33,10 +33,10 @@
 					<td>
 						<xsl:choose>
 							<xsl:when test="/Response/Service/ServiceType = 103">
-								<xsl:value-of select="./Source" disable-output-escaping="yes" />
+								<xsl:value-of select="./Source" />
 							</xsl:when>
 							<xsl:otherwise>
-								<xsl:value-of select="./Destination" disable-output-escaping="yes" />
+								<xsl:value-of select="./Destination" />
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>
@@ -51,8 +51,8 @@
 							<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
 						</xsl:call-template>
 					</td>
-					<td class="Currency"><xsl:value-of select="./Units" disable-output-escaping="yes" /></td>
-					<td class="Currency"><xsl:value-of select="./Charge" disable-output-escaping="yes" /></td>
+					<td class="Currency"><xsl:value-of select="./Units" /></td>
+					<td class="Currency"><xsl:value-of select="./Charge" /></td>
 					<td class="Currency">
 						<a>
 							<xsl:attribute name="href">

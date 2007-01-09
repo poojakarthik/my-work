@@ -22,14 +22,14 @@
 			<input type="hidden" name="Service">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Service/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
 			</input>
 			
 			<input type="hidden" name="Account">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Account-Receiving/Account/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/Account-Receiving/Account/Id" />
 				</xsl:attribute>
 			</input>
 			
@@ -46,7 +46,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Service/FNN" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Service/FNN" />
 							</td>
 						</tr>
 					</table>
@@ -67,7 +67,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Account-Original/Account/BusinessName" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Account-Original/Account/BusinessName" />
 							</td>
 						</tr>
 						<tr>
@@ -78,7 +78,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Account-Original/Account/TradingName" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Account-Original/Account/TradingName" />
 							</td>
 						</tr>
 					</table>
@@ -99,7 +99,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Account-Receiving/Account/BusinessName" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Account-Receiving/Account/BusinessName" />
 							</td>
 						</tr>
 						<tr>
@@ -110,7 +110,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Account-Receiving/Account/TradingName" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Account-Receiving/Account/TradingName" />
 							</td>
 						</tr>
 					</table>

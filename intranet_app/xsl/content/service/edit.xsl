@@ -12,7 +12,7 @@
 					<input type="hidden" name="Id">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>
-							<xsl:value-of select="/Response/Service/Id" disable-output-escaping="yes" />
+							<xsl:value-of select="/Response/Service/Id" />
 						</xsl:attribute>
 					</input>
 					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
@@ -24,7 +24,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Service/Id" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Service/Id" />
 							</td>
 						</tr>
 						<tr>
@@ -35,7 +35,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Service/ServiceTypes/ServiceType[@selected='selected']/Name" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Service/ServiceTypes/ServiceType[@selected='selected']/Name" />
 							</td>
 						</tr>
 						<tr>
@@ -49,7 +49,7 @@
 								<input type="text" name="FNN" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Service/FNN" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Service/FNN" />
 									</xsl:attribute>
 								</input>
 							</td>

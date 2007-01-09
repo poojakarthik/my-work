@@ -353,14 +353,14 @@
 											<xsl:text>account_view.php</xsl:text>
 											<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
 										</xsl:attribute>
-										<xsl:value-of select="./Id" disable-output-escaping="yes" />
+										<xsl:value-of select="./Id" />
 									</a>
 								</td>
 								<td>
-									<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
+									<xsl:value-of select="./BusinessName" />
 								</td>
 								<td>
-									<xsl:value-of select="./TradingName" disable-output-escaping="yes" />
+									<xsl:value-of select="./TradingName" />
 								</td>
 								<td></td>
 							</tr>

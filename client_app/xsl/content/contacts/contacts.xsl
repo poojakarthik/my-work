@@ -35,13 +35,13 @@
 						<xsl:text>'</xsl:text>
 					</xsl:attribute>
 					<td>
-						<xsl:value-of select="./UserName" disable-output-escaping="yes" />
+						<xsl:value-of select="./UserName"  />
 					</td>
 					<td>
-						<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
+						<xsl:value-of select="./FirstName"  />
 					</td>
 					<td>
-						<xsl:value-of select="./LastName" disable-output-escaping="yes" />
+						<xsl:value-of select="./LastName"  />
 					</td>
 					<td>
 						<xsl:choose>

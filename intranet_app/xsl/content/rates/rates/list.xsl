@@ -187,8 +187,8 @@
 								</xsl:choose>
 							</xsl:attribute>
 							<td><xsl:value-of select="position() + /Response/Rates/Results/rangeStart" />.</td>
-							<td><xsl:value-of select="./Id" disable-output-escaping="yes" /></td>
-							<td><xsl:value-of select="./Name" disable-output-escaping="yes" /></td>
+							<td><xsl:value-of select="./Id" /></td>
+							<td><xsl:value-of select="./Name" /></td>
 							<td>
 								<strong>
 									<span>

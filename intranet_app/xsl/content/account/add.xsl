@@ -69,7 +69,7 @@
 								<input type="text" name="BusinessName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/BusinessName" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/BusinessName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -85,7 +85,7 @@
 								<input type="text" name="TradingName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/TradingName" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/TradingName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -106,7 +106,7 @@
 								<input type="text" name="ABN" class="input-ABN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/ABN" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/ABN" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -122,7 +122,7 @@
 								<input type="text" name="ACN" class="input-ACN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/ACN" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/ACN" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -143,7 +143,7 @@
 								<input type="text" name="Address1" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Address1" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Address1" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -159,7 +159,7 @@
 								<input type="text" name="Address2" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Address2" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Address2" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -175,7 +175,7 @@
 								<input type="text" name="Suburb" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Suburb" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Suburb" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -191,7 +191,7 @@
 								<input type="text" name="Postcode" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Postcode" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Postcode" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -207,7 +207,7 @@
 								<input type="text" name="State" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/State" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/State" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -239,7 +239,7 @@
 													</xsl:attribute>
 												</xsl:when>
 											</xsl:choose>
-											<xsl:value-of select="./Name" disable-output-escaping="yes" />
+											<xsl:value-of select="./Name" />
 										</option>
 									</xsl:for-each>
 								</select>
@@ -339,7 +339,7 @@
 														<input type="text" name="DDR[BankName]" class="input-string">
 															<xsl:attribute name="value">
 																<xsl:text></xsl:text>
-																<xsl:value-of select="/Response/DirectDebit/BankName" disable-output-escaping="yes" />
+																<xsl:value-of select="/Response/DirectDebit/BankName" />
 															</xsl:attribute>
 														</input>
 													</td>
@@ -355,7 +355,7 @@
 														<input type="text" name="DDR[BSB]" class="input-string">
 															<xsl:attribute name="value">
 																<xsl:text></xsl:text>
-																<xsl:value-of select="/Response/DirectDebit/BSB" disable-output-escaping="yes" />
+																<xsl:value-of select="/Response/DirectDebit/BSB" />
 															</xsl:attribute>
 														</input>
 													</td>
@@ -371,7 +371,7 @@
 														<input type="text" name="DDR[AccountNumber]" class="input-string">
 															<xsl:attribute name="value">
 																<xsl:text></xsl:text>
-																<xsl:value-of select="/Response/DirectDebit/AccountNumber" disable-output-escaping="yes" />
+																<xsl:value-of select="/Response/DirectDebit/AccountNumber" />
 															</xsl:attribute>
 														</input>
 													</td>
@@ -387,7 +387,7 @@
 														<input type="text" name="DDR[AccountName]" class="input-string">
 															<xsl:attribute name="value">
 																<xsl:text></xsl:text>
-																<xsl:value-of select="/Response/DirectDebit/AccountName" disable-output-escaping="yes" />
+																<xsl:value-of select="/Response/DirectDebit/AccountName" />
 															</xsl:attribute>
 														</input>
 													</td>
@@ -452,7 +452,7 @@
 														<input type="text" name="CC[Name]" class="input-string">
 															<xsl:attribute name="value">
 																<xsl:text></xsl:text>
-																<xsl:value-of select="/Response/CreditCard/Name" disable-output-escaping="yes" />
+																<xsl:value-of select="/Response/CreditCard/Name" />
 															</xsl:attribute>
 														</input>
 													</td>
@@ -468,7 +468,7 @@
 														<input type="text" name="CC[CardNumber]" class="input-string">
 															<xsl:attribute name="value">
 																<xsl:text></xsl:text>
-																<xsl:value-of select="/Response/CreditCard/CardNumber" disable-output-escaping="yes" />
+																<xsl:value-of select="/Response/CreditCard/CardNumber" />
 															</xsl:attribute>
 														</input>
 													</td>
@@ -571,7 +571,7 @@
 								<input type="text" name="Contact[Title]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Title" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/Title" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -587,7 +587,7 @@
 								<input type="text" name="Contact[FirstName]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/FirstName" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/FirstName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -603,7 +603,7 @@
 								<input type="text" name="Contact[LastName]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/LastName" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/LastName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -660,7 +660,7 @@
 								<input type="text" name="Contact[JobTitle]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/JobTitle" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/JobTitle" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -681,7 +681,7 @@
 								<input type="text" name="Contact[Email]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Email" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/Email" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -697,7 +697,7 @@
 								<input type="text" name="Contact[Phone]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Phone" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/Phone" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -713,7 +713,7 @@
 								<input type="text" name="Contact[Mobile]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Mobile" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/Mobile" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -729,7 +729,7 @@
 								<input type="text" name="Contact[Fax]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Fax" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/Fax" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -750,7 +750,7 @@
 								<input type="text" name="Contact[UserName]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/UserName" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/UserName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -766,7 +766,7 @@
 								<input type="text" name="Contact[PassWord]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/PassWord" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Contact/PassWord" />
 									</xsl:attribute>
 								</input>
 							</td>

@@ -15,7 +15,7 @@
 					<input type="hidden" name="Id">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>
-							<xsl:value-of select="/Response/Account/Id" disable-output-escaping="yes" />
+							<xsl:value-of select="/Response/Account/Id" />
 						</xsl:attribute>
 					</input>
 					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
@@ -27,7 +27,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Account/Id" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Account/Id" />
 							</td>
 						</tr>
 						<tr>
@@ -41,7 +41,7 @@
 								<input type="text" name="BusinessName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/BusinessName" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/BusinessName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -57,7 +57,7 @@
 								<input type="text" name="TradingName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/TradingName" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/TradingName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -73,7 +73,7 @@
 								<input type="text" name="ABN" class="input-ABN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/ABN" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/ABN" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -89,7 +89,7 @@
 								<input type="text" name="ACN" class="input-ACN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/ACN" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/ACN" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -105,7 +105,7 @@
 								<input type="text" name="Address1" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Address1" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Address1" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -121,7 +121,7 @@
 								<input type="text" name="Address2" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Address2" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Address2" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -137,7 +137,7 @@
 								<input type="text" name="Suburb" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Suburb" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Suburb" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -153,7 +153,7 @@
 								<input type="text" name="Postcode" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Postcode" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/Postcode" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -169,7 +169,7 @@
 								<input type="text" name="State" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/State" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Account/State" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -182,7 +182,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Account/Country" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/Account/Country" />
 							</td>
 						</tr>
 					</table>

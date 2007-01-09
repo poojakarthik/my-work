@@ -5,9 +5,9 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h2 class="Account">
-			Account: <xsl:value-of select="/Response/Account/BusinessName" disable-output-escaping="yes" />
+			Account: <xsl:value-of select="/Response/Account/BusinessName"  />
 			<xsl:if test="/Response/Account/TradingName != ''">
-				[<xsl:value-of select="/Response/Account/TradingName" disable-output-escaping="yes" />]
+				[<xsl:value-of select="/Response/Account/TradingName"  />]
 			</xsl:if>
 		</h2>
 		
@@ -23,11 +23,11 @@
 			</tr>
 			<tr>
 				<th>Business Name:</th>
-				<td><xsl:value-of select="/Response/Account/BusinessName" disable-output-escaping="yes" /></td>
+				<td><xsl:value-of select="/Response/Account/BusinessName"  /></td>
 			</tr>
 			<tr>
 				<th>Trading Name:</th>
-				<td><xsl:value-of select="/Response/Account/TradingName" disable-output-escaping="yes" /></td>
+				<td><xsl:value-of select="/Response/Account/TradingName"  /></td>
 			</tr>
 			<tr>
 				<th>ABN:</th>
@@ -39,17 +39,17 @@
 			</tr>
 			<tr>
 				<th>Address:</th>
-				<td><xsl:value-of select="/Response/Account/Address1" disable-output-escaping="yes" /></td>
+				<td><xsl:value-of select="/Response/Account/Address1"  /></td>
 			</tr>
 			<xsl:if test="/Response/Account/Address2 != ''">
 				<tr>
 					<th></th>
-					<td><xsl:value-of select="/Response/Account/Address2" disable-output-escaping="yes" /></td>
+					<td><xsl:value-of select="/Response/Account/Address2"  /></td>
 				</tr>
 			</xsl:if>
 			<tr>
 				<th>Suburb:</th>
-				<td><xsl:value-of select="/Response/Account/Suburb" disable-output-escaping="yes" /></td>
+				<td><xsl:value-of select="/Response/Account/Suburb"  /></td>
 			</tr>
 			<tr>
 				<th>Postcode:</th>
@@ -57,11 +57,11 @@
 			</tr>
 			<tr>
 				<th>State:</th>
-				<td><xsl:value-of select="/Response/Account/State" disable-output-escaping="yes" /></td>
+				<td><xsl:value-of select="/Response/Account/State"  /></td>
 			</tr>
 			<tr>
 				<th>Country:</th>
-				<td><xsl:value-of select="/Response/Account/Country" disable-output-escaping="yes" /></td>
+				<td><xsl:value-of select="/Response/Account/Country"  /></td>
 			</tr>
 		</table>
 		

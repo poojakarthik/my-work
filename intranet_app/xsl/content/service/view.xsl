@@ -81,7 +81,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<xsl:value-of select="/Response/Service/Id" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/Service/Id" />
 									</td>
 								</tr>
 								<tr>
@@ -94,7 +94,7 @@
 											<xsl:with-param name="field" select="string('FNN')" />
 										</xsl:call-template>
 									</th>
-									<td><xsl:value-of select="/Response/Service/FNN" disable-output-escaping="yes" /></td>
+									<td><xsl:value-of select="/Response/Service/FNN" /></td>
 								</tr>
 								<tr>
 									<th class="JustifiedWidth">

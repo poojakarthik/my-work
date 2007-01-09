@@ -15,19 +15,19 @@
 			<input type="hidden" name="Name">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/RateGroup/Name" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/RateGroup/Name" />
 				</xsl:attribute>
 			</input>
 			<input type="hidden" name="ServiceType">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/RateGroup/ServiceTypes/ServiceType[@selected='selected']/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/RateGroup/ServiceTypes/ServiceType[@selected='selected']/Id" />
 				</xsl:attribute>
 			</input>
 			<input type="hidden" name="RecordType">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/RateGroup/RecordType/Id" disable-output-escaping="yes" />
+					<xsl:value-of select="/Response/RateGroup/RecordType/Id" />
 				</xsl:attribute>
 			</input>
 			
@@ -53,7 +53,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/RateGroup/Name" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/RateGroup/Name" />
 							</td>
 						</tr>
 						<tr>
@@ -64,7 +64,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/RateGroup/ServiceTypes/ServiceType[@selected='selected']/Name" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/RateGroup/ServiceTypes/ServiceType[@selected='selected']/Name" />
 							</td>
 						</tr>
 						<tr>
@@ -75,7 +75,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/RateGroup/RecordType/Name" disable-output-escaping="yes" />
+								<xsl:value-of select="/Response/RateGroup/RecordType/Name" />
 							</td>
 						</tr>
 						<tr>
@@ -89,7 +89,7 @@
 								<input type="text" name="Description" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/RateGroup/Name" disable-output-escaping="yes" />
+										<xsl:value-of select="/Response/RateGroup/Name" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -126,7 +126,7 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
-											<xsl:value-of select="./Name" disable-output-escaping="yes" />
+											<xsl:value-of select="./Name" />
 										</option>
 									</xsl:for-each>
 								</select>

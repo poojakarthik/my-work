@@ -84,7 +84,7 @@
 												</xsl:attribute>
 											</xsl:if>
 											<xsl:text></xsl:text>
-											<xsl:value-of select="./Name" disable-output-escaping="yes" />
+											<xsl:value-of select="./Name" />
 										</option>
 									</xsl:for-each>
 								</select>
