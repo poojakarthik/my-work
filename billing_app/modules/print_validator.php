@@ -44,7 +44,7 @@ require_once("../config.php");
 
 $strPath		= "/home/vixen_bill_output/sample/";
 $strPDFPath		= "/home/vixen_bill_output/sample/pdf/";
-$strFilename	= $strPath."sample".date("Y-m-d")."vbf";
+$strFilename	= $strPath."sample".date("Y-m-d").".vbf";
 
 $GLOBALS['FileFormat']	= $arrDefine;
 
