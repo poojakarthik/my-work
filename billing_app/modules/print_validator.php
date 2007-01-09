@@ -73,7 +73,7 @@ foreach ($arrFileContents as $strLine)
 	$mixResult = SplitLine($strLine);
 	if (is_string($mixResult))
 	{
-		echo "- ERROR: $mixResult $i\n";
+		echo "- ERROR: $mixResult $i\n\n'".$strLine."'\n";
 		die;
 	}
 	
@@ -161,7 +161,7 @@ foreach ($arrFileContents as $strLine)
 	if (!$arrRecordDefine)
 	{
 		// Unknown Record Type (ie. invalid file)
-		return "Unknown Record Type for line ";
+		return "Unknown Record Type for line";
 	}
 	$i = 0;
 	// fixed width record
@@ -177,7 +177,7 @@ foreach ($arrFileContents as $strLine)
 				$strRegex = "/^\d{".$strValue['Length']."}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
-					return "Data is not of type BILL_TYPE_INTEGER in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_INTEGER in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}						
 				$mixData = (int)$mixData;
 				break;
@@ -185,14 +185,14 @@ foreach ($arrFileContents as $strLine)
 				$strRegex = "/^[^\r\t\n\f]{".$strValue['Length']."}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
-					return "Data is not of type BILL_TYPE_CHAR in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_CHAR in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}						
 				break;
 			case BILL_TYPE_BINARY:
 				$strRegex = "/^[01]{".$strValue['Length']."}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
-					return "Data is not of type BILL_TYPE_BINARY in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_BINARY in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}		
 				break;
 			case BILL_TYPE_FLOAT:
@@ -200,7 +200,7 @@ foreach ($arrFileContents as $strLine)
 				if (!preg_match($strRegex, $mixData) || strlen($mixData) > $strValue['Length'])
 				{
 					// Not a number - invalid
-					return "Data is not of type BILL_TYPE_FLOAT in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_FLOAT in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}
 				$mixData = (float)$mixData;
 				break;
@@ -208,28 +208,28 @@ foreach ($arrFileContents as $strLine)
 				$strRegex = "/^\d{2}\/d{2}/\d{4}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
-					return "Data is not of type BILL_TYPE_SHORTDATE in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_SHORTDATE in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}						
 				break;
 			case BILL_TYPE_LONGDATE:
 				$strRegex = "/^[A-Za-z]{3} \d{2}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
-					return "Data is not of type BILL_TYPE_LONGDATE in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_LONGDATE in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}
 				break;
 			case BILL_TYPE_TIME:
 				$strRegex = "/^\d{2}:\d{2}:\d{2}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
-					return "Data is not of type BILL_TYPE_TIME in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_TIME in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}
 				break;
 			case BILL_TYPE_DURATION:
 				$strRegex = "/^\d{3}:\d{2}:\d{2}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
-					return "Data is not of type BILL_TYPE_DURATION in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_DURATION in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}
 				break;
 			case BILL_TYPE_SHORTCURRENCY:
@@ -237,13 +237,13 @@ foreach ($arrFileContents as $strLine)
 				if (!preg_match($strRegex, $mixData) || strlen($mixData) > $strValue['Length'])
 				{
 					// Not a number - invalid
-					return "Data is not of type BILL_TYPE_SHORTCURRENCY in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+					return "Data is not of type BILL_TYPE_SHORTCURRENCY in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}
 				$mixData = (float)$mixData;
 				break;
 			default:
 				// Invalid data type
-				return "Invalid Data Type in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line ";
+				return "Invalid Data Type in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 		}
 	}
 	
