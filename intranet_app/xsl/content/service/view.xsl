@@ -150,18 +150,20 @@
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Archive')" />
-											<xsl:with-param name="field" select="string('Archived')" />
+											<xsl:with-param name="entity" select="string('Service')" />
+											<xsl:with-param name="field" select="string('ClosedOn')" />
 										</xsl:call-template>
 									</th>
 									<td>
 										<xsl:choose>
-											<xsl:when test="/Response/Service/Archived = 0">
-												<strong><span class="Green">Currently Available</span></strong>
+											<xsl:when test="/Response/Service/ClosedOn">
+												<xsl:call-template name="dt:format-date-time">
+													<xsl:with-param name="year"	select="/Response/Service/ClosedOn/year" />
+													<xsl:with-param name="month"	select="/Response/Service/ClosedOn/month" />
+													<xsl:with-param name="day"		select="/Response/Service/ClosedOn/day" />
+													<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+												</xsl:call-template>
 											</xsl:when>
-											<xsl:otherwise>
-												<strong><span class="Red">Currently Archived</span></strong>
-											</xsl:otherwise>
 										</xsl:choose>
 									</td>
 								</tr>
