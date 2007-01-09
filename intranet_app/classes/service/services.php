@@ -77,7 +77,7 @@
 		public static function UnarchivedFNN ($strFNN)
 		{
 			// Search for the Serivce
-			$selService = new StatementSelect ('Service', 'Id', 'FNN = <FNN> AND Now() > CreatedOn AND (ClosedOn IS NULL OR ClosedOn < Now())', null, 1);
+			$selService = new StatementSelect ('Service', 'Id', 'FNN = <FNN> AND Now() >= CreatedOn AND (ClosedOn IS NULL OR ClosedOn <= Now())', null, 1);
 			$selService->Execute (Array ('FNN' => $strFNN));
 			
 			// If it wasn't found - throw an error

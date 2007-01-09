@@ -6,15 +6,16 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	// call application loader
 	require ('config/application_loader.php');
 	
-	// If the User is not logged into the system
-	if (!$athAuthentication->isAuthenticated ())
-	{
-		// Foward to Login Interface
-		header ('Location: login.php'); exit;
-	}
+	// set page details
+	$arrPage['PopUp']		= FALSE;
+	$arrPage['Permission']	= PERMISSION_ADMIN;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE;
 	
+	// call application
+	require ('config/application.php');
 	
 	
 	// Get the Charge Type
