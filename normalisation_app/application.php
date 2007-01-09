@@ -25,7 +25,7 @@
  *
  */
  
-echo "<pre>";
+echo "<pre>\n";
 
 // set addresses for report
 $mixEmailAddress = 'flame@telcoblue.com.au';
@@ -39,14 +39,12 @@ $appNormalise->Import();
 // run the Normalise method until there is nothing left to normalise
 while ($appNormalise->Normalise())
 {
-	//REMOVE FOR LIVE SYSTEM
-	// break here to only normalise 1000 CDRs
-	//break;
+
 }
 
 // finished
 echo("\n-- End of Normalisation --\n");
-echo "</pre>";
+echo "</pre>\n";
 die();
 
 
@@ -393,8 +391,8 @@ die();
 				
 				$this->_intImportPass++;
 				
-				//REMOVE THIS !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				if ($intSequence > 100)
+				// Break here for fast normalisation test
+				if (FAST_NORMALISATION_TEST === TRUE && $intSequence > 100)
 				{
 					break;
 				}

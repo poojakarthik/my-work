@@ -86,6 +86,9 @@
 // LOGIC
 //----------------------------------------------------------------------------//
 
+// no timeout
+set_time_limit(0);
+
 // load framework
 require_once($strFrameworkDir."framework.php");
 require_once($strFrameworkDir."functions.php");

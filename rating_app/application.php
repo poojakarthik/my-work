@@ -25,7 +25,7 @@
  *
  */
 
-echo "<pre>";
+echo "<pre>\n";
 
 // Application entry point - create an instance of the application object
 $appRating = new ApplicationRating($arrConfig);
@@ -36,9 +36,7 @@ $appRating->ReRate(CDR_RATE_NOT_FOUND);
 // run the Rate method until there is nothing left to rate
 while ($appRating->Rate())
 {
-	//REMOVE FOR LIVE SYSTEM
-	// break here to only rate 1000 CDRs
-	//break;
+
 }
 
 // Empty the Donkey Account
@@ -48,7 +46,7 @@ Debug("Donkey Account = $".$appRating->_DonkeyAccount);
 
 // finished
 echo("\n-- End of Rating --\n");
-echo "</pre>";
+echo "</pre>\n";
 die();
 
 
