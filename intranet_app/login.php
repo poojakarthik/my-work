@@ -13,11 +13,10 @@
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
 	$arrPage['BypassLoginCheck'] = TRUE;
-	//TODO!!!! - finish this
 	$arrPage['Modules']		= MODULE_BASE;
 	
 	// call application
-	//require ('config/application.php');
+	require ('config/application.php');
 	
 	// If the User is logged into the system
 	if ($athAuthentication->isAuthenticated ())
