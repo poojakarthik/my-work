@@ -507,4 +507,83 @@ function EvalReturn ($strCode)
 	return $return; 
 }
 
+// -------------------------------------------------------------------------- //
+// Permission Functions
+// -------------------------------------------------------------------------- //
+
+/**
+ * AddPermission()
+ * 
+ * Add permissions to a user
+ * 
+ * Add permissions to a user
+ * 
+ * @param	int		$intUser			Current Permissions of the user
+ * @param	int		$intPermission		Permissions to be added to the user
+ *
+ * @return	int							New permissions of the user
+ * 
+ * @method
+ */
+function AddPermission($intUser, $intPermission)
+{
+	// add the permission (Bitwise OR)
+	$intUser = (int)$intUser | (int)$intPermission;
+
+	// return the users permissions
+	return $intUser;
+}
+
+/**
+ * RemovePermission()
+ * 
+ * Remove permissions from a user
+ * 
+ * Remove permissions from a user
+ * 
+ * @param	int		$intUser			Current Permissions of the user
+ * @param	int		$intPermission		Permissions to be removed from the user
+ *
+ * @return	int							New permissions of the user
+ * 
+ * @method
+ */
+function RemovePermission($intUser, $intPermission)
+{
+	// add the permission (Bitwise OR)
+	$intUser = (int)$intUser | (int)$intPermission;
+	
+	// remove the permission (Bitwise XOR)
+	$intUser = (int)$intUser ^ (int)$intPermission;
+	
+	// return the users permissions
+	return $intUser;
+}
+
+/**
+ * HasPermission()
+ * 
+ * Check if a user has a specified permission
+ * 
+ * Check if a user has a specified permission
+ * 
+ * @param	int		$intUser			Current Permissions of the user
+ * @param	int		$intPermission		Permissions to be checked for
+ *
+ * @return	bool						TRUE if the user has the permission
+ * 
+ * @method
+ */
+function HasPermission($intUser, $intPermission)
+{
+	// check for the permission (Bitwise OR)
+	if ((int)$intUser && (int)$intUser == ((int)$intUser | (int)$intPermission))
+	{
+		// return TRUE
+		return TRUE;
+	}
+	// return FALSE
+	return FALSE;
+}
+
 ?>
