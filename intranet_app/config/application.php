@@ -112,7 +112,12 @@ $athAuthentication = new Authentication ();
 
 
 // The only time this will be false is on the Login page.
-if (!$arrPage['BypassLoginCheck'])
+if ($arrPage['BypassLoginCheck'])
+{
+	// STOP HERE!
+	return;
+}
+else
 {
 	// If the User is not logged into the system
 	if (!$athAuthentication->isAuthenticated ())
