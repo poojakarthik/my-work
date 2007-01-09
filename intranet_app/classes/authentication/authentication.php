@@ -249,7 +249,7 @@
 		 	}
 		 	
 			// Updating information
-			$Update = Array("SessionExpire" => new MySQLFunction ("NOW()"));
+			$Update = Array ("SessionExpire" => new MySQLFunction ("NOW()"), "SessionId" => "");
 			
 			// update the table
 			$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id> AND SessionId = <SessionId>", $Update);
