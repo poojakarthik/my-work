@@ -157,6 +157,8 @@ foreach ($arrFileContents as $strLine)
 			$arrRecordDefine = $arrRecordType;
 			break;
 		}
+		
+		Debug("'".$arrRecordType['RecordType']."'");
 	}
 	if (!$arrRecordDefine)
 	{
