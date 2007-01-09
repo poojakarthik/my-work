@@ -53,7 +53,7 @@ echo "<pre>";
 if(!file_exists($strFilename))
 {
 	// File doesn't exist
-	Debug("There is no billing file to validate.  Please run the Billing App first.");
+	Debug("There is no billing file to validate.  Please run the Billing App first. '$strFilename'");
 	die;
 }
 
