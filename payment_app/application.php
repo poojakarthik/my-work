@@ -17,7 +17,7 @@
  *
  * @file		application.php
  * @language	PHP
- * @package		skeleton_application
+ * @package		Payment_application
  * @author		Jared 'flame' Herbohn
  * @version		7.01
  * @copyright	2006-2007 VOIPTEL Pty Ltd
@@ -130,20 +130,41 @@ die();
 	 */
  	function Execute()
  	{
-		// import payments
+		// IMPORT PAYMENTS
 		$this->Import();
 		
-		// normalise payments
-		while($this->Normalise())
+		
+		// NORMALISE PAYMENTS
+		$this->_rptPaymentReport->AddMessage(MSG_NORMALISE_TITLE);
+		while($intCount = $this->Normalise())
 		{
-		
+			$arrReportLine['<Total>']	= $intCount;
+			$arrReportLine['<Time>']	= $this->Framework->LapWatch();
+			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_SUBTOTALS, $arrReportLine);
 		}
+		// Report normalisation results
+		$arrReportLine['<Total>']	= $this->_intNormalisationCount;
+		$arrReportLine['<Time>']	= $this->Framework->LapWatch();
+		$arrReportLine['<Pass>']	= $this->_intNormalisationPassed;
+		$arrReportLine['<Fail>']	= $this->_intNormalisationCount - $this->_intNormalisationPassed;
+		$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_FOOTER, $arrReportLine);
 		
-		// process payments
-		while($this->Process())
+		
+		// PROCESS PAYMENTS
+		$this->_rptPaymentReport->AddMessage(MSG_PROCESS_TITLE);
+		while($intCount = $this->Process())
 		{
-		
+			$arrReportLine['<Total>']	= $intCount;
+			$arrReportLine['<Time>']	= $this->Framework->LapWatch();
+			$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_SUBTOTALS, $arrReportLine);
 		}
+		// Report normalisation results
+		$arrReportLine['<Total>']	= $this->_intProcessCount;
+		$arrReportLine['<Time>']	= $this->Framework->LapWatch();
+		$arrReportLine['<Pass>']	= $this->_intProcessPassed;
+		$arrReportLine['<Fail>']	= $this->_intProcessCount - $this->_intProcessPassed;
+		$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_FOOTER, $arrReportLine);
+		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -162,16 +183,18 @@ die();
 	 */
 	 function Import()
 	 {
-		$this->_rptPaymentReport->AddMessage(MSG_IMPORTING_TITLE);
+		$this->_rptPaymentReport->AddMessage(MSG_IMPORT_TITLE);
 		$this->Framework->StartWatch();
 	
-		// Loop through the CDR File entries
+		// Loop through the Payment File entries
 		$intCount	= 0;
 		$intPassed	= 0;
 		$this->_selGetPaymentFiles->Execute();
-		while ($arrFile = $selSelectCDRFiles->Fetch())
+		while ($arrFile = _selGetPaymentFiles->Fetch())
 		{
 			$intCount++;
+			$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE, Array('<File>' => TruncateName($arrFile['FileName'], 30)));
+			
 			// Make sure the file exists
 			if (!file_exists($arrFile['Location']))
 			{
@@ -181,7 +204,7 @@ die();
 				$this->_ubiPaymentFile->Execute($arrFile);
 				
 				// Add to the Normalisation report
-				$this->_rptPaymentReport->AddMessageVariables(MSG_FAIL_FILE_MISSING, Array('<Path>' => $arrFile['Location']));
+				$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Cannot locate file '".$arrFile['Location']."'");
 				continue;
 			}
 
@@ -201,6 +224,7 @@ die();
 				$intSequence++;
 			}
 			$intPassed++;
+			$this->_rptPaymentReport->AddMessage(MSG_OK);
 		}
 		
 		// Report totals
@@ -208,7 +232,7 @@ die();
 		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
 		$arrReportLine['<Pass>']		= $intPassed;
 		$arrReportLine['<Fail>']		= $intCount - $intPassed;
-		$this->AddToNormalisationReport(MSG_IMPORT_FOOTER, $arrReportLine);
+		$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_FOOTER, $arrReportLine);
 	 }
 	
 	//------------------------------------------------------------------------//
@@ -228,34 +252,45 @@ die();
 	function Normalise()
 	{
 		// get next 1000 payments
-		$this->_selGetImportedPayments->Execute();
-		$arrPayments = $this->_selGetImportedPayments->FetchAll();
-		if (count($arrPayments) == 0)
+		$intCount = $this->_selGetImportedPayments->Execute();
+		if ($intCount == 0)
 		{
 			// No payments left, so return false
 			return FALSE;
 		}
+		$arrPayments = $this->_selGetImportedPayments->FetchAll();
 		
+		$intPassed = 0;
 		foreach($arrPayments as $arrPayment)
 		{
+			$this->_rptPaymentsReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']));
+			
 			// use payment module to decode the payment
 			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment);
-			if(!is_array($arrNormalised))
+			if($arrNormalised['Status'] != $arrPayment['Status'])
 			{
 				// An error has occurred
 				switch($arrNormalised)
 				{
-					// TODO: Handle different errors
+					case PAYMENT_CANT_NORMALISE_HEADER:
+						$this->_rptPaymentsReport->AddMessage(MSG_IGNORE.MSG_REASON."Header Record");
+						break;
+					case PAYMENT_CANT_NORMALISE_FOOTER:
+						$this->_rptPaymentsReport->AddMessage(MSG_IGNORE.MSG_REASON."Footer Record");
+						break;
+					case PAYMENT_CANT_NORMALISE_INVALID:
+						$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON."Not a vaild Payment Record");
+						break;
 					default:
-						Debug("An unknown error occurred with code ".(int)$arrNormalised.".");
+						$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON."An unknown error occurred with code ".(int)$arrNormalised.".");
 						$intStatus = PAYMENT_BAD_NORMALISE;
 				}
 				$arrNormalised	= Array();
 				$arrNormalised['Status']	= $intStatus;
 				$arrNormalised['Id']		= $arrPayment['Id'];
-				if (!$this->_ubiSavePaymentStatus->Execute($arrNormalised))
+				if ($this->_ubiSavePaymentStatus->Execute($arrNormalised) === FALSE)
 				{
-					// TODO: Error
+					$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 				}
 				continue;
 			}
@@ -264,9 +299,14 @@ die();
 			$arrNormalised['Status'] = PAYMENT_WAITING;
 			if(!$this->_ubiSaveNormalisedPayment->Execute($arrNormalised))
 			{
-				// TODO: An error occurred
+				$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 			}
+			$intPassed++;
 		}
+		
+		$this->_intNormalisationPassed	+= $intPassed;
+		$this->_intNormalisationCount	+= $intCount;
+		return $intCount;
 	}
 		
 	//------------------------------------------------------------------------//
@@ -286,11 +326,18 @@ die();
 	 function Process()
 	 {
 		// get next 1000 payments
-		$this->_selGetNormalisedPayments->Execute();
+		$intCount = $this->_selGetNormalisedPayments->Execute();
+		if ($intCount == 0)
+		{
+			// No payments left, so return false
+			return FALSE;
+		}
 		$arrPayments = $this->_selGetNormalisedPayments->FetchAll();
 		
 		foreach($arrPayments as $arrPayment)
 		{
+			$this->_rptPaymentsReport->AddMessageVariables(MSG_PROCESS_LINE, Array('<Id>' => $arrPayment['Id']));
+			
 			// set current payment
 			$this->_arrCurrentPayment = $arrPayment;
 			
@@ -305,6 +352,8 @@ die();
 			// while we have some payment left and an invoice to pay it against
 			while ($this->_arrPayment['Balance'] && $arrInvoice = $this->_selOutstandingInvoices->Fetch())
 			{
+				$this->_rptPaymentsReport->AddMessageVariables(MSG_INVOICE_LINE, Array('<Id>' => $arrInvoice['Id']));
+				
 				// set current invoice
 				$this->_arrCurrentInvoice = $arrInvoice;
 				
@@ -313,7 +362,7 @@ die();
 				if ($fltBalance === FALSE)
 				{
 					// something went wrong
-					//TODO!!!! - report it
+					$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON);
 					
 					// set status
 					$this->_arrPayment['Status'] = PAYMENT_BAD_PROCESS;
@@ -324,6 +373,8 @@ die();
 				
 				// update payment table
 				$this->_ubiPayment->Execute($this->_arrPayment);
+				
+				$this->_rptPaymentsReport->AddMessage(MSG_OK);
 			}
 			
 			// check if we have spent all our money
@@ -334,6 +385,9 @@ die();
 				// update payment table
 				$this->_ubiPayment->Execute($this->_arrPayment);
 			}
+			
+			// Process successful
+			$this->_rptPaymentsReport->AddMessage(MSG_OK);
 		}
 		
 	 }
