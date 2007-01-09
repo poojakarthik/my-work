@@ -53,7 +53,7 @@ $arrConfig['Modules'][MODULE_RECORD_TYPE] 		= "recordtype";
 $arrConfig['Modules'][MODULE_DOCUMENTATION] 	= "documentation";
 
 // Base Modules
-define("MODULE_BASE"			, MODULE_DOCUMENTATION);
+define("MODULE_BASE"			, MODULE_DOCUMENTATION | MODULE_ACCOUNT | MODULE_CONTACT);
 
 
 ?>

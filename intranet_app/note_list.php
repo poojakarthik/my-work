@@ -11,9 +11,8 @@
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
-	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	//TODO!!!! - finish this
-	$arrPage['Modules']		= MODULE_BASE | MODULE_NOTE | MODULE_SERVICE;
+	$arrPage['Permission']	= PERMISSION_OPERATOR | PERMISSION_ADMIN | PERMISSION_SALES;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_NOTE | MODULE_SERVICE | MODULE_CONTACT;
 	
 	// call application
 	require ('config/application.php');

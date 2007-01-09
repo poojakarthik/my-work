@@ -18,9 +18,6 @@
 	// call application
 	require ('config/application.php');
 	
-	require ('classes/accounts/ABN.php');
-	require ('classes/accounts/ACN.php');
-	
 	// Pull documentation information
 	$docDocumentation->Explain ('CDR');
 	$docDocumentation->Explain ('Account');
