@@ -10,7 +10,11 @@
 	require ('config/application_loader.php');
 	
 	// set page details
+	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	$arrPage['BypassLoginCheck'] = TRUE;
+	//TODO!!!! - finish this
+	$arrPage['Modules']		= MODULE_BASE;
 	
 	// call application
 	require ('config/application.php');

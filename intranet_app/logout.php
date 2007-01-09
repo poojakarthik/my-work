@@ -6,7 +6,16 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	require ("config/application_loader.php");
+	// call application loader
+	require ('config/application_loader.php');
+	
+	// set page details
+	$arrPage['PopUp']		= FALSE;
+	$arrPage['Permission']	= PERMISSION_OPERATOR | PERMISSION_SALES | PERMISSION_ADMIN | PERMISSION_SALES;
+	$arrPage['Modules']		= MODULE_BASE;
+	
+	// call application
+	require ('config/application.php');	
 	
 	// Delete Session Information
 	$athAuthentication->Logout ();

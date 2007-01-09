@@ -32,7 +32,7 @@
 //----------------------------------------------------------------------------//
 
 // Modules
-$arrConfig['Modules'][MODULES_AUDIT] 			= "audit";
+$arrConfig['Modules'][MODULE_AUDIT] 			= "audit";
 $arrConfig['Modules'][MODULE_SEARCH] 			= "search";
 $arrConfig['Modules'][MODULE_ACCOUNT] 			= "accounts";
 $arrConfig['Modules'][MODULE_ACCOUNT_GROUP] 	= "accountgroups";

@@ -82,6 +82,16 @@ if ($arrPage['Permission'] == 0)
 	require_once($strObLibDir."dataMultiple/dataSample.class.php");
 	
 	
+	// load up the searching stuff too
+	require_once("classes/search/search.php");
+	require_once("classes/search/searchconstraint.php");
+	require_once("classes/search/searchorder.php");
+	require_once("classes/search/searchresults.php");
+	
+	require_once("classes/accounts/account.php");
+	require_once("classes/contacts/contact.php");
+	
+	
 // load the ObLib XSLT stylesheet module
 require_once($strObLibDir."style.php");
 
@@ -100,23 +110,31 @@ require ("classes/employee/authenticatedemployeepriviledges.php");
 // Do Authentication
 $athAuthentication = new Authentication ();
 
-// If the User is not logged into the system
-if (!$athAuthentication->isAuthenticated ())
+
+// The only time this will be false is on the Login page.
+if (!$arrPage['BypassLoginCheck'])
 {
-	// Foward to Login Interface
-	if ($arrPage['PopUp'] === TRUE)
+	// If the User is not logged into the system
+	if (!$athAuthentication->isAuthenticated ())
 	{
-		// for popup windows
-		//TODO!!!! - build the error page
-		header ("Location: popup_login.php");
+		// Foward to Login Interface
+		if ($arrPage['PopUp'] === TRUE)
+		{
+			// for popup windows
+			//TODO!!!! - build the error page
+			header ("Location: popup_login.php");
+		}
+		else
+		{
+			// for normal pages
+			header ("Location: login.php");
+		}
+		exit;
 	}
-	else
-	{
-		// for normal pages
-		header ("Location: login.php");
-	}
-	exit;
 }
+
+/*
+TODO: Uncomment and fix this ...
 
 // Get user permission
 $intUserPermission = $athAuthentication->AuthenticatedEmployee()->Pull('Priviledges')->GetValue();
@@ -129,7 +147,7 @@ if (!HasPermission($intUserPermission, $arrPage['Permission']))
 	header ("Location: user_permission_error.php");
 	exit;
 }
-
+*/
 
 
 //----------------------------------------------------------------------------//
@@ -145,7 +163,7 @@ foreach($arrConfig['Modules'] as $intModule=>$strLocation)
 		// load all files for the module
 		foreach (glob("classes/$strLocation/*.php") as $strFile)
 		{
-			require_once ("classes/$strLocation/$strFile");
+			require_once ("$strFile");
 		}
 	}
 }
