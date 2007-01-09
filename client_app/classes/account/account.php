@@ -150,7 +150,7 @@
 			$oblarrServices = new dataArray ("Services", "Service");
 			
 			// Pull the list of services that are associated with this account
-			$selServices = new StatementSelect ("Service", "Id", "Account = <Account>");
+			$selServices = new StatementSelect ("Service", "Id", "Account = <Account>", "ServiceType, FNN");
 			$selServices->Execute(Array("Account" => $this->Pull ("Id")->getValue ()));
 			
 			// Put the services in the ObLib array

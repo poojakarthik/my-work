@@ -96,10 +96,17 @@
 			$this->_cntContact =& $cntContact;
 			$this->_srvService =& $srvService;
 			
-			$selChargesLength = new StatementSelect("Charge", "count(*) AS collationLength", "Invoice IS NULL AND Service = <Service>");
+			$selChargesLength = new StatementSelect(
+				"Charge", 
+				"count(*) AS collationLength", 
+				"Service = <Service> AND (Status = <Status1> OR Status = <Status2>)"
+			);
+			
 			$selChargesLength->Execute(
 				Array(
-					"Service"	=> $this->_srvService->Pull ("Id")->getValue ()
+					"Service"	=> $this->_srvService->Pull ("Id")->getValue (),
+					"Status1"	=> CHARGE_APPROVED,
+					"Status2"	=> CHARGE_TEMP_INVOICE
 				)
 			);
 			
@@ -153,14 +160,16 @@
 			$selChargeId = new StatementSelect (
 				"Charge", 
 				"Id", 
-				"Invoice IS NULL AND Service = <Service>", 
+				"Service = <Service> AND (Status = <Status1> OR Status = <Status2>)",
 				null, 
 				$intIndex . ", 1"
 			);
 			
 			$selChargeId->Execute(
 				Array(
-					"Service"	=> $this->_srvService->Pull ("Id")->getValue ()
+					"Service"	=> $this->_srvService->Pull ("Id")->getValue (),
+					"Status1"	=> CHARGE_APPROVED,
+					"Status2"	=> CHARGE_TEMP_INVOICE
 				)
 			);
 			

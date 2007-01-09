@@ -45,6 +45,9 @@ require_once($strObLibDir."dataMultiple/dataCollation.abstract.php");
 require_once($strObLibDir."dataMultiple/dataCollection.abstract.php");
 require_once($strObLibDir."dataMultiple/dataEnumerative.abstract.php");
 require_once($strObLibDir."dataMultiple/dataSample.class.php");
+// aux
+require_once($strObLibDir."dataAux/ABN.php");
+require_once($strObLibDir."dataAux/ACN.php");
 // load the ObLib XSLT stylesheet module
 require_once($strObLibDir."style.php");
 

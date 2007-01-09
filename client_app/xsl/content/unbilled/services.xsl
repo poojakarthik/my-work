@@ -40,9 +40,9 @@
 						<xsl:value-of select="./FNN" disable-output-escaping="yes" />
 					</td>
 					<td>
-						<xsl:value-of select="./NamedServiceType" />
+						<xsl:value-of select="./NamedServiceType/NamedServiceType[@selected='selected']" />
 						<xsl:if test="./Indial100 = '1'">
-							(100 Indial Numbers)
+							(100 Indial Number)
 						</xsl:if>
 					</td>
 					<td class="Currency"><xsl:value-of select="./TotalCharge" /></td>
