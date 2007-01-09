@@ -121,8 +121,8 @@
 						$intTime = time () + (60 * 20);
 					}
 					
-					setCookie ("Id", $_COOKIE ['Id'], $intTime, "/intranet_app/");
-					setCookie ("SessionId", $_COOKIE ['SessionId'], $intTime, "/intranet_app/");
+					setCookie ("Id", $_COOKIE ['Id'], $intTime, "/");
+					setCookie ("SessionId", $_COOKIE ['SessionId'], $intTime, "/");
 				} else {
 					// Unset the cookies so we don't have to bother checking them
 					setCookie ("Id", "", time () - 3600);
