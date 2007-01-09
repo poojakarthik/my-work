@@ -84,7 +84,7 @@
 			{
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
-					"Employee", "count(*) as length", 
+					"Employee", "count(Id) as length, Priviledges", 
 					"Id = <Id> AND SessionID = <SessionId> AND (SessionExpire > NOW() OR Priviledges = 9223372036854775807)" // Never log out GOD
 				);
 				
@@ -102,8 +102,20 @@
 					$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
 					$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE ['Id']));
 					
-					setCookie ("Id", $_COOKIE ['Id'], time () + (60 * 20), "/intranet_app/");
-					setCookie ("SessionId", $_COOKIE ['SessionId'], time () + (60 * 20), "/intranet_app/");
+					// set cookie timeout
+					if ($arrAuthentication['Priviledges'] = 9223372036854775807)
+					{
+						// God Cookies last for 7 days
+						$intTime = time () + (60 * 60 * 24 * 7);
+					}
+					else
+					{
+						// Normal Cookies last for 20 min
+						$intTime = time () + (60 * 20);
+					}
+					
+					setCookie ("Id", $_COOKIE ['Id'], $intTime, "/intranet_app/");
+					setCookie ("SessionId", $_COOKIE ['SessionId'], $intTime, "/intranet_app/");
 				} else {
 					// Unset the cookies so we don't have to bother checking them
 					setCookie ("Id", "", time () - 3600);
