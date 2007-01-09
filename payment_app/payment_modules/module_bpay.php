@@ -103,7 +103,7 @@
 		$arrDefine['Number3']				['Index']	= 47;
 
 		$arrDefine['Amount']			['Validate'] = "/^\$\d+\.\d{2}$/";
-		$arrDefine['CustomerReference']	['Validate'] = "/^\d$/";			// FIXME: Find out how customer ref #s are generated
+		$arrDefine['CustomerReference']	['Validate'] = "/^\d+$/";			// FIXME: Find out how customer ref #s are generated
 		$arrDefine['RemittanceDate']	['Validate'] = "/^\d{1,2}\/\d{1,2}\/\d{2}$/";
  	}
 
@@ -133,7 +133,7 @@
  		$this->_SplitRaw($strRawRecord);
  		
  		// Amount
- 		$mixValue	= ltrim($this->_FetchRaw('Amount'), "$");
+ 		$mixValue	= (float)ltrim($this->_FetchRaw('Amount'), "$");
  		$this->_Append('Amount', $mixValue);
  		
  		// Transaction Reference Number
@@ -149,6 +149,11 @@
  		
  		// Apply AccountGroup Ownership
  		$strAccount			= $this->_FetchRaw('CustomerReference');
+ 		// FIXME: Try to account for bad reference numbers.  Is this right?
+ 		if ((int)$strAccount < 1000000000)
+ 		{
+ 			$strAccount = "1".str_pad($strAccount, 9, "0", STR_PAD_LEFT);
+ 		}
  		$intAccount			= (int)substr($strAccount, 0, -1);
  		$intAccountGroup	= $this->_FindAccountGroup($intAccount);
  		$this->_Append('AccountGroup', $intAccountGroup);
@@ -165,7 +170,7 @@
 	 *
 	 * Converts from BPay date format to our own 
 	 *
-	 * Converts from "d/m/Y" date format to "Y-m-d".  Assumes that dates are in the 21st Century
+	 * Converts from "D/M/YY" date format to "YYYY-MM-DD".  Assumes that dates are in the 21st Century
 	 *
 	 * @param		string	$strPaymentRecord	String containing raw record
 	 * 
