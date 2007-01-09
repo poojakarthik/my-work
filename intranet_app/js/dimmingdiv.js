@@ -39,9 +39,7 @@ function buildDimmerDiv()
     var dimmer = document.createElement ("DIV");
     dimmer.id = 'dimmer';
     dimmer.className = 'dimmer';
-    dimmer.style.width = window.innerWidth + 'px';
-    dimmer.style.height = window.innerHeight +'px';
-//    document.body.appendChild (dimmer);
+ //    document.body.appendChild (dimmer);
 }
 
 
@@ -93,9 +91,13 @@ function hiddenFloatingDiv(divId)
 {
 	document.getElementById(divId).innerHTML = originalDivHTML;
 	document.getElementById(divId).style.visibility='hidden';
-	document.getElementById('dimmer').style.visibility = 'hidden';
 	document.getElementById(divId).style.display='none';
-	document.getElementById('dimmer').style.display = 'none';
+	
+	if (document.getElementById('dimmer'))
+	{
+		document.getElementById('dimmer').style.visibility = 'hidden';
+		document.getElementById('dimmer').style.display = 'none';
+	}
 	
 	DivID = "";
 }
@@ -197,4 +199,20 @@ function displayDebugWindow()
 
     // with title		        
     displayFloatingDiv('windowcontent', 'System Debug', w, h, l, t);
+}
+
+
+function displayRecentWindow()
+{
+    var w, h, l, t;
+    w = 550;
+    h = 300;
+    l = (window.innerWidth / 2) - (w / 2);
+    t = (window.innerHeight / 2) - (h / 2);;
+    
+    // no title		        
+    // displayFloatingDiv('windowcontent', '', w, h, l, t);
+
+    // with title		        
+    displayFloatingDiv('RecentWindow', 'Recent Customers', w, h, l, t);
 }

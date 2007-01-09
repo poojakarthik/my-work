@@ -13,7 +13,8 @@
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
 	//TODO!!!! - finish this
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_NOTE | MODULE_CARRIER | 
+							  MODULE_PROVISIONING | MODULE_RECURRING_CHARGE_TYPE | MODULE_BILLING | MODULE_CHARGE_TYPE;
 	
 	// call application
 	require ('config/application.php');

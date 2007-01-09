@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
+	<xsl:import href="../lib/date-time.xsl" />
+	
 	<xsl:output method="xml" version="1.0" encoding="iso-8859-1" indent="yes" 
 	doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" />
 	
@@ -44,84 +46,117 @@
 				<div id="Controller" class="sectionContainer">
 					<table border="0" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
-							<td valign="top" width="300">
+							<td valign="top" width="100">
 								<div id="Navigation" class="Left sectionContent">
-									<ul id="Navigation-Root">
-										<li>
-											Accounts
-											<ul>
-												<li><a href="account_add.php">Create an Account</a></li>
-												<li><a href="account_list.php">Find an Account</a></li>
-												<li>Recently Viewed
+									<!--
+											<ul id="Navigation-Root">
+												<li>
+													Accounts
 													<ul>
-														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Accounts/Account">
-															<xsl:sort order="descending" />
-															<li>
-																<a>
-																	<xsl:attribute name="href">
-																		<xsl:text>account_view.php?Id=</xsl:text>
-																		<xsl:value-of select="./Id" />
-																	</xsl:attribute>
-																	<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
-																</a>
-															</li>
-														</xsl:for-each>
+														<li><a href="account_add.php">Create an Account</a></li>
+														<li><a href="account_list.php">Find an Account</a></li>
+														<li>Recently Viewed
+															<ul>
+																<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Accounts/Account">
+																	<xsl:sort order="descending" />
+																	<li>
+																		<a>
+																			<xsl:attribute name="href">
+																				<xsl:text>account_view.php?Id=</xsl:text>
+																				<xsl:value-of select="./Id" />
+																			</xsl:attribute>
+																			<xsl:value-of select="./BusinessName" disable-output-escaping="yes" />
+																		</a>
+																	</li>
+																</xsl:for-each>
+															</ul>
+														</li>
+													</ul>
+												</li>
+												<li>
+													Contacts
+													<ul>
+														<li><a href="contact_list.php">Find a Contact</a></li>
+														<li>Recently Viewed
+															<ul>
+																<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
+																	<xsl:sort order="descending" />
+																	<li>
+																		<a>
+																			<xsl:attribute name="href">
+																				<xsl:text>contact_view.php?Id=</xsl:text>
+																				<xsl:value-of select="./Id" />
+																			</xsl:attribute>
+																			<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
+																			<xsl:text> </xsl:text>
+																			<xsl:value-of select="./LastName" disable-output-escaping="yes" />
+																		</a>
+																	</li>
+																</xsl:for-each>
+															</ul>
+														</li>
+													</ul>
+												</li>
+												<li>
+													Rates
+													<ul>
+														<li><a href="rates_plan_list.php">List Rate Plans</a></li>
+														<li><a href="rates_plan_add.php">Create Rate Plan</a></li>
+														<li><a href="rates_group_list.php">List Rate Groups</a></li>
+														<li><a href="rates_group_add.php">Create Rate Group</a></li>
+														<li><a href="rates_rate_list.php">List Rates</a></li>
+														<li><a href="rates_rate_add.php">Create Rate</a></li>
+													</ul>
+												</li>
+												<li>
+													Charges
+													<ul>
+														<li><a href="charges_recurringcharge_add.php">Add Recurring Charge Type</a></li>
+														<li><a href="charges_recurringcharge_list.php">List Recurring Charge Types</a></li>
+														<li><a href="charges_charge_add.php">Add Single Charge Type</a></li>
+														<li><a href="charges_charge_list.php">List Single Charge Types</a></li>
+														<li><a href="charges_approve.php">Approve Unbilled Charges</a></li>
+													</ul>
+												</li>
+												<li>
+													My Account
+													<ul>
+														<li><a href="logout.php">Logout</a></li>
 													</ul>
 												</li>
 											</ul>
-										</li>
-										<li>
-											Contacts
-											<ul>
-												<li><a href="contact_list.php">Find a Contact</a></li>
-												<li>Recently Viewed
-													<ul>
-														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
-															<xsl:sort order="descending" />
-															<li>
-																<a>
-																	<xsl:attribute name="href">
-																		<xsl:text>contact_view.php?Id=</xsl:text>
-																		<xsl:value-of select="./Id" />
-																	</xsl:attribute>
-																	<xsl:value-of select="./FirstName" disable-output-escaping="yes" />
-																	<xsl:text> </xsl:text>
-																	<xsl:value-of select="./LastName" disable-output-escaping="yes" />
-																</a>
-															</li>
-														</xsl:for-each>
-													</ul>
-												</li>
-											</ul>
-										</li>
-										<li>
-											Rates
-											<ul>
-												<li><a href="rates_plan_list.php">List Rate Plans</a></li>
-												<li><a href="rates_plan_add.php">Create Rate Plan</a></li>
-												<li><a href="rates_group_list.php">List Rate Groups</a></li>
-												<li><a href="rates_group_add.php">Create Rate Group</a></li>
-												<li><a href="rates_rate_list.php">List Rates</a></li>
-												<li><a href="rates_rate_add.php">Create Rate</a></li>
-											</ul>
-										</li>
-										<li>
-											Charges
-											<ul>
-												<li><a href="charges_recurringcharge_add.php">Add Recurring Charge Type</a></li>
-												<li><a href="charges_recurringcharge_list.php">List Recurring Charge Types</a></li>
-												<li><a href="charges_charge_add.php">Add Single Charge Type</a></li>
-												<li><a href="charges_charge_list.php">List Single Charge Types</a></li>
-												<li><a href="charges_approve.php">Approve Unbilled Charges</a></li>
-											</ul>
-										</li>
-										<li>
-											My Account
-											<ul>
-												<li><a href="logout.php">Logout</a></li>
-											</ul>
-										</li>
-									</ul>
+										-->
+										
+											<table border="0" cellpadding="5" cellspacing="0">
+												<tr>
+													<td>
+														<a href="account_add.php">
+															<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
+														</a>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a href="contact_list.php">
+															<img src="img/template/contact_retrieve.png" title="Find Customer" class="MenuIcon" />
+														</a>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a href="#" onclick="return displayRecentWindow()">
+															<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
+														</a>
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a href="rates_plan_list.php">
+															<img src="img/template/plans.png" title="View Plan Details" class="MenuIcon" />
+														</a>
+													</td>
+												</tr>
+											</table>
 								</div>
 							</td>
 							<td valign="top">
@@ -135,6 +170,39 @@
 					<div class="Clear"></div>
 				</div>
 				<div class="Clear"></div>
+
+				<div id="RecentWindow" style="display: none">
+					<div id="RecentWindowMain">
+						<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+							<thead>
+								<tr class="First">
+									<th>First Name</th>
+									<th>Last Name</th>
+								</tr>
+							</thead>
+							<tbody>
+								<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
+									<xsl:sort order="descending" />
+									
+									<tr>
+										<xsl:attribute name="class">
+											<xsl:choose>
+												<xsl:when test="position () mod 2 = 1">
+													<xsl:text>Odd</xsl:text>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:text>Even</xsl:text>
+												</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+										<td><xsl:value-of select="./FirstName" /></td>
+										<td><xsl:value-of select="./LastName" /></td>
+									</tr>
+								</xsl:for-each>
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</body>
 		</html>
 	</xsl:template>

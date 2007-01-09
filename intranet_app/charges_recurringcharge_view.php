@@ -22,7 +22,7 @@
 	// Get the RecurringCharge
 	try
 	{
-		$rctRecurringChargeType		= $Style->attachObject (new RecurringChargeType ($_GET ['Id']));
+		$rctRecurringChargeType = $Style->attachObject (new RecurringChargeType ($_GET ['Id']));
 	}
 	catch (Exception $e)
 	{
