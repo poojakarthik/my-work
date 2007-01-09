@@ -6,7 +6,16 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	require ("config/application_loader.php");
+	// call application loader
+	require ('config/application_loader.php');
+	
+	// set page details
+	$arrPage['PopUp']		= FALSE;
+	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_PLAN;
+	
+	// call application
+	require ('config/application.php');
 	
 	$docDocumentation->Explain ("Rate Plan");
 	
