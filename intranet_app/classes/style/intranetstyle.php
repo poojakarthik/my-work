@@ -108,7 +108,14 @@
 			
 			if (DEBUG_MODE == TRUE)
 			{
-				$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
+				// Get user permission
+				$intUserPermission = $athAuthentication->AuthenticatedEmployee()->Pull('Priviledges')->GetValue();
+
+				// Check if the user is allowed to view debug info
+				if (HasPermission($intUserPermission, $arrPage['Permission']))
+				{
+					$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
+				}
 			}
 			
 			parent::Output ($strXSLFilename);

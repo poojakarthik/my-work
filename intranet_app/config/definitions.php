@@ -74,8 +74,9 @@ define("PERMISSION_"					, 0x8000000);
 define("PERMISSION_"					, 0x10000000);
 define("PERMISSION_"					, 0x20000000);
 define("PERMISSION_"					, 0x40000000);
-define("PERMISSION_"					, 0x80000000);
 */
+
+define("PERMISSION_DEBUG"				, 0x80000000);
 
 // Maximum single Permission
 define("PERMISSION_MAXIMUM"				, 0x4000000000000000); // 4611686018427387904
