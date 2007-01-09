@@ -140,7 +140,7 @@ if (!HasPermission($intUserPermission, $arrPage['Permission']))
 foreach($arrConfig['Modules'] as $intModule=>$strLocation)
 {
 	// check if we need to load the module
-	if HasPermission($arrPage['Modules'], $intModule)
+	if (HasPermission($arrPage['Modules'], $intModule))
 	{
 		// load all files for the module
 		foreach (glob("classes/$strLocation/*.php") as $strFile)
