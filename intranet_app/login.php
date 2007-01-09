@@ -6,7 +6,14 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	require ("config/application_loader.php");
+	// call application loader
+	require ('config/application_loader.php');
+	
+	// set page details
+	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	
+	// call application
+	require ('config/application.php');
 	
 	// If the User is logged into the system
 	if ($athAuthentication->isAuthenticated ())
