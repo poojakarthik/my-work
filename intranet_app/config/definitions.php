@@ -85,7 +85,7 @@ define("USER_PERMISSION_ADMIN"			, 0xFFFF);
 
 // All User Permissions
 define("USER_PERMISSION_ALL"			, 0x7FFFFFFFFFFFFFFF);
-
+define("USER_PERMISSION_GOD"			, 0x7FFFFFFFFFFFFFFF);
 
 
 // Modules

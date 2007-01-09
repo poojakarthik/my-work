@@ -84,8 +84,8 @@
 			{
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
-					"Employee", "count(Id) as length, MAX(Priviledges) as xPriviledges", 
-					"Id = <Id> AND SessionID = <SessionId> AND (SessionExpire > NOW() OR Priviledges = 9223372036854775807)" // Never log out GOD
+					"Employee", "count(Id) as length, MAX(Priviledges) as Priviledges", 
+					"Id = <Id> AND SessionID = <SessionId> AND (SessionExpire > NOW() OR Priviledges = ".USER_PERMISSION_GOD.")" // Never log out GOD
 				);
 				
 				$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
@@ -103,7 +103,7 @@
 					$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE ['Id']));
 					
 					// set cookie timeout
-					if ($arrAuthentication['Priviledges'] = 9223372036854775807)
+					if ($arrAuthentication['Priviledges'] == USER_PERMISSION_GOD)
 					{
 						// God Cookies last for 7 days
 						$intTime = time () + (60 * 60 * 24 * 7);
