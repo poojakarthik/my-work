@@ -195,6 +195,11 @@
 												</xsl:otherwise>
 											</xsl:choose>
 										</xsl:attribute>
+										<xsl:attribute name="onclick">
+											<xsl:text>window.location='contact_view.php?Id=</xsl:text>
+											<xsl:value-of select="./Id" />
+											<xsl:text>'</xsl:text>
+										</xsl:attribute>
 										<td><xsl:value-of select="./FirstName" /></td>
 										<td><xsl:value-of select="./LastName" /></td>
 									</tr>

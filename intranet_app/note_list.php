@@ -17,9 +17,6 @@
 	// call application
 	require ('config/application.php');
 	
-	require ('classes/accounts/ABN.php');
-	require ('classes/accounts/ACN.php');
-	
 	$docDocumentation->Explain ('Account Group');
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Service');

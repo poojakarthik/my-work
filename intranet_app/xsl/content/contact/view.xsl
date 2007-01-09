@@ -326,8 +326,7 @@
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
 							<xsl:text>View Account</xsl:text>
-						</a>
-						-
+						</a>, 
 						<a>
 							<xsl:attribute name="href">
 								<xsl:text>javascript:notes_popup('', '</xsl:text>
