@@ -66,7 +66,7 @@
 			$this->Push (new dataString		('Field',		$arrDetails ['Field']));
 			$this->Push (new dataString		('Label',		$arrDetails ['Label']));
 			$this->Push (new dataString		('Title',		$arrDetails ['Title']));
-			$this->Push (new dataCDATA		('Description',	nl2br ($arrDetails ['Description'])));
+			$this->Push (new dataString		('Description',	nl2br ($arrDetails ['Description'])));
 		}
 		
 	}

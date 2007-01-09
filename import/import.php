@@ -207,7 +207,7 @@
 				
 				if ($_TABLE [0] == "Employee" && $_FIELD ['Field'] == "Session") {
 					$_FIELD ['RefType'] = "s";
-					$_FIELD ['ObLib'] = "dataCDATA";
+					$_FIELD ['ObLib'] = "dataString";
 				}
 				
 				$strFileContents .= " 

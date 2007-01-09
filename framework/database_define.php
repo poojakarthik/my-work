@@ -1560,7 +1560,7 @@
 		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataCDATA"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 				 
 				 
