@@ -86,6 +86,24 @@ die();
 		$arrColumns['Id']			= NULL;
 		$arrColumns['Status']		= NULL;
 		$this->_ubiPaymentFile		= new StatementUpdateById("FileImport", $arrColumns);
+		
+		$arrColumns = Array();
+		$arrColumns['Payment']		= NULL;
+		$arrColumns['SequenceNo']	= NULL;
+		$arrColumns['File']			= NULL;
+		$arrColumns['Status']		= NULL;
+		$this->_insPayment			= new StatementInsert("Payment", $arrColumns);
+
+		$arrColumns = Array();
+		$arrColumns['Id']		= "Payment.Id";
+		$arrColumns['Payment']	= "Payment.Payment";
+		$arrColumns['FileType']	= "FileImport.FileType";
+		$this->_selGetImportedPayments	= new StatementSelect("Payment JOIN FileImport ON Payment.File = FileImport.Id", $arrColumns, "Status = ".PAYMENT_IMPORTED, NULL, "1000");
+		
+		$arrColumns = Array();
+		$arrColumns['Id']		= NULL;
+		$arrColumns['Status']	= NULL;
+		$this->_ubiSavePaymentStatus	= new StatementUpdateById("Payment");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -214,16 +232,43 @@ die();
 		//		Status = PAYMENT_WAITING || PAYMENT_BAD_IMPORT
 		
 		// get next 1000 payments
-		//$arrPayments =
-		//TODO!!!!
+		$this->_selGetImportedPayments->Execute();
+		$arrPayments = $this->_selGetImportedPayments->FetchAll();
+		if (count($arrPayments) == 0)
+		{
+			// No payments left, so return false
+			return FALSE;
+		}
 		
 		foreach($arrPayments as $arrPayment)
 		{
 			// use payment module to decode the payment
-			// TODO!!!!
+			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment);
+			if(!is_array($arrNormalised))
+			{
+				// An error has occurred
+				switch($arrNormalised)
+				{
+					// TODO: Handle different errors
+					default:
+						Debug("An unknown error occurred with code ".(int)$arrNormalised.".");
+						$intStatus = PAYMENT_BAD_NORMALISE;
+				}
+				$arrNormalised	= Array();
+				$arrNormalised['Status']	= $intStatus;
+				$arrNormalised['Id']		= $arrPayment['Id'];
+				if (!$this->_ubiSavePaymentStatus->Execute($arrNormalised))
+				{
+					// TODO: Error
+				}
+				continue;
+			}
 			
 			// save the payment to DB
-			// TODO!!!!
+			if(!$this->_ubiSaveNormalisedPayment->Execute($arrNormalised))
+			{
+				// TODO: An error occurred
+			}
 		}
 	}
 		

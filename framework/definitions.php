@@ -34,6 +34,9 @@
 // debug mode
 define("DEBUG_MODE"					, TRUE);
 
+// Backend's Employee Id
+define("USER_ID"					, 999999999);
+
 // Applications
 define("APPLICATION_COLLECTION"		, 0);
 define("APPLICATION_NORMALISATION"	, 1);

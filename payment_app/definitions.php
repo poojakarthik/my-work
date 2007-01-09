@@ -37,10 +37,11 @@ define("USER_NAME"						, "payment_app");
 // payment status
 define("PAYMENT_IMPORTED"				, 100);
 define("PAYMENT_WAITING"				, 101);
-define("PAYMENT_PAYING"					, 102);
+define("PAYMENT_PAYING"					, 103);
 define("PAYMENT_FINISHED"				, 150);
 define("PAYMENT_BAD_IMPORT"				, 200);
 define("PAYMENT_BAD_PROCESS"			, 201);
+define("PAYMENT_BAD_NORMALISE"			, 202);
 
 
 ?>
