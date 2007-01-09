@@ -86,12 +86,14 @@
 	 */
  	function Normalise($strPaymentRecord)
  	{
- 		// BPay are idiots, so parse the file first, changing it from comma-delimited to pipe-delimited
- 		$strRawRecord = str_replace("\",", "\"|", $strPaymentRecord);
- 		$strRawRecord = str_replace(",\"", "|\"", $strRawRecord);
+ 		// Check if this is a footer record...
+ 		if (!is_numeric(substr($strPaymentRecord, 0, 1)))
+ 		{
+ 			return PAYMENT_CANT_NORMALISE_FOOTER;
+ 		}
  		
  		// Split the parsed record
- 		$this->_SplitRaw($strRawRecord);
+ 		$this->_SplitRaw($strPaymentRecord);
  		
  		// Amount
  		$mixValue	= ((float)$this->_FetchRaw('Amount')) / 100;
