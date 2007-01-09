@@ -55,9 +55,10 @@ if ($arrPage['Permission'] == 0)
 //----------------------------------------------------------------------------//
 
 // load oblib library
-require_once($strObLibDir."oblib.php");
+//TODO!!!! - load oblib from a single file
+//require_once($strObLibDir."oblib.php");
 
-	/*
+	//TODO!!!! - make all this a single file
 	// load the object library oblib
 	require_once($strObLibDir."data.abstract.php");
 	// load the oblib primitives
@@ -79,7 +80,7 @@ require_once($strObLibDir."oblib.php");
 	require_once($strObLibDir."dataMultiple/dataCollection.abstract.php");
 	require_once($strObLibDir."dataMultiple/dataEnumerative.abstract.php");
 	require_once($strObLibDir."dataMultiple/dataSample.class.php");
-	*/
+	
 	
 // load the ObLib XSLT stylesheet module
 require_once($strObLibDir."style.php");
