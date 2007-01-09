@@ -104,17 +104,17 @@
 			if ($this->_athAuthentication->isAuthenticated ())
 			{
 				$this->_athAuthentication->AuthenticatedEmployee ()->Save ();
-			}
 			
-			if (DEBUG_MODE == TRUE)
-			{
-				// Get user permission
-				$intUserPermission = $this->_athAuthentication->AuthenticatedEmployee()->Pull('Priviledges')->GetValue();
-
-				// Check if the user is allowed to view debug info
-				if (HasPermission($intUserPermission, $arrPage['Permission']))
+				if (DEBUG_MODE == TRUE)
 				{
-					$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
+					// Get user permission
+					$intUserPermission = $this->_athAuthentication->AuthenticatedEmployee ()->Pull('Priviledges')->GetValue();
+	
+					// Check if the user is allowed to view debug info
+					if (HasPermission($intUserPermission, $arrPage['Permission']))
+					{
+						$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
+					}
 				}
 			}
 			
