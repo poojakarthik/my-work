@@ -11,8 +11,7 @@
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
-	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['BypassLoginCheck'] = TRUE;
+	$arrPage['Permission']	= PERMISSION_PUBLIC;
 	$arrPage['Modules']		= MODULE_BASE;
 	
 	// call application

@@ -111,11 +111,16 @@ require ("classes/employee/authenticatedemployeepriviledges.php");
 $athAuthentication = new Authentication ();
 
 
-// The only time this will be false is on the Login page.
-if ($arrPage['BypassLoginCheck'])
+// Check if the authentication is needed
+if (!HasPermission($arrPage['Permission'], PERMISSION_PUBLIC))
 {
-	// STOP HERE!
-	return;
+	// This page does not require authentication
+	// However, we will be restricted to only loading base modules if we are
+	// not authenticated
+	if (!$athAuthentication->isAuthenticated ())
+	{
+		$arrPage['Modules'] = MODULE_BASE;
+	}
 }
 else
 {
@@ -173,15 +178,19 @@ foreach($arrConfig['Modules'] as $intModule=>$strLocation)
 	}
 }
 
+
+//----------------------------------------------------------------------------//
+// STYLE
+//----------------------------------------------------------------------------//
+
 //style (intranet-specific)
 require ("classes/style/intranetstyle.php");
-
-
-//----------------------------------------------------------------------------//
-// SOME CRAP AT THE END OF THE FILE
-//----------------------------------------------------------------------------//
-
 $Style = new IntranetStyle ($strWebDir, $athAuthentication);
+
+
+//----------------------------------------------------------------------------//
+// DOCUMENTATION
+//----------------------------------------------------------------------------//
 
 $docDocumentation = new Documentation ();
 $docDocumentation = $Style->attachObject ($docDocumentation);

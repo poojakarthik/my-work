@@ -41,13 +41,13 @@ define("USER_NAME"						, "intranet_app");
 // Permission All is 0x7FFFFFFFFFFFFFFF
 
 // Permissions - used for page permission
-define("PERMISSION_ADMIN"				, 0x1);
-define("PERMISSION_OPERATOR"			, 0x2);
-define("PERMISSION_SALES"				, 0x4);
-define("PERMISSION_ACCOUNTS"			, 0x8);
+define("PERMISSION_PUBLIC"				, 0x1);
+define("PERMISSION_ADMIN"				, 0x2);
+define("PERMISSION_OPERATOR"			, 0x4);
+define("PERMISSION_SALES"				, 0x8);
+define("PERMISSION_ACCOUNTS"			, 0x10);
 
 /*
-define("PERMISSION_"					, 0x10);
 define("PERMISSION_"					, 0x20);
 define("PERMISSION_"					, 0x40);
 define("PERMISSION_"					, 0x80);
