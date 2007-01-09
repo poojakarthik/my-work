@@ -6,7 +6,20 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	// call application loader
 	require ('config/application_loader.php');
+	
+	// set page details
+	$arrPage['PopUp']		= FALSE;
+	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	//TODO!!!! - finish this
+	$arrPage['Modules']		= MODULE_BASE | MODULE_NOTE | MODULE_SERVICE;
+	
+	// call application
+	require ('config/application.php');
+	
+	require ('classes/accounts/ABN.php');
+	require ('classes/accounts/ACN.php');
 	
 	$docDocumentation->Explain ('Account Group');
 	$docDocumentation->Explain ('Account');
