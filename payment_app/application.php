@@ -104,6 +104,14 @@ die();
 		$arrColumns['Id']		= NULL;
 		$arrColumns['Status']	= NULL;
 		$this->_ubiSavePaymentStatus	= new StatementUpdateById("Payment");
+		
+		$this->_selGetNormalisedPayments	= new StatementSelect("Payment", "*", "Status = ".PAYMENT_WAITING, NULL, "1000");
+		
+		$this->_selOutstandingInvoices		= new StatementSelect("Invoice", "*", "Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED, "DueOn ASC", "1000");
+		
+		$this->_ubiPayment					= new StatementUpdateById("Payment");
+		
+		$this->_ubiInvoice					= new StatementUpdateById("Invoice");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -219,18 +227,6 @@ die();
 	 */
 	function Normalise()
 	{
-	 	//TODO!!!!
-		// see Payment table description in table_descriptions.odt
-		//
-		// each payment type will need a module (similar to normalisation modules)
-		// 	we have sample files for each format
-		//
-		// in payment type module
-		//		match payment to an account group
-		//		match payment to an account (optional, but we should always try)
-		//		Balance = Amount
-		//		Status = PAYMENT_WAITING || PAYMENT_BAD_IMPORT
-		
 		// get next 1000 payments
 		$this->_selGetImportedPayments->Execute();
 		$arrPayments = $this->_selGetImportedPayments->FetchAll();
@@ -265,6 +261,7 @@ die();
 			}
 			
 			// save the payment to DB
+			$arrNormalised['Status'] = PAYMENT_WAITING;
 			if(!$this->_ubiSaveNormalisedPayment->Execute($arrNormalised))
 			{
 				// TODO: An error occurred
@@ -289,8 +286,8 @@ die();
 	 function Process()
 	 {
 		// get next 1000 payments
-		// $arrPayments =
-		//TODO!!!!
+		$this->_selGetNormalisedPayments->Execute();
+		$arrPayments = $this->_selGetNormalisedPayments->FetchAll();
 		
 		foreach($arrPayments as $arrPayment)
 		{
@@ -299,14 +296,14 @@ die();
 			
 			// get a list of outstanding invoices for this account group
 			//		(and account if we have one in $arrPayment) sorted oldest invoice first
-			// $selInvoices =
-			//TODO!!!!
+			$arrWhere['AccountGroup'] = $arrPayment['AccountGroup'];
+			$this->_selOutstandingInvoices->Execute($arrWhere);
 			
 			// set default status
 			$this->_arrPayment['Status'] = PAYMENT_PAYING; 
 			
 			// while we have some payment left and an invoice to pay it against
-			while ($this->_arrPayment['Balance'] && $arrInvoice = $selInvoices->Fetch())
+			while ($this->_arrPayment['Balance'] && $arrInvoice = $this->_selOutstandingInvoices->Fetch())
 			{
 				// set current invoice
 				$this->_arrCurrentInvoice = $arrInvoice;
@@ -326,7 +323,7 @@ die();
 				}
 				
 				// update payment table
-				// TODO!!!!
+				$this->_ubiPayment->Execute($this->_arrPayment);
 			}
 			
 			// check if we have spent all our money
@@ -335,7 +332,7 @@ die();
 				$this->_arrPayment['Status'] = PAYMENT_FINISHED;
 				
 				// update payment table
-				// TODO!!!!
+				$this->_ubiPayment->Execute($this->_arrPayment);
 			}
 		}
 		
@@ -381,10 +378,13 @@ die();
 		}
 		
 		// add an invoice payment record
-		//TODO!!!!
+		$arrInvoicePayment['Invoice']	= $this->_arrCurrentInvoice['Id'];
+		$arrInvoicePayment['Payment']	= $this->_arrCurrentPayment['Id'];
+		$arrInvoicePayment['Amount']	= $fltPayment;
+		$this->_insInvoicePayment->Execute($arrInvoicePayment);
 		
 		// update the invoice
-		//TODO!!!!
+		$this->_ubiInvoice->Execute($this->_arrCurrentInvoice);
 		
 		// save the balance
 		$this->_arrCurrentPayment['Balance'] = $fltBalance;

@@ -116,6 +116,17 @@
  		$intAccountGroup	= $this->_FindAccountGroup($intAccount);
  		$this->_Append('AccountGroup', $intAccountGroup);
  		$this->_Append('Account', $intAccount);
+ 		 		
+ 		// PaymentType
+ 		$this->_Append('PaymentType', PAYMENT_TYPE_SECUREPAY);
+ 		
+ 		//----------------------------------------------------------------------
+ 		
+ 		// Validate Normalised Data
+ 		if (!$this->Validate())
+ 		{
+ 			return PAYMENT_CANT_NORMALISE_INVALID;
+ 		}
  		
  		return $this->_Output();
  	}

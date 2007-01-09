@@ -57,7 +57,49 @@
 	 														NULL,
 	 														"1");
  	}
- 	
+
+	//------------------------------------------------------------------------//
+	// Validate
+	//------------------------------------------------------------------------//
+	/**
+	 * Validate()
+	 *
+	 * Validate Normalised Data
+	 *
+	 * Validate Normalised Data
+	 *
+	 * @return	boolean				true	: Data matches
+	 * 								false	: Data doesn't match
+	 *
+	 * @method
+	 */
+	function Validate()
+	{
+		// Validate our normalised data
+		$arrValid = Array();
+		
+		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d$/", $this->_arrNormalisedData['PaidOn']);			// 1
+		$arrValid[] = (bool)$this->_arrNormalisedData['CarrierRef'];										// 2
+		$arrValid[] = is_float($this->_arrNormalisedData['Amount']);										// 3
+		$arrValid[] = (bool)$this->_arrNormalisedData['TXNReference'];										// 4
+		$arrValid[] = (bool)$this->_arrNormalisedData['EnteredBy'];											// 5
+		$arrValid[] = ($this->_arrNormalisedData['Amount'] == $this->_arrNormalisedData['Balance']);		// 6
+
+		$i = 0;
+		foreach ($arrValid as $bolValid)
+		{
+			$i++;
+			if(!$bolValid)
+			{
+				$this->_arrNormalisedData['Status']	= PAYMENT_CANT_NORMALISE_INVALID;
+				Debug($i);
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
 	//------------------------------------------------------------------------//
 	// Normalise
 	//------------------------------------------------------------------------//
