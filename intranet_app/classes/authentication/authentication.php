@@ -84,7 +84,7 @@
 			{
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
-					"Employee", "count(Id) as length, MAX(Priviledges) as Priviledges", 
+					"Employee", "count(Id) as length, MAX(Priviledges) as xPriviledges", 
 					"Id = <Id> AND SessionID = <SessionId> AND (SessionExpire > NOW() OR Priviledges = 9223372036854775807)" // Never log out GOD
 				);
 				
