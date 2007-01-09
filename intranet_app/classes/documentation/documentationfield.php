@@ -52,27 +52,21 @@
 		 *
 		 * Holds the Fields that belong to a particular Documentation Entity.
 		 *
-		 * @param	String		$strEntity		The name of the Entity for the Field
-		 * @param	String		$strField		The name of the Field where we want Information for
+		 * @param	String		$arrDetails		The details of the Entity
 		 *
 		 * @method
 		 */
 		
-		function __construct ($strEntity, $strField)
+		function __construct ($arrDetails)
 		{
 			parent::__construct ('Field');
 			
-			$selFields = new StatementSelect (
-				"Documentation",
-				"*", 
-				"Entity = <Entity> AND Field = <Field>",
-				null,
-				"1"
-			);
-			
-			$selFields->UseObLib (TRUE);
-			$selFields->Execute(Array("Entity" => $strEntity, "Field" => $strField));
-			$selFields->Fetch ($this);
+			$this->Push (new dataInteger	('Id',			$arrDetails ['Id']));
+			$this->Push (new dataString		('Entity',		$arrDetails ['Entity']));
+			$this->Push (new dataString		('Field',		$arrDetails ['Field']));
+			$this->Push (new dataString		('Label',		$arrDetails ['Label']));
+			$this->Push (new dataString		('Title',		$arrDetails ['Title']));
+			$this->Push (new dataCDATA		('Description',	nl2br ($arrDetails ['Description'])));
 		}
 		
 	}

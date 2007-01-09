@@ -7,17 +7,15 @@
 	
 	<xsl:template name="Content">
 		<h1>Documentation Details</h1>
-		<h2>
-			<xsl:value-of select="/Response/DocumentationDetails/Field/Entity" /> : 
-			<xsl:value-of select="/Response/DocumentationDetails/Field/Field" />
-		</h2>
 		
 		<div class="Seperator"></div>
 		<div class="Pablo-Section">
 			<div class="Pablo-Section-Container">
 				<div class="Pablo-Section-Content">
 					<h2><xsl:value-of select="/Response/DocumentationDetails/Field/Title" /></h2>
-					<pre style="line-height: 100%;"><xsl:value-of select="/Response/DocumentationDetails/Field/Description" /></pre>
+					<p style="line-height: 200%; font-family: monospace;">
+						<xsl:value-of select="/Response/DocumentationDetails/Field/Description" disable-output-escaping="yes" />
+					</p>
 				</div>
 			</div>
 		</div>

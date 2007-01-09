@@ -544,9 +544,9 @@
 			);
 			
 			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrClose);
-//			$updService->Execute ($arrClose, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			$updService->Execute ($arrClose, Array ('Id' => $this->Pull ('Id')->getValue ()));
 			
-			$actAccount->LesseeReceive ($this, $arrDetailsDate);
+			return $actAccount->LesseeReceive ($this, $arrDetailsDate);
 		}
 	}
 	

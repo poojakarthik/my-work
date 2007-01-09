@@ -54,12 +54,12 @@
 			
 			if (isset ($_POST ['Date']))
 			{
-				$srvService->LesseePassthrough (
+				$intNewService = $srvService->LesseePassthrough (
 					$actReceiving, 
 					$_POST ['Date']
 				);
 				
-		//		header ("Location: service_view.php?Id=" . $srvService->Pull ('Id')->getValue ());
+				header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $intNewService);
 				exit;
 			}
 			

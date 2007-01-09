@@ -99,13 +99,13 @@
 			$this->_oblarrFields = $this->Push (new dataArray ('Fields', 'DocumentationField'));
 			
 			// Get each Field for this Entity
-			$selEntities = new StatementSelect ("Documentation", "Entity, Field", "Entity = <Entity>");
-			$selEntities->Execute(Array("Entity" => $strEntity));
+			$selEntities = new StatementSelect ('Documentation', '*', 'Entity = <Entity>');
+			$selEntities->Execute(Array('Entity' => $strEntity));
 			
 			// Put all the related fields for this entity on the Object
 			foreach ($selEntities->FetchAll () AS $arrEntity)
 			{
-				$this->_oblarrFields->Push (new DocumentationField ($arrEntity ['Entity'], $arrEntity ['Field']));
+				$this->_oblarrFields->Push (new DocumentationField ($arrEntity));
 			}
 		}
 		
