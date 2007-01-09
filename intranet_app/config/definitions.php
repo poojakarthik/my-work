@@ -41,11 +41,11 @@ define("USER_NAME"						, "intranet_app");
 // Permission All is 0x7FFFFFFFFFFFFFFF
 
 // Permissions - used for page permission
-define("PERMISSION_PUBLIC"				, 0x1);
-define("PERMISSION_ADMIN"				, 0x2);
-define("PERMISSION_OPERATOR"			, 0x4);
-define("PERMISSION_SALES"				, 0x8);
-define("PERMISSION_ACCOUNTS"			, 0x10);
+define("PERMISSION_PUBLIC"				, 0x1);		// 1
+define("PERMISSION_ADMIN"				, 0x2);		// 2	
+define("PERMISSION_OPERATOR"			, 0x4);		// 4
+define("PERMISSION_SALES"				, 0x8);		// 8
+define("PERMISSION_ACCOUNTS"			, 0x10);	// 16
 
 /*
 define("PERMISSION_"					, 0x20);
@@ -86,7 +86,7 @@ define("USER_PERMISSION_ADMIN"			, 0xFFFF);
 
 // All User Permissions
 define("USER_PERMISSION_ALL"			, 0x7FFFFFFFFFFFFFFF);
-define("USER_PERMISSION_GOD"			, 0x7FFFFFFFFFFFFFFF);
+define("USER_PERMISSION_GOD"			, 0x7FFFFFFFFFFFFFFF); // 9223372036854775807
 
 
 // Modules

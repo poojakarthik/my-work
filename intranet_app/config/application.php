@@ -82,16 +82,6 @@ if ($arrPage['Permission'] == 0)
 	require_once($strObLibDir."dataMultiple/dataSample.class.php");
 	
 	
-	// load up the searching stuff too
-	require_once("classes/search/search.php");
-	require_once("classes/search/searchconstraint.php");
-	require_once("classes/search/searchorder.php");
-	require_once("classes/search/searchresults.php");
-	
-	require_once("classes/accounts/account.php");
-	require_once("classes/contacts/contact.php");
-	
-	
 // load the ObLib XSLT stylesheet module
 require_once($strObLibDir."style.php");
 
@@ -177,6 +167,16 @@ foreach($arrConfig['Modules'] as $intModule=>$strLocation)
 		}
 	}
 }
+
+	// load up the searching stuff too
+	//TODO!!!! - FIX THIS
+	require_once("classes/search/search.php");
+	require_once("classes/search/searchconstraint.php");
+	require_once("classes/search/searchorder.php");
+	require_once("classes/search/searchresults.php");
+	
+	require_once("classes/accounts/account.php");
+	require_once("classes/contacts/contact.php");
 
 
 //----------------------------------------------------------------------------//
