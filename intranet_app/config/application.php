@@ -119,7 +119,7 @@ if (!$athAuthentication->isAuthenticated ())
 }
 
 // Get user permission
-$intUserPermission = $athAuthentication->AuthenticatedEmployee()->Pull('Permission')->GetValue();
+$intUserPermission = $athAuthentication->AuthenticatedEmployee()->Pull('Priviledges')->GetValue();
 
 // Check if the user is allowed to view this page
 if (!HasPermission($intUserPermission, $arrPage['Permission']))
