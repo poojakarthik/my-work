@@ -113,7 +113,7 @@
 					if ($arrAuthentication['Priviledges'] == USER_PERMISSION_GOD)
 					{
 						// God Cookies last for 7 days
-						$intTime = time () + (60 * 60 * 24 * 7);
+						$intTime = 0;
 					}
 					else
 					{
