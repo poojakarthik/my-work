@@ -111,7 +111,7 @@
 					$intUserPermission = $this->_athAuthentication->AuthenticatedEmployee ()->Pull('Priviledges')->GetValue();
 	
 					// Check if the user is allowed to view debug info
-					if (HasPermission($intUserPermission, $arrPage['Permission']))
+					if (HasPermission($intUserPermission, PERMISSION_DEBUG))
 					{
 						$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
 					}
