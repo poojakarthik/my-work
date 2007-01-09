@@ -336,6 +336,9 @@ die();
 	 */
  	function InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles)
  	{
+		// Report
+		$this->_rptNormalisationReport->AddMessage("\tImporting ".TruncateName($arrCDRFile['FileName'], 30)."...");
+		
 		try
 		{
 			// Set the File status to "Importing"
@@ -357,8 +360,8 @@ die();
 			}
 			
 			// Insert every CDR Line into the database
-			$fileCDRFile = fopen($arrCDRFile["Location"], "r");
-			$intSequence = 1;
+			$fileCDRFile	= fopen($arrCDRFile["Location"], "r");
+			$intSequence	= 1;
 			while (!feof($fileCDRFile))
 			{
 				// Add to report <Action> CDR <SeqNo> from <FileName>...");
@@ -403,8 +406,6 @@ die();
 			$arrCDRFile["Status"]		= CDRFILE_NORMALISED;
 			$arrCDRFile["ImportedOn"]	= "NOW()";
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
-			
-			return $intSequence;
 		}
 		catch (ExceptionVixen $exvException)
 		{
@@ -415,12 +416,17 @@ die();
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 			
 			// Report
-			$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_CORRUPT);
+			//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_CORRUPT);
 			
 			$this->_intImportFail++;
-			
-			return $intSequence;
 		}
+		
+		// Report
+		$intPassed = $this->_intImportPass;
+		$intFailed = $intSequence - $intPassed;
+		$this->_rptNormalisationReport->AddMessage("\t$intPassed passed, $intFailed failed.");
+		
+		return $intSequence;
  	}
  
  	//------------------------------------------------------------------------//
