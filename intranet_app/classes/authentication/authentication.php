@@ -85,7 +85,7 @@
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
 					"Employee", "count(*) as length", 
-					"Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW()"
+					"Id = <Id> AND SessionID = <SessionId> AND (SessionExpire > NOW() OR Priviledges = 9223372036854775807)" // Never log out GOD
 				);
 				
 				$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));

@@ -17,7 +17,7 @@
 	$arrPage['Modules']		= MODULE_BASE;
 	
 	// call application
-	require ('config/application.php');
+	//require ('config/application.php');
 	
 	// If the User is logged into the system
 	if ($athAuthentication->isAuthenticated ())
