@@ -25,6 +25,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+ 
 $strFrameworkDir	= "../../framework/";
 $strPDFDir			= $strFrameworkDir."pdf/";
 
@@ -46,9 +47,11 @@ $strPath		= "/home/vixen_bill_output/sample/";
 $strPDFPath		= "/home/vixen_bill_output/sample/pdf/";
 $strFilename	= $strPath."sample".date("Y-m-d").".vbf";
 
-$GLOBALS['FileFormat']	= $arrDefine;
+$GLOBALS['FileFormat']	= $arrPrintDefine;
 
 echo "<pre>";
+
+//print_r($GLOBALS['FileFormat']);
 
 if(!file_exists($strFilename))
 {
@@ -148,11 +151,13 @@ foreach ($arrFileContents as $strLine)
  	// clean the array
 	$arrLine = Array();
 	
+	
+	// Make sure this is a recognised type
 	$strRecordType = substr($strLine, 0, 2);
 	$arrRecordDefine = NULL;
 	foreach ($GLOBALS['FileFormat'] as $arrRecordType)
 	{
-		if ($arrRecordType['RecordType'] == $strRecordType)
+		if ($arrRecordType['RecordType']['Value'] == $strRecordType)
 		{
 			$arrRecordDefine = $arrRecordType;
 			break;
@@ -165,8 +170,10 @@ foreach ($arrFileContents as $strLine)
 		// Unknown Record Type (ie. invalid file)
 		return "Unknown Record Type for line";
 	}
+	
+	
+	// Validate the fields
 	$i = 0;
-	// fixed width record
 	foreach($arrRecordDefine as $strKey=>$strValue)
 	{
 		$arrLine[$strKey] = trim(substr($strLine, $strValue['Start'], $strValue['Length']));

@@ -252,7 +252,7 @@
 //		Debug($arrDefine['InvoiceDetails']);
 //		die;
 		
-		$this->_arrFileData[] = $arrDefine['InvoiceDetails'];
+		$arrFileData[] = $arrDefine['InvoiceDetails'];
 		
 		// MONTHLY COMPARISON BAR GRAPH
 		// build output
@@ -468,6 +468,12 @@
 			// Loop through Fields
 			foreach ($arrRecord as $arrField)
 			{
+				// If this is a non-print field, then skip it
+				if($arrField['Print'] === FALSE)
+				{
+					continue;
+				}
+				
 				$strValue = $arrField['Value'];
 				$t++;
 				
@@ -493,7 +499,7 @@
 						{
 							$strValue = "0";
 						};
-						$strValue = str_pad($strValue, 11, "0", STR_PAD_RIGHT);
+						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_RIGHT);
 						break;
 					case BILL_TYPE_FLOAT:
 						if (!$strValue)
@@ -618,7 +624,7 @@
 			$strInvoiceTable = 'Invoice';
 		}
 		$qryBuildFile	= new Query();
-		$strColumns		= "'10', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, ' '), InvoiceOutput.Data";
+		$strColumns		= "'10', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, '0'), InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun'";
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
