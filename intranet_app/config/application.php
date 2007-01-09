@@ -78,11 +78,12 @@ $athAuthentication = new Authentication ();
 if (HasPermission($arrPage['Permission'], PERMISSION_PUBLIC))
 {
 	// This page does not require authentication
-	// However, we will be restricted to only loading base modules if we are
-	// not authenticated
+	// However, we will be restricted to only loading the documentation module 
+	// if we are not authenticated. ANd we only allow this as it is required to
+	// load a page
 	if (!$athAuthentication->isAuthenticated ())
 	{
-		$arrPage['Modules'] = MODULE_BASE;
+		$arrPage['Modules'] = MODULE_DOCUMENTATION;
 	}
 }
 else
@@ -140,17 +141,6 @@ foreach($arrConfig['Modules'] as $intModule=>$strLocation)
 		}
 	}
 }
-
-	// load up the searching stuff too
-	//TODO!!!! - FIX THIS
-	require_once("classes/search/search.php");
-	require_once("classes/search/searchconstraint.php");
-	require_once("classes/search/searchorder.php");
-	require_once("classes/search/searchresults.php");
-	
-	require_once("classes/accounts/account.php");
-	require_once("classes/contacts/contact.php");
-
 
 //----------------------------------------------------------------------------//
 // STYLE
