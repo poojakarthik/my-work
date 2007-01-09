@@ -95,7 +95,7 @@
 			parent::__construct ('AuthenticatedEmployee');
 			
 			// Check their session is valid ...
-			$selAuthenticated = new StatementSelect ('Employee', '*', 'Id = <Id> AND SessionID = <SessionId> AND (SessionExpire > NOW() OR Priviledges = '.USER_PERMISSION_GOD.')', null, '1');
+			$selAuthenticated = new StatementSelect ('Employee', '*', 'Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW() ', null, '1');
 			$selAuthenticated->useObLib (TRUE);
 			$selAuthenticated->Execute(Array('Id' => $_COOKIE ['Id'], 'SessionId' => $_COOKIE ['SessionId']));
 			

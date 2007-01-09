@@ -85,7 +85,7 @@
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
 					"Employee", "count(Id) as length, MAX(Priviledges) as Priviledges", 
-					"Id = <Id> AND SessionID = <SessionId> AND (SessionExpire > NOW() OR Priviledges = ".USER_PERMISSION_GOD.")" // Never log out GOD
+					"Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW()"
 				);
 				
 				$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
@@ -98,7 +98,14 @@
 					$this->aemAuthenticatedEmployee = $this->Push (new AuthenticatedEmployee);
 					
 					// Revalidate the session so they can have another 20 minutes
-					$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
+					if ($arrAuthentication['Priviledges'] == USER_PERMISSION_GOD)
+					{
+						$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDDATE(NOW(), INTERVAL 7 DAY)"));
+					}
+					else
+					{
+						$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
+					}
 					$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
 					$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE ['Id']));
 					
