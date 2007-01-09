@@ -112,7 +112,7 @@ $athAuthentication = new Authentication ();
 
 
 // Check if the authentication is needed
-if (!HasPermission($arrPage['Permission'], PERMISSION_PUBLIC))
+if (HasPermission($arrPage['Permission'], PERMISSION_PUBLIC))
 {
 	// This page does not require authentication
 	// However, we will be restricted to only loading base modules if we are
