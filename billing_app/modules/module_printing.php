@@ -219,7 +219,7 @@
 		{
 			// Display the previous bill details
 			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'];						
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= 0 - ($arrInvoiceDetails['AccountBalance'] - $arrBillHistory[0]['AccountBalance']);
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= 0 - ((float)$arrInvoiceDetails['AccountBalance'] - (float)$arrBillHistory[0]['AccountBalance']);
 		}
 		else
 		{
@@ -587,6 +587,12 @@
 		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
 		$selMetaData->Execute();
 		$arrMetaData = $selMetaData->Fetch();
+		
+		if($arrMetaData['Invoices'] == 0)
+		{
+			// Nothing to do
+			return FALSE;
+		}
 
 		// generate filename
 		if($bolSample)
