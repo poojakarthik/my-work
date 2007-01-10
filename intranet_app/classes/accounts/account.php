@@ -348,6 +348,25 @@
 			$insService = new StatementInsert ('Service');
 			return $insService->Execute ($arrService);
 		}
+		
+		//------------------------------------------------------------------------//
+		// DirectDebit
+		//------------------------------------------------------------------------//
+		/**
+		 * DirectDebit()
+		 *
+		 * Adds the Direct Debit information to the Object
+		 *
+		 * Adds the Direct Debit information to the Object
+		 *
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function DirectDebit ()
+		{
+		}
 	}
 	
 ?>

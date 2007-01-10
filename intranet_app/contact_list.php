@@ -35,12 +35,12 @@
 	$oblstrInvoice			= $oblarrUI->Push (new dataString  ('Invoice',		(isset ($_POST ['ui-Invoice'])		? $_POST ['ui-Invoice']			: '')));
 	$oblstrFNN				= $oblarrUI->Push (new dataString  ('FNN',			(isset ($_POST ['ui-FNN'])			? $_POST ['ui-FNN']				: '')));
 	
-	$docDocumentation->Explain ("Account");
-	$docDocumentation->Explain ("Service");
-	$docDocumentation->Explain ("Invoice");
-	$docDocumentation->Explain ("Contact");
-	$docDocumentation->Explain ("Credit Card");
-	$docDocumentation->Explain ("Direct Debit");
+	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Service');
+	$docDocumentation->Explain ('Invoice');
+	$docDocumentation->Explain ('Contact');
+	$docDocumentation->Explain ('Credit Card');
+	$docDocumentation->Explain ('Direct Debit');
 	
 	//------------------------------------------------------
 	// Account Selection
@@ -188,7 +188,7 @@
 		
 		if ($cntContact->Pull ('CustomerContact')->getValue () == 0)
 		{
-			echo "this person is not an account group contact ... ";
+			echo 'this person is not an account group contact ... ';
 			// TODO: FIX
 		}
 		else
@@ -259,8 +259,19 @@
 	
 	if ($actAccount && (isset ($_POST ['ui-Contact-Use']) || $cntContact))
 	{
-		$Style->Output ('xsl/content/contact/list_3.xsl');
-		exit;
+		if (!isset ($_POST ['Confirm']))
+		{
+			$Style->Output ('xsl/content/contact/list_3.xsl');
+			exit;
+		}
+		else
+		{
+			// Record a request to view an Account in the Audit
+			$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordContact ($cntContact);
+			$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
+			
+			header ('Location: contact_view.php?Id=' . $cntContact->Pull ('Id')->getValue ());
+		}
 	}
 	
 	$Style->Output ('xsl/content/contact/list_1.xsl');

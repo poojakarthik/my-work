@@ -21,7 +21,67 @@
 			<input type="hidden" name="ui-Account">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/ui-values/Account/Id" />
+					<xsl:value-of select="/Response/ui-values/Account" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-Account-Sel">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/Account-Sel" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-Contact-First">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/Contact-First" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-Contact-Last">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/Contact-Last" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-Contact-Sel">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/Contact-Sel" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-Contact-Use">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/Contact-Use" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-BusinessName">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/BusinessName" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-ABN">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/ABN" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-ACN">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/ACN" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-Invoice">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/Invoice" />
+				</xsl:attribute>
+			</input>
+			<input type="hidden" name="ui-FNN">
+				<xsl:attribute name="value">
+					<xsl:text></xsl:text>
+					<xsl:value-of select="/Response/ui-values/FNN" />
 				</xsl:attribute>
 			</input>
 			
@@ -238,7 +298,9 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="DOB-year" ValidLevel="5">
+										<select name="DOB-year" id="DOB-year" ValidLevel="5" autocomplete="off" 
+										onchange="ValidateCustomer.ValidateInput (this)"
+										onkeyup="ValidateCustomer.ValidateInput (this)">
 											<xsl:attribute name="ValidValue">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
@@ -250,7 +312,9 @@
 												<xsl:with-param name="step" select="number('1')" />
 											</xsl:call-template>
 										</select>
-										<select name="DOB-month" ValidLevel="5">
+										<select name="DOB-month" id="DOB-month" ValidLevel="5" autocomplete="off" 
+										onchange="ValidateCustomer.ValidateInput (this)"
+										onkeyup="ValidateCustomer.ValidateInput (this)">
 											<xsl:attribute name="ValidValue">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ui-answers/Contact/DOB/month" />
@@ -269,7 +333,9 @@
 											<option value="11">11 - NOV</option>
 											<option value="12">12 - DEC</option>
 										</select>
-										<select name="DOB-day" ValidLevel="5">
+										<select name="DOB-day" id="DOB-day" ValidLevel="5" autocomplete="off" 
+										onchange="ValidateCustomer.ValidateInput (this)"
+										onkeyup="ValidateCustomer.ValidateInput (this)">
 											<xsl:attribute name="ValidValue">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
@@ -436,7 +502,7 @@
 			
 			<div class="Clear"></div>
 			
-			<input type="submit" class="input-submit-disabled" value="Continue &#0187;" id="FormSubmit" disabled="disabled" />
+			<input type="submit" name="Confirm" class="input-submit-disabled" value="Continue &#0187;" id="Confirm" disabled="disabled" />
 		</form>
 	</xsl:template>
 	

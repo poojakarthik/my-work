@@ -20,6 +20,28 @@ function ValidateCustomerClass ()
 				'Valid': (objObject.checked == true)
 			}
 		}
+		else if (objObject.id == 'DOB-year' || objObject.id == 'DOB-month' || objObject.id == 'DOB-day')
+		{
+			var dobyearcorrect = parseInt (document.getElementById ('DOB-year').getAttribute ('ValidValue'));
+			var dobmonthcorrect = parseInt (document.getElementById ('DOB-month').getAttribute ('ValidValue'));
+			var dobdaycorrect = parseInt (document.getElementById ('DOB-day').getAttribute ('ValidValue'));
+			
+			var dobyeartest = parseInt (document.getElementById ('DOB-year').options [document.getElementById ('DOB-year').selectedIndex].value);
+			var dobmonthtest = parseInt (document.getElementById ('DOB-month').options [document.getElementById ('DOB-month').selectedIndex].value);
+			var dobdaytest = parseInt (document.getElementById ('DOB-day').options [document.getElementById ('DOB-day').selectedIndex].value);
+			
+			var Valid = (dobyearcorrect == dobyeartest && dobmonthcorrect == dobmonthtest && dobdaycorrect == dobdaytest);
+			
+			this._objInput[objObject.id] =
+			{
+				'Level': objObject.getAttribute ("ValidLevel"),
+				'Valid': Valid
+			}
+			
+			document.getElementById ('DOB-year').className = ((Valid) ? 'select-valid' : '');
+			document.getElementById ('DOB-month').className = ((Valid) ? 'select-valid' : '');
+			document.getElementById ('DOB-day').className = ((Valid) ? 'select-valid' : '');
+		}
 		else if (objObject.id == 'ABN' || objObject.id == 'ACN')
 		{
 			var testvalue = objObject.value.replace (/[\s]/g, '');
@@ -56,13 +78,13 @@ function ValidateCustomerClass ()
 		
 		if (this.IsValidated ())
 		{
-			document.getElementById ("FormSubmit").disabled = false;
-			document.getElementById ("FormSubmit").className = "input-submit";
+			document.getElementById ("Confirm").disabled = false;
+			document.getElementById ("Confirm").className = "input-submit";
 		}
 		else
 		{
-			document.getElementById ("FormSubmit").disabled = true;
-			document.getElementById ("FormSubmit").className = "input-submit-disabled";
+			document.getElementById ("Confirm").disabled = true;
+			document.getElementById ("Confirm").className = "input-submit-disabled";
 		}
 	}
 	

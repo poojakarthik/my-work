@@ -51,10 +51,6 @@
 	// Get all the Contacts
 	$ctsContacts	= $Style->attachObject ($actAccount->Contacts ());
 	
-	// Record a request to view an Account in the Audit
-	$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
-	
-	
 	// Output the Account View
 	$Style->Output ('xsl/content/account/view.xsl');
 	
