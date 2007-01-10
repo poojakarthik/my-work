@@ -25,7 +25,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
+
 $strFrameworkDir	= "../../framework/";
 $strPDFDir			= $strFrameworkDir."pdf/";
 
@@ -50,8 +50,6 @@ $strFilename	= $strPath."sample".date("Y-m-d").".vbf";
 $GLOBALS['FileFormat']	= $arrPrintDefine;
 
 echo "<pre>";
-
-//print_r($GLOBALS['FileFormat']);
 
 if(!file_exists($strFilename))
 {
