@@ -10,11 +10,9 @@
 			<style type="text/css" media="screen">
 				
 				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; }
-			    #topContainer { padding-top: 16em; background: #FFF; }
+			    #topContainer { padding-top: 10px; background: #FFF; }
 			    #logoImage {width:300px; height:91px; float: left; }
-			    #loginContainer{padding: 0px 0px 18em 10px;}
-			    #loginForm {float:left;height: 150px;width:500px; border-left: 1px solid #CCCCCC; padding:0px 8px 8px 30px;text-align:left;}
-			    h3 { margin: 0; }
+			    #loginContainer{padding: 0px 0px 18em 210px;}
 			    
 			    div.Seperator { height: 5px; }
 			    .Right { float: right; }
