@@ -10,7 +10,7 @@
 	require ('config/application_loader.php');
 	
 	// set page details
-	$arrPage['PopUp']		= FALSE;
+	$arrPage['PopUp']		= TRUE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
 	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE | MODULE_CHARGE_TYPE;
 	
@@ -21,7 +21,7 @@
 	// Get the Charge Type
 	try
 	{
-		$rctChargeType		= $Style->attachObject (new ChargeType ($_GET ['Id']));
+		$rctChargeType = $Style->attachObject (new ChargeType ($_GET ['Id']));
 	}
 	catch (Exception $e)
 	{

@@ -17,13 +17,6 @@
 	// call application
 	require ('config/application.php');
 	
-	// If the User is not logged into the system
-	if (!$athAuthentication->isAuthenticated ())
-	{
-		// Foward to Login Interface
-		header ("Location: login.php"); exit;
-	}
-	
 	// If we're Posting through Charges, we want to delegate
 	if (isset ($_POST ['charge']))
 	{

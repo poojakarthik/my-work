@@ -10,9 +10,8 @@
 	require ('config/application_loader.php');
 	
 	// set page details
-	$arrPage['PopUp']		= FALSE;
+	$arrPage['PopUp']		= TRUE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	//TODO!!!! - finish this
 	$arrPage['Modules']		= MODULE_BASE | MODULE_CDR | MODULE_CARRIER;
 	
 	// call application

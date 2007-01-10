@@ -13,7 +13,7 @@
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
 	//TODO!!!! - finish this
-	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE | MODULE_SERVICE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_PLAN | MODULE_SERVICE;
 	
 	// call application
 	require ('config/application.php');
@@ -65,6 +65,7 @@
 		}
 		catch (Exception $e)
 		{
+			// We're doing nothing in here ... because it's going to show up in the page properly
 		}
 		
 		header ('Location: service_plan.php?Service=' . $_POST ['Service']);

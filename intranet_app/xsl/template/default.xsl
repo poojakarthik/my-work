@@ -156,6 +156,13 @@
 														</a>
 													</td>
 												</tr>
+												<tr>
+													<td>
+														<a href="logout.php">
+															<img src="img/template/logout.png" title="Account Logout" class="MenuIcon" />
+														</a>
+													</td>
+												</tr>
 											</table>
 								</div>
 							</td>

@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_PLAN | MODULE_RECURRING_CHARGE_TYPE | MODULE_RECORD_TYPE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECURRING_CHARGE_TYPE | MODULE_BILLING | MODULE_RECORD_TYPE;
 	
 	// call application
 	require ('config/application.php');

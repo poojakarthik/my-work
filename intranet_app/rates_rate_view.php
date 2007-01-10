@@ -6,7 +6,16 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	require ("config/application_loader.php");
+	// call application loader
+	require ('config/application_loader.php');
+	
+	// set page details
+	$arrPage['PopUp']		= FALSE;
+	$arrPage['Permission']	= PERMISSION_ADMIN;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE | MODULE_RATE_GROUP | MODULE_RECORD_TYPE;
+	
+	// call application
+	require ('config/application.php');
 	
 	// If the User is not logged into the system
 	if (!$athAuthentication->isAuthenticated ())

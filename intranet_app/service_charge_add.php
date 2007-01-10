@@ -7,16 +7,16 @@
 	//----------------------------------------------------------------------------//
 	
 	
+	// call application loader
 	require ('config/application_loader.php');
 	
+	// set page details
+	$arrPage['PopUp']		= FALSE;
+	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_CHARGE | MODULE_CHARGE_TYPE;
 	
-	
-	// If the User is not logged into the system
-	if (!$athAuthentication->isAuthenticated ())
-	{
-		// Foward to Login Interface
-		header ('Location: login.php'); exit;
-	}
+	// call application
+	require ('config/application.php');
 	
 	
 	// Get the Service

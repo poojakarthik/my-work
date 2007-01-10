@@ -6,18 +6,20 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	require ("config/application_loader.php");
+	// call application loader
+	require ('config/application_loader.php');
+	
+	// set page details
+	$arrPage['PopUp']		= FALSE;
+	$arrPage['Permission']	= PERMISSION_ADMIN;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_GROUP | MODULE_SERVICE_TYPE | MODULE_RECORD_TYPE;
+	
+	// call application
+	require ('config/application.php');
 	
 	$docDocumentation->Explain ("Rate Group");
 	
-	// If the User is not logged into the system
-	if (!$athAuthentication->isAuthenticated ())
-	{
-		// Foward to Login Interface
-		header ("Location: login.php"); exit;
-	}
-	
-	$rglRateGroups = new RateGroups ();
+	$rglRateGroups = $Style->attachObject (new RateGroups);
 	
 	if (isset ($_GET ['constraint']))
 	{
@@ -43,8 +45,6 @@
 	}
 	
 	$rglRateGroups->Sample ();
-	
-	$Style->attachObject ($rglRateGroups);
 	
 	$Style->Output ("xsl/content/rates/groups/list.xsl");
 	

@@ -22,11 +22,18 @@
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Invoice');
 	
-	// Get the Invoice
-	$invInvoice		= $Style->attachObject (new Invoice ($_GET ['Id']));
-	
-	// Get the Account the Invoice was Charged to
-	$actAccount		= $Style->attachObject ($invInvoice->Account ());
+	try
+	{
+		// Get the Invoice
+		$invInvoice		= $Style->attachObject (new Invoice ($_GET ['Id']));
+		// Get the Account the Invoice was Charged to
+		$actAccount		= $Style->attachObject ($invInvoice->Account ());
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/invoice/notfound.xsl');
+		exit;
+	}
 	
 	if (!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1)
 	{

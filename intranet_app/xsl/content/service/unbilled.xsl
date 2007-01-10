@@ -8,6 +8,27 @@
 	<xsl:template name="Content">
 		<h1>Unbilled Charges</h1>
 		
+		<h2>Service Information</h2>
+		<div class="Seperator"></div>
+		
+		<div class="Filter-Form">
+			<table border="0" cellpadding="5" cellspacing="0">
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Service')" />
+							<xsl:with-param name="field" select="string('FNN')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:value-of select="/Response/Service/FNN" />
+					</td>
+				</tr>
+			</table>
+		</div>
+		
+		<div class="Seperator"></div>
+		
 		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
