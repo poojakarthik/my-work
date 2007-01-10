@@ -57,6 +57,84 @@
 		{
 			parent::__construct ('Accounts', 'Account', 'Account');
 		}
+		
+		//------------------------------------------------------------------------//
+		// ABN
+		//------------------------------------------------------------------------//
+		/**
+		 * ABN()
+		 *
+		 * Get an Unarchived Account by ABN
+		 *
+		 * Get an Unarchived Account by ABN
+		 *
+		 * @param	ABN		$abnABN			The ABN# that we're wishing to view
+		 * @method
+		 */
+		
+		public function ABN (ABN $abnABN)
+		{
+			// Get the ABN's Value
+			$strABN = $abnABN->getValue ();
+			
+			// Make sure the ABN is not Blank
+			if ($strABN == '')
+			{
+				throw new Exception ('ABN Invalid');
+			}
+			
+			// Get the Id of the Account
+			$selAccount = new StatementSelect ('Account', 'Id', 'ABN = <ABN> AND Archived = 0', null, 1);
+			$selAccount->Execute (Array ('ABN' => $strABN));
+			
+			if ($selAccount->Count () <> 1)
+			{
+				throw new Exception ('ABN not found');
+			}
+			
+			$arrAccount = $selAccount->Fetch ();
+			
+			return new Account ($arrAccount ['Id']);
+		}
+		
+		//------------------------------------------------------------------------//
+		// ACN
+		//------------------------------------------------------------------------//
+		/**
+		 * ACN()
+		 *
+		 * Get an Unarchived Account by ACN
+		 *
+		 * Get an Unarchived Account by ACN
+		 *
+		 * @param	ACN		$acnACN			The ACN# that we're wishing to view
+		 * @method
+		 */
+		
+		public function ACN (ACN $acnACN)
+		{
+			// Get the ACN's Value
+			$strACN = $acnACN->getValue ();
+			
+			// Make sure the ACN is not Blank
+			if ($strACN == '')
+			{
+				throw new Exception ('ACN Invalid');
+			}
+			
+			// Get the Id of the Account
+			$selAccount = new StatementSelect ('Account', 'Id', 'ACN = <ACN> AND Archived = 0', null, 1);
+			$selAccount->Execute (Array ('ACN' => $strACN));
+			
+			if ($selAccount->Count () <> 1)
+			{
+				throw new Exception ('ACN not found');
+			}
+			
+			$arrAccount = $selAccount->Fetch ();
+			
+			return new Account ($arrAccount ['Id']);
+		}
 	}
 	
 ?>

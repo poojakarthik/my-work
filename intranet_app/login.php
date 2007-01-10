@@ -30,7 +30,7 @@
 		// Continue to show the webpage, but with an Error Message
 		$oblarrAuthenticationAttempt = new dataArray ("AuthenticationAttempt");
 		$oblarrAuthenticationAttempt->Push (
-			new dataCDATA ("UserName", $_POST ['UserName'])
+			new dataString ("UserName", $_POST ['UserName'])
 		);
 		
 		$Style->attachObject ($oblarrAuthenticationAttempt);

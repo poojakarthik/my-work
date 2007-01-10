@@ -17,6 +17,8 @@
 	// call application
 	require ('config/application.php');
 	
+	$oblstrError	= $Style->attachObject (new dataString ('Error', ''));
+	
 	$oblarrUI		= $Style->attachObject (new dataArray ('ui-values'));
 	$oblarrAnswers	= $Style->attachObject (new dataArray ('ui-answers'));
 	
@@ -26,8 +28,8 @@
 	$oblintAccountSel		= $oblarrUI->Push (new dataInteger ('Account-Sel',	(isset ($_POST ['ui-Account-Sel'])	? $_POST ['ui-Account-Sel']		: '')));
 	$oblbolContactUse		= $oblarrUI->Push (new dataBoolean ('Contact-Use',	(isset ($_POST ['ui-Contact-Use'])	? $_POST ['ui-Contact-Use']		: '')));
 	$oblintContactSel		= $oblarrUI->Push (new dataString  ('Contact-Sel',	(isset ($_POST ['ui-Contact-Sel'])	? $_POST ['ui-Contact-Sel']		: '')));
-	$oblstrABN				= $oblarrUI->Push (new ABN         ('ABN',			(isset ($_POST ['ui-ABN'])			? $_POST ['ui-ABN']				: '')));
-	$oblstrACN				= $oblarrUI->Push (new ACN         ('ACN',			(isset ($_POST ['ui-ACN'])			? $_POST ['ui-ACN']				: '')));
+	$abnABN					= $oblarrUI->Push (new ABN         ('ABN',			(isset ($_POST ['ui-ABN'])			? $_POST ['ui-ABN']				: '')));
+	$acnACN					= $oblarrUI->Push (new ACN         ('ACN',			(isset ($_POST ['ui-ACN'])			? $_POST ['ui-ACN']				: '')));
 	$oblstrInvoice			= $oblarrUI->Push (new dataString  ('Invoice',		(isset ($_POST ['ui-Invoice'])		? $_POST ['ui-Invoice']			: '')));
 	$oblstrFNN				= $oblarrUI->Push (new dataString  ('FNN',			(isset ($_POST ['ui-FNN'])			? $_POST ['ui-FNN']				: '')));
 	
@@ -50,12 +52,29 @@
 		// If we're matching against an ABN#, we need to attempt to pull an 
 		// unarchived Account with a matching ABN# from the database
 		
+		try
+		{
+			$actAccount = $oblarrAnswers->Push (Accounts::ABN ($abnABN));
+		}
+		catch (Exception $e)
+		{
+			$oblstrError->setValue ('ABN Not Found');
+		}
 	}
 	else if ($_POST ['ui-ACN'])
 	{
 		// If we're matching against an ACN#, we need to attempt to pull an 
 		// unarchived Account with a matching ACN# from the database
 		
+		try
+		{
+			$actAccount = $oblarrAnswers->Push (Accounts::ACN ($acnACN));
+		}
+		catch (Exception $e)
+		{
+			echo $e->getMessage (); exit;
+			$oblstrError->setValue ('ACN Not Found');
+		}
 	}
 	else if ($_POST ['ui-Invoice'])
 	{

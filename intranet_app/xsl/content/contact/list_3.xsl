@@ -21,80 +21,84 @@
 			</input>
 			
 			<div class="Filter-Form-Content Left">
-				<div class="Filter-Form">
-					<div class="Filter-Form-Content">
-						<table border="0" cellpadding="5" cellspacing="0">
-							<!-- Contact Name -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Contact')" />
-										<xsl:with-param name="field" select="string('Name')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<xsl:value-of select="/Response/ui-answers/Contact/Name" />
-								</td>
-							</tr>
-							<!-- Contact Date of Birth -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Contact')" />
-										<xsl:with-param name="field" select="string('DOB')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<select name="DOB-year">
-										<option value=""></option>
-										<xsl:call-template name="Date-Loop">
-											<xsl:with-param name="start" select="number('1900')" />
-											<xsl:with-param name="cease" select="number('1990')" />
-											<xsl:with-param name="step" select="number('1')" />
+				<xsl:if test="/Response/ui-answers/Contact">
+					<div class="Filter-Form">
+						<div class="Filter-Form-Content">
+							<table border="0" cellpadding="5" cellspacing="0">
+								<!-- Contact Name -->
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Contact')" />
+											<xsl:with-param name="field" select="string('Name')" />
 										</xsl:call-template>
-									</select>
-									<select name="DOB-month">
-										<option value=""></option>
-										<option value="01">01 - JAN</option>
-										<option value="02">02 - FEB</option>
-										<option value="03">03 - MAR</option>
-										<option value="04">04 - APR</option>
-										<option value="05">05 - MAY</option>
-										<option value="06">06 - JUN</option>
-										<option value="07">07 - JUL</option>
-										<option value="08">08 - AUG</option>
-										<option value="09">09 - SEP</option>
-										<option value="10">10 - OCT</option>
-										<option value="11">11 - NOV</option>
-										<option value="12">12 - DEC</option>
-									</select>
-									<select name="DOB-day">
-										<option value=""></option>
-										<xsl:call-template name="Date-Loop">
-											<xsl:with-param name="start" select="number('1')" />
-											<xsl:with-param name="cease" select="number('31')" />
-											<xsl:with-param name="step" select="number('1')" />
+									</th>
+									<td>
+										<xsl:value-of select="/Response/ui-answers/Contact/FirstName" />
+										<xsl:text> </xsl:text>
+										<xsl:value-of select="/Response/ui-answers/Contact/LastName" />
+									</td>
+								</tr>
+								<!-- Contact Date of Birth -->
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Contact')" />
+											<xsl:with-param name="field" select="string('DOB')" />
 										</xsl:call-template>
-									</select>
-								</td>
-							</tr>
-							<!-- Contact Email Address -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Contact')" />
-										<xsl:with-param name="field" select="string('Email')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<input type="text" name="Email" id="Email" class="input-string" />
-								</td>
-							</tr>
-						</table>
+									</th>
+									<td>
+										<select name="DOB-year">
+											<option value=""></option>
+											<xsl:call-template name="Date-Loop">
+												<xsl:with-param name="start" select="number('1900')" />
+												<xsl:with-param name="cease" select="number('1990')" />
+												<xsl:with-param name="step" select="number('1')" />
+											</xsl:call-template>
+										</select>
+										<select name="DOB-month">
+											<option value=""></option>
+											<option value="01">01 - JAN</option>
+											<option value="02">02 - FEB</option>
+											<option value="03">03 - MAR</option>
+											<option value="04">04 - APR</option>
+											<option value="05">05 - MAY</option>
+											<option value="06">06 - JUN</option>
+											<option value="07">07 - JUL</option>
+											<option value="08">08 - AUG</option>
+											<option value="09">09 - SEP</option>
+											<option value="10">10 - OCT</option>
+											<option value="11">11 - NOV</option>
+											<option value="12">12 - DEC</option>
+										</select>
+										<select name="DOB-day">
+											<option value=""></option>
+											<xsl:call-template name="Date-Loop">
+												<xsl:with-param name="start" select="number('1')" />
+												<xsl:with-param name="cease" select="number('31')" />
+												<xsl:with-param name="step" select="number('1')" />
+											</xsl:call-template>
+										</select>
+									</td>
+								</tr>
+								<!-- Contact Email Address -->
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Contact')" />
+											<xsl:with-param name="field" select="string('Email')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="Email" id="Email" class="input-string" />
+									</td>
+								</tr>
+							</table>
+						</div>
 					</div>
-				</div>
-			
-				<div class="Seperator"></div>
+				
+					<div class="Seperator"></div>
+				</xsl:if>
 
 				<div class="Filter-Form">
 					<div class="Filter-Form-Content">

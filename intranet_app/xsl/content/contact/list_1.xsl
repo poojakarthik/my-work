@@ -36,17 +36,38 @@
 							</td>
 						</tr>
 						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
 							<th>
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
-									<xsl:with-param name="field" select="string('Name')" />
+									<xsl:with-param name="field" select="string('FirstName')" />
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ui-ContactName" class="input-string">
+								<input type="text" name="ui-Contact-FirstName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/ContactName" />
+										<xsl:value-of select="/Response/ui-values/Contact-FirstName" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('LastName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="ui-Contact-LastName" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Contact-LastName" />
 									</xsl:attribute>
 								</input>
 							</td>
