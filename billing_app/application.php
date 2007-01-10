@@ -132,7 +132,7 @@ die();
 		// This is safe, because there should be no CDRs with CDR_TEMP_INVOICE status anyway
 		if (!$this->Revoke())
 		{
-			return;		// TODO: FIXME - Should we return if this fails??
+			return;		// Return if this fails
 		}
 		
 		// Init Select Statements
@@ -487,7 +487,7 @@ die();
 		if($selCheckTempInvoices->Fetch() !== FALSE)
 		{
 			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => ""));
+			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "Failed invoices found"));
 			return;
 		}
 		else
@@ -495,6 +495,12 @@ die();
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
+		
+		// Get InvoiceRun of the current Temporary Invoice Run
+		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
+		$selGetInvoiceRun->Execute();
+		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
+		$strInvoiceRun = $arrInvoiceRun[0];
 		
 		// copy temporary invoices to invoice table
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
@@ -546,8 +552,7 @@ die();
 		}
 		
 		// update Account LastBilled date
-		//TODO!!!! - Reporting
-		//$this->_rptBillingReport->AddMessage(MSG_UPDATE_????, FALSE);
+		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED);
 		$strQuery  = "UPDATE Account INNER JOIN Invoice on (Account.Id = Invoice.Account)";
 		$strQuery .= " SET Account.LastBilled = Now()";
 		$strQuery .= " WHERE Invoice.Status = ".INVOICE_TEMP;
@@ -565,8 +570,7 @@ die();
 		}
 		
 		// update Charge Status
-		//TODO!!!! - Reporting
-		//$this->_rptBillingReport->AddMessage(MSG_UPDATE_????, FALSE);
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGE, FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = CHARGE_INVOICED;
 		$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE, $arrUpdateData);
@@ -603,14 +607,25 @@ die();
 		// BILLING OUTPUT
 		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
 		{
+			$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_SEND_OUTPUT, Array('<Run>' => $strValue), FALSE);
 			// build billing output
-			$this->_arrBillOutput[$strKey]->BuildOutput();
+			if (!$this->_arrBillOutput[$strKey]->BuildOutput($strInvoiceRun))
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\t- Reason: Building failed");
+				continue;
+			}
 			
-			// send billig output
+			// send billing output
 			$this->_arrBillOutput[$strKey]->SendOutput();
+			// build billing output
+			if (!$this->_arrBillOutput[$strKey]->BuildOutput($strInvoiceRun))
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\t- Reason: Sending failed");
+				continue;
+			}
 			
-			// REPORTING
-			//TODO!!!!
+			// Report success
+			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
 		
