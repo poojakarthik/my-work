@@ -46,7 +46,7 @@ if ($arrPage['Permission'] == 0)
 {
 	// if not we die in the arse
 	//TODO!!!! - build the error page
-	header ("Location: permission_error.php");
+	header ("Location: error_permission.php");
 	Exit;
 }
 
@@ -118,7 +118,7 @@ if (!HasPermission($intUserPermission, $arrPage['Permission']))
 {
 	// User has no permission... KILL THEM
 	//TODO!!!! - build the error page
-	header ("Location: user_permission_error.php");
+	header ("Location: error_user_permission.php");
 	exit;
 }
 */
