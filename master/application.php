@@ -170,8 +170,18 @@ $appMaster->Run();
 			// check if the script needs to be run now
 			if ($intTimeNow > $arrScript['NextRun'])
 			{
-				// run the script
-				$strCommand = $arrScript['Config']['Command'];
+				// set run script command
+				if ($arrScript['Config']['Directory'])
+				{
+					// change directory first
+					$strCommand  = "cd {$arrScript['Config']['Directory']};";
+					$strCommand .= $arrScript['Config']['Command'];
+				}
+				else
+				{
+					// run it right where we are
+					$strCommand = $arrScript['Config']['Command'];
+				}
 				if ($strCommand)
 				{
 					// write state to database
@@ -179,6 +189,7 @@ $appMaster->Run();
 					$this->_arrState['CurrentRunTime'] = $intTimeNow;
 					$this->_WriteState(STATE_SCRIPT_RUN);
 				
+					// actually run the thing
 					$this->_arrState['LastReturn'] = shell_exec($strCommand);
 					$this->_arrState['LastScript'] = $strScriptName;
 					$this->_arrState['LastRunTime'] = $intTimeNow;

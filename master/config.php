@@ -73,6 +73,10 @@ $arrScript 							= Array();
 	//		String	Command to run the script (include full path to script).
 	$arrScript['Command']			=	'\home\vixen\scripts\example_script.php';
 	
+	// Directory
+	//		String	optional Directory to run the script in.
+	$arrScript['Directory']			=	'\home\vixen\scripts\';
+	
 $arrConfig['Script']['ScriptName'] 	= $arrScript;
 
 
