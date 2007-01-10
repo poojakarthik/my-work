@@ -56,7 +56,7 @@ define("MSG_LINE_FAILED"				, "\n\t\t- <Reason>");
 define("MSG_BUILD_REPORT"				, "\n\tGenerated <Total> Invoices in <Time> seconds.  <Pass> passed, <Fail> failed.\n\n");
 define("MSG_BILLING_FOOTER"				, "\nBilling completed in <Time> seconds.");
 define("MSG_COMMIT_TEMP_INVOICES"		, "Committing Temporary Invoices...\t");
-define("MSG_UPDATE_CDRS"				, "Linking CDRs to Invoices...\t\t");
+define("MSG_UPDATE_CDRS"				, "Updating CDR Status...\t\t");
 define("MSG_REVERT_CDRS"				, "Reverting CDR status...\t\t\t\t\t");
 define("MSG_CHECK_TEMP_INVOICES"		, "Checking for failed invoices...\t\t");
 define("MSG_UPDATE_TEMP_INVOICE_STATUS"	, "Updating status on temporary invoices...");

@@ -145,10 +145,14 @@ die();
 															  NULL,
 															  "2",
 															  "Nature");
+		// generate an InvoiceRun Id
+		$strInvoiceRun = uniqid();
+		$this->_strInvoiceRun = $strInvoiceRun;
 		
 		// Init Update Statements
 		$arrCDRCols = Array();
 		$arrCDRCols['Status']			= CDR_TEMP_INVOICE;
+		$arrCDRCols['InvoiceRun']		= $strInvoiceRun;
 		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
 		
 		// Init Insert Statements
@@ -181,10 +185,6 @@ die();
 
 		// Report Title
 		$this->_rptBillingReport->AddMessage("\n".MSG_BILLING_TITLE."\n");
-		
-		// generate an InvoiceRun Id
-		$strInvoiceRun = uniqid();
-		$this->_strInvoiceRun = $strInvoiceRun;
 		
 		// prepare (clean) billing files
 		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
@@ -528,13 +528,12 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		// apply invoice no. to all CDRs for this invoice
+		// change status of temp invoice CDRs
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS, FALSE);
-		$strQuery  = "UPDATE CDR INNER JOIN Invoice using (Account)";
-		$strQuery .= " SET CDR.Invoice = Invoice.Id, CDR.Status = ".CDR_INVOICED;
-		$strQuery .= " WHERE CDR.Status = ".CDR_TEMP_INVOICE." AND Invoice.Status = ".INVOICE_TEMP;
-		$qryCDRInvoice = new Query();
-		if(!$qryCDRInvoice->Execute($strQuery))
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = CDR_INVOICED;
+		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, $arrUpdateData);
+		if($updCDRStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
