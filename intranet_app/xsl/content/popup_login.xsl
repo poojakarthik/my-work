@@ -10,9 +10,9 @@
 			<style type="text/css" media="screen">
 				
 				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; }
-			    #topContainer { padding-top: 10px; background: #FFF; }
+			    #topContainer { padding-top: 5em; background: #FFF; }
 			    #logoImage {width:300px; height:91px; float: left; }
-			    #loginContainer{padding: 0px 0px 18em 210px;}
+			    #loginContainer{padding: 0px 0px 18em 110px;}
 			    
 			    div.Seperator { height: 5px; }
 			    .Right { float: right; }
