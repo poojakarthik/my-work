@@ -6,16 +6,28 @@
 	<xsl:template name="Content">
 		<h1>Contact Search</h1>
 		
-		<h2>Stage 1a: Verify Account</h2>
+		<h2>Stage 1a: Select Account</h2>
 		<div class="Seperator"></div>
 		
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<form method="post" action="contact_list.php">
-					<input type="hidden" name="ui-BusinessName">
+					<input type="hidden" name="ui-Contact-First">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>
-							<xsl:value-of select="/Response/ui-values/BusinessName" />
+							<xsl:value-of select="/Response/ui-values/Contact-First" />
+						</xsl:attribute>
+					</input>
+					<input type="hidden" name="ui-Contact-Last">
+						<xsl:attribute name="value">
+							<xsl:text></xsl:text>
+							<xsl:value-of select="/Response/ui-values/Contact-Last" />
+						</xsl:attribute>
+					</input>
+					<input type="hidden" name="ui-Contact-Sel">
+						<xsl:attribute name="value">
+							<xsl:text></xsl:text>
+							<xsl:value-of select="/Response/ui-values/Contact-Sel" />
 						</xsl:attribute>
 					</input>
 					
@@ -25,11 +37,20 @@
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Account')" />
-											<xsl:with-param name="field" select="string('BusinessName')" />
+											<xsl:with-param name="entity" select="string('Contact')" />
+											<xsl:with-param name="field" select="string('FirstName')" />
 										</xsl:call-template>
 									</th>
-									<td><xsl:value-of select="/Response/ui-values/BusinessName" /></td>
+									<td><xsl:value-of select="/Response/ui-values/Contact-First" /></td>
+								</tr>
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Contact')" />
+											<xsl:with-param name="field" select="string('LastName')" />
+										</xsl:call-template>
+									</th>
+									<td><xsl:value-of select="/Response/ui-values/Contact-Last" /></td>
 								</tr>
 							</table>
 						</div>

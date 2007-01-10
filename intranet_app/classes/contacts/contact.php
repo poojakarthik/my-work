@@ -111,6 +111,53 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// getAccount
+		//------------------------------------------------------------------------//
+		/**
+		 * getAccount()
+		 *
+		 * Gets an account if they have access to it
+		 *
+		 * Gets an account if they have access to it
+		 *
+		 * @param	Integer			$intAccount			The Id of the Account
+		 * @return	Account			The account we want to retrieve
+		 *
+		 * @method
+		 */
+		
+		public function getAccount ($intAccount)
+		{
+			if ($this->Pull ('CustomerContact')->isTrue ())
+			{
+				// If the person is a Customer Contact, then we want to check if the requested
+				// account is in the database and has the same account group as the contact
+				
+				$selAccount = new StatementSelect ('Account', 'Id', 'AccountGroup = <AccountGroup> AND Id = <Id>', null, 1);
+				$selAccount->Execute (Array ('AccountGroup' => $this->Pull ('AccountGroup')->getValue (), 'Id' => $intAccount));
+				
+				if ($selAccount->Count () <> 1)
+				{
+					throw new Exception ('Account not Found');
+				}
+				
+				return new Account ($intAccount);
+			}
+			else
+			{
+				// If the person is not an account group contact, just match the two
+				// numbers without SQL
+				
+				if ($intAccount != $this->Pull ('Account')->getValue ())
+				{
+					throw new Exception ('Account not Found');
+				}
+				
+				return new Account ($intAccount);
+			}
+		}
+		
+		//------------------------------------------------------------------------//
 		// Update
 		//------------------------------------------------------------------------//
 		/**

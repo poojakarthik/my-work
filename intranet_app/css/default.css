@@ -163,6 +163,13 @@
 		padding:             3px;
 	}
 	
+	input.input-string-valid
+	{
+		border:              solid 1px #89b100;
+		background-color:    #f1f7e1;
+		padding:             3px;
+	}
+	
 	input.input-label
 	{
 		border:              solid 1px #868735;

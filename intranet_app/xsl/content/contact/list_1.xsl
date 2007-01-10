@@ -12,6 +12,22 @@
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
 		
+		<xsl:if test="/Response/Error != ''">
+			<div class="MsgError">
+				<xsl:choose>
+					<xsl:when test="/Response/Error = 'ABN'">
+						The ABN# you entered was not found in the database.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'ACN'">
+						The ACN# you entered was not found in the database.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account'">
+						The Account# you entered was not found in the database.
+					</xsl:when>
+				</xsl:choose>
+			</div>
+		</xsl:if>
+		
 		<form method="post" action="contact_list.php">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -48,10 +64,10 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ui-Contact-FirstName" class="input-string">
+								<input type="text" name="ui-Contact-First" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/Contact-FirstName" />
+										<xsl:value-of select="/Response/ui-values/Contact-First" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -64,10 +80,10 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ui-Contact-LastName" class="input-string">
+								<input type="text" name="ui-Contact-Last" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/Contact-LastName" />
+										<xsl:value-of select="/Response/ui-values/Contact-Last" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -108,6 +124,9 @@
 									</xsl:attribute>
 								</input>
 							</td>
+							<td>
+								<sup><strong><span class="Attention">1</span></strong></sup>
+							</td>
 						</tr>
 						<tr>
 							<th>
@@ -123,6 +142,9 @@
 										<xsl:value-of select="/Response/ui-values/ACN" />
 									</xsl:attribute>
 								</input>
+							</td>
+							<td>
+								<sup><strong><span class="Attention">1</span></strong></sup>
 							</td>
 						</tr>
 						<tr>
@@ -156,15 +178,8 @@
 									</xsl:attribute>
 								</input>
 							</td>
-						</tr>
-						<tr>
-							<th></th>
-							<td width="500">
-								<strong><span class="Attention">Attention</span> :</strong>
-								You can only identify by a Line Number if the Line Number itself
-								is currently unarchived. Otherwise the customer is required to 
-								identify themselves by quoting their Account Number printed on 
-								the top of all their bills.
+							<td>
+								<sup><strong><span class="Attention">1</span></strong></sup>
 							</td>
 						</tr>
 						<tr>
@@ -179,6 +194,16 @@
 							</td>
 						</tr>
 					</table>
+					
+					<div class="Seperator"></div>
+					
+					<div style="width: 500px">
+						<strong><span class="Attention"><sup>1</sup></span> :</strong>
+						You can only identify a Contact or Account by these particular 
+						fields if the information is currently unarchived. Accounts
+						and Services that have been archived can not be identfied
+						using these particular means.
+					</div>
 				</div>
 			</div>
 		</form>
