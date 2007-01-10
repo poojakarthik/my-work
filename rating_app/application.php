@@ -214,9 +214,10 @@ die();
 			$bolReturn = TRUE;
 		
 			// Report
+			/*
 			$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
 			$this->_rptRatingReport->AddMessageVariables(MSG_LINE, $arrAlises, FALSE);
-			
+			*/
 			// set current CDR
 			$this->_arrCurrentCDR = $arrCDR;
 
@@ -231,7 +232,8 @@ die();
 				
 				// add to report
 				$arrAlises['<Reason>'] = "Rate not found";
-				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+				$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
+				$this->_rptRatingReport->AddMessageVariables(MSG_LINE.MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
 				
 				$intFailed++;
 				continue;
@@ -259,7 +261,8 @@ die();
 					
 					// add to report
 					$arrAlises['<Reason>'] = "Base charge calculation failed";
-					$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+					$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
+					$this->_rptRatingReport->AddMessageVariables(MSG_LINE.MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
 					
 					$intFailed++;
 					continue;
@@ -278,7 +281,8 @@ die();
 					
 					// add to report
 					$arrAlises['<Reason>'] = "Unable to cap CDR";
-					$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+					$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
+					$this->_rptRatingReport->AddMessageVariables(MSG_LINE.MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
 					
 					$intFailed++;
 					continue;
@@ -296,8 +300,9 @@ die();
 					$updSaveCDR->Execute($arrCDR);
 					
 					// add to report
+					$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
 					$arrAlises['<Reason>'] = "ProRating failed";
-					$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+					$this->_rptRatingReport->AddMessageVariables(MSG_LINE.MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
 					
 					$intFailed++;
 					continue;
@@ -319,7 +324,8 @@ die();
 				
 				// add to report
 				$arrAlises['<Reason>'] = "Totals updating failed";
-				$this->_rptRatingReport->AddMessageVariables(MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
+				$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
+				$this->_rptRatingReport->AddMessageVariables(MSG_LINE.MSG_FAILED.MSG_FAIL_LINE, $arrAlises, FALSE);
 				
 				$intFailed++;
 				continue;
@@ -328,7 +334,8 @@ die();
 			{
 				// add to report
 				$arrAlises['<Reason>'] = "Totals didn't change";
-				$this->_rptRatingReport->AddMessageVariables(MSG_IGNORE.MSG_FAIL_LINE, $arrAlises, FALSE);
+				$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
+				$this->_rptRatingReport->AddMessageVariables(MSG_LINE.MSG_IGNORE.MSG_FAIL_LINE, $arrAlises, FALSE);
 			}
 			
 			// Check for overlimit accounts
