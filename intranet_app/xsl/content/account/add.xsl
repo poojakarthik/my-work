@@ -477,7 +477,7 @@
 													<th class="JustifiedWidth">
 														<xsl:call-template name="Label">
 															<xsl:with-param name="entity" select="string('Credit Card')" />
-															<xsl:with-param name="field" select="string('ExpirationDate')" />
+															<xsl:with-param name="field" select="string('ExpiryDate')" />
 														</xsl:call-template>
 													</th>
 													<td>
