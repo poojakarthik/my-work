@@ -36,15 +36,10 @@
 			// Try the POST method
 			$srvService		= $Style->attachObject (new Service ($_POST ['Service']));
 		}
-		else
-		{
-			// Die
-			throw new Exception ('Service Not Found');
-		}
 	}
 	catch (Exception $e)
 	{
-		header ('Location: console.php'); exit;
+		$Style->Output ('xsl/content/service/notfound.xsl');
 	}
 	
 	// If we wish to update the Rate Plan ...

@@ -26,7 +26,8 @@
 	}
 	catch (Exception $e)
 	{
-		header ('Location: console.php'); exit;
+		$Style->Output ('xsl/content/service/notfound.xsl');
+		exit;
 	}
 	
 	// Get the Charge

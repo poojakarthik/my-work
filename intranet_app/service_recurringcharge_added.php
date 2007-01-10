@@ -17,14 +17,19 @@
 	// call application
 	require ('config/application.php');
 	
+	// Get the Service we just added the recurring charge to
 	try
 	{
 		$srvService = $Style->attachObject (new Service ($_GET ['Service']));
 	}
 	catch (Exception $e)
 	{
-		header ("Location: console.php"); exit;
+		// If the service is not found, error
+		$Style->Output ('xsl/content/service/notfound.xsl');
+		exit;
 	}
+	
+	// Display the happy message
 	
 	$Style->Output ("xsl/content/service/charges_recurringcharge_added.xsl");
 	

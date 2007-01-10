@@ -17,32 +17,29 @@
 	// call application
 	require ('config/application.php');
 	
-	// Check that there is an Id we're wishing to retrieve
-	if (!isset ($_GET ['Id']))
+	try
 	{
-		// If there aren't any - go away
-		header ("Location: console.php"); exit;
+		$rplRatePlans = new RatePlan ($_GET ['Id']);
 	}
-	
-	$docDocumentation->Explain ("Rate Plan");
-	
-	
-	
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/rates/plans/notfound.xsl');
+		exit;
+	}
 	
 	// Create a Base Object
 	$oblarrDetails	= $Style->attachObject (new dataArray ('RatePlanDetails'));
 	
 	// Add the details for the Rate Plan
-	$rplRatePlans	= $oblarrDetails->Push (new RatePlan ($_GET ['Id']));
+	$rplRatePlans = $oblarrDetails->Push ($rplRatePlans);
 	
 	// Include the Recurring Charge Types that are Associated with this Rate Plan
 	$oblarrRecurringCharges		= $oblarrDetails->Push ($rplRatePlans->RecurringChargeTypes ());
 	
-	
 	// Include the associated Rate Groups for this Rate Plan
 	$oblarrDetails->Push ($rplRatePlans->RateGroups ());
 	
-	
+	$docDocumentation->Explain ("Rate Plan");
 	$Style->Output ("xsl/content/rates/plans/view.xsl");
 	
 ?>

@@ -17,21 +17,21 @@
 	// call application
 	require ('config/application.php');
 	
-	
-	// Check that there is an Id we're wishing to retrieve
-	if (!isset ($_GET ['Id']))
+	try
 	{
-		// If there aren't any - go away
-		header ("Location: console.php"); exit;
+		$rrgRateGroup = new RateGroup ($_GET ['Id']);
 	}
-	
-	
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/rates/groups/notfound.xsl');
+		exit;
+	}
 	
 	// Create a Base Object
 	$oblarrDetails	= $Style->attachObject (new dataArray ('RateGroupDetails'));
 	
 	// Add the details for the Rate Group
-	$rrgRateGroup	= $oblarrDetails->Push (new RateGroup ($_GET ['Id']));
+	$rrgRateGroup	= $oblarrDetails->Push ($rrgRateGroup);
 	
 	
 	

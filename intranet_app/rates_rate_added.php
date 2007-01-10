@@ -17,9 +17,6 @@
 	// call application
 	require ('config/application.php');
 	
-	$docDocumentation->Explain ("Rate Plan");
-	$docDocumentation->Explain ("Service");
-	
 	$Style->Output ("xsl/content/rates/rates/confirm.xsl");
 	
 ?>

@@ -24,12 +24,27 @@
 	$docDocumentation->Explain ('Carrier');
 	$docDocumentation->Explain ('Provisioning');
 	
+	try
+	{
+		// Get the Service
+		$srvService		= $Style->attachObject (new Service ($_GET ['Service']));
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/service/notfound.xsl');
+		exit;
+	}
 	
-	// Get the Service
-	$srvService		= $Style->attachObject (new Service ($_GET ['Service']));
-	
-	// Get the Account
-	$actAccount		= $Style->attachObject ($srvService->getAccount ());
+	try
+	{
+		// Get the Account
+		$actAccount		= $Style->attachObject ($srvService->getAccount ());
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/account/notfound.xsl');
+		exit;
+	}
 	
 	// Get Associated Provisioning Requests
 	$prlProvision	= $Style->attachObject (new ProvisioningRequests ());

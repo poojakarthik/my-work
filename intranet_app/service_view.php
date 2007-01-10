@@ -27,9 +27,17 @@
 	$docDocumentation->Explain ('Carrier');
 	$docDocumentation->Explain ('Provisioning');
 	
+	try
+	{
+		// Get the Service
+		$srvService		= $Style->attachObject (new Service ($_GET ['Id']));
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/service/notfound.xsl');
+		exit;
+	}
 	
-	// Get the Service
-	$srvService		= $Style->attachObject (new Service ($_GET ['Id']));
 	$srvService->UnbilledChargeCostCurrent ();
 	
 	// Get the Service Address Information

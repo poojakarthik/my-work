@@ -17,17 +17,15 @@
 	// call application
 	require ('config/application.php');
 	
-	// Pull documentation information for a Service and an Account
-	$docDocumentation->Explain ('Service');
-	
 	try
 	{
 		// Get the Service
-		$srvService		= $Style->attachObject (new Service ($_GET ['Id']));
+		$srvService = $Style->attachObject (new Service ($_GET ['Id']));
 	}
 	catch (Exception $e)
 	{
-		header ('Location: console.php'); exit;
+		$Style->Output ('xsl/content/service/notfound.xsl');
+		exit;
 	}
 	
 	$cdrUnbilled = $srvService->UnbilledCharges ();
@@ -37,6 +35,9 @@
 			isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 30
 		)
 	);
+	
+	// Pull documentation information for a Service and an Account
+	$docDocumentation->Explain ('Service');
 	
 	// Output the Service Unbilled Charges
 	$Style->Output ('xsl/content/service/unbilled.xsl');

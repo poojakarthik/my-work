@@ -23,8 +23,16 @@
 	
 	
 	
-	// Get the Account
-	$actAccount		= $Style->attachObject (new Account ($_GET ['Id']));	
+	try
+	{
+		// Get the Account
+		$actAccount		= $Style->attachObject (new Account ($_GET ['Id']));
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/account/notfound.xsl');
+		exit;
+	}
 	
 	// Get Associated Services
 	$svsServices	= $Style->attachObject (new Services ());

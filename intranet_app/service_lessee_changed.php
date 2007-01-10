@@ -29,7 +29,7 @@
 	}
 	catch (Exception $e)
 	{
-		$Style->Output ('xsl/content/windowclose.xsl');
+		$Style->Output ('xsl/content/service/notfound.xsl');
 		exit;
 	}
 	
