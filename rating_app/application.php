@@ -344,7 +344,7 @@ die();
 			// implement this some time in the future
 			
 			// Report
-			$this->_rptRatingReport->AddMessage(MSG_OK, FALSE);
+			//$this->_rptRatingReport->AddMessage(MSG_OK, FALSE);
 			
 			// save CDR back to database
 			$arrCDR['Rate'] = $this->_arrCurrentRate['Id'];
