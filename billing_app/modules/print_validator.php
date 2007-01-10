@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2006 VOIPTEL Pty Ltd
+// (c) copyright 2006-7 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
@@ -20,8 +20,8 @@
  * @language	PHP
  * @package		billing
  * @author		Rich 'Waste' Davis
- * @version		7.1
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @version		7.01
+ * @copyright	2006-7 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -66,8 +66,9 @@ $arrFileContents = explode("\n", file_get_contents($strFilename));
 echo "\t\t\t\t[   OK   ]\n\n";
 echo "[ Generating PDF ]\n\n";
 
-$arrInvoices = Array();
-$arrInvoice = Array();
+$arrInvoices		= Array();
+$arrInvoice			= Array();
+$intLastRecordType	= 19;
 
 $i = 0;
 foreach ($arrFileContents as $strLine)
@@ -82,9 +83,14 @@ foreach ($arrFileContents as $strLine)
 	
 	// Add to Invoice Array
 	$arrInvoice[] = $mixResult;
+	$arrExpectedRecordTypes = Array();
 	switch ($mixResult['RecordType'])
 	{
+		//---------------------------- FRONT PAGE ----------------------------//
 		case 10:
+			// Make sure that this record is expected
+			ExpectedRecordType($intLastRecordType, 19, $i);
+			
 			// Invoice Header
 			$arrInvoice	= Array();
 
@@ -116,34 +122,344 @@ foreach ($arrFileContents as $strLine)
 			$arrTableData['Total of this Bill'] = $mixResult['BillTotal'];
 			$arrTableData['Total Owing']		= $mixResult['TotalOwing'];
 			$pdf->ezTable($arrTableData);
+			
+			$pdf->ezText($mixResult['CustomerName']."\n");
+			$pdf->ezText($mixResult['PropertyName']."\n");
+			$pdf->ezText($mixResult['AddressLine1']."\n");
+			$pdf->ezText($mixResult['Suburb']."   ".$mixResult['State']."   ".$mixResult['Postcode']."\n");
+			$pdf->ezText($mixResult['PaymentDueDate']."\n");
+			break;
+		case 11:
+			// Make sure that this record is expected
+			ExpectedRecordType($intLastRecordType, 49, $i);
+			
+			// Payment Information
+			$arrData = Array();
+			$arrData['Biller']				= "BillExpress";
+			$arrData['Biller Id']			= $mixResult['BillExpBillerID'];
+			$arrData['Customer Reference']	= $mixResult['BillExpRef'];
+			$arrTableData[] = $arrData;
+			
+			$arrData = Array();
+			$arrData['Biller']				= "BPay";
+			$arrData['Biller Id']			= $mixResult['BPayBillerCode'];
+			$arrData['Customer Reference']	= $mixResult['BPayCustomerRef'];
+			$arrTableData[] = $arrData;
+			$pdf->ezTable($arrTableData);
+			
+			$pdf->ezText($mixResult['CustomerName']."\n");
+			$pdf->ezText($mixResult['PropertyName']."\n");
+			$pdf->ezText($mixResult['AddressLine1']."\n");
+			$pdf->ezText($mixResult['AddressLine2']."\n");
+			$pdf->ezText($mixResult['PaymentDueDate']."\n");
+			
+			$arrData = Array();
+			$arrData['ACCOUNT NUMBER']	= $mixResult['AccountNo'];
+			$arrData['DATE DUE']		= $mixResult['DateDue'];
+			$arrData['TOTAL OWING']		= $mixResult['TotalOwing'];
+			$arrTableData[] = $arrData;
+			$pdf->ezTable($arrTableData);
+			
+			$pdf->ezText($mixResult['SpecialOffer1']."\n\n");
+			$pdf->ezText($mixResult['SpecialOffer2']."\n");
 			break;
 		case 19:
 			// Invoice Footer
 			$arrInvoices[]	= $arrInvoice;
 			$strFilename	= date("Y-m-d")."_".$arrInvoice[0]['InvoiceNo'].".pdf";
-			$pdfInvoice->ezStream(Array('Content-Disposition' => $strPDFPath.$strFilename));
+			$strFileData	= $pdfInvoice->ezOutput();
+			
+			$ptrFile		= fopen($strFilename, "w");
+			fwrite($ptrFile, $strFileData);
+			fclose($ptrFile);
+			break;
+			
+		//----------------------------- GRAPHING -----------------------------//
+		case 20:
+			// Graph Header
+			
+			// PDF stuff
+			$arrGraphData	= Array();
+			$intGraphType	= $mixResult['GraphType'];
+			$strGraphXTitle	= $mixResult['XTitle'];
+			$strGraphYTitle	= $mixResult['YTitle'];
+			$strGraphZTitle	= $mixResult['ZTitle'];			// Not used yet
+			$strGraphDesc	= $mixResult['Description'];	// Not used yet
+			break;
+		case 21:
+			// Graph Data
+			
+			// Check for GraphType, make sure its in correct place
+			$arrExpectedRecordTypes[] = 21;
+			switch ($intGraphType)
+			{
+				case 1:
+					// Vertical Bar Graph
+					$arrExpectedRecordTypes[] = 20;
+					break;
+				case 2:
+					// Vertical Breakdown Bar Graph
+					$arrExpectedRecordTypes[] = 30;
+					break;
+				case 3:
+					// Horizontal Split Bar Graph
+					$arrExpectedRecordTypes[] = 32;
+					break;
+				case 4:
+					// Line Graph
+				case 5:
+					// Line Graph XYZ
+					$arrExpectedRecordTypes[] = 34;
+					break;
+				default:
+					// Unknown Graph Type
+					echo "- ERROR: Unknown Graph Type (0$intGraphType) on line $i\n";
+					die;
+			}
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecodTypes, $i);
+			
+			// FIXME: This will work for Vertical Bargraphs, but nothing else
+			$arrData[$strGraphXTitle]	= $mixResult['Title'];
+			$arrData[$strGraphYTitle]	= $mixResult['Value'];
+			$arrGraphData[]				= $arrData;
+			break;
+		case 29:
+			// Graph Footer
+			// Data is only for validation
+			break;
+		case 30:
+			// Vertical Breakdown Bargraph Column Header
+			// Not used yet
+			break;
+		case 31:
+			// Vertical Breakdown Bargraph Column Footer
+			// Not used yet
+			break;
+		case 32:
+			// Hortizontal Bargraph Row Header
+			// Not used yet
+			break;
+		case 33:
+			// Hortizontal Bargraph Row Footer
+			// Not used yet
+			break;
+		case 34:
+			// Linegraph Line Header
+			// Not used yet
+			break;
+		case 35:
+			// Linegraph Line Footer
+			// Not used yet
+			break;
+		
+		//-------------------------- CHARGE  TOTALS --------------------------//
+		case 40:
+			// Charge Totals Header
+			
+			$arrChargeTotals = Array();
+			break;
+		case 41:
+			// Charge Total Data
+			ExpectedRecordType($intLastRecordType, 40, $i);
+			
+			$arrData = Array();
+			$arrData['Call Type']	= $mixResult['ChargeName'];
+			$arrData['Subtotal']	= $mixResult['ChargeTotal'];
+			$arrChargeTotals[] = $arrData;
+			break;
+		case 49:
+			// Charge Totals Footer
+			ExpectedRecordType($intLastRecordType, 41, $i);
+			
+			$arrData = Array();
+			$arrData['Call Type']	= "Total of this bill";
+			$arrData['Subtotal']	= $mixResult['BillTotal'];
+			$arrChargeTotals[] = $arrData;
+			$pdf->ezTable($arrChargeTotals);
+			break;
+			
+		//------------------------- SERVICE  SUMMARY -------------------------//
+		case 50:
+			// Service Summary Header
+			// No data in this record
+			ExpectedRecordType($intLastRecordType, 11, $i);
+			$pdf->ezNewPage();
+			break;
+		case 59:
+			// Service Summary Footer
+			// No data in this record
+			ExpectedRecordType($intLastRecordType, 69, $i);
+			break;
+		case 60:
+			// Service Summary Service Header
+			$arrExpectedRecordTypes[] = 50;
+			$arrExpectedRecordTypes[] = 69;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$strCurrentFNN = $mixResult['FNN'];
+			
+			$pdf->ezText("Service Summary for ".$strCurrentFNN."\n");
+			$arrServiceSummary = Array();
+			break;
+		case 61:
+			// Service Summary Data
+			$arrExpectedRecordTypes[] = 60;
+			$arrExpectedRecordTypes[] = 61;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$arrData = Array();
+			$arrData['Service Name']	= $mixResult['CallType'];
+			$arrData['Items']			= $mixResult['CallCount'];
+			$arrData['Charge']			= $mixResult['Charge'];
+			$arrServiceSummary[] = $arrData;
+			break;
+		case 69:
+			// Service Summary Service Footer
+			ExpectedRecordType($intLastRecordType, 61, $i);
+			
+			$arrData = Array();
+			$arrData['Service Name']	= "Total service charges for $strCurrentFNN";
+			$arrData['Items']			= "";
+			$arrData['Charge']			= $mixResult['TotalCharge'];
+			$arrServiceSummary[] = $arrData;
+			$pdf->ezTable($arrServiceSummary);
+			break;
+			
+		//-------------------------- ITEMISED CALLS --------------------------//
+		case 70:
+			// Itemised Call Header
+			// No data in this record
+			ExpectedRecordType($intLastRecordType, 59, $i);
+			$pdf->ezNewPage();
+			break;
+		case 79:
+			// Itemised Call Footer
+			// No data in this record
+			ExpectedRecordType($intLastRecordType, 89, $i);
+			break;
+		case 80:
+			// Itemised Call Service Header
+			$arrExpectedRecordTypes[] = 70;
+			$arrExpectedRecordTypes[] = 89;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$strCurrentFNN = $mixResult['FNN'];			
+			break;
+		case 89:
+			// Itemised Call Service Footer
+			// No data in this record
+			ExpectedRecordType($intLastRecordType, 99, $i);
+			break;
+		case 90:
+			// Itemised Call Type Header
+			$arrExpectedRecordTypes[] = 80;
+			$arrExpectedRecordTypes[] = 99;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$arrItemisedTable = Array();
+			$pdf->ezText($misResult['CallType']." for ".$strCurrentFNN."\n");
+			break;
+		case 91:
+			// Itemised Data Call
+			$arrExpectedRecordTypes[] = 90;
+			$arrExpectedRecordTypes[] = 91;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$arrData = Array();
+			$arrData['Date']			= $mixResult['Date'];
+			$arrData['Time']			= $mixResult['Time'];
+			$arrData['Called Party']	= $mixResult['CalledParty'];
+			$arrData['Description']		= $mixResult['Description'];
+			$arrData['Duration']		= $mixResult['Duration'];
+			$arrData['Charge']			= $mixResult['Charge'];
+			$arrItemisedTable[] = $arrData;
+			break;
+		case 92:
+			// Itemised Data S&E
+			$arrExpectedRecordTypes[] = 90;
+			$arrExpectedRecordTypes[] = 92;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$arrData = Array();
+			$arrData['Description']		= $mixResult['Description'];
+			$arrData['Items']			= $mixResult['Duration'];
+			$arrData['Charge']			= $mixResult['Charge'];
+			$arrItemisedTable[] = $arrData;
+			break;
+		case 93:
+			// Itemised Data KB
+			$arrExpectedRecordTypes[] = 90;
+			$arrExpectedRecordTypes[] = 93;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$arrData = Array();
+			$arrData['Date']				= $mixResult['Date'];
+			$arrData['Time']				= $mixResult['Time'];
+			$arrData['Called Party']		= $mixResult['CalledParty'];
+			$arrData['Description']			= $mixResult['Description'];
+			$arrData['Data Transferred']	= $mixResult['DataTransferred'];
+			$arrData['Charge']				= $mixResult['Charge'];
+			$arrItemisedTable[] = $arrData;
+			break;
+		case 94:
+			// Itemised Data SMS
+			$arrExpectedRecordTypes[] = 90;
+			$arrExpectedRecordTypes[] = 94;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$arrData = Array();
+			$arrData['Date']				= $mixResult['Date'];
+			$arrData['Time']				= $mixResult['Time'];
+			$arrData['Called Party']		= $mixResult['CalledParty'];
+			$arrData['Description']			= $mixResult['Description'];
+			$arrData['Items']				= $mixResult['SMSCount'];
+			$arrData['Charge']				= $mixResult['Charge'];
+			$arrItemisedTable[] = $arrData;
+			break;
+		case 99:
+			// Itemised Call Type Footer
+			$arrExpectedRecordTypes[] = 91;
+			$arrExpectedRecordTypes[] = 92;
+			$arrExpectedRecordTypes[] = 93;
+			$arrExpectedRecordTypes[] = 94;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			
+			$arrData = Array();
+			$arrData['Date']				= "Total Charges for ".$strCurrentFNN;
+			$arrData['Charge']				= $mixResult['TotalCharge'];
+			$arrItemisedTable[] = $arrData;
 			break;
 	}
 	$intLastRecordType = $mixResult['RecordType'];
-/*
-	elseif (!$bolHaveInvoice)
-	{
-		// Unexpected row between invoices
-		echo "- ERROR: Unexpected record between invoices on line $i\n";
-		die;
-	}
-*/
 }
 
 
 
 
-
-
-
-
-
-
+function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
+{
+	if (is_array($mixExpectedTypes))
+	{
+		$mixExpectedTypes[] = $mixExpectedTypes;
+	}
+	
+	$bolMatch = FALSE;
+	foreach($mixExpectedTypes as $intExpectedType)
+	{
+		if($intExpectedType == $intLastRecordType)
+		{
+			$bolMatch = TRUE;
+		}
+	}
+	$strExpectedTypes = implode("|", $mixExpectedTypes);
+	
+	if(!$bolMatch)
+	{
+		$intLine--;
+		echo "- ERROR: Unexpected record on line $intLine (Expected RecordType(s) $strExpectedTypes, found $intLastRecordType)\n";
+		die;
+	}
+}
 
 
  function SplitLine($strLine)

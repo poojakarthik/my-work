@@ -146,18 +146,18 @@
 		$arrPrintDefine['GraphHeader']		['Description']		['Length']	= 100;
 		$arrPrintDefine['GraphHeader']		['Description']		['Type']	= BILL_TYPE_CHAR;
 		
-		$arrPrintDefine['GraphData']			['RecordType']		['Start']	= 0;
-		$arrPrintDefine['GraphData']			['RecordType']		['Length']	= 2;
-		$arrPrintDefine['GraphData']			['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['GraphData']			['RecordType']		['Value']	= "21";
+		$arrPrintDefine['GraphData']		['RecordType']		['Start']	= 0;
+		$arrPrintDefine['GraphData']		['RecordType']		['Length']	= 2;
+		$arrPrintDefine['GraphData']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
+		$arrPrintDefine['GraphData']		['RecordType']		['Value']	= "21";
 		
-		$arrPrintDefine['GraphData']			['Title']			['Start']	= 2;
-		$arrPrintDefine['GraphData']			['Title']			['Length']	= 20;
-		$arrPrintDefine['GraphData']			['Title']			['Type']	= BILL_TYPE_CHAR;
+		$arrPrintDefine['GraphData']		['Title']			['Start']	= 2;
+		$arrPrintDefine['GraphData']		['Title']			['Length']	= 20;
+		$arrPrintDefine['GraphData']		['Title']			['Type']	= BILL_TYPE_CHAR;
 		
-		$arrPrintDefine['GraphData']			['Value']			['Start']	= 22;
-		$arrPrintDefine['GraphData']			['Value']			['Length']	= 10;
-		$arrPrintDefine['GraphData']			['Value']			['Type']	= BILL_TYPE_FLOAT;
+		$arrPrintDefine['GraphData']		['Value']			['Start']	= 22;
+		$arrPrintDefine['GraphData']		['Value']			['Length']	= 10;
+		$arrPrintDefine['GraphData']		['Value']			['Type']	= BILL_TYPE_FLOAT;
 		
 		$arrPrintDefine['GraphFooter']		['RecordType']		['Start']	= 0;
 		$arrPrintDefine['GraphFooter']		['RecordType']		['Length']	= 2;
@@ -380,14 +380,14 @@
 		$arrPrintDefine['ItemisedDataCall']	['CalledParty']		['Start']	= 20;
 		$arrPrintDefine['ItemisedDataCall']	['CalledParty']		['Length']	= 30;
 		$arrPrintDefine['ItemisedDataCall']	['CalledParty']		['Type']	= BILL_TYPE_CHAR;
-		
-		$arrPrintDefine['ItemisedDataCall']	['Duration']		['Start']	= 50;
-		$arrPrintDefine['ItemisedDataCall']	['Duration']		['Length']	= 9;
-		$arrPrintDefine['ItemisedDataCall']	['Duration']		['Type']	= BILL_TYPE_DURATION;
 
-		$arrPrintDefine['ItemisedDataCall']	['Description']		['Start']	= 59;
+		$arrPrintDefine['ItemisedDataCall']	['Description']		['Start']	= 50;
 		$arrPrintDefine['ItemisedDataCall']	['Description']		['Length']	= 100;
 		$arrPrintDefine['ItemisedDataCall']	['Description']		['Type']	= BILL_TYPE_CHAR;
+		
+		$arrPrintDefine['ItemisedDataCall']	['Duration']		['Start']	= 150;
+		$arrPrintDefine['ItemisedDataCall']	['Duration']		['Length']	= 9;
+		$arrPrintDefine['ItemisedDataCall']	['Duration']		['Type']	= BILL_TYPE_DURATION;
 				
 		$arrPrintDefine['ItemisedDataCall']	['Charge']			['Start']	= 159;
 		$arrPrintDefine['ItemisedDataCall']	['Charge']			['Length']	= 11;
@@ -426,14 +426,14 @@
 		$arrPrintDefine['ItemisedDataKB']	['CalledParty']		['Start']	= 20;
 		$arrPrintDefine['ItemisedDataKB']	['CalledParty']		['Length']	= 30;
 		$arrPrintDefine['ItemisedDataKB']	['CalledParty']		['Type']	= BILL_TYPE_CHAR;
-		
-		$arrPrintDefine['ItemisedDataKB']	['DataTransfered']	['Start']	= 50;
-		$arrPrintDefine['ItemisedDataKB']	['DataTransfered']	['Length']	= 10;
-		$arrPrintDefine['ItemisedDataKB']	['DataTransfered']	['Type']	= BILL_TYPE_INTEGER;
 
-		$arrPrintDefine['ItemisedDataKB']	['Description']		['Start']	= 60;
+		$arrPrintDefine['ItemisedDataKB']	['Description']		['Start']	= 50;
 		$arrPrintDefine['ItemisedDataKB']	['Description']		['Length']	= 100;
 		$arrPrintDefine['ItemisedDataKB']	['Description']		['Type']	= BILL_TYPE_CHAR;
+		
+		$arrPrintDefine['ItemisedDataKB']	['DataTransfered']	['Start']	= 150;
+		$arrPrintDefine['ItemisedDataKB']	['DataTransfered']	['Length']	= 10;
+		$arrPrintDefine['ItemisedDataKB']	['DataTransfered']	['Type']	= BILL_TYPE_INTEGER;
 				
 		$arrPrintDefine['ItemisedDataKB']	['Charge']			['Start']	= 160;
 		$arrPrintDefine['ItemisedDataKB']	['Charge']			['Length']	= 11;
@@ -455,14 +455,14 @@
 		$arrPrintDefine['ItemisedDataSMS']	['CalledParty']		['Start']	= 20;
 		$arrPrintDefine['ItemisedDataSMS']	['CalledParty']		['Length']	= 30;
 		$arrPrintDefine['ItemisedDataSMS']	['CalledParty']		['Type']	= BILL_TYPE_CHAR;
-		
-		$arrPrintDefine['ItemisedDataSMS']	['Items']			['Start']	= 50;
-		$arrPrintDefine['ItemisedDataSMS']	['Items']			['Length']	= 10;
-		$arrPrintDefine['ItemisedDataSMS']	['Items']			['Type']	= BILL_TYPE_INTEGER;
 
-		$arrPrintDefine['ItemisedDataSMS']	['Description']		['Start']	= 60;
+		$arrPrintDefine['ItemisedDataSMS']	['Description']		['Start']	= 50;
 		$arrPrintDefine['ItemisedDataSMS']	['Description']		['Length']	= 100;
 		$arrPrintDefine['ItemisedDataSMS']	['Description']		['Type']	= BILL_TYPE_CHAR;
+		
+		$arrPrintDefine['ItemisedDataSMS']	['Items']			['Start']	= 150;
+		$arrPrintDefine['ItemisedDataSMS']	['Items']			['Length']	= 10;
+		$arrPrintDefine['ItemisedDataSMS']	['Items']			['Type']	= BILL_TYPE_INTEGER;
 				
 		$arrPrintDefine['ItemisedDataSMS']	['Charge']			['Start']	= 160;
 		$arrPrintDefine['ItemisedDataSMS']	['Charge']			['Length']	= 11;
