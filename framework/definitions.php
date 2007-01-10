@@ -45,6 +45,7 @@ define("APPLICATION_BILLING"		, 3);
 define("APPLICATION_PROVISIONING"	, 4);
 
 // friendly error msg
+//TODO!!!! - make this a little more friendly
 define("ERROR_MESSAGE"				, "an error occured... sucks to be you");
 
 // CDR TYPES

@@ -5,7 +5,7 @@
 	<xsl:template name="Content">
 		<h1>Administrative Console</h1>
 		
-		Welcome, <xsl:value-of select="/Response/Authentication/AuthenticatedEmployee/UserName" />.
+		Welcome, <xsl:value-of select="/Response/Authentication/AuthenticatedEmployee/FirstName" />.
 		You are currently logged into your Employee Account.
 	</xsl:template>
 </xsl:stylesheet>

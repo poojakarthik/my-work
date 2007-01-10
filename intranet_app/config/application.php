@@ -55,8 +55,7 @@ if ($arrPage['Permission'] == 0)
 //----------------------------------------------------------------------------//
 
 // load oblib library
-	// load oblib from a single file
-	require_once($strObLibDir."oblib.php");
+require_once($strObLibDir."oblib.php");
 
 //----------------------------------------------------------------------------//
 // AUTHENTICATION

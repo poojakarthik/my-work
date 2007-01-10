@@ -245,8 +245,12 @@ die();
 		$arrWhere[status1]	= CDRFILE_WAITING;
 		$arrWhere[status2]	= CDRFILE_REIMPORT;
 		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere);
-		$updUpdateCDRFiles	= new StatementUpdate("FileImport", "Id = <id>");
 		$insInsertCDRLine	= new StatementInsert("CDR");
+		$arrDefine = Array();
+		$arrDefine['Status']		= TRUE;
+		$arrDefine['ImportedOn'] 	= new MySQLFunction("NOW()");
+		$updUpdateCDRFiles			= new StatementUpdate("FileImport", "Id = <id>", $arrDefine);
+		
 		
 		$selSelectCDRFiles->Execute($arrWhere);
 		
@@ -336,6 +340,8 @@ die();
 	 */
  	function InsertCDRFile($arrCDRFile, $insInsertCDRLine, $updUpdateCDRFiles)
  	{
+		unset($arrCDRFile['NormalisedOn']);
+
 		// Report
 		$this->_rptNormalisationReport->AddMessage("\tImporting ".TruncateName($arrCDRFile['FileName'], 30)."...");
 		
@@ -404,7 +410,7 @@ die();
 			
 			// Set the File status to "Normalised"
 			$arrCDRFile["Status"]		= CDRFILE_NORMALISED;
-			$arrCDRFile["ImportedOn"]	= "NOW()";
+			$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 		}
 		catch (ExceptionVixen $exvException)
