@@ -586,4 +586,73 @@ function HasPermission($intUser, $intPermission)
 	return FALSE;
 }
 
+
+/**
+ * ListPDF()
+ * 
+ * Return a list of invoice PDFs
+ * 
+ * Return a list of invoice PDFs for the specified account
+ * 
+ * @param	int		$intAccount			Account to find PDFs for
+ *
+ * @return	mixed						array: Associative array of PDFs
+ * 										FALSE: there was an error
+ * 
+ * @method
+ */
+function ListPDF($intAccount)
+{
+	$arrReturn = Array();
+	
+	// GLOB for year directories
+	$arrYears = glob("/home/vixen_invoices/*", GLOB_ONLYDIR);
+	foreach($arrYears as $strYear)
+	{
+		// GLOB for month directories
+		$arrMonths = glob("/home/vixen_invoices/$strYear/*", GLOB_ONLYDIR);
+		foreach($arrMonths as $strMonth)
+		{
+			// GLOB for account filename
+			$arrInvoices = glob("/home/vixen_invoices/$strYear/$strMonth/".$intAccount."_*.pdf");
+			$arrReturn[$strYear][$strMonth]	= basename($arrInvoices[0]);
+		}
+	}
+	
+	return $arrReturn;
+}
+
+/**
+ * GetPDF()
+ * 
+ * Return the contents of a PDF invoice in a string
+ * 
+ * Return the contents of a PDF invoice in a string for the specified account, year, and month
+ * 
+ * @param	int		$intAccount			Account to find PDFs for
+ * @param	int		$intYear			Year to match
+ * @param	int		$intMonth			Month to match
+ *
+ * @return	mixed						string: contents of the PDF invoice
+ * 										FALSE: there was an error
+ * 
+ * @method
+ */
+function GetPDF($intAccount, $intYear, $intMonth)
+{
+	$arrReturn = Array();
+	
+	// GLOB for account filename
+	$arrInvoices = glob("/home/vixen_invoices/$intYear/$intMonth/".$intAccount."_*.pdf");
+	if (count($arrInvoices) == 0 || $arrInvoices === FALSE)
+	{
+		// Either glob had an error, or the filename doesn't exist
+		return FALSE;
+	}
+	
+	// Read the file contents into a string
+	$strReturn = file_get_contents($arrInvoices[0]);
+	
+	return $strReturn;
+}
 ?>
