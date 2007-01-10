@@ -34,6 +34,34 @@
 								</input>
 							</td>
 						</tr>
+						<tr>
+							<th valign="top">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service')" />
+									<xsl:with-param name="field" select="string('ServiceType')" />
+								</xsl:call-template>
+							</th>
+							<td><input type="hidden" name="constraint[ServiceType][Operator]" value="EQUALS" /></td>
+							<td>
+								<select name="constraint[ServiceType][Value]">
+									<xsl:for-each select="/Response/ServiceTypes/ServiceType">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:if test="/Response/RatePlans/Constraints/Constraint[Name=string('ServiceType')]/Value = ./Id">
+											<xsl:attribute name="selected">
+												<xsl:text>selected</xsl:text>
+											</xsl:attribute>
+											</xsl:if>
+											<xsl:text></xsl:text>
+											<xsl:value-of select="./Name" />
+										</option>
+									</xsl:for-each>
+								</select>
+							</td>
+						</tr>
 					</table>
 					
 					<input type="submit" value="Search" class="input-submit" />

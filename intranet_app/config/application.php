@@ -62,6 +62,7 @@ if ($arrPage['Permission'] == 0)
 // AUTHENTICATION
 //----------------------------------------------------------------------------//
 
+
 // load authentication class
 require ("classes/authentication/authentication.php");
 

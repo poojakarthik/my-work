@@ -130,7 +130,7 @@
 			$selContacts = new StatementSelect (
 				'Contact', 
 				'Id', 
-				'(AccountGroup = <AccountGroup> AND CustomerContact = 1)' .
+				'(AccountGroup = <AccountGroup> AND CustomerContact = 1) ' .
 				'OR (Account = <Account> AND CustomerContact = 0)'
 			);
 			
@@ -147,6 +147,50 @@
 			}
 			
 			return $oblarrContacts;
+		}
+		
+		//------------------------------------------------------------------------//
+		// Contact
+		//------------------------------------------------------------------------//
+		/**
+		 * Contact()
+		 *
+		 * Retrieves a Contact if it has Access to this Account
+		 *
+		 * Retrieves a Contact if it has Access to this Account
+		 *
+		 * @param	Integer		$intContact			The Id of the Contact we are checking
+		 * @return	Contact : NULL
+		 *
+		 * @method
+		 */
+		 
+		public function Contact ($intContact)
+		{
+			$selContact = new StatementSelect (
+				'Contact', 
+				'Id', 
+				'Id = <Id> AND ' .
+				'(' .
+					'(AccountGroup = <AccountGroup> AND CustomerContact = 1) ' .
+					'OR (Account = <Account> AND CustomerContact = 0)' .
+				')'
+			);
+			
+			$selContact->Execute (
+				Array (
+					'Id'			=> $intContact,
+					'AccountGroup'	=> $this->Pull ('AccountGroup')->getValue (),
+					'Account'		=> $this->Pull ('Id')->getValue ()
+				)
+			);
+			
+			if ($selContact->Count () <> 1)
+			{
+				throw new Exception ('Contact Not Found');
+			}
+			
+			return new Contact ($intContact);
 		}
 		
 		//------------------------------------------------------------------------//

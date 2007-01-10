@@ -17,208 +17,149 @@
 	// call application
 	require ('config/application.php');
 	
+	$oblarrUI		= $Style->attachObject (new dataArray ('ui-values'));
+	$oblarrAnswers	= $Style->attachObject (new dataArray ('ui-answers'));
+	
+	$oblstrBusinessName		= $oblarrUI->Push (new dataString  ('BusinessName',	(isset ($_POST ['ui-BusinessName'])	? $_POST ['ui-BusinessName']	: '')));
+	$oblstrContactName		= $oblarrUI->Push (new dataString  ('ContactName',	(isset ($_POST ['ui-ContactName'])	? $_POST ['ui-ContactName']		: '')));
+	$oblstrAccount			= $oblarrUI->Push (new dataString  ('Account',		(isset ($_POST ['ui-Account'])		? $_POST ['ui-Account']			: '')));
+	$oblintAccountSel		= $oblarrUI->Push (new dataInteger ('Account-Sel',	(isset ($_POST ['ui-Account-Sel'])	? $_POST ['ui-Account-Sel']		: '')));
+	$oblbolContactUse		= $oblarrUI->Push (new dataBoolean ('Contact-Use',	(isset ($_POST ['ui-Contact-Use'])	? $_POST ['ui-Contact-Use']		: '')));
+	$oblintContactSel		= $oblarrUI->Push (new dataString  ('Contact-Sel',	(isset ($_POST ['ui-Contact-Sel'])	? $_POST ['ui-Contact-Sel']		: '')));
+	$oblstrABN				= $oblarrUI->Push (new ABN         ('ABN',			(isset ($_POST ['ui-ABN'])			? $_POST ['ui-ABN']				: '')));
+	$oblstrACN				= $oblarrUI->Push (new ACN         ('ACN',			(isset ($_POST ['ui-ACN'])			? $_POST ['ui-ACN']				: '')));
+	$oblstrInvoice			= $oblarrUI->Push (new dataString  ('Invoice',		(isset ($_POST ['ui-Invoice'])		? $_POST ['ui-Invoice']			: '')));
+	$oblstrFNN				= $oblarrUI->Push (new dataString  ('FNN',			(isset ($_POST ['ui-FNN'])			? $_POST ['ui-FNN']				: '')));
+	
 	$docDocumentation->Explain ("Account");
 	$docDocumentation->Explain ("Service");
+	$docDocumentation->Explain ("Invoice");
+	$docDocumentation->Explain ("Contact");
+	$docDocumentation->Explain ("Credit Card");
+	$docDocumentation->Explain ("Direct Debit");
 	
-	// Stage Two: Validate the Account or Service and Choose a Contact
-	if ($_POST ['Account'] || $_POST ['FNN'])
+	if ($_POST ['ui-Account'])
+	{
+		// If we're matching against an Account#, we need to pull the Account
+		// from the Database for further use
+		
+		$actAccount = $oblarrAnswers->Push (new Account ($_POST ['ui-Account']));
+	}
+	else if ($_POST ['ui-ABN'])
+	{
+		// If we're matching against an ABN#, we need to attempt to pull an 
+		// unarchived Account with a matching ABN# from the database
+		
+	}
+	else if ($_POST ['ui-ACN'])
+	{
+		// If we're matching against an ACN#, we need to attempt to pull an 
+		// unarchived Account with a matching ACN# from the database
+		
+	}
+	else if ($_POST ['ui-Invoice'])
+	{
+		// If we're matching against an Invoice#, we need to pull the Invoice
+		// from the Database for further use
+		
+	}
+	else if ($_POST ['ui-FNN'])
+	{
+		// If we're matching against a FNN#, we need to attempt to pull an 
+		// unarchived Service with a matching FNN# from the database
+		
+	}
+	else if ($_POST ['ui-BusinessName'])
+	{
+		// If we're matching against a Business Name, we need to display 
+		// a list of Accounts which possibly match
+		
+	}
+	else if ($_POST ['ui-ContactName'])
+	{
+		// If we're matching against a Contact Name, we need to display 
+		// a list of Contacts which possibly match
+		
+	}
+	
+	//------------------------------------------------------
+	// Dealing with Business Names
+	//------------------------------------------------------
+	
+	if ($_POST ['ui-BusinessName'] && !$_POST ['ui-Account-Sel'])
+	{
+		// If we have a Business Name, but we don't have an Account Number, 
+		// we have to show a screen which will allow the employee to 
+		// select the right account
+		
+		$acsAccounts = $oblarrAnswers->Push (new Accounts ());
+		$acsAccounts->Constrain ('BusinessName', 'LIKE', $oblstrBusinessName->getValue ());
+		$acsAccounts->Order ('BusinessName', TRUE);
+		$acsAccounts->Sample ();
+		
+		$Style->Output ('xsl/content/contact/list_1-account.xsl');
+		exit;
+	}
+	else if ($_POST ['ui-BusinessName'] && $_POST ['ui-Account-Sel'])
 	{
 		try
 		{
-			// The main aim in the following IF ... (ELSE IF ... ) ELSE ... statement 
-			// is to get a Contact that we can use to Authenticate against. If you
-			// gracefully exit out of this block, it can be assumed that the value of
-			// the variable $actAccount is the Account that you wish to edit.
-			
-			// Also - we only want to attach the Account to $Style if it's what we searched by
-			
-			// Try the Account first
-			if ($_POST ['Account'])
-			{
-				$actAccount = new Account ($_POST ['Account']);
-				$Style->attachObject ($actAccount);
-			}
-			// Then try the Service FNN
-			else if ($_POST ['FNN'])
-			{
-				$srvService = Services::UnarchivedFNN ($_POST ['FNN']);
-				$actAccount = $srvService->getAccount ();
-				
-				$Style->attachObject ($srvService);
-			}
-			else
-			{
-				header ('Location: contact_list.php');
-				exit;
-			}
-			
-			$docDocumentation->Explain ("Contact");
-			
-			// BRANCH
-			
-			// If there is a Contact Specified, try Authenticating the follow:
-			
-			if ($_POST ['Contact'])
-			{
-				// We've reached the point where we want to do stage 3: verification
-				
-				// Push the Account
-				// If it's already on there - it won't push it twice.
-				if (!$_POST ['Account'])
-				{
-					$Style->attachObject ($actAccount);
-				}
-				
-				// Explain the Invoice, CreditCard and Direct Debit
-				$docDocumentation->Explain ("Invoice");
-				$docDocumentation->Explain ("Credit Card");
-				$docDocumentation->Explain ("Direct Debit");
-				
-				// Get the Contact and attach it to the Style object
-				// If the Contact comes through invalid, this is handled in the TRY/CATCH
-				$cntContact = new Contact ($_POST ['Contact']);
-				$Style->attachObject ($cntContact);
-				
-				
-				// If we have a verification proceedure (which is identified by the presence of the $_POST ['Fields'] array ...
-				if ($_POST ['Fields'])
-				{
-					// RULES FOR SUCCESSFUL VERIFICATION
-					
-					// 1.	At least 3 Fields must be ticked and specified and Completely Correct
-					//		in order to successfully validate.
-					//
-					//		Except:
-					//		A.	If the Business Name and Trading Name fields are ticked, there must be 4
-					//
-					//
-					// 2.	If the Business Name field is Ticked, the Trading Name Field must also
-					//		be Ticked (and visa versa)
-					
-					
-					// Innocent until proven guilty
-					$bolValidated = TRUE;
-					
-					foreach ($_POST ['Fields'] AS $strEntityName => $strEntityValue)
-					{
-						switch ($strEntityName)
-						{
-							case 'Account-Id':
-								if ($actAccount->Pull ('Id')->getValue () <> $_POST ['Values']['Account-Id'])
-								{
-									$bolValidated = false;
-								}
-								
-								break;
-								
-							case 'Account-BusinessName':
-								if (!isset ($_POST ['Fields']['Account-TradingName']))
-								{
-									$bolValidated = false;
-								}
-								
-								break;
-								
-							case 'Account-TradingName':
-								if (!isset ($_POST ['Fields']['Account-BusinessName']))
-								{
-									$bolValidated = false;
-								}
-								
-								break;
-								
-							case 'Account-Address':
-								break;
-								
-							case 'Account-ABN':
-								$abnABN = new ABN ('ABN', $_POST ['Values']['Account-ABN']);
-								if ($actAccount->Pull ('ABN')->getValue () <> $abnABN->getValue ())
-								{
-									$bolValidated = false;
-								}
-								
-								break;
-								
-							case 'Account-ACN':
-								$acnACN = new ACN ('ACN', $_POST ['Values']['Account-ACN']);
-								if ($actAccount->Pull ('ACN')->getValue () <> $acnACN->getValue ())
-								{
-									$bolValidated = false;
-								}
-								
-								break;
-								
-							case 'Contact-DOB':
-								break;
-								
-							case 'Invoice-Amount':
-								break;
-								
-							case 'CreditCard-CardNumber':
-								break;
-								
-							case 'CreditCard-Expiration':
-								break;
-								
-							case 'DirectDebit-BSB':
-								break;
-								
-							default:
-								$bolValidated = false;
-								break;
-						}
-						
-						if (!$bolValidated)
-						{
-							echo $strEntityName;
-							break;
-						}
-					}
-					
-					if ($bolValidated)
-					{
-						// Record a request to view a Contact/Account in the Audit
-						$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordContact ($cntContact);
-						$athAuthentication->AuthenticatedEmployee ()->Save ();
-						
-						// Redirect to the Contact's Page
-						header ("Location: contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());
-						exit;
-					}
-				}
-				
-				$Style->Output ('xsl/content/contact/3_verify.xsl');
-			}
-			else
-			{
-				// If we have reached this Branch, then we
-				// have not selected a Contact from the List
-				// Therefore, we have to pull Basic Information
-				// about each Contact so we can select a Contact
-				// based on their Name
-				
-				// Pull information about Contacts
-				$cnsContacts = $Style->attachObject (new Contacts ());
-				$cnsContacts->Constrain ('Account', '=', $actAccount->Pull ('Id')->getValue ());
-				$cnsContacts->Order ('LastName', FALSE);
-				$cnsContacts->Sample ();
-				
-				$Style->Output ('xsl/content/contact/2_contact.xsl');
-			}
+			$actAccount = $oblarrAnswers->Push (new Account ($oblintAccountSel->getValue ()));
 		}
 		catch (Exception $e)
 		{
-			header ('Location: contact_list.php');
+			// If we try to get an Account that doesn't exist - start the process again
+			// because there's obvious an error occurring or hacking attempt
+			header ('Location: contact_list.php'); exit;
+		}
+	}
+	
+	//------------------------------------------------------
+	// Contact Management
+	//------------------------------------------------------
+	
+	if ($actAccount)
+	{
+		// If we've successfully (somehow) identified an account,
+		// then we need to start checking for a contact
+		
+		if (!isset ($_POST ['ui-Contact-Use']))
+		{
+			// If we have an Account, but we don't have a Contact, 
+			// we have to show a screen which will allow the employee to 
+			// select the person they are talking to on the phone. Alternatively
+			// it is possible to dictate that this particular contact is
+			// not on the account list, but may be able to process through
+			
+			$ctsContacts = $oblarrAnswers->Push ($actAccount->Contacts ());
+			
+			$Style->Output ('xsl/content/contact/list_2.xsl');
 			exit;
 		}
-		
+		else if ($_POST ['ui-Contact-Use'] && $_POST ['ui-Contact-Sel'])
+		{
+			try
+			{
+				// This method specifically makes sure that the contact
+				// has access to the identified account - to prevent against hacking
+				$cntContact = $oblarrAnswers->Push ($actAccount->Contact ($_POST ['ui-Contact-Sel']));
+			}
+			catch (Exception $e)
+			{
+				// If we try to get a Contact that doesn't exist in the account - 
+				// start the process again because there's obvious an error 
+				// occurring or hacking attempt
+				header ('Location: contact_list.php'); exit;
+			}
+		}
+	}
+	
+	if ($actAccount && isset ($_POST ['ui-Contact-Use']))
+	{
+		$Style->Output ('xsl/content/contact/list_3.xsl');
 		exit;
 	}
 	
-	// Stage One: Identify an Account or a Service
-	else
-	{
-		$Style->Output ('xsl/content/contact/1_account.xsl');
-	}
+	$Style->Output ('xsl/content/contact/list_1.xsl');
 	
 ?>

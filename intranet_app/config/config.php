@@ -50,6 +50,8 @@ $arrConfig['Modules'][MODULE_RATE] 						= "rate";
 $arrConfig['Modules'][MODULE_RATE_GROUP] 				= "rategroup";
 $arrConfig['Modules'][MODULE_RATE_PLAN] 				= "rateplan";
 $arrConfig['Modules'][MODULE_SERVICE] 					= "service";
+$arrConfig['Modules'][MODULE_SERVICE_TYPE] 				= "servicetype";
+$arrConfig['Modules'][MODULE_SERVICE_ADDRESS] 			= "serviceaddress";
 $arrConfig['Modules'][MODULE_INVOICE] 					= "invoices";
 $arrConfig['Modules'][MODULE_CARRIER] 					= "carrier";
 $arrConfig['Modules'][MODULE_PROVISIONING] 				= "provisioning";
@@ -57,7 +59,7 @@ $arrConfig['Modules'][MODULE_RECORD_TYPE] 				= "recordtype";
 $arrConfig['Modules'][MODULE_DOCUMENTATION] 			= "documentation";
 
 // Base Modules
-define("MODULE_BASE"			, MODULE_DOCUMENTATION | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_SEARCH);
+define("MODULE_BASE"			, MODULE_SEARCH | MODULE_DOCUMENTATION | MODULE_ACCOUNT | MODULE_CONTACT);
 
 
 ?>

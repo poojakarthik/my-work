@@ -18,16 +18,13 @@
 	require ('config/application.php');
 	
 	$docDocumentation->Explain ("Rate Plan");
+	$docDocumentation->Explain ("Service");
 	
-	// If the User is not logged into the system
-	if (!$athAuthentication->isAuthenticated ())
-	{
-		// Foward to Login Interface
-		header ("Location: login.php"); exit;
-	}
+	// Attach a Service Types Listing for Searching
+	$svtServiceTypes = $Style->attachObject (new ServiceTypes);
 	
-	// Start a new Account Search
-	$rplRatePlans = new RatePlans ();
+	// Start a new Rate Plans Search
+	$rplRatePlans = $Style->attachObject (new RatePlans);
 	
 	if (isset ($_GET ['constraint']))
 	{
@@ -53,8 +50,6 @@
 	}
 	
 	$rplRatePlans->Sample ();
-	
-	$Style->attachObject ($rplRatePlans);
 	
 	$Style->Output ("xsl/content/rates/plans/list.xsl");
 	

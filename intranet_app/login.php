@@ -17,13 +17,6 @@
 	// call application
 	require ('config/application.php');
 	
-	// If the User is logged into the system
-	if ($athAuthentication->isAuthenticated ())
-	{
-		// Foward to Console Interface
-		header ("Location: console.php"); exit;
-	}
-	
 	if (isset ($_POST ['UserName']) && isset ($_POST ['PassWord']))
 	{
 		// If the UserName and the PassWord fields match the informatiom in the database
