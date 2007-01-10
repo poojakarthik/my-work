@@ -138,8 +138,9 @@ class ErrorHandler
 			// output user "friendly" error msg
 			// TODO!!!! - add error Id from db
 			ob_clean();
-			echo (ERROR_MESSAGE);
 			
+			// redirects to an error page
+			header ("Location: error.php");
 		}
 		
 		// If we're writing a report, then append the error

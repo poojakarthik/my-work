@@ -16,9 +16,8 @@
 	$arrPage['Modules']		= MODULE_BASE;
 	
 	// call application
-	require ('config/application.php');	
+	require ('config/application.php');
 	
 	// If the Employee is Authenticated, show the Console
 	$Style->Output ("xsl/content/console.xsl");
-	
 ?>
