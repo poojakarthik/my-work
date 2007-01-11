@@ -383,7 +383,7 @@
 			if($arrData['RecordTypeName'] != $strCurrentRecordType)
 			{
 				// if old type exists
-				if($strCurrentRecordType == "")
+				if($strCurrentRecordType != "")
 				{
 					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $arrData['RecordTypeTotal'];
 					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
