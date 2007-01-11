@@ -287,7 +287,9 @@ foreach ($arrFileContents as $strLine)
 		case 59:
 			// Service Summary Footer
 			// No data in this record
-			ExpectedRecordType($intLastRecordType, 69, $i);
+			$arrExpectedRecordTypes[]	= 69;
+			$arrExpectedRecordTypes[]	= 50;				// FIXME: Remove later
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			break;
 		case 60:
 			// Service Summary Service Header
