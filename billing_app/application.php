@@ -43,7 +43,8 @@ switch ($_GET['action'])
 	default:
 		// By default, run Execute()
 		//$bolResponse = $appBilling->Revoke();
-		$bolResponse = $appBilling->Execute();
+		$bolResponse = $appBilling->Commit();
+		//$bolResponse = $appBilling->Execute();
 		break;
 }
 
