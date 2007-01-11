@@ -254,7 +254,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Billing Information</h2>
+			<h2 class="Invoice">Billing Information</h2>
 			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
@@ -523,7 +523,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Primary Contact Information</h2>
+			<h2 class="Contact">Primary Contact Information</h2>
 			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
