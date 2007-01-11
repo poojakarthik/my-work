@@ -29,7 +29,6 @@
 
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
-die; // DEBUG
 
 // Use GET variables to select which action to take
 switch ($_GET['action'])
@@ -104,7 +103,6 @@ die();
 		
 		// Construct the Bill Output objects
 		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db, $arrConfig);
-		echo $this->_arrBillOutput[BILL_PRINT]->BuildOutput("45a49907d78ac", TRUE);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -139,7 +137,7 @@ die();
 		
 		// Init Select Statements
 		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
-		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0");
+		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL, "100"); // FIXME: Remove Limit
 		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance)", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "Nature, SUM(Amount) AS Amount",
