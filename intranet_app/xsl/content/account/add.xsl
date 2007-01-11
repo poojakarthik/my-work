@@ -6,15 +6,15 @@
 	<xsl:template name="Content">
 		<xsl:choose>
 			<xsl:when test="/Response/AccountGroup">
-				<h1>Add New Customer</h1>
+				<h1>Add Associated Account</h1>
 			</xsl:when>
 			<xsl:otherwise>
-				<h1>Add Associated Account</h1>
+				<h1>Add New Customer</h1>
 			</xsl:otherwise>
 		</xsl:choose>
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
-
+		<!-- TODO!!!! - Error Message if submitted with missing/wrong data -->
 		<form method="POST" action="account_add.php">
 			<xsl:choose>
 				<xsl:when test="/Response/AccountGroup">
@@ -228,6 +228,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
+								<!-- TODO!!!! - retain selected value on re-display when form is submitted with missing/wrong data -->
 								<select name="Account[CustomerGroup]">
 									<xsl:for-each select="/Response/CustomerGroups/CustomerGroup">
 										<option>
@@ -267,6 +268,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
+								<!-- TODO!!!! - retain selected value on re-display when form is submitted with missing/wrong data -->
 								<select name="Account[BillingMethod]">
 									<xsl:for-each select="/Response/BillingMethods/BillingMethod">
 										<option>
@@ -313,6 +315,7 @@
 								<table border="0" cellpadding="5" cellspacing="0">
 									<tr>
 										<!-- TODO!!!! - Default Radio Button -->
+										<!-- make sure we retain selected value on re-display when form is submitted with missing/wrong data -->
 										<td><input type="radio" name="Account[BillingType]" value="3" id="PaymentMethod:AC" /></td>
 										<th>
 											<label for="PaymentMethod:AC">
@@ -427,6 +430,7 @@
 														</xsl:call-template>
 													</th>
 													<td>
+														<!-- TODO!!!! - retain selected value on re-display when form is submitted with missing/wrong data -->
 														<select name="CC[CardType]">
 															<xsl:for-each select="/Response/CreditCardTypes/CreditCardType">
 																<option>
@@ -745,6 +749,7 @@
 								<div class="Seperator"></div>
 							</td>
 						</tr>
+						<!-- TODO!!!! - LOW PRIORITY - auto generate username-->
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -777,6 +782,7 @@
 								</input>
 							</td>
 						</tr>
+						<!-- TODO!!!! - LOW PRIORITY - button to auto generate a password-->
 					</table>
 				</div>
 			</div>
