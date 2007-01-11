@@ -558,6 +558,7 @@ die();
 		}
 		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
 		$strInvoiceRun = $arrInvoiceRun[0];
+		$this->_rptBillingReport->AddMessage(MSG_OK);
 		
 		
 		// copy temporary invoices to invoice table
@@ -610,7 +611,7 @@ die();
 		}
 		
 		// update Account LastBilled date
-		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED, FALSE);
+		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED."\t", FALSE);
 		$strQuery  = "UPDATE Account INNER JOIN Invoice on (Account.Id = Invoice.Account)";
 		$strQuery .= " SET Account.LastBilled = Now()";
 		$strQuery .= " WHERE Invoice.Status = ".INVOICE_TEMP;
@@ -628,7 +629,7 @@ die();
 		}
 		
 		// update Charge Status
-		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGE, FALSE);
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGE."\t", FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = CHARGE_INVOICED;
 		$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE, $arrUpdateData);

@@ -95,7 +95,7 @@ define("MSG_SERVICE_TYPE_BREAKDOWN"		, "\t[ <ServiceType> ]\n" .
 										  "<RecordTypes>\n");
 define("MSG_LAST_BILLED"				, "Updating Account Last Billed date...");
 define("MSG_UPDATE_CHARGE"				, "Update Charge statuses...\t");
-define("MSG_BUILD_SEND_OUTPUT"			, "Building and Sending Invoice Output...\t\t");
+define("MSG_BUILD_SEND_OUTPUT"			, "Building and Sending Invoice Output...\t");
 define("MSG_FAILED_LINE"				, "\t- Reason: <Reason>");
 
 // Data Types for Bill Printing
