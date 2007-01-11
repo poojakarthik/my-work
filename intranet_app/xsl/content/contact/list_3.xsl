@@ -114,7 +114,7 @@
 								<td>
 									<xsl:choose>
 										<xsl:when test="/Response/ui-answers/Account/BusinessName = ''">
-											<span class="Red">No Business Name Defined</span>
+											<span class="Red"> </span>
 										</xsl:when>
 										<xsl:otherwise>
 											<xsl:value-of select="/Response/ui-answers/Account/BusinessName" />
@@ -127,7 +127,7 @@
 								<td>
 									<xsl:choose>
 										<xsl:when test="/Response/ui-answers/Account/TradingName = ''">
-											<span class="Red">No Trading Name Defined</span>
+											<span class="Red"> </span>
 										</xsl:when>
 										<xsl:otherwise>
 											<xsl:value-of select="/Response/ui-answers/Account/TradingName" />
