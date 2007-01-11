@@ -559,6 +559,8 @@ die();
 		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
 		$strInvoiceRun = $arrInvoiceRun[0];
 		$this->_rptBillingReport->AddMessage(MSG_OK);
+		Debug($arrInvoiceRun);
+		Debug($strInvoiceRun);
 		
 		
 		// copy temporary invoices to invoice table
