@@ -541,7 +541,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				}						
 				break;
 			case BILL_TYPE_LONGDATE:
-				$strRegex = "/^[A-Za-z]{3} \d{2}$/";
+				$strRegex = "/^\d{2} [A-Za-z]{3} \d{4}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
 					Debug("'$mixData'");
