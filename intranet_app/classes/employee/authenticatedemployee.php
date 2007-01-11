@@ -232,7 +232,7 @@
 			
 			// Now that we can update the employees profile to include this information
 			$updSession = new StatementUpdate ('Employee', 'Id = <Id>', $arrEmployeeSession);
-			$updSession->Execute ($arrEmployeeSession, Array ('Id' => 1));
+			$updSession->Execute ($arrEmployeeSession, Array ('Id' => $this->Pull ('Id')->getValue ()));
 		}
 	}
 	
