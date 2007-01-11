@@ -300,33 +300,65 @@ die();
  	}
  	
 	//------------------------------------------------------------------------//
-	// CascadeDeleteCDRs
+	// DeleteCDRsByFile
 	//------------------------------------------------------------------------//
 	/**
-	 * CascadeDeleteCDRs()
+	 * DeleteCDRsByFile()
 	 *
 	 * Deletes all data in the DB associated with a particular CDR File
 	 *
 	 * Deletes all data in the DB associated with a particular CDR File
 	 *
-	 * @param	<type>		<name>			<desc>
-	 * @return	<type>
+	 * @param	integer		$intFileImportId		Delete CDRs from this File
+	 * 
+	 * @return	boolean								FALSE: error or unable to delete
 	 *
 	 * @method
 	 */
- 	function CascadeDeleteCDRs()
+ 	function DeleteCDRsByFile($intFileImportId)
  	{
-		// TODO: Not for a long time, though ;)
-		//		 Will be implemented as a future feature
-		
 		// if TEMP_INVOICE or INVOICED return false
+		$selCanDeleteCDRs = new StatementSelect("CDR", "COUNT(Id)", "File = $intFileImportId AND (Status = ".CDR_TEMP_INVOICE." OR Status = ".CDR_INVOICED.")");
+		$selCanDeleteCDRs->Execute();
+		$arrResult = $selCanDeleteCDRs->Fetch();
+		if ($arrResult[0] > 0)
+		{
+			return FALSE;
+		}
 		
 		// remove cdrs
+		$qryDeleteCDRs = new Query();
+		return $qryDeleteCDRs->Execute("DELETE FROM CDR WHERE File = ".$intFileImportId);
+ 	}
+ 	
+ 	
+	//------------------------------------------------------------------------//
+	// CascadeDeleteCDRFile
+	//------------------------------------------------------------------------//
+	/**
+	 * CascadeDeleteCDRFile()
+	 *
+	 * Deletes a CDR File from the DB, and all associated CDRs
+	 *
+	 * Deletes a CDR File from the DB, and all associated CDRs
+	 *
+	 * @param	integer		$intFileImportId		Delete this File
+	 * 
+	 * @return	boolean								FALSE: error or unable to delete
+	 *
+	 * @method
+	 */
+ 	function CascadeDeleteCDRFile($intFileImportId)
+ 	{
+		// Delete all associated CDRs
+		if ($this->DeleteCDRsByFile($intFileImportId) === FALSE)
+		{
+			return FALSE;
+		}
 		
-		// Make another method for this
-		// remove files from fileImport
-
-		
+		// Delete CDR File entry in FileImport
+		$qryDeleteCDRFile = new Query();
+		return $qryDeleteCDRFile->Execute("DELETE FROM FileImport WHERE Id = ".$intFileImportId);
  	}
  	
  	
