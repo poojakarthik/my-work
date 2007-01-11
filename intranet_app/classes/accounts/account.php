@@ -216,6 +216,28 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// RecurringCharges
+		//------------------------------------------------------------------------//
+		/**
+		 * RecurringCharges()
+		 *
+		 * Retrieves a Recurring Charges List
+		 *
+		 * Retrieves a Recurring Charges List
+		 *
+		 * @return	RecurringCharges
+		 *
+		 * @method
+		 */
+		 
+		public function RecurringCharges ()
+		{
+			$rclRecurringCharges = new RecurringCharges ();
+			$rclRecurringCharges->Constrain ('Account', '=', $this->Pull ('Id')->getValue ());
+			return $rclRecurringCharges;
+		}
+		
+		//------------------------------------------------------------------------//
 		// ArchiveStatus
 		//------------------------------------------------------------------------//
 		/**

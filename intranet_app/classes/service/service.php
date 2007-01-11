@@ -227,7 +227,7 @@
 			
 			$arrCost = $selCost->Fetch ();
 			
-			$this->Push (new dataFloat ('UnbilledCharges-Cost-Current', $arrCost ['totalCost']));
+			$this->Push (new dataFloat ('UnbilledCharges-Cost-Current', $arrCost ['totalCost'] != "" ? $arrCost ['totalCost'] : 0));
 		}
 		
 		//------------------------------------------------------------------------//
