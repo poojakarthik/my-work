@@ -75,9 +75,9 @@ $arrScript 							= Array();
 	
 	// Directory
 	//		String	optional Directory to run the script in.
-	$arrScript['Directory']			=	'\home\vixen\scripts\';
+	$arrScript['Directory']			=	'\home\vixen\scripts\\';
 	
-$arrConfig['Script']['ScriptName'] 	= $arrScript;
+	$arrConfig['Script']['ScriptName'] 	= $arrScript;
 
 
 
