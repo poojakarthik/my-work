@@ -4,8 +4,12 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Create Account</h1>
-		
+		<xsl:when test="/Response/AccountGroup">
+			<h1>Add New Customer</h1>
+		</xsl:when>
+		<xsl:otherwise>
+			<h1>Add Associated Account</h1>
+		</xsl:otherwise>
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
 
@@ -40,10 +44,10 @@
 				<xsl:otherwise>
 					<div class="MsgNotice">
 						<strong><span class="Attention">Attention</span> :</strong>
-						You are currently requesting to add an Account for a Customer who we have
-						no pre-existing relationships with. If a pre-existing relationship with the 
-						customer exists, please create a new Account from the Console of an 
-						Account which is currently in the system.
+						This form will add a new Customer.  If you wish to add an 
+						account to an existing Customer you will need to use the
+						'Add Associated Account' link from the customers existing
+						account.						
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -306,18 +310,21 @@
 							<td>
 								<table border="0" cellpadding="5" cellspacing="0">
 									<tr>
+										<!-- TODO!!!! - Default Radio Button -->
 										<td><input type="radio" name="Account[BillingType]" value="3" id="PaymentMethod:AC" /></td>
 										<th>
 											<label for="PaymentMethod:AC">
-												Make charges against an Account
+												Account
 											</label>
 										</th>
 									</tr>
+									<!-- TODO!!!! - LOW PRIORITY - Payment terms.-->
+									<!-- put it in a seperate file, option for text entyr or select box  -->
 									<tr>
 										<td><input type="radio" name="Account[BillingType]" value="1" id="PaymentMethod:DDR" /></td>
 										<th>
 											<label for="PaymentMethod:DDR">
-												Pay this account via Direct Debit
+												Direct Debit - from Bank Account
 											</label>
 										</th>
 									</tr>
@@ -402,7 +409,7 @@
 										<td><input type="radio" name="Account[BillingType]" value="2" id="PaymentMethod:CC" /></td>
 										<th>
 											<label for="PaymentMethod:CC">
-												Pay this account via Credit Card
+												Direct Debit - from Credit Card
 											</label>
 										</th>
 									</tr>
