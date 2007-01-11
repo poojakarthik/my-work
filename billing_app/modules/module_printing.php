@@ -539,7 +539,7 @@
 							$strValue = "-9999999.99";
 						};
 						$strTemp = sprintf("%1.2f", ((float)$strValue));
-						$strValue = str_pad($strTemp, 11, " ", STR_PAD_LEFT);
+						$strValue = str_pad($strTemp, 11, "0", STR_PAD_LEFT);
 						break;
 					default:
 						// Unknown Data Type

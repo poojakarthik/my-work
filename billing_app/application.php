@@ -29,6 +29,7 @@
 
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
+die; // DEBUG
 
 // Use GET variables to select which action to take
 switch ($_GET['action'])
@@ -103,6 +104,7 @@ die();
 		
 		// Construct the Bill Output objects
 		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db, $arrConfig);
+		$this->_arrBillOutput[BILL_PRINT]->BuildOutput("45a49907d78ac", TRUE);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -410,19 +412,61 @@ die();
 		
 		// BILLING VALIDATION
 		// Make sure all of our totals add up
-		//TODO!!!!
+		/*
+			Direct SQL.......
+			
+			SELECT InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM( ServiceTypeTotal.Charge ) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM( ServiceTotal.TotalCharge ) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal
+			FROM ServiceTotal, ServiceTypeTotal, InvoiceTemp
+			WHERE ServiceTypeTotal.Service = ServiceTotal.Service
+			AND ServiceTotal.Account = InvoiceTemp.Account
+			GROUP BY InvoiceTemp.Account
+			HAVING (
+			SUM( ServiceTypeTotal.Charge ) != ServiceTotal.TotalCharge
+			OR SUM( ServiceTotal.TotalCharge ) != InvoiceTemp.Total
+			)
+		 */
+		$strSelect	=	"InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM(ServiceTypeTotal.Charge) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM(ServiceTotal.TotalCharge) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal";
+		$strFrom	=	"ServiceTotal, ServiceTypeTotal, InvoiceTemp";
+		$strWhere	=	"ServiceTypeTotal.Service = ServiceTotal.Service AND " .
+						"ServiceTotal.Account = InvoiceTemp.Account";
+		$strHaving	=	"(SUM(ServiceTypeTotal.Charge) != ServiceTotal.TotalCharge OR " .
+						"SUM(ServiceTotal.TotalCharge) != InvoiceTemp.Total)";
+		$selBillValidate = new StatementSelect($strFrom, $strSelect, $strWhere, NULL, NULL, "InvoiceTemp.Account\nHAVING ".$strHaving);
+		$selBillValidate->Execute();
+		$arrBillValid = $selBillValidate->Fetch();
+		if($arrBillValid === FALSE)
+		{
+			// TODO: Report Error
+		}
+		elseif (count($arrBillValid) == 0)
+		{
+			// TODO: Report Success
+		}
+		else
+		{
+			// TODO: Report Bad Match & how many didn't match
+		}
 		
 		// BILLING OUTPUT
 		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
 		{
+			$this->_rptBillingReport->AddMessage("Generating sample invoices for output type $strKey...\t\t", FALSE);
+			
 			// build billing output sample
-			$this->_arrBillOutput[$strKey]->BuildSample($strInvoiceRun);
+			if ($this->_arrBillOutput[$strKey]->BuildSample($strInvoiceRun) === FALSE)
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- Reason: Building Sample Invoices failed");
+				continue;
+			}
 			
-			// send billig output sample
-			$this->_arrBillOutput[$strKey]->SendSample();
+			// send billing output sample
+			if ($this->_arrBillOutput[$strKey]->SendSample() === FALSE)
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- Reason: Sending Sample Invoices failed");
+				continue;
+			}
 			
-			// REPORTING
-			//TODO!!!!
+			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
 		// Finish off Billing Report

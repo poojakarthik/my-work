@@ -34,6 +34,8 @@
 // user name
 define("USER_NAME"						, "Billing_app");
 
+define("BILL_PRINT"						, 900);
+
 // Reporting Messages
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
 define("MSG_OK"							, "\t\t[   OK   ]");
