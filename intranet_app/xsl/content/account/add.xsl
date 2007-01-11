@@ -4,12 +4,14 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<xsl:when test="/Response/AccountGroup">
-			<h1>Add New Customer</h1>
-		</xsl:when>
-		<xsl:otherwise>
-			<h1>Add Associated Account</h1>
-		</xsl:otherwise>
+		<xsl:choose>
+			<xsl:when test="/Response/AccountGroup">
+				<h1>Add New Customer</h1>
+			</xsl:when>
+			<xsl:otherwise>
+				<h1>Add Associated Account</h1>
+			</xsl:otherwise>
+		</xsl:choose>
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
 
