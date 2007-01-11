@@ -46,6 +46,7 @@ function ValidateCustomerClass ()
 			
 			if (rightvalue == "")
 			{
+				objObject.style.visible = 'hidden';
 				return;
 			}
 			
