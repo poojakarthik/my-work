@@ -268,31 +268,31 @@
 		$arrPrintDefine['PaymentData']		['DateDue']			['Length']	= 11;
 		$arrPrintDefine['PaymentData']		['DateDue']			['Type']	= BILL_TYPE_LONGDATE;
 		
-		$arrPrintDefine['PaymentData']		['TotalOwing']		['Start']	= 96;
+		$arrPrintDefine['PaymentData']		['TotalOwing']		['Start']	= 94;
 		$arrPrintDefine['PaymentData']		['TotalOwing']		['Length']	= 11;
 		$arrPrintDefine['PaymentData']		['TotalOwing']		['Type']	= BILL_TYPE_SHORTCURRENCY;
 		
-		$arrPrintDefine['PaymentData']		['CustomerName']	['Start']	= 107;
+		$arrPrintDefine['PaymentData']		['CustomerName']	['Start']	= 105;
 		$arrPrintDefine['PaymentData']		['CustomerName']	['Length']	= 60;
 		$arrPrintDefine['PaymentData']		['CustomerName']	['Type']	= BILL_TYPE_CHAR;
 		
-		$arrPrintDefine['PaymentData']		['PropertyName']	['Start']	= 167;
+		$arrPrintDefine['PaymentData']		['PropertyName']	['Start']	= 165;
 		$arrPrintDefine['PaymentData']		['PropertyName']	['Length']	= 60;
 		$arrPrintDefine['PaymentData']		['PropertyName']	['Type']	= BILL_TYPE_CHAR;
 		
-		$arrPrintDefine['PaymentData']		['AddressLine1']	['Start']	= 227;
+		$arrPrintDefine['PaymentData']		['AddressLine1']	['Start']	= 225;
 		$arrPrintDefine['PaymentData']		['AddressLine1']	['Length']	= 60;
 		$arrPrintDefine['PaymentData']		['AddressLine1']	['Type']	= BILL_TYPE_CHAR;
 		
-		$arrPrintDefine['PaymentData']		['AddressLine2']	['Start']	= 287;
+		$arrPrintDefine['PaymentData']		['AddressLine2']	['Start']	= 285;
 		$arrPrintDefine['PaymentData']		['AddressLine2']	['Length']	= 60;
 		$arrPrintDefine['PaymentData']		['AddressLine2']	['Type']	= BILL_TYPE_CHAR;
 		
-		$arrPrintDefine['PaymentData']		['SpecialOffer1']	['Start']	= 347;
+		$arrPrintDefine['PaymentData']		['SpecialOffer1']	['Start']	= 345;
 		$arrPrintDefine['PaymentData']		['SpecialOffer1']	['Length']	= 250;
 		$arrPrintDefine['PaymentData']		['SpecialOffer1']	['Type']	= BILL_TYPE_CHAR;
 		
-		$arrPrintDefine['PaymentData']		['SpecialOffer2']	['Start']	= 597;
+		$arrPrintDefine['PaymentData']		['SpecialOffer2']	['Start']	= 595;
 		$arrPrintDefine['PaymentData']		['SpecialOffer2']	['Length']	= 250;
 		$arrPrintDefine['PaymentData']		['SpecialOffer2']	['Type']	= BILL_TYPE_CHAR;
 		
