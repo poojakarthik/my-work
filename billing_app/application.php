@@ -43,8 +43,8 @@ switch ($_GET['action'])
 	default:
 		// By default, run Execute()
 		//$bolResponse = $appBilling->Revoke();
-		$bolResponse = $appBilling->Commit();
-		//$bolResponse = $appBilling->Execute();
+		//$bolResponse = $appBilling->Commit();
+		$bolResponse = $appBilling->Execute();
 		break;
 }
 
@@ -139,7 +139,7 @@ die();
 		
 		// Init Select Statements
 		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
-		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL); // FIXME: Remove Limit
+		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL, "100"); // FIXME: Remove Limit
 		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance)", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "Nature, SUM(Amount) AS Amount",
@@ -541,10 +541,24 @@ die();
 		}
 		
 		// Get InvoiceRun of the current Temporary Invoice Run
+		$this->_rptBillingReport->AddMessage("Retrieving InvoiceRun Id to commit...\t\t", FALSE);
 		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
-		$selGetInvoiceRun->Execute();
+		$mixResult = $selGetInvoiceRun->Execute();
+		if ($mixResult === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "There was a database error"));
+			return;
+		}
+		elseif ($mixResult == 0)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "There was no temporary invoice run"));
+			return;
+		}
 		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
 		$strInvoiceRun = $arrInvoiceRun[0];
+		
 		
 		// copy temporary invoices to invoice table
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
