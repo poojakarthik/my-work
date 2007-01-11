@@ -478,7 +478,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 			break;
 		}
 		
-		Debug("'".$arrRecordType['RecordType']."'");
+		//Debug("'".$arrRecordType['RecordType']."'");
 	}
 	if (!$arrRecordDefine)
 	{
