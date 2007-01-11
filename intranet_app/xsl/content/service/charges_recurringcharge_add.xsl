@@ -138,7 +138,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								Every <xsl:value-of select="/Response/RecurringChargeType/RecurringDate" />
+								Every <xsl:value-of select="/Response/RecurringChargeType/RecurringFreq" />
 								<xsl:text> </xsl:text>
 								<xsl:value-of select="/Response/RecurringChargeType/BillingFreqTypes/BillingFreqType[@selected='selected']/Name" />(s)
 							</td>

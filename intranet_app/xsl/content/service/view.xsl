@@ -227,55 +227,54 @@
 											<xsl:with-param name="field" select="string('UnbilledCharges')" />
 										</xsl:call-template>
 									</th>
+									<td><xsl:value-of select="/Response/Service/UnbilledCharges-Cost-Current" /></td>
+								</tr>
+								<tr>
+									<th></th>
+									<td>
+										<a>
+											<xsl:attribute name="href">
+												<xsl:text>service_unbilled.php?Id=</xsl:text>
+												<xsl:value-of select="/Response/Service/Id" />
+											</xsl:attribute>
+											<xsl:text>View Charges</xsl:text>
+										</a>
+									</td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service')" />
+											<xsl:with-param name="field" select="string('Plan')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:choose>
+											<xsl:when test="/Response/Service/RatePlan">
+												<xsl:value-of select="/Response/Service/RatePlan/Name" />
+											</xsl:when>
+											<xsl:otherwise>
+												<strong><span class="Attention">No Plan Assigned</span></strong>
+											</xsl:otherwise>
+										</xsl:choose>
+									</td>
+								</tr>
+								<tr>
+									<th></th>
+									<td>
+										<a>
+											<xsl:attribute name="href">
+												<xsl:text>service_plan.php?Service=</xsl:text>
+												<xsl:value-of select="/Response/Service/Id" />
+											</xsl:attribute>
+											<xsl:text>Plan Information</xsl:text>
+										</a>
+									</td>
 								</tr>
 							</table>
 						</div>
 					</div>
 					<div class="Clear"></div>
-					
-					<div class="Seperator"></div>
-					
-					<h2>Charges</h2>
-					<div class="Seperator"></div>
-					
-					<div class="Filter-Form">
-						<div class="Filter-Form-Content">
-							<div class="Left">
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>service_unbilled.php?Id=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-									</xsl:attribute>
-									<xsl:text>Current Unbilled Charges</xsl:text>
-								</a> :
-							</div>
-							<div class="Right">
-								<xsl:value-of select="/Response/Service/UnbilledCharges-Cost-Current" />
-							</div>
-							
-							<div class="Clear"></div>
-						</div>
-					</div>
-					
-					<div class="Seperator"></div>
-					
-					<h2>Service Plan</h2>
-					<div class="Seperator"></div>
-					
-					<div class="Filter-Form">
-						<div class="Filter-Form-Content">
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_plan.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>Current Plan Information</xsl:text>
-							</a>
-							
-							<div class="Clear"></div>
-						</div>
-					</div>
-					
 					<div class="Seperator"></div>
 					
 					<xsl:if test="/Response/Service/ServiceType = 102">
