@@ -4,9 +4,6 @@ function ValidateCustomerClass ()
 	// internal input array
 	this._objInput = {};
 	
-	// do we have a contact
-	this.HasContact = false;
-	
 	// validate an input
 	// returns true if input is valid
 	// returns false if input is invalid
@@ -110,47 +107,17 @@ function ValidateCustomerClass ()
 		}
 		
 		// see if we have a high enough score to be valid
-		if (this.HasContact == true)
+			
+		// 2 items from level 1
+		if (arrScore[1] >= 2)
 		{
-			// we have a contact... play nice
-			
-			// 1 item from level 1-2
-			if (arrScore[1] + arrScore[2] > 0)
-			{
-				return true;
-			}
-			
-			// 2 items from level 3-5
-			if (arrScore[3] + arrScore[4] + arrScore[5] > 1)
-			{
-				return true;
-			}
+			return true;
 		}
-		else
+		
+		// 1 item from level 1 and 2 items from level 2
+		if (arrScore[1] >= 1 && arrScore[2] >= 2)
 		{
-			// no contact, be harsh... be very harsh
-			
-			// 1 item from level 1
-			// 1 item from level 2
-			// 1 item from level 3-4
-			if (arrScore[1] > 0 && arrScore[2] > 0 && arrScore[3] + arrScore[4] > 0)
-			{
-				return true;
-			}
-			
-			// 1 item from level 1-2
-			// 2 item from level 3-4
-			if (arrScore[1] + arrScore[1] > 0 && arrScore[3] + arrScore[4] > 1)
-			{
-				return true;
-			}
-			
-			// 1 item from level 3
-			// 3 item from level 3-4 (4 total)
-			if (arrScore[3] > 0 && arrScore[3] + arrScore[4] > 3)
-			{
-				return true;
-			}
+			return true;
 		}
 		
 		// return false by default

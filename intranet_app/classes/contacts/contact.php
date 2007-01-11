@@ -158,6 +158,34 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// PrimaryAccount
+		//------------------------------------------------------------------------//
+		/**
+		 * PrimaryAccount()
+		 *
+		 * Attaches the Primary Account to the Contact
+		 *
+		 * Attaches the Primary Account to the Contact
+		 *
+		 * @return	Account			The primary account - incase you want to do stuff with it
+		 *
+		 * @method
+		 */
+		
+		public function PrimaryAccount ()
+		{
+			if ($this->_actAccount)
+			{
+				return $this->_actAccount;
+			}
+			
+			$arrPrimaryAccount = $this->Push (new dataArray ('PrimaryAccount', 'Account'));
+			$this->_actAccount = $arrPrimaryAccount->Push (new Account ($this->Pull ('Account')->getValue ()));
+			
+			return $this->_actAccount;
+		}
+		
+		//------------------------------------------------------------------------//
 		// Update
 		//------------------------------------------------------------------------//
 		/**

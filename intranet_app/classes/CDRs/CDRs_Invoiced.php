@@ -79,7 +79,7 @@
 			
 			parent::__construct ('CDRs-Invoiced', 'CDR', 'CDR');
 			
-			$this->Constrain ('Invoice', '=', $invInvoice->Pull ('Id')->getValue ());
+			$this->Constrain ('InvoiceRun', '=', $invInvoice->Pull ('InvoiceRun')->getValue ());
 		}
 		
 		//------------------------------------------------------------------------//

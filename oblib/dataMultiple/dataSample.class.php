@@ -75,6 +75,11 @@
 				}
 			}
 		}
+		
+		public function Count ()
+		{
+			return $this->collationLength->getValue ();
+		}
 	}
 	
 ?>

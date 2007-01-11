@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_ACCOUNT | MODULE_CONTACT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_INVOICE;
 	
 	// call application
 	require ('config/application.php');
@@ -28,7 +28,6 @@
 	$oblintAccountSel		= $oblarrUI->Push (new dataInteger ('Account-Sel',	(isset ($_POST ['ui-Account-Sel'])	? $_POST ['ui-Account-Sel']		: '')));
 	$oblstrFirstName		= $oblarrUI->Push (new dataString  ('Contact-First',(isset ($_POST ['ui-Contact-First'])? $_POST ['ui-Contact-First']	: '')));
 	$oblstrLastName			= $oblarrUI->Push (new dataString  ('Contact-Last',	(isset ($_POST ['ui-Contact-Last'])	? $_POST ['ui-Contact-Last']	: '')));
-	$oblbolContactUse		= $oblarrUI->Push (new dataBoolean ('Contact-Use',	(isset ($_POST ['ui-Contact-Use'])	? $_POST ['ui-Contact-Use']		: '')));
 	$oblintContactSel		= $oblarrUI->Push (new dataString  ('Contact-Sel',	(isset ($_POST ['ui-Contact-Sel'])	? $_POST ['ui-Contact-Sel']		: '')));
 	$abnABN					= $oblarrUI->Push (new ABN         ('ABN',			(isset ($_POST ['ui-ABN'])			? $_POST ['ui-ABN']				: '')));
 	$acnACN					= $oblarrUI->Push (new ACN         ('ACN',			(isset ($_POST ['ui-ACN'])			? $_POST ['ui-ACN']				: '')));
@@ -62,30 +61,90 @@
 	}
 	else if ($_POST ['ui-ABN'])
 	{
-		// If we're matching against an ABN#, we need to attempt to pull an 
-		// unarchived Account with a matching ABN# from the database
+		// If we're matching against an ABN#, we need to display 
+		// a list of Accounts which possibly match
 		
-		try
+		if (!$_POST ['ui-Account-Sel'])
 		{
-			$actAccount = $oblarrAnswers->Push (Accounts::ABN ($abnABN));
+			// If we have a Business Name, but we don't have an Account Number, 
+			// we have to show a screen which will allow the employee to 
+			// select the right account
+			
+			$acsAccounts = $oblarrAnswers->Push (new Accounts ());
+			$acsAccounts->Constrain ('ABN', 'LIKE', $abnABN->getValue ());
+			$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
+			$acsAccounts->Order ('BusinessName', TRUE);
+			$oblsamAccounts = $acsAccounts->Sample ();
+			
+			if ($oblsamAccounts->Count () == 1)
+			{
+				foreach ($oblsamAccounts as $objAccount)
+				{
+					$actAccount = $oblarrAnswers->Push ($objAccount);
+				}
+			}
+			else
+			{
+				$Style->Output ('xsl/content/contact/list_1-account.xsl');
+				exit;
+			}
 		}
-		catch (Exception $e)
+		else
 		{
-			$oblstrError->setValue ('ABN');
+			try
+			{
+				$actAccount = $oblarrAnswers->Push (new Account ($oblintAccountSel->getValue ()));
+			}
+			catch (Exception $e)
+			{
+				// If we try to get an Account that doesn't exist - start the process again
+				// because there's obvious an error occurring or hacking attempt
+				header ('Location: contact_list.php'); exit;
+			}
 		}
 	}
 	else if ($_POST ['ui-ACN'])
 	{
-		// If we're matching against an ACN#, we need to attempt to pull an 
-		// unarchived Account with a matching ACN# from the database
+		// If we're matching against an ACN#, we need to display 
+		// a list of Accounts which possibly match
 		
-		try
+		if (!$_POST ['ui-Account-Sel'])
 		{
-			$actAccount = $oblarrAnswers->Push (Accounts::ACN ($acnACN));
+			// If we have a Business Name, but we don't have an Account Number, 
+			// we have to show a screen which will allow the employee to 
+			// select the right account
+			
+			$acsAccounts = $oblarrAnswers->Push (new Accounts ());
+			$acsAccounts->Constrain ('ACN', 'LIKE', $acnACN->getValue ());
+			$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
+			$acsAccounts->Order ('BusinessName', TRUE);
+			$oblsamAccounts = $acsAccounts->Sample ();
+			
+			if ($oblsamAccounts->Count () == 1)
+			{
+				foreach ($oblsamAccounts as $objAccount)
+				{
+					$actAccount = $oblarrAnswers->Push ($objAccount);
+				}
+			}
+			else
+			{
+				$Style->Output ('xsl/content/contact/list_1-account.xsl');
+				exit;
+			}
 		}
-		catch (Exception $e)
+		else
 		{
-			$oblstrError->setValue ('ACN');
+			try
+			{
+				$actAccount = $oblarrAnswers->Push (new Account ($oblintAccountSel->getValue ()));
+			}
+			catch (Exception $e)
+			{
+				// If we try to get an Account that doesn't exist - start the process again
+				// because there's obvious an error occurring or hacking attempt
+				header ('Location: contact_list.php'); exit;
+			}
 		}
 	}
 	else if ($_POST ['ui-Invoice'])
@@ -131,6 +190,7 @@
 			
 			$acsAccounts = $oblarrAnswers->Push (new Accounts ());
 			$acsAccounts->Constrain ('BusinessName', 'LIKE', $oblstrBusinessName->getValue ());
+			$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
 			$acsAccounts->Order ('BusinessName', TRUE);
 			$acsAccounts->Sample ();
 			
@@ -166,7 +226,12 @@
 			$ctsContacts->Constrain ('FirstName', 'LIKE', $oblstrFirstName->getValue ());
 			$ctsContacts->Constrain ('LastName', 'LIKE', $oblstrLastName->getValue ());
 			$ctsContacts->Order ('LastName', TRUE);
-			$ctsContacts->Sample ();
+			$oblsamContacts = $ctsContacts->Sample ();
+			
+			foreach ($oblsamContacts as &$objContact)
+			{
+				$objContact->PrimaryAccount ();
+			}
 			
 			$Style->Output ('xsl/content/contact/list_1-contact.xsl');
 			exit;
@@ -188,8 +253,7 @@
 		
 		if ($cntContact->Pull ('CustomerContact')->getValue () == 0)
 		{
-			echo 'this person is not an account group contact ... ';
-			// TODO: FIX
+			$acsAccounts = $oblarrAnswers->Push ($cntContact->PrimaryAccount ());
 		}
 		else
 		{
@@ -197,11 +261,26 @@
 			{
 				$acsAccounts = $oblarrAnswers->Push (new Accounts ());
 				$acsAccounts->Constrain ('AccountGroup', 'EQUALS', $cntContact->Pull ('AccountGroup')->getValue ());
+				$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
 				$acsAccounts->Order ('BusinessName', TRUE);
-				$acsAccounts->Sample ();
+				$oblsamAccounts = $acsAccounts->Sample ();
 				
-				$Style->Output ('xsl/content/contact/list_2-account.xsl');
-				exit;
+				if ($oblsamAccounts->Count () <> 1)
+				{
+					$Style->Output ('xsl/content/contact/list_2-account.xsl');
+					exit;
+				}
+				else
+				{
+					// This will only ever loop 1 time. We're doing this
+					// to get the Account so we don't have to make the employee
+					// choose an account when there's only 1 anyway.
+					
+					foreach ($oblsamAccounts as $objAccount)
+					{
+						$actAccount = $oblarrAnswers->Push ($objAccount);
+					}
+				}
 			}
 			else
 			{
@@ -226,7 +305,7 @@
 		// If we've successfully (somehow) identified an account,
 		// then we need to start checking for a contact
 		
-		if (!isset ($_POST ['ui-Contact-Use']))
+		if (!isset ($_POST ['ui-Contact-Sel']))
 		{
 			// If we have an Account, but we don't have a Contact, 
 			// we have to show a screen which will allow the employee to 
@@ -239,7 +318,7 @@
 			$Style->Output ('xsl/content/contact/list_2-contact.xsl');
 			exit;
 		}
-		else if ($_POST ['ui-Contact-Use'] && $_POST ['ui-Contact-Sel'])
+		else
 		{
 			try
 			{
@@ -257,7 +336,7 @@
 		}
 	}
 	
-	if ($actAccount && (isset ($_POST ['ui-Contact-Use']) || $cntContact))
+	if ($actAccount && $cntContact)
 	{
 		if (!isset ($_POST ['Confirm']))
 		{

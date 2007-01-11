@@ -18,19 +18,55 @@
 							<xsl:value-of select="/Response/ui-values/BusinessName" />
 						</xsl:attribute>
 					</input>
+					<input type="hidden" name="ui-ABN">
+						<xsl:attribute name="value">
+							<xsl:text></xsl:text>
+							<xsl:value-of select="/Response/ui-values/ABN" />
+						</xsl:attribute>
+					</input>
+					<input type="hidden" name="ui-ACN">
+						<xsl:attribute name="value">
+							<xsl:text></xsl:text>
+							<xsl:value-of select="/Response/ui-values/ACN" />
+						</xsl:attribute>
+					</input>
 					
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
 							<table border="0" cellpadding="5" cellspacing="0">
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Account')" />
-											<xsl:with-param name="field" select="string('BusinessName')" />
-										</xsl:call-template>
-									</th>
-									<td><xsl:value-of select="/Response/ui-values/BusinessName" /></td>
-								</tr>
+								<xsl:if test="/Response/ui-values/BusinessName != ''">
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Account')" />
+												<xsl:with-param name="field" select="string('BusinessName')" />
+											</xsl:call-template>
+										</th>
+										<td><xsl:value-of select="/Response/ui-values/BusinessName" /></td>
+									</tr>
+								</xsl:if>
+								<xsl:if test="/Response/ui-values/ABN != ''">
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Account')" />
+												<xsl:with-param name="field" select="string('ABN')" />
+											</xsl:call-template>
+										</th>
+										<td><xsl:value-of select="/Response/ui-values/ABN" /></td>
+									</tr>
+								</xsl:if>
+								<xsl:if test="/Response/ui-values/ACN != ''">
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Account')" />
+												<xsl:with-param name="field" select="string('ACN')" />
+											</xsl:call-template>
+										</th>
+										<td><xsl:value-of select="/Response/ui-values/ACN" /></td>
+									</tr>
+								</xsl:if>
 							</table>
 						</div>
 					</div>

@@ -86,7 +86,7 @@
 				$selAuthenticated = new StatementSelect (
 					"Employee",
 					"count(Id) as length, MAX(Priviledges) as Priviledges", 
-					"Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
+					"Id = <Id> AND SessionId = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
 					null,
 					1
 				);

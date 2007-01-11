@@ -723,6 +723,8 @@
 		private $nodeType;
 		private $collationLength;
 		
+		private $arrSample;
+		
 		private $_DATA = Array ();
 		
 		function __construct ($nodeName, $nodeType=null, $collationLength)
@@ -756,7 +758,7 @@
 		
 		public function Sample ($rangePage=1, $rangeLength=null)
 		{
-			return new dataSample (
+			$this->arrSample = new dataSample (
 				$this, 
 				$this->tagName (),
 				$this->nodeType,
@@ -764,6 +766,8 @@
 				$rangePage,
 				$rangeLength
 			);
+			
+			return $this->arrSample;
 		}
 		
 		protected function &Push (&$itemObj)
@@ -898,7 +902,7 @@
 //----------------------------------------------------------------------------//
 // dataSample.class
 //----------------------------------------------------------------------------//
-	class dataSample extends dataObject
+	class dataSample extends dataObject implements iterator
 	{
 		
 		private $_COLLATION;
@@ -972,6 +976,38 @@
 					}
 				}
 			}
+		}
+		
+		public function Count ()
+		{
+			return $this->collationLength->getValue ();
+		}
+		
+		private $Valid = false;
+		
+		public function current ()
+		{
+			return $this->_DATA->current ();
+		}
+		
+		public function key ()
+		{
+			return $this->_DATA->key ();
+		}
+		
+		public function next ()
+		{
+			$this->_DATA->next ();
+		}
+		
+		public function rewind ()
+		{
+			$this->_DATA->rewind ();
+		}
+		
+		public function valid ()
+		{
+			return $this->_DATA->Valid ();
 		}
 	}
 	

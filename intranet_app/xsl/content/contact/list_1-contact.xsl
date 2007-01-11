@@ -62,7 +62,8 @@
 							<th>First Name</th>
 							<th>Last Name</th>
 							<th>Job Title</th>
-							<th>Username</th>
+							<th>Business Name</th>
+							<th>Suburb / Postcode</th>
 						</tr>
 						<xsl:if test="/Response/ui-answers/Contacts/Results/collationLength &lt;= 15">
 							<xsl:for-each select="/Response/ui-answers/Contacts/Results/rangeSample/Contact">
@@ -91,7 +92,11 @@
 									<td><xsl:value-of select="./FirstName" /></td>
 									<td><xsl:value-of select="./LastName" /></td>
 									<td><xsl:value-of select="./JobTitle" /></td>
-									<td><xsl:value-of select="./UserName" /></td>
+									<td><xsl:value-of select="./PrimaryAccount/Account/BusinessName" /></td>
+									<td>
+										<xsl:value-of select="./PrimaryAccount/Account/Suburb" />,
+										<xsl:value-of select="./PrimaryAccount/Account/Postcode" />
+									</td>
 								</tr>
 							</xsl:for-each>
 						</xsl:if>

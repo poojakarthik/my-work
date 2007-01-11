@@ -57,25 +57,11 @@
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
-							<td><input type="radio" name="ui-Contact-Use" value="0" id="ui-Contact-Use:FALSE" /></td>
 							<td>
-								<label for="ui-Contact-Use:FALSE">
-									The contact <strong><span class="Attention">is not listed</span></strong> 
-									in this list below but continue the verification.
-								</label>
+								Please use the contact listed in this field below:
 							</td>
 						</tr>
 						<tr>
-							<td><input type="radio" name="ui-Contact-Use" value="1" id="ui-Contact-Use:TRUE" /></td>
-							<td>
-								<label for="ui-Contact-Use:TRUE">
-									Please use the <strong><span class="Attention">contact listed</span></strong>
-									in this list below:
-								</label>
-							</td>
-						</tr>
-						<tr>
-							<td></td>
 							<td>
 								<table border="0" cellpadding="5" cellspacing="0">
 									<tr>
