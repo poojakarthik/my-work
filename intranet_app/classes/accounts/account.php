@@ -366,22 +366,79 @@
 		
 		public function CreditCard ()
 		{
+			// If the Credit Card is already set, return it
 			if ($this->_crcCreditCard)
 			{
 				return $this->_crcCreditCard;
 			}
 			
+			// If the billing method is not VIA credit card, then we can't return anything
+			if ($this->Pull ('BillingType')->getValue () != BILLING_TYPE_CREDIT_CARD)
+			{
+				return null;
+			}
+			
+			// Get the Credit Card
 			$intCreditCard = $this->Pull ('CreditCard')->getValue ();
 			
+			// Make sure the Credit Card is not Blank
 			if (!$intCreditCard)
 			{
 				return null;
 			}
 			
+			// Attach the information
 			$oblarrCreditCardContainer = $this->Push (new dataArray ('CreditCardDetails', 'CreditCard'));
 			$this->_crcCreditCard = $oblarrCreditCardContainer->Push (new CreditCard ($intCreditCard));
 			
+			// Return the Credit Card
 			return $this->_crcCreditCard;
+		}
+		
+		//------------------------------------------------------------------------//
+		// DirectDebit
+		//------------------------------------------------------------------------//
+		/**
+		 * DirectDebit()
+		 *
+		 * Adds the Direct Debit information for this account to the Object
+		 *
+		 * Adds the Direct Debit information for this account to the Object
+		 *
+		 * @return	DirectDebit
+		 *
+		 * @method
+		 */
+		
+		public function DirectDebit ()
+		{
+			// If Direct Debit is already set, return it
+			if ($this->_ddrDirectDebit)
+			{
+				return $this->_ddrDirectDebit;
+			}
+			
+			// If the billing method is not VIA Direct Debit, then we can't return anything
+			if ($this->Pull ('BillingType')->getValue () != BILLING_TYPE_DIRECT_DEBIT)
+			{
+				return null;
+			}
+			
+			// Get the Direct Debit information
+			$intDirectDebit = $this->Pull ('DirectDebit')->getValue ();
+			
+			// Make sure the Direct Debit Id is not Blank
+			if (!$intDirectDebit)
+			{
+				return null;
+			}
+			
+			// Attach the information
+			$oblarrDirectDebitContainer = $this->Push (new dataArray ('DirectDebitDetails', 'DirectDebit'));
+			$this->_ddrDirectDebit = $oblarrDirectDebitContainer->Push (new DirectDebit ($intDirectDebit));
+			
+			// Return the Direct Debit
+			return $this->_ddrDirectDebit;
 		}
 	}
 	

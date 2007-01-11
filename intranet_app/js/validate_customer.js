@@ -29,7 +29,7 @@ function ValidateCustomerClass ()
 			
 			var Valid = (dobyearcorrect == dobyeartest && dobmonthcorrect == dobmonthtest && dobdaycorrect == dobdaytest);
 			
-			this._objInput[objObject.id] =
+			this._objInput['DOB'] =
 			{
 				'Level': objObject.getAttribute ("ValidLevel"),
 				'Valid': Valid
@@ -39,6 +39,30 @@ function ValidateCustomerClass ()
 			document.getElementById ('DOB-month').className = ((Valid) ? 'select-valid' : '');
 			document.getElementById ('DOB-day').className = ((Valid) ? 'select-valid' : '');
 		}
+		else if (objObject.id == 'CreditCard-Exp-Month' || objObject.id == 'CreditCard-Exp-Year' || objObject.id == 'CreditCard-CardNumber')
+		{
+			var ccexpmonthcorrect = parseInt (document.getElementById ('CreditCard-Exp-Month').getAttribute ('ValidValue'));
+			var ccexpyearcorrect = parseInt (document.getElementById ('CreditCard-Exp-Year').getAttribute ('ValidValue'));
+			var ccnumbercorrect = document.getElementById ('CreditCard-CardNumber').getAttribute ('ValidValue');
+			
+			var ccexpmonthtest = parseInt (document.getElementById ('CreditCard-Exp-Month').options [
+				document.getElementById ('CreditCard-Exp-Month').selectedIndex].value);
+			var ccexpyeartest = parseInt (document.getElementById ('CreditCard-Exp-Year').options [
+				document.getElementById ('CreditCard-Exp-Year').selectedIndex].value);
+			var ccnumbertest = document.getElementById ('CreditCard-CardNumber').value;
+			
+			var Valid = (ccexpmonthcorrect == ccexpmonthtest && ccexpyearcorrect == ccexpyeartest && ccnumbercorrect == ccnumbertest);
+			
+			this._objInput['CreditCard'] =
+			{
+				'Level': objObject.getAttribute ("ValidLevel"),
+				'Valid': Valid
+			}
+			
+			document.getElementById ('CreditCard-Exp-Year').className = ((Valid) ? 'select-valid' : '');
+			document.getElementById ('CreditCard-Exp-Month').className = ((Valid) ? 'select-valid' : '');
+			document.getElementById ('CreditCard-CardNumber').className = ((Valid) ? 'input-string-valid' : 'input-string');
+		}
 		else if (objObject.id == 'ABN' || objObject.id == 'ACN')
 		{
 			var testvalue = objObject.value.replace (/[\s]/g, '');
@@ -47,6 +71,24 @@ function ValidateCustomerClass ()
 			if (rightvalue == "")
 			{
 				objObject.disabled = true;
+				return;
+			}
+			
+			this._objInput[objObject.id] =
+			{
+				'Level': objObject.getAttribute ("ValidLevel"),
+				'Valid': (testvalue == rightvalue)
+			}
+			
+			objObject.className = ((testvalue == rightvalue) ? "input-string-valid" : "input-string");
+		}
+		else if (objObject.id == 'DirectDebit-BSB')
+		{
+			var testvalue = objObject.value.replace (/[\s\-]/g, '');
+			var rightvalue = objObject.getAttribute ("ValidValue").replace (/[\s\-]/g, '');
+			
+			if (rightvalue == "")
+			{
 				return;
 			}
 			
@@ -135,10 +177,10 @@ window.addEventListener (
 	'load',
 	function ()
 	{
-		ValidateCustomer.ValidateInput (document.getElementById ('Account'));
-		ValidateCustomer.ValidateInput (document.getElementById ('ABN'));
-		ValidateCustomer.ValidateInput (document.getElementById ('ACN'));
-		ValidateCustomer.ValidateInput (document.getElementById ('Invoice'));
+		if (document.getElementById ('Account'))	{ ValidateCustomer.ValidateInput (document.getElementById ('Account'));	}
+		if (document.getElementById ('ABN'))		{ ValidateCustomer.ValidateInput (document.getElementById ('ABN'));		}
+		if (document.getElementById ('ACN'))		{ ValidateCustomer.ValidateInput (document.getElementById ('ACN'));		}
+		if (document.getElementById ('Invoice'))	{ ValidateCustomer.ValidateInput (document.getElementById ('Invoice'));	}
 	},
 	true
 );

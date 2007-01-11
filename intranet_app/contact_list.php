@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_INVOICE | MODULE_CREDIT_CARD;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_INVOICE | MODULE_CREDIT_CARD | MODULE_DIRECT_DEBIT;
 	
 	// call application
 	require ('config/application.php');
@@ -344,7 +344,9 @@
 			$actAccount->CreditCard ();
 			
 			// Pull the Direct Debit Information (if any)
+			$actAccount->DirectDebit ();
 			
+			// Output the Overall Verification
 			$Style->Output ('xsl/content/contact/list_3.xsl');
 			exit;
 		}

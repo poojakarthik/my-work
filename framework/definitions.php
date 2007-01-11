@@ -642,7 +642,7 @@ define("SERVICE_STATE_TYPE_WA"		, "WA");
 define("BILLING_METHOD_POST"		, 1);
 define("BILLING_METHOD_EMAIL"		, 2);
 
-// Billing Methods
+// Billing Types
 define("BILLING_TYPE_DIRECT_DEBIT"		, 1);
 define("BILLING_TYPE_CREDIT_CARD"		, 2);
 define("BILLING_TYPE_ACCOUNT"			, 3);

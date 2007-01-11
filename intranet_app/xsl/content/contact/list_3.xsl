@@ -399,26 +399,32 @@
 								</td>
 							</tr>
 							<!-- Direct Debit BSB -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Direct Debit')" />
-										<xsl:with-param name="field" select="string('BSB')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<input type="text" name="DirectDebit-BSB" id="DirectDebit-BSB-1" class="input-string" size="3" autocomplete="off" 
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1" /> -
-									<input type="text" name="DirectDebit-BSB" id="DirectDebit-BSB-2" class="input-string" size="3" autocomplete="off" 
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1" />
-								</td>
-							</tr>
+							<xsl:if test="/Response/ui-answers/Account/DirectDebitDetails/DirectDebit">
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Direct Debit')" />
+											<xsl:with-param name="field" select="string('BSB')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="DirectDebit-BSB" id="DirectDebit-BSB" class="input-string" size="8" autocomplete="off" 
+										onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+											<xsl:attribute name="ValidValue">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ui-answers/Account/DirectDebitDetails/DirectDebit/BSB" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+							</xsl:if>
 						</table>
 					</div>
 				</div>
 				
 				<div class="Seperator"></div>
 				
+				<!-- Credit Card Information -->
 				<xsl:if test="/Response/ui-answers/Account/CreditCardDetails/CreditCard">
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
@@ -436,7 +442,7 @@
 										autocomplete="off" onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 											<xsl:attribute name="ValidValue">
 												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/CardNumber" />
+												<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/Last4Digits" />
 											</xsl:attribute>
 										</input>
 									</td>
@@ -449,12 +455,14 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="CreditCard-Exp-Month" ValidLevel="1">
+										<select name="CreditCard-Exp-Month" id="CreditCard-Exp-Month" ValidLevel="1" autocomplete="off" 
+										onchange="ValidateCustomer.ValidateInput (this)"
+										onkeyup="ValidateCustomer.ValidateInput (this)">
 											<xsl:attribute name="ValidValue">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/ExpMonth" />
 											</xsl:attribute>
-											<option value=""></option>
+											<option value="" selected="selected"></option>
 											<option value="01">01</option>
 											<option value="02">02</option>
 											<option value="03">03</option>
@@ -468,12 +476,14 @@
 											<option value="11">11</option>
 											<option value="12">12</option>
 										</select> /
-										<select name="CreditCard-Exp-Year" ValidLevel="1">
+										<select name="CreditCard-Exp-Year" id="CreditCard-Exp-Year" ValidLevel="1" 
+										onchange="ValidateCustomer.ValidateInput (this)"
+										onkeyup="ValidateCustomer.ValidateInput (this)">
 											<xsl:attribute name="ValidValue">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/ExpYear" />
 											</xsl:attribute>
-											<option value=""></option>
+											<option value="" selected="selected"></option>
 											<option value="07">07</option>
 											<option value="08">08</option>
 											<option value="09">09</option>

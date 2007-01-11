@@ -38,6 +38,7 @@ $arrConfig['Modules'][MODULE_ACCOUNT] 					= "accounts";
 $arrConfig['Modules'][MODULE_ACCOUNT_GROUP] 			= "accountgroups";
 $arrConfig['Modules'][MODULE_CUSTOMER_GROUP]		 	= "customergroup";
 $arrConfig['Modules'][MODULE_CREDIT_CARD] 				= "creditcard";
+$arrConfig['Modules'][MODULE_DIRECT_DEBIT] 				= "directdebit";
 $arrConfig['Modules'][MODULE_CHARGE] 					= "charges";
 $arrConfig['Modules'][MODULE_CHARGE_TYPE] 				= "chargetype";
 $arrConfig['Modules'][MODULE_RECURRING_CHARGE_TYPE] 	= "recurringchargetype";
