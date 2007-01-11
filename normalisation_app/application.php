@@ -318,6 +318,15 @@ die();
  	{
 		// TODO: Not for a long time, though ;)
 		//		 Will be implemented as a future feature
+		
+		// if TEMP_INVOICE or INVOICED return false
+		
+		// remove cdrs
+		
+		// Make another method for this
+		// remove files from fileImport
+
+		
  	}
  	
  	

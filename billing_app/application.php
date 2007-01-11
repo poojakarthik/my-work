@@ -668,6 +668,7 @@ die();
 		}
 		
 		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
+		// TODO!!!! - remove InvoiceRun
 		$this->_rptBillingReport->AddMessage(MSG_REVERT_CDRS, FALSE);
 		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, Array('Status' => CDR_RATED));
 		if($updCDRStatus->Execute(Array('Status' => CDR_RATED), Array()) === FALSE)
@@ -682,7 +683,7 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		//TODO!!!! - Future: clean up Service total & Service type total table 
+		//TODO!!!! - clean up Service total & Service type total table 
 		
 		return TRUE;
 	}
