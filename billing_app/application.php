@@ -594,7 +594,7 @@ die();
 		}
 		
 		// update Account LastBilled date
-		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED);
+		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED, FALSE);
 		$strQuery  = "UPDATE Account INNER JOIN Invoice on (Account.Id = Invoice.Account)";
 		$strQuery .= " SET Account.LastBilled = Now()";
 		$strQuery .= " WHERE Invoice.Status = ".INVOICE_TEMP;
@@ -658,9 +658,7 @@ die();
 			}
 			
 			// send billing output
-			$this->_arrBillOutput[$strKey]->SendOutput();
-			// build billing output
-			if (!$this->_arrBillOutput[$strKey]->BuildOutput($strInvoiceRun))
+			if (!$this->_arrBillOutput[$strKey]->SendOutput(FALSE))
 			{
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\t- Reason: Sending failed");
 				continue;
@@ -734,7 +732,7 @@ die();
 		}
 		
 		// clean up ServiceTotal table
-		$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t\t", FALSE);
+		$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
 		$qryCleanServiceTotal = new Query();
 		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
 		{
@@ -746,7 +744,7 @@ die();
 		}
 
 		// clean up ServiceTypeTotal table
-		$this->_rptBillingReport->AddMessage("Cleaning ServiceTypeTotal table...\t\t\t\t", FALSE);
+		$this->_rptBillingReport->AddMessage("Cleaning ServiceTypeTotal table...\t\t\t", FALSE);
 		$qryCleanServiceTotal = new Query();
 		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
 		{

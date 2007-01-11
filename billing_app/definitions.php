@@ -93,8 +93,8 @@ define("MSG_SERVICE_TYPE_BREAKDOWN"		, "\t[ <ServiceType> ]\n" .
 										  "\t\tTotal \$ Charged\t\t\t: \$<TotalCharged>\n" .
 										  "\t\tTotal No. of CDRs\t\t: <TotalCDRs>\n\n" .
 										  "<RecordTypes>\n");
-define("MSG_LAST_BILLED"				, "\t\t+ Updating Account Last Billed date...");
-define("MSG_UPDATE_CHARGE"				, "\t\t+ Update Charge statuses...\t");
+define("MSG_LAST_BILLED"				, "Updating Account Last Billed date...");
+define("MSG_UPDATE_CHARGE"				, "Update Charge statuses...\t");
 define("MSG_BUILD_SEND_OUTPUT"			, "Building and Sending Invoice Output...\t\t");
 
 // Data Types for Bill Printing
