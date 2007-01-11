@@ -67,10 +67,21 @@
 			// Construct the object
 			parent::__construct ('Note', $this->Pull ('Id')->getValue ());
 			
-			/*
+			$strNote = $this->Pop ('Note')->getValue ();
+			$this->Push (new dataString ('Note', nl2br ($strNote)));
+			
 			$intEmployee = $this->Pop ('Employee')->getValue ();
-			$this->Push (new Employee ($intEmployee));
-			*/
+			
+			if ($intEmployee)
+			{
+				$this->Push (new Employee ($intEmployee));
+			}
+			else
+			{
+				$oblarrEmployee = $this->Push (new dataArray ('Employee'));
+				$oblarrEmployee->Push (new dataString ('FirstName', 'Automated'));
+				$oblarrEmployee->Push (new dataString ('LastName', 'System'));
+			}
 		}
 	}
 	

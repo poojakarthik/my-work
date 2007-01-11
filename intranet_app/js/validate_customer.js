@@ -82,6 +82,85 @@ function ValidateCustomerClass ()
 			
 			objObject.className = ((testvalue == rightvalue) ? "input-string-valid" : "input-string");
 		}
+		else if (objObject.id == 'Invoice-Recent-Id')
+		{
+			var testvalue = objObject.value;
+			var rightvalue = objObject.getAttribute ("ValidValue");
+			
+			if (rightvalue == "")
+			{
+				objObject.disabled = true;
+				return;
+			}
+			
+			if (parseInt (testvalue) == testvalue)
+			{
+				var Regex = new RegExp ('(\:' + parseInt (testvalue) + '\:)', 'g');
+				var Valid = (rightvalue.search (Regex) != -1);
+			}
+			else
+			{
+				var Valid = false;
+			}
+			
+			this._objInput[objObject.id] =
+			{
+				'Level': objObject.getAttribute ("ValidLevel"),
+				'Valid': Valid
+			}
+			
+			objObject.className = (Valid ? "input-string-valid" : "input-string");
+		}
+		else if (objObject.id == 'Invoice-Recent-Amount')
+		{
+			var testvalue = objObject.value.replace (/[\$]/g, '');
+			var rightvalue = objObject.getAttribute ("ValidValue").replace (/[^\d\:\.]/g, '');
+			
+			if (rightvalue == "")
+			{
+				objObject.disabled = true;
+				return;
+			}
+			
+			if (testvalue != '' && testvalue.search (/[\:]/g) == -1)
+			{
+				var Regex = new RegExp ('(\:' + testvalue + '\:)', 'g');
+				var Valid = (rightvalue.search (Regex) != -1);
+			}
+			else
+			{
+				var Valid = false;
+			}
+			
+			this._objInput[objObject.id] =
+			{
+				'Level': objObject.getAttribute ("ValidLevel"),
+				'Valid': Valid
+			}
+			
+			objObject.className = (Valid ? "input-string-valid" : "input-string");
+		}
+		else if (objObject.id == 'Invoice-Amount')
+		{
+			var testvalue = objObject.value.replace (/[\$]/g, '');
+			var rightvalue = objObject.getAttribute ("ValidValue").replace (/[^\d\:\.]/g, '');
+			
+			if (rightvalue == "")
+			{
+				objObject.disabled = true;
+				return;
+			}
+			
+			var Valid = (testvalue == rightvalue);
+			
+			this._objInput[objObject.id] =
+			{
+				'Level': objObject.getAttribute ("ValidLevel"),
+				'Valid': Valid
+			}
+			
+			objObject.className = (Valid ? "input-string-valid" : "input-string");
+		}
 		else if (objObject.id == 'DirectDebit-BSB')
 		{
 			var testvalue = objObject.value.replace (/[\s\-]/g, '');
@@ -100,7 +179,7 @@ function ValidateCustomerClass ()
 			
 			objObject.className = ((testvalue == rightvalue) ? "input-string-valid" : "input-string");
 		}
-		else if (objObject.type == 'text')
+		else if (objObject.type == 'text' || objObject.type == 'hidden')
 		{
 			if (objObject.getAttribute ("ValidValue") == "")
 			{
@@ -177,10 +256,10 @@ window.addEventListener (
 	'load',
 	function ()
 	{
-		if (document.getElementById ('Account'))	{ ValidateCustomer.ValidateInput (document.getElementById ('Account'));	}
-		if (document.getElementById ('ABN'))		{ ValidateCustomer.ValidateInput (document.getElementById ('ABN'));		}
-		if (document.getElementById ('ACN'))		{ ValidateCustomer.ValidateInput (document.getElementById ('ACN'));		}
-		if (document.getElementById ('Invoice'))	{ ValidateCustomer.ValidateInput (document.getElementById ('Invoice'));	}
+		if (document.getElementById ('Account'))	{ ValidateCustomer.ValidateInput (document.getElementById ('Account'));		}
+		if (document.getElementById ('ABN'))		{ ValidateCustomer.ValidateInput (document.getElementById ('ABN'));			}
+		if (document.getElementById ('ACN'))		{ ValidateCustomer.ValidateInput (document.getElementById ('ACN'));			}
+		if (document.getElementById ('Invoice-Id'))	{ ValidateCustomer.ValidateInput (document.getElementById ('Invoice-Id'));	}
 	},
 	true
 );

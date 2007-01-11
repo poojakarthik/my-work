@@ -138,12 +138,19 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<xsl:call-template name="dt:format-date-time">
-											<xsl:with-param name="year"	select="/Response/Service/CreatedOn/year" />
-											<xsl:with-param name="month"	select="/Response/Service/CreatedOn/month" />
-											<xsl:with-param name="day"		select="/Response/Service/CreatedOn/day" />
-											<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-										</xsl:call-template>
+										<xsl:choose>
+											<xsl:when test="/Response/Service/CreatedOn/year">
+												<xsl:call-template name="dt:format-date-time">
+													<xsl:with-param name="year"		select="/Response/Service/CreatedOn/year" />
+													<xsl:with-param name="month"	select="/Response/Service/CreatedOn/month" />
+													<xsl:with-param name="day"		select="/Response/Service/CreatedOn/day" />
+													<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+												</xsl:call-template>
+											</xsl:when>
+											<xsl:otherwise>
+												<strong><span class="Attention">No Date Specified</span></strong>
+											</xsl:otherwise>
+										</xsl:choose>
 									</td>
 								</tr>
 								<tr>
@@ -155,7 +162,7 @@
 									</th>
 									<td>
 										<xsl:choose>
-											<xsl:when test="/Response/Service/ClosedOn">
+											<xsl:when test="/Response/Service/ClosedOn/year">
 												<xsl:call-template name="dt:format-date-time">
 													<xsl:with-param name="year"	select="/Response/Service/ClosedOn/year" />
 													<xsl:with-param name="month"	select="/Response/Service/ClosedOn/month" />
@@ -163,6 +170,9 @@
 													<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 												</xsl:call-template>
 											</xsl:when>
+											<xsl:otherwise>
+												<strong><span class="Green">No Close Pending</span></strong>
+											</xsl:otherwise>
 										</xsl:choose>
 									</td>
 								</tr>
@@ -961,14 +971,18 @@
 						
 						<select name="NoteType">
 							<xsl:for-each select="/Response/NoteTypes/NoteType">
-								<xsl:variable name="NoteType" select="." />
 								<option>
 									<xsl:attribute name="style">
 										<xsl:text>background-color: #</xsl:text>
-										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BackgroundColor" />
+										<xsl:value-of select="./BackgroundColor" />
 										<xsl:text>;</xsl:text>
+										
 										<xsl:text>border: solid 1px #</xsl:text>
-										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BorderColor" />
+										<xsl:value-of select="./BorderColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>color: #</xsl:text>
+										<xsl:value-of select="./TextColor" />
 										<xsl:text>;</xsl:text>
 									</xsl:attribute>
 									<xsl:attribute name="value">
@@ -1006,8 +1020,17 @@
 						<xsl:variable name="Note" select="." />
 						<div class="Note">
 							<xsl:attribute name="style">
-								<xsl:text>background-color: #</xsl:text><xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" /><xsl:text>;</xsl:text>
-								<xsl:text>border: solid 1px #</xsl:text><xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" /><xsl:text>;</xsl:text>
+								<xsl:text>background-color: #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" />
+								<xsl:text>;</xsl:text>
+								
+								<xsl:text>border: solid 1px #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" />
+								<xsl:text>;</xsl:text>
+								
+								<xsl:text>color: #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/TextColor" />
+								<xsl:text>;</xsl:text>
 							</xsl:attribute>
 							
 							<div class="small">
@@ -1032,7 +1055,7 @@
 							</div>
 							<div class="Seperator"></div>
 							
-							<xsl:value-of select="./Note" />
+							<xsl:value-of select="./Note" disable-output-escaping="yes" />
 						</div>
 						<div class="Seperator"></div>
 					</xsl:for-each>

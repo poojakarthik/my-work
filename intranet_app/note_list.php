@@ -12,15 +12,10 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR | PERMISSION_ADMIN | PERMISSION_SALES;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_NOTE | MODULE_SERVICE | MODULE_CONTACT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_NOTE | MODULE_SERVICE | MODULE_CONTACT | MODULE_EMPLOYEE;
 	
 	// call application
 	require ('config/application.php');
-	
-	$docDocumentation->Explain ('Account Group');
-	$docDocumentation->Explain ('Account');
-	$docDocumentation->Explain ('Service');
-	$docDocumentation->Explain ('Contact');
 	
 	// If the User is not logged into the system
 	if (!$athAuthentication->isAuthenticated ())
@@ -36,9 +31,12 @@
 		header ('Location: index.php'); exit;
 	}
 	
+
+	// Attach the Note Type Inforamtion
+	$Style->attachObject (new NoteTypes);
 	
 	// Start a new Note Listing
-	$nosNotes = new Notes ();
+	$nosNotes = $Style->attachObject (new Notes);
 	
 	
 	// If we have an Account Group Specified, then 
@@ -49,11 +47,13 @@
 		try
 		{
 			// Pull:
-			$acgAccountGroup = new AccountGroup ($_GET ['AccountGroup']);
-			$Style->attachObject ($acgAccountGroup);
+			$acgAccountGroup = $Style->attachObject (new AccountGroup ($_GET ['AccountGroup']));
 			
 			// Constrain:
 			$nosNotes->Constrain ('AccountGroup', '=', $acgAccountGroup->Pull ('Id')->getValue ());
+			
+			// Documentation:
+			$docDocumentation->Explain ('Account Group');
 		}
 		catch (Exception $e)
 		{
@@ -71,11 +71,13 @@
 		try
 		{
 			// Pull:
-			$actAccount = new Account ($_GET ['Account']);
-			$Style->attachObject ($actAccount);
+			$actAccount = $Style->attachObject (new Account ($_GET ['Account']));
 			
 			// Constrain:
 			$nosNotes->Constrain ('Account', '=', $actAccount->Pull ('Id')->getValue ());
+			
+			// Documentation:
+			$docDocumentation->Explain ('Account');
 		}
 		catch (Exception $e)
 		{
@@ -93,11 +95,13 @@
 		try
 		{
 			// Pull:
-			$cntContact = new Contact ($_GET ['Contact']);
-			$Style->attachObject ($cntContact);
+			$cntContact = $Style->attachObject (new Contact ($_GET ['Contact']));
 			
 			// Constrain:
 			$nosNotes->Constrain ('Contact', '=', $cntContact->Pull ('Id')->getValue ());
+			
+			// Documentation:
+			$docDocumentation->Explain ('Contact');
 		}
 		catch (Exception $e)
 		{
@@ -114,11 +118,13 @@
 		try
 		{
 			// Pull:
-			$srvService = new Service ($_GET ['Service']);
-			$Style->attachObject ($srvService);
+			$srvService = $Style->attachObject (new Service ($_GET ['Service']));
 			
 			// Constrain:
 			$nosNotes->Constrain ('Service', '=', $srvService->Pull ('Id')->getValue ());
+			
+			// Documentation:
+			$docDocumentation->Explain ('Service');
 		}
 		catch (Exception $e)
 		{
@@ -130,17 +136,11 @@
 	// Order by Newest First
 	$nosNotes->Order ('Datetime', FALSE);
 	
-	// Pull a Sample
+	// Pull a Sample (all notes)
 	$nosNotes->Sample (
 		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
 		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : null
 	);
-	
-	// Attach the Notes
-	$Style->attachObject ($nosNotes);
-	
-	// Attach the Note Type Inforamtion
-	$Style->attachObject (new NoteTypes ());
 	
 	// Output to the Browser
 	$Style->Output ('xsl/content/notes/list.xsl');

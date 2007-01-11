@@ -288,14 +288,18 @@
 						
 						<select name="NoteType">
 							<xsl:for-each select="/Response/NoteTypes/NoteType">
-								<xsl:variable name="NoteType" select="." />
 								<option>
 									<xsl:attribute name="style">
 										<xsl:text>background-color: #</xsl:text>
-										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BackgroundColor" />
+										<xsl:value-of select="./BackgroundColor" />
 										<xsl:text>;</xsl:text>
+										
 										<xsl:text>border: solid 1px #</xsl:text>
-										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$NoteType/Id]/BorderColor" />
+										<xsl:value-of select="./BorderColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>color: #</xsl:text>
+										<xsl:value-of select="./TextColor" />
 										<xsl:text>;</xsl:text>
 									</xsl:attribute>
 									<xsl:attribute name="value">
@@ -333,18 +337,27 @@
 						<xsl:variable name="Note" select="." />
 						<div class="Note">
 							<xsl:attribute name="style">
-								<xsl:text>background-color: #</xsl:text><xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" /><xsl:text>;</xsl:text>
-								<xsl:text>border: solid 1px #</xsl:text><xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" /><xsl:text>;</xsl:text>
+								<xsl:text>background-color: #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" />
+								<xsl:text>;</xsl:text>
+								
+								<xsl:text>border: solid 1px #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" />
+								<xsl:text>;</xsl:text>
+								
+								<xsl:text>color: #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/TextColor" />
+								<xsl:text>;</xsl:text>
 							</xsl:attribute>
 							
 							<div class="small">
 								Created on 
 									<strong>
 										<xsl:call-template name="dt:format-date-time">
-											<xsl:with-param name="year"	select="./Datetime/year" />
+											<xsl:with-param name="year"		select="./Datetime/year" />
 											<xsl:with-param name="month"	select="./Datetime/month" />
 											<xsl:with-param name="day"		select="./Datetime/day" />
-					 						<xsl:with-param name="hour"	select="./Datetime/hour" />
+					 						<xsl:with-param name="hour"		select="./Datetime/hour" />
 											<xsl:with-param name="minute"	select="./Datetime/minute" />
 											<xsl:with-param name="second"	select="./Datetime/second" />
 											<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
@@ -359,7 +372,7 @@
 							</div>
 							<div class="Seperator"></div>
 							
-							<xsl:value-of select="./Note" />
+							<xsl:value-of select="./Note" disable-output-escaping="yes" />
 						</div>
 						<div class="Seperator"></div>
 					</xsl:for-each>

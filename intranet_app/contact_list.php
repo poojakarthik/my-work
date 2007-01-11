@@ -70,7 +70,7 @@
 			// we have to show a screen which will allow the employee to 
 			// select the right account
 			
-			$acsAccounts = $oblarrAnswers->Push (new Accounts ());
+			$acsAccounts = $oblarrAnswers->Push (new Accounts);
 			$acsAccounts->Constrain ('ABN', 'LIKE', $abnABN->getValue ());
 			$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
 			$acsAccounts->Order ('BusinessName', TRUE);
@@ -174,7 +174,7 @@
 		}
 		catch (Exception $e)
 		{
-			$oblstrError->setValue ('Invoice');
+			$oblstrError->setValue ('FNN');
 		}
 	}
 	else if ($_POST ['ui-BusinessName'])
@@ -190,12 +190,18 @@
 			
 			$acsAccounts = $oblarrAnswers->Push (new Accounts ());
 			$acsAccounts->Constrain ('BusinessName', 'LIKE', $oblstrBusinessName->getValue ());
-			$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
 			$acsAccounts->Order ('BusinessName', TRUE);
-			$acsAccounts->Sample ();
+			$oblsamAccounts = $acsAccounts->Sample ();
 			
-			$Style->Output ('xsl/content/contact/list_1-account.xsl');
-			exit;
+			if ($oblsamAccounts->Count () == 0)
+			{
+				$oblstrError->setValue ('BusinessName');
+			}
+			else
+			{
+				$Style->Output ('xsl/content/contact/list_1-account.xsl');
+				exit;
+			}
 		}
 		else
 		{
@@ -261,7 +267,6 @@
 			{
 				$acsAccounts = $oblarrAnswers->Push (new Accounts ());
 				$acsAccounts->Constrain ('AccountGroup', 'EQUALS', $cntContact->Pull ('AccountGroup')->getValue ());
-				$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
 				$acsAccounts->Order ('BusinessName', TRUE);
 				$oblsamAccounts = $acsAccounts->Sample ();
 				
@@ -345,6 +350,12 @@
 			
 			// Pull the Direct Debit Information (if any)
 			$actAccount->DirectDebit ();
+			
+			// Pull the 6 most recent invoices
+			$ivlInvoices = $oblarrAnswers->Push (new Invoices);
+			$ivlInvoices->Constrain ('Account', 'EQUALS', $actAccount->Pull ('Id')->getValue ());
+			$ivlInvoices->Order ('CreatedOn', FALSE);
+			$ivlInvoices->Sample (1, 6);
 			
 			// Output the Overall Verification
 			$Style->Output ('xsl/content/contact/list_3.xsl');

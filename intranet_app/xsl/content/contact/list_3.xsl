@@ -372,32 +372,95 @@
 				<div class="Filter-Form">
 					<div class="Filter-Form-Content">
 						<table border="0" cellpadding="5" cellspacing="0">
-							<!-- Most Recent Invoice# -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Invoice')" />
-										<xsl:with-param name="field" select="string('RecentId')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<input type="text" name="Invoice" id="Invoice" class="input-string" autocomplete="off" 
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1" />
-								</td>
-							</tr>
-							<!-- Most Recent Invoice Amount -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Invoice')" />
-										<xsl:with-param name="field" select="string('RecentAmount')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<input type="text" name="Invoice-Amount" id="Invoice-Amount" class="input-string" autocomplete="off" 
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1" />
-								</td>
-							</tr>
+							<xsl:choose>
+								<xsl:when test="/Response/ui-answers/Invoice">
+									<!-- Selected Invoice# -->
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Invoice')" />
+												<xsl:with-param name="field" select="string('Id')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:value-of select="/Response/ui-answers/Invoice/Id" />
+											<input type="hidden" name="Invoice-Id" id="Invoice-Id" class="input-string" autocomplete="off" ValidLevel="1">
+												<xsl:attribute name="ValidValue">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/ui-answers/Invoice/Id" />
+												</xsl:attribute>
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/ui-answers/Invoice/Id" />
+												</xsl:attribute>
+											</input>
+										</td>
+									</tr>
+									<!-- Selected Invoice Amount -->
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Invoice')" />
+												<xsl:with-param name="field" select="string('Amount')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<input type="text" name="Invoice-Amount" id="Invoice-Amount" class="input-string" autocomplete="off" 
+											onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+												<xsl:attribute name="ValidValue">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/ui-answers/Invoice/Balance" />
+												</xsl:attribute>
+											</input>
+										</td>
+									</tr>
+								</xsl:when>
+								<xsl:when test="count(/Response/ui-answers/Invoices/Results/rangeSample/Invoice) != 0">
+									<!-- Most Recent Invoice# -->
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Invoice')" />
+												<xsl:with-param name="field" select="string('RecentId')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<input type="text" name="Invoice-Recent-Id" id="Invoice-Recent-Id" class="input-string" autocomplete="off" 
+											onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+												<xsl:attribute name="ValidValue">
+													<xsl:text>:</xsl:text>
+													<xsl:for-each select="/Response/ui-answers/Invoices/Results/rangeSample/Invoice">
+														<xsl:value-of select="./Id" />
+														<xsl:text>:</xsl:text>
+													</xsl:for-each>
+												</xsl:attribute>
+											</input>
+										</td>
+									</tr>
+									<!-- Most Recent Invoice Amount -->
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Invoice')" />
+												<xsl:with-param name="field" select="string('RecentAmount')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<input type="text" name="Invoice-Amount" id="Invoice-Recent-Amount" class="input-string" autocomplete="off" 
+											onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+												<xsl:attribute name="ValidValue">
+													<xsl:text>:</xsl:text>
+													<xsl:for-each select="/Response/ui-answers/Invoices/Results/rangeSample/Invoice">
+														<xsl:value-of select="./Balance" />
+														<xsl:text>:</xsl:text>
+													</xsl:for-each>
+												</xsl:attribute>
+											</input>
+										</td>
+									</tr>
+								</xsl:when>
+							</xsl:choose>
+							
 							<!-- Direct Debit BSB -->
 							<xsl:if test="/Response/ui-answers/Account/DirectDebitDetails/DirectDebit">
 								<tr>

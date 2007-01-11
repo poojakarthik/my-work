@@ -38,13 +38,13 @@
 	if (!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1)
 	{
 		// Get the Charges the Invoice has
-		$cgsCharges		= $Style->attachObject ($invInvoice->Charges ());
+		$cgsCharges	= $Style->attachObject ($invInvoice->Charges ());
 		$cgsCharges->Sample ();
 	}
 	
 	// Get the CDRs the Invoice has
-	$cdrCDRs		= $Style->attachObject ($invInvoice->CDRs ());
-	$cdrCDRs->Constrain ('Invoice', '=', $invInvoice->Pull ('Id')->getValue ());
+	$cdrCDRs = $Style->attachObject ($invInvoice->CDRs ());
+	$cdrCDRs->Constrain ('InvoiceRun', '=', $invInvoice->Pull ('InvoiceRun')->getValue ());
 	
 	$cdrCDRs->Sample (
 		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1,

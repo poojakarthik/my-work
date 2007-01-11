@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CONTACT | MODULE_NOTE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CONTACT | MODULE_NOTE | MODULE_EMPLOYEE;
 	
 	// call application
 	require ('config/application.php');
@@ -44,7 +44,7 @@
 	$ntsNoteTypes	= $Style->attachObject (new NoteTypes ());
 	
 	// Get Associated Notes
-	$nosNotes		= $Style->attachObject (new Notes ());
+	$nosNotes = $Style->attachObject (new Notes);
 	$nosNotes->Constrain ('Account', '=', $_GET ['Id']);
 	$nosNotes->Sample (1, 5);
 	

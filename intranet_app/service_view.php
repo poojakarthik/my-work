@@ -13,7 +13,7 @@
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
 	//TODO!!!! - finish this
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_NOTE | MODULE_CARRIER | 
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_NOTE | MODULE_CARRIER | MODULE_EMPLOYEE | 
 							  MODULE_PROVISIONING | MODULE_RECURRING_CHARGE_TYPE | MODULE_BILLING | MODULE_CHARGE_TYPE;
 	
 	// call application
@@ -47,26 +47,32 @@
 	$actAccount		= $Style->attachObject (new Account ($srvService->Pull ('Account')->getValue ()));
 	
 	// Get information about Note Types
-	$ntsNoteTypes	= $Style->attachObject (new NoteTypes ());
+	$ntsNoteTypes	= $Style->attachObject (new NoteTypes);
 	
 	// Get Associated Notes
-	$nosNotes		= $Style->attachObject (new Notes ());
+	$nosNotes		= $Style->attachObject (new Notes);
 	$nosNotes->Constrain ('Service', '=', $_GET ['Id']);
 	$nosNotes->Sample ();
 	
+	
+	
 	// Load the List of Carrier Objects
-	$calCarriers	= $Style->attachObject (new Carriers ());
+	$calCarriers	= $Style->attachObject (new Carriers);
 	
 	// Load the List of Provisioning Request Type Objects
-	$prtPRQTypes	= $Style->attachObject (new ProvisioningRequestTypes ());
+	$prtPRQTypes	= $Style->attachObject (new ProvisioningRequestTypes);
+	
+	
 	
 	// ChargeType and RecurringChargeType
 	$tctCharges = $Style->attachObject (new dataArray ('TemplateChargeTypes'));
 	
-	$rclRecurringChargeTypes	= $tctCharges->Push (new RecurringChargeTypes ());
+	// Get the Recurring ChargeTypes which can be put against this Account
+	$rclRecurringChargeTypes	= $tctCharges->Push (new RecurringChargeTypes);
 	$rclRecurringChargeTypes->Sample ();
 	
-	$octChargeTypes				= $tctCharges->Push (new ChargeTypes ());
+	// Get the Charge Types which can be put against this Account
+	$octChargeTypes	= $tctCharges->Push (new ChargeTypes);
 	$octChargeTypes->Sample ();
 	
 	// Output the Account View

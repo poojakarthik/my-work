@@ -15,14 +15,26 @@
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
 				<xsl:choose>
+					<xsl:when test="/Response/Error = 'Account'">
+						The Account# you entered was not found in the database.
+					</xsl:when>
 					<xsl:when test="/Response/Error = 'ABN'">
 						The ABN# you entered was not found in the database.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'ACN'">
 						The ACN# you entered was not found in the database.
 					</xsl:when>
-					<xsl:when test="/Response/Error = 'Account'">
-						The Account# you entered was not found in the database.
+					<xsl:when test="/Response/Error = 'Invoice'">
+						The Invoice# you entered was not found in the database.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'FNN'">
+						The Line Number you entered was not found in the database.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'BusinessName'">
+						The Business Name you entered did not return any possible Accounts.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact'">
+						The First/Last Name you entered did not return any possible Contacts.
 					</xsl:when>
 				</xsl:choose>
 			</div>

@@ -22,22 +22,6 @@
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Contact')" />
-											<xsl:with-param name="field" select="string('Id')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/Contact/Id" />
-									</td>
-								</tr>
-								<tr>
-									<td colspan="2">
-										<div class="Seperator"></div>
-									</td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Contact')" />
 											<xsl:with-param name="field" select="string('Name')" />
 										</xsl:call-template>
 									</th>
@@ -232,8 +216,13 @@
 										<xsl:text>background-color: #</xsl:text>
 										<xsl:value-of select="./BackgroundColor" />
 										<xsl:text>;</xsl:text>
+										
 										<xsl:text>border: solid 1px #</xsl:text>
 										<xsl:value-of select="./BorderColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>color: #</xsl:text>
+										<xsl:value-of select="./TextColor" />
 										<xsl:text>;</xsl:text>
 									</xsl:attribute>
 									<xsl:attribute name="value">
@@ -271,8 +260,17 @@
 						<xsl:variable name="Note" select="." />
 						<div class="Note">
 							<xsl:attribute name="style">
-								<xsl:text>background-color: #</xsl:text><xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" /><xsl:text>;</xsl:text>
-								<xsl:text>border: solid 1px #</xsl:text><xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" /><xsl:text>;</xsl:text>
+								<xsl:text>background-color: #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" />
+								<xsl:text>;</xsl:text>
+								
+								<xsl:text>border: solid 1px #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" />
+								<xsl:text>;</xsl:text>
+								
+								<xsl:text>color: #</xsl:text>
+								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/TextColor" />
+								<xsl:text>;</xsl:text>
 							</xsl:attribute>
 							
 							<div class="small">
@@ -297,7 +295,7 @@
 							</div>
 							<div class="Seperator"></div>
 							
-							<xsl:value-of select="./Note" />
+							<xsl:value-of select="./Note" disable-output-escaping="yes" />
 						</div>
 						<div class="Seperator"></div>
 					</xsl:for-each>
