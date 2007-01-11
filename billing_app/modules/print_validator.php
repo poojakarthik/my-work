@@ -215,7 +215,7 @@ foreach ($arrFileContents as $strLine)
 					echo "- ERROR: Unknown Graph Type (0$intGraphType) on line $i\n";
 					die;
 			}
-			ExpectedRecordType($intLastRecordType, $arrExpectedRecodTypes, $i);
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			
 			// FIXME: This will work for Vertical Bargraphs, but nothing else
 			$arrData[$strGraphXTitle]	= $mixResult['Title'];
@@ -441,10 +441,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 {
 	if (!is_array($mixExpectedTypes))
 	{
-		Debug($mixExpectedTypes);
 		$mixExpectedTypes = Array($mixExpectedTypes);
-		Debug($mixExpectedTypes);
-		DebugBacktrace();
 	}
 	
 	$bolMatch = FALSE;
