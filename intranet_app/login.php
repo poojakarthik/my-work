@@ -17,6 +17,11 @@
 	// call application
 	require ('config/application.php');
 	
+	if ($athAuthentication->isAuthenticated ())
+	{
+		header ('Location: console.php'); exit;
+	}
+	
 	if (isset ($_POST ['UserName']) && isset ($_POST ['PassWord']))
 	{
 		// If the UserName and the PassWord fields match the informatiom in the database

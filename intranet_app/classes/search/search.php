@@ -250,7 +250,7 @@
 				$this->_seoOrder
 			);
 			
-			$this->Push ($serResults->Sample ($intPage, $intLength));
+			return $this->Push ($serResults->Sample ($intPage, $intLength));
 		}
 	}
 	

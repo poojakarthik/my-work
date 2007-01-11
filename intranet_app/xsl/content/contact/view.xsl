@@ -206,7 +206,7 @@
 						<input type="hidden" name="AccountGroup">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
-								<xsl:value-of select="/Response/Account/AccountGroup" />
+								<xsl:value-of select="/Response/Contact/AccountGroup" />
 							</xsl:attribute>
 						</input>
 						<input type="hidden" name="Contact">

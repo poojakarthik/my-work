@@ -23,21 +23,14 @@
 	// Authenticate the Note Type
 	$ntyNoteType = new NoteType ($_POST ['NoteType']);
 	
-	if (!$_POST ['Note'])
-	{
-		header ("Location: index.php");
-		exit;
-	}
-	
-	
 	try
 	{
 		// You MUST have an Account Group
-		$agrAccountGroup = new AccountGroup ($_POST ['AccountGroup']);
+		$agrAccountGroup = $Style->attachObject (new AccountGroup ($_POST ['AccountGroup']));
 	}
 	catch (Exception $e)
 	{
-		header ("Location: index.php");
+		$Style->Output ('xsl/content/accountgroup/notfound.xsl');
 		exit;
 	}
 	
@@ -46,11 +39,11 @@
 	{
 		try
 		{
-			$actAccount = $agrAccountGroup->getAccount ($_POST ['Account']);
+			$actAccount = $Style->attachObject ($agrAccountGroup->getAccount ($_POST ['Account']));
 		}
 		catch (Exception $e)
 		{
-			header ("Location: index.php");
+			$Style->Output ('xsl/content/account/notfound.xsl');
 			exit;
 		}
 	}
@@ -60,11 +53,11 @@
 	{
 		try
 		{
-			$cntContact = new Contact ($_POST ['Contact']);
+			$cntContact = $Style->attachObject (new Contact ($_POST ['Contact']));
 		}
 		catch (Exception $e)
 		{
-			header ("Location: index.php");
+			$Style->Output ('xsl/content/contact/notfound.xsl');
 			exit;
 		}
 	}
@@ -74,13 +67,19 @@
 	{
 		try
 		{
-			$srvService = new Service ($_POST ['Service']);
+			$srvService = $Style->attachObject (new Service ($_POST ['Service']));
 		}
 		catch (Exception $e)
 		{
-			header ("Location: index.php");
+			$Style->Output ('xsl/content/service/notfound.xsl');
 			exit;
 		}
+	}
+	
+	if (!$_POST ['Note'])
+	{
+		$Style->Output ('xsl/content/notes/add_empty.xsl');
+		exit;
 	}
 	
 	// Get the Notes Controller
@@ -101,7 +100,20 @@
 		)
 	);
 	
-	header ('Location: note_added.php');
-	exit;
+	if ($srvService)
+	{
+		header ('Location: service_view.php?Id=' . $_POST ['Service']);
+		exit;
+	}
+	else if ($cntContact)
+	{
+		header ('Location: contact_view.php?Id=' . $_POST ['Contact']);
+		exit;
+	}
+	else if ($actAccount)
+	{
+		header ('Location: account_view.php?Id=' . $_POST ['Account']);
+		exit;
+	}
 	
 ?>

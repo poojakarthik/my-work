@@ -36,64 +36,6 @@
 					
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
-							<th class="JustifiedWidth">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Account')" />
-									<xsl:with-param name="field" select="string('BusinessName')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<input type="text" name="ui-BusinessName" class="input-string">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/BusinessName" />
-									</xsl:attribute>
-								</input>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2">
-								<div class="Seperator"></div>
-							</td>
-						</tr>
-						<tr>
-							<th>
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Contact')" />
-									<xsl:with-param name="field" select="string('FirstName')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<input type="text" name="ui-Contact-First" class="input-string">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/Contact-First" />
-									</xsl:attribute>
-								</input>
-							</td>
-						</tr>
-						<tr>
-							<th>
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Contact')" />
-									<xsl:with-param name="field" select="string('LastName')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<input type="text" name="ui-Contact-Last" class="input-string">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/Contact-Last" />
-									</xsl:attribute>
-								</input>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2">
-								<div class="Seperator"></div>
-							</td>
-						</tr>
-						<tr>
 							<th>
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -188,9 +130,67 @@
 							</td>
 						</tr>
 						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('BusinessName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="ui-BusinessName" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/BusinessName" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('FirstName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="ui-Contact-First" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Contact-First" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('LastName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="ui-Contact-Last" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Contact-Last" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
 							<td></td>
 							<td>
-								<input type="submit" class="input-submit" value="Find Contact &#0187;" />
+								<input type="submit" class="input-submit" value="Find Customer &#0187;" />
 							</td>
 						</tr>
 					</table>
