@@ -491,7 +491,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 	$i = 0;
 	foreach($arrRecordDefine as $strKey=>$strValue)
 	{
-		$arrLine[$strKey] = trim(substr($strLine, $strValue['Start'], $strValue['Length']));
+		$arrLine[$strKey] = substr($strLine, $strValue['Start'], $strValue['Length']);
 		$mixData = $arrLine[$strKey];
 
 		// Process the field
@@ -579,6 +579,8 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				Debug("'$mixData'");
 				return "Invalid Data Type in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 		}
+		
+		$arrLine[$strKey] = trim($arrLine[$strKey]);
 	}
 	
 	return $arrLine;
