@@ -297,11 +297,11 @@ die();
 					{
 						if ($arrCharge['Nature'] == "DR")
 						{
-							$fltServiceDebits	= $arrCharge['Amount'];
+							$fltServiceDebits	+= $arrCharge['Amount'];
 						}
 						else
 						{
-							$fltServiceCredits	= $arrCharge['Amount'];
+							$fltServiceCredits	+= $arrCharge['Amount'];
 						}
 					}
 					$this->_rptBillingReport->AddMessage(MSG_OK);
@@ -713,7 +713,7 @@ die();
 		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
 		$selGetInvoiceRun->Execute();
 		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
-		$strInvoiceRun = $arrInvoiceRun[0];
+		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
 		
 		// empty temp invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
