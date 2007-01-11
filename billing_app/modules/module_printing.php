@@ -594,6 +594,7 @@
 		if($arrMetaData['Invoices'] == 0)
 		{
 			// Nothing to do
+			echo "LAME";
 			return FALSE;
 		}
 
