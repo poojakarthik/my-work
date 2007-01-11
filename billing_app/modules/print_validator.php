@@ -432,6 +432,8 @@ foreach ($arrFileContents as $strLine)
 	$intLastRecordType = $mixResult['RecordType'];
 }
 
+die;
+
 
 
 
