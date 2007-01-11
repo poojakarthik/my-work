@@ -42,7 +42,8 @@ switch ($_GET['action'])
 	case "execute":
 	default:
 		// By default, run Execute()
-		$bolResponse = $appBilling->Execute();
+		$bolResponse = $appBilling->Revoke();
+		//$bolResponse = $appBilling->Execute();
 		break;
 }
 
