@@ -265,7 +265,7 @@
 		$arrPrintDefine['PaymentData']		['AccountNo']		['Type']	= BILL_TYPE_INTEGER;
 		
 		$arrPrintDefine['PaymentData']		['DateDue']			['Start']	= 83;
-		$arrPrintDefine['PaymentData']		['DateDue']			['Length']	= 13;
+		$arrPrintDefine['PaymentData']		['DateDue']			['Length']	= 11;
 		$arrPrintDefine['PaymentData']		['DateDue']			['Type']	= BILL_TYPE_LONGDATE;
 		
 		$arrPrintDefine['PaymentData']		['TotalOwing']		['Start']	= 96;
