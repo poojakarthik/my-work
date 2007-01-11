@@ -80,21 +80,14 @@
 			$this->Push (
 				new dataBoolean (
 					'Archived', 
-					(
-						!(
-							($this->Pull ('ClosedOn')->Pull ('year')->getValue () == 0) &&
-							($this->Pull ('ClosedOn')->Pull ('month')->getValue () == 0) &&
-							($this->Pull ('ClosedOn')->Pull ('day')->getValue () == 0)
-						)
-					)
-					||
-					(
-						mktime (
-							0, 0, 0,
-							$this->Pull ('ClosedOn')->Pull ('month')->getValue (),
-							$this->Pull ('ClosedOn')->Pull ('day')->getValue (),
-							$this->Pull ('ClosedOn')->Pull ('year')->getValue ()
-						) > mktime (0, 0, 0)
+					$this->Pull ('ClosedOn')->Pull ('month') && 
+					$this->Pull ('ClosedOn')->Pull ('day') && 
+					$this->Pull ('ClosedOn')->Pull ('year') &&
+					mktime (0, 0, 0) <= mktime (
+						23, 59, 59,
+						$this->Pull ('ClosedOn')->Pull ('month')->getValue (),
+						$this->Pull ('ClosedOn')->Pull ('day')->getValue (),
+						$this->Pull ('ClosedOn')->Pull ('year')->getValue ()
 					)
 				)
 			);

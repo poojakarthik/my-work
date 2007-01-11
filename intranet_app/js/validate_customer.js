@@ -107,7 +107,7 @@ function ValidateCustomerClass ()
 		}
 		
 		// see if we have a high enough score to be valid
-			
+		
 		// 2 items from level 1
 		if (arrScore[1] >= 2)
 		{

@@ -5,14 +5,11 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h1>Create Account</h1>
-		<div class="Seperator"></div>
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
 
 		<form method="POST" action="account_add.php">
-			<div class="Seperator"></div>
-			
 			<xsl:choose>
 				<xsl:when test="/Response/AccountGroup">
 					<div class="Filter-Form">
@@ -46,7 +43,7 @@
 						You are currently requesting to add an Account for a Customer who we have
 						no pre-existing relationships with. If a pre-existing relationship with the 
 						customer exists, please create a new Account from the Console of an 
-						account which has been setup previously.
+						Account which is currently in the system.
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -66,7 +63,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="BusinessName" class="input-string">
+								<input type="text" name="Account[BusinessName]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/BusinessName" />
@@ -82,7 +79,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="TradingName" class="input-string">
+								<input type="text" name="Account[TradingName]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/TradingName" />
@@ -103,7 +100,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ABN" class="input-ABN">
+								<input type="text" name="Account[ABN]" class="input-ABN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/ABN" />
@@ -119,7 +116,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ACN" class="input-ACN">
+								<input type="text" name="Account[ACN]" class="input-ACN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/ACN" />
@@ -140,7 +137,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Address1" class="input-string">
+								<input type="text" name="Account[Address1]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/Address1" />
@@ -156,7 +153,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Address2" class="input-string">
+								<input type="text" name="Account[Address2]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/Address2" />
@@ -172,7 +169,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Suburb" class="input-string">
+								<input type="text" name="Account[Suburb]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/Suburb" />
@@ -188,7 +185,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Postcode" class="input-string">
+								<input type="text" name="Account[Postcode]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/Postcode" />
@@ -204,7 +201,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="State" class="input-string">
+								<input type="text" name="Account[State]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/State" />
@@ -225,7 +222,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<select name="CustomerGroup">
+								<select name="Account[CustomerGroup]">
 									<xsl:for-each select="/Response/CustomerGroups/CustomerGroup">
 										<option>
 											<xsl:attribute name="value">
@@ -250,7 +247,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Billing Method</h2>
+			<h2>Billing Information</h2>
 			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
@@ -264,7 +261,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<select name="BillingMethod">
+								<select name="Account[BillingMethod]">
 									<xsl:for-each select="/Response/BillingMethods/BillingMethod">
 										<option>
 											<xsl:attribute name="value">
@@ -309,7 +306,7 @@
 							<td>
 								<table border="0" cellpadding="5" cellspacing="0">
 									<tr>
-										<td><input type="radio" name="BillingType" value="3" id="PaymentMethod:AC" /></td>
+										<td><input type="radio" name="Account[BillingType]" value="3" id="PaymentMethod:AC" /></td>
 										<th>
 											<label for="PaymentMethod:AC">
 												Make charges against an Account
@@ -317,7 +314,7 @@
 										</th>
 									</tr>
 									<tr>
-										<td><input type="radio" name="BillingType" value="1" id="PaymentMethod:DDR" /></td>
+										<td><input type="radio" name="Account[BillingType]" value="1" id="PaymentMethod:DDR" /></td>
 										<th>
 											<label for="PaymentMethod:DDR">
 												Pay this account via Direct Debit
@@ -402,7 +399,7 @@
 									</tr>
 									
 									<tr>
-										<td><input type="radio" name="BillingType" value="2" id="PaymentMethod:CC" /></td>
+										<td><input type="radio" name="Account[BillingType]" value="2" id="PaymentMethod:CC" /></td>
 										<th>
 											<label for="PaymentMethod:CC">
 												Pay this account via Credit Card

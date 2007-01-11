@@ -96,13 +96,13 @@
 			$bmeBillingMethods = new BillingMethods ();
 			if (!$bmeBillingMethods->setValue ($arrDetails ['Account']['BillingMethod']))
 			{
-				throw new Exception ('BillingMethod');
+				throw new Exception ('Not a valid BillingMethod: ' . $arrDetails ['Account']['BillingMethod']);
 			}
 			
 			$btyBillingTypes = new BillingTypes ();
 			if (!$btyBillingTypes->setValue ($arrDetails ['Account']['BillingType']))
 			{
-				throw new Exception ('BillingType');
+				throw new Exception ('Not a valid BillingType: ' . $arrDetails ['Account']['BillingType']);
 			}
 			
 			// Check the Contact is in the Account Group

@@ -70,12 +70,19 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<xsl:call-template name="dt:format-date-time">
-											<xsl:with-param name="year"	select="/Response/Contact/DOB/year" />
-											<xsl:with-param name="month"	select="/Response/Contact/DOB/month" />
-											<xsl:with-param name="day"		select="/Response/Contact/DOB/day" />
-											<xsl:with-param name="format"	select="'%b %d, %Y'"/>
-										</xsl:call-template>
+										<xsl:choose>
+											<xsl:when test="/Response/Contact/DOB/year">
+												<xsl:call-template name="dt:format-date-time">
+													<xsl:with-param name="year"		select="/Response/Contact/DOB/year" />
+													<xsl:with-param name="month"	select="/Response/Contact/DOB/month" />
+													<xsl:with-param name="day"		select="/Response/Contact/DOB/day" />
+													<xsl:with-param name="format"	select="'%b %d, %Y'"/>
+												</xsl:call-template>
+											</xsl:when>
+											<xsl:otherwise>
+												<strong><span class="Attention">No Date of Birth</span></strong>
+											</xsl:otherwise>
+										</xsl:choose>
 									</td>
 								</tr>
 								<tr>

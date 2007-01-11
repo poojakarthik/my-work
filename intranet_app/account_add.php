@@ -12,97 +12,98 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_CUSTOMER_GROUP | MODULE_CREDIT_CARD | MODULE_BILLING | MODULE_ACCOUNT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_ACCOUNT | MODULE_CUSTOMER_GROUP | MODULE_CREDIT_CARD | MODULE_BILLING;
 	
 	// call application
 	require ('config/application.php');
 	
 	
+	// First of all, set an Error Container
 	$oblstrError = $Style->attachObject (new dataString ('Error', ''));
 	
-	try
+	
+	// If there is an Account Group Specified, then we desire to create
+	// An account that has some predefined information contained in it.
+	// Pull the information from the Database and store it in an object.
+	
+	if ($_GET ['AccountGroup'] || $_POST ['AccountGroup'])
 	{
-		if ($_GET ['AccountGroup'])
+		try
 		{
-			$acgAccountGroup = $Style->attachObject (new AccountGroup ($_GET ['AccountGroup']));
+			if ($_GET ['AccountGroup'])
+			{
+				$acgAccountGroup = $Style->attachObject (new AccountGroup ($_GET ['AccountGroup']));
+			}
+			else if ($_POST ['AccountGroup'])
+			{
+				$acgAccountGroup = $Style->attachObject (new AccountGroup ($_POST ['AccountGroup']));
+			}
+			
+			if ($acgAccountGroup)
+			{
+				$ctsContacts = $Style->attachObject ($acgAccountGroup->getContacts ());
+			}
 		}
-		else if ($_POST ['AccountGroup'])
+		catch (Exception $e)
 		{
-			$acgAccountGroup = $Style->attachObject (new AccountGroup ($_POST ['AccountGroup']));
+			$Style->Output ('xsl/content/accountgroup/notfound.xsl');
+			exit;
 		}
 	}
-	catch (Exception $e)
-	{
-		$Style->Output ('xsl/content/accountgroup/notfound.xsl');
-		exit;
-	}
 	
-	if ($acgAccountGroup)
-	{
-		$ctsContacts = $Style->attachObject ($acgAccountGroup->getContacts ());
-	}
+	// Attach essentials (BillingMethod, CustomerGroup and CreditCardTypes)
+	$bmeBillingMethods		= $Style->attachObject (new BillingMethods);
+	$cgsCustomerGroups		= $Style->attachObject (new CustomerGroups);
+	$ccsCreditCardTypes		= $Style->attachObject (new CreditCardTypes);
 	
-	// Attach essentials (CustomerGroup and CreditCardTypes)
-	$cgsCustomerGroups		= $Style->attachObject (new CustomerGroups ());
-	$ccsCreditCardTypes		= $Style->attachObject (new CreditCardTypes ());
 	
-	// Pull documentation information for an Account
-	$docDocumentation->Explain ('AccountGroup');
-	$docDocumentation->Explain ('Account');
-	$docDocumentation->Explain ('Archive');
-	$docDocumentation->Explain ('Contact');
-	$docDocumentation->Explain ('CustomerGroup');
-	$docDocumentation->Explain ('Billing');
-	$docDocumentation->Explain ('Payment');
-	$docDocumentation->Explain ('Direct Debit');
-	$docDocumentation->Explain ('Credit Card');
+	// Set up the basis of information within the system
 	
-	// Setup the BillingMethod
-	$bmeBillingMethods = $Style->attachObject (new BillingMethods ());
-		
+	// Start with the Account Entity
+	$oblarrAccount = $Style->attachObject (new dataArray ('Account'));
+	$oblarrAccount->Push	(new dataString	('BusinessName',	$_POST ['Account']['BusinessName']));
+	$oblarrAccount->Push	(new dataString	('TradingName',		$_POST ['Account']['TradingName']));
+	$oblarrAccount->Push	(new ABN		('ABN',				$_POST ['Account']['ABN']));
+	$oblarrAccount->Push	(new ACN		('ACN',				$_POST ['Account']['ACN']));
+	$oblarrAccount->Push	(new dataString	('Address1',		$_POST ['Account']['Address1']));
+	$oblarrAccount->Push	(new dataString	('Address2',		$_POST ['Account']['Address2']));
+	$oblarrAccount->Push	(new dataString	('Suburb',			$_POST ['Account']['Suburb']));
+	$oblarrAccount->Push	(new dataString	('Postcode',		$_POST ['Account']['Postcode']));
+	$oblarrAccount->Push	(new dataString	('State',			$_POST ['Account']['State']));
+	
+	$oblarrDirectDR = $Style->attachObject (new dataArray ('DirectDebit'));
+	$oblarrDirectDR->Push	(new dataString	('BankName',		$_POST ['DDR']['BankName']));
+	$oblarrDirectDR->Push	(new dataString	('BSB',				$_POST ['DDR']['BSB']));
+	$oblarrDirectDR->Push	(new dataString	('AccountNumber',	$_POST ['DDR']['AccountNumber']));
+	$oblarrDirectDR->Push	(new dataString	('AccountName',		$_POST ['DDR']['AccountName']));
+	
+	$oblarrCRCard = $Style->attachObject (new dataArray ('CreditCard'));
+	$oblarrCRCard->Push		(new dataString	('Name',			$_POST ['CC']['Name']));
+	$oblarrCRCard->Push		(new dataString	('CardNumber',		$_POST ['CC']['CardNumber']));
+	$oblarrCRCard->Push		(new dataInteger('ExpMonth',		$_POST ['CC']['ExpMonth']));
+	$oblarrCRCard->Push		(new dataInteger('ExpYear',			$_POST ['CC']['ExpYear']));
+	
+	$oblarrContact = $Style->attachObject (new dataArray ('Contact'));
+	
+	$oblarrContact->Push	(new dataString	('Title',			$_POST ['Contact']['Title']));
+	$oblarrContact->Push	(new dataString	('FirstName',		$_POST ['Contact']['FirstName']));
+	$oblarrContact->Push	(new dataString	('LastName',		$_POST ['Contact']['LastName']));
+	$oblarrContact->Push	(new dataString	('JobTitle',		$_POST ['Contact']['JobTitle']));
+	$oblarrContact->Push	(new dataString	('Email',			$_POST ['Contact']['Email']));
+	$oblarrContact->Push	(new dataInteger('DOB-year',		$_POST ['Contact']['DOB']['year']));
+	$oblarrContact->Push	(new dataInteger('DOB-month',		$_POST ['Contact']['DOB']['month']));
+	$oblarrContact->Push	(new dataInteger('DOB-day',			$_POST ['Contact']['DOB']['day']));
+	$oblarrContact->Push	(new dataString	('Phone',			$_POST ['Contact']['Phone']));
+	$oblarrContact->Push	(new dataString	('Mobile',			$_POST ['Contact']['Mobile']));
+	$oblarrContact->Push	(new dataString	('Fax',				$_POST ['Contact']['Fax']));
+	$oblarrContact->Push	(new dataString	('UserName',		$_POST ['Contact']['UserName']));
+	$oblarrContact->Push	(new dataString	('PassWord',		$_POST ['Contact']['PassWord']));
 	
 	// If we're wishing to save the details, we can identify this by
-	// whether or not we're using GET or POST
-	if ($_SERVER ['REQUEST_METHOD'] == "POST")
+	// whether or not we have identified a Business Name
+	if ($_POST ['Account']['BusinessName'])
 	{
-		$oblarrAccount = $Style->attachObject (new dataArray ('Account'));
-		$oblarrAccount->Push (new dataString		('BusinessName',		$_POST ['BusinessName']		));
-		$oblarrAccount->Push (new dataString		('TradingName',		$_POST ['TradingName']			));
-		$oblarrAccount->Push (new ABN				('ABN',					$_POST ['ABN']					));
-		$oblarrAccount->Push (new ACN				('ACN',					$_POST ['ACN']					));
-		$oblarrAccount->Push (new dataString		('Address1',			$_POST ['Address1']				));
-		$oblarrAccount->Push (new dataString		('Address2',			$_POST ['Address2']				));
-		$oblarrAccount->Push (new dataString		('Suburb',				$_POST ['Suburb']				));
-		$oblarrAccount->Push (new dataString		('Postcode',			$_POST ['Postcode']				));
-		$oblarrAccount->Push (new dataString		('State',				$_POST ['State']				));
-		
-		$oblarrDirectDebit = $Style->attachObject (new dataArray ('DirectDebit'));
-		$oblarrDirectDebit->Push (new dataString		('BankName',		$_POST ['DDR']['BankName']			));
-		$oblarrDirectDebit->Push (new dataString		('BSB',				$_POST ['DDR']['BSB']				));
-		$oblarrDirectDebit->Push (new dataString		('AccountNumber',	$_POST ['DDR']['AccountNumber']	));
-		$oblarrDirectDebit->Push (new dataString		('AccountName',	$_POST ['DDR']['AccountName']		));
-		
-		$oblarrCreditCard = $Style->attachObject (new dataArray ('CreditCard'));
-		$oblarrCreditCard->Push (new dataString		('Name',				$_POST ['CC']['Name']					));
-		$oblarrCreditCard->Push (new dataString		('CardNumber',			$_POST ['CC']['CardNumber']			));
-		$oblarrCreditCard->Push (new dataInteger	('ExpMonth',			$_POST ['CC']['ExpMonth']				));
-		$oblarrCreditCard->Push (new dataInteger	('ExpYear',				$_POST ['CC']['ExpYear']				));
-		
-		$oblarrContact = $Style->attachObject (new dataArray ('Contact'));
-		
-		$oblarrContact->Push (new dataString		('Title',			$_POST ['Contact']['Title']			));
-		$oblarrContact->Push (new dataString		('FirstName',		$_POST ['Contact']['FirstName']	));
-		$oblarrContact->Push (new dataString		('LastName',		$_POST ['Contact']['LastName']		));
-		$oblarrContact->Push (new dataString		('JobTitle',		$_POST ['Contact']['JobTitle']		));
-		$oblarrContact->Push (new dataString		('Email',			$_POST ['Contact']['Email']		));
-		$oblarrContact->Push (new dataInteger		('DOB-year',		$_POST ['Contact']['DOB']['year']	));
-		$oblarrContact->Push (new dataInteger		('DOB-month',		$_POST ['Contact']['DOB']['month']	));
-		$oblarrContact->Push (new dataInteger		('DOB-day',			$_POST ['Contact']['DOB']['day']	));
-		$oblarrContact->Push (new dataString		('Phone',			$_POST ['Contact']['Phone']			));
-		$oblarrContact->Push (new dataString		('Mobile',			$_POST ['Contact']['Mobile']		));
-		$oblarrContact->Push (new dataString		('Fax',				$_POST ['Contact']['Fax']			));
-		$oblarrContact->Push (new dataString		('UserName',		$_POST ['Contact']['UserName']		));
-		$oblarrContact->Push (new dataString		('PassWord',		$_POST ['Contact']['PassWord']		));
+		debug ($_POST); exit;
 		
 		$selUserName = new StatementSelect ('Contact', 'Id', 'UserName = <UserName> AND Archived = 0');
 		$selUserName->Execute (array ('UserName' => $_POST ['Contact']['UserName']));
@@ -131,25 +132,25 @@
 				$cntContact = new Contact ($_POST ['Contact']['Id']);
 			}
 			
-			$agsAccountGroups = new AccountGroups ();
+			$agsAccountGroups = new AccountGroups;
 			
 			$intAccount = $agsAccountGroups->Add (
 				(($acgAccountGroup) ? $acgAccountGroup : null),
 				(($cntContact) ? $cntContact : null),
 				Array (
 					"Account"		=> Array (
-						"BusinessName"		=> $_POST ['BusinessName'],
-						"TradingName"		=> $_POST ['TradingName'],
-						"ABN"				=> $_POST ['ABN'],
-						"ACN"				=> $_POST ['ACN'],
-						"Address1"			=> $_POST ['Address1'],
-						"Address2"			=> $_POST ['Address2'],
-						"Suburb"			=> $_POST ['Suburb'],
-						"Postcode"			=> $_POST ['Postcode'],
-						"State"				=> $_POST ['State'],
-						"CustomerGroup"	=> $_POST ['CustomerGroup'],
-						"BillingType"		=> $_POST ['BillingType'],
-						"BillingMethod"		=> $_POST ['BillingMethod']
+						"BusinessName"		=> $_POST ['Account']['BusinessName'],
+						"TradingName"		=> $_POST ['Account']['TradingName'],
+						"ABN"				=> $_POST ['Account']['ABN'],
+						"ACN"				=> $_POST ['Account']['ACN'],
+						"Address1"			=> $_POST ['Account']['Address1'],
+						"Address2"			=> $_POST ['Account']['Address2'],
+						"Suburb"			=> $_POST ['Account']['Suburb'],
+						"Postcode"			=> $_POST ['Account']['Postcode'],
+						"State"				=> $_POST ['Account']['State'],
+						"CustomerGroup"		=> $_POST ['Account']['CustomerGroup'],
+						"BillingType"		=> $_POST ['Account']['BillingType'],
+						"BillingMethod"		=> $_POST ['Account']['BillingMethod']
 					),
 					
 					"CreditCard"	=> Array (
@@ -189,6 +190,17 @@
 			exit;
 		}
 	}
+	
+	// Pull the required documentation information
+	$docDocumentation->Explain ('AccountGroup');
+	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Archive');
+	$docDocumentation->Explain ('Contact');
+	$docDocumentation->Explain ('CustomerGroup');
+	$docDocumentation->Explain ('Billing');
+	$docDocumentation->Explain ('Payment');
+	$docDocumentation->Explain ('Direct Debit');
+	$docDocumentation->Explain ('Credit Card');
 	
 	$Style->Output ('xsl/content/account/add.xsl');
 	

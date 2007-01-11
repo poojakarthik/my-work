@@ -279,83 +279,87 @@
 								</td>
 							</tr>
 							<!-- Contact Date of Birth -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Contact')" />
-										<xsl:with-param name="field" select="string('DOB')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<select name="DOB-year" id="DOB-year" ValidLevel="1" autocomplete="off" 
-									onchange="ValidateCustomer.ValidateInput (this)"
-									onkeyup="ValidateCustomer.ValidateInput (this)">
-										<xsl:attribute name="ValidValue">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
-										</xsl:attribute>
-										<option value=""></option>
-										<xsl:call-template name="Date-Loop">
-											<xsl:with-param name="start" select="number('1900')" />
-											<xsl:with-param name="cease" select="number('1990')" />
-											<xsl:with-param name="step" select="number('1')" />
+							<xsl:if test="/Response/ui-answers/Contact/DOB/year">
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Contact')" />
+											<xsl:with-param name="field" select="string('DOB')" />
 										</xsl:call-template>
-									</select>
-									<select name="DOB-month" id="DOB-month" ValidLevel="1" autocomplete="off" 
-									onchange="ValidateCustomer.ValidateInput (this)"
-									onkeyup="ValidateCustomer.ValidateInput (this)">
-										<xsl:attribute name="ValidValue">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/ui-answers/Contact/DOB/month" />
-										</xsl:attribute>
-										<option value=""></option>
-										<option value="01">01 - JAN</option>
-										<option value="02">02 - FEB</option>
-										<option value="03">03 - MAR</option>
-										<option value="04">04 - APR</option>
-										<option value="05">05 - MAY</option>
-										<option value="06">06 - JUN</option>
-										<option value="07">07 - JUL</option>
-										<option value="08">08 - AUG</option>
-										<option value="09">09 - SEP</option>
-										<option value="10">10 - OCT</option>
-										<option value="11">11 - NOV</option>
-										<option value="12">12 - DEC</option>
-									</select>
-									<select name="DOB-day" id="DOB-day" ValidLevel="1" autocomplete="off" 
-									onchange="ValidateCustomer.ValidateInput (this)"
-									onkeyup="ValidateCustomer.ValidateInput (this)">
-										<xsl:attribute name="ValidValue">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
-										</xsl:attribute>
-										<option value=""></option>
-										<xsl:call-template name="Date-Loop">
-											<xsl:with-param name="start" select="number('1')" />
-											<xsl:with-param name="cease" select="number('31')" />
-											<xsl:with-param name="step" select="number('1')" />
-										</xsl:call-template>
-									</select>
-								</td>
-							</tr>
+									</th>
+									<td>
+										<select name="DOB-year" id="DOB-year" ValidLevel="1" autocomplete="off" 
+										onchange="ValidateCustomer.ValidateInput (this)"
+										onkeyup="ValidateCustomer.ValidateInput (this)">
+											<xsl:attribute name="ValidValue">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
+											</xsl:attribute>
+											<option value=""></option>
+											<xsl:call-template name="Date-Loop">
+												<xsl:with-param name="start" select="number('1900')" />
+												<xsl:with-param name="cease" select="number('1990')" />
+												<xsl:with-param name="step" select="number('1')" />
+											</xsl:call-template>
+										</select>
+										<select name="DOB-month" id="DOB-month" ValidLevel="1" autocomplete="off" 
+										onchange="ValidateCustomer.ValidateInput (this)"
+										onkeyup="ValidateCustomer.ValidateInput (this)">
+											<xsl:attribute name="ValidValue">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ui-answers/Contact/DOB/month" />
+											</xsl:attribute>
+											<option value=""></option>
+											<option value="01">01 - JAN</option>
+											<option value="02">02 - FEB</option>
+											<option value="03">03 - MAR</option>
+											<option value="04">04 - APR</option>
+											<option value="05">05 - MAY</option>
+											<option value="06">06 - JUN</option>
+											<option value="07">07 - JUL</option>
+											<option value="08">08 - AUG</option>
+											<option value="09">09 - SEP</option>
+											<option value="10">10 - OCT</option>
+											<option value="11">11 - NOV</option>
+											<option value="12">12 - DEC</option>
+										</select>
+										<select name="DOB-day" id="DOB-day" ValidLevel="1" autocomplete="off" 
+										onchange="ValidateCustomer.ValidateInput (this)"
+										onkeyup="ValidateCustomer.ValidateInput (this)">
+											<xsl:attribute name="ValidValue">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
+											</xsl:attribute>
+											<option value=""></option>
+											<xsl:call-template name="Date-Loop">
+												<xsl:with-param name="start" select="number('1')" />
+												<xsl:with-param name="cease" select="number('31')" />
+												<xsl:with-param name="step" select="number('1')" />
+											</xsl:call-template>
+										</select>
+									</td>
+								</tr>
+							</xsl:if>
 							<!-- Contact Email Address -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Contact')" />
-										<xsl:with-param name="field" select="string('Email')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<input type="text" name="Email" id="Email" class="input-string" autocomplete="off"
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
-										<xsl:attribute name="ValidValue">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/ui-answers/Contact/Email" />
-										</xsl:attribute>
-									</input>
-								</td>
-							</tr>
+							<xsl:if test="/Response/ui-answers/Contact/Email != ''">
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Contact')" />
+											<xsl:with-param name="field" select="string('Email')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="Email" id="Email" class="input-string" autocomplete="off"
+										onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+											<xsl:attribute name="ValidValue">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ui-answers/Contact/Email" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+							</xsl:if>
 						</table>
 					</div>
 				</div>
