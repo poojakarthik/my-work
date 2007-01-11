@@ -68,7 +68,7 @@
 			parent::__construct ('Note', $this->Pull ('Id')->getValue ());
 			
 			$strNote = $this->Pop ('Note')->getValue ();
-			$this->Push (new dataString ('Note', nl2br ($strNote)));
+			$this->Push (new dataString ('Note', nl2br (htmlentities ($strNote))));
 			
 			$intEmployee = $this->Pop ('Employee')->getValue ();
 			

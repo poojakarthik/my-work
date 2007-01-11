@@ -43,6 +43,9 @@
 	// Get the Service Address Information
 	$srvService->ServiceAddress ();
 	
+	// Get the Rate Plan this person is on
+	$srvService->Plan ();
+	
 	// Get the Account
 	$actAccount		= $Style->attachObject (new Account ($srvService->Pull ('Account')->getValue ()));
 	

@@ -56,6 +56,8 @@
 		function __construct ()
 		{
 			parent::__construct ('Invoices', 'Invoice', 'Invoice');
+			
+			$this->Constrain ('Status', 'NOT EQUAL', 'INVOICE_TEMP');
 			$this->Order ('CreatedOn', FALSE);
 		}
 	}

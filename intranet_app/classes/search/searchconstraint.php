@@ -120,6 +120,10 @@
 				case 'EQUALS':
 					$strConstraintType = '=';
 					break;
+				case '!=':
+				case 'NOT EQUAL':
+					$strConstraintType = '!=';
+					break;
 				default:
 					throw new Exception (
 						'The Constraint Operator that you wished to search with is Invalid.'
@@ -195,6 +199,8 @@
 				case 'LIKE':
 					return $this->_processLIKE ();
 				case '=':
+					return $this->_processEQUALS ();
+				case '!=':
 					return $this->_processEQUALS ();
 			}
 		}
