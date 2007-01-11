@@ -577,7 +577,7 @@ die();
 		}
 		
 		// change status of temp invoice CDRs
-		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS, FALSE);
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS."\t", FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = CDR_INVOICED;
 		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, $arrUpdateData);
