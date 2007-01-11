@@ -565,7 +565,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				}
 				break;
 			case BILL_TYPE_SHORTCURRENCY:
-				$strRegex = "/^\d+\.d+$/";
+				$strRegex = "/^-?\d+\.d+$/";	// FIXME: Remove -? in final version
 				if (!preg_match($strRegex, $mixData) || strlen($mixData) > $strValue['Length'])
 				{
 					// Not a number - invalid
