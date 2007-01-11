@@ -95,17 +95,24 @@
 			parent::__construct ('AuthenticatedEmployee');
 			
 			// Check their session is valid ...
-			$selAuthenticated = new StatementSelect ('Employee', '*', 'Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW() ', null, '1');
-			$selAuthenticated->useObLib (TRUE);
-			$selAuthenticated->Execute(Array('Id' => $_COOKIE ['Id'], 'SessionId' => $_COOKIE ['SessionId']));
+			$selEmployee = new StatementSelect (
+				'Employee', 
+				'*', 
+				'Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW() AND Archived = 0', 
+				null, 
+				'1'
+			);
+			
+			$selEmployee->useObLib (TRUE);
+			$selEmployee->Execute(Array('Id' => $_COOKIE ['Id'], 'SessionId' => $_COOKIE ['SessionId']));
 			
 			// If the session is invalid - then throw an exception
-			if ($selAuthenticated->Count () <> 1)
+			if ($selEmployee->Count () <> 1)
 			{
 				throw new Exception ('Class AuthenticatedEmployee could not instantiate because Session could not be Authenticated');
 			}
 			
-			$selAuthenticated->Fetch ($this);
+			$selEmployee->Fetch ($this);
 			
 			
 			

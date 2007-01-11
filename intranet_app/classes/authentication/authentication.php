@@ -43,12 +43,12 @@
 	{
 		
 		//------------------------------------------------------------------------//
-		// authenticatedEmployee
+		// aemAuthenticatedEmployee
 		//------------------------------------------------------------------------//
 		/**
-		 * AuthenticatedEmployee
+		 * aemAuthenticatedEmployee
 		 *
-		 * An object (of type AuthenticatedEmployee) or Null
+		 * An object of type AuthenticatedEmployee (or NULL)
 		 *
 		 * If the session is not Authenticated, this property would be NULL. If the
 		 * session is Authenticated, this property would be an object which represents 
@@ -84,8 +84,11 @@
 			{
 				// Check their session is valid ...
 				$selAuthenticated = new StatementSelect (
-					"Employee", "count(Id) as length, MAX(Priviledges) as Priviledges", 
-					"Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW()"
+					"Employee",
+					"count(Id) as length, MAX(Priviledges) as Priviledges", 
+					"Id = <Id> AND SessionID = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
+					null,
+					1
 				);
 				
 				$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
@@ -106,6 +109,7 @@
 					{
 						$arrUpdate = Array("SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
 					}
+					
 					$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
 					$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE ['Id']));
 					
@@ -193,7 +197,14 @@
 		public function Login ($strUserName, $strPassWord)
 		{
 			// Get the Id of the Employee (Identified by UserName and PassWord combination)
-			$selSelectStatement = new StatementSelect("Employee", "Id", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)", null, "1");
+			$selSelectStatement = new StatementSelect (
+				"Employee", 
+				"Id", 
+				"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
+				null, 
+				"1"
+			);
+			
 			$selSelectStatement->Execute(Array("UserName"=>$strUserName, "PassWord"=>$strPassWord));
 			
 			// If the employee could not be found, return false
@@ -216,7 +227,7 @@
 			$Update = Array("SessionId" => $SessionId, "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
 			
 			// update the table
-			$updUpdateStatement = new StatementUpdate("Employee", "UserName = <UserName> AND PassWord = SHA1(<PassWord>)", $Update);
+			$updUpdateStatement = new StatementUpdate("Employee", "UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", $Update);
 			
 			// If we successfully update the database table
 			if ($updUpdateStatement->Execute($Update, Array("UserName" => $strUserName, "PassWord" => $strPassWord)) == 1)
@@ -259,7 +270,7 @@
 			$Update = Array ("SessionExpire" => new MySQLFunction ("NOW()"), "SessionId" => "");
 			
 			// update the table
-			$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id> AND SessionId = <SessionId>", $Update);
+			$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id> AND SessionId = <SessionId> AND Archived = 0", $Update);
 			
 			// If we successfully update the database table
 			$updUpdateStatement->Execute($Update, Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));

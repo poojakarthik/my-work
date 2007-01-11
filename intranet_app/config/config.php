@@ -57,6 +57,7 @@ $arrConfig['Modules'][MODULE_CARRIER] 					= "carrier";
 $arrConfig['Modules'][MODULE_PROVISIONING] 				= "provisioning";
 $arrConfig['Modules'][MODULE_RECORD_TYPE] 				= "recordtype";
 $arrConfig['Modules'][MODULE_DOCUMENTATION] 			= "documentation";
+$arrConfig['Modules'][MODULE_EMPLOYEE]		 			= "employee";
 
 // Base Modules
 define("MODULE_BASE"			, MODULE_SEARCH | MODULE_DOCUMENTATION | MODULE_ACCOUNT | MODULE_CONTACT);

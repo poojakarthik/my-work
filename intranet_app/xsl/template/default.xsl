@@ -144,7 +144,7 @@
 												</tr>
 												<tr>
 													<td>
-														<a href="#" onclick="return displayRecentWindow()">
+														<a href="#" onclick="displayRecentWindow(); return false;">
 															<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
 														</a>
 													</td>

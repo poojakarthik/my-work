@@ -1592,6 +1592,16 @@
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
 		 
+				 
+				 
+	// Define Columns 
+	$strName = "Archived"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= "0"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean"; 
+		 
 					 
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
