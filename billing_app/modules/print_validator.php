@@ -444,6 +444,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 		Debug($mixExpectedTypes);
 		$mixExpectedTypes = Array($mixExpectedTypes);
 		Debug($mixExpectedTypes);
+		DebugBacktrace();
 	}
 	
 	$bolMatch = FALSE;
