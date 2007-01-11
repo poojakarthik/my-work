@@ -38,6 +38,7 @@
 		exit;
 	}
 	
+	// Get the Amount of Unbilled Charges
 	$srvService->UnbilledChargeCostCurrent ();
 	
 	// Get the Service Address Information
@@ -46,14 +47,17 @@
 	// Get the Rate Plan this person is on
 	$srvService->Plan ();
 	
-	// Get the Account
-	$actAccount		= $Style->attachObject (new Account ($srvService->Pull ('Account')->getValue ()));
+	
+	// Get the Account Information
+	$actAccount = $Style->attachObject (new Account ($srvService->Pull ('Account')->getValue ()));
+	
+	
 	
 	// Get information about Note Types
-	$ntsNoteTypes	= $Style->attachObject (new NoteTypes);
+	$ntsNoteTypes = $Style->attachObject (new NoteTypes);
 	
 	// Get Associated Notes
-	$nosNotes		= $Style->attachObject (new Notes);
+	$nosNotes = $Style->attachObject (new Notes);
 	$nosNotes->Constrain ('Service', '=', $_GET ['Id']);
 	$nosNotes->Sample ();
 	

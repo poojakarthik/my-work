@@ -217,6 +217,17 @@
 										</a>
 									</td>
 								</tr>
+								<tr>
+									<td colspan="2"><div class="Seperator"></div></td>
+								</tr>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service')" />
+											<xsl:with-param name="field" select="string('UnbilledCharges')" />
+										</xsl:call-template>
+									</th>
+								</tr>
 							</table>
 						</div>
 					</div>
