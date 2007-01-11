@@ -104,7 +104,7 @@ die();
 		
 		// Construct the Bill Output objects
 		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db, $arrConfig);
-		$this->_arrBillOutput[BILL_PRINT]->BuildOutput("45a49907d78ac", TRUE);
+		echo $this->_arrBillOutput[BILL_PRINT]->BuildOutput("45a49907d78ac", TRUE);
 	}
 	
 	//------------------------------------------------------------------------//
