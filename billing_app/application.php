@@ -652,6 +652,12 @@ die();
 		// Report Title
 		$this->_rptBillingReport->AddMessage(MSG_REVOKE_TITLE."\n");
 		
+		// Get InvoiceRun of the current Temporary Invoice Run
+		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
+		$selGetInvoiceRun->Execute();
+		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
+		$strInvoiceRun = $arrInvoiceRun[0];
+		
 		// empty temp invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
 		$trqTruncateTempTable = new QueryTruncate();
@@ -668,10 +674,12 @@ die();
 		}
 		
 		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
-		// TODO!!!! - remove InvoiceRun
 		$this->_rptBillingReport->AddMessage(MSG_REVERT_CDRS, FALSE);
-		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, Array('Status' => CDR_RATED));
-		if($updCDRStatus->Execute(Array('Status' => CDR_RATED), Array()) === FALSE)
+		$arrColumns = Array();
+		$arrColumns['Status']		= CDR_RATED;
+		$arrColumns['InvoiceRun']	= NULL;
+		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, $arrColumns);
+		if($updCDRStatus->Execute($arrColumns, Array()) === FALSE)
 		{
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
@@ -683,7 +691,30 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		//TODO!!!! - clean up Service total & Service type total table 
+		// clean up ServiceTotal table
+		$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t\t", FALSE);
+		$qryCleanServiceTotal = new Query();
+		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+
+		// clean up ServiceTypeTotal table
+		$this->_rptBillingReport->AddMessage("Cleaning ServiceTypeTotal table...\t\t\t\t", FALSE);
+		$qryCleanServiceTotal = new Query();
+		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
 		
 		return TRUE;
 	}
