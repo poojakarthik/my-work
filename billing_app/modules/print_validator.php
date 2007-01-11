@@ -94,8 +94,8 @@ foreach ($arrFileContents as $strLine)
 			$arrInvoice	= Array();
 
 			// Init PDF File
-			$pdfInvoice	= new Cezpdf("a4", "portrait");
-			$pdfInvoice->selectFont($strPDFDir."fonts/Helvetica.afm");
+			$pdf	= new Cezpdf("a4", "portrait");
+			$pdf->selectFont($strPDFDir."fonts/Helvetica.afm");
 			
 			// Add data to PDF
 			$arrTableData['INVOICE NUMBER']		= $mixResult['InvoiceNo'];
