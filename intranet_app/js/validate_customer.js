@@ -17,13 +17,6 @@ function ValidateCustomerClass ()
 				'Valid': (objObject.checked == true)
 			}
 		}
-		else if (objObject.type == 'select')
-		{
-			if (objObject.getAttribute ("ValidValue") == "")
-			{
-				objObject.disabled = true;
-			}
-		}
 		else if (objObject.id == 'DOB-year' || objObject.id == 'DOB-month' || objObject.id == 'DOB-day')
 		{
 			var dobyearcorrect = parseInt (document.getElementById ('DOB-year').getAttribute ('ValidValue'));
