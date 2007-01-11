@@ -437,7 +437,7 @@ foreach ($arrFileContents as $strLine)
 
 function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 {
-	if (is_array($mixExpectedTypes))
+	if (!is_array($mixExpectedTypes))
 	{
 		$mixExpectedTypes[] = $mixExpectedTypes;
 	}
