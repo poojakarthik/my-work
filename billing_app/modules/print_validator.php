@@ -537,7 +537,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				$mixData = (float)$mixData;
 				break;
 			case BILL_TYPE_SHORTDATE:
-				$strRegex = "/^\d{2}\/d{2}/\d{4}$/";
+				$strRegex = "/^\d{2}\/\d{2}\/\d{4}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
 					Debug("'$mixData'");
