@@ -439,7 +439,9 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 {
 	if (!is_array($mixExpectedTypes))
 	{
+		Debug($mixExpectedTypes);
 		$mixExpectedTypes = Array($mixExpectedTypes);
+		Debug($mixExpectedTypes);
 	}
 	
 	$bolMatch = FALSE;
