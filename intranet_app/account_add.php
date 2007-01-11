@@ -103,12 +103,14 @@
 	// whether or not we have identified a Business Name
 	if ($_POST ['Account']['BusinessName'])
 	{
-		debug ($_POST); exit;
-		
 		$selUserName = new StatementSelect ('Contact', 'Id', 'UserName = <UserName> AND Archived = 0');
 		$selUserName->Execute (array ('UserName' => $_POST ['Contact']['UserName']));
 		
-		if ($selUserName->Count () <> 0)
+		if (!$_POST ['Account']['TradingName'])
+		{
+			$oblstrError->setValue ('TradingName');
+		}
+		else if ($selUserName->Count () <> 0)
 		{
 			$oblstrError->setValue ('UserName');
 		}

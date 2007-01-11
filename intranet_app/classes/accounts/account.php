@@ -350,22 +350,38 @@
 		}
 		
 		//------------------------------------------------------------------------//
-		// DirectDebit
+		// CreditCard
 		//------------------------------------------------------------------------//
 		/**
-		 * DirectDebit()
+		 * CreditCard()
 		 *
-		 * Adds the Direct Debit information to the Object
+		 * Adds the Credit Card information for this account to the Object
 		 *
-		 * Adds the Direct Debit information to the Object
+		 * Adds the Credit Card information for this account to the Object
 		 *
-		 * @return	Void
+		 * @return	CreditCard
 		 *
 		 * @method
 		 */
 		
-		public function DirectDebit ()
+		public function CreditCard ()
 		{
+			if ($this->_crcCreditCard)
+			{
+				return $this->_crcCreditCard;
+			}
+			
+			$intCreditCard = $this->Pull ('CreditCard')->getValue ();
+			
+			if (!$intCreditCard)
+			{
+				return null;
+			}
+			
+			$oblarrCreditCardContainer = $this->Push (new dataArray ('CreditCardDetails', 'CreditCard'));
+			$this->_crcCreditCard = $oblarrCreditCardContainer->Push (new CreditCard ($intCreditCard));
+			
+			return $this->_crcCreditCard;
 		}
 	}
 	

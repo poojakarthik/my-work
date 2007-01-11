@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_INVOICE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_INVOICE | MODULE_CREDIT_CARD;
 	
 	// call application
 	require ('config/application.php');
@@ -340,6 +340,11 @@
 	{
 		if (!isset ($_POST ['Confirm']))
 		{
+			// Pull the Credit Card Information (if any)
+			$actAccount->CreditCard ();
+			
+			// Pull the Direct Debit Information (if any)
+			
 			$Style->Output ('xsl/content/contact/list_3.xsl');
 			exit;
 		}
