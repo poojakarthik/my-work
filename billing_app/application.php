@@ -541,7 +541,7 @@ die();
 		}
 		
 		// Get InvoiceRun of the current Temporary Invoice Run
-		$this->_rptBillingReport->AddMessage("Retrieving InvoiceRun Id to commit...\t\t", FALSE);
+		$this->_rptBillingReport->AddMessage("Retrieving InvoiceRun Id to commit...\t", FALSE);
 		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
 		$mixResult = $selGetInvoiceRun->Execute();
 		if ($mixResult === FALSE)
