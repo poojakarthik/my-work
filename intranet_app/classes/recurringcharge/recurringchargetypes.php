@@ -158,14 +158,16 @@
 			$arrData = Array (
 				"ChargeType"			=> $arrDetails ['ChargeType'],
 				"Description"			=> $arrDetails ['Description'],
-				"RecursionCharge"		=> $fltRecursionCharge,
 				"Nature"				=> $arrDetails ['Nature'],
-				"RecurringDate"			=> $arrDetails ['RecurringDate'],
-				"MinCharge"				=> $fltMinCharge,
-				"CancellationFee"		=> $fltCancellationFee,
-				"Continuable"			=> $arrDetails ['Continuable'],
-				"Fixed"					=> $arrDetails ['Fixed'],
+				"Fixed"					=> (isset ($arrDetails ['Fixed'])			? $arrDetails ['Fixed']			: 0),
 				"RecurringFreqType"		=> $arrDetails ['RecurringFreqType'],
+				"RecurringFreq"			=> $arrDetails ['RecurringFreq'],
+				"MinCharge"				=> $fltMinCharge,
+				"RecursionCharge"		=> $fltRecursionCharge,
+				"CancellationFee"		=> $fltCancellationFee,
+				"Continuable"			=> (isset ($arrDetails ['Continuable'])		? $arrDetails ['Continuable']	: 0),
+				"PlanCharge"			=> (isset ($arrDetails ['PlanCharge'])		? $arrDetails ['PlanCharge']	: 0),
+				"UniqueCharge"			=> (isset ($arrDetails ['UniqueCharge'])	? $arrDetails ['UniqueCharge']	: 0),
 				"Archived"				=> 0
 			);
 			

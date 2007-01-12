@@ -10,27 +10,36 @@
 	require ('config/application_loader.php');
 	
 	// set page details
-	$arrPage['PopUp']		= TRUE;
-	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE | MODULE_RECURRING_CHARGE | MODULE_BILLING;
+	$arrPage['PopUp']		= FALSE;
+	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_INVOICE;
 	
 	// call application
 	require ('config/application.php');
 	
 	
-	
-	// Get the RecurringCharge
+	// Get Invoice PDF
 	try
 	{
-		$rctRecurringChargeType = $Style->attachObject (new RecurringChargeType ($_GET ['Id']));
+		// Try to pull the Invoice PDF
+		$strInvoice = getPDF (
+			$_GET ['Id'],
+			$_GET ['Year'],
+			$_GET ['Month']
+		);
+		
+		if ($strInvoice == "")
+		{
+			throw new Exception ("Not Found");
+		}
+		
+		echo $strInvoice;
 	}
 	catch (Exception $e)
 	{
-		$Style->Output ('xsl/content/windowclose.xsl');
+		// Dispaly Error
+		$Style->Output ('xsl/content/invoice/pdf_notfound.xsl');
 		exit;
 	}
-	
-	// Output the Account View
-	$Style->Output ('xsl/content/charges/recurringcharges/view.xsl');
 	
 ?>

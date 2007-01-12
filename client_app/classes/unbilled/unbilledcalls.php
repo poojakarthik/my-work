@@ -100,7 +100,7 @@
 			$selUnbilledCalls = new StatementSelect(
 				"CDR", 
 				"count(*) AS collationLength", 
-				"Invoice IS NULL AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)"
+				"InvoiceRun IS NULL AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)"
 			);
 			
 			$selUnbilledCalls->Execute(
@@ -163,7 +163,7 @@
 			$selCDRId = new StatementSelect (
 				"CDR", 
 				"Id", 
-				"Invoice IS NULL AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)",
+				"InvoiceRun IS NULL AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)",
 				null, 
 				$intIndex . ", 1"
 			);

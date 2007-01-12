@@ -134,10 +134,10 @@
 							</th>
 							<td>
 								<xsl:text>Every </xsl:text>
-								<input type="text" name="RecurringDate" class="input-string" size="1">
+								<input type="text" name="RecurringFreq" class="input-string" size="1">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/RecurringChargeType/RecurringDate" />
+										<xsl:value-of select="/Response/RecurringChargeType/RecurringFreq" />
 									</xsl:attribute>
 								</input>
 								<xsl:text> </xsl:text>
@@ -224,6 +224,62 @@
 										<td>
 											<label for="RecurringChargeType:Continuable">
 												Yes, keep charging for this after the Minimum Charged is reached.
+											</label>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
+									<xsl:with-param name="field" select="string('PlanCharge')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<table border="0" cellpadding="2" cellspacing="0">
+									<tr>
+										<td>
+											<input type="checkbox" name="PlanCharge" class="input-string" value="1" id="PlanCharge:TRUE">
+												<xsl:if test="/Response/RecurringChargeType/PlanCharge = 1">
+													<xsl:attribute name="checked">
+														<xsl:text>checked</xsl:text>
+													</xsl:attribute>
+												</xsl:if>
+											</input>
+										</td>
+										<td>
+											<label for="PlanCharge:TRUE">
+												Yes, this Recurring Charge is Specifically for Plans.
+											</label>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
+									<xsl:with-param name="field" select="string('UniqueCharge')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<table border="0" cellpadding="2" cellspacing="0">
+									<tr>
+										<td>
+											<input type="checkbox" name="UniqueCharge" class="input-string" value="1" id="UniqueCharge:TRUE">
+												<xsl:if test="/Response/RecurringChargeType/UniqueCharge = 1">
+													<xsl:attribute name="checked">
+														<xsl:text>checked</xsl:text>
+													</xsl:attribute>
+												</xsl:if>
+											</input>
+										</td>
+										<td>
+											<label for="UniqueCharge:TRUE">
+												Yes, this is a unique charge.
 											</label>
 										</td>
 									</tr>

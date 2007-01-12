@@ -132,7 +132,7 @@
 				"Description"			=> $arrDetails ['Description'],
 				"Amount"				=> $fltAmount,
 				"Nature"				=> $arrDetails ['Nature'],
-				"Fixed"					=> $arrDetails ['Fixed'],
+				"Fixed"					=> (isset ($arrDetails ['Fixed']) ? $arrDetails ['Fixed'] : 0),
 				"Archived"				=> 0
 			);
 			

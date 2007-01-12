@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE | MODULE_RECURRING_CHARGE_TYPE | MODULE_BILLING;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE | MODULE_RECURRING_CHARGE | MODULE_BILLING;
 	
 	// call application
 	require ('config/application.php');
@@ -34,6 +34,8 @@
 	$oblstrCancellationFee	= $oblarrRecurringChargeType->Push (new dataString ('CancellationFee', ''));
 	$oblbolContinuable		= $oblarrRecurringChargeType->Push (new dataBoolean ('Continuable', FALSE));
 	$oblbolFixed			= $oblarrRecurringChargeType->Push (new dataBoolean ('Fixed', FALSE));
+	$oblbolPlanCharge		= $oblarrRecurringChargeType->Push (new dataBoolean ('PlanCharge', FALSE));
+	$oblbolUniqueCharge		= $oblarrRecurringChargeType->Push (new dataBoolean ('UniqueCharge', FALSE));
 	
 	if ($_SERVER ['REQUEST_METHOD'] == "POST")
 	{
@@ -47,6 +49,8 @@
 		$oblstrCancellationFee	->setValue ($_POST ['CancellationFee']);
 		$oblbolContinuable		->setValue ($_POST ['Continuable']);
 		$oblbolFixed			->setValue ($_POST ['Fixed']);
+		$oblbolPlanCharge		->setValue ($_POST ['PlanCharge']);
+		$oblbolUniqueCharge		->setValue ($_POST ['UniqueCharge']);
 		
 		if (!$brqRecurringFreq->setValue ($_POST ['RecurringFreqType']))
 		{
@@ -82,14 +86,16 @@
 					Array (
 						"ChargeType"			=> $_POST ['ChargeType'],
 						"Description"			=> $_POST ['Description'],
-						"RecursionCharge"		=> $_POST ['RecursionCharge'],
 						"Nature"				=> $_POST ['Nature'],
-						"RecurringDate"			=> $_POST ['RecurringDate'],
+						"RecurringFreq"			=> $_POST ['RecurringFreq'],
+						"RecurringFreqType"		=> $_POST ['RecurringFreqType'],
 						"MinCharge"				=> $_POST ['MinCharge'],
+						"RecursionCharge"		=> $_POST ['RecursionCharge'],
 						"CancellationFee"		=> $_POST ['CancellationFee'],
 						"Continuable"			=> $_POST ['Continuable'],
 						"Fixed"					=> $_POST ['Fixed'],
-						"RecurringFreqType"		=> $_POST ['RecurringFreqType']
+						"PlanCharge"			=> $_POST ['PlanCharge'],
+						"UniqueCharge"			=> $_POST ['UniqueCharge']
 					)
 				);
 				
