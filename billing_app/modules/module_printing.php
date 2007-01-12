@@ -101,7 +101,7 @@
 																"RecordType AS RType," .
 																"Service",
 																$arrColumns,
-																"RecordType.Group = RType.Id AND Service.Account = <Account> AND InvoiceRun = <InvoiceRun> AND ServiceTypeTotal.Service = Service.Id",
+																"RecordType.GroupId = RType.Id AND Service.Account = <Account> AND InvoiceRun = <InvoiceRun> AND ServiceTypeTotal.Service = Service.Id",
 																"Service.ServiceType, Service.FNN");
 		
 		$this->_selServices				= new StatementSelect(	"Service",
@@ -114,7 +114,7 @@
 		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, " .
 																"RecordType AS RType",
 																$arrColumns,
-																"RecordType.Group = RType.Id AND CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND ISNULL(CDR.InvoiceRun)",
+																"RecordType.GroupId = RType.Id AND CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND ISNULL(CDR.InvoiceRun)",
 																"RType.Name",
 																NULL,
 																"RType.Id\n" .
