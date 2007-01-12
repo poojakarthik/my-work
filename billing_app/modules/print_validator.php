@@ -496,7 +496,6 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 			break;
 		}
 	}
-	die;
 	if (!$arrRecordDefine)
 	{
 		// Unknown Record Type (ie. invalid file)
