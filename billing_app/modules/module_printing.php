@@ -136,7 +136,7 @@
 		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
 																"RecordType AS RType",
 																$arrColumns,
-																"RType.Itemised = 1 AND Service.Account = <Account> AND RecordType.GroupId = RType.Id",
+																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id",
 																"CDR.FNN, RType.Name");
 																
 		$this->_selRecordTypeTotal		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
