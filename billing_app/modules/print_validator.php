@@ -126,17 +126,6 @@ foreach ($arrFileContents as $strLine)
 			$arrTable[] = $arrTableData;
 			$pdf->ezTable($arrTable);
 			
-			$arrTableData	= Array();
-			$arrTable		= Array();
-			$arrTableData['Opening Balance']	= $mixResult['OpeningBalance'];
-			$arrTableData['We Received']		= $mixResult['WeReceived'];
-			$arrTableData['Adjustments']		= $mixResult['Adjustments'];
-			$arrTableData['Balance']			= $mixResult['Balance'];
-			$arrTableData['Total of this Bill'] = $mixResult['BillTotal'];
-			$arrTableData['Total Owing']		= $mixResult['TotalOwing'];
-			$arrTable[] = $arrTableData;
-			$pdf->ezTable($arrTable);
-			
 			$pdf->ezText($mixResult['CustomerName']."\n");
 			$pdf->ezText($mixResult['PropertyName']."\n");
 			$pdf->ezText($mixResult['AddressLine1']."\n");
