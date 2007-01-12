@@ -550,11 +550,10 @@
 				$strFileContents .= $strValue;
 			}
 			
-			if ($arrRecord['RecordType'] != "19")
-			{
-				$strFileContents .= "\n";
-			}
+			$strFileContents .= "\n";
 		}
+		
+		$strFileContents = rtrim($strFileContents, "\n");
 		
 //		Debug($strFileContents);
 //		die;
