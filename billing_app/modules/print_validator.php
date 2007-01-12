@@ -457,6 +457,7 @@ foreach ($arrFileContents as $strLine)
 			$arrData['Date']				= "Total Charges for ".$strCurrentFNN;
 			$arrData['Charge']				= $mixResult['TotalCharge'];
 			$arrItemisedTable[] = $arrData;
+			$pdf->ezTable($arrItemisedTable);
 			break;
 	}
 	$intLastRecordType = $mixResult['RecordType'];
