@@ -73,6 +73,10 @@ echo "[ Generating PDF ]\n\n";
 
 $arrInvoices		= Array();
 $arrInvoice			= Array();
+$arrChargeTotals	= Array();
+$arrGraphData		= Array();
+$arrServiceSummary	= Array();
+$arrItemisedTable	= Array();
 $intLastRecordType	= 19;
 
 $i = 0;
