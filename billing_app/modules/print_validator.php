@@ -172,8 +172,17 @@ foreach ($arrFileContents as $strLine)
 			echo "Writing PDF to... '$strFilename'\n";
 			
 			$ptrFile		= fopen($strFilename, "w");
-			fwrite($ptrFile, $strFileData);
-			fclose($ptrFile);
+			$arrPass[]		= (bool)$ptrFile;
+			$arrPass[]		= fwrite($ptrFile, $strFileData);
+			$arrPass[]		= fclose($ptrFile);
+			
+			foreach($arrPass as $bolPass)
+			{
+				if (!bolPass)
+				{
+					echo "\t- There was an error";
+				}
+			}
 			
 			$arrInvoice = Array();
 			break;
