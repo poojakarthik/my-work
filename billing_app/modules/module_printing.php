@@ -359,6 +359,7 @@
 		// reset counters
 		$strCurrentService		= "";
 		$strCurrentRecordType	= "";
+		$fltRecordTypeTotal		= 0.0;
 		// add start record (70)
 		$arrFileData[] = $arrDefine['ItemisedHeader'];
 		// for each record
@@ -370,6 +371,11 @@
 				// if old service exists
 				if ($strCurrentService != "")
 				{
+					// add call type total
+					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
+					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+					$strCurrentRecordType = "";
+					
 					// add service total record (89)
 					$arrFileData[] = $arrDefine['ItemSvcFooter'];					
 				}
@@ -379,12 +385,19 @@
 				
 				$strCurrentService = $arrData['FNN'];
 			}
+			
+			Debug($arrData['RecordTypeName']);
+			
 			// if new type
 			if($arrData['RecordTypeName'] != $strCurrentRecordType)
 			{
+				Debug("New Type");
+				
 				// if old type exists
 				if($strCurrentRecordType != "")
 				{
+					Debug("Old Type Exists");
+					// add call type total
 					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $arrData['RecordTypeTotal'];
 					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
 				}
@@ -392,8 +405,10 @@
 				$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= $arrData['RecordTypeName'];
 				$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
 				// reset counters
-				$strCurrentRecordType = $arrData['RecordTypeName'];
+				$strCurrentRecordType	= $arrData['RecordTypeName'];
+				$fltRecordTypeTotal		= $arrData['RecordTypeTotal'];
 			}
+			
 			// build charge record
 			switch($arrData['DisplayType'])
 			{
