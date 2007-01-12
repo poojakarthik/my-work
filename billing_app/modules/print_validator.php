@@ -451,6 +451,8 @@ foreach ($arrFileContents as $strLine)
 	$intLastRecordType = $mixResult['RecordType'];
 }
 
+echo "\nValidation succeeded!\n\n";
+
 die;
 
 
