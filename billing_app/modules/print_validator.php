@@ -169,6 +169,8 @@ foreach ($arrFileContents as $strLine)
 			$strFilename	= $strPDFPath.date("Y-m-d")."_".$arrInvoice[0]['InvoiceNo'].".pdf";
 			$strFileData	= $pdf->ezOutput();
 			
+			echo "Writing PDF to... '$strFilename'\n";
+			
 			$ptrFile		= fopen($strFilename, "w");
 			fwrite($ptrFile, $strFileData);
 			fclose($ptrFile);
