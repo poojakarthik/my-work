@@ -550,7 +550,10 @@
 				$strFileContents .= $strValue;
 			}
 			
-			$strFileContents .= "\n";
+			if ($arrRecord['RecordType'] != "19")
+			{
+				$strFileContents .= "\n";
+			}
 		}
 		
 //		Debug($strFileContents);
