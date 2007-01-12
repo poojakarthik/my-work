@@ -61,8 +61,10 @@
 				<th width="30">#</th>
 				<th>Charge Type</th>
 				<th>Description</th>
+				<th>Service</th>
 				<th>Amount</th>
 				<th>Frequency</th>
+				<th>Archive</th>
 				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/RecurringCharges/Results/rangeSample/RecurringCharge">
@@ -82,6 +84,15 @@
 					<td><xsl:value-of select="./ChargeType" /></td>
 					<td><xsl:value-of select="./Description" /></td>
 					<td>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>service_view.php?Id=</xsl:text>
+								<xsl:value-of select="./Service/Id" />
+							</xsl:attribute>
+							<xsl:value-of select="./Service/FNN" />
+						</a>
+					</td>
+					<td>
 						<xsl:value-of select="./RecursionCharge" />
 						<xsl:text> </xsl:text>
 						<xsl:value-of select="./Nature" />
@@ -90,6 +101,16 @@
 						Every <xsl:value-of select="./RecurringFreq" />
 						<xsl:text> </xsl:text>
 						<xsl:value-of select="./BillingFreqTypes/BillingFreqType[@selected='selected']/Name" />(s)
+					</td>
+					<td>
+						<xsl:choose>
+							<xsl:when test="./Archived = 1">
+								<strong><span class="Blue">Current Archived</span></strong>
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><span class="Green">Current Applied</span></strong>
+							</xsl:otherwise>
+						</xsl:choose>
 					</td>
 					<td>
 						<a href="#">

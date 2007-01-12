@@ -75,6 +75,16 @@
 			
 			$this->Push (new BillingFreqTypes ($this->Pull ('RecurringFreqType')->getValue ()));
 		}
+		
+		public function Account ()
+		{
+			$this->Push (new Account ($this->Pop ('Account')->getValue ()));
+		}
+		
+		public function Service ()
+		{
+			$this->Push (new Service ($this->Pop ('Service')->getValue ()));
+		}
 	}
 	
 ?>

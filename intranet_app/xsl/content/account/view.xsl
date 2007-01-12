@@ -265,7 +265,7 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>account_recurring_charge_list.php?Account=</xsl:text>
+									<xsl:text>recurring_charge_list.php?Account=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>View Recurring Charges</xsl:text>
