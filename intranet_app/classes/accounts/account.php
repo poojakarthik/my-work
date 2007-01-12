@@ -210,9 +210,29 @@
 		 
 		public function Invoices ()
 		{
-			$ivlInvoices = new Invoices ();
+			$ivlInvoices = new Invoices;
 			$ivlInvoices->Constrain ('Account', '=', $this->Pull ('Id')->getValue ());
 			return $ivlInvoices;
+		}
+		
+		//------------------------------------------------------------------------//
+		// PDFInvoices
+		//------------------------------------------------------------------------//
+		/**
+		 * PDFInvoices()
+		 *
+		 * Retrieves a PDF Invoice List
+		 *
+		 * Retrieves a PDF Invoice List
+		 *
+		 * @return	Invoices_PDFs
+		 *
+		 * @method
+		 */
+		 
+		public function PDFInvoices ()
+		{
+			return new Invoices_PDFs ($this);
 		}
 		
 		//------------------------------------------------------------------------//

@@ -116,5 +116,65 @@
 				</tr>
 			</xsl:for-each>
 		</table>
+		
+		<div class="Seperator"></div>
+		
+		<h2>PDF Files</h2>
+		<div class="Seperator"></div>
+		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="50%">
+			<tr class="First">
+				<th width="30">#</th>
+				<th>Bill Month</th>
+				<th>Bill Year</th>
+				<th>Bill Name</th>
+				<th>Options</th>
+			</tr>
+			<xsl:for-each select="/Response/Invoices-PDFs/Invoice-PDF">
+				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>Odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>Even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					
+					<td><xsl:value-of select="position()" /></td>
+					<td>
+						<xsl:value-of select="./Month" />
+						(<xsl:choose>
+							<xsl:when test="./Month = 1"><xsl:text>January</xsl:text></xsl:when>
+							<xsl:when test="./Month = 2"><xsl:text>February</xsl:text></xsl:when>
+							<xsl:when test="./Month = 3"><xsl:text>March</xsl:text></xsl:when>
+							<xsl:when test="./Month = 4"><xsl:text>April</xsl:text></xsl:when>
+							<xsl:when test="./Month = 5"><xsl:text>May</xsl:text></xsl:when>
+							<xsl:when test="./Month = 6"><xsl:text>June</xsl:text></xsl:when>
+							<xsl:when test="./Month = 7"><xsl:text>July</xsl:text></xsl:when>
+							<xsl:when test="./Month = 8"><xsl:text>August</xsl:text></xsl:when>
+							<xsl:when test="./Month = 9"><xsl:text>September</xsl:text></xsl:when>
+							<xsl:when test="./Month = 10"><xsl:text>October</xsl:text></xsl:when>
+							<xsl:when test="./Month = 11"><xsl:text>November</xsl:text></xsl:when>
+							<xsl:when test="./Month = 12"><xsl:text>December</xsl:text></xsl:when>
+						</xsl:choose>)
+					</td>
+					<td><xsl:value-of select="./Year" /></td>
+					<td><xsl:value-of select="./Name" /></td>
+					<td>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>invoice_pdf.php</xsl:text>
+								<xsl:text>?Account=</xsl:text><xsl:value-of select="./Account" />
+								<xsl:text>&amp;Year=</xsl:text><xsl:value-of select="./Year" />
+								<xsl:text>&amp;Month=</xsl:text><xsl:value-of select="./Month" />
+							</xsl:attribute>
+							View PDF
+						</a>
+					</td>
+				</tr>
+			</xsl:for-each>
+		</table>
 	</xsl:template>
 </xsl:stylesheet>

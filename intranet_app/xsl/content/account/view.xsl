@@ -424,11 +424,30 @@
 					<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 					<td>
 						<xsl:choose>
-							<xsl:when test="./Archived = 0">
-								<strong><span class="Green">Currently Available</span></strong>
+							<xsl:when test="./ClosedOn/year">
+								<strong><span class="Red">
+									Closes On:
+									<xsl:call-template name="dt:format-date-time">
+										<xsl:with-param name="year"		select="./ClosedOn/year" />
+										<xsl:with-param name="month"	select="./ClosedOn/month" />
+										<xsl:with-param name="day"		select="./ClosedOn/day" />
+										<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+									</xsl:call-template>
+								</span></strong>
+							</xsl:when>
+							<xsl:when test="./CreatedOn/year and ./Available = 0">
+								<strong><span class="Blue">
+									Opens On:
+									<xsl:call-template name="dt:format-date-time">
+										<xsl:with-param name="year"		select="./CreatedOn/year" />
+										<xsl:with-param name="month"	select="./CreatedOn/month" />
+										<xsl:with-param name="day"		select="./CreatedOn/day" />
+										<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+									</xsl:call-template>
+								</span></strong>
 							</xsl:when>
 							<xsl:otherwise>
-								<strong><span class="Red">Currently Archived</span></strong>
+								<strong><span class="Green">Currently Available</span></strong>
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>

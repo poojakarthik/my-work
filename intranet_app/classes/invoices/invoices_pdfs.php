@@ -31,14 +31,14 @@
 	 * Controls Searching for an existing Invoice
 	 *
 	 *
-	 * @prefix		acs
+	 * @prefix		pdl
 	 *
 	 * @package		intranet_app
 	 * @class		Invoices_PDFS
-	 * @extends		dataObject
+	 * @extends		dataCollection
 	 */
 	
-	class Invoices_PDFS extends Search
+	class Invoices_PDFS extends dataCollection
 	{
 		//------------------------------------------------------------------------//
 		// __construct
@@ -50,15 +50,32 @@
 		 *
 		 * Constructs an Invoice Searching Routine
 		 *
+		 * @param	Account		$actAccount			The Account we are requesting PDFs for
+		 *
 		 * @method
 		 */
 		 
-		function __construct ()
+		function __construct (Account $actAccount)
 		{
-			parent::__construct ('Invoices_PDFS', 'Invoice', 'Invoice');
+			$intAccount = $actAccount->Pull ('Id')->getValue ();
 			
-			$this->Constrain ('Status', 'NOT EQUAL', 'INVOICE_TEMP');
-			$this->Order ('CreatedOn', FALSE);
+			// Get the list
+			$arrPDFs = listPDF ($intAccount);
+			
+			// Create Information Objects
+			foreach ($arrPDFs as $intYear => $arrYear)
+			{
+				foreach ($arrYear as $intMonth => $strName)
+				{
+					$this->Push (
+						new Invoice_PDF (
+							$intAccount, $intYear, $intMonth, $strName
+						)
+					);
+				}
+			}
+			
+			parent::__construct ('Invoices-PDFs', 'Invoice', 'Invoice');
 		}
 	}
 	

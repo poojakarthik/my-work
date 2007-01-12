@@ -56,14 +56,15 @@
 		 * @method
 		 */
 		
-		function __construct ($intAccount, $intYear, $intMonth)
+		function __construct ($intAccount, $intYear, $intMonth, $strName)
 		{
 			$this->_oblintAccount	= $this->Push (new dataInteger	('Account',	$intAccount));
 			$this->_oblintYear		= $this->Push (new dataInteger	('Year',	$intYear));
 			$this->_oblintMonth		= $this->Push (new dataInteger	('Month',	$intMonth));
+			$this->_oblstrName		= $this->Push (new dataString	('Name',	$strName));
 			
 			// Construct the object
-			parent::__construct ('Invoice_PDF', $this->Pull ('Id')->getValue ());
+			parent::__construct ('Invoice-PDF');
 		}
 		
 		//------------------------------------------------------------------------//

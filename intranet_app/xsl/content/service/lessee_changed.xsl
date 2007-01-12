@@ -7,8 +7,6 @@
 	
 	<xsl:template name="Content">
 		<h1>Successful Service Change of Lessee</h1>
-		<div class="Seperator"></div>
-		
 		<p>
 			The lessee for this number has been changed. Details about the change
 			are currently listed below.
@@ -25,7 +23,7 @@
 				<tr>
 					<th>Account</th>
 					<td>
-						<a>
+						<a target="_blank">
 							<xsl:attribute name="href">
 								<xsl:text>account_view.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Services/Old/Service/Account" />
@@ -34,7 +32,7 @@
 						</a>
 					</td>
 					<td>
-						<a>
+						<a target="_blank">
 							<xsl:attribute name="href">
 								<xsl:text>account_view.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Services/New/Service/Account" />
@@ -46,7 +44,7 @@
 				<tr>
 					<th>Service</th>
 					<td>
-						<a>
+						<a target="_blank">
 							<xsl:attribute name="href">
 								<xsl:text>service_view.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Services/Old/Service/Id" />
@@ -55,7 +53,7 @@
 						</a>
 					</td>
 					<td>
-						<a>
+						<a target="_blank">
 							<xsl:attribute name="href">
 								<xsl:text>service_view.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Services/New/Service/Id" />
@@ -73,7 +71,7 @@
 					<th>Start Date</th>
 					<td>
 						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"	select="/Response/Services/Old/Service/CreatedOn/year" />
+							<xsl:with-param name="year"		select="/Response/Services/Old/Service/CreatedOn/year" />
 							<xsl:with-param name="month"	select="/Response/Services/Old/Service/CreatedOn/month" />
 							<xsl:with-param name="day"		select="/Response/Services/Old/Service/CreatedOn/day" />
 							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
@@ -81,7 +79,7 @@
 					</td>
 					<td>
 						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"	select="/Response/Services/New/Service/CreatedOn/year" />
+							<xsl:with-param name="year"		select="/Response/Services/New/Service/CreatedOn/year" />
 							<xsl:with-param name="month"	select="/Response/Services/New/Service/CreatedOn/month" />
 							<xsl:with-param name="day"		select="/Response/Services/New/Service/CreatedOn/day" />
 							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
@@ -92,19 +90,26 @@
 					<th>Cease Date</th>
 					<td>
 						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"	select="/Response/Services/Old/Service/ClosedOn/year" />
+							<xsl:with-param name="year"		select="/Response/Services/Old/Service/ClosedOn/year" />
 							<xsl:with-param name="month"	select="/Response/Services/Old/Service/ClosedOn/month" />
 							<xsl:with-param name="day"		select="/Response/Services/Old/Service/ClosedOn/day" />
 							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 						</xsl:call-template>
 					</td>
 					<td>
-						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"	select="/Response/Services/New/Service/ClosedOn/year" />
-							<xsl:with-param name="month"	select="/Response/Services/New/Service/ClosedOn/month" />
-							<xsl:with-param name="day"		select="/Response/Services/New/Service/ClosedOn/day" />
-							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-						</xsl:call-template>
+						<xsl:choose>
+							<xsl:when test="/Response/Services/New/Service/ClosedOn/year">
+								<xsl:call-template name="dt:format-date-time">
+									<xsl:with-param name="year"		select="/Response/Services/New/Service/ClosedOn/year" />
+									<xsl:with-param name="month"	select="/Response/Services/New/Service/ClosedOn/month" />
+									<xsl:with-param name="day"		select="/Response/Services/New/Service/ClosedOn/day" />
+									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><span class="Green">No Close Date</span></strong>
+							</xsl:otherwise>
+						</xsl:choose>
 					</td>
 				</tr>
 			</table>

@@ -17,16 +17,12 @@
 	// call application
 	require ('config/application.php');
 	
-	// Pull documentation information for an Account
-	$docDocumentation->Explain ('Account');
-	$docDocumentation->Explain ('Archive');
 	
-	
-	
+	// Get Account
 	try
 	{
-		// Get the Account
-		$actAccount		= $Style->attachObject (new Account ($_GET ['Id']));	
+		// Try to pull the Account
+		$actAccount = $Style->attachObject (new Account ($_GET ['Id']));	
 	}
 	catch (Exception $e)
 	{
@@ -35,8 +31,16 @@
 		exit;
 	}
 	
+	// Retrieve the  invoices list
 	$ivlInvoices = $Style->attachObject ($actAccount->Invoices ());
 	$ivlInvoices->Sample ();
+	
+	// Retrieve the PDF Listing
+	$pdlInvoices = $Style->attachObject ($actAccount->PDFInvoices ());
+
+	// Pull documentation information for an Account
+	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Archive');
 	
 	// Output the Account View
 	$Style->Output ('xsl/content/account/ledger.xsl');

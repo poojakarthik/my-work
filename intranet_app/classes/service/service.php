@@ -79,7 +79,7 @@
 			// Set a Archived Boolean
 			$this->Push (
 				new dataBoolean (
-					'Archived', 
+					'Available', 
 					$this->Pull ('ClosedOn')->Pull ('month') && 
 					$this->Pull ('ClosedOn')->Pull ('day') && 
 					$this->Pull ('ClosedOn')->Pull ('year') &&
