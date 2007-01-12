@@ -415,8 +415,9 @@
 				// Get the RecordType total
 				$arrSelectData['Account']			= $arrInvoiceDetails['Account'];
 				$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
-				$this->_selRecordTypeTotal->Execute();
-				$fltRecordTypeTotal		= $arrData['RecordTypeTotal'];
+				$this->_selRecordTypeTotal->Execute($arrSelectData);
+				$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
+				$fltRecordTypeTotal	= $arrRecordTypeTotal['RecordTypeTotal'];
 			}
 			
 			// build charge record
