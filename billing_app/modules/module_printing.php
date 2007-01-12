@@ -515,7 +515,7 @@
 						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_CHAR:
-						if (!$strValue == NULL)
+						if ($strValue == NULL)
 						{
 							$strValue = "";
 						}
