@@ -132,7 +132,6 @@
 		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
 		$arrColumns['RecordTypeName']	= "RType.Name";
 		$arrColumns['DisplayType']		= "RType.DisplayType";
-		$arrColumns['RecordTypeTotal']	= "SUM(CDR.Charge)";
 		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
 																"RecordType AS RType",
 																$arrColumns,
