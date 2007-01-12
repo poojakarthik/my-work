@@ -12,6 +12,11 @@
 				<title>Employee Intranet System</title>
 				<link rel="stylesheet" type="text/css" href="css/default.css" />
 				<script language="javascript" src="js/init.js"></script>
+				
+				<!-- Popup Control -->
+				<script language="javascript" src="js/lightbox/jQuery.js"></script>
+				<script language="javascript" src="js/lightbox/dimensions.js"></script>
+				<script language="javascript" src="js/lightbox/jquery-modalContent.js"></script>
 			</head>
 			<body>
 				<div id="Header" class="sectionContainer">
@@ -24,17 +29,28 @@
 							Version 7.01
 							
 							<xsl:if test="/Response/SystemDebug">
-								<script language="javascript" src="js/dimmingdiv.js"></script>
 								<div id="Debug_Button">
-									<a href="javascript:displayDebugWindow()">
+									<a href="#" onclick="$('#windowcontent').modalContent(null, 'show', 'slow');">
 										<img src="img/template/debug.png" border="0" />
 									</a>
 								</div>
 								
-								<div id="windowcontent" style="display: none">
+								<div id="windowcontent" class="modalController">
+									<div class="Modal-Title">
+										<div class="Left">
+											Title
+										</div>
+										<div class="Right">
+											<a href="javascript:void(0);" class="close">
+												<img alt="Close..." title="Close..." src="img/template/close.png" class="closewindow" border="0" />
+											</a>
+										</div>
+									</div>
+									<div class="Clear"></div>
 									<div id="windowcontentmain">
 										<textarea readonly="readonly"><xsl:value-of select="/Response/SystemDebug" /></textarea>
 									</div>
+									<div class="Clear"></div>
 								</div>
 							</xsl:if>
 						</div>

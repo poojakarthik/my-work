@@ -49,7 +49,14 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Payed On :</th>
-						<td><xsl:value-of select="/Response/Payment/Id" /></td>
+						<td>
+							<xsl:call-template name="dt:format-date-time">
+								<xsl:with-param name="year"		select="/Response/Payment/PaidOn/year" />
+								<xsl:with-param name="month"	select="/Response/Payment/PaidOn/month" />
+								<xsl:with-param name="day"		select="/Response/Payment/PaidOn/day" />
+								<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+							</xsl:call-template>
+						</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Amount :</th>

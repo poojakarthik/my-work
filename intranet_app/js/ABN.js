@@ -108,7 +108,7 @@
 				return false;
 			}
 			
-			this.element.className = "input-ABN";
+			this.element.className = "input-ABN-valid";
 			return true;
 		}
 		

@@ -13,10 +13,12 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_TIP;
 	
 	// call application
 	require ('config/application.php');
+	
+	$tipTip = $Style->attachObject (Tips::FindRandom ($athAuthentication->AuthenticatedEmployee ()->Pull ('PabloSays')->getValue ()));
 	
 	// If the Employee is Authenticated, show the Console
 	$Style->Output ("xsl/content/console.xsl");

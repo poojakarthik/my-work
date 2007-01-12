@@ -60,6 +60,8 @@ $arrConfig['Modules'][MODULE_RECORD_TYPE] 				= "recordtype";
 $arrConfig['Modules'][MODULE_DOCUMENTATION] 			= "documentation";
 $arrConfig['Modules'][MODULE_EMPLOYEE]		 			= "employee";
 $arrConfig['Modules'][MODULE_PAYMENT]		 			= "payments";
+$arrConfig['Modules'][MODULE_SERVICE_TOTAL]	 			= "servicetotal";
+$arrConfig['Modules'][MODULE_TIP]			 			= "tip";
 
 // Base Modules
 define("MODULE_BASE"			, MODULE_SEARCH | MODULE_DOCUMENTATION | MODULE_ACCOUNT | MODULE_CONTACT);

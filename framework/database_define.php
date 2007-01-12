@@ -1535,6 +1535,16 @@
 				 
 				 
 	// Define Columns 
+	$strName = "DOB"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "date"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate"; 
+		 
+				 
+				 
+	// Define Columns 
 	$strName = "SessionId"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(40)"; 
@@ -2147,7 +2157,7 @@
 	// Define Columns 
 	$strName = "Data"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "text"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
@@ -5611,6 +5621,46 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+					 
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
+	 
+ 	
+	//----------------------------------------------------------------------------// 
+	// Table: Tip
+	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
+	$arrDefine['Name']		= "Tip"; 
+	$arrDefine['Type']		= "InnoDB"; 
+	$arrDefine['Id']		= "Id"; 
+	$arrDefine['Index'][] 		= ""; 
+	$arrDefine['Unique'][] 		= ""; 
+		 
+		 
+				 
+	// Define Columns 
+	$strName = "TipType"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "TipText"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 					 
 	// Save Table Define

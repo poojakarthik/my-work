@@ -118,6 +118,65 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// ServiceTotals
+		//------------------------------------------------------------------------//
+		/**
+		 * ServiceTotals()
+		 *
+		 * Get a list of Service Totals on this Invoice
+		 *
+		 * Get a list of Service Totals on this Invoice
+		 *
+		 * @return	ServiceTotals
+		 *
+		 * @method
+		 */
+		
+		public function ServiceTotals ()
+		{
+			$stlServiceTotals = new ServiceTotals;
+			$stlServiceTotals->Constrain ('InvoiceRun',	'=',	$this->Pull ('InvoiceRun')->getValue ());
+			$stlServiceTotals->Constrain ('Account',	'=',	$this->Pull ('Account')->getValue ());
+			
+			return $stlServiceTotals;
+		}
+		
+		//------------------------------------------------------------------------//
+		// ServiceTotal
+		//------------------------------------------------------------------------//
+		/**
+		 * ServiceTotal()
+		 *
+		 * Get a Service Total
+		 *
+		 * Get a Service Totals on this Invoice
+		 *
+		 * @return	ServiceTotal
+		 *
+		 * @method
+		 */
+		
+		public function ServiceTotal ($intServiceTotal)
+		{
+			$selServiceTotal = new StatementSelect (
+				'ServiceTotal', 
+				'Id', 
+				'Id = <Id> AND InvoiceRun = <InvoiceRun>', 
+				null, 
+				1
+			);
+			
+			$selServiceTotal->Execute (Array ('Id' => $intServiceTotal, 'InvoiceRun' => $this->Pull ('InvoiceRun')->getValue ()));
+			
+			if ($selServiceTotal->Count () <> 1)
+			{
+				throw new Exception ('Invoice does not exist.');
+			}
+			
+			return new ServiceTotal ($intServiceTotal);
+		}
+		
+		//------------------------------------------------------------------------//
 		// CDRs
 		//------------------------------------------------------------------------//
 		/**

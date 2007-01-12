@@ -140,6 +140,14 @@
 								</select>
 							</td>
 						</tr>
+						<xsl:if test="not(/Response/Contact/DOB/month)">
+							<tr>
+								<td></td>
+								<td>
+									<strong><span class="Attention">No Date of Birth Currently Set</span></strong>
+								</td>
+							</tr>
+						</xsl:if>
 						<tr>
 							<td>
 								<div class="Seperator"></div>

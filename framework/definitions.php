@@ -670,4 +670,11 @@ define("RECORD_DISPLAY_SMS"			, 65538);
 define("NATURE_CR"					, 'CR');
 define("NATURE_DR"					, 'DR');
 
+// Pablo's Tips
+define("PABLO_TIP_POLITE"			, 1);
+define("PABLO_TIP_SLEAZY"			, 2);
+define("PABLO_TIP_HATES_YOU"		, 3);
+define("PABLO_TIP_DRUNK"			, 4);
+
+
 ?>

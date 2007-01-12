@@ -12,11 +12,10 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_INVOICE | MODULE_CHARGE | MODULE_CDR;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_INVOICE | MODULE_CHARGE | MODULE_CDR | MODULE_SERVICE | MODULE_SERVICE_TOTAL;
 	
 	// call application
 	require ('config/application.php');
-	
 	
 	// Pull documentation information for a Service and an Account
 	$docDocumentation->Explain ('Account');
@@ -36,8 +35,11 @@
 	}
 	
 	// If no service is set, then ask for the service
-	if (!$_GET ['Service'])
+	if (!$_GET ['ServiceTotal'])
 	{
+		$stlServiceTotals = $Style->attachObject ($invInvoice->ServiceTotals ());
+		$stlServiceTotals->Sample ();
+		
 		$Style->Output ('xsl/content/invoice/view_service_select.xsl');
 		exit;
 	}
@@ -46,11 +48,10 @@
 	try
 	{
 		// Get the Service
-		$srvService	= $Style->attachObject ($actAccount->Service ($_GET ['Service']));		
+		$sttServiceTotal = $Style->attachObject ($invInvoice->ServiceTotal ($_GET ['ServiceTotal']));		
 	}
 	catch (Exception $e)
 	{
-		$svsServices = $Style->attachObjefct (new Services ());
 		// If the Service is not found, display an error
 		$Style->Output ('xsl/content/service/notfound.xsl');
 		exit;
@@ -60,14 +61,13 @@
 	{
 		// Get the Charges the Invoice has
 		$cgsCharges	= $Style->attachObject ($invInvoice->Charges ());
-		$cgsCharges->Constrain ('Service', '=', $srvService->Pull ('Id')->getValue ());
+		$cgsCharges->Constrain ('Service', '=', $sttServiceTotal->Pull ('Service')->getValue ());
 		$cgsCharges->Sample ();
 	}
 	
 	// Get the CDRs the Invoice has
 	$cdrCDRs = $Style->attachObject ($invInvoice->CDRs ());
-	$cdrCDRs->Constrain ('InvoiceRun',	'=', $invInvoice->Pull ('InvoiceRun')->getValue ());
-	$cdrCDRs->Constrain ('Service',		'=', $srvService->Pull ('Id')->getValue ());
+	$cdrCDRs->Constrain ('Service',		'=', $sttServiceTotal->Pull ('Service')->getValue ());
 	
 	$cdrCDRs->Sample (
 		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1,
