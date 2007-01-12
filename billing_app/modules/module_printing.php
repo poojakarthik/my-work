@@ -481,64 +481,73 @@
 						if (!$strValue)
 						{
 							$strValue = "0";
-						};
+						}
+						$strTemp = sprintf("%0".$arrField['Length']."d", ((int)$strValue));
+						if(substr($strValue, 0, 1) == "-")
+						{
+							$strTemp = "-".substr($strTemp, 1);
+						}
 						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_CHAR:
 						if (!$strValue == NULL)
 						{
 							$strValue = "";
-						};
+						}
 						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_RIGHT);
 						break;
 					case BILL_TYPE_BINARY:
 						if ($strValue == NULL)
 						{
 							$strValue = "0";
-						};
+						}
 						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_RIGHT);
 						break;
 					case BILL_TYPE_FLOAT:
 						if (!$strValue)
 						{
 							$strValue = "0";
-						};
+						}
 						$strValue = str_pad((float)$strValue, 11, "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTDATE:
 						if (!$strValue)
 						{
 							$strValue = "XX/XX/XXXX";
-						};
+						}
 						$strValue = str_pad($strValue, 10, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_LONGDATE:
 						if (!$strValue)
 						{
 							$strValue = "XX XXX XXXX";
-						};
+						}
 						$strValue = str_pad($strValue, 11, " ", STR_PAD_RIGHT);
 						break;
 					case BILL_TYPE_TIME:
 						if (!$strValue)
 						{
 							$strValue = "XX:XX:XX";
-						};
+						}
 						$strValue = str_pad($strValue, 8, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_DURATION:
 						if (!$strValue == NULL)
 						{
 							$strValue = "999:99:99";
-						};
+						}
 						$strValue = str_pad($strValue, 9, "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTCURRENCY:
 						if ($strValue == NULL)
 						{
 							$strValue = "-9999999.99";
-						};
-						$strTemp = sprintf("%08.2f", ((float)$strValue));
+						}
+						$strTemp = sprintf("%011.2f", ((float)$strValue));
+						if(substr($strValue, 0, 1) == "-")
+						{
+							$strTemp = "-".substr($strTemp, 1);
+						}
 						$strValue = str_pad($strTemp, 11, "0", STR_PAD_LEFT);
 						break;
 					default:
