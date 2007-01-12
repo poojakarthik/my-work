@@ -354,9 +354,11 @@
 		background-color:    #D5E0F8;
 	}
 	
-	table.Listing .Currency
+	.Currency
 	{
 		text-align:          right;
+		
+		font-family:		"Courier New", monospace;
 	}
 	
 	a.Label:Link,

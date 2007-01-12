@@ -31,9 +31,15 @@
 		exit;
 	}
 	
-	// Retrieve the  invoices list
+	// Retrieve the Invoices list
 	$ivlInvoices = $Style->attachObject ($actAccount->Invoices ());
 	$ivlInvoices->Sample ();
+	
+	// Retrieve the Payments list
+	$payPayments = $Style->attachObject ($payPayments->Payments ());
+	$payPayments->Sample ();
+	
+	echo $payPayments; exit;
 	
 	// Retrieve the PDF Listing
 	$pdlInvoices = $Style->attachObject ($actAccount->PDFInvoices ());

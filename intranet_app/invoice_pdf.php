@@ -23,7 +23,7 @@
 	{
 		// Try to pull the Invoice PDF
 		$strInvoice = getPDF (
-			$_GET ['Id'],
+			$_GET ['Account'],
 			$_GET ['Year'],
 			$_GET ['Month']
 		);
@@ -33,7 +33,9 @@
 			throw new Exception ("Not Found");
 		}
 		
+		header ("Content-Type: application/pdf");
 		echo $strInvoice;
+		exit;
 	}
 	catch (Exception $e)
 	{

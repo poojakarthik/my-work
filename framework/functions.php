@@ -607,15 +607,17 @@ function ListPDF($intAccount)
 	
 	// GLOB for year directories
 	$arrYears = glob("/home/vixen_invoices/*", GLOB_ONLYDIR);
+	
 	foreach($arrYears as $strYear)
 	{
 		// GLOB for month directories
-		$arrMonths = glob("/home/vixen_invoices/$strYear/*", GLOB_ONLYDIR);
+		$arrMonths = glob("$strYear/*", GLOB_ONLYDIR);
+		
 		foreach($arrMonths as $strMonth)
 		{
 			// GLOB for account filename
-			$arrInvoices = glob("/home/vixen_invoices/$strYear/$strMonth/".$intAccount."_*.pdf");
-			$arrReturn[$strYear][$strMonth]	= basename($arrInvoices[0]);
+			$arrInvoices = glob("$strMonth/".$intAccount."_*.pdf");
+			$arrReturn[basename ($strYear)][basename ($strMonth)]	= basename($arrInvoices[0]);
 		}
 	}
 	
@@ -643,7 +645,7 @@ function GetPDF($intAccount, $intYear, $intMonth)
 	$arrReturn = Array();
 	
 	// GLOB for account filename
-	$arrInvoices = glob("/home/vixen_invoices/$intYear/$intMonth/".$intAccount."_*.pdf");
+	$arrInvoices = glob("/home/vixen_invoices/".$intYear."/".$intMonth."/".$intAccount."_*.pdf");
 	if (count($arrInvoices) == 0 || $arrInvoices === FALSE)
 	{
 		// Either glob had an error, or the filename doesn't exist

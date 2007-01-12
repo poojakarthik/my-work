@@ -7,7 +7,9 @@
 	<xsl:template match="/">
 		<html>
 			<head>
+				<title>Employee Intranet System</title>
 				<link rel="stylesheet" type="text/css" href="css/default.css" />
+				<script language="javascript" src="js/init.js"></script>
 			</head>
 			<body>
 				<div id="Header" class="sectionContainer">

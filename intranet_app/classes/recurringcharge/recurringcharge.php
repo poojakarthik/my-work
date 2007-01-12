@@ -76,14 +76,145 @@
 			$this->Push (new BillingFreqTypes ($this->Pull ('RecurringFreqType')->getValue ()));
 		}
 		
+		//------------------------------------------------------------------------//
+		// Account
+		//------------------------------------------------------------------------//
+		/**
+		 * Account()
+		 *
+		 * Pull the Account this Recurring Charge is attached to
+		 *
+		 * Pull the Account this Recurring Charge is attached to
+		 *
+		 * @return	Account
+		 *
+		 * @method
+		 */
+		
 		public function Account ()
 		{
-			$this->Push (new Account ($this->Pop ('Account')->getValue ()));
+			return $this->Push (new Account ($this->Pop ('Account')->getValue ()));
 		}
+		
+		//------------------------------------------------------------------------//
+		// Service
+		//------------------------------------------------------------------------//
+		/**
+		 * Service()
+		 *
+		 * Pull the Service this Recurring Charge is attached to
+		 *
+		 * Pull the Service this Recurring Charge is attached to
+		 *
+		 * @return	Service
+		 *
+		 * @method
+		 */
 		
 		public function Service ()
 		{
-			$this->Push (new Service ($this->Pop ('Service')->getValue ()));
+			return $this->Push (new Service ($this->Pop ('Service')->getValue ()));
+		}
+		
+		//------------------------------------------------------------------------//
+		// CancellationAmount
+		//------------------------------------------------------------------------//
+		/**
+		 * CancellationAmount()
+		 *
+		 * How much it would cost to cancel this account
+		 *
+		 * How much it would cost to cancel this account
+		 *
+		 * @return	Integer
+		 *
+		 * @method
+		 */
+		
+		public function CancellationAmount ()
+		{
+			$selCancellationAmount = new StatementSelect (
+				'RecurringCharge', 
+				'IF(TotalCharged < MinCharge, MinCharge - TotalCharged + CancellationFee, 0) AS CancellationAmount', 
+				'Id = <Id> AND Nature = "' . NATURE_DR . '"', 
+				null,
+				1
+			);
+			
+			$selCancellationAmount->Execute (Array ('Id' => $this->Pull ('Id')->getValue ()));
+			
+			if ($selCancellationAmount->Count () == 1)
+			{
+				$arrCharge = $selCancellationAmount->Fetch ();
+			}
+			else
+			{
+				$arrCharge ['CancellationAmount'] = 0;
+			}
+			
+			if ($arrCharge ['CancellationAmount'] <> 0)
+			{
+				$this->Push (new dataFloat ('CancellationAmount', $arrCharge ['CancellationAmount']));
+			}
+			
+			return $arrCharge ['CancellationAmount'];
+		}
+		
+		//------------------------------------------------------------------------//
+		// Cancel
+		//------------------------------------------------------------------------//
+		/**
+		 * Cancel()
+		 *
+		 * Cancels the Recurring Charge
+		 *
+		 * Cancels the Recurring Charge + applies cancellation fees if any
+		 *
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function Cancel (AuthenticatedEmployee $aemAuthenticatedEmployee)
+		{
+			if ($this->Pull ('Archived')->isTrue ())
+			{
+				return;
+			}
+			
+			$fltCancellationAmount = $this->CancellationAmount ();
+			
+			if ($fltCancellationAmount <> 0)
+			{
+				$arrCharge = Array (
+					"AccountGroup"			=> $this->Pull ('AccountGroup')->getValue (),
+					"Account"				=> $this->Pull ('Account')->getValue (),
+					"Service"				=> $this->Pull ('Service')->getValue (),
+					"CreatedBy"				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+					"CreatedOn"				=> date ('Y-m-d'),
+					"ChargeType"			=> $this->Pull ('ChargeType')->getValue (),
+					"Description"			=> "CANCELLATION: " . $this->Pull ('Description')->getValue (),
+					"Nature"				=> NATURE_DR,
+					"Amount"				=> $fltCancellationAmount,
+					"Status"				=> CHARGE_APPROVED
+				);
+				
+				$insCharge = new StatementInsert ('Charge');
+				$insCharge->Execute ($arrCharge);
+			}
+			
+			$arrRecurringCharge = Array (
+				"Archived"	=> TRUE
+			);
+			
+			$updRecurringCharge = new StatementUpdate (
+				'RecurringCharge', 
+				'Id = <Id>',
+				$arrRecurringCharge,
+				1
+			);
+			
+			$updRecurringCharge->Execute ($arrRecurringCharge, Array ('Id' => $this->Pull ('Id')->getValue ()));
 		}
 	}
 	

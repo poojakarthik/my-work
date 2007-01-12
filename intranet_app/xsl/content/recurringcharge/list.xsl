@@ -120,6 +120,13 @@
 								<xsl:text>')</xsl:text>
 							</xsl:attribute>
 							View Details
+						</a>, 
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>recurring_charge_cancel.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							Cancel Charge
 						</a>
 					</td>
 				</tr>

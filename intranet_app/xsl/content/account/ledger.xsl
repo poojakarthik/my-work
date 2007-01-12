@@ -76,7 +76,7 @@
 					<td>
 						<a>
 							<xsl:attribute name="href">
-								<xsl:text>invoice_view.php?Id=</xsl:text>
+								<xsl:text>invoice_view.php?Invoice=</xsl:text>
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
 							Invoice #<xsl:value-of select="./Id" />

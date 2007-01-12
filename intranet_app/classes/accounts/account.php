@@ -216,6 +216,26 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// Payments
+		//------------------------------------------------------------------------//
+		/**
+		 * Payments()
+		 *
+		 * Retrieves Payments that have been made specifically against this Account
+		 *
+		 * Retrieves Payments that have been made specifically against this Account
+		 *
+		 * @return	Payments
+		 *
+		 * @method
+		 */
+		 
+		public function Payments ()
+		{
+			return new AccountPayments ($this);
+		}
+		
+		//------------------------------------------------------------------------//
 		// PDFInvoices
 		//------------------------------------------------------------------------//
 		/**

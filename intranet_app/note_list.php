@@ -133,6 +133,11 @@
 		}
 	}
 	
+	if ($_GET ['NoteType'])
+	{
+		$nosNotes->Constrain ('NoteType', '=', $_GET ['NoteType']);
+	}
+	
 	// Order by Newest First
 	$nosNotes->Order ('Datetime', FALSE);
 	
@@ -141,6 +146,10 @@
 		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
 		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : null
 	);
+	
+	$docDocumentation->Explain ('Note');
+	
+//	echo $Style;exit;
 	
 	// Output to the Browser
 	$Style->Output ('xsl/content/notes/list.xsl');

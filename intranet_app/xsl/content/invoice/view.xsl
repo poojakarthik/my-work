@@ -219,7 +219,7 @@
 									<xsl:attribute name="href">
 										<xsl:text>invoice_view.php</xsl:text>
 										
-										<xsl:text>?Id=</xsl:text>
+										<xsl:text>?Invoice=</xsl:text>
 										<xsl:value-of select="/Response/Invoice/Id" />
 										
 										<xsl:text>&amp;rangeLength=</xsl:text>
@@ -255,7 +255,7 @@
 									<xsl:attribute name="href">
 										<xsl:text>invoice_view.php</xsl:text>
 										
-										<xsl:text>?Id=</xsl:text>
+										<xsl:text>?Invoice=</xsl:text>
 										<xsl:value-of select="/Response/Invoice/Id" />
 										
 										<xsl:text>&amp;rangeLength=</xsl:text>
