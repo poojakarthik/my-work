@@ -106,30 +106,36 @@ foreach ($arrFileContents as $strLine)
 			$pdf->selectFont($strPDFDir."fonts/Helvetica.afm");
 			
 			// Add data to PDF
-			$arrTableData = Array();
+			$arrTableData	= Array();
+			$arrTable		= Array();
 			$arrTableData['INVOICE NUMBER']		= $mixResult['InvoiceNo'];
 			$arrTableData['BILL PERIOD']		= $mixResult['BillPeriod'];
 			$arrTableData['DATE OF ISSUE']		= $mixResult['DateIssued'];
 			$arrTableData['ACCOUNT NUMBER']		= $mixResult['AccountNo'];
-			$pdf->ezTable(Array($arrTableData));
+			$arrTable[] = $arrTableData;
+			$pdf->ezTable($arrTable);
 			
-			$arrTableData = Array();
+			$arrTableData	= Array();
+			$arrTable		= Array();
 			$arrTableData['Opening Balance']	= $mixResult['OpeningBalance'];
 			$arrTableData['We Received']		= $mixResult['WeReceived'];
 			$arrTableData['Adjustments']		= $mixResult['Adjustments'];
 			$arrTableData['Balance']			= $mixResult['Balance'];
 			$arrTableData['Total of this Bill'] = $mixResult['BillTotal'];
 			$arrTableData['Total Owing']		= $mixResult['TotalOwing'];
-			$pdf->ezTable(Array($arrTableData));
+			$arrTable[] = $arrTableData;
+			$pdf->ezTable($arrTable);
 			
-			$arrTableData = Array();
+			$arrTableData	= Array();
+			$arrTable		= Array();
 			$arrTableData['Opening Balance']	= $mixResult['OpeningBalance'];
 			$arrTableData['We Received']		= $mixResult['WeReceived'];
 			$arrTableData['Adjustments']		= $mixResult['Adjustments'];
 			$arrTableData['Balance']			= $mixResult['Balance'];
 			$arrTableData['Total of this Bill'] = $mixResult['BillTotal'];
 			$arrTableData['Total Owing']		= $mixResult['TotalOwing'];
-			$pdf->ezTable(Array($arrTableData));
+			$arrTable[] = $arrTableData;
+			$pdf->ezTable($arrTable);
 			
 			$pdf->ezText($mixResult['CustomerName']."\n");
 			$pdf->ezText($mixResult['PropertyName']."\n");
