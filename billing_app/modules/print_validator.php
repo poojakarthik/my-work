@@ -64,6 +64,7 @@ if(!file_exists($strFilename))
 
 // This could take a while =\, so echo start and finish
 echo "\nReading file contents...";
+echo "Filesize: ".filesize($strFilename);
 $arrFileContents = explode("\n", file_get_contents($strFilename));
 Debug($arrFileContents);
 echo "\t\t\t\t[   OK   ]\n\n";
