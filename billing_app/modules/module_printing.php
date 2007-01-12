@@ -390,17 +390,12 @@
 				$strCurrentService = $arrData['FNN'];
 			}
 			
-			Debug($arrData['RecordTypeName']);
-			
 			// if new type
 			if($arrData['RecordTypeName'] != $strCurrentRecordType)
 			{
-				Debug("New Type");
-				
 				// if old type exists
 				if($strCurrentRecordType != "")
 				{
-					Debug("Old Type Exists");
 					// add call type total
 					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
 					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
