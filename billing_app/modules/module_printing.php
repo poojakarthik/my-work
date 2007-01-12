@@ -122,7 +122,7 @@
 		
 		$arrColumns = Array();
 		$arrColumns['Charge']			= "CDR.Charge";
-		$arrColumns['FNN']				= "Service.FNN";
+		$arrColumns['FNN']				= "CDR.FNN";
 		$arrColumns['Source']			= "CDR.Source";
 		$arrColumns['Destination']		= "CDR.Destination";
 		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
@@ -134,15 +134,20 @@
 		$arrColumns['DisplayType']		= "RType.DisplayType";
 		$arrColumns['RecordTypeTotal']	= "SUM(CDR.Charge)";
 		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
-																"RecordType AS RType, " .
-																"Service",
+																"RecordType AS RType",
 																$arrColumns,
-																"RType.Itemised = 1 AND Service.Account = <Account> AND RecordType.Group = RType.Id AND Service.Id = CDR.Service",
-																"Service.FNN, RType.Name",
+																"RType.Itemised = 1 AND Service.Account = <Account> AND RecordType.GroupId = RType.Id",
+																"CDR.FNN, RType.Name");
+																
+		$this->_selRecordTypeTotal		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
+																"RecordType AS RType",
+																"SUM(CDR.Charge) AS TotalCharge",
+																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND CDR.Account = <Account>",
 																NULL,
-																"Service.Id, RType.Id");
+																"1",
+																"RType.Id");
 		
-				
+		
 		//----------------------------------------------------------------------------//
 		// Define the file format
 		//----------------------------------------------------------------------------//
@@ -398,7 +403,7 @@
 				{
 					Debug("Old Type Exists");
 					// add call type total
-					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $arrData['RecordTypeTotal'];
+					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
 					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
 				}
 				// build header record (90)
@@ -406,6 +411,11 @@
 				$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
 				// reset counters
 				$strCurrentRecordType	= $arrData['RecordTypeName'];
+				
+				// Get the RecordType total
+				$arrSelectData['Account']			= $arrInvoiceDetails['Account'];
+				$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
+				$this->_selRecordTypeTotal->Execute();
 				$fltRecordTypeTotal		= $arrData['RecordTypeTotal'];
 			}
 			
