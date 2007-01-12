@@ -386,7 +386,7 @@ foreach ($arrFileContents as $strLine)
 			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			
 			$arrItemisedTable = Array();
-			$pdf->ezText($misResult['CallType']." for ".$strCurrentFNN."\n");
+			$pdf->ezText($mixResult['CallType']." for ".$strCurrentFNN."\n");
 			break;
 		case 91:
 			// Itemised Data Call
