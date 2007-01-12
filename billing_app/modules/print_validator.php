@@ -44,10 +44,12 @@ require_once($strPDFDir."class.pdf.php");
 require_once("../config.php");
 
 $strPath		= "/home/vixen_bill_output/sample/";
-$strPDFPath		= "/home/vixen_bill_output/sample/pdf/";
+//$strPDFPath		= "/home/vixen_bill_output/sample/pdf/";
+$strPDFPath		= "/home/vixen_bill_output/pdf";
 //$strFilename	= $strPath."sample".date("Y-m-d").".vbf";
 //$strFilename	= $strPath."sample2007-01-12.vbf";
 $strFilename	= "/home/richdavis/2007-01-12.vbf";
+
 
 $GLOBALS['FileFormat']	= $arrPrintDefine;
 
@@ -165,6 +167,9 @@ foreach ($arrFileContents as $strLine)
 			break;
 		case 19:
 			// Invoice Footer
+			Debug($arrInvoice);
+			
+			
 			$arrInvoices[]	= $arrInvoice;
 			$strFilename	= date("Y-m-d")."_".$arrInvoice[0]['InvoiceNo'].".pdf";
 			$strFileData	= $pdf->ezOutput();
