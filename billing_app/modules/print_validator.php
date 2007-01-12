@@ -167,7 +167,7 @@ foreach ($arrFileContents as $strLine)
 			// Invoice Footer
 			$arrInvoices[]	= $arrInvoice;
 			$strFilename	= date("Y-m-d")."_".$arrInvoice[0]['InvoiceNo'].".pdf";
-			$strFileData	= $pdfInvoice->ezOutput();
+			$strFileData	= $pdf->ezOutput();
 			
 			$ptrFile		= fopen($strFilename, "w");
 			fwrite($ptrFile, $strFileData);

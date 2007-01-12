@@ -553,7 +553,7 @@
 			$strFileContents .= "\n";
 		}
 		
-		$strFileContents = rtrim($strFileContents, "\n");
+		$strFileContents = rtrim($strFileContents);
 		
 //		Debug($strFileContents);
 //		die;
