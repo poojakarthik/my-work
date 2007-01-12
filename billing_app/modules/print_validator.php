@@ -67,8 +67,7 @@ if(!file_exists($strFilename))
 // This could take a while =\, so echo start and finish
 echo "Filesize: ".filesize($strFilename)." bytes\n";
 echo "\nReading file contents...";
-$arrFileContents = explode("\n", file_get_contents($strFilename));
-array_pop($arrFileContents);
+$arrFileContents = explode("\n", rtrim(file_get_contents($strFilename), "\n"));
 echo "\t\t\t\t[   OK   ]\n\n";
 echo "[ Generating PDF ]\n\n";
 
