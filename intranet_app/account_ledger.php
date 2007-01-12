@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_INVOICE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_INVOICE | MODULE_PAYMENT;
 	
 	// call application
 	require ('config/application.php');
@@ -36,10 +36,8 @@
 	$ivlInvoices->Sample ();
 	
 	// Retrieve the Payments list
-	$payPayments = $Style->attachObject ($payPayments->Payments ());
+	$payPayments = $Style->attachObject ($actAccount->Payments ());
 	$payPayments->Sample ();
-	
-	echo $payPayments; exit;
 	
 	// Retrieve the PDF Listing
 	$pdlInvoices = $Style->attachObject ($actAccount->PDFInvoices ());

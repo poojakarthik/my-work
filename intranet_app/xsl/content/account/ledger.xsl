@@ -142,7 +142,7 @@
 						</xsl:choose>
 					</xsl:attribute>
 					
-					<td><xsl:value-of select="position()" /></td>
+					<td><xsl:value-of select="position()" />.</td>
 					<td>
 						<xsl:value-of select="./Month" />
 						(<xsl:choose>
@@ -171,6 +171,55 @@
 								<xsl:text>&amp;Month=</xsl:text><xsl:value-of select="./Month" />
 							</xsl:attribute>
 							View PDF
+						</a>
+					</td>
+				</tr>
+			</xsl:for-each>
+		</table>
+		
+		<div class="Seperator"></div>
+		
+		<h2>Payments</h2>
+		<div class="Seperator"></div>
+		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="50%">
+			<tr class="First">
+				<th width="30">#</th>
+				<th>Invoice #</th>
+				<th class="Currency">Payment Amount</th>
+				<th>Options</th>
+			</tr>
+			<xsl:for-each select="/Response/AccountPayments/rangeSample/InvoicePayment">
+				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>Odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>Even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					
+					<td><xsl:value-of select="position()" />.</td>
+					<td>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>invoice_view.php?Invoice=</xsl:text>
+								<xsl:value-of select="./Invoice" />
+							</xsl:attribute>
+							Invoice #<xsl:value-of select="./Invoice" />
+						</a>
+					</td>
+					<td class="Currency"><xsl:value-of select="./Amount" /></td>
+					<td>
+						<a href="#">
+							<xsl:attribute name="onclick">
+								<xsl:text>return openPopup('invoicepayment_view.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+								<xsl:text>')</xsl:text>
+							</xsl:attribute>
+							Payment Information
 						</a>
 					</td>
 				</tr>

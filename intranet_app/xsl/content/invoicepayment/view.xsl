@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
+	<xsl:import href="../../includes/init.xsl" />
+	<xsl:import href="../../template/popup.xsl" />
+	<xsl:import href="../../lib/date-time.xsl" />
+	
+	<xsl:template name="Content">
+		<h1>Payment Details</h1>
+		
+		<h2>Invoice Specific Information</h2>
+		<div class="Seperator"></div>
+		
+		<div class="Filter-Form">
+			<div class="Filter-Form-Content">
+				<table border="0" cellpadding="5" cellspacing="0">
+					<tr>
+						<th class="JustifiedWidth">Invoice Id :</th>
+						<td><xsl:value-of select="/Response/InvoicePayment/Invoice" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Payment# :</th>
+						<td><xsl:value-of select="/Response/InvoicePayment/Payment" /></td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<div class="Seperator"></div>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Amount :</th>
+						<td><xsl:value-of select="/Response/InvoicePayment/Amount" /></td>
+					</tr>
+				</table>
+				<div class="Clear"></div>
+			</div>
+		</div>
+		<div class="Seperator"></div>
+		
+		<h2>Payment Information</h2>
+		<div class="Seperator"></div>
+		
+		<div class="Filter-Form">
+			<div class="Filter-Form-Content">
+				<table border="0" cellpadding="5" cellspacing="0">
+					<tr>
+						<th class="JustifiedWidth">Payment Id :</th>
+						<td><xsl:value-of select="/Response/Payment/Id" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Payed On :</th>
+						<td><xsl:value-of select="/Response/Payment/Id" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Amount :</th>
+						<td><xsl:value-of select="/Response/Payment/Amount" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">TXN Reference :</th>
+						<td><xsl:value-of select="/Response/Payment/TXNReference" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Balance :</th>
+						<td><xsl:value-of select="/Response/Payment/Balance" /></td>
+					</tr>
+				</table>
+				<div class="Clear"></div>
+			</div>
+		</div>
+	</xsl:template>
+</xsl:stylesheet>
