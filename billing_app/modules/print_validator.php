@@ -498,6 +498,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 		
 		Debug("'".$arrRecordType['RecordType']['Value']."'");
 	}
+	die;
 	if (!$arrRecordDefine)
 	{
 		// Unknown Record Type (ie. invalid file)
