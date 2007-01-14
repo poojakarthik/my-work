@@ -1735,7 +1735,7 @@ class MySQLFunction
 		 		$arrParams[] = $strParam;
 	 			$i++;
 		 	}
-
+/*
 		 	if (count($this->_arrWhereAliases) != count($arrParams))
 		 	{
 		 		Debug("Number of Aliases doesn't match variables");
@@ -1745,7 +1745,7 @@ class MySQLFunction
 		 	}
 
 		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
-		 	DebugBacktrace();
+		 	DebugBacktrace();*/
 		 	
 			if (is_array($arrParams))
 			{
