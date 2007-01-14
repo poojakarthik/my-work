@@ -158,23 +158,21 @@ die();
 		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
 		
 		// Init Insert Statements
-		/*$arrInvoiceData 					= Array();
-		$arrInvoiceData['CreatedOn']		= /*new MySQLFunction("NOW()")*/NULL;
-		/*$arrInvoiceData['DueOn']			= /*new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY")*/NULL;
-		/*$arrInvoiceData['AccountGroup']		= NULL;
+		$arrInvoiceData 					= Array();
+		$arrInvoiceData['AccountGroup']		= NULL;
 		$arrInvoiceData['Account']			= NULL;
-		$arrInvoiceData['CreatedOn']		= NULL;
-		$arrInvoiceData['DueOn']			= NULL;
+		$arrInvoiceData['CreatedOn']		= /*new MySQLFunction("NOW()")*/NULL;
+		$arrInvoiceData['DueOn']			= /*new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY")*/NULL;
 		$arrInvoiceData['Credits']			= NULL;
 		$arrInvoiceData['Debits']			= NULL;
 		$arrInvoiceData['Total']			= NULL;
 		$arrInvoiceData['Tax']				= NULL;
 		$arrInvoiceData['Balance']			= NULL;
+		$arrInvoiceData['Disputed']			= NULL;
 		$arrInvoiceData['AccountBalance']	= NULL;
 		$arrInvoiceData['Status']			= NULL;
 		$arrInvoiceData['InvoiceRun']		= NULL;
-		$arrInvoiceData['Disputed']			= NULL;*/
-		$insTempInvoice						= new StatementInsert("InvoiceTemp"/*, $arrInvoiceData*/);
+		$insTempInvoice						= new StatementInsert("InvoiceTemp", $arrInvoiceData);
 		$insServiceTotal					= new StatementInsert("ServiceTotal");
 		
 		$intPassed = 0;
@@ -362,8 +360,6 @@ die();
 			// Account.CreditBalance
 			//TODO!!!!
 			
-			Debug("INSERT");
-			
 			// write to temporary invoice table
 			$arrInvoiceData = Array();
 			$arrInvoiceData['AccountGroup']		= $arrAccount['AccountGroup'];
@@ -377,10 +373,12 @@ die();
 			$arrInvoiceData['Total']			= $fltTotal;
 			$arrInvoiceData['Tax']				= $fltTax;
 			$arrInvoiceData['Balance']			= $fltBalance;
+			$arrInvoiceData['Disputed']			= 0;
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
 			$arrInvoiceData['Status']			= INVOICE_TEMP;
 			$arrInvoiceData['InvoiceRun']		= $strInvoiceRun;
-			$arrInvoiceData['Disputed']			= 0;
+			
+			Debug($arrInvoiceData);
 			
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))
