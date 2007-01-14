@@ -193,12 +193,14 @@
 			$acsAccounts->Order ('BusinessName', TRUE);
 			$oblsamAccounts = $acsAccounts->Sample ();
 			
+			
 			if ($oblsamAccounts->Count () == 0)
 			{
 				$oblstrError->setValue ('BusinessName');
 			}
 			else
 			{
+				//TODO!!!! - 1 match = skip this and go to the next step
 				$Style->Output ('xsl/content/contact/list_1-account.xsl');
 				exit;
 			}
@@ -320,6 +322,8 @@
 			
 			$ctsContacts = $oblarrAnswers->Push ($actAccount->Contacts ());
 			
+			//TODO!!!! - if no contact is selected on list_2-contact.xls we are being sent back to the start
+			//				we should be showing this page again with an error msg
 			$Style->Output ('xsl/content/contact/list_2-contact.xsl');
 			exit;
 		}

@@ -14,6 +14,7 @@
 		</xsl:choose>
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
+		
 		<!-- TODO!!!! - Error Message if submitted with missing/wrong data -->
 		<form method="POST" action="account_add.php">
 			<xsl:choose>

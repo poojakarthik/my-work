@@ -4,11 +4,11 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Contact Search</h1>
+		<h1>Find Customer</h1>
 		
 		<script language="javascript" src="js/validate_customer.js"></script>
 		
-		<h2>Stage 3: Overall Verification</h2>
+		<h2>Customer Verification</h2>
 		<div class="Seperator"></div>
 		
 		<form method="POST" action="contact_list.php">
@@ -568,8 +568,11 @@
 			</div>
 			
 			<div class="Clear"></div>
-			
+			<!-- TODO!!!! - Big red X fon disabled, big Green tick for enabled -->
 			<input type="submit" name="Confirm" class="input-submit-disabled" value="Continue &#0187;" id="Confirm" disabled="disabled" />
+			<!-- TODO!!!! - explain to the operator why they can't continue -->
+			<!-- TODO!!!! - + explain input box colors -->
+			
 		</form>
 	</xsl:template>
 	

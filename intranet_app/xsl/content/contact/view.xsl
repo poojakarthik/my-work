@@ -15,6 +15,7 @@
 			<tr>
 				<td>
 					<h2 class="Contact">Contact Information</h2>
+
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
 							<table border="0" cellpadding="5" cellspacing="0">
@@ -178,20 +179,19 @@
 							</table>
 						</div>
 					</div>
-					<div class="Seperator"></div>
-					
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>contact_edit.php?Id=</xsl:text>
-							<xsl:value-of select="/Response/Contact/Id" />
-						</xsl:attribute>
-						<xsl:text>Edit Contact</xsl:text>
-					</a>
+					<div class="LinkEdit">
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>contact_edit.php?Id=</xsl:text>
+								<xsl:value-of select="/Response/Contact/Id" />
+							</xsl:attribute>
+							<xsl:text>Edit Contact</xsl:text>
+						</a>
+					</div>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td width="300" valign="top">
-					<h2>Contact Notes</h2>
-					<div class="Seperator"></div>
+					<h2 class="Notes">Contact Notes</h2>
 					
 					<form method="post" action="note_add.php">
 						<input type="hidden" name="AccountGroup">
@@ -206,10 +206,10 @@
 								<xsl:value-of select="/Response/Contact/Id" />
 							</xsl:attribute>
 						</input>
-						Type new notes for this Contact in the field below:
+						Type new note for this Contact in the field below:
 						<textarea name="Note" class="input-summary" rows="6" />
 						
-						<select name="NoteType">
+						<select name="NoteType" class="Left">
 							<xsl:for-each select="/Response/NoteTypes/NoteType">
 								<option>
 									<xsl:attribute name="style">
@@ -243,18 +243,18 @@
 					
 					<div class="Seperator"></div>
 					<h3>Recent Notes</h3>
-					<div class="Seperator"></div>
-					Listed below are the 5 most recent notes
-					that are associated with this Contact. To view more
-					notes for this Contact, visit the
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>javascript:notes_popup('', '', '', '</xsl:text>
-							<xsl:value-of select="/Response/Contact/Id" />
-							<xsl:text>')</xsl:text>
-						</xsl:attribute>
-						<xsl:text>Note Archive</xsl:text>
-					</a>.
+					<!-- TODO!!!! - LOW PRIORITY - show 'no notes' message if there are no notes -->
+					The 5 most recent notes are listed below:
+					<div class="Right">
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>javascript:notes_popup('', '', '', '</xsl:text>
+								<xsl:value-of select="/Response/Contact/Id" />
+								<xsl:text>')</xsl:text>
+							</xsl:attribute>
+							<xsl:text>View All Customer Notes</xsl:text>
+						</a>
+					</div>
 					<div class="Seperator"></div>
 					<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 						<xsl:variable name="Note" select="." />
@@ -305,10 +305,7 @@
 		
 		<div class="Seperator"></div>
 		
-		<h2 class="Accounts">Account Privileges</h2>
-		<p>
-			The contact you are currently viewing has access to the following Accounts.
-		</p>
+		<h2 class="Accounts">Accounts</h2>
 		
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
@@ -316,7 +313,7 @@
 				<th>Account Id</th>
 				<th>Business Name</th>
 				<th>Trading Name</th>
-				<th>Options</th>
+				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/Accounts/Results/rangeSample/Account">
 				<tr>
@@ -330,7 +327,7 @@
 								<xsl:text>account_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
-							<xsl:text>View Account</xsl:text>
+							<xsl:text>Account Details</xsl:text>
 						</a>, 
 						<a>
 							<xsl:attribute name="href">

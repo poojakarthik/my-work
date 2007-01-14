@@ -508,6 +508,11 @@
 	
 	h2.Accounts,
 	h2.Account,
+	h2.AccountOptions,
+	h2.Notes,
+	h2.Note,
+	h2.Services,
+	h2.Service,
 	h2.Contacts,
 	h2.Contact,
 	h2.Invoice
@@ -519,6 +524,26 @@
 		padding-left:                  70px;
 		
 		height:                        50px;
+	}
+	
+	h2.Notes
+	{
+		background-image:              url('../img/template/note.png');
+	}
+	
+	h2.Note
+	{
+		background-image:              url('../img/template/note.png');
+	}
+	
+	h2.Services
+	{
+		background-image:              url('../img/template/service.png');
+	}
+	
+	h2.Service
+	{
+		background-image:              url('../img/template/service.png');
 	}
 	
 	h2.Contacts
@@ -539,6 +564,11 @@
 	h2.Account
 	{
 		background-image:              url('../img/template/account.png');
+	}
+	
+	h2.AccountOptions
+	{
+		background-image:              url('../img/template/account_options.png');
 	}
 	
 	h2.Invoice
@@ -695,3 +725,12 @@
 		cursor: pointer;
 	}
 	
+	.LinkEdit
+	{
+		text-align: Right;
+	}
+	
+	.LinkAdd
+	{
+		text-align: Right;
+	}

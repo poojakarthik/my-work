@@ -4,9 +4,9 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Contact Search</h1>
+		<h1>Find Customer</h1>
 		
-		<h2>Stage 2: Identify the Contact</h2>
+		<h2>Select a Contact</h2>
 		<div class="Seperator"></div>
 		
 		<form method="post" action="contact_list.php">
@@ -58,7 +58,7 @@
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<td>
-								Please use the contact listed in this field below:
+								Select a contact from the following list:
 							</td>
 						</tr>
 						<tr>
@@ -92,6 +92,12 @@
 							</td>
 						</tr>
 					</table>
+					<div class="Seperator"></div>
+					
+					<div style="width: 400px">
+						If the contact is not listed above they do not have authorisation
+						to access this Account.
+					</div>
 				</div>
 			</div>
 			<div class="Seperator"></div>

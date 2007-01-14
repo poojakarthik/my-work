@@ -4,14 +4,16 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Contact Search</h1>
+		<h1>Find Customer</h1>
 		
-		<h2>Stage 1: Initial Identification</h2>
+		<h2>Search for a Customer</h2>
 		<div class="Seperator"></div>
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
 		
+		<!-- TODO!!!! - Error Message if submitted with no data -->
+		<!-- TODO!!!! - Error Message if submitted with one name but not both -->
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
 				<xsl:choose>
@@ -43,7 +45,7 @@
 		<form method="post" action="contact_list.php">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
-					To authenticate a Customer, you must match <strong>only one</strong> of the following fields:
+					To search for a Customer, enter <strong>only one</strong> of the following:
 					<div class="Seperator"></div>
 					
 					<table border="0" cellpadding="5" cellspacing="0">
@@ -211,10 +213,7 @@
 					
 					<div style="width: 500px">
 						<strong><span class="Attention"><sup>1</sup></span> :</strong>
-						You can only identify a Contact or Account by these particular 
-						fields if the information is currently unarchived. Accounts
-						and Services that have been archived can not be identfied
-						using these particular means.
+						This field searches for Current Accounts only, not Archived Accounts.
 					</div>
 				</div>
 			</div>

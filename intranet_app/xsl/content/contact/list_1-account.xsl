@@ -4,9 +4,9 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Contact Search</h1>
+		<h1>Find Customer</h1>
 		
-		<h2>Stage 1a: Verify Account</h2>
+		<h2>Select an Account</h2>
 		<div class="Seperator"></div>
 		
 		<div class="sectionContainer">

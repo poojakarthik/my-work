@@ -15,7 +15,6 @@
 			<tr>
 				<td valign="top">
 					<h2 class="Account">Account Information</h2>
-					<div class="Seperator"></div>
 					
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
@@ -167,21 +166,20 @@
 							</form>
 						</div>
 					</div>
-					
-					<div class="Seperator"></div>
-					
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>account_edit.php?Id=</xsl:text>
-							<xsl:value-of select="/Response/Account/Id" />
-						</xsl:attribute>
-						<xsl:text>Edit Account</xsl:text>
-					</a>
+					<div class="LinkEdit">
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>account_edit.php?Id=</xsl:text>
+								<xsl:value-of select="/Response/Account/Id" />
+							</xsl:attribute>
+							<xsl:text>Edit Account</xsl:text>
+						</a>
+					</div>
 					
 					<div class="Clear"></div>
 					<div class="Seperator"></div>
 					
-					<h2 class="Contacts">Associated Active Contacts</h2>
+					<h2 class="Contacts">Active Contacts</h2>
 					
 					<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
@@ -222,18 +220,19 @@
 							</tr>
 						</xsl:for-each>
 					</table>
-					
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>contact_add.php?Account=</xsl:text>
-							<xsl:value-of select="/Response/Account/Id" />
-						</xsl:attribute>
-						<xsl:text>Add Contact</xsl:text>
-					</a>
+					<div class="LinkAdd">
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>contact_add.php?Account=</xsl:text>
+								<xsl:value-of select="/Response/Account/Id" />
+							</xsl:attribute>
+							<xsl:text>Add Contact</xsl:text>
+						</a>
+					</div>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">
-					<h2>Account Options</h2>
+					<h2 class="AccountOptions">Account Options</h2>
 					<ul>
 						<li>
 							<a>
@@ -276,8 +275,7 @@
 					<div class="Seperator"></div>
 					
 					
-					<h2>Account Notes</h2>
-					<div class="Seperator"></div>
+					<h2 class="Notes">Account Notes</h2>
 					
 					<form method="post" action="note_add.php">
 						<input type="hidden" name="AccountGroup">
@@ -292,10 +290,10 @@
 								<xsl:value-of select="/Response/Account/Id" />
 							</xsl:attribute>
 						</input>
-						Type new notes for this account in the field below:
+						Type new note for this account in the field below:
 						<textarea name="Note" class="input-summary" rows="6" />
 						
-						<select name="NoteType">
+						<select class="Left" name="NoteType">
 							<xsl:for-each select="/Response/NoteTypes/NoteType">
 								<option>
 									<xsl:attribute name="style">
@@ -329,18 +327,19 @@
 					
 					<div class="Seperator"></div>
 					<h3>Recent Notes</h3>
-					<div class="Seperator"></div>
-					Listed below are the 5 most recent notes
-					that are associated with this Account. To view more
-					notes for this account, visit the
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>javascript:notes_popup('', '</xsl:text>
-							<xsl:value-of select="/Response/Account/Id" />
-							<xsl:text>', '', '')</xsl:text>
-						</xsl:attribute>
-						<xsl:text>Note Archive</xsl:text>
-					</a>.
+					<!-- TODO!!!! - LOW PRIORITY - show 'no notes' message if there are no notes -->
+					The 5 most recent notes are listed below:
+					<div class="Right">
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>javascript:notes_popup('', '</xsl:text>
+								<xsl:value-of select="/Response/Account/Id" />
+								<xsl:text>', '', '')</xsl:text>
+							</xsl:attribute>
+							<xsl:text>View All Account Notes</xsl:text>
+						</a>
+					</div>
+					<div class="Clear"></div>
 					<div class="Seperator"></div>
 					<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 						<xsl:variable name="Note" select="." />
@@ -390,11 +389,9 @@
 		</table>
 		<div class="Clear"></div>
 		<div class="Seperator"></div>
-		<div class="Seperator"></div>
 		
 		<!-- Services -->
-		<h2>Services</h2>
-		<div class="Seperator"></div>
+		<h2 class="Services">Services</h2>
 		
 		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
@@ -467,18 +464,20 @@
 							</xsl:attribute>
 							<xsl:text>Unbilled Charges</xsl:text>
 						</a>
+						<!-- TODO!!!! - link to view notes -->
 					</td>
 				</tr>
 			</xsl:for-each>
 		</table>
-		<div class="Seperator"></div>
 		
-		<a>
-			<xsl:attribute name="href">
-				<xsl:text>service_add.php?Account=</xsl:text>
-				<xsl:value-of select="/Response/Account/Id" />
-			</xsl:attribute>
-			Add Service
-		</a>
+		<div class="LinkAdd">
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>service_add.php?Account=</xsl:text>
+					<xsl:value-of select="/Response/Account/Id" />
+				</xsl:attribute>
+				Add Service
+			</a>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>
