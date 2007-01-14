@@ -676,5 +676,23 @@ define("PABLO_TIP_SLEAZY"			, 2);
 define("PABLO_TIP_HATES_YOU"		, 3);
 define("PABLO_TIP_DRUNK"			, 4);
 
+// Payments
+// payment status
+define("PAYMENT_IMPORTED"				, 100);
+define("PAYMENT_WAITING"				, 101);
+define("PAYMENT_PAYING"					, 103);
+define("PAYMENT_FINISHED"				, 150);
+define("PAYMENT_BAD_IMPORT"				, 200);
+define("PAYMENT_BAD_PROCESS"			, 201);
+define("PAYMENT_BAD_NORMALISE"			, 202);
+define("PAYMENT_CANT_NORMALISE_HEADER"	, 203);
+define("PAYMENT_CANT_NORMALISE_FOOTER"	, 204);
+define("PAYMENT_CANT_NORMALISE_INVALID"	, 205);
+
+// payment types
+define("PAYMENT_TYPE_BILLEXPRESS"	, 1);
+define("PAYMENT_TYPE_BPAY"			, 2);
+define("PAYMENT_TYPE_CHEQUE"		, 3);
+define("PAYMENT_TYPE_SECUREPAY"		, 4);
 
 ?>
