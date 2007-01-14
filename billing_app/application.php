@@ -344,6 +344,8 @@ die();
 			$fltTax		= $fltTotal / TAX_RATE_GST;
 			$fltBalance	= $fltTotal + $fltTax;
 			
+			Debug("SELECT");
+			
 			// calculate account balance
 			if(!$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id'])))
 			{
@@ -362,6 +364,8 @@ die();
 			
 			// Account.CreditBalance
 			//TODO!!!!
+			
+			Debug("INSERT");
 			
 			// write to temporary invoice table
 			$arrInvoiceData = Array();
