@@ -125,6 +125,8 @@ die();
 		$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>");
 		$arrColumns['LastChargedOn']	= NULL;
 		$this->_ubiRecurringCharge		= new StatementUpdateById("RecurringCharge", $arrColumns);
+		
+		$this->_insAddToChargesTable	= new StatementInsert("Charge");
 
 		// Init Report
 		$this->_rptRecurringChargesReport	= new Report("Recurring Charges Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
