@@ -7,18 +7,12 @@
 	<xsl:import href="../../template/popup.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Note Listing</h1>
+		<h1>View Notes</h1>
 		
-		<p>
-			The notes listed below are sorted from most to least recently added into the system.
-		</p>
-		
-		<div class="Seperator"></div>
+
 		
 		<xsl:if test="/Response/AccountGroup">
-			<h2>Account Group Information</h2>
-			<div class="Seperator"></div>
-			
+			<h2 class="Accounts">Account Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
@@ -38,8 +32,7 @@
 		</xsl:if>
 		
 		<xsl:if test="/Response/Account">
-			<h2>Account Information</h2>
-			<div class="Seperator"></div>
+			<h2 class="Account">Account Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
@@ -68,8 +61,7 @@
 		</xsl:if>
 		
 		<xsl:if test="/Response/Service">
-			<h2>Contact Information</h2>
-			<div class="Seperator"></div>
+			<h2 class="Service">Service Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
@@ -89,8 +81,7 @@
 		</xsl:if>
 		
 		<xsl:if test="/Response/Contact">
-			<h2>Contact Information</h2>
-			<div class="Seperator"></div>
+			<h2 class="Contact">Contact Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
@@ -194,7 +185,7 @@
 		
 		<div class="Seperator"></div>
 		
-		<h2>Notes</h2>
+		<h2 class="Notes">Notes</h2>
 		
 		<xsl:if test="/Response/Notes/Constraints/Constraint[Name='NoteType']">
 			<p>

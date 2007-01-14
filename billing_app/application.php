@@ -309,7 +309,7 @@ die();
 				
 				
 				// service total
-				//$fltServiceTotal	= $fltTotalCharge + $fltServiceDebits - $fltServiceCredits;
+				$fltServiceTotal	= $fltTotalCharge + $fltServiceDebits - $fltServiceCredits;
 				
 				// insert into ServiceTotal
 				$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
@@ -331,8 +331,9 @@ die();
 					continue;
 				}
 				$this->_rptBillingReport->AddMessage(MSG_OK);
+				
 				// add to invoice totals
-				$fltTotalDebits		+= $fltServiceDebits;
+				$fltTotalDebits		+= $fltServiceDebits + $fltTotalCharge;
 				$fltTotalCredits	+= $fltServiceCredits;
 			}
 			$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);

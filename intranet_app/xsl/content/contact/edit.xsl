@@ -14,7 +14,7 @@
 				</xsl:attribute>
 			</input>
 			
-			<h2 class="Contact">Contact Information</h2>
+			<h2 class="Contact">Contact Details</h2>
 			
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgError">
@@ -270,20 +270,7 @@
 								<table border="0" cellpadding="4" cellspacing="0">
 									<tr>
 										<td>
-											<input type="radio" name="CustomerContact" value="1" id="CustomerContact:TRUE">
-												<xsl:choose>
-													<xsl:when test="/Response/Contact/CustomerContact = 1">
-														<xsl:attribute name="checked">
-															<xsl:text>checked</xsl:text>
-														</xsl:attribute>
-													</xsl:when>
-												</xsl:choose>
-											</input>
-										</td>
-										<td><label for="CustomerContact:TRUE">Yes, allow this Contact access to associated Accounts</label></td>
-									</tr>
-									<tr>
-										<td>
+											<!-- TODO!!!! - default radio button -->
 											<input type="radio" name="CustomerContact" value="0" id="CustomerContact:FALSE">
 												<xsl:choose>
 													<xsl:when test="/Response/Contact/CustomerContact != 1">
@@ -294,8 +281,23 @@
 												</xsl:choose>
 											</input>
 										</td>
-										<td><label for="CustomerContact:FALSE">No, only allow this Contact access to this Account</label></td>
+										<td><label for="CustomerContact:FALSE">Allow access to this Account only</label></td>
 									</tr>
+									<tr>
+										<td>
+											<input type="radio" name="CustomerContact" value="1" id="CustomerContact:TRUE">
+												<xsl:choose>
+													<xsl:when test="/Response/Contact/CustomerContact = 1">
+														<xsl:attribute name="checked">
+															<xsl:text>checked</xsl:text>
+														</xsl:attribute>
+													</xsl:when>
+												</xsl:choose>
+											</input>
+										</td>
+										<td><label for="CustomerContact:TRUE">Allow access to all Associated Accounts</label></td>
+									</tr>
+									
 								</table>
 							</td>
 						</tr>
@@ -304,9 +306,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Archive Status</h2>
-			<div class="Seperator"></div>
-			
+			<h2 class="Archive">Archive Status</h2>	
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<xsl:choose>
@@ -318,7 +318,6 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					
-					If you would like to change the Archive Status of this Contact, please click the button below:
 					<div class="Seperator"></div>
 					
 					<table border="0" cellpadding="5" cellspacing="0">
@@ -328,7 +327,7 @@
 									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
 									<td>
 										<label for="Archive:FALSE">
-											Make this Contact <strong><span class="Green">Available</span></strong> and active
+											<strong><span class="Green">Re-Activate</span></strong> this Contact.
 										</label>
 									</td>
 								</tr>
@@ -338,21 +337,17 @@
 									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
 									<td>
 										<label for="Archive:TRUE">
-											Make this Contact <strong><span class="Red">Archived</span></strong> and unavailable
+											<strong><span class="Red">Archive</span></strong> this Contact.
 										</label>
 									</td>
 								</tr>
 							</xsl:otherwise>
 						</xsl:choose>
-						<tr>
-							<td></td>
-							<td>
-								<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
-							</td>
-						</tr>
 					</table>
 				</div>
 			</div>
+			<div class="Seperator"></div>
+			<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
 		</form>
 	</xsl:template>
 	

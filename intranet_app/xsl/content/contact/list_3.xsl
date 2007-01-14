@@ -155,7 +155,7 @@
 											onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="2" /></td>
 											<th>
 												<label for="Address:TRUE">
-													Yes: verify this information
+													Address verified by customer
 												</label>
 											</th>
 										</tr>

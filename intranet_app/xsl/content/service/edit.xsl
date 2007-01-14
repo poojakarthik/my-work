@@ -7,6 +7,7 @@
 		<h1>Edit Service</h1>
 		
 		<form method="POST" action="service_edit.php">
+			<h2 class="Service">Service Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<input type="hidden" name="Id">
@@ -54,22 +55,13 @@
 								</input>
 							</td>
 						</tr>
-						<tr>
-							<th class="JustifiedWidth"></th>
-							<td>
-								<strong><span class="Attention">Attention</span> :</strong>
-								The line number you enter above must of the same Service Type
-								listed above.
-							</td>
-						</tr>
 					</table>
 				</div>
 			</div>
 			
 			<div class="Seperator"></div>
 			
-			<h2>Archive Status</h2>
-			<div class="Seperator"></div>
+			<h2 class="Archive">Archive Status</h2>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -96,20 +88,21 @@
 										</label>
 									</td>
 								</tr>
-								<tr>
-									<td></td>
-									<td>
-										<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
-									</td>
-								</tr>
 							</table>
 						</xsl:when>
 						<xsl:otherwise>
+							<!-- TODO!!!! - URGENT - allow unarchive of service -->
+							<!-- if an active service exists with this FNN : show a link to change of lessee -->
+							<!-- if a more recent archived service exists with this FNN : add a new service -->
+							<!-- otherwise, just re-activate the service -->
+							<!-- dont forget the service address details for provisioning -->
 							<p>Services can not be unarchived. Instead - add a new service with the same number.</p>
 						</xsl:otherwise>
 					</xsl:choose>
 				</div>
 			</div>
+			<div class="Seperator"></div>
+			<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

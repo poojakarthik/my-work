@@ -209,6 +209,16 @@
 						Type new note for this Contact in the field below:
 						<textarea name="Note" class="input-summary" rows="6" />
 						
+						<div>
+							<input type="checkbox" name="Account" CHECKED="CHECKED">
+								<xsl:attribute name="value">
+									<xsl:text></xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+							</input>
+							Show this note in Account Notes.
+						</div>
+						
 						<select name="NoteType" class="Left">
 							<xsl:for-each select="/Response/NoteTypes/NoteType">
 								<option>

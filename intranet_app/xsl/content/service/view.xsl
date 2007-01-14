@@ -13,8 +13,9 @@
 		<script language="javascript" src="js/notes_popup.js"></script>
 		<script language="javascript" src="js/provisioning_popup.js"></script>
 		
+		<h2 class="Account">Account Details</h2>
 		<div class="Filter-Form">
-			<h2>Account Information</h2>
+			
 			
 			<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 				<tr>
@@ -67,8 +68,7 @@
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
-					<h2>Service Information</h2>
-					<div class="Seperator"></div>
+					<h2 class="Service">Service Details</h2>
 					
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
@@ -181,25 +181,6 @@
 								</tr>
 								<tr>
 									<th class="JustifiedWidth">
-										<strong>Edit Details :</strong>
-									</th>
-									<td>
-										<a>
-											<xsl:attribute name="href">
-												<xsl:text>service_edit.php?Id=</xsl:text>
-												<xsl:value-of select="/Response/Service/Id" />
-											</xsl:attribute>
-											<xsl:attribute name="onclick">
-												<xsl:text>return openPopup('service_edit.php?Id=</xsl:text>
-												<xsl:value-of select="/Response/Service/Id" />
-												<xsl:text>')</xsl:text>
-											</xsl:attribute>
-											<xsl:text>Edit Service</xsl:text>
-										</a>
-									</td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
 										<strong>Change Lessee :</strong>
 									</th>
 									<td>
@@ -274,12 +255,26 @@
 							</table>
 						</div>
 					</div>
+					<div class="LinkEdit">
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>service_edit.php?Id=</xsl:text>
+								<xsl:value-of select="/Response/Service/Id" />
+							</xsl:attribute>
+							<xsl:attribute name="onclick">
+								<xsl:text>return openPopup('service_edit.php?Id=</xsl:text>
+								<xsl:value-of select="/Response/Service/Id" />
+								<xsl:text>')</xsl:text>
+							</xsl:attribute>
+							<xsl:text>Edit Service</xsl:text>
+						</a>
+					</div>
+					
 					<div class="Clear"></div>
 					<div class="Seperator"></div>
 					
 					<xsl:if test="/Response/Service/ServiceType = 102">
-						<h2>Provisioning</h2>
-						<div class="Seperator"></div>
+						<h2 class="Provisioning">Provisioning</h2>
 						
 						<form method="POST" action="provisioning_request.php">
 							<input type="hidden" name="Service">
@@ -376,8 +371,7 @@
 						
 						<div class="Seperator"></div>
 						
-						<h2>Service Address Information</h2>
-						<div class="Seperator"></div>
+						<h2 class="Address">Service Address Details</h2>
 						
 						<div class="Filter-Form">
 							<div class="Filter-Form-Content">
@@ -950,8 +944,7 @@
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">
-					<h2>Service Notes</h2>
-					<div class="Seperator"></div>
+					<h2 class="Notes">Service Notes</h2>
 					
 					<form method="post" action="note_add.php">
 						<input type="hidden" name="AccountGroup">
@@ -966,20 +959,20 @@
 								<xsl:value-of select="/Response/Service/Id" />
 							</xsl:attribute>
 						</input>
-						Type new notes for this service in the field below:
+						Type new note for this service in the field below:
 						<textarea name="Note" class="input-summary" rows="6" />
 						
 						<div>
-							<input type="checkbox" name="Account">
+							<input type="checkbox" name="Account" CHECKED="CHECKED">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 							</input>
-							Associate this Service note with this Account
+							Show this note in Account Notes.
 						</div>
 						
-						<select name="NoteType">
+						<select class="Left" name="NoteType">
 							<xsl:for-each select="/Response/NoteTypes/NoteType">
 								<option>
 									<xsl:attribute name="style">
@@ -1013,18 +1006,18 @@
 					
 					<div class="Seperator"></div>
 					<h3>Recent Notes</h3>
-					<div class="Seperator"></div>
-					Listed below are the 5 most recent notes
-					that are associated with this Service. To view more
-					notes for this Service, visit the
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>javascript:notes_popup('', '', '</xsl:text>
-							<xsl:value-of select="/Response/Service/Id" />
-							<xsl:text>', '')</xsl:text>
-						</xsl:attribute>
-						<xsl:text>Note Archive</xsl:text>
-					</a>.
+					<!-- TODO!!!! - LOW PRIORITY - show 'no notes' message if there are no notes -->
+					The 5 most recent notes are listed below:
+					<div class="Right">
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>javascript:notes_popup('', '', '</xsl:text>
+								<xsl:value-of select="/Response/Service/Id" />
+								<xsl:text>', '')</xsl:text>
+							</xsl:attribute>
+							<xsl:text>View All Service Notes</xsl:text>
+						</a>
+					</div>
 					<div class="Seperator"></div>
 					<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 						<xsl:variable name="Note" select="." />
@@ -1071,14 +1064,13 @@
 					</xsl:for-each>
 					<div class="Seperator"></div>
 
-					<h2>Add Account Charges</h2>
-					<div class="Seperator"></div>
+					<h2 class="Charge">Add Charges</h2>
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
 							<h2>Single Charge</h2>
 							<xsl:choose>
 								<xsl:when test="count(/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType) = 0">
-									No charge types are defined to add against an account.
+									No charges are available.
 								</xsl:when>
 								<xsl:otherwise>
 									<form method="post" action="service_charge_add.php">
@@ -1123,7 +1115,7 @@
 							<h2>Recurring Charge</h2>
 							<xsl:choose>
 								<xsl:when test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
-									No recurring charge types are defined to add against an account.
+									No recurring charges are available.
 								</xsl:when>
 								<xsl:otherwise>
 									<form method="post" action="service_recurringcharge_add.php">

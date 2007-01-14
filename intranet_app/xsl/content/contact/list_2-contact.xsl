@@ -58,6 +58,19 @@
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<td>
+								<!-- business name -->
+								<xsl:choose>
+									<xsl:when test="/Response/ui-answers/Account/BusinessName = ''">
+										<xsl:value-of select="/Response/ui-answers/Account/TradingName" />
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="/Response/ui-answers/Account/BusinessName" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</td>
+						</tr>
+						<tr>
+							<td>
 								Select a contact from the following list:
 							</td>
 						</tr>

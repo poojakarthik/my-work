@@ -8,8 +8,9 @@
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
-
+	
 		<form method="POST" action="account_edit.php">
+			<h2 class="Account">Account Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<input type="hidden" name="Id">
@@ -191,8 +192,7 @@
 			
 			<div class="Seperator"></div>
 			
-			<h2>Archive Status</h2>
-			<div class="Seperator"></div>
+			<h2 class="Archive">Archive Status</h2>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -205,7 +205,6 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					
-					If you would like to make this Account Archived, please click the button below:
 					<div class="Seperator"></div>
 					
 					<table border="0" cellpadding="5" cellspacing="0">
@@ -215,7 +214,7 @@
 									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
 									<td>
 										<label for="Archive:FALSE">
-											Make this account <strong><span class="Green">Available</span></strong> and active
+											<strong><span class="Green">Re-Activate</span></strong> this Account.
 										</label>
 									</td>
 								</tr>
@@ -225,21 +224,17 @@
 									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
 									<td>
 										<label for="Archive:TRUE">
-											Make this account <strong><span class="Red">Archived</span></strong> and unavailable
+											<strong><span class="Red">Archive</span></strong> this Account.
 										</label>
 									</td>
 								</tr>
 							</xsl:otherwise>
 						</xsl:choose>
-						<tr>
-							<td></td>
-							<td>
-								<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
-							</td>
-						</tr>
 					</table>
 				</div>
 			</div>
+			<div class="Seperator"></div>
+			<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

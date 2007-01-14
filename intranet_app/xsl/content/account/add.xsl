@@ -57,7 +57,6 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Account">General Account Information</h2>
-			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -256,7 +255,6 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Invoice">Billing Information</h2>
-			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -525,7 +523,6 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Contact">Primary Contact Information</h2>
-			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">

@@ -505,7 +505,12 @@
 		font-weight:         bold;
 	}
 	
-	
+	h2.Address,
+	h2.Payment,
+	h2.Charge,
+	h2.PDF,
+	h2.Provisioning,
+	h2.Archive,
 	h2.Accounts,
 	h2.Account,
 	h2.AccountOptions,
@@ -524,6 +529,35 @@
 		padding-left:                  70px;
 		
 		height:                        50px;
+	}
+	
+	h2.Payment
+	{
+		background-image:              url('../img/template/payment.png');
+	}
+	
+	h2.Charge
+	{
+		background-image:              url('../img/template/charge.png');
+	}
+	h2.Address
+	{
+		background-image:              url('../img/template/address.png');
+	}
+	
+	h2.Provisioning
+	{
+		background-image:              url('../img/template/provisioning.png');
+	}
+	
+	h2.PDF
+	{
+		background-image:              url('../img/template/pdf.png');
+	}
+	
+	h2.Archive
+	{
+		background-image:              url('../img/template/archive.png');
 	}
 	
 	h2.Notes
