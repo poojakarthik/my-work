@@ -212,8 +212,10 @@ die();
 			}
 			
 			// calculate totals
-			$fltDebits = 0;
-			$fltTotalCharge = 0;
+			$fltDebits			= 0.0;
+			$fltTotalCharge		= 0.0;
+			$fltTotalCredits	= 0.0;
+			$fltTotalDebits		= 0.0;
 
 			$this->_rptBillingReport->AddMessage(MSG_GET_SERVICES, FALSE);
 
