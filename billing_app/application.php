@@ -345,7 +345,14 @@ die();
 			$fltBalance	= $fltTotal + $fltTax;
 			
 			// calculate account balance
-			$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id']));
+			if(!$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id'])))
+			{
+				// Report and fail out
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n");
+				Debug($selCalcAccountBalance->Error());
+				$intFailed++;
+				continue;
+			}
 			$fltAccountBalance = $selCalcAccountBalance->Fetch();
 			
 			// AccountGroup.CreditBalance
