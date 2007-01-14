@@ -101,7 +101,7 @@
 																"RecordType AS RType",
 																$arrColumns,
 																"RecordType.GroupId = RType.Id AND ServiceTypeTotal.Account = <Account> AND ServiceTypeTotal.InvoiceRun = <InvoiceRun>",
-																"Service.FNN",
+																"ServiceTypeTotal.FNN",
 																NULL,
 																"RType.Id");
 		
