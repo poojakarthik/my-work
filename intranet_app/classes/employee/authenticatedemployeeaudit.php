@@ -228,7 +228,9 @@
 			
 			foreach ($this->_oblarrContacts as $oblstrContact)
 			{
-				$oblarrContacts->Push (new Contact ($oblstrContact->getValue ()));
+				$cntContact [$oblstrContact->getValue ()] = new Contact ($oblstrContact->getValue ());
+				$cntContact [$oblstrContact->getValue ()]->PrimaryAccount ();
+				$oblarrContacts->Push ($cntContact [$oblstrContact->getValue ()]);
 			}
 			
 			return $oblarrBase->Output ();
