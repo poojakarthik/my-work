@@ -380,8 +380,6 @@ die();
 			$arrInvoiceData['Status']			= INVOICE_TEMP;
 			$arrInvoiceData['InvoiceRun']		= $strInvoiceRun;
 			
-			Debug($arrInvoiceData);
-			
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))
 			{
