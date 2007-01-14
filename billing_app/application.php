@@ -230,6 +230,9 @@ die();
 			// for each service belonging to this account
 			foreach ($arrServices as $arrService)
 			{
+				$fltServiceCredits	= 0.0;
+				$fltServiceDebits	= 0.0;
+				
 				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
 				if ($arrService['ChargeCap'] > 0)
@@ -280,8 +283,6 @@ die();
 				}
 				
 				// Calculate Debit and Credit Totals
-				$fltServiceCredits	= 0.0;
-				$fltServiceDebits	= 0.0;
 				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 				$mixResult = $selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $this->_strInvoiceRun));
 				if($mixResult > 2 || $mixResult === FALSE)
