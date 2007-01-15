@@ -296,7 +296,6 @@
 		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
-			Debug($arrTotal);
 			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrTotal['RecordTypeName'];
 			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrTotal['Charge'];
 			$arrFileData[] = $arrDefine['ChargeTotal'];
