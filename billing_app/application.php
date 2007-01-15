@@ -780,6 +780,8 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		// TODO: Clean up BillOutput table
+		
 		
 		return TRUE;
 	}

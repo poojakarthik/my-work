@@ -110,7 +110,7 @@ foreach ($arrFileContents as $strLine)
 			$arrTable		= Array();
 			$arrTableData['INVOICE NUMBER']		= $mixResult['InvoiceNo'];
 			$arrTableData['BILL PERIOD']		= $mixResult['BillPeriod'];
-			$arrTableData['DATE OF ISSUE']		= $mixResult['DateIssued'];
+			$arrTableData['DATE OF ISSUE']		= $mixResult['IssueDate'];
 			$arrTableData['ACCOUNT NUMBER']		= $mixResult['AccountNo'];
 			$arrTable[] = $arrTableData;
 			$pdf->ezTable($arrTable);
