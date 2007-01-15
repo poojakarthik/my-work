@@ -529,7 +529,7 @@
 						{
 							$strValue = "0";
 						}
-						$strValue = str_pad((float)$strValue, 11, "0", STR_PAD_LEFT);
+						$strValue = str_pad((float)$strValue, $arrField['Length'], "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTDATE:
 						if (!$strValue)
