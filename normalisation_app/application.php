@@ -384,7 +384,7 @@ die();
 		unset($arrCDRFile['NormalisedOn']);
 
 		// Report
-		$this->_rptNormalisationReport->AddMessage("\tImporting ".TruncateName($arrCDRFile['FileName'], 30)."...");
+		$this->rptNormalisationReport->AddMessage("\tImporting ".TruncateName($arrCDRFile['FileName'], 30)."...");
 		
 		try
 		{
@@ -471,7 +471,7 @@ die();
 		// Report
 		$intPassed = $this->_intImportPass;
 		$intFailed = $intSequence - $intPassed;
-		$this->_rptNormalisationReport->AddMessage("\t$intPassed passed, $intFailed failed.");
+		$this->rptNormalisationReport->AddMessage("\t$intPassed passed, $intFailed failed.");
 		
 		return $intSequence;
  	}
