@@ -376,7 +376,7 @@ foreach ($arrFileContents as $strLine)
 			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			
 			$arrItemisedTable = Array();
-			$pdf->ezText($mixResult['CallType']." for ".$strCurrentFNN."\n");
+			$pdf->ezText("\n\t".$mixResult['CallType']." for ".$strCurrentFNN."\n");
 			break;
 		case 91:
 			// Itemised Data Call
@@ -603,7 +603,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				return "Invalid Data Type in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 		}
 		
-		$arrLine[$strKey] = trim($arrLine[$strKey]);
+		$arrLine[$strKey] = trim($mixData);
 	}
 	
 	return $arrLine;
