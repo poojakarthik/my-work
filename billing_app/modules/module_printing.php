@@ -269,7 +269,7 @@
 		$intCount = 1;
 		foreach($arrBillHistory as $arrBill)
 		{
-			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime($arrBill));
+			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime($arrBill['CreatedOn']));
 			$arrDefine['GraphData']		['Value']			['Value']	= $arrBill['Total'] + $arrBill['Tax'];
 			$arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
