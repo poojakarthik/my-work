@@ -561,7 +561,7 @@
 						$strValue = str_pad($strValue, 9, "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTCURRENCY:
-						if ($strValue == NULL)
+						if (!$strValue)
 						{
 							$strValue = "0";
 						}
