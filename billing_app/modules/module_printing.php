@@ -534,35 +534,35 @@
 					case BILL_TYPE_SHORTDATE:
 						if (!$strValue)
 						{
-							$strValue = "XX/XX/XXXX";
+							$strValue = "00/00/0000";
 						}
 						$strValue = str_pad($strValue, 10, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_LONGDATE:
 						if (!$strValue)
 						{
-							$strValue = "XX XXX XXXX";
+							$strValue = "00 Jan 0000";
 						}
 						$strValue = str_pad($strValue, 11, " ", STR_PAD_RIGHT);
 						break;
 					case BILL_TYPE_TIME:
 						if (!$strValue)
 						{
-							$strValue = "XX:XX:XX";
+							$strValue = "00:00:00";
 						}
 						$strValue = str_pad($strValue, 8, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_DURATION:
-						if (!$strValue == NULL)
+						if ($strValue == NULL)
 						{
-							$strValue = "999:99:99";
+							$strValue = "000:00:00";
 						}
 						$strValue = str_pad($strValue, 9, "0", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTCURRENCY:
 						if ($strValue == NULL)
 						{
-							$strValue = "-9999999.99";
+							$strValue = "0";
 						}
 						$strTemp = sprintf("%011.2f", ((float)$strValue));
 						if(substr($strValue, 0, 1) == "-")
