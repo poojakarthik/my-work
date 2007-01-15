@@ -106,7 +106,7 @@
 																"RType.Id");
 		
 		$this->_selServices				= new StatementSelect(	"Service",
-																"FNN",
+																"FNN, Id",
 																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW())");
 		
 		$arrColumns = Array();
