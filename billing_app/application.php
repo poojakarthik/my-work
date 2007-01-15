@@ -155,7 +155,7 @@ die();
 		$arrCDRCols = Array();
 		$arrCDRCols['Status']			= CDR_TEMP_INVOICE;
 		$arrCDRCols['InvoiceRun']		= $strInvoiceRun;
-		$updCDRs						= new StatementUpdate("CDR", "CDR.Credit = 0 AND Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
+		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
 		
 		// Init Insert Statements
 		$arrInvoiceData 					= Array();
@@ -609,7 +609,7 @@ die();
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS."\t", FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = CDR_INVOICED;
-		$updCDRStatus = new StatementUpdate("CDR", "CDR.Credit = 0 AND Status = ".CDR_TEMP_INVOICE, $arrUpdateData);
+		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, $arrUpdateData);
 		if($updCDRStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			// Report and fail out
