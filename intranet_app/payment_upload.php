@@ -17,10 +17,31 @@
 	// call application
 	require ('config/application.php');
 	
-	// Pull documentation information for an Account
-	$docDocumentation->Explain ('Account');
-	$docDocumentation->Explain ('Archive');
+	// Error Handler
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
+	// Payment Types
+	$ptlPaymentTypes = $Style->attachObject (new PaymentTypes);
+	
+	if (is_uploaded_file ($_FILES ['BillFile'] ['tmp_name']))
+	{
+		if (!$ptlPaymentTypes->setValue ($_POST ['PaymentType']))
+		{
+			$oblstrError->setValue ('PaymentType');
+		}
+		else
+		{
+			$strFilename = PATH_PAYMENT_UPLOADS . "/" . $_POST ['PaymentType'] . "/" . date ("Y-m-d-H-i-s-") . sha1 (uniqid (rand (), true));
+			move_uploaded_file ($_FILES ['BillFile'] ['tmp_name'], $strFilename);
+			chmod ($strFilename, 0755);
+			
+			header ("Location: payment_uploaded.php");
+			exit;
+		}
+	}
+	
+	// Pull documentation information for an Account
+	$docDocumentation->Explain ('Payment');
 	
 	// Output the Account View
 	$Style->Output ('xsl/content/payment/upload.xsl');

@@ -91,10 +91,10 @@
 			$intPayment = Payments::Pay (
 				Array (
 					"AccountGroup"			=> ($acgAccountGroup) ? $acgAccountGroup->Pull ('Id')->getValue () : $actAccount->Pull ('AccountGroup')->getValue (),
-					"Account"				=> $actAccount->Pull ('Id')->getValue (),
+					"Account"				=> ($actAccount) ? $actAccount->Pull ('Id')->getValue () : null,
 					"PaidOn"				=> date ("Y-m-d"),
 					"PaymentType"			=> $_POST ['PaymentType'],
-					"Amount"				=> $fltAmount->getValue (),
+					"Amount"				=> $_POST ['Amount'],
 					"TXNReference"			=> $strTXNReference->getValue (),
 					"EnteredBy"				=> $athAuthentication->AuthenticatedEmployee ()->Pull ('Id')->getValue (),
 					"Status"				=> PAYMENT_WAITING

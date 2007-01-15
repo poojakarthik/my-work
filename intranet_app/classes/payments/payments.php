@@ -56,7 +56,7 @@
 		function __construct ()
 		{
 			parent::__construct ('Payments', 'Payment', 'Payment');
-			$this->Order ('CreatedOn', FALSE);
+			$this->Order ('PaidOn', FALSE);
 		}
 		
 		//------------------------------------------------------------------------//

@@ -416,13 +416,15 @@
 		{
 			if ($this->Month && $this->Day && $this->Year)
 			{
-				return mktime (
-					0,
-					0,
-					0,
-					$this->Month->getValue (),
-					$this->Day->getValue (),
-					$this->Year->getValue ()
+				return date ("Y-m-d", 
+					mktime (
+						0,
+						0,
+						0,
+						$this->Month->getValue (),
+						$this->Day->getValue (),
+						$this->Year->getValue ()
+					)
 				);
 			}
 			

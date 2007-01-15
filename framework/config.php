@@ -47,4 +47,6 @@ define("DATABASE_USER", "vixen");
 define("DATABASE_PWORD", "V1x3n");
 
 define("DATABASE_ERROR_TABLE", "Error");
+
+define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
 ?>
