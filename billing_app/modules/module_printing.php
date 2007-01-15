@@ -112,6 +112,7 @@
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RType.Name";
 		$arrColumns['Charge']			= "SUM(CDR.Charge)";
+		$arrColumns['CallCount']		= "COUNT(CDR.Id)";
 		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, " .
 																"RecordType AS RType",
 																$arrColumns,
@@ -473,9 +474,6 @@
 		$arrFileData[] = $arrDefine['ItemisedFooter'];
 		// add invoice footer (19)		
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
-		
-		// DEBUG: This can be removed later
-		//Debug($arrFileData);
 		
 		// Process and implode the data so it can be inserted into the DB
 		$strFileContents = "";
