@@ -281,6 +281,7 @@
 		// get details from servicetype totals
 		$arrServiceTypeTotalVars['Account']		= $arrInvoiceDetails['Account'];
 		$arrServiceTypeTotalVars['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+		Debug($arrServiceTypeTotalVars);
 		$mixResult = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
 		if ($mixResult === FALSE)
 		{
@@ -290,6 +291,7 @@
 		$arrServiceTypeTotals = $this->_selServiceTypeTotals->FetchAll();
 		if(!is_array($arrServiceTypeTotals))
 		{
+			Debug("Fucked lol");
 			$arrServiceTypeTotals = Array();
 		}
 		// build output
