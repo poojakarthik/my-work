@@ -657,7 +657,7 @@
 		}
 		$qryBuildFile	= new Query();
 		$strColumns		= "'10', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, '0'), InvoiceOutput.Data";
-		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = Invoice.InvoiceRun";
+		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
 							"WHERE $strWhere\n";
