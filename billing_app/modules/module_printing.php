@@ -363,7 +363,7 @@
 		// DETAILS
 		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
-		$this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
 		// reset counters
 		$strCurrentService		= "";
@@ -372,106 +372,109 @@
 		// add start record (70)
 		$arrFileData[] = $arrDefine['ItemisedHeader'];
 		// for each record
-		foreach($arrItemisedCalls as $arrData)
+		if($intItemisedCount)
 		{
-			// if new service
-			if($arrData['FNN'] != $strCurrentService)
+			foreach($arrItemisedCalls as $arrData)
 			{
-				// if old service exists
-				if ($strCurrentService != "")
+				// if new service
+				if($arrData['FNN'] != $strCurrentService)
 				{
-					// add call type total
-					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
-					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
-					$strCurrentRecordType = "";
+					// if old service exists
+					if ($strCurrentService != "")
+					{
+						// add call type total
+						$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
+						$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+						$strCurrentRecordType = "";
+						
+						// add service total record (89)
+						$arrFileData[] = $arrDefine['ItemSvcFooter'];					
+					}
+					// add service record (80)
+					$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= $arrData['FNN'];
+					$arrFileData[] = $arrDefine['ItemSvcHeader'];
 					
-					// add service total record (89)
-					$arrFileData[] = $arrDefine['ItemSvcFooter'];					
+					$strCurrentService = $arrData['FNN'];
 				}
-				// add service record (80)
-				$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= $arrData['FNN'];
-				$arrFileData[] = $arrDefine['ItemSvcHeader'];
 				
-				$strCurrentService = $arrData['FNN'];
-			}
-			
-			// if new type
-			if($arrData['RecordTypeName'] != $strCurrentRecordType)
-			{
-				// if old type exists
-				if($strCurrentRecordType != "")
+				// if new type
+				if($arrData['RecordTypeName'] != $strCurrentRecordType)
 				{
-					// add call type total
-					$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
-					$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+					// if old type exists
+					if($strCurrentRecordType != "")
+					{
+						// add call type total
+						$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
+						$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+					}
+					// build header record (90)
+					$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= $arrData['RecordTypeName'];
+					$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
+					// reset counters
+					$strCurrentRecordType	= $arrData['RecordTypeName'];
+					
+					// Get the RecordType total
+					$arrSelectData['Account']			= $arrInvoiceDetails['Account'];
+					$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
+					$this->_selRecordTypeTotal->Execute($arrSelectData);
+					$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
+					$fltRecordTypeTotal	= $arrRecordTypeTotal['RecordTypeTotal'];
 				}
-				// build header record (90)
-				$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= $arrData['RecordTypeName'];
-				$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
-				// reset counters
-				$strCurrentRecordType	= $arrData['RecordTypeName'];
 				
-				// Get the RecordType total
-				$arrSelectData['Account']			= $arrInvoiceDetails['Account'];
-				$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
-				$this->_selRecordTypeTotal->Execute($arrSelectData);
-				$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
-				$fltRecordTypeTotal	= $arrRecordTypeTotal['RecordTypeTotal'];
+				// build charge record
+				switch($arrData['DisplayType'])
+				{
+					// Type 92
+					case RECORD_DISPLAY_S_AND_E:
+						$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";
+						$arrDefine['ItemisedDataS&E']	['Description']		['Value']	= $strDescription;
+						$arrDefine['ItemisedDataS&E']	['Items']			['Value']	= (int)$arrData['Units'];
+						$arrDefine['ItemisedDataS&E']	['Charge']			['Value']	= $arrData['Charge'];
+						$arrFileData[] = $arrDefine['ItemisedDataS&E'];
+						break;
+					// Type 93
+					case RECORD_DISPLAY_DATA:
+						$arrDefine['ItemisedDataKB']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
+						$arrDefine['ItemisedDataKB']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
+						$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+						$arrDefine['ItemisedDataKB']	['DataTransfered']	['Value']	= (int)$arrData['Units'];
+						$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrData['Description'];
+						$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrData['Charge'];
+						$arrFileData[] = $arrDefine['ItemisedDataKB'];
+						break;
+					// Type 94
+					case RECORD_DISPLAY_SMS:
+						$arrDefine['ItemisedDataSMS']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
+						$arrDefine['ItemisedDataSMS']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
+						$arrDefine['ItemisedDataSMS']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+						$arrDefine['ItemisedDataSMS']	['Items']			['Value']	= (int)$arrData['Units'];
+						$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrData['Description'];
+						$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrData['Charge'];
+						$arrFileData[] = $arrDefine['ItemisedDataSMS'];
+						break;
+					// Type 91
+					case RECORD_DISPLAY_CALL:
+					// Unknown Record Type (should never happen) - just display as a normal Call
+					default:
+						$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
+						$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
+						$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+						$intHours		= floor((int)$arrData['Units'] / 3600);
+						$strDuration	= "$intHours:".date("i:s", (int)$arrData['Units']);
+						$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
+						$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrData['Description'];
+						$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrData['Charge'];
+						$arrFileData[] = $arrDefine['ItemisedDataCall'];
+						break;
+				}
 			}
-			
-			// build charge record
-			switch($arrData['DisplayType'])
-			{
-				// Type 92
-				case RECORD_DISPLAY_S_AND_E:
-					$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";
-					$arrDefine['ItemisedDataS&E']	['Description']		['Value']	= $strDescription;
-					$arrDefine['ItemisedDataS&E']	['Items']			['Value']	= (int)$arrData['Units'];
-					$arrDefine['ItemisedDataS&E']	['Charge']			['Value']	= $arrData['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataS&E'];
-					break;
-				// Type 93
-				case RECORD_DISPLAY_DATA:
-					$arrDefine['ItemisedDataKB']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-					$arrDefine['ItemisedDataKB']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-					$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrData['CalledParty'];
-					$arrDefine['ItemisedDataKB']	['DataTransfered']	['Value']	= (int)$arrData['Units'];
-					$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrData['Description'];
-					$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrData['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataKB'];
-					break;
-				// Type 94
-				case RECORD_DISPLAY_SMS:
-					$arrDefine['ItemisedDataSMS']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-					$arrDefine['ItemisedDataSMS']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-					$arrDefine['ItemisedDataSMS']	['CalledParty']		['Value']	= $arrData['CalledParty'];
-					$arrDefine['ItemisedDataSMS']	['Items']			['Value']	= (int)$arrData['Units'];
-					$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrData['Description'];
-					$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrData['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataSMS'];
-					break;
-				// Type 91
-				case RECORD_DISPLAY_CALL:
-				// Unknown Record Type (should never happen) - just display as a normal Call
-				default:
-					$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-					$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-					$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['CalledParty'];
-					$intHours		= floor((int)$arrData['Units'] / 3600);
-					$strDuration	= "$intHours:".date("i:s", (int)$arrData['Units']);
-					$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
-					$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrData['Description'];
-					$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrData['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataCall'];
-					break;
-			}
+			$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $arrData['RecordTypeTotal'];
+			$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+			// add service total record (89)
+			$arrFileData[] = $arrDefine['ItemSvcFooter'];	
+			// add end record (79)
+			$arrFileData[] = $arrDefine['ItemisedFooter'];
 		}
-		$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $arrData['RecordTypeTotal'];
-		$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
-		// add service total record (89)
-		$arrFileData[] = $arrDefine['ItemSvcFooter'];	
-		// add end record (79)
-		$arrFileData[] = $arrDefine['ItemisedFooter'];
 		// add invoice footer (19)		
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		

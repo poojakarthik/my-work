@@ -360,7 +360,9 @@ foreach ($arrFileContents as $strLine)
 		case 79:
 			// Itemised Call Footer
 			// No data in this record
-			ExpectedRecordType($intLastRecordType, 89, $i);
+			$arrExpectedRecordTypes[] = 70;
+			$arrExpectedRecordTypes[] = 89;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			break;
 		case 80:
 			// Itemised Call Service Header
