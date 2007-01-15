@@ -39,7 +39,7 @@ $appNormalise->Import();
 // run the Normalise method until there is nothing left to normalise
 while ($appNormalise->Normalise())
 {
-
+	break;
 }
 
 // finished

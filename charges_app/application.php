@@ -268,6 +268,41 @@ die();
 			}
 		}
 		
+		// build any CDR based credits
+		
+		// change status of CDR Creidts
+		//TODO!!!!
+		/*
+		UPDATE CDR
+		SET Status = CDR_TEMP_CREDIT
+		WHERE Status = CDR_INVOICED
+		AND Credit = 1
+		*/
+		
+		// Get totals of CDR credits
+		//TODO!!!!
+		/*
+		SELECT SUM(Charge) FROM CDR
+		WHERE Status = CDR_TEMP_CREDIT
+		AND Credit = 1
+		GROUP BY Service
+		*/
+		
+		// foreach
+			// make a one off credit (not approved)
+			//TODO!!!!
+		
+		// change status of CDR credits
+		//TODO!!!!
+		/*
+		UPDATE CDR
+		SET Status = CDR_CREDITED
+		WHERE Status = CDR_TEMP_CREDIT
+		AND Credit = 1
+		*/
+		
+		
+		
 		// TODO: Report footer
 		$arrData['<Total>']		= $intTotal;
 		$arrData['<Time>']		= $this->SplitWatch();

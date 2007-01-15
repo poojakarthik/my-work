@@ -882,6 +882,12 @@ die();
 			return 1;
 		}
 		
+		// don't update totals (or fail) if charge is a credit
+		if ($this->_arrCurrentCDR['Credit'] == TRUE)
+		{
+			return 1;
+		}
+		
 		// set service Id
 		$arrData['Id'] = $this->_arrCurrentCDR['Service'];
         
