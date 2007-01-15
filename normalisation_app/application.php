@@ -34,7 +34,7 @@ $mixEmailAddress = 'flame@telcoblue.com.au';
 $appNormalise = new ApplicationNormalise($mixEmailAddress);
 
 // Import lines from CDR files into the database
-//$appNormalise->Import();
+$appNormalise->Import();
 
 // run the Normalise method until there is nothing left to normalise
 while ($appNormalise->Normalise())
