@@ -274,7 +274,7 @@
 			$arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
-		$arrDefine['GraphFooter']		['TotalSamples']	['Value']	= $intCount + 1;
+		$arrDefine['GraphFooter']		['TotalSamples']	['Value']	= $intCount;
 		$arrFileData[] = $arrDefine['GraphFooter'];
 		
 		// SUMMARY CHARGES
@@ -296,7 +296,7 @@
 		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
-			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrTotal['RecordType'];
+			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrTotal['RecordTypeName'];
 			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrTotal['Charge'];
 			$arrFileData[] = $arrDefine['ChargeTotal'];
 		}
