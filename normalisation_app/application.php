@@ -390,6 +390,7 @@ die();
 		{
 			// Set the File status to "Importing"
 			$arrCDRFile["Status"] = CDRFILE_IMPORTING;
+			$arrCDRFile['ImportedOn'] 	= new MySQLFunction("NOW()");
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 			
 			// Set fields that are consistent over all CDRs for this file
@@ -451,7 +452,7 @@ die();
 			
 			// Set the File status to "Normalised"
 			$arrCDRFile["Status"]		= CDRFILE_NORMALISED;
-			$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
+			//$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
 			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
 		}
 		catch (ExceptionVixen $exvException)
