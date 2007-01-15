@@ -263,7 +263,10 @@
 		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
 		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "\$ Value";
 		$arrFileData[] = $arrDefine['GraphHeader'];
-		$intCount = 0;
+		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", time());
+		$arrDefine['GraphData']		['Value']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
+		$arrFileData[] = $arrDefine['GraphData'];
+		$intCount = 1;
 		foreach($arrBillHistory as $arrBill)
 		{
 			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime("-$intCount months", time()));
