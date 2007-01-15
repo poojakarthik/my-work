@@ -337,6 +337,7 @@
 		$strCurrentService = "";
 		$arrServices = $this->_selServices->FetchAll();
 		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
+		Debug($arrServices);
 		foreach($arrServices as $arrService)
 		{
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
@@ -345,9 +346,10 @@
 			// The individual RecordTypes for each Service
 			$this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id']));
 			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
+			Debug($arrServiceSummaries);
 			foreach($arrServiceSummaries as $arrServiceSummary)
 			{
-				$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordType'];
+				$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordTypeName'];
 				$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['Records'];
 				$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Charge'];
 				$arrFileData[] = $arrDefine['SvcSummaryData'];
