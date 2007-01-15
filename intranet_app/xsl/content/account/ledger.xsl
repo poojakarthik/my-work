@@ -47,8 +47,7 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<h2>Invoices</h2>
-		<div class="Seperator"></div>
+		<h2 class="Invoice">Invoice</h2>
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
@@ -119,8 +118,7 @@
 		
 		<div class="Seperator"></div>
 		
-		<h2>PDF Files</h2>
-		<div class="Seperator"></div>
+		<h2 class="PDF">PDF Bills</h2>
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="50%">
 			<tr class="First">
 				<th width="30">#</th>
@@ -179,8 +177,7 @@
 		
 		<div class="Seperator"></div>
 		
-		<h2>Payments</h2>
-		<div class="Seperator"></div>
+		<h2 class="Payment">Payments</h2>
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="50%">
 			<tr class="First">
 				<th width="30">#</th>

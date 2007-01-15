@@ -8,8 +8,8 @@
 	<xsl:template name="Content">
 		<h1>Successful Service Change of Lessee</h1>
 		<p>
-			The lessee for this number has been changed. Details about the change
-			are currently listed below.
+			The lessee for this service has been changed.
+			<br/>Details are listed below.
 		</p>
 		<div class="Seperator"></div>
 		

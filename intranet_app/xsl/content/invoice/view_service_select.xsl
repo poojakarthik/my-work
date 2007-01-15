@@ -10,11 +10,48 @@
 		<h1>View Invoice Details</h1>
 		<div class="Seperator"></div>
 		
-		<h2>Select a Service</h2>
-		<p>
-			In order to view information placed on this invoice, you need to select a Service.
-		</p>
+		<h2 class="Invoice">Invoice Details</h2>
+		<!-- TODO!!!! - show invoice details, TOTALS etc -->
+		<div class="Filter-Form">
+			<table border="0" cellpadding="5" cellspacing="0">
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Invoice')" />
+							<xsl:with-param name="field" select="string('Id')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:value-of select="/Response/Invoice/Id" />
+					</td>
+				</tr>
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Account')" />
+							<xsl:with-param name="field" select="string('BusinessName')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:value-of select="/Response/Account/BusinessName" />
+					</td>
+				</tr>
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Account')" />
+							<xsl:with-param name="field" select="string('TradingName')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:value-of select="/Response/Account/TradingName" />
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div class="Seperator"></div>
 		
+		<h2 class="Services">Services</h2>
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>

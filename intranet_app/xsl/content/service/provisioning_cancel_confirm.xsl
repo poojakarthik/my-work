@@ -4,21 +4,19 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/popup.xsl" />
 	<xsl:template name="Content">
-		<h1>Provisioning Cancellation Applied</h1>
+		<h1>Provisioning Request Canceled</h1>
 		
 		<p>
-			Your attempt to Cancel a Provisioning Request has be successfully processed. The following Provisioning Request
-			will not be processed:
+			Provisioning Request has been successfully Canceled.
 		</p>
 		
 		<p>
-			You can now return to
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>provisioning_requests.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/ProvisioningRequest/Service" />
 				</xsl:attribute>
-				<xsl:text>provisioning information about this service</xsl:text>
+				<xsl:text>Return to Provisioning Details</xsl:text>
 			</a>.
 		</p>
 	</xsl:template>

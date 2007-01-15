@@ -505,6 +505,9 @@
 		font-weight:         bold;
 	}
 	
+	h2.CDR,
+	h2.Plan,
+	h2.Date,
 	h2.Address,
 	h2.Payment,
 	h2.Charge,
@@ -529,6 +532,21 @@
 		padding-left:                  70px;
 		
 		height:                        50px;
+	}
+	
+	h2.CDR
+	{
+		background-image:              url('../img/template/cdr.png');
+	}
+	
+	h2.Plan
+	{
+		background-image:              url('../img/template/plan.png');
+	}
+	
+	h2.Date
+	{
+		background-image:              url('../img/template/date.png');
 	}
 	
 	h2.Payment
@@ -696,4 +714,3 @@
 	{
 		text-align: Right;
 	}
-	

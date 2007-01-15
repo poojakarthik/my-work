@@ -33,8 +33,7 @@
 				</xsl:attribute>
 			</input>
 			
-			<h2>Service Information</h2>
-			<div class="Seperator"></div>
+			<h2 class="Service">Service Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
@@ -54,8 +53,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Current Account Information</h2>
-			<div class="Seperator"></div>
+			<h2 class="Account">Current Account Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
@@ -86,8 +84,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Receiving Account Information</h2>
-			<div class="Seperator"></div>
+			<h2 class="Account">Receiving Account Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
@@ -118,8 +115,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Application Date</h2>
-			<div class="Seperator"></div>
+			<h2 class="Date">Date of Change</h2>
 			<div class="Filter-Form">
 				<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 					<tr>

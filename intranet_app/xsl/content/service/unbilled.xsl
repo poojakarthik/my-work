@@ -8,8 +8,7 @@
 	<xsl:template name="Content">
 		<h1>Unbilled Charges</h1>
 		
-		<h2>Service Information</h2>
-		<div class="Seperator"></div>
+		<h2 class="Service">Service Details</h2>
 		
 		<div class="Filter-Form">
 			<table border="0" cellpadding="5" cellspacing="0">
@@ -32,10 +31,19 @@
 		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Calling Party</th>
+				<th>
+					<xsl:choose>
+						<xsl:when test="/Response/Service/ServiceType = 103">
+							Source
+						</xsl:when>
+						<xsl:otherwise>
+							Destination
+						</xsl:otherwise>
+					</xsl:choose>
+				</th>
 				<th>Start Date/Time</th>
 				<th class="Currency">Duration</th>
-				<th class="Currency">Cost</th>
+				<th class="Currency">Charge</th>
 				<th class="Currency">Options</th>
 			</tr>
 			<xsl:for-each select="/Response/CDRs-Unbilled/rangeSample/CDR">
@@ -84,7 +92,7 @@
 									<xsl:text>'cdr_view.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>'</xsl:text>
 								<xsl:text>)</xsl:text>
 							</xsl:attribute>
-							View CDR Record
+							View CDR
 						</a>
 					</td>
 				</tr>

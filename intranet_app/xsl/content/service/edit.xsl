@@ -66,37 +66,35 @@
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<xsl:choose>
-						<xsl:when test="/Response/Service/Archived = 0">
-							This Service is <strong><span class="Green">Currently Available</span></strong>.
+						<!-- TODO!!!! - URGENT - THIS IS NOT WORKING !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+						<xsl:when test="/Response/Service/Archived = 1">
+							This Service is <strong><span class="Red">Currently Archived</span></strong>.
 						</xsl:when>
 						<xsl:otherwise>
-							This Service is <strong><span class="Red">Currently Archived</span></strong>.
+							This Service is <strong><span class="Green">Currently Available</span></strong>.
 						</xsl:otherwise>
 					</xsl:choose>
 					
 					<xsl:choose>
-						<xsl:when test="/Response/Service/Archived = 0">
-							If you would like to make this Service Archived, please click the button below:
-							<div class="Seperator"></div>
-					
-							<table border="0" cellpadding="5" cellspacing="0">
-								<tr>
-									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
-									<td>
-										<label for="Archive:TRUE">
-											Make this Service <strong><span class="Red">Archived</span></strong> and unavailable
-										</label>
-									</td>
-								</tr>
-							</table>
-						</xsl:when>
-						<xsl:otherwise>
+						<xsl:when test="/Response/Service/Archived = 1">
 							<!-- TODO!!!! - URGENT - allow unarchive of service -->
 							<!-- if an active service exists with this FNN : show a link to change of lessee -->
 							<!-- if a more recent archived service exists with this FNN : add a new service -->
 							<!-- otherwise, just re-activate the service -->
 							<!-- dont forget the service address details for provisioning -->
 							<p>Services can not be unarchived. Instead - add a new service with the same number.</p>
+						</xsl:when>
+						<xsl:otherwise>
+							<table border="0" cellpadding="5" cellspacing="0">
+								<tr>
+									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
+									<td>
+										<label for="Archive:TRUE">
+											<strong><span class="Red">Archive</span></strong> this Service.
+										</label>
+									</td>
+								</tr>
+							</table>
 						</xsl:otherwise>
 					</xsl:choose>
 				</div>

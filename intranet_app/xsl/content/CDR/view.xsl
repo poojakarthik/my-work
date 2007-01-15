@@ -7,11 +7,12 @@
 	<xsl:import href="../../template/popup.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>CDR Record Information</h1>
+		<h1>View CDR</h1>
 		<div class="Seperator"></div>
 		
-		<h2>Account/Service Information</h2>
-		<div class="Seperator"></div>
+		<h2 class="CDR">CDR Details</h2>
+		<!-- TODO!!!! - show mere CDR details -->
+		<!-- TODO!!!! - only show raw data & cost to god mode users -->
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
 				<table border="0" width="100%" cellpadding="3" cellspacing="0">
@@ -176,6 +177,7 @@
 						</td>
 					</tr>
 					<tr>
+						<!-- TODO!!!! - only god mode can view -->
 						<th class="JustifiedWidth" valign="top">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('CDR')" />

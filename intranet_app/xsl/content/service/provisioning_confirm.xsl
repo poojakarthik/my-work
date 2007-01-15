@@ -4,20 +4,19 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Provisioning Request Appended</h1>
+		<h1>Provisioning Request Added</h1>
 		
 		<p>
-			Your Provisioning Request has been successfully created.
+			Your Provisioning Request has been successfully added.
 		</p>
 		
 		<p>
-			You can now return to information
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_view.php?Id=</xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
-				<xsl:text>about this service</xsl:text>
+				<xsl:text>Return to Service Details</xsl:text>
 			</a>.
 		</p>
 	</xsl:template>

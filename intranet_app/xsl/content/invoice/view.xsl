@@ -10,8 +10,7 @@
 		<h1>View Invoice Details</h1>
 		<div class="Seperator"></div>
 		
-		<h2>Invoice Overview</h2>
-		<div class="Seperator"></div>
+		<h2 class="Invoice">Invoice Details</h2>
 		<div class="Filter-Form">
 			<table border="0" cellpadding="5" cellspacing="0">
 				<tr>
@@ -52,8 +51,7 @@
 		<div class="Seperator"></div>
 		
 		<xsl:if test="/Response/Charges">
-			<h2>Credits + Debits</h2>
-			<div class="Seperator"></div>
+			<h2 class="Charges">Credits + Debits</h2>
 			
 			<xsl:choose>
 				<xsl:when test="/Response/Charges/Results/collationLength = 0">
@@ -131,8 +129,7 @@
 		</xsl:if>
 		<div class="Seperator"></div>
 		
-		<h2>Charges</h2>
-		<div class="Seperator"></div>
+		<h2 class="CDR">Usage Charges</h2>
 		
 		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">

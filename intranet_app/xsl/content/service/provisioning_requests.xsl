@@ -10,8 +10,7 @@
 		<h1>Provisioning Requests</h1>
 		<div class="Seperator"></div>
 		
-		<h2>Account/Service Information</h2>
-		<div class="Seperator"></div>
+		<h2 class="Service">Service Details</h2>
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
@@ -56,8 +55,7 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<h2>Provisioning Requests</h2>
-		<div class="Seperator"></div>
+		<h2 class="Provisioning">Provisioning Requests</h2>
 		
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
@@ -66,7 +64,7 @@
 				<th>Carrier</th>
 				<th>Type</th>
 				<th>Probable Response</th>
-				<th>Options</th>
+				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/ProvisioningRequests/Results/rangeSample/ProvisioningRequest">
 				<tr>

@@ -9,10 +9,10 @@
 	<xsl:template name="Content">
 		<h1>View Service Plan Details</h1>
 		
+		<h2 class="Service">Service Details</h2>
+		<!-- TODO!!!! - Show service details -->
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
-				<h2>Current Allocation</h2>
-				
 				<xsl:choose>
 					<xsl:when test="/Response/Service/RatePlan/Name">
 						<p>
@@ -39,7 +39,7 @@
 						</ul>
 					</xsl:when>
 					<xsl:otherwise>
-						<xsl:text>This service is currently not on a plan. Please select a plan.</xsl:text>
+						<xsl:text>This service is currently not on a plan.</xsl:text>
 					</xsl:otherwise>
 				</xsl:choose>
 			</div>
@@ -47,17 +47,9 @@
 		
 		<div class="Seperator"></div>
 		
+		<h2 class="Plan">Select Plan</h2>
 		<div class="Filter-Form">
-			<div class="Filter-Form-Content">
-				<h2>Change Plan</h2>
-				<p>
-					If you would like to change the Plan the person is currently on, 
-					select a plan from the list below (and fill in the extra options
-					if you want to) and click the submit button.
-				</p>
-				
-				<div class="Seperator"></div>
-				
+			<div class="Filter-Form-Content">	
 				<form method="post" action="service_plan.php">
 					<input type="hidden" name="Service">
 						<xsl:attribute name="value">

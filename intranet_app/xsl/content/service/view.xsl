@@ -248,7 +248,7 @@
 												<xsl:text>service_plan.php?Service=</xsl:text>
 												<xsl:value-of select="/Response/Service/Id" />
 											</xsl:attribute>
-											<xsl:text>Plan Information</xsl:text>
+											<xsl:text>Plan Details</xsl:text>
 										</a>
 									</td>
 								</tr>
@@ -291,7 +291,7 @@
 											<xsl:value-of select="/Response/Service/Id" />
 											<xsl:text>')</xsl:text>
 										</xsl:attribute>
-										<xsl:text>View Provisioning Requests and Responses for this Service</xsl:text>
+										<xsl:text>View Provisioning History</xsl:text>
 									</a><br />
 									... <a>
 										<xsl:attribute name="href">
@@ -299,7 +299,7 @@
 											<xsl:value-of select="/Response/Service/Id" />
 											<xsl:text>')</xsl:text>
 										</xsl:attribute>
-										<xsl:text>View Provisioning Requests on this Service</xsl:text>
+										<xsl:text>View Provisioning Requests</xsl:text>
 									</a><br />
 								</div>
 							</div>
@@ -933,7 +933,7 @@
 										<tr>
 											<td></td>
 											<td>
-												<input type="submit" value="Change Information &#0187;" class="input-submit" />
+												<input type="submit" value="Change Details &#0187;" class="input-submit" />
 											</td>
 										</tr>
 									</table>

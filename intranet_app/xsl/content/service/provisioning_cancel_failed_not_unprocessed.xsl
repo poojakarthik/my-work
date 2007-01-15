@@ -7,18 +7,17 @@
 		<h1>Provisioning Cancellation Failed</h1>
 		
 		<p>
-			Your request to cancel a Provisioning Request has been failed because it is not
-			unprocessed. Only unprocessed provisioning requests can be cancelled.
+			The Provisioning Request has already been processed and could not
+			be canceled.
 		</p>
 		
 		<p>
-			You can return to 
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>provisioning_requests.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/ProvisioningRequest/Service" />
 				</xsl:attribute>
-				<xsl:text>provisioning information about this service</xsl:text>
+				<xsl:text>Return to Provisioning Details</xsl:text>
 			</a>.
 		</p>
 	</xsl:template>
