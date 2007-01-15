@@ -279,7 +279,9 @@ foreach ($arrFileContents as $strLine)
 			break;
 		case 41:
 			// Charge Total Data
-			ExpectedRecordType($intLastRecordType, 40, $i);
+			$arrExpectedRecordTypes[]	= 40;
+			$arrExpectedRecordTypes[]	= 41;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			
 			$arrData = Array();
 			$arrData['Call Type']	= $mixResult['ChargeName'];
