@@ -13,61 +13,54 @@
 		<script language="javascript" src="js/notes_popup.js"></script>
 		<script language="javascript" src="js/provisioning_popup.js"></script>
 		
-		<h2 class="Account">Account Details</h2>
-		<div class="Filter-Form">
-			
-			
-			<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
-				<tr>
-					<th class="JustifiedWidth">
-						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Account')" />
-							<xsl:with-param name="field" select="string('Id')" />
-						</xsl:call-template>
-					</th>
-					<td>
-						<xsl:value-of select="/Response/Account/Id" />
-						[<a>
-							<xsl:attribute name="href">
-								<xsl:text>account_view.php?Id=</xsl:text>
-								<xsl:value-of select="/Response/Account/Id" />
-							</xsl:attribute>
-							<xsl:text>View Account</xsl:text>
-						</a>]
-					</td>
-				</tr>
-				<tr>
-					<th class="JustifiedWidth">
-						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Account')" />
-							<xsl:with-param name="field" select="string('BusinessName')" />
-						</xsl:call-template>
-					</th>
-					<td>
-						<xsl:value-of select="/Response/Account/BusinessName" />
-					</td>
-				</tr>
-				<tr>
-					<th class="JustifiedWidth">
-						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Account')" />
-							<xsl:with-param name="field" select="string('TradingName')" />
-						</xsl:call-template>
-					</th>
-					<td>
-						<xsl:value-of select="/Response/Account/TradingName" />
-					</td>
-				</tr>
-			</table>
-			
-			<div class="Clear"></div>
-		</div>
-		
 		<div class="Seperator"></div>
-		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
+					<h2 class="Account">Account Details</h2>
+					<div class="Filter-Form">
+						
+						
+						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Account')" />
+										<xsl:with-param name="field" select="string('Id')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:value-of select="/Response/Account/Id" />
+								</td>
+							</tr>
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Account')" />
+										<xsl:with-param name="field" select="string('BusinessName')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:value-of select="/Response/Account/BusinessName" />
+								</td>
+							</tr>
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Account')" />
+										<xsl:with-param name="field" select="string('TradingName')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:value-of select="/Response/Account/TradingName" />
+								</td>
+							</tr>
+						</table>
+						
+						<div class="Clear"></div>
+					</div>
+					<div class="Seperator"></div>
+					
 					<h2 class="Service">Service Details</h2>
 					
 					<div class="Filter-Form">
@@ -950,55 +943,76 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>account_ledger.php?Id=</xsl:text>
+									<xsl:text>account_view.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>View Invoices + Payments</xsl:text>
+								<xsl:text>View Account</xsl:text>
 							</a>
 						</li>
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>recurring_charge_list.php?Account=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
+									<xsl:text>service_unbilled.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
 								</xsl:attribute>
-								<xsl:text>View Recurring Charges</xsl:text>
+								<xsl:text>View Unbilled Charges</xsl:text>
 							</a>
 						</li>
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>account_edit.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
+									<xsl:text>service_plan.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
 								</xsl:attribute>
-								<xsl:text>Edit Account Details</xsl:text>
+								<xsl:text>View Plan Details</xsl:text>
 							</a>
 						</li>
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>account_add.php?AccountGroup=</xsl:text>
-									<xsl:value-of select="/Response/Account/AccountGroup" />
+									<xsl:text>javascript:provisioning_popup_history ('</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+									<xsl:text>')</xsl:text>
 								</xsl:attribute>
-								<xsl:text>Add Associated Account</xsl:text>
+								<xsl:text>View Provisioning History</xsl:text>
 							</a>
 						</li>
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>service_add.php?Account=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
+									<xsl:text>javascript:provisioning_popup_requests ('</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+									<xsl:text>')</xsl:text>
 								</xsl:attribute>
-								Add Service
+								<xsl:text>View Provisioning Requests</xsl:text>
 							</a>
 						</li>
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>contact_add.php?Account=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
+									<xsl:text>service_edit.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
 								</xsl:attribute>
-								<xsl:text>Add Contact</xsl:text>
+								<xsl:attribute name="onclick">
+									<xsl:text>return openPopup('service_edit.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+									<xsl:text>')</xsl:text>
+								</xsl:attribute>
+								<xsl:text>Edit Service</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_lessee.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+								<xsl:attribute name="onclick">
+									<xsl:text>return openPopup('service_lessee.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+									<xsl:text>', 450, 650)</xsl:text>
+								</xsl:attribute>
+								<xsl:text>Change Lessee</xsl:text>
 							</a>
 						</li>
 					</ul>
