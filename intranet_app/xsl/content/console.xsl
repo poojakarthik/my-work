@@ -12,7 +12,7 @@
 		
 		<div class="Seperator"></div>
 		
-		<h2>Menu Description</h2>
+		<h2>Menu</h2>
 		<div class="Seperator"></div>
 		<table border="0" cellpadding="5" cellspacing="0">
 			<tr>
@@ -22,8 +22,8 @@
 					</a>
 				</td>
 				<td>
-					<strong>Add New Customer</strong><br />
-					Allows you to add a new Customer to the database.
+					<strong>Add Customer</strong><br />
+					Add a new Customer to the system.
 				</td>
 			</tr>
 			<tr>
@@ -34,7 +34,7 @@
 				</td>
 				<td>
 					<strong>Find Customer</strong><br />
-					Authenticates a telephone call to view Customer information.
+					Find a Customer and access their account.
 				</td>
 			</tr>
 			<tr>
@@ -45,7 +45,7 @@
 				</td>
 				<td>
 					<strong>Recent Customers</strong><br />
-					Allows you to view your history of recently viewed Customers.
+					View recently accesed Customers.
 				</td>
 			</tr>
 			<tr>
@@ -56,18 +56,18 @@
 				</td>
 				<td>
 					<strong>View Plan Details</strong><br />
-					Shows information relating to available plans in the database.
+					View details of available plans.
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<a href="logout.php">
-						<img src="img/template/logout.png" title="Employee Logout" class="MenuIcon" />
+						<img src="img/template/logout.png" title="Logout" class="MenuIcon" />
 					</a>
 				</td>
 				<td>
-					<strong>Employee Logout</strong><br />
-					Safely and securely logout of your employee account.
+					<strong>Logout</strong><br />
+					Logout of the system.
 				</td>
 			</tr>
 		</table>

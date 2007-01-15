@@ -9,7 +9,7 @@
 	<xsl:template match="/">
 		<html>
 			<head>
-				<title>Employee Intranet System</title>
+				<title>viXen : Employee Intranet System</title>
 				<link rel="stylesheet" type="text/css" href="css/default.css" />
 				<script language="javascript" src="js/init.js"></script>
 				
@@ -19,12 +19,15 @@
 				<script language="javascript" src="js/lightbox/jquery-modalContent.js"></script>
 			</head>
 			<body>
+			<div class="Logo">
+				<img src="img/template/vixen_logo.png" border="0" />
+			</div>
 				<div id="Header" class="sectionContainer">
+					<span class="LogoSpacer"></span>
 					<div class="sectionContent">
 						<div class="Left">
 							TelcoBlue Internal Management System
 						</div>
-						
 						<div class="Right">
 							Version 7.01
 							
@@ -65,6 +68,7 @@
 					</div>
 					<div class="Clear"></div>
 				</div>
+
 				<div id="Controller" class="sectionContainer">
 					<table border="0" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
@@ -181,7 +185,7 @@
 										<tr>
 											<td>
 												<a href="logout.php">
-													<img src="img/template/logout.png" title="Account Logout" class="MenuIcon" />
+													<img src="img/template/logout.png" title="Logout" class="MenuIcon" />
 												</a>
 											</td>
 										</tr>
