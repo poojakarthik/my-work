@@ -661,10 +661,10 @@ define("BILLING_DEFAULT_FREQ"			, 1);
 define("BILLING_DEFAULT_FREQ_TYPE"		, BILLING_FREQ_MONTH);
 
 // Record Type Display Types
-define("RECORD_DISPLAY_CALL"		, 65535);
-define("RECORD_DISPLAY_S_AND_E"		, 65536);
-define("RECORD_DISPLAY_DATA"		, 65537);
-define("RECORD_DISPLAY_SMS"			, 65538);
+define("RECORD_DISPLAY_CALL"		, 1);
+define("RECORD_DISPLAY_S_AND_E"		, 2);
+define("RECORD_DISPLAY_DATA"		, 3);
+define("RECORD_DISPLAY_SMS"			, 4);
 
 // Debit and Credit
 define("NATURE_CR"					, 'CR');
