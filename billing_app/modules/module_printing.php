@@ -664,7 +664,14 @@
 							"WHERE $strWhere\n";
 		if($bolSample)
 		{
-			$strQuery .= "LIMIT ".rand((int)$arrMetaData['MinId'] , (int)$arrMetaData['MaxId'] - BILL_PRINT_SAMPLE_LIMIT).", ".BILL_PRINT_SAMPLE_LIMIT;
+			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
+			{
+				$strQuery .= "LIMIT ".(int)$arrMetaData['MaxId'];
+			}
+			else
+			{
+				$strQuery .= "LIMIT ".rand((int)$arrMetaData['MinId'] , (int)$arrMetaData['MaxId'] - BILL_PRINT_SAMPLE_LIMIT).", ".BILL_PRINT_SAMPLE_LIMIT;
+			}
 		}
 		if (file_exists($strFilename))
 		{
