@@ -429,7 +429,7 @@
 					$arrDefine['ItemisedDataS&E']	['Description']		['Value']	= $strDescription;
 					$arrDefine['ItemisedDataS&E']	['Items']			['Value']	= (int)$arrData['Units'];
 					$arrDefine['ItemisedDataS&E']	['Charge']			['Value']	= $arrData['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataCall'];
+					$arrFileData[] = $arrDefine['ItemisedDataS&E'];
 					break;
 				// Type 93
 				case RECORD_DISPLAY_DATA:
