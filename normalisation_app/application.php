@@ -39,7 +39,7 @@ $appNormalise = new ApplicationNormalise($mixEmailAddress);
 // run the Normalise method until there is nothing left to normalise
 while ($appNormalise->Normalise())
 {
-	break;
+	//break;
 }
 
 // finished
