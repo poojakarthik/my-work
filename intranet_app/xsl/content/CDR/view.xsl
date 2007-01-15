@@ -11,8 +11,6 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="CDR">CDR Details</h2>
-		<!-- TODO!!!! - show mere CDR details -->
-		<!-- TODO!!!! - only show raw data & cost to god mode users -->
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
 				<table border="0" width="100%" cellpadding="3" cellspacing="0">
@@ -170,21 +168,6 @@
 								<xsl:text>Open Service</xsl:text>
 							</a>
 						</td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<div class="Seperator"></div>
-						</td>
-					</tr>
-					<tr>
-						<!-- TODO!!!! - only god mode can view -->
-						<th class="JustifiedWidth" valign="top">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('CDR')" />
-								<xsl:with-param name="field" select="string('CDR')" />
-							</xsl:call-template>
-						</th>
-						<td><textarea name="CDR" style="width: 100%; height: 150px;" class="input-summary" readonly="readonly"><xsl:value-of select="/Response/CDR/CDR" /></textarea></td>
 					</tr>
 				</table>
 			</div>

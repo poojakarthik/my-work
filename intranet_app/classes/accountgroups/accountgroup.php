@@ -101,7 +101,7 @@
 				return new Account ($arrAccount ['Id']);
 			}
 			
-			return null;
+			throw new Exception ("Account is not in this Account Group");
 		}
 		
 		//------------------------------------------------------------------------//

@@ -270,7 +270,6 @@
 								<table border="0" cellpadding="4" cellspacing="0">
 									<tr>
 										<td>
-											<!-- TODO!!!! - default radio button -->
 											<input type="radio" name="CustomerContact" value="0" id="CustomerContact:FALSE">
 												<xsl:choose>
 													<xsl:when test="/Response/Contact/CustomerContact != 1">

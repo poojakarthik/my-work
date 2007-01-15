@@ -12,8 +12,6 @@
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
 		
-		<!-- TODO!!!! - Error Message if submitted with no data -->
-		<!-- TODO!!!! - Error Message if submitted with one name but not both -->
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
 				<xsl:choose>
@@ -37,6 +35,12 @@
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact'">
 						The First/Last Name you entered did not return any possible Contacts.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact-OneFill'">
+						You must search for a First and Last name for a Contact.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Empty'">
+						You did not enter any information to search for.
 					</xsl:when>
 				</xsl:choose>
 			</div>

@@ -58,6 +58,41 @@
 			parent::__construct ('Payments', 'Payment', 'Payment');
 			$this->Order ('CreatedOn', FALSE);
 		}
+		
+		//------------------------------------------------------------------------//
+		// Pay
+		//------------------------------------------------------------------------//
+		/**
+		 * Pay()
+		 *
+		 * Adds new payment information to the database
+		 *
+		 * Adds new payment information to the database
+		 *
+		 * @param	Array		$arrDetails			Associative Array of payment information
+		 * @return	Integer
+		 *
+		 * @method
+		 */
+		
+		public function Pay ($arrDetails)
+		{
+			$arrData = Array (
+				"AccountGroup"			=> $arrDetails ['AccountGroup'],
+				"Account"				=> $arrDetails ['Account'],
+				"PaidOn"				=> date ("Y-m-d"),
+				"PaymentType"			=> $arrDetails ['PaymentType'],
+				"Amount"				=> $arrDetails ['Amount'],
+				"TXNReference"			=> $arrDetails ['TXNReference'],
+				"EnteredBy"				=> $arrDetails ['EnteredBy'],
+				"Payment"				=> "",
+				"Balance"				=> $arrDetails ['Amount'],
+				"Status"				=> PAYMENT_WAITING
+			);
+			
+			$insService = new StatementInsert ('Payment');
+			return $insService->Execute ($arrData);
+		}
 	}
 	
 ?>

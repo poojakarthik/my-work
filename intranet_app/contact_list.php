@@ -302,6 +302,14 @@
 			}
 		}
 	}
+	else if ($_POST ['ui-Contact-First'] XOR $_POST ['ui-Contact-Last'])
+	{
+		$oblstrError->setValue ('Contact-OneFill');
+	}
+	else if ($_SERVER ['REQUEST_METHOD'] == "POST")
+	{
+		$oblstrError->setValue ('Empty');
+	}
 	
 	//------------------------------------------------------
 	// Contact Selection

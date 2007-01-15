@@ -104,6 +104,7 @@
 		
 		$sql = "INSERT INTO AccountGroup (Id, Archived) ";
 		$sql .= "VALUES ('" . mysql_escape_string ($row ['CustomerId']) . "', " . ($Customer ['archived'] ? "TRUE" : "FALSE") . ")";
+		
 		$insQuery = mysql_query ($sql);
 			
 		if (!$insQuery)

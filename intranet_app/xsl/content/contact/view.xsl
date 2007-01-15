@@ -191,6 +191,20 @@
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td width="300" valign="top">
+					<h2 class="Options">General Options</h2>
+					<ul>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>payment_add.php?AccountGroup=</xsl:text>
+									<xsl:value-of select="/Response/Contact/AccountGroup" />
+								</xsl:attribute>
+								Make a Payment
+							</a>
+						</li>
+					</ul>
+					<div class="Seperator"></div>
+					
 					<h2 class="Notes">Contact Notes</h2>
 					
 					<form method="post" action="note_add.php">
@@ -253,62 +267,68 @@
 					
 					<div class="Seperator"></div>
 					<h3>Recent Notes</h3>
-					<!-- TODO!!!! - LOW PRIORITY - show 'no notes' message if there are no notes -->
-					The 5 most recent notes are listed below:
-					<div class="Right">
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>javascript:notes_popup('', '', '', '</xsl:text>
-								<xsl:value-of select="/Response/Contact/Id" />
-								<xsl:text>')</xsl:text>
-							</xsl:attribute>
-							<xsl:text>View All Customer Notes</xsl:text>
-						</a>
-					</div>
-					<div class="Seperator"></div>
-					<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
-						<xsl:variable name="Note" select="." />
-						<div class="Note">
-							<xsl:attribute name="style">
-								<xsl:text>background-color: #</xsl:text>
-								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" />
-								<xsl:text>;</xsl:text>
-								
-								<xsl:text>border: solid 1px #</xsl:text>
-								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" />
-								<xsl:text>;</xsl:text>
-								
-								<xsl:text>color: #</xsl:text>
-								<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/TextColor" />
-								<xsl:text>;</xsl:text>
-							</xsl:attribute>
-							
-							<div class="small">
-								Created on 
-									<strong>
-										<xsl:call-template name="dt:format-date-time">
-											<xsl:with-param name="year"	select="./Datetime/year" />
-											<xsl:with-param name="month"	select="./Datetime/month" />
-											<xsl:with-param name="day"		select="./Datetime/day" />
-					 						<xsl:with-param name="hour"	select="./Datetime/hour" />
-											<xsl:with-param name="minute"	select="./Datetime/minute" />
-											<xsl:with-param name="second"	select="./Datetime/second" />
-											<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
-										</xsl:call-template>
-									</strong>
-								by
-									<strong>
-										<xsl:value-of select="./Employee/FirstName" />
-										<xsl:text> </xsl:text>
-										<xsl:value-of select="./Employee/LastName" />
-									</strong>.
+					<xsl:choose>
+						<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">
+							There are no notes attached to this Contact.
+						</xsl:when>
+						<xsl:otherwise>
+							The 5 most recent notes are listed below:
+							<div class="Right">
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>javascript:notes_popup('', '', '', '</xsl:text>
+										<xsl:value-of select="/Response/Contact/Id" />
+										<xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:text>View All Customer Notes</xsl:text>
+								</a>
 							</div>
 							<div class="Seperator"></div>
-							
-							<xsl:value-of select="./Note" disable-output-escaping="yes" />
-						</div>
-						<div class="Seperator"></div>
-					</xsl:for-each>
+							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
+								<xsl:variable name="Note" select="." />
+								<div class="Note">
+									<xsl:attribute name="style">
+										<xsl:text>background-color: #</xsl:text>
+										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>border: solid 1px #</xsl:text>
+										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>color: #</xsl:text>
+										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/TextColor" />
+										<xsl:text>;</xsl:text>
+									</xsl:attribute>
+									
+									<div class="small">
+										Created on 
+											<strong>
+												<xsl:call-template name="dt:format-date-time">
+													<xsl:with-param name="year"	select="./Datetime/year" />
+													<xsl:with-param name="month"	select="./Datetime/month" />
+													<xsl:with-param name="day"		select="./Datetime/day" />
+							 						<xsl:with-param name="hour"	select="./Datetime/hour" />
+													<xsl:with-param name="minute"	select="./Datetime/minute" />
+													<xsl:with-param name="second"	select="./Datetime/second" />
+													<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
+												</xsl:call-template>
+											</strong>
+										by
+											<strong>
+												<xsl:value-of select="./Employee/FirstName" />
+												<xsl:text> </xsl:text>
+												<xsl:value-of select="./Employee/LastName" />
+											</strong>.
+									</div>
+									<div class="Seperator"></div>
+									
+									<xsl:value-of select="./Note" disable-output-escaping="yes" />
+								</div>
+								<div class="Seperator"></div>
+							</xsl:for-each>
+						</xsl:otherwise>
+					</xsl:choose>
 				</td>
 			</tr>
 		</table>
@@ -346,6 +366,20 @@
 								<xsl:text>', '', '')</xsl:text>
 							</xsl:attribute>
 							<xsl:text>View Notes</xsl:text>
+						</a>, 
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>payment_add.php?Account=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:text>Make Payment</xsl:text>
+						</a>, 
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>account_ledger.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:text>View Invoices + Payments</xsl:text>
 						</a>
 					</td>
 				</tr>

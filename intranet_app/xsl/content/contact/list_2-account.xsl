@@ -9,8 +9,6 @@
 		<h2>Select an Account</h2>
 		<div class="Seperator"></div>
 		
-		<!-- TODO!!!! - Explain to the operator why we are here -->
-		<!-- <Name> is associated with multiple accounts, plese select one of the following accounts -->
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<form method="post" action="contact_list.php">

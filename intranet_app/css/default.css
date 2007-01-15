@@ -212,6 +212,39 @@
 		background-color:    #434343;
 	}
 	
+	input.input-submit-locked,
+	input.input-submit-unlocked
+	{
+		background-repeat:   no-repeat;
+		
+		font-weight:         bold;
+		
+		padding-top:         15px;
+		padding-left:        60px;
+		padding-right:       6px;
+		padding-bottom:      15px;
+	}
+	
+	input.input-submit-unlocked
+	{
+		background-image:    url('../img/template/btn_unlocked.png');
+		
+		border:              solid 1px #89b100;
+		
+		color:               #000000;
+		background-color:    #f1f7e1;
+	}
+	
+	input.input-submit-locked
+	{
+		background-image:    url('../img/template/btn_locked.png');
+		
+		border:              solid 1px #CC0000;
+		
+		color:               #999999;
+		background-color:    #f2dbdb;
+	}
+	
 	input.input-ABN-valid,
 	input.input-ACN-valid
 	{
@@ -273,7 +306,7 @@
 		background-repeat:   no-repeat;
 		background-position: top right;
 		
-		min-width:           750px;
+		min-width:           700px;
 	}
 	
 	.Pablo-Section-Container
@@ -650,7 +683,8 @@
 	
 	
 	#modalContent-systemDebug,
-	#modalContent-recentCustomers
+	#modalContent-recentCustomers,
+	#modalContent-PabloSays
 	{
 		display:				none;
 	}

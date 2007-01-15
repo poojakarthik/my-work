@@ -298,10 +298,9 @@
 								<table border="0" cellpadding="4" cellspacing="0">
 									<tr>
 										<td>
-											<!-- TODO!!!! - default radio button -->
 											<input type="radio" name="CustomerContact" value="0" id="CustomerContact:FALSE">
 												<xsl:choose>
-													<xsl:when test="/Response/Contact/CustomerContact != 1">
+													<xsl:when test="not(/Response/Contact/CustomerContact) or /Response/Contact/CustomerContact != 1">
 														<xsl:attribute name="checked">
 															<xsl:text>checked</xsl:text>
 														</xsl:attribute>

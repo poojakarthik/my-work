@@ -501,7 +501,7 @@
 			
 			// Return the Direct Debit
 			return $this->_ddrDirectDebit;
-		}
+		}		
 	}
 	
 ?>

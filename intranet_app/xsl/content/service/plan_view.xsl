@@ -10,38 +10,76 @@
 		<h1>View Service Plan Details</h1>
 		
 		<h2 class="Service">Service Details</h2>
-		<!-- TODO!!!! - Show service details -->
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
-				<xsl:choose>
-					<xsl:when test="/Response/Service/RatePlan/Name">
-						<p>
-							The service you are currently viewing is connected to the following plan:<br />
-							<strong><xsl:value-of select="/Response/Service/RatePlan/Name" /></strong>
-						</p>
-						
-						<div class="Seperator"></div>
-						
-						<ul>
-							<li>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:nohref()</xsl:text>
-									</xsl:attribute>
-									<xsl:attribute name="onclick">
-										<xsl:text>return openPopup(</xsl:text>
-											<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="/Response/Service/RatePlan/Id" /><xsl:text>'</xsl:text>
-										<xsl:text>)</xsl:text>
-									</xsl:attribute>
-									View Plan Details
-								</a>
-							</li>
-						</ul>
-					</xsl:when>
-					<xsl:otherwise>
-						<xsl:text>This service is currently not on a plan.</xsl:text>
-					</xsl:otherwise>
-				</xsl:choose>
+				<table border="0" cellpadding="5" cellspacing="0">
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service')" />
+								<xsl:with-param name="field" select="string('Id')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<xsl:value-of select="/Response/Service/Id" />
+							[<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_view.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+								<xsl:text>View Service</xsl:text>
+							</a>]
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service')" />
+								<xsl:with-param name="field" select="string('FNN')" />
+							</xsl:call-template>
+						</th>
+						<td><xsl:value-of select="/Response/Service/FNN" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service')" />
+								<xsl:with-param name="field" select="string('Plan')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<xsl:choose>
+								<xsl:when test="/Response/Service/RatePlan/Name">
+									<p>
+										The service you are currently viewing is connected to the following plan:<br />
+										<strong><xsl:value-of select="/Response/Service/RatePlan/Name" /></strong>
+									</p>
+									
+									<div class="Seperator"></div>
+									
+									<ul>
+										<li>
+											<a>
+												<xsl:attribute name="href">
+													<xsl:text>javascript:nohref()</xsl:text>
+												</xsl:attribute>
+												<xsl:attribute name="onclick">
+													<xsl:text>return openPopup(</xsl:text>
+														<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="/Response/Service/RatePlan/Id" /><xsl:text>'</xsl:text>
+													<xsl:text>)</xsl:text>
+												</xsl:attribute>
+												View Plan Details
+											</a>
+										</li>
+									</ul>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:text>This service is currently not on a plan.</xsl:text>
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+					</tr>
+				</table>
 			</div>
 		</div>
 		

@@ -199,12 +199,12 @@ function ValidateCustomerClass ()
 		if (this.IsValidated ())
 		{
 			document.getElementById ("Confirm").disabled = false;
-			document.getElementById ("Confirm").className = "input-submit";
+			document.getElementById ("Confirm").className = "input-submit-unlocked";
 		}
 		else
 		{
 			document.getElementById ("Confirm").disabled = true;
-			document.getElementById ("Confirm").className = "input-submit-disabled";
+			document.getElementById ("Confirm").className = "input-submit-locked";
 		}
 	}
 	

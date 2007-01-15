@@ -568,11 +568,15 @@
 			</div>
 			
 			<div class="Clear"></div>
-			<!-- TODO!!!! - Big red X fon disabled, big Green tick for enabled -->
-			<input type="submit" name="Confirm" class="input-submit-disabled" value="Continue &#0187;" id="Confirm" disabled="disabled" />
-			<!-- TODO!!!! - explain to the operator why they can't continue -->
-			<!-- TODO!!!! - + explain input box colors -->
+			<input type="submit" name="Confirm" class="input-submit-locked" value="Continue &#0187;" id="Confirm" disabled="disabled" />
+			<div class="Seperator"></div>
 			
+			<div class="MsgNotice">
+				You cannot continue unless you verify the customer information above.
+				When you have verified enough information, the button to Continue will
+				change colour, indicating that you are allowing the person through 
+				to their account.
+			</div>
 		</form>
 	</xsl:template>
 	

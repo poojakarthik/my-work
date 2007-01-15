@@ -24,6 +24,24 @@
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
+								<xsl:with-param name="field" select="string('Id')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<xsl:value-of select="/Response/Account/Id" />
+							[<a>
+								<xsl:attribute name="href">
+									<xsl:text>account_view.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>View Account</xsl:text>
+							</a>]
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Account')" />
 								<xsl:with-param name="field" select="string('BusinessName')" />
 							</xsl:call-template>
 						</th>

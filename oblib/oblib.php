@@ -107,6 +107,8 @@
 				0, 
 				$this->_DOMNode->length, $nodeValue
 			);
+			
+			return true;
 		}
 		
 		public function Output ()
@@ -189,9 +191,11 @@
 		
 		public function setValue ($nodeValue)
 		{
+			$nodeValue = preg_replace ("/^\$/", "", $nodeValue);
+			
 			if (!is_numeric ($nodeValue))
 			{
-				return;
+				return false;
 			}
 			
 			return parent::setValue	("$" . sprintf ("%0.2f", floatval ($nodeValue)));

@@ -12,21 +12,6 @@
 		
 		<div class="Seperator"></div>
 		
-		<!-- TODO!!!! - pop this up in a dhtml window -->
-		<div class="Pablo-Section">
-			<div class="Pablo-Section-Container">
-				<div class="Pablo-Section-Content">
-					<h2>Pablo's Rants ... </h2>
-					<p>
-						<xsl:value-of select="/Response/Tip/TipText" disable-output-escaping="yes" />
-					</p>
-				</div>
-			</div>
-		</div>
-		
-		<div class="Clear"></div>
-		<div class="Seperator"></div>
-		
 		<h2>Menu Description</h2>
 		<div class="Seperator"></div>
 		<table border="0" cellpadding="5" cellspacing="0">
@@ -54,7 +39,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="#" onclick="displayRecentWindow(); return false;">
+					<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'show', 'slow');">
 						<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
 					</a>
 				</td>
@@ -86,5 +71,41 @@
 				</td>
 			</tr>
 		</table>
+		
+		<div id="modalContent-PabloSays">
+			<div class="modalContainer">
+				<div class="modalContent">
+					<div class="Pablo-Section">
+						<div class="Pablo-Section-Container">
+							<div class="Pablo-Section-Content">
+								<h2>Pablo's Rants ... </h2>
+								<p>
+									<xsl:value-of select="/Response/Tip/TipText" disable-output-escaping="yes" />
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modalTitle">
+					<div class="modalClose Right">
+						<img src="img/template/closelabel.gif" class="close" />
+					</div>
+					<div class="Clear"></div>
+				</div>
+			</div>
+		</div>
+		
+		<script language="javascript">
+			
+			window.addEventListener (
+				"load",
+				function ()
+				{
+					$('#modalContent-PabloSays').modalContent(null, 'show', 'slow');
+				},
+				true
+			);
+			
+		</script>
 	</xsl:template>
 </xsl:stylesheet>
