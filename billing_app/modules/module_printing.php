@@ -95,7 +95,7 @@
 																BILL_PRINT_HISTORY_LIMIT - 1);
 																
 		$arrColumns = Array();
-		$arrColumns['RecordTypeName']	= "RecordType.Name";
+		$arrColumns['RecordTypeName']	= "RType.Name";
 		$arrColumns['Charge']			= "SUM(ServiceTypeTotal.Charge)";
 		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, " .
 																"RecordType AS RType",
@@ -110,7 +110,7 @@
 																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW())");
 		
 		$arrColumns = Array();
-		$arrColumns['RecordTypeName']	= "RecordType.Name";
+		$arrColumns['RecordTypeName']	= "RType.Name";
 		$arrColumns['Charge']			= "SUM(CDR.Charge)";
 		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, " .
 																"RecordType AS RType",
@@ -295,6 +295,7 @@
 		}
 		// build output
 		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
+		Debug($arrServiceTypeTotals);
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
 			Debug($arrTotal);
