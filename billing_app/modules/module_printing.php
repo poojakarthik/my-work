@@ -263,13 +263,10 @@
 		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
 		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "\$ Value";
 		$arrFileData[] = $arrDefine['GraphHeader'];
-		$arrDefine['GraphData']			['Title']			['Value']	= date("M y", strtotime("-$intCount months"));
-		$arrDefine['GraphData']			['Value']			['Value']	= $arrInvoiceDetails['Balance'];
-		$arrFileData[] = $arrDefine['GraphData'];
 		$intCount = 0;
 		foreach($arrBillHistory as $arrBill)
 		{
-			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime("-$intCount months"));
+			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime("-$intCount months", time()));
 			$arrDefine['GraphData']		['Value']			['Value']	= $arrBill['Total'] + $arrBill['Tax'];
 			$arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
@@ -281,12 +278,14 @@
 		// get details from servicetype totals
 		$arrServiceTypeTotalVars['Account']		= $arrInvoiceDetails['Account'];
 		$arrServiceTypeTotalVars['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
-		$arrServiceTypeTotals = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
-		if ($arrServiceTypeTotals === FALSE)
+		$mixResult = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
+		if ($mixResult === FALSE)
 		{
 			Debug($this->_selServiceTypeTotals->Error());
 		}
-		elseif(!is_array($arrServiceTypeTotals))
+		
+		$arrServiceTypeTotals = $this->_selServiceTypeTotals->FetchAll();
+		if(!is_array($arrServiceTypeTotals))
 		{
 			$arrServiceTypeTotals = Array();
 		}
