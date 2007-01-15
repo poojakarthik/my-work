@@ -209,6 +209,22 @@ die();
 				$this->_rptBillingReport->AddMessage(MSG_OK);
 			}
 			
+			// SERVICE TYPE TOTALS
+			
+			// build query
+			$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
+			$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$strInvoiceRun."' AS InvoiceRun,";
+			$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
+			$strQuery .= " FROM CDR";
+			$strQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
+			$strQuery .= " AND Status = ".CDR_TEMP_INVOICE;
+			$strQuery .= " AND Account = ".$arrAccount['Id'];
+			$strQuery .= " GROUP BY Service, RecordType";
+			
+			// run query
+			$qryServiceTypeTotal = new Query();
+			$qryServiceTypeTotal->Execute($strQuery);
+			
 			// calculate totals
 			$fltDebits			= 0.0;
 			$fltTotalCharge		= 0.0;
@@ -403,20 +419,7 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK."\n");
 		}
 		
-		// SERVICE TYPE TOTALS
 		
-		// build query
-		$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
-		$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$strInvoiceRun."' AS InvoiceRun,";
-		$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
-		$strQuery .= " FROM CDR";
-		$strQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
-		$strQuery .= " AND Status = ".CDR_TEMP_INVOICE;
-		$strQuery .= " GROUP BY Service, RecordType";
-		
-		// run query
-		$qryServiceTypeTotal = new Query();
-		$qryServiceTypeTotal->Execute($strQuery);
 		
 		// BILLING VALIDATION
 		// Make sure all of our totals add up
