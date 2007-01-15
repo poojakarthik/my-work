@@ -516,7 +516,7 @@
 	h2.Archive,
 	h2.Accounts,
 	h2.Account,
-	h2.AccountOptions,
+	h2.Options,
 	h2.Notes,
 	h2.Note,
 	h2.Services,
@@ -618,9 +618,9 @@
 		background-image:              url('../img/template/account.png');
 	}
 	
-	h2.AccountOptions
+	h2.Options
 	{
-		background-image:              url('../img/template/account_options.png');
+		background-image:              url('../img/template/options.png');
 	}
 	
 	h2.Invoice

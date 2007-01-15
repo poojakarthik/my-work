@@ -944,6 +944,68 @@
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">
+				
+					<h2 class="Options">Service Options</h2>
+					<ul>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>account_ledger.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>View Invoices + Payments</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>recurring_charge_list.php?Account=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>View Recurring Charges</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>account_edit.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>Edit Account Details</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>account_add.php?AccountGroup=</xsl:text>
+									<xsl:value-of select="/Response/Account/AccountGroup" />
+								</xsl:attribute>
+								<xsl:text>Add Associated Account</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_add.php?Account=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								Add Service
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>contact_add.php?Account=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>Add Contact</xsl:text>
+							</a>
+						</li>
+					</ul>
+					
+					<div class="Seperator"></div>
+				
+				
 					<h2 class="Notes">Service Notes</h2>
 					
 					<form method="post" action="note_add.php">

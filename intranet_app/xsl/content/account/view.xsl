@@ -14,7 +14,7 @@
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
-					<h2 class="Account">Account Information</h2>
+					<h2 class="Account">Account Details</h2>
 					
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
@@ -232,7 +232,7 @@
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">
-					<h2 class="AccountOptions">Account Options</h2>
+					<h2 class="Options">Account Options</h2>
 					<ul>
 						<li>
 							<a>
@@ -240,7 +240,16 @@
 									<xsl:text>account_ledger.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>Invoices + Payments</xsl:text>
+								<xsl:text>View Invoices + Payments</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>recurring_charge_list.php?Account=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>View Recurring Charges</xsl:text>
 							</a>
 						</li>
 						<li>
@@ -249,7 +258,7 @@
 									<xsl:text>account_edit.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>Edit Account Information</xsl:text>
+								<xsl:text>Edit Account Details</xsl:text>
 							</a>
 						</li>
 						<li>
@@ -264,10 +273,19 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>recurring_charge_list.php?Account=</xsl:text>
+									<xsl:text>service_add.php?Account=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>View Recurring Charges</xsl:text>
+								Add Service
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>contact_add.php?Account=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>Add Contact</xsl:text>
 							</a>
 						</li>
 					</ul>
