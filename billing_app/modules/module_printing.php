@@ -332,12 +332,12 @@
 		// SUMMARY SERVICES
 		// get details from servicetype totals
 		$this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
-		$arrServiceSummaries = $this->_selServices->FetchAll();
+		$arrServices = $this->_selServices->FetchAll();
 		// build output
 		$strCurrentService = "";
 		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
-		Debug($arrServiceSummaries);
-		foreach($arrServiceSummaries as $arrService)
+		Debug($arrServices);
+		foreach($arrServices as $arrService)
 		{
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
 			$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
