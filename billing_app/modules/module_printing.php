@@ -115,7 +115,7 @@
 		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, " .
 																"RecordType AS RType",
 																$arrColumns,
-																"RecordType.GroupId = RType.Id AND CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND CDR.Status = ".CDR_TEMP_INVOICE,
+																"RecordType.GroupId = RType.Id AND CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND CDR.Credit = 0 AND CDR.Status = ".CDR_TEMP_INVOICE,
 																"RType.Name",
 																NULL,
 																"RType.Id\n" .
@@ -136,13 +136,13 @@
 		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
 																"RecordType AS RType",
 																$arrColumns,
-																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id",
+																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id AND CDR.Credit = 0",
 																"CDR.FNN, RType.Name, CDR.StartDatetime");
 																
 		$this->_selRecordTypeTotal		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
 																"RecordType AS RType",
 																"SUM(CDR.Charge) AS TotalCharge",
-																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND CDR.Account = <Account>",
+																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND CDR.Account = <Account> AND CDR.Credit = 0",
 																NULL,
 																"1",
 																"RType.Id");
