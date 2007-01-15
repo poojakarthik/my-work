@@ -335,10 +335,9 @@
 		$arrServiceSummaries = $this->_selServices->FetchAll();
 		// build output
 		$strCurrentService = "";
-		$arrServices = $this->_selServices->FetchAll();
 		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
-		Debug($arrServices);
-		foreach($arrServices as $arrService)
+		Debug($arrServiceSummaries);
+		foreach($arrServiceSummaries as $arrService)
 		{
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
 			$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
