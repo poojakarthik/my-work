@@ -48,8 +48,9 @@ $strPath		= "/home/vixen_bill_output/";
 //$strPDFPath		= "/home/vixen_bill_output/sample/pdf/";
 $strPDFPath		= "/home/vixen_bill_output/pdf/";
 //$strFilename	= $strPath."sample".date("Y-m-d").".vbf";
+$strFilename	= $strPath.date("Y-m-d").".vbf";
 //$strFilename	= $strPath."sample2007-01-12.vbf";
-$strFilename	= $strPath."2007-01-12.vbf";
+//$strFilename	= $strPath."2007-01-12.vbf";
 //$strFilename	= "/home/richdavis/2007-01-12.vbf";
 
 
