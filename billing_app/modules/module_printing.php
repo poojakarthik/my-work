@@ -331,21 +331,21 @@
 		
 		// SUMMARY SERVICES
 		// get details from servicetype totals
-		$this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		$arrServices = $this->_selServices->FetchAll();
+		
 		// build output
 		$strCurrentService = "";
 		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
-		Debug($arrServices);
 		foreach($arrServices as $arrService)
 		{
+			// The individual RecordTypes for each Service
+			$intCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id']));
+			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
+
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
 			$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
-			
-			// The individual RecordTypes for each Service
-			$this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id']));
-			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
-			Debug($arrServiceSummaries);
+
 			foreach($arrServiceSummaries as $arrServiceSummary)
 			{
 				$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordTypeName'];

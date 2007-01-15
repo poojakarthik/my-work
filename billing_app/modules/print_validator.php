@@ -338,7 +338,9 @@ foreach ($arrFileContents as $strLine)
 			break;
 		case 69:
 			// Service Summary Service Footer
-			ExpectedRecordType($intLastRecordType, 61, $i);
+			$arrExpectedRecordTypes[] = 60;
+			$arrExpectedRecordTypes[] = 61;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			
 			$arrData = Array();
 			$arrData['Service Name']	= "Total service charges for $strCurrentFNN";
