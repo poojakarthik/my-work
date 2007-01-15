@@ -290,12 +290,10 @@
 		$arrServiceTypeTotals = $this->_selServiceTypeTotals->FetchAll();
 		if(!is_array($arrServiceTypeTotals))
 		{
-			Debug("Fucked lol");
 			$arrServiceTypeTotals = Array();
 		}
 		// build output
 		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
-		Debug($arrServiceTypeTotals);
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
 			Debug($arrTotal);
