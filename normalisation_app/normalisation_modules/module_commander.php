@@ -88,11 +88,11 @@ class NormalisationModuleCommander extends NormalisationModule
 		$arrDefine ['EventId']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
 		$arrDefine ['Datetime']			['Validate']	= "/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/";
-		$arrDefine ['Duration']			['Validate']	= "/^\d+$/";
+		$arrDefine ['Duration']			['Validate']	= "/^-?\d+$/";
 		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['Currency']			['Validate']	= "/^AUD$/";
-		$arrDefine ['Price']			['Validate']	= "/^\d+\.\d\d*$/";
+		$arrDefine ['Price']			['Validate']	= "/^-?\d+\.\d\d*$/";
 		$arrDefine ['CallType']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RateId']			['Validate']	= "/^\d+$/";
 		
@@ -228,6 +228,9 @@ class NormalisationModuleCommander extends NormalisationModule
 		// Destination
 		$mixValue = $this->_FetchRawCDR('DestinationNo');
 		$this->_AppendCDR('Destination', $this->RemoveAusCode($mixValue));
+		
+		// Is Credit?
+		$this->_IsCredit();
 		
 		//--------------------------------------------------------------------//
 		

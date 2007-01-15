@@ -92,7 +92,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$arrDefine ['EventId']			['Validate']	= "/^\d+$/";
 		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
 		$arrDefine ['DateTime']			['Validate']	= "/^((\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d)|(\"\d{2}\/\d{2}\/\d{4})\")$/";
-		$arrDefine ['Duration']			['Validate']	= "/^(\d+|)$/";
+		$arrDefine ['Duration']			['Validate']	= "/^(-?\d+|)$/";
 		$arrDefine ['OriginNo']			['Validate']	= "/^(\+?\d+|)$/";
 		$arrDefine ['DestinationNo']	['Validate']	= "/^(\+?\d+|)$/";
 		$arrDefine ['ChargedParty']		['Validate']	= "/^\"?\+?\d+\"?$/";
@@ -241,20 +241,6 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		 	$this->_AppendCDR('EndDatetime', $mixValue);
 		}
 		
-		// Units
-		if ($intCarrierRecordType == "1")
-		{
-		 	// For normal usage CDRs
-		 	$mixValue					= $this->_FetchRawCDR('Duration');
-		 	$this->_AppendCDR('Units', (int)$mixValue);
-		}
-		else
-		{
-		 	// For S&E and OC&C CDRs
-		 	$mixValue					=  $this->_FetchRawCDR('ItemCount');
-		 	$this->_AppendCDR('Units', (int)$mixValue);
-		}
-		
 		// Description
 		unset($strDescription);
 		if ($intCarrierRecordType == "1")
@@ -283,6 +269,20 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			$this->_AppendCDR('Description', $strDescription);
 		}
 		
+		// Units
+		if ($intCarrierRecordType == "1")
+		{
+		 	// For normal usage CDRs
+		 	$mixValue					= $this->_FetchRawCDR('Duration');
+		 	$this->_AppendCDR('Units', (int)$mixValue);
+		}
+		else
+		{
+		 	// For S&E and OC&C CDRs
+		 	$mixValue					=  $this->_FetchRawCDR('ItemCount');
+		 	$this->_AppendCDR('Units', (int)$mixValue);
+		}
+		
 		// Cost
 		$mixValue						= $this->_FetchRawCDR('Price');
 		$mixValue						= str_replace($mixValue, '$','');
@@ -295,6 +295,9 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		// Destination
 		$mixValue = $this->_FetchRawCDR('DestinationNo');
 		$this->_AppendCDR('Destination', $this->RemoveAusCode($mixValue));
+		
+		// Is Credit?
+		$this->_IsCredit();
 
 		//--------------------------------------------------------------------//
 		

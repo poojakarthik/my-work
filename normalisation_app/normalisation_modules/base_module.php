@@ -792,6 +792,46 @@ abstract class NormalisationModule
 		return FALSE;
 	 }
 	 
+	 
+	//------------------------------------------------------------------------//
+	// _IsCredit
+	//------------------------------------------------------------------------//
+	/**
+	 * _IsCredit()
+	 *
+	 * Check if this CDR is a credit, and changes normalised data to suit.
+	 *
+	 * Check if this CDR is a credit, and changes normalised data to suit.
+	 * Must be called after Cost and Units are set.
+	 *
+	 * @return	bool					
+	 *
+	 * @method
+	 */
+	 protected function _IsCredit()
+	 {
+	 	if(!isset($this->_arrNormalisedData['Units']) || !isset($this->_arrNormalisedData['Cost']))
+	 	{
+	 		// Either Units or Cost are not set yet
+	 		return FALSE;
+	 	}
+	 	
+	 	$intUnits	= (int)$this->_arrNormalisedData['Units'];
+	 	$fltCost	= (float)$this->_arrNormalisedData['Cost'];
+	 	if ($intUnits < 0 && $fltCost < 0.0)
+	 	{
+	 		$intUnits	= abs($intUnits);
+	 		$fltCost	= abs($fltCost);
+	 		$this->_AppendCDR('Credit', 1);
+	 		return TRUE;
+	 	}
+	 	else
+	 	{
+	 		$this->_AppendCDR('Credit', 0);
+	 		return FALSE;
+	 	}
+	 }
+	 
 }
 
 ?>
