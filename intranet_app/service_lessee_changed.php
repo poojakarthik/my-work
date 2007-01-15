@@ -33,6 +33,6 @@
 		exit;
 	}
 	
-	$Style->Output ('xsl/content/service/lessee_changed.xsl');
+	$Style->Output ('xsl/content/service/lessee/changed.xsl');
 	
 ?>

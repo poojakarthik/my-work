@@ -26,6 +26,6 @@
 		header ("Location: index.php"); exit;
 	}
 	
-	$Style->Output ("xsl/content/service/provisioning_confirm.xsl");
+	$Style->Output ("xsl/content/service/provisioning/confirm.xsl");
 	
 ?>

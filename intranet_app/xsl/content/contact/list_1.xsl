@@ -6,7 +6,7 @@
 	<xsl:template name="Content">
 		<h1>Find Customer</h1>
 		
-		<h2>Search for a Customer</h2>
+		<h2 class="Contact">Search for a Customer</h2>
 		<div class="Seperator"></div>
 		
 		<script language="javascript" src="js/ABN.js"></script>

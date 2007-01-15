@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="../../includes/init.xsl" />
-	<xsl:import href="../../template/popup.xsl" />
+	<xsl:import href="../../../includes/init.xsl" />
+	<xsl:import href="../../../template/popup.xsl" />
 	<xsl:template name="Content">
-		<h1>Provisioning Request Canceled</h1>
+		<h1>Provisioning Cancellation Failed</h1>
 		
 		<p>
-			Provisioning Request has been successfully Canceled.
+			The Provisioning Request has already been processed and could not
+			be canceled.
 		</p>
 		
 		<p>

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="../../includes/init.xsl" />
-	<xsl:import href="../../template/default.xsl" />
+	<xsl:import href="../../../includes/init.xsl" />
+	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Service Address Updated</h1>
+		<h1>Provisioning Request Added</h1>
 		
 		<p>
-			Your Service Address Information has been successfully updated.
+			Your Provisioning Request has been successfully added.
 		</p>
 		
 		<p>
@@ -17,7 +17,7 @@
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
 				<xsl:text>Return to Service Details</xsl:text>
-			</a>
+			</a>.
 		</p>
 	</xsl:template>
 </xsl:stylesheet>

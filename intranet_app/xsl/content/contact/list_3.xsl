@@ -8,7 +8,7 @@
 		
 		<script language="javascript" src="js/validate_customer.js"></script>
 		
-		<h2>Customer Verification</h2>
+		<h2 class="Contact">Customer Verification</h2>
 		<div class="Seperator"></div>
 		
 		<form method="POST" action="contact_list.php">
@@ -571,7 +571,7 @@
 			<input type="submit" name="Confirm" class="input-submit-locked" value="Continue &#0187;" id="Confirm" disabled="disabled" />
 			<div class="Seperator"></div>
 			
-			<div class="MsgNotice">
+			<div class="MsgNotice" style="width: 600px">
 				You cannot continue unless you verify the customer information above.
 				When you have verified enough information, the button to Continue will
 				change colour, indicating that you are allowing the person through 

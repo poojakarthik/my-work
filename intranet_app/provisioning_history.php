@@ -42,6 +42,6 @@
 	$prtProvisioningRequestType	= $Style->attachObject (new ProvisioningRequestTypes ());
 	
 	// Output the Account View
-	$Style->Output ('xsl/content/service/provisioning_history.xsl');
+	$Style->Output ('xsl/content/service/provisioning/history.xsl');
 	
 ?>

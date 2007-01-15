@@ -71,24 +71,24 @@
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<xsl:choose>
-						<xsl:when test="./ClosedOn/year">
+						<xsl:when test="/Response/Service/ClosedOn/year">
 							<strong><span class="Red">
 								This service closes on:
 								<xsl:call-template name="dt:format-date-time">
-									<xsl:with-param name="year"		select="./ClosedOn/year" />
-									<xsl:with-param name="month"	select="./ClosedOn/month" />
-									<xsl:with-param name="day"		select="./ClosedOn/day" />
+									<xsl:with-param name="year"		select="/Response/Service/ClosedOn/year" />
+									<xsl:with-param name="month"	select="/Response/Service/ClosedOn/month" />
+									<xsl:with-param name="day"		select="/Response/Service/ClosedOn/day" />
 									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 								</xsl:call-template>
 							</span></strong>
 						</xsl:when>
-						<xsl:when test="./CreatedOn/year and ./Available = 0">
+						<xsl:when test="/Response/Service/CreatedOn/year and /Response/Service/Available = 0">
 							<strong><span class="Blue">
 								This service opens on:
 								<xsl:call-template name="dt:format-date-time">
-									<xsl:with-param name="year"		select="./CreatedOn/year" />
-									<xsl:with-param name="month"	select="./CreatedOn/month" />
-									<xsl:with-param name="day"		select="./CreatedOn/day" />
+									<xsl:with-param name="year"		select="/Response/Service/CreatedOn/year" />
+									<xsl:with-param name="month"	select="/Response/Service/CreatedOn/month" />
+									<xsl:with-param name="day"		select="/Response/Service/CreatedOn/day" />
 									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 								</xsl:call-template>
 							</span></strong>
@@ -101,10 +101,7 @@
 					<div class="Seperator"></div>
 					
 					<xsl:choose>
-						<xsl:when test="/Response/Service/Archived = 1">
-							<p>Services can not be unarchived. Instead - add a new service with the same number.</p>
-						</xsl:when>
-						<xsl:otherwise>
+						<xsl:when test="not(/Response/Service/ClosedOn/year)">
 							<table border="0" cellpadding="5" cellspacing="0">
 								<tr>
 									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
@@ -115,7 +112,7 @@
 									</td>
 								</tr>
 							</table>
-						</xsl:otherwise>
+						</xsl:when>
 					</xsl:choose>
 				</div>
 			</div>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="../../includes/init.xsl" />
-	<xsl:import href="../../template/popup.xsl" />
+	<xsl:import href="../../../includes/init.xsl" />
+	<xsl:import href="../../../template/popup.xsl" />
 	<xsl:template name="Content">
 		<h1>Service Change of Lessee</h1>
 		<div class="Seperator"></div>
@@ -10,12 +10,13 @@
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
 				<xsl:choose>
-					<xsl:when test="/Response/Error = 'Invalid Account'">
-						The Account number you entered does not exist. Please check the
-						number and try again.
+					<xsl:when test="/Response/Error = 'Date Past'">
+						The date you entered was invalid. You must enter a date
+						at least 48 hours in the future from 12:00 AM today.
 					</xsl:when>
 				</xsl:choose>
 			</div>
+			<div class="Seperator"></div>
 		</xsl:if>
 		
 		<form method="POST" action="service_lessee.php">

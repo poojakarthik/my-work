@@ -56,16 +56,23 @@
 			
 			if (isset ($_POST ['Date']))
 			{
-				$intNewService = $srvService->LesseePassthrough (
-					$actReceiving, 
-					$_POST ['Date']
-				);
-				
-				header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $intNewService);
-				exit;
+				if (mktime (0, 0, 0, $_POST ['Date']['month'], $_POST ['Date']['day'], $_POST ['Date']['year']) < strtotime ("+48 hours", mktime (0, 0, 0)))
+				{
+					$oblstrError->setValue ('Date Past');
+				}
+				else
+				{
+					$intNewService = $srvService->LesseePassthrough (
+						$actReceiving, 
+						$_POST ['Date']
+					);
+					
+					header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $intNewService);
+					exit;
+				}
 			}
 			
-			$Style->Output ('xsl/content/service/lessee_date.xsl');
+			$Style->Output ('xsl/content/service/lessee/date.xsl');
 			exit;
 		}
 		catch (Exception $e)
@@ -74,6 +81,6 @@
 		}
 	}
 	
-	$Style->Output ('xsl/content/service/lessee_select.xsl');
+	$Style->Output ('xsl/content/service/lessee/select.xsl');
 	
 ?>

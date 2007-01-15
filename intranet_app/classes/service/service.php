@@ -112,34 +112,6 @@
 		{
 			return new Account ($this->Pull ('Account')->getValue ());
 		}
-		
-		//------------------------------------------------------------------------//
-		// ServiceAddress
-		//------------------------------------------------------------------------//
-		/**
-		 * ServiceAddress()
-		 *
-		 * Pull the Associated Service Address Information
-		 *
-		 * Pull the Associated Service Address Information. This is a seperate function
-		 * because of memory leakings that have been occurring
-		 *
-		 * @return	ServiceAddress
-		 *
-		 * @method
-		 */
-		 
-		public function ServiceAddress ()
-		{
-			$oblintServiceAddress = $this->Pop ('ServiceAddress');
-			
-			if ($oblintServiceAddress->getValue () != null)
-			{
-				return $this->Push (new ServiceAddress ($oblintServiceAddress->getValue ()));
-			}
-			
-			return null;
-		}
 		 
 		//------------------------------------------------------------------------//
 		// CreateNewProvisioningRequest
@@ -427,10 +399,6 @@
 				$insServiceRateGroup->Execute ($arrServiceRateGroup);
 			}
 			
-			
-			
-			
-			
 			// Start the Rate Plan Skeleton
 			$arrServiceRatePlan = Array (
 				'Service'			=> $this->Pull ('Id')->getValue (),
@@ -540,6 +508,112 @@
 			$updService->Execute ($arrClose, Array ('Id' => $this->Pull ('Id')->getValue ()));
 			
 			return $actAccount->LesseeReceive ($this, $arrDetailsDate);
+		}
+		
+		//------------------------------------------------------------------------//
+		// ServiceAddress
+		//------------------------------------------------------------------------//
+		/**
+		 * ServiceAddress()
+		 *
+		 * Pull the Associated Service Address Information
+		 *
+		 * Pull the Associated Service Address Information. This is a seperate function
+		 * because of memory leakings that have been occurring
+		 *
+		 * @return	ServiceAddress
+		 *
+		 * @method
+		 */
+		 
+		public function ServiceAddress ()
+		{
+			$intServiceAddress = $this->Pull ('ServiceAddress')->getValue ();
+			
+			if (!$intServiceAddress)
+			{
+				throw new Exception ('Service Address Not Found');
+			}
+			
+			return new ServiceAddress ($intServiceAddress);
+		}
+		
+		//------------------------------------------------------------------------//
+		// ServiceAddressUpdate
+		//------------------------------------------------------------------------//
+		/**
+		 * ServiceAddressUpdate()
+		 *
+		 * Update Service Address Information
+		 *
+		 * Save the Service Address information to the Database
+		 *
+		 * @param	Array		$arrDetails		An associative array of Service Address Information
+		 *
+		 * @method
+		 */
+		
+		public function ServiceAddressUpdate ($arrDetails)
+		{
+			$eutEndUserTitle			= new ServiceEndUserTitleTypes ();
+			$bolEndUserTitle			= $eutEndUserTitle->setValue ($arrDetails ['EndUserTitle']);
+
+			$satServiceAddressType		= new ServiceAddressTypes ();
+			$bolServiceAddressType		= $satServiceAddressType->setValue ($arrDetails ['ServiceAddressType']);
+			
+			$sstServiceStreetType		= new ServiceStreetTypes ();
+			$bolServiceStreetType		= $sstServiceStreetType->setValue ($arrDetails ['ServiceStreetType']);
+			
+			$sstServiceStreetSuffixType	= new ServiceStreetSuffixTypes ();
+			$bolServiceStreetSuffixType	= $sstServiceStreetSuffixType->setValue ($arrDetails ['ServiceStreetTypeSuffix']);
+			
+			$staServiceStateType		= new ServiceStateTypes ();
+			$bolServiceStateType		= $staServiceStateType->setValue ($arrDetails ['ServiceState']);
+			
+			$arrData = Array (
+				"BillName"						=> $arrDetails ['BillName'],
+				"BillAddress1"					=> $arrDetails ['BillAddress1'],
+				"BillAddress2"					=> $arrDetails ['BillAddress2'],
+				"BillLocality"					=> $arrDetails ['BillLocality'],
+				"BillPostcode"					=> sprintf ("%04d", $arrDetails ['BillPostcode']),
+				"EndUserTitle"					=> (($bolEndUserTitle == true) ? $arrDetails ['EndUserTitle'] : ""),
+				"EndUserGivenName"				=> $arrDetails ['EndUserGivenName'],
+				"EndUserFamilyName"				=> $arrDetails ['EndUserFamilyName'],
+				"EndUserCompanyName"			=> $arrDetails ['EndUserCompanyName'],
+				"DateOfBirth"					=> sprintf ("%04d", $arrDetails ['DateOfBirth:year']) . 
+												   sprintf ("%02d", $arrDetails ['DateOfBirth:month']) . 
+												   sprintf ("%02d", $arrDetails ['DateOfBirth:day']),
+				"Employer"						=> $arrDetails ['Employer'],
+				"Occupation"					=> $arrDetails ['Occupation'],
+				"ABN"							=> $arrDetails ['ABN'],
+				"TradingName"					=> $arrDetails ['TradingName'],
+				"ServiceAddressType"			=> (($bolServiceAddressType == true) ? $arrDetails ['ServiceAddressType'] : ""),
+				"ServiceAddressTypeNumber"		=> $arrDetails ['ServiceAddressTypeNumber'],
+				"ServiceAddressTypeSuffix"		=> $arrDetails ['ServiceAddressTypeSuffix'],
+				"ServiceStreetNumberStart"		=> $arrDetails ['ServiceStreetNumberStart'],
+				"ServiceStreetNumberEnd"		=> $arrDetails ['ServiceStreetNumberEnd'],
+				"ServiceStreetNumberSuffix"		=> $arrDetails ['ServiceStreetNumberSuffix'],
+				"ServiceStreetName"				=> $arrDetails ['ServiceStreetName'],
+				"ServiceStreetType"				=> (($bolServiceStreetType == true) ? $arrDetails ['ServiceStreetType'] : ""),
+				"ServiceStreetTypeSuffix"		=> (($bolServiceStreetSuffixType == true) ? $arrDetails ['ServiceStreetTypeSuffix'] : ""),
+				"ServicePropertyName"			=> $arrDetails ['ServicePropertyName'],
+				"ServiceLocality"				=> $arrDetails ['ServiceLocality'],
+				"ServiceState"					=> (($bolServiceStateType == true) ? $arrDetails ['ServiceState'] : ""),
+				"ServicePostcode"				=> sprintf ("%04d", $arrDetails ['ServicePostcode'])
+			);
+			
+			
+			// If Service Address Information currently exists for this Service
+				// Update the Service Address Information
+			// Otherwise
+				// Create a new Service Address and Update the Service to reflect this Service Address
+			
+			/*
+			$updServiceAddress = new StatementUpdate ("ServiceAddress", 'Id = <Id>', $arrData, 1);
+			$updServiceAddress->Execute ($arrData, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			
+			return true;
+			*/
 		}
 	}
 	
