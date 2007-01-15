@@ -271,37 +271,59 @@ die();
 		// build any CDR based credits
 		
 		// change status of CDR Creidts
-		//TODO!!!!
-		/*
-		UPDATE CDR
-		SET Status = CDR_TEMP_CREDIT
-		WHERE Status = CDR_INVOICED
-		AND Credit = 1
-		*/
-		
+		$arrColumns = Array();
+		$arrColumns['Status']	= CDR_TEMP_CREDIT;
+		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
+		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
+		{
+			// TODO: ERROR
+		}
+
 		// Get totals of CDR credits
-		//TODO!!!!
-		/*
-		SELECT SUM(Charge) FROM CDR
-		WHERE Status = CDR_TEMP_CREDIT
-		AND Credit = 1
-		GROUP BY Service
-		*/
+		$arrColumns = Array();
+		$arrColumns['Total']		= "SUM(Charge)";
+		$arrColumns['AccountGroup']	= "AccountGroup";
+		$arrColumns['Account']		= "Account";
+		$arrColumns['Service']		= "Service";
+		$arrColumns['Carrier']		= "Carrier";
+		$selCDRCreditTotals = new StatementSelect("CDR", $arrColumns, "Credit = 1 AND Status = ".CDR_TEMP_CREDIT, NULL, NULL, "Service");
+		if ($selCDRCreditTotals->Execute() === FALSE)
+		{
+			// TODO: ERROR
+		}
+		$arrCreditTotals = $selCDRCreditTotals->FetchAll();
 		
-		// foreach
+		$arrData['AccountGroup']	= NULL;
+		$arrData['Account']			= NULL;
+		$arrData['Service']			= NULL;
+		$arrData['CreatedBy']		= USER_ID;
+		$arrData['CreatedOn']		= new MySQLFunction("NOW()");
+		$arrData['ChargeType']		= CHARGE_CODE_CALL_CREDIT;
+		$arrData['Description']		= "Call credit from ";
+		$arrData['Nature']			= NATURE_CR;
+		$arrData['Amount']			= NULL;
+		$arrData['Status']			= CHARGE_WAITING;
+		$insOneOffCredit = new StatementInsert("Charge");
+		foreach($arrCreditTotals as $arrCreditTotal)
+		{
 			// make a one off credit (not approved)
-			//TODO!!!!
+			$arrData['AccountGroup']	= $arrCreditTotal['AccountGroup'];
+			$arrData['Account']			= $arrCreditTotal['Account'];
+			$arrData['Service']			= $arrCreditTotal['Service'];
+			$arrData['Description']		.= $arrCreditTotal['Carrier'];
+			$arrData['Amount']			= $arrCreditTotal['Total'];
+			$insOneOffCredit->Execute($arrData);
+		}
+
 		
 		// change status of CDR credits
-		//TODO!!!!
-		/*
-		UPDATE CDR
-		SET Status = CDR_CREDITED
-		WHERE Status = CDR_TEMP_CREDIT
-		AND Credit = 1
-		*/
-		
-		
+		$arrColumns['Status']	= CDR_CREDITED;
+		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
+		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
+		{
+			// TODO: ERROR
+		}
+				
 		
 		// TODO: Report footer
 		$arrData['<Total>']		= $intTotal;

@@ -123,6 +123,8 @@ define("CDR_RERATE"						, 160);
 define("CDR_TOTALS_UPDATE_FAILED"		, 155);
 define("CDR_TEMP_INVOICE"				, 198);
 define("CDR_INVOICED"					, 199);
+define("CDR_TEMP_CREDIT"				, 170);
+define("CDR_CREDITED"					, 171);
 
 // CDR File Handling (Range is 200-299)
 define("CDRFILE_WAITING"			, 200);
@@ -695,4 +697,6 @@ define("PAYMENT_TYPE_BPAY"			, 2);
 define("PAYMENT_TYPE_CHEQUE"		, 3);
 define("PAYMENT_TYPE_SECUREPAY"		, 4);
 
+// Charge Types/Codes
+define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
 ?>
