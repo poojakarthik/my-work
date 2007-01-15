@@ -243,6 +243,8 @@ foreach ($arrFileContents as $strLine)
 		case 29:
 			// Graph Footer
 			// Data is only for validation
+			
+			$odf->ezTable($arrGraphData);
 			break;
 		case 30:
 			// Vertical Breakdown Bargraph Column Header
