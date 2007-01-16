@@ -508,12 +508,12 @@
 						{
 							$strValue = "0";
 						}
-						$strTemp = sprintf("%0".$arrField['Length']."d", ((int)$strValue));
+						$strTemp = sprintf("% ".$arrField['Length']."d", ((int)$strValue));
 						if(substr($strValue, 0, 1) == "-")
 						{
 							$strTemp = "-".substr($strTemp, 1);
 						}
-						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_LEFT);
+						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_CHAR:
 						if ($strValue == NULL)
@@ -534,7 +534,7 @@
 						{
 							$strValue = "0";
 						}
-						$strValue = str_pad((float)$strValue, $arrField['Length'], "0", STR_PAD_LEFT);
+						$strValue = str_pad((float)$strValue, $arrField['Length'], " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTDATE:
 						if (!$strValue)
@@ -560,21 +560,21 @@
 					case BILL_TYPE_DURATION:
 						if ($strValue == NULL)
 						{
-							$strValue = "000:00:00";
+							$strValue = "0:00:00";
 						}
-						$strValue = str_pad($strValue, 9, "0", STR_PAD_LEFT);
+						$strValue = str_pad($strValue, 9, " ", STR_PAD_LEFT);
 						break;
 					case BILL_TYPE_SHORTCURRENCY:
 						if (!$strValue)
 						{
 							$strValue = "0";
 						}
-						$strTemp = sprintf("%011.2f", ((float)$strValue));
+						$strTemp = sprintf("% 11.2f", ((float)$strValue));
 						if(substr($strValue, 0, 1) == "-")
 						{
 							$strTemp = "-".substr($strTemp, 1);
 						}
-						$strValue = str_pad($strTemp, 11, "0", STR_PAD_LEFT);
+						$strValue = str_pad($strTemp, 11, " ", STR_PAD_LEFT);
 						break;
 					default:
 						// Unknown Data Type
