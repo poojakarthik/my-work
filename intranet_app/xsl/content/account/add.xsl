@@ -56,7 +56,7 @@
 			</xsl:choose>
 			<div class="Seperator"></div>
 			
-			<h2 class="Account">General Account Information</h2>
+			<h2 class="Account">General Account Details</h2>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -254,7 +254,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2 class="Invoice">Billing Information</h2>
+			<h2 class="Invoice">Billing Details</h2>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -522,7 +522,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2 class="Contact">Primary Contact Information</h2>
+			<h2 class="Contact">Primary Contact Details</h2>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -560,7 +560,7 @@
 								<td><input type="radio" name="Select_Contact" value="0" id="Select_Contact:FALSE" /></td>
 								<th>
 									<label for="Select_Contact:FALSE">
-										Create a new Contact using the following information:
+										Create a new Contact using the following details:
 									</label>
 								</th>
 							</tr>

@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_NOTE | MODULE_ACCOUNT_GROUP | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CONTACT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_NOTE | MODULE_ACCOUNT_GROUP | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CONTACT | MODULE_EMPLOYEE;
 	
 	// call application
 	require ('config/application.php');
@@ -83,7 +83,7 @@
 	}
 	
 	// Get the Notes Controller
-	$nosNotes = new Notes ();
+	$nosNotes = new Notes;
 	$nosNotes->Add (
 		Array (
 			'Note'			=> $_POST ['Note'],

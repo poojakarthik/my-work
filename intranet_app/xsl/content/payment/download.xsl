@@ -7,7 +7,7 @@
 		<h1>Download Payment Summary</h1>
 		<div class="Seperator"></div>
 		
-		<h2 class="Invoice">Payment Information</h2>
+		<h2 class="Invoice">Payment Details</h2>
 		<form method="post" action="payment_download.php">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">

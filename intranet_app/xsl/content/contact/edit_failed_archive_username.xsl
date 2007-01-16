@@ -7,7 +7,7 @@
 		<h1>Contact Reactivation Failed</h1>
 		<div class="Seperator"></div>
 		
-		<h2>Error Information</h2>
+		<h2>Error Details</h2>
 		<div class="Seperator"></div>
 		<p>
 			Your attempt to reactivate this particular contact has failed because
@@ -35,12 +35,12 @@
 		
 		<div class="Seperator"></div>
 		
-		<h2>Additional Information</h2>
+		<h2>Additional Details</h2>
 		<div class="Seperator"></div>
 		
 		<div class="MsgNotice">
 			<strong>Notice :</strong>
-			The other information relating to this account <strong>has been successfully updated</strong>.
+			The other details relating to this account <strong>has been successfully updated</strong>.
 		</div>
 		<div class="Seperator"></div>
 		

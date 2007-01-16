@@ -487,7 +487,7 @@
 				
 				<div class="Seperator"></div>
 				
-				<!-- Credit Card Information -->
+				<!-- Credit Card Details -->
 				<xsl:if test="/Response/ui-answers/Account/CreditCardDetails/CreditCard">
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
@@ -572,8 +572,8 @@
 			<div class="Seperator"></div>
 			
 			<div class="MsgNotice" style="width: 600px">
-				You cannot continue unless you verify the customer information above.
-				When you have verified enough information, the button to Continue will
+				You cannot continue unless you verify the customer details above.
+				When you have verified enough of their details, the button to Continue will
 				change colour, indicating that you are allowing the person through 
 				to their account.
 			</div>

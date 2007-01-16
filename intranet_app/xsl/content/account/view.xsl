@@ -8,6 +8,7 @@
 	<xsl:template name="Content">
 		<h1>View Account Details</h1>
 		
+		<script language="javascript" src="js/note_add.js"></script>
 		<script language="javascript" src="js/notes_popup.js"></script>
 		
 		<table border="0" cellpadding="0" cellspacing="0">
@@ -183,8 +184,8 @@
 					<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
 							<th></th>
-							<th>Contact Information</th>
-							<th>Options</th>
+							<th>Contact Details</th>
+							<th>Actions</th>
 						</tr>
 						<xsl:for-each select="/Response/Contacts/Contact">
 							<tr>
@@ -294,7 +295,7 @@
 					
 					<h2 class="Notes">Account Notes</h2>
 					
-					<form method="post" action="note_add.php">
+					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
 						<input type="hidden" name="AccountGroup">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>

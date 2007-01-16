@@ -19,7 +19,7 @@
 		</xsl:if>
 		
 		
-		<h2 class="Account">Account Information</h2>
+		<h2 class="Account">Account Details</h2>
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
 				<table border="0" cellpadding="5" cellspacing="0">
@@ -50,7 +50,7 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<h2 class="Invoice">Payment Information</h2>
+		<h2 class="Invoice">Payment Details</h2>
 		<form method="post" action="payment_add.php">
 			<xsl:if test="/Response/Account">
 				<input type="hidden" name="Account">

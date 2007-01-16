@@ -40,7 +40,7 @@
 						You must search for a First and Last name for a Contact.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Empty'">
-						You did not enter any information to search for.
+						Your search details are blank. Please enter criteria to search for.
 					</xsl:when>
 				</xsl:choose>
 			</div>

@@ -20,7 +20,7 @@
 							<xsl:text>account_view.php?Id=</xsl:text>
 							<xsl:value-of select="/Response/Account/Id" />
 						</xsl:attribute>
-						<xsl:text>information about this Account</xsl:text>
+						<xsl:text>Details about this Account</xsl:text>
 					</a>.
 				</li>
 			</xsl:if>
@@ -33,7 +33,7 @@
 							<xsl:text>service_view.php?Id=</xsl:text>
 							<xsl:value-of select="/Response/Service/Id" />
 						</xsl:attribute>
-						<xsl:text>information about this Service</xsl:text>
+						<xsl:text>Details about this Service</xsl:text>
 					</a>.
 				</li>
 			</xsl:if>
@@ -46,7 +46,7 @@
 							<xsl:text>contact_view.php?Id=</xsl:text>
 							<xsl:value-of select="/Response/Contact/Id" />
 						</xsl:attribute>
-						<xsl:text>information about this Contact</xsl:text>
+						<xsl:text>Details about this Contact</xsl:text>
 					</a>.
 				</li>
 			</xsl:if>

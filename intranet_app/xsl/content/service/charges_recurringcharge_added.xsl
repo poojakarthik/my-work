@@ -11,13 +11,13 @@
 		</p>
 		
 		<p>
-			You can now return to information
+			You can now return to 
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_view.php?Id=</xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
-				<xsl:text>about this service</xsl:text>
+				<xsl:text>Details about this Service</xsl:text>
 			</a>.
 		</p>
 	</xsl:template>

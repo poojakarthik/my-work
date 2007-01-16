@@ -63,6 +63,7 @@
 			$this->_BILLEXPRESS		= $this->Push (new PaymentType (PAYMENT_TYPE_BILLEXPRESS));
 			$this->_BPAY			= $this->Push (new PaymentType (PAYMENT_TYPE_BPAY));
 			$this->_CHEQUE			= $this->Push (new PaymentType (PAYMENT_TYPE_CHEQUE));
+			$this->_CREDIT_CARD		= $this->Push (new PaymentType (PAYMENT_TYPE_CREDIT_CARD));
 			$this->_SECUREPAY		= $this->Push (new PaymentType (PAYMENT_TYPE_SECUREPAY));
 			
 			$this->setValue ($intPaymentType);
@@ -92,6 +93,7 @@
 				case PAYMENT_TYPE_BILLEXPRESS:		$this->Select ($this->_BILLEXPRESS);	return true;
 				case PAYMENT_TYPE_BPAY:				$this->Select ($this->_BPAY);			return true;
 				case PAYMENT_TYPE_CHEQUE:			$this->Select ($this->_CHEQUE);			return true;
+				case PAYMENT_TYPE_CREDIT_CARD:		$this->Select ($this->_CREDIT_CARD);	return true;
 				case PAYMENT_TYPE_SECUREPAY:		$this->Select ($this->_SECUREPAY);		return true;
 				default:							return false;
 			}

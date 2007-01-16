@@ -8,7 +8,7 @@
 	<xsl:template name="Content">
 		<h1>Payment Details</h1>
 		
-		<h2>Invoice Specific Information</h2>
+		<h2>Invoice Specific Details</h2>
 		<div class="Seperator"></div>
 		
 		<div class="Filter-Form">
@@ -37,7 +37,7 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<h2>Payment Information</h2>
+		<h2>Payment Details</h2>
 		<div class="Seperator"></div>
 		
 		<div class="Filter-Form">

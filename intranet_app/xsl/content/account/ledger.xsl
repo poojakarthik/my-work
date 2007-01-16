@@ -14,7 +14,7 @@
 		<h1>Account Ledger</h1>
 		<div class="Seperator"></div>
 		
-		<h2 class="Account">Account Information</h2>
+		<h2 class="Account">Account Details</h2>
 		<div class="Seperator"></div>
 		
 		<div class="Filter-Form">
@@ -143,7 +143,7 @@
 				<th>Bill Month</th>
 				<th>Bill Year</th>
 				<th>Bill Name</th>
-				<th>Options</th>
+				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoices-PDFs/Invoice-PDF">
 				<tr>
@@ -201,7 +201,7 @@
 				<th width="30">#</th>
 				<th>Invoice #</th>
 				<th class="Currency">Payment Amount</th>
-				<th>Options</th>
+				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/AccountPayments/rangeSample/InvoicePayment">
 				<tr>
@@ -234,7 +234,7 @@
 								<xsl:value-of select="./Id" />
 								<xsl:text>')</xsl:text>
 							</xsl:attribute>
-							Payment Information
+							Payment Details
 						</a>
 					</td>
 				</tr>

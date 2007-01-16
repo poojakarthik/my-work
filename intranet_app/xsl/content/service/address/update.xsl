@@ -9,6 +9,7 @@
 		<h1>Service Address Details</h1>
 		
 		<script language="javascript" src="js/ABN.js"></script>
+		<script language="javascript" src="js/note_add.js"></script>
 		<script language="javascript" src="js/notes_popup.js"></script>
 		<script language="javascript" src="js/provisioning_popup.js"></script>
 		
@@ -98,7 +99,7 @@
 							</xsl:attribute>
 						</input>
 						
-						<h2 class="Invoice">Billing Information</h2>
+						<h2 class="Invoice">Billing Details</h2>
 						<div class="Filter-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
@@ -185,7 +186,7 @@
 						</div>
 						<div class="Seperator"></div>
 						
-						<h2 class="Contact">End User Information</h2>
+						<h2 class="Contact">End User Details</h2>
 						<div class="Filter-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
@@ -337,7 +338,7 @@
 						</div>
 						<div class="Seperator"></div>
 						
-						<h2 class="Account">Company Information</h2>
+						<h2 class="Account">Company Details</h2>
 						<div class="Filter-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
@@ -376,7 +377,7 @@
 						</div>
 						<div class="Seperator"></div>
 						
-						<h2 class="Service">Service Information</h2>
+						<h2 class="Service">Service Details</h2>
 						<div class="Filter-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
@@ -801,7 +802,7 @@
 				
 					<h2 class="Notes">Service Notes</h2>
 					
-					<form method="post" action="note_add.php">
+					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
 						<input type="hidden" name="AccountGroup">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>

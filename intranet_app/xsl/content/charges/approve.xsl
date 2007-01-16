@@ -21,7 +21,7 @@
 					<th>Account</th>
 					<th>Entered By</th>
 					<th>Entered On</th>
-					<th>Options</th>
+					<th>Actions</th>
 				</tr>
 				<xsl:for-each select="/Response/Charges-Unapproved/Results/rangeSample/Charge">
 					<tr>

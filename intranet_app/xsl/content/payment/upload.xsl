@@ -4,10 +4,10 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Upload Payment Information</h1>
+		<h1>Upload Payment Details</h1>
 		<div class="Seperator"></div>
 		
-		<h2 class="Invoice">Payment Information</h2>
+		<h2 class="Invoice">Payment Details</h2>
 		<form method="post" action="payment_upload.php" enctype="multipart/form-data">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">

@@ -9,6 +9,7 @@
 		<h1>View Service Details</h1>
 		
 		<script language="javascript" src="js/ABN.js"></script>
+		<script language="javascript" src="js/note_add.js"></script>
 		<script language="javascript" src="js/notes_popup.js"></script>
 		<script language="javascript" src="js/provisioning_popup.js"></script>
 		
@@ -337,7 +338,7 @@
 				
 					<h2 class="Notes">Service Notes</h2>
 					
-					<form method="post" action="note_add.php">
+					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
 						<input type="hidden" name="AccountGroup">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>

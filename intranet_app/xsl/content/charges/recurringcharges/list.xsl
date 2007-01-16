@@ -16,7 +16,7 @@
 						<th>Description</th>
 						<th>Amount</th>
 						<th>Recursion</th>
-						<th>Options</th>
+						<th>Actions</th>
 					</tr>
 					<xsl:for-each select="/Response/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
 						<tr>

@@ -8,7 +8,7 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Land Line Service Address Information</h1>
+		<h1>Land Line Service Address Details</h1>
 		
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
@@ -65,13 +65,13 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Service Address Information</h2>
+			<h2>Service Address Details</h2>
 			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
-						<!-- Bill Information -->
+						<!-- Bill Details -->
 						<tr>
 							<td width="100"><strong><span class="Attention">Required</span></strong></td>
 							<th>
@@ -163,7 +163,7 @@
 							</td>
 						</tr>
 						
-						<!-- End User Information -->
+						<!-- End User Details -->
 						<tr>
 							<td><strong><span class="Attention">Required</span></strong></td>
 							<th>
@@ -319,7 +319,7 @@
 							</td>
 						</tr>
 						
-						<!-- Company Information -->
+						<!-- Company Details -->
 						<tr>
 							<td><strong><span class="Attention">Required</span></strong></td>
 							<th>
@@ -360,7 +360,7 @@
 							</td>
 						</tr>
 						
-						<!-- Service Information -->
+						<!-- Service Details -->
 						<tr>
 							<td></td>
 							<th>

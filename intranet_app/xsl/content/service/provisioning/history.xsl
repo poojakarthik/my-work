@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time"
 	xmlns:func="http://exslt.org/functions" xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date">
 	<xsl:import href="../../../lib/date-time.xsl" />
@@ -84,12 +83,12 @@
 					<td>
 						<xsl:choose>
 							<xsl:when test="./Direction = 1">
-								<img src="img/template/icon_movedown.png" title="Information was Received from the Carrier" 
-								alt="Information was Received from the Carrier" />
+								<img src="img/template/icon_movedown.png" title="Details were Received from the Carrier" 
+								alt="Details were Received from the Carrier" />
 							</xsl:when>
 							<xsl:otherwise>
-								<img src="img/template/icon_moveup.png" title="Information was Sent to the Carrier" 
-								alt="Information was Sent to the Carrier" />
+								<img src="img/template/icon_moveup.png" title="Details were Sent to the Carrier" 
+								alt="Details were Sent to the Carrier" />
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>

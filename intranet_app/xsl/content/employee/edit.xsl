@@ -8,7 +8,7 @@
 		
 		<form method="POST" action="employee_edit.php">
 			
-			<h2>Personal Information</h2>
+			<h2>Personal Details</h2>
 			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">

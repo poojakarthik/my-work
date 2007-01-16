@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
@@ -9,12 +8,13 @@
 	<xsl:template name="Content">
 		<h1>View Contact Details</h1>
 		
+		<script language="javascript" src="js/note_add.js"></script>
 		<script language="javascript" src="js/notes_popup.js"></script>
 		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td>
-					<h2 class="Contact">Contact Information</h2>
+					<h2 class="Contact">Contact Details</h2>
 
 					<div class="Filter-Form">
 						<div class="Filter-Form-Content">
@@ -191,7 +191,7 @@
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td width="300" valign="top">
-					<h2 class="Options">General Options</h2>
+					<h2 class="Options">Contact Options</h2>
 					<ul>
 						<li>
 							<a>
@@ -207,7 +207,7 @@
 					
 					<h2 class="Notes">Contact Notes</h2>
 					
-					<form method="post" action="note_add.php">
+					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
 						<input type="hidden" name="AccountGroup">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>

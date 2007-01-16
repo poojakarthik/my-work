@@ -44,7 +44,7 @@
 				<th>Start Date/Time</th>
 				<th class="Currency">Duration</th>
 				<th class="Currency">Charge</th>
-				<th class="Currency">Options</th>
+				<th class="Currency">Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/CDRs-Unbilled/rangeSample/CDR">
 				<tr>

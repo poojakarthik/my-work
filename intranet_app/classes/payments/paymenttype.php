@@ -110,6 +110,10 @@
 					$strName = 'Cheque';
 					break;
 					
+				case PAYMENT_TYPE_CREDIT_CARD:
+					$strName = 'Credit Card';
+					break;
+					
 				case PAYMENT_TYPE_SECUREPAY:
 					$strName = 'Secure Pay';
 					break;

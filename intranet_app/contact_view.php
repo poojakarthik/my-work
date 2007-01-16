@@ -39,10 +39,10 @@
 	$acsAccounts->Sample ();
 	
 	// Note Types
-	$ntlNoteTypes = $Style->attachObject (new NoteTypes ());
+	$ntlNoteTypes = $Style->attachObject (new NoteTypes);
 	
 	// Notes
-	$nosNotes = $Style->attachObject (new Notes ());
+	$nosNotes = $Style->attachObject (new Notes);
 	$nosNotes->Constrain ('Contact', 'EQUALS', $cntContact->Pull ('Id')->getValue ());
 	$nosNotes->Sample ();
 	

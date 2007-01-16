@@ -35,13 +35,13 @@
 	}
 	
 	// Get Associated Services
-	$svsServices	= $Style->attachObject (new Services ());
+	$svsServices	= $Style->attachObject (new Services);
 	$svsServices->Constrain ('Account', '=', $_GET ['Id']);
 	$svsServices->Order ('FNN', TRUE);
 	$svsServices->Sample ();
 	
 	// Get information about Note Types
-	$ntsNoteTypes	= $Style->attachObject (new NoteTypes ());
+	$ntsNoteTypes	= $Style->attachObject (new NoteTypes);
 	
 	// Get Associated Notes
 	$nosNotes = $Style->attachObject (new Notes);

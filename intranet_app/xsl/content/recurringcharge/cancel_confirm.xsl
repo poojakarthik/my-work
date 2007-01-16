@@ -15,7 +15,7 @@
 			</input>
 			
 			<p>
-				If you would like to cancel this recurring charge, please confirm the information below:
+				If you would like to cancel this recurring charge, please confirm the details below:
 			</p>
 			
 			<div class="Seperator"></div>

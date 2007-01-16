@@ -696,6 +696,7 @@ define("PAYMENT_TYPE_BILLEXPRESS"	, 1);
 define("PAYMENT_TYPE_BPAY"			, 2);
 define("PAYMENT_TYPE_CHEQUE"		, 3);
 define("PAYMENT_TYPE_SECUREPAY"		, 4);
+define("PAYMENT_TYPE_CREDIT_CARD"	, 5);
 
 // Charge Types/Codes
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
