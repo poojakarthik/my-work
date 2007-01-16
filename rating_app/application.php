@@ -239,6 +239,9 @@ die();
 				continue;
 			}
 			
+			// set rate in CDR
+			$arrCDR['Rate'] = $this->_arrCurrentRate['Id'];
+			
 			if ($this->_arrCurrentRate['PassThrough'])
 			{
 				// Calculate Passthrough rate
@@ -347,6 +350,7 @@ die();
 			//$this->_rptRatingReport->AddMessage(MSG_OK, FALSE);
 			
 			// save CDR back to database
+			echo "{$arrCDR['Rate']} \n";
 			$arrCDR['Rate'] = $this->_arrCurrentRate['Id'];
 			$arrCDR['Charge'] = $this->_arrCurrentCDR['Charge'];
 			$arrCDR['Status'] = CDR_RATED;
