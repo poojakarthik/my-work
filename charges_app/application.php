@@ -241,7 +241,10 @@ die();
 						$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
 						$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 						$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0));
-						$this->_ubiRecurringCharge->Execute($arrCharge);
+						if ($this->_ubiRecurringCharge->Execute($arrCharge) === FALSE)
+						{
+							Debug($this->_ubiRecurringCharge->Error());
+						}
 						
 						// add to report
 						//TODO!!!! - different message (non-unique charge skipped)
@@ -253,13 +256,19 @@ die();
 					}
 				}
 
-				$this->_insAddToChargesTable->Execute($arrData);
+				if ($this->_insAddToChargesTable->Execute($arrData) === FALSE)
+				{
+					Debug($this->_insAddToChargesTable->Error());
+				}
 				
 				// update RecuringCharge Table
 				$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
 				$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
-				$this->_ubiRecurringCharge->Execute($arrCharge);
+				if ($this->_ubiRecurringCharge->Execute($arrCharge) === FALSE)
+				{
+					Debug($this->_ubiRecurringCharge->Error());
+				}
 				
 				// add to report
 				$this->_rptRecurringChargesReport->AddMessage(MSG_OK);
@@ -276,7 +285,8 @@ die();
 		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
 		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
 		{
-			// TODO: ERROR
+			// ERROR
+			Debug($updCDRSetStatus->Error());
 		}
 
 		// Get totals of CDR credits
@@ -289,7 +299,8 @@ die();
 		$selCDRCreditTotals = new StatementSelect("CDR", $arrColumns, "Credit = 1 AND Status = ".CDR_TEMP_CREDIT, NULL, NULL, "Service");
 		if ($selCDRCreditTotals->Execute() === FALSE)
 		{
-			// TODO: ERROR
+			// ERROR
+			Debug($selCDRCreditTotals->Error());
 		}
 		$arrCreditTotals = $selCDRCreditTotals->FetchAll();
 		
@@ -312,7 +323,10 @@ die();
 			$arrData['Service']			= $arrCreditTotal['Service'];
 			$arrData['Description']		.= $arrCreditTotal['Carrier'];
 			$arrData['Amount']			= $arrCreditTotal['Total'];
-			$insOneOffCredit->Execute($arrData);
+			if ($insOneOffCredit->Execute($arrData) === FALSE)
+			{
+				$insOneOffCredit->Error();
+			}
 		}
 
 		
@@ -321,11 +335,12 @@ die();
 		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
 		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
 		{
-			// TODO: ERROR
+			// ERROR
+			Debug($updCDRSetStatus->Error());
 		}
 				
 		
-		// TODO: Report footer
+		// Report footer
 		$arrData['<Total>']		= $intTotal;
 		$arrData['<Time>']		= $this->SplitWatch();
 		$arrData['<Passed>']	= $intPassed;
@@ -355,7 +370,12 @@ die();
 	function _GetCharges()
 	{
 		// get the next 1000 charges that need to be added
-		$this->_selGetCharges->Execute();
+		if ($this->_selGetCharges->Execute() === FALSE)
+		{
+			Debug($this->_selGetCharges->Error());
+			
+			return FALSE;
+		}
 		return $this->_selGetCharges->FetchAll();
 	}
  }
