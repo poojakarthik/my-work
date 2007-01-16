@@ -260,7 +260,10 @@ die();
 					$this->_arrCurrentDownloadFile['FileName'] 		= basename($strFileLocation);
 					$this->_arrCurrentDownloadFile['Carrier']		= $this->_arrCurrentModule['Carrier'];
 					$this->_arrCurrentDownloadFile['CollectedOn']	= New MySQLFunction("NOW()");
-					$intId = $insFileDownload->Execute($this->_arrCurrentDownloadFile);
+					if (($intId = $insFileDownload->Execute($this->_arrCurrentDownloadFile)) === FALSE)
+					{
+						Debug($insFileDownload->Error());
+					}
 					
 					// set current file Id
 					$this->_arrCurrentDownloadFile['Id'] = $intId;
@@ -269,7 +272,10 @@ die();
 					$this->Import($arrFiles);
 					
 					// record download in db (FileDownload) - status has now been changed
-					$ubiFileDownload->Execute($this->_arrCurrentDownloadFile);
+					if ($ubiFileDownload->Execute($this->_arrCurrentDownloadFile) === FALSE)
+					{
+						Debug($ubiFileDownload->Error());
+					}
 									
 					// increment counter
 					$intCounter++;
@@ -351,6 +357,11 @@ die();
 				$this->_arrCurrentImportFile['ImportedOn'] = new MySQLFunction("Now()");
 				if(!$this->_insFileImport->Execute($this->_arrCurrentImportFile))
 				{
+					if ($this->_insFileImport->Error())
+					{
+						Debug($this->_insFileImport->Error());
+					}
+					
 					$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
 					$this->AddToCollectionReport(MSG_IMPORT_FAILED, Array('<Reason>' => "Database Failure"));
 					$bolReturn = FALSE;
@@ -467,6 +478,11 @@ die();
 		$arrWhere['SHA1']		= $strHash;
 		if (!$this->_selIsUnique->Execute($arrWhere))
 		{
+			if ($this->_selIsUnique->Error())
+			{
+				Debug($this->_selIsUnique->Error());
+			}
+			
 			// file is unique
 			return $strHash;
 		}
