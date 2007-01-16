@@ -539,6 +539,12 @@ abstract class NormalisationModule
 	 	// set CDR
 	 	$this->_arrNormalisedData = $arrCDR;
 		
+		// not a credit by default
+		if (!$this->_arrNormalisedData['Credit'])
+		{
+			$this->_arrNormalisedData['Credit'] = 0;
+		}
+		
 		// set Default Context
 		$this->_intContext = 0;
 	 }
@@ -822,6 +828,7 @@ abstract class NormalisationModule
 	 	if(!isset($this->_arrNormalisedData['Units']) || !isset($this->_arrNormalisedData['Cost']))
 	 	{
 	 		// Either Units or Cost are not set yet
+			$this->_AppendCDR('Credit', 0);
 	 		return FALSE;
 	 	}
 	 	
