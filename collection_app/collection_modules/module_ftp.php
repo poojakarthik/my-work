@@ -231,6 +231,11 @@
 				// Check that we don't already have this file
 				if(!$this->_selFileExists->Execute(Array('filename' => key($this->_arrFileListing))))
 				{
+					if ($this->_selFileExists->Error())
+					{
+						Debug($this->_selFileExists->Error());
+					}
+					
 					// set download mode
 					if(strtolower(substr(key($this->_arrFileListing), -3)) == "zip")
 					{
