@@ -78,7 +78,7 @@ $arrChargeTotals	= Array();
 $arrGraphData		= Array();
 $arrServiceSummary	= Array();
 $arrItemisedTable	= Array();
-$intLastRecordType	= 19;
+$intLastRecordType	= 18;
 
 $i = 0;
 foreach ($arrFileContents as $strLine)
@@ -99,7 +99,7 @@ foreach ($arrFileContents as $strLine)
 		//---------------------------- FRONT PAGE ----------------------------//
 		case 10:
 			// Make sure that this record is expected
-			ExpectedRecordType($intLastRecordType, 19, $i);
+			ExpectedRecordType($intLastRecordType, 18, $i);
 			
 			// Invoice Header
 			// Init PDF File
