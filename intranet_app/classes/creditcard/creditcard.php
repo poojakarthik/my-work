@@ -74,6 +74,7 @@
 			parent::__construct ('CreditCard', $this->Pull ('Id')->getValue ());
 			
 			$this->Push (new dataString ('Last4Digits', substr (preg_replace ('/[\D]/', '', $this->Pull ('CardNumber')->getValue ()), -4)));
+			$this->Push (new CreditCardTypes ($this->Pull ('CardType')->getValue ()));
 		}
 	}
 	

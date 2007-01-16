@@ -190,6 +190,11 @@
 					$_FIELD ['ObLib'] = "dataFloat";
 				}
 				
+				if (preg_match ("/decimal/", $_FIELD ['Type'])) {
+					$_FIELD ['RefType'] = "d";
+					$_FIELD ['ObLib'] = "dataFloat";
+				}
+				
 				if (preg_match ("/enum/", $_FIELD ['Type'])) {
 					$_FIELD ['RefType'] = "s";
 					$_FIELD ['ObLib'] = "dataString";

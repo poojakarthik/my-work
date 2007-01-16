@@ -21,8 +21,6 @@
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archive');
 	
-	
-	
 	try
 	{
 		// Get the Account
@@ -38,7 +36,12 @@
 	$svsServices	= $Style->attachObject (new Services);
 	$svsServices->Constrain ('Account', '=', $_GET ['Id']);
 	$svsServices->Order ('FNN', TRUE);
-	$svsServices->Sample ();
+	$oblsamServices = $svsServices->Sample ();
+	
+	foreach ($oblsamServices as $srvService)
+	{
+		$srvService->Plan ();
+	}
 	
 	// Get information about Note Types
 	$ntsNoteTypes	= $Style->attachObject (new NoteTypes);

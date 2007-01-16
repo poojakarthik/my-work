@@ -90,7 +90,7 @@
 		 * @method
 		 */
 		
-		function getAccount ($intId)
+		public function getAccount ($intId)
 		{
 			// Pull all the account information and Store it ...
 			$selAccount = new StatementSelect ('Account', 'Id', 'AccountGroup = <AccountGroup> AND Id = <Id>');
@@ -119,7 +119,7 @@
 		 * @method
 		 */
 		
-		function getContacts ()
+		public function getContacts ()
 		{
 			// Start the array
 			$oblarrContacts = new dataArray ('Contacts', 'Contact');
@@ -134,6 +134,107 @@
 			}
 			
 			return $oblarrContacts;
+		}
+		
+		//------------------------------------------------------------------------//
+		// getDirectDebits
+		//------------------------------------------------------------------------//
+		/**
+		 * getDirectDebits()
+		 *
+		 * Get all associated Direct Debit Details
+		 *
+		 * Get all associated Direct Debit Details. Direct Debit Details
+		 * is not stored in a Search object for security reasons. Therefore, 
+		 * a manual search must be done.
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function getDirectDebits ()
+		{
+			// Start the array
+			$oblarrDDRs = new dataArray ('DirectDebits', 'DirectDebit');
+			
+			// Pull all the active contacts ...
+			$selDDR = new StatementSelect ('DirectDebit', 'Id', 'AccountGroup = <AccountGroup> AND Archived = 0');
+			$selDDR->Execute (Array ('AccountGroup' => $this->Pull ('Id')->getValue ()));
+			
+			foreach ($selDDR->FetchAll () as $arrDDR)
+			{
+				$oblarrDDRs->Push (new DirectDebit ($arrDDR ['Id']));
+			}
+			
+			return $oblarrDDRs;
+		}
+		
+		//------------------------------------------------------------------------//
+		// AddDirectDebit
+		//------------------------------------------------------------------------//
+		/**
+		 * AddDirectDebit()
+		 *
+		 * Add a new Direct Debit Account to this Acocunt Group
+		 *
+		 * Add a new Direct Debit Account to this Acocunt Group
+		 *
+		 * @param	Array			$arrData		Associative array of Direct Debit Information
+		 * @return	DirectDebit
+		 *
+		 * @method
+		 */
+		
+		public function AddDirectDebit ($arrData)
+		{
+			$arrDirectDebit = Array (
+				"AccountGroup"	=> $this->Pull ('Id')->getValue (),
+				"BankName"		=> $arrData ['BankName'],
+				"BSB"			=> $arrData ['BSB'],
+				"AccountNumber" => $arrData ['AccountNumber'],
+				"AccountName"	=> $arrData ['AccountName'],
+				"Archived"		=> 0
+			);
+			
+			$insDirectDebit = new StatementInsert ('DirectDebit');
+			$intDirectDebit = $insDirectDebit->Execute ($arrDirectDebit);
+			
+			return new DirectDebit ($intDirectDebit);
+		}
+		
+		//------------------------------------------------------------------------//
+		// getCreditCards
+		//------------------------------------------------------------------------//
+		/**
+		 * getCreditCards()
+		 *
+		 * Get all associated Credit Card Details
+		 *
+		 * Get all associated Credit Card Details. Credit Card Details
+		 * is not stored in a Search object for security reasons. Therefore, 
+		 * a manual search must be done.
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function getCreditCards ()
+		{
+			// Start the array
+			$oblarrCCs = new dataArray ('CreditCards', 'CreditCard');
+			
+			// Pull all the active contacts ...
+			$selCC = new StatementSelect ('CreditCard', 'Id', 'AccountGroup = <AccountGroup> AND Archived = 0');
+			$selCC->Execute (Array ('AccountGroup' => $this->Pull ('Id')->getValue ()));
+			
+			foreach ($selCC->FetchAll () as $arrCC)
+			{
+				$oblarrCCs->Push (new CreditCard ($arrCC ['Id']));
+			}
+			
+			return $oblarrCCs;
 		}
 	}
 	

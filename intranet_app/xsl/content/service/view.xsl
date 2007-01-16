@@ -266,6 +266,15 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
+									<xsl:text>recurring_charge_list.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+								<xsl:text>View Recurring Charges</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
 									<xsl:text>service_plan.php?Service=</xsl:text>
 									<xsl:value-of select="/Response/Service/Id" />
 								</xsl:attribute>

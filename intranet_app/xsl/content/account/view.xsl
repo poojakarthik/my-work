@@ -420,9 +420,9 @@
 		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Service Id</th>
 				<th>Service Number</th>
 				<th>Service Type</th>
+				<th>Plan Name</th>
 				<th>Archive Status</th>
 				<th>Actions</th>
 			</tr>
@@ -440,9 +440,18 @@
 					</xsl:attribute>
 					
 					<td><xsl:value-of select="/Response/Services/Results/rangeStart + position()" />.</td>
-					<td><xsl:value-of select="./Id" /></td>
 					<td><xsl:value-of select="./FNN" /></td>
 					<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
+					<td>
+						<xsl:choose>
+							<xsl:when test="./RatePlan">
+								<xsl:value-of select="./RatePlan/Name" />
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><span class="Attention">No Plan Selected</span></strong>
+							</xsl:otherwise>
+						</xsl:choose>
+					</td>
 					<td>
 						<xsl:choose>
 							<xsl:when test="./ClosedOn/year">

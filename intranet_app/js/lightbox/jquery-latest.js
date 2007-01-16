@@ -805,6 +805,7 @@ jQuery.extend({
 
 			// :not() is a special case that can be optimized by
 			// keeping it out of the expression list
+			
 			if ( m[1] == ":" && m[2] == "not" )
 				r = jQuery.filter(m[3],r,false).r;
 

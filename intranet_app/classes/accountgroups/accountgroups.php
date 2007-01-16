@@ -148,16 +148,8 @@
 			
 			if ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
 			{
-				$arrDirectDebit = Array (
-					"AccountGroup"	=> $acgAccountGroup->Pull ('Id')->getValue (),
-					"BankName"		=> $arrDetails ['DirectDebit']['BankName'],
-					"BSB"			=> $arrDetails ['DirectDebit']['BSB'],
-					"AccountNumber" => $arrDetails ['DirectDebit']['AccountNumber'],
-					"AccountName"	=> $arrDetails ['DirectDebit']['AccountName']
-				);
-				
-				$insDirectDebit = new StatementInsert ('DirectDebit');
-				$intDirectDebit = $insDirectDebit->Execute ($arrDirectDebit);
+				$ddrDirectDebit = $acgAccountGroup->AddDirectDebit ($arrDetails ['DirectDebit']);
+				$intDirectDebit = $ddrDirectDebit->Pull ('Id')->getValue ();
 			}
 			
 			// Add the Account
@@ -174,7 +166,7 @@
 				'Country'			=> 'AU',
 				'BillingType'		=> $arrDetails ['Account']['BillingType'],			// (CONSTANT) Account, Credit Card or Direct Debit.
 				'PrimaryContact'	=> ($cntContact !== null) ? $cntContact : null,
-				'CustomerGroup'	=> $arrDetails ['Account']['CustomerGroup'],
+				'CustomerGroup'		=> $arrDetails ['Account']['CustomerGroup'],
 				'CreditCard'		=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD) ? $intCreditCard : null,
 				'DirectDebit'		=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT) ? $intDirectDebit : null, 
 				'AccountGroup'		=> $acgAccountGroup->Pull ('Id')->getValue (),
