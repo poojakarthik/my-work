@@ -183,6 +183,11 @@
 		if (!$qryTruncateInvoiceOutput->Execute("InvoiceOutput"))
 		{
 			// There was an error
+			$strError = $qryTruncateInvoiceOutput->Error();
+			if($strError)
+			{
+				Debug($strError);
+			}
 			return FALSE;
 		}
 		
@@ -212,7 +217,12 @@
 		// HEADER
 		// get details from invoice & customer
 		$arrWhere['Account'] = $arrInvoiceDetails['Account'];
-		$this->_selCustomerDetails->Execute($arrWhere);
+		
+		if ($this->_selCustomerDetails->Execute($arrWhere) === FALSE)
+		{
+			Debug($this->_selCustomerDetails->Error());
+		}
+		
 		$bolHasBillHistory	= $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account'])) ? TRUE : FALSE;
 		$arrCustomerData	= $this->_selCustomerDetails->Fetch();
 		$arrBillHistory		= $this->_selLastBills->FetchAll();
@@ -334,6 +344,10 @@
 		// SUMMARY SERVICES
 		// get details from servicetype totals
 		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		if ($intCount === FALSE)
+		{
+			Debug($this->_selServices->Error());
+		}
 		$arrServices = $this->_selServices->FetchAll();
 		
 		// build output
@@ -342,7 +356,11 @@
 		foreach($arrServices as $arrService)
 		{
 			// The individual RecordTypes for each Service
-			$intCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id']));
+			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id']));
+			if ($intSummaryCount === FALSE)
+			{
+				Debug($this->_selServiceSummaries->Error());
+			}
 			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
 
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
@@ -365,6 +383,10 @@
 		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
 		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		if ($intItemisedCount === FALSE)
+		{
+			Debug($this->_selItemisedCalls->Error());
+		}
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
 		// reset counters
 		$strCurrentService		= "";
@@ -417,7 +439,11 @@
 					// Get the RecordType total
 					$arrSelectData['Account']			= $arrInvoiceDetails['Account'];
 					$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
-					$this->_selRecordTypeTotal->Execute($arrSelectData);
+
+					if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
+					{
+						Debug($this->_selRecordTypeTotal->Error());
+					}
 					$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
 					$fltRecordTypeTotal	= $arrRecordTypeTotal['RecordTypeTotal'];
 				}
@@ -598,9 +624,10 @@
 		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 		$arrWhere['Account']	= $arrInvoiceDetails['Account'];
 		$arrWhere['Data']		= $strFileContents;
-		if (!$this->_insInvoiceOutput->Execute($arrWhere))
+		if ($this->_insInvoiceOutput->Execute($arrWhere) === FALSE)
 		{
 			// Error
+			Debug($this->_insInvoiceOutput->Error());
 			return FALSE;			
 		}
 		return TRUE;
@@ -626,7 +653,10 @@
  	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
  	{
 		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
-		$selMetaData->Execute();
+		if ($selMetaData->Execute() === FALSE)
+		{
+			Debug($selMetaData->Error());
+		}
 		$arrMetaData = $selMetaData->Fetch();
 		
 		if($arrMetaData['Invoices'] == 0)
@@ -679,7 +709,7 @@
 		{
 			unlink($strFilename);
 		}
-		if (!$qryBuildFile->Execute($strQuery))
+		if ($qryBuildFile->Execute($strQuery) === FALSE)
 		{
 			Debug($qryBuildFile->Error());
 		}
