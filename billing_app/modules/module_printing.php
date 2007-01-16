@@ -484,7 +484,7 @@
 		$strFileContents = "";
 		$i = 0;
 		// Loop through Records
-		foreach ($arrFileData as $arrRecord)
+		foreach ($arrFileData as $strKey=>$arrRecord)
 		{
 			$i++;
 			$t = 0;
@@ -580,7 +580,7 @@
 					default:
 						// Unknown Data Type
 						Debug("BIG FLOPPY DONKEY DICK (Unknown Bill Printing Data Type: {$arrField['Type']})");
-						Debug($arrField);
+						Debug($arrRecord);
 						return FALSE;
 				}
 				
