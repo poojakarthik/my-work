@@ -116,32 +116,58 @@
 			<p>
 				<table border="0" cellpadding="3" cellspacing="0" width="100%">
 					<tr>
-						<td width="33%" align="left">
-							<xsl:if test="/Response/CDRs-Unbilled/rangePage &gt; 1">
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>service_unbilled.php</xsl:text>
-										
-										<xsl:text>?Id=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-										
-										<xsl:text>&amp;rangeLength=</xsl:text>
-										<xsl:value-of select="/Response/CDRs-Unbilled/rangeLength" />
-										
-										<xsl:text>&amp;rangePage=</xsl:text>
-										<xsl:value-of select="/Response/CDRs-Unbilled/rangePage - 1" />
-									</xsl:attribute>
-									<xsl:text>- Prev</xsl:text>
-								</a>
-							</xsl:if>
+						<td width="10%" align="left">
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Unbilled/rangePage != 1">
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>service_unbilled.php</xsl:text>
+											
+											<xsl:text>?Id=</xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+											
+											<xsl:text>&amp;rangeLength=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Unbilled/rangeLength" />
+											
+											<xsl:text>&amp;rangePage=1</xsl:text>
+										</xsl:attribute>
+										<xsl:text>- First</xsl:text>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									- First
+								</xsl:otherwise>
+							</xsl:choose>
 						</td>
-						<td width="34%" align="center">
+						<td width="10%" align="left">
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Unbilled/rangePage &gt; 1">
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>service_unbilled.php</xsl:text>
+											
+											<xsl:text>?Id=</xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+											
+											<xsl:text>&amp;rangeLength=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Unbilled/rangeLength" />
+											
+											<xsl:text>&amp;rangePage=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Unbilled/rangePage - 1" />
+										</xsl:attribute>
+										<xsl:text>- Prev</xsl:text>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									- Prev
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td width="60%" align="center">
 							Page <xsl:value-of select="/Response/CDRs-Unbilled/rangePage" />
 							of <xsl:value-of select="/Response/CDRs-Unbilled/rangePages" /><br />
-							Showing  
-							<xsl:value-of select="/Response/CDRs-Unbilled/rangeStart + 1" />
+							Showing <xsl:value-of select="/Response/CDRs-Unbilled/rangeStart + 1" />
 							to
-							
 							<xsl:choose>
 								<xsl:when test="/Response/CDRs-Unbilled/rangeLength + /Response/CDRs-Unbilled/rangeStart &gt; /Response/CDRs-Unbilled/collationLength">
 									<xsl:value-of select="/Response/CDRs-Unbilled/collationLength" />
@@ -150,28 +176,55 @@
 									<xsl:value-of select="/Response/CDRs-Unbilled/rangeStart + /Response/CDRs-Unbilled/rangeLength" />
 								</xsl:otherwise>
 							</xsl:choose>
-							
-							of
-							<xsl:value-of select="/Response/CDRs-Unbilled/collationLength" />
+							of <xsl:value-of select="/Response/CDRs-Unbilled/collationLength" />
 						</td>
-						<td width="33%" align="right">
-							<xsl:if test="/Response/CDRs-Unbilled/rangePage &lt; /Response/CDRs-Unbilled/rangePages">
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>service_unbilled.php</xsl:text>
-										
-										<xsl:text>?Id=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-										
-										<xsl:text>&amp;rangeLength=</xsl:text>
-										<xsl:value-of select="/Response/CDRs-Unbilled/rangeLength" />
-										
-										<xsl:text>&amp;rangePage=</xsl:text>
-										<xsl:value-of select="/Response/CDRs-Unbilled/rangePage + 1" />
-									</xsl:attribute>
-									<xsl:text>Next -</xsl:text>
-								</a>
-							</xsl:if>
+						<td width="10%" align="right">
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Unbilled/rangePage &lt; /Response/CDRs-Unbilled/rangePages">
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>service_unbilled.php</xsl:text>
+											
+											<xsl:text>?Id=</xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+											
+											<xsl:text>&amp;rangeLength=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Unbilled/rangeLength" />
+											
+											<xsl:text>&amp;rangePage=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Unbilled/rangePage + 1" />
+										</xsl:attribute>
+										<xsl:text>Next -</xsl:text>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									Next -
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td width="10%" align="right">
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Unbilled/rangePage != /Response/CDRs-Unbilled/rangePages">
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>service_unbilled.php</xsl:text>
+											
+											<xsl:text>?Id=</xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+											
+											<xsl:text>&amp;rangeLength=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Unbilled/rangeLength" />
+											
+											<xsl:text>&amp;rangePage=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Unbilled/rangePages" />
+										</xsl:attribute>
+										<xsl:text>Last -</xsl:text>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									Last -
+								</xsl:otherwise>
+							</xsl:choose>
 						</td>
 					</tr>
 				</table>

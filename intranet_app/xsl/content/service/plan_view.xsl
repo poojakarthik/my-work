@@ -116,7 +116,7 @@
 										</option>
 									</xsl:for-each>
 								</select>
-								<input type="button" value="View Plan Details &#0187;" class="input-submit-disabled">
+								<input type="button" value="View Plan Details &#0187;" class="input-submit">
 									<xsl:attribute name="onclick">
 										<xsl:text>return openPopup(</xsl:text>
 											<xsl:text>'rates_plan_view.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value</xsl:text>

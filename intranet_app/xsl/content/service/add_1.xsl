@@ -52,27 +52,12 @@
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
-									<xsl:with-param name="field" select="string('FNN')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<input type="text" name="FNN" class="input-string">
-									<xsl:attribute name="value">
-										<xsl:value-of select="/Response/Service/FNN" />
-									</xsl:attribute>
-								</input>
-							</td>
-						</tr>
-						<tr>
-							<th class="JustifiedWidth">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Service')" />
 									<xsl:with-param name="field" select="string('ServiceType')" />
 								</xsl:call-template>
 							</th>
 							<td>
 								<select name="ServiceType">
-									<xsl:for-each select="/Response/Service/ServiceTypes/ServiceType">
+									<xsl:for-each select="/Response/ui-values/ServiceTypes/ServiceType">
 										<option>
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
