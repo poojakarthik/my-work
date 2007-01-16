@@ -461,7 +461,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 	$arrRecordDefine = NULL;
 	foreach ($GLOBALS['FileFormat'] as $arrRecordType)
 	{
-		if ($arrRecordType['RecordType']['Value'] == $strRecordType)
+		if ((int)$arrRecordType['RecordType']['Value'] == (int)$strRecordType)
 		{
 			$arrRecordDefine = $arrRecordType;
 			break;
