@@ -485,8 +485,9 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 		switch ($strValue['Type'])
 		{
 			case BILL_TYPE_INTEGER:
-				$strRegex = "/^\d{".$strValue['Length']."}$/";
-				if (!preg_match($strRegex, $mixData))
+				$strInt = ltrim($mixData, " ");
+				$strRegex = "/^\d{".strlen($strInt)."}$/";
+				if (!preg_match($strRegex, $strInt))
 				{
 					Debug("'$mixData'");
 					return "Data is not of type BILL_TYPE_INTEGER in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
@@ -510,8 +511,9 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				}		
 				break;
 			case BILL_TYPE_FLOAT:
+				$strFloat = ltrim($mixData, " ");
 				$strRegex = "/^\d+(\.\d+)?$/";
-				if (!preg_match($strRegex, $mixData) || strlen($mixData) > $strValue['Length'])
+				if (!preg_match($strRegex, $strFloat) || strlen($mixData) > $strValue['Length'])
 				{
 					// Not a number - invalid
 					Debug("'$mixData'");
@@ -544,16 +546,18 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				}
 				break;
 			case BILL_TYPE_DURATION:
-				$strRegex = "/^\d{3}:\d{2}:\d{2}$/";
-				if (!preg_match($strRegex, $mixData))
+				$strDuration = ltrim($mixData, " ");
+				$strRegex = "/^\d{1,3}:\d{2}:\d{2}$/";
+				if (!preg_match($strRegex, $mixData) || strlen($mixData) > $strValue['Length'])
 				{
 					Debug("'$mixData'");
 					return "Data is not of type BILL_TYPE_DURATION in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}
 				break;
 			case BILL_TYPE_SHORTCURRENCY:
+				$strCurrency = ltrim($mixData, " ");
 				$strRegex = "/^-?\d+\.\d{2}$/";	// FIXME: Remove -? in final version
-				if (!preg_match($strRegex, $mixData) || strlen($mixData) > $strValue['Length'])
+				if (!preg_match($strRegex, $strCurrency) || strlen($mixData) > $strValue['Length'])
 				{
 					// Not a number - invalid
 					Debug("'$mixData'");
