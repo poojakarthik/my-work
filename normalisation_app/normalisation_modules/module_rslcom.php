@@ -285,7 +285,8 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		
 		// Cost
 		$mixValue						= $this->_FetchRawCDR('Price');
-		$mixValue						= str_replace($mixValue, '','$');
+		echo "$mixValue \n";
+		$mixValue						= str_replace('$', '', $mixValue);
 		echo "$mixValue \n";
 		$this->_AppendCDR('Cost', (float)$mixValue);
 		
