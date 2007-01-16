@@ -261,7 +261,7 @@
 		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
 		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "\$ Value";
 		$arrDefine['GraphHeader']		['ValueCount']		['Value']	= 1;
-		$arrDefine['GraphHeader']		['Legend1Text']		['Value']	= "Monthly Spending";
+		$arrDefine['GraphHeader']		['LegendText1']		['Value']	= "Monthly Spending";
 		$arrFileData[] = $arrDefine['GraphHeader'];
 		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", time());
 		$arrDefine['GraphData']		['Value']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
