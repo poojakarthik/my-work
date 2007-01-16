@@ -7,9 +7,13 @@
 		<h1>Create Service</h1>
 		<div class="Seperator"></div>
 		
-		<xsl:if test="/Response/Error">
+		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
-				<xsl:value-of select="/Response/Error" />
+				<xsl:choose>
+					<xsl:when test="/Response/Error = 'Mismatch'">
+						You must correctly confirm your Line Number.
+					</xsl:when>
+				</xsl:choose>
 			</div>
 		</xsl:if>
 		
@@ -83,10 +87,26 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="FNN" class="input-string">
+								<input type="text" name="FNN-1" id="FNN-1" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/FNN" />
+										<xsl:value-of select="/Response/ui-values/FNN-1" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service')" />
+									<xsl:with-param name="field" select="string('RepeatFNN')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="FNN-2" id="FNN-2" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/FNN-2" />
 									</xsl:attribute>
 								</input>
 							</td>

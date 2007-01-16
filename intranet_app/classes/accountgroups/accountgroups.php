@@ -209,7 +209,7 @@
 				$updAccount->Execute ($arrPrimaryContact, Array ('Id' => $intAccount));
 			}
 			
-			return $intAccount;
+			return $actAccount;
 		}
 	}
 	

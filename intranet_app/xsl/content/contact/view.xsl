@@ -196,6 +196,15 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
+									<xsl:text>account_add.php?AccountGroup=</xsl:text>
+									<xsl:value-of select="/Response/Contact/AccountGroup" />
+								</xsl:attribute>
+								Create Associated Account
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
 									<xsl:text>payment_add.php?AccountGroup=</xsl:text>
 									<xsl:value-of select="/Response/Contact/AccountGroup" />
 								</xsl:attribute>

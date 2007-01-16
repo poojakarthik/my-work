@@ -54,7 +54,8 @@
 	// Start the UI values storage engine
 	$oblarrUIValues		= $Style->attachObject (new dataArray ('ui-values'));
 	$srvServiceTypes	= $oblarrUIValues->Push (new ServiceTypes);
-	$oblstrFNN			= $oblarrUIValues->Push (new dataString ('FNN'));
+	$oblstrFNN_1		= $oblarrUIValues->Push (new dataString ('FNN-1'));
+	$oblstrFNN_2		= $oblarrUIValues->Push (new dataString ('FNN-2'));
 	
 	if ($_POST ['ServiceType'])
 	{
@@ -65,10 +66,15 @@
 		}
 		else
 		{
-			if ($_POST ['RatePlan'])
+			if ($_POST ['FNN-1'] <> $_POST ['FNN-2'])
+			{
+				$oblstrError->setValue ('Mismatch');
+			}
+			else if ($_POST ['RatePlan'])
 			{
 				// Set the FNN for use if there's an error
-				$oblstrFNN->setValue ($_POST ['FNN']);
+				$oblstrFNN_1->setValue ($_POST ['FNN-1']);
+				$oblstrFNN_2->setValue ($_POST ['FNN-2']);
 				
 				// Get the Rate Plan. If it doesn't exist
 				// then this is an error
@@ -92,7 +98,7 @@
 							$actAccount,
 							$rrpPlan,
 							Array (
-								"FNN"					=> $_POST ['FNN'],
+								"FNN"					=> $_POST ['FNN-1'],
 								"Indial100"				=> isset ($_POST ['Indial100']) ? TRUE : FALSE,
 								"ServiceType"			=> $_POST ['ServiceType']
 							)

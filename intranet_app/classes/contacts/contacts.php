@@ -59,6 +59,39 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// UnarchivedUsername
+		//------------------------------------------------------------------------//
+		/**
+		 * UnarchivedUsername()
+		 *
+		 * Retrieves an Unarchived User from the System based on its Username
+		 *
+		 * Retrieves an Unarchived User from the System based on its Username
+		 *
+		 * @param	String		$strUsername		The Username attempting to retrieve
+		 * @return	Service
+		 *
+		 * @method
+		 */
+		
+		public static function UnarchivedUsername ($strUsername)
+		{
+			$selUsername = new StatementSelect ('Contact', 'Id', 'UserName = <UserName> AND Archived = 0', null, 1);
+			$selUsername->Execute (Array ('UserName' => $strUsername));
+			
+			// If it wasn't found - throw an error
+			if ($selUsername->Count () <> 1)
+			{
+				throw new Exception ('Username not found');
+			}
+			
+			$arrUsername = $selUsername->Fetch ();
+			
+			// Return the Service that was Found
+			return new Contact ($arrUsername ['Id']);
+		}
+		
+		//------------------------------------------------------------------------//
 		// Add
 		//------------------------------------------------------------------------//
 		/**

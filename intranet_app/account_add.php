@@ -19,7 +19,7 @@
 	
 	
 	// First of all, set an Error Container
-	$oblstrError = $Style->attachObject (new dataString ('Error', ''));
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
 	
 	// If there is an Account Group Specified, then we desire to create
@@ -39,10 +39,8 @@
 				$acgAccountGroup = $Style->attachObject (new AccountGroup ($_POST ['AccountGroup']));
 			}
 			
-			if ($acgAccountGroup)
-			{
-				$ctsContacts = $Style->attachObject ($acgAccountGroup->getContacts ());
-			}
+			// We assume that at this point, there is an Account Group specified
+			$ctsContacts = $Style->attachObject ($acgAccountGroup->getContacts ());
 		}
 		catch (Exception $e)
 		{
@@ -52,15 +50,21 @@
 	}
 	
 	// Attach essentials (BillingMethod, CustomerGroup and CreditCardTypes)
-	$bmeBillingMethods		= $Style->attachObject (new BillingMethods);
-	$cgsCustomerGroups		= $Style->attachObject (new CustomerGroups);
-	$ccsCreditCardTypes		= $Style->attachObject (new CreditCardTypes);
-	
+	$bmeBillingMethods		= $Style->attachObject (new BillingMethods	($_POST ['Account']['BillingMethod']));
+	$btyBillingTypes		= $Style->attachObject (new BillingTypes	($_POST ['Account']['BillingType']));
+	$cgsCustomerGroups		= $Style->attachObject (new CustomerGroups	($_POST ['Account']['CustomerGroup']));
+	$ccsCreditCardTypes		= $Style->attachObject (new CreditCardTypes	($_POST ['CC']['CardType']));
 	
 	// Set up the basis of information within the system
+	$oblarrUIValues			= $Style->attachObject (new dataArray ('ui-values'));
+	
+	// Basis Values
+	$oblarrAccount = $oblarrUIValues->Push (new dataArray ('Account'));
+	$oblarrDirectDR = $oblarrUIValues->Push (new dataArray ('DirectDebit'));
+	$oblarrCRCard = $oblarrUIValues->Push (new dataArray ('CreditCard'));
+	$oblarrContact = $oblarrUIValues->Push (new dataArray ('Contact'));
 	
 	// Start with the Account Entity
-	$oblarrAccount = $Style->attachObject (new dataArray ('Account'));
 	$oblarrAccount->Push	(new dataString	('BusinessName',	$_POST ['Account']['BusinessName']));
 	$oblarrAccount->Push	(new dataString	('TradingName',		$_POST ['Account']['TradingName']));
 	$oblarrAccount->Push	(new ABN		('ABN',				$_POST ['Account']['ABN']));
@@ -71,20 +75,23 @@
 	$oblarrAccount->Push	(new dataString	('Postcode',		$_POST ['Account']['Postcode']));
 	$oblarrAccount->Push	(new dataString	('State',			$_POST ['Account']['State']));
 	
-	$oblarrDirectDR = $Style->attachObject (new dataArray ('DirectDebit'));
+	// Direct Debit Information
 	$oblarrDirectDR->Push	(new dataString	('BankName',		$_POST ['DDR']['BankName']));
 	$oblarrDirectDR->Push	(new dataString	('BSB',				$_POST ['DDR']['BSB']));
 	$oblarrDirectDR->Push	(new dataString	('AccountNumber',	$_POST ['DDR']['AccountNumber']));
 	$oblarrDirectDR->Push	(new dataString	('AccountName',		$_POST ['DDR']['AccountName']));
 	
-	$oblarrCRCard = $Style->attachObject (new dataArray ('CreditCard'));
+	// Credit Card Information
 	$oblarrCRCard->Push		(new dataString	('Name',			$_POST ['CC']['Name']));
 	$oblarrCRCard->Push		(new dataString	('CardNumber',		$_POST ['CC']['CardNumber']));
 	$oblarrCRCard->Push		(new dataInteger('ExpMonth',		$_POST ['CC']['ExpMonth']));
 	$oblarrCRCard->Push		(new dataInteger('ExpYear',			$_POST ['CC']['ExpYear']));
 	
-	$oblarrContact = $Style->attachObject (new dataArray ('Contact'));
+	// Contact Information (Existing Contact)
+	$oblarrContact->Push	(new dataBoolean('USE',				$_POST ['Contact']['USE']));
+	$oblarrContact->Push	(new dataInteger('Id',				$_POST ['Contact']['Id']));
 	
+	// Contact Information (New Contact)
 	$oblarrContact->Push	(new dataString	('Title',			$_POST ['Contact']['Title']));
 	$oblarrContact->Push	(new dataString	('FirstName',		$_POST ['Contact']['FirstName']));
 	$oblarrContact->Push	(new dataString	('LastName',		$_POST ['Contact']['LastName']));
@@ -101,42 +108,68 @@
 	
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we have identified a Business Name
-	if ($_POST ['Account']['BusinessName'])
+	if ($_POST ['Account'])
 	{
-		$selUserName = new StatementSelect ('Contact', 'Id', 'UserName = <UserName> AND Archived = 0');
-		$selUserName->Execute (array ('UserName' => $_POST ['Contact']['UserName']));
-		
-		if (!$_POST ['Account']['TradingName'])
+		if (!$acgAccountGroup || !$_POST ['Contact']['USE'])
 		{
+			try
+			{
+				$cntUsername = Contacts::UnarchivedUsername ($_POST ['Contact']['UserName']);
+			}
+			catch (Exception $e)
+			{
+			}
+		}
+		
+		if (!$_POST ['Account']['BusinessName'])
+		{
+			// This throws an error if the Business Name is Blank
+			$oblstrError->setValue ('BusinessName');
+		}
+		else if (!$_POST ['Account']['TradingName'])
+		{
+			// This throws an error if the Trading Name is Blank
 			$oblstrError->setValue ('TradingName');
 		}
-		else if ($selUserName->Count () <> 0)
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['UserName'])
 		{
+			// This throws an error if the User Name is Blank
+			$oblstrError->setValue ('UserName-Blank');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && $cntUsername)
+		{
+			// This throws an error if the User Name exists
 			$oblstrError->setValue ('UserName');
 		}
-		else if (!$cgsCustomerGroups->setValue ($_POST ['CustomerGroup']))
+		else if (!$cgsCustomerGroups->setValue ($_POST ['Account']['CustomerGroup']))
 		{
+			// This throws an error if the Customer Group is Invalid
 			$oblstrError->setValue ('CustomerGroup');
 		}
-		else if (!$bmeBillingMethods->setValue ($_POST ['BillingMethod']))
+		else if (!$bmeBillingMethods->setValue ($_POST ['Account']['BillingMethod']))
 		{
+			// This throws an error if the Billing Method is Invalid
 			$oblstrError->setValue ('BillingMethod');
 		}
 		else if (!$ccsCreditCardTypes->setValue ($_POST ['CC']['CardType']))
 		{
+			// This throws an error if the Credit Card Type is Invalid
 			$oblstrError->setValue ('CardType');
 		}
 		else
 		{
-			// if we're up to here ... make the account
+			// If we reach this point in the Script, then
+			// we're probably going to making the Account
+			// All we have to do is make sure the Contact
+			// being requested to add exists in the Account
+			// that is being requested - if an account
+			// is being made in an Account Group
 			
-			if ($_POST ['Select_Contact']) {
+			if ($_POST ['Contact']['USE']) {
 				$cntContact = new Contact ($_POST ['Contact']['Id']);
 			}
 			
-			$agsAccountGroups = new AccountGroups;
-			
-			$intAccount = $agsAccountGroups->Add (
+			$actAccount = AccountGroups::Add (
 				(($acgAccountGroup) ? $acgAccountGroup : null),
 				(($cntContact) ? $cntContact : null),
 				Array (
@@ -155,6 +188,13 @@
 						"BillingMethod"		=> $_POST ['Account']['BillingMethod']
 					),
 					
+					"DirectDebit"	=> Array (
+						"BankName"			=> $_POST ['DDR']['BankName'],
+						"BSB"				=> $_POST ['DDR']['BSB'],
+						"AccountNumber"		=> $_POST ['DDR']['AccountNumber'],
+						"AccountName"		=> $_POST ['DDR']['AccountName'],
+					),
+					
 					"CreditCard"	=> Array (
 						"CardType"			=> $_POST ['CC']['CardType'],
 						"Name"				=> $_POST ['CC']['Name'],
@@ -163,22 +203,15 @@
 						"ExpYear"			=> $_POST ['CC']['ExpYear'],
 					),
 					
-					"DirectDebit"	=> Array (
-						"BankName"			=> $_POST ['DDR']['BankName'],
-						"BSB"				=> $_POST ['DDR']['BSB'],
-						"AccountNumber"	=> $_POST ['DDR']['AccountNumber'],
-						"AccountName"		=> $_POST ['DDR']['AccountName'],
-					),
-					
 					"Contact"		=> Array (
 						"Title"				=> $_POST ['Contact']['Title'],
-						"FirstName"		=> $_POST ['Contact']['FirstName'],
+						"FirstName"			=> $_POST ['Contact']['FirstName'],
 						"LastName"			=> $_POST ['Contact']['LastName'],
 						"DOB:year"			=> $_POST ['Contact']['DOB']['year'],
-						"DOB:month"		=> $_POST ['Contact']['DOB']['month'],
+						"DOB:month"			=> $_POST ['Contact']['DOB']['month'],
 						"DOB:day"			=> $_POST ['Contact']['DOB']['day'],
 						"JobTitle"			=> $_POST ['Contact']['JobTitle'],
-						"Email"			=> $_POST ['Contact']['Email'],
+						"Email"				=> $_POST ['Contact']['Email'],
 						"Phone"				=> $_POST ['Contact']['Phone'],
 						"Mobile"			=> $_POST ['Contact']['Mobile'],
 						"Fax"				=> $_POST ['Contact']['Fax'],
@@ -188,7 +221,9 @@
 				)
 			);
 			
-			header ("Location: account_view.php?Id=" . $intAccount);
+			$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
+			
+			header ("Location: account_view.php?Id=" . $actAccount->Pull ('Id')->getValue ());
 			exit;
 		}
 	}
