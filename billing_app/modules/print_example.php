@@ -37,9 +37,9 @@ $arrDefine['InvoiceDetails']	['RecordType']		['Length']	= 2;
 $arrDefine['InvoiceDetails']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
 $arrDefine['InvoiceDetails']	['RecordType']		['Value']	= "10";
 
-$arrDefine['InvoiceDetails']	['BillType']		['Start']	= 2;
-$arrDefine['InvoiceDetails']	['BillType']		['Length']	= 2;
-$arrDefine['InvoiceDetails']	['BillType']		['Type']	= BILL_TYPE_INTEGER;
+$arrDefine['InvoiceDetails']	['InvoiceGroup']		['Start']	= 2;
+$arrDefine['InvoiceDetails']	['InvoiceGroup']		['Length']	= 2;
+$arrDefine['InvoiceDetails']	['InvoiceGroup']		['Type']	= BILL_TYPE_INTEGER;
 
 $arrDefine['InvoiceDetails']	['Inserts']			['Start']	= 4;
 $arrDefine['InvoiceDetails']	['Inserts']			['Length']	= 6;
@@ -490,7 +490,7 @@ $arrDefine['InvoiceFooter']		['Delivery']		['Type']	= BILL_TYPE_INTEGER;
 //----------------------------------------------------------------------------//
 
 // Invoice Details record
-$arrDefine['InvoiceDetails']	['BillType']		['Value']	= BILL_DESIGN_TELCOBLUE;
+$arrDefine['InvoiceDetails']	['InvoiceGroup']		['Value']	= BILL_DESIGN_TELCOBLUE;
 $arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "011010";
 $arrDefine['InvoiceDetails']	['InvoiceNo']		['Value']	= 3000987654;
 $arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= "December 06";

@@ -79,6 +79,8 @@
 		$arrColumns['Postcode']			= "Account.Postcode";
 		$arrColumns['AddressLine1']		= "Account.Address1";
 		$arrColumns['AddressLine2']		= "Account.Address2";
+		$arrColumns['BusinessName']		= "Account.BusinessName";
+		$arrColumns['TradingName']		= "Account.TradingName";
 		$this->_selCustomerDetails		= new StatementSelect(	"Account LEFT OUTER JOIN Contact ON Account.PrimaryContact = Contact.Id",
 																$arrColumns,
 																"Account.Id = <Account>");
@@ -216,7 +218,7 @@
 		$arrBillHistory		= $this->_selLastBills->FetchAll();
 		
 		// build output
-		$arrDefine['InvoiceDetails']	['BillType']		['Value']	= $arrCustomerData['CustomerGroup'];
+		$arrDefine['InvoiceDetails']	['InvoiceGroup']	['Value']	= $arrCustomerData['CustomerGroup'];
 		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
 		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month", time()));	// FIXME: At a later date.  This is fine for now.
 		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
@@ -238,18 +240,12 @@
 		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
 		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
 		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
-		if($arrCustomerData['Account.Address2'])
-		{
-			// There are 2 components to the address line
-			$arrDefine['InvoiceDetails']	['PropertyName']	['Value']	= $arrCustomerData['AddressLine1'];
-			$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['AddressLine2'];
-		}
-		else
-		{
-			// There is 1 component to the address line
-			$arrDefine['InvoiceDetails']	['PropertyName']	['Value']	= "";
-			$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['AddressLine1'];
-		}
+		
+		$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['BusinessName'];
+		$arrDefine['InvoiceDetails']	['AddressLine2']	['Value']	= $arrCustomerData['Address1'];
+		$arrDefine['InvoiceDetails']	['AddressLine3']	['Value']	= $arrCustomerData['Address2'];
+		// $arrDefine['InvoiceDetails']	['AddressLine4'] is unused at the moment
+
 		$arrDefine['InvoiceDetails']	['Suburb']			['Value']	= $arrCustomerData['Suburb'];
 		$arrDefine['InvoiceDetails']	['State']			['Value']	= $arrCustomerData['State'];
 		$arrDefine['InvoiceDetails']	['Postcode']		['Value']	= $arrCustomerData['Postcode'];
@@ -259,10 +255,13 @@
 		
 		// MONTHLY COMPARISON BAR GRAPH
 		// build output
+		// FIXME
 		$arrDefine['GraphHeader']		['GraphType']		['Value']	= GRAPH_TYPE_VERTICALBAR;
 		$arrDefine['GraphHeader']		['GraphTitle']		['Value']	= "Account History";
 		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
 		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "\$ Value";
+		$arrDefine['GraphHeader']		['ValueCount']		['Value']	= 1;
+		$arrDefine['GraphHeader']		['Legend1Text']		['Value']	= "Monthly Spending";
 		$arrFileData[] = $arrDefine['GraphHeader'];
 		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", time());
 		$arrDefine['GraphData']		['Value']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
@@ -271,7 +270,7 @@
 		foreach($arrBillHistory as $arrBill)
 		{
 			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime($arrBill['CreatedOn']));
-			$arrDefine['GraphData']		['Value']			['Value']	= $arrBill['Total'] + $arrBill['Tax'];
+			$arrDefine['GraphData']		['Value1']			['Value']	= $arrBill['Total'] + $arrBill['Tax'];
 			$arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
@@ -315,9 +314,12 @@
 		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
 		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
 		$arrDefine['PaymentData']		['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
-		$arrDefine['PaymentData']		['PropertyName']	['Value']	= $arrDefine['InvoiceDetails']['PropertyName']['Value'];
 		$arrDefine['PaymentData']		['AddressLine1']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine1']['Value'];
-		$arrDefine['PaymentData']		['AddressLine2']	['Value']	= "{$arrDefine['Suburb']}   {$arrDefine['State']}   {$arrDefine['Postcode']}";
+		$arrDefine['PaymentData']		['AddressLine2']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine2']['Value'];
+		$arrDefine['PaymentData']		['AddressLine3']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine3']['Value'];
+		$arrDefine['PaymentData']		['AddressLine4']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine4']['Value'];
+		$arrDefine['PaymentData']		['AddressLine5']	['Value']	= "{$arrDefine['Suburb']}   {$arrDefine['State']}   {$arrDefine['Postcode']}";
+		$arrDefine['PaymentData']		['PaymentMethod']	['Value']	= $arrCustomerData['BillingType'];
 		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= "FREE One Month Trial for our unlimited " .
 																		  "Dial Up Internet. Call customer care to " .
 																		  "get connected.";
@@ -475,7 +477,7 @@
 			// add end record (79)
 			$arrFileData[] = $arrDefine['ItemisedFooter'];
 		}
-		// add invoice footer (19)		
+		// add invoice footer (18)		
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		
 		// Process and implode the data so it can be inserted into the DB
@@ -681,21 +683,29 @@
 		{
 			Debug($qryBuildFile->Error());
 		}
-
+		
+		// Append metadata to bill output file
+		$arrDefine		= $this->_arrDefine;
+		$arrDefine['FileFooter']	['Date']			['Value']	= date("d/m/Y");
+		$arrDefine['FileFooter']	['InvoiceCount']	['Value']	= $arrMetaData['Invoices'];
+		$arrDefine['FileFooter']	['Insert1Id']		['Value']	= 0;
+		$arrDefine['FileFooter']	['Insert2Id']		['Value']	= 0;
+		$arrDefine['FileFooter']	['Insert3Id']		['Value']	= 0;
+		$arrDefine['FileFooter']	['Insert4Id']		['Value']	= 0;
+		$arrDefine['FileFooter']	['Insert5Id']		['Value']	= 0;
+		$arrDefine['FileFooter']	['Insert6Id']		['Value']	= 0;
+		$arrAppend		= Array($arrDefine);
+		$strFooter		= "\n".implode("", $arrAppend);
+		$ptrFile		= fopen($strFilename, "a");
+		fwrite($ptrFile, $strFooter);
+		fclose($ptrFile);
 		
 		// create metadata file
 		$ptrMetaFile	= fopen($strMetaName, "w");
 		// TODO - get actual insert ids for this billing run
-		$strLine		= 	date("Y-m-d").
-							$strFilename.
-							str_pad($arrMetaData['Invoices'], 10, " ", STR_PAD_LEFT).
-							sha1_file($strFilename).
-							str_pad(1, 10, " ", STR_PAD_LEFT).
-							str_pad(2, 10, " ", STR_PAD_LEFT).
-							str_pad(3, 10, " ", STR_PAD_LEFT).
-							str_pad(4, 10, " ", STR_PAD_LEFT).
-							str_pad(5, 10, " ", STR_PAD_LEFT).
-							str_pad(6, 10, " ", STR_PAD_LEFT);
+		$strLine		= 	date("d/m/Y").
+							basename($strFilename).
+							sha1_file($strFilename);
 		fwrite($ptrMetaFile, $strLine);
 		fclose($ptrMetaFile);
 		

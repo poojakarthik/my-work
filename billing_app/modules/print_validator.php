@@ -167,7 +167,7 @@ foreach ($arrFileContents as $strLine)
 			$pdf->ezText($mixResult['SpecialOffer1']."\n\n");
 			$pdf->ezText($mixResult['SpecialOffer2']."\n");
 			break;
-		case 19:
+		case 18:
 			// Invoice Footer
 			$arrInvoices[]	= $arrInvoice;
 			$strFilename	= $strPDFPath.date("Y-m-d")."_".$arrInvoice[0]['InvoiceNo'].".pdf";
@@ -190,6 +190,10 @@ foreach ($arrFileContents as $strLine)
 			
 			$arrInvoice = Array();
 			break;
+		case 19:
+			// File Footer
+			// Nothing useful in here
+			break;
 			
 		//----------------------------- GRAPHING -----------------------------//
 		case 20:
@@ -208,31 +212,7 @@ foreach ($arrFileContents as $strLine)
 			
 			// Check for GraphType, make sure its in correct place
 			$arrExpectedRecordTypes[] = 21;
-			switch ($intGraphType)
-			{
-				case 1:
-					// Vertical Bar Graph
-					$arrExpectedRecordTypes[] = 20;
-					break;
-				case 2:
-					// Vertical Breakdown Bar Graph
-					$arrExpectedRecordTypes[] = 30;
-					break;
-				case 3:
-					// Horizontal Split Bar Graph
-					$arrExpectedRecordTypes[] = 32;
-					break;
-				case 4:
-					// Line Graph
-				case 5:
-					// Line Graph XYZ
-					$arrExpectedRecordTypes[] = 34;
-					break;
-				default:
-					// Unknown Graph Type
-					echo "- ERROR: Unknown Graph Type (0$intGraphType) on line $i\n";
-					die;
-			}
+			$arrExpectedRecordTypes[] = 20;
 			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			
 			// FIXME: This will work for Vertical Bargraphs, but nothing else
@@ -245,30 +225,6 @@ foreach ($arrFileContents as $strLine)
 			// Data is only for validation
 			
 			$pdf->ezTable($arrGraphData);
-			break;
-		case 30:
-			// Vertical Breakdown Bargraph Column Header
-			// Not used yet
-			break;
-		case 31:
-			// Vertical Breakdown Bargraph Column Footer
-			// Not used yet
-			break;
-		case 32:
-			// Hortizontal Bargraph Row Header
-			// Not used yet
-			break;
-		case 33:
-			// Hortizontal Bargraph Row Footer
-			// Not used yet
-			break;
-		case 34:
-			// Linegraph Line Header
-			// Not used yet
-			break;
-		case 35:
-			// Linegraph Line Footer
-			// Not used yet
 			break;
 		
 		//-------------------------- CHARGE  TOTALS --------------------------//
