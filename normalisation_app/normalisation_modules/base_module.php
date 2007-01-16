@@ -265,7 +265,6 @@ abstract class NormalisationModule
 	 * 								false	: Data doesn't match
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function Validate()
 	{
@@ -278,7 +277,7 @@ abstract class NormalisationModule
 		
 		if ($this->_arrNormalisedData["Source"] != "")															// 3
 		{
-			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X|\d| )+$/", 	$this->_arrNormalisedData["Source"]);
+			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d{2}REV)$/", 	$this->_arrNormalisedData["Source"]);
 		}
 		else
 		{
@@ -287,7 +286,7 @@ abstract class NormalisationModule
 		
 		if ($this->_arrNormalisedData["Destination"] != "")														// 4
 		{
-			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X|\d| )+$/", 	$this->_arrNormalisedData["Destination"]);
+			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d{2}REV)$/", 	$this->_arrNormalisedData["Destination"]);
 		}
 		else
 		{
@@ -353,7 +352,6 @@ abstract class NormalisationModule
 	 * 									into DB
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */	
 	abstract function Normalise($arrCDR);
 	
@@ -391,6 +389,7 @@ abstract class NormalisationModule
 	 * 													131888		(13-numbers)
 	 * 													1800513454	(1800-numbers)
 	 * 													1900451354	(1900-numbers)
+	 * 													
 	 * 
 	 * @param	string		$strFNN		FNN to be parsed
 	 *
@@ -398,7 +397,6 @@ abstract class NormalisationModule
 	 * 									false	: FNN is not valid
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */	
 	protected function IsValidFNN($strFNN)
 	{
