@@ -434,6 +434,7 @@ die();
 				if (trim($arrCDRLine["CDR"]))
 				{
 					$insInsertCDRLine->Execute($arrCDRLine);
+					echo $insInsertCDRLine->Error();
 				}
 				$intSequence++;
 				

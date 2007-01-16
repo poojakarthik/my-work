@@ -59,6 +59,7 @@ define("NO_NORMALISATION_MODULE"	, 5003);
 // Fatal Exceptions
 
 
-
+// Fast normalisation test
+define("FAST_NORMALISATION_TEST"		, FALSE);
 
 ?>
