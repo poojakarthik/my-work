@@ -274,7 +274,6 @@
 			$arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
-		$arrDefine['GraphFooter']		['TotalSamples']	['Value']	= $intCount;
 		$arrFileData[] = $arrDefine['GraphFooter'];
 		
 		// SUMMARY CHARGES
