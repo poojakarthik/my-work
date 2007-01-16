@@ -457,7 +457,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 	
 	
 	// Make sure this is a recognised type
-	$strRecordType = substr($strLine, 0, 2);
+	$strRecordType = substr($strLine, 0, 4);
 	$arrRecordDefine = NULL;
 	foreach ($GLOBALS['FileFormat'] as $arrRecordType)
 	{
