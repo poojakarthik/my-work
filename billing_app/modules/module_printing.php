@@ -579,7 +579,7 @@
 						break;
 					default:
 						// Unknown Data Type
-						Debug("BIG FLOPPY DONKEY DICK (Unknown Bill Printing Data Type)");
+						Debug("BIG FLOPPY DONKEY DICK (Unknown Bill Printing Data Type: {$arrField['Type']})");
 						return FALSE;
 				}
 				
