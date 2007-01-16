@@ -7,7 +7,7 @@
 		<h1>Download Payment Summary</h1>
 		<div class="Seperator"></div>
 		
-		<h2 class="Invoice">Payment Details</h2>
+		<h2 class="Payment">Payment Details</h2>
 		<form method="post" action="payment_download.php">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -135,7 +135,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<input type="submit" value="Create Payment &#0187;" class="input-submit" />
+			<input type="submit" value="Download Payments &#0187;" class="input-submit" />
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

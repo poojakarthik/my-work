@@ -4,6 +4,8 @@
 	<xsl:output method="text" encoding="utf-8" />
 	
 	<xsl:template match="/">
+		<!-- TODO!!!! - add header row : Account No | Business Name | Reference | Date | Amount  -->
+		<!-- TODO!!!! - add some more fields to match the header-->
 		<xsl:for-each select="/Response/Payments/Results/rangeSample/Payment">
 			<xsl:text>"</xsl:text>
 			<xsl:value-of select="./TXNReference" />

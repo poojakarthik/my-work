@@ -22,6 +22,10 @@
 		<h2 class="Account">Account Details</h2>
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
+				<!-- TODO!!!! - URGENT - SELECT box of accounts for this contact -->
+				<!-- first option is All Accounts -->
+				<!-- auto use primary account & don't show SELECT if there is only one account -->
+				<!-- select the account we were vieweng if we came from an account page (still show the SELECT box) -->
 				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">
@@ -50,7 +54,7 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<h2 class="Invoice">Payment Details</h2>
+		<h2 class="Payment">Payment Details</h2>
 		<form method="post" action="payment_add.php">
 			<xsl:if test="/Response/Account">
 				<input type="hidden" name="Account">

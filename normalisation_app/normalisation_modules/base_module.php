@@ -272,9 +272,14 @@ abstract class NormalisationModule
 		$arrValid = Array();
 		
 		// $this->_arrNormalisedData["Id"];
+		
+		// FNN : valid FNN
 		$arrValid[] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", 	$this->_arrNormalisedData["FNN"]);	// 1
+		
+		// CarrierRef : required (non empty)
 		$arrValid[] = ($this->_arrNormalisedData["CarrierRef"] != "");											// 2
 		
+		// source : empty or valid FNN
 		if ($this->_arrNormalisedData["Source"] != "")															// 3
 		{
 			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d{2}REV)I?$/", 	$this->_arrNormalisedData["Source"]);
@@ -284,6 +289,7 @@ abstract class NormalisationModule
 			$arrValid[] = true;
 		}
 		
+		// destination : empty or valid FNN
 		if ($this->_arrNormalisedData["Destination"] != "")														// 4
 		{
 			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d{2}REV)I?$/", 	$this->_arrNormalisedData["Destination"]);
@@ -293,8 +299,10 @@ abstract class NormalisationModule
 			$arrValid[] = true;
 		}
 																												// 5
+		// start time : valid date/time
 		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/",	$this->_arrNormalisedData["StartDatetime"]);
 
+		// end time : empty or valid date/time
 		if ($this->_arrNormalisedData["EndDatetime"] != "")														// 6
 		{
 			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", $this->_arrNormalisedData["EndDatetime"]);
@@ -304,18 +312,21 @@ abstract class NormalisationModule
 			$arrValid[] = true;
 		}
 		
+		// units : numeric
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);											// 7
+		
+		// cost : numeric
 		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
 		
-		// DestinationCode is required for any record type with a context
+		// DestinationCode : required for any record type with a context
 		if ($this->_intContext > 0)
 		{
-			// requires a destination
+			// requires a destination code
 			$arrValid[] = is_numeric($this->_arrNormalisedData["DestinationCode"]);	// 9
 		}
 		else
 		{
-			// doesn't require a destination
+			// doesn't require a destination code
 			$arrValid[] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
 		}
 		

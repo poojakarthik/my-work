@@ -150,10 +150,10 @@
 									<td>
 										<xsl:choose>
 											<xsl:when test="/Response/Contact/CustomerContact = 1">
-												<strong><span class="Green">Account Group Contact</span></strong>
+												All Associated Accounts
 											</xsl:when>
 											<xsl:otherwise>
-												<strong><span class="Red">Account Contact</span></strong>
+												Primary Account Only
 											</xsl:otherwise>
 										</xsl:choose>
 									</td>
