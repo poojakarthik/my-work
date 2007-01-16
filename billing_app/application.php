@@ -180,7 +180,10 @@ die();
 		
 		// get a list of all accounts that require billing today
 		//TODO-LATER : Make this work with daily and 1/2 monthly billing
-		$selAccounts->Execute();
+		if ($selAccounts->Execute() === FALSE)
+		{
+			Debug($selAccounts->Error());
+		}
 		$arrAccounts = $selAccounts->FetchAll();
 
 		// Report Title
@@ -200,6 +203,11 @@ die();
 			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
 			if(!$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id'])))
 			{
+				if ($updCDRs->Error())
+				{
+					Debug($updCDRs->Error());
+				}
+				
 				// Report and continue
 				$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
 				continue;
@@ -224,7 +232,10 @@ die();
 			
 			// run query
 			$qryServiceTypeTotal = new Query();
-			$qryServiceTypeTotal->Execute($strQuery);
+			if ($qryServiceTypeTotal->Execute($strQuery) === FALSE)
+			{
+				Debug($qryServiceTypeTotal->Error());
+			}
 			
 			// calculate totals
 			$fltDebits			= 0.0;
@@ -238,6 +249,11 @@ die();
 			$selServices->Execute(Array('Account' => $arrAccount['Id']));
 			if(!$arrServices = $selServices->FetchAll())
 			{
+				if ($selServices->Error())
+				{
+					Debug($selServices->Error());
+				}
+				
 				// Report and continue
 				$this->_rptBillingReport->AddMessageVariables(MSG_LINE_FAILED, Array('<Reason>' => "No Services for this Account"));
 				continue;
@@ -289,6 +305,8 @@ die();
 				$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED, $arrUpdateData);
 				if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
 				{
+					Debug($updChargeStatus->Error());
+					
 					// Report and fail out
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
 					continue;
@@ -304,6 +322,11 @@ die();
 				$mixResult = $selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $this->_strInvoiceRun));
 				if($mixResult > 2 || $mixResult === FALSE)
 				{
+					if ($mixResult === FALSE)
+					{
+						Debug($selDebitsCredits->Error());
+					}
+					
 					// Incorrect number of rows returned or an error
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
 					continue;
@@ -345,7 +368,10 @@ die();
 				if (!$insServiceTotal->Execute($arrServiceTotal))
 				{
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
-					Debug($insServiceTotal->Error());
+					if ($insServiceTotal->Error())
+					{
+						Debug($insServiceTotal->Error());
+					}
 					continue;
 				}
 				$this->_rptBillingReport->AddMessage(MSG_OK);
@@ -364,6 +390,11 @@ die();
 			// calculate account balance
 			if(!$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id'])))
 			{
+				if ($selCalcAccountBalance->Error())
+				{
+					Debug($selCalcAccountBalance->Error());
+				}
+				
 				// Report and fail out
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n");
 				$intFailed++;
@@ -400,9 +431,13 @@ die();
 			// report error or success
 			if(!$insTempInvoice->Execute($arrInvoiceData))
 			{
+				if ($insTempInvoice->Error())
+				{
+					Debug($insTempInvoice->Error());
+				}
+				
 				// Report and fail out
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n");
-				Debug($insTempInvoice->Error());
 				$intFailed++;
 				continue;
 			}
@@ -446,9 +481,10 @@ die();
 		$selBillValidate = new StatementSelect($strFrom, $strSelect, $strWhere, NULL, NULL, "InvoiceTemp.Account\nHAVING ".$strHaving);
 		$selBillValidate->Execute();
 		$arrBillValid = $selBillValidate->Fetch();
-		if($arrBillValid === FALSE)
+		if($selBillValidate->Error())
 		{
-			// TODO: Report Error
+			// TODO: Debug Error
+			Debug($selBillValidate->Error());
 		}
 		elseif (count($arrBillValid) == 0)
 		{
@@ -539,7 +575,10 @@ die();
 		// FAIL if there are temporary invoices in the invoice table
 		$this->_rptBillingReport->AddMessage(MSG_CHECK_TEMP_INVOICES, FALSE);
 		$selCheckTempInvoices = new StatementSelect("Invoice", "Id", "Status = ".INVOICE_TEMP);
-		$selCheckTempInvoices->Execute();
+		if($selCheckTempInvoices->Execute() === FALSE)
+		{
+			Debug($selCheckTempInvoices->Error());
+		}
 		if($selCheckTempInvoices->Fetch() !== FALSE)
 		{
 			// Report and fail out
@@ -558,6 +597,8 @@ die();
 		$mixResult = $selGetInvoiceRun->Execute();
 		if ($mixResult === FALSE)
 		{
+			Debug($selCheckTempInvoices);
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "There was a database error"));
 			return;
@@ -578,6 +619,11 @@ die();
 		$siqInvoice = new QuerySelectInto();
 		if(!$siqInvoice->Execute('Invoice', 'InvoiceTemp', "Status = ".INVOICE_TEMP))
 		{
+			if ($siqInvoice->Error())
+			{
+				Debug($siqInvoice->Error());
+			}
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
@@ -595,6 +641,8 @@ die();
 		$updTempInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_TEMP, $arrUpdateData);
 		if($updTempInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
+			Debug($updTempInvoiceStatus->Error());
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
@@ -612,6 +660,8 @@ die();
 		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, $arrUpdateData);
 		if($updCDRStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
+			Debug($updCDRStatus->Error());
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
@@ -630,6 +680,11 @@ die();
 		$qryAccountLastBilled = new Query();
 		if(!$qryAccountLastBilled->Execute($strQuery))
 		{
+			if ($qryAccountLastBilled->Error())
+			{
+				Debug($qryAccountLastBilled->Error());
+			}
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
@@ -647,6 +702,8 @@ die();
 		$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE, $arrUpdateData);
 		if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
+			Debug($updChargeStatus->Error());
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
@@ -664,6 +721,8 @@ die();
 		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_TEMP, $arrUpdateData);
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
+			Debug($updInvoiceStatus->Error());
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
@@ -723,7 +782,10 @@ die();
 		
 		// Get InvoiceRun of the current Temporary Invoice Run
 		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
-		$selGetInvoiceRun->Execute();
+		if ($selGetInvoiceRun->Execute() === FALSE)
+		{
+			Debug($selGetInvoiceRun->Error());
+		}
 		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
 		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
 		
@@ -732,6 +794,11 @@ die();
 		$trqTruncateTempTable = new QueryTruncate();
 		if(!$trqTruncateTempTable->Execute("InvoiceTemp"))
 		{
+			if ($trqTruncateTempTable->Error())
+			{
+				Debug($trqTruncateTempTable->Error());
+			}
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return FALSE;
@@ -750,6 +817,8 @@ die();
 		$updCDRStatus = new StatementUpdate("CDR", "CDR.Credit = 0 AND Status = ".CDR_TEMP_INVOICE, $arrColumns);
 		if($updCDRStatus->Execute($arrColumns, Array()) === FALSE)
 		{
+			Debug($updCDRStatus->Error());
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return FALSE;
@@ -765,6 +834,8 @@ die();
 		$qryCleanServiceTotal = new Query();
 		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
 		{
+			Debug($qryCleanServiceTotal);
+			
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 		}
 		else
@@ -777,6 +848,8 @@ die();
 		$qryCleanServiceTotal = new Query();
 		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
 		{
+			Debug($qryCleanServiceTotal->Error());
+			
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 		}
 		else
@@ -847,6 +920,8 @@ die();
 													"InvoiceTemp.InvoiceRun");
 		if ($selInvoiceSummary->Execute() === FALSE)
 		{
+			Debug($selInvoiceSummary->Error());
+			
 			// Error out
 			return FALSE;
 		}
@@ -869,6 +944,8 @@ die();
 													"CDR.Carrier");
 		if ($selCarrierSummary->Execute() === FALSE)
 		{
+			Debug($selCarrierSummary->Error());
+			
 			// Error out
 			return FALSE;
 		}
@@ -892,6 +969,8 @@ die();
 														"CDR.ServiceType");
 		if ($selServiceTypeSummary->Execute() === FALSE)
 		{
+			Debug($selServiceTypeSummary->Error());
+			
 			// Error out
 			return FALSE;
 		}
@@ -933,7 +1012,10 @@ die();
 			
 			// Generate Carrier's Record Type Breakdowns
 			$strRecordTypes = "";
-			$selRecordTypes->Execute(Array('Carrier' => $arrCarrierSummary['CarrierId'], 'ServiceType' => DONKEY));
+			if ($selRecordTypes->Execute(Array('Carrier' => $arrCarrierSummary['CarrierId'], 'ServiceType' => DONKEY)) === FALSE)
+			{
+				Debug($selRecordTypes->Error());
+			}
 			while($arrRecordType = $selRecordTypes->Fetch())
 			{
 				$arrRecordTypeVars['<RecordType>']		= $arrRecordType['RecordType'];
@@ -963,7 +1045,10 @@ die();
 			
 			// Generate Carrier's Record Type Breakdowns
 			$strRecordTypes = "";
-			$selRecordTypes->Execute(Array('Carrier' => DONKEY, 'ServiceType' => $arrServiceTypeSummary['ServiceType']));
+			if ($selRecordTypes->Execute(Array('Carrier' => DONKEY, 'ServiceType' => $arrServiceTypeSummary['ServiceType'])) === FALSE)
+			{
+				Debug($selRecordTypes->Error());
+			}
 			while($arrRecordType = $selRecordTypes->Fetch())
 			{
 				$arrRecordTypeVars['<RecordType>']		= $arrRecordType['RecordType'];
