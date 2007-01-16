@@ -210,26 +210,54 @@
 			<p>
 				<table border="0" cellpadding="3" cellspacing="0" width="100%">
 					<tr>
-						<td width="33%" align="left">
-							<xsl:if test="/Response/CDRs-Invoiced/Results/rangePage &gt; 1">
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>invoice_view.php</xsl:text>
-										
-										<xsl:text>?Invoice=</xsl:text>
-										<xsl:value-of select="/Response/Invoice/Id" />
-										
-										<xsl:text>&amp;rangeLength=</xsl:text>
-										<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
-										
-										<xsl:text>&amp;rangePage=</xsl:text>
-										<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage - 1" />
-									</xsl:attribute>
-									<xsl:text>- Prev</xsl:text>
-								</a>
-							</xsl:if>
+						<td width="10%" align="left">
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Invoiced/Results/rangePage != 1">
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>invoice_view.php</xsl:text>
+											
+											<xsl:text>?Invoice=</xsl:text>
+											<xsl:value-of select="/Response/Invoice/Id" />
+											
+											<xsl:text>&amp;rangeLength=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
+											
+											<xsl:text>&amp;rangePage=1</xsl:text>
+										</xsl:attribute>
+										<xsl:text>- First</xsl:text>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									- First
+								</xsl:otherwise>
+							</xsl:choose>
 						</td>
-						<td width="34%" align="center">
+						<td width="10%" align="left">
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Invoiced/Results/rangePage &gt; 1">
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>invoice_view.php</xsl:text>
+											
+											<xsl:text>?Invoice=</xsl:text>
+											<xsl:value-of select="/Response/Invoice/Id" />
+											
+											<xsl:text>&amp;rangeLength=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
+											
+											<xsl:text>&amp;rangePage=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage - 1" />
+										</xsl:attribute>
+										<xsl:text>- Prev</xsl:text>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									- Prev
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td width="60%" align="center">
 							Page <xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage" />
 							of <xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePages" /><br />
 							Showing  
@@ -246,24 +274,53 @@
 							of
 							<xsl:value-of select="/Response/CDRs-Invoiced/Results/collationLength" />
 						</td>
-						<td width="33%" align="right">
-							<xsl:if test="/Response/CDRs-Invoiced/Results/rangePage &lt; /Response/CDRs-Invoiced/Results/rangePages">
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>invoice_view.php</xsl:text>
-										
-										<xsl:text>?Invoice=</xsl:text>
-										<xsl:value-of select="/Response/Invoice/Id" />
-										
-										<xsl:text>&amp;rangeLength=</xsl:text>
-										<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
-										
-										<xsl:text>&amp;rangePage=</xsl:text>
-										<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage + 1" />
-									</xsl:attribute>
-									<xsl:text>Next -</xsl:text>
-								</a>
-							</xsl:if>
+						<td width="10%" align="right">
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Invoiced/Results/rangePage &lt; /Response/CDRs-Invoiced/Results/rangePages">
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>invoice_view.php</xsl:text>
+											
+											<xsl:text>?Invoice=</xsl:text>
+											<xsl:value-of select="/Response/Invoice/Id" />
+											
+											<xsl:text>&amp;rangeLength=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
+											
+											<xsl:text>&amp;rangePage=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage + 1" />
+										</xsl:attribute>
+										<xsl:text>Next -</xsl:text>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									Next -
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+						<td width="10%" align="right">
+							<xsl:choose>
+								<xsl:when test="/Response/CDRs-Invoiced/Results/rangePage != /Response/CDRs-Invoiced/Results/rangePages">
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>invoice_view.php</xsl:text>
+											
+											<xsl:text>?Invoice=</xsl:text>
+											<xsl:value-of select="/Response/Invoice/Id" />
+											
+											<xsl:text>&amp;rangeLength=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
+											
+											<xsl:text>&amp;rangePage=</xsl:text>
+											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePages" />
+										</xsl:attribute>
+										<xsl:text>Last -</xsl:text>
+									</a>
+								</xsl:when>
+								<xsl:otherwise>
+									Last -
+								</xsl:otherwise>
+							</xsl:choose>
 						</td>
 					</tr>
 				</table>

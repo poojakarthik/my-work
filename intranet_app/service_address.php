@@ -31,7 +31,13 @@
 		exit;
 	}
 	
+	if ($srvService->Pull ('ServiceType')->getValue () <> SERVICE_TYPE_LAND_LINE)
+	{
+		$Style->Output ('xsl/content/service/notfound.xsl');
+		exit;
+	}
 	
+	// Try getting the Original Service Address Information
 	try
 	{
 		$sadServiceAddress = $Style->attachObject ($srvService->ServiceAddress ());
@@ -50,6 +56,8 @@
 	
 	if ($_POST ['Service'])
 	{
+		// Save Information
+		
 		$srvService->ServiceAddressUpdate (
 			Array (
 				'BillName'						=> $_POST ['BillName'],

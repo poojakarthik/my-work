@@ -13,7 +13,7 @@
 		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
-				<td>
+				<td valign="top">
 					<h2 class="Contact">Contact Details</h2>
 
 					<div class="Filter-Form">
@@ -283,6 +283,7 @@
 									<xsl:text>View All Customer Notes</xsl:text>
 								</a>
 							</div>
+							<div class="Clear"></div>
 							<div class="Seperator"></div>
 							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 								<xsl:variable name="Note" select="." />

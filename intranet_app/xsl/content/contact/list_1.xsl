@@ -11,42 +11,43 @@
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
+		<script language="javascript" src="js/contact_list_1.js"></script>
 		
-		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
-				<xsl:choose>
-					<xsl:when test="/Response/Error = 'Account'">
-						The Account# you entered was not found in the database.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'ABN'">
-						The ABN# you entered was not found in the database.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'ACN'">
-						The ACN# you entered was not found in the database.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'Invoice'">
-						The Invoice# you entered was not found in the database.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'FNN'">
-						The Line Number you entered was not found in the database.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'BusinessName'">
-						The Business Name you entered did not return any possible Accounts.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'Contact'">
-						The First/Last Name you entered did not return any possible Contacts.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'Contact-OneFill'">
-						You must search for a First and Last name for a Contact.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'Empty'">
-						Your search details are blank. Please enter criteria to search for.
-					</xsl:when>
-				</xsl:choose>
-			</div>
-		</xsl:if>
-		
-		<form method="post" action="contact_list.php">
+		<form method="post" action="contact_list.php" onsubmit="return contactList1 (this)">
+			<xsl:if test="/Response/Error != ''">
+				<div class="MsgError">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Account'">
+							The Account# you entered was not found in the database.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'ABN'">
+							The ABN# you entered was not found in the database.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'ACN'">
+							The ACN# you entered was not found in the database.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Invoice'">
+							The Invoice# you entered was not found in the database.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'FNN'">
+							The Line Number you entered was not found in the database.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'BusinessName'">
+							The Business Name you entered did not return any possible Accounts.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Contact'">
+							The First/Last Name you entered did not return any possible Contacts.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Contact-OneFill'">
+							You must search for a First and Last name for a Contact.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Empty'">
+							Your search details are blank. Please enter criteria to search for.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					To search for a Customer, enter <strong>only one</strong> of the following:

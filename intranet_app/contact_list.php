@@ -330,7 +330,7 @@
 			
 			$ctsContacts = $oblarrAnswers->Push ($actAccount->Contacts ());
 			
-			//TODO!!!! - if no contact is selected on list_2-contact.xls we are being sent back to the start
+			//TODO!!!! - if no contact is selected on list_2-contact.xsl we are being sent back to the start
 			//				we should be showing this page again with an error msg
 			$Style->Output ('xsl/content/contact/list_2-contact.xsl');
 			exit;

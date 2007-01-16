@@ -12,10 +12,16 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_SERVICE_ADDRESS;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_SERVICE_ADDRESS | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE;
 	
 	// call application
 	require ('config/application.php');
+	
+	// Pull documentation information for an Account
+	$docDocumentation->Explain ('AccountGroup');
+	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Service');
+	$docDocumentation->Explain ('Rate Plan');
 	
 	// Try and get the associated account
 	
@@ -41,140 +47,81 @@
 		exit;
 	}
 	
-	// Build the remembering base ...
-	$oblstrError = $Style->attachObject (new dataString ('Error', ''));
 	
-	$oblarrService = $Style->attachObject (new dataArray ('Service'));
+	// Build a String for Remembering Errors
+	$oblstrError 		= $Style->attachObject (new dataString ('Error'));
 	
-	$srvServiceTypes			= $oblarrService->Push (new ServiceTypes);
-	$oblstrFNN					= $oblarrService->Push (new dataString ('FNN'));
+	// Start the UI values storage engine
+	$oblarrUIValues		= $Style->attachObject (new dataArray ('ui-values'));
+	$srvServiceTypes	= $oblarrUIValues->Push (new ServiceTypes);
+	$oblstrFNN			= $oblarrUIValues->Push (new dataString ('FNN'));
 	
-	
-	// Pull documentation information for an Account
-	$docDocumentation->Explain ('AccountGroup');
-	$docDocumentation->Explain ('Account');
-	$docDocumentation->Explain ('Service');
-	
-	if ($_POST ['FNN'])
+	if ($_POST ['ServiceType'])
 	{
-		$oblstrFNN->setValue ($_POST ['FNN']);
-		
-		$selService = new StatementSelect ('Service', 'count(*) AS Length', 'FNN = <FNN> AND ClosedOn IS NULL');
-		$selService->Execute (Array ('FNN' => $_POST ['FNN']));
-		$arrLength = $selService->Fetch ();
-		
+		// If the Service Type is Invalid, Error
 		if (!$srvServiceTypes->setValue ($_POST ['ServiceType']))
 		{
-			$oblstrError->setValue ('ServiceType');
-		}
-		else if (!$_POST ['FNN'])
-		{
-			$oblstrError->setValue ('FNN Empty');
-		}
-		else if ($arrLength ['Length'] <> 0)
-		{
-			$oblstrError->setValue ('FNN Exists');
+			$oblstrError->setValue ("Service Type");
 		}
 		else
 		{
-			// If we're up to here, add the information to the database
-			if ($_POST ['ServiceType'] == SERVICE_TYPE_LAND_LINE)
+			if ($_POST ['RatePlan'])
 			{
-				$oblarrServiceAddress = $oblarrService->Push (new dataArray ('ServiceAddress'));
+				// Set the FNN for use if there's an error
+				$oblstrFNN->setValue ($_POST ['FNN']);
 				
-				$oblstrBillName						= $oblarrServiceAddress->Push (new dataString ('BillName'));
-				$oblstrBillAddress1					= $oblarrServiceAddress->Push (new dataString ('BillAddress1'));
-				$oblstrBillAddress2					= $oblarrServiceAddress->Push (new dataString ('BillAddress2'));
-				$oblstrBillLocality					= $oblarrServiceAddress->Push (new dataString ('BillLocality'));
-				$oblstrBillPostcode					= $oblarrServiceAddress->Push (new dataString ('BillPostcode'));
-				$eutEndUserTitle					= $oblarrServiceAddress->Push (new ServiceEndUserTitleTypes ());
-				$oblstrEndUserGivenName				= $oblarrServiceAddress->Push (new dataString ('EndUserGivenName'));
-				$oblstrEndUserFamilyName			= $oblarrServiceAddress->Push (new dataString ('EndUserFamilyName'));
-				$oblstrEndUserCompanyName			= $oblarrServiceAddress->Push (new dataString ('EndUserCompanyName'));
-				$oblstrDateOfBirth_day				= $oblarrServiceAddress->Push (new dataString ('DateOfBirth-day'));
-				$oblstrDateOfBirth_month			= $oblarrServiceAddress->Push (new dataString ('DateOfBirth-month'));
-				$oblstrDateOfBirth_year				= $oblarrServiceAddress->Push (new dataString ('DateOfBirth-year'));
-				$oblstrEmployer						= $oblarrServiceAddress->Push (new dataString ('Employer'));
-				$oblstrOccupation					= $oblarrServiceAddress->Push (new dataString ('Occupation'));
-				$oblstrABN							= $oblarrServiceAddress->Push (new dataString ('ABN'));
-				$oblstrTradingName					= $oblarrServiceAddress->Push (new dataString ('TradingName'));
-				$satServiceAddressType				= $oblarrServiceAddress->Push (new ServiceAddressTypes ());
-				$oblstrServiceAddressTypeNumber		= $oblarrServiceAddress->Push (new dataString ('ServiceAddressTypeNumber'));
-				$oblstrServiceAddressTypeSuffix		= $oblarrServiceAddress->Push (new dataString ('ServiceAddressTypeSuffix'));
-				$oblstrServiceStreetNumberStart		= $oblarrServiceAddress->Push (new dataString ('ServiceStreetNumberStart'));
-				$oblstrServiceStreetNumberEnd		= $oblarrServiceAddress->Push (new dataString ('ServiceStreetNumberEnd'));
-				$oblstrServiceStreetNumberSuffix	= $oblarrServiceAddress->Push (new dataString ('ServiceStreetNumberSuffix'));
-				$oblstrServiceStreetName			= $oblarrServiceAddress->Push (new dataString ('ServiceStreetName'));
-				$sstServiceStreetType				= $oblarrServiceAddress->Push (new ServiceStreetTypes ());
-				$sstServiceStreetSuffixType			= $oblarrServiceAddress->Push (new ServiceStreetSuffixTypes ());
-				$oblstrServicePropertyName			= $oblarrServiceAddress->Push (new dataString ('ServicePropertyName'));
-				$oblstrServiceLocality				= $oblarrServiceAddress->Push (new dataString ('ServiceLocality'));
-				$staServiceStateType				= $oblarrServiceAddress->Push (new ServiceStateTypes ());
-				$oblstrServicePostcode				= $oblarrServiceAddress->Push (new dataString ('ServicePostcode'));
-				
-				if ($_POST ['ServiceAddress'])
+				// Get the Rate Plan. If it doesn't exist
+				// then this is an error
+				try
 				{
-					$oblstrBillName						->setValue ($_POST ['ServiceAddress']['BillName']);
-					$oblstrBillAddress1					->setValue ($_POST ['ServiceAddress']['BillAddress1']);
-					$oblstrBillAddress2					->setValue ($_POST ['ServiceAddress']['BillAddress2']);
-					$oblstrBillLocality					->setValue ($_POST ['ServiceAddress']['BillLocality']);
-					$oblstrBillPostcode					->setValue ($_POST ['ServiceAddress']['BillPostcode']);
-					$oblstrEndUserGivenName				->setValue ($_POST ['ServiceAddress']['EndUserGivenName']);
-					$oblstrEndUserFamilyName			->setValue ($_POST ['ServiceAddress']['EndUserFamilyName']);
-					$oblstrEndUserCompanyName			->setValue ($_POST ['ServiceAddress']['EndUserCompanyName']);
-					$oblstrDateOfBirth_day				->setValue ($_POST ['ServiceAddress']['DateOfBirth-day']);
-					$oblstrDateOfBirth_month			->setValue ($_POST ['ServiceAddress']['DateOfBirth-month']);
-					$oblstrDateOfBirth_year				->setValue ($_POST ['ServiceAddress']['DateOfBirth-year']);
-					$oblstrEmployer						->setValue ($_POST ['ServiceAddress']['Employer']);
-					$oblstrOccupation					->setValue ($_POST ['ServiceAddress']['Occupation']);
-					$oblstrABN							->setValue ($_POST ['ServiceAddress']['ABN']);
-					$oblstrTradingName					->setValue ($_POST ['ServiceAddress']['TradingName']);
-					$oblstrServiceAddressTypeNumber		->setValue ($_POST ['ServiceAddress']['ServiceAddressTypeNumber']);
-					$oblstrServiceAddressTypeSuffix		->setValue ($_POST ['ServiceAddress']['ServiceAddressTypeSuffix']);
-					$oblstrServiceStreetNumberStart		->setValue ($_POST ['ServiceAddress']['ServiceStreetNumberStart']);
-					$oblstrServiceStreetNumberEnd		->setValue ($_POST ['ServiceAddress']['ServiceStreetNumberEnd']);
-					$oblstrServiceStreetNumberSuffix	->setValue ($_POST ['ServiceAddress']['ServiceStreetNumberSuffix']);
-					$oblstrServiceStreetName			->setValue ($_POST ['ServiceAddress']['ServiceStreetName']);
-					$oblstrServicePropertyName			->setValue ($_POST ['ServiceAddress']['ServicePropertyName']);
-					$oblstrServiceLocality				->setValue ($_POST ['ServiceAddress']['ServiceLocality']);
-					$oblstrServicePostcode				->setValue ($_POST ['ServiceAddress']['ServicePostcode']);
-					
-					$bolEndUserTitle			= $eutEndUserTitle				->setValue ($_POST ['ServiceAddress']['EndUserTitle']);
-					$bolServiceAddressType		= $satServiceAddressType		->setValue ($_POST ['ServiceAddress']['ServiceAddressType']);
-					$bolServiceStreetType		= $sstServiceStreetType			->setValue ($_POST ['ServiceAddress']['ServiceStreetType']);
-					$bolServiceStreetSuffixType	= $sstServiceStreetSuffixType	->setValue ($_POST ['ServiceAddress']['ServiceStreetTypeSuffix']);
-					$bolServiceStateType		= $staServiceStateType			->setValue ($_POST ['ServiceAddress']['ServiceState']);
-					
-					if ($_POST ['ServiceAddress']['EndUserTitle'] && !$bolEndUserTitle)
-					{
-						$oblstrError->setValue ('ServiceAddress-EndUserTitle');
-					}
-					else if ($_POST ['ServiceAddress']['ServiceAddressType'] && !$bolServiceAddressType)
-					{
-						$oblstrError->setValue ('ServiceAddress-ServiceAddressType');
-					}
-					else if ($_POST ['ServiceAddress']['ServiceStreetType'] && !$bolServiceStreetType)
-					{
-						$oblstrError->setValue ('ServiceAddress-ServiceStreetType');
-					}
-					else if ($_POST ['ServiceAddress']['ServiceStreetTypeSuffix'] && !$bolServiceStreetSuffixType)
-					{
-						$oblstrError->setValue ('ServiceAddress-ServiceStreetSuffixType');
-					}
-					else if ($_POST ['ServiceAddress']['ServiceState'] && !$bolServiceStateType)
-					{
-						$oblstrError->setValue ('ServiceAddress-ServiceStateType');
-					}
+					$rrpPlan = new RatePlan ($_POST ['RatePlan']);
+				}
+				catch (Exception $e)
+				{
+					$oblstrError->setValue ('Could not find valid Rate Plan');
 				}
 				
-				$docDocumentation->Explain ('Service Address');
-				
-				$Style->Output ('xsl/content/service/add_landline.xsl');
-				exit;
+				if ($rrpPlan)
+				{
+					// This Try will fail if there is an unarchived service
+					// with the same FNN already in the database
+					try
+					{
+						$srvService = Services::Add (
+							$athAuthentication->AuthenticatedEmployee (),
+							$actAccount,
+							$rrpPlan,
+							Array (
+								"FNN"					=> $_POST ['FNN'],
+								"Indial100"				=> isset ($_POST ['Indial100']) ? TRUE : FALSE,
+								"ServiceType"			=> $_POST ['ServiceType']
+							)
+						);
+						
+						header ("Location: service_view.php?Id=" . $srvService->Pull ('Id')->getValue ());
+						exit;
+					}
+					catch (Exception $e)
+					{
+						$oblstrError->setValue ($e->getMessage ());
+					}
+				}
 			}
+			
+			// Get the Plans that this ServiceType can have
+			$rplRatePlans = $Style->attachObject (new RatePlans);
+			$rplRatePlans->Constrain ('ServiceType',	'=', $_POST ['ServiceType']);
+			$rplRatePlans->Constrain ('Archived',		'=', 0);
+			$rplRatePlans->Order ('Name', TRUE);
+			$rplRatePlans->Sample ();
+			
+			$Style->Output ('xsl/content/service/add_2.xsl');
 		}
+		
+		exit;
 	}
 	
-	$Style->Output ('xsl/content/service/add.xsl');
+	// Output the Information
+	$Style->Output ('xsl/content/service/add_1.xsl');
 	
 ?>
