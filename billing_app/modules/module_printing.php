@@ -685,17 +685,16 @@
 		}
 		
 		// Append metadata to bill output file
-		$arrDefine		= $this->_arrDefine;
-		$arrDefine['FileFooter']	['Date']			['Value']	= date("d/m/Y");
-		$arrDefine['FileFooter']	['InvoiceCount']	['Value']	= $arrMetaData['Invoices'];
-		$arrDefine['FileFooter']	['Insert1Id']		['Value']	= 0;
-		$arrDefine['FileFooter']	['Insert2Id']		['Value']	= 0;
-		$arrDefine['FileFooter']	['Insert3Id']		['Value']	= 0;
-		$arrDefine['FileFooter']	['Insert4Id']		['Value']	= 0;
-		$arrDefine['FileFooter']	['Insert5Id']		['Value']	= 0;
-		$arrDefine['FileFooter']	['Insert6Id']		['Value']	= 0;
-		$arrAppend		= Array($arrDefine);
-		$strFooter		= "\n".implode("", $arrAppend);
+		$strFooter		=	"0019" .
+							date("d/m/Y") .
+							str_pad($arrMetaData['Invoices'], 10, "0", STR_PAD_LEFT) .
+							str_pad(0, 10, "0", STR_PAD_LEFT) .
+							str_pad(0, 10, "0", STR_PAD_LEFT) .
+							str_pad(0, 10, "0", STR_PAD_LEFT) .
+							str_pad(0, 10, "0", STR_PAD_LEFT) .
+							str_pad(0, 10, "0", STR_PAD_LEFT) .
+							str_pad(0, 10, "0", STR_PAD_LEFT);
+		
 		$ptrFile		= fopen($strFilename, "a");
 		fwrite($ptrFile, $strFooter);
 		fclose($ptrFile);
