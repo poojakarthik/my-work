@@ -48,6 +48,13 @@
 			isset ($_GET ['Order']['Method']) ? $_GET ['Order']['Method'] == 1 : TRUE
 		);
 	}
+	else
+	{
+		$rplRatePlans->Order (
+			"ServiceType",
+			TRUE
+		);
+	}
 	
 	$rplRatePlans->Sample ();
 	

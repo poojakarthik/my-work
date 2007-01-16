@@ -156,6 +156,13 @@
 									<table border="0" cellpadding="5" cellspacing="0">
 										<tr>
 											<td>
+												<a href="console.php">
+													<img src="img/template/address.png" title="Employee Console" class="MenuIcon" />
+												</a>
+											</td>
+										</tr>
+										<tr>
+											<td>
 												<a href="account_add.php">
 													<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
 												</a>
