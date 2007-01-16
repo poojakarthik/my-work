@@ -199,7 +199,7 @@
 			
 			$arrCost = $selCost->Fetch ();
 			
-			$this->Push (new dataFloat ('UnbilledCharges-Cost-Current', $arrCost ['totalCost'] != "" ? $arrCost ['totalCost'] : 0));
+			$this->Push (new dataFloat ('UnbilledCharges-Cost-Current', $arrCost ['totalCost'] != '' ? $arrCost ['totalCost'] : 0));
 		}
 		
 		//------------------------------------------------------------------------//
@@ -242,16 +242,16 @@
 			}
 			
 			$arrCharge = Array (
-				"AccountGroup"			=> $this->Pull ('AccountGroup')->getValue (),
-				"Account"				=> $this->Pull ('Account')->getValue (),
-				"Service"				=> $this->Pull ('Id')->getValue (),
-				"CreatedBy"				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				"CreatedOn"				=> date ('Y-m-d'),
-				"ChargeType"			=> $chgChargeType->Pull ('ChargeType')->getValue (),
-				"Description"			=> $chgChargeType->Pull ('Description')->getValue (),
-				"Nature"				=> $chgChargeType->Pull ('Nature')->getValue (),
-				"Amount"				=> $fltAmount,
-				"Status"				=> CHARGE_WAITING
+				'AccountGroup'			=> $this->Pull ('AccountGroup')->getValue (),
+				'Account'				=> $this->Pull ('Account')->getValue (),
+				'Service'				=> $this->Pull ('Id')->getValue (),
+				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'CreatedOn'				=> date ('Y-m-d'),
+				'ChargeType'			=> $chgChargeType->Pull ('ChargeType')->getValue (),
+				'Description'			=> $chgChargeType->Pull ('Description')->getValue (),
+				'Nature'				=> $chgChargeType->Pull ('Nature')->getValue (),
+				'Amount'				=> $fltAmount,
+				'Status'				=> CHARGE_WAITING
 			);
 			
 			$insCharge = new StatementInsert ('Charge');
@@ -298,23 +298,23 @@
 			}
 			
 			$arrRecurringCharge = Array (
-				"AccountGroup"			=> $this->Pull ('AccountGroup')->getValue (),
-				"Account"				=> $this->Pull ('Account')->getValue (),
-				"Service"				=> $this->Pull ('Id')->getValue (),
-				"CreatedBy"				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				"CreatedOn"				=> date ('Y-m-d'),
-				"ChargeType"			=> $rctRecurringChargeType->Pull ('ChargeType')->getValue (),
-				"Description"			=> $rctRecurringChargeType->Pull ('Description')->getValue (),
-				"Nature"				=> $rctRecurringChargeType->Pull ('Nature')->getValue (),
-				"RecurringFreqType"		=> $rctRecurringChargeType->Pull ('RecurringFreqType')->getValue (),
-				"RecurringDate"			=> $rctRecurringChargeType->Pull ('RecurringDate')->getValue (),
-				"MinCharge"				=> $rctRecurringChargeType->Pull ('MinCharge')->getValue (),
-				"RecursionCharge"		=> $fltAmount,
-				"CancellationFee"		=> $rctRecurringChargeType->Pull ('CancellationFee')->getValue (),
-				"Continuable"			=> $rctRecurringChargeType->Pull ('Continuable')->getValue (),
-				"TotalPaid"				=> 0,
-				"TotalRecursions"		=> 0,
-				"Status"				=> CHARGE_WAITING
+				'AccountGroup'			=> $this->Pull ('AccountGroup')->getValue (),
+				'Account'				=> $this->Pull ('Account')->getValue (),
+				'Service'				=> $this->Pull ('Id')->getValue (),
+				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'CreatedOn'				=> date ('Y-m-d'),
+				'ChargeType'			=> $rctRecurringChargeType->Pull ('ChargeType')->getValue (),
+				'Description'			=> $rctRecurringChargeType->Pull ('Description')->getValue (),
+				'Nature'				=> $rctRecurringChargeType->Pull ('Nature')->getValue (),
+				'RecurringFreqType'		=> $rctRecurringChargeType->Pull ('RecurringFreqType')->getValue (),
+				'RecurringDate'			=> $rctRecurringChargeType->Pull ('RecurringDate')->getValue (),
+				'MinCharge'				=> $rctRecurringChargeType->Pull ('MinCharge')->getValue (),
+				'RecursionCharge'		=> $fltAmount,
+				'CancellationFee'		=> $rctRecurringChargeType->Pull ('CancellationFee')->getValue (),
+				'Continuable'			=> $rctRecurringChargeType->Pull ('Continuable')->getValue (),
+				'TotalPaid'				=> 0,
+				'TotalRecursions'		=> 0,
+				'Status'				=> CHARGE_WAITING
 			);
 			
 			$insRecurringCharge = new StatementInsert ('RecurringCharge');
@@ -470,7 +470,7 @@
 			
 			// Set up an Archive SET clause
 			$arrArchive = Array (
-				"ClosedOn"	=>	($bolArchive == true) ? date ('Y-m-d') : null
+				'ClosedOn'	=>	($bolArchive == true) ? date ('Y-m-d') : null
 			);
 			
 			// Cascade down to include the Services
@@ -501,7 +501,7 @@
 			
 			// Cancel the Service on this specific date
 			$arrClose = Array (
-				"ClosedOn"		=>	date ("Y-m-d", strtotime ("-1 day", $intDate))
+				'ClosedOn'		=>	date ('Y-m-d', strtotime ('-1 day', $intDate))
 			);
 			
 			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrClose);
@@ -571,35 +571,35 @@
 			$bolServiceStateType		= $staServiceStateType->setValue ($arrDetails ['ServiceState']);
 			
 			$arrData = Array (
-				"BillName"						=> $arrDetails ['BillName'],
-				"BillAddress1"					=> $arrDetails ['BillAddress1'],
-				"BillAddress2"					=> $arrDetails ['BillAddress2'],
-				"BillLocality"					=> $arrDetails ['BillLocality'],
-				"BillPostcode"					=> sprintf ("%04d", $arrDetails ['BillPostcode']),
-				"EndUserTitle"					=> (($bolEndUserTitle == true) ? $arrDetails ['EndUserTitle'] : ""),
-				"EndUserGivenName"				=> $arrDetails ['EndUserGivenName'],
-				"EndUserFamilyName"				=> $arrDetails ['EndUserFamilyName'],
-				"EndUserCompanyName"			=> $arrDetails ['EndUserCompanyName'],
-				"DateOfBirth"					=> sprintf ("%04d", $arrDetails ['DateOfBirth:year']) . 
-												   sprintf ("%02d", $arrDetails ['DateOfBirth:month']) . 
-												   sprintf ("%02d", $arrDetails ['DateOfBirth:day']),
-				"Employer"						=> $arrDetails ['Employer'],
-				"Occupation"					=> $arrDetails ['Occupation'],
-				"ABN"							=> $arrDetails ['ABN'],
-				"TradingName"					=> $arrDetails ['TradingName'],
-				"ServiceAddressType"			=> (($bolServiceAddressType == true) ? $arrDetails ['ServiceAddressType'] : ""),
-				"ServiceAddressTypeNumber"		=> $arrDetails ['ServiceAddressTypeNumber'],
-				"ServiceAddressTypeSuffix"		=> $arrDetails ['ServiceAddressTypeSuffix'],
-				"ServiceStreetNumberStart"		=> $arrDetails ['ServiceStreetNumberStart'],
-				"ServiceStreetNumberEnd"		=> $arrDetails ['ServiceStreetNumberEnd'],
-				"ServiceStreetNumberSuffix"		=> $arrDetails ['ServiceStreetNumberSuffix'],
-				"ServiceStreetName"				=> $arrDetails ['ServiceStreetName'],
-				"ServiceStreetType"				=> (($bolServiceStreetType == true) ? $arrDetails ['ServiceStreetType'] : ""),
-				"ServiceStreetTypeSuffix"		=> (($bolServiceStreetSuffixType == true) ? $arrDetails ['ServiceStreetTypeSuffix'] : ""),
-				"ServicePropertyName"			=> $arrDetails ['ServicePropertyName'],
-				"ServiceLocality"				=> $arrDetails ['ServiceLocality'],
-				"ServiceState"					=> (($bolServiceStateType == true) ? $arrDetails ['ServiceState'] : ""),
-				"ServicePostcode"				=> sprintf ("%04d", $arrDetails ['ServicePostcode'])
+				'BillName'						=> $arrDetails ['BillName'],
+				'BillAddress1'					=> $arrDetails ['BillAddress1'],
+				'BillAddress2'					=> $arrDetails ['BillAddress2'],
+				'BillLocality'					=> $arrDetails ['BillLocality'],
+				'BillPostcode'					=> sprintf ('%04d', $arrDetails ['BillPostcode']),
+				'EndUserTitle'					=> (($bolEndUserTitle == true) ? $arrDetails ['EndUserTitle'] : ''),
+				'EndUserGivenName'				=> $arrDetails ['EndUserGivenName'],
+				'EndUserFamilyName'				=> $arrDetails ['EndUserFamilyName'],
+				'EndUserCompanyName'			=> $arrDetails ['EndUserCompanyName'],
+				'DateOfBirth'					=> sprintf ('%04d', $arrDetails ['DateOfBirth:year']) . 
+												   sprintf ('%02d', $arrDetails ['DateOfBirth:month']) . 
+												   sprintf ('%02d', $arrDetails ['DateOfBirth:day']),
+				'Employer'						=> $arrDetails ['Employer'],
+				'Occupation'					=> $arrDetails ['Occupation'],
+				'ABN'							=> $arrDetails ['ABN'],
+				'TradingName'					=> $arrDetails ['TradingName'],
+				'ServiceAddressType'			=> (($bolServiceAddressType == true) ? $arrDetails ['ServiceAddressType'] : ''),
+				'ServiceAddressTypeNumber'		=> $arrDetails ['ServiceAddressTypeNumber'],
+				'ServiceAddressTypeSuffix'		=> $arrDetails ['ServiceAddressTypeSuffix'],
+				'ServiceStreetNumberStart'		=> $arrDetails ['ServiceStreetNumberStart'],
+				'ServiceStreetNumberEnd'		=> $arrDetails ['ServiceStreetNumberEnd'],
+				'ServiceStreetNumberSuffix'		=> $arrDetails ['ServiceStreetNumberSuffix'],
+				'ServiceStreetName'				=> $arrDetails ['ServiceStreetName'],
+				'ServiceStreetType'				=> (($bolServiceStreetType == true) ? $arrDetails ['ServiceStreetType'] : ''),
+				'ServiceStreetTypeSuffix'		=> (($bolServiceStreetSuffixType == true) ? $arrDetails ['ServiceStreetTypeSuffix'] : ''),
+				'ServicePropertyName'			=> $arrDetails ['ServicePropertyName'],
+				'ServiceLocality'				=> $arrDetails ['ServiceLocality'],
+				'ServiceState'					=> (($bolServiceStateType == true) ? $arrDetails ['ServiceState'] : ''),
+				'ServicePostcode'				=> sprintf ('%04d', $arrDetails ['ServicePostcode'])
 			);
 			
 			
@@ -608,12 +608,28 @@
 			// Otherwise
 				// Create a new Service Address and Update the Service to reflect this Service Address
 			
-			/*
-			$updServiceAddress = new StatementUpdate ("ServiceAddress", 'Id = <Id>', $arrData, 1);
-			$updServiceAddress->Execute ($arrData, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			$intServiceAddress = $this->Pull ('ServiceAddress')->getValue ();
 			
-			return true;
-			*/
+			if (!$intServiceAddress)
+			{
+				// Insert Service Address
+				$insServiceAddress = new StatementInsert ('ServiceAddress');
+				$intServiceAddress = $insServiceAddress->Execute ($arrData);
+				
+				// Update Service
+				$arrServiceUpdate = Array ('ServiceAddress' => $intServiceAddress);
+				
+				$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrServiceUpdate, 1);
+				$updService->Execute ($arrServiceUpdate, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			}
+			else
+			{
+				// Update Service Address
+				$updServiceAddress = new StatementUpdate ('ServiceAddress', 'Id = <Id>', $arrData, 1);
+				$updServiceAddress->Execute ($arrData, Array ('Id' => $intServiceAddress));
+				
+				return true;
+			}
 		}
 	}
 	

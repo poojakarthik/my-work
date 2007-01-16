@@ -90,7 +90,7 @@
 					</xsl:if>
 					
 					
-					<form method="post" action="service_address_apply.php">
+					<form method="post" action="service_address.php">
 						<input type="hidden" name="Service">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
@@ -204,7 +204,7 @@
 														<xsl:text></xsl:text>
 														<xsl:value-of select="./Id" />
 													</xsl:attribute>
-													<xsl:if test="/Response/ServiceAddress/ServiceEndUserTitle = ./Id">
+													<xsl:if test="/Response/ServiceAddress/EndUserTitle = ./Id">
 														<xsl:attribute name="selected">
 															<xsl:text>selected</xsl:text>
 														</xsl:attribute>
@@ -547,7 +547,7 @@
 														<xsl:text></xsl:text>
 														<xsl:value-of select="./Id" />
 													</xsl:attribute>
-													<xsl:if test="/Response/ServiceAddress/ServiceStreetSuffixType = ./Id">
+													<xsl:if test="/Response/ServiceAddress/ServiceStreetTypeSuffix = ./Id">
 														<xsl:attribute name="selected">
 															<xsl:text>selected</xsl:text>
 														</xsl:attribute>
@@ -607,7 +607,7 @@
 														<xsl:text></xsl:text>
 														<xsl:value-of select="./Id" />
 													</xsl:attribute>
-													<xsl:if test="/Response/ServiceAddress/ServiceStateType = ./Id">
+													<xsl:if test="/Response/ServiceAddress/ServiceState = ./Id">
 														<xsl:attribute name="selected">
 															<xsl:text>selected</xsl:text>
 														</xsl:attribute>
