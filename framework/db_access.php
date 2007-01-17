@@ -411,7 +411,7 @@
 	{
 		if ((defined(USER_NAME)) && (USER_NAME != "intranet_app"))
 		{
-			Debug($this->Error());
+			Debug($this->Error(), 'console');
 		}
 	}
 	
