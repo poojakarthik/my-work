@@ -633,6 +633,11 @@ abstract class NormalisationModule
 	 {
 
 	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN'], "date" => (string)$this->_arrNormalisedData['StartDatetime']));
+	 	
+	 	if ($intResult === FALSE)
+	 	{
+	 		Debug($this->_selFindOwner->Error());
+	 	}
 		
 	 	if ($arrResult = $this->_selFindOwner->Fetch())
 	 	{
@@ -646,6 +651,12 @@ abstract class NormalisationModule
 	 		$arrParams['fnn'] = substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
 	 		
 	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
+	 		
+	 		if ($intResult === FALSE)
+	 		{
+	 			Debug($this->_selFindOwnerIndial100->Error());
+	 		}
+	 		
 	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
 	 		{
 	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
@@ -683,6 +694,11 @@ abstract class NormalisationModule
 
 	 	$intResult = $this->_selFindRecordCode->Execute(Array("Carrier" => $this->_arrNormalisedData["Carrier"], "CarrierCode" => $mixCarrierCode));
 		
+		if($intResult === FALSE)
+		{
+			Debug($this->_selFindRecordCode->Error());
+		}
+		
 	 	if ($arrResult = $this->_selFindRecordCode->Fetch())
 	 	{
 	 		return $arrResult['Code'];
@@ -714,6 +730,11 @@ abstract class NormalisationModule
 	 {
 
 	 	$intResult = $this->_selFindRecordType->Execute(Array("ServiceType" => $intServiceType, "Code" => $strRecordCode));
+		
+		if ($intResult === FALSE)
+		{
+			Debug($this->_selFindRecordType->Error());
+		}
 		
 	 	if ($arrResult = $this->_selFindRecordType->Fetch())
 	 	{
@@ -747,6 +768,11 @@ abstract class NormalisationModule
 	 {
 	 	$arrData = Array("Carrier" => $this->_arrNormalisedData["Carrier"], "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
 		$intResult = $this->_selFindDestination->Execute($arrData);
+		
+		if ($intResult === FALSE)
+		{
+			Debug($this->_selFindDestination->Error());
+		}
 		
 	 	if ($arrResult = $this->_selFindDestination->Fetch())
 	 	{
