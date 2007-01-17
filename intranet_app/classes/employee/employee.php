@@ -73,6 +73,97 @@
 			// Construct the object
 			parent::__construct ('Employee', $this->Pull ('Id')->getValue ());
 		}
+		
+		//------------------------------------------------------------------------//
+		// Update
+		//------------------------------------------------------------------------//
+		/**
+		 * Update()
+		 *
+		 * Updates the Employee
+		 *
+		 * Updates the Employee
+		 *
+		 * @param	AuthenticatedEmployee		$aemAuthenticatedEmployee		The employee (admin) who is updating this employee
+		 * @param	Array						$arrData						The data to update to
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function Update (AuthenticatedEmployee $aemAuthenticatedEmployee, $arrData)
+		{
+			// If we're not updating our personal profile, then we have to be updating 
+			// the profile of someone else. In this case, we want to lock this method off
+			// so that only Admin users can do this
+			
+			if ($aemAuthenticatedEmployee->Pull ('Id')->getValue () <> $this->Pull ('Id')->getValue ())
+			{
+				// If this person isn't an Admin user, then they shouldn't be in this Method, so throw an exception
+				if (!HasPermission ($aemAuthenticatedEmployee->Pull ('Priviledges')->getValue (), PERMISSIONG_ADMIN))
+				{
+					throw new Exception ('You do not have access to update this employee');
+				}
+			}
+			
+			$arrEmployee = Array (
+				'FirstName'				=> $arrData ['FirstName'],
+				'LastName'				=> $arrData ['LastName'],
+				'UserName'				=> $arrData ['UserName']
+			);
+			
+			if (!empty ($arrData ['PassWord']))
+			{
+				$arrEmployee ['PassWord'] = sha1 ($arrData ['PassWord']);
+			}
+			
+			$updEmployee = new StatementUpdate ('Employee', 'Id = <Id>', $arrEmployee, 1);
+			$updEmployee->Execute ($arrEmployee, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
+		
+		//------------------------------------------------------------------------//
+		// ArchiveStatus
+		//------------------------------------------------------------------------//
+		/**
+		 * ArchiveStatus()
+		 *
+		 * Update Employee Archive Status
+		 *
+		 * Update Employee Archive Status. If an Unarchive is being attempted, 
+		 * this method will check that the UserName hasn't been 'snatched' by someone else.
+		 * If it has been snatched, then it will throw an Exception
+		 *
+		 * @param	Boolean		$bolArchive		TRUE/FALSE:		Whether or not to Archive this Employee
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function ArchiveStatus ($bolArchive)
+		{
+			// If we want to Unarchive an Employee, we have to Ensure that there isn't an unarchive (active)
+			// account with the same username. If there is, throw an Exception
+			
+			if ($bolArchive == FALSE)
+			{
+				$selEmployee = new StatementSelect ('Employee', 'count(*) AS length', 'UserName = <UserName> AND Archived = 0');
+				$selEmployee->Execute (Array ('UserName' => $this->Pull ('UserName')->getValue ()));
+				$arrUserNames = $selEmployee->Fetch ();
+				
+				if ($arrUserNames ['length'] <> 0)
+				{
+					throw new Exception ('UserName Obtained Elsewhere');
+				}
+			}
+			
+			// Set up an Archive SET clause
+			$arrArchive = Array (
+				"Archived"	=>	($bolArchive == TRUE) ? "1" : "0"
+			);
+			
+			$updEmployee = new StatementUpdate ('Employee', 'Id = <Id>', $arrArchive, 1);
+			$updEmployee->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
 	}
 	
 ?>

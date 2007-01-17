@@ -39,7 +39,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'show', 'slow');">
+					<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'show', 'slow'); return false;">
 						<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
 					</a>
 				</td>

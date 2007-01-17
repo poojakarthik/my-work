@@ -17,18 +17,22 @@
 	// call application
 	require ('config/application.php');
 	
+	try
+	{
+		// Using GET
+		$empEmployee = $Style->attachObject (new Employee ($_GET ['Id']));
+	}
+	catch (Exception $e)
+	{
+		// If the account does not exist, an exception will be thrown
+		$Style->Output ('xsl/content/employee/notfound.xsl');
+		exit;
+	}
 	
-	// Start a new Employee Search
-	$emsEmployees = $Style->attachObject (new Employees);
-	$emsEmployees->Constrain ('Archived', '=', 0);
+	// Pull documentation information for an Account
+	$docDocumentation->Explain ('Employee');
+	$docDocumentation->Explain ('Archive');
 	
-	// Pull a Sample
-	$emsEmployees->Sample (
-		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
-		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : null
-	);
-	
-	// Output the Result
-	$Style->Output ('xsl/content/employee/list.xsl');
+	$Style->Output ('xsl/content/employee/edited.xsl');
 	
 ?>

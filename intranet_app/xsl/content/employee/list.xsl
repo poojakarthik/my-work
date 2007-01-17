@@ -55,5 +55,9 @@
 				</div>
 			</xsl:when>
 		</xsl:choose>
+		
+		<div class="LinkAdd">
+			<a href="employee_add.php">Add Employee</a>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>
