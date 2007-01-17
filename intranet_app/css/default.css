@@ -719,26 +719,21 @@
 	.modalContainer
 	{
 		width:					750px;
-		
 		padding:				5px;
-		
 		background-color:		#FFFFFF;
 	}
 	
 	.modalContent
 	{
 		height:					300px;
-		
 		margin:					5px;
 		padding:				5px;
-		
 		overflow-y:				auto;
 	}
 	
 	.modalIcon, .modalLabel, .modalClose
 	{
 		padding:				5px;
-		
 		font-family:			Tahoma, Arial, Helvetica, sans-serif;
 		font-size:				8pt;
 	}
