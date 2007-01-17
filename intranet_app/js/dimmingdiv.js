@@ -21,6 +21,9 @@
 //
 //************************************************************************************
 
+//TODO!bash! what the hell is this file ? there is no real explanation and the name doesn't make it obvious
+//TODO!bash! open a long page, scroll down a bit, then click recent customers, div opens in wrong place
+
 //
 // global variables
 //

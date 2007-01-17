@@ -7,7 +7,6 @@
 		<h1>Find Customer</h1>
 		
 		<h2 class="Account">Select an Account</h2>
-		<div class="Seperator"></div>
 		
 		<div class="sectionContainer">
 			<div class="sectionContent">

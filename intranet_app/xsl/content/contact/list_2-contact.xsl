@@ -7,7 +7,6 @@
 		<h1>Find Customer</h1>
 		
 		<h2 class="Contact">Select a Contact</h2>
-		<div class="Seperator"></div>
 		
 		<form method="post" action="contact_list.php">
 			<input type="hidden" name="ui-Account">
@@ -120,6 +119,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
+			<!-- TODO!bash! this is letting me continue without selecting a contact first -->
 			<input type="submit" class="input-submit" value="Continue &#0187;" />
 		</form>
 	</xsl:template>

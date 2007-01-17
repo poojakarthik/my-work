@@ -15,7 +15,6 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="Account">Account Details</h2>
-		<div class="Seperator"></div>
 		
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">

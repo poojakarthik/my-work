@@ -9,7 +9,6 @@
 		<script language="javascript" src="js/validate_customer.js"></script>
 		
 		<h2 class="Contact">Customer Verification</h2>
-		<div class="Seperator"></div>
 		
 		<form method="POST" action="contact_list.php">
 			<input type="hidden" name="ui-Account">
@@ -72,7 +71,7 @@
 					<xsl:value-of select="/Response/ui-values/FNN" />
 				</xsl:attribute>
 			</input>
-			
+				
 			<div class="Filter-Form-Content Left">
 				<div class="Filter-Form">
 					<div class="Filter-Form-Content">
@@ -570,13 +569,14 @@
 			<div class="Clear"></div>
 			<input type="submit" name="Confirm" class="input-submit-locked" value="Continue &#0187;" id="Confirm" disabled="disabled" />
 			<div class="Seperator"></div>
-			
-			<div class="MsgNotice" style="width: 600px">
-				You cannot continue unless you verify the customer details above.
-				When you have verified enough of their details, the button to Continue will
-				change colour, indicating that you are allowing the person through 
-				to their account.
+			<!-- TODO!bash! make this box the same width as the other boxes -->
+			<!-- TODO!bash! why are some of the boxes on this page different widths ? -->
+			<div class="MsgNotice">
+				Customers must provide verification details before being allowed access to an Account.<br/>
+				Input boxes will turn green when correct details have been entered.<br/>
+				The continue button will turn green once sufficient verification details have been entered.
 			</div>
+			
 		</form>
 	</xsl:template>
 	

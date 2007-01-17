@@ -7,7 +7,6 @@
 		<h1>Find Customer</h1>
 		
 		<h2 class="Contact">Search for a Customer</h2>
-		<div class="Seperator"></div>
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>

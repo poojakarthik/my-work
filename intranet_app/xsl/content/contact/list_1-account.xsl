@@ -7,8 +7,7 @@
 		<h1>Find Customer</h1>
 		
 		<h2 class="Account">Select an Account</h2>
-		<div class="Seperator"></div>
-		
+		<!-- TODO!bash! don't show this page if there is only one account found -->
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<form method="post" action="contact_list.php">
