@@ -32,8 +32,7 @@
 				</xsl:attribute>
 			</input>
 			
-			<h2>Account Details</h2>
-			<div class="Seperator"></div>
+			<h2 class="Account">Account Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
@@ -60,8 +59,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Service Details</h2>
-			<div class="Seperator"></div>
+			<h2 class="Service">Service Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
@@ -123,11 +121,11 @@
 									<table border="0" cellpadding="3" cellspacing="0">
 										<tr>
 											<td><input type="checkbox" name="Indial100" id="Indial100:TRUE" value="1" /></td>
-											<th>
+											<td>
 												<label for="Indial100:TRUE">
-													Yes, this is the GDM of an Indial 100 number
+													this service is the GDN for a 100 number Indial Range
 												</label>
-											</th>
+											</td>
 										</tr>
 									</table>
 								</td>

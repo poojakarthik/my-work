@@ -15,8 +15,7 @@
 				</xsl:attribute>
 			</input>
 			
-			<h2>Account Details</h2>
-			<div class="Seperator"></div>
+			<h2 class="Account">Account Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
@@ -43,8 +42,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Service Details</h2>
-			<div class="Seperator"></div>
+			<h2 class="Service">Service Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">

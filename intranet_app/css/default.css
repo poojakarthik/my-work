@@ -49,6 +49,13 @@
 		width:		70px;
 	}
 	
+	.Navigation
+	{
+		Position: 	fixed;
+		top:		1;
+		left:		1;
+	}
+	
 	div#Header
 	{
 		background-color:     #000000;

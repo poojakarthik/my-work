@@ -107,7 +107,7 @@
 									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
 									<td>
 										<label for="Archive:TRUE">
-											Yes, please <strong><span class="Red">Archive this Service</span></strong>.
+											<strong><span class="Red">Archive</span></strong> this Service.
 										</label>
 									</td>
 								</tr>

@@ -75,6 +75,8 @@ die();
  	{
 		parent::__construct();
 	}
+	
+	//TODO!flame! make this application do something
  }
 
 

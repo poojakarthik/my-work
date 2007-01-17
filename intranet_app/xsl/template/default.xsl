@@ -73,7 +73,7 @@
 					<table border="0" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
 							<td valign="top" width="100">
-								<div id="Navigation" class="Left sectionContent">
+								<div id="Navigation" class="Left sectionContent Navigation">
 									<!--
 											<ul id="Navigation-Root">
 												<li>

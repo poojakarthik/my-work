@@ -109,10 +109,10 @@
 										<td>
 											<xsl:choose>
 												<xsl:when test="/Response/Service/Indial100 = 1">
-													<strong><span class="Green">Indial 100 Support</span></strong>
+													<strong><span class="Green">Yes</span></strong>
 												</xsl:when>
 												<xsl:otherwise>
-													<strong><span class="Red">No Indial 100 Support</span></strong>
+													No
 												</xsl:otherwise>
 											</xsl:choose>
 										</td>
@@ -162,7 +162,7 @@
 												</xsl:call-template>
 											</xsl:when>
 											<xsl:otherwise>
-												<strong><span class="Green">No Close Pending</span></strong>
+												No Close Pending
 											</xsl:otherwise>
 										</xsl:choose>
 									</td>
