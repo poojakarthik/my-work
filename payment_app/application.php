@@ -189,7 +189,10 @@ die();
 		// Loop through the Payment File entries
 		$intCount	= 0;
 		$intPassed	= 0;
-		$this->_selGetPaymentFiles->Execute();
+		if ($this->_selGetPaymentFiles->Execute() === FALSE)
+		{
+			Debug($this->_selGetPaymentFiles->Error());
+		}
 		while ($arrFile = _selGetPaymentFiles->Fetch())
 		{
 			$intCount++;
@@ -201,7 +204,10 @@ die();
 				// Report the error, and UPDATE the database with a new status, then move to the next file
 				$arrColumns['Id']		= $arrFile['Id'];
 				$arrColumns['Status']	= PAYMENT_BAD_IMPORT;
-				$this->_ubiPaymentFile->Execute($arrFile);
+				if ($this->_ubiPaymentFile->Execute($arrFile) === FALSE)
+				{
+					Debug($this->_ubiPaymentFile->Error());
+				}
 				
 				// Add to the Normalisation report
 				$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Cannot locate file '".$arrFile['Location']."'");
@@ -218,7 +224,10 @@ die();
 				$arrData['SequenceNo']	= $intSequence;
 				$arrData['File']		= $arrFile['Id'];
 				$arrData['Status']		= PAYMENT_IMPORTED;
-				$this->_insPayment->Execute($arrData);
+				if ($this->_insPayment->Execute($arrData) === FALSE)
+				{
+					Debug($this->_insPayment->Error());
+				}
 				
 				// Increment sequence number
 				$intSequence++;
@@ -253,7 +262,14 @@ die();
 	{
 		// get next 1000 payments
 		$intCount = $this->_selGetImportedPayments->Execute();
-		if ($intCount == 0)
+		if ($intCount === FALSE)
+		{
+			Debug($this->_selGetImportedPayments->Error());
+			
+			// No payments left, so return false
+			return FALSE;
+		}
+		elseif ($intCount == 0)
 		{
 			// No payments left, so return false
 			return FALSE;
@@ -290,6 +306,7 @@ die();
 				$arrNormalised['Id']		= $arrPayment['Id'];
 				if ($this->_ubiSavePaymentStatus->Execute($arrNormalised) === FALSE)
 				{
+					Debug($this->_ubiSavePaymentStatus->Error());
 					$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 				}
 				continue;
@@ -297,7 +314,12 @@ die();
 			
 			// save the payment to DB
 			$arrNormalised['Status'] = PAYMENT_WAITING;
-			if(!$this->_ubiSaveNormalisedPayment->Execute($arrNormalised))
+			$intResult = $this->_ubiSaveNormalisedPayment->Execute($arrNormalised);
+			if($intResult === FALSE)
+			{
+				$this->_ubiSaveNormalisedPayment->Error();
+			}
+			elseif(!$intResult)
 			{
 				$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 			}
@@ -327,8 +349,13 @@ die();
 	 {
 		// get next 1000 payments
 		$intCount = $this->_selGetNormalisedPayments->Execute();
-		if ($intCount == 0)
+		if (!$intCount)
 		{
+			if ($this->_selGetNormalisedPayments->Error())
+			{
+				Debug($this->_selGetNormalisedPayments->Error());
+			}
+			
 			// No payments left, so return false
 			return FALSE;
 		}
@@ -344,7 +371,10 @@ die();
 			// get a list of outstanding invoices for this account group
 			//		(and account if we have one in $arrPayment) sorted oldest invoice first
 			$arrWhere['AccountGroup'] = $arrPayment['AccountGroup'];
-			$this->_selOutstandingInvoices->Execute($arrWhere);
+			if ($this->_selOutstandingInvoices->Execute($arrWhere) === FALSE)
+			{
+				Debug($this->_selOutstandingInvoices->Error());
+			}
 			
 			// set default status
 			$this->_arrPayment['Status'] = PAYMENT_PAYING; 
@@ -372,7 +402,10 @@ die();
 				}
 				
 				// update payment table
-				$this->_ubiPayment->Execute($this->_arrPayment);
+				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
+				{
+					Debug($this->_ubiPayment->Error());
+				}
 				
 				$this->_rptPaymentsReport->AddMessage(MSG_OK);
 			}
@@ -383,7 +416,10 @@ die();
 				$this->_arrPayment['Status'] = PAYMENT_FINISHED;
 				
 				// update payment table
-				$this->_ubiPayment->Execute($this->_arrPayment);
+				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
+				{
+					Debug($this->_ubiPayment->Error());
+				}
 			}
 			
 			// Process successful
@@ -435,10 +471,16 @@ die();
 		$arrInvoicePayment['Invoice']	= $this->_arrCurrentInvoice['Id'];
 		$arrInvoicePayment['Payment']	= $this->_arrCurrentPayment['Id'];
 		$arrInvoicePayment['Amount']	= $fltPayment;
-		$this->_insInvoicePayment->Execute($arrInvoicePayment);
+		if ($this->_insInvoicePayment->Execute($arrInvoicePayment) === FALSE)
+		{
+			Debug($this->_insInvoicePayment->Error());
+		}
 		
 		// update the invoice
-		$this->_ubiInvoice->Execute($this->_arrCurrentInvoice);
+		if ($this->_ubiInvoice->Execute($this->_arrCurrentInvoice) === FALSE)
+		{
+			Debug($this->_ubiInvoice->Error());
+		}
 		
 		// save the balance
 		$this->_arrCurrentPayment['Balance'] = $fltBalance;
