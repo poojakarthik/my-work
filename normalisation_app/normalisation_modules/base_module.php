@@ -282,7 +282,7 @@ abstract class NormalisationModule
 		// source : empty or valid FNN
 		if ($this->_arrNormalisedData["Source"] != "")															// 3
 		{
-			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d{2}REV)I?$/", 	$this->_arrNormalisedData["Source"]);
+			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", 	$this->_arrNormalisedData["Source"]);
 		}
 		else
 		{
