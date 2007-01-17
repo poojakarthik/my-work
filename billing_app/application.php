@@ -140,7 +140,7 @@ die();
 		// Init Select Statements
 		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
 		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL); // FIXME: Remove Limit
-		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance)", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
+		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "Nature, SUM(Amount) AS Amount",
 															  "Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
@@ -380,7 +380,11 @@ die();
 				continue;
 			}
 			$arrAccountBalance = $selCalcAccountBalance->Fetch();
-			$fltAccountBalance = $arrAccountBalance['SUM(Balance)'];
+			if (($fltAccountBalance = $arrAccountBalance['AccountBalance']) == NULL)
+			{
+				$fltAccountBalance = 0.0;
+			}
+			
 			
 			// AccountGroup.CreditBalance
 			//TODO!!!!
