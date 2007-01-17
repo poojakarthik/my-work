@@ -324,7 +324,7 @@
 		$arrDefine['PaymentData']		['AddressLine2']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine2']['Value'];
 		$arrDefine['PaymentData']		['AddressLine3']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine3']['Value'];
 		$arrDefine['PaymentData']		['AddressLine4']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine4']['Value'];
-		$arrDefine['PaymentData']		['AddressLine5']	['Value']	= "{$arrDefine['Suburb']}   {$arrDefine['State']}   {$arrDefine['Postcode']}";
+		$arrDefine['PaymentData']		['AddressLine5']	['Value']	= "{$arrDefine['InvoiceDetails']['Suburb']['Value']}   {$arrDefine['InvoiceDetails']['State']['Value']}   {$arrDefine['InvoiceDetails']['Postcode']['Value']}";
 		$arrDefine['PaymentData']		['PaymentMethod']	['Value']	= $arrCustomerData['BillingType'];
 		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= "FREE One Month Trial for our unlimited " .
 																		  "Dial Up Internet. Call customer care to " .
@@ -437,7 +437,6 @@
 
 					$this->_selRecordTypeTotal->Execute($arrSelectData);
 					$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
-					Debug($arrRecordTypeTotal);
 					$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
 				}
 				
