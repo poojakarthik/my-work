@@ -37,23 +37,35 @@
 		exit;
 	}
 	
+	// Error String
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
+	
+	
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we're using GET or POST
 	if ($_SERVER ['REQUEST_METHOD'] == "POST")
 	{
-		$srvService->Update (
-			Array (
-				"FNN"				=> $_POST ['FNN']
-			)
-		);
-		
-		if (isset ($_POST ['Archived']))
+		// Check the Line Numbers Match
+		if ($_POST ['FNN']['1'] <> $_POST ['FNN']['2'])
 		{
-			$srvService->ArchiveStatus ($_POST ['Archived']);
+			$oblstrError->setValue ('Mismatch');
 		}
-		
-		header ("Location: service_view.php?Id=" . $srvService->Pull ('Id')->getValue ());
-		exit;
+		else
+		{
+			$srvService->Update (
+				Array (
+					"FNN"				=> $_POST ['FNN']['1']
+				)
+			);
+			
+			if (isset ($_POST ['Archived']))
+			{
+				$srvService->ArchiveStatus ($_POST ['Archived']);
+			}
+			
+			header ("Location: service_view.php?Id=" . $srvService->Pull ('Id')->getValue ());
+			exit;
+		}
 	}
 	
 	// Pull documentation information for Service

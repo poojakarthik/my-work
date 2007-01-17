@@ -7,6 +7,16 @@
 	<xsl:template name="Content">
 		<h1>Edit Service</h1>
 		
+		<xsl:if test="/Response/Error != ''">
+			<div class="MsgError">
+				<xsl:choose>
+					<xsl:when test="/Response/Error = 'Mismatch'">
+						Your Line Numbers did not match eachother.
+					</xsl:when>
+				</xsl:choose>
+			</div>
+		</xsl:if>
+		
 		<form method="POST" action="service_edit.php">
 			<h2 class="Service">Service Details</h2>
 			<div class="Filter-Form">
@@ -48,12 +58,23 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="FNN" class="input-string">
+								<input type="text" name="FNN[1]" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Service/FNN" />
 									</xsl:attribute>
 								</input>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service')" />
+									<xsl:with-param name="field" select="string('RepeatFNN')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="FNN[2]" class="input-string" />
 							</td>
 						</tr>
 					</table>
