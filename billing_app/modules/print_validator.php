@@ -527,7 +527,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				{
 					Debug("'$mixData'");
 					return "Data is not of type BILL_TYPE_SHORTDATE in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
-				}						
+				}
 				break;
 			case BILL_TYPE_LONGDATE:
 				$strRegex = "/^\d{2} [A-Za-z]{3} \d{4}$/";
@@ -548,7 +548,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 			case BILL_TYPE_DURATION:
 				$strDuration = ltrim($mixData, " ");
 				$strRegex = "/^\d{1,3}:\d{2}:\d{2}$/";
-				if (!preg_match($strRegex, $mixData) || strlen($mixData) > $strValue['Length'])
+				if (!preg_match($strRegex, $strDuration) || strlen($mixData) > $strValue['Length'])
 				{
 					Debug("'$mixData'");
 					return "Data is not of type BILL_TYPE_DURATION in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
