@@ -235,7 +235,7 @@ $appMaster->Run();
 		// write to database
 		if ($this->_updMasterState->Execute($arrData, NULL) === FALSE)
 		{
-			Debug($this->_updMasterState->Error());
+
 		}
 	}
 	
@@ -259,7 +259,7 @@ $appMaster->Run();
 		// read our current state from the database
 		if ($this->_selGetState->Execute() === FALSE)
 		{
-			Debug($this->_selGetState->Error());
+
 		}
 		$arrResult = $this->_selGetState->Fetch();
 		$this->_arrState = Unserialize($arrResult['State']); 
@@ -314,7 +314,7 @@ $appMaster->Run();
 		// read any instructions from the database
 		if ($this->_selGetInstructions->Execute() === FALSE)
 		{
-			Debug($this->_selGetInstructions->Error());
+
 		}
 		$arrInstructions = $this->_selGetInstructions->FetchAll();
 		
@@ -351,7 +351,7 @@ $appMaster->Run();
 			// clear instruction from db
 			if ($this->_qryDeleteInstruction->Execute("DELETE FROM MasterInstruction WHERE Id = ".$arrInstruction['Id']) === FALSE)
 			{
-				Debug($this->_qryDeleteInstruction->Error());
+
 			}
 		}
 		
@@ -377,7 +377,7 @@ $appMaster->Run();
 		// clear all instructions from the database
 		if ($this->_qryTruncate->Execute("MasterInstruction"))
 		{
-			Debug($this->_qryTruncate->Error());
+
 		}
 	}
 	
