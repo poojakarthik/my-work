@@ -563,7 +563,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 					Debug("'$mixData'");
 					return "Data is not of type BILL_TYPE_SHORTCURRENCY in field '$strKey' ({$strValue['Start']}:{$strValue['Length']}) on line";
 				}
-				$mixData = "$".(float)$mixData;
+				$mixData = sprintf("$%01.2f", (float)$mixData);
 				break;
 			default:
 				// Invalid data type
