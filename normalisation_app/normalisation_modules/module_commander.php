@@ -89,7 +89,8 @@ class NormalisationModuleCommander extends NormalisationModule
 		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
 		$arrDefine ['Datetime']			['Validate']	= "/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/";
 		$arrDefine ['Duration']			['Validate']	= "/^-?\d+$/";
-		$arrDefine ['OriginNo']			['Validate']	= "/^\+?\d+$/";
+		$arrDefine ['OriginNo']			['Validate']	= "/^(\+?\d+(REV|I)?|)$/";
+		$arrDefine ['DestinationNo']	['Validate']	= "/^(\+?\d+(REV|I)?|)$/";
 		$arrDefine ['ChargedParty']		['Validate']	= "/^\+?\d+$/";
 		$arrDefine ['Currency']			['Validate']	= "/^AUD$/";
 		$arrDefine ['Price']			['Validate']	= "/^-?\d+\.\d\d*$/";

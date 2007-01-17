@@ -93,8 +93,8 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$arrDefine ['RecordType']		['Validate']	= "/^[178]$/";
 		$arrDefine ['DateTime']			['Validate']	= "/^((\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d)|(\"\d{2}\/\d{2}\/\d{4})\")$/";
 		$arrDefine ['Duration']			['Validate']	= "/^(-?\d+|)$/";
-		$arrDefine ['OriginNo']			['Validate']	= "/^(\+?\d+|)$/";
-		$arrDefine ['DestinationNo']	['Validate']	= "/^(\+?\d+|)$/";
+		$arrDefine ['OriginNo']			['Validate']	= "/^(\+?\d+(REV|I)?|)$/";
+		$arrDefine ['DestinationNo']	['Validate']	= "/^(\+?\d+(REV|I)?|)$/";
 		$arrDefine ['ChargedParty']		['Validate']	= "/^\"?\+?\d+\"?$/";
 		$arrDefine ['Currency']			['Validate']	= "/^(AUD|\"AUD\\$\")$/";
 		$arrDefine ['Price']			['Validate']	= "/^-?\\$?\d+\.\d\d*$/";
