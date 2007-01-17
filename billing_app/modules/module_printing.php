@@ -437,7 +437,8 @@
 
 					$this->_selRecordTypeTotal->Execute($arrSelectData);
 					$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
-					$fltRecordTypeTotal	= $arrRecordTypeTotal['RecordTypeTotal'];
+					Debug($arrRecordTypeTotal);
+					$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
 				}
 				
 				// build charge record
