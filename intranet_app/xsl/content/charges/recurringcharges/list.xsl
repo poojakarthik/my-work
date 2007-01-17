@@ -58,6 +58,13 @@
 										<xsl:text>)</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View Details</xsl:text>
+								</a>,
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>charges_recurringcharge_archive.php?Id=</xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+									<xsl:text>Archive Recurring Charge</xsl:text>
 								</a>
 							</td>
 						</tr>

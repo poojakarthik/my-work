@@ -75,6 +75,33 @@
 			
 			$this->Push (new BillingFreqTypes ($this->Pull ('RecurringFreqType')->getValue ()));
 		}
+		
+		//------------------------------------------------------------------------//
+		// Archive
+		//------------------------------------------------------------------------//
+		/**
+		 * Archive()
+		 *
+		 * Archive or Unarchive the Charge
+		 *
+		 * Archive or Unarchive the Charge
+		 *
+		 * @param	Boolean		$bolArchive		TRUE/FALSE: Whether or not to Archive the Charge Type
+		 * @param	Void
+		 *
+		 * @method
+		 */
+		
+		public function Archive ($bolArchive)
+		{
+			// Define the Archive/Unarchive
+			$arrRecurringChargeType = Array (
+				"Archived"	=> $bolArchive
+			);
+			
+			$updChargeType = new StatementUpdate ('RecurringChargeType', 'Id = <Id>', $arrRecurringChargeType, 1);
+			$updChargeType->Execute ($arrRecurringChargeType, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
 	}
 	
 ?>

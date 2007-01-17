@@ -20,7 +20,7 @@
 	$strMessage  = "This page is currently unavailable<br>";
 	$strMessage .= "Please contact your system administrator for assistance.";
 	
-	$Style->AttachObject (new DataString("Error", $strMessage));
+	$Style->attachObject (new DataString("Error", $strMessage));
 	
 	$Style->Output ("xsl/content/error/error.xsl");
 	

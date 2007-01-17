@@ -107,22 +107,29 @@ else
 	}
 }
 
-/*
-TODO: Uncomment and fix this ...
-
 // Get user permission
-$intUserPermission = $athAuthentication->AuthenticatedEmployee()->Pull('Priviledges')->GetValue();
 
-// Check if the user is allowed to view this page
-if (!HasPermission($intUserPermission, $arrPage['Permission']))
+if (!HasPermission(PERMISSION_PUBLIC, $arrPage['Permission']))
 {
-	// User has no permission... KILL THEM
-	//TODO!!!! - build the error page
-	header ("Location: error_user_permission.php");
-	exit;
+	if ($athAuthentication->isAuthenticated ())
+	{
+		$intUserPermission = $athAuthentication->AuthenticatedEmployee()->Pull('Priviledges')->getValue();
+		
+		// Check if the user is allowed to view this page
+		if (!HasPermission($intUserPermission, $arrPage['Permission']))
+		{
+			// User has no permission... KILL THEM
+			header ("Location: error_user_permission.php");
+			exit;
+		}
+	}
+	else
+	{
+		// User has no permission... KILL THEM
+		header ("Location: error_user_permission.php");
+		exit;
+	}
 }
-*/
-
 
 //----------------------------------------------------------------------------//
 // LOAD CLASSES

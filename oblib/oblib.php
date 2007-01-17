@@ -191,7 +191,7 @@
 		
 		public function setValue ($nodeValue)
 		{
-			$nodeValue = preg_replace ("/^\$/", "", $nodeValue);
+			$nodeValue = preg_replace ("/^\$/misU", "", $nodeValue);
 			
 			if (!is_numeric ($nodeValue))
 			{

@@ -19,7 +19,8 @@
 	
 	// Start a new Account Search
 	$rclRecurringChargeTypes = $Style->attachObject (new RecurringChargeTypes ());
-	$rclRecurringChargeTypes->Order ('ChargeType', TRUE);
+	$rclRecurringChargeTypes->Constrain	('Archived',	'=',	FALSE);
+	$rclRecurringChargeTypes->Order		('ChargeType',	TRUE);
 	$rclRecurringChargeTypes->Sample ();
 	
 	$Style->Output ('xsl/content/charges/recurringcharges/list.xsl');
