@@ -350,7 +350,7 @@
 		foreach($arrServices as $arrService)
 		{
 			// The individual RecordTypes for each Service
-			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id']));
+			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
 			if ($intSummaryCount === FALSE)
 			{
 
@@ -376,7 +376,7 @@
 		// DETAILS
 		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
-		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
 		if ($intItemisedCount === FALSE)
 		{
 
@@ -434,7 +434,7 @@
 					$arrSelectData['Account']			= $arrInvoiceDetails['Account'];
 					$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
 
-					if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
+					if ($this->_selRecordTypeTotal->Execute($arrSelectData, Array('InvoiceRun' => $arrInvoiceDetails['InvoiceRun'])) === FALSE)
 					{
 
 					}
