@@ -379,8 +379,8 @@ die();
 				$intFailed++;
 				continue;
 			}
-			$fltAccountBalance = $selCalcAccountBalance->Fetch();
-			Debug($fltAccountBalance);
+			$arrAccountBalance = $selCalcAccountBalance->Fetch();
+			$fltAccountBalance = $arrAccountBalance['SUM(Balance)'];
 			
 			// AccountGroup.CreditBalance
 			//TODO!!!!
