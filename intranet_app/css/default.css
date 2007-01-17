@@ -682,12 +682,18 @@
 		background-image:              url('../img/template/invoice.png');
 	}
 	
-	#Debug_Button
+	.Menu_Button
 	{
 		display:                       inline;
-		
 		margin-left:                   30px;
-		
+		line-height:                   20px;
+		vertical-align:                bottom;
+	}
+	
+	.Debug_Button
+	{
+		display:                       inline;
+		margin-left:                   5px;
 		line-height:                   20px;
 		vertical-align:                bottom;
 	}
@@ -702,7 +708,7 @@
 	
 	
 	
-	
+	#modalContent-ReportBug,
 	#modalContent-systemDebug,
 	#modalContent-recentCustomers,
 	#modalContent-PabloSays

@@ -4,7 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Rate Plans</h1>
+		<h1>Available Plans</h1>
 		
 		<script language="javascript" src="js/rates_plan_list.js"></script>
 		
@@ -79,9 +79,7 @@
 			<div class="sectionContent">
 				<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 					<tr class="First">
-						<th width="30">#</th>
-						<th>Rate Plan Id</th>
-						<th>Rate Plan Name</th>
+						<th>Plan Name</th>
 						<th>Service Type</th>
 						<th>Archive</th>
 						<th>Actions</th>
@@ -98,8 +96,6 @@
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:attribute>
-							<td><xsl:value-of select="position()" />.</td>
-							<td><xsl:value-of select="./Id" /></td>
 							<td><xsl:value-of select="./Name" /></td>
 							<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 							<td>

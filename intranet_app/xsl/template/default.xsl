@@ -6,6 +6,9 @@
 	<xsl:output method="xml" version="1.0" encoding="iso-8859-1" indent="yes" 
 	doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" />
 	
+	<!-- TODO!bash! LOOK BASH, XSL files can be commented !!!! -->
+	<!-- TODO!bash! at a minimum I want to see comments to show different sections within each XSL file !!!! -->
+	
 	<xsl:template match="/">
 		<html>
 			<head>
@@ -13,7 +16,7 @@
 				<link rel="stylesheet" type="text/css" href="css/default.css" />
 				<script language="javascript" src="js/init.js"></script>
 				
-				<!-- Popup Control -->
+				<!-- Load Javascript : Popup Control -->
 				<script language="javascript" src="js/lightbox/jquery-latest.js"></script>
 				<script language="javascript" src="js/lightbox/dimensions.js"></script>
 				<script language="javascript" src="js/lightbox/jquery-modalContent.js"></script>
@@ -30,13 +33,44 @@
 						</div>
 						<div class="Right">
 							Version 7.01
+						
+						<!-- Report Bug Button & PopUp -->
+						<div class="Menu_Button">
+								<a href="#" onclick="$('#modalContent-ReportBug').modalContent(null, 'show', 'slow');">
+									<img src="img/template/bug.png" border="0" />
+								</a>
+							</div>
 							
+							<div id="modalContent-ReportBug">
+								<div class="modalContainer">
+
+									<div class="modalContent">
+										<!-- TODO!bash! add a form to report a bug -->
+										<!-- TODO!bash! save bugs to the db see BugReport table def -->
+									</div>
+									<div class="modalTitle">
+										<div class="modalIcon Left">
+											<img src="img/template/lady-debug.png" />
+										</div>
+										<div class="modalLabel Left">
+											<strong>Report Bug</strong><br />
+											
+										</div>
+										<div class="modalClose Right">
+											<img src="img/template/closelabel.gif" class="close" />
+										</div>
+										<div class="Clear"></div>
+									</div>
+								</div>
+							</div>
+							
+							<!-- System Debug Button & PopUp -->
 							<xsl:if test="/Response/SystemDebug">
-								<div id="Debug_Button">
+								<span class="Debug_Button">
 									<a href="#" onclick="$('#modalContent-systemDebug').modalContent(null, 'show', 'slow');">
 										<img src="img/template/debug.png" border="0" />
 									</a>
-								</div>
+								</span>
 								
 								<div id="modalContent-systemDebug">
 									<div class="modalContainer">
@@ -69,6 +103,7 @@
 					<div class="Clear"></div>
 				</div>
 
+				<!-- Navigation Menu -->
 				<div id="Controller" class="sectionContainer">
 					<table border="0" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
@@ -211,6 +246,7 @@
 				</div>
 				<div class="Clear"></div>
 
+				<!-- Recent Customers PopUp -->
 				<div id="modalContent-recentCustomers">
 					<div class="modalContainer">
 						<div class="modalContent">
