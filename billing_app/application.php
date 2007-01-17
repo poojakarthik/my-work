@@ -380,6 +380,7 @@ die();
 				continue;
 			}
 			$fltAccountBalance = $selCalcAccountBalance->Fetch();
+			Debug($fltAccountBalance);
 			
 			// AccountGroup.CreditBalance
 			//TODO!!!!
