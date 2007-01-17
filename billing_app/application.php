@@ -139,7 +139,7 @@ die();
 		
 		// Init Select Statements
 		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
-		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL, "1000"); // FIXME: Remove Limit
+		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL, "500"); // FIXME: Remove Limit
 		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "Nature, SUM(Amount) AS Amount",
