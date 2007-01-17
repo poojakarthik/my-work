@@ -375,7 +375,7 @@ die();
 			if(!$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id'])))
 			{				
 				// Report and fail out
-				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n");
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Cannot retrieve Account Balance");
 				$intFailed++;
 				continue;
 			}
@@ -412,7 +412,7 @@ die();
 			if(!$insTempInvoice->Execute($arrInvoiceData))
 			{				
 				// Report and fail out
-				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n");
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Insert failed");
 				$intFailed++;
 				continue;
 			}
