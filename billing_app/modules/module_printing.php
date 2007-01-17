@@ -146,13 +146,12 @@
 																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id AND CDR.Credit = 0 AND CDR.InvoiceRun = <InvoiceRun> AND Status = ".CDR_TEMP_INVOICE,
 																"CDR.FNN, RType.Name, CDR.StartDatetime");
 																
-		$this->_selRecordTypeTotal		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
+		$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
 																"RecordType AS RType",
-																"SUM(CDR.Charge) AS TotalCharge",
-																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND CDR.Account = <Account> AND CDR.Credit = 0 AND CDR.InvoiceRun = <InvoiceRun> AND Status = ".CDR_TEMP_INVOICE,
+																"ServiceTypeTotal.Charge AS Charge",
+																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND ServiceTypeTotal.FNN = <FNN> AND ServiceTypeTotal.InvoiceRun = <InvoiceRun>",
 																NULL,
-																"1",
-																"RType.Id");
+																"1");
 		
 		
 		//----------------------------------------------------------------------------//
@@ -235,7 +234,7 @@
 		{
 			// Display the previous bill details
 			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'];						
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= 0 - ((float)$arrInvoiceDetails['AccountBalance'] - (float)$arrBillHistory[0]['AccountBalance']);
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= abs(0 - ((float)$arrInvoiceDetails['AccountBalance'] - (float)$arrBillHistory[0]['AccountBalance']));
 		}
 		else
 		{
@@ -342,10 +341,6 @@
 		// SUMMARY SERVICES
 		// get details from servicetype totals
 		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
-		if ($intCount === FALSE)
-		{
-
-		}
 		$arrServices = $this->_selServices->FetchAll();
 		
 		// build output
@@ -355,10 +350,6 @@
 		{
 			// The individual RecordTypes for each Service
 			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
-			if ($intSummaryCount === FALSE)
-			{
-
-			}
 			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
 
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
@@ -376,7 +367,7 @@
 			$arrServiceData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 			$this->_selServiceTotal->Execute($arrServiceData);
 			$arrServiceTotal = $this->_selServiceTotal->Fetch();
-			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $arrServiceTotal['Total'];
+			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $arrServiceTotal['TotalCharge'];
 			$arrFileData[] = $arrDefine['SvcSummSvcFooter'];
 		}
 		$arrFileData[] = $arrDefine['SvcSummaryFooter'];
@@ -440,14 +431,11 @@
 					$strCurrentRecordType	= $arrData['RecordTypeName'];
 					
 					// Get the RecordType total
-					$arrSelectData['Account']			= $arrInvoiceDetails['Account'];
+					$arrSelectData['FNN']				= $strCurrentService;
 					$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
-					$arrSelectData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+					$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
 
-					if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
-					{
-
-					}
+					$this->_selRecordTypeTotal->Execute($arrSelectData);
 					$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
 					$fltRecordTypeTotal	= $arrRecordTypeTotal['RecordTypeTotal'];
 				}
