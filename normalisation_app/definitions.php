@@ -32,7 +32,7 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"						, "Normilisation_app");
+define("USER_NAME"						, "Normalisation_app");
 
 // Normalisation Report Messages
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");

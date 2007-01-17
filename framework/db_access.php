@@ -25,9 +25,6 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
-
-// TODO: Add Functionality for MySQL Function in INSERT + SELECT
- 
  
 //----------------------------------------------------------------------------//
 // DataAccess
@@ -409,7 +406,7 @@
 	 */ 
 	function Debug()
 	{
-		if ((defined(USER_NAME)) && (USER_NAME != "intranet_app"))
+		if ((defined(USER_NAME)) && (USER_NAME != "Intranet_app"))
 		{
 			Debug($this->Error(), 'console');
 		}
@@ -1686,7 +1683,6 @@ class MySQLFunction
 		// Trace
 		$this->Trace("Query: $strQuery");
 		
-		// DEBUG
 		$this->_strQuery = $strQuery;
 	 	
 	 	// Init and Prepare the mysqli_stmt

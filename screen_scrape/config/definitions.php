@@ -32,6 +32,6 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"						, "Skell_app");
+define("USER_NAME"						, "Scrape_app");
 
 ?>

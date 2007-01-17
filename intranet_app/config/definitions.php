@@ -32,7 +32,7 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"						, "intranet_app");
+define("USER_NAME"						, "Intranet_app");
 
 
 // IMPORTANT NOTE !!!! - Permissions & Modules

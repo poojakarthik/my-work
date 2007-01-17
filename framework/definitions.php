@@ -103,7 +103,7 @@ define("FATAL_TEST_EXCEPTION"		, 80085);
 // CDR Handling (Range is 100-199)
 define("CDR_READY"						, 100);
 define("CDR_NORMALISED"					, 101);
-define("CDR_CANT_NORMALISE"				, 102); // TODO: Expand to define specific reasons for failed processing
+define("CDR_CANT_NORMALISE"				, 102);
 define("CDR_CANT_NORMALISE_RAW"			, 103);
 define("CDR_CANT_NORMALISE_BAD_SEQ_NO"	, 104);
 define("CDR_CANT_NORMALISE_HEADER"		, 105);

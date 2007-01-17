@@ -446,6 +446,7 @@ die();
 			OR SUM( ServiceTotal.TotalCharge ) != InvoiceTemp.Total
 			)
 		 */
+		$this->_rptBillingReport->AddMessage("Validating Invoice Totals...\t\t\t", FALSE);
 		$strSelect	=	"InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM(ServiceTypeTotal.Charge) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM(ServiceTotal.TotalCharge) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal";
 		$strFrom	=	"ServiceTotal, ServiceTypeTotal, InvoiceTemp";
 		$strWhere	=	"ServiceTypeTotal.Service = ServiceTotal.Service AND " .
@@ -453,20 +454,21 @@ die();
 		$strHaving	=	"(SUM(ServiceTypeTotal.Charge) != ServiceTotal.TotalCharge OR " .
 						"SUM(ServiceTotal.TotalCharge) != InvoiceTemp.Total)";
 		$selBillValidate = new StatementSelect($strFrom, $strSelect, $strWhere, NULL, NULL, "InvoiceTemp.Account\nHAVING ".$strHaving);
-		$selBillValidate->Execute();
+		$intInvalid = $selBillValidate->Execute();
 		$arrBillValid = $selBillValidate->Fetch();
-		if($selBillValidate->Error())
+		if($intInvalid === FALSE)
 		{
 			// Error
-
 		}
-		elseif (count($arrBillValid) == 0)
+		if ($intInvalid == 0)
 		{
-			// TODO: Report Success
+			// Report Success
+			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		else
 		{
-			// TODO: Report Bad Match & how many didn't match
+			// Report Bad Match & how many didn't match
+			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- $intInvalid invalid invoices");
 		}
 		
 		// BILLING OUTPUT

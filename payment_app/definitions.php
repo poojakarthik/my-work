@@ -32,7 +32,7 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"	, "payment_app");
+define("USER_NAME"	, "Payment_app");
 
 // reporting messages
 define("MSG_IMPORT_TITLE"				, "[ Importing Payment Records ]\n");
