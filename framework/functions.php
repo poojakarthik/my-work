@@ -119,6 +119,8 @@ function Debug($mixOutput, $strMode="html")
 			break;
 		case 'report':
 		case 'rpt':
+		case 'console':
+		case 'terminal':
 			echo $mixOutput;
 			break;
 			
