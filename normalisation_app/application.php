@@ -252,7 +252,10 @@ die();
 		$updUpdateCDRFiles			= new StatementUpdate("FileImport", "Id = <id>", $arrDefine);
 		
 		
-		$selSelectCDRFiles->Execute($arrWhere);
+		if ($selSelectCDRFiles->Execute($arrWhere) === FALSE)
+		{
+			Debug($selSelectCDRFiles->Error());
+		}
 		
 		$intCount = 0;
 
@@ -265,7 +268,10 @@ die();
 				// Report the error, and UPDATE the database with a new status, then move to the next file
 				new ExceptionVixen("Specified CDR File doesn't exist", $this->_errErrorHandler, CDR_FILE_DOESNT_EXIST);
 				$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
-				$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
+				if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
+				{
+					Debug($updUpdateCDRFiles->Error());
+				}
 				
 				// Add to the Normalisation report
 				$this->AddToNormalisationReport(MSG_FAIL_FILE_MISSING, Array('<Path>' => $arrCDRFile["Location"]));
@@ -319,7 +325,10 @@ die();
  	{
 		// if TEMP_INVOICE or INVOICED return false
 		$selCanDeleteCDRs = new StatementSelect("CDR", "COUNT(Id)", "File = $intFileImportId AND (Status = ".CDR_TEMP_INVOICE." OR Status = ".CDR_INVOICED.")");
-		$selCanDeleteCDRs->Execute();
+		if ($selCanDeleteCDRs->Execute() === FALSE)
+		{
+			Debug($selCanDeleteCDRs->Error());
+		}
 		$arrResult = $selCanDeleteCDRs->Fetch();
 		if ($arrResult[0] > 0)
 		{
@@ -328,7 +337,12 @@ die();
 		
 		// remove cdrs
 		$qryDeleteCDRs = new Query();
-		return $qryDeleteCDRs->Execute("DELETE FROM CDR WHERE File = ".$intFileImportId);
+		$intResult = $qryDeleteCDRs->Execute("DELETE FROM CDR WHERE File = ".$intFileImportId);
+		if ($intResult == FALSE)
+		{
+			Debug($qryDeleteCDRs->Error());
+		}
+		return $intResult;
  	}
  	
  	
@@ -358,7 +372,12 @@ die();
 		
 		// Delete CDR File entry in FileImport
 		$qryDeleteCDRFile = new Query();
-		return $qryDeleteCDRFile->Execute("DELETE FROM FileImport WHERE Id = ".$intFileImportId);
+		$intResult = $qryDeleteCDRFile->Execute("DELETE FROM FileImport WHERE Id = ".$intFileImportId);
+		if ($intResult === FALSE)
+		{
+			Debug($qryDeleteCDRFile->Error());
+		} 
+		return $qryDeleteCDRs;
  	}
  	
  	
@@ -391,7 +410,10 @@ die();
 			// Set the File status to "Importing"
 			$arrCDRFile["Status"] = CDRFILE_IMPORTING;
 			$arrCDRFile['ImportedOn'] 	= new MySQLFunction("NOW()");
-			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
+			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
+			{
+				Debug($updUpdateCDRFiles->Error());
+			}
 			
 			// Set fields that are consistent over all CDRs for this file
 			$arrCDRLine["File"]			= $arrCDRFile["Id"];
@@ -437,7 +459,7 @@ die();
 					if ($insInsertCDRLine->Error())
 					{
 						// error inserting
-						//TODO!!!! - report this & any other SQL errors
+						Debug($insInsertCDRLine->Error());
 					}
 				}
 				$intSequence++;
@@ -458,7 +480,10 @@ die();
 			// Set the File status to "Normalised"
 			$arrCDRFile["Status"]		= CDRFILE_NORMALISED;
 			//$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
-			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
+			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
+			{
+				Debug($updUpdateCDRFiles->Error());
+			}
 		}
 		catch (ExceptionVixen $exvException)
 		{
@@ -466,7 +491,10 @@ die();
 			
 			// Set the File status to "Failed"
 			$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
-			$updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"]));
+			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
+			{
+				$updUpdateCDRFiles->Error();
+			}
 			
 			// Report
 			//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_CORRUPT);
@@ -535,7 +563,10 @@ die();
 		$strOrder	= "";
 		$strLimit	= "1000";
  		$selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
-		$selSelectCDRs->Execute(Array("status" => CDR_READY));
+		if ($selSelectCDRs->Execute(Array("status" => CDR_READY)) === FALSE)
+		{
+			Debug($selSelectCDRs->Error());
+		}
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
 		// we will return FALSE if there are no CDRs to normalise
@@ -644,7 +675,10 @@ die();
 			
 			$arrCDR['NormalisedOn'] = new MySQLFunction("NOW()");
  			// Save CDR back to the DB
-			$updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])); 
+			if ($updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])) === FALSE)
+			{
+				Debug($updUpdateCDRs->Error());
+			} 
  		}
  		
  		// Generate Delinquent Report
