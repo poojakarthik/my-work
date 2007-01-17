@@ -703,6 +703,8 @@
 		if (file_exists($strFilename))
 		{
 			unlink($strFilename);
+			unlink($strMetaName);
+			unlink($strZipName);
 		}
 		if ($qryBuildFile->Execute($strQuery) === FALSE)
 		{
