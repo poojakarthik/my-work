@@ -37,7 +37,7 @@
 		$arrPrintDefine['InvoiceDetails']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['InvoiceDetails']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['InvoiceDetails']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['InvoiceDetails']	['RecordType']		['Value']	= "10";
+		$arrPrintDefine['InvoiceDetails']	['RecordType']		['Value']	= "0010";
 		$arrPrintDefine['InvoiceDetails']	['RecordType']		['Print']	= FALSE;
 		
 		$arrPrintDefine['InvoiceDetails']	['InvoiceNo']		['Start']	= 4;
@@ -132,7 +132,7 @@
 		$arrPrintDefine['GraphHeader']		['RecordType']		['Start']	= 0;
 		$arrPrintDefine['GraphHeader']		['RecordType']		['Length']	= 4;
 		$arrPrintDefine['GraphHeader']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['GraphHeader']		['RecordType']		['Value']	= "20";
+		$arrPrintDefine['GraphHeader']		['RecordType']		['Value']	= "0020";
 		
 		$arrPrintDefine['GraphHeader']		['GraphType']		['Start']	= 4;
 		$arrPrintDefine['GraphHeader']		['GraphType']		['Length']	= 2;
@@ -208,7 +208,7 @@
 		$arrPrintDefine['GraphData']		['RecordType']		['Start']	= 0;
 		$arrPrintDefine['GraphData']		['RecordType']		['Length']	= 4;
 		$arrPrintDefine['GraphData']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['GraphData']		['RecordType']		['Value']	= "21";
+		$arrPrintDefine['GraphData']		['RecordType']		['Value']	= "0021";
 		
 		$arrPrintDefine['GraphData']		['Title']			['Start']	= 4;
 		$arrPrintDefine['GraphData']		['Title']			['Length']	= 20;
@@ -260,7 +260,7 @@
 		$arrPrintDefine['GraphFooter']		['RecordType']		['Start']	= 0;
 		$arrPrintDefine['GraphFooter']		['RecordType']		['Length']	= 4;
 		$arrPrintDefine['GraphFooter']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['GraphFooter']		['RecordType']		['Value']	= "29";
+		$arrPrintDefine['GraphFooter']		['RecordType']		['Value']	= "0029";
 		
 		
 		
@@ -268,7 +268,7 @@
 		$arrPrintDefine['ChargeTotalsHeader']['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ChargeTotalsHeader']['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ChargeTotalsHeader']['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ChargeTotalsHeader']['RecordType']		['Value']	= "40";
+		$arrPrintDefine['ChargeTotalsHeader']['RecordType']		['Value']	= "0040";
 		
 		
 		
@@ -276,7 +276,7 @@
 		$arrPrintDefine['ChargeTotal']		['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ChargeTotal']		['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ChargeTotal']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ChargeTotal']		['RecordType']		['Value']	= "41";
+		$arrPrintDefine['ChargeTotal']		['RecordType']		['Value']	= "0041";
 		
 		$arrPrintDefine['ChargeTotal']		['ChargeName']		['Start']	= 4;
 		$arrPrintDefine['ChargeTotal']		['ChargeName']		['Length']	= 40;
@@ -293,7 +293,7 @@
 		$arrPrintDefine['ChargeTotalsFooter']['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ChargeTotalsFooter']['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ChargeTotalsFooter']['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ChargeTotalsFooter']['RecordType']		['Value']	= "49";
+		$arrPrintDefine['ChargeTotalsFooter']['RecordType']		['Value']	= "0049";
 		
 		$arrPrintDefine['ChargeTotalsFooter']['BillTotal']		['Start']	= 4;
 		$arrPrintDefine['ChargeTotalsFooter']['BillTotal']		['Length']	= 11;
@@ -306,7 +306,7 @@
 		$arrPrintDefine['PaymentData']		['RecordType']		['Start']	= 0;
 		$arrPrintDefine['PaymentData']		['RecordType']		['Length']	= 4;
 		$arrPrintDefine['PaymentData']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['PaymentData']		['RecordType']		['Value']	= "11";
+		$arrPrintDefine['PaymentData']		['RecordType']		['Value']	= "0011";
 		
 		$arrPrintDefine['PaymentData']		['BillExpBillerId']	['Start']	= 4;
 		$arrPrintDefine['PaymentData']		['BillExpBillerId']	['Length']	= 6;
@@ -381,7 +381,7 @@
 		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Value']	= "50";
+		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Value']	= "0050";
 		
 		
 		
@@ -390,7 +390,7 @@
 		$arrPrintDefine['SvcSummaryFooter']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummaryFooter']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummaryFooter']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['SvcSummaryFooter']	['RecordType']		['Value']	= "59";
+		$arrPrintDefine['SvcSummaryFooter']	['RecordType']		['Value']	= "0059";
 		
 		
 		
@@ -399,7 +399,7 @@
 		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Value']	= "60";
+		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Value']	= "0060";
 		
 		$arrPrintDefine['SvcSummSvcHeader']	['FNN']				['Start']	= 4;
 		$arrPrintDefine['SvcSummSvcHeader']	['FNN']				['Length']	= 10;
@@ -416,7 +416,7 @@
 		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Value']	= "61";
+		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Value']	= "0061";
 		
 		$arrPrintDefine['SvcSummaryData']	['CallType']		['Start']	= 4;
 		$arrPrintDefine['SvcSummaryData']	['CallType']		['Length']	= 40;
@@ -437,7 +437,7 @@
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Value']	= "69";
+		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Value']	= "0069";
 		
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Start']	= 4;
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Length']	= 11;
@@ -450,7 +450,7 @@
 		$arrPrintDefine['ItemisedHeader']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemisedHeader']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemisedHeader']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemisedHeader']	['RecordType']		['Value']	= "70";
+		$arrPrintDefine['ItemisedHeader']	['RecordType']		['Value']	= "0070";
 		
 		
 		
@@ -458,7 +458,7 @@
 		$arrPrintDefine['ItemSvcHeader']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemSvcHeader']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemSvcHeader']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemSvcHeader']	['RecordType']		['Value']	= "80";
+		$arrPrintDefine['ItemSvcHeader']	['RecordType']		['Value']	= "0080";
 		
 		$arrPrintDefine['ItemSvcHeader']	['FNN']				['Start']	= 4;
 		$arrPrintDefine['ItemSvcHeader']	['FNN']				['Length']	= 10;
@@ -470,7 +470,7 @@
 		$arrPrintDefine['ItemCallTypeHeader']['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemCallTypeHeader']['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemCallTypeHeader']['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemCallTypeHeader']['RecordType']		['Value']	= "90";
+		$arrPrintDefine['ItemCallTypeHeader']['RecordType']		['Value']	= "0090";
 		
 		$arrPrintDefine['ItemCallTypeHeader']['CallType']		['Start']	= 4;
 		$arrPrintDefine['ItemCallTypeHeader']['CallType']		['Length']	= 40;
@@ -482,7 +482,7 @@
 		$arrPrintDefine['ItemisedDataCall']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemisedDataCall']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemisedDataCall']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemisedDataCall']	['RecordType']		['Value']	= "91";
+		$arrPrintDefine['ItemisedDataCall']	['RecordType']		['Value']	= "0091";
 		
 		$arrPrintDefine['ItemisedDataCall']	['Date']			['Start']	= 4;
 		$arrPrintDefine['ItemisedDataCall']	['Date']			['Length']	= 10;
@@ -514,7 +514,7 @@
 		$arrPrintDefine['ItemisedDataS&E']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemisedDataS&E']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemisedDataS&E']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemisedDataS&E']	['RecordType']		['Value']	= "92";
+		$arrPrintDefine['ItemisedDataS&E']	['RecordType']		['Value']	= "0092";
 		
 		$arrPrintDefine['ItemisedDataS&E']	['Description']		['Start']	= 4;
 		$arrPrintDefine['ItemisedDataS&E']	['Description']		['Length']	= 100;
@@ -534,7 +534,7 @@
 		$arrPrintDefine['ItemisedDataKB']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemisedDataKB']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemisedDataKB']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemisedDataKB']	['RecordType']		['Value']	= "93";
+		$arrPrintDefine['ItemisedDataKB']	['RecordType']		['Value']	= "0093";
 		
 		$arrPrintDefine['ItemisedDataKB']	['Date']			['Start']	= 4;
 		$arrPrintDefine['ItemisedDataKB']	['Date']			['Length']	= 10;
@@ -566,7 +566,7 @@
 		$arrPrintDefine['ItemisedDataSMS']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemisedDataSMS']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemisedDataSMS']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemisedDataSMS']	['RecordType']		['Value']	= "94";
+		$arrPrintDefine['ItemisedDataSMS']	['RecordType']		['Value']	= "0094";
 		
 		$arrPrintDefine['ItemisedDataSMS']	['Date']			['Start']	= 4;
 		$arrPrintDefine['ItemisedDataSMS']	['Date']			['Length']	= 10;
@@ -598,7 +598,7 @@
 		$arrPrintDefine['ItemCallTypeFooter']['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemCallTypeFooter']['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemCallTypeFooter']['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemCallTypeFooter']['RecordType']		['Value']	= "99";
+		$arrPrintDefine['ItemCallTypeFooter']['RecordType']		['Value']	= "0099";
 		
 		$arrPrintDefine['ItemCallTypeFooter']['TotalCharge']		['Start']	= 4;
 		$arrPrintDefine['ItemCallTypeFooter']['TotalCharge']		['Length']	= 11;
@@ -610,7 +610,7 @@
 		$arrPrintDefine['ItemSvcFooter']		['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemSvcFooter']		['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemSvcFooter']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemSvcFooter']		['RecordType']		['Value']	= "89";
+		$arrPrintDefine['ItemSvcFooter']		['RecordType']		['Value']	= "0089";
 		
 /*		$arrPrintDefine['ItemSvcFooter']		['TotalCharge']		['Start']	= 4;
 		$arrPrintDefine['ItemSvcFooter']		['TotalCharge']		['Length']	= 11;
@@ -622,7 +622,7 @@
 		$arrPrintDefine['ItemisedFooter']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['ItemisedFooter']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['ItemisedFooter']	['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['ItemisedFooter']	['RecordType']		['Value']	= "79";
+		$arrPrintDefine['ItemisedFooter']	['RecordType']		['Value']	= "0079";
 		
 		
 		
@@ -630,7 +630,7 @@
 		$arrPrintDefine['InvoiceFooter']		['RecordType']		['Start']	= 0;
 		$arrPrintDefine['InvoiceFooter']		['RecordType']		['Length']	= 4;
 		$arrPrintDefine['InvoiceFooter']		['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['InvoiceFooter']		['RecordType']		['Value']	= "18";
+		$arrPrintDefine['InvoiceFooter']		['RecordType']		['Value']	= "0018";
 		
 		$arrPrintDefine['InvoiceFooter']		['Delivery']		['Start']	= 4;
 		$arrPrintDefine['InvoiceFooter']		['Delivery']		['Length']	= 1;
@@ -642,7 +642,7 @@
 		$arrPrintDefine['FileFooter']			['RecordType']		['Start']	= 0;
 		$arrPrintDefine['FileFooter']			['RecordType']		['Length']	= 4;
 		$arrPrintDefine['FileFooter']			['RecordType']		['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['FileFooter']			['RecordType']		['Value']	= "19";
+		$arrPrintDefine['FileFooter']			['RecordType']		['Value']	= "0019";
 		
 		$arrPrintDefine['FileFooter']			['Date']			['Start']	= 4;
 		$arrPrintDefine['FileFooter']			['Date']			['Length']	= 10;
