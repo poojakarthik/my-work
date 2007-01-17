@@ -191,7 +191,7 @@ die();
 		$intPassed	= 0;
 		if ($this->_selGetPaymentFiles->Execute() === FALSE)
 		{
-			Debug($this->_selGetPaymentFiles->Error());
+
 		}
 		while ($arrFile = _selGetPaymentFiles->Fetch())
 		{
@@ -206,7 +206,7 @@ die();
 				$arrColumns['Status']	= PAYMENT_BAD_IMPORT;
 				if ($this->_ubiPaymentFile->Execute($arrFile) === FALSE)
 				{
-					Debug($this->_ubiPaymentFile->Error());
+
 				}
 				
 				// Add to the Normalisation report
@@ -226,7 +226,7 @@ die();
 				$arrData['Status']		= PAYMENT_IMPORTED;
 				if ($this->_insPayment->Execute($arrData) === FALSE)
 				{
-					Debug($this->_insPayment->Error());
+
 				}
 				
 				// Increment sequence number
@@ -262,14 +262,7 @@ die();
 	{
 		// get next 1000 payments
 		$intCount = $this->_selGetImportedPayments->Execute();
-		if ($intCount === FALSE)
-		{
-			Debug($this->_selGetImportedPayments->Error());
-			
-			// No payments left, so return false
-			return FALSE;
-		}
-		elseif ($intCount == 0)
+		if ($intCount == 0)
 		{
 			// No payments left, so return false
 			return FALSE;
@@ -306,7 +299,6 @@ die();
 				$arrNormalised['Id']		= $arrPayment['Id'];
 				if ($this->_ubiSavePaymentStatus->Execute($arrNormalised) === FALSE)
 				{
-					Debug($this->_ubiSavePaymentStatus->Error());
 					$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 				}
 				continue;
@@ -351,11 +343,6 @@ die();
 		$intCount = $this->_selGetNormalisedPayments->Execute();
 		if (!$intCount)
 		{
-			if ($this->_selGetNormalisedPayments->Error())
-			{
-				Debug($this->_selGetNormalisedPayments->Error());
-			}
-			
 			// No payments left, so return false
 			return FALSE;
 		}
@@ -373,7 +360,7 @@ die();
 			$arrWhere['AccountGroup'] = $arrPayment['AccountGroup'];
 			if ($this->_selOutstandingInvoices->Execute($arrWhere) === FALSE)
 			{
-				Debug($this->_selOutstandingInvoices->Error());
+
 			}
 			
 			// set default status
@@ -404,7 +391,7 @@ die();
 				// update payment table
 				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
 				{
-					Debug($this->_ubiPayment->Error());
+
 				}
 				
 				$this->_rptPaymentsReport->AddMessage(MSG_OK);
@@ -418,7 +405,7 @@ die();
 				// update payment table
 				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
 				{
-					Debug($this->_ubiPayment->Error());
+
 				}
 			}
 			
@@ -473,13 +460,13 @@ die();
 		$arrInvoicePayment['Amount']	= $fltPayment;
 		if ($this->_insInvoicePayment->Execute($arrInvoicePayment) === FALSE)
 		{
-			Debug($this->_insInvoicePayment->Error());
+
 		}
 		
 		// update the invoice
 		if ($this->_ubiInvoice->Execute($this->_arrCurrentInvoice) === FALSE)
 		{
-			Debug($this->_ubiInvoice->Error());
+
 		}
 		
 		// save the balance
