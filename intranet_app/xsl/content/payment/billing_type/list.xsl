@@ -7,7 +7,7 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Billing Types</h1>
+		<h1>Direct Debit Accounts</h1>
 		<div class="Seperator"></div>
 		
 		<h2 class="Account">Account Details</h2>

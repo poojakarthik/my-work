@@ -36,6 +36,7 @@
 				</xsl:attribute>
 			</input>
 			
+			<h2 class="Account">Account Details</h2>
 			<div class="Filter-Form">
 				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
@@ -53,8 +54,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2 class="Invoice">Credit Card Details</h2>
-			
+			<h2 class="Payment">Credit Card Details</h2>
 			<div class="Filter-Form">
 				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
@@ -124,6 +124,10 @@
 								<xsl:with-param name="field" select="string('ExpiryDate')" />
 							</xsl:call-template>
 						</th>
+						
+						<!-- TODO!bash! Credit card exp date should always display as mm/yyyy -->
+						<!-- TODO!bash! put this code in its own template, use the template for ALL cc exp date display EVERYWHERE -->
+						<!-- TODO!bash! this way we can update it in one place and have it update on all pages -->
 						<td>
 							<select name="CreditCard[ExpMonth]">
 								<xsl:call-template name="Date_Loop">
