@@ -636,7 +636,7 @@ abstract class NormalisationModule
 	 	
 	 	if ($intResult === FALSE)
 	 	{
-	 		Debug($this->_selFindOwner->Error());
+
 	 	}
 		
 	 	if ($arrResult = $this->_selFindOwner->Fetch())
@@ -654,7 +654,7 @@ abstract class NormalisationModule
 	 		
 	 		if ($intResult === FALSE)
 	 		{
-	 			Debug($this->_selFindOwnerIndial100->Error());
+
 	 		}
 	 		
 	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
@@ -696,7 +696,7 @@ abstract class NormalisationModule
 		
 		if($intResult === FALSE)
 		{
-			Debug($this->_selFindRecordCode->Error());
+
 		}
 		
 	 	if ($arrResult = $this->_selFindRecordCode->Fetch())
@@ -733,7 +733,7 @@ abstract class NormalisationModule
 		
 		if ($intResult === FALSE)
 		{
-			Debug($this->_selFindRecordType->Error());
+
 		}
 		
 	 	if ($arrResult = $this->_selFindRecordType->Fetch())
@@ -771,7 +771,7 @@ abstract class NormalisationModule
 		
 		if ($intResult === FALSE)
 		{
-			Debug($this->_selFindDestination->Error());
+
 		}
 		
 	 	if ($arrResult = $this->_selFindDestination->Fetch())

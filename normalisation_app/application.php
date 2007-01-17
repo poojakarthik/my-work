@@ -254,7 +254,7 @@ die();
 		
 		if ($selSelectCDRFiles->Execute($arrWhere) === FALSE)
 		{
-			Debug($selSelectCDRFiles->Error());
+
 		}
 		
 		$intCount = 0;
@@ -270,7 +270,7 @@ die();
 				$arrCDRFile["Status"] = CDRFILE_IMPORT_FAILED;
 				if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 				{
-					Debug($updUpdateCDRFiles->Error());
+
 				}
 				
 				// Add to the Normalisation report
@@ -327,7 +327,7 @@ die();
 		$selCanDeleteCDRs = new StatementSelect("CDR", "COUNT(Id)", "File = $intFileImportId AND (Status = ".CDR_TEMP_INVOICE." OR Status = ".CDR_INVOICED.")");
 		if ($selCanDeleteCDRs->Execute() === FALSE)
 		{
-			Debug($selCanDeleteCDRs->Error());
+
 		}
 		$arrResult = $selCanDeleteCDRs->Fetch();
 		if ($arrResult[0] > 0)
@@ -340,7 +340,7 @@ die();
 		$intResult = $qryDeleteCDRs->Execute("DELETE FROM CDR WHERE File = ".$intFileImportId);
 		if ($intResult == FALSE)
 		{
-			Debug($qryDeleteCDRs->Error());
+
 		}
 		return $intResult;
  	}
@@ -375,9 +375,9 @@ die();
 		$intResult = $qryDeleteCDRFile->Execute("DELETE FROM FileImport WHERE Id = ".$intFileImportId);
 		if ($intResult === FALSE)
 		{
-			Debug($qryDeleteCDRFile->Error());
+
 		} 
-		return $qryDeleteCDRs;
+		return $intResult;
  	}
  	
  	
@@ -412,7 +412,7 @@ die();
 			$arrCDRFile['ImportedOn'] 	= new MySQLFunction("NOW()");
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
-				Debug($updUpdateCDRFiles->Error());
+
 			}
 			
 			// Set fields that are consistent over all CDRs for this file
@@ -459,7 +459,7 @@ die();
 					if ($insInsertCDRLine->Error())
 					{
 						// error inserting
-						Debug($insInsertCDRLine->Error());
+
 					}
 				}
 				$intSequence++;
@@ -482,7 +482,7 @@ die();
 			//$arrCDRFile['NormalisedOn'] = new MySQLFunction("Now()");
 			if ($updUpdateCDRFiles->Execute($arrCDRFile, Array("id" => $arrCDRFile["Id"])) === FALSE)
 			{
-				Debug($updUpdateCDRFiles->Error());
+
 			}
 		}
 		catch (ExceptionVixen $exvException)
@@ -565,7 +565,7 @@ die();
  		$selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
 		if ($selSelectCDRs->Execute(Array("status" => CDR_READY)) === FALSE)
 		{
-			Debug($selSelectCDRs->Error());
+
 		}
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
@@ -677,7 +677,7 @@ die();
  			// Save CDR back to the DB
 			if ($updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])) === FALSE)
 			{
-				Debug($updUpdateCDRs->Error());
+
 			} 
  		}
  		
