@@ -589,7 +589,8 @@
 						{
 							$strValue = "0";
 						}
-						$strTemp = sprintf("% 11.2f", ((float)$strValue));
+						
+						$strTemp = sprintf("%01.2f", ((float)$strValue));
 						if(substr($strValue, 0, 1) == "-")
 						{
 							$strTemp = "-".substr($strTemp, 1);
