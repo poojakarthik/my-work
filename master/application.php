@@ -233,7 +233,10 @@ $appMaster->Run();
 		$arrData['Datetime']	= new MySQLFunction("NOW()");
 		$arrData['State']		= Serialize($this->_arrState);
 		// write to database
-		$this->_updMasterState->Execute($arrData, NULL);
+		if ($this->_updMasterState->Execute($arrData, NULL) === FALSE)
+		{
+			Debug($this->_updMasterState->Error());
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -254,7 +257,10 @@ $appMaster->Run();
 	function _ReadState()
 	{
 		// read our current state from the database
-		$this->_selGetState->Execute();
+		if ($this->_selGetState->Execute() === FALSE)
+		{
+			Debug($this->_selGetState->Error());
+		}
 		$arrResult = $this->_selGetState->Fetch();
 		$this->_arrState = Unserialize($arrResult['State']); 
 		
@@ -306,7 +312,10 @@ $appMaster->Run();
 	function _ReadInstructions()
 	{
 		// read any instructions from the database
-		$this->_selGetInstructions->Execute();
+		if ($this->_selGetInstructions->Execute() === FALSE)
+		{
+			Debug($this->_selGetInstructions->Error());
+		}
 		$arrInstructions = $this->_selGetInstructions->FetchAll();
 		
 		foreach ($arrInstructions as $arrInstruction)
@@ -340,7 +349,10 @@ $appMaster->Run();
 			}
 			
 			// clear instruction from db
-			$this->_qryDeleteInstruction->Execute("DELETE FROM MasterInstruction WHERE Id = ".$arrInstruction['Id']);
+			if ($this->_qryDeleteInstruction->Execute("DELETE FROM MasterInstruction WHERE Id = ".$arrInstruction['Id']) === FALSE)
+			{
+				Debug($this->_qryDeleteInstruction->Error());
+			}
 		}
 		
 	}
@@ -363,7 +375,10 @@ $appMaster->Run();
 	function _ClearInstructions()
 	{
 		// clear all instructions from the database
-		$this->_qryTruncate->Execute("MasterInstruction");
+		if ($this->_qryTruncate->Execute("MasterInstruction"))
+		{
+			Debug($this->_qryTruncate->Error());
+		}
 	}
 	
 	//------------------------------------------------------------------------//
