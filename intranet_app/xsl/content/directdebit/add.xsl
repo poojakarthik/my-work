@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Add Direct Debit Details</h1>
+		<h1>Add Bank Account Details</h1>
 		
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
@@ -51,7 +51,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2 class="Payment">Direct Debit Details</h2>
+			<h2 class="Payment">Bank Account Details</h2>
 			<div class="Filter-Form">
 				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
@@ -127,7 +127,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<input type="submit" value="Create Direct Debit Details &#0187;" class="input-submit" />
+			<input type="submit" value="Create Bank Account Details &#0187;" class="input-submit" />
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

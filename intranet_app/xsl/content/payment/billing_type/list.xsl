@@ -7,7 +7,7 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Direct Debit Accounts</h1>
+		<h1>Direct Debit Details</h1>
 		<div class="Seperator"></div>
 		
 		<h2 class="Account">Account Details</h2>
@@ -28,7 +28,7 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<h2 class="Invoice">Associated Direct Debit Details</h2>
+		<h2 class="Invoice">Bank Account Details</h2>
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
@@ -62,7 +62,7 @@
 		<xsl:choose>
 			<xsl:when test="count(/Response/DirectDebits/DirectDebit) = 0">
 				<div class="MsgNotice">
-					There are no Direct Debit Details attached to this Account Group.
+					There are no Bank Account Details for this Customer.
 				</div>
 			</xsl:when>
 		</xsl:choose>
@@ -73,13 +73,13 @@
 					<xsl:text>directdebit_add.php?AccountGroup=</xsl:text>
 					<xsl:value-of select="/Response/AccountGroup/Id" />
 				</xsl:attribute>
-				Add Direct Debit Details
+				Add Bank Account Details
 			</a>
 		</div>
 		
 		<div class="Seperator"></div>
 		
-		<h2 class="Invoice">Associated Credit Card Details</h2>
+		<h2 class="Invoice">Credit Card Details</h2>
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
@@ -138,7 +138,7 @@
 		<xsl:choose>
 			<xsl:when test="count(/Response/CreditCards/CreditCard) = 0">
 				<div class="MsgNotice">
-					There are no Credit Card Details attached to this Account Group.
+					There are no Credit Card Details for this Customer.
 				</div>
 			</xsl:when>
 		</xsl:choose>
