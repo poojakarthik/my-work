@@ -394,6 +394,28 @@
 	}
 	
 	//------------------------------------------------------------------------//
+	// Debug()
+	//------------------------------------------------------------------------//
+	/**
+	 * Debug()
+	 *
+	 * Outputs the lastest SQL error message
+	 *
+	 * Outputs the lastest SQL error message on backend applications
+	 *
+	 * @param		mixed					Data returned from the MySQLi Execute function
+	 *
+	 * @method
+	 */ 
+	function Debug()
+	{
+		if ((defined(USER_NAME)) && (USER_NAME != "intranet_app"))
+		{
+			Debug($this->Error());
+		}
+	}
+	
+	//------------------------------------------------------------------------//
 	// PrepareWhere()
 	//------------------------------------------------------------------------//
 	/**
@@ -723,7 +745,9 @@
 	 	$this->Trace($strQuery);
 	 	
 	 	// run query
-		return mysqli_query($this->db->refMysqliConnection, $strQuery);
+	 	$mixResult = mysqli_query($this->db->refMysqliConnection, $strQuery);
+	 	$this->Debug($mixResult);
+		return $mixResult;
 	 }
  }
 
@@ -1045,6 +1069,7 @@ class MySQLFunction
 				$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
 				//echo (mysqli_error($this->db->refMysqliConnection));
 				// check result
+				$this->Debug($mixReturn);
 				if ($mixReturn !== TRUE)
 				{
 					// we will return false
@@ -1160,6 +1185,7 @@ class MySQLFunction
 			
 			// run query
 			$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+			$this->Debug($mixReturn);
 			//echo (mysqli_error($this->db->refMysqliConnection));
 			// check result
 			if ($mixReturn !== TRUE)
@@ -1241,6 +1267,7 @@ class MySQLFunction
 		
 		// run query
 		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+		$this->Debug($mixReturn);
 		// check result
 		if ($mixReturn !== TRUE)
 		{
@@ -1766,7 +1793,9 @@ class MySQLFunction
 	 	$this->_stmtSqlStatment->free_result();
 	 	
 	 	// Run the Statement
-	 	if(!$this->_stmtSqlStatment->execute())
+	 	$mixResult = $this->_stmtSqlStatment->execute();
+	 	$this->Debug($mixResult);
+	 	if(!$mixResult)
 	 	{
 			// Trace
 			$this->Trace("Failed: ".$this->Error());
@@ -2149,7 +2178,9 @@ class MySQLFunction
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 	 	
 	 	// Run the Statement
-	 	if ($this->_stmtSqlStatment->execute())
+	 	$mixResult = $this->_stmtSqlStatment->execute();
+	 	$this->Debug($mixResult);
+	 	if ($mixResult)
 		{
 			// If the execution worked, we want to get the insert id for this statement
 			$this->intInsertId = $this->db->refMysqliConnection->insert_id;	
@@ -2532,7 +2563,7 @@ class MySQLFunction
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
 		$mixResult = $this->_stmtSqlStatment->execute();
-		
+		$this->Debug($mixResult);
 	 	// Run the Statement
 	 	if ($mixResult)
 		{
