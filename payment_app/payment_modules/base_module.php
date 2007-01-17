@@ -333,7 +333,7 @@
 		$arrParams['Account'] = $intAccount;
 		if ($this->_selGetAccountGroup->Execute($arrParams) === FALSE)
 		{
-			Debug($this->_selGetAccountGroup->Error());
+
 		}
 		if (count($arrData = $this->_selGetAccountGroup->Fetch()) == 0)
 		{
