@@ -386,6 +386,7 @@
 		$strCurrentService		= "";
 		$strCurrentRecordType	= "";
 		$fltRecordTypeTotal		= 0.0;
+		$arrData				= Array();
 		// add start record (70)
 		$arrFileData[] = $arrDefine['ItemisedHeader'];
 		// for each record
