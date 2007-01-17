@@ -434,8 +434,9 @@
 					// Get the RecordType total
 					$arrSelectData['Account']			= $arrInvoiceDetails['Account'];
 					$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
+					$arrSelectData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 
-					if ($this->_selRecordTypeTotal->Execute($arrSelectData, Array('InvoiceRun' => $arrInvoiceDetails['InvoiceRun'])) === FALSE)
+					if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
 					{
 
 					}
@@ -458,7 +459,7 @@
 					case RECORD_DISPLAY_DATA:
 						$arrDefine['ItemisedDataKB']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
 						$arrDefine['ItemisedDataKB']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+						$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrData['Destination'];
 						$arrDefine['ItemisedDataKB']	['DataTransfered']	['Value']	= (int)$arrData['Units'];
 						$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrData['Description'];
 						$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrData['Charge'];
@@ -468,7 +469,7 @@
 					case RECORD_DISPLAY_SMS:
 						$arrDefine['ItemisedDataSMS']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
 						$arrDefine['ItemisedDataSMS']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataSMS']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+						$arrDefine['ItemisedDataSMS']	['CalledParty']		['Value']	= $arrData['Destination'];
 						$arrDefine['ItemisedDataSMS']	['Items']			['Value']	= (int)$arrData['Units'];
 						$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrData['Description'];
 						$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrData['Charge'];
@@ -480,7 +481,7 @@
 					default:
 						$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
 						$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['CalledParty'];
+						$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['Destination'];
 						$intHours		= floor((int)$arrData['Units'] / 3600);
 						$strDuration	= "$intHours:".date("i:s", (int)$arrData['Units']);
 						$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
