@@ -249,8 +249,8 @@
 		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		
 		$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['BusinessName'];
-		$arrDefine['InvoiceDetails']	['AddressLine2']	['Value']	= $arrCustomerData['Address1'];
-		$arrDefine['InvoiceDetails']	['AddressLine3']	['Value']	= $arrCustomerData['Address2'];
+		$arrDefine['InvoiceDetails']	['AddressLine2']	['Value']	= $arrCustomerData['AddressLine1'];
+		$arrDefine['InvoiceDetails']	['AddressLine3']	['Value']	= $arrCustomerData['AddressLine2'];
 		// $arrDefine['InvoiceDetails']	['AddressLine4'] is unused at the moment
 
 		$arrDefine['InvoiceDetails']	['Suburb']			['Value']	= $arrCustomerData['Suburb'];
