@@ -331,7 +331,10 @@
 	 protected function _FindAccountGroup($intAccount)
 	 {
 		$arrParams['Account'] = $intAccount;
-		$this->_selGetAccountGroup->Execute($arrParams);
+		if ($this->_selGetAccountGroup->Execute($arrParams) === FALSE)
+		{
+			Debug($this->_selGetAccountGroup->Error());
+		}
 		if (count($arrData = $this->_selGetAccountGroup->Fetch()) == 0)
 		{
 			// There was no match
