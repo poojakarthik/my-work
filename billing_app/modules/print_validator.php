@@ -127,10 +127,12 @@ foreach ($arrFileContents as $strLine)
 			$arrTable[] = $arrTableData;
 			$pdf->ezTable($arrTable);
 			
-			$pdf->ezText($mixResult['CustomerName']."\n");
-			$pdf->ezText($mixResult['PropertyName']."\n");
-			$pdf->ezText($mixResult['AddressLine1']."\n");
-			$pdf->ezText($mixResult['Suburb']."   ".$mixResult['State']."   ".$mixResult['Postcode']."\n");
+			$pdf->ezText($mixResult['CustomerName']);
+			$pdf->ezText($mixResult['AddressLine1']);
+			$pdf->ezText($mixResult['AddressLine2']);
+			$pdf->ezText($mixResult['AddressLine3']);
+			$pdf->ezText($mixResult['AddressLine4']);
+			$pdf->ezText($mixResult['Suburb']."   ".$mixResult['State']."   ".$mixResult['Postcode']);
 			$pdf->ezText($mixResult['PaymentDueDate']."\n");
 			break;
 		case 11:
@@ -151,10 +153,12 @@ foreach ($arrFileContents as $strLine)
 			$arrTableData[] = $arrData;
 			$pdf->ezTable($arrTableData);
 			
-			$pdf->ezText($mixResult['CustomerName']."\n");
-			$pdf->ezText($mixResult['PropertyName']."\n");
-			$pdf->ezText($mixResult['AddressLine1']."\n");
-			$pdf->ezText($mixResult['AddressLine2']."\n");
+			$pdf->ezText($mixResult['CustomerName']);
+			$pdf->ezText($mixResult['AddressLine1']);
+			$pdf->ezText($mixResult['AddressLine2']);
+			$pdf->ezText($mixResult['AddressLine3']);
+			$pdf->ezText($mixResult['AddressLine4']);
+			$pdf->ezText($mixResult['AddressLine5']);
 			$pdf->ezText($mixResult['PaymentDueDate']."\n");
 			
 			$arrData = Array();
@@ -164,7 +168,7 @@ foreach ($arrFileContents as $strLine)
 			$arrTableData[] = $arrData;
 			$pdf->ezTable($arrTableData);
 			
-			$pdf->ezText($mixResult['SpecialOffer1']."\n\n");
+			$pdf->ezText($mixResult['SpecialOffer1']."\n");
 			$pdf->ezText($mixResult['SpecialOffer2']."\n");
 			break;
 		case 18:
