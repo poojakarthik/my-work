@@ -487,7 +487,7 @@
 						break;
 				}
 			}
-			$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $arrData['RecordTypeTotal'];
+			$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
 			$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
 			// add service total record (89)
 			$arrFileData[] = $arrDefine['ItemSvcFooter'];	
