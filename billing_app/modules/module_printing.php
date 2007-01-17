@@ -263,7 +263,7 @@
 		$arrDefine['GraphHeader']		['GraphType']		['Value']	= GRAPH_TYPE_VERTICALBAR;
 		$arrDefine['GraphHeader']		['GraphTitle']		['Value']	= "Account History";
 		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
-		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "\$ Value";
+		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "$ Value";
 		$arrDefine['GraphHeader']		['ValueCount']		['Value']	= 1;
 		$arrDefine['GraphHeader']		['LegendText1']		['Value']	= "Monthly Spending";
 		$arrFileData[] = $arrDefine['GraphHeader'];

@@ -216,6 +216,7 @@ foreach ($arrFileContents as $strLine)
 			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			
 			// FIXME: This will work for Vertical Bargraphs, but nothing else
+			$arrData = Array();
 			$arrData[$strGraphXTitle]	= $mixResult['Title'];
 			$arrData[$strGraphYTitle]	= $mixResult['Value'];
 			$arrGraphData[]				= $arrData;
