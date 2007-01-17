@@ -382,7 +382,15 @@
 	 */ 
 	function Error()
 	{
-		return mysqli_error($this->db->refMysqliConnection);
+		if (mysqli_error($this->db->refMysqliConnection))
+		{
+			$strReturn = mysqli_error($this->db->refMysqliConnection);
+			$strReturn .= "\n Call Stack:\n".implode("\n", debug_backtrace())."\n";
+			return $strReturn;
+		}
+		
+		// There was no error
+		return FALSE;
 	}
 	
 	//------------------------------------------------------------------------//
