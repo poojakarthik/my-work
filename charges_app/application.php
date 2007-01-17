@@ -243,7 +243,7 @@ die();
 						$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0));
 						if ($this->_ubiRecurringCharge->Execute($arrCharge) === FALSE)
 						{
-							Debug($this->_ubiRecurringCharge->Error());
+
 						}
 						
 						// add to report
@@ -258,7 +258,7 @@ die();
 
 				if ($this->_insAddToChargesTable->Execute($arrData) === FALSE)
 				{
-					Debug($this->_insAddToChargesTable->Error());
+
 				}
 				
 				// update RecuringCharge Table
@@ -267,7 +267,7 @@ die();
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
 				if ($this->_ubiRecurringCharge->Execute($arrCharge) === FALSE)
 				{
-					Debug($this->_ubiRecurringCharge->Error());
+
 				}
 				
 				// add to report
@@ -286,7 +286,7 @@ die();
 		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
 		{
 			// ERROR
-			Debug($updCDRSetStatus->Error());
+
 		}
 
 		// Get totals of CDR credits
@@ -300,7 +300,7 @@ die();
 		if ($selCDRCreditTotals->Execute() === FALSE)
 		{
 			// ERROR
-			Debug($selCDRCreditTotals->Error());
+
 		}
 		$arrCreditTotals = $selCDRCreditTotals->FetchAll();
 		
@@ -336,7 +336,7 @@ die();
 		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
 		{
 			// ERROR
-			Debug($updCDRSetStatus->Error());
+
 		}
 				
 		
@@ -372,7 +372,7 @@ die();
 		// get the next 1000 charges that need to be added
 		if ($this->_selGetCharges->Execute() === FALSE)
 		{
-			Debug($this->_selGetCharges->Error());
+
 			
 			return FALSE;
 		}
