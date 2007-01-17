@@ -218,7 +218,7 @@ foreach ($arrFileContents as $strLine)
 			// FIXME: This will work for Vertical Bargraphs, but nothing else
 			$arrData = Array();
 			$arrData[$strGraphXTitle]	= $mixResult['Title'];
-			$arrData[$strGraphYTitle]	= $mixResult['Value'];
+			$arrData[$strGraphYTitle]	= $mixResult['Value1'];
 			$arrGraphData[]				= $arrData;
 			break;
 		case 29:

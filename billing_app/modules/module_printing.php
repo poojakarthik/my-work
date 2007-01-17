@@ -111,6 +111,10 @@
 																"FNN, Id",
 																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW())");
 		
+		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
+																"TotalCharge",
+																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
+		
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RType.Name";
 		$arrColumns['Charge']			= "SUM(CDR.Charge)";
@@ -363,12 +367,16 @@
 			foreach($arrServiceSummaries as $arrServiceSummary)
 			{
 				$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordTypeName'];
-				$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['Records'];
+				$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['CallCount'];
 				$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Charge'];
 				$arrFileData[] = $arrDefine['SvcSummaryData'];
 			}
 			
-			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $arrService['TotalCharge'];
+			$arrServiceData['Service']		= $arrService['Id'];
+			$arrServiceData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+			$this->_selServiceTotal->Execute($arrServiceData);
+			$arrServiceTotal = $this->_selServiceTotal->Fetch();
+			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $arrServiceTotal['Total'];
 			$arrFileData[] = $arrDefine['SvcSummSvcFooter'];
 		}
 		$arrFileData[] = $arrDefine['SvcSummaryFooter'];
