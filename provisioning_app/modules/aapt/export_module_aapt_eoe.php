@@ -173,7 +173,10 @@
  	function SendRequest()
 	{
 		// Get the latest Sequence Numbers
-		$this->_selGetSequence->Execute(Array('Module' => "Unitel"));
+		if ($this->_selGetSequence->Execute(Array('Module' => "Unitel")) === FALSE)
+		{
+			Debug($this->_selGetSequence->Error());
+		}
 		if(!($arrResult = $this->_selGetSequence->FetchAll()))
 		{
 			// Missing config definitions
@@ -226,7 +229,10 @@
 		*/
 		
 		// Update database (Request & Config tables)
-		$this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence"));
+		if ($this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence")) === FALSE)
+		{
+			Debug($this->_updPreselectSequence->Error());
+		}
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;
