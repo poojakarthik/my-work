@@ -262,7 +262,7 @@ die();
 					$this->_arrCurrentDownloadFile['CollectedOn']	= New MySQLFunction("NOW()");
 					if (($intId = $insFileDownload->Execute($this->_arrCurrentDownloadFile)) === FALSE)
 					{
-						Debug($insFileDownload->Error());
+
 					}
 					
 					// set current file Id
@@ -274,7 +274,7 @@ die();
 					// record download in db (FileDownload) - status has now been changed
 					if ($ubiFileDownload->Execute($this->_arrCurrentDownloadFile) === FALSE)
 					{
-						Debug($ubiFileDownload->Error());
+
 					}
 									
 					// increment counter
@@ -359,7 +359,7 @@ die();
 				{
 					if ($this->_insFileImport->Error())
 					{
-						Debug($this->_insFileImport->Error());
+
 					}
 					
 					$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
@@ -480,7 +480,7 @@ die();
 		{
 			if ($this->_selIsUnique->Error())
 			{
-				Debug($this->_selIsUnique->Error());
+
 			}
 			
 			// file is unique

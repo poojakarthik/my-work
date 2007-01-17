@@ -233,7 +233,7 @@
 				{
 					if ($this->_selFileExists->Error())
 					{
-						Debug($this->_selFileExists->Error());
+
 					}
 					
 					// set download mode
