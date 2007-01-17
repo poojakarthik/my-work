@@ -4,11 +4,31 @@
 	<xsl:output method="text" encoding="utf-8" />
 	
 	<xsl:template match="/">
-		<!-- TODO!!!! - add header row : Account No | Business Name | Reference | Date | Amount  -->
-		<!-- TODO!!!! - add some more fields to match the header-->
+		<xsl:text>"Account Group", "Account Id", "Business Name", "Reference", "Date", "Amount"</xsl:text>
+		<xsl:text>&#10;</xsl:text>
+		
 		<xsl:for-each select="/Response/Payments/Results/rangeSample/Payment">
 			<xsl:text>"</xsl:text>
+			<xsl:value-of select="./AccountGroup" />
+			<xsl:text>"</xsl:text>
+			<xsl:text>,</xsl:text>
+			
+			<xsl:text>"</xsl:text>
+			<xsl:value-of select="./Account" />
+			<xsl:text>"</xsl:text>
+			<xsl:text>,</xsl:text>
+			
+			<xsl:text>"</xsl:text>
 			<xsl:value-of select="./TXNReference" />
+			<xsl:text>"</xsl:text>
+			<xsl:text>,</xsl:text>
+			
+			<xsl:text>"</xsl:text>
+			<xsl:value-of select="./PaidOn/year" />
+			<xsl:text>-</xsl:text>
+			<xsl:value-of select="./PaidOn/month" />
+			<xsl:text>-</xsl:text>
+			<xsl:value-of select="./PaidOn/day" />
 			<xsl:text>"</xsl:text>
 			<xsl:text>,</xsl:text>
 			

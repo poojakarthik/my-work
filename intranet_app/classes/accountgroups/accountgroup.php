@@ -101,7 +101,30 @@
 				return new Account ($arrAccount ['Id']);
 			}
 			
-			throw new Exception ("Account is not in this Account Group");
+			throw new Exception ('Account is not in this Account Group');
+		}
+		
+		//------------------------------------------------------------------------//
+		// getAccounts
+		//------------------------------------------------------------------------//
+		/**
+		 * getAccounts()
+		 *
+		 * Get all associated Accounts
+		 *
+		 * Get all the Accounts associated with this account group
+		 *
+		 * @return	Accounts
+		 *
+		 * @method
+		 */
+		
+		public function getAccounts ()
+		{
+			$acsAccounts = new Accounts;
+			$acsAccounts->Constrain ('AccountGroup', '=', $this->Pull ('Id')->getValue ());
+			
+			return $acsAccounts;
 		}
 		
 		//------------------------------------------------------------------------//
@@ -176,9 +199,9 @@
 		/**
 		 * AddDirectDebit()
 		 *
-		 * Add a new Direct Debit Account to this Acocunt Group
+		 * Add a new Direct Debit Account to this Account Group
 		 *
-		 * Add a new Direct Debit Account to this Acocunt Group
+		 * Add a new Direct Debit Account to this Account Group
 		 *
 		 * @param	Array			$arrData		Associative array of Direct Debit Information
 		 * @return	DirectDebit
@@ -189,12 +212,12 @@
 		public function AddDirectDebit ($arrData)
 		{
 			$arrDirectDebit = Array (
-				"AccountGroup"	=> $this->Pull ('Id')->getValue (),
-				"BankName"		=> $arrData ['BankName'],
-				"BSB"			=> $arrData ['BSB'],
-				"AccountNumber" => $arrData ['AccountNumber'],
-				"AccountName"	=> $arrData ['AccountName'],
-				"Archived"		=> 0
+				'AccountGroup'	=> $this->Pull ('Id')->getValue (),
+				'BankName'		=> $arrData ['BankName'],
+				'BSB'			=> $arrData ['BSB'],
+				'AccountNumber' => $arrData ['AccountNumber'],
+				'AccountName'	=> $arrData ['AccountName'],
+				'Archived'		=> 0
 			);
 			
 			$insDirectDebit = new StatementInsert ('DirectDebit');
@@ -235,6 +258,41 @@
 			}
 			
 			return $oblarrCCs;
+		}
+		
+		//------------------------------------------------------------------------//
+		// AddCreditCard
+		//------------------------------------------------------------------------//
+		/**
+		 * AddCreditCard()
+		 *
+		 * Add a new Credit Card to this Account Group
+		 *
+		 * Add a new Credit Card to this Account Group
+		 *
+		 * @param	Array			$arrData		Associative array of Credit Card Information
+		 * @return	CreditCard
+		 *
+		 * @method
+		 */
+		
+		public function AddCreditCard ($arrData)
+		{
+			$arrCreditCard = Array (
+					'AccountGroup'	=> $this->Pull ('Id')->getValue (),
+					'CardType'		=> $arrData ['CardType'],
+					'Name'			=> $arrData ['Name'],
+					'CardNumber'	=> $arrData ['CardNumber'],
+					'ExpMonth'		=> $arrData ['ExpMonth'],
+					'ExpYear'		=> $arrData ['ExpYear'],
+					'CVV'			=> $arrData ['CVV'],
+					'Archived'		=> 0
+			);
+			
+			$insCreditCard = new StatementInsert ('CreditCard');
+			$intCreditCard = $insCreditCard->Execute ($arrCreditCard);
+			
+			return new CreditCard ($intCreditCard);
 		}
 	}
 	

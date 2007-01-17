@@ -7,63 +7,119 @@
 		<h1>Make Payment</h1>
 		<div class="Seperator"></div>
 		
-		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
-				<xsl:choose>
-					<xsl:when test="/Response/Error = 'Amount'">
-						There was an error with the amount that you entered.
-					</xsl:when>
-				</xsl:choose>
+		<form method="post" action="payment_add.php">
+			<xsl:if test="/Response/Error != ''">
+				<div class="MsgError">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Amount'">
+							There was an error with the amount that you entered.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+				<div class="Seperator"></div>
+			</xsl:if>
+			
+			
+			<h2 class="Account">Account Details</h2>
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content">
+					<!-- TODO: URGENT - SELECT box of accounts for this contact -->
+					<!-- first option is All Accounts -->
+					<!-- select the account we were vieweng if we came from an account page (still show the SELECT box) -->
+					<table border="0" cellpadding="5" cellspacing="0">
+						<tr>
+							<th class="JustifiedWidth" valign="top">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('BusinessName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:choose>
+									<xsl:when test="/Response/Accounts/Results/rangeLength = 1">
+										<xsl:value-of select="/Response/Accounts/Results/rangeSample/Account[1]/BusinessName" />
+										<input type="hidden" name="Account">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/Accounts/Results/rangeSample/Account[1]/Id" />
+											</xsl:attribute>
+										</input>
+									</xsl:when>
+									<xsl:otherwise>
+										<table border="0" cellpadding="3" cellspacing="0">
+											<tr>
+												<td>
+													<input type="radio" id="Account-Use:FALSE" name="Account-Use" value="0">
+														<xsl:choose>
+															<xsl:when test="/Response/ui-values/Account-Use = 0">
+																<xsl:attribute name="checked">
+																	<xsl:text>checked</xsl:text>
+																</xsl:attribute>
+															</xsl:when>
+														</xsl:choose>
+													</input>
+												</td>
+												<th>
+													<label for="Account-Use:FALSE">
+														Apply this Payment to the oldest Invoice in all of the Accounts.
+													</label>
+												</th>
+											</tr>
+											<tr>
+												<td>
+													<input type="radio" id="Account-Use:TRUE" name="Account-Use" value="1">
+														<xsl:choose>
+															<xsl:when test="/Response/ui-values/Account-Use = 1">
+																<xsl:attribute name="checked">
+																	<xsl:text>checked</xsl:text>
+																</xsl:attribute>
+															</xsl:when>
+														</xsl:choose>
+													</input>
+												</td>
+												<th>
+													<label for="Account-Use:TRUE">
+														Apply this Payment to the Account in the list below:
+													</label>
+												</th>
+											</tr>
+											<tr>
+												<td></td>
+												<td>
+													<select name="Account">
+														<option></option>
+														<xsl:for-each select="/Response/Accounts/Results/rangeSample/Account">
+															<option>
+																<xsl:attribute name="value">
+																	<xsl:text></xsl:text>
+																	<xsl:value-of select="./Id" />
+																</xsl:attribute>
+																<xsl:choose>
+																	<xsl:when test="./Id = /Response/Account">
+																		<xsl:attribute name="selected">
+																			<xsl:text>selected</xsl:text>
+																		</xsl:attribute>
+																	</xsl:when>
+																</xsl:choose>
+																<xsl:value-of select="./Id" />
+																<xsl:text>: </xsl:text>
+																<xsl:value-of select="./BusinessName" />
+															</option>
+														</xsl:for-each>
+													</select>
+												</td>
+											</tr>
+										</table>
+									</xsl:otherwise>
+								</xsl:choose>
+							</td>
+						</tr>
+					</table>
+				</div>
 			</div>
 			<div class="Seperator"></div>
-		</xsl:if>
-		
-		
-		<h2 class="Account">Account Details</h2>
-		<div class="Filter-Form">
-			<div class="Filter-Form-Content">
-				<!-- TODO!!!! - URGENT - SELECT box of accounts for this contact -->
-				<!-- first option is All Accounts -->
-				<!-- auto use primary account & don't show SELECT if there is only one account -->
-				<!-- select the account we were vieweng if we came from an account page (still show the SELECT box) -->
-				<table border="0" cellpadding="5" cellspacing="0">
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Account')" />
-								<xsl:with-param name="field" select="string('BusinessName')" />
-							</xsl:call-template>
-						</th>
-						<td>
-							<xsl:value-of select="/Response/Account/BusinessName" />
-						</td>
-					</tr>
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Account')" />
-								<xsl:with-param name="field" select="string('TradingName')" />
-							</xsl:call-template>
-						</th>
-						<td>
-							<xsl:value-of select="/Response/Account/TradingName" />
-						</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-		<div class="Seperator"></div>
-		
-		<h2 class="Payment">Payment Details</h2>
-		<form method="post" action="payment_add.php">
-			<xsl:if test="/Response/Account">
-				<input type="hidden" name="Account">
-					<xsl:attribute name="value">
-						<xsl:text></xsl:text>
-						<xsl:value-of select="/Response/Account/Id" />
-					</xsl:attribute>
-				</input>
-			</xsl:if>
+			
+			<h2 class="Payment">Payment Details</h2>
 			<xsl:if test="/Response/AccountGroup">
 				<input type="hidden" name="AccountGroup">
 					<xsl:attribute name="value">
@@ -105,7 +161,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Amount" class="input-string" />
+								<input type="text" name="Amount" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Amount" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 						<tr>
@@ -116,7 +177,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="TXNReference" class="input-string" />
+								<input type="text" name="TXNReference" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/TXNReference" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 					</table>

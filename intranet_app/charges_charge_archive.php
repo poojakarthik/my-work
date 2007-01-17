@@ -17,16 +17,28 @@
 	// call application
 	require ('config/application.php');
 	
+	try
+	{
+		$crgCharge = $Style->attachObject (new ChargeType (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/charges/charges/notfound.xsl');
+		exit;
+	}
 	
-	// Explain the Fundamentals
-	$docDocumentation->Explain ('Charge Type');
+	if (isset ($_POST ['Confirm']))
+	{
+		if ($_POST ['Confirm'])
+		{
+			// Archive it
+			$crgCharge->Archive (TRUE);
+		}
+		
+		header ("Location: charges_charge_list.php");
+		exit;
+	}
 	
-	// Start a new Account Search
-	$rclChargeTypes = $Style->attachObject (new ChargeTypes ());
-	$rclChargeTypes->Constrain	('Archived',	'=',	FALSE);
-	$rclChargeTypes->Order		('ChargeType',	TRUE);
-	$rclChargeTypes->Sample ();
-	
-	$Style->Output ('xsl/content/charges/charges/list.xsl');
+	$Style->Output ('xsl/content/charges/charges/archive_confirm.xsl');
 	
 ?>

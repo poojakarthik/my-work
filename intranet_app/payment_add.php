@@ -17,13 +17,36 @@
 	// call application
 	require ('config/application.php');
 	
-	if (!$_POST ['AccountGroup'] && !$_POST ['Account'] && !$_GET ['AccountGroup'] && !$_GET ['Account'])
-	{
-		header ('Location: console.php');
-		exit;
-	}
 	
-	if ($_POST ['AccountGroup'] || $_GET ['AccountGroup'])
+	
+	// Payments can be made in one of two ways:
+	// 1. Payments can be made against an Account Group. By doing this, the Invoice with
+	//    the most outstanding balance in the Account Group will be Paid First.
+	// 2. Payments can be made against an Account. By doing this, the Invoice with
+	//    the most outstanding balance in the Account will be Paid First.
+	
+	
+	// If an Account Group Id# exists, then we want to validate against
+	// the Account Group. By doing this, we will assume that there is no
+	// Account and the Account Group is the definitive answer to the
+	// 
+	
+	if ($_GET ['Account'] || $_POST ['Account'])
+	{
+		try
+		{
+			$actAccount = new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']);
+			$acgAccountGroup = $Style->attachObject ($actAccount->AccountGroup ());
+			
+			$Style->attachObject (new dataString ('Account', $actAccount->Pull ('Id')->getValue ()));
+		}
+		catch (Exception $e)
+		{
+			$Style->Output ('xsl/content/account/notfound.xsl');
+			exit;
+		}
+	}
+	else if ($_GET ['AccountGroup'] || $_POST ['AccountGroup'])
 	{
 		try
 		{
@@ -39,35 +62,29 @@
 			exit;
 		}
 	}
-	
-	if ($_POST ['Account'] || $_GET ['Account'])
+	else
 	{
-		try
-		{
-			$actAccount = $Style->attachObject (
-				new Account (
-					($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']
-				)
-			);
-		}
-		catch (Exception $e)
-		{
-			$Style->Output ('xsl/content/account/notfound.xsl');
-			exit;
-		}
+		header ('Location: console.php');
+		exit;
 	}
 	
-	// Error handler
-	$strError = $Style->attachObject (new dataString ('Error'));
+	// User Interface Values
+	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
+	
+	$oblbolAccount_Use		= $oblarrUIValues->Push (new dataBoolean('Account-Use',		$_POST ['Account-Use']));
+	$oblfltAmount			= $oblarrUIValues->Push (new dataFloat	('Amount',			$_POST ['Amount']));
+	$oblstrTXNReference		= $oblarrUIValues->Push (new dataString	('TXNReference',	$_POST ['TXNReference']));
 	
 	// Attach Payment Types
 	$ptlPaymentTypes = $Style->attachObject (new PaymentTypes);
 	
-	// Make the basics
-	$arrValues = $Style->attachObject (new dataArray ('ui-values'));
+	// Error handler
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
-	$fltAmount			= $arrValues->Push (new dataFloat	('Amount'));
-	$strTXNReference	= $arrValues->Push (new dataString	('TXNReference'));
+	// By this point, we should have an Account Group specified, and Possibly an
+	// account. Therefore, we can assume that the $acgAccountGroup variable is set.
+	$acsAccounts = $Style->attachObject ($acgAccountGroup->getAccounts ());
+	$acsAccounts->Sample ();
 	
 	if ($_POST ['Amount'])
 	{
@@ -76,26 +93,26 @@
 		
 		if (!$ptlPaymentTypes->setValue ($_POST ['PaymentType']))
 		{
-			$strError->setValue ('PaymentType');
+			$oblstrError->setValue ('PaymentType');
 		}
-		else if (!$fltAmount->setValue ($_POST ['Amount']))
+		else if (!$oblfltAmount->setValue ($_POST ['Amount']))
 		{
-			$strError->setValue ('Amount');
+			$oblstrError->setValue ('Amount');
 		}
-		else if (!$strTXNReference->setValue ($_POST ['TXNReference']))
+		else if (!$oblstrTXNReference->setValue ($_POST ['TXNReference']))
 		{
-			$strError->setValue ('TXNReference');
+			$oblstrError->setValue ('TXNReference');
 		}
 		else
 		{
 			$intPayment = Payments::Pay (
 				Array (
 					"AccountGroup"			=> ($acgAccountGroup) ? $acgAccountGroup->Pull ('Id')->getValue () : $actAccount->Pull ('AccountGroup')->getValue (),
-					"Account"				=> ($actAccount) ? $actAccount->Pull ('Id')->getValue () : null,
+					"Account"				=> ($oblbolAccount_Use->isTrue ()) ? $actAccount->Pull ('Id')->getValue () : null,
 					"PaidOn"				=> date ("Y-m-d"),
 					"PaymentType"			=> $_POST ['PaymentType'],
 					"Amount"				=> $_POST ['Amount'],
-					"TXNReference"			=> $strTXNReference->getValue (),
+					"TXNReference"			=> $oblstrTXNReference->getValue (),
 					"EnteredBy"				=> $athAuthentication->AuthenticatedEmployee ()->Pull ('Id')->getValue (),
 					"Status"				=> PAYMENT_WAITING
 				)

@@ -501,7 +501,27 @@
 			
 			// Return the Direct Debit
 			return $this->_ddrDirectDebit;
-		}		
+		}
+		
+		//------------------------------------------------------------------------//
+		// AccountGroup
+		//------------------------------------------------------------------------//
+		/**
+		 * AccountGroup()
+		 *
+		 * Retrieves the Associated Account Group
+		 *
+		 * Retrieves the Associated Account Group
+		 *
+		 * @return	AccountGroup
+		 *
+		 * @method
+		 */
+		 
+		public function AccountGroup ()
+		{
+			return new AccountGroup ($this->Pull ('AccountGroup')->getValue ());
+		}
 	}
 	
 ?>

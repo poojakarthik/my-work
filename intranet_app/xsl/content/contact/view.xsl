@@ -205,6 +205,15 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
+									<xsl:text>billing_type_list.php?AccountGroup=</xsl:text>
+									<xsl:value-of select="/Response/Contact/AccountGroup" />
+								</xsl:attribute>
+								View Payment Methods
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
 									<xsl:text>payment_add.php?AccountGroup=</xsl:text>
 									<xsl:value-of select="/Response/Contact/AccountGroup" />
 								</xsl:attribute>

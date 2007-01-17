@@ -73,6 +73,33 @@
 			// Construct the object
 			parent::__construct ('ChargeType', $this->Pull ('Id')->getValue ());
 		}
+		
+		//------------------------------------------------------------------------//
+		// Archive
+		//------------------------------------------------------------------------//
+		/**
+		 * Archive()
+		 *
+		 * Archive or Unarchive the Charge
+		 *
+		 * Archive or Unarchive the Charge
+		 *
+		 * @param	Boolean		$bolArchive		TRUE/FALSE: Whether or not to Archive the Charge Type
+		 * @param	Void
+		 *
+		 * @method
+		 */
+		
+		public function Archive ($bolArchive)
+		{
+			// Define the Archive/Unarchive
+			$arrChargeType = Array (
+				"Archived"	=> $bolArchive
+			);
+			
+			$updChargeType = new StatementUpdate ('ChargeType', 'Id = <Id>', $arrChargeType, 1);
+			$updChargeType->Execute ($arrChargeType, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
 	}
 	
 ?>

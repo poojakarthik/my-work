@@ -139,7 +139,7 @@
 					"CardNumber"	=> $arrDetails ['CreditCard']['CardNumber'],
 					"ExpMonth"		=> $arrDetails ['CreditCard']['ExpMonth'],
 					"ExpYear"		=> $arrDetails ['CreditCard']['ExpYear'],
-					"CVV"			=> ""
+					"CVV"			=> $arrDetails ['CreditCard']['CVV']
 				);
 				
 				$insCreditCard = new StatementInsert ('CreditCard');
