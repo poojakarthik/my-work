@@ -182,12 +182,6 @@
 		$qryTruncateInvoiceOutput = new QueryTruncate();
 		if (!$qryTruncateInvoiceOutput->Execute("InvoiceOutput"))
 		{
-			// There was an error
-			$strError = $qryTruncateInvoiceOutput->Error();
-			if($strError)
-			{
-				Debug($strError);
-			}
 			return FALSE;
 		}
 		
@@ -220,7 +214,7 @@
 		
 		if ($this->_selCustomerDetails->Execute($arrWhere) === FALSE)
 		{
-			Debug($this->_selCustomerDetails->Error());
+
 		}
 		
 		$bolHasBillHistory	= $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account'])) ? TRUE : FALSE;
@@ -293,7 +287,7 @@
 		$mixResult = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
 		if ($mixResult === FALSE)
 		{
-			Debug($this->_selServiceTypeTotals->Error());
+
 		}
 		
 		$arrServiceTypeTotals = $this->_selServiceTypeTotals->FetchAll();
@@ -346,7 +340,7 @@
 		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		if ($intCount === FALSE)
 		{
-			Debug($this->_selServices->Error());
+
 		}
 		$arrServices = $this->_selServices->FetchAll();
 		
@@ -359,7 +353,7 @@
 			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id']));
 			if ($intSummaryCount === FALSE)
 			{
-				Debug($this->_selServiceSummaries->Error());
+
 			}
 			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
 
@@ -385,7 +379,7 @@
 		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		if ($intItemisedCount === FALSE)
 		{
-			Debug($this->_selItemisedCalls->Error());
+
 		}
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
 		// reset counters
@@ -442,7 +436,7 @@
 
 					if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
 					{
-						Debug($this->_selRecordTypeTotal->Error());
+
 					}
 					$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
 					$fltRecordTypeTotal	= $arrRecordTypeTotal['RecordTypeTotal'];
@@ -627,7 +621,7 @@
 		if ($this->_insInvoiceOutput->Execute($arrWhere) === FALSE)
 		{
 			// Error
-			Debug($this->_insInvoiceOutput->Error());
+
 			return FALSE;			
 		}
 		return TRUE;
@@ -655,7 +649,7 @@
 		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
 		if ($selMetaData->Execute() === FALSE)
 		{
-			Debug($selMetaData->Error());
+
 		}
 		$arrMetaData = $selMetaData->Fetch();
 		
@@ -711,7 +705,7 @@
 		}
 		if ($qryBuildFile->Execute($strQuery) === FALSE)
 		{
-			Debug($qryBuildFile->Error());
+
 		}
 		
 		// Append metadata to bill output file
