@@ -18,7 +18,10 @@
 	// call application
 	require ('config/application.php');
 	
-	$tipTip = $Style->attachObject (Tips::FindRandom ($athAuthentication->AuthenticatedEmployee ()->Pull ('PabloSays')->getValue ()));
+	if ($_GET ['PabloSays'])
+	{
+		$tipTip = $Style->attachObject (Tips::FindRandom ($athAuthentication->AuthenticatedEmployee ()->Pull ('PabloSays')->getValue ()));
+	}
 	
 	// If the Employee is Authenticated, show the Console
 	$Style->Output ("xsl/content/console.xsl");

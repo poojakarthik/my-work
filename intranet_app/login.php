@@ -28,7 +28,7 @@
 		if ($athAuthentication->Login ($_POST ['UserName'], $_POST ['PassWord']))
 		{
 			// Foward to Console Interface
-			header ("Location: console.php"); exit;
+			header ("Location: console.php?PabloSays=1"); exit;
 		}
 		
 		// If the UserName and the PassWord fields do not match the informatiom in the database
