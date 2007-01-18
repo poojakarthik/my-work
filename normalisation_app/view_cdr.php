@@ -3,6 +3,7 @@
 // require stuff
 require_once("include.php");
 
+echo "<pre>";
 
 // show cdr
 $intCDR = (int)$_REQUEST['id'];
@@ -29,11 +30,20 @@ if ($intCDR)
 	$arrDebugCDR = $arrNormalisationModule[$arrCDR['FileType']]->DebugCDR($arrCDR['CDR']);
 	
 	// display it
-	Debug($arrDebugCDR);
+	PrintPrettyDebugInfo($arrDebugCDR);
 }
 else
 {
 	echo "No CDR record requested.\n";
+}
+die;
+
+
+
+
+function PrintPrettyDebugInfo($arrDebugCDR)
+{
+	// TODO!rich! Print pretty debug info
 }
 
 ?>
