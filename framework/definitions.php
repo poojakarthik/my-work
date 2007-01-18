@@ -704,4 +704,11 @@ define("PAYMENT_TYPE_CREDIT_CARD"	, 5);
 
 // Charge Types/Codes
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
+
+// Bug Type
+define("BUG_UNREAD"					, 100);
+define("BUG_UNASSIGNED"				, 101);
+define("BUG_UNRESOLVED"				, 102);
+define("BUG_RESOLVED"				, 103);
+
 ?>

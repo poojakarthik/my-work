@@ -63,6 +63,7 @@ $arrConfig['Modules'][MODULE_PAYMENT]		 			= "payments";
 $arrConfig['Modules'][MODULE_SERVICE_TOTAL]	 			= "servicetotal";
 $arrConfig['Modules'][MODULE_TIP]			 			= "tip";
 $arrConfig['Modules'][MODULE_PERMISSION]	 			= "permission";
+$arrConfig['Modules'][MODULE_BUG]			 			= "bug";
 
 // Base Modules
 define("MODULE_BASE"			, MODULE_SEARCH | MODULE_DOCUMENTATION | MODULE_ACCOUNT | MODULE_CONTACT);

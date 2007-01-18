@@ -56,3 +56,15 @@
 		
 		return false;
 	}
+	
+	function BugSubmit (form)
+	{
+		var PageDetails = document.createElement ("INPUT");
+		PageDetails.setAttribute ("type", "hidden");
+		PageDetails.setAttribute ("name", "PageDetails");
+		PageDetails.setAttribute ("value", document.getElementsByTagName ("HTML").item (0).innerHTML);
+		form.appendChild (PageDetails);
+		
+		return true;
+	}
+	

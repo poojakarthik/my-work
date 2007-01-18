@@ -417,10 +417,10 @@
 	// Define Columns 
 	$strName = "CreatedOn"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "date"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime"; 
 		 
 				 
 				 
@@ -437,10 +437,10 @@
 	// Define Columns 
 	$strName = "ClosedOn"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "date"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
 		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
 		$arrDefine['Column'][$strName]['Default'] 		= null; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime"; 
 		 
 				 
 				 
@@ -456,16 +456,6 @@
 				 
 	// Define Columns 
 	$strName = "PageDetails"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
-		 
-				 
-				 
-	// Define Columns 
-	$strName = "SystemDebug"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "longtext"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
@@ -497,7 +487,7 @@
 	// Define Columns 
 	$strName = "Status"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "int(11)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
@@ -547,10 +537,10 @@
 	// Define Columns 
 	$strName = "CreatedOn"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "date"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "datetime"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDate"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataDatetime"; 
 		 
 				 
 				 

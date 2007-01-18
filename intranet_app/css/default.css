@@ -177,6 +177,16 @@
 		padding:             3px;
 	}
 	
+	textarea.input-summary-note
+	{
+		border:              solid 1px #868735;
+		background-color:    #FFFFC0;
+		
+		width:               100%;
+		
+		padding:             3px;
+	}
+	
 	input.input-string,
 	input.input-ABN,
 	input.input-ACN
@@ -756,7 +766,7 @@
 		vertical-align:			middle;
 	}
 	
-	.modalContent tbody td
+	#modalContent-recentCustomers .modalContent tbody td
 	{
 		cursor:					pointer;
 	}
