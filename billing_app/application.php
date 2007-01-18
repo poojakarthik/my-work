@@ -195,6 +195,11 @@ die();
 			$this->_arrBillOutput[$strKey]->clean();
 		}
 		
+		// get a list of any shared plans
+		//TODO!rich! get all shared plans, including archived
+		// SELECT Id, MinMonthly, ChargeCap, UsageCap
+		// WHERE Shared = 1
+		
 		foreach ($arrAccounts as $arrAccount)
 		{
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
@@ -228,10 +233,10 @@ die();
 			$qryServiceTypeTotal = new Query();
 			if ($qryServiceTypeTotal->Execute($strQuery) === FALSE)
 			{
-
+				//TODO!rich!and then ?  do something here or at least add a comment to soy why we do nothing
 			}
 			
-			// calculate totals
+			// zero out totals
 			$fltDebits			= 0.0;
 			$fltTotalCharge		= 0.0;
 			$fltTotalCredits	= 0.0;
