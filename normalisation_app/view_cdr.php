@@ -10,25 +10,30 @@ if ($intCDR)
 {
 	// Create an instance of each Normalisation module
 	$arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
-	$arrNormalisationModule[CDR_UNTIEL_SE]			= new NormalisationModuleRSLCOM();
+	$arrNormalisationModule[CDR_UNITEL_SE]			= new NormalisationModuleRSLCOM();
 	$arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
-	$arrNormalisationModule[CDR_UNTIEL_COMMANDER]	= new NormalisationModuleCommander();
+	$arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
 	$arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
 	$arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
-	
-	// get the CDR record
-	//TODO!rich! get CDR with Id $intCDR
-	
-	// normalise it
-	// $arrNormalisedCDR =
-	//TODO!rich! normalise the CDR
+
+	// get cdr
+	$selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.CDR AS CDR, FileImport.FileType AS FileType", "CDR.Id = <Id>");
+	if (!$selCDR->Execute(Array('Id' => $intCDR)))
+	{
+		echo "Invalid CDR record requested.  Please double-check the Id ($intCDR).\n";
+		die;
+	}
+	$arrCDR = $selCDR->Fetch();
+		
+	// normalise and debug it
+	$arrDebugCDR = $arrNormalisationModule[$arrCDR['FileType']]->DebugCDR($arrCDR['CDR']);
 	
 	// display it
-	Debug($arrNormalisedCDR);
+	Debug($arrDebugCDR);
 }
 else
 {
-	echo "no CDR record requested";
+	echo "No CDR record requested.\n";
 }
 
 ?>

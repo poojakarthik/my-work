@@ -890,54 +890,38 @@ abstract class NormalisationModule
 	 *
 	 * Returns information related to normalising a CDR
 	 *
-	 * @param	integer		$intCDR			Index into the CDR table to debug
+	 * @param	string		$strCDR			Raw CDR string
 	 *
 	 * @return	mixed						associative array: debug data
 	 * 										FALSE: invalid input or db error
 	 *
 	 * @method
 	 */
-	 public function DebugCDR($intCDR)
+	 public function DebugCDR($strCDR)
 	 {
-		// We need a valid integer
-		if (!is_int($intCDR))
+		// Parse the CDR
+		$this->Normalise($strCDR);
+		
+		$arrDebugData = Array();
+		
+		// Add the Split Raw data and what it's validated against
+		foreach ($this->_arrRawData as $strKey=>$mixRawData)
 		{
-			return FALSE;
+			$arrDebugData['Raw'][$strKey]['Value']	= $mixRawData;
 		}
-
-		// Retrieve the raw CDR
-		$this->_selGetCDR->Execute(Array('Id' => $intCDR));
-		if ($arrCDR = $this->_selGetCDR->Fetch())
+		$arrDebugData['Raw']		= array_merge($arrDebugData['Raw'], $this->_arrDefineCarrier);
+		
+		// Add the Normalised data and whether it was valid, not valid, or ignored
+		foreach ($this->_arrNormalisedData as $strKey=>$mixNormalisedData)
 		{
-			// Parse the CDR
-			$this->Normalise($arrCDR['CDR']);
-			
-			$arrDebugData = Array();
-			
-			// Add the Split Raw data and what it's validated against
-			foreach ($this->_arrRawData as $strKey=>$mixRawData)
-			{
-				$arrDebugData['Raw'][$strKey]['Value']	= $mixRawData;
-			}
-			$arrDebugData['Raw']		= array_merge($arrDebugData['Raw'], $this->_arrDefineCarrier);
-			
-			// Add the Normalised data and whether it was valid, not valid, or ignored
-			foreach ($this->_arrNormalisedData as $strKey=>$mixNormalisedData)
-			{
-				$arrDebugData['Normalised'][$strKey]['Value']	= $mixNormalisedData;
-			}
-			$arrDebugData['Normalised']	= array_merge($arrDebugData['Normalised'], $this->_arrValid);
-			
-			// Add the Raw CDR string
-			$arrDebugData['CDR']		= $arrCDR['CDR'];
-			
-			return $arrDebugData;
+			$arrDebugData['Normalised'][$strKey]['Value']	= $mixNormalisedData;
 		}
-		else
-		{
-			// Database error
-			return FALSE;
-		}
+		$arrDebugData['Normalised']	= array_merge($arrDebugData['Normalised'], $this->_arrValid);
+		
+		// Add the Raw CDR string
+		$arrDebugData['CDR']		= $strCDR;
+		
+		return $arrDebugData;
 	 }
 }
 
