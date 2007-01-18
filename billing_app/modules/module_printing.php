@@ -496,7 +496,7 @@
 			$arrFileData[] = $arrDefine['ItemisedFooter'];
 		}
 		// add invoice footer (18)
-		if ($arrInvoiceDetails['Balance'] >= 10.0)
+		if ($arrInvoiceDetails['Balance'] >= BILLING_MINIMUM_TOTAL || $arrCustomerData['DeliveryMethod'] == BILLING_METHOD_EMAIL)
 		{
 			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= $arrCustomerData['DeliveryMethod'];
 		}
