@@ -138,7 +138,20 @@ die();
 		}
 		
 		// Init Select Statements
-		$selServices					= new StatementSelect("Service", "*", "Account = <Account>"); // TODO - join 
+		$arrColumns = Array();
+		$arrColumns['Shared']			= "RatePlan.Shared";
+		$arrColumns['MinMonthly']		= "RatePlan.MinMonthly";
+		$arrColumns['ChargeCap']		= "RatePlan.ChargeCap";
+		$arrColumns['UsageCap']			= "RatePlan.UsageCap";
+		$arrColumns['FNN']				= "Service.FNN";
+		$arrColumns['CappedCharge']		= "Service.CappedCharge";
+		$arrColumns['UnappedCharge']	= "Service.UncappedCharge";
+		$selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
+																"RatePlan",
+																$arrColumns,
+																"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
+																"Service.Archived = 0 AND NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime",
+																"RatePlan.Id");
 		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL, "100"); // FIXME: Remove Limit
 		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
@@ -195,19 +208,9 @@ die();
 			$this->_arrBillOutput[$strKey]->clean();
 		}
 		
-		// get a list of any shared plans (incl archived)
-		$selGetSharedPlans = new StatementSelect("RatePlan", "Id, MinMonthly, ChargeCap, UsageCap", "Shared = 1");
-		$selGetSharedPlans->Execute();
-		$arrSharedPlans = $selGetSharedPlans->FetchAll();
-		
+		// Loop through the accounts we're billing
 		foreach ($arrAccounts as $arrAccount)
 		{
-			// Get a list of shared plans for this account
-			// Service.RatePlan~, COUNT(Service.Id), MinMonthly, ChargeCap, UsageCap"
-			// WHERE Shared = 1 ...
-			// GROUP BY RatePlan
-			// $arrSharedPlans[RatePlan.Id]
-			
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
 			$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 			
@@ -256,7 +259,19 @@ die();
 				continue;
 			}
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-
+			
+			
+			// Get a list of shared plans for this account
+			$arrSharedPlans = Array();
+			foreach($arrServices as $arrService)
+			{
+				if ($arrService['Shared'])
+				{
+					$arrSharedPlans[$arrService['RatePlan']]['Count']++;
+					$arrSharedPlans[$arrService['RatePlan']]['MinMonthly']	= $arrService['MinMonthly'];
+				}
+			}
+			
 			// for each service belonging to this account
 			foreach ($arrServices as $arrService)
 			{
@@ -277,10 +292,10 @@ die();
 					{
 						// this is the last service
 						// do we have any min monthly left
-						if ($arrSharedPlans[$arrService['RatePlan']]['MimMonthly'] > 0)
+						if ($arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] > 0)
 						{
 							// add it to this service
-							$fltMinMonthly = $arrSharedPlans[$arrService['RatePlan']]['MimMonthly'];
+							$fltMinMonthly = $arrSharedPlans[$arrService['RatePlan']]['MinMonthly'];
 						}
 						else
 						{
@@ -291,7 +306,7 @@ die();
 					{
 						// not the last service
 						// decrease the min monthly remaining
-						$arrSharedPlans[$arrService['RatePlan']]['MimMonthly'] = $arrSharedPlans[$arrService['RatePlan']]['MimMonthly'] - $fltCharge;
+						$arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] = $arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] - $fltCharge;
 					}
 				}
 				else
