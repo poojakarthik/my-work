@@ -53,33 +53,12 @@
 										<form method="post" action="bug_report.php" onsubmit="return BugSubmit(this)">
 											<table border="0" cellpadding="0" cellspacing="0">
 												<tr>
-													<td valign="top" width="355">
-														<p>
-															In the case of an error occurring in the System - please
-															accept our sencere appologies.
-														</p>
-														
-														<p>
-															At <strong><em>VoIPTEL Systems</em></strong>, we endevour to create the most 
-															functional and user-friendly applications for your business.
-															In order to keep providing you with a high-quality service,
-															please report and errors (or Bugs) to the VoIPTEL staff
-															using this Report Form. It is the easiest and most efficient
-															way of having your problems handled.
-														</p>
-														
-														<p>
-															After the problem has been identified, you will receive an
-															email from the person who is assigned to correct the bug.
-														</p>
-													</td>
-													<td width="30" nowrap="nowrap"></td>
-													<td valign="top" width="355">
+													<td valign="top" width="100%">
 														<p>
 															<strong>Please describe the problem that occurred :</strong>
 														</p>
 														
-														<textarea name="Comment" style="width: 347px; height: 200px;" class="input-summary-note" />
+														<textarea name="Comment" style="width: 725px; height: 200px;" class="input-summary-note" />
 														
 														<div class="Right">
 															<input type="submit" value="Report Bug &#0187;" class="input-submit" />

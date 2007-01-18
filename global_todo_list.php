@@ -22,7 +22,6 @@
 // ---------------------------------------------------------------------------//
 // BASH
 // ---------------------------------------------------------------------------//
-
 //TODO!bash! rename Employee.Priviledges to Employee.Privileges (in the DB and in your code)
 //TODO!bash! add CreatedBy & ClosedBy when creating/closing a service
 //TODO!bash! DON'T MAKE CHANGES TO TABLES IN THE DB WITHOUT DOCUMENTING THEM !!!!

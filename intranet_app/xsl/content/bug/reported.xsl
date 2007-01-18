@@ -7,9 +7,7 @@
 		<h1>Bug Reported</h1>
 		
 		<p>
-			The bug you identified has been successfully reported. You will
-			be contact by a member of Customer Care when more information
-			becomes available.
+			<strong>Your Bug Report has been recorded.</strong><br/>
 		</p>
 	</xsl:template>
 </xsl:stylesheet>
