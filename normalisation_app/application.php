@@ -79,7 +79,6 @@ die();
 	 * @type		ErrorHandler
 	 *
 	 * @property
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	public $errErrorHandler;
 	
@@ -97,7 +96,6 @@ die();
 	 * @type		Report
 	 *
 	 * @property
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	public $rptNormalisationReport;
 	
@@ -205,8 +203,6 @@ die();
 		$this->rptNormalisationReport	= new Report("Normalisation Report for " . date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->rptDelinquentsReport		= new Report("Delinquents Report for ". date("Y-m-d H:i:s"), $$mixEmailAddress, FALSE);
 		$this->errErrorHandler			= new ErrorHandler();
-		//set_exception_handler(Array($this->_errErrorHandler, "PHPExceptionCatcher"));
-		//set_error_handler(Array($this->_errErrorHandler, "PHPErrorCatcher"));
 		
 		// Create an instance of each Normalisation module
  		$this->_arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
@@ -504,7 +500,8 @@ die();
 		
 		// Report
 		$intPassed = $this->_intImportPass;
-		$intFailed = $intSequence - $intPassed;
+		$intFailed = ($intSequence - 1) - $intPassed;
+		$this->_intImportFail += $intFailed; 
 		$this->rptNormalisationReport->AddMessage("\t$intPassed passed, $intFailed failed.");
 		
 		return $intSequence;
@@ -582,14 +579,16 @@ die();
 		
 		$this->Framework->StartWatch();
 		
-		$intNormalisePassed = 0;
-		$intNormaliseFailed = 0;
+		$intNormalisePassed	= 0;
+		$intNormaliseTotal	= 0;
 		
 		$intDelinquents = 0;
 		$arrDelinquents = Array();
 
  		foreach ($arrCDRList as $arrCDR)
  		{
+			$intNormaliseTotal++;
+			
 			// return TRUE if we have normalised (or tried to normalise) any CDRs
 			$bolReturn = TRUE;
 			
@@ -627,41 +626,32 @@ die();
 				case CDR_CANT_NORMALISE_NO_MODULE:
 					$arrAliases['<Module>'] = $arrCDR["FileType"];
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_MODULE, $arrAliases);
-					$intNormaliseFailed++;
 					break;
 				case CDR_CANT_NORMALISE_BAD_SEQ_NO:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Bad Sequence Number"));
-					$intNormaliseFailed++;
 					break;
 				case CDR_CANT_NORMALISE_HEADER:
 					//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Header Row"));
-					//$intNormaliseFailed++;
 					break;
 				case CDR_CANT_NORMALISE_NON_CDR:
 					//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Non-CDR"));
-					//$intNormaliseFailed++;
 					break;
 				case CDR_BAD_OWNER:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Cannot match owner"));
 					$arrDelinquents[$this->_arrNormalisationModule[$arrCDR["FileType"]]->strFNN]++;
 					$intDelinquents++;
-					$intNormaliseFailed++;
 					break;
 				case CDR_CANT_NORMALISE_INVALID:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Normalised Data Invalid"));
-					$intNormaliseFailed++;
 					break;
 				case CDR_CANT_NORMALISE_RAW:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Raw Data Invalid"));
-					$intNormaliseFailed++;
 					break;
 				case CDR_BAD_DESTINATION:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Destination not found"));
-					$intNormaliseFailed++;
 					break;
 				case CDR_BAD_RECORD_TYPE:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Record Type Invalid"));
-					$intNormaliseFailed++;
 					break;
 				case CDR_NORMALISED:
 					// Normalised OK
@@ -669,7 +659,6 @@ die();
 					break;
 				default:
 					$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_LINE, Array('<Reason>' => "Unknown Error"));
-					$intNormaliseFailed++;
 					break;
 			}
 			
@@ -700,10 +689,10 @@ die();
  		
 	 	// Normalisation Report totals
 		$arrReportLine['<Action>']		= "Normalised";
-		$arrReportLine['<Total>']		= $intNormalisePassed + $intNormaliseFailed;
+		$arrReportLine['<Total>']		= (int)$intNormaliseTotal;
 		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
 		$arrReportLine['<Pass>']		= (int)$intNormalisePassed;
-		$arrReportLine['<Fail>']		= (int)$intNormaliseFailed;
+		$arrReportLine['<Fail>']		= (int)$intNormaliseTotal - $intNormalisePassed;
 		$this->AddToNormalisationReport(MSG_REPORT, $arrReportLine);
 		$this->AddToNormalisationReport($strDelinquentText);
 		$this->AddToNormalisationReport(MSG_HORIZONTAL_RULE);
