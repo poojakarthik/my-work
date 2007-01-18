@@ -138,7 +138,7 @@ die();
 		}
 		
 		// Init Select Statements
-		$selServices					= new StatementSelect("Service", "*", "Account = <Account>");
+		$selServices					= new StatementSelect("Service", "*", "Account = <Account>"); // TODO - join 
 		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL, "100"); // FIXME: Remove Limit
 		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
@@ -202,6 +202,9 @@ die();
 		
 		foreach ($arrAccounts as $arrAccount)
 		{
+			// setup shared plan totals
+			$arrSharedTotals = Array();
+		
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
 			$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 			
@@ -259,28 +262,30 @@ die();
 				
 				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
-				if ($arrService['ChargeCap'] > 0)
+				if ($arrService['Shared'] > 0)
 				{
-					// If we have a charge cap, apply it
-					$fltTotalCharge = floatval (min ($arrService['CappedCharge'], $arrService['ChargeCap'] + $arrService['UnCappedCharge']));
-					
-					if ($arrService['UsageCap'] > 0 && $arrService['UsageCap'] < $arrService['CappedCharge'])
+					if ($arrService['ChargeCap'] > 0)
 					{
-						// Gone over cap
-						$fltTotalCharge += floatval ($arrService['UncappedCharge'] - $arrService['UsageCap']);
+						// If we have a charge cap, apply it
+						$fltTotalCharge = floatval (min ($arrService['CappedCharge'], $arrService['ChargeCap'] + $arrService['UnCappedCharge']));
+						
+						if ($arrService['UsageCap'] > 0 && $arrService['UsageCap'] < $arrService['CappedCharge'])
+						{
+							// Gone over cap
+							$fltTotalCharge += floatval ($arrService['UncappedCharge'] - $arrService['UsageCap']);
+						}
+					}
+					else
+					{
+						$fltTotalCharge = floatval ($arrService['CappedCharge'] + $arrService['UncappedCharge']);
+					}
+	
+					// If there is a minimum monthly charge, apply it
+					if ($arrService['MinMonthly'] > 0)
+					{
+						$fltTotalCharge = floatval(max($arrService['MinMonthly'], $fltTotalCharge));
 					}
 				}
-				else
-				{
-					$fltTotalCharge = floatval ($arrService['CappedCharge'] + $arrService['UncappedCharge']);
-				}
-
-				// If there is a minimum monthly charge, apply it
-				if ($arrService['MinMonthly'] > 0)
-				{
-					$fltTotalCharge = floatval(max($arrService['MinMonthly'], $fltTotalCharge));
-				}
-				
 				// Charges and Recurring Charges (Credits and Debits) are not included
 				// in caps or minimum monthlys (above)
 				
