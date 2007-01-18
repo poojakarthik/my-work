@@ -91,6 +91,7 @@
 		$arrColumns[]					= "Tax";
 		$arrColumns[]					= "Balance";
 		$arrColumns[]					= "CreatedOn";
+		$arrColumns[]					= "InvoiceRun";
 		$this->_selLastBills			= new StatementSelect(	"Invoice",
 																$arrColumns,
 																"Account = <Account>",
@@ -154,6 +155,9 @@
 																NULL,
 																"1");
 		
+		$this->_selWeReceived			= new StatementSelect(	"InvoicePayment",
+																"SUM(Amount) AS WeReceived",
+																"(InvoiceRun = <ThisInvoiceRun> OR InvoiceRun = <LastInvoiceRun>) AND Account = <Account>");
 		
 		//----------------------------------------------------------------------------//
 		// Define the file format
@@ -235,8 +239,20 @@
 		{
 			// Display the previous bill details
 			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'] + $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];						
-			//TODO!rich! = payments from last invoice + payments from this invoice
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= abs(0 - ((float)$arrInvoiceDetails['AccountBalance'] - (float)$arrBillHistory[0]['AccountBalance']));
+			
+			// WeReceived = payments from last invoice + payments from this invoice
+			$arrWeReceivedData['LastInvoiceRun']	= $arrBillHistory[0]['InvoiceRun'];
+			$arrWeReceivedData['ThisInvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+			$arrWeReceivedData['Account']			= $arrInvoiceDetails['Account'];
+			$this->_selWeReceived->Execute($arrWeReceivedData);
+			$arrWeReceived = $this->_selWeReceived->Fetch();
+
+			// If there were no payments, this will return NULL, so account for this
+			if ($arrWeReceived['WeReceived'] == NULL)
+			{
+				$arrWeReceived['WeReceived'] = 0.0;
+			}
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrWeReceived['WeReceived'];
 		}
 		else
 		{
