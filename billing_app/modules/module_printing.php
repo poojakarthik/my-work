@@ -234,7 +234,7 @@
 		if($bolHasBillHistory)
 		{
 			// Display the previous bill details
-			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'];						
+			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'] + $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];						
 			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= abs(0 - ((float)$arrInvoiceDetails['AccountBalance'] - (float)$arrBillHistory[0]['AccountBalance']));
 		}
 		else
