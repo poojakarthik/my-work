@@ -641,8 +641,9 @@ define("SERVICE_STATE_TYPE_VIC"		, "VIC");
 define("SERVICE_STATE_TYPE_WA"		, "WA");
 
 // Billing Methods
-define("BILLING_METHOD_POST"		, 1);
-define("BILLING_METHOD_EMAIL"		, 2);
+define("BILLING_METHOD_POST"			, 0);
+define("BILLING_METHOD_EMAIL"			, 1);
+define("BILLING_METHOD_DO_NOT_SEND"		, 2);
 
 // Billing Types
 define("BILLING_TYPE_DIRECT_DEBIT"		, 1);

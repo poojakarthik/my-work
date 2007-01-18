@@ -81,6 +81,7 @@
 		$arrColumns['AddressLine2']		= "Account.Address2";
 		$arrColumns['BusinessName']		= "Account.BusinessName";
 		$arrColumns['TradingName']		= "Account.TradingName";
+		$arrColumns['DeliveryMethod']	= "Account.BillingMethod";
 		$this->_selCustomerDetails		= new StatementSelect(	"Account LEFT OUTER JOIN Contact ON Account.PrimaryContact = Contact.Id",
 																$arrColumns,
 																"Account.Id = <Account>");
@@ -494,7 +495,15 @@
 			// add end record (79)
 			$arrFileData[] = $arrDefine['ItemisedFooter'];
 		}
-		// add invoice footer (18)		
+		// add invoice footer (18)
+		if ($arrInvoiceDetails['Balance'] >= 10.0)
+		{
+			$arrDefine['InvoiceFooter']	['DeliveryMethod']	['Value']	= $arrCustomerData['DeliveryMethod'];
+		}
+		else
+		{
+			$arrDefine['InvoiceFooter']	['DeliveryMethod']	['Value']	= BILLING_METHOD_DO_NOT_SEND;
+		}
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		
 		// Process and implode the data so it can be inserted into the DB
