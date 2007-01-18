@@ -105,6 +105,18 @@ die();
 		
 		// Construct the Bill Output objects
 		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db, $arrConfig);
+		
+		// Init Statements
+		$this->_selPayments = new StatementSelect(	"Payment",
+													"Id, Balance, SUM(Payment.Balance) AS CreditBalance",
+													"Balance > 0 AND AccountGroup = <AccountGroup> AND " .
+													"(Account = <Account> OR ISNULL(Account))",
+													"PaidOn");
+		$this->_insInvoicePayment = new StatementInsert("InvoicePayment");
+		
+		$arrCols['Status']	= NULL;
+		$arrCols['Balance']	= NULL;
+		$this->_ubiPayment = new StatementUpdateById("Payment", $arrCols);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -458,23 +470,41 @@ die();
 				$fltAccountDebitBalance = 0.0;
 			}
 			
-			// calculate account credit balance
-			//TODO!rich! calculate account credit balance
-			// SUM(Payment.Balance)
-			// WHERE AccountGroup = us
-			// AND (Account = us OR Account = NULL)
-			// $fltAccountCreditBalance =
-			
-			if ($fltAccountCreditBalance)
+			// calculate and apply account credit balance
+			$arrCreditData['Account']		= $arrAccount['Id'];
+			$arrCreditData['AccountGroup']	= $arrAccount['AccountGroup'];
+			$this->_selPayments->Execute($arrCreditData);
+			$arrPayments = $this->_selPayments->FetchAll();
+			foreach($arrPayments as $arrPayment)
 			{
-				// add temp InvoicePayments
-				//TODO!rich! add temp InvoicePayments
-				// see payment_app._PayInvoice()
+				$fltPayment						= min($arrPayment['Balance'], $fltAccountDebitBalance);
+				$arrUpdatePayment['Balance']	= $arrPayment['Balance'] - $fltPayment;
+				$fltAccountDebitBalance			= $fltAccountDebitBalance - $fltPayment;
+				
+				// Make Invoice Payments
+				$arrInvoicePaymentData['InvoiceRun']	= $this->_strInvoiceRun;
+				$arrInvoicePaymentData['Account']		= $arrAccount['Id'];
+				$arrInvoicePaymentData['AccountGroup']	= $arrAccount['AccountGroup'];
+				$arrInvoicePaymentData['Payment']		= $arrPayment['Id'];
+				$arrInvoicePaymentData['Amount']		= $fltPayment;
+				$this->_insInvoicePayment->Execute($arrInvoicePaymentData);
+
+				// Update Payment table
+				if ($arrUpdatePayment['Balance'] == 0)
+				{
+					$arrUpdatePayment['Status'] = PAYMENT_FINISHED;
+				}
+				else
+				{
+					$arrUpdatePayment['Status'] = PAYMENT_WAITING;
+				}
+				$this->_ubiPayment->Execute($arrUpdatePayment);
 				
 				//reduce balance of the invoice
 				//TODO!rich! reduce the balance
 				//$fltBalance =
 			}
+
 			
 			// calculate account balance
 			// NOTE : we don't show credit balance on the bill
@@ -899,9 +929,24 @@ die();
 		}
 		
 		// reverse payments
-		//TODO!rich! reverse any payments for this invoice run
-		// update total and status of Payment
-		// remove InvoicePayment
+		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = ".$strInvoiceRun);
+		$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
+		$arrCols['Status']	= NULL;
+		$arrCols['Balance']	= new MySQLStatement("Balance + <Balance>");
+		$ubiPayments		= new StatementUpdateById("Payment", $arrCols);
+		$qryDeletePayment	= new Query();
+		$selInvoicePayments->Execute();
+		$arrInvoicePayments = $selInvoicePayments->FetchAll();
+		foreach ($arrInvoicePayments as $arrInvoicePayment)
+		{
+			// update total and status of Payment
+			$arrPayment['Balance']	= new MySQLStatement("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
+			$arrPayment['Status']	= PAYMENT_PAYING;
+			$ubiPayments->Execute($arrPayment);
+			
+			// remove InvoicePayment
+			$qryDeletePayment->Execute("DELETE FROM InvoicePayment WHERE Id = ".$arrInvoicePayment['Id']);
+		}
 		
 		return TRUE;
 	}
