@@ -45,8 +45,10 @@
 								<div class="modalContainer">
 
 									<div class="modalContent">
-										<!-- TODO!bash! add a form to report a bug -->
-										<!-- TODO!bash! save bugs to the db see BugReport table def -->
+										<!-- TODO!bash! URGENT !!!!!!!!!! -->
+										<!-- TODO!bash! URGENT : add a form to report a bug -->
+										<!-- TODO!bash! URGENT : save bugs to the db see BugReport table def -->
+										<!-- TODO!bash! URGENT !!!!!!!!!! -->
 										
 										<form method="post" action="bug_report.php" onsubmit="return BugSubmit(this)">
 											<table border="0" cellpadding="0" cellspacing="0">
