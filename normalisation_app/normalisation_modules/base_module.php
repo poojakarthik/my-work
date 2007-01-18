@@ -248,6 +248,10 @@ abstract class NormalisationModule
 		$strData						= "Id, Code, Description";
 		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND Context = <Context>";
 		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
+		
+		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
+		
+		$this->_arrValid	= Array();
 	
 	}
 	
@@ -274,29 +278,29 @@ abstract class NormalisationModule
 		// $this->_arrNormalisedData["Id"];
 		
 		// FNN : valid FNN
-		$arrValid[] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", 	$this->_arrNormalisedData["FNN"]);	// 1
+		$arrValid['FNN'] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", 	$this->_arrNormalisedData["FNN"]);	// 1
 		
 		// CarrierRef : required (non empty)
-		$arrValid[] = ($this->_arrNormalisedData["CarrierRef"] != "");											// 2
+		$arrValid['CarrierRef'] = ($this->_arrNormalisedData["CarrierRef"] != "");											// 2
 		
 		// source : empty or valid FNN
 		if ($this->_arrNormalisedData["Source"] != "")															// 3
 		{
-			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", 	$this->_arrNormalisedData["Source"]);
+			$arrValid['Source'] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", 	$this->_arrNormalisedData["Source"]);
 		}
 		else
 		{
-			$arrValid[] = true;
+			$arrValid['Source'] = true;
 		}
 		
 		// destination : empty or valid FNN
 		if ($this->_arrNormalisedData["Destination"] != "")														// 4
 		{
-			$arrValid[] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", 	$this->_arrNormalisedData["Destination"]);
+			$arrValid['Destination'] = preg_match("/^\d+$|^\+\d+$|^\d{5}(X+|\d+| +|\d+REV)I?$/", 	$this->_arrNormalisedData["Destination"]);
 		}
 		else
 		{
-			$arrValid[] = true;
+			$arrValid['Destination'] = true;
 		}
 																												// 5
 		// start time : valid date/time
@@ -305,40 +309,41 @@ abstract class NormalisationModule
 		// end time : empty or valid date/time
 		if ($this->_arrNormalisedData["EndDatetime"] != "")														// 6
 		{
-			$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", $this->_arrNormalisedData["EndDatetime"]);
+			$arrValid['EndDatetime'] = preg_match("/^\d{4}-[01]\d-[0-3]\d [0-2]\d:[0-5]\d:[0-5]\d$/", $this->_arrNormalisedData["EndDatetime"]);
 		}
 		else
 		{
-			$arrValid[] = true;
+			$arrValid['EndDatetime'] = true;
 		}
 		
 		// units : numeric
-		$arrValid[] = is_numeric($this->_arrNormalisedData["Units"]);											// 7
+		$arrValid['Units'] = is_numeric($this->_arrNormalisedData["Units"]);											// 7
 		
 		// cost : numeric
-		$arrValid[] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
+		$arrValid['Cost'] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
 		
 		// DestinationCode : required for any record type with a context
 		if ($this->_intContext > 0)
 		{
 			// requires a destination code
-			$arrValid[] = is_numeric($this->_arrNormalisedData["DestinationCode"]);	// 9
+			$arrValid['DestinationCode'] = is_numeric($this->_arrNormalisedData["DestinationCode"]);	// 9
 		}
 		else
 		{
 			// doesn't require a destination code
-			$arrValid[] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
+			$arrValid['DestinationCode'] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
 		}
 		
+		$this->_arrValid = $arrValid;
 		
 		$i = 0;
-		foreach ($arrValid as $bolValid)
+		foreach ($arrValid as $strKey=>$bolValid)
 		{
 			$i++;
 			if(!$bolValid)
 			{
 				$this->_arrNormalisedData['Status']	= CDR_CANT_NORMALISE_INVALID;
-				Debug((string)$i);
+				Debug($strKey." : ".(string)$i);
 				return false;
 			}
 		}
@@ -874,6 +879,66 @@ abstract class NormalisationModule
 	 	}
 	 }
 	 
+	 
+	//------------------------------------------------------------------------//
+	// DebugCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * DebugCDR()
+	 *
+	 * Returns information related to normalising a CDR
+	 *
+	 * Returns information related to normalising a CDR
+	 *
+	 * @param	integer		$intCDR			Index into the CDR table to debug
+	 *
+	 * @return	mixed						associative array: debug data
+	 * 										FALSE: invalid input or db error
+	 *
+	 * @method
+	 */
+	 public function DebugCDR($intCDR)
+	 {
+		// We need a valid integer
+		if (!is_int($intCDR))
+		{
+			return FALSE;
+		}
+
+		// Retrieve the raw CDR
+		$this->_selGetCDR->Execute(Array('Id' => $intCDR));
+		if ($arrCDR = $this->_selGetCDR->Fetch())
+		{
+			// Parse the CDR
+			$this->Normalise($arrCDR['CDR']);
+			
+			$arrDebugData = Array();
+			
+			// Add the Split Raw data and what it's validated against
+			foreach ($this->_arrRawData as $strKey=>$mixRawData)
+			{
+				$arrDebugData['Raw'][$strKey]['Value']	= $mixRawData;
+			}
+			$arrDebugData['Raw']		= array_merge($arrDebugData['Raw'], $this->_arrDefineCarrier);
+			
+			// Add the Normalised data and whether it was valid, not valid, or ignored
+			foreach ($this->_arrNormalisedData as $strKey=>$mixNormalisedData)
+			{
+				$arrDebugData['Normalised'][$strKey]['Value']	= $mixNormalisedData;
+			}
+			$arrDebugData['Normalised']	= array_merge($arrDebugData['Normalised'], $this->_arrValid);
+			
+			// Add the Raw CDR string
+			$arrDebugData['CDR']		= $arrCDR['CDR'];
+			
+			return $arrDebugData;
+		}
+		else
+		{
+			// Database error
+			return FALSE;
+		}
+	 }
 }
 
 ?>
