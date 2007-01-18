@@ -205,7 +205,6 @@ die();
 			{
 				// Report and continue
 				$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
-				continue;
 			}
 			else
 			{

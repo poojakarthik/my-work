@@ -192,7 +192,7 @@
 										<tr>
 											<td>
 												<a href="console.php">
-													<img src="img/template/address.png" title="Employee Console" class="MenuIcon" />
+													<img src="img/template/home.png" title="Employee Console" class="MenuIcon" />
 												</a>
 											</td>
 										</tr>
