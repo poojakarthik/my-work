@@ -552,6 +552,12 @@
 		color:               #006599;
 	}
 	
+	.Large
+	{
+		font-size:			35px;
+		line-height:		150%;
+	}
+	
 	.Note
 	{
 		padding:            5px;

@@ -362,6 +362,7 @@
 				<th>Account Id</th>
 				<th>Business Name</th>
 				<th>Trading Name</th>
+				<th>Overdue Charges</th>
 				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/Accounts/Results/rangeSample/Account">
@@ -370,6 +371,23 @@
 					<td><xsl:value-of select="./Id" /></td>
 					<td><xsl:value-of select="./BusinessName" /></td>
 					<td><xsl:value-of select="./TradingName" /></td>
+					<td>
+						<strong>
+							<span>
+								<xsl:attribute name="class">
+									<xsl:choose>
+										<xsl:when test="./OverdueAmount = '$0.00'">
+											<xsl:text>Green</xsl:text>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:text>Red</xsl:text>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:attribute>
+								<xsl:value-of select="./OverdueAmount" />
+							</span>
+						</strong>
+					</td>
 					<td>
 						<a>
 							<xsl:attribute name="href">

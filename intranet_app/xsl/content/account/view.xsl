@@ -232,6 +232,28 @@
 				</td>
 				<td width="30" nowrap="nowrap"></td>
 				<td valign="top" width="300">
+					<h2 class="Invoice">Overdue Amount</h2>
+					Overdue charges for this account stand at :
+					<br />
+					<strong>
+						<span>
+							<xsl:attribute name="class">
+								<xsl:text>Large </xsl:text>
+								<xsl:choose>
+									<xsl:when test="/Response/Account/OverdueAmount = '$0.00'">
+										<xsl:text>Green</xsl:text>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:text>Red</xsl:text>
+									</xsl:otherwise>
+								</xsl:choose>
+							</xsl:attribute>
+							<xsl:value-of select="/Response/Account/OverdueAmount" />
+						</span>
+					</strong>
+					
+					<div class="Seperator"></div>
+					
 					<h2 class="Options">Account Options</h2>
 					<ul>
 						<li>
@@ -309,7 +331,6 @@
 					</ul>
 					
 					<div class="Seperator"></div>
-					
 					
 					<h2 class="Notes">Account Notes</h2>
 					

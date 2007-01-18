@@ -589,6 +589,38 @@
 			$updAccountBilling = new StatementUpdate ('Account', 'Id = <Id>', $arrAccountBilling, 1);
 			$updAccountBilling->Execute ($arrAccountBilling, Array ('Id' => $this->Pull ('Id')->getValue ()));
 		}
+		
+		//------------------------------------------------------------------------//
+		// OverdueAmount
+		//------------------------------------------------------------------------//
+		/**
+		 * OverdueAmount()
+		 *
+		 * Shows overdue charges
+		 *
+		 * Attaches an object and returns the same object displaying how much
+		 * the current overdue charges are for the account.
+		 *
+		 * @return	dataFloat
+		 *
+		 * @method
+		 */
+		 
+		public function OverdueAmount ()
+		{
+			$selOverdue = new StatementSelect ('Invoice', 'SUM(Balance) AS OverdueAmount', 'Now() > DueOn AND SettledOn IS NULL AND Account = <Account>');
+			$selOverdue->Execute (Array ('Account' => $this->Pull ('Id')->getValue ()));
+			
+			$oblfltOverdue = $this->Push (new dataFloat ('OverdueAmount'));
+			
+			if ($selOverdue->Count () == 1)
+			{
+				$arrOverdue = $selOverdue->Fetch ();
+				$oblfltOverdue->setValue ($arrOverdue ['OverdueAmount']);
+			}
+			
+			return $oblfltOverdue;
+		}
 	}
 	
 ?>

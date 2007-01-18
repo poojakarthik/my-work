@@ -35,6 +35,9 @@
 		exit;
 	}
 	
+	// Get Overdue Amount
+	$actAccount->OverdueAmount ();
+	
 	// Get Associated Services
 	$svsServices	= $Style->attachObject (new Services);
 	$svsServices->Constrain ('Account', '=', $_GET ['Id']);

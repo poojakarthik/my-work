@@ -36,7 +36,13 @@
 	
 	// Pull the Accounts that the Contact has Access to
 	$acsAccounts = $Style->attachObject ($cntContact->getAccounts ());
-	$acsAccounts->Sample ();
+	$oblsamAccounts = $acsAccounts->Sample ();
+	
+	// Get the Overdue Amount for the Account
+	foreach ($oblsamAccounts as $actAccount)
+	{
+		$actAccount->OverdueAmount ();
+	}
 	
 	// Note Types
 	$ntlNoteTypes = $Style->attachObject (new NoteTypes);
