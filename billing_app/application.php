@@ -260,7 +260,6 @@ die();
 			}
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 			
-			
 			// Get a list of shared plans for this account
 			$arrSharedPlans = Array();
 			foreach($arrServices as $arrService)
@@ -269,6 +268,8 @@ die();
 				{
 					$arrSharedPlans[$arrService['RatePlan']]['Count']++;
 					$arrSharedPlans[$arrService['RatePlan']]['MinMonthly']	= $arrService['MinMonthly'];
+					$arrSharedPlans[$arrService['RatePlan']]['UsageCap']	= $arrService['UsageCap'];
+					$arrSharedPlans[$arrService['RatePlan']]['ChargeCap']	= $arrService['ChargeCap'];
 				}
 			}
 			
@@ -282,62 +283,74 @@ die();
 				
 				if ($arrService['Shared'] > 0)
 				{
-					// this is a shared plan
-					
-					// add to rateplan count
+					// this is a shared plan, add to rateplan count
 					$arrSharedPlans[$arrService['RatePlan']]['ServicesBilled']++;
 					
-					// is this the last one for this rateplan
+					// is this the last Service for this RatePlan?
 					if ($arrSharedPlans[$arrService['RatePlan']]['ServicesBilled'] == $arrSharedPlans[$arrService['RatePlan']]['Count'])
 					{
-						// this is the last service
-						// do we have any min monthly left
-						if ($arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] > 0)
-						{
-							// add it to this service
-							$fltMinMonthly = $arrSharedPlans[$arrService['RatePlan']]['MinMonthly'];
-						}
-						else
-						{
-							$fltMinMonthly = 0;
-						}
+						// this is the last service, add min monthly to this service
+						$fltMinMonthly 	= max($arrSharedPlans[$arrService['RatePlan']]['MinMonthly'], 0);
 					}
 					else
 					{
-						// not the last service
-						// decrease the min monthly remaining
-						$arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] = $arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] - $fltCharge;
+						$fltMinMonthly 	= 0;
 					}
+					$fltUsageCap 		= max($arrSharedPlans[$arrService['RatePlan']]['UsageCap'], 0);
+					$fltChargeCap 		= max($arrSharedPlans[$arrService['RatePlan']]['ChargeCap'], 0);
 				}
 				else
 				{
+					// this is not a shared plan
 					$fltMinMonthly 	= $arrService['MinMonthly'];
-					$fltUsageCap 	= $arrService['UsageCap'];
-					$fltChargeCap 	= $arrService['ChargeCap'];
-				
+					$fltUsageCap 		= $arrService['UsageCap'];
+					$fltChargeCap 		= $arrService['ChargeCap'];
 				}
 				
-				// this is not a shared plan
-				if ($arrService['ChargeCap'] > 0)
+				// add capped charges
+				if ($arrService['ChargeCap'])
 				{
-					// If we have a charge cap, apply it
-					$fltTotalCharge = floatval (min ($arrService['CappedCharge'], $fltChargeCap + $arrService['UnCappedCharge']));
-					
-					if ($fltUsageCap > 0 && $fltUsageCap < $arrService['CappedCharge'])
+					// this is a capped plan
+					if ($fltChargeCap > $arrService['CappedCharge'])
 					{
-						// Gone over cap
-						$fltTotalCharge += floatval ($arrService['UncappedCharge'] - $fltUsageCap);
+						// under the Charge Cap : add the Full Charge
+						$fltTotalCharge = (float)$arrService['CappedCharge'];
+					}
+					elseif ($arrService['UsageCap'] > 0 && $fltUsageCap < $arrService['CappedCharge'])
+					{
+						// over the Usage Cap : add the Charge Cap + Charge - Usage Cap
+						$fltTotalCharge = (float)$fltChargeCap + (float)$arrService['CappedCharge'] - (float)$fltUsageCap;
+					}
+					else
+					{
+						// over the Charge Cap, Under the Usage Cap : add Charge Cap
+						$fltTotalCharge = (float)$fltChargeCap;
 					}
 				}
 				else
 				{
-					$fltTotalCharge = floatval ($arrService['CappedCharge'] + $arrService['UncappedCharge']);
+					// this is not a capped plan
+					$fltTotalCharge = (float)$arrService['CappedCharge'];
 				}
+				
+				// add uncapped charges
+				$fltTotalCharge += (float)$arrService['UncappedCharge'];
 
 				// If there is a minimum monthly charge, apply it
 				if ($fltMinMonthly > 0)
 				{
-					$fltTotalCharge = floatval(max($fltMinMonthly, $fltTotalCharge));
+					$fltTotalCharge = max($fltMinMonthly, $fltTotalCharge);
+				}
+				
+				// if this is a shared plan
+				if ($arrService['Shared'] > 0)
+				{
+					// remove total charged from min monthly
+					$arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] = $arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] - $fltTotalCharge;
+					
+					// reduce caps
+					$arrSharedPlans[$arrService['RatePlan']]['ChargeCap'] -= (float)$arrService['UncappedCharge'];
+					$arrSharedPlans[$arrService['RatePlan']]['UsageCap'] -= (float)$arrService['UncappedCharge'];
 				}
 				
 				// Charges and Recurring Charges (Credits and Debits) are not included
@@ -431,7 +444,7 @@ die();
 			$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
 			$fltBalance	= $fltTotal + $fltTax;
 
-			// calculate account balance
+			// calculate account debit balance
 			if(!$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id'])))
 			{				
 				// Report and fail out
@@ -440,19 +453,28 @@ die();
 				continue;
 			}
 			$arrAccountBalance = $selCalcAccountBalance->Fetch();
-			if (($fltAccountBalance = $arrAccountBalance['AccountBalance']) == NULL)
+			if (($fltAccountDebitBalance = $arrAccountBalance['AccountBalance']) == NULL)
 			{
-				$fltAccountBalance = 0.0;
+				$fltAccountDebitBalance = 0.0;
 			}
 			
+			// calculate account credit balance
+			//TODO!rich! calculate account credit balance
+			// SUM(Payment.Balance)
+			// WHERE AccountGroup = us
+			// AND (Account = us OR Account = NULL)
+			// $fltAccountCreditBalance =
 			
-			// AccountGroup.CreditBalance
-			//TODO!!!!
-			// add temp InvoicePayments ????
-			//TODO!!!!
+			if ($fltAccountCreditBalance)
+			{
+				// add temp InvoicePayments
+				//TODO!rich! add temp InvoicePayments
+				// see payment_app._PayInvoice()
+			}
 			
-			// Account.CreditBalance
-			//TODO!!!!
+			// calculate account balance
+			// NOTE : we don't show credit balance on the bill
+			$fltAccountBalance = $fltAccountDebitBalance;
 			
 			// write to temporary invoice table
 			$arrInvoiceData = Array();
@@ -870,6 +892,11 @@ die();
 		{
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
+		
+		// reverse payments
+		//TODO!rich! reverse any payments for this invoice run
+		// update total and status of Payment
+		// remove InvoicePayment
 		
 		return TRUE;
 	}
