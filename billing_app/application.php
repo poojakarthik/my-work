@@ -501,8 +501,7 @@ die();
 				$this->_ubiPayment->Execute($arrUpdatePayment);
 				
 				//reduce balance of the invoice
-				//TODO!rich! reduce the balance
-				//$fltBalance =
+				$fltBalance -= $fltPayment;
 			}
 
 			
@@ -694,8 +693,6 @@ die();
 		$mixResult = $selGetInvoiceRun->Execute();
 		if ($mixResult === FALSE)
 		{
-			Debug($selCheckTempInvoices);
-			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "There was a database error"));
 			return;
@@ -706,10 +703,10 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "There was no temporary invoice run"));
 			return;
 		}
-		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
-		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
+		$arrInvoiceRun	= $selGetInvoiceRun->Fetch();
+		$strInvoiceRun	= $arrInvoiceRun['InvoiceRun'];
 		$this->_rptBillingReport->AddMessage(MSG_OK);
-				
+		
 		
 		// copy temporary invoices to invoice table
 		$this->_rptBillingReport->AddMessage(MSG_COMMIT_TEMP_INVOICES, FALSE);
@@ -796,10 +793,10 @@ die();
 		}
 		
 		// update Invoice Status
-		//TODO!rich! If the invoice balance is zero mark it as settled
+		// If the invoice balance is zero mark it as settled
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = INVOICE_COMMITTED;
+		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
 		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_TEMP, $arrUpdateData);
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
