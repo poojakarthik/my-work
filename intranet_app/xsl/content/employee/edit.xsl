@@ -72,13 +72,6 @@
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
-					<input type="hidden" name="Id">
-						<xsl:attribute name="value">
-							<xsl:text></xsl:text>
-							<xsl:value-of select="/Response/Employee/Id" />
-						</xsl:attribute>
-					</input>
-					
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">

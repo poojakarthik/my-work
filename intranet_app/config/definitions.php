@@ -41,11 +41,13 @@ define("USER_NAME"						, "Intranet_app");
 // Permission All is 0x7FFFFFFFFFFFFFFF
 
 // Permissions - used for page permission
-define("PERMISSION_PUBLIC"				, 0x1);		// 1
-define("PERMISSION_ADMIN"				, 0x2);		// 2	
-define("PERMISSION_OPERATOR"			, 0x4);		// 4
-define("PERMISSION_SALES"				, 0x8);		// 8
-define("PERMISSION_ACCOUNTS"			, 0x10);	// 16
+													$arrPermissions = Array ();
+define("PERMISSION_PUBLIC"				, 0x1);		$arrPermissions[PERMISSION_PUBLIC]		= "Public";			// 1
+define("PERMISSION_ADMIN"				, 0x2);		$arrPermissions[PERMISSION_ADMIN]		= "Admin";			// 2	
+define("PERMISSION_OPERATOR"			, 0x4);		$arrPermissions[PERMISSION_OPERATOR]	= "Operator";		// 4
+define("PERMISSION_SALES"				, 0x8);		$arrPermissions[PERMISSION_SALES]		= "Sales";			// 8
+define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "Accounts";		// 16
+													$GLOBALS['Permissions']	= $arrPermissions;
 
 /*
 define("PERMISSION_"					, 0x20);
@@ -118,6 +120,7 @@ define("MODULE_DIRECT_DEBIT"			, 0x1000000);
 define("MODULE_PAYMENT"					, 0x2000000);
 define("MODULE_SERVICE_TOTAL"			, 0x4000000);
 define("MODULE_TIP"						, 0x8000000);
+define("MODULE_PERMISSION"				, 0x10000000);
 
 define("MODULE_MAXIMUM"					, 0x4000000000000000);
 define("MODULE_ALL"						, 0x7FFFFFFFFFFFFFFF);

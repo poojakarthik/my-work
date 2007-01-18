@@ -11,23 +11,26 @@ var sortPick = true;  // Will order the picklist in sort sequence
 
 // Initialise - invoked on load
 function initIt() {
-  var selectList = document.getElementById("AvailableRates");
+  var selectList = document.getElementById("AvailablePermissions");
   var selectOptions = selectList.options;
   var selectIndex = selectList.selectedIndex;
-  var pickList = document.getElementById("SelectedRates");
+  var pickList = document.getElementById("SelectedPermissions");
   var pickOptions = pickList.options;
   if (!(selectIndex > -1)) {
-    selectOptions[0].selected = true;  // Set first selected on load
-    selectOptions[0].defaultSelected = true;  // In case of reset/reload
+    if (selectOptions[0])
+    {
+      selectOptions[0].selected = true;  // Set first selected on load
+      selectOptions[0].defaultSelected = true;  // In case of reset/reload
+    }
   }
 }
 
 // Adds a selected item into the picklist
 function addIt() {
-  var selectList = document.getElementById("AvailableRates");
+  var selectList = document.getElementById("AvailablePermissions");
   var selectIndex = selectList.selectedIndex;
   var selectOptions = selectList.options;
-  var pickList = document.getElementById("SelectedRates");
+  var pickList = document.getElementById("SelectedPermissions");
   var pickOptions = pickList.options;
   var pickOLength = pickOptions.length;
   // An item must be selected
@@ -59,10 +62,10 @@ function addIt() {
 
 // Deletes an item from the picklist
 function delIt() {
-  var selectList = document.getElementById("AvailableRates");
+  var selectList = document.getElementById("AvailablePermissions");
   var selectOptions = selectList.options;
   var selectOLength = selectOptions.length;
-  var pickList = document.getElementById("SelectedRates");
+  var pickList = document.getElementById("SelectedPermissions");
   var pickIndex = pickList.selectedIndex;
   var pickOptions = pickList.options;
   while (pickIndex > -1) {
@@ -93,50 +96,13 @@ function delIt() {
 
 // Selection - invoked on submit
 function selIt() {
-  var pickList = document.getElementById("SelectedRates");
+  var pickList = document.getElementById("SelectedPermissions");
   var pickOptions = pickList.options;
   var pickOLength = pickOptions.length;
-  if (pickOLength < 1) {
-    alert("You must select at least one Rate Group\nPlease select Rate Groups using the [>>] button");
-    return false;
-  }
   for (var i = 0; i < pickOLength; i++) {
     pickOptions[i].selected = true;
   }
   return true;
-}
-
-
-
-
-// v - created by Bash
-function showSelectedRatesTable ()
-{
-	newForm = document.createElement ("FORM");
-	newForm.method = "POST";
-	newForm.action = "rates_group_summary.php";
-	newForm.style.display = "none";
-	newForm = document.body.appendChild (newForm);
-	
-	for (var i=0; i < document.getElementById("SelectedRates").options.length; ++i)
-	{
-		formElement = document.getElementById("SelectedRates").options [i];
-		
-		newFormElement = document.createElement ("INPUT");
-		newFormElement.type = "hidden";
-		newFormElement.name = "SelectedRates[]";
-		newFormElement.value = formElement.value;
-		newFormElement = newForm.appendChild (newFormElement);
-	}
-	
-	var newWindow = window.open (
-		"",
-		"newWindow",
-		"width=1000, height=500, scrollbars=yes"
-	);
-	
-	newForm.target = "newWindow";
-	newForm.submit ();
 }
 
 window.onload = initIt;

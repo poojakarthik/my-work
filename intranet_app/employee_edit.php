@@ -61,6 +61,10 @@
 		{
 			$oblstrError->setValue ('Password Mismatch');
 		}
+		else if (!$_POST ['UserName'])
+		{
+			$oblstrError->setValue ('Username Empty');
+		}
 		else
 		{
 			try

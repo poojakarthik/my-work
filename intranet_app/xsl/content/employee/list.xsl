@@ -38,6 +38,13 @@
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
 							<xsl:text>Edit Employee</xsl:text>
+						</a>,
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>employee_permissions.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:text>Edit Permissions</xsl:text>
 						</a>
 					</td>
 				</tr>

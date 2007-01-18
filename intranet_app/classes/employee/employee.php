@@ -141,6 +141,7 @@
 		
 		public function ArchiveStatus ($bolArchive)
 		{
+			
 			// If we want to Unarchive an Employee, we have to Ensure that there isn't an unarchive (active)
 			// account with the same username. If there is, throw an Exception
 			
@@ -163,6 +164,89 @@
 			
 			$updEmployee = new StatementUpdate ('Employee', 'Id = <Id>', $arrArchive, 1);
 			$updEmployee->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
+		
+		//------------------------------------------------------------------------//
+		// PermissionList
+		//------------------------------------------------------------------------//
+		/**
+		 * PermissionList()
+		 *
+		 * Get a list of Permissions this user has
+		 *
+		 * Get a list of Permissions this user has
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function PermissionList ()
+		{
+			$oblarrPermissions = new dataArray ('PermissionList', 'Permission');
+			
+			// Test each Permission
+			foreach ($GLOBALS['Permissions'] AS $intKey => $intValue)
+			{
+				if (HasPermission ($this->Pull ('Priviledges')->getValue (), $intKey))
+				{
+					$oblarrPermissions->Push (new Permission ($intKey));
+				}
+			}
+			
+			return $oblarrPermissions;
+		}
+		
+		//------------------------------------------------------------------------//
+		// PermissionsSet
+		//------------------------------------------------------------------------//
+		/**
+		 * PermissionsSet()
+		 *
+		 * Get a list of Permissions this user has
+		 *
+		 * Get a list of Permissions this user has
+		 *
+		 * @param	AuthenticatedEmploee	$aemAuthenticatedEmployee		The person wishing to perform this act
+		 * @param	Array					$arrSelectedPermissions			A list of Selected Permissions
+		 *
+		 * @method
+		 */
+		
+		public function PermissionsSet (AuthenticatedEmployee $aemAuthenticatedEmployee, $arrSelectedPermissions)
+		{
+			// If we're not updating our personal profile, then we have to be updating 
+			// the profile of someone else. In this case, we want to lock this method off
+			// so that only Admin users can do this
+			
+			if ($aemAuthenticatedEmployee->Pull ('Id')->getValue () <> $this->Pull ('Id')->getValue ())
+			{
+				// If this person isn't an Admin user, then they shouldn't be in this Method, so throw an exception
+				if (!HasPermission ($aemAuthenticatedEmployee->Pull ('Priviledges')->getValue (), PERMISSIONG_ADMIN))
+				{
+					throw new Exception ('You do not have access to update this employee');
+				}
+			}
+			
+			// Count the Permission Values
+			$intNewPermission = 0;
+			
+			// We have to check we have a list. No list means revert of Permission (set to 0)
+			if ($arrSelectedPermissions)
+			{
+				// Loop through each of the Selected Values
+				foreach ($arrSelectedPermissions AS $intPermission)
+				{
+					$intNewPermission = AddPermission ($intNewPermission, $intPermission);
+				}
+			}
+			
+			$arrPermission = Array (
+				'Priviledges'		=> $intNewPermission
+			);
+			
+			$updEmployeePermission = new StatementUpdate ('Employee', 'Id = <Id>', $arrPermission, 1);
+			$updEmployeePermission->Execute ($arrPermission, Array ('Id' => $this->Pull ('Id')->getValue ()));
 		}
 	}
 	

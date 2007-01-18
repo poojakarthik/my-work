@@ -57,6 +57,55 @@
 		{
 			parent::__construct ('Employees', 'Employee', 'Employee');
 		}
+		
+		//------------------------------------------------------------------------//
+		// Add
+		//------------------------------------------------------------------------//
+		/**
+		 * Add()
+		 *
+		 * Creates a new Employee
+		 *
+		 * Creates a new Employee
+		 *
+		 * @param	AuthenticatedEmployee		$aemAuthenticatedEmployee			The currently logged in user
+		 * @param	Array						$arrData							Raw Employee Data
+		 * @return	Employee
+		 * @method
+		 */
+		 
+		public function Add (AuthenticatedEmployee $aemAuthenticatedEmployee, $arrData)
+		{
+			// Check the Username is not in use
+			$selEmployee = new StatementSelect ('Employee', 'count(*) AS length', 'UserName = <UserName> AND Archived = 0');
+			$selEmployee->Execute (Array ('UserName' => $arrData ['UserName']));
+			$arrUserNames = $selEmployee->Fetch ();
+			
+			if ($arrUserNames ['length'] <> 0)
+			{
+				throw new Exception ('UserName Obtained Elsewhere');
+			}
+			
+			$arrEmployee = Array (
+				"FirstName"			=> $arrData ['FirstName'],
+				"LastName"			=> $arrData ['LastName'],
+				"UserName"			=> $arrData ['UserName'],
+				"PassWord"			=> sha1 ($arrData ['PassWord']),
+				"DOB"				=> date ("Y-m-d", mktime (0, 0, 0, $arrData ['DOB-month'], $arrData ['DOB-day'], $arrData ['DOB-year'])),
+				"SessionId"			=> "",
+				"SessionExpire"		=> date ("Y-m-d H:i:S"),
+				"Session"			=> "",
+				"Karma"				=> 0,
+				"PabloSays"			=> PABLO_TIP_POLITE,
+				"Priviledges"		=> 0,
+				"Archived"			=> 0
+			);
+			
+			$insEmployee = new StatementInsert ('Employee');
+			$intEmployee = $insEmployee->Execute ($arrEmployee);
+			
+			return new Employee ($intEmployee);
+		}
 	}
 	
 ?>
