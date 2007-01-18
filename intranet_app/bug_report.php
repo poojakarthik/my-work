@@ -22,12 +22,14 @@
 		$Style->Output ('xsl/content/bug/report_empty.xsl');
 	}
 	
+	//TODO!bash! Comment your damn code !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	Bugs::Report (
 		$athAuthentication->AuthenticatedEmployee (),
 		$_POST ['PageDetails'],
 		$_POST ['Comment']
 	);
 	
+	//TODO!bash! learn about resource conservation, There are better ways to prevent a page from being submitted twice
 	header ("Location: bug_reported.php");
 	exit;
 	

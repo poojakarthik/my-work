@@ -76,6 +76,7 @@
 		 * @method
 		 */
 		
+		//TODO!bash! this don't seem to be working :(
 		public function Report (AuthenticatedEmployee $aemAuthenticatedEmployee, $strPageDetails, $strComment)
 		{
 			$arrBug = Array (
