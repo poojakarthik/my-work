@@ -195,10 +195,10 @@ die();
 			$this->_arrBillOutput[$strKey]->clean();
 		}
 		
-		// get a list of any shared plans
-		//TODO!rich! get all shared plans, including archived
-		// SELECT Id, MinMonthly, ChargeCap, UsageCap
-		// WHERE Shared = 1
+		// get a list of any shared plans (incl archived)
+		$selGetSharedPlans = new StatementSelect("RatePlan", "Id, MinMonthly, ChargeCap, UsageCap", "Shared = 1");
+		$selGetSharedPlans->Execute();
+		$arrSharedPlans = $selGetSharedPlans->FetchAll();
 		
 		foreach ($arrAccounts as $arrAccount)
 		{
@@ -231,10 +231,7 @@ die();
 			
 			// run query
 			$qryServiceTypeTotal = new Query();
-			if ($qryServiceTypeTotal->Execute($strQuery) === FALSE)
-			{
-				//TODO!rich!and then ?  do something here or at least add a comment to soy why we do nothing
-			}
+			$qryServiceTypeTotal->Execute($strQuery);
 			
 			// zero out totals
 			$fltDebits			= 0.0;
@@ -814,9 +811,6 @@ die();
 		{
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-		
-		// TODO: Clean up BillOutput table
-		
 		
 		return TRUE;
 	}
