@@ -498,11 +498,11 @@
 		// add invoice footer (18)
 		if ($arrInvoiceDetails['Balance'] >= 10.0)
 		{
-			$arrDefine['InvoiceFooter']	['DeliveryMethod']	['Value']	= $arrCustomerData['DeliveryMethod'];
+			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= $arrCustomerData['DeliveryMethod'];
 		}
 		else
 		{
-			$arrDefine['InvoiceFooter']	['DeliveryMethod']	['Value']	= BILLING_METHOD_DO_NOT_SEND;
+			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= BILLING_METHOD_DO_NOT_SEND;
 		}
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		
