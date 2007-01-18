@@ -194,6 +194,40 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// getDirectDebit
+		//------------------------------------------------------------------------//
+		/**
+		 * getDirectDebit()
+		 *
+		 * Get a Direct Debit Bank Account if it belongs to an Account Group
+		 *
+		 * Get a Direct Debit Bank Account if it belongs to an Account Group
+		 *
+		 * @return	DirectDebit
+		 *
+		 * @method
+		 */
+		
+		public function getDirectDebit ($intId)
+		{
+			// Pull all the active contacts ...
+			$selDDR = new StatementSelect ('DirectDebit', 'Id', 'Id = <Id> AND AccountGroup = <AccountGroup>', null, 1);
+			$selDDR->Execute (
+				Array (
+					'AccountGroup'	=> $this->Pull ('Id')->getValue (),
+					'Id'			=> $intId
+				)
+			);
+			
+			if ($selDDR->Count () <> 1)
+			{
+				throw new Exception ('DDR Not Found');
+			}
+			
+			return new DirectDebit ($intId);
+		}
+		
+		//------------------------------------------------------------------------//
 		// AddDirectDebit
 		//------------------------------------------------------------------------//
 		/**
@@ -258,6 +292,40 @@
 			}
 			
 			return $oblarrCCs;
+		}
+		
+		//------------------------------------------------------------------------//
+		// getCreditCard
+		//------------------------------------------------------------------------//
+		/**
+		 * getCreditCard()
+		 *
+		 * Get a Credit Card if it belongs to an Account Group
+		 *
+		 * Get a Credit Card if it belongs to an Account Group
+		 *
+		 * @return	CreditCard
+		 *
+		 * @method
+		 */
+		
+		public function getCreditCard ($intId)
+		{
+			// Pull all the active contacts ...
+			$selCC = new StatementSelect ('CreditCard', 'Id', 'Id = <Id> AND AccountGroup = <AccountGroup>', null, 1);
+			$selCC->Execute (
+				Array (
+					'AccountGroup'	=> $this->Pull ('Id')->getValue (),
+					'Id'			=> $intId
+				)
+			);
+			
+			if ($selCC->Count () <> 1)
+			{
+				throw new Exception ('CC Not Found');
+			}
+			
+			return new CreditCard ($intId);
 		}
 		
 		//------------------------------------------------------------------------//

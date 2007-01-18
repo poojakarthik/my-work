@@ -264,6 +264,15 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
+									<xsl:text>account_payment.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>Change Payment Method</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
 									<xsl:text>account_edit.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
@@ -285,7 +294,7 @@
 									<xsl:text>service_add.php?Account=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								Add Service
+								<xsl:text>Add Service</xsl:text>
 							</a>
 						</li>
 						<li>

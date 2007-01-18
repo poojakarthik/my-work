@@ -522,6 +522,73 @@
 		{
 			return new AccountGroup ($this->Pull ('AccountGroup')->getValue ());
 		}
+		
+		//------------------------------------------------------------------------//
+		// BillingTypeSelect
+		//------------------------------------------------------------------------//
+		/**
+		 * BillingTypeSelect()
+		 *
+		 * Changes the Account's Billing Type to a Specific Billing Type
+		 *
+		 * Changes the Account's Billing Type to a Specific Billing Type
+		 *
+		 * @param	Integer		$intBillingType			The way in which this Account will be billed (based on the BILLING_TYPE_* constants)
+		 * @param	Integer		$objBillingVia			If $intBillingType is BILLING_TYPE_CREDIT_CARD, expect CreditCard object
+		 * 												If $intBillingType is BILLING_TYPE_DIRECT_DEBIT, expect DirectDebit object
+		 * 												If $intBillingType is BILLING_TYPE_ACCOUNT, expect NULL
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		 
+		public function BillingTypeSelect ($intBillingType, $objBillingVia)
+		{
+			// Check the Billing Type is Valid
+			$btyBillingType = new BillingTypes ();
+			
+			if (!$btyBillingType->setValue ($intBillingType))
+			{
+				throw new Exception ('BillingType Invalid');
+			}
+			
+			// Start the Array to Set Values
+			$arrAccountBilling = Array (
+				"BillingType"	=> $intBillingType,
+				"DirectDebit"	=> null,
+				"CreditCard"	=> null
+			);
+			
+			// This Switch ensures that Direct Debit Billing Types have a correct Direct Debit
+			// and that Credit Card Billing Types have a correct Credit Card
+			switch ($intBillingType)
+			{
+				case BILLING_TYPE_DIRECT_DEBIT:
+					if (!($objBillingVia instanceOf DirectDebit))
+					{
+						throw new Exception ('BillingVia DDR Invalid');
+					}
+					
+					// Update the Direct Debit
+					$arrAccountBilling ['DirectDebit'] = $objBillingVia->Pull ('Id')->getValue ();
+					
+					break;
+					
+				case BILLING_TYPE_CREDIT_CARD:
+					if (!($objBillingVia instanceOf CreditCard))
+					{
+						throw new Exception ('BillingVia CC Invalid');
+					}
+					
+					// Update the Credit Card
+					$arrAccountBilling ['CreditCard'] = $objBillingVia->Pull ('Id')->getValue ();
+					
+					break;
+			}
+			
+			$updAccountBilling = new StatementUpdate ('Account', 'Id = <Id>', $arrAccountBilling, 1);
+			$updAccountBilling->Execute ($arrAccountBilling, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
 	}
 	
 ?>

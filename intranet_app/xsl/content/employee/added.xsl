@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Employed Successfully Added</h1>
+		<h1>Employee Successfully Added</h1>
 		
 		<p>
 			The Employee you wish to add has successfully been created
