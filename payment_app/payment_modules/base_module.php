@@ -52,8 +52,8 @@
  		$this->_strEnclosedBy	= NULL;
  		
 	 	$this->_selGetAccountGroup	= new StatementSelect(	"AccountGroup LEFT OUTER JOIN Account ON AccountGroup.Id = Account.AccountGroup",
-	 														"AccountGroup.Id",
-	 														"AccountGroup.Archived = 0 AND Account.Archived = 0 AND Account.Id = <Account>",
+	 														"AccountGroup.Id, Account.Id",
+	 														"AccountGroup.Archived = 0 AND Account.Archived = 0 AND (Account.Id = <Account> OR AccountGroup.Id = <Account>)",
 	 														NULL,
 	 														"1");
  	}
