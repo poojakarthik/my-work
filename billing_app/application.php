@@ -367,7 +367,7 @@ die();
 			
 			// calculate invoice total
 			$fltTotal	= $fltTotalDebits - $fltTotalCredits;
-			$fltTax		= $fltTotal / TAX_RATE_GST;
+			$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
 			$fltBalance	= $fltTotal + $fltTax;
 
 			// calculate account balance
