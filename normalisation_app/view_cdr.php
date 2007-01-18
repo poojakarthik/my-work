@@ -27,10 +27,10 @@ if ($intCDR)
 	$arrCDR = $selCDR->Fetch();
 		
 	// Check for a Normalisation Module
-	if ($arrNormalisationModule[$arrCDR["FileType"]])
+	if ($arrNormalisationModule[$arrCDR['FileType']])
 	{
 		// normalise CDR
-		$mixReturn = $arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
+		$mixReturn = $arrNormalisationModule[$arrCDR['FileType']]->Normalise($arrCDR);
 		
 		// debug CDR
 		$arrDebugCDR = $arrNormalisationModule[$arrCDR['FileType']]->DebugCDR();

@@ -900,7 +900,6 @@ abstract class NormalisationModule
 	 */
 	 public function DebugCDR()
 	 {
-		
 		$arrDebugData = Array();
 		
 		// Add the Raw CDR string

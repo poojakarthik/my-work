@@ -6,9 +6,7 @@
 // RICH
 // ---------------------------------------------------------------------------//
 
-//TODO!rich! add CreatedBy & ClosedBy to Service Table (see latest version of table descriptions)
 //TODO!rich! Test shared plans
-//TODO!rich! add Phone, Mobile, Extension, Email to Employee Table (see latest version of table descriptions)
 
 //TODO!rich! fix reporting in normalisation import...
 //TODO!rich! 51369 passed	1 failed
