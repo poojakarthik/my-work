@@ -202,9 +202,12 @@ die();
 		
 		foreach ($arrAccounts as $arrAccount)
 		{
-			// setup shared plan totals
-			$arrSharedTotals = Array();
-		
+			// Get a list of shared plans for this account
+			// Service.RatePlan~, COUNT(Service.Id), MinMonthly, ChargeCap, UsageCap"
+			// WHERE Shared = 1 ...
+			// GROUP BY RatePlan
+			// $arrSharedPlans[RatePlan.Id]
+			
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
 			$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 			
@@ -264,28 +267,64 @@ die();
 				
 				if ($arrService['Shared'] > 0)
 				{
-					if ($arrService['ChargeCap'] > 0)
+					// this is a shared plan
+					
+					// add to rateplan count
+					$arrSharedPlans[$arrService['RatePlan']]['ServicesBilled']++;
+					
+					// is this the last one for this rateplan
+					if ($arrSharedPlans[$arrService['RatePlan']]['ServicesBilled'] == $arrSharedPlans[$arrService['RatePlan']]['Count'])
 					{
-						// If we have a charge cap, apply it
-						$fltTotalCharge = floatval (min ($arrService['CappedCharge'], $arrService['ChargeCap'] + $arrService['UnCappedCharge']));
-						
-						if ($arrService['UsageCap'] > 0 && $arrService['UsageCap'] < $arrService['CappedCharge'])
+						// this is the last service
+						// do we have any min monthly left
+						if ($arrSharedPlans[$arrService['RatePlan']]['MimMonthly'] > 0)
 						{
-							// Gone over cap
-							$fltTotalCharge += floatval ($arrService['UncappedCharge'] - $arrService['UsageCap']);
+							// add it to this service
+							$fltMinMonthly = $arrSharedPlans[$arrService['RatePlan']]['MimMonthly'];
+						}
+						else
+						{
+							$fltMinMonthly = 0;
 						}
 					}
 					else
 					{
-						$fltTotalCharge = floatval ($arrService['CappedCharge'] + $arrService['UncappedCharge']);
-					}
-	
-					// If there is a minimum monthly charge, apply it
-					if ($arrService['MinMonthly'] > 0)
-					{
-						$fltTotalCharge = floatval(max($arrService['MinMonthly'], $fltTotalCharge));
+						// not the last service
+						// decrease the min monthly remaining
+						$arrSharedPlans[$arrService['RatePlan']]['MimMonthly'] = $arrSharedPlans[$arrService['RatePlan']]['MimMonthly'] - $fltCharge;
 					}
 				}
+				else
+				{
+					$fltMinMonthly 	= $arrService['MinMonthly'];
+					$fltUsageCap 	= $arrService['UsageCap'];
+					$fltChargeCap 	= $arrService['ChargeCap'];
+				
+				}
+				
+				// this is not a shared plan
+				if ($arrService['ChargeCap'] > 0)
+				{
+					// If we have a charge cap, apply it
+					$fltTotalCharge = floatval (min ($arrService['CappedCharge'], $fltChargeCap + $arrService['UnCappedCharge']));
+					
+					if ($fltUsageCap > 0 && $fltUsageCap < $arrService['CappedCharge'])
+					{
+						// Gone over cap
+						$fltTotalCharge += floatval ($arrService['UncappedCharge'] - $fltUsageCap);
+					}
+				}
+				else
+				{
+					$fltTotalCharge = floatval ($arrService['CappedCharge'] + $arrService['UncappedCharge']);
+				}
+
+				// If there is a minimum monthly charge, apply it
+				if ($fltMinMonthly > 0)
+				{
+					$fltTotalCharge = floatval(max($fltMinMonthly, $fltTotalCharge));
+				}
+				
 				// Charges and Recurring Charges (Credits and Debits) are not included
 				// in caps or minimum monthlys (above)
 				
