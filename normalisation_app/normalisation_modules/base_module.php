@@ -437,6 +437,9 @@ abstract class NormalisationModule
 	 */
 	 protected function _SplitRawCDR($strCDR)
 	 {
+	 	// keep a record of the raw CDR
+		$this->_strRawCDR = $strCDR;
+		
 	 	// clean the array
 		$this->_arrRawData = array();
 		
@@ -890,37 +893,22 @@ abstract class NormalisationModule
 	 *
 	 * Returns information related to normalising a CDR
 	 *
-	 * @param	string		$strCDR			Raw CDR string
 	 *
-	 * @return	mixed						associative array: debug data
-	 * 										FALSE: invalid input or db error
+	 * @return	array						associative array: debug data
 	 *
 	 * @method
 	 */
-	 public function DebugCDR($strCDR)
+	 public function DebugCDR()
 	 {
-		// Parse the CDR
-		$this->Normalise($strCDR);
 		
 		$arrDebugData = Array();
 		
-		// Add the Split Raw data and what it's validated against
-		foreach ($this->_arrRawData as $strKey=>$mixRawData)
-		{
-			$arrDebugData['Raw'][$strKey]['Value']	= $mixRawData;
-		}
-		$arrDebugData['Raw']		= array_merge($arrDebugData['Raw'], $this->_arrDefineCarrier);
-		
-		// Add the Normalised data and whether it was valid, not valid, or ignored
-		foreach ($this->_arrNormalisedData as $strKey=>$mixNormalisedData)
-		{
-			$arrDebugData['Normalised'][$strKey]['Value']	= $mixNormalisedData;
-		}
-		$arrDebugData['Normalised']	= array_merge($arrDebugData['Normalised'], $this->_arrValid);
-		
 		// Add the Raw CDR string
-		$arrDebugData['CDR']		= $strCDR;
-		
+		$arrDebugData['CDR']		= $this->_strRawCDR;
+		$arrDebugData['Raw']		= $this->_arrRawData;
+		$arrDebugData['Normalised'] = $this->_arrNormalisedData;
+		$arrDebugData['Valid']		= $this->_arrValid;
+		$arrDebugData['Define']		= $this->_arrDefineCarrier;
 		return $arrDebugData;
 	 }
 }

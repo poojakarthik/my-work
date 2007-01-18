@@ -17,8 +17,8 @@ if ($intCDR)
 	$arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
 	$arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
 
-	// get cdr
-	$selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.CDR AS CDR, FileImport.FileType AS FileType", "CDR.Id = <Id>");
+	// get CDR
+	$selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.*, FileImport.FileType AS FileType", "CDR.Id = <Id>");
 	if (!$selCDR->Execute(Array('Id' => $intCDR)))
 	{
 		echo "Invalid CDR record requested.  Please double-check the Id ($intCDR).\n";
@@ -26,10 +26,22 @@ if ($intCDR)
 	}
 	$arrCDR = $selCDR->Fetch();
 		
-	// normalise and debug it
-	$arrDebugCDR = $arrNormalisationModule[$arrCDR['FileType']]->DebugCDR($arrCDR['CDR']);
+	// Check for a Normalisation Module
+	if ($arrNormalisationModule[$arrCDR["FileType"]])
+	{
+		// normalise CDR
+		$mixReturn = $arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
+		
+		// debug CDR
+		$arrDebugCDR = $arrNormalisationModule[$arrCDR['FileType']]->DebugCDR();
+	}
+	else
+	{
+		echo "No Normalisation Module found for this CDR.\n";
+		die;
+	}
 	
-	// display it
+	// display CDR
 	PrintPrettyDebugInfo($arrDebugCDR);
 }
 else
@@ -44,6 +56,7 @@ die;
 function PrintPrettyDebugInfo($arrDebugCDR)
 {
 	// TODO!rich! Print pretty debug info
+	Debug($arrDebugCDR);
 }
 
 ?>
