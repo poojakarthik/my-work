@@ -470,6 +470,10 @@ die();
 				// add temp InvoicePayments
 				//TODO!rich! add temp InvoicePayments
 				// see payment_app._PayInvoice()
+				
+				//reduce balance of the invoice
+				//TODO!rich! reduce the balance
+				//$fltBalance =
 			}
 			
 			// calculate account balance
@@ -762,6 +766,7 @@ die();
 		}
 		
 		// update Invoice Status
+		//TODO!rich! If the invoice balance is zero mark it as settled
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_COMMITTED;
