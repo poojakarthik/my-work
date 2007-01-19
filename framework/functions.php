@@ -287,16 +287,22 @@ function Trace($strString, $strLogname = 'Debug')
  * Returns formated backtrace string
  *
  * Returns formated backtrace string
+ * 
+ * @param	array	$backtrace		optional Data returned from a debug_backtrace() call
  *
  * @return	string
  *
  * @function
  * @package	framework
  */
-function Backtrace()
+function Backtrace($backtrace = NULL)
 {
 	$output = "";
-	$backtrace = debug_backtrace();
+	if (!is_array($backtrace))
+	{
+		$backtrace = debug_backtrace();
+	}
+	
 	foreach ($backtrace as $key=>$bt)
 	{
 		$args = '';
