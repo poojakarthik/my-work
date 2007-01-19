@@ -25,7 +25,7 @@ if ($intCDR)
 		die;
 	}
 	$arrCDR = $selCDR->Fetch();
-		
+	
 	// Check for a Normalisation Module
 	if ($arrNormalisationModule[$arrCDR['FileType']])
 	{
