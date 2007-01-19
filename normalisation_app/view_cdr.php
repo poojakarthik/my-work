@@ -42,21 +42,12 @@ if ($intCDR)
 	}
 	
 	// display CDR
-	PrintPrettyDebugInfo($arrDebugCDR);
+	Debug($arrDebugCDR);
 }
 else
 {
 	echo "No CDR record requested.\n";
 }
 die;
-
-
-
-
-function PrintPrettyDebugInfo($arrDebugCDR)
-{
-	// TODO!rich! Print pretty debug info
-	Debug($arrDebugCDR);
-}
 
 ?>
