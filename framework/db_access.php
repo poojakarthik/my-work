@@ -382,7 +382,7 @@
 		if (mysqli_error($this->db->refMysqliConnection))
 		{
 			$strReturn = mysqli_error($this->db->refMysqliConnection);
-			$strReturn .= "\n Call Stack:\n".implode("\n", debug_backtrace())."\n";
+			$strReturn .= "\n Call Stack:\n".print_r(debug_backtrace(), TRUE)."\n";
 			return $strReturn;
 		}
 		
