@@ -79,7 +79,6 @@
 						<div class="Pablo-Section">
 							<div class="Pablo-Section-Container">
 								<div class="Pablo-Section-Content">
-									<h2>Pablo's Rants ... </h2>
 									<p>
 										<xsl:value-of select="/Response/Tip/TipText" disable-output-escaping="yes" />
 									</p>
@@ -88,6 +87,11 @@
 						</div>
 					</div>
 					<div class="modalTitle">
+						<div class="modalIcon Left"></div>
+						<div class="modalLabel Left">
+							<strong>Pablo's Rants ...</strong><br />
+							Today's tip to help you use the system easily
+						</div>
 						<div class="modalClose Right">
 							<img src="img/template/closelabel.gif" class="close" />
 						</div>
