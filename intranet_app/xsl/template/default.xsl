@@ -36,7 +36,7 @@
 						
 							<!-- Report Bug Button & PopUp -->
 							<div class="Menu_Button">
-								<a href="#" onclick="$('#modalContent-ReportBug').modalContent(null, 'slideDown', 100);">
+								<a href="#" onclick="return ModalDisplay ('#modalContent-ReportBug')">
 									<img src="img/template/bug.png" border="0" />
 								</a>
 							</div>
@@ -82,7 +82,7 @@
 							<!-- System Debug Button & PopUp -->
 							<xsl:if test="/Response/SystemDebug">
 								<span class="Debug_Button">
-									<a href="#" onclick="$('#modalContent-systemDebug').modalContent(null, 'slideDown', 100);">
+									<a href="#" onclick="return ModalDisplay ('#modalContent-systemDebug')">
 										<img src="img/template/debug.png" border="0" />
 									</a>
 								</span>
@@ -227,7 +227,7 @@
 										</tr>
 										<tr>
 											<td>
-												<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'slideDown', 100); return false;">
+												<a href="#" onclick="return ModalDisplay ('#modalContent-recentCustomers')">
 													<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
 												</a>
 											</td>

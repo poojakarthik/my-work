@@ -51,7 +51,7 @@
 	
 	.Navigation
 	{
-		Position: 	fixed;
+		position: 	fixed;
 		top:		70px;
 		left:		1px;
 	}

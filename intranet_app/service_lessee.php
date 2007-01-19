@@ -25,7 +25,7 @@
 	
 	try
 	{
-		if ($_SERVER ['REQUEST_METHOD'] == "GET")
+		if ($_GET ['Service'])
 		{
 			// Using GET
 			$srvService = $Style->attachObject (new Service ($_GET ['Service']));

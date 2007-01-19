@@ -119,7 +119,7 @@
 							<td>
 								<a href="#" title="Rate Plan Details" alt="Information about this Rate and its Charges">
 									<xsl:attribute name="onclick">
-										<xsl:text>return DisplayModal (this, </xsl:text>
+										<xsl:text>return ModalExternal (this, </xsl:text>
 										<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View Details</xsl:text>

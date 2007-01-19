@@ -224,7 +224,7 @@
 					<td>
 						<a href="#" title="View Invoice Payment Details" alt="Information about a payment that was made">
 							<xsl:attribute name="onclick">
-								<xsl:text>return DisplayModal(this, 'invoicepayment_view.php?Id=</xsl:text>
+								<xsl:text>return ModalExternal (this, 'invoicepayment_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 								<xsl:text>')</xsl:text>
 							</xsl:attribute>

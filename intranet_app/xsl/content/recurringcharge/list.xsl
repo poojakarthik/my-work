@@ -115,7 +115,7 @@
 					<td>
 						<a href="#" title="Recurring Charge Details" alt="Information about the attached Recurring Charge">
 							<xsl:attribute name="onclick">
-								<xsl:text>return DisplayModal (this, 'recurring_charge_view.php?Id=</xsl:text>
+								<xsl:text>return ModalExternal (this, 'recurring_charge_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 								<xsl:text>')</xsl:text>
 							</xsl:attribute>

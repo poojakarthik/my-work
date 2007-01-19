@@ -28,23 +28,30 @@
 		true
 	);
 	
-	function DisplayModal (element, address)
+	function ModalExternal (element, address)
 	{
 		$('#Modal-Popup-Content').load (
 			address, 
 			{}, 
 			function ()
 			{
-				$('#modalContent-Popup').modalContent (
-					null, 
-					'show', 
-					100
-				);
+				ModalDisplay ('#modalContent-Popup');
 			}
 		);
 				
 		$('#Modal-Popup-Title').empty ().append (element.getAttribute ('title'));
 		$('#Modal-Popup-Summary').empty ().append (element.getAttribute ('alt'));
+		
+		return false;
+	}
+	
+	function ModalDisplay (object)
+	{
+		$(object).modalContent (
+			null, 
+			'slideDown', 
+			600
+		);
 		
 		return false;
 	}

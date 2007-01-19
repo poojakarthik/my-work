@@ -39,7 +39,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'slideDown', 100); return false;">
+					<a href="#" onclick="return ModalDisplay ('#modalContent-recentCustomers')">
 						<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
 					</a>
 				</td>
@@ -106,7 +106,13 @@
 					"load",
 					function ()
 					{
-						$('#modalContent-PabloSays').modalContent(null, 'slideDown', 100);
+						window.setTimeout (
+							function ()
+							{
+								ModalDisplay ('#modalContent-PabloSays');
+							},
+							10
+						);
 					},
 					true
 				);

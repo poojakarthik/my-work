@@ -13,7 +13,7 @@
 				<xsl:value-of select="$Element/Title" />
 			</xsl:attribute>
 			<xsl:attribute name="onclick">
-				<xsl:text>return DisplayModal(this, 'documentation_view.php?Entity=</xsl:text>
+				<xsl:text>return ModalExternal (this, 'documentation_view.php?Entity=</xsl:text>
 				<xsl:value-of select="$Element/Entity" />
 				<xsl:text>&amp;Field=</xsl:text>
 				<xsl:value-of select="$Element/Field" />

@@ -392,7 +392,7 @@
 							<div class="Right">
 								<a href="#" title="Account Notes" alt="Notes for this Account">
 									<xsl:attribute name="onclick">
-										<xsl:text>return DisplayModal (this, 'note_list.php?Account=</xsl:text>
+										<xsl:text>return ModalExternal (this, 'note_list.php?Account=</xsl:text>
 										<xsl:value-of select="/Response/Account/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View All Account Notes</xsl:text>
@@ -537,7 +537,7 @@
 						<xsl:text>, </xsl:text>
 						<a href="#" title="Service Notes" alt="Notes for this Service">
 							<xsl:attribute name="onclick">
-								<xsl:text>return DisplayModal (this, 'note_list.php?Service=</xsl:text>
+								<xsl:text>return ModalExternal (this, 'note_list.php?Service=</xsl:text>
 								<xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
 							</xsl:attribute>
 							<xsl:text>View Notes</xsl:text>

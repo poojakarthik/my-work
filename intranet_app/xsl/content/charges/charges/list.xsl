@@ -42,7 +42,7 @@
 							<td>
 								<a href="#" title="Viewing Charge Information" alt="Information about this Particular Charge">
 									<xsl:attribute name="onclick">
-										<xsl:text>return DisplayModal(this, </xsl:text>
+										<xsl:text>return ModalExternal (this, </xsl:text>
 											<xsl:text>'charges_charge_view.php?Id=</xsl:text>
 											<xsl:value-of select="./Id" />
 											<xsl:text>'</xsl:text>

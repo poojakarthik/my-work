@@ -179,7 +179,7 @@
 					<td class="Currency">
 						<a href="#" title="CDR Information" alt="Client Data Record Information">
 							<xsl:attribute name="onclick">
-								<xsl:text>return DisplayModal (this, </xsl:text>
+								<xsl:text>return ModalExternal (this, </xsl:text>
 									<xsl:text>'cdr_view.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>'</xsl:text>
 								<xsl:text>)</xsl:text>
 							</xsl:attribute>

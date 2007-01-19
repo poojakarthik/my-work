@@ -225,7 +225,7 @@
 					<div class="LinkEdit">
 						<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
 							<xsl:attribute name="onclick">
-								<xsl:text>return DisplayModal (this, 'service_edit.php?Id=</xsl:text>
+								<xsl:text>return ModalExternal (this, 'service_edit.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Service/Id" />
 								<xsl:text>')</xsl:text>
 							</xsl:attribute>
@@ -279,7 +279,7 @@
 							<li>
 								<a href="#" title="Provisioning History" alt="A history Sent and Received Requests">
 									<xsl:attribute name="onclick">
-										<xsl:text>return DisplayModal (this, 'provisioning_history.php?Service=</xsl:text>
+										<xsl:text>return ModalExternal (this, 'provisioning_history.php?Service=</xsl:text>
 										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View Provisioning History</xsl:text>
@@ -288,7 +288,7 @@
 							<li>
 								<a href="#" title="Provisioning Requests" alt="Requests that have been (or will be) Sent">
 									<xsl:attribute name="onclick">
-										<xsl:text>return DisplayModal (this, 'provisioning_requests.php?Service=</xsl:text>
+										<xsl:text>return ModalExternal (this, 'provisioning_requests.php?Service=</xsl:text>
 										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View Provisioning Requests</xsl:text>
@@ -307,7 +307,7 @@
 						<li>
 							<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
 								<xsl:attribute name="onclick">
-									<xsl:text>return DisplayModal (this, 'service_edit.php?Id=</xsl:text>
+									<xsl:text>return ModalExternal (this, 'service_edit.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Service/Id" />
 									<xsl:text>')</xsl:text>
 								</xsl:attribute>
@@ -317,7 +317,7 @@
 						<li>
 							<a href="#" title="Change of Lessee" alt="Change the owner of a particular Service">
 								<xsl:attribute name="onclick">
-									<xsl:text>return DisplayModal (this, 'service_lessee.php?Service=</xsl:text>
+									<xsl:text>return ModalExternal (this, 'service_lessee.php?Service=</xsl:text>
 									<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
 								</xsl:attribute>
 								<xsl:text>Change of Lessee</xsl:text>
@@ -399,7 +399,7 @@
 							<div class="Right">
 								<a href="#" title="Service Notes" alt="Notes for this Service">
 									<xsl:attribute name="onclick">
-										<xsl:text>return DisplayModal (this, 'note_list.php?Service=</xsl:text>
+										<xsl:text>return ModalExternal (this, 'note_list.php?Service=</xsl:text>
 										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View All Service Notes</xsl:text>

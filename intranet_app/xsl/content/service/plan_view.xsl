@@ -61,7 +61,7 @@
 										<li>
 											<a href="#" title="Viewing Plan Details" alt="Information about Charges incurred on this Plan">
 												<xsl:attribute name="onclick">
-													<xsl:text>return DisplayModal (this, </xsl:text>
+													<xsl:text>return ModalExternal (this, </xsl:text>
 														<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="/Response/Service/RatePlan/Id" /><xsl:text>'</xsl:text>
 													<xsl:text>)</xsl:text>
 												</xsl:attribute>
@@ -116,7 +116,7 @@
 								<input type="button" value="View Plan Details &#0187;" class="input-submit" 
 								title="Viewing Plan Details" alt="Information about Charges incurred on this Plan">
 									<xsl:attribute name="onclick">
-										<xsl:text>return DisplayModal(this, </xsl:text>
+										<xsl:text>return ModalExternal (this, </xsl:text>
 											<xsl:text>'rates_plan_view.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value</xsl:text>
 										<xsl:text>)</xsl:text>
 									</xsl:attribute>

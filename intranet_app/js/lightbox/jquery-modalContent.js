@@ -88,7 +88,7 @@ jQuery.modalContent = function(content, css, animation, speed) {
   var mdcLeft = ( winWidth / 2 ) - ( modalContent.outerWidth() / 2);
   
   $('#modalBackdrop').top(0).css(css).height(docHeight + 'px').width(winWidth + 'px').show()['fadeIn'](speed);
-  modalContent.css({top: mdcTop + 'px', left: mdcLeft + 'px'}).hide()[animation](speed);
+  modalContent.css({top: mdcTop + 'px', left: mdcLeft + 'px'});
 
   // Bind a click for closing the modalContent
   modalContentClose = function(){close(); return false;};

@@ -19,7 +19,7 @@
 	
 	try
 	{
-		if ($_SERVER ['REQUEST_METHOD'] == "GET")
+		if ($_GET ['Id'])
 		{
 			// Using GET
 			$srvService = $Style->attachObject (new Service ($_GET ['Id']));
@@ -43,7 +43,7 @@
 	
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we're using GET or POST
-	if ($_SERVER ['REQUEST_METHOD'] == "POST")
+	if (isset ($_POST ['FNN']))
 	{
 		// Check the Line Numbers Match
 		if ($_POST ['FNN']['1'] <> $_POST ['FNN']['2'])
