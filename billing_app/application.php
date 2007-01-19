@@ -927,7 +927,7 @@ die();
 		}
 		
 		// reverse payments
-		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = ".$strInvoiceRun);
+		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = '$strInvoiceRun'");
 		$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
 		$arrCols['Status']	= NULL;
 		$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
