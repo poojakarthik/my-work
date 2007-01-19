@@ -707,8 +707,8 @@ die();
 		
 	 	if ($this->_arrCurrentRate['PassThrough'])
 		{
-			// add the charge
-			$fltCharge = $this->_arrCurrentCDR['Charge'];
+			// add the cost
+			$fltCharge = $this->_arrCurrentCDR['Cost'];
 			
 			// add the flagfall
 			$fltCharge += $this->_arrCurrentRate['StdFlagfall'];
