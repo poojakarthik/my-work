@@ -148,7 +148,7 @@
 	 function __destruct()
 	 {
 		// Close application log
-		if (LOG_TO_FILE && !SAFE_LOGGING)
+		if (LOG_TO_FILE && !SAFE_LOGGING && defined(LOG_PATH))
 		{
 			fclose($this->_ptrLog);
 		}
