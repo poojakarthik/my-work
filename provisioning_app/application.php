@@ -242,7 +242,7 @@ die();
 				}
 				
 				// add to the log table
-				if(!$this->_prvCurrentModule->AddToLog())
+				if(!$this->_prvCurrentModule->AddToProvisioningLog())
 				{
 					// Report on error
 					$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => "Updating Log table failed"));
@@ -330,7 +330,7 @@ die();
 			if(!$this->_prvCurrentModule()->BuildRequest($arrRequest))
 			{
 				//TODO!!!! - log error & set status
-				$this->_prvCurrentModule()->AddToLog();
+				$this->_prvCurrentModule()->AddToProvisioningLog();
 			}
 			else
 			{

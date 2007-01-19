@@ -156,10 +156,10 @@
  	abstract function UpdateService();
 
 	//------------------------------------------------------------------------//
-	// AddToLog
+	// AddToProvisioningLog
 	//------------------------------------------------------------------------//
 	/**
-	 * AddToLog()
+	 * AddToProvisioningLog()
 	 *
 	 * Adds the record to the log
 	 *
@@ -169,7 +169,7 @@
 	 *
 	 * @method
 	 */
-	 function AddToLog()
+	 function AddToProvisioningLog()
 	 {
 		// If there is an FNN and no Service specified, then attempt to match
 		if (isset($this->_arrLog['FNN']) && !isset($this->_arrLog['Service']))
