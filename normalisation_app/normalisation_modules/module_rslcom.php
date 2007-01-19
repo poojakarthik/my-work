@@ -188,14 +188,23 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		{
 			// S&E
 			$strRecordCode 				= 'S&E';
-			//TODO!rich!split line rental from other S&E 
-			//look for Business Telephone Line etc in Description
-			
+
+			//split line rental from other S&E 
 			// set RateId in raw data
-			//1 = other
-			//...
+			switch ($this->_FetchRawCDR('Description'))
+			{
+				case "Business Telephone Line":
+					$intRateId	= 2;
+					break;
+				case "Faxstream":
+					$intRateId	= 3;
+					break;					
+				
+				default:
+					$intRateId	= 1;	// Other
+			}
 			
-			
+			$this->_arrRawData['RateId']	=  $intRateId;
 		}
 		elseif ($intCarrierRecordType == "8")
 		{
