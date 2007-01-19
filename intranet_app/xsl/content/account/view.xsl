@@ -237,9 +237,9 @@
 					<strong>
 						<span>
 							<xsl:attribute name="class">
-								<xsl:text>Large </xsl:text>
+								<xsl:text>Large Right </xsl:text>
 								<xsl:choose>
-									<xsl:when test="/Response/Account/OverdueAmount = '$0.00'">
+									<xsl:when test="/Response/Account/OverdueAmount = '$0.0000'">
 										<xsl:text>Green</xsl:text>
 									</xsl:when>
 									<xsl:otherwise>
@@ -251,6 +251,7 @@
 						</span>
 					</strong>
 					
+					<div class="Clear"></div>
 					<div class="Seperator"></div>
 					
 					<h2 class="Options">Account Options</h2>

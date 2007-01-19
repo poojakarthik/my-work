@@ -43,7 +43,7 @@
 	
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we're using GET or POST
-	if (isset ($_POST ['FNN']))
+	if ($_POST ['FNN'])
 	{
 		// Check the Line Numbers Match
 		if ($_POST ['FNN']['1'] <> $_POST ['FNN']['2'])

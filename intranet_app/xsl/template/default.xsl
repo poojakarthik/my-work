@@ -6,9 +6,6 @@
 	<xsl:output method="xml" version="1.0" encoding="iso-8859-1" indent="yes" 
 	doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" />
 	
-	<!-- TODO!bash! LOOK BASH, XSL files can be commented !!!! -->
-	<!-- TODO!bash! at a minimum I want to see comments to show different sections within each XSL file !!!! -->
-	
 	<xsl:template match="/">
 		<html>
 			<head>
@@ -271,6 +268,77 @@
 												<div class="Clear"></div>
 											</div>
 										</div>
+									</div>
+									
+									<div class="Right">
+										<ul id="QuickList">
+											<xsl:choose>
+												<xsl:when test="/Response/Service">
+													<li>
+														<a>
+															<xsl:attribute name="href">
+																<xsl:text>account_view.php?Id=</xsl:text>
+																<xsl:value-of select="/Response/Service/Account" />
+															</xsl:attribute>
+															<xsl:text>View Account</xsl:text>
+														</a>
+													</li>
+													<li>
+														<a>
+															<xsl:attribute name="href">
+																<xsl:text>service_view.php?Id=</xsl:text>
+																<xsl:value-of select="/Response/Service/Id" />
+															</xsl:attribute>
+															<xsl:text>View Service</xsl:text>
+														</a>
+													</li>
+												</xsl:when>
+												<xsl:when test="/Response/Account">
+													<li>
+														<a>
+															<xsl:attribute name="href">
+																<xsl:text>account_view.php?Id=</xsl:text>
+																<xsl:value-of select="/Response/Account/Id" />
+															</xsl:attribute>
+															<xsl:text>View Account</xsl:text>
+														</a>
+													</li>
+												</xsl:when>
+											</xsl:choose>
+											<xsl:if test="/Response/Contact">
+												<li>
+													<a>
+														<xsl:attribute name="href">
+															<xsl:text>contact_view.php?Id=</xsl:text>
+															<xsl:value-of select="/Response/Contact/Id" />
+														</xsl:attribute>
+														<xsl:text>View Contact</xsl:text>
+													</a>
+												</li>
+											</xsl:if>
+											<xsl:if test="/Response/Invoices">
+												<li>
+													<a>
+														<xsl:attribute name="href">
+															<xsl:text>account_ledger.php?Id=</xsl:text>
+															<xsl:value-of select="/Response/Account/Id" />
+														</xsl:attribute>
+														<xsl:text>Account Ledger</xsl:text>
+													</a>
+												</li>
+											</xsl:if>
+											<xsl:if test="/Response/Invoice">
+												<li>
+													<a>
+														<xsl:attribute name="href">
+															<xsl:text>invoice_view.php?Id=</xsl:text>
+															<xsl:value-of select="/Response/Invoice/Id" />
+														</xsl:attribute>
+														<xsl:text>View Invoice</xsl:text>
+													</a>
+												</li>
+											</xsl:if>
+										</ul>
 									</div>
 									
 									<xsl:call-template name="Content" />

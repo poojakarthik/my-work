@@ -8,7 +8,6 @@
 	
 	<xsl:template name="Content">
 		<h1>Account Ledger</h1>
-		<div class="Seperator"></div>
 		
 		<h2 class="Account">Account Details</h2>
 		<div class="Filter-Form">
@@ -102,7 +101,7 @@
 							<span>
 								<xsl:attribute name="class">
 									<xsl:choose>
-										<xsl:when test="./Balance != '$0.00'">
+										<xsl:when test="./Balance != '$0.0000'">
 											<xsl:text>Red</xsl:text>
 										</xsl:when>
 										<xsl:otherwise>
@@ -116,7 +115,7 @@
 					</td>
 					<td class="Currency">
 						<xsl:choose>
-							<xsl:when test="./Disputed != '$0.00'">
+							<xsl:when test="./Disputed != '$0.0000'">
 								<strong><span class="Red"><xsl:value-of select="./Disputed" /></span></strong>
 							</xsl:when>
 							<xsl:otherwise>
