@@ -108,6 +108,16 @@ function Debug($mixOutput, $strMode="html")
 		return FALSE;
 	}
 	
+	// If we're logging, add to that too
+	if (LOG_TO_FILE && isset($GLOBALS['fwkFramework']))
+	{
+		$bolLog = TRUE;
+	}
+	else
+	{
+		$bolLog = FALSE;
+	}
+	
 	// output debug info in required format
 	switch (strtolower($strMode))
 	{
@@ -116,19 +126,41 @@ function Debug($mixOutput, $strMode="html")
 			echo "\n";
 			print_r($mixOutput);
 			echo "\n";
+			if($bolLog)
+			{
+				$strData = "\n";
+				$strData .= print_r($mixOutput, TRUE);
+				$strData .= "\n";
+				$GLOBALS['fwkFramework']->AddToLog($strData, FALSE);
+			}
 			break;
+
 		case 'report':
 		case 'rpt':
 		case 'console':
 		case 'terminal':
 			echo $mixOutput;
+			if ($bolLog)
+			{
+				$GLOBALS['fwkFramework']->AddToLog($mixOutput, FALSE);
+			}
+			break;
+
+		case 'log':
+			$GLOBALS['fwkFramework']->AddToLog($mixOutput, FALSE);
 			break;
 			
 		default:
 			echo "\n<pre>\n";
 			print_r($mixOutput);
 			echo "\n</pre>\n";
-
+			if($bolLog)
+			{
+				$strData = "\n";
+				$strData .= print_r($mixOutput, TRUE);
+				$strData .= "\n";
+				$GLOBALS['fwkFramework']->AddToLog($strData, FALSE);
+			}
 	}
 	
 	// Flush the output to screen/client

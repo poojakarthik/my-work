@@ -122,9 +122,35 @@
 		$this->_intLapTime			= microtime(TRUE);
 		
 		// Init application log
-		if (LOG_TO_FILE)
+		$this->_strLogFileName	= date("Y-m-d_H:i:s", time()).".log";
+		if (LOG_TO_FILE && !SAFE_LOGGING)
 		{
-			$this->_ptrLog				= fopen(LOG_PATH, "a");
+			$this->_ptrLog = fopen(LOG_PATH.$this->_strLogFileName, "a");
+		}
+		else
+		{
+			$this->_ptrLog = NULL;
+		}
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// Framework - Destructor
+	//------------------------------------------------------------------------//
+	/**
+	 * Framework()
+	 *
+	 * Desctructor for the Framework object
+	 *
+	 * Desctructor for the Framework object
+	 *
+	 * @method
+	 */
+	 function __destruct()
+	 {
+		// Close application log
+		if (LOG_TO_FILE && !SAFE_LOGGING)
+		{
+			fclose($this->_ptrLog);
 		}
 	 }
 	 
@@ -236,14 +262,34 @@
 	 * 
 	 * @param	string	$strText		Text to be added to the log
 	 * @param	bool	$bolNewLine		optional TRUE: Append a new line character to the end of the string
-	 * 
-	 * @return	bool
 	 *
 	 * @method
 	 */
 	 function AddToLog($strText, $bolNewLine = TRUE)
 	 {
-	 	// TODO!rich!
+	 	// Are we logging?
+	 	if (!LOG_TO_FILE)
+	 	{
+	 		return;
+	 	}
+	 	
+	 	if ($bolNewLine)
+	 	{
+	 		$strText .= "\n";
+	 	}
+	 	
+	 	// Are we in safe mode?
+	 	if (SAFE_LOGGING)
+	 	{
+	 		// We need to open the file every time we append.  Huge overhead, but no corrupt files
+	 		$this->_ptrLog = fopen(LOG_PATH, "a");
+	 		fwrite($this->_ptrLog, $strText);
+	 		fclose($this->_ptrLog);
+	 	}
+	 	else
+	 	{
+	 		fwrite($this->_ptrLog, $strText);
+	 	}
 	 }
  }
 

@@ -154,6 +154,10 @@ class Report
 		{
 			Debug($strReportTitle."\n", "rpt");	
 		}
+		elseif(LOG_TO_FILE)
+		{
+			$GLOBALS['fwkFramework']->AddToLog($strReportTitle."\n", FALSE);
+		}
 		
 		if (is_array($mixEmailAddressee))
 		{
@@ -239,6 +243,7 @@ class Report
 			$strMessage .= "\n";
 		}
 		
+		
 		// Append the message to the end of the message array
 		$this->_arrLines[] = $strMessage;
 		
@@ -246,6 +251,10 @@ class Report
 		if($this->_bolDebugPrint)
 		{		
 			Debug($strMessage, "rpt");
+		}
+		elseif(LOG_TO_FILE)
+		{
+			$GLOBALS['fwkFramework']->AddToLog($strMessage, FALSE);
 		}
 	}	
 	
