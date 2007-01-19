@@ -8,11 +8,6 @@
 
 //TODO!rich! Test shared plans
 
-//TODO!rich! fix reporting in normalisation import...
-//TODO!rich! 51369 passed	1 failed
-//TODO!rich! 72698 passed	51368 failed
-
-
 // when you have some spare time
 //TODO!rich! get a list of extension numbers for all employees and add them to the DB
 //TODO!rich! also get DOB, phone & mobile 

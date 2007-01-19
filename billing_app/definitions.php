@@ -34,6 +34,9 @@
 // user name
 define("USER_NAME"						, "Billing_app");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/billing_app/");
+
 define("BILL_PRINT"						, 900);
 
 // Reporting Messages

@@ -34,6 +34,9 @@
 // user name
 define("USER_NAME"						, "Collection_app");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/collection_app/");
+
 // Diectories
 define("TEMP_DOWNLOAD_DIR"				, "/home/vixen_download/");
 define("TEMP_DOWNLOAD_DIR_PERMISSIONS"	, 0777);

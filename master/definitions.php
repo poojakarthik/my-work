@@ -34,6 +34,9 @@
 // user name
 define("USER_NAME"						, "_Master");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/master/");
+
 // State
 define("STATE_INIT"						, 1);
 define("STATE_RUN"						, 2);

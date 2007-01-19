@@ -34,6 +34,9 @@
 // user name
 define("USER_NAME"						, "Provisioning_app");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/provisioning_app/");
+
 // Reporting messages
 define("MSG_PROV_IMPORT"				, "[ Importing Provisioning Files ]\n");
 define("MSG_PROV_BUILD"					, "[ Building Provisioning Requests ]\n");

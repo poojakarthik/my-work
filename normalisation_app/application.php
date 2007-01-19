@@ -254,6 +254,8 @@ die();
 		}
 		
 		$intCount = 0;
+		$this->_intImportFail = 0;
+		$this->_intImportPass = 0;
 
 		// Loop through the CDR File entries
 		while ($arrCDRFile = $selSelectCDRFiles->Fetch())
@@ -494,8 +496,6 @@ die();
 			
 			// Report
 			//$this->AddToNormalisationReport(MSG_FAILED.MSG_FAIL_CORRUPT);
-			
-			$this->_intImportFail++;
 		}
 		
 		// Report

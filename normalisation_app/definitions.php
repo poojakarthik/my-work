@@ -34,6 +34,9 @@
 // user name
 define("USER_NAME"						, "Normalisation_app");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/normalisation_app/");
+
 // Normalisation Report Messages
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
 define("MSG_NO_NORMALISATION_MODULE"	, "NO NORMALISATION MODULE\t: <FriendlyName> (<Type>)\n\n");

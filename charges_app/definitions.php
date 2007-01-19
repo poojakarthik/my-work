@@ -34,6 +34,9 @@
 // user name
 define("USER_NAME"						, "Charges_app");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/charges_app/");
+
 define("MSG_GENERATE_CHARGES"			, "[ Generating Charges ]\n");
 define("MSG_LINE"						, " + Generating charge for #<Id>...");
 define("MSG_OK"							, "\t\t\t\t[   OK   ]");

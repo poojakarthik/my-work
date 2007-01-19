@@ -34,6 +34,9 @@
 // user name
 define("USER_NAME"	, "Payment_app");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/payment_app/");
+
 // reporting messages
 define("MSG_IMPORT_TITLE"				, "[ Importing Payment Records ]\n");
 define("MSG_NORMALISE_TITLE"			, "[ Normalising Payment Records ]\n");

@@ -103,11 +103,7 @@
 	 *
 	 * Constructor for the Framework object
 	 *
-	 * @param	<type>	<$name>	<description>
-	 * @return	<type>
-	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	 function __construct()
 	 {
@@ -124,6 +120,12 @@
 		$this->_intStartTime		= microtime(TRUE);
 		$this->_intStopwatchTime	= microtime(TRUE);
 		$this->_intLapTime			= microtime(TRUE);
+		
+		// Init application log
+		if (LOG_TO_FILE)
+		{
+			$this->_ptrLog				= fopen(LOG_PATH, "a");
+		}
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -220,6 +222,28 @@
 	 	$intOldLapTime		= $this->_intLapTime;
 	 	$this->_intLapTime	= microtime(TRUE);
 	 	return round($this->_intLapTime - $intOldLapTime, 4);
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// AddToLog()
+	//------------------------------------------------------------------------//
+	/**
+	 * AddToLog()
+	 *
+	 * Adds a string to the application log
+	 *
+	 * Adds a string to the application log
+	 * 
+	 * @param	string	$strText		Text to be added to the log
+	 * @param	bool	$bolNewLine		optional TRUE: Append a new line character to the end of the string
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	 function AddToLog($strText, $bolNewLine = TRUE)
+	 {
+	 	// TODO!rich!
 	 }
  }
 

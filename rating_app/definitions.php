@@ -34,6 +34,9 @@
 // user name
 define("USER_NAME"						, "Rating_app");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/rating_app/");
+
 // Rating Report Messages
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
 define("MSG_RATING_TITLE"				, "\n[ Rating ]\n\n");

@@ -34,6 +34,10 @@
 // debug mode
 define("DEBUG_MODE"					, TRUE);
 
+// file logging
+define("LOG_TO_FILE"				, TRUE);
+define("SAFE_LOGGING"				, FALSE);
+
 // Backend's Employee Id
 define("USER_ID"					, 999999999);
 
