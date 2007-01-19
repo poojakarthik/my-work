@@ -108,10 +108,11 @@ die();
 		
 		// Init Statements
 		$this->_selPayments = new StatementSelect(	"Payment",
-													"Id, Balance, SUM(Payment.Balance) AS CreditBalance",
+													"Id, Balance",
 													"Balance > 0 AND AccountGroup = <AccountGroup> AND " .
 													"(Account = <Account> OR ISNULL(Account))",
-													"PaidOn");
+													"PaidOn",
+													NULL);
 		$this->_insInvoicePayment = new StatementInsert("InvoicePayment");
 		
 		$arrCols['Status']	= NULL;
@@ -929,7 +930,7 @@ die();
 		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = ".$strInvoiceRun);
 		$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
 		$arrCols['Status']	= NULL;
-		$arrCols['Balance']	= new MySQLStatement("Balance + <Balance>");
+		$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
 		$ubiPayments		= new StatementUpdateById("Payment", $arrCols);
 		$qryDeletePayment	= new Query();
 		$selInvoicePayments->Execute();
@@ -937,7 +938,7 @@ die();
 		foreach ($arrInvoicePayments as $arrInvoicePayment)
 		{
 			// update total and status of Payment
-			$arrPayment['Balance']	= new MySQLStatement("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
+			$arrPayment['Balance']	= new MySQLFunction("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
 			$arrPayment['Status']	= PAYMENT_PAYING;
 			$ubiPayments->Execute($arrPayment);
 			
