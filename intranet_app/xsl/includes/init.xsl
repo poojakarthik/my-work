@@ -7,13 +7,13 @@
 		
 		<xsl:variable name="Element" select="/Response/Documentation/Entity/Fields/Field[Entity=$entity][Field=$field]" />
 		
-		<a href="#" class="Label">
+		<a href="#" class="Label" alt="Documentation Information about this Field">
 			<xsl:attribute name="title">
 				<xsl:text></xsl:text>
 				<xsl:value-of select="$Element/Title" />
 			</xsl:attribute>
 			<xsl:attribute name="onclick">
-				<xsl:text>return openPopup('documentation_view.php?Entity=</xsl:text>
+				<xsl:text>return DisplayModal(this, 'documentation_view.php?Entity=</xsl:text>
 				<xsl:value-of select="$Element/Entity" />
 				<xsl:text>&amp;Field=</xsl:text>
 				<xsl:value-of select="$Element/Field" />

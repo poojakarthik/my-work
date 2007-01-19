@@ -6,8 +6,6 @@
 	<xsl:template name="Content">
 		<h1>Rate Groups</h1>
 		
-		<script language="javascript" src="js/rates_group_list.js"></script>
-		
 		<form method="GET" action="rates_group_list.php">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
@@ -93,15 +91,10 @@
 								</strong>
 							</td>
 							<td>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>rates_group_view.php?Id=</xsl:text>
-										<xsl:value-of select="./Id" />
-									</xsl:attribute>
+								<a href="#" title="Rate Group Details" alt="Information about this Rate Group">
 									<xsl:attribute name="onclick">
-										<xsl:text>return ViewRateGroupDetails ('</xsl:text>
-										<xsl:value-of select="./Id" />
-										<xsl:text>')</xsl:text>
+										<xsl:text>return DisplayModal (this, </xsl:text>
+										<xsl:text>'rates_group_view.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View Details</xsl:text>
 								</a>

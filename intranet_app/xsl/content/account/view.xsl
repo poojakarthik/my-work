@@ -9,7 +9,6 @@
 		<h1>View Account Details</h1>
 		
 		<script language="javascript" src="js/note_add.js"></script>
-		<script language="javascript" src="js/notes_popup.js"></script>
 		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
@@ -391,11 +390,10 @@
 						<xsl:otherwise>
 							The 5 most recent notes are listed below:
 							<div class="Right">
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:notes_popup('', '</xsl:text>
-										<xsl:value-of select="/Response/Account/Id" />
-										<xsl:text>', '', '')</xsl:text>
+								<a href="#" title="Account Notes" alt="Notes for this Account">
+									<xsl:attribute name="onclick">
+										<xsl:text>return DisplayModal (this, 'note_list.php?Account=</xsl:text>
+										<xsl:value-of select="/Response/Account/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View All Account Notes</xsl:text>
 								</a>
@@ -537,11 +535,10 @@
 							<xsl:text>Unbilled Charges</xsl:text>
 						</a>
 						<xsl:text>, </xsl:text>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>javascript:notes_popup('', '', '</xsl:text>
-								<xsl:value-of select="./Id" />
-								<xsl:text>', '')</xsl:text>
+						<a href="#" title="Service Notes" alt="Notes for this Service">
+							<xsl:attribute name="onclick">
+								<xsl:text>return DisplayModal (this, 'note_list.php?Service=</xsl:text>
+								<xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
 							</xsl:attribute>
 							<xsl:text>View Notes</xsl:text>
 						</a>

@@ -727,7 +727,8 @@
 	#modalContent-ReportBug,
 	#modalContent-systemDebug,
 	#modalContent-recentCustomers,
-	#modalContent-PabloSays
+	#modalContent-PabloSays,
+	#modalContent-Popup
 	{
 		display:				none;
 	}

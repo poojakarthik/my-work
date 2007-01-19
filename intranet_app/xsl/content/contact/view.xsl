@@ -9,7 +9,6 @@
 		<h1>View Contact Details</h1>
 		
 		<script language="javascript" src="js/note_add.js"></script>
-		<script language="javascript" src="js/notes_popup.js"></script>
 		
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
@@ -292,13 +291,12 @@
 						<xsl:otherwise>
 							The 5 most recent notes are listed below:
 							<div class="Right">
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:notes_popup('', '', '', '</xsl:text>
-										<xsl:value-of select="/Response/Contact/Id" />
-										<xsl:text>')</xsl:text>
+								<a href="#" title="Contact Notes" alt="Notes for this Contact">
+									<xsl:attribute name="onclick">
+										<xsl:text>return DisplayModal (this, 'note_list.php?Contact=</xsl:text>
+										<xsl:value-of select="/Response/Contact/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
-									<xsl:text>View All Customer Notes</xsl:text>
+									<xsl:text>View All Contact Notes</xsl:text>
 								</a>
 							</div>
 							<div class="Clear"></div>
@@ -396,11 +394,10 @@
 							</xsl:attribute>
 							<xsl:text>Account Details</xsl:text>
 						</a>, 
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>javascript:notes_popup('', '</xsl:text>
-								<xsl:value-of select="./Id" />
-								<xsl:text>', '', '')</xsl:text>
+						<a href="#" title="Account Notes" alt="Notes for this Account">
+							<xsl:attribute name="onclick">
+								<xsl:text>return DisplayModal (this, 'note_list.php?Account=</xsl:text>
+								<xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
 							</xsl:attribute>
 							<xsl:text>View Notes</xsl:text>
 						</a>, 

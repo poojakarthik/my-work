@@ -12,15 +12,6 @@
 			<div class="Filter-Form-Content">
 				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
-						<th class="JustifiedWidth">Charge Type Id:</th>
-						<td><xsl:value-of select="/Response/ChargeType/Id" /></td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<div class="Seperator"></div>
-						</td>
-					</tr>
-					<tr>
 						<th class="JustifiedWidth">Charge Code:</th>
 						<td><xsl:value-of select="/Response/ChargeType/ChargeType" /></td>
 					</tr>

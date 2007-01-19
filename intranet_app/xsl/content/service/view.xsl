@@ -10,8 +10,6 @@
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/note_add.js"></script>
-		<script language="javascript" src="js/notes_popup.js"></script>
-		<script language="javascript" src="js/provisioning_popup.js"></script>
 		
 		<div class="Seperator"></div>
 		<table border="0" cellpadding="0" cellspacing="0">
@@ -225,13 +223,9 @@
 						</div>
 					</div>
 					<div class="LinkEdit">
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>service_edit.php?Id=</xsl:text>
-								<xsl:value-of select="/Response/Service/Id" />
-							</xsl:attribute>
+						<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
 							<xsl:attribute name="onclick">
-								<xsl:text>return openPopup('service_edit.php?Id=</xsl:text>
+								<xsl:text>return DisplayModal (this, 'service_edit.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Service/Id" />
 								<xsl:text>')</xsl:text>
 							</xsl:attribute>
@@ -283,21 +277,19 @@
 						</li>
 						<xsl:if test="/Response/Service/ServiceType = 102">
 							<li>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:provisioning_popup_history ('</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-										<xsl:text>')</xsl:text>
+								<a href="#" title="Provisioning History" alt="A history Sent and Received Requests">
+									<xsl:attribute name="onclick">
+										<xsl:text>return DisplayModal (this, 'provisioning_history.php?Service=</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View Provisioning History</xsl:text>
 								</a>
 							</li>
 							<li>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:provisioning_popup_requests ('</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-										<xsl:text>')</xsl:text>
+								<a href="#" title="Provisioning Requests" alt="Requests that have been (or will be) Sent">
+									<xsl:attribute name="onclick">
+										<xsl:text>return DisplayModal (this, 'provisioning_requests.php?Service=</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View Provisioning Requests</xsl:text>
 								</a>
@@ -313,13 +305,9 @@
 							</li>
 						</xsl:if>
 						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_edit.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
+							<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
 								<xsl:attribute name="onclick">
-									<xsl:text>return openPopup('service_edit.php?Id=</xsl:text>
+									<xsl:text>return DisplayModal (this, 'service_edit.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Service/Id" />
 									<xsl:text>')</xsl:text>
 								</xsl:attribute>
@@ -327,15 +315,10 @@
 							</a>
 						</li>
 						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_lessee.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
+							<a href="#" title="Change of Lessee" alt="Change the owner of a particular Service">
 								<xsl:attribute name="onclick">
-									<xsl:text>return openPopup('service_lessee.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-									<xsl:text>', 450, 650)</xsl:text>
+									<xsl:text>return DisplayModal (this, 'service_lessee.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
 								</xsl:attribute>
 								<xsl:text>Change of Lessee</xsl:text>
 							</a>
@@ -414,11 +397,10 @@
 						<xsl:otherwise>
 							The 5 most recent notes are listed below:
 							<div class="Right">
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:notes_popup('', '', '</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-										<xsl:text>', '')</xsl:text>
+								<a href="#" title="Service Notes" alt="Notes for this Service">
+									<xsl:attribute name="onclick">
+										<xsl:text>return DisplayModal (this, 'note_list.php?Service=</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View All Service Notes</xsl:text>
 								</a>

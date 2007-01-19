@@ -46,12 +46,9 @@
 								<xsl:value-of select="./BillingFreqTypes/BillingFreqType[@selected='selected']/Name" />
 							</td>
 							<td>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:nohref()</xsl:text>
-									</xsl:attribute>
+								<a href="#" title="Viewing Recurring Charge Information" alt="Information about this Particular Recurring Charge">
 									<xsl:attribute name="onclick">
-										<xsl:text>return openPopup(</xsl:text>
+										<xsl:text>return DisplayModal(</xsl:text>
 											<xsl:text>'charges_recurringcharge_view.php?Id=</xsl:text>
 											<xsl:value-of select="./Id" />
 											<xsl:text>'</xsl:text>

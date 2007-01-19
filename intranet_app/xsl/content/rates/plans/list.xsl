@@ -6,8 +6,6 @@
 	<xsl:template name="Content">
 		<h1>Available Plans</h1>
 		
-		<script language="javascript" src="js/rates_plan_list.js"></script>
-		
 		<form method="GET" action="rates_plan_list.php">
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
@@ -119,15 +117,10 @@
 								</strong>
 							</td>
 							<td>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>rates_plan_view.php?Id=</xsl:text>
-										<xsl:value-of select="./Id" />
-									</xsl:attribute>
+								<a href="#" title="Rate Plan Details" alt="Information about this Rate and its Charges">
 									<xsl:attribute name="onclick">
-										<xsl:text>return ViewRatePlanDetails ('</xsl:text>
-										<xsl:value-of select="./Id" />
-										<xsl:text>')</xsl:text>
+										<xsl:text>return DisplayModal (this, </xsl:text>
+										<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:text>View Details</xsl:text>
 								</a>

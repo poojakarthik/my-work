@@ -39,7 +39,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'show', 'slow'); return false;">
+					<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'slideDown', 100); return false;">
 						<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
 					</a>
 				</td>
@@ -102,7 +102,7 @@
 					"load",
 					function ()
 					{
-						$('#modalContent-PabloSays').modalContent(null, 'show', 'slow');
+						$('#modalContent-PabloSays').modalContent(null, 'slideDown', 100);
 					},
 					true
 				);

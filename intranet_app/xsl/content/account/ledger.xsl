@@ -1,21 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time"
-	xmlns:func="http://exslt.org/functions" xmlns:date="http://exslt.org/dates-and-times" extension-element-prefixes="date">
+<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
-	
-	<xsl:import href="../../lib/date-difference/date.difference.function.xsl"/>
-	<xsl:import href="../../lib/date-difference/date.difference.template.xsl"/>
 	
 	<xsl:template name="Content">
 		<h1>Account Ledger</h1>
 		<div class="Seperator"></div>
 		
 		<h2 class="Account">Account Details</h2>
-		
 		<div class="Filter-Form">
 			<div class="Filter-Form-Content">
 				<table border="0" cellpadding="5" cellspacing="0">
@@ -227,9 +222,9 @@
 					</td>
 					<td class="Currency"><xsl:value-of select="./Amount" /></td>
 					<td>
-						<a href="#">
+						<a href="#" title="View Invoice Payment Details" alt="Information about a payment that was made">
 							<xsl:attribute name="onclick">
-								<xsl:text>return openPopup('invoicepayment_view.php?Id=</xsl:text>
+								<xsl:text>return DisplayModal(this, 'invoicepayment_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 								<xsl:text>')</xsl:text>
 							</xsl:attribute>

@@ -59,12 +59,9 @@
 									
 									<ul>
 										<li>
-											<a>
-												<xsl:attribute name="href">
-													<xsl:text>javascript:nohref()</xsl:text>
-												</xsl:attribute>
+											<a href="#" title="Viewing Plan Details" alt="Information about Charges incurred on this Plan">
 												<xsl:attribute name="onclick">
-													<xsl:text>return openPopup(</xsl:text>
+													<xsl:text>return DisplayModal (this, </xsl:text>
 														<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="/Response/Service/RatePlan/Id" /><xsl:text>'</xsl:text>
 													<xsl:text>)</xsl:text>
 												</xsl:attribute>
@@ -116,9 +113,10 @@
 										</option>
 									</xsl:for-each>
 								</select>
-								<input type="button" value="View Plan Details &#0187;" class="input-submit">
+								<input type="button" value="View Plan Details &#0187;" class="input-submit" 
+								title="Viewing Plan Details" alt="Information about Charges incurred on this Plan">
 									<xsl:attribute name="onclick">
-										<xsl:text>return openPopup(</xsl:text>
+										<xsl:text>return DisplayModal(this, </xsl:text>
 											<xsl:text>'rates_plan_view.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value</xsl:text>
 										<xsl:text>)</xsl:text>
 									</xsl:attribute>

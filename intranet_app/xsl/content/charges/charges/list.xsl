@@ -40,12 +40,9 @@
 								<xsl:value-of select="./Nature" />
 							</td>
 							<td>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>javascript:nohref()</xsl:text>
-									</xsl:attribute>
+								<a href="#" title="Viewing Charge Information" alt="Information about this Particular Charge">
 									<xsl:attribute name="onclick">
-										<xsl:text>return openPopup(</xsl:text>
+										<xsl:text>return DisplayModal(this, </xsl:text>
 											<xsl:text>'charges_charge_view.php?Id=</xsl:text>
 											<xsl:value-of select="./Id" />
 											<xsl:text>'</xsl:text>

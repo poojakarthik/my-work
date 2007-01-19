@@ -156,7 +156,8 @@
 									</xsl:for-each>
 								</select>
 								<input type="button" value="View Plan Details &#0187;" class="input-submit" 
-								onclick="return openPopup('rates_plan_view.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value)" />
+								title="Viewing Plan Details" alt="Information about Charges incurred on this Plan"
+								onclick="return DisplayModal (this, 'rates_plan_view.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value)" />
 							</td>
 						</tr>
 					</table>

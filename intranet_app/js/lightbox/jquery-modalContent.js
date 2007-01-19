@@ -39,7 +39,7 @@ jQuery.modalContent = function(content, css, animation, speed) {
   // if we already ahve a modalContent, remove it
   if ( $('#modalBackdrop') ) $('#modalBackdrop').remove();
   if ( $('#modalContent') ) $('#modalContent').remove();
-
+  
   // position code lifted from http://www.quirksmode.org/viewport/compatibility.html
   if (self.pageYOffset) { // all except Explorer
   var wt = self.pageYOffset;
@@ -48,10 +48,10 @@ jQuery.modalContent = function(content, css, animation, speed) {
   } else if (document.body) { // all other Explorers
     var wt = document.body.scrollTop;
   }
-
+  
   // Get our dimensions
 
-  // Get the docHeight and (ugly hack) add 50 pixels to make sure we dont have a *visible* border below our div
+  // Get the docHeight
   var docHeight = $(document).outerHeight();
   var winHeight = $(window).height();
   var winWidth = $(window).innerWidth();
@@ -59,7 +59,7 @@ jQuery.modalContent = function(content, css, animation, speed) {
 
   // Create our divs
   $('body').append('<div id="modalBackdrop" style="z-index: 1000; display: none;"></div><div id="modalContent" style="z-index: 1001; position: absolute;">' + $(content).html() + '</div>');
-
+  
   // Keyboard and focus event handler ensures focus stays on modal elements only
   modalEventHandler = function( event ) {
     target = null;
@@ -69,13 +69,16 @@ jQuery.modalContent = function(content, css, animation, speed) {
       event = window.event;
       target = event.srcElement;
     }
+    
     if( $(target).filter('*:visible').parents('#modalContent').size() ) {
       // allow the event only if target is a visible child node of #modalContent
       return true;
     }
     if ( $('#modalContent') ) $('#modalContent').get(0).focus();
+    
     return false;
   };
+  
   $('body').bind( 'focus', modalEventHandler );
   $('body').bind( 'keypress', modalEventHandler );
 
@@ -83,8 +86,9 @@ jQuery.modalContent = function(content, css, animation, speed) {
   var modalContent = $('#modalContent').top('-1000px');
   var mdcTop = wt + ( winHeight / 2 ) - (  modalContent.outerHeight() / 2);
   var mdcLeft = ( winWidth / 2 ) - ( modalContent.outerWidth() / 2);
-  $('#modalBackdrop').top(0).css(css).height(docHeight + 'px').width(winWidth + 'px').show();
-  modalContent.css({top: mdcTop + 'px', left: mdcLeft + 'px'});
+  
+  $('#modalBackdrop').top(0).css(css).height(docHeight + 'px').width(winWidth + 'px').show()['fadeIn'](speed);
+  modalContent.css({top: mdcTop + 'px', left: mdcLeft + 'px'}).hide()[animation](speed);
 
   // Bind a click for closing the modalContent
   modalContentClose = function(){close(); return false;};
@@ -117,7 +121,7 @@ jQuery.modalContent = function(content, css, animation, speed) {
 
     // Apply the changes
     $('#modalBackdrop').height(docHeight + 'px').width(winWidth + 'px').show();
-    modalContent.top(mdcTop + 'px').left(mdcLeft + 'px').show();
+    modalContent.top(mdcTop + 'px').left(mdcLeft + 'px');
   };
   $(window).bind('resize', modalContentResize);
 
@@ -135,7 +139,7 @@ jQuery.fn.modalContent = function(css, animation, speed)
     if ( ( animation != 'fadeIn' ) && ( animation != 'slideDown') ) animation = 'show';
   }
 
-  if ( !speed ) var speed = 'fast';
+  if ( !speed ) var speed = 100;
 
   // Build our base attributes and allow them to be overriden
   css = jQuery.extend({

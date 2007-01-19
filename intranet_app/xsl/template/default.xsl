@@ -36,7 +36,7 @@
 						
 							<!-- Report Bug Button & PopUp -->
 							<div class="Menu_Button">
-								<a href="#" onclick="$('#modalContent-ReportBug').modalContent(null, 'show', 'slow');">
+								<a href="#" onclick="$('#modalContent-ReportBug').modalContent(null, 'slideDown', 100);">
 									<img src="img/template/bug.png" border="0" />
 								</a>
 							</div>
@@ -45,11 +45,6 @@
 								<div class="modalContainer">
 
 									<div class="modalContent">
-										<!-- TODO!bash! URGENT !!!!!!!!!! -->
-										<!-- TODO!bash! URGENT : add a form to report a bug -->
-										<!-- TODO!bash! URGENT : save bugs to the db see BugReport table def -->
-										<!-- TODO!bash! URGENT !!!!!!!!!! -->
-										
 										<form method="post" action="bug_report.php" onsubmit="return BugSubmit(this)">
 											<table border="0" cellpadding="0" cellspacing="0">
 												<tr>
@@ -87,7 +82,7 @@
 							<!-- System Debug Button & PopUp -->
 							<xsl:if test="/Response/SystemDebug">
 								<span class="Debug_Button">
-									<a href="#" onclick="$('#modalContent-systemDebug').modalContent(null, 'show', 'slow');">
+									<a href="#" onclick="$('#modalContent-systemDebug').modalContent(null, 'slideDown', 100);">
 										<img src="img/template/debug.png" border="0" />
 									</a>
 								</span>
@@ -232,7 +227,7 @@
 										</tr>
 										<tr>
 											<td>
-												<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'show', 'slow'); return false;">
+												<a href="#" onclick="$('#modalContent-recentCustomers').modalContent(null, 'slideDown', 100); return false;">
 													<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
 												</a>
 											</td>
@@ -256,6 +251,28 @@
 							</td>
 							<td valign="top">
 								<div id="Content" class="Left sectionContent">
+									<!-- Popup Window Controller -->
+									
+									<div id="modalContent-Popup">
+										<div class="modalContainer">
+											<div class="modalContent" id="Modal-Popup-Content">
+											</div>
+											<div class="modalTitle">
+												<div class="modalIcon Left">
+													<img id="Modal-Popup-Icon" src="" />
+												</div>
+												<div class="modalLabel Left">
+													<strong id="Modal-Popup-Title"></strong><br />
+													<span id="Modal-Popup-Summary"></span>
+												</div>
+												<div class="modalClose Right">
+													<img src="img/template/closelabel.gif" class="close" />
+												</div>
+												<div class="Clear"></div>
+											</div>
+										</div>
+									</div>
+									
 									<xsl:call-template name="Content" />
 								</div>
 							</td>

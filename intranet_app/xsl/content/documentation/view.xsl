@@ -6,9 +6,6 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Documentation Details</h1>
-		
-		<div class="Seperator"></div>
 		<div class="Pablo-Section">
 			<div class="Pablo-Section-Container">
 				<div class="Pablo-Section-Content">

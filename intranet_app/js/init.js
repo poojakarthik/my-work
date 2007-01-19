@@ -28,31 +28,23 @@
 		true
 	);
 	
-	function openPopup (address, width, height)
+	function DisplayModal (element, address)
 	{
-		if (width == undefined)
-		{
-			width = 800;
-		}
-		
-		if (height == undefined)
-		{
-			height = 400;
-		}
-		
-		window.open (
-			address,
-			"",
-			"width=" + width + ", " +
-			"height=" + height + ", " +
-			"scrollbars=yes, " +
-			"resize=yes, " +
-			"channelmode=no, " +
-			"directories=no, " +
-			"location=no, " +
-			"menubar=no, " +
-			"titlebar=no "
+		$('#Modal-Popup-Content').load (
+			address, 
+			{}, 
+			function ()
+			{
+				$('#modalContent-Popup').modalContent (
+					null, 
+					'show', 
+					100
+				);
+			}
 		);
+				
+		$('#Modal-Popup-Title').empty ().append (element.getAttribute ('title'));
+		$('#Modal-Popup-Summary').empty ().append (element.getAttribute ('alt'));
 		
 		return false;
 	}
