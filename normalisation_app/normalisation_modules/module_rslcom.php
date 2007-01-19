@@ -191,11 +191,9 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			//TODO!rich!split line rental from other S&E 
 			//look for Business Telephone Line etc in Description
 			
-			// Our Description
-			// $arrDestinationCode['Description'] = "";
-			
-			// Destination code
-			// $arrDestinationCode['Code'] = "";
+			// set RateId in raw data
+			//1 = other
+			//...
 			
 			
 		}
@@ -214,7 +212,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$this->_AppendCDR('RecordType', $mixValue);
 
 		// Destination Code & Description (only if we have a context)
-		if ($this->_intContext > 0 )
+		if ($this->_intContext > 0)
 		{
 			$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
 			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
