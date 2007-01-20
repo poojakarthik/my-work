@@ -41,7 +41,7 @@ $insRateGroup = new StatementInsert("RateGroup");
 $insRateGroupRate = new StatementInsert("RateGroupRate");
 $insRatePlanRateGroup = new StatementInsert("RatePlanRateGroup");
 
-$selRates = new StatementSelect("Rate", "Id, Name, RecordType, ServiceType", "Id >= 143");
+$selRates = new StatementSelect("Rate", "Id, Name, RecordType, ServiceType", "RecordType = 27 OR RecordType = 28");
 $selRates->Execute();
 $arrRates = $selRates->FetchAll();
 
@@ -123,7 +123,7 @@ foreach($arrRateGroups as $strName=>$arrRate)
 	}
 	echo "OK";
 	continue;*/
-	
+		
 	foreach($arrRate as $arrRateDetails)
 	{
 		// Link Rate to RateGroup

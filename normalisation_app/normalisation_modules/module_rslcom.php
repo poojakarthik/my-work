@@ -195,11 +195,14 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			{
 				case "Business Telephone Line":
 					$intRateId	= 2;
+					break;					
+				case "Residential Telephone Line":
+					//TODO!rich!find the real description for a residential line
+					$intRateId	= 3;
 					break;
 				case "Faxstream":
-					$intRateId	= 3;
-					break;					
-				
+					$intRateId	= 4;
+					break;
 				default:
 					$intRateId	= 1;	// Other
 			}
@@ -278,9 +281,12 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		}
 		else
 		{
-		 	// For S&E and OC&C CDRs
-		 	$strDescription				 = $this->_FetchRawCDR('Description');
-			$strDescription				.= " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
+		 	// For S&E and OC&C CDRs (unless we set a description previously
+			if ($mixCarrierCode == 1)
+			{
+				$strDescription				 = $this->_FetchRawCDR('Description');
+				$strDescription				.= " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
+			}
 		}
 		if ($strDescription)
 		{
