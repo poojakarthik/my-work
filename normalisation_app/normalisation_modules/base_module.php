@@ -641,12 +641,6 @@ abstract class NormalisationModule
 	 {
 
 	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN'], "date" => (string)$this->_arrNormalisedData['StartDatetime']));
-	 	
-	 	if ($intResult === FALSE)
-	 	{
-
-	 	}
-		
 	 	if ($arrResult = $this->_selFindOwner->Fetch())
 	 	{
 	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
@@ -656,15 +650,9 @@ abstract class NormalisationModule
 	 	}
 	 	else
 	 	{
-	 		$arrParams['fnn'] = substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
-	 		
+	 		$arrParams['fnn']	= substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
+	 		$arrParams['date']	= (string)$this->_arrNormalisedData['StartDatetime'];
 	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
-	 		
-	 		if ($intResult === FALSE)
-	 		{
-
-	 		}
-	 		
 	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
 	 		{
 	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
@@ -680,6 +668,33 @@ abstract class NormalisationModule
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
 	 	return false;
 	 }
+	
+	
+	//------------------------------------------------------------------------//
+	// FindOwner
+	//------------------------------------------------------------------------//
+	/**
+	 * FindOwner()
+	 *
+	 * Applies ownership based on the FNN
+	 *
+	 * Applies ownership based on the FNN
+	 * 
+	 * @param	array	$arrCDR		Associative Array result for a CDR from the database
+	 *
+	 * @return	mixed				Associative Array of normalised data
+	 * 								FALSE: ApplyOwnership() failed					
+	 *
+	 * @method
+	 */
+	 public function FindOwner($arrCDR)
+	 {
+		$this->_arrNormalisedData['FNN']			= $arrCDR['FNN'];
+		$this->_arrNormalisedData['StartDatetime']	= $arrCDR['StartDatetime'];
+		
+		return $this->ApplyOwnership() ? $this->_arrNormalisedData : FALSE;
+	 }
+	
 	
 	//------------------------------------------------------------------------//
 	// FindRecordCode
