@@ -28,14 +28,11 @@ system($strCommand);
 
 
 // Get Rate details from the scrape
-$sqlQuery = new Query();
-$strQuery = "SELECT DataSerialised, AxisM FROM ScrapeRates";
-$sqlResult = $sqlQuery->Execute($strQuery);
-while ($row = $sqlResult->fetch_assoc())
+while ($arrRow = $objDecoder->FetchIDDGroupRate())
 {
-	$arrScrapeRate = unserialize($row['DataSerialised']);
-	$arrScrapeRate['Carrier'] = $row['AxisM'];
-	$arrRates = objDecoder->DecodeIDDGroupRate($arrScrapeRate);
+	$arrScrapeRate = unserialize($arrRow['DataSerialised']);
+	$arrScrapeRate['Carrier'] = $arrRow['AxisM'];
+	$arrRates = $objDecoder->DecodeIDDGroupRate($arrScrapeRate);
 	
 	if (is_array($arrRates))
 	{

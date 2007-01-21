@@ -2,36 +2,18 @@
 <?=system ("clear");?>
 
 	=====================================================================================================
-	WELCOME TO THE ETECH DATA PARSER (version 1.0)
+	viXen : TelcoBlue Import (version 1.0)
 	=====================================================================================================
 	
 <?php
 	
-	// load framework
-	$strFrameworkDir = "../framework/";
-	require_once($strFrameworkDir."framework.php");
-	require_once($strFrameworkDir."functions.php");
-	require_once($strFrameworkDir."definitions.php");
-	require_once($strFrameworkDir."config.php");
-	require_once($strFrameworkDir."database_define.php");
-	require_once($strFrameworkDir."db_access.php");
-	require_once($strFrameworkDir."report.php");
-	require_once($strFrameworkDir."error.php");
-	require_once($strFrameworkDir."exception_vixen.php");
+	
 	
 	
 	// Define New RatePlans
 	//TODO!!!!
 	$arrConfig['RatePlan']['PlanName'][17] 		= 'Local-14';
 	$arrConfig['RatePlan']['PlanName'][18]		= 'ProgramLocal-13';
-	
-	// set global Plans array
-	$GLOBALS['arrPlans'] = $arrPlans;
-	
-	
-	
-	// rate report
-	$GLOBALS['arrRateReport'] = Array();
 	
 	// Record Types
 	$GLOBALS['arrRecordTypes'] = Array
@@ -199,8 +181,8 @@
 	
 	$arrRates['mobileinternational']	['Mobile Zero Plan']				= intRateId;
 
-	// set global rate array
-	$GLOBALS['arrRates'] = $arrRates;
+	// set config rate array
+	$arrConfig['Rate'] = $arrRates;
 	
 // ---------------------------------------------------------------------------//
 // SCRIPT
@@ -211,51 +193,59 @@
 	// Record the start time of the script
 	$startTime = microtime (TRUE);
 	
-	// setup db object
+	// load framework
+	$strFrameworkDir = "../framework/";
+	require_once($strFrameworkDir."framework.php");
+	require_once($strFrameworkDir."functions.php");
+	require_once($strFrameworkDir."definitions.php");
+	require_once($strFrameworkDir."config.php");
+	require_once($strFrameworkDir."database_define.php");
+	require_once($strFrameworkDir."db_access.php");
+	require_once($strFrameworkDir."report.php");
+	require_once($strFrameworkDir."error.php");
+	require_once($strFrameworkDir."exception_vixen.php");
+	
+	// setup a db query object
 	$sqlQuery = new Query();
 	
-	// database things
-	
-	
+	// instanciate the etech decoder
+	require_once('decode_etech.php');
+	$objDecoder = new VixenDecode($arrConfig);
 	
 	// instanciate the import object
-	$objImport = new VixenTelcoImport($arrConfig);
+	require_once('vixen_import.php');
+	$objImport = new VixenImport($arrConfig);
+	
+	// Import Rates
+	$objImport->ImportRate();
+	
+	// Import RateGroups
+	$objImport->ImportRateGroup();
+	
+	// Import RatePlans
+	$objImport->ImportRatePlan();
 	
 	// Match RateGroups to Rates
-	$objImport->CreateRateGroupRate();
+	//$objImport->CreateRateGroupRate();
 	
 	// Match RatePlans to RateGroups
-	$objImport->CreateRatePlanRateGroup();
+	//$objImport->CreateRatePlanRateGroup();
 	
-	
-	// ------------------------------------//
-	// Match RateGroups to Accounts
-	// ------------------------------------//
-	
-	// How many accounts do we have
-	$strQuery = "SELECT count(*) AS Records FROM ScrapeAccount";
-	$sqlResult = $sqlQuery->Execute($strQuery);
-	$arrRow = $sqlResult->fetch_assoc();
-	$intRecords = $arrRow['Records'];
-	echo "Matching RateGroupsto $intRecords Accounts\n";
-	
-	// Loop through each Account
-	for ($n=0; $n < ceil ($intRecords / 100); ++$n)
+	// Add Customers
+	while ($arrRow = $objDecoder->FetchCustomer())
 	{
-		MatchAccounts-RateGroups($start);
+		// get the etech customer details
+		$arrScrape = unserialize($arrRow['DataSerialised']);
+		$arrScrape['CustomerId'] = $arrRow['CustomerId'];
+		$arrCustomer = $objDecoder->DecodeCustomer($arrScrape);
+		
+		// add the customer
+		$objImport->AddCustomer($arrCustomer);
+		
 	}
-
-	// ------------------------------------//
-	// Match RatePlans to Accounts
-	// ------------------------------------//
-
-	//TODO!!!!
-	
 	
 	//finish
 	Die ();
-
-
 
 // ---------------------------------------------------------------------------//
 // IMPORT CLASS

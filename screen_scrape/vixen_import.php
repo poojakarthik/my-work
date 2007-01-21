@@ -142,7 +142,7 @@ class VixenImport extends ApplicationBaseClass
 				// look for a matching rate
 				$strQuery = "SELECT Id FROM Rate WHERE RecordType = {$arrRateGroup['RecordType']} AND Name LIKE '{$arrRateGroup['Name']}' LIMIT 1";
 				$sqlRate = $this->sqlQuery->Execute($strQuery);
-				$arrRate = $sqlRate->fetch_assoc()
+				$arrRate = $sqlRate->fetch_assoc();
 				if ($arrRate['Id'])
 				{
 					// save the link
@@ -194,7 +194,7 @@ class VixenImport extends ApplicationBaseClass
 					{
 						//error
 						$this->Error("RatePlan $intRatePlan not found");
-						continue();
+						continue;
 					}
 				}
 					
@@ -212,7 +212,7 @@ class VixenImport extends ApplicationBaseClass
 						{
 							//error
 							$this->Error("RecordType $intRecordType not found");
-							continue();
+							continue;
 						}
 					}
 					
@@ -227,7 +227,7 @@ class VixenImport extends ApplicationBaseClass
 						{
 							//error
 							$this->Error("RateGroup $intRateGroup not found");
-							continue();
+							continue;
 						}
 					}
 					
@@ -244,10 +244,6 @@ class VixenImport extends ApplicationBaseClass
 		
 		return TRUE;
 	}
-	
-	// ------------------------------------//
-	// Match 
-	// ------------------------------------//
 	
 	// ------------------------------------//
 	// Errors
@@ -272,7 +268,58 @@ class VixenImport extends ApplicationBaseClass
 		return $this->strLastError;
 	}
 	
-	function MatchAccounts-RateGroups($start)
+	// ------------------------------------//
+	// ADD
+	// ------------------------------------//
+	
+	function AddCustomer($arrCustomer)
+	{
+	
+	}
+	
+	function AddAccountGroup($arrAccountGroup)
+	{
+	
+	}
+	
+	function AddAccount($arrAccount)
+	{
+	
+	}
+	
+	function AddContact()
+	{
+	
+	}
+	
+	// ------------------------------------//
+	// IMPORT
+	// ------------------------------------//
+	
+	function ImportRate()
+	{
+	
+	}
+	
+	function ImportRateGroup()
+	{
+	
+	}
+	
+	function ImportRatePlan()
+	{
+	
+	}
+	
+	
+	
+	
+	
+	// ------------------------------------//
+	// Match 
+	// ------------------------------------//
+	
+	function MatchAccounts_RateGroups($start)
 	{
 		echo "Checking ".($start * 100)." - ".($start * 100 + 100)."\n";
 		// Get acount details from the scrape
@@ -288,9 +335,13 @@ class VixenImport extends ApplicationBaseClass
 	}
 	
 	
+	// CreateServiceRatePlan
+	function CreateServiceRateGroup()
+	{
 	
+	}
 	
-	
+	// CreateServiceRateGroup
 	function Decode($arrScrapeAccount)
 	{
 		//echo "Decoding\n";

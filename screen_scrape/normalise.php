@@ -170,6 +170,9 @@
 		
 		unset ($insQuery);
 		
+		//TODO!bash! WTF do these if statements do ?
+		//TODO!bash! why should I have to sift through this shit to try and work out what it is supposed to do ?
+		//TODO!bash! Add some MFkin comments !
 		if (
 		($Customer ['admin_email'] == "" && $Customer ['billing_email'] == "" && $Customer ['billing_email_2'] == "") ||
 		$Customer ['admin_email'] != ""
@@ -204,6 +207,7 @@
 			unset ($insQuery);
 		}
 		
+		//TODO!bash! WTF do these if statements do ?
 		if ($Customer ['billing_email'] == "" && $Customer ['admin_email'] != $Customer ['billing_email']) {
 			$sql = "INSERT INTO Contact ";
 			$sql .= "(AccountGroup, FirstName, JobTitle, Email, Account, CustomerContact, UserName, PassWord, Archived) ";
@@ -228,6 +232,7 @@
 			unset ($insQuery);
 		}
 		
+		//TODO!bash! WTF do these if statements do ?
 		if ($Customer ['billing_email_2'] == "" && $Customer ['admin_email'] != $Customer ['billing_email_2'] && $Customer ['billing_email'] != $Customer ['billing_email_2']) {
 			$sql = "INSERT INTO Contact ";
 			$sql .= "(AccountGroup, FirstName, JobTitle, Email, Account, CustomerContact, UserName, Password, Archived) ";
