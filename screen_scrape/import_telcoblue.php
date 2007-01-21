@@ -40,7 +40,7 @@
 	// Old Rates => New RateGroups
 	$arrRates['localrate']	['Local 14/13c (T3CC)']					[17]		= 'Local-14';			// Local
 	$arrRates['localrate']	['Local 14/13c (T3CC)']					[18]		= 'ProgramLocal-13';	// Programmed Local
-	$arrRates['localrate']	['Local 14/11c (tb fleet, t3 local)']	[17]		= 'Local-16'; // TODO!rich! should this be a 14c rate
+	$arrRates['localrate']	['Local 14/11c (tb fleet, t3 local)']	[17]		= 'Local-14';
 	$arrRates['localrate']	['Local 14/11c (tb fleet, t3 local)']	[18]		= 'ProgramLocal-11';
 	$arrRates['localrate']	['Local 10c (VV)']						[17]		= 'Local-10';
 	$arrRates['localrate']	['Local 10c (VV)']						[18]		= 'ProgramLocal-10';
@@ -55,7 +55,7 @@
 	$arrRates['localrate']	['Tier 3 corporate Local Saver']		[17]		= 'Local-14';
 	$arrRates['localrate']	['Tier 3 corporate Local Saver']		[18]		= 'ProgramLocal-11';
 	$arrRates['localrate']	['Local 17c (nat16)']					[17]		= 'Local-17';
-	$arrRates['localrate']	['Local 17c (nat16)']					[18]		= 'ProgramLocal-16';
+	$arrRates['localrate']	['Local 17c (nat16)']					[18]		= /* NO MATCH*/null;
 	$arrRates['localrate']	['Local 11/11c']						[17]		= /* NO MATCH*/null;
 	$arrRates['localrate']	['Local 11/11c']						[18]		= 'ProgramLocal-11';
 	$arrRates['localrate']	['Local 16.36 (res 18c gst)']			[17]		= 'Local-1636';
