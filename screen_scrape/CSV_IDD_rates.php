@@ -1,7 +1,7 @@
 #!/usr/bin/php
 <?php
 
-// outputs a CSV of IDD rates from the Etech scrape data
+// writes CSVs of IDD rates from the Etech scrape data
 
 // load framework
 $strFrameworkDir = "../framework/";
@@ -19,20 +19,32 @@ require_once($strFrameworkDir."exception_vixen.php");
 require_once(decode_etech.php);
 $objDecoder = new VixenDecode($arrConfig);
 
+// define the output directory
+$strDirName = "/home/vixen/vixen_seed/Rate/IDD";
+
+// create the output directory
+$strCommand = "mkdir -p $strDirName";
+system($strCommand);
+
+
 // Get Rate details from the scrape
 $sqlQuery = new Query();
 $strQuery = "SELECT DataSerialised, AxisM FROM ScrapeRates";
 $sqlResult = $sqlQuery->Execute($strQuery);
 while ($row = $sqlResult->fetch_assoc())
 {
-	$arrScrapeAccount = unserialize($row['DataSerialised']);
-	$arrScrapeAccount['Carrier'] = $row['AxisM'];
-	$arrRates = objDecoder->DecodeIDDGroupRate($arrScrapeAccount);
+	$arrScrapeRate = unserialize($row['DataSerialised']);
+	$arrScrapeRate['Carrier'] = $row['AxisM'];
+	$arrRates = objDecoder->DecodeIDDGroupRate($arrScrapeRate);
 	
 	if (is_array($arrRates))
 	{
+		// get the plan name
+		$arrTitle 			= explode(': ',$arrScrapeRate['Title']);
+		$strPlanName		= trim($arrTitle[1]);
+		
 		// set the file name
-		//TODO!flame!
+		$strFilename = "$strDirName/$strPlanName.csv";
 		
 		// open the file
 		$resFile = fopen($strFileName, 'r');
@@ -77,6 +89,4 @@ while ($row = $sqlResult->fetch_assoc())
 		echo "bad record\n";
 	}
 }
-
-
 ?>
