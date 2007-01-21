@@ -370,6 +370,7 @@
 							<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 								<thead>
 									<tr class="First">
+										<th width="30">#</th>
 										<th>Primary Account Name</th>
 										<th>First Name</th>
 										<th>Last Name</th>
@@ -396,7 +397,8 @@
 												<xsl:text>'</xsl:text>
 											</xsl:attribute>
 											
-											<td width="50%">
+											<td><xsl:value-of select="position()" />.</td>
+											<td>
 												<xsl:choose>
 													<xsl:when test="./PrimaryAccount/Account/BusinessName != ''">
 														<xsl:value-of select="./PrimaryAccount/Account/BusinessName" />

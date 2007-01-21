@@ -188,14 +188,31 @@
 			$insAudit = new StatementInsert ('EmployeeAccountAudit');
 			$insAudit->Execute ($arrAudit);
 			
+			// Make the list only 19 Contacts long (deleting items from the top first)
+			$intLastToDelete = $this->_oblarrContacts->Length () - 20;
+			
+			$intI = 0;
+			
 			foreach ($this->_oblarrContacts as $oblstrContact)
 			{
-				if ($oblstrContact->getValue () == $cntContact->Pull ('Id')->getValue ())
+				++$intI;
+				
+				if ($intI <= $intLastToDelete)
 				{
 					$this->_oblarrContacts->Pop ($oblstrContact);
 				}
 			}
 			
+			// Make sure the item isn't already in the list
+			foreach ($this->_oblarrContacts as $oblstrContact)
+			{
+				if ($oblstrContact->getValue () == $cntContact->Pull ('Id')->getValue ())
+				{
+					return;
+				}
+			}
+			
+			// Add the item to the list
 			$this->_oblarrContacts->Push (new dataString ('Contact', $cntContact->Pull ('Id')->getValue ()));
 		}
 		

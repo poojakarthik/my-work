@@ -657,6 +657,11 @@
 		public function Pull ($indexID)
 		{
 		}
+		
+		public function Length ()
+		{
+			return count ($this->_DATA);
+		}
 			
 		public function Output ()
 		{
