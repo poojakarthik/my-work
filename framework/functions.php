@@ -33,7 +33,7 @@
 
 
  	//------------------------------------------------------------------------//
-	// RemoveDir
+	// CleanDir
 	//------------------------------------------------------------------------//
 	/**
 	 * CleanDir()
@@ -502,10 +502,123 @@ function GetCarrierName($intCarrier)
  * 
  * @method
  */
-
 function isValidFNN ($strFNN)
 {
 	return preg_match ("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", $strFNN);
+}
+
+//------------------------------------------------------------------------//
+// CleanFNN()
+//------------------------------------------------------------------------//
+/**
+ * CleanFNN()
+ * 
+ * Clean an FNN
+ * 
+ * Clean an FNN
+ * 
+ * @param	string		$strFNN				The FNN number to Clean
+ * @param	string		$strAreaCode		optional Area Code to Clean
+ *
+ * @return	string							The Cleaned FNN
+ * 
+ * @method
+ */
+function CleanFNN($strFNN, $strAreaCode=NULL)
+{
+	// no suffix by default
+	$strSuffix = '';
+	
+	// trim the FNN
+	$strFNN = Trim($strFNN);
+	
+	// keep the i from the end of an ADSL service
+	if (strtolower(substr($strFNN, -1, 1)) == 'i')
+	{
+		$strSuffix = 'i';
+	}
+	
+	// clean any leading zeros from the fnn
+	$intFNN = (int)$strFNN;
+	$strFNN = "$intFNN";
+	
+	// clean the area code
+	if ((int)$strAreaCode)
+	{
+		$intAreaCode = (int)$strAreaCode;
+		$strFNN = "$intAreaCode".$strFNN;
+	}
+	
+	// get the FNN length
+	$intLength = strlen($strFNN);
+	
+	// add leading zeros if needed
+	if ($intLength < 10 && $intLength > 6)
+	{
+		$strFNN = str_pad($strFNN, 10 , '0', STR_PAD_LEFT);
+	}
+	
+	return $strFNN.$strSuffix;
+}
+
+//------------------------------------------------------------------------//
+// ServiceType()
+//------------------------------------------------------------------------//
+/**
+ * ServiceType()
+ * 
+ * Find the Service Type of an FNN
+ * 
+ * Find the Service Type of an FNN
+ * 
+ * @param	string		$strFNN				The FNN number to Clean
+ *
+ * @return	mixed					int		Service Type Constant
+ *									FALSE	Service Type not found
+ * 
+ * @method
+ */
+function ServiceType($strFNN)
+{
+	$strFNN 	= Trim($strFNN);
+	$intFNN 	= (int)$strFNN;
+	$strPrefix 	= substr($strFNN, 0, 2);
+	
+	// Land Line
+	if ($intFNN == $strFNN && ($strPrefix == '02' || $strPrefix == '03' || $strPrefix == '07' || $strPrefix == '08' || $strPrefix == '09'))
+	{
+		return SERVICE_TYPE_LAND_LINE;
+	}
+	
+	// Mobile
+	if ($strPrefix == '04')
+	{
+		return SERVICE_TYPE_MOBILE;
+	}
+
+	// Inbound
+	if ($strPrefix == '13' || $strPrefix == '18')
+	{
+		return SERVICE_TYPE_INBOUND;
+	}
+	
+	// get the suffix
+	$strSuffix	= strtolower(substr($strFNN, -1, 1));
+	
+	// ADSL
+	if ($strSuffix == 'i')
+	{
+		return SERVICE_TYPE_ADSL;
+	}
+	
+	// Dialup
+	if ($strSuffix == 'd')
+	{
+		return SERVICE_TYPE_DIALUP;
+	}
+	
+	// NFI what this service is
+	return FALSE;
 }
 
 //------------------------------------------------------------------------//
@@ -626,6 +739,9 @@ function HasPermission($intUser, $intPermission)
 	return FALSE;
 }
 
+// -------------------------------------------------------------------------- //
+// PDF FUNCTIONS
+// -------------------------------------------------------------------------- //
 
 /**
  * ListPDF()
@@ -639,7 +755,7 @@ function HasPermission($intUser, $intPermission)
  * @return	mixed						array: Associative array of PDFs
  * 										FALSE: there was an error
  * 
- * @method
+ * @function
  */
 function ListPDF($intAccount)
 {
@@ -678,7 +794,7 @@ function ListPDF($intAccount)
  * @return	mixed						string: contents of the PDF invoice
  * 										FALSE: there was an error
  * 
- * @method
+ * @function
  */
 function GetPDF($intAccount, $intYear, $intMonth)
 {
@@ -694,6 +810,77 @@ function GetPDF($intAccount, $intYear, $intMonth)
 	
 	// Read the file contents into a string
 	$strReturn = file_get_contents($arrInvoices[0]);
+	
+	return $strReturn;
+}
+
+// -------------------------------------------------------------------------- //
+// CSV FUNCTIONS
+// -------------------------------------------------------------------------- //
+
+/**
+ * CSVRow()
+ * 
+ * Formats an array of data as a CSV Row
+ * 
+ * Formats an array of data as a CSV Row
+ * 
+ * @param	string	$strTable			Tabe Name, used to define the CSV format
+ * @param	array	$arrData			Data to be formated as CSV
+ * @param	string	$strSeparator		optional field separator. defaults to ;
+ * @param	string	$strTerminator		optional line terminator. defaults to \n (newline)
+ *
+ * @return	mixed						string: CSV line
+ * 										FALSE: Table not found
+ * 
+ * @function
+ */
+function CSVRow($strTable, $arrData, $strSeparator=';', $strTerminator="\n")
+{
+	if (!is_array($GLOBALS['arrDatabaseTableDefine'][$strTable]['Column']))
+	{
+		return FALSE;
+	}
+	
+	$strReturn = $strSeparator; // Id
+	foreach($GLOBALS['arrDatabaseTableDefine'][$strTable]['Column'] AS $strKey => $arrValue)
+	{
+		$strReturn .= $arrData[$strKey].$strSeparator;
+	}
+	$strReturn .= $strTerminator;
+	
+	return $strReturn;
+}
+
+/**
+ * CSVHeader()
+ * 
+ * Returns a CSV header row for a table
+ * 
+ * Returns a CSV header row for a table
+ * 
+ * @param	string	$strTable			Tabe Name, used to define the CSV format
+ * @param	string	$strSeparator		optional field separator. defaults to ;
+ * @param	string	$strTerminator		optional line terminator. defaults to \n (newline)
+ *
+ * @return	mixed						string: CSV line
+ * 										FALSE: Table not found
+ * 
+ * @function
+ */
+function CSVHeader($strTable, $strSeparator=';', $strTerminator="\n")
+{
+	if (!is_array($GLOBALS['arrDatabaseTableDefine'][$strTable]['Column']))
+	{
+		return FALSE;
+	}
+	
+	$strReturn = "Id".$strSeparator;
+	foreach($GLOBALS['arrDatabaseTableDefine'][$strTable]['Column'] AS $strKey => $arrValue)
+	{
+		$strReturn .= "$strKey".$strSeparator;
+	}
+	$strReturn .= $strTerminator;
 	
 	return $strReturn;
 }

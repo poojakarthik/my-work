@@ -31,6 +31,9 @@
 // CONSTANTS
 //----------------------------------------------------------------------------//
 
+// db access
+define("DB_WITH_ID"					, TRUE);
+
 // debug mode
 define("DEBUG_MODE"					, TRUE);
 

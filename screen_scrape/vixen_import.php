@@ -71,6 +71,16 @@ class VixenImport extends ApplicationBaseClass
 		$this->insRatePlanRateGroup 	= new StatementInsert("RatePlanRateGroup");
 		$this->insServiceRateGroup		= new StatementInsert("ServiceRateGroup");
 		$this->insServiceRatePlan		= new StatementInsert("ServiceRatePlan");
+		
+		$this->_insWithIdAccountGroup	= new StatementInsert("AccountGroup", NULL, TRUE);
+		$this->_insWithIdAccount		= new StatementInsert("Account", NULL, TRUE);
+		
+		$this->_insAccountGroup			= new StatementInsert("AccountGroup");
+		$this->_insAccount				= new StatementInsert("Account");
+		$this->_insService				= new StatementInsert("Service");
+		$this->_insContact				= new StatementInsert("Contact");
+		$this->_insCreditCard			= new StatementInsert("CreditCard");
+		
 		$this->sqlQuery 				= new Query();
 		$this->selServicesByType		= new StatementSelect(	"Service",
 														"Id, FNN",
@@ -78,19 +88,111 @@ class VixenImport extends ApplicationBaseClass
 	}
 	
 	// ------------------------------------//
-	// Insert Records
+	// Add Records
 	// ------------------------------------//
 	
-	// insert a single RateGroupRate record 
-	function InsertRateGroupRate($intRateGroup, $intRate)
+	function AddCustomer($arrCustomer)
+	{
+		// insert account group
+		$intAccountGroup = InsertAccountGroup($arrCustomer['AccountGroup'][0]);
+		
+		// insert credit card
+		if (is_array($arrCustomer['CreditCard']))
+		{
+			foreach ($arrCustomer['Account'] AS $arrCreditCard)
+			{
+				$arrCreditCard['AccountGroup'] = $intAccountGroup;
+				$arrCreditCardId[] = $this->InsertCreditCard($arrCustomer['CreditCard']);
+			}
+			//TODO!flame!link this to the account
+		}
+		
+		// insert accounts
+		if (is_array($arrCustomer['Account']))
+		{
+			foreach ($arrCustomer['Account'] AS $arrAccount)
+			{
+				$arrAccount['AccountGroup'] = $intAccountGroup;
+				$intAccount = $this->InsertWithIdAccount($arrAccount);
+			}
+		}
+		
+		// insert contacts
+		if (is_array($arrCustomer['Contact']))
+		{
+			foreach ($arrCustomer['Contact'] AS $arrContact)
+			{
+				$arrContact['Account'] = $intAccount;
+				$arrContact['AccountGroup'] = $intAccountGroup;
+				$this->InsertContact($arrContact);
+			}
+		}
+		
+		// insert services
+		if (is_array($arrCustomer['Service']))
+		{
+			foreach ($arrCustomer['Service'] AS $arrService)
+			{
+				$arrService['Account'] = $intAccount;
+				$arrService['AccountGroup'] = $intAccountGroup;
+				$this->InsertService($arrService);
+			}
+		}
+	}
+	
+	function AddCustomerWithId($arrCustomer)
+	{
+		// insert account group
+		InsertWithIdAccountGroup($arrCustomer['AccountGroup'][0]);
+		
+		// insert credit card
+		if (is_array($arrCustomer['CreditCard']))
+		{
+			foreach ($arrCustomer['Account'] AS $arrCreditCard)
+			{
+				$intCreditCard[] = $this->InsertCreditCard($arrCustomer['CreditCard']);
+			}
+			//TODO!flame!link this to the account
+		}
+		
+		// insert accounts
+		if (is_array($arrCustomer['Account']))
+		{
+			foreach ($arrCustomer['Account'] AS $arrAccount)
+			{
+				$this->InsertWithIdAccount($arrAccount);
+			}
+		}
+		
+		// insert contacts
+		if (is_array($arrCustomer['Contact']))
+		{
+			foreach ($arrCustomer['Contact'] AS $arrContact)
+			{
+				$this->InsertContact($arrContact);
+			}
+		}
+		
+		// insert services
+		if (is_array($arrCustomer['Service']))
+		{
+			foreach ($arrCustomer['Service'] AS $arrService)
+			{
+				$this->InsertService($arrService);
+			}
+		}
+	}
+	
+	// add a single RateGroupRate record 
+	function AddRateGroupRate($intRateGroup, $intRate)
 	{
 		$arrRateGroupRate['RateGroup']	= $intRateGroup;
 		$arrRateGroupRate['Rate']		= $intRate;
 		return $this->insRateGroupRate->Execute($arrRateGroupRate);
 	}
 	
-	// insert a single RatePlanRateGroup record 
-	function InsertRatePlanRateGroup($intRatePlan, $intRateGroup)
+	// add a single RatePlanRateGroup record 
+	function AddRatePlanRateGroup($intRatePlan, $intRateGroup)
 	{
 		// Link RateGroup to RatePlan
 		$arrRatePlanRateGroup['RateGroup']	= $intRateGroup;
@@ -98,8 +200,8 @@ class VixenImport extends ApplicationBaseClass
 		return $this->insRatePlanRateGroup->Execute($arrRatePlanRateGroup);
 	}
 	
-	// insert a single RatePlanRateGroup record 
-	function InsertServiceRateGroup($intService, $intRateGroup)
+	// add a single RatePlanRateGroup record 
+	function AddServiceRateGroup($intService, $intRateGroup)
 	{
 		// insert into ServiceRateGroup
 		$arrData['Service']			= $intService;
@@ -111,8 +213,8 @@ class VixenImport extends ApplicationBaseClass
 		$this->insServiceRateGroup->Execute($arrData);
 	}
 	
-	// insert a single ServiceRatePlan record
-	function InsertServiceRatePlan($intService, $intRatePlan)
+	// add a single ServiceRatePlan record
+	function AddServiceRatePlan($intService, $intRatePlan)
 	{
 		// insert into ServiceRatePlan
 		$arrData['Service']			= $intService;
@@ -146,7 +248,7 @@ class VixenImport extends ApplicationBaseClass
 				if ($arrRate['Id'])
 				{
 					// save the link
-					$this->InsertRateGroupRate($arrRateGroup['Id'], $arrRate['Id']);
+					$this->AddRateGroupRate($arrRateGroup['Id'], $arrRate['Id']);
 				}
 				else
 				{
@@ -156,7 +258,7 @@ class VixenImport extends ApplicationBaseClass
 					While ($arrRate = $sqlRate->fetch_assoc())
 					{
 						// save the links
-						$this->InsertRateGroupRate($arrRateGroup['Id'], $arrRate['Id']);
+						$this->AddRateGroupRate($arrRateGroup['Id'], $arrRate['Id']);
 					}
 				}
 			}
@@ -169,7 +271,7 @@ class VixenImport extends ApplicationBaseClass
 				While ($arrRate = $sqlRate->fetch_assoc())
 				{
 					// save the links
-					$this->InsertRateGroupRate($arrRateGroup['Id'], $arrRate['Id']);
+					$this->AddRateGroupRate($arrRateGroup['Id'], $arrRate['Id']);
 				}
 			}
 		}
@@ -232,7 +334,7 @@ class VixenImport extends ApplicationBaseClass
 					}
 					
 					// link RatePlan to RateGroup
-					$this->InsertRatePlanRateGroup($intRatePlan, $intRateGroup);
+					$this->AddRatePlanRateGroup($intRatePlan, $intRateGroup);
 				}
 			}
 		}
@@ -253,7 +355,7 @@ class VixenImport extends ApplicationBaseClass
 	function Error($strError)
 	{
 		$this->strLastError = "$strError \n";
-		$this->strErrorLog += "$strError \n";
+		$this->strErrorLog .= "$strError \n";
 	}
 	
 	// return the error log
@@ -269,27 +371,46 @@ class VixenImport extends ApplicationBaseClass
 	}
 	
 	// ------------------------------------//
-	// ADD
+	// INSERT WITH ID
 	// ------------------------------------//
 	
-	function AddCustomer($arrCustomer)
+	function InsertWithIdAccountGroup($arrAccountGroup)
 	{
-	
+		return $this->_insAccountGroup->Execute($arrAccountGroup);
 	}
 	
-	function AddAccountGroup($arrAccountGroup)
+	function InsertWithIdAccount($arrAccount)
 	{
-	
+		return $this->_insAccount->Execute($arrAccount);
 	}
 	
-	function AddAccount($arrAccount)
-	{
+	// ------------------------------------//
+	// INSERT
+	// ------------------------------------//
 	
+	function InsertAccountGroup($arrAccountGroup)
+	{
+		return $this->_insAccountGroup->Execute($arrAccountGroup);
 	}
 	
-	function AddContact()
+	function InsertAccount($arrAccount)
 	{
+		return $this->_insAccount->Execute($arrAccount);
+	}
 	
+	function InsertContact($arrContact)
+	{
+		return $this->_insContact->Execute($arrContact);
+	}
+	
+	function InsertService($arrService)
+	{
+		return $this->_insContact->Execute($arrService);
+	}
+	
+	function InsertCreditCard($arrCreditCard)
+	{
+		return $this->_insCreditCard->Execute($arrCreditCard);
 	}
 	
 	// ------------------------------------//

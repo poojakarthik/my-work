@@ -2007,12 +2007,13 @@ class MySQLFunction
 	 * 										you want to insert, where the keys are the column names.
 	 * 										If you want to insert everything, ignore
 	 * 										this parameter
+	 * @param		bool	bolWithId		Set TRUE to force the Id field to be inserted 
 	 *
 	 * @return		void
 	 *
 	 * @method
 	 */ 
-	 function __construct($strTable, $arrColumns = NULL)
+	 function __construct($strTable, $arrColumns = NULL, $bolWithId = NULL)
 	 {
 		parent::__construct();
 		
@@ -2021,6 +2022,9 @@ class MySQLFunction
 			 	
 	 	$this->_strTable = $strTable;
 	 	
+		$this->_bolWithId = $bolWithId;
+		
+		
 		// Determine if it's a partial or full insert
 	 	if ($arrColumns)
 	 	{
@@ -2029,7 +2033,10 @@ class MySQLFunction
 			if (!is_string($arrColumns))
 			{
 				// remove the index column
-				unset($this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]);
+				if ($bolWithId !== TRUE)
+				{
+					unset($this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]);
+				}
 			}
 			else
 			{
@@ -2046,6 +2053,12 @@ class MySQLFunction
 		{
 			// Full Insert, so retrieve columns from the Table definition array
 			$this->_arrColumns = $this->db->arrTableDefine[$strTable]["Column"];
+			
+			// add the Id
+			if ($bolWithId === TRUE)
+			{
+				$this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]['Type'] = "i"; 
+			}
 		}
 		
 		// Work out the keys and values
@@ -2132,11 +2145,23 @@ class MySQLFunction
 				{
 					if (!isset ($this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"]))
 					{
-						throw new Exception ("Could not find data type: " . $this->_strTable . "." . $mixKey);
+						if (!$mixKey == $this->db->arrTableDefine[$this->_strTable]['Id'])
+						{
+							throw new Exception ("Could not find data type: " . $this->_strTable . "." . $mixKey);
+						}
 					}
 					
-					$strType .= $this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"];
-		 			
+					if ($mixKey == $this->db->arrTableDefine[$this->_strTable]['Id'])
+					{
+						// add Id
+						$strType .= 'i';
+					}
+					else
+					{
+						// add normal value
+						$strType .= $this->db->arrTableDefine[$this->_strTable]["Column"][$mixKey]["Type"];
+		 			}
+					
 					// account for table.column key names
 					if (isset($arrData [$mixKey]))
 					{
@@ -2151,7 +2176,13 @@ class MySQLFunction
 	 	}
 	 	else
 		{
-			// full insert	
+			// full insert
+			if ($this->_bolWithId === TRUE)
+			{
+				// add in the Id if needed
+				$strType = "i";
+				$arrParams[] = $arrData[$this->db->arrTableDefine[$this->_strTable]['Id']];
+			}
 			foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 			{
 				if (isset ($arrData[$strColumnName]))

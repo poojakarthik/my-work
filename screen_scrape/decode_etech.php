@@ -105,14 +105,14 @@
 	function FetchIDDGroupRate()
 	{
 		$strQuery 	= "SELECT DataSerialised, AxisM FROM ScrapeRates";
-		$name		= 'IDDGroupRate';
+		$strName	= 'IDDGroupRate';
 		return $this->FetchResult($strName, $strQuery);
 	}
 	
 	function FetchCustomer()
 	{
-		$strQuery 	= "SELECT CustomerId, DataSerialized FROM ScrapeAccount ";
-		$name		= 'Account';
+		$strQuery 	= "SELECT CustomerId, DataSerialized AS DataSerialised FROM ScrapeAccount ";
+		$strName	= 'Account';
 		return $this->FetchResult($strName, $strQuery);
 	}
 	
@@ -126,7 +126,7 @@
 			$this->sqlResult[$strName]['count'] = 0;
 			$this->sqlResult[$strName]['total'] = 0;
 			// if not, get them
-			$strQuery += " LIMIT 100";
+			$strQuery .= " LIMIT 100";
 			$this->sqlResult[$strName]['sql'] = $this->sqlQuery->Execute($strQuery);
 			if (!$this->sqlResult[$strName]['sql'])
 			{
@@ -148,7 +148,7 @@
 			$this->sqlResult[$strName]['sql']->free();
 			
 			// get the next group of records
-			$strQuery += " LIMIT {$this->sqlResult[$strName]['total']}, 100";
+			$strQuery .= " LIMIT {$this->sqlResult[$strName]['total']}, 100";
 			$this->sqlResult[$strName]['sql'] = $this->sqlQuery->Execute($strQuery);
 			if (!$this->sqlResult[$strName]['sql'])
 			{
@@ -298,7 +298,7 @@
 			unset($arrContact['Title']);
 			unset($arrCustomer['lastname']);
 			$arrContact['FirstName'] 				= 'Billing Contact';
-			$arrContact['UserName'] 				+= "-1";
+			$arrContact['UserName'] 				.= "-1";
 			$arrContact['CustomerContact'] 			=  0;
 		}
 
@@ -313,7 +313,7 @@
 			unset($arrContact['Title']);
 			unset($arrCustomer['lastname']);
 			$arrContact['FirstName'] 				= 'Secondary Billing Contact';
-			$arrContact['UserName'] 				+= "-2";
+			$arrContact['UserName'] 				.= "-2";
 			$arrContact['CustomerContact'] 			=  0;
 		}
 		

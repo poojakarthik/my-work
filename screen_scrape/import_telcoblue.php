@@ -233,15 +233,18 @@
 	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
-	{
+	{	
 		// get the etech customer details
 		$arrScrape = unserialize($arrRow['DataSerialised']);
 		$arrScrape['CustomerId'] = $arrRow['CustomerId'];
+
+		// decode the customer
+		echo "Decoding Customer  : {$arrScrape['CustomerId']}\n";
 		$arrCustomer = $objDecoder->DecodeCustomer($arrScrape);
 		
 		// add the customer
-		$objImport->AddCustomer($arrCustomer);
-		
+		echo "Importing Customer : {$arrScrape['CustomerId']}\n";
+		$objImport->AddCustomerWithId($arrCustomer);
 	}
 	
 	//finish
