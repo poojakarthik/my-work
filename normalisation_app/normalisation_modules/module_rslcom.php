@@ -196,7 +196,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 				case "Business Telephone Line":
 					$intRateId	= 2;
 					break;					
-				case "Residential Telephone Line":
+				case "Telephone Line":
 					//TODO!rich!find the real description for a residential line
 					$intRateId	= 3;
 					break;
