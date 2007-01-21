@@ -569,11 +569,10 @@
 			<div class="Clear"></div>
 			<input type="submit" name="Confirm" class="input-submit-locked" value="Continue &#0187;" id="Confirm" disabled="disabled" />
 			<div class="Seperator"></div>
-			<!-- TODO!bash! make this box the same width as the other boxes -->
-			<!-- TODO!bash! why are some of the boxes on this page different widths ? -->
+			
 			<div class="MsgNotice">
-				Customers must provide verification details before being allowed access to an Account.<br/>
-				Input boxes will turn green when correct details have been entered.<br/>
+				Customers must provide verification details before being allowed access to an Account.
+				Input boxes will turn green when correct details have been entered.
 				The continue button will turn green once sufficient verification details have been entered.
 			</div>
 			

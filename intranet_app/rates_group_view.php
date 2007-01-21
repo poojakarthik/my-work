@@ -34,16 +34,16 @@
 	$rrgRateGroup	= $oblarrDetails->Push ($rrgRateGroup);
 	
 	
+	$rgrRateGroupRate = $oblarrDetails->Push (new RateGroupRate ($_GET ['Id']));
+	$rgrRateGroupRate->Sample (1, 10);
 	
-	// Include the associated Rates for this Rate Group
-	$oblarrDetails->Push ($rrgRateGroup->Rates ());
-	
+	/*
 	// Include the Rate Plans that use this Rate Group
 	$oblarrDetails->Push ($rrgRateGroup->RatePlans ());
 	
-	
 	// Documentation for a Rate Group
 	$docDocumentation->Explain ("Rate Group");
+	*/
 	
 	$Style->Output ("xsl/content/rates/groups/view.xsl");
 	

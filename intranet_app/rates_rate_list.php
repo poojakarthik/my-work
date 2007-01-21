@@ -51,7 +51,7 @@
 	if (isset ($_GET ['constraint']['ServiceType']))
 	{
 		$rrlRates->Sample (
-			$_GET ['rangePage']		&& is_numeric ($_GET ['rangePage'])	? $_GET ['rangePage']	: 1		, 
+			$_GET ['rangePage']		&& is_numeric ($_GET ['rangePage'])		? $_GET ['rangePage']	: 1, 
 			$_GET ['rangeLength']	&& is_numeric ($_GET ['rangeLength'])	? $_GET ['rangeLength']	: 30
 		);
 		

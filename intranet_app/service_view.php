@@ -54,10 +54,12 @@
 	
 	// Get the Recurring ChargeTypes which can be put against this Account
 	$rclRecurringChargeTypes	= $tctCharges->Push (new RecurringChargeTypes);
+	$rclRecurringChargeTypes->Constrain ('Archived', '=', FALSE);
 	$rclRecurringChargeTypes->Sample ();
 	
 	// Get the Charge Types which can be put against this Account
 	$octChargeTypes	= $tctCharges->Push (new ChargeTypes);
+	$octChargeTypes->Constrain ('Archived', '=', FALSE);
 	$octChargeTypes->Sample ();
 	
 	// Output the Account View

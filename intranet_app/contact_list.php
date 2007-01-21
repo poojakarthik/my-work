@@ -320,7 +320,7 @@
 		// If we've successfully (somehow) identified an account,
 		// then we need to start checking for a contact
 		
-		if (!isset ($_POST ['ui-Contact-Sel']))
+		if (!$_POST ['ui-Contact-Sel'])
 		{
 			// If we have an Account, but we don't have a Contact, 
 			// we have to show a screen which will allow the employee to 

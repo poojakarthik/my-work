@@ -76,8 +76,7 @@
 		 * @method
 		 */
 		
-		//TODO!bash! this don't seem to be working :(
-		public function Report (AuthenticatedEmployee $aemAuthenticatedEmployee, $strPageDetails, $strComment)
+		public function Report (AuthenticatedEmployee $aemAuthenticatedEmployee, $strPageDetails, $strComment, $strSerialisedGET, $strSerialisedPOST)
 		{
 			$arrBug = Array (
 				"CreatedBy"			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
@@ -85,6 +84,8 @@
 				"PageName"			=> $_SERVER ['HTTP_REFERER'],
 				"PageDetails"		=> $strPageDetails,
 				"Comment"			=> $strComment,
+				"SerialisedGET"		=> $strSerialisedGET, 
+				"SerialisedPOST"	=> $strSerialisedPOST,
 				"Status"			=> BUG_UNREAD
 			);
 			

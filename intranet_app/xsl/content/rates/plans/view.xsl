@@ -73,10 +73,12 @@
 					<td><xsl:value-of select="./Name" /></td>
 					<td><xsl:value-of select="./RecordType/Name" /></td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>rates_group_view.php?Id=</xsl:text>
+						<a href="#" title="Rate Group Details" alt="Information about this Rate Group and its Charges">
+							<xsl:attribute name="onclick">
+								<xsl:text>return ModalExternal (this, </xsl:text>
+								<xsl:text>'rates_group_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
+								<xsl:text>')</xsl:text>
 							</xsl:attribute>
 							<xsl:text>View Rate Group Details</xsl:text>
 						</a>

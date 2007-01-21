@@ -43,6 +43,18 @@
 
 									<div class="modalContent">
 										<form method="post" action="bug_report.php" onsubmit="return BugSubmit(this)">
+											<input type="hidden" name="SerialisedGET">
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/DataSerialised/GET" />
+												</xsl:attribute>
+											</input>
+											<input type="hidden" name="SerialisedPOST">
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/DataSerialised/POST" />
+												</xsl:attribute>
+											</input>
 											<table border="0" cellpadding="0" cellspacing="0">
 												<tr>
 													<td valign="top" width="100%">

@@ -119,7 +119,6 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<!-- TODO!bash! this is letting me continue without selecting a contact first -->
 			<input type="submit" class="input-submit" value="Continue &#0187;" />
 		</form>
 	</xsl:template>

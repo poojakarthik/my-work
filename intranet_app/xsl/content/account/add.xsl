@@ -31,6 +31,9 @@
 					<xsl:when test="/Response/Error = 'UserName'">
 						The Username you entered already exists in the System.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'Email-Blank'">
+						The Email Address you entered was blank.
+					</xsl:when>
 					<xsl:when test="/Response/Error = 'CustomerGroup'">
 						The Customer Group you selected was Invalid. Please try again.
 					</xsl:when>
@@ -338,7 +341,6 @@
 									</td>
 									<th>
 										<label for="PaymentMethod:AC">
-											<!-- TODO!bash! when I change something don't go changing it back again !!!! -->
 											Account
 										</label>
 									</th>

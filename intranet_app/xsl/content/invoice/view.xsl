@@ -9,7 +9,6 @@
 	<xsl:template name="Content">
 		<h1>View Invoice Details</h1>
 		<div class="Seperator"></div>
-		<!-- TODO!bash! there are no services listed ???? -->
 		<h2 class="Invoice">Invoice Details</h2>
 		<div class="Filter-Form">
 			<table border="0" cellpadding="5" cellspacing="0">

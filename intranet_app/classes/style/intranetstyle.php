@@ -104,7 +104,7 @@
 			if ($this->_athAuthentication->isAuthenticated ())
 			{
 				$this->_athAuthentication->AuthenticatedEmployee ()->Save ();
-			
+				
 				if (DEBUG_MODE == TRUE)
 				{
 					// Get user permission
@@ -116,6 +116,10 @@
 						$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
 					}
 				}
+				
+				$oblarrDataSerialised = $this->attachObject (new dataArray ('DataSerialised'));
+				$oblarrDataSerialised->Push (new dataString ("GET",		serialize ($_GET)));
+				$oblarrDataSerialised->Push (new dataString ("POST",	serialize ($_POST)));
 			}
 			
 			parent::Output ($strXSLFilename);

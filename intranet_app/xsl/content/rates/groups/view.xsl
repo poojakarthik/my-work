@@ -60,7 +60,7 @@
 				<th>Rate Name</th>
 				<th>Actions</th>
 			</tr>
-			<xsl:for-each select="/Response/RateGroupDetails/Rates/Rate">
+			<xsl:for-each select="/Response/RateGroupDetails/RateGroupRate/rangeSample/Rate">
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>
@@ -75,10 +75,12 @@
 					<td><xsl:value-of select="position()" />.</td>
 					<td><xsl:value-of select="./Name" /></td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>rates_rate_view.php?Id=</xsl:text>
+						<a href="#" title="Rate Details" alt="Information about this Rate and its Charges">
+							<xsl:attribute name="onclick">
+								<xsl:text>return ModalExternal (this, </xsl:text>
+								<xsl:text>'rates_rate_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
+								<xsl:text>')</xsl:text>
 							</xsl:attribute>
 							<xsl:text>View Rate Details</xsl:text>
 						</a>

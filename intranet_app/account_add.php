@@ -141,6 +141,11 @@
 			// This throws an error if the User Name exists
 			$oblstrError->setValue ('UserName');
 		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['Email'])
+		{
+			// This throws an error if the Contact Email is Blank
+			$oblstrError->setValue ('Email-Blank');
+		}
 		else if (!$cgsCustomerGroups->setValue ($_POST ['Account']['CustomerGroup']))
 		{
 			// This throws an error if the Customer Group is Invalid
