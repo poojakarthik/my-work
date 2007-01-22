@@ -52,6 +52,8 @@
 		}
 		else
 		{
+			$intService = $srvService->Pull ('Id')->getValue ();
+			
 			$srvService->Update (
 				Array (
 					"FNN"				=> $_POST ['FNN']['1']
@@ -60,13 +62,13 @@
 			
 			if (isset ($_POST ['Archived']))
 			{
-				$srvService->ArchiveStatus ($_POST ['Archived']);
-				
-				echo "[ END ]";
-				exit;
+				$intService = $srvService->ArchiveStatus (
+					$_POST ['Archived'],
+					$athAuthentication->AuthenticatedEmployee ()
+				);
 			}
 			
-			header ("Location: service_view.php?Id=" . $srvService->Pull ('Id')->getValue ());
+			header ("Location: service_view.php?Id=" . $intService);
 			exit;
 		}
 	}

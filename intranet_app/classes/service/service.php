@@ -338,22 +338,26 @@
 		
 		public function Plan ()
 		{
-			$selCurrentPlan = new StatementSelect (
-				'ServiceRatePlan', 
-				'RatePlan', 
-				'Service = <Service> AND Now() BETWEEN StartDatetime AND EndDatetime', 
-				'CreatedOn DESC',
-				1
-			);
-			
-			$selCurrentPlan->Execute (Array ('Service' => $this->Pull ('Id')->getValue ()));
-			
-			if ($selCurrentPlan->Count () == 1)
+			if (!$this->_rrpRatePlan)
 			{
-				$arrPlan = $selCurrentPlan->Fetch ();
+				$selCurrentPlan = new StatementSelect (
+					'ServiceRatePlan', 
+					'RatePlan', 
+					'Service = <Service> AND Now() BETWEEN StartDatetime AND EndDatetime', 
+					'CreatedOn DESC',
+					1
+				);
 				
-				$this->Push (new RatePlan ($arrPlan ['RatePlan']));
+				$selCurrentPlan->Execute (Array ('Service' => $this->Pull ('Id')->getValue ()));
+				
+				if ($selCurrentPlan->Count () == 1)
+				{
+					$arrPlan = $selCurrentPlan->Fetch ();
+					$this->_rrpRatePlan = $this->Push (new RatePlan ($arrPlan ['RatePlan']));
+				}
 			}
+			
+			return $this->_rrpRatePlan;
 		}
 		
 		//------------------------------------------------------------------------//
@@ -453,19 +457,20 @@
 		 *
 		 * Update Service Archive Status. Unarchiving a Service from the Database may
 		 * incur a few different paths.
-		 * 1. If the FNN is in use (or potentially in use) by another service, a Change of Lessee will be performed.
-		 * 2. If the FNN is not in use by another Service AND (XOR):
-		 *		a. If the Service has been in use by another Service but the Service has , a new Service will be created.
-		 *		b. If the Service has not been in use by another Service, the expiration is revoked.
+		 * CLAUSE 1.	If the FNN is in use (or potentially in use) by another service, a Change of Lessee will be performed.
+		 * CLAUSE 2.	If the FNN is not in use by another Service AND (XOR):
+		 *		CLAUSE a.	If the Service has been in use by another Service but the Service has , a new Service will be created.
+		 *		CLAUSE b.	If the Service has not been in use by another Service, the expiration is revoked.
 		 *
-		 * @param	Boolean		$bolArchive		TRUE:	Archive this Service
-		 *										FALSE:	Unarchive this Service
+		 * @param	Boolean					$bolArchive					TRUE / FALSE:	Depending on whether or not the service is to be Archived or Unarchived
+		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmployee	The current person logged in and performing this action
+		 *
 		 * @return	Void
 		 *
 		 * @method
 		 */
 		
-		public function ArchiveStatus ($bolArchive)
+		public function ArchiveStatus ($bolArchive, AuthenticatedEmployee $aemAuthenticatedEmployee)
 		{
 			// If we are choosing to Archive the Service - this is a simple proceedure.
 			// It just sets the ClosedOn Date to the Current Date.
@@ -481,7 +486,7 @@
 				$updService->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
 				
 				// We have done all we need to here. Therefore, break out
-				return;
+				return $this->Pull ('Id')->getValue ();
 			}
 			
 			// If we're up to here, then we want to Reactivate the Service
@@ -490,7 +495,7 @@
 			// then there's no point in Reactivating because it's already active.
 			if (!$this->Pull ('ClosedOn')->Pull ('year'))
 			{
-				return;
+				throw new Exception ("Not Archived");
 			}
 			
 			// Check if the FNN is used elsewhere [snatched] (since the date of Closure)
@@ -500,6 +505,7 @@
 			$bolSnatched = ($arrSnatched ['snatchCount'] != 0);
 			
 			// If it hasn't been used anywhere else - suspend the Service closure
+			// This is CLAUSE 1
 			if (!$bolSnatched)
 			{
 				// Set up an Archive SET clause
@@ -512,36 +518,49 @@
 				$updService->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
 				
 				// We have done all we need to here. Therefore, break out
-				return;
+				return $this->Pull ('Id')->getValue ();
 			}
 			
 			// If we're up to here - then we will be snatching the FNN back from
 			// someone else.
 			
-			
-			
 			// If the Service with the FNN we want is currently in use, then we want
 			// to do a Change of Lessee (COfL)
-			$selCOfL = new StatementSelect ('Service', 'count(*) AS COfL', 'FNN = <FNN> AND (ClosedOn IS NULL OR ClosedOn >= Now())');
+			$selCOfL = new StatementSelect ('Service', 'Id', 'FNN = <FNN> AND (ClosedOn IS NULL OR ClosedOn >= Now())', null, 1);
 			$selCOfL->Execute (Array ('FNN' => $this->Pull ('FNN')->getValue ()));
-			$arrCOfL = $selCOfL->Fetch ();
-			$intCOfL = $arrCOfL ['COfL'];
 			
-			if ($intCOfL)
+			// This is CLAUSE 2.a.
+			if ($arrCOfL = $selCOfL->Fetch ())
 			{
+				$srvService = new Service ($arrCOfL ['Id']);
 				$intTomorrow = strtotime ("+1 day");
 				
-				$this->LesseePassthrough (
-					new Account ($this->Pull ('Account')->getValue ()),
+				return $srvService->LesseePassthrough (
+					$this->getAccount (),
+					$aemAuthenticatedEmployee,
 					Array (
 						"month"		=> date ("m", $intTomorrow),
 						"year"		=> date ("Y", $intTomorrow),
 						"day"		=> date ("d", $intTomorrow)
 					)
 				);
-				
-				return;
 			}
+			
+			// We've failed our tests. Therefore we must create a New Service
+			// This is CLAUSE 2.b.
+			
+			$srvService = Services::Add (
+				$aemAuthenticatedEmployee, 
+				$this->getAccount (), 
+				$this->Plan (), 
+				Array (
+					'FNN'					=> $this->Pull ('FNN')->getValue (),
+					'ServiceType'			=> $this->Pull ('ServicType')->getValue (),
+					'Indial100'				=> $this->Pull ('Indial100')->getValue ()
+				)
+			);
+			
+			return $srvService->Pull ('Id')->getValue ();
 		}
 		
 		//------------------------------------------------------------------------//
@@ -554,14 +573,15 @@
 		 *
 		 * Revokes the Service from the Account and Passes the Line to another Account
 		 *
-		 * @param	Account		$actAccount			The account to receive the Line
-		 * @param	Array		$arrDetailsDate		The day which the service will come to the new person
+		 * @param	Account					$actAccount					The account to receive the Line
+		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmployee	The person who is performing this request
+		 * @param	Array					$arrDetailsDate				The day which the service will come to the new person
 		 * @return	Void
 		 *
 		 * @method
 		 */
 		
-		public function LesseePassthrough (Account $actAccount, $arrDetailsDate)
+		public function LesseePassthrough (Account $actAccount, AuthenticatedEmployee $aemAuthenticatedEmployee, $arrDetailsDate)
 		{
 			$intDate = mktime (0, 0, 0, $arrDetailsDate ['month'], $arrDetailsDate ['day'], $arrDetailsDate ['year']);
 			
@@ -573,7 +593,7 @@
 			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrClose);
 			$updService->Execute ($arrClose, Array ('Id' => $this->Pull ('Id')->getValue ()));
 			
-			return $actAccount->LesseeReceive ($this, $arrDetailsDate);
+			return $actAccount->LesseeReceive ($this, $aemAuthenticatedEmployee, $arrDetailsDate);
 		}
 		
 		//------------------------------------------------------------------------//

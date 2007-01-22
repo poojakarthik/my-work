@@ -64,6 +64,7 @@
 				{
 					$intNewService = $srvService->LesseePassthrough (
 						$actReceiving, 
+						$athAuthentication->AuthenticatedEmployee (),
 						$_POST ['Date']
 					);
 					

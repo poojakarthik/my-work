@@ -144,7 +144,6 @@
 				'CappedCharge'			=> 0,
 				'UncappedCharge'		=> 0,
 				'CreatedOn'				=> date ('Y-m-d')
-				
 			);
 			
 			$insService = new StatementInsert ('Service');

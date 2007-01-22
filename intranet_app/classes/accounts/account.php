@@ -303,7 +303,7 @@
 				);
 				
 				// Cascade down to include the Services
-				$updService = new StatementUpdate ('Service', 'Account = <Account>', $arrArchiveService);
+				$updService = new StatementUpdate ('Service', 'Account = <Account> AND (ClosedOn IS NULL OR ClosedOn > Now())', $arrArchiveService);
 				$updService->Execute ($arrArchiveService, Array ('Account' => $this->Pull ('Id')->getValue ()));
 				
 				// Set up an Archive SET clause
@@ -377,14 +377,15 @@
 		 *
 		 * Receives a Service to Take Ownership
 		 *
-		 * @param	Service		$srvService			Boolean representing whether to Archive (true) or unarchive (false)
-		 * @param	Array		$arrDetailsDate		The date which this service will begin
+		 * @param	Service					$srvService					Boolean representing whether to Archive (true) or unarchive (false)
+		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmployee	The person who is performing this request
+		 * @param	Array					$arrDetailsDate				The date which this service will begin
 		 * @return	Void
 		 *
 		 * @method
 		 */
 		
-		public function LesseeReceive (Service $srvService, $arrDetailsDate)
+		public function LesseeReceive (Service $srvService, AuthenticatedEmployee $aemAuthenticatedEmployee, $arrDetailsDate)
 		{
 			$intDate = mktime (0, 0, 0, $arrDetailsDate ['month'], $arrDetailsDate ['day'], $arrDetailsDate ['year']);
 			
@@ -402,13 +403,16 @@
 				"CappedCharge"		=>	0,
 				"UncappedCharge"	=>	0,
 				"CreatedOn"			=>	date ("Y-m-d", $intDate),
+				"CreatedBy"			=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				"Carrier"			=>	$srvService->Pull ('Carrier')->getValue (),
 				"CarrierPreselect"	=>	$srvService->Pull ('CarrierPreselect')->getValue (),
 				"LineStatus"		=>	$srvService->Pull ('LineStatus')->getValue ()
 			);
 			
 			$insService = new StatementInsert ('Service');
-			return $insService->Execute ($arrService);
+			$intService = $insService->Execute ($arrService);
+			
+			return $intService;
 		}
 		
 		//------------------------------------------------------------------------//
