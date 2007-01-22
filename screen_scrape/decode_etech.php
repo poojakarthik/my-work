@@ -292,8 +292,68 @@
 	// prase system note
 	function ParseSystemNote($strNoteHtml, $intCustomerId)
 	{
+		// Read the DOM Document
+		$domDocument	= new DOMDocument ('1.0', 'utf-8');
+		@$domDocument->LoadHTML ($strNoteHtml);
+		
+		$dxpPath		= new DOMXPath ($domDocument);
+		
+		
+		//-----------------------------------------------
+		//	Ok - Freeze Frame.
+		//-----------------------------------------------
+		
+		$dncNotes = $dxpPath->Query ("//table[1]/tr[position() >= 4 and position() mod 2 = 0]");
+		
+		// Check if we are told there are "No Results"
+		if ($dncNotes->length == 1)
+		{
+			$domRow = new DOMDocument ('1.0', 'utf-8');
+			$domRow->formatOutput = true;
+			@$domRow->appendChild (
+				$domRow->importNode (
+					$dncNotes->item (0),
+					TRUE
+				)
+			);
+			
+			$xpaRow = new DOMXPath ($domRow);
+			
+			if ($xpaRow->Evaluate ("count(/tr/td[1][@colspan='3']) = 1"))
+			{
+				continue;
+			}
+		}
+		
+		// Loop through each of the Rows
+		$arrNotes = Array ();
+		$intCurrentRow = 0;
+		foreach ($dncNotes as $dnoRow)
+		{
+			// Up the count
+			$intCurrentRow++;
+			
+			$domRow = new DOMDocument ('1.0', 'utf-8');
+			$domRow->formatOutput = true;
+			@$domRow->appendChild (
+				$domRow->importNode (
+					$dnoRow,
+					TRUE
+				)
+			);
+			
+			$xpaRow = new DOMXPath ($domRow);
+			
+			$arrNote['NoteValue']	= $xpaRow->Query ("/tr/td[2]")->item (0)->nodeValue;
+			$arrNote['Employee']	= $xpaRow->Query ("/tr/td[3]")->item (0)->nodeValue;
+			$arrNote['Datetime']	= $xpaRow->Query ("/tr/td[1]")->item (0)->nodeValue;
+			$arrNote['NoteType']	= SYSTEM_NOTE_TYPE;
+			$arrNote['CustomerId']	= $intCustomerId;
+			$arrNotes[] = $arrNote;
+		}
+
 		// return array directly from data
-		return $arrNote;
+		return $arrNotes;
 	}
 	
 	// ------------------------------------//
@@ -366,7 +426,9 @@
 
 
 			// Employee
-			$arrNormalisedNote['EmployeeName'] = preg_replace("/^\W/", "", $arrNote['Employee']);
+			$arrNormalisedNote['EmployeeName']	= preg_replace("/^\W/", "", $arrNote['Employee']);
+			$arrNormalisedNote['AccountGroup']	= $arrNote['CustomerId'];
+			$arrNormalisedNote['Note']			= $arrNote['NoteValue'];
 			
 			// Add to normalised array
 			$arrNormalisedNotes[] = $arrNormalisedNote;
@@ -376,9 +438,25 @@
 	}
 	
 	// decode system note
-	function DecodeSystemNote($arrNote)
+	function DecodeSystemNote($arrNotes)
 	{
-		// work out stuff and makes it so it will go in the db
+		// Loop through each of the Rows
+		$intCurrentRow = 0;
+		foreach ($arrNotes as $arrNote)
+		{
+			// Up the count
+			$intCurrentRow++;
+			$arrNormalisedNote['Datetime']		= $arrNote['Datetime'];
+			$arrNormalisedNote['NoteType']		= $arrNote['NoteType'];
+			$arrNormalisedNote['AccountGroup']	= $arrNote['CustomerId'];
+			$arrNormalisedNote['Note']			= $arrNote['NoteValue'];
+			$arrNormalisedNote['EmployeeName']	= $arrNote['Employee'];
+			
+			// Add to normalised array
+			$arrNormalisedNotes[] = $arrNormalisedNote;
+		}
+		
+		return $arrNormalisedNotes;
 	}
 	
 	// decode a customer

@@ -720,4 +720,6 @@ define("BUG_UNASSIGNED"				, 101);
 define("BUG_UNRESOLVED"				, 102);
 define("BUG_RESOLVED"				, 103);
 
+// Note parsing
+define("SYSTEM_NOTE_TYPE"			, 7);
 ?>
