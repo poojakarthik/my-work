@@ -135,6 +135,54 @@
 			
 			return new Account ($arrAccount ['Id']);
 		}
+		
+		//------------------------------------------------------------------------//
+		/**
+		 * NameSearch()
+		 *
+		 * Get a list of Accounts which partially match a Business or Trading Name
+		 *
+		 * Get a list of Accounts which partially match a Business or Trading Name
+		 *
+		 * @param	String		$strName			The name searching for in the Businesss or Trading Name
+		 * @method
+		 */
+		
+		public function NameSearch ($strName)
+		{
+			// Make sure the Name is not Blank
+			if ($strName == '')
+			{
+				throw new Exception ('Name Invalid');
+			}
+			
+			// Get the matching Accounts
+			$selAccounts = new StatementSelect ('Account', 'Id', 'BusinessName LIKE <BusinessName> OR TradingName LIKE <TradingName>');
+			$selAccounts->Execute (
+				Array (
+					'BusinessName'	=> '%' . $strName . '%',
+					'TradingName'	=> '%' . $strName . '%'
+				)
+			);
+			
+			// If there are more than 15 records, we cannot perform a search
+			if ($selAccounts->Count () > 15)
+			{
+				throw new Exception ('Accounts Refine');
+			}
+			
+			
+			// Start the results array
+			$oblarrAccounts = new dataArray ('Accounts');
+			
+			// Push the results
+			foreach ($selAccounts->FetchAll () AS $arrAccount)
+			{
+				$oblarrAccounts->Push (new Account ($arrAccount ['Id']));
+			}
+			
+			return $oblarrAccounts;
+		}
 	}
 	
 ?>

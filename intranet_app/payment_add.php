@@ -35,7 +35,7 @@
 	{
 		try
 		{
-			$actAccount = new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']);
+			$actAccount = $Style->attachObject (new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']));
 			$acgAccountGroup = $Style->attachObject ($actAccount->AccountGroup ());
 			
 			$Style->attachObject (new dataString ('Account', $actAccount->Pull ('Id')->getValue ()));

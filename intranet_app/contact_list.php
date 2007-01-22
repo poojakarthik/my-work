@@ -188,21 +188,24 @@
 			// we have to show a screen which will allow the employee to 
 			// select the right account
 			
-			$acsAccounts = $oblarrAnswers->Push (new Accounts ());
-			$acsAccounts->Constrain ('BusinessName', 'LIKE', $oblstrBusinessName->getValue ());
-			$acsAccounts->Order ('BusinessName', TRUE);
-			$oblsamAccounts = $acsAccounts->Sample ();
-			
-			
-			if ($oblsamAccounts->Count () == 0)
+			try
 			{
-				$oblstrError->setValue ('BusinessName');
+				$oblarrAccounts = $oblarrAnswers->Push (Accounts::NameSearch ($oblstrBusinessName->getValue ()));
+				
+				if ($oblarrAccounts->Length () == 0)
+				{
+					$oblstrError->setValue ('BusinessName None');
+				}
+				else
+				{
+					//TODO!!!! - 1 match = skip this and go to the next step
+					$Style->Output ('xsl/content/contact/list_1-account.xsl');
+					exit;
+				}
 			}
-			else
+			catch (Exception $e)
 			{
-				//TODO!!!! - 1 match = skip this and go to the next step
-				$Style->Output ('xsl/content/contact/list_1-account.xsl');
-				exit;
+				$oblstrError->setValue ('BusinessName Refine');
 			}
 		}
 		else

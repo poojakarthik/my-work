@@ -31,8 +31,11 @@
 						<xsl:when test="/Response/Error = 'FNN'">
 							The Line Number you entered was not found in the database.
 						</xsl:when>
-						<xsl:when test="/Response/Error = 'BusinessName'">
+						<xsl:when test="/Response/Error = 'BusinessName None'">
 							The Business Name you entered did not return any possible Accounts.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'BusinessName Refine'">
+							The Business Name you entered returned too many any possible Accounts.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Contact'">
 							The First/Last Name you entered did not return any possible Contacts.

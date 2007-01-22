@@ -78,58 +78,34 @@
 							<th>Trading Name</th>
 							<th>Suburb / Postcode</th>
 						</tr>
-						<xsl:if test="/Response/ui-answers/Accounts/Results/collationLength &lt;= 15">
-							<xsl:for-each select="/Response/ui-answers/Accounts/Results/rangeSample/Account">
-								<tr>
-									<xsl:attribute name="class">
-										<xsl:choose>
-											<xsl:when test="position() mod 2 = 1">
-												<xsl:text>Odd</xsl:text>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:text>Even</xsl:text>
-											</xsl:otherwise>
-										</xsl:choose>
-									</xsl:attribute>
-									
-									<td><xsl:value-of select="/Response/ui-answers/Accounts/Results/rangeStart + position()" />.</td>
-									<td width="30">
-										<input type="radio" name="ui-Account-Sel">
-											<xsl:attribute name="value">
-												<xsl:value-of select="./Id" />
-											</xsl:attribute>
-											
-										</input>
-									</td>
-									<td><xsl:value-of select="./BusinessName" /></td>
-									<td><xsl:value-of select="./TradingName" /></td>
-									<td><xsl:value-of select="./Suburb" />,  <xsl:value-of select="./Postcode" /></td>
-								</tr>
-							</xsl:for-each>
-						</xsl:if>
+						<xsl:for-each select="/Response/ui-answers/Accounts/Account">
+							<tr>
+								<xsl:attribute name="class">
+									<xsl:choose>
+										<xsl:when test="position() mod 2 = 1">
+											<xsl:text>Odd</xsl:text>
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:text>Even</xsl:text>
+										</xsl:otherwise>
+									</xsl:choose>
+								</xsl:attribute>
+								
+								<td><xsl:value-of select="position()" />.</td>
+								<td width="30">
+									<input type="radio" name="ui-Account-Sel">
+										<xsl:attribute name="value">
+											<xsl:value-of select="./Id" />
+										</xsl:attribute>
+										
+									</input>
+								</td>
+								<td><xsl:value-of select="./BusinessName" /></td>
+								<td><xsl:value-of select="./TradingName" /></td>
+								<td><xsl:value-of select="./Suburb" />,  <xsl:value-of select="./Postcode" /></td>
+							</tr>
+						</xsl:for-each>
 					</table>
-					
-					<xsl:choose>
-						<xsl:when test="/Response/ui-answers/Accounts/Results/collationLength &gt; 15">
-							<div class="MsgError">
-								There are too many results to display. Please refine your search and try again.
-							</div>
-						</xsl:when>
-						<xsl:when test="/Response/ui-answers/Accounts/Results/collationLength = 0">
-							<div class="MsgError">
-								There are no Accounts with the Search Criteria that you Specified.
-							</div>
-						</xsl:when>
-						<xsl:when test="count(/Response/ui-answers/Accounts/Results/rangeSample/Account) = 0">
-							<div class="MsgNotice">
-								There are no Records for the Range that you Searched for.
-							</div>
-						</xsl:when>
-						<xsl:otherwise>
-							<div class="Seperator"></div>
-							<input type="submit" value="Continue Verification &#0187;" class="input-submit" />
-						</xsl:otherwise>
-					</xsl:choose>
 				</form>
 			</div>
 		</div>

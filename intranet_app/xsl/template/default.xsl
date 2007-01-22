@@ -428,7 +428,7 @@
 							</div>
 							<div class="modalLabel Left">
 								<strong>Recent Customers</strong><br />
-								Your 5 most recently verified customers
+								Your 20 most recently verified customers
 							</div>
 							<div class="modalClose Right">
 								<img src="img/template/closelabel.gif" class="close" />
