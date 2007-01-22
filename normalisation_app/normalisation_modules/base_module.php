@@ -688,10 +688,8 @@ abstract class NormalisationModule
 	 */
 	 public function FindOwner($arrCDR)
 	 {
-		$this->_arrNormalisedData['FNN']			= $arrCDR['FNN'];
-		$this->_arrNormalisedData['StartDatetime']	= $arrCDR['StartDatetime'];
-		$this->ApplyOwnership();
-		return  $this->_arrNormalisedData;
+		$this->_arrNormalisedData = $arrCDR;
+		return $this->_arrNormalisedData;
 	 }
 	
 	
