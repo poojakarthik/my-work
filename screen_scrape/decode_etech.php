@@ -79,7 +79,7 @@
 		$selNoteTypes	= new StatementSelect('NoteType', '*');		
 		$selNoteTypes->Execute();
 		$this->_arrNoteTypes = Array();
-		foreach ($selNoteTypes->Fetch() as $arrNoteType)
+		while ($arrNoteType = $selNoteTypes->Fetch())
 		{
 			$this->_arrNoteTypes[$arrNoteType['TypeLabel']] = $arrNoteType['Id'];
 		}
@@ -148,7 +148,8 @@
 		$arrNote = $this->FetchResult($strName, $strQuery);
 		if ($arrNote)
 		{
-			$arrRow['DataArray'] = $this->ParseSystemNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
+			$arrNote['DataArray'] = $this->ParseSystemNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
+			unset($arrNote['DataOriginal']);
 		}
 		return $arrNote;
 	}
@@ -160,7 +161,8 @@
 		$arrNote = $this->FetchResult($strName, $strQuery);
 		if ($arrNote)
 		{
-			$arrRow['DataArray'] = $this->ParseUserNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
+			$arrNote['DataArray'] = $this->ParseUserNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
+			unset($arrNote['DataOriginal']);
 		}
 		return $arrNote;
 	}
@@ -259,7 +261,7 @@
 			
 			if ($xpaRow->Evaluate("count(/tr/td[1][@colspan='3']) = 1"))
 			{
-				continue;
+				return FALSE;
 			}
 		}
 		
@@ -327,7 +329,7 @@
 			
 			if ($xpaRow->Evaluate ("count(/tr/td[1][@colspan='3']) = 1"))
 			{
-				continue;
+				return FALSE;
 			}
 		}
 		
@@ -369,6 +371,11 @@
 	// decode user note
 	function DecodeUserNote($arrNotes)
 	{
+		if (!is_array($arrNotes))
+		{
+			return FALSE;
+		}
+		
 		// Loop through each of the Rows
 		$intCurrentRow = 0;
 		foreach ($arrNotes as $arrNote)
@@ -446,6 +453,11 @@
 	// decode system note
 	function DecodeSystemNote($arrNotes)
 	{
+		if (!is_array($arrNotes))
+		{
+			return FALSE;
+		}
+		
 		// Loop through each of the Rows
 		$intCurrentRow = 0;
 		foreach ($arrNotes as $arrNote)

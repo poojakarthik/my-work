@@ -380,6 +380,7 @@ class VixenImport extends ApplicationBaseClass
 	function CreateRatePlanRecurringCharge()
 	{
 		//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		return TRUE;
 	}
 	
 	// Create all RateGroupRate records
@@ -427,20 +428,17 @@ class VixenImport extends ApplicationBaseClass
 				}
 			}
 		}
-	}
-	
-	// create all RatePlanRateGroup records
-	function CreateRatePlanRateGroup()
-	{
+		
+		// add stuff from the config array
 		// for each defined RatePlan
-		if (is_array($this->arrConfig['RatePlan']))
+		if (is_array($this->arrConfig['RateGroup']))
 		{
-			foreach ($this->arrConfig['RatePlan'] AS $intServiceType=>$arrPlans)
+			foreach ($this->arrConfig['RateGroup'] AS $intServiceType=>$arrGroups)
 			{
-				foreach ($arrPlans as $strRatePlan=>$arrRatePlan)
+				foreach ($arrGroups as $strRatePlan=>$arrRatePlan)
 				{
 					// get the RatePlan Id
-					$intRateplan = $this->FindRatePlan($strRatePlan, $intServiceType);
+					$intRatePlan = $this->FindRatePlan($strRatePlan, $intServiceType);
 					if (!(int)$intRatePlan)
 					{
 						//error
@@ -456,16 +454,66 @@ class VixenImport extends ApplicationBaseClass
 						if (!(int)$intRecordType)
 						{
 							//error
-							$this->Error("RecordType $intRecordType not found");
+							$this->Error("RecordType $intRecordType not found : $strRecordType - $intServiceType");
 							continue;
 						}
 						
 						// get the RateGroup Id
-						$intRateGroup = FindRateGroup($strRateGroup, $intRecordType);
+						$intRateGroup = $this->FindRateGroup($strRateGroup, $intRecordType);
 						if (!(int)$intRateGroup)
 						{
 							//error
-							$this->Error("RateGroup $intRateGroup not found");
+							$this->Error("RateGroup $intRateGroup not found : $strRateGroup - $intRecordType");
+							continue;
+						}
+						
+						// link RatePlan to RateGroup
+						$this->AddRatePlanRateGroup($intRatePlan, $intRateGroup);
+					}
+				}
+			}
+		}
+		
+		return TRUE;
+	}
+	
+	// create all RatePlanRateGroup records
+	function CreateRatePlanRateGroup()
+	{
+		// for each defined RatePlan
+		if (is_array($this->arrConfig['RatePlan']))
+		{
+			foreach ($this->arrConfig['RatePlan'] AS $intServiceType=>$arrPlans)
+			{
+				foreach ($arrPlans as $strRatePlan=>$arrRatePlan)
+				{
+					// get the RatePlan Id
+					$intRatePlan = $this->FindRatePlan($strRatePlan, $intServiceType);
+					if (!(int)$intRatePlan)
+					{
+						//error
+						$this->Error("RatePlan $intRatePlan not found");
+						continue;
+					}
+						
+					// for each RecordType within the RatePlan
+					foreach ($arrRatePlan as $strRecordType=>$strRateGroup)
+					{
+						// get RecordType Id
+						$intRecordType = $this->FindRecordType($strRecordType, $intServiceType);
+						if (!(int)$intRecordType)
+						{
+							//error
+							$this->Error("RecordType $intRecordType not found : $strRecordType - $intServiceType");
+							continue;
+						}
+						
+						// get the RateGroup Id
+						$intRateGroup = $this->FindRateGroup($strRateGroup, $intRecordType);
+						if (!(int)$intRateGroup)
+						{
+							//error
+							$this->Error("RateGroup $intRateGroup not found : $strRateGroup - $intRecordType");
 							continue;
 						}
 						
@@ -558,12 +606,17 @@ class VixenImport extends ApplicationBaseClass
 	function ImportCSV($strTable, $strFullPath, $strSeparator=';', $strTerminator='\n', $intSkipRecords=1)
 	{
 		$strQuery	=	"LOAD DATA INFILE '$strFullPath' \n" .
-						"INTO TABLE '$strTable' \n" .
+						"INTO TABLE `$strTable` \n" .
 						"FIELDS TERMINATED BY '$strSeparator' ENCLOSED BY '\"' ESCAPED BY '\\\\' \n" .
-						"LINES TERMINATED BY '$strTerminator' \n";
-						"IGNORE $intSkipRecords LINES" .						
+						"LINES TERMINATED BY '$strTerminator' \n" .
+						"IGNORE $intSkipRecords LINES";			
 		$qryImportCSV = new Query();
-		return $qryImportCSV->Execute($strQuery);
+		$intResult = $qryImportCSV->Execute($strQuery);
+		if (!$intResult)
+		{
+			//echo $qryImportCSV->Error();
+		}
+		return $intResult;
 	}
 	
 	// ------------------------------------//
@@ -630,12 +683,12 @@ class VixenImport extends ApplicationBaseClass
 			$selFindRatePlan->Execute();
 			while($arrRatePlan = $selFindRatePlan->Fetch())
 			{
-				$this->_arrRateGroups[$arrRatePlan['ServiceType']][$arrRatePlan['Name']] = $arrRatePlan['Id'];
+				$this->_arrRatePlans[$arrRatePlan['ServiceType']][$arrRatePlan['Name']] = $arrRatePlan['Id'];
 			}
 		}
 		
 		// return the rate group Id
-		return $this->_arrRateGroups[$intServiceType][$strRatePlanName];
+		return $this->_arrRatePlans[$intServiceType][$strRatePlanName];
 	}
 	
 	// find Employee

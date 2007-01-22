@@ -7,6 +7,31 @@
 	
 <?php
 
+// ---------------------------------------------------------------------------//
+// CRAP THAT NEEDS TO GO AT THE TOP !
+// ---------------------------------------------------------------------------//
+
+	set_time_limit (0);
+	
+	// Record the start time of the script
+	$startTime = microtime (TRUE);
+	
+	// load framework
+	$strFrameworkDir = "../framework/";
+	require_once($strFrameworkDir."framework.php");
+	require_once($strFrameworkDir."functions.php");
+	require_once($strFrameworkDir."definitions.php");
+	require_once($strFrameworkDir."config.php");
+	require_once($strFrameworkDir."database_define.php");
+	require_once($strFrameworkDir."db_access.php");
+	require_once($strFrameworkDir."report.php");
+	require_once($strFrameworkDir."error.php");
+	require_once($strFrameworkDir."exception_vixen.php");
+
+// ---------------------------------------------------------------------------//
+// CONFIG
+// ---------------------------------------------------------------------------//
+
 /*
 "IDD : 39c Cap Intl"
 "IDD : Blue 15c CTM"
@@ -20,144 +45,148 @@
 "IDD : True Blue Fleet"
 "IDD : VoiceTalk"
 */
+	// Define New RateGroups
+	//$arrGroup['RecordType'][]				= 'RateName';
+	//$arrConfig['Import']['RateGroup'][SERVICE_TYPE_MOBILE]['RateGroupName'] = $arrGroup;
+	$arrGroup['S&E'][]				= 'BusinessLine-3499';
+	$arrGroup['S&E'][]				= 'Faxstream-3499';
+	$arrGroup['S&E'][]				= 'ResidentialLine-2820';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_MOBILE]['PlanName-S&E'] = $arrGroup;
 	
 	// Define New RatePlans
-	//TODO!!!!
-	$arrPlans[SERVICE_TYPE_LAND_LINE]['PlanName']['Local'] 				= 'Local-14';
-	$arrPlans[SERVICE_TYPE_LAND_LINE]['PlanName']['ProgramLocal']		= 'ProgramLocal-13';
 	
 	// RateGroups common to all Mobile Plans	
 	$arrPlan = Array();
-	$arrPlan['Roaming']				= 'Roaming';
+	$arrPlan['Roaming']				= 'Roaming-35';
 	$arrPlan['MMS']					= 'MMS-68';
 	$arrPlan['Other']				= 'Other-Cost';
-	$arrPlan['OSNetworkTime']		= 'OSNetworkTime-Cost';
+	$arrPlan['OSNetworkAirtime']	= 'OSNetworkAirtime-Cost';
 	
 	// Plan Zero
-	$arrPlan['GPRS']				= 'PacketData-18-00-01';
+	$arrPlan['GPRS']				= 'GPRS-18-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-30-10-30';
+	$arrPlan['Freecall']			= 'Freecall-30-10-30';
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Zero'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Zero'] = $arrPlan;
 	
 	// $35 Cap
-	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['GPRS']				= 'GPRS-20-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-70-25-30';
+	$arrPlan['Freecall']			= 'Freecall-70-25-30';
 	$arrPlan['Mobile']				= 'Mobile-70-25-30';
 	$arrPlan['National']			= 'National-70-25-30';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['$35 Cap'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['$35 Cap'] = $arrPlan;
 	
 	// Plan Ten
-	$arrPlan['GPRS']				= 'PacketData-18-00-01';
+	$arrPlan['GPRS']				= 'GPRS-18-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-30-10-30';
+	$arrPlan['Freecall']			= 'Freecall-30-10-30';
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Ten'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Ten'] = $arrPlan;
 	
 	// Blue Shared 100
-	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['GPRS']				= 'GPRS-20-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-40-14-01';
+	$arrPlan['Freecall']			= 'Freecall-40-14-30';
 	$arrPlan['Mobile']				= 'Mobile-40-14-01';
 	$arrPlan['National']			= 'National-40-14-01';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 100'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 100'] = $arrPlan;
 	
 	// Blue Shared 250
-	$arrPlan['GPRS']				= 'PacketData-18-00-01';
+	$arrPlan['GPRS']				= 'GPRS-18-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-30-10-30';
+	$arrPlan['Freecall']			= 'Freecall-30-10-30';
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 250'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 250'] = $arrPlan;
 	
 	// Blue Shared 500
-	$arrPlan['GPRS']				= 'PacketData-15-00-01';
+	$arrPlan['GPRS']				= 'GPRS-15-00-01';
 	$arrPlan['SMS']					= 'SMS-20';
-	$arrPlan['FreeCall']			= 'FreeCall-26-09-30';
+	$arrPlan['Freecall']			= 'Freecall-26-09-30';
 	$arrPlan['Mobile']				= 'Mobile-26-09-01';
 	$arrPlan['National']			= 'National-26-09-01';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 500'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 500'] = $arrPlan;
 	
 	// Fleet Special Peter K
-	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['GPRS']				= 'GPRS-20-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-30-15-30';
+	$arrPlan['Freecall']			= 'Freecall-30-15-30';
 	$arrPlan['Mobile']				= 'Mobile-30-15-30';
 	$arrPlan['National']			= 'National-30-15-30';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet Special Peter K'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet Special Peter K'] = $arrPlan;
 	
 	// Fleet 60
-	$arrPlan['GPRS']				= 'PacketData-15-00-01';
+	$arrPlan['GPRS']				= 'GPRS-15-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-30-18-30';
+	$arrPlan['Freecall']			= 'Freecall-30-18-30';
 	$arrPlan['Mobile']				= 'Mobile-30-18-30';
 	$arrPlan['National']			= 'National-30-18-30';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 60'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 60'] = $arrPlan;
 	
 	// Fleet 30
-	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['GPRS']				= 'GPRS-20-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-40-18-30';
+	$arrPlan['Freecall']			= 'Freecall-40-18-30';
 	$arrPlan['Mobile']				= 'Mobile-40-18-30';
 	$arrPlan['National']			= 'National-40-18-30';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 30'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 30'] = $arrPlan;
 	
 	// Fleet 20
-	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['GPRS']				= 'GPRS-20-00-01';
 	$arrPlan['SMS']					= 'SMS-22';
-	$arrPlan['FreeCall']			= 'FreeCall-40-18-30';
+	$arrPlan['Freecall']			= 'Freecall-40-18-30';
 	$arrPlan['Mobile']				= 'Mobile-40-18-30';
 	$arrPlan['National']			= 'National-40-18-30';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 20'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 20'] = $arrPlan;
 	
 	// Pinnacle (Mobile)
-	$arrPlan['GPRS']				= 'PacketData-18-00-01';
+	$arrPlan['GPRS']				= 'GPRS-18-00-01';
 	$arrPlan['SMS']					= 'SMS-18';
-	$arrPlan['FreeCall']			= 'FreeCall-28-00-30';
+	$arrPlan['Freecall']			= 'Freecall-30-10-30';
 	$arrPlan['Mobile']				= 'Mobile-Pinnacle';
 	$arrPlan['National']			= 'National-Pinnacle';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-Pinnacle';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Pinnacle'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Pinnacle'] = $arrPlan;
 	
 	// RateGroups common to all Land Line Plans	
 	$arrPlan = Array();
 	$arrPlan['OneThree']			= 'OneThree-Cost';
-	$arrPlan['Other']				= 'Other-LL-Cost';
+	$arrPlan['Other']				= 'Other-Cost';
 	$arrPlan['SexHotline']			= '1900-28';
 	
 	// Blue 39c Cap
@@ -167,7 +196,7 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-3499';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Blue 39c Cap'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Blue 39c Cap'] = $arrPlan;
 	
 	// Blue 15 CTM
 	$arrPlan['Mobile']				= 'Mobile-15-15-01';
@@ -176,7 +205,7 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-12';
 	$arrPlan['S&E']					= 'S&E-3635';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Blue 15 CTM'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Blue 15 CTM'] = $arrPlan;
 	
 	// Virtual VOIP
 	$arrPlan['Mobile']				= 'Mobile-30-00-01';
@@ -185,7 +214,7 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-10';
 	$arrPlan['S&E']					= 'S&E-3635';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Virtual VOIP'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Virtual VOIP'] = $arrPlan;
 	
 	// Bus Saver Capped
 	$arrPlan['Mobile']				= 'Mobile-27-10-01-150';
@@ -194,7 +223,7 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
 	$arrPlan['S&E']					= 'S&E-3499';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Bus Saver Capped'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Bus Saver Capped'] = $arrPlan;
 	
 	// Tier Three Corporate Capped
 	$arrPlan['Mobile']				= 'Mobile-27-00-01-130';
@@ -203,7 +232,7 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-3499';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Corporate Capped'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Corporate Capped'] = $arrPlan;
 	
 	// True Blue Fleet
 	$arrPlan['Mobile']				= 'Mobile-25-06-01';
@@ -212,7 +241,7 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-11';
 	$arrPlan['S&E']					= 'S&E-3499';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['True Blue Fleet'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['True Blue Fleet'] = $arrPlan;
 	
 	// National 16
 	$arrPlan['Mobile']				= 'Mobile-30-00-01';
@@ -221,7 +250,7 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-16';
 	$arrPlan['S&E']					= 'S&E-3595';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['National 16'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['National 16'] = $arrPlan;
 	
 	// Voicetalk Capped
 	$arrPlan['Mobile']				= 'Mobile-27-10-01-99';
@@ -230,34 +259,34 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
 	$arrPlan['S&E']					= 'S&E-3499';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Voicetalk Capped'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Voicetalk Capped'] = $arrPlan;
 	
 	// Residential
 	$arrPlan['Mobile']				= 'Mobile-30-20-165';
-	$arrPlan['Local']				= 'Local-1635';
+	$arrPlan['Local']				= 'Local-1636';
 	$arrPlan['National']			= 'National-20-20-165';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-1636';
 	$arrPlan['S&E']					= 'S&E-3499';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Residential'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Residential'] = $arrPlan;
 	
 	// Tier Three Local Saver
-	$arrPlan['Mobile']				= 'Mobile-LL-26-09-01';
+	$arrPlan['Mobile']				= 'Mobile-26-09-01';
 	$arrPlan['Local']				= 'Local-14';
 	$arrPlan['National']			= 'National-08-06';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-11';
 	$arrPlan['S&E']					= 'S&E-3499';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Local Saver'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Local Saver'] = $arrPlan;
 	
 	// Pinnacle-LL
-	$arrPlan['Mobile']				= 'Mobile-LL-Pinnacle';
+	$arrPlan['Mobile']				= 'Mobile-Pinnacle';
 	$arrPlan['Local']				= 'Local-13';
-	$arrPlan['National']			= 'National-LL-Pinnacle';
+	$arrPlan['National']			= 'National-Pinnacle';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-3300';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Pinnacle-LL'] = $arrPlan;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Pinnacle-LL'] = $arrPlan;
 	
 	// Peter K Group Special
 	$arrPlan['Mobile']				= 'Mobile-PeterK';
@@ -266,9 +295,7 @@
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-3499';
 	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Peter K Group Special'] = $arrPlan;
-
-	$arrConfig['Decode']['RatePlan'] = $arrPlans;
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Peter K Group Special'] = $arrPlan;
 	
 	// Record Types
 	$arrConfig['Decode']['RecordType'] = Array
@@ -407,11 +434,11 @@
 	$arrRates['mobilenational']			['Blue Shared 500']								['National']			= 'National-26-09-01';
 	$arrRates['mobilenational']			['Fleet Mobile Peter K special']				['National']			= 'National-30-15-30';
 	
-	$arrRates['mobile1800']				['Mobile Zero Plan']							['FreeCall']			= 'Freecall-30-10-30';
-	$arrRates['mobile1800']				['Fleet Mobile 60']								['FreeCall']			= 'Freecall-30-18-30';
-	$arrRates['mobile1800']				['Pinnacle']									['FreeCall']			= 'Freecall-28-00-30';
-	$arrRates['mobile1800']				['Fleet Mobile 30']								['FreeCall']			= 'Freecall-40-18-30';
-	$arrRates['mobile1800']				['Blue Shared 500']								['FreeCall']			= 'Freecall-26-09-30';
+	$arrRates['mobile1800']				['Mobile Zero Plan']							['Freecall']			= 'Freecall-30-10-30';
+	$arrRates['mobile1800']				['Fleet Mobile 60']								['Freecall']			= 'Freecall-30-18-30';
+	$arrRates['mobile1800']				['Pinnacle']									['Freecall']			= 'Freecall-28-00-30';
+	$arrRates['mobile1800']				['Fleet Mobile 30']								['Freecall']			= 'Freecall-40-18-30';
+	$arrRates['mobile1800']				['Blue Shared 500']								['Freecall']			= 'Freecall-26-09-30';
 	
 	$arrRates['mobilevoicemail']		['Voicemail Retrievals']						['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrRates['mobilevoicemail']		['Pinnacle']									['VoiceMailRetrieval']	= 'VoiceMailRetrieval-Pinnacle';
@@ -425,9 +452,9 @@
 	
 	$arrRates['mobilemms']				['MMS 75c inc (68.2 ex)']						['MMS']					= 'MMS-68';
 	
-	$arrRates['mobiledata']				['GPRS 2c ex (BS100,Fleet 30, Zero)']			['GPRS']				= 'PacketData-20-00-01';
-	$arrRates['mobiledata']				['GPRS 1.5c ex (BS500, Fleet 60)']				['GPRS']				= 'PacketData-15-00-01';
-	$arrRates['mobiledata']				['GPRS 1.8c ex (BS250)']						['GPRS']				= 'PacketData-18-00-01';
+	$arrRates['mobiledata']				['GPRS 2c ex (BS100,Fleet 30, Zero)']			['GPRS']				= 'GPRS-20-00-01';
+	$arrRates['mobiledata']				['GPRS 1.5c ex (BS500, Fleet 60)']				['GPRS']				= 'GPRS-15-00-01';
+	$arrRates['mobiledata']				['GPRS 1.8c ex (BS250)']						['GPRS']				= 'GPRS-18-00-01';
 	
 	$arrRates['mobileinternational']	['Mobile Zero Plan']							['IDD']					= intRateId; //TODO!rich! add rateplan name
 
@@ -437,23 +464,6 @@
 // ---------------------------------------------------------------------------//
 // SCRIPT
 // ---------------------------------------------------------------------------//
-
-	set_time_limit (0);
-	
-	// Record the start time of the script
-	$startTime = microtime (TRUE);
-	
-	// load framework
-	$strFrameworkDir = "../framework/";
-	require_once($strFrameworkDir."framework.php");
-	require_once($strFrameworkDir."functions.php");
-	require_once($strFrameworkDir."definitions.php");
-	require_once($strFrameworkDir."config.php");
-	require_once($strFrameworkDir."database_define.php");
-	require_once($strFrameworkDir."db_access.php");
-	require_once($strFrameworkDir."report.php");
-	require_once($strFrameworkDir."error.php");
-	require_once($strFrameworkDir."exception_vixen.php");
 	
 	// setup a db query object
 	$sqlQuery = new Query();
@@ -467,7 +477,7 @@
 	$objImport = new VixenImport($arrConfig['Import']);
 	
 	// Truncate Tables
-	/*
+	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
 	$objImport->Truncate('AccountGroup');
 	//$objImport->Truncate('****C*D*R****');
@@ -505,42 +515,73 @@
 	$objImport->Truncate('ServiceRecurringCharge');
 	$objImport->Truncate('ServiceTotal');
 	$objImport->Truncate('ServiceTypeTotal');
-	*/
+	
+	// clean import array
+	$arrImport = Array();
 	
 	// Import Rates
-	//$objImport->ImportCSV('Rate', '/home/vixen/vixen_seed/Rate/Rate.csv');
+	$arrImport['/home/vixen/vixen_seed/Rate/Rate.csv'] = 'Rate';
 	$arrIDDRates = glob('/home/vixen/vixen_seed/Rate/IDD/*.csv');
 	if (is_array($arrIDDRates))
 	{
 		foreach($arrIDDRates AS $strFilePath)
 		{
-			//$objImport->ImportCSV('Rate', $strFilePath);
+			$arrImport[$strFilePath] = 'Rate';
 		}
 	}
 	
 	// Import RateGroup
-	//$objImport->ImportCSV('RateGroup', '/home/vixen/vixen_seed/RateGroup/RateGroup.csv');
+	$arrImport['/home/vixen/vixen_seed/RateGroup/RateGroup.csv'] = 'RateGroup';
 	
 	// Import RatePlan
-	//$objImport->ImportCSV('RatePlan', '/home/vixen/vixen_seed/RatePlan/RatePlan.csv');
+	$arrImport['/home/vixen/vixen_seed/RatePlan/RatePlan.csv'] = 'RatePlan';
 	
 	// Import Employee
-	//$objImport->ImportCSV('Employee', '/home/vixen/vixen_seed/RatePlan/Employee.csv');
+	$arrImport['/home/vixen/vixen_seed/Employee/Employee.csv'] = 'Employee';
 	
 	// Import Charge Types
-	//$objImport->ImportCSV('RecurringChargeType', '/home/vixen/vixen_seed/RecurringChargeType/RecurringChargeType.csv');
-	//$objImport->ImportCSV('ChargeType', '/home/vixen/vixen_seed/ChargeType/ChargeType.csv');
+	$arrImport['/home/vixen/vixen_seed/RecurringChargeType/RecurringChargeType.csv'] = 'RecurringChargeType';
+	$arrImport['/home/vixen/vixen_seed/ChargeType/ChargeType.csv'] = 'ChargeType';
+	
+	// Do Imports
+	foreach ($arrImport AS $strFilePath=>$strTable)
+	{
+		$strFileName = basename($strFilePath, '.csv');
+		echo "Importing $strTable : $strFileName\n";
+		if (!$objImport->ImportCSV($strTable, $strFilePath))
+		{
+			echo "FATAL ERROR : Import $strFileName FAILED\n";
+			Die();
+		}
+	}
 	
 	// Match RateGroups to Rates
-	//$objImport->CreateRateGroupRate();
+	echo "matching RateGroups to Rates\n";
+	if (!$objImport->CreateRateGroupRate())
+	{
+		echo "FATAL ERROR : Could not match RateGroups to Rates\n";
+		Die();
+	}
 	
 	// Match RatePlans to RateGroups
-	//$objImport->CreateRatePlanRateGroup();
+	echo "matching RatePlans to RateGroups\n";
+	if (!$objImport->CreateRatePlanRateGroup())
+	{
+		echo "FATAL ERROR : Could not match RatePlans to RateGroups\n";
+		Die();
+	}
+	echo $objImport->ErrorLog();
 	
 	// Match RatePlans to Recurring Charges
-	//$objImport->CreateRatePlanRecurringCharge();
+	echo "matching RatePlans to RecurringCharges\n";
+	if (!$objImport->CreateRatePlanRecurringCharge())
+	{
+		echo "FATAL ERROR : Could not match RatePlans to RecurringCharges\n";
+		Die();
+	}
 	
 	// Add Customers
+	/*
 	while ($arrRow = $objDecoder->FetchCustomer())
 	{	
 		// get the etech customer details
@@ -548,13 +589,16 @@
 		$arrScrape['CustomerId'] = $arrRow['CustomerId'];
 
 		// decode the customer
-		echo "Decoding Customer   : {$arrScrape['CustomerId']}\n";
+		echo "Decoding Customer   : {$arrRow['CustomerId']}\n";
 		$arrCustomer = $objDecoder->DecodeCustomer($arrScrape);
 		
 		// add the customer
-		echo "Importing Customer  : {$arrScrape['CustomerId']}\n";
-		$objImport->AddCustomerWithId($arrCustomer);
+		echo "Importing Customer  : {$arrRow['CustomerId']}\n";
+		//$objImport->AddCustomerWithId($arrCustomer);
 	}
+	*/
+	
+	Die();
 	
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
@@ -562,13 +606,20 @@
 		// get the etech note details
 		$arrScrape = $arrRow['DataArray'];
 
-		// decode the note
-		echo "Decoding Note for   : {$arrScrape['CustomerId']}\n";
-		$arrNote = $objDecoder->DecodeNote($arrScrape);
-		
-		// add the note
-		echo "Importing Note for  : {$arrScrape['CustomerId']}\n";
-		$objImport->AddNotes($arrNote);
+		if ($arrScrape)
+		{
+			// decode the note
+			echo "Decoding Note for   : {$arrRow['CustomerId']}\n";
+			$arrNote = $objDecoder->DecodeSystemNote($arrScrape);
+			
+			// add the note
+			echo "Importing Note for  : {$arrRow['CustomerId']}\n";
+			//$objImport->AddNotes($arrNote);
+		}
+		else
+		{
+			//echo "No Notes found for  : {$arrRow['CustomerId']}\n";
+		}
 	}
 	
 	// Add User Notes
@@ -577,16 +628,24 @@
 		// get the etech note details
 		$arrScrape = $arrRow['DataArray'];
 
-		// decode the note
-		echo "Decoding Notes for   : {$arrScrape['CustomerId']}\n";
-		$arrNote = $objDecoder->DecodeNote($arrScrape);
-		
-		// add the note
-		echo "Importing Notes for  : {$arrScrape['CustomerId']}\n";
-		$objImport->AddNotes($arrNote);
+		if ($arrScrape)
+		{
+			// decode the note
+			echo "Decoding Notes for   : {$arrRow['CustomerId']}\n";
+			$arrNote = $objDecoder->DecodeUserNote($arrScrape);
+			
+			// add the note
+			echo "Importing Notes for  : {$arrRow['CustomerId']}\n";
+			//$objImport->AddNotes($arrNote);
+		}
+		else
+		{
+			//echo "No Notes found for  : {$arrRow['CustomerId']}\n";
+		}
 	}
 	
 	//finish
+	echo "Done\n";
 	Die ();
 
 // ---------------------------------------------------------------------------//
