@@ -535,7 +535,7 @@
 		
 		// add the note
 		echo "Importing Note for  : {$arrScrape['CustomerId']}\n";
-		$objImport->AddNote($arrNote);
+		$objImport->AddNotes($arrNote);
 	}
 	
 	// Add User Notes
@@ -550,7 +550,7 @@
 		
 		// add the note
 		echo "Importing Notes for  : {$arrScrape['CustomerId']}\n";
-		$objImport->AddNote($arrNote);
+		$objImport->AddNotes($arrNote);
 	}
 	
 	//finish

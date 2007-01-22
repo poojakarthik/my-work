@@ -120,8 +120,11 @@
 		$strQuery 	= "SELECT DataSerialised, AxisM FROM ScrapeRates";
 		$strName	= 'IDDGroupRate';
 		$arrRow = $this->FetchResult($strName, $strQuery);
-		$arrRow['DataArray'] = unserialize($arrRow['DataSerialised']);
-		unset($arrRow['DataSerialised']);
+		if ($arrRow)
+		{
+			$arrRow['DataArray'] = unserialize($arrRow['DataSerialised']);
+			unset($arrRow['DataSerialised']);
+		}
 		return $arrRow;
 	}
 	
@@ -130,8 +133,11 @@
 		$strQuery 	= "SELECT CustomerId, DataSerialized AS DataSerialised FROM ScrapeAccount ";
 		$strName	= 'Account';
 		$arrRow = $this->FetchResult($strName, $strQuery);
-		$arrRow['DataArray'] = unserialize($arrRow['DataSerialised']);
-		unset($arrRow['DataSerialised']);
+		if ($arrRow)
+		{
+			$arrRow['DataArray'] = unserialize($arrRow['DataSerialised']);
+			unset($arrRow['DataSerialised']);
+		}
 		return $arrRow;
 	}
 	
@@ -757,7 +763,7 @@
 	function DecodeIDDGroupRate($arrScrapeRate)
 	{
 		// return on error
-		if (!is_array($arrScrapeRate))
+		if (!is_array($arrScrapeRate['Rates']))
 		{
 			return FALSE;
 		}

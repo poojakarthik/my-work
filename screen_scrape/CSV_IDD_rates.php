@@ -16,7 +16,7 @@ require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 
 // instanciate the etech decoder
-require_once(decode_etech.php);
+require_once('decode_etech.php');
 $objDecoder = new VixenDecode($arrConfig);
 
 // define the output directory
@@ -39,12 +39,13 @@ while ($arrRow = $objDecoder->FetchIDDGroupRate())
 		// get the plan name
 		$arrTitle 			= explode(': ',$arrScrapeRate['Title']);
 		$strPlanName		= trim($arrTitle[1]);
+		$strPlanName		= str_replace(' ', '_', $strPlanName);
 		
 		// set the file name
-		$strFilename = "$strDirName/$strPlanName.csv";
+		$strFileName = "$strDirName/$strPlanName.csv";
 		
 		// open the file
-		$resFile = fopen($strFileName, 'r');
+		$resFile = fopen($strFileName, 'w');
 		
 		if ($resFile)
 		{
@@ -52,7 +53,7 @@ while ($arrRow = $objDecoder->FetchIDDGroupRate())
 			$strHeader = CSVHeader('Rate');
 			if ($strHeader)
 			{
-				fwrite($strHeader);
+				fwrite($resFile, $strHeader);
 			}
 			else
 			{
@@ -65,7 +66,7 @@ while ($arrRow = $objDecoder->FetchIDDGroupRate())
 				$strLine = CSVRow('Rate', $arrRate);
 				if ($strLine)
 				{
-					fwrite($strLine);
+					fwrite($resFile, $strLine);
 				}
 				else
 				{
@@ -79,6 +80,7 @@ while ($arrRow = $objDecoder->FetchIDDGroupRate())
 		else
 		{
 			echo "could not open file $strFileName\n";
+			Die;
 		}
 	}
 	else
