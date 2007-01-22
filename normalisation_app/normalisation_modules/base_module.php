@@ -683,7 +683,6 @@ abstract class NormalisationModule
 	 * @param	array	$arrCDR		Associative Array result for a CDR from the database
 	 *
 	 * @return	mixed				Associative Array of normalised data
-	 * 								FALSE: ApplyOwnership() failed					
 	 *
 	 * @method
 	 */
@@ -691,8 +690,8 @@ abstract class NormalisationModule
 	 {
 		$this->_arrNormalisedData['FNN']			= $arrCDR['FNN'];
 		$this->_arrNormalisedData['StartDatetime']	= $arrCDR['StartDatetime'];
-		
-		return $this->ApplyOwnership() ? $this->_arrNormalisedData : FALSE;
+		$this->ApplyOwnership();
+		return  $this->_arrNormalisedData;
 	 }
 	
 	

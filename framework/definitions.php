@@ -120,6 +120,7 @@ define("CDR_BAD_RECORD_TYPE"			, 108);
 define("CDR_BAD_DESTINATION"			, 109);
 define("CDR_CANT_NORMALISE_NO_MODULE"	, 110);
 define("CDR_CANT_NORMALISE_INVALID"		, 111);
+define("CDR_FIND_OWNER"					, 112);
 define("CDR_IGNORE"						, 140);
 define("CDR_RATED"						, 150);
 define("CDR_RATE_NOT_FOUND"				, 151);

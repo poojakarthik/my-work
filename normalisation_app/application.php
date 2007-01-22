@@ -556,11 +556,11 @@ die();
  		// Select all CDRs ready to be Normalised
 		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
 		$mixColumns	= Array("" => "CDR.*", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
-		$strWhere	= "CDR.Status = <status>";
-		$strOrder	= "";
+		$strWhere	= "CDR.Status = ".CDR_READY." OR CDR.Status = ".CDR_BAD_OWNER." OR CDR.Status = ".CDR_FIND_OWNER;
+		$strOrder	= "CDR.Status";
 		$strLimit	= "1000";
  		$selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
-		if ($selSelectCDRs->Execute(Array("status" => CDR_READY)) === FALSE)
+		if ($selSelectCDRs->Execute() === FALSE)
 		{
 
 		}
@@ -600,11 +600,20 @@ die();
  			// Is there a normalisation module for this type?
 			if ($this->_arrNormalisationModule[$arrCDR["FileType"]])
 			{
-				// set status to normalised
-				$arrCDR['Status'] = CDR_NORMALISED;
-				
 				// normalise
-				$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
+				switch ($arrCDR['Status'])
+				{
+					case CDR_READY:
+					case CDR_BAD_OWNER:
+						$arrCDR['Status'] = CDR_NORMALISED;
+						$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
+						break;
+					case CDR_FIND_OWNER:
+						$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->FindOwner($arrCDR);
+						break;
+					default:
+						// Unhandled Status (will never occur)
+				}
 			}
 			else
 			{
