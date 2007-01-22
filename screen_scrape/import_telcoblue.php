@@ -14,6 +14,225 @@
 	//TODO!!!!
 	$arrPlans[SERVICE_TYPE_LAND_LINE]['PlanName']['Local'] 				= 'Local-14';
 	$arrPlans[SERVICE_TYPE_LAND_LINE]['PlanName']['ProgramLocal']		= 'ProgramLocal-13';
+	
+	// RateGroups common to all Mobile Plans	
+	$arrPlan = Array();
+	$arrPlan['Roaming']				= 'Roaming';
+	$arrPlan['MMS']					= 'MMS-68';
+	$arrPlan['Other']				= 'Other-Cost';
+	$arrPlan['OSNetworkTime']		= 'OSNetworkTime-Cost';
+	
+	// Plan Zero
+	$arrPlan['GPRS']				= 'PacketData-18-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-30-10-30';
+	$arrPlan['Mobile']				= 'Mobile-30-10-01';
+	$arrPlan['National']			= 'National-30-10-01';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Zero'] = $arrPlan;
+	
+	// $35 Cap
+	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-70-25-30';
+	$arrPlan['Mobile']				= 'Mobile-70-25-30';
+	$arrPlan['National']			= 'National-70-25-30';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['$35 Cap'] = $arrPlan;
+	
+	// Plan Ten
+	$arrPlan['GPRS']				= 'PacketData-18-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-30-10-30';
+	$arrPlan['Mobile']				= 'Mobile-30-10-01';
+	$arrPlan['National']			= 'National-30-10-01';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Ten'] = $arrPlan;
+	
+	// Blue Shared 100
+	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-40-14-01';
+	$arrPlan['Mobile']				= 'Mobile-40-14-01';
+	$arrPlan['National']			= 'National-40-14-01';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 100'] = $arrPlan;
+	
+	// Blue Shared 250
+	$arrPlan['GPRS']				= 'PacketData-18-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-30-10-30';
+	$arrPlan['Mobile']				= 'Mobile-30-10-01';
+	$arrPlan['National']			= 'National-30-10-01';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 250'] = $arrPlan;
+	
+	// Blue Shared 500
+	$arrPlan['GPRS']				= 'PacketData-15-00-01';
+	$arrPlan['SMS']					= 'SMS-20';
+	$arrPlan['FreeCall']			= 'FreeCall-26-09-30';
+	$arrPlan['Mobile']				= 'Mobile-26-09-01';
+	$arrPlan['National']			= 'National-26-09-01';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 500'] = $arrPlan;
+	
+	// Fleet Special Peter K
+	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-30-15-30';
+	$arrPlan['Mobile']				= 'Mobile-30-15-30';
+	$arrPlan['National']			= 'National-30-15-30';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet Special Peter K'] = $arrPlan;
+	
+	// Fleet 60
+	$arrPlan['GPRS']				= 'PacketData-15-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-30-18-30';
+	$arrPlan['Mobile']				= 'Mobile-30-18-30';
+	$arrPlan['National']			= 'National-30-18-30';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 60'] = $arrPlan;
+	
+	// Fleet 30
+	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-40-18-30';
+	$arrPlan['Mobile']				= 'Mobile-40-18-30';
+	$arrPlan['National']			= 'National-40-18-30';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 30'] = $arrPlan;
+	
+	// Fleet 20
+	$arrPlan['GPRS']				= 'PacketData-20-00-01';
+	$arrPlan['SMS']					= 'SMS-22';
+	$arrPlan['FreeCall']			= 'FreeCall-40-18-30';
+	$arrPlan['Mobile']				= 'Mobile-40-18-30';
+	$arrPlan['National']			= 'National-40-18-30';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 20'] = $arrPlan;
+	
+	// Pinnacle (Mobile)
+	$arrPlan['GPRS']				= 'PacketData-18-00-01';
+	$arrPlan['SMS']					= 'SMS-18';
+	$arrPlan['FreeCall']			= 'FreeCall-28-00-30';
+	$arrPlan['Mobile']				= 'Mobile-Pinnacle';
+	$arrPlan['National']			= 'National-Pinnacle';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-Pinnacle';
+	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Pinnacle'] = $arrPlan;
+	
+	// RateGroups common to all Land Line Plans	
+	$arrPlan = Array();
+	$arrPlan['OneThree']			= 'OneThree-Cost';
+	$arrPlan['Other']				= 'Other-LL-Cost';
+	$arrPlan['SexHotline']			= '1900-28';
+	
+	// Blue 39c Cap
+	$arrPlan['Mobile']				= 'Mobile-27-00-01-89';
+	$arrPlan['Local']				= 'Local-13';
+	$arrPlan['National']			= 'National-08-06-01-39';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
+	$arrPlan['S&E']					= 'S&E-3499';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Blue 39c Cap'] = $arrPlan;
+	
+	// Blue 15 CTM
+	$arrPlan['Mobile']				= 'Mobile-15-15-01';
+	$arrPlan['Local']				= 'Local-12';
+	$arrPlan['National']			= 'National-06-06-01';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-12';
+	$arrPlan['S&E']					= 'S&E-3635';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Blue 15 CTM'] = $arrPlan;
+	
+	// Virtual VOIP
+	$arrPlan['Mobile']				= 'Mobile-30-00-01';
+	$arrPlan['Local']				= 'Local-10';
+	$arrPlan['National']			= 'National-VOIP';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-10';
+	$arrPlan['S&E']					= 'S&E-3635';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Virtual VOIP'] = $arrPlan;
+	
+	// Bus Saver Capped
+	$arrPlan['Mobile']				= 'Mobile-27-10-01-150';
+	$arrPlan['Local']				= 'Local-16';
+	$arrPlan['National']			= 'National-09-07-01-90';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
+	$arrPlan['S&E']					= 'S&E-3499';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Bus Saver Capped'] = $arrPlan;
+	
+	// Tier Three Corporate Capped
+	$arrPlan['Mobile']				= 'Mobile-27-00-01-130';
+	$arrPlan['Local']				= 'Local-14';
+	$arrPlan['National']			= 'National-08-06-01-70';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
+	$arrPlan['S&E']					= 'S&E-3499';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Corporate Capped'] = $arrPlan;
+	
+	// True Blue Fleet
+	$arrPlan['Mobile']				= 'Mobile-25-06-01';
+	$arrPlan['Local']				= 'Local-14';
+	$arrPlan['National']			= 'National-09-06-01';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-11';
+	$arrPlan['S&E']					= 'S&E-3499';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['True Blue Fleet'] = $arrPlan;
+	
+	// National 16
+	$arrPlan['Mobile']				= 'Mobile-30-00-01';
+	$arrPlan['Local']				= 'Local-17';
+	$arrPlan['National']			= 'National-Nat16';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-16';
+	$arrPlan['S&E']					= 'S&E-3595';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['National 16'] = $arrPlan;
+	
+	// Voicetalk Capped
+	$arrPlan['Mobile']				= 'Mobile-27-10-01-99';
+	$arrPlan['Local']				= 'Local-16';
+	$arrPlan['National']			= 'National-12-10-99';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
+	$arrPlan['S&E']					= 'S&E-3499';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Voicetalk Capped'] = $arrPlan;
+	
+	// Residential
+	$arrPlan['Mobile']				= 'Mobile-30-20-165';
+	$arrPlan['Local']				= 'Local-1635';
+	$arrPlan['National']			= 'National-20-20-165';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-1636';
+	$arrPlan['S&E']					= 'S&E-3499';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Residential'] = $arrPlan;
+	
+	// Tier Three Local Saver
+	$arrPlan['Mobile']				= 'Mobile-LL-26-09-01';
+	$arrPlan['Local']				= 'Local-14';
+	$arrPlan['National']			= 'National-08-06';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-11';
+	$arrPlan['S&E']					= 'S&E-3499';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Local Saver'] = $arrPlan;
+	
+	// Pinnacle-LL
+	$arrPlan['Mobile']				= 'Mobile-LL-Pinnacle';
+	$arrPlan['Local']				= 'Local-13';
+	$arrPlan['National']			= 'National-LL-Pinnacle';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
+	$arrPlan['S&E']					= 'S&E-3300';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Pinnacle-LL'] = $arrPlan;
+	
+	// Peter K Group Special
+	$arrPlan['Mobile']				= 'Mobile-PeterK';
+	$arrPlan['Local']				= 'Local-13';
+	$arrPlan['National']			= 'National-PeterK';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
+	$arrPlan['S&E']					= 'S&E-3499';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Peter K Group Special'] = $arrPlan;
 
 	$arrConfig['Decode']['RatePlan'] = $arrPlans;
 	
