@@ -81,7 +81,7 @@
 			
 			if ($selTip->Count () <> 1)
 			{
-				throw new Exception ('No tips were found');
+				throw new Exception ('No Tip Found');
 			}
 			
 			$arrTip = $selTip->Fetch ();

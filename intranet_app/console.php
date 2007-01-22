@@ -20,7 +20,13 @@
 	
 	if ($_GET ['PabloSays'])
 	{
-		$tipTip = $Style->attachObject (Tips::FindRandom ($athAuthentication->AuthenticatedEmployee ()->Pull ('PabloSays')->getValue ()));
+		try
+		{
+			$tipTip = $Style->attachObject (Tips::FindRandom ($athAuthentication->AuthenticatedEmployee ()->Pull ('PabloSays')->getValue ()));
+		}
+		catch (Exception $e)
+		{
+		}
 	}
 	
 	// If the Employee is Authenticated, show the Console
