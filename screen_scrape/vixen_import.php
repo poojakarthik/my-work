@@ -338,6 +338,12 @@ class VixenImport extends ApplicationBaseClass
 	// Create Links
 	// ------------------------------------//
 	
+	// create all RatePlanRecurringCharge records
+	function CreateRatePlanRecurringCharge()
+	{
+		//TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	}
+	
 	// Create all RateGroupRate records
 	function CreateRateGroupRate()
 	{

@@ -433,6 +433,46 @@
 	require_once('vixen_import.php');
 	$objImport = new VixenImport($arrConfig['Import']);
 	
+	// Truncate Tables
+	//$objImport->Truncate('Account');
+	//$objImport->Truncate('AccountGroup');
+	//$objImport->Truncate('****C*D*R****');
+	//$objImport->Truncate('Charge');
+	//$objImport->Truncate('ChargeType');
+	//$objImport->Truncate('Contact');
+	//$objImport->Truncate('CreditCard');
+	//$objImport->Truncate('DirectDebit');
+	//$objImport->Truncate('Employee');
+	//$objImport->Truncate('EmployeeAccountAudit');
+	//$objImport->Truncate('ErrorLog');
+	//$objImport->Truncate('FileDownLoad');
+	//$objImport->Truncate('FileImport');
+	//$objImport->Truncate('Invoice');
+	//$objImport->Truncate('InvoiceOutput');
+	//$objImport->Truncate('InvoicePayment');
+	//$objImport->Truncate('InvoiceTemp');
+	//$objImport->Truncate('Note');
+	//$objImport->Truncate('Payment');
+	//$objImport->Truncate('ProvisioningExport');
+	//$objImport->Truncate('ProvisioningLog');
+	//$objImport->Truncate('Rate');
+	//$objImport->Truncate('RateGroup');
+	//$objImport->Truncate('RateGroupRate');
+	//$objImport->Truncate('RatePlan');
+	//$objImport->Truncate('RatePlanRateGroup');
+	//$objImport->Truncate('RatePlanRecurringCharge');
+	//$objImport->Truncate('RecurringCharge');
+	//$objImport->Truncate('RecurringChargeType');
+	//$objImport->Truncate('Request');
+	//$objImport->Truncate('Service');
+	//$objImport->Truncate('ServiceAddress');
+	//$objImport->Truncate('ServiceRateGroup');
+	//$objImport->Truncate('ServiceRatePlan');
+	//$objImport->Truncate('ServiceRecurringCharge');
+	//$objImport->Truncate('ServiceTotal');
+	//$objImport->Truncate('ServiceTypeTotal');
+	
+	
 	// Import Rates
 	//$objImport->ImportCSV('Rate', '/home/vixen/vixen_seed/Rate/Normal/Rate.csv');
 	$arrIDDRates = glob('/home/vixen/vixen_seed/Rate/IDD/*.csv');
@@ -444,17 +484,27 @@
 		}
 	}
 	
-	// Import RateGroups
+	// Import RateGroup
 	//$objImport->ImportCSV('RateGroup', '/home/vixen/vixen_seed/RateGroup/RateGroup.csv');
 	
-	// Import RatePlans
-	//$objImport->ImportCSV('RateGroup', '/home/vixen/vixen_seed/RatePlan/RatePlan.csv');
+	// Import RatePlan
+	//$objImport->ImportCSV('RatePlan', '/home/vixen/vixen_seed/RatePlan/RatePlan.csv');
+	
+	// Import Employee
+	//$objImport->ImportCSV('Employee', '/home/vixen/vixen_seed/RatePlan/Employee.csv');
+	
+	// Import Charge Types
+	//$objImport->ImportCSV('RecurringChargeType', '/home/vixen/vixen_seed/RecurringChargeType/RecurringChargeType.csv');
+	//$objImport->ImportCSV('ChargeType', '/home/vixen/vixen_seed/ChargeType/ChargeType.csv');
 	
 	// Match RateGroups to Rates
 	//$objImport->CreateRateGroupRate();
 	
 	// Match RatePlans to RateGroups
 	//$objImport->CreateRatePlanRateGroup();
+	
+	// Match RatePlans to Recurring Charges
+	//$objImport->CreateRatePlanRecurringCharge();
 	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
@@ -470,6 +520,12 @@
 		// add the customer
 		echo "Importing Customer : {$arrScrape['CustomerId']}\n";
 		$objImport->AddCustomerWithId($arrCustomer);
+	}
+	
+	// Add Notes
+	while ($arrRow = $objDecoder->FetchSystemNote())
+	{	
+	
 	}
 	
 	//finish

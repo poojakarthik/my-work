@@ -116,6 +116,30 @@
 		return $this->FetchResult($strName, $strQuery);
 	}
 	
+	function FetchSystemNote()
+	{
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeNoteSys ";
+		$strName	= 'NoteSys';
+		$arrNote = $this->FetchResult($strName, $strQuery);
+		if ($arrNote)
+		{
+			return $this->ParseSystemNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
+		}
+		return $strNote;
+	}
+	
+	function FetchUserNote()
+	{
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeNoteUser ";
+		$strName	= 'NoteUser';
+		$arrNote = $this->FetchResult($strName, $strQuery);
+		if ($arrNote)
+		{
+			return $this->ParseUserNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
+		}
+		return $strNote;
+	}
+	
 	// generic fetch
 	function FetchResult($strName, $strQuery)
 	{
@@ -165,8 +189,36 @@
 	}
 	
 	// ------------------------------------//
+	// PARSE
+	// ------------------------------------//
+	
+	// decode user note
+	function ParseUserNote($strNoteHtml, $intCustomerId)
+	{
+		return $arrNote;
+	}
+	
+	// decode system note
+	function ParseSystemNote($strNoteHtml, $intCustomerId)
+	{
+		return $arrNote;
+	}
+	
+	// ------------------------------------//
 	// DECODE RECORDS
 	// ------------------------------------//
+	
+	// decode user note
+	function DecodeUserNote($arrNote)
+	{
+	
+	}
+	
+	// decode system note
+	function DecodeSystemNote($arrNote)
+	{
+	
+	}
 	
 	// decode a customer
 	function DecodeCustomer($arrCustomer)
