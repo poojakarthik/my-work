@@ -495,7 +495,7 @@
 	 	else
 	 	{
 	 		$arrParams['fnn'] 	= substr((string)$strFNN, 0, -2) . "__";
-	 		$arrParams['date'] 	= ; //TODO!rich! todays date
+	 		$arrParams['date'] 	= date("Y-m-d", time()); //TODO!rich! todays date
 	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
 	 		
 	 		if ($intResult === FALSE)
