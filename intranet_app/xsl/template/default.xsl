@@ -126,242 +126,248 @@
 					</div>
 					<div class="Clear"></div>
 				</div>
+				<div class="Clear"></div>
+				<div class="Seperator"></div>
 
 				<!-- Navigation Menu -->
-				<div id="Controller" class="sectionContainer">
-					<table border="0" width="100%" cellpadding="0" cellspacing="0">
+					<table border="0" width="100%" cellpadding="10" cellspacing="0">
 						<tr>
-							<td valign="top" width="100">
-								<div id="Navigation" class="Left sectionContent Navigation">
-									<!--
-											<ul id="Navigation-Root">
-												<li>
-													Accounts
+							<td valign="top" width="50">
+								<!--
+									<ul id="Navigation-Root">
+										<li>
+											Accounts
+											<ul>
+												<li><a href="account_add.php">Create an Account</a></li>
+												<li><a href="account_list.php">Find an Account</a></li>
+												<li>Recently Viewed
 													<ul>
-														<li><a href="account_add.php">Create an Account</a></li>
-														<li><a href="account_list.php">Find an Account</a></li>
-														<li>Recently Viewed
-															<ul>
-																<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Accounts/Account">
-																	<xsl:sort order="descending" />
-																	<li>
-																		<a>
-																			<xsl:attribute name="href">
-																				<xsl:text>account_view.php?Id=</xsl:text>
-																				<xsl:value-of select="./Id" />
-																			</xsl:attribute>
-																			<xsl:value-of select="./BusinessName" />
-																		</a>
-																	</li>
-																</xsl:for-each>
-															</ul>
-														</li>
-													</ul>
-												</li>
-												<li>
-													Contacts
-													<ul>
-														<li><a href="contact_list.php">Find a Contact</a></li>
-														<li>Recently Viewed
-															<ul>
-																<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
-																	<xsl:sort order="descending" />
-																	<li>
-																		<a>
-																			<xsl:attribute name="href">
-																				<xsl:text>contact_view.php?Id=</xsl:text>
-																				<xsl:value-of select="./Id" />
-																			</xsl:attribute>
-																			<xsl:value-of select="./FirstName" />
-																			<xsl:text> </xsl:text>
-																			<xsl:value-of select="./LastName" />
-																		</a>
-																	</li>
-																</xsl:for-each>
-															</ul>
-														</li>
-													</ul>
-												</li>
-												<li>
-													Rates
-													<ul>
-														<li><a href="rates_plan_list.php">List Rate Plans</a></li>
-														<li><a href="rates_plan_add.php">Create Rate Plan</a></li>
-														<li><a href="rates_group_list.php">List Rate Groups</a></li>
-														<li><a href="rates_group_add.php">Create Rate Group</a></li>
-														<li><a href="rates_rate_list.php">List Rates</a></li>
-														<li><a href="rates_rate_add.php">Create Rate</a></li>
-													</ul>
-												</li>
-												<li>
-													Charges
-													<ul>
-														<li><a href="charges_recurringcharge_add.php">Add Recurring Charge Type</a></li>
-														<li><a href="charges_recurringcharge_list.php">List Recurring Charge Types</a></li>
-														<li><a href="charges_charge_add.php">Add Single Charge Type</a></li>
-														<li><a href="charges_charge_list.php">List Single Charge Types</a></li>
-														<li><a href="charges_approve.php">Approve Unbilled Charges</a></li>
-													</ul>
-												</li>
-												<li>
-													My Account
-													<ul>
-														<li><a href="logout.php">Logout</a></li>
+														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Accounts/Account">
+															<xsl:sort order="descending" />
+															<li>
+																<a>
+																	<xsl:attribute name="href">
+																		<xsl:text>account_view.php?Id=</xsl:text>
+																		<xsl:value-of select="./Id" />
+																	</xsl:attribute>
+																	<xsl:value-of select="./BusinessName" />
+																</a>
+															</li>
+														</xsl:for-each>
 													</ul>
 												</li>
 											</ul>
-										-->
-										
-									<table border="0" cellpadding="5" cellspacing="0">
-										<tr>
-											<td>
-												<a href="console.php">
-													<img src="img/template/home.png" title="Employee Console" class="MenuIcon" />
-												</a>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<a href="account_add.php">
-													<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
-												</a>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<a href="contact_list.php">
-													<img src="img/template/contact_retrieve.png" title="Find Customer" class="MenuIcon" />
-												</a>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<a href="#" onclick="return ModalDisplay ('#modalContent-recentCustomers')">
-													<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
-												</a>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<a href="rates_plan_list.php">
-													<img src="img/template/plans.png" title="View Plan Details" class="MenuIcon" />
-												</a>
-											</td>
-										</tr>
-										<tr>
-											<td>
-												<a href="logout.php">
-													<img src="img/template/logout.png" title="Logout" class="MenuIcon" />
-												</a>
-											</td>
-										</tr>
-									</table>
-								</div>
+										</li>
+										<li>
+											Contacts
+											<ul>
+												<li><a href="contact_list.php">Find a Contact</a></li>
+												<li>Recently Viewed
+													<ul>
+														<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
+															<xsl:sort order="descending" />
+															<li>
+																<a>
+																	<xsl:attribute name="href">
+																		<xsl:text>contact_view.php?Id=</xsl:text>
+																		<xsl:value-of select="./Id" />
+																	</xsl:attribute>
+																	<xsl:value-of select="./FirstName" />
+																	<xsl:text> </xsl:text>
+																	<xsl:value-of select="./LastName" />
+																</a>
+															</li>
+														</xsl:for-each>
+													</ul>
+												</li>
+											</ul>
+										</li>
+										<li>
+											Rates
+											<ul>
+												<li><a href="rates_plan_list.php">List Rate Plans</a></li>
+												<li><a href="rates_plan_add.php">Create Rate Plan</a></li>
+												<li><a href="rates_group_list.php">List Rate Groups</a></li>
+												<li><a href="rates_group_add.php">Create Rate Group</a></li>
+												<li><a href="rates_rate_list.php">List Rates</a></li>
+												<li><a href="rates_rate_add.php">Create Rate</a></li>
+											</ul>
+										</li>
+										<li>
+											Charges
+											<ul>
+												<li><a href="charges_recurringcharge_add.php">Add Recurring Charge Type</a></li>
+												<li><a href="charges_recurringcharge_list.php">List Recurring Charge Types</a></li>
+												<li><a href="charges_charge_add.php">Add Single Charge Type</a></li>
+												<li><a href="charges_charge_list.php">List Single Charge Types</a></li>
+												<li><a href="charges_approve.php">Approve Unbilled Charges</a></li>
+											</ul>
+										</li>
+										<li>
+											My Account
+											<ul>
+												<li><a href="logout.php">Logout</a></li>
+											</ul>
+										</li>
+									</ul>
+								-->
+									
+								<table border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td>
+											<a href="console.php">
+												<img src="img/template/home.png" title="Employee Console" class="MenuIcon" />
+											</a>
+										</td>
+									</tr>
+									<tr>
+										<td><div class="Seperator"></div></td>
+									</tr>
+									<tr>
+										<td>
+											<a href="account_add.php">
+												<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
+											</a>
+										</td>
+									</tr>
+									<tr>
+										<td><div class="Seperator"></div></td>
+									</tr>
+									<tr>
+										<td>
+											<a href="contact_list.php">
+												<img src="img/template/contact_retrieve.png" title="Find Customer" class="MenuIcon" />
+											</a>
+										</td>
+									</tr>
+									<tr>
+										<td><div class="Seperator"></div></td>
+									</tr>
+									<tr>
+										<td>
+											<a href="#" onclick="return ModalDisplay ('#modalContent-recentCustomers')">
+												<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
+											</a>
+										</td>
+									</tr>
+									<tr>
+										<td><div class="Seperator"></div></td>
+									</tr>
+									<tr>
+										<td>
+											<a href="rates_plan_list.php">
+												<img src="img/template/plans.png" title="View Plan Details" class="MenuIcon" />
+											</a>
+										</td>
+									</tr>
+									<tr>
+										<td><div class="Seperator"></div></td>
+									</tr>
+									<tr>
+										<td>
+											<a href="logout.php">
+												<img src="img/template/logout.png" title="Logout" class="MenuIcon" />
+											</a>
+										</td>
+									</tr>
+								</table>
 							</td>
 							<td valign="top">
-								<div id="Content" class="Left sectionContent">
-									<!-- Popup Window Controller -->
-									
-									<div id="modalContent-Popup">
-										<div class="modalContainer">
-											<div class="modalContent" id="Modal-Popup-Content">
+								<!-- Popup Window Controller -->
+								
+								<div id="modalContent-Popup">
+									<div class="modalContainer">
+										<div class="modalContent" id="Modal-Popup-Content">
+										</div>
+										<div class="modalTitle">
+											<div class="modalIcon Left">
+												<img id="Modal-Popup-Icon" src="" />
 											</div>
-											<div class="modalTitle">
-												<div class="modalIcon Left">
-													<img id="Modal-Popup-Icon" src="" />
-												</div>
-												<div class="modalLabel Left">
-													<strong id="Modal-Popup-Title"></strong><br />
-													<span id="Modal-Popup-Summary"></span>
-												</div>
-												<div class="modalClose Right">
-													<img src="img/template/closelabel.gif" class="close" />
-												</div>
-												<div class="Clear"></div>
+											<div class="modalLabel Left">
+												<strong id="Modal-Popup-Title"></strong><br />
+												<span id="Modal-Popup-Summary"></span>
 											</div>
+											<div class="modalClose Right">
+												<img src="img/template/closelabel.gif" class="close" />
+											</div>
+											<div class="Clear"></div>
 										</div>
 									</div>
-									
-									<div class="Right">
-										<ul id="QuickList">
-											<xsl:choose>
-												<xsl:when test="/Response/Service">
-													<li>
-														<a>
-															<xsl:attribute name="href">
-																<xsl:text>account_view.php?Id=</xsl:text>
-																<xsl:value-of select="/Response/Service/Account" />
-															</xsl:attribute>
-															<xsl:text>View Account</xsl:text>
-														</a>
-													</li>
-													<li>
-														<a>
-															<xsl:attribute name="href">
-																<xsl:text>service_view.php?Id=</xsl:text>
-																<xsl:value-of select="/Response/Service/Id" />
-															</xsl:attribute>
-															<xsl:text>View Service</xsl:text>
-														</a>
-													</li>
-												</xsl:when>
-												<xsl:when test="/Response/Account">
-													<li>
-														<a>
-															<xsl:attribute name="href">
-																<xsl:text>account_view.php?Id=</xsl:text>
-																<xsl:value-of select="/Response/Account/Id" />
-															</xsl:attribute>
-															<xsl:text>View Account</xsl:text>
-														</a>
-													</li>
-												</xsl:when>
-											</xsl:choose>
-											<xsl:if test="/Response/Contact">
-												<li>
-													<a>
-														<xsl:attribute name="href">
-															<xsl:text>contact_view.php?Id=</xsl:text>
-															<xsl:value-of select="/Response/Contact/Id" />
-														</xsl:attribute>
-														<xsl:text>View Contact</xsl:text>
-													</a>
-												</li>
-											</xsl:if>
-											<xsl:if test="/Response/Invoices">
-												<li>
-													<a>
-														<xsl:attribute name="href">
-															<xsl:text>account_ledger.php?Id=</xsl:text>
-															<xsl:value-of select="/Response/Account/Id" />
-														</xsl:attribute>
-														<xsl:text>Account Ledger</xsl:text>
-													</a>
-												</li>
-											</xsl:if>
-											<xsl:if test="/Response/Invoice">
-												<li>
-													<a>
-														<xsl:attribute name="href">
-															<xsl:text>invoice_view.php?Id=</xsl:text>
-															<xsl:value-of select="/Response/Invoice/Id" />
-														</xsl:attribute>
-														<xsl:text>View Invoice</xsl:text>
-													</a>
-												</li>
-											</xsl:if>
-										</ul>
-									</div>
-									
-									<xsl:call-template name="Content" />
 								</div>
+								
+								<ul id="QuickList" class="Right">
+									<xsl:choose>
+										<xsl:when test="/Response/Service">
+											<li>
+												<a>
+													<xsl:attribute name="href">
+														<xsl:text>account_view.php?Id=</xsl:text>
+														<xsl:value-of select="/Response/Service/Account" />
+													</xsl:attribute>
+													<xsl:text>View Account</xsl:text>
+												</a>
+											</li>
+											<li>
+												<a>
+													<xsl:attribute name="href">
+														<xsl:text>service_view.php?Id=</xsl:text>
+														<xsl:value-of select="/Response/Service/Id" />
+													</xsl:attribute>
+													<xsl:text>View Service</xsl:text>
+												</a>
+											</li>
+										</xsl:when>
+										<xsl:when test="/Response/Account">
+											<li>
+												<a>
+													<xsl:attribute name="href">
+														<xsl:text>account_view.php?Id=</xsl:text>
+														<xsl:value-of select="/Response/Account/Id" />
+													</xsl:attribute>
+													<xsl:text>View Account</xsl:text>
+												</a>
+											</li>
+										</xsl:when>
+									</xsl:choose>
+									<xsl:if test="/Response/Contact">
+										<li>
+											<a>
+												<xsl:attribute name="href">
+													<xsl:text>contact_view.php?Id=</xsl:text>
+													<xsl:value-of select="/Response/Contact/Id" />
+												</xsl:attribute>
+												<xsl:text>View Contact</xsl:text>
+											</a>
+										</li>
+									</xsl:if>
+									<xsl:if test="/Response/Invoices">
+										<li>
+											<a>
+												<xsl:attribute name="href">
+													<xsl:text>account_ledger.php?Id=</xsl:text>
+													<xsl:value-of select="/Response/Account/Id" />
+												</xsl:attribute>
+												<xsl:text>Account Ledger</xsl:text>
+											</a>
+										</li>
+									</xsl:if>
+									<xsl:if test="/Response/Invoice">
+										<li>
+											<a>
+												<xsl:attribute name="href">
+													<xsl:text>invoice_view.php?Id=</xsl:text>
+													<xsl:value-of select="/Response/Invoice/Id" />
+												</xsl:attribute>
+												<xsl:text>View Invoice</xsl:text>
+											</a>
+										</li>
+									</xsl:if>
+								</ul>
+								
+								<xsl:call-template name="Content" />
 							</td>
 						</tr>
 					</table>
-					
-					<div class="Clear"></div>
-				</div>
-				<div class="Clear"></div>
 
 				<!-- Recent Customers PopUp -->
 				<div id="modalContent-recentCustomers">
