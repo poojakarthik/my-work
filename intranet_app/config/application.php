@@ -45,7 +45,6 @@ else
 if ($arrPage['Permission'] == 0)
 {
 	// if not we die in the arse
-	//TODO!!!! - build the error page
 	header ("Location: error_permission.php");
 	Exit;
 }
@@ -95,7 +94,6 @@ else
 		if ($arrPage['PopUp'] === TRUE)
 		{
 			// for popup windows
-			//TODO!!!! - build the error page
 			header ("Location: popup_login.php");
 		}
 		else

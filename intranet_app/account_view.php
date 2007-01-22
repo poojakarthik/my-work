@@ -6,8 +6,6 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	//TODO!bash! fix error : Fatal error: Class 'RatePlan' not found in /home/flame/vixen/intranet_app/classes/service/service.php on line 355
-	
 	
 	// call application loader
 	require ('config/application_loader.php');

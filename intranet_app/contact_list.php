@@ -194,16 +194,27 @@
 				
 				if ($oblarrAccounts->Length () == 0)
 				{
+					// If there are no matches, then we need to show an error
 					$oblstrError->setValue ('BusinessName None');
+				}
+				else if ($oblarrAccounts->Length () == 1)
+				{
+					// If there is exactly one match, then we're just going to
+					// continue with the processes
+					
+					foreach ($oblarrAccounts as $actAccountItem)
+					{
+						$actAccount = $oblarrAnswers->Push ($actAccountItem);
+					}
 				}
 				else
 				{
+					// If there is more than 1 match, display a list of matches to choose from
 					if ($_POST ['ContinueAccount'])
 					{
 						$oblstrError->setValue ('Unselected');
 					}
 					
-					//TODO!!!! - 1 match = skip this and go to the next step
 					$Style->Output ('xsl/content/contact/list_1-account.xsl');
 					exit;
 				}
@@ -348,8 +359,6 @@
 				$oblstrError->setValue ('Unselected');
 			}
 			
-			//TODO!!!! - if no contact is selected on list_2-contact.xsl we are being sent back to the start
-			//				we should be showing this page again with an error msg
 			$Style->Output ('xsl/content/contact/list_2-contact.xsl');
 			exit;
 		}

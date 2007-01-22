@@ -12,6 +12,7 @@
 		
 		<h2 class="Invoice">Invoice Details</h2>
 		<!-- TODO!!!! - show invoice details, TOTALS etc -->
+		<!-- TODO!bash! - I won't be able to test this until an billing run is done -->
 		<div class="Filter-Form">
 			<table border="0" cellpadding="5" cellspacing="0">
 				<tr>
