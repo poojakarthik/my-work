@@ -417,9 +417,10 @@
 			if (is_array($arrRateGroup[$arrServiceType[$strFNN]]))
 			{
 				$arrServiceRateGroup['FNN'] 				= $strFNN;
+				$arrServiceRateGroup['ServiceType'] 		= $arrServiceType[$strFNN];
 				foreach($arrRateGroup[$arrServiceType[$strFNN]] AS $strRecordType=>$strRateGroupName)
 				{
-					$arrServiceRateGroup['RecordType'] 		= $strRecordType;
+					$arrServiceRateGroup['RecordTypeName'] 	= $strRecordType;
 					$arrServiceRateGroup['RateGroupName'] 	= $strRateName;
 					$arrOutput['ServiceRateGroup'][]		= $arrServiceRateGroup;
 				}

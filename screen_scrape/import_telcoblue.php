@@ -12,8 +12,13 @@
 	
 	// Define New RatePlans
 	//TODO!!!!
+<<<<<<< .mine
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['PlanName']['Local'] 			= 'Local-14';
+	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['PlanName']['ProgramLocal']		= 'ProgramLocal-13';
+=======
 	$arrConfig['RatePlan']['PlanName']['Local'] 			= 'Local-14';
 	$arrConfig['RatePlan']['PlanName']['ProgramLocal']		= 'ProgramLocal-13';
+>>>>>>> .r1206
 	
 	// Record Types
 	$arrConfig['Decode']['RecordType'] = Array

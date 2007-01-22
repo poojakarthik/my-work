@@ -193,19 +193,6 @@ class VixenImport extends ApplicationBaseClass
 		}
 	}
 	
-	AddCustomerServiceRatePlan($arrServiceRateGroups, $arrServices)
-	{
-		// for each service
-		foreach($arrServiceRateGroups AS $arrServiceRateGroup)
-		{
-				// for each recordtype
-						// for each RatePlan
-							// could we be on this rate plan ?
-							
-		// get highest scoring RatePlan
-		$arrConfig['RatePlan']['PlanName'][17] 		= 'Local-14';
-	}
-	
 	// add all service RateGroup & RatePlan records for a customer
 	function AddCustomerRatePlanRateGroup($arrServiceRateGroups, $arrServices)
 	{
@@ -215,17 +202,27 @@ class VixenImport extends ApplicationBaseClass
 		// ADD RATE GROUPS
 		foreach($arrServiceRateGroups AS $arrServiceRateGroup)
 		{
+			// get the ServiceType
+			$intServiceType 	= $arrServiceRateGroup['ServiceType'];
+			
+			// get the RecordType
+			$strRecordType 		= $arrServiceRateGroup['RecordTypeName'];
+			$intRecordType 		= FindRecordType($strRecordType, $intServiceType);
+			
 			// get the RateGroup Id
-			if (!$arrServiceRateGroup['RateGroup'])
+			$strRateGroupName 	= $arrServiceRateGroup['RateGroupName'];
+			$intRateGroup 		= $arrServiceRateGroup['RateGroup'];
+			if (!$intRateGroup)
 			{
-				$arrServiceRateGroup['RateGroup'] = $this->FindRateGroup($arrServiceRateGroup['RateGroupName'], $arrServiceRateGroup['RecordType']);
+				$intRateGroup 	= $this->FindRateGroup($arrServiceRateGroup['RateGroupName'], $intRecordType);
 			}
 			
 			// get the Service Id
-			if (!$arrServiceRateGroup['Service'] && is_array($arrServices))
+			$intService 		= $arrServiceRateGroup['Service'];
+			if (!$intService && is_array($arrServices))
 			{
 				// get services id
-				$arrServiceRateGroup['Service'] = $arrServices[$arrServiceRateGroup['FNN']];
+				$intService = $arrServices[$arrServiceRateGroup['FNN']];
 			}
 			else (!$arrServiceRateGroup['Service'])
 			{
@@ -233,19 +230,21 @@ class VixenImport extends ApplicationBaseClass
 			}
 			
 			
-			if ($arrServiceRateGroup['Service'] && $arrServiceRateGroup['RateGroup'])
+			if ($intService && $intRateGroup)
 			{
 				// insert the record
-				$this->AddServiceRateGroup($arrServiceRateGroup['Service'], $arrServiceRateGroup['RateGroup']);
+				$this->AddServiceRateGroup($intService, $intRateGroup);
 				
-				// stuff needed to find the ratePlan
-				$intService 		= $arrServiceRateGroup['Service'];
-				$strRecordType 		= $arrServiceRateGroup['RecordType'];
-				$strRateGroupName 	= $arrServiceRateGroup['RateGroupName'];
 				
 				if (!$strRecordType)
 				{
 					//TODO!flame! LATER - find RecordType.Name
+					continue;
+				}
+				
+				if (!$intServiceType)
+				{
+					//TODO!flame! LATER - find ServiceType.Name
 					continue;
 				}
 				
@@ -257,13 +256,13 @@ class VixenImport extends ApplicationBaseClass
 				
 				// add to RatePlan scores
 				// for each plan
-				foreach ($this->arrConfig['RatePlan'] AS $strPlan=>$arrRateGroups)
+				foreach ($this->arrConfig['RatePlan'][$intServiceType] AS $strPlan=>$arrRateGroups)
 				{
 					// is this RateGroup part of this plan
 					if ($arrRateGroups[$strRecordType] == $strRateGroupName)
 					{
 						// if so, score a goal for this plan
-						$arrPlanScores[$intService][$strPlan]++;
+						$arrPlanScores[$intServiceType][$intService][$strPlan]++;
 					}
 				}
 			}
@@ -271,14 +270,24 @@ class VixenImport extends ApplicationBaseClass
 		
 		// ADD RATE PLANS
 		
-		// for each service
-		foreach ($arrPlanScores AS $intService=>$arrPlan)
+		// for each service type
+		foreach ($arrPlanScores AS $intServiceType=>$arrService)
 		{
-			// sort the array of plans
-			$arrPlan = asort($arrPlan);
-			
-			// get the highest scoring plan
-			
+			// for each service
+			foreach ($arrService AS $intService=>$arrPlan)
+			{
+				// sort the array of plans & get the highest scoring plan
+				$strRatePlanName = array_pop(array_keys(asort($arrPlan)));
+				
+				// get the RatePlan ID
+				$intRatePlan = $this->FindRatePlan($strRatePlanName, $intServiceType);
+				
+				// insert the record
+				if ($intService && $intRatePlan)
+				{
+					$this->AddServiceRateGroup($intService, $intRatePlan);
+				}
+			}
 		}
 	}
 	
@@ -382,58 +391,55 @@ class VixenImport extends ApplicationBaseClass
 		// for each defined RatePlan
 		if (is_array($this->arrConfig['RatePlan']))
 		{
-			foreach ($this->arrConfig['RatePlan'] as $intRatePlan=>$arrRatePlan)
+			foreach ($this->arrConfig['RatePlan'] AS $intServiceType=>$arrPlans)
 			{
-				// get the RatePlan Id
-				if ((int)$intRatePlan != $intRatePlan)
+				foreach ($arrPlans as $strRatePlan=>$arrRatePlan)
 				{
-					$strQuery = "SELECT Id FROM RatePlan WHERE Name = '$intRatePlan' LIMIT 1";
-					$sqlRatePlan = $this->sqlQuery->Execute($strQuery);
-					$arrPlan = $sqlRatePlan->fetch_assoc();
-					$intRatePlan = $arrPlan['Id'];
+					// get the RatePlan Id
+					$intRateplan = $this->FindRatePlan($strRatePlan, $intServiceType)
 					if (!(int)$intRatePlan)
 					{
 						//error
 						$this->Error("RatePlan $intRatePlan not found");
 						continue;
 					}
-				}
-					
-				// for each RecordType within the RatePlan
-				foreach ($arrRatePlan as $intRecordType=>$intRateGroup)
-				{
-					// get RecordType Id
-					if ((int)$intRecordType != $intRecordType)
+						
+					// for each RecordType within the RatePlan
+					foreach ($arrRatePlan as $strRecordType=>$strRateGroup)
 					{
-						$strQuery = "SELECT Code FROM RecordType WHERE Name = '$intRecordType' LIMIT 1";
-						$sqlRecordType = $this->sqlQuery->Execute($strQuery);
-						$arrRecordType = $sqlRecordType->fetch_assoc();
-						$intRecordType = $arrRecordType['Code'];
-						if (!(int)$intRecordType)
+						// get RecordType Id
+						if ((int)$intRecordType != $intRecordType)
 						{
-							//error
-							$this->Error("RecordType $intRecordType not found");
-							continue;
+							$strQuery = "SELECT Code FROM RecordType WHERE Name = '$intRecordType' LIMIT 1";
+							$sqlRecordType = $this->sqlQuery->Execute($strQuery);
+							$arrRecordType = $sqlRecordType->fetch_assoc();
+							$intRecordType = $arrRecordType['Code'];
+							if (!(int)$intRecordType)
+							{
+								//error
+								$this->Error("RecordType $intRecordType not found");
+								continue;
+							}
 						}
-					}
-					
-					// get the RateGroup Id
-					if ((int)$intRateGroup != $intRateGroup)
-					{
-						$strQuery = "SELECT Id FROM RateGroup WHERE RecordType = $intRecordType AND Name = '$intRateGroup' LIMIT 1";
-						$sqlRateGroup = $this->sqlQuery->Execute($strQuery);
-						$arrRateGroup = $sqlRateGroup->fetch_assoc();
-						$intRateGroup = $arrRateGroup['Id'];
-						if (!(int)$intRateGroup)
+						
+						// get the RateGroup Id
+						if ((int)$intRateGroup != $intRateGroup)
 						{
-							//error
-							$this->Error("RateGroup $intRateGroup not found");
-							continue;
+							$strQuery = "SELECT Id FROM RateGroup WHERE RecordType = $intRecordType AND Name = '$intRateGroup' LIMIT 1";
+							$sqlRateGroup = $this->sqlQuery->Execute($strQuery);
+							$arrRateGroup = $sqlRateGroup->fetch_assoc();
+							$intRateGroup = $arrRateGroup['Id'];
+							if (!(int)$intRateGroup)
+							{
+								//error
+								$this->Error("RateGroup $intRateGroup not found");
+								continue;
+							}
 						}
+						
+						// link RatePlan to RateGroup
+						$this->AddRatePlanRateGroup($intRatePlan, $intRateGroup);
 					}
-					
-					// link RatePlan to RateGroup
-					$this->AddRatePlanRateGroup($intRatePlan, $intRateGroup);
 				}
 			}
 		}
@@ -536,6 +542,21 @@ class VixenImport extends ApplicationBaseClass
 	// FIND 
 	// ------------------------------------//
 	
+	// find RecordType
+	function FindRecordType($strRecordType, $intServiceType)
+	{
+		// check if we have a cache of record types
+		if (!is_array($this->_arrRecordTypes))
+		{
+			// get an array of recordTypes
+			//TODO!rich! get record types from the db and put them in an array
+			// $this->_arrRecordTypes[RecordType.ServiceType][RecordType.Name] = RecordType.Id
+		}
+		
+		// return the record Type Id
+		return $this->_arrRecordTypes[$intServiceType][$strRecordType];
+	}
+	
 	// find rate group
 	function FindRateGroup($strRateGroupName, $intRecordType)
 	{
@@ -549,6 +570,21 @@ class VixenImport extends ApplicationBaseClass
 		
 		// return the rate group Id
 		return $this->_arrRateGroups[$intRecordType][$strRateGroupName];
+	}
+	
+	// find rate plan
+	function FindRatePlan($strRatePlanName, $intServiceType)
+	{
+		// check if we have a cache of rate plans
+		if (!is_array($this->_arrRatePlans))
+		{
+			// get an array of rate plans
+			//TODO!rich! get rate plans from the db and put them in an array
+			// $this->_arrRatePlans[RatePlan.ServiceType][RatePlan.Name] = RatePlan.Id
+		}
+		
+		// return the rate group Id
+		return $this->_arrRateGroups[$intServiceType][$strRatePlanName];
 	}
 }
 
