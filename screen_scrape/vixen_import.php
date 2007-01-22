@@ -511,11 +511,15 @@ class VixenImport extends ApplicationBaseClass
 	// ------------------------------------//
 
 	// import a CSV file
-	function ImportCSV($strTable, $strFullPath, $strSeparator=';', $strTerminator="\n", $intSkipRecords=1)
+	function ImportCSV($strTable, $strFullPath, $strSeparator=';', $strTerminator='\n', $intSkipRecords=1)
 	{
-		//TODO!rich! import CSV file located at $strFullPath into $strTable
-		// use MYSQL LOAD DATA
-		// skip $intSkipRecords from start of file
+		$strQuery	=	"LOAD DATA INFILE '$strFullPath' \n" .
+						"INTO TABLE '$strTable' \n" .
+						"FIELDS TERMINATED BY '$strSeparator' ENCLOSED BY '\"' ESCAPED BY '\\\\' \n" .
+						"LINES TERMINATED BY '$strTerminator' \n";
+						"IGNORE $intSkipRecords LINES" .						
+		$qryImportCSV = new Query();
+		return $qryImportCSV->Execute($strQuery);
 	}
 	
 	// ------------------------------------//
@@ -525,11 +529,8 @@ class VixenImport extends ApplicationBaseClass
 	function Truncate($strTableName)
 	{
 		$strTableName = trim($strTableName);
-		if ()
-		{
-			return FALSE;
-		}
-		//TODO!rich!truncate the table
+		$qryTruncate = new QueryTruncate();
+		return $qryTruncate->Execute($strTableName);
 	}
 	
 	// ------------------------------------//
