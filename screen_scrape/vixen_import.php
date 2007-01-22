@@ -224,7 +224,7 @@ class VixenImport extends ApplicationBaseClass
 				// get services id
 				$intService = $arrServices[$arrServiceRateGroup['FNN']];
 			}
-			else (!$arrServiceRateGroup['Service'])
+			elseif (!$arrServiceRateGroup['Service'])
 			{
 				//TODO!flame! LATER
 			}
@@ -396,7 +396,7 @@ class VixenImport extends ApplicationBaseClass
 				foreach ($arrPlans as $strRatePlan=>$arrRatePlan)
 				{
 					// get the RatePlan Id
-					$intRateplan = $this->FindRatePlan($strRatePlan, $intServiceType)
+					$intRateplan = $this->FindRatePlan($strRatePlan, $intServiceType);
 					if (!(int)$intRatePlan)
 					{
 						//error
@@ -549,8 +549,12 @@ class VixenImport extends ApplicationBaseClass
 		if (!is_array($this->_arrRecordTypes))
 		{
 			// get an array of recordTypes
-			//TODO!rich! get record types from the db and put them in an array
-			// $this->_arrRecordTypes[RecordType.ServiceType][RecordType.Name] = RecordType.Id
+			$selFindRecordType = new StatementSelect("RecordType", "ServiceType, Code, Id");
+			$selFindRecordType->Execute();
+			while($arrRecordType = $selFindRecordType->Fetch())
+			{
+				$this->_arrRecordTypes[$arrRecordType['ServiceType']][$arrRecordType['Code']] = $arrRecordType['Id'];
+			}
 		}
 		
 		// return the record Type Id
@@ -564,8 +568,12 @@ class VixenImport extends ApplicationBaseClass
 		if (!is_array($this->_arrRateGroups))
 		{
 			// get an array of rate groups
-			//TODO!rich! get rate groups from the db and put them in an array
-			// $this->_arrRateGroups[RateGroup.RecordType][RateGroup.Name] = RateGroup.Id
+			$selFindRateGroup = new StatementSelect("RateGroup", "RecordType, Name, Id");
+			$selFindRateGroup->Execute();
+			while($arrRateGroup = $selFindRateGroup->Fetch())
+			{
+				$this->_arrRateGroups[$arrRateGroup['RecordType']][$arrRateGroup['Name']] = $arrRateGroup['Id'];
+			}
 		}
 		
 		// return the rate group Id
@@ -579,8 +587,12 @@ class VixenImport extends ApplicationBaseClass
 		if (!is_array($this->_arrRatePlans))
 		{
 			// get an array of rate plans
-			//TODO!rich! get rate plans from the db and put them in an array
-			// $this->_arrRatePlans[RatePlan.ServiceType][RatePlan.Name] = RatePlan.Id
+			$selFindRatePlan = new StatementSelect("RatePlan", "ServiceType, Name, Id");
+			$selFindRatePlan->Execute();
+			while($arrRatePlan = $selFindRatePlan->Fetch())
+			{
+				$this->_arrRateGroups[$arrRatePlan['ServiceType']][$arrRatePlan['Name']] = $arrRatePlan['Id'];
+			}
 		}
 		
 		// return the rate group Id
