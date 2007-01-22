@@ -434,47 +434,48 @@
 	$objImport = new VixenImport($arrConfig['Import']);
 	
 	// Truncate Tables
-	//$objImport->Truncate('Account');
-	//$objImport->Truncate('AccountGroup');
+	/*
+	$objImport->Truncate('Account');
+	$objImport->Truncate('AccountGroup');
 	//$objImport->Truncate('****C*D*R****');
-	//$objImport->Truncate('Charge');
-	//$objImport->Truncate('ChargeType');
-	//$objImport->Truncate('Contact');
-	//$objImport->Truncate('CreditCard');
-	//$objImport->Truncate('DirectDebit');
-	//$objImport->Truncate('Employee');
-	//$objImport->Truncate('EmployeeAccountAudit');
-	//$objImport->Truncate('ErrorLog');
+	$objImport->Truncate('Charge');
+	$objImport->Truncate('ChargeType');
+	$objImport->Truncate('Contact');
+	$objImport->Truncate('CreditCard');
+	$objImport->Truncate('DirectDebit');
+	$objImport->Truncate('Employee');
+	$objImport->Truncate('EmployeeAccountAudit');
+	$objImport->Truncate('ErrorLog');
 	//$objImport->Truncate('FileDownLoad');
 	//$objImport->Truncate('FileImport');
-	//$objImport->Truncate('Invoice');
-	//$objImport->Truncate('InvoiceOutput');
-	//$objImport->Truncate('InvoicePayment');
-	//$objImport->Truncate('InvoiceTemp');
-	//$objImport->Truncate('Note');
-	//$objImport->Truncate('Payment');
-	//$objImport->Truncate('ProvisioningExport');
-	//$objImport->Truncate('ProvisioningLog');
-	//$objImport->Truncate('Rate');
-	//$objImport->Truncate('RateGroup');
-	//$objImport->Truncate('RateGroupRate');
-	//$objImport->Truncate('RatePlan');
-	//$objImport->Truncate('RatePlanRateGroup');
-	//$objImport->Truncate('RatePlanRecurringCharge');
-	//$objImport->Truncate('RecurringCharge');
-	//$objImport->Truncate('RecurringChargeType');
-	//$objImport->Truncate('Request');
-	//$objImport->Truncate('Service');
-	//$objImport->Truncate('ServiceAddress');
-	//$objImport->Truncate('ServiceRateGroup');
-	//$objImport->Truncate('ServiceRatePlan');
-	//$objImport->Truncate('ServiceRecurringCharge');
-	//$objImport->Truncate('ServiceTotal');
-	//$objImport->Truncate('ServiceTypeTotal');
-	
+	$objImport->Truncate('Invoice');
+	$objImport->Truncate('InvoiceOutput');
+	$objImport->Truncate('InvoicePayment');
+	$objImport->Truncate('InvoiceTemp');
+	$objImport->Truncate('Note');
+	$objImport->Truncate('Payment');
+	$objImport->Truncate('ProvisioningExport');
+	$objImport->Truncate('ProvisioningLog');
+	$objImport->Truncate('Rate');
+	$objImport->Truncate('RateGroup');
+	$objImport->Truncate('RateGroupRate');
+	$objImport->Truncate('RatePlan');
+	$objImport->Truncate('RatePlanRateGroup');
+	$objImport->Truncate('RatePlanRecurringCharge');
+	$objImport->Truncate('RecurringCharge');
+	$objImport->Truncate('RecurringChargeType');
+	$objImport->Truncate('Request');
+	$objImport->Truncate('Service');
+	$objImport->Truncate('ServiceAddress');
+	$objImport->Truncate('ServiceRateGroup');
+	$objImport->Truncate('ServiceRatePlan');
+	$objImport->Truncate('ServiceRecurringCharge');
+	$objImport->Truncate('ServiceTotal');
+	$objImport->Truncate('ServiceTypeTotal');
+	*/
 	
 	// Import Rates
-	//$objImport->ImportCSV('Rate', '/home/vixen/vixen_seed/Rate/Normal/Rate.csv');
+	//$objImport->ImportCSV('Rate', '/home/vixen/vixen_seed/Rate/Rate.csv');
 	$arrIDDRates = glob('/home/vixen/vixen_seed/Rate/IDD/*.csv');
 	if (is_array($arrIDDRates))
 	{
@@ -510,22 +511,46 @@
 	while ($arrRow = $objDecoder->FetchCustomer())
 	{	
 		// get the etech customer details
-		$arrScrape = unserialize($arrRow['DataSerialised']);
+		$arrScrape = $arrRow['DataArray'];
 		$arrScrape['CustomerId'] = $arrRow['CustomerId'];
 
 		// decode the customer
-		echo "Decoding Customer  : {$arrScrape['CustomerId']}\n";
+		echo "Decoding Customer   : {$arrScrape['CustomerId']}\n";
 		$arrCustomer = $objDecoder->DecodeCustomer($arrScrape);
 		
 		// add the customer
-		echo "Importing Customer : {$arrScrape['CustomerId']}\n";
+		echo "Importing Customer  : {$arrScrape['CustomerId']}\n";
 		$objImport->AddCustomerWithId($arrCustomer);
 	}
 	
-	// Add Notes
+	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
 	{	
+		// get the etech note details
+		$arrScrape = $arrRow['DataArray'];
+
+		// decode the note
+		echo "Decoding Note for   : {$arrScrape['CustomerId']}\n";
+		$arrNote = $objDecoder->DecodeNote($arrScrape);
+		
+		// add the note
+		echo "Importing Note for  : {$arrScrape['CustomerId']}\n";
+		$objImport->AddNote($arrNote);
+	}
 	
+	// Add User Notes
+	while ($arrRow = $objDecoder->FetchUserNote())
+	{	
+		// get the etech note details
+		$arrScrape = $arrRow['DataArray'];
+
+		// decode the note
+		echo "Decoding Notes for   : {$arrScrape['CustomerId']}\n";
+		$arrNote = $objDecoder->DecodeNote($arrScrape);
+		
+		// add the note
+		echo "Importing Notes for  : {$arrScrape['CustomerId']}\n";
+		$objImport->AddNote($arrNote);
 	}
 	
 	//finish

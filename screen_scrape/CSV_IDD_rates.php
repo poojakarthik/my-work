@@ -30,7 +30,7 @@ system($strCommand);
 // Get Rate details from the scrape
 while ($arrRow = $objDecoder->FetchIDDGroupRate())
 {
-	$arrScrapeRate = unserialize($arrRow['DataSerialised']);
+	$arrScrapeRate = $arrRow['DataArray'];
 	$arrScrapeRate['Carrier'] = $arrRow['AxisM'];
 	$arrRates = $objDecoder->DecodeIDDGroupRate($arrScrapeRate);
 	

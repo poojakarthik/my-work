@@ -106,14 +106,20 @@
 	{
 		$strQuery 	= "SELECT DataSerialised, AxisM FROM ScrapeRates";
 		$strName	= 'IDDGroupRate';
-		return $this->FetchResult($strName, $strQuery);
+		$arrRow = $this->FetchResult($strName, $strQuery);
+		$arrRow['DataArray'] = unserialize($arrRow['DataSerialised']);
+		unset($arrRow['DataSerialised']);
+		return $arrRow;
 	}
 	
 	function FetchCustomer()
 	{
 		$strQuery 	= "SELECT CustomerId, DataSerialized AS DataSerialised FROM ScrapeAccount ";
 		$strName	= 'Account';
-		return $this->FetchResult($strName, $strQuery);
+		$arrRow = $this->FetchResult($strName, $strQuery);
+		$arrRow['DataArray'] = unserialize($arrRow['DataSerialised']);
+		unset($arrRow['DataSerialised']);
+		return $arrRow;
 	}
 	
 	function FetchSystemNote()
@@ -123,9 +129,9 @@
 		$arrNote = $this->FetchResult($strName, $strQuery);
 		if ($arrNote)
 		{
-			return $this->ParseSystemNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
+			$arrRow['DataArray'] = $this->ParseSystemNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
 		}
-		return $strNote;
+		return $arrNote;
 	}
 	
 	function FetchUserNote()
@@ -135,9 +141,9 @@
 		$arrNote = $this->FetchResult($strName, $strQuery);
 		if ($arrNote)
 		{
-			return $this->ParseUserNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
+			$arrRow['DataArray'] = $this->ParseUserNote($arrNote['DataOriginal'], $arrNote['CustomerId']);
 		}
-		return $strNote;
+		return $arrNote;
 	}
 	
 	// generic fetch
@@ -362,6 +368,7 @@
 	// prase system note
 	function ParseSystemNote($strNoteHtml, $intCustomerId)
 	{
+		// return array directly from data
 		return $arrNote;
 	}
 	
@@ -372,13 +379,13 @@
 	// decode user note
 	function DecodeUserNote($arrNote)
 	{
-	
+		// work out stuff and makes it so it will go in the db
 	}
 	
 	// decode system note
 	function DecodeSystemNote($arrNote)
 	{
-	
+		// work out stuff and makes it so it will go in the db
 	}
 	
 	// decode a customer

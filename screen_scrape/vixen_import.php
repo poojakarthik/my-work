@@ -67,6 +67,7 @@ class VixenImport extends ApplicationBaseClass
 		$this->arrConfig = $arrConfig;
 		
 		// db access
+		$this->insNote			 		= new StatementInsert("Note");
 		$this->insRateGroupRate 		= new StatementInsert("RateGroupRate");
 		$this->insRatePlanRateGroup 	= new StatementInsert("RatePlanRateGroup");
 		$this->insServiceRateGroup		= new StatementInsert("ServiceRateGroup");
@@ -289,6 +290,43 @@ class VixenImport extends ApplicationBaseClass
 				}
 			}
 		}
+	}
+	
+	// add all notes for a customer
+	function AddCustomerNote($arrNotes)
+	{
+		foreach ($arrNotes as $arrNote)
+		{
+			if (!$arrNote['Employee'])
+			{
+				if($arrNote['EmployeeName'])
+				{
+					$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeName']);
+				}
+				elseif($arrNote['EmployeeFirstName'] && $arrNote['EmployeeLastName'])
+				{
+					$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeFirstName'], $arrNote['EmployeeLastName']);
+				}
+			}
+			$this->insNote->Execute($arrNote);
+		}
+	}
+
+	// add a single note
+	function AddNote($arrNote)
+	{
+		if (!$arrNote['Employee'])
+		{
+			if($arrNote['EmployeeName'])
+			{
+				$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeName']);
+			}
+			elseif($arrNote['EmployeeFirstName'] && $arrNote['EmployeeLastName'])
+			{
+				$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeFirstName'], $arrNote['EmployeeLastName']);
+			}
+		}
+		return $this->insNote->Execute($arrNote);
 	}
 	
 	// add a single RateGroupRate record 
@@ -598,6 +636,33 @@ class VixenImport extends ApplicationBaseClass
 		
 		// return the rate group Id
 		return $this->_arrRateGroups[$intServiceType][$strRatePlanName];
+	}
+	
+	// find Employee
+	function FindEmployee($strFirstName, $strLastName='NULL')
+	{
+		// break apart name to get last name if needed
+		if (!$strLastName)
+		{
+			$arrName = explode(' ', $strFirstName, 2);
+			$strFirstName = $arrName[0];
+			$strLastName = trim($arrName[1]);
+		}
+		
+		// check if we have a cache of employees
+		if (!is_array($this->_arrEmployee))
+		{
+			// get an array of employees
+			$selFindEmployee = new StatementSelect("Employee", "FirstName, LastName, Id");
+			$selFindEmployee->Execute();
+			while($arrEmployee = $selFindEmployee->Fetch())
+			{
+				$this->_arrEmployee[$arrEmployee['LastName']][$arrEmployee['FirstName']] = $arrEmployee['Id'];
+			}
+		}
+		
+		// return the employee Id
+		return $this->_arrEmployee[$arrEmployee['LastName']][$arrEmployee['FirstName']];
 	}
 }
 
