@@ -2,7 +2,7 @@
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../../includes/init.xsl" />
-	<xsl:import href="../../../template/popup.xsl" />
+	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h1>Service Change of Lessee</h1>
 		<div class="Seperator"></div>

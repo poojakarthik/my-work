@@ -56,6 +56,17 @@
 				If the contact is not listed below they do not have authorisation
 				to access this Account.
 			</div>
+			
+			<xsl:if test="/Response/Error != ''">
+				<div class="MsgError">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Unselected'">
+							You must select a Contact to continue.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+			
 			<div class="Seperator"></div>
 			
 			<div class="Filter-Form">
@@ -119,7 +130,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<input type="submit" class="input-submit" value="Continue &#0187;" />
+			<input type="submit" name="ContinueContact" class="input-submit" value="Continue &#0187;" />
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

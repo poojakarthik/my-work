@@ -121,6 +121,14 @@
 			</xsl:for-each>
 		</table>
 		
+		<xsl:choose>
+			<xsl:when test="count(/Response/RatePlanDetails/RecurringChargeTypes/RecurringChargeType) = 0">
+				<div class="MsgNotice">
+					There are no Recurring Charges associated with this Rate Plan.
+				</div>
+			</xsl:when>
+		</xsl:choose>
+		
 		<div class="Seperator"></div>
 		
 	</xsl:template>

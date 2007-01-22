@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Create Service</h1>
+		<h1>Add Service</h1>
 		<div class="Seperator"></div>
 		
 		<form method="POST" action="service_add.php">

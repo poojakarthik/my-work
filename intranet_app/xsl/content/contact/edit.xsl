@@ -26,9 +26,9 @@
 							The UserName you requested to change to already exists on an
 							Active Contact. Please choose another UserName.
 						</xsl:when>
-						<xsl:otherwise>
-							An unknown error has occurred.
-						</xsl:otherwise>
+						<xsl:when test="/Response/Error = 'DOB'">
+							You must enter a valid Date of Birth.
+						</xsl:when>
 					</xsl:choose>
 				</div>
 				<div class="Seperator"></div>

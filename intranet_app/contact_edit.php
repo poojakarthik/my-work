@@ -63,40 +63,47 @@
 		}
 		else
 		{
-			$cntContact->Update (
-				Array (
-					'Title'					=> $_POST ['Title'],
-					'FirstName'			=> $_POST ['FirstName'],
-					'LastName'				=> $_POST ['LastName'],
-					'DOB-year'				=> $_POST ['DOB']['year'],
-					'DOB-month'			=> $_POST ['DOB']['month'],
-					'DOB-day'				=> $_POST ['DOB']['day'],
-					'JobTitle'				=> $_POST ['JobTitle'],
-					'Email'				=> $_POST ['Email'],
-					'CustomerContact'		=> ($_POST ['CustomerContact'] == 1),
-					'Phone'					=> $_POST ['Phone'],
-					'Mobile'				=> $_POST ['Mobile'],
-					'Fax'					=> $_POST ['Fax'],
-					'UserName'				=> $_POST ['UserName'],
-					'PassWord'				=> $_POST ['PassWord']
-				)
-			);
-			
 			try
 			{
-				if (isset ($_POST ['Archived']))
+				$cntContact->Update (
+					Array (
+						'Title'					=> $_POST ['Title'],
+						'FirstName'			=> $_POST ['FirstName'],
+						'LastName'				=> $_POST ['LastName'],
+						'DOB-year'				=> $_POST ['DOB']['year'],
+						'DOB-month'			=> $_POST ['DOB']['month'],
+						'DOB-day'				=> $_POST ['DOB']['day'],
+						'JobTitle'				=> $_POST ['JobTitle'],
+						'Email'				=> $_POST ['Email'],
+						'CustomerContact'		=> ($_POST ['CustomerContact'] == 1),
+						'Phone'					=> $_POST ['Phone'],
+						'Mobile'				=> $_POST ['Mobile'],
+						'Fax'					=> $_POST ['Fax'],
+						'UserName'				=> $_POST ['UserName'],
+						'PassWord'				=> $_POST ['PassWord']
+					)
+				);
+				
+				try
 				{
-					$cntContact->ArchiveStatus ($_POST ['Archived'] == 1);
+					if (isset ($_POST ['Archived']))
+					{
+						$cntContact->ArchiveStatus ($_POST ['Archived'] == 1);
+					}
 				}
+				catch (Exception $e)
+				{
+					$Style->Output ('xsl/content/contact/edit_failed_archive_username.xsl');
+					exit;
+				}
+				
+				header ("Location: contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());
+				exit;
 			}
 			catch (Exception $e)
 			{
-				$Style->Output ('xsl/content/contact/edit_failed_archive_username.xsl');
-				exit;
+				$oblstrError->setValue ($e->getMessage ());
 			}
-			
-			header ("Location: contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());
-			exit;
 		}
 	}
 	

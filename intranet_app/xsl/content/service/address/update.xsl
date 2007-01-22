@@ -11,7 +11,6 @@
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/note_add.js"></script>
 		
-		<div class="Seperator"></div>
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
@@ -76,8 +75,6 @@
 					<div class="Seperator"></div>
 					<div class="Seperator"></div>
 						
-					<h2 class="Address">Service Address Details</h2>
-					
 					<xsl:if test="not(/Response/ServiceAddress)">
 						<div class="MsgNotice" style="width: 375px;">
 							<strong><span class="Attention">Notice</span> :</strong>
@@ -774,10 +771,10 @@
 							</a>
 						</li>
 						<li>
-							<a href="#" title="Change of Lessee" alt="Change the owner of a particular Service">
-								<xsl:attribute name="onclick">
-									<xsl:text>return ModalExternal (this, 'service_lessee.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_lessee.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
 								</xsl:attribute>
 								<xsl:text>Change of Lessee</xsl:text>
 							</a>

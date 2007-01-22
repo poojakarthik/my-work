@@ -3,7 +3,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../../lib/date-time.xsl" />
 	<xsl:import href="../../../includes/init.xsl" />
-	<xsl:import href="../../../template/popup.xsl" />
+	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
 		<h1>Successful Service Change of Lessee</h1>
@@ -70,31 +70,52 @@
 				<tr>
 					<th>Start Date</th>
 					<td>
-						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"		select="/Response/Services/Old/Service/CreatedOn/year" />
-							<xsl:with-param name="month"	select="/Response/Services/Old/Service/CreatedOn/month" />
-							<xsl:with-param name="day"		select="/Response/Services/Old/Service/CreatedOn/day" />
-							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-						</xsl:call-template>
+						<xsl:choose>
+							<xsl:when test="/Response/Services/Old/Service/CreatedOn/year">
+								<xsl:call-template name="dt:format-date-time">
+									<xsl:with-param name="year"		select="/Response/Services/Old/Service/CreatedOn/year" />
+									<xsl:with-param name="month"	select="/Response/Services/Old/Service/CreatedOn/month" />
+									<xsl:with-param name="day"		select="/Response/Services/Old/Service/CreatedOn/day" />
+									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><span class="Green">No Start Date</span></strong>
+							</xsl:otherwise>
+						</xsl:choose>
 					</td>
 					<td>
-						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"		select="/Response/Services/New/Service/CreatedOn/year" />
-							<xsl:with-param name="month"	select="/Response/Services/New/Service/CreatedOn/month" />
-							<xsl:with-param name="day"		select="/Response/Services/New/Service/CreatedOn/day" />
-							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-						</xsl:call-template>
+						<xsl:choose>
+							<xsl:when test="/Response/Services/New/Service/CreatedOn/year">
+								<xsl:call-template name="dt:format-date-time">
+									<xsl:with-param name="year"		select="/Response/Services/New/Service/CreatedOn/year" />
+									<xsl:with-param name="month"	select="/Response/Services/New/Service/CreatedOn/month" />
+									<xsl:with-param name="day"		select="/Response/Services/New/Service/CreatedOn/day" />
+									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><span class="Red">No Start Date</span></strong>
+							</xsl:otherwise>
+						</xsl:choose>
 					</td>
 				</tr>
 				<tr>
 					<th>Cease Date</th>
 					<td>
-						<xsl:call-template name="dt:format-date-time">
-							<xsl:with-param name="year"		select="/Response/Services/Old/Service/ClosedOn/year" />
-							<xsl:with-param name="month"	select="/Response/Services/Old/Service/ClosedOn/month" />
-							<xsl:with-param name="day"		select="/Response/Services/Old/Service/ClosedOn/day" />
-							<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-						</xsl:call-template>
+						<xsl:choose>
+							<xsl:when test="/Response/Services/Old/Service/ClosedOn/year">
+								<xsl:call-template name="dt:format-date-time">
+									<xsl:with-param name="year"		select="/Response/Services/Old/Service/ClosedOn/year" />
+									<xsl:with-param name="month"	select="/Response/Services/Old/Service/ClosedOn/month" />
+									<xsl:with-param name="day"		select="/Response/Services/Old/Service/ClosedOn/day" />
+									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+								</xsl:call-template>
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><span class="Red">No Close Date</span></strong>
+							</xsl:otherwise>
+						</xsl:choose>
 					</td>
 					<td>
 						<xsl:choose>

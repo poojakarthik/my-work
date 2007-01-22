@@ -7,9 +7,16 @@
 		<h1>Recurring Charge Listing</h1>
 		
 		<p>
-			Charges and Recurring Charges are added against Services. To add a new
-			Recurring Charge, select a Service from the Service List on the
-			Console page for this Account.
+			Below is a list of Recurring Charges in the System. To add a new Recurring
+			Charge, select the Service you would like to add the Recurring Charge to
+			from the 
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>account_view.php?Id=</xsl:text>
+					<xsl:value-of select="/Response/Account/Id" />
+				</xsl:attribute>
+				<xsl:text>Account Details Page</xsl:text>
+			</a>.
 		</p>
 		<div class="Seperator"></div>
 		
@@ -135,12 +142,12 @@
 		
 		<xsl:choose>
 			<xsl:when test="/Response/RecurringCharges/Results/collationLength = 0">
-				<div class="MsgError">
+				<div class="MsgNotice">
 					No Recurring Charges have been made against this Account.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge) = 0">
-				<div class="MsgNotice">
+				<div class="MsgError">
 					No Recurring Charges were found between the range you searched for.
 				</div>
 			</xsl:when>

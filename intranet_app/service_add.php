@@ -84,7 +84,7 @@
 				}
 				catch (Exception $e)
 				{
-					$oblstrError->setValue ('Could not find valid Rate Plan');
+					$oblstrError->setValue ('Rate Plan Invalid');
 				}
 				
 				if ($rrpPlan)

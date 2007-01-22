@@ -42,33 +42,66 @@
 	// Start the Error String
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
+	// Start remembering
+	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
+	
+	$oblintBillingType = $oblarrUIValues->Push (
+		new dataInteger (
+			'BillingType',
+			($_POST ['BillingType']) ? $_POST ['BillingType'] : $actAccount->Pull ('BillingType')->getValue ()
+		)
+	);
+	
+	$oblintDDR = $oblarrUIValues->Push (
+		new dataInteger (
+			'DirectDebit',
+			($_POST ['DirectDebit']) ? $_POST ['DirectDebit'] : $actAccount->Pull ('DirectDebit')->getValue ()
+		)
+	);
+	
+	$oblintCC = $oblarrUIValues->Push (
+		new dataInteger (
+			'CreditCard',
+			($_POST ['CreditCard']) ? $_POST ['CreditCard'] : $actAccount->Pull ('CreditCard')->getValue ()
+		)
+	);
+	
 	// If the Billing Type is set in the POST, then we are
 	// going to be updating the information
 	if ($_POST ['BillingType'])
 	{
-		try
+		$btsBillingTypes = new BillingTypes ();
+		
+		if (!$btsBillingTypes->setValue ($_POST ['BillingType']))
 		{
-			$objBillingVia = null;
-			
-			switch ($_POST ['BillingType'])
-			{
-				case BILLING_TYPE_DIRECT_DEBIT:
-					$objBillingVia = $acgAccountGroup->getDirectDebit ($_POST ['DirectDebit']);
-					break;
-					
-				case BILLING_TYPE_CREDIT_CARD:
-					$objBillingVia = $acgAccountGroup->getCreditCard ($_POST ['CreditCard']);
-					break;
-			}
-			
-			$actAccount->BillingTypeSelect ($_POST ['BillingType'], $objBillingVia);
-			
-			$Style->Output ('xsl/content/account/payment_selected.xsl');
-			exit;
+			$oblstrError->setValue ('BillingType Invalid');
 		}
-		catch (Exception $e)
+		else
 		{
-			$oblstrError->setValue ($e->getMessage ());
+			try
+			{
+				$objBillingVia = null;
+				
+				switch ($_POST ['BillingType'])
+				{
+					case BILLING_TYPE_DIRECT_DEBIT:
+						$objBillingVia = $acgAccountGroup->getDirectDebit ($_POST ['DirectDebit']);
+						break;
+						
+					case BILLING_TYPE_CREDIT_CARD:
+						$objBillingVia = $acgAccountGroup->getCreditCard ($_POST ['CreditCard']);
+						break;
+				}
+				
+				$actAccount->BillingTypeSelect ($_POST ['BillingType'], $objBillingVia);
+				
+				$Style->Output ('xsl/content/account/payment_selected.xsl');
+				exit;
+			}
+			catch (Exception $e)
+			{
+				$oblstrError->setValue ($e->getMessage ());
+			}
 		}
 	}
 	

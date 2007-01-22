@@ -87,7 +87,7 @@
 				<tr>
 					<td width="30">
 						<input type="radio" id="BillingType:3" name="BillingType" value="3">
-							<xsl:if test="/Response/Account/BillingType = 3">
+							<xsl:if test="/Response/ui-values/BillingType = 3">
 								<xsl:attribute name="checked">
 									<xsl:text>checked</xsl:text>
 								</xsl:attribute>
@@ -103,7 +103,7 @@
 				<tr>
 					<td>
 						<input type="radio" id="BillingType:1" name="BillingType" value="1">
-							<xsl:if test="/Response/Account/BillingType = 1">
+							<xsl:if test="/Response/ui-values/BillingType = 1">
 								<xsl:attribute name="checked">
 									<xsl:text>checked</xsl:text>
 								</xsl:attribute>
@@ -148,8 +148,8 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
-											<xsl:if test="/Response/Account/BillingType = 1">
-												<xsl:if test="/Response/Account/DirectDebit = ./Id">
+											<xsl:if test="/Response/ui-values/BillingType = 1">
+												<xsl:if test="/Response/ui-values/DirectDebit = ./Id">
 													<xsl:attribute name="checked">
 														<xsl:text>checked</xsl:text>
 													</xsl:attribute>
@@ -183,7 +183,7 @@
 				<tr>
 					<td>
 						<input type="radio" id="BillingType:2" name="BillingType" value="2">
-							<xsl:if test="/Response/Account/BillingType = 2">
+							<xsl:if test="/Response/ui-values/BillingType = 2">
 								<xsl:attribute name="checked">
 									<xsl:text>checked</xsl:text>
 								</xsl:attribute>
@@ -229,8 +229,8 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
-											<xsl:if test="/Response/Account/BillingType = 2">
-												<xsl:if test="/Response/Account/CreditCard = ./Id">
+											<xsl:if test="/Response/ui-values/BillingType = 2">
+												<xsl:if test="/Response/ui-values/CreditCard = ./Id">
 													<xsl:attribute name="checked">
 														<xsl:text>checked</xsl:text>
 													</xsl:attribute>

@@ -77,9 +77,9 @@
 			<div class="sectionContent">
 				<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 					<tr class="First">
+						<th width="30">#</th>
 						<th>Plan Name</th>
 						<th>Service Type</th>
-						<th>Archive</th>
 						<th>Actions</th>
 					</tr>
 					<xsl:for-each select="/Response/RatePlans/Results/rangeSample/RatePlan">
@@ -94,28 +94,10 @@
 									</xsl:otherwise>
 								</xsl:choose>
 							</xsl:attribute>
+							
+							<td><xsl:value-of select="position()" />.</td>
 							<td><xsl:value-of select="./Name" /></td>
 							<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
-							<td>
-								<strong>
-									<span>
-										<xsl:choose>
-											<xsl:when test="./Archived = 1">
-												<xsl:attribute name="class">
-													<xsl:text>Red</xsl:text>
-												</xsl:attribute>
-												<xsl:text>Archived</xsl:text>
-											</xsl:when>
-											<xsl:otherwise>
-												<xsl:attribute name="class">
-													<xsl:text>Green</xsl:text>
-												</xsl:attribute>
-												<xsl:text>Available</xsl:text>
-											</xsl:otherwise>
-										</xsl:choose>
-									</span>
-								</strong>
-							</td>
 							<td>
 								<a href="#" title="Rate Plan Details" alt="Information about this Rate and its Charges">
 									<xsl:attribute name="onclick">
@@ -142,9 +124,9 @@
 					</xsl:when>
 				</xsl:choose>
 				
-				<p>
+				<div class="LinkAdd">
 					<a href="rates_plan_add.php">Add a New Rate Plan</a>
-				</p>
+				</div>
 			</div>
 		</div>
 	</xsl:template>

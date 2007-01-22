@@ -17,8 +17,8 @@
 	// call application
 	require ('config/application.php');
 	
-	$docDocumentation->Explain ("Rate Plan");
-	$docDocumentation->Explain ("Service");
+	$docDocumentation->Explain ('Rate Plan');
+	$docDocumentation->Explain ('Service');
 	
 	// Attach a Service Types Listing for Searching
 	$svtServiceTypes = $Style->attachObject (new ServiceTypes);
@@ -30,7 +30,7 @@
 	{
 		foreach ($_GET ['constraint'] as $strConstraintName => $arrConstraintRules)
 		{
-			if ($arrConstraintRules ['Value'] != "")
+			if ($arrConstraintRules ['Value'] != '')
 			{
 				$rplRatePlans->Constrain (
 					$strConstraintName,
@@ -40,6 +40,8 @@
 			}
 		}
 	}
+	
+	$rplRatePlans->Constrain ('Archived', '=', 0);
 	
 	if (isset ($_GET ['Order']['Column']))
 	{
@@ -51,13 +53,13 @@
 	else
 	{
 		$rplRatePlans->Order (
-			"ServiceType",
+			'ServiceType',
 			TRUE
 		);
 	}
 	
 	$rplRatePlans->Sample ();
 	
-	$Style->Output ("xsl/content/rates/plans/list.xsl");
+	$Style->Output ('xsl/content/rates/plans/list.xsl');
 	
 ?>

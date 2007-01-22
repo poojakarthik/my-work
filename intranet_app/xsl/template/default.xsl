@@ -34,7 +34,7 @@
 							<!-- Report Bug Button & PopUp -->
 							<div class="Menu_Button">
 								<a href="#" onclick="return ModalDisplay ('#modalContent-ReportBug')">
-									<img src="img/template/bug.png" border="0" />
+									<img src="img/template/bug.png" border="0" alt="Report Bug" title="Report Bug" />
 								</a>
 							</div>
 							
@@ -58,11 +58,10 @@
 											<table border="0" cellpadding="0" cellspacing="0">
 												<tr>
 													<td valign="top" width="100%">
-														<p>
-															<strong>Please describe the problem that occurred :</strong>
-														</p>
+														<h1>Bug Report</h1>
+														Please describe the problem that occurred :
 														
-														<textarea name="Comment" style="width: 725px; height: 200px;" class="input-summary-note" />
+														<textarea name="Comment" style="width: 725px; height: 150px;" class="input-summary-note" />
 														
 														<div class="Right">
 															<input type="submit" value="Report Bug &#0187;" class="input-submit" />
@@ -265,7 +264,10 @@
 									</tr>
 									<tr>
 										<td>
-											<a href="logout.php">
+											<a href="#">
+												<xsl:attribute name="onclick">
+													<xsl:text>return Logout()</xsl:text>
+												</xsl:attribute>
 												<img src="img/template/logout.png" title="Logout" class="MenuIcon" />
 											</a>
 										</td>
@@ -373,6 +375,7 @@
 				<div id="modalContent-recentCustomers">
 					<div class="modalContainer">
 						<div class="modalContent">
+							<h1>Recent Customers</h1>
 							<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 								<thead>
 									<tr class="First">

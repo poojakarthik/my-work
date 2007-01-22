@@ -10,16 +10,16 @@
 			<div class="MsgError">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'BankName'">
-						The Bank Name that you entered was Blank.
+						You did not enter a Bank Name. Please try again.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'BSB'">
-						The BSB# that you entered was Blank.
+						You did not enter a BSB#. Please try again.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'AccountNumber'">
-						The Account# that you entered was Blank.
+						You did not enter an Account Number. Please try again.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'AccountName'">
-						The Account Name that you entered was Blank.
+						You did not enter an Account Name. Please try again.
 					</xsl:when>
 				</xsl:choose>
 			</div>

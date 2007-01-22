@@ -19,25 +19,6 @@
 	require ('config/application.php');
 	
 	
-	if (!$_POST ['Carrier'] || !$_POST ['Service'] || !$_POST ['RequestType'])
-	{
-		header ('Location: console.php'); exit;
-	}
-	
-	// Check the requested Carrier Exists
-	$carCarrier = new Carriers ();
-	if (!$carCarrier->setValue ($_POST ['Carrier']))
-	{
-		header ('Location: console.php'); exit;
-	}
-	
-	// Check the requested Provisioning Request Type exists
-	$prtRequestType = new ProvisioningRequestTypes ();
-	if (!$prtRequestType->setValue ($_POST ['RequestType']))
-	{
-		header ('Location: console.php'); exit;
-	}
-	
 	// Get the Service
 	try
 	{
@@ -45,7 +26,27 @@
 	}
 	catch (Exception $e)
 	{
-		header ('Location: console.php'); exit;
+		$Style->Output ('xsl/content/service/notfound.xsl');
+		exit;
+	}
+	
+	if (!$_POST ['Carrier'] || !$_POST ['RequestType'])
+	{
+		header ('Location: service_address.php?Service=' . $srvService->Pull ('Id')->getValue ()); exit;
+	}
+	
+	// Check the requested Carrier Exists
+	$carCarrier = new Carriers ();
+	if (!$carCarrier->setValue ($_POST ['Carrier']))
+	{
+		header ('Location: service_address.php?Service=' . $srvService->Pull ('Id')->getValue ()); exit;
+	}
+	
+	// Check the requested Provisioning Request Type exists
+	$prtRequestType = new ProvisioningRequestTypes ();
+	if (!$prtRequestType->setValue ($_POST ['RequestType']))
+	{
+		header ('Location: service_address.php?Service=' . $srvService->Pull ('Id')->getValue ()); exit;
 	}
 	
 	// Do the Provisioning Request

@@ -67,3 +67,15 @@
 		return true;
 	}
 	
+	function Logout ()
+	{
+		var x = window.confirm ("Are you sure you would like to Logout?");
+		
+		if (x)
+		{
+			window.location = "logout.php";
+		}
+		
+		return false;
+	}
+	

@@ -126,11 +126,18 @@
 				</tr>
 			</xsl:for-each>
 		</table>
+		<xsl:choose>
+			<xsl:when test="/Response/Invoices/Results/collationLength = 0">
+				<div class="MsgNotice">
+					There are no Invoices associated with this Account.
+				</div>
+			</xsl:when>
+		</xsl:choose>
 		
 		<div class="Seperator"></div>
 		
 		<h2 class="PDF">PDF Bills</h2>
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="50%">
+		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Bill Month</th>
@@ -185,18 +192,25 @@
 				</tr>
 			</xsl:for-each>
 		</table>
+		<xsl:choose>
+			<xsl:when test="count(/Response/Invoices-PDFs/Invoice-PDF) = 0">
+				<div class="MsgNotice">
+					There are no PDF files associated with this Account.
+				</div>
+			</xsl:when>
+		</xsl:choose>
 		
 		<div class="Seperator"></div>
 		
 		<h2 class="Payment">Payments</h2>
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="50%">
+		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Invoice #</th>
-				<th class="Currency">Payment Amount</th>
+				<th>Payment Amount</th>
 				<th>Actions</th>
 			</tr>
-			<xsl:for-each select="/Response/AccountPayments/rangeSample/InvoicePayment">
+			<xsl:for-each select="/Response/AccountPayments/Results/rangeSample/InvoicePayment">
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>
@@ -219,7 +233,7 @@
 							Invoice #<xsl:value-of select="./Invoice" />
 						</a>
 					</td>
-					<td class="Currency"><xsl:value-of select="./Amount" /></td>
+					<td><xsl:value-of select="./Amount" /></td>
 					<td>
 						<a href="#" title="View Invoice Payment Details" alt="Information about a payment that was made">
 							<xsl:attribute name="onclick">
@@ -233,5 +247,12 @@
 				</tr>
 			</xsl:for-each>
 		</table>
+		<xsl:choose>
+			<xsl:when test="/Response/AccountPayments/Results/collationLength = 0">
+				<div class="MsgNotice">
+					There are no Payments associated with this Account.
+				</div>
+			</xsl:when>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>

@@ -17,31 +17,31 @@
 				<div class="MsgError">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Account'">
-							The Account# you entered was not found in the database.
+							The Account# you entered was not found. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'ABN'">
-							The ABN# you entered was not found in the database.
+							The ABN# you entered was not found. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'ACN'">
-							The ACN# you entered was not found in the database.
+							The ACN# you entered was not found. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Invoice'">
-							The Invoice# you entered was not found in the database.
+							The Invoice# you entered was not found. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'FNN'">
-							The Line Number you entered was not found in the database.
+							The Line Number you entered was not found. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'BusinessName None'">
-							The Business Name you entered did not return any possible Accounts.
+							The Business Name you entered was not found. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'BusinessName Refine'">
-							The Business Name you entered returned too many any possible Accounts.
+							The Business Name you entered was too ambiguous. Please refine your search.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Contact'">
-							The First/Last Name you entered did not return any possible Contacts.
+							The First/Last Name you entered was not found. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Contact-OneFill'">
-							You must search for a First and Last name for a Contact.
+							You must search for a First and Last name for a Contact. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Empty'">
 							Your search details are blank. Please enter criteria to search for.
@@ -166,13 +166,16 @@
 								</input>
 							</td>
 						</tr>
+					</table>
+					<div class="Seperator"></div>
+					<div class="Seperator"></div>
+
+					Or, enter <strong>both</strong> of the following fields:
+					<div class="Seperator"></div>
+					
+					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
-							<td colspan="2">
-								<div class="Seperator"></div>
-							</td>
-						</tr>
-						<tr>
-							<th>
+							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
 									<xsl:with-param name="field" select="string('FirstName')" />

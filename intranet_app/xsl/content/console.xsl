@@ -61,7 +61,10 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="logout.php">
+					<a href="#">
+						<xsl:attribute name="onclick">
+							<xsl:text>return Logout()</xsl:text>
+						</xsl:attribute>
 						<img src="img/template/logout.png" title="Logout" class="MenuIcon" />
 					</a>
 				</td>

@@ -198,6 +198,11 @@
 				}
 				else
 				{
+					if ($_POST ['ContinueAccount'])
+					{
+						$oblstrError->setValue ('Unselected');
+					}
+					
 					//TODO!!!! - 1 match = skip this and go to the next step
 					$Style->Output ('xsl/content/contact/list_1-account.xsl');
 					exit;
@@ -242,6 +247,11 @@
 			foreach ($oblsamContacts as &$objContact)
 			{
 				$objContact->PrimaryAccount ();
+			}
+			
+			if ($_POST ['ContinueContact'])
+			{
+				$oblstrError->setValue ('Unselected');
 			}
 			
 			$Style->Output ('xsl/content/contact/list_1-contact.xsl');
@@ -332,6 +342,11 @@
 			// not on the account list, but may be able to process through
 			
 			$ctsContacts = $oblarrAnswers->Push ($actAccount->Contacts ());
+			
+			if ($_POST ['ContinueContact'])
+			{
+				$oblstrError->setValue ('Unselected');
+			}
 			
 			//TODO!!!! - if no contact is selected on list_2-contact.xsl we are being sent back to the start
 			//				we should be showing this page again with an error msg

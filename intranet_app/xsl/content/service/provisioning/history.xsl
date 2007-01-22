@@ -8,54 +8,6 @@
 	
 	<xsl:template name="Content">
 		<h1>Provisioning History</h1>
-		<div class="Seperator"></div>
-		
-		<h2 class="Service">Service Details</h2>
-		<div class="Filter-Form">
-			<div class="Filter-Form-Content">
-				<table border="0" cellpadding="3" cellspacing="0">
-					<tr>
-						<th>
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Account')" />
-								<xsl:with-param name="field" select="string('Id')" />
-							</xsl:call-template>
-						</th>
-						<td><xsl:value-of select="/Response/Account/Id" /></td>
-					</tr>
-					<tr>
-						<th>
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Account')" />
-								<xsl:with-param name="field" select="string('BusinessName')" />
-							</xsl:call-template>
-						</th>
-						<td><xsl:value-of select="/Response/Account/BusinessName" /></td>
-					</tr>
-					<tr>
-						<th>
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Account')" />
-								<xsl:with-param name="field" select="string('TradingName')" />
-							</xsl:call-template>
-						</th>
-						<td><xsl:value-of select="/Response/Account/TradingName" /></td>
-					</tr>
-					<tr>
-						<th>
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Service')" />
-								<xsl:with-param name="field" select="string('FNN')" />
-							</xsl:call-template>
-						</th>
-						<td><xsl:value-of select="/Response/Service/FNN" /></td>
-					</tr>
-				</table>
-			</div>
-		</div>
-		<div class="Seperator"></div>
-		
-		<h2 class="Provisioning">Provisioning History</h2>
 		
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
@@ -112,5 +64,13 @@
 				</tr>
 			</xsl:for-each>
 		</table>
+		
+		<xsl:choose>
+			<xsl:when test="/Response/ProvisioningLog/Results/collationLength = 0">
+				<div class="MsgNotice">
+					There are no provisioning requests made on this Service.
+				</div>
+			</xsl:when>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>

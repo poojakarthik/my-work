@@ -20,18 +20,15 @@
 			</xsl:if>
 			
 			
-			<h2 class="Account">Account Details</h2>
+			<h2 class="Invoice">Payment Direction</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
-					<!-- TODO: URGENT - SELECT box of accounts for this contact -->
-					<!-- first option is All Accounts -->
-					<!-- select the account we were vieweng if we came from an account page (still show the SELECT box) -->
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Account')" />
-									<xsl:with-param name="field" select="string('BusinessName')" />
+									<xsl:with-param name="entity" select="string('Payment')" />
+									<xsl:with-param name="field" select="string('PaymentApplication')" />
 								</xsl:call-template>
 							</th>
 							<td>

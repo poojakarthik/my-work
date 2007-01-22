@@ -143,7 +143,8 @@
 				'Account'				=> $actAccount->Pull ('Id')->getValue (),
 				'CappedCharge'			=> 0,
 				'UncappedCharge'		=> 0,
-				'CreatedOn'				=> date ('Y-m-d')
+				'CreatedOn'				=> date ('Y-m-d'),
+				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue ()
 			);
 			
 			$insService = new StatementInsert ('Service');

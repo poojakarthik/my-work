@@ -71,303 +71,302 @@
 					<xsl:value-of select="/Response/ui-values/FNN" />
 				</xsl:attribute>
 			</input>
-				
-			<div class="Filter-Form-Content Left">
-				<div class="Filter-Form">
-					<div class="Filter-Form-Content">
-						<table border="0" cellpadding="3" cellspacing="0">
-							<!-- Service Number (FNN) - if entered -->
-							<xsl:if test="/Response/ui-values/FNN != ''">
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('FNN')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/ui-values/FNN" />
-										<input type="hidden" name="Service" id="Service" ValidLevel="2">
-											<xsl:if test="/Response/ui-values/FNN != ''">
-												<xsl:attribute name="value">
-													<xsl:text></xsl:text>
-													<xsl:value-of select="/Response/ui-values/FNN" />
-												</xsl:attribute>
-												<xsl:attribute name="ValidValue">
-													<xsl:text></xsl:text>
-													<xsl:value-of select="/Response/ui-values/FNN" />
-												</xsl:attribute>
-											</xsl:if>
-										</input>
-									</td>
-								</tr>
-							</xsl:if>
-							<!-- Account Business Name -->
+			
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content">
+					<table border="0" cellpadding="3" cellspacing="0">
+						<!-- Service Number (FNN) - if entered -->
+						<xsl:if test="/Response/ui-values/FNN != ''">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Account')" />
-										<xsl:with-param name="field" select="string('BusinessName')" />
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('FNN')" />
 									</xsl:call-template>
 								</th>
 								<td>
-									<xsl:choose>
-										<xsl:when test="/Response/ui-answers/Account/BusinessName = ''">
-											<span class="Red"> </span>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:value-of select="/Response/ui-answers/Account/BusinessName" />
-										</xsl:otherwise>
-									</xsl:choose>
+									<xsl:value-of select="/Response/ui-values/FNN" />
+									<input type="hidden" name="Service" id="Service" ValidLevel="2">
+										<xsl:if test="/Response/ui-values/FNN != ''">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ui-values/FNN" />
+											</xsl:attribute>
+											<xsl:attribute name="ValidValue">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ui-values/FNN" />
+											</xsl:attribute>
+										</xsl:if>
+									</input>
 								</td>
 							</tr>
-							<tr>
-								<td></td>
-								<td>
-									<xsl:choose>
-										<xsl:when test="/Response/ui-answers/Account/TradingName = ''">
-											<span class="Red"> </span>
-										</xsl:when>
-										<xsl:otherwise>
-											<xsl:value-of select="/Response/ui-answers/Account/TradingName" />
-										</xsl:otherwise>
-									</xsl:choose>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="2">
-									<div class="Seperator"></div>
-								</td>
-							</tr>
-							<!-- Account Address -->
-							<tr>
-								<th class="JustifiedWidth">
-									<xsl:call-template name="Label">
-										<xsl:with-param name="entity" select="string('Account')" />
-										<xsl:with-param name="field" select="string('Address')" />
-									</xsl:call-template>
-								</th>
-								<td>
-									<table border="0" cellpadding="0" cellspacing="0">
-										<tr>
-											<td width="30"><input type="checkbox" name="Address" id="Address:TRUE" autocomplete="off"
-											onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="2" /></td>
-											<th>
-												<label for="Address:TRUE">
-													Address verified by customer
-												</label>
-											</th>
-										</tr>
-									</table>
-								</td>
-							</tr>
-							<tr>
-								<td></td>
-								<td><xsl:value-of select="/Response/ui-answers/Account/Address1" /></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td><xsl:value-of select="/Response/ui-answers/Account/Address2" /></td>
-							</tr>
-							<tr>
-								<td></td>
-								<td>
-									<xsl:value-of select="/Response/ui-answers/Account/Suburb" />, 
-									<xsl:value-of select="/Response/ui-answers/Account/Postcode" />
-								</td>
-							</tr>
-						</table>
-					</div>
+						</xsl:if>
+						<!-- Account Business Name -->
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('BusinessName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:choose>
+									<xsl:when test="/Response/ui-answers/Account/BusinessName = ''">
+										<span class="Red"> </span>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="/Response/ui-answers/Account/BusinessName" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>
+								<xsl:choose>
+									<xsl:when test="/Response/ui-answers/Account/TradingName = ''">
+										<span class="Red"> </span>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:value-of select="/Response/ui-answers/Account/TradingName" />
+									</xsl:otherwise>
+								</xsl:choose>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<!-- Account Address -->
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('Address')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<table border="0" cellpadding="0" cellspacing="0">
+									<tr>
+										<td width="30"><input type="checkbox" name="Address" id="Address:TRUE" autocomplete="off"
+										onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="2" /></td>
+										<th>
+											<label for="Address:TRUE">
+												Address verified by customer
+											</label>
+										</th>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><xsl:value-of select="/Response/ui-answers/Account/Address1" /></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><xsl:value-of select="/Response/ui-answers/Account/Address2" /></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td>
+								<xsl:value-of select="/Response/ui-answers/Account/Suburb" />, 
+								<xsl:value-of select="/Response/ui-answers/Account/Postcode" />
+							</td>
+						</tr>
+					</table>
 				</div>
-				
-				<div class="Seperator"></div>
-				
-				<div class="Filter-Form">
-					<div class="Filter-Form-Content">
-						<table border="0" cellpadding="5" cellspacing="0">
-							<!-- Account Id -->
+			</div>
+			
+			<div class="Seperator"></div>
+			
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content">
+					<table border="0" cellpadding="5" cellspacing="0">
+						<!-- Account Id -->
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('Id')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Account" id="Account" class="input-string" autocomplete="off"
+								onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="2">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Account" />
+									</xsl:attribute>
+									<xsl:attribute name="ValidValue">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-answers/Account/Id" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<!-- Account ABN -->
+						<xsl:if test="/Response/ui-answers/Account/ABN != ''">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
 										<xsl:with-param name="entity" select="string('Account')" />
-										<xsl:with-param name="field" select="string('Id')" />
+										<xsl:with-param name="field" select="string('ABN')" />
 									</xsl:call-template>
 								</th>
 								<td>
-									<input type="text" name="Account" id="Account" class="input-string" autocomplete="off"
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="2">
+									<input type="text" name="ABN" id="ABN" class="input-string" autocomplete="off"
+									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 										<xsl:attribute name="value">
 											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/ui-values/Account" />
+											<xsl:value-of select="/Response/ui-values/ABN" />
 										</xsl:attribute>
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/ui-answers/Account/Id" />
+											<xsl:value-of select="/Response/ui-answers/Account/ABN" />
 										</xsl:attribute>
 									</input>
 								</td>
 							</tr>
-							<!-- Account ABN -->
-							<xsl:if test="/Response/ui-answers/Account/ABN != ''">
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Account')" />
-											<xsl:with-param name="field" select="string('ABN')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<input type="text" name="ABN" id="ABN" class="input-string" autocomplete="off"
-										onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-values/ABN" />
-											</xsl:attribute>
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Account/ABN" />
-											</xsl:attribute>
-										</input>
-									</td>
-								</tr>
-							</xsl:if>
-							
-							<!-- Account ACN -->
-							<xsl:if test="/Response/ui-answers/Account/ACN != ''">
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Account')" />
-											<xsl:with-param name="field" select="string('ACN')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<input type="text" name="ACN" id="ACN" class="input-string" autocomplete="off"
-										onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-values/ACN" />
-											</xsl:attribute>
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Account/ACN" />
-											</xsl:attribute>
-										</input>
-									</td>
-								</tr>
-							</xsl:if>
-						</table>
-					</div>
+						</xsl:if>
+						
+						<!-- Account ACN -->
+						<xsl:if test="/Response/ui-answers/Account/ACN != ''">
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Account')" />
+										<xsl:with-param name="field" select="string('ACN')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<input type="text" name="ACN" id="ACN" class="input-string" autocomplete="off"
+									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-values/ACN" />
+										</xsl:attribute>
+										<xsl:attribute name="ValidValue">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-answers/Account/ACN" />
+										</xsl:attribute>
+									</input>
+								</td>
+							</tr>
+						</xsl:if>
+					</table>
 				</div>
-				
-				<div class="Seperator"></div>
 			</div>
 			
-			<div class="Filter-Form-Content Left">
-				<div class="Filter-Form">
-					<div class="Filter-Form-Content">
-						<table border="0" cellpadding="5" cellspacing="0">
-							<!-- Contact Name -->
+			<div class="Seperator"></div>
+
+			<div class="Filter-Form">
+				<div class="Filter-Form-Content">
+					<table border="0" cellpadding="5" cellspacing="0">
+						<!-- Contact Name -->
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Contact')" />
+									<xsl:with-param name="field" select="string('Name')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:value-of select="/Response/ui-answers/Contact/FirstName" />
+								<xsl:text> </xsl:text>
+								<xsl:value-of select="/Response/ui-answers/Contact/LastName" />
+							</td>
+						</tr>
+						<!-- Contact Date of Birth -->
+						<xsl:if test="/Response/ui-answers/Contact/DOB/year">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
 										<xsl:with-param name="entity" select="string('Contact')" />
-										<xsl:with-param name="field" select="string('Name')" />
+										<xsl:with-param name="field" select="string('DOB')" />
 									</xsl:call-template>
 								</th>
 								<td>
-									<xsl:value-of select="/Response/ui-answers/Contact/FirstName" />
-									<xsl:text> </xsl:text>
-									<xsl:value-of select="/Response/ui-answers/Contact/LastName" />
+									<select name="DOB-year" id="DOB-year" ValidLevel="1" autocomplete="off" 
+									onchange="ValidateCustomer.ValidateInput (this)"
+									onkeyup="ValidateCustomer.ValidateInput (this)">
+										<xsl:attribute name="ValidValue">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
+										</xsl:attribute>
+										<option value=""></option>
+										<xsl:call-template name="Date-Loop">
+											<xsl:with-param name="start" select="number('1900')" />
+											<xsl:with-param name="cease" select="number('1990')" />
+											<xsl:with-param name="step" select="number('1')" />
+										</xsl:call-template>
+									</select>
+									<select name="DOB-month" id="DOB-month" ValidLevel="1" autocomplete="off" 
+									onchange="ValidateCustomer.ValidateInput (this)"
+									onkeyup="ValidateCustomer.ValidateInput (this)">
+										<xsl:attribute name="ValidValue">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-answers/Contact/DOB/month" />
+										</xsl:attribute>
+										<option value=""></option>
+										<option value="01">01 - JAN</option>
+										<option value="02">02 - FEB</option>
+										<option value="03">03 - MAR</option>
+										<option value="04">04 - APR</option>
+										<option value="05">05 - MAY</option>
+										<option value="06">06 - JUN</option>
+										<option value="07">07 - JUL</option>
+										<option value="08">08 - AUG</option>
+										<option value="09">09 - SEP</option>
+										<option value="10">10 - OCT</option>
+										<option value="11">11 - NOV</option>
+										<option value="12">12 - DEC</option>
+									</select>
+									<select name="DOB-day" id="DOB-day" ValidLevel="1" autocomplete="off" 
+									onchange="ValidateCustomer.ValidateInput (this)"
+									onkeyup="ValidateCustomer.ValidateInput (this)">
+										<xsl:attribute name="ValidValue">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
+										</xsl:attribute>
+										<option value=""></option>
+										<xsl:call-template name="Date-Loop">
+											<xsl:with-param name="start" select="number('1')" />
+											<xsl:with-param name="cease" select="number('31')" />
+											<xsl:with-param name="step" select="number('1')" />
+										</xsl:call-template>
+									</select>
 								</td>
 							</tr>
-							<!-- Contact Date of Birth -->
-							<xsl:if test="/Response/ui-answers/Contact/DOB/year">
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Contact')" />
-											<xsl:with-param name="field" select="string('DOB')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<select name="DOB-year" id="DOB-year" ValidLevel="1" autocomplete="off" 
-										onchange="ValidateCustomer.ValidateInput (this)"
-										onkeyup="ValidateCustomer.ValidateInput (this)">
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
-											</xsl:attribute>
-											<option value=""></option>
-											<xsl:call-template name="Date-Loop">
-												<xsl:with-param name="start" select="number('1900')" />
-												<xsl:with-param name="cease" select="number('1990')" />
-												<xsl:with-param name="step" select="number('1')" />
-											</xsl:call-template>
-										</select>
-										<select name="DOB-month" id="DOB-month" ValidLevel="1" autocomplete="off" 
-										onchange="ValidateCustomer.ValidateInput (this)"
-										onkeyup="ValidateCustomer.ValidateInput (this)">
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Contact/DOB/month" />
-											</xsl:attribute>
-											<option value=""></option>
-											<option value="01">01 - JAN</option>
-											<option value="02">02 - FEB</option>
-											<option value="03">03 - MAR</option>
-											<option value="04">04 - APR</option>
-											<option value="05">05 - MAY</option>
-											<option value="06">06 - JUN</option>
-											<option value="07">07 - JUL</option>
-											<option value="08">08 - AUG</option>
-											<option value="09">09 - SEP</option>
-											<option value="10">10 - OCT</option>
-											<option value="11">11 - NOV</option>
-											<option value="12">12 - DEC</option>
-										</select>
-										<select name="DOB-day" id="DOB-day" ValidLevel="1" autocomplete="off" 
-										onchange="ValidateCustomer.ValidateInput (this)"
-										onkeyup="ValidateCustomer.ValidateInput (this)">
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
-											</xsl:attribute>
-											<option value=""></option>
-											<xsl:call-template name="Date-Loop">
-												<xsl:with-param name="start" select="number('1')" />
-												<xsl:with-param name="cease" select="number('31')" />
-												<xsl:with-param name="step" select="number('1')" />
-											</xsl:call-template>
-										</select>
-									</td>
-								</tr>
-							</xsl:if>
-							<!-- Contact Email Address -->
-							<xsl:if test="/Response/ui-answers/Contact/Email != ''">
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Contact')" />
-											<xsl:with-param name="field" select="string('Email')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<input type="text" name="Email" id="Email" class="input-string" autocomplete="off"
-										onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Contact/Email" />
-											</xsl:attribute>
-										</input>
-									</td>
-								</tr>
-							</xsl:if>
-						</table>
-					</div>
+						</xsl:if>
+						<!-- Contact Email Address -->
+						<xsl:if test="/Response/ui-answers/Contact/Email != ''">
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Contact')" />
+										<xsl:with-param name="field" select="string('Email')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<input type="text" name="Email" id="Email" class="input-string" autocomplete="off"
+									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+										<xsl:attribute name="ValidValue">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-answers/Contact/Email" />
+										</xsl:attribute>
+									</input>
+								</td>
+							</tr>
+						</xsl:if>
+					</table>
 				</div>
-				<div class="Seperator"></div>
-				
+			</div>
+			<div class="Seperator"></div>
+			
+			<xsl:if test="/Response/ui-answers/Invoice or count(/Response/ui-answers/Invoices/Results/rangeSample/Invoice) != 0 or /Response/ui-answers/Account/DirectDebitDetails/DirectDebit">
+			
 				<div class="Filter-Form">
 					<div class="Filter-Form-Content">
 						<table border="0" cellpadding="5" cellspacing="0">
@@ -485,86 +484,86 @@
 				</div>
 				
 				<div class="Seperator"></div>
-				
-				<!-- Credit Card Details -->
-				<xsl:if test="/Response/ui-answers/Account/CreditCardDetails/CreditCard">
-					<div class="Filter-Form">
-						<div class="Filter-Form-Content">
-							<table border="0" cellpadding="5" cellspacing="0">
-								<!-- Credit Card Number -->
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Credit Card')" />
-											<xsl:with-param name="field" select="string('CardNumber')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<input type="text" name="CreditCard-CardNumber" id="CreditCard-CardNumber" class="input-string" size="4" 
-										autocomplete="off" onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/Last4Digits" />
-											</xsl:attribute>
-										</input>
-									</td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Credit Card')" />
-											<xsl:with-param name="field" select="string('ExpiryDate')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<select name="CreditCard-Exp-Month" id="CreditCard-Exp-Month" ValidLevel="1" autocomplete="off" 
-										onchange="ValidateCustomer.ValidateInput (this)"
-										onkeyup="ValidateCustomer.ValidateInput (this)">
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/ExpMonth" />
-											</xsl:attribute>
-											<option value="" selected="selected"></option>
-											<option value="01">01</option>
-											<option value="02">02</option>
-											<option value="03">03</option>
-											<option value="04">04</option>
-											<option value="05">05</option>
-											<option value="06">06</option>
-											<option value="07">07</option>
-											<option value="08">08</option>
-											<option value="09">09</option>
-											<option value="10">10</option>
-											<option value="11">11</option>
-											<option value="12">12</option>
-										</select> /
-										<select name="CreditCard-Exp-Year" id="CreditCard-Exp-Year" ValidLevel="1" 
-										onchange="ValidateCustomer.ValidateInput (this)"
-										onkeyup="ValidateCustomer.ValidateInput (this)">
-											<xsl:attribute name="ValidValue">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/ExpYear" />
-											</xsl:attribute>
-											<option value="" selected="selected"></option>
-											<option value="07">07</option>
-											<option value="08">08</option>
-											<option value="09">09</option>
-											<option value="10">10</option>
-											<option value="11">11</option>
-											<option value="12">12</option>
-											<option value="13">13</option>
-											<option value="14">14</option>
-											<option value="15">15</option>
-										</select>
-									</td>
-								</tr>
-							</table>
-						</div>
+			</xsl:if>
+			
+			<!-- Credit Card Details -->
+			<xsl:if test="/Response/ui-answers/Account/CreditCardDetails/CreditCard">
+				<div class="Filter-Form">
+					<div class="Filter-Form-Content">
+						<table border="0" cellpadding="5" cellspacing="0">
+							<!-- Credit Card Number -->
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Credit Card')" />
+										<xsl:with-param name="field" select="string('CardNumber')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<input type="text" name="CreditCard-CardNumber" id="CreditCard-CardNumber" class="input-string" size="4" 
+									autocomplete="off" onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+										<xsl:attribute name="ValidValue">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/Last4Digits" />
+										</xsl:attribute>
+									</input>
+								</td>
+							</tr>
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Credit Card')" />
+										<xsl:with-param name="field" select="string('ExpiryDate')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<select name="CreditCard-Exp-Month" id="CreditCard-Exp-Month" ValidLevel="1" autocomplete="off" 
+									onchange="ValidateCustomer.ValidateInput (this)"
+									onkeyup="ValidateCustomer.ValidateInput (this)">
+										<xsl:attribute name="ValidValue">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/ExpMonth" />
+										</xsl:attribute>
+										<option value="" selected="selected"></option>
+										<option value="01">01</option>
+										<option value="02">02</option>
+										<option value="03">03</option>
+										<option value="04">04</option>
+										<option value="05">05</option>
+										<option value="06">06</option>
+										<option value="07">07</option>
+										<option value="08">08</option>
+										<option value="09">09</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+									</select> /
+									<select name="CreditCard-Exp-Year" id="CreditCard-Exp-Year" ValidLevel="1" 
+									onchange="ValidateCustomer.ValidateInput (this)"
+									onkeyup="ValidateCustomer.ValidateInput (this)">
+										<xsl:attribute name="ValidValue">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/ExpYear" />
+										</xsl:attribute>
+										<option value="" selected="selected"></option>
+										<option value="07">07</option>
+										<option value="08">08</option>
+										<option value="09">09</option>
+										<option value="10">10</option>
+										<option value="11">11</option>
+										<option value="12">12</option>
+										<option value="13">13</option>
+										<option value="14">14</option>
+										<option value="15">15</option>
+									</select>
+								</td>
+							</tr>
+						</table>
 					</div>
-					
-					<div class="Seperator"></div>
-				</xsl:if>
-			</div>
+				</div>
+				
+				<div class="Seperator"></div>
+			</xsl:if>
 			
 			<div class="Clear"></div>
 			<input type="submit" name="Confirm" class="input-submit-locked" value="Continue &#0187;" id="Confirm" disabled="disabled" />

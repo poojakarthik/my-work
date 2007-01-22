@@ -4,18 +4,8 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Create Service</h1>
+		<h1>Add Service</h1>
 		<div class="Seperator"></div>
-		
-		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
-				<xsl:choose>
-					<xsl:when test="/Response/Error = 'Mismatch'">
-						You must correctly confirm your Line Number.
-					</xsl:when>
-				</xsl:choose>
-			</div>
-		</xsl:if>
 		
 		<form method="POST" action="service_add.php">
 			<input type="hidden" name="Account">
@@ -60,6 +50,22 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Service">Service Details</h2>
+			<xsl:if test="/Response/Error != ''">
+				<div class="MsgError">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Mismatch'">
+							You must correctly confirm your Line Number.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Unarchived FNN Exists'">
+							The Line Number you entered already exists.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Rate Plan Invalid'">
+							The Rate Plan you entered was Invalid.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">

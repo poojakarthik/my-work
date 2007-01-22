@@ -6,6 +6,7 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
+		<h1>Pablo &quot;the helpful donkey&quot; says:</h1>
 		<div class="Pablo-Section">
 			<div class="Pablo-Section-Container">
 				<div class="Pablo-Section-Content">

@@ -98,12 +98,12 @@
 		
 		<xsl:choose>
 			<xsl:when test="/Response/CDRs-Unbilled/collationLength = 0">
-				<div class="MsgError">
+				<div class="MsgNotice">
 					There are no CDR Records associated with this service.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/CDRs-Unbilled/rangeSample/CDR) = 0">
-				<div class="MsgNotice">
+				<div class="MsgError">
 					There are no CDR Records for the Range that you Searched for.
 				</div>
 			</xsl:when>

@@ -198,7 +198,7 @@
 									<xsl:text>account_add.php?AccountGroup=</xsl:text>
 									<xsl:value-of select="/Response/Contact/AccountGroup" />
 								</xsl:attribute>
-								Create Associated Account
+								Add Associated Account
 							</a>
 						</li>
 						<li>
@@ -216,7 +216,7 @@
 									<xsl:text>payment_add.php?AccountGroup=</xsl:text>
 									<xsl:value-of select="/Response/Contact/AccountGroup" />
 								</xsl:attribute>
-								Make a Payment
+								Make Payment
 							</a>
 						</li>
 					</ul>
@@ -365,6 +365,17 @@
 			</tr>
 			<xsl:for-each select="/Response/Accounts/Results/rangeSample/Account">
 				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>Odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>Even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					
 					<td><xsl:value-of select="position()" /></td>
 					<td><xsl:value-of select="./Id" /></td>
 					<td><xsl:value-of select="./BusinessName" /></td>

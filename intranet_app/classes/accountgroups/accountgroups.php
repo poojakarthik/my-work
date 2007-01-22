@@ -105,12 +105,28 @@
 				throw new Exception ('Not a valid BillingType: ' . $arrDetails ['Account']['BillingType']);
 			}
 			
-			// Check the Contact is in the Account Group
 			if ($cntContact != null)
 			{
+				// Check the Contact is in the Account Group
 				if ($acgAccountGroup->Pull ('Id')->getValue () <> $cntContact->Pull ('AccountGroup')->getValue ())
 				{
 					throw new Exception ('Contact');
+				}
+			}
+			else
+			{
+				// If the UserName is not Unique, error
+				try
+				{
+					$cntContact = Contacts::UnarchivedUsername ($_POST ['Contact']['UserName']);
+				}
+				catch (Exception $e)
+				{
+				}
+				
+				if ($cntContact)
+				{
+					throw new Exception ('UserName Exists');
 				}
 			}
 			

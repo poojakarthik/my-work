@@ -90,11 +90,6 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Archive">Archive Status</h2>
-			<!-- TODO!!!! - URGENT - allow unarchive of service -->  	 
-			<!-- if an active service exists with this FNN : show a link to change of lessee --> 	 
-			<!-- if a more recent archived service exists with this FNN : add a new service --> 	 
-			<!-- otherwise, just re-activate the service --> 	 
-			<!-- dont forget the service address details for provisioning -->
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<xsl:choose>

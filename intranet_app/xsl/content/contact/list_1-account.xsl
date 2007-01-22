@@ -70,6 +70,17 @@
 					</div>
 					<div class="Seperator"></div>
 					
+					<xsl:if test="/Response/Error != ''">
+						<div class="Seperator"></div>
+						<div class="MsgError">
+							<xsl:choose>
+								<xsl:when test="/Response/Error = 'Unselected'">
+									Please select an Account from the list below to continue.
+								</xsl:when>
+							</xsl:choose>
+						</div>
+					</xsl:if>
+					
 					<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
 							<th width="30">#</th>
@@ -106,6 +117,9 @@
 							</tr>
 						</xsl:for-each>
 					</table>
+					<div class="Seperator"></div>
+					
+					<input type="submit" name="ContinueAccount" value="Select Account &#0187;" class="input-submit" />
 				</form>
 			</div>
 		</div>

@@ -53,6 +53,16 @@
 					</div>
 					<div class="Seperator"></div>
 					
+					<xsl:if test="/Response/Error != ''">
+						<div class="MsgError">
+							<xsl:choose>
+								<xsl:when test="/Response/Error = 'Unselected'">
+									You must select a Contact to continue.
+								</xsl:when>
+							</xsl:choose>
+						</div>
+					</xsl:if>
+					
 					<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
 							<th width="30">#</th>
@@ -119,7 +129,7 @@
 						</xsl:when>
 						<xsl:otherwise>
 							<div class="Seperator"></div>
-							<input type="submit" value="Continue Verification &#0187;" class="input-submit" />
+							<input type="submit" name="ContinueContact" value="Continue Verification &#0187;" class="input-submit" />
 						</xsl:otherwise>
 					</xsl:choose>
 				</form>

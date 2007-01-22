@@ -7,7 +7,7 @@
 	<xsl:import href="../../template/popup.xsl" />
 	
 	<xsl:template name="Content">
-		<h2 class="Notes">
+		<h1>
 			<xsl:choose>
 				<xsl:when test="/Response/AccountGroup">
 					Account Group Notes
@@ -22,8 +22,7 @@
 					Contact Notes
 				</xsl:when>
 			</xsl:choose>
-		</h2>
-		<div class="Seperator"></div>
+		</h1>
 		
 		<xsl:choose>
 			<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">

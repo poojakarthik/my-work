@@ -28,21 +28,11 @@
 	{
 		// Get the Service
 		$srvService		= $Style->attachObject (new Service ($_GET ['Service']));
-	}
-	catch (Exception $e)
-	{
-		$Style->Output ('xsl/content/service/notfound.xsl');
-		exit;
-	}
-	
-	try
-	{
-		// Get the Account
 		$actAccount		= $Style->attachObject ($srvService->getAccount ());
 	}
 	catch (Exception $e)
 	{
-		$Style->Output ('xsl/content/account/notfound.xsl');
+		$Style->Output ('xsl/content/service/notfound.xsl');
 		exit;
 	}
 	

@@ -76,7 +76,7 @@
 					</input>
 				</xsl:when>
 				<xsl:otherwise>
-					<div class="MsgNotice" style="width: 450px">
+					<div class="MsgNotice">
 						<strong><span class="Attention">Attention</span> :</strong>
 						This form will add a new Customer.  If you wish to add an 
 						account to an existing Customer you will need to use the

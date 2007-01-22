@@ -7,7 +7,7 @@
 		<h1>Payment Method Selected</h1>
 		
 		<p>
-			You have successfully change the way in which this account pays their Account.
+			You have successfully changed the Payment Method for this Account.
 		</p>
 		
 		<ul>
@@ -18,7 +18,7 @@
 						<xsl:text>account_view.php?Id=</xsl:text>
 						<xsl:value-of select="/Response/Account/Id" />
 					</xsl:attribute>
-					<xsl:text>Information about this Account</xsl:text>
+					<xsl:text>Account Details</xsl:text>
 				</a>.
 			</li>
 		</ul>

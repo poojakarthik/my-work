@@ -24,8 +24,13 @@
 	
 	try
 	{
-		$oblarrServiceOld->Push (new Service ($_GET ['Old']));
-		$oblarrServiceNew->Push (new Service ($_GET ['New']));
+		$srvOld = new Service ($_GET ['Old']);
+		$srvNew = new Service ($_GET ['New']);
+		
+		$oblarrServiceOld->Push ($srvOld);
+		$oblarrServiceNew->Push ($srvNew);
+		
+		$Style->attachObject ($srvNew);
 	}
 	catch (Exception $e)
 	{

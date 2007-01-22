@@ -74,6 +74,7 @@
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
+							<td width="30"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -90,6 +91,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="30"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -106,6 +108,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="30"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -122,6 +125,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -143,6 +147,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="30"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -182,6 +187,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="30"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -198,6 +204,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="30"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -214,6 +221,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="30"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
