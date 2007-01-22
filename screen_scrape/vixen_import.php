@@ -408,33 +408,21 @@ class VixenImport extends ApplicationBaseClass
 					foreach ($arrRatePlan as $strRecordType=>$strRateGroup)
 					{
 						// get RecordType Id
-						if ((int)$intRecordType != $intRecordType)
+						$intRecordType = $this->FindRecordType($strRecordType, $intServiceType);
+						if (!(int)$intRecordType)
 						{
-							$strQuery = "SELECT Code FROM RecordType WHERE Name = '$intRecordType' LIMIT 1";
-							$sqlRecordType = $this->sqlQuery->Execute($strQuery);
-							$arrRecordType = $sqlRecordType->fetch_assoc();
-							$intRecordType = $arrRecordType['Code'];
-							if (!(int)$intRecordType)
-							{
-								//error
-								$this->Error("RecordType $intRecordType not found");
-								continue;
-							}
+							//error
+							$this->Error("RecordType $intRecordType not found");
+							continue;
 						}
 						
 						// get the RateGroup Id
-						if ((int)$intRateGroup != $intRateGroup)
+						$intRateGroup = FindRateGroup($strRateGroup, $intRecordType);
+						if (!(int)$intRateGroup)
 						{
-							$strQuery = "SELECT Id FROM RateGroup WHERE RecordType = $intRecordType AND Name = '$intRateGroup' LIMIT 1";
-							$sqlRateGroup = $this->sqlQuery->Execute($strQuery);
-							$arrRateGroup = $sqlRateGroup->fetch_assoc();
-							$intRateGroup = $arrRateGroup['Id'];
-							if (!(int)$intRateGroup)
-							{
-								//error
-								$this->Error("RateGroup $intRateGroup not found");
-								continue;
-							}
+							//error
+							$this->Error("RateGroup $intRateGroup not found");
+							continue;
 						}
 						
 						// link RatePlan to RateGroup
@@ -521,22 +509,28 @@ class VixenImport extends ApplicationBaseClass
 	// ------------------------------------//
 	// IMPORT
 	// ------------------------------------//
-	
-	function ImportRate()
+
+	// import a CSV file
+	function ImportCSV($strTable, $strFullPath, $strSeparator=';', $strTerminator="\n", $intSkipRecords=1)
 	{
-	
+		//TODO!rich! import CSV file located at $strFullPath into $strTable
+		// use MYSQL LOAD DATA
+		// skip $intSkipRecords from start of file
 	}
 	
-	function ImportRateGroup()
+	// ------------------------------------//
+	// TRUNCATE
+	// ------------------------------------//
+	
+	function Truncate($strTableName)
 	{
-	
+		$strTableName = trim($strTableName);
+		if ()
+		{
+			return FALSE;
+		}
+		//TODO!rich!truncate the table
 	}
-	
-	function ImportRatePlan()
-	{
-	
-	}
-	
 	
 	// ------------------------------------//
 	// FIND 

@@ -228,13 +228,21 @@
 	$objImport = new VixenImport($arrConfig['Import']);
 	
 	// Import Rates
-	$objImport->ImportRate();
+	//$objImport->ImportCSV('Rate', '/home/vixen/vixen_seed/Rate/Normal/Rate.csv');
+	$arrIDDRates = glob('/home/vixen/vixen_seed/Rate/IDD/*.csv');
+	if (is_array($arrIDDRates))
+	{
+		foreach($arrIDDRates AS $strFilePath)
+		{
+			//$objImport->ImportCSV('Rate', $strFilePath);
+		}
+	}
 	
 	// Import RateGroups
-	$objImport->ImportRateGroup();
+	//TODO!!!! $objImport->ImportRateGroup();
 	
 	// Import RatePlans
-	$objImport->ImportRatePlan();
+	//TODO!!!! $objImport->ImportRatePlan();
 	
 	// Match RateGroups to Rates
 	//$objImport->CreateRateGroupRate();
