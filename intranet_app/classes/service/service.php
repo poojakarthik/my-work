@@ -449,12 +449,17 @@
 		/**
 		 * ArchiveStatus()
 		 *
-		 * Update Service Archive Status
-		 *
 		 * Update Service Archive Status.
 		 *
+		 * Update Service Archive Status. Unarchiving a Service from the Database may
+		 * incur a few different paths.
+		 * 1. If the FNN is in use (or potentially in use) by another service, a Change of Lessee will be performed.
+		 * 2. If the FNN is not in use by another Service AND (XOR):
+		 *		a. If the Service has been in use by another Service but the Service has , a new Service will be created.
+		 *		b. If the Service has not been in use by another Service, the expiration is revoked.
+		 *
 		 * @param	Boolean		$bolArchive		TRUE:	Archive this Service
-		 *										FALSE:	Nothing Happens
+		 *										FALSE:	Unarchive this Service
 		 * @return	Void
 		 *
 		 * @method
@@ -462,20 +467,81 @@
 		
 		public function ArchiveStatus ($bolArchive)
 		{
-			// Archive must be true
-			if ($bolArchive !== true)
+			// If we are choosing to Archive the Service - this is a simple proceedure.
+			// It just sets the ClosedOn Date to the Current Date.
+			if ($bolArchive == true)
+			{
+				// Set up an Archive SET clause
+				$arrArchive = Array (
+					'ClosedOn'	=>	($bolArchive == true) ? date ('Y-m-d') : null
+				);
+				
+				// Apply the Change
+				$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrArchive);
+				$updService->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
+				
+				// We have done all we need to here. Therefore, break out
+				return;
+			}
+			
+			// If we're up to here, then we want to Reactivate the Service
+			
+			// Check that the Service is due to be (or is) closed. If it's not
+			// then there's no point in Reactivating because it's already active.
+			if (!$this->Pull ('ClosedOn')->Pull ('year'))
 			{
 				return;
 			}
 			
-			// Set up an Archive SET clause
-			$arrArchive = Array (
-				'ClosedOn'	=>	($bolArchive == true) ? date ('Y-m-d') : null
-			);
+			// Check if the FNN is used elsewhere [snatched] (since the date of Closure)
+			$selSnatched = new StatementSelect ('Service', 'count(*) as snatchCount', 'FNN = <FNN> AND CreatedOn > <ClosedOn>');
+			$selSnatched->Execute (Array ('FNN' => $this->Pull ('FNN')->getValue (), 'ClosedOn' => $this->Pull ('ClosedOn')->getValue ()));
+			$arrSnatched = $selSnatched->Fetch ();
+			$bolSnatched = ($arrSnatched ['snatchCount'] != 0);
 			
-			// Cascade down to include the Services
-			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrArchive);
-			$updService->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			// If it hasn't been used anywhere else - suspend the Service closure
+			if (!$bolSnatched)
+			{
+				// Set up an Archive SET clause
+				$arrArchive = Array (
+					'ClosedOn'	=>	NULL
+				);
+				
+				// Apply the Change
+				$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrArchive);
+				$updService->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
+				
+				// We have done all we need to here. Therefore, break out
+				return;
+			}
+			
+			// If we're up to here - then we will be snatching the FNN back from
+			// someone else.
+			
+			
+			
+			// If the Service with the FNN we want is currently in use, then we want
+			// to do a Change of Lessee (COfL)
+			$selCOfL = new StatementSelect ('Service', 'count(*) AS COfL', 'FNN = <FNN> AND (ClosedOn IS NULL OR ClosedOn >= Now())');
+			$selCOfL->Execute (Array ('FNN' => $this->Pull ('FNN')->getValue ()));
+			$arrCOfL = $selCOfL->Fetch ();
+			$intCOfL = $arrCOfL ['COfL'];
+			
+			if ($intCOfL)
+			{
+				$intTomorrow = strtotime ("+1 day");
+				
+				$this->LesseePassthrough (
+					new Account ($this->Pull ('Account')->getValue ()),
+					Array (
+						"month"		=> date ("m", $intTomorrow),
+						"year"		=> date ("Y", $intTomorrow),
+						"day"		=> date ("d", $intTomorrow)
+					)
+				);
+				
+				return;
+			}
 		}
 		
 		//------------------------------------------------------------------------//

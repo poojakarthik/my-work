@@ -61,6 +61,9 @@
 			if (isset ($_POST ['Archived']))
 			{
 				$srvService->ArchiveStatus ($_POST ['Archived']);
+				
+				echo "[ END ]";
+				exit;
 			}
 			
 			header ("Location: service_view.php?Id=" . $srvService->Pull ('Id')->getValue ());

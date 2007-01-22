@@ -827,3 +827,8 @@
 		text-decoration:		none;
 	}
 	
+	tr.RecentCustomers td
+	{
+		cursor:					pointer;
+	}
+	

@@ -382,6 +382,7 @@
 										
 										<tr>
 											<xsl:attribute name="class">
+												<xsl:text>RecentCustomers </xsl:text>
 												<xsl:choose>
 													<xsl:when test="position () mod 2 = 1">
 														<xsl:text>Odd</xsl:text>

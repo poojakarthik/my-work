@@ -7,6 +7,8 @@
 	<xsl:template name="Content">
 		<h1>Edit Service</h1>
 		
+		<script language="javascript" src="js/service_edit.js"></script>
+		
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
 				<xsl:choose>
@@ -18,6 +20,10 @@
 		</xsl:if>
 		
 		<form method="POST" action="service_edit.php">
+			<xsl:attribute name="onsubmit">
+				<xsl:text>return serviceEditSumit (this)</xsl:text>
+			</xsl:attribute>
+			
 			<h2 class="Service">Service Details</h2>
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
@@ -134,6 +140,18 @@
 								</tr>
 							</table>
 						</xsl:when>
+						<xsl:otherwise>
+							<table border="0" cellpadding="5" cellspacing="0">
+								<tr>
+									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
+									<td>
+										<label for="Archive:FALSE">
+											<strong><span class="Green">Activate</span></strong> this Service.
+										</label>
+									</td>
+								</tr>
+							</table>
+						</xsl:otherwise>
 					</xsl:choose>
 				</div>
 			</div>
