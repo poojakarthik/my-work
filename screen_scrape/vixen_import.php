@@ -139,7 +139,7 @@ class VixenImport extends ApplicationBaseClass
 			// insert service RateGroups
 			if (is_array($arrCustomer['ServiceRateGroup']))
 			{
-				$this->AddCustomerServiceRateGroup($arrCustomer['ServiceRateGroup'], $arrServices);
+				$this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices);
 			}
 		}
 	}
@@ -188,7 +188,7 @@ class VixenImport extends ApplicationBaseClass
 			// insert service RateGroups
 			if (is_array($arrCustomer['ServiceRateGroup']))
 			{
-				$this->AddCustomerServiceRateGroup($arrCustomer['ServiceRateGroup'], $arrServices);
+				$this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices);
 			}
 		}
 	}

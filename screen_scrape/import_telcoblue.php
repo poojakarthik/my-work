@@ -12,9 +12,10 @@
 	
 	// Define New RatePlans
 	//TODO!!!!
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['PlanName']['Local'] 			= 'Local-14';
-	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['PlanName']['ProgramLocal']		= 'ProgramLocal-13';
+	$arrPlans[SERVICE_TYPE_LAND_LINE]['PlanName']['Local'] 				= 'Local-14';
+	$arrPlans[SERVICE_TYPE_LAND_LINE]['PlanName']['ProgramLocal']		= 'ProgramLocal-13';
 
+	$arrConfig['Decode']['RatePlan'] = $arrPlans;
 	
 	// Record Types
 	$arrConfig['Decode']['RecordType'] = Array
@@ -140,20 +141,6 @@
 	$arrRates['service_equip_rate']		['Residential']									['S&E']					= 'S&E-3499';
 	$arrRates['service_equip_rate']		['Pinnacle ($33.00)']							['S&E']					= 'S&E-3300';
 	
-	// TODO!flame! need to account for different rates to unitel, telstra and others
-	$arrRates['mobileunitel']			['Mobile Zero Plan']							['Mobile']				= 'Unitel-30-10-01';
-	$arrRates['mobileunitel']			['Fleet Mobile 60']								['Mobile']				= 'Unitel-30-18-30';
-	$arrRates['mobileunitel']			['Pinnacle']									['Mobile']				= 'Unitel-30-18-30';
-	$arrRates['mobileunitel']			['Fleet Mobile Peter K Special']				['Mobile']				= 'Unitel-30-15-30';
-	$arrRates['mobileunitel']			['Fleet Mobile 30']								['Mobile']				= 'Unitel-40-18-30';
-	$arrRates['mobileunitel']			['Blue Shared 500']								['Mobile']				= 'Unitel-26-09-01';
-	
-	$arrRates['mobiletelstra']			['Mobile Zero Plan']							['Mobile']				= 'Telstra-30-10-01';
-	$arrRates['mobiletelstra']			['Fleet Mobile 60']								['Mobile']				= 'Telstra-30-18-30';
-	$arrRates['mobiletelstra']			['Pinnacle']									['Mobile']				= 'Telstra-Pinnacle';
-	$arrRates['mobiletelstra']			['Fleet Mobile 30']								['Mobile']				= 'Telstra-40-18-30';
-	$arrRates['mobiletelstra']			['Blue Shared 500']								['Mobile']				= 'Telstra-26-09-01';
-	
 	$arrRates['mobile']					['Mobile Zero Plan']							['Mobile']				= 'Mobile-30-10-01';
 	$arrRates['mobile']					['Fleet Mobile 60']								['Mobile']				= 'Mobile-30-18-30';
 	$arrRates['mobile']					['Pinnacle']									['Mobile']				= 'Mobile-Pinnacle';
@@ -239,10 +226,10 @@
 	}
 	
 	// Import RateGroups
-	//TODO!!!! $objImport->ImportRateGroup();
+	//$objImport->ImportCSV('RateGroup', '/home/vixen/vixen_seed/RateGroup/RateGroup.csv');
 	
 	// Import RatePlans
-	//TODO!!!! $objImport->ImportRatePlan();
+	//$objImport->ImportCSV('RateGroup', '/home/vixen/vixen_seed/RatePlan/RatePlan.csv');
 	
 	// Match RateGroups to Rates
 	//$objImport->CreateRateGroupRate();
