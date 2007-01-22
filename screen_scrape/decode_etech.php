@@ -333,6 +333,23 @@
 		}
 		
 		// ------------------------------------//
+		// Service Rate Groups
+		// ------------------------------------//
+		
+		// put Rates into an array
+		$arrRateGroup = Array();
+		foreach($this->arrConfig['RecordType'] AS $strRecordType=>$intServiceType)
+		{
+			if ($arrCustomer[$strRecordType])
+			{
+				$arrRateGroup[$strRecordType] = $arrCustomer[$strRecordType];
+			}
+		}
+		
+		// decode Rate Groups
+		$arrRateGroup = $this->DecodeRateGroup($arrRateGroup);
+		
+		// ------------------------------------//
 		// Services
 		// ------------------------------------//
 		
@@ -395,11 +412,54 @@
 			$arrService['FNN'] 					= $strFNN;
 			$arrService['ServiceType'] 			= $arrServiceType[$strFNN];
 			$arrOutput['Service'][$strFNN]		= $arrService;
+			
+			// add serviceRateGroup records
+			if (is_array($arrRateGroup[$arrServiceType[$strFNN]]))
+			{
+				$arrServiceRateGroup['FNN'] 				= $strFNN;
+				foreach($arrRateGroup[$arrServiceType[$strFNN]] AS $strRecordType=>$strRateGroupName)
+				{
+					$arrServiceRateGroup['RecordType'] 		= $strRecordType;
+					$arrServiceRateGroup['RateGroupName'] 	= $strRateName;
+					$arrOutput['ServiceRateGroup'][]		= $arrServiceRateGroup;
+				}
+			}
 		}
 		
 		// return the output array
 		return $arrOutput;
 	}
+	
+	// decode a customers rate groups
+	// returns	: Array[intServiceType][strRecordType] = strRateGroupName
+	function DecodeRateGroup($arrCustomer)
+	{
+		// clean the output array
+		$arrOutput = Array();
+		
+		// for each record type
+		foreach($this->arrConfig['RecordType'] AS $strRecordType=>$intServiceType)
+		{
+			// if we have an etech rate for this record type
+			if ($arrCustomer[$strRecordType])
+			{
+				// get the etech rate name
+				$strRateName = $arrCustomer[$strRecordType];
+				
+				// try to match it to new rate groups		
+				if (is_array($this->arrConfig['RateConvert'][$strRecordType][$strRateName]))
+				{
+					foreach($this->arrConfig['RateConvert'][$strRecordType][$strRateName] AS $strNewRecordType=>$strRateGroupName)
+					{
+						$arrOutput[$intServiceType][$strNewRecordType] = $strRateGroupName;
+					}
+				}
+			}
+		}
+		return $arrOutput;
+	}
+	
+	
 	
 	// decode a group of IDD rate records
 	function DecodeIDDGroupRate($arrScrapeRate)

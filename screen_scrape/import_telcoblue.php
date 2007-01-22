@@ -12,34 +12,40 @@
 	
 	// Define New RatePlans
 	//TODO!!!!
-	$arrConfig['RatePlan']['PlanName'][17] 		= 'Local-14';
-	$arrConfig['RatePlan']['PlanName'][18]		= 'ProgramLocal-13';
+	$arrConfig['RatePlan']['PlanName']['Local'] 		= 'Local-14';
+	$arrConfig['RatePlan']['PlanName']['ProgramLocal']		= 'ProgramLocal-13';
 	
 	// Record Types
-	$GLOBALS['arrRecordTypes'] = Array
+	$arrConfig['Decode']['RecordType'] = Array
 	(
-		"localrate"				=> 102,
-		"natrate"				=> 102,
-		"mobrate"				=> 102,
-		"intrate"				=> 102,
-		"service_equip_rate"	=> 102,
+		"localrate"				=> SERVICE_TYPE_LAND_LINE,
+		"natrate"				=> SERVICE_TYPE_LAND_LINE,
+		"mobrate"				=> SERVICE_TYPE_LAND_LINE,
+		"intrate"				=> SERVICE_TYPE_LAND_LINE,
+		"service_equip_rate"	=> SERVICE_TYPE_LAND_LINE,
 		
-		"mobileunitel"			=> 101,
-		"mobiletelstra"			=> 101,
-		"mobileother"			=> 101,
-		"mobilenational"		=> 101,
-		"mobile1800"			=> 101,
-		"mobilevoicemail"		=> 101,
-		"mobilediverted"		=> 101,
-		"mobilesms"				=> 101,
-		"mobilemms"				=> 101,
-		"mobiledata"			=> 101,
-		"mobileinternational"	=> 101
+		"mobileunitel"			=> SERVICE_TYPE_MOBILE,
+		"mobiletelstra"			=> SERVICE_TYPE_MOBILE,
+		"mobileother"			=> SERVICE_TYPE_MOBILE,
+		"mobilenational"		=> SERVICE_TYPE_MOBILE,
+		"mobile1800"			=> SERVICE_TYPE_MOBILE,
+		"mobilevoicemail"		=> SERVICE_TYPE_MOBILE,
+		"mobilediverted"		=> SERVICE_TYPE_MOBILE,
+		"mobilesms"				=> SERVICE_TYPE_MOBILE,
+		"mobilemms"				=> SERVICE_TYPE_MOBILE,
+		"mobiledata"			=> SERVICE_TYPE_MOBILE,
+		"mobileinternational"	=> SERVICE_TYPE_MOBILE
 	);
 	
 	// Old Rates => New RateGroups
-	$arrRates['localrate']	['Local 14/13c (T3CC)']					[17]		= 'Local-14';			// Local
-	$arrRates['localrate']	['Local 14/13c (T3CC)']					[18]		= 'ProgramLocal-13';	// Programmed Local
+	// $arrRates[strRecordType][strRateName][strNewRecordType] = strNewRateGroup
+	
+	//TODO!rich! these all need to look like the first 2 rows 
+	//RecordType specified by Name not Id, ie. 'Local' NOT 17
+	//and they ALL need to have the RecordType Name specfied
+	//also, RatePlan must be specified by name and not Id 
+	$arrRates['localrate']	['Local 14/13c (T3CC)']					['Local']			= 'Local-14';
+	$arrRates['localrate']	['Local 14/13c (T3CC)']					['ProgramLocal']	= 'ProgramLocal-13';
 	$arrRates['localrate']	['Local 14/11c (tb fleet, t3 local)']	[17]		= 'Local-14';
 	$arrRates['localrate']	['Local 14/11c (tb fleet, t3 local)']	[18]		= 'ProgramLocal-11';
 	$arrRates['localrate']	['Local 10c (VV)']						[17]		= 'Local-10';
@@ -179,10 +185,10 @@
 	$arrRates['mobiledata']		['GPRS 1.5c ex (BS500, Fleet 60)']				= 60;
 	$arrRates['mobiledata']		['GPRS 1.8c ex (BS250)']						= 58;
 	
-	$arrRates['mobileinternational']	['Mobile Zero Plan']				= intRateId;
+	$arrRates['mobileinternational']	['Mobile Zero Plan']				= intRateId; //TODO!rich! add rateplan name
 
 	// set config rate array
-	$arrConfig['Rate'] = $arrRates;
+	arrConfig['Decode']['RateConvert'] = $arrRates;
 	
 // ---------------------------------------------------------------------------//
 // SCRIPT
@@ -210,11 +216,11 @@
 	
 	// instanciate the etech decoder
 	require_once('decode_etech.php');
-	$objDecoder = new VixenDecode($arrConfig);
+	$objDecoder = new VixenDecode($arrConfig['Decode']);
 	
 	// instanciate the import object
 	require_once('vixen_import.php');
-	$objImport = new VixenImport($arrConfig);
+	$objImport = new VixenImport($arrConfig['Import']);
 	
 	// Import Rates
 	$objImport->ImportRate();

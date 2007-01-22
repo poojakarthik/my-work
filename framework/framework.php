@@ -376,4 +376,147 @@
 		$this->_errErrorHandler = $this->Framework->_errErrorHandler;
 	}
  }
+ 
+//----------------------------------------------------------------------------//
+// VixenHelper
+//----------------------------------------------------------------------------//
+/**
+ * VixenHelper
+ *
+ * Helper functions
+ *
+ * Helper functions
+ *
+ *
+ * @prefix		hlp
+ *
+ * @package		framework
+ * @class		VixenHelper 
+ */
+ class VixenHelper
+ {
+ 
+ 	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for the Helper
+	 *
+	 * Constructor for the Helper
+	 * 
+	 *
+	 * @return			Application
+	 *
+	 * @method
+	 */
+ 	function __construct()
+	{			
+		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC", "1");
+		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC", "1");
+		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
+		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
+		
+		$strTables						= "DestinationCode";
+		$strData						= "Id, Code, Description";
+		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND Context = <Context>";
+		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
+		
+		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");	
+	}
+	
+ 	//------------------------------------------------------------------------//
+	// FindRecordType
+	//------------------------------------------------------------------------//
+	/**
+	 * FindRecordType()
+	 *
+	 * Find the record type from a Service Type & Record Code
+	 *
+	 * Find the record type from a Service Type & Record Code
+	 * 
+	 *
+	 * @param	int		intServiceType		Service Type Constant
+	 * @param	string	strRecordCode		Vixen Record Type Code
+	 * @return	int		Record Type Id					
+	 *
+	 * @method
+	 */
+	 function FindRecordType($intServiceType, $strRecordCode)
+	 {
+
+	 	$intResult = $this->_selFindRecordType->Execute(Array("ServiceType" => $intServiceType, "Code" => $strRecordCode));
+		
+		if ($intResult === FALSE)
+		{
+			return false;
+		}
+		
+	 	if ($arrResult = $this->_selFindRecordType->Fetch())
+	 	{
+	 		return $arrResult['Id'];
+	 	}
+		
+		// Return false if there was no match
+	 	return false;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// FindServiceByFNN
+	//------------------------------------------------------------------------//
+	/**
+	 * FindServiceByFNN()
+	 *
+	 * Applies ownership based on the FNN
+	 *
+	 * Applies ownership based on the FNN
+	 * 
+	 *
+	 * @return	bool					
+	 *
+	 * @method
+	 */
+	 protected function FindServiceByFNN($strFNN, $intAccount)
+	 {
+
+	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$strFNN, "date" => (string)$strDate));
+	 	
+	 	if ($intResult === FALSE)
+	 	{
+
+	 	}
+		
+	 	if ($arrResult = $this->_selFindOwner->Fetch())
+	 	{
+			// found the service
+	 		return $arrResult['Id'];
+	 	}
+	 	else
+	 	{
+	 		$arrParams['fnn'] 	= substr((string)$strFNN, 0, -2) . "__";
+	 		$arrParams['date'] 	= ; //TODO!rich! todays date
+	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
+	 		
+	 		if ($intResult === FALSE)
+	 		{
+
+	 		}
+	 		
+	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
+	 		{
+	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
+	 			$this->_arrNormalisedData['Account']		= $arrResult['Account'];
+	 			$this->_arrNormalisedData['Service']		= $arrResult['Id'];
+	 			return true;
+	 		}
+	 	}
+	 	
+		// Return false if there was no match, or more than one match
+		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
+		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
+		$this->strFNN = $this->_arrNormalisedData['FNN'];
+	 	return false;
+	 }
+ }
 ?>

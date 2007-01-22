@@ -131,11 +131,15 @@ class VixenImport extends ApplicationBaseClass
 		// insert services
 		if (is_array($arrCustomer['Service']))
 		{
-			foreach ($arrCustomer['Service'] AS $arrService)
+			foreach ($arrCustomer['Service'] AS $strFNN=>$arrService)
 			{
-				$arrService['Account'] = $intAccount;
-				$arrService['AccountGroup'] = $intAccountGroup;
-				$this->InsertService($arrService);
+				$arrServices[$strFNN] = $this->InsertService($arrService);
+			}
+			
+			// insert service RateGroups
+			if (is_array($arrCustomer['ServiceRateGroup']))
+			{
+				$this->AddCustomerServiceRateGroup($arrCustomer['ServiceRateGroup'], $arrServices);
 			}
 		}
 	}
@@ -176,10 +180,105 @@ class VixenImport extends ApplicationBaseClass
 		// insert services
 		if (is_array($arrCustomer['Service']))
 		{
-			foreach ($arrCustomer['Service'] AS $arrService)
+			foreach ($arrCustomer['Service'] AS $strFNN=>$arrService)
 			{
-				$this->InsertService($arrService);
+				$arrServices[$strFNN] = $this->InsertService($arrService);
 			}
+			
+			// insert service RateGroups
+			if (is_array($arrCustomer['ServiceRateGroup']))
+			{
+				$this->AddCustomerServiceRateGroup($arrCustomer['ServiceRateGroup'], $arrServices);
+			}
+		}
+	}
+	
+	AddCustomerServiceRatePlan($arrServiceRateGroups, $arrServices)
+	{
+		// for each service
+		foreach($arrServiceRateGroups AS $arrServiceRateGroup)
+		{
+				// for each recordtype
+						// for each RatePlan
+							// could we be on this rate plan ?
+							
+		// get highest scoring RatePlan
+		$arrConfig['RatePlan']['PlanName'][17] 		= 'Local-14';
+	}
+	
+	// add all service RateGroup & RatePlan records for a customer
+	function AddCustomerRatePlanRateGroup($arrServiceRateGroups, $arrServices)
+	{
+		// clean the plan scores array
+		$arrPlanScores = Array();
+				
+		// ADD RATE GROUPS
+		foreach($arrServiceRateGroups AS $arrServiceRateGroup)
+		{
+			// get the RateGroup Id
+			if (!$arrServiceRateGroup['RateGroup'])
+			{
+				$arrServiceRateGroup['RateGroup'] = $this->FindRateGroup($arrServiceRateGroup['RateGroupName'], $arrServiceRateGroup['RecordType']);
+			}
+			
+			// get the Service Id
+			if (!$arrServiceRateGroup['Service'] && is_array($arrServices))
+			{
+				// get services id
+				$arrServiceRateGroup['Service'] = $arrServices[$arrServiceRateGroup['FNN']];
+			}
+			else (!$arrServiceRateGroup['Service'])
+			{
+				//TODO!flame! LATER
+			}
+			
+			
+			if ($arrServiceRateGroup['Service'] && $arrServiceRateGroup['RateGroup'])
+			{
+				// insert the record
+				$this->AddServiceRateGroup($arrServiceRateGroup['Service'], $arrServiceRateGroup['RateGroup']);
+				
+				// stuff needed to find the ratePlan
+				$intService 		= $arrServiceRateGroup['Service'];
+				$strRecordType 		= $arrServiceRateGroup['RecordType'];
+				$strRateGroupName 	= $arrServiceRateGroup['RateGroupName'];
+				
+				if (!$strRecordType)
+				{
+					//TODO!flame! LATER - find RecordType.Name
+					continue;
+				}
+				
+				if (!$strRateGroupName)
+				{
+					//TODO!flame! LATER - find RateGroup.Name
+					continue;
+				}
+				
+				// add to RatePlan scores
+				// for each plan
+				foreach ($this->arrConfig['RatePlan'] AS $strPlan=>$arrRateGroups)
+				{
+					// is this RateGroup part of this plan
+					if ($arrRateGroups[$strRecordType] == $strRateGroupName)
+					{
+						// if so, score a goal for this plan
+						$arrPlanScores[$intService][$strPlan]++;
+					}
+				}
+			}
+		}
+		
+		// ADD RATE PLANS
+		
+		// for each service
+		foreach ($arrPlanScores AS $intService=>$arrPlan)
+		{
+			// sort the array of plans
+			$arrPlan = asort($arrPlan);
+			
+			// get the highest scoring plan
+			
 		}
 	}
 	
@@ -433,107 +532,23 @@ class VixenImport extends ApplicationBaseClass
 	}
 	
 	
-	
-	
-	
 	// ------------------------------------//
-	// Match 
+	// FIND 
 	// ------------------------------------//
 	
-	function MatchAccounts_RateGroups($start)
+	// find rate group
+	function FindRateGroup($strRateGroupName, $intRecordType)
 	{
-		echo "Checking ".($start * 100)." - ".($start * 100 + 100)."\n";
-		// Get acount details from the scrape
-		$sql = "SELECT CustomerId, DataSerialized FROM ScrapeAccount ";
-		$sql .= "LIMIT " . ($start * 100) . ", 100";
-		$query = mysql_query ($sql);
-		while ($row = mysql_fetch_assoc ($query))
+		// check if we have a cache of rate groups
+		if (!is_array($this->_arrRateGroups))
 		{
-			$arrScrapeAccount = unserialize($row['DataSerialized']);
-			$arrScrapeAccount['AccountId'] = (int)$row['CustomerId'];
-			Decode($arrScrapeAccount);
-		}
-	}
-	
-	
-	// CreateServiceRatePlan
-	function CreateServiceRateGroup()
-	{
-	
-	}
-	
-	// CreateServiceRateGroup
-	function Decode($arrScrapeAccount)
-	{
-		//echo "Decoding\n";
-		if (!is_array($arrScrapeAccount))
-		{
-			return FALSE;
+			// get an array of rate groups
+			//TODO!rich! get rate groups from the db and put them in an array
+			// $this->_arrRateGroups[RateGroup.RecordType][RateGroup.Name] = RateGroup.Id
 		}
 		
-		$arrRates = Array();
-				
-		$insServiceRateGroup	= $GLOBALS['insServiceRateGroup'];
-		$selServicesByType		= $GLOBALS['selServicesByType'];
-		
-		// for each RecordType
-		foreach ($GLOBALS['arrRecordTypes'] AS $strName=>$intServiceType )
-		{
-			//echo $intServiceType."\n";
-			
-			// if we have a rate for this RecordType
-			if ($arrScrapeAccount[$strName])
-			{
-				//if we have a conversion name for this rate
-				if ($GLOBALS['arrRates'][$strName][$arrScrapeAccount[$strName]])
-				{
-					// add to rate report
-					$GLOBALS['arrRateReport'][$strName][$arrScrapeAccount[$strName]] = $intRateGroup;
-				
-					if (!is_array($GLOBALS['arrRates'][$strName][$arrScrapeAccount[$strName]]))
-					{
-						$arrRateGroup = Array($GLOBALS['arrRates'][$strName][$arrScrapeAccount[$strName]]);
-					}
-					else
-					{
-						$arrRateGroup = $GLOBALS['arrRates'][$strName][$arrScrapeAccount[$strName]];
-					}
-					
-					foreach($arrRateGroup as $intRateGroup)
-					{
-						//echo $intRateGroup."\n";
-						// insert record
-						
-						$selServicesByType->Execute(Array('ServiceType' => $intServiceType, 'Account' => $arrScrapeAccount['AccountId']));
-						$arrServices = $selServicesByType->FetchAll();
-						// for each service of $intServiceType
-						foreach($arrServices as $arrService)
-						{
-							// insert into ServiceRateGroup
-							$arrData['Service']			= $arrService['Id'];
-							$arrData['RateGroup']		= $intRateGroup;
-							$arrData['CreatedBy']		= 22;	// Rich ;)
-							$arrData['CreatedOn']		= date("Y-m-d");
-							$arrData['StartDatetime']	= "2006-01-01 11:57:40";
-							$arrData['EndDatetime']		= "2030-11-30 11:57:45";
-							$insServiceRateGroup->Execute($arrData);
-							//echo "{$arrService['Id']} - {$arrService['FNN']}\n";
-						}
-						//echo $arrScrapeAccount['AccountId']."\n";
-					}
-				}
-				else
-				{
-					//error
-					echo "No new rate found for : $intServiceType \t: {$arrScrapeAccount[$strName]}\n";
-					
-					// add to rate report
-					$GLOBALS['arrRateReport'][$strName][$arrScrapeAccount[$strName]] = 0;
-				}
-			}
-		}
-		
-		return TRUE;
+		// return the rate group Id
+		return $this->_arrRateGroups[$intRecordType][$strRateGroupName];
 	}
 }
 
