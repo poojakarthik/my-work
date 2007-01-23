@@ -468,7 +468,7 @@
 			$arrNormalisedNote['NoteType']		= $arrNote['NoteType'];
 			$arrNormalisedNote['AccountGroup']	= $arrNote['CustomerId'];
 			$arrNormalisedNote['Note']			= $arrNote['NoteValue'];
-			$arrNormalisedNote['EmployeeName']	= $arrNote['Employee'];
+			$arrNormalisedNote['EmployeeName']	= preg_replace("/^\W/", "", $arrNote['Employee']);
 			
 			// Add to normalised array
 			$arrNormalisedNotes[] = $arrNormalisedNote;
