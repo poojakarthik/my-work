@@ -145,7 +145,6 @@
 		line-height:         25px;
 		
 		margin-bottom:       10px;
-		width:				675px;
 	}
 	
 	div.MsgError
@@ -341,19 +340,26 @@
 		width:				 350px;
 	}
 	
+	.Form-Content
+	{
+		margin-right:        20px;
+	}
+	
+	
 	.Filter-Form
 	{
 		margin:              0;
 		padding:             10px;
 		
 		border:              solid 1px #D1D1D1;
-		background-color:    #FF0000;
+		background-color:    #CC0000;
 		width:				 700px;
 	}
 	
 	.Filter-Form-Content
 	{
 		margin-right:        20px;
+		background-color:    #CC0000;
 	}
 	
 	.Pablo-Section
@@ -489,7 +495,7 @@
 	
 	.LargeSelection
 	{
-		width:               350px;
+		width:               325px;
 	}
 	
 	select
@@ -760,9 +766,10 @@
 	
 	.modalContainer
 	{
-		width:					750px;
+		width:					760px;
 		padding:				5px;
 		background-color:		#FFFFFF;
+		border:					solid 1px #000000;
 	}
 	
 	.modalContent

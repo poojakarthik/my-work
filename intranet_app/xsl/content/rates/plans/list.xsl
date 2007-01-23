@@ -7,8 +7,8 @@
 		<h1>Available Plans</h1>
 		
 		<form method="GET" action="rates_plan_list.php">
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th valign="top">
@@ -99,12 +99,12 @@
 							<td><xsl:value-of select="./Name" /></td>
 							<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 							<td>
-								<a href="#" title="Rate Plan Details" alt="Information about this Rate and its Charges">
-									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (this, </xsl:text>
-										<xsl:text>'rates_plan_view.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>rates_plan_summary.php?Id=</xsl:text>
+										<xsl:value-of select="./Id" />
 									</xsl:attribute>
-									<xsl:text>View Details</xsl:text>
+									<xsl:text>View Summary</xsl:text>
 								</a>
 							</td>
 						</tr>

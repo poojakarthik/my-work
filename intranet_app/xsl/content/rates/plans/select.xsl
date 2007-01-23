@@ -40,8 +40,8 @@
 				</div>
 			</xsl:if>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<th class="JustifiedWidth">
@@ -91,8 +91,8 @@
 			
 			<div class="Seperator"></div>
 					
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<th class="JustifiedWidth">
@@ -140,8 +140,8 @@
 			<h2>Record Types</h2>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<xsl:for-each select="/Response/RatePlan/RecordTypes/Results/rangeSample/RecordType">
 							<xsl:variable name="RecordType" select="./Id" />
@@ -194,8 +194,8 @@
 				<h2>Recurring Changes</h2>
 				<div class="Seperator"></div>
 				
-				<div class="Filter-Form">
-					<div class="Filter-Form-Content Left">
+				<div class="Wide-Form">
+					<div class="Form-Content Left">
 						Select multiple Recurring Charges by holding the CTRL key while you click options from
 						either of the lists.
 						

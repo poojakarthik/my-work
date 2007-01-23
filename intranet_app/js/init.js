@@ -79,3 +79,16 @@
 		return false;
 	}
 	
+	function RecentCustomerGo (element, intCustomer)
+	{
+		var childElements = element.getElementsByTagName ("TD");
+		
+		for (i=0; i < childElements.length; ++i)
+		{
+			childElements.item (i).style.backgroundColor = "#006599";
+			childElements.item (i).style.color = "#FFFFFF";
+		}
+		
+		window.location = 'contact_view.php?Id=' + intCustomer;
+	}
+	

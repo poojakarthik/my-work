@@ -20,9 +20,9 @@
 				</div>
 			</xsl:if>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
-					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
+					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">

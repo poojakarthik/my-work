@@ -42,10 +42,10 @@
 			$selRatePlanName = new StatementSelect (
 				"RatePlan", 
 				"count(*) AS Length", 
-				"Name = <Name> AND Archived = 0"
+				"Name = <Name> AND ServiceType = <ServiceType> AND Archived = 0"
 			);
 			
-			$selRatePlanName->Execute (Array ("Name" => $_POST ['Name']));
+			$selRatePlanName->Execute (Array ("Name" => $_POST ['Name'], "ServiceType" => $_POST ['ServiceType']));
 			$arrLength = $selRatePlanName->Fetch ();
 			
 			if ($arrLength ['Length'] <> 0)

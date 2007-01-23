@@ -72,8 +72,8 @@
 				</xsl:attribute>
 			</input>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<!-- Service Number (FNN) - if entered -->
 						<xsl:if test="/Response/ui-values/FNN != ''">
@@ -181,8 +181,8 @@
 			
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<!-- Account Id -->
 						<tr>
@@ -261,8 +261,8 @@
 			
 			<div class="Seperator"></div>
 
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<!-- Contact Name -->
 						<tr>
@@ -367,8 +367,8 @@
 			
 			<xsl:if test="/Response/ui-answers/Invoice or count(/Response/ui-answers/Invoices/Results/rangeSample/Invoice) != 0 or /Response/ui-answers/Account/DirectDebitDetails/DirectDebit">
 			
-				<div class="Filter-Form">
-					<div class="Filter-Form-Content">
+				<div class="Wide-Form">
+					<div class="Form-Content">
 						<table border="0" cellpadding="5" cellspacing="0">
 							<xsl:choose>
 								<xsl:when test="/Response/ui-answers/Invoice">
@@ -488,8 +488,8 @@
 			
 			<!-- Credit Card Details -->
 			<xsl:if test="/Response/ui-answers/Account/CreditCardDetails/CreditCard">
-				<div class="Filter-Form">
-					<div class="Filter-Form-Content">
+				<div class="Wide-Form">
+					<div class="Form-Content">
 						<table border="0" cellpadding="5" cellspacing="0">
 							<!-- Credit Card Number -->
 							<tr>

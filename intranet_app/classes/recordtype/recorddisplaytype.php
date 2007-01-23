@@ -35,7 +35,7 @@
 	 *
 	 * @package	intranet_app
 	 * @class	RecordDisplayType
-	 * @extends	dataEnumerative
+	 * @extends	dataObject
 	 */
 	
 	class RecordDisplayType extends dataObject
@@ -111,37 +111,8 @@
 		{
 			parent::__construct ('RecordDisplayType');
 			
-			$strName = 'Unknown';
-			$strSuffix = '';
-			
-			switch ($intType)
-			{
-				// Type 92
-				case RECORD_DISPLAY_S_AND_E:
-					$strName = "Service & Equipment";
-					$strSuffix = "QTY";
-					break;
-					
-				// Type 93
-				case RECORD_DISPLAY_DATA:
-					$strName = "GPRS and ADSL Data";
-					$strSuffix = "KB";
-					break;
-					
-				// Type 94
-				case RECORD_DISPLAY_SMS:
-					$strName = "SMS (Short Message Service)";
-					$strSuffix = "MSG";
-					break;
-					
-				// Type 91
-				case RECORD_DISPLAY_CALL:
-				// Unknown Record Type (should never happen) - just display as a normal Call
-				default:
-					$strName = "Voice Calls";
-					$strSuffix = "MM:SS";
-					break;
-			}
+			$strName	= $GLOBALS['RecordDisplayRateName'][$intType];
+			$strSuffix	= $GLOBALS['RecordDisplayRateSuffix'][$intType];
 			
 			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));
 			$this->oblstrName		= $this->Push (new dataString	('Name',	$strName));

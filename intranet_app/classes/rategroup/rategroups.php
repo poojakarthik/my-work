@@ -76,15 +76,15 @@
 		 * @method
 		 */
 		
-		public function UnarchivedNameExists ($strName)
+		public function UnarchivedNameExists ($strName, $intServiceType)
 		{
 			$selRate = new StatementSelect (
 				"RateGroup", 
 				"count(*) AS Length", 
-				"Name = <Name> AND Archived = 0"
+				"Name = <Name> AND ServiceType = <ServiceType> AND Archived = 0"
 			);
 			
-			$selRate->Execute (Array ("Name" => $strName));
+			$selRate->Execute (Array ("Name" => $strName, "ServiceType" => $intServiceType));
 			$arrLength = $selRate->Fetch ();
 			
 			return $arrLength ['Length'] <> 0;

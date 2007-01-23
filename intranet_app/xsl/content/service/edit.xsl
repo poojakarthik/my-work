@@ -35,6 +35,7 @@
 					</input>
 					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -46,6 +47,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -57,6 +59,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -73,6 +76,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />

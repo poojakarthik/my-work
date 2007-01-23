@@ -67,8 +67,8 @@
 	// Start with the Account Entity
 	$oblarrAccount->Push	(new dataString	('BusinessName',	$_POST ['Account']['BusinessName']));
 	$oblarrAccount->Push	(new dataString	('TradingName',		$_POST ['Account']['TradingName']));
-	$oblarrAccount->Push	(new ABN		('ABN',				$_POST ['Account']['ABN']));
-	$oblarrAccount->Push	(new ACN		('ACN',				$_POST ['Account']['ACN']));
+	$oblarrAccount->Push	(new dataString	('ABN',				$_POST ['Account']['ABN']));
+	$oblarrAccount->Push	(new dataString	('ACN',				$_POST ['Account']['ACN']));
 	$oblarrAccount->Push	(new dataString	('Address1',		$_POST ['Account']['Address1']));
 	$oblarrAccount->Push	(new dataString	('Address2',		$_POST ['Account']['Address2']));
 	$oblarrAccount->Push	(new dataString	('Suburb',			$_POST ['Account']['Suburb']));
@@ -121,45 +121,152 @@
 			}
 		}
 		
+		$abnABN = new ABN ('ABN', '');
+		$acnACN = new ACN ('ACN', '');
+		
 		if (!$_POST ['Account']['BusinessName'])
 		{
 			// This throws an error if the Business Name is Blank
-			$oblstrError->setValue ('BusinessName');
+			$oblstrError->setValue ('Account BusinessName');
 		}
-		else if (!$_POST ['Account']['TradingName'])
+		else if (!$_POST ['Account']['ABN'] && !$_POST ['Account']['ACN'])
 		{
-			// This throws an error if the Trading Name is Blank
-			$oblstrError->setValue ('TradingName');
+			// This throws an error if the ABN and the ACN is Blank
+			$oblstrError->setValue ('Account ABN-ACN');
 		}
-		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['UserName'])
+		else if (!$abnABN->setValue ($_POST ['Account']['ABN']))
 		{
-			// This throws an error if the User Name is Blank
-			$oblstrError->setValue ('UserName-Blank');
+			// This throws an error if the ABN is Invalid
+			$oblstrError->setValue ('Account ABN Invalid');
 		}
-		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && $cntUsername)
+		else if (!$acnACN->setValue ($_POST ['Account']['ACN']))
 		{
-			// This throws an error if the User Name exists
-			$oblstrError->setValue ('UserName');
+			// This throws an error if the ACN is Invalid
+			$oblstrError->setValue ('Account ACN Invalid');
 		}
-		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['Email'])
+		else if (!$_POST ['Account']['Address1'])
 		{
-			// This throws an error if the Contact Email is Blank
-			$oblstrError->setValue ('Email-Blank');
+			// This throws an error if the Address (Line 1) is Blank
+			$oblstrError->setValue ('Account Address');
+		}
+		else if (!$_POST ['Account']['Suburb'])
+		{
+			// This throws an error if the Suburb is Blank
+			$oblstrError->setValue ('Account Suburb');
+		}
+		else if (!$_POST ['Account']['Postcode'])
+		{
+			// This throws an error if the Postcode is Blank
+			$oblstrError->setValue ('Account Postcode');
+		}
+		else if (!$_POST ['Account']['State'])
+		{
+			// This throws an error if the State is Blank
+			$oblstrError->setValue ('Account State');
 		}
 		else if (!$cgsCustomerGroups->setValue ($_POST ['Account']['CustomerGroup']))
 		{
 			// This throws an error if the Customer Group is Invalid
-			$oblstrError->setValue ('CustomerGroup');
+			$oblstrError->setValue ('Account CustomerGroup');
 		}
 		else if (!$bmeBillingMethods->setValue ($_POST ['Account']['BillingMethod']))
 		{
 			// This throws an error if the Billing Method is Invalid
-			$oblstrError->setValue ('BillingMethod');
+			$oblstrError->setValue ('Billing Method');
+		}
+		
+		// This section deals with Direct Debits
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['BankName'])
+		{
+			$oblstrError->setValue ('DirectDebit BankName');
+		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['BSB'])
+		{
+			$oblstrError->setValue ('DirectDebit BSB');
+		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['AccountNumber'])
+		{
+			$oblstrError->setValue ('DirectDebit AccountNumber');
+		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['AccountName'])
+		{
+			$oblstrError->setValue ('DirectDebit AccountName');
+		}
+		
+		// This section deals with Credit Cards
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$ccsCreditCardTypes->setValue ($_POST ['CC']['CardType']))
+		{
+			$oblstrError->setValue ('CreditCard CardType');
+		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['Name'])
+		{
+			$oblstrError->setValue ('CreditCard Name');
+		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['CardNumber'])
+		{
+			$oblstrError->setValue ('CreditCard CardNumber');
+		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['ExpMonth'])
+		{
+			$oblstrError->setValue ('CreditCard ExpMonth');
+		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['ExpYear'])
+		{
+			$oblstrError->setValue ('CreditCard ExpYear');
+		}
+		
+		// The following errors are related to New Contact Creation. These
+		// errors will only be run when a New Contact has been requested (or forced)
+		
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['Title'])
+		{
+			// This throws an error if the Contact's Title is Blank
+			$oblstrError->setValue ('Contact Title');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['FirstName'])
+		{
+			// This throws an error if the Contact's First Name is Blank
+			$oblstrError->setValue ('Contact FirstName');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['LastName'])
+		{
+			// This throws an error if the Contact's Last Name is Blank
+			$oblstrError->setValue ('Contact LastName');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !@checkdate ((int) $_POST ['Contact']['DOB']['month'], (int) $_POST ['Contact']['DOB']['day'], (int) $_POST ['Contact']['DOB']['year']))
+		{
+			// This throws an error if the Contact's DOB is Invalid
+			$oblstrError->setValue ('Contact DOB');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['Email'])
+		{
+			// This throws an error if the Contact's Email is Blank
+			$oblstrError->setValue ('Contact Email');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['Phone'] && !$_POST ['Contact']['Mobile'])
+		{
+			// This throws an error if the Contact's Phone and Mobile are Blank
+			$oblstrError->setValue ('Contact Phones Empty');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['UserName'])
+		{
+			// This throws an error if the Contact's Username is Blank
+			$oblstrError->setValue ('Contact UserName Empty');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && $cntUsername)
+		{
+			// This throws an error if the User Name exists
+			$oblstrError->setValue ('Contact UserName Exists');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['PassWord'])
+		{
+			// This throws an error if the Contact's Password is Blank
+			$oblstrError->setValue ('Contact PassWord');
 		}
 		else if (!$ccsCreditCardTypes->setValue ($_POST ['CC']['CardType']))
 		{
 			// This throws an error if the Credit Card Type is Invalid
-			$oblstrError->setValue ('CardType');
+			$oblstrError->setValue ('CreditCard CardType');
 		}
 		else
 		{

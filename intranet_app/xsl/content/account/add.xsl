@@ -19,29 +19,99 @@
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
 				<xsl:choose>
-					<xsl:when test="/Response/Error = 'BusinessName'">
-						The Business Name that you entered was Blank.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'TradingName'">
-						The Trading Name that you entered was Blank.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'UserName-Blank'">
-						The Username you entered was Blank.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'UserName'">
-						The Username you entered already exists in the System.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'Email-Blank'">
-						The Email Address you entered was blank.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'CustomerGroup'">
+					<!-- Serious Errors : Should never show, but just in case -->
+					<xsl:when test="/Response/Error = 'Account CustomerGroup'">
 						The Customer Group you selected was Invalid. Please try again.
 					</xsl:when>
-					<xsl:when test="/Response/Error = 'BillingMethod'">
+					<xsl:when test="/Response/Error = 'Billing Method'">
 						The Billing Method you selected was Invalid. Please try again.
 					</xsl:when>
-					<xsl:when test="/Response/Error = 'CardType'">
+					<xsl:when test="/Response/Error = 'CreditCard CardType'">
 						The Credit Card Type you selected was Invalid. Please try again.
+					</xsl:when>
+					
+					<!-- Account -->
+					<xsl:when test="/Response/Error = 'Account BusinessName'">
+						You did not enter a Business Name. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account ABN-ACN'">
+						You did not enter either an ABN# or ACN#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account ABN Invalid'">
+						You did not enter a valid ABN#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account ACN Invalid'">
+						You did not enter a valid ACN#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account Address'">
+						You did not enter an Address. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account Suburb'">
+						You did not enter a Suburb. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account Postcode'">
+						You did not enter a Postcode. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account State'">
+						You did not enter a State. Please try again.
+					</xsl:when>
+					
+					<!-- Direct Debit -->
+					<xsl:when test="/Response/Error = 'DirectDebit BankName'">
+						You did not enter a Direct Debit Bank Name. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'DirectDebit BSB'">
+						You did not enter a Direct Debit BSB#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'DirectDebit AccountNumber'">
+						You did not enter a Direct Debit Account#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'DirectDebit AccountName'">
+						You did not enter a Direct Debit Account Name. Please try again.
+					</xsl:when>
+					
+					<!-- Credit Card -->
+					<xsl:when test="/Response/Error = 'CreditCard Name'">
+						You did not enter a Credit Card Holder Name. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'CreditCard CardNumber'">
+						You did not enter a Credit Card Number. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'CreditCard ExpMonth'">
+						You did not enter a Credit Card Expiration Month. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'CreditCard ExpYear'">
+						You did not enter a Credit Card Expiration Year. Please try again.
+					</xsl:when>
+					
+					
+					<!-- Contact -->
+					<xsl:when test="/Response/Error = 'Contact Title'">
+						You must enter a Salutation for the Contact you are creating.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact FirstName'">
+						You must enter a First Name for the Contact you are creating.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact LastName'">
+						You must enter a Last Name for the Contact you are creating.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact DOB'">
+						You must enter a valid Date of Birth for the Contact you are creating.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact Email'">
+						You must enter an Email Address for the Contact you are creating.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact Phones Empty'">
+						You must enter a Contact Number for the Contact you are creating.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact UserName Empty'">
+						You must enter a Username for the Contact you are creating.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact UserName Exists'">
+						The Username you selected already exists. Please select another Username and try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact PassWord'">
+						You must enter a Password for the Contact you are creating.
 					</xsl:when>
 				</xsl:choose>
 			</div>
@@ -50,10 +120,11 @@
 		<form method="POST" action="account_add.php">
 			<xsl:choose>
 				<xsl:when test="/Response/AccountGroup">
-					<div class="Filter-Form">
-						<div class="Filter-Form-Content">
+					<div class="Wide-Form">
+						<div class="Form-Content">
 							<table border="0" cellpadding="5" cellspacing="0">
 								<tr>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('AccountGroup')" />
@@ -92,6 +163,7 @@
 			<div class="Wide-Form">
 				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
+						<td width="10"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -108,6 +180,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10"></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -124,11 +197,12 @@
 						</td>
 					</tr>
 					<tr>
-						<td coslpan="2">
+						<td coslpan="3">
 							<div class="Seperator"></div>
 						</td>
 					</tr>
 					<tr>
+						<td width="10"><strong><span class="Red"><sup>1</sup></span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -145,6 +219,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10"><strong><span class="Red"><sup>1</sup></span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -161,11 +236,12 @@
 						</td>
 					</tr>
 					<tr>
-						<td coslpan="2">
+						<td coslpan="3">
 							<div class="Seperator"></div>
 						</td>
 					</tr>
 					<tr>
+						<td width="10"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -182,6 +258,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10"></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -198,6 +275,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -214,6 +292,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -230,6 +309,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -246,11 +326,12 @@
 						</td>
 					</tr>
 					<tr>
-						<td coslpan="2">
+						<td coslpan="3">
 							<div class="Seperator"></div>
 						</td>
 					</tr>
 					<tr>
+						<td width="10"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('CustomerGroup')" />
@@ -284,9 +365,10 @@
 			
 			<h2 class="Invoice">Billing Details</h2>
 			
-			<div class="Filter-Form">
-				<table border="0" cellpadding="0" cellspacing="0">
+			<div class="Wide-Form">
+				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Billing')" />
@@ -316,11 +398,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2">
-							<div class="Seperator"></div>
-						</td>
-					</tr>
-					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth" valign="top">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Payment')" />
@@ -553,10 +631,11 @@
 			
 			<h2 class="Contact">Primary Contact Details</h2>
 			
-			<div class="Filter-Form">
+			<div class="Wide-Form">
 				<xsl:if test="/Response/Contacts">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
+							<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 							<td>
 								<input type="radio" name="Contact[USE]" value="1" id="Contact[USE]:TRUE">
 									<xsl:choose>
@@ -575,6 +654,7 @@
 							</th>
 						</tr>
 						<tr>
+							<td></td>
 							<td></td>
 							<td>
 								<select name="Contact[Id]">
@@ -600,6 +680,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 							<td>
 								<input type="radio" name="Contact[USE]" value="0" id="Contact[USE]:FALSE">
 									<xsl:choose>
@@ -622,6 +703,7 @@
 				
 				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -638,6 +720,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -654,6 +737,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -675,6 +759,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -694,6 +779,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -710,11 +796,12 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2">
+						<td colspan="3">
 							<div class="Seperator"></div>
 						</td>
 					</tr>
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -731,6 +818,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red"><sup>2</sup></span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -747,6 +835,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red"><sup>2</sup></span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -763,6 +852,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10"></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -779,12 +869,13 @@
 						</td>
 					</tr>
 					<tr>
-						<td colspan="2">
+						<td colspan="3">
 							<div class="Seperator"></div>
 						</td>
 					</tr>
 					<!-- TODO!!!! - LOW PRIORITY - auto generate username-->
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -801,6 +892,7 @@
 						</td>
 					</tr>
 					<tr>
+						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />

@@ -79,8 +79,8 @@
 				</div>
 			</xsl:if>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
@@ -112,7 +112,7 @@
 					<div class="Clear"></div>
 				</div>
 				
-				<div class="Filter-Form-Content Left">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
@@ -145,7 +145,7 @@
 			<div class="Seperator"></div>
 			
 
-			<div class="Filter-Form">
+			<div class="Wide-Form">
 				<script src="js/date_selection.js" type="text/javascript"></script>
 				
 				<div id="weekScheduler_Constraint">
@@ -215,7 +215,7 @@
 				
 				<div class="Seperator"></div>
 				
-				<div class="Filter-Form-Content Left">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
@@ -247,7 +247,7 @@
 					</table>
 				</div>
 				
-				<div class="Filter-Form-Content Left">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
@@ -288,8 +288,8 @@
 			<div class="Seperator"></div>
 			
 
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<td></td>
@@ -373,8 +373,8 @@
 			<div class="Clear"></div>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<td><input type="radio" name="CapCalculation" value="" checked="checked" /></td>
@@ -412,7 +412,7 @@
 				<div class="Clear"></div>
 				<div class="Seperator"></div>
 				
-				<div class="Filter-Form-Content Left Indent" id="CapLimit">
+				<div class="Form-Content Left Indent" id="CapLimit">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<td><input type="radio" name="CapLimiting" value="" checked="checked" /></td>
@@ -447,7 +447,7 @@
 					<div class="Clear"></div>
 					<div class="Seperator"></div>
 					
-					<div class="Filter-Form-Content Left Indent" id="Excess">
+					<div class="Form-Content Left Indent" id="Excess">
 						<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 							<tr>
 								<td></td>
@@ -522,8 +522,8 @@
 			<div class="Clear"></div>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
 							<td></td>

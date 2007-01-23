@@ -59,11 +59,10 @@
 		{
 			parent::__construct ('RecordDisplayTypes');
 			
-			// Instantiate the Variable Values for possible selection
-			$this->_S_AND_E		= $this->Push (new RecordDisplayType (RECORD_DISPLAY_S_AND_E));
-			$this->_DATA		= $this->Push (new RecordDisplayType (RECORD_DISPLAY_DATA));
-			$this->_SMS			= $this->Push (new RecordDisplayType (RECORD_DISPLAY_SMS));
-			$this->_CALL		= $this->Push (new RecordDisplayType (RECORD_DISPLAY_CALL));
+			foreach ($GLOBALS['RecordDisplayRateName'] AS $intType => $strName)
+			{
+				$this->_arrTypes [$intType] = $this->Push (new RecordDisplayType ($intType));
+			}
 			
 			$this->setValue ($intRecordDisplayType);
 		}
@@ -86,15 +85,13 @@
 		
 		public function setValue ($intRecordDisplayType)
 		{
-			// Select the value
-			switch ($intRecordDisplayType)
+			if (isset ($this->_arrTypes [$intRecordDisplayType]))
 			{
-				case RECORD_DISPLAY_S_AND_E:	$this->Select ($this->_S_AND_E);	return true;
-				case RECORD_DISPLAY_DATA:		$this->Select ($this->_DATA);		return true;
-				case RECORD_DISPLAY_SMS:		$this->Select ($this->_SMS);		return true;
-				case RECORD_DISPLAY_CALL:		$this->Select ($this->_CALL);		return true;
-				default:						return false;
+				$this->Select ($this->_arrTypes [$intRecordDisplayType]);
+				return true;
 			}
+			
+			return false;
 		}
 	}
 	

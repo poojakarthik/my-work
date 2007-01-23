@@ -112,6 +112,34 @@
 			$insRate = new StatementInsert ('Rate');
 			return $insRate->Execute ($arrRate);
 		}
+		
+		//------------------------------------------------------------------------//
+		// getRates
+		//------------------------------------------------------------------------//
+		/**
+		 * getRates()
+		 *
+		 * Get a list of Rates
+		 *
+		 * Get a list of Rates (Identified by an Array)
+		 *
+		 * @param	Array		$arrRates 		Associative array of Rates
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function getRates ($arrRates)
+		{
+			$oblarrRates = new dataArray ('Rates', 'Rate');
+			
+			foreach ($arrRates as $intRate => $strRate)
+			{
+				$oblarrRates->Push (new Rate ($intRate));
+			}
+			
+			return $oblarrRates;
+		}
 	}
 	
 ?>

@@ -78,6 +78,37 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// RatesListing
+		//------------------------------------------------------------------------//
+		/**
+		 * RatesListing()
+		 *
+		 * Gets the Rates in this Rate Group and returns only the Id
+		 *
+		 * Gets the Rates in this Rate Group and returns only the Id
+		 *
+		 * @param	Integer		$intLimit		[Optional] The number of Rates you want to return. NULL = all
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function RatesListing ($intLimit=NULL)
+		{
+			$oblarrRates = new dataArray ('Rates');
+			
+			$selRates = new StatementSelect ('RateGroupRate', 'Rate', 'RateGroup = <RateGroup>', null, $intLimit);
+			$selRates->Execute (Array ('RateGroup' => $this->Pull ('Id')->getValue ()));
+			
+			foreach ($selRates->FetchAll () as $arrRate)
+			{
+				$oblarrRates->Push (new dataString ('Rate', $arrRate ['Rate']));
+			}
+			
+			return $oblarrRates;
+		}
+		
+		//------------------------------------------------------------------------//
 		// Rates
 		//------------------------------------------------------------------------//
 		/**

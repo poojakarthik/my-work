@@ -129,9 +129,9 @@
 				<div class="Seperator"></div>
 
 				<!-- Navigation Menu -->
-					<table border="0" width="100%" cellpadding="10" cellspacing="0">
+					<table border="0" width="720" cellpadding="10" cellspacing="0">
 						<tr>
-							<td valign="top" width="50">
+							<td valign="top" width="200" nowrap="nowrap">
 								<!--
 									<ul id="Navigation-Root">
 										<li>
@@ -402,9 +402,7 @@
 												<xsl:text> RecentCustomers</xsl:text>
 											</xsl:attribute>
 											<xsl:attribute name="onclick">
-												<xsl:text>window.location='contact_view.php?Id=</xsl:text>
-												<xsl:value-of select="./Id" />
-												<xsl:text>'</xsl:text>
+												<xsl:text>RecentCustomerGo (this, '</xsl:text><xsl:value-of select="./Id" /><xsl:text>')</xsl:text>
 											</xsl:attribute>
 											
 											<td><xsl:value-of select="position()" />.</td>

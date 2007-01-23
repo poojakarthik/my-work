@@ -15,8 +15,8 @@
 				<td valign="top">
 					<h2 class="Account">Account Details</h2>
 					
-					<div class="Filter-Form">
-						<div class="Filter-Form-Content">
+					<div class="Narrow-Form">
+						<div class="Form-Content">
 							<form method="POST" action="account_edit.php">
 								<input type="hidden" name="Id">
 									<xsl:attribute name="value">

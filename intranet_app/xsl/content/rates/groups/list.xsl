@@ -7,8 +7,8 @@
 		<h1>Rate Groups</h1>
 		
 		<form method="GET" action="rates_group_list.php">
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th valign="top">

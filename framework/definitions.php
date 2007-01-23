@@ -681,6 +681,18 @@ define("RECORD_DISPLAY_S_AND_E"		, 2);
 define("RECORD_DISPLAY_DATA"		, 3);
 define("RECORD_DISPLAY_SMS"			, 4);
 
+$arrRecordDisplayRateName[RECORD_DISPLAY_CALL]			= "Voice Calls";
+$arrRecordDisplayRateName[RECORD_DISPLAY_S_AND_E]		= "Service & Equipment";
+$arrRecordDisplayRateName[RECORD_DISPLAY_DATA]			= "GPRS and ADSL Data";
+$arrRecordDisplayRateName[RECORD_DISPLAY_SMS]			= "SMS (Short Message Service)";
+$GLOBALS['RecordDisplayRateName'] = $arrRecordDisplayRateName;
+
+$arrRecordDisplayRateSuffix[RECORD_DISPLAY_CALL]		= "Second(s)";
+$arrRecordDisplayRateSuffix[RECORD_DISPLAY_S_AND_E]		= "Unit(s)";
+$arrRecordDisplayRateSuffix[RECORD_DISPLAY_DATA]		= "KB(s)";
+$arrRecordDisplayRateSuffix[RECORD_DISPLAY_SMS]			= "Unit(s)";
+$GLOBALS['RecordDisplayRateSuffix'] = $arrRecordDisplayRateSuffix;
+
 // Debit and Credit
 define("NATURE_CR"					, 'CR');
 define("NATURE_DR"					, 'DR');

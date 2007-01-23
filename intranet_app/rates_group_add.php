@@ -32,22 +32,21 @@
 	
 	if (isset ($_POST ['Name']) && isset ($_POST ['ServiceType']))
 	{
-		// The Name of the Rate Group cannot be empty
 		if (empty ($_POST ['Name']))
 		{
+			// The Name of the Rate Group cannot be empty
 			$oblstrError->setValue ('Blank');
 		}
-		// Check that an Item of the same Name that is Not Archived Exists
-		else if ($rglRateGroups->UnarchivedNameExists ($_POST ['Name']))
-		{
-			$oblstrError->setValue ('Exists');
-		}
-		// Ensure that the Service Type is Valid
 		else if (!$svtServiceType->setValue ($_POST ['ServiceType']))
 		{
+			// Ensure that the Service Type is Valid
 			$oblstrError->setValue ('ServiceType');
 		}
-		// If we're up to here - then we're good for stage 2
+		else if ($rglRateGroups->UnarchivedNameExists ($_POST ['Name'], $_POST ['ServiceType']))
+		{
+			// Check that an Item of the same Name that is Not Archived Exists
+			$oblstrError->setValue ('Exists');
+		}
 		else
 		{
 			// If we're here, we only have to set the name because the ServiceType

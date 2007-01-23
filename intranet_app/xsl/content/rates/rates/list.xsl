@@ -7,8 +7,8 @@
 		<h1>Listing Rates</h1>
 		
 		<form method="GET" action="rates_rate_list.php">
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
+			<div class="Wide-Form">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th valign="top">
@@ -62,11 +62,8 @@
 						</tr>
 					</table>
 					
-					<input type="submit" value="Search" class="input-submit" />
-					
-					<div class="Clear"></div>
 				</div>
-				<div class="Filter-Form-Content Left">
+				<div class="Content Left">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th valign="top">
@@ -126,7 +123,7 @@
 						</tr>
 					</table>
 				</div>
-				<div class="Filter-Form-Content Left">
+				<div class="Form-Content Left">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th valign="top">
@@ -154,6 +151,8 @@
 				</div>
 				
 				<div class="Clear"></div>
+				
+				<input type="submit" value="Search" class="input-submit" />
 			</div>
 		</form>
 		
