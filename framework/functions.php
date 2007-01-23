@@ -526,36 +526,33 @@ function isValidFNN ($strFNN)
  */
 function CleanFNN($strFNN, $strAreaCode=NULL)
 {
-	// no suffix by default
-	$strSuffix = '';
+	// add the area code
+	if ($strAreaCode)
+	{
+		$strFNN = "$strAreaCode$strFNN";
+	}
 	
 	// trim the FNN
 	$strFNN = Trim($strFNN);
 	
 	// keep the i from the end of an ADSL service
-	if (strtolower(substr($strFNN, -1, 1)) == 'i')
+	$strSuffix = strtolower(substr($strFNN, -1, 1));
+	if ($strSuffix != 'i' && $strSuffix != 'd')
 	{
-		$strSuffix = 'i';
+		$strSuffix = '';
 	}
 	
 	// clean any leading zeros from the fnn
 	$intFNN = (int)$strFNN;
 	$strFNN = "$intFNN";
 	
-	// clean the area code
-	if ((int)$strAreaCode)
-	{
-		$intAreaCode = (int)$strAreaCode;
-		$strFNN = "$intAreaCode".$strFNN;
-	}
-	
 	// get the FNN length
 	$intLength = strlen($strFNN);
 	
 	// add leading zeros if needed
-	if ($intLength < 10 && $intLength > 6)
+	if ($intLength == 9)
 	{
-		$strFNN = str_pad($strFNN, 10 , '0', STR_PAD_LEFT);
+		$strFNN = "0$strFNN";
 	}
 	
 	return $strFNN.$strSuffix;
@@ -883,5 +880,15 @@ function CSVHeader($strTable, $strSeparator=';', $strTerminator="\n")
 	$strReturn .= $strTerminator;
 	
 	return $strReturn;
+}
+
+// echo out a line
+function EchoLine($strText)
+{
+	echo $strText;
+	if (substr(-1, 1) != "\n")
+	{
+		echo "\n";
+	}
 }
 ?>

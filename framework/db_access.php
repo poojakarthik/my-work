@@ -2057,7 +2057,7 @@ class MySQLFunction
 			// add the Id
 			if ($bolWithId === TRUE)
 			{
-				$this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]['Type'] = "i"; 
+				$this->_arrColumns[$this->db->arrTableDefine[$this->_strTable]['Id']]['Type'] = "i";
 			}
 		}
 		
@@ -2177,12 +2177,6 @@ class MySQLFunction
 	 	else
 		{
 			// full insert
-			if ($this->_bolWithId === TRUE)
-			{
-				// add in the Id if needed
-				$strType = "i";
-				$arrParams[] = $arrData[$this->db->arrTableDefine[$this->_strTable]['Id']];
-			}
 			foreach ($this->db->arrTableDefine[$this->_strTable]["Column"] as $strColumnName=>$arrColumnValue)
 			{
 				if (isset ($arrData[$strColumnName]))
@@ -2198,6 +2192,12 @@ class MySQLFunction
 					$strType .= "i";
 					$arrParams[] = NULL;
 				}
+			}
+			if ($this->_bolWithId === TRUE)
+			{
+				// add in the Id if needed
+				$strType .= "i";
+				$arrParams[] = $arrData[$this->db->arrTableDefine[$this->_strTable]['Id']];
 			}
 		}
 		

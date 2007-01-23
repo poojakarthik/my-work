@@ -576,7 +576,7 @@
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
 	$objImport->Truncate('AccountGroup');
-	//$objImport->Truncate('****C*D*R****');
+	$objImport->Truncate('CDR');
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
 	$objImport->Truncate('Contact');
@@ -585,8 +585,8 @@
 	$objImport->Truncate('Employee');
 	$objImport->Truncate('EmployeeAccountAudit');
 	$objImport->Truncate('ErrorLog');
-	//$objImport->Truncate('FileDownLoad');
-	//$objImport->Truncate('FileImport');
+	$objImport->Truncate('FileDownLoad');
+	$objImport->Truncate('FileImport');
 	$objImport->Truncate('Invoice');
 	$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
