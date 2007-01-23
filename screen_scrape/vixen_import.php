@@ -103,10 +103,10 @@ class VixenImport extends ApplicationBaseClass
 		// insert credit card
 		if (is_array($arrCustomer['CreditCard']))
 		{
-			foreach ($arrCustomer['Account'] AS $arrCreditCard)
+			foreach ($arrCustomer['CreditCard'] AS $arrCreditCard)
 			{
 				$arrCreditCard['AccountGroup'] = $intAccountGroup;
-				$intCreditCardId = $this->InsertCreditCard($arrCustomer['CreditCard']);
+				$intCreditCardId = $this->InsertCreditCard($arrCreditCard);
 				$arrCreditCardId[] = $intCreditCardId;
 				$bolPassed = ($intCreditCardId === FALSE) ? FALSE : $bolPassed;
 			}
@@ -166,7 +166,7 @@ class VixenImport extends ApplicationBaseClass
 		{
 			foreach ($arrCustomer['CreditCard'] AS $arrCreditCard)
 			{
-				$intCreditCardId = $this->InsertCreditCard($arrCustomer['CreditCard']);
+				$intCreditCardId = $this->InsertCreditCard($arrCreditCard);
 				$arrCreditCard[] = $intCreditCardId;
 				$bolPassed = ($intCreditCardId === FALSE) ? FALSE : $bolPassed;
 			}
@@ -293,16 +293,19 @@ class VixenImport extends ApplicationBaseClass
 			// for each service
 			foreach ($arrService AS $intService=>$arrPlan)
 			{
-				// sort the array of plans & get the highest scoring plan
-				$strRatePlanName = array_pop(array_keys(asort($arrPlan)));
-				
-				// get the RatePlan ID
-				$intRatePlan = $this->FindRatePlan($strRatePlanName, $intServiceType);
-				
-				// insert the record
-				if ($intService && $intRatePlan)
+				if (is_array($arrPlan))
 				{
-					$this->AddServiceRateGroup($intService, $intRatePlan);
+					// sort the array of plans & get the highest scoring plan
+					$strRatePlanName = array_pop(array_keys(asort($arrPlan)));
+					
+					// get the RatePlan ID
+					$intRatePlan = $this->FindRatePlan($strRatePlanName, $intServiceType);
+					
+					// insert the record
+					if ($intService && $intRatePlan)
+					{
+						$this->AddServiceRateGroup($intService, $intRatePlan);
+					}
 				}
 			}
 		}
@@ -633,10 +636,17 @@ class VixenImport extends ApplicationBaseClass
 
 		$arrService['Archived']			= (int)$arrService['Archived'];
 		$return = $this->_insService->Execute($arrService);
+		if (!$return)
+		{
+			echo $this->_insService->Error();
+			Die();
+		}
+		return $return;
 	}
 	
 	function InsertCreditCard($arrCreditCard)
 	{
+		$arrCreditCard['Archived']			= (int)$arrCreditCard['Archived'];
 		return $this->_insCreditCard->Execute($arrCreditCard);
 	}
 	

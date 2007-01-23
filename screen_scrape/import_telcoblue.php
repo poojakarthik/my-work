@@ -690,7 +690,12 @@
 		
 		// add the customer
 		echo "Importing Customer  : {$arrRow['CustomerId']}\n";
-		$objImport->AddCustomerWithId($arrCustomer);
+		if (!$objImport->AddCustomerWithId($arrCustomer))
+		{
+			echo "FATAL ERROR : Could not add Customer : {$arrRow['CustomerId']}\n";
+			Die();
+		}
+		
 	}
 
 	// Add System Notes
