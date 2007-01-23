@@ -357,6 +357,15 @@
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Residential'] = $arrPlan;
 	
+	// Tier Three Mobile Saver
+	$arrPlan['Mobile']				= 'Mobile-26-06-01';
+	$arrPlan['Local']				= 'Local-16';
+	$arrPlan['National']			= 'National-09-06-01';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
+	$arrPlan['S&E']					= 'S&E-TierThreeMobileSaver';
+	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Mobile Saver'] = $arrPlan;
+	
 	// Tier Three Local Saver
 	$arrPlan['Mobile']				= 'Mobile-26-09-01';
 	$arrPlan['Local']				= 'Local-14';
