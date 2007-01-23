@@ -94,16 +94,21 @@ class VixenImport extends ApplicationBaseClass
 	
 	function AddCustomer($arrCustomer)
 	{
+		$bolPassed = TRUE;
+		
 		// insert account group
 		$intAccountGroup = $this->InsertAccountGroup($arrCustomer['AccountGroup'][0]);
-		
+		$bolPassed = ($intAccountGroup === FALSE) ? FALSE : $bolPassed;
+				
 		// insert credit card
 		if (is_array($arrCustomer['CreditCard']))
 		{
 			foreach ($arrCustomer['Account'] AS $arrCreditCard)
 			{
 				$arrCreditCard['AccountGroup'] = $intAccountGroup;
-				$arrCreditCardId[] = $this->InsertCreditCard($arrCustomer['CreditCard']);
+				$intCreditCardId = $this->InsertCreditCard($arrCustomer['CreditCard']);
+				$arrCreditCardId[] = $intCreditCardId;
+				$bolPassed = ($intCreditCardId === FALSE) ? FALSE : $bolPassed;
 			}
 			//TODO!flame!link this to the account
 		}
@@ -115,6 +120,7 @@ class VixenImport extends ApplicationBaseClass
 			{
 				$arrAccount['AccountGroup'] = $intAccountGroup;
 				$intAccount = $this->InsertWithIdAccount($arrAccount);
+				$bolPassed = ($intAccount === FALSE) ? FALSE : $bolPassed;
 			}
 		}
 		
@@ -125,7 +131,7 @@ class VixenImport extends ApplicationBaseClass
 			{
 				$arrContact['Account'] = $intAccount;
 				$arrContact['AccountGroup'] = $intAccountGroup;
-				$this->InsertContact($arrContact);
+				$bolPassed = ($this->InsertContact($arrContact) === FALSE) ? FALSE : $bolPassed;
 			}
 		}
 		
@@ -135,18 +141,23 @@ class VixenImport extends ApplicationBaseClass
 			foreach ($arrCustomer['Service'] AS $strFNN=>$arrService)
 			{
 				$arrServices[$strFNN] = $this->InsertService($arrService);
+				$bolPassed = ($arrServices[$strFNN] === FALSE) ? FALSE : $bolPassed;
 			}
 			
 			// insert service RateGroups
 			if (is_array($arrCustomer['ServiceRateGroup']))
 			{
-				$this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices);
+				$bolPassed = ($this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices) === FALSE) ? FALSE : $bolPassed;
 			}
 		}
+		
+		return $bolPassed;
 	}
 	
 	function AddCustomerWithId($arrCustomer)
 	{
+		$bolPassed = TRUE;
+		
 		// insert account group
 		$this->InsertWithIdAccountGroup($arrCustomer['AccountGroup'][0]);
 		
@@ -155,7 +166,9 @@ class VixenImport extends ApplicationBaseClass
 		{
 			foreach ($arrCustomer['CreditCard'] AS $arrCreditCard)
 			{
-				$intCreditCard[] = $this->InsertCreditCard($arrCustomer['CreditCard']);
+				$intCreditCardId = $this->InsertCreditCard($arrCustomer['CreditCard']);
+				$arrCreditCard[] = $intCreditCardId;
+				$bolPassed = ($intCreditCardId === FALSE) ? FALSE : $bolPassed;
 			}
 			//TODO!flame!link this to the account
 		}
@@ -165,7 +178,7 @@ class VixenImport extends ApplicationBaseClass
 		{
 			foreach ($arrCustomer['Account'] AS $arrAccount)
 			{
-				$this->InsertWithIdAccount($arrAccount);
+				$bolPassed = ($this->InsertWithIdAccount($arrAccount) === FALSE) ? FALSE : $bolPassed;
 			}
 		}
 		
@@ -174,7 +187,7 @@ class VixenImport extends ApplicationBaseClass
 		{
 			foreach ($arrCustomer['Contact'] AS $arrContact)
 			{
-				$this->InsertContact($arrContact);
+				$bolPassed = ($this->InsertContact($arrContact) === FALSE) ? FALSE : $bolPassed;
 			}
 		}
 		
@@ -184,14 +197,17 @@ class VixenImport extends ApplicationBaseClass
 			foreach ($arrCustomer['Service'] AS $strFNN=>$arrService)
 			{
 				$arrServices[$strFNN] = $this->InsertService($arrService);
+				$bolPassed = ($arrServices[$strFNN] === FALSE) ? FALSE : $bolPassed;
 			}
 			
 			// insert service RateGroups
 			if (is_array($arrCustomer['ServiceRateGroup']))
 			{
-				$this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices);
+				$bolPassed = ($this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices) === FALSE) ? FALSE : $bolPassed;
 			}
 		}
+		
+		return $bolPassed;
 	}
 	
 	// add all service RateGroup & RatePlan records for a customer
