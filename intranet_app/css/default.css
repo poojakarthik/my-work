@@ -319,7 +319,17 @@
 		border:              solid 1px #999999;
 	}
 	
-	.Filter-Form
+	.Wide-Form
+	{
+		margin:              0;
+		padding:             10px;
+		
+		border:              solid 1px #D1D1D1;
+		background-color:    #F3F3F3;
+		width:				 700px;
+	}
+	
+	.Narrow-Form
 	{
 		margin:              0;
 		padding:             10px;
