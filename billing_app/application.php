@@ -158,7 +158,7 @@ die();
 		$arrColumns['UsageCap']			= "RatePlan.UsageCap";
 		$arrColumns['FNN']				= "Service.FNN";
 		$arrColumns['CappedCharge']		= "Service.CappedCharge";
-		$arrColumns['UnappedCharge']	= "Service.UncappedCharge";
+		$arrColumns['UncappedCharge']	= "Service.UncappedCharge";
 		$arrColumns['Service']			= "Service.Id";
 		$selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																"RatePlan",
