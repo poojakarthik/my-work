@@ -389,7 +389,7 @@ class VixenImport extends ApplicationBaseClass
 		// get list of all rate groups
 		$strQuery = "SELECT * FROM RateGroup";
 		$sqlResult = $this->sqlQuery->Execute($strQuery);
-		While ($arrRateGroup = $sqlResult->fetch_assoc())
+		while ($arrRateGroup = $sqlResult->fetch_assoc())
 		{
 			if ($arrRateGroup['RecordType'] != 27 && $arrRateGroup['RecordType'] != 27)
 			{
@@ -408,7 +408,7 @@ class VixenImport extends ApplicationBaseClass
 					// single rate not found, look for a group of matching rates
 					$strQuery = "SELECT Id FROM Rate WHERE RecordType = {$arrRateGroup['RecordType']} AND Name LIKE '{$arrRateGroup['Name']} - %'";
 					$sqlRate = $this->sqlQuery->Execute($strQuery);
-					While ($arrRate = $sqlRate->fetch_assoc())
+					while ($arrRate = $sqlRate->fetch_assoc())
 					{
 						// save the links
 						$this->AddRateGroupRate($arrRateGroup['Id'], $arrRate['Id']);
@@ -421,7 +421,7 @@ class VixenImport extends ApplicationBaseClass
 				// look for a group of matching rates
 				$strQuery = "SELECT Id FROM Rate WHERE RecordType = {$arrRateGroup['RecordType']} AND Name LIKE '{$arrRateGroup['Name']} : %'";
 				$sqlRate = $this->sqlQuery->Execute($strQuery);
-				While ($arrRate = $sqlRate->fetch_assoc())
+				while ($arrRate = $sqlRate->fetch_assoc())
 				{
 					// save the links
 					$this->AddRateGroupRate($arrRateGroup['Id'], $arrRate['Id']);
