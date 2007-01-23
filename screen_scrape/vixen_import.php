@@ -98,7 +98,11 @@ class VixenImport extends ApplicationBaseClass
 		
 		// insert account group
 		$intAccountGroup = $this->InsertAccountGroup($arrCustomer['AccountGroup'][0]);
-		$bolPassed = ($intAccountGroup === FALSE) ? FALSE : $bolPassed;
+		if ($intAccountGroup === FALSE)
+		{
+			$bolPassed = FALSE;
+			$this->Error("InsertAccountGroup({$arrCustomer['AccountGroup'][0]}) failed (see line ~".__LINE__.")");
+		}
 				
 		// insert credit card
 		if (is_array($arrCustomer['CreditCard']))
@@ -108,7 +112,11 @@ class VixenImport extends ApplicationBaseClass
 				$arrCreditCard['AccountGroup'] = $intAccountGroup;
 				$intCreditCardId = $this->InsertCreditCard($arrCreditCard);
 				$arrCreditCardId[] = $intCreditCardId;
-				$bolPassed = ($intCreditCardId === FALSE) ? FALSE : $bolPassed;
+				if ($intCreditCardId === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("InsertCreditCard($arrCreditCard) failed (see line ~".__LINE__.")");
+				}
 			}
 			//TODO!flame!link this to the account
 		}
@@ -120,7 +128,11 @@ class VixenImport extends ApplicationBaseClass
 			{
 				$arrAccount['AccountGroup'] = $intAccountGroup;
 				$intAccount = $this->InsertWithIdAccount($arrAccount);
-				$bolPassed = ($intAccount === FALSE) ? FALSE : $bolPassed;
+				if ($intAccount === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("InsertWithIdAccount($arrAccount) failed (see line ~".__LINE__.")");
+				}
 			}
 		}
 		
@@ -131,7 +143,12 @@ class VixenImport extends ApplicationBaseClass
 			{
 				$arrContact['Account'] = $intAccount;
 				$arrContact['AccountGroup'] = $intAccountGroup;
-				$bolPassed = ($this->InsertContact($arrContact) === FALSE) ? FALSE : $bolPassed;
+				if ($this->InsertContact($arrContact) === FALSE)
+				if ($intAccount === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("InsertContact($arrContact) failed (see line ~".__LINE__.")");
+				}
 			}
 		}
 		
@@ -141,13 +158,21 @@ class VixenImport extends ApplicationBaseClass
 			foreach ($arrCustomer['Service'] AS $strFNN=>$arrService)
 			{
 				$arrServices[$strFNN] = $this->InsertService($arrService);
-				$bolPassed = ($arrServices[$strFNN] === FALSE) ? FALSE : $bolPassed;
+				if ($arrServices[$strFNN] === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("InsertService($arrService) failed (see line ~".__LINE__.")");
+				}
 			}
 			
 			// insert service RateGroups
 			if (is_array($arrCustomer['ServiceRateGroup']))
 			{
-				$bolPassed = ($this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices) === FALSE) ? FALSE : $bolPassed;
+				if ($this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices) === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("AddCustomerRatePlanRateGroup({$arrCustomer['ServiceRateGroup']}, $arrServices) failed (see line ~".__LINE__.")");
+				}
 			}
 		}
 		
@@ -159,7 +184,11 @@ class VixenImport extends ApplicationBaseClass
 		$bolPassed = TRUE;
 		
 		// insert account group
-		$this->InsertWithIdAccountGroup($arrCustomer['AccountGroup'][0]);
+		if ($this->InsertWithIdAccountGroup($arrCustomer['AccountGroup'][0]) === FALSE)
+		{
+			$bolPassed = FALSE;
+			$this->Error("InsertWithIdAccountGroup({$arrCustomer['AccountGroup'][0]}) failed (see line ~".__LINE__.")");
+		}
 		
 		// insert credit card
 		if (is_array($arrCustomer['CreditCard']))
@@ -168,7 +197,11 @@ class VixenImport extends ApplicationBaseClass
 			{
 				$intCreditCardId = $this->InsertCreditCard($arrCreditCard);
 				$arrCreditCard[] = $intCreditCardId;
-				$bolPassed = ($intCreditCardId === FALSE) ? FALSE : $bolPassed;
+				if ($intCreditCardId === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("InsertCreditCard($arrCreditCard) failed (see line ~".__LINE__.")");
+				}
 			}
 			//TODO!flame!link this to the account
 		}
@@ -178,7 +211,11 @@ class VixenImport extends ApplicationBaseClass
 		{
 			foreach ($arrCustomer['Account'] AS $arrAccount)
 			{
-				$bolPassed = ($this->InsertWithIdAccount($arrAccount) === FALSE) ? FALSE : $bolPassed;
+				if ($this->InsertWithIdAccount($arrAccount) === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("InsertWithIdAccount($arrAccount) failed (see line ~".__LINE__.")");
+				}
 			}
 		}
 		
@@ -187,7 +224,11 @@ class VixenImport extends ApplicationBaseClass
 		{
 			foreach ($arrCustomer['Contact'] AS $arrContact)
 			{
-				$bolPassed = ($this->InsertContact($arrContact) === FALSE) ? FALSE : $bolPassed;
+				if ($this->InsertContact($arrContact) === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("InsertContact($arrContact) failed (see line ~".__LINE__.")");
+				}
 			}
 		}
 		
@@ -197,13 +238,21 @@ class VixenImport extends ApplicationBaseClass
 			foreach ($arrCustomer['Service'] AS $strFNN=>$arrService)
 			{
 				$arrServices[$strFNN] = $this->InsertService($arrService);
-				$bolPassed = ($arrServices[$strFNN] === FALSE) ? FALSE : $bolPassed;
+				if ($arrServices[$strFNN] === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("InsertService($arrService) failed (see line ~".__LINE__.")");
+				}
 			}
 			
 			// insert service RateGroups
 			if (is_array($arrCustomer['ServiceRateGroup']))
 			{
-				$bolPassed = ($this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices) === FALSE) ? FALSE : $bolPassed;
+				if ($this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices) === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("AddCustomerRatePlanRateGroup({$arrCustomer['ServiceRateGroup']}, $arrServices) failed (see line ~".__LINE__.")");
+				}
 			}
 		}
 		
