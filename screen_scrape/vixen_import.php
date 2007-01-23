@@ -571,9 +571,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrAccount['BillingFreqType']	= ($arrAccount['BillingFreqType']	== NULL) ? BILLING_DEFAULT_FREQ_TYPE	: $arrAccount['BillingFreqType'];
 		$arrAccount['PaymentTerms']		= ($arrAccount['PaymentTerms']		== NULL) ? PAYMENT_TERMS_DEFAULT		: $arrAccount['PaymentTerms'];
 		$arrAccount['Archived']			= (int)$arrAccount['Archived'];
-		$return = $this->_insWithIdAccount->Execute($arrAccount);
-		echo $this->_insWithIdAccount->Error();
-		Die;
+		return $this->_insWithIdAccount->Execute($arrAccount);
 	}
 	
 	// ------------------------------------//
@@ -618,7 +616,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrService['CreatedBy']		= ($arrService['CreatedBy']			== NULL) ? 22						: $arrService['CreatedBy'];
 
 		$arrService['Archived']			= (int)$arrService['Archived'];
-		return $this->_insContact->Execute($arrService);
+		$return = $this->_insService->Execute($arrService);
 	}
 	
 	function InsertCreditCard($arrCreditCard)

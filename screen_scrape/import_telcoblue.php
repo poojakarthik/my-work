@@ -13,9 +13,6 @@
 
 	set_time_limit (0);
 	
-	// Record the start time of the script
-	$startTime = microtime (TRUE);
-	
 	// load framework
 	$strFrameworkDir = "../framework/";
 	require_once($strFrameworkDir."framework.php");
@@ -27,6 +24,8 @@
 	require_once($strFrameworkDir."report.php");
 	require_once($strFrameworkDir."error.php");
 	require_once($strFrameworkDir."exception_vixen.php");
+	
+	
 
 // ---------------------------------------------------------------------------//
 // CONFIG
@@ -652,7 +651,6 @@
 		}
 	}
 	
-	/*
 	// Match RateGroups to Rates
 	echo "matching RateGroups to Rates\n";
 	if (!$objImport->CreateRateGroupRate())
@@ -677,7 +675,6 @@
 		echo "FATAL ERROR : Could not match RatePlans to RecurringCharges\n";
 		Die();
 	}
-	*/
 	
 	// Add Customers
 	
@@ -694,8 +691,6 @@
 		// add the customer
 		echo "Importing Customer  : {$arrRow['CustomerId']}\n";
 		$objImport->AddCustomerWithId($arrCustomer);
-		print_r($arrCustomer);
-		die();
 	}
 
 	// Add System Notes
