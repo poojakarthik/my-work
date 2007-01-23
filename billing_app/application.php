@@ -429,11 +429,11 @@ die();
 				// insert into ServiceTotal
 				$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
 				$arrServiceTotal = Array();
-				$arrServiceTotal['InvoiceRun']		= $strInvoiceRun;
 				$arrServiceTotal['FNN']				= $arrService['FNN'];
 				$arrServiceTotal['AccountGroup']	= $arrService['AccountGroup'];
 				$arrServiceTotal['Account']			= $arrService['Account'];
 				$arrServiceTotal['Service']			= $arrService['Id'];
+				$arrServiceTotal['InvoiceRun']		= $strInvoiceRun;
 				$arrServiceTotal['CappedCharge']	= $arrService['CappedCharge'];
 				$arrServiceTotal['UncappedCharge']	= $arrService['UncappedCharge'];
 				$arrServiceTotal['TotalCharge']		= $fltTotalCharge;
@@ -441,6 +441,7 @@ die();
 				$arrServiceTotal['Debit']			= $fltServiceDebits;
 				if (!$insServiceTotal->Execute($arrServiceTotal))
 				{
+					Debug($insServiceTotal->Error());
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
 					continue;
 				}
