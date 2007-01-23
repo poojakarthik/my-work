@@ -159,6 +159,7 @@ die();
 		$arrColumns['FNN']				= "Service.FNN";
 		$arrColumns['CappedCharge']		= "Service.CappedCharge";
 		$arrColumns['UnappedCharge']	= "Service.UncappedCharge";
+		$arrColumns['Service']			= "Service.Id";
 		$selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																"RatePlan",
 																$arrColumns,
@@ -430,9 +431,9 @@ die();
 				$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
 				$arrServiceTotal = Array();
 				$arrServiceTotal['FNN']				= $arrService['FNN'];
-				$arrServiceTotal['AccountGroup']	= $arrService['AccountGroup'];
-				$arrServiceTotal['Account']			= $arrService['Account'];
-				$arrServiceTotal['Service']			= $arrService['Id'];
+				$arrServiceTotal['AccountGroup']	= $arrAccount['AccountGroup'];
+				$arrServiceTotal['Account']			= $arrAccount['Account'];
+				$arrServiceTotal['Service']			= $arrService['Service'];
 				$arrServiceTotal['InvoiceRun']		= $strInvoiceRun;
 				$arrServiceTotal['CappedCharge']	= $arrService['CappedCharge'];
 				$arrServiceTotal['UncappedCharge']	= $arrService['UncappedCharge'];
