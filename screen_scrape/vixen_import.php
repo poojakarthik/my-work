@@ -559,6 +559,7 @@ class VixenImport extends ApplicationBaseClass
 		// Add default values
 		$arrAccountGroup['CreatedOn']	= date("Y-m-d", time());
 		$arrAccountGroup['CreatedBy']	= 22;
+		$arrAccountGroup['Archived']	= (int)$arrAccountGroup['Archived'];
 		return $this->_insWithIdAccountGroup->Execute($arrAccountGroup);
 	}
 	
@@ -569,6 +570,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrAccount['BillingMethod']	= BILLING_METHOD_POST;
 		$arrAccount['BillingFreqType']	= BILLING_DEFAULT_FREQ_TYPE;
 		$arrAccount['PaymentTerms']		= PAYMENT_TERMS_DEFAULT;
+		$arrAccount['Archived']			= (int)$arrAccount['Archived'];
 		return $this->_insWithIdAccount->Execute($arrAccount);
 	}
 	
@@ -581,6 +583,7 @@ class VixenImport extends ApplicationBaseClass
 		// Add default values
 		$arrAccountGroup['CreatedOn']	= date("Y-m-d", time());
 		$arrAccountGroup['CreatedBy']	= 22;
+		$arrAccountGroup['Archived']	= (int)$arrAccountGroup['Archived'];
 		return $this->_insAccountGroup->Execute($arrAccountGroup);
 	}
 	
@@ -591,6 +594,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrAccount['BillingMethod']	= BILLING_METHOD_POST;
 		$arrAccount['BillingFreqType']	= BILLING_DEFAULT_FREQ_TYPE;
 		$arrAccount['PaymentTerms']		= PAYMENT_TERMS_DEFAULT;
+		$arrAccount['Archived']			= (int)$arrAccount['Archived'];
 		return $this->_insAccount->Execute($arrAccount);
 	}
 	
@@ -598,6 +602,7 @@ class VixenImport extends ApplicationBaseClass
 	{
 		$arrContact['SessionId']		= "";
 		$arrContact['SessionExpire']	= "00-00-00 00:00:00";
+		$arrContact['Archived']			= (int)$arrContact['Archived'];
 		return $this->_insContact->Execute($arrContact);
 	}
 	
@@ -607,6 +612,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrService['UncappedCharge']	= 0.0;
 		$arrService['CreatedOn']		= date("Y-m-d", time());
 		$arrService['CreatedBy']		= 22;
+		$arrService['Archived']			= (int)$arrService['Archived'];
 		return $this->_insContact->Execute($arrService);
 	}
 	
