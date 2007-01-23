@@ -555,8 +555,8 @@ class VixenImport extends ApplicationBaseClass
 	function InsertWithIdAccountGroup($arrAccountGroup)
 	{
 		// Add default values
-		$arrAccountGroup['CreatedOn']	= date("Y-m-d", time());
-		$arrAccountGroup['CreatedBy']	= 22;
+		$arrAccountGroup['CreatedOn']	= ($arrAccountGroup['CreatedOn'] == NULL) ? date("Y-m-d", time())	: $arrAccountGroup['CreatedOn'];
+		$arrAccountGroup['CreatedBy']	= ($arrAccountGroup['CreatedBy'] == NULL) ? 22						: $arrAccountGroup['CreatedBy'];
 		$arrAccountGroup['Archived']	= (int)$arrAccountGroup['Archived'];
 		return $intReturn = $this->_insWithIdAccountGroup->Execute($arrAccountGroup);
 	}
@@ -564,12 +564,12 @@ class VixenImport extends ApplicationBaseClass
 	function InsertWithIdAccount($arrAccount)
 	{
 		// Add default values
-		$arrAccount['BillingDate']		= 1;
-		$arrAccount['BillingFreq']		= 1;
-		$arrAccount['BillingType']		= BILLING_TYPE_ACCOUNT;
-		$arrAccount['BillingMethod']	= BILLING_METHOD_POST;
-		$arrAccount['BillingFreqType']	= BILLING_DEFAULT_FREQ_TYPE;
-		$arrAccount['PaymentTerms']		= PAYMENT_TERMS_DEFAULT;
+		$arrAccount['BillingDate']		= ($arrAccount['BillingDate']		== NULL) ? 1							: $arrAccount['BillingDate'];
+		$arrAccount['BillingFreq']		= ($arrAccount['BillingFreq']		== NULL) ? 1 							: $arrAccount['BillingFreq'];
+		$arrAccount['BillingType']		= ($arrAccount['BillingType']		== NULL) ? BILLING_TYPE_ACCOUNT			: $arrAccount['BillingType'];
+		$arrAccount['BillingMethod']	= ($arrAccount['BillingMethod']		== NULL) ? BILLING_METHOD_POST			: $arrAccount['BillingMethod'];
+		$arrAccount['BillingFreqType']	= ($arrAccount['BillingFreqType']	== NULL) ? BILLING_DEFAULT_FREQ_TYPE	: $arrAccount['BillingFreqType'];
+		$arrAccount['PaymentTerms']		= ($arrAccount['PaymentTerms']		== NULL) ? PAYMENT_TERMS_DEFAULT		: $arrAccount['PaymentTerms'];
 		$arrAccount['Archived']			= (int)$arrAccount['Archived'];
 		$return = $this->_insWithIdAccount->Execute($arrAccount);
 		echo $this->_insWithIdAccount->Error();
@@ -583,8 +583,8 @@ class VixenImport extends ApplicationBaseClass
 	function InsertAccountGroup($arrAccountGroup)
 	{
 		// Add default values
-		$arrAccountGroup['CreatedOn']	= date("Y-m-d", time());
-		$arrAccountGroup['CreatedBy']	= 22;
+		$arrAccountGroup['CreatedOn']	= ($arrAccountGroup['CreatedOn'] == NULL) ? date("Y-m-d", time())	: $arrAccountGroup['CreatedOn'];
+		$arrAccountGroup['CreatedBy']	= ($arrAccountGroup['CreatedBy'] == NULL) ? 22						: $arrAccountGroup['CreatedBy'];
 		$arrAccountGroup['Archived']	= (int)$arrAccountGroup['Archived'];
 		return $this->_insAccountGroup->Execute($arrAccountGroup);
 	}
@@ -592,10 +592,12 @@ class VixenImport extends ApplicationBaseClass
 	function InsertAccount($arrAccount)
 	{
 		// Add default values
-		$arrAccount['BillingType']		= BILLING_TYPE_ACCOUNT;
-		$arrAccount['BillingMethod']	= BILLING_METHOD_POST;
-		$arrAccount['BillingFreqType']	= BILLING_DEFAULT_FREQ_TYPE;
-		$arrAccount['PaymentTerms']		= PAYMENT_TERMS_DEFAULT;
+		$arrAccount['BillingDate']		= ($arrAccount['BillingDate']		== NULL) ? 1							: $arrAccount['BillingDate'];
+		$arrAccount['BillingFreq']		= ($arrAccount['BillingFreq']		== NULL) ? 1 							: $arrAccount['BillingFreq'];
+		$arrAccount['BillingType']		= ($arrAccount['BillingType']		== NULL) ? BILLING_TYPE_ACCOUNT			: $arrAccount['BillingType'];
+		$arrAccount['BillingMethod']	= ($arrAccount['BillingMethod']		== NULL) ? BILLING_METHOD_POST			: $arrAccount['BillingMethod'];
+		$arrAccount['BillingFreqType']	= ($arrAccount['BillingFreqType']	== NULL) ? BILLING_DEFAULT_FREQ_TYPE	: $arrAccount['BillingFreqType'];
+		$arrAccount['PaymentTerms']		= ($arrAccount['PaymentTerms']		== NULL) ? PAYMENT_TERMS_DEFAULT		: $arrAccount['PaymentTerms'];
 		$arrAccount['Archived']			= (int)$arrAccount['Archived'];
 		return $this->_insAccount->Execute($arrAccount);
 	}
@@ -610,10 +612,11 @@ class VixenImport extends ApplicationBaseClass
 	
 	function InsertService($arrService)
 	{
-		$arrService['CappedCharge']		= 0.0;
-		$arrService['UncappedCharge']	= 0.0;
-		$arrService['CreatedOn']		= date("Y-m-d", time());
-		$arrService['CreatedBy']		= 22;
+		$arrService['CappedCharge']		= ($arrService['CappedCharge']		== NULL) ? 0.0						: $arrService['CappedCharge'];
+		$arrService['UncappedCharge']	= ($arrService['UncappedCharge']	== NULL) ? 0.0						: $arrService['CappedCharge'];
+		$arrService['CreatedOn']		= ($arrService['CreatedOn']			== NULL) ? date("Y-m-d", time())	: $arrService['CreatedOn'];
+		$arrService['CreatedBy']		= ($arrService['CreatedBy']			== NULL) ? 22						: $arrService['CreatedBy'];
+
 		$arrService['Archived']			= (int)$arrService['Archived'];
 		return $this->_insContact->Execute($arrService);
 	}
