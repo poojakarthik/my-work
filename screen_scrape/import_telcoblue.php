@@ -418,7 +418,6 @@
 	// Old Rates => New RateGroups
 	// $arrRates[strRecordType][strRateName][strNewRecordType] = strNewRateGroup
 	
-	//TODO!rich! these all need to look like the first 2 rows 
 	//RecordType specified by Name not Id, ie. 'Local' NOT 17
 	//and they ALL need to have the RecordType Name specfied
 	//also, RatePlan must be specified by name and not Id 
@@ -552,7 +551,7 @@
 	$arrRates['mobiledata']				['GPRS 1.5c ex (BS500, Fleet 60)']				['GPRS']				= 'GPRS-15-00-01';
 	$arrRates['mobiledata']				['GPRS 1.8c ex (BS250)']						['GPRS']				= 'GPRS-18-00-01';
 	
-	$arrRates['mobileinternational']	['Mobile Zero Plan']							['IDD']					= intRateId; //TODO!rich! add rateplan name
+	$arrRates['mobileinternational']	['Mobile Zero Plan']							['IDD']					= 'Mobile Zero Plan';
 
 	// set config rate array
 	$arrConfig['Decode']['RateConvert'] = $arrRates;
