@@ -489,7 +489,7 @@
 		// ------------------------------------//
 		// Account Group
 		// ------------------------------------//
-		$arrOutput['AccountGroup'][0] = Array('Id'=>mysql_escape_string($arrCustomer['CustomerId']), Archived=>$bolArchived);
+		$arrOutput['AccountGroup'][0] = Array('Id'=>$arrCustomer['CustomerId'], Archived=>$bolArchived);
 		
 		// ------------------------------------//
 		// Credit Card
@@ -522,12 +522,12 @@
 		// credit card details
 		if ($arrOutput['CreditCard'][0])
 		{
-			$arrOutput['CreditCard'][0]['AccountGroup'] 	= mysql_escape_string ($arrCustomer['CustomerId']);
-			$arrOutput['CreditCard'][0]['Name'] 			= mysql_escape_string ($arrCustomer['cc_name']);
-			$arrOutput['CreditCard'][0]['CardNumber'] 		= mysql_escape_string ($arrCustomer['cc_num']);
-			$arrOutput['CreditCard'][0]['ExpMonth'] 		= mysql_escape_string ($arrCustomer['cc_exp_m']);
-			$arrOutput['CreditCard'][0]['ExpYear'] 			= mysql_escape_string ($arrCustomer['cc_exp_y']);
-			$arrOutput['CreditCard'][0]['CVV'] 				= mysql_escape_string ($arrCustomer['cc_cvv']);
+			$arrOutput['CreditCard'][0]['AccountGroup'] 	= $arrCustomer['CustomerId'];
+			$arrOutput['CreditCard'][0]['Name'] 			= $arrCustomer['cc_name'];
+			$arrOutput['CreditCard'][0]['CardNumber'] 		= $arrCustomer['cc_num'];
+			$arrOutput['CreditCard'][0]['ExpMonth'] 		= $arrCustomer['cc_exp_m'];
+			$arrOutput['CreditCard'][0]['ExpYear'] 			= $arrCustomer['cc_exp_y'];
+			$arrOutput['CreditCard'][0]['CVV'] 				= $arrCustomer['cc_cvv'];
 		}
 		
 		// ------------------------------------//
@@ -555,20 +555,20 @@
 		$arrCustomer ['acn'] = (strlen (preg_replace ("/\D/", "", $arrCustomer ['abn_acn'])) == 9) ? $arrCustomer ['abn_acn'] : "";
 		
 		// account
-		$arrOutput['CreditCard'][0]['Id'] 				= mysql_escape_string ($arrCustomer['CustomerId']);
-		$arrOutput['CreditCard'][0]['BusinessName'] 	= mysql_escape_string ($arrCustomer['businessname']);
-		$arrOutput['CreditCard'][0]['TradingName'] 		= mysql_escape_string ($arrCustomer['tradingname']);
-		$arrOutput['CreditCard'][0]['ABN'] 				= mysql_escape_string ($arrCustomer['abn']);
-		$arrOutput['CreditCard'][0]['ACN'] 				= mysql_escape_string ($arrCustomer['acn']);
-		$arrOutput['CreditCard'][0]['Address1'] 		= mysql_escape_string ($arrCustomer['address1']);
-		$arrOutput['CreditCard'][0]['Address2'] 		= mysql_escape_string ($arrCustomer['address2']);
-		$arrOutput['CreditCard'][0]['Suburb'] 			= mysql_escape_string (strtoupper($arrCustomer['suburb']));
-		$arrOutput['CreditCard'][0]['Postcode'] 		= mysql_escape_string ($arrCustomer['postcode']);
-		$arrOutput['CreditCard'][0]['State'] 			= mysql_escape_string (strtoupper($arrCustomer['state']));
+		$arrOutput['CreditCard'][0]['Id'] 				= $arrCustomer['CustomerId'];
+		$arrOutput['CreditCard'][0]['BusinessName'] 	= $arrCustomer['businessname'];
+		$arrOutput['CreditCard'][0]['TradingName'] 		= $arrCustomer['tradingname'];
+		$arrOutput['CreditCard'][0]['ABN'] 				= $arrCustomer['abn'];
+		$arrOutput['CreditCard'][0]['ACN'] 				= $arrCustomer['acn'];
+		$arrOutput['CreditCard'][0]['Address1'] 		= $arrCustomer['address1'];
+		$arrOutput['CreditCard'][0]['Address2'] 		= $arrCustomer['address2'];
+		$arrOutput['CreditCard'][0]['Suburb'] 			= strtoupper($arrCustomer['suburb']);
+		$arrOutput['CreditCard'][0]['Postcode'] 		= $arrCustomer['postcode'];
+		$arrOutput['CreditCard'][0]['State'] 			= strtoupper($arrCustomer['state']);
 		$arrOutput['CreditCard'][0]['Country'] 			= 'AU';
-		$arrOutput['CreditCard'][0]['CustomerGroup'] 	= mysql_escape_string ($arrCustomer['customer_group']);
+		$arrOutput['CreditCard'][0]['CustomerGroup'] 	= $arrCustomer['customer_group'];
 		//TODO!!!! - $arrOutput['CreditCard'][0]['CreditCard']
-		$arrOutput['CreditCard'][0]['AccountGroup'] 	= mysql_escape_string ($row ['CustomerId']) . "', ";
+		$arrOutput['CreditCard'][0]['AccountGroup'] 	= $arrCustomer ['CustomerId'] . "', ";
 		$arrOutput['CreditCard'][0]['Archived'] 		= $bolArchived;
 		
 		// ------------------------------------//
@@ -576,19 +576,19 @@
 		// ------------------------------------//
 		
 		$arrContact = Array();
-		$arrContact['AccountGroup'] 			= mysql_escape_string ($arrCustomer['CustomerId']);
-		$arrContact['Title'] 					= mysql_escape_string ($arrCustomer['title']);
-		$arrContact['FirstName'] 				= mysql_escape_string ($arrCustomer['firstname']);
-		$arrContact['LastName'] 				= mysql_escape_string ($arrCustomer['lastname']);
+		$arrContact['AccountGroup'] 			= $arrCustomer['CustomerId'];
+		$arrContact['Title'] 					= $arrCustomer['title'];
+		$arrContact['FirstName'] 				= $arrCustomer['firstname'];
+		$arrContact['LastName'] 				= $arrCustomer['lastname'];
 		$arrContact['DOB'] 						= sprintf("%04d", intval ($arrCustomer['dob_year'])) . "-" . sprintf("%02d", ($arrCustomer['dob_month'] != "") ? intval($MonthAbbr[trim($arrCustomer['dob_month'])]) : "0") . "-" . sprintf("%02d", intval($arrCustomer['dob_day']));
-		$arrContact['JobTitle'] 				= mysql_escape_string ($arrCustomer['position']);
-		$arrContact['Email'] 					= mysql_escape_string ($arrCustomer['admin_email']);
-		$arrContact['Account'] 					= mysql_escape_string ($arrCustomer['CustomerId']);
+		$arrContact['JobTitle'] 				= $arrCustomer['position'];
+		$arrContact['Email'] 					= $arrCustomer['admin_email'];
+		$arrContact['Account'] 					= $arrCustomer['CustomerId'];
 		$arrContact['CustomerContact'] 			=  1;
-		$arrContact['Phone'] 					= mysql_escape_string ($arrCustomer['phone']);
-		$arrContact['Mobile'] 					= mysql_escape_string ($arrCustomer['mobile']);
-		$arrContact['Fax'] 						= mysql_escape_string ($arrCustomer['fax']);
-		$arrContact['UserName'] 				= mysql_escape_string ($row['CustomerId']);
+		$arrContact['Phone'] 					= $arrCustomer['phone'];
+		$arrContact['Mobile'] 					= $arrCustomer['mobile'];
+		$arrContact['Fax'] 						= $arrCustomer['fax'];
+		$arrContact['UserName'] 				= $arrCustomer['CustomerId'];
 		$arrContact['PassWord'] 				= sha1("password"); //TODO!!!! - create a random password ????
 		$arrContact['Archived'] 				= $bolArchived;
 		
@@ -615,7 +615,7 @@
 		if ($arrCustomer['billing_email'] && $arrCustomer['admin_email'] != $arrCustomer['billing_email'])
 		{
 			// add billing user
-			$arrContact['Email'] 					= mysql_escape_string ($arrCustomer['billing_email']);
+			$arrContact['Email'] 					= $arrCustomer['billing_email'];
 			$arrOutput['Contact'][] = $arrContact;
 			
 			// change the contact details for next user
@@ -630,7 +630,7 @@
 		if ($arrCustomer['billing_email_2'] && $arrCustomer['admin_email'] != $arrCustomer['billing_email_2'] && $arrCustomer['billing_email'] != $arrCustomer['billing_email_2'])
 		{
 			// add second billing user
-			$arrContact['Email'] 					= mysql_escape_string ($arrCustomer['billing_email_2']);
+			$arrContact['Email'] 					= $arrCustomer['billing_email_2'];
 			$arrOutput['Contact'][] = $arrContact;
 		}
 		
@@ -685,8 +685,8 @@
 		
 		// set default service details
 		$arrService = Array();
-		$arrService['AccountGroup'] 			= mysql_escape_string ($arrCustomer['CustomerId']);
-		$arrService['Account'] 					= mysql_escape_string ($arrCustomer['CustomerId']);
+		$arrService['AccountGroup'] 			= $arrCustomer['CustomerId'];
+		$arrService['Account'] 					= $arrCustomer['CustomerId'];
 		
 		// for each service number
 		foreach ($arrCustomer['sn'] as $sn_id => $_SN)
@@ -717,7 +717,7 @@
 			}
 			
 			// add service
-			$arrService['EtechId'] 				= mysql_escape_string ($_SN['Id']);
+			$arrService['EtechId'] 				= $_SN['Id'];
 			$arrService['FNN'] 					= $strFNN;
 			$arrService['ServiceType'] 			= $arrServiceType[$strFNN];
 			$arrOutput['Service'][$strFNN]		= $arrService;
@@ -730,7 +730,7 @@
 				foreach($arrRateGroup[$arrServiceType[$strFNN]] AS $strRecordType=>$strRateGroupName)
 				{
 					$arrServiceRateGroup['RecordTypeName'] 	= $strRecordType;
-					$arrServiceRateGroup['RateGroupName'] 	= $strRateName;
+					$arrServiceRateGroup['RateGroupName'] 	= $strRateGroupName;
 					$arrOutput['ServiceRateGroup'][]		= $arrServiceRateGroup;
 				}
 			}
