@@ -556,11 +556,19 @@ class VixenImport extends ApplicationBaseClass
 	
 	function InsertWithIdAccountGroup($arrAccountGroup)
 	{
+		// Add default values
+		$arrAccountGroup['CreatedOn']	= date("Y-m-d", time());
+		$arrAccountGroup['CreatedBy']	= 22;
 		return $this->_insWithIdAccountGroup->Execute($arrAccountGroup);
 	}
 	
 	function InsertWithIdAccount($arrAccount)
 	{
+		// Add default values
+		$arrAccount['BillingType']		= BILLING_TYPE_ACCOUNT;
+		$arrAccount['BillingMethod']	= BILLING_METHOD_POST;
+		$arrAccount['BillingFreqType']	= BILLING_DEFAULT_FREQ_TYPE;
+		$arrAccount['PaymentTerms']		= PAYMENT_TERMS_DEFAULT;
 		return $this->_insWithIdAccount->Execute($arrAccount);
 	}
 	
@@ -570,21 +578,35 @@ class VixenImport extends ApplicationBaseClass
 	
 	function InsertAccountGroup($arrAccountGroup)
 	{
+		// Add default values
+		$arrAccountGroup['CreatedOn']	= date("Y-m-d", time());
+		$arrAccountGroup['CreatedBy']	= 22;
 		return $this->_insAccountGroup->Execute($arrAccountGroup);
 	}
 	
 	function InsertAccount($arrAccount)
 	{
+		// Add default values
+		$arrAccount['BillingType']		= BILLING_TYPE_ACCOUNT;
+		$arrAccount['BillingMethod']	= BILLING_METHOD_POST;
+		$arrAccount['BillingFreqType']	= BILLING_DEFAULT_FREQ_TYPE;
+		$arrAccount['PaymentTerms']		= PAYMENT_TERMS_DEFAULT;
 		return $this->_insAccount->Execute($arrAccount);
 	}
 	
 	function InsertContact($arrContact)
 	{
+		$arrContact['SessionId']		= "";
+		$arrContact['SessionExpire']	= "00-00-00 00:00:00";
 		return $this->_insContact->Execute($arrContact);
 	}
 	
 	function InsertService($arrService)
 	{
+		$arrService['CappedCharge']		= 0.0;
+		$arrService['UncappedCharge']	= 0.0;
+		$arrService['CreatedOn']		= date("Y-m-d", time());
+		$arrService['CreatedBy']		= 22;
 		return $this->_insContact->Execute($arrService);
 	}
 	
