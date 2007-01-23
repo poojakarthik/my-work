@@ -1426,21 +1426,21 @@
 				 
 	// Define Columns 
 	$strName = "ExpMonth"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(4) unsigned"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(2)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 				 
 				 
 	// Define Columns 
 	$strName = "ExpYear"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(4) unsigned"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(4)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 				 
 				 
@@ -1448,8 +1448,8 @@
 	$strName = "CVV"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "char(3)"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
 		 
 				 
@@ -4827,7 +4827,7 @@
 	// Define Columns 
 	$strName = "AxisM"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(4)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(3) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
