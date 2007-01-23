@@ -557,21 +557,21 @@
 		$arrCustomer ['acn'] = (strlen (preg_replace ("/\D/", "", $arrCustomer ['abn_acn'])) == 9) ? $arrCustomer ['abn_acn'] : "";
 		
 		// account
-		$arrOutput['CreditCard'][0]['Id'] 				= $arrCustomer['CustomerId'];
-		$arrOutput['CreditCard'][0]['BusinessName'] 	= $arrCustomer['businessname'];
-		$arrOutput['CreditCard'][0]['TradingName'] 		= $arrCustomer['tradingname'];
-		$arrOutput['CreditCard'][0]['ABN'] 				= $arrCustomer['abn'];
-		$arrOutput['CreditCard'][0]['ACN'] 				= $arrCustomer['acn'];
-		$arrOutput['CreditCard'][0]['Address1'] 		= $arrCustomer['address1'];
-		$arrOutput['CreditCard'][0]['Address2'] 		= $arrCustomer['address2'];
-		$arrOutput['CreditCard'][0]['Suburb'] 			= strtoupper($arrCustomer['suburb']);
-		$arrOutput['CreditCard'][0]['Postcode'] 		= $arrCustomer['postcode'];
-		$arrOutput['CreditCard'][0]['State'] 			= strtoupper($arrCustomer['state']);
-		$arrOutput['CreditCard'][0]['Country'] 			= 'AU';
-		$arrOutput['CreditCard'][0]['CustomerGroup'] 	= $arrCustomer['customer_group'];
-		//TODO!!!! - $arrOutput['CreditCard'][0]['CreditCard']
-		$arrOutput['CreditCard'][0]['AccountGroup'] 	= $arrCustomer ['CustomerId'] . "', ";
-		$arrOutput['CreditCard'][0]['Archived'] 		= $bolArchived;
+		$arrOutput['Account'][0]['Id'] 				= $arrCustomer['CustomerId'];
+		$arrOutput['Account'][0]['BusinessName'] 	= $arrCustomer['businessname'];
+		$arrOutput['Account'][0]['TradingName'] 		= $arrCustomer['tradingname'];
+		$arrOutput['Account'][0]['ABN'] 				= $arrCustomer['abn'];
+		$arrOutput['Account'][0]['ACN'] 				= $arrCustomer['acn'];
+		$arrOutput['Account'][0]['Address1'] 		= $arrCustomer['address1'];
+		$arrOutput['Account'][0]['Address2'] 		= $arrCustomer['address2'];
+		$arrOutput['Account'][0]['Suburb'] 			= strtoupper($arrCustomer['suburb']);
+		$arrOutput['Account'][0]['Postcode'] 		= $arrCustomer['postcode'];
+		$arrOutput['Account'][0]['State'] 			= strtoupper($arrCustomer['state']);
+		$arrOutput['Account'][0]['Country'] 			= 'AU';
+		$arrOutput['Account'][0]['CustomerGroup'] 	= $arrCustomer['customer_group'];
+		//TODO!!!! - $arrOutput['Account'][0]['CreditCard']
+		$arrOutput['Account'][0]['AccountGroup'] 	= $arrCustomer ['CustomerId'] . "', ";
+		$arrOutput['Account'][0]['Archived'] 		= $bolArchived;
 		
 		// ------------------------------------//
 		// Contacts

@@ -147,8 +147,6 @@ class VixenImport extends ApplicationBaseClass
 	
 	function AddCustomerWithId($arrCustomer)
 	{
-		print_r($arrCustomer);
-		Die();
 		// insert account group
 		$this->InsertWithIdAccountGroup($arrCustomer['AccountGroup'][0]);
 		
@@ -560,18 +558,22 @@ class VixenImport extends ApplicationBaseClass
 		$arrAccountGroup['CreatedOn']	= date("Y-m-d", time());
 		$arrAccountGroup['CreatedBy']	= 22;
 		$arrAccountGroup['Archived']	= (int)$arrAccountGroup['Archived'];
-		return $this->_insWithIdAccountGroup->Execute($arrAccountGroup);
+		return $intReturn = $this->_insWithIdAccountGroup->Execute($arrAccountGroup);
 	}
 	
 	function InsertWithIdAccount($arrAccount)
 	{
 		// Add default values
+		$arrAccount['BillingDate']		= 1;
+		$arrAccount['BillingFreq']		= 1;
 		$arrAccount['BillingType']		= BILLING_TYPE_ACCOUNT;
 		$arrAccount['BillingMethod']	= BILLING_METHOD_POST;
 		$arrAccount['BillingFreqType']	= BILLING_DEFAULT_FREQ_TYPE;
 		$arrAccount['PaymentTerms']		= PAYMENT_TERMS_DEFAULT;
 		$arrAccount['Archived']			= (int)$arrAccount['Archived'];
-		return $this->_insWithIdAccount->Execute($arrAccount);
+		$return = $this->_insWithIdAccount->Execute($arrAccount);
+		echo $this->_insWithIdAccount->Error();
+		Die;
 	}
 	
 	// ------------------------------------//

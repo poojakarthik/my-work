@@ -694,6 +694,8 @@
 		// add the customer
 		echo "Importing Customer  : {$arrRow['CustomerId']}\n";
 		$objImport->AddCustomerWithId($arrCustomer);
+		print_r($arrCustomer);
+		die();
 	}
 
 	// Add System Notes
