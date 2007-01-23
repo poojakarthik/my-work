@@ -47,95 +47,95 @@
 */
 	// Define New RateGroups
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-2820';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-Blue39cCap'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-2820';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-Blue39cCap'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3635';
-	$arrGroup['S&E'][]				= 'Faxstream-3635';
-	$arrGroup['S&E'][]				= 'ResidentialLine-3635';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-Blue15CTM'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3635';
+	$arrGroup[]				= 'Faxstream-3635';
+	$arrGroup[]				= 'ResidentialLine-3635';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-Blue15CTM'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3635';
-	$arrGroup['S&E'][]				= 'Faxstream-3635';
-	$arrGroup['S&E'][]				= 'ResidentialLine-3635';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-VOIP'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3635';
+	$arrGroup[]				= 'Faxstream-3635';
+	$arrGroup[]				= 'ResidentialLine-3635';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-VOIP'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-2979';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-BusSaverCapped'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-2979';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-BusSaverCapped'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-2979';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-TierThreeCorporateCapped'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-2979';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-TierThreeCorporateCapped'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-3499';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-TrueBlueFleet'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-3499';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-TrueBlueFleet'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3595';
-	$arrGroup['S&E'][]				= 'Faxstream-3595';
-	$arrGroup['S&E'][]				= 'ResidentialLine-3595';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-National16'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3595';
+	$arrGroup[]				= 'Faxstream-3595';
+	$arrGroup[]				= 'ResidentialLine-3595';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-National16'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-2698';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-VoicetalkCapped'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-2698';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-VoicetalkCapped'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-2995';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-Residential'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-2995';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-Residential'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-2979';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-TierThreeLocalSaver'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-2979';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-TierThreeLocalSaver'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-2979';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-TierThreeMobileSaver'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-2979';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-TierThreeMobileSaver'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3300';
-	$arrGroup['S&E'][]				= 'Faxstream-3300';
-	$arrGroup['S&E'][]				= 'ResidentialLine-3300';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-Pinnacle'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3300';
+	$arrGroup[]				= 'Faxstream-3300';
+	$arrGroup[]				= 'ResidentialLine-3300';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-Pinnacle'] = $arrGroup;
 	
 	$arrGroup = Array();
-	$arrGroup['S&E'][]				= 'BusinessLine-3499';
-	$arrGroup['S&E'][]				= 'Faxstream-3499';
-	$arrGroup['S&E'][]				= 'ResidentialLine-2820';
-	$arrGroup['S&E'][]				= 'S&E-Other';
-	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E-PeterKGroupSpecial'] = $arrGroup;
+	$arrGroup[]				= 'BusinessLine-3499';
+	$arrGroup[]				= 'Faxstream-3499';
+	$arrGroup[]				= 'ResidentialLine-2820';
+	$arrGroup[]				= 'S&E-Other';
+	$arrConfig['Import']['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-PeterKGroupSpecial'] = $arrGroup;
 
 	
 	
@@ -282,7 +282,7 @@
 	$arrPlan['National']			= 'National-08-06-01-39';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-Blue39cCap';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= '39c Cap Intl';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Blue 39c Cap'] = $arrPlan;
 	
 	// Blue 15 CTM
@@ -291,7 +291,7 @@
 	$arrPlan['National']			= 'National-06-06-01';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-12';
 	$arrPlan['S&E']					= 'S&E-Blue15CTM';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'Blue 15c CTM';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Blue 15 CTM'] = $arrPlan;
 	
 	// Virtual VOIP
@@ -300,7 +300,7 @@
 	$arrPlan['National']			= 'National-VOIP';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-10';
 	$arrPlan['S&E']					= 'S&E-VOIP';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'Blue Virtual VOIP';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Virtual VOIP'] = $arrPlan;
 	
 	// Bus Saver Capped
@@ -309,7 +309,7 @@
 	$arrPlan['National']			= 'National-09-07-01-90';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
 	$arrPlan['S&E']					= 'S&E-BusSaverCapped';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'National 16'; //TODO!!!! - CHECK THIS
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Bus Saver Capped'] = $arrPlan;
 	
 	// Tier Three Corporate Capped
@@ -318,7 +318,7 @@
 	$arrPlan['National']			= 'National-08-06-01-70';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-TierThreeCorporateCapped';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'Tier 3 corporate capped';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Corporate Capped'] = $arrPlan;
 	
 	// True Blue Fleet
@@ -327,7 +327,7 @@
 	$arrPlan['National']			= 'National-09-06-01';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-11';
 	$arrPlan['S&E']					= 'S&E-TrueBlueFleet';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'True Blue Fleet';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['True Blue Fleet'] = $arrPlan;
 	
 	// National 16
@@ -336,7 +336,7 @@
 	$arrPlan['National']			= 'National-Nat16';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-16';
 	$arrPlan['S&E']					= 'S&E-National16';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'National 16';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['National 16'] = $arrPlan;
 	
 	// Voicetalk Capped
@@ -345,7 +345,7 @@
 	$arrPlan['National']			= 'National-12-10-99';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
 	$arrPlan['S&E']					= 'S&E-VoicetalkCapped';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'VoiceTalk';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Voicetalk Capped'] = $arrPlan;
 	
 	// Residential
@@ -354,7 +354,7 @@
 	$arrPlan['National']			= 'National-20-20-165';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-1636';
 	$arrPlan['S&E']					= 'S&E-Residential';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'Residential';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Residential'] = $arrPlan;
 	
 	// Tier Three Mobile Saver
@@ -363,7 +363,7 @@
 	$arrPlan['National']			= 'National-09-06-01';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
 	$arrPlan['S&E']					= 'S&E-TierThreeMobileSaver';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'Tier 3 corporate Mobile Saver';
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Mobile Saver'] = $arrPlan;
 	
 	// Tier Three Local Saver
@@ -372,17 +372,17 @@
 	$arrPlan['National']			= 'National-08-06';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-11';
 	$arrPlan['S&E']					= 'S&E-TierThreeLocalSaver';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'Tier 3 corporate Mobile Saver'; //TODO!!!! - CHECK THIS
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Local Saver'] = $arrPlan;
 	
-	// Pinnacle-LL
+	// Pinnacle
 	$arrPlan['Mobile']				= 'Mobile-Pinnacle';
 	$arrPlan['Local']				= 'Local-13';
 	$arrPlan['National']			= 'National-Pinnacle';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-Pinnacle';
-	$arrPlan['IDD']					= ''; //TODO!!!!
-	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Pinnacle-LL'] = $arrPlan;
+	$arrPlan['IDD']					= 'National 16'; //TODO!!!! - CHECK THIS
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Pinnacle'] = $arrPlan;
 	
 	// Peter K Group Special
 	$arrPlan['Mobile']				= 'Mobile-PeterK';
@@ -390,7 +390,7 @@
 	$arrPlan['National']			= 'National-PeterK';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-PeterKGroupSpecial';
-	$arrPlan['IDD']					= ''; //TODO!!!!
+	$arrPlan['IDD']					= 'National 16'; //TODO!!!! - CHECK THIS
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Peter K Group Special'] = $arrPlan;
 	
 	// Record Types
@@ -612,6 +612,7 @@
 	$objImport->Truncate('ServiceTotal');
 	$objImport->Truncate('ServiceTypeTotal');
 	
+	
 	// clean import array
 	$arrImport = Array();
 	
@@ -651,6 +652,7 @@
 		}
 	}
 	
+	/*
 	// Match RateGroups to Rates
 	echo "matching RateGroups to Rates\n";
 	if (!$objImport->CreateRateGroupRate())
@@ -675,9 +677,10 @@
 		echo "FATAL ERROR : Could not match RatePlans to RecurringCharges\n";
 		Die();
 	}
+	*/
 	
 	// Add Customers
-	/*
+	
 	while ($arrRow = $objDecoder->FetchCustomer())
 	{	
 		// get the etech customer details
@@ -690,12 +693,9 @@
 		
 		// add the customer
 		echo "Importing Customer  : {$arrRow['CustomerId']}\n";
-		//$objImport->AddCustomerWithId($arrCustomer);
+		$objImport->AddCustomerWithId($arrCustomer);
 	}
-	*/
-	
-	Die();
-	
+
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
 	{	
@@ -706,11 +706,11 @@
 		{
 			// decode the note
 			echo "Decoding Note for   : {$arrRow['CustomerId']}\n";
-			$arrNote = $objDecoder->DecodeSystemNote($arrScrape);
+			$arrNotes = $objDecoder->DecodeSystemNote($arrScrape);
 			
 			// add the note
-			echo "Importing Note for  : {$arrRow['CustomerId']}\n";
-			//$objImport->AddNotes($arrNote);
+			echo "Importing Notes for  : {$arrRow['CustomerId']}\n";
+			$objImport->AddCustomerNote($arrNotes);
 		}
 		else
 		{
@@ -728,11 +728,11 @@
 		{
 			// decode the note
 			echo "Decoding Notes for   : {$arrRow['CustomerId']}\n";
-			$arrNote = $objDecoder->DecodeUserNote($arrScrape);
+			$arrNotes = $objDecoder->DecodeUserNote($arrScrape);
 			
 			// add the note
 			echo "Importing Notes for  : {$arrRow['CustomerId']}\n";
-			//$objImport->AddNotes($arrNote);
+			$objImport->AddCustomerNote($arrNotes);
 		}
 		else
 		{

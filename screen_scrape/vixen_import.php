@@ -95,7 +95,7 @@ class VixenImport extends ApplicationBaseClass
 	function AddCustomer($arrCustomer)
 	{
 		// insert account group
-		$intAccountGroup = InsertAccountGroup($arrCustomer['AccountGroup'][0]);
+		$intAccountGroup = $this->InsertAccountGroup($arrCustomer['AccountGroup'][0]);
 		
 		// insert credit card
 		if (is_array($arrCustomer['CreditCard']))
@@ -147,13 +147,15 @@ class VixenImport extends ApplicationBaseClass
 	
 	function AddCustomerWithId($arrCustomer)
 	{
+		print_r($arrCustomer);
+		Die();
 		// insert account group
-		InsertWithIdAccountGroup($arrCustomer['AccountGroup'][0]);
+		$this->InsertWithIdAccountGroup($arrCustomer['AccountGroup'][0]);
 		
 		// insert credit card
 		if (is_array($arrCustomer['CreditCard']))
 		{
-			foreach ($arrCustomer['Account'] AS $arrCreditCard)
+			foreach ($arrCustomer['CreditCard'] AS $arrCreditCard)
 			{
 				$intCreditCard[] = $this->InsertCreditCard($arrCustomer['CreditCard']);
 			}
@@ -208,7 +210,7 @@ class VixenImport extends ApplicationBaseClass
 			
 			// get the RecordType
 			$strRecordType 		= $arrServiceRateGroup['RecordTypeName'];
-			$intRecordType 		= FindRecordType($strRecordType, $intServiceType);
+			$intRecordType 		= $this->FindRecordType($strRecordType, $intServiceType);
 			
 			// get the RateGroup Id
 			$strRateGroupName 	= $arrServiceRateGroup['RateGroupName'];
@@ -295,38 +297,28 @@ class VixenImport extends ApplicationBaseClass
 	// add all notes for a customer
 	function AddCustomerNote($arrNotes)
 	{
-		foreach ($arrNotes as $arrNote)
+		if (is_array($arrNotes))
 		{
-			if (!$arrNote['Employee'])
+			foreach ($arrNotes as $arrNote)
 			{
-				if($arrNote['EmployeeName'])
+				if (!$arrNote['Employee'])
 				{
-					$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeName']);
+					if($arrNote['EmployeeName'])
+					{
+						$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeName']);
+					}
+					elseif($arrNote['EmployeeFirstName'] && $arrNote['EmployeeLastName'])
+					{
+						$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeFirstName'], $arrNote['EmployeeLastName']);
+					}
 				}
-				elseif($arrNote['EmployeeFirstName'] && $arrNote['EmployeeLastName'])
-				{
-					$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeFirstName'], $arrNote['EmployeeLastName']);
-				}
-			}
-			$this->insNote->Execute($arrNote);
-		}
-	}
-
-	// add a single note
-	function AddNote($arrNote)
-	{
-		if (!$arrNote['Employee'])
-		{
-			if($arrNote['EmployeeName'])
-			{
-				$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeName']);
-			}
-			elseif($arrNote['EmployeeFirstName'] && $arrNote['EmployeeLastName'])
-			{
-				$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeFirstName'], $arrNote['EmployeeLastName']);
+				$this->insNote->Execute($arrNote);
 			}
 		}
-		return $this->insNote->Execute($arrNote);
+		else
+		{
+			return FALSE;
+		}
 	}
 	
 	// add a single RateGroupRate record 
@@ -391,7 +383,7 @@ class VixenImport extends ApplicationBaseClass
 		$sqlResult = $this->sqlQuery->Execute($strQuery);
 		while ($arrRateGroup = $sqlResult->fetch_assoc())
 		{
-			if ($arrRateGroup['RecordType'] != 27 && $arrRateGroup['RecordType'] != 27)
+			if ($arrRateGroup['RecordType'] != 27 && $arrRateGroup['RecordType'] != 28)
 			{
 				// NON-IDD Rates
 				// look for a matching rate
@@ -429,46 +421,49 @@ class VixenImport extends ApplicationBaseClass
 			}
 		}
 		
-		// add stuff from the config array
-		// for each defined RatePlan
+		// Rates from the config array
+		// for each defined RateGroup
 		if (is_array($this->arrConfig['RateGroup']))
 		{
-			foreach ($this->arrConfig['RateGroup'] AS $intServiceType=>$arrGroups)
+			foreach ($this->arrConfig['RateGroup'] AS $intServiceType=>$arrRecordTypes)
 			{
-				foreach ($arrGroups as $strRatePlan=>$arrRatePlan)
+				foreach ($arrRecordTypes as $strRecordType=>$arrGroup)
 				{
-					// get the RatePlan Id
-					$intRatePlan = $this->FindRatePlan($strRatePlan, $intServiceType);
-					if (!(int)$intRatePlan)
+					// get RecordType Id
+					$intRecordType = $this->FindRecordType($strRecordType, $intServiceType);
+					if (!(int)$intRecordType)
 					{
 						//error
-						$this->Error("RatePlan $intRatePlan not found");
+						$this->Error("RecordType not found : $strRecordType - $intServiceType");
 						continue;
 					}
-						
-					// for each RecordType within the RatePlan
-					foreach ($arrRatePlan as $strRecordType=>$strRateGroup)
+
+					foreach ($arrGroup as $strRateGroup=>$arrRateGroup)
 					{
-						// get RecordType Id
-						$intRecordType = $this->FindRecordType($strRecordType, $intServiceType);
-						if (!(int)$intRecordType)
-						{
-							//error
-							$this->Error("RecordType $intRecordType not found : $strRecordType - $intServiceType");
-							continue;
-						}
-						
 						// get the RateGroup Id
 						$intRateGroup = $this->FindRateGroup($strRateGroup, $intRecordType);
 						if (!(int)$intRateGroup)
 						{
 							//error
-							$this->Error("RateGroup $intRateGroup not found : $strRateGroup - $intRecordType");
+							$this->Error("RateGroup not found : $strRateGroup - $intRecordType");
 							continue;
 						}
-						
-						// link RatePlan to RateGroup
-						$this->AddRatePlanRateGroup($intRatePlan, $intRateGroup);
+							
+						// for each Rate within the RateGroup
+						foreach ($arrRateGroup as $strRateName)
+						{
+							// get the Rate Id
+							$intRate = $this->FindRate($strRateName, $intRecordType);
+							if (!(int)$intRate)
+							{
+								//error
+								$this->Error("Rate not found : $strRateName - $intRecordType");
+								continue;
+							}
+							
+							// link RateGroup to Rate
+							$this->AddRateGroupRate($intRateGroup, $intRate);
+						}
 					}
 				}
 			}
@@ -492,7 +487,7 @@ class VixenImport extends ApplicationBaseClass
 					if (!(int)$intRatePlan)
 					{
 						//error
-						$this->Error("RatePlan $intRatePlan not found");
+						$this->Error("RatePlan not found : $strRatePlan - $intServiceType");
 						continue;
 					}
 						
@@ -504,7 +499,7 @@ class VixenImport extends ApplicationBaseClass
 						if (!(int)$intRecordType)
 						{
 							//error
-							$this->Error("RecordType $intRecordType not found : $strRecordType - $intServiceType");
+							$this->Error("RecordType not found : $strRecordType - $intServiceType");
 							continue;
 						}
 						
@@ -513,7 +508,7 @@ class VixenImport extends ApplicationBaseClass
 						if (!(int)$intRateGroup)
 						{
 							//error
-							$this->Error("RateGroup $intRateGroup not found : $strRateGroup - $intRecordType");
+							$this->Error("RateGroup not found : $strRateGroup - $intRecordType");
 							continue;
 						}
 						
@@ -561,12 +556,12 @@ class VixenImport extends ApplicationBaseClass
 	
 	function InsertWithIdAccountGroup($arrAccountGroup)
 	{
-		return $this->_insAccountGroup->Execute($arrAccountGroup);
+		return $this->_insWithIdAccountGroup->Execute($arrAccountGroup);
 	}
 	
 	function InsertWithIdAccount($arrAccount)
 	{
-		return $this->_insAccount->Execute($arrAccount);
+		return $this->_insWithIdAccount->Execute($arrAccount);
 	}
 	
 	// ------------------------------------//
@@ -596,6 +591,22 @@ class VixenImport extends ApplicationBaseClass
 	function InsertCreditCard($arrCreditCard)
 	{
 		return $this->_insCreditCard->Execute($arrCreditCard);
+	}
+	
+	function InsertNote($arrNote)
+	{
+		if (!$arrNote['Employee'])
+		{
+			if($arrNote['EmployeeName'])
+			{
+				$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeName']);
+			}
+			elseif($arrNote['EmployeeFirstName'] && $arrNote['EmployeeLastName'])
+			{
+				$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeFirstName'], $arrNote['EmployeeLastName']);
+			}
+		}
+		return $this->insNote->Execute($arrNote);
 	}
 	
 	// ------------------------------------//
@@ -672,6 +683,25 @@ class VixenImport extends ApplicationBaseClass
 		return $this->_arrRateGroups[$intRecordType][$strRateGroupName];
 	}
 	
+	// find rate
+	function FindRate($strRateName, $intRecordType)
+	{
+		// check if we have a cache of rate groups
+		if (!is_array($this->_arrRates))
+		{
+			// get an array of rate groups
+			$selFindRate = new StatementSelect("Rate", "RecordType, Name, Id");
+			$selFindRate->Execute();
+			while($arrRate = $selFindRate->Fetch())
+			{
+				$this->_arrRates[$arrRate['RecordType']][$arrRate['Name']] = $arrRate['Id'];
+			}
+		}
+		
+		// return the rate group Id
+		return $this->_arrRates[$intRecordType][$strRateName];
+	}
+	
 	// find rate plan
 	function FindRatePlan($strRatePlanName, $intServiceType)
 	{
@@ -692,8 +722,10 @@ class VixenImport extends ApplicationBaseClass
 	}
 	
 	// find Employee
-	function FindEmployee($strFirstName, $strLastName='NULL')
+	function FindEmployee($strFirstName, $strLastName=NULL)
 	{
+		$strFirstName = trim($strFirstName);
+		$strLastName = trim($strLastName);
 		// break apart name to get last name if needed
 		if (!$strLastName)
 		{
@@ -715,7 +747,7 @@ class VixenImport extends ApplicationBaseClass
 		}
 		
 		// return the employee Id
-		return $this->_arrEmployee[$arrEmployee['LastName']][$arrEmployee['FirstName']];
+		return $this->_arrEmployee[$strLastName][$strFirstName];
 	}
 }
 

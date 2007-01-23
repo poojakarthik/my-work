@@ -26,6 +26,8 @@ $strDirName = "/home/vixen/vixen_seed/Rate/IDD";
 $strCommand = "mkdir -p $strDirName";
 system($strCommand);
 
+// clean the output array
+$arrOutput = Array();
 
 // Get Rate details from the scrape
 while ($arrRow = $objDecoder->FetchIDDGroupRate())
@@ -33,7 +35,7 @@ while ($arrRow = $objDecoder->FetchIDDGroupRate())
 	$arrScrapeRate = $arrRow['DataArray'];
 	$arrScrapeRate['Carrier'] = $arrRow['AxisM'];
 	$arrRates = $objDecoder->DecodeIDDGroupRate($arrScrapeRate);
-	
+
 	if (is_array($arrRates))
 	{
 		// get the plan name
@@ -41,8 +43,25 @@ while ($arrRow = $objDecoder->FetchIDDGroupRate())
 		$strPlanName		= trim($arrTitle[1]);
 		$strPlanName		= str_replace(' ', '_', $strPlanName);
 		
+		// add each rate to the array
+		foreach ($arrRates AS $arrRate)
+		{
+			$arrOutput[$strPlanName][] = $arrRate;
+		}
+	}
+	else
+	{
+		echo "bad record\n";
+	}
+}
+
+// Output CSV Files
+foreach ($arrOutput AS $strPlanName=>$arrRates)
+{
 		// set the file name
 		$strFileName = "$strDirName/$strPlanName.csv";
+		
+		echo "Exporting $strPlanName\n";
 		
 		// open the file
 		$resFile = fopen($strFileName, 'w');
@@ -82,10 +101,5 @@ while ($arrRow = $objDecoder->FetchIDDGroupRate())
 			echo "could not open file $strFileName\n";
 			Die;
 		}
-	}
-	else
-	{
-		echo "bad record\n";
-	}
 }
 ?>

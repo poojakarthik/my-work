@@ -441,6 +441,7 @@
 			// Employee
 			$arrNormalisedNote['EmployeeName']	= preg_replace("/[^A-Za-z ]+/", "", $arrNote['Employee']);
 			$arrNormalisedNote['AccountGroup']	= $arrNote['CustomerId'];
+			$arrNormalisedNote['Account']		= $arrNote['CustomerId'];
 			$arrNormalisedNote['Note']			= $arrNote['NoteValue'];
 			
 			// Add to normalised array
@@ -467,6 +468,7 @@
 			$arrNormalisedNote['Datetime']		= $arrNote['Datetime'];
 			$arrNormalisedNote['NoteType']		= $arrNote['NoteType'];
 			$arrNormalisedNote['AccountGroup']	= $arrNote['CustomerId'];
+			$arrNormalisedNote['Account']		= $arrNote['CustomerId'];
 			$arrNormalisedNote['Note']			= $arrNote['NoteValue'];
 			$arrNormalisedNote['EmployeeName']	= preg_replace("/[^A-Za-z ]+/", "", $arrNote['Employee']);
 			
@@ -810,7 +812,8 @@
 			
 			// get rate specific values
 			$strDestination 	= $arrRate['Destination'];
-			$intCapSet 			= Max($arrScrapeRate['SetCap'],  $arrRate['CapSet']);
+			$intCapSet 			= Min((int)$arrScrapeRate['SetCap'], (int)$arrRate['CapSet']);
+			//$intCapSet 			= (int)$arrRate['CapSet'];
 			
 			// set output array values
 			$arrOutput['Name'] 				= "$strName : $strCarrier : $strDestination";
