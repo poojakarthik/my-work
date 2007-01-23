@@ -345,19 +345,28 @@ class VixenImport extends ApplicationBaseClass
 				if (is_array($arrPlan))
 				{
 					// sort the array of plans & get the highest scoring plan
-					$strRatePlanName = array_pop(array_keys(asort($arrPlan)));
-					
+					$bolSorted = asort($arrPlan);
+					if ($bolSorted)
+					{
+						$strRatePlanName = array_pop(array_keys($arrPlan));
+					}
+					else
+					{
+						return FALSE;
+					}
 					// get the RatePlan ID
 					$intRatePlan = $this->FindRatePlan($strRatePlanName, $intServiceType);
 					
 					// insert the record
 					if ($intService && $intRatePlan)
 					{
-						$this->AddServiceRateGroup($intService, $intRatePlan);
+						$this->AddServiceRatePlan($intService, $intRatePlan);
 					}
 				}
 			}
 		}
+		
+		return TRUE;
 	}
 	
 	// add all notes for a customer
@@ -414,7 +423,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrData['CreatedOn']		= date("Y-m-d");
 		$arrData['StartDatetime']	= "2006-01-01 11:57:40";
 		$arrData['EndDatetime']		= "2030-11-30 11:57:45";
-		$this->insServiceRateGroup->Execute($arrData);
+		return $this->insServiceRateGroup->Execute($arrData);
 	}
 	
 	// add a single ServiceRatePlan record
@@ -427,7 +436,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrData['CreatedOn']		= date("Y-m-d");
 		$arrData['StartDatetime']	= "2006-01-01 11:57:40";
 		$arrData['EndDatetime']		= "2030-11-30 11:57:45";
-		$this->insServiceRatePlan->Execute($arrData);
+		return $this->insServiceRatePlan->Execute($arrData);
 	}
 	
 	// ------------------------------------//
@@ -600,8 +609,13 @@ class VixenImport extends ApplicationBaseClass
 	// report an error
 	function Error($strError)
 	{
+		if (!$strError)
+		{
+			return FALSE;
+		}
 		$this->strLastError = "$strError \n";
 		$this->strErrorLog .= "$strError \n";
+		return TRUE;
 	}
 	
 	// return the error log
@@ -670,10 +684,16 @@ class VixenImport extends ApplicationBaseClass
 	
 	function InsertContact($arrContact)
 	{
+		$arrContact['Title']			= ($arrContact['Title']		== NULL) ? ''						: $arrContact['Title'];
 		$arrContact['SessionId']		= "";
-		$arrContact['SessionExpire']	= "00-00-00 00:00:00";
+		$arrContact['SessionExpire']	= "0000-00-00 00:00:00";
 		$arrContact['Archived']			= (int)$arrContact['Archived'];
-		return $this->_insContact->Execute($arrContact);
+		$return = $this->_insContact->Execute($arrContact);
+		if (!$return)
+		{
+			$this->Error($this->_insContact->Error());
+		}
+		return $return;
 	}
 	
 	function InsertService($arrService)
@@ -683,7 +703,10 @@ class VixenImport extends ApplicationBaseClass
 		$arrService['CreatedOn']		= ($arrService['CreatedOn']			== NULL) ? date("Y-m-d", time())	: $arrService['CreatedOn'];
 		$arrService['CreatedBy']		= ($arrService['CreatedBy']			== NULL) ? 22						: $arrService['CreatedBy'];
 
-		$arrService['Archived']			= (int)$arrService['Archived'];
+		if((int)$arrService['Archived'])
+		{
+			$arrService['ClosedOn']		= "1980-01-01 00:00:00";
+		}
 		$return = $this->_insService->Execute($arrService);
 		if (!$return)
 		{

@@ -689,10 +689,17 @@
 		$arrService = Array();
 		$arrService['AccountGroup'] 			= $arrCustomer['CustomerId'];
 		$arrService['Account'] 					= $arrCustomer['CustomerId'];
+		$arrService['Archived'] 				= $bolArchived;
 		
 		// for each service number
 		foreach ($arrCustomer['sn'] as $sn_id => $_SN)
 		{
+			// clean the service number
+			$strFNN = CleanFNN($_SN['Number'], $_SN['AreaCode']);
+
+			// raw services count
+			$arrOutput['RawServiceCount']++;
+			
 			// default is not an indial 
 			$arrService['Indial100'] 			= 0;
 			
@@ -723,6 +730,9 @@
 			$arrService['FNN'] 					= $strFNN;
 			$arrService['ServiceType'] 			= $arrServiceType[$strFNN];
 			$arrOutput['Service'][$strFNN]		= $arrService;
+			
+			// real services count
+			$arrOutput['ServiceCount']++;
 			
 			// add serviceRateGroup records
 			if (is_array($arrRateGroup[$arrServiceType[$strFNN]]))

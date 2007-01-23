@@ -25,6 +25,7 @@
 	require_once($strFrameworkDir."error.php");
 	require_once($strFrameworkDir."exception_vixen.php");
 	
+	Define('USER_NAME', 'Import');
 	
 
 // ---------------------------------------------------------------------------//
@@ -688,11 +689,24 @@
 		echo "Decoding Customer   : {$arrRow['CustomerId']}\n";
 		$arrCustomer = $objDecoder->DecodeCustomer($arrScrape);
 		
+		// counters
+		$intServiceCount += (int)$arrCustomer['ServiceCount'];
+		$intRawServiceCount += (int)$arrCustomer['RawServiceCount'];
+		$intCustomerCount++;
+		
+		// check service count
+		$intCountServices = count($arrCustomer['Service']);
+		if ($intCountServices != $arrCustomer['ServiceCount'])
+		{
+			echo "WARN : Actual Services : $intCountServices DOES NOT = Service Count : {$arrCustomer['ServiceCount']}\n";
+		}
+		
 		// add the customer
 		echo "Importing Customer  : {$arrRow['CustomerId']}\n";
 		if (!$objImport->AddCustomerWithId($arrCustomer))
 		{
 			echo "FATAL ERROR : Could not add Customer : {$arrRow['CustomerId']}\n";
+			echo $objImport->ErrorLog();
 			Die();
 		}
 		
@@ -744,6 +758,9 @@
 	
 	//finish
 	echo "Done\n";
+	echo "Added : $intCustomerCount Accounts\n";
+	echo "Added : $intRawServiceCount Raw Services\n";
+	echo "Added : $intServiceCount Actual Services\n";
 	Die ();
 
 // ---------------------------------------------------------------------------//
