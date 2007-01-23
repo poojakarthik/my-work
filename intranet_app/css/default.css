@@ -336,6 +336,16 @@
 		
 		border:              solid 1px #D1D1D1;
 		background-color:    #F3F3F3;
+		width:				 350px;
+	}
+	
+	.Filter-Form
+	{
+		margin:              0;
+		padding:             10px;
+		
+		border:              solid 1px #D1D1D1;
+		background-color:    #FF0000;
 		width:				 700px;
 	}
 	

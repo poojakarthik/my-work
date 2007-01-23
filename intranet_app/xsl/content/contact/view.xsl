@@ -15,7 +15,7 @@
 				<td valign="top">
 					<h2 class="Contact">Contact Details</h2>
 
-					<div class="Filter-Form">
+					<div class="Narrow-Form">
 						<div class="Filter-Form-Content">
 							<table border="0" cellpadding="5" cellspacing="0">
 								<tr>
