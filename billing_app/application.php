@@ -432,7 +432,7 @@ die();
 				$arrServiceTotal = Array();
 				$arrServiceTotal['FNN']				= $arrService['FNN'];
 				$arrServiceTotal['AccountGroup']	= $arrAccount['AccountGroup'];
-				$arrServiceTotal['Account']			= $arrAccount['Account'];
+				$arrServiceTotal['Account']			= $arrAccount['Id'];
 				$arrServiceTotal['Service']			= $arrService['Service'];
 				$arrServiceTotal['InvoiceRun']		= $strInvoiceRun;
 				$arrServiceTotal['CappedCharge']	= $arrService['CappedCharge'];
