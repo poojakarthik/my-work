@@ -77,7 +77,7 @@
 			<xsl:call-template name="DateLoop">
 				<xsl:with-param name="start" select="1" />
 				<xsl:with-param name="cease" select="12" />
-				<xsl:with-param name="selected" select="$Selected-Month" />
+				<xsl:with-param name="select" select="$Selected-Month" />
 			</xsl:call-template>
 		</select> / 
 		<select>
@@ -89,7 +89,59 @@
 			<xsl:call-template name="DateLoop">
 				<xsl:with-param name="start" select="2007" />
 				<xsl:with-param name="cease" select="2015" />
-				<xsl:with-param name="selected" select="$Selected-Year" />
+				<xsl:with-param name="select" select="$Selected-Year" />
+			</xsl:call-template>
+		</select>
+	</xsl:template>
+	
+	<xsl:template name="DOB">
+		<xsl:param name="Name-Day" />
+		<xsl:param name="Name-Month" />
+		<xsl:param name="Name-Year" />
+		<xsl:param name="Selected-Day" />
+		<xsl:param name="Selected-Month" />
+		<xsl:param name="Selected-Year" />
+		
+		<select>
+			<xsl:attribute name="name">
+				<xsl:text></xsl:text>
+				<xsl:value-of select="$Name-Day" />
+			</xsl:attribute>
+			
+			<option value="">DD</option>
+			
+			<xsl:call-template name="DateLoop">
+				<xsl:with-param name="start" select="1" />
+				<xsl:with-param name="cease" select="31" />
+				<xsl:with-param name="select" select="$Selected-Day" />
+			</xsl:call-template>
+		</select> / 
+		<select>
+			<xsl:attribute name="name">
+				<xsl:text></xsl:text>
+				<xsl:value-of select="$Name-Month" />
+			</xsl:attribute>
+			
+			<option value="">MM</option>
+			
+			<xsl:call-template name="DateLoop">
+				<xsl:with-param name="start" select="1" />
+				<xsl:with-param name="cease" select="12" />
+				<xsl:with-param name="select" select="$Selected-Month" />
+			</xsl:call-template>
+		</select> / 
+		<select>
+			<xsl:attribute name="name">
+				<xsl:text></xsl:text>
+				<xsl:value-of select="$Name-Year" />
+			</xsl:attribute>
+			
+			<option value="">YYYY</option>
+			
+			<xsl:call-template name="DateLoop">
+				<xsl:with-param name="start" select="1900" />
+				<xsl:with-param name="cease" select="2007" />
+				<xsl:with-param name="select" select="$Selected-Year" />
 			</xsl:call-template>
 		</select>
 	</xsl:template>

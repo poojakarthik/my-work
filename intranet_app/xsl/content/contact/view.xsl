@@ -385,7 +385,7 @@
 							<span>
 								<xsl:attribute name="class">
 									<xsl:choose>
-										<xsl:when test="./OverdueAmount = '$0.00'">
+										<xsl:when test="./OverdueAmount = '$0.0000'">
 											<xsl:text>Green</xsl:text>
 										</xsl:when>
 										<xsl:otherwise>

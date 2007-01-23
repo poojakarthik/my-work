@@ -8,7 +8,38 @@
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
-	
+		
+		<xsl:if test="/Response/Error != ''">
+			<div class="MsgError">
+				<xsl:choose>
+					<xsl:when test="/Response/Error = 'BusinessName'">
+						You did not enter a Business Name. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'ABN-ACN'">
+						You did not enter either an ABN# or ACN#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'ABN Invalid'">
+						You did not enter a valid ABN#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'ACN Invalid'">
+						You did not enter a valid ACN#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Address'">
+						You did not enter an Address. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Suburb'">
+						You did not enter a Suburb. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Postcode'">
+						You did not enter a Postcode. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'State'">
+						You did not enter a State. Please try again.
+					</xsl:when>
+				</xsl:choose>
+			</div>
+		</xsl:if>
+		
 		<form method="POST" action="account_edit.php">
 			<h2 class="Account">Account Details</h2>
 			<div class="Filter-Form">
@@ -19,8 +50,10 @@
 							<xsl:value-of select="/Response/Account/Id" />
 						</xsl:attribute>
 					</input>
+					
 					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -28,10 +61,14 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Account/Id" />
+								<xsl:value-of select="/Response/ui-values/Id" />
 							</td>
 						</tr>
 						<tr>
+							<td><div class="Seperator"></div></td>
+						</tr>
+						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -42,12 +79,13 @@
 								<input type="text" name="BusinessName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/BusinessName" />
+										<xsl:value-of select="/Response/ui-values/BusinessName" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -58,12 +96,16 @@
 								<input type="text" name="TradingName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/TradingName" />
+										<xsl:value-of select="/Response/ui-values/TradingName" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td><div class="Seperator"></div></td>
+						</tr>
+						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -74,12 +116,13 @@
 								<input type="text" name="ABN" class="input-ABN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/ABN" />
+										<xsl:value-of select="/Response/ui-values/ABN" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -90,12 +133,16 @@
 								<input type="text" name="ACN" class="input-ACN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/ACN" />
+										<xsl:value-of select="/Response/ui-values/ACN" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td><div class="Seperator"></div></td>
+						</tr>
+						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -106,12 +153,13 @@
 								<input type="text" name="Address1" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Address1" />
+										<xsl:value-of select="/Response/ui-values/Address1" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -122,12 +170,13 @@
 								<input type="text" name="Address2" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Address2" />
+										<xsl:value-of select="/Response/ui-values/Address2" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -138,12 +187,13 @@
 								<input type="text" name="Suburb" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Suburb" />
+										<xsl:value-of select="/Response/ui-values/Suburb" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -154,12 +204,13 @@
 								<input type="text" name="Postcode" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/Postcode" />
+										<xsl:value-of select="/Response/ui-values/Postcode" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -170,12 +221,13 @@
 								<input type="text" name="State" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Account/State" />
+										<xsl:value-of select="/Response/ui-values/State" />
 									</xsl:attribute>
 								</input>
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -183,7 +235,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:value-of select="/Response/Account/Country" />
+								<xsl:value-of select="/Response/ui-values/Country" />
 							</td>
 						</tr>
 					</table>
@@ -197,7 +249,7 @@
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content">
 					<xsl:choose>
-						<xsl:when test="/Response/Account/Archived = 0">
+						<xsl:when test="/Response/ui-values/Archived = 0">
 							This Account is <strong><span class="Green">Currently Available</span></strong>.
 						</xsl:when>
 						<xsl:otherwise>
@@ -209,7 +261,7 @@
 					
 					<table border="0" cellpadding="5" cellspacing="0">
 						<xsl:choose>
-							<xsl:when test="/Response/Account/Archived = 1">
+							<xsl:when test="/Response/ui-values/Archived = 1">
 								<tr>
 									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
 									<td>

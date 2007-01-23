@@ -19,16 +19,7 @@
 	
 	try
 	{
-		if ($_SERVER ['REQUEST_METHOD'] == "GET")
-		{
-			// Using GET
-			$actAccount = $Style->attachObject (new Account ($_GET ['Id']));
-		}
-		else
-		{
-			// Using POST
-			$actAccount = $Style->attachObject (new Account ($_POST ['Id']));
-		}
+		$actAccount = $Style->attachObject (new Account (isset ($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
 	}
 	catch (Exception $e)
 	{
@@ -37,36 +28,112 @@
 		exit;
 	}
 	
-	// Pull documentation information for an Account
-	$docDocumentation->Explain ('Account');
-	$docDocumentation->Explain ('Archive');
+	// Error Handling
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
+	
+	// Start UI Values
+	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
+	$oblstrBusinessName		= $oblarrUIValues->Push (new dataString ('BusinessName'			, $actAccount->Pull ('BusinessName')->getValue ()));
+	$oblstrTradingName		= $oblarrUIValues->Push (new dataString ('TradingName'			, $actAccount->Pull ('TradingName')->getValue ()));
+	$oblstrABN				= $oblarrUIValues->Push (new dataString ('ABN'					, $actAccount->Pull ('ABN')->getValue ()));
+	$oblstrACN				= $oblarrUIValues->Push (new dataString ('ACN'					, $actAccount->Pull ('ACN')->getValue ()));
+	$oblstrAddress1			= $oblarrUIValues->Push (new dataString ('Address1'				, $actAccount->Pull ('Address1')->getValue ()));
+	$oblstrAddress2			= $oblarrUIValues->Push (new dataString ('Address2'				, $actAccount->Pull ('Address2')->getValue ()));
+	$oblstrSuburb			= $oblarrUIValues->Push (new dataString ('Suburb'				, $actAccount->Pull ('Suburb')->getValue ()));
+	$oblstrPostcode			= $oblarrUIValues->Push (new dataString ('Postcode'				, $actAccount->Pull ('Postcode')->getValue ()));
+	$oblstrState			= $oblarrUIValues->Push (new dataString ('State'				, $actAccount->Pull ('State')->getValue ()));
+	$oblbolArchived			= $oblarrUIValues->Push (new dataBoolean('Archived'));
+	
+	// Set UI Values
+	if (isset ($_POST ['BusinessName']))	$oblstrBusinessName->setValue	($_POST ['BusinessName']);
+	if (isset ($_POST ['TradingName']))		$oblstrTradingName->setValue	($_POST ['TradingName']);
+	if (isset ($_POST ['ABN']))				$oblstrABN->setValue			($_POST ['ABN']);
+	if (isset ($_POST ['ACN']))				$oblstrACN->setValue			($_POST ['ACN']);
+	if (isset ($_POST ['Address1']))		$oblstrAddress1->setValue		($_POST ['Address1']);
+	if (isset ($_POST ['Address2']))		$oblstrAddress2->setValue		($_POST ['Address2']);
+	if (isset ($_POST ['Suburb']))			$oblstrSuburb->setValue			($_POST ['Suburb']);
+	if (isset ($_POST ['Postcode']))		$oblstrPostcode->setValue		($_POST ['Postcode']);
+	if (isset ($_POST ['State']))			$oblstrState->setValue			($_POST ['State']);
+	if (isset ($_POST ['Archived']))		$oblbolArchived->setValue		(TRUE);
 	
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we're using GET or POST
-	if ($_SERVER ['REQUEST_METHOD'] == "POST")
+	if (isset ($_POST ['BusinessName']))
 	{
-		$actAccount->Update (
-			Array (
-				"BusinessName"		=> $_POST ['BusinessName'],
-				"TradingName"		=> $_POST ['TradingName'],
-				"ABN"				=> $_POST ['ABN'],
-				"ACN"				=> $_POST ['ACN'],
-				"Address1"			=> $_POST ['Address1'],
-				"Address2"			=> $_POST ['Address2'],
-				"Suburb"			=> $_POST ['Suburb'],
-				"Postcode"			=> $_POST ['Postcode'],
-				"State"				=> $_POST ['State']
-			)
-		);
+		$abnABN = new ABN ('ABN', '');
+		$acnACN = new ACN ('ACN', '');
 		
-		if (isset ($_POST ['Archived']))
+		if (!$_POST ['BusinessName'])
 		{
-			$actAccount->ArchiveStatus ($_POST ['Archived']);
+			// Check the Business Name is not Empty
+			$oblstrError->setValue ('BusinessName');
 		}
-		
-		header ("Location: account_view.php?Id=" . $actAccount->Pull ('Id')->getValue ());
-		exit;
+		else if (!$_POST ['ABN'] &&  !$_POST ['ACN'])
+		{
+			// Check either an ABN or ACN exists
+			$oblstrError->setValue ('ABN-ACN');
+		}
+		else if ($_POST ['ABN'] && !$abnABN->setValue ($_POST ['ABN']))
+		{
+			// If the ABN is set, make sure it's valid
+			$oblstrError->setValue ('ABN Invalid');
+		}
+		else if ($_POST ['ACN'] && !$acnACN->setValue ($_POST ['ACN']))
+		{
+			// If the ACN is set, make sure it's valid
+			$oblstrError->setValue ('ACN Invalid');
+		}
+		else if (!$_POST ['Address1'])
+		{
+			// Check the Address is not Empty
+			$oblstrError->setValue ('Address');
+		}
+		else if (!$_POST ['Suburb'])
+		{
+			// Check the Address (Suburb) is not Empty
+			$oblstrError->setValue ('Suburb');
+		}
+		else if (!$_POST ['Postcode'])
+		{
+			// Check the Address (Postcode) is not Empty
+			$oblstrError->setValue ('Postcode');
+		}
+		else if (!$_POST ['State'])
+		{
+			// Check the Address (State) is not Empty
+			$oblstrError->setValue ('State');
+		}
+		else
+		{
+			$actAccount->Update (
+				Array (
+					"BusinessName"		=> $_POST ['BusinessName'],
+					"TradingName"		=> $_POST ['TradingName'],
+					"ABN"				=> $_POST ['ABN'],
+					"ACN"				=> $_POST ['ACN'],
+					"Address1"			=> $_POST ['Address1'],
+					"Address2"			=> $_POST ['Address2'],
+					"Suburb"			=> $_POST ['Suburb'],
+					"Postcode"			=> $_POST ['Postcode'],
+					"State"				=> $_POST ['State']
+				)
+			);
+			
+			// We're using ISSET here for a reason:
+			// If they want to unarchive the Account, $_POST ['Archived'] will be set to 0
+			if (isset ($_POST ['Archived']))
+			{
+				$actAccount->ArchiveStatus ($_POST ['Archived']);
+			}
+			
+			header ("Location: account_view.php?Id=" . $actAccount->Pull ('Id')->getValue ());
+			exit;
+		}
 	}
+	
+	// Pull documentation information for an Account
+	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Archive');
 	
 	$Style->Output ('xsl/content/account/edit.xsl');
 	

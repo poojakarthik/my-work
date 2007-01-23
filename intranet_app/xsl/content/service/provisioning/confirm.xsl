@@ -13,7 +13,7 @@
 		<p>
 			<a>
 				<xsl:attribute name="href">
-					<xsl:text>service_address.php?Id=</xsl:text>
+					<xsl:text>service_address.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
 				<xsl:text>Return to Service Address Details</xsl:text>

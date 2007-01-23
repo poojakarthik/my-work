@@ -98,6 +98,8 @@
 						<div class="Filter-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -114,6 +116,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -130,6 +134,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -146,6 +152,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -162,6 +170,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -185,6 +195,8 @@
 						<div class="Filter-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -213,6 +225,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -229,6 +243,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -245,6 +261,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -261,6 +279,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -268,36 +288,19 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="DateOfBirth[year]">
-											<option value="0000"></option>
-											<xsl:call-template name="Date_Loop">
-												<xsl:with-param name="start" select="number (1900)" />
-												<xsl:with-param name="cease" select="number (1990)" />
-												<xsl:with-param name="steps" select="number (1)" />
-												<xsl:with-param name="select" select="substring (/Response/ServiceAddress/DateOfBirth, 1, 4)" />
-											</xsl:call-template>
-										</select> -
-										<select name="DateOfBirth[month]">
-											<option value="00"></option>
-											<xsl:call-template name="Date_Loop">
-												<xsl:with-param name="start" select="number (1)" />
-												<xsl:with-param name="cease" select="number (12)" />
-												<xsl:with-param name="steps" select="number (1)" />
-												<xsl:with-param name="select" select="substring (/Response/ServiceAddress/DateOfBirth, 5, 2)" />
-											</xsl:call-template>
-										</select> -
-										<select name="DateOfBirth[day]">
-											<option value="00"></option>
-											<xsl:call-template name="Date_Loop">
-												<xsl:with-param name="start" select="number (1)" />
-												<xsl:with-param name="cease" select="number (31)" />
-												<xsl:with-param name="steps" select="number (1)" />
-												<xsl:with-param name="select" select="substring (/Response/ServiceAddress/DateOfBirth, 7, 2)" />
-											</xsl:call-template>
-										</select>
+										<xsl:call-template name="DOB">
+											<xsl:with-param name="Name-Day"			select="string('DateOfBirth[day]')" />
+											<xsl:with-param name="Name-Month"		select="string('DateOfBirth[month]')" />
+											<xsl:with-param name="Name-Year"		select="string('DateOfBirth[year]')" />
+											<xsl:with-param name="Selected-Day"		select="substring (/Response/ServiceAddress/DateOfBirth, 7, 2)" />
+											<xsl:with-param name="Selected-Month"	select="substring (/Response/ServiceAddress/DateOfBirth, 5, 2)" />
+											<xsl:with-param name="Selected-Year"	select="substring (/Response/ServiceAddress/DateOfBirth, 1, 4)" />
+										</xsl:call-template>
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -314,6 +317,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -337,6 +342,8 @@
 						<div class="Filter-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
+									<td width="10"></td>
+									<td width="10"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -353,6 +360,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -376,6 +385,8 @@
 						<div class="Filter-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -404,6 +415,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -420,6 +433,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -436,6 +451,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -452,6 +469,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -468,6 +487,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -484,6 +505,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -500,6 +523,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -528,6 +553,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -556,6 +583,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"></td>
+									<td width="10"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -572,6 +601,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -588,6 +619,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -616,6 +649,8 @@
 									</td>
 								</tr>
 								<tr>
+									<td width="10"><strong><span class="Red">R</span></strong></td>
+									<td width="10"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -633,6 +668,18 @@
 								</tr>
 							</table>
 						</div>
+						<div class="Seperator"></div>
+						
+						<table border="0" cellpadding="3" cellspacing="0">
+							<tr>
+								<td><strong><span class="Red">R :</span></strong></td>
+								<td>Required for Residential Services</td>
+							</tr>
+							<tr>
+								<td><strong><span class="Red">B :</span></strong></td>
+								<td>Required for Business Services</td>
+							</tr>
+						</table>
 						<div class="Seperator"></div>
 						
 						<input type="submit" value="Change Details &#0187;" class="input-submit" />

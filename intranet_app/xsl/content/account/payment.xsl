@@ -168,16 +168,19 @@
 							<xsl:when test="count(/Response/DirectDebits/DirectDebit) = 0">
 								<div class="MsgNotice">
 									There are no Direct Debit Details attached to this Account Group.
-									<a>
-										<xsl:attribute name="href">
-											<xsl:text>directdebit_add.php?AccountGroup=</xsl:text>
-											<xsl:value-of select="/Response/AccountGroup/Id" />
-										</xsl:attribute>
-										<xsl:text>Add Direct Debit Details</xsl:text>
-									</a>.
 								</div>
 							</xsl:when>
 						</xsl:choose>
+						
+						<div class="LinkEdit">
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>directdebit_add.php?AccountGroup=</xsl:text>
+									<xsl:value-of select="/Response/AccountGroup/Id" />
+								</xsl:attribute>
+								<xsl:text>Add Direct Debit Details</xsl:text>
+							</a>
+						</div>
 					</td>
 				</tr>
 				<tr>
@@ -269,16 +272,19 @@
 							<xsl:when test="count(/Response/CreditCards/CreditCard) = 0">
 								<div class="MsgNotice">
 									There are no Credit Card Details attached to this Account Group.
-									<a>
-										<xsl:attribute name="href">
-											<xsl:text>creditcard_add.php?AccountGroup=</xsl:text>
-											<xsl:value-of select="/Response/AccountGroup/Id" />
-										</xsl:attribute>
-										<xsl:text>Add Credit Card Details</xsl:text>
-									</a>.
 								</div>
 							</xsl:when>
 						</xsl:choose>
+						
+						<div class="LinkEdit">
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>creditcard_add.php?AccountGroup=</xsl:text>
+									<xsl:value-of select="/Response/AccountGroup/Id" />
+								</xsl:attribute>
+								<xsl:text>Add Credit Card Details</xsl:text>
+							</a>
+						</div>
 					</td>
 				</tr>
 				<tr>

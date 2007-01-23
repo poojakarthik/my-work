@@ -13,16 +13,16 @@
 						The Card Type you selected was invalid.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Name'">
-						The Card Holder Name you entered was Blank.
+						You must enter a Card Holder Name. Please try again.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'CardNumber'">
-						The Credit Card Number you entered was Blank.
+						You must enter a Card Card Number. Please try again.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'ExpMonth'">
-						The Month you entered for Credit Card Expiration was Invalid.
+						The Month you entered for Credit Card Expiration was Invalid. Please try again.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'ExpYear'">
-						The Year you entered for Credit Card Expiration was Invalid.
+						The Year you entered for Credit Card Expiration was Invalid. Please try again.
 					</xsl:when>
 				</xsl:choose>
 			</div>

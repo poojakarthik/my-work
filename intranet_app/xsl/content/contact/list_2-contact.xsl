@@ -52,11 +52,6 @@
 				</xsl:attribute>
 			</input>
 			
-			<div class="MsgNotice">
-				If the contact is not listed below they do not have authorisation
-				to access this Account.
-			</div>
-			
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgError">
 					<xsl:choose>

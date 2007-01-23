@@ -42,9 +42,9 @@
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
-							<th valign="top">
+							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('Name')" />
@@ -55,7 +55,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th valign="top">
+							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
 									<xsl:with-param name="field" select="string('ServiceType')" />
@@ -66,7 +66,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th valign="top">
+							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('Description')" />
@@ -93,9 +93,9 @@
 					
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<tr>
-							<th valign="top">
+							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('MinMonthly')" />
@@ -106,7 +106,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th valign="top">
+							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('ChargeCap')" />
@@ -117,7 +117,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th valign="top">
+							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('UsageCap')" />
@@ -142,17 +142,17 @@
 			
 			<div class="Filter-Form">
 				<div class="Filter-Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 						<xsl:for-each select="/Response/RatePlan/RecordTypes/Results/rangeSample/RecordType">
 							<xsl:variable name="RecordType" select="./Id" />
 							<tr>
-								<xsl:if test="./Required = 1">
-									<xsl:attribute name="class">
-										<xsl:text>Required</xsl:text>
-									</xsl:attribute>
-								</xsl:if>
+								<td width="10">
+									<xsl:if test="./Required = 1">
+										<strong><span class="Red">*</span></strong>
+									</xsl:if>
+								</td>
 								
-								<th valign="top">
+								<th class="JustifiedWidth">
 									<xsl:value-of select="./Name" /> :
 								</th>
 								<td>
@@ -183,79 +183,75 @@
 				<div class="Clear"></div>
 				<div class="Seperator"></div>
 				
-				<table border="0" cellpadding="5" cellspacing="0">
-					<tr class="Required">
-						<th width="30"></th>
-						<td>
-							<strong>Required Record Types</strong>
-						</td>
-					</tr>
-				</table>
+				<strong><span class="Red">*</span></strong>
+				This Record Type is Required
 				
 				<div class="Clear"></div>
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Recurring Changes</h2>
-			<div class="Seperator"></div>
-			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content Left">
-					Select multiple Recurring Charges by holding the CTRL key while you click options from
-					either of the lists.
-					
-					<div class="Seperator"></div>
-					
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
-						<tr>
-							<th>Available Recurring Charges :</th>
-							<td></td>
-							<th>Selected Recurring Charges :</th>
-						</tr>
-						<tr>
-							<td>
-								<select id="AvailableOptions" name="AvailableRecurringChargeTypes[]" size="20" class="LargeSelection" multiple="multiple">
-									<xsl:for-each select="/Response/RatePlan/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
-										<option>
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="./Id" />
+			<xsl:if test="/Response/RatePlan/RecurringChargeTypes/Results/collationLength != 0">
+				<h2>Recurring Changes</h2>
+				<div class="Seperator"></div>
+				
+				<div class="Filter-Form">
+					<div class="Filter-Form-Content Left">
+						Select multiple Recurring Charges by holding the CTRL key while you click options from
+						either of the lists.
+						
+						<div class="Seperator"></div>
+						
+						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+							<tr>
+								<th>Available Recurring Charges :</th>
+								<td></td>
+								<th>Selected Recurring Charges :</th>
+							</tr>
+							<tr>
+								<td>
+									<select id="AvailableOptions" name="AvailableRecurringChargeTypes[]" size="20" class="LargeSelection" multiple="multiple">
+										<xsl:for-each select="/Response/RatePlan/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
+											<option>
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Id" />
+												</xsl:attribute>
+												<xsl:value-of select="./Description" />
+												(<xsl:value-of select="./RecursionCharge" />)
+											</option>
+										</xsl:for-each>
+									</select>
+								</td>
+								<td>
+									<div>
+										<input type="button" value="&#0187;">
+											<xsl:attribute name="onclick">
+												<xsl:text>addIt ()</xsl:text>
 											</xsl:attribute>
-											<xsl:value-of select="./Description" />
-											(<xsl:value-of select="./RecursionCharge" />)
-										</option>
-									</xsl:for-each>
-								</select>
-							</td>
-							<td>
-								<div>
-									<input type="button" value="&#0187;">
-										<xsl:attribute name="onclick">
-											<xsl:text>addIt ()</xsl:text>
-										</xsl:attribute>
-									</input>
-								</div>
-								<div class="Seperator"></div>
-								<div>
-									<input type="button" value="&#0171;">
-										<xsl:attribute name="onclick">
-											<xsl:text>delIt ()</xsl:text>
-										</xsl:attribute>
-									</input>
-								</div>
-							</td>
-							<td>
-								<select id="SelectedOptions" name="SelectedRecurringChargeTypes[]" size="20" class="LargeSelection" multiple="multiple" />
-							</td>
-						</tr>
-					</table>
+										</input>
+									</div>
+									<div class="Seperator"></div>
+									<div>
+										<input type="button" value="&#0171;">
+											<xsl:attribute name="onclick">
+												<xsl:text>delIt ()</xsl:text>
+											</xsl:attribute>
+										</input>
+									</div>
+								</td>
+								<td>
+									<select id="SelectedOptions" name="SelectedRecurringChargeTypes[]" size="20" class="LargeSelection" multiple="multiple" />
+								</td>
+							</tr>
+						</table>
+						
+						<div class="Clear"></div>
+					</div>
 					
 					<div class="Clear"></div>
 				</div>
-				
-				<div class="Clear"></div>
-			</div>
-			<div class="Seperator"></div>
+				<div class="Seperator"></div>
+			</xsl:if>
 			
 			<input type="submit" value="Create Plan &#0187;" class="input-submit" />
 		</form>

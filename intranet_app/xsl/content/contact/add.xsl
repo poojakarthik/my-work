@@ -59,12 +59,33 @@
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgError">
 					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Title'">
+							You must enter a Salutation for the Contact you are creating.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'FirstName'">
+							You must enter a First Name for the Contact you are creating.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'LastName'">
+							You must enter a Last Name for the Contact you are creating.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'DOB'">
+							You must enter a valid Date of Birth for the Contact you are creating.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'Email'">
 							You must enter an Email Address for the Contact you are creating.
 						</xsl:when>
-						<xsl:otherwise>
-							An unknown error has occurred.
-						</xsl:otherwise>
+						<xsl:when test="/Response/Error = 'Phones Empty'">
+							You must enter a Contact Number for the Contact you are creating.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'UserName Empty'">
+							You must enter a Username for the Contact you are creating.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'UserName Exists'">
+							The Username you selected already exists. Please select another Username and try again.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'PassWord'">
+							You must enter a Password for the Contact you are creating.
+						</xsl:when>
 					</xsl:choose>
 				</div>
 				<div class="Seperator"></div>
@@ -74,7 +95,7 @@
 				<div class="Filter-Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
-							<td width="30"><strong><span class="Red">*</span></strong></td>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -91,7 +112,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="30"><strong><span class="Red">*</span></strong></td>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -108,7 +129,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="30"><strong><span class="Red">*</span></strong></td>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -147,7 +168,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="30"><strong><span class="Red">*</span></strong></td>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -155,30 +176,14 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<select name="DOB[year]">
-									<option value="">CCYY</option>
-									<xsl:call-template name="Date_Loop">
-										<xsl:with-param name="start" select="number('1900')" />
-										<xsl:with-param name="cease" select="number('1990')" />
-										<xsl:with-param name="select" select="/Response/Contact/DOB-year" />
-									</xsl:call-template>
-								</select> -
-								<select name="DOB[month]">
-									<option value="">MM</option>
-									<xsl:call-template name="Date_Loop">
-										<xsl:with-param name="start" select="number('1')" />
-										<xsl:with-param name="cease" select="number('12')" />
-										<xsl:with-param name="select" select="/Response/Contact/DOB-month" />
-									</xsl:call-template>
-								</select> -
-								<select name="DOB[day]">
-									<option value="">DD</option>
-									<xsl:call-template name="Date_Loop">
-										<xsl:with-param name="start" select="number('1')" />
-										<xsl:with-param name="cease" select="number('31')" />
-										<xsl:with-param name="select" select="/Response/Contact/DOB-day" />
-									</xsl:call-template>
-								</select>
+								<xsl:call-template name="DOB">
+									<xsl:with-param name="Name-Day"			select="string('DOB[day]')" />
+									<xsl:with-param name="Name-Month"		select="string('DOB[month]')" />
+									<xsl:with-param name="Name-Year"		select="string('DOB[year]')" />
+									<xsl:with-param name="Selected-Day"		select="/Response/Contact/DOB-day" />
+									<xsl:with-param name="Selected-Month"	select="/Response/Contact/DOB-month" />
+									<xsl:with-param name="Selected-Year"	select="/Response/Contact/DOB-year" />
+								</xsl:call-template>
 							</td>
 						</tr>
 						<tr>
@@ -187,7 +192,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="30"><strong><span class="Red">*</span></strong></td>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -204,7 +209,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="30"><strong><span class="Red"><sup>1</sup></span></strong></td>
+							<td width="10"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -221,7 +226,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="30"><strong><span class="Red"><sup>1</sup></span></strong></td>
+							<td width="10"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -238,6 +243,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -259,6 +265,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -275,6 +282,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />
@@ -296,6 +304,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Contact')" />

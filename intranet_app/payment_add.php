@@ -86,7 +86,7 @@
 	$acsAccounts = $Style->attachObject ($acgAccountGroup->getAccounts ());
 	$acsAccounts->Sample ();
 	
-	if ($_POST ['Amount'])
+	if ($_POST ['PaymentType'])
 	{
 		// If an amount has been posted - then we're attempting to 
 		// add the information into the database

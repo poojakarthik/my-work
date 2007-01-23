@@ -12,7 +12,7 @@
 				<div class="MsgError">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Amount'">
-							There was an error with the amount that you entered.
+							You did not enter a valid Payment Amount. Please try again.
 						</xsl:when>
 					</xsl:choose>
 				</div>

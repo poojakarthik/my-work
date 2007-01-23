@@ -682,32 +682,14 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<select name="Contact[DOB][year]">
-								<option value="">YYYY</option>
-								<xsl:call-template name="DateLoop">
-									<xsl:with-param name="start" select="1900" />
-									<xsl:with-param name="cease" select="1990" />
-									<xsl:with-param name="select" select="/Response/ui-values/Contact/DOB-year" />
-								</xsl:call-template>
-							</select>
-							-
-							<select name="Contact[DOB][month]">
-								<option value="">MM</option>
-								<xsl:call-template name="DateLoop">
-									<xsl:with-param name="start" select="1" />
-									<xsl:with-param name="cease" select="12" />
-									<xsl:with-param name="select" select="/Response/ui-values/Contact/DOB-month" />
-								</xsl:call-template>
-							</select>
-							-
-							<select name="Contact[DOB][day]">
-								<option value="">DD</option>
-								<xsl:call-template name="DateLoop">
-									<xsl:with-param name="start" select="1" />
-									<xsl:with-param name="cease" select="31" />
-									<xsl:with-param name="select" select="/Response/ui-values/Contact/DOB-day" />
-								</xsl:call-template>
-							</select>
+							<xsl:call-template name="DOB">
+								<xsl:with-param name="Name-Day"			select="string('Contact[DOB][day]')" />
+								<xsl:with-param name="Name-Month"		select="string('Contact[DOB][month]')" />
+								<xsl:with-param name="Name-Year"		select="string('Contact[DOB][year]')" />
+								<xsl:with-param name="Selected-Day"		select="/Response/ui-values/Contact/DOB-day" />
+								<xsl:with-param name="Selected-Month"	select="/Response/ui-values/Contact/DOB-month" />
+								<xsl:with-param name="Selected-Year"	select="/Response/ui-values/Contact/DOB-year" />
+							</xsl:call-template>
 						</td>
 					</tr>
 					<tr>

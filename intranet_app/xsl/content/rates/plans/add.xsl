@@ -11,12 +11,10 @@
 				<div class="MsgError">
 					<xsl:choose>
 						<xsl:when test="/Response/RatePlan/Error = 'Blank'">
-							Your Plan Name and your ServiceType must not be Blank.
-							Please choose a name for your Plan and Try Again.
+							You did not enter a Plan Name. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/RatePlan/Error = 'Exists'">
-							The Plan Name that you entered already exists in the System.
-							Please choose another Plan Name.
+							The Plan Name that you entered already exists. Please try again.
 						</xsl:when>
 					</xsl:choose>
 				</div>

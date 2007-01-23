@@ -70,30 +70,14 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<select name="DOB-year">
-									<option value="">YYYY</option>
-									<xsl:call-template name="Date_Loop">
-										<xsl:with-param name="start" select="1900" />
-										<xsl:with-param name="cease" select="1990" />
-										<xsl:with-param name="select" select="/Response/ui-values/DOB/year" />
-									</xsl:call-template>
-								</select> -
-								<select name="DOB-month">
-									<option value="">MM</option>
-									<xsl:call-template name="Date_Loop">
-										<xsl:with-param name="start" select="1" />
-										<xsl:with-param name="cease" select="12" />
-										<xsl:with-param name="select" select="/Response/ui-values/DOB/month" />
-									</xsl:call-template>
-								</select> -
-								<select name="DOB-day">
-									<option value="">DD</option>
-									<xsl:call-template name="Date_Loop">
-										<xsl:with-param name="start" select="1" />
-										<xsl:with-param name="cease" select="31" />
-										<xsl:with-param name="select" select="/Response/ui-values/DOB/day" />
-									</xsl:call-template>
-								</select>
+								<xsl:call-template name="DOB">
+									<xsl:with-param name="Name-Day"			select="string('DOB-day')" />
+									<xsl:with-param name="Name-Month"		select="string('DOB-month')" />
+									<xsl:with-param name="Name-Year"		select="string('DOB-year')" />
+									<xsl:with-param name="Selected-Day"		select="/Response/ui-values/DOB/day" />
+									<xsl:with-param name="Selected-Month"	select="/Response/ui-values/DOB/month" />
+									<xsl:with-param name="Selected-Year"	select="/Response/ui-values/DOB/year" />
+								</xsl:call-template>
 							</td>
 						</tr>
 					</table>
@@ -150,16 +134,6 @@
 							</th>
 							<td>
 								<input type="password" name="PassWord[1]" class="input-string" />
-							</td>
-						</tr>
-						<tr>
-							<th></th>
-							<td>
-								<div style="width: 350px">
-									<strong><span class="Attention">Attention</span> :</strong>
-									Leave these Password fields blank if you don't wish to 
-									change the Password of this Employee.
-								</div>
 							</td>
 						</tr>
 					</table>

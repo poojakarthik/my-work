@@ -391,7 +391,6 @@
 										
 										<tr>
 											<xsl:attribute name="class">
-												<xsl:text>RecentCustomers </xsl:text>
 												<xsl:choose>
 													<xsl:when test="position () mod 2 = 1">
 														<xsl:text>Odd</xsl:text>
@@ -400,6 +399,7 @@
 														<xsl:text>Even</xsl:text>
 													</xsl:otherwise>
 												</xsl:choose>
+												<xsl:text> RecentCustomers</xsl:text>
 											</xsl:attribute>
 											<xsl:attribute name="onclick">
 												<xsl:text>window.location='contact_view.php?Id=</xsl:text>
