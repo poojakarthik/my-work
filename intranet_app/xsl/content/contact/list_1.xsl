@@ -50,8 +50,8 @@
 				</div>
 			</xsl:if>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					To search for a Customer, enter <strong>only one</strong> of the following:
 					<div class="Seperator"></div>
 					

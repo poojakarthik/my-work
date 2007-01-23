@@ -23,8 +23,8 @@
 			</input>
 			
 			<h2 class="Account">Account Details</h2>
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
@@ -66,8 +66,8 @@
 				</div>
 			</xsl:if>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">

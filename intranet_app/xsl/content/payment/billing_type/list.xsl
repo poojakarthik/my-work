@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../../lib/date-time.xsl" />
 	<xsl:import href="../../../includes/init.xsl" />
@@ -11,8 +10,8 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="Account">Account Details</h2>
-		<div class="Filter-Form">
-			<div class="Filter-Form-Content">
+		<div class="Wide-Form">
+			<div class="Form-Content">
 				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">

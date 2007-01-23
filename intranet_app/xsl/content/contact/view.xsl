@@ -16,7 +16,7 @@
 					<h2 class="Contact">Contact Details</h2>
 
 					<div class="Narrow-Form">
-						<div class="Filter-Form-Content">
+						<div class="Form-Content">
 							<table border="0" cellpadding="5" cellspacing="0">
 								<tr>
 									<th class="JustifiedWidth">

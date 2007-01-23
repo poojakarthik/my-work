@@ -25,8 +25,8 @@
 			</xsl:attribute>
 			
 			<h2 class="Service">Service Details</h2>
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<input type="hidden" name="Id">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>
@@ -94,8 +94,8 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Archive">Archive Status</h2>
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<xsl:choose>
 						<xsl:when test="/Response/Service/ClosedOn/year">
 							<strong><span class="Red">

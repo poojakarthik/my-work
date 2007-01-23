@@ -20,8 +20,8 @@
 			<h2>Personal Details</h2>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<input type="hidden" name="Id">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>
@@ -88,8 +88,8 @@
 			<h2>Employee Authentication</h2>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<input type="hidden" name="Id">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>

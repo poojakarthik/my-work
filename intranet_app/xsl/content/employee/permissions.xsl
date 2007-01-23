@@ -16,7 +16,7 @@
 			<h2>Permission Details</h2>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
+			<div class="Wide-Form">
 				<input type="hidden" name="Id">
 					<xsl:attribute name="value">
 						<xsl:text></xsl:text>

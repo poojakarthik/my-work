@@ -11,8 +11,8 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="CDR">CDR Details</h2>
-		<div class="Filter-Form">
-			<div class="Filter-Form-Content">
+		<div class="Wide-Form">
+			<div class="Form-Content">
 				<table border="0" width="100%" cellpadding="3" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">

@@ -47,8 +47,8 @@
 			</xsl:if>
 			
 			<h2 class="Contact">Contact Details</h2>
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<td><strong><span class="Red">*</span></strong></td>
@@ -322,8 +322,8 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Archive">Archive Status</h2>	
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<xsl:choose>
 						<xsl:when test="/Response/ui-values/Archived = 0">
 							This Contact is <strong><span class="Green">Currently Available</span></strong>.

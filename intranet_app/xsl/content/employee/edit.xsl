@@ -20,8 +20,8 @@
 			<h2>Personal Details</h2>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<input type="hidden" name="Id">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>
@@ -70,8 +70,8 @@
 			<h2>Employee Authentication</h2>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
@@ -130,8 +130,8 @@
 			<h2>Archive Status</h2>
 			<div class="Seperator"></div>
 			
-			<div class="Filter-Form">
-				<div class="Filter-Form-Content">
+			<div class="Wide-Form">
+				<div class="Form-Content">
 					<xsl:choose>
 						<xsl:when test="/Response/Employee/Archived = 0">
 							This Employee is <strong><span class="Green">Currently Available</span></strong>.

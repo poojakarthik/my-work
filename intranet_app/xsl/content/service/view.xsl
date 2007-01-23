@@ -15,7 +15,7 @@
 			<tr>
 				<td valign="top">
 					<h2 class="Account">Account Details</h2>
-					<div class="Filter-Form">
+					<div class="Narrow-Form">
 						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 							<tr>
 								<th class="JustifiedWidth">
@@ -58,168 +58,166 @@
 					
 					<h2 class="Service">Service Details</h2>
 					
-					<div class="Filter-Form">
-						<div class="Filter-Form-Content">
-							<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<div class="Narrow-Form">
+						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('Id')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:value-of select="/Response/Service/Id" />
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2"><div class="Seperator"></div></td>
+							</tr>
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('FNN')" />
+									</xsl:call-template>
+								</th>
+								<td><xsl:value-of select="/Response/Service/FNN" /></td>
+							</tr>
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('ServiceType')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:value-of select="/Response/Service/ServiceTypes/ServiceType[@selected='selected']/Name" />
+								</td>
+							</tr>
+							<xsl:if test="/Response/Service/ServiceType = 102">
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('Id')" />
+											<xsl:with-param name="field" select="string('Indial100')" />
 										</xsl:call-template>
 									</th>
 									<td>
-										<xsl:value-of select="/Response/Service/Id" />
+										<xsl:choose>
+											<xsl:when test="/Response/Service/Indial100 = 1">
+												<strong><span class="Green">Yes</span></strong>
+											</xsl:when>
+											<xsl:otherwise>
+												No
+											</xsl:otherwise>
+										</xsl:choose>
 									</td>
 								</tr>
-								<tr>
-									<td colspan="2"><div class="Seperator"></div></td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('FNN')" />
-										</xsl:call-template>
-									</th>
-									<td><xsl:value-of select="/Response/Service/FNN" /></td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('ServiceType')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/Service/ServiceTypes/ServiceType[@selected='selected']/Name" />
-									</td>
-								</tr>
-								<xsl:if test="/Response/Service/ServiceType = 102">
-									<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Service')" />
-												<xsl:with-param name="field" select="string('Indial100')" />
+							</xsl:if>
+							<tr>
+								<td colspan="2"><div class="Seperator"></div></td>
+							</tr>
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('CreatedOn')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:choose>
+										<xsl:when test="/Response/Service/CreatedOn/year">
+											<xsl:call-template name="dt:format-date-time">
+												<xsl:with-param name="year"		select="/Response/Service/CreatedOn/year" />
+												<xsl:with-param name="month"	select="/Response/Service/CreatedOn/month" />
+												<xsl:with-param name="day"		select="/Response/Service/CreatedOn/day" />
+												<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 											</xsl:call-template>
-										</th>
-										<td>
-											<xsl:choose>
-												<xsl:when test="/Response/Service/Indial100 = 1">
-													<strong><span class="Green">Yes</span></strong>
-												</xsl:when>
-												<xsl:otherwise>
-													No
-												</xsl:otherwise>
-											</xsl:choose>
-										</td>
-									</tr>
-								</xsl:if>
-								<tr>
-									<td colspan="2"><div class="Seperator"></div></td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('CreatedOn')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:choose>
-											<xsl:when test="/Response/Service/CreatedOn/year">
-												<xsl:call-template name="dt:format-date-time">
-													<xsl:with-param name="year"		select="/Response/Service/CreatedOn/year" />
-													<xsl:with-param name="month"	select="/Response/Service/CreatedOn/month" />
-													<xsl:with-param name="day"		select="/Response/Service/CreatedOn/day" />
-													<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-												</xsl:call-template>
-											</xsl:when>
-											<xsl:otherwise>
-												<strong><span class="Attention">No Date Specified</span></strong>
-											</xsl:otherwise>
-										</xsl:choose>
-									</td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('ClosedOn')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:choose>
-											<xsl:when test="/Response/Service/ClosedOn/year">
-												<xsl:call-template name="dt:format-date-time">
-													<xsl:with-param name="year"	select="/Response/Service/ClosedOn/year" />
-													<xsl:with-param name="month"	select="/Response/Service/ClosedOn/month" />
-													<xsl:with-param name="day"		select="/Response/Service/ClosedOn/day" />
-													<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-												</xsl:call-template>
-											</xsl:when>
-											<xsl:otherwise>
-												No Close Pending
-											</xsl:otherwise>
-										</xsl:choose>
-									</td>
-								</tr>
-								<tr>
-									<td colspan="2"><div class="Seperator"></div></td>
-								</tr>
-								<tr>
-									<th>
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('UnbilledCharges')" />
-										</xsl:call-template>
-									</th>
-									<td><xsl:value-of select="/Response/Service/UnbilledCharges-Cost-Current" /></td>
-								</tr>
-								<tr>
-									<th></th>
-									<td>
-										<a>
-											<xsl:attribute name="href">
-												<xsl:text>service_unbilled.php?Id=</xsl:text>
-												<xsl:value-of select="/Response/Service/Id" />
-											</xsl:attribute>
-											<xsl:text>View Charges</xsl:text>
-										</a>
-									</td>
-								</tr>
-								<tr>
-									<th>
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service')" />
-											<xsl:with-param name="field" select="string('Plan')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:choose>
-											<xsl:when test="/Response/Service/RatePlan">
-												<xsl:value-of select="/Response/Service/RatePlan/Name" />
-											</xsl:when>
-											<xsl:otherwise>
-												<strong><span class="Attention">No Plan Assigned</span></strong>
-											</xsl:otherwise>
-										</xsl:choose>
-									</td>
-								</tr>
-								<tr>
-									<th></th>
-									<td>
-										<a>
-											<xsl:attribute name="href">
-												<xsl:text>service_plan.php?Service=</xsl:text>
-												<xsl:value-of select="/Response/Service/Id" />
-											</xsl:attribute>
-											<xsl:text>Plan Details</xsl:text>
-										</a>
-									</td>
-								</tr>
-							</table>
-						</div>
+										</xsl:when>
+										<xsl:otherwise>
+											<strong><span class="Attention">No Date Specified</span></strong>
+										</xsl:otherwise>
+									</xsl:choose>
+								</td>
+							</tr>
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('ClosedOn')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:choose>
+										<xsl:when test="/Response/Service/ClosedOn/year">
+											<xsl:call-template name="dt:format-date-time">
+												<xsl:with-param name="year"	select="/Response/Service/ClosedOn/year" />
+												<xsl:with-param name="month"	select="/Response/Service/ClosedOn/month" />
+												<xsl:with-param name="day"		select="/Response/Service/ClosedOn/day" />
+												<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+											</xsl:call-template>
+										</xsl:when>
+										<xsl:otherwise>
+											No Close Pending
+										</xsl:otherwise>
+									</xsl:choose>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="2"><div class="Seperator"></div></td>
+							</tr>
+							<tr>
+								<th>
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('UnbilledCharges')" />
+									</xsl:call-template>
+								</th>
+								<td><xsl:value-of select="/Response/Service/UnbilledCharges-Cost-Current" /></td>
+							</tr>
+							<tr>
+								<th></th>
+								<td>
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>service_unbilled.php?Id=</xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+										</xsl:attribute>
+										<xsl:text>View Charges</xsl:text>
+									</a>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('Plan')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:choose>
+										<xsl:when test="/Response/Service/RatePlan">
+											<xsl:value-of select="/Response/Service/RatePlan/Name" />
+										</xsl:when>
+										<xsl:otherwise>
+											<strong><span class="Attention">No Plan Assigned</span></strong>
+										</xsl:otherwise>
+									</xsl:choose>
+								</td>
+							</tr>
+							<tr>
+								<th></th>
+								<td>
+									<a>
+										<xsl:attribute name="href">
+											<xsl:text>service_plan.php?Service=</xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+										</xsl:attribute>
+										<xsl:text>Plan Details</xsl:text>
+									</a>
+								</td>
+							</tr>
+						</table>
 					</div>
 					<div class="LinkEdit">
 						<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
@@ -234,7 +232,7 @@
 					
 				</td>
 				<td width="30" nowrap="nowrap"></td>
-				<td valign="top" width="300">
+				<td valign="top">
 				
 					<h2 class="Options">Service Options</h2>
 					<ul>
@@ -453,93 +451,89 @@
 					<div class="Seperator"></div>
 
 					<h2 class="Charge">Add Charges</h2>
-					<div class="Filter-Form">
-						<div class="Filter-Form-Content">
-							<h2>Single Charge</h2>
-							<xsl:choose>
-								<xsl:when test="count(/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType) = 0">
-									No charges are available.
-								</xsl:when>
-								<xsl:otherwise>
-									<form method="post" action="service_charge_add.php">
-										<input type="hidden" name="Service">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/Service/Id" />
-											</xsl:attribute>
-										</input>
-										
-										<table border="0" cellpadding="5" cellspacing="0">
-											<tr>
-												<td>
-													<select name="ChargeType">
-														<xsl:for-each select="/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType">
-															<option>
-																<xsl:attribute name="value">
-																	<xsl:text></xsl:text>
-																	<xsl:value-of select="./Id" />
-																</xsl:attribute>
-																<xsl:value-of select="./Description" />
-															</option>
-														</xsl:for-each>
-													</select>
-												</td>
-											</tr>
-											<tr>
-												<td>
-													<input type="submit" value="Assign Charge &#0187;" class="input-submit" />
-												</td>
-											</tr>
-										</table>
-									</form>
-								</xsl:otherwise>
-							</xsl:choose>
-						</div>
+					<div class="Narrow-Form">
+						<h2>Single Charge</h2>
+						<xsl:choose>
+							<xsl:when test="count(/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType) = 0">
+								No charges are available.
+							</xsl:when>
+							<xsl:otherwise>
+								<form method="post" action="service_charge_add.php">
+									<input type="hidden" name="Service">
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+										</xsl:attribute>
+									</input>
+									
+									<table border="0" cellpadding="5" cellspacing="0">
+										<tr>
+											<td>
+												<select name="ChargeType">
+													<xsl:for-each select="/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType">
+														<option>
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="./Id" />
+															</xsl:attribute>
+															<xsl:value-of select="./Description" />
+														</option>
+													</xsl:for-each>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input type="submit" value="Assign Charge &#0187;" class="input-submit" />
+											</td>
+										</tr>
+									</table>
+								</form>
+							</xsl:otherwise>
+						</xsl:choose>
 						<br />
 						
 						<div class="Seperator"></div>
 						
-						<div class="Filter-Form-Content">
-							<h2>Recurring Charge</h2>
-							<xsl:choose>
-								<xsl:when test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
-									No recurring charges are available.
-								</xsl:when>
-								<xsl:otherwise>
-									<form method="post" action="service_recurringcharge_add.php">
-										<input type="hidden" name="Service">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/Service/Id" />
-											</xsl:attribute>
-										</input>
-										
-										<table border="0" cellpadding="5" cellspacing="0">
-											<tr>
-												<td>
-													<select name="RecurringChargeType">
-														<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
-															<option>
-																<xsl:attribute name="value">
-																	<xsl:text></xsl:text>
-																	<xsl:value-of select="./Id" />
-																</xsl:attribute>
-																<xsl:value-of select="./Description" />
-															</option>
-														</xsl:for-each>
-													</select>
-												</td>
-											</tr>
-											<tr>
-												<td>
-													<input type="submit" value="Assign Recurring Charge &#0187;" class="input-submit" />
-												</td>
-											</tr>
-										</table>
-									</form>
-								</xsl:otherwise>
-							</xsl:choose>
-						</div>
+						<h2>Recurring Charge</h2>
+						<xsl:choose>
+							<xsl:when test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
+								No recurring charges are available.
+							</xsl:when>
+							<xsl:otherwise>
+								<form method="post" action="service_recurringcharge_add.php">
+									<input type="hidden" name="Service">
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/Service/Id" />
+										</xsl:attribute>
+									</input>
+									
+									<table border="0" cellpadding="5" cellspacing="0">
+										<tr>
+											<td>
+												<select name="RecurringChargeType">
+													<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
+														<option>
+															<xsl:attribute name="value">
+																<xsl:text></xsl:text>
+																<xsl:value-of select="./Id" />
+															</xsl:attribute>
+															<xsl:value-of select="./Description" />
+														</option>
+													</xsl:for-each>
+												</select>
+											</td>
+										</tr>
+										<tr>
+											<td>
+												<input type="submit" value="Assign Recurring Charge &#0187;" class="input-submit" />
+											</td>
+										</tr>
+									</table>
+								</form>
+							</xsl:otherwise>
+						</xsl:choose>
 						
 						<div class="Clear"></div>
 					</div>
@@ -549,44 +543,5 @@
 			</tr>
 		</table>
 		<div class="Clear"></div>
-	</xsl:template>
-	
-	
-	
-	<xsl:template name="Date_Loop">
-		<xsl:param name="start">1</xsl:param>
-		<xsl:param name="cease">0</xsl:param>
-		<xsl:param name="steps">1</xsl:param>
-		<xsl:param name="count">0</xsl:param>
-		
-		<xsl:param name="select">0</xsl:param>
-		
-		<xsl:if test="number($start) + number($count) &lt;= number($cease)">
-			<option>
-				<xsl:attribute name="value">
-					<xsl:text></xsl:text>
-					<xsl:value-of select="$start + $count" />
-				</xsl:attribute>
-				
-				<xsl:choose>
-					<xsl:when test="$select = $start + $count">
-						<xsl:attribute name="selected">
-							<xsl:text>selected</xsl:text>
-						</xsl:attribute>
-					</xsl:when>
-					<xsl:otherwise>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				<xsl:value-of select="$start + $count" />
-			</option>
-			<xsl:call-template name="Date_Loop">
-				<xsl:with-param name="start" select="$start" />
-				<xsl:with-param name="cease" select="$cease" />
-				<xsl:with-param name="steps" select="$steps" />
-				<xsl:with-param name="count" select="$count + $steps" />
-				<xsl:with-param name="select" select="$select" />
-			</xsl:call-template>
-		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

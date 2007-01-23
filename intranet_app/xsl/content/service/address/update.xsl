@@ -15,7 +15,7 @@
 			<tr>
 				<td valign="top">
 					<h2 class="Account">Account Details</h2>
-					<div class="Filter-Form">
+					<div class="Narrow-Form">
 						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 							<tr>
 								<th class="JustifiedWidth">
@@ -47,7 +47,7 @@
 					
 					<h2 class="Service">Service Details</h2>
 					
-					<div class="Filter-Form">
+					<div class="Narrow-Form">
 						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
 							<tr>
 								<th class="JustifiedWidth">
@@ -95,7 +95,7 @@
 						</input>
 						
 						<h2 class="Invoice">Billing Details</h2>
-						<div class="Filter-Form">
+						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td width="10"></td>
@@ -192,7 +192,7 @@
 						<div class="Seperator"></div>
 						
 						<h2 class="Contact">End User Details</h2>
-						<div class="Filter-Form">
+						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td width="10"><strong><span class="Red">R</span></strong></td>
@@ -339,7 +339,7 @@
 						<div class="Seperator"></div>
 						
 						<h2 class="Account">Company Details</h2>
-						<div class="Filter-Form">
+						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td width="10"></td>
@@ -382,7 +382,7 @@
 						<div class="Seperator"></div>
 						
 						<h2 class="Service">Service Details</h2>
-						<div class="Filter-Form">
+						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td width="10"></td>
@@ -697,7 +697,7 @@
 							</xsl:attribute>
 						</input>
 						
-						<div class="Filter-Form">
+						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<th>
