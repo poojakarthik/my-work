@@ -486,7 +486,7 @@
 		$arrOutput = Array();
 		
 		// is this customer archived
-		$bolArchived = ($arrCustomer ['archived'] ? "TRUE" : "FALSE");
+		$bolArchived = ($arrCustomer ['archived'] ? TRUE : FALSE);
 		
 		// ------------------------------------//
 		// Account Group
