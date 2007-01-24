@@ -288,20 +288,21 @@
 									</xsl:call-template>
 								</th>
 								<td>
-									<select name="DOB-year" id="DOB-year" ValidLevel="1" autocomplete="off" 
+
+									<select name="DOB-day" id="DOB-day" ValidLevel="1" autocomplete="off" 
 									onchange="ValidateCustomer.ValidateInput (this)"
 									onkeyup="ValidateCustomer.ValidateInput (this)">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
+											<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
 										</xsl:attribute>
 										<option value=""></option>
 										<xsl:call-template name="Date-Loop">
-											<xsl:with-param name="start" select="number('1900')" />
-											<xsl:with-param name="cease" select="number('1990')" />
+											<xsl:with-param name="start" select="number('1')" />
+											<xsl:with-param name="cease" select="number('31')" />
 											<xsl:with-param name="step" select="number('1')" />
 										</xsl:call-template>
-									</select>
+									</select> /
 									<select name="DOB-month" id="DOB-month" ValidLevel="1" autocomplete="off" 
 									onchange="ValidateCustomer.ValidateInput (this)"
 									onkeyup="ValidateCustomer.ValidateInput (this)">
@@ -322,18 +323,18 @@
 										<option value="10">10 - OCT</option>
 										<option value="11">11 - NOV</option>
 										<option value="12">12 - DEC</option>
-									</select>
-									<select name="DOB-day" id="DOB-day" ValidLevel="1" autocomplete="off" 
+									</select> /
+									<select name="DOB-year" id="DOB-year" ValidLevel="1" autocomplete="off" 
 									onchange="ValidateCustomer.ValidateInput (this)"
 									onkeyup="ValidateCustomer.ValidateInput (this)">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
+											<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
 										</xsl:attribute>
 										<option value=""></option>
 										<xsl:call-template name="Date-Loop">
-											<xsl:with-param name="start" select="number('1')" />
-											<xsl:with-param name="cease" select="number('31')" />
+											<xsl:with-param name="start" select="number('1900')" />
+											<xsl:with-param name="cease" select="number('1990')" />
 											<xsl:with-param name="step" select="number('1')" />
 										</xsl:call-template>
 									</select>

@@ -41,97 +41,114 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Report Constraint Input</h2>
+			<h2>Report Select Options</h2>
 			<div class="Wide-Form">
 				<table border="0" cellpadding="5" cellspacing="0">
-					<xsl:for-each select="/Response/Inputs/Input">
+					<xsl:for-each select="/Response/Selects/Select">
 						<tr>
-							<th class="JustifiedWidth" valign="top">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="./Documentation-Entity" />
-									<xsl:with-param name="field" select="./Documentation-Field" />
-								</xsl:call-template>
-							</th>
 							<td>
-								<xsl:choose>
-									<xsl:when test="./Type = 'dataBoolean'">
-										<table border="0" cellpadding="3" cellspacing="0">
-											<tr>
-												<td>
-													<input type="radio" value="1">
-														<xsl:attribute name="name">
-															<xsl:text>input[</xsl:text>
-															<xsl:value-of select="./Name" />
-															<xsl:text>]</xsl:text>
-														</xsl:attribute>
-													</input>
-												</td>
-												<th>
-													Yes
-												</th>
-											</tr>
-											<tr>
-												<td>
-													<input type="radio" value="0">
-														<xsl:attribute name="name">
-															<xsl:text>input[</xsl:text>
-															<xsl:value-of select="./Name" />
-															<xsl:text>]</xsl:text>
-														</xsl:attribute>
-													</input>
-												</td>
-												<th>
-													No
-												</th>
-											</tr>
-										</table>
-									</xsl:when>
-								</xsl:choose>
+								<input type="checkbox" name="select[]" checked="checked">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="./Name" />
+									</xsl:attribute>
+								</input>
 							</td>
+							<th><xsl:value-of select="./Name" /></th>
 						</tr>
 					</xsl:for-each>
 				</table>
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2>Report Return</h2>
-			<div class="Wide-Form">
-				<table border="0" cellpadding="5" cellspacing="0">
-					<tr>
-						<th valign="top" class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Report')" />
-								<xsl:with-param name="field" select="string('ReturnType')" />
-							</xsl:call-template>
-						</th>
-						<td>
-							<table border="0" cellpadding="3" cellspacing="0">
-								<tr>
-									<td>
-										<input type="radio" name="ReturnType" id="ReturnType:CSV" value="CSV" checked="checked" />
-									</td>
-									<th>
-										<label for="ReturnType:CSV">
-											Save Report as a CSV (Comma Seperated Values) file
-										</label>
-									</th>
-								</tr>
-								<tr>
-									<td>
-										<input type="radio" name="ReturnType" id="ReturnType:HTML" value="HTML" />
-									</td>
-									<th>
-										<label for="ReturnType:HTML">
-											Tabulate the Report and show me the results
-										</label>
-									</th>
-								</tr>
-							</table>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<div class="Seperator"></div>
+			<xsl:if test="count(/Response/Inputs/Input) != 0">
+				<h2>Report Constraint Input</h2>
+				<div class="Wide-Form">
+					<table border="0" cellpadding="5" cellspacing="0">
+						<xsl:for-each select="/Response/Inputs/Input">
+							<tr>
+								<th class="JustifiedWidth" valign="top">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="./Documentation-Entity" />
+										<xsl:with-param name="field" select="./Documentation-Field" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:choose>
+										<xsl:when test="./Type = 'dataBoolean'">
+											<table border="0" cellpadding="3" cellspacing="0">
+												<tr>
+													<td>
+														<input type="radio" value="1">
+															<xsl:attribute name="name">
+																<xsl:text>input[</xsl:text>
+																<xsl:value-of select="./Name" />
+																<xsl:text>]</xsl:text>
+															</xsl:attribute>
+														</input>
+													</td>
+													<th>Yes</th>
+												</tr>
+												<tr>
+													<td>
+														<input type="radio" value="0">
+															<xsl:attribute name="name">
+																<xsl:text>input[</xsl:text>
+																<xsl:value-of select="./Name" />
+																<xsl:text>]</xsl:text>
+															</xsl:attribute>
+														</input>
+													</td>
+													<th>No</th>
+												</tr>
+											</table>
+										</xsl:when>
+										<xsl:when test="./Type = 'dataDate'">
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][day]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('1')" />
+													<xsl:with-param name="cease" select="number('31')" />
+												</xsl:call-template>
+											</select> /
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][month]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('1')" />
+													<xsl:with-param name="cease" select="number('12')" />
+												</xsl:call-template>
+											</select> /
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][year]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('2000')" />
+													<xsl:with-param name="cease" select="number('2010')" />
+												</xsl:call-template>
+											</select>
+										</xsl:when>
+									</xsl:choose>
+								</td>
+							</tr>
+						</xsl:for-each>
+					</table>
+				</div>
+				<div class="Seperator"></div>
+			</xsl:if>
 			
 			<input type="submit" class="input-submit" name="Confirm" value="Run Report &#0187;" />
 		</form>

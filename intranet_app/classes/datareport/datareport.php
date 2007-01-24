@@ -84,43 +84,77 @@
 		 *
 		 * Execute the DataReport
 		 *
+		 * @param	Array		$arrSelects		A filled Associative Array of Fields that will be Selected
 		 * @param	Array		$arrFields		A filled Associative Array (from the Serialized DataReportFields field)
-		 * @param	String		$strOrder		The field in which to Order By
 		 *
 		 * @return	Array
 		 *
 		 * @method
 		 */
 		
-		public function Execute ($arrFields, $strOrder=null)
+		public function Execute ($arrSelects, $arrFields)
 		{
 			// This deals with turning the SQLSelect Serialized Array 
 			// into a String: Field1, Field2, Field3 [, ... ]
 			$arrSelect = unserialize ($this->Pull ('SQLSelect')->getValue ());
 			
 			$i = 0;
-			foreach ($arrSelect as $strField)
+			foreach ($arrSelects as $strField)
 			{
-				if ($i != 0)
+				if ($arrSelect [$strField])
 				{
-					$strSelect .= ", ";
+					if ($i != 0)
+					{
+						$strSelect .= ", ";
+					}
+					
+					$strSelect .= $arrSelect [$strField];
+					
+					++$i;
 				}
-				
-				$strSelect .= $strField;
-				
-				++$i;
 			}
+			
+			// This starts the SQL Statement
 			
 			$selResult = new StatementSelect (
 				$this->Pull ('SQLTable')->getValue (), 
 				$strSelect, 
 				$this->Pull ('SQLWhere')->getValue (), 
-				$strOrder,
-				null
+				null,
+				null,
+				$this->Pull ('SQLGroupBy')->getValue ()
 			);
 			
-			$selResult->Execute ($arrFields);
 			
+			// From here, we may need to process values. For example, dates
+			// come into the system as an Array [day, month, year]. We need
+			// to change them to a string of YYYY-MM-DD
+			
+			$arrInputs = unserialize ($this->Pull ('SQLFields')->getValue ());
+			$arrValues = Array ();
+			
+			foreach ($arrInputs as $strName => $arrInput)
+			{
+				switch ($arrInput ['Type'])
+				{
+					case "dataDate":
+						$arrValues [$strName] = date (
+							"Y-m-d", 
+							mktime (0, 0, 0, $arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year'])
+						);
+						
+						break;
+						
+					default:
+						$arrValues [$strName] = $arrFields [$strName];
+						break;
+				}
+			}
+			
+			// Execute the Result
+			$selResult->Execute ($arrValues);
+			
+			// Return the Result
 			return $selResult;
 		}
 		
@@ -165,18 +199,56 @@
 			
 			$oblarrInputs = new dataArray ('Inputs');
 			
-			foreach ($arrInputs as $strName => $arrInput)
+			if (is_array ($arrInputs))
 			{
-				$oblarrField = $oblarrInputs->Push (new dataArray ('Input'));
-				$strName = $oblarrField->Push (new dataString ('Name', $strName));
-				
-				foreach ($arrInput as $strKey => $mixValue)
+				foreach ($arrInputs as $strName => $arrInput)
 				{
-					$oblarrField->Push (new dataString ($strKey, $mixValue));
+					$oblarrField		= $oblarrInputs->Push (new dataArray ('Input'));
+					$oblstrName			= $oblarrField->Push (new dataString ('Name', $strName));
+					
+					$oblstrDocEntity	= $oblarrField->Push (new dataString ('Documentation-Entity',	$arrInput ['Documentation-Entity']));
+					$oblstrDocField		= $oblarrField->Push (new dataString ('Documentation-Field',	$arrInput ['Documentation-Field']));
+					
+					$oblstrType			= $oblarrField->Push (new dataString ('Type',					$arrInput ['Type']));
+					$oblstrValue		= $oblarrField->Push (new $arrInput ['Type'] ('Value'));
 				}
 			}
 			
 			return $oblarrInputs;
+		}
+		
+		//------------------------------------------------------------------------//
+		// Selects
+		//------------------------------------------------------------------------//
+		/**
+		 * Selects()
+		 *
+		 * Returns the Select Options as an ObLib Array
+		 *
+		 * Returns the Select Options as an ObLib Array
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function Selects ()
+		{
+			$arrInputs = unserialize ($this->Pull ('SQLSelect')->getValue ());
+			
+			$oblarrSelects = new dataArray ('Selects');
+			
+			if (is_array ($arrInputs))
+			{
+				foreach ($arrInputs as $strName => $strValue)
+				{
+					$oblarrSelect		= $oblarrSelects->Push	(new dataArray	('Select'));
+					$oblstrName			= $oblarrSelect->Push	(new dataString	('Name', $strName));
+					$oblstrValue		= $oblarrSelect->Push	(new dataString	('Value', $strValue));
+				}
+			}
+			
+			return $oblarrSelects;
 		}
 	}
 	

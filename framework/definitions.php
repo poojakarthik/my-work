@@ -742,6 +742,10 @@ define("BUG_RESOLVED"				, 103);
 // Note parsing
 define("SYSTEM_NOTE_TYPE"			, 7);
 
+//Report Result Types
+define("REPORT_RESULT_TYPE_CSV"		, "CSV");
+define("REPORT_RESULT_TYPE_HTML"	, "HTML");
+
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 {
@@ -750,4 +754,5 @@ foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 		define($arrConstant['Constant'], $intConstant);
 	}
 }
+
 ?>

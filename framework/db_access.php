@@ -1720,6 +1720,24 @@ class MySQLFunction
 	 {
 	 	$this->_bolObLib = ($bolObLib === TRUE);
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// MetaData()
+	//------------------------------------------------------------------------//
+	/**
+	 * MetaData()
+	 *
+	 * Get the Meta Data from the Result
+	 *
+	 * Get the Meta Data from the Result
+	 *
+	 * @return		Array
+	 * @method
+	 */ 
+	 public function MetaData ()
+	 {
+		return $this->_datMetaData;
+	 }
 
 	//------------------------------------------------------------------------//
 	// Execute()

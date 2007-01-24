@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR | PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_DATA_REPORT;
+	$arrPage['Modules']		= MODULE_ALL;
 	
 	// call application
 	require ('config/application.php');
@@ -30,12 +30,16 @@
 	
 	if ($_POST ['Confirm'])
 	{
-		$selResult = $rptReport->Execute ($_POST ['input']);
+		$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input']);
 		
-		debug ($selResult->FetchAll ());
+		header('Content-type: text/csv');
+		header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.csv"');
+		
+		echo CSVStatementSelect ($selResult);
 		exit;
 	}
 	
+	$Style->attachObject ($rptReport->Selects ());
 	$Style->attachObject ($rptReport->Inputs ());
 	
 	// In terms of Documentation, we want to show the 

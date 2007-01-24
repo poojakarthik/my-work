@@ -40,7 +40,6 @@
 	
 	class SearchConstraint extends dataObject
 	{
-		
 		//------------------------------------------------------------------------//
 		// _oblstrConstraintName
 		//------------------------------------------------------------------------//
@@ -112,24 +111,6 @@
 		
 		function __construct ($strConstraintName, $strConstraintType, $strConstraintObject, $strConstraintValue)
 		{
-			switch ($strConstraintType)
-			{
-				case 'LIKE':
-					break;
-				case '=':
-				case 'EQUALS':
-					$strConstraintType = '=';
-					break;
-				case '!=':
-				case 'NOT EQUAL':
-					$strConstraintType = '!=';
-					break;
-				default:
-					throw new Exception (
-						'The Constraint Operator that you wished to search with is Invalid.'
-					);
-			}
-			
 			$this->_oblstrConstraintName = $this->Push (new dataString ('Name', $strConstraintName));
 			$this->_oblstrConstraintType = $this->Push (new dataString ('Operator', $strConstraintType));
 			$this->_oblobjConstraintValue = $this->Push (new $strConstraintObject ('Value', $strConstraintValue));
@@ -174,7 +155,21 @@
 		
 		public function getOperator ()
 		{
-			return $this->_oblstrConstraintType->getValue ();
+			switch ($this->_oblstrConstraintType->getValue ())
+			{
+				case 'LIKE':
+					return 'LIKE';
+				case '=':
+				case 'EQUALS':
+					return '=';
+				case '!=':
+				case 'NOT EQUAL':
+					return '!=';
+				default:
+					throw new Exception (
+						'The Constraint Operator that you wished to search with is Invalid.'
+					);
+			}
 		}
 		
 		//------------------------------------------------------------------------//
@@ -194,13 +189,15 @@
 		
 		public function getValue ()
 		{
-			switch ($this->getOperator ())
+			switch ($this->_oblstrConstraintType->getValue ())
 			{
 				case 'LIKE':
 					return $this->_processLIKE ();
 				case '=':
+				case 'EQUALS':
 					return $this->_processEQUALS ();
 				case '!=':
+				case 'NOT EQUAL':
 					return $this->_processEQUALS ();
 			}
 		}
@@ -235,7 +232,7 @@
 		 *
 		 * Process EQUALS Constraints - doesn't do much - this is just for future expansion
 		 *
-		 * @return	String
+		 * @return	Mixed
 		 *
 		 * @method
 		 */

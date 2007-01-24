@@ -912,6 +912,59 @@ function CSVHeader($strTable, $strSeparator=';', $strTerminator="\n")
 	return $strReturn;
 }
 
+
+/**
+ * CSVStatementSelect()
+ * 
+ * Formats an executed StatementSelect object as a CSV document
+ * 
+ * Formats an executed StatementSelect object as a CSV document.
+ * 
+ * @param	StatementSelect		$selStatement		The SQL Statement (Post Execution) being parse
+ * @param	string	$strSeparator		optional field separator. defaults to ;
+ * @param	string	$strTerminator		optional line terminator. defaults to \n (newline)
+ *
+ * @return	String
+ * 
+ * @function
+ */
+function CSVStatementSelect (StatementSelect $selStatement, $strSeparator=';', $strTerminator="\n")
+{
+	// Start with a Blank Result
+	$strResult = "";
+	
+	// Pull the Meta Data for the Statement
+	$objMetaData = $selStatement->MetaData ();
+	
+	
+	// Get all the Fields and write a Heading row
+	$arrFields = $objMetaData->fetch_fields ();
+	$arrLabels = Array ();
+	
+	foreach ($arrFields as $intIndex => $objField)
+	{
+		$arrLabels [$intIndex] = str_replace ('"', '""', $objField->name);
+	}
+	
+	$strResult .= '"' . implode ('"' . $strSeparator . '"', $arrLabels) . '"' . $strTerminator;
+	
+	// Get the results one by one and write them up
+	while ($arrRow = $selStatement->Fetch ())
+	{
+		$arrFields = Array ();
+		
+		foreach ($arrRow as $intIndex => $mixField)
+		{
+			$arrFields [$intIndex] = str_replace ('"', '""', $mixField);
+		}
+		
+		$strResult .= '"' . implode ('"' . $strSeparator . '"', $arrFields) . '"' . $strTerminator;
+	}
+	
+	return $strResult;
+}
+
+
 // echo out a line
 function EchoLine($strText)
 {
