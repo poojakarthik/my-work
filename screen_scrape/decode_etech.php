@@ -742,8 +742,6 @@
 			{
 				// use default RateGroups for inbound services
 				$strPrefix = substr($strFNN, 0, 2);
-				echo $strFNN;
-				Die;
 				if ($strPrefix == '13')
 				{
 					$intFakeServiceType = 1300;
@@ -858,6 +856,25 @@
 			$intCapSet 			= Min((int)$arrScrapeRate['SetCap'], (int)$arrRate['CapSet']);
 			//$intCapSet 			= (int)$arrRate['CapSet'];
 			
+			// work out the record & service type
+			// ############################################################################################################################ //
+			// HACK ALERT : this will only work if the IDD rate name contains 'mobile' : will work for telcoblue
+			// ############################################################################################################################ //
+			if (strpos(strtolower($strName),'mobile') !== FALSE)
+			{
+				// Mobile
+				$intServiceType 			= 101;
+				$intRecordType		 		= 27;
+			}
+			else
+			{
+				// LL
+				$intServiceType 			= 102;
+				$intRecordType		 		= 28;
+			}
+			// ############################################################################################################################ //
+			// ############################################################################################################################ //
+			
 			// set output array values
 			$arrOutput['Name'] 				= "$strName : $strCarrier : $strDestination";
 			$arrOutput['Description'] 		= "Calls to $strDestination via the $strCarrier network on the $strName plan";
@@ -870,8 +887,8 @@
 			}
 			$arrOutput['StdFlagfall'] 		= $fltStdFlagfall;
 			$arrOutput['ExsFlagfall'] 		= $fltExsFlagfall;
-			$arrOutput['ServiceType'] 		= 102;
-			$arrOutput['RecordType'] 		= 28;
+			$arrOutput['ServiceType'] 		= $intServiceType;
+			$arrOutput['RecordType'] 		= $intRecordType;
 			$arrOutput['StdUnits'] 			= 1;
 			$arrOutput['StartTime'] 		= '00:00:00';
 			$arrOutput['EndTime'] 			= '23:59:59';

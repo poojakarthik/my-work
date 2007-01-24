@@ -33,18 +33,22 @@
 // ---------------------------------------------------------------------------//
 
 /*
-"IDD : 39c Cap Intl"
-"IDD : Blue 15c CTM"
-"IDD : Blue Virtual VOIP"
-"IDD : Mobile Zero Plan"
-"IDD : National 16"
-"IDD : Residential"
-"IDD : Tier 3 corporate capped"
-"IDD : Tier 3 corporate Long Distance"
-"IDD : Tier 3 corporate Mobile Saver"
-"IDD : True Blue Fleet"
-"IDD : VoiceTalk"
+39c Cap Intl
+Blue 15c CTM
+Blue Virtual VOIP
+Mobile Zero Plan
+National 16
+Residential
+Tier 3 corporate capped
+Tier 3 corporate Long Distance
+Tier 3 corporate Mobile Saver
+True Blue Fleet
+VoiceTalk
 */
+
+// ---------------------------------------------------------------------//
+// Define New Rate Groups
+// ---------------------------------------------------------------------//
 	// Define New RateGroups
 	$arrGroup = Array();
 	$arrGroup[]				= 'BusinessLine-3499';
@@ -142,7 +146,9 @@
 	
 	
 	
-	// Define New RatePlans
+// ---------------------------------------------------------------------//
+// Define New Rate Plans
+// ---------------------------------------------------------------------//
 	
 	// inbound
 	$arrPlan = Array();
@@ -168,6 +174,7 @@
 	$arrPlan['Other']				= 'Other-Cost';
 	$arrPlan['OSNetworkAirtime']	= 'OSNetworkAirtime-Cost';
 	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['IDD']					= 'Mobile Zero Plan';
 	
 	// Plan Zero
 	$arrPlan['GPRS']				= 'GPRS-18-00-01';
@@ -176,7 +183,6 @@
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Zero'] = $arrPlan;
 	
 	// $35 Cap
@@ -186,7 +192,6 @@
 	$arrPlan['Mobile']				= 'Mobile-70-25-30';
 	$arrPlan['National']			= 'National-70-25-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['$35 Cap'] = $arrPlan;
 	
 	// Plan Ten
@@ -196,7 +201,6 @@
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Ten'] = $arrPlan;
 	
 	// Blue Shared 100
@@ -206,7 +210,6 @@
 	$arrPlan['Mobile']				= 'Mobile-40-14-01';
 	$arrPlan['National']			= 'National-40-14-01';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 100'] = $arrPlan;
 	
 	// Blue Shared 250
@@ -216,7 +219,6 @@
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 250'] = $arrPlan;
 	
 	// Blue Shared 500
@@ -226,7 +228,6 @@
 	$arrPlan['Mobile']				= 'Mobile-26-09-01';
 	$arrPlan['National']			= 'National-26-09-01';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 500'] = $arrPlan;
 	
 	// Fleet Special Peter K
@@ -236,7 +237,6 @@
 	$arrPlan['Mobile']				= 'Mobile-30-15-30';
 	$arrPlan['National']			= 'National-30-15-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet Special Peter K'] = $arrPlan;
 	
 	// Fleet 60
@@ -246,7 +246,6 @@
 	$arrPlan['Mobile']				= 'Mobile-30-18-30';
 	$arrPlan['National']			= 'National-30-18-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 60'] = $arrPlan;
 	
 	// Fleet 30
@@ -256,7 +255,6 @@
 	$arrPlan['Mobile']				= 'Mobile-40-18-30';
 	$arrPlan['National']			= 'National-40-18-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 30'] = $arrPlan;
 	
 	// Fleet 20
@@ -266,7 +264,6 @@
 	$arrPlan['Mobile']				= 'Mobile-40-18-30';
 	$arrPlan['National']			= 'National-40-18-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 20'] = $arrPlan;
 	
 	// Pinnacle (Mobile)
@@ -276,7 +273,6 @@
 	$arrPlan['Mobile']				= 'Mobile-Pinnacle';
 	$arrPlan['National']			= 'National-Pinnacle';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-Pinnacle';
-	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Pinnacle'] = $arrPlan;
 	
 	// RateGroups common to all Land Line Plans
@@ -384,6 +380,13 @@
 	$arrPlan['IDD']					= 'Tier 3 corporate Mobile Saver'; //TODO!!!! - CHECK THIS
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Local Saver'] = $arrPlan;
 	
+	// Tier Three Long Distance
+	$arrPlan['Mobile']				= 'Mobile-26-05-01';
+	$arrPlan['National']			= 'National-10-00';
+	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
+	$arrPlan['IDD']					= 'Tier 3 corporate Mobile Saver'; //TODO!!!! - CHECK THIS
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Long Distance'] = $arrPlan;
+	
 	// Pinnacle
 	$arrPlan['Mobile']				= 'Mobile-Pinnacle';
 	$arrPlan['Local']				= 'Local-13';
@@ -402,36 +405,11 @@
 	$arrPlan['IDD']					= 'National 16'; //TODO!!!! - CHECK THIS
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_LAND_LINE]['Peter K Group Special'] = $arrPlan;
 	
-	// Record Types
-	$arrConfig['Decode']['RecordType'] = Array
-	(
-		"localrate"				=> SERVICE_TYPE_LAND_LINE,
-		"natrate"				=> SERVICE_TYPE_LAND_LINE,
-		"mobrate"				=> SERVICE_TYPE_LAND_LINE,
-		"intrate"				=> SERVICE_TYPE_LAND_LINE,
-		"service_equip_rate"	=> SERVICE_TYPE_LAND_LINE,
-		
-		"mobileunitel"			=> SERVICE_TYPE_MOBILE,
-		"mobiletelstra"			=> SERVICE_TYPE_MOBILE,
-		"mobileother"			=> SERVICE_TYPE_MOBILE,
-		"mobilenational"		=> SERVICE_TYPE_MOBILE,
-		"mobile1800"			=> SERVICE_TYPE_MOBILE,
-		"mobilevoicemail"		=> SERVICE_TYPE_MOBILE,
-		"mobilediverted"		=> SERVICE_TYPE_MOBILE,
-		"mobilesms"				=> SERVICE_TYPE_MOBILE,
-		"mobilemms"				=> SERVICE_TYPE_MOBILE,
-		"mobiledata"			=> SERVICE_TYPE_MOBILE,
-		"mobileinternational"	=> SERVICE_TYPE_MOBILE
-	);
-	
-	// Old Rates => New RateGroups
-	// $arrRates[strRecordType][strRateName][strNewRecordType] = strNewRateGroup
-	
-	//RecordType specified by Name not Id, ie. 'Local' NOT 17
-	//and they ALL need to have the RecordType Name specfied
-	//also, RatePlan must be specified by name and not Id 
-	
-			// Etech RecordType			// Etech RateGroup								// TB RecordType		// TB RateGroup
+// ---------------------------------------------------------------------//
+// Match Old Rates to New Rate Groups
+// ---------------------------------------------------------------------//
+
+	// Etech RecordType					// Etech RateGroup								// TB RecordType		// TB RateGroup
 	$arrRates['localrate']				['Local 14/13c (T3CC)']							['Local']				= 'Local-14';
 	$arrRates['localrate']				['Local 14/13c (T3CC)']							['ProgramLocal']		= 'ProgramLocal-13';
 	$arrRates['localrate']				['Local 14/11c (tb fleet, t3 local)']			['Local']				= 'Local-14';
@@ -449,15 +427,15 @@
 	$arrRates['localrate']				['Tier 3 corporate Local Saver']				['Local']				= 'Local-14';
 	$arrRates['localrate']				['Tier 3 corporate Local Saver']				['ProgramLocal']		= 'ProgramLocal-11';
 	$arrRates['localrate']				['Local 17c (nat16)']							['Local']				= 'Local-17';
-	$arrRates['localrate']				['Local 17c (nat16)']							['ProgramLocal']		= /* NO MATCH*/null;
-	$arrRates['localrate']				['Local 11/11c']								['Local']				= /* NO MATCH*/null;
+	$arrRates['localrate']				['Local 17c (nat16)']							['ProgramLocal']		= 'ProgramLocal-17';
+	$arrRates['localrate']				['Local 11/11c']								['Local']				= 'Local-11';
 	$arrRates['localrate']				['Local 11/11c']								['ProgramLocal']		= 'ProgramLocal-11';
 	$arrRates['localrate']				['Local 16.36 (res 18c gst)']					['Local']				= 'Local-1636';
 	$arrRates['localrate']				['Local 16.36 (res 18c gst)']					['ProgramLocal']		= 'ProgramLocal-1636';
-	$arrRates['localrate']				['Tier 3 corporate Long Distance']				['Local']				= /* PLAN DOESN'T EXIST ANYMORE */null;
-	$arrRates['localrate']				['Tier 3 corporate Long Distance']				['ProgramLocal']		= /* PLAN DOESN'T EXIST ANYMORE */null;
-	$arrRates['localrate']				['Local 18c']									['Local']				= /* PLAN DOESN'T EXIST ANYMORE */null;
-	$arrRates['localrate']				['Local 18c']									['ProgramLocal']		= /* PLAN DOESN'T EXIST ANYMORE */null;
+	$arrRates['localrate']				['Tier 3 corporate Long Distance']				['Local']				= 'Local-14'; // NA for this plan
+	$arrRates['localrate']				['Tier 3 corporate Long Distance']				['ProgramLocal']		= 'ProgramLocal-14';
+	$arrRates['localrate']				['Local 18c']									['Local']				= 'Local-18';
+	$arrRates['localrate']				['Local 18c']									['ProgramLocal']		= 'ProgramLocal-18';
 	
 	$arrRates['natrate']				['Tier 3 corporate capped (6ff,8cpm)']			['National']			= 'National-08-06-01-70';
 	$arrRates['natrate']				['Tier 3 corporate Local (6ff,8cpm)']			['National']			= 'National-08-06';
@@ -468,18 +446,18 @@
 	$arrRates['natrate']				['VoiceTalk (10 ff/12cpm) cap']					['National']			= 'National-12-10-99';
 	$arrRates['natrate']				['National 16']									['National']			= 'National-Nat16';
 	$arrRates['natrate']				['Tier 3 corporate Mobile Saver (6.5ff,9cpm)']	['National']			= 'National-09-065';
-	$arrRates['natrate']				['Tier 3 corp. L D (0 ff,10cpm)']				['National']			= /* PLAN DOESN'T EXIST ANYMORE */null;
-	$arrRates['natrate']				['7.5cpm no flag']								['National']			= /* NO MATCH*/null;
+	$arrRates['natrate']				['Tier 3 corp. L D (0 ff,10cpm)']				['National']			= 'National-10-00';
+	$arrRates['natrate']				['7.5cpm no flag']								['National']			= 'National-7.5-00';
 	$arrRates['natrate']				['True Blue Fleet (6ff,9cpm)']					['National']			= 'National-09-06-01';
-	$arrRates['natrate']				['National 8c no ff']							['National']			= /* NO MATCH*/null;
-	$arrRates['natrate']				['5.5cpm no flag']								['National']			= /* NO MATCH*/null;
-	$arrRates['natrate']				['Residential (20ff,18cpm)']					['National']			= /* PLAN FOUND, INCORRECT RATE */null;
-	$arrRates['natrate']				['Pinnacle (13c per call)']						['National']			= 'National-LL-Pinnacle';
-	$arrRates['natrate']				['7cpm 0 flag']									['National']			= /* NO MATCH*/null;
-	$arrRates['natrate']				['6 cpm 0 flag']								['National']			= /* NO MATCH*/null;
+	$arrRates['natrate']				['National 8c no ff']							['National']			= 'National-08-00';
+	$arrRates['natrate']				['5.5cpm no flag']								['National']			= 'National-5.5-00';
+	$arrRates['natrate']				['Residential (20ff,18cpm)']					['National']			= 'National-18-20';
+	$arrRates['natrate']				['Pinnacle (13c per call)']						['National']			= 'National-Pinnacle';
+	$arrRates['natrate']				['7cpm 0 flag']									['National']			= 'National-07-00';
+	$arrRates['natrate']				['6 cpm 0 flag']								['National']			= 'National-06-00';
 	
 	$arrRates['mobrate']				['Tier 3 corporate capped(27cpm, 20c min)']		['Mobile']				= 'Mobile-27-00-01-130';
-	$arrRates['mobrate']				['Tier 3 corporate Local Saver (9ff, 26cpm)']	['Mobile']				= 'Mobile-LL-26-09-01';
+	$arrRates['mobrate']				['Tier 3 corporate Local Saver (9ff, 26cpm)']	['Mobile']				= 'Mobile-26-09-01';
 	$arrRates['mobrate']				['Virtual VOIP (30cpm, 30c min)']				['Mobile']				= 'Mobile-VOIP';
 	$arrRates['mobrate']				['39cent cap (20min 27cpm)']					['Mobile']				= 'Mobile-27-00-01-89';
 	$arrRates['mobrate']				['Business Saver Capped (10ff, 27cpm)']			['Mobile']				= 'Mobile-27-10-01-150';
@@ -487,29 +465,29 @@
 	$arrRates['mobrate']				['VoiceTalk standard (10ff, 27cpm)']			['Mobile']				= 'Mobile-27-10-01-99';
 	$arrRates['mobrate']				['National 16 (30cpm, 20c min)']				['Mobile']				= 'Mobile-30-00-01';
 	$arrRates['mobrate']				['Tier 3 corporate Mobile Saver (6ff, 26cpm)']	['Mobile']				= 'Mobile-26-06-01';
-	$arrRates['mobrate']				['tier 3 corporate Long distance (5ff, 26cpm)']	['Mobile']				= /* PLAN DOESN'T EXIST ANYMORE */null;
-	$arrRates['mobrate']				['Pinnacle (50cper call)']						['Mobile']				= 'Mobile-LL-Pinnacle';
-	$arrRates['mobrate']				['CTM 26c no flag']								['Mobile']				= /* NO MATCH*/null;
+	$arrRates['mobrate']				['tier 3 corporate Long distance (5ff, 26cpm)']	['Mobile']				= 'Mobile-26-05-01';
+	$arrRates['mobrate']				['Pinnacle (50cper call)']						['Mobile']				= 'Mobile-Pinnacle';
+	$arrRates['mobrate']				['CTM 26c no flag']								['Mobile']				= 'Mobile-26-00-01';
 	$arrRates['mobrate']				['True Blue Fleet (6ff, 25cpm)']				['Mobile']				= 'Mobile-25-06-01';
-	$arrRates['mobrate']				['Voicetalk Feb06 cap']							['Mobile']				= /* NO MATCH*/null;
-	$arrRates['mobrate']				['CTM 22 no flag']								['Mobile']				= /* NO MATCH*/null;
-	$arrRates['mobrate']				['CTM 30 no ff']								['Mobile']				= /* NO MATCH*/null;
-	$arrRates['mobrate']				['CTM 23cpm 0ff']								['Mobile']				= /* NO MATCH*/null;
-	$arrRates['mobrate']				['Residential (20ff, 27.27cpm)']				['Mobile']				= /* NO MATCH*/null;
-	$arrRates['mobrate']				['CTM 25c 0 flag']								['Mobile']				= /* NO MATCH*/null;
-	$arrRates['mobrate']				['CTM 24c 0 flag']								['Mobile']				= /* NO MATCH*/null;
-	$arrRates['mobrate']				['CTM 25pm 8ff']								['Mobile']				= /* NO MATCH*/null;
+	$arrRates['mobrate']				['Voicetalk Feb06 cap']							['Mobile']				= 'National-12-10-99';
+	$arrRates['mobrate']				['CTM 22 no flag']								['Mobile']				= 'Mobile-22-00-01';
+	$arrRates['mobrate']				['CTM 30 no ff']								['Mobile']				= 'Mobile-30-00-01';
+	$arrRates['mobrate']				['CTM 23cpm 0ff']								['Mobile']				= 'Mobile-23-00-01';
+	$arrRates['mobrate']				['Residential (20ff, 27.27cpm)']				['Mobile']				= 'Mobile-27-20-01'; // 27.27 INC GST
+	$arrRates['mobrate']				['CTM 25c 0 flag']								['Mobile']				= 'Mobile-25-00-01';
+	$arrRates['mobrate']				['CTM 24c 0 flag']								['Mobile']				= 'Mobile-24-00-01';
+	$arrRates['mobrate']				['CTM 25pm 8ff']								['Mobile']				= 'Mobile-25-08-01';
 	
-	$arrRates['intrate']				['Blue 15c CTM'] 								['IDD']					= 'IDD : Blue 15c CTM';
-	$arrRates['intrate']				['Tier 3 corporate capped'] 					['IDD']					= 'IDD : Tier 3 corporate capped';
-	$arrRates['intrate']				['Blue Virtual VOIP'] 							['IDD']					= 'IDD : Blue Virtual VOIP';
-	$arrRates['intrate']				['39c Cap Intl'] 								['IDD']					= 'IDD : 39c Cap Intl';
-	$arrRates['intrate']				['VoiceTalk'] 									['IDD']					= 'IDD : VoiceTalk';
-	$arrRates['intrate']				['National 16'] 								['IDD']					= 'IDD : National 16';
-	$arrRates['intrate']				['Tier 3 corporate Long Distance'] 				['IDD']					= 'IDD : Tier 3 corporate Long Distance';
-	$arrRates['intrate']				['Mobile Zero Plan'] 							['IDD']					= 'IDD : Mobile Zero Plan';
-	$arrRates['intrate']				['Tier 3 corporate Mobile Saver'] 				['IDD']					= 'IDD : Tier 3 corporate Mobile Saver';
-	$arrRates['intrate']				['Residential'] 								['IDD']					= 'IDD : Residential';
+	$arrRates['intrate']				['Blue 15c CTM'] 								['IDD']					= 'Blue 15c CTM';
+	$arrRates['intrate']				['Tier 3 corporate capped'] 					['IDD']					= 'Tier 3 corporate capped';
+	$arrRates['intrate']				['Blue Virtual VOIP'] 							['IDD']					= 'Blue Virtual VOIP';
+	$arrRates['intrate']				['39c Cap Intl'] 								['IDD']					= '39c Cap Intl';
+	$arrRates['intrate']				['VoiceTalk'] 									['IDD']					= 'VoiceTalk';
+	$arrRates['intrate']				['National 16'] 								['IDD']					= 'National 16';
+	$arrRates['intrate']				['Tier 3 corporate Long Distance'] 				['IDD']					= 'Tier 3 corporate Long Distance';
+	$arrRates['intrate']				['Mobile Zero Plan'] 							['IDD']					= 'Mobile Zero Plan';
+	$arrRates['intrate']				['Tier 3 corporate Mobile Saver'] 				['IDD']					= 'Tier 3 corporate Mobile Saver';
+	$arrRates['intrate']				['Residential'] 								['IDD']					= 'Residential';
 	
 	$arrRates['service_equip_rate']		['Tier 3 Corporate Capped']						['S&E']					= 'S&E-3499';
 	$arrRates['service_equip_rate']		['Tier 3 Corporate Local Saver']				['S&E']					= 'S&E-3499';
@@ -565,23 +543,61 @@
 	// set config rate array
 	$arrConfig['Decode']['RateConvert'] = $arrRates;
 	
+// ---------------------------------------------------------------------//
+// Default Rate Groups
+// ---------------------------------------------------------------------//
+	
 	// Define Default Rate Groups
 	$arrRateGroups = Array();
+	
+	// Inbound
 	$arrRateGroups[1300] = $arrConfig['Import']['RatePlan'][SERVICE_TYPE_INBOUND]['Inbound1300'];
 	$arrRateGroups[1800] = $arrConfig['Import']['RatePlan'][SERVICE_TYPE_INBOUND]['Inbound1800'];
 	
+	// Land Line
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['OneThree']			= 'OneThree-Cost';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['Other']				= 'Other-Cost';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['SexHotline']		= '1900-28';
 	
+	// Mobile
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['Roaming']				= 'Roaming-35';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['MMS']					= 'MMS-68';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['Other']				= 'Other-Cost';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['OSNetworkAirtime']		= 'OSNetworkAirtime-Cost';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['VoiceMailDeposit']		= 'VoiceMailDeposit-10-00-30';
+	
 	// set config default rategroup array
 	$arrConfig['Decode']['DefaultRateGroup'] = $arrRateGroups;
-	
+
+
+// ---------------------------------------------------------------------------//
+// DEFINITIONS
+// ---------------------------------------------------------------------------//
+
+// ---------------------------------------------------------------------//
+// Define New Record Type -> Service Type Translations
+// ---------------------------------------------------------------------//
+	// Record Types
+	$arrConfig['Decode']['RecordType'] = Array
+	(
+		"localrate"				=> SERVICE_TYPE_LAND_LINE,
+		"natrate"				=> SERVICE_TYPE_LAND_LINE,
+		"mobrate"				=> SERVICE_TYPE_LAND_LINE,
+		"intrate"				=> SERVICE_TYPE_LAND_LINE,
+		"service_equip_rate"	=> SERVICE_TYPE_LAND_LINE,
+		
+		"mobileunitel"			=> SERVICE_TYPE_MOBILE,
+		"mobiletelstra"			=> SERVICE_TYPE_MOBILE,
+		"mobileother"			=> SERVICE_TYPE_MOBILE,
+		"mobilenational"		=> SERVICE_TYPE_MOBILE,
+		"mobile1800"			=> SERVICE_TYPE_MOBILE,
+		"mobilevoicemail"		=> SERVICE_TYPE_MOBILE,
+		"mobilediverted"		=> SERVICE_TYPE_MOBILE,
+		"mobilesms"				=> SERVICE_TYPE_MOBILE,
+		"mobilemms"				=> SERVICE_TYPE_MOBILE,
+		"mobiledata"			=> SERVICE_TYPE_MOBILE,
+		"mobileinternational"	=> SERVICE_TYPE_MOBILE
+	);
 	
 // ---------------------------------------------------------------------------//
 // SCRIPT
@@ -597,7 +613,7 @@
 	// instanciate the import object
 	require_once('vixen_import.php');
 	$objImport = new VixenImport($arrConfig['Import']);
-/*	
+
 	// Truncate Tables
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
@@ -702,7 +718,7 @@
 		echo "FATAL ERROR : Could not match RatePlans to RecurringCharges\n";
 		Die();
 	}
-*/	
+
 	// Add Customers
 	
 	while ($arrRow = $objDecoder->FetchCustomer())
@@ -726,7 +742,7 @@
 		{
 			echo "WARN : Actual Services : $intCountServices DOES NOT = Service Count : {$arrCustomer['ServiceCount']}\n";
 		}
-		/*
+		
 		// add the customer
 		echo "Importing Customer  : {$arrRow['CustomerId']}\n";
 		if (!$objImport->AddCustomerWithId($arrCustomer))
@@ -735,7 +751,6 @@
 			echo $objImport->ErrorLog();
 			Die();
 		}
-		*/
 	}
 /*
 	// Add System Notes
