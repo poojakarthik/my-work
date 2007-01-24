@@ -81,7 +81,7 @@
 			
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -113,7 +113,7 @@
 				</div>
 				
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -216,7 +216,7 @@
 				<div class="Seperator"></div>
 				
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -248,7 +248,7 @@
 				</div>
 				
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -290,7 +290,7 @@
 
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<td></td>
 							<th class="JustifiedWidth" valign="top">
@@ -375,7 +375,7 @@
 			
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<td><input type="radio" name="CapCalculation" value="" checked="checked" /></td>
 							<th class="JustifiedWidth">No Cap</th>
@@ -413,7 +413,7 @@
 				<div class="Seperator"></div>
 				
 				<div class="Form-Content Left Indent" id="CapLimit">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<td><input type="radio" name="CapLimiting" value="" checked="checked" /></td>
 							<th class="JustifiedWidth">No Cap Limits</th>
@@ -448,7 +448,7 @@
 					<div class="Seperator"></div>
 					
 					<div class="Form-Content Left Indent" id="Excess">
-						<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+						<table border="0" cellpadding="1" cellspacing="0">
 							<tr>
 								<td></td>
 								<th class="JustifiedWidth" valign="top">
@@ -524,7 +524,7 @@
 			
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<td></td>
 							<th class="JustifiedWidth" valign="top">

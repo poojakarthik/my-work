@@ -11,12 +11,12 @@
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/note_add.js"></script>
 		
-		<table border="0" cellpadding="0" cellspacing="0">
+		<table border="0" width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
 					<h2 class="Account">Account Details</h2>
 					<div class="Narrow-Form">
-						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+						<table border="0" cellpadding="5" cellspacing="0">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
@@ -48,7 +48,7 @@
 					<h2 class="Service">Service Details</h2>
 					
 					<div class="Narrow-Form">
-						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+						<table border="0" cellpadding="5" cellspacing="0">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
@@ -76,7 +76,7 @@
 					<div class="Seperator"></div>
 						
 					<xsl:if test="not(/Response/ServiceAddress)">
-						<div class="MsgNotice" style="width: 375px;">
+						<div class="MsgNotice" style="width:355px">
 							<strong><span class="Attention">Notice</span> :</strong>
 							This service does not have any Service Address Details 
 							associated with it. By submitting the form below, you 
@@ -685,8 +685,8 @@
 						<input type="submit" value="Change Details &#0187;" class="input-submit" />
 					</form>
 				</td>
-				<td width="30" nowrap="nowrap"></td>
-				<td valign="top" width="300">
+				<td width="30"></td>
+				<td valign="top">
 					<h2 class="Provisioning">Provisioning Request</h2>
 					
 					<form method="POST" action="provisioning_request.php">
@@ -729,7 +729,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="RequestType" style="width: 150px">
+										<select name="RequestType">
 											<option value=""></option>
 											<xsl:for-each select="/Response/ProvisioningRequestTypes/ProvisioningRequestType">
 												<option>

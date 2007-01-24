@@ -45,7 +45,7 @@
 		
 		<h2 class="Invoice">Charges</h2>
 		
-		<table border="0" cellpadding="5" cellspacing="0" style="font-family: monospace; font-size: 9pt;" class="Listing">
+		<table border="0" width="100%" cellpadding="5" cellspacing="0" style="font-family: monospace; font-size: 9pt;" class="Listing">
 			<xsl:for-each select="/Response/RecordTypes/Results/rangeSample/RecordType">
 				<xsl:variable name="RecordType" select="." />
 				<xsl:variable name="RateGroup" select="/Response/RateGroups/RateGroup[RecordType=$RecordType]" />

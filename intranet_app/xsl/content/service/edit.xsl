@@ -33,7 +33,7 @@
 							<xsl:value-of select="/Response/Service/Id" />
 						</xsl:attribute>
 					</input>
-					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<td></td>
 							<th class="JustifiedWidth">

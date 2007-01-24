@@ -37,7 +37,7 @@
 			<h2 class="Service">Service Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -57,7 +57,7 @@
 			<h2 class="Account">Current Account Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -88,7 +88,7 @@
 			<h2 class="Account">Receiving Account Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="5" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -118,7 +118,7 @@
 			
 			<h2 class="Date">Date of Change</h2>
 			<div class="Wide-Form">
-				<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth" valign="top">
 							<xsl:call-template name="Label">

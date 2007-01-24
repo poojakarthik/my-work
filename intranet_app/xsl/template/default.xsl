@@ -127,11 +127,12 @@
 				</div>
 				<div class="Clear"></div>
 				<div class="Seperator"></div>
-
-				<!-- Navigation Menu -->
-					<table border="0" width="720" cellpadding="10" cellspacing="0">
+				
+				<div id="Content">
+					<table border="0" width="100%" cellpadding="0" cellspacing="0">
 						<tr>
-							<td valign="top" width="200" nowrap="nowrap">
+							<td valign="top" width="75" nowrap="nowrap">
+								<!-- Navigation Menu -->
 								<!--
 									<ul id="Navigation-Root">
 										<li>
@@ -370,6 +371,7 @@
 							</td>
 						</tr>
 					</table>
+				</div>
 
 				<!-- Recent Customers PopUp -->
 				<div id="modalContent-recentCustomers">

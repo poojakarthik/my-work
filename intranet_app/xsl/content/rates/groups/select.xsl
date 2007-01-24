@@ -44,7 +44,7 @@
 			
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -111,7 +111,7 @@
 					
 					<div class="Seperator"></div>
 					
-					<table border="0" cellpadding="1" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="1" cellspacing="0">
 						<tr>
 							<th>Available Rates :</th>
 							<td></td>

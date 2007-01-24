@@ -16,7 +16,7 @@
 			
 			<h2 class="Account">Account Details</h2>
 			<div class="Wide-Form">
-				<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+				<table border="0" cellpadding="5" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">

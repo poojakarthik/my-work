@@ -24,7 +24,7 @@
 										<xsl:value-of select="/Response/Account/Id" />
 									</xsl:attribute>
 								</input>
-								<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+								<table border="0" cellpadding="5" cellspacing="0">
 									<tr>
 										<th class="JustifiedWidth">
 											<xsl:call-template name="Label">
@@ -230,7 +230,7 @@
 					</div>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
-				<td valign="top" width="300">
+				<td valign="top">
 					<h2 class="Invoice">Overdue Amount</h2>
 					Overdue charges for this account stand at :
 					<br />

@@ -42,7 +42,7 @@
 			
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -93,7 +93,7 @@
 					
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -142,7 +142,7 @@
 			
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="3" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:for-each select="/Response/RatePlan/RecordTypes/Results/rangeSample/RecordType">
 							<xsl:variable name="RecordType" select="./Id" />
 							<tr>
@@ -201,7 +201,7 @@
 						
 						<div class="Seperator"></div>
 						
-						<table border="0" cellpadding="5" cellspacing="0" class="Somebody_doesn_t_know_about_spacing">
+						<table border="0" cellpadding="5" cellspacing="0">
 							<tr>
 								<th>Available Recurring Charges :</th>
 								<td></td>

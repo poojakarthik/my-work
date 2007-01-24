@@ -189,7 +189,7 @@
 					</div>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
-				<td width="300" valign="top">
+				<td valign="top">
 					<h2 class="Options">Contact Options</h2>
 					<ul>
 						<li>
