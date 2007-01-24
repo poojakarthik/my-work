@@ -92,6 +92,7 @@ define("CARRIER_UNITEL"			, 1);
 define("CARRIER_OPTUS"			, 2);
 define("CARRIER_AAPT"			, 3);
 define("CARRIER_ISEEK"			, 4);
+//TODO!rich! make this (and whatever uses it) work with GetConstantDescription
 $arrCarriers[CARRIER_UNITEL]	= "Unitel";
 $arrCarriers[CARRIER_OPTUS]		= "Optus";
 $arrCarriers[CARRIER_AAPT]		= "AAPT";
@@ -107,34 +108,8 @@ define("FATAL_TEST_EXCEPTION"		, 80085);
 // CDR status
 
 // CDR Handling (Range is 100-199)
-/*
-define("CDR_READY"						, 100);
-define("CDR_NORMALISED"					, 101);
-define("CDR_CANT_NORMALISE"				, 102);
-define("CDR_CANT_NORMALISE_RAW"			, 103);
-define("CDR_CANT_NORMALISE_BAD_SEQ_NO"	, 104);
-define("CDR_CANT_NORMALISE_HEADER"		, 105);
-define("CDR_CANT_NORMALISE_NON_CDR"		, 106);
-define("CDR_BAD_OWNER"					, 107);
-define("CDR_BAD_RECORD_TYPE"			, 108);
-define("CDR_BAD_DESTINATION"			, 109);
-define("CDR_CANT_NORMALISE_NO_MODULE"	, 110);
-define("CDR_CANT_NORMALISE_INVALID"		, 111);
-define("CDR_FIND_OWNER"					, 112);
-define("CDR_IGNORE"						, 140);
-define("CDR_RATED"						, 150);
-define("CDR_RATE_NOT_FOUND"				, 151);
-define("CDR_UNABLE_TO_RATE"				, 152);
-define("CDR_UNABLE_TO_CAP"				, 153);
-define("CDR_UNABLE_TO_PRORATE"			, 154);
-define("CDR_RERATE"						, 160);
-define("CDR_TOTALS_UPDATE_FAILED"		, 155);
-define("CDR_TEMP_INVOICE"				, 198);
-define("CDR_INVOICED"					, 199);
-define("CDR_TEMP_CREDIT"				, 170);
-define("CDR_CREDITED"					, 171);
-*/
 $GLOBALS['*arrConstant']['CDR'][100]['Constant'] = 'CDR_READY';
+$GLOBALS['*arrConstant']['CDR'][100]['Description'] = 'CDR is ready to normalise';
 $GLOBALS['*arrConstant']['CDR'][101]['Constant'] = 'CDR_NORMALISED';
 $GLOBALS['*arrConstant']['CDR'][102]['Constant'] = 'CDR_CANT_NORMALISE';
 $GLOBALS['*arrConstant']['CDR'][103]['Constant'] = 'CDR_CANT_NORMALISE_RAW';
@@ -160,13 +135,9 @@ $GLOBALS['*arrConstant']['CDR'][199]['Constant'] = 'CDR_INVOICED';
 $GLOBALS['*arrConstant']['CDR'][170]['Constant'] = 'CDR_TEMP_CREDIT';
 $GLOBALS['*arrConstant']['CDR'][171]['Constant'] = 'CDR_CREDITED';
 
-foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
-{
-	foreach ($arrConstants AS $intConstant=>$arrConstant)
-	{
-		define($arrConstant['Constant'], $intConstant);
-	}
-}
+//TODO!rich! when you have time, update all constant definitons to work like the CDR ones
+//$GLOBALS['*arrConstant']['CDR'][100]['Constant'] = 'CDR_READY';
+//$GLOBALS['*arrConstant']['CDR'][100]['Description'] = 'CDR is ready to normalise';
 
 
 // CDR File Handling (Range is 200-299)
@@ -716,6 +687,7 @@ define("RECORD_DISPLAY_S_AND_E"		, 2);
 define("RECORD_DISPLAY_DATA"		, 3);
 define("RECORD_DISPLAY_SMS"			, 4);
 
+//TODO!bash! make this (and whatever uses it) work with GetConstantDescription
 $arrRecordDisplayRateName[RECORD_DISPLAY_CALL]			= "Voice Calls";
 $arrRecordDisplayRateName[RECORD_DISPLAY_S_AND_E]		= "Service & Equipment";
 $arrRecordDisplayRateName[RECORD_DISPLAY_DATA]			= "GPRS and ADSL Data";
@@ -769,4 +741,13 @@ define("BUG_RESOLVED"				, 103);
 
 // Note parsing
 define("SYSTEM_NOTE_TYPE"			, 7);
+
+// Define all Constants
+foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
+{
+	foreach ($arrConstants AS $intConstant=>$arrConstant)
+	{
+		define($arrConstant['Constant'], $intConstant);
+	}
+}
 ?>
