@@ -56,7 +56,7 @@ define("APPLICATION_PROVISIONING"	, 4);
 define("ERROR_MESSAGE"				, "an error occured... sucks to be you");
 
 // CDR TYPES
-define("CDR_UNKNOWN"				, 0);
+/*define("CDR_UNKNOWN"				, 0);
 define("CDR_UNITEL_RSLCOM"			, 1);
 define("CDR_UNITEL_COMMANDER"		, 2);
 define("CDR_OPTUS_STANDARD"			, 3);
@@ -64,10 +64,24 @@ define("CDR_AAPT_STANDARD"			, 4);
 define("CDR_ISEEK_STANDARD"			, 5);
 define("CDR_UNITEL_SE"				, CDR_UNITEL_RSLCOM);
 define("CDR_UNTIEL_RSLCOM"			, CDR_UNITEL_RSLCOM);		// Backwards Compatability
-define("CDR_UNTIEL_COMMANDER"		, CDR_UNITEL_COMMANDER);	// Backwards Compatability
+define("CDR_UNTIEL_COMMANDER"		, CDR_UNITEL_COMMANDER);	// Backwards Compatability*/
+$GLOBALS['*arrConstant']	['CDRType']	[0]	['Constant']	= 'CDR_UNKNOWN';
+$GLOBALS['*arrConstant']	['CDRType']	[0]	['Description']	= 'Unknown Type';
+$GLOBALS['*arrConstant']	['CDRType']	[1]	['Constant']	= 'CDR_UNITEL_RSLCOM';
+$GLOBALS['*arrConstant']	['CDRType']	[1]	['Description']	= 'Unitel Usage/S&E/OC&C';
+$GLOBALS['*arrConstant']	['CDRType']	[2]	['Constant']	= 'CDR_UNITEL_COMMANDER';
+$GLOBALS['*arrConstant']	['CDRType']	[2]	['Description']	= 'Unitel Mobile Usage';
+$GLOBALS['*arrConstant']	['CDRType']	[3]	['Constant']	= 'CDR_OPTUS_STANDARD';
+$GLOBALS['*arrConstant']	['CDRType']	[3]	['Description']	= 'Optus Usage';
+$GLOBALS['*arrConstant']	['CDRType']	[4]	['Constant']	= 'CDR_AAPT_STANDARD';
+$GLOBALS['*arrConstant']	['CDRType']	[4]	['Description']	= 'AAPT Usage';
+$GLOBALS['*arrConstant']	['CDRType']	[5]	['Constant']	= 'CDR_ISEEK_STANDARD';
+$GLOBALS['*arrConstant']	['CDRType']	[5]	['Description']	= 'iSeek Usage';
 
 // Provisioning Types
-define("PRV_UNITEL_DAILY_ORDER_RPT"		, 100);
+define("PRV_IMPORT_RANGE_MIN"			, 100);
+define("PRV_IMPORT_RANGE_MAX"			, 149);
+/*define("PRV_UNITEL_DAILY_ORDER_RPT"		, 100);
 define("PRV_UNITEL_DAILY_STATUS_RPT"	, 101);
 define("PRV_UNITEL_BASKETS_RPT"			, 102);
 define("PRV_UNITEL_OUT"					, 103);
@@ -79,25 +93,54 @@ define("PRV_AAPT_LSD"					, 108);
 define("PRV_AAPT_REJECT"				, 109);
 define("PRV_AAPT_LOSS"					, 110);
 
-
 define("PRV_UNITEL_PRESELECTION_EXP"	, 150);
 define("PRV_UNITEL_DAILY_ORDER_EXP"		, 151);
 define("PRV_AAPT_EOE"					, 152);
+*/
+$GLOBALS['*arrConstant']	['ProvisioningType']	[100]	['Constant']	= 'PRV_UNITEL_DAILY_ORDER_RPT';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[100]	['Description']	= 'Unitel Daily Order Report';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[101]	['Constant']	= 'PRV_UNITEL_DAILY_STATUS_RPT';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[101]	['Description']	= 'Unitel Daily Status Report';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[102]	['Constant']	= 'PRV_UNITEL_BASKETS_RPT';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[102]	['Description']	= 'Unitel Agreed Baskets Report';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[103]	['Constant']	= 'PRV_UNITEL_OUT';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[103]	['Description']	= 'Unitel Standard Output File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[104]	['Constant']	= 'PRV_OPTUS_ALL';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[104]	['Description']	= 'Optus Line Status Report';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[105]	['Constant']	= 'PRV_AAPT_ALL';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[105]	['Description']	= 'AAPT Provisioning Input File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[106]	['Constant']	= 'PRV_UNITEL_PRESELECTION_RPT';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[106]	['Description']	= 'Unitel Preselection Report';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[107]	['Constant']	= 'PRV_AAPT_EOE_RETURN';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[107]	['Description']	= 'AAPT EOE Return File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[108]	['Constant']	= 'PRV_AAPT_LSD';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[108]	['Description']	= 'AAPT Line Status Report';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[109]	['Constant']	= 'PRV_AAPT_REJECT';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[109]	['Description']	= 'AAPT Rejections Report';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[110]	['Constant']	= 'PRV_AAPT_LOSS';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[110]	['Description']	= 'AAPT Loss Report';
 
-define("PRV_IMPORT_RANGE_MIN"			, 100);
-define("PRV_IMPORT_RANGE_MAX"			, 149);
+$GLOBALS['*arrConstant']	['ProvisioningType']	[150]	['Constant']	= 'PRV_UNITEL_PRESELECTION_EXP';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[150]	['Description']	= 'Unitel Preselection Order File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[151]	['Constant']	= 'PRV_UNITEL_DAILY_ORDER_EXP';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[151]	['Description']	= 'Unitel Daily Order File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[152]	['Constant']	= 'PRV_AAPT_EOE';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[152]	['Description']	= 'AAPT EOE Order File';
+
 
 // Carriers
-define("CARRIER_UNITEL"			, 1);
+/*define("CARRIER_UNITEL"			, 1);
 define("CARRIER_OPTUS"			, 2);
 define("CARRIER_AAPT"			, 3);
-define("CARRIER_ISEEK"			, 4);
-//TODO!rich! make this (and whatever uses it) work with GetConstantDescription
-$arrCarriers[CARRIER_UNITEL]	= "Unitel";
-$arrCarriers[CARRIER_OPTUS]		= "Optus";
-$arrCarriers[CARRIER_AAPT]		= "AAPT";
-$arrCarriers[CARRIER_ISEEK]		= "iSeek";
-$GLOBALS['Carriers'] = $arrCarriers;
+define("CARRIER_ISEEK"			, 4);*/
+$GLOBALS['*arrConstant']	['Carrier']	[1]	['Constant']	= 'CARRIER_UNITEL';
+$GLOBALS['*arrConstant']	['Carrier']	[1]	['Description']	= 'Unitel';
+$GLOBALS['*arrConstant']	['Carrier']	[2]	['Constant']	= 'CARRIER_OPTUS';
+$GLOBALS['*arrConstant']	['Carrier']	[2]	['Description']	= 'Optus';
+$GLOBALS['*arrConstant']	['Carrier']	[3]	['Constant']	= 'CARRIER_AAPT';
+$GLOBALS['*arrConstant']	['Carrier']	[3]	['Description']	= 'AAPT';
+$GLOBALS['*arrConstant']	['Carrier']	[4]	['Constant']	= 'CARRIER_ISEEK';
+$GLOBALS['*arrConstant']	['Carrier']	[4]	['Description']	= 'iSeek';
 
 // ERROR TABLE
 define("FATAL_ERROR_LEVEL"			, 10000);
@@ -141,41 +184,91 @@ $GLOBALS['*arrConstant']['CDR'][171]['Constant'] = 'CDR_CREDITED';
 
 
 // CDR File Handling (Range is 200-299)
-define("CDRFILE_WAITING"			, 200);
+/*define("CDRFILE_WAITING"			, 200);
 define("CDRFILE_IMPORTING"			, 201);
 define("CDRFILE_IMPORTED"			, 202);
 define("CDRFILE_REIMPORT"			, 203);
 define("CDRFILE_IGNORE"				, 204);
 define("CDRFILE_IMPORT_FAILED"		, 205);
 define("CDRFILE_NORMALISE_FAILED"	, 206);
-define("CDRFILE_NORMALISED"			, 207);
+define("CDRFILE_NORMALISED"			, 207);*/
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[200]	['Constant']	= 'CDRFILE_WAITING';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[200]	['Description']	= 'Collected';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[201]	['Constant']	= 'CDRFILE_IMPORTING';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[201]	['Description']	= 'Importing';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[202]	['Constant']	= 'CDRFILE_IMPORTED';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[202]	['Description']	= 'Imported';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[203]	['Constant']	= 'CDRFILE_REIMPORT';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[203]	['Description']	= 'Re-attempt import in the next cycle';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[204]	['Constant']	= 'CDRFILE_IGNORE';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[204]	['Description']	= 'Ignored';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[205]	['Constant']	= 'CDRFILE_IMPORT_FAILED';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[205]	['Description']	= 'Importing Failed';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[206]	['Constant']	= 'CDRFILE_NORMALISE_FAILED';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[206]	['Description']	= 'Normalisation Failed';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[207]	['Constant']	= 'CDRFILE_NORMALISED';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[207]	['Description']	= 'Normalised';
 
 // Provisioning File Handling
-define("PROVFILE_WAITING"			, 250);
+/*define("PROVFILE_WAITING"			, 250);
 define("PROVFILE_READING"			, 251);
 define("PROVFILE_IGNORE"			, 252);
-define("PROVFILE_COMPLETE"			, 253);
+define("PROVFILE_COMPLETE"			, 253);*/
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[250]	['Constant']	= 'PROVFILE_WAITING';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[250]	['Description']	= 'Collected';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[251]	['Constant']	= 'PROVFILE_READING';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[251]	['Description']	= 'Importing';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[252]	['Constant']	= 'PROVFILE_IGNORE';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[252]	['Description']	= 'Ignored';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[253]	['Constant']	= 'PROVFILE_COMPLETE';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[253]	['Description']	= 'Imported';
 
 
 // Invoice Status
-define("INVOICE_TEMP"				, 100);
+/*define("INVOICE_TEMP"				, 100);
 define("INVOICE_COMMITTED"			, 101);
 define("INVOICE_DISPUTED"			, 102);
 define("INVOICE_SETTLED"			, 103);
-define("INVOICE_DISPUTED_SETTLED"	, 104); // undisputed portion paid in full
+define("INVOICE_DISPUTED_SETTLED"	, 104); // undisputed portion paid in full*/
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[100]	['Constant']	= 'INVOICE_TEMP';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[100]	['Description']	= 'Temporary Invoice';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[101]	['Constant']	= 'INVOICE_COMMITTED';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[101]	['Description']	= 'Committed';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[102]	['Constant']	= 'INVOICE_DISPUTED';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[102]	['Description']	= 'In Dispute';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[103]	['Constant']	= 'INVOICE_SETTLED';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[103]	['Description']	= 'Settled';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[104]	['Constant']	= 'INVOICE_DISPUTED_SETTLED';
+$GLOBALS['*arrConstant']	['InvoiceStatus']	[104]	['Description']	= 'Dispute Settled';
 
 
 // Charge Status
-define("CHARGE_WAITING"				, 100);
+/*define("CHARGE_WAITING"				, 100);
 define("CHARGE_APPROVED"			, 101);
 define("CHARGE_DECLINED"			, 104);
 define("CHARGE_TEMP_INVOICE"		, 102);
-define("CHARGE_INVOICED"			, 103);
+define("CHARGE_INVOICED"			, 103);*/
+$GLOBALS['*arrConstant']	['ChargeStatus']	[100]	['Constant']	= 'CHARGE_WAITING';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[100]	['Description']	= 'Awaiting Approval';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[101]	['Constant']	= 'CHARGE_APPROVED';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[101]	['Description']	= 'Approved';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[102]	['Constant']	= 'CHARGE_TEMP_INVOICE';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[102]	['Description']	= 'Temporarily Invoiced';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[103]	['Constant']	= 'CHARGE_INVOICED';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[103]	['Description']	= 'Invoiced';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[104]	['Constant']	= 'CHARGE_DECLINED';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[104]	['Description']	= 'Declined';
 
 // Customer Group Constants
-define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
+/*define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
 define("CUSTOMER_GROUP_VOICETALK"	, 2);
-define("CUSTOMER_GROUP_IMAGINE"		, 3);
+define("CUSTOMER_GROUP_IMAGINE"		, 3);*/
+$GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Constant']	= 'CUSTOMER_GROUP_TELCOBLUE';
+$GLOBALS['*arrConstant']	['CustomerGroup']	[1]	['Description']	= 'Telco Blue';
+$GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Constant']	= 'CUSTOMER_GROUP_VOICETALK';
+$GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Description']	= 'VoiceTalk';
+$GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Constant']	= 'CUSTOMER_GROUP_IMAGINE';
+$GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Description']	= 'Imagine';
 
 // Credit Card Constants
 define("CREDIT_CARD_VISA"			, 1);
@@ -188,17 +281,21 @@ define("CREDIT_CARD_DINERS"			, 5);
 define("DONKEY"						, -1);
 
 // Service Types
-define("SERVICE_TYPE_ADSL"			, 100);
+/*define("SERVICE_TYPE_ADSL"			, 100);
 define("SERVICE_TYPE_MOBILE"		, 101);
 define("SERVICE_TYPE_LAND_LINE"		, 102);
 define("SERVICE_TYPE_INBOUND"		, 103);
-define("SERVICE_TYPE_DIALUP"		, 104);
-$arrServiceTypes[SERVICE_TYPE_ADSL]			= "ADSL";
-$arrServiceTypes[SERVICE_TYPE_MOBILE]		= "Mobile";
-$arrServiceTypes[SERVICE_TYPE_LAND_LINE]	= "Land Line";
-$arrServiceTypes[SERVICE_TYPE_INBOUND]		= "Inbound";
-$arrServiceTypes[SERVICE_TYPE_DIALUP]		= "Dialup";
-$GLOBALS['ServiceTypes']	= $arrServiceTypes;
+define("SERVICE_TYPE_DIALUP"		, 104);*/
+$GLOBALS['*arrConstant']	['ServiceType']	[100]	['Constant']	= 'SERVICE_TYPE_ADSL';
+$GLOBALS['*arrConstant']	['ServiceType']	[100]	['Description']	= 'ADSL';
+$GLOBALS['*arrConstant']	['ServiceType']	[101]	['Constant']	= 'SERVICE_TYPE_MOBILE';
+$GLOBALS['*arrConstant']	['ServiceType']	[101]	['Description']	= 'Mobile';
+$GLOBALS['*arrConstant']	['ServiceType']	[102]	['Constant']	= 'SERVICE_TYPE_LAND_LINE';
+$GLOBALS['*arrConstant']	['ServiceType']	[102]	['Description']	= 'Land Line';
+$GLOBALS['*arrConstant']	['ServiceType']	[103]	['Constant']	= 'SERVICE_TYPE_INBOUND';
+$GLOBALS['*arrConstant']	['ServiceType']	[103]	['Description']	= 'Inbound 1300/1800';
+$GLOBALS['*arrConstant']	['ServiceType']	[104]	['Constant']	= 'SERVICE_TYPE_DIALUP';
+$GLOBALS['*arrConstant']	['ServiceType']	[104]	['Description']	= 'Dialup Internet';
 
 // Context
 define("CONTEXT_NORMAL"			, 0);
@@ -217,11 +314,21 @@ define("SQL_QUERY"				, 100);
 define("SQL_STATEMENT"			, 200);
 
 // Provisioning Request Status
-define("REQUEST_STATUS_WAITING"			, 300);
+/*define("REQUEST_STATUS_WAITING"			, 300);
 define("REQUEST_STATUS_PENDING"			, 301);
 define("REQUEST_STATUS_REJECTED"		, 302);
 define("REQUEST_STATUS_COMPLETED"		, 303);
-define("REQUEST_STATUS_CANCELLED"		, 304);
+define("REQUEST_STATUS_CANCELLED"		, 304);*/
+$GLOBALS['*arrConstant']	['RequestStatus']	[300]	['Constant']	= 'REQUEST_STATUS_WAITING';
+$GLOBALS['*arrConstant']	['RequestStatus']	[300]	['Description']	= 'Awaiting Dispatch';
+$GLOBALS['*arrConstant']	['RequestStatus']	[301]	['Constant']	= 'REQUEST_STATUS_PENDING';
+$GLOBALS['*arrConstant']	['RequestStatus']	[301]	['Description']	= 'Pending';
+$GLOBALS['*arrConstant']	['RequestStatus']	[302]	['Constant']	= 'REQUEST_STATUS_REJECTED';
+$GLOBALS['*arrConstant']	['RequestStatus']	[302]	['Description']	= 'Rejected';
+$GLOBALS['*arrConstant']	['RequestStatus']	[303]	['Constant']	= 'REQUEST_STATUS_COMPLETED';
+$GLOBALS['*arrConstant']	['RequestStatus']	[303]	['Description']	= 'Completed';
+$GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Constant']	= 'REQUEST_STATUS_CANCELLED';
+$GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Description']	= 'Cancelled';
 
 // Provisioning Request Status
 define("REQUEST_DIRECTION_OUTGOING"		, 0);
@@ -229,11 +336,21 @@ define("REQUEST_DIRECTION_INCOMING"		, 1);
 
 
 // Serivce Line Status
-define("LINE_ACTIVE"					, 400);
+/*define("LINE_ACTIVE"					, 400);
 define("LINE_DEACTIVATED"				, 401);
 define("LINE_PENDING"					, 402);
 define("LINE_SOFT_BARRED"				, 403);
-define("LINE_HARD_BARRED"				, 404);
+define("LINE_HARD_BARRED"				, 404);*/
+$GLOBALS['*arrConstant']	['LineStatus']	[400]	['Constant']	= 'LINE_ACTIVE';
+$GLOBALS['*arrConstant']	['LineStatus']	[400]	['Description']	= 'Active';
+$GLOBALS['*arrConstant']	['LineStatus']	[401]	['Constant']	= 'LINE_DEACTIVATED';
+$GLOBALS['*arrConstant']	['LineStatus']	[401]	['Description']	= 'Deactivated';
+$GLOBALS['*arrConstant']	['LineStatus']	[402]	['Constant']	= 'LINE_PENDING';
+$GLOBALS['*arrConstant']	['LineStatus']	[402]	['Description']	= 'Pending';
+$GLOBALS['*arrConstant']	['LineStatus']	[403]	['Constant']	= 'LINE_SOFT_BARRED';
+$GLOBALS['*arrConstant']	['LineStatus']	[403]	['Description']	= 'Soft-barred';
+$GLOBALS['*arrConstant']	['LineStatus']	[404]	['Constant']	= 'LINE_HARD_BARRED';
+$GLOBALS['*arrConstant']	['LineStatus']	[404]	['Description']	= 'Hard-barred';
 
 // Provisioning Request Types
 define("REQUEST_FULL_SERVICE"			, 900);

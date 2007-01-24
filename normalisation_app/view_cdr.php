@@ -10,8 +10,7 @@ $intCDR = (int)$_REQUEST['id'];
 if ($intCDR)
 {
 	// Create an instance of each Normalisation module
-	$arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
-	$arrNormalisationModule[CDR_UNITEL_SE]			= new NormalisationModuleRSLCOM();
+	$arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();
 	$arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
 	$arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
 	$arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();

@@ -205,10 +205,10 @@ die();
 		$this->errErrorHandler			= new ErrorHandler();
 		
 		// Create an instance of each Normalisation module
- 		$this->_arrNormalisationModule[CDR_UNTIEL_RSLCOM]		= new NormalisationModuleRSLCOM();
+ 		$this->_arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();
  		$this->_arrNormalisationModule[CDR_UNTIEL_SE]			= new NormalisationModuleRSLCOM();
  		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
- 		$this->_arrNormalisationModule[CDR_UNTIEL_COMMANDER]	= new NormalisationModuleCommander();
+ 		$this->_arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
  		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
 		
