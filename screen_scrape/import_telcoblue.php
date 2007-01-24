@@ -597,7 +597,7 @@
 	// instanciate the import object
 	require_once('vixen_import.php');
 	$objImport = new VixenImport($arrConfig['Import']);
-	
+/*	
 	// Truncate Tables
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
@@ -702,7 +702,7 @@
 		echo "FATAL ERROR : Could not match RatePlans to RecurringCharges\n";
 		Die();
 	}
-	
+*/	
 	// Add Customers
 	
 	while ($arrRow = $objDecoder->FetchCustomer())
@@ -726,7 +726,7 @@
 		{
 			echo "WARN : Actual Services : $intCountServices DOES NOT = Service Count : {$arrCustomer['ServiceCount']}\n";
 		}
-		
+		/*
 		// add the customer
 		echo "Importing Customer  : {$arrRow['CustomerId']}\n";
 		if (!$objImport->AddCustomerWithId($arrCustomer))
@@ -735,7 +735,7 @@
 			echo $objImport->ErrorLog();
 			Die();
 		}
-		
+		*/
 	}
 /*
 	// Add System Notes

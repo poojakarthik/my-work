@@ -734,26 +734,37 @@
 			// real services count
 			$arrOutput['ServiceCount']++;
 			
+			// get real service type
+			$intServiceType								= $arrServiceType[$strFNN];
+			
+			// get fake service type
+			if ($intServiceType == SERVICE_TYPE_INBOUND)
+			{
+				// use default RateGroups for inbound services
+				$strPrefix = substr($strFNN, 0, 2);
+				echo $strFNN;
+				Die;
+				if ($strPrefix == '13')
+				{
+					$intFakeServiceType = 1300;
+				}
+				elseif ($strPrefix == '18')
+				{
+					$intFakeServiceType = 1800;
+				}
+			}
+			else
+			{
+				$intFakeServiceType = $intServiceType;
+			}
+			
 			// add serviceRateGroup records
-			if (is_array($arrRateGroup[$arrServiceType[$strFNN]]))
+			if (is_array($arrRateGroup[$intFakeServiceType]))
 			{
 				$arrServiceRateGroup['FNN'] 				= $strFNN;
-				$intServiceType								= $arrServiceType[$strFNN];
 				$arrServiceRateGroup['ServiceType'] 		= $intServiceType;
-				// use default RateGroups for inbound services
-				if ($intServiceType == SERVICE_TYPE_INBOUND)
-				{
-					$strPrefix = substr($strFNN, 0, 2);
-					if ($strPrefix == '13')
-					{
-						$intServiceType = 1300;
-					}
-					elseif ($strPrefix == '18')
-					{
-						$intServiceType = 1800;
-					}
-				}
-				foreach($arrRateGroup[$intServiceType] AS $strRecordType=>$strRateGroupName)
+				
+				foreach($arrRateGroup[$intFakeServiceType] AS $strRecordType=>$strRateGroupName)
 				{
 					$arrServiceRateGroup['RecordTypeName'] 	= $strRecordType;
 					$arrServiceRateGroup['RateGroupName'] 	= $strRateGroupName;
