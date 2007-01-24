@@ -619,6 +619,36 @@ function ServiceType($strFNN)
 }
 
 //------------------------------------------------------------------------//
+// GetConstantName()
+//------------------------------------------------------------------------//
+/**
+ * GetConstantName()
+ * 
+ * Find the Name of a Constant
+ * 
+ * Find the Name of a Constant
+ * 
+ * @param	string		$intCode			The Constant
+ * @param	string		$strType			optional type of Constant. Default = 'CDR'
+ *
+ * @return	mixed					string	Constant Name
+ *									FALSE	Constant not found
+ * 
+ * @method
+ */
+function GetConstantName($intCode, $strType='CDR')
+{
+	if (isset($GLOBALS['*arrConstant'][$strType][$intCode]['Constant']))
+	{
+		return $GLOBALS['*arrConstant'][$strType][$intCode]['Constant'];
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+//------------------------------------------------------------------------//
 // EvalReturn()
 //------------------------------------------------------------------------//
 /**

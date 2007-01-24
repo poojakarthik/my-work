@@ -106,8 +106,8 @@ define("FATAL_TEST_EXCEPTION"		, 80085);
 
 // CDR status
 
-
 // CDR Handling (Range is 100-199)
+/*
 define("CDR_READY"						, 100);
 define("CDR_NORMALISED"					, 101);
 define("CDR_CANT_NORMALISE"				, 102);
@@ -133,6 +133,41 @@ define("CDR_TEMP_INVOICE"				, 198);
 define("CDR_INVOICED"					, 199);
 define("CDR_TEMP_CREDIT"				, 170);
 define("CDR_CREDITED"					, 171);
+*/
+$GLOBALS['*arrConstant']['CDR'][100]['Constant'] = 'CDR_READY';
+$GLOBALS['*arrConstant']['CDR'][101]['Constant'] = 'CDR_NORMALISED';
+$GLOBALS['*arrConstant']['CDR'][102]['Constant'] = 'CDR_CANT_NORMALISE';
+$GLOBALS['*arrConstant']['CDR'][103]['Constant'] = 'CDR_CANT_NORMALISE_RAW';
+$GLOBALS['*arrConstant']['CDR'][104]['Constant'] = 'CDR_CANT_NORMALISE_BAD_SEQ_NO';
+$GLOBALS['*arrConstant']['CDR'][105]['Constant'] = 'CDR_CANT_NORMALISE_HEADER';
+$GLOBALS['*arrConstant']['CDR'][106]['Constant'] = 'CDR_CANT_NORMALISE_NON_CDR';
+$GLOBALS['*arrConstant']['CDR'][107]['Constant'] = 'CDR_BAD_OWNER';
+$GLOBALS['*arrConstant']['CDR'][108]['Constant'] = 'CDR_BAD_RECORD_TYPE';
+$GLOBALS['*arrConstant']['CDR'][109]['Constant'] = 'CDR_BAD_DESTINATION';
+$GLOBALS['*arrConstant']['CDR'][110]['Constant'] = 'CDR_CANT_NORMALISE_NO_MODULE';
+$GLOBALS['*arrConstant']['CDR'][111]['Constant'] = 'CDR_CANT_NORMALISE_INVALID';
+$GLOBALS['*arrConstant']['CDR'][112]['Constant'] = 'CDR_FIND_OWNER';
+$GLOBALS['*arrConstant']['CDR'][140]['Constant'] = 'CDR_IGNORE';
+$GLOBALS['*arrConstant']['CDR'][150]['Constant'] = 'CDR_RATED';
+$GLOBALS['*arrConstant']['CDR'][151]['Constant'] = 'CDR_RATE_NOT_FOUND';
+$GLOBALS['*arrConstant']['CDR'][152]['Constant'] = 'CDR_UNABLE_TO_RATE';
+$GLOBALS['*arrConstant']['CDR'][153]['Constant'] = 'CDR_UNABLE_TO_CAP';
+$GLOBALS['*arrConstant']['CDR'][154]['Constant'] = 'CDR_UNABLE_TO_PRORATE';
+$GLOBALS['*arrConstant']['CDR'][160]['Constant'] = 'CDR_RERATE';
+$GLOBALS['*arrConstant']['CDR'][155]['Constant'] = 'CDR_TOTALS_UPDATE_FAILED';
+$GLOBALS['*arrConstant']['CDR'][198]['Constant'] = 'CDR_TEMP_INVOICE';
+$GLOBALS['*arrConstant']['CDR'][199]['Constant'] = 'CDR_INVOICED';
+$GLOBALS['*arrConstant']['CDR'][170]['Constant'] = 'CDR_TEMP_CREDIT';
+$GLOBALS['*arrConstant']['CDR'][171]['Constant'] = 'CDR_CREDITED';
+
+foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
+{
+	foreach ($arrConstants AS $intConstant=>$arrConstant)
+	{
+		define($arrConstant['Constant'], $intConstant);
+	}
+}
+
 
 // CDR File Handling (Range is 200-299)
 define("CDRFILE_WAITING"			, 200);

@@ -738,8 +738,22 @@
 			if (is_array($arrRateGroup[$arrServiceType[$strFNN]]))
 			{
 				$arrServiceRateGroup['FNN'] 				= $strFNN;
-				$arrServiceRateGroup['ServiceType'] 		= $arrServiceType[$strFNN];
-				foreach($arrRateGroup[$arrServiceType[$strFNN]] AS $strRecordType=>$strRateGroupName)
+				$intServiceType								= $arrServiceType[$strFNN];
+				$arrServiceRateGroup['ServiceType'] 		= $intServiceType;
+				// use default RateGroups for inbound services
+				if ($intServiceType == SERVICE_TYPE_INBOUND)
+				{
+					$strPrefix = substr($strFNN, 0, 2);
+					if ($strPrefix == '13')
+					{
+						$intServiceType = 1300;
+					}
+					elseif ($strPrefix == '18')
+					{
+						$intServiceType = 1800;
+					}
+				}
+				foreach($arrRateGroup[$intServiceType] AS $strRecordType=>$strRateGroupName)
 				{
 					$arrServiceRateGroup['RecordTypeName'] 	= $strRecordType;
 					$arrServiceRateGroup['RateGroupName'] 	= $strRateGroupName;
@@ -757,7 +771,15 @@
 	function DecodeRateGroup($arrCustomer)
 	{
 		// clean the output array
-		$arrOutput = Array();
+		if (is_array($this->arrConfig['DefaultRateGroup']))
+		{
+			// or set it to the default array
+			$arrOutput = $this->arrConfig['DefaultRateGroup'];
+		}
+		else
+		{
+			$arrOutput = Array();
+		}
 		
 		// for each record type
 		foreach($this->arrConfig['RecordType'] AS $strRecordType=>$intServiceType)

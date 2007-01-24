@@ -212,7 +212,8 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		elseif ($intCarrierRecordType == "8")
 		{
 			// OC&C
-			$strRecordCode 				= 'OC&C';
+			$strRecordCode 					= 'S&E';
+			$this->_arrRawData['RateId']	=  1;
 		}
 		else
 		{

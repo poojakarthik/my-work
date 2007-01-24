@@ -140,7 +140,26 @@
 	
 	
 	
+	
+	
 	// Define New RatePlans
+	
+	// inbound
+	$arrPlan = Array();
+	
+	// 1300
+	$arrPlan['Other']				= 'Inbound-Other';
+	$arrPlan['S&E']					= 'Inbound-S&E';
+	$arrPlan['Local']				= 'Inbound-Local-1300';
+	$arrPlan['National']			= 'Inbound-National';
+	$arrPlan['MobileToFixed']		= 'Inbound-MobileToFixed';
+	$arrPlan['FixedToMobile']		= 'Inbound-FixedToMobile';
+	$arrPlan['MobileToMobile']		= 'Inbound-MobileToMobile';
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_INBOUND]['Inbound1300'] = $arrPlan;
+	
+	// 1800
+	$arrPlan['Local']				= 'Inbound-Local-1800';
+	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_INBOUND]['Inbound1800'] = $arrPlan;
 	
 	// RateGroups common to all Mobile Plans	
 	$arrPlan = Array();
@@ -148,6 +167,7 @@
 	$arrPlan['MMS']					= 'MMS-68';
 	$arrPlan['Other']				= 'Other-Cost';
 	$arrPlan['OSNetworkAirtime']	= 'OSNetworkAirtime-Cost';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	
 	// Plan Zero
 	$arrPlan['GPRS']				= 'GPRS-18-00-01';
@@ -155,7 +175,6 @@
 	$arrPlan['Freecall']			= 'Freecall-30-10-30';
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Zero'] = $arrPlan;
@@ -166,7 +185,6 @@
 	$arrPlan['Freecall']			= 'Freecall-70-25-30';
 	$arrPlan['Mobile']				= 'Mobile-70-25-30';
 	$arrPlan['National']			= 'National-70-25-30';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['$35 Cap'] = $arrPlan;
@@ -177,7 +195,6 @@
 	$arrPlan['Freecall']			= 'Freecall-30-10-30';
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Plan Ten'] = $arrPlan;
@@ -188,7 +205,6 @@
 	$arrPlan['Freecall']			= 'Freecall-40-14-30';
 	$arrPlan['Mobile']				= 'Mobile-40-14-01';
 	$arrPlan['National']			= 'National-40-14-01';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 100'] = $arrPlan;
@@ -199,7 +215,6 @@
 	$arrPlan['Freecall']			= 'Freecall-30-10-30';
 	$arrPlan['Mobile']				= 'Mobile-30-10-01';
 	$arrPlan['National']			= 'National-30-10-01';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 250'] = $arrPlan;
@@ -210,7 +225,6 @@
 	$arrPlan['Freecall']			= 'Freecall-26-09-30';
 	$arrPlan['Mobile']				= 'Mobile-26-09-01';
 	$arrPlan['National']			= 'National-26-09-01';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 500'] = $arrPlan;
@@ -221,7 +235,6 @@
 	$arrPlan['Freecall']			= 'Freecall-30-15-30';
 	$arrPlan['Mobile']				= 'Mobile-30-15-30';
 	$arrPlan['National']			= 'National-30-15-30';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet Special Peter K'] = $arrPlan;
@@ -232,7 +245,6 @@
 	$arrPlan['Freecall']			= 'Freecall-30-18-30';
 	$arrPlan['Mobile']				= 'Mobile-30-18-30';
 	$arrPlan['National']			= 'National-30-18-30';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 60'] = $arrPlan;
@@ -243,7 +255,6 @@
 	$arrPlan['Freecall']			= 'Freecall-40-18-30';
 	$arrPlan['Mobile']				= 'Mobile-40-18-30';
 	$arrPlan['National']			= 'National-40-18-30';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 30'] = $arrPlan;
@@ -254,7 +265,6 @@
 	$arrPlan['Freecall']			= 'Freecall-40-18-30';
 	$arrPlan['Mobile']				= 'Mobile-40-18-30';
 	$arrPlan['National']			= 'National-40-18-30';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 20'] = $arrPlan;
@@ -265,7 +275,6 @@
 	$arrPlan['Freecall']			= 'Freecall-30-10-30';
 	$arrPlan['Mobile']				= 'Mobile-Pinnacle';
 	$arrPlan['National']			= 'National-Pinnacle';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-Pinnacle';
 	$arrPlan['IDD']					= ''; //TODO!!!!
 	$arrConfig['Import']['RatePlan'][SERVICE_TYPE_MOBILE]['Pinnacle'] = $arrPlan;
@@ -556,6 +565,24 @@
 	// set config rate array
 	$arrConfig['Decode']['RateConvert'] = $arrRates;
 	
+	// Define Default Rate Groups
+	$arrRateGroups = Array();
+	$arrRateGroups[1300] = $arrConfig['Import']['RatePlan'][SERVICE_TYPE_INBOUND]['Inbound1300'];
+	$arrRateGroups[1800] = $arrConfig['Import']['RatePlan'][SERVICE_TYPE_INBOUND]['Inbound1800'];
+	
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['OneThree']			= 'OneThree-Cost';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['Other']				= 'Other-Cost';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['SexHotline']		= '1900-28';
+	
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['Roaming']				= 'Roaming-35';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['MMS']					= 'MMS-68';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['Other']				= 'Other-Cost';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['OSNetworkAirtime']		= 'OSNetworkAirtime-Cost';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['VoiceMailDeposit']		= 'VoiceMailDeposit-10-00-30';
+	// set config default rategroup array
+	$arrConfig['Decode']['DefaultRateGroup'] = $arrRateGroups;
+	
+	
 // ---------------------------------------------------------------------------//
 // SCRIPT
 // ---------------------------------------------------------------------------//
@@ -575,7 +602,7 @@
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
 	$objImport->Truncate('AccountGroup');
-	$objImport->Truncate('CDR');
+	//$objImport->Truncate('CDR');
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
 	$objImport->Truncate('Contact');
@@ -584,8 +611,8 @@
 	$objImport->Truncate('Employee');
 	$objImport->Truncate('EmployeeAccountAudit');
 	$objImport->Truncate('ErrorLog');
-	$objImport->Truncate('FileDownLoad');
-	$objImport->Truncate('FileImport');
+	//$objImport->Truncate('FileDownload');
+	//$objImport->Truncate('FileImport');
 	$objImport->Truncate('Invoice');
 	$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
