@@ -24,5 +24,5 @@
 	$docDocumentation->Explain ('Archive');
 	
 	$Style->Output ('xsl/content/account/list.xsl');
-	+
+	
 ?>
