@@ -858,9 +858,9 @@
 			
 			// work out the record & service type
 			// ############################################################################################################################ //
-			// HACK ALERT : this will only work if the IDD rate name contains 'mobile' : will work for telcoblue
+			// HACK ALERT : this will only work if mobile IDD rates start with 'mobile' : will work for telcoblue, may not work for others
 			// ############################################################################################################################ //
-			if (strpos(strtolower($strName),'mobile') !== FALSE)
+			if (strpos(strtolower($strName),'mobile') === 0)
 			{
 				// Mobile
 				$intServiceType 			= 101;
