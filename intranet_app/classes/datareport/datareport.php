@@ -1,16 +1,16 @@
 <?php
 	
 	//----------------------------------------------------------------------------//
-	// report.php
+	// datareport.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * report.php
+	 * datareport.php
 	 *
-	 * File containing Report Class
+	 * File containing DataReport Class
 	 *
-	 * File containing Report Class
+	 * File containing DataReport Class
 	 *
-	 * @file		report.php
+	 * @file		datareport.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// Report
+	// DataReport
 	//----------------------------------------------------------------------------//
 	/**
-	 * Report
+	 * DataReport
 	 *
-	 * A Report in the Database
+	 * A DataReport in the Database
 	 *
-	 * A Report in the Database
+	 * A DataReport in the Database
 	 *
 	 *
 	 * @prefix	rpt
 	 *
 	 * @package		intranet_app
-	 * @class		Report
+	 * @class		DataReport
 	 * @extends		dataObject
 	 */
 	
-	class Report extends dataObject
+	class DataReport extends dataObject
 	{
 		
 		//------------------------------------------------------------------------//
@@ -47,31 +47,31 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructor for a new Report
+		 * Constructor for a new DataReport
 		 *
-		 * Constructor for a new Report
+		 * Constructor for a new DataReport
 		 *
-		 * @param	Integer		$intId		The Id of the Report being Retrieved
+		 * @param	Integer		$intId		The Id of the DataReport being Retrieved
 		 *
 		 * @method
 		 */
 		
 		function __construct ($intId)
 		{
-			// Pull all the Report information and Store it ...
-			$selReport = new StatementSelect ('Report', '*', 'Id = <Id>', null, 1);
-			$selReport->useObLib (TRUE);
-			$selReport->Execute (Array ('Id' => $intId));
+			// Pull all the DataReport information and Store it ...
+			$selDataReport = new StatementSelect ('DataReport', '*', 'Id = <Id>', null, 1);
+			$selDataReport->useObLib (TRUE);
+			$selDataReport->Execute (Array ('Id' => $intId));
 			
-			if ($selReport->Count () <> 1)
+			if ($selDataReport->Count () <> 1)
 			{
-				throw new Exception ('Report does not exist.');
+				throw new Exception ('DataReport does not exist.');
 			}
 			
-			$selReport->Fetch ($this);
+			$selDataReport->Fetch ($this);
 			
 			// Construct the object
-			parent::__construct ('Report', $this->Pull ('Id')->getValue ());
+			parent::__construct ('DataReport', $this->Pull ('Id')->getValue ());
 		}
 		
 		//------------------------------------------------------------------------//
@@ -80,26 +80,26 @@
 		/**
 		 * Execute()
 		 *
-		 * Execute the Report
+		 * Execute the DataReport
 		 *
-		 * Execute the Report
+		 * Execute the DataReport
 		 *
-		 * @param	Array		$arrFields		A filled Associative Array (from the Serialized ReportFields field)
+		 * @param	Array		$arrFields		A filled Associative Array (from the Serialized DataReportFields field)
 		 * @param	String		$strOrder		The field in which to Order By
 		 *
 		 * @return	Array
 		 *
 		 * @method
 		 */
-		 
-		public function Execute ($arrFields, $strOrder)
+		
+		public function Execute ($arrFields, $strOrder=null)
 		{
 			// This deals with turning the SQLSelect Serialized Array 
 			// into a String: Field1, Field2, Field3 [, ... ]
 			$arrSelect = unserialize ($this->Pull ('SQLSelect')->getValue ());
 			
 			$i = 0;
-			foreach ($arrSelect as $strField => $strType)
+			foreach ($arrSelect as $strField)
 			{
 				if ($i != 0)
 				{
@@ -122,6 +122,61 @@
 			$selResult->Execute ($arrFields);
 			
 			return $selResult;
+		}
+		
+		//------------------------------------------------------------------------//
+		// Documentation
+		//------------------------------------------------------------------------//
+		/**
+		 * Documentation()
+		 *
+		 * Get a list of Documentation objects required
+		 *
+		 * Get a list of Documentation objects required
+		 *
+		 * @return	Array
+		 *
+		 * @method
+		 */
+		
+		public function Documentation ()
+		{
+			return unserialize ($this->Pull ('Documentation')->getValue ());
+		}
+		
+		//------------------------------------------------------------------------//
+		// Inputs
+		//------------------------------------------------------------------------//
+		/**
+		 * Inputs()
+		 *
+		 * Turn the Serialised Input Array into ObLib
+		 *
+		 * Turn the Serialised Input Array into ObLib
+		 *
+		 * @return	dataArray
+		 *
+		 * @method
+		 */
+		
+		public function Inputs ()
+		{
+			$arrInputs = unserialize ($this->Pull ('SQLFields')->getValue ());
+			
+			$oblarrInputs = new dataArray ('Inputs');
+			
+			foreach ($arrInputs as $strName => $arrInput)
+			{
+				$oblarrField = $oblarrInputs->Push (new dataArray ('Input'));
+				$strName = $oblarrField->Push (new dataString ('Name', $strName));
+				
+				foreach ($arrInput as $strKey => $mixValue)
+				{
+					$oblarrField->Push (new dataString ($strKey, $mixValue));
+				}
+			}
+			
+			return $oblarrInputs;
 		}
 	}
 	

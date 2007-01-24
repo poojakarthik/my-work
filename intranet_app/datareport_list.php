@@ -17,12 +17,13 @@
 	// call application
 	require ('config/application.php');
 	
-	$rpsReports = new Reports ();
+	// Get all reports
+	$rpsReports = $Style->attachObject (new DataReports);
+	$rpsReports->Sample ();
 	
 	// Explain the Fundamentals
 	$docDocumentation->Explain ('Report');
-	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/account/list.xsl');
+	$Style->Output ('xsl/content/datareport/list.xsl');
 	
 ?>

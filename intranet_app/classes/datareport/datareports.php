@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// reports.php
+	// datareports.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * reports.php
+	 * datareports.php
 	 *
-	 * Contains the Class that Controls Report Listing
+	 * Contains the Class that Controls DataReport Listing
 	 *
-	 * Contains the Class that Controls Report Listing
+	 * Contains the Class that Controls DataReport Listing
 	 *
-	 * @file		reports.php
+	 * @file		datareports.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// Reports
+	// DataReports
 	//----------------------------------------------------------------------------//
 	/**
-	 * Reports
+	 * DataReports
 	 *
-	 * Controls listing of Available Reports
+	 * Controls listing of Available DataReports
 	 *
-	 * Controls listing of Available Reports
+	 * Controls listing of Available DataReports
 	 *
 	 *
 	 * @prefix		rps
 	 *
 	 * @package		intranet_app
-	 * @class		Reports
+	 * @class		DataReports
 	 * @extends		dataObject
 	 */
 	
-	class Reports extends Search
+	class DataReports extends Search
 	{
 		//------------------------------------------------------------------------//
 		// __construct
@@ -46,16 +46,16 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructs a Report Searching Routine
+		 * Constructs a DataReport Searching Routine
 		 *
-		 * Constructs a Report Searching Routine
+		 * Constructs a DataReport Searching Routine
 		 *
 		 * @method
 		 */
 		 
 		function __construct ()
 		{
-			parent::__construct ('Reports', 'Report', 'Report');
+			parent::__construct ('DataReports', 'DataReport', 'DataReport');
 		}
 	}
 	
