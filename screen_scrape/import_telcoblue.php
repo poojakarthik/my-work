@@ -617,7 +617,7 @@
 	$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
 	$objImport->Truncate('InvoiceTemp');
-	$objImport->Truncate('Note');
+	//$objImport->Truncate('Note');
 	$objImport->Truncate('Payment');
 	$objImport->Truncate('ProvisioningExport');
 	$objImport->Truncate('ProvisioningLog');
@@ -737,7 +737,7 @@
 		}
 		
 	}
-
+/*
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
 	{	
@@ -781,7 +781,7 @@
 			//echo "No Notes found for  : {$arrRow['CustomerId']}\n";
 		}
 	}
-	
+*/	
 	//finish
 	echo "Done\n";
 	echo "Added : $intCustomerCount Accounts\n";

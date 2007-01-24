@@ -117,8 +117,8 @@ die();
 		
 		$ServiceTotalsColumns = Array();
 		$ServiceTotalsColumns['UncappedCharge']		= new MySQLFunction("(UncappedCharge + <AddCharge>)");
-        $this->_ubiServiceTotalsUnCapped    		= new StatementUpdateById("Service", $ServiceTotalsColumns);
-		
+        $this->_ubiServiceTotalsUncapped    		= new StatementUpdateById("Service", $ServiceTotalsColumns);
+
 		$ServiceTotalsColumns = Array();
 		$ServiceTotalsColumns['CappedCharge']		= new MySQLFunction("(CappedCharge + <AddCharge>)");
 		$this->_ubiServiceTotalsCapped    			= new StatementUpdateById("Service", $ServiceTotalsColumns);
