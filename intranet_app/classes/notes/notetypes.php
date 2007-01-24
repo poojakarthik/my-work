@@ -58,7 +58,7 @@
 			parent::__construct ('NoteTypes', 'NoteType');
 			
 			// Pull all the NoteTypes and attach them
-			$selNoteTypes = new StatementSelect ('NoteType', 'Id', '');
+			$selNoteTypes = new StatementSelect ('NoteType', 'Id');
 			$selNoteTypes->Execute (Array ());
 			
 			foreach ($selNoteTypes->FetchAll () as $arrNoteType)

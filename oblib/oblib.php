@@ -540,7 +540,7 @@
 		
 		private $Timestamp;
 		
-		function __construct ($nodeName, $nodeValue)
+		function __construct ($nodeName, $nodeValue=null)
 		{
 			parent::__construct ($nodeName, $nodeName);
 			

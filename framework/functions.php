@@ -955,7 +955,11 @@ function CSVStatementSelect (StatementSelect $selStatement, $strSeparator=';', $
 		
 		foreach ($arrRow as $intIndex => $mixField)
 		{
-			$arrFields [$intIndex] = str_replace ('"', '""', $mixField);
+			$mixCorrectedField = $mixField;
+			$mixCorrectedField = str_replace	('"',				'""',	$mixCorrectedField);
+			$mixCorrectedField = preg_replace	('/[\r\n]/misU',	' ',	$mixCorrectedField);
+			
+			$arrFields [$intIndex] = $mixCorrectedField;
 		}
 		
 		$strResult .= '"' . implode ('"' . $strSeparator . '"', $arrFields) . '"' . $strTerminator;

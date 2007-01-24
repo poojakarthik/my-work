@@ -75,6 +75,7 @@
 								</th>
 								<td>
 									<xsl:choose>
+										<!-- dataBoolean -->
 										<xsl:when test="./Type = 'dataBoolean'">
 											<table border="0" cellpadding="3" cellspacing="0">
 												<tr>
@@ -103,6 +104,17 @@
 												</tr>
 											</table>
 										</xsl:when>
+										<!-- dataString -->
+										<xsl:when test="./Type = 'dataString'">
+											<input type="text" class="input-string">
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>]</xsl:text>
+												</xsl:attribute>
+											</input>
+										</xsl:when>
+										<!-- dataDate -->
 										<xsl:when test="./Type = 'dataDate'">
 											<select>
 												<xsl:attribute name="name">
@@ -139,6 +151,135 @@
 													<xsl:with-param name="start" select="number('2000')" />
 													<xsl:with-param name="cease" select="number('2010')" />
 												</xsl:call-template>
+											</select>
+										</xsl:when>
+										<!-- dataDatetime -->
+										<xsl:when test="./Type = 'dataDatetime'">
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][day]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('1')" />
+													<xsl:with-param name="cease" select="number('31')" />
+												</xsl:call-template>
+											</select> /
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][month]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('1')" />
+													<xsl:with-param name="cease" select="number('12')" />
+												</xsl:call-template>
+											</select> /
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][year]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('2000')" />
+													<xsl:with-param name="cease" select="number('2010')" />
+												</xsl:call-template>
+											</select>
+											<xsl:text> </xsl:text>
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][hour]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('0')" />
+													<xsl:with-param name="cease" select="number('24')" />
+												</xsl:call-template>
+											</select> :
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][minute]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('0')" />
+													<xsl:with-param name="cease" select="number('59')" />
+												</xsl:call-template>
+											</select> :
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>][second]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:call-template name="DateLoop">
+													<xsl:with-param name="start" select="number('0')" />
+													<xsl:with-param name="cease" select="number('59')" />
+												</xsl:call-template>
+											</select>
+										</xsl:when>
+										<!-- NoteTypes -->
+										<xsl:when test="./Type = 'NoteTypes'">
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:for-each select="./Value/NoteTypes/NoteType">
+													<option>
+														<xsl:attribute name="style">
+															<xsl:text>background-color: #</xsl:text>
+															<xsl:value-of select="./BackgroundColor" />
+															<xsl:text>;</xsl:text>
+															
+															<xsl:text>border: solid 1px #</xsl:text>
+															<xsl:value-of select="./BorderColor" />
+															<xsl:text>;</xsl:text>
+															
+															<xsl:text>color: #</xsl:text>
+															<xsl:value-of select="./TextColor" />
+															<xsl:text>;</xsl:text>
+														</xsl:attribute>
+														<xsl:attribute name="value">
+															<xsl:text></xsl:text>
+															<xsl:value-of select="./Id" />
+														</xsl:attribute>
+														<xsl:value-of select="./TypeLabel" />
+													</option>
+												</xsl:for-each>
+											</select>
+										</xsl:when>
+										<!-- dataEnumerative -->
+										<xsl:when test="count(./Value[/*/Results]) = 0">
+											<select>
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>]</xsl:text>
+												</xsl:attribute>
+												
+												<xsl:for-each select="./Value/ServiceTypes/ServiceType">
+													<option>
+														<xsl:attribute name="value">
+															<xsl:text></xsl:text>
+															<xsl:value-of select="./Id" />
+														</xsl:attribute>
+														<xsl:value-of select="./Name" />
+													</option>
+												</xsl:for-each>
 											</select>
 										</xsl:when>
 									</xsl:choose>

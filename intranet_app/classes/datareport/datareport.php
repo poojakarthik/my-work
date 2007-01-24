@@ -125,7 +125,6 @@
 				$this->Pull ('SQLGroupBy')->getValue ()
 			);
 			
-			
 			// From here, we may need to process values. For example, dates
 			// come into the system as an Array [day, month, year]. We need
 			// to change them to a string of YYYY-MM-DD
@@ -142,6 +141,22 @@
 							"Y-m-d", 
 							mktime (0, 0, 0, $arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year'])
 						);
+						
+						break;
+						
+					case "dataDatetime":
+						$arrValues [$strName] = date (
+							"Y-m-d H:i:s", 
+							mktime (
+								$arrFields [$strName]['hour'], $arrFields [$strName]['minute'], $arrFields [$strName]['second'],
+								$arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year']
+							)
+						);
+						
+						break;
+						
+					case "dataString":
+						$arrValues [$strName] = "%" . $arrFields [$strName] . "%";
 						
 						break;
 						
@@ -210,7 +225,19 @@
 					$oblstrDocField		= $oblarrField->Push (new dataString ('Documentation-Field',	$arrInput ['Documentation-Field']));
 					
 					$oblstrType			= $oblarrField->Push (new dataString ('Type',					$arrInput ['Type']));
-					$oblstrValue		= $oblarrField->Push (new $arrInput ['Type'] ('Value'));
+					
+					if (class_exists ($arrInput ['Type']))
+					{
+						if (is_subclass_of ($arrInput ['Type'], "dataPrimitive") || is_subclass_of ($arrInput ['Type'], "dataObject"))
+						{
+							$oblarrField->Push (new $arrInput ['Type'] ('Value'));
+						}
+						else
+						{
+							$oblarrValue		= $oblarrField->Push (new dataArray  ('Value'));
+							$oblarrValue->Push (new $arrInput ['Type'] ());
+						}
+					}
 				}
 			}
 			
