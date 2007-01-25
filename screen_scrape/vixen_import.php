@@ -72,6 +72,7 @@ class VixenImport extends ApplicationBaseClass
 		$this->insRatePlanRateGroup 	= new StatementInsert("RatePlanRateGroup");
 		$this->insServiceRateGroup		= new StatementInsert("ServiceRateGroup");
 		$this->insServiceRatePlan		= new StatementInsert("ServiceRatePlan");
+		$this->insServiceMobileDetail	= new StatementInsert("ServiceMobileDetail");
 		
 		$this->_insWithIdAccountGroup	= new StatementInsert("AccountGroup", NULL, TRUE);
 		$this->_insWithIdAccount		= new StatementInsert("Account", NULL, TRUE);
@@ -86,6 +87,10 @@ class VixenImport extends ApplicationBaseClass
 		$this->selServicesByType		= new StatementSelect(	"Service",
 														"Id, FNN",
 														"Account = <Account> AND ServiceType = <ServiceType>");
+														
+		$this->_selFindService 			= new StatementSelect("Service", "Id", "FNN = <fnn>", "CreatedOn DESC", "1");
+		$this->_selFindServiceIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
+
 	}
 	
 	// ------------------------------------//
@@ -394,6 +399,86 @@ class VixenImport extends ApplicationBaseClass
 		{
 			return FALSE;
 		}
+	}
+	
+	// add mobile details
+	function AddMobileDetails($arrDetails)
+	{	
+		$strFNN = $arrDetails['FNN'];
+		$strRatePlanName = $arrDetails['RatePlanName'];
+		$intService = (int)$arrDetails['Service'];
+		
+		// find the service
+		if (!$intService)
+		{
+			if ($strFNN)
+			{
+				$intService = $this->FindService($strFNN);
+				$arrDetails['Service'] = $intService;
+				if (!$intService)
+				{
+					$this->Error("Could not add MobileDetails : Service Not Found : $strFNN");
+					return FALSE;
+				}
+			}
+			else
+			{
+				$this->Error("Could not add MobileDetails : No Service, No FNN");
+				return FALSE;
+			}
+		}
+		
+		// Find the Plan
+		if ($strRatePlanName)
+		{
+			$intRatePlan = $this->FindRatePlan($strRatePlanName, SERVICE_TYPE_MOBILE);
+			if (!$intRatePlan)
+			{
+				$this->Error("Could not add MobileDetails, RatePlan: $strRatePlanName NOT FOUND : $strFNN");
+				return FALSE;
+			}
+		}
+		else
+		{
+			$this->Error("Could not add MobileDetails, Plan: $strPlanName NOT FOUND : $strFNN");
+			return FALSE;
+		}
+			
+		// add the details record
+		$this->insServiceMobileDetail->Execute($arrDetails);
+		
+		// add ServiceRatePlan record
+		$this->AddServiceRatePlan($intService, $intRatePlan);
+		
+		// add ServiceRateGroup records
+		if (is_array($this->arrConfig['RatePlan'][SERVICE_TYPE_MOBILE][$strRatePlanName]))
+		{
+			foreach ($this->arrConfig['RatePlan'][SERVICE_TYPE_MOBILE][$strRatePlanName] AS $strRecordType=>$strRateGroupName)
+			{
+				// find the record type
+				$intRecordType = $this->FindRecordType($strRecordType, SERVICE_TYPE_MOBILE);
+				
+				// find the rategroup
+				$intRateGroup = $this->FindRateGroup($strRateGroupName, $intRecordType);
+				
+				if ($intRateGroup)
+				{
+					// add ServiceRateGroup Record
+					$this->AddServiceRateGroup($intService, $intRateGroup);
+				}
+				else
+				{
+					$this->Error("RateGroup Not Found :$strRateGroupName");
+					return FALSE;
+				}
+			}
+		}
+		else
+		{
+			$this->Error("RatePlan Not Defined :$strRatePlanName");
+			return FALSE;
+		}
+		return TRUE;
 	}
 	
 	// add a single RateGroupRate record 
@@ -878,6 +963,60 @@ class VixenImport extends ApplicationBaseClass
 		// return the employee Id
 		return $this->_arrEmployee[$strLastName][$strFirstName];
 	}
+	
+	//------------------------------------------------------------------------//
+	// FindService
+	//------------------------------------------------------------------------//
+	/**
+	 * FindService()
+	 *
+	 * finds a service based on the FNN
+	 *
+	 * finds a service based on the FNN
+	 * 
+	 *
+	 * @return	bool					
+	 *
+	 * @method
+	 */
+	 function FindService($strFNN)
+	 {
+		if (!$strFNN)
+		{
+			return FALSE;
+		}
+		
+	 	$intResult = $this->_selFindService->Execute(Array("fnn" => (string)$strFNN));
+	 	if ($intResult === FALSE)
+	 	{
+			return FALSE;
+	 	}
+		
+	 	if ($arrResult = $this->_selFindService->Fetch())
+	 	{
+			// found the service
+	 		return $arrResult['Id'];
+	 	}
+	 	else
+	 	{
+			$arrParams = Array();
+	 		$arrParams['fnn'] = substr((string)$strFNN, 0, -2) . "__";
+	 		$intResult = $this->_selFindServiceIndial100->Execute($arrParams);
+	 		if ($intResult === FALSE)
+	 		{
+				return FALSE;
+	 		}
+	 		
+	 		if(($arrResult = $this->_selFindServiceIndial100->Fetch()))
+	 		{
+	 			// found the service
+	 			return $arrResult['Id'];
+	 		}
+	 	}
+	 	
+		// Return false if there was no match
+	 	return FALSE;
+	 }
 }
 
 

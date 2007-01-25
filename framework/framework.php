@@ -468,9 +468,9 @@
 	/**
 	 * FindServiceByFNN()
 	 *
-	 * Applies ownership based on the FNN
+	 * finds a service based on the FNN
 	 *
-	 * Applies ownership based on the FNN
+	 * finds a service based on the FNN
 	 * 
 	 *
 	 * @return	bool					

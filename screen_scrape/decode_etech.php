@@ -167,17 +167,32 @@
 		return $arrNote;
 	}
 	
-	function FetchMobileDetails()
+	function FetchMobileDetail()
 	{
 		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeServiceMobile ";
 		$strName	= 'MobileDetails';
 		$arrRow = $this->FetchResult($strName, $strQuery);
 		if ($arrRow)
 		{
-			$arrRow['DataArray'] = $this->ParseMobileDetails($arrRow['DataOriginal'], $arrRow['CustomerId']);
+			$arrRow['DataArray'] = $this->ParseMobileDetail($arrRow['DataOriginal'], $arrRow['CustomerId']);
 			unset($arrRow['DataOriginal']);
 		}
 		return $arrRow;
+	}
+	
+	function FetchMobileDetailsByAccount($intAccount)
+	{
+		$intAccount = (int)$intAccount;
+		
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeServiceMobile WHERE CustomerId = $intAccount";
+		$strName	= 'MobileDetailsByAccount';
+		$arrMobile = $this->FetchResult($strName, $strQuery);
+		if ($arrMobile)
+		{
+			$arrMobile['DataArray'] = $this->ParseMobileDetails($arrMobile['DataOriginal'], $arrMobile['CustomerId']);
+			unset($arrMobile['DataOriginal']);
+		}
+		return $arrMobile;
 	}
 	
 	function FetchPayment()
@@ -391,7 +406,7 @@
 	}
 	
 	// prase mobile details
-	function ParseMobileDetails($strMobileHtml, $intCustomerId)
+	function ParseMobileDetail($strMobileHtml, $intCustomerId)
 	{
 		// Read the DOM Document
 		$domDocument	= new DOMDocument ('1.0', 'utf-8');
@@ -665,7 +680,7 @@
 		{
 			return FALSE;
 		}
-		
+			
 		// Loop through each of the Rows
 		$intCurrentRow = 0;
 		foreach ($arrNotes as $arrNote)
@@ -687,24 +702,36 @@
 	}
 	
 	// decode mobile details
-	function DecodeMobileDetails($arrDetails)
+	function DecodeMobileDetail($arrDetails)
 	{
 		if (!is_array($arrDetails))
 		{
 			return FALSE;
 		}
 		
+		$strRatePlanName = $this->arrConfig['RatePlanConvert'][SERVICE_TYPE_MOBILE][trim($arrDetails ['Plan'])];
+		if (!$strRatePlanName)
+		{
+			// find the RatePlan
+			$strRatePlanName = $this->GuessRatePlan($arrDetails['CustomerId'], SERVICE_TYPE_MOBILE);
+			if (!$strRatePlanName)
+			{
+				return FALSE;
+			}
+		}
+		
 		return Array (
-			"ServiceMobileDetail"	=> Array (
-				"SimPUK"			=> $arrDetails ['SimPUK'],
-				"SimESN"			=> $arrDetails ['SimESN'],
-				"SimState"			=> $arrDetails ['SimState'],
-				"DOB"				=> (($arrDetails['DOB_month'] && $arrDetails['DOB_day'] && $arrDetails['DOB_year']) ? date ("Y-m-d", $arrDetails ['DOB']) : "0000-00-00"),
-				"Comments"			=> $arrDetails ['Comments'],
-			),
-			
-			"Plan"					=> $arrDetails ['Plan'],
-			"Parent"				=> $arrDetails ['Parent']
+			// extra information
+			"FNN"				=> CleanFNN($arrDetails['Number']),
+			"RatePlanName"		=> $strRatePlanName,
+			"PlanName"			=> $arrDetails ['Plan'],
+			"ParentFNN"			=> $arrDetails ['Parent'],
+			// table values
+			"SimPUK"			=> $arrDetails ['SimPUK'],
+			"SimESN"			=> $arrDetails ['SimESN'],
+			"SimState"			=> $arrDetails ['SimState'],
+			"DOB"				=> (($arrDetails['DOB_month'] && $arrDetails['DOB_day'] && $arrDetails['DOB_year']) ? date ("Y-m-d", $arrDetails ['DOB']) : "0000-00-00"),
+			"Comments"			=> $arrDetails ['Comments']
 		);
 	}
 	
@@ -714,6 +741,21 @@
 		// clean the output array
 		$arrOutput = Array();
 		
+		$MonthAbbr = Array (
+			"Jan"	=> "1",
+			"Feb"	=> "2",
+			"Mar"	=> "3",
+			"Apr"	=> "4",
+			"May"	=> "5",
+			"Jun"	=> "6",
+			"Jul"	=> "7",
+			"Aug"	=> "8",
+			"Sep"	=> "9",
+			"Oct"	=> "10",
+			"Nov"	=> "11",
+			"Dec"	=> "12"
+		);
+	
 		// is this customer archived
 		$bolArchived = ($arrCustomer ['archived'] ? TRUE : FALSE);
 		
@@ -1148,6 +1190,82 @@
 		}
 		
 		return $arrFullOutput;
+	}
+	
+	// ------------------------------------//
+	// GUESS
+	// ------------------------------------//
+	
+	// guess the new rateplane name for a service type far a customer
+	// by using the rategroups and a little glue sniffing
+	function GuessRatePlan($intCustomer, $intServiceType)
+	{
+		$intCustomer 	= (int)$intCustomer;
+		$intServiceType = (int)$intServiceType;
+		if (!$intCustomer || !$intServiceType)
+		{
+			return FALSE;
+		}
+		
+		// get customer details
+		$strQuery 	= "SELECT DataSerialized AS DataSerialised FROM ScrapeAccount WHERE CustomerId = $intCustomer";
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		if (!$sqlResult)
+		{
+			// return false if we can't get the results
+			Return FALSE;
+		}
+		$arrRow = $sqlResult->fetch_assoc();
+		if ($arrRow)
+		{
+			$arrCustomer = unserialize($arrRow['DataSerialised']);
+		}
+		else
+		{
+			return FALSE;
+		}
+		
+		// put Rates into an array
+		$arrRateGroup = Array();
+		foreach($this->arrConfig['RecordType'] AS $strRecordType=>$intServiceType)
+		{
+			if ($arrCustomer[$strRecordType])
+			{
+				$arrRateGroup[$strRecordType] = $arrCustomer[$strRecordType];
+			}
+		}
+		
+		// decode Rate Groups : returns	: Array[intServiceType][strRecordType] = $strRateGroupName
+		$arrRateGroup = $this->DecodeRateGroup($arrRateGroup);
+		
+		// clean the plan scores array
+		$arrPlanScores = Array();
+				
+		// Score plans
+		foreach($arrRateGroup[$intServiceType] AS $strRecordType=>$strRateGroupName)
+		{
+			// add to RatePlan scores for each plan
+			foreach ($this->arrConfig['RatePlan'][$intServiceType] AS $strPlan=>$arrRateGroups)
+			{
+				// is this RateGroup part of this plan
+				if ($arrRateGroups[$strRecordType] == $strRateGroupName)
+				{
+					// if so, score a goal for this plan
+					$arrPlanScores[$strPlan]++;
+				}
+			}
+		}
+		
+		// sort the array of plans & get the highest scoring plan
+		$bolSorted = asort($arrPlanScores);
+		if ($bolSorted)
+		{
+			return array_pop(array_keys($arrPlanScores));
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
  }
 
