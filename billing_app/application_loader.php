@@ -115,6 +115,7 @@ require_once($strFrameworkDir."exception_vixen.php");
 
 // load modules
 require_once($strModuleDir."module_printing.php");
+require_once($strModuleDir."module_etech.php");
 
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
