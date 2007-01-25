@@ -32,22 +32,12 @@
 	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
 	$oblstrDisputed = $oblarrUIValues->Push (new dataFloat ('Disputed'));
 	
-	if ($_POST ['Disputed'])
+	if ($_POST ['Resolve'])
 	{
-		$oblstrDisputed->setValue ($_POST ['Disputed']);
-		
-		// If we have set a dispute forward
-		$oblfltDisputed = new dataFloat ('Disputed');
-		
-		// Check the Dispute is valid
-		if ($oblfltDisputed->setValue ($_POST ['Disputed']))
-		{
-			$invInvoice->Dispute ($_POST ['Disputed']);
-			
-			// If it is valid, show a Confirmation
-			$Style->Output ('xsl/content/invoice/dispute/applied.xsl');
-			exit;
-		}
+		$invInvoice->Resolve ();
+		// If it is valid, show a Confirmation
+		$Style->Output ('xsl/content/invoice/dispute/resolved.xsl');
+		exit;
 	}
 	else
 	{

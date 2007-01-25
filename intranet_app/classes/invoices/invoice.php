@@ -246,8 +246,8 @@
 				"Status"		=> INVOICE_DISPUTED_SETTLED
 			);
 			
-			$updDispute = new StatementUpdate ('Invoice', 'Id = <Id>', $arrResolve);
-			$updDispute->Execute ($arrDispute, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			$updDispute = new StatementUpdate ('Invoice', 'Id = <Id> AND Status = ' . INVOICE_DISPUTED, $arrResolve);
+			$updDispute->Execute ($arrResolve, Array ('Id' => $this->Pull ('Id')->getValue ()));
 		}
 	}
 	

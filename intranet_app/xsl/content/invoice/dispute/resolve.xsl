@@ -10,7 +10,7 @@
 		<h1>Resolve Invoice Dispute</h1>
 		<div class="Seperator"></div>
 		
-		<form method="post" action="invoice_dispute_apply.php">
+		<form method="post" action="invoice_dispute_resolve.php">
 			<input type="hidden" name="Id">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
@@ -40,6 +40,18 @@
 							</xsl:call-template>
 						</th>
 						<td><xsl:value-of select="/Response/Invoice/Disputed" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Resolve')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<input type="checkbox" name="Resolve" value="1" />
+							Yes, Resolve this Dispute
+						</td>
 					</tr>
 				</table>
 			</div>
