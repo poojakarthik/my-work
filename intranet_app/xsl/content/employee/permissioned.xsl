@@ -4,10 +4,10 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Employee Priviledges Redefined</h1>
+		<h1>Employee Permissions Redefined</h1>
 		
 		<p>
-			The priviledges that you selected have been successfully 
+			The Permissions that you selected have been successfully 
 			been applied to the Employee you selected.
 		</p>
 		

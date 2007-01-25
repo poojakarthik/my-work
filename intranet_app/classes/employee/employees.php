@@ -101,7 +101,7 @@
 				"Session"			=> "",
 				"Karma"				=> 0,
 				"PabloSays"			=> PABLO_TIP_POLITE,
-				"Priviledges"		=> 0,
+				"Privileges"		=> 0,
 				"Archived"			=> 0
 			);
 			

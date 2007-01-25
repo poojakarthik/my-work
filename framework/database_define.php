@@ -1975,7 +1975,7 @@
 				 
 				 
 	// Define Columns 
-	$strName = "Priviledges"; 
+	$strName = "Privileges"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 

@@ -108,7 +108,7 @@
 				if (DEBUG_MODE == TRUE)
 				{
 					// Get user permission
-					$intUserPermission = $this->_athAuthentication->AuthenticatedEmployee ()->Pull('Priviledges')->GetValue();
+					$intUserPermission = $this->_athAuthentication->AuthenticatedEmployee ()->Pull('Privileges')->GetValue();
 	
 					// Check if the user is allowed to view debug info
 					if (HasPermission($intUserPermission, PERMISSION_DEBUG))

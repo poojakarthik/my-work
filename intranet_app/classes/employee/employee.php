@@ -100,7 +100,7 @@
 			if ($aemAuthenticatedEmployee->Pull ('Id')->getValue () <> $this->Pull ('Id')->getValue ())
 			{
 				// If this person isn't an Admin user, then they shouldn't be in this Method, so throw an exception
-				if (!HasPermission ($aemAuthenticatedEmployee->Pull ('Priviledges')->getValue (), PERMISSIONG_ADMIN))
+				if (!HasPermission ($aemAuthenticatedEmployee->Pull ('Privileges')->getValue (), PERMISSIONG_ADMIN))
 				{
 					throw new Exception ('You do not have access to update this employee');
 				}
@@ -192,7 +192,7 @@
 			// Test each Permission
 			foreach ($GLOBALS['Permissions'] AS $intKey => $intValue)
 			{
-				if (HasPermission ($this->Pull ('Priviledges')->getValue (), $intKey))
+				if (HasPermission ($this->Pull ('Privileges')->getValue (), $intKey))
 				{
 					$oblarrPermissions->Push (new Permission ($intKey));
 				}
@@ -226,7 +226,7 @@
 			if ($aemAuthenticatedEmployee->Pull ('Id')->getValue () <> $this->Pull ('Id')->getValue ())
 			{
 				// If this person isn't an Admin user, then they shouldn't be in this Method, so throw an exception
-				if (!HasPermission ($aemAuthenticatedEmployee->Pull ('Priviledges')->getValue (), PERMISSIONG_ADMIN))
+				if (!HasPermission ($aemAuthenticatedEmployee->Pull ('Privileges')->getValue (), PERMISSIONG_ADMIN))
 				{
 					throw new Exception ('You do not have access to update this employee');
 				}
@@ -246,7 +246,7 @@
 			}
 			
 			$arrPermission = Array (
-				'Priviledges'		=> $intNewPermission
+				'Privileges'		=> $intNewPermission
 			);
 			
 			$updEmployeePermission = new StatementUpdate ('Employee', 'Id = <Id>', $arrPermission, 1);

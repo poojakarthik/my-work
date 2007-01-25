@@ -15,21 +15,13 @@
 // ---------------------------------------------------------------------------//
 // BASH
 // ---------------------------------------------------------------------------//
-//TODO!bash! rename Employee.Priviledges to Employee.Privileges (in the DB and in your code)
 //TODO!bash! add CreatedBy & ClosedBy when creating/closing a service
 //TODO!bash! add CreatedBy & CreatedOn when creating an account
-//TODO!bash! DON'T MAKE CHANGES TO TABLES IN THE DB WITHOUT DOCUMENTING THEM !!!!
-//TODO!bash! CHANGES HAVE BEEN MADE IN THE BUGREPORT TABLE AND NOT DOCUMENTED !!!!
-//TODO!bash! CHANGES HAVE BEEN MADE IN THE EMPLOYEE TABLE AND NOT DOCUMENTED !!!!
-//TODO!bash! record Phone, Mobile, Extension, Email for Employees 
 //TODO!bash! 3 URGENT ! - Mark an invoice as disputed and update the disputed $
 //TODO!bash! 3 URGENT ! - Resolve a disputed invoice
 
 //TODO!bash! SCRAPE...
-//TODO!bash! 1 URGENT !!!!!!! - Real Mobile Rates for each service
-//TODO!bash! Mobile details
 //TODO!bash! DD Details (CSV)
-//TODO!bash! 2 URGENT ! - Payment History
 //TODO!bash! Fix Other Broken Data
 //TODO!bash! Cost Centres
 //TODO!bash! Inbound Answer point

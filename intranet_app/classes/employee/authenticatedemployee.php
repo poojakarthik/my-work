@@ -59,21 +59,21 @@
 		private $_oblarrSession;
 		
 		//------------------------------------------------------------------------//
-		// _aepPriviledges
+		// _aepPrivileges
 		//------------------------------------------------------------------------//
 		/**
-		 * _aepPriviledges
+		 * _aepPrivileges
 		 *
 		 * Priviledge Management
 		 *
 		 * An object which controls the Priviledge Management in the System
 		 *
-		 * @type	AuthenticatedEmployeePriviledges
+		 * @type	AuthenticatedEmployeePrivileges
 		 *
 		 * @property
 		 */
 		 
-		private $_aepPriviledges;
+		private $_aepPrivileges;
 		
 		//------------------------------------------------------------------------//
 		// __construct
@@ -157,8 +157,8 @@
 				$this->_aeaAudit = $this->_oblarrSession->Push (new AuthenticatedEmployeeAudit ($this->Pull ('Id')->getValue ()));
 			}
 			
-			// Start the Priviledges System
-			$this->_aepPriviledges = $this->Push (new AuthenticatedEmployeePriviledges ($this));
+			// Start the Privileges System
+			$this->_aepPrivileges = $this->Push (new AuthenticatedEmployeePrivileges ($this));
 			
 			// If Karma ...
 			if ($this->Pull ('Karma')->getValue () < 0)
@@ -188,23 +188,23 @@
 		}
 		
 		//------------------------------------------------------------------------//
-		// Priviledges
+		// Privileges
 		//------------------------------------------------------------------------//
 		/**
-		 * Priviledges()
+		 * Privileges()
 		 *
-		 * Return the Priviledges Object
+		 * Return the Privileges Object
 		 *
-		 * Return the Priviledges Object
+		 * Return the Privileges Object
 		 *
-		 * @return	AuthenticatedEmployeePriviledges
+		 * @return	AuthenticatedEmployeePrivileges
 		 *
 		 * @method
 		 */
 		
-		public function Priviledges ()
+		public function Privileges ()
 		{
-			return $this->_aepPriviledges;
+			return $this->_aepPrivileges;
 		}
 		
 		//------------------------------------------------------------------------//

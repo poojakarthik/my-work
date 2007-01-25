@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// AuthenticatedEmployeePriviledges.php
+	// AuthenticatedEmployeePrivileges.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * AuthenticatedEmployeePriviledges.php
+	 * AuthenticatedEmployeePrivileges.php
 	 *
-	 * File for the AuthenticatedEmployeePriviledges Class
+	 * File for the AuthenticatedEmployeePrivileges Class
 	 *
-	 * File for the AuthenticatedEmployeePriviledges Class
+	 * File for the AuthenticatedEmployeePrivileges Class
 	 *
-	 * @file	AuthenticatedEmployeePriviledges.php
+	 * @file	AuthenticatedEmployeePrivileges.php
 	 * @language	PHP
 	 * @package	intranet_app
 	 * @author	Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
  
 	//----------------------------------------------------------------------------//
-	// AuthenticatedEmployeePriviledges
+	// AuthenticatedEmployeePrivileges
 	//----------------------------------------------------------------------------//
 	/**
-	 * AuthenticatedEmployeePriviledges
+	 * AuthenticatedEmployeePrivileges
 	 *
-	 * Manages Access Priviledges
+	 * Manages Access Privileges
 	 *
-	 * Manages Access Priviledges to certain Sections of the System
+	 * Manages Access Privileges to certain Sections of the System
 	 *
 	 *
 	 * @prefix	aep
 	 *
 	 * @package	intranet_app
-	 * @class	AuthenticatedEmployeePriviledges
+	 * @class	AuthenticatedEmployeePrivileges
 	 * @extends	dataObject
 	 */
 	
-	class AuthenticatedEmployeePriviledges extends dataObject
+	class AuthenticatedEmployeePrivileges extends dataObject
 	{
 		
 		//------------------------------------------------------------------------//
@@ -59,10 +59,10 @@
 		private $_aemAuthenticatedEmployee;
 		
 		//------------------------------------------------------------------------//
-		// _arrPriviledges
+		// _arrPrivileges
 		//------------------------------------------------------------------------//
 		/**
-		 * _arrPriviledges
+		 * _arrPrivileges
 		 *
 		 * Priviledge Definition Array
 		 *
@@ -73,7 +73,7 @@
 		 * @property
 		 */
 		
-		private $_arrPriviledges;
+		private $_arrPrivileges;
 		
 		//------------------------------------------------------------------------//
 		// __construct
@@ -81,9 +81,9 @@
 		/**
 		 * __construct()
 		 *
-		 * Created a new AuthenticatedEmployeePriviledges
+		 * Created a new AuthenticatedEmployeePrivileges
 		 *
-		 * Creates a new AuthenticatedEmployeePriviledges Object which controls access
+		 * Creates a new AuthenticatedEmployeePrivileges Object which controls access
 		 * to particular parts of the System
 		 *
 		 * @method
@@ -92,14 +92,14 @@
 		function __construct (AuthenticatedEmployee &$aemAuthenticatedEmployee)
 		{
 			// Contruct the ObLib object
-			parent::__construct ('AuthenticatedEmployeePriviledges');
+			parent::__construct ('AuthenticatedEmployeePrivileges');
 			
 			$this->_aemAuthenticatedEmployee =& $aemAuthenticatedEmployee;
 			
-			$this->_arrPriviledges = Array ();
+			$this->_arrPrivileges = Array ();
 			
 			// Start the Antecedent at the Value that we have in the system
-			$antecedent = intval ($this->_aemAuthenticatedEmployee->Pull ('Priviledges')->getValue ());
+			$antecedent = intval ($this->_aemAuthenticatedEmployee->Pull ('Privileges')->getValue ());
 			
 			// Consequential Position
 			$concequent = 1;
@@ -107,7 +107,7 @@
 			// Work out what we have access to ...
 			while ($antecedent > 0)
 			{
-				$this->_arrPriviledges [$concequent] = ($antecedent % 2 == 1) ? true : false;
+				$this->_arrPrivileges [$concequent] = ($antecedent % 2 == 1) ? true : false;
 				
 				$antecedent = intval ($antecedent / 2);
 				$concequent = $concequent + $concequent;
@@ -130,7 +130,7 @@
 		 *											
 		 *	WARNING :
 		 *	Be aware that the value inside $intGuardValue is ALWAYS represented in Binary, whereas the key in
-		 *  the array $this->_arrPriviledges is represented in Decimal. $intGuardValue is converted from 
+		 *  the array $this->_arrPrivileges is represented in Decimal. $intGuardValue is converted from 
 		 *	Binary to Decimal during this comparison stage.
 		 *	
 		 *	This is done because when editing constant values, it's easier to keep track of Binary values
@@ -148,12 +148,12 @@
 			$intGuardValue = base_convert ($intGuardValue, 2, 10);
 			
 			// Check if it exists
-			if (!isset ($this->_arrPriviledges [$intGuardValue]))
+			if (!isset ($this->_arrPrivileges [$intGuardValue]))
 			{
 				return false;
 			}
 			
-			return $this->_arrPriviledges [$intGuardValue] == 1;
+			return $this->_arrPrivileges [$intGuardValue] == 1;
 		}
 	}
 	

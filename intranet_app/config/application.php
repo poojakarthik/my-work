@@ -67,7 +67,7 @@ require ("classes/authentication/authentication.php");
 // load employee classes
 require ("classes/employee/authenticatedemployee.php");
 require ("classes/employee/authenticatedemployeeaudit.php");
-require ("classes/employee/authenticatedemployeepriviledges.php");
+require ("classes/employee/authenticatedemployeeprivileges.php");
 
 // Do Authentication
 $athAuthentication = new Authentication ();
@@ -111,7 +111,7 @@ if (!HasPermission(PERMISSION_PUBLIC, $arrPage['Permission']))
 {
 	if ($athAuthentication->isAuthenticated ())
 	{
-		$intUserPermission = $athAuthentication->AuthenticatedEmployee()->Pull('Priviledges')->getValue();
+		$intUserPermission = $athAuthentication->AuthenticatedEmployee()->Pull('Privileges')->getValue();
 		
 		// Check if the user is allowed to view this page
 		if (!HasPermission($intUserPermission, $arrPage['Permission']))

@@ -517,7 +517,7 @@
 		// Loop through all the rows we found
 		foreach ($delRows as $intIndex => $delRow)
 		{
-			if ($intIndex < 3 || $intIndex > ($delRows->length - 3))
+			if ($intIndex < 3 || $intIndex >= ($delRows->length - 3))
 			{
 				continue;
 			}
