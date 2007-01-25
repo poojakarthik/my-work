@@ -2604,6 +2604,7 @@ class MySQLFunction
 	 		$arrParams[] = $strParam;
 	 	}
 	 	array_unshift($arrParams, $strType);
+	 	Debug($arrParams);
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
 		$mixResult = $this->_stmtSqlStatment->execute();
