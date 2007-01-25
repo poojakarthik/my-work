@@ -2473,12 +2473,17 @@ class MySQLFunction
 	 	}
 
 	 	// Add the WHERE clause
-	 	if ($strWhere != "")
+	 	if (is_array($strWhere))
 	 	{
 	 		// Find and replace the aliases in $strWhere
 	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
 	 		
 			$strQuery .= $strWhere . "\n";
+	 	}
+	 	elseif($strWhere)
+	 	{
+			$strQuery .= $strWhere . "\n";
+			$this->_arrWhereAliases = NULL;
 	 	}
 	 	else
 	 	{
@@ -2586,26 +2591,29 @@ class MySQLFunction
 	 	}
 		
 	 	// Bind the WHERE data to our mysqli_stmt
-	 	foreach ($this->_arrWhereAliases as $strAlias)
+	 	if (is_array($this->_arrWhereAliases))
 	 	{
-	 		$strType .= $this->GetDBInputType($arrWhere[$strAlias]);
-			
-			$strParam = "";
-			
-			if ($arrWhere[$strAlias] instanceOf MySQLFunction)
-			{
-				$strParam = $arrWhere[$strAlias]->getFunction ();
-			}
-			else
-			{
-				$strParam = $arrWhere[$strAlias];
-			}
-			
-	 		$arrParams[] = $strParam;
+		 	foreach ($this->_arrWhereAliases as $strAlias)
+		 	{
+		 		$strType .= $this->GetDBInputType($arrWhere[$strAlias]);
+				
+				$strParam = "";
+				
+				if ($arrWhere[$strAlias] instanceOf MySQLFunction)
+				{
+					$strParam = $arrWhere[$strAlias]->getFunction ();
+				}
+				else
+				{
+					$strParam = $arrWhere[$strAlias];
+				}
+				
+		 		$arrParams[] = $strParam;
+		 	}
+		 	
+		 	array_unshift($arrParams, $strType);
+			call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 	 	}
-	 	
-	 	array_unshift($arrParams, $strType);
-		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
 		$mixResult = $this->_stmtSqlStatment->execute();
 		$this->Debug($mixResult);
