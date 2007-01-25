@@ -109,6 +109,10 @@
 			$arrEmployee = Array (
 				'FirstName'				=> $arrData ['FirstName'],
 				'LastName'				=> $arrData ['LastName'],
+				'Email'					=> $arrData ['Email'],
+				'Extension'				=> $arrData ['Extension'],
+				'Phone'					=> $arrData ['Phone'],
+				'Mobile'				=> $arrData ['Mobile'],
 				'UserName'				=> $arrData ['UserName']
 			);
 			

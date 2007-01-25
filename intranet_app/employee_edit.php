@@ -45,11 +45,19 @@
 	
 	$oblstrFirstName	= $oblarrUIValues->Push (new dataString ('FirstName',	$empEmployee->Pull ('FirstName')->getValue ()));
 	$oblstrLastName		= $oblarrUIValues->Push (new dataString ('LastName',	$empEmployee->Pull ('LastName')->getValue ()));
+	$oblstrEmail		= $oblarrUIValues->Push (new dataString ('Email',		$empEmployee->Pull ('Email')->getValue ()));
+	$oblstrExtension	= $oblarrUIValues->Push (new dataString ('Extension',	$empEmployee->Pull ('Extension')->getValue ()));
+	$oblstrPhone		= $oblarrUIValues->Push (new dataString ('Phone',		$empEmployee->Pull ('Phone')->getValue ()));
+	$oblstrMobile		= $oblarrUIValues->Push (new dataString ('Mobile',		$empEmployee->Pull ('Mobile')->getValue ()));
 	$oblstrUserName		= $oblarrUIValues->Push (new dataString ('UserName',	$empEmployee->Pull ('UserName')->getValue ()));
 	$oblbolArchive		= $oblarrUIValues->Push (new dataBoolean('Archived'));
 	
 	if ($_POST ['FirstName'])	$oblstrFirstName->setValue	($_POST ['FirstName']);
 	if ($_POST ['LastName'])	$oblstrLastName->setValue	($_POST ['LastName']);
+	if ($_POST ['Email'])		$oblstrEmail->setValue	($_POST ['Email']);
+	if ($_POST ['Extension'])	$oblstrExtension->setValue	($_POST ['Extension']);
+	if ($_POST ['Phone'])		$oblstrPhone->setValue	($_POST ['Phone']);
+	if ($_POST ['Mobile'])		$oblstrMobile->setValue	($_POST ['Mobile']);
 	if ($_POST ['UserName'])	$oblstrUserName->setValue 	($_POST ['UserName']);
 	if ($_POST ['Archived'])	$oblbolArchive->setValue 	(isset ($_POST ['Archived']) ? TRUE : FALSE);
 	
@@ -74,6 +82,10 @@
 					Array (
 						"FirstName"		=> $_POST ['FirstName'],
 						"LastName"		=> $_POST ['LastName'],
+						"Email"			=> $_POST ['Email'],
+						"Extension"		=> $_POST ['Extension'],
+						"Phone"			=> $_POST ['Phone'],
+						"Mobile"		=> $_POST ['Mobile'],
 						"UserName"		=> $_POST ['UserName'],
 						"PassWord"		=> $_POST ['PassWord']['0']
 					)

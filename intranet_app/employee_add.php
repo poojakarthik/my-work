@@ -26,6 +26,10 @@
 	
 	$oblstrFirstName	= $oblarrUIValues->Push (new dataString ('FirstName'));
 	$oblstrLastName		= $oblarrUIValues->Push (new dataString ('LastName'));
+	$oblstrEmail		= $oblarrUIValues->Push (new dataString ('Email'));
+	$oblstrExtension	= $oblarrUIValues->Push (new dataString ('Extension'));
+	$oblstrPhone		= $oblarrUIValues->Push (new dataString ('Phone'));
+	$oblstrMobile		= $oblarrUIValues->Push (new dataString ('Mobile'));
 	$oblstrUserName		= $oblarrUIValues->Push (new dataString ('UserName'));
 	$oblintDOBYear		= $oblarrUIValues->Push (new dataInteger('DOB-year'));
 	$oblintDOBMonth		= $oblarrUIValues->Push (new dataInteger('DOB-month'));
@@ -33,6 +37,10 @@
 	
 	if ($_POST ['FirstName'])	$oblstrFirstName->setValue	($_POST ['FirstName']);
 	if ($_POST ['LastName'])	$oblstrLastName->setValue	($_POST ['LastName']);
+	if ($_POST ['Email'])		$oblstrEmail->setValue		($_POST ['Email']);
+	if ($_POST ['Extension'])	$oblstrExtension->setValue	($_POST ['Extension']);
+	if ($_POST ['Phone'])		$oblstrPhone->setValue		($_POST ['Phone']);
+	if ($_POST ['Mobile'])		$oblstrMobile->setValue		($_POST ['Mobile']);
 	if ($_POST ['UserName'])	$oblstrUserName->setValue 	($_POST ['UserName']);
 	if ($_POST ['DOB-year'])	$oblintDOBYear->setValue	($_POST ['DOB-year']);
 	if ($_POST ['DOB-month'])	$oblintDOBMonth->setValue	($_POST ['DOB-month']);
@@ -63,6 +71,10 @@
 					Array (
 						"FirstName"		=> $_POST ['FirstName'],
 						"LastName"		=> $_POST ['LastName'],
+						"Email"			=> $_POST ['Email'],
+						"Extension"		=> $_POST ['Extension'],
+						"Phone"			=> $_POST ['Phone'],
+						"Mobile"		=> $_POST ['Mobile'],
 						"UserName"		=> $_POST ['UserName'],
 						"DOB-year"		=> $_POST ['DOB-year'],
 						"DOB-month"		=> $_POST ['DOB-month'],

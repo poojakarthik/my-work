@@ -89,6 +89,10 @@
 			$arrEmployee = Array (
 				"FirstName"			=> $arrData ['FirstName'],
 				"LastName"			=> $arrData ['LastName'],
+				"Email"				=> $arrData ['Email'],
+				"Extension"			=> $arrData ['Extension'],
+				"Phone"				=> $arrData ['Phone'],
+				"Mobile"			=> $arrData ['Mobile'],
 				"UserName"			=> $arrData ['UserName'],
 				"PassWord"			=> sha1 ($arrData ['PassWord']),
 				"DOB"				=> date ("Y-m-d", mktime (0, 0, 0, $arrData ['DOB-month'], $arrData ['DOB-day'], $arrData ['DOB-year'])),
