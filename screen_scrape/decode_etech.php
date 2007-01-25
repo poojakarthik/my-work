@@ -167,11 +167,24 @@
 		return $arrNote;
 	}
 	
+	function FetchMobileDetails()
+	{
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeServiceMobile ";
+		$strName	= 'MobileDetails';
+		$arrMobile = $this->FetchResult($strName, $strQuery);
+		if ($arrMobile)
+		{
+			$arrMobile['DataArray'] = $this->ParseMobileDetails($arrMobile['DataOriginal'], $arrMobile['CustomerId']);
+			unset($arrMobile['DataOriginal']);
+		}
+		return $arrMobile;
+	}
+	
 	// generic fetch
 	function FetchResult($strName, $strQuery)
 	{
 		// check if we have the results yet
-		if (!$this->sqlResult[$strName])
+		if (!isset ($this->sqlResult[$strName]) || !$this->sqlResult[$strName])
 		{
 			// init the counter & total
 			$this->sqlResult[$strName]['count'] = 0;
@@ -364,6 +377,61 @@
 		return $arrNotes;
 	}
 	
+	// prase mobile details
+	function ParseMobileDetails($strMobileHtml, $intCustomerId)
+	{
+		// Read the DOM Document
+		$domDocument	= new DOMDocument ('1.0', 'utf-8');
+		@$domDocument->LoadHTML ($strMobileHtml);
+		
+		$dxpPath		= new DOMXPath ($domDocument);
+		
+		
+		//-----------------------------------------------
+		//	Ok - Freeze Frame.
+		//-----------------------------------------------
+		
+		$delForm = $dxpPath->Query ("//form[@name='form1']")->Item (0);
+		
+		// Loop through each of the Rows
+		$arrDetails = Array ();
+		
+		$domForm = new DOMDocument ('1.0', 'utf-8');
+		@$domForm->appendChild (
+			$domForm->importNode (
+				$delForm,
+				TRUE
+			)
+		);
+			
+		$xpaForm = new DOMXPath ($domForm);
+		
+		$dnlNumber		= $xpaForm->Query ("//input[@id='number']");
+		$dnlSimPUK		= $xpaForm->Query ("//input[@id='puk']");
+		$dnlSimESN		= $xpaForm->Query ("//input[@id='sim_esn_num']");
+		$dnlSimState	= $xpaForm->Query ("//select[@id='sim_state']/option[@selected]");
+		$dnlPlan		= $xpaForm->Query ("//select[@id='group_id']/option[@selected]");
+		$dnlParent		= $xpaForm->Query ("//select[@name='shared_parent_number']/option[@selected]");
+		$dnlComments	= $xpaForm->Query ("//textarea[@id='comments']");
+		$dnlDOB_day		= $xpaForm->Query ("//select[@id='dob_day']/option[@selected]");
+		$dnlDOB_month	= $xpaForm->Query ("//select[@id='dob_month']/option[@selected]");
+		$dnlDOB_year	= $xpaForm->Query ("//select[@id='dob_year']/option[@selected]");
+		
+		$arrDetails['Number']		= (($dnlNumber->length		== 1) ? $dnlNumber->item (0)->getAttribute ("value") : "");
+		$arrDetails['SimPUK']		= (($dnlSimPUK->length		== 1) ? $dnlSimPUK->item (0)->getAttribute ("value") : "");
+		$arrDetails['SimESN']		= (($dnlSimESN->length		== 1) ? $dnlSimESN->item (0)->getAttribute ("value") : "");
+		$arrDetails['SimState']		= (($dnlSimState->length	== 1) ? $dnlSimState->item (0)->getAttribute ("value") : "");
+		$arrDetails['Plan']			= (($dnlPlan->length		== 1) ? $dnlPlan->item (0)->nodeValue : "");
+		$arrDetails['Parent']		= (($dnlParent->length		== 1) ? $dnlParent->item (0)->getAttribute ("value") : "");
+		$arrDetails['Comments']		= (($dnlComments->length	== 1) ? $dnlComments->item (0)->nodeValue : "");
+		$arrDetails['DOB_month']	= (($dnlDOB_month->length	== 1) ? $dnlDOB_month->item (0)->nodeValue : 0);
+		$arrDetails['DOB_day']		= (($dnlDOB_day->length		== 1) ? $dnlDOB_day->item (0)->nodeValue : 0);
+		$arrDetails['DOB_year']		= (($dnlDOB_year->length	== 1) ? $dnlDOB_year->item (0)->nodeValue : 0);
+		
+		// return array directly from data
+		return $arrDetails;
+	}
+	
 	// ------------------------------------//
 	// DECODE RECORDS
 	// ------------------------------------//
@@ -477,6 +545,28 @@
 		}
 		
 		return $arrNormalisedNotes;
+	}
+	
+	// decode mobile details
+	function DecodeMobileDetails($arrDetails)
+	{
+		if (!is_array($arrDetails))
+		{
+			return FALSE;
+		}
+		
+		return Array (
+			"ServiceMobileDetail"	=> Array (
+				"SimPUK"			=> $arrDetails ['SimPUK'],
+				"SimESN"			=> $arrDetails ['SimESN'],
+				"SimState"			=> $arrDetails ['SimState'],
+				"DOB"				=> (($arrDetails['DOB_month'] && $arrDetails['DOB_day'] && $arrDetails['DOB_year']) ? date ("Y-m-d", $arrDetails ['DOB']) : "0000-00-00"),
+				"Comments"			=> $arrDetails ['Comments'],
+			),
+			
+			"Plan"					=> $arrDetails ['Plan'],
+			"Parent"				=> $arrDetails ['Parent'],
+		);
 	}
 	
 	// decode a customer

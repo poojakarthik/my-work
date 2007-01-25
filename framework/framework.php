@@ -361,7 +361,7 @@
 	function __construct()
 	{
 		// connect to database if not already connected
-		if (!$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
+		if (!isset ($GLOBALS['dbaDatabase']) || !$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
 		{
 			$GLOBALS['dbaDatabase'] = new DataAccess();
 		}

@@ -2145,7 +2145,7 @@ class MySQLFunction
 		// Bind the VALUES data to our mysqli_stmt
 	 	$strType = "";
 		$arrParams = array();
-	 	if ($this->_bolIsPartialInsert)
+	 	if (isset ($this->_bolIsPartialInsert) && $this->_bolIsPartialInsert)
 	 	{
 			// partial insert
 			foreach ($this->_arrColumns as $mixKey => $mixColumn)

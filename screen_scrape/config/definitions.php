@@ -34,4 +34,7 @@
 // user name
 define("USER_NAME"						, "Scrape_app");
 
+// Log path (with trailing /)
+define("LOG_PATH"						, "/home/vixen_log/normalisation_app/");
+
 ?>

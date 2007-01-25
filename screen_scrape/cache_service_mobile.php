@@ -3,7 +3,7 @@
 	system ("clear;");
 	
 	require ("config/application_loader.php");
-	
+	require ("decode_etech.php");
 	
 	
 	// Create a new Report Object
@@ -13,10 +13,6 @@
 	);
 	
 	
-	
-	// Read the Customers CSV File
-	$cstCustomers = new Parser_CSV ('data/customers_short.csv');
-	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
 	
 	// Open a Connection/Session to ETECH
 	$cnnConnection = new Connection ();	
@@ -35,49 +31,58 @@
 	$insScrape = new StatementInsert ('ScrapeServiceMobile');
 	
 	
+	$objDecodeEtech = new VixenDecode (Array ());
 	
-	// Loop through each of the Customers
-	foreach ($cstCustomers->CustomerList () AS $intCustomerId)
+	while ($arrCustomer = $objDecodeEtech->FetchCustomer ())
 	{
-		
-		// Start a Timer for this Request
-		$fltStartTime = microtime (TRUE);
-		
-		// Pull the Information from ETECH
-		$strResponse = $cnnConnection->Transmit (
-			"GET",
-			"https://sp.teleconsole.com.au/sp/customers/extrainfo.php?customer_id=" . $intCustomerId
-		);
-		
-		// Count the Total Time
-		$fltTotalTime = microtime (TRUE) - $fltStartTime;
-		
-		
-		// Insert the Information into the Database
-		$arrScrape = Array (
-			'CustomerId'		=> $intCustomerId,
-			'DataOriginal'		=> $strResponse,
-			'DataSerialized'	=> ''
-		);
-		
-		$insScrape->Execute ($arrScrape);
-		
-		// Add something to the Report
-		$rptReport->AddMessageVariables (
-			"+	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>\n",
-			Array (
-				"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
-				"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),
-				"<CustomerID>"		=> $intCustomerId,
-				"<Response>"		=> "PAGE HAS BEEN CACHED"
-			)
-		);
-		
-		// Up the count
-		++$intCurrentRow;
-		
-		// Flush the data out
-		flush ();
+		foreach ($arrCustomer ['DataArray']['sn'] as $arrService)
+		{
+			if ($arrService ['AreaCode'] == "04")
+			{
+				// Start a Timer for this Request
+				$fltStartTime = microtime (TRUE);
+				
+				// Pull the Information from ETECH
+				$strResponse = $cnnConnection->Transmit (
+					"GET",
+					"https://sp.teleconsole.com.au/sp/customers/viewdetails.php" .
+					"?customer_id=" . $arrCustomer ['CustomerId'] . 
+					"&MBnumber=" . $arrService ['AreaCode'] . $arrService ['Number'] . 
+					"&editMb"
+				);
+				
+				// Count the Total Time
+				$fltTotalTime = microtime (TRUE) - $fltStartTime;
+				
+				// Insert the Information into the Database
+				$arrScrape = Array (
+					'CustomerId'		=> $arrCustomer ['CustomerId'],
+					'FNN'				=> $arrService ['AreaCode'] . $arrService ['Number'],
+					'DataOriginal'		=> $strResponse,
+					'DataSerialized'	=> ''
+				);
+				
+				$insScrape->Execute ($arrScrape);
+				
+				// Add something to the Report
+				$rptReport->AddMessageVariables (
+					"+	<CurrentRow>		<TotalTime>	<Account>	<FNN>	<Response>",
+					Array (
+						"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
+						"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),
+						"<Account>"			=> $arrCustomer ['CustomerId'],
+						"<FNN>"				=> $arrService ['AreaCode'] . $arrService ['Number'],
+						"<Response>"		=> "MOBILE HAS BEEN CACHED"
+					)
+				);
+				
+				// Up the count
+				++$intCurrentRow;
+				
+				// Flush the data out
+				flush ();
+			}
+		}
 	}
 	
 	echo "\n\n";
