@@ -916,6 +916,7 @@
 		{
 			$strInvoiceTable = 'Invoice';
 		}
+		// TODO!rich! figure out what the hell is wrong with this query
 		$qryBuildFile	= new Query();
 		$strColumns		= "'005|', $strInvoiceTable.Id - ".$arrMetaData['MinId'].", '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";

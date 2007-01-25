@@ -803,6 +803,7 @@ die();
 		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
 		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_TEMP, $arrUpdateData);
 		Debug($updInvoiceStatus->Error());
+		// TODO!rich! what the hell is wrong with this query?
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			Debug($updInvoiceStatus->Error());
