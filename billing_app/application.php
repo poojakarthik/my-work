@@ -805,6 +805,7 @@ die();
 		Debug($updInvoiceStatus->Error());
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
+			Debug($updInvoiceStatus->Error());
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return;
