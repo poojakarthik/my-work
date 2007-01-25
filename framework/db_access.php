@@ -2473,17 +2473,12 @@ class MySQLFunction
 	 	}
 
 	 	// Add the WHERE clause
-	 	if (is_array($strWhere))
+	 	if ($strWhere)
 	 	{
 	 		// Find and replace the aliases in $strWhere
 	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
 	 		
 			$strQuery .= $strWhere . "\n";
-	 	}
-	 	elseif($strWhere)
-	 	{
-			$strQuery .= $strWhere . "\n";
-			$this->_arrWhereAliases = NULL;
 	 	}
 	 	else
 	 	{
@@ -2591,7 +2586,7 @@ class MySQLFunction
 	 	}
 		
 	 	// Bind the WHERE data to our mysqli_stmt
-	 	if (is_array($this->_arrWhereAliases))
+	 	if (count($this->_arrWhereAliases) > 0)
 	 	{
 		 	foreach ($this->_arrWhereAliases as $strAlias)
 		 	{
