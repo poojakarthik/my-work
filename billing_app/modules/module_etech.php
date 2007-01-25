@@ -186,8 +186,8 @@
 		$arrDefine['SPDetails']		['Fax']				['Type']	= ETECH_FNN;
 		$arrDefine['SPDetails']		['URL']				['Type']	= ETECH_STRING;
 		$arrDefine['SPDetails']		['BPayCode']		['Type']	= ETECH_INTEGER;
-		$arrDefine['SPDetails']		['InvoiceDate']		['Type']	= ETECH_DATE_YYYY-MM-DD;
-		$arrDefine['SPDetails']		['DueByDate']		['Type']	= ETECH_DATE_YYYY-MM-DD;
+		$arrDefine['SPDetails']		['InvoiceDate']		['Type']	= ETECH_DATE_YYYY_MM_DD;
+		$arrDefine['SPDetails']		['DueByDate']		['Type']	= ETECH_DATE_YYYY_MM_DD;
 		
 		// Global Message (unused)
 		$arrDefine['GlobalMessage']	['Message']			['Type']	= ETECH_STRING;
@@ -555,9 +555,6 @@
 		
 		// Customer Details
 		//----------------------------------------------------------------------
-		
-		// TODO!rich! Determine check digit for customer ref numbers
-		// $intCheckDigit = ?????????;
 		
 		// Determine Invoice Type
 		switch($arrCustomerData['BillingMethod'])
@@ -1114,68 +1111,64 @@
 				// Process the field
 				switch ($arrField['Type'])
 				{
-					case BILL_TYPE_INTEGER:
+					case ETECH_ROW:
 						if (!$strValue)
 						{
 							$strValue = "0";
 						}
-						$strTemp = sprintf("% ".$arrField['Length']."d", ((int)$strValue));
-						if(substr($strValue, 0, 1) == "-")
-						{
-							$strTemp = "-".substr($strTemp, 1);
-						}
-						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_LEFT);
+						$strValue = str_pad((int)$strValue, 3, "0", STR_PAD_LEFT);
 						break;
-					case BILL_TYPE_CHAR:
+					case ETECH_INTEGER:
+						if (!(int)$strValue)
+						{
+							$strValue = "0";
+						}
+						$strValue = (int)$strValue;
+						break;
+					case ETECH_FNN:
+						if (!(int)$strValue)
+						{
+							$strValue = "0123456789";
+						}
+						$strValue = str_pad((int)$strValue, 10, "0", STR_PAD_LEFT);
+						break;
+					case ETECH_STRING:
 						if ($strValue == NULL)
 						{
 							$strValue = "";
 						}
-						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_RIGHT);
 						break;
-					case BILL_TYPE_BINARY:
+					case ETECH_DATE_YYYYMMDD:
+						if (!strtotime)
+						{
+							$strValue = "19700101";
+						}
+						break;
+					case ETECH_DATE_MONTH_YY:
+						if (!$strValue)
+						{
+							$strValue = "January 70";
+						}
+						break;
+					case ETECH_DATE_YYYY_MM_DD:
+						if (!$strValue)
+						{
+							$strValue = "1970-01-01";
+						}
+						break;
+					case ETECH_DATETIME:
+						if (strtotime($strValue) == 0)
+						{
+							$strValue = "1970-01-01 00:00:00";
+						}
+						break;
+					case ETECH_DURATION:
 						if ($strValue == NULL)
 						{
-							$strValue = "0";
+							$strValue = "0:00";
 						}
-						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_RIGHT);
 						break;
-					case BILL_TYPE_FLOAT:
-						if (!$strValue)
-						{
-							$strValue = "0";
-						}
-						$strValue = str_pad((float)$strValue, $arrField['Length'], " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_SHORTDATE:
-						if (!$strValue)
-						{
-							$strValue = "00/00/0000";
-						}
-						$strValue = str_pad($strValue, 10, " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_LONGDATE:
-						if (!$strValue)
-						{
-							$strValue = "00 Jan 0000";
-						}
-						$strValue = str_pad($strValue, 11, " ", STR_PAD_RIGHT);
-						break;
-					case BILL_TYPE_TIME:
-						if (!$strValue)
-						{
-							$strValue = "00:00:00";
-						}
-						$strValue = str_pad($strValue, 8, " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_DURATION:
-						if ($strValue == NULL)
-						{
-							$strValue = "0:00:00";
-						}
-						$strValue = str_pad($strValue, 9, " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_SHORTCURRENCY:
+					case ETECH_SHORT_CURRENCY:
 						if (!$strValue)
 						{
 							$strValue = "0";
@@ -1186,7 +1179,20 @@
 						{
 							$strTemp = "-".substr($strTemp, 1);
 						}
-						$strValue = str_pad($strTemp, 11, " ", STR_PAD_LEFT);
+						$strValue = $strTemp;
+						break;
+					case ETECH_LONG_CURRENCY:
+						if (!$strValue)
+						{
+							$strValue = "0";
+						}
+						
+						$strTemp = sprintf("%01.4f", ((float)$strValue));
+						if(substr($strValue, 0, 1) == "-")
+						{
+							$strTemp = "-".substr($strTemp, 1);
+						}
+						$strValue = $strTemp;
 						break;
 					default:
 						// Unknown Data Type
@@ -1213,9 +1219,9 @@
 	/**
 	 * GetRowType()
 	 *
-	 * Builds a sample bill file
+	 * Determines the Etech RowType from the Call's RecordType and ServiceType
 	 *
-	 * Builds a sample bill file
+	 * Determines the Etech RowType from the Call's RecordType and ServiceType
 	 *
  	 * @param		string		$strRecordTypeName	The record type to work with
  	 * @param		integer		$intServiceType		The service type to work with

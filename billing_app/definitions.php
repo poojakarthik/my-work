@@ -112,6 +112,19 @@ define("BILL_TYPE_TIME"					, 704);
 define("BILL_TYPE_DURATION"				, 705);
 define("BILL_TYPE_SHORTCURRENCY"		, 707);
 
+// Datatypes for Etech's Bill Output Format
+define("ETECH_DATE_YYYYMMDD"			, 800);
+define("ETECH_STRING"					, 801);
+define("ETECH_DATE_MONTH_YY"			, 802);
+define("ETECH_INTEGER"					, 803);
+define("ETECH_FNN"						, 804);
+define("ETECH_DATE_YYYY_MM_DD"			, 805);
+define("ETECH_SHORT_CURRENCY"			, 806);
+define("ETECH_DATETIME"					, 807);
+define("ETECH_DURATION"					, 808);
+define("ETECH_LONG_CURRENCY"			, 809);
+define("ETECH_ROW"						, 810);
+
 // Bill Designs for Bill Printing
 define("BILL_DESIGN_TELCOBLUE"			, 1);
 define("BILL_DESIGN_VOICETALK"			, 2);
