@@ -358,7 +358,7 @@
 										<li>
 											<a>
 												<xsl:attribute name="href">
-													<xsl:text>invoice_view.php?Id=</xsl:text>
+													<xsl:text>invoice_view.php?Invoice=</xsl:text>
 													<xsl:value-of select="/Response/Invoice/Id" />
 												</xsl:attribute>
 												<xsl:text>View Invoice</xsl:text>

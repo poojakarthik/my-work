@@ -195,6 +195,60 @@
 		{
 			return new CDRs_Invoiced ($this);
 		}
+		
+		//------------------------------------------------------------------------//
+		// Dispute
+		//------------------------------------------------------------------------//
+		/**
+		 * Dispute()
+		 *
+		 * Apply a Dispute against this Invoice
+		 *
+		 * Apply a Dispute against this Invoice
+		 *
+		 * @param	Float			$fltDisputed			The amount to set the Dispute as (inc. GST)
+		 * @return	void
+		 *
+		 * @method
+		 */
+		
+		public function Dispute ($fltDisputed)
+		{
+			$fltDisputed = str_replace ("$", "", $fltDisputed);
+			
+			$arrDispute = Array (
+				"Disputed"		=> $fltDisputed,
+				"Status"		=> INVOICE_DISPUTED
+			);
+			
+			$updDispute = new StatementUpdate ('Invoice', 'Id = <Id>', $arrDispute);
+			$updDispute->Execute ($arrDispute, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
+		
+		//------------------------------------------------------------------------//
+		// Resolve
+		//------------------------------------------------------------------------//
+		/**
+		 * Resolve()
+		 *
+		 * Resolve a Dispute
+		 *
+		 * Resolve a Dispute
+		 *
+		 * @return	void
+		 *
+		 * @method
+		 */
+		
+		public function Resolve ()
+		{
+			$arrResolve = Array (
+				"Status"		=> INVOICE_DISPUTED_SETTLED
+			);
+			
+			$updDispute = new StatementUpdate ('Invoice', 'Id = <Id>', $arrResolve);
+			$updDispute->Execute ($arrDispute, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
 	}
 	
 ?>

@@ -112,12 +112,30 @@
 							<xsl:with-param name="field" select="string('Disputed')" />
 						</xsl:call-template>
 					</th>
-					<td>
-						<xsl:value-of select="/Response/Invoice/Disputed" />
-					</td>
+					<td><xsl:value-of select="/Response/Invoice/Disputed" /></td>
 				</tr>
 			</table>
 		</div>
+		
+		<div class="LinkAdd">
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
+					<xsl:value-of select="/Response/Invoice/Id" />
+				</xsl:attribute>
+				<xsl:text>Add/Change Disputed Amount</xsl:text>
+			</a>
+		</div>
+		<div class="LinkEdit">
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
+					<xsl:value-of select="/Response/Invoice/Id" />
+				</xsl:attribute>
+				<xsl:text>Resolve Disputed Amount</xsl:text>
+			</a>
+		</div>
+		
 		<div class="Seperator"></div>
 	</xsl:template>
 </xsl:stylesheet>
