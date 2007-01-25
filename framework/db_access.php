@@ -2586,29 +2586,25 @@ class MySQLFunction
 	 	}
 		
 	 	// Bind the WHERE data to our mysqli_stmt
-	 	if (count($this->_arrWhereAliases) > 0)
+	 	foreach ($this->_arrWhereAliases as $strAlias)
 	 	{
-		 	foreach ($this->_arrWhereAliases as $strAlias)
-		 	{
-		 		$strType .= $this->GetDBInputType($arrWhere[$strAlias]);
-				
-				$strParam = "";
-				
-				if ($arrWhere[$strAlias] instanceOf MySQLFunction)
-				{
-					$strParam = $arrWhere[$strAlias]->getFunction ();
-				}
-				else
-				{
-					$strParam = $arrWhere[$strAlias];
-				}
-				
-		 		$arrParams[] = $strParam;
-		 	}
-		 	
-		 	array_unshift($arrParams, $strType);
-			call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
+	 		$strType .= $this->GetDBInputType($arrWhere[$strAlias]);
+			
+			$strParam = "";
+			
+			if ($arrWhere[$strAlias] instanceOf MySQLFunction)
+			{
+				$strParam = $arrWhere[$strAlias]->getFunction ();
+			}
+			else
+			{
+				$strParam = $arrWhere[$strAlias];
+			}
+			
+	 		$arrParams[] = $strParam;
 	 	}
+	 	array_unshift($arrParams, $strType);
+		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 		
 		$mixResult = $this->_stmtSqlStatment->execute();
 		$this->Debug($mixResult);
