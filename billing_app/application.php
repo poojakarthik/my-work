@@ -732,7 +732,6 @@ die();
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_COMMITTED;
 		$updTempInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_TEMP, $arrUpdateData);
-		Debug($updTempInvoiceStatus->Error());
 		if($updTempInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{			
 			// Report and fail out
@@ -803,6 +802,7 @@ die();
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
 		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_TEMP, $arrUpdateData);
+		Debug($updInvoiceStatus->Error());
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			// Report and fail out
