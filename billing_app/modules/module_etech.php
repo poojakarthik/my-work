@@ -142,6 +142,7 @@
 		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
 		$arrColumns['RecordTypeName']	= "RType.Name";
 		$arrColumns['DisplayType']		= "RType.DisplayType";
+		$arrColumns['ServiceType']		= "RType.ServiceType";
 		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
 																"RecordType AS RType",
 																$arrColumns,
@@ -243,9 +244,9 @@
 		$arrDefine['ItemisedCall']	['Charge']			['Type']	= ETECH_LONG_CURRENCY;
 		
 		// Itemised S&E Data
-		$arrDefine['ItemisedCall']	['RecordCount']		['Type']	= ETECH_INTEGER;
-		$arrDefine['ItemisedCall']	['Description']		['Type']	= ETECH_STRING;
-		$arrDefine['ItemisedCall']	['Charge']			['Type']	= ETECH_LONG_CURRENCY;
+		$arrDefine['ItemisedS&E']	['RecordCount']		['Type']	= ETECH_INTEGER;
+		$arrDefine['ItemisedS&E']	['Description']		['Type']	= ETECH_STRING;
+		$arrDefine['ItemisedS&E']	['Charge']			['Type']	= ETECH_LONG_CURRENCY;
 		
 		// Charge Footer
 		$arrDefine['CategoryFooter']['CategoryId']		['Type']	= ETECH_INTEGER;
@@ -255,7 +256,7 @@
 		
 		// Service Header
 		$arrDefine['ServiceHeader']	['FNN']				['Type']	= ETECH_FNN;
-		$arrDefine['ServiceHeader']	['CostCentre']		['Type']	= ETECH_STRING;
+		//$arrDefine['ServiceHeader']	['CostCentre']		['Type']	= ETECH_STRING;
 		
 		// Service Detail
 		$arrDefine['ServiceDetail']	['RecordCount']		['Type']	= ETECH_INTEGER;
@@ -269,8 +270,8 @@
 		$arrDefine['ServiceTotals']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
 		
 		// Service Footer
-		$arrDefine['ServiceFooter']	['CostCentre']		['Type']	= ETECH_STRING;
-		$arrDefine['ServiceFooter']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
+		//$arrDefine['ServiceFooter']	['CostCentre']		['Type']	= ETECH_STRING;
+		//$arrDefine['ServiceFooter']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
 		
 		// Special Message 1
 		$arrDefine['SpecialMsg1']	['Message']			['Type']	= ETECH_STRING;
@@ -484,29 +485,47 @@
  	{
 		$arrDefine = $this->_arrDefine;
 		
-		// HEADER
-		// get details from invoice & customer
+		// Retrieve customer data
 		$arrWhere['Account'] = $arrInvoiceDetails['Account'];
-		
 		if ($this->_selCustomerDetails->Execute($arrWhere) === FALSE)
 		{
-
+			return FALSE;
+		}
+		else
+		{
+			$arrCustomerData	= $this->_selCustomerDetails->Fetch();
 		}
 		
 		$bolHasBillHistory	= $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account'])) ? TRUE : FALSE;
-		$arrCustomerData	= $this->_selCustomerDetails->Fetch();
 		$arrBillHistory		= $this->_selLastBills->FetchAll();
 		
-		// build output
-		$arrDefine['InvoiceDetails']	['InvoiceGroup']	['Value']	= $arrCustomerData['CustomerGroup'];
-		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
-		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month", time()));	// FIXME: At a later date.  This is fine for now.
-		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
-		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
+		// Invoice Brand Id
+		//----------------------------------------------------------------------
+		switch($arrCustomerData['CustomerGroup'])
+		{
+			case CUSTOMER_GROUP_VOICETALK:
+				$intCustomerGroup = ETECH_BRAND_VOICETALK;
+				break;
+			case CUSTOMER_GROUP_IMAGINE:
+				$intCustomerGroup = ETECH_BRAND_IMGAINE;
+				break;
+			case CUSTOMER_GROUP_TELCOBLUE:
+				$intCustomerGroup = ETECH_BRAND_TELCOBLUE;
+				break;
+			default:
+				// No Customer Group
+				Debug("***************** No Customer Group!!! *****************");
+				return FALSE;
+		}
+		$arrDefine['BrandId']	['BrandId']		['Value']	= $intCustomerGroup;
+		$arrFileData[] = $arrDefine['BrandId'];
+		
+		// Invoice Charges
+		//----------------------------------------------------------------------
 		if($bolHasBillHistory)
 		{
 			// Display the previous bill details
-			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'] + $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];						
+			$arrDefine['InvoiceCharge']	['PreviousBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'] + $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];						
 			
 			// WeReceived = payments from last invoice + payments from this invoice
 			$arrWeReceivedData['LastInvoiceRun']	= $arrBillHistory[0]['InvoiceRun'];
@@ -520,63 +539,68 @@
 			{
 				$arrWeReceived['WeReceived'] = 0.0;
 			}
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrWeReceived['WeReceived'];
+			$arrDefine['InvoiceCharge']	['Received']['Value']	= $arrWeReceived['WeReceived'];
 		}
 		else
 		{
 			// There is no previous bill
-			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= 0;						
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= 0;
+			$arrDefine['InvoiceCharge']	['PreviousBalance']	['Value']	= 0;						
+			$arrDefine['InvoiceCharge']	['Received']		['Value']	= 0;
 		}
-		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= $arrInvoiceDetails['Credits'];
-		$arrDefine['InvoiceDetails']	['Balance']			['Value']	= $arrInvoiceDetails['AccountBalance'];
-		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
-		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
-		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
+		$arrDefine['InvoiceCharge']	['Adjustments']		['Value']	= $arrInvoiceDetails['Credits'];
+		$arrDefine['InvoiceCharge']	['Overdue']			['Value']	= $arrInvoiceDetails['AccountBalance'];
+		$arrDefine['InvoiceCharge']	['NewCharges']		['Value']	= $arrInvoiceDetails['Balance'];
+		$arrDefine['InvoiceCharge']	['AmountOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
+		$arrFileData[] = $arrDefine['InvoiceCharge'];
 		
-		$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['BusinessName'];
-		$arrDefine['InvoiceDetails']	['AddressLine2']	['Value']	= $arrCustomerData['AddressLine1'];
-		$arrDefine['InvoiceDetails']	['AddressLine3']	['Value']	= $arrCustomerData['AddressLine2'];
-		// $arrDefine['InvoiceDetails']	['AddressLine4'] is unused at the moment
-
-		$arrDefine['InvoiceDetails']	['Suburb']			['Value']	= $arrCustomerData['Suburb'];
-		$arrDefine['InvoiceDetails']	['State']			['Value']	= $arrCustomerData['State'];
-		$arrDefine['InvoiceDetails']	['Postcode']		['Value']	= $arrCustomerData['Postcode'];
-		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days", time()));
+		// Customer Details
+		//----------------------------------------------------------------------
 		
-		$arrFileData[] = $arrDefine['InvoiceDetails'];
+		// TODO!rich! Determine check digit for customer ref numbers
+		// $intCheckDigit = ?????????;
 		
-		// MONTHLY COMPARISON BAR GRAPH
-		// build output
-		// FIXME
-		$arrDefine['GraphHeader']		['GraphType']		['Value']	= GRAPH_TYPE_VERTICALBAR;
-		$arrDefine['GraphHeader']		['GraphTitle']		['Value']	= "Account History";
-		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
-		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "$ Value";
-		$arrDefine['GraphHeader']		['ValueCount']		['Value']	= 1;
-		$arrDefine['GraphHeader']		['LegendText1']		['Value']	= "Monthly Spending";
-		$arrFileData[] = $arrDefine['GraphHeader'];
-		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", time());
-		$arrDefine['GraphData']		['Value1']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
-		$arrFileData[] = $arrDefine['GraphData'];
-		$intCount = 1;
-		foreach($arrBillHistory as $arrBill)
+		// Determine Invoice Type
+		switch($arrCustomerData['BillingMethod'])
 		{
-			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime($arrBill['CreatedOn']));
-			$arrDefine['GraphData']		['Value1']			['Value']	= $arrBill['Total'] + $arrBill['Tax'];
-			$arrFileData[] = $arrDefine['GraphData'];
-			$intCount++;
+			case BILLING_METHOD_POST:
+				$strBillingMethod = "P";
+				break;
+			case BILLING_METHOD_EMAIL:
+			case BILLING_METHOD_DO_NOT_SEND:
+				// Etech doesn't support "do not send", mark as Email
+				$strBillingMethod = "E";
+				break;
+			default:
+				Debug("***************** Unhandled Billing Method!!! *****************");
+				return FALSE;
 		}
-		$arrFileData[] = $arrDefine['GraphFooter'];
 		
-		// SUMMARY CHARGES
+		
+		$arrDefine['Customer']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
+		$arrDefine['Customer']		['CheckDigit']		['Value']	= MakeLuhn($arrInvoiceDetails['Account']);
+		$arrDefine['Customer']		['Address1']		['Value']	= $arrCustomerData['Address1'];
+		$arrDefine['Customer']		['Address2']		['Value']	= $arrCustomerData['Address2'];
+		$arrDefine['Customer']		['Suburb']			['Value']	= $arrCustomerData['Suburb'];
+		$arrDefine['Customer']		['Postcode']		['Value']	= $arrCustomerData['Postcode'];
+		$arrDefine['Customer']		['State']			['Value']	= $arrCustomerData['State'];
+		$arrDefine['Customer']		['BusinessName']	['Value']	= $arrCustomerData['BusinessName'];
+		$arrDefine['Customer']		['Firstname']		['Value']	= $arrCustomerData['FirstName'];
+		$arrDefine['Customer']		['Lastname']		['Value']	= $arrCustomerData['LastName'];
+		$arrDefine['Customer']		['InvoiceType']		['Value']	= $strBillingMethod;
+		$arrFileData[] = $arrDefine['Customer'];
+		
+		// Charge Summaries
+		//----------------------------------------------------------------------
+		$arrDefine['ChargeSummary']	['Category']		['Type']	= ETECH_STRING;
+		$arrDefine['ChargeSummary']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
+		
 		// get details from servicetype totals
 		$arrServiceTypeTotalVars['Account']		= $arrInvoiceDetails['Account'];
 		$arrServiceTypeTotalVars['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 		$mixResult = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
 		if ($mixResult === FALSE)
 		{
-
+			return FALSE;
 		}
 		
 		$arrServiceTypeTotals = $this->_selServiceTypeTotals->FetchAll();
@@ -585,214 +609,489 @@
 			$arrServiceTypeTotals = Array();
 		}
 		// build output
-		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
-			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrTotal['RecordTypeName'];
-			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrTotal['Charge'];
-			$arrFileData[] = $arrDefine['ChargeTotal'];
+			$arrDefine['ChargeSummary']	['Category']	['Value']	= $arrTotal['RecordTypeName'];
+			$arrDefine['ChargeSummary']	['Total']		['Value']	= $arrTotal['Charge'];
+			$arrFileData[] = $arrDefine['ChargeSummary'];
 		}
-		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
-		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
-		$arrFileData[] = $arrDefine['ChargeTotal'];
-		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
-		$arrFileData[] = $arrDefine['ChargeTotalsFooter'];
+		$arrDefine['ChargeSummary']		['Category']	['Value']	= "GST Total";
+		$arrDefine['ChargeSummary']		['Total']		['Value']	= $arrInvoiceDetails['Tax'];
+		$arrFileData[] = $arrDefine['ChargeSummary'];
 		
-		// PAYMENT DETAILS
-		// build output
-		$arrDefine['PaymentData']		['BillExpRef']		['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
-		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
-		$arrDefine['PaymentData']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
-		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
-		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
-		$arrDefine['PaymentData']		['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
-		$arrDefine['PaymentData']		['AddressLine1']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine1']['Value'];
-		$arrDefine['PaymentData']		['AddressLine2']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine2']['Value'];
-		$arrDefine['PaymentData']		['AddressLine3']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine3']['Value'];
-		$arrDefine['PaymentData']		['AddressLine4']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine4']['Value'];
-		$arrDefine['PaymentData']		['AddressLine5']	['Value']	= "{$arrDefine['InvoiceDetails']['Suburb']['Value']}   {$arrDefine['InvoiceDetails']['State']['Value']}   {$arrDefine['InvoiceDetails']['Postcode']['Value']}";
-		$arrDefine['PaymentData']		['PaymentMethod']	['Value']	= $arrCustomerData['BillingType'];
-		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= "FREE One Month Trial for our unlimited " .
-																		  "Dial Up Internet. Call customer care to " .
-																		  "get connected.";
-		$arrDefine['PaymentData']		['SpecialOffer2']	['Value']	= "View your bill online, simply go to " .
-																		  "www.telcoblue.com.au click on " .
-																		  "Customer Login, and use your " .
-																		  "supplied username and password. " .
-																		  "See calls made in the last few days plus " .
-																		  "your local calls itemised, or copy all your " .
-																		  "calls to a spreadsheet for analysis.";
-		$arrFileData[] = $arrDefine['PaymentData'];
+		// Category Header / Itemised Calls/ Category Footer
+		//----------------------------------------------------------------------
 		
-		// SUMMARY SERVICES
-		// get details from servicetype totals
-		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
-		$arrServices = $this->_selServices->FetchAll();
-		
-		// build output
-		$strCurrentService = "";
-		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
-		foreach($arrServices as $arrService)
-		{
-			// The individual RecordTypes for each Service
-			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
-			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
-
-			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
-			$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
-
-			foreach($arrServiceSummaries as $arrServiceSummary)
-			{
-				$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordTypeName'];
-				$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['CallCount'];
-				$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Charge'];
-				$arrFileData[] = $arrDefine['SvcSummaryData'];
-			}
-			
-			$arrServiceData['Service']		= $arrService['Id'];
-			$arrServiceData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
-			$this->_selServiceTotal->Execute($arrServiceData);
-			$arrServiceTotal = $this->_selServiceTotal->Fetch();
-			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $arrServiceTotal['TotalCharge'];
-			$arrFileData[] = $arrDefine['SvcSummSvcFooter'];
-		}
-		$arrFileData[] = $arrDefine['SvcSummaryFooter'];
-		
-		// DETAILS
 		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
 		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
 		if ($intItemisedCount === FALSE)
 		{
-
+			return FALSE;
 		}
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
+		
 		// reset counters
 		$strCurrentService		= "";
 		$strCurrentRecordType	= "";
+		$strCurrentPlace		= "";
+		$intRecordCount			= 0;
 		$fltRecordTypeTotal		= 0.0;
+		$intCategoryId			= 0;
 		$arrData				= Array();
-		// add start record (70)
-		$arrFileData[] = $arrDefine['ItemisedHeader'];
+		// add start record
+		$arrFileData[] = $arrDefine['DetailsHeader'];
 		// for each record
 		if($intItemisedCount)
 		{
 			foreach($arrItemisedCalls as $arrData)
 			{
 				// if new service
-				if($arrData['FNN'] != $strCurrentService)
+				if (($arrData['FNN'] != $strCurrentService) || ($arrData['RecordTypeName'] != $strCurrentRecordType))
 				{
-					// if old service exists
-					if ($strCurrentService != "")
+					// if old service and record type exists
+					if (($strCurrentService != "") && ($strCurrentRecordType != ""))
 					{
-						// add call type total
-						$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
-						$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
-						$strCurrentRecordType = "";
+						// Get the RecordType total
+						$arrSelectData['FNN']				= $strCurrentService;
+						$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
+						$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
+						if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
+						{
+							return FALSE;
+						}
+						$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
+						$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
 						
-						// add service total record (89)
-						$arrFileData[] = $arrDefine['ItemSvcFooter'];					
+						// add category footer
+						$arrDefine['CategoryFooter']['CategoryId']		['Value']	= $intCategoryId;
+						$arrDefine['CategoryFooter']['RecordTotal']		['Value']	= $intRecordCount;
+						$arrDefine['CategoryFooter']['FNN']				['Value']	= $strCurrentService;
+						$arrDefine['CategoryFooter']['Total']			['Value']	= $fltRecordTypeTotal;
+						$arrFileData[] = $arrDefine['CategoryFooter'];
 					}
 					// add service record (80)
-					$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= $arrData['FNN'];
-					$arrFileData[] = $arrDefine['ItemSvcHeader'];
-					
-					$strCurrentService = $arrData['FNN'];
-				}
-				
-				// if new type
-				if($arrData['RecordTypeName'] != $strCurrentRecordType)
-				{
-					// if old type exists
-					if($strCurrentRecordType != "")
-					{
-						// add call type total
-						$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
-						$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
-					}
-					// build header record (90)
-					$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= $arrData['RecordTypeName'];
-					$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
-					// reset counters
+					$arrDefine['CategoryHeader']['Category']		['Value']	= $arrData['RecordTypeName'];
+					$arrDefine['CategoryHeader']['FNN']				['Value']	= $arrData['FNN'];
+					$arrFileData[] = $arrDefine['CategoryHeader'];
+					$strCurrentService		= $arrData['FNN'];
 					$strCurrentRecordType	= $arrData['RecordTypeName'];
-					
-					// Get the RecordType total
-					$arrSelectData['FNN']				= $strCurrentService;
-					$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
-					$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
 
-					$this->_selRecordTypeTotal->Execute($arrSelectData);
-					$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
-					$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
+					// Do our Inbound Service Type hack...
+					if ($arrData['ServiceType'] == SERVICE_TYPE_INBOUND)
+					{
+						switch (substr($arrData['FNN'], 0, 2))
+						{
+							case "18":
+								$intServiceType = 1800;
+								break;
+							case "13":
+								$intServiceType = 1300;
+								break;
+							default:
+								$intServiceType = $arrData['ServiceType'];
+						}
+					}
+					else
+					{
+						$intServiceType = $arrData['ServiceType'];
+					}
+
+					// Determine the Row and Category Ids
+					$arrRowType		= $this->GetRowType($strCurrentRecordType, $intServiceType);
+					if ($arrRowType['RowType'] > 199)
+					{
+						$intCategoryId  = $arrRowType['RowType'] - 100;
+					}
+					else
+					{
+						$intCategoryId  = $arrRowType['RowType'];
+					}
+					$intCurrentRowType		= $arrRowType['RowType'];
+					$strCurrentRecordType	= $arrRowType['LongDesc'];
+					$strCurrentPlace		= $arrRowType['ShortDesc'];
+					
+					$intRecordCount = 0;
 				}
 				
 				// build charge record
-				switch($arrData['DisplayType'])
+				$intRecordCount++;
+				if ($intCurrentRowType >= 200)
 				{
-					// Type 92
-					case RECORD_DISPLAY_S_AND_E:
-						$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";
-						$arrDefine['ItemisedDataS&E']	['Description']		['Value']	= $strDescription;
-						$arrDefine['ItemisedDataS&E']	['Items']			['Value']	= (int)$arrData['Units'];
-						$arrDefine['ItemisedDataS&E']	['Charge']			['Value']	= $arrData['Charge'];
-						$arrFileData[] = $arrDefine['ItemisedDataS&E'];
-						break;
-					// Type 93
-					case RECORD_DISPLAY_DATA:
-						$arrDefine['ItemisedDataKB']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataKB']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrData['Destination'];
-						$arrDefine['ItemisedDataKB']	['DataTransfered']	['Value']	= (int)$arrData['Units'];
-						$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrData['Description'];
-						$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrData['Charge'];
-						$arrFileData[] = $arrDefine['ItemisedDataKB'];
-						break;
-					// Type 94
-					case RECORD_DISPLAY_SMS:
-						$arrDefine['ItemisedDataSMS']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataSMS']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataSMS']	['CalledParty']		['Value']	= $arrData['Destination'];
-						$arrDefine['ItemisedDataSMS']	['Items']			['Value']	= (int)$arrData['Units'];
-						$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrData['Description'];
-						$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrData['Charge'];
-						$arrFileData[] = $arrDefine['ItemisedDataSMS'];
-						break;
-					// Type 91
-					case RECORD_DISPLAY_CALL:
-					// Unknown Record Type (should never happen) - just display as a normal Call
-					default:
-						$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['Destination'];
-						$intHours		= floor((int)$arrData['Units'] / 3600);
-						$strDuration	= "$intHours:".date("i:s", (int)$arrData['Units']);
-						$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
-						$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrData['Description'];
-						$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrData['Charge'];
-						$arrFileData[] = $arrDefine['ItemisedDataCall'];
-						break;
+					// S&E and OC&C
+					$arrRow = $arrDefine['ItemisedS&E'];
+					$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";
+					$arrRow['RecordCount']		['Value']	= $intRecordCount;
+					$arrRow['Description']		['Value']	= $strDescription;
+					$arrRow['Charge']			['Value']	= $arrData['Charge'];
+					$arrRow['RecordType']		['Value']	= $intCurrentRowType;
+					$arrFileData[] = $arrRow;
+				}
+				else
+				{
+					// Everything else
+					$arrRow = $arrDefine['ItemisedCall'];
+					$arrRow['RecordCount']		['Value']	= $intRecordCount;
+					$arrRow['Datetime']			['Value']	= $arrData['StartDatetime'];
+					$arrRow['CalledParty']		['Value']	= $arrData['Destination'];
+					$arrRow['Description']		['Value']	= $strCurrentPlace;
+					$intMinutes		= (int)floor($arrData['Units'] / 60);
+					$intSeconds		= (int)($arrData['Units'] % 60);
+					$strDuration	= "$intMinutes:$intSeconds";
+					$arrRow['Duration']			['Value']	= $strDuration;
+					$arrRow['Charge']			['Value']	= $arrData['Charge'];
+					$arrRow['RecordType']		['Value']	= $intCurrentRowType;
+					$arrFileData[] = $arrRow;
 				}
 			}
-			$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
-			$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
-			// add service total record (89)
-			$arrFileData[] = $arrDefine['ItemSvcFooter'];	
-			// add end record (79)
-			$arrFileData[] = $arrDefine['ItemisedFooter'];
+			
+			// Get the RecordType total
+			$arrSelectData['FNN']				= $strCurrentService;
+			$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
+			$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
+			if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
+			{
+				return FALSE;
+			}
+			$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
+			$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
+			
+			// add category footer
+			$arrDefine['CategoryFooter']['CategoryId']		['Value']	= $intCategoryId;
+			$arrDefine['CategoryFooter']['RecordTotal']		['Value']	= $intRecordCount;
+			$arrDefine['CategoryFooter']['FNN']				['Value']	= $strCurrentService;
+			$arrDefine['CategoryFooter']['Total']			['Value']	= $fltRecordTypeTotal;
+			$arrFileData[] = $arrDefine['CategoryFooter'];
+			
+			// add details footer
+			$arrFileData[] = $arrDefine['DetailsFooter'];
 		}
-		// add invoice footer (18)
-		if ($arrInvoiceDetails['Balance'] >= BILLING_MINIMUM_TOTAL || $arrCustomerData['DeliveryMethod'] == BILLING_METHOD_EMAIL)
+		
+		// Service Header/Details/Totals/Footer
+		//----------------------------------------------------------------------
+
+		// get details from servicetype totals
+		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		$arrServices = $this->_selServices->FetchAll();
+		
+		// build output
+		$strCurrentService = "";
+		$arrFileData[] = $arrDefine['SvcSummHeader'];
+		foreach($arrServices as $arrService)
 		{
-			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= $arrCustomerData['DeliveryMethod'];
+			// The individual RecordTypes for each Service
+			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
+			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
+
+			$arrDefine['ServiceHeader']		['FNN']				['Value']	= $arrService['FNN'];
+			$arrFileData[] = $arrDefine['ServiceHeader'];
+			
+			$intRecordCount = 0;
+			foreach($arrServiceSummaries as $arrServiceSummary)
+			{
+				$intRecordCount++;
+				$arrDefine['ServiceDetail']	['RecordCount']		['Value']	= $intRecordCount;
+				$arrDefine['ServiceDetail']	['ChargeType']		['Value']	= $arrServiceSummary['RecordTypeName'];
+				$arrDefine['ServiceDetail']	['CallCount']		['Value']	= $arrServiceSummary['CallCount'];
+				$arrDefine['ServiceDetail']	['Charge']			['Value']	= $arrServiceSummary['Charge'];
+				$arrFileData[] = $arrDefine['ServiceDetail'];
+			}
+			
+			// Get ServiceTotal
+			$arrServiceData['Service']		= $arrService['Id'];
+			$arrServiceData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+			$this->_selServiceTotal->Execute($arrServiceData);
+			$arrServiceTotal = $this->_selServiceTotal->Fetch();
+			$arrDefine['ServiceTotals']		['RecordTotal']	['Value']	= $intRecordCount;
+			$arrDefine['ServiceTotals']		['FNN']			['Value']	= $arrService['FNN'];
+			$arrDefine['ServiceTotals']		['Total']		['Value']	= $arrServiceTotal['TotalCharge'];
+			$arrFileData[] = $arrDefine['ServiceTotals'];
+		}
+		
+		// Don't print the ServiceFooter, because we don't do Cost Centres 
+		//$arrFileData[] = $arrDefine['ServiceFooter'];
+		
+		$arrFileData[] = $arrDefine['SvcSummFooter'];
+		
+
+		// Special Messages
+		//----------------------------------------------------------------------
+		// TODO!rich! Find out what this message will be and hard code it
+		
+		// Credits
+		//----------------------------------------------------------------------
+		// TODO!rich! Find out if we are going to use this functionality....
+		
+		// Graph Info
+		//----------------------------------------------------------------------
+		// Global Graph Info
+		// TODO!rich! remove this date range hack
+		$strDateRange = date("d/m/Y", time()).":".date("d/m/Y", strtotime("-1 month", time()));
+		$arrDefine['GraphInfo']		['DateRange']		['Value']	= $strDateRange;
+		$arrFileData[] = $arrDefine['GraphInfo'];
+		
+		// Graph Data
+		$arrDefine['GraphData']		['CurrentMonth']	['Value']	= $arrInvoiceDetails['Balance'];
+		$arrDefine['GraphData']		['LastMonth']		['Value']	= $arrBillHistory[0];
+		$arrDefine['GraphData']		['2MonthsAgo']		['Value']	= $arrBillHistory[1];
+		$arrDefine['GraphData']		['3MonthsAgo']		['Value']	= $arrBillHistory[2];
+		$arrDefine['GraphData']		['4MonthsAgo']		['Value']	= $arrBillHistory[3];
+		$arrDefine['GraphData']		['5MonthsAgo']		['Value']	= $arrBillHistory[4];
+		$arrFileData[] = $arrDefine['GraphData'];
+
+		// Invoice Footer
+		$arrFileData[] = $arrDefine['InvoiceFooter'];
+
+	
+		// Process and implode the data so it can be inserted into the DB
+		if (($strFileContents = $this->GenerateInvoiceData($arrFileData)) === FALSE)
+		{
+			// Invalid data
+			return FALSE;
+		}
+
+		// Insert into InvoiceOutput table
+		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+		$arrWhere['Account']	= $arrInvoiceDetails['Account'];
+		$arrWhere['Data']		= $strFileContents;
+		if ($this->_insInvoiceOutput->Execute($arrWhere) === FALSE)
+		{
+			// Error
+			return FALSE;			
+		}
+		return TRUE;
+ 	}
+ 	
+ 	//------------------------------------------------------------------------//
+	// BuildOutput()
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildOutput()
+	 *
+	 * Builds the bill file
+	 *
+	 * Builds the bill file
+	 *
+	 * @param		string		strInvoiceRun	The Invoice Run to build from
+	 * @param		boolean		bolSample		optional This is a sample billing file
+	 *
+	 * @return		string						filename
+	 *
+	 * @method
+	 */
+ 	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
+ 	{
+		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
+		if ($selMetaData->Execute() === FALSE)
+		{
+			return FALSE;
+		}
+		$arrMetaData = $selMetaData->Fetch();
+		
+		if($arrMetaData['Invoices'] == 0)
+		{
+			// Nothing to do
+			return FALSE;
+		}
+
+		// generate filename
+		if($bolSample)
+		{
+			$strFilename	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.txt";
+			$strTempFile	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.tmp";
+			$strZipName		= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.zip";
 		}
 		else
 		{
-			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= BILLING_METHOD_DO_NOT_SEND;
+			$strFilename	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.txt";
+			$strTempFile	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.tmp";
+			$strZipName		= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.zip";
 		}
-		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		
-		// Process and implode the data so it can be inserted into the DB
-		$strFileContents = "";
+		// Use a MySQL select into file Query to generate the file
+		if($bolSample)
+		{
+			$strInvoiceTable = 'InvoiceTemp';
+		}
+		else
+		{
+			$strInvoiceTable = 'Invoice';
+		}
+		$qryBuildFile	= new Query();
+		$strColumns		= "'005|', $strInvoiceTable.Id - ".$arrMetaData['MinId'].", '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
+		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
+		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
+							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
+							"WHERE $strWhere\n";
+		if($bolSample)
+		{
+			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
+			{
+				$strQuery .= "LIMIT ".(int)$arrMetaData['MaxId'];
+			}
+			else
+			{
+				$strQuery .= "LIMIT ".rand((int)$arrMetaData['MinId'] , (int)$arrMetaData['MaxId'] - BILL_PRINT_SAMPLE_LIMIT).", ".BILL_PRINT_SAMPLE_LIMIT;
+			}
+		}
+		if (file_exists($strFilename))
+		{
+			unlink($strFilename);
+			unlink($strTempFile);
+			unlink($strZipName);
+		}
+		if ($qryBuildFile->Execute($strQuery) === FALSE)
+		{
+			return FALSE;
+		}
+		
+		// Write the file header
+		$strHeader		=	"001|".date("Ymd", time())."|$strFilename|TelcoBlue|".date("F y")."\n" .
+							"002|TelcoBlue|Locked Bag 4000||Fortitude Valley|4006|QLD|1300 835 262|07 3250 4228|www.telcoblue.com.au|0|".date("Y-m-d", time())."|".date("Y-m-d", strtotime("+".PAYMENT_TERMS_DEFAULT." days", time()))."\n" .
+							"003|\n" .
+							"004|1:TelcoBlue|2:Voicetalk|4:Imagine";
+		$ptrFile		= fopen($strFilename, "w");
+		fwrite($ptrFile, $strHeader);
+		fclose($ptrFile);
+		
+		// Append the invoice data from the temp file
+		$strCommand = "cat $strTempFile >> $strFilename";
+		exec($strCommand);		
+		
+		// Append metadata to bill output file
+		$strFooter		=	"099|".str_pad($arrMetaData['Invoices'], 10, " ", STR_PAD_LEFT);
+		$ptrFile		= fopen($strFilename, "a");
+		fwrite($ptrFile, $strFooter);
+		fclose($ptrFile);
+		
+		// zip files
+		$strCommand = "zip $strZipName $strFilename";
+		exec($strCommand);
+		
+		// set filename internally
+		$this->_strFilename = $strZipName;
+		
+		// return zip's filename
+		return $strZipName;
+ 	}
+ 	
+ 	//------------------------------------------------------------------------//
+	// SendOutput()
+	//------------------------------------------------------------------------//
+	/**
+	 * SendOutput()
+	 *
+	 * Sends the bill file
+	 *
+	 * Sends the bill file
+	 *
+	 * @param		boolean		bolSample		optional This is a sample billing file
+	 *
+	 * @return		boolean
+	 *
+	 * @method
+	 */
+ 	function SendOutput($bolSample)
+ 	{
+		// Set the remote directory
+		if ($bolSample)
+		{
+			$strRemoteDir	= BILL_PRINT_REMOTE_DIR_SAMPLE;
+			$strFile		= $this->_strSampleFile;
+		}
+		else
+		{
+			$strRemoteDir	= BILL_PRINT_REMOTE_DIR;
+			$strFile		= $this->Filename;
+		}
+		
+		/*
+		// Connect to FTP
+		$ptrFTP = ftp_connect(BILL_PRINT_HOST);
+		if (!ftp_login($ptrFTP, BILL_PRINT_USERNAME, BILL_PRINT_PASSWORD))
+		{
+			// Log in failed
+			return FALSE;
+		}
+		ftp_chdir($ptrFTP, $strRemoteDir);
+		
+		// Upload file
+		if(!ftp_put($ptrFTP, basename($strFile), $strFile, FTP_ASCII))
+		{
+			return FALSE;
+		}
+		
+		// Close the FTP connection
+		ftp_close($ptrFTP);
+		*/
+		return TRUE;
+ 	}
+	
+	//------------------------------------------------------------------------//
+	// BuildSample()
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildSample()
+	 *
+	 * Builds a sample bill file
+	 *
+	 * Builds a sample bill file
+	 *
+ 	 * @param		string		strInvoiceRun	The Invoice Run to build from
+ 	 * 
+	 * @return		string						filename
+	 *
+	 * @method
+	 */
+ 	function BuildSample($strInvoiceRun)
+ 	{
+		return $this->BuildOutput($strInvoiceRun, TRUE);
+ 	}
+ 	
+ 	//------------------------------------------------------------------------//
+	// SendSample()
+	//------------------------------------------------------------------------//
+	/**
+	 * SendOutput()
+	 *
+	 * Sends a sample bill file
+	 *
+	 * Sends a sample bill file
+	 *
+	 * @return		boolean
+	 *
+	 * @method
+	 */
+ 	function SendSample()
+ 	{
+		return $this->SendOutput(TRUE);
+ 	}
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// GenerateInvoiceData()
+	//------------------------------------------------------------------------//
+	/**
+	 * GenerateInvoiceData()
+	 *
+	 * Generates a block of invoice data
+	 *
+	 * Generates a block of invoice data from the passed indexed array
+	 * 
+	 * @param	array					Indexed array of data to be imploded and validated
+	 *
+	 * @return	mixed					string	: invoice data
+	 * 									FALSE	: invalid input
+	 *
+	 * @method
+	 */
+ 	protected function GenerateInvoiceData($arrFileData)
+ 	{
+		if (!is_array($arrFileData))
+		{
+			return FALSE;
+		}
+		
 		$i = 0;
 		// Loop through Records
 		foreach ($arrFileData as $strKey=>$arrRecord)
@@ -903,231 +1202,92 @@
 		}
 		
 		$strFileContents = rtrim($strFileContents);
-		
-//		Debug($strFileContents);
-//		die;
-		
-		// Insert into InvoiceOutput table
-		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
-		$arrWhere['Account']	= $arrInvoiceDetails['Account'];
-		$arrWhere['Data']		= $strFileContents;
-		if ($this->_insInvoiceOutput->Execute($arrWhere) === FALSE)
-		{
-			// Error
-
-			return FALSE;			
-		}
-		return TRUE;
  	}
  	
- 	//------------------------------------------------------------------------//
-	// BuildOutput()
-	//------------------------------------------------------------------------//
-	/**
-	 * BuildOutput()
-	 *
-	 * Builds the bill file
-	 *
-	 * Builds the bill file
-	 *
-	 * @param		string		strInvoiceRun	The Invoice Run to build from
-	 * @param		boolean		bolSample		optional This is a sample billing file
-	 *
-	 * @return		string						filename
-	 *
-	 * @method
-	 */
- 	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
- 	{
-		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
-		if ($selMetaData->Execute() === FALSE)
-		{
-
-		}
-		$arrMetaData = $selMetaData->Fetch();
-		
-		if($arrMetaData['Invoices'] == 0)
-		{
-			// Nothing to do
-			return FALSE;
-		}
-
-		// generate filename
-		if($bolSample)
-		{
-			$strFilename	= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbf";
-			$strMetaName	= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbm";
-			$strZipName		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".zip";
-		}
-		else
-		{
-			$strFilename	= BILLING_LOCAL_PATH.date("Y-m-d").".vbf";
-			$strMetaName	= BILLING_LOCAL_PATH.date("Y-m-d").".vbm";
-			$strZipName		= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
-		}
-		
-		// Use a MySQL select into file Query to generate the file
-		if($bolSample)
-		{
-			$strInvoiceTable = 'InvoiceTemp';
-		}
-		else
-		{
-			$strInvoiceTable = 'Invoice';
-		}
-		$qryBuildFile	= new Query();
-		$strColumns		= "'0010', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, '0'), InvoiceOutput.Data";
-		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
-		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
-							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
-							"WHERE $strWhere\n";
-		if($bolSample)
-		{
-			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
-			{
-				$strQuery .= "LIMIT ".(int)$arrMetaData['MaxId'];
-			}
-			else
-			{
-				$strQuery .= "LIMIT ".rand((int)$arrMetaData['MinId'] , (int)$arrMetaData['MaxId'] - BILL_PRINT_SAMPLE_LIMIT).", ".BILL_PRINT_SAMPLE_LIMIT;
-			}
-		}
-		if (file_exists($strFilename))
-		{
-			unlink($strFilename);
-			unlink($strMetaName);
-			unlink($strZipName);
-		}
-		if ($qryBuildFile->Execute($strQuery) === FALSE)
-		{
-
-		}
-		
-		// Append metadata to bill output file
-		$strFooter		=	"0019" .
-							date("d/m/Y") .
-							str_pad($arrMetaData['Invoices'], 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT) .
-							str_pad(0, 10, "0", STR_PAD_LEFT);
-		
-		$ptrFile		= fopen($strFilename, "a");
-		fwrite($ptrFile, $strFooter);
-		fclose($ptrFile);
-		
-		// create metadata file
-		$ptrMetaFile	= fopen($strMetaName, "w");
-		// TODO - get actual insert ids for this billing run
-		$strLine		= 	date("d/m/Y").
-							basename($strFilename).
-							sha1_file($strFilename);
-		fwrite($ptrMetaFile, $strLine);
-		fclose($ptrMetaFile);
-		
-		// zip files
-		$strCommand = "zip $strZipName $strFilename $strMetaName";
-		exec($strCommand);
-		
-		// set filename internally
-		$this->_strFilename = $strZipName;
-		
-		// return zip's filename
-		return $strZipName;
- 	}
  	
- 	//------------------------------------------------------------------------//
-	// SendOutput()
+ 	
+ 	
+	//------------------------------------------------------------------------//
+	// GetRowType()
 	//------------------------------------------------------------------------//
 	/**
-	 * SendOutput()
-	 *
-	 * Sends the bill file
-	 *
-	 * Sends the bill file
-	 *
-	 * @param		boolean		bolSample		optional This is a sample billing file
-	 *
-	 * @return		boolean
-	 *
-	 * @method
-	 */
- 	function SendOutput($bolSample)
- 	{
-		// Set the remote directory
-		if ($bolSample)
-		{
-			$strRemoteDir	= BILL_PRINT_REMOTE_DIR_SAMPLE;
-			$strFile		= $this->_strSampleFile;
-		}
-		else
-		{
-			$strRemoteDir	= BILL_PRINT_REMOTE_DIR;
-			$strFile		= $this->Filename;
-		}
-		
-		/*
-		// Connect to FTP
-		$ptrFTP = ftp_connect(BILL_PRINT_HOST);
-		if (!ftp_login($ptrFTP, BILL_PRINT_USERNAME, BILL_PRINT_PASSWORD))
-		{
-			// Log in failed
-			return FALSE;
-		}
-		ftp_chdir($ptrFTP, $strRemoteDir);
-		
-		// Upload file
-		if(!ftp_put($ptrFTP, basename($strFile), $strFile, FTP_ASCII))
-		{
-			return FALSE;
-		}
-		
-		// Close the FTP connection
-		ftp_close($ptrFTP);
-		*/
-		return TRUE;
- 	}
-	
-	//------------------------------------------------------------------------//
-	// BuildSample()
-	//------------------------------------------------------------------------//
-	/**
-	 * BuildSample()
+	 * GetRowType()
 	 *
 	 * Builds a sample bill file
 	 *
 	 * Builds a sample bill file
 	 *
- 	 * @param		string		strInvoiceRun	The Invoice Run to build from
+ 	 * @param		string		$strRecordTypeName	The record type to work with
+ 	 * @param		integer		$intServiceType		The service type to work with
  	 * 
-	 * @return		string						filename
+	 * @return		array							Associative array with the RowType data
 	 *
 	 * @method
 	 */
- 	function BuildSample($strInvoiceRun)
+ 	function GetRowType($strRecordTypeName, $intServiceType)
  	{
-		return $this->BuildOutput($strInvoiceRun, TRUE);
- 	}
- 	
- 	//------------------------------------------------------------------------//
-	// SendSample()
-	//------------------------------------------------------------------------//
-	/**
-	 * SendOutput()
-	 *
-	 * Sends a sample bill file
-	 *
-	 * Sends a sample bill file
-	 *
-	 * @return		boolean
-	 *
-	 * @method
-	 */
- 	function SendSample()
- 	{
-		return $this->SendOutput(TRUE);
+		// general record types
+		switch ($strRecordTypeName)
+		{
+			case "S&E":
+			case "Service & Equipment":
+				return Array( 'RowType' => 208, 'LongDesc' => "Service & Equipment" );
+			case "OC&C":
+				return Array( 'RowType' => 237, 'LongDesc' => "Other Charges and Credits" );
+		}
+		
+		// ServiceType specific record types
+		switch ($intServiceType)
+		{
+			case SERVICE_TYPE_LAND_LINE:
+				switch ($strRecordTypeName)
+				{
+					case "National":
+						return Array( 'RowType' => 102	, 'LongDesc' => "National Calls"				, 'ShortDesc' => "National" );
+					case "Calls to 1300":
+						return Array( 'RowType' => 103	, 'LongDesc' => "Calls to 13/1300 Numbers"		, 'ShortDesc' => "Calls" );
+					case "Calls to Mobile":
+						return Array( 'RowType' => 104	, 'LongDesc' => "Calls to Mobiles"				, 'ShortDesc' => "Calls" );
+					case "International Direct Dial":
+						return Array( 'RowType' => 105	, 'LongDesc' => "International Calls"			, 'ShortDesc' => "International" );
+					case "SMS":
+					case "Other":
+						return Array( 'RowType' => 116	, 'LongDesc' => "Other Call Types"				, 'ShortDesc' => "Other" );
+				}
+				break;
+			
+			case SERVICE_TYPE_MOBILE:
+				switch ($strRecordTypeName)
+				{
+					case "International Direct Dial":
+						return Array( 'RowType' => 113	, 'LongDesc' => "Mobile to International"		, 'ShortDesc' => "Mobile" );
+					case "Mobile to Mobile":
+						return Array( 'RowType' => 106	, 'LongDesc' => "Mobile to Mobile"				, 'ShortDesc' => "Mobile" );
+					case "Mobile to National":
+						return Array( 'RowType' => 107	, 'LongDesc' => "Mobile to National"			, 'ShortDesc' => "Mobile" );
+					case "Mobile Other":
+						return Array( 'RowType' => 110	, 'LongDesc' => "Mobile - Other Charges"		, 'ShortDesc' => "Mobile" );
+					case "Mobile International Roaming":
+						return Array( 'RowType' => 111	, 'LongDesc' => "Mobile International Roaming"	, 'ShortDesc' => "Mobile" );
+					case "Mobile to 1800 Numbers":
+						return Array( 'RowType' => 113	, 'LongDesc' => "Mobile to 1800 Numbers"		, 'ShortDesc' => "Mobile" );
+					case "Mobile SMS":
+						return Array( 'RowType' => 119	, 'LongDesc' => "Mobile - SMS"					, 'ShortDesc' => "Mobile" );
+					case "Mobile MMS":
+						return Array( 'RowType' => 120	, 'LongDesc' => "Mobile - MMS"					, 'ShortDesc' => "Mobile" );
+				}
+				break;
+			
+			case 1800:
+				return Array( 'RowType' => 117	, 'LongDesc' => "1800 Inbound"							, 'ShortDesc' => "1800" );
+				break;
+			
+			case 1300:
+				return Array( 'RowType' => 118	, 'LongDesc' => "13/1300 Inbound"						, 'ShortDesc' => "13/1300" );
+				break;
+		}
+
+		return Array( 'RowType' => 135	, 'LongDesc' => "Unknown Call Type"								, 'ShortDesc' => "Unknown" );
  	}
  }
 
