@@ -17,12 +17,23 @@
 // ---------------------------------------------------------------------------//
 //TODO!bash! rename Employee.Priviledges to Employee.Privileges (in the DB and in your code)
 //TODO!bash! add CreatedBy & ClosedBy when creating/closing a service
+//TODO!bash! add CreatedBy & CreatedOn when creating an account
 //TODO!bash! DON'T MAKE CHANGES TO TABLES IN THE DB WITHOUT DOCUMENTING THEM !!!!
-//TODO!bash! CHANGES HAVE BEEN MADE IN THE BFGREPORT TABLE AND NOT DOCUMENTED !!!!
+//TODO!bash! CHANGES HAVE BEEN MADE IN THE BUGREPORT TABLE AND NOT DOCUMENTED !!!!
 //TODO!bash! CHANGES HAVE BEEN MADE IN THE EMPLOYEE TABLE AND NOT DOCUMENTED !!!!
 //TODO!bash! record Phone, Mobile, Extension, Email for Employees 
-//TODO!bash! Mark an invoice as disputed and update the disputed $
-//TODO!bash! Resolve a disputed invoice
+//TODO!bash! 3 URGENT ! - Mark an invoice as disputed and update the disputed $
+//TODO!bash! 3 URGENT ! - Resolve a disputed invoice
+
+//TODO!bash! SCRAPE...
+//TODO!bash! 1 URGENT !!!!!!! - Real Mobile Rates for each service
+//TODO!bash! Mobile details
+//TODO!bash! DD Details (CSV)
+//TODO!bash! 2 URGENT ! - Payment History
+//TODO!bash! Fix Other Broken Data
+//TODO!bash! Cost Centres
+//TODO!bash! Inbound Answer point
+//TODO!bash! Aditional account details
 
 // ---------------------------------------------------------------------------//
 // FLAME
@@ -31,15 +42,6 @@
 //TODO!flame! Reserved Usernames
 //TODO!flame! Schedule MySQL Backup
 //TODO!flame! MySQL Recovery
-
-//TODO!flame! SCRAPE...
-//TODO!flame! DD Details
-//TODO!flame! Payment History
-//TODO!flame! Service Type
-//TODO!flame! Fix Broken FNNs
-//TODO!flame! Fix Other Broken Data
-//TODO!flame! Cost Centres
-//TODO!flame! Real Mobile Plans
 
 //TODO!flame! Select correct list of accounts to invoice
 //TODO!flame! Rollback CDR files

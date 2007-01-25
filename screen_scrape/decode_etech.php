@@ -827,6 +827,12 @@
 			// get real service type
 			$intServiceType								= $arrServiceType[$strFNN];
 			
+			// skip mobile services, we get their RateGroups someplace else
+			if ($intServiceType == SERVICE_TYPE_MOBILE)
+			{
+				continue;
+			}
+			
 			// get fake service type
 			if ($intServiceType == SERVICE_TYPE_INBOUND)
 			{

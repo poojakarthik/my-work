@@ -978,4 +978,80 @@ function EchoLine($strText)
 		echo "\n";
 	}
 }
+
+
+//  LUHN formula
+function CheckLuhn($mixNumber)
+{
+	$card = (string)$mixNumber;
+	$card = strrev($card);
+	$total = 0;
+	
+	for ($n=0; $n<strlen($card); $n++)
+	{
+		$digit = substr($card,$n,1);
+		if ($n/2 != floor($n/2))
+		{
+			$digit *= 2;
+		}
+		if (strlen($digit) == 2)
+		{
+			$digit = substr($digit,0,1) + substr($digit,1,1);
+		}
+		$total += $digit;
+	}
+	if ($total % 10 == 0)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+//  LUHN formula
+function MakeLuhn($mixNumber)
+{
+	$card = (string)$mixNumber;
+	$intCheckDigit = 0;
+	for ($n=0; $n<strlen($card); $n++)
+	{
+		$digit = substr($card,$n,1);
+		if ($n/2 != floor($n/2))
+		{
+			$digit *= 2;
+		}
+		if (strlen($digit) == 2)
+		{
+			$digit = substr($digit,0,1) + substr($digit,1,1);
+		}
+		$intCheckDigit += $digit;
+	}
+	
+	$intCheckDigit = $intCheckDigit % 10;
+	
+	if($intCheckDigit > 0)
+	{
+		$intCheckDigit = 10 - $intCheckDigit;
+	}
+	return $intCheckDigit;
+}
+
+// Check the expiry date of a credit card
+function expdate($month,$year)
+{
+	if ( $year < date('Y') )
+	{
+		return FALSE;
+	}
+	elseif ( $year == date('Y') )
+	{
+		if ( $month < date('m') )
+		{
+			return FALSE;
+		}
+	}
+	return true;
+}
 ?>

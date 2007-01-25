@@ -473,7 +473,7 @@ class VixenImport extends ApplicationBaseClass
 				else
 				{
 					// single rate not found, look for a group of matching rates
-					$strQuery = "SELECT Id FROM Rate WHERE RecordType = {$arrRateGroup['RecordType']} AND Name LIKE '{$arrRateGroup['Name']} - %'";
+					$strQuery = "SELECT Id FROM Rate WHERE RecordType = {$arrRateGroup['RecordType']} AND Name LIKE '{$arrRateGroup['Name']}-%'";
 					$sqlRate = $this->sqlQuery->Execute($strQuery);
 					while ($arrRate = $sqlRate->fetch_assoc())
 					{
