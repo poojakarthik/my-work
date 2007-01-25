@@ -128,7 +128,7 @@
 		</xsl:if>
 		<div class="Seperator"></div>
 		
-		<h2 class="CDR">Usage Charges</h2>
+		<h2 class="Invoice">Usage Charges</h2>
 		
 		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">

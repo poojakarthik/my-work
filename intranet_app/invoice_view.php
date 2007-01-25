@@ -17,10 +17,6 @@
 	// call application
 	require ('config/application.php');
 	
-	// Pull documentation information for a Service and an Account
-	$docDocumentation->Explain ('Account');
-	$docDocumentation->Explain ('Invoice');
-	
 	try
 	{
 		// Get the Invoice
@@ -33,6 +29,10 @@
 		$Style->Output ('xsl/content/invoice/notfound.xsl');
 		exit;
 	}
+	
+	// Pull documentation information for a Service and an Account
+	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Invoice');
 	
 	// If no service is set, then ask for the service
 	if (!$_GET ['ServiceTotal'])

@@ -62,13 +62,13 @@
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Invoice Number</th>
-				<th class="Currency" width="120">Overdue</th>
-				<th class="Currency" width="120">Credits</th>
-				<th class="Currency" width="120">Debits</th>
-				<th class="Currency" width="120">Total</th>
-				<th class="Currency" width="120">Balance</th>
-				<th class="Currency" width="120">Disputed</th>
+				<th>Invoice#</th>
+				<th class="Currency" width="110">Overdue</th>
+				<th class="Currency" width="110">Credits</th>
+				<th class="Currency" width="110">Debits</th>
+				<th class="Currency" width="110">Total</th>
+				<th class="Currency" width="110">Balance</th>
+				<th class="Currency" width="110">Disputed</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoices/Results/rangeSample/Invoice">
 				<tr>

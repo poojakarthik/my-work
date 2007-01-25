@@ -52,13 +52,23 @@
 		</div>
 		<div class="Seperator"></div>
 		
+		<xsl:choose>
+			<xsl:when test="/Response/Invoice/Status = 102">
+				<div class="MsgNotice">
+					This Invoice is currently <strong class="Red">IN DISPUTE</strong>
+				</div>
+			</xsl:when>
+		</xsl:choose>
+		<div class="Seperator"></div>
+		
 		<h2 class="Services">Services</h2>
 		<table border="0" cellpadding="5" cellspacing="0" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th width="150">Line Number</th>
-				<th width="120" class="Currency">Credit</th>
-				<th width="120" class="Currency">Debit</th>
+				<th width="110" class="Currency">Charges</th>
+				<th width="110" class="Currency">Credit</th>
+				<th width="110" class="Currency">Debit</th>
 			</tr>
 			<xsl:for-each select="/Response/ServiceTotals/Results/rangeSample/ServiceTotal">
 				<tr>
@@ -84,12 +94,30 @@
 							<xsl:value-of select="./FNN" />
 						</a>
 					</td>
+					<td class="Currency"><xsl:value-of select="./TotalCharge" /></td>
 					<td class="Currency"><xsl:value-of select="./Credit" /></td>
 					<td class="Currency"><xsl:value-of select="./Debit" /></td>
 				</tr>
 			</xsl:for-each>
 		</table>
+		<div class="Seperator"></div>
 		
+		<h2>Disputes</h2>
+		<div class="Wide-Form">
+			<table border="0" cellpadding="5" cellspacing="0">
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Invoice')" />
+							<xsl:with-param name="field" select="string('Disputed')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:value-of select="/Response/Invoice/Disputed" />
+					</td>
+				</tr>
+			</table>
+		</div>
 		<div class="Seperator"></div>
 	</xsl:template>
 </xsl:stylesheet>
