@@ -732,6 +732,7 @@ die();
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_COMMITTED;
 		$updTempInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_TEMP, $arrUpdateData);
+		Debug($updTempInvoiceStatus->Error());
 		if($updTempInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{			
 			// Report and fail out
