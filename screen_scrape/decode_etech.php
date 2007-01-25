@@ -171,13 +171,26 @@
 	{
 		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeServiceMobile ";
 		$strName	= 'MobileDetails';
-		$arrMobile = $this->FetchResult($strName, $strQuery);
-		if ($arrMobile)
+		$arrRow = $this->FetchResult($strName, $strQuery);
+		if ($arrRow)
 		{
-			$arrMobile['DataArray'] = $this->ParseMobileDetails($arrMobile['DataOriginal'], $arrMobile['CustomerId']);
-			unset($arrMobile['DataOriginal']);
+			$arrRow['DataArray'] = $this->ParseMobileDetails($arrRow['DataOriginal'], $arrRow['CustomerId']);
+			unset($arrRow['DataOriginal']);
 		}
-		return $arrMobile;
+		return $arrRow;
+	}
+	
+	function FetchPayment()
+	{
+		$strQuery 	= "SELECT Month, Year, DataOriginal FROM ScrapePayment ";
+		$strName	= 'Payment';
+		$arrRow = $this->FetchResult($strName, $strQuery);
+		if ($arrRow)
+		{
+			$arrRow['DataArray'] = $this->ParsePayment($arrRow['DataOriginal']);
+			unset($arrRow['DataOriginal']);
+		}
+		return $arrRow;
 	}
 	
 	// generic fetch
@@ -432,6 +445,132 @@
 		return $arrDetails;
 	}
 	
+	// god help us
+	// parse payment history
+	function ParsePayment($strHtml)
+	{
+		// Read the DOM Document
+		$domDocument	= new DOMDocument ('1.0', 'utf-8');
+		@$domDocument->LoadHTML ($strHtml);
+		
+		$dxpPath		= new DOMXPath ($domDocument);
+		
+		//-----------------------------------------------
+		//	Ok - Freeze Frame.
+		//-----------------------------------------------
+		
+		// This an example of what the Page looks like
+		
+		/*
+		
+			+--------------------------------------+----------------+--------------------------+
+			| Name                                 | Customer ID    | Amount                   |
+			+--------------------------------------+----------------+--------------------------+
+			| AAA PTY LTD                          | 1000100000     | $100.00                  |		/tr/td[@bgcolor="#999900"]
+			+--------------------------------------+----------------+--------------------------+
+			|                                      |                | $100.00 [2006-06-15]     |		/tr/td[@bgcolor="#FFFFDD"]
+			+--------------------------------------+----------------+--------------------------+
+			| BBB PTY LTD                          | 1000100001     | $200.00                  |
+			+--------------------------------------+----------------+--------------------------+
+			|                                      |                | $99.50 [2006-06-14]      |
+			+--------------------------------------+----------------+--------------------------+
+			|                                      |                | $101.50 [2006-06-15]     |
+			+--------------------------------------+----------------+--------------------------+
+			
+		*/
+		
+		//--------------------------------------------------------------------------------------
+		//
+		//	So this is how we're going to go about parsing this page
+		//
+		//	If the Background Color of the Row is #999900, then
+		//	we can assume that we are gathering Customer Details
+		//	In which case, we only want the "Customer ID" column
+		//
+		//	If the Background Color of the Row is #FFFFDD, then
+		//	we can assume that we are gathering Payment Details
+		//	In which case, we only want the "Amount" column
+		//	which will have String functions performed
+		//
+		//	In the table we're working with, we want to loop through 
+		//	from row #4 to the end
+		//
+		//--------------------------------------------------------------------------------------
+		
+		$delTable = $dxpPath->Query ("//table")->Item (4);
+		
+		$domTable = new DOMDocument ('1.0', 'utf-8');
+		@$domTable->appendChild (
+			$domTable->importNode (
+				$delTable,
+				TRUE
+			)
+		);
+		
+		$dxpTable	= new DOMXPath ($domTable);
+		$delRows	= $dxpTable->Query ("/table/tr");
+		
+		$arrPayments = Array ();
+		
+		$strCurrentCustomer = "";
+		
+		// Loop through all the rows we found
+		foreach ($delRows as $intIndex => $delRow)
+		{
+			if ($intIndex < 3 || $intIndex > ($delRows->length - 3))
+			{
+				continue;
+			}
+			
+			$domRow = new DOMDocument ('1.0', 'utf-8');
+			@$domRow->appendChild (
+				$domRow->importNode (
+					$delRow,
+					TRUE
+				)
+			);
+				
+			$xpaRow = new DOMXPath ($domRow);
+			
+			// Firstly, check if we're dealing with a Customer or with a Payment row
+			// We can define this by checking the first TD of the row:
+			//		If the Background Color is #999900, this is a Customer
+			//		[otherwise] If the Background Color is #FFFFDD, this is a Payment 
+			
+			$bolCustomer = ($xpaRow->Query ("/tr/td")->Item (0)->getAttribute ("bgcolor") == "#999900");
+			
+			if ($bolCustomer)
+			{
+				// If we're dealing with a Customer, set $strCurrentCustomer to the Customer ID column's value
+				$strCurrentCustomer = $xpaRow->Query ("/tr/td")->Item (1)->nodeValue;
+				
+				// Also - start the Array
+				$arrPayments [$strCurrentCustomer] = Array ();
+			}
+			else
+			{
+				// Store the Amount + Date Combination in a Variable
+				$strInformation = $xpaRow->Query ("/tr/td")->Item (2)->nodeValue;
+				
+				// Match the Information
+				preg_match ("/([\S]+)\s\[([^\]]+)\]/misU", $strInformation, $arrMatches);
+				
+				// $arrMatches [1] = Amount
+				// $arrMatches [2] = Date (YYYY-MM-DD)
+				
+				$arrPayment = Array (
+					"Amount"		=> $arrMatches ['1'],
+					"Date"			=> $arrMatches ['2'],
+				);
+				
+				$arrPayments [$strCurrentCustomer][] = $arrPayment;
+			}
+		}
+		
+		// return array directly from data
+		return $arrPayments;
+	}
+	
 	// ------------------------------------//
 	// DECODE RECORDS
 	// ------------------------------------//
@@ -565,7 +704,7 @@
 			),
 			
 			"Plan"					=> $arrDetails ['Plan'],
-			"Parent"				=> $arrDetails ['Parent'],
+			"Parent"				=> $arrDetails ['Parent']
 		);
 	}
 	

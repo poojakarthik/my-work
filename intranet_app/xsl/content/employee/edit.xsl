@@ -62,6 +62,75 @@
 								</input>
 							</td>
 						</tr>
+						<tr>
+							<td colspan="2">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Employee')" />
+									<xsl:with-param name="field" select="string('Email')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Email" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Email" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Employee')" />
+									<xsl:with-param name="field" select="string('Extension')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Extension" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Extension" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Employee')" />
+									<xsl:with-param name="field" select="string('Phone')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Phone" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Phone" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Employee')" />
+									<xsl:with-param name="field" select="string('Mobile')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<input type="text" name="Mobile" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Mobile" />
+									</xsl:attribute>
+								</input>
+							</td>
+						</tr>
 					</table>
 				</div>
 			</div>
