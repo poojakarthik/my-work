@@ -941,6 +941,7 @@
 		}
 		if ($qryBuildFile->Execute($strQuery) === FALSE)
 		{
+			Debug($qryBuildFile->Error());
 			return FALSE;
 		}
 		
