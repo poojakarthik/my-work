@@ -875,9 +875,7 @@ die();
 		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
 		$trqTruncateTempTable = new QueryTruncate();
 		if(!$trqTruncateTempTable->Execute("InvoiceTemp"))
-		{
-			Debug($trqTruncateTempTable->Error());
-			
+		{			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return FALSE;
@@ -896,6 +894,8 @@ die();
 		$updCDRStatus = new StatementUpdate("CDR", "CDR.Credit = 0 AND Status = ".CDR_TEMP_INVOICE, $arrColumns);
 		if($updCDRStatus->Execute($arrColumns, Array()) === FALSE)
 		{
+			Debug($updCDRStatus->Error());
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return FALSE;
