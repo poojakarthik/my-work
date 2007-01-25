@@ -876,6 +876,8 @@ die();
 		$trqTruncateTempTable = new QueryTruncate();
 		if(!$trqTruncateTempTable->Execute("InvoiceTemp"))
 		{
+			Debug($trqTruncateTempTable->Error());
+			
 			// Report and fail out
 			$this->_rptBillingReport->AddMessage(MSG_FAILED);
 			return FALSE;
