@@ -391,6 +391,8 @@
 		$arrDefine['InvoiceFooter']	['RecordType']		['Value']	= 95;
 		$arrDefine['FileFooter']	['RecordType']		['Type']	= ETECH_ROW;
 		$arrDefine['FileFooter']	['RecordType']		['Value']	= 99;
+		$arrDefine['ItemisedCall']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrDefine['ItemisedS&E']	['RecordType']		['Type']	= ETECH_ROW;
 		
 		// Call Details
 		$arrDefine['CallLLNational']['RecordType']		['Type']	= ETECH_ROW;
