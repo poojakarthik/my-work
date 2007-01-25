@@ -614,14 +614,15 @@
 		 
 		public function ServiceAddress ()
 		{
-			$intServiceAddress = $this->Pull ('ServiceAddress')->getValue ();
+			$selServiceAddress = new StatementSelect ("ServiceAddress", "Id", "Service = <Service>");
+			$selServiceAddress->Execute (Array ("Service"=>$this->Pull ('Id')->getValue ()));
 			
-			if (!$intServiceAddress)
+			if ($arrServiceAddress = $selServiceAddress->Fetch ())
 			{
-				throw new Exception ('Service Address Not Found');
+				return new ServiceAddress ($arrServiceAddress ['Id']);
 			}
 			
-			return new ServiceAddress ($intServiceAddress);
+			throw new Exception ('Service Address Not Found');
 		}
 		
 		//------------------------------------------------------------------------//
@@ -694,27 +695,25 @@
 			// Otherwise
 				// Create a new Service Address and Update the Service to reflect this Service Address
 			
-			$intServiceAddress = $this->Pull ('ServiceAddress')->getValue ();
-			
-			if (!$intServiceAddress)
+			try
 			{
+				$sadServiceAddress = $this->ServiceAddress ();
+				
+				// Update Service Address
+				$updServiceAddress = new StatementUpdate ('ServiceAddress', 'Id = <Id>', $arrData, 1);
+				$updServiceAddress->Execute ($arrData, Array ('Id' => $sadServiceAddress->Pull ('Id')->getValue ()));
+				
+				return true;
+			}
+			catch (Exception $e)
+			{
+				$arrData ['AccountGroup']	= $this->Pull ('AccountGroup')->getValue ();
+				$arrData ['Account']		= $this->Pull ('Account')->getValue ();
+				$arrData ['Service']		= $this->Pull ('Id')->getValue ();
+				
 				// Insert Service Address
 				$insServiceAddress = new StatementInsert ('ServiceAddress');
 				$intServiceAddress = $insServiceAddress->Execute ($arrData);
-				
-				// Update Service
-				$arrServiceUpdate = Array ('ServiceAddress' => $intServiceAddress);
-				
-				$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrServiceUpdate, 1);
-				$updService->Execute ($arrServiceUpdate, Array ('Id' => $this->Pull ('Id')->getValue ()));
-			}
-			else
-			{
-				// Update Service Address
-				$updServiceAddress = new StatementUpdate ('ServiceAddress', 'Id = <Id>', $arrData, 1);
-				$updServiceAddress->Execute ($arrData, Array ('Id' => $intServiceAddress));
-				
-				return true;
 			}
 		}
 	}
