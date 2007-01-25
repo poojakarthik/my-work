@@ -1162,6 +1162,13 @@
 							$strValue = "1970-01-01 00:00:00";
 						}
 						break;
+					case ETECH_DATE_RANGE:
+						if (!$strValue)
+						{
+							$strValue = "01/01/1970:01/01/1970";
+						}
+						break;
+						
 					case ETECH_DURATION:
 						if ($strValue == NULL)
 						{

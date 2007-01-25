@@ -126,6 +126,7 @@ define("ETECH_DATETIME"					, 807);
 define("ETECH_DURATION"					, 808);
 define("ETECH_LONG_CURRENCY"			, 809);
 define("ETECH_ROW"						, 810);
+define("ETECH_DATE_RANGE"				, 811);
 
 // Bill Designs for Bill Printing
 define("BILL_DESIGN_TELCOBLUE"			, 1);
