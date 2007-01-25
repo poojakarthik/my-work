@@ -104,7 +104,8 @@ die();
 		$this->_rptAuditReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Construct the Bill Output objects
-		$this->_arrBillOutput[BILL_PRINT]	= new BillingModulePrint(&$this->db, $arrConfig);
+		$this->_arrBillOutput[BILL_PRINT]		= new BillingModulePrint(&$this->db, $arrConfig);
+		$this->_arrBillOutput[BILL_PRINT_ETECH]	= new BillingModuleEtech(&$this->db, $arrConfig);
 		
 		// Init Statements
 		$this->_selPayments = new StatementSelect(	"Payment",
@@ -541,7 +542,7 @@ die();
 			
 			// work out the bill printing target
 			// TODO - LATER : fake it for now
-			$intPrintTarget = BILL_PRINT;
+			$intPrintTarget = BILL_PRINT_ETECH;
 			
 			// build billing output for this invoice
 			$this->_arrBillOutput[$intPrintTarget]->AddInvoice($arrInvoiceData);

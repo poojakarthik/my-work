@@ -37,7 +37,9 @@ define("USER_NAME"						, "Billing_app");
 // Log path (with trailing /)
 define("LOG_PATH"						, "/home/vixen_log/billing_app/");
 
+// Billy Printing Variations
 define("BILL_PRINT"						, 900);
+define("BILL_PRINT_ETECH"				, 901);
 
 // Reporting Messages
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
