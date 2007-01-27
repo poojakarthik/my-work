@@ -49,7 +49,7 @@
 			<h2 class="Contact">Contact Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<td><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
@@ -335,7 +335,7 @@
 					
 					<div class="Seperator"></div>
 					
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
 							<xsl:when test="/Response/ui-values/Archived = 1">
 								<tr>

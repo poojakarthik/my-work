@@ -22,7 +22,7 @@
 			<h2 class="Invoice">Payment Direction</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -127,7 +127,7 @@
 			
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">

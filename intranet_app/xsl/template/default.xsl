@@ -109,7 +109,7 @@
 											</div>
 											<div class="modalLabel Left">
 												<strong>System Debug</strong><br />
-												A trace of information passing through the system
+												System Debug Information
 											</div>
 											<div class="modalClose Right">
 												<img src="img/template/closelabel.gif" class="close" />
@@ -133,6 +133,7 @@
 						<tr>
 							<td valign="top" width="75" nowrap="nowrap">
 								<!-- Navigation Menu -->
+								<div id="Navigation" class="Left sectionContent Navigation">
 								<!--
 									<ul id="Navigation-Root">
 										<li>
@@ -221,17 +222,11 @@
 										</td>
 									</tr>
 									<tr>
-										<td><div class="Seperator"></div></td>
-									</tr>
-									<tr>
 										<td>
 											<a href="account_add.php">
 												<img src="img/template/contact_add.png" title="Add Customer" class="MenuIcon" />
 											</a>
 										</td>
-									</tr>
-									<tr>
-										<td><div class="Seperator"></div></td>
 									</tr>
 									<tr>
 										<td>
@@ -241,9 +236,6 @@
 										</td>
 									</tr>
 									<tr>
-										<td><div class="Seperator"></div></td>
-									</tr>
-									<tr>
 										<td>
 											<a href="#" onclick="return ModalDisplay ('#modalContent-recentCustomers')">
 												<img src="img/template/history.png" title="Recent Customers" class="MenuIcon" />
@@ -251,17 +243,11 @@
 										</td>
 									</tr>
 									<tr>
-										<td><div class="Seperator"></div></td>
-									</tr>
-									<tr>
 										<td>
 											<a href="rates_plan_list.php">
 												<img src="img/template/plans.png" title="View Plan Details" class="MenuIcon" />
 											</a>
 										</td>
-									</tr>
-									<tr>
-										<td><div class="Seperator"></div></td>
 									</tr>
 									<tr>
 										<td>
@@ -274,6 +260,7 @@
 										</td>
 									</tr>
 								</table>
+								</div>
 							</td>
 							<td valign="top">
 								<!-- Popup Window Controller -->
@@ -378,7 +365,7 @@
 					<div class="modalContainer">
 						<div class="modalContent">
 							<h1>Recent Customers</h1>
-							<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+							<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 								<thead>
 									<tr class="First">
 										<th width="30">#</th>

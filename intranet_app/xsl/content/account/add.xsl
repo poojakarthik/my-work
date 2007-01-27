@@ -3,13 +3,14 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
+	
 	<xsl:template name="Content">
 		<xsl:choose>
 			<xsl:when test="/Response/AccountGroup">
 				<h1>Add Associated Account</h1>
 			</xsl:when>
 			<xsl:otherwise>
-				<h1>Add New Customer</h1>
+				<h1>Add Customer</h1>
 			</xsl:otherwise>
 		</xsl:choose>
 		
@@ -17,7 +18,7 @@
 		<script language="javascript" src="js/ACN.js"></script>
 		
 		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
+			<div class="MsgErrorWide">
 				<xsl:choose>
 					<!-- Serious Errors : Should never show, but just in case -->
 					<xsl:when test="/Response/Error = 'Account CustomerGroup'">
@@ -122,9 +123,9 @@
 				<xsl:when test="/Response/AccountGroup">
 					<div class="Wide-Form">
 						<div class="Form-Content">
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
-									<td width="10"></td>
+									<th class="Required"></th>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('AccountGroup')" />
@@ -147,7 +148,7 @@
 					</input>
 				</xsl:when>
 				<xsl:otherwise>
-					<div class="MsgNotice">
+					<div class="MsgNoticeWide">
 						<strong><span class="Attention">Attention</span> :</strong>
 						This form will add a new Customer.  If you wish to add an 
 						account to an existing Customer you will need to use the
@@ -158,12 +159,12 @@
 			</xsl:choose>
 			<div class="Seperator"></div>
 			
-			<h2 class="Account">General Account Details</h2>
+			<h2 class="Account">Account Details</h2>
 			
 			<div class="Wide-Form">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<td width="10"><strong><span class="Red">*</span></strong></td>
+						<th class="Required"><strong><span class="Red">*</span></strong></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -180,7 +181,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10"></td>
+						<th class="Required"></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -198,11 +199,11 @@
 					</tr>
 					<tr>
 						<td coslpan="3">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
-						<td width="10"><strong><span class="Red"><sup>1</sup></span></strong></td>
+						<th class="Required"><strong><span class="Red"><sup>1</sup></span></strong></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -219,7 +220,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10"><strong><span class="Red"><sup>1</sup></span></strong></td>
+						<th class="Required"><strong><span class="Red"><sup>1</sup></span></strong></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -237,11 +238,11 @@
 					</tr>
 					<tr>
 						<td coslpan="3">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
-						<td width="10"><strong><span class="Red">*</span></strong></td>
+						<th class="Required"><strong><span class="Red">*</span></strong></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -258,7 +259,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10"></td>
+						<th class="Required"></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -275,7 +276,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10"><strong><span class="Red">*</span></strong></td>
+						<th class="Required"><strong><span class="Red">*</span></strong></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -292,7 +293,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10"><strong><span class="Red">*</span></strong></td>
+						<th class="Required"><strong><span class="Red">*</span></strong></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -309,7 +310,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10"><strong><span class="Red">*</span></strong></td>
+						<th class="Required"><strong><span class="Red">*</span></strong></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Account')" />
@@ -327,11 +328,11 @@
 					</tr>
 					<tr>
 						<td coslpan="3">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
-						<td width="10"><strong><span class="Red">*</span></strong></td>
+						<th class="Required"><strong><span class="Red">*</span></strong></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('CustomerGroup')" />
@@ -366,9 +367,9 @@
 			<h2 class="Invoice">Billing Details</h2>
 			
 			<div class="Wide-Form">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Billing')" />
@@ -398,7 +399,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth" valign="top">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Payment')" />
@@ -406,7 +407,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td>
 										<input type="radio" name="Account[BillingType]" value="3" id="PaymentMethod:AC">
@@ -514,7 +515,7 @@
 								</tr>
 								<tr>
 									<td colspan="2">
-										<div class="Seperator"></div>
+										<div class="MicroSeperator"></div>
 									</td>
 								</tr>
 								
@@ -620,11 +621,6 @@
 							</table>
 						</td>
 					</tr>
-					<tr>
-						<td colspan="2">
-							<div class="Seperator"></div>
-						</td>
-					</tr>
 				</table>
 			</div>
 			<div class="Seperator"></div>
@@ -633,9 +629,9 @@
 			
 			<div class="Wide-Form">
 				<xsl:if test="/Response/Contacts">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
-							<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 							<td>
 								<input type="radio" name="Contact[USE]" value="1" id="Contact[USE]:TRUE">
 									<xsl:choose>
@@ -680,7 +676,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 							<td>
 								<input type="radio" name="Contact[USE]" value="0" id="Contact[USE]:FALSE">
 									<xsl:choose>
@@ -701,9 +697,9 @@
 					</table>
 				</xsl:if>
 				
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -720,7 +716,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -737,7 +733,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -755,11 +751,11 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -797,11 +793,11 @@
 					</tr>
 					<tr>
 						<td colspan="3">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -818,7 +814,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red"><sup>2</sup></span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red"><sup>2</sup></span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -835,7 +831,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red"><sup>2</sup></span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red"><sup>2</sup></span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -852,7 +848,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10"></td>
+						<th class="Required"></th>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -870,12 +866,12 @@
 					</tr>
 					<tr>
 						<td colspan="3">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<!-- TODO!!!! - LOW PRIORITY - auto generate username-->
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -892,7 +888,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td width="10" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -911,9 +907,15 @@
 					<!-- TODO!!!! - LOW PRIORITY - button to auto generate a password-->
 				</table>
 			</div>
-			<div class="Seperator"></div>
-			
-			<input type="submit" value="Create Account &#0187;" class="input-submit" />
+			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+				<strong><span class="Red"><sup>1</sup> </span></strong>: One or both fields required<br/>
+				<strong><span class="Red"><sup>2</sup> </span></strong>: One or both fields required<br/>
+			</div>
+			<div class="Right">
+				<input type="submit" value="Create Account &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

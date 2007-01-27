@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- TODO!bash! Don't show this page if no contact is found. show an error on the first page like you do if a business name search returns no results -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
@@ -29,7 +29,7 @@
 					
 					<div class="Wide-Form">
 						<div class="Form-Content">
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -54,7 +54,7 @@
 					<div class="Seperator"></div>
 					
 					<xsl:if test="/Response/Error != ''">
-						<div class="MsgError">
+						<div class="MsgErrorWide">
 							<xsl:choose>
 								<xsl:when test="/Response/Error = 'Unselected'">
 									You must select a Contact to continue.
@@ -63,7 +63,7 @@
 						</div>
 					</xsl:if>
 					
-					<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+					<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
 							<th width="30">#</th>
 							<th></th>
@@ -113,23 +113,25 @@
 					
 					<xsl:choose>
 						<xsl:when test="/Response/ui-answers/Contacts/Results/collationLength &gt; 15">
-							<div class="MsgError">
+							<div class="MsgErrorWide">
 								There are too many results to display. Please refine your search and try again.
 							</div>
 						</xsl:when>
 						<xsl:when test="/Response/ui-answers/Contacts/Results/collationLength = 0">
-							<div class="MsgError">
+							<div class="MsgErrorWide">
 								There are no Contacts with the Search Criteria that you Specified.
 							</div>
 						</xsl:when>
 						<xsl:when test="count(/Response/ui-answers/Contacts/Results/rangeSample/Contact) = 0">
-							<div class="MsgNotice">
+							<div class="MsgNoticeWide">
 								There are no Records for the Range that you Searched for.
 							</div>
 						</xsl:when>
 						<xsl:otherwise>
-							<div class="Seperator"></div>
-							<input type="submit" name="ContinueContact" value="Continue Verification &#0187;" class="input-submit" />
+							<div class="SmallSeperator"></div>
+								<div class="Right">
+									<input type="submit" name="ContinueContact" value="Continue &#0187;" class="input-submit" />
+								</div>
 						</xsl:otherwise>
 					</xsl:choose>
 				</form>

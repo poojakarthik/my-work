@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- TODO!bash! change class of errors and notices MsgNotice & MsgError no longer exist-->
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../lib/date-time.xsl" />
@@ -13,7 +13,7 @@
 		<form method="post" action="charges_approve.php">
 			<h2>Unapproved Charges</h2>
 			<div class="Seperator"></div>
-			<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">
 					<th width="30">#</th>
 					<th>Description</th>

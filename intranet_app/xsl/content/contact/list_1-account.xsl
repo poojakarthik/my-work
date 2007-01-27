@@ -31,7 +31,7 @@
 					
 					<div class="Wide-Form">
 						<div class="Form-Content">
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<xsl:if test="/Response/ui-values/BusinessName != ''">
 									<tr>
 										<th class="JustifiedWidth">
@@ -71,7 +71,6 @@
 					<div class="Seperator"></div>
 					
 					<xsl:if test="/Response/Error != ''">
-						<div class="Seperator"></div>
 						<div class="MsgError">
 							<xsl:choose>
 								<xsl:when test="/Response/Error = 'Unselected'">
@@ -81,7 +80,7 @@
 						</div>
 					</xsl:if>
 					
-					<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+					<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
 							<th width="30">#</th>
 							<th></th>
@@ -117,9 +116,10 @@
 							</tr>
 						</xsl:for-each>
 					</table>
-					<div class="Seperator"></div>
-					
-					<input type="submit" name="ContinueAccount" value="Select Account &#0187;" class="input-submit" />
+					<div class="SmallSeperator"></div>
+						<div class="Right">
+							<input type="submit" name="ContinueAccount" value="Continue &#0187;" class="input-submit" />
+						</div>
 				</form>
 			</div>
 		</div>

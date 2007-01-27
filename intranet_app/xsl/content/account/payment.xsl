@@ -16,7 +16,7 @@
 			
 			<h2 class="Account">Account Details</h2>
 			<div class="Wide-Form">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -65,7 +65,7 @@
 			<div class="Seperator"></div>
 			
 			<xsl:if test="/Response/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'DDR Not Found'">
 							You did not select a valid Direct Debit Bank Account. 
@@ -83,7 +83,7 @@
 				<div class="Seperator"></div>
 			</xsl:if>
 			
-			<table border="0" width="100%" cellpadding="5" cellspacing="0">
+			<table border="0" width="100%" cellpadding="3" cellspacing="0">
 				<tr>
 					<td width="30">
 						<input type="radio" id="BillingType:3" name="BillingType" value="3">
@@ -119,7 +119,7 @@
 				<tr>
 					<td></td>
 					<td>
-						<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+						<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 							<tr class="First">
 								<th width="30">#</th>
 								<th width="30"></th>
@@ -166,7 +166,7 @@
 						</table>
 						<xsl:choose>
 							<xsl:when test="count(/Response/DirectDebits/DirectDebit) = 0">
-								<div class="MsgNotice">
+								<div class="MsgNoticeWide">
 									There are no Direct Debit Details attached to this Account Group.
 								</div>
 							</xsl:when>
@@ -202,7 +202,7 @@
 				<tr>
 					<td></td>
 					<td>
-						<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+						<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 							<tr class="First">
 								<th width="30">#</th>
 								<th width="30"></th>
@@ -270,7 +270,7 @@
 						</table>
 						<xsl:choose>
 							<xsl:when test="count(/Response/CreditCards/CreditCard) = 0">
-								<div class="MsgNotice">
+								<div class="MsgNoticeWide">
 									There are no Credit Card Details attached to this Account Group.
 								</div>
 							</xsl:when>

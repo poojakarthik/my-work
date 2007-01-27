@@ -9,7 +9,7 @@
 		<form method="GET" action="rates_plan_list.php">
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th valign="top">
 								<xsl:call-template name="Label">
@@ -75,7 +75,7 @@
 		
 		<div class="sectionContainer">
 			<div class="sectionContent">
-				<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+				<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 					<tr class="First">
 						<th width="30">#</th>
 						<th>Plan Name</th>
@@ -113,12 +113,12 @@
 				
 				<xsl:choose>
 					<xsl:when test="/Response/RatePlans/Results/collationLength = 0">
-						<div class="MsgError">
+						<div class="MsgErrorWide">
 							No Rate Plans were found with the criteria you searched for.
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/RatePlans/Results/rangeSample/RatePlan) = 0">
-						<div class="MsgNotice">
+						<div class="MsgNoticeWide">
 							There are no Rate Plans in the Range that you wish to display.
 						</div>
 					</xsl:when>

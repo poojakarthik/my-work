@@ -53,9 +53,9 @@
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					To search for a Customer, enter <strong>only one</strong> of the following:
-					<div class="Seperator"></div>
+					<div class="SmallSeperator"></div>
 					
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th>
 								<xsl:call-template name="Label">
@@ -147,7 +147,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -168,12 +168,11 @@
 						</tr>
 					</table>
 					<div class="Seperator"></div>
-					<div class="Seperator"></div>
 
-					Or, enter <strong>both</strong> of the following fields:
-					<div class="Seperator"></div>
+					Or, enter <strong>both</strong> of the following:
+					<div class="SmallSeperator"></div>
 					
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -206,26 +205,15 @@
 								</input>
 							</td>
 						</tr>
-						<tr>
-							<td colspan="2">
-								<div class="Seperator"></div>
-							</td>
-						</tr>
-						<tr>
-							<td></td>
-							<td>
-								<input type="submit" class="input-submit" value="Find Customer &#0187;" />
-							</td>
-						</tr>
 					</table>
-					
-					<div class="Seperator"></div>
-					
-					<div style="width: 500px">
-						<strong><span class="Attention"><sup>1</sup></span> :</strong>
-						This field searches for Current Accounts only, not Archived Accounts.
-					</div>
 				</div>
+			</div>
+			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red"><sup>1</sup> </span></strong>: This field searches for Current Accounts only, not Archived Accounts.
+			</div>
+			<div class="Right">
+				<input type="submit" class="input-submit" value="Find Customer &#0187;" />
 			</div>
 		</form>
 	</xsl:template>

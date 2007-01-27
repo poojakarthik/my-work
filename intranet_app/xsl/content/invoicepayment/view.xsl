@@ -13,7 +13,7 @@
 		
 		<div class="Wide-Form">
 			<div class="Form-Content">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">Invoice Id :</th>
 						<td><xsl:value-of select="/Response/InvoicePayment/Invoice" /></td>
@@ -42,7 +42,7 @@
 		
 		<div class="Wide-Form">
 			<div class="Form-Content">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">Payment Id :</th>
 						<td><xsl:value-of select="/Response/Payment/Id" /></td>

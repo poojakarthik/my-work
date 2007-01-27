@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- TODO!bash! change class of errors and notices MsgNotice & MsgError no longer exist-->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
@@ -9,7 +9,7 @@
 		
 		<div class="sectionContainer">
 			<div class="sectionContent">
-				<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+				<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 					<tr class="First">
 						<th width="30">#</th>
 						<th>Code</th>

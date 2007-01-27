@@ -29,7 +29,7 @@
 				
 				<div class="Seperator"></div>
 				
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th>Available Permissions :</th>
 						<th></th>

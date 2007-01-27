@@ -11,7 +11,7 @@
 		<h2 class="Service">Service Details</h2>
 		
 		<div class="Wide-Form">
-			<table border="0" cellpadding="5" cellspacing="0">
+			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
@@ -28,7 +28,7 @@
 		
 		<div class="Seperator"></div>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>
@@ -98,12 +98,12 @@
 		
 		<xsl:choose>
 			<xsl:when test="/Response/CDRs-Unbilled/collationLength = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					There are no CDR Records associated with this service.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/CDRs-Unbilled/rangeSample/CDR) = 0">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					There are no CDR Records for the Range that you Searched for.
 				</div>
 			</xsl:when>

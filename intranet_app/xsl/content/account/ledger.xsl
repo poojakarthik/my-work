@@ -12,7 +12,7 @@
 		<h2 class="Account">Account Details</h2>
 		<div class="Wide-Form">
 			<div class="Form-Content">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -59,7 +59,7 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="Invoice">Invoice</h2>
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Invoice#</th>
@@ -128,7 +128,7 @@
 		</table>
 		<xsl:choose>
 			<xsl:when test="/Response/Invoices/Results/collationLength = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					There are no Invoices associated with this Account.
 				</div>
 			</xsl:when>
@@ -137,7 +137,7 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="PDF">PDF Bills</h2>
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Bill Month</th>
@@ -194,7 +194,7 @@
 		</table>
 		<xsl:choose>
 			<xsl:when test="count(/Response/Invoices-PDFs/Invoice-PDF) = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					There are no PDF files associated with this Account.
 				</div>
 			</xsl:when>
@@ -203,7 +203,7 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="Payment">Payments</h2>
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Invoice #</th>
@@ -249,7 +249,7 @@
 		</table>
 		<xsl:choose>
 			<xsl:when test="/Response/AccountPayments/Results/collationLength = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					There are no Payments associated with this Account.
 				</div>
 			</xsl:when>

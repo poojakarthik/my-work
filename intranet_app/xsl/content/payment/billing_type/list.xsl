@@ -12,7 +12,7 @@
 		<h2 class="Account">Account Details</h2>
 		<div class="Wide-Form">
 			<div class="Form-Content">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -28,7 +28,7 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="Invoice">Bank Account Details</h2>
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Bank Name</th>
@@ -60,7 +60,7 @@
 		
 		<xsl:choose>
 			<xsl:when test="count(/Response/DirectDebits/DirectDebit) = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					There are no Bank Account Details for this Customer.
 				</div>
 			</xsl:when>
@@ -79,7 +79,7 @@
 		<div class="Seperator"></div>
 		
 		<h2 class="Invoice">Credit Card Details</h2>
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Card Type</th>
@@ -136,7 +136,7 @@
 		</table>
 		<xsl:choose>
 			<xsl:when test="count(/Response/CreditCards/CreditCard) = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					There are no Credit Card Details for this Customer.
 				</div>
 			</xsl:when>

@@ -10,7 +10,7 @@
 		
 		<div class="Wide-Form">
 			<div class="Form-Content">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th>Rate Group Id:</th>
 						<td><xsl:value-of select="/Response/RateGroupDetails/RateGroup/Id" /></td>
@@ -54,7 +54,7 @@
 		<h2>Associated Rates</h2>
 		<div class="Seperator"></div>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Rate Name</th>
@@ -94,7 +94,7 @@
 		<h2>Plans using this Rate Group</h2>
 		<div class="Seperator"></div>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Plan Name</th>

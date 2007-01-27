@@ -51,7 +51,7 @@
 						</xsl:attribute>
 					</input>
 					
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<td></td>
 							<th class="JustifiedWidth">
@@ -259,7 +259,7 @@
 					
 					<div class="Seperator"></div>
 					
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
 							<xsl:when test="/Response/ui-values/Archived = 1">
 								<tr>

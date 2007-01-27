@@ -14,7 +14,7 @@
 				<form method="GET" action="account_list.php">
 					<div class="Wide-Form">
 						<div class="Form-Content Left">
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<th valign="top">
 										<xsl:call-template name="Label">
@@ -124,7 +124,7 @@
 							</table>
 						</div>
 						<div class="Form-Content Left">
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<th valign="top">
 										<xsl:call-template name="Label">
@@ -184,7 +184,7 @@
 							</table>
 						</div>
 						<div class="Form-Content Left">
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<th valign="top">
 										Results Per Page :
@@ -224,7 +224,7 @@
 				
 				<div class="Seperator"></div>
 				
-				<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+				<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 					<tr class="First">
 						<th width="30">
 							#
@@ -370,17 +370,17 @@
 				
 				<xsl:choose>
 					<xsl:when test="/Response/Accounts/Results/collationLength &gt; 80">
-						<div class="MsgError">
+						<div class="MsgErrorWide">
 							There are too many results to display. Please refine your search and try again.
 						</div>
 					</xsl:when>
 					<xsl:when test="/Response/Accounts/Results/collationLength = 0">
-						<div class="MsgError">
+						<div class="MsgErrorWide">
 							There are no Accounts with the Search Criteria that you Specified.
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/Accounts/Results/rangeSample/Account) = 0">
-						<div class="MsgNotice">
+						<div class="MsgNoticeWide">
 							There are no Records for the Range that you Searched for.
 						</div>
 					</xsl:when>

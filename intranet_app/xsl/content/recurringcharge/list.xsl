@@ -22,7 +22,7 @@
 		
 		<div class="Wide-Form">
 			<div class="Form-Content">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -63,7 +63,7 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Charge Type</th>
@@ -142,12 +142,12 @@
 		
 		<xsl:choose>
 			<xsl:when test="/Response/RecurringCharges/Results/collationLength = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					No Recurring Charges have been made against this Account.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge) = 0">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					No Recurring Charges were found between the range you searched for.
 				</div>
 			</xsl:when>

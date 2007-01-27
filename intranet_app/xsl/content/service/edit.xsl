@@ -33,7 +33,7 @@
 							<xsl:value-of select="/Response/Service/Id" />
 						</xsl:attribute>
 					</input>
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<td></td>
 							<th class="JustifiedWidth">
@@ -128,7 +128,7 @@
 					
 					<xsl:choose>
 						<xsl:when test="not(/Response/Service/ClosedOn/year)">
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td><input type="checkbox" name="Archived" value="1" id="Archive:TRUE" /></td>
 									<td>
@@ -140,7 +140,7 @@
 							</table>
 						</xsl:when>
 						<xsl:otherwise>
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
 									<td>

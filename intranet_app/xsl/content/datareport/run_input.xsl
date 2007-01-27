@@ -18,7 +18,7 @@
 			
 			<h2>Report Details</h2>
 			<div class="Wide-Form">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -43,7 +43,7 @@
 			
 			<h2>Report Select Options</h2>
 			<div class="Wide-Form">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<xsl:for-each select="/Response/Selects/Select">
 						<tr>
 							<td>
@@ -64,7 +64,7 @@
 			<xsl:if test="count(/Response/Inputs/Input) != 0">
 				<h2>Report Constraint Input</h2>
 				<div class="Wide-Form">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:for-each select="/Response/Inputs/Input">
 							<tr>
 								<th class="JustifiedWidth" valign="top">

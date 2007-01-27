@@ -14,7 +14,7 @@
 		<div class="Seperator"></div>
 		
 		<div class="Wide-Form">
-			<table border="0" cellpadding="5" cellspacing="0">
+			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
 					<th>Option</th>
 					<th>Old Details</th>

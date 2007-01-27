@@ -9,7 +9,7 @@
 		<form method="GET" action="rates_rate_list.php">
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th valign="top">
 								<xsl:call-template name="Label">
@@ -64,7 +64,7 @@
 					
 				</div>
 				<div class="Content Left">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th valign="top">
 								<xsl:call-template name="Label">
@@ -124,7 +124,7 @@
 					</table>
 				</div>
 				<div class="Form-Content Left">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th valign="top">
 								Results Per Page :
@@ -163,7 +163,7 @@
 		
 		<xsl:choose>
 			<xsl:when test="/Response/Rates">
-				<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+				<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 					<tr class="First">
 						<th width="30">#</th>
 						<th>Rate Id</th>
@@ -221,12 +221,12 @@
 				
 				<xsl:choose>
 					<xsl:when test="/Response/Rates/Results/collationLength = 0">
-						<div class="MsgError">
+						<div class="MsgErrorWide">
 							No Rates were found with the criteria you searched for.
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/Rates/Results/rangeSample/Rate) = 0">
-						<div class="MsgNotice">
+						<div class="MsgNoticeWide">
 							There are no Rates in the Range that you wish to display.
 						</div>
 					</xsl:when>
@@ -440,7 +440,7 @@
 				</xsl:if>
 			</xsl:when>
 			<xsl:otherwise>
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					<strong><span class="Attention">Attention</span> :</strong>
 					Due to the significant number of Rates in the database, you must select a 
 					Service Type from the List above before you can list any Rates.

@@ -10,11 +10,11 @@
 			You are currently logged into your Employee Account.
 		</p>
 		
-		<div class="Seperator"></div>
+		<div class="TinySeperator"></div>
 		
 		<h2>Menu</h2>
-		<div class="Seperator"></div>
-		<table border="0" cellpadding="5" cellspacing="0">
+		<div class="SmallSeperator"></div>
+		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
 				<td>
 					<a href="account_add.php">

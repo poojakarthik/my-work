@@ -29,7 +29,7 @@
 						</xsl:attribute>
 					</input>
 					
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -141,7 +141,7 @@
 			
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -207,7 +207,7 @@
 							If you would like to make this Employee Archived, please click the button below:
 							<div class="Seperator"></div>
 							
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td>
 										<input type="checkbox" name="Archived" value="1" id="Archive:TRUE">
@@ -231,7 +231,7 @@
 							If you would like to make this Employee Available, please click the button below:
 							<div class="Seperator"></div>
 							
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td>
 										<input type="checkbox" name="Archived" value="0" id="Archive:FALSE">

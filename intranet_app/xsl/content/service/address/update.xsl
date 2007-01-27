@@ -16,7 +16,7 @@
 				<td valign="top">
 					<h2 class="Service">Service Details</h2>
 					<div class="Narrow-Form">
-						<table border="0" cellpadding="5" cellspacing="0">
+						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
@@ -86,7 +86,7 @@
 						<h2 class="Address">Service Address Details</h2>
 						<xsl:if test="not(/Response/ServiceAddress)">
 						<!-- TODO!bash! DO NOT SET WIDTH INSIDE THE PAGE !!!!!!!!!!!! SET IT IN THE DAMN CLASS !!!!!!!!!!!!!! -->
-						<div class="MsgNotice">
+						<div class="MsgNoticeNarrow">
 								<strong><span class="Attention">Notice</span> :</strong>
 								No Service Address Details Found
 							</div>
@@ -677,8 +677,8 @@
 					</form>
 				</td>
 				
-				<!-- column gap -->
-				<td width="30"></td>
+				<!-- column spacer -->
+				<td class="ColumnSpacer"></td>
 				
 				<!-- second column -->
 				<td valign="top">

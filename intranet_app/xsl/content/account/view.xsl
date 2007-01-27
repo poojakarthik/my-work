@@ -24,7 +24,7 @@
 										<xsl:value-of select="/Response/Account/Id" />
 									</xsl:attribute>
 								</input>
-								<table border="0" cellpadding="5" cellspacing="0">
+								<table border="0" cellpadding="3" cellspacing="0">
 									<tr>
 										<th class="JustifiedWidth">
 											<xsl:call-template name="Label">
@@ -36,6 +36,43 @@
 											<xsl:value-of select="/Response/Account/Id" />
 										</td>
 									</tr>
+									<tr>
+										<td colspan="2"><div class="MicroSeperator"></div></td>
+									</tr>
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Account')" />
+												<xsl:with-param name="field" select="string('Balance')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<span Class="Red">
+												<!-- TODO!bash!Display overdue amount to 2 decimal places --> 
+												<xsl:value-of select="/Response/Account/Balance" />
+											</span>
+										</td>
+									</tr>
+									<xsl:choose>
+										<!-- TODO!bash!Display overdue amount to 2 decimal places --> 
+										<xsl:when test="/Response/Account/OverdueAmount = '$0.0000'">
+										</xsl:when>
+										<xsl:otherwise>
+											<tr>
+												<th class="JustifiedWidth">
+													<xsl:call-template name="Label">
+														<xsl:with-param name="entity" select="string('Account')" />
+														<xsl:with-param name="field" select="string('Overdue')" />
+													</xsl:call-template>
+												</th>
+												<td>
+													<span Class="Red">
+														<xsl:value-of select="/Response/Account/OverdueAmount" />
+													</span>
+												</td>
+											</tr>
+										</xsl:otherwise>
+									</xsl:choose>
 									<tr>
 										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
@@ -180,7 +217,7 @@
 					
 					<h2 class="Contacts">Active Contacts</h2>
 					
-					<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+					<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
 							<th></th>
 							<th>Contact Details</th>
@@ -235,29 +272,6 @@
 				
 				<!-- second column -->
 				<td valign="top">
-					<h2 class="Invoice">Overdue Amount</h2>
-					Overdue charges for this account stand at :
-					<br />
-					<strong>
-						<span>
-							<xsl:attribute name="class">
-								<xsl:text>Large Right </xsl:text>
-								<xsl:choose>
-									<xsl:when test="/Response/Account/OverdueAmount = '$0.0000'">
-										<xsl:text>Green</xsl:text>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:text>Red</xsl:text>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:attribute>
-							<xsl:value-of select="/Response/Account/OverdueAmount" />
-						</span>
-					</strong>
-					
-					<div class="Clear"></div>
-					<div class="Seperator"></div>
-					
 					<!-- options -->
 					<h2 class="Options">Account Options</h2>
 					<ul>
@@ -460,7 +474,7 @@
 		<!-- Services -->
 		<h2 class="Services">Services</h2>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Service Number</th>

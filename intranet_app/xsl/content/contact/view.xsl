@@ -17,7 +17,7 @@
 
 					<div class="Narrow-Form">
 						<div class="Form-Content">
-							<table border="0" cellpadding="5" cellspacing="0">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -354,7 +354,7 @@
 		
 		<h2 class="Accounts">Accounts</h2>
 		
-		<table border="0" cellpadding="5" cellspacing="0" class="Listing" width="100%">
+		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Account Id</th>

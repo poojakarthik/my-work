@@ -10,7 +10,7 @@
 		
 		<div class="Wide-Form">
 			<div class="Form-Content">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th>Rate Plan Id:</th>
 						<td><xsl:value-of select="/Response/RatePlanDetails/RatePlan/Id" /></td>
@@ -50,7 +50,7 @@
 		<h2>Associated Rate Groups</h2>
 		<div class="Seperator"></div>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Rate Group Name</th>
@@ -92,7 +92,7 @@
 		<h2>Associated Recurring Charges</h2>
 		<div class="Seperator"></div>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Code</th>
@@ -123,7 +123,7 @@
 		
 		<xsl:choose>
 			<xsl:when test="count(/Response/RatePlanDetails/RecurringChargeTypes/RecurringChargeType) = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeWide">
 					There are no Recurring Charges associated with this Rate Plan.
 				</div>
 			</xsl:when>

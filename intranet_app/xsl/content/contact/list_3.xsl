@@ -13,6 +13,12 @@
 		<!-- TODO!bash! Entering details, and then using the Back/Forward buttons wipes the details from input boxes, but they remain green : fix this -->
 		<!-- TODO!bash! give this page a usefull name... list_3.xls wtf is that? this page is not listing anything, it's a verification page -->
 		
+		<div class="MsgNoticeWide">
+			Customers must provide verification details before being allowed access to an Account.
+			Input boxes will turn green when correct details have been entered.
+			The continue button will turn green once sufficient verification details have been entered.
+		</div>
+			
 		<form method="POST" action="contact_list.php">
 			<input type="hidden" name="ui-Account">
 				<xsl:attribute name="value">
@@ -123,22 +129,21 @@
 								</xsl:choose>
 							</td>
 						</tr>
-						<tr>
-							<td></td>
-							<td>
-								<xsl:choose>
-									<xsl:when test="/Response/ui-answers/Account/TradingName = ''">
-										<span class="Red"> </span>
-									</xsl:when>
-									<xsl:otherwise>
+						<xsl:choose>
+							<xsl:when test="/Response/ui-answers/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<td></td>
+									<td>
 										<xsl:value-of select="/Response/ui-answers/Account/TradingName" />
-									</xsl:otherwise>
-								</xsl:choose>
-							</td>
-						</tr>
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<!-- Account Address -->
@@ -165,15 +170,9 @@
 						</tr>
 						<tr>
 							<td></td>
-							<td><xsl:value-of select="/Response/ui-answers/Account/Address1" /></td>
-						</tr>
-						<tr>
-							<td></td>
-							<td><xsl:value-of select="/Response/ui-answers/Account/Address2" /></td>
-						</tr>
-						<tr>
-							<td></td>
 							<td>
+								<xsl:value-of select="/Response/ui-answers/Account/Address1" /><br/>
+								<xsl:value-of select="/Response/ui-answers/Account/Address2" /><br/>
 								<xsl:value-of select="/Response/ui-answers/Account/Suburb" />, 
 								<xsl:value-of select="/Response/ui-answers/Account/Postcode" />
 							</td>
@@ -182,11 +181,11 @@
 				</div>
 			</div>
 			
-			<div class="Seperator"></div>
+			<div class="SmallSeperator"></div>
 			
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<!-- Account Id -->
 						<tr>
 							<th class="JustifiedWidth">
@@ -262,11 +261,11 @@
 				</div>
 			</div>
 			
-			<div class="Seperator"></div>
+			<div class="SmallSeperator"></div>
 
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<!-- Contact Name -->
 						<tr>
 							<th class="JustifiedWidth">
@@ -367,13 +366,13 @@
 					</table>
 				</div>
 			</div>
-			<div class="Seperator"></div>
+			<div class="SmallSeperator"></div>
 			
 			<xsl:if test="/Response/ui-answers/Invoice or count(/Response/ui-answers/Invoices/Results/rangeSample/Invoice) != 0 or /Response/ui-answers/Account/DirectDebitDetails/DirectDebit">
 			
 				<div class="Wide-Form">
 					<div class="Form-Content">
-						<table border="0" cellpadding="5" cellspacing="0">
+						<table border="0" cellpadding="3" cellspacing="0">
 							<xsl:choose>
 								<xsl:when test="/Response/ui-answers/Invoice">
 									<!-- Selected Invoice# -->
@@ -487,14 +486,14 @@
 					</div>
 				</div>
 				
-				<div class="Seperator"></div>
+				<div class="SmallSeperator"></div>
 			</xsl:if>
 			
 			<!-- Credit Card Details -->
 			<xsl:if test="/Response/ui-answers/Account/CreditCardDetails/CreditCard">
 				<div class="Wide-Form">
 					<div class="Form-Content">
-						<table border="0" cellpadding="5" cellspacing="0">
+						<table border="0" cellpadding="3" cellspacing="0">
 							<!-- Credit Card Number -->
 							<tr>
 								<th class="JustifiedWidth">
@@ -566,17 +565,11 @@
 					</div>
 				</div>
 				
-				<div class="Seperator"></div>
+				<div class="SmallSeperator"></div>
 			</xsl:if>
 			
-			<div class="Clear"></div>
-			<input type="submit" name="Confirm" class="input-submit-locked" value="Continue &#0187;" id="Confirm" disabled="disabled" />
-			<div class="Seperator"></div>
-			
-			<div class="MsgNotice">
-				Customers must provide verification details before being allowed access to an Account.
-				Input boxes will turn green when correct details have been entered.
-				The continue button will turn green once sufficient verification details have been entered.
+			<div class="Right">
+				<input type="submit" name="Confirm" class="input-submit-locked" value="Continue &#0187;" id="Confirm" disabled="disabled" />
 			</div>
 			
 		</form>

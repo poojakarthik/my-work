@@ -10,7 +10,7 @@
 		
 		<div class="Wide-Form">
 			<div class="Form-Content">
-				<table border="0" cellpadding="5" cellspacing="0">
+				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
 						<th>Rate Id:</th>
 						<td><xsl:value-of select="/Response/RateDetails/Rate/Id" /></td>
@@ -88,7 +88,7 @@
 		<h2>Rate Groups using this Rate</h2>
 		<div class="Seperator"></div>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Rate Group Name</th>

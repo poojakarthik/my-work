@@ -16,7 +16,7 @@
 				<td valign="top">
 					<h2 class="Account">Account Details</h2>
 					<div class="Narrow-Form">
-						<table border="0" cellpadding="5" cellspacing="0">
+						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
@@ -59,7 +59,7 @@
 					
 					<h2 class="Service">Service Details</h2>
 					<div class="Narrow-Form">
-						<table border="0" cellpadding="5" cellspacing="0">
+						<table border="0" cellpadding="3" cellspacing="0">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
@@ -223,7 +223,7 @@
 										</xsl:attribute>
 									</input>
 									
-									<table border="0" cellpadding="5" cellspacing="0">
+									<table border="0" cellpadding="3" cellspacing="0">
 										<tr>
 											<td>
 												<select name="ChargeType">
@@ -266,7 +266,7 @@
 										</xsl:attribute>
 									</input>
 									
-									<table border="0" cellpadding="5" cellspacing="0">
+									<table border="0" cellpadding="3" cellspacing="0">
 										<tr>
 											<td>
 												<select name="RecurringChargeType">

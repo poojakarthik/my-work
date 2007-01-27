@@ -142,6 +142,10 @@
 				{
 					if (isset ($_POST ['Archived']))
 					{
+						// TODO!bash! based on your error msg (that's all there is to go on due to lack of comments here) it looks like
+						// TODO!bash! you are failing here if an archived username is the same as another existing username...
+						// TODO!bash! this should not fail, the archived user should have their username automatically changed (or removed)
+						// TODO!bash! and a notice should be displayed to inform the opperator of this change
 						$cntContact->ArchiveStatus ($_POST ['Archived'] == 1);
 					}
 				}

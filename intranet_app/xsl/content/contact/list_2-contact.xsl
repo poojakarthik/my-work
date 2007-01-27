@@ -62,11 +62,9 @@
 				</div>
 			</xsl:if>
 			
-			<div class="Seperator"></div>
-			
 			<div class="Wide-Form">
 				<div class="Form-Content">
-					<table border="0" cellpadding="5" cellspacing="0">
+					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -76,6 +74,8 @@
 							</th>
 							<td><xsl:value-of select="/Response/ui-answers/Account/BusinessName" /></td>
 						</tr>
+						<!-- TODO!bash! Don't show the Trading Name title if there is no trading name -->
+						<!-- TODO!bash! Don't show the Trading Name title if there is no trading name... DO THIS ON EVERY PAGE WITH A TRADING NAME -->
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -84,17 +84,6 @@
 								</xsl:call-template>
 							</th>
 							<td><xsl:value-of select="/Response/ui-answers/Account/TradingName" /></td>
-						</tr>
-						<tr>
-							<td colspan="2">
-								<div class="Seperator"></div>
-							</td>
-						</tr>
-						<tr>
-							<th></th>
-							<td>
-								Select a contact from the following list:
-							</td>
 						</tr>
 						<tr>
 							<th>
@@ -123,9 +112,10 @@
 					</table>
 				</div>
 			</div>
-			<div class="Seperator"></div>
-			
-			<input type="submit" name="ContinueContact" class="input-submit" value="Continue &#0187;" />
+			<div class="SmallSeperator"></div>
+			<div class="Right">
+				<input type="submit" name="ContinueContact" class="input-submit" value="Continue &#0187;" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

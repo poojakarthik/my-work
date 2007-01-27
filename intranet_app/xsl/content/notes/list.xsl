@@ -26,7 +26,7 @@
 		
 		<xsl:choose>
 			<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">
-				<div class="MsgNotice">
+				<div class="MsgNoticeNarrow">
 					<xsl:choose>
 						<xsl:when test="/Response/Service">
 							No notes were found for the Service that you requested.
