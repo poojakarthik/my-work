@@ -4,8 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Service Change of Lessee</h1>
-		<div class="Seperator"></div>
+		<h1>Change of Lessee</h1>
 		
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgError">
@@ -62,6 +61,17 @@
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('Id')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:value-of select="/Response/Account-Original/Account/Id" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth" valign="top">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
 									<xsl:with-param name="field" select="string('BusinessName')" />
 								</xsl:call-template>
 							</th>
@@ -93,6 +103,17 @@
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('Id')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:value-of select="/Response/Account-Receiving/Account/Id" />
+							</td>
+						</tr>
+						<tr>
+							<th class="JustifiedWidth" valign="top">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
 									<xsl:with-param name="field" select="string('BusinessName')" />
 								</xsl:call-template>
 							</th>
@@ -115,7 +136,6 @@
 				</div>
 			</div>
 			<div class="Seperator"></div>
-			
 			<h2 class="Date">Date of Change</h2>
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
@@ -127,11 +147,11 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<select name="Date[year]">
-								<option value="">YYYY</option>
+							<select name="Date[day]">
+								<option value="">DD</option>
 								<xsl:call-template name="Date_Loop">
-									<xsl:with-param name="start" select="number('2007')" />
-									<xsl:with-param name="cease" select="number('2007')" />
+									<xsl:with-param name="start" select="number('1')" />
+									<xsl:with-param name="cease" select="number('31')" />
 								</xsl:call-template>
 							</select> -
 							<select name="Date[month]">
@@ -141,11 +161,11 @@
 									<xsl:with-param name="cease" select="number('12')" />
 								</xsl:call-template>
 							</select> -
-							<select name="Date[day]">
-								<option value="">DD</option>
+							<select name="Date[year]">
+								<option value="">YYYY</option>
 								<xsl:call-template name="Date_Loop">
-									<xsl:with-param name="start" select="number('1')" />
-									<xsl:with-param name="cease" select="number('31')" />
+									<xsl:with-param name="start" select="number('2007')" />
+									<xsl:with-param name="cease" select="number('2007')" />
 								</xsl:call-template>
 							</select>
 						</td>
@@ -153,9 +173,10 @@
 				</table>
 			</div>
 			
-			<div class="Seperator"></div>
-			
-			<input type="submit" value="Finalise &amp; Process &#0187;" class="input-submit" />
+			<div class="SmallSeperator"></div>
+			<div class="Right">
+				<input type="submit" value="Finalise &amp; Process &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 	
