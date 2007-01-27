@@ -7,7 +7,7 @@
 		<h1>Change of Lessee</h1>
 		
 		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
+			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Date Past'">
 						The date you entered was invalid. You must enter a date
@@ -164,6 +164,9 @@
 							<select name="Date[year]">
 								<option value="">YYYY</option>
 								<xsl:call-template name="Date_Loop">
+									<!-- TODO!bash! NO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
+									<!-- TODO!bash! THIS IS NOT EVEN CLOSE TO BEING FUNNY ! YOU NEVER DO THIS EVER -->
+									<!-- TODO!bash! Display this year + next year and make it based on the current year so that this crap does not need to be updated every damn year !!!!!!!! -->
 									<xsl:with-param name="start" select="number('2007')" />
 									<xsl:with-param name="cease" select="number('2007')" />
 								</xsl:call-template>

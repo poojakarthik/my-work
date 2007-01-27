@@ -7,7 +7,7 @@
 		<h1>Change of Lessee</h1>
 		
 		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
+			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Invalid Account'">
 						The Account number you entered does not exist. Please check the

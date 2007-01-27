@@ -6,6 +6,9 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	// TODO!bash! Fatal error: Call to a member function getValue() on a non-object in /home/flame/vixen/intranet_app/classes/accounts/account.php on line 402
+	// TODO! I give up.... I don't think there is anything left to say? do you?
+	
 	// call application loader
 	require ('config/application_loader.php');
 	
@@ -56,6 +59,8 @@
 			
 			if (isset ($_POST ['Date']))
 			{
+				// TODO!bash! Warning: mktime() expects parameter 4 to be long, string given in /home/flame/vixen/intranet_app/service_lessee.php on line 59
+				// TODO!bash! submit with no date causes a PHP warning
 				if (mktime (0, 0, 0, $_POST ['Date']['month'], $_POST ['Date']['day'], $_POST ['Date']['year']) < strtotime ("+48 hours", mktime (0, 0, 0)))
 				{
 					$oblstrError->setValue ('Date Past');
