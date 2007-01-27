@@ -245,9 +245,10 @@ abstract class NormalisationModule
 		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
 		
-		$strTables						= "DestinationCode";
-		$strData						= "Id, Code, Description";
-		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND Context = <Context>";
+		$strTables						= "Destination, DestinationTranslation";
+		$strData						= "Destination.Code AS Code, Destination.Description AS Description";
+		$strWhere						= "Destination.Code = DestinationTranslation.Code AND ";
+		$strWhere						.= "DestinationTranslation.Carrier = <Carrier> AND DestinationTranslation.CarrierCode = <CarrierCode> AND DestinationTranslation.Context = <Context>";
 		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
 		
 		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");

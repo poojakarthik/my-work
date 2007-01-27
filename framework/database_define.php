@@ -1588,7 +1588,7 @@
 	 
  	
 	//----------------------------------------------------------------------------// 
-	// Table: DestinationCode
+	// Table: Destination
 	//----------------------------------------------------------------------------// 
 	 
  
@@ -1596,7 +1596,7 @@
  		
 	unset($arrDefine);
 	 
-	$arrDefine['Name']		= "DestinationCode"; 
+	$arrDefine['Name']		= "Destination"; 
 	$arrDefine['Type']		= "InnoDB"; 
 	$arrDefine['Id']		= "Id"; 
 	$arrDefine['Index'][] 		= ""; 
@@ -1625,6 +1625,46 @@
 				 
 				 
 	// Define Columns 
+	$strName = "Context"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(20) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+					 
+	// Save Table Define
+	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
+	 
+ 	
+	//----------------------------------------------------------------------------// 
+	// Table: DestinationTranslation
+	//----------------------------------------------------------------------------// 
+	 
+ 
+ 		
+ 		
+	unset($arrDefine);
+	 
+	$arrDefine['Name']		= "DestinationTranslation"; 
+	$arrDefine['Type']		= "InnoDB"; 
+	$arrDefine['Id']		= "Id"; 
+	$arrDefine['Index'][] 		= ""; 
+	$arrDefine['Unique'][] 		= ""; 
+		 
+		 
+				 
+	// Define Columns 
+	$strName = "Code"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
 	$strName = "Carrier"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
@@ -1645,22 +1685,12 @@
 				 
 				 
 	// Define Columns 
-	$strName = "CarrierDescription"; 
+	$strName = "Description"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(255)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
-		 
-				 
-				 
-	// Define Columns 
-	$strName = "Context"; 
-		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "int(20) unsigned"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
 		 
 					 
 	// Save Table Define

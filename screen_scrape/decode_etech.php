@@ -1090,6 +1090,30 @@
 	}
 	
 	
+	// decode Destinations from a group of IDD rate records
+	function DecodeIDDDestination($arrScrapeRate)
+	{
+		// return on error
+		if (!is_array($arrScrapeRate['Rates']))
+		{
+			return FALSE;
+		}
+		
+		// clean output array
+		$arrOutput = Array();
+		
+		// for each record
+		foreach ($arrScrapeRate['Rates'] as $arrRate)
+		{	
+			// get the destination
+			if ($arrRate['Destination'])
+			{
+				$arrOutput[] = $arrRate['Destination'];
+			}
+		}
+		
+		return $arrOutput;
+	}
 	
 	// decode a group of IDD rate records
 	function DecodeIDDGroupRate($arrScrapeRate)
@@ -1153,8 +1177,8 @@
 			// ############################################################################################################################ //
 			
 			// set output array values
-			$arrOutput['Name'] 				= "$strName : $strCarrier : $strDestination";
-			$arrOutput['Description'] 		= "Calls to $strDestination via the $strCarrier network on the $strName plan";
+			$arrOutput['Name'] 				= "$strName : $strDestination";
+			$arrOutput['Description'] 		= "$strDestination on the $strName plan";
 			$arrOutput['StdRatePerUnit'] 	= number_format($arrRate['StdRate'] / 60, 8, '.', '');
 			$arrOutput['ExsRatePerUnit'] 	= number_format($arrRate['PostCredit'] / 60, 8, '.', '');
 			if ($intCapSet)
@@ -1177,8 +1201,8 @@
 			$arrOutput['Saturday'] 			= 1;
 			$arrOutput['Sunday'] 			= 1;
 			
-			// try to find the destination code
-			$strQuery = "SELECT Code FROM DestinationCode WHERE CarrierDescription LIKE '$strDestination' AND Carrier = $intCarrier LIMIT 1";
+			// find the destination code
+			$strQuery = "SELECT Code FROM Destination WHERE Description = '$strDestination' AND Context = 1 LIMIT 1";
 			$sqlResult = $this->sqlQuery->Execute($strQuery);
 			$row = $sqlResult->fetch_assoc();
 			if ($row['Code'])
@@ -1196,7 +1220,7 @@
 	// GUESS
 	// ------------------------------------//
 	
-	// guess the new rateplane name for a service type far a customer
+	// guess the new rateplane name for a service type for a customer
 	// by using the rategroups and a little glue sniffing
 	function GuessRatePlan($intCustomer, $intServiceType)
 	{

@@ -504,18 +504,18 @@ Blue Shared 500 						25
 	$arrRates['intrate']				['Tier 3 corporate Mobile Saver'] 				['IDD']					= 'Tier 3 corporate Mobile Saver';
 	$arrRates['intrate']				['Residential'] 								['IDD']					= 'Residential';
 	
-	$arrRates['service_equip_rate']		['Tier 3 Corporate Capped']						['S&E']					= 'S&E-3499';
-	$arrRates['service_equip_rate']		['Tier 3 Corporate Local Saver']				['S&E']					= 'S&E-3499';
-	$arrRates['service_equip_rate']		['Blue Virtual VOIP']							['S&E']					= 'S&E-3635';
-	$arrRates['service_equip_rate']		['Business Saver Capped']						['S&E']					= 'S&E-3499';
-	$arrRates['service_equip_rate']		['VoiceTalk']									['S&E']					= 'S&E-3499';
-	$arrRates['service_equip_rate']		['39cent cap']									['S&E']					= 'S&E-3499';
-	$arrRates['service_equip_rate']		['National 16']									['S&E']					= 'S&E-3595';
-	$arrRates['service_equip_rate']		['Blue 15c CTM']								['S&E']					= 'S&E-3635';
-	$arrRates['service_equip_rate']		['Tier 3 Corporate Mobile Saver']				['S&E']					= 'S&E-3499';
-	$arrRates['service_equip_rate']		['True Blue Fleet']								['S&E']					= 'S&E-3499';
-	$arrRates['service_equip_rate']		['Residential']									['S&E']					= 'S&E-3499';
-	$arrRates['service_equip_rate']		['Pinnacle ($33.00)']							['S&E']					= 'S&E-3300';
+	$arrRates['service_equip_rate']		['Tier 3 Corporate Capped']						['S&E']					= 'S&E-TierThreeCorporateCapped';
+	$arrRates['service_equip_rate']		['Tier 3 Corporate Local Saver']				['S&E']					= 'S&E-TierThreeLocalSaver';
+	$arrRates['service_equip_rate']		['Blue Virtual VOIP']							['S&E']					= 'S&E-VOIP';
+	$arrRates['service_equip_rate']		['Business Saver Capped']						['S&E']					= 'S&E-BusSaverCapped';
+	$arrRates['service_equip_rate']		['VoiceTalk']									['S&E']					= 'S&E-VoicetalkCapped';
+	$arrRates['service_equip_rate']		['39cent cap']									['S&E']					= 'S&E-Blue39cCap';
+	$arrRates['service_equip_rate']		['National 16']									['S&E']					= 'S&E-National16';
+	$arrRates['service_equip_rate']		['Blue 15c CTM']								['S&E']					= 'S&E-Blue15CTM';
+	$arrRates['service_equip_rate']		['Tier 3 Corporate Mobile Saver']				['S&E']					= 'S&E-TierThreeMobileSaver';
+	$arrRates['service_equip_rate']		['True Blue Fleet']								['S&E']					= 'S&E-TrueBlueFleet';
+	$arrRates['service_equip_rate']		['Residential']									['S&E']					= 'S&E-Residential';
+	$arrRates['service_equip_rate']		['Pinnacle ($33.00)']							['S&E']					= 'S&E-Pinnacle';
 	
 	$arrRates['mobile']					['Mobile Zero Plan']							['Mobile']				= 'Mobile-30-10-01';
 	$arrRates['mobile']					['Fleet Mobile 60']								['Mobile']				= 'Mobile-30-18-30';
@@ -646,7 +646,7 @@ Blue Shared 500 						25
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
 	$objImport->Truncate('AccountGroup');
-	$objImport->Truncate('CDR');
+	//$objImport->Truncate('CDR');
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
 	$objImport->Truncate('Contact');
@@ -657,10 +657,10 @@ Blue Shared 500 						25
 	$objImport->Truncate('ErrorLog');
 	$objImport->Truncate('FileDownload');
 	$objImport->Truncate('FileImport');
-	$objImport->Truncate('Invoice');
-	$objImport->Truncate('InvoiceOutput');
+	//$objImport->Truncate('Invoice');
+	//$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
-	$objImport->Truncate('InvoiceTemp');
+	//$objImport->Truncate('InvoiceTemp');
 	$objImport->Truncate('Note');
 	$objImport->Truncate('Payment');
 	$objImport->Truncate('ProvisioningExport');
@@ -817,7 +817,7 @@ Blue Shared 500 						25
 
 	}
 
-
+/*
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
 	{	
@@ -861,7 +861,7 @@ Blue Shared 500 						25
 			//echo "No Notes found for  : {$arrRow['CustomerId']}\n";
 		}
 	}
-	
+*/	
 	//finish
 	echo "Done\n";
 	echo "Added : $intCustomerCount Accounts\n";
