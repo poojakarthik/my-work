@@ -5,9 +5,8 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h1>Upload Payment Details</h1>
-		<div class="Seperator"></div>
 		
-		<h2 class="Invoice">Payment Details</h2>
+		<h2 class="Payment">Payment Details</h2>
 		<form method="post" action="payment_upload.php" enctype="multipart/form-data">
 			<div class="Wide-Form">
 				<div class="Form-Content">

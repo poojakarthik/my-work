@@ -243,6 +243,8 @@
 		// If we're matching against a Contact Name, we need to display 
 		// a list of Contacts which possibly match
 		
+		//TODO!bash! If only one matching contact is found, don't show a list, just skip to the next step
+		
 		if (!$_POST ['ui-Contact-Sel'])
 		{
 			// If we have the First and Last name of a Contact but not the 

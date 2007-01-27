@@ -37,7 +37,7 @@
 										</td>
 									</tr>
 									<tr>
-										<td colspan="2"><div class="Seperator"></div></td>
+										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -58,7 +58,7 @@
 										<td><xsl:value-of select="/Response/Account/TradingName" /></td>
 									</tr>
 									<tr>
-										<td colspan="2"><div class="Seperator"></div></td>
+										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -79,7 +79,7 @@
 										<td><xsl:value-of select="/Response/Account/ACN" /></td>
 									</tr>
 									<tr>
-										<td colspan="2"><div class="Seperator"></div></td>
+										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -118,7 +118,7 @@
 										<td><xsl:value-of select="/Response/Account/Postcode" /></td>
 									</tr>
 									<tr>
-										<td colspan="2"><div class="Seperator"></div></td>
+										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -141,7 +141,7 @@
 										</td>
 									</tr>
 									<tr>
-										<td colspan="2"><div class="Seperator"></div></td>
+										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">
@@ -229,7 +229,11 @@
 						</a>
 					</div>
 				</td>
-				<td width="30" nowrap="nowrap"></td>
+				
+				<!-- column spacer -->
+				<td class="ColumnSpacer"></td>
+				
+				<!-- second column -->
 				<td valign="top">
 					<h2 class="Invoice">Overdue Amount</h2>
 					Overdue charges for this account stand at :
@@ -254,6 +258,7 @@
 					<div class="Clear"></div>
 					<div class="Seperator"></div>
 					
+					<!-- options -->
 					<h2 class="Options">Account Options</h2>
 					<ul>
 						<li>
@@ -262,7 +267,7 @@
 									<xsl:text>account_ledger.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>View Invoices + Payments</xsl:text>
+								<xsl:text>View Invoices &amp; Payments</xsl:text>
 							</a>
 						</li>
 						<li>
@@ -277,10 +282,10 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>payment_add.php?Account=</xsl:text>
+									<xsl:text>account_edit.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>Make Payment</xsl:text>
+								<xsl:text>Edit Account Details</xsl:text>
 							</a>
 						</li>
 						<li>
@@ -290,15 +295,6 @@
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>Change Payment Method</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>account_edit.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
-								</xsl:attribute>
-								<xsl:text>Edit Account Details</xsl:text>
 							</a>
 						</li>
 						<li>
@@ -326,6 +322,15 @@
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>Add Contact</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>payment_add.php?Account=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>Make Payment</xsl:text>
 							</a>
 						</li>
 					</ul>
@@ -478,7 +483,16 @@
 					</xsl:attribute>
 					
 					<td><xsl:value-of select="/Response/Services/Results/rangeStart + position()" />.</td>
-					<td><xsl:value-of select="./FNN" /></td>
+					<td>
+						<a title="View Service Details">
+							<xsl:attribute name="href">
+								<xsl:text>service_view.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:value-of select="./FNN" />
+						</a>					
+					
+					</td>
 					<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 					<td>
 						<xsl:choose>
@@ -520,14 +534,6 @@
 						</xsl:choose>
 					</td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>service_view.php?Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:text>Service Details</xsl:text>
-						</a>
-						<xsl:text>, </xsl:text>
 						<a>
 							<xsl:attribute name="href">
 								<xsl:text>service_unbilled.php?Id=</xsl:text>

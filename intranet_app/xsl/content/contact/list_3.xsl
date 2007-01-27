@@ -10,6 +10,9 @@
 		
 		<h2 class="Contact">Customer Verification</h2>
 		
+		<!-- TODO!bash! Entering details, and then using the Back/Forward buttons wipes the details from input boxes, but they remain green : fix this -->
+		<!-- TODO!bash! give this page a usefull name... list_3.xls wtf is that? this page is not listing anything, it's a verification page -->
+		
 		<form method="POST" action="contact_list.php">
 			<input type="hidden" name="ui-Account">
 				<xsl:attribute name="value">

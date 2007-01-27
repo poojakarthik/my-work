@@ -5,7 +5,6 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h1>Make Payment</h1>
-		<div class="Seperator"></div>
 		
 		<form method="post" action="payment_add.php">
 			<xsl:if test="/Response/Error != ''">

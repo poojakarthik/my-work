@@ -16,7 +16,7 @@
 					<xsl:text>service_address.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/ProvisioningRequest/Service" />
 				</xsl:attribute>
-				<xsl:text>Return to Service Provisioning Details</xsl:text>
+				<xsl:text>Return to Provisioning</xsl:text>
 			</a>.
 		</p>
 	</xsl:template>

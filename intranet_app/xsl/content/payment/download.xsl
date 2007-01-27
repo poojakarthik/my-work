@@ -5,7 +5,6 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h1>Download Payment Summary</h1>
-		<div class="Seperator"></div>
 		
 		<h2 class="Payment">Payment Details</h2>
 		<form method="post" action="payment_download.php">

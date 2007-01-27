@@ -72,7 +72,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td colspan="2"><div class="Seperator"></div></td>
+								<td colspan="2"><div class="MicroSeperator"></div></td>
 							</tr>
 							<tr>
 								<th class="JustifiedWidth">
@@ -115,7 +115,7 @@
 								</tr>
 							</xsl:if>
 							<tr>
-								<td colspan="2"><div class="Seperator"></div></td>
+								<td colspan="2"><div class="MicroSeperator"></div></td>
 							</tr>
 							<tr>
 								<th class="JustifiedWidth">
@@ -164,7 +164,7 @@
 								</td>
 							</tr>
 							<tr>
-								<td colspan="2"><div class="Seperator"></div></td>
+								<td colspan="2"><div class="MicroSeperator"></div></td>
 							</tr>
 							<tr>
 								<th>
@@ -174,18 +174,6 @@
 									</xsl:call-template>
 								</th>
 								<td><xsl:value-of select="/Response/Service/UnbilledCharges-Cost-Current" /></td>
-							</tr>
-							<tr>
-								<th></th>
-								<td>
-									<a>
-										<xsl:attribute name="href">
-											<xsl:text>service_unbilled.php?Id=</xsl:text>
-											<xsl:value-of select="/Response/Service/Id" />
-										</xsl:attribute>
-										<xsl:text>View Charges</xsl:text>
-									</a>
-								</td>
 							</tr>
 							<tr>
 								<th>
@@ -205,18 +193,6 @@
 									</xsl:choose>
 								</td>
 							</tr>
-							<tr>
-								<th></th>
-								<td>
-									<a>
-										<xsl:attribute name="href">
-											<xsl:text>service_plan.php?Service=</xsl:text>
-											<xsl:value-of select="/Response/Service/Id" />
-										</xsl:attribute>
-										<xsl:text>Plan Details</xsl:text>
-									</a>
-								</td>
-							</tr>
 						</table>
 					</div>
 					<div class="LinkEdit">
@@ -230,226 +206,7 @@
 						</a>
 					</div>
 					
-				</td>
-				<td width="30"></td>
-				<td valign="top">
-				
-					<h2 class="Options">Service Options</h2>
-					<ul>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>account_view.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
-								</xsl:attribute>
-								<xsl:text>View Account</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_unbilled.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>View Unbilled Charges</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>recurring_charge_list.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>View Recurring Charges</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_plan.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>View Plan Details</xsl:text>
-							</a>
-						</li>
-						<xsl:if test="/Response/Service/ServiceType = 102">
-							<li>
-								<a href="#" title="Provisioning History" alt="A history Sent and Received Requests">
-									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (this, 'provisioning_history.php?Service=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
-									</xsl:attribute>
-									<xsl:text>View Provisioning History</xsl:text>
-								</a>
-							</li>
-							<li>
-								<a href="#" title="Provisioning Requests" alt="Requests that have been (or will be) Sent">
-									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (this, 'provisioning_requests.php?Service=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
-									</xsl:attribute>
-									<xsl:text>View Provisioning Requests</xsl:text>
-								</a>
-							</li>
-							<li>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>service_address.php?Service=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-									</xsl:attribute>
-									<xsl:text>Edit Service Address</xsl:text>
-								</a>
-							</li>
-						</xsl:if>
-						<li>
-							<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
-								<xsl:attribute name="onclick">
-									<xsl:text>return ModalExternal (this, 'service_edit.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-									<xsl:text>')</xsl:text>
-								</xsl:attribute>
-								<xsl:text>Edit Service</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_lessee.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>Change of Lessee</xsl:text>
-							</a>
-						</li>
-					</ul>
-					
-					<div class="Seperator"></div>
-				
-				
-					<h2 class="Notes">Service Notes</h2>
-					
-					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
-						<input type="hidden" name="AccountGroup">
-							<xsl:attribute name="value">
-								<xsl:text></xsl:text>
-								<xsl:value-of select="/Response/Service/AccountGroup" />
-							</xsl:attribute>
-						</input>
-						<input type="hidden" name="Service">
-							<xsl:attribute name="value">
-								<xsl:text></xsl:text>
-								<xsl:value-of select="/Response/Service/Id" />
-							</xsl:attribute>
-						</input>
-						Type new note for this service in the field below:
-						<textarea name="Note" class="input-summary" rows="6" />
-						
-						<div>
-							<input type="checkbox" name="Account" CHECKED="CHECKED">
-								<xsl:attribute name="value">
-									<xsl:text></xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
-								</xsl:attribute>
-							</input>
-							Show this note in Account Notes.
-						</div>
-						
-						<select class="Left" name="NoteType">
-							<xsl:for-each select="/Response/NoteTypes/NoteType">
-								<option>
-									<xsl:attribute name="style">
-										<xsl:text>background-color: #</xsl:text>
-										<xsl:value-of select="./BackgroundColor" />
-										<xsl:text>;</xsl:text>
-										
-										<xsl:text>border: solid 1px #</xsl:text>
-										<xsl:value-of select="./BorderColor" />
-										<xsl:text>;</xsl:text>
-										
-										<xsl:text>color: #</xsl:text>
-										<xsl:value-of select="./TextColor" />
-										<xsl:text>;</xsl:text>
-									</xsl:attribute>
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<xsl:value-of select="./Id" />
-									</xsl:attribute>
-									<xsl:value-of select="./TypeLabel" />
-								</option>
-							</xsl:for-each>
-						</select>
-						
-						<div class="Right">
-							<input type="submit" value="Create Note &#0187;" class="input-submit" />
-						</div>
-					</form>
-					
-					<div class="Clear"></div>
-					
-					<div class="Seperator"></div>
-					<h3>Recent Notes</h3>
-					<xsl:choose>
-						<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">
-							There are no notes currently attached to this Service.
-						</xsl:when>
-						<xsl:otherwise>
-							The 5 most recent notes are listed below:
-							<div class="Right">
-								<a href="#" title="Service Notes" alt="Notes for this Service">
-									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (this, 'note_list.php?Service=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
-									</xsl:attribute>
-									<xsl:text>View All Service Notes</xsl:text>
-								</a>
-							</div>
-							<div class="Seperator"></div>
-							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
-								<xsl:variable name="Note" select="." />
-								<div class="Note">
-									<xsl:attribute name="style">
-										<xsl:text>background-color: #</xsl:text>
-										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" />
-										<xsl:text>;</xsl:text>
-										
-										<xsl:text>border: solid 1px #</xsl:text>
-										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" />
-										<xsl:text>;</xsl:text>
-										
-										<xsl:text>color: #</xsl:text>
-										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/TextColor" />
-										<xsl:text>;</xsl:text>
-									</xsl:attribute>
-									
-									<div class="small">
-										Created on 
-											<strong>
-												<xsl:call-template name="dt:format-date-time">
-													<xsl:with-param name="year"	select="./Datetime/year" />
-													<xsl:with-param name="month"	select="./Datetime/month" />
-													<xsl:with-param name="day"		select="./Datetime/day" />
-							 						<xsl:with-param name="hour"	select="./Datetime/hour" />
-													<xsl:with-param name="minute"	select="./Datetime/minute" />
-													<xsl:with-param name="second"	select="./Datetime/second" />
-													<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
-												</xsl:call-template>
-											</strong>
-										by
-											<strong>
-												<xsl:value-of select="./Employee/FirstName" />
-												<xsl:text> </xsl:text>
-												<xsl:value-of select="./Employee/LastName" />
-											</strong>.
-									</div>
-									<div class="Seperator"></div>
-									
-									<xsl:value-of select="./Note" disable-output-escaping="yes" />
-								</div>
-								<div class="Seperator"></div>
-							</xsl:for-each>
-						</xsl:otherwise>
-					</xsl:choose>
-					<div class="Seperator"></div>
-
+					<!-- charges -->
 					<h2 class="Charge">Add Charges</h2>
 					<div class="Narrow-Form">
 						<h2>Single Charge</h2>
@@ -538,6 +295,213 @@
 						<div class="Clear"></div>
 					</div>
 					
+					<div class="Seperator"></div>
+					
+				</td>
+				
+				<!-- column spacer -->
+				<td class="ColumnSpacer"></td>
+				
+				<!-- second column -->
+				<td valign="top">
+					<h2 class="Options">Service Options</h2>
+					<ul>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_unbilled.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+								<xsl:text>View Unbilled Charges</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>recurring_charge_list.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+								<xsl:text>View Recurring Charges</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
+								<xsl:attribute name="onclick">
+									<xsl:text>return ModalExternal (this, 'service_edit.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+									<xsl:text>')</xsl:text>
+								</xsl:attribute>
+								<xsl:text>Edit Service Details</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_plan.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+								<xsl:text>Change Plan</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_lessee.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" />
+								</xsl:attribute>
+								<xsl:text>Change of Lessee</xsl:text>
+							</a>
+						</li>
+						<xsl:if test="/Response/Service/ServiceType = 102">
+							<li>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>service_address.php?Service=</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" />
+									</xsl:attribute>
+									<xsl:text>Provisioning</xsl:text>
+								</a>
+							</li>
+						</xsl:if>
+						<xsl:if test="/Response/Service/ServiceType = 101">
+							<li>
+								<a>
+									<xsl:attribute name="href">
+										<!-- TODO!bash! make this point to a mobile provisioning page -->
+										<xsl:text>service_address.php?Service=</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" />
+									</xsl:attribute>
+									<xsl:text>Mobile Provisioning</xsl:text>
+								</a>
+							</li>
+						</xsl:if>
+					</ul>
+					
+					<div class="Seperator"></div>
+				
+					<!-- notes -->
+					<h2 class="Notes">Service Notes</h2>
+					
+					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
+						<input type="hidden" name="AccountGroup">
+							<xsl:attribute name="value">
+								<xsl:text></xsl:text>
+								<xsl:value-of select="/Response/Service/AccountGroup" />
+							</xsl:attribute>
+						</input>
+						<input type="hidden" name="Service">
+							<xsl:attribute name="value">
+								<xsl:text></xsl:text>
+								<xsl:value-of select="/Response/Service/Id" />
+							</xsl:attribute>
+						</input>
+						Type new note for this service in the field below:
+						<textarea name="Note" class="input-summary" rows="6" />
+						
+						<div>
+							<input type="checkbox" name="Account" CHECKED="CHECKED">
+								<xsl:attribute name="value">
+									<xsl:text></xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+							</input>
+							Show this note in Account Notes.
+						</div>
+						
+						<select class="Left" name="NoteType">
+							<xsl:for-each select="/Response/NoteTypes/NoteType">
+								<option>
+									<xsl:attribute name="style">
+										<xsl:text>background-color: #</xsl:text>
+										<xsl:value-of select="./BackgroundColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>border: solid 1px #</xsl:text>
+										<xsl:value-of select="./BorderColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>color: #</xsl:text>
+										<xsl:value-of select="./TextColor" />
+										<xsl:text>;</xsl:text>
+									</xsl:attribute>
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+									<xsl:value-of select="./TypeLabel" />
+								</option>
+							</xsl:for-each>
+						</select>
+						
+						<div class="Right">
+							<input type="submit" value="Create Note &#0187;" class="input-submit" />
+						</div>
+						<div class="Clear"></div>
+					</form>
+					
+					<!-- recent notes -->
+					<h3>Recent Notes</h3>
+					<xsl:choose>
+						<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">
+							There are no notes currently attached to this Service.
+						</xsl:when>
+						<xsl:otherwise>
+							The 5 most recent notes are listed below:
+							<div class="Seperator"></div>
+							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
+								<xsl:variable name="Note" select="." />
+								<div class="Note">
+									<xsl:attribute name="style">
+										<xsl:text>background-color: #</xsl:text>
+										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BackgroundColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>border: solid 1px #</xsl:text>
+										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/BorderColor" />
+										<xsl:text>;</xsl:text>
+										
+										<xsl:text>color: #</xsl:text>
+										<xsl:value-of select="/Response/NoteTypes/NoteType[Id=$Note/NoteType]/TextColor" />
+										<xsl:text>;</xsl:text>
+									</xsl:attribute>
+									
+									<div class="small">
+										Created on 
+											<strong>
+												<xsl:call-template name="dt:format-date-time">
+													<xsl:with-param name="year"	select="./Datetime/year" />
+													<xsl:with-param name="month"	select="./Datetime/month" />
+													<xsl:with-param name="day"		select="./Datetime/day" />
+							 						<xsl:with-param name="hour"	select="./Datetime/hour" />
+													<xsl:with-param name="minute"	select="./Datetime/minute" />
+													<xsl:with-param name="second"	select="./Datetime/second" />
+													<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
+												</xsl:call-template>
+											</strong>
+										by
+											<strong>
+												<xsl:value-of select="./Employee/FirstName" />
+												<xsl:text> </xsl:text>
+												<xsl:value-of select="./Employee/LastName" />
+											</strong>.
+									</div>
+									<div class="Seperator"></div>
+									
+									<xsl:value-of select="./Note" disable-output-escaping="yes" />
+								</div>
+								<div class="Seperator"></div>
+							</xsl:for-each>
+							<div class="Right">
+								<a href="#" title="Service Notes" alt="Notes for this Service">
+									<xsl:attribute name="onclick">
+										<xsl:text>return ModalExternal (this, 'note_list.php?Service=</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:text>View All Service Notes</xsl:text>
+								</a>
+							</div>
+						</xsl:otherwise>
+					</xsl:choose>
 					<div class="Seperator"></div>
 				</td>
 			</tr>

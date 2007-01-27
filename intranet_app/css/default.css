@@ -35,6 +35,26 @@
 		height:               20px;
 	}
 	
+	.SmallSeperator
+	{
+		height:               10px;
+	}
+	
+	.TinySeperator
+	{
+		height:               5px;
+	}
+	
+	.MicroSeperator
+	{
+		height:               0px;
+	}
+	
+	.ColumnSpacer
+	{
+		width:					30px;	
+	}
+	
 	.Logo
 	{
 		position:	absolute;
@@ -103,16 +123,84 @@
 	.Narrow-Form
 	{
 		margin:              0;
-		padding:             10px;
+		padding-top:         5px;
+		padding-left:        5px;
+		padding-right:       0px;
+		padding-bottom:      5px;
 		
 		border:              solid 1px #D1D1D1;
 		background-color:    #F3F3F3;
-		width:				 380px;
+		width:				 425px;
 	}
 	
 	.Form-Content
 	{
 		margin-right:        20px;
+	}
+	
+	.Required
+	{
+		width:				10px;
+		padding:			0px;
+	}
+	
+	div.MsgNotice
+	{
+		border:              solid 1px #868735;
+		background-color:    #FFFFC0;
+		
+		background-image:    url('../img/template/MsgNotice.png');
+		background-repeat:   no-repeat;
+		background-position: top left;
+		
+		padding-top:         5px;
+		padding-left:        40px;
+		padding-right:       5px;
+		padding-bottom:      5px;
+		
+		line-height:         25px;
+		
+		margin-bottom:       10px;
+		
+		width:					385px;
+	}
+	
+	div.MsgNoticeWide
+	{
+		border:              solid 1px #868735;
+		background-color:    #FFFFC0;
+		
+		background-image:    url('../img/template/MsgNotice.png');
+		background-repeat:   no-repeat;
+		background-position: top left;
+		
+		padding-top:         5px;
+		padding-left:        40px;
+		padding-right:       5px;
+		padding-bottom:      5px;
+		
+		line-height:         25px;
+		
+		margin-bottom:       10px;
+	}
+	
+	div.MsgError
+	{
+		border:              solid 1px #CC0000;
+		background-color:    #f2dbdb;
+		
+		background-image:    url('../img/template/MsgError.png');
+		background-repeat:   no-repeat;
+		background-position: top left;
+		
+		padding-top:         5px;
+		padding-left:        40px;
+		padding-right:       5px;
+		padding-bottom:      5px;
+		
+		line-height:         25px;
+		
+		margin-bottom:       10px;
 	}
 	
 	h1
@@ -154,43 +242,7 @@
 		text-align:				left;
 	}
 	
-	div.MsgNotice
-	{
-		border:              solid 1px #868735;
-		background-color:    #FFFFC0;
-		
-		background-image:    url('../img/template/MsgNotice.png');
-		background-repeat:   no-repeat;
-		background-position: top left;
-		
-		padding-top:         5px;
-		padding-left:        40px;
-		padding-right:       5px;
-		padding-bottom:      5px;
-		
-		line-height:         25px;
-		
-		margin-bottom:       10px;
-	}
 	
-	div.MsgError
-	{
-		border:              solid 1px #CC0000;
-		background-color:    #f2dbdb;
-		
-		background-image:    url('../img/template/MsgError.png');
-		background-repeat:   no-repeat;
-		background-position: top left;
-		
-		padding-top:         5px;
-		padding-left:        40px;
-		padding-right:       5px;
-		padding-bottom:      5px;
-		
-		line-height:         25px;
-		
-		margin-bottom:       10px;
-	}
 	
 	input, select
 	{

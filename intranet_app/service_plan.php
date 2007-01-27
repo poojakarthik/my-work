@@ -6,6 +6,10 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
+	//TODO!bash! Assigning a new plan does not work, no error, just doesn't work.... I thought you told me the UI was finished ????
+	//TODO!bash! View Plan Details still shows the old view plan details pages, make it show the new one in a popup
+	
+	
 	// call application loader
 	require ('config/application_loader.php');
 	
@@ -13,7 +17,7 @@
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
 	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_PLAN | MODULE_SERVICE;
-	
+
 	// call application
 	require ('config/application.php');
 	
@@ -21,6 +25,7 @@
 	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Rate Plan');
 	$docDocumentation->Explain ('Service Rate Plan');
+	$docDocumentation->Explain ('Account');
 	
 	// Get the Service
 	try
@@ -35,6 +40,8 @@
 			// Try the POST method
 			$srvService		= $Style->attachObject (new Service ($_POST ['Service']));
 		}
+		// get the account
+		$actAccount		= $Style->attachObject ($srvService->getAccount ());
 	}
 	catch (Exception $e)
 	{

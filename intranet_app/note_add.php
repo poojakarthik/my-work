@@ -102,6 +102,7 @@
 	
 	if ($srvService)
 	{
+		//TODO!bash! return to provisioning page if note is submitted from there
 		header ('Location: service_view.php?Id=' . $_POST ['Service']);
 		exit;
 	}

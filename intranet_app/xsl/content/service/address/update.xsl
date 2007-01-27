@@ -6,17 +6,28 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Service Address Details</h1>
-		
+		<h1>Provisioning</h1>
+		<!-- TODO!bash! Rename this page and stick all of the 'Service address' pages in the provisioning folder where they belong -->
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/note_add.js"></script>
 		
 		<table border="0" width="100%" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
-					<h2 class="Account">Account Details</h2>
+					<h2 class="Service">Service Details</h2>
 					<div class="Narrow-Form">
 						<table border="0" cellpadding="5" cellspacing="0">
+							<tr>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Account')" />
+										<xsl:with-param name="field" select="string('Id')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<xsl:value-of select="/Response/Account/Id" />
+								</td>
+							</tr>
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
@@ -39,16 +50,6 @@
 									<xsl:value-of select="/Response/Account/TradingName" />
 								</td>
 							</tr>
-						</table>
-						
-						<div class="Clear"></div>
-					</div>
-					<div class="Seperator"></div>
-					
-					<h2 class="Service">Service Details</h2>
-					
-					<div class="Narrow-Form">
-						<table border="0" cellpadding="5" cellspacing="0">
 							<tr>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
@@ -73,19 +74,7 @@
 					</div>
 					
 					<div class="Seperator"></div>
-					<div class="Seperator"></div>
 						
-					<xsl:if test="not(/Response/ServiceAddress)">
-						<div class="MsgNotice" style="width:355px">
-							<strong><span class="Attention">Notice</span> :</strong>
-							This service does not have any Service Address Details 
-							associated with it. By submitting the form below, you 
-							will be creating a new Service Address Record.
-						</div>
-						<div class="Seperator"></div>
-					</xsl:if>
-					
-					
 					<form method="post" action="service_address.php">
 						<input type="hidden" name="Service">
 							<xsl:attribute name="value">
@@ -94,12 +83,19 @@
 							</xsl:attribute>
 						</input>
 						
-						<h2 class="Invoice">Billing Details</h2>
+						<h2 class="Address">Service Address Details</h2>
+						<xsl:if test="not(/Response/ServiceAddress)">
+						<!-- TODO!bash! DO NOT SET WIDTH INSIDE THE PAGE !!!!!!!!!!!! SET IT IN THE DAMN CLASS !!!!!!!!!!!!!! -->
+						<div class="MsgNotice">
+								<strong><span class="Attention">Notice</span> :</strong>
+								No Service Address Details Found
+							</div>
+						</xsl:if>
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -116,8 +112,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -134,8 +130,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -152,8 +148,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -170,8 +166,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -189,14 +185,16 @@
 								</tr>
 							</table>
 						</div>
-						<div class="Seperator"></div>
 						
-						<h2 class="Contact">End User Details</h2>
+						<div class="SmallSeperator"></div>
+						
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"></td>
+									<!-- TODO!bash! don't do things like td width=10 ... do class=Something and stick the width control in CSS -->
+									<!-- this has already been done here. -->
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"> </td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -225,8 +223,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -243,8 +241,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -261,8 +259,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -279,8 +277,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -299,8 +297,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -317,8 +315,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -336,14 +334,14 @@
 								</tr>
 							</table>
 						</div>
-						<div class="Seperator"></div>
 						
-						<h2 class="Account">Company Details</h2>
+						<div class="SmallSeperator"></div>
+						
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
-									<td width="10"></td>
-									<td width="10"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"></td>
+									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -360,8 +358,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"></td>
+									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -379,14 +377,14 @@
 								</tr>
 							</table>
 						</div>
-						<div class="Seperator"></div>
 						
-						<h2 class="Service">Service Details</h2>
+						<div class="SmallSeperator"></div>
+						
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -415,8 +413,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -433,8 +431,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -451,8 +449,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -469,8 +467,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -487,8 +485,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -505,8 +503,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -523,8 +521,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -553,8 +551,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -583,8 +581,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"></td>
-									<td width="10"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -601,8 +599,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -619,8 +617,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -649,8 +647,8 @@
 									</td>
 								</tr>
 								<tr>
-									<td width="10"><strong><span class="Red">R</span></strong></td>
-									<td width="10"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -668,25 +666,48 @@
 								</tr>
 							</table>
 						</div>
-						<div class="Seperator"></div>
-						
-						<table border="0" cellpadding="3" cellspacing="0">
-							<tr>
-								<td><strong><span class="Red">R :</span></strong></td>
-								<td>Required for Residential Services</td>
-							</tr>
-							<tr>
-								<td><strong><span class="Red">B :</span></strong></td>
-								<td>Required for Business Services</td>
-							</tr>
-						</table>
-						<div class="Seperator"></div>
-						
-						<input type="submit" value="Change Details &#0187;" class="input-submit" />
+						<div class="SmallSeperator"></div>
+						<div class="Left">
+							<strong><span class="Red">R </span></strong>: Required for Residential Services<br/>
+							<strong><span class="Red">B </span></strong>: Required for Business Services<br/>
+						</div>
+						<div class="Right">
+							<input type="submit" value="Change Details &#0187;" class="input-submit" />
+						</div>
 					</form>
 				</td>
+				
+				<!-- column gap -->
 				<td width="30"></td>
+				
+				<!-- second column -->
 				<td valign="top">
+					
+					<!-- Options -->
+					<h2 class="Options">Provisioning Options</h2>
+					<ul>
+						<li>
+							<a href="#" title="Provisioning History" alt="A history Sent and Received Requests">
+								<xsl:attribute name="onclick">
+									<xsl:text>return ModalExternal (this, 'provisioning_history.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
+								</xsl:attribute>
+								<xsl:text>View Provisioning History</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a href="#" title="Provisioning Requests" alt="Requests that have been (or will be) Sent">
+								<xsl:attribute name="onclick">
+									<xsl:text>return ModalExternal (this, 'provisioning_requests.php?Service=</xsl:text>
+									<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
+								</xsl:attribute>
+								<xsl:text>View Provisioning Requests</xsl:text>
+							</a>
+						</li>
+					</ul>
+					<div class="Seperator"></div>
+					
+					<!-- Provisioning Request -->
 					<h2 class="Provisioning">Provisioning Request</h2>
 					
 					<form method="POST" action="provisioning_request.php">
@@ -700,7 +721,7 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
-									<th>
+									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Carrier')" />
 											<xsl:with-param name="field" select="string('CarrierName')" />
@@ -722,7 +743,7 @@
 									</td>
 								</tr>
 								<tr>
-									<th>
+									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Provisioning')" />
 											<xsl:with-param name="field" select="string('ProvisioningRequestType')" />
@@ -743,94 +764,17 @@
 										</select>
 									</td>
 								</tr>
-								<tr>
-									<td colspan="2">
-										<div class="Seperator"></div>
-									</td>
-								</tr>
-								<tr>
-									<th></th>
-									<td>
-										<input type="submit" value="Perform Request &#0187;" class="input-submit" />
-									</td>
-								</tr>
 							</table>
 						</div>
+						<div class="SmallSeperator"></div>
+						<div class="Right">
+							<input type="submit" value="Perform Request &#0187;" class="input-submit" />
+						</div>
+						<div class="Clear"></div>
 					</form>
-					
 					<div class="Seperator"></div>
 					
-					<h2 class="Options">Service Options</h2>
-					<ul>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>account_view.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
-								</xsl:attribute>
-								<xsl:text>View Account</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_unbilled.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>View Unbilled Charges</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_plan.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>View Plan Details</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a href="#" title="Provisioning History" alt="A history Sent and Received Requests">
-								<xsl:attribute name="onclick">
-									<xsl:text>return ModalExternal (this, 'provisioning_history.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
-								</xsl:attribute>
-								<xsl:text>View Provisioning History</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a href="#" title="Provisioning Requests" alt="Requests that have been (or will be) Sent">
-								<xsl:attribute name="onclick">
-									<xsl:text>return ModalExternal (this, 'provisioning_requests.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
-								</xsl:attribute>
-								<xsl:text>View Provisioning Requests</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
-								<xsl:attribute name="onclick">
-									<xsl:text>return ModalExternal (this, 'service_edit.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-									<xsl:text>')</xsl:text>
-								</xsl:attribute>
-								<xsl:text>Edit Service</xsl:text>
-							</a>
-						</li>
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>service_lessee.php?Service=</xsl:text>
-									<xsl:value-of select="/Response/Service/Id" />
-								</xsl:attribute>
-								<xsl:text>Change of Lessee</xsl:text>
-							</a>
-						</li>
-					</ul>
-					
-					<div class="Seperator"></div>
-				
-				
+					<!-- Notes -->
 					<h2 class="Notes">Service Notes</h2>
 					
 					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
@@ -887,11 +831,10 @@
 						<div class="Right">
 							<input type="submit" value="Create Note &#0187;" class="input-submit" />
 						</div>
+						<div class="Clear"></div>
 					</form>
 					
-					<div class="Clear"></div>
-					
-					<div class="Seperator"></div>
+					<!-- Recent Notes -->
 					<h3>Recent Notes</h3>
 					<xsl:choose>
 						<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">
@@ -899,15 +842,6 @@
 						</xsl:when>
 						<xsl:otherwise>
 							The 5 most recent notes are listed below:
-							<div class="Right">
-								<a href="#" title="Service Notes" alt="Notes for this Service">
-									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (this, 'note_list.php?Service=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
-									</xsl:attribute>
-									<xsl:text>View All Service Notes</xsl:text>
-								</a>
-							</div>
 							<div class="Seperator"></div>
 							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 								<xsl:variable name="Note" select="." />
@@ -952,6 +886,15 @@
 								</div>
 								<div class="Seperator"></div>
 							</xsl:for-each>
+							<div class="Right">
+								<a href="#" title="Service Notes" alt="Notes for this Service">
+									<xsl:attribute name="onclick">
+										<xsl:text>return ModalExternal (this, 'note_list.php?Service=</xsl:text>
+										<xsl:value-of select="/Response/Service/Id" /><xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:text>View All Service Notes</xsl:text>
+								</a>
+							</div>
 						</xsl:otherwise>
 					</xsl:choose>
 					<div class="Seperator"></div>

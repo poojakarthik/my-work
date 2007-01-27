@@ -10,6 +10,7 @@ $strDomain	= "voiptelsystems.com.au";
 $strSubject	= "TODO List : ".Date('Y-m-d');
 $strHeader	= "The following TODOs are currently assigned to you;\n";
 $strFooter	= "\n\nThis is an automated message, do not reply\n\n";
+$strAdmin	= "flame";
 
 // include developer tools
 require_once('dev_tools.php');
@@ -47,14 +48,20 @@ foreach($arrEmail AS $strUser=>$strMessage)
 	switch ($strUser)
 	{
 		case 'todo':
+		case 'jared':
 			$strUser = 'flame';
 		case 'bash':
 		case 'rich':
 		case 'flame':
-		case 'jared':
 			// send email
 			mail ("$strUser@$strDomain", $strSubject, "$strUser, \n $strHeader \n $strMessage \n $strFooter");
 			//echo "$strUser, \n $strHeader \n $strMessage \n $strFooter";
+			
+			// send admin a copy of every email
+			if ($strUser != $strAdmin)
+			{
+				mail ("$strAdmin@$strDomain", "$strUser : $strSubject", "$strUser, \n $strHeader \n $strMessage \n $strFooter");
+			}
 			break;
 	}
 }
