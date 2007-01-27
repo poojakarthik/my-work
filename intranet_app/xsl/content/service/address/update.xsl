@@ -842,9 +842,9 @@
 						</xsl:when>
 						<xsl:otherwise>
 							The 5 most recent notes are listed below:
-							<div class="Seperator"></div>
 							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 								<xsl:variable name="Note" select="." />
+								<div class="SmallSeperator"></div>
 								<div class="Note">
 									<xsl:attribute name="style">
 										<xsl:text>background-color: #</xsl:text>
@@ -884,7 +884,6 @@
 									
 									<xsl:value-of select="./Note" disable-output-escaping="yes" />
 								</div>
-								<div class="Seperator"></div>
 							</xsl:for-each>
 							<div class="Right">
 								<a href="#" title="Service Notes" alt="Notes for this Service">

@@ -7,7 +7,7 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Account Ledger</h1>
+		<h1>View Invoices &amp; Payments</h1>
 		
 		<h2 class="Account">Account Details</h2>
 		<div class="Wide-Form">
@@ -22,13 +22,6 @@
 						</th>
 						<td>
 							<xsl:value-of select="/Response/Account/Id" />
-							[<a>
-								<xsl:attribute name="href">
-									<xsl:text>account_view.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
-								</xsl:attribute>
-								<xsl:text>View Account</xsl:text>
-							</a>]
 						</td>
 					</tr>
 					<tr>

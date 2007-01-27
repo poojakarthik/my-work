@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- TODO!bash! does not keep value of select when page reloads due to error -->
+<!-- TODO!bash! mark all fields as mandatory... use class=Required -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
@@ -8,7 +9,7 @@
 		
 		<form method="post" action="payment_add.php">
 			<xsl:if test="/Response/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Amount'">
 							You did not enter a valid Payment Amount. Please try again.
@@ -184,9 +185,13 @@
 					</table>
 				</div>
 			</div>
-			<div class="Seperator"></div>
-			
-			<input type="submit" value="Create Payment &#0187;" class="input-submit" />
+			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
+			<div class="Right">
+				<input type="submit" value="Create Payment &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

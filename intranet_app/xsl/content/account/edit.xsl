@@ -10,7 +10,7 @@
 		<script language="javascript" src="js/ACN.js"></script>
 		
 		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
+			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'BusinessName'">
 						You did not enter a Business Name. Please try again.
@@ -61,14 +61,15 @@
 								</xsl:call-template>
 							</th>
 							<td>
+								<!-- TODO!bash! Account Id is not displaying -->
 								<xsl:value-of select="/Response/ui-values/Id" />
 							</td>
 						</tr>
 						<tr>
-							<td><div class="Seperator"></div></td>
+							<td><div class="MicroSeperator"></div></td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -102,10 +103,11 @@
 							</td>
 						</tr>
 						<tr>
-							<td><div class="Seperator"></div></td>
+							<td><div class="MicroSeperator"></div></td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+
+							<td class="Required"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -113,6 +115,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
+								<!-- TODO!bash! the yellow color is useless... just make it stay white until valid. same with ACN -->
 								<input type="text" name="ABN" class="input-ABN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -122,7 +125,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+							<td class="Required"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -139,10 +142,10 @@
 							</td>
 						</tr>
 						<tr>
-							<td><div class="Seperator"></div></td>
+							<td><div class="MicroSeperator"></div></td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -176,7 +179,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -193,7 +196,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -210,7 +213,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -235,6 +238,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
+								<!-- TODO!bash! Country is not displaying -->
 								<xsl:value-of select="/Response/ui-values/Country" />
 							</td>
 						</tr>
@@ -257,7 +261,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					
-					<div class="Seperator"></div>
+					<div class="MicroSeperator"></div>
 					
 					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
@@ -285,8 +289,14 @@
 					</table>
 				</div>
 			</div>
-			<div class="Seperator"></div>
-			<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+				<strong><span class="Red"><sup>1</sup> </span></strong>: One or both fields required<br/>
+			</div>
+			<div class="Right">
+				<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

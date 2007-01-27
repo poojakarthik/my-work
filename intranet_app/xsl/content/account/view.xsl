@@ -409,19 +409,9 @@
 						</xsl:when>
 						<xsl:otherwise>
 							The 5 most recent notes are listed below:
-							<div class="Right">
-								<a href="#" title="Account Notes" alt="Notes for this Account">
-									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (this, 'note_list.php?Account=</xsl:text>
-										<xsl:value-of select="/Response/Account/Id" /><xsl:text>')</xsl:text>
-									</xsl:attribute>
-									<xsl:text>View All Account Notes</xsl:text>
-								</a>
-							</div>
-							<div class="Clear"></div>
-							<div class="Seperator"></div>
 							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 								<xsl:variable name="Note" select="." />
+								<div class="SmallSeperator"></div>
 								<div class="Note">
 									<xsl:attribute name="style">
 										<xsl:text>background-color: #</xsl:text>
@@ -461,8 +451,16 @@
 									
 									<xsl:value-of select="./Note" disable-output-escaping="yes" />
 								</div>
-								<div class="Seperator"></div>
 							</xsl:for-each>
+							<div class="Right">
+								<a href="#" title="Account Notes" alt="Notes for this Account">
+									<xsl:attribute name="onclick">
+										<xsl:text>return ModalExternal (this, 'note_list.php?Account=</xsl:text>
+										<xsl:value-of select="/Response/Account/Id" /><xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:text>View All Account Notes</xsl:text>
+								</a>
+							</div>
 						</xsl:otherwise>
 					</xsl:choose>
 				</td>

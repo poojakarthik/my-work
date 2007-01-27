@@ -71,7 +71,7 @@
 								</tr>
 								<tr>
 									<td colspan="2">
-										<div class="Seperator"></div>
+										<div class="MicroSeperator"></div>
 									</td>
 								</tr>
 								<tr>
@@ -120,7 +120,7 @@
 								</tr>
 								<tr>
 									<td colspan="2">
-										<div class="Seperator"></div>
+										<div class="MicroSeperator"></div>
 									</td>
 								</tr>
 								<tr>
@@ -136,7 +136,7 @@
 								</tr>
 								<tr>
 									<td colspan="2">
-										<div class="Seperator"></div>
+										<div class="MicroSeperator"></div>
 									</td>
 								</tr>
 								<tr>
@@ -184,7 +184,7 @@
 								<xsl:text>contact_edit.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Contact/Id" />
 							</xsl:attribute>
-							<xsl:text>Edit Contact</xsl:text>
+							<xsl:text>Edit Contact Details</xsl:text>
 						</a>
 					</div>
 				</td>
@@ -195,19 +195,19 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>account_add.php?AccountGroup=</xsl:text>
-									<xsl:value-of select="/Response/Contact/AccountGroup" />
+									<xsl:text>contact_edit.php?Id=</xsl:text>
+									<xsl:value-of select="/Response/Contact/Id" />
 								</xsl:attribute>
-								Add Associated Account
+								<xsl:text>Edit Contact Details</xsl:text>
 							</a>
 						</li>
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>billing_type_list.php?AccountGroup=</xsl:text>
+									<xsl:text>account_add.php?AccountGroup=</xsl:text>
 									<xsl:value-of select="/Response/Contact/AccountGroup" />
 								</xsl:attribute>
-								View Payment Methods
+								Add Associated Account
 							</a>
 						</li>
 						<li>
@@ -282,7 +282,6 @@
 					
 					<div class="Clear"></div>
 					
-					<div class="Seperator"></div>
 					<h3>Recent Notes</h3>
 					<xsl:choose>
 						<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">
@@ -290,19 +289,9 @@
 						</xsl:when>
 						<xsl:otherwise>
 							The 5 most recent notes are listed below:
-							<div class="Right">
-								<a href="#" title="Contact Notes" alt="Notes for this Contact">
-									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (this, 'note_list.php?Contact=</xsl:text>
-										<xsl:value-of select="/Response/Contact/Id" /><xsl:text>')</xsl:text>
-									</xsl:attribute>
-									<xsl:text>View All Contact Notes</xsl:text>
-								</a>
-							</div>
-							<div class="Clear"></div>
-							<div class="Seperator"></div>
 							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 								<xsl:variable name="Note" select="." />
+								<div class="SmallSeperator"></div>
 								<div class="Note">
 									<xsl:attribute name="style">
 										<xsl:text>background-color: #</xsl:text>
@@ -342,8 +331,16 @@
 									
 									<xsl:value-of select="./Note" disable-output-escaping="yes" />
 								</div>
-								<div class="Seperator"></div>
 							</xsl:for-each>
+							<div class="Right">
+								<a href="#" title="Contact Notes" alt="Notes for this Contact">
+									<xsl:attribute name="onclick">
+										<xsl:text>return ModalExternal (this, 'note_list.php?Contact=</xsl:text>
+										<xsl:value-of select="/Response/Contact/Id" /><xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:text>View All Contact Notes</xsl:text>
+								</a>
+							</div>
 						</xsl:otherwise>
 					</xsl:choose>
 				</td>
@@ -377,7 +374,15 @@
 					</xsl:attribute>
 					
 					<td><xsl:value-of select="position()" /></td>
-					<td><xsl:value-of select="./Id" /></td>
+					<td>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>account_view.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:value-of select="./Id" />
+						</a>
+					</td>
 					<td><xsl:value-of select="./BusinessName" /></td>
 					<td><xsl:value-of select="./TradingName" /></td>
 					<td>
@@ -398,13 +403,6 @@
 						</strong>
 					</td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>account_view.php?Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:text>Account Details</xsl:text>
-						</a>, 
 						<a href="#" title="Account Notes" alt="Notes for this Account">
 							<xsl:attribute name="onclick">
 								<xsl:text>return ModalExternal (this, 'note_list.php?Account=</xsl:text>
@@ -424,7 +422,7 @@
 								<xsl:text>account_ledger.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
-							<xsl:text>View Invoices + Payments</xsl:text>
+							<xsl:text>View Invoices &amp; Payments</xsl:text>
 						</a>
 					</td>
 				</tr>

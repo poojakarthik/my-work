@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Edit Contact</h1>
+		<h1>Edit Contact Details</h1>
 		
 		<form method="POST" action="contact_edit.php">
 			<input type="hidden" name="Id">
@@ -15,7 +15,7 @@
 			</input>
 			
 			<xsl:if test="/Response/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Title'">
 							You must enter a Salutation for the Contact you are editing.
@@ -120,7 +120,7 @@
 						</tr>
 						<tr>
 							<td>
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -140,19 +140,15 @@
 									<xsl:with-param name="Selected-Month"	select="/Response/ui-values/DOB-month" />
 									<xsl:with-param name="Selected-Year"	select="/Response/ui-values/DOB-year" />
 								</xsl:call-template>
+								<xsl:if test="not(/Response/Contact/DOB/year)">
+									<span class="Nbsp"> </span><strong><span class="Attention">No Date of Birth Currently Set</span></strong>
+								</xsl:if>
 							</td>
 						</tr>
-						<xsl:if test="not(/Response/Contact/DOB/year)">
-							<tr>
-								<td colspan="2"></td>
-								<td>
-									<strong><span class="Attention">No Date of Birth Currently Set</span></strong>
-								</td>
-							</tr>
-						</xsl:if>
+						
 						<tr>
 							<td>
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -225,7 +221,7 @@
 						</tr>
 						<tr>
 							<td>
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -260,18 +256,13 @@
 										<xsl:value-of select="/Response/ui-values/PassWord" />
 									</xsl:attribute>
 								</input>
-							</td>
-						</tr>
-						<tr>
-							<td colspan="2"></td>
-							<td>
-								<strong><span class="Attention">Attention</span> :</strong> Leave this password field
-								blank if you do not want to change the password.
+								<span class="Nbsp"> </span><strong><span class="Attention">Attention</span> :</strong>
+								Leave blank to keep existing password.
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -333,7 +324,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					
-					<div class="Seperator"></div>
+					<div class="MicroSeperator"></div>
 					
 					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
@@ -361,8 +352,14 @@
 					</table>
 				</div>
 			</div>
-			<div class="Seperator"></div>
-			<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+				<strong><span class="Red"><sup>1</sup> </span></strong>: One or both fields required<br/>
+			</div>
+			<div class="Right">
+				<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

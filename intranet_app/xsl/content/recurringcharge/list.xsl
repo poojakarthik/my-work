@@ -4,22 +4,9 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Recurring Charge Listing</h1>
+		<h1>View Recurring Charges</h1>
 		
-		<p>
-			Below is a list of Recurring Charges in the System. To add a new Recurring
-			Charge, select the Service you would like to add the Recurring Charge to
-			from the 
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>account_view.php?Id=</xsl:text>
-					<xsl:value-of select="/Response/Account/Id" />
-				</xsl:attribute>
-				<xsl:text>Account Details Page</xsl:text>
-			</a>.
-		</p>
-		<div class="Seperator"></div>
-		
+		<h2 class="Account">Account Details</h2>
 		<div class="Wide-Form">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
@@ -31,13 +18,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>account_view.php?Id=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
-								</xsl:attribute>
-								<xsl:value-of select="/Response/Account/Id" />
-							</a>
+							<xsl:value-of select="/Response/Account/Id" />
 						</td>
 					</tr>
 					<tr>
@@ -63,6 +44,7 @@
 		</div>
 		<div class="Seperator"></div>
 		
+		<h2 class="Charge">Recurring Charge Details</h2>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>

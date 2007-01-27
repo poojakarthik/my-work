@@ -3,9 +3,9 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
-	<xsl:import href="../../template/popup.xsl" />
+	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Edit Service</h1>
+		<h1>Edit Service Details</h1>
 		
 		<script language="javascript" src="js/service_edit.js"></script>
 		
@@ -124,7 +124,7 @@
 						</xsl:otherwise>
 					</xsl:choose>
 					
-					<div class="Seperator"></div>
+					<div class="MicroSeperator"></div>
 					
 					<xsl:choose>
 						<xsl:when test="not(/Response/Service/ClosedOn/year)">
@@ -154,9 +154,13 @@
 					</xsl:choose>
 				</div>
 			</div>
-			<div class="Seperator"></div>
-			
-			<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
+			<div class="Right">
+				<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

@@ -196,13 +196,12 @@
 						</table>
 					</div>
 					<div class="LinkEdit">
-						<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
-							<xsl:attribute name="onclick">
-								<xsl:text>return ModalExternal (this, 'service_edit.php?Id=</xsl:text>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>service_edit.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Service/Id" />
-								<xsl:text>')</xsl:text>
 							</xsl:attribute>
-							<xsl:text>Edit Service</xsl:text>
+							Edit Service Details
 						</a>
 					</div>
 					
@@ -325,13 +324,12 @@
 							</a>
 						</li>
 						<li>
-							<a href="#" title="Edit Service" alt="Archive or Edit Service Information">
-								<xsl:attribute name="onclick">
-									<xsl:text>return ModalExternal (this, 'service_edit.php?Id=</xsl:text>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_edit.php?Id=</xsl:text>
 									<xsl:value-of select="/Response/Service/Id" />
-									<xsl:text>')</xsl:text>
 								</xsl:attribute>
-								<xsl:text>Edit Service Details</xsl:text>
+								Edit Service Details
 							</a>
 						</li>
 						<li>
@@ -447,9 +445,9 @@
 						</xsl:when>
 						<xsl:otherwise>
 							The 5 most recent notes are listed below:
-							<div class="Seperator"></div>
 							<xsl:for-each select="/Response/Notes/Results/rangeSample/Note">
 								<xsl:variable name="Note" select="." />
+								<div class="SmallSeperator"></div>
 								<div class="Note">
 									<xsl:attribute name="style">
 										<xsl:text>background-color: #</xsl:text>
@@ -489,7 +487,6 @@
 									
 									<xsl:value-of select="./Note" disable-output-escaping="yes" />
 								</div>
-								<div class="Seperator"></div>
 							</xsl:for-each>
 							<div class="Right">
 								<a href="#" title="Service Notes" alt="Notes for this Service">
