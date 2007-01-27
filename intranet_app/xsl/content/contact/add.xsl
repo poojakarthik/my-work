@@ -164,7 +164,7 @@
 						</tr>
 						<tr>
 							<td>
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -188,7 +188,7 @@
 						</tr>
 						<tr>
 							<td>
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -261,7 +261,7 @@
 						</tr>
 						<tr>
 							<td>
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -300,7 +300,7 @@
 						</tr>
 						<tr>
 							<td>
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -347,8 +347,14 @@
 					</table>
 				</div>
 			</div>
-			<div class="Seperator"></div>
-			<input type="submit" value="Create Contact &#0187;" class="input-submit" />
+			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+				<strong><span class="Red"><sup>1</sup> </span></strong>: One or both fields required<br/>
+			</div>
+			<div class="Right">
+				<input type="submit" value="Add Contact &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 	

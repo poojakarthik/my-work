@@ -914,7 +914,7 @@
 				<strong><span class="Red"><sup>2</sup> </span></strong>: One or both fields required<br/>
 			</div>
 			<div class="Right">
-				<input type="submit" value="Create Account &#0187;" class="input-submit" />
+				<input type="submit" value="Add Account &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

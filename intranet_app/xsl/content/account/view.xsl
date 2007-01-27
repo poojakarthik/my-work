@@ -503,6 +503,7 @@
 								<xsl:text>service_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
+							<!-- Display 'NONE' in Red if there is no FNN -->
 							<xsl:value-of select="./FNN" />
 						</a>					
 					

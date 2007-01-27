@@ -7,7 +7,7 @@
 		<h1>Add Bank Account Details</h1>
 		
 		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
+			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'BankName'">
 						You did not enter a Bank Name. Please try again.
@@ -88,7 +88,7 @@
 					</tr>
 					<tr>
 						<td coslpan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
@@ -125,9 +125,11 @@
 					</tr>
 				</table>
 			</div>
-			<div class="Seperator"></div>
+			<div class="SmallSeperator"></div>
 			
-			<input type="submit" value="Create Bank Account Details &#0187;" class="input-submit" />
+			<div class="Right">
+				<input type="submit" value="Add Bank Account Details &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Account Payment Method</h1>
+		<h1>Change Payment Method</h1>
 		
 		<form method="POST" action="account_payment.php">
 			<input type="hidden" name="Id">
@@ -56,13 +56,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<h2 class="Invoice">Payment Method</h2>
-			
-			<p>
-				This screen allows you to choose how a particular Account will make and
-				handle payments.
-			</p>
-			<div class="Seperator"></div>
+			<h2 class="Payment">Payment Method</h2>
 			
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
@@ -81,44 +75,26 @@
 					</xsl:choose>
 				</div>
 				<div class="Seperator"></div>
-			</xsl:if>
-			
-			<table border="0" width="100%" cellpadding="3" cellspacing="0">
-				<tr>
-					<td width="30">
-						<input type="radio" id="BillingType:3" name="BillingType" value="3">
+				</xsl:if>
+						<!-- TODO!bash! This page needs to have just 1 set of radio buttons-->
+						<!-- TODO!bash! you can select account, or 1 direct debit account-->
+						<input type="radio" id="BillingType:3" name="FixThisBash" value="3">
 							<xsl:if test="/Response/ui-values/BillingType = 3">
 								<xsl:attribute name="checked">
 									<xsl:text>checked</xsl:text>
 								</xsl:attribute>
 							</xsl:if>
 						</input>
-					</td>
-					<th>
+
 						<label for="BillingType:3">
-							Bill all charges against the Account and do not automatically debit charges
+							Account
 						</label>
-					</th>
-				</tr>
-				<tr>
-					<td>
-						<input type="radio" id="BillingType:1" name="BillingType" value="1">
-							<xsl:if test="/Response/ui-values/BillingType = 1">
-								<xsl:attribute name="checked">
-									<xsl:text>checked</xsl:text>
-								</xsl:attribute>
-							</xsl:if>
-						</input>
-					</td>
-					<th>
+
+						<div class="SmallSeperator"></div>
 						<label for="BillingType:1">
-							Direct Debit the amount automatically from the following Bank Account :
+							Direct Debit from a Bank Account :
 						</label>
-					</th>
-				</tr>
-				<tr>
-					<td></td>
-					<td>
+
 						<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 							<tr class="First">
 								<th width="30">#</th>
@@ -143,7 +119,7 @@
 									
 									<td><xsl:value-of select="position()" />.</td>
 									<td>
-										<input type="radio" name="DirectDebit">
+										<input type="radio" name="FixThisBash">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
@@ -172,36 +148,21 @@
 							</xsl:when>
 						</xsl:choose>
 						
-						<div class="LinkEdit">
+						<div class="LinkAdd">
 							<a>
 								<xsl:attribute name="href">
 									<xsl:text>directdebit_add.php?AccountGroup=</xsl:text>
 									<xsl:value-of select="/Response/AccountGroup/Id" />
 								</xsl:attribute>
-								<xsl:text>Add Direct Debit Details</xsl:text>
+								<xsl:text>Add Bank Account Details</xsl:text>
 							</a>
 						</div>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<input type="radio" id="BillingType:2" name="BillingType" value="2">
-							<xsl:if test="/Response/ui-values/BillingType = 2">
-								<xsl:attribute name="checked">
-									<xsl:text>checked</xsl:text>
-								</xsl:attribute>
-							</xsl:if>
-						</input>
-					</td>
-					<th>
+
+						<div class="SmallSeperator"></div>
 						<label for="BillingType:2">
-							Direct Debit the amount automatically from the following Credit Card :
+							Direct Debit from a Credit Card :
 						</label>
-					</th>
-				</tr>
-				<tr>
-					<td></td>
-					<td>
+
 						<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 							<tr class="First">
 								<th width="30">#</th>
@@ -227,7 +188,7 @@
 									
 									<td><xsl:value-of select="position()" />.</td>
 									<td>
-										<input type="radio" name="CreditCard">
+										<input type="radio" name="FixThisBash">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
@@ -259,7 +220,7 @@
 														<xsl:attribute name="class">
 															<xsl:text>Red</xsl:text>
 														</xsl:attribute>
-														No CVV Defined
+														No CVV Entered
 													</xsl:otherwise>
 												</xsl:choose>
 											</span>
@@ -276,7 +237,7 @@
 							</xsl:when>
 						</xsl:choose>
 						
-						<div class="LinkEdit">
+						<div class="LinkAdd">
 							<a>
 								<xsl:attribute name="href">
 									<xsl:text>creditcard_add.php?AccountGroup=</xsl:text>
@@ -285,20 +246,11 @@
 								<xsl:text>Add Credit Card Details</xsl:text>
 							</a>
 						</div>
-					</td>
-				</tr>
-				<tr>
-					<td colspan="2">
-						<div class="Seperator"></div>
-					</td>
-				</tr>
-				<tr>
-					<td></td>
-					<td>
-						<input type="submit" value="Change Payment Method &#0187;" class="input-submit" />
-					</td>
-				</tr>
-			</table>
+						<div class="SmallSeperator"></div>
+						<div class="Right">
+							<input type="submit" value="Change Payment Method &#0187;" class="input-submit" />
+						</div>
+
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

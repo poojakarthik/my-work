@@ -151,9 +151,11 @@
 					</tr>
 				</table>
 			</div>
-			<div class="Seperator"></div>
+			<div class="SmallSeperator"></div>
 			
-			<input type="submit" value="Create Credit Card Details &#0187;" class="input-submit" />
+			<div class="Right">
+				<input type="submit" value="Add Credit Card Details &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

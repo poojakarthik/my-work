@@ -5,7 +5,6 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h1>Add Service</h1>
-		<div class="Seperator"></div>
 		
 		<form method="POST" action="service_add.php">
 			<input type="hidden" name="Account">
@@ -76,9 +75,10 @@
 					</table>
 				</div>
 			</div>
-			<div class="Seperator"></div>
-			
-			<input type="submit" value="Continue &#0187;" class="input-submit" />
+			<div class="SmallSeperator"></div>
+			<div class="Right">
+				<input type="submit" value="Continue &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

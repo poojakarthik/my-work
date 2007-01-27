@@ -4,11 +4,11 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Available Plans</h1>
+		<h1>View Available Plans</h1>
 		
 		<form method="GET" action="rates_plan_list.php">
 			<div class="Wide-Form">
-				<div class="Form-Content Left">
+				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th valign="top">
@@ -17,6 +17,9 @@
 									<xsl:with-param name="field" select="string('Name')" />
 								</xsl:call-template>
 							</th>
+							<!-- TODO!bash! at some point are we going to have an option other than 'contains' ? -->
+							<!-- TODO!bash! if this is not going to happen before we go live then this select box looks stupid -->
+							<!-- TODO!bash! remove this if there is only one option -->
 							<td>
 								<xsl:call-template name="ConstraintOperator">
 									<xsl:with-param name="Name" select="string('constraint[Name][Operator]')" />
@@ -61,14 +64,13 @@
 							</td>
 						</tr>
 					</table>
-					
-					<input type="submit" value="Search" class="input-submit" />
-					
-					<div class="Clear"></div>
 				</div>
-				
-				<div class="Clear"></div>
 			</div>
+			<div class="SmallSeperator"></div>
+			<div class="Right">
+				<input type="submit" value="Search" class="input-submit" />
+			</div>
+			<div class="Clear"></div>
 		</form>
 		
 		<div class="Seperator"></div>
@@ -96,7 +98,15 @@
 							</xsl:attribute>
 							
 							<td><xsl:value-of select="position()" />.</td>
-							<td><xsl:value-of select="./Name" /></td>
+							<td>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>rates_plan_summary.php?Id=</xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+									<xsl:value-of select="./Name" />
+								</a>
+							</td>
 							<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 							<td>
 								<a>

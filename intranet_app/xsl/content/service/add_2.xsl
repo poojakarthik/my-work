@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-
+<!-- TODO!bash! No Plan Assigned when I add a service -->
+<!-- TODO!bash! It lets me add a service with the same no. over and over again -->
+<!-- TODO!bash! it lets me add any damn thing i want as the FNN. should allow a valid FNN or blank... NOTHING ELSE -->
+<!-- TODO!bash! How the hell can you tell me that this system is finished ????? It is 10pm on a Saturday night and I am still here fixing up your mess. I want to see every bit of this fixed and perfect by end of the day on Monday -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h1>Add Service</h1>
-		<div class="Seperator"></div>
 		
 		<form method="POST" action="service_add.php">
 			<input type="hidden" name="Account">
@@ -48,10 +50,10 @@
 				</div>
 			</div>
 			<div class="Seperator"></div>
-			
+			<!-- TODO!bash! if i hit continue without entering any details i get taken back to the service view page ????? -->
 			<h2 class="Service">Service Details</h2>
 			<xsl:if test="/Response/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Mismatch'">
 							You must correctly confirm your Line Number.
@@ -80,7 +82,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -91,6 +93,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
+								<!-- TODO!bash! mark this as mandatory. and make sure you use class="Required" -->
 								<input type="text" name="FNN-1" id="FNN-1" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -107,6 +110,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
+								<!-- TODO!bash! mark this as mandatory. and make sure you use class="Required" -->
 								<input type="text" name="FNN-2" id="FNN-2" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -138,7 +142,7 @@
 							</tr>
 							<tr>
 								<td colspan="2">
-									<div class="Seperator"></div>
+									<div class="MicroSeperator"></div>
 								</td>
 							</tr>
 						</xsl:if>
@@ -161,6 +165,7 @@
 										</option>
 									</xsl:for-each>
 								</select>
+								<!-- TODO!bash! this needs to open the new plan summary page, not this crap one -->
 								<input type="button" value="View Plan Details &#0187;" class="input-submit" 
 								title="Viewing Plan Details" alt="Information about Charges incurred on this Plan"
 								onclick="return ModalExternal (this, 'rates_plan_view.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value)" />
@@ -169,9 +174,13 @@
 					</table>
 				</div>
 			</div>
-			<div class="Seperator"></div>
-			
-			<input type="submit" value="Continue &#0187;" class="input-submit" />
+			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
+			<div class="Right">
+				<input type="submit" value="Continue &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Account Listing</h1>
+		<h1>Account List</h1>
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
@@ -212,15 +212,15 @@
 						
 						<div class="Clear"></div>
 						
+						
+					</div>
+					<div class="SmallSeperator"></div>
+					<div class="Right">
 						<input type="submit" value="Submit" class="input-submit" />
 					</div>
 				</form>
 				
 				<div class="Seperator"></div>
-				
-				<a href="account_add.php">
-					Create a new Account
-				</a>
 				
 				<div class="Seperator"></div>
 				
@@ -429,11 +429,11 @@
 														<xsl:value-of select="./Operator" />
 													</xsl:for-each>
 												</xsl:attribute>
-												<xsl:text>- First</xsl:text>
+												<xsl:text>&#124;&lt;- First</xsl:text>
 											</a>
 										</xsl:when>
 										<xsl:otherwise>
-											- First
+											<!-- &#124;&lt;- First -->
 										</xsl:otherwise>
 									</xsl:choose>
 								</td>
@@ -477,11 +477,11 @@
 														<xsl:value-of select="./Operator" />
 													</xsl:for-each>
 												</xsl:attribute>
-												<xsl:text>- Prev</xsl:text>
+												<xsl:text>&lt;- Prev</xsl:text>
 											</a>
 										</xsl:when>
 										<xsl:otherwise>
-											- Prev
+											<!-- &lt;- Prev -->
 										</xsl:otherwise>
 									</xsl:choose>
 								</td>
@@ -541,11 +541,11 @@
 														<xsl:value-of select="./Operator" />
 													</xsl:for-each>
 												</xsl:attribute>
-												<xsl:text>Next -</xsl:text>
+												<xsl:text>Next -&gt;</xsl:text>
 											</a>
 										</xsl:when>
 										<xsl:otherwise>
-											Next -
+											<!-- Next -&gt; -->
 										</xsl:otherwise>
 									</xsl:choose>
 								</td>
@@ -588,11 +588,11 @@
 														<xsl:value-of select="./Operator" />
 													</xsl:for-each>
 												</xsl:attribute>
-												<xsl:text>Last -</xsl:text>
+												<xsl:text>Last -&gt;&#124;</xsl:text>
 											</a>
 										</xsl:when>
 										<xsl:otherwise>
-											Last -
+											<!-- Last -&gt;&#124; -->
 										</xsl:otherwise>
 									</xsl:choose>
 								</td>

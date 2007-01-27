@@ -81,6 +81,7 @@
 				)
 			);
 			
+			// TODO!bash! what if we came from account payment.php ?
 			header ('Location: billing_type_list.php?AccountGroup=' . $acgAccountGroup->Pull ('Id')->getValue ());
 			exit;
 		}

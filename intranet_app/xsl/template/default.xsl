@@ -245,7 +245,7 @@
 									<tr>
 										<td>
 											<a href="rates_plan_list.php">
-												<img src="img/template/plans.png" title="View Plan Details" class="MenuIcon" />
+												<img src="img/template/plans.png" title="View Available Plans" class="MenuIcon" />
 											</a>
 										</td>
 									</tr>
@@ -376,6 +376,7 @@
 								</thead>
 								<tbody>
 									<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
+									<!-- TODO!bash! Alert msg when this list is empty, just like there is every other place -->
 										<xsl:sort order="descending" />
 										
 										<tr>

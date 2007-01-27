@@ -8,6 +8,7 @@
 	<xsl:template name="Content">
 		<h1>View Plan Details</h1>
 		
+		<h2 class="Plan">Plan Details</h2>
 		<div class="Wide-Form">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
@@ -36,6 +37,7 @@
 							</xsl:choose>
 						</td>
 					</tr>
+					<!-- TODO!bash! Shared? MinMontly? ChargeCap? UsageCap?  where are they? they need to be shown here-->
 				</table>
 				<div class="Clear"></div>
 			</div>
@@ -52,8 +54,9 @@
 			
 				<xsl:if test="$RateGroup">
 					<tr class="First">
-						<th colspan="4">
+						<th colspan="3">
 							<xsl:value-of select="$RecordType/Name" />
+							<!-- TODO!bash! link this to view rate group details -->
 							(<xsl:value-of select="$RateGroup/Name" />)
 						</th>
 					</tr>
@@ -73,11 +76,9 @@
 								</xsl:choose>
 							</xsl:attribute>
 							
-							<td><xsl:value-of select="$Rate/StdFlagfall" /> flagfall + </td>
 							<td>
-								<xsl:value-of select="$Rate/StdRatePerUnit" /> per 
-								<xsl:value-of select="$Rate/StdUnits" /> <xsl:text> </xsl:text>
-								<xsl:value-of select="/Response/RecordDisplayTypes/RecordDisplayType[Id=$RecordType/DisplayType]/Suffix" />
+								<!-- TODO!bash! link this to view rate details -->
+								<xsl:value-of select="$Rate/Description" />	
 							</td>
 							<td>
 								<table border="0" cellpadding="3" cellspacing="0">
@@ -173,12 +174,14 @@
 						</tr>
 					</xsl:for-each>
 					<tr>
-						<td colspan="4">
-							<div class="Seperator"></div>
+						<td colspan="3">
+							<div class="MicroSeperator"></div>
+							<!-- TODO!bash! add a link that says "More Rates ..." and links to view rate group details if there are more rates to show -->
 						</td>
 					</tr>
 				</xsl:if>
 			</xsl:for-each>
+			<!-- TODO!bash! add in a section for Recurring Charges -->
 		</table>
 	</xsl:template>
 </xsl:stylesheet>

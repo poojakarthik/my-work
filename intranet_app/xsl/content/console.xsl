@@ -3,7 +3,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Administrative Console</h1>
+		<h1>Employee Console</h1>
 		
 		<p>
 			Welcome, <xsl:value-of select="/Response/Authentication/AuthenticatedEmployee/FirstName" />.
@@ -55,7 +55,7 @@
 					</a>
 				</td>
 				<td>
-					<strong>View Plan Details</strong><br />
+					<strong>View Available Plans</strong><br />
 					View details of available plans.
 				</td>
 			</tr>
