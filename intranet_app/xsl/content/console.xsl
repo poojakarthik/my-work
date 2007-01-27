@@ -75,10 +75,12 @@
 			</tr>
 		</table>
 		
+		<!-- Display Tip of the day popup -->
 		<xsl:if test="/Response/Tip">
 			<div id="modalContent-PabloSays">
 				<div class="modalContainer">
 					<div class="modalContent">
+						<h1>Pablo's Tip of the day</h1>
 						<div class="Pablo-Section">
 							<div class="Pablo-Section-Container">
 								<div class="Pablo-Section-Content">
@@ -92,8 +94,8 @@
 					<div class="modalTitle">
 						<div class="modalIcon Left"></div>
 						<div class="modalLabel Left">
-							<strong>Pablo's Rants ...</strong><br />
-							Today's tip to help you use the system easily
+							<strong>Pablo's Tip of the day</strong><br />
+							Pablo's helpful tip of the day
 						</div>
 						<div class="modalClose Right">
 							<img src="img/template/closelabel.gif" class="close" />

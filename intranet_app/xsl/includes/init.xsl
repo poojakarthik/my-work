@@ -7,10 +7,9 @@
 		
 		<xsl:variable name="Element" select="/Response/Documentation/Entity/Fields/Field[Entity=$entity][Field=$field]" />
 		
-		<a href="#" class="Label" alt="Documentation Information about this Field">
+		<a href="#" class="Label" alt="Pablo provides helpful online documentation">
 			<xsl:attribute name="title">
-				<xsl:text></xsl:text>
-				<xsl:value-of select="$Element/Title" />
+				<xsl:text>Pablo 'the helpful donkey'</xsl:text>
 			</xsl:attribute>
 			<xsl:attribute name="onclick">
 				<xsl:text>return ModalExternal (this, 'documentation_view.php?Entity=</xsl:text>
