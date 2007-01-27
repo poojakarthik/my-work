@@ -646,7 +646,7 @@ Blue Shared 500 						25
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
 	$objImport->Truncate('AccountGroup');
-	//$objImport->Truncate('CDR');
+	$objImport->Truncate('CDR');
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
 	$objImport->Truncate('Contact');
@@ -657,11 +657,11 @@ Blue Shared 500 						25
 	$objImport->Truncate('ErrorLog');
 	$objImport->Truncate('FileDownload');
 	$objImport->Truncate('FileImport');
-	//$objImport->Truncate('Invoice');
-	//$objImport->Truncate('InvoiceOutput');
+	$objImport->Truncate('Invoice');
+	$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
-	//$objImport->Truncate('InvoiceTemp');
-	$objImport->Truncate('Note');
+	$objImport->Truncate('InvoiceTemp');
+	//$objImport->Truncate('Note');
 	$objImport->Truncate('Payment');
 	$objImport->Truncate('ProvisioningExport');
 	$objImport->Truncate('ProvisioningLog');
