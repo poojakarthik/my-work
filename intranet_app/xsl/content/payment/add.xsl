@@ -20,29 +20,50 @@
 			</xsl:if>
 			
 			
-			<h2 class="Invoice">Payment Direction</h2>
+			<h2 class="Account">Account Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
-						<tr>
-							<th class="JustifiedWidth" valign="top">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Payment')" />
-									<xsl:with-param name="field" select="string('PaymentApplication')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<xsl:choose>
-									<xsl:when test="/Response/Accounts/Results/rangeLength = 1">
+						<xsl:choose>
+							<xsl:when test="/Response/Accounts/Results/rangeLength = 1">
+								<input type="hidden" name="Account">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Accounts/Results/rangeSample/Account[1]/Id" />
+									</xsl:attribute>
+								</input>
+								<tr>
+									<th class="JustifiedWidth" valign="top">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('Id')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Accounts/Results/rangeSample/Account[1]/Id" />
+									</td>
+								</tr>
+								<tr>
+									<th class="JustifiedWidth" valign="top">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('BusinessName')" />
+										</xsl:call-template>
+									</th>
+									<td>
 										<xsl:value-of select="/Response/Accounts/Results/rangeSample/Account[1]/BusinessName" />
-										<input type="hidden" name="Account">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/Accounts/Results/rangeSample/Account[1]/Id" />
-											</xsl:attribute>
-										</input>
-									</xsl:when>
-									<xsl:otherwise>
+									</td>
+								</tr>
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th class="JustifiedWidth" valign="top">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Payment')" />
+											<xsl:with-param name="field" select="string('PaymentApplication')" />
+										</xsl:call-template>
+									</th>
+									<td>
 										<table border="0" cellpadding="3" cellspacing="0">
 											<tr>
 												<td>
@@ -58,7 +79,7 @@
 												</td>
 												<th>
 													<label for="Account-Use:FALSE">
-														Apply this Payment to the oldest Invoice in all of the Accounts.
+														Apply this Payment against all Accounts.
 													</label>
 												</th>
 											</tr>
@@ -76,7 +97,7 @@
 												</td>
 												<th>
 													<label for="Account-Use:TRUE">
-														Apply this Payment to the Account in the list below:
+														Apply this Payment against the following Account:
 													</label>
 												</th>
 											</tr>
@@ -107,10 +128,10 @@
 												</td>
 											</tr>
 										</table>
-									</xsl:otherwise>
-								</xsl:choose>
-							</td>
-						</tr>
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 					</table>
 				</div>
 			</div>

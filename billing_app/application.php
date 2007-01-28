@@ -167,7 +167,7 @@ die();
 																"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
 																"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
 																"RatePlan.Id");
-		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL); // FIXME: Remove Limit
+		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0", NULL, 500); // FIXME: Remove Limit
 		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "Nature, SUM(Amount) AS Amount",

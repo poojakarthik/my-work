@@ -582,7 +582,7 @@ function ServiceType($strFNN)
 	$strPrefix 	= substr($strFNN, 0, 2);
 	
 	// Land Line
-	if ($intFNN == $strFNN && ($strPrefix == '02' || $strPrefix == '03' || $strPrefix == '07' || $strPrefix == '08' || $strPrefix == '09'))
+	if ("$intFNN" === "$strFNN" && ($strPrefix == '02' || $strPrefix == '03' || $strPrefix == '07' || $strPrefix == '08' || $strPrefix == '09'))
 	{
 		return SERVICE_TYPE_LAND_LINE;
 	}

@@ -840,7 +840,6 @@
 		$arrOutput['Account'][0]['State'] 			= strtoupper($arrCustomer['state']);
 		$arrOutput['Account'][0]['Country'] 			= 'AU';
 		$arrOutput['Account'][0]['CustomerGroup'] 	= $arrCustomer['customer_group'];
-		//TODO!!!! - $arrOutput['Account'][0]['CreditCard']
 		$arrOutput['Account'][0]['AccountGroup'] 	= $arrCustomer ['CustomerId'] . "', ";
 		$arrOutput['Account'][0]['Archived'] 		= $bolArchived;
 		
@@ -1191,6 +1190,7 @@
 			$arrOutput['ServiceType'] 		= $intServiceType;
 			$arrOutput['RecordType'] 		= $intRecordType;
 			$arrOutput['StdUnits'] 			= 1;
+			$arrOutput['ExsUnits'] 			= 1;
 			$arrOutput['StartTime'] 		= '00:00:00';
 			$arrOutput['EndTime'] 			= '23:59:59';
 			$arrOutput['Monday'] 			= 1;

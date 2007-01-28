@@ -97,71 +97,141 @@ class VixenImport extends ApplicationBaseClass
 	// Add Records
 	// ------------------------------------//
 	
-	function AddCustomer($arrCustomer)
+	function AddCustomer($arrCustomer, $bolWithId=FALSE)
 	{
 		$bolPassed = TRUE;
 		
-		// insert account group
-		$intAccountGroup = $this->InsertAccountGroup($arrCustomer['AccountGroup'][0]);
+		// set account Id if we have one
+		if ($bolWithId === TRUE)
+		{
+			$mixKey = key($arrCustomer['Account']);
+			$intAccount = $arrCustomer['Account'][$mixKey]['Id'];
+		}
+		
+		// insert account group ##
+		if ($bolWithId === TRUE)
+		{
+			// with Id
+			$intAccountGroup = $this->InsertWithIdAccountGroup(current($arrCustomer['AccountGroup']));
+		}
+		else
+		{
+			// without Id
+			$intAccountGroup = $this->InsertAccountGroup(current($arrCustomer['AccountGroup']));
+		}
 		if ($intAccountGroup === FALSE)
 		{
 			$bolPassed = FALSE;
-			$this->Error("InsertAccountGroup({$arrCustomer['AccountGroup'][0]}) failed (see line ~".__LINE__.")");
+			$this->Error("Insert(WithId)AccountGroup(".current($arrCustomer['AccountGroup']).") failed (see line ~".__LINE__.")");
 		}
-				
-		// insert credit card
+
+		// insert credit card ##
+		// note : CreditCard[n] will be added to Account[n]. This works with 1 account/multiple CC but will not work with 1 CC/multiple Accounts
+		$arrCreditCardId = Array();
 		if (is_array($arrCustomer['CreditCard']))
 		{
-			foreach ($arrCustomer['CreditCard'] AS $arrCreditCard)
+			foreach ($arrCustomer['CreditCard'] AS $mixIndex=>$arrCreditCard)
 			{
-				$arrCreditCard['AccountGroup'] = $intAccountGroup;
-				$intCreditCardId = $this->InsertCreditCard($arrCreditCard);
-				$arrCreditCardId[] = $intCreditCardId;
-				if ($intCreditCardId === FALSE)
+				// add account group
+				if (!$bolWithId || !$arrCreditCard['AccountGroup'])
+				{
+					$arrCreditCard['AccountGroup'] = $intAccountGroup;
+				}
+				$arrCreditCardId[$mixIndex] = $this->InsertCreditCard($arrCreditCard);
+				if ($arrCreditCardId[$mixIndex] === FALSE)
 				{
 					$bolPassed = FALSE;
 					$this->Error("InsertCreditCard($arrCreditCard) failed (see line ~".__LINE__.")");
 				}
 			}
-			//TODO!flame!link this to the account
 		}
 		
-		// insert accounts
-		if (is_array($arrCustomer['Account']))
-		{
-			foreach ($arrCustomer['Account'] AS $arrAccount)
-			{
-				$arrAccount['AccountGroup'] = $intAccountGroup;
-				$intAccount = $this->InsertWithIdAccount($arrAccount);
-				if ($intAccount === FALSE)
-				{
-					$bolPassed = FALSE;
-					$this->Error("InsertWithIdAccount($arrAccount) failed (see line ~".__LINE__.")");
-				}
-			}
-		}
-		
-		// insert contacts
+		// insert contacts X#
+		$intPrimaryContact = FALSE;
 		if (is_array($arrCustomer['Contact']))
 		{
 			foreach ($arrCustomer['Contact'] AS $arrContact)
 			{
-				$arrContact['Account'] = $intAccount;
-				$arrContact['AccountGroup'] = $intAccountGroup;
-				if ($this->InsertContact($arrContact) === FALSE)
-				if ($intAccount === FALSE)
+				// add account group
+				if (!$bolWithId || !$arrContact['AccountGroup'])
+				{
+					$arrContact['AccountGroup'] = $intAccountGroup;
+				}
+				// add account
+				if (!$bolWithId || !$arrContact['Account'])
+				{
+					$arrContact['Account'] = $intAccount;
+				}
+				$intContact = $this->InsertContact($arrContact);
+				if ($intContact === FALSE)
 				{
 					$bolPassed = FALSE;
 					$this->Error("InsertContact($arrContact) failed (see line ~".__LINE__.")");
 				}
+				elseif ($arrContact['CustomerContact'] == 1)
+				{
+					// this is the primary contact
+					$intPrimaryContact = $intContact;
+				}
 			}
 		}
 		
-		// insert services
+		// insert accounts ##
+		if (is_array($arrCustomer['Account']))
+		{
+			foreach ($arrCustomer['Account'] AS $mixIndex=>$arrAccount)
+			{
+				// add credit card
+				if ($arrCreditCardId[$mixIndex])
+				{
+					$arrAccount['CreditCard'] = $arrCreditCardId[$mixIndex];
+				}
+				
+				// add primary contact
+				if ($intPrimaryContact)
+				{
+					$arrAccount['PrimaryContact'] = $intPrimaryContact;
+				}
+				
+				// insert account ##
+				if ($bolWithId === TRUE)
+				{
+					// with Id
+					$intAccount = $this->InsertWithIdAccount($arrAccount);
+				}
+				else
+				{
+					// without Id
+					$arrAccount['AccountGroup'] = $intAccountGroup;
+					$intAccount = $this->InsertAccount($arrAccount);
+				}
+				if ($intAccount === FALSE)
+				{
+					$bolPassed = FALSE;
+					$this->Error("Insert(WithId)Account($arrAccount) failed (see line ~".__LINE__.")");
+				}
+			}
+		}
+		
+		// TODO!flame! For Add (without Id) we will have added contocts with no Account
+		// need to run a query here to add Account to all contacts for this account
+		
+		// insert services ##
 		if (is_array($arrCustomer['Service']))
 		{
 			foreach ($arrCustomer['Service'] AS $strFNN=>$arrService)
 			{
+				// add account group
+				if (!$bolWithId || !$arrService['AccountGroup'])
+				{
+					$arrService['AccountGroup'] = $intAccountGroup;
+				}
+				// add account
+				if (!$bolWithId || !$arrService['Account'])
+				{
+					$arrService['Account'] = $intAccount;
+				}
+				// insert service
 				$arrServices[$strFNN] = $this->InsertService($arrService);
 				if ($arrServices[$strFNN] === FALSE)
 				{
@@ -170,7 +240,7 @@ class VixenImport extends ApplicationBaseClass
 				}
 			}
 			
-			// insert service RateGroups
+			// insert service RateGroups ##
 			if (is_array($arrCustomer['ServiceRateGroup']))
 			{
 				if ($this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices) === FALSE)
@@ -186,82 +256,7 @@ class VixenImport extends ApplicationBaseClass
 	
 	function AddCustomerWithId($arrCustomer)
 	{
-		$bolPassed = TRUE;
-		
-		// insert account group
-		if ($this->InsertWithIdAccountGroup($arrCustomer['AccountGroup'][0]) === FALSE)
-		{
-			$bolPassed = FALSE;
-			$this->Error("InsertWithIdAccountGroup({$arrCustomer['AccountGroup'][0]}) failed (see line ~".__LINE__.")");
-		}
-		
-		// insert credit card
-		if (is_array($arrCustomer['CreditCard']))
-		{
-			foreach ($arrCustomer['CreditCard'] AS $arrCreditCard)
-			{
-				$intCreditCardId = $this->InsertCreditCard($arrCreditCard);
-				$arrCreditCard[] = $intCreditCardId;
-				if ($intCreditCardId === FALSE)
-				{
-					$bolPassed = FALSE;
-					$this->Error("InsertCreditCard($arrCreditCard) failed (see line ~".__LINE__.")");
-				}
-			}
-			//TODO!flame!link this to the account
-		}
-		
-		// insert accounts
-		if (is_array($arrCustomer['Account']))
-		{
-			foreach ($arrCustomer['Account'] AS $arrAccount)
-			{
-				if ($this->InsertWithIdAccount($arrAccount) === FALSE)
-				{
-					$bolPassed = FALSE;
-					$this->Error("InsertWithIdAccount($arrAccount) failed (see line ~".__LINE__.")");
-				}
-			}
-		}
-		
-		// insert contacts
-		if (is_array($arrCustomer['Contact']))
-		{
-			foreach ($arrCustomer['Contact'] AS $arrContact)
-			{
-				if ($this->InsertContact($arrContact) === FALSE)
-				{
-					$bolPassed = FALSE;
-					$this->Error("InsertContact($arrContact) failed (see line ~".__LINE__.")");
-				}
-			}
-		}
-		
-		// insert services
-		if (is_array($arrCustomer['Service']))
-		{
-			foreach ($arrCustomer['Service'] AS $strFNN=>$arrService)
-			{
-				$arrServices[$strFNN] = $this->InsertService($arrService);
-				if ($arrServices[$strFNN] === FALSE)
-				{
-					$bolPassed = FALSE;
-					$this->Error("InsertService($arrService) failed (see line ~".__LINE__.")");
-				}
-			}
-			
-			// insert service RateGroups
-			if (is_array($arrCustomer['ServiceRateGroup']))
-			{
-				if ($this->AddCustomerRatePlanRateGroup($arrCustomer['ServiceRateGroup'], $arrServices) === FALSE)
-				{
-					$bolPassed = FALSE;
-					$this->Error("AddCustomerRatePlanRateGroup({$arrCustomer['ServiceRateGroup']}, $arrServices) failed (see line ~".__LINE__.")");
-				}
-			}
-		}
-		
-		return $bolPassed;
+		return $this->AddCustomer($arrCustomer, TRUE);
 	}
 	
 	// add all service RateGroup & RatePlan records for a customer
@@ -731,6 +726,8 @@ class VixenImport extends ApplicationBaseClass
 	function InsertWithIdAccount($arrAccount)
 	{
 		// Add default values
+		$arrAccount['CreatedOn']		= ($arrAccount['CreatedOn'] 		== NULL) ? date("Y-m-d", time())		: $arrAccount['CreatedOn'];
+		$arrAccount['CreatedBy']		= ($arrAccount['CreatedBy'] 		== NULL) ? 22							: $arrAccount['CreatedBy'];
 		$arrAccount['BillingDate']		= ($arrAccount['BillingDate']		== NULL) ? 1							: $arrAccount['BillingDate'];
 		$arrAccount['BillingFreq']		= ($arrAccount['BillingFreq']		== NULL) ? 1 							: $arrAccount['BillingFreq'];
 		$arrAccount['BillingType']		= ($arrAccount['BillingType']		== NULL) ? BILLING_TYPE_ACCOUNT			: $arrAccount['BillingType'];
@@ -757,6 +754,8 @@ class VixenImport extends ApplicationBaseClass
 	function InsertAccount($arrAccount)
 	{
 		// Add default values
+		$arrAccount['CreatedOn']		= ($arrAccount['CreatedOn'] 		== NULL) ? date("Y-m-d", time())		: $arrAccount['CreatedOn'];
+		$arrAccount['CreatedBy']		= ($arrAccount['CreatedBy'] 		== NULL) ? 22							: $arrAccount['CreatedBy'];
 		$arrAccount['BillingDate']		= ($arrAccount['BillingDate']		== NULL) ? 1							: $arrAccount['BillingDate'];
 		$arrAccount['BillingFreq']		= ($arrAccount['BillingFreq']		== NULL) ? 1 							: $arrAccount['BillingFreq'];
 		$arrAccount['BillingType']		= ($arrAccount['BillingType']		== NULL) ? BILLING_TYPE_ACCOUNT			: $arrAccount['BillingType'];

@@ -7,7 +7,7 @@
 	//----------------------------------------------------------------------------//
 	
 	// TODO!bash! Fatal error: Call to a member function getValue() on a non-object in /home/flame/vixen/intranet_app/classes/accounts/account.php on line 402
-	// TODO! I give up.... I don't think there is anything left to say? do you?
+	// TODO!bash! I give up.... I don't think there is anything left to say? do you?
 	
 	// call application loader
 	require ('config/application_loader.php');

@@ -15,10 +15,13 @@
 // ---------------------------------------------------------------------------//
 // BASH
 // ---------------------------------------------------------------------------//
-//TODO!bash! add CreatedBy & ClosedBy when creating/closing a service
-//TODO!bash! add CreatedBy & CreatedOn when creating an account
-//TODO!bash! 3 URGENT ! - Mark an invoice as disputed and update the disputed $
-//TODO!bash! 3 URGENT ! - Resolve a disputed invoice
+//TODO!bash! URGENT add CreatedBy & ClosedBy when creating/closing a service
+//TODO!bash! URGENT DO THIS FIRST !!!! - add CreatedBy & CreatedOn when creating an account
+//TODO!bash! URGENT DO THIS FIRST !!!! - add CreatedBy & CreatedOn to the Account Table in the DB (see table documentation)
+//TODO!bash! URGENT ! - Mark an invoice as disputed and update the disputed $
+//TODO!bash! URGENT ! - Resolve a disputed invoice
+
+//TODO!bash! Add an optional LIMIT Clause to the DataReport, ask flame about this
 
 //TODO!bash! SCRAPE...
 //TODO!bash! DD Details (CSV)
@@ -31,11 +34,9 @@
 // FLAME
 // ---------------------------------------------------------------------------//
 
-//TODO!flame! Reserved Usernames
 //TODO!flame! Schedule MySQL Backup
 //TODO!flame! MySQL Recovery
 
-//TODO!flame! Select correct list of accounts to invoice
 //TODO!flame! Rollback CDR files
 //TODO!flame! Credits
 
@@ -52,26 +53,9 @@
 //TODO!flame! Testing Server
 //TODO!flame! Live Server
 //TODO!flame! Billing Server
-//TODO!flame! Disable write-back cache
-//TODO!flame! Full reporting of server load
-//TODO!flame! Nagios
 
 //TODO!flame! Zip file : remove /home/blah
 //TODO!flame! Unzip : don't ask for password
-
-//TODO!flame! Dealer Support
-//TODO!flame! add Dealer to AccountGroup & Service
-
-//TODO!flame! Master to look for VIXEN_FAIL, segfault etc
-
-//TODO!flame! Delinquents 	= illegal/bad churn
-//TODO!flame! UnApplied CDR = can't find owner
-//TODO!flame! Unrated 		= can't rate call
-
-//TODO!flame! Equipment
-//TODO!flame! Brand, Lines, Extns, Maintainer, Model, Year, Notes
-//TODO!flame! SOAP, ABN
-//TODO!flame! ASIC LINK
 
 //TODO!flame! Provisioning Permissions
 //TODO!flame! Customer Service	: Full Service, Activate, DeActivate, Preselection
@@ -83,9 +67,6 @@
 //TODO!flame! BILLING
 //TODO!flame! Insert Specification
 //TODO!flame! Special Offer Specification
-//TODO!flame! Customer Ref No (for payments)
-
-//TODO!flame! Unitel does iBurst
 
 //TODO!flame! NORMALISATION
 //TODO!flame! Program local
@@ -97,11 +78,42 @@
 //TODO!flame! Record Types for Inbound
 //TODO!flame! OC&C
 
-//TODO!flame! White screen of death on oversized page loads
-
 //TODO!flame! RATES
-//TODO!flame! Is the flagfall included in min call charge in old rates
 //TODO!flame! Congo, Cyprus, Korea, Dominica, East Timor, NZ Mobile
+
+// ---------------------------------------------------------------------------//
+// Later
+// ---------------------------------------------------------------------------//
+
+//TODO!later! Select correct list of accounts to invoice
+
+//TODO!later! Master to look for VIXEN_FAIL, segfault etc
+
+//TODO!later! Reserved Usernames
+
+//TODO!later! Equipment
+//TODO!later! Brand, Lines, Extns, Maintainer, Model, Year, Notes
+//TODO!later! SOAP, ABN
+//TODO!later! ASIC LINK
+
+//TODO!later! White screen of death on oversized page loads
+
+//TODO!later! Dealer Support
+//TODO!later! add Dealer to AccountGroup & Service
+
+//TODO!later! Disable write-back cache
+//TODO!later! Full reporting of server load
+//TODO!later! Nagios
+
+// ---------------------------------------------------------------------------//
+// Notes
+// ---------------------------------------------------------------------------//
+
+//TODO!notes! Unitel does iBurst
+
+//TODO!notes! Delinquents 	= illegal/bad churn
+//TODO!notes! UnApplied CDR = can't find owner
+//TODO!notes! Unrated 		= can't rate call
 
 
 

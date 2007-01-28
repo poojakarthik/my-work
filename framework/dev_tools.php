@@ -108,7 +108,7 @@
 			}
 			
 			// remove TODO from line
-			$arrTODO = explode('TODO!', $strTODO, 2);
+			$arrTODO = explode('TODO'.'!', $strTODO, 2);
 			if (!is_array($arrTODO))
 			{
 				continue;
