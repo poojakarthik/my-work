@@ -848,7 +848,7 @@
 
 	
 		// Process and implode the data so it can be inserted into the DB
-		if (($strFileContents = $this->GenerateInvoiceData($arrFileData)) === FALSE)
+		if (!($strFileContents = $this->GenerateInvoiceData($arrFileData)))
 		{
 			// Invalid data
 			Debug("Invalid data encountered!");
@@ -1225,7 +1225,8 @@
 			$strFileContents .= "\n";
 		}
 		
-		$strFileContents = rtrim($strFileContents);
+		// Return the data
+		return rtrim($strFileContents);
  	}
  	
  	
