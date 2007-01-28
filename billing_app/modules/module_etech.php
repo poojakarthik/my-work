@@ -1106,6 +1106,7 @@
 		{
 			$i++;
 			$t = 0;
+			$arrLine = Array();
 			
 			// Loop through Fields
 			foreach ($arrRecord as $arrField)
@@ -1219,10 +1220,10 @@
 						return FALSE;
 				}
 				
-				$strFileContents .= $strValue;
+				$arrLine[] = $strValue;
 			}
 			
-			$strFileContents .= "\n";
+			$strFileContents .= implode($this->_strDelimeter, $arrLine)."\n";
 		}
 		
 		// Return the data
