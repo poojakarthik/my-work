@@ -633,6 +633,7 @@
 		$strCurrentService		= "";
 		$strCurrentRecordType	= "";
 		$strCurrentPlace		= "";
+		$strCurrentLongDesc		= "";
 		$intRecordCount			= 0;
 		$fltRecordTypeTotal		= 0.0;
 		$intCategoryId			= 0;
@@ -670,10 +671,6 @@
 						$arrDefine['CategoryFooter']['Total']			['Value']	= $fltRecordTypeTotal;
 						$arrFileData[] = $arrDefine['CategoryFooter'];
 					}
-					// add service record (80)
-					$arrDefine['CategoryHeader']['Category']		['Value']	= $arrData['RecordTypeName'];
-					$arrDefine['CategoryHeader']['FNN']				['Value']	= $arrData['FNN'];
-					$arrFileData[] = $arrDefine['CategoryHeader'];
 					$strCurrentService		= $arrData['FNN'];
 					$strCurrentRecordType	= $arrData['RecordTypeName'];
 
@@ -708,8 +705,13 @@
 						$intCategoryId  = $arrRowType['RowType'];
 					}
 					$intCurrentRowType		= $arrRowType['RowType'];
-					$strCurrentRecordType	= $arrRowType['LongDesc'];
+					$strCurrentLongDesc		= $arrRowType['LongDesc'];
 					$strCurrentPlace		= $arrRowType['ShortDesc'];
+										
+					// add service record (80)
+					$arrDefine['CategoryHeader']['Category']		['Value']	= $strCurrentLongDesc;
+					$arrDefine['CategoryHeader']['FNN']				['Value']	= $arrData['FNN'];
+					$arrFileData[] = $arrDefine['CategoryHeader'];
 					
 					$intRecordCount = 0;
 				}
