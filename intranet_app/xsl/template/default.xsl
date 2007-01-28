@@ -285,6 +285,7 @@
 									</div>
 								</div>
 								
+								<!-- Top Menu -->
 								<ul id="QuickList" class="Right">
 									<xsl:choose>
 										<xsl:when test="/Response/Service">
@@ -337,7 +338,7 @@
 													<xsl:text>account_ledger.php?Id=</xsl:text>
 													<xsl:value-of select="/Response/Account/Id" />
 												</xsl:attribute>
-												<xsl:text>Account Ledger</xsl:text>
+												<xsl:text>Invoices &amp; Payments</xsl:text>
 											</a>
 										</li>
 									</xsl:if>

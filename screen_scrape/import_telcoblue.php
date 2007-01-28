@@ -585,6 +585,7 @@ Blue Shared 500 						25
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['OneThree']			= 'OneThree-Cost';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['Other']				= 'Other-Cost';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['SexHotline']		= '1900-28';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['SMS']				= 'SMS';
 	
 	// Mobile
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['Roaming']				= 'Roaming-35';
@@ -592,6 +593,7 @@ Blue Shared 500 						25
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['Other']				= 'Other-Cost';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['OSNetworkAirtime']		= 'OSNetworkAirtime-Cost';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['VoiceMailDeposit']		= 'VoiceMailDeposit-10-00-30';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['IDD']					= 'Mobile Zero Plan';
 	
 	// set config default rategroup array
 	$arrConfig['DefaultRateGroup'] = $arrRateGroups;
