@@ -636,6 +636,7 @@
 		$intRecordCount			= 0;
 		$fltRecordTypeTotal		= 0.0;
 		$intCategoryId			= 0;
+		$intCurrentRowType		= NULL;
 		$arrData				= Array();
 		// add start record
 		$arrFileData[] = $arrDefine['DetailsHeader'];
@@ -736,7 +737,7 @@
 					$arrRow['Description']		['Value']	= $strCurrentPlace;
 					$intMinutes		= (int)floor($arrData['Units'] / 60);
 					$intSeconds		= (int)($arrData['Units'] % 60);
-					$strDuration	= "$intMinutes:$intSeconds";
+					$strDuration	= "$intMinutes:".sprintf("%02d", $intSeconds);
 					$arrRow['Duration']			['Value']	= $strDuration;
 					$arrRow['Charge']			['Value']	= $arrData['Charge'];
 					$arrRow['RecordType']		['Value']	= $intCurrentRowType;
