@@ -87,7 +87,7 @@
 		
 		<xsl:choose>
 			<xsl:when test="/Response/ProvisioningRequests/Results/collationLength = 0">
-				<div class="MsgNoticeWide">
+				<div class="MsgNoticeModal">
 					There are no provisioning requests made on this Service.
 				</div>
 			</xsl:when>

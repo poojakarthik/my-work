@@ -8,11 +8,11 @@
 	<xsl:template name="Content">
 		<h1>View Unbilled Charges</h1>
 		
+		<!-- Service Details -->
 		<h2 class="Service">Service Details</h2>
 		
 		<div class="Wide-Form">
 			<table border="0" cellpadding="3" cellspacing="0">
-				<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
 							<xsl:with-param name="entity" select="string('Service')" />
@@ -28,7 +28,7 @@
 		
 		<div class="Seperator"></div>
 		
-		
+		<!-- Unbilled Charges -->
 		<h2 class="Charge">Unbilled Charges</h2>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">

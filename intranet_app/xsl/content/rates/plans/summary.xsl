@@ -6,8 +6,11 @@
 	<xsl:import href="../../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
+	
+		<!-- Page for viewing details of plans -->
 		<h1>View Plan Details</h1>
 		
+		<!-- Plan Details -->
 		<h2 class="Plan">Plan Details</h2>
 		<div class="Wide-Form">
 			<div class="Form-Content">
@@ -45,6 +48,7 @@
 		
 		<div class="Seperator"></div>
 		
+		<!-- Charges -->
 		<h2 class="Invoice">Charges</h2>
 		
 		<table border="0" width="100%" cellpadding="3" cellspacing="0" style="font-family: monospace; font-size: 9pt;" class="Listing">
@@ -181,6 +185,7 @@
 					</tr>
 				</xsl:if>
 			</xsl:for-each>
+			
 			<!-- TODO!bash! add in a section for Recurring Charges -->
 		</table>
 	</xsl:template>

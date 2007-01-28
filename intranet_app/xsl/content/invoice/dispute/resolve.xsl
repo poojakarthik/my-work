@@ -10,7 +10,7 @@
 	
 		<!--Page for resolving Invoice Disputes-->
 		
-		<h1>Resolve Invoice Dispute</h1>
+		<h1>Resolve Disputed Invoice</h1>
 		
 		<form method="post" action="invoice_dispute_resolve.php">
 			<input type="hidden" name="Id">

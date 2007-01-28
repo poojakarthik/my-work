@@ -8,22 +8,23 @@
 	
 	<xsl:template name="Content">	
 	
-		<!--  -->
+		<!-- View invoice Details (Breakdown) (2/2) -->
 
 		<h1>View Invoice Details</h1>
 
+		<!-- Invoice Details -->
 		<h2 class="Invoice">Invoice Details</h2>
 		<div class="Wide-Form">
 			<table border="0" cellpadding="3" cellspacing="0">
-				<tr>
+			<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Invoice')" />
+							<xsl:with-param name="entity" select="string('Account')" />
 							<xsl:with-param name="field" select="string('Id')" />
 						</xsl:call-template>
 					</th>
 					<td>
-						<xsl:value-of select="/Response/Invoice/Id" />
+						<xsl:value-of select="/Response/Account/BusinessName" />
 					</td>
 				</tr>
 				<tr>
@@ -37,31 +38,44 @@
 						<xsl:value-of select="/Response/Account/BusinessName" />
 					</td>
 				</tr>
+				<!--Check for Trading Name-->
+						<xsl:choose>
+							<xsl:when test="/Response/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Account/TradingName" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 				<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Account')" />
-							<xsl:with-param name="field" select="string('TradingName')" />
+							<xsl:with-param name="entity" select="string('Invoice')" />
+							<xsl:with-param name="field" select="string('Id')" />
 						</xsl:call-template>
 					</th>
 					<td>
-						<xsl:value-of select="/Response/Account/TradingName" />
+						<xsl:value-of select="/Response/Invoice/Id" />
 					</td>
 				</tr>
 			</table>
 		</div>
 		<div class="Seperator"></div>
 		
+	
+		<!-- Credits & Debits -->
 		<xsl:if test="/Response/Charges">
-			<h2 class="Charges">Credits + Debits</h2>
+			<h2 class="Charge">Credits &amp; Debits</h2>
 			
-			<xsl:choose>
-				<xsl:when test="/Response/Charges/Results/collationLength = 0">
-					<div class="MsgNoticeWide">
-						No charges were applied to this particular invoice.
-					</div>
-				</xsl:when>
-				<xsl:otherwise>
 					<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 						<tr class="First">
 							<th>Id</th>
@@ -126,11 +140,17 @@
 							</tr>
 						</xsl:for-each>
 					</table>
-				</xsl:otherwise>
+				<xsl:choose>
+				<xsl:when test="/Response/Charges/Results/collationLength = 0">
+					<div class="MsgNoticeWide">
+						No charges were applied to this particular invoice.
+					</div>
+				</xsl:when>
 			</xsl:choose>
 		</xsl:if>
 		<div class="Seperator"></div>
 		
+		<!--Usage Charges -->
 		<h2 class="Invoice">Usage Charges</h2>
 		
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
@@ -185,7 +205,7 @@
 									<xsl:text>'cdr_view.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>'</xsl:text>
 								<xsl:text>)</xsl:text>
 							</xsl:attribute>
-							View CDR Record
+							View CDR 
 						</a>
 					</td>
 				</tr>

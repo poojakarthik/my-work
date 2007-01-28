@@ -207,6 +207,27 @@
 		width:					835px;
 	}
 	
+	div.MsgNoticeModal
+	{
+		border:              solid 1px #868735;
+		background-color:    #FFFFC0;
+		
+		background-image:    url('../img/template/MsgNotice.png');
+		background-repeat:   no-repeat;
+		background-position: top left;
+		
+		padding-top:         5px;
+		padding-left:        40px;
+		padding-right:       5px;
+		padding-bottom:      5px;
+		
+		line-height:         25px;
+		
+		margin-bottom:       10px;
+		
+		width:					693px;
+	}
+	
 	div.MsgErrorNarrow
 	{
 		border:              solid 1px #CC0000;

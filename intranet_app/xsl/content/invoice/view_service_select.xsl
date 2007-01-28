@@ -17,17 +17,17 @@
 		<!-- TODO!bash! - I won't be able to test this until an billing run is done -->
 		<div class="Wide-Form">
 			<table border="0" cellpadding="3" cellspacing="0">
-				<tr>
+			<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Invoice')" />
+							<xsl:with-param name="entity" select="string('Account')" />
 							<xsl:with-param name="field" select="string('Id')" />
 						</xsl:call-template>
 					</th>
 					<td>
-						<xsl:value-of select="/Response/Invoice/Id" />
+						<xsl:value-of select="/Response/Account/Id" />
 					</td>
-				</tr>
+				</tr>	
 				<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
@@ -38,16 +38,34 @@
 					<td>
 						<xsl:value-of select="/Response/Account/BusinessName" />
 					</td>
-				</tr>
-				<tr>
+				</tr>	
+					<!--Check for Trading Name-->
+						<xsl:choose>
+							<xsl:when test="/Response/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Account/TradingName" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
+					<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Account')" />
-							<xsl:with-param name="field" select="string('TradingName')" />
+							<xsl:with-param name="entity" select="string('Invoice')" />
+							<xsl:with-param name="field" select="string('Id')" />
 						</xsl:call-template>
 					</th>
 					<td>
-						<xsl:value-of select="/Response/Account/TradingName" />
+						<xsl:value-of select="/Response/Invoice/Id" />
 					</td>
 				</tr>
 				<tr>
@@ -77,7 +95,7 @@
 					<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
 					<xsl:value-of select="/Response/Invoice/Id" />
 				</xsl:attribute>
-				<xsl:text>Add/Edit Disputed Amount</xsl:text>
+				<xsl:text>Dispute Invoice</xsl:text>
 			</a>
 		</div>
 		<div class="LinkEdit">
@@ -86,7 +104,7 @@
 					<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
 					<xsl:value-of select="/Response/Invoice/Id" />
 				</xsl:attribute>
-				<xsl:text>Resolve Disputed Amount</xsl:text>
+				<xsl:text>Resolve Disputed Invoice</xsl:text>
 			</a>
 		</div>
 		

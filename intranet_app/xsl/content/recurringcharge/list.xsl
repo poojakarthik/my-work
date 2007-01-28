@@ -30,20 +30,30 @@
 						</th>
 						<td><xsl:value-of select="/Response/Account/BusinessName" /></td>
 					</tr>
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Account')" />
-								<xsl:with-param name="field" select="string('TradingName')" />
-							</xsl:call-template>
-						</th>
-						<td><xsl:value-of select="/Response/Account/TradingName" /></td>
-					</tr>
+					<!--Check for Trading Name-->
+						<xsl:choose>
+							<xsl:when test="/Response/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Account/TradingName" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 				</table>
 			</div>
 		</div>
 		<div class="Seperator"></div>
 		
+		<!-- Recurring Charge Details -->
 		<h2 class="Charge">Recurring Charge Details</h2>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
