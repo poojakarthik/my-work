@@ -672,7 +672,7 @@
 							<strong><span class="Red">B </span></strong>: Required for Business Services<br/>
 						</div>
 						<div class="Right">
-							<input type="submit" value="Change Details &#0187;" class="input-submit" />
+							<input type="submit" value="Apply Changes &#0187;" class="input-submit" />
 						</div>
 					</form>
 				</td>
@@ -829,7 +829,7 @@
 						</select>
 						
 						<div class="Right">
-							<input type="submit" value="Create Note &#0187;" class="input-submit" />
+							<input type="submit" value="Add Note &#0187;" class="input-submit" />
 						</div>
 						<div class="Clear"></div>
 					</form>

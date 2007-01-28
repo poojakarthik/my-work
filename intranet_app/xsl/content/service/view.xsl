@@ -303,6 +303,7 @@
 				
 				<!-- second column -->
 				<td valign="top">
+				<!--Service Options-->
 					<h2 class="Options">Service Options</h2>
 					<ul>
 						<li>
@@ -432,7 +433,7 @@
 						</select>
 						
 						<div class="Right">
-							<input type="submit" value="Create Note &#0187;" class="input-submit" />
+							<input type="submit" value="Add Note &#0187;" class="input-submit" />
 						</div>
 						<div class="Clear"></div>
 					</form>

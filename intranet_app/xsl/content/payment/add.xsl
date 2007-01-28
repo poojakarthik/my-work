@@ -211,7 +211,7 @@
 				<strong><span class="Red">* </span></strong>: Required field<br/>
 			</div>
 			<div class="Right">
-				<input type="submit" value="Create Payment &#0187;" class="input-submit" />
+				<input type="submit" value="Make Payment &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

@@ -178,7 +178,7 @@
 			
 			<div class="SmallSeperator"></div>
 			<div class="Right">
-				<input type="submit" value="Finalise &amp; Process &#0187;" class="input-submit" />
+				<input type="submit" value="Change Lessee &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

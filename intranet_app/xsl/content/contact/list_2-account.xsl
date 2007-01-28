@@ -112,8 +112,10 @@
 							</div>
 						</xsl:when>
 						<xsl:otherwise>
-							<div class="Seperator"></div>
-							<input type="submit" value="Continue &#0187;" class="input-submit" />
+							<div class="SmallSeperator"></div>
+							<div class="Right">
+								<input type="submit" value="Continue &#0187;" class="input-submit" />
+							</div>
 						</xsl:otherwise>
 					</xsl:choose>
 				</form>

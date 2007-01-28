@@ -351,6 +351,7 @@
 					
 					<div class="Seperator"></div>
 					
+					<!-- Account Notes -->
 					<h2 class="Notes">Account Notes</h2>
 					
 					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
@@ -395,7 +396,7 @@
 						</select>
 						
 						<div class="Right">
-							<input type="submit" value="Create Note &#0187;" class="input-submit" />
+							<input type="submit" value="Add Note &#0187;" class="input-submit" />
 						</div>
 					</form>
 					

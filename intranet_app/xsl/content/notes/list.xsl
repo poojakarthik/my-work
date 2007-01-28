@@ -10,16 +10,16 @@
 		<h1>
 			<xsl:choose>
 				<xsl:when test="/Response/AccountGroup">
-					Account Group Notes
+					View Account Group Notes
 				</xsl:when>
 				<xsl:when test="/Response/Account">
-					Account Notes
+					View Account Notes
 				</xsl:when>
 				<xsl:when test="/Response/Service">
-					Service Notes
+					View Service Notes
 				</xsl:when>
 				<xsl:when test="/Response/Contact">
-					Contact Notes
+					View Contact Notes
 				</xsl:when>
 			</xsl:choose>
 		</h1>

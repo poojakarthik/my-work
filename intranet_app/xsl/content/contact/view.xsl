@@ -189,7 +189,10 @@
 					</div>
 				</td>
 				<td width="30" nowrap="nowrap"></td>
+				
+				<!-- column 2 -->
 				<td valign="top">
+					<!-- Contact Options -->
 					<h2 class="Options">Contact Options</h2>
 					<ul>
 						<li>
@@ -222,6 +225,7 @@
 					</ul>
 					<div class="Seperator"></div>
 					
+					<!-- Contact Notes -->
 					<h2 class="Notes">Contact Notes</h2>
 					
 					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
@@ -276,7 +280,7 @@
 						</select>
 						
 						<div class="Right">
-							<input type="submit" value="Create Note &#0187;" class="input-submit" />
+							<input type="submit" value="Add Note &#0187;" class="input-submit" />
 						</div>
 					</form>
 					
@@ -349,6 +353,7 @@
 		
 		<div class="Seperator"></div>
 		
+		<!-- Accounts Table -->
 		<h2 class="Accounts">Accounts</h2>
 		
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
@@ -428,5 +433,15 @@
 				</tr>
 			</xsl:for-each>
 		</table>
+		<div class= "SmallSeperator"> </div> 
+		<div class= "Right">
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>account_add.php?AccountGroup=</xsl:text>
+					<xsl:value-of select="/Response/Contact/AccountGroup" />
+				</xsl:attribute>
+				Add Associated Account
+			</a>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>
