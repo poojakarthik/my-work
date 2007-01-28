@@ -194,17 +194,41 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			switch ($this->_FetchRawCDR('Description'))
 			{
 				case "Business Telephone Line":
-					$intRateId	= 2;
+					// Business Line
+					$intRateId	= 80002;
 					break;					
 				case "Telephone Line":
-					//TODO!rich!find the real description for a residential line
-					$intRateId	= 3;
+					// Residential Line
+					//TODO!rich! find the real description for a residential line
+					$intRateId	= 80003;
 					break;
 				case "Faxstream":
-					$intRateId	= 4;
+					// Fax Stream
+					$intRateId	= 80004;
+					break;
+				case "ISDN2":
+					// ISDN 2
+					//TODO!rich! find the real description(s) for an ISDN 2
+					$intRateId	= 81002;
+					break;
+				case "ISDN10":
+					// ISDN 10
+					//TODO!rich! find the real description(s) for an ISDN 10
+					$intRateId	= 81010;
+					break;
+				case "ISDN20":
+					// ISDN 20
+					//TODO!rich! find the real description(s) for an ISDN 20
+					$intRateId	= 81020;
+					break;
+				case "ISDN30":
+					// ISDN 30
+					//TODO!rich! find the real description(s) for an ISDN 30
+					$intRateId	= 81030;
 					break;
 				default:
-					$intRateId	= 1;	// Other
+					// Other
+					$intRateId	= 80001;
 			}
 			
 			$this->_arrRawData['RateId']	=  $intRateId;
