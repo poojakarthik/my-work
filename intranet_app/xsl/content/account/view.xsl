@@ -6,6 +6,9 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	
+		<!-- Page for Viewing Account Details -->
+		
 		<h1>View Account Details</h1>
 		
 		<script language="javascript" src="js/note_add.js"></script>
@@ -208,7 +211,7 @@
 								<xsl:text>account_edit.php?Id=</xsl:text>
 								<xsl:value-of select="/Response/Account/Id" />
 							</xsl:attribute>
-							<xsl:text>Edit Account</xsl:text>
+							<xsl:text>Edit Account Details</xsl:text>
 						</a>
 					</div>
 					

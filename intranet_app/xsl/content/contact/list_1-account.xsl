@@ -3,12 +3,17 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
+	
 	<xsl:template name="Content">
+	
+		<!--  This Page is part of Find A Customer -->
+		<!-- Select an Account (Following Search OTHER THAN First/Last Name -->
 		<h1>Find Customer</h1>
 		
 		<h2 class="Account">Select an Account</h2>
 		<div class="sectionContainer">
 			<div class="sectionContent">
+			
 				<form method="post" action="contact_list.php">
 					<input type="hidden" name="ui-BusinessName">
 						<xsl:attribute name="value">
@@ -29,6 +34,7 @@
 						</xsl:attribute>
 					</input>
 					
+					<!--Search Details -->
 					<div class="Wide-Form">
 						<div class="Form-Content">
 							<table border="0" cellpadding="3" cellspacing="0">
@@ -70,6 +76,7 @@
 					</div>
 					<div class="Seperator"></div>
 					
+					<!--Error if no account is chosen -->
 					<xsl:if test="/Response/Error != ''">
 						<div class="MsgError">
 							<xsl:choose>
@@ -80,6 +87,7 @@
 						</div>
 					</xsl:if>
 					
+					<!--Account Options Table -->
 					<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">
 							<th width="30">#</th>

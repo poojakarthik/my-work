@@ -3,22 +3,24 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
-	
 	<xsl:template name="Content">
+	
+		<!-- Confirmation Page following Update of Service Address Details -->
+		
 		<h1>Service Address Updated</h1>
 		
-		<p>
+		<div class = "MsgNoticeWide">
 			Your Service Address Details have been successfully updated.
-		</p>
+		</div>
 		
-		<p>
+		<div class = "Right">
 			<a>
 				<xsl:attribute name="href">
-					<xsl:text>service_address.php?Id=</xsl:text>
+					<xsl:text>service_address.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
 				<xsl:text>Return to Provisioning</xsl:text>
 			</a>
-		</p>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

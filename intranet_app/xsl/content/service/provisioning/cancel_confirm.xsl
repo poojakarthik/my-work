@@ -4,13 +4,14 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Provisioning Request Canceled</h1>
 		
-		<p>
-			Provisioning Request has been successfully Canceled.
-		</p>
+		<!-- Confirmation Page following a Cancellation of a Provisioning Request-->
+		<h1>Provisioning Request Cancelled</h1>
 		
-		<p>
+		<div class = "MsgNoticeWide">
+			Provisioning Request has been successfully Cancelled.
+		</div>
+		<div class = "Right">
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_address.php?Service=</xsl:text>
@@ -18,6 +19,6 @@
 				</xsl:attribute>
 				<xsl:text>Return to Provisioning</xsl:text>
 			</a>.
-		</p>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

@@ -4,6 +4,9 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+		<!-- Page for Viewing a list of Available Plans -->
+		
 		<h1>View Available Plans</h1>
 		
 		<form method="GET" action="rates_plan_list.php">
@@ -114,7 +117,7 @@
 										<xsl:text>rates_plan_summary.php?Id=</xsl:text>
 										<xsl:value-of select="./Id" />
 									</xsl:attribute>
-									<xsl:text>View Summary</xsl:text>
+									<xsl:text>View Plan Details</xsl:text>
 								</a>
 							</td>
 						</tr>

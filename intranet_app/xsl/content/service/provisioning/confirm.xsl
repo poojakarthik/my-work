@@ -4,13 +4,15 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+		<!-- Confirmation Page following a Provisioning Request -->
+	
 		<h1>Provisioning Request Added</h1>
 		
-		<p>
+		<div class="MsgNoticeWide">
 			Your Provisioning Request has been successfully added.
-		</p>
-		
-		<p>
+		</div>
+		<div class = "Right">
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_address.php?Service=</xsl:text>
@@ -18,6 +20,7 @@
 				</xsl:attribute>
 				<xsl:text>Return to Provisioning</xsl:text>
 			</a>.
-		</p>
+		</div>
+			
 	</xsl:template>
 </xsl:stylesheet>

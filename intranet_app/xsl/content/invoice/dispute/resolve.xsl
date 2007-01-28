@@ -7,8 +7,10 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	
+		<!--Page for resolving Invoice Disputes-->
+		
 		<h1>Resolve Invoice Dispute</h1>
-		<div class="Seperator"></div>
 		
 		<form method="post" action="invoice_dispute_resolve.php">
 			<input type="hidden" name="Id">
@@ -18,6 +20,7 @@
 				</xsl:attribute>
 			</input>
 			
+			<!--Dispute Details -->
 			<h2 class="Invoice">Dispute Details</h2>
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
@@ -55,9 +58,11 @@
 					</tr>
 				</table>
 			</div>
-			<div class="Seperator"></div>
+			<div class="SmallSeperator"></div>
 			
-			<input type="submit" value="Apply Dispute &#0187;" class="input-submit" />
+			<div class="Right">
+				<input type="submit" value="Apply Dispute &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

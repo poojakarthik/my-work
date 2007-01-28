@@ -213,7 +213,7 @@
 				<strong><span class="Red"><sup>1</sup> </span></strong>: This field searches for Current Accounts only, not Archived Accounts.
 			</div>
 			<div class="Right">
-				<input type="submit" class="input-submit" value="Find Customer &#0187;" />
+				<input type="submit" class="input-submit" value="Search &#0187;" />
 			</div>
 		</form>
 	</xsl:template>

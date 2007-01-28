@@ -7,9 +7,11 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	
+		<!--Page for viewing Invoice Details -->
 		<h1>View Invoice Details</h1>
-		<div class="Seperator"></div>
 		
+		<!-- Invoice Details -->
 		<h2 class="Invoice">Invoice Details</h2>
 		<!-- TODO!!!! - show invoice details, TOTALS etc -->
 		<!-- TODO!bash! - I won't be able to test this until an billing run is done -->
@@ -48,9 +50,17 @@
 						<xsl:value-of select="/Response/Account/TradingName" />
 					</td>
 				</tr>
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Invoice')" />
+							<xsl:with-param name="field" select="string('Disputed')" />
+						</xsl:call-template>
+					</th>
+					<td><xsl:value-of select="/Response/Invoice/Disputed" /></td>
+				</tr>
 			</table>
 		</div>
-		<div class="Seperator"></div>
 		
 		<xsl:choose>
 			<xsl:when test="/Response/Invoice/Status = 102">
@@ -59,10 +69,30 @@
 				</div>
 			</xsl:when>
 		</xsl:choose>
-		<div class="Seperator"></div>
 		
+		<!--Links-->
+		<div class="LinkAdd">
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
+					<xsl:value-of select="/Response/Invoice/Id" />
+				</xsl:attribute>
+				<xsl:text>Add/Edit Disputed Amount</xsl:text>
+			</a>
+		</div>
+		<div class="LinkEdit">
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
+					<xsl:value-of select="/Response/Invoice/Id" />
+				</xsl:attribute>
+				<xsl:text>Resolve Disputed Amount</xsl:text>
+			</a>
+		</div>
+		
+		<!-- Table of Services -->
 		<h2 class="Services">Services</h2>
-		<table border="0" cellpadding="3" cellspacing="0" class="Listing">
+		<table border="0" cellpadding="3" cellspacing="0" class="Listing"  width="100%">
 			<tr class="First">
 				<th width="30">#</th>
 				<th width="150">Line Number</th>
@@ -101,40 +131,9 @@
 			</xsl:for-each>
 		</table>
 		<div class="Seperator"></div>
+
 		
-		<h2>Disputes</h2>
-		<div class="Wide-Form">
-			<table border="0" cellpadding="3" cellspacing="0">
-				<tr>
-					<th class="JustifiedWidth">
-						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Invoice')" />
-							<xsl:with-param name="field" select="string('Disputed')" />
-						</xsl:call-template>
-					</th>
-					<td><xsl:value-of select="/Response/Invoice/Disputed" /></td>
-				</tr>
-			</table>
-		</div>
-		
-		<div class="LinkAdd">
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
-					<xsl:value-of select="/Response/Invoice/Id" />
-				</xsl:attribute>
-				<xsl:text>Add/Change Disputed Amount</xsl:text>
-			</a>
-		</div>
-		<div class="LinkEdit">
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
-					<xsl:value-of select="/Response/Invoice/Id" />
-				</xsl:attribute>
-				<xsl:text>Resolve Disputed Amount</xsl:text>
-			</a>
-		</div>
+
 		
 		<div class="Seperator"></div>
 	</xsl:template>

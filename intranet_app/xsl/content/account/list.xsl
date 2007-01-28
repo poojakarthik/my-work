@@ -4,11 +4,16 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+		<!-- ADMIN PAGE -->
+		<!-- Page for searching for Customers (NO VERIFICATION) -->
+		
 		<h1>Account List</h1>
 		
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
 		
+		<h2 class="Account"> Account Details </h2>
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<form method="GET" action="account_list.php">
@@ -367,7 +372,6 @@
 						</xsl:for-each>
 					</xsl:if>
 				</table>
-				
 				<xsl:choose>
 					<xsl:when test="/Response/Accounts/Results/collationLength &gt; 80">
 						<div class="MsgErrorWide">

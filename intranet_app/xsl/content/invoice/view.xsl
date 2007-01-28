@@ -6,9 +6,12 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	
-	<xsl:template name="Content">
+	<xsl:template name="Content">	
+	
+		<!--  -->
+
 		<h1>View Invoice Details</h1>
-		<div class="Seperator"></div>
+
 		<h2 class="Invoice">Invoice Details</h2>
 		<div class="Wide-Form">
 			<table border="0" cellpadding="3" cellspacing="0">
