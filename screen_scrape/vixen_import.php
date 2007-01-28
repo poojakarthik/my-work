@@ -399,9 +399,10 @@ class VixenImport extends ApplicationBaseClass
 	// add mobile details
 	function AddMobileDetails($arrDetails)
 	{	
-		$strFNN = $arrDetails['FNN'];
-		$strRatePlanName = $arrDetails['RatePlanName'];
-		$intService = (int)$arrDetails['Service'];
+		$strFNN 			= $arrDetails['FNN'];
+		$strRatePlanName 	= $arrDetails['RatePlanName'];
+		$intService 		= (int)$arrDetails['Service'];
+		$arrRateGroup 		= $arrDetails['RateGroup'];
 		
 		// find the service
 		if (!$intService)
@@ -421,6 +422,14 @@ class VixenImport extends ApplicationBaseClass
 				$this->Error("Could not add MobileDetails : No Service, No FNN");
 				return FALSE;
 			}
+		}
+		
+		// Guess the plan name if we don't have it yet
+		$bolGuessRatePlan = FALSE;
+		if (!$strRatePlanName)
+		{
+			$strRatePlanName = $this->GuessRatePlan($arrRateGroup, SERVICE_TYPE_MOBILE);
+			$bolGuessRatePlan = TRUE;
 		}
 		
 		// Find the Plan
@@ -453,8 +462,26 @@ class VixenImport extends ApplicationBaseClass
 				// find the record type
 				$intRecordType = $this->FindRecordType($strRecordType, SERVICE_TYPE_MOBILE);
 				
-				// find the rategroup
-				$intRateGroup = $this->FindRateGroup($strRateGroupName, $intRecordType);
+				// clean the rategroup
+				unset($intRateGroup);
+				
+				// if we guessed the RatePlan
+				if($bolGuessRatePlan === TRUE)
+				{
+					// use the customers RateGroup if there is one
+					if ($arrRateGroup[SERVICE_TYPE_MOBILE][$strRecordType])
+					{
+						// find the rategroup
+						$intRateGroup = $this->FindRateGroup($arrRateGroup[SERVICE_TYPE_MOBILE][$strRecordType], $intRecordType);
+					}
+				}
+				
+				// use the default rategroup for the rateplan
+				if (!$intRateGroup)
+				{
+					// find the rategroup
+					$intRateGroup = $this->FindRateGroup($strRateGroupName, $intRecordType);
+				}
 				
 				if ($intRateGroup)
 				{
@@ -1016,6 +1043,48 @@ class VixenImport extends ApplicationBaseClass
 		// Return false if there was no match
 	 	return FALSE;
 	 }
+	 
+	 
+	// guess the new rateplane name by looking at the customers RateGroups for a
+	// specific service type, sniffing some glue & taking a wild guess
+	// $arrRateGroup : Array[intServiceType][strRecordType] = $strRateGroupName
+	function GuessRatePlan($arrRateGroup, $intServiceType)
+	{
+		$intServiceType = (int)$intServiceType;
+		if (!is_array($arrRateGroup) || !$intServiceType)
+		{
+			return FALSE;
+		}
+		
+		// clean the plan scores array
+		$arrPlanScores = Array();
+				
+		// Score plans
+		foreach($arrRateGroup[$intServiceType] AS $strRecordType=>$strRateGroupName)
+		{
+			// add to RatePlan scores for each plan
+			foreach ($this->arrConfig['RatePlan'][$intServiceType] AS $strPlan=>$arrRateGroups)
+			{
+				// is this RateGroup part of this plan
+				if ($arrRateGroups[$strRecordType] == $strRateGroupName)
+				{
+					// if so, score a goal for this plan
+					$arrPlanScores[$strPlan]++;
+				}
+			}
+		}
+		
+		// sort the array of plans & get the highest scoring plan
+		$bolSorted = asort($arrPlanScores);
+		if ($bolSorted)
+		{
+			return array_pop(array_keys($arrPlanScores));
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
 }
 
 

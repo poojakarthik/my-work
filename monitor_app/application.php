@@ -87,6 +87,7 @@ $appMonitor = new ApplicationMonitor($arrConfig);
 		return $arrOutput;
 	}
 	
+	// return an array of invalid FNNs
 	function GetInvalidFNN()
 	{
 		/*
@@ -98,6 +99,23 @@ $appMonitor = new ApplicationMonitor($arrConfig);
 		*/
 	
 	}
+	
+	
+	function GetBadDestination()
+	{
+		// clean output array
+		$arrOutput = Array();
+		
+		$strQuery = "SELECT Status, COUNT(Id) AS CountCDR FROM CDR GROUP BY Status";
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		while ($arrRow = $sqlResult->fetch_assoc())
+		{
+			$arrOutput[$arrRow['Status']] = $arrRow['CountCDR'];
+		}
+		return $arrOutput;
+	}
+	
+	
 	
  }
 

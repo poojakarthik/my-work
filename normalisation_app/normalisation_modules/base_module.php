@@ -277,7 +277,21 @@ abstract class NormalisationModule
 		// Validate our normalised data
 		$arrValid = Array();
 		
-		// $this->_arrNormalisedData["Id"];
+		// DestinationCode : required for any record type with a context
+		if ($this->_intContext > 0)
+		{
+			// requires a destination code
+			if (!is_numeric($this->_arrNormalisedData["DestinationCode"]))
+			{
+				$this->_UpdateStatus(CDR_BAD_DESTINATION);
+				return FALSE;
+			}
+		}
+		else
+		{
+			// doesn't require a destination code
+			$arrValid['DestinationCode'] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
+		}
 		
 		// FNN : valid FNN
 		$arrValid['FNN'] = preg_match("/^0\d{9}[i]?|13\d{4}|1[89]00\d{6}$/", 	$this->_arrNormalisedData["FNN"]);	// 1
@@ -324,18 +338,6 @@ abstract class NormalisationModule
 		// cost : numeric
 		$arrValid['Cost'] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8
 		
-		// DestinationCode : required for any record type with a context
-		if ($this->_intContext > 0)
-		{
-			// requires a destination code
-			$arrValid['DestinationCode'] = is_numeric($this->_arrNormalisedData["DestinationCode"]);	// 9
-		}
-		else
-		{
-			// doesn't require a destination code
-			$arrValid['DestinationCode'] = (!$this->_arrNormalisedData["DestinationCode"] || is_numeric($this->_arrNormalisedData["DestinationCode"]));	// 9
-		}
-		
 		$this->_arrValid = $arrValid;
 		
 		$i = 0;
@@ -344,7 +346,7 @@ abstract class NormalisationModule
 			$i++;
 			if(!$bolValid)
 			{
-				$this->_arrNormalisedData['Status']	= CDR_CANT_NORMALISE_INVALID;
+				$this->_UpdateStatus(CDR_CANT_NORMALISE_INVALID);
 				Debug($strKey." : ".(string)$i);
 				return false;
 			}
@@ -503,7 +505,7 @@ abstract class NormalisationModule
 			}
 			return TRUE;
 		}
-		// retfrn false if there is no define array for the carrier (should never happen)
+		// return false if there is no define array for the carrier (should never happen)
 		return FALSE;
 	 }
 	
@@ -549,6 +551,9 @@ abstract class NormalisationModule
 	 	// set CDR
 	 	$this->_arrNormalisedData = $arrCDR;
 		
+		// Status = Normalised by default
+		$this->_arrNormalisedData['Status'] 	= CDR_NORMALISED;
+		
 		// not a credit by default
 		if (!$this->_arrNormalisedData['Credit'])
 		{
@@ -579,6 +584,40 @@ abstract class NormalisationModule
 	 protected function _AppendCDR($strKey, $mixValue)
 	 {
 	 	$this->_arrNormalisedData[$strKey] = $mixValue;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _UpdateStatus
+	//------------------------------------------------------------------------//
+	/**
+	 * _UpdateStatus()
+	 *
+	 * Update Status of the output CDR
+	 *
+	 * Update Status of the output CDR
+	 * will not update status if the CDR already has an error status (other than CDR_BAD_OWNER)
+	 * 
+	 * @param	int		intStatus		Status Constant
+	 *
+	 * @return	bool					
+	 *
+	 * @method
+	 */
+	 protected function _UpdateStatus($intStatus)
+	 {
+	 	// only set status if our current status is CDR_NORMALISED, CDR_FIND_OWNER, CDR_RENORMALISE or CDR_BAD_OWNER
+		$intStatus = $this->_arrNormalisedData['Status'];
+	 	if ($intStatus == CDR_NORMALISED || $intStatus == CDR_FIND_OWNER || $intStatus == CDR_BAD_OWNER || $intStatus == CDR_RENORMALISE)
+		{
+			// Set new status
+			$this->_arrNormalisedData['Status'] = $intStatus;
+			return TRUE;
+		}
+		else
+		{
+			// can't set status
+			return FALSE;
+		}
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -665,7 +704,7 @@ abstract class NormalisationModule
 	 	}
 	 	
 		// Return false if there was no match, or more than one match
-		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
+		$this->_UpdateStatus(CDR_BAD_OWNER);
 		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
 	 	return false;
@@ -690,7 +729,15 @@ abstract class NormalisationModule
 	 */
 	 public function FindOwner($arrCDR)
 	 {
-		$this->_arrNormalisedData = $arrCDR;
+		// set local copy of CDR
+		$this->_arrNormalisedData 			= $arrCDR;
+		
+		// default to status = normalised
+		$this->_arrNormalisedData['Status']	= CDR_NORMALISED;
+		
+		// apply ownership
+		$this->ApplyOwnership();
+		
 		return $this->_arrNormalisedData;
 	 }
 	
@@ -727,7 +774,7 @@ abstract class NormalisationModule
 	 	}
 	 	
 		// Return false if there was no match
-		$this->_arrNormalisedData['Status']	= CDR_BAD_RECORD_TYPE;
+		$this->_UpdateStatus(CDR_BAD_RECORD_TYPE);
 	 	return false;
 	 }
 	
@@ -765,7 +812,7 @@ abstract class NormalisationModule
 	 	}
 		
 		// Return false if there was no match
-		$this->_arrNormalisedData['Status']	= CDR_BAD_RECORD_TYPE;
+		$this->_UpdateStatus(CDR_BAD_RECORD_TYPE);
 	 	return false;
 	 }
 	 
@@ -804,7 +851,7 @@ abstract class NormalisationModule
 		//TODO!!!! - add this to a report so we can see any missing destinations
 
 		// Set an error status
-		$this->_arrNormalisedData['Status']	= CDR_BAD_DESTINATION;
+		$this->_UpdateStatus(CDR_BAD_DESTINATION);
 		
 		// Return false if there was no match
 	 	return false;

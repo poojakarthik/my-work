@@ -141,6 +141,33 @@
 		return $arrRow;
 	}
 	
+	function FetchCustomerById($intCustomer)
+	{
+		$intCustomer = (int)$intCustomer;
+		if (!$intCustomer)
+		{
+			return FALSE;
+		}
+		
+		// get customer details
+		$strQuery 	= "SELECT DataSerialized AS DataSerialised FROM ScrapeAccount WHERE CustomerId = $intCustomer LIMIT 1";
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		if (!$sqlResult)
+		{
+			// return false if we can't get the results
+			return FALSE;
+		}
+		$arrRow = $sqlResult->fetch_assoc();
+		if ($arrRow)
+		{
+			return unserialize($arrRow['DataSerialised']);
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+	
 	function FetchSystemNote()
 	{
 		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeNoteSys ";
@@ -704,34 +731,34 @@
 	// decode mobile details
 	function DecodeMobileDetail($arrDetails)
 	{
-		if (!is_array($arrDetails))
+		$intCustomer = (int)$arrDetails['CustomerId'];
+		if (!is_array($arrDetails) || !$intCustomer)
 		{
 			return FALSE;
 		}
 		
-		$strRatePlanName = $this->arrConfig['RatePlanConvert'][SERVICE_TYPE_MOBILE][trim($arrDetails ['Plan'])];
-		if (!$strRatePlanName)
-		{
-			// find the RatePlan
-			$strRatePlanName = $this->GuessRatePlan($arrDetails['CustomerId'], SERVICE_TYPE_MOBILE);
-			if (!$strRatePlanName)
-			{
-				return FALSE;
-			}
-		}
+		// get customer details
+		$arrCustomer = $this->FetchCustomerById($intCustomer);
+		
+		// get RateGroups for this Customer
+		$arrRateGroup = $this->DecodeRateGroup($arrCustomer);
+		
+		// get RatePlan Name
+		$strRatePlanName = $this->arrConfig['RatePlanConvert'][SERVICE_TYPE_MOBILE][trim($arrDetails['Plan'])];
 		
 		return Array (
 			// extra information
 			"FNN"				=> CleanFNN($arrDetails['Number']),
 			"RatePlanName"		=> $strRatePlanName,
-			"PlanName"			=> $arrDetails ['Plan'],
-			"ParentFNN"			=> $arrDetails ['Parent'],
+			"PlanName"			=> $arrDetails['Plan'],
+			"ParentFNN"			=> $arrDetails['Parent'],
 			// table values
-			"SimPUK"			=> $arrDetails ['SimPUK'],
-			"SimESN"			=> $arrDetails ['SimESN'],
-			"SimState"			=> $arrDetails ['SimState'],
+			"SimPUK"			=> $arrDetails['SimPUK'],
+			"SimESN"			=> $arrDetails['SimESN'],
+			"SimState"			=> $arrDetails['SimState'],
 			"DOB"				=> (($arrDetails['DOB_month'] && $arrDetails['DOB_day'] && $arrDetails['DOB_year']) ? date ("Y-m-d", $arrDetails ['DOB']) : "0000-00-00"),
-			"Comments"			=> $arrDetails ['Comments']
+			"Comments"			=> $arrDetails['Comments'],
+			"RateGroup"			=> $arrRateGroup
 		);
 	}
 	
@@ -1215,83 +1242,9 @@
 		
 		return $arrFullOutput;
 	}
-	
-	// ------------------------------------//
-	// GUESS
-	// ------------------------------------//
-	
-	// guess the new rateplane name for a service type for a customer
-	// by using the rategroups and a little glue sniffing
-	function GuessRatePlan($intCustomer, $intServiceType)
-	{
-		$intCustomer 	= (int)$intCustomer;
-		$intServiceType = (int)$intServiceType;
-		if (!$intCustomer || !$intServiceType)
-		{
-			return FALSE;
-		}
-		
-		// get customer details
-		$strQuery 	= "SELECT DataSerialized AS DataSerialised FROM ScrapeAccount WHERE CustomerId = $intCustomer";
-		$sqlResult = $this->sqlQuery->Execute($strQuery);
-		if (!$sqlResult)
-		{
-			// return false if we can't get the results
-			Return FALSE;
-		}
-		$arrRow = $sqlResult->fetch_assoc();
-		if ($arrRow)
-		{
-			$arrCustomer = unserialize($arrRow['DataSerialised']);
-		}
-		else
-		{
-			return FALSE;
-		}
-		
-		// put Rates into an array
-		$arrRateGroup = Array();
-		foreach($this->arrConfig['RecordType'] AS $strRecordType=>$intServiceType)
-		{
-			if ($arrCustomer[$strRecordType])
-			{
-				$arrRateGroup[$strRecordType] = $arrCustomer[$strRecordType];
-			}
-		}
-		
-		// decode Rate Groups : returns	: Array[intServiceType][strRecordType] = $strRateGroupName
-		$arrRateGroup = $this->DecodeRateGroup($arrRateGroup);
-		
-		// clean the plan scores array
-		$arrPlanScores = Array();
-				
-		// Score plans
-		foreach($arrRateGroup[$intServiceType] AS $strRecordType=>$strRateGroupName)
-		{
-			// add to RatePlan scores for each plan
-			foreach ($this->arrConfig['RatePlan'][$intServiceType] AS $strPlan=>$arrRateGroups)
-			{
-				// is this RateGroup part of this plan
-				if ($arrRateGroups[$strRecordType] == $strRateGroupName)
-				{
-					// if so, score a goal for this plan
-					$arrPlanScores[$strPlan]++;
-				}
-			}
-		}
-		
-		// sort the array of plans & get the highest scoring plan
-		$bolSorted = asort($arrPlanScores);
-		if ($bolSorted)
-		{
-			return array_pop(array_keys($arrPlanScores));
-		}
-		else
-		{
-			return FALSE;
-		}
-	}
- }
+
+
+}
 
 
 ?>

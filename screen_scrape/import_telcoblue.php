@@ -295,6 +295,7 @@ Blue Shared 500 						25
 	$arrPlan['OneThree']			= 'OneThree-Cost';
 	$arrPlan['Other']				= 'Other-Cost';
 	$arrPlan['SexHotline']			= '1900-28';
+	$arrPlan['SMS']					= 'SMS-22';		//TODO!flame! Is this the correct Rate !!!!
 	
 	// Blue 39c Cap
 	$arrPlan['Mobile']				= 'Mobile-27-00-01-89';
@@ -329,7 +330,7 @@ Blue Shared 500 						25
 	$arrPlan['National']			= 'National-09-07-01-90';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
 	$arrPlan['S&E']					= 'S&E-BusSaverCapped';
-	$arrPlan['IDD']					= 'National 16'; //TODO!!!! - CHECK THIS
+	$arrPlan['IDD']					= 'Blue 15c CTM';
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Bus Saver Capped'] = $arrPlan;
 	
 	// Tier Three Corporate Capped
@@ -338,7 +339,7 @@ Blue Shared 500 						25
 	$arrPlan['National']			= 'National-08-06-01-70';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-TierThreeCorporateCapped';
-	$arrPlan['IDD']					= 'Tier 3 corporate capped';
+	$arrPlan['IDD']					= 'Blue 15c CTM'; // TODO!flame! this is the rate shown in etech, is it right ?
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Corporate Capped'] = $arrPlan;
 	
 	// True Blue Fleet
@@ -347,7 +348,7 @@ Blue Shared 500 						25
 	$arrPlan['National']			= 'National-09-06-01';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-11';
 	$arrPlan['S&E']					= 'S&E-TrueBlueFleet';
-	$arrPlan['IDD']					= 'True Blue Fleet';
+	$arrPlan['IDD']					= 'Blue 15c CTM'; // TODO!flame! this is the rate shown in etech, is it right ?
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['True Blue Fleet'] = $arrPlan;
 	
 	// National 16
@@ -356,7 +357,7 @@ Blue Shared 500 						25
 	$arrPlan['National']			= 'National-Nat16';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-16';
 	$arrPlan['S&E']					= 'S&E-National16';
-	$arrPlan['IDD']					= 'National 16';
+	$arrPlan['IDD']					= 'Blue 15c CTM'; // TODO!flame! this is the rate shown in etech, is it right ?
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['National 16'] = $arrPlan;
 	
 	// Voicetalk Capped
@@ -383,7 +384,7 @@ Blue Shared 500 						25
 	$arrPlan['National']			= 'National-09-06-01';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
 	$arrPlan['S&E']					= 'S&E-TierThreeMobileSaver';
-	$arrPlan['IDD']					= 'Tier 3 corporate Mobile Saver';
+	$arrPlan['IDD']					= 'Blue 15c CTM'; // TODO!flame! this is the rate shown in etech, is it right ?
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Mobile Saver'] = $arrPlan;
 	
 	// Tier Three Local Saver
@@ -392,14 +393,14 @@ Blue Shared 500 						25
 	$arrPlan['National']			= 'National-08-06';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-11';
 	$arrPlan['S&E']					= 'S&E-TierThreeLocalSaver';
-	$arrPlan['IDD']					= 'Tier 3 corporate Mobile Saver'; //TODO!!!! - CHECK THIS
+	$arrPlan['IDD']					= 'Blue 15c CTM'; // TODO!flame! this is the rate shown in etech, is it right ?
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Local Saver'] = $arrPlan;
 	
 	// Tier Three Long Distance
 	$arrPlan['Mobile']				= 'Mobile-26-05-01';
 	$arrPlan['National']			= 'National-10-00';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-14';
-	$arrPlan['IDD']					= 'Tier 3 corporate Mobile Saver'; //TODO!!!! - CHECK THIS
+	$arrPlan['IDD']					= 'Blue 15c CTM'; // TODO!flame! this is the rate shown in etech, is it right ?
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Tier Three Long Distance'] = $arrPlan;
 	
 	// Pinnacle
@@ -408,7 +409,7 @@ Blue Shared 500 						25
 	$arrPlan['National']			= 'National-Pinnacle';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-Pinnacle';
-	$arrPlan['IDD']					= 'National 16'; //TODO!!!! - CHECK THIS
+	$arrPlan['IDD']					= 'Blue 15c CTM'; // TODO!flame! this is the rate shown in etech, is it right ?
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Pinnacle'] = $arrPlan;
 	
 	// Peter K Group Special
@@ -417,7 +418,7 @@ Blue Shared 500 						25
 	$arrPlan['National']			= 'National-PeterK';
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-PeterKGroupSpecial';
-	$arrPlan['IDD']					= 'National 16'; //TODO!!!! - CHECK THIS
+	$arrPlan['IDD']					= '39c Cap Intl'; // TODO!flame! this is the rate shown in etech, is it right ?
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Peter K Group Special'] = $arrPlan;
 	
 // ---------------------------------------------------------------------//
@@ -484,7 +485,7 @@ Blue Shared 500 						25
 	$arrRates['mobrate']				['Pinnacle (50cper call)']						['Mobile']				= 'Mobile-Pinnacle';
 	$arrRates['mobrate']				['CTM 26c no flag']								['Mobile']				= 'Mobile-26-00-01';
 	$arrRates['mobrate']				['True Blue Fleet (6ff, 25cpm)']				['Mobile']				= 'Mobile-25-06-01';
-	$arrRates['mobrate']				['Voicetalk Feb06 cap']							['Mobile']				= 'National-12-10-99';
+	$arrRates['mobrate']				['Voicetalk Feb06 cap']							['Mobile']				= 'Mobile-27-10-01-99'; 
 	$arrRates['mobrate']				['CTM 22 no flag']								['Mobile']				= 'Mobile-22-00-01';
 	$arrRates['mobrate']				['CTM 30 no ff']								['Mobile']				= 'Mobile-30-00-01';
 	$arrRates['mobrate']				['CTM 23cpm 0ff']								['Mobile']				= 'Mobile-23-00-01';
@@ -585,15 +586,27 @@ Blue Shared 500 						25
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['OneThree']			= 'OneThree-Cost';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['Other']				= 'Other-Cost';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['SexHotline']		= '1900-28';
-	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['SMS']				= 'SMS';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['SMS']				= 'SMS-22';		//TODO!flame! Is this the correct Rate !!!!
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['Mobile']			= 'Mobile-27-10-01-150';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['IDD']				= 'Blue 15c CTM';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['National']			= 'National-09-07-01-90';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['Local']				= 'Local-16';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['ProgramLocal']		= 'ProgramLocal-14';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['S&E']				= 'S&E-Blue39cCap';
 	
-	// Mobile
+	// Mobile (I think this is just plan zero)
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['Roaming']				= 'Roaming-35';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['MMS']					= 'MMS-68';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['Other']				= 'Other-Cost';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['OSNetworkAirtime']		= 'OSNetworkAirtime-Cost';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['VoiceMailDeposit']		= 'VoiceMailDeposit-10-00-30';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['IDD']					= 'Mobile Zero Plan';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['mobile']				= 'Mobile-30-10-01';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['GPRS']					= 'GPRS-18-00-01';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['SMS']					= 'SMS-22';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['Freecall']				= 'Freecall-30-10-30';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['National']				= 'National-30-10-01';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20-00-30';
 	
 	// set config default rategroup array
 	$arrConfig['DefaultRateGroup'] = $arrRateGroups;
@@ -643,12 +656,12 @@ Blue Shared 500 						25
 	require_once('vixen_import.php');
 	$objImport = new VixenImport($arrConfig);
 
-
+/*
 	// Truncate Tables
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
 	$objImport->Truncate('AccountGroup');
-	$objImport->Truncate('CDR');
+	//$objImport->Truncate('CDR');
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
 	$objImport->Truncate('Contact');
@@ -657,12 +670,12 @@ Blue Shared 500 						25
 	$objImport->Truncate('Employee');
 	$objImport->Truncate('EmployeeAccountAudit');
 	$objImport->Truncate('ErrorLog');
-	$objImport->Truncate('FileDownload');
-	$objImport->Truncate('FileImport');
-	$objImport->Truncate('Invoice');
-	$objImport->Truncate('InvoiceOutput');
+	//$objImport->Truncate('FileDownload');
+	//$objImport->Truncate('FileImport');
+	//$objImport->Truncate('Invoice');
+	//$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
-	$objImport->Truncate('InvoiceTemp');
+	//$objImport->Truncate('InvoiceTemp');
 	//$objImport->Truncate('Note');
 	$objImport->Truncate('Payment');
 	$objImport->Truncate('ProvisioningExport');
@@ -682,8 +695,8 @@ Blue Shared 500 						25
 	$objImport->Truncate('ServiceRateGroup');
 	$objImport->Truncate('ServiceRatePlan');
 	$objImport->Truncate('ServiceRecurringCharge');
-	$objImport->Truncate('ServiceTotal');
-	$objImport->Truncate('ServiceTypeTotal');
+	//$objImport->Truncate('ServiceTotal');
+	//$objImport->Truncate('ServiceTypeTotal');
 	
 	
 	// clean import array
@@ -783,9 +796,8 @@ Blue Shared 500 						25
 			Die();
 		}
 	}
-
+*/
 	// Add Mobile Details
-	
 	while ($arrRow = $objDecoder->FetchMobileDetail())
 	{
 		// get the etech Mobile details

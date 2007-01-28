@@ -168,6 +168,18 @@ die();
 		// fleet rate query
 		$strWhere					.=	"AND Rate.Fleet 				= 1 \n";
 		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
+		
+		// Select CDR Query
+		$this->_selGetCDRs = new StatementSelect("CDR", "*", "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
+		
+		// Update CDR Query
+		$arrDefine = Array();
+		$arrDefine['Rate'] = TRUE;
+		$arrDefine['Status'] = TRUE;
+		$arrDefine['Charge'] = TRUE;
+		$arrDefine['RatedOn'] = new MySQLFunction("NOW()");
+		$this->_updUpdateCDRs = new StatementUpdateById("CDR", $arrDefine);
+	 	
  	}
  	
  	
@@ -188,8 +200,7 @@ die();
 	 function Rate()
 	 {
 	 	// get list of CDRs to rate (limit results to 1000)
-	 	$selGetCDRs = new StatementSelect("CDR", "*", "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
-	 	$selGetCDRs->Execute();
+	 	$this->_selGetCDRs->Execute();
 		$arrCDRList = $selGetCDRs->FetchAll();
 		
 		// we will return FALSE if there are no CDRs to rate
@@ -229,7 +240,7 @@ die();
 				// set status in database
 				$arrCDR['Status']	= CDR_RATE_NOT_FOUND;
 				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-				$updSaveCDR->Execute($arrCDR);
+				$this->_updUpdateCDRs->Execute($arrCDR);
 				
 				// add to report
 				$arrAlises['<Reason>'] = "Rate not found";
@@ -258,7 +269,7 @@ die();
 	
 					$arrCDR['Status'] = CDR_UNABLE_TO_RATE;
 					$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-					$updSaveCDR->Execute($arrCDR);
+					$this->_updUpdateCDRs->Execute($arrCDR);
 					
 					// add to report
 					$arrAlises['<Reason>'] = "Base charge calculation failed";
@@ -278,7 +289,7 @@ die();
 	
 					$arrCDR['Status'] = CDR_UNABLE_TO_CAP;
 					$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-					$updSaveCDR->Execute($arrCDR);
+					$this->_updUpdateCDRs->Execute($arrCDR);
 					
 					// add to report
 					$arrAlises['<Reason>'] = "Unable to cap CDR";
@@ -298,7 +309,7 @@ die();
 	
 					$arrCDR['Status'] = CDR_UNABLE_TO_PRORATE;
 					$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-					$updSaveCDR->Execute($arrCDR);
+					$this->_updUpdateCDRs->Execute($arrCDR);
 					
 					// add to report
 					$arrAlises['<SeqNo>'] = str_pad($arrCDR['Id'], 60, " ");
@@ -321,7 +332,7 @@ die();
 				// set status in database
 				$arrCDR['Status'] = CDR_TOTALS_UPDATE_FAILED;
 				$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-				$updSaveCDR->Execute($arrCDR);
+				$this->_updUpdateCDRs->Execute($arrCDR);
 				
 				// add to report
 				$arrAlises['<Reason>'] = "Totals updating failed";
@@ -352,7 +363,7 @@ die();
 			$arrCDR['Charge'] = $this->_arrCurrentCDR['Charge'];
 			$arrCDR['Status'] = CDR_RATED;
 			$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
-			$updSaveCDR->Execute($arrCDR);
+			$this->_updUpdateCDRs->Execute($arrCDR);
 			$intPassed++;
 		}
 		
@@ -1003,7 +1014,8 @@ die();
 	 *
 	 * Changes CDR Status from specified value to CDR_RERATE
 	 *
-	 * Changes CDR Status from specified value to CDR_RERATE
+	 * Forces the Rating engine to attempt to Rate the CDRs
+	 * on the next Rating Run
 	 *
 	 * @param	integer		$intStatus			Status to look for
 	 *	 
@@ -1013,6 +1025,7 @@ die();
 	 */
 	 function ReRate($intStatus)
 	 {
+	 	$intStatus = (int)$intStatus;
 	 	$arrColumns['Status']	= CDR_RERATE;
 	 	$updReRate = new StatementUpdate("CDR", "Status = $intStatus", $arrColumns);
 	 	$mixReturn = $updReRate->Execute($arrColumns, NULL);

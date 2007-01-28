@@ -578,11 +578,12 @@ function CleanFNN($strFNN, $strAreaCode=NULL)
 function ServiceType($strFNN)
 {
 	$strFNN 	= Trim($strFNN);
-	$intFNN 	= (int)$strFNN;
 	$strPrefix 	= substr($strFNN, 0, 2);
+	$intNine	= (int)"9$strFNN";
+	$strNine	= "9$strFNN";
 	
 	// Land Line
-	if ("$intFNN" === "$strFNN" && ($strPrefix == '02' || $strPrefix == '03' || $strPrefix == '07' || $strPrefix == '08' || $strPrefix == '09'))
+	if ("$intNine" === $strNine && ($strPrefix == '02' || $strPrefix == '03' || $strPrefix == '07' || $strPrefix == '08' || $strPrefix == '09'))
 	{
 		return SERVICE_TYPE_LAND_LINE;
 	}

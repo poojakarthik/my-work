@@ -294,16 +294,10 @@ class NormalisationModuleAAPT extends NormalisationModule
 		//##----------------------------------------------------------------##//
 		
 		// Apply Ownership
-		if (!$this->ApplyOwnership())
-		{
-			$this->_AppendCDR('Status', CDR_BAD_OWNER);
-		}
+		$this->ApplyOwnership();
 		
 		// Validation of Normalised data
-		if (!$this->Validate())
-		{
-			$this->_AppendCDR('Status', CDR_CANT_NORMALISE_INVALID);
-		}
+		$this->Validate();
 		
 		// return output array
 		return $this->_OutputCDR();

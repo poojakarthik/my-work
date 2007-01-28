@@ -236,8 +236,9 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		elseif ($intCarrierRecordType == "8")
 		{
 			// OC&C
+			// Look over there while I Change these to look like an S&E Record
 			$strRecordCode 					= 'S&E';
-			$this->_arrRawData['RateId']	=  1;
+			$this->_arrRawData['RateId']	=  80001;
 		}
 		else
 		{
@@ -350,16 +351,11 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 
 		//--------------------------------------------------------------------//
 		
-		if (!$this->ApplyOwnership())
-		{
-			$this->_AppendCDR('Status', CDR_BAD_OWNER);
-		}
+		// Apply Ownership
+		$this->ApplyOwnership();
 		
 		// Validation of Normalised data
-		if (!$this->Validate())
-		{
-			$this->_AppendCDR('Status', CDR_CANT_NORMALISE_INVALID);
-		}
+		$this->Validate()
 		
 		// return output array
 		return $this->_OutputCDR();

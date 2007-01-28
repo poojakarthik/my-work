@@ -33,6 +33,12 @@ $mixEmailAddress = 'flame@telcoblue.com.au';
 // Application entry point - create an instance of the application object
 $appNormalise = new ApplicationNormalise($mixEmailAddress);
 
+// Change status of all CDRs with missing destination 
+$appNormalise->ReNormalise(CDR_BAD_DESTINATION);
+
+// Change status of all CDRs with missing owner 
+$appNormalise->ReFindOwner(CDR_BAD_OWNER);
+
 // Import lines from CDR files into the database
 $appNormalise->Import();
 
@@ -211,6 +217,19 @@ die();
  		$this->_arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
  		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
+		
+		// Select CDR Query
+		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
+		$mixColumns	= Array("" => "CDR.*", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
+		$strWhere	= "CDR.Status = ".CDR_READY." OR CDR.Status = ".CDR_FIND_OWNER." OR CDR.Status = ".CDR_RENORMALISE;
+		$strOrder	= "CDR.Status";
+		$strLimit	= "1000";
+ 		$this->_selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
+		
+		// Update CDR Query
+		$arrDefine = $this->db->FetchClean("CDR");
+		$arrDefine['NormalisedOn'] = new MySQLFunction("NOW()");
+ 		$this->_updUpdateCDRs = new StatementUpdate("CDR", "Id = <CdrId>", $arrDefine);
 		
 		$this->_arrDelinquents = Array();
  	}
@@ -535,7 +554,7 @@ die();
  		
  		$this->rptNormalisationReport->AddMessage($strMessage, FALSE);
  	}
-
+	
 	//------------------------------------------------------------------------//
 	// Normalise
 	//------------------------------------------------------------------------//
@@ -553,27 +572,15 @@ die();
 	 */
  	function Normalise()
  	{
-		//TODO!flame!check that this will work properly in a loop
  		// Select all CDRs ready to be Normalised
-		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
-		$mixColumns	= Array("" => "CDR.*", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
-		$strWhere	= "CDR.Status = ".CDR_READY." OR CDR.Status = ".CDR_BAD_OWNER." OR CDR.Status = ".CDR_FIND_OWNER;
-		$strOrder	= "CDR.Status";
-		$strLimit	= "1000";
- 		$selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
-		if ($selSelectCDRs->Execute() === FALSE)
+		if ($this->_selSelectCDRs->Execute() === FALSE)
 		{
 
 		}
  		$arrCDRList = $selSelectCDRs->FetchAll();
  		
 		// we will return FALSE if there are no CDRs to normalise
-		$bolReturn = FALSE;
-		
-		// setup update query
-		$arrDefine = $this->db->FetchClean("CDR");
-		$arrDefine['NormalisedOn'] = new MySQLFunction("NOW()");
- 		$updUpdateCDRs = new StatementUpdate("CDR", "Id = <CdrId>", $arrDefine); 		
+		$bolReturn = FALSE;		
 
 		// Report
 		$this->rptNormalisationReport->AddMessage(MSG_NORMALISATION_TITLE);
@@ -605,8 +612,7 @@ die();
 				switch ($arrCDR['Status'])
 				{
 					case CDR_READY:
-					case CDR_BAD_OWNER:
-						$arrCDR['Status'] = CDR_NORMALISED;
+					case CDR_FIND_DESTINATION:
 						$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
 						break;
 					case CDR_FIND_OWNER:
@@ -674,7 +680,7 @@ die();
 			
 			$arrCDR['NormalisedOn'] = new MySQLFunction("NOW()");
  			// Save CDR back to the DB
-			if ($updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])) === FALSE)
+			if ($this->_updUpdateCDRs->Execute($arrCDR, Array("CdrId" => $arrCDR['Id'])) === FALSE)
 			{
 
 			} 
@@ -715,5 +721,57 @@ die();
 		// Return TRUE or FALSE
 		return $bolReturn;
  	}
+	
+	//------------------------------------------------------------------------//
+	// ReNormalise()
+	//------------------------------------------------------------------------//
+	/**
+	 * ReNormalise()
+	 *
+	 * Changes CDR Status from specified value to CDR_RENORMALISE
+	 *
+	 * Forces the Normaliseation engine to attempt to Normalise the CDRs
+	 * on the next Normalisation Run
+	 *
+	 * @param	integer		$intStatus			Status to look for
+	 *	 
+	 * @return	integer							Number of CDRs affected
+	 *
+	 * @method
+	 */
+	 function ReNormalise($intStatus)
+	 {
+	 	$intStatus = (int)$intStatus;
+	 	$arrColumns['Status']	= CDR_RENORMALISE;
+	 	$updReRate = new StatementUpdate("CDR", "Status = $intStatus", $arrColumns);
+	 	$mixReturn = $updReRate->Execute($arrColumns, NULL);
+	 	return (int)$mixReturn;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// ReFindOwner()
+	//------------------------------------------------------------------------//
+	/**
+	 * ReFindOwner()
+	 *
+	 * Changes CDR Status from specified value to CDR_FIND_OWNER
+	 *
+	 * Forces the Normaliseation engine to attempt to find an owner for the CDRs
+	 * on the next Normalisation Run
+	 *
+	 * @param	integer		$intStatus			Status to look for
+	 *	 
+	 * @return	integer							Number of CDRs affected
+	 *
+	 * @method
+	 */
+	 function ReFindOwner($intStatus)
+	 {
+	 	$intStatus = (int)$intStatus;
+	 	$arrColumns['Status']	= CDR_FIND_OWNER;
+	 	$updReRate = new StatementUpdate("CDR", "Status = $intStatus", $arrColumns);
+	 	$mixReturn = $updReRate->Execute($arrColumns, NULL);
+	 	return (int)$mixReturn;
+	 }
  }
 ?>
