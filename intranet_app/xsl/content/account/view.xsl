@@ -88,39 +88,63 @@
 										</th>
 										<td><xsl:value-of select="/Response/Account/BusinessName" /></td>
 									</tr>
-									<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Account')" />
-												<xsl:with-param name="field" select="string('TradingName')" />
-											</xsl:call-template>
-										</th>
-										<td><xsl:value-of select="/Response/Account/TradingName" /></td>
-									</tr>
-									<tr>
-										<td colspan="2"><div class="MicroSeperator"></div></td>
-									</tr>
-									<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Account')" />
-												<xsl:with-param name="field" select="string('ABN')" />
-											</xsl:call-template>
-										</th>
-										<td><xsl:value-of select="/Response/Account/ABN" /></td>
-									</tr>
-									<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Account')" />
-												<xsl:with-param name="field" select="string('ACN')" />
-											</xsl:call-template>
-										</th>
-										<td><xsl:value-of select="/Response/Account/ACN" /></td>
-									</tr>
+									<!--Check for Trading Name-->
+									<xsl:choose>
+										<xsl:when test="/Response/Account/TradingName = ''">
+										</xsl:when>
+										<xsl:otherwise>
+											<tr>
+												<th>
+													<xsl:call-template name="Label">
+														<xsl:with-param name="entity" select="string('Account')" />
+														<xsl:with-param name="field" select="string('TradingName')" />
+													</xsl:call-template>
+												</th>
+												<td>
+													<xsl:value-of select="/Response/Account/TradingName" />
+												</td>
+											</tr>
+										</xsl:otherwise>
+									</xsl:choose>
 									<tr>
 										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
+									<!--Check for ABN-->
+									<xsl:choose>
+										<xsl:when test="/Response/Account/ABN = ''">
+										</xsl:when>
+										<xsl:otherwise>
+											<tr>
+												<th>
+													<xsl:call-template name="Label">
+														<xsl:with-param name="entity" select="string('Account')" />
+														<xsl:with-param name="field" select="string('ABN')" />
+													</xsl:call-template>
+												</th>
+												<td>
+													<xsl:value-of select="/Response/Account/ABN" />
+												</td>
+											</tr>
+										</xsl:otherwise>
+									</xsl:choose>
+									<!--Check for ACN-->
+									<xsl:choose>
+										<xsl:when test="/Response/Account/ACN = ''">
+										</xsl:when>
+										<xsl:otherwise>
+											<tr>
+												<th>
+													<xsl:call-template name="Label">
+														<xsl:with-param name="entity" select="string('Account')" />
+														<xsl:with-param name="field" select="string('ACN')" />
+													</xsl:call-template>
+												</th>
+												<td>
+													<xsl:value-of select="/Response/Account/ACN" />
+												</td>
+											</tr>
+										</xsl:otherwise>
+									</xsl:choose>
 									<tr>
 										<th class="JustifiedWidth">
 											<xsl:call-template name="Label">
@@ -130,15 +154,24 @@
 										</th>
 										<td><xsl:value-of select="/Response/Account/Address1" /></td>
 									</tr>
-									<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Account')" />
-												<xsl:with-param name="field" select="string('Address2')" />
-											</xsl:call-template>
-										</th>
-										<td><xsl:value-of select="/Response/Account/Address2" /></td>
-									</tr>
+									<!--Check for Address2-->
+									<xsl:choose>
+										<xsl:when test="/Response/Account/TradingName = ''">
+										</xsl:when>
+										<xsl:otherwise>
+											<tr>
+												<th>
+													<xsl:call-template name="Label">
+														<xsl:with-param name="entity" select="string('Account')" />
+														<xsl:with-param name="field" select="string('Address2')" />
+													</xsl:call-template>
+												</th>
+												<td>
+													<xsl:value-of select="/Response/Account/Address2" />
+												</td>
+											</tr>
+										</xsl:otherwise>
+									</xsl:choose>
 									<tr>
 										<th class="JustifiedWidth">
 											<xsl:call-template name="Label">
@@ -218,6 +251,8 @@
 					<div class="Clear"></div>
 					<div class="Seperator"></div>
 					
+					
+					<!-- Active Contacts -->
 					<h2 class="Contacts">Active Contacts</h2>
 					
 					<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
@@ -405,7 +440,7 @@
 					
 					<div class="Clear"></div>
 					
-					<div class="Seperator"></div>
+					<!--Recent Notes-->
 					<h3>Recent Notes</h3>
 					<xsl:choose>
 						<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">
@@ -479,7 +514,7 @@
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Service Number</th>
+				<th>Service #</th>
 				<th>Service Type</th>
 				<th>Plan Name</th>
 				<th>Archive Status</th>
@@ -499,15 +534,30 @@
 					</xsl:attribute>
 					
 					<td><xsl:value-of select="/Response/Services/Results/rangeStart + position()" />.</td>
-					<td>
-						<a title="View Service Details">
-							<xsl:attribute name="href">
-								<xsl:text>service_view.php?Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<!-- TODO!bash! Display 'NONE' in Red if there is no FNN -->
-							<xsl:value-of select="./FNN" />
-						</a>					
+					<td>		
+						
+						<xsl:choose>
+							<xsl:when test="./FNN=''">
+								<a title="View Service Details">
+									<xsl:attribute name="href">
+										<xsl:text>service_view.php?Id=</xsl:text>
+										<xsl:value-of select="./Id" />
+										
+									</xsl:attribute>
+									<span class="Red"><strong>None</strong></span> 
+								</a>
+							</xsl:when>
+							<xsl:otherwise>
+								<a title="View Service Details">
+									<xsl:attribute name="href">
+										<xsl:text>service_view.php?Id=</xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+									<xsl:value-of select="./FNN" /> 
+									</a>
+								</xsl:otherwise>
+							</xsl:choose>
+										
 					
 					</td>
 					<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
@@ -551,14 +601,6 @@
 						</xsl:choose>
 					</td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>service_unbilled.php?Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:text>Unbilled Charges</xsl:text>
-						</a>
-						<xsl:text>, </xsl:text>
 						<a href="#" title="Service Notes" alt="Notes for this Service">
 							<xsl:attribute name="onclick">
 								<xsl:text>return ModalExternal (this, 'note_list.php?Service=</xsl:text>
@@ -566,10 +608,26 @@
 							</xsl:attribute>
 							<xsl:text>View Notes</xsl:text>
 						</a>
+						<xsl:text>, </xsl:text>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>service_unbilled.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:text>View Unbilled Charges</xsl:text>
+						</a>
+						
 					</td>
 				</tr>
 			</xsl:for-each>
 		</table>
+		<xsl:choose>
+			<xsl:when test="/Response/Services/Results/collationLength = 0">
+				<div class="MsgNoticeWide">
+					There are no services associated with this account.
+				</div>
+			</xsl:when>
+		</xsl:choose>
 		
 		<div class="LinkAdd">
 			<a>

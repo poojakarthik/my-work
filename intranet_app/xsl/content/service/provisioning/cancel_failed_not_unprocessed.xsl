@@ -4,21 +4,24 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+		<!-- Cancelling Provisioning did not work -->
+		
 		<h1>Provisioning Cancellation Failed</h1>
 		
-		<p>
+		<div class="MsgNoticeWide">
 			The Provisioning Request has already been processed and could not
-			be canceled.
-		</p>
+			be cancelled.
+		</div>
 		
-		<p>
+		<div class="Right">
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_address.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/ProvisioningRequest/Service" />
 				</xsl:attribute>
 				<xsl:text>Return to Provisioning</xsl:text>
-			</a>.
-		</p>
+			</a>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

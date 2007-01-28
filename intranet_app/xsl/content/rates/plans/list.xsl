@@ -9,6 +9,8 @@
 		
 		<h1>View Available Plans</h1>
 		
+		<!-- Search for Plan -->
+		<h2 class="Plan">Search for a Plan</h2>
 		<form method="GET" action="rates_plan_list.php">
 			<div class="Wide-Form">
 				<div class="Form-Content">

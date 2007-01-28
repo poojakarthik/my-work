@@ -6,13 +6,18 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	
+		<!-- Page for viewing contact Details -->
 		<h1>View Contact Details</h1>
 		
 		<script language="javascript" src="js/note_add.js"></script>
 		
+		<!--Column 1 -->
 		<table border="0" cellpadding="0" cellspacing="0">
 			<tr>
 				<td valign="top">
+				
+					<!--Contact Details -->
 					<h2 class="Contact">Contact Details</h2>
 
 					<div class="Narrow-Form">
@@ -35,17 +40,24 @@
 										<xsl:value-of select="/Response/Contact/LastName" />
 									</td>
 								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Contact')" />
-											<xsl:with-param name="field" select="string('JobTitle')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/Contact/JobTitle" />
-									</td>
-								</tr>
+									<!--Check for Job Title-->
+									<xsl:choose>
+										<xsl:when test="/Response/Contact/JobTitle = ''">
+										</xsl:when>
+										<xsl:otherwise>
+											<tr>
+												<th>
+													<xsl:call-template name="Label">
+														<xsl:with-param name="entity" select="string('Contact')" />
+														<xsl:with-param name="field" select="string('JobTitle')" />
+													</xsl:call-template>
+												</th>
+												<td>
+													<xsl:value-of select="/Response/Contact/JobTitle" />
+												</td>
+											</tr>
+										</xsl:otherwise>
+									</xsl:choose>
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -85,39 +97,60 @@
 										<xsl:value-of select="/Response/Contact/Email" />
 									</td>
 								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Contact')" />
-											<xsl:with-param name="field" select="string('Phone')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/Contact/Phone" />
-									</td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Contact')" />
-											<xsl:with-param name="field" select="string('Mobile')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/Contact/Mobile" />
-									</td>
-								</tr>
-								<tr>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Contact')" />
-											<xsl:with-param name="field" select="string('Fax')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/Contact/Fax" />
-									</td>
-								</tr>
+								<!--Check for Phone-->
+								<xsl:choose>
+									<xsl:when test="/Response/Contact/Phone = ''">
+									</xsl:when>
+									<xsl:otherwise>
+										<tr>
+											<th>
+												<xsl:call-template name="Label">
+													<xsl:with-param name="entity" select="string('Contact')" />
+													<xsl:with-param name="field" select="string('Phone')" />
+												</xsl:call-template>
+											</th>
+											<td>
+												<xsl:value-of select="/Response/Contact/Phone" />
+											</td>
+										</tr>
+									</xsl:otherwise>
+								</xsl:choose>
+								<!-- Check for Mobile -->
+								<xsl:choose>
+									<xsl:when test="/Response/Contact/Mobile = ''">
+									</xsl:when>
+									<xsl:otherwise>
+										<tr>
+											<th>
+												<xsl:call-template name="Label">
+													<xsl:with-param name="entity" select="string('Contact')" />
+													<xsl:with-param name="field" select="string('Mobile')" />
+												</xsl:call-template>
+											</th>
+											<td>
+												<xsl:value-of select="/Response/Contact/Mobile" />
+											</td>
+										</tr>
+									</xsl:otherwise>
+								</xsl:choose>
+								<!--Check for Fax -->
+								<xsl:choose>
+									<xsl:when test="/Response/Contact/Fax = ''">
+									</xsl:when>
+									<xsl:otherwise>
+										<tr>
+											<th>
+												<xsl:call-template name="Label">
+													<xsl:with-param name="entity" select="string('Contact')" />
+													<xsl:with-param name="field" select="string('Fax')" />
+												</xsl:call-template>
+											</th>
+											<td>
+												<xsl:value-of select="/Response/Contact/Fax" />
+											</td>
+										</tr>
+									</xsl:otherwise>
+								</xsl:choose>
 								<tr>
 									<td colspan="2">
 										<div class="MicroSeperator"></div>
@@ -359,7 +392,7 @@
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Account Id</th>
+				<th>Account ID</th>
 				<th>Business Name</th>
 				<th>Trading Name</th>
 				<th>Overdue Charges</th>
@@ -417,18 +450,19 @@
 						</a>, 
 						<a>
 							<xsl:attribute name="href">
-								<xsl:text>payment_add.php?Account=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:text>Make Payment</xsl:text>
-						</a>, 
-						<a>
-							<xsl:attribute name="href">
 								<xsl:text>account_ledger.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
 							<xsl:text>View Invoices &amp; Payments</xsl:text>
+						</a>,
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>payment_add.php?Account=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:text>Make Payment</xsl:text>
 						</a>
+						
 					</td>
 				</tr>
 			</xsl:for-each>
