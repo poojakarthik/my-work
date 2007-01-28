@@ -858,7 +858,8 @@ abstract class NormalisationModule
 
 		// Set an error status
 		$this->_UpdateStatus(CDR_BAD_DESTINATION);
-		
+		echo "xxxxxxxxxxx";
+		Die();
 		// Return false if there was no match
 	 	return false;
 	 }
