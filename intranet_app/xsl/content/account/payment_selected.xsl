@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Payment Method Selected</h1>
+		<h1>Payment Method  Changed</h1>
 		
 		<p>
 			You have successfully changed the Payment Method for this Account.

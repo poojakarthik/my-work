@@ -6,7 +6,7 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Unbilled Charges</h1>
+		<h1>View Unbilled Charges</h1>
 		
 		<h2 class="Service">Service Details</h2>
 		
@@ -28,6 +28,8 @@
 		
 		<div class="Seperator"></div>
 		
+		
+		<h2 class="Charge">Unbilled Charges</h2>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
@@ -99,12 +101,12 @@
 		<xsl:choose>
 			<xsl:when test="/Response/CDRs-Unbilled/collationLength = 0">
 				<div class="MsgNoticeWide">
-					There are no CDR Records associated with this service.
+					There are no Unbilled Charges associated with this service.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/CDRs-Unbilled/rangeSample/CDR) = 0">
 				<div class="MsgErrorWide">
-					There are no CDR Records for the Range that you Searched for.
+					There are no Unbilled Charges matching your search.
 				</div>
 			</xsl:when>
 		</xsl:choose>

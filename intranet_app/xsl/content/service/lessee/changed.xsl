@@ -6,7 +6,7 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Successful Service Change of Lessee</h1>
+		<h1>Lessee Changed</h1>
 		<p>
 			The lessee for this service has been changed.
 			<br/>Details are listed below.

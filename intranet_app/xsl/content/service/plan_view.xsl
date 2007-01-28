@@ -72,6 +72,7 @@
 		
 		<div class="Seperator"></div>
 		
+		<!-- Plan Details -->
 		<h2 class="Plan">Plan Details</h2>
 		<form method="post" action="service_plan.php">
 			<div class="Wide-Form">
