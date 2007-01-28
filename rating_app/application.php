@@ -201,7 +201,7 @@ die();
 	 {
 	 	// get list of CDRs to rate (limit results to 1000)
 	 	$this->_selGetCDRs->Execute();
-		$arrCDRList = $selGetCDRs->FetchAll();
+		$arrCDRList = $this->_selGetCDRs->FetchAll();
 		
 		// we will return FALSE if there are no CDRs to rate
 		$bolReturn = FALSE;
