@@ -577,7 +577,7 @@ die();
 		{
 
 		}
- 		$arrCDRList = $selSelectCDRs->FetchAll();
+ 		$arrCDRList = $this->_selSelectCDRs->FetchAll();
  		
 		// we will return FALSE if there are no CDRs to normalise
 		$bolReturn = FALSE;		
