@@ -99,6 +99,9 @@
 				</div>
 			</div>
 			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
 			<div class="Right">
 				<input type="submit" value="Continue &#0187;" class="input-submit" />
 			</div>

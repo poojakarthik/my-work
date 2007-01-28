@@ -139,9 +139,7 @@
 					</xsl:when>
 				</xsl:choose>
 				
-				<div class="LinkAdd">
-					<a href="rates_plan_add.php">Add a New Rate Plan</a>
-				</div>
+
 			</div>
 		</div>
 	</xsl:template>

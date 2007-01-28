@@ -62,7 +62,7 @@
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Invoice#</th>
+				<th>Invoice #</th>
 				<th class="Currency" width="110">Overdue</th>
 				<th class="Currency" width="110">Credits</th>
 				<th class="Currency" width="110">Debits</th>
