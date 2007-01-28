@@ -917,6 +917,9 @@ class MySQLFunction
 	{
 		parent::__construct();
 		
+		// set query
+		$this->strQuery = $strQuery;
+		
 		// set limit
 		if ((int)$intLimit)
 		{
@@ -971,7 +974,7 @@ class MySQLFunction
 			
 	 	// get results
 	 	$this->sqlResult = mysqli_query($this->db->refMysqliConnection, $this->strQuery.' LIMIT '.$this->intRecords.','.$this->intLimit);
-		
+
 		//increment Limit
 		$this->intRecords += $this->intLimit;
 	}
@@ -999,7 +1002,7 @@ class MySQLFunction
 		if ($this->intCounter > $this->intRecords)
 		{
 			// get more results
-			$this->FetchNext();
+			$this->_Next();
 		}
 		
 		if ($this->sqlResult)

@@ -977,6 +977,35 @@ abstract class NormalisationModule
 		$arrDebugData['Define']		= $this->_arrDefineCarrier;
 		return $arrDebugData;
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// RawCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * RawCDR()
+	 *
+	 * Returns Raw CDR as an Array
+	 *
+	 * Returns Raw CDR as an Array
+	 *
+	 *
+	 * @param	string	strCDR		optional Raw CDR as String
+	 * @return	array				associative array: Raw CDR
+	 *
+	 * @method
+	 */
+	 public function RawCDR($strCDR=Null)
+	 {
+		
+		// Split the Raw CDR
+		if ($strCDR)
+		{
+			$this->_SplitRawCDR($strCDR);
+		}
+		
+		// return the Raw CDR string
+		return $this->_arrRawData;
+	 }
 }
 
 ?>

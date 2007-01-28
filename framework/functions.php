@@ -650,6 +650,36 @@ function GetConstantName($intCode, $strType='CDR')
 }
 
 //------------------------------------------------------------------------//
+// GetConstantDescription()
+//------------------------------------------------------------------------//
+/**
+ * GetConstantDescription()
+ * 
+ * Find the Description of a Constant
+ * 
+ * Find the Description of a Constant
+ * 
+ * @param	string		$intCode			The Constant
+ * @param	string		$strType			optional type of Constant. Default = 'CDR'
+ *
+ * @return	mixed					string	Constant Description
+ *									FALSE	Constant not found
+ * 
+ * @method
+ */
+function GetConstantDescription($intCode, $strType='CDR')
+{
+	if (isset($GLOBALS['*arrConstant'][$strType][$intCode]['Description']))
+	{
+		return $GLOBALS['*arrConstant'][$strType][$intCode]['Description'];
+	}
+	else
+	{
+		return FALSE;
+	}
+}
+
+//------------------------------------------------------------------------//
 // EvalReturn()
 //------------------------------------------------------------------------//
 /**

@@ -384,6 +384,46 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$strReturn .=  " 00:00:00";							// Time
 		return $strReturn;
 	}
+	
+	//------------------------------------------------------------------------//
+	// RawDestinationCode
+	//------------------------------------------------------------------------//
+	/**
+	 * RawDestinationCode()
+	 *
+	 * Returns the Raw Destination Code from the CDR
+	 *
+	 * Returns the Raw Destination Code from the CDR
+	 * 
+	 *
+	 * @return	mixed					Raw Destination Code
+	 *
+	 * @method
+	 */
+	 function RawDestinationCode()
+	 {
+	 	return $this->_FetchRawCDR('RateId');
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// RawDescription
+	//------------------------------------------------------------------------//
+	/**
+	 * RawDescription()
+	 *
+	 * Returns the Raw Description Code from the CDR
+	 *
+	 * Returns the Raw Description Code from the CDR
+	 * 
+	 *
+	 * @return	mixed					Raw Description Code
+	 *
+	 * @method
+	 */
+	 function RawDescription()
+	 {
+	 	return $this->_FetchRawCDR('Description');
+	 }
 }
 	
 	//------------------------------------------------------------------------//
