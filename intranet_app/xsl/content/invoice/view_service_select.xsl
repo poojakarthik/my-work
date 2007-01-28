@@ -8,7 +8,7 @@
 	
 	<xsl:template name="Content">
 	
-		<!--Page for viewing Invoice Details -->
+		<!--Page for viewing Invoice Details (1/2) -->
 		<h1>View Invoice Details</h1>
 		
 		<!-- Invoice Details -->

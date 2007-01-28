@@ -4,8 +4,13 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+		<!-- This page is used in find a customer -->
+		<!-- Select a contact following search OTHER THAN NAME -->
+		
 		<h1>Find Customer</h1>
 		
+		<!--Select a Contact -->
 		<h2 class="Contact">Select a Contact</h2>
 		
 		<form method="post" action="contact_list.php">
@@ -74,17 +79,24 @@
 							</th>
 							<td><xsl:value-of select="/Response/ui-answers/Account/BusinessName" /></td>
 						</tr>
-						<!-- TODO!bash! Don't show the Trading Name title if there is no trading name -->
-						<!-- TODO!bash! Don't show the Trading Name title if there is no trading name... DO THIS ON EVERY PAGE WITH A TRADING NAME -->
-						<tr>
-							<th class="JustifiedWidth">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Account')" />
-									<xsl:with-param name="field" select="string('TradingName')" />
-								</xsl:call-template>
-							</th>
-							<td><xsl:value-of select="/Response/ui-answers/Account/TradingName" /></td>
-						</tr>
+						<!--Check for Trading Name-->
+						<xsl:choose>
+							<xsl:when test="/Response/ui-answers/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/ui-answers/Account/TradingName" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 						<tr>
 							<th>
 								<xsl:call-template name="Label">

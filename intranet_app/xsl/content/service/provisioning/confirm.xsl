@@ -19,7 +19,7 @@
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
 				<xsl:text>Return to Provisioning</xsl:text>
-			</a>.
+			</a>
 		</div>
 			
 	</xsl:template>

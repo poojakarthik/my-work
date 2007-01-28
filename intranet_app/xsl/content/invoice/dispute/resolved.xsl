@@ -7,8 +7,23 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	
+		<!-- Confirmation page after resolving an Invoice Dispute -->
 		<h1>Invoice Dispute Resolved</h1>
 		
-		The dispute has been successfully resolved against this Invoice.
+		<div class="MsgNoticeWide">
+			The Invoice Dispute has been successfully resolved.
+		</div>
+		
+		<div class = "Right">
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>invoice_view.php?Invoice=</xsl:text>
+					<xsl:value-of select="/Response/Invoice/Id" />
+				</xsl:attribute>
+				<xsl:text>Return to Invoice</xsl:text>
+			</a>
+		</div>
+		
 	</xsl:template>
 </xsl:stylesheet>

@@ -4,7 +4,11 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
+	
 	<xsl:template name="Content">
+	
+		<!--This page is for editing Service Details -->
+		
 		<h1>Edit Service Details</h1>
 		
 		<script language="javascript" src="js/service_edit.js"></script>
@@ -24,6 +28,7 @@
 				<xsl:text>return serviceEditSumit (this)</xsl:text>
 			</xsl:attribute>
 			
+			<!--Service Details -->
 			<h2 class="Service">Service Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
@@ -35,7 +40,7 @@
 					</input>
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
-							<td></td>
+							<td class = "Required"></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -47,7 +52,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td></td>
+							<td class = "Required"></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -59,7 +64,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -76,7 +81,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td width="10"><strong><span class="Red">*</span></strong></td>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -93,6 +98,8 @@
 			
 			<div class="Seperator"></div>
 			
+			
+			<!-- Archive Status -->
 			<h2 class="Archive">Archive Status</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">

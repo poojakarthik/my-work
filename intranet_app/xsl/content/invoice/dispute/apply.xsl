@@ -24,6 +24,17 @@
 			<h2 class="Invoice">Dispute Details</h2>
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
+						<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Id')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<xsl:value-of select="/Response/Invoice/Id" />
+						</td>
+					</tr>
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
