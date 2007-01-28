@@ -953,7 +953,7 @@
 		$strHeader		=	"001|".date("Ymd", time())."|$strFilename|TelcoBlue|".date("F y")."\n" .
 							"002|TelcoBlue|Locked Bag 4000||Fortitude Valley|4006|QLD|1300 835 262|07 3250 4228|www.telcoblue.com.au|0|".date("Y-m-d", time())."|".date("Y-m-d", strtotime("+".PAYMENT_TERMS_DEFAULT." days", time()))."\n" .
 							"003|\n" .
-							"004|1:TelcoBlue|2:Voicetalk|4:Imagine";
+							"004|1:TelcoBlue|2:Voicetalk|4:Imagine\n";
 		$ptrFile		= fopen($strFilename, "w");
 		fwrite($ptrFile, $strHeader);
 		fclose($ptrFile);
@@ -963,7 +963,7 @@
 		exec($strCommand);		
 		
 		// Append metadata to bill output file
-		$strFooter		=	"099|".str_pad($arrMetaData['Invoices'], 10, " ", STR_PAD_LEFT);
+		$strFooter		=	"099|".str_pad($arrMetaData['Invoices'], 10, "0", STR_PAD_LEFT);
 		$ptrFile		= fopen($strFilename, "a");
 		fwrite($ptrFile, $strFooter);
 		fclose($ptrFile);

@@ -128,6 +128,11 @@ define("ETECH_LONG_CURRENCY"			, 809);
 define("ETECH_ROW"						, 810);
 define("ETECH_DATE_RANGE"				, 811);
 
+// Etech Brand Ids
+define("ETECH_BRAND_TELCOBLUE"			, 1);
+define("ETECH_BRAND_VOICETALK"			, 2);
+define("ETECH_BRAND_IMGAINE"			, 4);
+
 // Bill Designs for Bill Printing
 define("BILL_DESIGN_TELCOBLUE"			, 1);
 define("BILL_DESIGN_VOICETALK"			, 2);
