@@ -553,6 +553,7 @@ die();
 	 */
  	function Normalise()
  	{
+		//TODO!flame!check that this will work properly in a loop
  		// Select all CDRs ready to be Normalised
 		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
 		$mixColumns	= Array("" => "CDR.*", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
