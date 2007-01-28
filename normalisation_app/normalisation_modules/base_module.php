@@ -732,6 +732,9 @@ abstract class NormalisationModule
 		// set local copy of CDR
 		$this->_arrNormalisedData 			= $arrCDR;
 		
+		// set context to 0
+		$this->_intContext = 0;
+		
 		// default to status = normalised
 		$this->_arrNormalisedData['Status']	= CDR_NORMALISED;
 		

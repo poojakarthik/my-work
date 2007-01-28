@@ -252,6 +252,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		// Destination Code & Description (only if we have a context)
 		if ($this->_intContext > 0)
 		{
+			Die();
 			$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
 			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
 			if ($arrDestinationCode)
