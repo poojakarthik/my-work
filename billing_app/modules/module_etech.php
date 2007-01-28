@@ -491,6 +491,7 @@
 		$arrWhere['Account'] = $arrInvoiceDetails['Account'];
 		if ($this->_selCustomerDetails->Execute($arrWhere) === FALSE)
 		{
+			Debug("Line ".__LINE__.": ".$this->_selCustomerDetails->Error());
 			return FALSE;
 		}
 		else
@@ -599,6 +600,7 @@
 		$mixResult = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
 		if ($mixResult === FALSE)
 		{
+			Debug("Line ".__LINE__.": ".$this->_selServiceTypeTotals->Error());
 			return FALSE;
 		}
 		
@@ -626,6 +628,7 @@
 		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
 		if ($intItemisedCount === FALSE)
 		{
+			Debug("Line ".__LINE__.": ".$this->_selItemisedCalls->Error());
 			return FALSE;
 		}
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
@@ -657,6 +660,7 @@
 						$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
 						if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
 						{
+							Debug("Line ".__LINE__.": ".$this->_selRecordTypeTotal->Error());
 							return FALSE;
 						}
 						$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
@@ -750,6 +754,7 @@
 			$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
 			if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
 			{
+				Debug("Line ".__LINE__.": ".$this->_selRecordTypeTotal->Error());
 				return FALSE;
 			}
 			$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
@@ -846,6 +851,7 @@
 		if (($strFileContents = $this->GenerateInvoiceData($arrFileData)) === FALSE)
 		{
 			// Invalid data
+			Debug("Invalid data encountered!");
 			return FALSE;
 		}
 
@@ -856,6 +862,7 @@
 		if ($this->_insInvoiceOutput->Execute($arrWhere) === FALSE)
 		{
 			// Error
+			Debug("Line ".__LINE__.": ".$this->_insInvoiceOutput->Error());
 			return FALSE;			
 		}
 		return TRUE;
