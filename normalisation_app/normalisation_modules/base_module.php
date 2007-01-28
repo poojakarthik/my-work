@@ -858,7 +858,7 @@ abstract class NormalisationModule
 
 		// Set an error status
 		$this->_UpdateStatus(CDR_BAD_DESTINATION);
-		echo "xxxxxxxxxxx";
+		echo $this->_arrNormalisedData['Status'];
 		Die();
 		// Return false if there was no match
 	 	return false;
