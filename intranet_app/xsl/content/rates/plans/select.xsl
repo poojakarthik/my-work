@@ -3,8 +3,15 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
+	
 	<xsl:template name="Content">
-		<h1>Add New Rate Plan</h1>
+	
+		<!-- ADMIN ONLY -->
+		<!-- Page used to Add Rate Plan (Part 2)-->
+		
+		<!--This needs display fixes -->
+		
+		<h1>Add Rate Plan</h1>
 		
 		<script language="javascript" src="js/rates_plan_add.js"></script>
 		
@@ -40,21 +47,25 @@
 				</div>
 			</xsl:if>
 			
+			<!-- Plan Details -->
+			<h2 class = "Plan"> Plan Details </h2>
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+						<td class="Required"></td>	
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('Name')" />
 								</xsl:call-template>
-							</th>
+							</th>								
 							<td>
 								<xsl:value-of select="/Response/RatePlan/Name" />
 							</td>
 						</tr>
-						<tr>
+						<tr>	
+						<td class="Required"></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -66,6 +77,10 @@
 							</td>
 						</tr>
 						<tr>
+		
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
+								
+								
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
@@ -81,20 +96,11 @@
 								</input>
 							</td>
 						</tr>
-					</table>
-					
-					<div class="Clear"></div>
-				</div>
-				
-				<div class="Clear"></div>
-			</div>
-			
-			<div class="Seperator"></div>
-					
-			<div class="Wide-Form">
-				<div class="Form-Content Left">
-					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+						
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
+								
+								
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
@@ -106,6 +112,11 @@
 							</td>
 						</tr>
 						<tr>
+						
+						
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
+								
+								
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
@@ -117,6 +128,10 @@
 							</td>
 						</tr>
 						<tr>
+						
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
+								
+								
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
@@ -127,30 +142,10 @@
 								<input type="text" name="UsageCap" class="input-string" />
 							</td>
 						</tr>
-					</table>
-					
-					<div class="Clear"></div>
-				</div>
-					
-				<div class="Clear"></div>
-			</div>
-			
-			<div class="Seperator"></div>
-			
-			<h2>Record Types</h2>
-			<div class="Seperator"></div>
-			
-			<div class="Wide-Form">
-				<div class="Form-Content Left">
-					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:for-each select="/Response/RatePlan/RecordTypes/Results/rangeSample/RecordType">
 							<xsl:variable name="RecordType" select="./Id" />
 							<tr>
-								<td width="10">
-									<xsl:if test="./Required = 1">
-										<strong><span class="Red">*</span></strong>
-									</xsl:if>
-								</td>
+								<td class="Required"><strong><span class="Red">*</span></strong></td>
 								
 								<th class="JustifiedWidth">
 									<xsl:value-of select="./Name" /> :

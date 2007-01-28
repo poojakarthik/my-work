@@ -13,7 +13,8 @@
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/ACN.js"></script>
 		
-		<h2 class="Account"> Account Details </h2>
+		<!-- Search Details -->
+		<h2 class="Account"> Search for an Account </h2>
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<form method="GET" action="account_list.php">
@@ -221,7 +222,7 @@
 					</div>
 					<div class="SmallSeperator"></div>
 					<div class="Right">
-						<input type="submit" value="Submit" class="input-submit" />
+						<input type="submit" value="Search" class="input-submit" />
 					</div>
 				</form>
 				

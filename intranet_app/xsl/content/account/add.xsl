@@ -5,6 +5,9 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	
+		<!--Page for adding a new customer or associated account -->
+		
 		<xsl:choose>
 			<xsl:when test="/Response/AccountGroup">
 				<h1>Add Associated Account</h1>

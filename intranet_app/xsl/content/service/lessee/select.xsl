@@ -3,7 +3,11 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
+	
 	<xsl:template name="Content">
+	
+		<!--This page changes the Lessee of a Service (Part 1) -->	
+		
 		<h1>Change of Lessee</h1>
 		
 		<xsl:if test="/Response/Error != ''">
@@ -25,10 +29,22 @@
 				</xsl:attribute>
 			</input>
 			
+			<!-- Service Details -->
 			<h2 class="Service">Service Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
+						<tr>
+							<th class="JustifiedWidth" valign="top">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service')" />
+									<xsl:with-param name="field" select="string('Id')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:value-of select="/Response/Service/Id" />
+							</td>
+						</tr>
 						<tr>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
@@ -45,6 +61,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
+			<!-- Current Account Details -->
 			<h2 class="Account">Current Account Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
@@ -71,17 +88,24 @@
 								<xsl:value-of select="/Response/Account-Original/Account/BusinessName" />
 							</td>
 						</tr>
-						<tr>
-							<th class="JustifiedWidth" valign="top">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Account')" />
-									<xsl:with-param name="field" select="string('TradingName')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<xsl:value-of select="/Response/Account-Original/Account/TradingName" />
-							</td>
-						</tr>
+						<!--Check for Trading Name-->
+						<xsl:choose>
+							<xsl:when test="/Response/Account-Original/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Account-Original/Account/TradingName" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 					</table>
 				</div>
 			</div>

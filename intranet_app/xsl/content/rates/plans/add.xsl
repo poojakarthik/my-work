@@ -3,8 +3,13 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
+	
 	<xsl:template name="Content">
-		<h1>Add New Rate Plan</h1>
+	
+		<!-- ADMIN ONLY -->
+		<!-- Page for adding a Rate Plan -->
+		
+		<h1>Add Rate Plan</h1>
 		
 		<form method="POST" action="rates_plan_add.php">
 			<xsl:if test="/Response/RatePlan/Error != ''">
@@ -20,10 +25,13 @@
 				</div>
 			</xsl:if>
 			
+			<!-- Plan Details -->
+			<h2 class = "Plan"> Plan Details </h2>
 			<div class="Wide-Form">
 				<div class="Form-Content Left">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
@@ -40,6 +48,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth" valign="top">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -66,15 +75,13 @@
 							</td>
 						</tr>
 					</table>
-					
-					<div class="Seperator"></div>
-					
-					<input type="submit" value="Continue &#0187;" class="input-submit" />
-					
-					<div class="Clear"></div>
 				</div>
 					
 				<div class="Clear"></div>
+			</div>
+			<div class="SmallSeperator"></div>
+			<div class = "Right">
+					<input type="submit" value="Continue &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

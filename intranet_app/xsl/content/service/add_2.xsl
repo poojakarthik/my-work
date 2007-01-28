@@ -6,7 +6,10 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
+	
 	<xsl:template name="Content">
+	
+		<!-- This page adds a service to an account (Part 2/2)-->
 		<h1>Add Service</h1>
 		
 		<form method="POST" action="service_add.php">
@@ -24,10 +27,20 @@
 				</xsl:attribute>
 			</input>
 			
+			<!--Account Details-->
 			<h2 class="Account">Account Details</h2>
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('Id')" />
+								</xsl:call-template>
+							</th>
+							<td><xsl:value-of select="/Response/Account/Id" /></td>
+						</tr>
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -37,15 +50,24 @@
 							</th>
 							<td><xsl:value-of select="/Response/Account/BusinessName" /></td>
 						</tr>
-						<tr>
-							<th class="JustifiedWidth">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Account')" />
-									<xsl:with-param name="field" select="string('TradingName')" />
-								</xsl:call-template>
-							</th>
-							<td><xsl:value-of select="/Response/Account/TradingName" /></td>
-						</tr>
+						<!--Check for Trading Name-->
+						<xsl:choose>
+							<xsl:when test="/Response/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Account/TradingName" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 					</table>
 				</div>
 			</div>
@@ -59,7 +81,7 @@
 							You must correctly confirm your Line Number.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Unarchived FNN Exists'">
-							The Line Number you entered already exists.
+							The Service ID you entered already exists.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Rate Plan Invalid'">
 							The Rate Plan you entered was Invalid.

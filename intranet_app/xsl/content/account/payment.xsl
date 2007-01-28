@@ -3,7 +3,10 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
+	
 	<xsl:template name="Content">
+	
+		<!-- This page is used to Change the payment Method for an account -->
 		<h1>Change Payment Method</h1>
 		
 		<form method="POST" action="account_payment.php">
@@ -14,6 +17,7 @@
 				</xsl:attribute>
 			</input>
 			
+			<!--Account Details -->
 			<h2 class="Account">Account Details</h2>
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
@@ -39,17 +43,24 @@
 							<xsl:value-of select="/Response/Account/BusinessName" />
 						</td>
 					</tr>
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Account')" />
-								<xsl:with-param name="field" select="string('TradingName')" />
-							</xsl:call-template>
-						</th>
-						<td>
-							<xsl:value-of select="/Response/Account/TradingName" />
-						</td>
-					</tr>
+					<!--Check for Trading Name-->
+						<xsl:choose>
+							<xsl:when test="/Response/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Account/TradingName" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 				</table>
 				
 				<div class="Clear"></div>

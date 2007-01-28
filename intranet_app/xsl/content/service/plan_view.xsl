@@ -7,8 +7,13 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	
+		<!-- This page allows the user to change a Service's Plan -->
+		
 		<h1>Change Plan</h1>
 		
+		
+		<!--Service Details -->
 		<h2 class="Service">Service Details</h2>
 		<div class="Wide-Form">
 			<div class="Form-Content">
@@ -35,17 +40,24 @@
 							<xsl:value-of select="/Response/Account/BusinessName" />
 						</td>
 					</tr>
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Account')" />
-								<xsl:with-param name="field" select="string('TradingName')" />
-							</xsl:call-template>
-						</th>
-						<td>
-							<xsl:value-of select="/Response/Account/TradingName" />
-						</td>
-					</tr>
+					<!--Check for Trading Name-->
+						<xsl:choose>
+							<xsl:when test="/Response/Account/TradingName = ''">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Account')" />
+											<xsl:with-param name="field" select="string('TradingName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Account/TradingName" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">

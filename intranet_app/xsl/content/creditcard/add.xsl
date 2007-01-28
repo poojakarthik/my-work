@@ -4,6 +4,9 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+		<!-- Page for adding Credit Card Details -->
+		
 		<h1>Add Credit Card Details</h1>
 		
 		<xsl:if test="/Response/Error != ''">
@@ -36,6 +39,7 @@
 				</xsl:attribute>
 			</input>
 			
+			<!-- Account Details -->
 			<h2 class="Account">Account Details</h2>
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
