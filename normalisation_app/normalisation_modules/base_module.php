@@ -606,8 +606,8 @@ abstract class NormalisationModule
 	 protected function _UpdateStatus($intStatus)
 	 {
 	 	// only set status if our current status is CDR_NORMALISED, CDR_FIND_OWNER, CDR_RENORMALISE or CDR_BAD_OWNER
-		$intStatus = $this->_arrNormalisedData['Status'];
-	 	if ($intStatus == CDR_NORMALISED || $intStatus == CDR_FIND_OWNER || $intStatus == CDR_BAD_OWNER || $intStatus == CDR_RENORMALISE)
+		$intCurStatus = $this->_arrNormalisedData['Status'];
+	 	if ($intCurStatus == CDR_NORMALISED || $intCurStatus == CDR_FIND_OWNER || $intCurStatus == CDR_BAD_OWNER || $intCurStatus == CDR_RENORMALISE)
 		{
 			// Set new status
 			$this->_arrNormalisedData['Status'] = $intStatus;
@@ -737,6 +737,9 @@ abstract class NormalisationModule
 		
 		// apply ownership
 		$this->ApplyOwnership();
+		
+		// validate
+		$this->Validate();
 		
 		return $this->_arrNormalisedData;
 	 }

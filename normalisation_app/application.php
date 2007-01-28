@@ -611,15 +611,14 @@ die();
 				// normalise
 				switch ($arrCDR['Status'])
 				{
-					case CDR_READY:
-					case CDR_FIND_DESTINATION:
-						$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
-						break;
 					case CDR_FIND_OWNER:
 						$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->FindOwner($arrCDR);
 						break;
+					case CDR_READY:
+					case CDR_RENORMALISE:
 					default:
-						// Unhandled Status (will never occur)
+						$arrCDR = $this->_arrNormalisationModule[$arrCDR["FileType"]]->Normalise($arrCDR);
+						break;
 				}
 			}
 			else
