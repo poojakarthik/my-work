@@ -284,8 +284,6 @@ abstract class NormalisationModule
 			if (!is_numeric($this->_arrNormalisedData["DestinationCode"]))
 			{
 				$this->_UpdateStatus(CDR_BAD_DESTINATION);
-				echo $this->_arrNormalisedData['Status'];
-				Die();
 				return FALSE;
 			}
 		}
@@ -350,8 +348,6 @@ abstract class NormalisationModule
 			{
 				$this->_UpdateStatus(CDR_CANT_NORMALISE_INVALID);
 				Debug($strKey." : ".(string)$i);
-				echo $this->_arrNormalisedData['Status'];
-				Die();
 				return false;
 			}
 		}
