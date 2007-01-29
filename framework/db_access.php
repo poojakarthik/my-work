@@ -2753,6 +2753,7 @@ class MySQLFunction
 		if (!call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams))
 		{
 			Debug($arrParams);
+			Debug(count($arrParams));
 			Debug($this->_strQuery);
 		}
 		
