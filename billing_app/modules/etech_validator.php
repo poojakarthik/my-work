@@ -755,6 +755,8 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 		return "Unknown Record Type for line";
 	}
 	
+	Debug($arrRecordDefine);
+	
 	// Explode the line
 	$arrRawLine = explode($GLOBALS['Delimiter'], $strLine);
 		
@@ -880,7 +882,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 			default:
 				// Invalid data type
 				Debug("'$mixData'");
-				return "Invalid Data Type in field '$strKey' (".(int)$strValue['Type'].") at index $i on line";
+				return "Invalid Data Type (".(int)$strValue['Type'].") in field '$strKey' at index $i on line";
 		}
 		
 		$arrLine[$strKey] = trim($mixData);
