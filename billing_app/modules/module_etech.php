@@ -772,10 +772,9 @@
 			$arrDefine['CategoryFooter']['FNN']				['Value']	= $strCurrentService;
 			$arrDefine['CategoryFooter']['Total']			['Value']	= $fltRecordTypeTotal;
 			$arrFileData[] = $arrDefine['CategoryFooter'];
-			
-			// add details footer
-			$arrFileData[] = $arrDefine['DetailsFooter'];
-		}
+		}			
+		// add details footer
+		$arrFileData[] = $arrDefine['DetailsFooter'];
 		
 		// Service Header/Details/Totals/Footer
 		//----------------------------------------------------------------------
