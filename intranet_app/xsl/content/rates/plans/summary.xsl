@@ -95,7 +95,7 @@
 													<xsl:otherwise>Red</xsl:otherwise>
 												</xsl:choose>
 											</xsl:attribute>
-											Mon</span></strong>
+											Mo</span></strong>
 										</td>
 										<td>
 											<strong><span>
@@ -105,7 +105,7 @@
 													<xsl:otherwise>Red</xsl:otherwise>
 												</xsl:choose>
 											</xsl:attribute>
-											Tue</span></strong>
+											Tu</span></strong>
 										</td>
 										<td>
 											<strong><span>
@@ -115,7 +115,7 @@
 													<xsl:otherwise>Red</xsl:otherwise>
 												</xsl:choose>
 											</xsl:attribute>
-											Wed</span></strong>
+											We</span></strong>
 										</td>
 										<td>
 											<strong><span>
@@ -125,7 +125,7 @@
 													<xsl:otherwise>Red</xsl:otherwise>
 												</xsl:choose>
 											</xsl:attribute>
-											Thu</span></strong>
+											Th</span></strong>
 										</td>
 										<td>
 											<strong><span>
@@ -135,7 +135,7 @@
 													<xsl:otherwise>Red</xsl:otherwise>
 												</xsl:choose>
 											</xsl:attribute>
-											Fri</span></strong>
+											Fr</span></strong>
 										</td>
 										<td>
 											<strong><span>
@@ -145,7 +145,7 @@
 													<xsl:otherwise>Red</xsl:otherwise>
 												</xsl:choose>
 											</xsl:attribute>
-											Sat</span></strong>
+											Sa</span></strong>
 										</td>
 										<td>
 											<strong><span>
@@ -155,7 +155,7 @@
 													<xsl:otherwise>Red</xsl:otherwise>
 												</xsl:choose>
 											</xsl:attribute>
-											Sun</span></strong>
+											Su</span></strong>
 										</td>
 									</tr>
 								</table>
@@ -178,9 +178,19 @@
 						</tr>
 					</xsl:for-each>
 					<tr>
-						<td colspan="3">
+						<td colspan="4" align="right">
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>rates_group_details.php?Id=</xsl:text>
+									<xsl:value-of select="$RateGroup/Id" />
+								</xsl:attribute>
+								<xsl:text>More Details</xsl:text>
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="4">
 							<div class="MicroSeperator"></div>
-							<!-- TODO!bash! add a link that says "More Rates ..." and links to view rate group details if there are more rates to show -->
 						</td>
 					</tr>
 				</xsl:if>

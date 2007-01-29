@@ -15,7 +15,7 @@
 	
 	
 	// Read the Customers CSV File
-	$cstCustomers = new Parser_CSV ('data/customers_short.csv');
+	$cstCustomers = new Parser_CSV ('data/customers.csv');
 	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
 	
 	// Open a Connection/Session to ETECH
@@ -32,7 +32,7 @@
 	$intCurrentRow = 1;
 	
 	// Setup the MySQLi Insert Query
-	$insScrape = new StatementInsert ('ScrapeAccountAdditional');
+	$insScrape = new StatementInsert ('ScrapeInvoice');
 	
 	
 	
@@ -46,7 +46,7 @@
 		// Pull the Information from ETECH
 		$strResponse = $cnnConnection->Transmit (
 			"GET",
-			"https://sp.teleconsole.com.au/sp/customers/extrainfo.php?customer_id=" . $intCustomerId
+			"https://sp.teleconsole.com.au/sp/customers/viewinvoice.php?customer_id=" . $intCustomerId
 		);
 		
 		// Count the Total Time
@@ -64,12 +64,12 @@
 		
 		// Add something to the Report
 		$rptReport->AddMessageVariables (
-			"+	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>\n",
+			"+	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>",
 			Array (
 				"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
 				"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),
 				"<CustomerID>"		=> $intCustomerId,
-				"<Response>"		=> "PAGE HAS BEEN CACHED"
+				"<Response>"		=> "MANAGE INVOICE PAGE HAS BEEN CACHED"
 			)
 		);
 		

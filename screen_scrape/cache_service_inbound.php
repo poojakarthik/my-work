@@ -1,28 +1,22 @@
 <?php
 	
-	system ('clear;');
+	system ("clear;");
 	
-	require ('config/application_loader.php');
-	
+	require ("config/application_loader.php");
+	require ("decode_etech.php");
 	
 	
 	// Create a new Report Object
 	$rptReport = new Report (
-		'+	ETECH CUSTOMER INBOUND SERVICE CACHE RUNNER: ' . date ('Y-m-d h:i:s A'),
-		'bash@voiptelsystems.com.au'
+		"+	ETECH CUSTOMER ACCOUNT ADDITIONAL INFORMATION CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
+		"bash@voiptelsystems.com.au"
 	);
+	
 	
 	
 	// Open a Connection/Session to ETECH
 	$cnnConnection = new Connection ();	
-	$rptReport->AddMessage ('+	COMMUNICATION WITH ETECH ESTABLISHED\n');
-	
-	
-	// Read the Services
-	$selCustomers = new StatementSelect ('Service', 'Id, Account, FNN', 'ServiceType = <ServiceType>');
-	$selCustomers->Execute (Array ('ServiceType' => SERVICE_TYPE_INBOUND));
-	$rptReport->AddMessage ('+	SERVICE QUERY HAS BEEN EXECUTED');
-	
+	$rptReport->AddMessage ("+	COMMUNICATION WITH ETECH ESTABLISHED\n");
 	
 	
 	
@@ -35,50 +29,60 @@
 	$insScrape = new StatementInsert ('ScrapeServiceInbound');
 	
 	
+	$objDecodeEtech = new VixenDecode (Array ());
 	
-	// Loop through each of the Customers
-	foreach ($selCustomers->FetchAll () AS $arrService)
+	while ($arrCustomer = $objDecodeEtech->FetchCustomer ())
 	{
-		// Start a Timer for this Request
-		$fltStartTime = microtime (TRUE);
-		
-		// Pull the Information from ETECH
-		$strResponse = $cnnConnection->Transmit (
-			'GET',
-			'https://sp.teleconsole.com.au/sp/customers/viewdetails.php?customer_id=' . $arrService ['Account'] . '&id=' . $arrService ['Id'] . '&editInbound'
-		);
-		
-		// Count the Total Time
-		$fltTotalTime = microtime (TRUE) - $fltStartTime;
-		
-		// Insert the Information into the Database
-		$arrScrape = Array (
-			'ServiceId'			=> $intServiceId,
-			'DataOriginal'		=> $strResponse,
-			'DataSerialized'	=> ''
-		);
-		
-		$insScrape->Execute ($arrScrape);
-		
-		// Add something to the Report
-		$rptReport->AddMessageVariables (
-			'+	<CurrentRow>		<TotalTime>	<ServiceId>	<Response>',
-			Array (
-				'<CurrentRow>'		=> sprintf ('%06d',	$intCurrentRow),
-				'<TotalTime>'		=> sprintf ('%1.6f', $fltTotalTime),
-				'<ServiceId>'		=> $intServiceId,
-				'<Response>'		=> $insScrape->Error ()
-			)
-		);
-		
-		// Up the count
-		++$intCurrentRow;
-		
-		// Flush the data out
-		flush ();
+		foreach ($arrCustomer ['DataArray']['sn'] as $arrService)
+		{
+			if (substr (trim ($arrService ['Number']), 0, 4) == "1300")
+			{
+				// Start a Timer for this Request
+				$fltStartTime = microtime (TRUE);
+				
+				// Pull the Information from ETECH
+				$strResponse = $cnnConnection->Transmit (
+					"GET",
+					"https://sp.teleconsole.com.au/sp/customers/viewdetails.php" .
+					"?customer_id=" . $arrCustomer ['CustomerId'] . 
+					"&id=" . $arrService ['Id'] . 
+					"&editInbound"
+				);
+				
+				// Count the Total Time
+				$fltTotalTime = microtime (TRUE) - $fltStartTime;
+				
+				// Insert the Information into the Database
+				$arrScrape = Array (
+					'CustomerId'		=> $arrCustomer ['CustomerId'],
+					'FNN'				=> $arrService ['AreaCode'] . $arrService ['Number'],
+					'DataOriginal'		=> $strResponse
+				);
+				
+				$insScrape->Execute ($arrScrape);
+				
+				// Add something to the Report
+				$rptReport->AddMessageVariables (
+					"+	<CurrentRow>		<TotalTime>	<Account>	<FNN>	<Response>",
+					Array (
+						"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
+						"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),
+						"<Account>"			=> $arrCustomer ['CustomerId'],
+						"<FNN>"				=> $arrService ['AreaCode'] . $arrService ['Number'],
+						"<Response>"		=> "INBOUND HAS BEEN CACHED"
+					)
+				);
+				
+				// Up the count
+				++$intCurrentRow;
+				
+				// Flush the data out
+				flush ();
+			}
+		}
 	}
 	
-	echo '\n\n';
+	echo "\n\n";
 	
 	$rptReport->Finish ();
 	

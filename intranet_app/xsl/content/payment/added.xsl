@@ -8,7 +8,7 @@
 		
 		<p>
 			The Payment has been successfully added to the payments 
-			que for processing. It may take up to 24 hours for
+			Queue for processing. It may take up to 24 hours for
             this payment to be visible in the system.
 		</p>
 	</xsl:template>

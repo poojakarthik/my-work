@@ -8,7 +8,7 @@
 	
 	// Create a new Report Object
 	$rptReport = new Report (
-		"+	ETECH CUSTOMER ACCOUNT ADDITIONAL INFORMATION CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
+		"+	ETECH CUSTOMER SYSTEM NOTE CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
 		"bash@voiptelsystems.com.au"
 	);
 	
@@ -32,7 +32,7 @@
 	$intCurrentRow = 1;
 	
 	// Setup the MySQLi Insert Query
-	$insAdditionalScrape = new StatementInsert ('ScrapeAccountAdditional');
+	$insScrape = new StatementInsert ('ScrapeAccountAdditional');
 	
 	
 	
@@ -59,8 +59,7 @@
 			'DataOriginal'		=> $strResponse
 		);
 		
-		$insAdditionalScrape->Execute ($arrScrape);
-		echo $insAdditionalScrape->Error ();
+		$insScrape->Execute ($arrScrape);
 		
 		// Add something to the Report
 		$rptReport->AddMessageVariables (
@@ -69,7 +68,7 @@
 				"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
 				"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),
 				"<CustomerID>"		=> $intCustomerId,
-				"<Response>"		=> "PAGE HAS BEEN CACHED"
+				"<Response>"		=> "ADDITIONAL INFO HAS BEEN CACHED"
 			)
 		);
 		
