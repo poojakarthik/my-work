@@ -801,7 +801,7 @@ die();
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
-		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = $strInvoiceRun AND Status = ".INVOICE_TEMP, $arrUpdateData);
+		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_TEMP, $arrUpdateData);
 		Debug($updInvoiceStatus->Error());
 		// TODO!rich! what the hell is wrong with this query?
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
