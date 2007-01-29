@@ -110,7 +110,7 @@
 																"RType.Id");
 		
 		$this->_selServices				= new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
-																"Service.FNN AS FNN, Service.Id AS Id, ServiceTotal.Total AS Total, Service.ServiceType AS ServiceType",
+																"Service.FNN AS FNN, Service.Id AS Id",
 																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND" .
 																" (Service.ServiceType = ".SERVICE_TYPE_MOBILE." OR ServiceTotal.Total != 0.0)");
 		
