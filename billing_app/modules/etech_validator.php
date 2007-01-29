@@ -755,7 +755,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 		return "Unknown Record Type for line";
 	}
 	
-	Debug($arrRecordDefine);
+	//Debug($arrRecordDefine);
 	
 	// Explode the line
 	$arrRawLine = explode($GLOBALS['Delimiter'], $strLine);
@@ -860,7 +860,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				}
 				break;
 			case ETECH_SHORT_CURRENCY:
-				$strRegex = "/^\d+\.\d{2}$/";
+				$strRegex = "/^[\d\,]+\.\d{2}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
 					// Not a number - invalid
@@ -870,7 +870,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				$mixData = "$".$mixData;
 				break;
 			case ETECH_LONG_CURRENCY:
-				$strRegex = "/^\d+\.\d{4}$/";
+				$strRegex = "/^[\d\,]+\.\d{4}$/";
 				if (!preg_match($strRegex, $mixData))
 				{
 					// Not a number - invalid
