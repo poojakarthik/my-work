@@ -109,9 +109,10 @@
 																NULL,
 																"RType.Id");
 		
-		$this->_selServices				= new StatementSelect(	"Service",
-																"FNN, Id",
-																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW())");
+		$this->_selServices				= new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
+																"Service.FNN AS FNN, Service.Id AS Id, ServiceTotal.Total AS Total, Service.ServiceType AS ServiceType",
+																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND" .
+																" (Service.ServiceType = ".SERVICE_TYPE_MOBILE." OR ServiceTotal.Total != 0.0)");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"TotalCharge",
@@ -781,7 +782,7 @@
 		$strCurrentService = "";
 		$arrFileData[] = $arrDefine['SvcSummHeader'];
 		foreach($arrServices as $arrService)
-		{
+		{			
 			// The individual RecordTypes for each Service
 			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
 			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
@@ -829,7 +830,7 @@
 		//----------------------------------------------------------------------
 		// Global Graph Info
 		// TODO!rich! remove this date range hack
-		$strDateRange = date("d/m/Y", time()).":".date("d/m/Y", strtotime("-1 month", time()));
+		$strDateRange = date("d/m/Y", strtotime("-1 month", time())).":".date("d/m/Y", time());
 		$arrDefine['GraphInfo']		['DateRange']		['Value']	= $strDateRange;
 		$arrFileData[] = $arrDefine['GraphInfo'];
 		
