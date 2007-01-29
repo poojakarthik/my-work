@@ -11,8 +11,6 @@
 
 		</div>
 		
-		<div class = "Right">
-				Return to  <a href="employee_list.php">Employee Listing</a>.
-		</div>
+
 	</xsl:template>
 </xsl:stylesheet>

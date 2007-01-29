@@ -7,22 +7,13 @@
 	
 		<!-- Confirmation Page following Update of Mobile Details -->
 		
-		<h1>Mobile Details Updated</h1>
+		<h1>Mobile Provisioning Updated</h1>
 		
 		<div class = "MsgNoticeWide">
 			The Mobile Details have been successfully updated.
 
 		</div>
 		
-		<div class = "Right">
-		Return to 
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>service_mobile_details.php?Service=</xsl:text>
-					<xsl:value-of select="/Response/Service/Id" />
-				</xsl:attribute>
-				<xsl:text>Mobile Details</xsl:text>
-			</a>
-		</div>
+
 	</xsl:template>
 </xsl:stylesheet>

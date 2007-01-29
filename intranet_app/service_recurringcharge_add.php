@@ -52,6 +52,7 @@
 		header ('Location: service_recurringcharge_added.php?Service=' . $srvService->Pull ('Id')->getValue ()); exit;
 	}
 	
+	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Frequency');
 	$docDocumentation->Explain ('Recurring Charge Type');

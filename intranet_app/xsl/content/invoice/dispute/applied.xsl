@@ -15,16 +15,7 @@
 			The invoice has been successfully disputed
 		</div>
 		
-		<div class = "Right">
-		Return to 
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>invoice_view.php?Invoice=</xsl:text>
-					<xsl:value-of select="/Response/Invoice/Id" />
-				</xsl:attribute>
-				<xsl:text>Invoice</xsl:text>
-			</a>
-		</div>
+
 		
 	</xsl:template>
 </xsl:stylesheet>

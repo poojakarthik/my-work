@@ -7,7 +7,7 @@
 		<h1>Service Charge Added</h1>
 		
 		<div class = "MsgNoticeWide">
-			The Charge has been successfully added to the service.
+			The Charge has been successfully added to the Service.
 
 		</div>
 		

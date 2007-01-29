@@ -10,6 +10,9 @@
 		<!-- Page for viewing details of plans -->
 		<h1>View Plan Details</h1>
 		
+		<!--TODO!bash! URGENT - the 'More Details...' link does not work-->
+		<!--TODO!bash! URGENT - this page also needs to  link to View Rate Details -->
+		
 		<!-- Plan Details -->
 		<h2 class="Plan">Plan Details</h2>
 		<div class="Wide-Form">
@@ -184,7 +187,7 @@
 									<xsl:text>rates_group_details.php?Id=</xsl:text>
 									<xsl:value-of select="$RateGroup/Id" />
 								</xsl:attribute>
-								<xsl:text>More Details</xsl:text>
+								<xsl:text>More Details...</xsl:text>
 							</a>
 						</td>
 					</tr>

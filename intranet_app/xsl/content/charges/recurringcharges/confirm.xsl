@@ -10,8 +10,6 @@
 			The Recurring Charge Type has been successfully added.
 		</div>
 		
-		<div class = "Right">
-			Continue to <a href="charges_recurringcharge_list.php">List Recurring Charge Types</a>.
-		</div>
+
 	</xsl:template>
 </xsl:stylesheet>

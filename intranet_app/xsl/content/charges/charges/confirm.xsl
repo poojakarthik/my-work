@@ -10,9 +10,6 @@
 			The Charge Type has been successfully added.
 
 		</div>
-		
-		<div class="Right"
-			Continue to <a href="charges_charge_list.php">List Charge Types</a>.
-		</div>
+
 	</xsl:template>
 </xsl:stylesheet>

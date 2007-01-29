@@ -7,7 +7,7 @@
 		<h1>Bug Reported</h1>
 		
 		<div class="MsgNoticeWide">
-			<strong>Your  Bug has been successfully recorded.</strong><br/>
+			Your  Bug has been successfully recorded.
 		</div>
 	</xsl:template>
 </xsl:stylesheet>

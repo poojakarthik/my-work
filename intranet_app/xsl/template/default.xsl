@@ -416,7 +416,7 @@
                                                         
                                                         <xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact) = 0">
                                                                 <div class="MsgNoticeModal">
-                                                                        You have no Recently Authentiated Contacts.
+                                                                        You have no Recently Verified Customers.
                                                                 </div>
                                                         </xsl:if>
                                                 </div>

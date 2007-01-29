@@ -4,6 +4,8 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+		<!--TODO!bash! URGENT - This has fatal error on continue-->
 		<h1>Add Recurring Service Charge</h1>
 		
 		<form method="post" action="service_recurringcharge_add.php">
@@ -24,7 +26,7 @@
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
-						<tr>
+					<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -151,7 +153,7 @@
 			</div>
 			<div class = "SmallSeperator"></div>
 			<div class = "Right">
-					<input type="submit" name="Confirm" value="Assign Charge &#0187;" class="input-submit" />
+					<input type="submit" name="Confirm" value="Add Charge &#0187;" class="input-submit" />
 			</div>
 		</form>
 		

@@ -14,14 +14,6 @@
 			You have successfully changed the Payment Method for this Account.
 		</div>
 		
-		<div class="Right">		
-				<a>
-					<xsl:attribute name="href">
-						<xsl:text>account_view.php?Id=</xsl:text>
-						<xsl:value-of select="/Response/Account/Id" />
-					</xsl:attribute>
-					<xsl:text>Return to  Account Details</xsl:text>
-				</a>
-		</div>
+
 	</xsl:template>
 </xsl:stylesheet>

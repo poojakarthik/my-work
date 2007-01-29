@@ -6,6 +6,7 @@
 	<xsl:template name="Content">
 		<h1>Add Bank Account Details</h1>
 		
+		<!--TODO!Bash! URGENT - This page only comes from Change Payment Method now, so it needs to return there.  We don't want to use Direct Debit Details page anymore-->
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
 				<xsl:choose>

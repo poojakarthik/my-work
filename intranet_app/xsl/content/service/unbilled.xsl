@@ -102,7 +102,7 @@
 		<xsl:choose>
 			<xsl:when test="/Response/CDRs-Unbilled/collationLength = 0">
 				<div class="MsgNoticeWide">
-					There are no Unbilled Charges associated with this Account.
+					There are no Unbilled Charges associated with this Service.
 
 				</div>
 			</xsl:when>

@@ -6,7 +6,7 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">	
-		<h1>Mobile Details</h1>
+		<h1>Mobile Provisioning</h1>
 		<script language="javascript" src="js/note_add.js"></script>
 		
 		<table border="0" width="100%" cellpadding="0" cellspacing="0">

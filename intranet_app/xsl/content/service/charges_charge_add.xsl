@@ -111,7 +111,7 @@
 				</div>
 			
 			</div>
-				<div class = "Small Seperator"></div>
+				<div class = "SmallSeperator"></div>
 			<div class = "Right">
 				<input type="submit" name="Confirm" value="Add Charge &#0187;" class="input-submit" />
 			</div>
