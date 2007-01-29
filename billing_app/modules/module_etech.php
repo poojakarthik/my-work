@@ -363,7 +363,7 @@
 		// Itemised S&E Data
 		$arrDefine['ItemisedS&E']	['RecordCount']		['Type']	= ETECH_INTEGER;
 		$arrDefine['ItemisedS&E']	['Description']		['Type']	= ETECH_STRING;
-		$arrDefine['ItemisedS&E']	['Charge']			['Type']	= ETECH_LONG_CURRENCY;
+		$arrDefine['ItemisedS&E']	['Charge']			['Type']	= ETECH_SHORT_CURRENCY;
 		
 		// Charge Footer
 		$arrDefine['CategoryFooter']['CategoryId']		['Type']	= ETECH_INTEGER;
@@ -723,7 +723,7 @@
 				{
 					// S&E and OC&C
 					$arrRow = $arrDefine['ItemisedS&E'];
-					$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";
+					$strDescription = $arrData['FNN']." : ".$arrData['Description']." - ".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime']));
 					$arrRow['RecordCount']		['Value']	= $intRecordCount;
 					$arrRow['Description']		['Value']	= $strDescription;
 					$arrRow['Charge']			['Value']	= $arrData['Charge'];
@@ -1201,8 +1201,8 @@
 							$strValue = "0";
 						}
 						
-						$strTemp = sprintf("%01.2f", ((float)$strValue));
-						if(substr($strValue, 0, 1) == "-")
+						$strTemp = number_format((float)$strValue, 2);
+						if((substr($strValue, 0, 1) == "-") && (substr($strTemp, 0, 1) != "-"))
 						{
 							$strTemp = "-".substr($strTemp, 1);
 						}
@@ -1214,7 +1214,7 @@
 							$strValue = "0";
 						}
 						
-						$strTemp = number_format((float)$strValue, 2);
+						$strTemp = number_format((float)$strValue, 4);
 						if((substr($strValue, 0, 1) == "-") && (substr($strTemp, 0, 1) != "-"))
 						{
 							$strTemp = "-".substr($strTemp, 1);
