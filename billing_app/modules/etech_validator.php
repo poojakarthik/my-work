@@ -58,7 +58,7 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		// Define the file format
 		//----------------------------------------------------------------------------//
 		
-		$GLOBALS['Delimeter'] = "|";
+		$GLOBALS['Delimiter'] = "|";
 		
 		// Define RecordTypes
 		$arrPrintDefine['FileHeader']		['RecordType']		['Type']	= ETECH_ROW;
