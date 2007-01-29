@@ -572,6 +572,12 @@
 				return FALSE;
 		}
 		
+		// If there is less than $10 on the invoice, mark as Email
+		if ($arrInvoiceDetails['Balance'] < INVOICE_MIN_CHARGE)
+		{
+			$strBillingMethod = "E";
+		}
+		
 		
 		$arrDefine['Customer']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		$arrDefine['Customer']		['CheckDigit']		['Value']	= MakeLuhn($arrInvoiceDetails['Account']);

@@ -154,6 +154,7 @@ define("BILL_PRINT_HISTORY_LIMIT"			, 6);
 define("BILL_PRINT_SAMPLE_LIMIT"			, 10);
 define("BILLING_LOCAL_PATH"					, "/home/vixen_bill_output/");
 define("BILLING_LOCAL_PATH_SAMPLE"			, BILLING_LOCAL_PATH."sample/");
+define("INVOICE_MIN_CHARGE"					, 10);
 
 // Bill Printing FTP data
 define("BILL_PRINT_HOST"					, "");	// TODO
