@@ -1212,8 +1212,8 @@
 							$strValue = "0";
 						}
 						
-						$strTemp = sprintf("%01.4f", ((float)$strValue));
-						if(substr($strValue, 0, 1) == "-")
+						$strTemp = number_format((float)$strValue, 2);
+						if((substr($strValue, 0, 1) == "-") && (substr($strTemp, 0, 1) != "-"))
 						{
 							$strTemp = "-".substr($strTemp, 1);
 						}
