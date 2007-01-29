@@ -77,8 +77,8 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		$arrPrintDefineEtech['BrandId']			['RecordType']		['Value']	= 7;
 		$arrPrintDefineEtech['InvoiceCharge']	['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['InvoiceCharge']	['RecordType']		['Value']	= 10;
-		$arrPrintDefineEtech['Customer']			['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['Customer']			['RecordType']		['Value']	= 11;
+		$arrPrintDefineEtech['Customer']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['Customer']		['RecordType']		['Value']	= 11;
 		$arrPrintDefineEtech['ChargeSummary']	['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['ChargeSummary']	['RecordType']		['Value']	= 15;
 		$arrPrintDefineEtech['DetailsHeader']	['RecordType']		['Type']	= ETECH_ROW;
@@ -111,8 +111,8 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		$arrPrintDefineEtech['SpecialMsg4']		['RecordType']		['Value']	= 53;
 		$arrPrintDefineEtech['SpecialMsg5']		['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['SpecialMsg5']		['RecordType']		['Value']	= 54;
-		$arrPrintDefineEtech['CreditHeader']		['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['CreditHeader']		['RecordType']		['Value']	= 60;
+		$arrPrintDefineEtech['CreditHeader']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CreditHeader']	['RecordType']		['Value']	= 60;
 		$arrPrintDefineEtech['CreditBalance']	['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['CreditBalance']	['RecordType']		['Value']	= 61;
 		$arrPrintDefineEtech['CreditAdded']		['RecordType']		['Type']	= ETECH_ROW;
@@ -121,8 +121,8 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		$arrPrintDefineEtech['CreditUsed']		['RecordType']		['Value']	= 63;
 		$arrPrintDefineEtech['CreditLeft']		['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['CreditLeft']		['RecordType']		['Value']	= 64;
-		$arrPrintDefineEtech['CreditFooter']		['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['CreditFooter']		['RecordType']		['Value']	= 69;
+		$arrPrintDefineEtech['CreditFooter']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CreditFooter']	['RecordType']		['Value']	= 69;
 		$arrPrintDefineEtech['GraphInfo']		['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['GraphInfo']		['RecordType']		['Value']	= 70;
 		$arrPrintDefineEtech['GraphData']		['RecordType']		['Type']	= ETECH_ROW;
@@ -133,28 +133,28 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		$arrPrintDefineEtech['InvoiceFooter']	['RecordType']		['Value']	= 95;
 		$arrPrintDefineEtech['FileFooter']		['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['FileFooter']		['RecordType']		['Value']	= 99;
-		$arrPrintDefineEtech['ItemisedCall']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['ItemisedCall']	['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['ItemisedS&E']		['RecordType']		['Type']	= ETECH_ROW;
 		
 		// Call Details
 		$arrPrintDefineEtech['CallLLNational']	['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['CallLLNational']	['RecordType']		['Value']	= 102;
-		$arrPrintDefineEtech['CallLLTo1300']		['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['CallLLTo1300']		['RecordType']		['Value']	= 103;
+		$arrPrintDefineEtech['CallLLTo1300']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallLLTo1300']	['RecordType']		['Value']	= 103;
 		$arrPrintDefineEtech['CallLLToMob']		['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['CallLLToMob']		['RecordType']		['Value']	= 104;
 		$arrPrintDefineEtech['CallLLToIDD']		['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['CallLLToIDD']		['RecordType']		['Value']	= 105;
-		$arrPrintDefineEtech['CallMobToMob']		['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['CallMobToMob']		['RecordType']		['Value']	= 106;
-		$arrPrintDefineEtech['CallMobToNat']		['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['CallMobToNat']		['RecordType']		['Value']	= 107;
-		$arrPrintDefineEtech['CallMobOther']		['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['CallMobOther']		['RecordType']		['Value']	= 110;
+		$arrPrintDefineEtech['CallMobToMob']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobToMob']	['RecordType']		['Value']	= 106;
+		$arrPrintDefineEtech['CallMobToNat']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobToNat']	['RecordType']		['Value']	= 107;
+		$arrPrintDefineEtech['CallMobOther']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobOther']	['RecordType']		['Value']	= 110;
 		$arrPrintDefineEtech['CallMobRoam']		['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['CallMobRoam']		['RecordType']		['Value']	= 111;
-		$arrPrintDefineEtech['CallMobToIDD']		['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['CallMobToIDD']		['RecordType']		['Value']	= 112;
+		$arrPrintDefineEtech['CallMobToIDD']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobToIDD']	['RecordType']		['Value']	= 112;
 		$arrPrintDefineEtech['CallMobTo18']		['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['CallMobTo18']		['RecordType']		['Value']	= 113;
 		$arrPrintDefineEtech['Call13IDD']		['RecordType']		['Type']	= ETECH_ROW;
@@ -173,8 +173,8 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		$arrPrintDefineEtech['CallUnknown']		['RecordType']		['Value']	= 135;
 		$arrPrintDefineEtech['CallS&E']			['RecordType']		['Type']	= ETECH_ROW;
 		$arrPrintDefineEtech['CallS&E']			['RecordType']		['Value']	= 208;				// Record type is 108 in footer
-		$arrPrintDefineEtech['CallOC&C']			['RecordType']		['Type']	= ETECH_ROW;
-		$arrPrintDefineEtech['CallOC&C']			['RecordType']		['Value']	= 237;				// Record type is 137 in footer
+		$arrPrintDefineEtech['CallOC&C']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallOC&C']		['RecordType']		['Value']	= 237;				// Record type is 137 in footer
 		
 		// Row Type					Field Name			Property	Value
 		//------------------------------------------------------------------------------
@@ -225,17 +225,17 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		$arrPrintDefineEtech['InvoiceCharge']	['AmountOwing']		['Type']	= ETECH_SHORT_CURRENCY;
 		
 		// Customer Details
-		$arrPrintDefineEtech['Customer']			['AccountNo']		['Type']	= ETECH_INTEGER;
-		$arrPrintDefineEtech['Customer']			['CheckDigit']		['Type']	= ETECH_INTEGER;
-		$arrPrintDefineEtech['Customer']			['Address1']		['Type']	= ETECH_STRING;
-		$arrPrintDefineEtech['Customer']			['Address2']		['Type']	= ETECH_STRING;
-		$arrPrintDefineEtech['Customer']			['Suburb']			['Type']	= ETECH_STRING;
-		$arrPrintDefineEtech['Customer']			['Postcode']		['Type']	= ETECH_INTEGER;
-		$arrPrintDefineEtech['Customer']			['State']			['Type']	= ETECH_STRING;
-		$arrPrintDefineEtech['Customer']			['BusinessName']	['Type']	= ETECH_STRING;
-		$arrPrintDefineEtech['Customer']			['Firstname']		['Type']	= ETECH_STRING;
-		$arrPrintDefineEtech['Customer']			['Lastname']		['Type']	= ETECH_STRING;
-		$arrPrintDefineEtech['Customer']			['InvoiceType']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['AccountNo']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['Customer']		['CheckDigit']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['Customer']		['Address1']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Address2']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Suburb']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Postcode']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['Customer']		['State']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['BusinessName']	['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Firstname']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Lastname']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['InvoiceType']		['Type']	= ETECH_STRING;
 		
 		// Charge Summaries
 		$arrPrintDefineEtech['ChargeSummary']	['Category']		['Type']	= ETECH_STRING;
@@ -246,12 +246,12 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		$arrPrintDefineEtech['CategoryHeader']	['FNN']				['Type']	= ETECH_FNN;
 		
 		// Itemised Call Data
-		$arrPrintDefineEtech['ItemisedCall']		['RecordCount']		['Type']	= ETECH_INTEGER;
-		$arrPrintDefineEtech['ItemisedCall']		['Datetime']		['Type']	= ETECH_DATETIME;
-		$arrPrintDefineEtech['ItemisedCall']		['CalledParty']		['Type']	= ETECH_FNN;
-		$arrPrintDefineEtech['ItemisedCall']		['Description']		['Type']	= ETECH_STRING;
-		$arrPrintDefineEtech['ItemisedCall']		['Duration']		['Type']	= ETECH_DURATION;
-		$arrPrintDefineEtech['ItemisedCall']		['Charge']			['Type']	= ETECH_LONG_CURRENCY;
+		$arrPrintDefineEtech['ItemisedCall']	['RecordCount']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['ItemisedCall']	['Datetime']		['Type']	= ETECH_DATETIME;
+		$arrPrintDefineEtech['ItemisedCall']	['CalledParty']		['Type']	= ETECH_FNN;
+		$arrPrintDefineEtech['ItemisedCall']	['Description']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['ItemisedCall']	['Duration']		['Type']	= ETECH_DURATION;
+		$arrPrintDefineEtech['ItemisedCall']	['Charge']			['Type']	= ETECH_LONG_CURRENCY;
 		
 		// Itemised S&E Data
 		$arrPrintDefineEtech['ItemisedS&E']		['RecordCount']		['Type']	= ETECH_INTEGER;
@@ -351,7 +351,7 @@ $arrChargeTotals	= Array();
 $arrGraphData		= Array();
 $arrServiceSummary	= Array();
 $arrItemisedTable	= Array();
-$intLastRecordType	= 18;
+$intLastRecordType	= 0;
 
 $i = 0;
 foreach ($arrFileContents as $strLine)
@@ -364,13 +364,231 @@ foreach ($arrFileContents as $strLine)
 		die;
 	}
 	
+	// Add to Invoice Array
+	$arrInvoice[] = $mixResult;
+	$arrExpectedRecordTypes = Array();
+	
+	switch ($mixResult['RecordType'])
+	{
+		//--------------------------- FILE HEADERS ---------------------------//
+		case 1:
+			// Header Record
+			ExpectedRecordType($intLastRecordType, 0, $i);
+			break;
+		case 2:
+			// SP Details
+			ExpectedRecordType($intLastRecordType, 1, $i);
+			break;
+		case 3:
+			// Global Message
+			ExpectedRecordType($intLastRecordType, 2, $i);
+			break;
+		case 4:
+			// Invoice Brands Available
+			ExpectedRecordType($intLastRecordType, 3, $i);
+			break;
+		
+		//------------------------- INVOICE  HEADERS -------------------------//
+		case 5:
+			// Record Sequence
+			$arrExpectedRecordTypes[] = 4;
+			$arrExpectedRecordTypes[] = 95;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 6:
+			// Invoice Number
+			ExpectedRecordType($intLastRecordType, 5, $i);
+			break;
+		case 7:
+			// Invoice Brand Id
+			ExpectedRecordType($intLastRecordType, 6, $i);
+			break;
+		
+		//---------------------------- FRONT PAGE ----------------------------//
+		case 10:
+			// Invoice Charges
+			ExpectedRecordType($intLastRecordType, 7, $i);
+			break;
+		case 11:
+			// Customer Detail
+			ExpectedRecordType($intLastRecordType, 10, $i);
+			break;
+		
+		//------------------------- CHARGE SUMMARIES -------------------------//
+		case 15:
+			// Charge Summary
+			$arrExpectedRecordTypes[] = 11;
+			$arrExpectedRecordTypes[] = 15;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		
+		//-------------------------- ITEMISED CALLS --------------------------//
+		case 19:
+			// Start Detailed Information
+			$arrExpectedRecordTypes[] = 11;
+			$arrExpectedRecordTypes[] = 15;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 20:
+			// Details by Category Start
+			$arrExpectedRecordTypes[] = 19;
+			$arrExpectedRecordTypes[] = 21;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 102:
+		case 103:
+		case 104:
+		case 105:
+		case 106:
+		case 107:
+		case 110:
+		case 111:
+		case 112:
+		case 113:
+		case 114:
+		case 116:
+		case 117:
+		case 118:
+		case 119:
+		case 120:
+		case 135:
+		case 208:
+		case 237:
+			// Call Records
+			$arrExpectedRecordTypes[] = 20;
+			$arrExpectedRecordTypes[] = "102-237";
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 21:
+			// Details by Category End
+			$arrExpectedRecordTypes[] = 20;
+			$arrExpectedRecordTypes[] = "102-237";
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 29:
+			// End Detailed Info
+			$arrExpectedRecordTypes[] = 19;
+			$arrExpectedRecordTypes[] = 21;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		
+		//------------------------ SERVICE  SUMMARIES ------------------------//
+		case 39:
+			// Start Summary By Service Number
+			ExpectedRecordType($intLastRecordType, 29, $i);
+			break;
+		case 40:
+			// Service Numbers Summary
+			$arrExpectedRecordTypes[] = 39;
+			$arrExpectedRecordTypes[] = 48;
+			$arrExpectedRecordTypes[] = 45;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 41:
+			// Summary Details
+			$arrExpectedRecordTypes[] = 40;
+			$arrExpectedRecordTypes[] = 41;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 45:
+			// Summary Totals
+			ExpectedRecordType($intLastRecordType, 41, $i);
+			break;
+		case 48:
+			// Cost Centre Totals
+			ExpectedRecordType($intLastRecordType, 45, $i);
+			break;
+		case 49:
+			// End Service Number Summaries
+			$arrExpectedRecordTypes[] = 39;
+			$arrExpectedRecordTypes[] = 48;
+			$arrExpectedRecordTypes[] = 45;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		
+		//------------------------- SPECIAL MESSAGES -------------------------//
+		case 50:
+			// Special Message 1
+			ExpectedRecordType($intLastRecordType, 49, $i);
+			break;
+		case 51:
+			// Special Message 2
+			ExpectedRecordType($intLastRecordType, 50, $i);
+			break;
+		case 52:
+			// Special Message 3
+			ExpectedRecordType($intLastRecordType, 51, $i);
+			break;
+		case 53:
+			// Special Message 4
+			ExpectedRecordType($intLastRecordType, 52, $i);
+			break;
+		case 54:
+			// Special Message 5
+			ExpectedRecordType($intLastRecordType, 53, $i);
+			break;
+		
+		//-------------------------- CREDIT DETAILS --------------------------//
+		case 60:
+			// Start Credit Details
+			ExpectedRecordType($intLastRecordType, "49-54", $i);
+			break;
+		case 61:
+			// Credit Balance Total
+			ExpectedRecordType($intLastRecordType, 60, $i);
+			break;
+		case 62:
+			// Credit Amount Total
+			ExpectedRecordType($intLastRecordType, 61, $i);
+			break;
+		case 63:
+			// Credit Used
+			ExpectedRecordType($intLastRecordType, 62, $i);
+			break;
+		case 64:
+			// Credit Remaining
+			ExpectedRecordType($intLastRecordType, 63, $i);
+			break;
+		case 69:
+			// End Credit Detail
+			ExpectedRecordType($intLastRecordType, 64, $i);
+			break;
+		
+		//------------------------- INVOICE  FOOTERS -------------------------//
+		case 70:
+			// Global Graphing Info
+			$arrExpectedRecordTypes[] = "49-54";
+			$arrExpectedRecordTypes[] = 69;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 71:
+			// Billing History
+			ExpectedRecordType($intLastRecordType, 70, $i);
+			break;
+		case 80:
+			// Extra Info
+			ExpectedRecordType($intLastRecordType, 71, $i);
+			break;
+		case 95:
+			// Invoice Footer
+			$arrExpectedRecordTypes[] = 71;
+			$arrExpectedRecordTypes[] = 80;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
+			break;
+		case 99:
+			// File Footer
+			ExpectedRecordType($intLastRecordType, 95, $i);
+			break;
+	}
+	$intLastRecordType = $mixResult['RecordType'];
+		
+	
 	// REMOVE ME
 	continue;
 	// REMOVE ME
 	
-	// Add to Invoice Array
-	$arrInvoice[] = $mixResult;
-	$arrExpectedRecordTypes = Array();
+		//--------------------------- VIXEN  STUFF ---------------------------//
+	
 	switch ($mixResult['RecordType'])
 	{
 		//---------------------------- FRONT PAGE ----------------------------//
@@ -708,16 +926,28 @@ die;
 
 function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 {
+	// Make it an array if it isn't already
 	if (!is_array($mixExpectedTypes))
 	{
 		$mixExpectedTypes = Array($mixExpectedTypes);
 	}
 	
+	// Loop through each of the expected types
 	$bolMatch = FALSE;
-	foreach($mixExpectedTypes as $intExpectedType)
+	foreach($mixExpectedTypes as $mixExpectedType)
 	{
-		if($intExpectedType == $intLastRecordType)
+		if (is_string($mixExpectedType))
 		{
+			// If it's a string range, then check if our value is inside
+			$arrRange = explode("-", $mixExpectedType);
+			if (((int)$arrRange[0] <= $intLastRecordType) && ((int)$arrRange[1] >= $intLastRecordType))
+			{
+				$bolMatch = TRUE;
+			}
+		}
+		elseif($mixExpectedType == $intLastRecordType)
+		{
+			// If its just an int, then see if our value matches
 			$bolMatch = TRUE;
 		}
 	}
