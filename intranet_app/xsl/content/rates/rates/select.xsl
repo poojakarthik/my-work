@@ -27,7 +27,7 @@
 			</input>
 			
 			<xsl:if test="/Response/Rate/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Rate/Error = 'Blank'">
 							Your Rate Name and your ServiceType must not be Blank.

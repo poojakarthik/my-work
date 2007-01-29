@@ -7,11 +7,8 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	
 		<!-- This page allows the user to change a Service's Plan -->
-		
 		<h1>Change Plan</h1>
-		
 		
 		<!--Service Details -->
 		<h2 class="Service">Service Details</h2>
@@ -126,11 +123,16 @@
 								<select name="RatePlan" id="RatePlan">
 									<xsl:for-each select="/Response/RatePlans/Results/rangeSample/RatePlan">
 										<option>
-											<!-- TODO!bash! current plan should be selected -->
+											<!-- TODO!bash! [  DONE  ]		current plan should be selected -->
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
+											<xsl:if test="/Response/Service/RatePlan/Id and ./Id = /Response/Service/RatePlan/Id">
+												<xsl:attribute name="selected">
+													<xsl:text>selected</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
 											<xsl:value-of select="./Name" />
 										</option>
 									</xsl:for-each>

@@ -69,7 +69,7 @@
 			<h2 class="Contact">Contact Details</h2>
 			
 			<xsl:if test="/Response/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Title'">
 							You must enter a Salutation for the Contact you are creating.

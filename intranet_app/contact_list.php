@@ -257,73 +257,82 @@
 			$ctsContacts->Order ('LastName', TRUE);
 			$oblsamContacts = $ctsContacts->Sample ();
 			
-			foreach ($oblsamContacts as &$objContact)
+			if ($oblsamContacts->Count () == 0)
 			{
-				$objContact->PrimaryAccount ();
-			}
-			
-			if ($_POST ['ContinueContact'])
-			{
-				$oblstrError->setValue ('Unselected');
-			}
-			
-			$Style->Output ('xsl/content/contact/list_1-contact.xsl');
-			exit;
-		}
-		
-		// If the contact exists, try to get the Contact
-		
-		try
-		{
-			$cntContact = $oblarrAnswers->Push (new Contact ($_POST ['ui-Contact-Sel']));
-		}
-		catch (Exception $e)
-		{
-			header ('Location: contact_list.php'); exit;
-		}
-		
-		// If the person is a Customer Contact, they can manage multiple contacts
-		// Which means that you have to choose at least one
-		
-		if ($cntContact->Pull ('CustomerContact')->getValue () == 0)
-		{
-			$acsAccounts = $oblarrAnswers->Push ($cntContact->PrimaryAccount ());
-		}
-		else
-		{
-			if (!$_POST ['ui-Account-Sel'])
-			{
-				$acsAccounts = $oblarrAnswers->Push (new Accounts ());
-				$acsAccounts->Constrain ('AccountGroup', 'EQUALS', $cntContact->Pull ('AccountGroup')->getValue ());
-				$acsAccounts->Order ('BusinessName', TRUE);
-				$oblsamAccounts = $acsAccounts->Sample ();
-				
-				if ($oblsamAccounts->Count () <> 1)
-				{
-					$Style->Output ('xsl/content/contact/list_2-account.xsl');
-					exit;
-				}
-				else
-				{
-					// This will only ever loop 1 time. We're doing this
-					// to get the Account so we don't have to make the employee
-					// choose an account when there's only 1 anyway.
-					
-					foreach ($oblsamAccounts as $objAccount)
-					{
-						$actAccount = $oblarrAnswers->Push ($objAccount);
-					}
-				}
+				$oblstrError->setValue ('Contact');
 			}
 			else
 			{
-				try
+				foreach ($oblsamContacts as &$objContact)
 				{
-					$actAccount = $oblarrAnswers->Push ($cntContact->getAccount ($_POST ['ui-Account-Sel']));
+					$objContact->PrimaryAccount ();
 				}
-				catch (Exception $e)
+				
+				if ($_POST ['ContinueContact'])
 				{
-					header ('Location: contact_list.php'); exit;
+					$oblstrError->setValue ('Unselected');
+				}
+				
+				$Style->Output ('xsl/content/contact/list_1-contact.xsl');
+				exit;
+			}
+		}
+		else
+		{
+			// If the contact exists, try to get the Contact
+			
+			try
+			{
+				$cntContact = $oblarrAnswers->Push (new Contact ($_POST ['ui-Contact-Sel']));
+			}
+			catch (Exception $e)
+			{
+				header ('Location: contact_list.php'); exit;
+			}
+			
+			// If the person is a Customer Contact, they can manage multiple contacts
+			// Which means that you have to choose at least one
+			
+			if ($cntContact->Pull ('CustomerContact')->getValue () == 0)
+			{
+				$acsAccounts = $oblarrAnswers->Push ($cntContact->PrimaryAccount ());
+			}
+			else
+			{
+				if (!$_POST ['ui-Account-Sel'])
+				{
+					$acsAccounts = $oblarrAnswers->Push (new Accounts ());
+					$acsAccounts->Constrain ('AccountGroup', 'EQUALS', $cntContact->Pull ('AccountGroup')->getValue ());
+					$acsAccounts->Order ('BusinessName', TRUE);
+					$oblsamAccounts = $acsAccounts->Sample ();
+					
+					if ($oblsamAccounts->Count () <> 1)
+					{
+						$Style->Output ('xsl/content/contact/list_2-account.xsl');
+						exit;
+					}
+					else
+					{
+						// This will only ever loop 1 time. We're doing this
+						// to get the Account so we don't have to make the employee
+						// choose an account when there's only 1 anyway.
+						
+						foreach ($oblsamAccounts as $objAccount)
+						{
+							$actAccount = $oblarrAnswers->Push ($objAccount);
+						}
+					}
+				}
+				else
+				{
+					try
+					{
+						$actAccount = $oblarrAnswers->Push ($cntContact->getAccount ($_POST ['ui-Account-Sel']));
+					}
+					catch (Exception $e)
+					{
+						header ('Location: contact_list.php'); exit;
+					}
 				}
 			}
 		}

@@ -15,20 +15,21 @@
 // ---------------------------------------------------------------------------//
 // BASH
 // ---------------------------------------------------------------------------//
-//TODO!bash! URGENT add CreatedBy & ClosedBy when creating/closing a service
-//TODO!bash! URGENT DO THIS FIRST !!!! - add CreatedBy & CreatedOn when creating an account
-//TODO!bash! URGENT DO THIS FIRST !!!! - add CreatedBy & CreatedOn to the Account Table in the DB (see table documentation)
-//TODO!bash! URGENT ! - Mark an invoice as disputed and update the disputed $
-//TODO!bash! URGENT ! - Resolve a disputed invoice
+//TODO!bash! [  DONE  ]		URGENT add CreatedBy & ClosedBy when creating/closing a service
+//TODO!bash! [  DONE  ]		URGENT DO THIS FIRST !!!! - add CreatedBy & CreatedOn when creating an account
+//TODO!bash! [  DONE  ]		URGENT DO THIS FIRST !!!! - add CreatedBy & CreatedOn to the Account Table in the DB (see table documentation)
 
-//TODO!bash! Add an optional LIMIT Clause to the DataReport, ask flame about this
+//TODO!bash! [  DONE  ]		URGENT ! - Mark an invoice as disputed and update the disputed $
+//TODO!bash! [  DONE  ]		URGENT ! - Resolve a disputed invoice
 
-//TODO!bash! SCRAPE...
-//TODO!bash! DD Details (CSV)
-//TODO!bash! Fix Other Broken Data
-//TODO!bash! Cost Centres
-//TODO!bash! Inbound Answer point
-//TODO!bash! Aditional account details
+//TODO!bash! [NOT DONE]		Add an optional LIMIT Clause to the DataReport, ask flame about this
+
+//TODO!bash! 				SCRAPE...
+//TODO!bash! [NOT DONE]		DD Details (CSV)
+//TODO!bash! [  HELP  ]		Fix Other Broken Data
+//TODO!bash! [  DONE  ]		Cost Centres
+//TODO!bash! [  DONE  ]		Inbound Answer point
+//TODO!bash! [  DONE  ]		Aditional account details
 
 // ---------------------------------------------------------------------------//
 // FLAME
@@ -114,7 +115,5 @@
 //TODO!notes! Delinquents 	= illegal/bad churn
 //TODO!notes! UnApplied CDR = can't find owner
 //TODO!notes! Unrated 		= can't rate call
-
-
 
 ?>

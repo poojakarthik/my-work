@@ -48,13 +48,14 @@
 				</input>
 			</xsl:when>
 			<xsl:when test="$DataType = 'String'">
-				<select>
+				<input type="hidden" value="LIKE">
 					<xsl:attribute name="name">
 						<xsl:text></xsl:text>
 						<xsl:value-of select="$Name" />
 					</xsl:attribute>
-					<option value="LIKE">Contains ...</option>
-				</select>
+				</input>
+				
+				contains
 			</xsl:when>
 			<xsl:otherwise>
 				<xsl:text>Unknown Data Type</xsl:text>

@@ -13,7 +13,7 @@
 		
 		<form method="POST" action="rates_plan_add.php">
 			<xsl:if test="/Response/RatePlan/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/RatePlan/Error = 'Blank'">
 							You did not enter a Plan Name. Please try again.

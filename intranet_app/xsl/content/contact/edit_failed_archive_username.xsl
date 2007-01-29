@@ -44,7 +44,7 @@
 		<h2>Additional Details</h2>
 		<div class="Seperator"></div>
 		
-		<div class="MsgNotice">
+		<div class="MsgNoticeWide">
 			<strong>Notice :</strong>
 			<!-- TODO!bash! NO! -->
 			The other details relating to this account <strong>has been successfully updated</strong>.

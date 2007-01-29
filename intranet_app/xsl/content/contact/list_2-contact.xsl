@@ -58,7 +58,7 @@
 			</input>
 			
 			<xsl:if test="/Response/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Unselected'">
 							You must select a Contact to continue.

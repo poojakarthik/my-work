@@ -14,7 +14,7 @@
 		<script language="javascript" src="js/service_edit.js"></script>
 		
 		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
+			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Mismatch'">
 						Your Line Numbers did not match eachother.

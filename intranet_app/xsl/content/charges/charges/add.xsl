@@ -8,7 +8,7 @@
 		
 		<form method="POST" action="charges_charge_add.php">
 			<xsl:if test="/Response/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'CType-Blank'">
 							Your Charge Code must not be Blank. Please try again.

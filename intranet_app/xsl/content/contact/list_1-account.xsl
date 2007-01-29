@@ -78,7 +78,7 @@
 					
 					<!--Error if no account is chosen -->
 					<xsl:if test="/Response/Error != ''">
-						<div class="MsgError">
+						<div class="MsgErrorWide">
 							<xsl:choose>
 								<xsl:when test="/Response/Error = 'Unselected'">
 									Please select an Account from the list below to continue.

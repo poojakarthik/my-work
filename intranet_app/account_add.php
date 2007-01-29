@@ -284,6 +284,7 @@
 			$actAccount = AccountGroups::Add (
 				(($acgAccountGroup) ? $acgAccountGroup : null),
 				(($cntContact) ? $cntContact : null),
+				$athAuthentication->AuthenticatedEmployee (),
 				Array (
 					"Account"		=> Array (
 						"BusinessName"		=> $_POST ['Account']['BusinessName'],

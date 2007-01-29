@@ -70,15 +70,16 @@
 		 * return the account that was created. From here, the Account Group is 
 		 * derivative
 		 *
-		 * @param	AccountGroup	$acgAccountGroup	The AccountGroup where the Account will be added. NULL if creating a new account group
-		 * @param	Contact			$cntContact			The Primary Contact associated with this Account. NULL If creating a new contact
-		 * @param	Array			$arrDetails			Details relating to the Account being created
+		 * @param	AccountGroup				$acgAccountGroup			The AccountGroup where the Account will be added. (NULL = new account group)
+		 * @param	Contact						$cntContact					The Primary Contact associated with this Account. (NULL = new contact)
+		 * @param	AuthenticatedEmployee		$aemAuthenticatedEmployee	The Employee adding this Account Group / Account / Contact / DD / CC
+		 * @param	Array						$arrDetails					Details relating to the Account being created
 		 * @return	Integer
 		 *
 		 * @method
 		 */
 		
-		public function Add (AccountGroup $acgAccountGroup=null, Contact $cntContact=null, $arrDetails)
+		public function Add (AccountGroup $acgAccountGroup=null, Contact $cntContact=null, AuthenticatedEmployee $aemAuthenticatedEmployee, $arrDetails)
 		{
 			// Check the primary details are valid
 			$abnABN = new ABN ('ABN', '');
@@ -192,6 +193,8 @@
 				'BillingFreqType'	=> BILLING_DEFAULT_FREQ_TYPE,
 				'BillingMethod'		=> $arrDetails ['Account']['BillingMethod'],		// (CONSTANT) post or email.
 				'PaymentTerms'		=> PAYMENT_TERMS_DEFAULT,
+				'CreatedOn'			=> date ("Y-m-d"),
+				'CreatedBy'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				'Archived'			=> 0
 			);
 			

@@ -13,7 +13,7 @@
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
 				<xsl:choose>
-					<xsl:when test="/Response/Error = 'Date Past'">
+					<xsl:when test="/Response/Error = 'Date Invalid'">
 						The date you entered was invalid. You must enter a date
 						at least 48 hours in the future from 12:00 AM today.
 					</xsl:when>
@@ -181,26 +181,29 @@
 						<td>
 							<select name="Date[day]">
 								<option value="">DD</option>
-								<xsl:call-template name="Date_Loop">
+								<xsl:call-template name="DateLoop">
 									<xsl:with-param name="start" select="number('1')" />
 									<xsl:with-param name="cease" select="number('31')" />
+									<xsl:with-param name="select" select="/Response/ui-values/Date-day" />
 								</xsl:call-template>
 							</select> -
 							<select name="Date[month]">
 								<option value="">MM</option>
-								<xsl:call-template name="Date_Loop">
+								<xsl:call-template name="DateLoop">
 									<xsl:with-param name="start" select="number('1')" />
 									<xsl:with-param name="cease" select="number('12')" />
+									<xsl:with-param name="select" select="/Response/ui-values/Date-month" />
 								</xsl:call-template>
 							</select> -
 							<select name="Date[year]">
 								<option value="">YYYY</option>
-								<xsl:call-template name="Date_Loop">
+								<xsl:call-template name="DateLoop">
 									<!-- TODO!bash! NO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
 									<!-- TODO!bash! THIS IS NOT EVEN CLOSE TO BEING FUNNY ! YOU NEVER DO THIS EVER -->
 									<!-- TODO!bash! Display this year + next year and make it based on the current year so that this crap does not need to be updated every damn year !!!!!!!! -->
 									<xsl:with-param name="start" select="number('2007')" />
 									<xsl:with-param name="cease" select="number('2007')" />
+									<xsl:with-param name="select" select="/Response/ui-values/Date-year" />
 								</xsl:call-template>
 							</select>
 						</td>
@@ -213,42 +216,5 @@
 				<input type="submit" value="Change Lessee &#0187;" class="input-submit" />
 			</div>
 		</form>
-	</xsl:template>
-	
-	<xsl:template name="Date_Loop">
-		<xsl:param name="start">1</xsl:param>
-		<xsl:param name="cease">0</xsl:param>
-		<xsl:param name="steps">1</xsl:param>
-		<xsl:param name="count">0</xsl:param>
-		
-		<xsl:param name="select">0</xsl:param>
-		
-		<xsl:if test="number($start) + number($count) &lt;= number($cease)">
-			<option>
-				<xsl:attribute name="value">
-					<xsl:text></xsl:text>
-					<xsl:value-of select="$start + $count" />
-				</xsl:attribute>
-				
-				<xsl:choose>
-					<xsl:when test="$select = $start + $count">
-						<xsl:attribute name="selected">
-							<xsl:text>selected</xsl:text>
-						</xsl:attribute>
-					</xsl:when>
-					<xsl:otherwise>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				<xsl:value-of select="$start + $count" />
-			</option>
-			<xsl:call-template name="Date_Loop">
-				<xsl:with-param name="start" select="$start" />
-				<xsl:with-param name="cease" select="$cease" />
-				<xsl:with-param name="steps" select="$steps" />
-				<xsl:with-param name="count" select="$count + $steps" />
-				<xsl:with-param name="select" select="$select" />
-			</xsl:call-template>
-		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

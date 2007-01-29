@@ -165,48 +165,8 @@
 		padding:			0px;
 	}
 	
-	div.MsgNoticeNarrow
-	{
-		border:              solid 1px #868735;
-		background-color:    #FFFFC0;
-		
-		background-image:    url('../img/template/MsgNotice.png');
-		background-repeat:   no-repeat;
-		background-position: top left;
-		
-		padding-top:         5px;
-		padding-left:        40px;
-		padding-right:       5px;
-		padding-bottom:      5px;
-		
-		line-height:         25px;
-		
-		margin-bottom:       10px;
-		
-		width:					385px;
-	}
-	
-	div.MsgNoticeWide
-	{
-		border:              solid 1px #868735;
-		background-color:    #FFFFC0;
-		
-		background-image:    url('../img/template/MsgNotice.png');
-		background-repeat:   no-repeat;
-		background-position: top left;
-		
-		padding-top:         5px;
-		padding-left:        40px;
-		padding-right:       5px;
-		padding-bottom:      5px;
-		
-		line-height:         25px;
-		
-		margin-bottom:       10px;
-		
-		width:					835px;
-	}
-	
+	div.MsgNoticeNarrow,
+	div.MsgNoticeWide,
 	div.MsgNoticeModal
 	{
 		border:              solid 1px #868735;
@@ -224,11 +184,26 @@
 		line-height:         25px;
 		
 		margin-bottom:       10px;
-		
+	}
+	
+	div.MsgNoticeNarrow
+	{
+		width:					385px;
+	}
+	
+	div.MsgNoticeWide
+	{
+		width:					835px;
+	}
+	
+	div.MsgNoticeModal
+	{
 		width:					693px;
 	}
 	
-	div.MsgErrorNarrow
+	div.MsgErrorNarrow,
+	div.MsgErrorWide,
+	div.MsgErrorModal
 	{
 		border:              solid 1px #CC0000;
 		background-color:    #f2dbdb;
@@ -245,29 +220,21 @@
 		line-height:         25px;
 		
 		margin-bottom:       10px;
-		
+	}
+	
+	div.MsgErrorNarrow
+	{
 		width:					385px;
 	}
 	
 	div.MsgErrorWide
 	{
-		border:              solid 1px #CC0000;
-		background-color:    #f2dbdb;
-		
-		background-image:    url('../img/template/MsgError.png');
-		background-repeat:   no-repeat;
-		background-position: top left;
-		
-		padding-top:         5px;
-		padding-left:        40px;
-		padding-right:       5px;
-		padding-bottom:      5px;
-		
-		line-height:         25px;
-		
-		margin-bottom:       10px;
-		
 		width:					835px;
+	}
+	
+	div.MsgErrorModal
+	{
+		width:					100%;
 	}
 	
 	h1
@@ -335,7 +302,9 @@
 	
 	input.input-string,
 	input.input-ABN,
-	input.input-ACN
+	input.input-ACN,
+	input.input-ABN-incomplete,
+	input.input-ACN-incomplete
 	{
 		border:              solid 1px #919191;
 		
@@ -427,14 +396,6 @@
 	{
 		border:              solid 1px #89b100;
 		background-color:    #f1f7e1;
-		padding:             3px;
-	}
-	
-	input.input-ABN-incomplete,
-	input.input-ACN-incomplete
-	{
-		border:              solid 1px #868735;
-		background-color:    #FFFFC0;
 		padding:             3px;
 	}
 	

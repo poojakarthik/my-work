@@ -6,8 +6,7 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	// TODO!bash! Fatal error: Call to a member function getValue() on a non-object in /home/flame/vixen/intranet_app/classes/accounts/account.php on line 402
-	// TODO!bash! I give up.... I don't think there is anything left to say? do you?
+	// TODO!bash! [  DONE  ] Fatal error: Call to a member function getValue() on a non-object in /home/flame/vixen/intranet_app/classes/accounts/account.php on line 402
 	
 	// call application loader
 	require ('config/application_loader.php');
@@ -28,16 +27,9 @@
 	
 	try
 	{
-		if ($_GET ['Service'])
-		{
-			// Using GET
-			$srvService = $Style->attachObject (new Service ($_GET ['Service']));
-		}
-		else
-		{
-			// Using POST
-			$srvService = $Style->attachObject (new Service ($_POST ['Service']));
-		}
+		// Try to get the Service
+		$srvService = $Style->attachObject (new Service (($_GET ['Service']) ? $_GET ['Service'] : $_POST ['Service']));
+		$actOriginal		= $Style->attachObject (new dataArray ('Account-Original', 'Account'))->Push ($srvService->getAccount ());
 	}
 	catch (Exception $e)
 	{
@@ -46,24 +38,38 @@
 		exit;
 	}
 	
-	$actOriginal		= $Style->attachObject (new dataArray ('Account-Original', 'Account'))->Push ($srvService->getAccount ());
 	$oblstrError		= $Style->attachObject (new dataString ('Error', ''));
 	
-	// If we've got an account, validate it
+	$arrUIValues		= $Style->attachObject (new dataArray ('ui-values'));
 	
-	if (isset ($_POST ['Account']))
+	$oblstrAccount		= $arrUIValues->Push (new dataString	('Account',		$_POST ['Account']));
+	$oblintDateDay		= $arrUIValues->Push (new dataInteger	('Date-day',	$_POST ['Date']['day']));
+	$oblintDateMonth	= $arrUIValues->Push (new dataInteger	('Date-month',	$_POST ['Date']['month']));
+	$oblintDateYear		= $arrUIValues->Push (new dataInteger	('Date-year',	$_POST ['Date']['year']));
+	
+	// If we've got an account, validate it
+	if ($_POST ['Account'])
 	{
 		try
 		{
 			$actReceiving		= $Style->attachObject (new dataArray ('Account-Receiving', 'Account'))->Push (new Account ($_POST ['Account']));
 			
-			if (isset ($_POST ['Date']))
+			if ($_POST ['Date'])
 			{
-				// TODO!bash! Warning: mktime() expects parameter 4 to be long, string given in /home/flame/vixen/intranet_app/service_lessee.php on line 59
-				// TODO!bash! submit with no date causes a PHP warning
-				if (mktime (0, 0, 0, $_POST ['Date']['month'], $_POST ['Date']['day'], $_POST ['Date']['year']) < strtotime ("+48 hours", mktime (0, 0, 0)))
+				$intDate = mktime (0, 0, 0, (float) $_POST ['Date']['month'], (float) $_POST ['Date']['day'], (float) $_POST ['Date']['year']);
+				
+				// TODO!bash! [  DONE  ]		Warning: mktime() expects parameter 4 to be long, string given in ... (submit with no date)
+				if (!$_POST ['Date']['month'] || !$_POST ['Date']['day'] || !$_POST ['Date']['year'])
 				{
-					$oblstrError->setValue ('Date Past');
+					$oblstrError->setValue ('Date Invalid');
+				}
+				else if (!$intDate)
+				{
+					$oblstrError->setValue ('Date Invalid');
+				}
+				else if ($intDate < strtotime ("+2 days"))
+				{
+					$oblstrError->setValue ('Date Invalid');
 				}
 				else
 				{

@@ -161,16 +161,18 @@
 					</tr>
 					
 					<!-- Cost -->
-					<!-- TODO!bash! only display if god -->
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('CDR')" />
-								<xsl:with-param name="field" select="string('Cost')" />
-							</xsl:call-template>
-						</th>
-						<td><xsl:value-of select="/Response/CDR/Cost" /></td>
-					</tr>
+					<!-- TODO!bash! [  DONE  ]		only display if god -->
+					<xsl:if test="/Response/Authentication/AuthenticatedEmployee/Privileges = '9223372036854775807'">
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('CDR')" />
+									<xsl:with-param name="field" select="string('Cost')" />
+								</xsl:call-template>
+							</th>
+							<td><xsl:value-of select="/Response/CDR/Cost" /></td>
+						</tr>
+					</xsl:if>
 					
 					<!-- Status -->
 					<!-- TODO!bash! make this show Status name ... ask flame how -->
@@ -181,20 +183,22 @@
 								<xsl:with-param name="field" select="string('Status')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/Status" /></td>
+						<td><xsl:value-of select="/Response/CDR-Status" /></td>
 					</tr>
 					
 					<!-- Description -->
 					<!-- TODO!bash! don't display if blank -->
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('CDR')" />
-								<xsl:with-param name="field" select="string('Description')" />
-							</xsl:call-template>
-						</th>
-						<td><xsl:value-of select="/Response/CDR/Description" /></td>
-					</tr>
+					<xsl:if test="/Response/CDR/Description != ''">
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('CDR')" />
+									<xsl:with-param name="field" select="string('Description')" />
+								</xsl:call-template>
+							</th>
+							<td><xsl:value-of select="/Response/CDR/Description" /></td>
+						</tr>
+					</xsl:if>
 					
 					<!-- DestinationCode -->
 					<tr>

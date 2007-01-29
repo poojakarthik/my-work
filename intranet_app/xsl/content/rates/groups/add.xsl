@@ -10,7 +10,7 @@
 			<script language="javascript" src="servicetype_recordtype.php"></script>
 			
 			<xsl:if test="/Response/RateGroup/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/RateGroup/Error = 'Blank'">
 							Your Group Name and your ServiceType must not be Blank.

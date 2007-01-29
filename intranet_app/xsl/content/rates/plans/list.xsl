@@ -22,9 +22,9 @@
 									<xsl:with-param name="field" select="string('Name')" />
 								</xsl:call-template>
 							</th>
-							<!-- TODO!bash! at some point are we going to have an option other than 'contains' ? -->
-							<!-- TODO!bash! if this is not going to happen before we go live then this select box looks stupid -->
-							<!-- TODO!bash! remove this if there is only one option -->
+							<!-- TODO!bash! [  DONE  ]		at some point are we going to have an option other than 'contains' ? -->
+							<!-- TODO!bash! [  DONE  ]		if this is not going to happen before we go live then this select box looks stupid -->
+							<!-- TODO!bash! [  DONE  ]		remove this if there is only one option -->
 							<td>
 								<xsl:call-template name="ConstraintOperator">
 									<xsl:with-param name="Name" select="string('constraint[Name][Operator]')" />

@@ -61,8 +61,8 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<!-- TODO!bash! Account Id is not displaying -->
-								<xsl:value-of select="/Response/ui-values/Id" />
+								<!-- TODO!bash! [  DONE  ]		Account Id is not displaying -->
+								<xsl:value-of select="/Response/Account/Id" />
 							</td>
 						</tr>
 						<tr>
@@ -115,7 +115,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<!-- TODO!bash! the yellow color is useless... just make it stay white until valid. same with ACN -->
+								<!-- TODO!bash! [  DONE  ]		the yellow color is useless... just make it stay white until valid. same with ACN -->
 								<input type="text" name="ABN" class="input-ABN">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -238,8 +238,8 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<!-- TODO!bash! Country is not displaying -->
-								<xsl:value-of select="/Response/ui-values/Country" />
+								<!-- TODO!bash! [  DONE  ]		Country is not displaying -->
+								<xsl:value-of select="/Response/Account/Country" />
 							</td>
 						</tr>
 					</table>

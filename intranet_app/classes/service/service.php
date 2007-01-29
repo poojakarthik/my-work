@@ -112,7 +112,7 @@
 		{
 			return new Account ($this->Pull ('Account')->getValue ());
 		}
-		 
+		
 		//------------------------------------------------------------------------//
 		// CreateNewProvisioningRequest
 		//------------------------------------------------------------------------//
@@ -478,7 +478,8 @@
 			{
 				// Set up an Archive SET clause
 				$arrArchive = Array (
-					'ClosedOn'	=>	($bolArchive == true) ? date ('Y-m-d') : null
+					'ClosedOn'	=>	($bolArchive == true) ? date ('Y-m-d') : null,
+					'ClosedBy'	=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue ()
 				);
 				
 				// Apply the Change
@@ -587,7 +588,8 @@
 			
 			// Cancel the Service on this specific date
 			$arrClose = Array (
-				'ClosedOn'		=>	date ('Y-m-d', strtotime ('-1 day', $intDate))
+				'ClosedOn'	=>	date ('Y-m-d', strtotime ('-1 day', $intDate)),
+				'ClosedBy'	=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue ()
 			);
 			
 			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrClose);

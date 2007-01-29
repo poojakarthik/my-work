@@ -21,7 +21,7 @@
 			<div class="Seperator"></div>
 			
 			<xsl:if test="/Response/RecurringCharge/CancellationAmount">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<strong>Warning :</strong>
 					Cancelling this account will incur a cost to the Customer.
 					

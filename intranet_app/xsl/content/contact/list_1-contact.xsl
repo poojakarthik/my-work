@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO!bash! Don't show this page if no contact is found. show an error on the first page like you do if a business name search returns no results -->
+<!-- TODO!bash! [  DONE  ]		Don't show this page if no contact is found. show an error on the first page like you do if a business name search returns no results -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />

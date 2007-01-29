@@ -399,7 +399,6 @@
 				"UsageCap"			=>	0,
 				"AccountGroup"		=>	$this->Pull ('AccountGroup')->getValue (),
 				"Account"			=>	$this->Pull ('Id')->getValue (),
-				"ServiceAddress"	=>	($srvService->Pull ('ServiceAddress')->getValue () == null) ? null : $srvService->Pull ('ServiceAddress')->getValue (),
 				"CappedCharge"		=>	0,
 				"UncappedCharge"	=>	0,
 				"CreatedOn"			=>	date ("Y-m-d", $intDate),

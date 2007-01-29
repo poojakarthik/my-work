@@ -377,7 +377,7 @@
 								</thead>
 								<tbody>
 									<xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
-									<!-- TODO!bash! Alert msg when this list is empty, just like there is every other place -->
+									<!-- TODO!bash! [  DONE  ]		Alert msg when this list is empty, just like there is every other place -->
 										<xsl:sort order="descending" />
 										
 										<tr>
@@ -413,6 +413,12 @@
 									</xsl:for-each>
 								</tbody>
 							</table>
+							
+							<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact) = 0">
+								<div class="MsgNoticeModal">
+									You have no Recently Authentiated Contacts.
+								</div>
+							</xsl:if>
 						</div>
 						<div class="modalTitle">
 							<div class="modalIcon Left">

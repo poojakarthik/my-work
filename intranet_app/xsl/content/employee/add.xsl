@@ -7,7 +7,7 @@
 		<h1>Add Employee</h1>
 		
 		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
+			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Password Mismatch'">
 						Your passwords mismatched. Please try again.

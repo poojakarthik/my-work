@@ -765,7 +765,7 @@
 								<xsl:with-param name="field" select="string('DOB')" />
 							</xsl:call-template>
 						</th>
-						<!-- TODO!bash! Make DOB DD-MM-YYYY ... do this any place you have a Date -->
+						<!-- TODO!bash! [  DONE  ]		Make DOB DD-MM-YYYY ... do this any place you have a Date -->
 						<td>
 							<xsl:call-template name="DOB">
 								<xsl:with-param name="Name-Day"			select="string('Contact[DOB][day]')" />

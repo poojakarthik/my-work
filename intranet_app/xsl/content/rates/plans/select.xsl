@@ -34,7 +34,7 @@
 			</input>
 			
 			<xsl:if test="/Response/RatePlan/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/RatePlan/Error = 'Requirements'">
 							You did not fill in all the Required Record Type fields. Please

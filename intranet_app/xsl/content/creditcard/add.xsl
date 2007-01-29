@@ -10,7 +10,7 @@
 		<h1>Add Credit Card Details</h1>
 		
 		<xsl:if test="/Response/Error != ''">
-			<div class="MsgError">
+			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'CardType'">
 						The Card Type you selected was invalid.

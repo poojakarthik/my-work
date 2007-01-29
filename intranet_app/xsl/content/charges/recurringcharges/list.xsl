@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO!bash! change class of errors and notices MsgNotice & MsgError no longer exist-->
+<!-- TODO!bash! [  DONE  ]		change class of errors and notices MsgNotice & MsgError no longer exist-->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
@@ -70,12 +70,12 @@
 				
 				<xsl:choose>
 					<xsl:when test="/Response/RecurringChargeTypes/Results/collationLength = 0">
-						<div class="MsgError">
+						<div class="MsgErrorWide">
 							No Recurring Charge Types were found with the criteria you searched for.
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
-						<div class="MsgNotice">
+						<div class="MsgNoticeWide">
 							There are no Recurring Charge Types in the Range that you wish to display.
 						</div>
 					</xsl:when>

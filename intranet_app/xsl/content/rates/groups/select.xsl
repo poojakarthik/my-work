@@ -32,7 +32,7 @@
 			</input>
 			
 			<xsl:if test="/Response/RateGroup/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/RateGroup/Error = 'RateNotFound'">
 							One of the Rates that you selected was not valid. Please
