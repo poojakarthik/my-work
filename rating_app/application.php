@@ -508,7 +508,7 @@ die();
 		// check if we found a rate
 		if (!($arrRate = $this->_selFindRate->Fetch()))
 		{
-			echo $this->_selFindRate->Error();
+			print_r($strAliases);
 			Die();
 			return FALSE;
 		}
