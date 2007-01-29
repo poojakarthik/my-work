@@ -493,7 +493,9 @@ foreach ($arrFileContents as $strLine)
 			break;
 		case 45:
 			// Summary Totals
-			ExpectedRecordType($intLastRecordType, 41, $i);
+			$arrExpectedRecordTypes[] = 40;
+			$arrExpectedRecordTypes[] = 41;
+			ExpectedRecordType($intLastRecordType, $arrExpectedRecordTypes, $i);
 			break;
 		case 48:
 			// Cost Centre Totals
