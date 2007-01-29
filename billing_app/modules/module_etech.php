@@ -930,9 +930,8 @@
 			return FALSE;
 		}
 
-		// TODO!rich! figure out what the hell is wrong with this query
 		$qryBuildFile	= new Query();
-		$strColumns		= "'005|', $strInvoiceTable.Id - ".$arrMetaData['MinId']." + 1, '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
+		$strColumns		= "'005|', LPAD(CAST(($strInvoiceTable.Id - ".$arrMetaData['MinId']." + 1) AS CHAR), 10, '0'), '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
@@ -961,7 +960,7 @@
 		}
 		
 		// Write the file header
-		$strHeader		=	"001|".date("Ymd", time())."|$strFilename|TelcoBlue|".date("F y")."\n" .
+		$strHeader		=	"001|".date("Ymd", time())."|".basename($strFilename)."|TelcoBlue|".date("F y")."\n" .
 							"002|TelcoBlue|Locked Bag 4000||Fortitude Valley|4006|QLD|1300 835 262|07 3250 4228|www.telcoblue.com.au|0|".date("Y-m-d", time())."|".date("Y-m-d", strtotime("+".PAYMENT_TERMS_DEFAULT." days", time()))."\n" .
 							"003|\n" .
 							"004|1:TelcoBlue|2:Voicetalk|4:Imagine\n";
