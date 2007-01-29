@@ -901,7 +901,23 @@
 	 */
  	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
  	{
-		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
+		// generate filenames
+		if($bolSample)
+		{
+			$strFilename	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.txt";
+			$strTempFile	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.tmp";
+			$strZipName		= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.zip";
+			$strInvoiceTable = 'InvoiceTemp';
+		}
+		else
+		{
+			$strFilename	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.txt";
+			$strTempFile	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.tmp";
+			$strZipName		= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.zip";
+			$strInvoiceTable = 'Invoice';
+		}
+		
+		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
 		if ($selMetaData->Execute() === FALSE)
 		{
 			return FALSE;
@@ -914,32 +930,9 @@
 			return FALSE;
 		}
 
-		// generate filename
-		if($bolSample)
-		{
-			$strFilename	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.txt";
-			$strTempFile	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.tmp";
-			$strZipName		= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.zip";
-		}
-		else
-		{
-			$strFilename	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.txt";
-			$strTempFile	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.tmp";
-			$strZipName		= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.zip";
-		}
-		
-		// Use a MySQL select into file Query to generate the file
-		if($bolSample)
-		{
-			$strInvoiceTable = 'InvoiceTemp';
-		}
-		else
-		{
-			$strInvoiceTable = 'Invoice';
-		}
 		// TODO!rich! figure out what the hell is wrong with this query
 		$qryBuildFile	= new Query();
-		$strColumns		= "'005|', $strInvoiceTable.Id - ".$arrMetaData['MinId'].", '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
+		$strColumns		= "'005|', $strInvoiceTable.Id - ".$arrMetaData['MinId']." + 1, '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
