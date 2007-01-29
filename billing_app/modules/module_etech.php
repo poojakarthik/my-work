@@ -574,8 +574,8 @@
 		
 		$arrDefine['Customer']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		$arrDefine['Customer']		['CheckDigit']		['Value']	= MakeLuhn($arrInvoiceDetails['Account']);
-		$arrDefine['Customer']		['Address1']		['Value']	= $arrCustomerData['Address1'];
-		$arrDefine['Customer']		['Address2']		['Value']	= $arrCustomerData['Address2'];
+		$arrDefine['Customer']		['Address1']		['Value']	= $arrCustomerData['AddressLine1'];
+		$arrDefine['Customer']		['Address2']		['Value']	= $arrCustomerData['AddressLine2'];
 		$arrDefine['Customer']		['Suburb']			['Value']	= $arrCustomerData['Suburb'];
 		$arrDefine['Customer']		['Postcode']		['Value']	= $arrCustomerData['Postcode'];
 		$arrDefine['Customer']		['State']			['Value']	= $arrCustomerData['State'];
@@ -1311,6 +1311,8 @@
 				return Array( 'RowType' => 118	, 'LongDesc' => "13/1300 Inbound"						, 'ShortDesc' => "13/1300" );
 				break;
 		}
+		
+		Debug("Record Type: '$strRecordTypeName'; Service Type: $intServiceType");
 
 		return Array( 'RowType' => 135	, 'LongDesc' => "Unknown Call Type"								, 'ShortDesc' => "Unknown" );
  	}
