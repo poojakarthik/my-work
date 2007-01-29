@@ -84,5 +84,6 @@
 	}
 	
 	$Style->Output ('xsl/content/charges/charges/add.xsl');
+
 	
 ?>

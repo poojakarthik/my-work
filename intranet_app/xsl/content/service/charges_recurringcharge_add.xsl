@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Assign a Recurring Charge to a Service</h1>
+		<h1>Add Recurring Service Charge</h1>
 		
 		<form method="post" action="service_recurringcharge_add.php">
 			<input type="hidden" name="Service">
@@ -44,7 +44,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -67,7 +67,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -104,7 +104,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -127,7 +127,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -144,14 +144,16 @@
 							</td>
 						</tr>
 						<tr>
-							<th></th>
-							<td>
-								<input type="submit" name="Confirm" value="Assign Charge &#0187;" class="input-submit" />
-							</td>
+
 						</tr>
 					</table>
 				</div>
 			</div>
+			<div class = "SmallSeperator"></div>
+			<div class = "Right">
+					<input type="submit" name="Confirm" value="Assign Charge &#0187;" class="input-submit" />
+			</div>
 		</form>
+		
 	</xsl:template>
 </xsl:stylesheet>

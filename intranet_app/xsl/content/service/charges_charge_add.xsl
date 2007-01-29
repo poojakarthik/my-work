@@ -4,25 +4,30 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Assign a Charge to a Service</h1>
+	
+		<!-- Add a Charge to a Service -->
+		<h1>Add Service Charge</h1>
 		
+		
+					
 		<form method="post" action="service_charge_add.php">
+		<h2 class="Service">Service Charge Details</h2>
+		<div class="Wide-Form">
+			<div class="Form-Content">
 			<input type="hidden" name="Service">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
 			</input>
-			
+
 			<input type="hidden" name="ChargeType">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
 					<xsl:value-of select="/Response/ChargeType/Id" />
 				</xsl:attribute>
 			</input>
-			
-			<div class="Wide-Form">
-				<div class="Form-Content">
+
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
@@ -44,7 +49,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -67,7 +72,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -102,15 +107,15 @@
 							</th>
 							<td><xsl:value-of select="/Response/ChargeType/Nature" /></td>
 						</tr>
-						<tr>
-							<th></th>
-							<td>
-								<input type="submit" name="Confirm" value="Assign Charge &#0187;" class="input-submit" />
-							</td>
-						</tr>
 					</table>
 				</div>
+			
 			</div>
+				<div class = "Small Seperator"></div>
+			<div class = "Right">
+				<input type="submit" name="Confirm" value="Add Charge &#0187;" class="input-submit" />
+			</div>
+			
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

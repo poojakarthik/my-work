@@ -211,17 +211,22 @@
 							Edit Service Details
 						</a>
 					</div>
+
 					
-					<!-- charges -->
-					<h2 class="Charge">Add Charges</h2>
-					<div class="Narrow-Form">
-						<h2>Single Charge</h2>
+
+						<!-- Add charge -->
+					<h2 class="Charge">Add Charge</h2>
+					
 						<xsl:choose>
 							<xsl:when test="count(/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType) = 0">
+							<div class="Narrow-Form">
 								No charges are available.
+							</div>
 							</xsl:when>
 							<xsl:otherwise>
+							
 								<form method="post" action="service_charge_add.php">
+								<div class="Narrow-Form">
 									<input type="hidden" name="Service">
 										<xsl:attribute name="value">
 											<xsl:text></xsl:text>
@@ -231,6 +236,12 @@
 									
 									<table border="0" cellpadding="3" cellspacing="0">
 										<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Charge Type')" />
+												<xsl:with-param name="field" select="string('ChargeType')" />
+											</xsl:call-template>
+										</th>
 											<td>
 												<select name="ChargeType">
 													<xsl:for-each select="/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType">
@@ -245,26 +256,33 @@
 												</select>
 											</td>
 										</tr>
-										<tr>
-											<td>
-												<input type="submit" value="Assign Charge &#0187;" class="input-submit" />
-											</td>
-										</tr>
 									</table>
-								</form>
+
+									</div>
+									<div class="SmallSeperator"></div>
+									<div class ="Right">
+												<input type="submit" value="Add Charge &#0187;" class="input-submit" />
+									</div>
+									</form>
 							</xsl:otherwise>
 						</xsl:choose>
-						<br />
 						
 						<div class="Seperator"></div>
 						
-						<h2>Recurring Charge</h2>
+						<!--Add Recurring Charge -->
+						<h2 class="Charge">Add Recurring Charge</h2>
 						<xsl:choose>
+						
 							<xsl:when test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
+							<div class="Narrow-Form">
 								No recurring charges are available.
+							</div>
 							</xsl:when>
 							<xsl:otherwise>
+							
+							
 								<form method="post" action="service_recurringcharge_add.php">
+								<div class="Narrow-Form">
 									<input type="hidden" name="Service">
 										<xsl:attribute name="value">
 											<xsl:text></xsl:text>
@@ -274,6 +292,12 @@
 									
 									<table border="0" cellpadding="3" cellspacing="0">
 										<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
+												<xsl:with-param name="field" select="string('ChargeType')" />
+											</xsl:call-template>
+										</th>
 											<td>
 												<select name="RecurringChargeType">
 													<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
@@ -288,20 +312,21 @@
 												</select>
 											</td>
 										</tr>
-										<tr>
-											<td>
-												<input type="submit" value="Assign Recurring Charge &#0187;" class="input-submit" />
-											</td>
-										</tr>
 									</table>
+							
+								</div>
+								<div class = "SmallSeperator"></div>
+								<div class = "Right">
+									<input type="submit" value="Add Recurring Charge &#0187;" class="input-submit" />
+								</div>
 								</form>
 							</xsl:otherwise>
 						</xsl:choose>
 						
 						<div class="Clear"></div>
-					</div>
 					
-					<div class="Seperator"></div>
+					
+					<div class="Seperator"></div> 
 					
 				</td>
 				

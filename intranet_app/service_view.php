@@ -21,6 +21,8 @@
 	$docDocumentation->Explain ('Archive');
 	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Charge Type');
+	$docDocumentation->Explain ('Recurring Charge Type');
 	
 	try
 	{
