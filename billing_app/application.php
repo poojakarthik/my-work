@@ -441,6 +441,9 @@ die();
 				$arrServiceTotal['TotalCharge']		= $fltTotalCharge;
 				$arrServiceTotal['Credit']			= $fltServiceCredits;
 				$arrServiceTotal['Debit']			= $fltServiceDebits;
+				
+				Debug($arrServiceTotal);
+				
 				if (!$insServiceTotal->Execute($arrServiceTotal))
 				{
 					Debug($insServiceTotal->Error());
