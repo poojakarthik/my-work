@@ -110,7 +110,7 @@
 																"RType.Id");
 		
 		$this->_selServices				= new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
-																"Service.FNN AS FNN, Service.Id AS Id",
+																"Service.FNN AS FNN, Service.Id AS Id, Service.ServiceType AS ServiceType",
 																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND" .
 																" (Service.ServiceType = ".SERVICE_TYPE_MOBILE." OR ServiceTotal.TotalCharge != 0.0)");
 		
@@ -789,13 +789,15 @@
 
 			$arrDefine['ServiceHeader']		['FNN']				['Value']	= $arrService['FNN'];
 			$arrFileData[] = $arrDefine['ServiceHeader'];
-			
+						
 			$intRecordCount = 0;
 			foreach($arrServiceSummaries as $arrServiceSummary)
 			{
+				$arrEtechRowType = $this->GetRowType($arrServiceSummary['RecordTypeName'], $arrService['ServiceType']);
+			
 				$intRecordCount++;
 				$arrDefine['ServiceDetail']	['RecordCount']		['Value']	= $intRecordCount;
-				$arrDefine['ServiceDetail']	['ChargeType']		['Value']	= $arrServiceSummary['RecordTypeName'];
+				$arrDefine['ServiceDetail']	['ChargeType']		['Value']	= $arrEtechRowType['LongDesc'];
 				$arrDefine['ServiceDetail']	['CallCount']		['Value']	= $arrServiceSummary['CallCount'];
 				$arrDefine['ServiceDetail']	['Charge']			['Value']	= $arrServiceSummary['Charge'];
 				$arrFileData[] = $arrDefine['ServiceDetail'];
@@ -1275,6 +1277,8 @@
 			case SERVICE_TYPE_LAND_LINE:
 				switch ($strRecordTypeName)
 				{
+					case "Local":
+						return Array( 'RowType' => 101	, 'LongDesc' => "Local Calls"					, 'ShortDesc' => "Local" );
 					case "National":
 						return Array( 'RowType' => 102	, 'LongDesc' => "National Calls"				, 'ShortDesc' => "National" );
 					case "Calls to 1300":
