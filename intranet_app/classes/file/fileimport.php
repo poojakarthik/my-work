@@ -1,16 +1,16 @@
 <?php
 	
 	//----------------------------------------------------------------------------//
-	// recordtype.php
+	// fileimport.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * recordtype.php
+	 * fileimport.php
 	 *
-	 * File for RecordType Class
+	 * File for FileImport Class
 	 *
-	 * File for RecordType Class
+	 * File for FileImport Class
 	 *
-	 * @file		recordtype.php
+	 * @file		fileimport.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	 
 	//----------------------------------------------------------------------------//
-	// RecordType
+	// FileImport
 	//----------------------------------------------------------------------------//
 	/**
-	 * RecordType
+	 * FileImport
 	 *
-	 * Contains information reguarding Record Types
+	 * Contains information reguarding File Imports
 	 *
-	 * Contains information reguarding Record Types
+	 * Contains information reguarding File Imports
 	 *
 	 *
-	 * @prefix	rty
+	 * @prefix	fim
 	 *
 	 * @package		intranet_app
-	 * @class		RecordType
+	 * @class		FileImport
 	 * @extends		dataObject
 	 */
 	
-	class RecordType extends dataObject
+	class FileImport extends dataObject
 	{
 		
 		//------------------------------------------------------------------------//
@@ -47,24 +47,24 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructs RecordType information from the Database
+		 * Constructs FileImport information from the Database
 		 *
-		 * Constructs RecordType information from the Database
+		 * Constructs FileImport information from the Database
 		 *
-		 * @param	Integer		$intId		The Id of the RecordType being Retrieved
+		 * @param	Integer		$intId		The Id of the FileImport being Retrieved
 		 *
 		 * @method
 		 */
 		
 		function __construct ($intId)
 		{
-			parent::__construct ('RecordType', $intId);
+			parent::__construct ('FileImport', $intId);
 			
-			// Pull the RecordType information and attach it to the Object
-			$selRecordType = new StatementSelect ('RecordType', '*', 'Id = <Id>');
-			$selRecordType->useObLib (TRUE);
-			$selRecordType->Execute (Array ('Id' => $intId));
-			$selRecordType->Fetch ($this);
+			// Pull the FileImport information and attach it to the Object
+			$selFileImport = new StatementSelect ('FileImport', '*', 'Id = <Id>');
+			$selFileImport->useObLib (TRUE);
+			$selFileImport->Execute (Array ('Id' => $intId));
+			$selFileImport->Fetch ($this);
 		}
 	}
 	

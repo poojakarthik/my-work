@@ -718,6 +718,35 @@
 				$intServiceAddress = $insServiceAddress->Execute ($arrData);
 			}
 		}
+		
+		//------------------------------------------------------------------------//
+		// MobileDetail
+		//------------------------------------------------------------------------//
+		/**
+		 * MobileDetail()
+		 *
+		 * Pull the Associated Mobile Detail Information
+		 *
+		 * Pull the Associated Mobile Detail Information. This is a seperate function
+		 * to stop potential memory leakings
+		 *
+		 * @return	MobileDetail
+		 *
+		 * @method
+		 */
+		 
+		public function MobileDetail ()
+		{
+			$selMobileDetail = new StatementSelect ("ServiceMobileDetail", "Id", "Service = <Service>");
+			$selMobileDetail->Execute (Array ("Service"=>$this->Pull ('Id')->getValue ()));
+			
+			if ($arrMobileDetail = $selMobileDetail->Fetch ())
+			{
+				return new MobileDetail ($arrMobileDetail ['Id']);
+			}
+			
+			throw new Exception ('Mobile Detail Not Found');
+		}
 	}
 	
 ?>

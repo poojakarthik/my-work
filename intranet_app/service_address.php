@@ -101,7 +101,7 @@
 	// Get Associated Notes
 	$nosNotes = $Style->attachObject (new Notes);
 	$nosNotes->Constrain ('Service', '=', $_GET ['Service']);
-	$nosNotes->Sample ();
+	$nosNotes->Sample (1, 5);
 	
 	// Provisioning Request Information
 	$calCarriers	= $Style->attachObject (new Carriers);

@@ -65,6 +65,8 @@ $arrConfig['Modules'][MODULE_TIP]			 			= "tip";
 $arrConfig['Modules'][MODULE_PERMISSION]	 			= "permission";
 $arrConfig['Modules'][MODULE_BUG]			 			= "bug";
 $arrConfig['Modules'][MODULE_DATA_REPORT]	 			= "datareport";
+$arrConfig['Modules'][MODULE_FILE]	 					= "file";
+$arrConfig['Modules'][MODULE_MOBILE_DETAIL]				= "servicemobile";
 
 // Base Modules
 define("MODULE_BASE"			, MODULE_SEARCH | MODULE_DOCUMENTATION | MODULE_ACCOUNT | MODULE_CONTACT);

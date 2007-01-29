@@ -34,7 +34,7 @@
 					</tr>
 					
 					<!-- File -->
-					<!-- TODO!bash! make this display FileImport.FileName -->
+					<!-- TODO!bash! [  DONE  ]		make this display FileImport.FileName -->
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -42,7 +42,7 @@
 								<xsl:with-param name="field" select="string('File')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/File" /></td>
+						<td><xsl:value-of select="/Response/FileImport/FileName" /></td>
 					</tr>
 					
 					<!-- Carrier -->
@@ -116,9 +116,6 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<xsl:value-of select="/Response/CDR/StartDatetime/minute">
-							
-							</xsl:value-of>
 							<xsl:call-template name="dt:format-date-time">
 								<xsl:with-param name="year"		select="/Response/CDR/StartDatetime/year" />
 								<xsl:with-param name="month"	select="/Response/CDR/StartDatetime/month" />
@@ -167,7 +164,7 @@
 					</xsl:if>
 					
 					<!-- Status -->
-					<!-- TODO!bash! make this show Status name ... ask flame how -->
+					<!-- TODO!bash! [  DONE  ] make this show Status name ... ask flame how -->
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -175,7 +172,7 @@
 								<xsl:with-param name="field" select="string('Status')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR-Status" /></td>
+						<td><xsl:value-of select="/Response/CDR-Status/Name" /></td>
 					</tr>
 					
 					<!-- Description -->

@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= TRUE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_CDR | MODULE_CARRIER | MODULE_RECORD_TYPE | MODULE_RATE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_CDR | MODULE_CARRIER | MODULE_RECORD_TYPE | MODULE_RATE | MODULE_FILE;
 	
 	// call application
 	require ('config/application.php');
@@ -34,25 +34,26 @@
 		exit;
 	}
 	
-	// Carrier Information
-	$Style->attachObject (new Carriers);
-	
-	// Record Type Information
 	try
 	{
+		// Carrier Information
+		$Style->attachObject (new Carriers);
+		
+		// Record Type Information
 		$Style->attachObject (new RecordType ($cdrCDR->Pull ('RecordType')->getValue ()));
-	}
-	catch (Exception $e)
-	{
-	}
-	
-	// Rate Information
-	try
-	{
+		
+		// Rate Information
 		$Style->attachObject (new Rate ($cdrCDR->Pull ('Rate')->getValue ()));
+		
+		// CDR Status Information
+		$Style->attachObject (new CDR_Status ($cdrCDR->Pull ('Status')->getValue ()));
+		
+		// File Import Information
+		$Style->attachObject (new FileImport ($cdrCDR->Pull ('File')->getValue ()));
 	}
 	catch (Exception $e)
 	{
+		// We only want to surpress errors here
 	}
 	
 	// Output the Account View

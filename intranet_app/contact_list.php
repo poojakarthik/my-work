@@ -243,7 +243,7 @@
 		// If we're matching against a Contact Name, we need to display 
 		// a list of Contacts which possibly match
 		
-		//TODO!bash! If only one matching contact is found, don't show a list, just skip to the next step
+		//TODO!bash! [  DONE  ] If only one matching contact is found, don't show a list, just skip to the next step
 		
 		if (!$_POST ['ui-Contact-Sel'])
 		{
@@ -259,10 +259,22 @@
 			
 			if ($oblsamContacts->Count () == 0)
 			{
+				// If no results were found, show an error
 				$oblstrError->setValue ('Contact');
+			}
+			else if ($oblsamContacts->Count () == 1)
+			{
+				// If one result was found, use it
+				$cntContact = null;
+				
+				foreach ($oblsamContacts as $objContact)
+				{
+					$cntContact = $oblarrAnswers->Push ($objContact);
+				}
 			}
 			else
 			{
+				// This is displayed when we have to select from a list of possible contacts
 				foreach ($oblsamContacts as &$objContact)
 				{
 					$objContact->PrimaryAccount ();
@@ -277,9 +289,10 @@
 				exit;
 			}
 		}
-		else
+		
+		if ($_POST ['ui-Contact-Sel'])
 		{
-			// If the contact exists, try to get the Contact
+			// If a contact has been selected, try to get the Contact
 			
 			try
 			{
@@ -289,13 +302,19 @@
 			{
 				header ('Location: contact_list.php'); exit;
 			}
-			
+		}
+		
+		// If a contact is found (either by having just 1 result in the search
+		// or by selecting it from the list, we want to do the following block
+		
+		if ($cntContact)
+		{
 			// If the person is a Customer Contact, they can manage multiple contacts
 			// Which means that you have to choose at least one
 			
 			if ($cntContact->Pull ('CustomerContact')->getValue () == 0)
 			{
-				$acsAccounts = $oblarrAnswers->Push ($cntContact->PrimaryAccount ());
+				$actAccount = $oblarrAnswers->Push ($cntContact->PrimaryAccount ());
 			}
 			else
 			{

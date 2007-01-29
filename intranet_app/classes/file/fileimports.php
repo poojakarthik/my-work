@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// recordtypes.php
+	// fileimports.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * recordtypes.php
+	 * fileimports.php
 	 *
-	 * Searches for RecordType Information
+	 * Searches for FileImport Information
 	 *
-	 * Searches for RecordType Information
+	 * Searches for FileImport Information
 	 *
-	 * @file		recordtypes.php
+	 * @file		fileimports.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'bash' Isai
@@ -21,24 +21,24 @@
 	 */
 
 	//----------------------------------------------------------------------------//
-	// RecordTypes
+	// FileImports
 	//----------------------------------------------------------------------------//
 	/**
-	 * RecordTypes
+	 * FileImports
 	 *
-	 * Class for Searching for Record Types
+	 * Class for Searching for File Imports
 	 *
-	 * Class for Searching for Record Types
+	 * Class for Searching for File Imports
 	 *
 	 *
-	 * @prefix		rts
+	 * @prefix		fil
 	 *
 	 * @package		intranet_app
-	 * @class		RecordTypes
+	 * @class		FileImports
 	 * @extends		Search
 	 */
 	
-	class RecordTypes extends Search
+	class FileImports extends Search
 	{
 	
 		//------------------------------------------------------------------------//
@@ -47,16 +47,16 @@
 		/**
 		 * __construct()
 		 *
-		 * Construct a new Record Type Search
+		 * Construct a new File Import Search
 		 *
-		 * Construct a new Record Type Search
+		 * Construct a new File Import Search
 		 *
 		 * @method
 		 */
 		
 		function __construct ()
 		{
-			parent::__construct ('RecordTypes', 'RecordType', 'RecordType');
+			parent::__construct ('FileImports', 'FileImport', 'FileImport');
 		}
 	}
 	
