@@ -682,7 +682,7 @@ die();
 		if($selCheckTempInvoices->Fetch() !== FALSE)
 		{
 			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED.MSG_FAILED_LINE, Array('<Reason>' => "Failed invoices found"));
+			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n".MSG_FAILED_LINE, Array('<Reason>' => "Failed invoices found"));
 			return;
 		}
 		else

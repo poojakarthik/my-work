@@ -2730,6 +2730,8 @@ class MySQLFunction
 				$arrParams[] = $arrData[$strColumnName];
 		 	}		
 	 	}
+	 	
+	 	$intParamCount = count($arrParams);
 		
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	foreach ($this->_arrWhereAliases as $strAlias)
@@ -2753,7 +2755,7 @@ class MySQLFunction
 		if (!call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams))
 		{
 			Debug($arrParams);
-			Debug(count($arrParams));
+			Debug("Total Params: ".count($arrParams)."; Data Params: $intParamCount");
 			Debug($this->_strQuery);
 		}
 		
