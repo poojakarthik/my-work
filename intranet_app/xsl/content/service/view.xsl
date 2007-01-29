@@ -481,7 +481,7 @@
 							 						<xsl:with-param name="hour"	select="./Datetime/hour" />
 													<xsl:with-param name="minute"	select="./Datetime/minute" />
 													<xsl:with-param name="second"	select="./Datetime/second" />
-													<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
+													<xsl:with-param name="format"	select="'%A, %b %d, %Y %I:%M:%S %P'"/>
 												</xsl:call-template>
 											</strong>
 										by

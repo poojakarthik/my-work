@@ -193,7 +193,7 @@
 	 						<xsl:with-param name="hour"	select="./StartDatetime/hour" />
 							<xsl:with-param name="minute"	select="./StartDatetime/minute" />
 							<xsl:with-param name="second"	select="./StartDatetime/second" />
-							<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
+							<xsl:with-param name="format"	select="'%A, %b %d, %Y %I:%M:%S %P'"/>
 						</xsl:call-template>
 					</td>
 					<td class="Currency"><xsl:value-of select="./Units" /></td>

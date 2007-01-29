@@ -116,14 +116,17 @@
 							</xsl:call-template>
 						</th>
 						<td>
+							<xsl:value-of select="/Response/CDR/StartDatetime/minute">
+							
+							</xsl:value-of>
 							<xsl:call-template name="dt:format-date-time">
-								<xsl:with-param name="year"	select="/Response/CDR/StartDatetime/year" />
+								<xsl:with-param name="year"		select="/Response/CDR/StartDatetime/year" />
 								<xsl:with-param name="month"	select="/Response/CDR/StartDatetime/month" />
 								<xsl:with-param name="day"		select="/Response/CDR/StartDatetime/day" />
-		 						<xsl:with-param name="hour"	select="/Response/CDR/StartDatetime/hour" />
+		 						<xsl:with-param name="hour"		select="/Response/CDR/StartDatetime/hour" />
 								<xsl:with-param name="minute"	select="/Response/CDR/StartDatetime/minute" />
 								<xsl:with-param name="second"	select="/Response/CDR/StartDatetime/second" />
-								<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
+								<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%M:%S %P'"/>
 							</xsl:call-template>
 						</td>
 					</tr>
@@ -138,26 +141,15 @@
 						</th>
 						<td>
 							<xsl:call-template name="dt:format-date-time">
-								<xsl:with-param name="year"	select="/Response/CDR/EndDatetime/year" />
+								<xsl:with-param name="year"		select="/Response/CDR/EndDatetime/year" />
 								<xsl:with-param name="month"	select="/Response/CDR/EndDatetime/month" />
 								<xsl:with-param name="day"		select="/Response/CDR/EndDatetime/day" />
-		 						<xsl:with-param name="hour"	select="/Response/CDR/EndDatetime/hour" />
+		 						<xsl:with-param name="hour"		select="/Response/CDR/EndDatetime/hour" />
 								<xsl:with-param name="minute"	select="/Response/CDR/EndDatetime/minute" />
 								<xsl:with-param name="second"	select="/Response/CDR/EndDatetime/second" />
-								<xsl:with-param name="format"	select="'%A, %b %d, %Y %H:%I:%S %P'"/>
+								<xsl:with-param name="format"	select="'%A, %b %d, %Y %I:%M:%S %P'"/>
 							</xsl:call-template>
 						</td>
-					</tr>
-					
-					<!-- Units -->
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('CDR')" />
-								<xsl:with-param name="field" select="string('File')" />
-							</xsl:call-template>
-						</th>
-						<td><xsl:value-of select="/Response/CDR/File" /></td>
 					</tr>
 					
 					<!-- Cost -->
@@ -187,7 +179,7 @@
 					</tr>
 					
 					<!-- Description -->
-					<!-- TODO!bash! don't display if blank -->
+					<!-- TODO!bash! [  DONE  ]		don't display if blank -->
 					<xsl:if test="/Response/CDR/Description != ''">
 						<tr>
 							<th class="JustifiedWidth">
@@ -212,7 +204,7 @@
 					</tr>
 					
 					<!-- RecordType -->
-					<!-- TODO!bash! make this display RecordType.Name -->
+					<!-- TODO!bash! [  DONE  ]		make this display RecordType.Name -->
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -220,7 +212,9 @@
 								<xsl:with-param name="field" select="string('RecordType')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/RecordType" /></td>
+						<td>
+							<xsl:value-of select="/Response/RecordType/Name" />
+						</td>
 					</tr>
 					
 					<!-- Charge -->
@@ -235,7 +229,7 @@
 					</tr>
 					
 					<!-- Rate -->
-					<!-- TODO!bash! make this display Rate.Name -->
+					<!-- TODO!bash! [  DONE  ]		make this display Rate.Name -->
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -243,12 +237,14 @@
 								<xsl:with-param name="field" select="string('Rate')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/Rate" /></td>
+						<td>
+							<xsl:value-of select="/Response/Rate/Name" />
+						</td>
 					</tr>
 					
 					<!-- NormalisedOn -->
-					<!-- TODO!bash! make this display 'Not Normalised' if not normalised -->
-					<!-- TODO!bash! format the date time -->
+					<!-- TODO!bash! [  DONE  ]		make this display 'Not Normalised' if not normalised -->
+					<!-- TODO!bash! [  DONE  ]		format the date time -->
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -256,12 +252,29 @@
 								<xsl:with-param name="field" select="string('NormalisedOn')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/NormalisedOn" /></td>
+						<td>
+							<xsl:choose>
+								<xsl:when test="/Response/CDR/NormalisedOn/year">
+									<xsl:call-template name="dt:format-date-time">
+										<xsl:with-param name="year"		select="/Response/CDR/NormalisedOn/year" />
+										<xsl:with-param name="month"	select="/Response/CDR/NormalisedOn/month" />
+										<xsl:with-param name="day"		select="/Response/CDR/NormalisedOn/day" />
+				 						<xsl:with-param name="hour"		select="/Response/CDR/NormalisedOn/hour" />
+										<xsl:with-param name="minute"	select="/Response/CDR/NormalisedOn/minute" />
+										<xsl:with-param name="second"	select="/Response/CDR/NormalisedOn/second" />
+										<xsl:with-param name="format"	select="'%A, %b %d, %Y %I:%M:%S %P'"/>
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:otherwise>
+									<span class="Attention">Not Normalised</span>
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
 					</tr>
 					
 					<!-- RatedOn -->
-					<!-- TODO!bash! make this display 'Not Normalised' if not normalised -->
-					<!-- TODO!bash! format the date time -->
+					<!-- TODO!bash! [  DONE  ]		make this display 'Not Normalised' if not normalised -->
+					<!-- TODO!bash! [  DONE  ]		format the date time -->
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -269,7 +282,24 @@
 								<xsl:with-param name="field" select="string('RatedOn')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/RatedOn" /></td>
+						<td>
+							<xsl:choose>
+								<xsl:when test="/Response/CDR/NormalisedOn/year">
+									<xsl:call-template name="dt:format-date-time">
+										<xsl:with-param name="year"		select="/Response/CDR/RatedOn/year" />
+										<xsl:with-param name="month"	select="/Response/CDR/RatedOn/month" />
+										<xsl:with-param name="day"		select="/Response/CDR/RatedOn/day" />
+				 						<xsl:with-param name="hour"		select="/Response/CDR/RatedOn/hour" />
+										<xsl:with-param name="minute"	select="/Response/CDR/RatedOn/minute" />
+										<xsl:with-param name="second"	select="/Response/CDR/RatedOn/second" />
+										<xsl:with-param name="format"	select="'%A, %b %d, %Y %I:%M:%S %P'"/>
+									</xsl:call-template>
+								</xsl:when>
+								<xsl:otherwise>
+									<span class="Attention">Not Rated</span>
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
 					</tr>
 					
 					<!-- InvoiceRun -->
@@ -295,7 +325,7 @@
 					</tr>
 					
 					<!-- Credit -->
-					<!-- TODO!bash! make this display 'Charge' or 'Credit' -->
+					<!-- TODO!bash! [  DONE  ]	make this display 'Charge' or 'Credit' -->
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -303,7 +333,18 @@
 								<xsl:with-param name="field" select="string('Credit')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/Credit" /></td>
+						<td>
+							<strong>
+								<xsl:choose>
+									<xsl:when test="/Response/CDR/Credit = '1'">
+										<span class="Blue">Credit</span>
+									</xsl:when>
+									<xsl:otherwise>
+										<span class="Green">Charge</span>
+									</xsl:otherwise>
+								</xsl:choose>
+							</strong>
+						</td>
 					</tr>
 
 					<!-- CDR -->
