@@ -780,7 +780,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				{
 					Debug("'$mixData'");
 					return "Data is not of type ETECH_ROW in field '$strKey' at index $i on line";
-				}						
+				}
 				$mixData = (int)$mixData;
 				break;
 			case ETECH_INTEGER:
@@ -880,7 +880,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 			default:
 				// Invalid data type
 				Debug("'$mixData'");
-				return "Invalid Data Type in field '$strKey' at index $i on line";
+				return "Invalid Data Type in field '$strKey' (".(int)$strValue['Type'].") at index $i on line";
 		}
 		
 		$arrLine[$strKey] = trim($mixData);
