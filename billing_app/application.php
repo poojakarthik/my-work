@@ -326,7 +326,7 @@ die();
 				}
 				
 				// add capped charges
-				if ($arrService['ChargeCap'])
+				if ($arrService['ChargeCap'] > 0.0)
 				{
 					// this is a capped plan
 					if ($fltChargeCap > $arrService['CappedCharge'])
