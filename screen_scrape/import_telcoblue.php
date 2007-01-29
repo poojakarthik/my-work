@@ -162,25 +162,25 @@ Blue Shared 500 						25
 	$arrGroup = Array();
 	$arrGroup[]				= 'Mobile-40c-18f-30s-00m';
 	$arrGroup[]				= 'FleetMobile-40c-00f-30s-00m:00c03m';
-	$arrConfig['RateGroup'][SERVICE_TYPE_Mobile]['Mobile']['Fleet-Mobile-30'] = $arrGroup;
+	$arrConfig['RateGroup'][SERVICE_TYPE_MOBILE]['Mobile']['Fleet-Mobile-30'] = $arrGroup;
 	
 	// Fleet 30 -> LL
 	$arrGroup = Array();
 	$arrGroup[]				= 'National-40c-18f-30s-00m';
 	$arrGroup[]				= 'FleetNational-40c-00f-30s-00m:00c03m';
-	$arrConfig['RateGroup'][SERVICE_TYPE_Mobile]['National']['Fleet-National-30'] = $arrGroup;
+	$arrConfig['RateGroup'][SERVICE_TYPE_MOBILE]['National']['Fleet-National-30'] = $arrGroup;
 	
 	// Fleet 60 -> Mobile
 	$arrGroup = Array();
 	$arrGroup[]				= 'Mobile-30c-18f-30s-00m';
 	$arrGroup[]				= 'FleetMobile-30c-00f-30s-00m:00c03m';
-	$arrConfig['RateGroup'][SERVICE_TYPE_Mobile]['Mobile']['Fleet-Mobile-60'] = $arrGroup;
+	$arrConfig['RateGroup'][SERVICE_TYPE_MOBILE]['Mobile']['Fleet-Mobile-60'] = $arrGroup;
 	
 	// Fleet 60 -> LL
 	$arrGroup = Array();
 	$arrGroup[]				= 'National-30c-18f-30s-00m';
 	$arrGroup[]				= 'FleetNational-30c-00f-30s-00m:00c03m';
-	$arrConfig['RateGroup'][SERVICE_TYPE_Mobile]['National']['Fleet-National-60'] = $arrGroup;
+	$arrConfig['RateGroup'][SERVICE_TYPE_MOBILE]['National']['Fleet-National-60'] = $arrGroup;
 	
 	// Fleet Special LL -> Mobile
 	$arrGroup = Array();
@@ -192,13 +192,13 @@ Blue Shared 500 						25
 	$arrGroup = Array();
 	$arrGroup[]				= 'Mobile-30c-15f-30s-00m';
 	$arrGroup[]				= 'FleetMobile-30c-00f-30s-00m:00c03m';
-	$arrConfig['RateGroup'][SERVICE_TYPE_Mobile]['Mobile']['Fleet-Mobile-Special'] = $arrGroup;
+	$arrConfig['RateGroup'][SERVICE_TYPE_MOBILE]['Mobile']['Fleet-Mobile-Special'] = $arrGroup;
 	
 	// Fleet Special Mobile -> LL
 	$arrGroup = Array();
 	$arrGroup[]				= 'National-30c-15f-30s-00m';
 	$arrGroup[]				= 'FleetNational-30c-00f-30s-00m:00c03m';
-	$arrConfig['RateGroup'][SERVICE_TYPE_Mobile]['National']['Fleet-National-Special'] = $arrGroup;
+	$arrConfig['RateGroup'][SERVICE_TYPE_MOBILE]['National']['Fleet-National-Special'] = $arrGroup;
 	
 // ---------------------------------------------------------------------//
 // Define New Rate Plans
@@ -210,15 +210,15 @@ Blue Shared 500 						25
 	// 1300
 	$arrPlan['Other']				= 'Inbound-Other';
 	$arrPlan['S&E']					= 'Inbound-S&E';
-	$arrPlan['Local']				= 'Inbound-Local-1300';
-	$arrPlan['National']			= 'Inbound-National';
-	$arrPlan['MobileToFixed']		= 'Inbound-MobileToFixed';
-	$arrPlan['FixedToMobile']		= 'Inbound-FixedToMobile';
-	$arrPlan['MobileToMobile']		= 'Inbound-MobileToMobile';
+	$arrPlan['Local']				= 'Local-08c-00f-01s-00m:00c20m';
+	$arrPlan['National']			= 'National-11c-00f-01s-00m';
+	$arrPlan['MobileToFixed']		= 'MobileToFixed-16c-00f-01s-00m';
+	$arrPlan['FixedToMobile']		= 'FixedToMobile-38c-00f-01s-00m';
+	$arrPlan['MobileToMobile']		= 'MobileToMobile-38c-00f-01s-00m';
 	$arrConfig['RatePlan'][SERVICE_TYPE_INBOUND]['Inbound1300'] = $arrPlan;
 	
 	// 1800
-	$arrPlan['Local']				= 'Inbound-Local-1800';
+	$arrPlan['Local']				= 'Local-08c-00f-01s-04m';
 	$arrConfig['RatePlan'][SERVICE_TYPE_INBOUND]['Inbound1800'] = $arrPlan;
 	
 	// MOBILE ----------------------------------------------------------------//
@@ -229,7 +229,7 @@ Blue Shared 500 						25
 	$arrPlan['MMS']					= 'MMS-68';
 	$arrPlan['Other']				= 'Other-Cost';
 	$arrPlan['OSNetworkAirtime']	= 'OSNetworkAirtime-Cost';
-	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10-00-30';
+	$arrPlan['VoiceMailDeposit']	= 'VoiceMailDeposit-10c-00f-30s-00m';
 	$arrPlan['IDD']					= 'Mobile Zero Plan';
 	
 	// Plan Zero
@@ -264,7 +264,7 @@ Blue Shared 500 						25
 	$arrPlan['SMS']					= 'SMS-22';
 	$arrPlan['Freecall']			= 'Freecall-40c-14f-30s-00m';
 	$arrPlan['Mobile']				= 'Mobile-40c-14f-01s-00m';
-	$arrPlan['National']			= 'Mobile-40c-14f-01s-00m';
+	$arrPlan['National']			= 'National-40c-14f-01s-00m';
 	$arrPlan['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20c-00f-30s-00m';
 	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 100'] = $arrPlan;
 	
@@ -287,7 +287,7 @@ Blue Shared 500 						25
 	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Blue Shared 500'] = $arrPlan;
 	
 	// Fleet Special Peter K
-	$arrPlan['GPRS']				= 'GPRS';
+	$arrPlan['GPRS']				= 'GPRS-15';
 	$arrPlan['SMS']					= 'SMS-22';
 	$arrPlan['Freecall']			= 'Freecall-30c-15f-30s-00m';
 	$arrPlan['Mobile']				= 'Fleet-Mobile-Special';
@@ -314,7 +314,7 @@ Blue Shared 500 						25
 	$arrConfig['RatePlan'][SERVICE_TYPE_MOBILE]['Fleet 30'] = $arrPlan;
 	
 	// Fleet 20
-	$arrPlan['GPRS']				= 'GPRS';
+	$arrPlan['GPRS']				= 'GPRS-20';
 	$arrPlan['SMS']					= 'SMS-22';
 	$arrPlan['Freecall']			= 'Freecall-40c-18f-30s-00m';
 	$arrPlan['Mobile']				= 'Fleet-Mobile-30';
@@ -456,9 +456,9 @@ Blue Shared 500 						25
 	$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Pinnacle'] = $arrPlan;
 	
 	// Peter K Group Special
-	$arrPlan['Mobile']				= 'Mobile-24c-05f-01s-00m';
+	$arrPlan['Mobile']				= 'Fleet-Mobile-Special';
 	$arrPlan['Local']				= 'Local-13';
-	$arrPlan['National']			= 'Fleet-Mobile-Special';
+	$arrPlan['National']			= 'National-00c-09f-01s-00m'; //TODO!flame! is this the correct rate !!!!
 	$arrPlan['ProgramLocal']		= 'ProgramLocal-13';
 	$arrPlan['S&E']					= 'S&E-PeterKGroupSpecial';
 	$arrPlan['IDD']					= '39c Cap Intl'; // TODO!flame! this is the rate shown in etech, is it right ?
@@ -544,7 +544,7 @@ Blue Shared 500 						25
 	$arrRates['intrate']				['VoiceTalk'] 									['IDD']					= 'VoiceTalk';
 	$arrRates['intrate']				['National 16'] 								['IDD']					= 'National 16';
 	$arrRates['intrate']				['Tier 3 corporate Long Distance'] 				['IDD']					= 'Tier 3 corporate Long Distance';
-	$arrRates['intrate']				['Mobile Zero Plan'] 							['IDD']					= 'Mobile Zero Plan';
+	$arrRates['intrate']				['Mobile Zero Plan'] 							['IDD']					= 'Blue 15c CTM'; // TODO!flame! should land lines be allowed on the Mobile Zero IDD rates !!!!
 	$arrRates['intrate']				['Tier 3 corporate Mobile Saver'] 				['IDD']					= 'Tier 3 corporate Mobile Saver';
 	$arrRates['intrate']				['Residential'] 								['IDD']					= 'Residential';
 	
@@ -611,6 +611,7 @@ Blue Shared 500 						25
 	$arrPlans[SERVICE_TYPE_MOBILE]['Fleet 30'] 								= 'Fleet 30';
 	$arrPlans[SERVICE_TYPE_MOBILE]['Blue Shared 500'] 						= 'Blue Shared 500';
 	$arrPlans[SERVICE_TYPE_MOBILE]['35 Cap TRIAL'] 							= '$35 Cap';
+	$arrPlans[SERVICE_TYPE_MOBILE]['Plan 10'] 								= 'Plan Ten';
 	
 	$arrConfig['RatePlanConvert'] = $arrPlans;
 	
@@ -644,7 +645,7 @@ Blue Shared 500 						25
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['OSNetworkAirtime']		= 'OSNetworkAirtime-Cost';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['VoiceMailDeposit']		= 'VoiceMailDeposit-10c-00f-30s-00m';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['IDD']					= 'Mobile Zero Plan';
-	$arrRateGroups[SERVICE_TYPE_MOBILE]['mobile']				= 'Mobile-30c-10f-01s-00m';
+	$arrRateGroups[SERVICE_TYPE_MOBILE]['Mobile']				= 'Mobile-30c-10f-01s-00m';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['GPRS']					= 'GPRS-18';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['SMS']					= 'SMS-22';
 	$arrRateGroups[SERVICE_TYPE_MOBILE]['Freecall']				= 'Freecall-30c-10f-30s-00m';
@@ -671,9 +672,7 @@ Blue Shared 500 						25
 		"intrate"				=> SERVICE_TYPE_LAND_LINE,
 		"service_equip_rate"	=> SERVICE_TYPE_LAND_LINE,
 		
-		"mobileunitel"			=> SERVICE_TYPE_MOBILE,
-		"mobiletelstra"			=> SERVICE_TYPE_MOBILE,
-		"mobileother"			=> SERVICE_TYPE_MOBILE,
+		"mobile"				=> SERVICE_TYPE_MOBILE,
 		"mobilenational"		=> SERVICE_TYPE_MOBILE,
 		"mobile1800"			=> SERVICE_TYPE_MOBILE,
 		"mobilevoicemail"		=> SERVICE_TYPE_MOBILE,
@@ -699,7 +698,6 @@ Blue Shared 500 						25
 	require_once('vixen_import.php');
 	$objImport = new VixenImport($arrConfig);
 
-
 	// Truncate Tables
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
@@ -715,10 +713,10 @@ Blue Shared 500 						25
 	$objImport->Truncate('ErrorLog');
 	//$objImport->Truncate('FileDownload');
 	//$objImport->Truncate('FileImport');
-	//$objImport->Truncate('Invoice');
-	//$objImport->Truncate('InvoiceOutput');
+	$objImport->Truncate('Invoice');
+	$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
-	//$objImport->Truncate('InvoiceTemp');
+	$objImport->Truncate('InvoiceTemp');
 	$objImport->Truncate('Note');
 	$objImport->Truncate('Payment');
 	$objImport->Truncate('ProvisioningExport');
@@ -738,9 +736,8 @@ Blue Shared 500 						25
 	$objImport->Truncate('ServiceRateGroup');
 	$objImport->Truncate('ServiceRatePlan');
 	$objImport->Truncate('ServiceRecurringCharge');
-	//$objImport->Truncate('ServiceTotal');
-	//$objImport->Truncate('ServiceTypeTotal');
-	
+	$objImport->Truncate('ServiceTotal');
+	$objImport->Truncate('ServiceTypeTotal');
 	
 	// clean import array
 	$arrImport = Array();
@@ -761,14 +758,14 @@ Blue Shared 500 						25
 	
 	// Import RatePlan
 	$arrImport['/home/vixen/vixen_seed/RatePlan/RatePlan.csv'] = 'RatePlan';
-	
+
 	// Import Employee
 	$arrImport['/home/vixen/vixen_seed/Employee/Employee.csv'] = 'Employee';
 	
 	// Import Charge Types
 	$arrImport['/home/vixen/vixen_seed/RecurringChargeType/RecurringChargeType.csv'] = 'RecurringChargeType';
 	$arrImport['/home/vixen/vixen_seed/ChargeType/ChargeType.csv'] = 'ChargeType';
-	
+
 	// Do Imports
 	foreach ($arrImport AS $strFilePath=>$strTable)
 	{
@@ -779,6 +776,19 @@ Blue Shared 500 						25
 			echo "FATAL ERROR : Import $strFileName FAILED\n";
 			Die();
 		}
+	}
+	
+	// Validate Rates
+	$mixValid = $objImport->ValidateRates();
+	if ($mixValid === TRUE)
+	{
+		echo "Rates Validated\n";
+	}
+	else
+	{
+		echo (implode("\n", $mixValid));
+		echo "\n\nFATAL ERROR : Could not Validate Rates\n";
+		Die();
 	}
 	
 	// Match RateGroups to Rates
@@ -874,7 +884,7 @@ Blue Shared 500 						25
 
 	}
 
-
+Die();
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
 	{	

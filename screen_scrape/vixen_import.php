@@ -1089,13 +1089,169 @@ class VixenImport extends ApplicationBaseClass
 	// validate Rates, RateGroups & RatePlans
 	function ValidateRates()
 	{
-		// get rates from the db
+		$arrOutput	= Array();
 		
-		// get rate groups from the DB
+		// validate RatePlans
+		//$arrConfig['RatePlan'][SERVICE_TYPE_LAND_LINE]['Peter K Group Special'] = $arrPlan;	
+		if (!is_array($this->arrConfig['RatePlan']))
+		{
+			$arrOutput[] = "No RatePlans Defined";
+		}
+		else
+		{
+			foreach($this->arrConfig['RatePlan'] AS $intServiceType=>$arrRatePlan)
+			{
+				foreach($arrRatePlan AS $strRatePlan=>$arrRateGroup)
+				{
+					if (!$this->FindRatePlan($strRatePlan, $intServiceType))
+					{
+						$arrOutput[] = "RatePlan Not Found : $strRatePlan";
+					}
+					foreach($arrRateGroup AS $strRecordType=>$strRateGroup)
+					{
+						if (!$intRecordType = $this->FindRecordType($strRecordType, $intServiceType))
+						{
+							$arrOutput[] = "RecordType Not Found : $strRecordType";
+						}
+						elseif (!$this->FindRateGroup($strRateGroup, $intRecordType))
+						{
+							$arrOutput[] = "RateGroup Not Found : $strRateGroup";
+						}
+					}
+				}
+			}
+		}
 		
-		// get rate plans from the DB
+		// validate RateGroups
+		//$arrConfig['RateGroup'][SERVICE_TYPE_Mobile]['National']['Fleet-National-Special'] = $arrGroup;
+		if (!is_array($this->arrConfig['RateGroup']))
+		{
+			$arrOutput[] = "No RateGroups Defined";
+		}
+		else
+		{
+			foreach($this->arrConfig['RateGroup'] AS $intServiceType=>$arrRecordType)
+			{
+				foreach($arrRecordType AS $strRecordType=>$arrRateGroup)
+				{
+					if (!$intRecordType = $this->FindRecordType($strRecordType, $intServiceType))
+					{
+						$arrOutput[] = "RecordType Not Found : $strRecordType";
+					}
+					else
+					{
+						foreach($arrRateGroup AS $strRateGroup=>$arrRate)
+						{
+							if (!$this->FindRateGroup($strRateGroup, $intRecordType))
+							{
+								$arrOutput[] = "RateGroup Not Found : $strRateGroup";
+							}
+							foreach($arrRate AS $strRate)
+							{
+								if (!$this->FindRate($strRate, $intRecordType))
+								{
+									$arrOutput[] = "Rate Not Found : $strRate";
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+	
+		// validate RateConvert
+		//$arrConfig['RateConvert'] = $arrRates;
+		//	$arrRates['mobileinternational']	['Mobile Zero Plan']							['IDD']					= 'Mobile Zero Plan';
+		if (!is_array($this->arrConfig['RateConvert']))
+		{
+			$arrOutput[] = "No RateConvert Defined";
+		}
+		else
+		{
+			foreach($this->arrConfig['RateConvert'] AS $strExternalType=>$arrExternalRate)
+			{
+				$intServiceType = $this->arrConfig['RecordType'][$strExternalType];
+				if (!$intServiceType)
+				{
+					$arrOutput[] = "ServiceType Not Found for : $strExternalType";
+				}
+				else
+				{
+					foreach($arrExternalRate AS $strExternalRate=>$arrRate)
+					{
+						foreach($arrRate AS $strRecordType=>$strRateGroup)
+						{
+							if (!$intRecordType = $this->FindRecordType($strRecordType, $intServiceType))
+							{
+								$arrOutput[] = "RecordType Not Found : $strRecordType";
+							}
+							elseif (!$this->FindRateGroup($strRateGroup, $intRecordType))
+							{
+								$arrOutput[] = "RateGroup Not Found : $strRateGroup";
+							}
+						}
+					}
+				}
+			}
+		}
+	
+		// validate RatePlanConvert
+		//$arrConfig['RatePlanConvert'] = $arrPlans;
+		//	$arrPlans[SERVICE_TYPE_MOBILE]['35 Cap TRIAL'] 							= '$35 Cap';
+		if (!is_array($this->arrConfig['RatePlanConvert']))
+		{
+			$arrOutput[] = "RatePlanConvert Not Defined";
+		}
+		else
+		{
+			foreach($this->arrConfig['RatePlanConvert'] AS $intServiceType=>$arrPlan)
+			{
+				foreach($arrPlan AS $strRatePlan)
+				{
+					if (!$this->FindRatePlan($strRatePlan, $intServiceType))
+					{
+						$arrOutput[] = "RatePlan Not Found : $strRatePlan";
+					}
+				}
+			}
+		}
+		
+		// validate DefaultRateGroup
+		//$arrConfig['DefaultRateGroup'][SERVICE_TYPE_MOBILE]['VoiceMailRetrieval']	= 'VoiceMailRetrieval-20c-00f-30s-00m';
+		if (!is_array($this->arrConfig['DefaultRateGroup']))
+		{
+			$arrOutput[] = "No DefaultRateGroups Defined";
+		}
+		else
+		{
+			foreach($this->arrConfig['DefaultRateGroup'] AS $intServiceType=>$arrRecordType)
+			{
+				if ($intServiceType == 1300 || $intServiceType == 1800)
+				{
+					$intServiceType = SERVICE_TYPE_INBOUND;
+				}
+				foreach($arrRecordType AS $strRecordType=>$strRateGroup)
+				{
+					if (!$intRecordType = $this->FindRecordType($strRecordType, $intServiceType))
+					{
+						$arrOutput[] = "RecordType Not Found : $strRecordType";
+					}
+					elseif (!$this->FindRateGroup($strRateGroup, $intRecordType))
+					{
+						$arrOutput[] = "RateGroup Not Found : $strRateGroup";
+					}
+				}
+			}
+		}
 		
 		
+		// return Array or TRUE
+		if (empty($arrOutput))
+		{
+			return TRUE;
+		}
+		return $arrOutput;
 	}
 }
 

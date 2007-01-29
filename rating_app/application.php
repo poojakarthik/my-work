@@ -462,6 +462,8 @@ die();
 				if ($intSourceFleetAccount === $intDestinationFleetAccount)
 				{
 					$bolFleet = TRUE;
+					echo "FLEET";
+					Die();
 				}
 			}
 		}
