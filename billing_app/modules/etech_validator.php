@@ -324,7 +324,7 @@ $strFilename	= $strPath."inv_telcoblue_".date("Ymd")."_0123456789.txt";
 		// File Footer
 		$arrPrintDefine['FileFooter']		['InvoiceCount']	['Type']	= ETECH_INTEGER;
 		
-		$GLOBALS['FileFormat'] = $arrPrintDefine;
+		$GLOBALS['FileFormatEtech'] = $arrPrintDefine;
 		
 		//----------------------------------------------------------------------------//
 
@@ -741,7 +741,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 	// Make sure this is a recognised type
 	$strRecordType = substr($strLine, 0, 3);
 	$arrRecordDefine = NULL;
-	foreach ($GLOBALS['FileFormat'] as $arrRecordType)
+	foreach ($GLOBALS['FileFormatEtech'] as $arrRecordType)
 	{
 		if ((int)$arrRecordType['RecordType']['Value'] == (int)$strRecordType)
 		{
