@@ -2636,6 +2636,8 @@ class MySQLFunction
 			$strQuery .= " LIMIT ".(int)$intLimit;
 		}
 		
+		$this->_strQuery = $strQuery;
+		
 		// Trace
 		$this->Trace("Query: $strQuery");
 		
@@ -2748,8 +2750,11 @@ class MySQLFunction
 	 		$arrParams[] = $strParam;
 	 	}
 	 	array_unshift($arrParams, $strType);
-	 	//Debug($arrParams);
-		call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
+		if (!call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams))
+		{
+			Debug($arrParams);
+			Debug($this->_strQuery);
+		}
 		
 		$mixResult = $this->_stmtSqlStatment->execute();
 		$this->Debug($mixResult);
