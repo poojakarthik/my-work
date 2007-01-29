@@ -293,6 +293,7 @@ die();
 			{
 				$fltServiceCredits	= 0.0;
 				$fltServiceDebits	= 0.0;
+				$fltTotalCharge		= 0.0;
 				
 				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
@@ -317,7 +318,7 @@ die();
 				else
 				{
 					// this is not a shared plan
-					$fltMinMonthly 	= $arrService['MinMonthly'];
+					$fltMinMonthly 		= $arrService['MinMonthly'];
 					$fltUsageCap 		= $arrService['UsageCap'];
 					$fltChargeCap 		= $arrService['ChargeCap'];
 				}
