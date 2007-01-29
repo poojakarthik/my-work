@@ -2730,8 +2730,6 @@ class MySQLFunction
 				$arrParams[] = $arrData[$strColumnName];
 		 	}		
 	 	}
-	 	
-	 	$intParamCount = count($arrParams);
 		
 	 	// Bind the WHERE data to our mysqli_stmt
 	 	foreach ($this->_arrWhereAliases as $strAlias)
@@ -2751,13 +2749,18 @@ class MySQLFunction
 			
 	 		$arrParams[] = $strParam;
 	 	}
-	 	array_unshift($arrParams, $strType);
-		if (!call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams))
-		{
-			Debug($arrParams);
-			Debug("Total Params: ".count($arrParams)."; Data Params: $intParamCount");
-			Debug($this->_strQuery);
-		}
+	 	
+	 	// Only do bind_param if we have params to bind
+	 	if (count($arrParams))
+	 	{
+		 	array_unshift($arrParams, $strType);
+			if (!call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams))
+			{
+				Debug($arrParams);
+				Debug("Total Params: ".count($arrParams)."; Data Params: $intParamCount");
+				Debug($this->_strQuery);
+			}
+	 	}
 		
 		$mixResult = $this->_stmtSqlStatment->execute();
 		$this->Debug($mixResult);
