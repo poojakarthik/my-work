@@ -793,7 +793,7 @@ function ExpectedRecordType($intLastRecordType, $mixExpectedTypes, $intLine)
 				$mixData = (int)$mixData;
 				break;
 			case ETECH_FNN:
-				$strRegex = "/^[A-Za-z0-9]+$/";
+				$strRegex = "/^[A-Za-z0-9 ]+$/";
 				if (!preg_match($strRegex, $mixData))
 				{
 					Debug("'$mixData'");
