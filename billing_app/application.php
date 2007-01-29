@@ -349,14 +349,21 @@ die();
 					$fltTotalCharge = (float)$arrService['CappedCharge'];
 				}
 				
+				Debug($fltTotalCharge);
+				
 				// add uncapped charges
 				$fltTotalCharge += (float)$arrService['UncappedCharge'];
+				
+				
+				Debug($fltTotalCharge);
 
 				// If there is a minimum monthly charge, apply it
 				if ($fltMinMonthly > 0)
 				{
 					$fltTotalCharge = max($fltMinMonthly, $fltTotalCharge);
 				}
+				
+				Debug($fltTotalCharge);
 				
 				// if this is a shared plan
 				if ($arrService['Shared'] > 0)
