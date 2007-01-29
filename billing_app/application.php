@@ -295,6 +295,8 @@ die();
 				$fltServiceDebits	= 0.0;
 				$fltTotalCharge		= 0.0;
 				
+				Debug($arrService);
+				
 				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
 				if ($arrService['Shared'] > 0)
