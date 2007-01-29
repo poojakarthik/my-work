@@ -1256,6 +1256,7 @@
 		{
 			case "S&E":
 			case "Service & Equipment":
+			case "Service and Equipment":
 				return Array( 'RowType' => 208, 'LongDesc' => "Service & Equipment" );
 			case "OC&C":
 				return Array( 'RowType' => 237, 'LongDesc' => "Other Charges and Credits" );
