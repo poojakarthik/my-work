@@ -834,12 +834,26 @@
 		$arrFileData[] = $arrDefine['GraphInfo'];
 		
 		// Graph Data
+		$i = 0;
+		foreach ($arrBillHistory as $arrBill)
+		{
+			if ($arrBill['Total'] == NULL)
+			{
+				$arrBillHistory[$i]['Total'] = 0;
+			}
+			if ($arrBill['Tax'] == NULL)
+			{
+				$arrBillHistory[$i]['Tax'] = 0;
+			}
+			$i++;
+		}
+		
 		$arrDefine['GraphData']		['CurrentMonth']	['Value']	= $arrInvoiceDetails['Balance'];
-		$arrDefine['GraphData']		['LastMonth']		['Value']	= $arrBillHistory[0];
-		$arrDefine['GraphData']		['2MonthsAgo']		['Value']	= $arrBillHistory[1];
-		$arrDefine['GraphData']		['3MonthsAgo']		['Value']	= $arrBillHistory[2];
-		$arrDefine['GraphData']		['4MonthsAgo']		['Value']	= $arrBillHistory[3];
-		$arrDefine['GraphData']		['5MonthsAgo']		['Value']	= $arrBillHistory[4];
+		$arrDefine['GraphData']		['LastMonth']		['Value']	= $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];
+		$arrDefine['GraphData']		['2MonthsAgo']		['Value']	= $arrBillHistory[1]['Total'] + $arrBillHistory[1]['Tax'];
+		$arrDefine['GraphData']		['3MonthsAgo']		['Value']	= $arrBillHistory[2]['Total'] + $arrBillHistory[2]['Tax'];
+		$arrDefine['GraphData']		['4MonthsAgo']		['Value']	= $arrBillHistory[3]['Total'] + $arrBillHistory[3]['Tax'];
+		$arrDefine['GraphData']		['5MonthsAgo']		['Value']	= $arrBillHistory[4]['Total'] + $arrBillHistory[4]['Tax'];
 		$arrFileData[] = $arrDefine['GraphData'];
 
 		// Invoice Footer
