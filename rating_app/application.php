@@ -462,8 +462,6 @@ die();
 				if ($intSourceFleetAccount === $intDestinationFleetAccount)
 				{
 					$bolFleet = TRUE;
-					echo "FLEET";
-					Die();
 				}
 			}
 		}
@@ -510,6 +508,8 @@ die();
 		// check if we found a rate
 		if (!($arrRate = $this->_selFindRate->Fetch()))
 		{
+			echo $this->_selFindRate->Error();
+			Die();
 			return FALSE;
 		}
 		
