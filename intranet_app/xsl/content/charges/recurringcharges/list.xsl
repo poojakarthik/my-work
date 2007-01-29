@@ -71,12 +71,12 @@
 				<xsl:choose>
 					<xsl:when test="/Response/RecurringChargeTypes/Results/collationLength = 0">
 						<div class="MsgErrorWide">
-							No Recurring Charge Types were found with the criteria you searched for.
+							There were no results matching your search. Please change your search and try again.
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
 						<div class="MsgNoticeWide">
-							There are no Recurring Charge Types in the Range that you wish to display.
+							There were no results matching your search. Please change your search and try again.
 						</div>
 					</xsl:when>
 				</xsl:choose>

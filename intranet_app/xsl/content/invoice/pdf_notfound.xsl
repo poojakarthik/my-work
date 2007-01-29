@@ -6,8 +6,8 @@
 	<xsl:template name="Content">
 		<h1>Invoice PDF Not Found</h1>
 		
-		<p>
-			The invoice PDF you were attempting to view could not be found in the system.
-		</p>
+		<div class = "MsgErrorWide">
+			The Invoice PDF you were attempting to view could not be found.
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

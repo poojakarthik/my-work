@@ -13,28 +13,28 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'BusinessName'">
-						You did not enter a Business Name. Please try again.
+						Please enter a Business Name.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'ABN-ACN'">
-						You did not enter either an ABN# or ACN#. Please try again.
+						Please enter a ABN or ACN.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'ABN Invalid'">
-						You did not enter a valid ABN#. Please try again.
+						Please enter a valid ABN.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'ACN Invalid'">
-						You did not enter a valid ACN#. Please try again.
+						Please enter a valid ACN.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Address'">
-						You did not enter an Address. Please try again.
+						Please enter an Address.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Suburb'">
-						You did not enter a Suburb. Please try again.
+						Please enter a Suburb.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Postcode'">
-						You did not enter a Postcode. Please try again.
+						Please enter a Postcode.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'State'">
-						You did not enter a State. Please try again.
+						Please enter a State.
 					</xsl:when>
 				</xsl:choose>
 			</div>

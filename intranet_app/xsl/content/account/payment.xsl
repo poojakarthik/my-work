@@ -73,12 +73,12 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'DDR Not Found'">
-							You did not select a valid Direct Debit Bank Account. 
-							Please select a valid Direct Debit Bank Account option from the list and try again.
+							Please select a valid Direct Debit Bank Account
+.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CC Not Found'">
-							You did not select a valid Credit Card. 
-							Please select a valid Credit Card option from the list and try again.
+							Please select a valid Credit Card Account
+
 						</xsl:when>
 						<xsl:otherwise>
 							<xsl:value-of select="/Response/Error" />
@@ -160,7 +160,8 @@
 			<xsl:choose>
 				<xsl:when test="count(/Response/DirectDebits/DirectDebit) = 0">
 					<div class="MsgNoticeWide">
-						There are no Direct Debit Details attached to this Account Group.
+						There are no Direct Debit details associated with this Account Group
+
 					</div>
 				</xsl:when>
 			</xsl:choose>
@@ -252,7 +253,7 @@
 			<xsl:choose>
 				<xsl:when test="count(/Response/CreditCards/CreditCard) = 0">
 					<div class="MsgNoticeWide">
-						There are no Credit Card Details attached to this Account Group.
+						There are no Credit Card details associated with this Account Group
 					</div>
 				</xsl:when>
 			</xsl:choose>

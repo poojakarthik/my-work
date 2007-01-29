@@ -98,17 +98,17 @@
 					<xsl:choose>
 						<xsl:when test="/Response/ui-answers/Accounts/Results/collationLength &gt; 15">
 							<div class="MsgErrorWide">
-								There are too many results to display. Please refine your search and try again.
+								There are too many results to display.  Please refine your search and try again.
 							</div>
 						</xsl:when>
 						<xsl:when test="/Response/ui-answers/Accounts/Results/collationLength = 0">
 							<div class="MsgErrorWide">
-								There are no Accounts with the Search Criteria that you Specified.
+								There were no results matching your search. Please change your search and try again.
 							</div>
 						</xsl:when>
 						<xsl:when test="count(/Response/ui-answers/Accounts/Results/rangeSample/Account) = 0">
 							<div class="MsgNoticeWide">
-								There are no Records for the Range that you Searched for.
+								There were no results matching your search. Please change your search and try again.
 							</div>
 						</xsl:when>
 						<xsl:otherwise>

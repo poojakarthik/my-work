@@ -102,7 +102,7 @@
 						<xsl:if test="not(/Response/ServiceAddress)">
 						<div class="MsgNoticeNarrow">
 								<strong><span class="Attention">Notice</span> :</strong>
-								No Mobile Details Found
+								No Mobile Details found.
 							</div>
 						</xsl:if>
 						<div class="Narrow-Form">

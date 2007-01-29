@@ -4,15 +4,19 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Added New Rate Group</h1>
+		<h1>Rate Group Added</h1>
 		
-		<p>
-			Your new Rate Group has been successfully created.
-		</p>
+		<div class = "MsgNoticeWide">
+			The Rate Group has been successfully added.
+
+		</div>
 		
-		<p>
+		
+		<div class  = "Right">
 			Continue to <a href="rates_group_list.php">List Rate Groups</a>
-			or <a href="rates_group_add.php">Create Another New Rate Group</a>.
-		</p>
+		</div>
+		<div class = "Right">
+			or <a href="rates_group_add.php">Add Another Rate Group</a>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

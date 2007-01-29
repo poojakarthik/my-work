@@ -4,18 +4,15 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Employed Successfully Edited</h1>
+		<h1>Employed  Edited</h1>
 		
-		<p>
-			The employee you wish to edit has successfully been changed
-			and saved to the database.
-		</p>
+		<div class = "MsgNoticeWide">
+			The Employee has been successfully edited.
+
+		</div>
 		
-		<ul>
-			<li>
-				Return to 
-				<a href="employee_list.php">Employee Listing</a>.
-			</li>
-		</ul>
+		<div class = "Right">
+				Return to  <a href="employee_list.php">Employee Listing</a>.
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

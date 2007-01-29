@@ -65,7 +65,7 @@
 			<xsl:choose>
 				<xsl:when test="/Response/Charges-Unapproved/Results/collationLength = 0">
 					<div class="MsgNoticeWide">
-						There are currently no requests for Debits or Credits to be processed.
+						There are no requests for Debits or Credits to be processed.
 					</div>
 				</xsl:when>
 			</xsl:choose>

@@ -6,8 +6,8 @@
 	<xsl:template name="Content">
 		<h1>Invoice Not Found</h1>
 		
-		<p>
+		<div class = "MsgErrorWide">
 			The invoice you were attempting to view could not be found in the system.
-		</p>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

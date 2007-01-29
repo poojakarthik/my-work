@@ -25,97 +25,97 @@
 				<xsl:choose>
 					<!-- Serious Errors : Should never show, but just in case -->
 					<xsl:when test="/Response/Error = 'Account CustomerGroup'">
-						The Customer Group you selected was Invalid. Please try again.
+						Please select a valid Customer Group.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Billing Method'">
-						The Billing Method you selected was Invalid. Please try again.
+						Please select a valid Billing Method.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'CreditCard CardType'">
-						The Credit Card Type you selected was Invalid. Please try again.
+						Please select a valid Credit Card Type.
 					</xsl:when>
 					
 					<!-- Account -->
 					<xsl:when test="/Response/Error = 'Account BusinessName'">
-						You did not enter a Business Name. Please try again.
+						Please enter a Business Name.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Account ABN-ACN'">
-						You did not enter either an ABN# or ACN#. Please try again.
+						Please enter an ABN or ACN.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Account ABN Invalid'">
-						You did not enter a valid ABN#. Please try again.
+						Please enter a valid ABN.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Account ACN Invalid'">
-						You did not enter a valid ACN#. Please try again.
+						Please enter a valid ACN.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Account Address'">
-						You did not enter an Address. Please try again.
+						Please enter an Address.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Account Suburb'">
-						You did not enter a Suburb. Please try again.
+						Please enter a Suburb.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Account Postcode'">
-						You did not enter a Postcode. Please try again.
+						Please enter a Postcode.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Account State'">
-						You did not enter a State. Please try again.
+						Please enter a State
 					</xsl:when>
 					
 					<!-- Direct Debit -->
 					<xsl:when test="/Response/Error = 'DirectDebit BankName'">
-						You did not enter a Direct Debit Bank Name. Please try again.
+						Please enter a Direct Debit Bank Name.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'DirectDebit BSB'">
-						You did not enter a Direct Debit BSB#. Please try again.
+						Please enter a Direct Debit BSB #.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'DirectDebit AccountNumber'">
-						You did not enter a Direct Debit Account#. Please try again.
+						Please enter a Direct Debit Account #.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'DirectDebit AccountName'">
-						You did not enter a Direct Debit Account Name. Please try again.
+						Please enter a Direct Debit Account Name.
 					</xsl:when>
 					
 					<!-- Credit Card -->
 					<xsl:when test="/Response/Error = 'CreditCard Name'">
-						You did not enter a Credit Card Holder Name. Please try again.
+						Please enter a Credit Card Holder Name.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'CreditCard CardNumber'">
-						You did not enter a Credit Card Number. Please try again.
+						Please enter a Credit Card #.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'CreditCard ExpMonth'">
-						You did not enter a Credit Card Expiration Month. Please try again.
+						Please enter a Credit Card Expiry Month.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'CreditCard ExpYear'">
-						You did not enter a Credit Card Expiration Year. Please try again.
+						Please enter a Credit Card Expiry Year.
 					</xsl:when>
 					
 					
 					<!-- Contact -->
 					<xsl:when test="/Response/Error = 'Contact Title'">
-						You must enter a Salutation for the Contact you are creating.
+						Please enter a Title.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact FirstName'">
-						You must enter a First Name for the Contact you are creating.
+						Please enter a First Name.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact LastName'">
-						You must enter a Last Name for the Contact you are creating.
+						Please enter a Last Name.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact DOB'">
-						You must enter a valid Date of Birth for the Contact you are creating.
+						Please enter a valid Date of Birth.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact Email'">
-						You must enter an Email Address for the Contact you are creating.
+						Please enter an Email Address.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact Phones Empty'">
-						You must enter a Contact Number for the Contact you are creating.
+						Please enter a Contact Number.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact UserName Empty'">
-						You must enter a Username for the Contact you are creating.
+						Please enter a Username.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact UserName Exists'">
-						The Username you selected already exists. Please select another Username and try again.
+						The Username you entered already exists. Please enter a unique Username.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact PassWord'">
-						You must enter a Password for the Contact you are creating.
+						Please enter a Password.
 					</xsl:when>
 				</xsl:choose>
 			</div>
@@ -153,15 +153,15 @@
 				<xsl:otherwise>
 					<div class="MsgNoticeWide">
 						<strong><span class="Attention">Attention</span> :</strong>
-						This form will add a new Customer.  If you wish to add an 
-						account to an existing Customer you will need to use the
-						&quot;Add Associated Account&quot; link from the customers
-						existing account.						
+						This form will add a new Customer.  If you wish to add an Account to an existing Customer, you will need to use the &quot; Add Associated Account&quote; link from the existing Account.
+				
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>
 			<div class="Seperator"></div>
 			
+			
+			<!--Account Details -->
 			<h2 class="Account">Account Details</h2>
 			
 			<div class="Wide-Form">
@@ -367,6 +367,7 @@
 			</div>
 			<div class="Seperator"></div>
 			
+			<!-- Billing Details -->
 			<h2 class="Invoice">Billing Details</h2>
 			
 			<div class="Wide-Form">
@@ -450,6 +451,7 @@
 									<td>
 										<table border="0" cellpadding="2" cellspacing="0">
 											<tr>
+											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Direct Debit')" />
@@ -466,6 +468,7 @@
 												</td>
 											</tr>
 											<tr>
+											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Direct Debit')" />
@@ -482,6 +485,7 @@
 												</td>
 											</tr>
 											<tr>
+											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Direct Debit')" />
@@ -498,6 +502,7 @@
 												</td>
 											</tr>
 											<tr>
+											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Direct Debit')" />
@@ -522,6 +527,7 @@
 									</td>
 								</tr>
 								
+								<!--Direct Detbi -->
 								<tr>
 									<td>
 										<input type="radio" name="Account[BillingType]" value="2" id="PaymentMethod:CC">
@@ -543,6 +549,7 @@
 									<td>
 										<table border="0" cellpadding="2" cellspacing="0">
 											<tr>
+											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -571,6 +578,7 @@
 												</td>
 											</tr>
 											<tr>
+											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -587,6 +595,7 @@
 												</td>
 											</tr>
 											<tr>
+											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -603,6 +612,7 @@
 												</td>
 											</tr>
 											<tr>
+											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -655,7 +665,8 @@
 						<tr>
 							<td></td>
 							<td></td>
-							<td>
+							
+							<td >
 								<select name="Contact[Id]">
 									<xsl:for-each select="/Response/Contacts/Contact">
 										<option>
@@ -716,7 +727,7 @@
 									<xsl:value-of select="/Response/ui-values/Contact/Title" />
 								</xsl:attribute>
 							</input>
-						</td>
+						</td>	
 					</tr>
 					<tr>
 						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
@@ -915,6 +926,7 @@
 				<strong><span class="Red">* </span></strong>: Required field<br/>
 				<strong><span class="Red"><sup>1</sup> </span></strong>: One or both fields required<br/>
 				<strong><span class="Red"><sup>2</sup> </span></strong>: One or both fields required<br/>
+				<strong><span class="Red"><sup>#</sup> </span></strong>: Required only when the associated option is selected<br/>
 			</div>
 			<div class="Right">
 				<input type="submit" value="Add Account &#0187;" class="input-submit" />

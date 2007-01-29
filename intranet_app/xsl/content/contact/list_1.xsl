@@ -17,34 +17,34 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Account'">
-							The Account# you entered was not found. Please try again.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'ABN'">
-							The ABN# you entered was not found. Please try again.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'ACN'">
-							The ACN# you entered was not found. Please try again.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Invoice'">
-							The Invoice# you entered was not found. Please try again.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'FNN'">
-							The Line Number you entered was not found. Please try again.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'BusinessName None'">
-							The Business Name you entered was not found. Please try again.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'BusinessName Refine'">
-							The Business Name you entered was too ambiguous. Please refine your search.
+						    There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Contact'">
-							A Contact with the First/Last Name you entered was not found. Please try again.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Contact-OneFill'">
-							You must search for a First and Last name for a Contact. Please try again.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Empty'">
-							Your search details are blank. Please enter criteria to search for.
+							There were no results matching your search. Please change your search and try again.
 						</xsl:when>
 					</xsl:choose>
 				</div>

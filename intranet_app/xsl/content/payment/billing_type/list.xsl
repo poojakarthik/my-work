@@ -70,7 +70,7 @@
 		<xsl:choose>
 			<xsl:when test="count(/Response/DirectDebits/DirectDebit) = 0">
 				<div class="MsgNoticeWide">
-					There are no Bank Account Details for this Customer.
+					There are no Direct Debit details associated with this Account Group.
 				</div>
 			</xsl:when>
 		</xsl:choose>
@@ -146,7 +146,8 @@
 		<xsl:choose>
 			<xsl:when test="count(/Response/CreditCards/CreditCard) = 0">
 				<div class="MsgNoticeWide">
-					There are no Credit Card Details for this Customer.
+					There are no Credit Card details associated with this Account Group.
+
 				</div>
 			</xsl:when>
 		</xsl:choose>

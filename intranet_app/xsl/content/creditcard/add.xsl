@@ -13,19 +13,19 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'CardType'">
-						The Card Type you selected was invalid.
+						Please select a valid Credit Card Type.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Name'">
-						You must enter a Card Holder Name. Please try again.
+						Please enter a Credit Card Holder Name.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'CardNumber'">
-						You must enter a Card Card Number. Please try again.
+						Please enter a Credit Card #.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'ExpMonth'">
-						The Month you entered for Credit Card Expiration was Invalid. Please try again.
+						Please enter a Credit Card Expiry Month.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'ExpYear'">
-						The Year you entered for Credit Card Expiration was Invalid. Please try again.
+						Please enter a Credit Card Expiry Year.
 					</xsl:when>
 				</xsl:choose>
 			</div>
@@ -62,6 +62,7 @@
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
+					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -90,6 +91,7 @@
 						</td>
 					</tr>
 					<tr>
+					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -106,6 +108,7 @@
 						</td>
 					</tr>
 					<tr>
+					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -122,6 +125,7 @@
 						</td>
 					</tr>
 					<tr>
+					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -138,6 +142,7 @@
 						</td>
 					</tr>
 					<tr>
+					<td class="Required"> </td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -156,7 +161,9 @@
 				</table>
 			</div>
 			<div class="SmallSeperator"></div>
-			
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
 			<div class="Right">
 				<input type="submit" value="Add Credit Card Details &#0187;" class="input-submit" />
 			</div>

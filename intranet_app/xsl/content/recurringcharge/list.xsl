@@ -135,12 +135,14 @@
 		<xsl:choose>
 			<xsl:when test="/Response/RecurringCharges/Results/collationLength = 0">
 				<div class="MsgNoticeWide">
-					No Recurring Charges have been made against this Account.
+					There are no Recurring Charges associated with this Account
+
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge) = 0">
 				<div class="MsgErrorWide">
-					No Recurring Charges were found between the range you searched for.
+					There were no results matching your search. Please change your search and try again.
+
 				</div>
 			</xsl:when>
 		</xsl:choose>

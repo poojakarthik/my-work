@@ -53,12 +53,14 @@
 		<xsl:choose>
 			<xsl:when test="/Response/Employees/Results/collationLength = 0">
 				<div class="MsgErrorWide">
-					There are no Accounts with the Search Criteria that you Specified.
+					There were no results matching your search. Please change your search and try again.
+
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/Employees/Results/rangeSample/Employee) = 0">
 				<div class="MsgNoticeWide">
-					There are no Records for the Range that you Searched for.
+					There were no results matching your search. Please change your search and try again.
+
 				</div>
 			</xsl:when>
 		</xsl:choose>

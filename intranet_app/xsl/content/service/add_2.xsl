@@ -78,22 +78,25 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Mismatch'">
-							You must correctly confirm your Line Number.
+							Your Service IDs did not match. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Unarchived FNN Exists'">
-							The Service ID you entered already exists.
+							The Service ID you entered already exists.  Please enter a unique Service ID.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Rate Plan Invalid'">
-							The Rate Plan you entered was Invalid.
+							Please enter a valid Rate Plan.
+
 						</xsl:when>
 					</xsl:choose>
 				</div>
 			</xsl:if>
 			
+			<!-- Service Details-->
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -103,11 +106,13 @@
 							<td><xsl:value-of select="/Response/ui-values/ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 						</tr>
 						<tr>
+						
 							<td colspan="2">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+						<td class="Required" valign="top"></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -125,6 +130,8 @@
 							</td>
 						</tr>
 						<tr>
+						<td class="Required" valign="top"></td>
+						
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -143,6 +150,7 @@
 						</tr>
 						<xsl:if test="/Response/ui-values/ServiceTypes/ServiceType[@selected='selected']/Id = 102">
 							<tr>
+							<td class="Required"> </td>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
 										<xsl:with-param name="entity" select="string('Service')" />
@@ -163,12 +171,14 @@
 								</td>
 							</tr>
 							<tr>
+							
 								<td colspan="2">
 									<div class="MicroSeperator"></div>
 								</td>
 							</tr>
 						</xsl:if>
 						<tr>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />

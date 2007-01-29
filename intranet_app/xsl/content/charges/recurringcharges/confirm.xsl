@@ -4,14 +4,14 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Added New Recurring Charge Type</h1>
+		<h1>Recurring Charge Type Added</h1>
 		
-		<p>
-			Your new Recurring Charge Type has been successfully created.
-		</p>
+		<div class= "MsgNoticeWide">
+			The Recurring Charge Type has been successfully added.
+		</div>
 		
-		<p>
+		<div class = "Right">
 			Continue to <a href="charges_recurringcharge_list.php">List Recurring Charge Types</a>.
-		</p>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

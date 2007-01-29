@@ -222,12 +222,14 @@
 				<xsl:choose>
 					<xsl:when test="/Response/Rates/Results/collationLength = 0">
 						<div class="MsgErrorWide">
-							No Rates were found with the criteria you searched for.
+							There were no results matching your search. Please change your search and try again.
+
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/Rates/Results/rangeSample/Rate) = 0">
 						<div class="MsgNoticeWide">
-							There are no Rates in the Range that you wish to display.
+							There were no results matching your search. Please change your search and try again.
+
 						</div>
 					</xsl:when>
 				</xsl:choose>

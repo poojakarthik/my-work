@@ -309,6 +309,8 @@
 		border:              solid 1px #919191;
 		
 		padding:             3px;
+		
+		width:				180px;
 	}
 	
 	input.input-string-valid
@@ -316,6 +318,7 @@
 		border:              solid 1px #89b100;
 		background-color:    #f1f7e1;
 		padding:             3px;
+		width:				180px;
 	}
 	
 	input.input-label
@@ -323,6 +326,7 @@
 		border:              solid 1px #868735;
 		background-color:    #FFFFC0;
 		padding:             3px;
+		width:				180px;
 	}
 	
 	input.input-submit,

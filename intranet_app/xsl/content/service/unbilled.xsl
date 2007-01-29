@@ -102,12 +102,14 @@
 		<xsl:choose>
 			<xsl:when test="/Response/CDRs-Unbilled/collationLength = 0">
 				<div class="MsgNoticeWide">
-					There are no Unbilled Charges associated with this service.
+					There are no Unbilled Charges associated with this Account.
+
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/CDRs-Unbilled/rangeSample/CDR) = 0">
 				<div class="MsgErrorWide">
-					There are no Unbilled Charges matching your search.
+					There were no results matching your search. Please change your search and try again.
+
 				</div>
 			</xsl:when>
 		</xsl:choose>

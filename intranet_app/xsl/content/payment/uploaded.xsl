@@ -4,12 +4,13 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+	<!--Are we using this page?-->
 		<h1>Payment Uploaded</h1>
 		
-		<p>
-			The Payment file you uploaded has been successfully added to the que of 
-			payments to be processed. It may take up to 24 hours for
-			this payment to be dispursed.
-		</p>
+		<div class="MsgAlertWide">
+			The Payment has been successfully uploaded.  Please not that it may take up to 24 hours to be processed.
+
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

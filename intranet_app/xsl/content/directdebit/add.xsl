@@ -10,16 +10,16 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'BankName'">
-						You did not enter a Bank Name. Please try again.
+						Please enter a Direct Debit Bank Name.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'BSB'">
-						You did not enter a BSB#. Please try again.
+						Please enter a Direct Debit BSB #.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'AccountNumber'">
-						You did not enter an Account Number. Please try again.
+						Please enter a Direct Debit Account #.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'AccountName'">
-						You did not enter an Account Name. Please try again.
+						Please enter a Direct Debit Account Name.
 					</xsl:when>
 				</xsl:choose>
 			</div>
@@ -32,6 +32,8 @@
 					<xsl:value-of select="/Response/AccountGroup/Id" />
 				</xsl:attribute>
 			</input>
+		
+			
 			
 			<h2 class="Account">Account Details</h2>
 			<div class="Wide-Form">
@@ -51,10 +53,12 @@
 			</div>
 			<div class="Seperator"></div>
 			
+			<!-- Bank Account Details -->
 			<h2 class="Payment">Bank Account Details</h2>
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
+						<td class="Required"><span class="Red"><strong>*</strong></span></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Direct Debit')" />
@@ -71,6 +75,7 @@
 						</td>
 					</tr>
 					<tr>
+					<td class="Required"><span class="Red"><strong>*</strong></span></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Direct Debit')" />
@@ -92,6 +97,7 @@
 						</td>
 					</tr>
 					<tr>
+					<td class="Required"><span class="Red"><strong>*</strong></span></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Direct Debit')" />
@@ -108,6 +114,7 @@
 						</td>
 					</tr>
 					<tr>
+					<td class="Required"><span class="Red"><strong>*</strong></span></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Direct Debit')" />
@@ -126,7 +133,9 @@
 				</table>
 			</div>
 			<div class="SmallSeperator"></div>
-			
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
 			<div class="Right">
 				<input type="submit" value="Add Bank Account Details &#0187;" class="input-submit" />
 			</div>

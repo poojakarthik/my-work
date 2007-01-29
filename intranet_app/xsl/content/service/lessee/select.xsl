@@ -14,8 +14,8 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Invalid Account'">
-						The Account number you entered does not exist. Please check the
-						number and try again.
+						The Account ID you entered was not found. 
+
 					</xsl:when>
 				</xsl:choose>
 			</div>
@@ -116,6 +116,7 @@
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Account')" />
@@ -131,6 +132,9 @@
 			</div>
 			
 			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
 			<div class="Right">
 				<input type="submit" value="Continue &#0187;" class="input-submit" />
 			</div>

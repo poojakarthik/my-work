@@ -6,8 +6,9 @@
 	<xsl:template name="Content">
 		<h1>Cancellation Failed</h1>
 		
-		<p>
-			This Recurring Charge could not be cancelled because it is already in a Cancelled State.
-		</p>
+		<div class = "MsgErrorWide">
+			The Recurring Charge could not be Cancelled.
+
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

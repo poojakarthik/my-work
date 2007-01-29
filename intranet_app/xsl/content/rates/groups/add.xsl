@@ -4,6 +4,8 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+		<!--UBER ADMIN ONLY -->
 		<h1>Add New Rate Group</h1>
 		
 		<form method="POST" action="rates_group_add.php">
@@ -13,16 +15,15 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/RateGroup/Error = 'Blank'">
-							Your Group Name and your ServiceType must not be Blank.
-							Please choose a name for your Group and Try Again.
+							Please enter a Rate Group Name.
 						</xsl:when>
 						<xsl:when test="/Response/RateGroup/Error = 'Exists'">
-							The Group Name that you entered already exists in the System.
-							Please choose another Group Name.
+							The Rate Group Name you entered already exists.  Please enter a unique Rate Group Name.
+
 						</xsl:when>
 						<xsl:when test="/Response/RateGroup/Error = 'ServiceType'">
-							The Service Type that you entered is Invalid. Please choose a
-							valid Service Type and try again.
+							Please select a valid Service Type.
+
 						</xsl:when>
 					</xsl:choose>
 				</div>

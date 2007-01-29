@@ -6,8 +6,8 @@
 	<xsl:template name="Content">
 		<h1>Employee Not Found</h1>
 		
-		<p>
-			The Employee you were attempting to view could not be found in the system.
-		</p>
+		<div  class = "MsgErrorWide">
+			The Employee you were attempting to view could not be found.
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

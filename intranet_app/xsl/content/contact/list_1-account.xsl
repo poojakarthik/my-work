@@ -81,7 +81,7 @@
 						<div class="MsgErrorWide">
 							<xsl:choose>
 								<xsl:when test="/Response/Error = 'Unselected'">
-									Please select an Account from the list below to continue.
+									Please select an Account.
 								</xsl:when>
 							</xsl:choose>
 						</div>

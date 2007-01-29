@@ -12,7 +12,7 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Amount'">
-							You did not enter a valid Payment Amount. Please try again.
+							Please enter a valid Amount.
 						</xsl:when>
 					</xsl:choose>
 				</div>
@@ -151,6 +151,7 @@
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Payment')" />
@@ -172,6 +173,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Payment')" />
@@ -188,6 +190,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Payment')" />

@@ -6,8 +6,9 @@
 	<xsl:template name="Content">
 		<h1>Service Not Found</h1>
 		
-		<p>
-			The Service you were attempting to view could not be found in the system.
-		</p>
+		<div class ="MsgError">
+			The Service you were attempting to view could not be found.
+
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

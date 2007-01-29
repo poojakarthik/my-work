@@ -14,8 +14,8 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Date Invalid'">
-						The date you entered was invalid. You must enter a date
-						at least 48 hours in the future from 12:00 AM today.
+						Please enter a valid Date .  You must enter a date at least 48 hours in the future from 12:00 AM today.
+
 					</xsl:when>
 				</xsl:choose>
 			</div>
@@ -172,6 +172,7 @@
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
+					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth" valign="top">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Lessee')" />
@@ -212,6 +213,9 @@
 			</div>
 			
 			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
 			<div class="Right">
 				<input type="submit" value="Change Lessee &#0187;" class="input-submit" />
 			</div>

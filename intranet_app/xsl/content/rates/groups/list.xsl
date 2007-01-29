@@ -106,12 +106,14 @@
 				<xsl:choose>
 					<xsl:when test="/Response/RateGroups/Results/collationLength = 0">
 						<div class="MsgErrorWide">
-							No Rate Groups were found with the criteria you searched for.
+							There were no results matching your search. Please change your search and try again.
+
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/RateGroups/Results/rangeSample/RateGroup) = 0">
 						<div class="MsgNoticeWide">
-							There are no Rate Groups in the Range that you wish to display.
+							There were no results matching your search. Please change your search and try again.
+
 						</div>
 					</xsl:when>
 				</xsl:choose>

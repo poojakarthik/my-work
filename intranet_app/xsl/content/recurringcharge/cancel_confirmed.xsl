@@ -6,8 +6,8 @@
 	<xsl:template name="Content">
 		<h1>Recurring Charge Cancelled</h1>
 		
-		<p>
+		<div = "MsgNoticeBox">
 			The Recurring Charge has successfully been cancelled.
-		</p>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

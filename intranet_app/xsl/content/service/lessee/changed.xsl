@@ -7,10 +7,10 @@
 	
 	<xsl:template name="Content">
 		<h1>Lessee Changed</h1>
-		<p>
-			The lessee for this service has been changed.
+		<div class = "MsgNoticeWide">
+			The Lessee for this service has been changed.
 			<br/>Details are listed below.
-		</p>
+		</div>
 		<div class="Seperator"></div>
 		
 		<div class="Wide-Form">

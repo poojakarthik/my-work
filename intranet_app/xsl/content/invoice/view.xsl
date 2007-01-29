@@ -143,7 +143,7 @@
 				<xsl:choose>
 				<xsl:when test="/Response/Charges/Results/collationLength = 0">
 					<div class="MsgNoticeWide">
-						No charges were applied to this particular invoice.
+						There are no Charges associated with this Invoice.
 					</div>
 				</xsl:when>
 			</xsl:choose>
@@ -215,12 +215,13 @@
 		<xsl:choose>
 			<xsl:when test="/Response/CDRs-Invoiced/Results/collationLength = 0">
 				<div class="MsgErrorWide">
-					There are no CDR Records associated with this service.
+					There are no CDR Records associated with this Service.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/CDRs-Invoiced/Results/rangeSample/CDR) = 0">
 				<div class="MsgNoticeWide">
-					There are no CDR Records for the Range that you Searched for.
+					There were no results matching your search. Please change your search and try again.
+
 				</div>
 			</xsl:when>
 		</xsl:choose>

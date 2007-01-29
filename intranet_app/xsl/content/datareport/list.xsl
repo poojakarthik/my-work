@@ -43,12 +43,14 @@
 		<xsl:choose>
 			<xsl:when test="/Response/DataReports/Results/collationLength = 0">
 				<div class="MsgErrorWide">
-					There are no Reports currently in the System.
+					There are no Reports
+
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/DataReports/Results/rangeSample/DataReport) = 0">
 				<div class="MsgNoticeWide">
-					No Matching Reports found.
+					There are no Reports
+
 				</div>
 			</xsl:when>
 		</xsl:choose>

@@ -4,29 +4,25 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Employee Successfully Added</h1>
+		<h1>Employee  Added</h1>
 		
-		<p>
-			The Employee you wish to add has successfully been created
-			and saved to the database. Please note that this Employee
-			may not be able to Login until you have up their Permissions.
-		</p>
+		<div class = "MsgNoticeWide">
+			The Employee has been successfully added.  Please note that they may not be able to log in until you have updated their permissions.
+		</div>
 		
-		<ul>
-			<li>
+		<div class = "Right">
 				Continue to 
 				<a>
 					<xsl:attribute name="href">
 						<xsl:text>employee_permissions.php?Id=</xsl:text>
 						<xsl:value-of select="/Response/Employee/Id" />
 					</xsl:attribute>
-					<xsl:text>Setup Employee Permissions</xsl:text>
+					<xsl:text>Setup Employee Permissions</xsl:text>.
 				</a>.
-			</li>
-			<li>
-				Return to 
-				<a href="employee_list.php">Employee Listing</a>.
-			</li>
-		</ul>
-	</xsl:template>
+		</div>
+		<div class = "Right">
+				Return to  <a href="employee_list.php">Employee Listing</a>.
+		</div>
+				
+</xsl:template>
 </xsl:stylesheet>

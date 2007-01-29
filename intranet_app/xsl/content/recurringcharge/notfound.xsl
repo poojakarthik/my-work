@@ -6,8 +6,8 @@
 	<xsl:template name="Content">
 		<h1>Recurring Charge Not Found</h1>
 		
-		<p>
-			The Recurring Charge you were attempting to manipulate could not be found in the system.
-		</p>
+		<div = "MsgErrorWide">
+			The Recurring Charge you were attempting to view could not be found.
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

@@ -11,19 +11,19 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'CType-Blank'">
-							Your Charge Code must not be Blank. Please try again.
+							Please enter a Charge Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Descr-Blank'">
-							Your Charge Description must not be Blank. Please try again.
+							Please enter a Charge Description
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CType-Exists'">
-							Your Charge Code already exists in the Database for an Unarchived Item. Please try again.
+							The Charge Code you entered already exists.  Please enter a unique Charge Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Nature'">
-							You did not select a valid nature. Please select a valid nature and try again.
+							Please select a valid Nature.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Amount Invalid'">
-							You did not enter a valid value for your Amount. Please check this and try again.
+							Please enter a valid Amount.
 						</xsl:when>
 					</xsl:choose>
 				</div>

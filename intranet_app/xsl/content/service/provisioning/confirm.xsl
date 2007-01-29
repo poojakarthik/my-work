@@ -10,15 +10,17 @@
 		<h1>Provisioning Request Added</h1>
 		
 		<div class="MsgNoticeWide">
-			Your Provisioning Request has been successfully added.
+			The Provisioning Request has been successfully added.
+
 		</div>
 		<div class = "Right">
+		Return to 
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_address.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
-				<xsl:text>Return to Provisioning</xsl:text>
+				<xsl:text>Provisioning</xsl:text>
 			</a>
 		</div>
 			

@@ -4,14 +4,15 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Added New Rate</h1>
+		<h1>Rate Added</h1>
 		
-		<p>
-			Your new Rate has been successfully created.
-		</p>
+		<div class="MsgNoticeWide">
+			The Rate has been successfully added.
+
+		</div>
 		
-		<p>
-			Continue to <a href="rates_rate_list.php">List Rates</a>.
-		</p>
+		<div class = "Right">
+			Continue to <a href="rates_rate_list.php">List Rates</a>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

@@ -10,7 +10,7 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Password Mismatch'">
-						Your passwords mismatched. Please try again.
+						Your Passwords did not match.  Please try again,
 					</xsl:when>
 				</xsl:choose>
 			</div>

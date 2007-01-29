@@ -6,19 +6,20 @@
 	<xsl:template name="Content">
 		<h1>Recurring Charge Assigned</h1>
 		
-		<p>
-			Your recurring charge has successfully been assigned to your requested service.
-		</p>
+		<div class = "MsgNoticeWide">
+			The Recurring Charge has been successfully assigned to the service.
+
+		</div>
 		
-		<p>
-			You can now return to 
+		<div class = "Right">
+			Return to
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_view.php?Id=</xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
-				<xsl:text>Details about this Service</xsl:text>
-			</a>.
-		</p>
+				<xsl:text>Service Details</xsl:text>
+			</a>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

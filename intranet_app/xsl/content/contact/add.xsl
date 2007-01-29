@@ -72,31 +72,31 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Title'">
-							You must enter a Salutation for the Contact you are creating.
+							Please enter a Title.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'FirstName'">
-							You must enter a First Name for the Contact you are creating.
+							Please enter a First Name.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'LastName'">
-							You must enter a Last Name for the Contact you are creating.
+							Please enter a Last Name.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'DOB'">
-							You must enter a valid Date of Birth for the Contact you are creating.
+							Please enter a valid Date of Birth.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Email'">
-							You must enter an Email Address for the Contact you are creating.
+							Please enter an Email Address.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Phones Empty'">
-							You must enter a Contact Number for the Contact you are creating.
+							Please enter a Contact Number.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'UserName Empty'">
-							You must enter a Username for the Contact you are creating.
+							Please enter a Username.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'UserName Exists'">
-							The Username you selected already exists. Please select another Username and try again.
+							The Username you entered already exists. Please enter a unique Username.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'PassWord'">
-							You must enter a Password for the Contact you are creating.
+							Please enter a Password.
 						</xsl:when>
 					</xsl:choose>
 				</div>

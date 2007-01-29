@@ -6,8 +6,9 @@
 	<xsl:template name="Content">
 		<h1>Rate Group Not Found</h1>
 		
-		<p>
-			The Rate Group you were attempting to view could not be found in the system.
-		</p>
+		<div class = "MsgErrorWide">
+			The Rate Group you were attempting to view could not be found.
+
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

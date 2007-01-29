@@ -26,19 +26,19 @@
 		
 		<xsl:choose>
 			<xsl:when test="count(/Response/Notes/Results/rangeSample/Note) = 0">
-				<div class="MsgNoticeNarrow">
+				<div class="MsgNoticeModal">
 					<xsl:choose>
 						<xsl:when test="/Response/Service">
-							No notes were found for the Service that you requested.
+							There are no Notes associated with this Service.
 						</xsl:when>
 						<xsl:when test="/Response/Contact">
-							No notes were found for the Contact that you requested.
+							There are no Notes associated with this Contact.
 						</xsl:when>
 						<xsl:when test="/Response/Account">
-							No notes were found for the Account that you requested.
+							There are no Notes associated with this Account.
 						</xsl:when>
 						<xsl:when test="/Response/AccountGroup">
-							No notes were found for the Account Group that you requested.
+							There are no Notes associated with this Account Group.
 						</xsl:when>
 					</xsl:choose>
 				</div>

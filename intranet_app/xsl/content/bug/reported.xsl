@@ -6,8 +6,8 @@
 	<xsl:template name="Content">
 		<h1>Bug Reported</h1>
 		
-		<p>
-			<strong>Your Bug Report has been recorded.</strong><br/>
-		</p>
+		<div class="MsgNoticeWide">
+			<strong>Your  Bug has been successfully recorded.</strong><br/>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

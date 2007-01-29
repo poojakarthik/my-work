@@ -11,28 +11,28 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'CType-Blank'">
-							Your Recurring Charge Code must not be Blank. Please try again.
+							Please enter a Recurring Charge Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Descr-Blank'">
-							Your Recurring Charge Description must not be Blank. Please try again.
+							Please enter a Recurring Charge Description
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CType-Exists'">
-							Your Recurring Charge Code already exists in the Database for an Unarchived Item. Please try again.
+							The Recurring Charge Code you entered already exists.  Please enter a unique Recurring Charge Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Frequency'">
-							Invalid selection of a Recurring Frequency.
+							Please enter a valid Frequency.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Nature'">
-							You did not select a valid nature. Please select a valid nature and try again.
+							Please select a valid Nature.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'RecursionCharge Invalid'">
-							You did not select a valid value for your Recursion Charge. Please check this and try again.
+							Please enter a valid Recursion Charge.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'MinCharge Invalid'">
-							You did not select a valid value for your Minimum Charge. Please check this and try again.
+							Please enter a valid Minimum Charge.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CancellationFee Invalid'">
-							You did not select a valid value for your Cancellation Fee. Please check this and try again.
+							Please enter a Valid Cancellation Fee.
 						</xsl:when>
 					</xsl:choose>
 				</div>

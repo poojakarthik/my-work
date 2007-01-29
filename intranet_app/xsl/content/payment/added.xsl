@@ -4,12 +4,14 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+	<!--are we using this page?-->
+	<!--what is the difference between uploaded and added?-->
 		<h1>Payment Added</h1>
 		
-		<p>
-			The Payment has been successfully added to the payments 
-			Queue for processing. It may take up to 24 hours for
-            this payment to be visible in the system.
-		</p>
+		<div class = "MsgNoticeWide">
+			The Payment has been successfully added.  Please not that it may take up to 24 hours to be processed.
+
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

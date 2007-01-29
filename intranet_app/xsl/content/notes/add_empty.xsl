@@ -4,6 +4,9 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
+	
+	<!--NOT USING THIS PAGE-->
+	<!-- I am under ther impression that this page is not in use-->
 		<h1>Problem Creating New Note</h1>
 		
 		<p>

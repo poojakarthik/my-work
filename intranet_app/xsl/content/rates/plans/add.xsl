@@ -16,10 +16,10 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/RatePlan/Error = 'Blank'">
-							You did not enter a Plan Name. Please try again.
+							Please enter a Rate Plan Name.
 						</xsl:when>
 						<xsl:when test="/Response/RatePlan/Error = 'Exists'">
-							The Plan Name that you entered already exists. Please try again.
+							The Rate Plan Name you entered already exists.  Please enter a unique Rate Plan Name.
 						</xsl:when>
 					</xsl:choose>
 				</div>

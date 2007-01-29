@@ -11,13 +11,15 @@
 		
 		<h1>Edit Service Details</h1>
 		
+		
 		<script language="javascript" src="js/service_edit.js"></script>
 		
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Mismatch'">
-						Your Line Numbers did not match eachother.
+						Your Service IDs did not match. Please try again.
+
 					</xsl:when>
 				</xsl:choose>
 			</div>
@@ -39,6 +41,7 @@
 						</xsl:attribute>
 					</input>
 					<table border="0" cellpadding="3" cellspacing="0">
+				
 						<tr>
 							<td class = "Required"></td>
 							<th class="JustifiedWidth">

@@ -110,7 +110,7 @@
 						<!-- TODO!bash! DO NOT SET WIDTH INSIDE THE PAGE !!!!!!!!!!!! SET IT IN THE DAMN CLASS !!!!!!!!!!!!!! -->
 						<div class="MsgNoticeNarrow">
 								<strong><span class="Attention">Notice</span> :</strong>
-								No Service Address Details Found
+								No Service Address Details found.
 							</div>
 						</xsl:if>
 						<div class="Narrow-Form">

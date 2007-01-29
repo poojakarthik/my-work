@@ -624,7 +624,7 @@
 		<xsl:choose>
 			<xsl:when test="/Response/Services/Results/collationLength = 0">
 				<div class="MsgNoticeWide">
-					There are no services associated with this account.
+					There are no Services associated with this Account.
 				</div>
 			</xsl:when>
 		</xsl:choose>

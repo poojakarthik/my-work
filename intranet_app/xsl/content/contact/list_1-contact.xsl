@@ -57,7 +57,7 @@
 						<div class="MsgErrorWide">
 							<xsl:choose>
 								<xsl:when test="/Response/Error = 'Unselected'">
-									You must select a Contact to continue.
+									Please select a Contact.
 								</xsl:when>
 							</xsl:choose>
 						</div>
@@ -114,17 +114,17 @@
 					<xsl:choose>
 						<xsl:when test="/Response/ui-answers/Contacts/Results/collationLength &gt; 15">
 							<div class="MsgErrorWide">
-								There are too many results to display. Please refine your search and try again.
+								There are too many results to display.  Please refine your search and try again.
 							</div>
 						</xsl:when>
 						<xsl:when test="/Response/ui-answers/Contacts/Results/collationLength = 0">
 							<div class="MsgErrorWide">
-								There are no Contacts with the Search Criteria that you Specified.
+								There were no results matching your search. Please change your search and try again.
 							</div>
 						</xsl:when>
 						<xsl:when test="count(/Response/ui-answers/Contacts/Results/rangeSample/Contact) = 0">
 							<div class="MsgNoticeWide">
-								There are no Records for the Range that you Searched for.
+								There were no results matching your search. Please change your search and try again.
 							</div>
 						</xsl:when>
 						<xsl:otherwise>

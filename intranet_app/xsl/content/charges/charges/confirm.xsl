@@ -4,14 +4,15 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Added New Charge Type</h1>
+		<h1>Charge Type Added</h1>
 		
-		<p>
-			Your new Charge Type has been successfully created.
-		</p>
+		<div class="MsgNoticeWide">
+			The Charge Type has been successfully added.
+
+		</div>
 		
-		<p>
+		<div class="Right"
 			Continue to <a href="charges_charge_list.php">List Charge Types</a>.
-		</p>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

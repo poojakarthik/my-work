@@ -6,8 +6,9 @@
 	<xsl:template name="Content">
 		<h1>Rate Plan Not Found</h1>
 		
-		<p>
-			The Rate Plan you were attempting to view could not be found in the system.
-		</p>
+		<div class = "MsgErrorWide">
+			The Rate Plan you were attempting to view could not be found.
+
+		</div>
 	</xsl:template>
 </xsl:stylesheet>

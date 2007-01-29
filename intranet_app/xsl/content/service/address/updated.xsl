@@ -10,16 +10,18 @@
 		<h1>Service Address Updated</h1>
 		
 		<div class = "MsgNoticeWide">
-			Your Service Address Details have been successfully updated.
+			The Service Address has been successfully updated.
+
 		</div>
 		
 		<div class = "Right">
+		Return to 
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_address.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
-				<xsl:text>Return to Provisioning</xsl:text>
+				<xsl:text>Provisioning</xsl:text>
 			</a>
 		</div>
 	</xsl:template>

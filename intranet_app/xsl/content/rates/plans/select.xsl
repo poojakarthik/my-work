@@ -37,8 +37,7 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/RatePlan/Error = 'Requirements'">
-							You did not fill in all the Required Record Type fields. Please
-							select all the required Record Types and resubmit.
+							Please enter a Rate Plan Description.
 						</xsl:when>
 						<xsl:when test="/Response/RatePlan/Error = 'Mishandled'">
 							A system error occurred.
@@ -98,7 +97,7 @@
 						</tr>
 						<tr>
 						
-						<td class="Required"><strong><span class="Red">*</span></strong></td>
+						<td class="Required"></td>
 								
 								
 							<th class="JustifiedWidth">
@@ -114,7 +113,7 @@
 						<tr>
 						
 						
-						<td class="Required"><strong><span class="Red">*</span></strong></td>
+						<td class="Required"></td>
 								
 								
 							<th class="JustifiedWidth">
@@ -129,7 +128,7 @@
 						</tr>
 						<tr>
 						
-						<td class="Required"><strong><span class="Red">*</span></strong></td>
+						<td class="Required"></td>
 								
 								
 							<th class="JustifiedWidth">
@@ -176,14 +175,12 @@
 					<div class="Clear"></div>
 				</div>
 				<div class="Clear"></div>
-				<div class="Seperator"></div>
 				
-				<strong><span class="Red">*</span></strong>
-				This Record Type is Required
 				
 				<div class="Clear"></div>
 			</div>
-			<div class="Seperator"></div>
+			
+			
 			
 			<xsl:if test="/Response/RatePlan/RecurringChargeTypes/Results/collationLength != 0">
 				<h2>Recurring Changes</h2>
@@ -245,10 +242,15 @@
 					
 					<div class="Clear"></div>
 				</div>
-				<div class="Seperator"></div>
+				<div class="SmallSeperator"></div>
 			</xsl:if>
-			
-			<input type="submit" value="Create Plan &#0187;" class="input-submit" />
+			<div class = "Left">
+			<strong><span class="Red">*</span></strong>
+				: Required Field
+			</div>
+			<div class = "Right">
+				<input type="submit" value="Create Plan &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

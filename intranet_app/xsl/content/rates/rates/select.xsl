@@ -30,50 +30,48 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Rate/Error = 'Blank'">
-							Your Rate Name and your ServiceType must not be Blank.
-							Please try again.
+							Please enter a Rate Name.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'Exists'">
-							The Rate Name that you entered already exists in the System.
-							Please choose another Rate Name.
+							The Rate Name you entered already exists.  Please enter a unique Rate Name.
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'ServiceType'">
-							You have selected an invalid ServiceType. Please select a 
-							service type from the list below.
+							Please select a valid Service Type
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'Hours'">
-							You have incorrectly set an Hour value for your Start and Cease
-							times. Please correct this and try again.
+							Please enter valid Start/Cease Times.
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'StandardUnits'">
-							Standard units must be a whole number and not zero. Please check
-							this value and try again.
+							Please enter a valid value for Standard Units.  Standard Units should be a whole number, and should not be zero.
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'StandardRateSelection'">
-							The Value that you Entered for your Standard Rate Selection
-							was Invalid. Please enter an appropriate value for this selection.
+							Please select a valid Standard Rate.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'CapCalculationSelection'">
-							You must enter a value for your selected Cap type. Please
-							fill this field and resubmit your Rate.
+							Please enter a value for your selected Cap Type.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'CapLimitingSelection'">
-							You must enter a value for your selected Cap Limits type. Please
-							fill this field and resubmit your Rate.
+							Please enter a value for your selected Cap Limits Type.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'ExcessRateSelection'">
-							You must select and enter a valid Excess Rate. Please correct this
-							and resubmit your Rate.
+							Please select a valid Excess Rate.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'StartTimeInvalid'">
-							There was an error with your Start time. Please check this value.
+							Please enter a valid Start Time.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'EndTimeInvalid'">
-							There was an error with your Cease time. Please check this value.
+							Please enter a valid Cease Time.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'Weekday'">
-							You must select at least one of the Week Days. Please check this and
-							try resubmitting this form.
+							Please select a minimum of one day of the week.
+
 						</xsl:when>
 					</xsl:choose>
 				</div>

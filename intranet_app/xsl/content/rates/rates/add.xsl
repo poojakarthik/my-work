@@ -4,7 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Add New Rate</h1>
+		<h1>Add  Rate</h1>
 		
 		<form method="POST" action="rates_rate_add.php">
 			<script language="javascript" src="servicetype_recordtype.php"></script>
@@ -13,16 +13,16 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Rate/Error = 'Blank'">
-							Your Rate Name and your ServiceType must not be Blank.
-							Please try again.
+							Please enter a Rate Name.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'Exists'">
-							The Rate Name that you entered already exists in the System.
-							Please choose another Rate Name.
+							The Rate Name you entered already exists.  Please enter a unique Rate Name.
+
 						</xsl:when>
 						<xsl:when test="/Response/Rate/Error = 'ServiceType'">
-							You have selected an invalid ServiceType. Please select a 
-							service type from the list below.
+							Please select a valid Service Type.
+
 						</xsl:when>
 					</xsl:choose>
 				</div>

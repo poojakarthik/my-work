@@ -10,16 +10,18 @@
 		<h1>Mobile Details Updated</h1>
 		
 		<div class = "MsgNoticeWide">
-			Your Mobile Details have been successfully updated.
+			The Mobile Details have been successfully updated.
+
 		</div>
 		
 		<div class = "Right">
+		Return to 
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>service_mobile_details.php?Service=</xsl:text>
 					<xsl:value-of select="/Response/Service/Id" />
 				</xsl:attribute>
-				<xsl:text>Return to Mobile Details</xsl:text>
+				<xsl:text>Mobile Details</xsl:text>
 			</a>
 		</div>
 	</xsl:template>
