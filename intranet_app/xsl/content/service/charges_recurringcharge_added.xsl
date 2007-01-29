@@ -4,22 +4,12 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Recurring Charge Assigned</h1>
+		<h1>Recurring Service Charge Added</h1>
 		
 		<div class = "MsgNoticeWide">
-			The Recurring Charge has been successfully assigned to the service.
+			The Recurring Charge has been successfully added to the service.
 
 		</div>
 		
-		<div class = "Right">
-			Return to
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>service_view.php?Id=</xsl:text>
-					<xsl:value-of select="/Response/Service/Id" />
-				</xsl:attribute>
-				<xsl:text>Service Details</xsl:text>
-			</a>
-		</div>
 	</xsl:template>
 </xsl:stylesheet>

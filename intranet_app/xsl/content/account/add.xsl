@@ -153,7 +153,7 @@
 				<xsl:otherwise>
 					<div class="MsgNoticeWide">
 						<strong><span class="Attention">Attention</span> :</strong>
-						This form will add a new Customer.  If you wish to add an Account to an existing Customer, you will need to use the &quot; Add Associated Account&quote; link from the existing Account.
+						This form will add a new Customer.  If you wish to add an Account to an existing Customer, you will need to use the &quot; Add Associated Account&quot; link from the existing Account.
 				
 					</div>
 				</xsl:otherwise>
