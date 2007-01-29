@@ -747,6 +747,60 @@
 			
 			throw new Exception ('Mobile Detail Not Found');
 		}
+		
+		//------------------------------------------------------------------------//
+		// MobileDetailUpdate
+		//------------------------------------------------------------------------//
+		/**
+		 * MobileDetailUpdate()
+		 *
+		 * Update Service Address Information
+		 *
+		 * Save the Service Address information to the Database
+		 *
+		 * @param	Array		$arrDetails		An associative array of Mobile Details
+		 *
+		 * @return	MobileDetail
+		 *
+		 * @method
+		 */
+		 
+		public function MobileDetailUpdate ($arrDetails)
+		{
+			$staServiceStateType		= new ServiceStateTypes;
+			$bolServiceStateType		= $staServiceStateType->setValue ($arrDetails ['SimState']);
+			
+			$arrData = Array (
+				'SimPUK'			=> $arrDetails ['SimPUK'],
+				'SimESN'			=> $arrDetails ['SimESN'],
+				'DOB'				=> sprintf ("%04d", $arrDetails ['DOB']['year']) . "-" .
+									   sprintf ("%02d", $arrDetails ['DOB']['month']) . "-" .
+									   sprintf ("%02d", $arrDetails ['DOB']['day']),
+				'SimState'			=> (($bolServiceStateType == true) ? $arrDetails ['SimState'] : ''),
+				'Comments'			=> $arrDetails ['Comments']
+			);
+			
+			try
+			{
+				$mdeMobileDetail = $this->MobileDetail ();
+				
+				// Update Service Address
+				$updMobileDetail = new StatementUpdate ('ServiceMobileDetail', 'Id = <Id>', $arrData, 1);
+				$updMobileDetail->Execute ($arrData, Array ('Id' => $mdeMobileDetail->Pull ('Id')->getValue ()));
+				
+				return true;
+			}
+			catch (Exception $e)
+			{
+				$arrData ['AccountGroup']	= $this->Pull ('AccountGroup')->getValue ();
+				$arrData ['Account']		= $this->Pull ('Account')->getValue ();
+				$arrData ['Service']		= $this->Pull ('Id')->getValue ();
+				
+				// Insert Service Address
+				$insMobileDetail = new StatementInsert ('ServiceMobileDetail');
+				$insMobileDetail = $insMobileDetail->Execute ($arrData);
+			}
+		}
 	}
 	
 ?>

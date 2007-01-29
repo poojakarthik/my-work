@@ -374,10 +374,10 @@
 								<a>
 									<xsl:attribute name="href">
 										<!-- TODO!bash! make this point to a mobile provisioning page -->
-										<xsl:text>service_address.php?Service=</xsl:text>
+										<xsl:text>service_mobile_details.php?Service=</xsl:text>
 										<xsl:value-of select="/Response/Service/Id" />
 									</xsl:attribute>
-									<xsl:text>Mobile Provisioning</xsl:text>
+									<xsl:text>Mobile Details</xsl:text>
 								</a>
 							</li>
 						</xsl:if>

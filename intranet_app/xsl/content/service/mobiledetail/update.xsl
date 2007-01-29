@@ -90,7 +90,7 @@
 					
 					<div class="Seperator"></div>
 						
-					<form method="post" action="service_address.php">
+					<form method="post" action="service_mobile_details.php">
 						<input type="hidden" name="Service">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
@@ -111,16 +111,91 @@
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Mobile')" />
-											<xsl:with-param name="field" select="string('PUK')" />
+											<xsl:with-param name="field" select="string('SimPUK')" />
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="PUK" class="input-string">
+										<input type="text" name="SimPUK" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/MobileDetail/PUK" />
+												<xsl:value-of select="/Response/ui-values/SimPUK" />
 											</xsl:attribute>
 										</input>
+									</td>
+								</tr>
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Mobile')" />
+											<xsl:with-param name="field" select="string('SimESN')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="SimESN" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ui-values/SimESN" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Mobile')" />
+											<xsl:with-param name="field" select="string('SimState')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<select name="SimState">
+											<xsl:for-each select="/Response/ServiceStateTypes/ServiceStateType">
+												<option>
+													<xsl:attribute name="value">
+														<xsl:text></xsl:text>
+														<xsl:value-of select="./Id" />
+													</xsl:attribute>
+													<xsl:if test="./Id = /Response/ui-values/SimState">
+														<xsl:attribute name="selected">
+															<xsl:text>selected</xsl:text>
+														</xsl:attribute>
+													</xsl:if>
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Name" />
+												</option>
+											</xsl:for-each>
+										</select>
+									</td>
+								</tr>
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Mobile')" />
+											<xsl:with-param name="field" select="string('DOB')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:call-template name="DOB">
+											<xsl:with-param name="Name-Day"			select="string('DOB[day]')" />
+											<xsl:with-param name="Name-Month"		select="string('DOB[month]')" />
+											<xsl:with-param name="Name-Year"		select="string('DOB[year]')" />
+											<xsl:with-param name="Selected-Day"		select="/Response/ui-values/DOB-day" />
+											<xsl:with-param name="Selected-Month"	select="/Response/ui-values/DOB-month" />
+											<xsl:with-param name="Selected-Year"	select="/Response/ui-values/DOB-year" />
+										</xsl:call-template>
+									</td>
+								</tr>
+								<tr>
+									<th class="JustifiedWidth" valign="top">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Mobile')" />
+											<xsl:with-param name="field" select="string('Comments')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<textarea name="Comments" class="input-summary">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/ui-values/Comments" />
+										</textarea>
 									</td>
 								</tr>
 							</table>
