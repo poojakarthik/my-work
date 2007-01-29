@@ -766,8 +766,8 @@ die();
 		// update Account LastBilled date
 		$this->_rptBillingReport->AddMessage(MSG_LAST_BILLED."\t", FALSE);
 		$strQuery  = "UPDATE Account INNER JOIN Invoice on (Account.Id = Invoice.Account)";
-		$strQuery .= " SET Account.LastBilled = Now()";
-		$strQuery .= " WHERE Invoice.Status = ".INVOICE_TEMP;
+		$strQuery .= " SET Account.LastBilled = NOW()";
+		$strQuery .= " WHERE Invoice.InvoiceRun = '$strInvoiceRun'";
 		$qryAccountLastBilled = new Query();
 		if(!$qryAccountLastBilled->Execute($strQuery))
 		{
