@@ -917,7 +917,7 @@
 			$strInvoiceTable = 'Invoice';
 		}
 		
-		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices", "InvoiceRun = $strInvoiceRun");
+		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices", "InvoiceRun = '$strInvoiceRun'");
 		if ($selMetaData->Execute() === FALSE)
 		{
 			return FALSE;
