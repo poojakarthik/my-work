@@ -141,7 +141,7 @@
 								title="View Plan Details" alt="View Rates and Charges for a Plan">
 									<xsl:attribute name="onclick">
 										<xsl:text>return ModalExternal (this, </xsl:text>
-											<!-- TODO!bash! make this display properly in a popup -->
+											<!-- TODO!flame! popup ???? -->
 											<xsl:text>'rates_plan_summary.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value</xsl:text>
 										<xsl:text>)</xsl:text>
 									</xsl:attribute>

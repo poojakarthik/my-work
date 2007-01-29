@@ -7,7 +7,7 @@
 	//----------------------------------------------------------------------------//
 	
 	//TODO!bash! Assigning a new plan does not work, no error, just doesn't work.... I thought you told me the UI was finished ????
-	//TODO!bash! View Plan Details still shows the old view plan details pages, make it show the new one in a popup
+	//TODO!bash! View Plan Details still shows the old view plan details pages, make it show the new one
 	
 	
 	// call application loader

@@ -296,18 +296,38 @@ class NormalisationModuleCommander extends NormalisationModule
 	/**
 	 * RawDescription()
 	 *
-	 * Returns the Raw Description Code from the CDR
+	 * Returns the Raw Description from the CDR
 	 *
-	 * Returns the Raw Description Code from the CDR
+	 * Returns the Raw Description from the CDR
 	 * 
 	 *
-	 * @return	mixed					Raw Description Code
+	 * @return	mixed					Raw Description
 	 *
 	 * @method
 	 */
 	 function RawDescription()
 	 {
 	 	return $this->_FetchRawCDR('Location');
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// RawRecordType
+	//------------------------------------------------------------------------//
+	/**
+	 * RawRecordType()
+	 *
+	 * Returns the Raw RawRecord Type from the CDR
+	 *
+	 * Returns the Raw RawRecord Type from the CDR
+	 * 
+	 *
+	 * @return	mixed					Raw RawRecord Type
+	 *
+	 * @method
+	 */
+	 function RawRecordType()
+	 {
+	 	return (int)$this->_FetchRawCDR('CallType');
 	 }
 }
 	

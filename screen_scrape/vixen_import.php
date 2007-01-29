@@ -1085,6 +1085,18 @@ class VixenImport extends ApplicationBaseClass
 			return FALSE;
 		}
 	}
+	
+	// validate Rates, RateGroups & RatePlans
+	function ValidateRates()
+	{
+		// get rates from the db
+		
+		// get rate groups from the DB
+		
+		// get rate plans from the DB
+		
+		
+	}
 }
 
 

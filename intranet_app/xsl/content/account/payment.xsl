@@ -100,7 +100,8 @@
 			</input>
 
 			<label for="BillingType:AC">
-				Make all charges against the Account
+				<!-- Bash, Do NOT change this... it is supposed to say 'Account' -->
+				Account
 			</label>
 
 			<div class="SmallSeperator"></div>
