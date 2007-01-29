@@ -183,7 +183,7 @@ die();
 		$arrCDRCols = Array();
 		$arrCDRCols['Status']			= CDR_TEMP_INVOICE;
 		$arrCDRCols['InvoiceRun']		= $strInvoiceRun;
-		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Status = ".CDR_RATED, $arrCDRCols);
+		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Credit = 0 AND Status = ".CDR_RATED, $arrCDRCols);
 		
 		// Init Insert Statements
 		$arrInvoiceData 					= Array();
@@ -295,8 +295,6 @@ die();
 				$fltServiceDebits	= 0.0;
 				$fltTotalCharge		= 0.0;
 				
-				Debug($arrService);
-				
 				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
 				if ($arrService['Shared'] > 0)
@@ -351,21 +349,14 @@ die();
 					$fltTotalCharge = (float)$arrService['CappedCharge'];
 				}
 				
-				Debug($fltTotalCharge);
-				
 				// add uncapped charges
 				$fltTotalCharge += (float)$arrService['UncappedCharge'];
-				
-				
-				Debug($fltTotalCharge);
 
 				// If there is a minimum monthly charge, apply it
 				if ($fltMinMonthly > 0)
 				{
 					$fltTotalCharge = max($fltMinMonthly, $fltTotalCharge);
 				}
-				
-				Debug($fltTotalCharge);
 				
 				// if this is a shared plan
 				if ($arrService['Shared'] > 0)
@@ -451,8 +442,6 @@ die();
 				$arrServiceTotal['TotalCharge']		= $fltTotalCharge;
 				$arrServiceTotal['Credit']			= $fltServiceCredits;
 				$arrServiceTotal['Debit']			= $fltServiceDebits;
-				
-				Debug($arrServiceTotal);
 				
 				if (!$insServiceTotal->Execute($arrServiceTotal))
 				{
