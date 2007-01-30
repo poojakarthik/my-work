@@ -7,15 +7,13 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	<!--TODO!bash! URGENT! The menu needs to return to View invoices and payments page - Do NOT have a link back to the same page!!!!-->
-	
 		<!--Page for viewing Invoice Details (1/2) -->
+		
+		<!--TODO!bash! URGENT! The menu needs to return to View invoices and payments page - Do NOT have a link back to the same page!!!!-->
 		<h1>View Invoice Details</h1>
 		
 		<!-- Invoice Details -->
 		<h2 class="Invoice">Invoice Details</h2>
-		<!-- TODO!!!! - show invoice details, TOTALS etc -->
-		<!-- TODO!bash! - I won't be able to test this until an billing run is done -->
 		<div class="Wide-Form">
 			<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
@@ -76,14 +74,12 @@
 							<xsl:with-param name="field" select="string('Disputed')" />
 						</xsl:call-template>
 					</th>
-					<td>
-					
-					<!--TODO!bash! Make this red when disputed and green when resolved!!!!-->
-			       			<xsl:call-template name="Currency">
-			       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed"/>
-								<xsl:with-param name="Decimal" select="number('2')" />
-	       					</xsl:call-template>
-
+					<td>					
+						<!--TODO!bash! Make this red when disputed and green when resolved!!!!-->
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed"/>
+							<xsl:with-param name="Decimal" select="number('2')" />
+       					</xsl:call-template>
 					</td>
 				</tr>
 			</table>
@@ -99,31 +95,45 @@
 			</xsl:when>
 		</xsl:choose>
 		
-		<!--Links-->
-		<div class="LinkAdd">
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
-					<xsl:value-of select="/Response/Invoice/Id" />
-				</xsl:attribute>
-				<xsl:text>Dispute Invoice</xsl:text>
-			</a>
-		</div>
 		<div class="LinkEdit">
-		<!--TODO!bash! Urgent - why is this link here when the invoice is not in dispute - only show it if it has been disputed, not before, and not after it has been resolved-->
-		<!--TODO!bash! Urgent - INVOICE_DISPUTED = show resolve -->	
-		<!--TODO!bash! Urgent - INVOICE_COMMITTED = show dispute -->			
-		<!--TODO!flame! Urgent - other status show ???? -->
-		<!--TODO!bash! Urgent - INVOICE_SETTLED = show none -->
-			<a>
-				<xsl:attribute name="href">
-					<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
-					<xsl:value-of select="/Response/Invoice/Id" />
-				</xsl:attribute>
-				<xsl:text>Resolve Disputed Invoice</xsl:text>
-			</a>
+			<xsl:choose>
+				<!--TODO!bash! Urgent - INVOICE_SETTLED = show none -->
+				<xsl:when test="/Response/Invoice/Status = 103" />
+				
+				<!--TODO!bash! Urgent - INVOICE_COMMITTED = show dispute -->
+				<xsl:when test="/Response/Invoice/Status = 101">
+					<!-- Dispute Invoice -->
+					<a>
+						<xsl:attribute name="href">
+							<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
+							<xsl:value-of select="/Response/Invoice/Id" />
+						</xsl:attribute>
+						<xsl:text>Raise Dispute</xsl:text>
+					</a>
+				</xsl:when>
+				
+				<!--TODO!bash! Urgent - INVOICE_DISPUTED = show resolve -->	
+				<xsl:when test="/Response/Invoice/Status = 102">
+					<!-- Resolve Disputed Invoice -->
+					<a>
+						<xsl:attribute name="href">
+							<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
+							<xsl:value-of select="/Response/Invoice/Id" />
+						</xsl:attribute>
+						<xsl:text>Resolve Dispute</xsl:text>
+					</a>
+				</xsl:when>
+				
+				<!--TODO!flame! Urgent - other status show ???? -->
+				<xsl:otherwise>
+					<xsl:text> ???? </xsl:text>
+				</xsl:otherwise>
+			</xsl:choose>
 		</div>
-		 <!-- TODO!bash! URGENT!!!!!! NO SERVICES ARE SHOWING UP!!!!!!!-->
+		
+		<div class="Seperator"></div>
+
+		<!-- TODO!bash! [MOVED ON] URGENT!!!!!! NO SERVICES ARE SHOWING UP! (This is occurring on the CDR Page) -->
 		<!-- Table of Services -->
 		<h2 class="Services">Services</h2>
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing"  width="100%">
@@ -149,13 +159,21 @@
 					
 					<td><xsl:value-of select="/Response/ServiceTotals/Results/rangeStart + position()" />.</td>
 					<td>
-						<a>
+						<a title="View Service Details">
 							<xsl:attribute name="href">
-								<xsl:text>invoice_view.php</xsl:text>
-								<xsl:text>?Invoice=</xsl:text><xsl:value-of select="/Response/Invoice/Id" />
-								<xsl:text>&amp;ServiceTotal=</xsl:text><xsl:value-of select="./Id" />
+								<xsl:text>invoice_view.php?Invoice=</xsl:text>
+								<xsl:value-of select="/Response/Invoice/Id" />
+								<xsl:text>&amp;ServiceTotal=</xsl:text>
+								<xsl:value-of select="./Id" />
 							</xsl:attribute>
-							<xsl:value-of select="./FNN" />
+							<xsl:choose>
+								<xsl:when test="./FNN=''">
+									<span class="Red"><strong>None</strong></span> 
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:value-of select="./FNN" /> 
+								</xsl:otherwise>
+							</xsl:choose>
 						</a>
 					</td>
 					<td class="Currency">
@@ -179,11 +197,6 @@
 				</tr>
 			</xsl:for-each>
 		</table>
-		<div class="Seperator"></div>
-
-		
-
-		
 		<div class="Seperator"></div>
 	</xsl:template>
 </xsl:stylesheet>

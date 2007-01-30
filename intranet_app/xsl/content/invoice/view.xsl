@@ -250,6 +250,9 @@
 											<xsl:text>?Invoice=</xsl:text>
 											<xsl:value-of select="/Response/Invoice/Id" />
 											
+											<xsl:text>&amp;ServiceTotal=</xsl:text>
+											<xsl:value-of select="/Response/ServiceTotal/Id" />
+											
 											<xsl:text>&amp;rangeLength=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
 											
@@ -272,6 +275,9 @@
 											
 											<xsl:text>?Invoice=</xsl:text>
 											<xsl:value-of select="/Response/Invoice/Id" />
+											
+											<xsl:text>&amp;ServiceTotal=</xsl:text>
+											<xsl:value-of select="/Response/ServiceTotal/Id" />
 											
 											<xsl:text>&amp;rangeLength=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
@@ -314,6 +320,9 @@
 											<xsl:text>?Invoice=</xsl:text>
 											<xsl:value-of select="/Response/Invoice/Id" />
 											
+											<xsl:text>&amp;ServiceTotal=</xsl:text>
+											<xsl:value-of select="/Response/ServiceTotal/Id" />
+											
 											<xsl:text>&amp;rangeLength=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />
 											
@@ -337,6 +346,9 @@
 											
 											<xsl:text>?Invoice=</xsl:text>
 											<xsl:value-of select="/Response/Invoice/Id" />
+											
+											<xsl:text>&amp;ServiceTotal=</xsl:text>
+											<xsl:value-of select="/Response/ServiceTotal/Id" />
 											
 											<xsl:text>&amp;rangeLength=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangeLength" />

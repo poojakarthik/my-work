@@ -542,29 +542,20 @@
 					<td><xsl:value-of select="/Response/Services/Results/rangeStart + position()" />.</td>
 					<td>		
 						
-						<xsl:choose>
-							<xsl:when test="./FNN=''">
-								<a title="View Service Details">
-									<xsl:attribute name="href">
-										<xsl:text>service_view.php?Id=</xsl:text>
-										<xsl:value-of select="./Id" />
-										
-									</xsl:attribute>
+						<a title="View Service Details">
+							<xsl:attribute name="href">
+								<xsl:text>service_view.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:choose>
+								<xsl:when test="./FNN=''">
 									<span class="Red"><strong>None</strong></span> 
-								</a>
-							</xsl:when>
-							<xsl:otherwise>
-								<a title="View Service Details">
-									<xsl:attribute name="href">
-										<xsl:text>service_view.php?Id=</xsl:text>
-										<xsl:value-of select="./Id" />
-									</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
 									<xsl:value-of select="./FNN" /> 
-									</a>
 								</xsl:otherwise>
 							</xsl:choose>
-										
-					
+						</a>
 					</td>
 					<td><xsl:value-of select="./ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 					<td>
