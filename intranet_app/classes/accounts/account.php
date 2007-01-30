@@ -299,7 +299,7 @@
 			if ($bolStatus == 1)
 			{
 				$arrArchiveService = Array (
-					"ClosedOn"	=>	date ('Y-m-d')
+					"ClosedOn"	=>	new MySQLFunction ('NOW()')
 				);
 				
 				// Cascade down to include the Services
@@ -401,14 +401,14 @@
 				"Account"			=>	$this->Pull ('Id')->getValue (),
 				"CappedCharge"		=>	0,
 				"UncappedCharge"	=>	0,
-				"CreatedOn"			=>	date ("Y-m-d", $intDate),
+				"CreatedOn"			=>	new MySQLFunction ("NOW()"),
 				"CreatedBy"			=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				"Carrier"			=>	$srvService->Pull ('Carrier')->getValue (),
 				"CarrierPreselect"	=>	$srvService->Pull ('CarrierPreselect')->getValue (),
 				"LineStatus"		=>	$srvService->Pull ('LineStatus')->getValue ()
 			);
 			
-			$insService = new StatementInsert ('Service');
+			$insService = new StatementInsert ('Service', $arrService);
 			$intService = $insService->Execute ($arrService);
 			
 			return $intService;

@@ -191,7 +191,7 @@
 					"Account"				=> $this->Pull ('Account')->getValue (),
 					"Service"				=> $this->Pull ('Service')->getValue (),
 					"CreatedBy"				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-					"CreatedOn"				=> date ('Y-m-d'),
+					"CreatedOn"				=> new MySQLFunction ("NOW()"),
 					"ChargeType"			=> $this->Pull ('ChargeType')->getValue (),
 					"Description"			=> "CANCELLATION: " . $this->Pull ('Description')->getValue (),
 					"Nature"				=> NATURE_DR,
@@ -199,7 +199,7 @@
 					"Status"				=> CHARGE_APPROVED
 				);
 				
-				$insCharge = new StatementInsert ('Charge');
+				$insCharge = new StatementInsert ('Charge', $arrCharge);
 				$insCharge->Execute ($arrCharge);
 			}
 			

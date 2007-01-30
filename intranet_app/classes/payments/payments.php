@@ -80,7 +80,7 @@
 			$arrData = Array (
 				"AccountGroup"			=> $arrDetails ['AccountGroup'],
 				"Account"				=> $arrDetails ['Account'],
-				"PaidOn"				=> date ("Y-m-d"),
+				"PaidOn"				=> new MySQLFunction ('NOW()'),
 				"PaymentType"			=> $arrDetails ['PaymentType'],
 				"Amount"				=> $arrDetails ['Amount'],
 				"TXNReference"			=> $arrDetails ['TXNReference'],
@@ -90,7 +90,7 @@
 				"Status"				=> PAYMENT_WAITING
 			);
 			
-			$insService = new StatementInsert ('Payment');
+			$insService = new StatementInsert ('Payment', $arrData);
 			return $insService->Execute ($arrData);
 		}
 	}

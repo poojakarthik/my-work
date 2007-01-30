@@ -133,17 +133,17 @@
 		 
 		public function CreateNewProvisioningRequest ($aemAuthenticatedEmployee, $intCarrier, $intProvisioningRequestType)
 		{
-			$insProvisioningRequest = new StatementInsert ('Request');
-			$insProvisioningRequest->Execute (
-				Array (
-			 		'Carrier'			=> $intCarrier,
-			 		'Service'			=> $this->Pull ('Id')->getValue (),
-			 		'Employee'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-			 		'RequestType'		=> $intProvisioningRequestType,
-			 		'RequestDateTime'	=> date ('Y-m-d H:i:s'),
-			 		'Status'			=> REQUEST_STATUS_WAITING
-			 	)
-			);
+			$arrRequest = Array (
+		 		'Carrier'			=> $intCarrier,
+		 		'Service'			=> $this->Pull ('Id')->getValue (),
+		 		'Employee'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+		 		'RequestType'		=> $intProvisioningRequestType,
+		 		'RequestDateTime'	=> new MySQLFunction ('NOW()'),
+		 		'Status'			=> REQUEST_STATUS_WAITING
+		 	);
+			
+			$insProvisioningRequest = new StatementInsert ('Request', $arrRequest);
+			$insProvisioningRequest->Execute ($arrRequest);
 		}
 		
 		//------------------------------------------------------------------------//
@@ -246,7 +246,7 @@
 				'Account'				=> $this->Pull ('Account')->getValue (),
 				'Service'				=> $this->Pull ('Id')->getValue (),
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				'CreatedOn'				=> date ('Y-m-d'),
+				'CreatedOn'				=> new MySQLFunction ("NOW()"),
 				'ChargeType'			=> $chgChargeType->Pull ('ChargeType')->getValue (),
 				'Description'			=> $chgChargeType->Pull ('Description')->getValue (),
 				'Nature'				=> $chgChargeType->Pull ('Nature')->getValue (),
@@ -254,7 +254,7 @@
 				'Status'				=> CHARGE_WAITING
 			);
 			
-			$insCharge = new StatementInsert ('Charge');
+			$insCharge = new StatementInsert ('Charge', $arrCharge);
 			$insCharge->Execute ($arrCharge);
 		}
 		
@@ -302,7 +302,7 @@
 				'Account'				=> $this->Pull ('Account')->getValue (),
 				'Service'				=> $this->Pull ('Id')->getValue (),
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				'CreatedOn'				=> date ('Y-m-d'),
+				'CreatedOn'				=> new MySQLFunction ("NOW()"),
 				'ChargeType'			=> $rctRecurringChargeType->Pull ('ChargeType')->getValue (),
 				'Description'			=> $rctRecurringChargeType->Pull ('Description')->getValue (),
 				'Nature'				=> $rctRecurringChargeType->Pull ('Nature')->getValue (),
@@ -317,7 +317,7 @@
 				'Status'				=> CHARGE_WAITING
 			);
 			
-			$insRecurringCharge = new StatementInsert ('RecurringCharge');
+			$insRecurringCharge = new StatementInsert ('RecurringCharge', $arrRecurringCharge);
 			$insRecurringCharge->Execute ($arrRecurringCharge);
 		}
 		
@@ -380,18 +380,18 @@
 		
 		public function PlanSelect (AuthenticatedEmployee $aemAuthenticatedEmployee, RatePlan $rplRatePlan)
 		{
-			// Prepare each Rate Group
-			$insServiceRateGroup = new StatementInsert ('ServiceRateGroup');
-			
 			// Start the Skeleton
 			$arrServiceRateGroup = Array (
 				'Service'			=> $this->Pull ('Id')->getValue (),
 				'RateGroup'			=> '',
 				'CreatedBy'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				'CreatedOn'			=> date ('Y-m-d H:i:s'),
-				'StartDatetime'	=> date ('Y-m-d H:i:s'),
+				'CreatedOn'			=> new MySQLFunction ("NOW()"),
+				'StartDatetime'		=> new MySQLFunction ("NOW()"),
 				'EndDatetime'		=> '9999-12-31 23:59:59'
 			);
+			
+			// Prepare each Rate Group
+			$insServiceRateGroup = new StatementInsert ('ServiceRateGroup', $arrServiceRateGroup);
 			
 			// Loop through each of the Rate Groups and add them against the Service
 			foreach ($rplRatePlan->RateGroups () as $rgrRateGroup)
@@ -408,13 +408,13 @@
 				'Service'			=> $this->Pull ('Id')->getValue (),
 				'RatePlan'			=> $rplRatePlan->Pull ('Id')->getValue (),
 				'CreatedBy'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				'CreatedOn'			=> date ('Y-m-d H:i:s'),
-				'StartDatetime'	=> date ('Y-m-d H:i:s'),
+				'CreatedOn'			=> new MySQLFunction ("NOW()"),
+				'StartDatetime'		=> new MySQLFunction ("NOW()"),
 				'EndDatetime'		=> '9999-12-31 23:59:59'
 			);
 			
 			// Insert the Rate Plan against the Service
-			$insServiceRatePlan = new StatementInsert ('ServiceRatePlan');
+			$insServiceRatePlan = new StatementInsert ('ServiceRatePlan', $arrServiceRatePlan);
 			$insServiceRatePlan->Execute ($arrServiceRatePlan);
 		}
 		
@@ -478,7 +478,7 @@
 			{
 				// Set up an Archive SET clause
 				$arrArchive = Array (
-					'ClosedOn'	=>	($bolArchive == true) ? date ('Y-m-d') : null,
+					'ClosedOn'	=>	($bolArchive == true) ? new MySQLFunction ("NOW()") : null,
 					'ClosedBy'	=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue ()
 				);
 				

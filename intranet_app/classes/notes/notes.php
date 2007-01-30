@@ -72,14 +72,28 @@
 		 * Add a new Note to the Database
 		 *
 		 *
-		 * @param	Array	$arrNote		An associative array with the Note information contained.
+		 * @param	Array	$arrDetails		An associative array with the Note information contained.
 		 *
 		 * @method
 		 */
 		 
-		function Add ($arrNote)
+		function Add ($arrDetails)
 		{
-			$insNote = new StatementInsert ('Note');
+			$arrNote = Array (
+				'Note'			=> $arrDetails ['Note'],
+				'NoteType'		=> $arrDetails ['NoteType'],
+				
+				'AccountGroup'	=> $arrDetails ['AccountGroup'],
+				'Account'		=> $arrDetails ['Account'],
+				'Service'		=> $arrDetails ['Service'],
+				'Contact'		=> $arrDetails ['Contact'],
+				
+				'Datetime'		=> new MySQLFunction ("NOW()"),
+				
+				'Employee'		=> $arrDetails ['Employee']
+			);
+			
+			$insNote = new StatementInsert ('Note', $arrNote);
 			$intNote = $insNote->Execute ($arrNote);
 			
 			return new Note ($intNote);

@@ -95,9 +95,11 @@
 				"Mobile"			=> $arrData ['Mobile'],
 				"UserName"			=> $arrData ['UserName'],
 				"PassWord"			=> sha1 ($arrData ['PassWord']),
-				"DOB"				=> date ("Y-m-d", mktime (0, 0, 0, $arrData ['DOB-month'], $arrData ['DOB-day'], $arrData ['DOB-year'])),
+				"DOB"				=> sprintf ("%04d", $arrData ['DOB-year']) . "-" .
+									   sprintf ("%02d", $arrData ['DOB-month']) . "-" .  
+									   sprintf ("%02d", $arrData ['DOB-day']),
 				"SessionId"			=> "",
-				"SessionExpire"		=> date ("Y-m-d H:i:S"),
+				"SessionExpire"		=> new MySQLFunction ("NOW()"),
 				"Session"			=> "",
 				"Karma"				=> 0,
 				"PabloSays"			=> PABLO_TIP_POLITE,
@@ -105,7 +107,7 @@
 				"Archived"			=> 0
 			);
 			
-			$insEmployee = new StatementInsert ('Employee');
+			$insEmployee = new StatementInsert ('Employee', $arrEmployee);
 			$intEmployee = $insEmployee->Execute ($arrEmployee);
 			
 			return new Employee ($intEmployee);

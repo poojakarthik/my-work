@@ -434,7 +434,6 @@
 		{
 			// Record a request to view an Account in the Audit
 			$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordContact ($cntContact);
-			$athAuthentication->AuthenticatedEmployee ()->Audit ()->RecordAccount ($actAccount);
 			
 			header ('Location: contact_view.php?Id=' . $cntContact->Pull ('Id')->getValue ());
 		}

@@ -116,18 +116,22 @@
 			// In this particular TRY block - we want to hit the Catch area
 			// Reason being, if we find an Unarchived FNN - then the number
 			// cannot be added to the database.
-			try
-			{
-				$srvService = Services::UnarchivedFNN ($strFNN);
-			}
-			catch (Exception $e)
-			{
-			}
 			
-			// If there is a Service ... Throw an Exception
-			if ($srvService != NULL)
+			if ($arrData ['FNN'] <> "")
 			{
-				throw new Exception ('Unarchived FNN Exists');
+				try
+				{
+					$srvService = Services::UnarchivedFNN ($arrData ['FNN']);
+				}
+				catch (Exception $e)
+				{
+				}
+				
+				// If there is a Service ... Throw an Exception
+				if ($srvService)
+				{
+					throw new Exception ('Unarchived FNN Exists');
+				}
 			}
 			
 			$arrService = Array (
@@ -135,20 +139,17 @@
 				'ServiceType'			=> $arrData ['ServiceType'],
 				'Indial100'				=> ($arrData ['ServiceType'] == SERVICE_TYPE_LAND_LINE && $arrData ['Indial100'] == TRUE) ? '1' : '0',
 				
-				'MinMonthly'			=> 0,
-				'ChargeCap'				=> 0,
-				'UsageCap'				=> 0,
-				
 				'AccountGroup'			=> $actAccount->Pull ('AccountGroup')->getValue (),
 				'Account'				=> $actAccount->Pull ('Id')->getValue (),
+				
 				'CappedCharge'			=> 0,
 				'UncappedCharge'		=> 0,
 				
-				'CreatedOn'				=> date ('Y-m-d'),
+				'CreatedOn'				=> new MySQLFunction ("NOW()"),
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue ()
 			);
 			
-			$insService = new StatementInsert ('Service');
+			$insService = new StatementInsert ('Service', $arrService);
 			$intService = $insService->Execute ($arrService);
 			
 			$srvService = new Service ($intService);

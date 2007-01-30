@@ -109,7 +109,6 @@
 				Array (
 					"AccountGroup"			=> ($acgAccountGroup) ? $acgAccountGroup->Pull ('Id')->getValue () : $actAccount->Pull ('AccountGroup')->getValue (),
 					"Account"				=> ($oblbolAccount_Use->isTrue ()) ? $actAccount->Pull ('Id')->getValue () : null,
-					"PaidOn"				=> date ("Y-m-d"),
 					"PaymentType"			=> $_POST ['PaymentType'],
 					"Amount"				=> $_POST ['Amount'],
 					"TXNReference"			=> $oblstrTXNReference->getValue (),

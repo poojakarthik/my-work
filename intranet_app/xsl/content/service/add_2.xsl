@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO!bash! No Plan Assigned when I add a service -->
-<!-- TODO!bash! It lets me add a service with the same no. over and over again -->
+<!-- TODO!bash! [  DONE  ]		No Plan Assigned when I add a service -->
+<!-- TODO!bash! [  DONE  ]		It lets me add a service with the same no. over and over again -->
 <!-- TODO!bash! it lets me add any damn thing i want as the FNN. should allow a valid FNN or blank... NOTHING ELSE -->
-<!-- TODO!bash! How the hell can you tell me that this system is finished ????? It is 10pm on a Saturday night and I am still here fixing up your mess. I want to see every bit of this fixed and perfect by end of the day on Monday -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
@@ -72,20 +71,20 @@
 				</div>
 			</div>
 			<div class="Seperator"></div>
-			<!-- TODO!bash! if i hit continue without entering any details i get taken back to the service view page ????? -->
+			<!-- TODO!bash! [  DONE  ]		if i hit continue without entering any details i get taken back to the service view page ????? -->
 			<h2 class="Service">Service Details</h2>
+			
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Mismatch'">
-							Your Service IDs did not match. Please try again.
+							You must correctly confirm your Line Number. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Unarchived FNN Exists'">
-							The Service ID you entered already exists.  Please enter a unique Service ID.
+							The Line Number you entered is already tolling on this System. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Rate Plan Invalid'">
-							Please enter a valid Rate Plan.
-
+							The Rate Plan you entered was Invalid. Please try again.
 						</xsl:when>
 					</xsl:choose>
 				</div>
@@ -96,7 +95,7 @@
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+							<td><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -106,13 +105,13 @@
 							<td><xsl:value-of select="/Response/ui-values/ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 						</tr>
 						<tr>
-						
+							<td></td>
 							<td colspan="2">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
-						<td class="Required" valign="top"></td>
+							<td><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -120,7 +119,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<!-- TODO!bash! mark this as mandatory. and make sure you use class="Required" -->
+								<!-- TODO!bash! [  DONE  ]		mark this as mandatory -->
 								<input type="text" name="FNN-1" id="FNN-1" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -130,8 +129,7 @@
 							</td>
 						</tr>
 						<tr>
-						<td class="Required" valign="top"></td>
-						
+							<td><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -139,7 +137,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<!-- TODO!bash! mark this as mandatory. and make sure you use class="Required" -->
+								<!-- TODO!bash! [  DONE  ]		mark this as mandatory -->
 								<input type="text" name="FNN-2" id="FNN-2" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -150,7 +148,7 @@
 						</tr>
 						<xsl:if test="/Response/ui-values/ServiceTypes/ServiceType[@selected='selected']/Id = 102">
 							<tr>
-							<td class="Required"> </td>
+								<td></td>
 								<th class="JustifiedWidth">
 									<xsl:call-template name="Label">
 										<xsl:with-param name="entity" select="string('Service')" />
@@ -178,7 +176,7 @@
 							</tr>
 						</xsl:if>
 						<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+							<td><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
@@ -197,10 +195,10 @@
 										</option>
 									</xsl:for-each>
 								</select>
-								<!-- TODO!bash! this needs to open the new plan summary page, not this crap one -->
+								<!-- TODO!bash! [  DONE  ]		this needs to open the new plan summary page, not this crap one -->
 								<input type="button" value="View Plan Details &#0187;" class="input-submit" 
 								title="Viewing Plan Details" alt="Information about Charges incurred on this Plan"
-								onclick="return ModalExternal (this, 'rates_plan_view.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value)" />
+								onclick="window.open ('rates_plan_summary.php?Id=' + document.getElementById ('RatePlan').options [document.getElementById ('RatePlan').options.selectedIndex].value, '', '')" />
 							</td>
 						</tr>
 					</table>

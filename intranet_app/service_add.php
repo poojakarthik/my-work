@@ -27,19 +27,7 @@
 	
 	try
 	{
-		if ($_GET ['Account'])
-		{
-			$actAccount = $Style->attachObject (new Account ($_GET ['Account']));
-		}
-		else if ($_POST ['Account'])
-		{
-			$actAccount = $Style->attachObject (new Account ($_POST ['Account']));
-		}
-		else
-		{
-			header ('Location: /console.php');
-			exit;
-		}
+		$actAccount = $Style->attachObject (new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']));
 	}
 	catch (Exception $e)
 	{

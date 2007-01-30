@@ -80,7 +80,7 @@
 		{
 			$arrBug = Array (
 				"CreatedBy"			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				"CreatedOn"			=> date ('Y-m-d H:i:s'),
+				"CreatedOn"			=> new MySQLFunction ("NOW()"),
 				"PageName"			=> $_SERVER ['HTTP_REFERER'],
 				"PageDetails"		=> $strPageDetails,
 				"Comment"			=> $strComment,
@@ -89,7 +89,7 @@
 				"Status"			=> BUG_UNREAD
 			);
 			
-			$insBug = new StatementInsert ('BugReport');
+			$insBug = new StatementInsert ('BugReport', $arrBug);
 			$intBug = $insBug->Execute ($arrBug);
 		}
 	}

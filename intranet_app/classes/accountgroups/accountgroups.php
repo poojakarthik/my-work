@@ -136,12 +136,12 @@
 			{
 				$arrAccountGroup = Array (
 					'CreatedBy'			=> '',
-					'CreatedOn'			=> date ('Y-m-d'),
+					'CreatedOn'			=> new MySQLFunction ("NOW()"),
 					'ManagedBy'			=> null,
 					'Archived'			=> 0
 				);
 				
-				$insAccountGroup = new StatementInsert ('AccountGroup');
+				$insAccountGroup = new StatementInsert ('AccountGroup', $arrAccountGroup);
 				$intAccountGroup = $insAccountGroup->Execute ($arrAccountGroup);
 				
 				$acgAccountGroup = new AccountGroup ($intAccountGroup);
@@ -193,12 +193,12 @@
 				'BillingFreqType'	=> BILLING_DEFAULT_FREQ_TYPE,
 				'BillingMethod'		=> $arrDetails ['Account']['BillingMethod'],		// (CONSTANT) post or email.
 				'PaymentTerms'		=> PAYMENT_TERMS_DEFAULT,
-				'CreatedOn'			=> date ("Y-m-d"),
+				'CreatedOn'			=> new MySQLFunction ("NOW()"),
 				'CreatedBy'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				'Archived'			=> 0
 			);
 			
-			$insAccount = new StatementInsert ('Account');
+			$insAccount = new StatementInsert ('Account', $arrAccount);
 			$intAccount = $insAccount->Execute ($arrAccount);
 			
 			$actAccount = new Account ($intAccount);

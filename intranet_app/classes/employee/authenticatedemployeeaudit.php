@@ -142,7 +142,7 @@
 			$arrAudit = Array (
 				'Employee'		=> $this->_oblintEmployee->getValue (),
 				'Account'		=> $actAccount->Pull ('Id')->getValue (), 
-				'RequestedOn'	=> date ('Y-m-d H:i:s', mktime ())
+				'RequestedOn'	=> new MySQLFunction ("NOW()")
 			);
 			
 			$insAudit = new StatementInsert ('EmployeeAccountAudit', $arrAudit);
@@ -181,11 +181,11 @@
 			$arrAudit = Array (
 				'Employee'		=> $this->_oblintEmployee->getValue (),
 				'Account'		=> $cntContact->Pull ('Account')->getValue (), 
-				'Contact'		=> $cntContact->Pull ('Id')->getValue (), 
-				'RequestedOn'	=> date ('Y-m-d H:i:s', mktime ())
+				'Contact'		=> $cntContact->Pull ('Id')->getValue (),
+				'RequestedOn'	=> new MySQLFunction ("NOW()")
 			);
 			
-			$insAudit = new StatementInsert ('EmployeeAccountAudit');
+			$insAudit = new StatementInsert ('EmployeeAccountAudit', $arrAudit);
 			$insAudit->Execute ($arrAudit);
 			
 			// Make the list only 19 Contacts long (deleting items from the top first)

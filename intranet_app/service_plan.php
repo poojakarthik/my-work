@@ -16,7 +16,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_PLAN | MODULE_SERVICE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE | MODULE_SERVICE;
 
 	// call application
 	require ('config/application.php');
@@ -30,17 +30,7 @@
 	// Get the Service
 	try
 	{
-		if ($_GET ['Service'])
-		{
-			// Try the GET method
-			$srvService		= $Style->attachObject (new Service ($_GET ['Service']));
-		}
-		else if ($_POST ['Service'])
-		{
-			// Try the POST method
-			$srvService		= $Style->attachObject (new Service ($_POST ['Service']));
-		}
-		// get the account
+		$srvService		= $Style->attachObject (new Service (($_GET ['Service']) ? $_GET ['Service'] : $_POST ['Service']));
 		$actAccount		= $Style->attachObject ($srvService->getAccount ());
 	}
 	catch (Exception $e)
@@ -63,21 +53,22 @@
 			}
 			
 			$srvService->PlanSelect ($athAuthentication->AuthenticatedEmployee (), $rplRatePlan);
+			
+			header ('Location: service_view.php?Id=' . $_POST ['Service']);
+			exit;
 		}
 		catch (Exception $e)
-		{
-			// We're doing nothing in here ... because it's going to show up in the page properly
+		{		
+			header ('Location: service_plan.php?Service=' . $_POST ['Service']);
+			exit;
 		}
-		
-		header ('Location: service_plan.php?Service=' . $_POST ['Service']);
-		exit;
 	}
 	
 	$srvService->Plan ();
 	
 	$rplRatePlans = $Style->attachObject (new RatePlans ());
-	$rplRatePlans->Constrain ('ServiceType', 'EQUALS', $srvService->Pull ('ServiceType')->getValue ());
-	$rplRatePlans->Constrain ('Archived', 'EQUALS', 0);
+	$rplRatePlans->Constrain ('ServiceType',	'EQUALS',	$srvService->Pull ('ServiceType')->getValue ());
+	$rplRatePlans->Constrain ('Archived',		'EQUALS',	0);
 	$rplRatePlans->Sample ();
 	
 	// Output the Account View
