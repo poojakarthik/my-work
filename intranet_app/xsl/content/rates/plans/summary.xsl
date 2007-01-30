@@ -93,7 +93,7 @@
 		
 		<!-- Charges -->
 		<h2 class="Invoice">Charges</h2>
-		<!--TODO!bash! URGENT! Why does this say more details when there is <5 rates???? This link should only be there if there are more rates that aren't being shown! Use some common sense!!!-->
+		<!--TODO!bash! URGENT! Why does this say more details when there is <5 rates???? This link should only be there if there are more rates that aren't being shown! -->
 		<table border="0" width="100%" cellpadding="3" cellspacing="0" style="font-family: monospace; font-size: 9pt;" class="Listing">
 			<xsl:for-each select="/Response/RecordTypes/Results/rangeSample/RecordType">
 				<xsl:variable name="RecordType" select="." />

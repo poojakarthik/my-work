@@ -74,6 +74,7 @@
 			<!-- TODO!bash! [  DONE  ]		if i hit continue without entering any details i get taken back to the service view page ????? -->
 			<h2 class="Service">Service Details</h2>
 			<!-- TODO!bash! DO NOT UNDER ANY CIRCUMSTANCES CHANGE ANY ERROR MESSAGES IN THIS SYSTEM!!!! IF YOU HAVE TO ADD ERRORS COPY THEM EXACTLY FROM EXISTING ERRORS!!! -->
+			<!-- TODO!bash! IF AN APPROPRIATE EXISTING ERROR MESSAGE DOES NOT EXIST, ADD A BLANK ERROR WITH AN URGENT TODO FOR FLAME  -->
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
 					<xsl:choose>

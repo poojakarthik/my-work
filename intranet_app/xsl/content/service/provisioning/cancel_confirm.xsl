@@ -4,7 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<!-- TODO!bash! URGENT this page needs a menu to view account and view service-->
+		<!-- TODO!bash! URGENT this page needs a top menu to view account and view service-->
 		<!-- Confirmation Page following a Cancellation of a Provisioning Request-->
 		<h1>Provisioning Request Cancelled</h1>
 		
