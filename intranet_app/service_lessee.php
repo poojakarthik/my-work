@@ -48,48 +48,59 @@
 	$oblintDateYear		= $arrUIValues->Push (new dataInteger	('Date-year',	$_POST ['Date']['year']));
 	
 	// If we've got an account, validate it
-	if ($_POST ['Account'])
+	if (isset ($_POST ['Account']))
 	{
-		try
+		if (empty ($_POST ['Account']))
 		{
-			$actReceiving		= $Style->attachObject (new dataArray ('Account-Receiving', 'Account'))->Push (new Account ($_POST ['Account']));
-			
-			if ($_POST ['Date'])
-			{
-				$intDate = mktime (0, 0, 0, (float) $_POST ['Date']['month'], (float) $_POST ['Date']['day'], (float) $_POST ['Date']['year']);
-				
-				// TODO!bash! [  DONE  ]		Warning: mktime() expects parameter 4 to be long, string given in ... (submit with no date)
-				if (!$_POST ['Date']['month'] || !$_POST ['Date']['day'] || !$_POST ['Date']['year'])
-				{
-					$oblstrError->setValue ('Date Invalid');
-				}
-				else if (!$intDate)
-				{
-					$oblstrError->setValue ('Date Invalid');
-				}
-				else if ($intDate < strtotime ("+2 days"))
-				{
-					$oblstrError->setValue ('Date Invalid');
-				}
-				else
-				{
-					$intNewService = $srvService->LesseePassthrough (
-						$actReceiving, 
-						$athAuthentication->AuthenticatedEmployee (),
-						$_POST ['Date']
-					);
-					
-					header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $intNewService);
-					exit;
-				}
-			}
-			
-			$Style->Output ('xsl/content/service/lessee/date.xsl');
-			exit;
+			$oblstrError->setValue ('Empty Account');
 		}
-		catch (Exception $e)
+		else if ($_POST ['Account'] == $actOriginal->Pull ('Id')->getValue ())
 		{
-			$oblstrError->setValue ('Invalid Account');
+			$oblstrError->setValue ('Same Account');
+		}
+		else
+		{
+			try
+			{
+				$actReceiving		= $Style->attachObject (new dataArray ('Account-Receiving', 'Account'))->Push (new Account ($_POST ['Account']));
+				
+				if ($_POST ['Date'])
+				{
+					$intDate = mktime (0, 0, 0, (float) $_POST ['Date']['month'], (float) $_POST ['Date']['day'], (float) $_POST ['Date']['year']);
+					
+					// TODO!bash! [  DONE  ]		Warning: mktime() expects parameter 4 to be long, string given in ... (submit with no date)
+					if (!$_POST ['Date']['month'] || !$_POST ['Date']['day'] || !$_POST ['Date']['year'])
+					{
+						$oblstrError->setValue ('Date Invalid');
+					}
+					else if (!$intDate)
+					{
+						$oblstrError->setValue ('Date Invalid');
+					}
+					else if ($intDate < strtotime ("+2 days"))
+					{
+						$oblstrError->setValue ('Date Invalid');
+					}
+					else
+					{
+						$intNewService = $srvService->LesseePassthrough (
+							$actReceiving, 
+							$athAuthentication->AuthenticatedEmployee (),
+							$_POST ['Date']
+						);
+						
+						header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $intNewService);
+						exit;
+					}
+				}
+				
+				$Style->Output ('xsl/content/service/lessee/date.xsl');
+				exit;
+			}
+			catch (Exception $e)
+			{
+				$oblstrError->setValue ('Invalid Account');
+			}
 		}
 	}
 	

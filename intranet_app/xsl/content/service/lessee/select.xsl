@@ -13,6 +13,12 @@
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
 				<xsl:choose>
+					<xsl:when test="/Response/Error = 'Empty Account'">
+						You did not enter an Account Id#. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Same Account'">
+						You did not enter a different Account. Please try again.
+					</xsl:when>
 					<xsl:when test="/Response/Error = 'Invalid Account'">
 						Please enter a valid Account ID.
 					</xsl:when>
@@ -125,7 +131,12 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Account" class="input-string" />
+								<input type="text" name="Account" class="input-string">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/ui-values/Account" />
+									</xsl:attribute>
+								</input>
 							</td>
 						</tr>
 					</table>
