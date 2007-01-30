@@ -143,7 +143,7 @@
 				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
 				break;
 			
-			case REQUEST_PRESELECTION_REVERSAL:
+			case REQUEST_PRESELECTION_REVERSE:
 				$arrRequest['RecordType']				= "21";
 				$arrRequest['ServiceNumber']			= $arrRequest['FNN'];
 				

@@ -332,8 +332,13 @@ $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Constant']	= 'REQUEST_STATUS_
 $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Description']	= 'Cancelled';
 
 // Provisioning Request Status
-define("REQUEST_DIRECTION_OUTGOING"		, 0);
-define("REQUEST_DIRECTION_INCOMING"		, 1);
+/*define("REQUEST_DIRECTION_OUTGOING"		, 0);
+define("REQUEST_DIRECTION_INCOMING"		, 1);*/
+$GLOBALS['*arrConstant']	['RequestDirection']	[0]	['Constant']	= 'REQUEST_DIRECTION_OUTGOING';
+$GLOBALS['*arrConstant']	['RequestDirection']	[0]	['Description']	= 'Outgoing';
+$GLOBALS['*arrConstant']	['RequestDirection']	[1]	['Constant']	= 'REQUEST_DIRECTION_INCOMING';
+$GLOBALS['*arrConstant']	['RequestDirection']	[1]	['Description']	= 'Incoming';
+
 
 
 // Serivce Line Status
@@ -354,7 +359,7 @@ $GLOBALS['*arrConstant']	['LineStatus']	[404]	['Constant']	= 'LINE_HARD_BARRED';
 $GLOBALS['*arrConstant']	['LineStatus']	[404]	['Description']	= 'Hard-barred';
 
 // Provisioning Request Types
-define("REQUEST_FULL_SERVICE"			, 900);
+/*define("REQUEST_FULL_SERVICE"			, 900);
 define("REQUEST_PRESELECTION"			, 901);
 define("REQUEST_BAR_SOFT"				, 902);
 define("REQUEST_UNBAR_SOFT"				, 903);
@@ -362,9 +367,28 @@ define("REQUEST_ACTIVATION"				, 904);
 define("REQUEST_DEACTIVATION"			, 905);
 define("REQUEST_PRESELECTION_REVERSE"	, 906);
 define("REQUEST_FULL_SERVICE_REVERSE"	, 907);
-define("REQUEST_PRESELECTION_REVERSAL"	, REQUEST_PRESELECTION_REVERSE);
 define("REQUEST_BAR_HARD"				, 908);
-define("REQUEST_UNBAR_HARD"				, 909);
+define("REQUEST_UNBAR_HARD"				, 909);*/
+$GLOBALS['*arrConstant']	['Request']	[900]	['Constant']	= 'REQUEST_FULL_SERVICE';
+$GLOBALS['*arrConstant']	['Request']	[900]	['Description']	= 'Full Service';
+$GLOBALS['*arrConstant']	['Request']	[901]	['Constant']	= 'REQUEST_PRESELECTION';
+$GLOBALS['*arrConstant']	['Request']	[901]	['Description']	= 'Preselection';
+$GLOBALS['*arrConstant']	['Request']	[902]	['Constant']	= 'REQUEST_BAR_SOFT';
+$GLOBALS['*arrConstant']	['Request']	[902]	['Description']	= 'Activate Soft Bar';
+$GLOBALS['*arrConstant']	['Request']	[903]	['Constant']	= 'REQUEST_UNBAR_SOFT';
+$GLOBALS['*arrConstant']	['Request']	[903]	['Description']	= 'Remove Soft Bar';
+$GLOBALS['*arrConstant']	['Request']	[904]	['Constant']	= 'REQUEST_ACTIVATION';
+$GLOBALS['*arrConstant']	['Request']	[904]	['Description']	= 'Activation';
+$GLOBALS['*arrConstant']	['Request']	[905]	['Constant']	= 'REQUEST_DEACTIVATION';
+$GLOBALS['*arrConstant']	['Request']	[905]	['Description']	= 'Deactivation';
+$GLOBALS['*arrConstant']	['Request']	[906]	['Constant']	= 'REQUEST_PRESELECTION_REVERSE';
+$GLOBALS['*arrConstant']	['Request']	[906]	['Description']	= 'Preselection Reversal';
+$GLOBALS['*arrConstant']	['Request']	[907]	['Constant']	= 'REQUEST_FULL_SERVICE_REVERSE';
+$GLOBALS['*arrConstant']	['Request']	[907]	['Description']	= 'Full Service Reversal';
+$GLOBALS['*arrConstant']	['Request']	[908]	['Constant']	= 'REQUEST_BAR_HARD';
+$GLOBALS['*arrConstant']	['Request']	[908]	['Description']	= 'Activate Hard Bar';
+$GLOBALS['*arrConstant']	['Request']	[909]	['Constant']	= 'REQUEST_UNBAR_HARD';
+$GLOBALS['*arrConstant']	['Request']	[909]	['Description']	= 'Remove Hard Bar';
 
 // Provisioning Line Actions (Log)
 define("LINE_ACTION_OTHER"				, 600);
