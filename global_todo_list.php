@@ -82,6 +82,9 @@
 //TODO!flame! RATES
 //TODO!flame! Congo, Cyprus, Korea, Dominica, East Timor, NZ Mobile
 
+//TODO!flame! Residential rates include GST
+//TODO!flame! remove parse_service_rate_group & import telcoblue_old
+
 // ---------------------------------------------------------------------------//
 // Later
 // ---------------------------------------------------------------------------//
@@ -105,6 +108,9 @@
 //TODO!later! Disable write-back cache
 //TODO!later! Full reporting of server load
 //TODO!later! Nagios
+
+//TODO!later! PHP Command Line Options
+//TODO!later! Whiptail
 
 // ---------------------------------------------------------------------------//
 // Notes
