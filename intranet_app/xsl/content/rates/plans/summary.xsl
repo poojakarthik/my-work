@@ -19,19 +19,19 @@
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<th>Rate Plan Name:</th>
+						<th class="JustifiedWidth">Rate Plan Name :</th>
 						<td><xsl:value-of select="/Response/RatePlan/Name" /></td>
 					</tr>
 					<tr>
-						<th>Rate Plan Description:</th>
+						<th class="JustifiedWidth">Rate Plan Description :</th>
 						<td><xsl:value-of select="/Response/RatePlan/Description" /></td>
 					</tr>
 					<tr>
-						<th>Service Type:</th>
+						<th class="JustifiedWidth">Service Type :</th>
 						<td><xsl:value-of select="/Response/RatePlan/ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
 					</tr>
 					<tr>
-						<th>Archive Status:</th>
+						<th class="JustifiedWidth">Archive Status :</th>
 						<td>
 							<xsl:choose>
 								<xsl:when test="/Response/RatePlan/Archived = 0">
@@ -43,7 +43,32 @@
 							</xsl:choose>
 						</td>
 					</tr>
-					<!-- TODO!bash! Shared? MinMontly? ChargeCap? UsageCap?  where are they? they need to be shown here-->
+					<tr>
+						<th class="JustifiedWidth">Charge Cap :</th>
+						<td><xsl:value-of select="/Response/RatePlan/ChargeCap" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Usage Cap :</th>
+						<td><xsl:value-of select="/Response/RatePlan/UsageCap" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Minimum Monthly :</th>
+						<td><xsl:value-of select="/Response/RatePlan/MinMonthly" /></td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">Shared Cap :</th>
+						<td>
+							<xsl:choose>
+								<xsl:when test="/Response/RatePlan/Shared = 1">
+									<strong><span class="Green">Shared Plan</span></strong>
+								</xsl:when>
+								<xsl:otherwise>
+									<strong><span class="Blue">Non-Shared Plan</span></strong>
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+					</tr>
+					<!-- TODO!bash! [  DONE  ]		Shared? MinMontly? ChargeCap? UsageCap?  where are they? they need to be shown here-->
 				</table>
 				<div class="Clear"></div>
 			</div>
@@ -63,8 +88,18 @@
 					<tr class="First">
 						<th colspan="3">
 							<xsl:value-of select="$RecordType/Name" />
-							<!-- TODO!bash! link this to view rate group details -->
-							(<xsl:value-of select="$RateGroup/Name" />)
+							<!-- TODO!bash! [  DONE  ]		link this to view rate group details -->
+							(
+								<a href="#" title="Rate Group Details" alt="Information about this Rate Group and its Charges">
+									<xsl:attribute name="onclick">
+										<xsl:text>return ModalExternal (this, </xsl:text>
+										<xsl:text>'rates_group_view.php?Id=</xsl:text>
+										<xsl:value-of select="$RateGroup/Id" />
+										<xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:value-of select="$RateGroup/Name" />
+								</a>
+							)
 						</th>
 					</tr>
 					<xsl:for-each select="/Response/RateGroupRates/RateGroupRate[RateGroup=$RateGroup/Id]/Rates/Rate">
@@ -84,8 +119,16 @@
 							</xsl:attribute>
 							
 							<td>
-								<!-- TODO!bash! link this to view rate details -->
-								<xsl:value-of select="$Rate/Description" />	
+								<!-- TODO!bash! [  DONE  ]		link this to view rate details -->
+								<a href="#" title="Rate Group Details" alt="Information about this Rate Group and its Charges">
+									<xsl:attribute name="onclick">
+										<xsl:text>return ModalExternal (this, </xsl:text>
+										<xsl:text>'rates_rate_view.php?Id=</xsl:text>
+										<xsl:value-of select="$Rate/Id" />
+										<xsl:text>')</xsl:text>
+									</xsl:attribute>
+									<xsl:value-of select="$Rate/Description" />	
+								</a>
 							</td>
 							<td>
 								<table border="0" cellpadding="3" cellspacing="0">
@@ -198,8 +241,45 @@
 					</tr>
 				</xsl:if>
 			</xsl:for-each>
-			
-			<!-- TODO!bash! add in a section for Recurring Charges -->
 		</table>
+		
+		<div class="Seperator"></div>
+		
+		<!-- TODO!bash! [  DONE  ]		add in a section for Recurring Charges -->
+		<h2>Associated Recurring Charges</h2>
+		<div class="Seperator"></div>
+		
+		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
+			<tr class="First">
+				<th width="30">#</th>
+				<th>Code</th>
+				<th>Description</th>
+			</tr>
+			<xsl:for-each select="/Response/RecurringChargeTypes/RecurringChargeType">
+				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>Odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>Even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					<td><xsl:value-of select="position()" />.</td>
+					<td><xsl:value-of select="./ChargeType" /></td>
+					<td><xsl:value-of select="./Description" /></td>
+				</tr>
+			</xsl:for-each>
+		</table>
+		
+		<xsl:choose>
+			<xsl:when test="count(/Response/RecurringChargeTypes/RecurringChargeType) = 0">
+				<div class="MsgNoticeWide">
+					There are no Recurring Charges associated with this Rate Plan.
+				</div>
+			</xsl:when>
+		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>

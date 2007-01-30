@@ -28,8 +28,8 @@
 	try
 	{
 		// Try to get the Service
-		$srvService = $Style->attachObject (new Service (($_GET ['Service']) ? $_GET ['Service'] : $_POST ['Service']));
-		$actOriginal		= $Style->attachObject (new dataArray ('Account-Original', 'Account'))->Push ($srvService->getAccount ());
+		$srvService 	= $Style->attachObject (new Service (($_GET ['Service']) ? $_GET ['Service'] : $_POST ['Service']));
+		$actOriginal	= $Style->attachObject (new dataArray ('Account-Original', 'Account'))->Push ($srvService->getAccount ());
 	}
 	catch (Exception $e)
 	{

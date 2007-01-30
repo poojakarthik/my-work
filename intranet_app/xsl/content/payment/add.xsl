@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO!bash! does not keep value of select when page reloads due to error -->
-<!-- TODO!bash! mark all fields as mandatory... use class=Required -->
+<!-- TODO!bash! [  DONE  ]		does not keep value of select when page reloads due to error -->
+<!-- TODO!bash! [  DONE  ]		mark all fields as mandatory... use class=Required -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
@@ -166,6 +166,11 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
+											<xsl:if test="@selected='selected'">
+												<xsl:attribute name="selected">
+													<xsl:text>selected</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
 											<xsl:value-of select="./Name" />
 										</option>
 									</xsl:for-each>

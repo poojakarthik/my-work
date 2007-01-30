@@ -3907,10 +3907,10 @@
 	// Define Columns 
 	$strName = "Shared"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(4)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= "0"; 
-		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean"; 
 		 
 				 
 				 

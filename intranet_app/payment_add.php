@@ -72,7 +72,7 @@
 	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
 	
 	$oblbolAccount_Use		= $oblarrUIValues->Push (new dataBoolean('Account-Use',		$_POST ['Account-Use']));
-	$oblfltAmount			= $oblarrUIValues->Push (new dataFloat	('Amount',			$_POST ['Amount']));
+	$oblstrAmount			= $oblarrUIValues->Push (new dataString ('Amount',			$_POST ['Amount']));
 	$oblstrTXNReference		= $oblarrUIValues->Push (new dataString	('TXNReference',	$_POST ['TXNReference']));
 	
 	// Attach Payment Types
@@ -90,6 +90,8 @@
 	{
 		// If an amount has been posted - then we're attempting to 
 		// add the information into the database
+		
+		$oblfltAmount = new dataFloat ('Amount', $_POST ['Amount']);
 		
 		if (!$ptlPaymentTypes->setValue ($_POST ['PaymentType']))
 		{

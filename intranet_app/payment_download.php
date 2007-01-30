@@ -53,6 +53,9 @@
 			$payPayments->Constrain ('PaidOn',		'EQUALS', $strPaidOn);
 			$payPayments->Sample ();
 			
+			header('Content-type: text/csv');
+			header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.csv"');
+			
 			$Style->Output ('xsl/content/payment/download_csv.xsl');
 			exit;
 		}

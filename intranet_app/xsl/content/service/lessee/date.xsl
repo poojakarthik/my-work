@@ -180,33 +180,14 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<select name="Date[day]">
-								<option value="">DD</option>
-								<xsl:call-template name="DateLoop">
-									<xsl:with-param name="start" select="number('1')" />
-									<xsl:with-param name="cease" select="number('31')" />
-									<xsl:with-param name="select" select="/Response/ui-values/Date-day" />
-								</xsl:call-template>
-							</select> -
-							<select name="Date[month]">
-								<option value="">MM</option>
-								<xsl:call-template name="DateLoop">
-									<xsl:with-param name="start" select="number('1')" />
-									<xsl:with-param name="cease" select="number('12')" />
-									<xsl:with-param name="select" select="/Response/ui-values/Date-month" />
-								</xsl:call-template>
-							</select> -
-							<select name="Date[year]">
-								<option value="">YYYY</option>
-								<xsl:call-template name="DateLoop">
-									<!-- TODO!bash! NO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! -->
-									<!-- TODO!bash! THIS IS NOT EVEN CLOSE TO BEING FUNNY ! YOU NEVER DO THIS EVER -->
-									<!-- TODO!bash! Display this year + next year and make it based on the current year so that this crap does not need to be updated every damn year !!!!!!!! -->
-									<xsl:with-param name="start" select="number('2007')" />
-									<xsl:with-param name="cease" select="number('2007')" />
-									<xsl:with-param name="select" select="/Response/ui-values/Date-year" />
-								</xsl:call-template>
-							</select>
+							<xsl:call-template name="NearFuture">
+								<xsl:with-param name="Name-Day"			select="string('Date[day]')" />
+								<xsl:with-param name="Name-Month"		select="string('Date[month]')" />
+								<xsl:with-param name="Name-Year"		select="string('Date[year]')" />
+								<xsl:with-param name="Selected-Month"	select="/Response/ui-values/Date-day" />
+								<xsl:with-param name="Selected-Month"	select="/Response/ui-values/Date-month" />
+								<xsl:with-param name="Selected-Month"	select="/Response/ui-values/Date-year" />
+							</xsl:call-template>
 						</td>
 					</tr>
 				</table>

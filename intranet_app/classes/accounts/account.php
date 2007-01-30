@@ -394,14 +394,13 @@
 				"FNN"				=>	$srvService->Pull ('FNN')->getValue (),
 				"ServiceType"		=>	$srvService->Pull ('ServiceType')->getValue (),
 				"Indial100"			=>	$srvService->Pull ('Indial100')->getValue (),
-				"MinMonthly"		=>	0,
-				"ChargeCap"			=>	0,
-				"UsageCap"			=>	0,
 				"AccountGroup"		=>	$this->Pull ('AccountGroup')->getValue (),
 				"Account"			=>	$this->Pull ('Id')->getValue (),
 				"CappedCharge"		=>	0,
 				"UncappedCharge"	=>	0,
-				"CreatedOn"			=>	new MySQLFunction ("NOW()"),
+				"CreatedOn"			=>	sprintf ("%04d", $arrDetailsDate ['year']) . "-" .
+										sprintf ("%02d", $arrDetailsDate ['month']) . "-" .
+										sprintf ("%02d", $arrDetailsDate ['day']),
 				"CreatedBy"			=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				"Carrier"			=>	$srvService->Pull ('Carrier')->getValue (),
 				"CarrierPreselect"	=>	$srvService->Pull ('CarrierPreselect')->getValue (),

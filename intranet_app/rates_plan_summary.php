@@ -58,6 +58,9 @@
 	
 	$Style->attachObject (Rates::getRates ($arrRates));
 	
+	// Include the Recurring Charge Types that are Associated with this Rate Plan
+	$oblarrRecurringCharges		= $Style->attachObject ($rplRatePlan->RecurringChargeTypes ());
+	
 	// Get the Documentation for Rate Plans
 	$docDocumentation->Explain ("Rate Plan");
 	
