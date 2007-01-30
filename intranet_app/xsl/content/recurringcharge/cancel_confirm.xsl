@@ -4,7 +4,9 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Cancelling a Recurring Charge</h1>
+	<!--TODO!Bash! Urgent - This page needs a menu back to view account-->
+	<!--TODO!Bash! Urgent - Continuing does not work!!!!-->
+		<h1>Cancel Recurring Charge</h1>
 		
 		<form method="post" action="recurring_charge_cancel.php">
 			<input type="hidden" name="Id">
@@ -13,64 +15,66 @@
 					<xsl:value-of select="/Response/RecurringCharge/Id" />
 				</xsl:attribute>
 			</input>
-			
-			<p>
-				If you would like to cancel this recurring charge, please confirm the details below:
-			</p>
-			
-			<div class="Seperator"></div>
+
 			
 			<xsl:if test="/Response/RecurringCharge/CancellationAmount">
 				<div class="MsgErrorWide">
 					<strong>Warning :</strong>
 					Cancelling this account will incur a cost to the Customer.
-					
-					<div class="Seperator"></div>
-					
+				</div>
+				<div class = "Wide-Form">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">Minimum Charge :</th>
+							<td></td>
 							<td class="Currency">
-								<xsl:value-of select="/Response/RecurringCharge/MinCharge" />
+								$<xsl:value-of select="/Response/RecurringCharge/MinCharge" />
 							</td>
 						</tr>
 						<tr>
 							<th></th>
-							<td class="Currency">-</td>
+							<td class="Currency"></td>
 						</tr>
 						<tr>
-							<th class="JustifiedWidth">Total Charged :</th>
+							<th class="JustifiedWidth">Additional Charge :</th>
+							<td>+</td>
 							<td class="Currency">
-								<xsl:value-of select="/Response/RecurringCharge/TotalCharged" />
+								$<xsl:value-of select="/Response/RecurringCharge/TotalCharged" />
 							</td>
 						</tr>
 						<tr>
 							<th></th>
-							<td class="Currency">+</td>
+							<td class="Currency"></td>
 						</tr>
 						<tr>
 							<th class="JustifiedWidth">Cancellation Fee :</th>
+							<td>+</td>
 							<td class="Currency">
-								<xsl:value-of select="/Response/RecurringCharge/CancellationFee" />
+								 $<xsl:value-of select="/Response/RecurringCharge/CancellationFee" />
 							</td>
 						</tr>
 						<tr>
-							<th></th>
-							<td class="Currency">=</td>
+							<th colspan="3">
+							_______________________________
+							</th>
 						</tr>
 						<tr>
-							<th class="JustifiedWidth">Cancellation Amount :</th>
+							<th class="JustifiedWidth">Total Cancellation Cost:</th>
+							<td></td>
 							<th class="Currency">
-								<xsl:value-of select="/Response/RecurringCharge/CancellationAmount" />
+								<strong><div class="Red">$<xsl:value-of select="/Response/RecurringCharge/CancellationAmount" /></div></strong>
 							</th>
 						</tr>
 					</table>
-				</div>
+					</div>
+
 				
-				<div class="Seperator"></div>
+
 			</xsl:if>
-			
-			<input type="Submit" name="Confirm" value="Confirm Cancellation &#0187;" class="input-submit" />
+			<div class = "SmallSeperator"></div>
+			<div class = "Right">
+				<input type="Submit" name="Confirm" value="Confirm Cancellation &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

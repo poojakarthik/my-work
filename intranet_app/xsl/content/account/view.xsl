@@ -6,7 +6,8 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	
+	<!-- TODO!Bash!  Use a msgbox for blank note errors like all other messages! DO THIS EVERYWHERE!!-->
+	<!-- Error === X"Please enter details to create a new note." -->
 		<!-- Page for Viewing Account Details -->
 		
 		<h1>View Account Details</h1>

@@ -5,7 +5,7 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	
+	<!--TODO!bash! Current method does not always display!!!!-->
 		<!-- This page is used to Change the payment Method for an account -->
 		<h1>Change Payment Method</h1>
 		

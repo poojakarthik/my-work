@@ -6,6 +6,8 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	
+	<!--TODO!bash! Urgent - do NOT show menu links to the same page!!-->
 		<h1>View Service Details</h1>
 		
 		<script language="javascript" src="js/ABN.js"></script>

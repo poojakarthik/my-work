@@ -11,6 +11,10 @@
 		
 		<!-- Search for Plan -->
 		<h2 class="Plan">Search for a Plan</h2>
+		
+		<!--TODO!bash! Why can I search for an empty field? show an error!-->
+		<!--- error === "Please enter a Plan Name."-->
+		
 		<form method="GET" action="rates_plan_list.php">
 			<div class="Wide-Form">
 				<div class="Form-Content">

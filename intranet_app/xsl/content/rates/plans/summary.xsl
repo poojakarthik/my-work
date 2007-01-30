@@ -48,7 +48,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/RatePlan/ChargeCap" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
 					</tr>
@@ -57,7 +57,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/RatePlan/UsageCap" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
 					</tr>
@@ -66,7 +66,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/RatePlan/MinMonthly" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
 					</tr>
@@ -260,7 +260,7 @@
 		<div class="Seperator"></div>
 		
 		<!-- TODO!bash! [  DONE  ]		add in a section for Recurring Charges -->
-		<h2>Associated Recurring Charges</h2>
+		<h2 class="Charge">Recurring Charges</h2>
 		<div class="Seperator"></div>
 		
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">

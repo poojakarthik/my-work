@@ -7,9 +7,9 @@
 	<xsl:import href="../../template/popup.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Recurring Charge Details</h1>
+		<h1>View Recurring Charge Details</h1>
 		
-		<div class="Wide-Form">
+		<div class="FormPopup">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
@@ -23,7 +23,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
@@ -46,11 +46,12 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">
+						<!--TODO!bash! This isn't displaying!!!-->
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
 								<xsl:with-param name="field" select="string('CreatedOn')" />
@@ -67,7 +68,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
@@ -80,7 +81,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/RecurringCharge/RecursionCharge" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
 					</tr>
@@ -92,7 +93,8 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							Every <xsl:value-of select="/Response/RecurringCharge/RecurringFreq" />
+						<!--TODO!bash! This is not showing a Frequency! i.e 0 months instead of 1 month-->
+							Every <xsl:value-of select="/Response/RecurringCharge/RecurringFreq" /> 
 							<xsl:text> </xsl:text>
 							<xsl:value-of select="/Response/RecurringCharge/BillingFreqTypes/BillingFreqType[@selected='selected']/Name" />(s)
 						</td>
@@ -107,7 +109,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/RecurringCharge/MinCharge" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
 					</tr>
@@ -121,7 +123,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/RecurringCharge/CancellationFee" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
 					</tr>

@@ -45,7 +45,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 	       				</td>
 					</tr>
@@ -61,7 +61,7 @@
 							Yes, Resolve this Dispute
 							<!-- TODO!bash! URGENT need the following options (radio buttons)...-->
 							<!-- Text === "Customer to pay full amount" => Invoice.Balance += Invoice.Disputed, Invoice.Status = INVOICE_COMMITTED -->
-							<!-- Text === "Customer to pay $" [Input.Amount] => 
+							<!-- Text === "Customer to pay $" [Input.Amount] =--> 
 							<!-- 			Invoice.Balance += Input.Amount, Invoice.Disputed -= Input.Amount, Invoice.Status = INVOICE_COMMITTED -->
 							<!-- Text === "Payment NOT required" : Invoice.Status = INVOICE_DISPUTED_SETTLED -->
 						</td>

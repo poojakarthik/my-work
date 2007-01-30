@@ -8,6 +8,8 @@
 	
 	<xsl:template name="Content">
 	
+	<!--TODO!Bash! This needs an error when disputed = 0!!!  Error==="Please enter a Disputed Amount."-->
+	
 		<!--Page for disputing an Invoice -->
 		
 		<h1>Dispute Invoice </h1>
@@ -48,7 +50,7 @@
 									<xsl:text></xsl:text>
 					       			<xsl:call-template name="Currency">
 					       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed" />
-										<xsl:with-param name="Decimal" select="number('4')" />
+										<xsl:with-param name="Decimal" select="number('2')" />
 			       					</xsl:call-template>
 								</xsl:attribute>
 							</input>

@@ -7,6 +7,7 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+	<!--TODO!bash! URGENT! The menu needs to return to View invoices and payments page - Do NOT have a link back to the same page!!!!-->
 	
 		<!--Page for viewing Invoice Details (1/2) -->
 		<h1>View Invoice Details</h1>
@@ -75,11 +76,21 @@
 							<xsl:with-param name="field" select="string('Disputed')" />
 						</xsl:call-template>
 					</th>
-					<td><xsl:value-of select="/Response/Invoice/Disputed" /></td>
+					<td>
+					
+					<!--TODO!bash! Make this red when disputed and green when resolved!!!!-->
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed"/>
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+
+					</td>
 				</tr>
 			</table>
 		</div>
 		
+		
+		<div class="SmallSeperator"></div>
 		<xsl:choose>
 			<xsl:when test="/Response/Invoice/Status = 102">
 				<div class="MsgNoticeWide">
@@ -99,6 +110,7 @@
 			</a>
 		</div>
 		<div class="LinkEdit">
+		<!--TODO!bash! Urgent - why is this link here when the invoice is not in dispute - only show it if it has been disputed, not before, and not after it has been resolved-->
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
@@ -145,19 +157,19 @@
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./TotalCharge" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
 					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Credit" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
 					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Debit" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
 					</td>
 				</tr>

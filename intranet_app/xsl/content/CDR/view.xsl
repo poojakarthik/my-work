@@ -161,7 +161,7 @@
 							<td>
 				       			<xsl:call-template name="Currency">
 				       				<xsl:with-param name="Number" select="/Response/CDR/Cost" />
-									<xsl:with-param name="Decimal" select="number('4')" />
+									<xsl:with-param name="Decimal" select="number('2')" />
 		       					</xsl:call-template>
 							</td>
 						</tr>
@@ -229,7 +229,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/CDR/Charge" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
 					</tr>

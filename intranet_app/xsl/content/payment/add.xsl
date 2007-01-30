@@ -193,7 +193,7 @@
 										<xsl:text></xsl:text>
 						       			<xsl:call-template name="Currency">
 						       				<xsl:with-param name="Number" select="/Response/ui-values/Amount" />
-											<xsl:with-param name="Decimal" select="number('4')" />
+											<xsl:with-param name="Decimal" select="number('2')" />
 				       					</xsl:call-template>
 									</xsl:attribute>
 								</input>

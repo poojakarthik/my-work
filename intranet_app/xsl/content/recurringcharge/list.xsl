@@ -94,7 +94,7 @@
 					<td>
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./RecursionCharge" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
 						<xsl:text> </xsl:text>
 						<xsl:value-of select="./Nature" />

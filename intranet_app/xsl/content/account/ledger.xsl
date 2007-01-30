@@ -6,6 +6,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	
+	<!--TODO!bash! URGENT - DO NOT have menus linking to the page you are already on!!!!-->
 	<xsl:template name="Content">
 		<h1>View Invoices &amp; Payments</h1>
 		
@@ -96,25 +97,25 @@
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./AccountBalance" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
        				</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Credits" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
 					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Debits" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
        				</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Total" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
        				</td>
 					<td class="Currency">
@@ -133,13 +134,14 @@
 								
 				       			<xsl:call-template name="Currency">
 				       				<xsl:with-param name="Number" select="./Balance" />
-									<xsl:with-param name="Decimal" select="number('4')" />
+									<xsl:with-param name="Decimal" select="number('2')" />
 		       					</xsl:call-template>
 							</span>
 						</strong>
 					</td>
 					<td class="Currency">
 						<span>
+						<!--TODO!Bash! Make this green when it has been resolved!!!!!!!!!!-->
 							<xsl:choose>
 								<xsl:when test="./Disputed != 0">
 									<xsl:attribute name="class">
@@ -154,7 +156,7 @@
 							
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="./Disputed" />
-								<xsl:with-param name="Decimal" select="number('4')" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</span>
 					</td>
@@ -271,7 +273,7 @@
 					<td>
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Amount" />
-							<xsl:with-param name="Decimal" select="number('4')" />
+							<xsl:with-param name="Decimal" select="number('2')" />
     					</xsl:call-template>
    					</td>
 					<td>
