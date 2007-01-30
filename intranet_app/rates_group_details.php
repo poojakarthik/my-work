@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RATE | MODULE_RECURRING_CHARGE | MODULE_BILLING | MODULE_RECORD_TYPE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_RATE_GROUP | MODULE_RATE | MODULE_RECURRING_CHARGE | MODULE_BILLING | MODULE_RECORD_TYPE;
 	
 	// call application
 	require ('config/application.php');
@@ -28,15 +28,14 @@
 		exit;
 	}
 	
-	// Get the Record Types
-	$rtyRecordType = $Style->attachObject (new RecordType ($rrgRateGroup->Pull ('RecordType')->getValue ()));
-	
-	
 	// Get a list of Rates associated
-	$rgrRateGroupRate = $Style->attachObject (new RateGroupRate ($rrgRateGroup->Pull ('Id')->getValue ()));
-	$rgrRateGroupRate->Sample (1, 10);
+	$rgrRateGroupRate		= new RateGroupRate ($rrgRateGroup->Pull ('Id')->getValue ());
+	$oblsamRateGroupRate	= $rgrRateGroupRate->Sample (
+		($_GET ['rangePage'])	? $_GET ['rangePage']	: 1, 
+		($_GET ['rangeLength'])	? $_GET ['rangeLength']	: 10
+	);
 	
-	
+	$Style->attachObject ($oblsamRateGroupRate);
 	
 	// Get the Documentation for Rate Plans
 	$docDocumentation->Explain ("Rate Group");

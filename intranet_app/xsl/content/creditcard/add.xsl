@@ -7,7 +7,7 @@
 	   
 		<!-- Page for adding Credit Card Details -->
 		
-		<!--TODO!Bash! URGENT - This page only comes from Change Payment Method now, so it needs to return there.  We don't want to use Direct Debit Details page anymore-->
+		<!--TODO!Bash! [  DONE  ]		URGENT - This page only comes from Change Payment Method now, so it needs to return there.  We don't want to use Direct Debit Details page anymore-->
 		<h1>Add Credit Card Details</h1>
 		
 		<xsl:if test="/Response/Error != ''">

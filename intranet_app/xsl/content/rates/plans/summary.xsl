@@ -10,8 +10,8 @@
 		<!-- Page for viewing details of plans -->
 		<h1>View Plan Details</h1>
 		
-		<!--TODO!bash! URGENT - the 'More Details...' link does not work-->
-		<!--TODO!bash! URGENT - this page also needs to  link to View Rate Details -->
+		<!--TODO!bash! [  DONE  ]		URGENT - the 'More Details...' link does not work-->
+		<!--TODO!bash! [  DONE  ]		URGENT - this page also needs to  link to View Rate Details -->
 		
 		<!-- Plan Details -->
 		<h2 class="Plan">Plan Details</h2>
@@ -135,7 +135,7 @@
 							
 							<td>
 								<!-- TODO!bash! [  DONE  ]		link this to view rate details -->
-								<a href="#" title="Rate Group Details" alt="Information about this Rate Group and its Charges">
+								<a href="#" title="Rate Details" alt="Information about this Rate and its Charges">
 									<xsl:attribute name="onclick">
 										<xsl:text>return ModalExternal (this, </xsl:text>
 										<xsl:text>'rates_rate_view.php?Id=</xsl:text>

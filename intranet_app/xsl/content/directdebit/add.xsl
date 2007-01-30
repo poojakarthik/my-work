@@ -6,7 +6,7 @@
 	<xsl:template name="Content">
 		<h1>Add Bank Account Details</h1>
 		
-		<!--TODO!Bash! URGENT - This page only comes from Change Payment Method now, so it needs to return there.  We don't want to use Direct Debit Details page anymore-->
+		<!--TODO!Bash! [  DONE  ]		URGENT - This page only comes from Change Payment Method now, so it needs to return there.  We don't want to use Direct Debit Details page anymore-->
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
 				<xsl:choose>
@@ -33,8 +33,6 @@
 					<xsl:value-of select="/Response/Account/Id" />
 				</xsl:attribute>
 			</input>
-		
-			
 			
 			<h2 class="Account">Account Details</h2>
 			<div class="Wide-Form">
@@ -42,12 +40,12 @@
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('AccountGroup')" />
+								<xsl:with-param name="entity" select="string('Account')" />
 								<xsl:with-param name="field" select="string('Id')" />
 							</xsl:call-template>
 						</th>
 						<td>
-							<xsl:value-of select="/Response/AccountGroup/Id" />
+							<xsl:value-of select="/Response/Account/Id" />
 						</td>
 					</tr>
 				</table>

@@ -22,11 +22,11 @@
 //TODO!bash! [  DONE  ]		URGENT ! - Mark an invoice as disputed and update the disputed $
 //TODO!bash! [  DONE  ]		URGENT ! - Resolve a disputed invoice
 
-//TODO!bash! [NOT DONE]		Add an optional LIMIT Clause to the DataReport, ask flame about this
+//TODO!bash! [  DONE  ]		Add an optional LIMIT Clause to the DataReport, ask flame about this
 
 //TODO!bash! 				SCRAPE...
-//TODO!bash! [NOT DONE]		DD Details (CSV)
-//TODO!bash! [  HELP  ]		Fix Other Broken Data
+//TODO!bash! [HAS FILE]		DD Details (CSV)
+//TODO!bash! [  DONE  ]		Fix Other Broken Data
 //TODO!bash! [  DONE  ]		Cost Centres
 //TODO!bash! [  DONE  ]		Inbound Answer point
 //TODO!bash! [  DONE  ]		Aditional account details
