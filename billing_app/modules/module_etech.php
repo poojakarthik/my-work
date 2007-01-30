@@ -101,23 +101,24 @@
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RType.Name";
 		$arrColumns['Charge']			= "SUM(ServiceTypeTotal.Charge)";
+		$arrColumns['ServiceType']		= "RType.ServiceType";
 		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, " .
 																"RecordType AS RType",
 																$arrColumns,
 																"RecordType.GroupId = RType.Id AND ServiceTypeTotal.Account = <Account> AND ServiceTypeTotal.InvoiceRun = <InvoiceRun>",
-																"ServiceTypeTotal.FNN",
+																"RType.ServiceType, RType.Name",
 																NULL,
 																"RType.Id");
 		
 		$this->_selServices				= new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
 																"Service.FNN AS FNN, Service.Id AS Id, Service.ServiceType AS ServiceType",
 																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND" .
-																" (Service.ServiceType = ".SERVICE_TYPE_MOBILE." OR ServiceTotal.TotalCharge != 0.0)");
+																" (Service.ServiceType = ".SERVICE_TYPE_MOBILE." OR ServiceTotal.TotalCharge > 0.0)");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"TotalCharge",
 																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
-		
+		/*
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RType.Name";
 		$arrColumns['Charge']			= "SUM(CDR.Charge)";
@@ -130,6 +131,22 @@
 																NULL,
 																"RType.Id\n" .
 																"HAVING SUM(CDR.Charge) > 0.0");
+																*/
+		$arrColumns = Array();
+		$arrColumns['RecordTypeName']	= "RecordGroup.Name";
+		$arrColumns['Charge']			= "SUM(ServiceTypeTotal.Charge)";
+		$arrColumns['CallCount']		= "SUM(ServiceTypeTotal.Records)";
+		$this->_selServiceSummaries		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON RecordType.Id = ServiceTypeTotal.RecordType, " .
+																"RecordType AS RecordGroup",
+																$arrColumns,
+																"RecordGroup.Id = RecordType.GroupId AND " .
+																"ServiceTypeTotal.Service = <Service> AND " .
+																"InvoiceRun = <InvoiceRun> AND " .
+																"ServiceTypeTotal.Charge > 0",
+																"RecordGroup.Name",
+																NULL,
+																"RecordGroup.Name");
+		
 		
 		$arrColumns = Array();
 		$arrColumns['Charge']			= "CDR.Charge";
@@ -152,10 +169,11 @@
 																
 		$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
 																"RecordType AS RType",
-																"ServiceTypeTotal.Charge AS Charge",
+																"SUM(ServiceTypeTotal.Charge) AS Charge",
 																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND ServiceTypeTotal.FNN = <FNN> AND ServiceTypeTotal.InvoiceRun = <InvoiceRun>",
 																NULL,
-																"1");
+																"1",
+																"RType.Name");
 		
 		$this->_selWeReceived			= new StatementSelect(	"InvoicePayment",
 																"SUM(Amount) AS WeReceived",
@@ -615,7 +633,9 @@
 		// build output
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
-			$arrDefine['ChargeSummary']	['Category']	['Value']	= $arrTotal['RecordTypeName'];
+			$arrRowType = $this->GetRowType($arrTotal['RecordTypeName'], $arrTotal['ServiceType']);
+			
+			$arrDefine['ChargeSummary']	['Category']	['Value']	= $arrRowType['LongDesc'];
 			$arrDefine['ChargeSummary']	['Total']		['Value']	= $arrTotal['Charge'];
 			$arrFileData[] = $arrDefine['ChargeSummary'];
 		}
