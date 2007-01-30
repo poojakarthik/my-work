@@ -10,6 +10,17 @@
 		<!-- Select an Account (Following Search OTHER THAN First/Last Name -->
 		<h1>Find Customer</h1>
 		
+							<!--Error if no account is chosen -->
+					<xsl:if test="/Response/Error != ''">
+						<div class="MsgErrorWide">
+							<xsl:choose>
+								<xsl:when test="/Response/Error = 'Unselected'">
+									Please select an Account.
+								</xsl:when>
+							</xsl:choose>
+						</div>
+					</xsl:if>
+		
 		<h2 class="Account">Select an Account</h2>
 		<div class="sectionContainer">
 			<div class="sectionContent">
@@ -76,16 +87,7 @@
 					</div>
 					<div class="Seperator"></div>
 					
-					<!--Error if no account is chosen -->
-					<xsl:if test="/Response/Error != ''">
-						<div class="MsgErrorWide">
-							<xsl:choose>
-								<xsl:when test="/Response/Error = 'Unselected'">
-									Please select an Account.
-								</xsl:when>
-							</xsl:choose>
-						</div>
-					</xsl:if>
+
 					
 					<!--Account Options Table -->
 					<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">

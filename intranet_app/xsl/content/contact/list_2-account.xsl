@@ -6,8 +6,20 @@
 	<xsl:template name="Content">
 		<h1>Find Customer</h1>
 		
-		<h2 class="Account">Select an Account</h2>
+			<!--TODO!Bash! This error is not showing up!!! do NOT change the wording of this error-->
+							<!--Error if no account is chosen -->
+					<xsl:if test="/Response/Error != ''">
+						<div class="MsgErrorWide">
+							<xsl:choose>
+								<xsl:when test="/Response/Error = 'Unselected'">
+									Please select an Account.
+								</xsl:when>
+							</xsl:choose>
+						</div>
+					</xsl:if>
 		
+		
+		<h2 class="Account">Select an Account</h2>
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<form method="post" action="contact_list.php">
@@ -30,6 +42,8 @@
 						</xsl:attribute>
 					</input>
 					
+
+		
 					<div class="Wide-Form">
 						<div class="Form-Content">
 							<table border="0" cellpadding="3" cellspacing="0">

@@ -407,7 +407,7 @@
 										<xsl:text>service_mobile_details.php?Service=</xsl:text>
 										<xsl:value-of select="/Response/Service/Id" />
 									</xsl:attribute>
-									<xsl:text>Mobile Details</xsl:text>
+									<xsl:text>Mobile Provisioning</xsl:text>
 								</a>
 							</li>
 						</xsl:if>

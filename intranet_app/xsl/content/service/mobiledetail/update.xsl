@@ -146,6 +146,7 @@
 											<xsl:with-param name="field" select="string('SimState')" />
 										</xsl:call-template>
 									</th>
+									<!-- TODO!bash! You need to base state and date of birth on contact details-->
 									<td>
 										<select name="SimState">
 											<xsl:for-each select="/Response/ServiceStateTypes/ServiceStateType">

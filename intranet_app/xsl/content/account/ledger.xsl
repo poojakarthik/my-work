@@ -67,6 +67,7 @@
 				<th class="Currency" width="110">Credits</th>
 				<th class="Currency" width="110">Debits</th>
 				<th class="Currency" width="110">Total</th>
+				<!--TODO!bash! you need to have a tax column - otherwise it looks like the total and balance columns do not add up!!! -->
 				<th class="Currency" width="110">Balance</th>
 				<th class="Currency" width="110">Disputed</th>
 			</tr>

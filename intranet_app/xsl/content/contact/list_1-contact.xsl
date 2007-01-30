@@ -6,6 +6,16 @@
 	<xsl:template name="Content">
 		<h1>Find Customer</h1>
 		
+							<xsl:if test="/Response/Error != ''">
+						<div class="MsgErrorWide">
+							<xsl:choose>
+								<xsl:when test="/Response/Error = 'Unselected'">
+									Please select a Contact.
+								</xsl:when>
+							</xsl:choose>
+						</div>
+					</xsl:if>
+					
 		<h2 class="Contact">Select a Contact</h2>
 		
 		<script language="javascript" src="js/ABN.js"></script>
@@ -53,15 +63,7 @@
 					</div>
 					<div class="Seperator"></div>
 					
-					<xsl:if test="/Response/Error != ''">
-						<div class="MsgErrorWide">
-							<xsl:choose>
-								<xsl:when test="/Response/Error = 'Unselected'">
-									Please select a Contact.
-								</xsl:when>
-							</xsl:choose>
-						</div>
-					</xsl:if>
+
 					
 					<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 						<tr class="First">

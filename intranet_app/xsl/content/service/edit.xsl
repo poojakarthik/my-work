@@ -13,7 +13,8 @@
 		
 		
 		<script language="javascript" src="js/service_edit.js"></script>
-		
+		<!--TODO!bash! This page has a popup error instead of using these.  it needs to use these errors!!!-->
+		<!--DO NOT CHANGE THE WORDING OF ANY ERRORS-->
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
 				<xsl:choose>

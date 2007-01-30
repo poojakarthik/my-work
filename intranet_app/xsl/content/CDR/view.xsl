@@ -7,7 +7,6 @@
 	<xsl:template name="Content">
 		<h1>View CDR</h1>
 		
-		<h2 class="CDR">CDR Details</h2>
 		<div class="FormPopup">
 			<div class="Form-Content">
 				<table border="0" width="100%" cellpadding="3" cellspacing="0">

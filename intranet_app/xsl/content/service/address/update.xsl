@@ -7,6 +7,8 @@
 	
 	<xsl:template name="Content">
 	
+	
+	
 		<!-- This page is for Provisioning and Service Address Details -->
 		
 		<h1>Provisioning</h1>
@@ -112,6 +114,14 @@
 								No Service Address Details found.
 							</div>
 						</xsl:if>
+						<!--TODO!bash! URGENT - have errors at least for fields that are required for both business and residential services! Use the following errors EXACTLY:-->
+						<!-- Do NOT change the wording of any errors -->
+						<!-- Please enter a Street Number Start.-->
+						<!-- Please enter a Street Name. -->
+						<!-- Please select a Street Type. -->
+						<!-- Please enter a Locality. -->
+						<!-- Please enter a State. -->
+						<!-- Please enter a Postcode. -->
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>

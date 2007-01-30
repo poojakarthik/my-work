@@ -12,6 +12,10 @@
 		<script language="javascript" src="js/ACN.js"></script>
 		<script language="javascript" src="js/contact_list_1.js"></script>
 		
+		
+		<!-- TODO!bash! This page has a popup error when fields are not filled in correctly!!!  It needs to have a msgerror saying EXACTLY "You did not fill in this form correctly.  Please try again."-->
+		<!-- do NOT change the wording of the error-->
+		
 		<form method="post" action="contact_list.php" onsubmit="return contactList1 (this)">
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">

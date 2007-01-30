@@ -10,8 +10,21 @@
 		
 		<h1>Find Customer</h1>
 		
+				
+					<xsl:if test="/Response/Error != ''">
+				<div class="MsgErrorWide">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Unselected'">
+							Please select a Contact.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+		
 		<!--Select a Contact -->
 		<h2 class="Contact">Select a Contact</h2>
+
+			
 		
 		<form method="post" action="contact_list.php">
 			<input type="hidden" name="ui-Account">
@@ -57,16 +70,7 @@
 				</xsl:attribute>
 			</input>
 			
-			<xsl:if test="/Response/Error != ''">
-				<div class="MsgErrorWide">
-					<xsl:choose>
-						<xsl:when test="/Response/Error = 'Unselected'">
-							Please select a Contact.
-						</xsl:when>
-					</xsl:choose>
-				</div>
-			</xsl:if>
-			
+
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
