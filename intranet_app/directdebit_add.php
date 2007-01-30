@@ -77,7 +77,7 @@
 		}
 	}
 	
-	$docDocumentation->Explain ("AccountGroup");
+	$docDocumentation->Explain ("Account");
 	$docDocumentation->Explain ("Direct Debit");
 	
 	$Style->Output ('xsl/content/directdebit/add.xsl');

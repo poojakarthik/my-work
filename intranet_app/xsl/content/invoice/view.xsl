@@ -255,11 +255,11 @@
 											
 											<xsl:text>&amp;rangePage=1</xsl:text>
 										</xsl:attribute>
-										<xsl:text>- First</xsl:text>
+										<xsl:text>&#124;&lt;- First</xsl:text>
 									</a>
 								</xsl:when>
 								<xsl:otherwise>
-									- First
+									<!-- &#124;&lt;- First -->
 								</xsl:otherwise>
 							</xsl:choose>
 						</td>
@@ -279,11 +279,11 @@
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage - 1" />
 										</xsl:attribute>
-										<xsl:text>- Prev</xsl:text>
+										<xsl:text>&lt;- Prev</xsl:text>
 									</a>
 								</xsl:when>
 								<xsl:otherwise>
-									- Prev
+									<!-- &lt;- Prev -->
 								</xsl:otherwise>
 							</xsl:choose>
 						</td>
@@ -320,11 +320,11 @@
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePage + 1" />
 										</xsl:attribute>
-										<xsl:text>Next -</xsl:text>
+										<xsl:text>Next -&gt;</xsl:text>
 									</a>
 								</xsl:when>
 								<xsl:otherwise>
-									Next -
+									<!-- Next -&gt; -->
 								</xsl:otherwise>
 							</xsl:choose>
 						</td>
@@ -344,11 +344,11 @@
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CDRs-Invoiced/Results/rangePages" />
 										</xsl:attribute>
-										<xsl:text>Last -</xsl:text>
+										<xsl:text>Last -&gt;&#124;</xsl:text>
 									</a>
 								</xsl:when>
 								<xsl:otherwise>
-									Last -
+									<!-- Last -&gt;&#124; -->
 								</xsl:otherwise>
 							</xsl:choose>
 						</td>

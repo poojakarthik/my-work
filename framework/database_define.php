@@ -4439,7 +4439,7 @@
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1) unsigned"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['Default'] 		= "0"; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean"; 
 		 
 					 

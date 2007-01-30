@@ -47,12 +47,12 @@
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('AccountGroup')" />
+								<xsl:with-param name="entity" select="string('Account')" />
 								<xsl:with-param name="field" select="string('Id')" />
 							</xsl:call-template>
 						</th>
 						<td>
-							<xsl:value-of select="/Response/AccountGroup/Id" />
+							<xsl:value-of select="/Response/Account/Id" />
 						</td>
 					</tr>
 				</table>
