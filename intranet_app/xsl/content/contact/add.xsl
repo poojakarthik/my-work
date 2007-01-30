@@ -369,41 +369,4 @@
 			</div>
 		</form>
 	</xsl:template>
-	
-	<xsl:template name="Date_Loop">
-		<xsl:param name="start">1</xsl:param>
-		<xsl:param name="cease">0</xsl:param>
-		<xsl:param name="steps">1</xsl:param>
-		<xsl:param name="count">0</xsl:param>
-		
-		<xsl:param name="select">0</xsl:param>
-		
-		<xsl:if test="number($start) + number($count) &lt;= number($cease)">
-			<option>
-				<xsl:attribute name="value">
-					<xsl:text></xsl:text>
-					<xsl:value-of select="$start + $count" />
-				</xsl:attribute>
-				
-				<xsl:choose>
-					<xsl:when test="$select = $start + $count">
-						<xsl:attribute name="selected">
-							<xsl:text>selected</xsl:text>
-						</xsl:attribute>
-					</xsl:when>
-					<xsl:otherwise>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				<xsl:value-of select="$start + $count" />
-			</option>
-			<xsl:call-template name="Date_Loop">
-				<xsl:with-param name="start" select="$start" />
-				<xsl:with-param name="cease" select="$cease" />
-				<xsl:with-param name="steps" select="$steps" />
-				<xsl:with-param name="count" select="$count + $steps" />
-				<xsl:with-param name="select" select="$select" />
-			</xsl:call-template>
-		</xsl:if>
-	</xsl:template>
 </xsl:stylesheet>

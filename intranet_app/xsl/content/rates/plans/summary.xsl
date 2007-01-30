@@ -45,15 +45,30 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Charge Cap :</th>
-						<td><xsl:value-of select="/Response/RatePlan/ChargeCap" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RatePlan/ChargeCap" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Usage Cap :</th>
-						<td><xsl:value-of select="/Response/RatePlan/UsageCap" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RatePlan/UsageCap" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Minimum Monthly :</th>
-						<td><xsl:value-of select="/Response/RatePlan/MinMonthly" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RatePlan/MinMonthly" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Shared Cap :</th>

@@ -7,15 +7,10 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	
 		<!-- Confirmation page after disputing an Invoice -->
 		<h1>Invoice Disputed</h1>
 		
 		<div class="MsgNoticeWide">
 			The invoice has been successfully disputed
-		</div>
-		
-
-		
-	</xsl:template>
+		</div>	</xsl:template>
 </xsl:stylesheet>

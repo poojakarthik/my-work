@@ -189,7 +189,10 @@
 								<input type="text" name="Amount" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/Amount" />
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/ui-values/Amount" />
+											<xsl:with-param name="Decimal" select="number('4')" />
+				       					</xsl:call-template>
 									</xsl:attribute>
 								</input>
 							</td>

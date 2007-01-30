@@ -35,7 +35,10 @@
 							<td><xsl:value-of select="./ChargeType" /></td>
 							<td><xsl:value-of select="./Description" /></td>
 							<td>
-								<xsl:value-of select="./RecursionCharge" />
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="./RecursionCharge" />
+									<xsl:with-param name="Decimal" select="number('4')" />
+		       					</xsl:call-template>
 								<xsl:text> </xsl:text>
 								<xsl:value-of select="./Nature" />
 							</td>
@@ -48,7 +51,7 @@
 							<td>
 								<a href="#" title="Viewing Recurring Charge Information" alt="Information about this Particular Recurring Charge">
 									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (</xsl:text>
+										<xsl:text>return ModalExternal (this, </xsl:text>
 											<xsl:text>'charges_recurringcharge_view.php?Id=</xsl:text>
 											<xsl:value-of select="./Id" />
 											<xsl:text>'</xsl:text>

@@ -92,7 +92,10 @@
 						</a>
 					</td>
 					<td>
-						<xsl:value-of select="./RecursionCharge" />
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./RecursionCharge" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
 						<xsl:text> </xsl:text>
 						<xsl:value-of select="./Nature" />
 					</td>
@@ -136,13 +139,11 @@
 			<xsl:when test="/Response/RecurringCharges/Results/collationLength = 0">
 				<div class="MsgNoticeWide">
 					There are no Recurring Charges associated with this Account
-
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge) = 0">
 				<div class="MsgErrorWide">
 					There were no results matching your search. Please change your search and try again.
-
 				</div>
 			</xsl:when>
 		</xsl:choose>

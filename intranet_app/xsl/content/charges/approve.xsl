@@ -25,9 +25,24 @@
 				</tr>
 				<xsl:for-each select="/Response/Charges-Unapproved/Results/rangeSample/Charge">
 					<tr>
+						<xsl:attribute name="class">
+							<xsl:choose>
+								<xsl:when test="position() mod 2 = 1">
+									<xsl:text>Odd</xsl:text>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:text>Even</xsl:text>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
 						<td><xsl:value-of select="position()" />.</td>
 						<td><xsl:value-of select="./Description" /></td>
-						<td><xsl:value-of select="./Amount" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="./Amount" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
 						<td>
 							<a>
 								<xsl:attribute name="href">

@@ -112,6 +112,7 @@
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:attribute>
+					
 					<td><xsl:value-of select="position()" />.</td>
 					<td><xsl:value-of select="./Name" /></td>
 					<td>

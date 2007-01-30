@@ -180,7 +180,12 @@
 										<xsl:with-param name="field" select="string('UnbilledCharges')" />
 									</xsl:call-template>
 								</th>
-								<td><xsl:value-of select="/Response/Service/UnbilledCharges-Cost-Current" /></td>
+								<td>
+					       			<xsl:call-template name="Currency">
+					       				<xsl:with-param name="Number" select="/Response/Service/UnbilledCharges-Cost-Current" />
+										<xsl:with-param name="Decimal" select="number('4')" />
+			       					</xsl:call-template>
+						       	</td>
 							</tr>
 							<tr>
 								<th>

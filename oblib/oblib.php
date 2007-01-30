@@ -193,12 +193,12 @@
 		{
 			$nodeValue = preg_replace ("/^\$/misU", "", $nodeValue);
 			
-			if (!is_numeric ($nodeValue))
+			if (!preg_match ("/^[\d]+[\.[\d]+]?$/", $nodeValue))
 			{
 				return false;
 			}
 			
-			return parent::setValue	("$" . sprintf ("%0.4f", floatval ($nodeValue)));
+			return parent::setValue	(floatval ($nodeValue));
 		}
 	}
 	

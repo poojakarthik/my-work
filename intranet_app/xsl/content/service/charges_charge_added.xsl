@@ -8,9 +8,6 @@
 		
 		<div class = "MsgNoticeWide">
 			The Charge has been successfully added to the Service.
-
 		</div>
-		
-
 	</xsl:template>
 </xsl:stylesheet>

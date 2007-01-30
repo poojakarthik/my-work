@@ -35,7 +35,12 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Recursion Amount:</th>
-						<td><xsl:value-of select="/Response/RecurringChargeType/RecursionCharge" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+	       				</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Nature:</th>
@@ -86,11 +91,21 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Minimum Charge:</th>
-						<td><xsl:value-of select="/Response/RecurringChargeType/MinCharge" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+	       				</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Cancellation Fee:</th>
-						<td><xsl:value-of select="/Response/RecurringChargeType/CancellationFee" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/CancellationFee" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+	       				</td>
 					</tr>
 					<tr>
 						<td colspan="2">
@@ -120,6 +135,5 @@
 				<div class="Clear"></div>
 			</div>
 		</div>
-
 	</xsl:template>
 </xsl:stylesheet>

@@ -50,17 +50,18 @@
 											</xsl:call-template>
 										</th>
 										<td>
-											<span Class="Red">
-												<!-- TODO!bash!Display overdue amount to 2 decimal places --> 
-												<xsl:value-of select="/Response/Account/Balance" />
+											<span class="Red">
+												<!-- TODO!bash! [  DONE  ]		Display overdue amount to 2 decimal places --> 
+								       			<xsl:call-template name="Currency">
+								       				<xsl:with-param name="Number" select="/Response/Account/Balance" />
+													<xsl:with-param name="Decimal" select="number('2')" />
+						       					</xsl:call-template>
 											</span>
 										</td>
 									</tr>
 									<xsl:choose>
-										<!-- TODO!bash!Display overdue amount to 2 decimal places --> 
-										<xsl:when test="/Response/Account/OverdueAmount = '$0.0000'">
-										</xsl:when>
-										<xsl:otherwise>
+										<!-- TODO!bash! [  DONE  ]		Display overdue amount to 2 decimal places -->
+										<xsl:when test="/Response/Account/OverdueAmount != '0' and /Response/Account/OverdueAmount != ''">
 											<tr>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
@@ -70,11 +71,14 @@
 												</th>
 												<td>
 													<span Class="Red">
-														<xsl:value-of select="/Response/Account/OverdueAmount" />
+										       			<xsl:call-template name="Currency">
+										       				<xsl:with-param name="Number" select="/Response/Account/OverdueAmount" />
+															<xsl:with-param name="Decimal" select="number('2')" />
+									    				</xsl:call-template>
 													</span>
 												</td>
 											</tr>
-										</xsl:otherwise>
+										</xsl:when>
 									</xsl:choose>
 									<tr>
 										<td colspan="2"><div class="MicroSeperator"></div></td>

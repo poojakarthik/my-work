@@ -42,7 +42,12 @@
 								<xsl:with-param name="field" select="string('Disputed')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/Invoice/Disputed" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+	       				</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">

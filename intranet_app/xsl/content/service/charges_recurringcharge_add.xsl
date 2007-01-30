@@ -85,12 +85,18 @@
 										<input type="text" name="Amount" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/RecurringChargeType/RecursionCharge" />
+								       			<xsl:call-template name="Currency">
+								       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
+													<xsl:with-param name="Decimal" select="number('4')" />
+						       					</xsl:call-template>
 											</xsl:attribute>
 										</input>	
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="/Response/RecurringChargeType/RecursionCharge" />
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
+											<xsl:with-param name="Decimal" select="number('4')" />
+				       					</xsl:call-template>
 									</xsl:otherwise>
 								</xsl:choose>
 							</td>
@@ -116,7 +122,12 @@
 									<xsl:with-param name="field" select="string('MinCharge')" />
 								</xsl:call-template>
 							</th>
-							<td><xsl:value-of select="/Response/RecurringChargeType/MinCharge" /></td>
+							<td>
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
+									<xsl:with-param name="Decimal" select="number('4')" />
+		       					</xsl:call-template>
+							</td>
 						</tr>
 						<tr>
 							<th class="JustifiedWidth">
@@ -125,7 +136,12 @@
 									<xsl:with-param name="field" select="string('CancellationFee')" />
 								</xsl:call-template>
 							</th>
-							<td><xsl:value-of select="/Response/RecurringChargeType/CancellationFee" /></td>
+							<td>
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/CancellationFee" />
+									<xsl:with-param name="Decimal" select="number('4')" />
+		       					</xsl:call-template>
+							</td>
 						</tr>
 						<tr>
 							<td colspan="2">
@@ -156,6 +172,5 @@
 					<input type="submit" name="Confirm" value="Add Charge &#0187;" class="input-submit" />
 			</div>
 		</form>
-		
 	</xsl:template>
 </xsl:stylesheet>

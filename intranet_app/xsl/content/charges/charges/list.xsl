@@ -35,7 +35,10 @@
 							<td><xsl:value-of select="./ChargeType" /></td>
 							<td><xsl:value-of select="./Description" /></td>
 							<td>
-								<xsl:value-of select="./Amount" />
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="./Amount" />
+									<xsl:with-param name="Decimal" select="number('4')" />
+		       					</xsl:call-template>
 								<xsl:text> </xsl:text>
 								<xsl:value-of select="./Nature" />
 							</td>

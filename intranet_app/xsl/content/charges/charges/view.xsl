@@ -26,7 +26,12 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Amount:</th>
-						<td><xsl:value-of select="/Response/ChargeType/Amount" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/ChargeType/Amount" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+	       				</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Nature:</th>
@@ -65,6 +70,5 @@
 				<div class="Clear"></div>
 			</div>
 		</div>
-
 	</xsl:template>
 </xsl:stylesheet>

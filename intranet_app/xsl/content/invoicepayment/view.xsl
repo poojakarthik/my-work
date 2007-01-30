@@ -29,7 +29,12 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Amount :</th>
-						<td><xsl:value-of select="/Response/InvoicePayment/Amount" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/InvoicePayment/Amount" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
 					</tr>
 				</table>
 				<div class="Clear"></div>
@@ -60,7 +65,12 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Amount :</th>
-						<td><xsl:value-of select="/Response/Payment/Amount" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Payment/Amount" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">TXN Reference :</th>
@@ -68,7 +78,12 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">Balance :</th>
-						<td><xsl:value-of select="/Response/Payment/Balance" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Payment/Balance" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
 					</tr>
 				</table>
 				<div class="Clear"></div>

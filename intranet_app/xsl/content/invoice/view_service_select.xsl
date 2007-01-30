@@ -142,9 +142,24 @@
 							<xsl:value-of select="./FNN" />
 						</a>
 					</td>
-					<td class="Currency"><xsl:value-of select="./TotalCharge" /></td>
-					<td class="Currency"><xsl:value-of select="./Credit" /></td>
-					<td class="Currency"><xsl:value-of select="./Debit" /></td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./TotalCharge" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+					</td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Credit" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+					</td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Debit" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+					</td>
 				</tr>
 			</xsl:for-each>
 		</table>

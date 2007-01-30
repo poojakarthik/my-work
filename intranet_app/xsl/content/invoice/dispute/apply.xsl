@@ -46,7 +46,10 @@
 							<input type="text" name="Disputed" class="input-string">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
-									<xsl:value-of select="/Response/Invoice/Disputed"/>
+					       			<xsl:call-template name="Currency">
+					       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed" />
+										<xsl:with-param name="Decimal" select="number('4')" />
+			       					</xsl:call-template>
 								</xsl:attribute>
 							</input>
 						</td>
@@ -55,7 +58,7 @@
 			</div>
 			<div class="Small Seperator"></div>
 			
-			<div class = " Right">
+			<div class="Right">
 				<input type="submit" value="Continue &#0187;" class="input-submit" />
 			</div>
 		</form>

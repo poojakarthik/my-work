@@ -84,7 +84,12 @@
 						</xsl:call-template>
 					</td>
 					<td class="Currency"><xsl:value-of select="./Units" /></td>
-					<td class="Currency"><xsl:value-of select="./Charge" /></td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Charge" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+					</td>
 					<td class="Currency">
 						<a href="#" title="CDR Information" alt="View CDR Record Information">
 							<xsl:attribute name="onclick">

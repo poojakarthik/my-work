@@ -88,12 +88,18 @@
 										<input type="text" name="Amount" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ChargeType/Amount" />
+								       			<xsl:call-template name="Currency">
+								       				<xsl:with-param name="Number" select="/Response/ChargeType/Amount" />
+													<xsl:with-param name="Decimal" select="number('4')" />
+						       					</xsl:call-template>
 											</xsl:attribute>
 										</input>	
 									</xsl:when>
 									<xsl:otherwise>
-										<xsl:value-of select="/Response/ChargeType/Amount" />
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/ChargeType/Amount" />
+											<xsl:with-param name="Decimal" select="number('4')" />
+				       					</xsl:call-template>
 									</xsl:otherwise>
 								</xsl:choose>
 							</td>
@@ -115,7 +121,6 @@
 			<div class = "Right">
 				<input type="submit" name="Confirm" value="Add Charge &#0187;" class="input-submit" />
 			</div>
-			
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

@@ -303,18 +303,18 @@
 				'Service'				=> $this->Pull ('Id')->getValue (),
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				'CreatedOn'				=> new MySQLFunction ("NOW()"),
+				'StartedOn'				=> new MySQLFunction ("NOW()"),
+				'LastChargedOn'			=> new MySQLFunction ("NOW()"),
 				'ChargeType'			=> $rctRecurringChargeType->Pull ('ChargeType')->getValue (),
 				'Description'			=> $rctRecurringChargeType->Pull ('Description')->getValue (),
 				'Nature'				=> $rctRecurringChargeType->Pull ('Nature')->getValue (),
 				'RecurringFreqType'		=> $rctRecurringChargeType->Pull ('RecurringFreqType')->getValue (),
-				'RecurringDate'			=> $rctRecurringChargeType->Pull ('RecurringDate')->getValue (),
 				'MinCharge'				=> $rctRecurringChargeType->Pull ('MinCharge')->getValue (),
 				'RecursionCharge'		=> $fltAmount,
 				'CancellationFee'		=> $rctRecurringChargeType->Pull ('CancellationFee')->getValue (),
 				'Continuable'			=> $rctRecurringChargeType->Pull ('Continuable')->getValue (),
-				'TotalPaid'				=> 0,
-				'TotalRecursions'		=> 0,
-				'Status'				=> CHARGE_WAITING
+				'TotalCharged'			=> 0,
+				'TotalRecursions'		=> 0
 			);
 			
 			$insRecurringCharge = new StatementInsert ('RecurringCharge', $arrRecurringCharge);

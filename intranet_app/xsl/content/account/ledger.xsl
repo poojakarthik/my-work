@@ -92,16 +92,36 @@
 							Invoice #<xsl:value-of select="./Id" />
 						</a>
 					</td>
-					<td class="Currency"><xsl:value-of select="./AccountBalance" /></td>
-					<td class="Currency"><xsl:value-of select="./Credits" /></td>
-					<td class="Currency"><xsl:value-of select="./Debits" /></td>
-					<td class="Currency"><xsl:value-of select="./Total" /></td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./AccountBalance" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+       				</td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Credits" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+					</td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Debits" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+       				</td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Total" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+       				</td>
 					<td class="Currency">
 						<strong>
 							<span>
 								<xsl:attribute name="class">
 									<xsl:choose>
-										<xsl:when test="./Balance != '$0.0000'">
+										<xsl:when test="./Balance != 0">
 											<xsl:text>Red</xsl:text>
 										</xsl:when>
 										<xsl:otherwise>
@@ -109,19 +129,33 @@
 										</xsl:otherwise>
 									</xsl:choose>
 								</xsl:attribute>
-								<xsl:value-of select="./Balance" />
+								
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="./Balance" />
+									<xsl:with-param name="Decimal" select="number('4')" />
+		       					</xsl:call-template>
 							</span>
 						</strong>
 					</td>
 					<td class="Currency">
-						<xsl:choose>
-							<xsl:when test="./Disputed != '$0.0000'">
-								<strong><span class="Red"><xsl:value-of select="./Disputed" /></span></strong>
-							</xsl:when>
-							<xsl:otherwise>
-								<xsl:value-of select="./Disputed" />
-							</xsl:otherwise>
-						</xsl:choose>
+						<span>
+							<xsl:choose>
+								<xsl:when test="./Disputed != 0">
+									<xsl:attribute name="class">
+										<xsl:text>Red</xsl:text>
+									</xsl:attribute>
+									
+									<xsl:attribute name="style">
+										<xsl:text>font-weight: bold;</xsl:text>
+									</xsl:attribute>
+								</xsl:when>
+							</xsl:choose>
+							
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="./Disputed" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</span>
 					</td>
 				</tr>
 			</xsl:for-each>
@@ -233,7 +267,12 @@
 							Invoice #<xsl:value-of select="./Invoice" />
 						</a>
 					</td>
-					<td><xsl:value-of select="./Amount" /></td>
+					<td>
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Amount" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+    					</xsl:call-template>
+   					</td>
 					<td>
 						<a href="#" title="View Invoice Payment Details" alt="Information about a payment that was made">
 							<xsl:attribute name="onclick">

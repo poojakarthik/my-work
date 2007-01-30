@@ -6,15 +6,7 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	
-	
-	
-	
-	<!--we are not using this page anymore link to change payment details instead-->
-	
-	
-	
-	
+		<!--we are not using this page anymore link to change payment details instead-->
 		<h1>Direct Debit Details</h1>
 		<div class="Seperator"></div>
 		

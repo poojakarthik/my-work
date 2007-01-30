@@ -159,7 +159,12 @@
 									<xsl:with-param name="field" select="string('Cost')" />
 								</xsl:call-template>
 							</th>
-							<td><xsl:value-of select="/Response/CDR/Cost" /></td>
+							<td>
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="/Response/CDR/Cost" />
+									<xsl:with-param name="Decimal" select="number('4')" />
+		       					</xsl:call-template>
+							</td>
 						</tr>
 					</xsl:if>
 					
@@ -222,7 +227,12 @@
 								<xsl:with-param name="field" select="string('Charge')" />
 							</xsl:call-template>
 						</th>
-						<td><xsl:value-of select="/Response/CDR/Charge" /></td>
+						<td>
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/CDR/Charge" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
 					</tr>
 					
 					<!-- Rate -->

@@ -78,7 +78,10 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<xsl:value-of select="/Response/RecurringCharge/RecursionCharge" />
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RecurringCharge/RecursionCharge" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
 						</td>
 					</tr>
 					<tr>
@@ -102,7 +105,10 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<xsl:value-of select="/Response/RecurringCharge/MinCharge" />
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RecurringCharge/MinCharge" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
 						</td>
 					</tr>
 					<tr>
@@ -113,7 +119,10 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<xsl:value-of select="/Response/RecurringCharge/CancellationFee" />
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/RecurringCharge/CancellationFee" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
 						</td>
 					</tr>
 				</table>

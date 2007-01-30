@@ -16,7 +16,7 @@
 		<h2 class="Invoice">Invoice Details</h2>
 		<div class="Wide-Form">
 			<table border="0" cellpadding="3" cellspacing="0">
-			<tr>
+				<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
 							<xsl:with-param name="entity" select="string('Account')" />
@@ -119,7 +119,12 @@
 										<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 									</xsl:call-template>
 								</td>
-								<td><xsl:value-of select="./Amount" /></td>
+								<td>
+					       			<xsl:call-template name="Currency">
+					       				<xsl:with-param name="Number" select="./Amount" />
+										<xsl:with-param name="Decimal" select="number('4')" />
+			       					</xsl:call-template>
+								</td>
 								<td>
 									<strong>
 										<span>
@@ -197,7 +202,12 @@
 						</xsl:call-template>
 					</td>
 					<td class="Currency"><xsl:value-of select="./Units" /></td>
-					<td class="Currency"><xsl:value-of select="./Charge" /></td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Charge" />
+							<xsl:with-param name="Decimal" select="number('4')" />
+       					</xsl:call-template>
+					</td>
 					<td class="Currency">
 						<a href="#" title="CDR Information" alt="Client Data Record Information">
 							<xsl:attribute name="onclick">

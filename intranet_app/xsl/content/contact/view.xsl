@@ -428,7 +428,7 @@
 							<span>
 								<xsl:attribute name="class">
 									<xsl:choose>
-										<xsl:when test="./OverdueAmount = '$0.0000'">
+										<xsl:when test="./OverdueAmount = '' or ./OverdueAmount = '0'">
 											<xsl:text>Green</xsl:text>
 										</xsl:when>
 										<xsl:otherwise>
@@ -436,7 +436,10 @@
 										</xsl:otherwise>
 									</xsl:choose>
 								</xsl:attribute>
-								<xsl:value-of select="./OverdueAmount" />
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="./OverdueAmount" />
+									<xsl:with-param name="Decimal" select="number('4')" />
+		       					</xsl:call-template>
 							</span>
 						</strong>
 					</td>
