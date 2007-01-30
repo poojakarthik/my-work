@@ -111,6 +111,10 @@
 		</div>
 		<div class="LinkEdit">
 		<!--TODO!bash! Urgent - why is this link here when the invoice is not in dispute - only show it if it has been disputed, not before, and not after it has been resolved-->
+		<!--TODO!bash! Urgent - INVOICE_DISPUTED = show resolve -->	
+		<!--TODO!bash! Urgent - INVOICE_COMMITTED = show dispute -->			
+		<!--TODO!flame! Urgent - other status show ???? -->
+		<!--TODO!bash! Urgent - INVOICE_SETTLED = show none -->
 			<a>
 				<xsl:attribute name="href">
 					<xsl:text>invoice_dispute_resolve.php?Id=</xsl:text>
