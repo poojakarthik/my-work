@@ -112,8 +112,7 @@
 		
 		$this->_selServices				= new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
 																"Service.FNN AS FNN, Service.Id AS Id, Service.ServiceType AS ServiceType",
-																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND" .
-																" (Service.ServiceType = ".SERVICE_TYPE_MOBILE." OR ServiceTotal.TotalCharge > 0.0)");
+																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW())");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"TotalCharge",
@@ -810,11 +809,19 @@
 		{			
 			// The individual RecordTypes for each Service
 			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
+			if ($intSummaryCount === FALSE)
+			{
+				Debug('$intSummaryCount is FALSE! for service '.$arrService['FNN']);
+			}
+			elseif($intSummaryCount == 0)
+			{
+				Debug('$intSummaryCount is 0! for service '.$arrService['FNN']);
+			}
 			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
 
 			$arrDefine['ServiceHeader']		['FNN']				['Value']	= $arrService['FNN'];
 			$arrFileData[] = $arrDefine['ServiceHeader'];
-						
+			
 			$intRecordCount = 0;
 			foreach($arrServiceSummaries as $arrServiceSummary)
 			{
