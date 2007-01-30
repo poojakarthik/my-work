@@ -38,7 +38,7 @@
 		$strLocalFTPDir			= "/home/CDR/";
 		$strLocalFTPServer		= "10.11.12.13";
 		
-/*
+
 		/* Skeleton
 		$arrConfig['Define']["Skeleton"]	["Name"]		= "Skeleton";
 		$arrConfig['Define']["Skeleton"]	["Carrier"]		= CARRIER_UNITEL;
@@ -51,7 +51,7 @@
 		$arrConfig['Define']["Skeleton"]	["FileType"][REGEX_SKELETON]	= CDR_SKELETON;
 		$arrConfig['Define']["Skeleton"]	["FileType"]['/test.txt/']		= CDR_SKELETON;
 		*/
-
+/*
 		// Unitel Landline Definition
 		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel Landline/S&E";
 		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
@@ -68,7 +68,7 @@
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;*/
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 		
 		// Unitel Mobile Definition
 		// (needs a separate definition because the regex's for Commander and LL are the same, but different file format)
@@ -174,7 +174,8 @@
  		$arrConfig['Define']["Optus"]	["Server"]						= $strTestServer;
  		$arrConfig['Define']["Optus"]	["Username"]					= $strTestUsername;
  		$arrConfig['Define']["Optus"]	["PWord"]						= $strTestPassword;
- 		$arrConfig['Define']["Optus"]	["Dir"][]						= $strTestDir."optus/".$strOptusTestDir."Speedi Files/";
+ 		//$arrConfig['Define']["Optus"]	["Dir"][]						= $strTestDir."optus/".$strOptusTestDir."Speedi Files/";
+		$arrConfig['Define']["Optus"]	["Dir"][]						= $strTestDir."optus/".$strOptusTestDir;
  		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/";
 		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
 		
