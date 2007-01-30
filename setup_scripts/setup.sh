@@ -1,6 +1,5 @@
 #!/bin/sh
 
-# Backup a MySQL InnoDB Database
 #
 
 # Make Dirs

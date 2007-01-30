@@ -9,16 +9,16 @@
 # -----------------------------------------------------------------------------#
 
 # Server Host Name
-StrHostName=""
+StrHostName="catwalk"
 
 # Internal IP Address
-IPeth0="10.11.12.1n"
+IPeth0="10.11.12.14"
 
 # Backup IP Address
-IPeth1="10.10.10.1n"
+IPeth1="10.10.10.14"
 
 # External IP Address
-IPeth2="192.168.2.22n"
+IPeth2="192.168.2.224"
 
 # -----------------------------------------------------------------------------#
 # APT Config
@@ -187,10 +187,6 @@ echo "Configuring Folders ..."
 
 # viXen folder
 mkdir -pm=755 /usr/share/vixen
-
-# web links
-ln -s /usr/share/vixen/intranet_app /var/www/vixen_intranet
-ln -s /usr/share/vixen/client_app /var/www/vixen_website
 
 # -----------------------------------------------------------------------------#
 # INSTALL PACKAGES
@@ -656,7 +652,7 @@ max_allowed_packet      = 16M
 [isamchk]
 key_buffer              = 16M
 			"
-echo "$FileMyCnf" > /etc/iftab
+echo "$FileMyCnf" > /etc/my.cnf
 
 
 # -----------------------------------------------------------------------------#
@@ -686,13 +682,16 @@ FileVixenWebsite="
 echo "$FileVixenWebsite" > /etc/apache2/sites-available/vixen-website
 
 # enable the sites
-ln -s /etc/apache2/sites-enabled/vixen-intranet /etc/apache2/sites-available/vixen-intranet
-ln -s /etc/apache2/sites-enabled/vixen-website /etc/apache2/sites-available/vixen-website
+#ln -s /etc/apache2/sites-enabled/vixen-intranet /etc/apache2/sites-available/vixen-intranet
+#ln -s /etc/apache2/sites-enabled/vixen-website /etc/apache2/sites-available/vixen-website
 
 # set intranet as the default site
-rm /etc/apache2/sites-available/default
-ln -s /etc/apache2/sites-available/vixen-intranet /etc/apache2/sites-available/default
+#rm /etc/apache2/sites-available/default
+#ln -s /etc/apache2/sites-available/vixen-intranet /etc/apache2/sites-available/default
 
+# web links (temporary hack)
+ln -s /usr/share/vixen/intranet_app /var/www/vixen_intranet
+ln -s /usr/share/vixen/client_app /var/www/vixen_website
 
 # -----------------------------------------------------------------------------#
 # VIXEN CONFIG
@@ -701,11 +700,12 @@ ln -s /etc/apache2/sites-available/vixen-intranet /etc/apache2/sites-available/d
 echo "Configuring Vixen ..."
 
 # copy default server index page(s) into place
-cp /usr/share/vixen/server/* /var/www/
+cp /usr/share/vixen/www/* /var/www/
 
 # run setup script
-cd /usr/share/vixen/setup_scripts
-/usr/share/vixen/server_setup.php
+#cd /usr/share/vixen/setup_scripts
+#chmod 755 /usr/share/vixen/setup_scripts/server_setup.php
+#/usr/share/vixen/setup_scripts/server_setup.php
 
 
 # -----------------------------------------------------------------------------#

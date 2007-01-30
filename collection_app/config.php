@@ -38,7 +38,7 @@
 		$strLocalFTPDir			= "/home/CDR/";
 		$strLocalFTPServer		= "10.11.12.13";
 		
-
+/*
 		/* Skeleton
 		$arrConfig['Define']["Skeleton"]	["Name"]		= "Skeleton";
 		$arrConfig['Define']["Skeleton"]	["Carrier"]		= CARRIER_UNITEL;
@@ -106,7 +106,7 @@
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
-		
+*/		
 		/*
 		TODO!rich! Write this definition when you get the details
 		// iSeek Definition
@@ -123,7 +123,7 @@
 		
 		
 		
-/*		
+	
 		
 		// TESTING DEFINITIONS
 		$strTestUsername	= "download";
@@ -132,7 +132,7 @@
 		$strTestServer		= "10.11.12.13";
 		
 		// Unitel Landline and S&E Definition
-		$strUnitelTestDir = "2006/dec/";
+		$strUnitelTestDir = "2007/jan/";
 		$arrConfig['Define']["RSLCOM"]	["Name"]							= "RSLCOM";
 		$arrConfig['Define']["RSLCOM"]	["Carrier"]							= CARRIER_UNITEL;
  		$arrConfig['Define']["RSLCOM"]	["Type"]							= COLLECTION_TYPE_FTP;
@@ -150,7 +150,7 @@
 		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 
 		// Unitel Landline and S&E Definition
-		$strUnitelTestDir = "2006/dec/";
+		$strUnitelTestDir = "2007/jan/";
 		$arrConfig['Define']["Commander"]	["Name"]							= "Commander";
 		$arrConfig['Define']["Commander"]	["Carrier"]							= CARRIER_UNITEL;
  		$arrConfig['Define']["Commander"]	["Type"]							= COLLECTION_TYPE_FTP;
@@ -165,7 +165,7 @@
 		//$arrConfig['Define']["Commander"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
 		//$arrConfig['Define']["Commander"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 		
-
+/*
 		// Optus Definition
 		$strOptusTestDir = "Dec 06/";
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
@@ -191,6 +191,7 @@
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
+	
 */
 		
 ?>

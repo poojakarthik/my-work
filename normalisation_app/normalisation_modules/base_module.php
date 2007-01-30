@@ -804,6 +804,18 @@ abstract class NormalisationModule
 	 protected function FindRecordType($intServiceType, $strRecordCode)
 	 {
 
+// ############################################################################################################################ //
+// HACK ALERT : Convert Mobile->1300 to Mobile->National as Mobiile->1300 doesn't exist
+// ############################################################################################################################ //
+
+	if ($intServiceType == SERVICE_TYPE_MOBILE && $strRecordCode == 'OneThree')
+	{
+		$strRecordCode = 'National';
+	}
+
+// ############################################################################################################################ //
+// ############################################################################################################################ //
+
 	 	$intResult = $this->_selFindRecordType->Execute(Array("ServiceType" => $intServiceType, "Code" => $strRecordCode));
 		
 		if ($intResult === FALSE)

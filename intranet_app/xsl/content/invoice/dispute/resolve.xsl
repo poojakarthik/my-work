@@ -59,6 +59,11 @@
 						<td>
 							<input type="checkbox" name="Resolve" value="1" />
 							Yes, Resolve this Dispute
+							<!-- TODO!bash! URGENT need the following options (radio buttons)...-->
+							<!-- Text === "Customer to pay full amount" => Invoice.Balance += Invoice.Disputed, Invoice.Status = INVOICE_COMMITTED -->
+							<!-- Text === "Customer to pay $" [Input.Amount] => 
+							<!-- 			Invoice.Balance += Input.Amount, Invoice.Disputed -= Input.Amount, Invoice.Status = INVOICE_COMMITTED -->
+							<!-- Text === "Payment NOT required" : Invoice.Status = INVOICE_DISPUTED_SETTLED -->
 						</td>
 					</tr>
 				</table>
