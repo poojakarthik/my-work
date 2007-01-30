@@ -626,6 +626,7 @@ die();
 		$arrReportLines['<Fail>']	= $intFailed;
 		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
 		
+		// FIXME: Remove if we want to do the bill audit
 		return;
 		
 		// Generate the Bill Audit Report

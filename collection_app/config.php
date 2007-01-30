@@ -30,6 +30,14 @@
 //----------------------------------------------------------------------------//
 // CONFIG
 //----------------------------------------------------------------------------//
+		
+		// eg. "Jan 07/"
+		$strDateDir				= date("M y/", strtotime("-1 day", time()));
+		$strLocalFTPUsername	= "download";
+		$strLocalFTPPassword	= "password";
+		$strLocalFTPDir			= "/home/CDR/";
+		$strLocalFTPServer		= "10.11.12.13";
+		
 
 		/* Skeleton
 		$arrConfig['Define']["Skeleton"]	["Name"]		= "Skeleton";
@@ -43,34 +51,45 @@
 		$arrConfig['Define']["Skeleton"]	["FileType"][REGEX_SKELETON]	= CDR_SKELETON;
 		$arrConfig['Define']["Skeleton"]	["FileType"]['/test.txt/']		= CDR_SKELETON;
 		*/
-		/* TODO: UNCOMMENT THIS WHEN WE GO LIVE
-		// Unitel Definition
-		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel";
+
+		// Unitel Landline Definition
+		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel Landline/S&E";
 		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
  		$arrConfig['Define']["Unitel"]	["Type"]							= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["Unitel"]	["Server"]							= "rslcom.com.au";
  		$arrConfig['Define']["Unitel"]	["Username"]						= "sp058";
  		$arrConfig['Define']["Unitel"]	["PWord"]							= "BuzzaBee06*#";
  		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "cdrbatchesoffnet/";
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]						= "mobilecdrbatches/";
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatchesoffnet/";
+ 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
+		$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;/*
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
-
-		// Optus Definition
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;*/
+		
+		// Unitel Mobile Definition
+		// (needs a separate definition because the regex's for Commander and LL are the same, but different file format)
+		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel Commander Mobile";
+		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
+ 		$arrConfig['Define']["Unitel"]	["Type"]							= COLLECTION_TYPE_FTP;
+ 		$arrConfig['Define']["Unitel"]	["Server"]							= "rslcom.com.au";
+ 		$arrConfig['Define']["Unitel"]	["Username"]						= "sp058";
+ 		$arrConfig['Define']["Unitel"]	["PWord"]							= "BuzzaBee06*#";
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "mobilecdrbatches/";
+ 		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
+		
+		// Optus Definition	
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Optus"]	["Server"]						= "cyrene";				// FIXME
- 		$arrConfig['Define']["Optus"]	["Username"]					= "flame";				// FIXME
- 		$arrConfig['Define']["Optus"]	["PWord"]						= "flame";				// FIXME
- 		$arrConfig['Define']["Optus"]	["Dir"][]						= "optustest/";			// FIXME
+ 		$arrConfig['Define']["Optus"]	["Server"]						= $strLocalFTPServer;
+ 		$arrConfig['Define']["Optus"]	["Username"]					= $strLocalFTPUsername;
+ 		$arrConfig['Define']["Optus"]	["PWord"]						= $strLocalFTPPassword;
+ 		$arrConfig['Define']["Optus"]	["Dir"][]						= $strLocalFTPDir."optus/".$strDateDir."Speedi Files/";
  		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/";
 		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
 
@@ -78,19 +97,18 @@
 		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
 		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;
  		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["AAPT"]	["Server"]						= "cyrene";				// FIXME
- 		$arrConfig['Define']["AAPT"]	["Username"]					= "flame";				// FIXME
- 		$arrConfig['Define']["AAPT"]	["PWord"]						= "flame";				// FIXME
- 		$arrConfig['Define']["AAPT"]	["ZipPword"]					= "flame";				// FIXME
- 		$arrConfig['Define']["AAPT"]	["Dir"][]						= "aapttest/";			// FIXME
+ 		$arrConfig['Define']["AAPT"]	["Server"]						= $strLocalFTPServer;
+ 		$arrConfig['Define']["AAPT"]	["Username"]					= $strLocalFTPUsername;
+ 		$arrConfig['Define']["AAPT"]	["PWord"]						= $strLocalFTPPassword;
+ 		$arrConfig['Define']["AAPT"]	["Dir"][]						= $strLocalFTPDir."aapt/".$strDateDir;
  		$arrConfig['Define']["AAPT"]	["FinalDir"]					= DESTINATION_ROOT."aapt/";
 		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT]		= CDR_AAPT_STANDARD;
-		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
-		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
-		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
-		*/
+		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
+		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
+		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
 		
 		/*
+		TODO!rich! Write this definition when you get the details
 		// iSeek Definition
 		$arrConfig['Define']["iSeek"]	["Name"]						= "iSeek";
 		$arrConfig['Define']["iSeek"]	["Carrier"]						= CARRIER_ISEEK;
@@ -105,7 +123,7 @@
 		
 		
 		
-		
+/*		
 		
 		// TESTING DEFINITIONS
 		$strTestUsername	= "download";
@@ -173,6 +191,6 @@
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
-		
+*/
 		
 ?>
