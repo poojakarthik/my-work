@@ -343,6 +343,7 @@
 								</td>
 							</tr>
 						</xsl:if>
+						<!-- TODO!bash! make email address validation case insensitve!! -->
 						<!-- Contact Email Address -->
 						<xsl:if test="/Response/ui-answers/Contact/Email != ''">
 							<tr>

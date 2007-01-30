@@ -378,7 +378,7 @@
 			</xsl:when>
 			<xsl:when test="/Response/Accounts/Results/collationLength = 0">
 				<div class="MsgErrorWide">
-					No Match 	There were no results matching your search. Please change your search and try again.
+					There were no results matching your search. Please change your search and try again.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/Accounts/Results/rangeSample/Account) = 0">

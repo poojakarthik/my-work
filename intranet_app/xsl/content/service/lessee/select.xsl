@@ -14,12 +14,13 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Invalid Account'">
-						The Account ID you entered was not found. 
-
+						Please enter a valid Account ID.
 					</xsl:when>
 				</xsl:choose>
 			</div>
 		</xsl:if>
+		
+	
 		
 		<form method="POST" action="service_lessee.php">
 			<input type="hidden" name="Service">

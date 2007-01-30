@@ -6,7 +6,9 @@
 	<xsl:import href="../../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Rate Group Details</h1>
+		<h1>View Rate Group Details</h1>
+		
+		<h2 class="Plan"> Group Details</h2>
 		
 		<div class="Wide-Form">
 			<div class="Form-Content">
@@ -36,6 +38,7 @@
 		
 		<h2 class="Invoice">Charges</h2>
 		
+		<!--TODO!bash! URGENT! This needs to be the same table as on the view rate plan details page!-->
 		<table border="0" width="100%" cellpadding="5" cellspacing="0" style="font-family: monospace; font-size: 9pt;" class="Listing">
 			<xsl:for-each select="/Response/RateGroupRate/rangeSample/Rate">
 				<tr class="First">
@@ -151,6 +154,7 @@
 						</xsl:call-template>
 					</td>
 				</tr>
+				   
 			</xsl:for-each>
 		</table>
 		

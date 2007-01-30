@@ -368,6 +368,7 @@
 			<div class="Seperator"></div>
 			
 			<!-- Billing Details -->
+			<!--TODO!bash! URGENT! - Billing details are not being saved!!! (this may only be happening if there has been an error on when adding customer - check)-->
 			<h2 class="Invoice">Billing Details</h2>
 			
 			<div class="Wide-Form">
@@ -644,7 +645,7 @@
 				<xsl:if test="/Response/Contacts">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
-							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+							<td class="Required" valign="top"></td>
 							<td>
 								<input type="radio" name="Contact[USE]" value="1" id="Contact[USE]:TRUE">
 									<xsl:choose>
@@ -658,6 +659,7 @@
 							</td>
 							<th>
 								<label for="Contact[USE]:TRUE">
+								<!--TODO!bash! URGENT this option does not always work (maybe not when there have been errors? - check - maybe because their account access is still 'this account only' on the other account? but it is definately broken-->
 									Select an existing contact from the list below:
 								</label>
 							</th>
@@ -690,7 +692,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+							<td class="Required" valign="top"></td>
 							<td>
 								<input type="radio" name="Contact[USE]" value="0" id="Contact[USE]:FALSE">
 									<xsl:choose>
@@ -713,7 +715,15 @@
 				
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+					
+					<xsl:choose>
+						<xsl:when test="/Response/AccountGroup">
+							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+						</xsl:when>
+						<xsl:otherwise>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						</xsl:otherwise>
+					</xsl:choose>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -730,7 +740,14 @@
 						</td>	
 					</tr>
 					<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						<xsl:choose>
+						<xsl:when test="/Response/AccountGroup">
+							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+						</xsl:when>
+						<xsl:otherwise>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						</xsl:otherwise>
+					</xsl:choose>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -747,7 +764,14 @@
 						</td>
 					</tr>
 					<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						<xsl:choose>
+						<xsl:when test="/Response/AccountGroup">
+							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+						</xsl:when>
+						<xsl:otherwise>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						</xsl:otherwise>
+					</xsl:choose>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -769,14 +793,21 @@
 						</td>
 					</tr>
 					<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						<xsl:choose>
+						<xsl:when test="/Response/AccountGroup">
+							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+						</xsl:when>
+						<xsl:otherwise>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						</xsl:otherwise>
+					</xsl:choose>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
 								<xsl:with-param name="field" select="string('DOB')" />
 							</xsl:call-template>
 						</th>
-						<!-- TODO!bash! [  DONE  ]		Make DOB DD-MM-YYYY ... do this any place you have a Date -->
+						<!-- TODO!bash! URGENT!DOB is not always storing properly! make sure it is fixed properly-->
 						<td>
 							<xsl:call-template name="DOB">
 								<xsl:with-param name="Name-Day"			select="string('Contact[DOB][day]')" />
@@ -811,8 +842,14 @@
 						</td>
 					</tr>
 					<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
-						<th class="JustifiedWidth">
+						<xsl:choose>
+						<xsl:when test="/Response/AccountGroup">
+							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+						</xsl:when>
+						<xsl:otherwise>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						</xsl:otherwise>
+					</xsl:choose>						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
 								<xsl:with-param name="field" select="string('Email')" />
@@ -885,7 +922,14 @@
 					</tr>
 					<!-- TODO!!!! - LOW PRIORITY - auto generate username-->
 					<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						<xsl:choose>
+						<xsl:when test="/Response/AccountGroup">
+							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+						</xsl:when>
+						<xsl:otherwise>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						</xsl:otherwise>
+					</xsl:choose>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -902,7 +946,14 @@
 						</td>
 					</tr>
 					<tr>
-						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						<xsl:choose>
+						<xsl:when test="/Response/AccountGroup">
+							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+						</xsl:when>
+						<xsl:otherwise>
+							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						</xsl:otherwise>
+					</xsl:choose>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
@@ -925,7 +976,15 @@
 			<div class="Left">
 				<strong><span class="Red">* </span></strong>: Required field<br/>
 				<strong><span class="Red"><sup>1</sup> </span></strong>: One or both fields required<br/>
-				<strong><span class="Red"><sup>2</sup> </span></strong>: One or both fields required<br/>
+				<xsl:choose>
+						<xsl:when test="/Response/AccountGroup">
+							<strong><span class="Red"><sup>2</sup> </span></strong>: One or both fields required only when the associated option is selected<br/>
+						</xsl:when>
+						<xsl:otherwise>
+							<strong><span class="Red"><sup>2</sup> </span></strong>: One or both fields required<br/>
+						</xsl:otherwise>
+					</xsl:choose>
+				
 				<strong><span class="Red"><sup>#</sup> </span></strong>: Required only when the associated option is selected<br/>
 			</div>
 			<div class="Right">

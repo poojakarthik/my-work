@@ -8,7 +8,7 @@
 	<xsl:template name="Content">
 	
 		<!-- Page for viewing details of plans -->
-		<h1>View Plan Details</h1>
+		<h1>View Rate Plan Details</h1>
 		
 		<!--TODO!bash! [  DONE  ]		URGENT - the 'More Details...' link does not work-->
 		<!--TODO!bash! [  DONE  ]		URGENT - this page also needs to  link to View Rate Details -->
@@ -93,7 +93,7 @@
 		
 		<!-- Charges -->
 		<h2 class="Invoice">Charges</h2>
-		
+		<!--TODO!bash! URGENT! Why does this say more details when there is <5 rates???? This link should only be there if there are more rates that aren't being shown! Use some common sense!!!-->
 		<table border="0" width="100%" cellpadding="3" cellspacing="0" style="font-family: monospace; font-size: 9pt;" class="Listing">
 			<xsl:for-each select="/Response/RecordTypes/Results/rangeSample/RecordType">
 				<xsl:variable name="RecordType" select="." />
@@ -105,16 +105,15 @@
 							<xsl:value-of select="$RecordType/Name" />
 							<!-- TODO!bash! [  DONE  ]		link this to view rate group details -->
 							(
-								<a href="#" title="Rate Group Details" alt="Information about this Rate Group and its Charges">
-									<xsl:attribute name="onclick">
-										<xsl:text>return ModalExternal (this, </xsl:text>
-										<xsl:text>'rates_group_view.php?Id=</xsl:text>
+								<a title="Rate Group Details">
+									<xsl:attribute name="href">
+										<xsl:text>rates_group_details.php?Id=</xsl:text>
 										<xsl:value-of select="$RateGroup/Id" />
-										<xsl:text>')</xsl:text>
 									</xsl:attribute>
 									<xsl:value-of select="$RateGroup/Name" />
-								</a>
+									</a>
 							)
+															
 						</th>
 					</tr>
 					<xsl:for-each select="/Response/RateGroupRates/RateGroupRate[RateGroup=$RateGroup/Id]/Rates/Rate">

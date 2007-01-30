@@ -284,7 +284,11 @@
                                                                                 </div>
                                                                         </div>
                                                                 </div>
-                                                                
+                                                                <!--TODO!bash! MEGA URGENT !!! This menu needs heaps of work.  There should be links on pretty much every page (including all confirmation /failure pages except 
+																*ones you can view from home
+																*View Serivce Details
+																*View Contact Details
+																the navigation is still really bad and REALLY  needs fixing -->
                                                                 <!-- Top Menu -->
                                                                 <ul id="QuickList" class="Right">
                                                                         <xsl:choose>

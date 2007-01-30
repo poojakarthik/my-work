@@ -6,7 +6,9 @@
 	<xsl:import href="../../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Rate Plan Details</h1>
+	
+	<!--Is this page still being used-->
+		<h1>View Rate Plan Details</h1>
 		
 		<div class="Wide-Form">
 			<div class="Form-Content">

@@ -21,7 +21,7 @@
 						Your Service IDs did not match. Please try again.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'FNN ServiceType'">
-						You did not enter a valid FNN for this Service Type. Please try again.
+						Please enter a valid Service #.
 					</xsl:when>
 				</xsl:choose>
 			</div>

@@ -73,21 +73,22 @@
 			<div class="Seperator"></div>
 			<!-- TODO!bash! [  DONE  ]		if i hit continue without entering any details i get taken back to the service view page ????? -->
 			<h2 class="Service">Service Details</h2>
-			
+			<!-- TODO!bash! DO NOT UNDER ANY CIRCUMSTANCES CHANGE ANY ERROR MESSAGES IN THIS SYSTEM!!!! IF YOU HAVE TO ADD ERRORS COPY THEM EXACTLY FROM EXISTING ERRORS!!! -->
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Mismatch'">
-							You must correctly confirm your Line Number. Please try again.
+							Your Service #s did not match. Please try again.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'FNN ServiceType'">
-							The Line Number you entered was invalid. Please try again.
+						Please select a valid Service #.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Unarchived FNN Exists'">
-							The Line Number you entered is already tolling on this System. Please try again.
+							The Service # you entered already exists.  Please enter a unique Service #.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Rate Plan Invalid'">
-							The Rate Plan you entered was Invalid. Please try again.
+							Please enter a valid Rate Plan.
+
 						</xsl:when>
 					</xsl:choose>
 				</div>
@@ -114,7 +115,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td><strong><span class="Red">*</span></strong></td>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -132,7 +133,7 @@
 							</td>
 						</tr>
 						<tr>
-							<td><strong><span class="Red">*</span></strong></td>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Service')" />
@@ -186,7 +187,7 @@
 									<xsl:with-param name="field" select="string('SelectPlan')" />
 								</xsl:call-template>
 							</th>
-							<td>
+							<td >
 								<select name="RatePlan" id="RatePlan">
 									<xsl:for-each select="/Response/RatePlans/Results/rangeSample/RatePlan">
 										<option>

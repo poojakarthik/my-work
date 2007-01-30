@@ -5,6 +5,8 @@
 	<xsl:import href="../../../template/popup.xsl" />
 	
 	<xsl:template name="Content">
+	
+	<!--Is this page being used?-->
 		<h1>Rate Selection Summary</h1>
 		
 		<xsl:choose>

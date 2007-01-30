@@ -61,6 +61,7 @@
 									</tr>
 									<xsl:choose>
 										<!-- TODO!bash! [  DONE  ]		Display overdue amount to 2 decimal places -->
+										<!-- TODO!bash! Show account balance as green if it = 0, just like all the other 0s!!! -->
 										<xsl:when test="/Response/Account/OverdueAmount != '0' and /Response/Account/OverdueAmount != ''">
 											<tr>
 												<th class="JustifiedWidth">

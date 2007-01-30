@@ -5,9 +5,12 @@
 	<xsl:import href="../../../template/popup.xsl" />
 	<xsl:import href="../../../lib/date-time.xsl" />
 	
+	
+	<!--Is this page still being used ?-->
 	<xsl:template name="Content">
 		<h1>Rate Group Details</h1>
 		
+
 		<div class="Wide-Form">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
