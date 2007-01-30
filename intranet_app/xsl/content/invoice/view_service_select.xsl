@@ -67,21 +67,44 @@
 						<xsl:value-of select="/Response/Invoice/Id" />
 					</td>
 				</tr>
-				<tr>
-					<th class="JustifiedWidth">
-						<xsl:call-template name="Label">
-							<xsl:with-param name="entity" select="string('Invoice')" />
-							<xsl:with-param name="field" select="string('Disputed')" />
-						</xsl:call-template>
-					</th>
-					<td>					
-						<!--TODO!bash! Make this red when disputed and green when resolved!!!!-->
-		       			<xsl:call-template name="Currency">
-		       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed"/>
-							<xsl:with-param name="Decimal" select="number('2')" />
-       					</xsl:call-template>
-					</td>
-				</tr>
+				<xsl:if test="/Response/Invoice/Disputed != 0">
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Disputed')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<!--TODO!bash! [  DONE  ]		Make this red when disputed and green when resolved!!!!-->
+							<strong>
+								<span>
+									<xsl:choose>
+										<xsl:when test="/Response/Invoice/Status = 102">
+											<xsl:attribute name="class">
+												<xsl:text>Red</xsl:text>
+											</xsl:attribute>
+											
+											Disputed :
+										</xsl:when>
+										<xsl:otherwise>
+											<xsl:attribute name="class">
+												<xsl:text>Green</xsl:text>
+											</xsl:attribute>
+											
+											Resolved :
+										</xsl:otherwise>
+									</xsl:choose>
+									
+					       			<xsl:call-template name="Currency">
+					       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed" />
+										<xsl:with-param name="Decimal" select="number('2')" />
+			       					</xsl:call-template>
+			       				</span>
+			       			</strong>
+						</td>
+					</tr>
+				</xsl:if>
 			</table>
 		</div>
 		
@@ -97,10 +120,10 @@
 		
 		<div class="LinkEdit">
 			<xsl:choose>
-				<!--TODO!bash! Urgent - INVOICE_SETTLED = show none -->
+				<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_SETTLED = show none -->
 				<xsl:when test="/Response/Invoice/Status = 103" />
 				
-				<!--TODO!bash! Urgent - INVOICE_COMMITTED = show dispute -->
+				<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_COMMITTED = show dispute -->
 				<xsl:when test="/Response/Invoice/Status = 101">
 					<!-- Dispute Invoice -->
 					<a>
@@ -112,7 +135,7 @@
 					</a>
 				</xsl:when>
 				
-				<!--TODO!bash! Urgent - INVOICE_DISPUTED = show resolve -->	
+				<!--TODO!bash! [  DONE  ]		Urgent - INVOICE_DISPUTED = show resolve -->	
 				<xsl:when test="/Response/Invoice/Status = 102">
 					<!-- Resolve Disputed Invoice -->
 					<a>
@@ -124,7 +147,7 @@
 					</a>
 				</xsl:when>
 				
-				<!--TODO!flame! Urgent - other status show ???? -->
+				<!--TODO!flame! [NOT DONE]		Urgent - other status show ???? -->
 				<xsl:otherwise>
 					<xsl:text> ???? </xsl:text>
 				</xsl:otherwise>
@@ -133,7 +156,7 @@
 		
 		<div class="Seperator"></div>
 
-		<!-- TODO!bash! [MOVED ON] URGENT!!!!!! NO SERVICES ARE SHOWING UP! (This is occurring on the CDR Page) -->
+		<!-- TODO!bash! [   ??   ] URGENT!!!!!! NO SERVICES ARE SHOWING UP! (This is occurring on the CDR Page) -->
 		<!-- Table of Services -->
 		<h2 class="Services">Services</h2>
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing"  width="100%">

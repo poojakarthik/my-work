@@ -24,7 +24,7 @@
 						</xsl:call-template>
 					</th>
 					<td>
-						<xsl:value-of select="/Response/Account/BusinessName" />
+						<xsl:value-of select="/Response/Account/Id" />
 					</td>
 				</tr>
 				<tr>
@@ -39,23 +39,23 @@
 					</td>
 				</tr>
 				<!--Check for Trading Name-->
-						<xsl:choose>
-							<xsl:when test="/Response/Account/TradingName = ''">
-							</xsl:when>
-							<xsl:otherwise>
-								<tr>
-									<th>
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Account')" />
-											<xsl:with-param name="field" select="string('TradingName')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/Account/TradingName" />
-									</td>
-								</tr>
-							</xsl:otherwise>
-						</xsl:choose>
+				<xsl:choose>
+					<xsl:when test="/Response/Account/TradingName = ''">
+					</xsl:when>
+					<xsl:otherwise>
+						<tr>
+							<th>
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('TradingName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:value-of select="/Response/Account/TradingName" />
+							</td>
+						</tr>
+					</xsl:otherwise>
+				</xsl:choose>
 				<tr>
 					<th class="JustifiedWidth">
 						<xsl:call-template name="Label">
@@ -67,11 +67,21 @@
 						<xsl:value-of select="/Response/Invoice/Id" />
 					</td>
 				</tr>
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Service')" />
+							<xsl:with-param name="field" select="string('FNN')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:value-of select="/Response/ServiceTotal/FNN" />
+					</td>
+				</tr>
 			</table>
 		</div>
 		<div class="Seperator"></div>
 		
-	
 		<!-- Credits & Debits -->
 		<xsl:if test="/Response/Charges">
 			<h2 class="Charge">Credits &amp; Debits</h2>

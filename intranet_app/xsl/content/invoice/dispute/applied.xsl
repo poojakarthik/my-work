@@ -7,12 +7,12 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	<!--TODO!bash! Urgent! this needs a menu link to view account -->
-	
+		<!--TODO!bash! Urgent! this needs a menu link to view account -->
 		<!-- Confirmation page after disputing an Invoice -->
 		<h1>Invoice Disputed</h1>
 		
 		<div class="MsgNoticeWide">
 			The Invoice has been successfully disputed.
-		</div>	</xsl:template>
+		</div>
+	</xsl:template>
 </xsl:stylesheet>

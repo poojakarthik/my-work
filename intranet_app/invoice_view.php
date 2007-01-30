@@ -32,6 +32,7 @@
 	
 	// Pull documentation information for a Service and an Account
 	$docDocumentation->Explain ('Account');
+	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Invoice');
 	
 	// If no service is set, then ask for the service

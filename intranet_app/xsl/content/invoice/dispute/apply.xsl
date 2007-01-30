@@ -7,11 +7,7 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	
-	<!--TODO!Bash! This needs an error when disputed = 0!!!  Error==="Please enter a Disputed Amount."-->
-	
 		<!--Page for disputing an Invoice -->
-		
 		<h1>Dispute Invoice </h1>
 		
 		<form method="post" action="invoice_dispute_apply.php">
@@ -24,9 +20,21 @@
 			
 			<!-- Dispute Details -->
 			<h2 class="Invoice">Dispute Details</h2>
+			
+			<!--TODO!bash! [  DONE  ]		This needs an error when disputed = 0!!!  Error==="Please enter a Disputed Amount."-->
+			<xsl:if test="/Response/Error != ''">
+				<div class="MsgError">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Amount Blank'">
+							Please enter a Disputed Amount.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+			
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
-						<tr>
+					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Invoice')" />
@@ -41,11 +49,67 @@
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Credits')" />
+							</xsl:call-template>
+						</th>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Credits" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Debits')" />
+							</xsl:call-template>
+						</th>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Debits" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Amount')" />
+							</xsl:call-template>
+						</th>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Balance" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Tax')" />
+							</xsl:call-template>
+						</th>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Tax" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
 								<xsl:with-param name="field" select="string('Disputed')" />
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Disputed" class="input-string">
+							<input type="text" name="Disputed" class="input-string Currency">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 					       			<xsl:call-template name="Currency">
