@@ -12,31 +12,29 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_DIRECT_DEBIT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_DIRECT_DEBIT | MODULE_BILLING;
 	
 	// call application
 	require ('config/application.php');
 	
-	
-	
-	// Start the Error Handler
-	$oblstrError = $Style->attachObject (new dataString ('Error', ''));
-	
-	// Try getting the account
-	try
-	{
-		$acgAccountGroup = $Style->attachObject (new AccountGroup ($_GET ['AccountGroup'] ? $_GET ['AccountGroup'] : $_POST ['AccountGroup']));
-	}
-	catch (Exception $e)
-	{
-		$Style->Output ('xsl/content/accountgroup/notfound.xsl');
-	}
+    // Start the Error Handler
+    $oblstrError = $Style->attachObject (new dataString ('Error', ''));
+    
+    try
+    {
+	    // Try getting the account + account group
+	    $actAccount			= $Style->attachObject (new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']));
+        $acgAccountGroup	= $Style->attachObject ($actAccount->AccountGroup ());
+    }
+    catch (Exception $e)
+    {
+        $Style->Output ('xsl/content/account/notfound.xsl');
+        exit;
+    }
 	
 	// Start the User Interface Stored Values
 	$oblarrUIValues			= $Style->attachObject (new dataArray ('ui-values'));
-	
 	$oblarrDirectDebit		= $oblarrUIValues->Push (new dataArray ('DirectDebit'));
-	
 	$oblstrBankName			= $oblarrDirectDebit->Push (new dataString ('BankName',			$_POST ['DirectDebit']['BankName']));
 	$oblstrBSB				= $oblarrDirectDebit->Push (new dataString ('BSB',				$_POST ['DirectDebit']['BSB']));
 	$oblstrAccountNumber	= $oblarrDirectDebit->Push (new dataString ('AccountNumber',	$_POST ['DirectDebit']['AccountNumber']));
@@ -71,9 +69,11 @@
 				)
 			);
 			
-			// TODO!bash! what if we came from account payment.php ?
-			header ("Location: billing_type_list.php?AccountGroup=" . $acgAccountGroup->Pull ('Id')->getValue ());
-			exit;
+			$actAccount->BillingTypeSelect (BILLING_TYPE_DIRECT_DEBIT, $ddrDirectDebit);
+            
+            // TODO!bash! [  DONE  ]		what if we came from account payment.php ?
+            header ('Location: account_payment.php?Id=' . $actAccount->Pull ('Id')->getValue ());
+            exit;
 		}
 	}
 	

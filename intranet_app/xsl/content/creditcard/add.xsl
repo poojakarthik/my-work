@@ -33,13 +33,12 @@
 		</xsl:if>
 		
 		<form method="POST" action="creditcard_add.php">
-			<input type="hidden" name="AccountGroup">
+			<input type="hidden" name="Account">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/AccountGroup/Id" />
+					<xsl:value-of select="/Response/Account/Id" />
 				</xsl:attribute>
 			</input>
-
 			
 			<!-- Account Details -->
 			<h2 class="Account">Account Details</h2>

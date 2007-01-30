@@ -30,7 +30,7 @@
 	
 	if ($_POST ['Confirm'])
 	{
-		$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input']);
+		$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input'], $_POST ['limit']);
 		
 		header('Content-type: text/csv');
 		header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.csv"');

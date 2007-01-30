@@ -92,7 +92,7 @@
 		 * @method
 		 */
 		
-		public function Execute ($arrSelects, $arrFields)
+		public function Execute ($arrSelects, $arrFields, $intLimit)
 		{
 			// This deals with turning the SQLSelect Serialized Array 
 			// into a String: Field1, Field2, Field3 [, ... ]
@@ -121,7 +121,7 @@
 				$strSelect, 
 				$this->Pull ('SQLWhere')->getValue (), 
 				null,
-				null,
+				(is_numeric ($intLimit) ? $intLimit : null),
 				$this->Pull ('SQLGroupBy')->getValue ()
 			);
 			

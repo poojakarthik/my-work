@@ -99,35 +99,35 @@
 			switch ($strId)
 			{
 				case SERVICE_STATE_TYPE_ACT:
-					$strName = 'ACT - Australian Capital Territory';
+					$strName = 'Australian Capital Territory';
 					break;
 					
 				case SERVICE_STATE_TYPE_NSW:
-					$strName = 'NSW - New South Wales';
+					$strName = 'New South Wales';
 					break;
 					
 				case SERVICE_STATE_TYPE_NT:
-					$strName = 'NT - Northern Territory';
+					$strName = 'Northern Territory';
 					break;
 					
 				case SERVICE_STATE_TYPE_QLD:
-					$strName = 'QLD - Queensland';
+					$strName = 'Queensland';
 					break;
 					
 				case SERVICE_STATE_TYPE_SA:
-					$strName = 'SA - South Australia';
+					$strName = 'South Australia';
 					break;
 					
 				case SERVICE_STATE_TYPE_TAS:
-					$strName = 'TAS - Tasmania';
+					$strName = 'Tasmania';
 					break;
 					
 				case SERVICE_STATE_TYPE_VIC:
-					$strName = 'VIC - Victoria';
+					$strName = 'Victoria';
 					break;
 					
 				case SERVICE_STATE_TYPE_WA:
-					$strName = 'WA - Western Australia';
+					$strName = 'Western Australia';
 					break;
 					
 			}

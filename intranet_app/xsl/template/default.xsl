@@ -378,7 +378,7 @@
                                                                 <tbody>
                                                                         <xsl:for-each select="/Response/Authentication/AuthenticatedEmployee/Session/AuditList/Contacts/Contact">
                                                                         <!-- TODO!bash! [  DONE  ]		Alert msg when this list is empty, just like there is every other place -->
-                                                                                <xsl:sort order="descending" />
+                                                                                <xsl:sort select="position()" order="descending" />
                                                                                 
                                                                                 <tr>
                                                                                         <xsl:attribute name="class">

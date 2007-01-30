@@ -291,6 +291,19 @@
 				<div class="Seperator"></div>
 			</xsl:if>
 			
+			<h2>Report Limit</h2>
+			<div class="Wide-Form">
+				<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<th class="JustifiedWidth">Maximum Results :</th>
+						<td>
+							<input type="text" name="limit" class="input-string" />
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="Seperator"></div>
+			
 			<input type="submit" class="input-submit" name="Confirm" value="Run Report &#0187;" />
 		</form>
 	</xsl:template>

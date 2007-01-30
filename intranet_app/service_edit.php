@@ -19,16 +19,7 @@
 	
 	try
 	{
-		if ($_GET ['Id'])
-		{
-			// Using GET
-			$srvService = $Style->attachObject (new Service ($_GET ['Id']));
-		}
-		else
-		{
-			// Using POST
-			$srvService = $Style->attachObject (new Service ($_POST ['Id']));
-		}
+		$srvService = $Style->attachObject (new Service (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
 	}
 	catch (Exception $e)
 	{
@@ -49,6 +40,10 @@
 		if ($_POST ['FNN']['1'] <> $_POST ['FNN']['2'])
 		{
 			$oblstrError->setValue ('Mismatch');
+		}
+		else if ($_POST ['FNN']['1'] <> "" && ServiceType ($_POST ['FNN']['1']) <> $srvService->Pull ('ServiceType')->getValue ())
+		{
+			$oblstrError->setValue ('FNN ServiceType');
 		}
 		else
 		{

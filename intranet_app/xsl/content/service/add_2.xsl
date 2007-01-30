@@ -80,6 +80,9 @@
 						<xsl:when test="/Response/Error = 'Mismatch'">
 							You must correctly confirm your Line Number. Please try again.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'FNN ServiceType'">
+							The Line Number you entered was invalid. Please try again.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'Unarchived FNN Exists'">
 							The Line Number you entered is already tolling on this System. Please try again.
 						</xsl:when>

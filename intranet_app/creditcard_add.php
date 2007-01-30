@@ -10,41 +10,38 @@
     require ('config/application_loader.php');
     
     // set page details
-    $arrPage['PopUp']        = FALSE;
-    $arrPage['Permission']    = PERMISSION_OPERATOR;
-    $arrPage['Modules']        = MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_CREDIT_CARD;
+    $arrPage['PopUp']		= FALSE;
+    $arrPage['Permission']	= PERMISSION_OPERATOR;
+    $arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_CREDIT_CARD | MODULE_BILLING;
     
     // call application
     require ('config/application.php');
     
-    
-    
     // Start the Error Handler
     $oblstrError = $Style->attachObject (new dataString ('Error', ''));
     
-    // Try getting the account
     try
     {
-        $acgAccountGroup = $Style->attachObject (new AccountGroup ($_GET ['AccountGroup'] ? $_GET ['AccountGroup'] : $_POST ['AccountGroup']));
+	    // Try getting the account + account group
+	    $actAccount			= $Style->attachObject (new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']));
+        $acgAccountGroup	= $Style->attachObject ($actAccount->AccountGroup ());
     }
     catch (Exception $e)
     {
-        $Style->Output ('xsl/content/accountgroup/notfound.xsl');
+        $Style->Output ('xsl/content/account/notfound.xsl');
+        exit;
     }
     
     // Start the User Interface Stored Values
-    $oblarrUIValues            = $Style->attachObject (new dataArray ('ui-values'));
-    
-    $oblarrCreditCard        = $oblarrUIValues->Push (new dataArray ('CreditCard'));
-    
-    $oblintCardType            = $oblarrCreditCard->Push (new dataInteger('CardType',            $_POST ['CreditCard']['CardType']));
-    $oblstrName                = $oblarrCreditCard->Push (new dataString ('Name',                $_POST ['CreditCard']['Name']));
-    $oblstrCardNumber        = $oblarrCreditCard->Push (new dataString ('CardNumber',        $_POST ['CreditCard']['CardNumber']));
-    $oblintExpMonth            = $oblarrCreditCard->Push (new dataInteger('ExpMonth',            $_POST ['CreditCard']['ExpMonth']));
-    $oblintExpYear            = $oblarrCreditCard->Push (new dataInteger('ExpYear',            $_POST ['CreditCard']['ExpYear']));
-    $oblstrCVV                = $oblarrCreditCard->Push (new dataString ('CVV',                $_POST ['CreditCard']['CVV']));
-    
-    $cctCreditCardTypes        = $Style->attachObject (new CreditCardTypes);
+	$oblarrUIValues			= $Style->attachObject (new dataArray ('ui-values'));
+	$oblarrCreditCard		= $oblarrUIValues->Push (new dataArray ('CreditCard'));
+	$oblintCardType			= $oblarrCreditCard->Push (new dataInteger('CardType',            $_POST ['CreditCard']['CardType']));
+	$oblstrName				= $oblarrCreditCard->Push (new dataString ('Name',                $_POST ['CreditCard']['Name']));
+	$oblstrCardNumber		= $oblarrCreditCard->Push (new dataString ('CardNumber',          $_POST ['CreditCard']['CardNumber']));
+	$oblintExpMonth			= $oblarrCreditCard->Push (new dataInteger('ExpMonth',            $_POST ['CreditCard']['ExpMonth']));
+	$oblintExpYear			= $oblarrCreditCard->Push (new dataInteger('ExpYear',             $_POST ['CreditCard']['ExpYear']));
+	$oblstrCVV				= $oblarrCreditCard->Push (new dataString ('CVV',                 $_POST ['CreditCard']['CVV']));
+	$cctCreditCardTypes		= $Style->attachObject (new CreditCardTypes);
     
     if ($_SERVER ['REQUEST_METHOD'] == 'POST')
     {
@@ -72,17 +69,19 @@
         {
             $crcCreditCard = $acgAccountGroup->AddCreditCard (
                 Array (
-                    'CardType'            => $_POST ['CreditCard']['CardType'],
-                    'Name'                => $_POST ['CreditCard']['Name'],
-                    'CardNumber'        => $_POST ['CreditCard']['CardNumber'],
-                    'ExpMonth'            => $_POST ['CreditCard']['ExpMonth'],
-                    'ExpYear'            => $_POST ['CreditCard']['ExpYear'],
-                    'CVV'                => $_POST ['CreditCard']['CVV']
+                    'CardType'			=> $_POST ['CreditCard']['CardType'],
+                    'Name'				=> $_POST ['CreditCard']['Name'],
+                    'CardNumber'		=> $_POST ['CreditCard']['CardNumber'],
+                    'ExpMonth'			=> $_POST ['CreditCard']['ExpMonth'],
+                    'ExpYear'			=> $_POST ['CreditCard']['ExpYear'],
+                    'CVV'				=> $_POST ['CreditCard']['CVV']
                 )
             );
             
-            // TODO!bash! what if we came from account payment.php ?
-            header ('Location: billing_type_list.php?AccountGroup=' . $acgAccountGroup->Pull ('Id')->getValue ());
+			$actAccount->BillingTypeSelect (BILLING_TYPE_CREDIT_CARD, $crcCreditCard);
+            
+            // TODO!bash! [  DONE  ]		what if we came from account payment.php ?
+            header ('Location: account_payment.php?Id=' . $actAccount->Pull ('Id')->getValue ());
             exit;
         }
     }

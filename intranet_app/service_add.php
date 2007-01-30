@@ -47,6 +47,10 @@
 	
 	if ($_POST ['ServiceType'])
 	{
+		// Set the FNN for use if there's an error
+		$oblstrFNN_1->setValue ($_POST ['FNN-1']);
+		$oblstrFNN_2->setValue ($_POST ['FNN-2']);
+		
 		// If the Service Type is Invalid, Error
 		if (!$srvServiceTypes->setValue ($_POST ['ServiceType']))
 		{
@@ -58,12 +62,12 @@
 			{
 				$oblstrError->setValue ('Mismatch');
 			}
+			else if ($_POST ['FNN-1'] <> "" && ServiceType ($_POST ['FNN-1']) <> $_POST ['ServiceType'])
+			{
+				$oblstrError->setValue ('FNN ServiceType');
+			}
 			else if ($_POST ['RatePlan'])
 			{
-				// Set the FNN for use if there's an error
-				$oblstrFNN_1->setValue ($_POST ['FNN-1']);
-				$oblstrFNN_2->setValue ($_POST ['FNN-2']);
-				
 				// Get the Rate Plan. If it doesn't exist
 				// then this is an error
 				try

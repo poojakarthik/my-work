@@ -102,9 +102,16 @@
 	
 	if ($srvService)
 	{
-		//TODO!bash! return to provisioning page if note is submitted from there
-		header ('Location: service_view.php?Id=' . $_POST ['Service']);
-		exit;
+		//TODO!bash! [  DONE  ]		return to provisioning page if note is submitted from there
+		if ($_POST ['ServiceAddress'])
+		{
+			header ('Location: service_address.php?Service=' . $_POST ['Service']);
+		}
+		else
+		{
+			header ('Location: service_view.php?Id=' . $_POST ['Service']);
+			exit;
+		}
 	}
 	else if ($cntContact)
 	{

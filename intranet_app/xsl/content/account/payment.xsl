@@ -100,7 +100,6 @@
 			</input>
 
 			<label for="BillingType:AC">
-				<!-- Bash, Do NOT change this... it is supposed to say 'Account' -->
 				Account
 			</label>
 
@@ -161,7 +160,6 @@
 				<xsl:when test="count(/Response/DirectDebits/DirectDebit) = 0">
 					<div class="MsgNoticeWide">
 						There are no Direct Debit details associated with this Account Group
-
 					</div>
 				</xsl:when>
 			</xsl:choose>
@@ -169,8 +167,8 @@
 			<div class="LinkAdd">
 				<a>
 					<xsl:attribute name="href">
-						<xsl:text>directdebit_add.php?AccountGroup=</xsl:text>
-						<xsl:value-of select="/Response/AccountGroup/Id" />
+						<xsl:text>directdebit_add.php?Account=</xsl:text>
+						<xsl:value-of select="/Response/Account/Id" />
 					</xsl:attribute>
 					<xsl:text>Add Bank Account Details</xsl:text>
 				</a>
@@ -261,8 +259,8 @@
 			<div class="LinkAdd">
 				<a>
 					<xsl:attribute name="href">
-						<xsl:text>creditcard_add.php?AccountGroup=</xsl:text>
-						<xsl:value-of select="/Response/AccountGroup/Id" />
+						<xsl:text>creditcard_add.php?Account=</xsl:text>
+						<xsl:value-of select="/Response/Account/Id" />
 					</xsl:attribute>
 					<xsl:text>Add Credit Card Details</xsl:text>
 				</a>

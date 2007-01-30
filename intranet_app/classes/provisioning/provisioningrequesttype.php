@@ -99,43 +99,43 @@
 			switch ($intType)
 			{
 				case REQUEST_FULL_SERVICE:
-					$strName = 'Full Service Request';
+					$strName = 'Full Service';
 					break;
 					
 				case REQUEST_PRESELECTION:
-					$strName = 'Preselection Request';
+					$strName = 'Preselection';
 					break;
 					
 				case REQUEST_BAR_SOFT:
-					$strName = 'Soft Bar Request';
+					$strName = 'Soft Bar';
 					break;
 					
 				case REQUEST_UNBAR_SOFT:
-					$strName = 'Soft Bar Reversal Request';
+					$strName = 'Soft Bar Reversal';
 					break;
 					
 				case REQUEST_ACTIVATION:
-					$strName = 'Activation Request';
+					$strName = 'Activation';
 					break;
 					
 				case REQUEST_DEACTIVATION:
-					$strName = 'Deactivation Request';
+					$strName = 'Deactivation';
 					break;
 					
 				case REQUEST_PRESELECTION_REVERSE:
-					$strName = 'Preselection Reversal Request';
+					$strName = 'Preselection Reversal';
 					break;
 					
 				case REQUEST_FULL_SERVICE_REVERSE:
-					$strName = 'Full Service Reversal Request';
+					$strName = 'Full Service Reversal';
 					break;
 					
 				case REQUEST_BAR_HARD:
-					$strName = 'Hard Bar Request';
+					$strName = 'Hard Bar';
 					break;
 					
 				case REQUEST_UNBAR_HARD:
-					$strName = 'Hard Bar Reversal Request';
+					$strName = 'Hard Bar Reversal';
 					break;
 			}
 			

@@ -831,7 +831,10 @@ function ListPDF($intAccount)
 		{
 			// GLOB for account filename
 			$arrInvoices = glob("$strMonth/".$intAccount."_*.pdf");
-			$arrReturn[basename ($strYear)][basename ($strMonth)]	= basename($arrInvoices[0]);
+			if ($arrInvoices[0])
+			{
+				$arrReturn[basename ($strYear)][basename ($strMonth)]	= basename($arrInvoices[0]);
+			}
 		}
 	}
 	

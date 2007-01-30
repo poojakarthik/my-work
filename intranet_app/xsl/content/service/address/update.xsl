@@ -107,8 +107,7 @@
 						
 						<h2 class="Address">Service Address Details</h2>
 						<xsl:if test="not(/Response/ServiceAddress)">
-						<!-- TODO!bash! DO NOT SET WIDTH INSIDE THE PAGE !!!!!!!!!!!! SET IT IN THE DAMN CLASS !!!!!!!!!!!!!! -->
-						<div class="MsgNoticeNarrow">
+							<div class="MsgNoticeNarrow">
 								<strong><span class="Attention">Notice</span> :</strong>
 								No Service Address Details found.
 							</div>
@@ -213,8 +212,6 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
-									<!-- TODO!bash! don't do things like td width=10 ... do class=Something and stick the width control in CSS -->
-									<!-- this has already been done here. -->
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"> </td>
 									<th class="JustifiedWidth">
@@ -812,6 +809,8 @@
 								<xsl:value-of select="/Response/Service/Id" />
 							</xsl:attribute>
 						</input>
+						<input type="hidden" name="ServiceAddress" value="1" />
+						
 						Type new note for this service in the field below:
 						<textarea name="Note" class="input-summary" rows="6" />
 						
