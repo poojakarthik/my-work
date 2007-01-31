@@ -835,17 +835,17 @@
 		// ------------------------------------//
 		
 		// customer group
-		switch ($arrCustomer['customer_group'])
+		switch (strtolower($arrCustomer['customer_group']))
 		{
-			case 'VoiceTalk':
+			case 'voicetalk':
 				$arrCustomer['customer_group'] = 2;
 				break;
 				
-			case 'Imagine':
+			case 'imagine':
 				$arrCustomer['customer_group'] = 3;
 				break;
 				
-			case 'TelcoBlue':
+			case 'telcoblue':
 			default:
 				$arrCustomer['customer_group'] = 1;
 		}
