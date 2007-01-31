@@ -112,6 +112,31 @@
 			
 			return true;
 		}
+		
+		//------------------------------------------------------------------------//
+		// Service
+		//------------------------------------------------------------------------//
+		/**
+		 * Service()
+		 *
+		 * Gets the Associated Service
+		 *
+		 * Gets the Associated Service
+		 *
+		 * @return	Service
+		 *
+		 * @method
+		 */
+		 
+		public function Service ()
+		{
+			if (!$this->_srvService)
+			{
+				$this->_srvService = new Service ($this->Pull ('Service')->getValue ());
+			}
+			
+			return $this->_srvService;
+		}
 	}
 	
 ?>

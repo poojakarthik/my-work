@@ -6,18 +6,16 @@
 	<xsl:template name="Content">
 		<h1>Find Customer</h1>
 		
-			<!--TODO!Bash! This error is not showing up!!! do NOT change the wording of this error-->
-							<!--Error if no account is chosen -->
-					<xsl:if test="/Response/Error != ''">
-						<div class="MsgErrorWide">
-							<xsl:choose>
-								<xsl:when test="/Response/Error = 'Unselected'">
-									Please select an Account.
-								</xsl:when>
-							</xsl:choose>
-						</div>
-					</xsl:if>
-		
+		<!--TODO!bash! [  DONE  ]		This error is not showing up!!! do NOT change the wording of this error-->
+		<xsl:if test="/Response/Error != ''">
+			<div class="MsgErrorWide">
+				<xsl:choose>
+					<xsl:when test="/Response/Error = 'Unselected'">
+						Please select an Account.
+					</xsl:when>
+				</xsl:choose>
+			</div>
+		</xsl:if>
 		
 		<h2 class="Account">Select an Account</h2>
 		<div class="sectionContainer">
@@ -128,7 +126,7 @@
 						<xsl:otherwise>
 							<div class="SmallSeperator"></div>
 							<div class="Right">
-								<input type="submit" value="Continue &#0187;" class="input-submit" />
+								<input type="submit" name="Confirm-Account" value="Continue &#0187;" class="input-submit" />
 							</div>
 						</xsl:otherwise>
 					</xsl:choose>

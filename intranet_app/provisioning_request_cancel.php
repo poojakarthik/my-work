@@ -28,6 +28,7 @@
 	try
 	{
 		$prqProvisioningRequest = $Style->attachObject (new ProvisioningRequest ($_GET ['Id']));
+		$srvService				= $prqProvisioningRequest->Service ();
 	}
 	catch (Exception $e)
 	{
@@ -43,6 +44,12 @@
 	
 	$prqProvisioningRequest->Cancel ();
 	
-	$Style->Output ("xsl/content/service/provisioning/cancel_confirm.xsl");
+	$Style->Output (
+		"xsl/content/service/provisioning/cancel_confirm.xsl",
+		Array (
+			"Account"		=> $srvService->Pull ("Account")->getValue (),
+			"Service"		=> $srvService->Pull ("Id")->getValue ()
+		)
+	);
 	
 ?>

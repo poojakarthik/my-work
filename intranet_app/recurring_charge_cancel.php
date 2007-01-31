@@ -23,14 +23,7 @@
 	{
 		// Try and get the Recurring Charge
 		// If the Recurring Charge does not exist, then throw an error
-		if ($_GET ['Id'])
-		{
-			$rciRecurringCharge = $Style->attachObject (new RecurringCharge ($_GET ['Id']));
-		}
-		else
-		{
-			$rciRecurringCharge = $Style->attachObject (new RecurringCharge ($_POST ['Id']));
-		}
+		$rciRecurringCharge = $Style->attachObject (new RecurringCharge (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
 	}
 	catch (Exception $e)
 	{
@@ -50,7 +43,7 @@
 		// Cancel the Account
 		$rciRecurringCharge->Cancel ($athAuthentication->AuthenticatedEmployee ());
 		
-		header ("Location: recurring_charge_cancelled.php");
+		header ("Location: recurring_charge_cancelled.php?Id=" . $rciRecurringCharge->Pull ('Id')->getValue ());
 		exit;
 	}
 	
@@ -58,6 +51,12 @@
 	$rciRecurringCharge->CancellationAmount ();
 	
 	// Display
-	$Style->Output ("xsl/content/recurringcharge/cancel_confirm.xsl");
+	$Style->Output (
+		"xsl/content/recurringcharge/cancel_confirm.xsl",
+		Array (
+			"Account"		=> $rciRecurringCharge->Pull ('Account')->getValue (),
+			"Service"		=> $rciRecurringCharge->Pull ('Service')->getValue ()
+		)
+	);
 	
 ?>

@@ -74,6 +74,7 @@
 	// Get the CDRs the Invoice has
 	$cdrCDRs = $Style->attachObject ($invInvoice->CDRs ());
 	$cdrCDRs->Constrain ('Service',		'=', $sttServiceTotal->Pull ('Service')->getValue ());
+	$cdrCDRs->Order		('StartDatetime');
 	
 	$cdrCDRs->Sample (
 		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1,

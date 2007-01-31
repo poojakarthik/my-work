@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_MOBILE_DETAIL | MODULE_SERVICE_ADDRESS;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_MOBILE_DETAIL | MODULE_SERVICE_ADDRESS | MODULE_STATE;
 	
 	// call application
 	require ('config/application.php');
@@ -48,17 +48,25 @@
 	}
 	
 	$arrUIValues 		= $Style->attachObject (new dataArray ('ui-values'));
-	$oblstrSimPUK		= $arrUIValues->Push (new dataString ('SimPUK',		$mdeMobileDetail->Pull ('SimPUK')->getValue ()));
-	$oblstrSimESN		= $arrUIValues->Push (new dataString ('SimESN',		$mdeMobileDetail->Pull ('SimESN')->getValue ()));
-	$oblstrSimState		= $arrUIValues->Push (new dataString ('SimState',	$mdeMobileDetail->Pull ('SimState')->getValue ()));
-	$oblstrComments		= $arrUIValues->Push (new dataString ('Comments',	$mdeMobileDetail->Pull ('Comments')->getValue ()));
+	$oblstrSimPUK		= $arrUIValues->Push (new dataString ('SimPUK',		($mdeMobileDetail) ? $mdeMobileDetail->Pull ('SimPUK')->getValue ()		: ""));
+	$oblstrSimESN		= $arrUIValues->Push (new dataString ('SimESN',		($mdeMobileDetail) ? $mdeMobileDetail->Pull ('SimESN')->getValue ()		: ""));
+	$oblstrSimState		= $arrUIValues->Push (new dataString ('SimState',	($mdeMobileDetail) ? $mdeMobileDetail->Pull ('SimState')->getValue ()	: ""));
+	$oblstrComments		= $arrUIValues->Push (new dataString ('Comments',	($mdeMobileDetail) ? $mdeMobileDetail->Pull ('Comments')->getValue ()	: ""));
 	
 	$oblstrDOBday		= $arrUIValues->Push (new dataString ('DOB-day',
-							$mdeMobileDetail->Pull ('DOB')->Pull ('day') ? $mdeMobileDetail->Pull ('DOB')->Pull ('day')->getValue () : 0));
+								$mdeMobileDetail && $mdeMobileDetail->Pull ('DOB')->Pull ('day') 
+								? $mdeMobileDetail->Pull ('DOB')->Pull ('day')->getValue ()
+								: 0));
+								
 	$oblstrDOBmonth		= $arrUIValues->Push (new dataString ('DOB-month',
-							$mdeMobileDetail->Pull ('DOB')->Pull ('month') ? $mdeMobileDetail->Pull ('DOB')->Pull ('month')->getValue () : 0));
+								$mdeMobileDetail && $mdeMobileDetail->Pull ('DOB')->Pull ('month')
+								? $mdeMobileDetail->Pull ('DOB')->Pull ('month')->getValue ()
+								: 0));
+								
 	$oblstrDOByear		= $arrUIValues->Push (new dataString ('DOB-year',
-							$mdeMobileDetail->Pull ('DOB')->Pull ('year') ? $mdeMobileDetail->Pull ('DOB')->Pull ('year')->getValue () : 0));
+								$mdeMobileDetail && $mdeMobileDetail->Pull ('DOB')->Pull ('year')
+								? $mdeMobileDetail->Pull ('DOB')->Pull ('year')->getValue ()
+								: 0));
 	
 	if (isset ($_POST ['SimPUK']))			$oblstrSimPUK->setValue		($_POST ['SimPUK']);
 	if (isset ($_POST ['SimESN']))			$oblstrSimESN->setValue		($_POST ['SimESN']);

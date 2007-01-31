@@ -327,6 +327,11 @@
 					
 					if ($oblsamAccounts->Count () <> 1)
 					{
+						if ($_POST ['Confirm-Account'])
+						{
+							$oblstrError->setValue ('Unselected');
+						}
+						
 						$Style->Output ('xsl/content/contact/list_2-account.xsl');
 						exit;
 					}

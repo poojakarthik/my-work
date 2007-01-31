@@ -28,7 +28,10 @@
 							<th class="JustifiedWidth">Minimum Charge :</th>
 							<td></td>
 							<td class="Currency">
-								$<xsl:value-of select="/Response/RecurringCharge/MinCharge" />
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="/Response/RecurringCharge/MinCharge" />
+									<xsl:with-param name="Decimal" select="number('2')" />
+		       					</xsl:call-template>
 							</td>
 						</tr>
 						<tr>
@@ -39,7 +42,10 @@
 							<th class="JustifiedWidth">Additional Charge :</th>
 							<td>+</td>
 							<td class="Currency">
-								$<xsl:value-of select="/Response/RecurringCharge/TotalCharged" />
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="/Response/RecurringCharge/TotalCharged" />
+									<xsl:with-param name="Decimal" select="number('2')" />
+		       					</xsl:call-template>
 							</td>
 						</tr>
 						<tr>
@@ -50,19 +56,29 @@
 							<th class="JustifiedWidth">Cancellation Fee :</th>
 							<td>+</td>
 							<td class="Currency">
-								 $<xsl:value-of select="/Response/RecurringCharge/CancellationFee" />
+				       			<xsl:call-template name="Currency">
+				       				<xsl:with-param name="Number" select="/Response/RecurringCharge/CancellationFee" />
+									<xsl:with-param name="Decimal" select="number('2')" />
+		       					</xsl:call-template>
 							</td>
 						</tr>
 						<tr>
 							<th colspan="3">
-							_______________________________
+								<hr />
 							</th>
 						</tr>
 						<tr>
 							<th class="JustifiedWidth">Total Cancellation Cost:</th>
 							<td></td>
 							<th class="Currency">
-								<strong><div class="Red">$<xsl:value-of select="/Response/RecurringCharge/CancellationAmount" /></div></strong>
+								<strong>
+									<div class="Red">
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/RecurringCharge/CancellationAmount" />
+											<xsl:with-param name="Decimal" select="number('2')" />
+				       					</xsl:call-template>
+			    	   				</div>
+			    	   			</strong>
 							</th>
 						</tr>
 					</table>

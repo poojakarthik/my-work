@@ -146,7 +146,11 @@
 											<xsl:with-param name="field" select="string('SimState')" />
 										</xsl:call-template>
 									</th>
-									<!-- TODO!bash! You need to base state and date of birth on contact details-->
+									<!-- TODO!flame! (originally Bash) You need to base state and date of birth on contact details-->
+									<!-- TODO!flame! 
+										Recommendation: Because this is the information stored on the service's server (eg. UNITEL),
+										I dont' know if this is since a good idea.
+									-->
 									<td>
 										<select name="SimState">
 											<xsl:for-each select="/Response/ServiceStateTypes/ServiceStateType">

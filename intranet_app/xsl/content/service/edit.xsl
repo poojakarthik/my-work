@@ -12,8 +12,7 @@
 		<h1>Edit Service Details</h1>
 		
 		
-		<script language="javascript" src="js/service_edit.js"></script>
-		<!--TODO!bash! This page has a popup error instead of using these.  it needs to use these errors!!!-->
+		<!--TODO!bash! [  DONE  ]		This page has a popup error instead of using these.  it needs to use these errors!!!-->
 		<!--DO NOT CHANGE THE WORDING OF ANY ERRORS-->
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
@@ -29,10 +28,6 @@
 		</xsl:if>
 		
 		<form method="POST" action="service_edit.php">
-			<xsl:attribute name="onsubmit">
-				<xsl:text>return serviceEditSumit (this)</xsl:text>
-			</xsl:attribute>
-			
 			<!--Service Details -->
 			<h2 class="Service">Service Details</h2>
 			<div class="Wide-Form">

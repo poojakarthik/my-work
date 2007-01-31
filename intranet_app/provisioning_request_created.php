@@ -26,6 +26,12 @@
 		header ("Location: index.php"); exit;
 	}
 	
-	$Style->Output ("xsl/content/service/provisioning/confirm.xsl");
+	$Style->Output (
+		"xsl/content/service/provisioning/confirm.xsl",
+		Array (
+			"Account"		=> $srvService->Pull ("Account")->getValue (),
+			"Service"		=> $srvService->Pull ("Id")->getValue ()
+		)
+	);
 	
 ?>

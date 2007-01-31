@@ -309,12 +309,14 @@
 				'Description'			=> $rctRecurringChargeType->Pull ('Description')->getValue (),
 				'Nature'				=> $rctRecurringChargeType->Pull ('Nature')->getValue (),
 				'RecurringFreqType'		=> $rctRecurringChargeType->Pull ('RecurringFreqType')->getValue (),
+				'RecurringFreq'			=> $rctRecurringChargeType->Pull ('RecurringFreq')->getValue (),
 				'MinCharge'				=> $rctRecurringChargeType->Pull ('MinCharge')->getValue (),
 				'RecursionCharge'		=> $fltAmount,
 				'CancellationFee'		=> $rctRecurringChargeType->Pull ('CancellationFee')->getValue (),
 				'Continuable'			=> $rctRecurringChargeType->Pull ('Continuable')->getValue (),
 				'TotalCharged'			=> 0,
-				'TotalRecursions'		=> 0
+				'TotalRecursions'		=> 0,
+				'Archived'				=> 0
 			);
 			
 			$insRecurringCharge = new StatementInsert ('RecurringCharge', $arrRecurringCharge);
@@ -664,7 +666,7 @@
 				'BillAddress1'					=> $arrDetails ['BillAddress1'],
 				'BillAddress2'					=> $arrDetails ['BillAddress2'],
 				'BillLocality'					=> $arrDetails ['BillLocality'],
-				'BillPostcode'					=> sprintf ('%04d', $arrDetails ['BillPostcode']),
+				'BillPostcode'					=> $arrDetails ['BillPostcode'],
 				'EndUserTitle'					=> (($bolEndUserTitle == true) ? $arrDetails ['EndUserTitle'] : ''),
 				'EndUserGivenName'				=> $arrDetails ['EndUserGivenName'],
 				'EndUserFamilyName'				=> $arrDetails ['EndUserFamilyName'],

@@ -7,7 +7,7 @@
 	{
 		if (form.elements ["Note"].value.replace (/\s/g, "") == "")
 		{
-			alert ("You cannot enter a Blank Note into the system.");
+//			alert ("You cannot enter a Blank Note into the system.");
 			return false;
 		}
 		

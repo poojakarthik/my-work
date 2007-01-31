@@ -51,7 +51,7 @@
 					</tr>
 					<tr>
 						<th class="JustifiedWidth">
-						<!--TODO!bash! This isn't displaying!!!-->
+						<!--TODO!bash! [  DONE  ]		This isn't displaying!!!-->
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
 								<xsl:with-param name="field" select="string('CreatedOn')" />
@@ -93,7 +93,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-						<!--TODO!bash! This is not showing a Frequency! i.e 0 months instead of 1 month-->
+						<!--TODO!bash! [  DONE  ]		This is not showing a Frequency! i.e 0 months instead of 1 month-->
 							Every <xsl:value-of select="/Response/RecurringCharge/RecurringFreq" /> 
 							<xsl:text> </xsl:text>
 							<xsl:value-of select="/Response/RecurringCharge/BillingFreqTypes/BillingFreqType[@selected='selected']/Name" />(s)
