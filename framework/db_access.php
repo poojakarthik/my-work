@@ -2646,6 +2646,8 @@ class MySQLFunction
 	 	
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
+			Debug($strQuery);
+			
 			// Trace
 			$this->Trace("Failed: ".$this->Error());
 	 		// There was problem preparing the statment
