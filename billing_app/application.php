@@ -802,10 +802,11 @@ die();
 		// update Service CappedCharge and UncappedCharge
 		$this->_rptBillingReport->AddMessage("Updating Service Capped and Uncapped Totals...", FALSE);
 		$arrUpdateData = Array();
-		$arrUpdateData['CappedCharge'] = new MySQLFunction("Service.CappedCharge - ServiceTotal.CappedCharge");
-		$arrUpdateData['CappedCharge'] = new MySQLFunction("Service.UncappedCharge - ServiceTotal.UncappedCharge");
+		$arrUpdateData['CappedCharge']		= new MySQLFunction("Service.CappedCharge - ServiceTotal.CappedCharge");
+		$arrUpdateData['UncappedCharge']	= new MySQLFunction("Service.UncappedCharge - ServiceTotal.UncappedCharge");
 		$updServiceCharges = new StatementUpdate(	"Service JOIN ServiceTotal ON (Service.Id = ServiceTotal.Service)",
-													"ServiceTotal.InvoiceRun = '$strInvoiceRun'");
+													"ServiceTotal.InvoiceRun = '$strInvoiceRun'",
+													$arrUpdateData);
 		if($updServiceCharges->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			Debug($updServiceCharges->Error());
