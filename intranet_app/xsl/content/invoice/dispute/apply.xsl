@@ -77,12 +77,12 @@
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Invoice')" />
-								<xsl:with-param name="field" select="string('Amount')" />
+								<xsl:with-param name="field" select="string('Tax')" />
 							</xsl:call-template>
 						</th>
 						<td class="Currency">
 			       			<xsl:call-template name="Currency">
-			       				<xsl:with-param name="Number" select="/Response/Invoice/Balance" />
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Tax" />
 								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
@@ -91,12 +91,12 @@
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Invoice')" />
-								<xsl:with-param name="field" select="string('Tax')" />
+								<xsl:with-param name="field" select="string('Amount')" />
 							</xsl:call-template>
 						</th>
 						<td class="Currency">
 			       			<xsl:call-template name="Currency">
-			       				<xsl:with-param name="Number" select="/Response/Invoice/Tax" />
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Balance" />
 								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>

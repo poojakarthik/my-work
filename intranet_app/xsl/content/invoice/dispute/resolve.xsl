@@ -39,10 +39,66 @@
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Credits')" />
+							</xsl:call-template>
+						</th>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Credits" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Debits')" />
+							</xsl:call-template>
+						</th>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Debits" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Tax')" />
+							</xsl:call-template>
+						</th>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Tax" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Amount')" />
+							</xsl:call-template>
+						</th>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Balance" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
 								<xsl:with-param name="field" select="string('Disputed')" />
 							</xsl:call-template>
 						</th>
-						<td>
+						<td class="Currency">
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed" />
 								<xsl:with-param name="Decimal" select="number('2')" />
@@ -50,15 +106,48 @@
 	       				</td>
 					</tr>
 					<tr>
-						<th class="JustifiedWidth">
+						<th class="JustifiedWidth" valign="top">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Invoice')" />
 								<xsl:with-param name="field" select="string('Resolve')" />
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="checkbox" name="Resolve" value="1" />
-							Yes, Resolve this Dispute
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td>
+										<input type="radio" name="Resolve" value="0" id="Resolve:0" />
+									</td>
+									<td>
+										<strong><label for="Resolve:0">Customer to pay full amount</label></strong>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<input type="radio" name="Resolve" value="1" id="Resolve:1" />
+									</td>
+									<td>
+										<strong><label for="Resolve:1">Customer to pay $</label></strong>
+										<input type="text" name="ResolveAmount" class="input-string Currency">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+								       			<xsl:call-template name="Currency">
+								       				<xsl:with-param name="Number" select="/Response/Invoice/Disputed" />
+													<xsl:with-param name="Decimal" select="number('2')" />
+						       					</xsl:call-template>
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<input type="radio" name="Resolve" value="2" id="Resolve:2" />
+									</td>
+									<td>
+										<strong><label for="Resolve:2">Payment NOT required</label></strong>
+									</td>
+								</tr>
+							</table>
 							<!-- TODO!bash! URGENT need the following options (radio buttons)...-->
 							<!-- Text === "Customer to pay full amount" => Invoice.Balance += Invoice.Disputed, Invoice.Status = INVOICE_COMMITTED -->
 							<!-- Text === "Customer to pay $" [Input.Amount] =--> 
