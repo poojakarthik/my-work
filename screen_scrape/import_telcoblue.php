@@ -816,8 +816,14 @@ Blue Shared 500 						25
 		Die();
 	}
 
-	// Add Customers
+	// get delinquents
+	//TODO
+	$arrDel = $objDecoder->FetchCustomerById(1000154916);
 	
+	// get array of services
+	// $arrDelinquents[] = FNN  // $arrDel['Service'][FNN]
+
+	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
 	{	
 		// get the etech customer details
@@ -832,6 +838,10 @@ Blue Shared 500 						25
 		$intServiceCount += (int)$arrCustomer['ServiceCount'];
 		$intRawServiceCount += (int)$arrCustomer['RawServiceCount'];
 		$intCustomerCount++;
+		
+		// remove delinquents
+		//for FNN in $arrDelinquents
+		// unset($arrCustomer['Service'][FNN])
 		
 		// check service count
 		$intCountServices = count($arrCustomer['Service']);
