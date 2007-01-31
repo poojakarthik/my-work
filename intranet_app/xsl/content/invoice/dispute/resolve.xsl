@@ -128,6 +128,11 @@
 									</td>
 									<td>
 										<strong><label for="Resolve:1">Customer to pay $</label></strong>
+									</td>
+								</tr>
+								<tr>
+									<td></td>
+									<td>
 										<input type="text" name="ResolveAmount" class="input-string Currency">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
