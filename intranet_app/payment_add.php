@@ -101,7 +101,7 @@
 		{
 			$oblstrError->setValue ('Amount');
 		}
-		else if (!$oblstrTXNReference->setValue ($_POST ['TXNReference']))
+		else if (!$_POST ['TXNReference'])
 		{
 			$oblstrError->setValue ('TXNReference');
 		}

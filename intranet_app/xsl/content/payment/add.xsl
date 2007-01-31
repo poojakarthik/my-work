@@ -14,8 +14,10 @@
 						<xsl:when test="/Response/Error = 'Amount'">
 							Please enter a valid Amount.
 						</xsl:when>
-						<!--TODO!bash! Reference number should be required!!! add an error saying EXACTLY: "Please enter a valid Reference #." -->
-						<!--do not change the wording of any errors-->
+						<!--TODO!bash! [  DONE  ]		Reference number should be required!!! add error saying EXACTLY: "Please enter a valid Reference #." -->
+						<xsl:when test="/Response/Error = 'TXNReference'">
+							Please enter a valid Reference #.
+						</xsl:when>
 					</xsl:choose>
 				</div>
 				<div class="Seperator"></div>

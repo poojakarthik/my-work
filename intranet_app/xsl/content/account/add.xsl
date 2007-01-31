@@ -33,6 +33,9 @@
 					<xsl:when test="/Response/Error = 'CreditCard CardType'">
 						Please select a valid Credit Card Type.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'Account State'">
+						Please select a valid State.
+					</xsl:when>
 					
 					<!-- Account -->
 					<xsl:when test="/Response/Error = 'Account BusinessName'">
@@ -55,9 +58,6 @@
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Account Postcode'">
 						Please enter a Postcode.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'Account State'">
-						Please enter a State
 					</xsl:when>
 					
 					<!-- Direct Debit -->
@@ -321,12 +321,17 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Account[State]" class="input-string">
-								<xsl:attribute name="value">
-									<xsl:text></xsl:text>
-									<xsl:value-of select="/Response/ui-values/Account/State" />
-								</xsl:attribute>
-							</input>
+							<select name="Account[State]">
+								<xsl:for-each select="/Response/ServiceStateTypes/ServiceStateType">
+									<option>
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="./Id" />
+										</xsl:attribute>
+										<xsl:value-of select="./Name" />
+									</option>
+								</xsl:for-each>
+							</select>
 						</td>
 					</tr>
 					<tr>

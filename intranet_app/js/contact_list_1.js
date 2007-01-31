@@ -19,9 +19,7 @@
 		if (count != 1)
 		{
 			alert (
-				"You did not fill in this form correctly. \n" +
-				"You must search for ONLY ONE of the fields \n" +
-				"except for First and Last name, which requires both."
+				"You did not fill in this form correctly.  Please try again."
 			);
 			
 			return false;

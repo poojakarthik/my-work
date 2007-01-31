@@ -190,10 +190,10 @@ function ValidateCustomerClass ()
 			this._objInput[objObject.id] =
 			{
 				'Level': objObject.getAttribute ("ValidLevel"),
-				'Valid': (objObject.value == objObject.getAttribute ("ValidValue"))
+				'Valid': (objObject.value.toLowerCase() == objObject.getAttribute ("ValidValue").toLowerCase())
 			}
 			
-			objObject.className = ((objObject.value == objObject.getAttribute ("ValidValue")) ? "input-string-valid" : "input-string");
+			objObject.className = ((objObject.value.toLowerCase() == objObject.getAttribute ("ValidValue").toLowerCase()) ? "input-string-valid" : "input-string");
 		}
 		
 		if (this.IsValidated ())

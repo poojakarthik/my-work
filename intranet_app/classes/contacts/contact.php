@@ -232,13 +232,13 @@
 			// Set the Data to Update
 			$arrData = Array (
 				"Title"				=> $arrDetails ['Title'],
-				"FirstName"		=> $arrDetails ['FirstName'],
+				"FirstName"			=> $arrDetails ['FirstName'],
 				"LastName"			=> $arrDetails ['LastName'],
 				"DOB"				=> sprintf ("%04d", $arrDetails ['DOB-year']) . "-" .
 									   sprintf ("%02d", $arrDetails ['DOB-month']) . "-" .
 									   sprintf ("%02d", $arrDetails ['DOB-day']),
 				"JobTitle"			=> $arrDetails ['JobTitle'],
-				"Email"			=> $arrDetails ['Email'],
+				"Email"				=> $arrDetails ['Email'],
 				"CustomerContact"	=> ($arrDetails ['CustomerContact'] == true) ? "1" : "0",
 				"Phone"				=> $arrDetails ['Phone'],
 				"Mobile"			=> $arrDetails ['Mobile'],

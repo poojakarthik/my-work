@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_ACCOUNT | MODULE_CUSTOMER_GROUP | MODULE_DIRECT_DEBIT | MODULE_CREDIT_CARD | MODULE_BILLING;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_ACCOUNT | MODULE_CUSTOMER_GROUP | MODULE_DIRECT_DEBIT | MODULE_CREDIT_CARD | MODULE_BILLING | MODULE_STATE;
 	
 	// call application
 	require ('config/application.php');
@@ -50,10 +50,11 @@
 	}
 	
 	// Attach essentials (BillingMethod, CustomerGroup and CreditCardTypes)
-	$bmeBillingMethods		= $Style->attachObject (new BillingMethods	($_POST ['Account']['BillingMethod']));
-	$btyBillingTypes		= $Style->attachObject (new BillingTypes	($_POST ['Account']['BillingType']));
-	$cgsCustomerGroups		= $Style->attachObject (new CustomerGroups	($_POST ['Account']['CustomerGroup']));
-	$ccsCreditCardTypes		= $Style->attachObject (new CreditCardTypes	($_POST ['CC']['CardType']));
+	$bmeBillingMethods		= $Style->attachObject (new BillingMethods		($_POST ['Account']['BillingMethod']));
+	$btyBillingTypes		= $Style->attachObject (new BillingTypes		($_POST ['Account']['BillingType']));
+	$cgsCustomerGroups		= $Style->attachObject (new CustomerGroups		($_POST ['Account']['CustomerGroup']));
+	$ccsCreditCardTypes		= $Style->attachObject (new CreditCardTypes		($_POST ['CC']['CardType']));
+	$sstStates				= $Style->attachObject (new ServiceStateTypes	($_POST ['Account']['State']));
 	
 	// Set up the basis of information within the system
 	$oblarrUIValues			= $Style->attachObject (new dataArray ('ui-values'));
@@ -159,7 +160,7 @@
 			// This throws an error if the Postcode is Blank
 			$oblstrError->setValue ('Account Postcode');
 		}
-		else if (!$_POST ['Account']['State'])
+		else if (!$sstStates->setValue ($_POST ['Account']['State']))
 		{
 			// This throws an error if the State is Blank
 			$oblstrError->setValue ('Account State');
