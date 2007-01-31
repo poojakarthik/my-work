@@ -4,10 +4,6 @@
 	
 	require ("config/application_loader.php");
 	
-	// The first thing we have to do is get the INVOICE.HTML file
-	// This is what we will be using as an example so we can leave
-	// the cache runner do what it needs to
-	
 	
 	$arrInvoices = Array ();
 	
