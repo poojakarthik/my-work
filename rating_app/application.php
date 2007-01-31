@@ -134,7 +134,7 @@ die();
 		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE <Prefix>))";	
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
-															$strWhere, 'CreatedOn DESC', '1');
+															$strWhere, 'CreatedOn DESC, Account DESC', '1');
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
 		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
