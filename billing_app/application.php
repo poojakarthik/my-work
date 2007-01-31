@@ -167,7 +167,7 @@ die();
 																"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
 																"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
 																"RatePlan.Id");
-		$selAccounts					= new StatementSelect(	"Account", "*", "Archived = 0 AND" .
+		$selAccounts					= new StatementSelect(	"Account", "*", "Archived = 0 AND " .
 																"Id = 1000009145 OR " .
 																"Id = 1000007460 OR " .
 																"Id = 1000008407 OR " .
