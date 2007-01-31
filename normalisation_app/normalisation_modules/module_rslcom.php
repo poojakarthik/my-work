@@ -193,20 +193,24 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			// set RateId in raw data
 			switch ($this->_FetchRawCDR('Description'))
 			{
-				case "Business Telephone Line":
+				case "Business Telephone Line":	// not in file
+				case "Network Access Rental":	// $24.50
 					// Business Line
 					$intRateId	= 80002;
 					break;					
-				case "Telephone Line":
+				case "Telephone Line":			// not in file
 					// Residential Line
 					//TODO!rich! find the real description for a residential line
 					$intRateId	= 80003;
 					break;
-				case "Faxstream":
+				case "Faxstream":				// not in file
+				case "Faxstream Service":		// $31.77
 					// Fax Stream
 					$intRateId	= 80004;
 					break;
 				case "!ISDN2":
+				case "?ISDN HOME":						// $43.54
+				case "!Telstra Wholesale ISDN 2B+D":	// $57.72
 					// ISDN 2
 					//TODO!rich! find the real description(s) for an ISDN 2
 					$intRateId	= 81002;
@@ -222,6 +226,8 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 					$intRateId	= 81020;
 					break;
 				case "!ISDN30":
+				case "!ISDN 30 Access":	// $804.5 - $536.36 - $268.18
+					// see ItemCount = 10/20/30
 					// ISDN 30
 					//TODO!rich! find the real description(s) for an ISDN 30
 					$intRateId	= 81030;
