@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_STATE;
 	
 	// call application
 	require ('config/application.php');
@@ -27,6 +27,8 @@
 		$Style->Output ('xsl/content/account/notfound.xsl');
 		exit;
 	}
+	
+	$sstStates				= $Style->attachObject (new ServiceStateTypes);
 	
 	// Error Handling
 	$oblstrError = $Style->attachObject (new dataString ('Error'));

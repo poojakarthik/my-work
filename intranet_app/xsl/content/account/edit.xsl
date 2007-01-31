@@ -221,12 +221,23 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="State" class="input-string">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/State" />
-									</xsl:attribute>
-								</input>
+							<select name="State">
+								<xsl:for-each select="/Response/ServiceStateTypes/ServiceStateType">
+									<option>
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="./Id" />
+										</xsl:attribute>
+										<xsl:if test="/Response/ui-values/State = ./Id">
+											<xsl:attribute name="selected">
+												<xsl:text>selected</xsl:text>
+											</xsl:attribute>
+										</xsl:if>
+										
+										<xsl:value-of select="./Name" />
+									</option>
+								</xsl:for-each>
+							</select>
 							</td>
 						</tr>
 						<tr>

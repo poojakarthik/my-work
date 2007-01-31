@@ -206,7 +206,7 @@
 												<xsl:with-param name="field" select="string('State')" />
 											</xsl:call-template>
 										</th>
-										<td><xsl:value-of select="/Response/Account/State" /></td>
+										<td><xsl:value-of select="/Response/ServiceStateType/Name" /></td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">

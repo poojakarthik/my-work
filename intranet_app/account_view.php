@@ -13,7 +13,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CONTACT | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_RATE_PLAN;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CONTACT | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_RATE_PLAN | MODULE_STATE;
 	
 	// call application
 	require ('config/application.php');
@@ -35,6 +35,9 @@
 	
 	// Get Overdue Amount
 	$actAccount->OverdueAmount ();
+	
+	// Grab States
+	$sstStates		= $Style->attachObject (new ServiceStateType ($actAccount->Pull ('State')->getValue ()));
 	
 	// Get Associated Services
 	$svsServices	= $Style->attachObject (new Services);
