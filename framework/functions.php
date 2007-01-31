@@ -568,7 +568,7 @@ function CleanFNN($strFNN, $strAreaCode=NULL)
  * 
  * Find the Service Type of an FNN
  * 
- * @param	string		$strFNN				The FNN number to Clean
+ * @param	string		$strFNN				The FNN number to Check
  *
  * @return	mixed					int		Service Type Constant
  *									FALSE	Service Type not found

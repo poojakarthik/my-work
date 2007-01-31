@@ -25,32 +25,6 @@
  *
  */
 
-echo "<pre>\n";
-
-// Application entry point - create an instance of the application object
-$appRating = new ApplicationRating($arrConfig);
-
-// Change status of all CDRs with missing rate 
-$appRating->ReRate(CDR_RATE_NOT_FOUND);
-
-// run the Rate method until there is nothing left to rate
-while ($appRating->Rate())
-{
-
-}
-
-// Empty the Donkey Account
-Debug("Donkey Account = $".$appRating->_DonkeyAccount);
-
-//TODO!!!! - send the report
-
-// finished
-echo("\n-- End of Rating --\n");
-echo "</pre>\n";
-die();
-
-
-
 //----------------------------------------------------------------------------//
 // ApplicationRating
 //----------------------------------------------------------------------------//
@@ -104,14 +78,18 @@ die();
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
- 	function __construct($arrConfig)
+ 	function __construct($arrConfig=NULL)
  	{
+		$this->arrConfig = $arrConfig;
 		parent::__construct();
 		
 	 	// Initialise framework components
-		$this->_rptRatingReport = new Report("Rating Report for " . date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
-		
-		$this->_rptRatingReport->AddMessage("\n".MSG_HORIZONTAL_RULE.MSG_RATING_TITLE, FALSE);
+		if ($arrConfig['Reporting'] === TRUE)
+		{
+			$this->_rptRatingReport = new Report("Rating Report for " . date("Y-m-d H:i:s"), "flame@telcoblue.com.au");
+			
+			$this->_rptRatingReport->AddMessage("\n".MSG_HORIZONTAL_RULE.MSG_RATING_TITLE, FALSE);
+		}
 		
 		// Init Statement
 		
@@ -182,6 +160,90 @@ die();
 	 	
  	}
  	
+	//------------------------------------------------------------------------//
+	// RateCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * RateCDR()
+	 *
+	 * Rate a single CDR Record
+	 *
+	 * Rate a single CDR Record
+	 *
+	 * @param	array	$arrCDR			CDR Array from database
+	 * @return	float	Rated Charge
+	 * @method
+	 */
+	function RateCDR($mixCDR)
+	{
+		if (is_array($mixCDR))
+		{
+			$arrCDR = $mixCDR;
+		}
+		elseif ((int)$mixCDR)
+		{
+			$intCDR = $mixCDR;
+			// Get the CDR
+			$selCDR = new StatementSelect("CDR", "*", "CDR.Id = <Id>");
+			if (!$selCDR->Execute(Array('Id' => $intCDR)))
+			{
+				return FALSE;
+			}
+			$arrCDR = $selCDR->Fetch();
+		}
+		else
+		{
+			return FALSE;
+		}
+
+		$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
+		$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
+		
+		// set current CDR
+		$this->_arrCurrentCDR = $arrCDR;
+	
+		// Find Rate for this CDR
+		if (!$this->_arrCurrentRate = $this->_FindRate())
+		{
+			return FALSE;
+		}
+		
+		if ($this->_arrCurrentRate['PassThrough'])
+		{
+			// Calculate Passthrough rate
+			$fltCharge = $this->_CalculatePassThrough();
+		}
+		else
+		{
+			// Calculate other rate types
+			
+			// Calculate Charge
+			$fltCharge = $this->_CalculateCharge();
+			if ($fltCharge === FALSE)
+			{
+				return FALSE;
+			}
+		
+			// Calculate Cap Rate
+			$fltCharge = $this->_CalculateCap();
+			if ($fltCharge === FALSE)
+			{
+				return FALSE;
+			}
+			
+			// Calculate Prorate
+			$fltCharge = $this->_CalculateProrate();
+			if ($fltCharge === FALSE)
+			{
+				return FALSE;
+			}
+			
+			// Rounding
+			$this->_Rounding();
+		}
+		
+		return $this->_arrCurrentCDR['Charge'];
+	}
  	
  	//------------------------------------------------------------------------//
 	// Rate
@@ -222,12 +284,14 @@ die();
 		// Loop through each CDR
 		foreach($arrCDRList as $arrCDR)
 		{
+			// return TRUE if we have rated (or tried to rate) any CDRs
+			$bolReturn = TRUE;
+			
 			// cast MySQL strings to floats so they don't break our shit
 			$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
 			$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
 			
-			// return TRUE if we have rated (or tried to rate) any CDRs
-			$bolReturn = TRUE;
+			
 		
 			// Report
 			/*
@@ -801,7 +865,7 @@ die();
 		else
 		{
 			// calculate cap charge
-			if ($intUnits > $intCapUnits)
+			if ($intCapUnits && $intUnits > $intCapUnits)
 			{
 				// over cap units, cap at cap units
 				//resend to Zeemus magic rating formular with less units
