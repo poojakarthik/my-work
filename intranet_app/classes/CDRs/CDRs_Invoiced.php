@@ -80,8 +80,9 @@
 			
 			parent::__construct ('CDRs-Invoiced', 'CDR', 'CDR');
 			
-			$this->Constrain ('InvoiceRun',	'=', $invInvoice->Pull ('InvoiceRun')->getValue ());
-			$this->Constrain ('Account',	'=', $invInvoice->Pull ('Account')->getValue ());
+			$this->Constrain	('InvoiceRun',		'=',	$invInvoice->Pull ('InvoiceRun')->getValue ());
+			$this->Constrain	('Account',			'=',	$invInvoice->Pull ('Account')->getValue ());
+			$this->Order		('StartDatetime');
 		}
 	}
 	

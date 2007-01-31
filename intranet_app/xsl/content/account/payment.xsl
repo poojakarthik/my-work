@@ -104,9 +104,7 @@
 			</label>
 
 			<div class="SmallSeperator"></div>
-			<label for="BillingType:1">
-				Direct Debit from a Bank Account :
-			</label>
+			Direct Debit from a Bank Account :
 
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">
@@ -175,9 +173,7 @@
 			</div>
 
 			<div class="SmallSeperator"></div>
-			<label for="BillingType:2">
-				Direct Debit from a Credit Card :
-			</label>
+			Direct Debit from a Credit Card :
 
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">

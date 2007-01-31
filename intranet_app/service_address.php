@@ -92,7 +92,7 @@
 		);
 		
 		$Style->Output (
-			'xsl/content/service/address/updated.xsl',
+			'xsl/content/service/provisioning/serviceaddress_updated.xsl',
 			Array (
 				'Account'		=> $actAccount->Pull ('Id')->getValue (),
 				'Service'		=> $srvService->Pull ('Id')->getValue ()
@@ -121,7 +121,7 @@
 	
 	// Output the Request Page
 	$Style->Output (
-		'xsl/content/service/address/update.xsl',
+		'xsl/content/service/provisioning/serviceaddress_update.xsl',
 		Array (
 			'Account'		=> $actAccount->Pull ('Id')->getValue (),
 			'Service'		=> $srvService->Pull ('Id')->getValue ()

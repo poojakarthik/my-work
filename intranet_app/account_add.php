@@ -271,12 +271,9 @@
 		}
 		else
 		{
-			// If we reach this point in the Script, then
-			// we're probably going to making the Account
-			// All we have to do is make sure the Contact
-			// being requested to add exists in the Account
-			// that is being requested - if an account
-			// is being made in an Account Group
+			// If we reach this point in the Script, then we're probably going to making the Account
+			// All we have to do is make sure the Contact being requested to add exists in the Account
+			// that is being requested - if an account is being made in an Account Group
 			
 			if ($_POST ['Contact']['USE']) {
 				$cntContact = new Contact ($_POST ['Contact']['Id']);
@@ -306,7 +303,7 @@
 						"BankName"			=> $_POST ['DDR']['BankName'],
 						"BSB"				=> $_POST ['DDR']['BSB'],
 						"AccountNumber"		=> $_POST ['DDR']['AccountNumber'],
-						"AccountName"		=> $_POST ['DDR']['AccountName'],
+						"AccountName"		=> $_POST ['DDR']['AccountName']
 					),
 					
 					"CreditCard"	=> Array (
@@ -314,7 +311,7 @@
 						"Name"				=> $_POST ['CC']['Name'],
 						"CardNumber"		=> $_POST ['CC']['CardNumber'],
 						"ExpMonth"			=> $_POST ['CC']['ExpMonth'],
-						"ExpYear"			=> $_POST ['CC']['ExpYear'],
+						"ExpYear"			=> $_POST ['CC']['ExpYear']
 					),
 					
 					"Contact"		=> Array (

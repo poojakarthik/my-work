@@ -149,18 +149,8 @@
 			
 			if ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD)
 			{
-				$arrCreditCard = Array (
-					"AccountGroup"	=> $acgAccountGroup->Pull ('Id')->getValue (),
-					"CardType"		=> $arrDetails ['CreditCard']['CardType'],
-					"Name"			=> $arrDetails ['CreditCard']['Name'],
-					"CardNumber"	=> $arrDetails ['CreditCard']['CardNumber'],
-					"ExpMonth"		=> $arrDetails ['CreditCard']['ExpMonth'],
-					"ExpYear"		=> $arrDetails ['CreditCard']['ExpYear'],
-					"CVV"			=> $arrDetails ['CreditCard']['CVV']
-				);
-				
-				$insCreditCard = new StatementInsert ('CreditCard');
-				$intCreditCard = $insCreditCard->Execute ($arrCreditCard);
+				$crcCreditCard = $acgAccountGroup->AddCreditCard ($arrDetails ['CreditCard']);
+				$intCreditCard = $crcCreditCard->Pull ('Id')->getValue ();
 			}
 			
 			if ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)

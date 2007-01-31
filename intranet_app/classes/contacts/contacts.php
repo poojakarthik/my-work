@@ -120,13 +120,13 @@
 				"AccountGroup"		=> $actAccount->Pull ('AccountGroup')->getValue (),
 				"Account"			=> $actAccount->Pull ('Id')->getValue (),
 				"Title"				=> $arrDetails ['Title'],
-				"FirstName"		=> $arrDetails ['FirstName'],
+				"FirstName"			=> $arrDetails ['FirstName'],
 				"LastName"			=> $arrDetails ['LastName'],
 				"JobTitle"			=> $arrDetails ['JobTitle'],
 				"DOB"				=> sprintf ("%04d", $arrDetails ['DOB:year']) . "-" .
 									   sprintf ("%02d", $arrDetails ['DOB:month']) . "-" . 
 									   sprintf ("%02d", $arrDetails ['DOB:day']),
-				"Email"			=> $arrDetails ['Email'],
+				"Email"				=> $arrDetails ['Email'],
 				"Phone"				=> $arrDetails ['Phone'],
 				"Fax"				=> $arrDetails ['Fax'],
 				"Mobile"			=> $arrDetails ['Mobile'],

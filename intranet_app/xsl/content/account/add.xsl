@@ -373,7 +373,7 @@
 			<div class="Seperator"></div>
 			
 			<!-- Billing Details -->
-			<!--TODO!bash! URGENT! - Billing details are not being saved!!! (this may only be happening if there has been an error on when adding customer - check)-->
+			<!--TODO!bash! [  DONE  ]		URGENT! - Billing details are not being saved!!! (this may only be happening if there has been an error on when adding customer - check)-->
 			<h2 class="Invoice">Billing Details</h2>
 			
 			<div class="Wide-Form">
@@ -533,7 +533,7 @@
 									</td>
 								</tr>
 								
-								<!--Direct Detbi -->
+								<!--Direct Debit -->
 								<tr>
 									<td>
 										<input type="radio" name="Account[BillingType]" value="2" id="PaymentMethod:CC">
@@ -664,7 +664,7 @@
 							</td>
 							<th>
 								<label for="Contact[USE]:TRUE">
-								<!--TODO!bash! URGENT this option does not always work (maybe not when there have been errors? - check - maybe because their account access is still 'this account only' on the other account? but it is definately broken-->
+								<!--TODO!bash! [  DONE  ]		URGENT this option does not always work (maybe not when there have been errors? - check - maybe because their account access is still 'this account only' on the other account? but it is definately broken-->
 									Select an existing contact from the list below:
 								</label>
 							</th>
@@ -812,7 +812,7 @@
 								<xsl:with-param name="field" select="string('DOB')" />
 							</xsl:call-template>
 						</th>
-						<!-- TODO!bash! URGENT!DOB is not always storing properly! make sure it is fixed properly-->
+						<!-- TODO!bash! URGENT! [  DONE  ]		DOB is not always storing properly! make sure it is fixed properly. -->
 						<td>
 							<xsl:call-template name="DOB">
 								<xsl:with-param name="Name-Day"			select="string('Contact[DOB][day]')" />
