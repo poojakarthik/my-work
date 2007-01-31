@@ -222,6 +222,10 @@ die();
 		// Loop through each CDR
 		foreach($arrCDRList as $arrCDR)
 		{
+			// cast MySQL strings to floats so they don't break our shit
+			$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
+			$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
+			
 			// return TRUE if we have rated (or tried to rate) any CDRs
 			$bolReturn = TRUE;
 		
@@ -232,7 +236,7 @@ die();
 			*/
 			// set current CDR
 			$this->_arrCurrentCDR = $arrCDR;
-
+		
 			// Find Rate for this CDR
 			if (!$this->_arrCurrentRate = $this->_FindRate())
 			{
@@ -541,6 +545,19 @@ die();
 		 	
 		// set the current rate
 		$this->_arrCurrentRate = $arrRate;
+		
+		// cast MySQL strings to floats so they don't break our shit
+		$this->_arrCurrentRate['StdRatePerUnit'] 	= (float)$this->_arrCurrentRate['StdRatePerUnit'];
+		$this->_arrCurrentRate['StdFlagfall'] 		= (float)$this->_arrCurrentRate['StdFlagfall'];
+		$this->_arrCurrentRate['StdPercentage'] 	= (float)$this->_arrCurrentRate['StdPercentage'];
+		$this->_arrCurrentRate['StdMarkup'] 		= (float)$this->_arrCurrentRate['StdMarkup'];
+		$this->_arrCurrentRate['StdMinCharge'] 		= (float)$this->_arrCurrentRate['StdMinCharge'];
+		$this->_arrCurrentRate['ExsRatePerUnit'] 	= (float)$this->_arrCurrentRate['ExsRatePerUnit'];
+		$this->_arrCurrentRate['ExsFlagfall'] 		= (float)$this->_arrCurrentRate['ExsFlagfall'];
+		$this->_arrCurrentRate['ExsPercentage'] 	= (float)$this->_arrCurrentRate['ExsPercentage'];
+		$this->_arrCurrentRate['ExsMarkup'] 		= (float)$this->_arrCurrentRate['ExsMarkup'];
+		$this->_arrCurrentRate['CapCost'] 			= (float)$this->_arrCurrentRate['CapCost'];
+		$this->_arrCurrentRate['CapLimit'] 			= (float)$this->_arrCurrentRate['CapLimit'];		
 		
 		// return something
 		return $arrRate;
