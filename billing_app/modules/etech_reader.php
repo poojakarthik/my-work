@@ -141,7 +141,7 @@
 		$arrOutput = Array();
 		
 		// read line
-		$strLine = $this->FetchNext();
+		$strLine = $this->ReadRawLine();
 		if ($strLine === FALSE)
 		{
 			return FALSE;
