@@ -38,6 +38,13 @@
 		exit;
 	}
 	
-	$Style->Output ('xsl/content/service/lessee/changed.xsl');
+	$Style->Output (
+		'xsl/content/service/lessee/changed.xsl',
+		
+		Array (
+			'Account'		=> $srvNew->Pull ('Account')->getValue (),
+			'Service'		=> $srvNew->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

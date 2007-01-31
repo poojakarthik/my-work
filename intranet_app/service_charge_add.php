@@ -53,6 +53,12 @@
 	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Charge Type');
 	
-	$Style->Output ('xsl/content/service/charges_charge_add.xsl');
+	$Style->Output (
+		'xsl/content/service/charges_charge_add.xsl',
+		Array (
+			'Account'		=> $srvService->Pull ('Account')->getValue (),
+			'Service'		=> $srvService->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

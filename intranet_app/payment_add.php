@@ -129,6 +129,11 @@
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Payment');
 	
-	$Style->Output ('xsl/content/payment/add.xsl');
+	$Style->Output (
+		'xsl/content/payment/add.xsl',
+		Array (
+			'Account'	=> ($actAccount) ? $actAccount->Pull ('Id')->getValue () : null
+		)
+	);
 	
 ?>

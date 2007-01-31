@@ -19,9 +19,8 @@
 	
 	try
 	{
-		// Get the Invoice
+		// Get the Invoice + Associated Account
 		$invInvoice		= $Style->attachObject (new Invoice ($_GET ['Invoice']));
-		// Get the Account the Invoice was Charged to
 		$actAccount		= $Style->attachObject ($invInvoice->Account ());
 	}
 	catch (Exception $e)
@@ -41,14 +40,20 @@
 		$stlServiceTotals = $Style->attachObject ($invInvoice->ServiceTotals ());
 		$stlServiceTotals->Sample ();
 		
-		$Style->Output ('xsl/content/invoice/view_service_select.xsl');
+		$Style->Output (
+			'xsl/content/invoice/view_service_select.xsl',
+			Array (
+				'Account'	=> $actAccount->Pull ('Id')->getValue (),
+				'Invoice'	=> $invInvoice->Pull ('Id')->getValue ()
+			)
+		);
 		exit;
 	}
 	
-	// If the Service is set, then filter for it
+	// If the ServiceTotal is set, then filter for it
 	try
 	{
-		// Get the Service
+		// Get the ServiceTotal
 		$sttServiceTotal = $Style->attachObject ($invInvoice->ServiceTotal ($_GET ['ServiceTotal']));		
 	}
 	catch (Exception $e)
@@ -76,6 +81,13 @@
 	);
 	
 	// Output the Account View
-	$Style->Output ('xsl/content/invoice/view.xsl');
+	$Style->Output (
+		'xsl/content/invoice/view.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue (),
+			'Invoice'	=> $invInvoice->Pull ('Id')->getValue (),
+			'Service'	=> $sttServiceTotal->Pull ('Service')->getValue ()
+		)
+	);
 	
 ?>

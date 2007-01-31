@@ -20,6 +20,7 @@
 	try
 	{
 		$srvService = $Style->attachObject (new Service (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
+		$actAccount = $Style->attachObject ($srvService->getAccount ());
 	}
 	catch (Exception $e)
 	{
@@ -72,6 +73,12 @@
 	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/service/edit.xsl');
+	$Style->Output (
+		'xsl/content/service/edit.xsl',
+		Array (
+			'Account'		=> $actAccount->Pull ('Id')->getValue (),
+			'Service'		=> $srvService->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

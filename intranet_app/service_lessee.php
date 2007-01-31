@@ -94,7 +94,13 @@
 					}
 				}
 				
-				$Style->Output ('xsl/content/service/lessee/date.xsl');
+				$Style->Output (
+					'xsl/content/service/lessee/date.xsl',
+					Array (
+						'Account'		=> $actOriginal->Pull ('Id')->getValue (),
+						'Service'		=> $srvService->Pull ('Id')->getValue ()
+					)
+				);
 				exit;
 			}
 			catch (Exception $e)
@@ -104,6 +110,12 @@
 		}
 	}
 	
-	$Style->Output ('xsl/content/service/lessee/select.xsl');
+	$Style->Output (
+		'xsl/content/service/lessee/select.xsl',
+		Array (
+			'Account'		=> $actOriginal->Pull ('Id')->getValue (),
+			'Service'		=> $srvService->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

@@ -38,12 +38,14 @@
 		
 		<h2 class="Invoice">Charges</h2>
 		
-		<!--TODO!bash! URGENT! This needs to be the same table as on the view rate plan details page!-->
+		<!--TODO!bash! [  DONE  ]		URGENT! This needs to be the same table as on the view rate plan details page!-->
 		<table border="0" width="100%" cellpadding="5" cellspacing="0" style="font-family: monospace; font-size: 9pt;" class="Listing">
+			<tr class="First">
+				<th colspan="3">
+					<xsl:value-of select="/Response/RateGroup/RecordType/Name" /> ( <xsl:value-of select="/Response/RateGroup/Name" /> )
+				</th>
+			</tr>
 			<xsl:for-each select="/Response/RateGroupRate/rangeSample/Rate">
-				<tr class="First">
-					<th colspan="4"><xsl:value-of select="./Name" /></th>
-				</tr>
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>
@@ -56,11 +58,17 @@
 						</xsl:choose>
 					</xsl:attribute>
 					
-					<td><xsl:value-of select="./StdFlagfall" /> flagfall + </td>
 					<td>
-						<xsl:value-of select="./StdRatePerUnit" /> per 
-						<xsl:value-of select="./StdUnits" /> <xsl:text> </xsl:text>
-						<xsl:value-of select="/Response/RecordDisplayTypes/RecordDisplayType[Id=$RecordType/DisplayType]/Suffix" />
+						<!-- TODO!bash! [  DONE  ]		link this to view rate details -->
+						<a href="#" title="Rate Details" alt="Information about this Rate and its Charges">
+							<xsl:attribute name="onclick">
+								<xsl:text>return ModalExternal (this, </xsl:text>
+								<xsl:text>'rates_rate_view.php?Id=</xsl:text>
+								<xsl:value-of select="./Id" />
+								<xsl:text>')</xsl:text>
+							</xsl:attribute>
+							<xsl:value-of select="./Description" />	
+						</a>
 					</td>
 					<td>
 						<table border="0" cellpadding="3" cellspacing="0">
@@ -154,7 +162,6 @@
 						</xsl:call-template>
 					</td>
 				</tr>
-				   
 			</xsl:for-each>
 		</table>
 		

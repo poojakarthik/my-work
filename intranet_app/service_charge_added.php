@@ -26,6 +26,12 @@
 		header ("Location: console.php"); exit;
 	}
 	
-	$Style->Output ("xsl/content/service/charges_charge_added.xsl");
+	$Style->Output (
+		"xsl/content/service/charges_charge_added.xsl",
+		Array (
+			'Account'		=> $srvService->Pull ('Account')->getValue (),
+			'Service'		=> $srvService->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

@@ -71,7 +71,12 @@
 	$rplRatePlans->Constrain ('Archived',		'EQUALS',	0);
 	$rplRatePlans->Sample ();
 	
-	// Output the Account View
-	$Style->Output ('xsl/content/service/plan_view.xsl');
+	$Style->Output (
+		'xsl/content/service/plan_view.xsl',
+		Array (
+			'Account'		=> $actAccount->Pull ('Id')->getValue (),
+			'Service'		=> $srvService->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

@@ -80,6 +80,11 @@
 	$docDocumentation->Explain ("Account");
 	$docDocumentation->Explain ("Direct Debit");
 	
-	$Style->Output ('xsl/content/directdebit/add.xsl');
+	$Style->Output (
+		'xsl/content/directdebit/add.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

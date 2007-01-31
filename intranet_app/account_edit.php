@@ -135,6 +135,11 @@
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/account/edit.xsl');
+	$Style->Output (
+		'xsl/content/account/edit.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

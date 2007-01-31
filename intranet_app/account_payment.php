@@ -78,7 +78,12 @@
 			
 			$actAccount->BillingTypeSelect ($intBillingType, $objBillingVia);
 			
-			$Style->Output ('xsl/content/account/payment_selected.xsl');
+			$Style->Output (
+				'xsl/content/account/payment_selected.xsl',
+				Array (
+					'Account'	=> $actAccount->Pull ('Id')->getValue ()
+				)
+			);
 			exit;
 		}
 		catch (Exception $e)
@@ -95,6 +100,11 @@
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/account/payment.xsl');
+	$Style->Output (
+		'xsl/content/account/payment.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

@@ -47,6 +47,11 @@
 	$docDocumentation->Explain ('Archive');
 	
 	// Output the Account View
-	$Style->Output ('xsl/content/account/ledger.xsl');
+	$Style->Output (
+		'xsl/content/account/ledger.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

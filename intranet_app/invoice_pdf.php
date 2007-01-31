@@ -40,7 +40,12 @@
 	catch (Exception $e)
 	{
 		// Dispaly Error
-		$Style->Output ('xsl/content/invoice/pdf_notfound.xsl');
+		$Style->Output (
+			'xsl/content/invoice/pdf_notfound.xsl',
+			Array (
+				'Account'	=> $_GET ['Account']
+			)
+		);
 		exit;
 	}
 	

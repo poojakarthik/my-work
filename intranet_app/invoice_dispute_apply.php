@@ -45,7 +45,14 @@
 			$invInvoice->Dispute ($_POST ['Disputed']);
 			
 			// If it is valid, show a Confirmation
-			$Style->Output ('xsl/content/invoice/dispute/applied.xsl');
+			$Style->Output (
+				'xsl/content/invoice/dispute/applied.xsl',
+				Array (
+					'Account'	=> $actAccount->Pull ('Id')->getValue (),
+					'Invoice'	=> $invInvoice->Pull ('Id')->getValue ()
+				)
+			);
+			
 			exit;
 		}
 	}
@@ -59,6 +66,12 @@
 	$docDocumentation->Explain ('Invoice');
 	
 	// Output the Account View
-	$Style->Output ('xsl/content/invoice/dispute/apply.xsl');
+	$Style->Output (
+		'xsl/content/invoice/dispute/apply.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue (),
+			'Invoice'	=> $invInvoice->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

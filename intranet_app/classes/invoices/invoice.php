@@ -31,7 +31,7 @@
 	 * An Invoice in the Database
 	 *
 	 *
-	 * @prefix	act
+	 * @prefix		inv
 	 *
 	 * @package		intranet_app
 	 * @class		Invoice
@@ -235,13 +235,51 @@
 		 *
 		 * Resolve a Dispute
 		 *
+		 * @param	Integer		$intResolveMethod		(CONSTANT) The method in which this dispute will be resolved
+		 * @param	Float		$fltAmount				The amount which will be changed to the Account, if customer to Pay $X.XX
 		 * @return	void
 		 *
 		 * @method
 		 */
 		
-		public function Resolve ()
+		public function Resolve ($intResolveMethod, $fltAmount)
 		{
+			switch ($intResolveMethod)
+			{
+				case DISPUTE_RESOLVE_FULL_PAYMENT:
+					$arrInvoice = Array (
+					);
+					
+					break;
+					
+				case DISPUTE_RESOLVE_PARTIAL_PAYMENT:
+					$arrInvoice = Array (
+					);
+					
+					break;
+					
+				case DISPUTE_RESOLVE_NO_PAYMENT:
+//					$arrInvoice = Array (
+//						"Status"	=> INVOICE_COMMMITTED
+//					);
+					
+//					$updDispute = new StatementUpdate ('Invoice', 'Id = <Id>', $arrInvoice);
+//					$updDispute->Execute ($arrInvoice);
+//						Invoice.Balance += Invoice.Disputed, Invoice.Status = INVOICE_COMMITTED
+					break;
+			}
+			
+			//	TODO!bash! URGENT need the following options (radio buttons)...
+			//		Text === "Customer to pay full amount" => Invoice.Balance += Invoice.Disputed, Invoice.Status = INVOICE_COMMITTED
+			//		Text === "Customer to pay $" [Input.Amount]
+			//				Invoice.Balance += Input.Amount, Invoice.Disputed -= Input.Amount, Invoice.Status = ?????
+			//
+			//	TODO!flame! URGENT : Status ???? -->
+			//		Text === "Payment NOT required" : Invoice.Status = ????
+			//
+			//	TODO!bash! auto add an account note (by employee) to say how this was resolved, use "Disputed Invoice Resolved : " same text as options
+			//	TODO!bash! auto add an account note (by employee) when an invoice is disputed "Invoice Disputed $".DiputedAmount
+			
 			$arrResolve = Array (
 				"Status"		=> INVOICE_DISPUTED_SETTLED
 			);

@@ -116,19 +116,19 @@
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td>
-										<input type="radio" name="Resolve" value="0" id="Resolve:0" />
+										<input type="radio" name="ResolveMethod" value="1" id="Resolve:1" />
 									</td>
-									<td>
-										<strong><label for="Resolve:0">Customer to pay full amount</label></strong>
-									</td>
+									<th>
+										<label for="Resolve:1">Customer to pay full amount</label>
+									</th>
 								</tr>
 								<tr>
 									<td>
-										<input type="radio" name="Resolve" value="1" id="Resolve:1" />
+										<input type="radio" name="ResolveMethod" value="2" id="Resolve:2" />
 									</td>
-									<td>
-										<strong><label for="Resolve:1">Customer to pay $</label></strong>
-									</td>
+									<th>
+										<label for="Resolve:2">Customer to pay $</label>
+									</th>
 								</tr>
 								<tr>
 									<td></td>
@@ -146,21 +146,13 @@
 								</tr>
 								<tr>
 									<td>
-										<input type="radio" name="Resolve" value="2" id="Resolve:2" />
+										<input type="radio" name="ResolveMethod" value="3" id="Resolve:3" />
 									</td>
-									<td>
-										<strong><label for="Resolve:2">Payment NOT required</label></strong>
-									</td>
+									<th>
+										<label for="Resolve:3">Payment NOT required</label>
+									</th>
 								</tr>
 							</table>
-							<!-- TODO!bash! URGENT need the following options (radio buttons)...-->
-							<!-- Text === "Customer to pay full amount" => Invoice.Balance += Invoice.Disputed, Invoice.Status = INVOICE_COMMITTED -->
-							<!-- Text === "Customer to pay $" [Input.Amount] =--> 
-							<!-- 			Invoice.Balance += Input.Amount, Invoice.Disputed -= Input.Amount, Invoice.Status = ?????  -->
-							<!-- TODO!flame! URGENT : Status ???? -->
-							<!-- Text === "Payment NOT required" : Invoice.Status = ???? -->
-							<!-- TODO!bash! auto add an account note (by employee) to say how this was resolved, use "Disputed Invoice Resolved : " same text as options -->
-							<!-- TODO!bash! auto add an account note (by employee) when an invoice is disputed "Invoice Disputed $".DiputedAmount -->
 						</td>
 					</tr>
 				</table>

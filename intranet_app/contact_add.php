@@ -133,6 +133,11 @@
 	$docDocumentation->Explain ("Account");
 	$docDocumentation->Explain ("Contact");
 	
-	$Style->Output ('xsl/content/contact/add.xsl');
+	$Style->Output (
+		'xsl/content/contact/add.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

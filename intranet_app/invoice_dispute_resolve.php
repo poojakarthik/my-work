@@ -28,27 +28,39 @@
 		exit;
 	}
 	
-	// UI Values (Remember)
-	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
-	$oblstrDisputed = $oblarrUIValues->Push (new dataFloat ('Disputed'));
+	// Error
+	$oblstrError			= $Style->attachObject	(new dataString		('Error'));
 	
-	if ($_POST ['Resolve'])
+	// UI Values (Remember)
+	$oblarrUIValues			= $Style->attachObject	(new dataArray		('ui-values'));
+	$oblintResolveMethod	= $oblarrUIValues->Push (new dataInteger	('ResolveMethod',	$_POST ['ResolveMethod']));
+	$oblintPaymentAmount	= $oblarrUIValues->Push (new dataString		('PaymentAmount',	$_POST ['PaymentAmount']));
+	
+	if (isset ($_POST ['ResolveMethod']))
 	{
-		$invInvoice->Resolve ();
-		// If it is valid, show a Confirmation
-		$Style->Output ('xsl/content/invoice/dispute/resolved.xsl');
-		exit;
-	}
-	else
-	{
-		// Get the current database value
-		$oblstrDisputed->setValue ($invInvoice->Pull ('Disputed')->getValue ());
+		$oblfltAmount = new dataFloat ('PaymentAmount');
+		
+		if (!$oblfltAmount->setValue ($_POST ['PaymentAmount']))
+		{
+			$oblstrError->setValue ('Invalid PaymentAmount');
+		}
+		else
+		{
+			$invInvoice->Resolve ($_POST ['ResolveMethod'], $_POST ['PaymentAmount']);
+			header ("Location: invoice_dispute_resolved.php?Invoice=" . $invInvoice->Pull ('Id')->getValue ());
+		}
 	}
 	
 	// Pull documentation information for a Service and an Account
 	$docDocumentation->Explain ('Invoice');
 	
 	// Output the Account View
-	$Style->Output ('xsl/content/invoice/dispute/resolve.xsl');
+	$Style->Output (
+		'xsl/content/invoice/dispute/resolve.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue (),
+			'Invoice'	=> $invInvoice->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

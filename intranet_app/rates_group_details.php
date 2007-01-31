@@ -32,7 +32,7 @@
 	$rgrRateGroupRate		= new RateGroupRate ($rrgRateGroup->Pull ('Id')->getValue ());
 	$oblsamRateGroupRate	= $rgrRateGroupRate->Sample (
 		($_GET ['rangePage'])	? $_GET ['rangePage']	: 1, 
-		($_GET ['rangeLength'])	? $_GET ['rangeLength']	: 10
+		($_GET ['rangeLength'])	? $_GET ['rangeLength']	: 20
 	);
 	
 	$Style->attachObject ($oblsamRateGroupRate);

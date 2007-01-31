@@ -73,6 +73,40 @@
 			// Construct the object
 			parent::__construct ('Payment', $this->Pull ('Id')->getValue ());
 		}
+		
+		//------------------------------------------------------------------------//
+		// Account
+		//------------------------------------------------------------------------//
+		/**
+		 * Account()
+		 *
+		 * Gets the Account that the Payment was added to
+		 *
+		 * Gets the Account that the Payment was added to. If there is no account, 
+		 * this returns NULL
+		 *
+		 * @return	Account
+		 *
+		 * @method
+		 */
+		
+		public function Account ()
+		{
+			if ($this->_actAccount)
+			{
+				return $this->_actAccount;
+			}
+			
+			$intAccount = $this->Pull ('Account')->getValue ();
+			
+			if ($intAccount == NULL)
+			{
+				return NULL;
+			}
+			
+			$this->_actAccount = new Account ($intAccount);
+			return $this->_actAccount;
+		}
 	}
 	
 ?>

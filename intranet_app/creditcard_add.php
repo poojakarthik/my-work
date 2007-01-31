@@ -89,6 +89,11 @@
     $docDocumentation->Explain ('Account');
     $docDocumentation->Explain ('Credit Card');
     
-    $Style->Output ('xsl/content/creditcard/add.xsl');
+    $Style->Output (
+    	'xsl/content/creditcard/add.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue ()
+		)
+	);
     
 ?>

@@ -21,6 +21,7 @@
 	{
 		// Get the Service
 		$srvService = $Style->attachObject (new Service ($_GET ['Id']));
+		$actAccount = $Style->attachObject ($srvService->getAccount ());
 	}
 	catch (Exception $e)
 	{
@@ -40,6 +41,12 @@
 	$docDocumentation->Explain ('Service');
 	
 	// Output the Service Unbilled Charges
-	$Style->Output ('xsl/content/service/unbilled.xsl');
+	$Style->Output (
+		'xsl/content/service/unbilled.xsl',
+		Array (
+			'Account'		=> $actAccount->Pull ('Id')->getValue (),
+			'Service'		=> $srvService->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

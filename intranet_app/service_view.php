@@ -64,7 +64,11 @@
 	$octChargeTypes->Constrain ('Archived', '=', FALSE);
 	$octChargeTypes->Sample ();
 	
-	// Output the Account View
-	$Style->Output ('xsl/content/service/view.xsl');
+	$Style->Output (
+		'xsl/content/service/view.xsl',
+		Array (
+			'Account'		=> $actAccount->Pull ('Id')->getValue (),
+		)
+	);
 	
 ?>

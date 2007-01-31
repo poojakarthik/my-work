@@ -93,7 +93,7 @@
 		
 		<!-- Charges -->
 		<h2 class="Invoice">Charges</h2>
-		<!--TODO!bash! URGENT! Why does this say more details when there is <5 rates???? This link should only be there if there are more rates that aren't being shown! -->
+		<!--TODO!bash! [  DONE  ]		URGENT! Why does this say more details when there is <5 rates? -->
 		<table border="0" width="100%" cellpadding="3" cellspacing="0" style="font-family: monospace; font-size: 9pt;" class="Listing">
 			<xsl:for-each select="/Response/RecordTypes/Results/rangeSample/RecordType">
 				<xsl:variable name="RecordType" select="." />
@@ -237,22 +237,19 @@
 							</td>
 						</tr>
 					</xsl:for-each>
-					<tr>
-						<td colspan="4" align="right">
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>rates_group_details.php?Id=</xsl:text>
-									<xsl:value-of select="$RateGroup/Id" />
-								</xsl:attribute>
-								<xsl:text>More Details...</xsl:text>
-							</a>
-						</td>
-					</tr>
-					<tr>
-						<td colspan="4">
-							<div class="MicroSeperator"></div>
-						</td>
-					</tr>
+					<xsl:if test="count(/Response/RateGroupRates/RateGroupRate[RateGroup=$RateGroup/Id]/Rates/Rate) = 5">
+						<tr>
+							<td colspan="4" align="right">
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>rates_group_details.php?Id=</xsl:text>
+										<xsl:value-of select="$RateGroup/Id" />
+									</xsl:attribute>
+									<xsl:text>More Details...</xsl:text>
+								</a>
+							</td>
+						</tr>
+					</xsl:if>
 				</xsl:if>
 			</xsl:for-each>
 		</table>

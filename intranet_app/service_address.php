@@ -91,7 +91,13 @@
 			)
 		);
 		
-		$Style->Output ('xsl/content/service/address/updated.xsl');
+		$Style->Output (
+			'xsl/content/service/address/updated.xsl',
+			Array (
+				'Account'		=> $actAccount->Pull ('Id')->getValue (),
+				'Service'		=> $srvService->Pull ('Id')->getValue ()
+			)
+		);
 		exit;
 	}
 	
@@ -114,6 +120,12 @@
 	$docDocumentation->Explain ('Provisioning');
 	
 	// Output the Request Page
-	$Style->Output ('xsl/content/service/address/update.xsl');
+	$Style->Output (
+		'xsl/content/service/address/update.xsl',
+		Array (
+			'Account'		=> $actAccount->Pull ('Id')->getValue (),
+			'Service'		=> $srvService->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

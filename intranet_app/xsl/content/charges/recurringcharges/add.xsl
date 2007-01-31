@@ -213,7 +213,7 @@
 								<table border="0" cellpadding="2" cellspacing="0">
 									<tr>
 										<td>
-											<input type="checkbox" name="Continuable" class="input-string" value="1" id="RecurringChargeType:Continuable">
+											<input type="checkbox" name="Continuable" value="1" id="RecurringChargeType:Continuable">
 												<xsl:if test="/Response/RecurringChargeType/Continuable = 1">
 													<xsl:attribute name="checked">
 														<xsl:text>checked</xsl:text>
@@ -241,7 +241,7 @@
 								<table border="0" cellpadding="2" cellspacing="0">
 									<tr>
 										<td>
-											<input type="checkbox" name="PlanCharge" class="input-string" value="1" id="PlanCharge:TRUE">
+											<input type="checkbox" name="PlanCharge" value="1" id="PlanCharge:TRUE">
 												<xsl:if test="/Response/RecurringChargeType/PlanCharge = 1">
 													<xsl:attribute name="checked">
 														<xsl:text>checked</xsl:text>
@@ -269,7 +269,7 @@
 								<table border="0" cellpadding="2" cellspacing="0">
 									<tr>
 										<td>
-											<input type="checkbox" name="UniqueCharge" class="input-string" value="1" id="UniqueCharge:TRUE">
+											<input type="checkbox" name="UniqueCharge" value="1" id="UniqueCharge:TRUE">
 												<xsl:if test="/Response/RecurringChargeType/UniqueCharge = 1">
 													<xsl:attribute name="checked">
 														<xsl:text>checked</xsl:text>
@@ -297,7 +297,7 @@
 								<table border="0" cellpadding="2" cellspacing="0">
 									<tr>
 										<td>
-											<input type="checkbox" name="Fixed" class="input-string" value="1" id="RecurringChargeType:Fixed">
+											<input type="checkbox" name="Fixed" value="1" id="RecurringChargeType:Fixed">
 												<xsl:if test="/Response/RecurringChargeType/Fixed = 1">
 													<xsl:attribute name="checked">
 														<xsl:text>checked</xsl:text>

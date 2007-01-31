@@ -31,6 +31,12 @@
 	
 	// Display the happy message
 	
-	$Style->Output ("xsl/content/service/charges_recurringcharge_added.xsl");
+	$Style->Output (
+		"xsl/content/service/charges_recurringcharge_added.xsl",
+		Array (
+			'Account'		=> $srvService->Pull ('Account')->getValue (),
+			'Service'		=> $srvService->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

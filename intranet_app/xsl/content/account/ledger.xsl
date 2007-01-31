@@ -64,13 +64,14 @@
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Invoice #</th>
-				<th class="Currency" width="110">Overdue</th>
-				<th class="Currency" width="110">Credits</th>
-				<th class="Currency" width="110">Debits</th>
-				<th class="Currency" width="110">Total</th>
-				<!--TODO!bash! you need to have a tax column - otherwise it looks like the total and balance columns do not add up!!! -->
-				<th class="Currency" width="110">Balance</th>
-				<th class="Currency" width="110">Disputed</th>
+				<th class="Currency" width="100">Overdue</th>
+				<th class="Currency" width="100">Credits</th>
+				<th class="Currency" width="100">Debits</th>
+				<th class="Currency" width="100">Total</th>
+				<!--TODO!bash! [  DONE  ]		you need to have a tax column - otherwise it looks like the total and balance columns do not add up!!! -->
+				<th class="Currency" width="100">Tax</th>
+				<th class="Currency" width="100">Balance</th>
+				<th class="Currency" width="100">Disputed</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoices/Results/rangeSample/Invoice">
 				<tr>
@@ -119,6 +120,12 @@
        					</xsl:call-template>
        				</td>
 					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Tax" />
+							<xsl:with-param name="Decimal" select="number('2')" />
+       					</xsl:call-template>
+       				</td>
+					<td class="Currency">
 						<strong>
 							<span>
 								<xsl:attribute name="class">
@@ -141,7 +148,7 @@
 					</td>
 					<td class="Currency">
 						<span>
-						<!--TODO!Bash! Make this green when it has been resolved!!!!!!!!!!-->
+						<!-- TODO!bash! [  DONE  ]		Make this green when it has been resolved -->
 							<xsl:choose>
 								<xsl:when test="./Disputed != 0">
 									<xsl:attribute name="class">

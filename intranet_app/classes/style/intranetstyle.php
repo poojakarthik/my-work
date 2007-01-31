@@ -92,19 +92,37 @@
 		 * Saves the session information for the employee to the database and outputs the
 		 * data to the screen
 		 *
-		 * @param	String				$strXSLFilename		The XSLT Template being translated
+		 * @param	String		$strXSLFilename			The XSLT Template being translated
+		 * @param	Array		$arrQuickList			[Optional] An associative array of Name/Value Pairs of Quicklist Details
 		 * @return	Void
 		 *
 		 * @method
 		 */
 		
 		
-		public function Output ($strXSLFilename)
+		public function Output ($strXSLFilename, $arrQuickList=Array())
 		{
+			// Quick List
+			if (is_array ($arrQuickList))
+			{
+				$oblarrQuickList = $this->attachObject (new dataArray ('QuickList'));
+				
+				foreach ($arrQuickList as $strName => $mixValue)
+				{
+					// No Blanks
+					if ($mixValue)
+					{
+						$oblarrQuickList->Push (new dataString ($strName, $mixValue));
+					}
+				}
+			}
+			// If the Employee is Logged in
 			if ($this->_athAuthentication->isAuthenticated ())
 			{
+				// Save the Employee Session Information
 				$this->_athAuthentication->AuthenticatedEmployee ()->Save ();
 				
+				// If we are in DEBUG MODE and we have permission to view a Debug then Output the Debug
 				if (DEBUG_MODE == TRUE)
 				{
 					// Get user permission
@@ -117,6 +135,9 @@
 					}
 				}
 				
+				// Attach the Serialized GET and POST details
+				// This is done only if the Person is logged in so you don't
+				// see any of the Sensitive information (such as Passwords)
 				$oblarrDataSerialised = $this->attachObject (new dataArray ('DataSerialised'));
 				$oblarrDataSerialised->Push (new dataString ("GET",		serialize ($_GET)));
 				$oblarrDataSerialised->Push (new dataString ("POST",	serialize ($_POST)));

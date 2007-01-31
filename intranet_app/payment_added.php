@@ -21,6 +21,7 @@
 	try
 	{
 		$payPayment = $Style->attachObject (new Payment ($_GET ['Id']));
+		$actAccount = $payPayment->Account ();
 	}
 	catch (Exception $e)
 	{
@@ -29,7 +30,11 @@
 		exit;
 	}
 	
-	// Display the happy message
-	$Style->Output ("xsl/content/payment/added.xsl");
+	$Style->Output (
+		"xsl/content/payment/added.xsl",
+		Array (
+			'Account'	=> ($actAccount) ? $actAccount->Pull ('Id')->getValue () : null
+		)
+	);
 	
 ?>

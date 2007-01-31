@@ -130,7 +130,7 @@
 								<table border="0" cellpadding="2" cellspacing="0">
 									<tr>
 										<td>
-											<input type="checkbox" name="Fixed" class="input-string" value="1" id="ChargeType:Fixed">
+											<input type="checkbox" name="Fixed" value="1" id="ChargeType:Fixed">
 												<xsl:if test="/Response/ChargeType/Fixed = 1">
 													<xsl:attribute name="checked">
 														<xsl:text>checked</xsl:text>

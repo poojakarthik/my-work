@@ -20,10 +20,11 @@
 	try
 	{
 		$cntContact = $Style->attachObject (new Contact (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
+		$actAccount = $cntContact->PrimaryAccount ();
 	}
 	catch (Exception $e)
 	{
-		// If the account does not exist, an exception will be thrown
+		// If the Contact does not exist, an exception will be thrown
 		$Style->Output ('xsl/content/contact/notfound.xsl');
 		exit;
 	}
@@ -169,6 +170,12 @@
 	$docDocumentation->Explain ('Contact');
 	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/contact/edit.xsl');
+	$Style->Output (
+		'xsl/content/contact/edit.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue (),
+			'Contact'	=> $cntContact->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>
