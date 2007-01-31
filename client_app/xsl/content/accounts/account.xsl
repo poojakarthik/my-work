@@ -87,7 +87,7 @@
 			further information.
 		</p>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 			<tr class="first">
 				<th>Invoice Number</th>
 				<th>Issued On</th>

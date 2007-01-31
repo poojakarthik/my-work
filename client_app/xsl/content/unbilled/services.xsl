@@ -11,7 +11,7 @@
 			Click a service to view call details for the particular service.
 		</p>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 			<tr class="first">
 				<th>Service Number</th>
 				<th>Service Type</th>
@@ -42,7 +42,7 @@
 					<td>
 						<xsl:value-of select="./NamedServiceType/NamedServiceType[@selected='selected']" />
 						<xsl:if test="./Indial100 = '1'">
-							(100 Indial Number)
+							(100 Indial)
 						</xsl:if>
 					</td>
 					<td class="Currency"><xsl:value-of select="./TotalCharge" /></td>

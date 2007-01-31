@@ -106,6 +106,9 @@
 			$fltTotalCharge = 0;
 			
 			// Calculate the Unbilled Charges - based on Caps and etc.
+			
+			/*
+			// This has been commented out because an error has been occurring
 			if ($this->Pull ("ChargeCap")->getValue () > 0)
 			{
 				$fltTotalCharge = floatval (
@@ -122,6 +125,7 @@
 			{
 				$fltTotalCharge = floatval ($this->Pull ("CappedCharge")->getValue () + $this->Pull ("UncappedCharge")->getValue ());
 			}
+			*/
 			
 			// Store the Total Charge
 			$this->Push (new dataFloat ("TotalCharge", $fltTotalCharge));

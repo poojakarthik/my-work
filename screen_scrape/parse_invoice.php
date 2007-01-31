@@ -9,7 +9,7 @@
 	// the cache runner do what it needs to
 	
 	
-	$arrInvoice = Array ();
+	$arrInvoices = Array ();
 	
 	// Start Time
 	$fltStartTime = microtime (TRUE);
@@ -22,7 +22,6 @@
 	
 	
 	// Get the Table
-	
 	$dnlTable = $dxpDocument->Query ("//table");
 	
 	$domTable = new DOMDocument;
@@ -35,8 +34,11 @@
 	
 	$dxpDocument	= new DOMXPath ($domTable);	
 	
+	
+	// Get Each Possible Invoice Row
 	$dnlRows		= $dxpDocument->Query ("/table/tr[position() >= 6 and position() < last()]");
 	
+	// Loop Through all the Invoice Rows
 	foreach ($dnlRows as $dnoRow)
 	{
 		$domRow = new DOMDocument;
@@ -49,34 +51,33 @@
 		
 		$dxpRow		= new DOMXPath ($domRow);	
 		
+		// Pull the Invoice Information from the Rows
 		$strMonthYear	= trim ($dxpRow->Query ("/tr/td[position() = 1]")->Item (0)->nodeValue);
 		$strInvoiceId	= trim ($dxpRow->Query ("/tr/td[position() = 2]")->Item (0)->nodeValue);
 		$strInvAmount	= trim ($dxpRow->Query ("/tr/td[position() = 3]")->Item (0)->nodeValue);
 		$strInvApplied	= trim ($dxpRow->Query ("/tr/td[position() = 4]")->Item (0)->nodeValue);
 		$strInvOwing	= trim ($dxpRow->Query ("/tr/td[position() = 5]")->Item (0)->nodeValue);
+		$bolInvSent		= trim ($dxpRow->Query ("/tr/td[position() = 6]")->Item (0)->nodeValue) == "Yes";
 		
 		list ($strMonth, $strYear) = explode ("_", $strMonthYear);
 		
+		// To make sure we're dealing with an Invoice and not a pure PDF, 
+		// check that the Invoice Number exists
 		if ($strInvoiceId)
 		{
-			$arrInvoice [] = Array (
+			// Write up the Invoice add it to the Invoices array
+			$arrInvoices [] = Array (
 				"Month"			=> $strMonth,
 				"Year"			=> $strYear,
 				"InvoiceId"		=> $strInvoiceId,
 				"Amount"		=> $strInvAmount,
 				"Applied"		=> $strInvApplied,
-				"Owing"			=> $strInvOwing
+				"Owing"			=> $strInvOwing,
+				"Sent"			=> $bolInvSent
 			);
 		}
 	}
 	
-	print_r ($arrInvoice);
-	
-	echo "\n\n\n";
-	echo "Done in " . (microtime (TRUE) - $fltStartTime) . " seconds\n\n\n\n";
-	
-	// Get the List of Invoices Table
-	
-//	echo $domTable->saveXML ();
+	print_r ($arrInvoices);
 	
 ?>

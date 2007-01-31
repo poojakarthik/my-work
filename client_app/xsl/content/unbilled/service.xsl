@@ -20,7 +20,7 @@
 		
 		<xsl:if test="/Response/Service/UnbilledCalls/rangePage = 1">
 			<h3>Service Charges</h3>
-			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+			<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 				<tr class="first">
 					<th>Charged On</th>
 					<th>Ref.</th>
@@ -67,7 +67,7 @@
 		
 		<h3>Call Information</h3>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 			<tr class="first">
 				<th>#</th>
 				<th>Date</th>

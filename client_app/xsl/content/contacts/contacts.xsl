@@ -10,7 +10,7 @@
 			Click on a Contact for more information.
 		</p>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 			<tr class="first">
 				<th>User Name</th>
 				<th>First Name</th>
