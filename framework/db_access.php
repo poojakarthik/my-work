@@ -1940,7 +1940,7 @@ class MySQLFunction
 		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
 		 	DebugBacktrace();*/
 		 	
-			if (is_array($arrParams))
+			if (isset ($arrParams) && is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);

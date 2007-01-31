@@ -20,7 +20,7 @@
  * @language	PHP 
  * @package		framework 
  * @author		Jared 'flame' Herbohn 
- * @version		7.1 
+ * @version		7.2 
  * @copyright	2006 VOIPTEL Pty Ltd 
  * @license		NOT FOR EXTERNAL DISTRIBUTION 
  * 
@@ -4921,6 +4921,26 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Attempt"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(10) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "TimeTaken"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "time"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataTime"; 
 		 
 					 
 	// Save Table Define
