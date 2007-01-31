@@ -47,12 +47,8 @@
 	empty ($_POST ['DOB_day']) ||
 	empty ($_POST ['DOB_month']) ||
 	empty ($_POST ['DOB_year']) ||
-	empty ($_POST ['JobTitle']) ||
 	empty ($_POST ['Email']) ||
-	// empty ($_POST ['Fax']) ||	// Fax can be empty
-	!checkdate ($_POST ['DOB_month'], $_POST ['DOB_day'], $_POST ['DOB_year']) ||
-	$_POST ['DOB_year'] < (date ("Y") - 100) ||
-	$_POST ['DOB_year'] > (date ("Y") - 18)
+	!checkdate ($_POST ['DOB_month'], $_POST ['DOB_day'], $_POST ['DOB_year'])
 	) {
 		header ("Location: contact.php");
 		exit;
