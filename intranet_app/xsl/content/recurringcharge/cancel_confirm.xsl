@@ -8,10 +8,11 @@
 	<!--TODO!Bash! Urgent - Continuing does not work!!!!-->
 		<h1>Cancel Recurring Charge</h1>
 		
+		<h2 class="Charge"> Cancellation Details</h2>
+		
 		<form method="post" action="recurring_charge_cancel.php">
 			<input type="hidden" name="Id">
-				<xsl:attribute name="value">
-					<xsl:text></xsl:text>
+				<xsl:attribute name="value">				<xsl:text></xsl:text>
 					<xsl:value-of select="/Response/RecurringCharge/Id" />
 				</xsl:attribute>
 			</input>

@@ -101,6 +101,7 @@
 						<h2 class="Service">Mobile Details</h2>
 						<xsl:if test="not(/Response/ServiceAddress)">
 						<div class="MsgNoticeNarrow">
+						<!--TODO!bash! this is showing up even when there are details!!!-->
 								<strong><span class="Attention">Notice</span> :</strong>
 								No Mobile Details found.
 							</div>

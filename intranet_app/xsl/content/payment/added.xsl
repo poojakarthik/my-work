@@ -5,7 +5,7 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 	
-	<!--TODO!bash! this page needs a link (top right ) to view account!!!-->
+	<!--TODO!bash! URGENT this page needs a menu!-->
 	<!--what is the difference between uploaded and added?-->
 		<h1>Payment Added</h1>
 		

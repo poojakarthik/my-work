@@ -188,7 +188,7 @@
 										</input>
 									</td>
 								</tr>
-								<!--TODO!bash! If no postcode is entered and the service address details are updated, postcode fields show up as 000!!! Make them show as blank.-->
+								<!--TODO!bash! If no postcode is entered and the service address details are updated, postcode fields show up as 0000!!! Make them show as blank!!!-->
 								<tr>
 									<td class="Required"></td>
 									<td class="Required"></td>

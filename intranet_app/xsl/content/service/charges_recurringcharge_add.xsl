@@ -5,9 +5,10 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 	
-		<!--TODO!bash! URGENT - This has fatal error on continue-->
 		<h1>Add Recurring Service Charge</h1>
+		<!--TODO!bash! URgent! This page needs a menu-->
 		
+		<h2 class = "Charge"> Recurring Charge Details</h2>
 		<form method="post" action="service_recurringcharge_add.php">
 			<input type="hidden" name="Service">
 				<xsl:attribute name="value">
@@ -87,7 +88,7 @@
 												<xsl:text></xsl:text>
 								       			<xsl:call-template name="Currency">
 								       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
-													<xsl:with-param name="Decimal" select="number('4')" />
+													<xsl:with-param name="Decimal" select="number('2')" />
 						       					</xsl:call-template>
 											</xsl:attribute>
 										</input>	
@@ -95,7 +96,7 @@
 									<xsl:otherwise>
 						       			<xsl:call-template name="Currency">
 						       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
-											<xsl:with-param name="Decimal" select="number('4')" />
+											<xsl:with-param name="Decimal" select="number('2')" />
 				       					</xsl:call-template>
 									</xsl:otherwise>
 								</xsl:choose>
@@ -125,7 +126,7 @@
 							<td>
 				       			<xsl:call-template name="Currency">
 				       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
-									<xsl:with-param name="Decimal" select="number('4')" />
+									<xsl:with-param name="Decimal" select="number('2')" />
 		       					</xsl:call-template>
 							</td>
 						</tr>
@@ -139,7 +140,7 @@
 							<td>
 				       			<xsl:call-template name="Currency">
 				       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/CancellationFee" />
-									<xsl:with-param name="Decimal" select="number('4')" />
+									<xsl:with-param name="Decimal" select="number('2')" />
 		       					</xsl:call-template>
 							</td>
 						</tr>

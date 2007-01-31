@@ -5,6 +5,7 @@
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
 		<h1>View Recurring Charges</h1>
+		<!--TODO!bash! URGENT! This page needs a menu!-->
 		
 		<h2 class="Account">Account Details</h2>
 		<div class="Wide-Form">

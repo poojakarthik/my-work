@@ -65,7 +65,7 @@
 																<h1>Bug Report</h1>
 																Please describe the problem that occurred :
 																
-																<textarea name="Comment" style="width: 725px; height: 150px;" class="input-summary-note" />
+																<textarea name="Comment" style="width: 725px; height: 225px;" class="input-summary-note" />
 																
 																<div class="Right">
 																	<input type="submit" value="Report Bug &#0187;" class="input-submit" />
