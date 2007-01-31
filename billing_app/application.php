@@ -799,6 +799,26 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		// update Service CappedCharge and UncappedCharge
+		$this->_rptBillingReport->AddMessage("Updating Service Capped and Uncapped Totals...", FALSE);
+		$arrUpdateData = Array();
+		$arrUpdateData['CappedCharge'] = new MySQLFunction("Service.CappedCharge - ServiceTotal.CappedCharge");
+		$arrUpdateData['CappedCharge'] = new MySQLFunction("Service.UncappedCharge - ServiceTotal.UncappedCharge");
+		$updServiceCharges = new StatementUpdate(	"Service JOIN ServiceTotal ON (Service.Id = ServiceTotal.Service)",
+													"ServiceTotal.InvoiceRun = '$strInvoiceRun'");
+		if($updServiceCharges->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			Debug($updServiceCharges->Error());
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
 		// update Invoice Status
 		// If the invoice balance is zero mark it as settled
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);

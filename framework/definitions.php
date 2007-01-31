@@ -152,9 +152,11 @@ define("FATAL_TEST_EXCEPTION"		, 80085);
 
 // CDR Handling (Range is 100-199)
 $GLOBALS['*arrConstant']['CDR'][100]['Constant'] = 'CDR_READY';
-$GLOBALS['*arrConstant']['CDR'][100]['Description'] = 'CDR is ready to normalise';
+$GLOBALS['*arrConstant']['CDR'][100]['Description'] = 'Imported';
 $GLOBALS['*arrConstant']['CDR'][101]['Constant'] = 'CDR_NORMALISED';
+$GLOBALS['*arrConstant']['CDR'][101]['Description'] = 'Normalised';
 $GLOBALS['*arrConstant']['CDR'][102]['Constant'] = 'CDR_CANT_NORMALISE';
+$GLOBALS['*arrConstant']['CDR'][102]['Description'] = 'Unable to Normalise';
 $GLOBALS['*arrConstant']['CDR'][103]['Constant'] = 'CDR_CANT_NORMALISE_RAW';
 $GLOBALS['*arrConstant']['CDR'][104]['Constant'] = 'CDR_CANT_NORMALISE_BAD_SEQ_NO';
 $GLOBALS['*arrConstant']['CDR'][105]['Constant'] = 'CDR_CANT_NORMALISE_HEADER';
