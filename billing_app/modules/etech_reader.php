@@ -157,6 +157,8 @@
 		// to-do : decode the line into an output array
 		// if a line is of a type that we don't care about you need to skip forward until we find a line we do want
 		// sometimes you may need to read in more than 1 line ??
+		// $arrOutput['_Table'] =  'CDR' || 'Invoice' || 'ServiceTypTotal' || 'ServiceTotal'
+		// $arrOutput[FieldName]...
 		
 		// set status
 		$arrOutput['_Status'] 	= $this->_arrStatus;
