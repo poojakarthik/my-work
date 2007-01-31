@@ -815,7 +815,7 @@
 			}
 			elseif($intSummaryCount == 0)
 			{
-				Debug('$intSummaryCount is 0! for service '.$arrService['FNN']);
+				//Debug('$intSummaryCount is 0! for service '.$arrService['FNN']);
 			}
 			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
 
