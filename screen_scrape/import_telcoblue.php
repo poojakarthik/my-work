@@ -817,11 +817,7 @@ Blue Shared 500 						25
 	}
 
 	// get delinquents
-	//TODO
-	$arrDel = $objDecoder->FetchCustomerById(1000154916);
-	
-	// get array of services
-	// $arrDelinquents[] = FNN  // $arrDel['Service'][FNN]
+	$arrDelinquents = $objDecoder->FetchCustomerById(1000154916);
 
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
@@ -840,8 +836,10 @@ Blue Shared 500 						25
 		$intCustomerCount++;
 		
 		// remove delinquents
-		//for FNN in $arrDelinquents
-		// unset($arrCustomer['Service'][FNN])
+		foreach ($arrDelinquents['Service'] as $arrDelinquent)
+		{
+			unset($arrCustomer['Service'][$arrDelinquent['FNN']]);
+		}
 		
 		// check service count
 		$intCountServices = count($arrCustomer['Service']);
