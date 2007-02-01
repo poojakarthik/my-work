@@ -677,9 +677,284 @@
 		$arrPrintDefine['FileFooter']			['Insert6Id']		['Type']	= BILL_TYPE_INTEGER;
 
 		
-		
-		
 		$arrConfig['BillPrintDefine']									= $arrPrintDefine;
+		//----------------------------------------------------------------------------//
+
+
+
+
+
+		//----------------------------------------------------------------------------//
+		// DEFINE THE ETECH FILE FORMAT
+		//----------------------------------------------------------------------------//
 		
+		// Define RecordTypes
+		$arrPrintDefineEtech['FileHeader']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['FileHeader']		['RecordType']		['Value']	= 1;
+		$arrPrintDefineEtech['SPDetails']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SPDetails']		['RecordType']		['Value']	= 2;
+		$arrPrintDefineEtech['GlobalMessage']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['GlobalMessage']	['RecordType']		['Value']	= 3;
+		$arrPrintDefineEtech['Brands']			['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['Brands']			['RecordType']		['Value']	= 4;
+		$arrPrintDefineEtech['SequenceNo']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SequenceNo']		['RecordType']		['Value']	= 5;
+		$arrPrintDefineEtech['InvoiceNo']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['InvoiceNo']		['RecordType']		['Value']	= 6;
+		$arrPrintDefineEtech['BrandId']			['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['BrandId']			['RecordType']		['Value']	= 7;
+		$arrPrintDefineEtech['InvoiceCharge']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['InvoiceCharge']	['RecordType']		['Value']	= 10;
+		$arrPrintDefineEtech['Customer']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['Customer']		['RecordType']		['Value']	= 11;
+		$arrPrintDefineEtech['ChargeSummary']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['ChargeSummary']	['RecordType']		['Value']	= 15;
+		$arrPrintDefineEtech['DetailsHeader']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['DetailsHeader']	['RecordType']		['Value']	= 19;
+		$arrPrintDefineEtech['CategoryHeader']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CategoryHeader']	['RecordType']		['Value']	= 20;
+		$arrPrintDefineEtech['CategoryFooter']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CategoryFooter']	['RecordType']		['Value']	= 21;
+		$arrPrintDefineEtech['DetailsFooter']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['DetailsFooter']	['RecordType']		['Value']	= 29;
+		$arrPrintDefineEtech['SvcSummHeader']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SvcSummHeader']	['RecordType']		['Value']	= 39;
+		$arrPrintDefineEtech['ServiceHeader']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['ServiceHeader']	['RecordType']		['Value']	= 40;
+		$arrPrintDefineEtech['ServiceDetail']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['ServiceDetail']	['RecordType']		['Value']	= 41;
+		$arrPrintDefineEtech['ServiceTotals']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['ServiceTotals']	['RecordType']		['Value']	= 45;
+		$arrPrintDefineEtech['ServiceFooter']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['ServiceFooter']	['RecordType']		['Value']	= 48;
+		$arrPrintDefineEtech['SvcSummFooter']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SvcSummFooter']	['RecordType']		['Value']	= 49;
+		$arrPrintDefineEtech['SpecialMsg1']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SpecialMsg1']		['RecordType']		['Value']	= 50;
+		$arrPrintDefineEtech['SpecialMsg2']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SpecialMsg2']		['RecordType']		['Value']	= 51;
+		$arrPrintDefineEtech['SpecialMsg3']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SpecialMsg3']		['RecordType']		['Value']	= 52;
+		$arrPrintDefineEtech['SpecialMsg4']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SpecialMsg4']		['RecordType']		['Value']	= 53;
+		$arrPrintDefineEtech['SpecialMsg5']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['SpecialMsg5']		['RecordType']		['Value']	= 54;
+		$arrPrintDefineEtech['CreditHeader']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CreditHeader']	['RecordType']		['Value']	= 60;
+		$arrPrintDefineEtech['CreditBalance']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CreditBalance']	['RecordType']		['Value']	= 61;
+		$arrPrintDefineEtech['CreditAdded']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CreditAdded']		['RecordType']		['Value']	= 62;
+		$arrPrintDefineEtech['CreditUsed']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CreditUsed']		['RecordType']		['Value']	= 63;
+		$arrPrintDefineEtech['CreditLeft']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CreditLeft']		['RecordType']		['Value']	= 64;
+		$arrPrintDefineEtech['CreditFooter']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CreditFooter']	['RecordType']		['Value']	= 69;
+		$arrPrintDefineEtech['GraphInfo']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['GraphInfo']		['RecordType']		['Value']	= 70;
+		$arrPrintDefineEtech['GraphData']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['GraphData']		['RecordType']		['Value']	= 71;
+		$arrPrintDefineEtech['ExtraInfo']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['ExtraInfo']		['RecordType']		['Value']	= 80;
+		$arrPrintDefineEtech['InvoiceFooter']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['InvoiceFooter']	['RecordType']		['Value']	= 95;
+		$arrPrintDefineEtech['FileFooter']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['FileFooter']		['RecordType']		['Value']	= 99;
+		$arrPrintDefineEtech['ItemisedCall']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['ItemisedS&E']		['RecordType']		['Type']	= ETECH_ROW;
+		
+		// Call Details
+		$arrPrintDefineEtech['CallLLNational']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallLLNational']	['RecordType']		['Value']	= 102;
+		$arrPrintDefineEtech['CallLLTo1300']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallLLTo1300']	['RecordType']		['Value']	= 103;
+		$arrPrintDefineEtech['CallLLToMob']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallLLToMob']		['RecordType']		['Value']	= 104;
+		$arrPrintDefineEtech['CallLLToIDD']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallLLToIDD']		['RecordType']		['Value']	= 105;
+		$arrPrintDefineEtech['CallMobToMob']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobToMob']	['RecordType']		['Value']	= 106;
+		$arrPrintDefineEtech['CallMobToNat']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobToNat']	['RecordType']		['Value']	= 107;
+		$arrPrintDefineEtech['CallMobOther']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobOther']	['RecordType']		['Value']	= 110;
+		$arrPrintDefineEtech['CallMobRoam']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobRoam']		['RecordType']		['Value']	= 111;
+		$arrPrintDefineEtech['CallMobToIDD']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobToIDD']	['RecordType']		['Value']	= 112;
+		$arrPrintDefineEtech['CallMobTo18']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMobTo18']		['RecordType']		['Value']	= 113;
+		$arrPrintDefineEtech['Call13IDD']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['Call13IDD']		['RecordType']		['Value']	= 114;
+		$arrPrintDefineEtech['CallLLOther']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallLLOther']		['RecordType']		['Value']	= 116;
+		$arrPrintDefineEtech['Call18Inbound']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['Call18Inbound']	['RecordType']		['Value']	= 117;
+		$arrPrintDefineEtech['Call13Inbound']	['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['Call13Inbound']	['RecordType']		['Value']	= 118;
+		$arrPrintDefineEtech['CallSMS']			['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallSMS']			['RecordType']		['Value']	= 119;
+		$arrPrintDefineEtech['CallMMS']			['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallMMS']			['RecordType']		['Value']	= 120;
+		$arrPrintDefineEtech['CallUnknown']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallUnknown']		['RecordType']		['Value']	= 135;
+		$arrPrintDefineEtech['CallS&E']			['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallS&E']			['RecordType']		['Value']	= 208;				// Record type is 108 in footer
+		$arrPrintDefineEtech['CallOC&C']		['RecordType']		['Type']	= ETECH_ROW;
+		$arrPrintDefineEtech['CallOC&C']		['RecordType']		['Value']	= 237;				// Record type is 137 in footer
+		
+		// Row Type					Field Name			Property	Value
+		//------------------------------------------------------------------------------
+		
+		// File Header
+		$arrPrintDefineEtech['FileHeader']		['Date']			['Type']	= ETECH_DATE_YYYYMMDD;
+		$arrPrintDefineEtech['FileHeader']		['Filename']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['FileHeader']		['SPName']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['FileHeader']		['BillingPeriod']	['Type']	= ETECH_DATE_MONTH_YY;
+		
+		// SP Details
+		$arrPrintDefineEtech['SPDetails']		['BusinessName']	['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['SPDetails']		['Address1']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['SPDetails']		['Address2']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['SPDetails']		['Suburb']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['SPDetails']		['Postcode']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['SPDetails']		['State']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['SPDetails']		['Phone']			['Type']	= ETECH_FNN;
+		$arrPrintDefineEtech['SPDetails']		['Fax']				['Type']	= ETECH_FNN;
+		$arrPrintDefineEtech['SPDetails']		['URL']				['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['SPDetails']		['BPayCode']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['SPDetails']		['InvoiceDate']		['Type']	= ETECH_DATE_YYYY_MM_DD;
+		$arrPrintDefineEtech['SPDetails']		['DueByDate']		['Type']	= ETECH_DATE_YYYY_MM_DD;
+		
+		// Global Message (unused)
+		$arrPrintDefineEtech['GlobalMessage']	['Message']			['Type']	= ETECH_STRING;
+		
+		// Brands (Telco Blue, Voicetalk, etc)
+		$arrPrintDefineEtech['Brands']			['Brand1']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Brands']			['Brand2']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Brands']			['Brand3']			['Type']	= ETECH_STRING;
+		
+		// Invoice Sequence Number
+		$arrPrintDefineEtech['SequenceNo']		['SequenceNo']		['Type']	= ETECH_INTEGER;
+		
+		// Invoice Number
+		$arrPrintDefineEtech['InvoiceNo']		['InvoiceNo']		['Type']	= ETECH_INTEGER;
+		
+		// Invoice Brand Id
+		$arrPrintDefineEtech['BrandId']			['BrandId']			['Type']	= ETECH_INTEGER;
+		
+		// Invoice Charges
+		$arrPrintDefineEtech['InvoiceCharge']	['PreviousBalance']	['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['InvoiceCharge']	['Received']		['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['InvoiceCharge']	['Adjustments']		['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['InvoiceCharge']	['Overdue']			['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['InvoiceCharge']	['NewCharges']		['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['InvoiceCharge']	['AmountOwing']		['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Customer Details
+		$arrPrintDefineEtech['Customer']		['AccountNo']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['Customer']		['CheckDigit']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['Customer']		['Address1']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Address2']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Suburb']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Postcode']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['Customer']		['State']			['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['BusinessName']	['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Firstname']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['Lastname']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['Customer']		['InvoiceType']		['Type']	= ETECH_STRING;
+		
+		// Charge Summaries
+		$arrPrintDefineEtech['ChargeSummary']	['Category']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['ChargeSummary']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Category Header
+		$arrPrintDefineEtech['CategoryHeader']	['Category']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['CategoryHeader']	['FNN']				['Type']	= ETECH_FNN;
+		
+		// Itemised Call Data
+		$arrPrintDefineEtech['ItemisedCall']	['RecordCount']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['ItemisedCall']	['Datetime']		['Type']	= ETECH_DATETIME;
+		$arrPrintDefineEtech['ItemisedCall']	['CalledParty']		['Type']	= ETECH_FNN;
+		$arrPrintDefineEtech['ItemisedCall']	['Description']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['ItemisedCall']	['Duration']		['Type']	= ETECH_DURATION;
+		$arrPrintDefineEtech['ItemisedCall']	['Charge']			['Type']	= ETECH_LONG_CURRENCY;
+		
+		// Itemised S&E Data
+		$arrPrintDefineEtech['ItemisedS&E']		['RecordCount']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['ItemisedS&E']		['Description']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['ItemisedS&E']		['Charge']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Charge Footer
+		$arrPrintDefineEtech['CategoryFooter']	['CategoryId']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['CategoryFooter']	['RecordTotal']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['CategoryFooter']	['FNN']				['Type']	= ETECH_FNN;
+		$arrPrintDefineEtech['CategoryFooter']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Service Header
+		$arrPrintDefineEtech['ServiceHeader']	['FNN']				['Type']	= ETECH_FNN;
+		//$arrPrintDefineEtech['ServiceHeader']	['CostCentre']		['Type']	= ETECH_STRING;
+		
+		// Service Detail
+		$arrPrintDefineEtech['ServiceDetail']	['RecordCount']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['ServiceDetail']	['ChargeType']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['ServiceDetail']	['Charge']			['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['ServiceDetail']	['CallCount']		['Type']	= ETECH_INTEGER;
+		
+		// Service Totals
+		$arrPrintDefineEtech['ServiceTotals']	['RecordTotal']		['Type']	= ETECH_INTEGER;
+		$arrPrintDefineEtech['ServiceTotals']	['FNN']				['Type']	= ETECH_FNN;
+		$arrPrintDefineEtech['ServiceTotals']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Service Footer
+		//$arrPrintDefineEtech['ServiceFooter']	['CostCentre']		['Type']	= ETECH_STRING;
+		//$arrPrintDefineEtech['ServiceFooter']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Special Message 1
+		$arrPrintDefineEtech['SpecialMsg1']		['Message']			['Type']	= ETECH_STRING;
+		
+		// Special Message 2
+		$arrPrintDefineEtech['SpecialMsg2']		['Message']			['Type']	= ETECH_STRING;
+		
+		// Special Message 3
+		$arrPrintDefineEtech['SpecialMsg3']		['Message']			['Type']	= ETECH_STRING;
+		
+		// Special Message 4
+		$arrPrintDefineEtech['SpecialMsg4']		['Message']			['Type']	= ETECH_STRING;
+		
+		// Special Message 5
+		$arrPrintDefineEtech['SpecialMsg5']		['Message']			['Type']	= ETECH_STRING;
+		
+		// Credit Balance
+		$arrPrintDefineEtech['CreditBalance']	['Message']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Credit Added
+		$arrPrintDefineEtech['CreditAdded']		['Message']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Credit Left
+		$arrPrintDefineEtech['CreditLeft']		['Message']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Credit Remaining
+		$arrPrintDefineEtech['CreditLeft']		['Message']			['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// Global Graph Info
+		$arrPrintDefineEtech['GraphInfo']		['DateRange']		['Type']	= ETECH_DATE_RANGE;
+		
+		// Graph Data
+		$arrPrintDefineEtech['GraphData']		['CurrentMonth']	['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['GraphData']		['LastMonth']		['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['GraphData']		['2MonthsAgo']		['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['GraphData']		['3MonthsAgo']		['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['GraphData']		['4MonthsAgo']		['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['GraphData']		['5MonthsAgo']		['Type']	= ETECH_SHORT_CURRENCY;
+		
+		// File Footer
+		$arrPrintDefineEtech['FileFooter']		['InvoiceCount']	['Type']	= ETECH_INTEGER;
+		
+		$GLOBALS['FileFormatEtech'] = $arrPrintDefineEtech;
+		
+		//----------------------------------------------------------------------------//
+
 
 ?>

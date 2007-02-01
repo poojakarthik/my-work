@@ -1321,6 +1321,7 @@
 						return Array( 'RowType' => 105	, 'LongDesc' => "International Calls"			, 'ShortDesc' => "International" );
 					case "SMS":
 					case "Other":
+					default:
 						return Array( 'RowType' => 116	, 'LongDesc' => "Other Call Types"				, 'ShortDesc' => "Other" );
 				}
 				break;
@@ -1334,8 +1335,6 @@
 						return Array( 'RowType' => 106	, 'LongDesc' => "Mobile to Mobile"				, 'ShortDesc' => "Mobile" );
 					case "Mobile to National":
 						return Array( 'RowType' => 107	, 'LongDesc' => "Mobile to National"			, 'ShortDesc' => "Mobile" );
-					case "Mobile Other":
-						return Array( 'RowType' => 110	, 'LongDesc' => "Mobile - Other Charges"		, 'ShortDesc' => "Mobile" );
 					case "Mobile International Roaming":
 						return Array( 'RowType' => 111	, 'LongDesc' => "Mobile International Roaming"	, 'ShortDesc' => "Mobile" );
 					case "Mobile to 1800 Numbers":
@@ -1344,6 +1343,9 @@
 						return Array( 'RowType' => 119	, 'LongDesc' => "Mobile - SMS"					, 'ShortDesc' => "Mobile" );
 					case "Mobile MMS":
 						return Array( 'RowType' => 120	, 'LongDesc' => "Mobile - MMS"					, 'ShortDesc' => "Mobile" );
+					case "Mobile Other":
+					default:
+						return Array( 'RowType' => 110	, 'LongDesc' => "Mobile - Other Charges"		, 'ShortDesc' => "Mobile" );
 				}
 				break;
 			

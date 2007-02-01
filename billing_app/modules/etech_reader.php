@@ -149,34 +149,30 @@
  	function FetchNext()
  	{
 		$arrOutput = Array();
+		$this->arrData = Array();
 		
-		// read line
-		$strLine = $this->ReadRawLine();
-		if ($strLine === FALSE)
+		// Decode the next batch of data
+		while ($this->arrData == NULL)
+		{
+			$this->DecodeData();
+		}
+		if (($arrOutput = $this->arrData) === FALSE)
 		{
 			return FALSE;
 		}
-		elseif ($strLine == 'error')
+		elseif ($arrOutput == '!ERROR!')
 		{
-			$arrOutput['_LineType'] = 'error';
+			$arrOutput = Array();
+			$arrOutput['_LineNo'] 	= $this->intLine;
+			$arrOutput['_LineType'] = 'ERROR';
 			return $arrOutput;
 		}
-		
-
-		// decode line
-		// to-do : decode the line into an output array
-		// if a line is of a type that we don't care about you need to skip forward until we find a line we do want
-		// sometimes you may need to read in more than 1 line ??
-		// $arrOutput['_Table'] =  		// 'CDR' || 'Invoice' || 'ServiceTypTotal' || 'ServiceTotal'
-		// $arrOutput[FieldName]...
-		// $arrOutput['FNN']			// alwayn return this as we have no Service field
-		// $arrOutput['Account']
 		
 		// set status
 		$arrOutput['_Status'] 	= $this->_arrStatus;
 		
 		// set line type for output
-		$arrOutput['_LineType'] 	= 'data';
+		$arrOutput['_LineType'] 	= 'DATA';
 		
 		// set line no for output
 		$arrOutput['_LineNo'] 		= $this->intLine;
@@ -222,6 +218,451 @@
 		// return the raw line
 		return $strLine;				
 	}
+	
+	//------------------------------------------------------------------------//
+	// DecodeData
+	//------------------------------------------------------------------------//
+	/**
+	 * DecodeData()
+	 *
+	 * Decodes data from the etech file format
+	 *
+	 * Decodes data from the etech file format
+	 *
+	 * @return	array					associative array of data
+	 *
+	 * @method
+	 */
+ 	function DecodeData()
+ 	{
+		// Fetch the next line and split it
+		$strLine = $this->ReadRawLine();
+		if ($strLine === FALSE)
+		{
+			return FALSE;
+		}
+		$arrLine = $this->SplitLine($strLine);
+		
+		// If its an itemised data row, assign general data here
+		if ($arrLine['RecordType'] > 100 && $arrLine['RecordType'] < 240)
+		{
+			$arrDuration			= explode(":", $arrLine['Duration']);
+			$intMinutesInSeconds	=  (int)$arrDuration[0] * 60;
+			
+			$this->arrData['_Table']			= "CDR";
+			$this->arrData['FNN']				= $this->_arrStatus['FNN'];
+			$this->arrData['Account']			= $this->_arrStatus['Account'];
+			$this->arrData['AccountGroup']		= $this->_arrStatus['Account'];
+			$this->arrData['StartDatetime']		= $arrLine['Datetime'];
+			$this->arrData['Destination']		= $arrLine['CalledParty'];
+			$this->arrData['Units']				= $intMinutesInSeconds + (int)$arrDuration[1];
+			$this->arrData['Charge']			= (float)$arrLine['Charge'];
+		}
+		
+		// Determine the Row Type
+		switch ($arrLine['RecordType'])
+		{
+			//------------------------- INVOICE  HEADERS -------------------------//
+			case 6:
+				// INVOICE NUMBER
+				// Set data
+				$this->arrData['_Table']		= "Invoice";
+				$this->arrData['Id']			= (int)$arrLine['InvoiceNo'];
+				$this->_arrStatus['Invoice']	= $this->arrData['Id'];
+				
+				// Call DecodeData() again
+				DecodeData();
+				break;
+			
+			//---------------------------- FRONT PAGE ----------------------------//
+			case 10:
+				// INVOICE CHARGES
+				// Set data
+				$this->arrData['Tax']				= (float)$arrLine['NewCharges'] / 11.0;
+				$this->arrData['Total']				= (float)$arrLine['NewCharges'] - $this->arrData['Tax'];
+				$this->arrData['Balance']			= (float)$arrLine['AmountOwing'];
+				$this->arrData['AccountBalance']	= (float)$arrLine['Overdue'];
+				// FIXME: These Credit/Debit values could be incorrect - its just a guess
+				$this->arrData['Credits']			= (float)$arrLine['Adjustments'];
+				$this->arrData['Debits']			= $this->arrData['Total'] - (float)$arrLine['Adjustments'];
+				
+				// Call DecodeData() again
+				DecodeData();
+				break;
+			case 11:
+				// CUSTOMER DETAIL
+				// Set data
+				$this->_arrStatus['Account']	= (int)$arrLine['AccountNo'];
+				$this->arrData['Account']		= $this->_arrStatus['Account'];
+				$this->arrData['AccountGroup']	= $this->_arrStatus['Account'];
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			
+			//-------------------------- ITEMISED CALLS --------------------------//
+			case 20:
+				// ITEMISED CALLS HEADER
+				$this->_arrStatus['FNN']		= $arrLine['FNN'];
+				
+				// Call DecodeData() again
+				DecodeData();
+				break;
+			case 102:
+				// LANDLINE -> NATIONAL
+				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
+				$this->arrData['RecordType']	= 19;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 103:
+				// LANDLINE -> 13/1300
+				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
+				$this->arrData['RecordType']	= 24;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 104:
+				// LANDLINE -> MOBILE
+				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
+				$this->arrData['RecordType']	= 20;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 105:
+				// LANDLINE -> IDD
+				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
+				$this->arrData['RecordType']	= 28;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 106:
+				// MOBILE -> MOBILE
+				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
+				$this->arrData['RecordType']	= 2;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 107:
+				// MOBILE -> NATIONAL
+				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
+				$this->arrData['RecordType']	= 6;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 110:
+				// MOBILE OTHER
+				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
+				$this->arrData['RecordType']	= 16;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 111:
+				// MOBILE ROAMING
+				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
+				$this->arrData['RecordType']	= 11;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 112:
+				// MOBILE -> IDD
+				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
+				$this->arrData['RecordType']	= 27;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 113:
+				// MOBILE -> 1800
+				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
+				$this->arrData['RecordType']	= 7;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 114:
+				// 13/1300 <- IDD
+				$this->arrData['ServiceType']	= SERVICE_TYPE_INBOUND;
+				$this->arrData['RecordType']	= 29;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 116:
+				// LANDLINE OTHER
+				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
+				$this->arrData['RecordType']	= 26;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 117:
+				// 1800 <- ALL
+				$this->arrData['ServiceType']	= SERVICE_TYPE_INBOUND;
+				$this->arrData['RecordType']	= 35;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 118:
+				// 13/1300 <- ALL
+				$this->arrData['ServiceType']	= SERVICE_TYPE_INBOUND;
+				$this->arrData['RecordType']	= 35;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 119:
+				// MOBILE SMS
+				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
+				$this->arrData['RecordType']	= 10;
+				$this->arrData['EndDatetime']	= $this->arrData['StartDatetime'];
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 120:
+				// MOBILE MMS
+				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
+				$this->arrData['RecordType']	= 15;
+				$this->arrData['EndDatetime']	= $this->arrData['StartDatetime'];
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 135:
+				// UNKNOWN
+				$this->arrData['ServiceType']	= ServiceType($this->arrData['FNN']);
+				$this->arrData['RecordType']	= 0;
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 208:
+				// OC&C
+				$this->arrData['_Table']		= "Other";
+				$this->arrData['FNN']			= trim(substr($arrLine['Description'], 0, 11));	// 11 to account for ADSL FNNs with i's
+				$this->arrData['Description']	= trim(substr($arrLine['Description'], 13));
+				$this->arrData['ServiceType']	= ServiceType($this->arrData['FNN']);
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			case 237:
+				// S&E
+				$arrDateRange = Array();				
+				preg_match("/\d{1,2} [A-Za-z]{3} \d{4} to \d{1,2} [A-Za-z]{3} \d{4}$/", trim($arrLine['Description']), $arrDateRange);
+				$arrDates = explode($arrDateRange[1], " to ");
+				
+				$this->arrData['FNN']			= trim(substr($arrLine['Description'], 0, 11));	// 11 to account for ADSL FNNs with i's
+				$this->arrData['ServiceType']	= ServiceType($this->arrData['FNN']);
+				$this->arrData['StartDatetime']	= $arrDates[0] . " 00:00:00";
+				$this->arrData['EndDatetime']	= $arrDates[1] . " 00:00:00";
+				$this->arrData['Description']	= trim(substr($arrLine['Description'], 13, 0-strlen($arrDateRange[1])));
+				
+				// we have all of the data we need, so return back to FetchNext()
+				return;
+			
+			//------------------------ SERVICE  SUMMARIES ------------------------//
+			case 40:
+				// SERVICE SUMMARY HEADER
+				$this->arrData['Account']		= $this->_arrStatus['Account'];
+				$this->arrData['AccountGroup']	= $this->_arrStatus['Account'];
+				$this->arrData['FNN']			= $arrLine['FNN'];
+				$this->intCurrentFNN			= $this->arrData['FNN'];
+				
+				// Call DecodeData() again
+				DecodeData();
+				break;
+			case 41:
+				// SUMMARY DETAILS
+				// Set data
+				$this->arrData['_Table']		= "ServiceTypeTotal";
+				$this->arrData['RecordType']	= $this->DecodeRecordType($arrLine['ChargeType']);
+				$this->arrData['Records']		= (int)$arrLine['CallCount'];
+				$this->arrData['Charge']		= (float)$arrLine['Charge'];
+				return;
+			case 45:
+				// SUMMARY TOTALS
+				// Set data
+				$this->arrData['_Table']		= "ServiceTotal";
+				$this->arrData['FNN']			= $arrLine['FNN'];
+				$this->arrData['Account']		= $this->_arrStatus['Account'];
+				$this->arrData['AccountGroup']	= $this->_arrStatus['Account'];
+				$this->arrData['TotalCharge']	= (float)$arrLine['Total'];
+				return;
+			
+			//-------------------------- CREDIT DETAILS --------------------------//
+			/* TODO: Will we use these?
+			case 60:
+				// Start Credit Details
+				
+				break;
+			case 61:
+				// Credit Balance Total
+				
+				break;
+			case 62:
+				// Credit Amount Total
+				
+				break;
+			case 63:
+				// Credit Used
+				
+				break;
+			case 64:
+				// Credit Remaining
+				
+				break;
+			case 69:
+				// End Credit Detail
+				
+				break;
+			*/
+			
+			default:
+				// Recursively call DecodeData()
+				DecodeData();
+				break;
+		}
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// SplitLine
+	//------------------------------------------------------------------------//
+	/**
+	 * SplitLine()
+	 *
+	 * Splits up a line of data
+	 *
+	 * Splits up a line of data
+	 *
+	 * @param	string	$strLine		contents of current line 
+	 *
+	 * @return	array					associative array of data
+	 *
+	 * @method
+	 */
+	 function SplitLine($strLine)
+	 {
+	 	// clean the array
+		$arrLine = Array();
+		
+		// Make sure this is a recognised type
+		$strRecordType = substr($strLine, 0, 3);
+		$arrRecordDefine = NULL;
+		foreach ($GLOBALS['FileFormatEtech'] as $arrRecordType)
+		{
+			if ((int)$arrRecordType['RecordType']['Value'] == (int)$strRecordType)
+			{
+				$arrRecordDefine = $arrRecordType;
+				break;
+			}
+		}
+		if (!$arrRecordDefine)
+		{
+			// Unknown Record Type (ie. invalid file)
+			return "Unknown Record Type for line";
+		}
+		
+		// Explode the line on '|'
+		$arrRawLine = explode("|", $strLine);
+		
+		// Set the fields
+		$i = 0;
+		foreach($arrRecordDefine as $strKey=>$strValue)
+		{
+			// Is the field optional (must be last field on line)?
+			if (($strValue['Optional'] === TRUE) && ($arrRawLine[$i] == NULL))
+			{
+				continue;
+			}
+			
+			$arrLine[$strKey] = trim($arrRawLine[$i]);
+			$i++;
+		}
+		
+		return $arrLine;
+	 }
+	
+	
+	
+	
+	//------------------------------------------------------------------------//
+	// DecodeRecordType
+	//------------------------------------------------------------------------//
+	/**
+	 * DecodeRecordType()
+	 *
+	 * Converts and Etech Charge Type to Vixen Record Type
+	 *
+	 * Converts and Etech Charge Type to Vixen Record Type
+	 *
+	 * @param	string	$strChargeType	charge type to convert 
+	 *
+	 * @return	int						vixen record type
+	 *
+	 * @method
+	 */
+	 function DecodeRecordType($strChargeType)
+	 {		
+		$intServiceType = ServiceType($this->_arrStatus['FNN']);
+		
+		// ServiceType specific record types
+		switch ($intServiceType)
+		{
+			case SERVICE_TYPE_LAND_LINE:
+				switch ($strChargeType)
+				{
+					case "Local Calls":
+						return 17;
+					case "National Calls":
+						return 19;
+					case "Calls to 13/1300 Numbers":
+						return 24;
+					case "Calls to Mobiles":
+						return 20;
+					case "International Calls":
+						return 28;
+					case "Other Call Types":
+					default:
+						return 26;
+				}
+				break;
+			
+			case SERVICE_TYPE_MOBILE:
+				switch ($strChargeType)
+				{
+					case "Mobile to International":
+						return 27;
+					case "Mobile to Mobile":
+						return 2;
+					case "Mobile to National":
+						return 6;
+					case "Mobile International Roaming":
+						return 11;
+					case "Mobile to 1800 Numbers":
+						return 7;
+					case "Mobile - SMS":
+						return 10;
+					case "Mobile - MMS":
+						return 15;
+					case "Mobile - Other Charges":
+					default:
+						return 16;
+				}
+				break;
+			
+			case SERVICE_TYPE_INBOUND:
+				return 35;
+		}
+	 }
+	
  }
 
 
