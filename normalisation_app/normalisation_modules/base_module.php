@@ -937,8 +937,8 @@ abstract class NormalisationModule
 	 	$fltCost	= (float)$this->_arrNormalisedData['Cost'];
 	 	if ($intUnits < 0 && $fltCost < 0.0)
 	 	{
-	 		$intUnits	= abs($intUnits);
-	 		$fltCost	= abs($fltCost);
+	 		$this->_arrNormalisedData			= abs($intUnits);
+	 		$this->_arrNormalisedData['Cost']	= abs($fltCost);
 	 		$this->_AppendCDR('Credit', 1);
 	 		return TRUE;
 	 	}
