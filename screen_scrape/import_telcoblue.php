@@ -877,12 +877,15 @@ Blue Shared 500 						25
 	}
 
 	// get delinquents
-	$arrDelinquents = $objDecoder->FetchCustomerById(1000154916);
-	if (!is_array($arrDelinquents))
+	$arrRow = $objDecoder->FetchCustomerById(1000154916);
+	$arrScrape = $arrRow['DataArray'];
+	$arrDelinquents = $objDecoder->DecodeCustomer($arrScrape);
+	if (!is_array($arrDelinquents['Service']))
 	{
 		echo "FATAL ERROR : Could not Find Delinquents\n";
 		Die();
 	}
+	
 	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
