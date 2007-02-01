@@ -145,11 +145,39 @@
 																"RecordGroup.Name",
 																NULL,
 																"RecordGroup.Name");
+		$arrColumns = Array();
+		$arrColumns['Charge']			= "Charge.Amount";
+		$arrColumns['FNN']				= "Service.FNN";
+		$arrColumns['Service']			= "Service.Id";
+		$arrColumns['Description']		= "Charge.Description";
+		$arrColumns['ChargeType']		= "Charge.ChargeType";
+		$arrColumns['Nature']			= "Charge.Nature";
+		$arrColumns['RecordTypeName']	= "'OC&C'";
+		$arrColumns['ServiceType']		= "Service.ServiceType";
+		$this->_selItemisedCharges		= new StatementSelect(	"Charge JOIN Service ON Service.Id = Charge.Service",
+																$arrColumns,
+																"Charge.Account = <Account> AND ChargeInvoiceRun = <InvoiceRun> AND ChargeStatus = CHARGE_TEMP_INVOICE");		
 		
+
+		$this->_selChargesTotal			= new StatementSelect(	"Charge",
+																"SUM(Amount) AS Charge",
+																"Account = <Account> AND InvoiceRun = <InvoiceRun> AND Status = CHARGE_TEMP_INVOICE",
+																"Nature ASC",
+																NULL,
+																"Nature");
+		
+
+		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
+																"SUM(Amount) AS Charge",
+																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND Status = CHARGE_TEMP_INVOICE",
+																"Nature ASC",
+																NULL,
+																"Nature");
 		
 		$arrColumns = Array();
 		$arrColumns['Charge']			= "CDR.Charge";
 		$arrColumns['FNN']				= "CDR.FNN";
+		$arrColumns['Service']			= "CDR.Service";
 		$arrColumns['Source']			= "CDR.Source";
 		$arrColumns['Destination']		= "CDR.Destination";
 		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
@@ -629,6 +657,15 @@
 		{
 			$arrServiceTypeTotals = Array();
 		}
+		
+		// get details from charge table
+		if (($intChargeCount = $this->_selChargesTotal->Execute($arrServiceTypeTotalVars)) === FALSE)
+		{
+			Debug("Line ".__LINE__.": ".$this->_selChargesTotal->Error());
+			return FALSE;
+		}
+		$arrChargesTotal = $this->_selChargesTotal->FetchAll();
+		
 		// build output
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
@@ -638,6 +675,27 @@
 			$arrDefine['ChargeSummary']	['Total']		['Value']	= $arrTotal['Charge'];
 			$arrFileData[] = $arrDefine['ChargeSummary'];
 		}
+		// build charge output
+		if ($intChargeCount)
+		{
+			$arrDefine['ChargeSummary']	['Category']	['Value']	= "Other Charges and Credits";
+			
+			$fltChargeTotal = 0.0;
+			foreach ($arrChargesTotal as $arrTotal)
+			{
+				if ($arrTotal['Nature'] == NATURE_CR)
+				{
+					$fltChargeTotal -= $arrTotal['Charge'];
+				}
+				else
+				{
+					$fltChargeTotal += $arrTotal['Charge'];
+				}
+			}
+			$arrDefine['ChargeSummary']	['Total']		['Value']	= $fltChargeTotal;
+			$arrFileData[] = $arrDefine['ChargeSummary'];
+		}
+		// add gst entry
 		$arrDefine['ChargeSummary']		['Category']	['Value']	= "GST Total";
 		$arrDefine['ChargeSummary']		['Total']		['Value']	= $arrInvoiceDetails['Tax'];
 		$arrFileData[] = $arrDefine['ChargeSummary'];
@@ -654,6 +712,17 @@
 			return FALSE;
 		}
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
+		
+		// grab itemised charges
+		if ($this->_selItemisedCharges->Execute() === FALSE)
+		{
+			Debug("Line ".__LINE__.": ".$this->_selItemisedCalls->Error());
+			return FALSE;
+		}
+		while ($arrCharge = $this->_selItemisedCharges->Fetch())
+		{
+			$arrItemisedCalls[] = $arrCharge;
+		}
 		
 		// reset counters
 		$strCurrentService		= "";
@@ -679,16 +748,41 @@
 					if (($strCurrentService != "") && ($strCurrentRecordType != ""))
 					{
 						// Get the RecordType total
-						$arrSelectData['FNN']				= $strCurrentService;
-						$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
-						$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
-						if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
+						if ($strCurrentRecordType == "Other Charges and Credits")
 						{
-							Debug("Line ".__LINE__.": ".$this->_selRecordTypeTotal->Error());
-							return FALSE;
+							$arrSelectData['Service']			= $arrData['Service'];
+							$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
+							if ($this->_selServiceChargesTotal->Execute($arrSelectData))
+							{
+								$arrChargesTotal = $this->_selServiceChargesTotal->FetchAll();
+								
+								$fltRecordTypeTotal = 0.0;
+								foreach ($arrChargesTotal as $arrTotal)
+								{
+									if ($arrTotal['Nature'] == NATURE_CR)
+									{
+										$fltRecordTypeTotal -= $arrTotal['Charge'];
+									}
+									else
+									{
+										$fltRecordTypeTotal += $arrTotal['Charge'];
+									}
+								}
+							}
 						}
-						$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
-						$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
+						else
+						{
+							$arrSelectData['FNN']				= $strCurrentService;
+							$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
+							$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
+							if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
+							{
+								Debug("Line ".__LINE__.": ".$this->_selRecordTypeTotal->Error());
+								return FALSE;
+							}
+							$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
+							$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
+						}
 						
 						// add category footer
 						$arrDefine['CategoryFooter']['CategoryId']		['Value']	= $intCategoryId;
@@ -748,7 +842,18 @@
 				{
 					// S&E and OC&C
 					$arrRow = $arrDefine['ItemisedS&E'];
-					$strDescription = $arrData['FNN']." : ".$arrData['Description']." - ".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime']));
+					if ($intCurrentRowType = 237)
+					{
+						$strDescription = $arrData['ChargeType']." - ".$arrData['Description'];
+						if ($arrData['Nature'] == NATURE_CR)
+						{
+							$arrData['Charge'] = 0 - $arrData['Charge'];
+						}
+					}
+					else
+					{
+						$strDescription = $arrData['Description']." - ".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime']));
+					}
 					$arrRow['RecordCount']		['Value']	= $intRecordCount;
 					$arrRow['Description']		['Value']	= $strDescription;
 					$arrRow['Charge']			['Value']	= $arrData['Charge'];
@@ -774,16 +879,41 @@
 			}
 			
 			// Get the RecordType total
-			$arrSelectData['FNN']				= $strCurrentService;
-			$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
-			$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
-			if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
+			if ($strCurrentRecordType == "Other Charges and Credits")
 			{
-				Debug("Line ".__LINE__.": ".$this->_selRecordTypeTotal->Error());
-				return FALSE;
+				$arrSelectData['Service']			= $arrData['Service'];
+				$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
+				if ($this->_selServiceChargesTotal->Execute($arrSelectData))
+				{
+					$arrChargesTotal = $this->_selServiceChargesTotal->FetchAll();
+					
+					$fltRecordTypeTotal = 0.0;
+					foreach ($arrChargesTotal as $arrTotal)
+					{
+						if ($arrTotal['Nature'] == NATURE_CR)
+						{
+							$fltRecordTypeTotal -= $arrTotal['Charge'];
+						}
+						else
+						{
+							$fltRecordTypeTotal += $arrTotal['Charge'];
+						}
+					}
+				}
 			}
-			$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
-			$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
+			else
+			{
+				$arrSelectData['FNN']				= $strCurrentService;
+				$arrSelectData['RecordTypeName']	= $strCurrentRecordType;
+				$arrSelectData['InvoiceRun']		= $arrInvoiceDetails['InvoiceRun'];
+				if ($this->_selRecordTypeTotal->Execute($arrSelectData) === FALSE)
+				{
+					Debug("Line ".__LINE__.": ".$this->_selRecordTypeTotal->Error());
+					return FALSE;
+				}
+				$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
+				$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
+			}
 			
 			// add category footer
 			$arrDefine['CategoryFooter']['CategoryId']		['Value']	= $intCategoryId;

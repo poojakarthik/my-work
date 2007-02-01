@@ -941,6 +941,23 @@ die();
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		// update Charge Status
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGE."\t", FALSE);
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = CHARGE_APPROVED;
+		$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE, $arrUpdateData);
+		if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
 		// clean up ServiceTotal table
 		$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
 		$qryCleanServiceTotal = new Query();
