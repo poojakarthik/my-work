@@ -458,13 +458,14 @@
 		return $arrNotes;
 	}
 	
-	function ParseInvoiceDetail($strHtml, $intCustomerId)
+	// parse recurring charges
+	function ParseRecurringCharges($strHtml, $intCustomerId)
 	{
 		$arrRecurringCharges = Array ();
 		
 		// Load the entire HTML into a DOM Document
 		$domDocument = new DOMDocument;
-		@$domDocument->LoadHTML ($strHTML);
+		@$domDocument->LoadHTML ($strHtml);
 		
 		$dxpDocument = new DOMXPath ($domDocument);
 		
@@ -511,8 +512,8 @@
 			);
 			
 			$arrRecurringCharge = Array (
-				"AccountGroup"			=> "",
-				"Account"				=> "",
+				"AccountGroup"			=> $intCustomerId,
+				"Account"				=> $intCustomerId,
 				"Service"				=> null,
 				"CreatedBy"				=> "",
 				"ApprovedBy"			=> "",
