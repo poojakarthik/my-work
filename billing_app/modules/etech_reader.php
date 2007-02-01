@@ -111,7 +111,7 @@
 		}
 		
 		// open the file
-		if (@$this->ptrFile = fopen($strFilePath, "r") === FALSE)
+		if ((@$this->ptrFile = fopen($strFilePath, "r")) === FALSE)
 		{
 			// if it failed, return false
 			return FALSE;
@@ -205,13 +205,22 @@
  	{
 		// increment counter
 		$this->intLine++;
-
-		// read line from file
-		// to-do
 		
-		// return line string or FALSE on EOF
-		// return a string 'error' on error
-		// to-do
+		// If EOF, then return FALSE
+		if (feof($this->ptrFile))
+		{
+			return FALSE;
+		}
+
+		// read next line from file
+		if (($strLine = fgets($this->ptrFile)) === FALSE)
+		{
+			// There was an error
+			return "!ERROR!";
+		}
+		
+		// return the raw line
+		return $strLine;				
 	}
  }
 
