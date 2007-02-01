@@ -214,8 +214,10 @@
 		
 		public function Dispute ($fltDisputed)
 		{
+			//TODO!bash! make sure $fltDisputed !> Invoice.Total
 			$fltDisputed = str_replace ("$", "", $fltDisputed);
 			
+			//TODO!bash! Invoice.Balance -= $fltDisputed
 			$arrDispute = Array (
 				"Disputed"		=> $fltDisputed,
 				"Status"		=> INVOICE_DISPUTED
@@ -244,21 +246,37 @@
 		
 		public function Resolve ($intResolveMethod, $fltAmount)
 		{
+			// start at INVOICE_DISPUTED
 			switch ($intResolveMethod)
 			{
 				case DISPUTE_RESOLVE_FULL_PAYMENT:
 					$arrInvoice = Array (
+						//TODO!bash! 
+						// Disputed = 0
+						// Invoice.Balance += Invoice.Disputed
+						// if Balance > 0 Status = INVOICE_COMMITTED
+						// else Status = INVOICE_SETTLED
 					);
 					
 					break;
 					
 				case DISPUTE_RESOLVE_PARTIAL_PAYMENT:
 					$arrInvoice = Array (
+						// generate a credit for Invoice.Disputed - $fltAmount
+						// Invoice.Disputed = 0
+						// Invoice.Balance += $fltAmount
+						// if Balance > 0 Status = INVOICE_COMMITTED
+						// else Status = INVOICE_SETTLED
 					);
 					
 					break;
 					
 				case DISPUTE_RESOLVE_NO_PAYMENT:
+					// generate a credit for Invoice.Disputed
+					// Invoice.Disputed = 0
+					// if Balance > 0  Status = INVOICE_COMMITTED
+					// if Balance = 0  Status = INVOICE_SETTLED
+					
 //					$arrInvoice = Array (
 //						"Status"	=> INVOICE_COMMMITTED
 //					);
@@ -269,16 +287,6 @@
 					break;
 			}
 			
-			//	TODO!bash! URGENT need the following options (radio buttons)...
-			//		Text === "Customer to pay full amount" => Invoice.Balance += Invoice.Disputed, Invoice.Status = INVOICE_COMMITTED
-			//		Text === "Customer to pay $" [Input.Amount]
-			//				Invoice.Balance += Input.Amount, Invoice.Disputed -= Input.Amount, Invoice.Status = ?????
-			//
-			//	TODO!flame! URGENT : Status ???? -->
-			//		Text === "Payment NOT required" : Invoice.Status = ????
-			//
-			//	TODO!bash! auto add an account note (by employee) to say how this was resolved, use "Disputed Invoice Resolved : " same text as options
-			//	TODO!bash! auto add an account note (by employee) when an invoice is disputed "Invoice Disputed $".DiputedAmount
 			
 			$arrResolve = Array (
 				"Status"		=> INVOICE_DISPUTED_SETTLED
