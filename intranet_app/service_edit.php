@@ -39,17 +39,19 @@
 	{
 		$strFNN = preg_replace ('/\s/', '', $_POST ['FNN']['1']);
 		
-		// Check the Line Numbers Match
 		if ($_POST ['FNN']['1'] <> $_POST ['FNN']['2'])
 		{
+			// Check the Line Numbers Match
 			$oblstrError->setValue ('Mismatch');
 		}
-		else if ($strFNN <> "" && !isValidFNN ($strFNN))
+		else if ($strFNN <> "" && !IsValidFNN ($strFNN))
 		{
+			// Check the FNN is Valid
 			$oblstrError->setValue ('FNN ServiceType');
 		}
 		else if ($strFNN <> "" && ServiceType ($strFNN) <> $srvService->Pull ('ServiceType')->getValue ())
 		{
+			// Check the FNN is the Right Service Type
 			$oblstrError->setValue ('FNN ServiceType');
 		}
 		else

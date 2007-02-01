@@ -100,14 +100,14 @@
 			$selUnbilledCalls = new StatementSelect(
 				"CDR", 
 				"count(*) AS collationLength", 
-				"InvoiceRun IS NULL AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)"
+				"Service = <Service> AND (Status = <Status1> OR Status = <Status2>)"
 			);
 			
 			$selUnbilledCalls->Execute(
 				Array(
 					"Service"	=> $this->_srvService->Pull ("Id")->getValue (),
 					"Status1"	=> CDR_RATED,
-					"Status2"	=> INVOICE_TEMP
+					"Status2"	=> CDR_TEMP_INVOICE
 				)
 			);
 			
@@ -163,8 +163,8 @@
 			$selCDRId = new StatementSelect (
 				"CDR", 
 				"Id", 
-				"InvoiceRun IS NULL AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)",
-				null, 
+				"Service = <Service> AND (Status = <Status1> OR Status = <Status2>)",
+				"StartDatetime DESC", 
 				$intIndex . ", 1"
 			);
 			
@@ -172,7 +172,7 @@
 				Array( 
 					"Service"	=> $this->_srvService->Pull ("Id")->getValue (),
 					"Status1"	=> CDR_RATED,
-					"Status2"	=> INVOICE_TEMP
+					"Status2"	=> CDR_TEMP_INVOICE
 				)
 			);
 			

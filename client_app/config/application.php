@@ -41,6 +41,7 @@ require_once($strWebDir."classes/invoice/invoiceservicecharges.php");
 require_once($strWebDir."classes/invoice/invoiceservice.php");
 require_once($strWebDir."classes/invoice/invoice.php");
 require_once($strWebDir."classes/account/account.php");
+require_once($strWebDir."classes/rateplan/rateplan.php");
 // load the authentication module
 require_once($strWebDir."classes/authentication/authentication.php");
 require_once($strWebDir."classes/contact/authenticatedcontact.php");

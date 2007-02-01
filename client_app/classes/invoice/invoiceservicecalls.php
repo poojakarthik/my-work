@@ -119,15 +119,14 @@
 			$selCDRLength = new StatementSelect(
 				"CDR", 
 				"count(*) AS collationLength", 
-				"Invoice = <Invoice> AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)"
+				"InvoiceRun = <InvoiceRun> AND Service = <Service> AND Status = <Status>"
 			);
 			
 			$selCDRLength->Execute(
 				Array(
-					"Invoice"	=> $this->_invInvoice->Pull ("Id")->getValue (), 
+					"InvoiceRun"=> $this->_invInvoice->Pull ("InvoiceRun")->getValue (), 
 					"Service"	=> $this->_ivsService->Pull ("Id")->getValue (),
-					"Status1"	=> CDR_RATED,
-					"Status2"	=> INVOICE_TEMP
+					"Status"	=> CDR_INVOICED
 				)
 			);
 			
@@ -179,18 +178,17 @@
 		{
 			$selCDRId = new StatementSelect (
 				"CDR", 
-				"Id", 
-				"Invoice = <Invoice> AND Service = <Service> AND (Status = <Status1> OR Status = <Status2>)", 
-				null, 
+				"count(*) AS collationLength", 
+				"InvoiceRun = <InvoiceRun> AND Service = <Service> AND Status = <Status>",
+				"StartDatetime", 
 				$itemIndex . ", 1"
 			);
 			
 			$selCDRId->Execute(
 				Array(
-					"Invoice"	=> $this->_invInvoice->Pull ("Id")->getValue (), 
+					"InvoiceRun"=> $this->_invInvoice->Pull ("InvoiceRun")->getValue (), 
 					"Service"	=> $this->_ivsService->Pull ("Id")->getValue (),
-					"Status1"	=> CDR_RATED,
-					"Status2"	=> INVOICE_TEMP
+					"Status"	=> CDR_INVOICED
 				)
 			);
 			

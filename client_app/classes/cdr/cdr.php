@@ -87,12 +87,13 @@
 			if ($this->_cntContact->Pull ("CustomerContact")->isTrue ())
 			{
 				// This person is a customer contact ... :. check the CDR against the AccountGroup
-				$selCDR = new StatementSelect("CDR", "*", "Id = <Id> AND AccountGroup = <AccountGroup> AND Status = <Status>");
+				$selCDR = new StatementSelect("CDR", "*", "Id = <Id> AND AccountGroup = <AccountGroup> AND (Status = <Status1> OR Status = <Status2>)");
 				$selCDR->Execute(
 					Array(
 						"Id"			=> $intId, 
 						"AccountGroup"	=> $this->_cntContact->Pull ("AccountGroup")->getValue (),
-						"Status"		=> CDR_RATED
+						"Status1"		=> CDR_RATED,
+						"Status2"		=> CDR_TEMP_INVOICE
 					)
 				);
 			}
@@ -105,7 +106,7 @@
 						"Id"			=> $intId, 
 						"Account"		=> $this->_cntContact->Pull ("Account")->getValue (),
 						"Status1"		=> CDR_RATED,
-						"Status2"		=> INVOICE_TEMP
+						"Status2"		=> CDR_TEMP_INVOICE
 					)
 				);
 			}

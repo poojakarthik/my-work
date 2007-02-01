@@ -51,6 +51,8 @@
 		$oblstrFNN_1->setValue ($_POST ['FNN-1']);
 		$oblstrFNN_2->setValue ($_POST ['FNN-2']);
 		
+		$strFNN = preg_replace ('/\s/', '', $_POST ['FNN-1']);
+		
 		// If the Service Type is Invalid, Error
 		if (!$srvServiceTypes->setValue ($_POST ['ServiceType']))
 		{
@@ -62,7 +64,11 @@
 			{
 				$oblstrError->setValue ('Mismatch');
 			}
-			else if ($_POST ['FNN-1'] <> "" && ServiceType ($_POST ['FNN-1']) <> $_POST ['ServiceType'])
+			else if ($strFNN <> "" && !IsValidFNN ($strFNN))
+			{
+				$oblstrError->setValue ('FNN ServiceType');
+			}
+			else if ($strFNN <> "" && ServiceType ($strFNN) <> $_POST ['ServiceType'])
 			{
 				$oblstrError->setValue ('FNN ServiceType');
 			}

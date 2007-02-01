@@ -14,7 +14,7 @@
 					<th>Charged On</th>
 					<th>Ref.</th>
 					<th>Description</th>
-					<th>Amount</th>
+					<th class="Currency">Amount</th>
 				</tr>
 				<xsl:choose>
 					<xsl:when test="count(/Response/Service/UnbilledCharges/rangeSample/Charge) = 0">
@@ -46,7 +46,7 @@
 								</td>
 								<td><xsl:value-of select="./ChargeType"  /></td>
 								<td><xsl:value-of select="./Description"  /></td>
-								<td>
+								<td class="Currency">
 									<xsl:call-template name="Currency">
 										<xsl:with-param name="Number"	select="./Amount" />
 										<xsl:with-param name="Decimal"	select="number('2')" />
@@ -66,11 +66,10 @@
 		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 			<tr class="first">
 				<th>#</th>
-				<th>Date</th>
-				<th>Time</th>
+				<th>Start Date/Time</th>
 				<th>Called Party</th>
 				<th>Duration</th>
-				<th>Charge</th>
+				<th class="Currency">Charge</th>
 			</tr>
 			<xsl:choose>
 				<xsl:when test="/Response/Service/UnbilledCalls/rangePages != 0">
@@ -87,23 +86,16 @@
 								</xsl:choose>
 							</xsl:attribute>
 							
-							<td>
-								<xsl:value-of select="./Id" />
-							</td>
+							<td><xsl:value-of select="/Response/Service/UnbilledCalls/rangeStart + position()" />.</td>
 							<td>
 								<xsl:call-template name="dt:format-date-time">
 									<xsl:with-param name="year"		select="./StartDatetime/year" />
 									<xsl:with-param name="month"	select="./StartDatetime/month" />
 									<xsl:with-param name="day"		select="./StartDatetime/day" />
-									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-								</xsl:call-template>
-							</td>
-							<td>
-								<xsl:call-template name="dt:format-date-time">
 									<xsl:with-param name="hour"		select="./StartDatetime/hour" />
 									<xsl:with-param name="minute"	select="./StartDatetime/minute" />
 									<xsl:with-param name="second"	select="./StartDatetime/second" />
-									<xsl:with-param name="format"	select="'%I:%M:%S %P'"/>
+									<xsl:with-param name="format"	select="'%A, %b %d, %Y %I:%M:%S %P'"/>
 								</xsl:call-template>
 							</td>
 							<td>
@@ -112,8 +104,11 @@
 							<td>
 								<xsl:value-of select="./Duration" />
 							</td>
-							<td>
-								<xsl:value-of select="./Charge" />
+							<td class="Currency">
+								<xsl:call-template name="Currency">
+									<xsl:with-param name="Number"	select="./Charge" />
+									<xsl:with-param name="Decimal"	select="number('2')" />
+								</xsl:call-template>
 							</td>
 						</tr>
 					</xsl:for-each>

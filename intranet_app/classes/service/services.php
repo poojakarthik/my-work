@@ -117,6 +117,18 @@
 			// Reason being, if we find an Unarchived FNN - then the number
 			// cannot be added to the database.
 			
+			$strFNN = preg_replace ("/\s/", "", $arrData ['FNN']);
+			
+			if ($strFNN <> "" && !IsValidFNN ($strFNN))
+			{
+				throw new Exception ("FNN ServiceType");
+			}
+			
+			if ($strFNN <> "" && ServiceType ($strFNN) <> $arrData ['ServiceType'])
+			{
+				throw new Exception ("FNN ServiceType");
+			}
+			
 			if ($arrData ['FNN'] <> "")
 			{
 				try

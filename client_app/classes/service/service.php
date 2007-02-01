@@ -105,27 +105,28 @@
 			
 			$fltTotalCharge = 0;
 			
+			// Get the Current Plan
+			$rrpPlan = $this->Plan ();
+			
 			// Calculate the Unbilled Charges - based on Caps and etc.
 			
-			/*
 			// This has been commented out because an error has been occurring
-			if ($this->Pull ("ChargeCap")->getValue () > 0)
+			if ($rrpPlan->Pull ("ChargeCap")->getValue () > 0)
 			{
 				$fltTotalCharge = floatval (
-					min ($this->Pull ("CappedCharge")->getValue (), $this->Pull ("ChargeCap")->getValue ()) +
+					min ($this->Pull ("CappedCharge")->getValue (), $rrpPlan->Pull ("ChargeCap")->getValue ()) +
 					$this->Pull ("UncappedCharge")->getValue ()
 				);
 				
-				if ($this->Pull ("UsageCap")->getValue () > 0 && $this->Pull ("UsageCap")->getValue () < $this->Pull ("CappedCharge")->getValue ())
+				if ($rrpPlan->Pull ("UsageCap")->getValue () > 0 && $rrpPlan->Pull ("UsageCap")->getValue () < $this->Pull ("CappedCharge")->getValue ())
 				{
-					$fltTotalCharge += floatval ($this->Pull ("UncappedCharge")->getValue () - $this->Pull ("UseageCap")->getValue ());
+					$fltTotalCharge += floatval ($this->Pull ("UncappedCharge")->getValue () - $rrpPlan->Pull ("UseageCap")->getValue ());
 				}
 			}
 			else 
 			{
 				$fltTotalCharge = floatval ($this->Pull ("CappedCharge")->getValue () + $this->Pull ("UncappedCharge")->getValue ());
 			}
-			*/
 			
 			// Store the Total Charge
 			$this->Push (new dataFloat ("TotalCharge", $fltTotalCharge));
@@ -177,6 +178,45 @@
 		{
 			$oblcoaUnbilledCalls = new UnbilledCalls ($this->_cntContact, $this);
 			return $this->Push ($oblcoaUnbilledCalls->Sample ($intPage, $intLength));
+		}
+		
+		//------------------------------------------------------------------------//
+		// Plan
+		//------------------------------------------------------------------------//
+		/**
+		 * Plan()
+		 *
+		 * Determine the current Plan
+		 *
+		 * Determine the current Plan
+		 *
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function Plan ()
+		{
+			if (!$this->_rrpRatePlan)
+			{
+				$selCurrentPlan = new StatementSelect (
+					'ServiceRatePlan', 
+					'RatePlan', 
+					'Service = <Service> AND Now() BETWEEN StartDatetime AND EndDatetime', 
+					'CreatedOn DESC',
+					1
+				);
+				
+				$selCurrentPlan->Execute (Array ('Service' => $this->Pull ('Id')->getValue ()));
+				
+				if ($selCurrentPlan->Count () == 1)
+				{
+					$arrPlan = $selCurrentPlan->Fetch ();
+					$this->_rrpRatePlan = $this->Push (new RatePlan ($arrPlan ['RatePlan']));
+				}
+			}
+			
+			return $this->_rrpRatePlan;
 		}
 	}
 	
