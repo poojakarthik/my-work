@@ -499,12 +499,7 @@
 	 */
  	function Clean()
  	{
-		// Truncate the InvoiceOutput table
-		$qryTruncateInvoiceOutput = new QueryTruncate();
-		if (!$qryTruncateInvoiceOutput->Execute("InvoiceOutput"))
-		{
-			return FALSE;
-		}
+
 		
 		return TRUE;
  	}

@@ -955,6 +955,18 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		// Truncate the InvoiceOutput table
+		$this->_rptBillingReport->AddMessage("Truncating InvoiceOutput table...\t\t\t", FALSE);
+		$qryTruncateInvoiceOutput = new QueryTruncate();
+		if ($qryTruncateInvoiceOutput->Execute("InvoiceOutput") === FALSE)
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
 		// reverse payments
 		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = '$strInvoiceRun'");
 		$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
