@@ -160,7 +160,9 @@
 		$arrRow = $sqlResult->fetch_assoc();
 		if ($arrRow)
 		{
-			return unserialize($arrRow['DataSerialised']);
+			$arrRow['DataArray'] = unserialize($arrRow['DataSerialised']);
+			unset($arrRow['DataSerialised']);
+			return($arrRow);
 		}
 		else
 		{
@@ -1105,8 +1107,9 @@
 		}
 		
 		// get customer details
-		$arrCustomer = $this->FetchCustomerById($intCustomer);
-		
+		$arrRow = $this->FetchCustomerById($intCustomer);
+		$arrCustomer = $arrRow['DataArray'];
+	
 		// get RateGroups for this Customer
 		$arrRateGroup = $this->DecodeRateGroup($arrCustomer);
 		

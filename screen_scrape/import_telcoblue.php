@@ -885,7 +885,12 @@ Blue Shared 500 						25
 		echo "FATAL ERROR : Could not Find Delinquents\n";
 		Die();
 	}
-	
+	else
+	{
+		$intDelinquents = count($arrDelinquents['Service']);
+		echo "Delinquents in system : $intDelinquents\n";
+	}
+	sleep(2);
 	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
@@ -906,8 +911,11 @@ Blue Shared 500 						25
 		// remove delinquents
 		foreach ($arrDelinquents['Service'] as $arrDelinquent)
 		{
-			unset($arrCustomer['Service'][$arrDelinquent['FNN']]);
-			echo "WARN : Delinquent Service Removed: {$arrDelinquent['FNN']} \n";
+			if ($arrCustomer['Service'][$arrDelinquent['FNN']])
+			{
+				unset($arrCustomer['Service'][$arrDelinquent['FNN']]);
+				echo "WARN : Delinquent Service Removed: {$arrDelinquent['FNN']} \n";
+			}
 		}
 		
 		// check service count

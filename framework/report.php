@@ -189,6 +189,11 @@ class Report
 	 */
 	public function Finish()
 	{
+		// Don't send mail for now
+		unset($this->_arrLines);
+		$this->_arrLines = Array();
+		return 0;
+		
 		// Create the final email message from _arrLines, _strTitle,
 		//									 and a predifined message
 		$strEmailMessage = 	AUTOMATED_REPORT_HEADER;
@@ -212,6 +217,10 @@ class Report
 			// Send the email
 			$intSent += mail($strEmailAddressee, $this->_strTitle . "(Automated Report)", $strEmailMessage, $strMailHeaders);
 		}
+		
+		// clean up
+		unset($this->_arrLines);
+		$this->_arrLines = Array();
 
 		// return
 		return (int)$intSent;
@@ -242,7 +251,6 @@ class Report
 		{
 			$strMessage .= "\n";
 		}
-		
 		
 		// Append the message to the end of the message array
 		$this->_arrLines[] = $strMessage;
