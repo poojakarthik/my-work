@@ -11,6 +11,10 @@
 // when you have some spare time
 //TODO!rich! get a list of extension numbers for all employees and add them to the DB - Waiting on reply from scott
 //TODO!rich! also get DOB, phone & mobile 
+//TODO!print charges and credits on bill
+// itemised
+// print on front page
+// print in service summary
 
 // ---------------------------------------------------------------------------//
 // BASH
