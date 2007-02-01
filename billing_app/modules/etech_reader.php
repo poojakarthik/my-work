@@ -99,18 +99,28 @@
 		}
 		
 		// close existing file
-		// to-do
+		if ($this->ptrFile)
+		{
+			fclose($this->ptrFile);
+		}
 		
 		// check if the file exists
-		// to-do
+		if (!file_exists($strFilePath))
+		{
+			return FALSE;
+		}
 		
 		// open the file
-		// to-do
+		if (@$this->ptrFile = fopen($strFilePath, "r") === FALSE)
+		{
+			// if it failed, return false
+			return FALSE;
+		}
 		
 		// skip forward to line no.
-		if ($intLine > 1)
+		for ($i = 0; $i < $intLine; $i++)
 		{
-			// to-do
+			fgets($this->ptrFile);
 		}
 		
 		// set line no.
@@ -193,7 +203,7 @@
 	 */
  	function ReadRawLine()
  	{
-		// incrament counter
+		// increment counter
 		$this->intLine++;
 
 		// read line from file
