@@ -8,7 +8,7 @@
 	
 	// Create a new Report Object
 	$rptReport = new Report (
-		"+	ETECH CUSTOMER ACCOUNT ADDITIONAL INFORMATION CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
+		"+	ETECH CUSTOMER INBOUND SERVICE CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
 		"bash@voiptelsystems.com.au"
 	);
 	
@@ -35,7 +35,11 @@
 	{
 		foreach ($arrCustomer ['DataArray']['sn'] as $arrService)
 		{
-			if (substr (trim ($arrService ['Number']), 0, 4) == "1300")
+			if (
+				(strlen (trim ($arrService ['Number'])) == 10 && substr (trim ($arrService ['Number']), 0, 1) == "1") ||
+				substr (trim ($arrService ['AreaCode']), 0, 1) == "1" ||
+				strlen (trim ($arrService ['Number'])) == 6
+			)
 			{
 				// Start a Timer for this Request
 				$fltStartTime = microtime (TRUE);

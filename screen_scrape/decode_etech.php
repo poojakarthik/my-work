@@ -209,6 +209,19 @@
 		return $arrInvoice;
 	}
 	
+	function FetchCharges()
+	{
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeInvoice ";
+		$strName	= 'Charges';
+		$arrCharges = $this->FetchResult($strName, $strQuery);
+		if ($arrCharges)
+		{
+			$arrCharges['DataArray'] = $this->ParseCharges($arrCharges['DataOriginal'], $arrCharges['CustomerId']);
+			unset($arrCharges['DataOriginal']);
+		}
+		return $arrCharges;
+	}
+	
 	function FetchRecurringCharges()
 	{
 		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeInvoice ";
@@ -458,6 +471,164 @@
 
 		// return array directly from data
 		return $arrNotes;
+	}
+	
+	// parse charges
+	function ParseCharges($strHtml, $intCustomerId)
+	{
+		$arrCharges = Array ();
+		
+		$domDocument = new DOMDocument;
+		@$domDocument->LoadHTML ($strHtml);
+		$dxpDocument = new DOMXPath ($domDocument);
+		
+		$dnlTable = $dxpDocument->Query ("//table");
+		
+		$domTable = new DOMDocument;
+		$domTable->appendChild (
+			$domTable->importNode (
+				$dnlTable->Item (7),
+				TRUE
+			)
+		);
+		
+		$dxpTable = new DOMXPath ($domTable);
+		
+		$dnlRows = $dxpTable->Query ("//tr[position() >= 3 and position() < last()]");
+		
+		foreach ($dnlRows as $dnoRow)
+		{
+			$domRow = new DOMDocument;
+			$domRow->appendChild (
+				$domRow->importNode (
+					$dnoRow,
+					TRUE
+				)
+			);
+			
+			$dxpRow = new DOMXPath ($domRow);
+			
+			$strDetails = $dxpRow->Query ("/tr/td/img[1]")->item (0)->getAttribute ("alt");
+			
+			$arrDetails = explode ("\n", $strDetails);
+			
+			$arrChargeFields = Array (
+				"Adjustment Message"	=> "Description"
+			);
+			
+			$arrCharge = Array (
+				"AccountGroup"	=> "",
+				"Account"		=> "",
+				"Service"		=> NULL,
+				"InvoiceRun"	=> NULL,
+				"CreatedBy"		=> NULL,
+				"CreatedOn"		=> "",
+				"ApprovedBy"	=> "",
+				"ChargeType"	=> "",
+				"Description"	=> "",
+				"ChargedOn"		=> "",
+				"Nature"		=> "",
+				"Amount"		=> "",
+				"Status"		=> CHARGE_APPROVED
+			);
+			
+			$strLastIndex = "";
+			
+			foreach ($arrDetails as $value)
+			{
+				if (strstr ($value, ": LP") || strstr ($value, "#:"))
+				{
+					$arrData = Array (
+						"0"		=> $value
+					);
+				}
+				else
+				{
+					$arrData = preg_split ("/\:/", $value, 2);
+				}
+				
+				if (trim ($arrData [0]) == "")
+				{
+					continue;
+				}
+				
+				if (!isset ($arrData [1]))
+				{
+					$arrData [1] = $arrData [0];
+					$arrData [0] = $strLastIndex;
+				}
+				
+				if (isset ($arrData [1]))
+				{
+					$arrData [1] = trim ($arrData [1]);
+				}
+				
+				// AMOUNT
+				// Removes the Dollar sign from the start of any amount
+				if ($arrData [0] == "Amount")
+				{
+					$arrCharge ['Amount'] = str_replace ("$", "", $arrData [1]);
+					continue;
+				}
+				
+				// APPLIED BY
+				// The person who Applied the Charge
+				// In this case, this is also the person who Approved the Charge
+				if ($arrData [0] == "Applied By")
+				{
+					$arrCharge ['CreatedBy'] = $arrData [1];
+					$arrCharge ['ApprovedBy'] = $arrData [1];
+					continue;
+				}
+				
+				// APPLIED DATE/TIME
+				// Stores the date in which this Charge was added to the System
+				// and calculates the date that this charge was first created on.
+				if ($arrData [0] == "Applied Date/Time")
+				{
+					$arrCharge ['CreatedOn'] = $arrData [1];
+					continue;
+				}
+				
+				// ADJUSTMENT TYPE
+				// Works out if this is a Continuously Charge or a Count Controlled
+				// Charge. If this is count controlled, it also gets the number of counts
+				// until it ceases
+				if ($arrData [0] == "Adjustment Type")
+				{
+					$arrCharge ['Nature'] = ($arrData [1] == "Debit") ? "DR" : "CR";
+					continue;
+				}
+				
+				// This is the Default for Storage
+				if (!isset ($arrChargeFields [$arrData [0]]))
+				{
+					echo "Not Found: " . $arrData [0] . "\n";
+					continue;
+				}
+				
+				// Store the Last Field we were working with in case
+				// This is a multi-line field
+				$strLastIndex = $arrData [0];
+				
+				// Instantiate the storage array value if it doesn't exist
+				if (!isset ($arrCharge [$arrData [0]]))
+				{
+					$arrCharge [$arrChargeFields [$arrData [0]]] = "";
+				}
+				
+				// Add the Information
+				$arrCharge [$arrChargeFields [$arrData [0]]] .= $arrData [1];
+			}
+			
+			// Only add this item if it was added after the 1st of January
+			if (strtotime ($arrCharge ['CreatedOn']) >= mktime (0, 0, 0, 1, 1, 2007))
+			{
+				$arrCharges [] = $arrCharge;
+			}
+		}
+		
+		return $arrCharges;
 	}
 	
 	// parse recurring charges
