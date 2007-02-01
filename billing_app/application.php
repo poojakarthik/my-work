@@ -167,7 +167,7 @@ die();
 																"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
 																"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
 																"RatePlan.Id");
-		$selAccounts					= new StatementSelect(	"Account", "*", "Archived = 0 AND " .
+		$strTestAccounts =		" AND " .
 																"Id = 1000009145 OR " .
 																"Id = 1000007460 OR " .
 																"Id = 1000008407 OR " .
@@ -178,7 +178,9 @@ die();
 																"Id = 1000160393 OR " .
 																"Id = 1000158098 OR " .
 																"Id = 1000155964 OR " .
-																"Id = 1000160897");	//  limited to 11 specified accounts
+																"Id = 1000160897";	//  limited to 11 specified accounts
+		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0"); 
+										
 		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		$selDebitsCredits				= new StatementSelect("Charge",
 															  "Nature, SUM(Amount) AS Amount",
