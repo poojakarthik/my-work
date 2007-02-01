@@ -183,92 +183,67 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$this->_AppendCDR('ServiceType', $intServiceType);
 		
 		// RecordType
-		unset($arrDestinationCode);
 		if ($intCarrierRecordType == "7")
 		{
 			// S&E
-			$strRecordCode 				= 'S&E';
-
-			// split line rental from other S&E 
-			// set RateId in raw data
-			switch ($this->_FetchRawCDR('Description'))
-			{
-				case "Business Telephone Line":
-				case "Network Access Rental":
-					// Business Line
-					$intRateId	= 80002;
-					break;					
-				case "Telephone Line":
-					// Residential Line
-					//TODO!rich! find the real description for a residential line
-					$intRateId	= 80003;
-					break;
-				case "Faxstream":
-				case "Faxstream Service":
-					// Fax Stream
-					$intRateId	= 80004;
-					break;
-				case "ISDN HOME":
-					// ISDN Home
-					$intRateId	= 81001;
-					break;
-				case "Telstra Wholesale ISDN 2B+D":
-					// ISDN 2
-					$intRateId	= 81002;
-					break;
-				case "!ISDN 30 Access":
-					switch ((int)$this->_FetchRawCDR('ItemCount'))
-					{
-						case 10:				
-							// ISDN 10
-							$intRateId	= 81010;
-							break;
-						case 20:
-							// ISDN 20
-							$intRateId	= 81020;
-							break;
-						case 30:
-							// ISDN 30
-							$intRateId	= 81030;
-							break;
-						default:
-							// unknown
-							$intRateId	= 80001;
-					}
-					break;
-				default:
-					// Other
-					$intRateId	= 80001;
-			}
-			
-			$this->_arrRawData['RateId']	=  $intRateId;
+			$strRecordCode 					= 'S&E';
 		}
 		elseif ($intCarrierRecordType == "8")
 		{
 			// OC&C
 			// Look over there while I Change these to look like an S&E Record
 			$strRecordCode 					= 'S&E';
-			$this->_arrRawData['RateId']	=  80001;
 		}
 		else
 		{
 			// normal calls
-			$mixCarrierCode				= $this->_FetchRawCDR('CallType');
-			$strRecordCode 				= $this->FindRecordCode($mixCarrierCode);
+			$mixCarrierCode					= $this->_FetchRawCDR('CallType');
+			$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
 		}
-		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
+		$mixValue 							= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 
 		// Destination Code & Description (context based)
 		unset($strDescription);
 		if ($this->_intContext > 0)
 		{
-			$mixCarrierCode 			= $this->_FetchRawCDR('RateId');
-			$arrDestinationCode 		= $this->FindDestination($mixCarrierCode);
+			if ($intCarrierRecordType == "7")
+			{
+				// get S&E Description 
+				$mixCarrierDestination 				= $this->_FetchRawCDR('Description');
+				switch ($mixCarrierDestination)
+				{
+					case "ISDN 30 Access":
+						$intItemCount 				= (int)$this->_FetchRawCDR('ItemCount');
+						$mixCarrierDestination 		.= " $intItemCount";
+						break;
+					default:
+						break;
+				}
+			}
+			elseif ($intCarrierRecordType == "8")
+			{
+				// OC&C
+				// Look over there while I Change these to look like an S&E Record
+				$mixCarrierDestination 				= $this->_FetchRawCDR('Description');
+			}
+			else
+			{
+				// normal calls
+				$mixCarrierDestination	 			= $this->_FetchRawCDR('RateId');
+			}
+			
+			$arrDestinationCode 					= $this->FindDestination($mixCarrierDestination);
 			if ($arrDestinationCode)
 			{
 				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
+				// set destination based description here
 				$strDescription = $arrDestinationCode['Description'];
+			}
+			elseif ($intCarrierRecordType == "7" || $intCarrierRecordType == "8")
+			{
+				// Set Destination to 'Other S&E'
+				$this->_AppendCDR('DestinationCode', 80001);
 			}
 		}
 		
@@ -321,10 +296,10 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			if (!$strDescription)
 			{
 				// use description from file for unknown S&E types
-				$strDescription				 = $this->_FetchRawCDR('Description');
+				$strDescription			= $this->_FetchRawCDR('Description');
 			}
-				// add dates
-				$strDescription				.= " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
+			// add dates
+			$strDescription				.= " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
 		}
 		if ($strDescription)
 		{
