@@ -3,20 +3,9 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../template/default.xsl" />
+	
 	<xsl:template name="Content">
-		<h2 class="Invoice">Unbilled Charges</h2>
-		
-		<h3>Service Details</h3>
-		<p>
-			Information about a services that appears on a particular invoice.
-		</p>
-		
-		<table border="1" cellpadding="3" cellspacing="0">
-			<tr>
-				<th>Service Number:</th>
-				<td><xsl:value-of select="/Response/Service/FNN" /></td>
-			</tr>
-		</table>
+		<h2 class="Invoice">Unbilled Charges for <xsl:value-of select="/Response/Service/FNN" /></h2>
 		
 		<xsl:if test="/Response/Service/UnbilledCalls/rangePage = 1">
 			<h3>Service Charges</h3>
@@ -30,7 +19,7 @@
 				<xsl:choose>
 					<xsl:when test="count(/Response/Service/UnbilledCharges/rangeSample/Charge) = 0">
 						<tr class="odd">
-							<td colspan="4">There are no charges in this list.</td>
+							<td colspan="4">No charges have been made against this Service.</td>
 						</tr>
 					</xsl:when>
 					<xsl:otherwise>
@@ -57,7 +46,14 @@
 								</td>
 								<td><xsl:value-of select="./ChargeType"  /></td>
 								<td><xsl:value-of select="./Description"  /></td>
-								<td><xsl:value-of select="./Amount" /> <xsl:value-of select="./Nature" /></td>
+								<td>
+									<xsl:call-template name="Currency">
+										<xsl:with-param name="Number"	select="./Amount" />
+										<xsl:with-param name="Decimal"	select="number('2')" />
+									</xsl:call-template>
+									<xsl:text> </xsl:text>
+									<xsl:value-of select="./Nature" />
+								</td>
 							</tr>
 						</xsl:for-each>
 					</xsl:otherwise>
@@ -125,7 +121,7 @@
 				<xsl:otherwise>
 					<tr class="odd">
 						<td colspan="6">
-							There are currently no calls in your unbilled charges for this service.
+							No calls have been recorded against this Service.
 						</td>
 					</tr>
 				</xsl:otherwise>

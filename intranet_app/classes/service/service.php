@@ -247,6 +247,7 @@
 				'Service'				=> $this->Pull ('Id')->getValue (),
 				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 				'CreatedOn'				=> new MySQLFunction ("NOW()"),
+				'ChargedOn'				=> new MySQLFunction ("NOW()"),
 				'ChargeType'			=> $chgChargeType->Pull ('ChargeType')->getValue (),
 				'Description'			=> $chgChargeType->Pull ('Description')->getValue (),
 				'Nature'				=> $chgChargeType->Pull ('Nature')->getValue (),

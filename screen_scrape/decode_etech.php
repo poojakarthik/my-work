@@ -207,6 +207,19 @@
 		return $arrInvoice;
 	}
 	
+	function FetchRecurringCharges()
+	{
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeInvoice ";
+		$strName	= 'RecurringCharges';
+		$arrRecurringCharges = $this->FetchResult($strName, $strQuery);
+		if ($arrRecurringCharges)
+		{
+			$arrRecurringCharges['DataArray'] = $this->ParseRecurringCharges($arrRecurringCharges['DataOriginal'], $arrRecurringCharges['CustomerId']);
+			unset($arrRecurringCharges['DataOriginal']);
+		}
+		return $arrRecurringCharges;
+	}
+	
 	function FetchMobileDetail()
 	{
 		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeServiceMobile ";
@@ -445,7 +458,276 @@
 		return $arrNotes;
 	}
 	
-	// parse user note
+	function ParseInvoiceDetail($strHtml, $intCustomerId)
+	{
+		$arrRecurringCharges = Array ();
+		
+		// Load the entire HTML into a DOM Document
+		$domDocument = new DOMDocument;
+		@$domDocument->LoadHTML ($strHTML);
+		
+		$dxpDocument = new DOMXPath ($domDocument);
+		
+		// Find the Tables in the file and use Table 9 (Recurring Charges)
+		$dnlTable = $dxpDocument->Query ("//table");
+		
+		$domTable = new DOMDocument;
+		$domTable->appendChild (
+			$domTable->importNode (
+				$dnlTable->Item (9),
+				TRUE
+			)
+		);
+		
+		$dxpTable = new DOMXPath ($domTable);
+		
+		// Get the Rows in that Table which are actual recurring charges
+		$dnlRows = $dxpTable->Query ("/table/tr[position() >= 3 and position() != last()]");
+		
+		// Foreach Row (Recurring Charge)
+		foreach ($dnlRows as $dnoRow)
+		{
+			$domRow = new DOMDocument;
+			$domRow->appendChild (
+				$domRow->importNode (
+					$dnoRow,
+					TRUE
+				)
+			);
+			
+			$dxpRow = new DOMXPath ($domRow);
+			
+			// There are 4 Columns in each Row. We only want the Image from Column 1
+			$strDetails	= trim ($dxpRow->Query ("/tr/td/img[1]")->item (0)->getAttribute ("alt"));
+			
+			$arrDetails = explode ("\n", $strDetails);
+			
+			$arrRecurringChargeFields = Array (
+				"Amount"				=> "RecursionCharge",
+				"Frequency"				=> "Frequency",
+				"Continuable"			=> "Continuable",
+				"Payments Remaining"	=> "RemainingRecursions",
+				"Invoice Message"		=> "Description"
+			);
+			
+			$arrRecurringCharge = Array (
+				"AccountGroup"			=> "",
+				"Account"				=> "",
+				"Service"				=> null,
+				"CreatedBy"				=> "",
+				"ApprovedBy"			=> "",
+				"ChargeType"			=> "",
+				"Description"			=> "",
+				"Nature"				=> "DR",
+				"CreatedOn"				=> "",
+				"StartedOn"				=> "",
+				"LastChargedOn"			=> "",
+				"RecurringFreqType"		=> "",
+				"RecurringFreq"			=> "",
+				"MinCharge"				=> "",
+				"RecursionCharge"		=> "",
+				"CancellationFee"		=> "0.0000",
+				"Continuable"			=> 0,
+				"PlanCharge"			=> FALSE,
+				"UniqueCharge"			=> FALSE,
+				"TotalCharged"			=> "0.0000",
+				"TotalRecursions"		=> "0",
+				"Archived"				=> 0
+			);
+			
+			$strLastIndex = "";
+			
+			foreach ($arrDetails as $value)
+			{
+				$arrData = preg_split ("/\:/", $value, 2);
+				
+				if ($arrData [0] == "")
+				{
+					continue;
+				}
+				
+				if (!isset ($arrData [1]))
+				{
+					$arrData [1] = $arrData [0];
+					$arrData [0] = $strLastIndex;
+				}
+				
+				if (isset ($arrData [1]))
+				{
+					$arrData [1] = trim ($arrData [1]);
+				}
+				
+				// AMOUNT
+				// Removes the Dollar sign from the start of any amount
+				if ($arrData [0] == "Amount")
+				{
+					$arrRecurringCharge ['RecursionCharge'] = str_replace ("$", "", $arrData [1]);
+					continue;
+				}
+				
+				// APPLIED BY
+				// The person who Applied the Recurring Charge
+				// In this case, this is also the person who Approved the Recurring Charge
+				if ($arrData [0] == "Added By")
+				{
+					$arrRecurringCharge ['CreatedBy'] = $arrData [1];
+					$arrRecurringCharge ['ApprovedBy'] = $arrData [1];
+					continue;
+				}
+				
+				// FREQUENCY
+				// The Frequency of the Recurring Charge (Monthly, Quarterly, ... etc)
+				if ($arrData [0] == "Frequency")
+				{
+					switch (strtolower ($arrData [1]))
+					{
+						case "monthly":
+							$arrRecurringCharge ['RecurringFreqType']	= BILLING_FREQ_MONTH;
+							$arrRecurringCharge ['RecurringFreq']		= 1;
+							break;
+							
+						case "quarterly":
+							$arrRecurringCharge ['RecurringFreqType']	= BILLING_FREQ_MONTH;
+							$arrRecurringCharge ['RecurringFreq']		= 3;
+							break;
+							
+						case "half yearly":
+							$arrRecurringCharge ['RecurringFreqType']	= BILLING_FREQ_MONTH;
+							$arrRecurringCharge ['RecurringFreq']		= 6;
+							break;
+							
+						case "annually":
+							$arrRecurringCharge ['RecurringFreqType']	= BILLING_FREQ_MONTH;
+							$arrRecurringCharge ['RecurringFreq']		= 12;
+							break;
+					}
+					
+					continue;
+				}
+				
+				// APPLIED DATE/TIME
+				// Stores the date in which this Recurring Charge was added to the System
+				// and calculates the date that this recurring charge was first created on.
+				if ($arrData [0] == "Applied Date/Time")
+				{
+					$arrRecurringCharge ['CreatedOn'] = $arrData [1];
+					
+					$intStartedOn = strtotime ($arrData [1]);
+					$arrRecurringCharge ['StartedOn'] = date (
+						"Y-m-d", 
+						strtotime ("+1 month", mktime (0, 0, 0, date ("m", $intStartedOn), 1, date ("Y", $intStartedOn)))
+					);
+					
+					continue;
+				}
+				
+				// TYPE
+				// Works out if this is a Continuously Recurring Charge or a Count Controlled
+				// Recurring Charge. If this is count controlled, it also gets the number of counts
+				// until it ceases
+				if ($arrData [0] == "Type")
+				{
+					$arrRecurringCharge ['Continuable'] = ($arrData [1] == "Continuous Recurring");
+					
+					if (preg_match ("/^Set Number of Payments\[(\d+)\]$/", $arrData [1], $arrMatches))
+					{
+						$arrRecurringCharge ['TotalPaymentsRequired'] = $arrMatches [1];
+					}
+					
+					continue;
+				}
+				
+				// STATUS
+				// Checks if the Recurring Charge is Archived or Available. If the Recurring Charge is Archived,
+				// don't bother doing anything else with it
+				if ($arrData [0] == "Status")
+				{
+					$arrRecurringCharge ['Archived'] = preg_match ("/^Cancelled - /", $arrData [1], $arrMatches);
+					
+					if ($arrRecurringCharge ['Archived'])
+					{
+						break;
+					}
+					
+					continue;
+				}
+				
+				// This is the Default for Storage
+				if (!isset ($arrRecurringChargeFields [$arrData [0]]))
+				{
+					echo "Not Found: " . $arrData [0] . "\n";
+					continue;
+				}
+				
+				// Store the Last Field we were working with in case
+				// This is a multi-line field
+				$strLastIndex = $arrData [0];
+				
+				// Instantiate the storage array value if it doesn't exist
+				if (!isset ($arrRecurringCharge [$arrData [0]]))
+				{
+					$arrRecurringCharge [$arrRecurringChargeFields [$arrData [0]]] = "";
+				}
+				
+				// Add the Information
+				$arrRecurringCharge [$arrRecurringChargeFields [$arrData [0]]] .= $arrData [1];
+			}
+			
+			$intFirstThisMonth = mktime (0, 0, 0, 1, 1, date ("Y"));
+			
+			if (isset ($arrRecurringCharge ['TotalPaymentsRequired']))
+			{
+				// This calculates the Total Number of Payments that have been made and the total Amount that has been Charged
+				// but only for count-controlled recurring charges
+				
+				$arrRecurringCharge ['TotalRecursions'] = $arrRecurringCharge ['TotalPaymentsRequired'] - $arrRecurringCharge ['RemainingRecursions'];
+				$arrRecurringCharge ['TotalCharged'] = $arrRecurringCharge ['TotalRecursions'] * $arrRecurringCharge ['RecursionCharge'];
+				
+				$arrRecurringCharge ['MinCharge'] = $arrRecurringCharge ['TotalPaymentsRequired'] * $arrRecurringCharge ['RecursionCharge'];
+				
+				unset ($arrRecurringCharge ['TotalPaymentsRequired']);
+				unset ($arrRecurringCharge ['RemainingRecursions']);
+			}
+			else
+			{
+				// This calculates the Total Number of Payments that have been made 
+				// and the total Amount that has been Charged but only for continuous recurring charges
+				
+				$intCurrentMonth = strtotime ($arrRecurringCharge ['StartedOn']);
+				
+				$intMonths = 0;
+				
+				while (true)
+				{
+					if (
+						date ("Y", $intFirstThisMonth) == date ("Y", $intCurrentMonth) &&
+						date ("m", $intFirstThisMonth) == date ("m", $intCurrentMonth)
+					)
+					{
+						break;
+					}
+					
+					++$intMonths;
+					$intCurrentMonth = strtotime ("+1 month", $intCurrentMonth);
+				}
+				
+				$arrRecurringCharge ['TotalRecursions']		= $intMonths;
+				$arrRecurringCharge ['TotalCharged']		= $intMonths * $arrRecurringCharge ['RecursionCharge'];
+			}
+			
+			$arrRecurringCharge ['LastChargedOn']		= date ("Y-m-d", $intFirstThisMonth);
+			
+			// We only want to save this if it's not archived.
+			if (!$arrRecurringCharge ['Archived'])
+			{
+				$arrRecurringCharges [] = $arrRecurringCharge;
+			}
+		}
+		
+		return $arrRecurringCharges;
+	}
+	
+	// parse invoice detail
 	function ParseInvoiceDetail($strHtml, $intCustomerId)
 	{
 		$arrInvoices = Array ();

@@ -139,4 +139,30 @@
 			</body>
 		</html>
 	</xsl:template>
+	
+	<xsl:template name="Currency">
+		<xsl:param name="Number" />
+		<xsl:param name="Decimal" select="number('4')" />
+		
+		<xsl:variable name="NumberCorrect">
+			<xsl:choose>
+				<xsl:when test="not($Number) or $Number = ''">
+					<xsl:value-of select="number(0)" />
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="number($Number)" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		
+		<xsl:text>$</xsl:text>
+		<xsl:choose>
+			<xsl:when test="$Decimal = 2">
+				<xsl:value-of select='format-number($NumberCorrect, "###,###,###,##0.00")' />
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select='format-number($NumberCorrect, "###,###,###,##0.0000")' />
+			</xsl:otherwise>
+		</xsl:choose>
+	</xsl:template>
 </xsl:stylesheet>
