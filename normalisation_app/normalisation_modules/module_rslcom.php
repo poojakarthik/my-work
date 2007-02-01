@@ -189,48 +189,52 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			// S&E
 			$strRecordCode 				= 'S&E';
 
-			//split line rental from other S&E 
+			// split line rental from other S&E 
 			// set RateId in raw data
 			switch ($this->_FetchRawCDR('Description'))
 			{
-				case "Business Telephone Line":	// not in file
-				case "Network Access Rental":	// $24.50
+				case "Business Telephone Line":
+				case "Network Access Rental":
 					// Business Line
 					$intRateId	= 80002;
 					break;					
-				case "Telephone Line":			// not in file
+				case "Telephone Line":
 					// Residential Line
 					//TODO!rich! find the real description for a residential line
 					$intRateId	= 80003;
 					break;
-				case "Faxstream":				// not in file
-				case "Faxstream Service":		// $31.77
+				case "Faxstream":
+				case "Faxstream Service":
 					// Fax Stream
 					$intRateId	= 80004;
 					break;
-				case "!ISDN2":
-				case "?ISDN HOME":						// $43.54
-				case "!Telstra Wholesale ISDN 2B+D":	// $57.72
+				case "ISDN HOME":
+					// ISDN Home
+					$intRateId	= 81001;
+					break;
+				case "Telstra Wholesale ISDN 2B+D":
 					// ISDN 2
-					//TODO!rich! find the real description(s) for an ISDN 2
 					$intRateId	= 81002;
 					break;
-				case "!ISDN10":
-					// ISDN 10
-					//TODO!rich! find the real description(s) for an ISDN 10
-					$intRateId	= 81010;
-					break;
-				case "!ISDN20":
-					// ISDN 20
-					//TODO!rich! find the real description(s) for an ISDN 20
-					$intRateId	= 81020;
-					break;
-				case "!ISDN30":
-				case "!ISDN 30 Access":	// $804.5 - $536.36 - $268.18
-					// see ItemCount = 10/20/30
-					// ISDN 30
-					//TODO!rich! find the real description(s) for an ISDN 30
-					$intRateId	= 81030;
+				case "!ISDN 30 Access":
+					switch ((int)$this->_FetchRawCDR('ItemCount'))
+					{
+						case 10:				
+							// ISDN 10
+							$intRateId	= 81010;
+							break;
+						case 20:
+							// ISDN 20
+							$intRateId	= 81020;
+							break;
+						case 30:
+							// ISDN 30
+							$intRateId	= 81030;
+							break;
+						default:
+							// unknown
+							$intRateId	= 80001;
+					}
 					break;
 				default:
 					// Other
@@ -255,23 +259,22 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 
-		// Destination Code & Description (only if we have a context)
+		// Destination Code & Description (context based)
+		unset($strDescription);
 		if ($this->_intContext > 0)
 		{
-			$mixCarrierCode 				= $this->_FetchRawCDR('RateId');
-			$arrDestinationCode 			= $this->FindDestination($mixCarrierCode);
+			$mixCarrierCode 			= $this->_FetchRawCDR('RateId');
+			$arrDestinationCode 		= $this->FindDestination($mixCarrierCode);
 			if ($arrDestinationCode)
 			{
 				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
-				$this->_AppendCDR('Description', $arrDestinationCode['Description']);
+				$strDescription = $arrDestinationCode['Description'];
 			}
 		}
 		
 		// CarrierRef
 		$mixValue 						= $this->_FetchRawCDR('EventId');
 		$this->_AppendCDR('CarrierRef', $mixValue);
-		
-		
 		
 		// StartDateTime & EndDateTime
 		if ($intCarrierRecordType == "1")
@@ -295,30 +298,33 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		}
 		
 		// Description
-		unset($strDescription);
 		if ($intCarrierRecordType == "1")
 		{
-		 	// For normal usage CDRs
-			//TODO!!!! - Work out description
-			if ($intServiceType === SERVICE_TYPE_INBOUND)
+			if($strDescription)
+			{
+				// already has a description
+			}
+			elseif ($intServiceType === SERVICE_TYPE_INBOUND)
 			{
 				// inbound service
-				//TODO-LATER !!!! - set this to the state or city the call originated from
+				//TODO!LATER! set this to the state or city the call originated from
 				$strDescription			= "Call from ".$this->_FetchRawCDR('OriginNo');
 			}
 			else
 			{
-		 		//TODO-LATER !!!! - more desrciptions
+		 		//TODO!LATER! more desrciptions
 			}
 		}
 		else
 		{
-		 	// For S&E and OC&C CDRs (unless we set a description previously
-			if ($mixCarrierCode == 1)
+		 	// For S&E and OC&C CDRs
+			if (!$strDescription)
 			{
+				// use description from file for unknown S&E types
 				$strDescription				 = $this->_FetchRawCDR('Description');
-				$strDescription				.= " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
 			}
+				// add dates
+				$strDescription				.= " ".$this->_FetchRawCDR('BeginDate')." to ".$this->_FetchRawCDR('EndDate');
 		}
 		if ($strDescription)
 		{
