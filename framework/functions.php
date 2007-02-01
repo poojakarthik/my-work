@@ -487,10 +487,10 @@ function GetCarrierName($intCarrier)
 }	
 
 //------------------------------------------------------------------------//
-// isValidFNN()
+// IsValidFNN()
 //------------------------------------------------------------------------//
 /**
- * isValidFNN()
+ * IsValidFNN()
  * 
  * Check if an FNN is valid
  * 
@@ -502,7 +502,7 @@ function GetCarrierName($intCarrier)
  * 
  * @method
  */
-function isValidFNN ($strFNN)
+function IsValidFNN ($strFNN)
 {
 	return preg_match ("/^(0\d{9}[i]?)|(13\d{4})|(1[89]00\d{6})$/", $strFNN);
 }

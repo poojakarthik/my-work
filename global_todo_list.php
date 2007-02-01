@@ -15,6 +15,11 @@
 // itemised
 // print on front page
 // print in service summary
+//TODO!rich! print charges and credits on bill
+//TODO!rich! don't add dates to S&E on bill
+
+
+
 
 // ---------------------------------------------------------------------------//
 // BASH
