@@ -46,6 +46,8 @@
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Destination');
 	$objImport->Truncate('DestinationTranslation');
+	$objImport->Truncate('RecordType');
+	$objImport->Truncate('RecordTypeTranslation');
 	
 	// clean import array
 	$arrImport = Array();
@@ -57,6 +59,12 @@
 	// Import Destination Translations
 	$arrImport['/home/vixen/vixen_seed/DestinationTranslation/IDD/DestinationTranslation.csv'] = 'DestinationTranslation';
 	$arrImport['/home/vixen/vixen_seed/DestinationTranslation/DestinationTranslation.csv'] = 'DestinationTranslation';
+	
+	// Import Record Types
+	$arrImport['/home/vixen/vixen_seed/RecordType/RecordType.csv'] = 'RecordType';
+	
+	// Import Record Type Translations
+	$arrImport['/home/vixen/vixen_seed/RecordTypeTranslation/RecordTypeTranslation.csv'] = 'RecordTypeTranslation';
 	
 	// Do Imports
 	foreach ($arrImport AS $strFilePath=>$strTable)

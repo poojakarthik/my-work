@@ -66,6 +66,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-2820';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-Blue39cCap'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -73,6 +78,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3635';
 	$arrGroup[]				= 'ResidentialLine-3635';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-Blue15CTM'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -80,6 +90,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3635';
 	$arrGroup[]				= 'ResidentialLine-3635';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-VOIP'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -87,6 +102,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-2979';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-BusSaverCapped'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -94,6 +114,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-2979';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-TierThreeCorporateCapped'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -101,6 +126,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-3499';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-TrueBlueFleet'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -108,6 +138,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3595';
 	$arrGroup[]				= 'ResidentialLine-3595';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-National16'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -115,6 +150,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-2698';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-VoicetalkCapped'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -122,6 +162,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-2995';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-Residential'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -129,6 +174,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-2979';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-06273';
+	$arrGroup[]				= 'ISDN-10-29318';
+	$arrGroup[]				= 'ISDN-20-58636';
+	$arrGroup[]				= 'ISDN-30-85000';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-TierThreeLocalSaver'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -136,6 +186,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-2979';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-06273';
+	$arrGroup[]				= 'ISDN-10-29318';
+	$arrGroup[]				= 'ISDN-20-58636';
+	$arrGroup[]				= 'ISDN-30-85000';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-TierThreeMobileSaver'] = $arrGroup;
 	
 	$arrGroup = Array();
@@ -150,6 +205,11 @@ Blue Shared 500 						25
 	$arrGroup[]				= 'Faxstream-3499';
 	$arrGroup[]				= 'ResidentialLine-2820';
 	$arrGroup[]				= 'S&E-Other';
+	$arrGroup[]				= 'ISDN-HOME-Cost';
+	$arrGroup[]				= 'ISDN-02-05772';
+	$arrGroup[]				= 'ISDN-10-27727';
+	$arrGroup[]				= 'ISDN-20-55454';
+	$arrGroup[]				= 'ISDN-30-80454';
 	$arrConfig['RateGroup'][SERVICE_TYPE_LAND_LINE]['S&E']['S&E-PeterKGroupSpecial'] = $arrGroup;
 
 	// Fleet LL -> Mobile
@@ -818,7 +878,12 @@ Blue Shared 500 						25
 
 	// get delinquents
 	$arrDelinquents = $objDecoder->FetchCustomerById(1000154916);
-
+	if (!is_array($arrDelinquents))
+	{
+		echo "FATAL ERROR : Could not Find Delinquents\n";
+		Die();
+	}
+	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
 	{	
@@ -839,6 +904,7 @@ Blue Shared 500 						25
 		foreach ($arrDelinquents['Service'] as $arrDelinquent)
 		{
 			unset($arrCustomer['Service'][$arrDelinquent['FNN']]);
+			echo "WARN : Delinquent Service Removed: {$arrDelinquent['FNN']} \n";
 		}
 		
 		// check service count
@@ -892,7 +958,7 @@ Blue Shared 500 						25
 
 	}
 
-Die();
+/*
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
 	{	
@@ -936,7 +1002,7 @@ Die();
 			//echo "No Notes found for  : {$arrRow['CustomerId']}\n";
 		}
 	}
-
+*/
 	//finish
 	echo "Done\n";
 	echo "Added : $intCustomerCount Accounts\n";
