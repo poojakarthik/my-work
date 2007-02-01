@@ -25,37 +25,6 @@
  *
  */
  
- echo "<pre>";
-
-// Application entry point - create an instance of the application object
-$appBilling = new ApplicationBilling($arrConfig);
-
-// Use GET variables to select which action to take
-switch ($_GET['action'])
-{
-	case "commit":
-		$bolResponse = $appBilling->Commit();
-		break;
-	case "revoke":
-		$bolResponse = $appBilling->Revoke();
-		break;
-	case "execute":
-	default:
-		// By default, run Execute()
-		//$bolResponse = $appBilling->Revoke();
-		//$bolResponse = $appBilling->Commit();
-		$bolResponse = $appBilling->Execute();
-		break;
-}
-
-$appBilling->FinaliseReport();
-
-// finished
-echo("\n\n-- End of Billing --\n");
-echo "</pre>";
-die();
-
-
 
 //----------------------------------------------------------------------------//
 // ApplicationBilling
