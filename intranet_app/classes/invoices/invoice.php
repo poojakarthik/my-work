@@ -217,7 +217,6 @@
 			//TODO!bash! make sure $fltDisputed !> Invoice.Total
 			$fltDisputed = str_replace ("$", "", $fltDisputed);
 			
-			//TODO!bash! Invoice.Balance -= $fltDisputed
 			$arrDispute = Array (
 				"Disputed"		=> $fltDisputed,
 				"Status"		=> INVOICE_DISPUTED
@@ -259,8 +258,11 @@
 					$fltBalance = $this->Pull ("Balance")->getValue () + $this->Pull ("Disputed")->getValue ();
 					
 					$arrInvoice = Array (
+						//TODO!bash! 
+						// Invoice.Disputed = 0
+						// if Balance > 0 Status = INVOICE_COMMITTED
+						// else Status = INVOICE_SETTLED
 						"Disputed"		=> 0,
-						"Balance"		=> $fltBalance,
 						"Status"		=> ($fltBalance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED
 					);
 					
@@ -287,15 +289,21 @@
 					$fltBalance = $this->Pull ("Balance")->getValue () + $fltAmount;
 					
 					$arrInvoice = Array (
+						// generate a credit for Invoice.Disputed - $fltAmount
+						// Invoice.Disputed = 0
+						// if Balance > 0 Status = INVOICE_COMMITTED
+						// else Status = INVOICE_SETTLED
 						"Disputed"		=> 0,
-						"Balance"		=> $fltBalance,
 						"Status"		=> ($fltBalance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED
 					);
 					
 					break;
 					
 				case DISPUTE_RESOLVE_NO_PAYMENT:
-					// IF the 
+					// generate a credit for Invoice.Disputed
+					// Invoice.Disputed = 0
+					// if Balance > 0  Status = INVOICE_COMMITTED
+					// if Balance = 0  Status = INVOICE_SETTLED
 					$arrCredit = Array (
 						"AccountGroup"	=> $this->Pull ('AccountGroup')->getValue (),
 						"Account"		=> $this->Pull ('Account')->getValue (),
@@ -312,10 +320,7 @@
 						"Status"		=> CHARGE_APPROVED
 					);
 					
-					// generate a credit for Invoice.Disputed
-					// Invoice.Disputed = 0
-					// if Balance > 0  Status = INVOICE_COMMITTED
-					// if Balance = 0  Status = INVOICE_SETTLED
+					
 					
 //					$arrInvoice = Array (
 //						"Status"	=> INVOICE_COMMMITTED
