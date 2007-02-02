@@ -515,26 +515,28 @@
 	 */
 	 private function _FindRate()
 	 {
-	 	// is this a fleet service
-		$intSourceFleetAccount = $this->_FindFleetAccount($this->_arrCurrentCDR['Service']);
-		if ($intSourceFleetAccount)
+	 	$bolFleet = FALSE;
+		
+		// this is one of our services
+		// find destination account & Service
+		//TODO
+		//$intDestinationAccount =
+		//$intDestinationService =
+		
+		// is this service on the same account
+		if ($intDestinationAccount == $this->_arrCurrentCDR['Account'])
 		{
-			// get the destination service Id
-			$intDestinationService = $this->_FindServiceByFNN($this->_arrCurrentCDR['Destination'], $this->_arrCurrentCDR['StartDatetime']);
-			
-			// is the destination a fleet account
-			$intDestinationFleetAccount = $this->_FindFleetAccount($intDestinationService);
-			if ($intDestinationFleetAccount)
+
+			// does the destination have a fleet rate
+			// TODO
+			//$intSoureRate = 
+			if ($intSoureRate)
 			{
-				// are both fleet services on the same account
-				if ($intSourceFleetAccount === $intDestinationFleetAccount)
-				{
-					$bolFleet = TRUE;
-				}
+				$bolFleet = TRUE;
 			}
 		}
 
-	 	// find the appropriate rate
+		// find the appropriate rate
 	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
 	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 	 	$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
@@ -627,47 +629,7 @@
 		return $arrRate;
 	 }
 	 
-	//------------------------------------------------------------------------//
-	// _FindFleetAccount
-	//------------------------------------------------------------------------//
-	/**
-	 * _FindFleetAccount()
-	 *
-	 * Find the Fleet Account for a Service
-	 *
-	 * Find the Fleet Account for a Service
-	 * Checks if there is a fleet rate plan attached to this service and returns
-	 * the Account Id for the service if a fleet rate is found.
-	 *
-	 * @param	int		$intService		Id of the service
-	 *
-	 * @return	mixed	int				Account Id
-	 * 					bool			FALSE if Account not found
-	 * @method
-	 */
-	 private function _FindFleetAccount($intService)
-	 {
-	 	// return FALSE if invalid Service
-		if ((int)$intService == 0)
-		{
-			return FALSE; 
-		}
-		
-		// find fleet RateGroup attached to this service for this record type & service type
-		$arrWhere = Array();
-		$arrWhere['Service']		= $intService;
-		$arrWhere['RecordType']		= $this->_arrCurrentCDR['RecordType'];
-		$arrWhere['ServiceType']	= $this->_arrCurrentCDR['ServiceType'];
-		$this->_selFleetAccount->Execute($arrWhere);
-		if($arrAccount = $this->_selFleetAccount->Fetch())
-		{
-			return $arrAccount['Account'];
-		}
-		// return FALSE if fleet rate not found
-		return FALSE;
-			
-	 }
-	 
+ 
 	//------------------------------------------------------------------------//
 	// _FindServiceByFNN
 	//------------------------------------------------------------------------//
