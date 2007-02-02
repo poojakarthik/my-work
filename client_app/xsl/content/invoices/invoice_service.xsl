@@ -13,6 +13,19 @@
 		
 		<table border="1" cellpadding="3" cellspacing="0">
 			<tr>
+				<th>Invoice Number:</th>
+				<td>
+					<a>
+						<xsl:attribute name="href">
+							<xsl:text>invoice.php?Id=</xsl:text>
+							<xsl:value-of select="/Response/Invoice/Id" />
+						</xsl:attribute>
+						<xsl:text></xsl:text>
+						<xsl:value-of select="/Response/Invoice/Id" />
+					</a>
+				</td>
+			</tr>
+			<tr>
 				<th>Service Number:</th>
 				<td>
 					<xsl:value-of select="/Response/InvoiceService/FNN" />
@@ -90,6 +103,8 @@
 			<xsl:choose>
 				<xsl:when test="count (/Response/InvoiceService/InvoiceServiceCalls/rangeSample/CDR) != 0">
 					<xsl:for-each select="/Response/InvoiceService/InvoiceServiceCalls/rangeSample/CDR">
+						<xsl:variable name="CDR" select="." />
+						
 						<tr>
 							<xsl:attribute name="class">
 								<xsl:choose>
@@ -111,20 +126,53 @@
 									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 								</xsl:call-template>
 							</td>
-							<td>
-								<xsl:value-of select="./Destination" />
-							</td>
-							<td>
-								<xsl:call-template name="dt:format-date-time">
-									<xsl:with-param name="hour"		select="./StartDatetime/hour" />
-									<xsl:with-param name="minute"	select="./StartDatetime/minute" />
-									<xsl:with-param name="second"	select="./StartDatetime/second" />
-									<xsl:with-param name="format"	select="'%I:%M:%S %P'"/>
-								</xsl:call-template>
-							</td>
-							<td>
-								<xsl:value-of select="./Duration" />
-							</td>
+							
+							
+							<xsl:choose>
+								<xsl:when test="/Response/RecordTypes/RecordType[./Id = $CDR/RecordType]/DisplayType = 1">
+									<td>
+										<xsl:value-of select="./Destination" />
+									</td>
+									<td>
+										<xsl:call-template name="dt:format-date-time">
+											<xsl:with-param name="hour"		select="./StartDatetime/hour" />
+											<xsl:with-param name="minute"	select="./StartDatetime/minute" />
+											<xsl:with-param name="second"	select="./StartDatetime/second" />
+											<xsl:with-param name="format"	select="'%I:%M:%S %P'"/>
+										</xsl:call-template>
+									</td>
+									<td>
+										<xsl:value-of select="./Duration" />
+									</td>
+								</xsl:when>
+								<xsl:when test="/Response/RecordTypes/RecordType[./Id = $CDR/RecordType]/DisplayType = 2">
+									<td colspan="3">
+										<xsl:value-of select="./Description" />
+									</td>
+								</xsl:when>
+								<xsl:when test="/Response/RecordTypes/RecordType[./Id = $CDR/RecordType]/DisplayType = 3">
+									<td colspan="3">
+										GPRS Data
+									</td>
+								</xsl:when>
+								<xsl:when test="/Response/RecordTypes/RecordType[./Id = $CDR/RecordType]/DisplayType = 4">
+									<td>
+										<xsl:value-of select="./Destination" />
+									</td>
+									<td>
+										<xsl:call-template name="dt:format-date-time">
+											<xsl:with-param name="hour"		select="./StartDatetime/hour" />
+											<xsl:with-param name="minute"	select="./StartDatetime/minute" />
+											<xsl:with-param name="second"	select="./StartDatetime/second" />
+											<xsl:with-param name="format"	select="'%I:%M:%S %P'"/>
+										</xsl:call-template>
+									</td>
+									<td>
+										SMS
+									</td>
+								</xsl:when>
+							</xsl:choose>
+							
 							<td class="Currency">
 								<xsl:call-template name="Currency">
 									<xsl:with-param name="Number"	select="./Charge" />

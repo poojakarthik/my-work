@@ -19,6 +19,9 @@
 	
 	$ivsService->getCalls (isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1);
 	
+	$RecordTypes		= $Style->attachObject (new RecordTypes ());
+	$RecordDisplayTypes	= $Style->attachObject (new RecordDisplayTypes ());
+	
 	$Style->Output ("xsl/content/invoices/invoice_service.xsl");
 	
 ?>

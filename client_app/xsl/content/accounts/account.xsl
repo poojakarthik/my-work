@@ -105,6 +105,7 @@
 								<xsl:text>even</xsl:text>
 							</xsl:otherwise>
 						</xsl:choose>
+						<xsl:text> Clickable</xsl:text>
 					</xsl:attribute>
 					<xsl:attribute name="onclick">
 						<xsl:text>window.location='invoice.php?Id=</xsl:text>

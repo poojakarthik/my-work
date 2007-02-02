@@ -253,7 +253,7 @@
 												<tr>
 													<td>
 														<a href="console_admin.php">
-															<img src="img/template/admin_console.png" title="Admin Console" class="MenuIcon" />
+															<img src="img/template/admin_console.png" title="Administrative Console" class="MenuIcon" />
 														</a>
 													</td>
 												</tr>

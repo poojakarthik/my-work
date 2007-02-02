@@ -33,7 +33,7 @@
 	 *
 	 * @prefix	rdt
 	 *
-	 * @package	intranet_app
+	 * @package	client_app
 	 * @class	RecordDisplayType
 	 * @extends	dataObject
 	 */

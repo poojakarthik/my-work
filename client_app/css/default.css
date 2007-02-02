@@ -184,6 +184,17 @@
 		padding-left:                  2px;
 		padding-right:                 2px;
 		padding-bottom:                2px;
+		
+		width:                         173px;
+	}
+	
+	select
+	{
+		border:                        solid 1px #006599;
+		padding-top:                   2px;
+		padding-left:                  2px;
+		padding-right:                 2px;
+		padding-bottom:                2px;
 	}
 	
 	div#Information
@@ -301,13 +312,17 @@
 	table tr.odd th
 	{
 		background-color:    #FFFFFF;
-		cursor:              pointer;
 	}
 	
 	table tr.even td,
 	table tr.even th
 	{
 		background-color:    #D5E0F8;
+	}
+	
+	tr.Clickable td,
+	.Clickable
+	{
 		cursor:              pointer;
 	}
 	

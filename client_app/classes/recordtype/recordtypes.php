@@ -33,12 +33,12 @@
 	 *
 	 * @prefix		rts
 	 *
-	 * @package		intranet_app
+	 * @package		client_app
 	 * @class		RecordTypes
-	 * @extends		Search
+	 * @extends		dataArray
 	 */
 	
-	class RecordTypes extends Search
+	class RecordTypes extends dataArray
 	{
 	
 		//------------------------------------------------------------------------//
@@ -56,7 +56,18 @@
 		
 		function __construct ()
 		{
-			parent::__construct ('RecordTypes', 'RecordType', 'RecordType');
+			parent::__construct ("RecordTypes");
+			
+			// Get all the invoices in the account
+			$selRecordTypes = new StatementSelect ("RecordType", "Id");
+			$selRecordTypes->Execute ();
+			
+			// Loop through all the invoices
+			while ($arrRecordType = $selRecordTypes->Fetch ())
+			{
+				// Push the invoice into the ObLib object
+				$this->Push (new RecordType ($arrRecordType ['Id']));
+			}
 		}
 	}
 	

@@ -32,7 +32,7 @@
 	 *
 	 * @prefix	rdl
 	 *
-	 * @package	intranet_app
+	 * @package	client_app
 	 * @class	RecordDisplayTypes
 	 * @extends	dataEnumerative
 	 */

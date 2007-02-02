@@ -42,6 +42,10 @@ require_once($strWebDir."classes/invoice/invoiceservice.php");
 require_once($strWebDir."classes/invoice/invoice.php");
 require_once($strWebDir."classes/account/account.php");
 require_once($strWebDir."classes/rateplan/rateplan.php");
+require_once($strWebDir."classes/recordtype/recordtype.php");
+require_once($strWebDir."classes/recordtype/recordtypes.php");
+require_once($strWebDir."classes/recordtype/recorddisplaytype.php");
+require_once($strWebDir."classes/recordtype/recorddisplaytypes.php");
 // load the authentication module
 require_once($strWebDir."classes/authentication/authentication.php");
 require_once($strWebDir."classes/contact/authenticatedcontact.php");

@@ -33,7 +33,7 @@
 	 *
 	 * @prefix	rty
 	 *
-	 * @package		intranet_app
+	 * @package		client_app
 	 * @class		RecordType
 	 * @extends		dataObject
 	 */

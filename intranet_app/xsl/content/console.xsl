@@ -56,9 +56,22 @@
 				</td>
 				<td>
 					<strong>View Available Plans</strong><br />
-					View details of available plans.
+					View details of available Plans.
 				</td>
 			</tr>
+			<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">
+				<tr>
+					<td>
+						<a href="console_admin.php">
+							<img src="img/template/admin_console.png" title="Administrative Console" class="MenuIcon" />
+						</a>
+					</td>
+				<td>
+					<strong>Administrative Console</strong><br />
+					Additional Administrative Options.
+				</td>
+				</tr>
+			</xsl:if>
 			<tr>
 				<td>
 					<a href="#">
