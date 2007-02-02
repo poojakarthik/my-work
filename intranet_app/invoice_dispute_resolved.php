@@ -20,7 +20,7 @@
 	try
 	{
 		// Get the Invoice
-		$invInvoice		= $Style->attachObject (new Invoice (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
+		$invInvoice		= $Style->attachObject (new Invoice ($_GET ['Invoice']));
 	}
 	catch (Exception $e)
 	{
@@ -28,35 +28,12 @@
 		exit;
 	}
 	
-	// Error
-	$oblstrError			= $Style->attachObject	(new dataString		('Error'));
-	
-	// UI Values (Remember)
-	$oblarrUIValues			= $Style->attachObject	(new dataArray		('ui-values'));
-	$oblintResolveMethod	= $oblarrUIValues->Push (new dataInteger	('ResolveMethod',	$_POST ['ResolveMethod']));
-	$oblintPaymentAmount	= $oblarrUIValues->Push (new dataString		('PaymentAmount',	$_POST ['PaymentAmount']));
-	
-	if (isset ($_POST ['ResolveMethod']))
-	{
-		$oblfltAmount = new dataFloat ('ResolveAmount');
-		
-		if (!$oblfltAmount->setValue ($_POST ['ResolveAmount']))
-		{
-			$oblstrError->setValue ('Invalid PaymentAmount');
-		}
-		else
-		{
-			$invInvoice->Resolve ($athAuthentication->AuthenticatedEmployee (), $_POST ['ResolveMethod'], $_POST ['PaymentAmount']);
-			header ("Location: invoice_dispute_resolved.php?Invoice=" . $invInvoice->Pull ('Id')->getValue ());
-		}
-	}
-	
 	// Pull documentation information for a Service and an Account
 	$docDocumentation->Explain ('Invoice');
 	
 	// Output the Account View
 	$Style->Output (
-		'xsl/content/invoice/dispute/resolve.xsl',
+		'xsl/content/invoice/dispute/resolved.xsl',
 		Array (
 			'Account'	=> $invInvoice->Pull ('Account')->getValue (),
 			'Invoice'	=> $invInvoice->Pull ('Id')->getValue ()

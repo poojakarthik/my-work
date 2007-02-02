@@ -912,6 +912,11 @@ define("SYSTEM_NOTE_TYPE"			, 7);
 define("REPORT_RESULT_TYPE_CSV"		, "CSV");
 define("REPORT_RESULT_TYPE_HTML"	, "HTML");
 
+// resolve dispute status codes
+define("DISPUTE_RESOLVE_FULL_PAYMENT"		, 1);
+define("DISPUTE_RESOLVE_PARTIAL_PAYMENT"	, 2);
+define("DISPUTE_RESOLVE_NO_PAYMENT"			, 3);
+
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 {

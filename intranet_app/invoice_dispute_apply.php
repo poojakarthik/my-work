@@ -48,7 +48,7 @@
 			$Style->Output (
 				'xsl/content/invoice/dispute/applied.xsl',
 				Array (
-					'Account'	=> $actAccount->Pull ('Id')->getValue (),
+					'Account'	=> $invInvoice->Pull ('Account')->getValue (),
 					'Invoice'	=> $invInvoice->Pull ('Id')->getValue ()
 				)
 			);
@@ -69,7 +69,7 @@
 	$Style->Output (
 		'xsl/content/invoice/dispute/apply.xsl',
 		Array (
-			'Account'	=> $actAccount->Pull ('Id')->getValue (),
+			'Account'	=> $invInvoice->Pull ('Account')->getValue (),
 			'Invoice'	=> $invInvoice->Pull ('Id')->getValue ()
 		)
 	);
