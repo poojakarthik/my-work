@@ -79,7 +79,6 @@ require_once('application_loader.php');
 		
 
 		// Optus Definition
-		$arrConfig['Define']["Optus"]	['ZipPword']					= "";
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
@@ -90,6 +89,7 @@ require_once('application_loader.php');
 		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
 		
 		// AAPT Definition
+		$arrConfig['Define']["AAPT"]	['ZipPword']					= "zbj6v04ls";
 		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
 		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;
  		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_FTP;
