@@ -477,8 +477,14 @@
 	 *
 	 * @method
 	 */
-	 protected function FindServiceByFNN($strFNN, $intAccount)
+	 protected function FindServiceByFNN($strFNN, $intAccount, $strDate=NULL)
 	 {
+		// TODO!rich! - Why aren't we using $intAccount????????
+		
+		if ($strDate == NULL)
+		{
+			$strDate = date("Y-m-d", time());
+		}
 
 	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$strFNN, "date" => (string)$strDate));
 	 	

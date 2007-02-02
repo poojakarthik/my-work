@@ -263,6 +263,17 @@
 		switch ($arrLine['RecordType'])
 		{
 			//------------------------- INVOICE  HEADERS -------------------------//
+			case 2:
+				// SP DETAILS
+				// Set Data
+				$this->_arrStatus['CreatedOn']	= $arrLine['InvoiceDate'];
+				$this->arrData['CreatedOn']		= $this->_arrStatus['CreatedOn'];
+				$this->_arrStatus['DueOn']		= $arrLine['DueByDate'];
+				$this->arrData['DueOn']			= $this->_arrStatus['DueByDate'];
+								
+				// Call DecodeData() again
+				DecodeData();
+				break;
 			case 6:
 				// INVOICE NUMBER
 				// Set data
