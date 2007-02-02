@@ -113,6 +113,10 @@
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
 															$strWhere, 'CreatedOn DESC, Account DESC', '1');
+															
+		$this->_selDestinationDetails	=new StatementSelect(	"Service",
+																"Id, Account",
+																$strWhere, 'CreatedOn DESC, Account DESC', '1');
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
 		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
@@ -516,30 +520,9 @@
 	 private function _FindRate()
 	 {
 	 	$bolFleet = FALSE;
-		
-		// this is one of our services
-		// find destination account & Service
-		//TODO
-		//$intDestinationAccount =
-		//$intDestinationService =
-		
-		// is this service on the same account
-		if ($intDestinationAccount == $this->_arrCurrentCDR['Account'])
-		{
-
-			// does the destination have a fleet rate
-			// TODO
-			//$intSoureRate = 
-			if ($intSoureRate)
-			{
-				$bolFleet = TRUE;
-			}
-		}
-
-		// find the appropriate rate
-	 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
-	 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
-	 	$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
+	 	
+	 	// Set up the rate-finding query
+		$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
 		if (!$this->_arrCurrentCDR['DestinationCode'])
 		{
 			// TODO!!!! - Context
@@ -556,6 +539,32 @@
 	 	$strAliases['Friday']		= ($strDay == "Friday") ? TRUE : DONKEY;
 	 	$strAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
 	 	$strAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
+		
+		// this is one of our services
+		// find destination account & Service
+		$arrWhere['Prefix']		= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
+		$arrWhere['FNN']		= $this->_arrCurrentCDR['Destination'];
+		$arrWhere['Date']		= $this->_arrCurrentCDR['StartDatetime'];
+		$this->_selDestinationDetails->Execute($arrWhere);
+		$arrDestinationDetails = $this->_selDestinationDetails->Fetch();
+		$intDestinationAccount = $arrDestinationDetails['Account'];
+		$intDestinationService = $arrDestinationDetails['Id'];
+		
+		// is this service on the same account
+		if ($intDestinationAccount == $this->_arrCurrentCDR['Account'])
+		{
+		 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
+		 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
+			// does the destination have a fleet rate
+			$this->_selFindFleetRate->Execute($strAliases);
+			$arrSourceRate = $this->_selFindFleetRate->Fetch();
+			if ($intSourceRate = $arrSourceRate['Id'])
+			{
+				$bolFleet = TRUE;
+			}
+		}
+
+		// find the appropriate rate
 		if ($bolFleet === TRUE)
 		{
 			// look for a fleet rate
