@@ -112,8 +112,13 @@
 		public function getInvoices ()
 		{
 			// Get all the invoices in the account
-			$selInvoices = new StatementSelect ("Invoice", "Id", "Account = <Account>");
-			$selInvoices->Execute(Array("Account" => $this->Pull ("Id")->getValue ()));
+			$selInvoices = new StatementSelect ("Invoice", "Id", "AccountGroup = <AccountGroup> AND Account = <Account>");
+			$selInvoices->Execute (
+				Array (
+					"AccountGroup"	=> $this->Pull ("AccountGroup")->getValue (),
+					"Account"		=> $this->Pull ("Id")->getValue ()
+				)
+			);
 			
 			// Create a new ObLib object to contain the invoices in
 			$oblarrInvoices = new dataArray ("Invoices", "Invoice");

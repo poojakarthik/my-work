@@ -119,8 +119,20 @@
 			// do this through the account group variable. Otherwise this must
 			// be authenticated through the user's Account.
 			
-			$selServiceDetails = new StatementSelect ("ServiceTotal", "*", "InvoiceRun = <InvoiceRun> AND Service = <Service>");
-			$selServiceDetails->Execute(Array("InvoiceRun" => $invInvoice->Pull ("InvoiceRun")->getValue (), "Service" => $intService));
+			$selServiceDetails = new StatementSelect (
+				"ServiceTotal",
+				"*",
+				"AccountGroup = <AccountGroup> AND Account = <Account> AND InvoiceRun = <InvoiceRun> AND Service = <Service>"
+			);
+			
+			$selServiceDetails->Execute (
+				Array (
+					"AccountGroup"	=> $invInvoice->Pull ("AccountGroup")->getValue (),
+					"Account"		=> $invInvoice->Pull ("Account")->getValue (),
+					"InvoiceRun"	=> $invInvoice->Pull ("InvoiceRun")->getValue (),
+					"Service"		=> $intService
+				)
+			);
 			
 			// Use ObLib and set all this information in the object
 			$selServiceDetails->useObLib (TRUE);

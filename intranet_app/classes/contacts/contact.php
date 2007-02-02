@@ -111,6 +111,31 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// AccountGroup
+		//------------------------------------------------------------------------//
+		/**
+		 * AccountGroup()
+		 *
+		 * The Contact's Account Group
+		 *
+		 * The Contact's Account Group
+		 *
+		 * @return	AccountGroup		The Account Group this Contact belongs to
+		 *
+		 * @method
+		 */
+		
+		public function AccountGroup ()
+		{
+			if (!$this->_acgAccountGroup)
+			{
+				$this->_acgAccountGroup = new AccountGroup ($this->Pull ('AccountGroup')->getValue ());
+			}
+			
+			return $this->_acgAccountGroup;
+		}
+		
+		//------------------------------------------------------------------------//
 		// getAccount
 		//------------------------------------------------------------------------//
 		/**

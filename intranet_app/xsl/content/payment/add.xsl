@@ -30,6 +30,7 @@
 					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
 							<xsl:when test="/Response/Accounts/Results/rangeLength = 1">
+								<input type="hidden" name="Account-Use" value="1" />
 								<input type="hidden" name="Account">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -142,11 +143,11 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Payment">Payment Details</h2>
-			<xsl:if test="/Response/AccountGroup">
-				<input type="hidden" name="AccountGroup">
+			<xsl:if test="/Response/Contact">
+				<input type="hidden" name="Contact">
 					<xsl:attribute name="value">
 						<xsl:text></xsl:text>
-						<xsl:value-of select="/Response/AccountGroup/Id" />
+						<xsl:value-of select="/Response/Contact/Id" />
 					</xsl:attribute>
 				</input>
 			</xsl:if>

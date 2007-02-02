@@ -9,14 +9,15 @@
 		exit;
 	}
 	
-	$invInvoice = $athAuthentication->getAuthenticatedUser ()->getInvoice ($_GET ['Invoice']);
-	$Style->attachObject ($invInvoice);
+	$invInvoice = $Style->attachObject ($athAuthentication->getAuthenticatedUser ()->getInvoice ($_GET ['Invoice']));
+	$ivsService = $Style->attachObject ($invInvoice->getService ($_GET ['Id']));
 	
-	$srvService = $invInvoice->getService ($_GET ['Id']);
-	$Style->attachObject ($srvService);
+	if (!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1)
+	{
+		$ivsService->getCharges ();
+	}
 	
-	$srvService->getCalls (isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1);
-	((!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1) ? $srvService->getCharges () : null);
+	$ivsService->getCalls (isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1);
 	
 	$Style->Output ("xsl/content/invoices/invoice_service.xsl");
 	

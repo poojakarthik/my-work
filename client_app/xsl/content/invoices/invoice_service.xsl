@@ -22,12 +22,13 @@
 		
 		<xsl:if test="/Response/InvoiceService/InvoiceServiceCalls/rangePage = 1">
 			<h3>Service Charges</h3>
-			<table border="0" cellpadding="5" cellspacing="0" width="100%">
+			<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 				<tr class="first">
+					<th>#</th>
 					<th>Charged On</th>
 					<th>Ref.</th>
 					<th>Description</th>
-					<th>Amount</th>
+					<th class="Currency">Amount</th>
 				</tr>
 				<xsl:choose>
 					<xsl:when test="count(/Response/InvoiceService/InvoiceServiceCharges/rangeSample/Charge) != 0">
@@ -44,6 +45,7 @@
 									</xsl:choose>
 								</xsl:attribute>
 								
+								<td><xsl:value-of select="/Response/InvoiceService/InvoiceServiceCharges/rangeStart + position()" />.</td>
 								<td>
 									<xsl:call-template name="dt:format-date-time">
 										<xsl:with-param name="year"		select="./ChargedOn/year" />
@@ -54,7 +56,14 @@
 								</td>
 								<td><xsl:value-of select="./ChargeType"  /></td>
 								<td><xsl:value-of select="./Description"  /></td>
-								<td><xsl:value-of select="./Amount" /> <xsl:value-of select="./Nature" /></td>
+								<td class="Currency">
+									<xsl:call-template name="Currency">
+										<xsl:with-param name="Number"	select="./Amount" />
+										<xsl:with-param name="Decimal"	select="number('2')" />
+									</xsl:call-template>
+									<xsl:text> </xsl:text>
+									<xsl:value-of select="./Nature" />
+								</td>
 							</tr>
 						</xsl:for-each>
 					</xsl:when>
@@ -69,12 +78,12 @@
 		
 		<h3>Call Information</h3>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 			<tr class="first">
 				<th>#</th>
 				<th>Date</th>
-				<th>Time</th>
 				<th>Called Party</th>
+				<th>Time</th>
 				<th>Duration</th>
 				<th>Charge</th>
 			</tr>
@@ -93,9 +102,7 @@
 								</xsl:choose>
 							</xsl:attribute>
 							
-							<td>
-								<xsl:value-of select="./Id" />
-							</td>
+							<td><xsl:value-of select="/Response/InvoiceService/InvoiceServiceCalls/rangeStart + position()" />.</td>
 							<td>
 								<xsl:call-template name="dt:format-date-time">
 									<xsl:with-param name="year"		select="./StartDatetime/year" />
@@ -103,6 +110,9 @@
 									<xsl:with-param name="day"		select="./StartDatetime/day" />
 									<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
 								</xsl:call-template>
+							</td>
+							<td>
+								<xsl:value-of select="./Destination" />
 							</td>
 							<td>
 								<xsl:call-template name="dt:format-date-time">
@@ -113,13 +123,13 @@
 								</xsl:call-template>
 							</td>
 							<td>
-								<xsl:value-of select="./Destination" />
-							</td>
-							<td>
 								<xsl:value-of select="./Duration" />
 							</td>
-							<td>
-								<xsl:value-of select="./Charge" />
+							<td class="Currency">
+								<xsl:call-template name="Currency">
+									<xsl:with-param name="Number"	select="./Charge" />
+									<xsl:with-param name="Decimal"	select="number('4')" />
+								</xsl:call-template>
 							</td>
 						</tr>
 					</xsl:for-each>
@@ -145,7 +155,7 @@
 										<xsl:text>invoice_service.php?Invoice=</xsl:text>
 										<xsl:value-of select="/Response/Invoice/Id" />
 										<xsl:text>&amp;Id=</xsl:text>
-										<xsl:value-of select="/Response/InvoiceService/Id" />
+										<xsl:value-of select="/Response/InvoiceService/Service" />
 										<xsl:text>&amp;rangePage=</xsl:text>
 										<xsl:value-of select="/Response/InvoiceService/InvoiceServiceCalls/rangePage - 1" />
 									</xsl:attribute>
@@ -165,7 +175,7 @@
 										<xsl:text>invoice_service.php?Invoice=</xsl:text>
 										<xsl:value-of select="/Response/Invoice/Id" />
 										<xsl:text>&amp;Id=</xsl:text>
-										<xsl:value-of select="/Response/InvoiceService/Id" />
+										<xsl:value-of select="/Response/InvoiceService/Service" />
 										<xsl:text>&amp;rangePage=</xsl:text>
 										<xsl:value-of select="/Response/InvoiceService/InvoiceServiceCalls/rangePage + 1" />
 									</xsl:attribute>

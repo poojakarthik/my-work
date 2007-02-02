@@ -122,7 +122,7 @@
 					</td>
 					<td>
 						<xsl:choose>
-							<xsl:when test="/Response/Invoice/SettledOn/year = ''">
+							<xsl:when test="/Response/Invoice/Status = 103">
 								<xsl:call-template name="dt:format-date-time">
 									<xsl:with-param name="year"	select="/Response/Invoice/SettledOn/year" />
 									<xsl:with-param name="month"	select="/Response/Invoice/SettledOn/month" />
@@ -138,7 +138,12 @@
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>
-					<td class="Currency"><xsl:value-of select="./Total" /></td>
+					<td class="Currency">
+						<xsl:call-template name="Currency">
+							<xsl:with-param name="Number"	select="./Total + ./Tax" />
+							<xsl:with-param name="Decimal"	select="number('2')" />
+						</xsl:call-template>
+					</td>
 				</tr>
 			</xsl:for-each>
 		</table>

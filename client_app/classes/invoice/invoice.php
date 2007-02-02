@@ -124,8 +124,6 @@
 			}
 			
 			$selInvoice->Fetch ($this);
-			
-			$this->Push ($this->getServices ());
 		}
 		
 		//------------------------------------------------------------------------//
@@ -149,15 +147,26 @@
 			
 			$oblarrInvoiceServices = new dataArray ("InvoiceServices", "InvoiceService");
 			
-			$selServices = new StatementSelect ("ServiceTotal", "Service, InvoiceRun", "InvoiceRun = <InvoiceRun>");
-			$selServices->Execute(Array("InvoiceRun" => $this->Pull ("InvoiceRun")->getValue ()));
+			$selServices = new StatementSelect (
+				"ServiceTotal", 
+				"Service", 
+				"AccountGroup = <AccountGroup> AND Account = <Account> AND InvoiceRun = <InvoiceRun>"
+			);
+			
+			$selServices->Execute(
+				Array (
+					"AccountGroup"	=> $this->Pull ("AccountGroup")->getValue (),
+					"Account"		=> $this->Pull ("Account")->getValue (),
+					"InvoiceRun"	=> $this->Pull ("InvoiceRun")->getValue ()
+				)
+			);
 			
 			while ($arrService = $selServices->Fetch ())
 			{
 				$oblarrInvoiceServices->Push (new InvoiceService ($this->_cntContact, $this, $arrService ['Service']));
 			}
 			
-			return $oblarrInvoiceServices;
+			return $this->Push ($oblarrInvoiceServices);
 		}
 		
 		//------------------------------------------------------------------------//
@@ -179,9 +188,19 @@
 		
 		public function getService ($Id)
 		{
-			$selService = new StatementSelect ("ServiceTotal", "InvoiceRun, Service", "InvoiceRun = <InvoiceRun> AND Service = <Service>");
-			$selService->Execute(Array("InvoiceRun" => $this->Pull ("InvoiceRun")->getValue (), "Service" => $Id));
-			
+			$selService = new StatementSelect (
+				"ServiceTotal", 
+				"Service", 
+				"AccountGroup = <AccountGroup> AND Account = <Account> AND InvoiceRun = <InvoiceRun> AND Service = <Service>"
+			);
+			$selService->Execute (
+				Array (
+					"AccountGroup"	=> $this->Pull ("AccountGroup")->getValue (),
+					"Account"		=> $this->Pull ("Account")->getValue (),
+					"InvoiceRun"	=> $this->Pull ("InvoiceRun")->getValue (),
+					"Service"		=> $Id
+				)
+			);
 			if ($selService->Count () <> 1)
 			{
 				throw new Exception ("There is no service with the ID you requested");

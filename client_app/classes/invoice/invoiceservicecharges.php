@@ -118,11 +118,18 @@
 			$this->_ivsService =& $ivsService;
 			
 			// Get a list of the number of charges that are associated with this invoice-service pair
-			$selChargesLength = new StatementSelect("Charge", "count(*) AS collationLength", "Invoice = <Invoice> AND Service = <Service>");
+			$selChargesLength = new StatementSelect (
+				"Charge",
+				"count(*) AS collationLength",
+				"AccountGroup = <AccountGroup> AND Account = <Account> AND InvoiceRun = <InvoiceRun> AND Service = <Service>"
+			);
+			
 			$selChargesLength->Execute(
 				Array(
-					"Invoice"	=> $this->_invInvoice->Pull ("Id")->getValue (), 
-					"Service"	=> $this->_ivsService->Pull ("Id")->getValue ()
+					"AccountGroup"	=> $this->_invInvoice->Pull ("AccountGroup")->getValue (), 
+					"Account"		=> $this->_invInvoice->Pull ("Account")->getValue (), 
+					"InvoiceRun"	=> $this->_invInvoice->Pull ("InvoiceRun")->getValue (), 
+					"Service"		=> $this->_ivsService->Pull ("Service")->getValue ()
 				)
 			);
 			
@@ -174,17 +181,19 @@
 		public function ItemIndex ($intIndex)
 		{
 			$selChargeId = new StatementSelect (
-				"Charge", 
+				"Charge",
 				"Id", 
-				"Invoice = <Invoice> AND Service = <Service>", 
+				"AccountGroup = <AccountGroup> AND Account = <Account> AND InvoiceRun = <InvoiceRun> AND Service = <Service>",
 				null, 
 				$intIndex . ", 1"
 			);
 			
 			$selChargeId->Execute(
 				Array(
-					"Invoice"	=> $this->_invInvoice->Pull ("Id")->getValue (), 
-					"Service"	=> $this->_ivsService->Pull ("Id")->getValue ()
+					"AccountGroup"	=> $this->_invInvoice->Pull ("AccountGroup")->getValue (), 
+					"Account"		=> $this->_invInvoice->Pull ("Account")->getValue (), 
+					"InvoiceRun"	=> $this->_invInvoice->Pull ("InvoiceRun")->getValue (), 
+					"Service"		=> $this->_ivsService->Pull ("Service")->getValue ()
 				)
 			);
 			

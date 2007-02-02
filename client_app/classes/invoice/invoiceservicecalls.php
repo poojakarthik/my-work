@@ -118,21 +118,23 @@
 			
 			$selCDRLength = new StatementSelect(
 				"CDR", 
-				"count(*) AS collationLength", 
-				"InvoiceRun = <InvoiceRun> AND Service = <Service> AND Status = <Status>"
+				"count(Id) AS collationLength", 
+				"AccountGroup = <AccountGroup> AND Account = <Account> AND InvoiceRun = <InvoiceRun> AND Service = <Service> AND Status = <Status>"
 			);
 			
 			$selCDRLength->Execute(
 				Array(
-					"InvoiceRun"=> $this->_invInvoice->Pull ("InvoiceRun")->getValue (), 
-					"Service"	=> $this->_ivsService->Pull ("Id")->getValue (),
-					"Status"	=> CDR_INVOICED
+					"AccountGroup"	=> $this->_invInvoice->Pull ("AccountGroup")->getValue (), 
+					"Account"		=> $this->_invInvoice->Pull ("Account")->getValue (), 
+					"InvoiceRun"	=> $this->_invInvoice->Pull ("InvoiceRun")->getValue (), 
+					"Service"		=> $this->_ivsService->Pull ("Service")->getValue (), 
+					"Status"		=> CDR_INVOICED
 				)
 			);
 			
-			$intLength = $selCDRLength->Fetch ();
+			$arrLength = $selCDRLength->Fetch ();
 			
-			parent::__construct ("InvoiceServiceCalls", "CDR", $intLength ['collationLength']);
+			parent::__construct ("InvoiceServiceCalls", "CDR", $arrLength ['collationLength']);
 		}
 		
 		//------------------------------------------------------------------------//
@@ -176,28 +178,32 @@
 		
 		public function ItemIndex ($itemIndex)
 		{
-			$selCDRId = new StatementSelect (
+			$selCDR = new StatementSelect (
 				"CDR", 
-				"count(*) AS collationLength", 
-				"InvoiceRun = <InvoiceRun> AND Service = <Service> AND Status = <Status>",
+				"Id", 
+				"AccountGroup = <AccountGroup> AND Account = <Account> AND InvoiceRun = <InvoiceRun> AND Service = <Service> AND Status = <Status>",
 				"StartDatetime", 
 				$itemIndex . ", 1"
 			);
 			
-			$selCDRId->Execute(
+			$selCDR->Execute(
 				Array(
-					"InvoiceRun"=> $this->_invInvoice->Pull ("InvoiceRun")->getValue (), 
-					"Service"	=> $this->_ivsService->Pull ("Id")->getValue (),
-					"Status"	=> CDR_INVOICED
+					"AccountGroup"	=> $this->_invInvoice->Pull ("AccountGroup")->getValue (), 
+					"Account"		=> $this->_invInvoice->Pull ("Account")->getValue (), 
+					"InvoiceRun"	=> $this->_invInvoice->Pull ("InvoiceRun")->getValue (), 
+					"Service"		=> $this->_ivsService->Pull ("Service")->getValue (),
+					"Status"		=> CDR_INVOICED
 				)
 			);
 			
-			if (!$arrCDRId = $selCDRId->Fetch ())
+			$arrCDR = $selCDR->Fetch ();
+			
+			if ($arrCDR == null)
 			{
 				return null;
 			}
 			
-			return $this->ItemId ($arrCDRId ['Id']);
+			return $this->ItemId ($arrCDR ['Id']);
 		}
 	}
 	

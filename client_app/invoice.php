@@ -10,6 +10,7 @@
 	}
 	
 	$Invoice = $athAuthentication->getAuthenticatedUser ()->getInvoice ($_GET ['Id']);
+	$Invoice->getServices ();
 	$Style->attachObject ($Invoice);
 	
 	$Style->Output ("xsl/content/invoices/invoice.xsl");

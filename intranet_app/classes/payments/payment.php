@@ -92,19 +92,18 @@
 		
 		public function Account ()
 		{
-			if ($this->_actAccount)
+			if (!$this->_actAccount)
 			{
-				return $this->_actAccount;
+				$intAccount = $this->Pull ('Account')->getValue ();
+				
+				if ($intAccount == NULL)
+				{
+					return NULL;
+				}
+				
+				$this->_actAccount = new Account ($intAccount);
 			}
 			
-			$intAccount = $this->Pull ('Account')->getValue ();
-			
-			if ($intAccount == NULL)
-			{
-				return NULL;
-			}
-			
-			$this->_actAccount = new Account ($intAccount);
 			return $this->_actAccount;
 		}
 	}

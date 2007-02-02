@@ -35,8 +35,8 @@
 	{
 		try
 		{
-			$actAccount = $Style->attachObject (new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']));
-			$acgAccountGroup = $Style->attachObject ($actAccount->AccountGroup ());
+			$actAccount			= $Style->attachObject (new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']));
+			$acgAccountGroup	= $Style->attachObject ($actAccount->AccountGroup ());
 			
 			$Style->attachObject (new dataString ('Account', $actAccount->Pull ('Id')->getValue ()));
 		}
@@ -46,15 +46,17 @@
 			exit;
 		}
 	}
-	else if ($_GET ['AccountGroup'] || $_POST ['AccountGroup'])
+	
+	if ($_GET ['Contact'] || $_POST ['Contact'])
 	{
 		try
 		{
-			$acgAccountGroup = $Style->attachObject (
-				new AccountGroup (
-					($_GET ['AccountGroup']) ? $_GET ['AccountGroup'] : $_POST ['AccountGroup']
-				)
-			);
+			$cntContact			= $Style->attachObject (new Contact (($_GET ['Contact']) ? $_GET ['Contact'] : $_POST ['Contact']));
+			
+			if (!isset ($acgAccountGroup))
+			{
+				$acgAccountGroup	= $Style->attachObject ($cntContact->AccountGroup ());
+			}
 		}
 		catch (Exception $e)
 		{
@@ -62,7 +64,8 @@
 			exit;
 		}
 	}
-	else
+	
+	if (!$actAccount && !$cntContact)
 	{
 		header ('Location: console.php');
 		exit;
@@ -80,11 +83,6 @@
 	
 	// Error handler
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
-	
-	// By this point, we should have an Account Group specified, and Possibly an
-	// account. Therefore, we can assume that the $acgAccountGroup variable is set.
-	$acsAccounts = $Style->attachObject ($acgAccountGroup->getAccounts ());
-	$acsAccounts->Sample ();
 	
 	if ($_POST ['PaymentType'])
 	{
@@ -119,10 +117,15 @@
 				)
 			);
 			
-			header ("Location: payment_added.php?Id=" . $intPayment);
+			header ("Location: payment_added.php?Id=" . $intPayment . (($cntContact) ? "&Contact=" . $cntContact->Pull ('Id')->getValue () : ""));
 			exit;
 		}
 	}
+	
+	// By this point, we should have an Account Group specified, and Possibly an
+	// account. Therefore, we can assume that the $acgAccountGroup variable is set.
+	$acsAccounts = $Style->attachObject ($acgAccountGroup->getAccounts ());
+	$oblsamAccounts = $acsAccounts->Sample ();
 	
 	// Pull the required documentation information
 	$docDocumentation->Explain ('AccountGroup');
@@ -132,7 +135,8 @@
 	$Style->Output (
 		'xsl/content/payment/add.xsl',
 		Array (
-			'Account'	=> ($actAccount) ? $actAccount->Pull ('Id')->getValue () : null
+			'Contact'	=> ($cntContact)	? $cntContact->Pull ('Id')->getValue () : null,
+			'Account'	=> ($actAccount)	? $actAccount->Pull ('Id')->getValue () : null
 		)
 	);
 	

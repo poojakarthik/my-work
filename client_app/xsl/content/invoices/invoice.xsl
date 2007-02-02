@@ -44,7 +44,7 @@
 				<th>Settlement:</th>
 				<td>
 					<xsl:choose>
-						<xsl:when test="/Response/Invoice/SettledOn/year = ''">
+						<xsl:when test="/Response/Invoice/Status = 103">
 							<xsl:call-template name="dt:format-date-time">
 								<xsl:with-param name="year"	select="/Response/Invoice/SettledOn/year" />
 								<xsl:with-param name="month"	select="/Response/Invoice/SettledOn/month" />
@@ -67,29 +67,58 @@
 		<table border="1" cellpadding="3" cellspacing="0">
 			<tr>
 				<th>Total Debits:</th>
-				<td class="Currency"><xsl:value-of select="/Response/Invoice/Debits" /></td>
+				<td class="Currency">
+					<xsl:call-template name="Currency">
+						<xsl:with-param name="Number"	select="/Response/Invoice/Debits" />
+						<xsl:with-param name="Decimal"	select="number('4')" />
+					</xsl:call-template>
+				</td>
 			</tr>
 			<tr>
 				<th>Total Credits:</th>
-				<td class="Currency"><xsl:value-of select="/Response/Invoice/Credits" /></td>
+				<td class="Currency">
+					<xsl:call-template name="Currency">
+						<xsl:with-param name="Number"	select="/Response/Invoice/Credits" />
+						<xsl:with-param name="Decimal"	select="number('4')" />
+					</xsl:call-template>
+				</td>
 			</tr>
 			<tr>
-				<th>Invoice Total:</th>
-				<td class="Currency"><xsl:value-of select="/Response/Invoice/Total" /></td>
+				<th>Sub-Total:</th>
+				<td class="Currency">
+					<xsl:call-template name="Currency">
+						<xsl:with-param name="Number"	select="/Response/Invoice/Total" />
+						<xsl:with-param name="Decimal"	select="number('2')" />
+					</xsl:call-template>
+				</td>
 			</tr>
 			<tr>
-				<th>Total Tax:</th>
-				<td class="Currency"><xsl:value-of select="/Response/Invoice/Tax" /></td>
+				<th>Tax:</th>
+				<td class="Currency">
+					<xsl:call-template name="Currency">
+						<xsl:with-param name="Number"	select="/Response/Invoice/Tax" />
+						<xsl:with-param name="Decimal"	select="number('2')" />
+					</xsl:call-template>
+				</td>
+			</tr>
+			<tr>
+				<th>Invoice Amount:</th>
+				<td class="Currency">
+					<xsl:call-template name="Currency">
+						<xsl:with-param name="Number"	select="/Response/Invoice/Tax + /Response/Invoice/Total" />
+						<xsl:with-param name="Decimal"	select="number('2')" />
+					</xsl:call-template>
+				</td>
 			</tr>
 		</table>
 
 		<h3>Services</h3>
 		<p>Click a service to view call details for the particular service.</p>
 		
-		<table border="0" cellpadding="5" cellspacing="0" width="100%">
+		<table border="0" cellpadding="5" cellspacing="0" width="100%" class="listing">
 			<tr class="first">
 				<th>Service Number</th>
-				<th class="Currency">Total Charges</th>
+				<th class="Currency">Total Charges (ex. GST)</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoice/InvoiceServices/InvoiceService">
 				<tr>
@@ -111,7 +140,12 @@
 						<xsl:text>'</xsl:text>
 					</xsl:attribute>
 					<td><xsl:value-of select="./FNN" /></td>
-					<td class="Currency"><xsl:value-of select="./TotalCharge" /></td>
+					<td class="Currency">
+						<xsl:call-template name="Currency">
+							<xsl:with-param name="Number"	select="./TotalCharge" />
+							<xsl:with-param name="Decimal"	select="number('4')" />
+						</xsl:call-template>
+					</td>
 				</tr>
 			</xsl:for-each>
 		</table>

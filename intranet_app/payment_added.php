@@ -30,10 +30,25 @@
 		exit;
 	}
 	
+	if ($_GET ['Contact'])
+	{
+		try
+		{
+			$cntContact = $Style->attachObject (new Contact ($_GET ['Contact']));
+		}
+		catch (Exception $e)
+		{
+			// If the service is not found, error
+			$Style->Output ('xsl/content/contact/notfound.xsl');
+			exit;
+		}
+	}
+	
 	$Style->Output (
 		"xsl/content/payment/added.xsl",
 		Array (
-			'Account'	=> ($actAccount) ? $actAccount->Pull ('Id')->getValue () : null
+			'Account'	=> ($actAccount) ? $actAccount->Pull ('Id')->getValue () : null,
+			'Contact'	=> ($cntContact) ? $cntContact->Pull ('Id')->getValue () : null
 		)
 	);
 	
