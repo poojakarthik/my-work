@@ -98,7 +98,7 @@
 				<th>Called Party</th>
 				<th>Time</th>
 				<th>Duration</th>
-				<th>Charge</th>
+				<th class="Currency">Charge</th>
 			</tr>
 			<xsl:choose>
 				<xsl:when test="count (/Response/InvoiceService/InvoiceServiceCalls/rangeSample/CDR) != 0">
