@@ -1,0 +1,11 @@
+charge
+
+--This line, and those below, will be ignored--
+
+M    intranet_app/service_edit.php
+M    intranet_app/classes/service/service.php
+M    framework/database_define.php
+A    screen_scrape/cache_notes_sys_janitor.php
+M    screen_scrape/cache_service_inbound.php
+M    screen_scrape/data/cookies.txt
+M    screen_scrape/decode_etech.php
