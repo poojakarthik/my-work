@@ -9,16 +9,16 @@
 # -----------------------------------------------------------------------------#
 
 # Server Host Name
-StrHostName="catwalk"
+StrHostName="minx"
 
 # Internal IP Address
-IPeth0="10.11.12.14"
+IPeth0="10.11.12.16"
 
 # Backup IP Address
-IPeth1="10.10.10.14"
+IPeth1="10.10.10.16"
 
 # External IP Address
-IPeth2="192.168.2.224"
+IPeth2="192.168.2.226"
 
 # -----------------------------------------------------------------------------#
 # APT Config

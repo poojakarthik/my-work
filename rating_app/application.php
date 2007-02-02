@@ -446,6 +446,9 @@
 		$arrAliases['<Fail>']	= $intFailed;
 		$this->_rptRatingReport->AddMessageVariables("\n".MSG_HORIZONTAL_RULE.MSG_REPORT, $arrAliases, FALSE);
 		
+		// Deliver the report
+		$this->_rptRatingReport->Finish();
+		
 		// Return TRUE or FALSE
 		return $bolReturn;
 	 }

@@ -581,7 +581,7 @@ Blue Shared 500 						25
 	$arrRates['mobrate']				['39cent cap (20min 27cpm)']					['Mobile']				= 'Mobile-27c-00f-01s-20m:89c10m';
 	$arrRates['mobrate']				['Business Saver Capped (10ff, 27cpm)']			['Mobile']				= 'Mobile-27c-10f-01s-00m:150c10m';
 	$arrRates['mobrate']				['Blue 15c CTM (15ff,15cpm)']					['Mobile']				= 'Mobile-15c-15f-01s-00m';
-	$arrRates['mobrate']				['VoiceTalk standard (10ff, 27cpm)']			['Mobile']				= 'Mobile-27c-10f-01s-00m:99c10m';
+	$arrRates['mobrate']				['VoiceTalk standard (10ff, 27cpm)']			['Mobile']				= 'Mobile-27c-10f-01s-00m';
 	$arrRates['mobrate']				['National 16 (30cpm, 20c min)']				['Mobile']				= 'Mobile-30c-00f-01s-20m';
 	$arrRates['mobrate']				['Tier 3 corporate Mobile Saver (6ff, 26cpm)']	['Mobile']				= 'Mobile-26c-06f-01s-00m';
 	$arrRates['mobrate']				['tier 3 corporate Long distance (5ff, 26cpm)']	['Mobile']				= 'Mobile-26c-05f-01s-00m';
