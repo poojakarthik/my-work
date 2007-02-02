@@ -897,7 +897,7 @@
 			// Yes it is...
 			$intEndDay		= floor(strtotime($this->_arrCurrentCDR['EndDateTime'])/86400);
 			$intStartDay	= floor(strtotime($this->_arrCurrentCDR['StartDateTime'])/86400);
-			$intEndMonth	= floor((strtotime("+ 1 month", $intStartDay)/86400) - 1);
+			$intEndMonth	= floor((strtotime("+ 1 month", strtotime($this->_arrCurrentCDR['StartDateTime']))/86400) - 1);
 			$intDaysInMonth = $intEndMonth - $intStartDay;
 			
 			// is StartDate -> EndDate a whole month
