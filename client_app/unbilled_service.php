@@ -9,14 +9,18 @@
 		exit;
 	}
 	
-	$actAccount = $athAuthentication->getAuthenticatedUser ()->getAccount ($_GET ['Account']);
-	$Style->attachObject ($actAccount);
-
-	$srvServices = $actAccount->getService ($_GET ['Service']);
-	$Style->attachObject ($srvServices);
+	$actAccount		= $Style->attachObject ($athAuthentication->getAuthenticatedUser ()->getAccount ($_GET ['Account']));
+	$srvServices	= $Style->attachObject ($actAccount->getService ($_GET ['Service']));
 	
-	$srvServices->getCalls (isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1);	
-	(!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1) ? $srvServices->getCharges () : null;
+	$srvServices->getCalls (isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1);
+	
+	if (!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1)
+	{
+		$srvServices->getCharges ();
+	}
+	
+	$RecordTypes		= $Style->attachObject (new RecordTypes ());
+	$RecordDisplayTypes	= $Style->attachObject (new RecordDisplayTypes ());
 	
 	$Style->Output ("xsl/content/unbilled/service.xsl");
 	

@@ -9,15 +9,15 @@
 		exit;
 	}
 	
-	$invInvoice = $Style->attachObject ($athAuthentication->getAuthenticatedUser ()->getInvoice ($_GET ['Invoice']));
-	$ivsService = $Style->attachObject ($invInvoice->getService ($_GET ['Id']));
+	$invInvoice		= $Style->attachObject ($athAuthentication->getAuthenticatedUser ()->getInvoice ($_GET ['Invoice']));
+	$ivsService		= $Style->attachObject ($invInvoice->getService ($_GET ['Id']));
+	
+	$ivsService->getCalls (isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1);
 	
 	if (!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1)
 	{
 		$ivsService->getCharges ();
 	}
-	
-	$ivsService->getCalls (isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1);
 	
 	$RecordTypes		= $Style->attachObject (new RecordTypes ());
 	$RecordDisplayTypes	= $Style->attachObject (new RecordDisplayTypes ());
