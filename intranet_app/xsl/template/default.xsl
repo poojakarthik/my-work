@@ -212,7 +212,7 @@
 												</li>
 											</ul>
 										-->
-															
+										
 										<table border="0" cellpadding="0" cellspacing="0">
 											<tr>
 												<td>
@@ -249,6 +249,29 @@
 													</a>
 												</td>
 											</tr>
+											<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">
+												<tr>
+													<td>
+														<a href="charges_approve.php">
+															Approve<br />Charges
+														</a><br />.
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a href="charges_charge_list.php">
+															Edit<br />Charge<br />Types
+														</a><br />.
+													</td>
+												</tr>
+												<tr>
+													<td>
+														<a href="charges_recurringcharge_list.php">
+															Edit<br />Rec.<br />Charge<br />Types
+														</a><br />.
+													</td>
+												</tr>
+											</xsl:if>
 											<tr>
 												<td>
 													<a href="#">

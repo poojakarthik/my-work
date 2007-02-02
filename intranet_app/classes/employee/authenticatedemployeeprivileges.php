@@ -59,21 +59,21 @@
 		private $_aemAuthenticatedEmployee;
 		
 		//------------------------------------------------------------------------//
-		// _arrPrivileges
+		// _oblarrPrivileges
 		//------------------------------------------------------------------------//
 		/**
-		 * _arrPrivileges
+		 * _oblarrPrivileges
 		 *
 		 * Priviledge Definition Array
 		 *
-		 * An associative array of Boolean values to represent what areas a user has access to
+		 * An Array of Permissions
 		 *
-		 * @type	Array [Associative => Boolean]
+		 * @type	dataArray
 		 *
 		 * @property
 		 */
 		
-		private $_arrPrivileges;
+		private $_oblarrPrivileges;
 		
 		//------------------------------------------------------------------------//
 		// __construct
@@ -96,22 +96,18 @@
 			
 			$this->_aemAuthenticatedEmployee =& $aemAuthenticatedEmployee;
 			
-			$this->_arrPrivileges = Array ();
+			$this->_oblarrPrivileges = $this->Push (new dataArray ('Permissions', 'Permission'));
 			
-			// Start the Antecedent at the Value that we have in the system
-			$antecedent = intval ($this->_aemAuthenticatedEmployee->Pull ('Privileges')->getValue ());
-			
-			// Consequential Position
-			$concequent = 1;
-			
-			// Work out what we have access to ...
-			while ($antecedent > 0)
+			// Test each Permission
+			foreach ($GLOBALS['Permissions'] AS $intKey => $intValue)
 			{
-				$this->_arrPrivileges [$concequent] = ($antecedent % 2 == 1) ? true : false;
-				
-				$antecedent = intval ($antecedent / 2);
-				$concequent = $concequent + $concequent;
+				if (HasPermission ($this->_aemAuthenticatedEmployee->Pull ('Privileges')->getValue (), $intKey))
+				{
+					$this->_oblarrPrivileges->Push (new Permission ($intKey));
+				}
 			}
+			
+			return $oblarrPermissions;
 		}
 		
 		//------------------------------------------------------------------------//
@@ -127,15 +123,6 @@
 		 *
 		 *
 		 * @param	Integer		$intGuardName		The Constant Representation that we're testing against. 
-		 *											
-		 *	WARNING :
-		 *	Be aware that the value inside $intGuardValue is ALWAYS represented in Binary, whereas the key in
-		 *  the array $this->_arrPrivileges is represented in Decimal. $intGuardValue is converted from 
-		 *	Binary to Decimal during this comparison stage.
-		 *	
-		 *	This is done because when editing constant values, it's easier to keep track of Binary values
-		 *	than it is to keep track of plain text values
-		 *
 		 *
 		 * @return	Boolean							(TRUE/FALSE) Depending on whether or not permission was granted
 		 *
@@ -144,16 +131,7 @@
 		
 		public function Validate ($intGuardValue)
 		{
-			// BIN -> DEC
-			$intGuardValue = base_convert ($intGuardValue, 2, 10);
-			
-			// Check if it exists
-			if (!isset ($this->_arrPrivileges [$intGuardValue]))
-			{
-				return false;
-			}
-			
-			return $this->_arrPrivileges [$intGuardValue] == 1;
+			return HasPermission ($this->_aemAuthenticatedEmployee->Pull ('Privileges')->getValue (), $intGuard);
 		}
 	}
 	

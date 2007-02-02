@@ -68,6 +68,7 @@ require ("classes/authentication/authentication.php");
 require ("classes/employee/authenticatedemployee.php");
 require ("classes/employee/authenticatedemployeeaudit.php");
 require ("classes/employee/authenticatedemployeeprivileges.php");
+require ("classes/permission/permission.php");
 
 // Do Authentication
 $athAuthentication = new Authentication ();

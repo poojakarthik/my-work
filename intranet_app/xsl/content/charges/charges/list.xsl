@@ -67,13 +67,13 @@
 				
 				<xsl:choose>
 					<xsl:when test="/Response/ChargeTypes/Results/collationLength = 0">
-						<div class="MsgErrorWide">
-							There were no results matching your search. Please change your search and try again.
+						<div class="MsgNoticeWide">
+							There are currently no Charge Types in the System.
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/ChargeTypes/Results/rangeSample/ChargeType) = 0">
-						<div class="MsgNoticeWide">
-							There were no results matching your search. Please change your search and try again.
+						<div class="MsgErrorWide">
+							There are Results matching the Criteria you searched for.
 						</div>
 					</xsl:when>
 				</xsl:choose>

@@ -215,11 +215,11 @@
 		public function Dispute ($fltDisputed)
 		{
 			//TODO!bash! make sure $fltDisputed !> Invoice.Total
-			$fltDisputed = str_replace ("$", "", $fltDisputed);
+			$fltDisputed = str_replace ('$', '', $fltDisputed);
 			
 			$arrDispute = Array (
-				"Disputed"		=> $fltDisputed,
-				"Status"		=> INVOICE_DISPUTED
+				'Disputed'		=> $fltDisputed,
+				'Status'		=> INVOICE_DISPUTED
 			);
 			
 			$updDispute = new StatementUpdate ('Invoice', 'Id = <Id>', $arrDispute);
@@ -248,97 +248,80 @@
 		{
 			if ($this->Pull ('Status')->getValue () <> INVOICE_DISPUTED)
 			{
-				throw new Exception ("Invoice Not Disputed");
+				throw new Exception ('Invoice Not Disputed');
 			}
 			
 			switch ($intResolveMethod)
 			{
 				case DISPUTE_RESOLVE_FULL_PAYMENT:
 					// If the full amount is required to be paid (for example, Dispute was Denied)
-					$fltBalance = $this->Pull ("Balance")->getValue () + $this->Pull ("Disputed")->getValue ();
-					
-					$arrInvoice = Array (
-						//TODO!bash! 
-						// Invoice.Disputed = 0
-						// if Balance > 0 Status = INVOICE_COMMITTED
-						// else Status = INVOICE_SETTLED
-						"Disputed"		=> 0,
-						"Status"		=> ($fltBalance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED
-					);
+					$fltBalance = $this->Pull ('Balance')->getValue ();
 					
 					break;
 					
 				case DISPUTE_RESOLVE_PARTIAL_PAYMENT:
 					// If a payment is required for a particular amount of a Dispute
+					
+					// generate a credit for Invoice.Disputed - $fltAmount
 					$arrCredit = Array (
-						"AccountGroup"	=> $this->Pull ('AccountGroup')->getValue (),
-						"Account"		=> $this->Pull ('Account')->getValue (),
-						"Service"		=> NULL,
-						"InvoiceRun"	=> NULL,
-						"CreatedBy"		=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-						"CreatedOn"		=> new MySQLFunction ("NOW()"),
-						"ApprovedBy"	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-						"ChargeType"	=> "",
-						"Description"	=> "Invoice Dispute (Invoice: #" . $this->Pull ('Id')->getValue () . ")",
-						"ChargedOn"		=> NULL,
-						"Nature"		=> NATURE_CR,
-						"Amount"		=> $this->Pull ("Disputed")->getValue () - $fltAmount,
-						"Status"		=> CHARGE_APPROVED
+						'AccountGroup'	=> $this->Pull ('AccountGroup')->getValue (),
+						'Account'		=> $this->Pull ('Account')->getValue (),
+						'Service'		=> NULL,
+						'InvoiceRun'	=> NULL,
+						'CreatedBy'		=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+						'CreatedOn'		=> new MySQLFunction ('NOW()'),
+						'ApprovedBy'	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+						'ChargeType'	=> '',
+						'Description'	=> 'Invoice Dispute (Invoice: #' . $this->Pull ('Id')->getValue () . ')',
+						'ChargedOn'		=> NULL,
+						'Nature'		=> NATURE_CR,
+						'Amount'		=> $this->Pull ('Disputed')->getValue () - $fltAmount,
+						'Status'		=> CHARGE_APPROVED
 					);
 					
-					$fltBalance = $this->Pull ("Balance")->getValue () + $fltAmount;
-					
-					$arrInvoice = Array (
-						// generate a credit for Invoice.Disputed - $fltAmount
-						// Invoice.Disputed = 0
-						// if Balance > 0 Status = INVOICE_COMMITTED
-						// else Status = INVOICE_SETTLED
-						"Disputed"		=> 0,
-						"Status"		=> ($fltBalance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED
-					);
+					$fltBalance = $this->Pull ('Balance')->getValue () + $fltAmount;
 					
 					break;
 					
 				case DISPUTE_RESOLVE_NO_PAYMENT:
 					// generate a credit for Invoice.Disputed
-					// Invoice.Disputed = 0
-					// if Balance > 0  Status = INVOICE_COMMITTED
-					// if Balance = 0  Status = INVOICE_SETTLED
 					$arrCredit = Array (
-						"AccountGroup"	=> $this->Pull ('AccountGroup')->getValue (),
-						"Account"		=> $this->Pull ('Account')->getValue (),
-						"Service"		=> NULL,
-						"InvoiceRun"	=> NULL,
-						"CreatedBy"		=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-						"CreatedOn"		=> new MySQLFunction ("NOW()"),
-						"ApprovedBy"	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-						"ChargeType"	=> "",
-						"Description"	=> "Invoice Dispute (Invoice: #" . $this->Pull ('Id')->getValue () . ")",
-						"ChargedOn"		=> NULL,
-						"Nature"		=> NATURE_CR,
-						"Amount"		=> $this->Pull ("Disputed")->getValue (),
-						"Status"		=> CHARGE_APPROVED
+						'AccountGroup'	=> $this->Pull ('AccountGroup')->getValue (),
+						'Account'		=> $this->Pull ('Account')->getValue (),
+						'Service'		=> NULL,
+						'InvoiceRun'	=> NULL,
+						'CreatedBy'		=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+						'CreatedOn'		=> new MySQLFunction ('NOW()'),
+						'ApprovedBy'	=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+						'ChargeType'	=> '',
+						'Description'	=> 'Invoice Dispute (Invoice: #' . $this->Pull ('Id')->getValue () . ')',
+						'ChargedOn'		=> NULL,
+						'Nature'		=> NATURE_CR,
+						'Amount'		=> $this->Pull ('Disputed')->getValue (),
+						'Status'		=> CHARGE_APPROVED
 					);
-					
-					
-					
-//					$arrInvoice = Array (
-//						"Status"	=> INVOICE_COMMMITTED
-//					);
-					
-//					$updDispute = new StatementUpdate ('Invoice', 'Id = <Id>', $arrInvoice);
-//					$updDispute->Execute ($arrInvoice);
-//						Invoice.Balance += Invoice.Disputed, Invoice.Status = INVOICE_COMMITTED
 					break;
+					
+				default:
+					throw new Exception ('Invalid Resolution');
 			}
 			
+			if ($arrCredit)
+			{
+				$insCredit = new StatementInsert ('Charge', $arrCredit);
+				$intCredit = $insCredit->Execute ($arrCredit);
+			}
 			
-			$arrResolve = Array (
-				"Status"		=> INVOICE_DISPUTED_SETTLED
+			// Invoice.Disputed = 0
+			// if Balance > 0	Status = INVOICE_COMMITTED
+			// else				Status = INVOICE_SETTLED
+			$arrDispute = Array (
+				'Disputed'		=> 0,
+				'Status'		=> ($fltBalance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED
 			);
 			
-			$updDispute = new StatementUpdate ('Invoice', 'Id = <Id> AND Status = ' . INVOICE_DISPUTED, $arrResolve);
-			$updDispute->Execute ($arrResolve, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			$updDispute = new StatementUpdate ('Invoice', 'Id = <Id> AND Status = ' . INVOICE_DISPUTED, $arrDispute);
+			$updDispute->Execute ($arrDispute, Array ('Id' => $this->Pull ('Id')->getValue ()));
 		}
 	}
 	

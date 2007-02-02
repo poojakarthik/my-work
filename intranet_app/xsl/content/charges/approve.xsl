@@ -11,8 +11,6 @@
 		<div class="Seperator"></div>
 		
 		<form method="post" action="charges_approve.php">
-			<h2>Unapproved Charges</h2>
-			<div class="Seperator"></div>
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">
 					<th width="30">#</th>
