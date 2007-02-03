@@ -233,7 +233,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 				$mixCarrierDestination	 			= $this->_FetchRawCDR('RateId');
 			}
 			
-			$arrDestinationCode 					= $this->FindDestination($mixCarrierDestination);
+			$arrDestinationCode 					= $this->FindDestination($mixCarrierDestination, TRUE); // <-- *** Don't error if destination not found ***
 			if ($arrDestinationCode)
 			{
 				$this->_AppendCDR('DestinationCode', $arrDestinationCode['Code']);
@@ -244,6 +244,10 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 			{
 				// Set Destination to 'Other S&E'
 				$this->_AppendCDR('DestinationCode', 80001);
+			}
+			else
+			{
+				$this->_UpdateStatus(CDR_BAD_DESTINATION);
 			}
 		}
 		

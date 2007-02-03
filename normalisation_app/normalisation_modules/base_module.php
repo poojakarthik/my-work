@@ -835,11 +835,12 @@ abstract class NormalisationModule
 	 * 
 	 *
 	 * @param	mixed	mixCarrierCode		Carrier Destination code
+	 * @param	bool	bolDontError		TRUE = Don't add an error to the CDR if destination not found
 	 * @return	array	Destination Details, Code & Description		
 	 *
 	 * @method
 	 */
-	 protected function FindDestination($mixCarrierCode)
+	 protected function FindDestination($mixCarrierCode, $bolDontError=FALSE)
 	 {
 	 	$arrData = Array("Carrier" => $this->_arrNormalisedData["Carrier"], "CarrierCode" => $mixCarrierCode, "Context" => $this->_intContext);
 		$intResult = $this->_selFindDestination->Execute($arrData);
@@ -857,7 +858,10 @@ abstract class NormalisationModule
 		//TODO!!!! - add this to a report so we can see any missing destinations
 
 		// Set an error status
-		$this->_UpdateStatus(CDR_BAD_DESTINATION);
+		if ($bolDontError === TRUE)
+		{
+			$this->_UpdateStatus(CDR_BAD_DESTINATION);
+		}
 		
 		// Return false if there was no match
 	 	return false;
