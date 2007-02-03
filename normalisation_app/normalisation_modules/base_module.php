@@ -858,7 +858,7 @@ abstract class NormalisationModule
 		//TODO!!!! - add this to a report so we can see any missing destinations
 
 		// Set an error status
-		if ($bolDontError === TRUE)
+		if ($bolDontError !== TRUE)
 		{
 			$this->_UpdateStatus(CDR_BAD_DESTINATION);
 		}
