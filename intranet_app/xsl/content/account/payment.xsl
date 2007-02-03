@@ -100,7 +100,7 @@
 			</input>
 
 			<label for="BillingType:AC">
-				Account
+				Invoice
 			</label>
 
 			<div class="SmallSeperator"></div>

@@ -7,8 +7,9 @@
 
 	
 	
-		<h1>Add New Charge Type</h1>
+		<h1>Add Charge Type</h1>
 		
+		<h2 class = "Charge"> Charge Details</h2>
 		<form method="POST" action="charges_charge_add.php">
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
@@ -69,7 +70,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -116,7 +117,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -151,9 +152,10 @@
 				</div>
 				<div class="Clear"></div>
 			</div>
-			<div class="Seperator"></div>
-			
+			<div class="SmallSeperator"></div>
+			<div class = "Right">
 			<input type="submit" value="Create Charge &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

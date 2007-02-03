@@ -17,8 +17,7 @@
 		</xsl:if>
 		
 		<form method="POST" action="employee_edit.php">
-			<h2>Personal Details</h2>
-			<div class="Seperator"></div>
+			<h2 class= "Contact"> Employee Details</h2>
 			
 			<div class="Wide-Form">
 				<div class="Form-Content">
@@ -64,7 +63,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -131,17 +130,6 @@
 								</input>
 							</td>
 						</tr>
-					</table>
-				</div>
-			</div>
-			<div class="Seperator"></div>
-			
-			<h2>Employee Authentication</h2>
-			<div class="Seperator"></div>
-			
-			<div class="Wide-Form">
-				<div class="Form-Content">
-					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -168,6 +156,10 @@
 							<td>
 								<input type="password" name="PassWord[0]" class="input-string" />
 							</td>
+							<td>
+							<strong><span class="Attention">Attention</span> :</strong>
+									Leave these Password fields blank if you don't wish to 
+							</td>
 						</tr>
 						<tr>
 							<th class="JustifiedWidth">
@@ -179,25 +171,18 @@
 							<td>
 								<input type="password" name="PassWord[1]" class="input-string" />
 							</td>
-						</tr>
-						<tr>
-							<th></th>
 							<td>
-								<div style="width: 350px">
-									<strong><span class="Attention">Attention</span> :</strong>
-									Leave these Password fields blank if you don't wish to 
-									change the Password of this Employee.
-								</div>
+							change the Password of this Employee.
 							</td>
 						</tr>
 					</table>
 				</div>
 			</div>
-			
+
+
 			<div class="Seperator"></div>
 			
-			<h2>Archive Status</h2>
-			<div class="Seperator"></div>
+			<h2 class = "Archive">Archive Status</h2>
 			
 			<div class="Wide-Form">
 				<div class="Form-Content">
@@ -254,9 +239,10 @@
 				</div>
 			</div>
 			
-			<div class="Seperator"></div>
-			
+			<div class="SmallSeperator"></div>
+			<div class = "Right">
 			<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

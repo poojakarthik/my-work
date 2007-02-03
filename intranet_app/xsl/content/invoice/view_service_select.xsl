@@ -131,7 +131,7 @@
 							<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
 							<xsl:value-of select="/Response/Invoice/Id" />
 						</xsl:attribute>
-						<xsl:text>Raise Dispute</xsl:text>
+						<xsl:text>Dispute Invoice</xsl:text>s
 					</a>
 				</xsl:when>
 				
@@ -162,7 +162,8 @@
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing"  width="100%">
 			<tr class="First">
 				<th width="30">#</th>
-				<th width="150">Line Number</th>
+				<!--TODO!bash! URGENT! Do not use 'Line Number' or anything other than 'Service #' anywhere - this has already been done here-->
+				<th width="150">Service #</th>
 				<th width="110" class="Currency">Charges</th>
 				<th width="110" class="Currency">Credit</th>
 				<th width="110" class="Currency">Debit</th>

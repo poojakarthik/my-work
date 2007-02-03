@@ -4,8 +4,9 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Add New Recurring Charge Type</h1>
+		<h1>Add Recurring Charge Type</h1>
 		
+		<h2 class= "Charge"> Charge Details</h2>
 		<form method="POST" action="charges_recurringcharge_add.php">
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
@@ -75,7 +76,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -122,7 +123,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -133,7 +134,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:text>Every </xsl:text>
+
 								<input type="text" name="RecurringFreq" class="input-string" size="1">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -162,7 +163,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -199,7 +200,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -318,9 +319,10 @@
 				</div>
 				<div class="Clear"></div>
 			</div>
-			<div class="Seperator"></div>
-			
+			<div class="SmallSeperator"></div>
+			<div class = "Right">
 			<input type="submit" value="Create Recurring Charge &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

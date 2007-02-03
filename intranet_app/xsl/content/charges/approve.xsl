@@ -7,9 +7,9 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Approve Charges</h1>
-		<div class="Seperator"></div>
-		
+		<h1>Approve Unbilled Charges</h1>
+
+		<h2 class="Charge"> Charge Details</h2>
 		<form method="post" action="charges_approve.php">
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">
@@ -83,9 +83,10 @@
 				</xsl:when>
 			</xsl:choose>
 			
-			<div class="Seperator"></div>
-			
-			<input type="submit" value="Delegate Approvals &#0187;" class="input-submit" />
+			<div class="SmallSeperator"></div>
+			<div class= "Right">
+				<input type="submit" value="Delegate Approvals &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

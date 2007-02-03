@@ -6,6 +6,7 @@
 	<xsl:template name="Content">
 		<h1>Employee Listing</h1>
 		
+		<h2 class="Contact"> Employee Details</h2>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>

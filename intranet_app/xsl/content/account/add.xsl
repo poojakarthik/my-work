@@ -431,7 +431,7 @@
 									</td>
 									<th>
 										<label for="PaymentMethod:AC">
-											Account
+											Invoice
 										</label>
 									</th>
 								</tr>
@@ -666,6 +666,7 @@
 							<th>
 								<label for="Contact[USE]:TRUE">
 								<!--TODO!bash! [  DONE  ]		URGENT this option does not always work (maybe not when there have been errors? - check - maybe because their account access is still 'this account only' on the other account? but it is definately broken-->
+								<!--TODO!bash! URGENT - no, this is not done.  fix it.-->
 									Select an existing contact from the list below:
 								</label>
 							</th>
@@ -737,6 +738,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
+						<!--TODO!bash! Make this a dropdown box - Do this Everywhere where there is a title!!!-->
 							<input type="text" name="Contact[Title]" class="input-string">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>

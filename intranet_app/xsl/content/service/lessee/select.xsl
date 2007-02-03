@@ -17,7 +17,7 @@
 						You did not enter an Account Id#. Please try again.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Same Account'">
-						You did not enter a different Account. Please try again.
+						Please enter a different Account ID.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'Invalid Account'">
 						Please enter a valid Account ID.

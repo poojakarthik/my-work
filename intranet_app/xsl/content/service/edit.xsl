@@ -18,7 +18,7 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Mismatch'">
-						Your Service IDs did not match. Please try again.
+						Please correctly confirm your Service #.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'FNN ServiceType'">
 						Please enter a valid Service #.

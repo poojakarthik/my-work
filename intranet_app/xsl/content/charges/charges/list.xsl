@@ -4,9 +4,9 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Charge Types</h1>
-		<div class="Seperator"></div>
-		
+		<h1>View Charge Types</h1>
+
+		<h2 class="Charge"> Charge Details</h2>
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
@@ -78,9 +78,9 @@
 					</xsl:when>
 				</xsl:choose>
 				
-				<p>
+				<div class= "Right">
 					<a href="charges_charge_add.php">Add a New Charge Type</a>
-				</p>
+				</div>
 			</div>
 		</div>
 	</xsl:template>

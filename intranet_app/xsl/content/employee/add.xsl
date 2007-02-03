@@ -17,8 +17,7 @@
 		</xsl:if>
 		
 		<form method="POST" action="employee_add.php">
-			<h2>Personal Details</h2>
-			<div class="Seperator"></div>
+			<h2 class ="Contact">Employee Details</h2>
 			
 			<div class="Wide-Form">
 				<div class="Form-Content">
@@ -64,7 +63,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -133,7 +132,7 @@
 						</tr>
 						<tr>
 							<td colspan="2">
-								<div class="Seperator"></div>
+								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
@@ -154,24 +153,6 @@
 								</xsl:call-template>
 							</td>
 						</tr>
-					</table>
-				</div>
-			</div>
-			<div class="Seperator"></div>
-			
-			<h2>Employee Authentication</h2>
-			<div class="Seperator"></div>
-			
-			<div class="Wide-Form">
-				<div class="Form-Content">
-					<input type="hidden" name="Id">
-						<xsl:attribute name="value">
-							<xsl:text></xsl:text>
-							<xsl:value-of select="/Response/Employee/Id" />
-						</xsl:attribute>
-					</input>
-					
-					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
@@ -213,10 +194,11 @@
 					</table>
 				</div>
 			</div>
-			
-			<div class="Seperator"></div>
-			
-			<input type="submit" class="input-submit" value="Apply Changes &#0187;" />
+			<div class="SmallSeperator"></div>
+
+			<div class="Right">
+			<input type="submit" class="input-submit" value="Add Employee&#0187;" />
+			</div>
 		</form>
 	</xsl:template>
 	

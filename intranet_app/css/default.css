@@ -693,7 +693,8 @@
 	h2.Service,
 	h2.Contacts,
 	h2.Contact,
-	h2.Invoice
+	h2.Invoice,
+	h2.Admin
 	{
 		background-repeat:             no-repeat;
 		background-position:           top left;
@@ -797,6 +798,12 @@
 	{
 		background-image:              url('../img/template/invoice.png');
 	}
+	
+	h2.Admin
+	{
+		background-image:              url('../img/template/admin_console.png');
+	}
+	
 	
 	.Menu_Button
 	{

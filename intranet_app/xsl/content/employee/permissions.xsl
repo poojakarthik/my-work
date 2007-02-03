@@ -6,6 +6,7 @@
 	<xsl:template name="Content">
 		<h1>Edit Employee Permissions</h1>
 		
+	
 		<script type="text/javascript" src="js/employee_permission_select.js"></script>
 		
 		<form method="POST" action="employee_permissions.php">
@@ -13,9 +14,8 @@
 				<xsl:text>return selIt ()</xsl:text>
 			</xsl:attribute>
 			
-			<h2>Permission Details</h2>
-			<div class="Seperator"></div>
-			
+	
+			<h2 class="Admin"> Permissions</h2>
 			<div class="Wide-Form">
 				<input type="hidden" name="Id">
 					<xsl:attribute name="value">
@@ -27,7 +27,7 @@
 				Select multiple Permissions by holding the CTRL key while you click options from
 				either of the lists.
 				
-				<div class="Seperator"></div>
+				<div class="SmallSeperator"></div>
 				
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
@@ -95,8 +95,9 @@
 				</table>
 			</div>
 			<div class="Seperator"></div>
-			
+			<div class="Right">
 			<input type="submit" class="input-submit" name="Confirm" value="Apply Changes &#0187;" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

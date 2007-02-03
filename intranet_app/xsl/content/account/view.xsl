@@ -523,7 +523,7 @@
 				<th>Service #</th>
 				<th>Service Type</th>
 				<th>Plan Name</th>
-				<th>Archive Status</th>
+				<th>Status</th>
 				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/Services/Results/rangeSample/Service">

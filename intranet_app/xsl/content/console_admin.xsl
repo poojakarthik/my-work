@@ -10,8 +10,67 @@
 			This is your Administration Console. From here, you can perform tasks that are only accessible
 			to Administrative Employees.
 		</p>
-		<div class="TinySeperator"></div>
+		<div class="TinySeperator">
+		</div>
 		
+		<h2 >
+			Menu
+		</h2>
+		<div class="SmallSeperator">
+		</div>
+		<table border="0" cellpadding="3" cellspacing="0">
+			<tr>
+				<td>
+					<a href="charges_approve.php">
+						<img src="img/template/charge.png" title="Approve Unbilled Charges" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Unbilled Charges
+					</strong><br />
+					Approve Unbilled Charges
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="charges_charge_list.php">
+						<img src="img/template/charge.png" title="Single Charge Types" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Single Charge Types
+					</strong><br />
+					List and Add Single Charge Types
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="charges_recurringcharge_list.php">
+						<img src="img/template/charge.png" title="Recurring Charge Types" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Recurring Charge Types
+					</strong><br />
+					List and Add Recurring Charge Types
+				</td>
+			</tr>
+				<tr>
+					<td>
+						<a href="employee_list.php">
+							<img src="img/template/contact.png" title="Employees" class="MenuIcon" />
+						</a>
+					</td>
+					<td>
+						<strong>Employees</strong><br />
+						List and Add Employees
+					</td>
+				</tr>
+		</table>
+		<!--
 		<ul>
 			<li>
 				Charges and Charge Types
@@ -43,5 +102,6 @@
 				<div class="Seperator"></div>
 			</li>
 		</ul>
+		-->
 	</xsl:template>
 </xsl:stylesheet>

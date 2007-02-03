@@ -6,9 +6,9 @@
 	<xsl:import href="../../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Recurring Charge Type Details</h1>
+		<h1>View Recurring Charge Type Details</h1>
 		
-		<div class="Wide-Form">
+		<div class="FormPopup">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
@@ -17,7 +17,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
@@ -30,7 +30,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
@@ -68,7 +68,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
@@ -86,7 +86,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
@@ -109,7 +109,7 @@
 					</tr>
 					<tr>
 						<td colspan="2">
-							<div class="Seperator"></div>
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>

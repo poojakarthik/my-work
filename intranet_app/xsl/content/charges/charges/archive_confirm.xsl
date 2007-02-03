@@ -4,13 +4,14 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Confirm Charge Type Archive</h1>
+		<h1>Archive Charge Type</h1>
+		<!--TODO!bash! URGENT this page needs to link to a confirmation page-->
 		
-		<p>
-			Are you sure you would like to Archive this charge type?
-		</p>
-		
+		<h2 class="Archive">Archive Status</h2>
 		<form method="post" action="charges_charge_archive.php">
+		<div class= "Wide-Form">
+		
+		
 			<input type="hidden" name="Id">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
@@ -18,9 +19,15 @@
 				</xsl:attribute>
 			</input>
 			
+			
+			Are you sure you would like to Archive this charge type?
+		<div class="SmallSeperator"></div>
+			
 			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
-					<td><input type="radio" id="Confirm:TRUE" name="Confirm" value="1" /></td>
+					<td><input type="radio" id="Confirm:TRUE" name="Confirm" value="1" />
+					</td>
+					
 					<th>
 						<label for="Confirm:TRUE">
 							Yes, please Archive this Charge Type, making it unavailable for use.
@@ -35,13 +42,16 @@
 						</label>
 					</th>
 				</tr>
-				<tr>
-					<td></td>
-					<td>
-						<input type="submit" value="Continue &#0187;" class="input-submit" />
-					</td>
-				</tr>
+				
 			</table>
-		</form>
+		
+			
+</div>
+		<div class="SmallSeperator"></div>
+	<div class="Right">
+						<input type="submit" value="Continue &#0187;" class="input-submit" />
+			</div>
+		
+			</form>
 	</xsl:template>
 </xsl:stylesheet>
