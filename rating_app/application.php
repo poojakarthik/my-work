@@ -542,31 +542,33 @@
 	 	$strAliases['Friday']		= ($strDay == "Friday") ? TRUE : DONKEY;
 	 	$strAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
 	 	$strAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
+		$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 		
-		// this is one of our services
 		// find destination account & Service
-		$arrWhere['Prefix']		= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
-		$arrWhere['FNN']		= $this->_arrCurrentCDR['Destination'];
-		$arrWhere['Date']		= $this->_arrCurrentCDR['StartDatetime'];
+		$arrWhere['Prefix']			= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
+		$arrWhere['FNN']			= $this->_arrCurrentCDR['Destination'];
+		$arrWhere['Date']			= $this->_arrCurrentCDR['StartDatetime'];
 		$this->_selDestinationDetails->Execute($arrWhere);
-		$arrDestinationDetails = $this->_selDestinationDetails->Fetch();
-		$intDestinationAccount = $arrDestinationDetails['Account'];
-		$intDestinationService = $arrDestinationDetails['Id'];
+		$arrDestinationDetails 		= $this->_selDestinationDetails->Fetch();
+		$intDestinationAccount 		= $arrDestinationDetails['Account'];
+		$intDestinationService 		= $arrDestinationDetails['Id'];
 		
-		// is this service on the same account
-		if ($intDestinationAccount == $this->_arrCurrentCDR['Account'])
+		// is the destination service on the same account
+		if ($intDestinationAccount && $intDestinationAccount == $this->_arrCurrentCDR['Account'])
 		{
-		 	$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
-		 	$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 			// does the destination have a fleet rate
+		 	$strAliases['Service']	= $intDestinationService;
 			$this->_selFindFleetRate->Execute($strAliases);
 			$arrSourceRate = $this->_selFindFleetRate->Fetch();
-			if ($intSourceRate = $arrSourceRate['Id'])
+			if ($arrSourceRate['Id'])
 			{
 				$bolFleet = TRUE;
 			}
 		}
 
+		// Set This Service
+		$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
+		
 		// find the appropriate rate
 		if ($bolFleet === TRUE)
 		{
