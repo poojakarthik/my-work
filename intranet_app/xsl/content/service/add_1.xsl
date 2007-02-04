@@ -3,7 +3,7 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
-	
+	<!--TODO!bash! URGENT! This page needs a menu!-->
 	<xsl:template name="Content">
 	
 		<!--This page is used to add a service to an account (Part 1/2)-->

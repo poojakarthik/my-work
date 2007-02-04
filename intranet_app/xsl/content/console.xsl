@@ -5,18 +5,28 @@
 <xsl:template name="Content">
 	
 	<!-- Heading 1-->	
-	<h1>Employee Console</h1>
+	<h1>
+		Employee Console
+	</h1>
 	
 	<!--Welcome Message-->
 	<p>
 		Welcome, <xsl:value-of select="/Response/Authentication/AuthenticatedEmployee/FirstName" />.
 		You are currently logged into your Employee Account.
 	</p>
-	<div class="TinySeperator"></div>
+	<div class="TinySeperator">
+	</div>
 	
-	<h2>Menu</h2>
-	<div class="SmallSeperator"></div>
+	<!-- Heading 2 -->
+	<h2>
+		Menu
+	</h2>
+	<div class="SmallSeperator">
+	</div>
+	
+	<!-- Menu -->
 	<table border="0" cellpadding="3" cellspacing="0">
+		<!-- Add Customer -->
 		<tr>
 			<td>
 				<a href="account_add.php">
@@ -24,10 +34,14 @@
 				</a>
 			</td>
 			<td>
-				<strong>Add Customer</strong><br />
+				<strong>
+					Add Customer
+				</strong>
+				<br />
 				Add a new Customer to the system.
 			</td>
 		</tr>
+		<!-- Find Customer -->
 		<tr>
 			<td>
 				<a href="contact_list.php">
@@ -35,10 +49,14 @@
 				</a>
 			</td>
 			<td>
-				<strong>Find Customer</strong><br />
+				<strong>
+					Find Customer
+				</strong>
+				<br />
 				Find a Customer and access their account.
 			</td>
 		</tr>
+		<!-- Recent Customers -->
 		<tr>
 			<td>
 				<a href="#" onclick="return ModalDisplay ('#modalContent-recentCustomers')">
@@ -46,10 +64,14 @@
 				</a>
 			</td>
 			<td>
-				<strong>Recent Customers</strong><br />
+				<strong>
+					Recent Customers
+				</strong>
+				<br />
 				View recently accesed Customers.
 			</td>
 		</tr>
+		<!-- View Available Plans -->
 		<tr>
 			<td>
 				<a href="rates_plan_list.php">
@@ -57,34 +79,48 @@
 				</a>
 			</td>
 			<td>
-				<strong>View Available Plans</strong><br />
+				<strong>
+					View Available Plans
+				</strong>
+				<br />
 				View details of available Plans.
 			</td>
 		</tr>
+		<!-- If Admin... -->
 		<xsl:if test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">
+			<!-- Administrative Console -->
 			<tr>
 				<td>
 					<a href="console_admin.php">
 						<img src="img/template/admin_console.png" title="Administrative Console" class="MenuIcon" />
 					</a>
 				</td>
-			<td>
-				<strong>Administrative Console</strong><br />
-				Additional Administrative Options.
-			</td>
+				<td>
+					<strong>
+						Administrative Console
+					</strong>
+					<br />
+					Additional Administrative Options.
+				</td>
 			</tr>
 		</xsl:if>
+		<!-- Logout -->
 		<tr>
 			<td>
 				<a href="#">
 					<xsl:attribute name="onclick">
-						<xsl:text>return Logout()</xsl:text>
+						<xsl:text>
+							return Logout()
+						</xsl:text>
 					</xsl:attribute>
 					<img src="img/template/logout.png" title="Logout" class="MenuIcon" />
 				</a>
 			</td>
 			<td>
-				<strong>Logout</strong><br />
+				<strong>
+					Logout
+				</strong>
+				<br />
 				Logout of the system.
 			</td>
 		</tr>
@@ -95,7 +131,9 @@
 		<div id="modalContent-PabloSays">
 			<div class="modalContainer">
 				<div class="modalContent">
-					<h1>Pablo's Tip of the day</h1>
+					<h1>
+						Pablo's Tip of the day
+					</h1>
 					<div class="Pablo-Section">
 						<div class="Pablo-Section-Container">
 							<div class="Pablo-Section-Content">
@@ -107,15 +145,20 @@
 					</div>
 				</div>
 				<div class="modalTitle">
-					<div class="modalIcon Left"></div>
+					<div class="modalIcon Left">
+					</div>
 					<div class="modalLabel Left">
-						<strong>Pablo's Tip of the day</strong><br />
+						<strong>
+							Pablo's Tip of the day
+						</strong>
+						<br />
 						Pablo's helpful tip of the day
 					</div>
 					<div class="modalClose Right">
 						<img src="img/template/closelabel.gif" class="close" />
 					</div>
-					<div class="Clear"></div>
+					<div class="Clear">
+					</div>
 				</div>
 			</div>
 		</div>

@@ -3,9 +3,12 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/popup.xsl" />
-	
 	<xsl:template name="Content">
-		<h1>View CDR</h1>
+	
+		<!-- Heading 1 -->
+		<h1>
+			View CDR
+		</h1>
 		
 		<div class="FormPopup">
 			<div class="Form-Content">

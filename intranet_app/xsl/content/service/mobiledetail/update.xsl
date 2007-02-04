@@ -172,6 +172,7 @@
 										</select>
 									</td>
 								</tr>
+								<!--TODO!bash! Urgent - do not show dates which allow the person to be <18-->
 								<tr>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">

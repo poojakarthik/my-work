@@ -108,6 +108,7 @@
 							</input>
 						</td>
 					</tr>
+					<!--TODO!bash!URGENT  verify credit card number - ask flame if you aren't sure how -->
 					<tr>
 					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
@@ -125,6 +126,7 @@
 							</input>
 						</td>
 					</tr>
+					<!--TODO!bash! URGENT - do not show expiration dates earlier than this month-->
 					<tr>
 					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
@@ -142,6 +144,7 @@
 							</xsl:call-template>
 						</td>
 					</tr>
+					<!--TODO!bash! URGENT! verify cvv - no more than 4 numeric digits -->
 					<tr>
 					<td class="Required"> </td>
 						<th class="JustifiedWidth">

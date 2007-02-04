@@ -174,7 +174,7 @@
 
 			<div class="SmallSeperator"></div>
 			Direct Debit from a Credit Card :
-
+		<!--TODO!bash! URGENT Expired credit cards should not be an option! maybe default to invoice  & remove radio button when they have expired. You might need to be able to edit these details to update the expiry date when they get a new card?--> 
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">
 					<th width="30">#</th>

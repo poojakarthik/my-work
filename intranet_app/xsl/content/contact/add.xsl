@@ -106,6 +106,7 @@
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
+					<!--TODO!bash! URGENT! Make title a drop down box! -->
 						<tr>
 							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
@@ -179,6 +180,7 @@
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
+						<!--TODO!bash! URGENT! Only show dates which allow contact to be > 18 - do not allow ages < 18 -->
 						<tr>
 							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
@@ -203,6 +205,7 @@
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
+						<!--TODO!bash! URGENT! verify email - needs to include '@' symbol -->
 						<tr>
 							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
@@ -220,6 +223,7 @@
 								</input>
 							</td>
 						</tr>
+						<!--TODO!bash! Urgent! verify ph number - numeric only-->
 						<tr>
 							<td class="Required"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
@@ -237,6 +241,7 @@
 								</input>
 							</td>
 						</tr>
+						<!--TODO!bash! Urgent! verify ph number - numeric only-->
 						<tr>
 							<td class="Required"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
@@ -254,6 +259,7 @@
 								</input>
 							</td>
 						</tr>
+						<!--TODO!bash! Urgent! verify ph number - numeric only-->
 						<tr>
 							<td></td>
 							<th class="JustifiedWidth">

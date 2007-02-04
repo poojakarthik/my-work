@@ -73,6 +73,7 @@
 							</input>
 						</td>
 					</tr>
+					<!--TODO!bash! URGENT! verify bsb - 6 digit number only -->
 					<tr>
 					<td class="Required"><span class="Red"><strong>*</strong></span></td>
 						<th class="JustifiedWidth">
@@ -95,6 +96,7 @@
 							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
+					<!--TODO!bash! URGENT verify - 9 digit number only -->
 					<tr>
 					<td class="Required"><span class="Red"><strong>*</strong></span></td>
 						<th class="JustifiedWidth">

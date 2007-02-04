@@ -7,8 +7,7 @@
 		
 		<p>
 			Welcome, <xsl:value-of select="/Response/Authentication/AuthenticatedEmployee/FirstName" />.
-			This is your Administration Console. From here, you can perform tasks that are only accessible
-			to Administrative Employees.
+			You are currently logged into your Administration Account.
 		</p>
 		<div class="TinySeperator">
 		</div>
@@ -42,7 +41,7 @@
 					<strong>
 						Single Charge Types
 					</strong><br />
-					List and Add Single Charge Types
+					List Single Charge Types
 				</td>
 			</tr>
 			<tr>
@@ -55,7 +54,7 @@
 					<strong>
 						Recurring Charge Types
 					</strong><br />
-					List and Add Recurring Charge Types
+					List Recurring Charge Types
 				</td>
 			</tr>
 				<tr>
@@ -66,42 +65,10 @@
 					</td>
 					<td>
 						<strong>Employees</strong><br />
-						List and Add Employees
+						List Employees
 					</td>
 				</tr>
 		</table>
-		<!--
-		<ul>
-			<li>
-				Charges and Charge Types
-				<ul>
-					<li><a href="charges_approve.php">Approve Unbilled Charges</a></li>
-					<li>
-						Single Charges
-						<ul>
-							<li><a href="charges_charge_add.php">Add Single Charge Type</a></li>
-							<li><a href="charges_charge_list.php">List Single Charge Types</a></li>
-						</ul>
-					</li>
-					<li>
-						Recurring Charges
-						<ul>
-							<li><a href="charges_recurringcharge_add.php">Add Recurring Charge Type</a></li>
-							<li><a href="charges_recurringcharge_list.php">List Recurring Charge Types</a></li>
-						</ul>
-					</li>
-				</ul>
-				<div class="Seperator"></div>
-			</li>
-			<li>
-				Employees
-				<ul>
-					<li><a href="employee_add.php">Add Employee</a></li>
-					<li><a href="employee_list.php">List Employees</a></li>
-				</ul>
-				<div class="Seperator"></div>
-			</li>
-		</ul>
-		-->
+
 	</xsl:template>
 </xsl:stylesheet>

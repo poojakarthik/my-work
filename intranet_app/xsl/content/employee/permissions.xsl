@@ -55,6 +55,8 @@
 								</xsl:for-each>
 							</select>
 						</td>
+						<!--TODO!bash! URGENT make these stay the same height -they change height!!!-->
+						<!--TODO!bash! URGENT why can i select empty gaps and change their list? and why do options appear half way down the list when i change their list? -->
 						<td>
 							<div>
 								<input type="button" value="&#0187;">

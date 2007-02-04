@@ -3,17 +3,19 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
-	
 	<xsl:template name="Content">
 	
 		<!--Page for adding a new customer or associated account -->
 		
+		<!-- Heading 1 -->
 		<xsl:choose>
+			<!-- If add associated account page -->
 			<xsl:when test="/Response/AccountGroup">
 			<!--TODO!Bash! add associated account page needs menu -->
 				<h1>Add Associated Account</h1>
 			</xsl:when>
 			<xsl:otherwise>
+			<!--Else add customer page-->
 				<h1>Add Customer</h1>
 			</xsl:otherwise>
 		</xsl:choose>
@@ -305,6 +307,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
+						<!--TODO!bash! Only accept 4 digit numbers!! -->
 							<input type="text" name="Account[Postcode]" class="input-string">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
@@ -474,6 +477,7 @@
 													</input>
 												</td>
 											</tr>
+											<!--TODO!bash! Verify - only accept 6 digit number!!-->
 											<tr>
 											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
@@ -491,6 +495,7 @@
 													</input>
 												</td>
 											</tr>
+											<!--TODO!bash! URGENT -Verify -  only accept 9 digit number!!-->
 											<tr>
 											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
@@ -601,6 +606,7 @@
 													</input>
 												</td>
 											</tr>
+											<!--TODO!bash! URGENT - Verify Credit Card Number (talk to flame if you aren't sure how)-->
 											<tr>
 											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
@@ -816,6 +822,7 @@
 							</xsl:call-template>
 						</th>
 						<!-- TODO!bash! URGENT! [  DONE  ]		DOB is not always storing properly! make sure it is fixed properly. -->
+						<!-- TODO!bash! URGENT! Only allow realistic dob - i.e., not less than 18 yrs old. -->
 						<td>
 							<xsl:call-template name="DOB">
 								<xsl:with-param name="Name-Day"			select="string('Contact[DOB][day]')" />
@@ -858,6 +865,7 @@
 							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						</xsl:otherwise>
 					</xsl:choose>						<th class="JustifiedWidth">
+					<!--TODO!bash! URGENT! Verify - only allow strings including an @ symbol-->
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
 								<xsl:with-param name="field" select="string('Email')" />
@@ -875,6 +883,7 @@
 					<tr>
 						<td class="Required" valign="top"><strong><span class="Red"><sup>2</sup></span></strong></td>
 						<th class="JustifiedWidth">
+						<!--TODO!bash! URGENT - verify - only numeric -->
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
 								<xsl:with-param name="field" select="string('Phone')" />
@@ -898,6 +907,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
+						<!--TODO!bash! URGENT - Verify - Only numeric -->
 							<input type="text" name="Contact[Mobile]" class="input-string">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
@@ -915,6 +925,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
+						<!--TODO!bash! URGENT! - Verify - only numeric -->
 							<input type="text" name="Contact[Fax]" class="input-string">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
