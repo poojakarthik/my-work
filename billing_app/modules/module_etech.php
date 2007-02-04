@@ -156,7 +156,7 @@
 		$arrColumns['ServiceType']		= "Service.ServiceType";
 		$this->_selItemisedCharges		= new StatementSelect(	"Charge JOIN Service ON Service.Id = Charge.Service",
 																$arrColumns,
-																"Charge.Account = <Account> AND ChargeInvoiceRun = <InvoiceRun> AND ChargeStatus = ".CHARGE_TEMP_INVOICE);		
+																"Charge.Account = <Account> AND Charge.InvoiceRun = <InvoiceRun> AND ChargeStatus = ".CHARGE_TEMP_INVOICE);		
 		
 
 		$this->_selChargesTotal			= new StatementSelect(	"Charge",
