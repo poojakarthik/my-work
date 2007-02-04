@@ -334,6 +334,11 @@ abstract class NormalisationModule
 		
 		// units : numeric
 		$arrValid['Units'] = is_numeric($this->_arrNormalisedData["Units"]);											// 7
+		if (is_numeric($this->_arrNormalisedData["Units"]) && (int)$this->_arrNormalisedData["Units"] == 0)
+		{
+			// convert 0 units to 1 units
+			$this->_arrNormalisedData["Units"] = 1;
+		}
 		
 		// cost : numeric
 		$arrValid['Cost'] = is_numeric($this->_arrNormalisedData["Cost"]);											// 8

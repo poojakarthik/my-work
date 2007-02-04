@@ -60,10 +60,16 @@
 	 *
 	 * @method
 	 */
- 	function __construct($arrConfig)
+ 	function __construct($arrConfig=NULL)
  	{
 		parent::__construct();
 		
+		// cache recordtypes by Value for faster lookups
+		foreach ($GLOBALS['FileFormatEtech'] as $arrRecordType)
+		{
+			$this->_arrEtechRecordType[(int)$arrRecordType['RecordType']['Value']] = $arrRecordType;
+		}
+			
 	}
 	
 	//------------------------------------------------------------------------//
@@ -243,6 +249,10 @@
 		}
 		$arrLine = $this->SplitLine($strLine);
 		
+		// debuging
+		$this->arrData['_OriginalLine'] = $strLine;
+		$this->arrData['_OriginalLineArray'] = $arrLine;
+		
 		// If its an itemised data row, assign general data here
 		if ($arrLine['RecordType'] > 100 && $arrLine['RecordType'] < 240)
 		{
@@ -272,7 +282,7 @@
 				$this->arrData['DueOn']			= $this->_arrStatus['DueByDate'];
 								
 				// Call DecodeData() again
-				DecodeData();
+				$this->DecodeData();
 				break;
 			case 6:
 				// INVOICE NUMBER
@@ -282,7 +292,7 @@
 				$this->_arrStatus['Invoice']	= $this->arrData['Id'];
 				
 				// Call DecodeData() again
-				DecodeData();
+				$this->DecodeData();
 				break;
 			
 			//---------------------------- FRONT PAGE ----------------------------//
@@ -298,7 +308,7 @@
 				$this->arrData['Debits']			= $this->arrData['Total'] - (float)$arrLine['Adjustments'];
 				
 				// Call DecodeData() again
-				DecodeData();
+				$this->DecodeData();
 				break;
 			case 11:
 				// CUSTOMER DETAIL
@@ -316,7 +326,7 @@
 				$this->_arrStatus['FNN']		= $arrLine['FNN'];
 				
 				// Call DecodeData() again
-				DecodeData();
+				$this->DecodeData();
 				break;
 			case 102:
 				// LANDLINE -> NATIONAL
@@ -435,6 +445,7 @@
 				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
 				$this->arrData['RecordType']	= 10;
 				$this->arrData['EndDatetime']	= $this->arrData['StartDatetime'];
+				$this->arrData['Units']			= 1;
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -443,6 +454,7 @@
 				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
 				$this->arrData['RecordType']	= 15;
 				$this->arrData['EndDatetime']	= $this->arrData['StartDatetime'];
+				$this->arrData['Units']			= 1;
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -467,13 +479,14 @@
 				// S&E
 				$arrDateRange = Array();				
 				preg_match("/\d{1,2} [A-Za-z]{3} \d{4} to \d{1,2} [A-Za-z]{3} \d{4}$/", trim($arrLine['Description']), $arrDateRange);
-				$arrDates = explode($arrDateRange[1], " to ");
+				$arrDates = explode(" to ", $arrDateRange[1]);
 				
 				$this->arrData['FNN']			= trim(substr($arrLine['Description'], 0, 11));	// 11 to account for ADSL FNNs with i's
 				$this->arrData['ServiceType']	= ServiceType($this->arrData['FNN']);
 				$this->arrData['StartDatetime']	= $arrDates[0] . " 00:00:00";
 				$this->arrData['EndDatetime']	= $arrDates[1] . " 00:00:00";
 				$this->arrData['Description']	= trim(substr($arrLine['Description'], 13, 0-strlen($arrDateRange[1])));
+				$this->arrData['Units']			= 1;
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -487,7 +500,7 @@
 				$this->intCurrentFNN			= $this->arrData['FNN'];
 				
 				// Call DecodeData() again
-				DecodeData();
+				$this->DecodeData();
 				break;
 			case 41:
 				// SUMMARY DETAILS
@@ -537,7 +550,7 @@
 			
 			default:
 				// Recursively call DecodeData()
-				DecodeData();
+				$this->DecodeData();
 				break;
 		}
 	}
@@ -565,16 +578,9 @@
 		$arrLine = Array();
 		
 		// Make sure this is a recognised type
-		$strRecordType = substr($strLine, 0, 3);
+		$intRecordType = (int)substr($strLine, 0, 3);
 		$arrRecordDefine = NULL;
-		foreach ($GLOBALS['FileFormatEtech'] as $arrRecordType)
-		{
-			if ((int)$arrRecordType['RecordType']['Value'] == (int)$strRecordType)
-			{
-				$arrRecordDefine = $arrRecordType;
-				break;
-			}
-		}
+		$arrRecordDefine = $this->_arrEtechRecordType[$intRecordType];
 		if (!$arrRecordDefine)
 		{
 			// Unknown Record Type (ie. invalid file)
@@ -586,16 +592,44 @@
 		
 		// Set the fields
 		$i = 0;
-		foreach($arrRecordDefine as $strKey=>$strValue)
+		if (count($arrRecordDefine) > 1)
 		{
-			// Is the field optional (must be last field on line)?
-			if (($strValue['Optional'] === TRUE) && ($arrRawLine[$i] == NULL))
+			foreach($arrRecordDefine as $strKey=>$arrValue)
 			{
-				continue;
+				// Is the field optional (must be last field on line)?
+				if (($arrValue['Optional'] === TRUE) && ($arrRawLine[$i] == NULL))
+				{
+					continue;
+				}
+				
+				$arrLine[$strKey] = trim($arrRawLine[$i]);
+				$i++;
 			}
-			
-			$arrLine[$strKey] = trim($arrRawLine[$i]);
-			$i++;
+		}
+		else
+		{
+			// not enough rows in define
+			if ($intRecordType >= 200)
+			{
+				// S&E and OC&C
+				$arrRow = $GLOBALS['FileFormatEtech']['ItemisedS&E'];
+			}
+			else
+			{
+				// Everything else
+				$arrRow = $GLOBALS['FileFormatEtech']['ItemisedCall'];
+			}
+			foreach($arrRow as $strKey=>$arrValue)
+			{
+				// Is the field optional (must be last field on line)?
+				if (($arrValue['Optional'] === TRUE) && ($arrRawLine[$i] == NULL))
+				{
+					continue;
+				}
+				
+				$arrLine[$strKey] = trim($arrRawLine[$i]);
+				$i++;
+			}
 		}
 		
 		return $arrLine;

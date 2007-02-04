@@ -60,7 +60,7 @@
 	 *
 	 * @method
 	 */
- 	function __construct($arrConfig)
+ 	function __construct($arrConfig=NULL)
  	{
 		parent::__construct();
 		
@@ -76,11 +76,21 @@
 		
 		$this->_selMatchCDR	= new StatementSelect(	"CDR",
 													"Id, Charge",
+													"Status != 199 AND " .
 													"FNN = <FNN> AND " .
 													"Account = <Account> AND " .
 													"Units = <Units> AND " .
 													"Destination = <Destination> AND " .
-													"StartDatetime BETWEEN <StartDateTime> AND <EndDateTime>"); // ????? is this right ?
+													"StartDatetime = <StartDateTime> AND EndDatetime = <EndDateTime>");
+													
+		$this->_selMatchCDR	= new StatementSelect(	"CDR",
+													"Id, Charge",
+													"Status != 199 AND " .
+													"FNN = <FNN> AND " .
+													"Account = <Account> AND " .
+													"Units = <Units> AND " .
+													"Destination = <Destination> AND " .
+													"StartDatetime = <StartDateTime> AND EndDatetime = <EndDateTime>");
 		
 		
 		$this->_selMatchLocal = new StatementSelect("CDR",
