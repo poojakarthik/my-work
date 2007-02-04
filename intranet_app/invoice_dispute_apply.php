@@ -40,7 +40,11 @@
 		$oblfltDisputed = new dataFloat ('Disputed');
 		
 		// Check the Dispute is valid
-		if ($oblfltDisputed->setValue ($_POST ['Disputed']))
+		if (!$oblfltDisputed->setValue ($_POST ['Disputed']))
+		{
+			$oblstrError->setValue ('Invalid Amount');
+		}
+		else
 		{
 			$invInvoice->Dispute ($_POST ['Disputed']);
 			

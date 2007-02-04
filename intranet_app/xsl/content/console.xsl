@@ -104,6 +104,21 @@
 				</td>
 			</tr>
 		</xsl:if>
+		<!-- User Manual -->
+		<tr>
+			<td>
+				<a href="user_manual">
+					<img src="img/template/pdf.png" title="User Manual" class="MenuIcon" />
+				</a>
+			</td>
+			<td>
+				<strong>
+					User Manual
+				</strong>
+				<br />
+				Need Help? Check the Manual.
+			</td>
+		</tr>
 		<!-- Logout -->
 		<tr>
 			<td>

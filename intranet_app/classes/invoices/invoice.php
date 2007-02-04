@@ -214,8 +214,13 @@
 		
 		public function Dispute ($fltDisputed)
 		{
+			$fltDisputed = floatval (str_replace ('$', '', $fltDisputed));
+			
 			//TODO!bash! make sure $fltDisputed !> Invoice.Total
-			$fltDisputed = str_replace ('$', '', $fltDisputed);
+			if ($fltDisputed > $this->Pull ('Total')->getValue ())
+			{
+				throw new Exception ('Dispute Too High');
+			}
 			
 			$arrDispute = Array (
 				'Disputed'		=> $fltDisputed,

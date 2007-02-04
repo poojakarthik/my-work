@@ -11,7 +11,7 @@
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
-	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	$arrPage['Permission']	= PERMISSION_ADMIN;
 	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT;
 	
 	// call application
@@ -22,38 +22,39 @@
 	$docDocumentation->Explain ("Account");
 	$docDocumentation->Explain ('Archive');
 	
-	// Start a new Account Search
-	$acsAccounts = new Accounts ();
-	
 	if (isset ($_GET ['constraint']))
 	{
-		foreach ($_GET ['constraint'] as $strConstraintName => $arrConstraintRules)
+		// Start a new Account Search
+		$acsAccounts = $Style->attachObject (new Accounts);
+		
+		if (isset ($_GET ['constraint']))
 		{
-			if ($arrConstraintRules ['Value'] != "")
+			foreach ($_GET ['constraint'] as $strConstraintName => $arrConstraintRules)
 			{
-				$acsAccounts->Constrain (
-					$strConstraintName,
-					$arrConstraintRules ['Operator'],
-					$arrConstraintRules ['Value']
-				);
+				if ($arrConstraintRules ['Value'] != "")
+				{
+					$acsAccounts->Constrain (
+						$strConstraintName,
+						$arrConstraintRules ['Operator'],
+						$arrConstraintRules ['Value']
+					);
+				}
 			}
 		}
-	}
-	
-	if (isset ($_GET ['Order']['Column']))
-	{
-		$acsAccounts->Order (
-			$_GET ['Order']['Column'],
-			isset ($_GET ['Order']['Method']) ? $_GET ['Order']['Method'] == 1 : TRUE
+		
+		if (isset ($_GET ['Order']['Column']))
+		{
+			$acsAccounts->Order (
+				$_GET ['Order']['Column'],
+				isset ($_GET ['Order']['Method']) ? $_GET ['Order']['Method'] == 1 : TRUE
+			);
+		}
+		
+		$acsAccounts->Sample (
+			isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
+			isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
 		);
 	}
-	
-	$acsAccounts->Sample (
-		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
-		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
-	);
-	
-	$Style->attachObject ($acsAccounts);
 	
 	$Style->Output ("xsl/content/account/list.xsl");
 	

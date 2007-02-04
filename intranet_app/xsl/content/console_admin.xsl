@@ -20,6 +20,19 @@
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
 				<td>
+					<a href="account_list.php">
+						<img src="img/template/contact_retrieve.png" title="Advanced Account Search" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Advanced Account Search
+					</strong><br />
+					 Search for Accounts without Verification
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<a href="charges_approve.php">
 						<img src="img/template/charge.png" title="Approve Unbilled Charges" class="MenuIcon" />
 					</a>
