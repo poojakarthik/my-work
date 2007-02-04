@@ -156,12 +156,12 @@
 		$arrColumns['ServiceType']		= "Service.ServiceType";
 		$this->_selItemisedCharges		= new StatementSelect(	"Charge JOIN Service ON Service.Id = Charge.Service",
 																$arrColumns,
-																"Charge.Account = <Account> AND ChargeInvoiceRun = <InvoiceRun> AND ChargeStatus = CHARGE_TEMP_INVOICE");		
+																"Charge.Account = <Account> AND ChargeInvoiceRun = <InvoiceRun> AND ChargeStatus = ".CHARGE_TEMP_INVOICE);		
 		
 
 		$this->_selChargesTotal			= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge",
-																"Account = <Account> AND InvoiceRun = <InvoiceRun> AND Status = CHARGE_TEMP_INVOICE",
+																"Account = <Account> AND InvoiceRun = <InvoiceRun> AND Status = ".CHARGE_TEMP_INVOICE,
 																"Nature ASC",
 																NULL,
 																"Nature");
@@ -169,7 +169,7 @@
 
 		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge",
-																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND Status = CHARGE_TEMP_INVOICE",
+																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND Status = ".CHARGE_TEMP_INVOICE,
 																"Nature ASC",
 																NULL,
 																"Nature");
