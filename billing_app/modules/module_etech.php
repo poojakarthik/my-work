@@ -708,8 +708,13 @@
 		}
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
 		
+		// get details...
+		//TODO!rich! I assume this is what should be here ??!!
+		$arrItemisedVars['Account']		= $arrInvoiceDetails['Account'];
+		$arrItemisedVars['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+		
 		// grab itemised charges
-		if ($this->_selItemisedCharges->Execute() === FALSE)
+		if ($this->_selItemisedCharges->Execute($arrItemisedVars) === FALSE)
 		{
 			Debug("Line ".__LINE__.": ".$this->_selItemisedCalls->Error());
 			return FALSE;
