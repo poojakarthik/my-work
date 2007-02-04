@@ -23,10 +23,19 @@
 			
 			<!--TODO!bash! [  DONE  ]		This needs an error when disputed = 0!!!  Error==="Please enter a Disputed Amount."-->
 			<xsl:if test="/Response/Error != ''">
-				<div class="MsgError">
+				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Amount Blank'">
 							Please enter a Disputed Amount.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Amount Zero'">
+							Please enter a valid Dispute Amount.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Invalid Amount'">
+							Please enter a valid Dispute Amount.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Dispute High'">
+							You can only Dispute an Amount less than the Value of the Invoice.
 						</xsl:when>
 					</xsl:choose>
 				</div>
@@ -98,7 +107,7 @@
 					</tr>
 					<tr>
 						<td colspan="3">
-							__________________________________
+							<hr />
 						</td>
 					</tr>
 					<tr>
@@ -130,7 +139,7 @@
 						</th>
 						<td></td>
 						<td>
-							<input type="text" name="Disputed" class="input-string2 Currency" >
+							<input type="text" name="Disputed" class="input-string2 Currency">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 					       			<xsl:call-template name="Currency">

@@ -301,6 +301,7 @@
 	}
 	
 	input.input-string,
+	input.input-string2,
 	input.input-ABN,
 	input.input-ACN,
 	input.input-ABN-incomplete,
@@ -315,7 +316,7 @@
 	
 	input.input-string2
 	{
-		width:			65px;
+		width:			85px;
 	}
 	input.input-string-valid
 	{

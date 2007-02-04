@@ -7,8 +7,8 @@
 	
 	<xsl:template name="Content">
 	
-	<!--TODO!bash! URGENT - Do not have menu options that return to the same page!!!-->
-	
+		<!--TODO!bash! [  DONE  ]		URGENT - Do not have menu options that return to the same page!!!-->
+		
 		<!-- Page for viewing contact Details -->
 		<h1>View Contact Details</h1>
 		

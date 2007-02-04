@@ -28,6 +28,9 @@
 		exit;
 	}
 	
+	// Error
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
+	
 	// UI Values (Remember)
 	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
 	$oblstrDisputed = $oblarrUIValues->Push (new dataFloat ('Disputed'));
@@ -40,13 +43,25 @@
 		$oblfltDisputed = new dataFloat ('Disputed');
 		
 		// Check the Dispute is valid
-		if (!$oblfltDisputed->setValue ($_POST ['Disputed']))
+		if (!$_POST ['Disputed'])
+		{
+			$oblstrError->setValue ('Amount Blank');
+		}
+		else if (!$oblfltDisputed->setValue ($_POST ['Disputed']))
 		{
 			$oblstrError->setValue ('Invalid Amount');
 		}
+		else if ($oblfltDisputed->getValue () == 0)
+		{
+			$oblstrError->setValue ('Amount Zero');
+		}
+		else if ($oblfltDisputed->getValue () > $invInvoice->Pull ('Total')->getValue () + $invInvoice->Pull ('Tax')->getValue ())
+		{
+			$oblstrError->setValue ('Dispute High');
+		}
 		else
 		{
-			$invInvoice->Dispute ($_POST ['Disputed']);
+			$invInvoice->Dispute ($oblfltDisputed->getValue ());
 			
 			// If it is valid, show a Confirmation
 			$Style->Output (

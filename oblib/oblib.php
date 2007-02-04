@@ -192,6 +192,7 @@
 		public function setValue ($nodeValue)
 		{
 			$nodeValue = str_replace ("$", "", $nodeValue);
+			$nodeValue = str_replace (",", "", $nodeValue);
 			
 			if (!preg_match ("/^[\d]+(\.[\d]+){0,1}$/misU", $nodeValue))
 			{

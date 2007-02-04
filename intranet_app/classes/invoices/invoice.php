@@ -216,8 +216,8 @@
 		{
 			$fltDisputed = floatval (str_replace ('$', '', $fltDisputed));
 			
-			//TODO!bash! make sure $fltDisputed !> Invoice.Total
-			if ($fltDisputed > $this->Pull ('Total')->getValue ())
+			//TODO!bash! [  DONE  ]		make sure $fltDisputed !> Invoice.Total
+			if ($fltDisputed > $this->Pull ('Total')->getValue () + $this->Pull ('Tax')->getValue ())
 			{
 				throw new Exception ('Dispute Too High');
 			}
