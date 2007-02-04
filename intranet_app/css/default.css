@@ -313,6 +313,10 @@
 		width:				180px;
 	}
 	
+	input.input-string2
+	{
+		width:			65px;
+	}
 	input.input-string-valid
 	{
 		border:              solid 1px #89b100;

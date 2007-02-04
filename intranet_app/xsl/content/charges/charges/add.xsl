@@ -5,7 +5,13 @@
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
 
-	
+	<!--TODO! bash! Add Errors for when required fields are not entered!!-->
+	<!--Error === "Please enter a Charge Code." -->
+	<!--Error === "Please enter a Description." -->
+	<!--Error === "Please enter a valid Amount." -->
+	<!--Error === "Please select a valid Nature." -->
+	<!--TODO!bash! only allow a valid amount!! -->
+	<!--Error === "Please enter a valid Amount." -->
 	
 		<h1>Add Charge Type</h1>
 		
@@ -37,6 +43,7 @@
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Charge Type')" />
@@ -53,6 +60,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Charge Type')" />
@@ -69,11 +77,12 @@
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2">
+							<td colspan="3">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Charge Type')" />
@@ -90,6 +99,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Charge Type')" />
@@ -116,11 +126,12 @@
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2">
+							<td colspan="3">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+						<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Charge Type')" />
@@ -152,7 +163,11 @@
 				</div>
 				<div class="Clear"></div>
 			</div>
+
 			<div class="SmallSeperator"></div>
+						<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
 			<div class = "Right">
 			<input type="submit" value="Create Charge &#0187;" class="input-submit" />
 			</div>

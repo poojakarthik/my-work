@@ -82,6 +82,7 @@
 							</th>
 							<td>
 								<xsl:choose>
+								<!--TODO!bash! URGENT only allow a valid amount to be entered as the recursion charge - at the moment this crashes and dies if it's entered wrong -->
 									<xsl:when test="/Response/RecurringChargeType/Fixed = 0">
 										<input type="text" name="Amount" class="input-string">
 											<xsl:attribute name="value">

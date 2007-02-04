@@ -328,6 +328,7 @@
 					
 					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
+						<!--TODO!bash! URGENT! This is not working - view contact details page shows status as 'archived' but this page still says 'this contact is currently available'/'archive this contact' and the contact cannot be unarchived-->
 							<xsl:when test="/Response/ui-values/Archived = 1">
 								<tr>
 									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>

@@ -41,10 +41,31 @@
 								<xsl:with-param name="field" select="string('Id')" />
 							</xsl:call-template>
 						</th>
-						<td>
+						<td></td>
+						<td class="Right">
 							<xsl:value-of select="/Response/Invoice/Id" />
 						</td>
 					</tr>
+					<tr>
+					<td colspan="3">
+						<div class="MicroSeperator"></div>
+					</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Invoice')" />
+								<xsl:with-param name="field" select="string('Debits')" />
+							</xsl:call-template>
+						</th>
+						<td></td>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/Invoice/Debits" />
+								<xsl:with-param name="Decimal" select="number('2')" />
+	       					</xsl:call-template>
+						</td>
+					</tr> 
 					<tr>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
@@ -52,6 +73,7 @@
 								<xsl:with-param name="field" select="string('Credits')" />
 							</xsl:call-template>
 						</th>
+						<td>-</td>
 						<td class="Currency">
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/Invoice/Credits" />
@@ -63,28 +85,20 @@
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Invoice')" />
-								<xsl:with-param name="field" select="string('Debits')" />
-							</xsl:call-template>
-						</th>
-						<td class="Currency">
-			       			<xsl:call-template name="Currency">
-			       				<xsl:with-param name="Number" select="/Response/Invoice/Debits" />
-								<xsl:with-param name="Decimal" select="number('2')" />
-	       					</xsl:call-template>
-						</td>
-					</tr>
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('Invoice')" />
 								<xsl:with-param name="field" select="string('Tax')" />
 							</xsl:call-template>
 						</th>
+						<td>+</td>
 						<td class="Currency">
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/Invoice/Tax" />
 								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							__________________________________
 						</td>
 					</tr>
 					<tr>
@@ -94,11 +108,17 @@
 								<xsl:with-param name="field" select="string('Amount')" />
 							</xsl:call-template>
 						</th>
+						<td></td>
 						<td class="Currency">
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/Invoice/Balance" />
 								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
 					<tr>
@@ -108,8 +128,9 @@
 								<xsl:with-param name="field" select="string('Disputed')" />
 							</xsl:call-template>
 						</th>
+						<td></td>
 						<td>
-							<input type="text" name="Disputed" class="input-string Currency">
+							<input type="text" name="Disputed" class="input-string2 Currency" >
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 					       			<xsl:call-template name="Currency">

@@ -7,7 +7,7 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Approve Unbilled Charges</h1>
+		<h1>Manage Charges &amp; Credits</h1>
 
 		<h2 class="Charge"> Charge Details</h2>
 		<form method="post" action="charges_approve.php">
@@ -16,6 +16,7 @@
 					<th width="30">#</th>
 					<th>Description</th>
 					<th>Amount</th>
+					<!--TODO!bash! This needs to have a 'Nature' column!!-->
 					<th>Account</th>
 					<th>Entered By</th>
 					<th>Entered On</th>
@@ -47,9 +48,11 @@
 									<xsl:text>account_view.php?Id=</xsl:text>
 									<xsl:value-of select="./Account" />
 								</xsl:attribute>
+								<!--TODO!bash! make this be the account number !!-->
 								<xsl:text>View Account</xsl:text>
 							</a>
 						</td>
+						<!--TODO!bash! Make this the name of the employee, not their #!!-->
 						<td><xsl:value-of select="./CreatedBy" /></td>
 						<td>
 							<xsl:call-template name="dt:format-date-time">
@@ -82,10 +85,9 @@
 					</div>
 				</xsl:when>
 			</xsl:choose>
-			
 			<div class="SmallSeperator"></div>
 			<div class= "Right">
-				<input type="submit" value="Delegate Approvals &#0187;" class="input-submit" />
+				<input type="submit" value="Apply Changes &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

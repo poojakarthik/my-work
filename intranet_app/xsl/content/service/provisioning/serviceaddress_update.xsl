@@ -188,7 +188,7 @@
 										</input>
 									</td>
 								</tr>
-								<!--TODO!bash! If no postcode is entered and the service address details are updated, postcode fields show up as 0000!!! Make them show as blank!!!-->
+								<!--TODO!bash! URGENT verify postcode - only 4 digit number-->
 								<tr>
 									<td class="Required"></td>
 									<td class="Required"></td>
@@ -298,6 +298,7 @@
 										</input>
 									</td>
 								</tr>
+								<!--TODO!bash! Urgent! do not show dates which allow the person to be <18-->
 								<tr>
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"></td>
@@ -668,6 +669,7 @@
 										</select>
 									</td>
 								</tr>
+								<!--TODO!bash! URGENT! when you're asked to fix one postcode, you should probably fix the other one too.  Don't show 0000 if no postcode is entered!!-->
 								<tr>
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"><strong><span class="Red">B</span></strong></td>

@@ -118,6 +118,10 @@
 				</div>
 			</xsl:when>
 		</xsl:choose>
+		<div class="Seperator"></div>
+		<!--TODO!bash! URGENT - Add a table for Charges & Credits - show all added sevice charges with status CHARGE_APPROVED(Green) OR CHARGE_WAITING.  Do NOT show CHARGE_DECLINED or CHARGE_INVOICED -->
+		<!--TODO!bash! URGENT - if there are no charges or credits, msgnotice === "There are no Charges or Credits associated with this Service."-->
+
 		
 		<xsl:if test="/Response/CDRs-Unbilled/rangePages != 0">
 			<p>

@@ -4,7 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Recurring Charge Types</h1>
+		<h1>View Recurring Charge Types</h1>
 
 		<h2 class="Charge"> Recurring Charge Details</h2>
 		<div class="sectionContainer">
@@ -85,7 +85,7 @@
 				</xsl:choose>
 				
 				<div class="Right">
-					<a href="charges_recurringcharge_add.php">Add a New Recurring Charge</a>
+					<a href="charges_recurringcharge_add.php">Add Recurring Charge</a>
 				</div>
 			</div>
 		</div>

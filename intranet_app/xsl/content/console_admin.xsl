@@ -26,9 +26,9 @@
 				</td>
 				<td>
 					<strong>
-						Unbilled Charges
+						Manage Charges &amp; Credits
 					</strong><br />
-					Approve Unbilled Charges
+					 Approve and Decline Charges and Credits.
 				</td>
 			</tr>
 			<tr>
@@ -39,9 +39,9 @@
 				</td>
 				<td>
 					<strong>
-						Single Charge Types
+						Manage Single Charge Types
 					</strong><br />
-					List Single Charge Types
+					View and Add Single Charge Types.
 				</td>
 			</tr>
 			<tr>
@@ -52,9 +52,9 @@
 				</td>
 				<td>
 					<strong>
-						Recurring Charge Types
+						Manage Recurring Charge Types
 					</strong><br />
-					List Recurring Charge Types
+					View and Add Recurring Charge Types.
 				</td>
 			</tr>
 				<tr>
@@ -64,8 +64,8 @@
 						</a>
 					</td>
 					<td>
-						<strong>Employees</strong><br />
-						List Employees
+						<strong> Manage Employees</strong><br />
+						View and Add Employees.
 					</td>
 				</tr>
 		</table>

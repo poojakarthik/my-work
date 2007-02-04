@@ -84,13 +84,14 @@
 							</th>
 							<td>
 								<xsl:choose>
+								<!--TODO!bash! only allowed valid $ value - this crashes & dies if its entered wrong-->
 									<xsl:when test="/Response/ChargeType/Fixed = 0">
 										<input type="text" name="Amount" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 								       			<xsl:call-template name="Currency">
 								       				<xsl:with-param name="Number" select="/Response/ChargeType/Amount" />
-													<xsl:with-param name="Decimal" select="number('4')" />
+													<xsl:with-param name="Decimal" select="number('2')" />
 						       					</xsl:call-template>
 											</xsl:attribute>
 										</input>	
@@ -98,7 +99,7 @@
 									<xsl:otherwise>
 						       			<xsl:call-template name="Currency">
 						       				<xsl:with-param name="Number" select="/Response/ChargeType/Amount" />
-											<xsl:with-param name="Decimal" select="number('4')" />
+											<xsl:with-param name="Decimal" select="number('2')" />
 				       					</xsl:call-template>
 									</xsl:otherwise>
 								</xsl:choose>

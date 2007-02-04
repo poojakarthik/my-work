@@ -4,6 +4,24 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
+	<!--TODO!bash! I'm curious - why the hell do you have 3 folders for recurring charges? I'm getting really sick of trying to find the right file. -->
+	<!--TODO!bash! URGENT - adding a recurring charge does not work - not being added to db-->
+	<!--TODO!bash! URGENT - throw errors when required fields are not entered -->
+	<!--Error=== "Please enter a Charge Code."-->
+	<!--Error=== "Please enter a Description." -->
+	<!--Error=== "Please enter a Recursion Charge." -->
+	<!--Error=== "Please select a valid Nature." -->
+	<!--Error=== "Please enter a Recurring Frequency." -->
+	<!--TODO!bash! URGENT - throw error if recursion charge is not valid -->
+	<!--Error=== "Please enter a valid Recursion Charge." -->
+	<!--TODO!bash! URGENT - throw error if Frequency is not numeric -->
+	<!--Error=== "Please enter a valid Recurring Frequency." -->
+	<!--TODO!bash! URGENT - throw error if min charge is not valid -->
+	<!--Error=== "Please enter a valid Minimum Charge." -->
+	<!--TODO!bash! URGENT - throw error if cancellation charge is not valid -->
+	<!--Error=== "Please enter a valid Cancellation Charge." -->
+	
+	
 		<h1>Add Recurring Charge Type</h1>
 		
 		<h2 class= "Charge"> Charge Details</h2>
@@ -43,6 +61,7 @@
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -59,6 +78,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -75,11 +95,12 @@
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2">
+							<td colspan="3">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -96,6 +117,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -122,11 +144,12 @@
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2">
+							<td colspan="3">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+						<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -162,11 +185,12 @@
 							</td>
 						</tr>
 						<tr>
-							<td colspan="2">
+							<td colspan="3">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+						<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -183,6 +207,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -199,11 +224,13 @@
 							</td>
 						</tr>
 						<tr>
+						<td></td>
 							<td colspan="2">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+						<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -232,6 +259,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -260,6 +288,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -288,6 +317,7 @@
 							</td>
 						</tr>
 						<tr>
+						<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -320,6 +350,9 @@
 				<div class="Clear"></div>
 			</div>
 			<div class="SmallSeperator"></div>
+			<div class="Left">
+				<strong><span class="Red">* </span></strong>: Required field<br/>
+			</div>
 			<div class = "Right">
 			<input type="submit" value="Create Recurring Charge &#0187;" class="input-submit" />
 			</div>

@@ -131,7 +131,7 @@
 							<xsl:text>invoice_dispute_apply.php?Id=</xsl:text>
 							<xsl:value-of select="/Response/Invoice/Id" />
 						</xsl:attribute>
-						<xsl:text>Dispute Invoice</xsl:text>s
+						<xsl:text>Dispute Invoice</xsl:text>
 					</a>
 				</xsl:when>
 				

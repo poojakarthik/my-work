@@ -274,7 +274,7 @@
 					</xsl:choose>
 					
 					<div class="MicroSeperator"></div>
-					
+					<!--TODO!bash! URGENT! This is not working - view account details page shows status as 'archived' but this page still says 'this account is currently available'/'archive this account' and the account cannot be unarchived-->
 					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
 							<xsl:when test="/Response/ui-values/Archived = 1">

@@ -79,7 +79,7 @@
 				</xsl:choose>
 				
 				<div class= "Right">
-					<a href="charges_charge_add.php">Add a New Charge Type</a>
+					<a href="charges_charge_add.php">Add Charge Type</a>
 				</div>
 			</div>
 		</div>
