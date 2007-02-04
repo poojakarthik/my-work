@@ -193,7 +193,74 @@ $appMonitor = new ApplicationMonitor($arrConfig);
 		AND ISNULL(ClosedOn)
 		AND ServiceType = 0
 		*/
-	}	
+	}
+	
+	// return a list of rate groups for a service
+	function ListServiceRateGroup($intService)
+	{
+		$intService = (int)$intService;
+		if (!$intService)
+		{
+			return FALSE;
+		}
+		$strQuery  = "SELECT RateGroup.*, ServiceRateGroup.StartDateTime AS StartDateTime, ServiceRateGroup.EndDateTime AS EndDateTime\n";
+		$strQuery .= " FROM ServiceRateGroup, RateGroup\n";
+		$strQuery .= " WHERE RateGroup.Id = ServiceRateGroup.RateGroup\n";
+		$strQuery .= " AND ServiceRateGroup.Service = $intService\n";
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		$arrOutput = Array();
+		while ($arrRow = $sqlResult->fetch_assoc())
+		{
+			$arrOutput[] = $arrRow;
+		}
+		return $arrOutput;
+		
+	}
+	
+	// return a list of rates for a service
+	function ListServiceRate($intService)
+	{
+		$intService = (int)$intService;
+		if (!$intService)
+		{
+			return FALSE;
+		}
+		
+		$strQuery = "SELECT Rate.* FROM ServiceRateGroup, RateGroup, Rate, RateGroupRate\n";
+		$strQuery .= " WHERE RateGroup.Id = RateGroupRate.RateGroup\n";
+		$strQuery .= " AND Rate.Id = RateGroupRate.Rate\n";
+		$strQuery .= " AND RateGroup.Id = ServiceRateGroup.RateGroup\n";
+		$strQuery .= " AND ServiceRateGroup.Service = $intService\n";
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		$arrOutput = Array();
+		while ($arrRow = $sqlResult->fetch_assoc())
+		{
+			$arrOutput[] = $arrRow;
+		}
+		return $arrOutput;
+	}
+	
+	// return a list of rate plans for a service
+	function ListServiceRatePlan($intService)
+	{
+		$intService = (int)$intService;
+		if (!$intService)
+		{
+			return FALSE;
+		}
+		
+		$strQuery  = "SELECT RatePlan.*, ServiceRatePlan.StartDateTime AS StartDateTime, ServiceRatePlan.EndDateTime AS EndDateTime\n";
+		$strQuery .= " FROM ServiceRatePlan, RatePlan\n";
+		$strQuery .= " WHERE RatePlan.Id = ServiceRatePlan.RatePlan\n";
+		$strQuery .= " AND ServiceRatePlan.Service = $intService\n";
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		$arrOutput = Array();
+		while ($arrRow = $sqlResult->fetch_assoc())
+		{
+			$arrOutput[] = $arrRow;
+		}
+		return $arrOutput;
+	}
  }
 
 

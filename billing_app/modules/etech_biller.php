@@ -80,7 +80,7 @@
 													"Account = <Account> AND " .
 													"Units = <Units> AND " .
 													"Destination = <Destination> AND " .
-													"StartDatetime BETWEEN <StartDateTime> AND <EndDateTime>");
+													"StartDatetime BETWEEN <StartDateTime> AND <EndDateTime>"); // ????? is this right ?
 		
 		
 		$this->_selMatchLocal = new StatementSelect("CDR",
@@ -163,7 +163,7 @@
 		switch ($arrServiceTypeTotal['RecordType'])
 		{
 			case 17:
-			case 34:
+			//case 34: // <-- not sure if these are itemised on the etech bills? they probably should be
 				// Find the CDRs total
 				$strStartDate	= date("Y-m-", strtotime("-1 Month", strtotime($strInvoiceCreatedOn)))."01";
 				$strEndDate		= date("Y-m-d", strtotime("-1 Day", strtotime("+1 Month", strtotime($strStartDate))));
@@ -235,7 +235,8 @@
 	 * @param	array	$arrCDR				associative array to be matched
 	 * @param	string	$strInvoiceRun		generated InvoiceRun Id
 	 *
-	 * @return			bool
+	 * @return	mixed	int					difference between our charge and etech's
+	 *					bool				FALSE if a match was not found (use === FALSE, as this method may return 0)
 	 *
 	 * @method
 	 */
@@ -260,6 +261,39 @@
 			// Error
 			return FALSE;
 		}
+		
+		// return the difference between our charge and etech's
+		return $arrCDRResult['Charge'] - $arrCDR['Charge'];
+	}
+	
+	//------------------------------------------------------------------------//
+	// FindCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * FindCDR()
+	 *
+	 * Attempts to Find an Etech CDR in our database.
+	 *
+	 * Attempts to Find an Etech CDR in our database.
+	 * 
+	 * @param	array	$arrCDR				associative array to be matched
+	 *
+	 * @return	mixed	int					difference between our charge and etech's
+	 *					bool				FALSE if a match was not found (use === FALSE, as this method may return 0)
+	 *
+	 * @method
+	 */
+ 	function FindCDR($arrCDR)
+ 	{
+		// Try to match
+		$arrWhere = $arrCDR;
+		$intResults = $this->_selMatchCDR->Execute($arrWhere);
+		if (!$intResults)
+		{
+			// Error or no results
+			return FALSE;
+		}
+		$arrCDRResult = $this->_selMatchCDR->Fetch();
 		
 		// return the difference between our charge and etech's
 		return $arrCDRResult['Charge'] - $arrCDR['Charge'];

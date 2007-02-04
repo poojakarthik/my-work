@@ -159,9 +159,16 @@ $objPage = new VixenPage($arrConfig);
 	}
 	
 	// Add a farward link to the body
-	function AddForwardLink($strHref, $strValue, $strName, $strNewline=TRUE)
+	function AddForwardLink($strHref, $strValue, $strName=NULL, $strNewline=TRUE)
 	{
-		$strHref = $this->_EncodeBackLink($strHref, $strName);
+		if (!$strName)
+		{
+			$strName = $this->_strPageLink;
+		}
+		if ($strName)
+		{
+			$strHref = $this->_EncodeBackLink($strHref, $strName);
+		}
 		$this->Append('Body', "<a href=\"$strHref\">$strValue</a>", $strNewline);
 	}
 	

@@ -29,6 +29,7 @@ $intMaxId 		= $intStart;
 
 // menu
 $objPage->AddLink("cdr_index.php","[ CDR Menu ]");
+$objPage->AddBackLink();
 
 // get CDR Status list
 $arrWhere = Array();

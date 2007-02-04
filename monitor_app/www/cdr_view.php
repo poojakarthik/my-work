@@ -75,6 +75,13 @@ if ($arrOutput)
 {
 	if (is_array($arrOutput['Normalised']))
 	{
+		// menu items
+		if ($arrOutput['Normalised']['Service'])
+		{
+			$objPage->AddForwardLink("service_rategroup_list.php?Service={$arrOutput['Normalised']['Service']}","[ RateGroups for Service ]");
+			$objPage->AddForwardLink("service_rateplan_list.php?Service={$arrOutput['Normalised']['Service']}","[ RatePlans for Service ]");
+		}
+		
 		// title
 		$objPage->AddTitle("Normalised CDR");
 		
