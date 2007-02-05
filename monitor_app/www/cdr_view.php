@@ -32,7 +32,7 @@ $objPage->AddBackLink();
 
 // get CDR Id
 $intCDR = (int)$_REQUEST['Id'];
-echo($_REQUEST['Id']);
+echo($_GET['Id']);
 Die();
 if (!$intCDR)
 {
