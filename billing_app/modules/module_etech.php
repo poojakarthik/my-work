@@ -110,10 +110,10 @@
 																NULL,
 																"RType.Id");
 		
-		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN CostCentre ON Service2.CostCentre = CostCentre.Id, ServiceTotal",
+		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN CostCentre ON Service.CostCentre = CostCentre.Id, ServiceTotal",
 																"Service.FNN AS FNN, Service.Id AS Id, Service.ServiceType AS ServiceType, CostCentre.Name AS CostCentre",
 																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND ServiceTotal.Service = Service.Id",
-																"CostCentre, FNN");
+																"Service.CostCentre, FNN");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"TotalCharge",
