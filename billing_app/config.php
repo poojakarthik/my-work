@@ -893,8 +893,9 @@
 		$arrPrintDefineEtech['CategoryFooter']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
 		
 		// Service Header
-		$arrPrintDefineEtech['ServiceHeader']	['FNN']				['Type']	= ETECH_FNN;
-		//$arrPrintDefineEtech['ServiceHeader']	['CostCentre']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['ServiceHeader']	['FNN']				['Type']		= ETECH_FNN;
+		$arrPrintDefineEtech['ServiceHeader']	['CostCentre']		['Type']		= ETECH_STRING;
+		$arrPrintDefineEtech['ServiceHeader']	['CostCentre']		['Optional']	= TRUE;
 		
 		// Service Detail
 		$arrPrintDefineEtech['ServiceDetail']	['RecordCount']		['Type']	= ETECH_INTEGER;
@@ -908,8 +909,8 @@
 		$arrPrintDefineEtech['ServiceTotals']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
 		
 		// Service Footer
-		//$arrPrintDefineEtech['ServiceFooter']	['CostCentre']		['Type']	= ETECH_STRING;
-		//$arrPrintDefineEtech['ServiceFooter']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
+		$arrPrintDefineEtech['ServiceFooter']	['CostCentre']		['Type']	= ETECH_STRING;
+		$arrPrintDefineEtech['ServiceFooter']	['Total']			['Type']	= ETECH_SHORT_CURRENCY;
 		
 		// Special Message 1
 		$arrPrintDefineEtech['SpecialMsg1']		['Message']			['Type']	= ETECH_STRING;

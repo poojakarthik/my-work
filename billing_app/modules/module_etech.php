@@ -110,9 +110,10 @@
 																NULL,
 																"RType.Id");
 		
-		$this->_selServices				= new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
-																"Service.FNN AS FNN, Service.Id AS Id, Service.ServiceType AS ServiceType",
-																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW())");
+		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN CostCentre ON Service2.CostCentre = CostCentre.Id, ServiceTotal",
+																"Service.FNN AS FNN, Service.Id AS Id, Service.ServiceType AS ServiceType, CostCentre.Name AS CostCentre",
+																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND ServiceTotal.Service = Service.Id",
+																"CostCentre, FNN");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"TotalCharge",
@@ -211,7 +212,7 @@
 		//----------------------------------------------------------------------------//
 		
 		$this->_strDelimeter = "|";
-		
+		/*
 		// Define RecordTypes
 		$arrDefine['FileHeader']	['RecordType']		['Type']	= ETECH_ROW;
 		$arrDefine['FileHeader']	['RecordType']		['Value']	= 1;
@@ -474,9 +475,9 @@
 		$arrDefine['GraphData']		['5MonthsAgo']		['Type']	= ETECH_SHORT_CURRENCY;
 		
 		// File Footer
-		$arrDefine['FileFooter']	['InvoiceCount']	['Type']	= ETECH_INTEGER;
+		$arrDefine['FileFooter']	['InvoiceCount']	['Type']	= ETECH_INTEGER;*/
 		
-		$this->_arrDefine = $arrDefine;
+		$this->_arrDefine = $arrConfig['FileFormatEtech'];
 		
 		//----------------------------------------------------------------------------//
 
@@ -933,25 +934,41 @@
 		$arrServices = $this->_selServices->FetchAll();
 		
 		// build output
-		$strCurrentService = "";
+		$strCurrentService		= "";
+		$strCurrentCostCentre	= NULL;
+		$fltCostCentreTotal		= 0.0;
 		$arrFileData[] = $arrDefine['SvcSummHeader'];
 		foreach($arrServices as $arrService)
 		{			
+			// Is this a new Cost Centre?
+			if ($strCurrentCostCentre != $arrService['CostCentre'])
+			{
+				// Was there an old Cost Centre?
+				if ($strCurrentCostCentre != NULL && $strCurrentService != "")
+					{
+					// Insert Cost Centre Footer
+					$arrDefine['ServiceFooter']	['CostCentre']		['Value']	= $strCurrentCostCentre;
+					$arrDefine['ServiceFooter']	['Total']			['Value']	= $fltCostCentreTotal;
+					
+				}
+				$strCurrentCostCentre	= $arrService['CostCentre'];
+				$fltCostCentreTotal		= 0.0;
+			}
+
+			// Add Service Header
+			$arrDefine['ServiceHeader']		['FNN']				['Value']	= $arrService['FNN'];
+			$arrDefine['ServiceHeader']		['CostCentre']		['Value']	= $strCurrentCostCentre;
+			$arrFileData[] = $arrDefine['ServiceHeader'];
+			
 			// The individual RecordTypes for each Service
 			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
 			if ($intSummaryCount === FALSE)
 			{
 				Debug('$intSummaryCount is FALSE! for service '.$arrService['FNN']);
 			}
-			elseif($intSummaryCount == 0)
-			{
-				//Debug('$intSummaryCount is 0! for service '.$arrService['FNN']);
-			}
 			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
-
-			$arrDefine['ServiceHeader']		['FNN']				['Value']	= $arrService['FNN'];
-			$arrFileData[] = $arrDefine['ServiceHeader'];
 			
+			// RecordType breakdown
 			$intRecordCount = 0;
 			foreach($arrServiceSummaries as $arrServiceSummary)
 			{
@@ -974,6 +991,9 @@
 			$arrDefine['ServiceTotals']		['FNN']			['Value']	= $arrService['FNN'];
 			$arrDefine['ServiceTotals']		['Total']		['Value']	= $arrServiceTotal['TotalCharge'];
 			$arrFileData[] = $arrDefine['ServiceTotals'];
+			
+			// Add to CostCentre total
+			$fltCostCentreTotal += (float)$arrServiceTotal['TotalCharge'];
 		}
 		
 		// Don't print the ServiceFooter, because we don't do Cost Centres 
@@ -1284,6 +1304,14 @@
 				// If this is a non-print field, then skip it
 				if($arrField['Print'] === FALSE)
 				{
+					continue;
+				}
+				
+				// If this is an optional field, and the value is NULL, then remove/ignore
+				// Must be the last field in the row
+				if(($arrField['Optional'] === TRUE) && (count($arrRecord) > $t + 1))
+				{
+					unset($arrFileData[$i-1][$t]);
 					continue;
 				}
 				
