@@ -1106,25 +1106,41 @@
 	 */
 	 function UnRate()
 	 {
-	 	// Subtract from Service Uncapped and Capped totals
-	 	$arrColumns['Service.UncappedCharge']	= new MySQLFunction("IF(Rate.Uncapped = 1, Service.UncappedCharge - CDR.Charge, Service.UncappedCharge)");
-	 	$arrColumns['Service.CappedCharge']		= new MySQLFunction("IF(Rate.Uncapped = 0, Service.CappedCharge - CDR.Charge, Service.CappedCharge)");
+	 	// Subtract from Service Uncapped totals
+	 	$arrColumns['Service.UncappedCharge']	= new MySQLFunction("Service.UncappedCharge - CDR.Charge");
+	 	$arrColumns['CDR.Status']				= CDR_NORMALISED;
 	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR  ON Service.Id = CDR.Service, Rate",
-	 										"CDR.Rate = Rate.Id AND CDR.Status = ".CDR_UNRATE,
+	 										"CDR.Rate = Rate.Id AND Rate.Uncapped = 1 AND CDR.Status = ".CDR_UNRATE,
 	 										$arrColumns);
-	 	if ($updUnRate->Execute($arrColumns, Array()) === FALSE)
+	 	if (($mixReturn = $updUnRate->Execute($arrColumns, Array())) === FALSE)
 	 	{
 	 		// Couldn't update
-	 		Debug("Couldn't update Capped and Uncapped Totals: ".$updUnRate->Error());
+	 		Debug("Couldn't update Uncapped Totals: ".$updUnRate->Error());
 	 		return FALSE;
 	 	}
+	 	else
+	 	{
+	 		$intTotal = (int)$mixReturn;
+	 	}
 	 	
-	 	// Set CDR status
-	 	$arrColumns = Array();
-	 	$arrColumns['Status']	= CDR_NORMALISED;
-	 	$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_UNRATE, $arrColumns);
-	 	$mixReturn = $updCDRStatus->Execute($arrColumns, NULL);
-	 	return (int)$mixReturn;
+	 	// Subtract from Service Capped totals
+	 	$arrColumns['Service.CappedCharge']		= new MySQLFunction("Service.CappedCharge - CDR.Charge");
+	 	$arrColumns['CDR.Status']				= CDR_NORMALISED;
+	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR  ON Service.Id = CDR.Service, Rate",
+	 										"CDR.Rate = Rate.Id AND Rate.Uncapped = 0 AND CDR.Status = ".CDR_UNRATE,
+	 										$arrColumns);
+	 	if (($mixReturn = $updUnRate->Execute($arrColumns, Array())) === FALSE)
+	 	{
+	 		// Couldn't update
+	 		Debug("Couldn't update Capped Totals: ".$updUnRate->Error());
+	 		return FALSE;
+	 	}
+	 	else
+	 	{
+	 		$intTotal += (int)$mixReturn;
+	 	}
+	 	
+	 	return $intTotal;
 	 }
  }
 
