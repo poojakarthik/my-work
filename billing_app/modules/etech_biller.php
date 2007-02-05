@@ -24,7 +24,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
+
 
 //----------------------------------------------------------------------------//
 // EtechBiller
@@ -97,6 +97,8 @@
 													"SUM(Charge) AS Total",
 													"Account = <Account> AND " .
 													"StartDatetime BETWEEN <StartDateTime> AND <EndDateTime>");
+													
+		$this->_insBadCDR = new StatementInsert("CDRBadMatch");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -307,6 +309,29 @@
 		
 		// return the difference between our charge and etech's
 		return $arrCDRResult['Charge'] - $arrCDR['Charge'];
+	}
+	
+	//------------------------------------------------------------------------//
+	// InsertBadCDR
+	//------------------------------------------------------------------------//
+	/**
+	 * InsertBadCDR()
+	 *
+	 * Inserts a CDR into the CDRBadMatch table
+	 *
+	 * Inserts a CDR into the CDRBadMatch table
+	 * 
+	 * @param	array	$arrCDR				associative array to be inserted
+	 *
+	 * @return	mixed	int					Id of the inserted CDR 
+	 *					bool				FALSE if a match was not found (use === FALSE, as this method may return 0)
+	 *
+	 * @method
+	 */
+ 	function InsertBadCDR($arrCDR)
+ 	{
+		// return the difference between our charge and etech's
+		return $this->_insBadCDR->Execute($arrCDR);
 	}
  }	
 ?>
