@@ -1120,7 +1120,7 @@
 	 	elseif (!$mixResult)
 	 	{
 	 		Debug("No CDRs to unrate");
-	 		return TRUE;
+	 		return 0;
 	 	}
 	 	
 	 	// For each of the CDRs
