@@ -953,7 +953,8 @@
 		// File Footer
 		$arrPrintDefineEtech['FileFooter']		['InvoiceCount']	['Type']	= ETECH_INTEGER;
 		
-		$GLOBALS['FileFormatEtech'] = $arrPrintDefineEtech;
+		$GLOBALS['FileFormatEtech']		= $arrPrintDefineEtech;
+		$arrConfig['FileFormatEtech']	= $arrPrintDefineEtech;
 		
 		//----------------------------------------------------------------------------//
 
