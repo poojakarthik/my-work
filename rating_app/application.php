@@ -1107,12 +1107,20 @@
 	 function UnRate()
 	 {
 	 	// Subtract from Service Uncapped totals
+	 	
+	 	$qryUnRate = new Query();
+	 	
+	 	$strQuery = "UPDATE CDR JOIN Service ON Service.Id = CDR.Service, Rate \n" .
+	 				"SET Service.UncappedCharge = Service.UncappedCharge - CDR.Charge, CDR.Status = ".CDR_NORMALISED." \n" .
+	 				"WHERE CDR.Rate = Rate.Id AND Rate.Uncapped = 1 AND CDR.Status = ".CDR_UNRATE;
+	 					 	
+	 	/*
 	 	$arrColumns['Service.UncappedCharge']	= new MySQLFunction("Service.UncappedCharge - CDR.Charge");
 	 	$arrColumns['CDR.Status']				= CDR_NORMALISED;
 	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR  ON Service.Id = CDR.Service, Rate",
 	 										"CDR.Rate = Rate.Id AND Rate.Uncapped = 1 AND CDR.Status = ".CDR_UNRATE,
-	 										$arrColumns);
-	 	if (($mixReturn = $updUnRate->Execute($arrColumns, Array())) === FALSE)
+	 										$arrColumns);*/
+	 	if (($mixReturn = $qryUnRate>Execute($strQuery)) === FALSE)
 	 	{
 	 		// Couldn't update
 	 		Debug("Couldn't update Uncapped Totals: ".$updUnRate->Error());
@@ -1124,12 +1132,16 @@
 	 	}
 	 	
 	 	// Subtract from Service Capped totals
+	 	$strQuery = "UPDATE CDR JOIN Service ON Service.Id = CDR.Service, Rate \n" .
+					"SET Service.CappedCharge = Service.CappedCharge - CDR.Charge, CDR.Status = ".CDR_NORMALISED." \n" .
+					"WHERE CDR.Rate = Rate.Id AND Rate.Uncapped = 0 AND CDR.Status = ".CDR_UNRATE;
+	 	/*
 	 	$arrColumns['Service.CappedCharge']		= new MySQLFunction("Service.CappedCharge - CDR.Charge");
 	 	$arrColumns['CDR.Status']				= CDR_NORMALISED;
 	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR  ON Service.Id = CDR.Service, Rate",
 	 										"CDR.Rate = Rate.Id AND Rate.Uncapped = 0 AND CDR.Status = ".CDR_UNRATE,
-	 										$arrColumns);
-	 	if (($mixReturn = $updUnRate->Execute($arrColumns, Array())) === FALSE)
+	 										$arrColumns);*/
+	 	if (($mixReturn = $qryUnRate>Execute($strQuery)) === FALSE)
 	 	{
 	 		// Couldn't update
 	 		Debug("Couldn't update Capped Totals: ".$updUnRate->Error());
