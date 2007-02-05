@@ -32,6 +32,8 @@ $objPage->AddBackLink();
 
 // get CDR Id
 $intCDR = (int)$_REQUEST['Id'];
+echo($intCDR);
+Die();
 if (!$intCDR)
 {
 	$objPage->AddError("NO CDR Requested");
