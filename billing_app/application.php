@@ -1413,9 +1413,132 @@
 	 */
  	function RevokeAccount($intAccount)
  	{
-		//TODO!rich! make this do stuff
-		
 		// Single-Serving revoke
+		
+		// Report Title
+		$this->_rptBillingReport->AddMessage("[ REVOKING SINGLE INVOICE ]"."\n");
+		
+		// Get InvoiceRun of the current Temporary Invoice Run
+		$selGetInvoiceRun = new StatementSelect("InvoiceTemp", "InvoiceRun", "1", NULL, "1");
+		if ($selGetInvoiceRun->Execute() === FALSE)
+		{
+
+		}
+		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
+		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
+		
+		// remove temporary invoice
+		$this->_rptBillingReport->AddMessage("Revoking invoice for $intAccount...\t\t\t", FALSE);
+		$qryDeleteTempInvoice = new Query();
+		if(!$qryDeleteTempInvoice->Execute("DELETE FROM InvoiceTemp WHERE Account = $intAccount"))
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return FALSE;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
+		$this->_rptBillingReport->AddMessage(MSG_REVERT_CDRS, FALSE);
+		$arrColumns = Array();
+		$arrColumns['Status']		= CDR_RATED;
+		$arrColumns['InvoiceRun']	= NULL;
+		$updCDRStatus = new StatementUpdate("CDR", "Account = $intAccount AND CDR.Credit = 0 AND Status = ".CDR_TEMP_INVOICE, $arrColumns);
+		if($updCDRStatus->Execute($arrColumns, Array()) === FALSE)
+		{
+			Debug($updCDRStatus->Error());
+			
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return FALSE;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// update Charge Status
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGE."\t", FALSE);
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = CHARGE_APPROVED;
+		$updChargeStatus = new StatementUpdate("Charge", "Account = $intAccount AND Status = ".CHARGE_TEMP_INVOICE, $arrUpdateData);
+		if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// clean up ServiceTotal table
+		$this->_rptBillingReport->AddMessage("Removing ServiceTotal entries...\t\t\t\t", FALSE);
+		$qryCleanServiceTotal = new Query();
+		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'") === FALSE)
+		{
+			Debug($qryCleanServiceTotal);
+			
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+
+		// clean up ServiceTypeTotal table
+		$this->_rptBillingReport->AddMessage("Removing ServiceTypeTotal entries...\t\t\t", FALSE);
+		$qryCleanServiceTotal = new Query();
+		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'") === FALSE)
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// Truncate the InvoiceOutput table
+		$this->_rptBillingReport->AddMessage("Removing InvoiceOutput entry...\t\t\t", FALSE);
+		$qryDeleteInvoiceOutput = new Query();
+		if ($qryDeleteInvoiceOutput->Execute("DELETE FROM InvoiceOutput WHERE Account = $intAccount") === FALSE)
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// reverse payments
+		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
+		$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
+		$arrCols['Status']	= NULL;
+		$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
+		$ubiPayments		= new StatementUpdateById("Payment", $arrCols);
+		$qryDeletePayment	= new Query();
+		$selInvoicePayments->Execute();
+		$arrInvoicePayments = $selInvoicePayments->FetchAll();
+		foreach ($arrInvoicePayments as $arrInvoicePayment)
+		{
+			// update total and status of Payment
+			$arrPayment['Balance']	= new MySQLFunction("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
+			$arrPayment['Status']	= PAYMENT_PAYING;
+			$ubiPayments->Execute($arrPayment);
+			
+			// remove InvoicePayment
+			$qryDeletePayment->Execute("DELETE FROM InvoicePayment WHERE Id = ".$arrInvoicePayment['Id']);
+		}
+		
+		return TRUE;
+	
 	}
 	
 	//------------------------------------------------------------------------//
