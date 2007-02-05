@@ -1096,9 +1096,9 @@
 	/**
 	 * UnRate()
 	 *
-	 * UnRates all CDRs with the status CDR_UNRATE
+	 * UnRates 1000 CDRs with the status CDR_UNRATE
 	 *
-	 * UnRates all CDRs with the status CDR_UNRATE
+	 * UnRates a maximum of 1000 CDRs with the status CDR_UNRATE
 	 *	 
 	 * @return	integer							Number of CDRs affected
 	 *
@@ -1106,53 +1106,61 @@
 	 */
 	 function UnRate()
 	 {
-	 	// Subtract from Service Uncapped totals
-	 	
-	 	$qryUnRate = new Query();
-	 	
-	 	$strQuery = "UPDATE CDR JOIN Service ON Service.Id = CDR.Service, Rate \n" .
-	 				"SET Service.UncappedCharge = Service.UncappedCharge - CDR.Charge, CDR.Status = ".CDR_NORMALISED." \n" .
-	 				"WHERE CDR.Rate = Rate.Id AND Rate.Uncapped = 1 AND CDR.Status = ".CDR_UNRATE;
-	 					 	
-	 	/*
-	 	$arrColumns['Service.UncappedCharge']	= new MySQLFunction("Service.UncappedCharge - CDR.Charge");
-	 	$arrColumns['CDR.Status']				= CDR_NORMALISED;
-	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR  ON Service.Id = CDR.Service, Rate",
-	 										"CDR.Rate = Rate.Id AND Rate.Uncapped = 1 AND CDR.Status = ".CDR_UNRATE,
-	 										$arrColumns);*/
-	 	if (($mixReturn = $qryUnRate>Execute($strQuery)) === FALSE)
+	 	// Select the CDRs
+	 	$selCDRs = new StatementSelect(	"CDR JOIN Rate ON CDR.Rate = Rate.Id",
+	 									"CDR.Id AS Id, CDR.Service AS Service, CDR.Charge AS Charge, Rate.Uncapped AS Uncapped",
+	 									"CDR.Status = ".CDR_UNRATE,
+	 									"CDR.Id ASC",
+	 									"1000");
+	 	if ($selCDRs->Execute() === FALSE)
 	 	{
-	 		// Couldn't update
-	 		Debug("Couldn't update Uncapped Totals: ".$updUnRate->Error());
+	 		Debug("Selecting CDRs failed: ".$selCDRs->Error());
 	 		return FALSE;
 	 	}
-	 	else
+	 	
+	 	// For each of the CDRs
+	 	$intMinCDRId = NULL;
+	 	$arrColumns = Array();
+	 	$arrColumns['UncappedCharge']	= new MySQLFunction("UncappedCharge - <UncappedCharge>");
+	 	$arrColumns['CappedCharge']		= new MySQLFunction("CappedCharge - <CappedCharge>");
+	 	$updServiceTotals = new StatementUpdate("Service", "Id = <Service>", $arrColumns);
+	 	while($arrCDR = $selCDRs->Fetch())
 	 	{
-	 		$intTotal = (int)$mixReturn;
+		 	// Set min CDR Id value
+		 	if ($intMinCDRId)
+		 	{
+		 		$intMinCDRId = min($intMinCDRId, $arrCDR['Id']);
+		 	}
+		 	else
+		 	{
+		 		$intMinCDRId = $arrCDR['Id'];
+		 	}
+		 	
+		 	// Uncapped or Capped
+		 	if ($arrCDR['Uncapped'])
+		 	{
+		 		$arrColumns['UncappedCharge']	= new MySQLFunction("UncappedCharge - <UncappedCharge>", Array('UncappedCharge' => $arrCDR['Charge']));
+		 		$arrColumns['CappedCharge']		= new MySQLFunction("CappedCharge - <CappedCharge>", Array('CappedCharge' => 0));
+		 	}
+		 	else
+		 	{
+		 		$arrColumns['CappedCharge']		= new MySQLFunction("CappedCharge - <CappedCharge>", Array('CappedCharge' => $arrCDR['Charge']));
+		 		$arrColumns['UncappedCharge']	= new MySQLFunction("UncappedCharge - <UncappedCharge>", Array('UncappedCharge' => 0));
+		 	}
+		 	
+		 	// Update the Service
+		 	if ($updServiceTotals->Execute($arrColumns) === FALSE)
+		 	{
+		 		Debug("Couldn't update Service: ".$updServiceTotals->Error());
+		 		return FALSE;
+		 	}
 	 	}
 	 	
-	 	// Subtract from Service Capped totals
-	 	$strQuery = "UPDATE CDR JOIN Service ON Service.Id = CDR.Service, Rate \n" .
-					"SET Service.CappedCharge = Service.CappedCharge - CDR.Charge, CDR.Status = ".CDR_NORMALISED." \n" .
-					"WHERE CDR.Rate = Rate.Id AND Rate.Uncapped = 0 AND CDR.Status = ".CDR_UNRATE;
-	 	/*
-	 	$arrColumns['Service.CappedCharge']		= new MySQLFunction("Service.CappedCharge - CDR.Charge");
-	 	$arrColumns['CDR.Status']				= CDR_NORMALISED;
-	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR  ON Service.Id = CDR.Service, Rate",
-	 										"CDR.Rate = Rate.Id AND Rate.Uncapped = 0 AND CDR.Status = ".CDR_UNRATE,
-	 										$arrColumns);*/
-	 	if (($mixReturn = $qryUnRate>Execute($strQuery)) === FALSE)
-	 	{
-	 		// Couldn't update
-	 		Debug("Couldn't update Capped Totals: ".$updUnRate->Error());
-	 		return FALSE;
-	 	}
-	 	else
-	 	{
-	 		$intTotal += (int)$mixReturn;
-	 	}
-	 	
-	 	return $intTotal;
+	 	// Set the CDR statuses
+	 	$arrColumns = Array();
+	 	$arrColumns['Status']	= CDR_NORMALISED;
+	 	$updCDRStatus = new StatementUpdate("CDR", "Id >= $intMinCDRId AND Status = ".CDR_UNRATE, $arrColumns, 1000);
+	 	return $updCDRStatus->Execute();
 	 }
  }
 
