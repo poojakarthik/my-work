@@ -15,14 +15,14 @@ $objPage->AddPageTitle('viXen CDR List');
 $objPage->SetPageLink('[ CDR List ]');
 
 // get values
-$intStart 		= (int)$_REQUEST['Start'];
-$intLimit 		= (int)$_REQUEST['Limit'];
+$intStart 		= (int)$_GET['Start'];
+$intLimit 		= (int)$_GET['Limit'];
 if (!$intLimit)
 {
 	$intLimit 	= 30;
 }
-$intStatus 		= (int)$_REQUEST['Status'];
-$intRecordType 	= (int)$_REQUEST['RecordType'];
+$intStatus 		= (int)$_GET['Status'];
+$intRecordType 	= (int)$_GET['RecordType'];
 $strStatus 		= GetConstantDescription($intStatus, 'CDR');
 $strRecordType 	= $appMonitor->arrRecordType[$intRecordType]['Name'];
 $intMaxId 		= $intStart;

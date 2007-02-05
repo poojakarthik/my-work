@@ -15,13 +15,13 @@ $objPage->AddPageTitle('viXen Service RateGroup List');
 $objPage->SetPageLink('[ Service RateGroup List ]');
 
 // get values
-$intStart 		= (int)$_REQUEST['Start'];
-$intLimit 		= (int)$_REQUEST['Limit'];
+$intStart 		= (int)$_GET['Start'];
+$intLimit 		= (int)$_GET['Limit'];
 if (!$intLimit)
 {
 	$intLimit 	= 30;
 }
-$intService		= (int)$_REQUEST['Service'];
+$intService		= (int)$_GET['Service'];
 $intMaxId 		= $intStart;
 
 // menu

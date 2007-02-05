@@ -320,7 +320,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		else
 		{
 		 	// For S&E and OC&C CDRs
-		 	$mixValue					=  $this->_FetchRawCDR('ItemCount');
+		 	$mixValue					= $this->_FetchRawCDR('ItemCount');
 		 	$this->_AppendCDR('Units', (int)$mixValue);
 		}
 		

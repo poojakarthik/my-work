@@ -51,8 +51,8 @@ $objPage = new VixenPage($arrConfig);
 	function _DecodeBackLink()
 	{
 		$arrBack = Array();
-		$arrBack['Value'] 	= urldecode($_REQUEST['__BackValue']);
-		$arrBack['Href'] 	= urldecode($_REQUEST['__BackHref']);
+		$arrBack['Value'] 	= urldecode($_GET['__BackValue']);
+		$arrBack['Href'] 	= urldecode($_GET['__BackHref']);
 		if ($arrBack['Value'] && $arrBack['Href'])
 		{
 			return $arrBack;

@@ -1187,20 +1187,17 @@
 		$this->_rptAuditReport->AddMessageVariables(MSG_SERVICE_TYPE_SUMMARY, Array('<Summaries>' => $strSummaries));
 	}
 	
-	
-	
-	
-	
+
 	//------------------------------------------------------------------------//
 	// RevertInvoiceRun
 	//------------------------------------------------------------------------//
 	/**
 	 * RevertInvoiceRun()
 	 *
-	 * Reverts a specified Invoice Run
+	 * Reverts a specified Invoice Run after it has been commited.
 	 *
 	 * Reverts a specified Invoice Run.  Returns all CDRs to Rated status, and removes
-	 * all traced of invoicing
+	 * all traces of invoicing
 	 * 
 	 * @param	string		$strInvoiceRun		The invoice run to revert 
 	 *
@@ -1253,8 +1250,8 @@
 		// Update Service Capped and Uncapped Charges
 		$this->_rptBillingReport->AddMessage("Updating Service Charge Totals"."\t", FALSE);
 		$arrData = Array();
-		$arrData['Service.UncappedCharge']	= new MySQLFunction("Service.UncappedCharge += ServiceTotal.UncappedCharge");
-		$arrData['Service.CappedCharge']	= new MySQLFunction("Service.CappedCharge += ServiceTotal.CappedCharge");
+		$arrData['Service.UncappedCharge']	= new MySQLFunction("Service.UncappedCharge + ServiceTotal.UncappedCharge");
+		$arrData['Service.CappedCharge']	= new MySQLFunction("Service.CappedCharge + ServiceTotal.CappedCharge");
 		$updServiceCharges = new StatementUpdate(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
 													"ServiceTotal.InvoiceRun = '$strInvoiceRun'",
 													$arrData);
@@ -1334,7 +1331,84 @@
 		}
 		
 		return TRUE;
- 	}	
+ 	}
+	
+	//------------------------------------------------------------------------//
+	// ExecuteAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * ExecuteAccount()
+	 *
+	 * Execute a single Invoice for a specified account
+	 *
+	 * Execute a single Invoice for a specified account
+	 *
+	 * @param	mixed	$intAccount		The Account to Execute an Invoice for
+	 *		 	 
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+ 	function ExecuteAccount($intAccuont)
+ 	{
+		//TODO!rich! make this do stuff
+		
+		// fail if there is a temp invoice for this account
+		
+		// do everything like a normal invoice
+	}
+	
+	//------------------------------------------------------------------------//
+	// RevokeAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * RevokeAccount()
+	 *
+	 * Revoke a temporary invoice for a specified account
+	 *
+	 * Revoke a temporary invoice for a specified account.
+	 * Once invoices have been commited they can not be revoked.
+	 *
+	 * @param	int		$intAccount		The Account to Revoke an Invoice for 	 	 
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+ 	function RevokeAccount($intAccount)
+ 	{
+		//TODO!rich! make this do stuff
+		
+		// Single-Serving revoke
+	}
+	
+	//------------------------------------------------------------------------//
+	// Reprint
+	//------------------------------------------------------------------------//
+	/**
+	 * Reprint()
+	 *
+	 * Reprint Specified Invoices
+	 *
+	 * Reprint Specified Invoices
+	 *
+	 * @param	array	$arrInvoice		The Accounts to Reprint Invoices for 	 	 
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+	 function Reprint($arrInvoice)
+	 {
+	 	//TODO!rich! make this do stuff
+		
+		// for each invoice
+			// get invoice details
+			// stick stuff in invoice output
+		
+		// build an output file
+	 }
  }
 
 
