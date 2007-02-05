@@ -31,9 +31,8 @@ $objPage->AddLink("cdr_index.php","[ CDR Menu ]");
 $objPage->AddBackLink();
 
 // get CDR Id
-$intCDR = (int)$_REQUEST['Id'];
-echo($_GET['Id']);
-Die();
+$intCDR = (int)$_GET['Id'];
+
 if (!$intCDR)
 {
 	$objPage->AddError("NO CDR Requested");
