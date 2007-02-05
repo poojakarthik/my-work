@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- TODO!bash! [  DONE  ]		No Plan Assigned when I add a service -->
 <!-- TODO!bash! [  DONE  ]		It lets me add a service with the same no. over and over again -->
-<!-- TODO!bash! URGENT! it lets me add any damn thing i want as the FNN. should allow a valid FNN or blank... NOTHING ELSE  - make sure you test this properly!!!-->
+<!-- TODO!bash! [  DONE  ]		URGENT! it lets me add any damn thing i want as the FNN. should allow a valid FNN or blank... NOTHING ELSE  - make sure you test this properly!!!-->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	<!--TODO!bash! URGENT! this page needs a menu!-->
+	<!--TODO!bash! [  DONE  ]		URGENT! this page needs a menu!-->
 		<!-- This page adds a service to an account (Part 2/2)-->
 		<h1>Add Service</h1>
 		

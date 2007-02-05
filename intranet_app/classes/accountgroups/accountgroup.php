@@ -346,15 +346,20 @@
 		
 		public function AddCreditCard ($arrData)
 		{
+	        if (!CheckCC ($arrData ['CardNumber'], $arrData ['CardType']))
+	        {
+				throw new Exception ('Card Invalid');
+	        }
+			
 			$arrCreditCard = Array (
-					'AccountGroup'	=> $this->Pull ('Id')->getValue (),
-					'CardType'		=> $arrData ['CardType'],
-					'Name'			=> $arrData ['Name'],
-					'CardNumber'	=> $arrData ['CardNumber'],
-					'ExpMonth'		=> $arrData ['ExpMonth'],
-					'ExpYear'		=> $arrData ['ExpYear'],
-					'CVV'			=> $arrData ['CVV'],
-					'Archived'		=> 0
+				'AccountGroup'	=> $this->Pull ('Id')->getValue (),
+				'CardType'		=> $arrData ['CardType'],
+				'Name'			=> $arrData ['Name'],
+				'CardNumber'	=> $arrData ['CardNumber'],
+				'ExpMonth'		=> $arrData ['ExpMonth'],
+				'ExpYear'		=> $arrData ['ExpYear'],
+				'CVV'			=> $arrData ['CVV'],
+				'Archived'		=> 0
 			);
 			
 			$insCreditCard = new StatementInsert ('CreditCard');

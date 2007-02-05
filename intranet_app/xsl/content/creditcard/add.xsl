@@ -10,28 +10,6 @@
 		<!--TODO!Bash! [  DONE  ]		URGENT - This page only comes from Change Payment Method now, so it needs to return there.  We don't want to use Direct Debit Details page anymore-->
 		<h1>Add Credit Card Details</h1>
 		
-		<xsl:if test="/Response/Error != ''">
-			<div class="MsgErrorWide">
-				<xsl:choose>
-					<xsl:when test="/Response/Error = 'CardType'">
-						Please select a valid Credit Card Type.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'Name'">
-						Please enter a Credit Card Holder Name.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'CardNumber'">
-						Please enter a Credit Card #.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'ExpMonth'">
-						Please enter a Credit Card Expiry Month.
-					</xsl:when>
-					<xsl:when test="/Response/Error = 'ExpYear'">
-						Please enter a Credit Card Expiry Year.
-					</xsl:when>
-				</xsl:choose>
-			</div>
-		</xsl:if>
-		
 		<form method="POST" action="creditcard_add.php">
 			<input type="hidden" name="Account">
 				<xsl:attribute name="value">
@@ -60,6 +38,35 @@
 			<div class="Seperator"></div>
 			
 			<h2 class="Payment">Credit Card Details</h2>
+				
+			<xsl:if test="/Response/Error != ''">
+				<div class="MsgErrorWide">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'CardType'">
+							Please select a valid Credit Card Type.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Name'">
+							Please enter a Credit Card Holder Name.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'CardNumber'">
+							Please enter a Credit Card #.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Card Invalid'">
+							The Credit Card Number you entered was Invalid.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'ExpMonth'">
+							Please enter a Credit Card Expiry Month.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'ExpYear'">
+							Please enter a Credit Card Expiry Year.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Expired'">
+							Please enter a valid Expiration Date.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+			
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
@@ -108,7 +115,7 @@
 							</input>
 						</td>
 					</tr>
-					<!--TODO!bash!URGENT  verify credit card number - ask flame if you aren't sure how -->
+					<!--TODO!bash! [  DONE  ]		URGENT! verify credit card number - ask flame if you aren't sure how -->
 					<tr>
 					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
@@ -126,7 +133,8 @@
 							</input>
 						</td>
 					</tr>
-					<!--TODO!bash! URGENT - do not show expiration dates earlier than this month-->
+					<!--TODO!bash! [  DONE  ] URGENT - do not show expiration dates earlier than this month-->
+					<!--TOOD!bash! This cannot be done on-the-fly, but it is verified and submission time-->
 					<tr>
 					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">

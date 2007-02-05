@@ -24,6 +24,16 @@
 				</xsl:attribute>
 			</input>
 			
+			<xsl:if test="/Response/Error != ''">
+				<div class="MsgErrorWide">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Invalid Amount'">
+							You did not enter a valid Amount.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+			
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
@@ -82,13 +92,13 @@
 							</th>
 							<td>
 								<xsl:choose>
-								<!--TODO!bash! URGENT only allow a valid amount to be entered as the recursion charge - at the moment this crashes and dies if it's entered wrong -->
+									<!--TODO!bash! [  DONE  ]		URGENT only allow a valid amount to be entered as the recursion charge - at the moment this crashes and dies if it's entered wrong -->
 									<xsl:when test="/Response/RecurringChargeType/Fixed = 0">
 										<input type="text" name="Amount" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 								       			<xsl:call-template name="Currency">
-								       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
+								       				<xsl:with-param name="Number" select="/Response/ui-values/RecursionCharge" />
 													<xsl:with-param name="Decimal" select="number('2')" />
 						       					</xsl:call-template>
 											</xsl:attribute>

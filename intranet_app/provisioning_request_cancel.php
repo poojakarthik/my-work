@@ -38,7 +38,13 @@
 	// Make sure the Provisioning Request is Unprocessed
 	if ($prqProvisioningRequest->Pull ('Status')->getValue () != REQUEST_STATUS_WAITING)
 	{
-		$Style->Output ("xsl/content/service/provisioning/cancel_failed_not_unprocessed.xsl");
+		$Style->Output (
+			"xsl/content/service/provisioning/cancel_failed_not_unprocessed.xsl",
+			Array (
+				"Account"		=> $srvService->Pull ("Account")->getValue (),
+				"Service"		=> $srvService->Pull ("Id")->getValue ()
+			)
+		);
 		exit;
 	}
 	

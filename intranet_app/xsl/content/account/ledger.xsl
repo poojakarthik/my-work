@@ -6,7 +6,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	
-	<!--TODO!bash! URGENT - DO NOT have menus linking to the page you are already on!!!!-->
+	<!--TODO!bash! [  DONE  ]		URGENT - DO NOT have menus linking to the page you are already on!!!!-->
 	<xsl:template name="Content">
 		<h1>View Invoices &amp; Payments</h1>
 		
@@ -179,7 +179,7 @@
 		</xsl:choose>
 		
 		<div class="Seperator"></div>
-		<!--TODO!bash! URGENT - View PDF does not work-->
+		<!--TODO!bash! [  DONE  ]		URGENT - View PDF does not work-->
 		<h2 class="PDF">PDF Bills</h2>
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">

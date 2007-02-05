@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE | MODULE_SERVICE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_CHARGE | MODULE_SERVICE | MODULE_EMPLOYEE;
 	
 	// call application
 	require ('config/application.php');
@@ -47,8 +47,25 @@
 		header ("Location: charges_approve.php"); exit;
 	}
 	
-	$uchUnapprovedCharges = $Style->attachObject (new Charges_Unapproved ());
-	$uchUnapprovedCharges->Sample ();
+	$uchUnapprovedCharges = $Style->attachObject (new Charges_Unapproved);
+	$oblsamCharges = $uchUnapprovedCharges->Sample (1, 20);
+	
+	$arrEmployees = Array ();
+	$oblarrEmployees = $Style->attachObject (new dataArray ('Employees', 'Employee'));
+	
+	foreach ($oblsamCharges as $chgUnapprovedCharge)
+	{
+		if (!isset ($arrEmployees [$chgUnapprovedCharge->Pull ('CreatedBy')->getValue ()]))
+		{
+			$arrEmployees [$chgUnapprovedCharge->Pull ('CreatedBy')->getValue ()] = new Employee (
+				$chgUnapprovedCharge->Pull ('CreatedBy')->getValue ()
+			);
+			
+			$oblarrEmployees->Push (
+				$arrEmployees [$chgUnapprovedCharge->Pull ('CreatedBy')->getValue ()]
+			);
+		}
+	}
 	
 	$Style->Output ('xsl/content/charges/approve.xsl');
 	

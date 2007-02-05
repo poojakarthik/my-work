@@ -84,11 +84,17 @@
 					<xsl:when test="/Response/Error = 'CreditCard CardNumber'">
 						Please enter a Credit Card #.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'CreditCard Invalid'">
+						Please enter a valid Credit Card Number.
+					</xsl:when>
 					<xsl:when test="/Response/Error = 'CreditCard ExpMonth'">
 						Please enter a Credit Card Expiry Month.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'CreditCard ExpYear'">
 						Please enter a Credit Card Expiry Year.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'CreditCard Expired'">
+						Please enter a valid Credit Card Expiration Date.
 					</xsl:when>
 					
 					

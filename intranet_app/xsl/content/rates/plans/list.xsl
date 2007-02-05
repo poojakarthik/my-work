@@ -12,8 +12,8 @@
 		<!-- Search for Plan -->
 		<h2 class="Plan">Search for a Plan</h2>
 		
-		<!--TODO!bash! Why can I search for an empty field? show an error!-->
-		<!--- error === "Please enter a Plan Name."-->
+		<!--TODO!bash! [ANSWERED] Why can I search for an empty field? show an error!-->
+		<!--TODO!bash! A: Because you may want to view all Plans of a certain Service Type. -->
 		
 		<form method="GET" action="rates_plan_list.php">
 			<div class="Wide-Form">

@@ -34,7 +34,7 @@
 			$rctRecurringCharge->Archive (TRUE);
 		}
 		
-		header ("Location: charges_recurringcharge_list.php");
+		$Style->Output ('xsl/content/charges/recurringcharges/archive_confirmed.xsl');
 		exit;
 	}
 	

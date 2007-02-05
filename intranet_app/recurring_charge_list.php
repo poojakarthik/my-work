@@ -90,6 +90,11 @@
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archived');
 	
-	$Style->Output ("xsl/content/recurringcharge/list.xsl");
+	$Style->Output (
+		"xsl/content/recurringcharge/list.xsl",
+		Array (
+			"Account"		=> $actAccount->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

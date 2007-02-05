@@ -27,32 +27,38 @@
 	
 	$oblstrChargeType		= $oblarrChargeType->Push (new dataString ('ChargeType', ''));
 	$oblstrDescription		= $oblarrChargeType->Push (new dataString ('Description', ''));
-	$oblstrAmount			= $oblarrChargeType->Push (new dataString ('Amount', ''));
+	$oblfltAmount			= $oblarrChargeType->Push (new dataFloat ('Amount', ''));
 	$natNature				= $oblarrChargeType->Push (new Natures ());
 	$oblbolFixed			= $oblarrChargeType->Push (new dataBoolean ('Fixed', FALSE));
 	
 	if ($_SERVER ['REQUEST_METHOD'] == "POST")
 	{
-		$oblstrChargeType		->setValue ($_POST ['ChargeType']);
-		$oblstrDescription		->setValue ($_POST ['Description']);
-		$oblstrAmount			->setValue ($_POST ['Amount']);
-		$natNature				->setValue ($_POST ['Nature']);
-		$oblbolFixed			->setValue ($_POST ['Fixed']);
+		$oblstrChargeType->setValue		($_POST ['ChargeType']);
+		$oblstrDescription->setValue	($_POST ['Description']);
+		$natNature->setValue			($_POST ['Nature']);
+		$oblbolFixed->setValue			($_POST ['Fixed']);
+		
+		$bolAmountValid = $oblfltAmount->setValue ($_POST ['Amount']);
 		
 		if (!$natNature->setValue ($_POST ['Nature']))
 		{
 			// error here
 			$oblstrError->setValue ('Nature');
 		}
-		else if (empty ($oblstrChargeType))
+		else if (!$_POST ['ChargeType'])
 		{
 			// The Charge Type cannot be Empty
 			$oblstrError->setValue ('CType-Blank');
 		}
-		else if (empty ($oblstrDescription))
+		else if (!$_POST ['Description'])
 		{
 			// The Description cannot be Empty
 			$oblstrError->setValue ('Descr-Blank');
+		}
+		else if (!$_POST ['Amount'] || !$bolAmountValid || $oblfltAmount->getValue () == 0)
+		{
+			// The Amount cannot be Empty
+			$oblstrError->setValue ('Amount Invalid');
 		}
 		else if ($cgtChargesTypes->UnarchivedChargeType ($_POST ['ChargeType']) !== false)
 		{
@@ -84,6 +90,5 @@
 	}
 	
 	$Style->Output ('xsl/content/charges/charges/add.xsl');
-
 	
 ?>

@@ -35,7 +35,7 @@
 			$crgCharge->Archive (TRUE);
 		}
 		
-		header ("Location: charges_charge_list.php");
+		$Style->Output ('xsl/content/charges/charges/archive_confirmed.xsl');
 		exit;
 	}
 	

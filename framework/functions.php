@@ -1088,4 +1088,89 @@ function expdate($month,$year)
 	}
 	return true;
 }
+
+// check the validity of a credit card
+function CheckCC($mixNumber, $intCreditCardType)
+{
+	$strNumber = str_replace (" ", "", $mixNumber);
+	
+	// Check the LUHN of the Credit Card
+	if (!CheckLuhn ($strNumber))
+	{
+		return FALSE;
+	}
+	
+	// Load up the values allowed for Prefixes and Lengths of each Credit Card Type
+	switch ($intCreditCardType)
+	{
+		case CREDIT_CARD_VISA:
+			$arrPrefixes	= Array (4);
+			$arrLengths		= Array (13, 16);
+			
+			break;
+			
+		case CREDIT_CARD_MASTERCARD:
+			$arrPrefixes	= Array (51, 52, 53, 54, 55);
+			$arrLengths		= Array (16);
+			
+			break;
+			
+		case CREDIT_CARD_BANKCARD:
+			$arrPrefixes	= Array ();
+			$arrLengths = Array (16);
+			
+			break;
+			
+		case CREDIT_CARD_AMEX:
+			$arrPrefixes	= Array (34, 37);
+			$arrLengths = Array (15);
+			break;
+			
+		case CREDIT_CARD_DINERS:
+			$arrPrefixes	= Array (30, 36, 38);
+			$arrLengths = Array (14);
+			break;
+			
+		default:
+			return FALSE;
+	}
+	
+	// Check the Length is Correct
+	$bolLengthFound = FALSE;
+	
+	foreach ($arrLengths as $intLength)
+	{
+		if (strlen ($strNumber) == $intLength)
+		{
+			$bolLengthFound = TRUE;
+		}
+	}
+	
+	if (!$bolLengthFound)
+	{
+		return FALSE;
+	}
+	
+	// If we have a prefix, check it's correct
+	if (count ($arrPrefixes) <> 0)
+	{
+		$bolPrefixFound = FALSE;
+		
+		foreach ($arrPrefixes as $intPrefix)
+		{
+			if (substr ($strNumber, 0, strlen ($intPrefix)) == $intPrefix)
+			{
+				$bolPrefixFound = TRUE;
+			}
+		}
+		
+		if (!$bolPrefixFound)
+		{
+			return FALSE;
+		}
+	}
+	
+	return true;
+}
+
 ?>

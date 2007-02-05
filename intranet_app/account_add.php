@@ -207,6 +207,10 @@
 		{
 			$oblstrError->setValue ('CreditCard CardNumber');
 		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !CheckCC ($_POST ['CC']['CardNumber'], $_POST ['CC']['CardType']))
+        {
+			$oblstrError->setValue ('CreditCard Invalid');
+        }
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['ExpMonth'])
 		{
 			$oblstrError->setValue ('CreditCard ExpMonth');
@@ -215,6 +219,10 @@
 		{
 			$oblstrError->setValue ('CreditCard ExpYear');
 		}
+        else if (!expdate ($_POST ['CC']['ExpMonth'], $_POST ['CC']['ExpYear']))
+        {
+            $oblstrError->setValue ('CreditCard Expired');
+        }
 		
 		// The following errors are related to New Contact Creation. These
 		// errors will only be run when a New Contact has been requested (or forced)

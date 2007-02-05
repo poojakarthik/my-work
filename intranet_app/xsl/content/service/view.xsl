@@ -7,7 +7,7 @@
 	
 	<xsl:template name="Content">
 	
-	<!--TODO!bash! Urgent - do NOT show menu links to the same page!!-->
+	<!--TODO!bash! [  DONE  ]		Urgent - do NOT show menu links to the same page!!-->
 		<h1>View Service Details</h1>
 		
 		<script language="javascript" src="js/ABN.js"></script>
@@ -403,9 +403,9 @@
 						</xsl:if>
 						<xsl:if test="/Response/Service/ServiceType = 101">
 							<li>
+								<!-- TODO!bash! [  DONE  ]		make this point to a mobile provisioning page -->
 								<a>
 									<xsl:attribute name="href">
-										<!-- TODO!bash! make this point to a mobile provisioning page -->
 										<xsl:text>service_mobile_details.php?Service=</xsl:text>
 										<xsl:value-of select="/Response/Service/Id" />
 									</xsl:attribute>

@@ -140,7 +140,7 @@
 			<option value="">YYYY</option>
 			
 			<xsl:call-template name="DateLoop">
-				<xsl:with-param name="start" select="1900" />
+				<xsl:with-param name="start" select="1988" />
 				<xsl:with-param name="cease" select="2007" />
 				<xsl:with-param name="select" select="$Selected-Year" />
 			</xsl:call-template>

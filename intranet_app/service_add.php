@@ -119,13 +119,23 @@
 			$rplRatePlans->Order ('Name', TRUE);
 			$rplRatePlans->Sample ();
 			
-			$Style->Output ('xsl/content/service/add_2.xsl');
+			$Style->Output (
+				'xsl/content/service/add_2.xsl',
+				Array (
+					'Account'	=> $actAccount->Pull ('Id')->getValue ()
+				)
+			);
 		}
 		
 		exit;
 	}
 	
 	// Output the Information
-	$Style->Output ('xsl/content/service/add_1.xsl');
+	$Style->Output (
+		'xsl/content/service/add_1.xsl',
+		Array (
+			'Account'	=> $actAccount->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

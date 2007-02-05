@@ -3,30 +3,39 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
-	<xsl:template name="Content">
 	
+	<xsl:template name="Content">
 		<!-- Add a Charge to a Service -->
 		<h1>Add Service Charge</h1>
-		
-		
 					
-		<form method="post" action="service_charge_add.php">
-		<h2 class="Service">Service Charge Details</h2>
-		<div class="Wide-Form">
-			<div class="Form-Content">
-			<input type="hidden" name="Service">
-				<xsl:attribute name="value">
-					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Service/Id" />
-				</xsl:attribute>
-			</input>
+		<form method="POST" action="service_charge_add.php">
+			<h2 class="Service">Service Charge Details</h2>
+			
+			<xsl:if test="/Response/Error != ''">
+				<div class="MsgErrorWide">
+					<xsl:choose>
+						<xsl:when test="/Response/Error = 'Invalid Amount'">
+							You did not enter a valid Amount.
+						</xsl:when>
+					</xsl:choose>
+				</div>
+			</xsl:if>
+			
+			<div class="Wide-Form">
+				<div class="Form-Content">
+					<input type="hidden" name="Service">
+						<xsl:attribute name="value">
+							<xsl:text></xsl:text>
+							<xsl:value-of select="/Response/Service/Id" />
+						</xsl:attribute>
+					</input>
 
-			<input type="hidden" name="ChargeType">
-				<xsl:attribute name="value">
-					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/ChargeType/Id" />
-				</xsl:attribute>
-			</input>
+					<input type="hidden" name="ChargeType">
+						<xsl:attribute name="value">
+							<xsl:text></xsl:text>
+							<xsl:value-of select="/Response/ChargeType/Id" />
+						</xsl:attribute>
+					</input>
 
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
@@ -84,13 +93,13 @@
 							</th>
 							<td>
 								<xsl:choose>
-								<!--TODO!bash! only allowed valid $ value - this crashes & dies if its entered wrong-->
+								<!--TODO!bash! [  DONE  ]		only allowed valid $ value - this crashes & dies if its entered wrong-->
 									<xsl:when test="/Response/ChargeType/Fixed = 0">
 										<input type="text" name="Amount" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 								       			<xsl:call-template name="Currency">
-								       				<xsl:with-param name="Number" select="/Response/ChargeType/Amount" />
+								       				<xsl:with-param name="Number" select="/Response/ui-values/Amount" />
 													<xsl:with-param name="Decimal" select="number('2')" />
 						       					</xsl:call-template>
 											</xsl:attribute>
@@ -116,10 +125,10 @@
 						</tr>
 					</table>
 				</div>
-			
+				
 			</div>
-				<div class = "SmallSeperator"></div>
-			<div class = "Right">
+			<div class="SmallSeperator"></div>
+			<div class="Right">
 				<input type="submit" name="Confirm" value="Add Charge &#0187;" class="input-submit" />
 			</div>
 		</form>

@@ -57,6 +57,10 @@
         {
             $oblstrError->setValue ('CardNumber');
         }
+        else if (!CheckCC ($_POST ['CreditCard']['CardNumber'], $_POST ['CreditCard']['CardType']))
+        {
+            $oblstrError->setValue ('Card Invalid');
+        }
         else if (!$_POST ['CreditCard']['ExpMonth'])
         {
             $oblstrError->setValue ('ExpMonth');
@@ -64,6 +68,10 @@
         else if (!$_POST ['CreditCard']['ExpYear'])
         {
             $oblstrError->setValue ('ExpYear');
+        }
+        else if (!expdate ($_POST ['CreditCard']['ExpMonth'], $_POST ['CreditCard']['ExpYear']))
+        {
+            $oblstrError->setValue ('Expired');
         }
         else
         {

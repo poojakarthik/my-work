@@ -40,16 +40,34 @@
 		header ('Location: service_view.php?Id=' . $srvService->Pull ('Id')->getValue ()); exit;
 	}
 	
+	// Error Remembering
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
+	
+	// UI Values
+	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
+	$oblstrRecurringCharge = $oblarrUIValues->Push (new dataString ('RecursionCharge', $rcgCharge->Pull ('RecursionCharge')->getValue ()));
+	
 	// If Confirm is set, then we want to apply the value
 	if ($_POST ['Confirm'])
 	{
-		$srvService->RecurringChargeAdd (
-			$athAuthentication->AuthenticatedEmployee (),
-			$rcgCharge,
-			$_POST ['Amount']
-		);
+		$oblstrRecurringCharge->setValue ($_POST ['Amount']);
+		$fltAmount = new dataFloat ('Amount');
 		
-		header ('Location: service_recurringcharge_added.php?Service=' . $srvService->Pull ('Id')->getValue ()); exit;
+		if (!$fltAmount->setValue ($_POST ['Amount']))
+		{
+			$oblstrError->setValue ('Invalid Amount');
+		}
+		else
+		{
+			$srvService->RecurringChargeAdd (
+				$athAuthentication->AuthenticatedEmployee (),
+				$rcgCharge,
+				$fltAmount->getValue ()
+			);
+			
+			header ('Location: service_recurringcharge_added.php?Service=' . $srvService->Pull ('Id')->getValue ());
+			exit;
+		}
 	}
 	
 	$docDocumentation->Explain ('Account');

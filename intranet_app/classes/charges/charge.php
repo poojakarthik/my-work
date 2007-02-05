@@ -73,7 +73,10 @@
 			// Construct the object
 			parent::__construct ('Charge', $this->Pull ('Id')->getValue ());
 			
-			$this->Push (new Service ($this->Pop ('Service')->getValue ()));
+			if ($this->Pull ('Service')->getValue () <> NULL)
+			{
+				$this->Push (new Service ($this->Pop ('Service')->getValue ()));
+			}
 		}
 		
 		//------------------------------------------------------------------------//

@@ -99,13 +99,15 @@
 						</input>
 						
 						<h2 class="Service">Mobile Details</h2>
-						<xsl:if test="not(/Response/ServiceAddress)">
-						<div class="MsgNoticeNarrow">
-						<!--TODO!bash! this is showing up even when there are details!!!-->
+						
+						<!--TODO!bash! [  DONE  ]		this is showing up even when there are details!!!-->
+						<xsl:if test="not(/Response/ServiceMobileDetail)">
+							<div class="MsgNoticeNarrow">
 								<strong><span class="Attention">Notice</span> :</strong>
 								No Mobile Details found.
 							</div>
 						</xsl:if>
+						
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>

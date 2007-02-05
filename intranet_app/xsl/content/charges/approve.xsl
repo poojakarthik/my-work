@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- TODO!bash! change class of errors and notices MsgNotice & MsgError no longer exist-->
+<!-- TODO!bash! [  DONE   ]		change class of errors and notices MsgNotice & MsgError no longer exist-->
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../lib/date-time.xsl" />
@@ -11,18 +11,22 @@
 
 		<h2 class="Charge"> Charge Details</h2>
 		<form method="post" action="charges_approve.php">
+			<!--TODO!bash! [  DONE  ]		This needs to have a 'Nature' column!!-->
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">
 					<th width="30">#</th>
 					<th>Description</th>
-					<th>Amount</th>
-					<!--TODO!bash! This needs to have a 'Nature' column!!-->
+					<th class="Currency">Amount</th>
+					<th>Nature</th>
 					<th>Account</th>
 					<th>Entered By</th>
 					<th>Entered On</th>
 					<th>Actions</th>
 				</tr>
 				<xsl:for-each select="/Response/Charges-Unapproved/Results/rangeSample/Charge">
+					<xsl:variable name="Charge" select="." />
+					<xsl:variable name="CreatedBy" select="/Response/Employees/Employee[./Id=$Charge/CreatedBy]" />
+					
 					<tr>
 						<xsl:attribute name="class">
 							<xsl:choose>
@@ -34,13 +38,34 @@
 								</xsl:otherwise>
 							</xsl:choose>
 						</xsl:attribute>
+						
 						<td><xsl:value-of select="position()" />.</td>
 						<td><xsl:value-of select="./Description" /></td>
-						<td>
+						<td class="Currency">
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="./Amount" />
 								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
+						</td>
+						<td>
+							<strong>
+								<span>
+									<xsl:choose>
+										<xsl:when test="./Nature = 'DR'">
+											<xsl:attribute name="class">
+												<xsl:text>Green</xsl:text>
+											</xsl:attribute>
+											<xsl:text>DR</xsl:text>
+										</xsl:when>
+										<xsl:when test="./Nature = 'CR'">
+											<xsl:attribute name="class">
+												<xsl:text>Blue</xsl:text>
+											</xsl:attribute>
+											<xsl:text>CR</xsl:text>
+										</xsl:when>
+									</xsl:choose>
+								</span>
+							</strong>
 						</td>
 						<td>
 							<a>
@@ -48,12 +73,17 @@
 									<xsl:text>account_view.php?Id=</xsl:text>
 									<xsl:value-of select="./Account" />
 								</xsl:attribute>
-								<!--TODO!bash! make this be the account number !!-->
-								<xsl:text>View Account</xsl:text>
+								<!--TODO!bash! [  DONE  ]		make this be the account number !!-->
+								<xsl:text></xsl:text>
+								<xsl:value-of select="./Account" />
 							</a>
 						</td>
-						<!--TODO!bash! Make this the name of the employee, not their #!!-->
-						<td><xsl:value-of select="./CreatedBy" /></td>
+						<!--TODO!bash! [  DONE  ]		Make this the name of the employee, not their #!!-->
+						<td>
+							<xsl:value-of select="$CreatedBy/FirstName" />
+							<xsl:text> </xsl:text>
+							<xsl:value-of select="$CreatedBy/LastName" />
+						</td>
 						<td>
 							<xsl:call-template name="dt:format-date-time">
 								<xsl:with-param name="year"	select="./CreatedOn/year" />
@@ -84,11 +114,26 @@
 						There are no requests for Debits or Credits to be processed.
 					</div>
 				</xsl:when>
+				<xsl:otherwise>
+					<div class="SmallSeperator"></div>
+					<div class="Right">
+						<input type="submit" value="Apply Changes &#0187;" class="input-submit" />
+					</div>
+					<div class="Clear" />
+					<div class="Seperator"></div>
+					
+					<table width="100%" border="0" cellpadding="0" cellspacing="0">
+						<tr>
+							<td width="33%"></td>
+							<td width="34%" align="center">
+								Page <xsl:value-of select="/Response/Charges-Unapproved/Results/rangePage" />
+								of <xsl:value-of select="/Response/Charges-Unapproved/Results/rangePages" />
+							</td>
+							<td width="33%"></td>
+						</tr>
+					</table>
+				</xsl:otherwise>
 			</xsl:choose>
-			<div class="SmallSeperator"></div>
-			<div class= "Right">
-				<input type="submit" value="Apply Changes &#0187;" class="input-submit" />
-			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

@@ -3,20 +3,21 @@
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
-	<xsl:template name="Content">
-
-	<!--TODO! bash! Add Errors for when required fields are not entered!!-->
-	<!--Error === "Please enter a Charge Code." -->
-	<!--Error === "Please enter a Description." -->
-	<!--Error === "Please enter a valid Amount." -->
-	<!--Error === "Please select a valid Nature." -->
-	<!--TODO!bash! only allow a valid amount!! -->
-	<!--Error === "Please enter a valid Amount." -->
 	
+	<xsl:template name="Content">
 		<h1>Add Charge Type</h1>
 		
-		<h2 class = "Charge"> Charge Details</h2>
+		<h2 class="Charge"> Charge Details</h2>
 		<form method="POST" action="charges_charge_add.php">
+			
+			<!--TODO! bash! [  DONE  ]		Add Errors for when required fields are not entered!!-->
+			<!--Error === "Please enter a Charge Code." -->
+			<!--Error === "Please enter a Description." -->
+			<!--Error === "Please enter a valid Amount." -->
+			<!--Error === "Please select a valid Nature." -->
+			<!--TODO!bash! [  DONE  ]		only allow a valid amount!! -->
+			<!--Error === "Please enter a valid Amount." -->
+			
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
 					<xsl:choose>
@@ -93,7 +94,10 @@
 								<input type="text" name="Amount" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ChargeType/Amount" />
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/ChargeType/Amount" />
+											<xsl:with-param name="Decimal" select="number('2')" />
+				       					</xsl:call-template>
 									</xsl:attribute>
 								</input>
 							</td>

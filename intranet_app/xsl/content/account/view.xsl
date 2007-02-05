@@ -6,8 +6,8 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	<!-- TODO!Bash!  Use a msgbox for blank note errors like all other messages! DO THIS EVERYWHERE!!-->
-	<!-- Error === X"Please enter details to create a new note." -->
+		<!-- TODO!Bash!  Use a msgbox for blank note errors like all other messages! DO THIS EVERYWHERE!!-->
+		<!-- Error === X"Please enter details to create a new note." -->
 		<!-- Page for Viewing Account Details -->
 		
 		<h1>View Account Details</h1>
@@ -51,8 +51,19 @@
 											</xsl:call-template>
 										</th>
 										<td>
-											<span class="Red">
-												<!-- TODO!bash! [  DONE  ]		Display overdue amount to 2 decimal places --> 
+											<!-- TODO!bash! [  DONE  ]		Show account balance as green if it = 0, just like all the other 0s!!!!! -->
+											<span>
+												<!-- TODO!bash! [  DONE  ]		Display overdue amount to 2 decimal places -->
+												<xsl:attribute name="class">
+													<xsl:choose>
+														<xsl:when test="not(/Response/Account/Balance) or /Response/Account/Balance = 0">
+															<xsl:text>Green</xsl:text>
+														</xsl:when>
+														<xsl:otherwise>
+															<xsl:text>Red</xsl:text>
+														</xsl:otherwise>
+													</xsl:choose>
+												</xsl:attribute>
 								       			<xsl:call-template name="Currency">
 								       				<xsl:with-param name="Number" select="/Response/Account/Balance" />
 													<xsl:with-param name="Decimal" select="number('2')" />
@@ -62,7 +73,6 @@
 									</tr>
 									<xsl:choose>
 										<!-- TODO!bash! [  DONE  ]		Display overdue amount to 2 decimal places -->
-										<!-- TODO!bash! Show account balance as green if it = 0, just like all the other 0s!!!!! -->
 										<xsl:when test="/Response/Account/OverdueAmount != '0' and /Response/Account/OverdueAmount != ''">
 											<tr>
 												<th class="JustifiedWidth">

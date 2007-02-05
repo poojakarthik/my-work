@@ -11,15 +11,15 @@
 		<h2>Invoice Specific Details</h2>
 		<div class="Seperator"></div>
 		
-		<div class="Wide-Form">
+		<div class="Narrow-Form">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<th class="JustifiedWidth">Invoice Id :</th>
-						<td><xsl:value-of select="/Response/InvoicePayment/Invoice" /></td>
+						<th class="JustifiedWidth">Invoice Run :</th>
+						<td><xsl:value-of select="/Response/InvoicePayment/InvoiceRun" /></td>
 					</tr>
 					<tr>
-						<th class="JustifiedWidth">Payment# :</th>
+						<th class="JustifiedWidth">Payment #:</th>
 						<td><xsl:value-of select="/Response/InvoicePayment/Payment" /></td>
 					</tr>
 					<tr>
@@ -32,7 +32,7 @@
 						<td>
 			       			<xsl:call-template name="Currency">
 			       				<xsl:with-param name="Number" select="/Response/InvoicePayment/Amount" />
-								<xsl:with-param name="Decimal" select="number('2)" />
+								<xsl:with-param name="Decimal" select="number('2')" />
 	       					</xsl:call-template>
 						</td>
 					</tr>
@@ -45,13 +45,9 @@
 		<h2>Payment Details</h2>
 		<div class="Seperator"></div>
 		
-		<div class="Wide-Form">
+		<div class="Narrow-Form">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
-					<tr>
-						<th class="JustifiedWidth">Payment Id :</th>
-						<td><xsl:value-of select="/Response/Payment/Id" /></td>
-					</tr>
 					<tr>
 						<th class="JustifiedWidth">Payed On :</th>
 						<td>

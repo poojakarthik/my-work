@@ -9,7 +9,7 @@
 	<xsl:template name="Content">
 		<!--Page for viewing Invoice Details (1/2) -->
 		
-		<!--TODO!bash! URGENT! The menu needs to return to View invoices and payments page - Do NOT have a link back to the same page!!!!-->
+		<!--TODO!bash! [  DONE  ]		URGENT! The menu needs to return to View invoices and payments page - Do NOT have a link back to the same page!!!!-->
 		<h1>View Invoice Details</h1>
 		
 		<!-- Invoice Details -->
@@ -162,7 +162,7 @@
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing"  width="100%">
 			<tr class="First">
 				<th width="30">#</th>
-				<!--TODO!bash! URGENT! Do not use 'Line Number' or anything other than 'Service #' anywhere - this has already been done here-->
+				<!--TODO!bash! [  DONE  ]		URGENT! Do not use 'Line Number' or anything other than 'Service #' anywhere - this has already been done here-->
 				<th width="150">Service #</th>
 				<th width="110" class="Currency">Charges</th>
 				<th width="110" class="Currency">Credit</th>

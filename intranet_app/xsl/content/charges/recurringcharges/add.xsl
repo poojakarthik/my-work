@@ -4,24 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-	<!--TODO!bash! I'm curious - why the hell do you have 3 folders for recurring charges? I'm getting really sick of trying to find the right file. -->
-	<!--TODO!bash! URGENT - adding a recurring charge does not work - not being added to db-->
-	<!--TODO!bash! URGENT - throw errors when required fields are not entered -->
-	<!--Error=== "Please enter a Charge Code."-->
-	<!--Error=== "Please enter a Description." -->
-	<!--Error=== "Please enter a Recursion Charge." -->
-	<!--Error=== "Please select a valid Nature." -->
-	<!--Error=== "Please enter a Recurring Frequency." -->
-	<!--TODO!bash! URGENT - throw error if recursion charge is not valid -->
-	<!--Error=== "Please enter a valid Recursion Charge." -->
-	<!--TODO!bash! URGENT - throw error if Frequency is not numeric -->
-	<!--Error=== "Please enter a valid Recurring Frequency." -->
-	<!--TODO!bash! URGENT - throw error if min charge is not valid -->
-	<!--Error=== "Please enter a valid Minimum Charge." -->
-	<!--TODO!bash! URGENT - throw error if cancellation charge is not valid -->
-	<!--Error=== "Please enter a valid Cancellation Charge." -->
-	
-	
+		<!--TODO!bash! [  DONE  ]		URGENT - adding a recurring charge does not work - not being added to db-->		
 		<h1>Add Recurring Charge Type</h1>
 		
 		<h2 class= "Charge"> Charge Details</h2>
@@ -30,16 +13,16 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'CType-Blank'">
-							Please enter a Recurring Charge Code.
+							Please enter a Charge Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Descr-Blank'">
-							Please enter a Recurring Charge Description
+							Please enter a Charge Description.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CType-Exists'">
 							The Recurring Charge Code you entered already exists.  Please enter a unique Recurring Charge Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Frequency'">
-							Please enter a valid Frequency.
+							Please enter a Recurring Frequency.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Nature'">
 							Please select a valid Nature.
@@ -51,7 +34,7 @@
 							Please enter a valid Minimum Charge.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CancellationFee Invalid'">
-							Please enter a Valid Cancellation Fee.
+							Please enter a valid Cancellation Charge.
 						</xsl:when>
 					</xsl:choose>
 				</div>
@@ -111,7 +94,10 @@
 								<input type="text" name="RecursionCharge" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/RecurringChargeType/RecursionCharge" />
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
+											<xsl:with-param name="Decimal" select="number('2')" />
+				       					</xsl:call-template>
 									</xsl:attribute>
 								</input>
 							</td>
@@ -158,7 +144,7 @@
 							</th>
 							<td>
 
-								<input type="text" name="RecurringFreq" class="input-string" size="1">
+								<input type="text" name="RecurringFreq" class="input-string2" size="1">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/RecurringChargeType/RecurringFreq" />
@@ -201,7 +187,10 @@
 								<input type="text" name="MinCharge" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/RecurringChargeType/MinCharge" />
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
+											<xsl:with-param name="Decimal" select="number('2')" />
+				       					</xsl:call-template>
 									</xsl:attribute>
 								</input>
 							</td>
@@ -218,7 +207,10 @@
 								<input type="text" name="CancellationFee" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/RecurringChargeType/CancellationFee" />
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/CancellationFee" />
+											<xsl:with-param name="Decimal" select="number('2')" />
+				       					</xsl:call-template>
 									</xsl:attribute>
 								</input>
 							</td>

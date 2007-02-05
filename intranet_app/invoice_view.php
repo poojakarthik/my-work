@@ -43,8 +43,7 @@
 		$Style->Output (
 			'xsl/content/invoice/view_service_select.xsl',
 			Array (
-				'Account'	=> $actAccount->Pull ('Id')->getValue (),
-				'Invoice'	=> $invInvoice->Pull ('Id')->getValue ()
+				'Account'	=> $actAccount->Pull ('Id')->getValue ()
 			)
 		);
 		exit;

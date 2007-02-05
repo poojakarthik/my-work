@@ -51,8 +51,8 @@
 		}
 		
 		$acsAccounts->Sample (
-			isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
-			isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
+			($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
+			($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
 		);
 	}
 	

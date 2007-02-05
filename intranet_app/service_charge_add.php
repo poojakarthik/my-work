@@ -26,7 +26,8 @@
 	}
 	catch (Exception $e)
 	{
-		header ('Location: console.php'); exit;
+		$Style->Output ('xsl/content/service/notfound.xsl');
+		exit;
 	}
 	
 	// Get the Charge
@@ -36,18 +37,37 @@
 	}
 	catch (Exception $e)
 	{
-		header ('Location: service_view.php?Id=' . $srvService->Pull ('Id')->getValue ()); exit;
+		header ('Location: service_view.php?Id=' . $srvService->Pull ('Id')->getValue ());
+		exit;
 	}
+	
+	// Error Handler
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
+	
+	// UI Values
+	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
+	$oblstrAmount	= $oblarrUIValues->Push (new dataString ('Amount', $chgCharge->Pull ('Amount')->getValue ()));
 	
 	if ($_POST ['Confirm'])
 	{
-		$srvService->ChargeAdd (
-			$athAuthentication->AuthenticatedEmployee (),
-			$chgCharge,
-			$_POST ['Amount']
-		);
+		$oblstrAmount->setValue ($_POST ['Amount']);
 		
-		header ('Location: service_charge_added.php?Service=' . $srvService->Pull ('Id')->getValue ()); exit;
+		$fltAmount = new dataFloat ('Amount');
+		
+		if (!$fltAmount->setValue ($_POST ['Amount']))
+		{
+			$oblstrError->setValue ('Invalid Amount');
+		}
+		else
+		{
+			$srvService->ChargeAdd (
+				$athAuthentication->AuthenticatedEmployee (),
+				$chgCharge,
+				$fltAmount->getValue ()
+			);
+			
+			header ('Location: service_charge_added.php?Service=' . $srvService->Pull ('Id')->getValue ()); exit;
+		}
 	}
 	
 	$docDocumentation->Explain ('Service');
