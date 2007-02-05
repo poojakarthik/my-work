@@ -830,14 +830,26 @@ define("SERVICE_STATE_TYPE_VIC"		, "VIC");
 define("SERVICE_STATE_TYPE_WA"		, "WA");
 
 // Billing Methods
-define("BILLING_METHOD_POST"			, 0);
+/*define("BILLING_METHOD_POST"			, 0);
 define("BILLING_METHOD_EMAIL"			, 1);
-define("BILLING_METHOD_DO_NOT_SEND"		, 2);
+define("BILLING_METHOD_DO_NOT_SEND"		, 2);*/
+$GLOBALS['*arrConstant']	['BillingMethod']	[0]	['Constant']	= 'BILLING_METHOD_POST';
+$GLOBALS['*arrConstant']	['BillingMethod']	[0]	['Description']	= 'Post';
+$GLOBALS['*arrConstant']	['BillingMethod']	[1]	['Constant']	= 'BILLING_METHOD_EMAIL';
+$GLOBALS['*arrConstant']	['BillingMethod']	[1]	['Description']	= 'Email';
+$GLOBALS['*arrConstant']	['BillingMethod']	[2]	['Constant']	= 'BILLING_METHOD_DO_NOT_SEND';
+$GLOBALS['*arrConstant']	['BillingMethod']	[2]	['Description']	= 'Do Not Send';
 
 // Billing Types
-define("BILLING_TYPE_DIRECT_DEBIT"		, 1);
+/*define("BILLING_TYPE_DIRECT_DEBIT"		, 1);
 define("BILLING_TYPE_CREDIT_CARD"		, 2);
-define("BILLING_TYPE_ACCOUNT"			, 3);
+define("BILLING_TYPE_ACCOUNT"			, 3);*/
+$GLOBALS['*arrConstant']	['BillingType']	[1]	['Constant']	= 'BILLING_TYPE_DIRECT_DEBIT';
+$GLOBALS['*arrConstant']	['BillingType']	[1]	['Description']	= 'Direct Debit';
+$GLOBALS['*arrConstant']	['BillingType']	[2]	['Constant']	= 'BILLING_TYPE_CREDIT_CARD';
+$GLOBALS['*arrConstant']	['BillingType']	[2]	['Description']	= 'Credit Card';
+$GLOBALS['*arrConstant']	['BillingType']	[3]	['Constant']	= 'BILLING_TYPE_ACCOUNT';
+$GLOBALS['*arrConstant']	['BillingType']	[3]	['Description']	= 'Account';
 
 // Payment Terms
 define("PAYMENT_TERMS_DEFAULT"			, 30);
@@ -856,23 +868,18 @@ define("BILLING_DEFAULT_FREQ"			, 1);
 define("BILLING_DEFAULT_FREQ_TYPE"		, BILLING_FREQ_MONTH);
 
 // Record Type Display Types
-define("RECORD_DISPLAY_CALL"		, 1);
+/*define("RECORD_DISPLAY_CALL"		, 1);
 define("RECORD_DISPLAY_S_AND_E"		, 2);
 define("RECORD_DISPLAY_DATA"		, 3);
-define("RECORD_DISPLAY_SMS"			, 4);
-
-//TODO!bash! make this (and whatever uses it) work with GetConstantDescription
-$arrRecordDisplayRateName[RECORD_DISPLAY_CALL]			= "Voice Calls";
-$arrRecordDisplayRateName[RECORD_DISPLAY_S_AND_E]		= "Service & Equipment";
-$arrRecordDisplayRateName[RECORD_DISPLAY_DATA]			= "GPRS and ADSL Data";
-$arrRecordDisplayRateName[RECORD_DISPLAY_SMS]			= "SMS (Short Message Service)";
-$GLOBALS['RecordDisplayRateName'] = $arrRecordDisplayRateName;
-
-$arrRecordDisplayRateSuffix[RECORD_DISPLAY_CALL]		= "Second(s)";
-$arrRecordDisplayRateSuffix[RECORD_DISPLAY_S_AND_E]		= "Unit(s)";
-$arrRecordDisplayRateSuffix[RECORD_DISPLAY_DATA]		= "KB(s)";
-$arrRecordDisplayRateSuffix[RECORD_DISPLAY_SMS]			= "Unit(s)";
-$GLOBALS['RecordDisplayRateSuffix'] = $arrRecordDisplayRateSuffix;
+define("RECORD_DISPLAY_SMS"			, 4);*/
+$GLOBALS['*arrConstant']	['DisplayType']	[1]	['Constant']	= 'RECORD_DISPLAY_CALL';
+$GLOBALS['*arrConstant']	['DisplayType']	[1]	['Description']	= 'Call';
+$GLOBALS['*arrConstant']	['DisplayType']	[2]	['Constant']	= 'RECORD_DISPLAY_S_AND_E';
+$GLOBALS['*arrConstant']	['DisplayType']	[2]	['Description']	= 'Service and Equipment';
+$GLOBALS['*arrConstant']	['DisplayType']	[3]	['Constant']	= 'RECORD_DISPLAY_DATA';
+$GLOBALS['*arrConstant']	['DisplayType']	[3]	['Description']	= 'Data Transfer';
+$GLOBALS['*arrConstant']	['DisplayType']	[4]	['Constant']	= 'RECORD_DISPLAY_SMS';
+$GLOBALS['*arrConstant']	['DisplayType']	[4]	['Description']	= 'SMS';
 
 // Debit and Credit
 define("NATURE_CR"					, 'CR');
@@ -886,7 +893,7 @@ define("PABLO_TIP_DRUNK"			, 4);
 
 // Payments
 // payment status
-define("PAYMENT_IMPORTED"				, 100);
+/*define("PAYMENT_IMPORTED"				, 100);
 define("PAYMENT_WAITING"				, 101);
 define("PAYMENT_PAYING"					, 103);
 define("PAYMENT_FINISHED"				, 150);
@@ -895,14 +902,44 @@ define("PAYMENT_BAD_PROCESS"			, 201);
 define("PAYMENT_BAD_NORMALISE"			, 202);
 define("PAYMENT_CANT_NORMALISE_HEADER"	, 203);
 define("PAYMENT_CANT_NORMALISE_FOOTER"	, 204);
-define("PAYMENT_CANT_NORMALISE_INVALID"	, 205);
+define("PAYMENT_CANT_NORMALISE_INVALID"	, 205);*/
+$GLOBALS['*arrConstant']	['PaymentStatus']	[100]	['Constant']	= 'PAYMENT_IMPORTED';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[100]	['Description']	= 'Imported';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[101]	['Constant']	= 'PAYMENT_WAITING';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[101]	['Description']	= 'Waiting';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[103]	['Constant']	= 'PAYMENT_PAYING';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[103]	['Description']	= 'Paying';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[150]	['Constant']	= 'PAYMENT_FINISHED';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[150]	['Description']	= 'Finished';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[200]	['Constant']	= 'PAYMENT_BAD_IMPORT';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[200]	['Description']	= 'Import Failed';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[201]	['Constant']	= 'PAYMENT_BAD_PROCESS';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[201]	['Description']	= 'Process Failed';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[202]	['Constant']	= 'PAYMENT_BAD_NORMALISE';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[202]	['Description']	= 'Normalisation Failed';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[203]	['Constant']	= 'PAYMENT_CANT_NORMALISE_HEADER';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[203]	['Description']	= 'Cannot Normalise Header Row';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[204]	['Constant']	= 'PAYMENT_CANT_NORMALISE_FOOTER';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[204]	['Description']	= 'Cannot Normalise Footer Row';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[205]	['Constant']	= 'PAYMENT_CANT_NORMALISE_INVALID';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[205]	['Description']	= 'Cannot Normalise Unrecognised Row';
 
 // payment types
-define("PAYMENT_TYPE_BILLEXPRESS"	, 1);
+/*define("PAYMENT_TYPE_BILLEXPRESS"	, 1);
 define("PAYMENT_TYPE_BPAY"			, 2);
 define("PAYMENT_TYPE_CHEQUE"		, 3);
 define("PAYMENT_TYPE_SECUREPAY"		, 4);
-define("PAYMENT_TYPE_CREDIT_CARD"	, 5);
+define("PAYMENT_TYPE_CREDIT_CARD"	, 5);*/
+$GLOBALS['*arrConstant']	['PaymentType']	[1]	['Constant']	= 'PAYMENT_TYPE_BILLEXPRESS';
+$GLOBALS['*arrConstant']	['PaymentType']	[1]	['Description']	= 'BillExpress';
+$GLOBALS['*arrConstant']	['PaymentType']	[2]	['Constant']	= 'PAYMENT_TYPE_BPAY';
+$GLOBALS['*arrConstant']	['PaymentType']	[2]	['Description']	= 'BPay';
+$GLOBALS['*arrConstant']	['PaymentType']	[3]	['Constant']	= 'PAYMENT_TYPE_CHEQUE';
+$GLOBALS['*arrConstant']	['PaymentType']	[3]	['Description']	= 'Cheque';
+$GLOBALS['*arrConstant']	['PaymentType']	[4]	['Constant']	= 'PAYMENT_TYPE_SECUREPAY';
+$GLOBALS['*arrConstant']	['PaymentType']	[4]	['Description']	= 'SecurePay';
+$GLOBALS['*arrConstant']	['PaymentType']	[5]	['Constant']	= 'PAYMENT_TYPE_CREDIT_CARD';
+$GLOBALS['*arrConstant']	['PaymentType']	[5]	['Description']	= 'Credit Card';
 
 // Charge Types/Codes
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
@@ -948,4 +985,19 @@ foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 	}
 }
 
+
+
+
+//TODO!bash! make this (and whatever uses it) work with GetConstantDescription
+$arrRecordDisplayRateName[RECORD_DISPLAY_CALL]			= "Voice Calls";
+$arrRecordDisplayRateName[RECORD_DISPLAY_S_AND_E]		= "Service & Equipment";
+$arrRecordDisplayRateName[RECORD_DISPLAY_DATA]			= "GPRS and ADSL Data";
+$arrRecordDisplayRateName[RECORD_DISPLAY_SMS]			= "SMS (Short Message Service)";
+$GLOBALS['RecordDisplayRateName'] = $arrRecordDisplayRateName;
+
+$arrRecordDisplayRateSuffix[RECORD_DISPLAY_CALL]		= "Second(s)";
+$arrRecordDisplayRateSuffix[RECORD_DISPLAY_S_AND_E]		= "Unit(s)";
+$arrRecordDisplayRateSuffix[RECORD_DISPLAY_DATA]		= "KB(s)";
+$arrRecordDisplayRateSuffix[RECORD_DISPLAY_SMS]			= "Unit(s)";
+$GLOBALS['RecordDisplayRateSuffix'] = $arrRecordDisplayRateSuffix;
 ?>
