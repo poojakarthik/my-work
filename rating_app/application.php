@@ -1112,10 +1112,15 @@
 	 									"CDR.Status = ".CDR_UNRATE,
 	 									"CDR.Id ASC",
 	 									"1000");
-	 	if ($selCDRs->Execute() === FALSE)
+	 	if (($mixResult = $selCDRs->Execute()) === FALSE)
 	 	{
 	 		Debug("Selecting CDRs failed: ".$selCDRs->Error());
 	 		return FALSE;
+	 	}
+	 	elseif (!$mixResult)
+	 	{
+	 		Debug("No CDRs to unrate");
+	 		return TRUE;
 	 	}
 	 	
 	 	// For each of the CDRs
@@ -1149,7 +1154,7 @@
 		 	}
 		 	
 		 	// Update the Service
-		 	if ($updServiceTotals->Execute($arrColumns) === FALSE)
+		 	if ($updServiceTotals->Execute($arrColumns, Array('Service' => $arrCDR['Service'])) === FALSE)
 		 	{
 		 		Debug("Couldn't update Service: ".$updServiceTotals->Error());
 		 		return FALSE;
