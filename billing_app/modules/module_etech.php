@@ -1076,14 +1076,13 @@
 	 *
 	 * Builds the bill file
 	 *
-	 * @param		string		strInvoiceRun	The Invoice Run to build from
 	 * @param		boolean		bolSample		optional This is a sample billing file
 	 *
 	 * @return		string						filename
 	 *
 	 * @method
 	 */
- 	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
+ 	function BuildOutput($bolSample = FALSE)
  	{
 		// generate filenames
 		if($bolSample)
@@ -1101,12 +1100,15 @@
 			$strInvoiceTable = 'Invoice';
 		}
 		
-		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices", "InvoiceRun = '$strInvoiceRun'");
+		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "Status = ".INVOICE_PRINT);
 		if ($selMetaData->Execute() === FALSE)
 		{
 			return FALSE;
 		}
 		$arrMetaData = $selMetaData->Fetch();
+
+		// Set the InvoiceRun
+		$strInvoiceRun = $arrMetaData['InvoiceRun'];
 		
 		if($arrMetaData['Invoices'] == 0)
 		{

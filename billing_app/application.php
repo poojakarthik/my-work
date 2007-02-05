@@ -514,7 +514,7 @@
 			$arrInvoiceData['Balance']			= $fltBalance;
 			$arrInvoiceData['Disputed']			= 0;
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
-			$arrInvoiceData['Status']			= INVOICE_TEMP;
+			$arrInvoiceData['Status']			= INVOICE_PRINT;
 			$arrInvoiceData['InvoiceRun']		= $strInvoiceRun;
 			
 			// report error or success
@@ -600,6 +600,23 @@
 				continue;
 			}
 			
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// update Invoice Status to INVOICE_TEMP
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = INVOICE_TEMP;
+		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_PRINT, $arrUpdateData);
+		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			Debug($updInvoiceStatus->Error());
+			// Report
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
@@ -804,11 +821,10 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		// update Invoice Status
-		// If the invoice balance is zero mark it as settled
+		// update Invoice Status to PRINT
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
+		$arrUpdateData['Status'] = INVOICE_PRINT;
 		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_TEMP, $arrUpdateData);
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
@@ -823,13 +839,12 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		
 		// BILLING OUTPUT
 		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
 		{
 			$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_SEND_OUTPUT, Array('<Run>' => $strValue), FALSE);
 			// build billing output
-			if (!$this->_arrBillOutput[$strKey]->BuildOutput($strInvoiceRun))
+			if (!$this->_arrBillOutput[$strKey]->BuildOutput())
 			{
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\t- Reason: Building failed");
 				continue;
@@ -846,6 +861,24 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		
+		// update Invoice Status to COMMITTED, or SETTLED if the invoice balance is zero
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
+		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_PRINT, $arrUpdateData);
+		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			Debug($updInvoiceStatus->Error());
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
 		
 	}
 	
@@ -1395,24 +1428,37 @@
 	 *
 	 * Reprint Specified Invoices
 	 *
-	 * @param	array	$arrAccounts		The Accounts to Reprint Invoices for
-	 * @param	string	$strInvoiceRun		optional Invoice Run to reprint from
+	 * @param	array	$arrInvoices		The Invoices to Reprint
 	 * @param	integer	$intPrintTartget	optional Id of the Module to print from
 	 *
 	 * @return			bool
 	 *
 	 * @method
 	 */
-	 function Reprint($arrAccounts, $strInvoiceRun = NULL, $intPrintTartget = BILL_PRINT_ETECH)
+	 function Reprint($arrInvoices, $intPrintTartget = BILL_PRINT_ETECH)
 	 {
-		$intPassed = 0;
+		// Truncate the InvoiceOutput table
+		$this->_rptBillingReport->AddMessage("Truncating InvoiceOutput table...\t\t\t", FALSE);
+		$qryTruncateInvoiceOutput = new QueryTruncate();
+		if ($qryTruncateInvoiceOutput->Execute("InvoiceOutput") === FALSE)
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		$arrUpdateData = Array();
+		$arrUpdateData['Status']	= INVOICE_PRINT;
+		$ubiInvoiceStatus = new StatementUpdate("Invoice", $arrUpdateData);
 		
 		// for each account
-		foreach($arrAccounts as $intAccount)
+		$intPassed = 0;
+		foreach($arrInvoices as $intInvoice)
 		{
 			// Get Invoice details
-			$arrData['Account'] 	= $intAccount;
-			$arrData['InvoiceRun']	= $strInvoiceRun;
+			$arrData['Id'] 	= $intInvoice;
 			if ($this->selGetInvoice->Execute($arrData) === FALSE)
 			{
 				Debug("Invoice Retrieval FAILED! : ".$this->selGetInvoice->Error());
@@ -1425,11 +1471,20 @@
 			
 			// stick stuff in invoice output
 			$this->_arrBillOutput[$intPrintTartget]->AddInvoice($arrInvoiceData);
+			
+			// update Invoice Status to PRINT
+			$arrUpdateData['Id'] = $arrData['Id'];
+			if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+			{
+				Debug("Update status to PRINT failed! : ".$updInvoiceStatus->Error());
+				return;
+			}
+		
 			$intPassed++;
 		}
 		
 		// Report how many passed
-		$intFailed = count($arrAccounts) - $intPassed;
+		$intFailed = count($arrInvoices) - $intPassed;
 		Debug("$intPassed Invoice Outputs generated ($intFailed failed)");
 		if ($intPassed == 0)
 		{
@@ -1440,7 +1495,7 @@
 		$strNewInvoiceRun = uniqid();
 		
 		// build an output file
-		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput($strNewInvoiceRun))
+		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput())
 		{
 			Debug("Building Output FAILED!");
 			return FALSE;
@@ -1450,6 +1505,16 @@
 		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(FALSE))
 		{
 			Debug("Sending Output FAILED!");
+			return FALSE;
+		}
+		
+		// update Invoice Status to COMMITTED, or SETTLED if the invoice balance is zero
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
+		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_PRINT, $arrUpdateData);
+		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			Debug("Update status to COMMITED/SETTLED failed! : ".$updInvoiceStatus->Error());
 			return FALSE;
 		}
 		
