@@ -193,6 +193,8 @@ $GLOBALS['*arrConstant']['CDR'][154]['Constant']	= 'CDR_UNABLE_TO_PRORATE';
 $GLOBALS['*arrConstant']['CDR'][154]['Description'] = 'Unable to Prorate';
 $GLOBALS['*arrConstant']['CDR'][160]['Constant']	= 'CDR_RERATE';
 $GLOBALS['*arrConstant']['CDR'][160]['Description'] = 'Awating Re-Rating';
+$GLOBALS['*arrConstant']['CDR'][161]['Constant']	= 'CDR_UNRATE';
+$GLOBALS['*arrConstant']['CDR'][161]['Description'] = 'Awating Un-Rating';
 $GLOBALS['*arrConstant']['CDR'][155]['Constant']	= 'CDR_TOTALS_UPDATE_FAILED';
 $GLOBALS['*arrConstant']['CDR'][155]['Description'] = 'Unable to Update Service Totals';
 $GLOBALS['*arrConstant']['CDR'][198]['Constant']	= 'CDR_TEMP_INVOICE';
@@ -415,9 +417,15 @@ $GLOBALS['*arrConstant']	['Request']	[909]	['Constant']	= 'REQUEST_UNBAR_HARD';
 $GLOBALS['*arrConstant']	['Request']	[909]	['Description']	= 'Remove Hard Bar';
 
 // Provisioning Line Actions (Log)
-define("LINE_ACTION_OTHER"				, 600);
+/*define("LINE_ACTION_OTHER"				, 600);
 define("LINE_ACTION_GAIN"				, 601);
-define("LINE_ACTION_LOSS"				, 602);
+define("LINE_ACTION_LOSS"				, 602);*/
+$GLOBALS['*arrConstant']	['LineAction']	[600]	['Constant']	= 'LINE_ACTION_OTHER';
+$GLOBALS['*arrConstant']	['LineAction']	[600]	['Description']	= 'Other';
+$GLOBALS['*arrConstant']	['LineAction']	[601]	['Constant']	= 'LINE_ACTION_GAIN';
+$GLOBALS['*arrConstant']	['LineAction']	[601]	['Description']	= 'Gain';
+$GLOBALS['*arrConstant']	['LineAction']	[602]	['Constant']	= 'LINE_ACTION_LOSS';
+$GLOBALS['*arrConstant']	['LineAction']	[602]	['Description']	= 'Loss';
 
 // God help me ...
 // Service Address Types
@@ -900,10 +908,18 @@ define("PAYMENT_TYPE_CREDIT_CARD"	, 5);
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
 
 // Bug Type
-define("BUG_UNREAD"					, 100);
+/*define("BUG_UNREAD"					, 100);
 define("BUG_UNASSIGNED"				, 101);
 define("BUG_UNRESOLVED"				, 102);
-define("BUG_RESOLVED"				, 103);
+define("BUG_RESOLVED"				, 103);*/
+$GLOBALS['*arrConstant']	['BugStatus']	[100]	['Constant']	= 'BUG_UNREAD';
+$GLOBALS['*arrConstant']	['BugStatus']	[100]	['Description']	= 'Unread';
+$GLOBALS['*arrConstant']	['BugStatus']	[101]	['Constant']	= 'BUG_UNASSIGNED';
+$GLOBALS['*arrConstant']	['BugStatus']	[101]	['Description']	= 'Unassigned';
+$GLOBALS['*arrConstant']	['BugStatus']	[102]	['Constant']	= 'BUG_UNRESOLVED';
+$GLOBALS['*arrConstant']	['BugStatus']	[102]	['Description']	= 'Unresolved';
+$GLOBALS['*arrConstant']	['BugStatus']	[103]	['Constant']	= 'BUG_RESOLVED';
+$GLOBALS['*arrConstant']	['BugStatus']	[103]	['Description']	= 'Resolved';
 
 // Note parsing
 define("SYSTEM_NOTE_TYPE"			, 7);
@@ -913,9 +929,15 @@ define("REPORT_RESULT_TYPE_CSV"		, "CSV");
 define("REPORT_RESULT_TYPE_HTML"	, "HTML");
 
 // resolve dispute status codes
-define("DISPUTE_RESOLVE_FULL_PAYMENT"		, 1);
+/*define("DISPUTE_RESOLVE_FULL_PAYMENT"		, 1);
 define("DISPUTE_RESOLVE_PARTIAL_PAYMENT"	, 2);
-define("DISPUTE_RESOLVE_NO_PAYMENT"			, 3);
+define("DISPUTE_RESOLVE_NO_PAYMENT"			, 3);*/
+$GLOBALS['*arrConstant']	['DistputeResolve']	[1]	['Constant']	= 'DISPUTE_RESOLVE_FULL_PAYMENT';
+$GLOBALS['*arrConstant']	['DistputeResolve']	[1]	['Description']	= 'Full Payment';
+$GLOBALS['*arrConstant']	['DistputeResolve']	[2]	['Constant']	= 'DISPUTE_RESOLVE_PARTIAL_PAYMENT';
+$GLOBALS['*arrConstant']	['DistputeResolve']	[2]	['Description']	= 'Partial Payment';
+$GLOBALS['*arrConstant']	['DistputeResolve']	[3]	['Constant']	= 'DISPUTE_RESOLVE_NO_PAYMENT';
+$GLOBALS['*arrConstant']	['DistputeResolve']	[3]	['Description']	= 'No Payment';
 
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)

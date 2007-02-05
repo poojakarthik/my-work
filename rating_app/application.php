@@ -1088,6 +1088,44 @@
 	 	$mixReturn = $updReRate->Execute($arrColumns, NULL);
 	 	return (int)$mixReturn;
 	 }
+	 
+	 
+	//------------------------------------------------------------------------//
+	// UnRate()
+	//------------------------------------------------------------------------//
+	/**
+	 * UnRate()
+	 *
+	 * UnRates all CDRs with the status CDR_UNRATE
+	 *
+	 * UnRates all CDRs with the status CDR_UNRATE
+	 *	 
+	 * @return	integer							Number of CDRs affected
+	 *
+	 * @method
+	 */
+	 function UnRate()
+	 {
+	 	// Subtract from Service Uncapped and Capped totals
+	 	$arrColumns['Service.UncappedCharge']	= new MySQLFunction("IF(Rate.Uncapped = 1, Service.UncappedCharge - CDR.Charge, Service.UncappedCharge)");
+	 	$arrColumns['Service.CappedCharge']		= new MySQLFunction("IF(Rate.Uncapped = 0, Service.CappedCharge - CDR.Charge, Service.CappedCharge)");
+	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR ON Service.Id = CDR.Service, Rate",
+	 										"CDR.Rate = Rate.Id AND CDR.Status = ".CDR_UNRATE,
+	 										$arrColumns);
+	 	if ($updUnRate->Execute($arrColumns, Array()) === FALSE)
+	 	{
+	 		// Couldn't update
+	 		Debug("Couldn't update Capped and Uncapped Totals: ".$updUnRate->Error());
+	 		return FALSE;
+	 	}
+	 	
+	 	// Set CDR status
+	 	$arrColumns = Array();
+	 	$arrColumns['Status']	= CDR_NORMALISED;
+	 	$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_UNRATE, $arrColumns);
+	 	$mixReturn = $updCDRStatus->Execute($arrColumns, NULL);
+	 	return (int)$mixReturn;
+	 }
  }
 
 
