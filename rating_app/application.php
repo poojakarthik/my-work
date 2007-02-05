@@ -1109,7 +1109,7 @@
 	 	// Subtract from Service Uncapped and Capped totals
 	 	$arrColumns['Service.UncappedCharge']	= new MySQLFunction("IF(Rate.Uncapped = 1, Service.UncappedCharge - CDR.Charge, Service.UncappedCharge)");
 	 	$arrColumns['Service.CappedCharge']		= new MySQLFunction("IF(Rate.Uncapped = 0, Service.CappedCharge - CDR.Charge, Service.CappedCharge)");
-	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR ON Service.Id = CDR.Service, Rate",
+	 	$updUnRate = new StatementUpdate(	"Service JOIN CDR  ON Service.Id = CDR.Service, Rate",
 	 										"CDR.Rate = Rate.Id AND CDR.Status = ".CDR_UNRATE,
 	 										$arrColumns);
 	 	if ($updUnRate->Execute($arrColumns, Array()) === FALSE)
