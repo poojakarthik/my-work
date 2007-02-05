@@ -88,6 +88,8 @@
 		$arrCols['Status']	= NULL;
 		$arrCols['Balance']	= NULL;
 		$this->_ubiPayment = new StatementUpdateById("Payment", $arrCols);
+		
+		$this->selGetInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND (ISNULL(<InvoiceRun>) OR InvoiceRun = <InvoiceRun>)", "CreatedOn DESC", 1);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1393,21 +1395,65 @@
 	 *
 	 * Reprint Specified Invoices
 	 *
-	 * @param	array	$arrInvoice		The Accounts to Reprint Invoices for 	 	 
+	 * @param	array	$arrAccounts		The Accounts to Reprint Invoices for
+	 * @param	string	$strInvoiceRun		optional Invoice Run to reprint from
+	 * @param	integer	$intPrintTartget	optional Id of the Module to print from
 	 *
 	 * @return			bool
 	 *
 	 * @method
 	 */
-	 function Reprint($arrInvoice)
+	 function Reprint($arrAccounts, $strInvoiceRun = NULL, $intPrintTartget = BILL_PRINT_ETECH)
 	 {
-	 	//TODO!rich! make this do stuff
+		$intPassed = 0;
 		
-		// for each invoice
-			// get invoice details
+		// for each account
+		foreach($arrAccounts as $intAccount)
+		{
+			// Get Invoice details
+			$arrData['Account'] 	= $intAccount;
+			$arrData['InvoiceRun']	= $strInvoiceRun;
+			if ($this->selGetInvoice->Execute($arrData) === FALSE)
+			{
+				Debug("Invoice Retrieval FAILED! : ".$this->selGetInvoice->Error());
+			}
+			if (($arrInvoiceData = $this->selGetInvoice->Fetch()) === FALSE)
+			{
+				Debug("Invoice #$intAccount not found!");
+				continue;
+			}
+			
 			// stick stuff in invoice output
+			$this->_arrBillOutput[$intPrintTartget]->AddInvoice($arrInvoiceData);
+			$intPassed++;
+		}
+		
+		// Report how many passed
+		$intFailed = count($arrAccounts) - $intPassed;
+		Debug("$intPassed Invoice Outputs generated ($intFailed failed)");
+		if ($intPassed == 0)
+		{
+			return FALSE;
+		}
+		
+		// Generate a new InvoiceRun for these reprints
+		$strNewInvoiceRun = uniqid();
 		
 		// build an output file
+		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput($strNewInvoiceRun))
+		{
+			Debug("Building Output FAILED!");
+			return FALSE;
+		}
+		
+		// send billing output
+		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(FALSE))
+		{
+			Debug("Sending Output FAILED!");
+			return FALSE;
+		}
+		
+		return TRUE;
 	 }
  }
 
