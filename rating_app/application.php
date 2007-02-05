@@ -1165,7 +1165,7 @@
 	 	$arrColumns = Array();
 	 	$arrColumns['Status']	= CDR_NORMALISED;
 	 	$updCDRStatus = new StatementUpdate("CDR", "Id >= $intMinCDRId AND Status = ".CDR_UNRATE, $arrColumns, 1000);
-	 	return $updCDRStatus->Execute();
+	 	return $updCDRStatus->Execute($arrColumns);
 	 }
  }
 
