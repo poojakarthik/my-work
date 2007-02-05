@@ -1186,6 +1186,155 @@
 	
 		$this->_rptAuditReport->AddMessageVariables(MSG_SERVICE_TYPE_SUMMARY, Array('<Summaries>' => $strSummaries));
 	}
+	
+	
+	
+	
+	
+	//------------------------------------------------------------------------//
+	// RevertInvoiceRun
+	//------------------------------------------------------------------------//
+	/**
+	 * RevertInvoiceRun()
+	 *
+	 * Reverts a specified Invoice Run
+	 *
+	 * Reverts a specified Invoice Run.  Returns all CDRs to Rated status, and removes
+	 * all traced of invoicing
+	 * 
+	 * @param	string		$strInvoiceRun		The invoice run to revert 
+	 *
+	 * @return	bool
+	 *
+	 * @method
+	 */
+ 	function RevertInvoiceRun($strInvoiceRun)
+ 	{
+		// Report Title
+		$this->_rptBillingReport->AddMessage("[ REVERTING INVOICE ]"."\n");
+		
+		// change status of CDR_INVOICED status CDRs to CDR_RATED
+		$this->_rptBillingReport->AddMessage(MSG_REVERT_CDRS, FALSE);
+		$arrColumns = Array();
+		$arrColumns['Status']		= CDR_RATED;
+		$arrColumns['InvoiceRun']	= NULL;
+		$updCDRStatus = new StatementUpdate("CDR", "CDR.Credit = 0 AND InvoiceRun = '$strInvoiceRun' AND Status = ".CDR_INVOICED, $arrColumns);
+		if($updCDRStatus->Execute($arrColumns, Array()) === FALSE)
+		{
+			Debug($updCDRStatus->Error());
+			
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return FALSE;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// update Charge Status
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGE."\t", FALSE);
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = CHARGE_APPROVED;
+		$updChargeStatus = new StatementUpdate("Charge", "InvoiceRun = '$strInvoiceRun' AND Status = ".CHARGE_INVOICED, $arrUpdateData);
+		if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// Update Service Capped and Uncapped Charges
+		$this->_rptBillingReport->AddMessage("Updating Service Charge Totals"."\t", FALSE);
+		$arrData = Array();
+		$arrData['Service.UncappedCharge']	= new MySQLFunction("Service.UncappedCharge += ServiceTotal.UncappedCharge");
+		$arrData['Service.CappedCharge']	= new MySQLFunction("Service.CappedCharge += ServiceTotal.CappedCharge");
+		$updServiceCharges = new StatementUpdate(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
+													"ServiceTotal.InvoiceRun = '$strInvoiceRun'",
+													$arrData);
+		if($updServiceCharges->Execute($arrData, Array()) === FALSE)
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}		
+		
+		// clean up ServiceTotal table
+		$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
+		$qryCleanServiceTotal = new Query();
+		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
+		{
+			Debug($qryCleanServiceTotal);
+			
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+
+		// clean up ServiceTypeTotal table
+		$this->_rptBillingReport->AddMessage("Cleaning ServiceTypeTotal table...\t\t\t", FALSE);
+		$qryCleanServiceTotal = new Query();
+		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// reverse payments
+		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = '$strInvoiceRun'");
+		$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
+		$arrCols['Status']	= NULL;
+		$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
+		$ubiPayments		= new StatementUpdateById("Payment", $arrCols);
+		$qryDeletePayment	= new Query();
+		$selInvoicePayments->Execute();
+		$arrInvoicePayments = $selInvoicePayments->FetchAll();
+		foreach ($arrInvoicePayments as $arrInvoicePayment)
+		{
+			// update total and status of Payment
+			$arrPayment['Balance']	= new MySQLFunction("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
+			$arrPayment['Status']	= PAYMENT_PAYING;
+			$ubiPayments->Execute($arrPayment);
+			
+			// remove InvoicePayment
+			$qryDeletePayment->Execute("DELETE FROM InvoicePayment WHERE Id = ".$arrInvoicePayment['Id']);
+		}
+		
+		// TODO!rich! - Update each Account's LastBilled field (later - we don't use this at the moment)
+		
+		// remove invoices
+		$this->_rptBillingReport->AddMessage("Removing Invoices\t\t\t", FALSE);
+		$qryDeleteInvoices = new Query();
+		if(!$qryDeleteInvoices->Execute("DELETE FROM Invoice WHERE InvoiceRun = '$strInvoiceRun'"))
+		{			
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return FALSE;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		return TRUE;
+ 	}	
  }
 
 
