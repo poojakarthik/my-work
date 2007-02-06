@@ -23,6 +23,8 @@ require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 
+$hlpHelper = new VixenHelper();
+
 
 // Select all accounts
 $selAccounts = new StatementSelect("Account", "Id", "Archived = 0");
@@ -37,7 +39,7 @@ $arrAccounts = $selAccounts->FetchAll();
 $fltGrandTotal = 0.0;
 foreach ($arrAccounts as $arrAccount)
 {
-	$fltGrandTotal += (float)$this->GetInvoiceTotal($arrAccount['Id']);
+	$fltGrandTotal += (float)$hlpHelper->GetInvoiceTotal($arrAccount['Id']);
 }
 
 Debug("Grand Total: $fltGrandTotal (ex. GST)");
