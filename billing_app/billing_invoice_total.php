@@ -25,7 +25,7 @@ require_once($strFrameworkDir."exception_vixen.php");
 
 
 // Select all accounts
-$selAccounts = new StatementSelect("Account", "Id", "Invoiced = 0");
+$selAccounts = new StatementSelect("Account", "Id", "Archived = 0");
 if ($selAccounts->Execute() === FALSE)
 {
 	Debug('$selAccounts died in the ass');
