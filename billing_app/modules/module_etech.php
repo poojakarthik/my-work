@@ -1130,13 +1130,12 @@
 		}
 
 		$qryBuildFile	= new Query();
-		$strColumns		= "'005|', LPAD(CAST((@pos := @pos + 1) AS CHAR), 10, '0'), '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
+		$strColumns		= "'005|', LPAD(CAST(InvoiceOutput.Id AS CHAR), 10, '0'), '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
-		$strQuery		=	"SET @pos = 0;" .
-							"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
+		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
 							"WHERE $strWhere\n" .
-							"ORDER BY Id";
+							"ORDER BY InvoiceOutput.Id";
 		if($intOutputType == BILL_SAMPLE)
 		{
 			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
