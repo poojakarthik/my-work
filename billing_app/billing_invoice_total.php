@@ -28,7 +28,7 @@ $hlpHelper = new VixenHelper();
 
 // Select all accounts
 $selAccounts = new StatementSelect("Account", "Id", "Archived = 0");
-if ($selAccounts->Execute() === FALSE)
+if (($intCount = $selAccounts->Execute()) === FALSE)
 {
 	Debug('$selAccounts died in the ass');
 	die;
@@ -37,9 +37,19 @@ $arrAccounts = $selAccounts->FetchAll();
 
 // loop through the accounts
 $fltGrandTotal = 0.0;
+$i = 0;
 foreach ($arrAccounts as $arrAccount)
 {
-	$fltGrandTotal += (float)$hlpHelper->GetInvoiceTotal($arrAccount['Id']);
+	$i++;
+	
+	echo "+ ($i of $intCount) Working Account #".$arrAccount['Id']."...\t\t\t";
+	if (($mixResult = $hlpHelper->GetInvoiceTotal($arrAccount['Id'])) === FALSE)
+	{
+		echo "FAILED!\n";
+		continue;
+	}
+	$fltGrandTotal += (float)$mixResult;
+	echo '$'.$fltGrandTotal."\n";
 }
 
 Debug("Grand Total: $fltGrandTotal (ex. GST)");
