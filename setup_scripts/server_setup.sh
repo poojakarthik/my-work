@@ -128,7 +128,7 @@ eth0 businfo 0000:02:09.0
 eth1 businfo 0000:02:09.1
 
 #eth2 (external :   100mbps)
-eth2 businfo 0000:03:08.0
+#eth2 businfo 0000:03:08.0
 
 			"
 echo "$FileIftab" > /etc/iftab
@@ -174,6 +174,7 @@ broadcast 10.10.10.255
 auto eth2
 iface eth2 inet static
 address $IPeth2
+netmask 255.255.255.0
 broadcast 192.168.2.255
 gateway 192.168.2.253
 			"
