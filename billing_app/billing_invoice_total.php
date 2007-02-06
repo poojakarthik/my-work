@@ -23,11 +23,6 @@ require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 
-
-$ivtInvoiceTotal = new InvoiceTotal();
-die;
-
-
 class InvoiceTotal extends ApplicationBaseClass
 {
 	function __construct()
@@ -68,4 +63,8 @@ class InvoiceTotal extends ApplicationBaseClass
 		return;
 	}
 }
+
+
+$ivtInvoiceTotal = new InvoiceTotal();
+die;
 ?>
