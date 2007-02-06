@@ -63,6 +63,9 @@
 						<xsl:when test="/Response/Error = 'Expired'">
 							Please enter a valid Expiration Date.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'CVV'">
+							Please enter a valid CVV.
+						</xsl:when>
 					</xsl:choose>
 				</div>
 			</xsl:if>
@@ -152,7 +155,7 @@
 							</xsl:call-template>
 						</td>
 					</tr>
-					<!--TODO!bash! URGENT! verify cvv - no more than 4 numeric digits -->
+					<!--TODO!bash! URGENT! [  DONE  ]		verify cvv - no more than 4 numeric digits -->
 					<tr>
 					<td class="Required"> </td>
 						<th class="JustifiedWidth">

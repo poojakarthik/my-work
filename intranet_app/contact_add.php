@@ -18,12 +18,14 @@
 	require ('config/application.php');
 	
 	// Start the Error Handler
-	$oblstrError = $Style->attachObject (new dataString ('Error', ''));
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
 	
-	// Try getting the account
+	// Attempt to get the Account that we are associating this Contact with.
+	// If the Account cannot be found, then an Error needs to be Shown.
 	try
 	{
+		// Retrieve the Account
 		$actAccount = $Style->attachObject (
 			new Account (
 				isset ($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']
@@ -32,48 +34,71 @@
 	}
 	catch (Exception $e)
 	{
+		// Display an error if no Account is Found
 		$Style->Output ('xsl/content/account/notfound.xsl');
 		exit;
 	}
 	
+	// If we are at a point where we want to save Contact Information
 	if (isset ($_POST ['CustomerContact']))
 	{
-		$oblarrContact = $Style->attachObject (new dataArray ('Contact'));
-		
 		if (!$_POST ['Title'])
 		{
+			// Check that a Title was passed through
 			$oblstrError->setValue ('Title');
 		}
 		else if (!$_POST ['FirstName'])
 		{
+			// Check that a First Name was passed through
 			$oblstrError->setValue ('FirstName');
 		}
 		else if (!$_POST ['LastName'])
 		{
+			// Check that a Last Name was passed through
 			$oblstrError->setValue ('LastName');
 		}
 		else if (!@checkdate ((int) $_POST ['DOB']['month'], (int) $_POST ['DOB']['day'], (int) $_POST ['DOB']['year']))
 		{
+			// Check the DOB passed through was Valid
 			$oblstrError->setValue ('DOB');
 		}
 		else if (!$_POST ['Email'])
 		{
+			// Check that an Email Address was passed through
 			$oblstrError->setValue ('Email');
+		}
+		else if (!EmailAddressValid ($_POST ['Email']))
+		{
+			// Check that the Email Address that was passed through is valid
+			$oblstrError->setValue ('Email Invalid');
 		}
 		else if (!$_POST ['Phone'] && !$_POST ['Mobile'])
 		{
+			// Check that either a Phone or Mobile was passed through
 			$oblstrError->setValue ('Phones Empty');
 		}
 		else if (!$_POST ['UserName'])
 		{
+			// Check that a User Name was passed through
 			$oblstrError->setValue ('UserName Empty');
 		}
 		else if (!$_POST ['PassWord'])
 		{
+			// Check that a Pass Word was passed through
 			$oblstrError->setValue ('PassWord');
 		}
 		else
 		{
+			// The following TRY block ensures that the Username
+			// requested does not currently exist within the system.
+			
+			// If it doesn't exist, the TRY block will catch an error
+			// and the value of $cntContact will be undefined.
+			
+			// If it does exist, the TRY block will execute appropriately
+			// and the value of $cntContact will be an Object of the 
+			// Username
+			
 			try
 			{
 				$cntContact = Contacts::UnarchivedUsername ($_POST ['UserName']);
@@ -82,14 +107,21 @@
 			{
 			}
 			
+			// Using the Information from the TRY block above, if $cntContact
+			// is defined, then we have a duplicate User Name. In this scenario,
+			// we want to display an error to the screen.
+			
 			if ($cntContact)
 			{
+				// Display the "User Name Exists" error
 				$oblstrError->setValue ('UserName Exists');
 			}
 			else
 			{
-				$ctsContacts = new Contacts ();
-				$intContact = $ctsContacts->Add (
+				// Attempt to add the Contact into the Database. In this situation, 
+				// the value returned by Contacts::Add () will be an Integer 
+				// representing the Id of the new Contact
+				$intContact = Contacts::Add (
 					$actAccount,
 					Array (
 						"Title"				=> $_POST ['Title'],
@@ -109,11 +141,18 @@
 					)
 				);
 				
+				// Forward to the Contact View page for the Contact
+				// we've just created
 				header ("Location: contact_view.php?Id=" . $intContact);
 				exit;
 			}
 		}
 		
+		// If we Failed in our ability to add Contact Information, then start
+		// a ui-values array so we can recall the information that was sent
+		// in the POST.
+		
+		$oblarrContact = $Style->attachObject (new dataArray ('ui-values'));
 		$oblarrContact->Push (new dataString	('Title'			, $_POST ['Title']));
 		$oblarrContact->Push (new dataString	('FirstName'		, $_POST ['FirstName']));
 		$oblarrContact->Push (new dataString	('LastName'			, $_POST ['LastName']));
@@ -130,9 +169,11 @@
 		$oblarrContact->Push (new dataBoolean	('CustomerContact'	, $_POST ['CustomerContact'] == 1));
 	}
 	
+	// Pull Documentation Information about the Account and Contact
 	$docDocumentation->Explain ("Account");
 	$docDocumentation->Explain ("Contact");
 	
+	// Output the Contact Add page to the browser
 	$Style->Output (
 		'xsl/content/contact/add.xsl',
 		Array (

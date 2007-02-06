@@ -73,6 +73,10 @@
         {
             $oblstrError->setValue ('Expired');
         }
+        else if (!preg_match ("/^(\d{3,4})$/", $_POST ['CreditCard']['CVV']))
+        {
+            $oblstrError->setValue ('CVV');
+        }
         else
         {
             $crcCreditCard = $acgAccountGroup->AddCreditCard (

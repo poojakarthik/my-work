@@ -5,7 +5,6 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	
 		<!--Page for adding a new contact -->
 		<h1>Add Contact</h1>
 		
@@ -86,6 +85,9 @@
 						<xsl:when test="/Response/Error = 'Email'">
 							Please enter an Email Address.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'Email Invalid'">
+							Please enter a valid Email Address.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'Phones Empty'">
 							Please enter a Contact Number.
 						</xsl:when>
@@ -100,7 +102,6 @@
 						</xsl:when>
 					</xsl:choose>
 				</div>
-				<div class="Seperator"></div>
 			</xsl:if>
 			
 			<div class="Wide-Form">
@@ -119,7 +120,7 @@
 								<input type="text" name="Title" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Title" />
+										<xsl:value-of select="/Response/ui-values/Title" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -136,7 +137,7 @@
 								<input type="text" name="FirstName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/FirstName" />
+										<xsl:value-of select="/Response/ui-values/FirstName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -153,7 +154,7 @@
 								<input type="text" name="LastName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/LastName" />
+										<xsl:value-of select="/Response/ui-values/LastName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -170,7 +171,7 @@
 								<input type="text" name="JobTitle" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/JobTitle" />
+										<xsl:value-of select="/Response/ui-values/JobTitle" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -180,7 +181,7 @@
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
-						<!--TODO!bash! URGENT! Only show dates which allow contact to be > 18 - do not allow ages < 18 -->
+						<!--TODO!bash! [  DONE  ]		URGENT! Only show dates which allow contact to be > 18 - do not allow ages < 18 -->
 						<tr>
 							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
@@ -194,9 +195,9 @@
 									<xsl:with-param name="Name-Day"			select="string('DOB[day]')" />
 									<xsl:with-param name="Name-Month"		select="string('DOB[month]')" />
 									<xsl:with-param name="Name-Year"		select="string('DOB[year]')" />
-									<xsl:with-param name="Selected-Day"		select="/Response/Contact/DOB-day" />
-									<xsl:with-param name="Selected-Month"	select="/Response/Contact/DOB-month" />
-									<xsl:with-param name="Selected-Year"	select="/Response/Contact/DOB-year" />
+									<xsl:with-param name="Selected-Day"		select="/Response/ui-values/DOB-day" />
+									<xsl:with-param name="Selected-Month"	select="/Response/ui-values/DOB-month" />
+									<xsl:with-param name="Selected-Year"	select="/Response/ui-values/DOB-year" />
 								</xsl:call-template>
 							</td>
 						</tr>
@@ -205,7 +206,7 @@
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
-						<!--TODO!bash! URGENT! verify email - needs to include '@' symbol -->
+						<!--TODO!bash! [  DONE  ]		URGENT! verify email - needs to include '@' symbol -->
 						<tr>
 							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
@@ -218,7 +219,7 @@
 								<input type="text" name="Email" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Email" />
+										<xsl:value-of select="/Response/ui-values/Email" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -236,7 +237,7 @@
 								<input type="text" name="Phone" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Phone" />
+										<xsl:value-of select="/Response/ui-values/Phone" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -254,7 +255,7 @@
 								<input type="text" name="Mobile" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Mobile" />
+										<xsl:value-of select="/Response/ui-values/Mobile" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -272,7 +273,7 @@
 								<input type="text" name="Fax" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/Fax" />
+										<xsl:value-of select="/Response/ui-values/Fax" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -294,7 +295,7 @@
 								<input type="text" name="UserName" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/UserName" />
+										<xsl:value-of select="/Response/ui-values/UserName" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -311,7 +312,7 @@
 								<input type="text" name="PassWord" class="input-string">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/Contact/PassWord" />
+										<xsl:value-of select="/Response/ui-values/PassWord" />
 									</xsl:attribute>
 								</input>
 							</td>
@@ -335,7 +336,7 @@
 										<td>
 											<input type="radio" name="CustomerContact" value="0" id="CustomerContact:FALSE">
 												<xsl:choose>
-													<xsl:when test="not(/Response/Contact/CustomerContact) or /Response/Contact/CustomerContact != 1">
+													<xsl:when test="not(/Response/ui-values/CustomerContact) or /Response/ui-values/CustomerContact != 1">
 														<xsl:attribute name="checked">
 															<xsl:text>checked</xsl:text>
 														</xsl:attribute>
@@ -349,7 +350,7 @@
 										<td>
 											<input type="radio" name="CustomerContact" value="1" id="CustomerContact:TRUE">
 												<xsl:choose>
-													<xsl:when test="/Response/Contact/CustomerContact = 1">
+													<xsl:when test="/Response/ui-values/CustomerContact = 1">
 														<xsl:attribute name="checked">
 															<xsl:text>checked</xsl:text>
 														</xsl:attribute>

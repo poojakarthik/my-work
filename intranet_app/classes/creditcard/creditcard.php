@@ -75,6 +75,13 @@
 			
 			$this->Push (new dataString ('Last4Digits', substr (preg_replace ('/[\D]/', '', $this->Pull ('CardNumber')->getValue ()), -4)));
 			$this->Push (new CreditCardTypes ($this->Pull ('CardType')->getValue ()));
+			
+			$this->Push (
+				new dataBoolean (
+					'Expired',
+					!expdate ($this->Pull ('ExpMonth')->getValue (), $this->Pull ('ExpYear')->getValue ())
+				)
+			);
 		}
 	}
 	

@@ -17,20 +17,31 @@
 	// call application
 	require ('config/application.php');
 	
+	
+	// Firstly, attempt to retrieve the Contact that we are trying to view.
+	// From here, we also want to retireve the Primary Account that this
+	// particular contact belongs to.
+	
+	// If any errors occur in this retrieval process, then we want to 
+	// exit out of this Script displaying an Error Message
 	try
 	{
+		// Retrieve the Contact (either by GET or POST)
 		$cntContact = $Style->attachObject (new Contact (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
+		
+		// Get the Primary Account for this Contact
 		$actAccount = $cntContact->PrimaryAccount ();
 	}
 	catch (Exception $e)
 	{
-		// If the Contact does not exist, an exception will be thrown
+		// If the Contact does not exist, an exception will be thrown.
+		// Handle this Exception by displaying a Contact Not Found page.
 		$Style->Output ('xsl/content/contact/notfound.xsl');
 		exit;
 	}
 	
 	// Error Handling
-	$oblstrError = $Style->attachObject (new dataString ('Error', ''));
+	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
 	// Start UI Values
 	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
@@ -48,8 +59,10 @@
 	$oblstrUserName			= $oblarrUIValues->Push (new dataString ('UserName'			, $cntContact->Pull ('UserName')->getValue ()));
 	$oblstrPassWord			= $oblarrUIValues->Push (new dataString ('PassWord'			, ''));
 	$oblbolCustomerContact	= $oblarrUIValues->Push (new dataBoolean('CustomerContact'	, $cntContact->Pull ('CustomerContact')->getValue ()));
-	$oblbolArchived			= $oblarrUIValues->Push (new dataBoolean('Archived'));
 	
+	// If there is a DOB currently associated with a Contact, then
+	// store the DOB inforamtion. This check is done because if no
+	// DOB exist, you cannot pull the 'year' value from DOB
 	if ($cntContact->Pull ('DOB')->Pull ('year'))
 	{
 		$oblstrDOB_Year->setValue	($cntContact->Pull ('DOB')->Pull ('year')->getValue ());
@@ -57,112 +70,129 @@
 		$oblstrDOB_Day->setValue	($cntContact->Pull ('DOB')->Pull ('day')->getValue ());
 	}
 	
-	// Set UI Values
-	if (isset ($_POST ['Title']))			$oblstrTitle->setValue			($_POST ['Title']);
-	if (isset ($_POST ['FirstName']))		$oblstrFirstName->setValue		($_POST ['FirstName']);
-	if (isset ($_POST ['LastName']))		$oblstrLastName->setValue		($_POST ['LastName']);
-	if (isset ($_POST ['JobTitle']))		$oblstrJobTitle->setValue		($_POST ['JobTitle']);
-	if (isset ($_POST ['DOB']['year']))		$oblstrDOB_Year->setValue		($_POST ['DOB']['year']);
-	if (isset ($_POST ['DOB']['month']))	$oblstrDOB_Month->setValue		($_POST ['DOB']['month']);
-	if (isset ($_POST ['DOB']['day']))		$oblstrDOB_Day->setValue		($_POST ['DOB']['day']);
-	if (isset ($_POST ['Email']))			$oblstrEmail->setValue			($_POST ['Email']);
-	if (isset ($_POST ['Phone']))			$oblstrPhone->setValue			($_POST ['Phone']);
-	if (isset ($_POST ['Mobile']))			$oblstrMobile->setValue			($_POST ['Mobile']);
-	if (isset ($_POST ['Fax']))				$oblstrFax->setValue			($_POST ['Fax']);
-	if (isset ($_POST ['UserName']))		$oblstrUserName->setValue		($_POST ['UserName']);
-	if (isset ($_POST ['PassWord']))		$oblstrPassWord->setValue		($_POST ['PassWord']);
-	if (isset ($_POST ['CustomerContact']))	$oblbolCustomerContact->setValue($_POST ['CustomerContact']);
-	if (isset ($_POST ['Archived']))		$oblbolArchived->setValue(TRUE);
+	// Set the remaining UI Values
+	if ($_POST ['Title'])			$oblstrTitle->setValue			($_POST ['Title']);
+	if ($_POST ['FirstName'])		$oblstrFirstName->setValue		($_POST ['FirstName']);
+	if ($_POST ['LastName'])		$oblstrLastName->setValue		($_POST ['LastName']);
+	if ($_POST ['JobTitle'])		$oblstrJobTitle->setValue		($_POST ['JobTitle']);
+	if ($_POST ['DOB']['year'])		$oblstrDOB_Year->setValue		($_POST ['DOB']['year']);
+	if ($_POST ['DOB']['month'])	$oblstrDOB_Month->setValue		($_POST ['DOB']['month']);
+	if ($_POST ['DOB']['day'])		$oblstrDOB_Day->setValue		($_POST ['DOB']['day']);
+	if ($_POST ['Email'])			$oblstrEmail->setValue			($_POST ['Email']);
+	if ($_POST ['Phone'])			$oblstrPhone->setValue			($_POST ['Phone']);
+	if ($_POST ['Mobile'])			$oblstrMobile->setValue			($_POST ['Mobile']);
+	if ($_POST ['Fax'])				$oblstrFax->setValue			($_POST ['Fax']);
+	if ($_POST ['UserName'])		$oblstrUserName->setValue		($_POST ['UserName']);
+	if ($_POST ['PassWord'])		$oblstrPassWord->setValue		($_POST ['PassWord']);
+	if ($_POST ['CustomerContact'])	$oblbolCustomerContact->setValue($_POST ['CustomerContact']);
 	
-	// If we're wishing to save the details, we can identify this by
-	// whether or not we're using GET or POST
+	// We can identify whether or not we're planning
+	// to save information depending on whether
+	// or not we are viewing this page through POST
+	
 	if ($_SERVER ['REQUEST_METHOD'] == "POST")
 	{
-		if ($cntContact->Pull ('Archived')->getValue () == 0)
+		// The following IF block deals with ensuring that Duplicate Usernames are not
+		// entered into the System. It will be executed based on the following conditions:
+		//		1. If we're dealing with an Active Contact
+		//	or	2. We're dealing with an Unarchived Contact and we wish to Re-activate their account
+		
+		// To makes things easier down below when we're processing, we're going to be using
+		// the following variable to remember Validity of a Username
+		$bolUserNameTaken = FALSE;
+		
+		if (($cntContact->Pull ('Archived')->isTrue () && isset ($_POST ['Archived'])) || $cntContact->Pull ('Archived')->isFalse ())
 		{
+			// A username is not duplicated if no *other* Archive (Unarchived) 
+			// Contact exists with the Same Username
 			$selUserNames = new StatementSelect ('Contact', 'Id', 'UserName = <UserName> AND Archived = 0 AND Id != <Id>', null, 1);
 			$selUserNames->Execute (Array ('UserName' => $_POST ['UserName'], 'Id' => $cntContact->Pull ('Id')->getValue ()));
+			
+			$bolUserNameTaken = ($selUserNames->Count () == 1);
 		}
 		
 		if (!$_POST ['Title'])
 		{
+			// Ensure that the Contact has a Title
 			$oblstrError->setValue ('Title');
 		}
 		else if (!$_POST ['FirstName'])
 		{
+			// Ensure that the Contact has a First Name
 			$oblstrError->setValue ('FirstName');
 		}
 		else if (!$_POST ['LastName'])
 		{
+			// Ensure that the Contact has a Last Name
 			$oblstrError->setValue ('LastName');
 		}
 		else if (!@checkdate ((int) $_POST ['DOB']['month'], (int) $_POST ['DOB']['day'], (int) $_POST ['DOB']['year']))
 		{
+			// Ensure that the Contact has a Valid DOB
 			$oblstrError->setValue ('DOB');
 		}
 		else if (!$_POST ['Email'])
 		{
+			// Ensure that the Contact has an Email
 			$oblstrError->setValue ('Email');
+		}
+		else if (!EmailAddressValid ($_POST ['Email']))
+		{
+			// Ensure that the Contact has a valid Email
+			$oblstrError->setValue ('Email Invalid');
 		}
 		else if (!$_POST ['Phone'] && !$_POST ['Mobile'])
 		{
+			// Ensure that the Contact has either a Phone or Mobile number
 			$oblstrError->setValue ('Phones Empty');
 		}
 		else if (!$_POST ['UserName'])
 		{
+			// Ensure that the Contact has a User Name
 			$oblstrError->setValue ('UserName Empty');
 		}
-		else if ($cntContact->Pull ('Archived')->getValue () == 0 && $selUserNames->Count () <> 0)
+		else if ($bolUserNameTaken)
 		{
-			$oblstrError->setValue ('UserName');
+			// This error is Displayed when the Username being requested already
+			// exists on another Contact in the Database. The value of $bolUserNameTaken
+			// (above) decided in a previous block.
+			$oblstrError->setValue ('UserName Exists');
 		}
 		else
 		{
-			try
+			// Update the Contact Information
+			$cntContact->Update (
+				Array (
+					'Title'				=> $_POST ['Title'],
+					'FirstName'			=> $_POST ['FirstName'],
+					'LastName'			=> $_POST ['LastName'],
+					'DOB-year'			=> $_POST ['DOB']['year'],
+					'DOB-month'			=> $_POST ['DOB']['month'],
+					'DOB-day'			=> $_POST ['DOB']['day'],
+					'JobTitle'			=> $_POST ['JobTitle'],
+					'Email'				=> $_POST ['Email'],
+					'CustomerContact'	=> ($_POST ['CustomerContact'] == 1),
+					'Phone'				=> $_POST ['Phone'],
+					'Mobile'			=> $_POST ['Mobile'],
+					'Fax'				=> $_POST ['Fax'],
+					'UserName'			=> $_POST ['UserName'],
+					'PassWord'			=> $_POST ['PassWord']
+				)
+			);
+			
+			// If we want to change the Archive Status of the Contact, then check that
+			// the Archived variable is set. Notice that we are using ISSET here, this 
+			// is because the value of $_POST ['Archived'] may be 0 (in which case 
+			// means we want to Unarchive the Account).
+			
+			if (isset ($_POST ['Archived']))
 			{
-				$cntContact->Update (
-					Array (
-						'Title'				=> $_POST ['Title'],
-						'FirstName'			=> $_POST ['FirstName'],
-						'LastName'			=> $_POST ['LastName'],
-						'DOB-year'			=> $_POST ['DOB']['year'],
-						'DOB-month'			=> $_POST ['DOB']['month'],
-						'DOB-day'			=> $_POST ['DOB']['day'],
-						'JobTitle'			=> $_POST ['JobTitle'],
-						'Email'				=> $_POST ['Email'],
-						'CustomerContact'	=> ($_POST ['CustomerContact'] == 1),
-						'Phone'				=> $_POST ['Phone'],
-						'Mobile'			=> $_POST ['Mobile'],
-						'Fax'				=> $_POST ['Fax'],
-						'UserName'			=> $_POST ['UserName'],
-						'PassWord'			=> $_POST ['PassWord']
-					)
-				);
-				
-				try
-				{
-					if (isset ($_POST ['Archived']))
-					{
-						// TODO!bash! based on your error msg (that's all there is to go on due to lack of comments here) it looks like
-						// TODO!bash! you are failing here if an archived username is the same as another existing username...
-						// TODO!bash! this should not fail, the archived user should have their username automatically changed (or removed)
-						// TODO!bash! and a notice should be displayed to inform the opperator of this change
-						$cntContact->ArchiveStatus ($_POST ['Archived'] == 1);
-					}
-				}
-				catch (Exception $e)
-				{
-					$Style->Output ('xsl/content/contact/edit_failed_archive_username.xsl');
-					exit;
-				}
-				
-				header ("Location: contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());
-				exit;
+				$cntContact->ArchiveStatus ($_POST ['Archived'] == 1);
 			}
-			catch (Exception $e)
-			{
-				$oblstrError->setValue ($e->getMessage ());
-			}
+			
+			// Forward on to View the Contact's Information
+			header ("Location: contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());
+			exit;
 		}
 	}
 	
@@ -170,6 +200,7 @@
 	$docDocumentation->Explain ('Contact');
 	$docDocumentation->Explain ('Archive');
 	
+	// Output the Contact Edit page
 	$Style->Output (
 		'xsl/content/contact/edit.xsl',
 		Array (

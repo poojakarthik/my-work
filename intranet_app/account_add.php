@@ -87,6 +87,7 @@
 	$oblarrCRCard->Push		(new dataString	('CardNumber',		$_POST ['CC']['CardNumber']));
 	$oblarrCRCard->Push		(new dataInteger('ExpMonth',		$_POST ['CC']['ExpMonth']));
 	$oblarrCRCard->Push		(new dataInteger('ExpYear',			$_POST ['CC']['ExpYear']));
+	$oblarrCRCard->Push		(new dataInteger('CVV',				$_POST ['CC']['CVV']));
 	
 	// Contact Information (Existing Contact)
 	$oblarrContact->Push	(new dataBoolean('USE',				$_POST ['Contact']['USE']));
@@ -160,6 +161,11 @@
 			// This throws an error if the Postcode is Blank
 			$oblstrError->setValue ('Account Postcode');
 		}
+		else if (!PostcodeValid ($_POST ['Account']['Postcode']))
+		{
+			// This throws an error if the Postcode is not XXXX digits
+			$oblstrError->setValue ('Account Postcode');
+		}
 		else if (!$sstStates->setValue ($_POST ['Account']['State']))
 		{
 			// This throws an error if the State is Blank
@@ -179,50 +185,69 @@
 		// This section deals with Direct Debits
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['BankName'])
 		{
+			// This throws an error if there is no Bank Name
 			$oblstrError->setValue ('DirectDebit BankName');
 		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['BSB'])
 		{
+			// This throws an error if there is no BSB information
 			$oblstrError->setValue ('DirectDebit BSB');
 		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['AccountNumber'])
 		{
+			// This throws an error if there is no Account Number
 			$oblstrError->setValue ('DirectDebit AccountNumber');
 		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['AccountName'])
 		{
+			// This throws an error if there is no Account Name
 			$oblstrError->setValue ('DirectDebit AccountName');
 		}
 		
 		// This section deals with Credit Cards
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$ccsCreditCardTypes->setValue ($_POST ['CC']['CardType']))
 		{
+			// This throws an error if the Credit Card Type is Invalid (not likely to be done often)
 			$oblstrError->setValue ('CreditCard CardType');
 		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['Name'])
 		{
+			// This throws an error if there is no Name for the Credit Card
 			$oblstrError->setValue ('CreditCard Name');
 		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['CardNumber'])
 		{
+			// This throws an error if there is no Credit Card Number
 			$oblstrError->setValue ('CreditCard CardNumber');
 		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !CheckCC ($_POST ['CC']['CardNumber'], $_POST ['CC']['CardType']))
         {
+			// This throws an error if the Credit Card is Invalid
 			$oblstrError->setValue ('CreditCard Invalid');
         }
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['ExpMonth'])
 		{
+			// This throws an error if there is no selected Expiration Month
 			$oblstrError->setValue ('CreditCard ExpMonth');
 		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$_POST ['CC']['ExpYear'])
 		{
+			// This throws an error if there is no selected Expiration Year
 			$oblstrError->setValue ('CreditCard ExpYear');
 		}
-        else if (!expdate ($_POST ['CC']['ExpMonth'], $_POST ['CC']['ExpYear']))
+        else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !expdate ($_POST ['CC']['ExpMonth'], $_POST ['CC']['ExpYear']))
         {
+			// This throws an error if the Expiration Date is Invalid
             $oblstrError->setValue ('CreditCard Expired');
         }
+        else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !preg_match ("/^(\d{3,4})$/", $_POST ['CC']['CVV']))
+        {
+			// This throws an error if there is no CVV
+            $oblstrError->setValue ('CreditCard CVV');
+        }
+        
+
+        
 		
 		// The following errors are related to New Contact Creation. These
 		// errors will only be run when a New Contact has been requested (or forced)
@@ -248,6 +273,11 @@
 			$oblstrError->setValue ('Contact DOB');
 		}
 		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['Email'])
+		{
+			// This throws an error if the Contact's Email is Blank
+			$oblstrError->setValue ('Contact Email');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !EmailAddressValid ($_POST ['Contact']['Email']))
 		{
 			// This throws an error if the Contact's Email is Blank
 			$oblstrError->setValue ('Contact Email');
@@ -319,7 +349,8 @@
 						"Name"				=> $_POST ['CC']['Name'],
 						"CardNumber"		=> $_POST ['CC']['CardNumber'],
 						"ExpMonth"			=> $_POST ['CC']['ExpMonth'],
-						"ExpYear"			=> $_POST ['CC']['ExpYear']
+						"ExpYear"			=> $_POST ['CC']['ExpYear'],
+						"CVV"				=> $_POST ['CC']['CVV']
 					),
 					
 					"Contact"		=> Array (

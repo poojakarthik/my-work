@@ -5,7 +5,7 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-	<!--TODO!bash! Current method does not always display!!!!-->
+		<!--TODO!bash! Current method does not always display!!!!-->
 		<!-- This page is used to Change the payment Method for an account -->
 		<h1>Change Payment Method</h1>
 		
@@ -92,7 +92,7 @@
 			<!-- TODO!bash! [  DONE  ]		This page needs to have just 1 set of radio buttons-->
 			<!-- TODO!bash! [  DONE  ]		you can select account, or 1 direct debit account-->
 			<input type="radio" id="BillingType:AC" name="BillingType" value="AC">
-				<xsl:if test="/Response/ui-values/BillingType = 'AC'">
+				<xsl:if test="/Response/ui-values/BillingType = 'AC' or (substring(/Response/ui-values/BillingType, 0, 2) = 'CC' and /Response/CreditCards/CreditCard[Id=substring(/Response/ui-values/BillingType, 2)]/Expired = 1)">
 					<xsl:attribute name="checked">
 						<xsl:text>checked</xsl:text>
 					</xsl:attribute>
@@ -174,7 +174,8 @@
 
 			<div class="SmallSeperator"></div>
 			Direct Debit from a Credit Card :
-		<!--TODO!bash! URGENT Expired credit cards should not be an option! maybe default to invoice  & remove radio button when they have expired. You might need to be able to edit these details to update the expiry date when they get a new card?--> 
+			<!--TODO!bash! [  DONE  ]		URGENT Expired credit cards should not be an option! maybe default to invoice  & remove radio button when they have expired. You might need to be able to edit these details to update the expiry date when they get a new card?-->
+			
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 				<tr class="First">
 					<th width="30">#</th>
@@ -205,22 +206,41 @@
 						
 						<td><xsl:value-of select="position()" />.</td>
 						<td>
-							<input type="radio" name="BillingType">
-								<xsl:attribute name="value">
-									<xsl:text>CC</xsl:text>
-									<xsl:value-of select="./Id" />
-								</xsl:attribute>
-								<xsl:if test="/Response/ui-values/BillingType = $Name">
-									<xsl:attribute name="checked">
-										<xsl:text>checked</xsl:text>
+							<xsl:if test="./Expired = 0">
+								<input type="radio" name="BillingType">
+									<xsl:attribute name="value">
+										<xsl:text>CC</xsl:text>
+										<xsl:value-of select="./Id" />
 									</xsl:attribute>
-								</xsl:if>
-							</input>
+									<xsl:if test="/Response/ui-values/BillingType = $Name">
+										<xsl:attribute name="checked">
+											<xsl:text>checked</xsl:text>
+										</xsl:attribute>
+									</xsl:if>
+								</input>
+							</xsl:if>
 						</td>
 						<td><xsl:value-of select="./CreditCardTypes/CreditCardType[@selected='selected']/Name" /></td>
 						<td><xsl:value-of select="./Name" /></td>
 						<td><xsl:value-of select="./CardNumber" /></td>
-						<td><xsl:value-of select="./ExpMonth" /> / <xsl:value-of select="./ExpYear" /></td>
+						<td>
+							<strong>
+								<span>
+									<xsl:attribute name="class">
+										<xsl:choose>
+											<xsl:when test="./Expired = 1">
+												<xsl:text>Red</xsl:text>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:text>Green</xsl:text>
+											</xsl:otherwise>
+										</xsl:choose>
+									</xsl:attribute>
+									
+									<xsl:value-of select="./ExpMonth" /> / <xsl:value-of select="./ExpYear" />
+								</span>
+							</strong>
+						</td>
 						<td>
 							<strong>
 								<span>

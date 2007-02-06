@@ -1173,4 +1173,60 @@ function CheckCC($mixNumber, $intCreditCardType)
 	return true;
 }
 
+// check valid email address
+// comes from: http://www.ilovejackdaniels.com/php/email-address-validation/
+
+// code has been modified to reflect the coding standards
+
+// "RFC 2822, that specifies what is and is not allowed in an email address, 
+// states that the form of an email address must be of the form "local-part @ domain"."
+
+function EmailAddressValid ($strEmail) {
+	// First, we check that there's one @ symbol, and that the lengths are right
+	
+	// The "local-part" of an email address must be between 1 and 64 characters
+	
+	// The most common form is a domain name, which is made up of a number of 
+	// "labels", each separated by a period and between 1 and 63 characters in 
+	// length. Labels may contain letters, digits and hyphens, however must not 
+	// begin or end with a hyphen
+	
+	if (!ereg("^[^@]{1,64}@[^@]{1,255}$", $strEmail)) {
+		// Email invalid because wrong number of characters in one section, or wrong number of @ symbols.
+		return false;
+	}
+	
+	// Split it into sections to make life easier
+	$arrEmail = explode("@", $strEmail);
+	$arrLocal = explode(".", $arrEmail [0]);
+	
+	for ($i = 0; $i < sizeof($arrLocal); $i++) {
+		if (!ereg("^(([A-Za-z0-9!#$%&'*+/=?^_`{|}~-][A-Za-z0-9!#$%&'*+/=?^_`{|}~\.-]{0,63})|(\"[^(\\|\")]{0,62}\"))$", $arrLocal [$i])) {
+			return false;
+		}
+	}
+
+	if (!ereg("^\[?[0-9\.]+\]?$", $arrEmail [1])) { // Check if domain is IP. If not, it should be valid domain name
+		$arrDomain = explode(".", $arrEmail [1]);
+		
+		if (sizeof ($arrDomain) < 2) {
+			return false; // Not enough parts to domain
+		}
+		
+		for ($i = 0; $i < sizeof($arrDomain); $i++) {
+			if (!ereg("^(([A-Za-z0-9][A-Za-z0-9-]{0,61}[A-Za-z0-9])|([A-Za-z0-9]+))$", $arrDomain [$i])) {
+				return false;
+			}
+		}
+	}
+	
+	return true;
+}
+
+// postcode valid
+function PostcodeValid ($strPostcode)
+{
+	return preg_match ("/^(\d{4})$/", $_POST ['Account']['Postcode']);
+}
+
 ?>

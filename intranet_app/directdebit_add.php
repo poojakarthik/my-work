@@ -50,7 +50,15 @@
 		{
 			$oblstrError->setValue ('BSB');
 		}
+		else if (!preg_match ("/^(\d{6})$/", $_POST ['DirectDebit']['BSB']))
+		{
+			$oblstrError->setValue ('BSB');
+		}
 		else if (!$_POST ['DirectDebit']['AccountNumber'])
+		{
+			$oblstrError->setValue ('AccountNumber');
+		}
+		else if (!preg_match ("/^(\d{9})$/", $_POST ['DirectDebit']['AccountNumber']))
 		{
 			$oblstrError->setValue ('AccountNumber');
 		}

@@ -100,6 +100,11 @@
 			// Check the Address (Postcode) is not Empty
 			$oblstrError->setValue ('Postcode');
 		}
+		else if (!preg_match ("/^(\d{4})$/", $_POST ['Postcode']))
+		{
+			// Check the Address (Postcode) is 4 digits long
+			$oblstrError->setValue ('Postcode');
+		}
 		else if (!$_POST ['State'])
 		{
 			// Check the Address (State) is not Empty

@@ -32,6 +32,9 @@
 						<xsl:when test="/Response/Error = 'Email'">
 							Please enter an Email Address.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'Email Invalid'">
+							Please enter a valid Email Address.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'Phones Empty'">
 							Please enter a Contact Number.
 						</xsl:when>
@@ -316,7 +319,7 @@
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<xsl:choose>
-						<xsl:when test="/Response/ui-values/Archived = 0">
+						<xsl:when test="/Response/Contact/Archived = 0">
 							This Contact is <strong><span class="Green">Currently Available</span></strong>.
 						</xsl:when>
 						<xsl:otherwise>
@@ -328,8 +331,8 @@
 					
 					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
-						<!--TODO!bash! URGENT! This is not working - view contact details page shows status as 'archived' but this page still says 'this contact is currently available'/'archive this contact' and the contact cannot be unarchived-->
-							<xsl:when test="/Response/ui-values/Archived = 1">
+						<!--TODO!bash! [  DONE  ]		URGENT! This is not working - view contact details page shows status as 'archived' but this page still says 'this contact is currently available'/'archive this contact' and the contact cannot be unarchived-->
+							<xsl:when test="/Response/Contact/Archived = 1">
 								<tr>
 									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
 									<td>

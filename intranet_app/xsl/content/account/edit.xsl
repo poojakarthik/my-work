@@ -203,7 +203,7 @@
 									<xsl:with-param name="field" select="string('Postcode')" />
 								</xsl:call-template>
 							</th>
-							<!--TODO!bash! URGENT - verify - only 4 digit number -->
+							<!--TODO!bash! [  DONE  ]		URGENT - verify - only 4 digit number -->
 							<td>
 								<input type="text" name="Postcode" class="input-string">
 									<xsl:attribute name="value">

@@ -1787,7 +1787,7 @@
 	// Define Columns 
 	$strName = "BSB"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "char(7)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(6)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 

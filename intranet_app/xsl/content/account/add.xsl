@@ -96,6 +96,9 @@
 					<xsl:when test="/Response/Error = 'CreditCard Expired'">
 						Please enter a valid Credit Card Expiration Date.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'CreditCard CVV'">
+						Please enter a valid Credit Card CVV.
+					</xsl:when>
 					
 					
 					<!-- Contact -->
@@ -313,7 +316,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-						<!--TODO!bash! Only accept 4 digit numbers!! -->
+						<!--TODO!bash! [  DONE  ]		Only accept 4 digit numbers!! -->
 							<input type="text" name="Account[Postcode]" class="input-string">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
@@ -612,9 +615,9 @@
 													</input>
 												</td>
 											</tr>
-											<!--TODO!bash! URGENT - Verify Credit Card Number (talk to flame if you aren't sure how)-->
+											<!--TODO!bash! [  DONE  ]		URGENT - Verify Credit Card Number (talk to flame if you aren't sure how)-->
 											<tr>
-											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+												<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -631,7 +634,7 @@
 												</td>
 											</tr>
 											<tr>
-											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+												<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
 													<xsl:call-template name="Label">
 														<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -645,6 +648,23 @@
 														<xsl:with-param name="Selected-Month"	select="/Response/ui-values/CreditCard/ExpMonth" />
 														<xsl:with-param name="Selected-Year"	select="/Response/ui-values/CreditCard/ExpYear" />
 													</xsl:call-template>
+												</td>
+											</tr>
+											<tr>
+												<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+												<th class="JustifiedWidth">
+													<xsl:call-template name="Label">
+														<xsl:with-param name="entity" select="string('Credit Card')" />
+														<xsl:with-param name="field" select="string('CVV')" />
+													</xsl:call-template>
+												</th>
+												<td>
+													<input type="text" name="CC[CVV]" class="input-string2">
+														<xsl:attribute name="value">
+															<xsl:text></xsl:text>
+															<xsl:value-of select="/Response/ui-values/CreditCard/CVV" />
+														</xsl:attribute>
+													</input>
 												</td>
 											</tr>
 										</table>
@@ -686,8 +706,7 @@
 						<tr>
 							<td></td>
 							<td></td>
-							
-							<td >
+							<td>
 								<select name="Contact[Id]">
 									<xsl:for-each select="/Response/Contacts/Contact">
 										<option>
@@ -828,7 +847,7 @@
 							</xsl:call-template>
 						</th>
 						<!-- TODO!bash! URGENT! [  DONE  ]		DOB is not always storing properly! make sure it is fixed properly. -->
-						<!-- TODO!bash! URGENT! Only allow realistic dob - i.e., not less than 18 yrs old. -->
+						<!-- TODO!bash! URGENT! [  DONE  ]		Only allow realistic dob - i.e., not less than 18 yrs old. -->
 						<td>
 							<xsl:call-template name="DOB">
 								<xsl:with-param name="Name-Day"			select="string('Contact[DOB][day]')" />
@@ -871,7 +890,7 @@
 							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						</xsl:otherwise>
 					</xsl:choose>						<th class="JustifiedWidth">
-					<!--TODO!bash! URGENT! Verify - only allow strings including an @ symbol-->
+					<!--TODO!bash! [  DONE  ]		URGENT! Verify - only allow strings including an @ symbol-->
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
 								<xsl:with-param name="field" select="string('Email')" />
