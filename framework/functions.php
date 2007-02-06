@@ -1226,7 +1226,7 @@ function EmailAddressValid ($strEmail) {
 // postcode valid
 function PostcodeValid ($strPostcode)
 {
-	return preg_match ("/^(\d{4})$/", $_POST ['Account']['Postcode']);
+	return preg_match ("/^(\d{4})$/", $strPostcode);
 }
 
 ?>
