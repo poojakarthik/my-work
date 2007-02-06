@@ -89,7 +89,7 @@
 		$arrCols['Balance']	= NULL;
 		$this->_ubiPayment = new StatementUpdateById("Payment", $arrCols);
 		
-		$this->selGetInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND (ISNULL(<InvoiceRun>) OR InvoiceRun = <InvoiceRun>)", "CreatedOn DESC", 1);
+		$this->selGetInvoice = new StatementSelect("Invoice", "*", "Id = <Id>", "CreatedOn DESC", 1);
 		
 		// Init Select Statements
 		$this->arrServiceColumns = Array();
@@ -1631,8 +1631,9 @@
 		}
 		
 		$arrUpdateData = Array();
+		$arrUpdateData['Id']		= NULL;
 		$arrUpdateData['Status']	= INVOICE_PRINT;
-		$ubiInvoiceStatus = new StatementUpdate("Invoice", $arrUpdateData);
+		$ubiInvoiceStatus = new StatementUpdateById("Invoice", $arrUpdateData);
 		
 		// for each invoice
 		$intPassed = 0;
@@ -1655,7 +1656,7 @@
 			
 			// update Invoice Status to PRINT
 			$arrUpdateData['Id'] = $arrData['Id'];
-			if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+			if($ubiInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 			{
 				Debug("Update status to PRINT failed! : ".$updInvoiceStatus->Error());
 				return;
@@ -1673,14 +1674,14 @@
 		}
 		
 		// build an output file
-		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput())
+		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput(BILL_REPRINT))
 		{
 			Debug("Building Output FAILED!");
 			return FALSE;
 		}
 		
 		// send billing output
-		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(FALSE))
+		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(BILL_REPRINT))
 		{
 			Debug("Sending Output FAILED!");
 			return FALSE;

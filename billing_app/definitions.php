@@ -166,5 +166,9 @@ define("BILL_PRINT_REMOTE_DIR_SAMPLE"		, "");	// TODO
 // Error Codes
 define("ERROR_NO_INVOICE_DATA"				, -1);
 
+// Bill Printing Run Types
+define("BILL_COMPLETE"						, 0);
+define("BILL_SAMPLE"						, 1);
+define("BILL_REPRINT"						, 2);
 
 ?>

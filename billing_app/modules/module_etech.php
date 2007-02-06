@@ -1082,27 +1082,37 @@
 	 *
 	 * @method
 	 */
- 	function BuildOutput($bolSample = FALSE)
+ 	function BuildOutput($intOutputType = BILL_COMPLETE)
  	{
 		// generate filenames
-		if($bolSample)
+		switch ($intOutputType)
 		{
-			$strFilename	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.txt";
-			$strTempFile	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.tmp";
-			$strZipName		= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.zip";
-			$strInvoiceTable = 'InvoiceTemp';
-		}
-		else
-		{
-			$strFilename	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.txt";
-			$strTempFile	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.tmp";
-			$strZipName		= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.zip";
-			$strInvoiceTable = 'Invoice';
+			case BILL_SAMPLE:
+				$strFilename	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.txt";
+				$strTempFile	= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.tmp";
+				$strZipName		= BILLING_LOCAL_PATH_SAMPLE."sample_inv_telcoblue_".date("Ymd")."_0123456789.zip";
+				$strInvoiceTable = 'InvoiceTemp';
+				break;
+			
+			case BILL_COMPLETE:
+				$strFilename	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.txt";
+				$strTempFile	= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.tmp";
+				$strZipName		= BILLING_LOCAL_PATH."inv_telcoblue_".date("Ymd")."_0123456789.zip";
+				$strInvoiceTable = 'Invoice';
+				break;
+				
+			case BILL_REPRINT:
+				$strFilename	= BILLING_LOCAL_PATH."reprint_inv_telcoblue_".date("Ymd")."_0123456789.txt";
+				$strTempFile	= BILLING_LOCAL_PATH."reprint_inv_telcoblue_".date("Ymd")."_0123456789.tmp";
+				$strZipName		= BILLING_LOCAL_PATH."reprint_inv_telcoblue_".date("Ymd")."_0123456789.zip";
+				$strInvoiceTable = 'Invoice';
+				break;	
 		}
 		
-		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "Status = ".INVOICE_PRINT);
+		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "Status = ".INVOICE_PRINT, NULL, NULL, "InvoiceRun");
 		if ($selMetaData->Execute() === FALSE)
 		{
+			Debug('$selMetaData : '.$selMetaData->Error());
 			return FALSE;
 		}
 		$arrMetaData = $selMetaData->Fetch();
@@ -1113,6 +1123,7 @@
 		if($arrMetaData['Invoices'] == 0)
 		{
 			// Nothing to do
+			Debug("Nothing to do");
 			return FALSE;
 		}
 
@@ -1122,7 +1133,7 @@
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
 							"WHERE $strWhere\n";
-		if($bolSample)
+		if($intOutputType == BILL_SAMPLE)
 		{
 			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
 			{
@@ -1141,7 +1152,7 @@
 		}
 		if ($qryBuildFile->Execute($strQuery) === FALSE)
 		{
-			Debug($qryBuildFile->Error());
+			Debug('$qryBuildFile : '.$qryBuildFile->Error());
 			return FALSE;
 		}
 		
@@ -1245,7 +1256,7 @@
 	 */
  	function BuildSample($strInvoiceRun)
  	{
-		return $this->BuildOutput($strInvoiceRun, TRUE);
+		return $this->BuildOutput($strInvoiceRun, BILL_SAMPLE);
  	}
  	
  	//------------------------------------------------------------------------//
@@ -1264,7 +1275,7 @@
 	 */
  	function SendSample()
  	{
-		return $this->SendOutput(TRUE);
+		return $this->SendOutput(BILL_SAMPLE);
  	}
  	
  	
@@ -1445,13 +1456,33 @@
 	 *
  	 * @param		string		$strRecordTypeName	The record type to work with
  	 * @param		integer		$intServiceType		The service type to work with
+ 	 * @param		string		$strFNN				optional FNN (used to determine type of inbound service)
  	 * 
 	 * @return		array							Associative array with the RowType data
 	 *
 	 * @method
 	 */
- 	function GetRowType($strRecordTypeName, $intServiceType)
+ 	function GetRowType($strRecordTypeName, $intServiceType, $strFNN = NULL)
  	{
+		// ServiceType hack for indials
+		if ($strFNN)
+		{
+			if ($intServiceType == SERVICE_TYPE_INBOUND)
+			{
+				switch (substr($strFNN, 0, 2))
+				{
+					case "18":
+						$intServiceType = 1800;
+						break;
+					case "13":
+						$intServiceType = 1300;
+						break;
+					default:
+						$intServiceType = $intServiceType;
+				}
+			}
+		}
+		
 		// general record types
 		switch ($strRecordTypeName)
 		{
@@ -1516,6 +1547,9 @@
 			case 1300:
 				return Array( 'RowType' => 118	, 'LongDesc' => "13/1300 Inbound"						, 'ShortDesc' => "13/1300" );
 				break;
+				
+			case SERVICE_TYPE_INBOUND:
+				return Array( 'RowType' => 117	, 'LongDesc' => "1800/13/1300 Inbound"					, 'ShortDesc' => "1800/13/1300" );
 		}
 		
 		Debug("Record Type: '$strRecordTypeName'; Service Type: $intServiceType");

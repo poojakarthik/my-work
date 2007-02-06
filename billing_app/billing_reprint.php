@@ -31,9 +31,9 @@ $arrAccounts[]	= 1000155964;
 $arrAccounts[]	= 1000160897;
 
 $arrAccounts[]	= 1000155466;
-$arrAccounts[]	= 1000007119;
+$arrAccounts[]	= 1000154838;
 $arrAccounts[]	= 1000010826;
-$arrAccounts[]	= 1000155653;
+$arrAccounts[]	= 1000154946;
 $arrAccounts[]	= 1000154811;
 $arrAccounts[]	= 1000155253;
 $arrAccounts[]	= 1000156068;
@@ -41,18 +41,18 @@ $arrAccounts[]	= 1000155105;
 $arrAccounts[]	= 1000155666;
 $arrAccounts[]	= 1000155637;
 $arrAccounts[]	= 1000155676;
-$arrAccounts[]	= 1000155467;
+$arrAccounts[]	= 1000155650;
 $arrAccounts[]	= 1000155468;
 $arrAccounts[]	= 1000155090;
 $arrAccounts[]	= 1000009313;
-$arrAccounts[]	= 1000004781;
+$arrAccounts[]	= 1000004847;
 $arrAccounts[]	= 1000158138;
-$arrAccounts[]	= 1000155446;
-$arrAccounts[]	= 1000009298;
+$arrAccounts[]	= 1000155669;
+$arrAccounts[]	= 1000155182;
 $arrAccounts[]	= 1000155629;
 $arrAccounts[]	= 1000155463;
 $arrAccounts[]	= 1000155462;
-$arrAccounts[]	= 1000155272;
+$arrAccounts[]	= 1000154972;
 
 $arrAccounts[]	= 1000157470;
 $arrAccounts[]	= 1000155675;
@@ -92,10 +92,16 @@ $selInvoiceRun->Execute();
 $arrInvoiceRun = $selInvoiceRun->Fetch();
 $strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
 
+$arrInvoices = Array();
+
 // Get list of invoices
-$selInvoices = new StatementSelect("Invoice", "Id", "InvoiceRun = $strInvoiceRun");
-$selInvoices->Execute();
-$arrInvoices = $selInvoices->FetchAll();
+$selInvoices = new StatementSelect("Invoice", "Id", "Account = <Account> AND InvoiceRun = '$strInvoiceRun'");
+foreach ($arrAccounts as $intAccount)
+{
+	$selInvoices->Execute(Array('Account' => $intAccount));
+	$arrInvoice = $selInvoices->Fetch();
+	$arrInvoices[] = $arrInvoice['Id'];
+}
 
 // reprint
 $bolResponse = $appBilling->Reprint($arrInvoices);
