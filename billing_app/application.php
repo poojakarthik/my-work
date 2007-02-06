@@ -122,12 +122,12 @@
 		$this->selAccounts					= new StatementSelect("Account", "*", "Archived = 0"); 
 										
 		$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
-		$this->selDebitsCredits				= new StatementSelect("Charge",
-															  "Nature, SUM(Amount) AS Amount",
-															  "Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
-															  NULL,
-															  "2",
-															  "Nature");
+		$this->selDebitsCredits				= new StatementSelect(	"Charge",
+																 	"Nature, SUM(Amount) AS Amount",
+															 		"Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
+															  		NULL,
+															  		"2",
+															  		"Nature");
 
 		// Init Update Statements
 		$this->arrCDRCols = Array();

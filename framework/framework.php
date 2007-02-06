@@ -425,23 +425,23 @@
 		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
 
 		
-		$this->arrServiceColumns = Array();
-		$this->arrServiceColumns['Shared']			= "RatePlan.Shared";
-		$this->arrServiceColumns['MinMonthly']		= "RatePlan.MinMonthly";
-		$this->arrServiceColumns['ChargeCap']		= "RatePlan.ChargeCap";
-		$this->arrServiceColumns['UsageCap']		= "RatePlan.UsageCap";
-		$this->arrServiceColumns['FNN']				= "Service.FNN";
-		$this->arrServiceColumns['CappedCharge']	= "Service.CappedCharge";
-		$this->arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
-		$this->arrServiceColumns['Service']			= "Service.Id";
-		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
+		$arrServiceColumns = Array();
+		$arrServiceColumns['Shared']			= "RatePlan.Shared";
+		$arrServiceColumns['MinMonthly']		= "RatePlan.MinMonthly";
+		$arrServiceColumns['ChargeCap']			= "RatePlan.ChargeCap";
+		$arrServiceColumns['UsageCap']			= "RatePlan.UsageCap";
+		$arrServiceColumns['FNN']				= "Service.FNN";
+		$arrServiceColumns['CappedCharge']		= "Service.CappedCharge";
+		$arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
+		$arrServiceColumns['Service']			= "Service.Id";
+		$this->selInvoiceTotalServices		= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																	"RatePlan",
-																	$this->arrServiceColumns,
+																	$arrServiceColumns,
 																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
 																	"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
 																	"RatePlan.Id");
 																
-		$this->selDebitsCredits				= new StatementSelect(	"Charge",
+		$this->selInvoiceTotalDebitsCredits	= new StatementSelect(	"Charge",
 																 	"Nature, SUM(Amount) AS Amount",
 															 		"Service = <Service> AND Status = ".CHARGE_APPROVED,
 															  		NULL,
@@ -476,8 +476,8 @@
 		$fltTotalDebits		= 0.0;
 		
 		// Retrieve list of services for this account
-		$this->selServices->Execute(Array('Account' => $intAccount));
-		if(!$arrServices = $this->selServices->FetchAll())
+		$this->selInvoiceTotalServices->Execute(Array('Account' => $intAccount));
+		if(!$arrServices = $this->selInvoiceTotalServices->FetchAll())
 		{
 			// No services for this account
 			return 0.0;
@@ -576,7 +576,7 @@
 			}
 			
 			// Calculate Debit and Credit Totals
-			$mixResult = $this->selDebitsCredits->Execute(Array('Service' => $arrService['Id']));
+			$mixResult = $this->selInvoiceTotalDebitsCredits->Execute(Array('Service' => $arrService['Id']));
 			if($mixResult > 2 || $mixResult === FALSE)
 			{
 				if ($mixResult === FALSE)
@@ -589,7 +589,7 @@
 			}
 			else
 			{
-				$arrDebitsCredits = $this->selDebitsCredits->FetchAll();
+				$arrDebitsCredits = $this->selInvoiceTotalDebitsCredits->FetchAll();
 				foreach($arrDebitsCredits as $arrCharge)
 				{
 					if ($arrCharge['Nature'] == "DR")
