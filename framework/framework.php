@@ -395,8 +395,7 @@
  */
  class VixenHelper
  {
- 
- 	//------------------------------------------------------------------------//
+  	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -423,8 +422,203 @@
 		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND Context = <Context>";
 		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
 		
-		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");	
+		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
+
+		
+		$this->arrServiceColumns = Array();
+		$this->arrServiceColumns['Shared']			= "RatePlan.Shared";
+		$this->arrServiceColumns['MinMonthly']		= "RatePlan.MinMonthly";
+		$this->arrServiceColumns['ChargeCap']		= "RatePlan.ChargeCap";
+		$this->arrServiceColumns['UsageCap']		= "RatePlan.UsageCap";
+		$this->arrServiceColumns['FNN']				= "Service.FNN";
+		$this->arrServiceColumns['CappedCharge']	= "Service.CappedCharge";
+		$this->arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
+		$this->arrServiceColumns['Service']			= "Service.Id";
+		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
+																	"RatePlan",
+																	$this->arrServiceColumns,
+																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
+																	"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
+																	"RatePlan.Id");
+																
+		$this->selDebitsCredits				= new StatementSelect(	"Charge",
+																 	"Nature, SUM(Amount) AS Amount",
+															 		"Service = <Service> AND Status = ".CHARGE_APPROVED,
+															  		NULL,
+															  		"2",
+															  		"Nature");
 	}
+	
+ 	//------------------------------------------------------------------------//
+	// GetInvoiceTotal()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetInvoiceTotal()
+	 *
+	 * Determine the total of an invoice before having generated one
+	 *
+	 * Determine the total of an invoice before having generated one
+	 * 
+	 *
+	 * @param	integer		$intAccount		The account to determine the invoice total for
+	 * 
+	 * @return	mixed						float: invoice total (ex. tax)
+	 * 										FALSE: an error occurred
+	 *
+	 * @method
+	 */
+	 function GetInvoiceTotal($intAccount)
+	 {
+		// zero out totals
+		$fltDebits			= 0.0;
+		$fltTotalCharge		= 0.0;
+		$fltTotalCredits	= 0.0;
+		$fltTotalDebits		= 0.0;
+		
+		// Retrieve list of services for this account
+		$this->selServices->Execute(Array('Account' => $intAccount));
+		if(!$arrServices = $this->selServices->FetchAll())
+		{
+			// No services for this account
+			return 0.0;
+		}
+		
+		// Get a list of shared plans for this account
+		$arrSharedPlans = Array();
+		foreach($arrServices as $arrService)
+		{
+			if ($arrService['Shared'])
+			{
+				$arrSharedPlans[$arrService['RatePlan']]['Count']++;
+				$arrSharedPlans[$arrService['RatePlan']]['MinMonthly']	= $arrService['MinMonthly'];
+				$arrSharedPlans[$arrService['RatePlan']]['UsageCap']	= $arrService['UsageCap'];
+				$arrSharedPlans[$arrService['RatePlan']]['ChargeCap']	= $arrService['ChargeCap'];
+			}
+		}
+		
+		// for each service belonging to this account
+		foreach ($arrServices as $arrService)
+		{
+			$fltServiceCredits	= 0.0;
+			$fltServiceDebits	= 0.0;
+			$fltTotalCharge		= 0.0;
+			
+			if ($arrService['Shared'] > 0)
+			{
+				// this is a shared plan, add to rateplan count
+				$arrSharedPlans[$arrService['RatePlan']]['ServicesBilled']++;
+				
+				// is this the last Service for this RatePlan?
+				if ($arrSharedPlans[$arrService['RatePlan']]['ServicesBilled'] == $arrSharedPlans[$arrService['RatePlan']]['Count'])
+				{
+					// this is the last service, add min monthly to this service
+					$fltMinMonthly 	= max($arrSharedPlans[$arrService['RatePlan']]['MinMonthly'], 0);
+				}
+				else
+				{
+					$fltMinMonthly 	= 0;
+				}
+				$fltUsageCap 		= max($arrSharedPlans[$arrService['RatePlan']]['UsageCap'], 0);
+				$fltChargeCap 		= max($arrSharedPlans[$arrService['RatePlan']]['ChargeCap'], 0);
+			}
+			else
+			{
+				// this is not a shared plan
+				$fltMinMonthly 		= $arrService['MinMonthly'];
+				$fltUsageCap 		= $arrService['UsageCap'];
+				$fltChargeCap 		= $arrService['ChargeCap'];
+			}
+			
+			// add capped charges
+			if ($arrService['ChargeCap'] > 0.0)
+			{
+				// this is a capped plan
+				if ($fltChargeCap > $arrService['CappedCharge'])
+				{
+					// under the Charge Cap : add the Full Charge
+					$fltTotalCharge = (float)$arrService['CappedCharge'];
+				}
+				elseif ($arrService['UsageCap'] > 0 && $fltUsageCap < $arrService['CappedCharge'])
+				{
+					// over the Usage Cap : add the Charge Cap + Charge - Usage Cap
+					$fltTotalCharge = (float)$fltChargeCap + (float)$arrService['CappedCharge'] - (float)$fltUsageCap;
+				}
+				else
+				{
+					// over the Charge Cap, Under the Usage Cap : add Charge Cap
+					$fltTotalCharge = (float)$fltChargeCap;
+				}
+			}
+			else
+			{
+				// this is not a capped plan
+				$fltTotalCharge = (float)$arrService['CappedCharge'];
+			}
+			
+			// add uncapped charges
+			$fltTotalCharge += (float)$arrService['UncappedCharge'];
+
+			// If there is a minimum monthly charge, apply it
+			if ($fltMinMonthly > 0)
+			{
+				$fltTotalCharge = max($fltMinMonthly, $fltTotalCharge);
+			}
+			
+			// if this is a shared plan
+			if ($arrService['Shared'] > 0)
+			{
+				// remove total charged from min monthly
+				$arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] = $arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] - $fltTotalCharge;
+				
+				// reduce caps
+				$arrSharedPlans[$arrService['RatePlan']]['ChargeCap'] -= (float)$arrService['UncappedCharge'];
+				$arrSharedPlans[$arrService['RatePlan']]['UsageCap'] -= (float)$arrService['UncappedCharge'];
+			}
+			
+			// Calculate Debit and Credit Totals
+			$mixResult = $this->selDebitsCredits->Execute(Array('Service' => $arrService['Id']));
+			if($mixResult > 2 || $mixResult === FALSE)
+			{
+				if ($mixResult === FALSE)
+				{
+
+				}
+				
+				// Incorrect number of rows returned or an error
+				continue;
+			}
+			else
+			{
+				$arrDebitsCredits = $this->selDebitsCredits->FetchAll();
+				foreach($arrDebitsCredits as $arrCharge)
+				{
+					if ($arrCharge['Nature'] == "DR")
+					{
+						$fltServiceDebits	+= $arrCharge['Amount'];
+					}
+					else
+					{
+						$fltServiceCredits	+= $arrCharge['Amount'];
+					}
+				}
+			}
+			
+			// service total
+			$fltServiceTotal	= $fltTotalCharge + $fltServiceDebits - $fltServiceCredits;
+			
+			// add to invoice totals
+			$fltTotalDebits		+= $fltServiceDebits + $fltTotalCharge;
+			$fltTotalCredits	+= $fltServiceCredits;
+		}
+		
+		// calculate invoice total
+		$fltTotal	= $fltTotalDebits - $fltTotalCredits;
+		$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
+		$fltBalance	= $fltTotal + $fltTax;
+		
+		// Return ex. Tax total
+		return $fltTotal;
+	 }
 	
  	//------------------------------------------------------------------------//
 	// FindRecordType
