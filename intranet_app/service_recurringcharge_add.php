@@ -76,7 +76,7 @@
 	$docDocumentation->Explain ('Recurring Charge Type');
 	
 	$Style->Output (
-		'xsl/content/service/charges_recurringcharge_add.xsl',
+		'xsl/content/service/charges/recurringcharges/add.xsl',
 		Array (
 			'Account'		=> $srvService->Pull ('Account')->getValue (),
 			'Service'		=> $srvService->Pull ('Id')->getValue ()

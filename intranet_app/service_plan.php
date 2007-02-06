@@ -72,7 +72,7 @@
 	$rplRatePlans->Sample ();
 	
 	$Style->Output (
-		'xsl/content/service/plan_view.xsl',
+		'xsl/content/service/plan/view.xsl',
 		Array (
 			'Account'		=> $actAccount->Pull ('Id')->getValue (),
 			'Service'		=> $srvService->Pull ('Id')->getValue ()

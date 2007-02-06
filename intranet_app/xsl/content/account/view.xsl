@@ -571,10 +571,22 @@
 					<td>
 						<xsl:choose>
 							<xsl:when test="./RatePlan">
-								<xsl:value-of select="./RatePlan/Name" />
+								<a target="blank">
+									<xsl:attribute name="href">
+										<xsl:text>rates_plan_summary.php?Id=</xsl:text>
+										<xsl:value-of select="./RatePlan/Id" />
+									</xsl:attribute>
+									<xsl:value-of select="./RatePlan/Name" />
+								</a>
 							</xsl:when>
 							<xsl:otherwise>
-								<strong><span class="Attention">No Plan Selected</span></strong>
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>service_plan.php?Service=</xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+									<strong><span class="Attention">No Plan Selected</span></strong>
+								</a>
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>

@@ -27,7 +27,7 @@
 	}
 	
 	$Style->Output (
-		"xsl/content/service/charges_charge_added.xsl",
+		"xsl/content/service/charges/charges/added.xsl",
 		Array (
 			'Account'		=> $srvService->Pull ('Account')->getValue (),
 			'Service'		=> $srvService->Pull ('Id')->getValue ()
