@@ -162,7 +162,7 @@
 
 		$this->_selChargesTotal			= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge",
-																"Account = <Account> AND InvoiceRun = <InvoiceRun>AND Status = ",
+																"Account = <Account> AND InvoiceRun = <InvoiceRun>",
 																"Nature ASC",
 																NULL,
 																"Nature");
@@ -170,7 +170,7 @@
 
 		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge",
-																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND",
+																"Service = <Service> AND InvoiceRun = <InvoiceRun>",
 																"Nature ASC",
 																NULL,
 																"Nature");
