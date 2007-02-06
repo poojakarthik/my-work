@@ -131,6 +131,30 @@
 		{
 			$this->_ptrLog = NULL;
 		}
+		
+		// init statements
+		$arrServiceColumns = Array();
+		$arrServiceColumns['Shared']			= "RatePlan.Shared";
+		$arrServiceColumns['MinMonthly']		= "RatePlan.MinMonthly";
+		$arrServiceColumns['ChargeCap']			= "RatePlan.ChargeCap";
+		$arrServiceColumns['UsageCap']			= "RatePlan.UsageCap";
+		$arrServiceColumns['FNN']				= "Service.FNN";
+		$arrServiceColumns['CappedCharge']		= "Service.CappedCharge";
+		$arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
+		$arrServiceColumns['Service']			= "Service.Id";
+		$this->selInvoiceTotalServices		= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
+																	"RatePlan",
+																	$arrServiceColumns,
+																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
+																	"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
+																	"RatePlan.Id");
+																
+		$this->selInvoiceTotalDebitsCredits	= new StatementSelect(	"Charge",
+																 	"Nature, SUM(Amount) AS Amount",
+															 		"Service = <Service> AND Status = ".CHARGE_APPROVED,
+															  		NULL,
+															  		"2",
+															  		"Nature");
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -291,163 +315,6 @@
 	 		fwrite($this->_ptrLog, $strText);
 	 	}
 	 }
- }
-
-//----------------------------------------------------------------------------//
-// ApplicationBaseClass
-//----------------------------------------------------------------------------//
-/**
- * ApplicationBaseClass
- *
- * Abstract Base Class for Application Classes
- *
- * Use this class as a base for all application classes
- *
- *
- * @prefix		app
- *
- * @package		framework
- * @class		DatabaseAccess 
- */
- abstract class ApplicationBaseClass
- {
- 	//------------------------------------------------------------------------//
-	// db
-	//------------------------------------------------------------------------//
-	/**
-	 * db
-	 *
-	 * Instance of the DataAccess class
-	 *
-	 * Instance of the DataAccess class
-	 *
-	 * @type		DataAccess
-	 *
-	 * @property
-	 */
-	 public $db;
- 	
- 	//------------------------------------------------------------------------//
-	// Framework
-	//------------------------------------------------------------------------//
-	/**
-	 * Framework
-	 *
-	 * Instance of the Framework class
-	 *
-	 * Instance of the Framework class
-	 *
-	 * @type		Framework
-	 *
-	 * @property
-	 */
-	 public $Framework;
- 	
- 	
- 	//------------------------------------------------------------------------//
-	// ApplicationBaseClass() - Constructor
-	//------------------------------------------------------------------------//
-	/**
-	 * ApplicationBaseClass()
-	 *
-	 * Constructor for ApplicationBaseClass
-	 *
-	 * Constructor for ApplicationBaseClass
-
-	 * @return		void
-	 *
-	 * @method
-	 */ 
-	function __construct()
-	{
-		// connect to database if not already connected
-		if (!isset ($GLOBALS['dbaDatabase']) || !$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
-		{
-			$GLOBALS['dbaDatabase'] = new DataAccess();
-		}
-		
-		// make global database object available
-		$this->db = &$GLOBALS['dbaDatabase'];
-		
-		// make global framework object available
-		$this->Framework = &$GLOBALS['fwkFramework'];
-		
-		// make global error handler available
-		$this->_errErrorHandler = $this->Framework->_errErrorHandler;
-	}
- }
- 
-//----------------------------------------------------------------------------//
-// VixenHelper
-//----------------------------------------------------------------------------//
-/**
- * VixenHelper
- *
- * Helper functions
- *
- * Helper functions
- *
- *
- * @prefix		hlp
- *
- * @package		framework
- * @class		VixenHelper 
- */
- class VixenHelper
- {
-  	//------------------------------------------------------------------------//
-	// __construct
-	//------------------------------------------------------------------------//
-	/**
-	 * __construct()
-	 *
-	 * Constructor for the Helper
-	 *
-	 * Constructor for the Helper
-	 * 
-	 *
-	 * @return			Application
-	 *
-	 * @method
-	 */
- 	function __construct()
-	{			
-		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
-		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
-		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
-		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
-		
-		$strTables						= "DestinationCode";
-		$strData						= "Id, Code, Description";
-		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND Context = <Context>";
-		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
-		
-		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
-
-		
-		$arrServiceColumns = Array();
-		$arrServiceColumns['Shared']			= "RatePlan.Shared";
-		$arrServiceColumns['MinMonthly']		= "RatePlan.MinMonthly";
-		$arrServiceColumns['ChargeCap']			= "RatePlan.ChargeCap";
-		$arrServiceColumns['UsageCap']			= "RatePlan.UsageCap";
-		$arrServiceColumns['FNN']				= "Service.FNN";
-		$arrServiceColumns['CappedCharge']		= "Service.CappedCharge";
-		$arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
-		$arrServiceColumns['Service']			= "Service.Id";
-		$this->selInvoiceTotalServices		= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
-																	"RatePlan",
-																	$arrServiceColumns,
-																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
-																	"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
-																	"RatePlan.Id");
-																
-		$this->selInvoiceTotalDebitsCredits	= new StatementSelect(	"Charge",
-																 	"Nature, SUM(Amount) AS Amount",
-															 		"Service = <Service> AND Status = ".CHARGE_APPROVED,
-															  		NULL,
-															  		"2",
-															  		"Nature");
-	}
 	
  	//------------------------------------------------------------------------//
 	// GetInvoiceTotal()
@@ -619,6 +486,142 @@
 		// Return ex. Tax total
 		return $fltTotal;
 	 }
+	
+ }
+
+//----------------------------------------------------------------------------//
+// ApplicationBaseClass
+//----------------------------------------------------------------------------//
+/**
+ * ApplicationBaseClass
+ *
+ * Abstract Base Class for Application Classes
+ *
+ * Use this class as a base for all application classes
+ *
+ *
+ * @prefix		app
+ *
+ * @package		framework
+ * @class		DatabaseAccess 
+ */
+ abstract class ApplicationBaseClass
+ {
+ 	//------------------------------------------------------------------------//
+	// db
+	//------------------------------------------------------------------------//
+	/**
+	 * db
+	 *
+	 * Instance of the DataAccess class
+	 *
+	 * Instance of the DataAccess class
+	 *
+	 * @type		DataAccess
+	 *
+	 * @property
+	 */
+	 public $db;
+ 	
+ 	//------------------------------------------------------------------------//
+	// Framework
+	//------------------------------------------------------------------------//
+	/**
+	 * Framework
+	 *
+	 * Instance of the Framework class
+	 *
+	 * Instance of the Framework class
+	 *
+	 * @type		Framework
+	 *
+	 * @property
+	 */
+	 public $Framework;
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// ApplicationBaseClass() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * ApplicationBaseClass()
+	 *
+	 * Constructor for ApplicationBaseClass
+	 *
+	 * Constructor for ApplicationBaseClass
+
+	 * @return		void
+	 *
+	 * @method
+	 */ 
+	function __construct()
+	{
+		// connect to database if not already connected
+		if (!isset ($GLOBALS['dbaDatabase']) || !$GLOBALS['dbaDatabase'] || !($GLOBALS['dbaDatabase'] instanceOf DataAccess))
+		{
+			$GLOBALS['dbaDatabase'] = new DataAccess();
+		}
+		
+		// make global database object available
+		$this->db = &$GLOBALS['dbaDatabase'];
+		
+		// make global framework object available
+		$this->Framework = &$GLOBALS['fwkFramework'];
+		
+		// make global error handler available
+		$this->_errErrorHandler = $this->Framework->_errErrorHandler;
+	}
+ }
+ 
+//----------------------------------------------------------------------------//
+// VixenHelper
+//----------------------------------------------------------------------------//
+/**
+ * VixenHelper
+ *
+ * Helper functions
+ *
+ * Helper functions
+ *
+ *
+ * @prefix		hlp
+ *
+ * @package		framework
+ * @class		VixenHelper 
+ */
+ class VixenHelper
+ {
+  	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for the Helper
+	 *
+	 * Constructor for the Helper
+	 * 
+	 *
+	 * @return			Application
+	 *
+	 * @method
+	 */
+ 	function __construct()
+	{			
+		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
+		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
+		
+		$strTables						= "DestinationCode";
+		$strData						= "Id, Code, Description";
+		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND Context = <Context>";
+		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
+		
+		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
+
+
+	}
 	
  	//------------------------------------------------------------------------//
 	// FindRecordType
