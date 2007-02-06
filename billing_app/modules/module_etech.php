@@ -1144,7 +1144,7 @@
 				$strQuery .= "LIMIT ".rand((int)$arrMetaData['MinId'] , (int)$arrMetaData['MaxId'] - BILL_PRINT_SAMPLE_LIMIT).", ".BILL_PRINT_SAMPLE_LIMIT;
 			}
 		}
-		if (file_exists($strFilename))
+		if (file_exists($strFilename) || file_exists($strTempFile) || file_exists($strZipName))
 		{
 			unlink($strFilename);
 			unlink($strTempFile);
