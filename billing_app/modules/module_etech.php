@@ -157,12 +157,12 @@
 		$arrColumns['ServiceType']		= "Service.ServiceType";
 		$this->_selItemisedCharges		= new StatementSelect(	"Charge JOIN Service ON Service.Id = Charge.Service",
 																$arrColumns,
-																"Charge.Account = <Account> AND Charge.InvoiceRun = <InvoiceRun> AND Charge.Status = ".CHARGE_TEMP_INVOICE);		
+																"Charge.Account = <Account> AND Charge.InvoiceRun = <InvoiceRun>");		
 		
 
 		$this->_selChargesTotal			= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge",
-																"Account = <Account> AND InvoiceRun = <InvoiceRun> AND Status = ".CHARGE_TEMP_INVOICE,
+																"Account = <Account> AND InvoiceRun = <InvoiceRun>AND Status = ",
 																"Nature ASC",
 																NULL,
 																"Nature");
@@ -170,7 +170,7 @@
 
 		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge",
-																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND Status = ".CHARGE_TEMP_INVOICE,
+																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND",
 																"Nature ASC",
 																NULL,
 																"Nature");
@@ -192,7 +192,7 @@
 		$this->_selItemisedCalls		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id," .
 																"RecordType AS RType",
 																$arrColumns,
-																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id AND CDR.Credit = 0 AND CDR.InvoiceRun = <InvoiceRun> AND Status = ".CDR_TEMP_INVOICE,
+																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id AND CDR.Credit = 0 AND CDR.InvoiceRun = <InvoiceRun>",
 																"CDR.FNN, RType.Name, CDR.StartDatetime");
 																
 		$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
@@ -1132,7 +1132,8 @@
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
-							"WHERE $strWhere\n";
+							"WHERE $strWhere\n" .
+							"ORDER BY Id";
 		if($intOutputType == BILL_SAMPLE)
 		{
 			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
@@ -1146,9 +1147,9 @@
 		}
 		if (file_exists($strFilename) || file_exists($strTempFile) || file_exists($strZipName))
 		{
-			unlink($strFilename);
-			unlink($strTempFile);
-			unlink($strZipName);
+			@unlink($strFilename);
+			@unlink($strTempFile);
+			@unlink($strZipName);
 		}
 		if ($qryBuildFile->Execute($strQuery) === FALSE)
 		{
