@@ -1109,7 +1109,7 @@
 				break;	
 		}
 		
-		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "1", NULL, NULL, "Status HAVING Status = ".INVOICE_PRINT);
+		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "Status = ".INVOICE_PRINT, NULL, NULL, "Status");
 		if ($selMetaData->Execute() === FALSE)
 		{
 			Debug('$selMetaData : '.$selMetaData->Error());
