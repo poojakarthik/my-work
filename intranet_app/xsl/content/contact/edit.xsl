@@ -38,6 +38,15 @@
 						<xsl:when test="/Response/Error = 'Phones Empty'">
 							Please enter a Contact Number.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'Phone Invalid'">
+							Please enter a valid Phone Number.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Mobile Invalid'">
+							Please enter a valid Mobile Number.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Fax Invalid'">
+							Please enter a valid Fax Number.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'UserName Empty'">
 							Please enter a Username.
 						</xsl:when>

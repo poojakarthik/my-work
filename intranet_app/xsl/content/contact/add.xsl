@@ -91,6 +91,15 @@
 						<xsl:when test="/Response/Error = 'Phones Empty'">
 							Please enter a Contact Number.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'Phone Invalid'">
+							Please enter a valid Phone Number.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Mobile Invalid'">
+							Please enter a valid Mobile Number.
+						</xsl:when>
+						<xsl:when test="/Response/Error = 'Fax Invalid'">
+							Please enter a valid Fax Number.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'UserName Empty'">
 							Please enter a Username.
 						</xsl:when>
@@ -224,7 +233,7 @@
 								</input>
 							</td>
 						</tr>
-						<!--TODO!bash! Urgent! verify ph number - numeric only-->
+						<!--TODO!bash! [  DONE  ]		URGENT! verify ph number - numeric only-->
 						<tr>
 							<td class="Required"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
@@ -242,7 +251,7 @@
 								</input>
 							</td>
 						</tr>
-						<!--TODO!bash! Urgent! verify ph number - numeric only-->
+						<!--TODO!bash! [  DONE  ]		URGENT! verify ph number - numeric only-->
 						<tr>
 							<td class="Required"><strong><span class="Red"><sup>1</sup></span></strong></td>
 							<th class="JustifiedWidth">
@@ -260,7 +269,7 @@
 								</input>
 							</td>
 						</tr>
-						<!--TODO!bash! Urgent! verify ph number - numeric only-->
+						<!--TODO!bash! [  DONE  ]		URGENT! verify ph number - numeric only-->
 						<tr>
 							<td></td>
 							<th class="JustifiedWidth">

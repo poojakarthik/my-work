@@ -265,7 +265,7 @@
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<xsl:choose>
-						<xsl:when test="/Response/ui-values/Archived = 0">
+						<xsl:when test="/Response/Account/Archived = 0">
 							This Account is <strong><span class="Green">Currently Available</span></strong>.
 						</xsl:when>
 						<xsl:otherwise>
@@ -274,10 +274,10 @@
 					</xsl:choose>
 					
 					<div class="MicroSeperator"></div>
-					<!--TODO!bash! URGENT! This is not working - view account details page shows status as 'archived' but this page still says 'this account is currently available'/'archive this account' and the account cannot be unarchived-->
+					<!--TODO!bash! [  DONE  ]		URGENT! This is not working - view account details page shows status as 'archived' but this page still says 'this account is currently available'/'archive this account' and the account cannot be unarchived-->
 					<table border="0" cellpadding="3" cellspacing="0">
 						<xsl:choose>
-							<xsl:when test="/Response/ui-values/Archived = 1">
+							<xsl:when test="/Response/Account/Archived = 1">
 								<tr>
 									<td><input type="checkbox" name="Archived" value="0" id="Archive:FALSE" /></td>
 									<td>

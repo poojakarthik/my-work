@@ -146,6 +146,21 @@
 			// Ensure that the Contact has either a Phone or Mobile number
 			$oblstrError->setValue ('Phones Empty');
 		}
+		else if ($_POST ['Phone'] && !PhoneNumberValid ($_POST ['Phone']))
+		{
+			// If a Phone number is Entered, check that it is valid
+			$oblstrError->setValue ('Phone Invalid');
+		}
+		else if ($_POST ['Mobile'] && !PhoneNumberValid ($_POST ['Mobile']))
+		{
+			// If a Mobile number is Entered, check that it is valid
+			$oblstrError->setValue ('Mobile Invalid');
+		}
+		else if ($_POST ['Fax'] && !PhoneNumberValid ($_POST ['Fax']))
+		{
+			// If a Fax number is Entered, check that it is valid
+			$oblstrError->setValue ('Fax Invalid');
+		}
 		else if (!$_POST ['UserName'])
 		{
 			// Ensure that the Contact has a User Name

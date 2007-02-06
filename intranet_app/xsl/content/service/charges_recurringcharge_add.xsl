@@ -120,7 +120,16 @@
 									<xsl:with-param name="field" select="string('Nature')" />
 								</xsl:call-template>
 							</th>
-							<td><xsl:value-of select="/Response/RecurringChargeType/Nature" /></td>
+							<td>
+								<xsl:choose>
+									<xsl:when test="/Response/RecurringChargeType/Nature = 'DR'">
+										<span class="Blue">Debit</span>
+									</xsl:when>
+									<xsl:when test="/Response/RecurringChargeType/Nature = 'CR'">
+										<span class="Green">Credit</span>
+									</xsl:when>
+								</xsl:choose>
+							</td>
 						</tr>
 						<tr>
 							<td colspan="2">

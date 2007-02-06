@@ -98,7 +98,15 @@
 							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
 						<xsl:text> </xsl:text>
-						<xsl:value-of select="./Nature" />
+						
+						<xsl:choose>
+							<xsl:when test="./Nature = 'DR'">
+								<span class="Blue">Debit</span>
+							</xsl:when>
+							<xsl:when test="./Nature = 'CR'">
+								<span class="Green">Credit</span>
+							</xsl:when>
+						</xsl:choose>
 					</td>
 					<td>
 						Every <xsl:value-of select="./RecurringFreq" />

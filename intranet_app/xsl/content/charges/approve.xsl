@@ -49,22 +49,14 @@
 						</td>
 						<td>
 							<strong>
-								<span>
-									<xsl:choose>
-										<xsl:when test="./Nature = 'DR'">
-											<xsl:attribute name="class">
-												<xsl:text>Green</xsl:text>
-											</xsl:attribute>
-											<xsl:text>DR</xsl:text>
-										</xsl:when>
-										<xsl:when test="./Nature = 'CR'">
-											<xsl:attribute name="class">
-												<xsl:text>Blue</xsl:text>
-											</xsl:attribute>
-											<xsl:text>CR</xsl:text>
-										</xsl:when>
-									</xsl:choose>
-								</span>
+								<xsl:choose>
+									<xsl:when test="./Nature = 'DR'">
+										<span class="Blue">Debit</span>
+									</xsl:when>
+									<xsl:when test="./Nature = 'CR'">
+										<span class="Green">Credit</span>
+									</xsl:when>
+								</xsl:choose>
 							</strong>
 						</td>
 						<td>

@@ -93,9 +93,9 @@
 		public function Update ($arrAccount)
 		{
 			// Ensure the Postcode is Valid
-			if (!preg_match ("/^(\d{4})$/", $arrAccount ['Postcode']))
+			if (!PostcodeValid ($arrAccount ['Postcode']))
 			{
-				throw new Exception ('Invalid Credit Card');
+				throw new Exception ('Invalid Postcode');
 			}
 			
 			$arrDetails = Array (

@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
 	<xsl:import href="../../lib/date-time.xsl" />
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">	
-	
 		<!-- View invoice Details (Breakdown) (2/2) -->
-
 		<h1>View Invoice Details</h1>
 
 		<!-- Invoice Details -->
@@ -136,21 +133,14 @@
 			       					</xsl:call-template>
 								</td>
 								<td>
-									<strong>
-										<span>
-											<xsl:attribute name="class">
-												<xsl:choose>
-													<xsl:when test="./Nature = 'CR'">
-														<xsl:text>Blue</xsl:text>
-													</xsl:when>
-													<xsl:otherwise>
-														<xsl:text>Green</xsl:text>
-													</xsl:otherwise>
-												</xsl:choose>
-											</xsl:attribute>
-											<xsl:value-of select="./Nature" />
-										</span>
-									</strong>
+									<xsl:choose>
+										<xsl:when test="./Nature = 'DR'">
+											<span class="Blue">Debit</span>
+										</xsl:when>
+										<xsl:when test="./Nature = 'CR'">
+											<span class="Green">Credit</span>
+										</xsl:when>
+									</xsl:choose>
 								</td>
 							</tr>
 						</xsl:for-each>

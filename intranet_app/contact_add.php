@@ -20,9 +20,9 @@
 	// Start the Error Handler
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
-	
 	// Attempt to get the Account that we are associating this Contact with.
 	// If the Account cannot be found, then an Error needs to be Shown.
+	
 	try
 	{
 		// Retrieve the Account
@@ -76,6 +76,21 @@
 		{
 			// Check that either a Phone or Mobile was passed through
 			$oblstrError->setValue ('Phones Empty');
+		}
+		else if ($_POST ['Phone'] && !PhoneNumberValid ($_POST ['Phone']))
+		{
+			// If a Phone number is Entered, check that it is valid
+			$oblstrError->setValue ('Phone Invalid');
+		}
+		else if ($_POST ['Mobile'] && !PhoneNumberValid ($_POST ['Mobile']))
+		{
+			// If a Mobile number is Entered, check that it is valid
+			$oblstrError->setValue ('Mobile Invalid');
+		}
+		else if ($_POST ['Fax'] && !PhoneNumberValid ($_POST ['Fax']))
+		{
+			// If a Fax number is Entered, check that it is valid
+			$oblstrError->setValue ('Fax Invalid');
 		}
 		else if (!$_POST ['UserName'])
 		{
