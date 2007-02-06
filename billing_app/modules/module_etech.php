@@ -1130,9 +1130,10 @@
 		}
 
 		$qryBuildFile	= new Query();
-		$strColumns		= "'005|', LPAD(CAST(($strInvoiceTable.Id - ".$arrMetaData['MinId']." + 1) AS CHAR), 10, '0'), '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
+		$strColumns		= "'005|', LPAD(CAST((@pos := @pos + 1) AS CHAR), 10, '0'), '\\n006|', $strInvoiceTable.Id, '\\n', InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
-		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
+		$strQuery		=	"SET @pos = 0;" .
+							"SELECT $strColumns INTO OUTFILE '$strTempFile' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
 							"WHERE $strWhere\n" .
 							"ORDER BY Id";
