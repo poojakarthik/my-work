@@ -90,6 +90,68 @@
 		$this->_ubiPayment = new StatementUpdateById("Payment", $arrCols);
 		
 		$this->selGetInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND (ISNULL(<InvoiceRun>) OR InvoiceRun = <InvoiceRun>)", "CreatedOn DESC", 1);
+		
+		// Init Select Statements
+		$this->arrServiceColumns = Array();
+		$this->arrServiceColumns['Shared']			= "RatePlan.Shared";
+		$this->arrServiceColumns['MinMonthly']		= "RatePlan.MinMonthly";
+		$this->arrServiceColumns['ChargeCap']		= "RatePlan.ChargeCap";
+		$this->arrServiceColumns['UsageCap']		= "RatePlan.UsageCap";
+		$this->arrServiceColumns['FNN']				= "Service.FNN";
+		$this->arrServiceColumns['CappedCharge']	= "Service.CappedCharge";
+		$this->arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
+		$this->arrServiceColumns['Service']			= "Service.Id";
+		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
+																"RatePlan",
+																$this->arrServiceColumns,
+																"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
+																"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
+																"RatePlan.Id");
+		$this->strTestAccounts =		" AND " .
+																"Id = 1000009145 OR " .
+																"Id = 1000007460 OR " .
+																"Id = 1000008407 OR " .
+																"Id = 1000157133 OR " .
+																"Id = 1000161583 OR " .
+																"Id = 1000158216 OR " .
+																"Id = 1000157698 OR " .
+																"Id = 1000160393 OR " .
+																"Id = 1000158098 OR " .
+																"Id = 1000155964 OR " .
+																"Id = 1000160897";	//  limited to 11 specified accounts
+		$this->selAccounts					= new StatementSelect("Account", "*", "Archived = 0"); 
+										
+		$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
+		$this->selDebitsCredits				= new StatementSelect("Charge",
+															  "Nature, SUM(Amount) AS Amount",
+															  "Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
+															  NULL,
+															  "2",
+															  "Nature");
+
+		// Init Update Statements
+		$this->arrCDRCols = Array();
+		$this->arrCDRCols['Status']			= CDR_TEMP_INVOICE;
+		$this->arrCDRCols['InvoiceRun']		= NULL;
+		$this->updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Credit = 0 AND Status = ".CDR_RATED, $this->arrCDRCols);
+		
+		// Init Insert Statements
+		$this->arrInvoiceData 						= Array();
+		$this->arrInvoiceData 	['AccountGroup']	= NULL;
+		$this->arrInvoiceData 	['Account']			= NULL;
+		$this->arrInvoiceData 	['CreatedOn']		= /*new MySQLFunction("NOW()")*/NULL;
+		$this->arrInvoiceData 	['DueOn']			= /*new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY")*/NULL;
+		$this->arrInvoiceData 	['Credits']			= NULL;
+		$this->arrInvoiceData 	['Debits']			= NULL;
+		$this->arrInvoiceData 	['Total']			= NULL;
+		$this->arrInvoiceData 	['Tax']				= NULL;
+		$this->arrInvoiceData 	['Balance']			= NULL;
+		$this->arrInvoiceData 	['Disputed']		= NULL;
+		$this->arrInvoiceData 	['AccountBalance']	= NULL;
+		$this->arrInvoiceData 	['Status']			= NULL;
+		$this->arrInvoiceData 	['InvoiceRun']		= NULL;
+		$this->insTempInvoice						= new StatementInsert("InvoiceTemp", $this->arrInvoiceData 	);
+		$this->insServiceTotal						= new StatementInsert("ServiceTotal");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -122,82 +184,162 @@
 			return;		// Return if this fails
 		}
 		
-		// Init Select Statements
-		$arrColumns = Array();
-		$arrColumns['Shared']			= "RatePlan.Shared";
-		$arrColumns['MinMonthly']		= "RatePlan.MinMonthly";
-		$arrColumns['ChargeCap']		= "RatePlan.ChargeCap";
-		$arrColumns['UsageCap']			= "RatePlan.UsageCap";
-		$arrColumns['FNN']				= "Service.FNN";
-		$arrColumns['CappedCharge']		= "Service.CappedCharge";
-		$arrColumns['UncappedCharge']	= "Service.UncappedCharge";
-		$arrColumns['Service']			= "Service.Id";
-		$selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
-																"RatePlan",
-																$arrColumns,
-																"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
-																"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
-																"RatePlan.Id");
-		$strTestAccounts =		" AND " .
-																"Id = 1000009145 OR " .
-																"Id = 1000007460 OR " .
-																"Id = 1000008407 OR " .
-																"Id = 1000157133 OR " .
-																"Id = 1000161583 OR " .
-																"Id = 1000158216 OR " .
-																"Id = 1000157698 OR " .
-																"Id = 1000160393 OR " .
-																"Id = 1000158098 OR " .
-																"Id = 1000155964 OR " .
-																"Id = 1000160897";	//  limited to 11 specified accounts
-		$selAccounts					= new StatementSelect("Account", "*", "Archived = 0"); 
-										
-		$selCalcAccountBalance			= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
-		$selDebitsCredits				= new StatementSelect("Charge",
-															  "Nature, SUM(Amount) AS Amount",
-															  "Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
-															  NULL,
-															  "2",
-															  "Nature");
 		// generate an InvoiceRun Id
 		$strInvoiceRun = uniqid();
 		$this->_strInvoiceRun = $strInvoiceRun;
-		
-		// Init Update Statements
-		$arrCDRCols = Array();
-		$arrCDRCols['Status']			= CDR_TEMP_INVOICE;
-		$arrCDRCols['InvoiceRun']		= $strInvoiceRun;
-		$updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Credit = 0 AND Status = ".CDR_RATED, $arrCDRCols);
-		
-		// Init Insert Statements
-		$arrInvoiceData 					= Array();
-		$arrInvoiceData['AccountGroup']		= NULL;
-		$arrInvoiceData['Account']			= NULL;
-		$arrInvoiceData['CreatedOn']		= /*new MySQLFunction("NOW()")*/NULL;
-		$arrInvoiceData['DueOn']			= /*new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY")*/NULL;
-		$arrInvoiceData['Credits']			= NULL;
-		$arrInvoiceData['Debits']			= NULL;
-		$arrInvoiceData['Total']			= NULL;
-		$arrInvoiceData['Tax']				= NULL;
-		$arrInvoiceData['Balance']			= NULL;
-		$arrInvoiceData['Disputed']			= NULL;
-		$arrInvoiceData['AccountBalance']	= NULL;
-		$arrInvoiceData['Status']			= NULL;
-		$arrInvoiceData['InvoiceRun']		= NULL;
-		$insTempInvoice						= new StatementInsert("InvoiceTemp", $arrInvoiceData);
-		$insServiceTotal					= new StatementInsert("ServiceTotal");
 		
 		$intPassed = 0;
 		$intFailed = 0;
 		
 		// get a list of all accounts that require billing today
 		//TODO-LATER : Make this work with daily and 1/2 monthly billing
-		if ($selAccounts->Execute() === FALSE)
+		if ($this->selAccounts->Execute() === FALSE)
 		{
 
 		}
 		$arrAccounts = $selAccounts->FetchAll();
+		
+		// Generate the Invoices
+		$this->GenerateInvoices($arrAccounts);
 
+		// BILLING VALIDATION
+		// Make sure all of our totals add up
+		/*
+			Direct SQL.......
+			
+			SELECT InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM( ServiceTypeTotal.Charge ) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM( ServiceTotal.TotalCharge ) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal
+			FROM ServiceTotal, ServiceTypeTotal, InvoiceTemp
+			WHERE ServiceTypeTotal.Service = ServiceTotal.Service
+			AND ServiceTotal.Account = InvoiceTemp.Account
+			GROUP BY InvoiceTemp.Account
+			HAVING (
+			SUM( ServiceTypeTotal.Charge ) != ServiceTotal.TotalCharge
+			OR SUM( ServiceTotal.TotalCharge ) != InvoiceTemp.Total
+			)
+		 */
+		$this->_rptBillingReport->AddMessage("Validating Invoice Totals...\t\t\t", FALSE);
+		$strSelect	=	"InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM(ServiceTypeTotal.Charge) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM(ServiceTotal.TotalCharge) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal";
+		$strFrom	=	"ServiceTotal, ServiceTypeTotal, InvoiceTemp";
+		$strWhere	=	"ServiceTypeTotal.Service = ServiceTotal.Service AND " .
+						"ServiceTotal.Account = InvoiceTemp.Account";
+		$strHaving	=	"(SUM(ServiceTypeTotal.Charge) != ServiceTotal.TotalCharge OR " .
+						"SUM(ServiceTotal.TotalCharge) != InvoiceTemp.Total)";
+		$selBillValidate = new StatementSelect($strFrom, $strSelect, $strWhere, NULL, NULL, "InvoiceTemp.Account\nHAVING ".$strHaving);
+		$intInvalid = $selBillValidate->Execute();
+		$arrBillValid = $selBillValidate->Fetch();
+		if($intInvalid === FALSE)
+		{
+			// Error
+		}
+		if ($intInvalid == 0)
+		{
+			// Report Success
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		else
+		{
+			// Report Bad Match & how many didn't match
+			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- $intInvalid invalid invoices");
+		}
+		
+		// BILLING OUTPUT
+		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
+		{
+			$this->_rptBillingReport->AddMessage("Generating sample invoices for output type $strKey...\t\t", FALSE);
+			
+			// build billing output sample
+			if ($this->_arrBillOutput[$strKey]->BuildSample($strInvoiceRun) === FALSE)
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- Reason: Building Sample Invoices failed");
+				continue;
+			}
+			
+			// send billing output sample
+			if ($this->_arrBillOutput[$strKey]->SendSample() === FALSE)
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- Reason: Sending Sample Invoices failed");
+				continue;
+			}
+			
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// update Invoice Status to INVOICE_TEMP
+		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = INVOICE_TEMP;
+		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_PRINT, $arrUpdateData);
+		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			Debug($updInvoiceStatus->Error());
+			// Report
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// Finish off Billing Report
+		$arrReportLines['<Total>']	= $this->intPassed + $this->intFailed;
+		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
+		$arrReportLines['<Pass>']	= $this->intPassed;
+		$arrReportLines['<Fail>']	= $this->intFailed;
+		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
+		
+		// FIXME: Remove if we want to do the bill audit
+		return;
+		
+		// Generate the Bill Audit Report
+		$this->_rptBillingReport->AddMessage(MSG_GENERATE_AUDIT, FALSE);
+		$mixResponse = $this->_GenerateBillAudit();
+		if($mixResponse === FALSE)
+		{
+			// Error out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\tReason: There was an error retrieving from the database", FALSE);
+		}
+		elseif($mixResponse < 0)
+		{
+			// There was no invoice data
+			$this->_rptAuditReport->AddMessage("There was no invoice data to generate this report from.");
+			$this->_rptBillingReport->AddMessage(MSG_IGNORE."\n\t- There was no invoice data", FALSE);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK, FALSE);
+		}
+		// Add Footer and Send off the audit report
+		$this->_rptAuditReport->AddMessage(MSG_HORIZONTAL_RULE);
+		$this->_rptAuditReport->Finish();
+	}
+
+
+
+
+	//------------------------------------------------------------------------//
+	// GenerateInvoices
+	//------------------------------------------------------------------------//
+	/**
+	 * GenerateInvoices()
+	 *
+	 * Generates Invoices for an array of accounts
+	 *
+	 * Generates Invoices for an array of accounts
+	 *
+	 * @param	array	$arrAccount		Indexed array of accounts to generate invoices for
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+	function GenerateInvoices($arrAccounts)
+	{
+		if (!is_array($arrAccounts))
+		{
+			return FALSE;
+		}
+		
 		// Report Title
 		$this->_rptBillingReport->AddMessage("\n".MSG_BILLING_TITLE."\n");
 		
@@ -214,7 +356,8 @@
 			$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 			
 			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
-			if(!$updCDRs->Execute($arrCDRCols, Array('Account' => $arrAccount['Id'])))
+			$this->arrCDRCols['InvoiceRun'] = $this->_strInvoiceRun;
+			if(!$this->updCDRs->Execute($this->arrCDRCols, Array('Account' => $arrAccount['Id'])))
 			{
 				// Report and continue
 				$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
@@ -228,7 +371,7 @@
 			
 			// build query
 			$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
-			$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$strInvoiceRun."' AS InvoiceRun,";
+			$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
 			$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
 			$strQuery .= " FROM CDR";
 			$strQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
@@ -250,8 +393,8 @@
 			$this->_rptBillingReport->AddMessage(MSG_GET_SERVICES, FALSE);
 
 			// Retrieve list of services for this account
-			$selServices->Execute(Array('Account' => $arrAccount['Id']));
-			if(!$arrServices = $selServices->FetchAll())
+			$this->selServices->Execute(Array('Account' => $arrAccount['Id']));
+			if(!$arrServices = $this->selServices->FetchAll())
 			{
 				// Report and continue
 				$this->_rptBillingReport->AddMessageVariables(MSG_LINE_FAILED, Array('<Reason>' => "No Services for this Account"));
@@ -363,7 +506,7 @@
 				$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
 				
 				$arrUpdateData = Array();
-				$arrUpdateData['InvoiceRun']	= $strInvoiceRun;
+				$arrUpdateData['InvoiceRun']	= $this->_strInvoiceRun;
 				$arrUpdateData['Status']		= CHARGE_TEMP_INVOICE;
 				$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED, $arrUpdateData);
 				if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
@@ -380,7 +523,7 @@
 				
 				// Calculate Debit and Credit Totals
 				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
-				$mixResult = $selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $this->_strInvoiceRun));
+				$mixResult = $this->selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $this->_strInvoiceRun));
 				if($mixResult > 2 || $mixResult === FALSE)
 				{
 					if ($mixResult === FALSE)
@@ -394,7 +537,7 @@
 				}
 				else
 				{
-					$arrDebitsCredits = $selDebitsCredits->FetchAll();
+					$arrDebitsCredits = $this->selDebitsCredits->FetchAll();
 					foreach($arrDebitsCredits as $arrCharge)
 					{
 						if ($arrCharge['Nature'] == "DR")
@@ -420,16 +563,16 @@
 				$arrServiceTotal['AccountGroup']	= $arrAccount['AccountGroup'];
 				$arrServiceTotal['Account']			= $arrAccount['Id'];
 				$arrServiceTotal['Service']			= $arrService['Service'];
-				$arrServiceTotal['InvoiceRun']		= $strInvoiceRun;
+				$arrServiceTotal['InvoiceRun']		= $this->_strInvoiceRun;
 				$arrServiceTotal['CappedCharge']	= $arrService['CappedCharge'];
 				$arrServiceTotal['UncappedCharge']	= $arrService['UncappedCharge'];
 				$arrServiceTotal['TotalCharge']		= $fltTotalCharge;
 				$arrServiceTotal['Credit']			= $fltServiceCredits;
 				$arrServiceTotal['Debit']			= $fltServiceDebits;
 				
-				if (!$insServiceTotal->Execute($arrServiceTotal))
+				if (!$this->insServiceTotal->Execute($arrServiceTotal))
 				{
-					Debug($insServiceTotal->Error());
+					Debug($this->insServiceTotal->Error());
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
 					continue;
 				}
@@ -447,14 +590,14 @@
 			$fltBalance	= $fltTotal + $fltTax;
 
 			// calculate account debit balance
-			if(!$selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id'])))
+			if(!$this->selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id'])))
 			{				
 				// Report and fail out
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Cannot retrieve Account Balance");
-				$intFailed++;
+				$this->intFailed++;
 				continue;
 			}
-			$arrAccountBalance = $selCalcAccountBalance->Fetch();
+			$arrAccountBalance = $this->selCalcAccountBalance->Fetch();
 			if (($fltAccountDebitBalance = $arrAccountBalance['AccountBalance']) == NULL)
 			{
 				$fltAccountDebitBalance = 0.0;
@@ -515,14 +658,14 @@
 			$arrInvoiceData['Disputed']			= 0;
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
 			$arrInvoiceData['Status']			= INVOICE_PRINT;
-			$arrInvoiceData['InvoiceRun']		= $strInvoiceRun;
+			$arrInvoiceData['InvoiceRun']		= $this->_strInvoiceRun;
 			
 			// report error or success
-			if(!$insTempInvoice->Execute($arrInvoiceData))
+			if(!$this->insTempInvoice->Execute($arrInvoiceData))
 			{				
 				// Report and fail out
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Insert failed");
-				$intFailed++;
+				$this->intFailed++;
 				continue;
 			}
 			
@@ -533,127 +676,20 @@
 			// build billing output for this invoice
 			$this->_arrBillOutput[$intPrintTarget]->AddInvoice($arrInvoiceData);
 			
-			$intPassed++;
+			$this->intPassed++;
 			
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK."\n");
 		}
-		
-		
-		
-		// BILLING VALIDATION
-		// Make sure all of our totals add up
-		/*
-			Direct SQL.......
-			
-			SELECT InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM( ServiceTypeTotal.Charge ) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM( ServiceTotal.TotalCharge ) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal
-			FROM ServiceTotal, ServiceTypeTotal, InvoiceTemp
-			WHERE ServiceTypeTotal.Service = ServiceTotal.Service
-			AND ServiceTotal.Account = InvoiceTemp.Account
-			GROUP BY InvoiceTemp.Account
-			HAVING (
-			SUM( ServiceTypeTotal.Charge ) != ServiceTotal.TotalCharge
-			OR SUM( ServiceTotal.TotalCharge ) != InvoiceTemp.Total
-			)
-		 */
-		$this->_rptBillingReport->AddMessage("Validating Invoice Totals...\t\t\t", FALSE);
-		$strSelect	=	"InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM(ServiceTypeTotal.Charge) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM(ServiceTotal.TotalCharge) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal";
-		$strFrom	=	"ServiceTotal, ServiceTypeTotal, InvoiceTemp";
-		$strWhere	=	"ServiceTypeTotal.Service = ServiceTotal.Service AND " .
-						"ServiceTotal.Account = InvoiceTemp.Account";
-		$strHaving	=	"(SUM(ServiceTypeTotal.Charge) != ServiceTotal.TotalCharge OR " .
-						"SUM(ServiceTotal.TotalCharge) != InvoiceTemp.Total)";
-		$selBillValidate = new StatementSelect($strFrom, $strSelect, $strWhere, NULL, NULL, "InvoiceTemp.Account\nHAVING ".$strHaving);
-		$intInvalid = $selBillValidate->Execute();
-		$arrBillValid = $selBillValidate->Fetch();
-		if($intInvalid === FALSE)
-		{
-			// Error
-		}
-		if ($intInvalid == 0)
-		{
-			// Report Success
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		else
-		{
-			// Report Bad Match & how many didn't match
-			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- $intInvalid invalid invoices");
-		}
-		
-		// BILLING OUTPUT
-		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
-		{
-			$this->_rptBillingReport->AddMessage("Generating sample invoices for output type $strKey...\t\t", FALSE);
-			
-			// build billing output sample
-			if ($this->_arrBillOutput[$strKey]->BuildSample($strInvoiceRun) === FALSE)
-			{
-				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- Reason: Building Sample Invoices failed");
-				continue;
-			}
-			
-			// send billing output sample
-			if ($this->_arrBillOutput[$strKey]->SendSample() === FALSE)
-			{
-				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- Reason: Sending Sample Invoices failed");
-				continue;
-			}
-			
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
-		// update Invoice Status to INVOICE_TEMP
-		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
-		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = INVOICE_TEMP;
-		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_PRINT, $arrUpdateData);
-		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
-		{
-			Debug($updInvoiceStatus->Error());
-			// Report
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-		}
-		else
-		{
-			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
-		// Finish off Billing Report
-		$arrReportLines['<Total>']	= $intPassed + $intFailed;
-		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
-		$arrReportLines['<Pass>']	= $intPassed;
-		$arrReportLines['<Fail>']	= $intFailed;
-		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
-		
-		// FIXME: Remove if we want to do the bill audit
-		return;
-		
-		// Generate the Bill Audit Report
-		$this->_rptBillingReport->AddMessage(MSG_GENERATE_AUDIT, FALSE);
-		$mixResponse = $this->_GenerateBillAudit();
-		if($mixResponse === FALSE)
-		{
-			// Error out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\tReason: There was an error retrieving from the database", FALSE);
-		}
-		elseif($mixResponse < 0)
-		{
-			// There was no invoice data
-			$this->_rptAuditReport->AddMessage("There was no invoice data to generate this report from.");
-			$this->_rptBillingReport->AddMessage(MSG_IGNORE."\n\t- There was no invoice data", FALSE);
-		}
-		else
-		{
-			$this->_rptBillingReport->AddMessage(MSG_OK, FALSE);
-		}
-		// Add Footer and Send off the audit report
-		$this->_rptAuditReport->AddMessage(MSG_HORIZONTAL_RULE);
-		$this->_rptAuditReport->Finish();
-		
-
 	}
+
+
+
+
+
+
+
+
 	
 	//------------------------------------------------------------------------//
 	// Commit
@@ -1385,13 +1421,35 @@
 	 *
 	 * @method
 	 */
- 	function ExecuteAccount($intAccuont)
- 	{
-		//TODO!rich! make this do stuff
-		
+ 	function ExecuteAccount($intAccount)
+ 	{		
 		// fail if there is a temp invoice for this account
+		$selFindTempInvoice = new StatementSelect("InvoiceTemp", "Id", "Account = $intAccount");
+		if (!$selFindTempInvoice->Execute())
+		{
+			Debug("Temporary Invoice found!  Aborting...");
+			return;
+		}
 		
-		// do everything like a normal invoice
+		// Select Account Details
+		$selAccountDetails	= new StatementSelect("Account", "*", "Id = $intAccount");
+		if (!$selAccountDetails->Execute())
+		{
+			Debug("Error retrieving account data for $intAccount... : ".$selAccountDetails->Error());
+		}
+		
+		// FetchAll will automatically put it in an indexed array for us
+		$arrAccount = $selAccountDetails->FetchAll();
+		
+		// Generate the invoice
+		$this->GenerateInvoices($arrAccount);
+		
+		// Finish off Billing Report
+		$arrReportLines['<Total>']	= $this->intPassed + $this->intFailed;
+		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
+		$arrReportLines['<Pass>']	= $this->intPassed;
+		$arrReportLines['<Fail>']	= $this->intFailed;
+		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1576,7 +1634,7 @@
 		$arrUpdateData['Status']	= INVOICE_PRINT;
 		$ubiInvoiceStatus = new StatementUpdate("Invoice", $arrUpdateData);
 		
-		// for each account
+		// for each invoice
 		$intPassed = 0;
 		foreach($arrInvoices as $intInvoice)
 		{
@@ -1613,9 +1671,6 @@
 		{
 			return FALSE;
 		}
-		
-		// Generate a new InvoiceRun for these reprints
-		$strNewInvoiceRun = uniqid();
 		
 		// build an output file
 		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput())
