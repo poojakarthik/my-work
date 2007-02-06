@@ -52,6 +52,7 @@ foreach ($arrAccounts as $arrAccount)
 	}
 	$fltGrandTotal += (float)$mixResult;
 	$intTimeLapse = microtime() - $intLastTime;
+	$intLastTime = microtime();
 	echo '$'.$fltGrandTotal." ($fltTimeLapse secs)\n";
 }
 
