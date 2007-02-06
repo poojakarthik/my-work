@@ -1116,6 +1116,8 @@
 			return FALSE;
 		}
 		$arrMetaData = $selMetaData->Fetch();
+		
+		Debug("{$arrMetaData['MinId']} {$arrMetaData['MaxId']} {$arrMetaData['Invoices']} {$arrMetaData['InvoiceRun']}");
 
 		// Set the InvoiceRun
 		$strInvoiceRun = $arrMetaData['InvoiceRun'];
