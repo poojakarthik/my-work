@@ -9,7 +9,7 @@
 // Reprint invoices for a defined list of accounts
 //----------------------------------------------------------------------------//
  
- echo "<pre>";
+ echo "<pre>\n";
 
 // load framework
 $strFrameworkDir = "../framework/";
@@ -48,7 +48,7 @@ class InvoiceTotal extends ApplicationBaseClass
 			$fltLastTime = microtime(TRUE);
 			
 			echo "+ ($i of $intCount) Working Account #".$arrAccount['Id']."...\t\t\t";
-			if (($mixResult = $this->GetInvoiceTotal($arrAccount['Id'])) === FALSE)
+			if (($mixResult = $this->Framework->GetInvoiceTotal($arrAccount['Id'])) === FALSE)
 			{
 				echo "FAILED!\n";
 				continue;
