@@ -38,9 +38,11 @@ $arrAccounts = $selAccounts->FetchAll();
 // loop through the accounts
 $fltGrandTotal = 0.0;
 $i = 0;
+$fltLastTime = 0.0;
 foreach ($arrAccounts as $arrAccount)
 {
 	$i++;
+	$fltLastTime = microtime(TRUE);
 	
 	echo "+ ($i of $intCount) Working Account #".$arrAccount['Id']."...\t\t\t";
 	if (($mixResult = $hlpHelper->GetInvoiceTotal($arrAccount['Id'])) === FALSE)
@@ -49,7 +51,8 @@ foreach ($arrAccounts as $arrAccount)
 		continue;
 	}
 	$fltGrandTotal += (float)$mixResult;
-	echo '$'.$fltGrandTotal."\n";
+	$intTimeLapse = microtime() - $intLastTime;
+	echo '$'.$fltGrandTotal." ($fltTimeLapse secs)\n";
 }
 
 Debug("Grand Total: $fltGrandTotal (ex. GST)");
