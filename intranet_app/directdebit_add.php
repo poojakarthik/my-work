@@ -50,7 +50,7 @@
 		{
 			$oblstrError->setValue ('BSB');
 		}
-		else if (!preg_match ("/^(\d{6})$/", $_POST ['DirectDebit']['BSB']))
+		else if (!BSBValid ($_POST ['DirectDebit']['BSB']))
 		{
 			$oblstrError->setValue ('BSB');
 		}

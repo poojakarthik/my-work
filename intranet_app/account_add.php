@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_ACCOUNT | MODULE_CUSTOMER_GROUP | MODULE_DIRECT_DEBIT | MODULE_CREDIT_CARD | MODULE_BILLING | MODULE_STATE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT_GROUP | MODULE_ACCOUNT | MODULE_CUSTOMER_GROUP | MODULE_DIRECT_DEBIT | MODULE_CREDIT_CARD | MODULE_BILLING | MODULE_STATE | MODULE_TITLE;
 	
 	// call application
 	require ('config/application.php');
@@ -55,6 +55,7 @@
 	$cgsCustomerGroups		= $Style->attachObject (new CustomerGroups		($_POST ['Account']['CustomerGroup']));
 	$ccsCreditCardTypes		= $Style->attachObject (new CreditCardTypes		($_POST ['CC']['CardType']));
 	$sstStates				= $Style->attachObject (new ServiceStateTypes	($_POST ['Account']['State']));
+	$ttyTitleTypes			= $Style->attachObject (new TitleTypes			($_POST ['Contact']['Title']));
 	
 	// Set up the basis of information within the system
 	$oblarrUIValues			= $Style->attachObject (new dataArray ('ui-values'));
@@ -182,6 +183,10 @@
 			$oblstrError->setValue ('Billing Method');
 		}
 		
+		
+		
+		
+		
 		// This section deals with Direct Debits
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['BankName'])
 		{
@@ -193,16 +198,30 @@
 			// This throws an error if there is no BSB information
 			$oblstrError->setValue ('DirectDebit BSB');
 		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !BSBValid ($_POST ['DDR']['BSB']))
+		{
+			// This throws an error if the BSB number is invalid
+			$oblstrError->setValue ('DirectDebit BSB Invalid');
+		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['AccountNumber'])
 		{
 			// This throws an error if there is no Account Number
 			$oblstrError->setValue ('DirectDebit AccountNumber');
+		}
+		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !BankAccountValid ($_POST ['DDR']['AccountNumber']))
+		{
+			// This throws an error if the Bank Account number is invalid
+			$oblstrError->setValue ('DirectDebit AccountNumber Invalid');
 		}
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT && !$_POST ['DDR']['AccountName'])
 		{
 			// This throws an error if there is no Account Name
 			$oblstrError->setValue ('DirectDebit AccountName');
 		}
+		
+		
+		
+		
 		
 		// This section deals with Credit Cards
 		else if ($_POST ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD && !$ccsCreditCardTypes->setValue ($_POST ['CC']['CardType']))
@@ -252,7 +271,7 @@
 		// The following errors are related to New Contact Creation. These
 		// errors will only be run when a New Contact has been requested (or forced)
 		
-		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['Title'])
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$ttyTitleTypes->setValue ($_POST ['Contact']['Title']))
 		{
 			// This throws an error if the Contact's Title is Blank
 			$oblstrError->setValue ('Contact Title');
@@ -287,6 +306,21 @@
 			// This throws an error if the Contact's Phone and Mobile are Blank
 			$oblstrError->setValue ('Contact Phones Empty');
 		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && ($_POST ['Contact']['Phone'] && !PhoneNumberValid ($_POST ['Contact']['Phone'])))
+		{
+			// This throws an error if a Contact's Phone Number is specified but is Invalid
+			$oblstrError->setValue ('Contact Phone Invalid');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && ($_POST ['Contact']['Mobile'] && !PhoneNumberValid ($_POST ['Contact']['Mobile'])))
+		{
+			// This throws an error if a Contact's Mobile Number is specified but is Invalid
+			$oblstrError->setValue ('Contact Mobile Invalid');
+		}
+		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && ($_POST ['Contact']['Fax'] && !PhoneNumberValid ($_POST ['Contact']['Fax'])))
+		{
+			// This throws an error if a Contact's Fax Number is specified but is Invalid
+			$oblstrError->setValue ('Contact Fax Invalid');
+		}
 		else if ((!$acgAccountGroup || !$_POST ['Contact']['USE']) && !$_POST ['Contact']['UserName'])
 		{
 			// This throws an error if the Contact's Username is Blank
@@ -302,11 +336,7 @@
 			// This throws an error if the Contact's Password is Blank
 			$oblstrError->setValue ('Contact PassWord');
 		}
-		else if (!$ccsCreditCardTypes->setValue ($_POST ['CC']['CardType']))
-		{
-			// This throws an error if the Credit Card Type is Invalid
-			$oblstrError->setValue ('CreditCard CardType');
-		}
+		
 		else
 		{
 			// If we reach this point in the Script, then we're probably going to making the Account

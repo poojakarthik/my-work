@@ -517,8 +517,8 @@
 			);
 			
 			$arrCharge = Array (
-				"AccountGroup"	=> "",
-				"Account"		=> "",
+				"AccountGroup"	=> $intCustomerId,
+				"Account"		=> $intCustomerId,
 				"Service"		=> NULL,
 				"InvoiceRun"	=> NULL,
 				"CreatedBy"		=> NULL,
@@ -536,7 +536,7 @@
 			
 			foreach ($arrDetails as $value)
 			{
-				if (strstr ($value, ": LP") || strstr ($value, "#:"))
+				if (strstr ($value, ": LP") || strstr ($value, "#:") || strstr ($value, "CSG Refund"))
 				{
 					$arrData = Array (
 						"0"		=> $value
@@ -621,11 +621,15 @@
 				$arrCharge [$arrChargeFields [$arrData [0]]] .= $arrData [1];
 			}
 			
+			/*
 			// Only add this item if it was added after the 1st of January
-			if (strtotime ($arrCharge ['CreatedOn']) >= mktime (0, 0, 0, 1, 1, 2007))
+			if (strtotime ($arrCharge ['CreatedOn']) >= mktime (0, 0, 0, 12, 1, 2006))
 			{
 				$arrCharges [] = $arrCharge;
 			}
+			*/
+			
+			$arrCharges [] = $arrCharge;
 		}
 		
 		return $arrCharges;
@@ -713,7 +717,16 @@
 			
 			foreach ($arrDetails as $value)
 			{
-				$arrData = preg_split ("/\:/", $value, 2);
+				if (strstr ($value, "IMEI"))
+				{
+					$arrData = Array (
+						"0"		=> $value
+					);
+				}
+				else
+				{
+					$arrData = preg_split ("/\:/", $value, 2);
+				}
 				
 				if ($arrData [0] == "")
 				{
@@ -949,7 +962,17 @@
 			$strInvOwing	= trim ($dxpRow->Query ("/tr/td[position() = 5]")->Item (0)->nodeValue);
 			$bolInvSent		= trim ($dxpRow->Query ("/tr/td[position() = 6]")->Item (0)->nodeValue) == "Yes";
 			
-			list ($strMonth, $strYear) = explode ("_", $strMonthYear);
+			list ($strYear, $strMonth) = explode ("_", $strMonthYear);
+			
+			// get rid of $ and , in amounts
+			$strInvAmount	= str_replace ("$", "", $strInvAmount);
+			$strInvAmount	= str_replace (",", "", $strInvAmount);
+			
+			$strInvApplied	= str_replace ("$", "", $strInvApplied);
+			$strInvApplied	= str_replace (",", "", $strInvApplied);
+			
+			$strInvOwing	= str_replace ("$", "", $strInvOwing);
+			$strInvOwing	= str_replace (",", "", $strInvOwing);
 			
 			// To make sure we're dealing with an Invoice and not a pure PDF, 
 			// check that the Invoice Number exists

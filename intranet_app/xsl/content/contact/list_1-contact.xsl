@@ -78,6 +78,7 @@
 						</tr>
 						<xsl:if test="/Response/ui-answers/Contacts/Results/collationLength &lt;= 15">
 							<xsl:for-each select="/Response/ui-answers/Contacts/Results/rangeSample/Contact">
+								<xsl:variable name="Contact" select="." />
 								<tr>
 									<xsl:attribute name="class">
 										<xsl:choose>
@@ -99,7 +100,7 @@
 											
 										</input>
 									</td>
-									<td><xsl:value-of select="./Title" /></td>
+									<td><xsl:value-of select="/Response/ui-answers/TitleTypes/TitleType[./Id = $Contact/Title]/Name" /></td>
 									<td><xsl:value-of select="./FirstName" /></td>
 									<td><xsl:value-of select="./LastName" /></td>
 									<td><xsl:value-of select="./JobTitle" /></td>

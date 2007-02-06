@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_CONTACT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_CONTACT | MODULE_TITLE;
 	
 	// call application
 	require ('config/application.php');
@@ -43,6 +43,8 @@
 	// Error Handling
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
+	$ttsTitleTypes = $Style->attachObject (new TitleTypes);
+	
 	// Start UI Values
 	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
 	$oblstrTitle			= $oblarrUIValues->Push (new dataString ('Title'			, $cntContact->Pull ('Title')->getValue ()));
@@ -69,22 +71,6 @@
 		$oblstrDOB_Month->setValue	($cntContact->Pull ('DOB')->Pull ('month')->getValue ());
 		$oblstrDOB_Day->setValue	($cntContact->Pull ('DOB')->Pull ('day')->getValue ());
 	}
-	
-	// Set the remaining UI Values
-	if ($_POST ['Title'])			$oblstrTitle->setValue			($_POST ['Title']);
-	if ($_POST ['FirstName'])		$oblstrFirstName->setValue		($_POST ['FirstName']);
-	if ($_POST ['LastName'])		$oblstrLastName->setValue		($_POST ['LastName']);
-	if ($_POST ['JobTitle'])		$oblstrJobTitle->setValue		($_POST ['JobTitle']);
-	if ($_POST ['DOB']['year'])		$oblstrDOB_Year->setValue		($_POST ['DOB']['year']);
-	if ($_POST ['DOB']['month'])	$oblstrDOB_Month->setValue		($_POST ['DOB']['month']);
-	if ($_POST ['DOB']['day'])		$oblstrDOB_Day->setValue		($_POST ['DOB']['day']);
-	if ($_POST ['Email'])			$oblstrEmail->setValue			($_POST ['Email']);
-	if ($_POST ['Phone'])			$oblstrPhone->setValue			($_POST ['Phone']);
-	if ($_POST ['Mobile'])			$oblstrMobile->setValue			($_POST ['Mobile']);
-	if ($_POST ['Fax'])				$oblstrFax->setValue			($_POST ['Fax']);
-	if ($_POST ['UserName'])		$oblstrUserName->setValue		($_POST ['UserName']);
-	if ($_POST ['PassWord'])		$oblstrPassWord->setValue		($_POST ['PassWord']);
-	if ($_POST ['CustomerContact'])	$oblbolCustomerContact->setValue($_POST ['CustomerContact']);
 	
 	// We can identify whether or not we're planning
 	// to save information depending on whether
@@ -209,6 +195,22 @@
 			header ("Location: contact_view.php?Id=" . $cntContact->Pull ('Id')->getValue ());
 			exit;
 		}
+		
+		// Set the UI Values
+		$oblstrTitle->setValue			($_POST ['Title']);
+		$oblstrFirstName->setValue		($_POST ['FirstName']);
+		$oblstrLastName->setValue		($_POST ['LastName']);
+		$oblstrJobTitle->setValue		($_POST ['JobTitle']);
+		$oblstrDOB_Year->setValue		($_POST ['DOB']['year']);
+		$oblstrDOB_Month->setValue		($_POST ['DOB']['month']);
+		$oblstrDOB_Day->setValue		($_POST ['DOB']['day']);
+		$oblstrEmail->setValue			($_POST ['Email']);
+		$oblstrPhone->setValue			($_POST ['Phone']);
+		$oblstrMobile->setValue			($_POST ['Mobile']);
+		$oblstrFax->setValue			($_POST ['Fax']);
+		$oblstrUserName->setValue		($_POST ['UserName']);
+		$oblstrPassWord->setValue		($_POST ['PassWord']);
+		$oblbolCustomerContact->setValue($_POST ['CustomerContact']);
 	}
 	
 	// Pull documentation information for a Contact

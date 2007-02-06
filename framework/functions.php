@@ -1226,13 +1226,26 @@ function EmailAddressValid ($strEmail) {
 // postcode valid
 function PostcodeValid ($strPostcode)
 {
-	return preg_match ("/^(\d{4})$/", $strPostcode);
+	return preg_match ("/^\d{4}$/", $strPostcode);
 }
 
 // valid phone number (international ok)
 function PhoneNumberValid ($strNumber)
 {
 	return preg_match ("/^\+?[\d\s]{10,}$/", $strNumber);
+}
+
+// valid bsb number
+function BSBValid ($strNumber)
+{
+	return preg_match ("/^\d{6}$/", $strNumber);
+}
+
+
+// valid account number
+function BankAccountValid ($strNumber)
+{
+	return preg_match ("/^\d{9}$/", $strNumber);
 }
 
 ?>

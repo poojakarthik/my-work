@@ -12,7 +12,7 @@
 		<!-- This page is for Provisioning and Service Address Details -->
 		
 		<h1>Provisioning</h1>
-		<!-- TODO!bash! Rename this page and stick all of the 'Service address' pages in the provisioning folder where they belong -->
+		<!-- TODO!bash! [  DONE  ]		Rename this page and stick all of the 'Service address' pages in the provisioning folder where they belong -->
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/note_add.js"></script>
 		
@@ -226,7 +226,7 @@
 									<td>
 										<select name="EndUserTitle">
 											<option></option>
-											<xsl:for-each select="/Response/ServiceEndUserTitleTypes/ServiceEndUserTitleType">
+											<xsl:for-each select="/Response/TitleTypes/TitleType">
 												<option>
 													<xsl:attribute name="value">
 														<xsl:text></xsl:text>

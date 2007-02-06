@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// ServiceEndUserTitleTypes.php
+	// TitleTypes.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * ServiceEndUserTitleTypes.php
+	 * TitleTypes.php
 	 *
 	 * Contains the ServiceType object
 	 *
 	 * Contains the ServiceType object
 	 *
-	 * @file		ServiceEndUserTitleTypes.php
+	 * @file		TitleTypes.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'Bash' Isai
@@ -21,23 +21,23 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// ServiceEndUserTitleTypes
+	// TitleTypes
 	//----------------------------------------------------------------------------//
 	/**
-	 * ServiceEndUserTitleTypes
+	 * TitleTypes
 	 *
 	 * Textual Service Types
 	 *
-	 * Allows Textual (named) Representation of the Constants which form ServiceEndUserTitleTypes
+	 * Allows Textual (named) Representation of the Constants which form TitleTypes
 	 *
-	 * @prefix	etl
+	 * @prefix	tts
 	 *
 	 * @package	intranet_app
-	 * @class	ServiceEndUserTitleTypes
+	 * @class	TitleTypes
 	 * @extends	dataEnumerative
 	 */
 	
-	class ServiceEndUserTitleTypes extends dataEnumerative
+	class TitleTypes extends dataEnumerative
 	{
 		
 
@@ -48,27 +48,27 @@
 		/**
 		 * __construct()
 		 *
-		 * Controls a List of ServiceEndUserTitleTypes
+		 * Controls a List of TitleTypes
 		 *
-		 * Controls a List of ServiceEndUserTitleTypes
+		 * Controls a List of TitleTypes
 		 *
-		 * @param	String		$strId			[Optional] A representation of a ServiceEndUserTitleType which matches a Constant
+		 * @param	String		$strId			[Optional] A representation of a TitleType which matches a Constant
 		 *
 		 * @method
 		 */
 		
 		function __construct ($strId=null)
 		{
-			parent::__construct ('ServiceEndUserTitleTypes');
+			parent::__construct ('TitleTypes');
 			
 			// Instantiate the Variable Values for possible selection
-			$this->_MASTER		= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_MASTER));
-			$this->_MISTER		= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_MISTER));
-			$this->_MRS			= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_MRS));
-			$this->_MS			= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_MS));
-			$this->_MISS		= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_MISS));
-			$this->_DOCTOR		= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_DOCTOR));
-			$this->_PROFESSOR	= $this->Push (new ServiceEndUserTitleType (END_USER_TITLE_TYPE_PROFESSOR));
+			$this->_MASTER		= $this->Push (new TitleType (END_USER_TITLE_TYPE_MASTER));
+			$this->_MISTER		= $this->Push (new TitleType (END_USER_TITLE_TYPE_MISTER));
+			$this->_MRS			= $this->Push (new TitleType (END_USER_TITLE_TYPE_MRS));
+			$this->_MS			= $this->Push (new TitleType (END_USER_TITLE_TYPE_MS));
+			$this->_MISS		= $this->Push (new TitleType (END_USER_TITLE_TYPE_MISS));
+			$this->_DOCTOR		= $this->Push (new TitleType (END_USER_TITLE_TYPE_DOCTOR));
+			$this->_PROFESSOR	= $this->Push (new TitleType (END_USER_TITLE_TYPE_PROFESSOR));
 			
 			if ($strId !== null)
 			{
@@ -86,7 +86,7 @@
 		 *
 		 * Change the Selected Service Type to another Service Type
 		 *
-		 * @param	String		$strId		The value of the ServiceEndUserTitleType Constant wishing to be set
+		 * @param	String		$strId		The value of the TitleType Constant wishing to be set
 		 * @return	Boolean					Whether or not the Select succeeded
 		 *
 		 * @method

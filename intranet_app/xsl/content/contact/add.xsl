@@ -116,7 +116,7 @@
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
-					<!--TODO!bash! URGENT! Make title a drop down box! -->
+					<!--TODO!bash! [  DONE  ]		URGENT! Make title a drop down box! -->
 						<tr>
 							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
@@ -126,12 +126,24 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Title" class="input-string">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/ui-values/Title" />
-									</xsl:attribute>
-								</input>
+								<select name="Title">
+									<option value=""></option>
+									<xsl:for-each select="/Response/TitleTypes/TitleType">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:if test="./Id = /Response/ui-values/Title">
+												<xsl:attribute name="selected">
+													<xsl:text>selected</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+											<xsl:text></xsl:text>
+											<xsl:value-of select="./Name" />
+										</option>
+									</xsl:for-each>
+								</select>
 							</td>
 						</tr>
 						<tr>

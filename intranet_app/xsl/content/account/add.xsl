@@ -70,8 +70,14 @@
 					<xsl:when test="/Response/Error = 'DirectDebit BSB'">
 						Please enter a Direct Debit BSB #.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'DirectDebit BSB Invalid'">
+						Please enter a valid Direct Debit BSB #.
+					</xsl:when>
 					<xsl:when test="/Response/Error = 'DirectDebit AccountNumber'">
 						Please enter a Direct Debit Account #.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'DirectDebit AccountNumber Invalid'">
+						Please enter a valid Direct Debit Account #.
 					</xsl:when>
 					<xsl:when test="/Response/Error = 'DirectDebit AccountName'">
 						Please enter a Direct Debit Account Name.
@@ -120,6 +126,15 @@
 					<xsl:when test="/Response/Error = 'Contact Phones Empty'">
 						Please enter a Contact Number.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact Phone Invalid'">
+						Please enter a valid Phone Number.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact Mobile Invalid'">
+						Please enter a valid Mobile Number.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Contact Fax Invalid'">
+						Please enter a valid Fax Number.
+					</xsl:when>
 					<xsl:when test="/Response/Error = 'Contact UserName Empty'">
 						Please enter a Username.
 					</xsl:when>
@@ -165,8 +180,8 @@
 				<xsl:otherwise>
 					<div class="MsgNoticeWide">
 						<strong><span class="Attention">Attention</span> :</strong>
-						This form will add a new Customer.  If you wish to add an Account to an existing Customer, you will need to use the &quot; Add Associated Account&quot; link from the existing Account.
-				
+						This form will add a new Customer. If you wish to add an Account to an existing Customer, 
+						you will need to use the &quot; Add Associated Account&quot; link from the existing Account.
 					</div>
 				</xsl:otherwise>
 			</xsl:choose>
@@ -709,6 +724,7 @@
 							<td>
 								<select name="Contact[Id]">
 									<xsl:for-each select="/Response/Contacts/Contact">
+										<xsl:variable name="Contact" select="." />
 										<option>
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
@@ -719,7 +735,7 @@
 													<xsl:text>selected</xsl:text>
 												</xsl:attribute>
 											</xsl:if>
-											<xsl:value-of select="./Title" />
+											<xsl:value-of select="/Response/TitleTypes/TitleType[./Id=$Contact/Title]/Name" />
 											<xsl:text> </xsl:text>
 											<xsl:value-of select="./FirstName" />
 											<xsl:text> </xsl:text>
@@ -769,13 +785,25 @@
 							</xsl:call-template>
 						</th>
 						<td>
-						<!--TODO!bash! Make this a dropdown box - Do this Everywhere where there is a title!!!-->
-							<input type="text" name="Contact[Title]" class="input-string">
-								<xsl:attribute name="value">
-									<xsl:text></xsl:text>
-									<xsl:value-of select="/Response/ui-values/Contact/Title" />
-								</xsl:attribute>
-							</input>
+						<!--TODO!bash! [  DONE  ]		Make this a dropdown box - Do this Everywhere where there is a title!!!-->
+							<select name="Contact[Title]">
+								<option value=""></option>
+								<xsl:for-each select="/Response/TitleTypes/TitleType">
+									<option>
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="./Id" />
+										</xsl:attribute>
+										<xsl:if test="/Response/ui-values/Contact/Title = ./Id">
+											<xsl:attribute name="selected">
+												<xsl:text>selected</xsl:text>
+											</xsl:attribute>
+										</xsl:if>
+										<xsl:text></xsl:text>
+										<xsl:value-of select="./Name" />
+									</option>
+								</xsl:for-each>
+							</select>
 						</td>	
 					</tr>
 					<tr>

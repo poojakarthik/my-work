@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_INVOICE | MODULE_CREDIT_CARD | MODULE_DIRECT_DEBIT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_INVOICE | MODULE_CREDIT_CARD | MODULE_DIRECT_DEBIT | MODULE_TITLE;
 	
 	// call application
 	require ('config/application.php');
@@ -274,6 +274,9 @@
 			}
 			else
 			{
+				// Titles (Mr, Mrs, Ms, Master ...)
+				$ttyTitles = $oblarrAnswers->Push (new TitleTypes);
+				
 				// This is displayed when we have to select from a list of possible contacts
 				foreach ($oblsamContacts as &$objContact)
 				{

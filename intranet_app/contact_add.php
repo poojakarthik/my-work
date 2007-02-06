@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_CONTACT | MODULE_ACCOUNT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_CONTACT | MODULE_ACCOUNT | MODULE_TITLE;
 	
 	// call application
 	require ('config/application.php');
@@ -39,10 +39,13 @@
 		exit;
 	}
 	
+	// Retrieve the TitleTypes list
+	$ttyTitleTypes = $Style->attachObject (new TitleTypes);
+	
 	// If we are at a point where we want to save Contact Information
 	if (isset ($_POST ['CustomerContact']))
 	{
-		if (!$_POST ['Title'])
+		if (!$ttyTitleTypes->setValue ($_POST ['Title']))
 		{
 			// Check that a Title was passed through
 			$oblstrError->setValue ('Title');

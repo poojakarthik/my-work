@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_SERVICE_ADDRESS | MODULE_CARRIER | MODULE_PROVISIONING | MODULE_STATE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_SERVICE_ADDRESS | MODULE_CARRIER | MODULE_PROVISIONING | MODULE_STATE | MODULE_TITLE;
 	
 	// call application
 	require ('config/application.php');
@@ -50,13 +50,12 @@
 	$Style->attachObject (new ServiceAddressTypes		(($sadServiceAddress) ? $sadServiceAddress->Pull ('ServiceAddressType')->getValue ()		: null));
 	$Style->attachObject (new ServiceStreetTypes		(($sadServiceAddress) ? $sadServiceAddress->Pull ('ServiceStreetType')->getValue ()			: null));
 	$Style->attachObject (new ServiceStreetSuffixTypes	(($sadServiceAddress) ? $sadServiceAddress->Pull ('ServiceStreetTypeSuffix')->getValue ()	: null));
-	$Style->attachObject (new ServiceEndUserTitleTypes	(($sadServiceAddress) ? $sadServiceAddress->Pull ('EndUserTitle')->getValue ()				: null));
+	$Style->attachObject (new TitleTypes				(($sadServiceAddress) ? $sadServiceAddress->Pull ('EndUserTitle')->getValue ()				: null));
 	$Style->attachObject (new ServiceStateTypes			(($sadServiceAddress) ? $sadServiceAddress->Pull ('ServiceState')->getValue ()				: null));
 	
 	if ($_POST ['Service'])
 	{
 		// Save Information
-		
 		$srvService->ServiceAddressUpdate (
 			Array (
 				'BillName'						=> $_POST ['BillName'],

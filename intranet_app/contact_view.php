@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_NOTE | MODULE_EMPLOYEE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_CONTACT | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_TITLE;
 	
 	// call application
 	require ('config/application.php');
@@ -51,6 +51,9 @@
 	$nosNotes = $Style->attachObject (new Notes);
 	$nosNotes->Constrain ('Contact', 'EQUALS', $cntContact->Pull ('Id')->getValue ());
 	$nosNotes->Sample ();
+	
+	// Titles (Mr, Mrs, Ms, Master ...)
+	$ttyTitles = $Style->attachObject (new TitleTypes);
 	
 	// Output the Account View
 	$Style->Output ('xsl/content/contact/view.xsl');

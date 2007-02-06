@@ -1,16 +1,16 @@
 <?php
 
 	//----------------------------------------------------------------------------//
-	// ServiceEndUserTitleType.php
+	// TitleType.php
 	//----------------------------------------------------------------------------//
 	/**
-	 * ServiceEndUserTitleType.php
+	 * TitleType.php
 	 *
-	 * Contains the ServiceEndUserTitleType object
+	 * Contains the TitleType object
 	 *
-	 * Contains the ServiceEndUserTitleType object
+	 * Contains the TitleType object
 	 *
-	 * @file		ServiceEndUserTitleType.php
+	 * @file		TitleType.php
 	 * @language	PHP
 	 * @package		intranet_app
 	 * @author		Bashkim 'Bash' Isai
@@ -21,24 +21,24 @@
 	 */
 	
 	//----------------------------------------------------------------------------//
-	// ServiceEndUserTitleType
+	// TitleType
 	//----------------------------------------------------------------------------//
 	/**
-	 * ServiceEndUserTitleType
+	 * TitleType
 	 *
 	 * Allows Textual (named) Representation of the Constants which form End User Title Types
 	 *
 	 * Allows Textual (named) Representation of the Constants which form End User Title Types
 	 *
 	 *
-	 * @prefix	srt
+	 * @prefix	tit
 	 *
 	 * @package	intranet_app
-	 * @class	ServiceEndUserTitleType
-	 * @extends	dataEnumerative
+	 * @class	TitleType
+	 * @extends	dataObject
 	 */
 	
-	class ServiceEndUserTitleType extends dataObject
+	class TitleType extends dataObject
 	{
 		
 		//------------------------------------------------------------------------//
@@ -47,9 +47,9 @@
 		/**
 		 * _oblstrType
 		 *
-		 * The Id of the ServiceEndUserTitleType
+		 * The Id of the TitleType
 		 *
-		 * The Id of the ServiceEndUserTitleType
+		 * The Id of the TitleType
 		 *
 		 * @type	dataString
 		 *
@@ -92,7 +92,7 @@
 		
 		function __construct ($strType)
 		{
-			parent::__construct ('ServiceEndUserTitleType');
+			parent::__construct ('TitleType');
 			
 			$strName = 'Unknown';
 			

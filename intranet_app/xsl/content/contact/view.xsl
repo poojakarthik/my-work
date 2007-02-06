@@ -33,10 +33,8 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<xsl:if test="/Response/Contact/Title != ''">
-											<xsl:value-of select="/Response/Contact/Title" />.
-											<xsl:text> </xsl:text>
-										</xsl:if>
+										<xsl:value-of select="/Response/TitleTypes/TitleType[./Id=/Response/Contact/Title]/Name" />
+										<xsl:text> </xsl:text>
 										<xsl:value-of select="/Response/Contact/FirstName" />
 										<xsl:text> </xsl:text>
 										<xsl:value-of select="/Response/Contact/LastName" />
@@ -280,10 +278,10 @@
 						<textarea name="Note" class="input-summary" rows="6" />
 						
 						<div>
-							<input type="checkbox" name="Account" CHECKED="CHECKED">
+							<input type="checkbox" name="Account" checked="checked">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
+									<xsl:value-of select="/Response/Contact/Account" />
 								</xsl:attribute>
 							</input>
 							Show this note in Account Notes.
