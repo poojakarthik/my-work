@@ -28,7 +28,7 @@ function CliEcho($strOutput)
 CliEcho("STARTING");
 
 // set location of file
-$strFilePath = "/home/vixen/etech_bills/2006/12/inv_telcoblue_20070105_1167948643.txt";
+$strFilePath = "/home/etech_bills/2006/12/inv_telcoblue_20070105_1167948643.txt";
 
 // open file
 CliEcho("Opening $strFilePath...");
@@ -44,7 +44,7 @@ $intCount = 0;
 while($arrLine = $suxEtech->FetchNext())
 {	
 	$intCount++;
-	if ($intCount > 1000)
+	if ($intCount > 10000)
 	{
 		break;
 	}
@@ -63,13 +63,16 @@ while($arrLine = $suxEtech->FetchNext())
 					$mixReturn = $etbEtech->FindCDR($arrLine);
 					if ($mixReturn === FALSE)
 					{
-						CliEcho("CDR NOT FOUND for : ".$arrLine['FNN']);
-						print_r($arrLine);
-						Die;
+						//CliEcho("CDR NOT FOUND for : ".$arrLine['FNN']);
+						/*print_r($arrLine);
+						Die;*/
 					}
 					else
 					{
-						CliEcho($arrLine['FNN']." = ".$mixReturn);
+						if (abs($mixReturn['Difference']) > 0.05)
+						{
+							CliEcho($arrLine['FNN']." (".$mixReturn['Id'].") =\t ".$mixReturn['Difference']."\t\t\t".GetConstantDescription($mixReturn['Status'], 'CDR'));
+						}
 					}
 					break;
 				
@@ -91,6 +94,8 @@ while($arrLine = $suxEtech->FetchNext())
 					
 				default:
 					CliEcho("Unknown Table ({$arrLine['_Table']}) at Line {$arrLine['_LineNo']}");
+					print_r($arrLine);
+					die;
 					break;
 			}
 			break;

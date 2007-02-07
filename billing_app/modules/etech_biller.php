@@ -73,7 +73,7 @@
 		$arrUpdateData['InvoiceRun']	= NULL;
 		$arrUpdateData['Id']			= NULL;
 		$this->_ubiMatchCDR	= new StatementUpdateById("CDR", $arrUpdateData);
-		
+		/*
 		$this->_selMatchCDR	= new StatementSelect(	"CDR",
 													"Id, Charge",
 													"Status != 199 AND " .
@@ -81,22 +81,24 @@
 													"Account = <Account> AND " .
 													"Units = <Units> AND " .
 													"Destination = <Destination> AND " .
-													"StartDatetime = <StartDateTime> AND EndDatetime = <EndDateTime>");
+													"StartDatetime = <StartDatetime> AND EndDatetime = <EndDateTime>");*/
 													
 		$this->_selMatchCDR	= new StatementSelect(	"CDR",
-													"Id, Charge",
-													"Status != 199 AND " .
+													"Id, Charge, Status, RecordType",
+													/*"Status != 199 AND " .*/
 													"FNN = <FNN> AND " .
 													"Account = <Account> AND " .
 													"Units = <Units> AND " .
-													"Destination = <Destination> AND " .
-													"StartDatetime = <StartDateTime> AND EndDatetime = <EndDateTime>");
+													"StartDatetime = <StartDatetime> AND " .
+													"Credit = 0",
+													NULL,
+													2);
 		
 		
 		$this->_selMatchLocal = new StatementSelect("CDR",
 													"SUM(Charge) AS Total",
 													"Account = <Account> AND " .
-													"StartDatetime BETWEEN <StartDateTime> AND <EndDateTime>");
+													"StartDatetime BETWEEN <StartDatetime> AND <EndDatetime>");
 		
 		// TODO: uncomment this when we create the CDRBadMatch table										
 		//$this->_insBadCDR = new StatementInsert("CDRBadMatch");
@@ -265,7 +267,7 @@
 		}
 		$arrCDRResult = $this->_selMatchCDR->Fetch();
 		
-		// Update Status
+		/*// Update Status
 		$arrUpdateData['Status']		= CDR_INVOICED;
 		$arrUpdateData['InvoiceRun']	= $strInvoiceRun;
 		$arrUpdateData['Id']			= $arrCDRResult['Id'];
@@ -273,10 +275,14 @@
 		{
 			// Error
 			return FALSE;
-		}
+		}*/
+		
+		$arrReturn = Array();
+		$arrReturn['Id']			= $arrCDRResult['Id'];
+		$arrReturn['Difference']	= $arrCDRResult['Charge'] - $arrCDR['Charge'];
 		
 		// return the difference between our charge and etech's
-		return $arrCDRResult['Charge'] - $arrCDR['Charge'];
+		return $arrReturn;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -308,8 +314,13 @@
 		}
 		$arrCDRResult = $this->_selMatchCDR->Fetch();
 		
+		$arrReturn = Array();
+		$arrReturn['Id']			= $arrCDRResult['Id'];
+		$arrReturn['Difference']	= $arrCDRResult['Charge'] - $arrCDR['Charge'];
+		$arrReturn['Status']		= $arrCDRResult['Status'];
+		
 		// return the difference between our charge and etech's
-		return $arrCDRResult['Charge'] - $arrCDR['Charge'];
+		return $arrReturn;
 	}
 	
 	//------------------------------------------------------------------------//

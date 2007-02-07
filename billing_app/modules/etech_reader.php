@@ -207,16 +207,15 @@
  	{
 		// increment counter
 		$this->intLine++;
-		
-		// If EOF, then return FALSE
-		if (feof($this->ptrFile))
-		{
-			return FALSE;
-		}
 
 		// read next line from file
 		if (($strLine = fgets($this->ptrFile)) === FALSE)
 		{
+			// If EOF, then return FALSE
+			if (feof($this->ptrFile))
+			{
+				return FALSE;
+			}
 			// There was an error
 			return "!ERROR!";
 		}
@@ -246,6 +245,10 @@
 		if ($strLine === FALSE)
 		{
 			return FALSE;
+		}
+		if ($strLine === "!ERROR!")
+		{
+			return $strLine;
 		}
 		$arrLine = $this->SplitLine($strLine);
 		
@@ -547,6 +550,10 @@
 				
 				break;
 			*/
+			case 99:
+				// file footer
+				$this->arrData = FALSE;
+				return;
 			
 			default:
 				// Recursively call DecodeData()
