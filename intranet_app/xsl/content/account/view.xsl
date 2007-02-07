@@ -6,10 +6,10 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<!-- TODO!Bash!  Use a msgbox for blank note errors like all other messages! DO THIS EVERYWHERE!!-->
+		<!-- TODO!bash! [  DONE  ]		Use a msgbox for blank note errors like all other messages! DO THIS EVERYWHERE!!-->
 		<!-- Error === X"Please enter details to create a new note." -->
-		<!-- Page for Viewing Account Details -->
 		
+		<!-- Page for Viewing Account Details -->
 		<h1>View Account Details</h1>
 		
 		<script language="javascript" src="js/note_add.js"></script>
@@ -408,7 +408,7 @@
 					<!-- Account Notes -->
 					<h2 class="Notes">Account Notes</h2>
 					
-					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
+					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)" name="NoteAdd">
 						<input type="hidden" name="AccountGroup">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
@@ -450,7 +450,7 @@
 						</select>
 						
 						<div class="Right">
-							<input type="submit" value="Add Note &#0187;" class="input-submit" />
+							<input type="submit" value="Add Note &#0187;" class="input-submit-disabled" disabled="disabled" />
 						</div>
 					</form>
 					

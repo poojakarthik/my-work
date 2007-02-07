@@ -261,7 +261,7 @@
 					<!-- Contact Notes -->
 					<h2 class="Notes">Contact Notes</h2>
 					
-					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)">
+					<form method="post" action="note_add.php" onsubmit="return noteAdd (this)" name="NoteAdd">
 						<input type="hidden" name="AccountGroup">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>
@@ -313,7 +313,7 @@
 						</select>
 						
 						<div class="Right">
-							<input type="submit" value="Add Note &#0187;" class="input-submit" />
+							<input type="submit" value="Add Note &#0187;" class="input-submit-disabled" disabled="disabled" />
 						</div>
 					</form>
 					

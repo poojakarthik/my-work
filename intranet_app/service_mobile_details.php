@@ -120,8 +120,6 @@
 	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Account');
 	
-	echo $Style; exit;
-	
 	// Output the Request Page
 	$Style->Output (
 		'xsl/content/service/mobiledetail/update.xsl',
