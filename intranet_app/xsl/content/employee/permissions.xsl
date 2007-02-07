@@ -81,15 +81,15 @@
 									
 									<xsl:variable name="Permission" select="." />
 									
-									<option>
-										<xsl:if test="/Response/PermissionList/Permission[Id=$Permission/Id]">
+									<xsl:if test="/Response/PermissionList/Permission[Id=$Permission/Id]">
+										<option>
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
 											<xsl:value-of select="./Name" />
-										</xsl:if>
-									</option>
+										</option>
+									</xsl:if>
 								</xsl:for-each>
 							</select>
 						</td>

@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_CDR;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_CDR | MODULE_CHARGE | MODULE_EMPLOYEE;
 	
 	// call application
 	require ('config/application.php');
@@ -29,7 +29,7 @@
 		exit;
 	}
 	
-	$cdrUnbilled = $srvService->UnbilledCharges ();
+	$cdrUnbilled = $srvService->UnbilledCDRs ();
 	$Style->attachObject (
 		$cdrUnbilled->Sample (
 			isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
@@ -37,12 +37,31 @@
 		)
 	);
 	
+	if (!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1)
+	{
+		$cubUnbilledCharges = $Style->attachObject ($srvService->UnbilledCharges ());
+		$oblsamCharges = $cubUnbilledCharges->Sample ();
+		
+		$oblarrEmployees = $Style->attachObject (new dataArray ('Employees', 'Employee'));
+		$arrEmployees = Array ();
+		
+		foreach ($oblsamCharges as $crgCharge)
+		{
+			if (!isset ($arrEmployees [$crgCharge->Pull ('CreatedBy')->getValue ()]))
+			{
+				$arrEmployees [$crgCharge->Pull ('CreatedBy')->getValue ()] = $oblarrEmployees->Push (
+					new Employee ($crgCharge->Pull ('CreatedBy')->getValue ())
+				);
+			}
+		}
+	}
+	
 	// Pull documentation information for a Service and an Account
 	$docDocumentation->Explain ('Service');
 	
 	// Output the Service Unbilled Charges
 	$Style->Output (
-		'xsl/content/service/unbilled.xsl',
+		'xsl/content/service/charges/unbilled.xsl',
 		Array (
 			'Account'		=> $actAccount->Pull ('Id')->getValue (),
 			'Service'		=> $srvService->Pull ('Id')->getValue ()

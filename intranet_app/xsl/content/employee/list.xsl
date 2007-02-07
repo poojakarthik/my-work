@@ -16,6 +16,7 @@
 				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/Employees/Results/rangeSample/Employee">
+				<xsl:sort select="./LastName" />
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>

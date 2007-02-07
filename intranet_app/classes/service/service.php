@@ -147,23 +147,43 @@
 		}
 		
 		//------------------------------------------------------------------------//
-		// UnbilledCharges
+		// UnbilledCDRs
 		//------------------------------------------------------------------------//
 		/**
-		 * UnbilledCharges()
+		 * UnbilledCDRs()
 		 *
-		 * List of unbilled charges
+		 * List of unbilled CDRs
 		 *
-		 * Returns a list of all unbilled charges associated with this service
+		 * Returns a list of all unbilled CDRs associated with this service
 		 *
 		 * @return	CDRs
 		 *
 		 * @method
 		 */
 		
-		public function UnbilledCharges ()
+		public function UnbilledCDRs ()
 		{
 			return new CDRs_Unbilled ($this);
+		}
+		
+		//------------------------------------------------------------------------//
+		// UnbilledCharges
+		//------------------------------------------------------------------------//
+		/**
+		 * UnbilledCharges()
+		 *
+		 * List of Unbilled Charges
+		 *
+		 * Returns a list of all Unbilled Charges associated with this service
+		 *
+		 * @return	UnbilledCharges
+		 *
+		 * @method
+		 */
+		
+		public function UnbilledCharges ()
+		{
+			return new Charges_Unbilled ($this);
 		}
 		
 		//------------------------------------------------------------------------//

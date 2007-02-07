@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:dt="http://xsltsl.org/date-time">
-	<xsl:import href="../../includes/init.xsl" />
-	<xsl:import href="../../template/default.xsl" />
-	<xsl:import href="../../lib/date-time.xsl" />
+	<xsl:import href="../../../includes/init.xsl" />
+	<xsl:import href="../../../template/default.xsl" />
+	<xsl:import href="../../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
 		<h1>View Unbilled Charges</h1>
@@ -26,11 +26,104 @@
 				</tr>
 			</table>
 		</div>
-		
 		<div class="Seperator"></div>
 		
+		<!--TODO!bash! [  DONE  ]		URGENT - Add a table for Charges & Credits -->
+		<!--TODO!bash! [  DONE  ]		Show all added sevice charges with status CHARGE_APPROVED(Green) OR CHARGE_WAITING. -->
+		<!--TODO!bash! [  DONE  ]		Do NOT show CHARGE_DECLINED or CHARGE_INVOICED -->
+
 		<!-- Unbilled Charges -->
-		<h2 class="Charge">Unbilled Charges</h2>
+		<xsl:if test="/Response/Charges-Unbilled">
+			<h2 class="Charge">Unbilled Charges</h2>
+			<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
+				<tr class="First">
+					<th width="30">#</th>
+					<th>Charge Code</th>
+					<th>Description</th>
+					<th>Created On</th>
+					<th>Created By</th>
+					<th>Status</th>
+					<th class="Currency">Charge</th>
+					<th>Nature</th>
+				</tr>
+				<xsl:for-each select="/Response/Charges-Unbilled/Results/rangeSample/Charge">
+					<xsl:variable name="Charge" select="." />
+					<xsl:variable name="CreatedBy" select="/Response/Employees/Employee[./Id=$Charge/CreatedBy]" />
+					
+					<tr>
+						<xsl:attribute name="class">
+							<xsl:choose>
+								<xsl:when test="position() mod 2 = 1">
+									<xsl:text>Odd</xsl:text>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:text>Even</xsl:text>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
+						
+						<td><xsl:value-of select="position()" />.</td>
+						<td><xsl:value-of select="./ChargeType" /></td>
+						<td><xsl:value-of select="./Description" /></td>
+						<td>
+							<xsl:call-template name="dt:format-date-time">
+								<xsl:with-param name="year"		select="./CreatedOn/year" />
+								<xsl:with-param name="month"	select="./CreatedOn/month" />
+								<xsl:with-param name="day"		select="./CreatedOn/day" />
+								<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
+							</xsl:call-template>
+						</td>
+						<td>
+							<xsl:value-of select="$CreatedBy/FirstName" />
+							<xsl:text> </xsl:text>
+							<xsl:value-of select="$CreatedBy/LastName" />
+						</td>
+						<td>
+							<strong>
+								<xsl:choose>
+									<xsl:when test="./Status = '100'">
+										<span class="Red">Unapproved</span>
+									</xsl:when>
+									<xsl:otherwise>
+										<span class="Green">Approved</span>
+									</xsl:otherwise>
+								</xsl:choose>
+							</strong>
+						</td>
+						<td class="Currency">
+			       			<xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="./Charge" />
+								<xsl:with-param name="Decimal" select="number('4')" />
+	       					</xsl:call-template>
+						</td>
+						<td>
+							<strong>
+								<xsl:choose>
+									<xsl:when test="./Nature = 'DR'">
+										<span class="Blue">Debit</span>
+									</xsl:when>
+									<xsl:when test="./Nature = 'CR'">
+										<span class="Green">Credit</span>
+									</xsl:when>
+								</xsl:choose>
+							</strong>
+						</td>
+					</tr>
+				</xsl:for-each>
+			</table>
+			<!--TODO!bash! [  DONE  ]		URGENT - if there are no charges or credits: -->
+			<!--TODO!bash! [  DONE  ]		msgnotice === "There are no Charges or Credits associated with this Service." -->
+			<xsl:if test="/Response/Charges-Unbilled/Results/collationLength = 0">
+				<div class="MsgNoticeWide">
+					There are no Charges or Credits associated with this Service.
+				</div>
+			</xsl:if>
+			
+			<div class="Seperator"></div>
+		</xsl:if>
+		
+		<!-- Unbilled Calls -->
+		<h2 class="Charge">Unbilled Calls</h2>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
@@ -119,9 +212,6 @@
 			</xsl:when>
 		</xsl:choose>
 		<div class="Seperator"></div>
-		<!--TODO!bash! URGENT - Add a table for Charges & Credits - show all added sevice charges with status CHARGE_APPROVED(Green) OR CHARGE_WAITING.  Do NOT show CHARGE_DECLINED or CHARGE_INVOICED -->
-		<!--TODO!bash! URGENT - if there are no charges or credits, msgnotice === "There are no Charges or Credits associated with this Service."-->
-
 		
 		<xsl:if test="/Response/CDRs-Unbilled/rangePages != 0">
 			<p>
