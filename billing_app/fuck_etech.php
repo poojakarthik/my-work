@@ -39,6 +39,8 @@ CliEcho("Parsing file...");
 $intCount = 0;
 while($arrLine = $suxEtech->FetchNext())
 {
+	print_r($arrLine);
+	
 	$intCount++;
 	if ($intCount > 1000)
 	{
