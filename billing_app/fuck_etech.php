@@ -32,15 +32,17 @@ $strFilePath = "/home/vixen/etech_bills/2006/12/inv_telcoblue_20070105_116794864
 
 // open file
 CliEcho("Opening $strFilePath...");
-$suxEtech->OpenFile($strFilePath);
+if (!$suxEtech->OpenFile($strFilePath))
+{
+	CliEcho("Failed to open file $strFilePath");
+	die;
+}
 
 // read file
 CliEcho("Parsing file...");
 $intCount = 0;
 while($arrLine = $suxEtech->FetchNext())
-{
-	print_r($arrLine);
-	
+{	
 	$intCount++;
 	if ($intCount > 1000)
 	{
