@@ -97,8 +97,9 @@
 													"SUM(Charge) AS Total",
 													"Account = <Account> AND " .
 													"StartDatetime BETWEEN <StartDateTime> AND <EndDateTime>");
-													
-		$this->_insBadCDR = new StatementInsert("CDRBadMatch");
+		
+		// TODO: uncomment this when we create the CDRBadMatch table										
+		//$this->_insBadCDR = new StatementInsert("CDRBadMatch");
 	}
 	
 	//------------------------------------------------------------------------//
