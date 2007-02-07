@@ -240,8 +240,8 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>account_add.php?AccountGroup=</xsl:text>
-									<xsl:value-of select="/Response/Contact/AccountGroup" />
+									<xsl:text>account_add.php?Associated=</xsl:text>
+									<xsl:value-of select="/Response/Contact/Account" />
 								</xsl:attribute>
 								Add Associated Account
 							</a>
@@ -470,12 +470,12 @@
 				</tr>
 			</xsl:for-each>
 		</table>
-		<div class= "SmallSeperator"> </div> 
-		<div class= "Right">
+		<div class="SmallSeperator"> </div> 
+		<div class="Right">
 			<a>
 				<xsl:attribute name="href">
-					<xsl:text>account_add.php?AccountGroup=</xsl:text>
-					<xsl:value-of select="/Response/Contact/AccountGroup" />
+					<xsl:text>account_add.php?Associated=</xsl:text>
+					<xsl:value-of select="/Response/Contact/Account" />
 				</xsl:attribute>
 				Add Associated Account
 			</a>

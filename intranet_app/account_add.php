@@ -22,25 +22,22 @@
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
 	
-	// If there is an Account Group Specified, then we desire to create
-	// An account that has some predefined information contained in it.
-	// Pull the information from the Database and store it in an object.
+	// We need to check whether or not we're adding a new Account
+	// and a new Account Group or whether we're using an Existing 
+	// Account Group. In order for us to have the ability to return
+	// to the previous page that we were at, the Associated 
+	// Account is passed (through $_~ ['Associated']), which use to
+	// evaluate which AccountGroup we are dealing with.
 	
-	if ($_GET ['AccountGroup'] || $_POST ['AccountGroup'])
+	if ($_GET ['Associated'] || $_POST ['Associated'])
 	{
 		try
 		{
-			if ($_GET ['AccountGroup'])
-			{
-				$acgAccountGroup = $Style->attachObject (new AccountGroup ($_GET ['AccountGroup']));
-			}
-			else if ($_POST ['AccountGroup'])
-			{
-				$acgAccountGroup = $Style->attachObject (new AccountGroup ($_POST ['AccountGroup']));
-			}
+			$actAssociated		= new Account (($_GET ['Associated']) ? $_GET ['Associated'] : $_POST ['Associated']);
+			$intAssociated		= $Style->attachObject (new dataInteger ('Associated', $actAssociated->Pull ('Id')->getValue ()));
 			
-			// We assume that at this point, there is an Account Group specified
-			$ctsContacts = $Style->attachObject ($acgAccountGroup->getContacts ());
+			$acgAccountGroup	= $Style->attachObject ($actAssociated->AccountGroup ());
+			$ctsContacts		= $Style->attachObject ($acgAccountGroup->getContacts ());
 		}
 		catch (Exception $e)
 		{
@@ -419,6 +416,11 @@
 	$docDocumentation->Explain ('Direct Debit');
 	$docDocumentation->Explain ('Credit Card');
 	
-	$Style->Output ('xsl/content/account/add.xsl');
+	$Style->Output (
+		'xsl/content/account/add.xsl',
+		Array (
+			'Account'	=>	(isset ($actAssociated) ? $actAssociated->Pull ('Id')->getValue () : null)
+		)
+	);
 	
 ?>

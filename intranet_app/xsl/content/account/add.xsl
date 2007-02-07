@@ -170,10 +170,10 @@
 						</div>
 					</div>
 					
-					<input type="hidden" name="AccountGroup">
+					<input type="hidden" name="Associated">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>
-							<xsl:value-of select="/Response/AccountGroup/Id" />
+							<xsl:value-of select="/Response/Associated" />
 						</xsl:attribute>
 					</input>
 				</xsl:when>

@@ -368,8 +368,8 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>account_add.php?AccountGroup=</xsl:text>
-									<xsl:value-of select="/Response/Account/AccountGroup" />
+									<xsl:text>account_add.php?Associated=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>Add Associated Account</xsl:text>
 							</a>
