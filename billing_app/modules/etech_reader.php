@@ -155,15 +155,18 @@
  	function FetchNext()
  	{
 		$arrOutput = Array();
-		$this->arrData = Array();
+		$this->arrData = NULL;
+		$this->intDepth = 0;
 		
 		// Decode the next batch of data
-		while ($this->arrData == NULL)
+		while ($this->arrData === NULL)
 		{
 			$this->DecodeData();
 		}
 		if (($arrOutput = $this->arrData) === FALSE)
 		{
+			// EOF
+			fclose($this->ptrFile);
 			return FALSE;
 		}
 		elseif ($arrOutput == '!ERROR!')
@@ -205,6 +208,12 @@
 	 */
  	function ReadRawLine()
  	{
+		// If EOF, then return FALSE
+		if (feof($this->ptrFile))
+		{
+			return FALSE;
+		}
+		
 		// increment counter
 		$this->intLine++;
 
@@ -239,12 +248,13 @@
 	 * @method
 	 */
  	function DecodeData()
- 	{
+ 	{	
 		// Fetch the next line and split it
 		$strLine = $this->ReadRawLine();
 		if ($strLine === FALSE)
 		{
-			return FALSE;
+			$this->arrData = FALSE;
+			return;
 		}
 		if ($strLine === "!ERROR!")
 		{
@@ -560,6 +570,8 @@
 				$this->DecodeData();
 				break;
 		}
+		
+		return;
 	}
 	
 	

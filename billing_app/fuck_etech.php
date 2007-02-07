@@ -42,7 +42,7 @@ if (!$suxEtech->OpenFile($strFilePath))
 CliEcho("Parsing file...");
 $intCount = 0;
 while($arrLine = $suxEtech->FetchNext())
-{	
+{
 	$intCount++;
 	if ($intCount > 10000)
 	{
@@ -78,17 +78,21 @@ while($arrLine = $suxEtech->FetchNext())
 				
 				case 'ServiceTypeTotal':
 					// Ignore
+					//CliEcho("ServiceTypeTotal");
 					break;
 					
 				case 'ServiceTotal':
+					//CliEcho("ServiceTotal");
 					// Ignore
 					break;
 					
 				case 'Invoice':
+					//CliEcho("Invoice");
 					// Ignore
 					break;
 				
 				case 'Other':
+					//CliEcho("Other");
 					// Ignore
 					break;
 					
@@ -109,6 +113,6 @@ while($arrLine = $suxEtech->FetchNext())
 
 CliEcho("\n\nDone");
 fclose($stdout);
-Die();
+die;
 
 ?>
