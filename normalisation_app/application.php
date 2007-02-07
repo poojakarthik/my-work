@@ -746,5 +746,74 @@
 	 	$mixReturn = $updReRate->Execute($arrColumns, NULL);
 	 	return (int)$mixReturn;
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// MatchCredits()
+	//------------------------------------------------------------------------//
+	/**
+	 * MatchCredits()
+	 *
+	 * Attempts to link Credit CDRs to their Debit counterparts, and excludes them from rating
+	 *
+	 * Attempts to link Credit CDRs to their Debit counterparts, and excludes them from rating
+	 *	 
+	 * @return	integer							Number of CDRs affected
+	 *
+	 * @method
+	 */
+	 function MatchCredits($intStatus)
+	 {
+	 	// Find the normalised Credit CDRs
+	 	$selCredits = new StatementSelect("CDR", "*", "Credit = 1 AND Status = ".CDR_NORMALISED);
+	 	if (($intTotalCount = $selCredits->Execute()) === FALSE)
+	 	{
+	 		Debug("Could not select credit CDRS!");
+	 		return FALSE;
+	 	}
+ 		
+ 		$arrUpdateColumns['Id']		= NULL;
+ 		$arrUpdateColumns['Status']	= NULL;
+ 		$ubiCDR = new StatementUpdateById("CDR", $arrUpdateColumns);
+ 		
+	 	// Attempt to match the CDRs up
+	 	$intCount = 0;
+	 	while ($arrCreditCDR = $selCredits->Fetch())
+	 	{
+	 		// Find matching Debit
+	 		$selDebitCDR = new StatementSelect("CDR", "Id", "FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = (0 - <Cost>) AND Units = (0 - <Units>) AND StartDatetime = <StartDateTime> AND Status = ".CDR_NORMALISED);
+	 		if (!$selDebitCDR->Execute($arrCreditCDR))
+	 		{
+	 			echo " ! Couldn't Match Debit to Credit with CDR.Id {$arrCreditCDR['Id']}!\n";
+	 			
+		 		// Update the Credit CDR
+		 		$arrUpdateColumns['Id']		= $arrCreditCDR['Id'];
+	 			$arrUpdateColumns['Status']	= CDR_CREDIT_MATCH_NOT_FOUND;
+		 		$ubiCDR->Execute($arrUpdateColumns);
+	 			continue;
+	 		}
+	 		$arrDebitCDR = $selDebitCDR->Fetch();
+	 		
+	 		// Add to the link table
+	 		$arrInsertColumns['CreditCDR']	= $arrCreditCDR['Id'];
+	 		$arrInsertColumns['DebitCDR']	= $arrDebitCDR['Id'];
+	 		$insCreditLink = new StatementInsert("CDRCreditLink");
+	 		
+	 		// Update the Credit CDR
+	 		$arrUpdateColumns['Id']		= $arrCreditCDR['Id'];
+ 			$arrUpdateColumns['Status']	= CDR_CREDIT_MATCHED;
+	 		$ubiCDR->Execute($arrUpdateColumns);
+	 		
+	 		// Update the Debit CDR
+	 		$arrUpdateColumns['Id']		= $arrDebitCDR['Id'];
+ 			$arrUpdateColumns['Status']	= CDR_DEBIT_MATCHED;
+	 		$ubiCDR->Execute($arrUpdateColumns);
+	 		
+	 		echo " + Credit ({$arrCreditCDR['Id']}) matched Debit ({$arrDebitCDR['Id']})";
+	 		
+	 		$intCount++;
+	 	}
+	 	
+	 	Debug("Matched $intCount out of $intTotalCount credit CDRs.");
+	 }
  }
 ?>
