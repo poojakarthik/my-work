@@ -17,7 +17,44 @@
 // print in service summary
 //TODO!rich! print charges and credits on bill
 //TODO!rich! don't add dates to S&E on bill
+//TODO!rich! fix this error in billing...
+/*
+Mixing of GROUP columns (MIN(),MAX(),COUNT(),...) with no GROUP columns is illegal if there is no GROUP BY clause
+ Call Stack:
+#0  DatabaseAccess->Error() called at [/usr/share/vixen/framework/db_access.php:1841]
+#1  StatementSelect->__construct("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, Invoi...", "Status = 105") called at [/usr/share/vixen/billing_app/modules/module_etech.php:1103]
+#2  BillingModuleEtech->BuildOutput("45c8060d0f81f", TRUE) called at [/usr/share/vixen/billing_app/modules/module_etech.php:1248]
+#3  BillingModuleEtech->BuildSample("45c8060d0f81f") called at [/usr/share/vixen/billing_app/application.php:590]
+#4  ApplicationBilling->Execute() called at [/usr/share/vixen/billing_app/billing_execute.php:21]
 
+
+
+</pre>
+
+Fatal error: Call to a member function fetch_field() on a non-object in /usr/share/vixen/framework/db_access.php on line 1973
+root@catwalk:/usr/share/vixen/billing_app# php billing_commit.php
+
+
+
+Building and Sending Invoice Output...
+Warning: Missing argument 1 for BillingModulePrint::BuildOutput(), called in /usr/share/vixen/billing_app/application.php on line 847 and defined in /usr/share/vixen/billing_app/modules/module_printing.php on line 672
+                [   OK   ]
+Building and Sending Invoice Output...
+<pre>
+Mixing of GROUP columns (MIN(),MAX(),COUNT(),...) with no GROUP columns is illegal if there is no GROUP BY clause
+ Call Stack:
+#0  DatabaseAccess->Error() called at [/usr/share/vixen/framework/db_access.php:1841]
+#1  StatementSelect->__construct("Invoice", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, Invoi...", "Status = 105") called at [/usr/share/vixen/billing_app/modules/module_etech.php:1103]
+#2  BillingModuleEtech->BuildOutput() called at [/usr/share/vixen/billing_app/application.php:847]
+#3  ApplicationBilling->Commit() called at [/usr/share/vixen/billing_app/billing_commit.php:21]
+
+
+
+</pre>
+
+Fatal error: Call to a member function fetch_field() on a non-object in /usr/share/vixen/framework/db_access.php on line 1973
+
+*/
 
 
 

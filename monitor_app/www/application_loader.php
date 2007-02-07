@@ -122,5 +122,12 @@ require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");
 require_once($strApplicationDir."database_define.php");
 require_once($strApplicationDir."application.php");
+
+// load page classes
+require_once('page.php');
+require_once('monitor_page.php');
+
+// Create an Instance of the Page object
+$objPage = new MonitorPage($arrConfig);
  
  ?>

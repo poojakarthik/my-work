@@ -24,13 +24,6 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
-// Create an Instance of the Monitor App
-$appMonitor = new ApplicationMonitor($arrConfig);
-
-
-
-
 
 //----------------------------------------------------------------------------//
 // ApplicationMonitor
@@ -97,11 +90,11 @@ $appMonitor = new ApplicationMonitor($arrConfig);
 		}
 		
 		$arrOutput = Array();
-		$strQuery = "SELECT Status, COUNT(Id) AS CountCDR FROM CDR $strWhere GROUP BY Status";
+		$strQuery = "SELECT Status, COUNT(Id) AS `Count`, SUM(Cost) AS `Cost`, SUM(Charge) AS `Charge` FROM CDR $strWhere GROUP BY Status";
 		$sqlResult = $this->sqlQuery->Execute($strQuery);
 		while ($arrRow = $sqlResult->fetch_assoc())
 		{
-			$arrOutput[$arrRow['Status']] = $arrRow['CountCDR'];
+			$arrOutput[$arrRow['Status']] = $arrRow;
 		}
 		if ($intStatus !== FALSE)
 		{
@@ -126,11 +119,11 @@ $appMonitor = new ApplicationMonitor($arrConfig);
 		}
 		
 		$arrOutput = Array();
-		$strQuery = "SELECT Status, RecordType, COUNT(Id) AS CountCDR FROM CDR $strWhere GROUP BY Status, RecordType";
+		$strQuery = "SELECT Status, RecordType, COUNT(Id) AS `Count`,  SUM(Cost) AS `Cost`, SUM(Charge) AS `Charge` FROM CDR $strWhere GROUP BY Status, RecordType";
 		$sqlResult = $this->sqlQuery->Execute($strQuery);
 		while ($arrRow = $sqlResult->fetch_assoc())
 		{
-			$arrOutput[$arrRow['Status']][$arrRow['RecordType']] = $arrRow['CountCDR'];
+			$arrOutput[$arrRow['Status']][$arrRow['RecordType']] = $arrRow;
 		}
 		if ($intStatus !== FALSE)
 		{

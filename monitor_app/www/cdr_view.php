@@ -33,85 +33,8 @@ $objPage->AddBackLink();
 // get CDR Id
 $intCDR = (int)$_GET['Id'];
 
-if (!$intCDR)
-{
-	$objPage->AddError("NO CDR Requested");
-}
-else
-{
-	// Create an instance of each Normalisation module
-	$arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();
-	$arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
-	$arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
-	$arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
-	$arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
-
-	// get CDR
-	$arrCDR = $appMonitor->GetCDR($intCDR);
-	if (!$arrCDR)
-	{
-		$objPage->AddError("CDR Not Found");
-	}
-	else
-	{
-		// Check for a Normalisation Module
-		if (!$arrNormalisationModule[$arrCDR['FileType']])
-		{
-			$objPage->AddError("Missing CDR Normalisation Module");
-		}
-		else
-		{
-			// normalise CDR
-			$mixReturn = $arrNormalisationModule[$arrCDR['FileType']]->Normalise($arrCDR);
-			
-			// debug CDR
-			$arrOutput = $arrNormalisationModule[$arrCDR['FileType']]->DebugCDR();
-		}
-	}
-}
-
-
-// Display CDR
-if ($arrOutput)
-{
-	if (is_array($arrOutput['Normalised']))
-	{
-		// menu items
-		if ($arrOutput['Normalised']['Service'])
-		{
-			$objPage->AddForwardLink("service_rategroup_list.php?Service={$arrOutput['Normalised']['Service']}","[ RateGroups for Service ]");
-			$objPage->AddForwardLink("service_rateplan_list.php?Service={$arrOutput['Normalised']['Service']}","[ RatePlans for Service ]");
-		}
-		
-		// title
-		$objPage->AddTitle("Normalised CDR");
-		
-		// table
-		$tblCDR = $objPage->NewTable('Border');
-		foreach($arrOutput['Normalised'] AS $strKey=>$strValue)
-		{
-			$arrRow = Array($strKey, $strValue);
-			$tblCDR->AddRow($arrRow);
-		}
-		$objPage->AddTable($tblCDR);
-	}
-	
-	if (is_array($arrOutput['Raw']))
-	{
-		// title
-		$objPage->AddTitle("Raw CDR");
-		
-		// table
-		$tblCDR = $objPage->NewTable('Border');
-		foreach($arrOutput['Raw'] AS $strKey=>$strValue)
-		{
-			$arrRow = Array($strKey, $strValue);
-			$tblCDR->AddRow($arrRow);
-		}
-		$objPage->AddTable($tblCDR);
-	}
-}
-
+// display CDR
+$objPage->ShowNormalisedCDR($intCDR);
 
 // display the page
 $objPage->Render();

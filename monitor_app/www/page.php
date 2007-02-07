@@ -261,7 +261,15 @@ $objPage = new VixenPage($arrConfig);
 			$strOutput .= "	<tr class=\"".$this->_strClass."Tr\">\n";
 			for ($n=0;$n < $this->_intColumns;$n++)
 			{
-				$strOutput .= "		<td class=\"".$this->_strClass."Td\">\n";
+				if ($this->arrAlign[$n])
+				{
+					$strAlign = "Align=\"{$this->arrAlign[$n]}\"";
+				}
+				else
+				{
+					$strAlign = "";
+				}
+				$strOutput .= "		<td $strAlign class=\"".$this->_strClass."Td\">\n";
 				$strOutput .= "			<span class=\"".$this->_strDataClass."Text\">";
 				if (is_array($arrRow[$n]))
 				{
@@ -308,6 +316,12 @@ $objPage = new VixenPage($arrConfig);
 		
 		// add the row
 		$this->_arrRows[] = $arrRow;
+	}
+	
+	// set alignment
+	function Align($arrAlign)
+	{
+		$this->arrAlign = $arrAlign;
 	}
  }
 
