@@ -25,15 +25,17 @@ function CliEcho($strOutput)
 	$stdout = $GLOBALS['stdout'];
 	fwrite($stdout, $strOutput."\n");
 }
-CliEcho("Starting");
+CliEcho("STARTING");
 
 // set location of file
 $strFilePath = "/home/vixen/etech_bills/2006/12/inv_telcoblue_20070105_1167948643.txt";
 
 // open file
+CliEcho("Opening $strFilePath...");
 $suxEtech->OpenFile($strFilePath);
 
 // read file
+CliEcho("Parsing file...");
 $intCount = 0;
 while($arrLine = $suxEtech->FetchNext())
 {
