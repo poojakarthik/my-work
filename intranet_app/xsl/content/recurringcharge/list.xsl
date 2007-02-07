@@ -59,7 +59,7 @@
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Charge Type</th>
+				<th>Charge Code</th>
 				<th>Description</th>
 				<th>Service</th>
 				<th>Amount</th>
@@ -84,13 +84,20 @@
 					<td><xsl:value-of select="./ChargeType" /></td>
 					<td><xsl:value-of select="./Description" /></td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>service_view.php?Id=</xsl:text>
-								<xsl:value-of select="./Service/Id" />
-							</xsl:attribute>
-							<xsl:value-of select="./Service/FNN" />
-						</a>
+						<xsl:choose>
+							<xsl:when test="./Service/Id">
+								<a>
+									<xsl:attribute name="href">
+										<xsl:text>service_view.php?Id=</xsl:text>
+										<xsl:value-of select="./Service/Id" />
+									</xsl:attribute>
+									<xsl:value-of select="./Service/FNN" />
+								</a>
+							</xsl:when>
+							<xsl:otherwise>
+								<strong><span class="Attention">No Service</span></strong>
+							</xsl:otherwise>
+						</xsl:choose>
 					</td>
 					<td>
 		       			<xsl:call-template name="Currency">

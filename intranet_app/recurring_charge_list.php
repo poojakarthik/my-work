@@ -65,7 +65,6 @@
 		exit;
 	}
 	
-	
 	if (isset ($_POST ['Archived']))
 	{
 		// This will allow us to choose whether or not we show Archived Recurring Charges

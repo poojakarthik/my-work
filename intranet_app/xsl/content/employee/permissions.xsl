@@ -6,15 +6,32 @@
 	<xsl:template name="Content">
 		<h1>Edit Employee Permissions</h1>
 		
-	
 		<script type="text/javascript" src="js/employee_permission_select.js"></script>
+		
+		<h2 class="Contact">Employee</h2>
+		<div class="Wide-Form">
+			<table border="0" cellpadding="3" cellspacing="0">
+				<tr>
+					<th class="JustifiedWidth">First Name:</th>
+					<td><xsl:value-of select="/Response/Employee/FirstName" /></td>
+				</tr>
+				<tr>
+					<th class="JustifiedWidth">Last Name:</th>
+					<td><xsl:value-of select="/Response/Employee/LastName" /></td>
+				</tr>
+				<tr>
+					<th class="JustifiedWidth">User Name:</th>
+					<td><xsl:value-of select="/Response/Employee/UserName" /></td>
+				</tr>
+			</table>
+		</div>
+		<div class="Seperator"></div>
 		
 		<form method="POST" action="employee_permissions.php">
 			<xsl:attribute name="onsubmit">
 				<xsl:text>return selIt ()</xsl:text>
 			</xsl:attribute>
 			
-	
 			<h2 class="Admin"> Permissions</h2>
 			<div class="Wide-Form">
 				<input type="hidden" name="Id">

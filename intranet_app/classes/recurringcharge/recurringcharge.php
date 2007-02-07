@@ -113,7 +113,14 @@
 		
 		public function Service ()
 		{
-			return $this->Push (new Service ($this->Pop ('Service')->getValue ()));
+			$intService = $this->Pop ('Service')->getValue ();
+			
+			if ($intService != NULL)
+			{
+				return $this->Push (new Service ($intService));
+			}
+			
+			return null;
 		}
 		
 		//------------------------------------------------------------------------//

@@ -4,8 +4,8 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-	<!--TODO!Bash! Urgent - This page needs a menu back to view account-->
-	<!--TODO!Bash! Urgent - Continuing does not work!!!!-->
+	<!--TODO!Bash! [  DONE  ]		Urgent - This page needs a menu back to view account-->
+	<!--TODO!Bash! [  DONE  ]		Urgent - Continuing does not work!!!!-->
 		<h1>Cancel Recurring Charge</h1>
 		
 		<h2 class="Charge"> Cancellation Details</h2>
