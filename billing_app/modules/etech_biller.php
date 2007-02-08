@@ -99,9 +99,8 @@
 													"SUM(Charge) AS Total",
 													"Account = <Account> AND " .
 													"StartDatetime BETWEEN <StartDatetime> AND <EndDatetime>");
-		
-		// TODO: uncomment this when we create the CDRBadMatch table										
-		//$this->_insBadCDR = new StatementInsert("CDRBadMatch");
+			
+		$this->_insEtechCDR = new StatementInsert("CDREtech");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -255,23 +254,40 @@
 	 *
 	 * @method
 	 */
- 	function MatchCDR($arrCDR, $strInvoiceRun)
+ 	function MatchCDR($arrCDR, $strInvoiceRun = NULL)
  	{
 		// Try to match
 		$arrWhere = $arrCDR;
 		$intResults = $this->_selMatchCDR->Execute($arrWhere);
-		if (!$intResults)
+		if ($intResults === FALSE)
 		{
-			// Error or no results
+			// Error
 			return FALSE;
 		}
 		$arrCDRResult = $this->_selMatchCDR->Fetch();
 		
-		/*// Update Status
-		$arrUpdateData['Status']		= CDR_INVOICED;
-		$arrUpdateData['InvoiceRun']	= $strInvoiceRun;
-		$arrUpdateData['Id']			= $arrCDRResult['Id'];
-		if ($this->_ubiMatchCDR->Execute($arrUpdateData) === FALSE)
+		// Determine status
+		$fltDifference = $arrCDRResult['Charge'] - $arrCDR['Charge'];
+		if ($fltDifference === (float)0)
+		{
+			$arrCDR['Status']	= CDR_ETECH_PERFECT_MATCH;
+		}
+		elseif ($arrCDRResult['Id'])
+		{
+			$arrCDR['Status']	= CDR_ETECH_IMPERFECT_MATCH;
+		}
+		else
+		{
+			$arrCDR['Status']	= CDR_ETECH_NO_MATCH;
+		}
+		/*
+		// Insert CDR into CDREtech table
+		$arrCDR['VixenCDR']		= $arrCDRResult['Id'];
+		$arrCDR['SequenceNo']	= $arrCDR['_LineNo'];
+		$arrCDR['CDR']			= $arrCDR['_OriginalLine'];
+		$arrCDR['File']			= $arrCDR['_File'];
+		$arrCDR['InvoiceRun']	= $arrCDR['_Status']['InvoiceRun'];
+		if ($this->InsertEtechCDR($arrCDR) === FALSE)
 		{
 			// Error
 			return FALSE;
@@ -280,6 +296,7 @@
 		$arrReturn = Array();
 		$arrReturn['Id']			= $arrCDRResult['Id'];
 		$arrReturn['Difference']	= $arrCDRResult['Charge'] - $arrCDR['Charge'];
+		$arrReturn['Status']		= $arrCDRResult['Status'];
 		
 		// return the difference between our charge and etech's
 		return $arrReturn;
@@ -324,14 +341,14 @@
 	}
 	
 	//------------------------------------------------------------------------//
-	// InsertBadCDR
+	// InsertEtechCDR
 	//------------------------------------------------------------------------//
 	/**
-	 * InsertBadCDR()
+	 * InsertEtechCDR()
 	 *
-	 * Inserts a CDR into the CDRBadMatch table
+	 * Inserts a CDR into the CDREtech table
 	 *
-	 * Inserts a CDR into the CDRBadMatch table
+	 * Inserts a CDR into the CDREtech table
 	 * 
 	 * @param	array	$arrCDR				associative array to be inserted
 	 *
@@ -340,10 +357,20 @@
 	 *
 	 * @method
 	 */
- 	function InsertBadCDR($arrCDR)
- 	{
+ 	function InsertEtechCDR($arrCDR)
+ 	{		
+		// Insert CDR into CDREtech table
+		$arrCDR['SequenceNo']	= $arrCDR['_LineNo'];
+		$arrCDR['CDR']			= $arrCDR['_OriginalLine'];
+		$arrCDR['File']			= $arrCDR['_File'];
+		$arrCDR['InvoiceRun']	= $arrCDR['_Status']['BillingPeriod'];
+		
 		// return the difference between our charge and etech's
-		return $this->_insBadCDR->Execute($arrCDR);
+		if (($mixResult = $this->_insEtechCDR->Execute($arrCDR)) === FALSE)
+		{
+			Debug($this->_insEtechCDR->Error());
+		}
+		return $this->_insEtechCDR->Execute($arrCDR);
 	}
  }	
 ?>

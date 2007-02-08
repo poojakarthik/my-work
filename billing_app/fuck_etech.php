@@ -43,6 +43,8 @@ CliEcho("Parsing file...");
 $intCount = 0;
 while($arrLine = $suxEtech->FetchNext())
 {
+	$arrLine['_File']	= $strFilePath;
+	
 	$intCount++;
 	if ($intCount > 10000)
 	{
@@ -68,11 +70,29 @@ while($arrLine = $suxEtech->FetchNext())
 						Die;*/
 					}
 					else
-					{
+					{						
 						if (abs($mixReturn['Difference']) > 0.05)
 						{
 							CliEcho($arrLine['FNN']." (".$mixReturn['Id'].") =\t ".$mixReturn['Difference']."\t\t\t".GetConstantDescription($mixReturn['Status'], 'CDR'));
 						}
+		
+						// Determine status
+						if ($mixReturn['Difference'] === (float)0)
+						{
+							$arrLine['Status']	= CDR_ETECH_PERFECT_MATCH;
+						}
+						elseif ($mixReturn['Id'])
+						{
+							$arrLine['Status']	= CDR_ETECH_IMPERFECT_MATCH;
+						}
+						else
+						{
+							$arrLine['Status']	= CDR_ETECH_NO_MATCH;
+						}
+						
+						// Insert into DB
+						$arrLine['VixenCDR'] = $mixReturn['Id'];
+						$etbEtech->InsertEtechCDR($arrLine);
 					}
 					break;
 				

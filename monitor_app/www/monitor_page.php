@@ -327,6 +327,37 @@
 		//TODO!rich! show a list of Accounts for an AccountGroup
 	}
 	
+	// return a viXen/Etech invoice comparison
+	function ShowEtechInvoice($strBillingPeriod)
+	{
+		// TODO
+	}
+	
+	// return a viXen/Etech invoice list
+	function ShowEtechInvoiceList()
+	{
+		// Get Invoice List
+		$arrInvoices = $this->appMonitor->ListEtechInvoice();
+		
+		if (count($arrInvoices) == 0)
+		{
+			$this->AddError("There are no Etech invoices in the system.  Please run the Etech bill importer first!");
+		}
+		
+		// Generate page
+		foreach ($arrInvoices as $arrInvoice)
+		{
+			$strBillingPeriodURL = str_replace(" ", "%20", $arrInvoice['InvoiceRun']);
+			$this->AddLink("invoice_view_etech.php?period=$strBillingPeriodURL", "1. ".$arrInvoice['InvoiceRun']);
+		}
+	}
+	
+	// return a viXen/Etech CDR comparison
+	function ShowEtechCDR($intEtechCDR)
+	{
+		// TODO
+	}
+	
  }
  
 ?>

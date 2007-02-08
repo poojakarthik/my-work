@@ -254,6 +254,32 @@
 		}
 		return $arrOutput;
 	}
+	
+	// return a list of etech invoices
+	function ListEtechInvoice()
+	{
+		$this->selEtechInvoices = new StatementSelect(	"CDREtech",
+														"InvoiceRun AS BillingPeriod",
+														"1",
+														"InvoiceRun DESC",
+														NULL,
+														"InvoiceRun");
+		
+		$this->selEtechInvoices->Execute();
+		return $this->selEtechInvoices->FetchAll();
+	}
+	
+	// return a viXen/Etech invoice comparison
+	function GetEtechInvoice($intEtechInvoice)
+	{
+		// TODO
+	}
+	
+	// return a viXen/Etech CDR comparison
+	function GetEtechCDR($intEtechCDR)
+	{
+		// TODO
+	}
  }
 
 

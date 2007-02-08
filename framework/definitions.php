@@ -202,8 +202,16 @@ $GLOBALS['*arrConstant']['CDR'][198]['Description'] = 'Temporarily Invoiced';
 $GLOBALS['*arrConstant']['CDR'][199]['Constant']	= 'CDR_INVOICED';
 $GLOBALS['*arrConstant']['CDR'][199]['Description'] = 'Invoiced';
 $GLOBALS['*arrConstant']['CDR'][170]['Constant']	= 'CDR_TEMP_CREDIT';
-$GLOBALS['*arrConstant']['CDR'][171]['Description'] = 'Temporarily Credited';
+$GLOBALS['*arrConstant']['CDR'][170]['Description'] = 'Temporarily Credited';
 $GLOBALS['*arrConstant']['CDR'][171]['Constant'] 	= 'CDR_CREDITED';
+$GLOBALS['*arrConstant']['CDR'][171]['Description'] = 'Credited';
+$GLOBALS['*arrConstant']['CDR'][180]['Constant'] 	= 'CDR_ETECH_PERFECT_MATCH';
+$GLOBALS['*arrConstant']['CDR'][181]['Description'] = 'viXen/Etech Perfect Match';
+$GLOBALS['*arrConstant']['CDR'][181]['Constant'] 	= 'CDR_ETECH_IMPERFECT_MATCH';
+$GLOBALS['*arrConstant']['CDR'][182]['Description'] = 'viXen/Etech Close Match';
+$GLOBALS['*arrConstant']['CDR'][182]['Constant'] 	= 'CDR_ETECH_NO_MATCH';
+$GLOBALS['*arrConstant']['CDR'][180]['Description'] = 'viXen/Etech No Match';
+
 
 //TODO!rich! when you have time, update all constant definitons to work like the CDR ones
 //$GLOBALS['*arrConstant']['CDR'][100]['Constant'] = 'CDR_READY';

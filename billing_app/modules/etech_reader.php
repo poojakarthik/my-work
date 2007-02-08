@@ -286,6 +286,13 @@
 		switch ($arrLine['RecordType'])
 		{
 			//------------------------- INVOICE  HEADERS -------------------------//
+			case 1:
+				// FILE HEADER
+				$this->_arrStatus['BillingPeriod']	= $arrLine['BillingPeriod'];
+				
+				// Call DecodeData() again
+				$this->DecodeData();
+				break;				
 			case 2:
 				// SP DETAILS
 				// Set Data
