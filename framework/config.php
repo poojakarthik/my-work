@@ -39,12 +39,15 @@ define("AUTOMATED_REPORT_HEADER", 	"===================================\n" .
 									
 define("AUTOMATED_REPORT_FOOTER", 	"\n -- END OF REPORT --\n");
 
-
 // Data Access constants
-define("DATABASE_URL", "10.11.12.13");
-define("DATABASE_NAME", "vixen");
-define("DATABASE_USER", "vixen");
-define("DATABASE_PWORD", "V1x3n");
+// MOVED TO /etc/vixen/vixen.conf
+// run setup_scripts/config.sh as root to add a default config file
+if (!@include_once("/etc/vixen/vixen.conf"))
+{
+	echo "Missing config script";
+	Die;
+}
+
 
 define("DATABASE_ERROR_TABLE", "Error");
 

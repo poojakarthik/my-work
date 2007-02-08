@@ -5,20 +5,40 @@
 # -----------------------------------------------------------------------------#
 
 # -----------------------------------------------------------------------------#
+# USAGE
+# -----------------------------------------------------------------------------#
+
+# server_setup <hostname> <ip_suffix>
+
+# -----------------------------------------------------------------------------#
 # CONFIG
 # -----------------------------------------------------------------------------#
 
 # Server Host Name
-StrHostName="minx"
+StrHostName="$1"
+
+# IP Suffix
+IntSuffix="$2"
+
+# Test Input
+if [ $# != 2 ] || [ $[ 0 + $IntSuffix] -lt 8 ] || [ $[ 0 + $IntSuffix] -gt 24 ] || [ $StrHostName = "" ]
+then
+	echo "USAGE server_setup <hostname> <ip_suffix>"
+	exit
+fi
+
+IPeth0Prefix="10.11.12"
+IPeth1Prefix="10.10.10"
+IPeth2Prefix="192.168.2"
 
 # Internal IP Address
-IPeth0="10.11.12.16"
+IPeth0="IPeth0Prefix.$IntSuffix"
 
 # Backup IP Address
-IPeth1="10.10.10.16"
+IPeth1="IPeth1Prefix.$IntSuffix"
 
 # External IP Address
-IPeth2="192.168.2.226"
+IPeth2="$IPeth2Prefix.$IntSuffix"
 
 # -----------------------------------------------------------------------------#
 # APT Config
@@ -187,7 +207,7 @@ echo "$FileInterfaces" > /etc/network/interfaces
 echo "Configuring Folders ..."
 
 # viXen folder
-mkdir -pm=755 /usr/share/vixen
+mkdir -pm 755 /usr/share/vixen
 
 # -----------------------------------------------------------------------------#
 # INSTALL PACKAGES
@@ -672,27 +692,125 @@ echo "Configuring Apache ..."
 
 # Intranet
 FileVixenIntranet="
+<VirtualHost $IPeth2>
+        ServerAdmin webmaster@localhost
+        ServerName viXen
+        DocumentRoot /usr/share/vixen/intranet_app
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory /usr/share/vixen/intranet_app/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
 
+        ErrorLog /var/log/apache2/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog /var/log/apache2/access.log combined
+        ServerSignature On
+</VirtualHost>
 			"
 echo "$FileVixenIntranet" > /etc/apache2/sites-available/vixen-intranet
 
 # Website
 FileVixenWebsite="
+<VirtualHost $IPeth2>
+        ServerAdmin webmaster@localhost
+        ServerName viXen
+        DocumentRoot /usr/share/vixen/client_app
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory /usr/share/vixen/client_app/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order allow,deny
+                allow from all
+        </Directory>
 
+        ErrorLog /var/log/apache2/error.log
+
+        # Possible values include: debug, info, notice, warn, error, crit,
+        # alert, emerg.
+        LogLevel warn
+
+        CustomLog /var/log/apache2/access.log combined
+        ServerSignature On
+</VirtualHost>
 			"
 echo "$FileVixenWebsite" > /etc/apache2/sites-available/vixen-website
 
+# Dev
+FileVixenDev="
+<VirtualHost $IPeth0>
+        ServerAdmin webmaster@localhost
+
+        DocumentRoot /var/www
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+        </Directory>
+        <Directory /var/www/>
+                Options Indexes FollowSymLinks MultiViews
+                AllowOverride None
+                Order deny,allow
+                Deny from all
+                Allow from $IPeth0Prefix
+        </Directory>
+
+        ErrorLog /var/log/apache2/error.log
+        LogLevel warn
+        CustomLog /var/log/apache2/access.log combined
+        ServerSignature On
+			"
+echo "$FileVixenDev" > /etc/apache2/sites-available/vixen-dev
+
+# Default (Dead End)
+FileVixenDefault="
+NameVirtualHost *
+<VirtualHost *>
+        ServerAdmin webmaster@localhost
+        DocumentRoot /var/www/default
+        <Directory />
+                Options FollowSymLinks
+                AllowOverride None
+				Order deny,allow
+                Deny from all
+        </Directory>
+        <Directory /var/www/default/>
+                Options FollowSymLinks
+                AllowOverride None
+                Order deny,allow
+                Deny from all
+        </Directory>
+        ErrorLog /var/log/apache2/error.log
+        LogLevel warn
+        CustomLog /var/log/apache2/access.log combined
+        ServerSignature On
+</VirtualHost>
+			"
+echo "$FileVixenDefault" > /etc/apache2/sites-available/vixen-default
+
 # enable the sites
-#ln -s /etc/apache2/sites-enabled/vixen-intranet /etc/apache2/sites-available/vixen-intranet
+ln -s /etc/apache2/sites-enabled/vixen-intranet /etc/apache2/sites-available/vixen-intranet
 #ln -s /etc/apache2/sites-enabled/vixen-website /etc/apache2/sites-available/vixen-website
+ln -s /etc/apache2/sites-enabled/vixen-dev /etc/apache2/sites-available/vixen-dev
 
-# set intranet as the default site
-#rm /etc/apache2/sites-available/default
-#ln -s /etc/apache2/sites-available/vixen-intranet /etc/apache2/sites-available/default
+# enable default site (Dead End)
+mkdir -pm 755 /var/www/default
+echo "" > /var/www/index.html
+rm /etc/apache2/sites-enabled/000-default
+ln -s /etc/apache2/sites-enabled/vixen-default /etc/apache2/sites-available/000-default
 
-# web links (temporary hack)
-ln -s /usr/share/vixen/intranet_app /var/www/vixen_intranet
-ln -s /usr/share/vixen/client_app /var/www/vixen_website
+
 
 # -----------------------------------------------------------------------------#
 # VIXEN CONFIG
