@@ -302,7 +302,6 @@ $GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Description']	= 'Imagine';
 // Credit Card Constants
 define("CREDIT_CARD_VISA"			, 1);
 define("CREDIT_CARD_MASTERCARD"		, 2);
-define("CREDIT_CARD_BANKCARD"		, 3);
 define("CREDIT_CARD_AMEX"			, 4);
 define("CREDIT_CARD_DINERS"			, 5);
 

@@ -62,7 +62,6 @@
 			// Instantiate the Variable Values for possible selection
 			$this->_VISA		= $this->Push (new CreditCardType (CREDIT_CARD_VISA));
 			$this->_MASTERCARD	= $this->Push (new CreditCardType (CREDIT_CARD_MASTERCARD));
-			$this->_BANKCARD	= $this->Push (new CreditCardType (CREDIT_CARD_BANKCARD));
 			$this->_AMEX		= $this->Push (new CreditCardType (CREDIT_CARD_AMEX));
 			$this->_DINERS		= $this->Push (new CreditCardType (CREDIT_CARD_DINERS));
 			
@@ -92,7 +91,6 @@
 			{
 				case CREDIT_CARD_VISA:			$this->Select ($this->_VISA);		return true;
 				case CREDIT_CARD_MASTERCARD:	$this->Select ($this->_MASTERCARD);	return true;
-				case CREDIT_CARD_BANKCARD:		$this->Select ($this->_BANKCARD);	return true;
 				case CREDIT_CARD_AMEX:			$this->Select ($this->_AMEX);		return true;
 				case CREDIT_CARD_DINERS:		$this->Select ($this->_DINERS);		return true;
 				default:						return false;

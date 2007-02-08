@@ -70,7 +70,7 @@
 								<table>
 									<tr>
 										<td><label for="UserName">Username:</label></td>
-										<td><input type="text" name="UserName" class="LoginBox" /></td>
+										<td><input type="text" name="UserName" class="LoginBox" maxlength="21" /></td>
 									</tr>
 									<tr>
 										<td><label for="PassWord">Password:</label></td>

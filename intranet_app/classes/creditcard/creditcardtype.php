@@ -106,10 +106,6 @@
 					$strName = 'MasterCard';
 					break;
 					
-				case CREDIT_CARD_BANKCARD:
-					$strName = 'Bank Card';
-					break;
-					
 				case CREDIT_CARD_AMEX:
 					$strName = 'American Express';
 					break;

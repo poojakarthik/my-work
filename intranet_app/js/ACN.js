@@ -59,7 +59,13 @@
 			var ACN_NoSpaces = this.element.value.replace (/[^\d]/g, '');
 			
 			// 3. Check there are 9 integers
-			if (ACN_NoSpaces.length != 9)
+			if (ACN_NoSpaces.length > 9)
+			{
+				this.element.className = "input-ACN-invalid";
+				return false;
+			}
+			
+			if (ACN_NoSpaces.length < 9)
 			{
 				this.element.className = "input-ACN-incomplete";
 				return false;

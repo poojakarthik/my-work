@@ -677,7 +677,7 @@
 		
 		public function ServiceAddressUpdate ($arrDetails)
 		{
-			$eutEndUserTitle			= new ServiceEndUserTitleTypes ();
+			$eutEndUserTitle			= new TitleTypes ();
 			$bolEndUserTitle			= $eutEndUserTitle->setValue ($arrDetails ['EndUserTitle']);
 
 			$satServiceAddressType		= new ServiceAddressTypes ();

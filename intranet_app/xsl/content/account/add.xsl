@@ -26,7 +26,7 @@
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
 				<xsl:choose>
-					<!-- Serious Errors : Should never show, but just in case -->
+					<!-- Enumeration Errors -->
 					<xsl:when test="/Response/Error = 'Account CustomerGroup'">
 						Please select a valid Customer Group.
 					</xsl:when>
@@ -202,7 +202,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Account[BusinessName]" class="input-string">
+							<input type="text" name="Account[BusinessName]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Account/BusinessName" />
@@ -219,7 +219,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Account[TradingName]" class="input-string">
+							<input type="text" name="Account[TradingName]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Account/TradingName" />
@@ -280,7 +280,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Account[Address1]" class="input-string">
+							<input type="text" name="Account[Address1]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Account/Address1" />
@@ -297,7 +297,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Account[Address2]" class="input-string">
+							<input type="text" name="Account[Address2]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Account/Address2" />
@@ -314,7 +314,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Account[Suburb]" class="input-string">
+							<input type="text" name="Account[Suburb]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Account/Suburb" />
@@ -350,12 +350,18 @@
 						</th>
 						<td>
 							<select name="Account[State]">
+								<option value=""></option>
 								<xsl:for-each select="/Response/ServiceStateTypes/ServiceStateType">
 									<option>
 										<xsl:attribute name="value">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="./Id" />
 										</xsl:attribute>
+										<xsl:if test="@selected='selected'">
+											<xsl:attribute name="selected">
+												<xsl:text>selected</xsl:text>
+											</xsl:attribute>
+										</xsl:if>
 										<xsl:value-of select="./Name" />
 									</option>
 								</xsl:for-each>
@@ -377,19 +383,18 @@
 						</th>
 						<td>
 							<select name="Account[CustomerGroup]">
+								<option value=""></option>
 								<xsl:for-each select="/Response/CustomerGroups/CustomerGroup">
 									<option>
 										<xsl:attribute name="value">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="./Id" />
 										</xsl:attribute>
-										<xsl:choose>
-											<xsl:when test="@selected='selected'">
-												<xsl:attribute name="selected">
-													<xsl:text>selected</xsl:text>
-												</xsl:attribute>
-											</xsl:when>
-										</xsl:choose>
+										<xsl:if test="@selected='selected'">
+											<xsl:attribute name="selected">
+												<xsl:text>selected</xsl:text>
+											</xsl:attribute>
+										</xsl:if>
 										<xsl:value-of select="./Name" />
 									</option>
 								</xsl:for-each>
@@ -493,7 +498,7 @@
 													</xsl:call-template>
 												</th>
 												<td>
-													<input type="text" name="DDR[BankName]" class="input-string">
+													<input type="text" name="DDR[BankName]" class="input-string" maxlength="255">
 														<xsl:attribute name="value">
 															<xsl:text></xsl:text>
 															<xsl:value-of select="/Response/ui-values/DirectDebit/BankName" />
@@ -501,7 +506,7 @@
 													</input>
 												</td>
 											</tr>
-											<!--TODO!bash! Verify - only accept 6 digit number!!-->
+											<!--TODO!bash! [  DONE  ]		Verify - only accept 6 digit number!!-->
 											<tr>
 											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
@@ -511,7 +516,7 @@
 													</xsl:call-template>
 												</th>
 												<td>
-													<input type="text" name="DDR[BSB]" class="input-string">
+													<input type="text" name="DDR[BSB]" class="input-string" maxlength="6">
 														<xsl:attribute name="value">
 															<xsl:text></xsl:text>
 															<xsl:value-of select="/Response/ui-values/DirectDebit/BSB" />
@@ -519,7 +524,7 @@
 													</input>
 												</td>
 											</tr>
-											<!--TODO!bash! URGENT -Verify -  only accept 9 digit number!!-->
+											<!--TODO!bash! [  DONE  ]		URGENT -Verify -  only accept 9 digit number!!-->
 											<tr>
 											<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
 												<th class="JustifiedWidth">
@@ -529,7 +534,7 @@
 													</xsl:call-template>
 												</th>
 												<td>
-													<input type="text" name="DDR[AccountNumber]" class="input-string">
+													<input type="text" name="DDR[AccountNumber]" class="input-string" maxlength="9">
 														<xsl:attribute name="value">
 															<xsl:text></xsl:text>
 															<xsl:value-of select="/Response/ui-values/DirectDebit/AccountNumber" />
@@ -546,7 +551,7 @@
 													</xsl:call-template>
 												</th>
 												<td>
-													<input type="text" name="DDR[AccountName]" class="input-string">
+													<input type="text" name="DDR[AccountName]" class="input-string" maxlength="255">
 														<xsl:attribute name="value">
 															<xsl:text></xsl:text>
 															<xsl:value-of select="/Response/ui-values/DirectDebit/AccountName" />
@@ -600,13 +605,11 @@
 																	<xsl:text></xsl:text>
 																	<xsl:value-of select="./Id" />
 																</xsl:attribute>
-																<xsl:choose>
-																	<xsl:when test="@selected='selected'">
-																		<xsl:attribute name="selected">
-																			<xsl:text>selected</xsl:text>
-																		</xsl:attribute>
-																	</xsl:when>
-																</xsl:choose>
+																<xsl:if test="@selected='selected'">
+																	<xsl:attribute name="selected">
+																		<xsl:text>selected</xsl:text>
+																	</xsl:attribute>
+																</xsl:if>
 																<xsl:value-of select="./Name" />
 															</option>
 														</xsl:for-each>
@@ -622,7 +625,7 @@
 													</xsl:call-template>
 												</th>
 												<td>
-													<input type="text" name="CC[Name]" class="input-string">
+													<input type="text" name="CC[Name]" class="input-string" maxlength="255">
 														<xsl:attribute name="value">
 															<xsl:text></xsl:text>
 															<xsl:value-of select="/Response/ui-values/CreditCard/Name" />
@@ -640,7 +643,7 @@
 													</xsl:call-template>
 												</th>
 												<td>
-													<input type="text" name="CC[CardNumber]" class="input-string">
+													<input type="text" name="CC[CardNumber]" class="input-string" maxlength="20">
 														<xsl:attribute name="value">
 															<xsl:text></xsl:text>
 															<xsl:value-of select="/Response/ui-values/CreditCard/CardNumber" />

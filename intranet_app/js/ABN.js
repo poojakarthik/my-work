@@ -59,7 +59,13 @@
 			var ABN_NoSpaces = this.element.value.replace (/[^\d]/g, '');
 			
 			// 3. Check there are 11 integers
-			if (ABN_NoSpaces.length != 11)
+			if (ABN_NoSpaces.length > 11)
+			{
+				this.element.className = "input-ABN-invalid";
+				return false;
+			}
+			
+			if (ABN_NoSpaces.length < 11)
 			{
 				this.element.className = "input-ABN-incomplete";
 				return false;
