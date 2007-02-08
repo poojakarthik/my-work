@@ -10,8 +10,7 @@
 mkdir -m 755 /etc/vixen
 
 # write conf file
-FileVixenConf="
-<?php
+FileVixenConf="<?php
 //----------------------------------------------------------------------------//
 // /etc/vixen/vixen.conf
 //----------------------------------------------------------------------------//
@@ -22,8 +21,7 @@ define('DATABASE_NAME', "vixen");
 define('DATABASE_USER', "vixen");
 define('DATABASE_PWORD', "V1x3n");
 
-?>
-"
+?>"
 echo "$FileVixenConf" > /etc/vixen/vixen.conf
 
 # set permissions
