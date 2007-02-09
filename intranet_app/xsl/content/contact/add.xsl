@@ -155,7 +155,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="FirstName" class="input-string">
+								<input type="text" name="FirstName" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/FirstName" />
@@ -172,7 +172,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="LastName" class="input-string">
+								<input type="text" name="LastName" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/LastName" />
@@ -189,7 +189,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="JobTitle" class="input-string">
+								<input type="text" name="JobTitle" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/JobTitle" />
@@ -237,7 +237,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Email" class="input-string">
+								<input type="text" name="Email" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Email" />
@@ -255,7 +255,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Phone" class="input-string">
+								<input type="text" name="Phone" class="input-string" maxlength="25">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Phone" />
@@ -273,7 +273,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Mobile" class="input-string">
+								<input type="text" name="Mobile" class="input-string" maxlength="25">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Mobile" />
@@ -291,7 +291,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Fax" class="input-string">
+								<input type="text" name="Fax" class="input-string" maxlength="25">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Fax" />
@@ -313,7 +313,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="UserName" class="input-string">
+								<input type="text" name="UserName" class="input-string" maxlength="31">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/UserName" />

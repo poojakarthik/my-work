@@ -825,7 +825,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Contact[FirstName]" class="input-string">
+							<input type="text" name="Contact[FirstName]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Contact/FirstName" />
@@ -849,7 +849,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Contact[LastName]" class="input-string">
+							<input type="text" name="Contact[LastName]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Contact/LastName" />
@@ -899,7 +899,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Contact[JobTitle]" class="input-string">
+							<input type="text" name="Contact[JobTitle]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Contact/JobTitle" />
@@ -914,21 +914,23 @@
 					</tr>
 					<tr>
 						<xsl:choose>
-						<xsl:when test="/Response/AccountGroup">
-							<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
-						</xsl:when>
-						<xsl:otherwise>
-							<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
-						</xsl:otherwise>
-					</xsl:choose>						<th class="JustifiedWidth">
-					<!--TODO!bash! [  DONE  ]		URGENT! Verify - only allow strings including an @ symbol-->
+							<xsl:when test="/Response/AccountGroup">
+								<td class="Required" valign="top"><strong><span class="Red"><sup>#</sup></span></strong></td>
+							</xsl:when>
+							<xsl:otherwise>
+								<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+							</xsl:otherwise>
+						</xsl:choose>
+					
+						<th class="JustifiedWidth">
+							<!--TODO!bash! [  DONE  ]		URGENT! Verify - only allow strings including an @ symbol-->
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Contact')" />
 								<xsl:with-param name="field" select="string('Email')" />
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Contact[Email]" class="input-string">
+							<input type="text" name="Contact[Email]" class="input-string" maxlength="255">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Contact/Email" />
@@ -946,7 +948,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Contact[Phone]" class="input-string">
+							<input type="text" name="Contact[Phone]" class="input-string" maxlength="25">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Contact/Phone" />
@@ -964,7 +966,7 @@
 						</th>
 						<td>
 						<!--TODO!bash! URGENT - Verify - Only numeric -->
-							<input type="text" name="Contact[Mobile]" class="input-string">
+							<input type="text" name="Contact[Mobile]" class="input-string" maxlength="25">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Contact/Mobile" />
@@ -982,7 +984,7 @@
 						</th>
 						<td>
 						<!--TODO!bash! URGENT! - Verify - only numeric -->
-							<input type="text" name="Contact[Fax]" class="input-string">
+							<input type="text" name="Contact[Fax]" class="input-string" maxlength="25">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Contact/Fax" />
@@ -1012,7 +1014,7 @@
 							</xsl:call-template>
 						</th>
 						<td>
-							<input type="text" name="Contact[UserName]" class="input-string">
+							<input type="text" name="Contact[UserName]" class="input-string" maxlength="31">
 								<xsl:attribute name="value">
 									<xsl:text></xsl:text>
 									<xsl:value-of select="/Response/ui-values/Contact/UserName" />

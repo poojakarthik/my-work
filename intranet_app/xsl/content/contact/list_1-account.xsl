@@ -10,16 +10,16 @@
 		<!-- Select an Account (Following Search OTHER THAN First/Last Name -->
 		<h1>Find Customer</h1>
 		
-							<!--Error if no account is chosen -->
-					<xsl:if test="/Response/Error != ''">
-						<div class="MsgErrorWide">
-							<xsl:choose>
-								<xsl:when test="/Response/Error = 'Unselected'">
-									Please select an Account.
-								</xsl:when>
-							</xsl:choose>
-						</div>
-					</xsl:if>
+		<!--Error if no account is chosen -->
+		<xsl:if test="/Response/Error != ''">
+			<div class="MsgErrorWide">
+				<xsl:choose>
+					<xsl:when test="/Response/Error = 'Unselected'">
+						Please select an Account.
+					</xsl:when>
+				</xsl:choose>
+			</div>
+		</xsl:if>
 		
 		<h2 class="Account">Select an Account</h2>
 		<div class="sectionContainer">
@@ -98,7 +98,7 @@
 							<th>Trading Name</th>
 							<th>Suburb / Postcode</th>
 						</tr>
-						<xsl:for-each select="/Response/ui-answers/Accounts/Account">
+						<xsl:for-each select="/Response/ui-answers/Accounts/Results/rangeSample/Account">
 							<tr>
 								<xsl:attribute name="class">
 									<xsl:choose>

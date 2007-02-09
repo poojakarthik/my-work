@@ -77,7 +77,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="BusinessName" class="input-string">
+								<input type="text" name="BusinessName" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/BusinessName" />
@@ -94,7 +94,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="TradingName" class="input-string">
+								<input type="text" name="TradingName" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/TradingName" />
@@ -153,7 +153,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Address1" class="input-string">
+								<input type="text" name="Address1" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Address1" />
@@ -170,7 +170,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Address2" class="input-string">
+								<input type="text" name="Address2" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Address2" />
@@ -187,7 +187,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Suburb" class="input-string">
+								<input type="text" name="Suburb" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Suburb" />
@@ -205,7 +205,7 @@
 							</th>
 							<!--TODO!bash! [  DONE  ]		URGENT - verify - only 4 digit number -->
 							<td>
-								<input type="text" name="Postcode" class="input-string">
+								<input type="text" name="Postcode" class="input-string" maxlength="4">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Postcode" />

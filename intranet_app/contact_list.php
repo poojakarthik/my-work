@@ -64,7 +64,11 @@
 		// If we're matching against an ABN#, we need to display 
 		// a list of Accounts which possibly match
 		
-		if (!$_POST ['ui-Account-Sel'])
+		if ($abnABN->getValue () == "")
+		{
+			$oblstrError->setValue ('ABN');
+		}
+		else if (!$_POST ['ui-Account-Sel'])
 		{
 			// If we have a Business Name, but we don't have an Account Number, 
 			// we have to show a screen which will allow the employee to 
@@ -76,7 +80,11 @@
 			$acsAccounts->Order ('BusinessName', TRUE);
 			$oblsamAccounts = $acsAccounts->Sample ();
 			
-			if ($oblsamAccounts->Count () == 1)
+			if ($oblsamAccounts->Count () == 0)
+			{
+				$oblstrError->setValue ('ABN');
+			}
+			else if ($oblsamAccounts->Count () == 1)
 			{
 				foreach ($oblsamAccounts as $objAccount)
 				{
@@ -108,7 +116,11 @@
 		// If we're matching against an ACN#, we need to display 
 		// a list of Accounts which possibly match
 		
-		if (!$_POST ['ui-Account-Sel'])
+		if ($acnACN->getValue () == "")
+		{
+			$oblstrError->setValue ('ACN');
+		}
+		else if (!$_POST ['ui-Account-Sel'])
 		{
 			// If we have a Business Name, but we don't have an Account Number, 
 			// we have to show a screen which will allow the employee to 
@@ -120,7 +132,11 @@
 			$acsAccounts->Order ('BusinessName', TRUE);
 			$oblsamAccounts = $acsAccounts->Sample ();
 			
-			if ($oblsamAccounts->Count () == 1)
+			if ($oblsamAccounts->Count () == 0)
+			{
+				$oblstrError->setValue ('ACN');
+			}
+			else if ($oblsamAccounts->Count () == 1)
 			{
 				foreach ($oblsamAccounts as $objAccount)
 				{
@@ -190,19 +206,23 @@
 			
 			try
 			{
-				$oblarrAccounts = $oblarrAnswers->Push (Accounts::NameSearch ($oblstrBusinessName->getValue ()));
+				$acsAccounts = $oblarrAnswers->Push (new Accounts);
+				$acsAccounts->Constrain ('BusinessName', 'LIKE', $oblstrBusinessName->getValue ());
+				$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
+				$acsAccounts->Order ('BusinessName', TRUE);
+				$oblsamAccounts = $acsAccounts->Sample ();
 				
-				if ($oblarrAccounts->Length () == 0)
+				if ($oblsamAccounts->Count () == 0)
 				{
 					// If there are no matches, then we need to show an error
 					$oblstrError->setValue ('BusinessName None');
 				}
-				else if ($oblarrAccounts->Length () == 1)
+				else if ($oblsamAccounts->Count () == 1)
 				{
 					// If there is exactly one match, then we're just going to
 					// continue with the processes
 					
-					foreach ($oblarrAccounts as $actAccountItem)
+					foreach ($oblsamAccounts as $actAccountItem)
 					{
 						$actAccount = $oblarrAnswers->Push ($actAccountItem);
 					}

@@ -12,7 +12,6 @@
 		<script language="javascript" src="js/ACN.js"></script>
 		<script language="javascript" src="js/contact_list_1.js"></script>
 		
-		<!-- TODO !bash! It doesn't look very done...make it a MSGERROR!!!!!-->
 		<!-- TODO!bash! [  DONE  ]		This page has a popup error when fields are not filled in correctly!!!  It needs to have a msgerror saying EXACTLY "You did not fill in this form correctly.  Please try again."-->
 		<!-- do NOT change the wording of the error-->
 		
@@ -138,7 +137,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ui-FNN" class="input-string">
+								<input type="text" name="ui-FNN" class="input-string" maxlength="25">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/FNN" />
@@ -162,7 +161,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ui-BusinessName" class="input-string">
+								<input type="text" name="ui-BusinessName" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/BusinessName" />
@@ -185,7 +184,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ui-Contact-First" class="input-string">
+								<input type="text" name="ui-Contact-First" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Contact-First" />
@@ -201,7 +200,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="ui-Contact-Last" class="input-string">
+								<input type="text" name="ui-Contact-Last" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Contact-Last" />
