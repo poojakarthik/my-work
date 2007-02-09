@@ -190,7 +190,7 @@
 			</div>
 			<div class = "SmallSeperator"></div>
 			<div class = "Right">
-					<input type="submit" name="Confirm" value="Add Charge &#0187;" class="input-submit" />
+					<input type="submit" name="Confirm" value="Add Recurring Charge &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

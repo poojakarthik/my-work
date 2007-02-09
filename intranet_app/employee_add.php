@@ -50,17 +50,29 @@
 	// whether or not we're using GET or POST
 	if ($_SERVER ['REQUEST_METHOD'] == 'POST')
 	{
-		if ($_POST ['PassWord']['0'] <> $_POST ['PassWord']['1'])
+		if ($_POST ['Email'] && !EmailAddressValid ($_POST ['Email']))
+		{
+			$oblstrError->setValue ('Email');
+		}
+		else if ($_POST ['Phone'] && !PhoneNumberValid ($_POST ['Phone']))
+		{
+			$oblstrError->setValue ('Phone');
+		}
+		else if ($_POST ['Mobile'] && !PhoneNumberValid ($_POST ['Mobile']))
+		{
+			$oblstrError->setValue ('Mobile');
+		}
+		else if (!$_POST ['UserName'])
+		{
+			$oblstrError->setValue ('Username Empty');
+		}
+		else if ($_POST ['PassWord']['0'] <> $_POST ['PassWord']['1'])
 		{
 			$oblstrError->setValue ('Password Mismatch');
 		}
 		else if (!$_POST ['PassWord']['0'])
 		{
 			$oblstrError->setValue ('Password Empty');
-		}
-		else if (!$_POST ['UserName'])
-		{
-			$oblstrError->setValue ('Username Empty');
 		}
 		else
 		{
@@ -97,6 +109,11 @@
 	$docDocumentation->Explain ('Employee');
 	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/employee/add.xsl');
+	$Style->Output (
+		'xsl/content/employee/add.xsl',
+		Array (
+			"Employees"		=> TRUE
+		)
+	);
 	
 ?>

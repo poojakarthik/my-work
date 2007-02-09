@@ -48,10 +48,8 @@
 	if ($_POST ['ServiceType'])
 	{
 		// Set the FNN for use if there's an error
-		$oblstrFNN_1->setValue ($_POST ['FNN-1']);
-		$oblstrFNN_2->setValue ($_POST ['FNN-2']);
-		
-		$strFNN = preg_replace ('/\s/', '', $_POST ['FNN-1']);
+		$oblstrFNN_1->setValue (preg_replace ("/\s/", "", $_POST ['FNN-1']));
+		$oblstrFNN_2->setValue (preg_replace ("/\s/", "", $_POST ['FNN-2']));
 		
 		// If the Service Type is Invalid, Error
 		if (!$srvServiceTypes->setValue ($_POST ['ServiceType']))
@@ -60,15 +58,15 @@
 		}
 		else
 		{
-			if ($_POST ['FNN-1'] <> $_POST ['FNN-2'])
+			if ($oblstrFNN_1->getValue () <> $oblstrFNN_2->getValue ())
 			{
 				$oblstrError->setValue ('Mismatch');
 			}
-			else if ($strFNN <> "" && !IsValidFNN ($strFNN))
+			else if ($oblstrFNN_1->getValue () <> "" && !IsValidFNN ($oblstrFNN_1->getValue ()))
 			{
 				$oblstrError->setValue ('FNN ServiceType');
 			}
-			else if ($strFNN <> "" && ServiceType ($strFNN) <> $_POST ['ServiceType'])
+			else if ($oblstrFNN_1->getValue () <> "" && ServiceType ($oblstrFNN_1->getValue ()) <> $_POST ['ServiceType'])
 			{
 				$oblstrError->setValue ('FNN ServiceType');
 			}
@@ -96,7 +94,7 @@
 							$actAccount,
 							$rrpPlan,
 							Array (
-								"FNN"					=> $_POST ['FNN-1'],
+								"FNN"					=> $oblstrFNN_1->getValue (),
 								"Indial100"				=> isset ($_POST ['Indial100']) ? TRUE : FALSE,
 								"ServiceType"			=> $_POST ['ServiceType']
 							)

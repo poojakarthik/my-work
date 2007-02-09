@@ -17,23 +17,20 @@
 	// call application
 	require ('config/application.php');
 	
+	// Get the Employee
 	try
 	{
-		if ($_SERVER ['REQUEST_METHOD'] == "GET")
-		{
-			// Using GET
-			$empEmployee = $Style->attachObject (new Employee ($_GET ['Id']));
-		}
-		else
-		{
-			// Using POST
-			$empEmployee = $Style->attachObject (new Employee ($_POST ['Id']));
-		}
+		$empEmployee = $Style->attachObject (new Employee (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
 	}
 	catch (Exception $e)
 	{
 		// If the account does not exist, an exception will be thrown
-		$Style->Output ('xsl/content/employee/notfound.xsl');
+		$Style->Output (
+			'xsl/content/employee/notfound.xsl',
+			Array (
+				"Employees"		=> TRUE
+			)
+		);
 		exit;
 	}
 	
@@ -52,26 +49,38 @@
 	$oblstrUserName		= $oblarrUIValues->Push (new dataString ('UserName',	$empEmployee->Pull ('UserName')->getValue ()));
 	$oblbolArchive		= $oblarrUIValues->Push (new dataBoolean('Archived'));
 	
-	if ($_POST ['FirstName'])	$oblstrFirstName->setValue	($_POST ['FirstName']);
-	if ($_POST ['LastName'])	$oblstrLastName->setValue	($_POST ['LastName']);
-	if ($_POST ['Email'])		$oblstrEmail->setValue	($_POST ['Email']);
-	if ($_POST ['Extension'])	$oblstrExtension->setValue	($_POST ['Extension']);
-	if ($_POST ['Phone'])		$oblstrPhone->setValue	($_POST ['Phone']);
-	if ($_POST ['Mobile'])		$oblstrMobile->setValue	($_POST ['Mobile']);
-	if ($_POST ['UserName'])	$oblstrUserName->setValue 	($_POST ['UserName']);
-	if ($_POST ['Archived'])	$oblbolArchive->setValue 	(isset ($_POST ['Archived']) ? TRUE : FALSE);
+	if (isset ($_POST ['FirstName']))	$oblstrFirstName->setValue	($_POST ['FirstName']);
+	if (isset ($_POST ['LastName']))	$oblstrLastName->setValue	($_POST ['LastName']);
+	if (isset ($_POST ['Email']))		$oblstrEmail->setValue	($_POST ['Email']);
+	if (isset ($_POST ['Extension']))	$oblstrExtension->setValue	($_POST ['Extension']);
+	if (isset ($_POST ['Phone']))		$oblstrPhone->setValue	($_POST ['Phone']);
+	if (isset ($_POST ['Mobile']))		$oblstrMobile->setValue	($_POST ['Mobile']);
+	if (isset ($_POST ['UserName']))	$oblstrUserName->setValue 	($_POST ['UserName']);
+	if (isset ($_POST ['Archived']))	$oblbolArchive->setValue 	(isset ($_POST ['Archived']) ? TRUE : FALSE);
 	
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we're using GET or POST
 	if ($_POST ['Id'])
 	{
-		if ($_POST ['PassWord']['0'] <> $_POST ['PassWord']['1'])
+		if ($_POST ['Email'] && !EmailAddressValid ($_POST ['Email']))
 		{
-			$oblstrError->setValue ('Password Mismatch');
+			$oblstrError->setValue ('Email');
+		}
+		else if ($_POST ['Phone'] && !PhoneNumberValid ($_POST ['Phone']))
+		{
+			$oblstrError->setValue ('Phone');
+		}
+		else if ($_POST ['Mobile'] && !PhoneNumberValid ($_POST ['Mobile']))
+		{
+			$oblstrError->setValue ('Mobile');
 		}
 		else if (!$_POST ['UserName'])
 		{
 			$oblstrError->setValue ('Username Empty');
+		}
+		else if ($_POST ['PassWord']['0'] && $_POST ['PassWord']['0'] <> $_POST ['PassWord']['1'])
+		{
+			$oblstrError->setValue ('Password Mismatch');
 		}
 		else
 		{
@@ -110,6 +119,11 @@
 	$docDocumentation->Explain ('Employee');
 	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/employee/edit.xsl');
+	$Style->Output (
+		'xsl/content/employee/edit.xsl',
+		Array (
+			"Employees"		=> TRUE
+		)
+	);
 	
 ?>

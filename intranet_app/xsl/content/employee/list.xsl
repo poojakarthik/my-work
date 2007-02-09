@@ -56,13 +56,11 @@
 			<xsl:when test="/Response/Employees/Results/collationLength = 0">
 				<div class="MsgErrorWide">
 					There were no results matching your search. Please change your search and try again.
-
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/Employees/Results/rangeSample/Employee) = 0">
 				<div class="MsgNoticeWide">
 					There were no results matching your search. Please change your search and try again.
-
 				</div>
 			</xsl:when>
 		</xsl:choose>

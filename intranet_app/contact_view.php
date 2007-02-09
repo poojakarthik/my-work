@@ -25,14 +25,16 @@
 	$docDocumentation->Explain ('Contact');
 	$docDocumentation->Explain ('Service');
 	
-	// Make sure we have a Contact being Requested
-	if (!$_GET ['Id'])
-	{
-		header ('Location: console.php'); exit;
-	}
-	
 	// Pull the Information about the Contact
-	$cntContact = $Style->attachObject (new Contact ($_GET ['Id']));
+	try
+	{
+		$cntContact = $Style->attachObject (new Contact ($_GET ['Id']));
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ('xsl/content/contact/notfound.xsl');
+		exit;
+	}
 	
 	// Pull the Accounts that the Contact has Access to
 	$acsAccounts = $Style->attachObject ($cntContact->getAccounts ());

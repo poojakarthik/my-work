@@ -6,9 +6,7 @@
 	<xsl:template name="Content">
 	
 		<!-- Heading 1 -->
-		<h1>
-			View CDR
-		</h1>
+		<h1>View CDR</h1>
 		
 		<div class="FormPopup">
 			<div class="Form-Content">

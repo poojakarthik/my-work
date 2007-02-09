@@ -304,7 +304,9 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<input type="submit" class="input-submit" name="Confirm" value="Run Report &#0187;" />
+			<div class="Right">
+				<input type="submit" class="input-submit" name="Confirm" value="Run Report &#0187;" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

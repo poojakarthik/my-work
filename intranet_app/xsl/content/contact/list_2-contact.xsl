@@ -9,9 +9,7 @@
 		<!-- Select a contact following search OTHER THAN NAME -->
 		
 		<h1>Find Customer</h1>
-		
-				
-					<xsl:if test="/Response/Error != ''">
+			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'Unselected'">

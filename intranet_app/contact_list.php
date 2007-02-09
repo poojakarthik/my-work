@@ -93,6 +93,12 @@
 			}
 			else
 			{
+				// If there is more than 1 match, display a list of matches to choose from
+				if ($_POST ['ContinueAccount'])
+				{
+					$oblstrError->setValue ('Unselected');
+				}
+				
 				$Style->Output ('xsl/content/contact/list_1-account.xsl');
 				exit;
 			}
@@ -145,6 +151,12 @@
 			}
 			else
 			{
+				// If there is more than 1 match, display a list of matches to choose from
+				if ($_POST ['ContinueAccount'])
+				{
+					$oblstrError->setValue ('Unselected');
+				}
+				
 				$Style->Output ('xsl/content/contact/list_1-account.xsl');
 				exit;
 			}

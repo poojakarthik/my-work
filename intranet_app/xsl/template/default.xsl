@@ -301,34 +301,49 @@
 												<xsl:choose>
 													<xsl:when test="name(.) = 'Account'">
 														<xsl:attribute name="href">
-																<xsl:text>account_view.php?Id=</xsl:text>
-																<xsl:value-of select="." />
+															<xsl:text>account_view.php?Id=</xsl:text>
+															<xsl:value-of select="." />
 														</xsl:attribute>
 														<xsl:text>View Account</xsl:text>
 													</xsl:when>
 													
 													<xsl:when test="name(.) = 'Invoice'">
 														<xsl:attribute name="href">
-																<xsl:text>invoice_view.php?Invoice=</xsl:text>
-																<xsl:value-of select="." />
+															<xsl:text>invoice_view.php?Invoice=</xsl:text>
+															<xsl:value-of select="." />
 														</xsl:attribute>
 														<xsl:text>View Invoice</xsl:text>
 													</xsl:when>
 													
 													<xsl:when test="name(.) = 'Contact'">
 														<xsl:attribute name="href">
-																<xsl:text>contact_view.php?Id=</xsl:text>
-																<xsl:value-of select="." />
+															<xsl:text>contact_view.php?Id=</xsl:text>
+															<xsl:value-of select="." />
 														</xsl:attribute>
 														<xsl:text>View Contact</xsl:text>
 													</xsl:when>
 													
 													<xsl:when test="name(.) = 'Service'">
 														<xsl:attribute name="href">
-																<xsl:text>service_view.php?Id=</xsl:text>
-																<xsl:value-of select="." />
+															<xsl:text>service_view.php?Id=</xsl:text>
+															<xsl:value-of select="." />
 														</xsl:attribute>
 														<xsl:text>View Service</xsl:text>
+													</xsl:when>
+													
+													<xsl:when test="name(.) = 'Employees'">
+														<xsl:attribute name="href">
+															<xsl:text>employee_list.php</xsl:text>
+														</xsl:attribute>
+														<xsl:text>View Employees</xsl:text>
+													</xsl:when>
+													
+													<xsl:when test="name(.) = 'Employee'">
+														<xsl:attribute name="href">
+															<xsl:text>employee_edit.php?Id=</xsl:text>
+															<xsl:value-of select="." />
+														</xsl:attribute>
+														<xsl:text>Edit Employee</xsl:text>
 													</xsl:when>
 												</xsl:choose>
 											</a>

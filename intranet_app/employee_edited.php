@@ -33,6 +33,12 @@
 	$docDocumentation->Explain ('Employee');
 	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/employee/edited.xsl');
+	$Style->Output (
+		'xsl/content/employee/edited.xsl',
+		Array (
+			"Employees"		=> TRUE,
+			"Employee"		=> $empEmployee->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

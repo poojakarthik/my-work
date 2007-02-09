@@ -68,12 +68,14 @@
 				{
 					$intDate = mktime (0, 0, 0, (float) $_POST ['Date']['month'], (float) $_POST ['Date']['day'], (float) $_POST ['Date']['year']);
 					
+					$bolDate = @checkdate ((int) $_POST ['Date']['month'], (int) $_POST ['Date']['day'], (int) $_POST ['Date']['year']);
+					
 					// TODO!bash! [  DONE  ]		Warning: mktime() expects parameter 4 to be long, string given in ... (submit with no date)
 					if (!$_POST ['Date']['month'] || !$_POST ['Date']['day'] || !$_POST ['Date']['year'])
 					{
 						$oblstrError->setValue ('Date Invalid');
 					}
-					else if (!$intDate)
+					else if (!$bolDate)
 					{
 						$oblstrError->setValue ('Date Invalid');
 					}

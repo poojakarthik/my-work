@@ -9,8 +9,26 @@
 		<xsl:if test="/Response/Error != ''">
 			<div class="MsgErrorWide">
 				<xsl:choose>
+					<xsl:when test="/Response/Error = 'Email'">
+						You did not enter a valid Email. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Phone'">
+						You did not enter a valid Phone Number. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Mobile'">
+						You did not enter a valid Mobile Number. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Username Empty'">
+						You did not fill the required fields. Please try again.
+					</xsl:when>
 					<xsl:when test="/Response/Error = 'Password Mismatch'">
-						Your Passwords did not match.  Please try again,
+						Your Passwords did not match.  Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'Password Empty'">
+						You did not enter a valid Password. Please try again.
+					</xsl:when>
+					<xsl:when test="/Response/Error = 'UserName Obtained Elsewhere'">
+						The Username you entered is in use on another Employee. Please try again.
 					</xsl:when>
 				</xsl:choose>
 			</div>
@@ -30,6 +48,7 @@
 					
 					<table border="0" cellpadding="3" cellspacing="0">
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -37,7 +56,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="FirstName" class="input-string">
+								<input type="text" name="FirstName" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/FirstName" />
@@ -46,6 +65,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -53,7 +73,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="LastName" class="input-string">
+								<input type="text" name="LastName" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/LastName" />
@@ -62,11 +82,13 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<td colspan="2">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -74,7 +96,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Email" class="input-string">
+								<input type="text" name="Email" class="input-string" maxlength="255">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Email" />
@@ -83,6 +105,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -90,7 +113,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Extension" class="input-string">
+								<input type="text" name="Extension" class="input-string" maxlength="15">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Extension" />
@@ -99,6 +122,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -106,7 +130,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Phone" class="input-string">
+								<input type="text" name="Phone" class="input-string" maxlength="25">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Phone" />
@@ -115,6 +139,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -122,7 +147,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="Mobile" class="input-string">
+								<input type="text" name="Mobile" class="input-string" maxlength="25">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Mobile" />
@@ -131,11 +156,13 @@
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<td colspan="2">
 								<div class="MicroSeperator"></div>
 							</td>
 						</tr>
 						<tr>
+							<td></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -154,6 +181,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -161,7 +189,7 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="UserName" class="input-string">
+								<input type="text" name="UserName" class="input-string" maxlength="31">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/UserName" />
@@ -170,6 +198,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />
@@ -181,6 +210,7 @@
 							</td>
 						</tr>
 						<tr>
+							<td width="10"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Employee')" />

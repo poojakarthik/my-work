@@ -12,15 +12,30 @@
 		<div class="Wide-Form">
 			<table border="0" cellpadding="3" cellspacing="0">
 				<tr>
-					<th class="JustifiedWidth">First Name:</th>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Employee')" />
+							<xsl:with-param name="field" select="string('FirstName')" />
+						</xsl:call-template>
+					</th>
 					<td><xsl:value-of select="/Response/Employee/FirstName" /></td>
 				</tr>
 				<tr>
-					<th class="JustifiedWidth">Last Name:</th>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Employee')" />
+							<xsl:with-param name="field" select="string('LastName')" />
+						</xsl:call-template>
+					</th>
 					<td><xsl:value-of select="/Response/Employee/LastName" /></td>
 				</tr>
 				<tr>
-					<th class="JustifiedWidth">User Name:</th>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Employee')" />
+							<xsl:with-param name="field" select="string('UserName')" />
+						</xsl:call-template>
+					</th>
 					<td><xsl:value-of select="/Response/Employee/UserName" /></td>
 				</tr>
 			</table>

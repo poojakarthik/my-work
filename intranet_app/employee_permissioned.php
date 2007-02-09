@@ -25,7 +25,12 @@
 	catch (Exception $e)
 	{
 		// If the account does not exist, an exception will be thrown
-		$Style->Output ('xsl/content/employee/notfound.xsl');
+		$Style->Output (
+			'xsl/content/employee/notfound.xsl',
+			Array (
+				"Employees"		=> TRUE
+			)
+		);
 		exit;
 	}
 	
@@ -33,6 +38,12 @@
 	$docDocumentation->Explain ('Employee');
 	$docDocumentation->Explain ('Archive');
 	
-	$Style->Output ('xsl/content/employee/permissioned.xsl');
+	$Style->Output (
+		'xsl/content/employee/permissioned.xsl',
+		Array (
+			"Employees"		=> TRUE,
+			"Employee"		=> $empEmployee->Pull ('Id')->getValue ()
+		)
+	);
 	
 ?>

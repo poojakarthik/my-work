@@ -66,7 +66,7 @@
 	
 	$srvService->Plan ();
 	
-	$rplRatePlans = $Style->attachObject (new RatePlans ());
+	$rplRatePlans = $Style->attachObject (new RatePlans);
 	$rplRatePlans->Constrain ('ServiceType',	'EQUALS',	$srvService->Pull ('ServiceType')->getValue ());
 	$rplRatePlans->Constrain ('Archived',		'EQUALS',	0);
 	$rplRatePlans->Sample ();
