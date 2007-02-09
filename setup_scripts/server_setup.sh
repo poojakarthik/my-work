@@ -800,15 +800,15 @@ NameVirtualHost *
 echo "$FileVixenDefault" > /etc/apache2/sites-available/vixen-default
 
 # enable the sites
-ln -s /etc/apache2/sites-enabled/vixen-intranet /etc/apache2/sites-available/vixen-intranet
-#ln -s /etc/apache2/sites-enabled/vixen-website /etc/apache2/sites-available/vixen-website
-ln -s /etc/apache2/sites-enabled/vixen-dev /etc/apache2/sites-available/vixen-dev
+ln -s /etc/apache2/sites-available/vixen-intranet /etc/apache2/sites-enabled/vixen-intranet 
+#ln -s /etc/apache2/sites-available/vixen-website /etc/apache2/sites-enabled/vixen-website 
+ln -s /etc/apache2/sites-available/vixen-dev /etc/apache2/sites-enabled/vixen-dev 
 
 # enable default site (Dead End)
 mkdir -pm 755 /var/www/default
 echo "" > /var/www/index.html
 rm /etc/apache2/sites-enabled/000-default
-ln -s /etc/apache2/sites-enabled/vixen-default /etc/apache2/sites-available/000-default
+ln -s /etc/apache2/sites-available/000-default /etc/apache2/sites-enabled/vixen-default
 
 
 
