@@ -342,20 +342,52 @@
 		if (count($arrInvoices) == 0)
 		{
 			$this->AddError("There are no Etech invoices in the system.  Please run the Etech bill importer first!");
+			return;
 		}
+		
+		$this->AddTitle("Etech Invoices");
 		
 		// Generate page
 		foreach ($arrInvoices as $arrInvoice)
 		{
 			$strBillingPeriodURL = str_replace(" ", "%20", $arrInvoice['InvoiceRun']);
-			$this->AddLink("invoice_view_etech.php?period=$strBillingPeriodURL", "1. ".$arrInvoice['InvoiceRun']);
+			$this->AddLink("invoice_view_etech.php?period=$strBillingPeriodURL", date("F Y", strtotime($arrInvoice['InvoiceRun'])));
 		}
 	}
 	
 	// return a viXen/Etech CDR comparison
 	function ShowEtechCDR($intEtechCDR)
 	{
-		// TODO
+		// Get the CDR
+		if (!($arrCDR = $this->appMonitor->GetEtechCDR($intEtechCDR)))
+		{
+			$this->AddError("Cannot find Etech CDR with id $intEtechCDR");
+			return;
+		}
+		
+		// Etech CDR
+		$tblCDR = $this->NewTable('Border');
+		$arrRows[] = Array("", "<B>Etech CDR</B>", "<B>viXen CDR</B>");
+		foreach ($arrCDR[0] as $strKey=>$mixValue)
+		{
+			$arrRows[] = Array("<B>$strKey</B>", $mixValue);
+		}
+		
+		// Vixen CDR
+		$i = 0;
+		foreach ($arrCDR[1] as $strKey=>$mixValue)
+		{
+			$i++;
+			$arrRows[$i][] = $mixValue;
+		}
+		
+		// add the rows
+		foreach ($arrRows as $arrRow)
+		{
+			$tblCDR->AddRow($arrRow);
+		}
+		
+		$this->AddTable($tblCDR);
 	}
 	
  }

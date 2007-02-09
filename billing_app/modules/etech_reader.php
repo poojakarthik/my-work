@@ -288,7 +288,7 @@
 			//------------------------- INVOICE  HEADERS -------------------------//
 			case 1:
 				// FILE HEADER
-				$this->_arrStatus['BillingPeriod']	= $arrLine['BillingPeriod'];
+				$this->_arrStatus['BillingPeriod']	= date("Y-m-d", strtotime($arrLine['BillingPeriod']));
 				
 				// Call DecodeData() again
 				$this->DecodeData();

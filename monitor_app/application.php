@@ -259,7 +259,7 @@
 	function ListEtechInvoice()
 	{
 		$this->selEtechInvoices = new StatementSelect(	"CDREtech",
-														"InvoiceRun AS BillingPeriod",
+														"InvoiceRun",
 														"1",
 														"InvoiceRun DESC",
 														NULL,
@@ -278,7 +278,34 @@
 	// return a viXen/Etech CDR comparison
 	function GetEtechCDR($intEtechCDR)
 	{
-		// TODO
+		$this->selEtechCDR = new StatementSelect(	"CDREtech",
+													"*",
+													"Id = <Id>");
+		
+		$arrColumns = Array();
+		$arrColumns['Id']				= "CDR.Id";
+		$arrColumns['FNN']				= "CDR.FNN";
+		$arrColumns['Destination']		= "CDR.Destination";
+		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
+		$arrColumns['EndDatetime']		= "CDR.EndDatetime";
+		$arrColumns['Units']			= "CDR.Units";
+		$arrColumns['AccountGroup']		= "CDR.AccountGroup";
+		$arrColumns['Account']			= "CDR.Account";
+		$arrColumns['Account']			= "CDR.Account";
+		$this->selVixenCDR = new StatementSelect(	"CDR",
+													"*",
+													"Id = <Id>");
+		
+		$this->selEtechCDR->Execute(Array('Id' => $intEtechCDR));
+		$arrResults = Array();
+		$arrResults[]	= $this->selEtechCDR->Fetch();
+		
+		if ($arrResults[0]['VixenCDR'])
+		{
+			$this->selVixenCDR->Execute(Array('Id' => $arrResults[0]['VixenCDR']));
+			$arrResults[]	= $this->selVixenCDR->Fetch();
+		}
+		return $arrResults;
 	}
  }
 
