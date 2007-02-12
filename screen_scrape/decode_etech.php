@@ -235,6 +235,21 @@
 		return $arrRecurringCharges;
 	}
 	
+	function FetchAccountOptions()
+	{
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeInvoice ";
+		$strName	= 'AccountOptions';
+		$arrOptions = $this->FetchResult($strName, $strQuery);
+		
+		if ($arrOptions)
+		{
+			$arrOptions ['DataArray'] = $this->ParseAccountOptions ($arrOptions ['DataOriginal'], $arrOptions ['CustomerId']);
+			unset ($arrOptions ['DataOriginal']);
+		}
+		
+		return $arrOptions;
+	}
+	
 	function FetchMobileDetail()
 	{
 		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeServiceMobile ";
@@ -912,6 +927,31 @@
 		}
 		
 		return $arrRecurringCharges;
+	}
+	
+	// account options (namely: DisableDDR and LatePaymentFee)
+	function ParseAccountOptions ($strHtml, $intCustomerId)
+	{
+		$arrAccountInformation = Array (
+			"DisableDDR"			=> 0,
+			"DisableLatePayment"	=> 0
+		);
+		
+		// Load the entire HTML into a DOM Document
+		$domDocument = new DOMDocument;
+		@$domDocument->LoadHTML ($strHtml);
+		
+		$dxpDocument = new DOMXPath ($domDocument);
+		
+		// Get the three fields that we are interested in
+		$bolNonDirectDebitFeeDisabled	= $dxpDocument->Query ("//input[@id='checkbox_nonddr'][@checked]");
+		$bolLatePaymentDisabledAlways	= $dxpDocument->Query ("//input[@id='checkbox_lpdisable'][@checked]");
+		$bolLatePaymentDisabledOnce		= $dxpDocument->Query ("//input[@id='checkbox_lpdisable_oneoff'][@checked]");
+		
+		$arrAccountInformation ['DisableDDR']			= $bolNonDirectDebitFeeDisabled->length == 1;
+		$arrAccountInformation ['DisableLatePayment']	= (($bolLatePaymentDisabledAlways->length) ? 1 : (($bolLatePaymentDisabledOnce->length) ? -1 : 0));
+		
+		return $arrAccountInformation;
 	}
 	
 	// parse invoice detail
@@ -1809,6 +1849,5 @@
 
 
 }
-
 
 ?>

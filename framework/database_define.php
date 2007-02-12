@@ -335,6 +335,26 @@
 				 
 				 
 	// Define Columns 
+	$strName = "DisableDDR"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "DisableLatePayment"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "int(11)"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
 	$strName = "Archived"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1)"; 
@@ -1637,7 +1657,7 @@
 	// Define Columns 
 	$strName = "Phone"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(25)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(25)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
@@ -1647,7 +1667,7 @@
 	// Define Columns 
 	$strName = "Mobile"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(25)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(25)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
@@ -1657,7 +1677,7 @@
 	// Define Columns 
 	$strName = "Fax"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(25)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(25)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
@@ -2267,7 +2287,7 @@
 	// Define Columns 
 	$strName = "UserName"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(21)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(31)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
@@ -2287,7 +2307,7 @@
 	// Define Columns 
 	$strName = "Phone"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(15)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(25)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
 		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
@@ -2297,7 +2317,7 @@
 	// Define Columns 
 	$strName = "Mobile"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "s"; 
-		$arrDefine['Column'][$strName]['SqlType'] 		= "varchar(15)"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "char(25)"; 
 		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
 		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataString"; 
