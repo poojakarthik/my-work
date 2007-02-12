@@ -297,10 +297,19 @@ $objPage = new VixenPage($arrConfig);
 	}
 	
 	// add a row to the table
-	function AddRow($arrRow, $strHref = FALSE)
+	function AddRow($arrRow, $strHref = FALSE, $bolTitle = FALSE)
 	{
 		// work out no. of cols
-		$this->_intColumns = max($this->_intColumns, count($arrRow));	
+		$this->_intColumns = max($this->_intColumns, count($arrRow));
+		
+		// if its a title row, then bold everything
+		if ($bolTitle)
+		{
+			foreach ($arrRow as &$mixValue)
+			{
+				$mixValue = "<b>".$mixValue."</b>";
+			}
+		}
 		
 		// add global hrefs
 		if ($strHref !== FALSE)

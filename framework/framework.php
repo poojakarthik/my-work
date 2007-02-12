@@ -155,6 +155,14 @@
 															  		NULL,
 															  		"2",
 															  		"Nature");
+															  		
+	 	$this->_selDisputedBalance(	"Invoice",
+	 								"SUM(Balance) AS DisputedBalance",
+	 								"Account = <Account> AND Status = ".INVOICE_DISPUTED);
+	 	
+	 	$this->_selAccountBalance(	"Invoice",
+	 								"SUM(Balance) AS AccountBalance",
+	 								"Account = <Account> AND Status != ".INVOICE_SETTLED." AND Status != ".INVOICE_TEMP);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -314,6 +322,66 @@
 	 	{
 	 		fwrite($this->_ptrLog, $strText);
 	 	}
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// GetAccountBalance()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetAccountBalance()
+	 *
+	 * Determines the current Account Balance for a specified account
+	 *
+	 * Determines the current Account Balance for a specified account
+	 * 
+	 *
+	 * @param	integer		$intAccount		The account to determine the balance total for
+	 * 
+	 * @return	mixed						float: account balance total
+	 * 										FALSE: an error occurred
+	 *
+	 * @method
+	 */
+	 function GetAccountBalance($intAccount)
+	 {	 								
+	 	if ($this->_selAccountBalance->Execute(Array('Account' => $intAccount)) === FALSE)
+	 	{
+			// ERROR
+			return FALSE;
+	 	}
+	 	
+	 	$arrAccountBalance = $this->_selAccountBalance->Fetch();
+	 	return (float)$arrAccountBalance['AccountBalance'];
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// GetDistputedBalance()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetDistputedBalance()
+	 *
+	 * Determines the current Disputed Balance for a specified account
+	 *
+	 * Determines the current Disputed Balance for a specified account
+	 * 
+	 *
+	 * @param	integer		$intAccount		The account to determine the balance total for
+	 * 
+	 * @return	mixed						float: account balance total
+	 * 										FALSE: an error occurred
+	 *
+	 * @method
+	 */
+	 function GetDistputedBalance($intAccount)
+	 {	 								
+	 	if ($this->_selDisputedBalance->Execute(Array('Account' => $intAccount)) === FALSE)
+	 	{
+			// ERROR
+			return FALSE;
+	 	}
+	 	
+	 	$arrDisputedBalance = $this->_selDisputedBalance->Fetch();
+	 	return (float)$arrDisputedBalance['DisputedBalance'];
 	 }
 	
  	//------------------------------------------------------------------------//

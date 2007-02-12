@@ -327,10 +327,63 @@
 		//TODO!rich! show a list of Accounts for an AccountGroup
 	}
 	
-	// return a viXen/Etech invoice comparison
-	function ShowEtechInvoice($strBillingPeriod)
+	// return a list of Etech CDRs
+	function ShowEtechCDRList($strBillingPeriod, $intStart, $intLimit)
 	{
-		// TODO
+		$arrCDRs = $this->appMonitor->ListEtechCDRs($strBillingPeriod, $intStart, $intLimit);
+		if (is_array($arrCDRs))
+		{
+			// Status Descriptions & Colour Code the Differences
+			foreach ($arrCDRs as &$arrCDR)
+			{
+				// status
+				if ($arrCDR['Status'] != CDR_ETECH_NO_MATCH)
+				{
+					$fltDifference = (float)$arrCDR['Difference'];
+				}
+				else
+				{
+					$fltDifference = "";
+				}
+				$arrCDR['Status'] = GetConstantDescription($arrCDR['Status'], 'CDR');
+								
+				// colours
+				if ($fltDifference == 0.0)
+				{
+					$arrCDR['Difference'] = "<b><font color='#00AA00'>".$arrCDR['Difference']."</font></b>";
+				}
+				elseif ($fltDifference >= -1 && $fltDifference <= 1)
+				{
+					$arrCDR['Difference'] = "<b><font color='#FF8800'>".$arrCDR['Difference']."</font></b>";
+				}
+				else
+				{
+					$arrCDR['Difference'] = "<b><font color='#FF0000'>".$arrCDR['Difference']."</font></b>";
+				}
+			}
+			
+			// table
+			$tblCDR = $this->NewTable('Border');
+			$tblCDR->AddRow(Array('Etech CDR Id', 'Vixen CDR Id', 'Account', 'Service', 'FNN', 'Destination', 'Description', 'Units', 'Charge', 'Credit', 'ServiceType', 'RecordType', 'Status', 'Start', 'End', 'Difference'), FALSE, TRUE);
+			$tblCDR->Align(Array('Right', 'Right', 'Right', 'Right', 'Right', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right'));
+			foreach($arrCDRs AS $arrCDR)
+			{
+				$intMaxId = max($intMaxId, $arrCDR['Id']);
+				$arrRow = Array($arrCDR['Id'], $arrCDR['VixenCDR'],  $arrCDR['Account'], $arrCDR['Service'], $arrCDR['FNN'], $arrCDR['Destination'], $arrCDR['Description'], $arrCDR['Units'], $arrCDR['Charge'], $arrCDR['Credit'], $arrCDR['ServiceType'], $arrCDR['RecordTypeName'], "<b>".$arrCDR['Status']."</b>", $arrCDR['StartDatetime'], $arrCDR['EndDatetime'], $arrCDR['Difference']);
+				$tblCDR->AddRow($arrRow, "cdr_compare_etech.php?Id={$arrCDR['Id']}");
+			}
+			$this->AddTable($tblCDR);
+			
+			// pagination ('previous' button won't work properly)
+			$intPaginateStart = $intMaxId - $intLimit;
+			$this->AddPagination("cdr_list_etech.php", "period=$strBillingPeriod", $intPaginateStart, $intLimit);
+		}
+		else
+		{
+			$this->AddError("NO CDRs FOUND");
+			return FALSE;
+		}
+		return TRUE;
 	}
 	
 	// return a viXen/Etech invoice list
@@ -351,7 +404,7 @@
 		foreach ($arrInvoices as $arrInvoice)
 		{
 			$strBillingPeriodURL = str_replace(" ", "%20", $arrInvoice['InvoiceRun']);
-			$this->AddLink("invoice_view_etech.php?period=$strBillingPeriodURL", date("F Y", strtotime($arrInvoice['InvoiceRun'])));
+			$this->AddLink("cdr_list_etech.php?period=$strBillingPeriodURL", date("F Y", strtotime($arrInvoice['InvoiceRun'])));
 		}
 	}
 	

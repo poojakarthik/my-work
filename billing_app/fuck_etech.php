@@ -77,7 +77,7 @@ while($arrLine = $suxEtech->FetchNext())
 						}
 		
 						// Determine status
-						if ($mixReturn['Difference'] === (float)0)
+						if ($mixReturn['Difference'] === (float)0.0)
 						{
 							$arrLine['Status']	= CDR_ETECH_PERFECT_MATCH;
 						}

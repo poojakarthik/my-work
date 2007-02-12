@@ -12,10 +12,10 @@ require_once('page.php');
 $arrOutput = Array();
 
 // page title
-$objPage->AddPageTitle('viXen/Etech Invoice Comparison');
+$objPage->AddPageTitle('viXen/Etech Invoice List');
 
 // page link
-$objPage->SetPageLink('[ viXen/Etech Invoice Comparison ]');
+$objPage->SetPageLink('[ viXen/Etech Invoice List ]');
 
 $objPage->AddBackLink();
 

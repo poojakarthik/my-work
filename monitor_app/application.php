@@ -270,9 +270,18 @@
 	}
 	
 	// return a viXen/Etech invoice comparison
-	function GetEtechInvoice($intEtechInvoice)
+	function ListEtechCDRs($strEtechInvoice, $intStart, $intLimit)
 	{
-		// TODO
+		$this->selEtechCDRs = new StatementSelect(	"CDREtech LEFT OUTER JOIN CDR ON (CDREtech.VixenCDR = CDR.Id), RecordType",
+													"CDREtech.*, (CDREtech.Charge - CDR.Charge) AS Difference, RecordType.Name AS RecordTypeName",
+													"CDREtech.InvoiceRun = '$strEtechInvoice' AND RecordType.Id = CDREtech.RecordType",
+													NULL,
+													"$intStart, $intLimit");
+													
+		$this->selEtechCDRs->Execute();
+		$arrCDRs = $this->selEtechCDRs->FetchAll();
+
+		return $arrCDRs;
 	}
 	
 	// return a viXen/Etech CDR comparison
