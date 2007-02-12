@@ -699,7 +699,8 @@
 	h2.Contacts,
 	h2.Contact,
 	h2.Invoice,
-	h2.Admin
+	h2.Admin,
+	h2.Report
 	{
 		background-repeat:             no-repeat;
 		background-position:           top left;
@@ -807,6 +808,11 @@
 	h2.Admin
 	{
 		background-image:              url('../img/template/admin_console.png');
+	}
+	
+	h2.Report
+	{
+		background-image:              url('../img/template/report.png');
 	}
 	
 	

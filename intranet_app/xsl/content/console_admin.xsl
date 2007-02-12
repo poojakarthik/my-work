@@ -9,14 +9,12 @@
 			Welcome, <xsl:value-of select="/Response/Authentication/AuthenticatedEmployee/FirstName" />.
 			You are currently logged into your Administration Account.
 		</p>
-		<div class="TinySeperator">
-		</div>
 		
-		<h2 >
-			Menu
-		</h2>
-		<div class="SmallSeperator">
-		</div>
+		<div class="TinySeperator"></div>
+		
+		<h2>Menu</h2>
+		<div class="SmallSeperator"></div>
+		
 		<table border="0" cellpadding="3" cellspacing="0">
 			<tr>
 				<td>
@@ -70,18 +68,30 @@
 					View and Add Recurring Charge Types.
 				</td>
 			</tr>
-				<tr>
-					<td>
-						<a href="employee_list.php">
-							<img src="img/template/contact.png" title="Employees" class="MenuIcon" />
-						</a>
-					</td>
-					<td>
-						<strong> Manage Employees</strong><br />
-						View and Add Employees.
-					</td>
-				</tr>
+			<tr>
+				<td>
+					<a href="datareport_list.php">
+						<img src="img/template/report.png" title="Data Reports" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Data Reports
+					</strong><br />
+					Run reports to return information on data in the System.
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<a href="employee_list.php">
+						<img src="img/template/contact.png" title="Employees" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong> Manage Employees</strong><br />
+					View and Add Employees.
+				</td>
+			</tr>
 		</table>
-
 	</xsl:template>
 </xsl:stylesheet>

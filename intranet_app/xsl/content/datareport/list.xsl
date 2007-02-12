@@ -4,8 +4,9 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Report List</h1>
+		<h1>Data Reports</h1>
 		
+		<h2 class="Report">Report Listing</h2>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
