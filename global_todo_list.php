@@ -6,6 +6,8 @@
 // RICH
 // ---------------------------------------------------------------------------//
 
+//TODO!rich! check any of our charges that do not match etech... find out why
+
 //TODO!rich! Test shared plans
 
 // when you have some spare time
@@ -61,21 +63,53 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 // ---------------------------------------------------------------------------//
 // BASH
 // ---------------------------------------------------------------------------//
-//TODO!bash! [  DONE  ]		URGENT add CreatedBy & ClosedBy when creating/closing a service
-//TODO!bash! [  DONE  ]		URGENT DO THIS FIRST !!!! - add CreatedBy & CreatedOn when creating an account
-//TODO!bash! [  DONE  ]		URGENT DO THIS FIRST !!!! - add CreatedBy & CreatedOn to the Account Table in the DB (see table documentation)
 
-//TODO!bash! [  DONE  ]		URGENT ! - Mark an invoice as disputed and update the disputed $
-//TODO!bash! [  DONE  ]		URGENT ! - Resolve a disputed invoice
+//TODO!bash! the following are listed in order of importance, start at the top of the list
 
-//TODO!bash! [  DONE  ]		Add an optional LIMIT Clause to the DataReport, ask flame about this
+//TODO!bash! filter CDR list by Record type (unbilled charges & invoice details)
+//TODO!bash! list_account, seach by contact name & service #
 
-//TODO!bash! 				SCRAPE...
-//TODO!bash! [HAS FILE]		DD Details (CSV)
-//TODO!bash! [  DONE  ]		Fix Other Broken Data
-//TODO!bash! [  DONE  ]		Cost Centres
-//TODO!bash! [  DONE  ]		Inbound Answer point
-//TODO!bash! [  DONE  ]		Aditional account details
+//TODO!bash! add the following items to the interface, use the exact text shown below
+//TODO!bash! replace the crap ascii art with checkbox/radio button etc.
+
+//TODO!bash! checkbox (add/edit account);
+//TODO!bash! NDD Fee [] Charge a fee if account is not paid by direct debit
+
+//TODO!bash! radio buttons (add/edit account);
+//TODO!bash! Late Payments	() Charge a late payment fee
+//TODO!bash! 				() Don't charge a late payment fee on the next invoice
+//TODO!bash! 				() Never charge a late payment fee
+
+//TODO!bash! Dropdown (add/edit service);
+//TODO!bash! Cost Centre  [              |V]
+
+//TODO!bash! make sure we are parsing and importing all details required for the above fields
+
+//TODO!bash! add the following reports and test them
+//TODO!bash! report : profit per rate
+/*
+	return ->	Rate.Name	Cost	Charge	$profit	%profit
+	
+	allow selection of start and end date for report
+	
+*/
+
+//TODO!bash! report : profit per RatePlan
+/*
+	return ->	RatePlan.Name	Cost	Charge	$profit	%profit
+	
+	allow selection of start and end date for report
+	
+*/
+
+//TODO!bash! report profit per customer
+/*
+	return ->	Account.Id Account.BusinessName	Cost	Charge	$profit	%profit
+	
+	allow selection of start and end date for report
+*/
+
+
 
 // ---------------------------------------------------------------------------//
 // FLAME
