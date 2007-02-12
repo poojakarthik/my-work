@@ -94,7 +94,20 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<xsl:value-of select="/Response/Contact/Email" />
+										<xsl:choose>
+											<xsl:when test="/Response/Contact/Email != ''">
+												<a>
+													<xsl:attribute name="href">
+														<xsl:text>mailto:</xsl:text>
+														<xsl:value-of select="/Response/Contact/Email" />
+													</xsl:attribute>
+													<xsl:value-of select="/Response/Contact/Email" />
+												</a>
+											</xsl:when>
+											<xsl:otherwise>
+												<strong><span class="Attention">No Email Address</span></strong>
+											</xsl:otherwise>
+										</xsl:choose>
 									</td>
 								</tr>
 								<!--Check for Phone-->
