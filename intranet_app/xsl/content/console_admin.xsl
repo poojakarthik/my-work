@@ -31,6 +31,19 @@
 			</tr>
 			<tr>
 				<td>
+					<a href="service_list.php">
+						<img src="img/template/contact_retrieve.png" title="Advanced Service Search" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Advanced Service Search
+					</strong><br />
+					 Search for Services without Verification
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<a href="charges_approve.php">
 						<img src="img/template/charge.png" title="Approve Unbilled Charges" class="MenuIcon" />
 					</a>

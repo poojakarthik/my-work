@@ -12,14 +12,14 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE;
 	
 	// call application
 	require ('config/application.php');
 	
 	
 	// Explain the Fundamentals
-	$docDocumentation->Explain ("Account");
+	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Archive');
 	
 	if (isset ($_GET ['constraint']))
@@ -33,7 +33,7 @@
 			{
 				if ($arrConstraintRules ['Value'] != "")
 				{
-					$acsAccounts->Constrain (
+					$svsServices->Constrain (
 						$strConstraintName,
 						$arrConstraintRules ['Operator'],
 						$arrConstraintRules ['Value']
@@ -44,17 +44,20 @@
 		
 		if (isset ($_GET ['Order']['Column']))
 		{
-			$acsAccounts->Order (
+			$svsServices->Order (
 				$_GET ['Order']['Column'],
 				isset ($_GET ['Order']['Method']) ? $_GET ['Order']['Method'] == 1 : TRUE
 			);
 		}
 		
-		$acsAccounts->Sample (
+		$svsServices->Sample (
 			($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
 			($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
 		);
 	}
+	
+	// List of Service Types
+	$styServiceTypes = $Style->attachObject (new ServiceTypes);
 	
 	$Style->Output ("xsl/content/service/list.xsl");
 	

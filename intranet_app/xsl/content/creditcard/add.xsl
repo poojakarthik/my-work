@@ -120,7 +120,7 @@
 					</tr>
 					<!--TODO!bash! [  DONE  ]		URGENT! verify credit card number - ask flame if you aren't sure how -->
 					<tr>
-					<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Credit Card')" />
@@ -157,7 +157,7 @@
 					</tr>
 					<!--TODO!bash! URGENT! [  DONE  ]		verify cvv - no more than 4 numeric digits -->
 					<tr>
-					<td class="Required"> </td>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Credit Card')" />

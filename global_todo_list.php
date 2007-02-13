@@ -66,7 +66,9 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 
 //TODO!bash! the following are listed in order of importance, start at the top of the list
 
-//TODO!bash! filter CDR list by Record type (unbilled charges & invoice details)
+//TODO!bash! filter CDR list by Record type
+//TODO!bash! [UNTESTED] unbilled charges
+//TODO!bash! [  DONE  ] invoice details
 //TODO!bash! list_account, seach by contact name & service #
 
 //TODO!bash! add the following items to the interface, use the exact text shown below

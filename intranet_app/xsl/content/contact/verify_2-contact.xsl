@@ -24,7 +24,7 @@
 
 			
 		
-		<form method="post" action="contact_list.php">
+		<form method="post" action="contact_verify.php">
 			<input type="hidden" name="ui-Account">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>

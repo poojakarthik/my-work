@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_INVOICE | MODULE_CHARGE | MODULE_CDR | MODULE_SERVICE | MODULE_SERVICE_TOTAL;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_INVOICE | MODULE_CHARGE | MODULE_CDR | MODULE_SERVICE | MODULE_SERVICE_TOTAL | MODULE_RECORD_TYPE;
 	
 	// call application
 	require ('config/application.php');
@@ -54,6 +54,7 @@
 	{
 		// Get the ServiceTotal
 		$sttServiceTotal = $Style->attachObject ($invInvoice->ServiceTotal ($_GET ['ServiceTotal']));		
+		$srvService = $Style->attachObject ($sttServiceTotal->Service ());
 	}
 	catch (Exception $e)
 	{
@@ -71,13 +72,26 @@
 	}
 	
 	// Get the CDRs the Invoice has
+	// We may also want to Constrain this to only show a Certain Record Type
 	$cdrCDRs = $Style->attachObject ($invInvoice->CDRs ());
-	$cdrCDRs->Constrain ('Service',		'=', $sttServiceTotal->Pull ('Service')->getValue ());
+	$cdrCDRs->Constrain ('Service',			'=',	$sttServiceTotal->Pull ('Service')->getValue ());
+	
+	if ($_GET ['RecordType'])
+	{
+		$cdrCDRs->Constrain ('RecordType',	'=',	$_GET ['RecordType']);
+	}
 	
 	$cdrCDRs->Sample (
 		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1,
 		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 30
 	);
+	
+	// Get a list of Record Types
+	$rtsRecordTypes = $Style->attachObject (new RecordTypes);
+	$rtsRecordTypes->Constrain ('ServiceType', '=', $srvService->Pull ('ServiceType')->getValue ());
+	$rtsRecordTypes->Sample ();
+	
+	$docDocumentation->Explain ('CDR');
 	
 	// Output the Account View
 	$Style->Output (

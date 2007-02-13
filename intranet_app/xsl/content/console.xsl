@@ -7,24 +7,18 @@
 	<xsl:template name="Content">
 		
 		<!-- Heading 1-->	
-		<h1>
-			Employee Console
-		</h1>
+		<h1>Employee Console</h1>
 		
 		<!--Welcome Message-->
 		<p>
 			Welcome, <xsl:value-of select="/Response/Authentication/AuthenticatedEmployee/FirstName" />.
 			You are currently logged into your Employee Account.
 		</p>
-		<div class="TinySeperator">
-		</div>
+		<div class="TinySeperator"></div>
 		
 		<!-- Heading 2 -->
-		<h2>
-			Menu
-		</h2>
-		<div class="SmallSeperator">
-		</div>
+		<h2>Menu</h2>
+		<div class="SmallSeperator"></div>
 		
 		<!-- Menu -->
 		<table border="0" cellpadding="3" cellspacing="0">
@@ -46,7 +40,7 @@
 			<!-- Find Customer -->
 			<tr>
 				<td>
-					<a href="contact_list.php">
+					<a href="contact_verify.php">
 						<img src="img/template/contact_retrieve.png" title="Find Customer" class="MenuIcon" />
 					</a>
 				</td>

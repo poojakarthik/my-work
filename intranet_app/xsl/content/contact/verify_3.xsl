@@ -19,7 +19,7 @@
 			The continue button will turn green once sufficient verification details have been entered.
 		</div>
 			
-		<form method="POST" action="contact_list.php">
+		<form method="POST" action="contact_verify.php">
 			<input type="hidden" name="ui-Account">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
@@ -196,7 +196,8 @@
 							</th>
 							<td>
 								<input type="text" name="Account" id="Account" class="input-string" autocomplete="off"
-								onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="2">
+								onkeyup="ValidateCustomer.ValidateInput (this)"
+								onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="2">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/ui-values/Account" />
@@ -219,7 +220,8 @@
 								</th>
 								<td>
 									<input type="text" name="ABN" id="ABN" class="input-string" autocomplete="off"
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+									onkeyup="ValidateCustomer.ValidateInput (this)" 
+									onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 										<xsl:attribute name="value">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-values/ABN" />
@@ -244,7 +246,8 @@
 								</th>
 								<td>
 									<input type="text" name="ACN" id="ACN" class="input-string" autocomplete="off"
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+									onkeyup="ValidateCustomer.ValidateInput (this)" 
+									onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 										<xsl:attribute name="value">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-values/ACN" />
@@ -293,7 +296,8 @@
 
 									<select name="DOB-day" id="DOB-day" ValidLevel="1" autocomplete="off" 
 									onchange="ValidateCustomer.ValidateInput (this)"
-									onkeyup="ValidateCustomer.ValidateInput (this)">
+									onkeyup="ValidateCustomer.ValidateInput (this)"
+									onclick="ValidateCustomer.ValidateInput (this)">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
@@ -307,7 +311,8 @@
 									</select> /
 									<select name="DOB-month" id="DOB-month" ValidLevel="1" autocomplete="off" 
 									onchange="ValidateCustomer.ValidateInput (this)"
-									onkeyup="ValidateCustomer.ValidateInput (this)">
+									onkeyup="ValidateCustomer.ValidateInput (this)"
+									onclick="ValidateCustomer.ValidateInput (this)">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-answers/Contact/DOB/month" />
@@ -328,7 +333,8 @@
 									</select> /
 									<select name="DOB-year" id="DOB-year" ValidLevel="1" autocomplete="off" 
 									onchange="ValidateCustomer.ValidateInput (this)"
-									onkeyup="ValidateCustomer.ValidateInput (this)">
+									onkeyup="ValidateCustomer.ValidateInput (this)"
+									onclick="ValidateCustomer.ValidateInput (this)">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
@@ -355,7 +361,8 @@
 								</th>
 								<td>
 									<input type="text" name="Email" id="Email" class="input-string" autocomplete="off"
-									onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+									onkeyup="ValidateCustomer.ValidateInput (this)" 
+									onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-answers/Contact/Email" />
@@ -408,7 +415,8 @@
 										</th>
 										<td>
 											<input type="text" name="Invoice-Amount" id="Invoice-Amount" class="input-string" autocomplete="off" 
-											onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+											onkeyup="ValidateCustomer.ValidateInput (this)" 
+											onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 												<xsl:attribute name="ValidValue">
 													<xsl:text></xsl:text>
 													<xsl:value-of select="/Response/ui-answers/Invoice/Balance" />
@@ -428,7 +436,8 @@
 										</th>
 										<td>
 											<input type="text" name="Invoice-Recent-Id" id="Invoice-Recent-Id" class="input-string" autocomplete="off" 
-											onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+											onkeyup="ValidateCustomer.ValidateInput (this)" 
+											onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 												<xsl:attribute name="ValidValue">
 													<xsl:text>:</xsl:text>
 													<xsl:for-each select="/Response/ui-answers/Invoices/Results/rangeSample/Invoice">
@@ -449,7 +458,8 @@
 										</th>
 										<td>
 											<input type="text" name="Invoice-Amount" id="Invoice-Recent-Amount" class="input-string" autocomplete="off" 
-											onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+											onkeyup="ValidateCustomer.ValidateInput (this)" 
+											onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 												<xsl:attribute name="ValidValue">
 													<xsl:text>:</xsl:text>
 													<xsl:for-each select="/Response/ui-answers/Invoices/Results/rangeSample/Invoice">
@@ -474,7 +484,8 @@
 									</th>
 									<td>
 										<input type="text" name="DirectDebit-BSB" id="DirectDebit-BSB" class="input-string" size="8" autocomplete="off" 
-										onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+										onkeyup="ValidateCustomer.ValidateInput (this)" 
+										onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 											<xsl:attribute name="ValidValue">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ui-answers/Account/DirectDebitDetails/DirectDebit/BSB" />
@@ -505,7 +516,8 @@
 								</th>
 								<td>
 									<input type="text" name="CreditCard-CardNumber" id="CreditCard-CardNumber" class="input-string" size="4" 
-									autocomplete="off" onkeyup="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
+									autocomplete="off" onkeyup="ValidateCustomer.ValidateInput (this)" 
+									onclick="ValidateCustomer.ValidateInput (this)" ValidLevel="1">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/Last4Digits" />
@@ -523,7 +535,8 @@
 								<td>
 									<select name="CreditCard-Exp-Month" id="CreditCard-Exp-Month" ValidLevel="1" autocomplete="off" 
 									onchange="ValidateCustomer.ValidateInput (this)"
-									onkeyup="ValidateCustomer.ValidateInput (this)">
+									onkeyup="ValidateCustomer.ValidateInput (this)"
+									onclick="ValidateCustomer.ValidateInput (this)">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/ExpMonth" />
@@ -544,7 +557,8 @@
 									</select> /
 									<select name="CreditCard-Exp-Year" id="CreditCard-Exp-Year" ValidLevel="1" 
 									onchange="ValidateCustomer.ValidateInput (this)"
-									onkeyup="ValidateCustomer.ValidateInput (this)">
+									onkeyup="ValidateCustomer.ValidateInput (this)"
+									onclick="ValidateCustomer.ValidateInput (this)">
 										<xsl:attribute name="ValidValue">
 											<xsl:text></xsl:text>
 											<xsl:value-of select="/Response/ui-answers/Account/CreditCardDetails/CreditCard/ExpYear" />

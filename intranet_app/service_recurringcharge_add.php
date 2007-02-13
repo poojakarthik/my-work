@@ -53,7 +53,7 @@
 		$oblstrRecurringCharge->setValue ($_POST ['Amount']);
 		$fltAmount = new dataFloat ('Amount');
 		
-		if (!$fltAmount->setValue ($_POST ['Amount']))
+		if ($rcgCharge->Pull ('Fixed')->isFalse () && !$fltAmount->setValue ($_POST ['Amount']))
 		{
 			$oblstrError->setValue ('Invalid Amount');
 		}

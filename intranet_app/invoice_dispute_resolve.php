@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_INVOICE | MODULE_CHARGE | MODULE_CDR | MODULE_SERVICE | MODULE_SERVICE_TOTAL;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_INVOICE | MODULE_CHARGE | MODULE_CDR | MODULE_SERVICE | MODULE_SERVICE_TOTAL | MODULE_NOTE | MODULE_EMPLOYEE;
 	
 	// call application
 	require ('config/application.php');
@@ -28,6 +28,12 @@
 		exit;
 	}
 	
+	if ($invInvoice->Pull ('Status')->getValue () != INVOICE_DISPUTED)
+	{
+		header ("Location: invoice_view.php?Invoice=" . $invInvoice->Pull ('Id')->getValue ());
+		exit;
+	}
+	
 	// Error
 	$oblstrError			= $Style->attachObject	(new dataString		('Error'));
 	
@@ -40,13 +46,18 @@
 	{
 		$oblfltAmount = new dataFloat ('ResolveAmount');
 		
-		if (!$oblfltAmount->setValue ($_POST ['ResolveAmount']))
+		if ($_POST ['ResolveMethod'] == DISPUTE_RESOLVE_PARTIAL_PAYMENT && !$oblfltAmount->setValue ($_POST ['ResolveAmount']))
 		{
 			$oblstrError->setValue ('Invalid PaymentAmount');
 		}
 		else
 		{
-			$invInvoice->Resolve ($athAuthentication->AuthenticatedEmployee (), $_POST ['ResolveMethod'], $_POST ['PaymentAmount']);
+			$invInvoice->Resolve (
+				$athAuthentication->AuthenticatedEmployee (), 
+				$_POST ['ResolveMethod'], 
+				$_POST ['ResolveAmount']
+			);
+			
 			header ("Location: invoice_dispute_resolved.php?Invoice=" . $invInvoice->Pull ('Id')->getValue ());
 		}
 	}

@@ -99,7 +99,7 @@
 					$oblstrError->setValue ('Unselected');
 				}
 				
-				$Style->Output ('xsl/content/contact/list_1-account.xsl');
+				$Style->Output ('xsl/content/contact/verify_1-account.xsl');
 				exit;
 			}
 		}
@@ -113,7 +113,7 @@
 			{
 				// If we try to get an Account that doesn't exist - start the process again
 				// because there's obvious an error occurring or hacking attempt
-				header ('Location: contact_list.php'); exit;
+				header ('Location: contact_verify.php'); exit;
 			}
 		}
 	}
@@ -157,7 +157,7 @@
 					$oblstrError->setValue ('Unselected');
 				}
 				
-				$Style->Output ('xsl/content/contact/list_1-account.xsl');
+				$Style->Output ('xsl/content/contact/verify_1-account.xsl');
 				exit;
 			}
 		}
@@ -171,7 +171,7 @@
 			{
 				// If we try to get an Account that doesn't exist - start the process again
 				// because there's obvious an error occurring or hacking attempt
-				header ('Location: contact_list.php'); exit;
+				header ('Location: contact_verify.php'); exit;
 			}
 		}
 	}
@@ -247,7 +247,7 @@
 						$oblstrError->setValue ('Unselected');
 					}
 					
-					$Style->Output ('xsl/content/contact/list_1-account.xsl');
+					$Style->Output ('xsl/content/contact/verify_1-account.xsl');
 					exit;
 				}
 			}
@@ -266,7 +266,7 @@
 			{
 				// If we try to get an Account that doesn't exist - start the process again
 				// because there's obvious an error occurring or hacking attempt
-				header ('Location: contact_list.php'); exit;
+				header ('Location: contact_verify.php'); exit;
 			}
 		}
 	}
@@ -320,7 +320,7 @@
 					$oblstrError->setValue ('Unselected');
 				}
 				
-				$Style->Output ('xsl/content/contact/list_1-contact.xsl');
+				$Style->Output ('xsl/content/contact/verify_1-contact.xsl');
 				exit;
 			}
 		}
@@ -335,7 +335,7 @@
 			}
 			catch (Exception $e)
 			{
-				header ('Location: contact_list.php'); exit;
+				header ('Location: contact_verify.php'); exit;
 			}
 		}
 		
@@ -367,7 +367,7 @@
 							$oblstrError->setValue ('Unselected');
 						}
 						
-						$Style->Output ('xsl/content/contact/list_2-account.xsl');
+						$Style->Output ('xsl/content/contact/verify_2-account.xsl');
 						exit;
 					}
 					else
@@ -390,7 +390,7 @@
 					}
 					catch (Exception $e)
 					{
-						header ('Location: contact_list.php'); exit;
+						header ('Location: contact_verify.php'); exit;
 					}
 				}
 			}
@@ -429,7 +429,7 @@
 				$oblstrError->setValue ('Unselected');
 			}
 			
-			$Style->Output ('xsl/content/contact/list_2-contact.xsl');
+			$Style->Output ('xsl/content/contact/verify_2-contact.xsl');
 			exit;
 		}
 		else
@@ -445,7 +445,7 @@
 				// If we try to get a Contact that doesn't exist in the account - 
 				// start the process again because there's obvious an error 
 				// occurring or hacking attempt
-				header ('Location: contact_list.php'); exit;
+				header ('Location: contact_verify.php'); exit;
 			}
 		}
 	}
@@ -467,7 +467,7 @@
 			$ivlInvoices->Sample (1, 6);
 			
 			// Output the Overall Verification
-			$Style->Output ('xsl/content/contact/list_3.xsl');
+			$Style->Output ('xsl/content/contact/verify_3.xsl');
 			exit;
 		}
 		else
@@ -479,6 +479,6 @@
 		}
 	}
 	
-	$Style->Output ('xsl/content/contact/list_1.xsl');
+	$Style->Output ('xsl/content/contact/verify_1.xsl');
 	
 ?>

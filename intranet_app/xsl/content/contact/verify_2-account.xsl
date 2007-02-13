@@ -20,7 +20,7 @@
 		<h2 class="Account">Select an Account</h2>
 		<div class="sectionContainer">
 			<div class="sectionContent">
-				<form method="post" action="contact_list.php">
+				<form method="post" action="contact_verify.php">
 					<input type="hidden" name="ui-Contact-First">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>

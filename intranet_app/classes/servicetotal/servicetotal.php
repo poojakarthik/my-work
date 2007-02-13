@@ -41,6 +41,8 @@
 	class ServiceTotal extends dataObject
 	{
 		
+		private $_srvService;
+		
 		//------------------------------------------------------------------------//
 		// __construct
 		//------------------------------------------------------------------------//
@@ -72,6 +74,31 @@
 			
 			// Construct the object
 			parent::__construct ('ServiceTotal', $this->Pull ('Id')->getValue ());
+		}
+		
+		//------------------------------------------------------------------------//
+		// Service
+		//------------------------------------------------------------------------//
+		/**
+		 * Service()
+		 *
+		 * Returns the Associated Service
+		 *
+		 * Returns the Associated Service
+		 *
+		 * @return	Service
+		 *
+		 * @method
+		 */
+		
+		public function Service ()
+		{
+			if (!$this->_srvService)
+			{
+				$this->_srvService = new Service ($this->Pull ('Service')->getValue ());
+			}
+			
+			return $this->_srvService;
 		}
 	}
 	

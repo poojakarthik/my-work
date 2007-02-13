@@ -15,7 +15,7 @@
 		<!-- TODO!bash! [  DONE  ]		This page has a popup error when fields are not filled in correctly!!!  It needs to have a msgerror saying EXACTLY "You did not fill in this form correctly.  Please try again."-->
 		<!-- do NOT change the wording of the error-->
 		
-		<form method="post" action="contact_list.php" onsubmit="return contactList1 (this)">
+		<form method="post" action="contact_verify.php" onsubmit="return contactList1 (this)">
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
 					<xsl:choose>

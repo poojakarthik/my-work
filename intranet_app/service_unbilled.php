@@ -12,14 +12,14 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_CDR | MODULE_CHARGE | MODULE_EMPLOYEE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_CDR | MODULE_CHARGE | MODULE_EMPLOYEE | MODULE_RECORD_TYPE;
 	
 	// call application
 	require ('config/application.php');
 	
+	// Attempt to get the Service that's being Requested
 	try
 	{
-		// Get the Service
 		$srvService = $Style->attachObject (new Service ($_GET ['Id']));
 		$actAccount = $Style->attachObject ($srvService->getAccount ());
 	}
@@ -29,7 +29,9 @@
 		exit;
 	}
 	
+	// Pull unbilled Services
 	$cdrUnbilled = $srvService->UnbilledCDRs ();
+	
 	$Style->attachObject (
 		$cdrUnbilled->Sample (
 			isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
@@ -56,8 +58,17 @@
 		}
 	}
 	
-	// Pull documentation information for a Service and an Account
+	$rtsRecordTypes = $Style->attachObject (new RecordTypes);
+	$rtsRecordTypes->Constrain ('ServiceType', '=', $srvService->Pull ('ServiceType')->getValue ());
+	
+	// Pull documentation information for a Service and CDR Records
 	$docDocumentation->Explain ('Service');
+	$docDocumentation->Explain ('CDR');
+	
+	// Get a list of Record Types that can be searched for
+	$rtsRecordTypes = $Style->attachObject (new RecordTypes);
+	$rtsRecordTypes->Constrain ('ServiceType', '=', $srvService->Pull ('ServiceType')->getValue ());
+	$rtsRecordTypes->Sample ();
 	
 	// Output the Service Unbilled Charges
 	$Style->Output (

@@ -230,7 +230,7 @@
 											</tr>
 											<tr>
 												<td>
-													<a href="contact_list.php">
+													<a href="contact_verify.php">
 														<img src="img/template/contact_retrieve.png" title="Find Customer" class="MenuIcon" />
 													</a>
 												</td>

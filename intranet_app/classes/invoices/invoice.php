@@ -251,16 +251,21 @@
 		
 		public function Resolve (AuthenticatedEmployee $aemAuthenticatedEmployee, $intResolveMethod, $fltAmount)
 		{
+			// Check that the invoice is currently in dispute
 			if ($this->Pull ('Status')->getValue () <> INVOICE_DISPUTED)
 			{
 				throw new Exception ('Invoice Not Disputed');
 			}
 			
+			// The status that will be added to the Note
+			$strStatus = "Resolution for Dispute on Invoice #" . $this->Pull ('Id')->getValue () . "\n";
+			
 			switch ($intResolveMethod)
 			{
 				case DISPUTE_RESOLVE_FULL_PAYMENT:
 					// If the full amount is required to be paid (for example, Dispute was Denied)
-					$fltBalance = $this->Pull ('Balance')->getValue ();
+					$strStatus .= "No Credit was applied to this Dispute. ";
+					$strStatus .= "The Customer is required to pay the full Amount.";
 					
 					break;
 					
@@ -284,7 +289,11 @@
 						'Status'		=> CHARGE_APPROVED
 					);
 					
-					$fltBalance = $this->Pull ('Balance')->getValue () + $fltAmount;
+					$strStatus .= "This dispute was resolved by partial payment. ";
+					$strStatus .= "The Customer is required to pay the amount of $" . sprintf ("%01.4f", $fltAmount) . ". ";
+					$strStatus .= "The Original disputed amount was: $" . sprintf ("%01.4f", $this->Pull ('Disputed')->getValue ()) . ". ";
+					$strStatus .= "The remaining amount of $" . sprintf ("%01.4f", $this->Pull ('Disputed')->getValue () - $fltAmount) . " ";
+					$strStatus .= "was Credited towards this Account.";
 					
 					break;
 					
@@ -305,6 +314,10 @@
 						'Amount'		=> $this->Pull ('Disputed')->getValue (),
 						'Status'		=> CHARGE_APPROVED
 					);
+					
+					$strStatus .= "The full amount of the the dispute ($" . sprintf ("%01.4f", $this->Pull ('Disputed')->getValue ()) . ") ";
+					$strStatus .= "was Credited towards this Account.";
+					
 					break;
 					
 				default:
@@ -322,11 +335,25 @@
 			// else				Status = INVOICE_SETTLED
 			$arrDispute = Array (
 				'Disputed'		=> 0,
-				'Status'		=> ($fltBalance > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED
+				'Status'		=> ($this->Pull ('Balance')->getValue () > 0) ? INVOICE_COMMITTED : INVOICE_SETTLED
 			);
 			
 			$updDispute = new StatementUpdate ('Invoice', 'Id = <Id> AND Status = ' . INVOICE_DISPUTED, $arrDispute);
 			$updDispute->Execute ($arrDispute, Array ('Id' => $this->Pull ('Id')->getValue ()));
+			
+			Notes::Add (
+				Array (
+					'Note'			=> $strStatus,
+					'NoteType'		=> SYSTEM_NOTE_TYPE,
+					
+					'AccountGroup'	=> $this->Pull ('AccountGroup')->getValue (),
+					'Account'		=> $this->Pull ('Account')->getValue (),
+					'Service'		=> NULL,
+					'Contact'		=> NULL,
+					
+					'Employee'		=> $aemAuthenticatedEmployee->Pull ('Id')->getValue ()
+				)
+			);
 		}
 	}
 	

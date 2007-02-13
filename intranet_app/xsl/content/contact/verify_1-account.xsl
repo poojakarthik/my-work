@@ -25,7 +25,7 @@
 		<div class="sectionContainer">
 			<div class="sectionContent">
 			
-				<form method="post" action="contact_list.php">
+				<form method="post" action="contact_verify.php">
 					<input type="hidden" name="ui-BusinessName">
 						<xsl:attribute name="value">
 							<xsl:text></xsl:text>

@@ -2056,13 +2056,16 @@ class MySQLFunction
 					else
 					{
 						// Create a new instance of an oblib object using the ObLib parameter of the database definition
-						$oblobjPushObject->Push
-						(
-							new $this->db->arrTableDefine[$fldField->table]["Column"][$fldField->name]["ObLib"]
+						if (isset ($this->db->arrTableDefine[$fldField->table]["Column"][$fldField->name]["ObLib"]))
+						{
+							$oblobjPushObject->Push
 							(
-								$fldField->name, $this->_arrBoundResults [$fldField->name]
-							)
-						);
+								new $this->db->arrTableDefine[$fldField->table]["Column"][$fldField->name]["ObLib"]
+								(
+									$fldField->name, $this->_arrBoundResults [$fldField->name]
+								)
+							);
+						}
 					}
 				}
 				
