@@ -13,10 +13,6 @@
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<th>Rate Id:</th>
-						<td><xsl:value-of select="/Response/RateDetails/Rate/Id" /></td>
-					</tr>
-					<tr>
 						<th>Rate Name:</th>
 						<td><xsl:value-of select="/Response/RateDetails/Rate/Name" /></td>
 					</tr>
@@ -24,6 +20,132 @@
 						<th>Rate Description:</th>
 						<td><xsl:value-of select="/Response/RateDetails/Rate/Description" /></td>
 					</tr>
+					<tr>
+						<td colspan="2">
+							<div class="MicroSeperator"></div>
+						</td>
+					</tr>
+					
+					<xsl:choose>
+						<xsl:when test="/Response/RateDetails/Rate/PassThrough = 1">
+							<tr>
+								<th>Rate Charge:</th>
+								<td>
+					       			Re-billed at Cost
+								</td>
+							</tr>
+						</xsl:when>
+						<xsl:otherwise>
+							<tr>
+								<th>Rate Charge:</th>
+								<td>
+					       			<xsl:call-template name="Currency">
+					       				<xsl:with-param name="Number" select="/Response/RateDetails/Rate/StdRatePerUnit" />
+										<xsl:with-param name="Decimal" select="number('4')" />
+			       					</xsl:call-template>
+									per 
+									<xsl:value-of select="/Response/RateDetails/Rate/StdUnits" />
+									<xsl:text> </xsl:text>
+									<xsl:value-of select="/Response/RateDetails/Rate/RecordDisplayType/Suffix" />
+								</td>
+							</tr>
+							<tr>
+								<th>Flagfall:</th>
+								<td>
+					       			<xsl:call-template name="Currency">
+					       				<xsl:with-param name="Number" select="/Response/RateDetails/Rate/StdFlagfall" />
+										<xsl:with-param name="Decimal" select="number('4')" />
+			       					</xsl:call-template>
+								</td>
+							</tr>
+						</xsl:otherwise>
+					</xsl:choose>
+					<tr>
+						<th>Availability:</th>
+						<td>
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td>
+										<strong><span>
+										<xsl:attribute name="class">
+											<xsl:choose>
+												<xsl:when test="/Response/RateDetails/Rate/Monday = 1">Green</xsl:when>
+												<xsl:otherwise>Red</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+										Mo</span></strong>
+									</td>
+									<td>
+										<strong><span>
+										<xsl:attribute name="class">
+											<xsl:choose>
+												<xsl:when test="/Response/RateDetails/Rate/Tuesday = 1">Green</xsl:when>
+												<xsl:otherwise>Red</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+										Tu</span></strong>
+									</td>
+									<td>
+										<strong><span>
+										<xsl:attribute name="class">
+											<xsl:choose>
+												<xsl:when test="/Response/RateDetails/Rate/Wednesday = 1">Green</xsl:when>
+												<xsl:otherwise>Red</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+										We</span></strong>
+									</td>
+									<td>
+										<strong><span>
+										<xsl:attribute name="class">
+											<xsl:choose>
+												<xsl:when test="/Response/RateDetails/Rate/Thursday = 1">Green</xsl:when>
+												<xsl:otherwise>Red</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+										Th</span></strong>
+									</td>
+									<td>
+										<strong><span>
+										<xsl:attribute name="class">
+											<xsl:choose>
+												<xsl:when test="/Response/RateDetails/Rate/Friday = 1">Green</xsl:when>
+												<xsl:otherwise>Red</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+										Fr</span></strong>
+									</td>
+									<td>
+										<strong><span>
+										<xsl:attribute name="class">
+											<xsl:choose>
+												<xsl:when test="/Response/RateDetails/Rate/Saturday = 1">Green</xsl:when>
+												<xsl:otherwise>Red</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+										Sa</span></strong>
+									</td>
+									<td>
+										<strong><span>
+										<xsl:attribute name="class">
+											<xsl:choose>
+												<xsl:when test="/Response/RateDetails/Rate/Sunday = 1">Green</xsl:when>
+												<xsl:otherwise>Red</xsl:otherwise>
+											</xsl:choose>
+										</xsl:attribute>
+										Su</span></strong>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2">
+							<div class="MicroSeperator"></div>
+						</td>
+					</tr>
+					
+					
 					<tr>
 						<th>Service Type:</th>
 						<td><xsl:value-of select="/Response/RateDetails/Rate/ServiceTypes/ServiceType[@selected='selected']/Name" /></td>
@@ -33,18 +155,12 @@
 						<td><xsl:value-of select="/Response/RateDetails/Rate/RecordType/Name" /></td>
 					</tr>
 					<tr>
-						<th>Archive Status:</th>
-						<td>
-							<xsl:choose>
-								<xsl:when test="/Response/RateDetails/Rate/Archived = 0">
-									<strong><span class="Green">Currently Available</span></strong>
-								</xsl:when>
-								<xsl:otherwise>
-									<strong><span class="Red">Currently Archived</span></strong>
-								</xsl:otherwise>
-							</xsl:choose>
+						<td colspan="2">
+							<div class="MicroSeperator"></div>
 						</td>
 					</tr>
+					
+					
 					<tr>
 						<th>Avalible Time:</th>
 						<td>
@@ -63,24 +179,13 @@
 							</xsl:call-template>
 							
 						</td>
-							<td>
-							
-						</td>
 					</tr>
-
 					<tr>
 						<th>Duration:</th>
 						<td>
 							<xsl:value-of select="floor (/Response/RateDetails/Rate/quarter-length div 4)" /> hours,
 							<xsl:value-of select="floor (/Response/RateDetails/Rate/quarter-length mod 4)" /> minutes
 						</td>
-						<td>
-							
-						</td>
-					</tr>
-					<tr>
-						<th></th>
-						
 					</tr>
 				</table>
 				<div class="Clear"></div>

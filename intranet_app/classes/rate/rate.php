@@ -76,8 +76,10 @@
 			
 			// Get Named RecordType Information
 			$intRecordType = $this->Pop ('RecordType')->getValue ();
-			$this->Push (new RecordType ($intRecordType));
+			$rdtRecordDisplayType = $this->Push (new RecordType ($intRecordType));
 			
+			// Get Record Display Type Information
+			$rdtRecordDisplayType = $this->Push (new RecordDisplayType ($rdtRecordDisplayType->Pull ('DisplayType')->getValue ()));
 			
 			
 			// Work out what Quarter Hour the Rate lies between

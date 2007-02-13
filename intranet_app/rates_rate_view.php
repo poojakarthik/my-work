@@ -17,25 +17,19 @@
 	// call application
 	require ('config/application.php');
 	
+	// Create a Base Object
+	$oblarrDetails	= $Style->attachObject (new dataArray ('RateDetails'));
+	
 	try
 	{
-		$rrrRate = new Rate ($_GET ['Id']);
+		// Add the details for the Rate
+		$rrrRate = $oblarrDetails->Push (new Rate ($_GET ['Id']));
 	}
 	catch (Exception $e)
 	{
 		$Style->Output ("xsl/content/rates/rates/notfound.xsl");
 		exit;
 	}
-	
-	// Create a Base Object
-	$oblarrDetails	= $Style->attachObject (new dataArray ('RateDetails'));
-	
-	// Add the details for the Rate
-	$rrrRate = $oblarrDetails->Push ($rrrRate);
-	
-	// Include a list of Rate Groups that use this Rate
-	$oblarrDetails->Push ($rrrRate->RateGroups ());
-	
 	
 	$docDocumentation->Explain ("Rate");
 	
