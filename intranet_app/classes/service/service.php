@@ -462,14 +462,17 @@
 			$strFNN = $arrDetails ['FNN'];
 			$strFNN = preg_replace ('/\s/', '', $strFNN);
 			
-			if (!isValidFNN ($strFNN))
+			if ($strFNN <> "")
 			{
-				throw new Exception ("FNN Invalid");
-			}
-			
-			if (ServiceType ($strFNN) <> $this->Pull ('ServiceType')->getValue ())
-			{
-				throw new Exception ("FNN Invalid");
+				if (!isValidFNN ($strFNN))
+				{
+					throw new Exception ("FNN Invalid");
+				}
+				
+				if (ServiceType ($strFNN) <> $this->Pull ('ServiceType')->getValue ())
+				{
+					throw new Exception ("FNN Invalid");
+				}
 			}
 			
 			$arrData = Array (

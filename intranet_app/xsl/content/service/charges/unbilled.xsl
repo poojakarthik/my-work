@@ -92,7 +92,7 @@
 						</td>
 						<td class="Currency">
 			       			<xsl:call-template name="Currency">
-			       				<xsl:with-param name="Number" select="./Charge" />
+			       				<xsl:with-param name="Number" select="./Amount" />
 								<xsl:with-param name="Decimal" select="number('4')" />
 	       					</xsl:call-template>
 						</td>
@@ -124,57 +124,6 @@
 		
 		<!-- Unbilled Calls -->
 		<h2 class="Charge">Unbilled Calls</h2>
-		
-		<form method="get" action="service_unbilled.php">
-			<input type="hidden" name="Id">
-				<xsl:attribute name="value">
-					<xsl:text></xsl:text>
-					<xsl:value-of select="/Response/Service/Id" />
-				</xsl:attribute>
-			</input>
-			
-			<!-- Record Type Filter -->
-			<div class="Wide-Form">
-				<table border="0" cellpadding="3" cellspacing="0">
-					<tr>
-						<th class="JustifiedWidth">
-							<xsl:call-template name="Label">
-								<xsl:with-param name="entity" select="string('CDR')" />
-								<xsl:with-param name="field" select="string('RecordType')" />
-							</xsl:call-template>
-						</th>
-						<td>
-							<select name="RecordType">
-								<option value="">All</option>
-								<xsl:for-each select="/Response/RecordTypes/Results/rangeSample/RecordType">
-									<xsl:sort select="./Name" />
-									<option>
-										<xsl:attribute name="value">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="./Id" />
-										</xsl:attribute>
-										<xsl:if test="./Id = /Response/CDRs-Invoiced/Constraints/Constraint[./Name='RecordType']/Value">
-											<xsl:attribute name="selected">
-												<xsl:text>selected</xsl:text>
-											</xsl:attribute>
-										</xsl:if>
-										<xsl:value-of select="./Name" />
-									</option>
-								</xsl:for-each>
-							</select>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<div class="Seperator"></div>
-			
-			<div class="Right">
-				<input type="submit" value="Filter &#0187;" class="input-submit" />
-			</div>
-			<div class="Clear"></div>
-		</form>
-		
-		<div class="Seperator"></div>
 		
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">

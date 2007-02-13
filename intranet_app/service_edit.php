@@ -39,17 +39,19 @@
 	{
 		$strFNN = preg_replace ('/\s/', '', $_POST ['FNN']['1']);
 		
-		if ($_POST ['FNN']['1'] <> $_POST ['FNN']['2'])
+		$bolDifferent = ($strFNN <> $srvService->Pull ('FNN')->getValue ());
+		
+		if ($bolDifferent && $_POST ['FNN']['1'] <> $_POST ['FNN']['2'])
 		{
 			// Check the Line Numbers Match
 			$oblstrError->setValue ('Mismatch');
 		}
-		else if ($strFNN <> "" && !IsValidFNN ($strFNN))
+		else if ($bolDifferent && $strFNN <> "" && !IsValidFNN ($strFNN))
 		{
 			// Check the FNN is Valid
 			$oblstrError->setValue ('FNN ServiceType');
 		}
-		else if ($strFNN <> "" && ServiceType ($strFNN) <> $srvService->Pull ('ServiceType')->getValue ())
+		else if ($bolDifferent && $strFNN <> "" && ServiceType ($strFNN) <> $srvService->Pull ('ServiceType')->getValue ())
 		{
 			// Check the FNN is the Right Service Type
 			$oblstrError->setValue ('FNN ServiceType');
@@ -58,11 +60,14 @@
 		{
 			$intService = $srvService->Pull ('Id')->getValue ();
 			
-			$srvService->Update (
-				Array (
-					"FNN"				=> $strFNN
-				)
-			);
+			if ($bolDifferent)
+			{
+				$srvService->Update (
+					Array (
+						"FNN"				=> $strFNN
+					)
+				);
+			}
 			
 			if (isset ($_POST ['Archived']))
 			{
