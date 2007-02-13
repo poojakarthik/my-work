@@ -156,13 +156,13 @@
 															  		"2",
 															  		"Nature");
 															  		
-	 	$this->_selDisputedBalance(	"Invoice",
-	 								"SUM(Balance) AS DisputedBalance",
-	 								"Account = <Account> AND Status = ".INVOICE_DISPUTED);
+	 	$this->_selDisputedBalance = new StatementSelect(	"Invoice",
+	 														"SUM(Balance) AS DisputedBalance",
+	 														"Account = <Account> AND Status = ".INVOICE_DISPUTED);
 	 	
-	 	$this->_selAccountBalance(	"Invoice",
-	 								"SUM(Balance) AS AccountBalance",
-	 								"Account = <Account> AND Status != ".INVOICE_SETTLED." AND Status != ".INVOICE_TEMP);
+	 	$this->_selAccountBalance = new StatementSelect(	"Invoice",
+	 														"SUM(Balance) AS AccountBalance",
+	 														"Account = <Account> AND Status != ".INVOICE_SETTLED." AND Status != ".INVOICE_TEMP);
 	 }
 	 
 	//------------------------------------------------------------------------//
