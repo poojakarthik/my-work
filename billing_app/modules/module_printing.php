@@ -216,6 +216,48 @@
  	{
 		$arrDefine = $this->_arrDefine;
 		
+		//--------------------------------------------------------------------//
+		//                          FRONT PAGE
+		//--------------------------------------------------------------------//
+		
+		// Invoice Detail
+		
+		// Graph
+		
+		// Charge Totals
+		
+		// Payment Information
+		
+		
+		//--------------------------------------------------------------------//
+		//                       SERVICE SUMMARIES
+		//--------------------------------------------------------------------//
+		
+		
+		//--------------------------------------------------------------------//
+		//                       ITEMISED CALLS
+		//--------------------------------------------------------------------//
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		// HEADER
 		// get details from invoice & customer
 		$arrWhere['Account'] = $arrInvoiceDetails['Account'];
@@ -860,6 +902,51 @@
  	function SendSample()
  	{
 		return $this->SendOutput(TRUE);
+ 	}
+ 	
+ 	
+ 	
+ 	//------------------------------------------------------------------------//
+	// GenerateServiceSummary()
+	//------------------------------------------------------------------------//
+	/**
+	 * GenerateServiceSummary()
+	 *
+	 * Generates a Service Summary for a specified service
+	 *
+	 * Generates a Service Summary for a specified service
+	 * 
+	 * @param		integer		$intService		The service to generate a summary for
+	 *
+	 * @return		boolean
+	 *
+	 * @method
+	 */
+ 	function GenerateServiceSummary($intService)
+ 	{
+ 		// TODO
+ 	}
+ 	
+ 	//------------------------------------------------------------------------//
+	// GenerateItemisedCalls()
+	//------------------------------------------------------------------------//
+	/**
+	 * GenerateItemisedCalls()
+	 *
+	 * Generates a list of itemised calls for a specified service and record type
+	 *
+	 * Generates a list of itemised calls for a specified service and record type
+	 * 
+	 * @param		integer		$intService		The service to generate itemised calls for
+	 * @param		integer		$intRecordType	The record type to generate itemised calls for
+	 *
+	 * @return		boolean
+	 *
+	 * @method
+	 */
+ 	function GenerateItemisedCalls($intService, $intRecordType)
+ 	{
+ 		// TODO
  	}
  }
 
