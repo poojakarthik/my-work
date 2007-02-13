@@ -13,7 +13,7 @@
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<th>Rate Name:</th>
+						<th class="JustifiedWidth">Rate Name:</th>
 						<td><xsl:value-of select="/Response/RateDetails/Rate/Name" /></td>
 					</tr>
 					<tr>
@@ -26,19 +26,14 @@
 						</td>
 					</tr>
 					
-					<xsl:choose>
-						<xsl:when test="/Response/RateDetails/Rate/PassThrough = 1">
-							<tr>
-								<th>Rate Charge:</th>
-								<td>
-					       			Re-billed at Cost
-								</td>
-							</tr>
-						</xsl:when>
-						<xsl:otherwise>
-							<tr>
-								<th>Rate Charge:</th>
-								<td>
+					<tr>
+						<th>Rate Charge:</th>
+						<td>
+							<xsl:choose>
+								<xsl:when test="/Response/RateDetails/Rate/PassThrough = 1">
+									Re-billed at Cost
+								</xsl:when>
+								<xsl:otherwise>
 					       			<xsl:call-template name="Currency">
 					       				<xsl:with-param name="Number" select="/Response/RateDetails/Rate/StdRatePerUnit" />
 										<xsl:with-param name="Decimal" select="number('4')" />
@@ -47,19 +42,42 @@
 									<xsl:value-of select="/Response/RateDetails/Rate/StdUnits" />
 									<xsl:text> </xsl:text>
 									<xsl:value-of select="/Response/RateDetails/Rate/RecordDisplayType/Suffix" />
-								</td>
-							</tr>
-							<tr>
-								<th>Flagfall:</th>
-								<td>
+								</xsl:otherwise>
+							</xsl:choose>
+						</td>
+					</tr>
+					<tr>
+						<th>Flagfall:</th>
+						<td>
+							<xsl:choose>
+								<xsl:when test="/Response/RateDetails/Rate/StdFlagfall = 0">
+									<strong><span class="Attention">No Flagfall</span></strong>
+								</xsl:when>
+								<xsl:otherwise>
 					       			<xsl:call-template name="Currency">
 					       				<xsl:with-param name="Number" select="/Response/RateDetails/Rate/StdFlagfall" />
 										<xsl:with-param name="Decimal" select="number('4')" />
 			       					</xsl:call-template>
-								</td>
-							</tr>
-						</xsl:otherwise>
-					</xsl:choose>
+			       				</xsl:otherwise>
+			       			</xsl:choose>
+						</td>
+					</tr>
+					<tr>
+						<th>Minimum Charge:</th>
+						<td>
+							<xsl:choose>
+								<xsl:when test="/Response/RateDetails/Rate/StdMinCharge = 0">
+									<strong><span class="Attention">No Minimum Charge</span></strong>
+								</xsl:when>
+								<xsl:otherwise>
+					       			<xsl:call-template name="Currency">
+					       				<xsl:with-param name="Number" select="/Response/RateDetails/Rate/StdMinCharge" />
+										<xsl:with-param name="Decimal" select="number('4')" />
+			       					</xsl:call-template>
+			       				</xsl:otherwise>
+			       			</xsl:choose>
+						</td>
+					</tr>
 					<tr>
 						<th>Availability:</th>
 						<td>
