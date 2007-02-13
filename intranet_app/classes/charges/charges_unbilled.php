@@ -56,13 +56,17 @@
 		 * @method
 		 */
 		
-		function __construct (Service $srvService)
+		function __construct (Service $srvService=NULL)
 		{
 			parent::__construct ('Charges-Unbilled', 'Charge', 'Charge');
 			
 			$this->Constrain ('Status',		'NOT EQUAL',	CHARGE_DECLINED);
 			$this->Constrain ('Status',		'NOT EQUAL',	CHARGE_INVOICED);
-			$this->Constrain ('Service',	'EQUALS',		$srvService->Pull ('Id')->getValue ());
+			
+			if ($srvService)
+			{
+				$this->Constrain ('Service',	'EQUALS',		$srvService->Pull ('Id')->getValue ());
+			}
 		}
 	}
 	
