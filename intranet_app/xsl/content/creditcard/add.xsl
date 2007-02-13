@@ -54,6 +54,9 @@
 						<xsl:when test="/Response/Error = 'Card Invalid'">
 							The Credit Card Number you entered was Invalid.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'Card Number Type'">
+							The Credit Card Number you entered was not a valid card number for <xsl:value-of select="/Response/CreditCardTypes/CreditCardType[./Id = /Response/ui-values/CreditCard/CardType]/Name" />.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'ExpMonth'">
 							Please enter a Credit Card Expiry Month.
 						</xsl:when>

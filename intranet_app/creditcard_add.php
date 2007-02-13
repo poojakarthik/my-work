@@ -47,34 +47,47 @@
     {
         if (!$cctCreditCardTypes->setValue ($_POST ['CreditCard']['CardType']))
         {
+        	// Check that the Card Type is a Valid selection
             $oblstrError->setValue ('CardType');
         }
         else if (!$_POST ['CreditCard']['Name'])
         {
+        	// Check that the Card Holder's Name Exists
             $oblstrError->setValue ('Name');
         }
         else if (!$_POST ['CreditCard']['CardNumber'])
         {
+        	// Check that the Card Number Exists
             $oblstrError->setValue ('CardNumber');
+        }
+        else if (!CheckLuhn ($_POST ['CreditCard']['CardNumber']))
+        {
+        	// Check that the Card Number is LUHN Valid
+            $oblstrError->setValue ('Card Invalid');
         }
         else if (!CheckCC ($_POST ['CreditCard']['CardNumber'], $_POST ['CreditCard']['CardType']))
         {
-            $oblstrError->setValue ('Card Invalid');
+        	// Check that the Card Number is Company-Type Valid
+            $oblstrError->setValue ('Card Number Type');
         }
         else if (!$_POST ['CreditCard']['ExpMonth'])
         {
+        	// Check that the Expiration Month Exists
             $oblstrError->setValue ('ExpMonth');
         }
         else if (!$_POST ['CreditCard']['ExpYear'])
         {
+        	// Check that the Expiration Year Exists
             $oblstrError->setValue ('ExpYear');
         }
         else if (!expdate ($_POST ['CreditCard']['ExpMonth'], $_POST ['CreditCard']['ExpYear']))
         {
+        	// Check that the Expiration Date has not Expired
             $oblstrError->setValue ('Expired');
         }
         else if (!preg_match ("/^(\d{3,4})$/", $_POST ['CreditCard']['CVV']))
         {
+        	// Check that the CVV is Valid
             $oblstrError->setValue ('CVV');
         }
         else
