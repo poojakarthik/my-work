@@ -99,7 +99,7 @@
 																BILL_PRINT_HISTORY_LIMIT - 1);
 																
 		$arrColumns = Array();
-		$arrColumns['RecordTypeName']	= "RType.Name";
+		$arrColumns['RecordTypeName']	= "RType.Description";
 		$arrColumns['Charge']			= "SUM(ServiceTypeTotal.Charge)";
 		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, " .
 																"RecordType AS RType",
@@ -117,18 +117,20 @@
 																"TotalCharge",
 																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
 		
-		$arrColumns = Array();
-		$arrColumns['RecordTypeName']	= "RType.Name";
-		$arrColumns['Charge']			= "SUM(CDR.Charge)";
-		$arrColumns['CallCount']		= "COUNT(CDR.Id)";
-		$this->_selServiceSummaries		= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, " .
-																"RecordType AS RType",
-																$arrColumns,
-																"RecordType.GroupId = RType.Id AND CDR.Service = <Service> AND (NOT ISNULL(CDR.RatedOn)) AND CDR.Credit = 0 AND CDR.InvoiceRun = <InvoiceRun> AND Status = ".CDR_TEMP_INVOICE,
-																"RType.Name",
-																NULL,
-																"RType.Id\n" .
-																"HAVING SUM(CDR.Charge) > 0.0");
+ 		$arrColumns = Array();
+ 		$arrColumns['RecordType']	= "GroupType.Description";
+ 		$arrColumns['Total']		= "SUM(ServiceTypeTotal.Charge)";
+ 		$arrColumns['Records']		= "SUM(Records)";
+ 		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
+ 																$arrColumns,
+ 																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
+ 																"ServiceTypeTotal.FNN, GroupId.Description",
+ 																NULL,
+ 																"GroupType.Description");
+ 		
+		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
+																"SUM(Amount) AS Charge, 'Other Credits & Charges' AS RecordType, COUNT(Id) AS Records",
+																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
 		
 		$arrColumns = Array();
 		$arrColumns['Charge']			= "CDR.Charge";
@@ -348,10 +350,6 @@
 		$arrServiceTypeTotalVars['Account']		= $arrInvoiceDetails['Account'];
 		$arrServiceTypeTotalVars['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 		$mixResult = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
-		if ($mixResult === FALSE)
-		{
-
-		}
 		
 		$arrServiceTypeTotals = $this->_selServiceTypeTotals->FetchAll();
 		if(!is_array($arrServiceTypeTotals))
@@ -404,31 +402,13 @@
 		$arrServices = $this->_selServices->FetchAll();
 		
 		// build output
-		$strCurrentService = "";
 		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
 		foreach($arrServices as $arrService)
 		{
-			// The individual RecordTypes for each Service
-			$intSummaryCount = $this->_selServiceSummaries->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
-			$arrServiceSummaries = $this->_selServiceSummaries->FetchAll();
-
-			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $arrService['FNN'];
-			$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
-
-			foreach($arrServiceSummaries as $arrServiceSummary)
-			{
-				$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordTypeName'];
-				$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['CallCount'];
-				$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Charge'];
-				$arrFileData[] = $arrDefine['SvcSummaryData'];
-			}
+			// TODO: Cost Centres?
 			
-			$arrServiceData['Service']		= $arrService['Id'];
-			$arrServiceData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
-			$this->_selServiceTotal->Execute($arrServiceData);
-			$arrServiceTotal = $this->_selServiceTotal->Fetch();
-			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $arrServiceTotal['TotalCharge'];
-			$arrFileData[] = $arrDefine['SvcSummSvcFooter'];
+			// Add the Service Summary
+			$this->GenerateServiceSummary($arrService['Id']);
 		}
 		$arrFileData[] = $arrDefine['SvcSummaryFooter'];
 		
@@ -917,14 +897,60 @@
 	 * Generates a Service Summary for a specified service
 	 * 
 	 * @param		integer		$intService		The service to generate a summary for
+	 * @param		string		$strFNN			The FNN for this service
 	 *
-	 * @return		boolean
+	 * @return		mixed						float: total charge
+	 * 											FALSE: an error occurred
 	 *
 	 * @method
 	 */
- 	function GenerateServiceSummary($intService)
+ 	function GenerateServiceSummary($intService, $strFNN)
  	{
- 		// TODO
+		// Service Header
+		$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
+		$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
+ 		
+  		// Get ServiceTypeTotals
+ 		$arrColumns = Array();
+ 		$arrColumns['Service']		= $intService;
+ 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;													
+ 		if ($this->_selServiceTypeTotals->Execute($arrColumns) === FALSE)
+ 		{
+ 			// ERROR
+ 			Debug($this->_selServiceTypeTotals->Error());
+ 			return FALSE;
+ 		}
+ 		$arrServiceSummaries = $this->_selServiceTypeTotals->FetchAll();
+ 		
+ 		// Get Charge Totals
+ 		$arrColumns = Array();
+ 		$arrColumns['Service']		= $intService;
+ 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;
+ 		if ($this->_selServiceChargesTotal->Execute($arrColumns) === FALSE)
+ 		{
+ 			// ERROR
+ 			Debug($this->_selServiceChargesTotal->Error());
+ 			return FALSE;
+ 		}
+ 		$arrServiceSummaries[] = $this->_selServiceChargesTotal->Fetch();
+ 		
+ 		// Add each to the invoice
+ 		$fltTotal = 0.0;
+ 		foreach ($arrServiceSummaries as $arrServiceSummary)
+ 		{
+			$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordType'];
+			$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['Records'];
+			$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Total'];
+			$arrFileData[] = $arrDefine['SvcSummaryData'];
+			
+			$fltTotal += $arrServiceSummary['Total'];
+ 		}
+ 		
+		// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
+		$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
+		$arrFileData[] = $arrDefine['SvcSummSvcFooter'];
+ 		
+ 		return $fltTotal;
  	}
  	
  	//------------------------------------------------------------------------//
