@@ -370,7 +370,7 @@
 		{
 			Debug($this->_insEtechCDR->Error());
 		}
-		return $this->_insEtechCDR->Execute($arrCDR);
+		return $mixResult;
 	}
  }	
 ?>
