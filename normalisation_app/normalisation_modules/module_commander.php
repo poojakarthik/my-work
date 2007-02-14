@@ -187,7 +187,7 @@ class NormalisationModuleCommander extends NormalisationModule
 	 	$mixValue						= $this->_FetchRawCDR('Datetime');
 	 	$this->_AppendCDR('StartDatetime', $mixValue);
 		 	
-	 	$mixValue						= date("Y-m-d H:i:s", strtotime($this->_FetchRawCDR('Datetime') . " +" . $this->_FetchRawCDR('Duration') . "seconds"));
+	 	$mixValue						= date("Y-m-d H:i:s", strtotime($this->_FetchRawCDR('Datetime') . " +" . abs($this->_FetchRawCDR('Duration')) . "seconds"));
 		$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Units

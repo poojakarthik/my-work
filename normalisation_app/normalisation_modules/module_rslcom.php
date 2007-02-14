@@ -263,7 +263,7 @@ class NormalisationModuleRSLCOM extends NormalisationModule
 		 	$this->_AppendCDR('StartDatetime', $mixValue);
 		 	
 		 	$intStart					= strtotime($this->_FetchRawCDR('DateTime'));
-		 	$intEnd						= strtotime(" +" . $this->_FetchRawCDR('Duration') . "seconds", $intStart);
+		 	$intEnd						= strtotime(" +" . abs($this->_FetchRawCDR('Duration')) . "seconds", $intStart);
 		 	$mixValue					= date("Y-m-d H:i:s", $intEnd);
 			$this->_AppendCDR('EndDatetime', $mixValue);
 		}
