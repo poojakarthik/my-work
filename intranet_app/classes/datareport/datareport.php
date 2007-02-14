@@ -108,7 +108,7 @@
 						$strSelect .= ", ";
 					}
 					
-					$strSelect .= $arrSelect [$strField];
+					$strSelect .= $arrSelect [$strField] . " AS \"" . str_replace ("\"", "\\\"", $strField) . "\"";
 					
 					++$i;
 				}

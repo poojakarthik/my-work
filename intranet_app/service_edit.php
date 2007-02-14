@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_COST_CENTRE;
 	
 	// call application
 	require ('config/application.php');
@@ -60,14 +60,12 @@
 		{
 			$intService = $srvService->Pull ('Id')->getValue ();
 			
-			if ($bolDifferent)
-			{
-				$srvService->Update (
-					Array (
-						"FNN"				=> $strFNN
-					)
-				);
-			}
+			$srvService->Update (
+				Array (
+					"FNN"				=> $strFNN,
+					"CostCentre"		=> $_POST ['CostCentre']
+				)
+			);
 			
 			if (isset ($_POST ['Archived']))
 			{
@@ -81,6 +79,10 @@
 			exit;
 		}
 	}
+	
+	// Get Cost Centres
+	$ccrCostCentres = $Style->attachObject (new CostCentres);
+	$ccrCostCentres->Sample ();
 	
 	// Pull documentation information for Service
 	$docDocumentation->Explain ('Service');

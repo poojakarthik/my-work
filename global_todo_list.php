@@ -83,35 +83,24 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 //TODO!bash! [  DONE  ]						() Don't charge a late payment fee on the next invoice
 //TODO!bash! [  DONE  ]						() Never charge a late payment fee
 
-//TODO!bash! Dropdown (add/edit service);
-//TODO!bash! Cost Centre  [              |V]
+//TODO!bash! [  DONE  ]		Dropdown (add/edit service);
+//TODO!bash! [  DONE  ]		Cost Centre  [              |V]
 
-//TODO!bash! make sure we are parsing and importing all details required for the above fields
+//TODO!bash! [  DONE  ]		make sure we are parsing and importing all details required for the above fields
 
 //TODO!bash! add the following reports and test them
-//TODO!bash! report : profit per rate
-/*
-	return ->	Rate.Name	Cost	Charge	$profit	%profit
-	
-	allow selection of start and end date for report
-	
-*/
+
+//TODO!bash! [  DONE  ]		report : profit per rate
+//TODO!bash! [  DONE  ]		return ->	Rate.Name	Cost	Charge	$profit	%profit
+//TODO!bash! [  DONE  ]		allow selection of start and end date for report
 
 //TODO!bash! report : profit per RatePlan
-/*
-	return ->	RatePlan.Name	Cost	Charge	$profit	%profit
-	
-	allow selection of start and end date for report
-	
-*/
+//TODO!bash! return ->	RatePlan.Name	Cost	Charge	$profit	%profit
+//TODO!bash! allow selection of start and end date for report
 
 //TODO!bash! report profit per customer
-/*
-	return ->	Account.Id Account.BusinessName	Cost	Charge	$profit	%profit
-	
-	allow selection of start and end date for report
-*/
-
+//TODO!bash! return ->	Account.Id Account.BusinessName	Cost	Charge	$profit	%profit
+//TODO!bash! allow selection of start and end date for report
 
 
 // ---------------------------------------------------------------------------//

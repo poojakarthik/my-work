@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_SERVICE_ADDRESS | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_SERVICE_ADDRESS | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE | MODULE_COST_CENTRE;
 	
 	// call application
 	require ('config/application.php');
@@ -96,6 +96,7 @@
 							Array (
 								"FNN"					=> $oblstrFNN_1->getValue (),
 								"Indial100"				=> isset ($_POST ['Indial100']) ? TRUE : FALSE,
+								"CostCentre"			=> $_POST ['CostCentre'],
 								"ServiceType"			=> $_POST ['ServiceType']
 							)
 						);
@@ -109,6 +110,10 @@
 					}
 				}
 			}
+			
+			// Get Cost Centres
+			$ccrCostCentres = $Style->attachObject (new CostCentres);
+			$ccrCostCentres->Sample ();
 			
 			// Get the Plans that this ServiceType can have
 			$rplRatePlans = $Style->attachObject (new RatePlans);

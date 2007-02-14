@@ -476,7 +476,8 @@
 			}
 			
 			$arrData = Array (
-				'FNN'			=> $strFNN
+				'FNN'			=> $strFNN,
+				'CostCentre'	=> ($arrDetails ['CostCentre']) ? $arrDetails ['CostCentre'] : null
 			);
 			
 			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrData);

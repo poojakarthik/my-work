@@ -147,12 +147,14 @@
 			}
 			
 			$arrService = Array (
+				'AccountGroup'			=> $actAccount->Pull ('AccountGroup')->getValue (),
+				'Account'				=> $actAccount->Pull ('Id')->getValue (),
+				
 				'FNN'					=> $arrData ['FNN'],
 				'ServiceType'			=> $arrData ['ServiceType'],
 				'Indial100'				=> ($arrData ['ServiceType'] == SERVICE_TYPE_LAND_LINE && $arrData ['Indial100'] == TRUE) ? '1' : '0',
 				
-				'AccountGroup'			=> $actAccount->Pull ('AccountGroup')->getValue (),
-				'Account'				=> $actAccount->Pull ('Id')->getValue (),
+				'CostCentre'			=> $arrData ['CostCentre'],
 				
 				'CappedCharge'			=> 0,
 				'UncappedCharge'		=> 0,
