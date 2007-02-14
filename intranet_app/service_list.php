@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_COST_CENTRE;
 	
 	// call application
 	require ('config/application.php');
@@ -22,42 +22,43 @@
 	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Archive');
 	
+	// Start a new Account Search
+	$svsServices = $Style->attachObject (new Services);
+	
 	if (isset ($_GET ['constraint']))
 	{
-		// Start a new Account Search
-		$svsServices = $Style->attachObject (new Services);
-		
-		if (isset ($_GET ['constraint']))
+		foreach ($_GET ['constraint'] as $strConstraintName => $arrConstraintRules)
 		{
-			foreach ($_GET ['constraint'] as $strConstraintName => $arrConstraintRules)
+			if ($arrConstraintRules ['Value'] != "")
 			{
-				if ($arrConstraintRules ['Value'] != "")
-				{
-					$svsServices->Constrain (
-						$strConstraintName,
-						$arrConstraintRules ['Operator'],
-						$arrConstraintRules ['Value']
-					);
-				}
+				$svsServices->Constrain (
+					$strConstraintName,
+					$arrConstraintRules ['Operator'],
+					$arrConstraintRules ['Value']
+				);
 			}
 		}
-		
-		if (isset ($_GET ['Order']['Column']))
-		{
-			$svsServices->Order (
-				$_GET ['Order']['Column'],
-				isset ($_GET ['Order']['Method']) ? $_GET ['Order']['Method'] == 1 : TRUE
-			);
-		}
-		
-		$svsServices->Sample (
-			($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
-			($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
+	}
+	
+	if (isset ($_GET ['Order']['Column']))
+	{
+		$svsServices->Order (
+			$_GET ['Order']['Column'],
+			isset ($_GET ['Order']['Method']) ? $_GET ['Order']['Method'] == 1 : TRUE
 		);
 	}
 	
+	$svsServices->Sample (
+		($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
+		($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
+	);
+	
 	// List of Service Types
 	$styServiceTypes = $Style->attachObject (new ServiceTypes);
+	
+	// List of Cost Centres
+	$cclCostCentres = $Style->attachObject (new CostCentres);
+	$cclCostCentres->Sample ();
 	
 	$Style->Output ("xsl/content/service/list.xsl");
 	

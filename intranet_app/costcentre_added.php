@@ -11,20 +11,12 @@
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
-	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_COST_CENTRE;
+	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE;
 	
 	// call application
 	require ('config/application.php');
 	
-	$csrCostCentres = $Style->attachObject (new CostCentres);
-	$csrCostCentres->Order ("Name", TRUE);
-	
-	$csrCostCentres->Sample (
-		($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
-		($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 15
-	);
-	
-	$Style->Output ("xsl/content/costcentre/list.xsl");
+	$Style->Output ("xsl/content/costcentre/added.xsl");
 	
 ?>

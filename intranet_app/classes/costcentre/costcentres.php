@@ -58,6 +58,33 @@
 		{
 			parent::__construct ('CostCentres', 'CostCentre', 'CostCentre');
 		}
+		
+		//------------------------------------------------------------------------//
+		// Add
+		//------------------------------------------------------------------------//
+		/**
+		 * Add()
+		 *
+		 * Add a new Cost Centre
+		 *
+		 * Add a new Cost Centre
+		 *
+		 * @param	Array	$arrDetails		An associate array of details about the new Cost Centre
+		 *
+		 * @method
+		 */
+		
+		public function Add ($arrDetails)
+		{
+			$arrData = Array (
+				'Name'		=> $arrDetails ['Name']
+			);
+			
+			$insCostCentre = new StatementInsert ('CostCentre');
+			$intCostCentre = $insCostCentre->Execute ($arrData);
+			
+			return $intCostCentre;
+		}
 	}
 	
 ?>

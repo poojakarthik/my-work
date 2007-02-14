@@ -109,7 +109,7 @@
 			</tr>
 			<tr>
 				<td>
-					<a href="costcentres_list.php">
+					<a href="costcentre_list.php">
 						<img src="img/template/icon-shoppingcart_small.jpg" title="Cost Centres" class="MenuIcon" />
 					</a>
 				</td>
@@ -117,7 +117,7 @@
 					<strong>
 						Cost Centres
 					</strong><br />
-					Manage the Cost Centres Maintained in the System.
+					Manage Cost Centres maintained in the System.
 				</td>
 			</tr>
 			<tr>

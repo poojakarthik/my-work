@@ -59,6 +59,39 @@
 								</input>
 							</td>
 						</tr>
+						<tr>
+							<th valign="top">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service')" />
+									<xsl:with-param name="field" select="string('CostCentre')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:call-template name="ConstraintOperator">
+									<xsl:with-param name="Name" select="string('constraint[CostCentre][Operator]')" />
+									<xsl:with-param name="DataType" select="string('Id')" />
+								</xsl:call-template>
+							</td>
+							<td>
+								<select name="constraint[CostCentre][Value]">
+									<option value=""></option>
+									<xsl:for-each select="/Response/CostCentres/Results/rangeSample/CostCentre">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:if test="/Response/Services/Constraints/Constraint[Name=string('CostCentre')]/Value = ./Id">
+												<xsl:attribute name="selected">
+													<xsl:text>selected</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+											<xsl:value-of select="./Name" />
+										</option>
+									</xsl:for-each>
+								</select>
+							</td>
+						</tr>
 					</table>
 				</div>
 				<div class="Form-Content Left">
@@ -209,49 +242,42 @@
 					</th>
 					<th>Actions</th>
 				</tr>
-				<xsl:if test="/Response/Services/Results/collationLength &lt;= 80">
-					<xsl:for-each select="/Response/Services/Results/rangeSample/Service">
-						<xsl:variable name="Service" select="." />
-						<tr>
-							<xsl:attribute name="class">
-								<xsl:choose>
-									<xsl:when test="position() mod 2 = 1">
-										<xsl:text>Odd</xsl:text>
-									</xsl:when>
-									<xsl:otherwise>
-										<xsl:text>Even</xsl:text>
-									</xsl:otherwise>
-								</xsl:choose>
-							</xsl:attribute>
-							<td>
-								<xsl:value-of select="/Response/Services/Results/rangeStart + position()" />.
-							</td>
-							<td>
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>service_view.php</xsl:text>
-										<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
-									</xsl:attribute>
-									<xsl:value-of select="./Id" />
-								</a>
-							</td>
-							<td>
-								<xsl:value-of select="./FNN" />
-							</td>
-							<td>
-								<xsl:value-of select="/Response/ServiceTypes/ServiceType[./Id = $Service/ServiceType]/Name" />
-							</td>
-							<td></td>
-						</tr>
-					</xsl:for-each>
-				</xsl:if>
+				<xsl:for-each select="/Response/Services/Results/rangeSample/Service">
+					<xsl:variable name="Service" select="." />
+					<tr>
+						<xsl:attribute name="class">
+							<xsl:choose>
+								<xsl:when test="position() mod 2 = 1">
+									<xsl:text>Odd</xsl:text>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:text>Even</xsl:text>
+								</xsl:otherwise>
+							</xsl:choose>
+						</xsl:attribute>
+						<td>
+							<xsl:value-of select="/Response/Services/Results/rangeStart + position()" />.
+						</td>
+						<td>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>service_view.php</xsl:text>
+									<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
+								</xsl:attribute>
+								<xsl:value-of select="./Id" />
+							</a>
+						</td>
+						<td>
+							<xsl:value-of select="./FNN" />
+						</td>
+						<td>
+							<xsl:value-of select="/Response/ServiceTypes/ServiceType[./Id = $Service/ServiceType]/Name" />
+						</td>
+						<td></td>
+					</tr>
+				</xsl:for-each>
 			</table>
 			<xsl:choose>
-				<xsl:when test="/Response/Services/Results/collationLength &gt; 80">
-					<div class="MsgErrorWide">
-						There are too many results to display.  Please refine your search and try again.
-					</div>
-				</xsl:when>
 				<xsl:when test="/Response/Services/Results/collationLength = 0">
 					<div class="MsgErrorWide">
 						There were no results matching your search. Please change your search and try again.
@@ -264,7 +290,7 @@
 				</xsl:when>
 			</xsl:choose>
 			
-			<xsl:if test="/Response/Services/Results/rangePages != 0 and /Response/Services/Results/collationLength &lt;= 80">
+			<xsl:if test="/Response/Services/Results/rangePages != 0">
 				<p>
 					<table border="0" cellpadding="3" cellspacing="0" width="100%">
 						<tr>

@@ -14,109 +14,8 @@
 		
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
-				<th width="30">
-					#
-				</th>
-				<th>
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>costcentre_list.php</xsl:text>
-							<xsl:text>?Order[Column]=Id</xsl:text>
-							
-							<xsl:if test="/Response/CostCentres/Order/Column = string('Id')">
-								<xsl:choose>
-									<xsl:when test="/Response/CostCentres/Order/Method = 0">
-										<xsl:text>&amp;Order[Method]=1</xsl:text>
-									</xsl:when>
-									<xsl:when test="/Response/CostCentres/Order/Method = 1">
-										<xsl:text>&amp;Order[Method]=0</xsl:text>
-									</xsl:when>
-								</xsl:choose>
-							</xsl:if>
-							
-							<xsl:text>&amp;rangeLength=</xsl:text>
-							<xsl:value-of select="/Response/CostCentres/Results/rangeLength" />
-							
-							<xsl:for-each select="/Response/CostCentres/Constraints/Constraint">
-								<xsl:text>&amp;constraint[</xsl:text>
-								<xsl:value-of select="./Name" />
-								<xsl:text>][Value]=</xsl:text>
-								<xsl:value-of select="./Value" />
-								
-								<xsl:text>&amp;constraint[</xsl:text>
-								<xsl:value-of select="./Name" />
-								<xsl:text>][Operator]=</xsl:text>
-								<xsl:value-of select="./Operator" />
-							</xsl:for-each>
-						</xsl:attribute>
-						Cost Centre ID
-					</a>
-				</th>
-				<th>
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>costcentre_list.php</xsl:text>
-							<xsl:text>?Order[Column]=BusinessName</xsl:text>
-							
-							<xsl:if test="/Response/CostCentres/Order/Column = string('BusinessName')">
-								<xsl:choose>
-									<xsl:when test="/Response/CostCentres/Order/Method = 0">
-										<xsl:text>&amp;Order[Method]=1</xsl:text>
-									</xsl:when>
-									<xsl:when test="/Response/CostCentres/Order/Method = 1">
-										<xsl:text>&amp;Order[Method]=0</xsl:text>
-									</xsl:when>
-								</xsl:choose>
-							</xsl:if>
-							
-							<xsl:text>&amp;rangeLength=</xsl:text>
-							<xsl:value-of select="/Response/CostCentres/Results/rangeLength" />
-							
-							<xsl:for-each select="/Response/CostCentres/Constraints/Constraint">
-								<xsl:text>&amp;constraint[</xsl:text>
-								<xsl:value-of select="./Name" />
-								<xsl:text>][Value]=</xsl:text>
-								<xsl:value-of select="./Value" />
-								
-								<xsl:text>&amp;constraint[</xsl:text>
-								<xsl:value-of select="./Name" />
-								<xsl:text>][Operator]=</xsl:text>
-								<xsl:value-of select="./Operator" />
-							</xsl:for-each>
-						</xsl:attribute>
-						Business Name
-					</a>
-				</th>
-				<th>
-					<a>
-						<xsl:attribute name="href">
-							<xsl:text>costcentre_list.php</xsl:text>
-							<xsl:text>?Order[Column]=TradingName</xsl:text>
-							
-							<xsl:if test="/Response/CostCentres/Order/Column = string('TradingName')">
-								<xsl:if test="/Response/CostCentres/Order/Method = 1">
-									<xsl:text>&amp;Order[Method]=0</xsl:text>
-								</xsl:if>
-							</xsl:if>
-							
-							<xsl:text>&amp;rangeLength=</xsl:text>
-							<xsl:value-of select="/Response/CostCentres/Results/rangeLength" />
-							
-							<xsl:for-each select="/Response/CostCentres/Constraints/Constraint">
-								<xsl:text>&amp;constraint[</xsl:text>
-								<xsl:value-of select="./Name" />
-								<xsl:text>][Value]=</xsl:text>
-								<xsl:value-of select="./Value" />
-								
-								<xsl:text>&amp;constraint[</xsl:text>
-								<xsl:value-of select="./Name" />
-								<xsl:text>][Operator]=</xsl:text>
-								<xsl:value-of select="./Operator" />
-							</xsl:for-each>
-						</xsl:attribute>
-						Trading Name
-					</a>
-				</th>
+				<th width="30">#</th>
+				<th>Cost Centre Name</th>
 				<th>Actions</th>
 			</tr>
 			<xsl:for-each select="/Response/CostCentres/Results/rangeSample/CostCentre">
@@ -131,25 +30,31 @@
 							</xsl:otherwise>
 						</xsl:choose>
 					</xsl:attribute>
+					
 					<td>
 						<xsl:value-of select="/Response/CostCentres/Results/rangeStart + position()" />.
 					</td>
 					<td>
+						<xsl:value-of select="./Name" />
+					</td>
+					<td>
 						<a>
 							<xsl:attribute name="href">
-								<xsl:text>costcentre_view.php</xsl:text>
+								<xsl:text>costcentre_edit.php</xsl:text>
 								<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
 							</xsl:attribute>
-							<xsl:value-of select="./Id" />
+							<xsl:text>Edit Cost Centre</xsl:text>
+						</a>,
+						<a target="_blank">
+							<xsl:attribute name="href">
+								<xsl:text>service_list.php</xsl:text>
+								<xsl:text>?constraint[CostCentre][Operator]=EQUALS</xsl:text>
+								<xsl:text>&amp;constraint[CostCentre][Value]=</xsl:text>
+								<xsl:value-of select="./Id" />
+							</xsl:attribute>
+							<xsl:text>List Services</xsl:text>
 						</a>
 					</td>
-					<td>
-						<xsl:value-of select="./BusinessName" />
-					</td>
-					<td>
-						<xsl:value-of select="./TradingName" />
-					</td>
-					<td></td>
 				</tr>
 			</xsl:for-each>
 		</table>
@@ -181,33 +86,6 @@
 											<xsl:value-of select="/Response/CostCentres/Results/rangeLength" />
 											
 											<xsl:text>&amp;rangePage=1</xsl:text>
-											
-											
-											<xsl:if test="/Response/CostCentres/Order/Column != ''">
-												<xsl:text>&amp;Order[Column]=</xsl:text>
-												<xsl:value-of select="/Response/CostCentres/Order/Column" />
-											</xsl:if>
-											
-											<xsl:choose>
-												<xsl:when test="/Response/CostCentres/Order/Method = 1">
-													<xsl:text>&amp;Order[Ascending]=1</xsl:text>
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:text>&amp;Order[Ascending]=0</xsl:text>
-												</xsl:otherwise>
-											</xsl:choose>
-											
-											<xsl:for-each select="/Response/CostCentres/Constraints/Constraint">
-												<xsl:text>&amp;constraint[</xsl:text>
-												<xsl:value-of select="./Name" />
-												<xsl:text>][Value]=</xsl:text>
-												<xsl:value-of select="./Value" />
-												
-												<xsl:text>&amp;constraint[</xsl:text>
-												<xsl:value-of select="./Name" />
-												<xsl:text>][Operator]=</xsl:text>
-												<xsl:value-of select="./Operator" />
-											</xsl:for-each>
 										</xsl:attribute>
 										<xsl:text>&#124;&lt;- First</xsl:text>
 									</a>
@@ -229,33 +107,6 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CostCentres/Results/rangePage - 1" />
-											
-											
-											<xsl:if test="/Response/CostCentres/Order/Column != ''">
-												<xsl:text>&amp;Order[Column]=</xsl:text>
-												<xsl:value-of select="/Response/CostCentres/Order/Column" />
-											</xsl:if>
-											
-											<xsl:choose>
-												<xsl:when test="/Response/CostCentres/Order/Method = 1">
-													<xsl:text>&amp;Order[Ascending]=1</xsl:text>
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:text>&amp;Order[Ascending]=0</xsl:text>
-												</xsl:otherwise>
-											</xsl:choose>
-											
-											<xsl:for-each select="/Response/CostCentres/Constraints/Constraint">
-												<xsl:text>&amp;constraint[</xsl:text>
-												<xsl:value-of select="./Name" />
-												<xsl:text>][Value]=</xsl:text>
-												<xsl:value-of select="./Value" />
-												
-												<xsl:text>&amp;constraint[</xsl:text>
-												<xsl:value-of select="./Name" />
-												<xsl:text>][Operator]=</xsl:text>
-												<xsl:value-of select="./Operator" />
-											</xsl:for-each>
 										</xsl:attribute>
 										<xsl:text>&lt;- Prev</xsl:text>
 									</a>
@@ -294,32 +145,6 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CostCentres/Results/rangePage + 1" />
-											
-											<xsl:if test="/Response/CostCentres/Order/Column != ''">
-												<xsl:text>&amp;Order[Column]=</xsl:text>
-												<xsl:value-of select="/Response/CostCentres/Order/Column" />
-											</xsl:if>
-											
-											<xsl:choose>
-												<xsl:when test="/Response/CostCentres/Order/Method = 1">
-													<xsl:text>&amp;Order[Ascending]=1</xsl:text>
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:text>&amp;Order[Ascending]=0</xsl:text>
-												</xsl:otherwise>
-											</xsl:choose>
-											
-											<xsl:for-each select="/Response/CostCentres/Constraints/Constraint">
-												<xsl:text>&amp;constraint[</xsl:text>
-												<xsl:value-of select="./Name" />
-												<xsl:text>][Value]=</xsl:text>
-												<xsl:value-of select="./Value" />
-												
-												<xsl:text>&amp;constraint[</xsl:text>
-												<xsl:value-of select="./Name" />
-												<xsl:text>][Operator]=</xsl:text>
-												<xsl:value-of select="./Operator" />
-											</xsl:for-each>
 										</xsl:attribute>
 										<xsl:text>Next -&gt;</xsl:text>
 									</a>
@@ -341,32 +166,6 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CostCentres/Results/rangePages" />
-											
-											<xsl:if test="/Response/CostCentres/Order/Column != ''">
-												<xsl:text>&amp;Order[Column]=</xsl:text>
-												<xsl:value-of select="/Response/CostCentres/Order/Column" />
-											</xsl:if>
-											
-											<xsl:choose>
-												<xsl:when test="/Response/CostCentres/Order/Method = 1">
-													<xsl:text>&amp;Order[Ascending]=1</xsl:text>
-												</xsl:when>
-												<xsl:otherwise>
-													<xsl:text>&amp;Order[Ascending]=0</xsl:text>
-												</xsl:otherwise>
-											</xsl:choose>
-											
-											<xsl:for-each select="/Response/CostCentres/Constraints/Constraint">
-												<xsl:text>&amp;constraint[</xsl:text>
-												<xsl:value-of select="./Name" />
-												<xsl:text>][Value]=</xsl:text>
-												<xsl:value-of select="./Value" />
-												
-												<xsl:text>&amp;constraint[</xsl:text>
-												<xsl:value-of select="./Name" />
-												<xsl:text>][Operator]=</xsl:text>
-												<xsl:value-of select="./Operator" />
-											</xsl:for-each>
 										</xsl:attribute>
 										<xsl:text>Last -&gt;&#124;</xsl:text>
 									</a>
@@ -380,5 +179,14 @@
 				</table>
 			</p>
 		</xsl:if>
+		
+		<div class="LinkAdd">
+			<a>
+				<xsl:attribute name="href">
+					<xsl:text>costcentre_add.php</xsl:text>
+				</xsl:attribute>
+				<xsl:text>Add Cost Centre</xsl:text>
+			</a>
+		</div>
 	</xsl:template>
 </xsl:stylesheet>
