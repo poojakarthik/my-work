@@ -27,107 +27,111 @@ function CliEcho($strOutput)
 }
 CliEcho("STARTING");
 
-// set location of file
-$strFilePath = "/home/etech_bills/2006/12/inv_telcoblue_20070105_1167948643.txt";
+// set location of files
+$arrFilePath[] = "/home/etech_bills/2006/12/inv_telcoblue_20070105_1167948643.txt";
 
-// open file
-CliEcho("Opening $strFilePath...");
-if (!$suxEtech->OpenFile($strFilePath))
+foreach($arrFilePath AS $strFilePath)
 {
-	CliEcho("Failed to open file $strFilePath");
-	die;
-}
-
-// read file
-CliEcho("Parsing file...");
-$intCount = 0;
-while($arrLine = $suxEtech->FetchNext())
-{
-	$arrLine['_File']	= $strFilePath;
-	
-	$intCount++;
-	if ($intCount > 10000)
+	// open file
+	CliEcho("Opening $strFilePath...");
+	if (!$suxEtech->OpenFile($strFilePath))
 	{
-		break;
+		CliEcho("Failed to open file $strFilePath");
+		die;
 	}
-	// check line type
-	switch($arrLine['_LineType'])
+	
+	// read file
+	CliEcho("Parsing file...");
+	$intCount = 0;
+	while($arrLine = $suxEtech->FetchNext())
 	{
-		case 'ERROR':
-			CliEcho("Error at Line {$arrLine['_LineNo']}");
-			break;
-			
-		case 'DATA':
-			// check table type
-			switch ($arrLine['_Table'])
-			{
-				case 'CDR':
-					$mixReturn = $etbEtech->FindCDR($arrLine);
-					if ($mixReturn === FALSE)
-					{
-						//CliEcho("CDR NOT FOUND for : ".$arrLine['FNN']);
-						/*print_r($arrLine);
-						Die;*/
-					}
-					else
-					{						
-						if (abs($mixReturn['Difference']) > 0.05)
-						{
-							CliEcho($arrLine['FNN']." (".$mixReturn['Id'].") =\t ".$mixReturn['Difference']."\t\t\t".GetConstantDescription($mixReturn['Status'], 'CDR'));
-						}
+		$arrLine['_File']	= $strFilePath;
 		
-						// Determine status
-						if ($mixReturn['Difference'] === (float)0.0)
+		/*$intCount++;
+		if ($intCount > 10000)
+		{
+			break;
+		}*/
+		
+		// check line type
+		switch($arrLine['_LineType'])
+		{
+			case 'ERROR':
+				CliEcho("Error at Line {$arrLine['_LineNo']}");
+				break;
+				
+			case 'DATA':
+				// check table type
+				switch ($arrLine['_Table'])
+				{
+					case 'CDR':
+						$mixReturn = $etbEtech->FindCDR($arrLine);
+						if ($mixReturn === FALSE)
 						{
-							$arrLine['Status']	= CDR_ETECH_PERFECT_MATCH;
-						}
-						elseif ($mixReturn['Id'])
-						{
-							$arrLine['Status']	= CDR_ETECH_IMPERFECT_MATCH;
+							//CliEcho("CDR NOT FOUND for : ".$arrLine['FNN']);
+							/*print_r($arrLine);
+							Die;*/
 						}
 						else
-						{
-							$arrLine['Status']	= CDR_ETECH_NO_MATCH;
-						}
-						
-						// Insert into DB
-						$arrLine['VixenCDR'] = $mixReturn['Id'];
-						$etbEtech->InsertEtechCDR($arrLine);
-					}
-					break;
-				
-				case 'ServiceTypeTotal':
-					// Ignore
-					//CliEcho("ServiceTypeTotal");
-					break;
-					
-				case 'ServiceTotal':
-					//CliEcho("ServiceTotal");
-					// Ignore
-					break;
-					
-				case 'Invoice':
-					//CliEcho("Invoice");
-					// Ignore
-					break;
-				
-				case 'Other':
-					//CliEcho("Other");
-					// Ignore
-					break;
-					
-				default:
-					CliEcho("Unknown Table ({$arrLine['_Table']}) at Line {$arrLine['_LineNo']}");
-					print_r($arrLine);
-					die;
-					break;
-			}
-			break;
+						{						
+							if (abs($mixReturn['Difference']) > 0.05)
+							{
+								CliEcho($arrLine['FNN']." (".$mixReturn['Id'].") =\t ".$mixReturn['Difference']."\t\t\t".GetConstantDescription($mixReturn['Status'], 'CDR'));
+							}
 			
-		// match line
-		default:
-			CliEcho("Unknown Type at Line {$arrLine['_LineNo']}");
-			break;
+							// Determine status
+							if ($mixReturn['Difference'] === (float)0.0)
+							{
+								$arrLine['Status']	= CDR_ETECH_PERFECT_MATCH;
+							}
+							elseif ($mixReturn['Id'])
+							{
+								$arrLine['Status']	= CDR_ETECH_IMPERFECT_MATCH;
+							}
+							else
+							{
+								$arrLine['Status']	= CDR_ETECH_NO_MATCH;
+							}
+							
+							// Insert into DB
+							$arrLine['VixenCDR'] = $mixReturn['Id'];
+							$etbEtech->InsertEtechCDR($arrLine);
+						}
+						break;
+					
+					case 'ServiceTypeTotal':
+						// Ignore
+						//CliEcho("ServiceTypeTotal");
+						break;
+						
+					case 'ServiceTotal':
+						//CliEcho("ServiceTotal");
+						// Ignore
+						break;
+						
+					case 'Invoice':
+						//CliEcho("Invoice");
+						// Ignore
+						break;
+					
+					case 'Other':
+						//CliEcho("Other");
+						// Ignore
+						break;
+						
+					default:
+						CliEcho("Unknown Table ({$arrLine['_Table']}) at Line {$arrLine['_LineNo']}");
+						print_r($arrLine);
+						die;
+						break;
+				}
+				break;
+				
+			// match line
+			default:
+				CliEcho("Unknown Type at Line {$arrLine['_LineNo']}");
+				break;
+		}
 	}
 }
 

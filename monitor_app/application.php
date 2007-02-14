@@ -272,9 +272,14 @@
 	// return a viXen/Etech invoice comparison
 	function ListEtechCDRs($strEtechInvoice, $intStart, $intLimit)
 	{
+		$strWhere = "CDREtech.InvoiceRun = '$strEtechInvoice' AND RecordType.Id = CDREtech.RecordType";
+		$strWhere .= " AND ((CDREtech.Charge - CDR.Charge) > 0.01 OR (CDREtech.Charge - CDR.Charge) < -0.01)";
+		$strWhere .= " AND CDREtech.Destination != '101'";
+		
+		
 		$this->selEtechCDRs = new StatementSelect(	"CDREtech LEFT OUTER JOIN CDR ON (CDREtech.VixenCDR = CDR.Id), RecordType",
 													"CDREtech.*, (CDREtech.Charge - CDR.Charge) AS Difference, RecordType.Name AS RecordTypeName",
-													"CDREtech.InvoiceRun = '$strEtechInvoice' AND RecordType.Id = CDREtech.RecordType",
+													$strWhere,
 													NULL,
 													"$intStart, $intLimit");
 													
