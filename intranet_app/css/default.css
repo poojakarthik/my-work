@@ -700,7 +700,8 @@
 	h2.Contact,
 	h2.Invoice,
 	h2.Admin,
-	h2.Report
+	h2.Report,
+	h2.CostCentre
 	{
 		background-repeat:             no-repeat;
 		background-position:           top left;
@@ -813,6 +814,11 @@
 	h2.Report
 	{
 		background-image:              url('../img/template/report.png');
+	}
+	
+	h2.CostCentre
+	{
+		background-image:              url('../img/template/icon-shoppingcart_small.jpg');
 	}
 	
 	

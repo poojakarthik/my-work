@@ -109,6 +109,19 @@
 			</tr>
 			<tr>
 				<td>
+					<a href="costcentres_list.php">
+						<img src="img/template/icon-shoppingcart_small.jpg" title="Cost Centres" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Cost Centres
+					</strong><br />
+					Manage the Cost Centres Maintained in the System.
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<a href="employee_list.php">
 						<img src="img/template/contact.png" title="Employees" class="MenuIcon" />
 					</a>
