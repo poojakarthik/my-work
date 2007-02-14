@@ -161,31 +161,33 @@
 			
 			// Add the Account
 			$arrAccount = Array (
-				'BusinessName'		=> $arrDetails ['Account']['BusinessName'],
-				'TradingName'		=> $arrDetails ['Account']['TradingName'],
-				'ABN'				=> $abnABN->getValue (),
-				'ACN'				=> $acnACN->getValue (),
-				'Address1'			=> $arrDetails ['Account']['Address1'],
-				'Address2'			=> $arrDetails ['Account']['Address2'],
-				'Suburb'			=> $arrDetails ['Account']['Suburb'],
-				'Postcode'			=> $arrDetails ['Account']['Postcode'],
-				'State'				=> $arrDetails ['Account']['State'],
-				'Country'			=> 'AU',
-				'BillingType'		=> $arrDetails ['Account']['BillingType'],			// (CONSTANT) Account, Credit Card or Direct Debit.
-				'PrimaryContact'	=> ($cntContact !== null) ? $cntContact : null,
-				'CustomerGroup'		=> $arrDetails ['Account']['CustomerGroup'],
-				'CreditCard'		=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD) ? $intCreditCard : null,
-				'DirectDebit'		=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT) ? $intDirectDebit : null, 
-				'AccountGroup'		=> $acgAccountGroup->Pull ('Id')->getValue (),
-				'LastBilled'		=> null,
-				'BillingDate'		=> BILLING_DEFAULT_DATE, 
-				'BillingFreq'		=> BILLING_DEFAULT_FREQ,
-				'BillingFreqType'	=> BILLING_DEFAULT_FREQ_TYPE,
-				'BillingMethod'		=> $arrDetails ['Account']['BillingMethod'],		// (CONSTANT) post or email.
-				'PaymentTerms'		=> PAYMENT_TERMS_DEFAULT,
-				'CreatedOn'			=> new MySQLFunction ("NOW()"),
-				'CreatedBy'			=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
-				'Archived'			=> 0
+				'BusinessName'			=> $arrDetails ['Account']['BusinessName'],
+				'TradingName'			=> $arrDetails ['Account']['TradingName'],
+				'ABN'					=> $abnABN->getValue (),
+				'ACN'					=> $acnACN->getValue (),
+				'Address1'				=> $arrDetails ['Account']['Address1'],
+				'Address2'				=> $arrDetails ['Account']['Address2'],
+				'Suburb'				=> $arrDetails ['Account']['Suburb'],
+				'Postcode'				=> $arrDetails ['Account']['Postcode'],
+				'State'					=> $arrDetails ['Account']['State'],
+				'Country'				=> 'AU',
+				'BillingType'			=> $arrDetails ['Account']['BillingType'],			// (CONSTANT) Account, Credit Card or Direct Debit.
+				'PrimaryContact'		=> ($cntContact !== null) ? $cntContact : null,
+				'CustomerGroup'			=> $arrDetails ['Account']['CustomerGroup'],
+				'CreditCard'			=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_CREDIT_CARD) ? $intCreditCard : null,
+				'DirectDebit'			=> ($arrDetails ['Account']['BillingType'] == BILLING_TYPE_DIRECT_DEBIT) ? $intDirectDebit : null, 
+				'AccountGroup'			=> $acgAccountGroup->Pull ('Id')->getValue (),
+				'LastBilled'			=> null,
+				'BillingDate'			=> BILLING_DEFAULT_DATE, 
+				'BillingFreq'			=> BILLING_DEFAULT_FREQ,
+				'BillingFreqType'		=> BILLING_DEFAULT_FREQ_TYPE,
+				'BillingMethod'			=> $arrDetails ['Account']['BillingMethod'],		// (CONSTANT) post or email.
+				'PaymentTerms'			=> PAYMENT_TERMS_DEFAULT,
+				'CreatedOn'				=> new MySQLFunction ("NOW()"),
+				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'DisableDDR'			=> ($arrDetails ['Account']['DisableDDR']) ? $arrDetails ['Account']['DisableDDR'] : 0,
+				'DisableLatePayment'	=> $arrDetails ['Account']['DisableLatePayment'],
+				'Archived'				=> 0
 			);
 			
 			$insAccount = new StatementInsert ('Account', $arrAccount);

@@ -64,47 +64,50 @@
 	$oblarrContact = $oblarrUIValues->Push (new dataArray ('Contact'));
 	
 	// Start with the Account Entity
-	$oblarrAccount->Push	(new dataString	('BusinessName',	$_POST ['Account']['BusinessName']));
-	$oblarrAccount->Push	(new dataString	('TradingName',		$_POST ['Account']['TradingName']));
-	$oblarrAccount->Push	(new dataString	('ABN',				$_POST ['Account']['ABN']));
-	$oblarrAccount->Push	(new dataString	('ACN',				$_POST ['Account']['ACN']));
-	$oblarrAccount->Push	(new dataString	('Address1',		$_POST ['Account']['Address1']));
-	$oblarrAccount->Push	(new dataString	('Address2',		$_POST ['Account']['Address2']));
-	$oblarrAccount->Push	(new dataString	('Suburb',			$_POST ['Account']['Suburb']));
-	$oblarrAccount->Push	(new dataString	('Postcode',		$_POST ['Account']['Postcode']));
-	$oblarrAccount->Push	(new dataString	('State',			$_POST ['Account']['State']));
+	$oblarrAccount->Push	(new dataString	('BusinessName',		$_POST ['Account']['BusinessName']));
+	$oblarrAccount->Push	(new dataString	('TradingName',			$_POST ['Account']['TradingName']));
+	$oblarrAccount->Push	(new dataString	('ABN',					$_POST ['Account']['ABN']));
+	$oblarrAccount->Push	(new dataString	('ACN',					$_POST ['Account']['ACN']));
+	$oblarrAccount->Push	(new dataString	('Address1',			$_POST ['Account']['Address1']));
+	$oblarrAccount->Push	(new dataString	('Address2',			$_POST ['Account']['Address2']));
+	$oblarrAccount->Push	(new dataString	('Suburb',				$_POST ['Account']['Suburb']));
+	$oblarrAccount->Push	(new dataString	('Postcode',			$_POST ['Account']['Postcode']));
+	$oblarrAccount->Push	(new dataString	('State',				$_POST ['Account']['State']));
+	$oblarrAccount->Push	(new dataBoolean('DisableDDR',			$_POST ['Account']['DisableDDR']));
+	$oblarrAccount->Push	(new dataInteger('DisableLatePayment',	(isset ($_POST ['Account']['DisableLatePayment']) ? 
+																		$_POST ['Account']['DisableLatePayment'] : 0)));
 	
 	// Direct Debit Information
-	$oblarrDirectDR->Push	(new dataString	('BankName',		$_POST ['DDR']['BankName']));
-	$oblarrDirectDR->Push	(new dataString	('BSB',				$_POST ['DDR']['BSB']));
-	$oblarrDirectDR->Push	(new dataString	('AccountNumber',	$_POST ['DDR']['AccountNumber']));
-	$oblarrDirectDR->Push	(new dataString	('AccountName',		$_POST ['DDR']['AccountName']));
+	$oblarrDirectDR->Push	(new dataString	('BankName',			$_POST ['DDR']['BankName']));
+	$oblarrDirectDR->Push	(new dataString	('BSB',					$_POST ['DDR']['BSB']));
+	$oblarrDirectDR->Push	(new dataString	('AccountNumber',		$_POST ['DDR']['AccountNumber']));
+	$oblarrDirectDR->Push	(new dataString	('AccountName',			$_POST ['DDR']['AccountName']));
 	
 	// Credit Card Information
-	$oblarrCRCard->Push		(new dataString	('Name',			$_POST ['CC']['Name']));
-	$oblarrCRCard->Push		(new dataString	('CardNumber',		$_POST ['CC']['CardNumber']));
-	$oblarrCRCard->Push		(new dataInteger('ExpMonth',		$_POST ['CC']['ExpMonth']));
-	$oblarrCRCard->Push		(new dataInteger('ExpYear',			$_POST ['CC']['ExpYear']));
-	$oblarrCRCard->Push		(new dataInteger('CVV',				$_POST ['CC']['CVV']));
+	$oblarrCRCard->Push		(new dataString	('Name',				$_POST ['CC']['Name']));
+	$oblarrCRCard->Push		(new dataString	('CardNumber',			$_POST ['CC']['CardNumber']));
+	$oblarrCRCard->Push		(new dataInteger('ExpMonth',			$_POST ['CC']['ExpMonth']));
+	$oblarrCRCard->Push		(new dataInteger('ExpYear',				$_POST ['CC']['ExpYear']));
+	$oblarrCRCard->Push		(new dataInteger('CVV',					$_POST ['CC']['CVV']));
 	
 	// Contact Information (Existing Contact)
-	$oblarrContact->Push	(new dataBoolean('USE',				$_POST ['Contact']['USE']));
-	$oblarrContact->Push	(new dataInteger('Id',				$_POST ['Contact']['Id']));
+	$oblarrContact->Push	(new dataBoolean('USE',					$_POST ['Contact']['USE']));
+	$oblarrContact->Push	(new dataInteger('Id',					$_POST ['Contact']['Id']));
 	
 	// Contact Information (New Contact)
-	$oblarrContact->Push	(new dataString	('Title',			$_POST ['Contact']['Title']));
-	$oblarrContact->Push	(new dataString	('FirstName',		$_POST ['Contact']['FirstName']));
-	$oblarrContact->Push	(new dataString	('LastName',		$_POST ['Contact']['LastName']));
-	$oblarrContact->Push	(new dataString	('JobTitle',		$_POST ['Contact']['JobTitle']));
-	$oblarrContact->Push	(new dataString	('Email',			$_POST ['Contact']['Email']));
-	$oblarrContact->Push	(new dataInteger('DOB-year',		$_POST ['Contact']['DOB']['year']));
-	$oblarrContact->Push	(new dataInteger('DOB-month',		$_POST ['Contact']['DOB']['month']));
-	$oblarrContact->Push	(new dataInteger('DOB-day',			$_POST ['Contact']['DOB']['day']));
-	$oblarrContact->Push	(new dataString	('Phone',			$_POST ['Contact']['Phone']));
-	$oblarrContact->Push	(new dataString	('Mobile',			$_POST ['Contact']['Mobile']));
-	$oblarrContact->Push	(new dataString	('Fax',				$_POST ['Contact']['Fax']));
-	$oblarrContact->Push	(new dataString	('UserName',		$_POST ['Contact']['UserName']));
-	$oblarrContact->Push	(new dataString	('PassWord',		$_POST ['Contact']['PassWord']));
+	$oblarrContact->Push	(new dataString	('Title',				$_POST ['Contact']['Title']));
+	$oblarrContact->Push	(new dataString	('FirstName',			$_POST ['Contact']['FirstName']));
+	$oblarrContact->Push	(new dataString	('LastName',			$_POST ['Contact']['LastName']));
+	$oblarrContact->Push	(new dataString	('JobTitle',			$_POST ['Contact']['JobTitle']));
+	$oblarrContact->Push	(new dataString	('Email',				$_POST ['Contact']['Email']));
+	$oblarrContact->Push	(new dataInteger('DOB-year',			$_POST ['Contact']['DOB']['year']));
+	$oblarrContact->Push	(new dataInteger('DOB-month',			$_POST ['Contact']['DOB']['month']));
+	$oblarrContact->Push	(new dataInteger('DOB-day',				$_POST ['Contact']['DOB']['day']));
+	$oblarrContact->Push	(new dataString	('Phone',				$_POST ['Contact']['Phone']));
+	$oblarrContact->Push	(new dataString	('Mobile',				$_POST ['Contact']['Mobile']));
+	$oblarrContact->Push	(new dataString	('Fax',					$_POST ['Contact']['Fax']));
+	$oblarrContact->Push	(new dataString	('UserName',			$_POST ['Contact']['UserName']));
+	$oblarrContact->Push	(new dataString	('PassWord',			$_POST ['Contact']['PassWord']));
 	
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we have identified a Business Name
@@ -350,50 +353,52 @@
 				$athAuthentication->AuthenticatedEmployee (),
 				Array (
 					"Account"		=> Array (
-						"BusinessName"		=> $_POST ['Account']['BusinessName'],
-						"TradingName"		=> $_POST ['Account']['TradingName'],
-						"ABN"				=> $_POST ['Account']['ABN'],
-						"ACN"				=> $_POST ['Account']['ACN'],
-						"Address1"			=> $_POST ['Account']['Address1'],
-						"Address2"			=> $_POST ['Account']['Address2'],
-						"Suburb"			=> $_POST ['Account']['Suburb'],
-						"Postcode"			=> $_POST ['Account']['Postcode'],
-						"State"				=> $_POST ['Account']['State'],
-						"CustomerGroup"		=> $_POST ['Account']['CustomerGroup'],
-						"BillingType"		=> $_POST ['Account']['BillingType'],
-						"BillingMethod"		=> $_POST ['Account']['BillingMethod']
+						"BusinessName"			=> $_POST ['Account']['BusinessName'],
+						"TradingName"			=> $_POST ['Account']['TradingName'],
+						"ABN"					=> $_POST ['Account']['ABN'],
+						"ACN"					=> $_POST ['Account']['ACN'],
+						"Address1"				=> $_POST ['Account']['Address1'],
+						"Address2"				=> $_POST ['Account']['Address2'],
+						"Suburb"				=> $_POST ['Account']['Suburb'],
+						"Postcode"				=> $_POST ['Account']['Postcode'],
+						"State"					=> $_POST ['Account']['State'],
+						"DisableDDR"			=> $_POST ['Account']['DisableDDR'],
+						"DisableLatePayment"	=> $_POST ['Account']['DisableLatePayment'],
+						"CustomerGroup"			=> $_POST ['Account']['CustomerGroup'],
+						"BillingType"			=> $_POST ['Account']['BillingType'],
+						"BillingMethod"			=> $_POST ['Account']['BillingMethod']
 					),
 					
 					"DirectDebit"	=> Array (
-						"BankName"			=> $_POST ['DDR']['BankName'],
-						"BSB"				=> $_POST ['DDR']['BSB'],
-						"AccountNumber"		=> $_POST ['DDR']['AccountNumber'],
-						"AccountName"		=> $_POST ['DDR']['AccountName']
+						"BankName"				=> $_POST ['DDR']['BankName'],
+						"BSB"					=> $_POST ['DDR']['BSB'],
+						"AccountNumber"			=> $_POST ['DDR']['AccountNumber'],
+						"AccountName"			=> $_POST ['DDR']['AccountName']
 					),
 					
 					"CreditCard"	=> Array (
-						"CardType"			=> $_POST ['CC']['CardType'],
-						"Name"				=> $_POST ['CC']['Name'],
-						"CardNumber"		=> $_POST ['CC']['CardNumber'],
-						"ExpMonth"			=> $_POST ['CC']['ExpMonth'],
-						"ExpYear"			=> $_POST ['CC']['ExpYear'],
-						"CVV"				=> $_POST ['CC']['CVV']
+						"CardType"				=> $_POST ['CC']['CardType'],
+						"Name"					=> $_POST ['CC']['Name'],
+						"CardNumber"			=> $_POST ['CC']['CardNumber'],
+						"ExpMonth"				=> $_POST ['CC']['ExpMonth'],
+						"ExpYear"				=> $_POST ['CC']['ExpYear'],
+						"CVV"					=> $_POST ['CC']['CVV']
 					),
 					
 					"Contact"		=> Array (
-						"Title"				=> $_POST ['Contact']['Title'],
-						"FirstName"			=> $_POST ['Contact']['FirstName'],
-						"LastName"			=> $_POST ['Contact']['LastName'],
-						"DOB:year"			=> $_POST ['Contact']['DOB']['year'],
-						"DOB:month"			=> $_POST ['Contact']['DOB']['month'],
-						"DOB:day"			=> $_POST ['Contact']['DOB']['day'],
-						"JobTitle"			=> $_POST ['Contact']['JobTitle'],
-						"Email"				=> $_POST ['Contact']['Email'],
-						"Phone"				=> $_POST ['Contact']['Phone'],
-						"Mobile"			=> $_POST ['Contact']['Mobile'],
-						"Fax"				=> $_POST ['Contact']['Fax'],
-						"UserName"			=> $_POST ['Contact']['UserName'],
-						"PassWord"			=> $_POST ['Contact']['PassWord']
+						"Title"					=> $_POST ['Contact']['Title'],
+						"FirstName"				=> $_POST ['Contact']['FirstName'],
+						"LastName"				=> $_POST ['Contact']['LastName'],
+						"DOB:year"				=> $_POST ['Contact']['DOB']['year'],
+						"DOB:month"				=> $_POST ['Contact']['DOB']['month'],
+						"DOB:day"				=> $_POST ['Contact']['DOB']['day'],
+						"JobTitle"				=> $_POST ['Contact']['JobTitle'],
+						"Email"					=> $_POST ['Contact']['Email'],
+						"Phone"					=> $_POST ['Contact']['Phone'],
+						"Mobile"				=> $_POST ['Contact']['Mobile'],
+						"Fax"					=> $_POST ['Contact']['Fax'],
+						"UserName"				=> $_POST ['Contact']['UserName'],
+						"PassWord"				=> $_POST ['Contact']['PassWord']
 					)
 				)
 			);

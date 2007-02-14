@@ -66,21 +66,22 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 
 //TODO!bash! the following are listed in order of importance, start at the top of the list
 
-//TODO!bash! filter CDR list by Record type
-//TODO!bash! [UNTESTED] unbilled charges
-//TODO!bash! [  DONE  ] invoice details
-//TODO!bash! list_account, seach by contact name & service #
+//TODO!bash! filter CDR list by Record type:
+//TODO!bash! [UNTESTED]		unbilled charges
+//TODO!bash! [  DONE  ]		invoice details
+
+//TODO!bash! [  DONE  ]		list_account, seach by contact name & service #
 
 //TODO!bash! add the following items to the interface, use the exact text shown below
 //TODO!bash! replace the crap ascii art with checkbox/radio button etc.
 
-//TODO!bash! checkbox (add/edit account);
-//TODO!bash! NDD Fee [] Charge a fee if account is not paid by direct debit
+//TODO!bash! [  DONE  ]		checkbox (add/edit account);
+//TODO!bash! [  DONE  ]		NDD Fee [] Charge a fee if account is not paid by direct debit
 
-//TODO!bash! radio buttons (add/edit account);
-//TODO!bash! Late Payments	() Charge a late payment fee
-//TODO!bash! 				() Don't charge a late payment fee on the next invoice
-//TODO!bash! 				() Never charge a late payment fee
+//TODO!bash! [  DONE  ]		radio buttons (add/edit account);
+//TODO!bash! [  DONE  ]		Late Payments	() Charge a late payment fee
+//TODO!bash! [  DONE  ]						() Don't charge a late payment fee on the next invoice
+//TODO!bash! [  DONE  ]						() Never charge a late payment fee
 
 //TODO!bash! Dropdown (add/edit service);
 //TODO!bash! Cost Centre  [              |V]

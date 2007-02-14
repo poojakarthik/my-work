@@ -99,15 +99,17 @@
 			}
 			
 			$arrDetails = Array (
-				"BusinessName"	=>	(($arrAccount ['BusinessName'])	? $arrAccount ['BusinessName']	: ''),
-				"TradingName"	=>	(($arrAccount ['TradingName'])		? $arrAccount ['TradingName']	: ''),
-				"ABN"			=>	(($arrAccount ['ABN'])				? $arrAccount ['ABN']			: ''),
-				"ACN"			=>	(($arrAccount ['ACN'])				? $arrAccount ['ACN']			: ''),
-				"Address1"		=>	(($arrAccount ['Address1'])			? $arrAccount ['Address1']		: ''),
-				"Address2"		=>	(($arrAccount ['Address2'])			? $arrAccount ['Address2']		: ''),
-				"Suburb"		=>	(($arrAccount ['Suburb'])			? $arrAccount ['Suburb']		: ''),
-				"Postcode"		=>	(($arrAccount ['Postcode'])			? $arrAccount ['Postcode']		: ''),
-				"State"			=>	(($arrAccount ['State'])			? $arrAccount ['State']			: '')
+				"BusinessName"			=>	(($arrAccount ['BusinessName'])			? $arrAccount ['BusinessName']			: ''),
+				"TradingName"			=>	(($arrAccount ['TradingName'])			? $arrAccount ['TradingName']			: ''),
+				"ABN"					=>	(($arrAccount ['ABN'])					? $arrAccount ['ABN']					: ''),
+				"ACN"					=>	(($arrAccount ['ACN'])					? $arrAccount ['ACN']					: ''),
+				"Address1"				=>	(($arrAccount ['Address1'])				? $arrAccount ['Address1']				: ''),
+				"Address2"				=>	(($arrAccount ['Address2'])				? $arrAccount ['Address2']				: ''),
+				"Suburb"				=>	(($arrAccount ['Suburb'])				? $arrAccount ['Suburb']				: ''),
+				"Postcode"				=>	(($arrAccount ['Postcode'])				? $arrAccount ['Postcode']				: ''),
+				"State"					=>	(($arrAccount ['State'])				? $arrAccount ['State']					: ''),
+				"DisableDDR"			=>	(($arrAccount ['DisableDDR'])			? $arrAccount ['DisableDDR']			: 0),
+				"DisableLatePayment"	=>	(($arrAccount ['DisableLatePayment'])	? $arrAccount ['DisableLatePayment']	: 0)
 			);
 			
 			$updAccount = new StatementUpdate ('Account', 'Id = <Id>', $arrDetails, 1);

@@ -291,6 +291,21 @@
 		return $arrRow;
 	}
 	
+	function FetchCostCentre()
+	{
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeAccountViewDetail ";
+		$strName	= 'CostCentre';
+		$arrRow = $this->FetchResult ($strName, $strQuery);
+		
+		if ($arrRow)
+		{
+			$arrRow['DataArray'] = $this->ParseCostCentre ($arrRow['DataOriginal'], $arrRow['CustomerId']);
+			unset($arrRow['DataOriginal']);
+		}
+		
+		return $arrRow;
+	}
+	
 	// generic fetch
 	function FetchResult($strName, $strQuery)
 	{
@@ -1214,6 +1229,75 @@
 		
 		// return array directly from data
 		return $arrPayments;
+	}
+	
+	// parse cost centre information
+	function ParseCostCentre ($strHtml, $intCustomerId)
+	{
+		$arrServices = Array ();
+		
+		// Put the HTML of the file into a DOM Document Object
+		$domDocument = new DOMDocument;
+		@$domDocument->LoadHTML ($strHtml);
+		$domDocument->formatOutput = true;
+		
+		// Create an XPath object so we can search for Applicable Tables
+		$dxpDocument = new DOMXPath ($domDocument);
+		
+		// Get a list of Tables
+		$dnlTables = $dxpDocument->Query ("//table");
+		
+		// Loop through each of the tables
+		foreach ($dnlTables as $dnoTable)
+		{
+			// Put the Table into its own DOM Document Object, allowing us to perform
+			// our own XPath Queries to find information
+			$domTable = new DOMDocument;
+			$domTable->appendChild (
+				$domTable->importNode (
+					$dnoTable,
+					TRUE
+				)
+			);
+			
+			$dxpTable = new DOMXPath ($domTable);
+			
+			// At this point we want to check if we're dealing with the Applicable table.
+			// We can identify whether or not we are dealing with the applicable table by testing 
+			// to see if the value of the first row is equal to "Servicenumbers"
+			
+			$bolApplicable = $dxpTable->Evaluate ("/table/tr/td/strong = 'Servicenumbers'");
+			
+			
+			// If we are dealing with an Applicable Table
+			// Then we want to parse out the data
+			
+			if ($bolApplicable)
+			{
+				// With this table, we are ONLY USING THE FIRST COLUMN
+				// Because of this, we wont bother to put each row in its own DOMDocument
+				// Instead, we can pull the list of <a> tags (from the first column) directly
+				$dnlCostCentres = $dxpTable->Query ("/table/tr/td[1]/a");
+				
+				foreach ($dnlCostCentres as $dnoCostCentre)
+				{
+					$strOnclick = $dnoCostCentre->getAttribute ("onclick");
+					$strOnclick = substr ($strOnclick, 0, (0 - strlen ("','CostCentre','status=yes,scrollbars=yes,width=500,height=250')")));
+					$strOnclick = substr ($strOnclick, strlen ("MM_openBrWindow('costcentre.php?"));
+					
+					parse_str ($strOnclick, $arrQuery);
+					
+					$arrServices [] = Array (
+						"AccountGroup"	=> $intCustomerId,
+						"Account"		=> $intCustomerId,
+						"FNN"			=> CleanFNN ($arrQuery ['number']),
+						"CostCentre"	=> ($dnoCostCentre->nodeValue == "Add Cost Centre") ? FALSE : $dnoCostCentre->nodeValue
+					);
+				}
+			}
+		}
+		
+		return $arrServices;
 	}
 	
 	// ------------------------------------//

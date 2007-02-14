@@ -31,6 +31,19 @@
 			</tr>
 			<tr>
 				<td>
+					<a href="contact_list.php">
+						<img src="img/template/contact_retrieve.png" title="Advanced Contact Search" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Advanced Contact Search
+					</strong><br />
+					 Search for Contacts without Verification
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<a href="service_list.php">
 						<img src="img/template/contact_retrieve.png" title="Advanced Service Search" class="MenuIcon" />
 					</a>

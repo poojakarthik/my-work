@@ -35,28 +35,32 @@
 	
 	// Start UI Values
 	$oblarrUIValues = $Style->attachObject (new dataArray ('ui-values'));
-	$oblstrBusinessName		= $oblarrUIValues->Push (new dataString ('BusinessName'			, $actAccount->Pull ('BusinessName')->getValue ()));
-	$oblstrTradingName		= $oblarrUIValues->Push (new dataString ('TradingName'			, $actAccount->Pull ('TradingName')->getValue ()));
-	$oblstrABN				= $oblarrUIValues->Push (new dataString ('ABN'					, $actAccount->Pull ('ABN')->getValue ()));
-	$oblstrACN				= $oblarrUIValues->Push (new dataString ('ACN'					, $actAccount->Pull ('ACN')->getValue ()));
-	$oblstrAddress1			= $oblarrUIValues->Push (new dataString ('Address1'				, $actAccount->Pull ('Address1')->getValue ()));
-	$oblstrAddress2			= $oblarrUIValues->Push (new dataString ('Address2'				, $actAccount->Pull ('Address2')->getValue ()));
-	$oblstrSuburb			= $oblarrUIValues->Push (new dataString ('Suburb'				, $actAccount->Pull ('Suburb')->getValue ()));
-	$oblstrPostcode			= $oblarrUIValues->Push (new dataString ('Postcode'				, $actAccount->Pull ('Postcode')->getValue ()));
-	$oblstrState			= $oblarrUIValues->Push (new dataString ('State'				, $actAccount->Pull ('State')->getValue ()));
-	$oblbolArchived			= $oblarrUIValues->Push (new dataBoolean('Archived'));
+	$oblstrBusinessName			= $oblarrUIValues->Push (new dataString ('BusinessName'			, $actAccount->Pull ('BusinessName')->getValue ()));
+	$oblstrTradingName			= $oblarrUIValues->Push (new dataString ('TradingName'			, $actAccount->Pull ('TradingName')->getValue ()));
+	$oblstrABN					= $oblarrUIValues->Push (new dataString ('ABN'					, $actAccount->Pull ('ABN')->getValue ()));
+	$oblstrACN					= $oblarrUIValues->Push (new dataString ('ACN'					, $actAccount->Pull ('ACN')->getValue ()));
+	$oblstrAddress1				= $oblarrUIValues->Push (new dataString ('Address1'				, $actAccount->Pull ('Address1')->getValue ()));
+	$oblstrAddress2				= $oblarrUIValues->Push (new dataString ('Address2'				, $actAccount->Pull ('Address2')->getValue ()));
+	$oblstrSuburb				= $oblarrUIValues->Push (new dataString ('Suburb'				, $actAccount->Pull ('Suburb')->getValue ()));
+	$oblstrPostcode				= $oblarrUIValues->Push (new dataString ('Postcode'				, $actAccount->Pull ('Postcode')->getValue ()));
+	$oblstrState				= $oblarrUIValues->Push (new dataString ('State'				, $actAccount->Pull ('State')->getValue ()));
+	$oblbolDisableDDR			= $oblarrUIValues->Push (new dataString ('DisableDDR'			, $actAccount->Pull ('DisableDDR')->getValue ()));
+	$oblintDisableLatePayment	= $oblarrUIValues->Push (new dataInteger('DisableLatePayment'	, $actAccount->Pull ('DisableLatePayment')->getValue ()));
+	$oblbolArchived				= $oblarrUIValues->Push (new dataBoolean('Archived'));
 	
 	// Set UI Values
-	if (isset ($_POST ['BusinessName']))	$oblstrBusinessName->setValue	($_POST ['BusinessName']);
-	if (isset ($_POST ['TradingName']))		$oblstrTradingName->setValue	($_POST ['TradingName']);
-	if (isset ($_POST ['ABN']))				$oblstrABN->setValue			($_POST ['ABN']);
-	if (isset ($_POST ['ACN']))				$oblstrACN->setValue			($_POST ['ACN']);
-	if (isset ($_POST ['Address1']))		$oblstrAddress1->setValue		($_POST ['Address1']);
-	if (isset ($_POST ['Address2']))		$oblstrAddress2->setValue		($_POST ['Address2']);
-	if (isset ($_POST ['Suburb']))			$oblstrSuburb->setValue			($_POST ['Suburb']);
-	if (isset ($_POST ['Postcode']))		$oblstrPostcode->setValue		($_POST ['Postcode']);
-	if (isset ($_POST ['State']))			$oblstrState->setValue			($_POST ['State']);
-	if (isset ($_POST ['Archived']))		$oblbolArchived->setValue		(TRUE);
+	if (isset ($_POST ['BusinessName']))		$oblstrBusinessName->setValue		($_POST ['BusinessName']);
+	if (isset ($_POST ['TradingName']))			$oblstrTradingName->setValue		($_POST ['TradingName']);
+	if (isset ($_POST ['ABN']))					$oblstrABN->setValue				($_POST ['ABN']);
+	if (isset ($_POST ['ACN']))					$oblstrACN->setValue				($_POST ['ACN']);
+	if (isset ($_POST ['Address1']))			$oblstrAddress1->setValue			($_POST ['Address1']);
+	if (isset ($_POST ['Address2']))			$oblstrAddress2->setValue			($_POST ['Address2']);
+	if (isset ($_POST ['Suburb']))				$oblstrSuburb->setValue				($_POST ['Suburb']);
+	if (isset ($_POST ['Postcode']))			$oblstrPostcode->setValue			($_POST ['Postcode']);
+	if (isset ($_POST ['State']))				$oblstrState->setValue				($_POST ['State']);
+	if (isset ($_POST ['DisableDDR']))			$oblbolDisableDDR->setValue			($_POST ['DisableDDR']);
+	if (isset ($_POST ['DisableLatePayment']))	$oblintDisableLatePayment->setValue	($_POST ['DisableLatePayment']);
+	if (isset ($_POST ['Archived']))			$oblbolArchived->setValue			(TRUE);
 	
 	// If we're wishing to save the details, we can identify this by
 	// whether or not we're using GET or POST
@@ -114,15 +118,17 @@
 		{
 			$actAccount->Update (
 				Array (
-					"BusinessName"		=> $_POST ['BusinessName'],
-					"TradingName"		=> $_POST ['TradingName'],
-					"ABN"				=> $_POST ['ABN'],
-					"ACN"				=> $_POST ['ACN'],
-					"Address1"			=> $_POST ['Address1'],
-					"Address2"			=> $_POST ['Address2'],
-					"Suburb"			=> $_POST ['Suburb'],
-					"Postcode"			=> $_POST ['Postcode'],
-					"State"				=> $_POST ['State']
+					"BusinessName"			=> $_POST ['BusinessName'],
+					"TradingName"			=> $_POST ['TradingName'],
+					"ABN"					=> $_POST ['ABN'],
+					"ACN"					=> $_POST ['ACN'],
+					"Address1"				=> $_POST ['Address1'],
+					"Address2"				=> $_POST ['Address2'],
+					"Suburb"				=> $_POST ['Suburb'],
+					"Postcode"				=> $_POST ['Postcode'],
+					"State"					=> $_POST ['State'],
+					"DisableDDR"			=> $_POST ['DisableDDR'],
+					"DisableLatePayment"	=> $_POST ['DisableLatePayment']
 				)
 			);
 			

@@ -69,6 +69,7 @@ $arrConfig['Modules'][MODULE_FILE]	 					= "file";
 $arrConfig['Modules'][MODULE_MOBILE_DETAIL]				= "servicemobile";
 $arrConfig['Modules'][MODULE_STATE]						= "state";
 $arrConfig['Modules'][MODULE_TITLE]						= "title";
+$arrConfig['Modules'][MODULE_COST_CENTRE]				= "costcentre";
 
 // Base Modules
 define("MODULE_BASE"			, MODULE_SEARCH | MODULE_DOCUMENTATION | MODULE_ACCOUNT | MODULE_CONTACT);

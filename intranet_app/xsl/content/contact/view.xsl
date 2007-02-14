@@ -111,59 +111,47 @@
 									</td>
 								</tr>
 								<!--Check for Phone-->
-								<xsl:choose>
-									<xsl:when test="/Response/Contact/Phone = ''">
-									</xsl:when>
-									<xsl:otherwise>
-										<tr>
-											<th>
-												<xsl:call-template name="Label">
-													<xsl:with-param name="entity" select="string('Contact')" />
-													<xsl:with-param name="field" select="string('Phone')" />
-												</xsl:call-template>
-											</th>
-											<td>
-												<xsl:value-of select="/Response/Contact/Phone" />
-											</td>
-										</tr>
-									</xsl:otherwise>
-								</xsl:choose>
+								<xsl:if test="/Response/Contact/Phone != ''">
+									<tr>
+										<th>
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Contact')" />
+												<xsl:with-param name="field" select="string('Phone')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:value-of select="/Response/Contact/Phone" />
+										</td>
+									</tr>
+								</xsl:if>
 								<!-- Check for Mobile -->
-								<xsl:choose>
-									<xsl:when test="/Response/Contact/Mobile = ''">
-									</xsl:when>
-									<xsl:otherwise>
-										<tr>
-											<th>
-												<xsl:call-template name="Label">
-													<xsl:with-param name="entity" select="string('Contact')" />
-													<xsl:with-param name="field" select="string('Mobile')" />
-												</xsl:call-template>
-											</th>
-											<td>
-												<xsl:value-of select="/Response/Contact/Mobile" />
-											</td>
-										</tr>
-									</xsl:otherwise>
-								</xsl:choose>
+								<xsl:if test="/Response/Contact/Mobile != ''">
+									<tr>
+										<th>
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Contact')" />
+												<xsl:with-param name="field" select="string('Mobile')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:value-of select="/Response/Contact/Mobile" />
+										</td>
+									</tr>
+								</xsl:if>
 								<!--Check for Fax -->
-								<xsl:choose>
-									<xsl:when test="/Response/Contact/Fax = ''">
-									</xsl:when>
-									<xsl:otherwise>
-										<tr>
-											<th>
-												<xsl:call-template name="Label">
-													<xsl:with-param name="entity" select="string('Contact')" />
-													<xsl:with-param name="field" select="string('Fax')" />
-												</xsl:call-template>
-											</th>
-											<td>
-												<xsl:value-of select="/Response/Contact/Fax" />
-											</td>
-										</tr>
-									</xsl:otherwise>
-								</xsl:choose>
+								<xsl:if test="/Response/Contact/Fax != ''">
+									<tr>
+										<th>
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Contact')" />
+												<xsl:with-param name="field" select="string('Fax')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:value-of select="/Response/Contact/Fax" />
+										</td>
+									</tr>
+								</xsl:if>
 								<tr>
 									<td colspan="2">
 										<div class="MicroSeperator"></div>

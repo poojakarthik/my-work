@@ -412,6 +412,94 @@
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
+						<td></td>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Account')" />
+								<xsl:with-param name="field" select="string('DisableDDR')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<input type="checkbox" name="Account[DisableDDR]" id="DisableDDR:TRUE" value="1">
+								<xsl:if test="/Response/ui-values/Account/DisableDDR = 1">
+									<xsl:attribute name="checked">
+										<xsl:text>checked</xsl:text>
+									</xsl:attribute>
+								</xsl:if>
+							</input>
+							
+							<label for="DisableDDR:TRUE">
+								Disable Direct Debit Fees from being Charged on this Account
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<td></td>
+						<th class="JustifiedWidth" valign="top">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Account')" />
+								<xsl:with-param name="field" select="string('DisableLatePayment')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td>
+										<input type="radio" name="Account[DisableLatePayment]" id="DisableLatePayment:FALSE" value="0">
+											<xsl:if test="/Response/ui-values/Account/DisableLatePayment = 0">
+												<xsl:attribute name="checked">
+													<xsl:text>checked</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+										</input>
+									</td>
+									<td>
+										<label for="DisableLatePayment:FALSE">
+											Charge a late payment fee
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<input type="radio" name="Account[DisableLatePayment]" id="DisableLatePayment:DONKEY" value="-1">
+											<xsl:if test="/Response/ui-values/Account/DisableLatePayment = -1">
+												<xsl:attribute name="checked">
+													<xsl:text>checked</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+										</input>
+									</td>
+									<td>
+										<label for="DisableLatePayment:DONKEY">
+											Don't charge a late payment fee on the next invoice
+										</label>
+									</td>
+								</tr>
+								<tr>
+									<td>
+										<input type="radio" name="Account[DisableLatePayment]" id="DisableLatePayment:TRUE" value="1">
+											<xsl:if test="/Response/ui-values/Account/DisableLatePayment = 1">
+												<xsl:attribute name="checked">
+													<xsl:text>checked</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+										</input>
+									</td>
+									<td>
+										<label for="DisableLatePayment:TRUE">
+											Never charge a late payment fee
+										</label>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="3">
+							<div class="Seperator"></div>
+						</td>
+					</tr>
+					<tr>
 						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
 						<th class="JustifiedWidth">
 							<xsl:call-template name="Label">
