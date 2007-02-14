@@ -98,8 +98,8 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 //TODO!bash! return ->	RatePlan.Name	Cost	Charge	$profit	%profit
 //TODO!bash! allow selection of start and end date for report
 
-//TODO!bash! report profit per customer
-//TODO!bash! return ->	Account.Id Account.BusinessName	Cost	Charge	$profit	%profit
+//TODO!bash! [  DONE  ]		report profit per customer
+//TODO!bash! [  DONE  ]		return ->	Account.Id Account.BusinessName	Cost	Charge	$profit	%profit
 //TODO!bash! allow selection of start and end date for report
 
 

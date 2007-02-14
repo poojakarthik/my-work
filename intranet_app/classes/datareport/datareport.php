@@ -132,37 +132,40 @@
 			$arrInputs = unserialize ($this->Pull ('SQLFields')->getValue ());
 			$arrValues = Array ();
 			
-			foreach ($arrInputs as $strName => $arrInput)
+			if (is_array ($arrInputs))
 			{
-				switch ($arrInput ['Type'])
+				foreach ($arrInputs as $strName => $arrInput)
 				{
-					case "dataDate":
-						$arrValues [$strName] = date (
-							"Y-m-d", 
-							mktime (0, 0, 0, $arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year'])
-						);
-						
-						break;
-						
-					case "dataDatetime":
-						$arrValues [$strName] = date (
-							"Y-m-d H:i:s", 
-							mktime (
-								$arrFields [$strName]['hour'], $arrFields [$strName]['minute'], $arrFields [$strName]['second'],
-								$arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year']
-							)
-						);
-						
-						break;
-						
-					case "dataString":
-						$arrValues [$strName] = "%" . $arrFields [$strName] . "%";
-						
-						break;
-						
-					default:
-						$arrValues [$strName] = $arrFields [$strName];
-						break;
+					switch ($arrInput ['Type'])
+					{
+						case "dataDate":
+							$arrValues [$strName] = date (
+								"Y-m-d", 
+								mktime (0, 0, 0, $arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year'])
+							);
+							
+							break;
+							
+						case "dataDatetime":
+							$arrValues [$strName] = date (
+								"Y-m-d H:i:s", 
+								mktime (
+									$arrFields [$strName]['hour'], $arrFields [$strName]['minute'], $arrFields [$strName]['second'],
+									$arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year']
+								)
+							);
+							
+							break;
+							
+						case "dataString":
+							$arrValues [$strName] = "%" . $arrFields [$strName] . "%";
+							
+							break;
+							
+						default:
+							$arrValues [$strName] = $arrFields [$strName];
+							break;
+					}
 				}
 			}
 			
