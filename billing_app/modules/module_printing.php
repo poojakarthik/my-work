@@ -109,9 +109,10 @@
 																NULL,
 																"RType.Id");
 		
-		$this->_selServices				= new StatementSelect(	"Service",
-																"FNN, Id",
-																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW())");
+		$this->_selServices				= new StatementSelect(	"Service JOIN CostCentre ON Service.CostCentre = CostCentre.Id",
+																"FNN, Service.Id AS Id, CostCentre.Name AS CostCentre",
+																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW())",
+																"CostCentre.Name");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"TotalCharge",
@@ -405,10 +406,8 @@
 		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
 		foreach($arrServices as $arrService)
 		{
-			// TODO: Cost Centres?
-			
 			// Add the Service Summary
-			$this->GenerateServiceSummary($arrService['Id']);
+			$this->GenerateServiceSummary($arrService['Id'], $arrService['FNN'], $arrService['CostCentre']);
 		}
 		$arrFileData[] = $arrDefine['SvcSummaryFooter'];
 		
@@ -904,10 +903,11 @@
 	 *
 	 * @method
 	 */
- 	function GenerateServiceSummary($intService, $strFNN)
+ 	function GenerateServiceSummary($intService, $strFNN, $strCostCentre)
  	{
 		// Service Header
 		$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
+		$arrDefine['SvcSummSvcHeader']		['CostCentre']		['Value']	= $strCostCentre;
 		$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
  		
   		// Get ServiceTypeTotals
