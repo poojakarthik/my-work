@@ -6,6 +6,11 @@
 // RICH
 // ---------------------------------------------------------------------------//
 
+//TODO!rich! Cost centers need to be per account...
+//TODO!rich! Bash is going to add an Account field to the table, I assume that this will make no difference to your billing code?
+
+//TODO!rich! when a reply comes in on a provisioning request, email the employee who added the request + an admin adress set in config
+
 //TODO!rich! check any of our charges that do not match etech... find out why
 
 //TODO!rich! Test shared plans
@@ -66,40 +71,41 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 
 //TODO!bash! the following are listed in order of importance, start at the top of the list
 
+//TODO!bash! URGENT CDR not displaying in 'View CDR' from invoice
+//TODO!bash! show RecordType in CDR list (invoice & unbilled charges)
+
+//TODO!bash! ABN, ACN, FNN to be displayed without spaces.  users will need to copy and paste the numbers without spaces in them
+//TODO!bash! BSB to be displayed as nnn-nnn
+//TODO!bash! account no was still requiring 9 digits yenterday, wasn't this fixed? or did I get a copy before you did an svn ci?  please check that this is working
+//TODO!bash! 'GDN' is NOT the correct term... it should be 'Primary #' change this any place we have used GDN
+
+//TODO!bash! Cost centers need to be per account...
+//TODO!bash! will need to add an account field to the cost center table
+//TODO!bash! remove costcenter list from admin consol
+//TODO!bash! add costcenter link to account options
+
+//TODO!bash! 
+
 //TODO!bash! filter CDR list by Record type:
 //TODO!bash! [UNTESTED]		unbilled charges
-//TODO!bash! [  DONE  ]		invoice details
-
-//TODO!bash! [  DONE  ]		list_account, seach by contact name & service #
-
-//TODO!bash! add the following items to the interface, use the exact text shown below
-//TODO!bash! replace the crap ascii art with checkbox/radio button etc.
-
-//TODO!bash! [  DONE  ]		checkbox (add/edit account);
-//TODO!bash! [  DONE  ]		NDD Fee [] Charge a fee if account is not paid by direct debit
-
-//TODO!bash! [  DONE  ]		radio buttons (add/edit account);
-//TODO!bash! [  DONE  ]		Late Payments	() Charge a late payment fee
-//TODO!bash! [  DONE  ]						() Don't charge a late payment fee on the next invoice
-//TODO!bash! [  DONE  ]						() Never charge a late payment fee
-
-//TODO!bash! [  DONE  ]		Dropdown (add/edit service);
-//TODO!bash! [  DONE  ]		Cost Centre  [              |V]
-
-//TODO!bash! [  DONE  ]		make sure we are parsing and importing all details required for the above fields
 
 //TODO!bash! add the following reports and test them
 
-//TODO!bash! [  DONE  ]		report : profit per rate
-//TODO!bash! [  DONE  ]		return ->	Rate.Name	Cost	Charge	$profit	%profit
-//TODO!bash! [  DONE  ]		allow selection of start and end date for report
+//TODO!bash! report : Active LL services with no CDRs in the last month
+//TODO!bash! return -> account no, FNN, business name
+
+//TODO!bash! report Account with credit balance
+//TODO!bash! return -> account no, business name, balance
+
+//TODO!bash! report : aged receivables
+//TODO!bash! return -> account no, business name, 30 days, 60 days, 90 days +
 
 //TODO!bash! report : profit per RatePlan
 //TODO!bash! return ->	RatePlan.Name	Cost	Charge	$profit	%profit
 //TODO!bash! allow selection of start and end date for report
 
-//TODO!bash! [  DONE  ]		report profit per customer
-//TODO!bash! [  DONE  ]		return ->	Account.Id Account.BusinessName	Cost	Charge	$profit	%profit
+//DONE!bash! [  DONE  ]		report profit per customer
+//DONE!bash! [  DONE  ]		return ->	Account.Id Account.BusinessName	Cost	Charge	$profit	%profit
 //TODO!bash! allow selection of start and end date for report
 
 
@@ -193,5 +199,40 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 //TODO!notes! Delinquents 	= illegal/bad churn
 //TODO!notes! UnApplied CDR = can't find owner
 //TODO!notes! Unrated 		= can't rate call
+
+
+
+
+
+
+
+// ---------------------------------------------------------------------------//
+// BASH - DONE
+// ---------------------------------------------------------------------------//
+
+
+//DONE!bash! [  DONE  ]		report : profit per rate
+//DONE!bash! [  DONE  ]		return ->	Rate.Name	Cost	Charge	$profit	%profit
+//DONE!bash! [  DONE  ]		allow selection of start and end date for report
+
+//DONE!bash! [  DONE  ]		invoice details
+
+//DONE!bash! [  DONE  ]		list_account, seach by contact name & service #
+
+//DONE!bash! add the following items to the interface, use the exact text shown below
+//DONE!bash! replace the crap ascii art with checkbox/radio button etc.
+
+//DONE!bash! [  DONE  ]		checkbox (add/edit account);
+//DONE!bash! [  DONE  ]		NDD Fee [] Charge a fee if account is not paid by direct debit
+
+//DONE!bash! [  DONE  ]		radio buttons (add/edit account);
+//DONE!bash! [  DONE  ]		Late Payments	() Charge a late payment fee
+//DONE!bash! [  DONE  ]						() Don't charge a late payment fee on the next invoice
+//DONE!bash! [  DONE  ]						() Never charge a late payment fee
+
+//DONE!bash! [  DONE  ]		Dropdown (add/edit service);
+//DONE!bash! [  DONE  ]		Cost Centre  [              |V]
+
+//DONE!bash! [  DONE  ]		make sure we are parsing and importing all details required for the above fields
 
 ?>

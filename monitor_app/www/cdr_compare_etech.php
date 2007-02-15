@@ -29,7 +29,12 @@ $intEtechCDR = (int)$_GET['Id'];
 $objPage->AddTitle("Comparison of Etech CDR $intEtechCDR to viXen CDR");
 
 // display CDR
-$objPage->ShowEtechCDR($intEtechCDR);
+$intCDR = $objPage->ShowEtechCDR($intEtechCDR);
+
+if ($intCDR)
+{
+	$objPage->AddLink("cdr_view.php?Id=$intCDR","[ View CDR ]");
+}
 
 // display the page
 $objPage->Render();

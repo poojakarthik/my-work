@@ -362,14 +362,16 @@
 				}
 			}
 			
+			unset($arrCDR);
+
 			// table
 			$tblCDR = $this->NewTable('Border');
-			$tblCDR->AddRow(Array('Etech CDR Id', 'Vixen CDR Id', 'Account', 'Service', 'FNN', 'Destination', 'Description', 'Units', 'Charge', 'Credit', 'ServiceType', 'RecordType', 'Status', 'Start', 'End', 'Difference'), FALSE, TRUE);
+			$tblCDR->AddRow(Array('Etech CDR Id', 'Vixen CDR Id', 'Account', 'Service', 'FNN', 'Destination', 'Description', 'Units', 'Charge', 'Cost', 'Credit', 'ServiceType', 'RecordType', 'Status', 'Start', 'Rate', 'Difference'), FALSE, TRUE);
 			$tblCDR->Align(Array('Right', 'Right', 'Right', 'Right', 'Right', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right'));
 			foreach($arrCDRs AS $arrCDR)
 			{
 				$intMaxId = max($intMaxId, $arrCDR['Id']);
-				$arrRow = Array($arrCDR['Id'], $arrCDR['VixenCDR'],  $arrCDR['Account'], $arrCDR['Service'], $arrCDR['FNN'], $arrCDR['Destination'], $arrCDR['Description'], $arrCDR['Units'], $arrCDR['Charge'], $arrCDR['Credit'], $arrCDR['ServiceType'], $arrCDR['RecordTypeName'], "<b>".$arrCDR['Status']."</b>", $arrCDR['StartDatetime'], $arrCDR['EndDatetime'], $arrCDR['Difference']);
+				$arrRow = Array($arrCDR['Id'], $arrCDR['VixenCDR'],  $arrCDR['Account'], $arrCDR['Service'], $arrCDR['FNN'], $arrCDR['Destination'], $arrCDR['Description'], $arrCDR['Units'], $arrCDR['Charge'], $arrCDR['CDRCost'], $arrCDR['Credit'], $arrCDR['ServiceType'], $arrCDR['RecordTypeName'], "<b>".$arrCDR['Status']."</b>", $arrCDR['StartDatetime'], $arrCDR['RateName'], $arrCDR['Difference']);
 				$tblCDR->AddRow($arrRow, "cdr_compare_etech.php?Id={$arrCDR['Id']}");
 			}
 			$this->AddTable($tblCDR);
@@ -415,7 +417,7 @@
 		if (!($arrCDR = $this->appMonitor->GetEtechCDR($intEtechCDR)))
 		{
 			$this->AddError("Cannot find Etech CDR with id $intEtechCDR");
-			return;
+			return FALSE;
 		}
 		
 		// Etech CDR
@@ -441,6 +443,8 @@
 		}
 		
 		$this->AddTable($tblCDR);
+		
+		return $arrCDR[1]['Id'];
 	}
 	
  }

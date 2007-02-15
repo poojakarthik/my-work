@@ -272,20 +272,55 @@
 	// return a viXen/Etech invoice comparison
 	function ListEtechCDRs($strEtechInvoice, $intStart, $intLimit)
 	{
-		$strWhere = "CDREtech.InvoiceRun = '$strEtechInvoice' AND RecordType.Id = CDREtech.RecordType";
+		// return 1 - 1000 CDRs
+		$intLimit = (int)$intLimit;
+		$intLimit = max(1, $intLimit);
+		$intLimit = min(1000, $intLimit);
+		
+		$intStart = (int)$intStart;
+		if ($intStart)
+		{
+			$strWhere = "CDREtech.Id > $intStart AND ";
+		}
+		else
+		{
+			$strWhere = "";
+		}
+		
+		$strWhere .= "CDREtech.InvoiceRun = '$strEtechInvoice'";
+		
+		// IGNORE
+		
+		// calls  with charge within 1c
 		$strWhere .= " AND ((CDREtech.Charge - CDR.Charge) > 0.01 OR (CDREtech.Charge - CDR.Charge) < -0.01)";
+		
+		// calls to 101
 		$strWhere .= " AND CDREtech.Destination != '101'";
 		
+		// National-08c-06f-01s-00m:70c10m was missing exs rate
+		$strWhere .= " AND CDR.Rate != 72";
 		
-		$this->selEtechCDRs = new StatementSelect(	"CDREtech LEFT OUTER JOIN CDR ON (CDREtech.VixenCDR = CDR.Id), RecordType",
-													"CDREtech.*, (CDREtech.Charge - CDR.Charge) AS Difference, RecordType.Name AS RecordTypeName",
+		// 1900 rate (etech does not have a 28c flagfall)
+		$strWhere .= " AND CDR.Rate != 151";
+		
+		// other cost LOOK AT THIS LATER
+		//$strWhere .= " AND CDR.Rate != 153";
+		
+		// NZ Mobile
+		$strWhere .= " AND CDR.Rate != 1636";
+		
+		// AAPT BandStep 5,6,13
+		$strWhere .= " AND !(CDR.Carrier = 3 AND (CDR.CDR LIKE '%0006%' OR CDR.CDR LIKE '%0005%'  OR CDR.CDR LIKE '%0013%'))";
+													
+		$this->selEtechCDRs = new StatementSelect(	"CDREtech LEFT OUTER JOIN CDR ON (CDREtech.VixenCDR = CDR.Id) LEFT OUTER JOIN RecordType ON (CDREtech.RecordType = RecordType.Id) LEFT OUTER JOIN Rate ON (CDR.Rate = Rate.Id)",
+													"CDREtech.*, (CDREtech.Charge - CDR.Charge) AS Difference, CDR.Cost AS CDRCost, RecordType.Name AS RecordTypeName, Rate.Name AS RateName",
 													$strWhere,
 													NULL,
-													"$intStart, $intLimit");
-													
+													$intLimit);
+		
+
 		$this->selEtechCDRs->Execute();
 		$arrCDRs = $this->selEtechCDRs->FetchAll();
-
 		return $arrCDRs;
 	}
 	
