@@ -66,6 +66,32 @@
 			$selCostCentre->Execute (Array ('Id' => $intId));
 			$selCostCentre->Fetch ($this);
 		}
+		
+		//------------------------------------------------------------------------//
+		// Update
+		//------------------------------------------------------------------------//
+		/**
+		 * Update()
+		 *
+		 * Update Cost Centre Information
+		 *
+		 * Update Cost Centre Information
+		 *
+		 * @param	Array		$arrDetails		An associative array representing new Cost Centre Information
+		 * @return	void	
+		 *
+		 * @method
+		 */
+		 
+		public function Update ($arrDetails)
+		{
+			$arrData = Array (
+				"Name"			=>	$arrDetails ['Name'],
+			);
+			
+			$updCostCentre = new StatementUpdate ('CostCentre', 'Id = <Id>', $arrData, 1);
+			$updCostCentre->Execute ($arrData, Array ('Id' => $this->Pull ('Id')->getValue ()));
+		}
 	}
 	
 ?>

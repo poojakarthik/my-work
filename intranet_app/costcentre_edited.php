@@ -17,6 +17,6 @@
 	// call application
 	require ('config/application.php');
 	
-	$Style->Output ("xsl/content/costcentre/added.xsl");
+	$Style->Output ("xsl/content/costcentre/edited.xsl");
 	
 ?>
