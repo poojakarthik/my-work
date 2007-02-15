@@ -109,10 +109,12 @@
 																NULL,
 																"RType.Id");
 		
-		$this->_selServices				= new StatementSelect(	"Service JOIN CostCentre ON Service.CostCentre = CostCentre.Id",
-																"FNN, Service.Id AS Id, CostCentre.Name AS CostCentre",
-																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW())",
-																"CostCentre.Name");
+		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service, CostCentre",
+																"FNN, Service.Id AS Id, CostCentre.Name AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
+																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW()) AND Service.CostCentre = CostCentre.Id",
+																"CostCentre.Name",
+																NULL,
+																"Service.Id, ServiceExtension.RangeStart");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"TotalCharge",
@@ -397,7 +399,10 @@
 																		  "calls to a spreadsheet for analysis.";
 		$arrFileData[] = $arrDefine['PaymentData'];
 		
-		// SUMMARY SERVICES
+		
+		//--------------------------------------------------------------------//
+		// SERVICE SUMMARIES
+		//--------------------------------------------------------------------//
 		// get details from servicetype totals
 		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		$arrServices = $this->_selServices->FetchAll();
@@ -411,14 +416,13 @@
 		}
 		$arrFileData[] = $arrDefine['SvcSummaryFooter'];
 		
-		// DETAILS
+		
+		//--------------------------------------------------------------------//
+		// ITEMISED CALLS
+		//--------------------------------------------------------------------//
 		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
 		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
-		if ($intItemisedCount === FALSE)
-		{
-
-		}
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
 		// reset counters
 		$strCurrentService		= "";
@@ -545,120 +549,7 @@
 		$arrFileData[] = $arrDefine['InvoiceFooter'];
 		
 		// Process and implode the data so it can be inserted into the DB
-		$strFileContents = "";
-		$i = 0;
-		// Loop through Records
-		foreach ($arrFileData as $strKey=>$arrRecord)
-		{
-			$i++;
-			$t = 0;
-			
-			// Loop through Fields
-			foreach ($arrRecord as $arrField)
-			{
-				// If this is a non-print field, then skip it
-				if($arrField['Print'] === FALSE)
-				{
-					continue;
-				}
-				
-				$strValue = $arrField['Value'];
-				$t++;
-				
-				// Process the field
-				switch ($arrField['Type'])
-				{
-					case BILL_TYPE_INTEGER:
-						if (!$strValue)
-						{
-							$strValue = "0";
-						}
-						$strTemp = sprintf("% ".$arrField['Length']."d", ((int)$strValue));
-						if(substr($strValue, 0, 1) == "-")
-						{
-							$strTemp = "-".substr($strTemp, 1);
-						}
-						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_CHAR:
-						if ($strValue == NULL)
-						{
-							$strValue = "";
-						}
-						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_RIGHT);
-						break;
-					case BILL_TYPE_BINARY:
-						if ($strValue == NULL)
-						{
-							$strValue = "0";
-						}
-						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_RIGHT);
-						break;
-					case BILL_TYPE_FLOAT:
-						if (!$strValue)
-						{
-							$strValue = "0";
-						}
-						$strValue = str_pad((float)$strValue, $arrField['Length'], " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_SHORTDATE:
-						if (!$strValue)
-						{
-							$strValue = "00/00/0000";
-						}
-						$strValue = str_pad($strValue, 10, " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_LONGDATE:
-						if (!$strValue)
-						{
-							$strValue = "00 Jan 0000";
-						}
-						$strValue = str_pad($strValue, 11, " ", STR_PAD_RIGHT);
-						break;
-					case BILL_TYPE_TIME:
-						if (!$strValue)
-						{
-							$strValue = "00:00:00";
-						}
-						$strValue = str_pad($strValue, 8, " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_DURATION:
-						if ($strValue == NULL)
-						{
-							$strValue = "0:00:00";
-						}
-						$strValue = str_pad($strValue, 9, " ", STR_PAD_LEFT);
-						break;
-					case BILL_TYPE_SHORTCURRENCY:
-						if (!$strValue)
-						{
-							$strValue = "0";
-						}
-						
-						$strTemp = sprintf("%01.2f", ((float)$strValue));
-						if(substr($strValue, 0, 1) == "-")
-						{
-							$strTemp = "-".substr($strTemp, 1);
-						}
-						$strValue = str_pad($strTemp, 11, " ", STR_PAD_LEFT);
-						break;
-					default:
-						// Unknown Data Type
-						Debug("BIG FLOPPY DONKEY DICK (Unknown Bill Printing Data Type: {$arrField['Type']})");
-						Debug($arrRecord);
-						return FALSE;
-				}
-				
-				$strFileContents .= $strValue;
-			}
-			
-			$strFileContents .= "\n";
-		}
-		
-		$strFileContents = rtrim($strFileContents);
-		
-//		Debug($strFileContents);
-//		die;
+		$strFileContents = GenerateInvoiceData($arrFileData);
 		
 		// Insert into InvoiceOutput table
 		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
@@ -963,17 +854,191 @@
 	 *
 	 * Generates a list of itemised calls for a specified service and record type
 	 * 
-	 * @param		integer		$intService		The service to generate itemised calls for
-	 * @param		integer		$intRecordType	The record type to generate itemised calls for
+	 * @param		array		$arrService		Array of service data returned from the database
+	 * @param		integer		$intRecordGroup	The record type group to generate itemised calls for
 	 *
 	 * @return		boolean
 	 *
 	 * @method
 	 */
- 	function GenerateItemisedCalls($intService, $intRecordType)
+ 	function GenerateItemisedCalls($arrService, $intRecordGroup)
  	{
  		// TODO
+ 		$arrColumns = Array();
+		$arrColumns['Charge']			= "CDR.Charge";
+		$arrColumns['Source']			= "CDR.Source";
+		$arrColumns['Destination']		= "CDR.Destination";
+		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
+		$arrColumns['EndDatetime']		= "CDR.EndDatetime";
+		$arrColumns['Units']			= "CDR.Units";
+		$arrColumns['Description']		= "CDR.Description";
+		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
+ 		$this->_selItemisedCalls	= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id" .
+ 															", RecordType as RecordGroup",
+ 															$arrColumns,
+ 															"Service = <Service> " .
+ 															"AND RecordGroup.Id = RecordType.GroupId AND " .
+ 															"RecordGroup.Id = <RecordGroup>" .
+ 															"RecordGroup.Itemised = 1 AND " .
+ 															"CDR.InvoiceRun = <InvoiceRun> AND " .
+ 															"(" .
+ 															"	ISNULL(<RangeStart>)" .
+ 															" OR " .
+ 															"	CAST(<RangeStart> AS INTEGER) BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER)" .
+ 															")",
+ 															"CDR.StartDateTime");
+ 		
+ 		$arrWhere = Array();
+ 		$arrWhere['Service']		= $arrService['Id'];
+ 		$arrWhere['RecordGroup']	= $intRecordGroup;
+ 		$arrWhere['RangeStart']		= $arrService['RangeStart'];
+ 		$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
+		if ($this->_selItemisedCalls->Execute($arrWhere) === FALSE)
+		{
+			// ERROR
+			Debug($this->_selItemisedCalls->Error());
+			return FALSE;
+		}
+		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
+ 	}
+
+ 
+  	//------------------------------------------------------------------------//
+	// GenerateInvoiceData()
+	//------------------------------------------------------------------------//
+	/**
+	 * GenerateInvoiceData()
+	 *
+	 * Generates a block of invoice data
+	 *
+	 * Generates a block of invoice data from the passed indexed array
+	 * 
+	 * @param	array					Indexed array of data to be imploded and validated
+	 *
+	 * @return	mixed					string	: invoice data
+	 * 									FALSE	: invalid input
+	 *
+	 * @method
+	 */
+ 	protected function GenerateInvoiceData($arrFileData)
+ 	{
+		if (!is_array($arrFileData))
+		{
+			return FALSE;
+		}
+		
+		$strFileContents = "";
+		$i = 0;
+		// Loop through Records
+		foreach ($arrFileData as $strKey=>$arrRecord)
+		{
+			$i++;
+			$t = 0;
+			
+			// Loop through Fields
+			foreach ($arrRecord as $arrField)
+			{
+				// If this is a non-print field, then skip it
+				if($arrField['Print'] === FALSE)
+				{
+					continue;
+				}
+				
+				$strValue = $arrField['Value'];
+				$t++;
+				
+				// Process the field
+				switch ($arrField['Type'])
+				{
+					case BILL_TYPE_INTEGER:
+						if (!$strValue)
+						{
+							$strValue = "0";
+						}
+						$strTemp = sprintf("% ".$arrField['Length']."d", ((int)$strValue));
+						if(substr($strValue, 0, 1) == "-")
+						{
+							$strTemp = "-".substr($strTemp, 1);
+						}
+						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_CHAR:
+						if ($strValue == NULL)
+						{
+							$strValue = "";
+						}
+						$strValue = str_pad($strValue, $arrField['Length'], " ", STR_PAD_RIGHT);
+						break;
+					case BILL_TYPE_BINARY:
+						if ($strValue == NULL)
+						{
+							$strValue = "0";
+						}
+						$strValue = str_pad($strValue, $arrField['Length'], "0", STR_PAD_RIGHT);
+						break;
+					case BILL_TYPE_FLOAT:
+						if (!$strValue)
+						{
+							$strValue = "0";
+						}
+						$strValue = str_pad((float)$strValue, $arrField['Length'], " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_SHORTDATE:
+						if (!$strValue)
+						{
+							$strValue = "00/00/0000";
+						}
+						$strValue = str_pad($strValue, 10, " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_LONGDATE:
+						if (!$strValue)
+						{
+							$strValue = "00 Jan 0000";
+						}
+						$strValue = str_pad($strValue, 11, " ", STR_PAD_RIGHT);
+						break;
+					case BILL_TYPE_TIME:
+						if (!$strValue)
+						{
+							$strValue = "00:00:00";
+						}
+						$strValue = str_pad($strValue, 8, " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_DURATION:
+						if ($strValue == NULL)
+						{
+							$strValue = "0:00:00";
+						}
+						$strValue = str_pad($strValue, 9, " ", STR_PAD_LEFT);
+						break;
+					case BILL_TYPE_SHORTCURRENCY:
+						if (!$strValue)
+						{
+							$strValue = "0";
+						}
+						
+						$strTemp = sprintf("%01.2f", ((float)$strValue));
+						if(substr($strValue, 0, 1) == "-")
+						{
+							$strTemp = "-".substr($strTemp, 1);
+						}
+						$strValue = str_pad($strTemp, 11, " ", STR_PAD_LEFT);
+						break;
+					default:
+						// Unknown Data Type
+						Debug("BIG FLOPPY DONKEY DICK (Unknown Bill Printing Data Type: {$arrField['Type']})");
+						Debug($arrRecord);
+						return FALSE;
+				}
+				
+				$strFileContents .= $strValue;
+			}
+			
+			$strFileContents .= "\n";
+		}
+				
+		// Return the data
+		return rtrim($strFileContents);
  	}
  }
-
 ?>
