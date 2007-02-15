@@ -1245,7 +1245,7 @@ function BSBValid ($strNumber)
 // valid account number
 function BankAccountValid ($strNumber)
 {
-	return preg_match ("/^\d{9}$/", $strNumber);
+	return preg_match ("/^\d{4,11}$/", $strNumber);
 }
 
 ?>
