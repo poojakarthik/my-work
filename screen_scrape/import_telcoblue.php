@@ -966,7 +966,33 @@ Blue Shared 500 						25
 			//echo $objImport->ErrorLog();
 			//Die();
 		}
-
+	}
+	
+	
+	// cost centres
+	while ($arrAccount = $objDecoder->FetchCostCentre ())
+	{
+		// Loop through each of the Services
+		foreach ($arrAccount ['DataArray'] as $arrService)
+		{
+			// If there is a Cost Centre defined, update the Service Cost Centre
+			if ($arrService ['CostCentre'])
+			{
+				if ($objImport->SetCostCentre($arrService ['CostCentre'], $arrService ['Account'], $arrService ['FNN']))
+				{
+					echo "Cost centre set for: " . $arrService ['Account'] . " (" . $arrService ['FNN'] . ")\n";
+				}
+				else
+				{
+					echo "FATAL ERROR: could not set cost centre for : " . $arrService ['Account'] . " (" . $arrService ['FNN'] . ")\n\n";
+					die ();
+				}
+			}
+			else
+			{
+				echo "NOTICE: no cost centre for : " . $arrService ['Account'] . " (" . $arrService ['FNN'] . ")\n";
+			}
+		}
 	}
 
 /*

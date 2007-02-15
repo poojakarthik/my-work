@@ -263,6 +263,21 @@
 		return $arrRow;
 	}
 	
+	function FetchInboundDetail()
+	{
+		$strQuery 	= "SELECT CustomerId, FNN, DataOriginal FROM ScrapeServiceInbound ";
+		$strName	= 'InboundDetails';
+		$arrRow		= $this->FetchResult($strName, $strQuery);
+		
+		if ($arrRow)
+		{
+			$arrRow['DataArray'] = $this->ParseInboundDetail($arrRow['DataOriginal'], $arrRow['CustomerId'], $arrRow['FNN']);
+			unset($arrRow['DataOriginal']);
+		}
+		
+		return $arrRow;
+	}
+	
 	function FetchMobileDetailsByAccount($intAccount)
 	{
 		$intAccount = (int)$intAccount;
@@ -288,6 +303,21 @@
 			$arrRow['DataArray'] = $this->ParsePayment($arrRow['DataOriginal']);
 			unset($arrRow['DataOriginal']);
 		}
+		return $arrRow;
+	}
+	
+	function FetchPassword()
+	{
+		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeAccountViewDetail ";
+		$strName	= 'FetchPassword';
+		$arrRow = $this->FetchResult ($strName, $strQuery);
+		
+		if ($arrRow)
+		{
+			$arrRow['DataArray'] = $this->ParsePassword ($arrRow['DataOriginal'], $arrRow['CustomerId']);
+			unset($arrRow['DataOriginal']);
+		}
+		
 		return $arrRow;
 	}
 	
@@ -1105,6 +1135,25 @@
 		return $arrDetails;
 	}
 	
+	function ParseInboundDetail ($strHtml, $intCustomerId, $strFNN)
+	{
+		$domDocument	= new DOMDocument ('1.0', 'utf-8');
+		@$domDocument->LoadHTML ($strHtml);
+		
+		$dxpPath		= new DOMXPath ($domDocument);
+		
+		$strAnswerPoint		= $dxpPath->Query ("//input[@name='ans_point']")->item (0)->getAttribute ("value");
+		$bolComplexConfig	= ($dxpPath->Query ("//input[@name='complex_set'][@checked]")->length == 1);
+		$strConfiguration	= $dxpPath->Query ("//textarea[@name='complex_desc']")->item (0)->nodeValue;
+		
+		return Array (
+			"Service"			=> NULL,
+			"AnswerPoint"		=> $strAnswerPoint,
+			"Complex"			=> $bolComplexConfig,
+			"Configuration"		=> $strConfiguration
+		);
+	}
+	
 	// god help us
 	// parse payment history
 	function ParsePayment($strHtml)
@@ -1231,6 +1280,32 @@
 		return $arrPayments;
 	}
 	
+	// parse password out
+	function ParsePassword ($strHtml, $intCustomerId)
+	{
+		// Put the HTML of the file into a DOM Document Object
+		$domDocument = new DOMDocument;
+		@$domDocument->LoadHTML ($strHtml);
+		$domDocument->formatOutput = true;
+		
+		// Create an XPath object so we can search for Applicable Tables
+		$dxpDocument = new DOMXPath ($domDocument);
+		
+		$dnlTDs = $dxpDocument->Query ("//td[@bgcolor='#FFF0D1']");
+		
+		foreach ($dnlTDs as $dnoTD)
+		{
+			$strTD = $dnoTD->nodeValue;
+			
+			if (preg_match ("/^Pass\: (.*)$/", $strTD, $arrMatches))
+			{
+				return Array (
+					"password"	=> $arrMatches [1]
+				);
+			}
+		}
+	}
+	
 	// parse cost centre information
 	function ParseCostCentre ($strHtml, $intCustomerId)
 	{
@@ -1331,7 +1406,7 @@
 				"June"			=> 6,
 				"July"			=> 7,
 				"August"		=> 8,
-				"September"		=> 9,
+				"September"	=> 9,
 				"October"		=> 10,
 				"November"		=> 11,
 				"December"		=> 12

@@ -83,6 +83,8 @@ class VixenImport extends ApplicationBaseClass
 		$this->_insContact				= new StatementInsert("Contact");
 		$this->_insCreditCard			= new StatementInsert("CreditCard");
 		
+		$this->_updSetCostCentre		= new StatementUpdate("Service", "FNN = <FNN> AND Account = <Account>", Array ('CostCentre'=>''));
+		
 		$this->sqlQuery 				= new Query();
 		$this->selServicesByType		= new StatementSelect(	"Service",
 														"Id, FNN",
@@ -90,8 +92,44 @@ class VixenImport extends ApplicationBaseClass
 														
 		$this->_selFindService 			= new StatementSelect("Service", "Id", "FNN = <fnn>", "CreatedOn DESC", "1");
 		$this->_selFindServiceIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
-
+		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Name", "Name = <Name>", NULL, "1");
+		
+		$this->_arrCostCentres = Array ();
 	}
+	
+	// set the cost centre for a particular service (identified by FNN and Account#)
+	function SetCostCentre($strCostCentreName, $strAccount, $strFNN)
+	{
+		$arrCostCentre = Array(
+			"CostCentre"	=> $this->FindCostCentre ($strCostCentreName)
+		);
+		
+		$this->_updSetCostCentre->Execute(
+			$arrCostCentre, 
+			Array (
+				"FNN"		=> $strFNN,
+				"Account"	=> $strAccount
+			)
+		);
+		
+		return true;
+	}
+	
+	// get a cost centre's id by its name
+	function FindCostCentre ($strName)
+	{
+		if (!isset ($this->_arrCostCentres [$strName]))
+		{
+			$this->_selFindCostCentreByName->Execute (Array ("Name" => $strName));
+			$arrCostCentre = $this->_selFindCostCentreByName->Fetch ();
+			
+			
+			$this->_arrCostCentres [$arrCostCentre ['Name']] = $arrCostCentre ['Id'];
+		}
+		
+		return $this->_arrCostCentres [$strName];
+	}
+	
 	
 	// ------------------------------------//
 	// Add Records
