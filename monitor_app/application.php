@@ -304,10 +304,14 @@
 		$strWhere .= " AND CDR.Rate != 151";
 		
 		// other cost LOOK AT THIS LATER
-		//$strWhere .= " AND CDR.Rate != 153";
+		$strWhere .= " AND CDR.Rate != 153";
+		$strWhere .= " AND CDR.Rate != 47";
 		
 		// NZ Mobile
 		$strWhere .= " AND CDR.Rate != 1636";
+		
+		// SMS20 - we are 20c x etech is 18c x
+		$strWhere .= " AND CDR.Rate != 38";
 		
 		// AAPT BandStep 5,6,13
 		$strWhere .= " AND !(CDR.Carrier = 3 AND (CDR.CDR LIKE '%0006%' OR CDR.CDR LIKE '%0005%'  OR CDR.CDR LIKE '%0013%'))";

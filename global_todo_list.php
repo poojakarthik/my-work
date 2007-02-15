@@ -76,15 +76,13 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 
 //TODO!bash! ABN, ACN, FNN to be displayed without spaces.  users will need to copy and paste the numbers without spaces in them
 //TODO!bash! BSB to be displayed as nnn-nnn
-//TODO!bash! account no was still requiring 9 digits yenterday, wasn't this fixed? or did I get a copy before you did an svn ci?  please check that this is working
+//TODO!bash! account no was still requiring 9 digits yesterday, wasn't this fixed? or did I get a copy before you did an svn ci?  please check that this is working
 //TODO!bash! 'GDN' is NOT the correct term... it should be 'Primary #' change this any place we have used GDN
 
 //TODO!bash! Cost centers need to be per account...
 //TODO!bash! will need to add an account field to the cost center table
 //TODO!bash! remove costcenter list from admin consol
 //TODO!bash! add costcenter link to account options
-
-//TODO!bash! 
 
 //TODO!bash! filter CDR list by Record type:
 //TODO!bash! [UNTESTED]		unbilled charges
