@@ -58,7 +58,7 @@
 		{
 			$oblstrError->setValue ('AccountNumber');
 		}
-		else if (!preg_match ("/^(\d{9})$/", $_POST ['DirectDebit']['AccountNumber']))
+		else if (!BankAccountValid ($_POST ['DirectDebit']['AccountNumber']))
 		{
 			$oblstrError->setValue ('AccountNumber');
 		}

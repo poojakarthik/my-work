@@ -76,7 +76,6 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 
 //TODO!bash! ABN, ACN, FNN to be displayed without spaces.  users will need to copy and paste the numbers without spaces in them
 //TODO!bash! BSB to be displayed as nnn-nnn
-//TODO!bash! account no was still requiring 9 digits yesterday, wasn't this fixed? or did I get a copy before you did an svn ci?  please check that this is working
 //TODO!bash! 'GDN' is NOT the correct term... it should be 'Primary #' change this any place we have used GDN
 
 //TODO!bash! Cost centers need to be per account...
@@ -219,6 +218,8 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 
 //DONE!bash! add the following items to the interface, use the exact text shown below
 //DONE!bash! replace the crap ascii art with checkbox/radio button etc.
+
+//TODO!bash! [  DONE  ]		account no was still requiring 9 digits yenterday, wasn't this fixed? or did I get a copy before you did an svn ci?  please check that this is working
 
 //DONE!bash! [  DONE  ]		checkbox (add/edit account);
 //DONE!bash! [  DONE  ]		NDD Fee [] Charge a fee if account is not paid by direct debit
