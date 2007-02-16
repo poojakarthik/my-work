@@ -1,13 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:import href="../../includes/init.xsl" />
-	<xsl:import href="../../template/default.xsl" />
+	<xsl:import href="../../../includes/init.xsl" />
+	<xsl:import href="../../../template/default.xsl" />
+	
 	<xsl:template name="Content">
 		<!-- ADMIN PAGE -->
 		<!-- Page for searching for Customers (NO VERIFICATION) -->
 		
 		<h1>Cost Centres</h1>
+		
+		<div class="Wide-Form">
+			<table border="0" cellpadding="3" cellspacing="0">
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Account')" />
+							<xsl:with-param name="field" select="string('Id')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:value-of select="/Response/Account/Id" />
+					</td>
+				</tr>
+				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Account')" />
+							<xsl:with-param name="field" select="string('BusinessName')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:value-of select="/Response/Account/BusinessName" />
+					</td>
+				</tr>
+				<!--Check for Trading Name-->
+				<xsl:choose>
+					<xsl:when test="/Response/Account/TradingName = ''">
+					</xsl:when>
+					<xsl:otherwise>
+						<tr>
+							<th>
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Account')" />
+									<xsl:with-param name="field" select="string('TradingName')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<xsl:value-of select="/Response/Account/TradingName" />
+							</td>
+						</tr>
+					</xsl:otherwise>
+				</xsl:choose>
+			</table>
+		</div>
+		
+		<div class="Seperator"></div>
 		
 		<!-- Search Details -->
 		<h2 class="CostCentre">Cost Centre Listing</h2>
@@ -44,15 +92,6 @@
 								<xsl:text>?Id=</xsl:text><xsl:value-of select="./Id" />
 							</xsl:attribute>
 							<xsl:text>Edit Cost Centre</xsl:text>
-						</a>,
-						<a target="_blank">
-							<xsl:attribute name="href">
-								<xsl:text>service_list.php</xsl:text>
-								<xsl:text>?constraint[CostCentre][Operator]=EQUALS</xsl:text>
-								<xsl:text>&amp;constraint[CostCentre][Value]=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
-							<xsl:text>List Services</xsl:text>
 						</a>
 					</td>
 				</tr>
@@ -86,6 +125,9 @@
 											<xsl:value-of select="/Response/CostCentres/Results/rangeLength" />
 											
 											<xsl:text>&amp;rangePage=1</xsl:text>
+											
+											<xsl:text>&amp;Account=</xsl:text>
+											<xsl:value-of select="/Response/Account/Id" />
 										</xsl:attribute>
 										<xsl:text>&#124;&lt;- First</xsl:text>
 									</a>
@@ -107,6 +149,9 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CostCentres/Results/rangePage - 1" />
+											
+											<xsl:text>&amp;Account=</xsl:text>
+											<xsl:value-of select="/Response/Account/Id" />
 										</xsl:attribute>
 										<xsl:text>&lt;- Prev</xsl:text>
 									</a>
@@ -145,6 +190,9 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CostCentres/Results/rangePage + 1" />
+											
+											<xsl:text>&amp;Account=</xsl:text>
+											<xsl:value-of select="/Response/Account/Id" />
 										</xsl:attribute>
 										<xsl:text>Next -&gt;</xsl:text>
 									</a>
@@ -166,6 +214,9 @@
 											
 											<xsl:text>&amp;rangePage=</xsl:text>
 											<xsl:value-of select="/Response/CostCentres/Results/rangePages" />
+											
+											<xsl:text>&amp;Account=</xsl:text>
+											<xsl:value-of select="/Response/Account/Id" />
 										</xsl:attribute>
 										<xsl:text>Last -&gt;&#124;</xsl:text>
 									</a>
@@ -183,7 +234,8 @@
 		<div class="LinkAdd">
 			<a>
 				<xsl:attribute name="href">
-					<xsl:text>costcentre_add.php</xsl:text>
+					<xsl:text>costcentre_add.php?Account=</xsl:text>
+					<xsl:value-of select="/Response/Account/Id" />
 				</xsl:attribute>
 				<xsl:text>Add Cost Centre</xsl:text>
 			</a>

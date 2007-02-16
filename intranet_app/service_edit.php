@@ -82,6 +82,7 @@
 	
 	// Get Cost Centres
 	$ccrCostCentres = $Style->attachObject (new CostCentres);
+	$ccrCostCentres->Constrain ('Account',	'=',	$actAccount->Pull ('Id')->getValue ());
 	$ccrCostCentres->Sample ();
 	
 	// Pull documentation information for Service

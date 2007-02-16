@@ -56,10 +56,6 @@
 	// List of Service Types
 	$styServiceTypes = $Style->attachObject (new ServiceTypes);
 	
-	// List of Cost Centres
-	$cclCostCentres = $Style->attachObject (new CostCentres);
-	$cclCostCentres->Sample ();
-	
 	$Style->Output ("xsl/content/service/list.xsl");
 	
 ?>

@@ -32,6 +32,13 @@
 // CONFIG
 //----------------------------------------------------------------------------//
 
+// Before we do anything is check that we're using Firefox
+if (stristr ($_SERVER ['HTTP_USER_AGENT'], 'Firefox') === FALSE)
+{
+	echo "<p>Firefox Only - <a href='http://www.getfirefox.com/'>Get Firefox</a></p>";
+	exit;
+}
+
 //----------------------------------------------------------------//
 // strFrameworkDir
 //----------------------------------------------------------------//

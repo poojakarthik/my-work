@@ -71,17 +71,20 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 
 //TODO!bash! the following are listed in order of importance, start at the top of the list
 
-//TODO!bash! URGENT CDR not displaying in 'View CDR' from invoice
-//TODO!bash! show RecordType in CDR list (invoice & unbilled charges)
+//TODO!bash! [RECREATE]		URGENT CDR not displaying in 'View CDR' from invoice
 
-//TODO!bash! ABN, ACN, FNN to be displayed without spaces.  users will need to copy and paste the numbers without spaces in them
+//TODO!bash! show RecordType in CDR list
+//TODO!bash! [  DONE  ]		for invoices
+//TODO!bash! [NOT DONE]		for unbilled charges
+
+//TODO!bash! [  DONE  ]		ABN, ACN, FNN to be displayed without spaces.  users will need to copy and paste the numbers without spaces in them
 //TODO!bash! BSB to be displayed as nnn-nnn
-//TODO!bash! 'GDN' is NOT the correct term... it should be 'Primary #' change this any place we have used GDN
+//TODO!bash! [  DONE  ]		'GDN' is NOT the correct term... it should be 'Primary #' change this any place we have used GDN
 
-//TODO!bash! Cost centers need to be per account...
-//TODO!bash! will need to add an account field to the cost center table
-//TODO!bash! remove costcenter list from admin consol
-//TODO!bash! add costcenter link to account options
+//TODO!bash! [  DONE  ]		Cost centers need to be per account...
+//TODO!bash! [  DONE  ]		will need to add an account field to the cost center table
+//TODO!bash! [  DONE  ]		remove costcenter list from admin consol
+//TODO!bash! [  DONE  ]		add costcenter link to account options
 
 //TODO!bash! filter CDR list by Record type:
 //TODO!bash! [UNTESTED]		unbilled charges

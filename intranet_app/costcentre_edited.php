@@ -11,12 +11,28 @@
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
-	$arrPage['Permission']	= PERMISSION_ADMIN;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE;
+	$arrPage['Permission']	= PERMISSION_OPERATOR;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_COST_CENTRE;
 	
 	// call application
 	require ('config/application.php');
 	
-	$Style->Output ("xsl/content/costcentre/edited.xsl");
+	// Try to get the Cost Centre we are dealing with
+	try
+	{
+		$ccrCostCentre = $Style->attachObject (new CostCentre (($_GET ['Id']) ? $_GET ['Id'] : $_POST ['Id']));
+	}
+	catch (Exception $e)
+	{
+		$Style->Output ("xsl/content/account/costcentre/notfound.xsl");
+		exit;
+	}
+	
+	$Style->Output (
+		"xsl/content/account/costcentre/edited.xsl",
+		Array (
+			"Account"	=> $ccrCostCentre->Pull ('Account')->getValue ()
+		)
+	);
 	
 ?>

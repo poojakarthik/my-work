@@ -631,6 +631,35 @@
 			
 			return $oblfltOverdue;
 		}
+		
+		//------------------------------------------------------------------------//
+		// AddCostCentre
+		//------------------------------------------------------------------------//
+		/**
+		 * AddCostCentre()
+		 *
+		 * Add a new Cost Centre
+		 *
+		 * Add a new Cost Centre
+		 *
+		 * @param	Array	$arrDetails		An associate array of details about the new Cost Centre
+		 *
+		 * @method
+		 */
+		
+		public function AddCostCentre ($arrDetails)
+		{
+			$arrData = Array (
+				'AccountGroup'		=> $this->Pull ('AccountGroup')->getValue (),
+				'Account'			=> $this->Pull ('Id')->getValue (),
+				'Name'				=> $arrDetails ['Name']
+			);
+			
+			$insCostCentre = new StatementInsert ('CostCentre');
+			$intCostCentre = $insCostCentre->Execute ($arrData);
+			
+			return $intCostCentre;
+		}
 	}
 	
 ?>

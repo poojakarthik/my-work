@@ -72,6 +72,14 @@
 			
 			// Construct the object
 			parent::__construct ('CDR', $this->Pull ('Id')->getValue ());
+			
+			// Add an extra field which calculates the duration
+			$this->Push (
+				new dataDuration (
+					"Duration",
+					$this->PUll ("EndDatetime")->getValue () - $this->PUll ("StartDatetime")->getValue ()
+				)
+			);
 		}
 	}
 	

@@ -166,7 +166,7 @@
 											<td><input type="checkbox" name="Indial100" id="Indial100:TRUE" value="1" /></td>
 											<td>
 												<label for="Indial100:TRUE">
-													this service is the GDN for a 100 number Indial Range
+													This service is the Primary Number for a 100 number Indial Range
 												</label>
 											</td>
 										</tr>
@@ -181,36 +181,38 @@
 						</xsl:if>
 						
 						<!-- Cost Centre -->
-						<tr>
-							<td></td>
-							<th class="JustifiedWidth">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Service')" />
-									<xsl:with-param name="field" select="string('CostCentre')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<select name="CostCentre">
-									<option value=""></option>
-									<xsl:for-each select="/Response/CostCentres/Results/rangeSample/CostCentre">
-										<xsl:sort select="./Name" />
-										
-										<option>
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="./Id" />
-											</xsl:attribute>
-											<xsl:if test="./Id = /Response/Service/CostCentre">
-												<xsl:attribute name="selected">
-													<xsl:text>selected</xsl:text>
+						<xsl:if test="/Response/CostCentres/Results/collationLength != 0">
+							<tr>
+								<td></td>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('CostCentre')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<select name="CostCentre">
+										<option value=""></option>
+										<xsl:for-each select="/Response/CostCentres/Results/rangeSample/CostCentre">
+											<xsl:sort select="./Name" />
+											
+											<option>
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Id" />
 												</xsl:attribute>
-											</xsl:if>
-											<xsl:value-of select="./Name" />
-										</option>
-									</xsl:for-each>
-								</select>
-							</td>
-						</tr>
+												<xsl:if test="./Id = /Response/Service/CostCentre">
+													<xsl:attribute name="selected">
+														<xsl:text>selected</xsl:text>
+													</xsl:attribute>
+												</xsl:if>
+												<xsl:value-of select="./Name" />
+											</option>
+										</xsl:for-each>
+									</select>
+								</td>
+							</tr>
+						</xsl:if>
 						
 						<!-- Rate Plan -->
 						<tr>

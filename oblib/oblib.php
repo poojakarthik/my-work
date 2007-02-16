@@ -1210,9 +1210,7 @@
 				return false;
 			}
 			
-			parent::setValue (
-				substr ($strABN, 0, 2) . " " . substr ($strABN, 2, 3) . " " . substr ($strABN, 5, 3) . " " . substr ($strABN, 8, 3)
-			);
+			parent::setValue ($strABN);
 			
 			return true;
 		}
@@ -1343,9 +1341,7 @@
 				return false;
 			}
 			
-			parent::setValue (
-				substr ($strACN, 0, 3) . " " . substr ($strACN, 3, 3) . " " . substr ($strACN, 6, 3)
-			);
+			parent::setValue ($strACN);
 			
 			return true;
 		}

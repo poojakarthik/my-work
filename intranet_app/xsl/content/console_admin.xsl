@@ -96,6 +96,19 @@
 			</tr>
 			<tr>
 				<td>
+					<a href="payment_download.php">
+						<img src="img/template/charge.png" title="Payment Download" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						Payment Download
+					</strong><br />
+					Download a list of Payments made on a particular date.
+				</td>
+			</tr>
+			<tr>
+				<td>
 					<a href="datareport_list.php">
 						<img src="img/template/report.png" title="Data Reports" class="MenuIcon" />
 					</a>
@@ -105,19 +118,6 @@
 						Data Reports
 					</strong><br />
 					Run reports to return information on data in the System.
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<a href="costcentre_list.php">
-						<img src="img/template/icon-shoppingcart_small.jpg" title="Cost Centres" class="MenuIcon" />
-					</a>
-				</td>
-				<td>
-					<strong>
-						Cost Centres
-					</strong><br />
-					Manage Cost Centres maintained in the System.
 				</td>
 			</tr>
 			<tr>

@@ -347,6 +347,15 @@
 								<xsl:text>View Recurring Charges</xsl:text>
 							</a>
 						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
+									<xsl:text>costcentre_list.php?Account=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>View Cost Centres</xsl:text>
+							</a>
+						</li>
 						
 						
 						<li>

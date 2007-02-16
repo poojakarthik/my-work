@@ -11,7 +11,7 @@
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
-	$arrPage['Permission']	= PERMISSION_ADMIN;
+	$arrPage['Permission']	= PERMISSION_OPERATOR;
 	$arrPage['Modules']		= MODULE_BASE | MODULE_COST_CENTRE;
 	
 	// call application
@@ -24,7 +24,7 @@
 	}
 	catch (Exception $e)
 	{
-		$Style->Output ("xsl/content/costcentre/notfound.xsl");
+		$Style->Output ("xsl/content/account/costcentre/notfound.xsl");
 		exit;
 	}
 	
@@ -63,6 +63,11 @@
 	
 	$docDocumentation->Explain ('Cost Centre');
 	
-	$Style->Output ("xsl/content/costcentre/edit.xsl");
+	$Style->Output (
+		"xsl/content/account/costcentre/edit.xsl",
+		Array (
+			'Account'		=> $ccrCostCentre->Pull ('Account')->getValue ()
+		)
+	);
 	
 ?>

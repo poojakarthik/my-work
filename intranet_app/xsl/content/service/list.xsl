@@ -59,39 +59,6 @@
 								</input>
 							</td>
 						</tr>
-						<tr>
-							<th valign="top">
-								<xsl:call-template name="Label">
-									<xsl:with-param name="entity" select="string('Service')" />
-									<xsl:with-param name="field" select="string('CostCentre')" />
-								</xsl:call-template>
-							</th>
-							<td>
-								<xsl:call-template name="ConstraintOperator">
-									<xsl:with-param name="Name" select="string('constraint[CostCentre][Operator]')" />
-									<xsl:with-param name="DataType" select="string('Id')" />
-								</xsl:call-template>
-							</td>
-							<td>
-								<select name="constraint[CostCentre][Value]">
-									<option value=""></option>
-									<xsl:for-each select="/Response/CostCentres/Results/rangeSample/CostCentre">
-										<option>
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="./Id" />
-											</xsl:attribute>
-											<xsl:if test="/Response/Services/Constraints/Constraint[Name=string('CostCentre')]/Value = ./Id">
-												<xsl:attribute name="selected">
-													<xsl:text>selected</xsl:text>
-												</xsl:attribute>
-											</xsl:if>
-											<xsl:value-of select="./Name" />
-										</option>
-									</xsl:for-each>
-								</select>
-							</td>
-						</tr>
 					</table>
 				</div>
 				<div class="Form-Content Left">
