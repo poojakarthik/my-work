@@ -135,7 +135,7 @@
 																"SUM(Amount) AS Charge, 'Other Credits & Charges' AS RecordType, COUNT(Id) AS Records",
 																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
 		
-		$arrColumns = Array();
+		/*$arrColumns = Array();
 		$arrColumns['Charge']			= "CDR.Charge";
 		$arrColumns['FNN']				= "CDR.FNN";
 		$arrColumns['Source']			= "CDR.Source";
@@ -151,7 +151,32 @@
 																"RecordType AS RType",
 																$arrColumns,
 																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id AND CDR.Credit = 0 AND CDR.InvoiceRun = <InvoiceRun> AND Status = ".CDR_TEMP_INVOICE,
-																"CDR.FNN, RType.Name, CDR.StartDatetime");
+																"CDR.FNN, RType.Name, CDR.StartDatetime");*/
+		$arrColumns = Array();
+		$arrColumns['Charge']			= "CDR.Charge";
+		$arrColumns['Source']			= "CDR.Source";
+		$arrColumns['Destination']		= "CDR.Destination";
+		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
+		$arrColumns['EndDatetime']		= "CDR.EndDatetime";
+		$arrColumns['Units']			= "CDR.Units";
+		$arrColumns['Description']		= "CDR.Description";
+		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
+		$arrColumns['DisplayType']		= "RecordGroup.DisplayType";
+		$arrColumns['RecordGroup']		= "RecordGroup.Description";
+ 		$this->_selItemisedCalls	= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id" .
+ 															", RecordType as RecordGroup",
+ 															$arrColumns,
+ 															"Service = <Service> " .
+ 															"AND RecordGroup.Id = RecordType.GroupId AND " .
+ 															"RecordGroup.Id = <RecordGroup>" .
+ 															"RecordGroup.Itemised = 1 AND " .
+ 															"CDR.InvoiceRun = <InvoiceRun> AND " .
+ 															"(" .
+ 															"	ISNULL(<RangeStart>)" .
+ 															" OR " .
+ 															"	CAST(<RangeStart> AS INTEGER) BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER)" .
+ 															")",
+ 															"CDR.StartDateTime");
 																
 		$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
 																"RecordType AS RType",
@@ -420,6 +445,18 @@
 		//--------------------------------------------------------------------//
 		// ITEMISED CALLS
 		//--------------------------------------------------------------------//
+		$arrColumns = Array();
+		$this->_selServiceRecordTypes	= new StatementSelect(	"RecordType JOIN RecordType AS RecordGroup ON RecordType.GroupId = RateGroup.Id" .
+																", CDR",
+																$arrColumns,
+																"CDR.Service = <Service> AND CDR.InvoiceRun = <InvoiceRun> AND RecordGroup.Itemised = 1",
+																"RecordType.Description",
+																NULL,
+																"RecordType.Description");
+		
+		
+		
+		
 		// get list of CDRs grouped by service no, record type
 		// ignoring any record types that do not get itemised
 		$intItemisedCount = $this->_selItemisedCalls->Execute(Array('Account' => $arrInvoiceDetails['Account'], 'InvoiceRun' => $arrInvoiceDetails['InvoiceRun']));
@@ -482,56 +519,8 @@
 					$arrRecordTypeTotal	= $this->_selRecordTypeTotal->Fetch();
 					$fltRecordTypeTotal	= $arrRecordTypeTotal['Charge'];
 				}
-				
-				// build charge record
-				switch($arrData['DisplayType'])
-				{
-					// Type 92
-					case RECORD_DISPLAY_S_AND_E:
-						$strDescription = $arrData['FNN']." : ".$arrData['Description']." (".date("j M Y", strtotime($arrData['StartDatetime']))." to ".date("j M Y", strtotime($arrData['EndDatetime'])).")";
-						$arrDefine['ItemisedDataS&E']	['Description']		['Value']	= $strDescription;
-						$arrDefine['ItemisedDataS&E']	['Items']			['Value']	= (int)$arrData['Units'];
-						$arrDefine['ItemisedDataS&E']	['Charge']			['Value']	= $arrData['Charge'];
-						$arrFileData[] = $arrDefine['ItemisedDataS&E'];
-						break;
-					// Type 93
-					case RECORD_DISPLAY_DATA:
-						$arrDefine['ItemisedDataKB']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataKB']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrData['Destination'];
-						$arrDefine['ItemisedDataKB']	['DataTransfered']	['Value']	= (int)$arrData['Units'];
-						$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrData['Description'];
-						$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrData['Charge'];
-						$arrFileData[] = $arrDefine['ItemisedDataKB'];
-						break;
-					// Type 94
-					case RECORD_DISPLAY_SMS:
-						$arrDefine['ItemisedDataSMS']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataSMS']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataSMS']	['CalledParty']		['Value']	= $arrData['Destination'];
-						$arrDefine['ItemisedDataSMS']	['Items']			['Value']	= (int)$arrData['Units'];
-						$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrData['Description'];
-						$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrData['Charge'];
-						$arrFileData[] = $arrDefine['ItemisedDataSMS'];
-						break;
-					// Type 91
-					case RECORD_DISPLAY_CALL:
-					// Unknown Record Type (should never happen) - just display as a normal Call
-					default:
-						$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrData['StartDatetime']));
-						$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrData['Destination'];
-						$intHours		= floor((int)$arrData['Units'] / 3600);
-						$strDuration	= "$intHours:".date("i:s", (int)$arrData['Units']);
-						$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
-						$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrData['Description'];
-						$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrData['Charge'];
-						$arrFileData[] = $arrDefine['ItemisedDataCall'];
-						break;
-				}
 			}
-			$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
-			$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+
 			// add service total record (89)
 			$arrFileData[] = $arrDefine['ItemSvcFooter'];	
 			// add end record (79)
@@ -861,36 +850,11 @@
 	 *
 	 * @method
 	 */
- 	function GenerateItemisedCalls($arrService, $intRecordGroup)
+ 	function GenerateItemisedCalls($arrService, $arrRecordGroup)
  	{
- 		// TODO
- 		$arrColumns = Array();
-		$arrColumns['Charge']			= "CDR.Charge";
-		$arrColumns['Source']			= "CDR.Source";
-		$arrColumns['Destination']		= "CDR.Destination";
-		$arrColumns['StartDatetime']	= "CDR.StartDatetime";
-		$arrColumns['EndDatetime']		= "CDR.EndDatetime";
-		$arrColumns['Units']			= "CDR.Units";
-		$arrColumns['Description']		= "CDR.Description";
-		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
- 		$this->_selItemisedCalls	= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id" .
- 															", RecordType as RecordGroup",
- 															$arrColumns,
- 															"Service = <Service> " .
- 															"AND RecordGroup.Id = RecordType.GroupId AND " .
- 															"RecordGroup.Id = <RecordGroup>" .
- 															"RecordGroup.Itemised = 1 AND " .
- 															"CDR.InvoiceRun = <InvoiceRun> AND " .
- 															"(" .
- 															"	ISNULL(<RangeStart>)" .
- 															" OR " .
- 															"	CAST(<RangeStart> AS INTEGER) BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER)" .
- 															")",
- 															"CDR.StartDateTime");
- 		
  		$arrWhere = Array();
  		$arrWhere['Service']		= $arrService['Id'];
- 		$arrWhere['RecordGroup']	= $intRecordGroup;
+ 		$arrWhere['RecordGroup']	= $arrRecordGroup['RecordGroup'];
  		$arrWhere['RangeStart']		= $arrService['RangeStart'];
  		$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
 		if ($this->_selItemisedCalls->Execute($arrWhere) === FALSE)
@@ -900,6 +864,70 @@
 			return FALSE;
 		}
 		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
+		
+		// build header record (90)
+		$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= $arrRecordGroup['Description'];
+		$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
+		
+		// Create output for each call
+		$fltTotalCharge = 0.0;
+		foreach ($arrItemisedCalls as $arrItemisedCall)
+		{
+			// build charge record
+			switch($arrRecordGroup['DisplayType'])
+			{
+				// Type 92
+				case RECORD_DISPLAY_S_AND_E:
+					$strDescription = $arrService['FNN']." : ".$arrItemisedCall['Description'];
+					$arrDefine['ItemisedDataS&E']	['Description']		['Value']	= $strDescription;
+					$arrDefine['ItemisedDataS&E']	['Items']			['Value']	= (int)$arrItemisedCall['Units'];
+					$arrDefine['ItemisedDataS&E']	['Charge']			['Value']	= $arrItemisedCall['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataS&E'];
+					break;
+				// Type 93
+				case RECORD_DISPLAY_DATA:
+					$arrDefine['ItemisedDataKB']	['Date']			['Value']	= date("d/m/Y", strtotime($arrItemisedCall['StartDatetime']));
+					$arrDefine['ItemisedDataKB']	['Time']			['Value']	= date("H:i:s", strtotime($arrItemisedCall['StartDatetime']));
+					$arrDefine['ItemisedDataKB']	['CalledParty']		['Value']	= $arrItemisedCall['Destination'];
+					$arrDefine['ItemisedDataKB']	['DataTransfered']	['Value']	= (int)$arrItemisedCall['Units'];
+					$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrItemisedCall['Description'];
+					$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrItemisedCall['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataKB'];
+					break;
+				// Type 94
+				case RECORD_DISPLAY_SMS:
+					$arrDefine['ItemisedDataSMS']	['Date']			['Value']	= date("d/m/Y", strtotime($arrItemisedCall['StartDatetime']));
+					$arrDefine['ItemisedDataSMS']	['Time']			['Value']	= date("H:i:s", strtotime($arrItemisedCall['StartDatetime']));
+					$arrDefine['ItemisedDataSMS']	['CalledParty']		['Value']	= $arrItemisedCall['Destination'];
+					$arrDefine['ItemisedDataSMS']	['Items']			['Value']	= (int)$arrItemisedCall['Units'];
+					$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrItemisedCall['Description'];
+					$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrItemisedCall['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataSMS'];
+					break;
+				// Type 91
+				case RECORD_DISPLAY_CALL:
+				// Unknown Record Type (should never happen) - just display as a normal Call
+				default:
+					$arrDefine['ItemisedDataCall']	['Date']			['Value']	= date("d/m/Y", strtotime($arrItemisedCall['StartDatetime']));
+					$arrDefine['ItemisedDataCall']	['Time']			['Value']	= date("H:i:s", strtotime($arrItemisedCall['StartDatetime']));
+					$arrDefine['ItemisedDataCall']	['CalledParty']		['Value']	= $arrItemisedCall['Destination'];
+					$intHours		= floor((int)$arrItemisedCall['Units'] / 3600);
+					$strDuration	= "$intHours:".date("i:s", (int)$arrItemisedCall['Units']);
+					$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
+					$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrItemisedCall['Description'];
+					$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrItemisedCall['Charge'];
+					$arrFileData[] = $arrDefine['ItemisedDataCall'];
+					break;
+			}
+			
+			$fltTotalCharge += $arrItemisedCall['Charge'];
+		}
+		
+		// add call type total
+		$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltTotalCharge;
+		$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+		
+		return TRUE;
  	}
 
  
@@ -920,7 +948,7 @@
 	 *
 	 * @method
 	 */
- 	protected function GenerateInvoiceData($arrFileData)
+ 	function GenerateInvoiceData($arrFileData)
  	{
 		if (!is_array($arrFileData))
 		{
@@ -1041,4 +1069,5 @@
 		return rtrim($strFileContents);
  	}
  }
+
 ?>
