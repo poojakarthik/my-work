@@ -58,6 +58,11 @@
 	$ttyTitles = $Style->attachObject (new TitleTypes);
 	
 	// Output the Account View
-	$Style->Output ('xsl/content/contact/view.xsl');
+	$Style->Output (
+		'xsl/content/contact/view.xsl',
+		Array (
+			'Account'		=> $cntContact->Pull ('Account')->getValue ()
+		)
+	);
 	
 ?>

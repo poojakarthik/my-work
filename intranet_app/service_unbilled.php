@@ -30,13 +30,18 @@
 	}
 	
 	// Pull unbilled Services
-	$cdrUnbilled = $srvService->UnbilledCDRs ();
+	$cdrUnbilled = $Style->attachObject ($srvService->UnbilledCDRs ());
 	
-	$Style->attachObject (
-		$cdrUnbilled->Sample (
-			isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
-			isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 30
-		)
+	// If there is a specific Record Type wishing to be viewed, constrain against it
+	if ($_GET ['RecordType'])
+	{
+		$cdrUnbilled->Constrain ('RecordType', '=', $_GET ['RecordType']);
+	}
+	
+	// Pull the sample
+	$cdrUnbilled->Sample (
+		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
+		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 30
 	);
 	
 	if (!isset ($_GET ['rangePage']) || $_GET ['rangePage'] == 1)
@@ -57,9 +62,6 @@
 			}
 		}
 	}
-	
-	$rtsRecordTypes = $Style->attachObject (new RecordTypes);
-	$rtsRecordTypes->Constrain ('ServiceType', '=', $srvService->Pull ('ServiceType')->getValue ());
 	
 	// Pull documentation information for a Service and CDR Records
 	$docDocumentation->Explain ('Service');

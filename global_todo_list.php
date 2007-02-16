@@ -75,7 +75,7 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 
 //TODO!bash! show RecordType in CDR list
 //TODO!bash! [  DONE  ]		for invoices
-//TODO!bash! [NOT DONE]		for unbilled charges
+//TODO!bash! [  DONE  ]		for unbilled charges
 
 //TODO!bash! [  DONE  ]		ABN, ACN, FNN to be displayed without spaces.  users will need to copy and paste the numbers without spaces in them
 //TODO!bash! BSB to be displayed as nnn-nnn
@@ -87,7 +87,7 @@ Fatal error: Call to a member function fetch_field() on a non-object in /usr/sha
 //TODO!bash! [  DONE  ]		add costcenter link to account options
 
 //TODO!bash! filter CDR list by Record type:
-//TODO!bash! [UNTESTED]		unbilled charges
+//TODO!bash! [  DONE  ]		unbilled charges
 
 //TODO!bash! add the following reports and test them
 
