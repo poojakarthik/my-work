@@ -126,41 +126,51 @@
 										<td colspan="2"><div class="MicroSeperator"></div></td>
 									</tr>
 									<!--Check for ABN-->
-									<xsl:choose>
-										<xsl:when test="/Response/Account/ABN = ''">
-										</xsl:when>
-										<xsl:otherwise>
-											<tr>
-												<th>
-													<xsl:call-template name="Label">
-														<xsl:with-param name="entity" select="string('Account')" />
-														<xsl:with-param name="field" select="string('ABN')" />
-													</xsl:call-template>
-												</th>
-												<td>
-													<xsl:value-of select="/Response/Account/ABN" />
-												</td>
-											</tr>
-										</xsl:otherwise>
-									</xsl:choose>
+									<xsl:if test="/Response/Account/ABN != ''">
+										<tr>
+											<th>
+												<xsl:call-template name="Label">
+													<xsl:with-param name="entity" select="string('Account')" />
+													<xsl:with-param name="field" select="string('ABN')" />
+												</xsl:call-template>
+											</th>
+											<td>
+												<xsl:value-of select="/Response/Account/ABN" />
+												<xsl:text> [</xsl:text>
+												<a target="_blank">
+													<xsl:attribute name="href">
+														<xsl:text>http://www.search.asic.gov.au/cgi-bin/gns030c?FORMID=gns010s1&amp;ACN=</xsl:text>
+														<xsl:value-of select="/Response/Account/ABN" />
+													</xsl:attribute>
+													<xsl:text>View ASIC</xsl:text>
+												</a>
+												<xsl:text>]</xsl:text>
+											</td>
+										</tr>
+									</xsl:if>
 									<!--Check for ACN-->
-									<xsl:choose>
-										<xsl:when test="/Response/Account/ACN = ''">
-										</xsl:when>
-										<xsl:otherwise>
-											<tr>
-												<th>
-													<xsl:call-template name="Label">
-														<xsl:with-param name="entity" select="string('Account')" />
-														<xsl:with-param name="field" select="string('ACN')" />
-													</xsl:call-template>
-												</th>
-												<td>
-													<xsl:value-of select="/Response/Account/ACN" />
-												</td>
-											</tr>
-										</xsl:otherwise>
-									</xsl:choose>
+									<xsl:if test="/Response/Account/ACN != ''">
+										<tr>
+											<th>
+												<xsl:call-template name="Label">
+													<xsl:with-param name="entity" select="string('Account')" />
+													<xsl:with-param name="field" select="string('ACN')" />
+												</xsl:call-template>
+											</th>
+											<td>
+												<xsl:value-of select="/Response/Account/ACN" />
+												<xsl:text> [</xsl:text>
+												<a target="_blank">
+													<xsl:attribute name="href">
+														<xsl:text>http://www.search.asic.gov.au/cgi-bin/gns030c?FORMID=gns010s1&amp;ACN=</xsl:text>
+														<xsl:value-of select="/Response/Account/ACN" />
+													</xsl:attribute>
+													<xsl:text>View ASIC</xsl:text>
+												</a>
+												<xsl:text>]</xsl:text>
+											</td>
+										</tr>
+									</xsl:if>
 									<tr>
 										<th class="JustifiedWidth">
 											<xsl:call-template name="Label">

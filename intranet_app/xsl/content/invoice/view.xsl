@@ -289,10 +289,10 @@
 						<xsl:when test="/Response/RecordTypes/Results/rangeSample/RecordType[./Id = $CDR/RecordType]/DisplayType = 4">
 							<td>
 								<xsl:call-template name="dt:format-date-time">
-									<xsl:with-param name="year"	select="./StartDatetime/year" />
+									<xsl:with-param name="year"		select="./StartDatetime/year" />
 									<xsl:with-param name="month"	select="./StartDatetime/month" />
 									<xsl:with-param name="day"		select="./StartDatetime/day" />
-			 						<xsl:with-param name="hour"	select="./StartDatetime/hour" />
+			 						<xsl:with-param name="hour"		select="./StartDatetime/hour" />
 									<xsl:with-param name="minute"	select="./StartDatetime/minute" />
 									<xsl:with-param name="second"	select="./StartDatetime/second" />
 									<xsl:with-param name="format"	select="'%A, %b %d, %Y %I:%M:%S %P'"/>
