@@ -207,7 +207,6 @@
 			$arrOutput[] = $arrRow;
 		}
 		return $arrOutput;
-		
 	}
 	
 	// return a list of rates for a service
@@ -310,12 +309,36 @@
 		// NZ Mobile
 		$strWhere .= " AND CDR.Rate != 1636";
 		
-		// SMS20 - we are 20c x etech is 18c x
+		// SMS20 - we are 20c x etech is 18c x -> Shared500 plan. published rate is 20c x
 		$strWhere .= " AND CDR.Rate != 38";
+		
+		// National-08c-00f-01s-00m - was 7.5cpm
+		$strWhere .= " AND CDR.Rate != 69";
+		
+		// T3 ld NZ - we charge about 19c less per call ?? don't know why
+		$strWhere .= " AND CDR.Rate != 7377";
+		
+		// virt voip nz - we charge less per call
+		$strWhere .= " AND CDR.Rate != 2781";
+		
+		// rated zero by etech
+		$strWhere .= " AND CDREtech.Charge > 0";
+		
+		//FleetNational-30c-00f-30s-00m:00c03m		-> whole call is free
+		//TODO!flame! I think rating is broken for this type of rate
+		$strWhere .= " AND CDR.Rate != 14";
 		
 		// AAPT BandStep 5,6,13
 		$strWhere .= " AND !(CDR.Carrier = 3 AND (CDR.CDR LIKE '%0006%' OR CDR.CDR LIKE '%0005%'  OR CDR.CDR LIKE '%0013%'))";
-													
+		
+		// INBOUND - don't show any
+		$strWhere .= " AND CDR.ServiceType != 103";
+		// Local-08c-00f-01s-00m:00c20m		-> charging at 0
+		// National-11c-00f-01s-00m			-> we charge about 0.00185 more per second
+		// Local-08c-00f-01s-04m			-> we are charging less but our rating is correct... is the rate wrong?  only one call on this atm
+		
+		
+		
 		$this->selEtechCDRs = new StatementSelect(	"CDREtech LEFT OUTER JOIN CDR ON (CDREtech.VixenCDR = CDR.Id) LEFT OUTER JOIN RecordType ON (CDREtech.RecordType = RecordType.Id) LEFT OUTER JOIN Rate ON (CDR.Rate = Rate.Id)",
 													"CDREtech.*, (CDREtech.Charge - CDR.Charge) AS Difference, CDR.Cost AS CDRCost, RecordType.Name AS RecordTypeName, Rate.Name AS RateName",
 													$strWhere,

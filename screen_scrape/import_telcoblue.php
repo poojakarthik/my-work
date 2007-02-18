@@ -397,7 +397,8 @@ Blue Shared 500 						25
 	$arrPlan = Array();
 	$arrPlan['OneThree']			= 'OneThree-Cost';
 	$arrPlan['Other']				= 'Other-Cost';
-	$arrPlan['ZeroOneNine']			= '1900-28';
+	$arrPlan['OneNineHundred']		= '1900-Cost';
+	$arrPlan['ZeroOneNine']			= '019-28';
 	$arrPlan['SMS']					= 'SMS-22';		//TODO!flame! Is this the correct Rate !!!!
 	
 	// Blue 39c Cap
@@ -566,7 +567,7 @@ Blue Shared 500 						25
 	$arrRates['natrate']				['National 16']									['National']			= 'National-Nat16';
 	$arrRates['natrate']				['Tier 3 corporate Mobile Saver (6.5ff,9cpm)']	['National']			= 'National-09c-07f-01s-00m'; // 6.5c/ff
 	$arrRates['natrate']				['Tier 3 corp. L D (0 ff,10cpm)']				['National']			= 'National-10c-00f-01s-00m';
-	$arrRates['natrate']				['7.5cpm no flag']								['National']			= 'National-08c-00f-01s-00m'; // 7.cpm
+	$arrRates['natrate']				['7.5cpm no flag']								['National']			= 'National-08c-00f-01s-00m'; // 7.5cpm
 	$arrRates['natrate']				['True Blue Fleet (6ff,9cpm)']					['National']			= 'National-09c-06f-01s-00m';
 	$arrRates['natrate']				['National 8c no ff']							['National']			= 'National-08c-00f-01s-00m';
 	$arrRates['natrate']				['5.5cpm no flag']								['National']			= 'National-06c-00f-01s-00m'; // 5.5cpm
@@ -689,7 +690,8 @@ Blue Shared 500 						25
 	// Land Line
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['OneThree']			= 'OneThree-Cost';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['Other']				= 'Other-Cost';
-	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['ZeroOneNine']		= '1900-28';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['ZeroOneNine']		= '019-28';
+	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['OneNineHundred']	= '1900-Cost';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['SMS']				= 'SMS-22';		//TODO!flame! Is this the correct Rate !!!!
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['Mobile']			= 'Mobile-27c-10f-01s-00m:150c10m';
 	$arrRateGroups[SERVICE_TYPE_LAND_LINE]['IDD']				= 'Blue 15c CTM';
@@ -762,7 +764,7 @@ Blue Shared 500 						25
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
 	$objImport->Truncate('AccountGroup');
-	//$objImport->Truncate('CDR');
+	//$objImport->Truncate('xxx_C_DR');
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
 	$objImport->Truncate('Contact');
@@ -771,8 +773,8 @@ Blue Shared 500 						25
 	$objImport->Truncate('Employee');
 	$objImport->Truncate('EmployeeAccountAudit');
 	$objImport->Truncate('ErrorLog');
-	//$objImport->Truncate('FileDownload');
-	//$objImport->Truncate('FileImport');
+	//$objImport->Truncate('xxx_F_ileDownload');
+	//$objImport->Truncate('xxx_F_ileImport');
 	$objImport->Truncate('Invoice');
 	$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
@@ -968,7 +970,29 @@ Blue Shared 500 						25
 		}
 	}
 	
+	//TODO!bash! example
+	// Add Passwords
+	while ($arrRow = $objDecoder->FetchPassword ())
+	{
+		// add the Password Details
+		echo "Importing Password Details: {$arrRow['CustomerId']}\n";
+		if (!$objImport->AddPassword($arrRow['CustomerId'], $arrRow['DataArray']['password']))
+		{
+			echo "WARN : Could not add Password : {$arrRow['CustomerId']}\n";
+		}
+	}
 	
+	// Add CostCentres
+	// Add inbound details
+	// Add recurring charges
+	// Add charges
+	// Add account options
+	// Add payments
+	//TODO!bash! move stuff from _quick_.... scripts to here and vixen_import
+	// look at the examples above for details an how this should be done
+	// 
+	
+/*	
 	// cost centres
 	while ($arrAccount = $objDecoder->FetchCostCentre ())
 	{
@@ -994,7 +1018,7 @@ Blue Shared 500 						25
 			}
 		}
 	}
-
+*/
 /*
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())

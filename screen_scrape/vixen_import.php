@@ -85,6 +85,9 @@ class VixenImport extends ApplicationBaseClass
 		
 		$this->_updSetCostCentre		= new StatementUpdate("Service", "FNN = <FNN> AND Account = <Account>", Array ('CostCentre'=>''));
 		
+		//TODO!bash! example
+		$this->_updContactPassword		= new StatementUpdate("Contact", "Account = <Account>", Array ("PassWord"	=> ""));
+		
 		$this->sqlQuery 				= new Query();
 		$this->selServicesByType		= new StatementSelect(	"Service",
 														"Id, FNN",
@@ -584,6 +587,26 @@ class VixenImport extends ApplicationBaseClass
 		return $this->insServiceRatePlan->Execute($arrData);
 	}
 	
+	//TODO!bash! example
+	// add a password to all contacts for an account
+	function AddPassword($intAccount, $strPassword)
+	{
+		// clean and test input
+		$arrContact = Array();
+		$arrContact['Account'] = (int)$intAccount;
+		$arrContact['PassWord'] = trim($strPassword);
+		if (!$arrContact['Account'] || !$arrContact['PassWord'])
+		{
+			return FALSE
+		}
+
+		// hash password
+		$arrContact['PassWord'] = sha1($arrContact['PassWord']);
+		
+		// update record
+		return $this->_updContactPassword->Execute($arrContact);
+	}
+	
 	// ------------------------------------//
 	// Create Links
 	// ------------------------------------//
@@ -799,6 +822,8 @@ class VixenImport extends ApplicationBaseClass
 		$arrAccount['BillingMethod']	= ($arrAccount['BillingMethod']		== NULL) ? BILLING_METHOD_POST			: $arrAccount['BillingMethod'];
 		$arrAccount['BillingFreqType']	= ($arrAccount['BillingFreqType']	== NULL) ? BILLING_DEFAULT_FREQ_TYPE	: $arrAccount['BillingFreqType'];
 		$arrAccount['PaymentTerms']		= ($arrAccount['PaymentTerms']		== NULL) ? PAYMENT_TERMS_DEFAULT		: $arrAccount['PaymentTerms'];
+		$arrAccount['DisableDDR']		= ($arrAccount['DisableDDR']		== NULL) ? 0							: $arrAccount['DisableDDR'];
+		$arrAccount['DisableLatePayment']	= ($arrAccount['DisableLatePayment']		== NULL) ? 0				: $arrAccount['DisableLatePayment'];
 		$arrAccount['Archived']			= (int)$arrAccount['Archived'];
 		return $this->_insWithIdAccount->Execute($arrAccount);
 	}

@@ -1,5 +1,5 @@
 <?php
-	
+	//TODO!bash! look at the examles in import_telcoblue & vixen_import
 	system ("clear;");
 	
 	require ("config/application_loader.php");

@@ -107,7 +107,7 @@
 		// close existing file
 		if ($this->ptrFile)
 		{
-			fclose($this->ptrFile);
+			@fclose($this->ptrFile);
 		}
 		
 		// check if the file exists
