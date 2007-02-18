@@ -760,50 +760,56 @@ Blue Shared 500 						25
 	require_once('vixen_import.php');
 	$objImport = new VixenImport($arrConfig);
 
+	//TODO!bash! add any new tables that need to be truncated
+
 	// Truncate Tables
 	echo "Truncating Tables\n";
-	$objImport->Truncate('Account');
-	$objImport->Truncate('AccountGroup');
+	//$objImport->Truncate('Account');
+	//$objImport->Truncate('AccountGroup');
 	//$objImport->Truncate('xxx_C_DR');
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
-	$objImport->Truncate('Contact');
-	$objImport->Truncate('CreditCard');
+	//$objImport->Truncate('Contact');
+	//$objImport->Truncate('CreditCard');
 	$objImport->Truncate('DirectDebit');
-	$objImport->Truncate('Employee');
+	//$objImport->Truncate('Employee');
 	$objImport->Truncate('EmployeeAccountAudit');
 	$objImport->Truncate('ErrorLog');
 	//$objImport->Truncate('xxx_F_ileDownload');
 	//$objImport->Truncate('xxx_F_ileImport');
-	$objImport->Truncate('Invoice');
-	$objImport->Truncate('InvoiceOutput');
+	//$objImport->Truncate('Invoice');
+	//$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
-	$objImport->Truncate('InvoiceTemp');
+	//$objImport->Truncate('InvoiceTemp');
 	$objImport->Truncate('Note');
 	$objImport->Truncate('Payment');
 	$objImport->Truncate('ProvisioningExport');
 	$objImport->Truncate('ProvisioningLog');
+/*	
 	$objImport->Truncate('Rate');
 	$objImport->Truncate('RateGroup');
 	$objImport->Truncate('RateGroupRate');
 	$objImport->Truncate('RatePlan');
 	$objImport->Truncate('RatePlanRateGroup');
 	$objImport->Truncate('RatePlanRecurringCharge');
+*/
 	$objImport->Truncate('RecurringCharge');
 	$objImport->Truncate('RecurringChargeType');
 	$objImport->Truncate('Request');
-	$objImport->Truncate('Service');
+	//$objImport->Truncate('Service');
 	$objImport->Truncate('ServiceAddress');
 	$objImport->Truncate('ServiceMobileDetail');
+/*
 	$objImport->Truncate('ServiceRateGroup');
 	$objImport->Truncate('ServiceRatePlan');
+*/
 	$objImport->Truncate('ServiceRecurringCharge');
-	$objImport->Truncate('ServiceTotal');
-	$objImport->Truncate('ServiceTypeTotal');
+	//$objImport->Truncate('ServiceTotal');
+	//$objImport->Truncate('ServiceTypeTotal');
 	
 	// clean import array
 	$arrImport = Array();
-	
+/*	
 	// Import Rates
 	$arrImport['/home/vixen/vixen_seed/Rate/Rate.csv'] = 'Rate';
 	$arrIDDRates = glob('/home/vixen/vixen_seed/Rate/IDD/*.csv');
@@ -823,7 +829,7 @@ Blue Shared 500 						25
 
 	// Import Employee
 	$arrImport['/home/vixen/vixen_seed/Employee/Employee.csv'] = 'Employee';
-	
+*/	
 	// Import Charge Types
 	$arrImport['/home/vixen/vixen_seed/RecurringChargeType/RecurringChargeType.csv'] = 'RecurringChargeType';
 	$arrImport['/home/vixen/vixen_seed/ChargeType/ChargeType.csv'] = 'ChargeType';
@@ -839,7 +845,7 @@ Blue Shared 500 						25
 			Die();
 		}
 	}
-	
+/*	
 	// Validate Rates
 	$mixValid = $objImport->ValidateRates();
 	if ($mixValid === TRUE)
@@ -877,7 +883,8 @@ Blue Shared 500 						25
 		echo "FATAL ERROR : Could not match RatePlans to RecurringCharges\n";
 		Die();
 	}
-
+*/
+/*
 	// get delinquents
 	$arrRow = $objDecoder->FetchCustomerById(1000154916);
 	$arrScrape = $arrRow['DataArray'];
@@ -893,7 +900,8 @@ Blue Shared 500 						25
 		echo "Delinquents in system : $intDelinquents\n";
 	}
 	sleep(2);
-	
+*/
+/*	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
 	{	
@@ -936,7 +944,7 @@ Blue Shared 500 						25
 			Die();
 		}
 	}
-
+*/
 	// Add Mobile Details
 	while ($arrRow = $objDecoder->FetchMobileDetail())
 	{
@@ -992,7 +1000,7 @@ Blue Shared 500 						25
 	// look at the examples above for details an how this should be done
 	// 
 	
-/*	
+	
 	// cost centres
 	while ($arrAccount = $objDecoder->FetchCostCentre ())
 	{
@@ -1018,8 +1026,8 @@ Blue Shared 500 						25
 			}
 		}
 	}
-*/
-/*
+
+
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
 	{	
@@ -1063,7 +1071,7 @@ Blue Shared 500 						25
 			//echo "No Notes found for  : {$arrRow['CustomerId']}\n";
 		}
 	}
-*/
+
 	//finish
 	echo "Done\n";
 	echo "Added : $intCustomerCount Accounts\n";
