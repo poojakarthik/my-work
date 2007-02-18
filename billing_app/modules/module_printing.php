@@ -111,7 +111,7 @@
 		
 		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service, CostCentre",
 																"FNN, Service.Id AS Id, CostCentre.Name AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
-																"Account = <Account> AND (ISNULL(ClosedOn) OR ClosedOn > NOW()) AND Service.CostCentre = CostCentre.Id",
+																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND Service.CostCentre = CostCentre.Id",
 																"CostCentre.Name",
 																NULL,
 																"Service.Id, ServiceExtension.RangeStart");
@@ -127,7 +127,7 @@
  		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
  																$arrColumns,
  																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
- 																"ServiceTypeTotal.FNN, GroupId.Description",
+ 																"ServiceTypeTotal.FNN, GroupType.Description",
  																NULL,
  																"GroupType.Description");
  		
@@ -168,7 +168,7 @@
  															$arrColumns,
  															"Service = <Service> " .
  															"AND RecordGroup.Id = RecordType.GroupId AND " .
- 															"RecordGroup.Id = <RecordGroup>" .
+ 															"RecordGroup.Id = <RecordGroup> " .
  															"RecordGroup.Itemised = 1 AND " .
  															"CDR.InvoiceRun = <InvoiceRun> AND " .
  															"(" .
@@ -400,8 +400,8 @@
 		
 		// PAYMENT DETAILS
 		// build output
-		$arrDefine['PaymentData']		['BillExpRef']		['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
-		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account']."9";	// FIXME: Where do we get the last digit from?
+		$arrDefine['PaymentData']		['BillExpRef']		['Value']	= $arrInvoiceDetails['Account'].MakeLuhn($arrInvoiceDetails['Account']);
+		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account'].MakeLuhn($arrInvoiceDetails['Account']);
 		$arrDefine['PaymentData']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
 		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
