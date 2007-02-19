@@ -166,15 +166,15 @@
  		$this->_selItemisedCalls	= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id" .
  															", RecordType as RecordGroup",
  															$arrColumns,
- 															"Service = <Service> " .
- 															"AND RecordGroup.Id = RecordType.GroupId AND " .
- 															"RecordGroup.Id = <RecordGroup> " .
+ 															"Service = <Service> AND " .
+ 															"RecordGroup.Id = RecordType.GroupId AND " .
+ 															"RecordGroup.Id = <RecordGroup> AND " .
  															"RecordGroup.Itemised = 1 AND " .
  															"CDR.InvoiceRun = <InvoiceRun> AND " .
  															"(" .
- 															"	ISNULL(<RangeStart>)" .
+ 															"	<RangeStart> <=> NULL " .
  															" OR " .
- 															"	CAST(<RangeStart> AS INTEGER) BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER)" .
+ 															"	(<RangeStart> BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER) " .
  															")",
  															"CDR.StartDateTime");
  															
@@ -185,9 +185,9 @@
 	 															"RecordGroup.Itemised = 1 AND " .
 	 															"CDR.InvoiceRun = <InvoiceRun> AND " .
 	 															"(" .
-	 															"	ISNULL(<RangeStart>)" .
+	 															"	<RangeStart> <=> NULL " .
 	 															" OR " .
-	 															"	CAST(<RangeStart> AS INTEGER) BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER)" .
+	 															"	<RangeStart> BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER) " .
 	 															")",
 	 															"CDR.StartDateTime");
 																
