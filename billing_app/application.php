@@ -671,7 +671,7 @@
 			
 			// work out the bill printing target
 			// TODO - LATER : fake it for now
-			$intPrintTarget = BILL_PRINT_ETECH;
+			$intPrintTarget = BILL_PRINT;
 			
 			// build billing output for this invoice
 			$this->_arrBillOutput[$intPrintTarget]->AddInvoice($arrInvoiceData);
@@ -1616,7 +1616,7 @@
 	 *
 	 * @method
 	 */
-	 function Reprint($arrInvoices, $intPrintTartget = BILL_PRINT_ETECH)
+	 function Reprint($arrInvoices, $intPrintTartget = BILL_PRINT)
 	 {
 		// Truncate the InvoiceOutput table
 		$this->_rptBillingReport->AddMessage("Truncating InvoiceOutput table...\t\t\t", FALSE);
