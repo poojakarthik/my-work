@@ -174,7 +174,7 @@
  															"(" .
  															"	<RangeStart> <=> NULL " .
  															" OR " .
- 															"	<RangeStart> BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER) " .
+	 														"	CAST(SUBSTRING(CDR.FNN, -2) AS UNSIGNED) BETWEEN <RangeStart> AND <RangeEnd> " .
  															")",
  															"CDR.StartDatetime");
  															
@@ -187,7 +187,7 @@
 	 															"(" .
 	 															"	<RangeStart> <=> NULL " .
 	 															" OR " .
-	 															"	<RangeStart> BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER) " .
+	 															"	CAST(SUBSTRING(CDR.FNN, -2) AS UNSIGNED) BETWEEN <RangeStart> AND <RangeEnd> " .
 	 															")",
 	 															"CDR.StartDatetime");
 																
@@ -637,7 +637,7 @@
 		$this->_arrFileData[] = $arrDefine['InvoiceFooter'];
 		
 		// Process and implode the data so it can be inserted into the DB
-		$strFileContents = GenerateInvoiceData($this->_arrFileData);
+		$strFileContents = $this->GenerateInvoiceData($this->_arrFileData);
 		
 		// Insert into InvoiceOutput table
 		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
@@ -662,52 +662,62 @@
 	 *
 	 * Builds the bill file
 	 *
-	 * @param		string		strInvoiceRun	The Invoice Run to build from
 	 * @param		boolean		bolSample		optional This is a sample billing file
 	 *
 	 * @return		string						filename
 	 *
 	 * @method
 	 */
- 	function BuildOutput($strInvoiceRun, $bolSample = FALSE)
+ 	function BuildOutput($intOutputType = BILL_COMPLETE)
  	{
-		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
+		// generate filenames
+		switch ($intOutputType)
+		{
+			case BILL_SAMPLE:
+				$strFilename		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".zip";
+				$strInvoiceTable	= 'InvoiceTemp';
+				$bolSample			= TRUE;
+				break;
+			
+			case BILL_COMPLETE:
+				$strFilename		= BILLING_LOCAL_PATH.date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH.date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
+				$strInvoiceTable	= 'Invoice';
+				$bolSample			= FALSE;
+				break;
+				
+			case BILL_REPRINT:
+				$strFilename		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
+				$strInvoiceTable	= 'Invoice';
+				$bolSample			= FALSE;
+				break;	
+		}
+		
+		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "Status = ".INVOICE_PRINT, NULL, NULL, "Status");
 		if ($selMetaData->Execute() === FALSE)
 		{
-			// ERROR
+			Debug('$selMetaData : '.$selMetaData->Error());
 			return FALSE;
 		}
 		$arrMetaData = $selMetaData->Fetch();
 		
+		//Debug("{$arrMetaData['MinId']} {$arrMetaData['MaxId']} {$arrMetaData['Invoices']} {$arrMetaData['InvoiceRun']}");
+
+		// Set the InvoiceRun
+		$strInvoiceRun = $arrMetaData['InvoiceRun'];
+		
 		if($arrMetaData['Invoices'] == 0)
 		{
 			// Nothing to do
+			Debug("Nothing to do");
 			return FALSE;
 		}
 
-		// generate filename
-		if($bolSample)
-		{
-			$strFilename	= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbf";
-			$strMetaName	= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".vbm";
-			$strZipName		= BILLING_LOCAL_PATH_SAMPLE."sample".date("Y-m-d").".zip";
-		}
-		else
-		{
-			$strFilename	= BILLING_LOCAL_PATH.date("Y-m-d").".vbf";
-			$strMetaName	= BILLING_LOCAL_PATH.date("Y-m-d").".vbm";
-			$strZipName		= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
-		}
-		
-		// Use a MySQL select into file Query to generate the file
-		if($bolSample)
-		{
-			$strInvoiceTable = 'InvoiceTemp';
-		}
-		else
-		{
-			$strInvoiceTable = 'Invoice';
-		}
 		$qryBuildFile	= new Query();
 		$strColumns		= "'0010', LPAD(CAST($strInvoiceTable.Id AS CHAR), 10, '0'), InvoiceOutput.Data";
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
@@ -733,7 +743,9 @@
 		}
 		if ($qryBuildFile->Execute($strQuery) === FALSE)
 		{
-
+			// ERROR
+			Debug($qryBuildFile->Error());
+			return FALSE;
 		}
 		
 		// Append metadata to bill output file
