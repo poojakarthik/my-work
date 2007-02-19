@@ -176,7 +176,7 @@
  															" OR " .
  															"	<RangeStart> BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER) " .
  															")",
- 															"CDR.StartDateTime");
+ 															"CDR.StartDatetime");
  															
 		$this->_selItemisedRecordTypes = new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
 																"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description", 
@@ -189,7 +189,7 @@
 	 															" OR " .
 	 															"	<RangeStart> BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER) " .
 	 															")",
-	 															"CDR.StartDateTime");
+	 															"CDR.StartDatetime");
 																
 		$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
 																"RecordType AS RType",
