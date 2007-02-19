@@ -174,7 +174,7 @@
  															"(" .
  															"	<RangeStart> <=> NULL " .
  															" OR " .
- 															"	(<RangeStart> BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER) " .
+ 															"	<RangeStart> BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER) " .
  															")",
  															"CDR.StartDateTime");
  															
