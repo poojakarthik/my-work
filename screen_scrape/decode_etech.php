@@ -581,9 +581,9 @@
 				"Account"		=> $intCustomerId,
 				"Service"		=> NULL,
 				"InvoiceRun"	=> NULL,
-				"CreatedBy"		=> NULL,
+				"CreatedByName"	=> NULL,
 				"CreatedOn"		=> "",
-				"ApprovedBy"	=> "",
+				"ApprovedByName"=> "",
 				"ChargeType"	=> "",
 				"Description"	=> "",
 				"ChargedOn"		=> "",
@@ -636,8 +636,8 @@
 				// In this case, this is also the person who Approved the Charge
 				if ($arrData [0] == "Applied By")
 				{
-					$arrCharge ['CreatedBy'] = $arrData [1];
-					$arrCharge ['ApprovedBy'] = $arrData [1];
+					$arrCharge ['CreatedByName'] = $arrData [1];
+					$arrCharge ['ApprovedByName'] = $arrData [1];
 					continue;
 				}
 				
@@ -680,14 +680,6 @@
 				// Add the Information
 				$arrCharge [$arrChargeFields [$arrData [0]]] .= $arrData [1];
 			}
-			
-			/*
-			// Only add this item if it was added after the 1st of January
-			if (strtotime ($arrCharge ['CreatedOn']) >= mktime (0, 0, 0, 12, 1, 2006))
-			{
-				$arrCharges [] = $arrCharge;
-			}
-			*/
 			
 			$arrCharges [] = $arrCharge;
 		}

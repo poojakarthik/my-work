@@ -981,7 +981,6 @@ Blue Shared 500 						25
 	}
 */
 
-/*
 	//TODO!bash! example
 	// Add Passwords
 	while ($arrRow = $objDecoder->FetchPassword ())
@@ -998,7 +997,8 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%r FAILED %n]\n");
 		}
 	}
-*/
+	
+	exit;
 
 	// Add CostCentres
 	// Add inbound details
@@ -1098,35 +1098,6 @@ Blue Shared 500 						25
 		}
 	}
 	
-	// Add User Notes
-	while ($arrRow = $objDecoder->FetchUserNote())
-	{	
-		echo "Assigning User Notes for : {$arrRow['CustomerId']}                  ";
-		
-		// get the etech note details
-		$arrScrape = $arrRow['DataArray'];
-
-		if ($arrScrape)
-		{
-			$arrNotes = $objDecoder->DecodeUserNote($arrScrape);
-			
-			// add the note
-			if ($objImport->AddCustomerNote ($arrNotes))
-			{
-				echo Console_Color::convert("[%g  DONE  %n]\n");
-			}
-			else
-			{
-				echo Console_Color::convert("[%r  DIED  %n]\n");
-				die ();
-			}
-		}
-		else
-		{
-			echo Console_Color::convert("[%b  NONE  %n]\n");
-		}
-	}
-	
 	// Add Inbound Details
 	while ($arrRow = $objDecoder->FetchInboundDetail())
 	{	
@@ -1142,11 +1113,10 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%r FAILED %n]\n");
 		}
 	}
-	*/
 
-	// Add Inbound Details
+	// Add Invoice Details
 	while ($arrRow = $objDecoder->FetchInvoiceDetail())
-	{	
+	{
 		echo "Fetching Invoice Details : {$arrRow['CustomerId']}                  ";
 		
 		// add the inbound details
@@ -1159,7 +1129,47 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%r FAILED %n]\n");
 		}
 	}
-
+	
+	// Add Account Options (eg: Late Payment Options and Direct Debit Options)
+	while ($arrRow = $objDecoder->FetchAccountOptions ())
+	{
+		echo "Assigning Account Options : {$arrRow['CustomerId']}                 ";
+		
+		// add the inbound details
+		if ($objImport->SetAccountOptions ($arrRow ['CustomerId'], $arrRow ['DataArray']))
+		{
+			echo Console_Color::convert("[%g  DONE  %n]\n");
+		}
+		else
+		{
+			echo Console_Color::convert("[%r FAILED %n]\n");
+		}
+	}
+	*/
+	
+	// once-off charges
+	while ($arrCharges = $objDecoder->FetchCharges ())
+	{
+		echo "Inserting Once-Off Charges : {$arrCharges['CustomerId']}                ";
+		
+		// add the inbound details
+		if (count ($arrCharges ['DataArray']) <> 0)
+		{
+			if ($objImport->AddAccountCharge ($arrCharges ['DataArray']))
+			{
+				echo Console_Color::convert("[%g  DONE  %n]\n");
+			}
+			else
+			{
+				echo Console_Color::convert("[%r FAILED %n]\n");
+			}
+		}
+		else
+		{
+			echo Console_Color::convert("[%b  NONE  %n]\n");
+		}
+	}
+	
 	/*
 	//finish
 	echo "Done\n";

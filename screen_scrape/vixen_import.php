@@ -84,8 +84,10 @@ class VixenImport extends ApplicationBaseClass
 		$this->_insCreditCard			= new StatementInsert("CreditCard");
 		
 		$this->_updSetCostCentre		= new StatementUpdate("Service", "FNN = <FNN> AND Account = <Account>", Array ('CostCentre'=>''));
+		$this->_updSetAccountDetails	= new StatementUpdate("Account", "Id = <Id>", Array ('DisableLatePayment' => '', 'DisableDDR' => ''));
 		$this->_updAccountPassword		= new StatementUpdate("Contact", "Account = <Account>", Array ("PassWord"	=> ""));
-		$this->_insInboundDetail		= new StatementInsert ("ServiceInboundDetail");
+		$this->_insInboundDetail		= new StatementInsert("ServiceInboundDetail");
+		$this->_insCharge				= new StatementInsert("Charge");
 		
 		$this->sqlQuery 				= new Query();
 		$this->selServicesByType		= new StatementSelect(	"Service",
@@ -114,6 +116,24 @@ class VixenImport extends ApplicationBaseClass
 			Array (
 				"FNN"		=> $strFNN,
 				"Account"	=> $strAccount
+			)
+		);
+		
+		return true;
+	}
+	
+	// set account options (non DDR and Late Payment)
+	function SetAccountOptions ($intAccount, $arrDetails)
+	{
+		$arrData = Array(
+			"DisableDDR"			=> $arrDetails ['DisableDDR'],
+			"DisableLatePayment"	=> $arrDetails ['DisableLatePayment']
+		);
+		
+		$this->_updSetAccountDetails->Execute(
+			$arrData, 
+			Array (
+				"Id"		=> $intAccount
 			)
 		);
 		
@@ -500,6 +520,52 @@ class VixenImport extends ApplicationBaseClass
 		return TRUE;
 	}
 	
+	// add charges against an account
+	function AddAccountCharge ($arrCharges)
+	{
+		foreach ($arrCharges as $arrCharge)
+		{
+			if (!isset ($arrCharge['CreatedBy']))
+			{
+				if (isset ($arrCharge ['CreatedByName']))
+				{
+					$arrCharge ['CreatedBy'] = $this->FindEmployee ($arrCharge ['CreatedByName']);
+					unset ($arrCharge ['CreatedByName']);
+				}
+				else if (isset ($arrCharge ['CreatedByFirstName']) && isset ($arrCharge ['CreatedByLastName']))
+				{
+					$arrCharge ['CreatedBy'] = $this->FindEmployee ($arrCharge ['CreatedByFirstName'], $arrCharge ['CreatedByLastName']);
+					unset ($arrCharge ['CreatedByFirstName']);
+					unset ($arrCharge ['CreatedByLastName']);
+				}
+			}
+			
+			if (!isset ($arrCharge['ApprovedBy']))
+			{
+				if (isset ($arrCharge ['ApprovedByName']))
+				{
+					$arrCharge ['ApprovedBy'] = $this->FindEmployee ($arrCharge ['ApprovedByName']);
+					unset ($arrCharge ['ApprovedByName']);
+				}
+				else if (isset ($arrCharge ['ApprovedByFirstName']) && isset ($arrCharge ['ApprovedByLastName']))
+				{
+					$arrCharge ['ApprovedBy'] = $this->FindEmployee ($arrCharge ['ApprovedByFirstName'], $arrCharge ['ApprovedByLastName']);
+					unset ($arrCharge ['ApprovedByFirstName']);
+					unset ($arrCharge ['ApprovedByLastName']);
+				}
+			}
+			
+			$insId = $this->_insCharge->Execute ($arrCharge);
+			
+			if (!$insId)
+			{
+				return FALSE;
+			}
+		}
+		
+		return TRUE;
+	}
+	
 	// add mobile details
 	function AddMobileDetails($arrDetails)
 	{	
@@ -655,13 +721,14 @@ class VixenImport extends ApplicationBaseClass
 	function AddPassword($intAccount, $strPassword)
 	{
 		// clean and test input
-		$arrPassWord = Array();
-
-		// hash password
-		$arrPassWord ['PassWord'] = sha1(trim($strPassword));
+		$arrPassWord = Array(
+			'PassWord'		=> sha1 ($strPassword)
+		);
 		
 		// update record
-		return $this->_updAccountPassword->Execute($arrPassWord, Array ("Account"=>$intAccount));
+		$this->_updAccountPassword->Execute($arrPassWord, Array ("Account"=>$intAccount));
+		
+		return !$this->_updAccountPassword->Error ();
 	}
 	
 	// ------------------------------------//

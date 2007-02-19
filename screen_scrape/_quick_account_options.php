@@ -17,7 +17,7 @@
 	$intTotalCharges = 0;
 	
 	$arrOptions = Array (
-		"DisableDDR"		=> "",
+		"DisableDDR"			=> "",
 		"DisableLatePayment"	=> ""
 	);
 	
