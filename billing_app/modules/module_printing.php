@@ -97,7 +97,7 @@
 																"Account = <Account>",
 																"CreatedOn DESC",
 																BILL_PRINT_HISTORY_LIMIT - 1);
-																
+		/*														
 		$arrColumns = Array();
 		$arrColumns['RecordTypeName']	= "RType.Description";
 		$arrColumns['Charge']			= "SUM(ServiceTypeTotal.Charge)";
@@ -107,7 +107,7 @@
 																"RecordType.GroupId = RType.Id AND ServiceTypeTotal.Account = <Account> AND ServiceTypeTotal.InvoiceRun = <InvoiceRun>",
 																"ServiceTypeTotal.FNN",
 																NULL,
-																"RType.Id");
+																"RType.Id");*/
 		
 		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service, CostCentre",
 																"FNN, Service.Id AS Id, CostCentre.Name AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
@@ -177,6 +177,19 @@
  															"	CAST(<RangeStart> AS INTEGER) BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER)" .
  															")",
  															"CDR.StartDateTime");
+ 															
+		$this->_selItemisedRecordTypes = new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
+																"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description", 
+	 															"Service = <Service> AND " .
+	 															"RecordGroup.Id = RecordType.GroupId AND " .
+	 															"RecordGroup.Itemised = 1 AND " .
+	 															"CDR.InvoiceRun = <InvoiceRun> AND " .
+	 															"(" .
+	 															"	ISNULL(<RangeStart>)" .
+	 															" OR " .
+	 															"	CAST(<RangeStart> AS INTEGER) BETWEEN CAST(SUBSTRING(CDR.FNN, -2) AS INTEGER) AND CAST(SUBTRING(CDR.FNN, -2) AS INTEGER)" .
+	 															")",
+	 															"CDR.StartDateTime");
 																
 		$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
 																"RecordType AS RType",
@@ -348,7 +361,7 @@
 		$arrDefine['InvoiceDetails']	['Postcode']		['Value']	= $arrCustomerData['Postcode'];
 		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days", time()));
 		
-		$arrFileData[] = $arrDefine['InvoiceDetails'];
+		$this->_arrFileData[] = $arrDefine['InvoiceDetails'];
 		
 		// MONTHLY COMPARISON BAR GRAPH
 		// build output
@@ -359,19 +372,19 @@
 		$arrDefine['GraphHeader']		['YTitle']			['Value']	= "$ Value";
 		$arrDefine['GraphHeader']		['ValueCount']		['Value']	= 1;
 		$arrDefine['GraphHeader']		['LegendText1']		['Value']	= "Monthly Spending";
-		$arrFileData[] = $arrDefine['GraphHeader'];
+		$this->_arrFileData[] = $arrDefine['GraphHeader'];
 		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", time());
 		$arrDefine['GraphData']		['Value1']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
-		$arrFileData[] = $arrDefine['GraphData'];
+		$this->_arrFileData[] = $arrDefine['GraphData'];
 		$intCount = 1;
 		foreach($arrBillHistory as $arrBill)
 		{
 			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime($arrBill['CreatedOn']));
 			$arrDefine['GraphData']		['Value1']			['Value']	= $arrBill['Total'] + $arrBill['Tax'];
-			$arrFileData[] = $arrDefine['GraphData'];
+			$this->_arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
-		$arrFileData[] = $arrDefine['GraphFooter'];
+		$this->_arrFileData[] = $arrDefine['GraphFooter'];
 		
 		// SUMMARY CHARGES
 		// get details from servicetype totals
@@ -385,18 +398,18 @@
 			$arrServiceTypeTotals = Array();
 		}
 		// build output
-		$arrFileData[] = $arrDefine['ChargeTotalsHeader'];
+		$this->_arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
 			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrTotal['RecordTypeName'];
 			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrTotal['Charge'];
-			$arrFileData[] = $arrDefine['ChargeTotal'];
+			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		}
 		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
 		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
-		$arrFileData[] = $arrDefine['ChargeTotal'];
+		$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
-		$arrFileData[] = $arrDefine['ChargeTotalsFooter'];
+		$this->_arrFileData[] = $arrDefine['ChargeTotalsFooter'];
 		
 		// PAYMENT DETAILS
 		// build output
@@ -422,29 +435,115 @@
 																		  "See calls made in the last few days plus " .
 																		  "your local calls itemised, or copy all your " .
 																		  "calls to a spreadsheet for analysis.";
-		$arrFileData[] = $arrDefine['PaymentData'];
+		$this->_arrFileData[] = $arrDefine['PaymentData'];
 		
 		
-		//--------------------------------------------------------------------//
-		// SERVICE SUMMARIES
-		//--------------------------------------------------------------------//
-		// get details from servicetype totals
+		// get details from services
 		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
 		$arrServices = $this->_selServices->FetchAll();
 		
-		// build output
-		$arrFileData[] = $arrDefine['SvcSummaryHeader'];
-		foreach($arrServices as $arrService)
+		// Only generate Service Summaries and Itemised calls if there are services to generate for
+		if ($intCount >= 1)
 		{
-			// Add the Service Summary
-			$this->GenerateServiceSummary($arrService['Id'], $arrService['FNN'], $arrService['CostCentre']);
+			//--------------------------------------------------------------------//
+			// SERVICE SUMMARIES
+			//--------------------------------------------------------------------//
+			
+			// build output
+			$this->_arrFileData[] = $arrDefine['SvcSummaryHeader'];
+			foreach($arrServices as $arrService)
+			{
+				if ($arrService['RangeStart'] && $arrService['RangeEnd'])
+				{
+					$strFNN	= $arrService['FNN']."(".$arrService['ExtensionName'].")";
+				}
+				else
+				{
+					$strFNN	= $arrService['FNN'];
+				}
+				
+				// Add the Service Summary
+				$this->GenerateServiceSummary($arrService['Id'], $strFNN, $arrService['CostCentre']);
+			}
+			$this->_arrFileData[] = $arrDefine['SvcSummaryFooter'];
+			
+			
+			//--------------------------------------------------------------------//
+			// ITEMISED CALLS
+			//--------------------------------------------------------------------//
+		
+			// add start record (70)
+			$this->_arrFileData[] = $arrDefine['ItemisedHeader'];
+			
+			// loop through the services
+			foreach($arrServices as $arrService)
+			{
+				// add service record (80)
+				if ($arrService['RangeStart'] && $arrService['RangeEnd'])
+				{
+					$strFNN	= $arrService['FNN']."(".$arrService['ExtensionName'].")";
+				}
+				else
+				{
+					$strFNN	= $arrService['FNN'];
+				}
+				$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= $strFNN;
+				$this->_arrFileData[] = $arrDefine['ItemSvcHeader'];
+				
+			 	// Fetch the record type data
+			 	$arrWhere = Array();
+			 	$arrWhere['Service']	= $arrService['Id'];
+			 	$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+			 	$arrWhere['RangeStart']	= $arrService['RangeStart'];
+			 	$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
+			 	if ($this->_selItemisedRecordTypes->Execute($arrWhere) === FALSE)
+			 	{
+			 		// ERROR
+			 		return FALSE;
+			 	}
+			 	$arrItemisedRecordTypes = $this->_selItemisedRecordTypes->FetchAll();
+			 	
+			 	
+			 	// Generate the Itemised Call list
+			 	if ($this->GenerateItemisedCalls($arrService, $arrItemisedRecordTypes) === FALSE)
+			 	{
+			 		// ERROR
+			 		return FALSE;
+			 	}
+			 	
+			 	// Fetch the itemised charge data
+			 	$arrWhere = Array();
+				$arrColumns = Array();
+				$arrColumns['Charge']			= "Charge.Amount";
+				$arrColumns['Description']		= "Charge.Description";
+				$arrColumns['ChargeType']		= "Charge.ChargeType";
+				$arrColumns['Nature']			= "Charge.Nature";
+				$this->_selItemisedCharges		= new StatementSelect(	"Charge JOIN Service ON Service.Id = Charge.Service",
+																		$arrColumns,
+																		"Charge.Account = <Account> AND Charge.InvoiceRun = <InvoiceRun>");
+																		
+				if (($intChargeCount = $this->_selItemisedCharges->Execute($arrWhere)) === FALSE)
+				{
+					// ERROR
+					return FALSE;
+				}
+			 	
+				// add service total record (89)
+				$this->_arrFileData[] = $arrDefine['ItemSvcFooter'];
+			}
+			// add end record (79)
+			$this->_arrFileData[] = $arrDefine['ItemisedFooter'];
 		}
-		$arrFileData[] = $arrDefine['SvcSummaryFooter'];
+		
+		// Add general account charges
+		if ($intChargeCount)
+		{
+			// Add the itemised charges
+			// TODO
+		}
 		
 		
-		//--------------------------------------------------------------------//
-		// ITEMISED CALLS
-		//--------------------------------------------------------------------//
+		/*
 		$arrColumns = Array();
 		$this->_selServiceRecordTypes	= new StatementSelect(	"RecordType JOIN RecordType AS RecordGroup ON RecordType.GroupId = RateGroup.Id" .
 																", CDR",
@@ -467,7 +566,7 @@
 		$fltRecordTypeTotal		= 0.0;
 		$arrData				= Array();
 		// add start record (70)
-		$arrFileData[] = $arrDefine['ItemisedHeader'];
+		$this->_arrFileData[] = $arrDefine['ItemisedHeader'];
 		// for each record
 		if($intItemisedCount)
 		{
@@ -481,15 +580,15 @@
 					{
 						// add call type total
 						$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
-						$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+						$this->_arrFileData[] = $arrDefine['ItemCallTypeFooter'];
 						$strCurrentRecordType = "";
 						
 						// add service total record (89)
-						$arrFileData[] = $arrDefine['ItemSvcFooter'];					
+						$this->_arrFileData[] = $arrDefine['ItemSvcFooter'];					
 					}
 					// add service record (80)
 					$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= $arrData['FNN'];
-					$arrFileData[] = $arrDefine['ItemSvcHeader'];
+					$this->_arrFileData[] = $arrDefine['ItemSvcHeader'];
 					
 					$strCurrentService = $arrData['FNN'];
 				}
@@ -502,11 +601,11 @@
 					{
 						// add call type total
 						$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltRecordTypeTotal;
-						$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+						$this->_arrFileData[] = $arrDefine['ItemCallTypeFooter'];
 					}
 					// build header record (90)
 					$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= $arrData['RecordTypeName'];
-					$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
+					$this->_arrFileData[] = $arrDefine['ItemCallTypeHeader'];
 					// reset counters
 					$strCurrentRecordType	= $arrData['RecordTypeName'];
 					
@@ -522,10 +621,10 @@
 			}
 
 			// add service total record (89)
-			$arrFileData[] = $arrDefine['ItemSvcFooter'];	
+			$this->_arrFileData[] = $arrDefine['ItemSvcFooter'];	
 			// add end record (79)
-			$arrFileData[] = $arrDefine['ItemisedFooter'];
-		}
+			$this->_arrFileData[] = $arrDefine['ItemisedFooter'];
+		}*/
 		// add invoice footer (18)
 		if ($arrInvoiceDetails['Balance'] >= BILLING_MINIMUM_TOTAL || $arrCustomerData['DeliveryMethod'] == BILLING_METHOD_EMAIL)
 		{
@@ -535,10 +634,10 @@
 		{
 			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= BILLING_METHOD_DO_NOT_SEND;
 		}
-		$arrFileData[] = $arrDefine['InvoiceFooter'];
+		$this->_arrFileData[] = $arrDefine['InvoiceFooter'];
 		
 		// Process and implode the data so it can be inserted into the DB
-		$strFileContents = GenerateInvoiceData($arrFileData);
+		$strFileContents = GenerateInvoiceData($this->_arrFileData);
 		
 		// Insert into InvoiceOutput table
 		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
@@ -575,7 +674,8 @@
 		$selMetaData = new StatementSelect("InvoiceTemp", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices");
 		if ($selMetaData->Execute() === FALSE)
 		{
-
+			// ERROR
+			return FALSE;
 		}
 		$arrMetaData = $selMetaData->Fetch();
 		
@@ -788,7 +888,7 @@
 		// Service Header
 		$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
 		$arrDefine['SvcSummSvcHeader']		['CostCentre']		['Value']	= $strCostCentre;
-		$arrFileData[] = $arrDefine['SvcSummSvcHeader'];
+		$this->_arrFileData[] = $arrDefine['SvcSummSvcHeader'];
  		
   		// Get ServiceTypeTotals
  		$arrColumns = Array();
@@ -821,14 +921,14 @@
 			$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordType'];
 			$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['Records'];
 			$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Total'];
-			$arrFileData[] = $arrDefine['SvcSummaryData'];
+			$this->_arrFileData[] = $arrDefine['SvcSummaryData'];
 			
 			$fltTotal += $arrServiceSummary['Total'];
  		}
  		
 		// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
 		$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
-		$arrFileData[] = $arrDefine['SvcSummSvcFooter'];
+		$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
  		
  		return $fltTotal;
  	}
@@ -867,7 +967,7 @@
 		
 		// build header record (90)
 		$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= $arrRecordGroup['Description'];
-		$arrFileData[] = $arrDefine['ItemCallTypeHeader'];
+		$this->_arrFileData[] = $arrDefine['ItemCallTypeHeader'];
 		
 		// Create output for each call
 		$fltTotalCharge = 0.0;
@@ -882,7 +982,7 @@
 					$arrDefine['ItemisedDataS&E']	['Description']		['Value']	= $strDescription;
 					$arrDefine['ItemisedDataS&E']	['Items']			['Value']	= (int)$arrItemisedCall['Units'];
 					$arrDefine['ItemisedDataS&E']	['Charge']			['Value']	= $arrItemisedCall['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataS&E'];
+					$this->_arrFileData[] = $arrDefine['ItemisedDataS&E'];
 					break;
 				// Type 93
 				case RECORD_DISPLAY_DATA:
@@ -892,7 +992,7 @@
 					$arrDefine['ItemisedDataKB']	['DataTransfered']	['Value']	= (int)$arrItemisedCall['Units'];
 					$arrDefine['ItemisedDataKB']	['Description']		['Value']	= $arrItemisedCall['Description'];
 					$arrDefine['ItemisedDataKB']	['Charge']			['Value']	= $arrItemisedCall['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataKB'];
+					$this->_arrFileData[] = $arrDefine['ItemisedDataKB'];
 					break;
 				// Type 94
 				case RECORD_DISPLAY_SMS:
@@ -902,7 +1002,7 @@
 					$arrDefine['ItemisedDataSMS']	['Items']			['Value']	= (int)$arrItemisedCall['Units'];
 					$arrDefine['ItemisedDataSMS']	['Description']		['Value']	= $arrItemisedCall['Description'];
 					$arrDefine['ItemisedDataSMS']	['Charge']			['Value']	= $arrItemisedCall['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataSMS'];
+					$this->_arrFileData[] = $arrDefine['ItemisedDataSMS'];
 					break;
 				// Type 91
 				case RECORD_DISPLAY_CALL:
@@ -916,7 +1016,7 @@
 					$arrDefine['ItemisedDataCall']	['Duration']		['Value']	= $strDuration;
 					$arrDefine['ItemisedDataCall']	['Description']		['Value']	= $arrItemisedCall['Description'];
 					$arrDefine['ItemisedDataCall']	['Charge']			['Value']	= $arrItemisedCall['Charge'];
-					$arrFileData[] = $arrDefine['ItemisedDataCall'];
+					$this->_arrFileData[] = $arrDefine['ItemisedDataCall'];
 					break;
 			}
 			
@@ -925,7 +1025,7 @@
 		
 		// add call type total
 		$arrDefine['ItemCallTypeFooter']['TotalCharge']		['Value']	= $fltTotalCharge;
-		$arrFileData[] = $arrDefine['ItemCallTypeFooter'];
+		$this->_arrFileData[] = $arrDefine['ItemCallTypeFooter'];
 		
 		return TRUE;
  	}
@@ -950,7 +1050,7 @@
 	 */
  	function GenerateInvoiceData($arrFileData)
  	{
-		if (!is_array($arrFileData))
+		if (!is_array($this->_arrFileData))
 		{
 			return FALSE;
 		}
@@ -958,7 +1058,7 @@
 		$strFileContents = "";
 		$i = 0;
 		// Loop through Records
-		foreach ($arrFileData as $strKey=>$arrRecord)
+		foreach ($this->_arrFileData as $strKey=>$arrRecord)
 		{
 			$i++;
 			$t = 0;
