@@ -197,7 +197,7 @@
 		{
 
 		}
-		$arrAccounts = $selAccounts->FetchAll();
+		$arrAccounts = $this->selAccounts->FetchAll();
 		
 		// Generate the Invoices
 		$this->GenerateInvoices($arrAccounts);
