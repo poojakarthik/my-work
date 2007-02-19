@@ -179,6 +179,11 @@
 					$_FIELD ['RefType'] = "i";
 					$_FIELD ['ObLib'] = "dataInteger";
 				}
+
+				if (preg_match ("/bigint/", $_FIELD ['Type'])) {
+					$_FIELD ['RefType'] = "d";
+					$_FIELD ['ObLib'] = "dataInteger";
+				}
 				
 				if (preg_match ("/tinyint\(1\)/", $_FIELD ['Type'])) {
 					$_FIELD ['RefType'] = "i";

@@ -97,7 +97,7 @@ class VixenImport extends ApplicationBaseClass
 		$this->_selFindServiceIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
 		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Name", "Name = <Name>", NULL, "1");
 		
-		$this->_insWithIdInvoiceDetail	= new StatementInsert ("Invoice_Bash", NULL, TRUE);
+		$this->_insWithIdInvoiceDetail	= new StatementInsert ("Invoice", NULL, TRUE);
 		
 		$this->_arrCostCentres = Array ();
 	}
@@ -472,7 +472,7 @@ class VixenImport extends ApplicationBaseClass
 			$intInvoiceDate = strtotime ("+1 month", $intInvoiceDate);
 			
 			$arrInvoiceDetails = Array (
-				"Id"				=> $arrInvoice ['InvoiceId'],
+				"Id"				=> (int) $arrInvoice ['InvoiceId'],
 				"AccountGroup"		=> $arrInvoice ['CustomerId'],
 				"Account"			=> $arrInvoice ['CustomerId'],
 				"CreatedOn"			=> date ("Y-m-d", $intInvoiceDate),
@@ -489,9 +489,9 @@ class VixenImport extends ApplicationBaseClass
 				"InvoiceRun"		=> ""
 			);
 			
-			$bolSuccess = $this->_insWithIdInvoiceDetail->Execute ($arrInvoiceDetails);
+			$insId = $this->_insWithIdInvoiceDetail->Execute ($arrInvoiceDetails);
 			
-			if (!$bolSuccess)
+			if (!$insId)
 			{
 				return FALSE;
 			}
