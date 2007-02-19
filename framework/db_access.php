@@ -2319,7 +2319,7 @@ class MySQLFunction
 					if ($mixKey == $this->db->arrTableDefine[$this->_strTable]['Id'])
 					{
 						// add Id
-						$strType .= 'i';
+						$strType .= 'd';
 					}
 					else
 					{
@@ -2361,7 +2361,7 @@ class MySQLFunction
 			if ($this->_bolWithId === TRUE)
 			{
 				// add in the Id if needed
-				$strType .= "i";
+				$strType .= "d";
 				$arrParams[] = $arrData[$this->db->arrTableDefine[$this->_strTable]['Id']];
 			}
 		}
