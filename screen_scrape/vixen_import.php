@@ -88,6 +88,7 @@ class VixenImport extends ApplicationBaseClass
 		$this->_updAccountPassword		= new StatementUpdate("Contact", "Account = <Account>", Array ("PassWord"	=> ""));
 		$this->_insInboundDetail		= new StatementInsert("ServiceInboundDetail");
 		$this->_insCharge				= new StatementInsert("Charge");
+		$this->_insRecurringCharge		= new StatementInsert("RecurringCharge");
 		
 		$this->sqlQuery 				= new Query();
 		$this->selServicesByType		= new StatementSelect(	"Service",
@@ -530,32 +531,58 @@ class VixenImport extends ApplicationBaseClass
 				if (isset ($arrCharge ['CreatedByName']))
 				{
 					$arrCharge ['CreatedBy'] = $this->FindEmployee ($arrCharge ['CreatedByName']);
+					$arrCharge ['ApprovedBy'] = $arrCharge ['CreatedBy'];
+					unset ($arrCharge ['ApprovedByName']);
 					unset ($arrCharge ['CreatedByName']);
 				}
 				else if (isset ($arrCharge ['CreatedByFirstName']) && isset ($arrCharge ['CreatedByLastName']))
 				{
 					$arrCharge ['CreatedBy'] = $this->FindEmployee ($arrCharge ['CreatedByFirstName'], $arrCharge ['CreatedByLastName']);
+					$arrCharge ['ApprovedBy'] = $arrCharge ['CreatedBy'];
 					unset ($arrCharge ['CreatedByFirstName']);
 					unset ($arrCharge ['CreatedByLastName']);
-				}
-			}
-			
-			if (!isset ($arrCharge['ApprovedBy']))
-			{
-				if (isset ($arrCharge ['ApprovedByName']))
-				{
-					$arrCharge ['ApprovedBy'] = $this->FindEmployee ($arrCharge ['ApprovedByName']);
-					unset ($arrCharge ['ApprovedByName']);
-				}
-				else if (isset ($arrCharge ['ApprovedByFirstName']) && isset ($arrCharge ['ApprovedByLastName']))
-				{
-					$arrCharge ['ApprovedBy'] = $this->FindEmployee ($arrCharge ['ApprovedByFirstName'], $arrCharge ['ApprovedByLastName']);
 					unset ($arrCharge ['ApprovedByFirstName']);
 					unset ($arrCharge ['ApprovedByLastName']);
 				}
 			}
 			
 			$insId = $this->_insCharge->Execute ($arrCharge);
+			
+			if (!$insId)
+			{
+				return FALSE;
+			}
+		}
+		
+		return TRUE;
+	}
+	
+	// add recurring charges
+	function AddRecurringCharge ($arrRecurringCharges)
+	{
+		foreach ($arrRecurringCharges as $arrRecurringCharge)
+		{
+			if (!isset ($arrRecurringCharge ['CreatedBy']))
+			{
+				if (isset ($arrRecurringCharge ['CreatedByName']))
+				{
+					$arrRecurringCharge ['CreatedBy'] = $this->FindEmployee ($arrRecurringCharge ['CreatedByName']);
+					$arrRecurringCharge ['ApprovedBy'] = $arrRecurringCharge ['CreatedBy'];
+					unset ($arrRecurringCharge ['ApprovedByName']);
+					unset ($arrRecurringCharge ['CreatedByName']);
+				}
+				else if (isset ($arrRecurringCharge ['CreatedByFirstName']) && isset ($arrRecurringCharge ['CreatedByLastName']))
+				{
+					$arrRecurringCharge ['CreatedBy'] = $this->FindEmployee ($arrRecurringCharge ['CreatedByFirstName'], $arrRecurringCharge ['CreatedByLastName']);
+					$arrRecurringCharge ['ApprovedBy'] = $arrRecurringCharge ['CreatedBy'];
+					unset ($arrRecurringCharge ['CreatedByFirstName']);
+					unset ($arrRecurringCharge ['CreatedByLastName']);
+					unset ($arrRecurringCharge ['ApprovedByFirstName']);
+					unset ($arrRecurringCharge ['ApprovedByLastName']);
+				}
+			}
+			
+			$insId = $this->_insRecurringCharge->Execute ($arrRecurringCharge);
 			
 			if (!$insId)
 			{

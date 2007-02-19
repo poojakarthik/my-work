@@ -744,8 +744,6 @@
 				"AccountGroup"			=> $intCustomerId,
 				"Account"				=> $intCustomerId,
 				"Service"				=> null,
-				"CreatedBy"				=> "",
-				"ApprovedBy"			=> "",
 				"ChargeType"			=> "",
 				"Description"			=> "",
 				"Nature"				=> "DR",
@@ -809,8 +807,8 @@
 				// In this case, this is also the person who Approved the Recurring Charge
 				if ($arrData [0] == "Added By")
 				{
-					$arrRecurringCharge ['CreatedBy'] = $arrData [1];
-					$arrRecurringCharge ['ApprovedBy'] = $arrData [1];
+					$arrRecurringCharge ['CreatedByName'] = $arrData [1];
+					$arrRecurringCharge ['ApprovedByName'] = $arrData [1];
 					continue;
 				}
 				

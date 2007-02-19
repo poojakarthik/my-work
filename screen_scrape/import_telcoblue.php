@@ -980,8 +980,7 @@ Blue Shared 500 						25
 		}
 	}
 */
-
-	//TODO!bash! example
+	
 	// Add Passwords
 	while ($arrRow = $objDecoder->FetchPassword ())
 	{
@@ -998,20 +997,6 @@ Blue Shared 500 						25
 		}
 	}
 	
-	exit;
-
-	// Add CostCentres
-	// Add inbound details
-	// Add recurring charges
-	// Add charges
-	// Add account options
-	// Add payments
-	//TODO!bash! move stuff from _quick_.... scripts to here and vixen_import
-	// look at the examples above for details an how this should be done
-	// 
-	
-	
-	/*
 	// cost centres
 	while ($arrAccount = $objDecoder->FetchCostCentre ())
 	{
@@ -1045,10 +1030,7 @@ Blue Shared 500 						25
 	{
 		echo "Assigning System Notes for : {$arrRow['CustomerId']}                ";
 		
-		// get the etech note details
-		$arrScrape = $arrRow['DataArray'];
-		
-		if ($arrScrape)
+		if (count ($arrRow ['DataArray']) <> 0)
 		{
 			$arrNotes = $objDecoder->DecodeSystemNote ($arrScrape);
 			
@@ -1074,12 +1056,9 @@ Blue Shared 500 						25
 	{	
 		echo "Assigning User Notes for : {$arrRow['CustomerId']}                  ";
 		
-		// get the etech note details
-		$arrScrape = $arrRow['DataArray'];
-
-		if ($arrScrape)
+		if (count ($arrRow ['DataArray']) <> 0)
 		{
-			$arrNotes = $objDecoder->DecodeUserNote($arrScrape);
+			$arrNotes = $objDecoder->DecodeUserNote ($arrScrape);
 			
 			// add the note
 			if ($objImport->AddCustomerNote ($arrNotes))
@@ -1145,7 +1124,6 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%r FAILED %n]\n");
 		}
 	}
-	*/
 	
 	// once-off charges
 	while ($arrCharges = $objDecoder->FetchCharges ())
@@ -1156,6 +1134,29 @@ Blue Shared 500 						25
 		if (count ($arrCharges ['DataArray']) <> 0)
 		{
 			if ($objImport->AddAccountCharge ($arrCharges ['DataArray']))
+			{
+				echo Console_Color::convert("[%g  DONE  %n]\n");
+			}
+			else
+			{
+				echo Console_Color::convert("[%r FAILED %n]\n");
+			}
+		}
+		else
+		{
+			echo Console_Color::convert("[%b  NONE  %n]\n");
+		}
+	}
+	
+	// recurring charges
+	while ($arrRecurringCharges = $objDecoder->FetchRecurringCharges ())
+	{
+		echo "Inserting Recurring Charges : {$arrRecurringCharges['CustomerId']}               ";
+		
+		// add the inbound details
+		if (count ($arrRecurringCharges ['DataArray']) <> 0)
+		{
+			if ($objImport->AddRecurringCharge ($arrRecurringCharges ['DataArray']))
 			{
 				echo Console_Color::convert("[%g  DONE  %n]\n");
 			}
