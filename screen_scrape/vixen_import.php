@@ -97,25 +97,7 @@ class VixenImport extends ApplicationBaseClass
 		$this->_selFindServiceIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
 		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Name", "Name = <Name>", NULL, "1");
 		
-		$arrInvoiceInsert = Array (
-			"Id"				=> "",
-			"AccountGroup"		=> "",
-			"Account"			=> "",
-			"CreatedOn"			=> "",
-			"DueOn"				=> "",
-			"SettledOn"			=> "",
-			"Credits"			=> "",
-			"Debits"			=> "",
-			"Total"				=> "",
-			"Tax"				=> "",
-			"Balance"			=> "",
-			"Disputed"			=> "",
-			"AccountBalance"	=> "",
-			"Status"			=> "",
-			"InvoiceRun"		=> ""
-		);
-
-		$this->_insInvoiceDetail		= new StatementInsert ("Invoice_Bash", $arrInvoiceInsert, TRUE);
+		$this->_insWithIdInvoiceDetail	= new StatementInsert ("Invoice_Bash", NULL, TRUE);
 		
 		$this->_arrCostCentres = Array ();
 	}
@@ -507,10 +489,7 @@ class VixenImport extends ApplicationBaseClass
 				"InvoiceRun"		=> ""
 			);
 			
-			debug ($arrInvoiceDetails);
-			exit;
-			
-			$bolSuccess = $this->_insInvoiceDetail->Execute ($arrInvoiceDetails);
+			$bolSuccess = $this->_insWithIdInvoiceDetail->Execute ($arrInvoiceDetails);
 			
 			if (!$bolSuccess)
 			{
