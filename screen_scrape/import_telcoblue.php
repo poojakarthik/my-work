@@ -24,6 +24,7 @@
 	require_once($strFrameworkDir."report.php");
 	require_once($strFrameworkDir."error.php");
 	require_once($strFrameworkDir."exception_vixen.php");
+	require_once($strFrameworkDir."Color.php");
 	
 	Define('USER_NAME', 'Import');
 	
@@ -798,7 +799,7 @@ Blue Shared 500 						25
 	$objImport->Truncate('Request');
 	//$objImport->Truncate('Service');
 	$objImport->Truncate('ServiceAddress');
-	$objImport->Truncate('ServiceMobileDetail');
+	//$objImport->Truncate('ServiceMobileDetail');
 /*
 	$objImport->Truncate('ServiceRateGroup');
 	$objImport->Truncate('ServiceRatePlan');
@@ -945,6 +946,7 @@ Blue Shared 500 						25
 		}
 	}
 */
+/*
 	// Add Mobile Details
 	while ($arrRow = $objDecoder->FetchMobileDetail())
 	{
@@ -977,19 +979,27 @@ Blue Shared 500 						25
 			//Die();
 		}
 	}
-	
+*/
+
+/*
 	//TODO!bash! example
 	// Add Passwords
 	while ($arrRow = $objDecoder->FetchPassword ())
 	{
 		// add the Password Details
-		echo "Importing Password Details: {$arrRow['CustomerId']}\n";
-		if (!$objImport->AddPassword($arrRow['CustomerId'], $arrRow['DataArray']['password']))
+		echo "Importing Password Details: {$arrRow['CustomerId']}                 ";
+		
+		if ($objImport->AddPassword($arrRow['CustomerId'], $arrRow['DataArray']['password']))
 		{
-			echo "WARN : Could not add Password : {$arrRow['CustomerId']}\n";
+			echo Console_Color::convert("[%g  DONE  %n]\n");
+		}
+		else
+		{
+			echo Console_Color::convert("[%r FAILED %n]\n");
 		}
 	}
-	
+*/
+
 	// Add CostCentres
 	// Add inbound details
 	// Add recurring charges
@@ -1001,83 +1011,163 @@ Blue Shared 500 						25
 	// 
 	
 	
+	/*
 	// cost centres
 	while ($arrAccount = $objDecoder->FetchCostCentre ())
 	{
 		// Loop through each of the Services
 		foreach ($arrAccount ['DataArray'] as $arrService)
 		{
+			echo "Cost Centre Information for : {$arrService ['Account']} ({$arrService ['FNN']})    ";
+			
 			// If there is a Cost Centre defined, update the Service Cost Centre
 			if ($arrService ['CostCentre'])
 			{
 				if ($objImport->SetCostCentre($arrService ['CostCentre'], $arrService ['Account'], $arrService ['FNN']))
 				{
-					echo "Cost centre set for: " . $arrService ['Account'] . " (" . $arrService ['FNN'] . ")\n";
+					echo Console_Color::convert("[%g  DONE  %n]\n");
 				}
 				else
 				{
-					echo "FATAL ERROR: could not set cost centre for : " . $arrService ['Account'] . " (" . $arrService ['FNN'] . ")\n\n";
+					echo Console_Color::convert("[%r  DIED  %n]\n");
 					die ();
 				}
 			}
 			else
 			{
-				echo "NOTICE: no cost centre for : " . $arrService ['Account'] . " (" . $arrService ['FNN'] . ")\n";
+				echo Console_Color::convert("[%b  NONE  %n]\n");
 			}
 		}
 	}
-
-
+	
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
-	{	
+	{
+		echo "Assigning System Notes for : {$arrRow['CustomerId']}                ";
+		
 		// get the etech note details
 		$arrScrape = $arrRow['DataArray'];
-
+		
 		if ($arrScrape)
 		{
-			// decode the note
-			echo "Decoding Note for   : {$arrRow['CustomerId']}\n";
-			$arrNotes = $objDecoder->DecodeSystemNote($arrScrape);
+			$arrNotes = $objDecoder->DecodeSystemNote ($arrScrape);
 			
 			// add the note
-			echo "Importing Notes for  : {$arrRow['CustomerId']}\n";
-			$objImport->AddCustomerNote($arrNotes);
+			if ($objImport->AddCustomerNote ($arrNotes))
+			{
+				echo Console_Color::convert("[%g  DONE  %n]\n");
+			}
+			else
+			{
+				echo Console_Color::convert("[%r  DIED  %n]\n");
+				die ();
+			}
 		}
 		else
 		{
-			//echo "No Notes found for  : {$arrRow['CustomerId']}\n";
+			echo Console_Color::convert("[%b  NONE  %n]\n");
 		}
 	}
 	
 	// Add User Notes
 	while ($arrRow = $objDecoder->FetchUserNote())
 	{	
+		echo "Assigning User Notes for : {$arrRow['CustomerId']}                  ";
+		
 		// get the etech note details
 		$arrScrape = $arrRow['DataArray'];
 
 		if ($arrScrape)
 		{
-			// decode the note
-			echo "Decoding Notes for   : {$arrRow['CustomerId']}\n";
 			$arrNotes = $objDecoder->DecodeUserNote($arrScrape);
 			
 			// add the note
-			echo "Importing Notes for  : {$arrRow['CustomerId']}\n";
-			$objImport->AddCustomerNote($arrNotes);
+			if ($objImport->AddCustomerNote ($arrNotes))
+			{
+				echo Console_Color::convert("[%g  DONE  %n]\n");
+			}
+			else
+			{
+				echo Console_Color::convert("[%r  DIED  %n]\n");
+				die ();
+			}
 		}
 		else
 		{
-			//echo "No Notes found for  : {$arrRow['CustomerId']}\n";
+			echo Console_Color::convert("[%b  NONE  %n]\n");
+		}
+	}
+	
+	// Add User Notes
+	while ($arrRow = $objDecoder->FetchUserNote())
+	{	
+		echo "Assigning User Notes for : {$arrRow['CustomerId']}                  ";
+		
+		// get the etech note details
+		$arrScrape = $arrRow['DataArray'];
+
+		if ($arrScrape)
+		{
+			$arrNotes = $objDecoder->DecodeUserNote($arrScrape);
+			
+			// add the note
+			if ($objImport->AddCustomerNote ($arrNotes))
+			{
+				echo Console_Color::convert("[%g  DONE  %n]\n");
+			}
+			else
+			{
+				echo Console_Color::convert("[%r  DIED  %n]\n");
+				die ();
+			}
+		}
+		else
+		{
+			echo Console_Color::convert("[%b  NONE  %n]\n");
+		}
+	}
+	
+	// Add Inbound Details
+	while ($arrRow = $objDecoder->FetchInboundDetail())
+	{	
+		echo "Fetching Inbound Details : {$arrRow['CustomerId']} ({$arrRow ['FNN']})     ";
+		
+		// add the inbound details
+		if ($objImport->AddInboundDetail ($arrRow))
+		{
+			echo Console_Color::convert("[%g  DONE  %n]\n");
+		}
+		else
+		{
+			echo Console_Color::convert("[%r FAILED %n]\n");
+		}
+	}
+	*/
+
+	// Add Inbound Details
+	while ($arrRow = $objDecoder->FetchInvoiceDetail())
+	{	
+		echo "Fetching Invoice Details : {$arrRow['CustomerId']}                  ";
+		
+		// add the inbound details
+		if ($objImport->AddInvoiceDetail ($arrRow ['DataArray']))
+		{
+			echo Console_Color::convert("[%g  DONE  %n]\n");
+		}
+		else
+		{
+			echo Console_Color::convert("[%r FAILED %n]\n");
 		}
 	}
 
+	/*
 	//finish
 	echo "Done\n";
 	echo "Added : $intCustomerCount Accounts\n";
 	echo "Added : $intRawServiceCount Raw Services\n";
 	echo "Added : $intServiceCount Actual Services\n";
 	Die ();
+	*/
 
 // ---------------------------------------------------------------------------//
 // IMPORT CLASS

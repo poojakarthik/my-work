@@ -84,9 +84,8 @@ class VixenImport extends ApplicationBaseClass
 		$this->_insCreditCard			= new StatementInsert("CreditCard");
 		
 		$this->_updSetCostCentre		= new StatementUpdate("Service", "FNN = <FNN> AND Account = <Account>", Array ('CostCentre'=>''));
-		
-		//TODO!bash! example
-		$this->_updContactPassword		= new StatementUpdate("Contact", "Account = <Account>", Array ("PassWord"	=> ""));
+		$this->_updAccountPassword		= new StatementUpdate("Contact", "Account = <Account>", Array ("PassWord"	=> ""));
+		$this->_insInboundDetail		= new StatementInsert ("ServiceInboundDetail");
 		
 		$this->sqlQuery 				= new Query();
 		$this->selServicesByType		= new StatementSelect(	"Service",
@@ -94,8 +93,29 @@ class VixenImport extends ApplicationBaseClass
 														"Account = <Account> AND ServiceType = <ServiceType>");
 														
 		$this->_selFindService 			= new StatementSelect("Service", "Id", "FNN = <fnn>", "CreatedOn DESC", "1");
+		$this->_selFindServiceByAccount	= new StatementSelect("Service", "Id", "Account = <Account> AND FNN = <FNN>", "CreatedOn DESC", "1");
 		$this->_selFindServiceIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
 		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Name", "Name = <Name>", NULL, "1");
+		
+		$arrInvoiceInsert = Array (
+			"Id"				=> "",
+			"AccountGroup"		=> "",
+			"Account"			=> "",
+			"CreatedOn"			=> "",
+			"DueOn"				=> "",
+			"SettledOn"			=> "",
+			"Credits"			=> "",
+			"Debits"			=> "",
+			"Total"				=> "",
+			"Tax"				=> "",
+			"Balance"			=> "",
+			"Disputed"			=> "",
+			"AccountBalance"	=> "",
+			"Status"			=> "",
+			"InvoiceRun"		=> ""
+		);
+
+		$this->_insInvoiceDetail		= new StatementInsert ("Invoice_Bash", $arrInvoiceInsert, TRUE);
 		
 		$this->_arrCostCentres = Array ();
 	}
@@ -417,24 +437,88 @@ class VixenImport extends ApplicationBaseClass
 		{
 			foreach ($arrNotes as $arrNote)
 			{
-				if (!$arrNote['Employee'])
+				if (!isset ($arrNote['Employee']))
 				{
-					if($arrNote['EmployeeName'])
+					if (isset ($arrNote ['EmployeeName']))
 					{
-						$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeName']);
+						$arrNote ['Employee'] = $this->FindEmployee ($arrNote ['EmployeeName']);
+						unset ($arrNote ['EmployeeName']);
 					}
-					elseif($arrNote['EmployeeFirstName'] && $arrNote['EmployeeLastName'])
+					else if (isset ($arrNote ['EmployeeFirstName']) && isset ($arrNote ['EmployeeLastName']))
 					{
-						$arrNote['Employee'] = $this->FindEmployee($arrNote['EmployeeFirstName'], $arrNote['EmployeeLastName']);
+						$arrNote ['Employee'] = $this->FindEmployee ($arrNote ['EmployeeFirstName'], $arrNote ['EmployeeLastName']);
+						unset ($arrNote ['EmployeeFirstName']);
+						unset ($arrNote ['EmployeeLastName']);
 					}
 				}
-				$this->insNote->Execute($arrNote);
+				
+				$this->insNote->Execute ($arrNote);
 			}
+			
+			return TRUE;
 		}
 		else
 		{
 			return FALSE;
 		}
+	}
+	
+	// add inbound provisioning information
+	function AddInboundDetail ($arrDetails)
+	{
+		// get the service id (identified by CustomerId as Account and FNN)
+		$this->_selFindServiceByAccount->Execute (
+			Array (
+				"Account"	=> $arrDetails ['CustomerId'],
+				"FNN"		=> $arrDetails ['FNN']
+			)
+		);
+		
+		$arrService = $this->_selFindServiceByAccount->Fetch ();
+		
+		$arrDetails ['DataArray']['Service'] = $arrService ['Id'];
+		
+		return $this->_insInboundDetail->Execute ($arrDetails ['DataArray']);
+	}
+	
+	// add inbound provisioning information
+	function AddInvoiceDetail ($arrDetails)
+	{
+		foreach ($arrDetails as $arrInvoice)
+		{
+			$intInvoiceDate = strtotime ($arrInvoice ['Year'] . "-" . $arrInvoice ['Month'] . "-01");
+			$intInvoiceDate = strtotime ("+1 month", $intInvoiceDate);
+			
+			$arrInvoiceDetails = Array (
+				"Id"				=> $arrInvoice ['InvoiceId'],
+				"AccountGroup"		=> $arrInvoice ['CustomerId'],
+				"Account"			=> $arrInvoice ['CustomerId'],
+				"CreatedOn"			=> date ("Y-m-d", $intInvoiceDate),
+				"DueOn"				=> "0000-00-00",
+				"SettledOn"			=> "0000-00-00",
+				"Credits"			=> "0",
+				"Debits"			=> "0",
+				"Total"				=> $arrInvoice ['Amount'],
+				"Tax"				=> ($arrInvoice ['Amount'] * .1),
+				"Balance"			=> $arrInvoice ['Owing'],
+				"Disputed"			=> "",
+				"AccountBalance"	=> "",
+				"Status"			=> "",
+				"InvoiceRun"		=> ""
+			);
+			
+			debug ($arrInvoiceDetails);
+			exit;
+			
+			$bolSuccess = $this->_insInvoiceDetail->Execute ($arrInvoiceDetails);
+			
+			if (!$bolSuccess)
+			{
+				return FALSE;
+			}
+		}
+		
+		return TRUE;
 	}
 	
 	// add mobile details
@@ -518,7 +602,7 @@ class VixenImport extends ApplicationBaseClass
 				}
 				
 				// use the default rategroup for the rateplan
-				if (!$intRateGroup)
+				if (!isset ($intRateGroup))
 				{
 					// find the rategroup
 					$intRateGroup = $this->FindRateGroup($strRateGroupName, $intRecordType);
@@ -592,19 +676,13 @@ class VixenImport extends ApplicationBaseClass
 	function AddPassword($intAccount, $strPassword)
 	{
 		// clean and test input
-		$arrContact = Array();
-		$arrContact['Account'] = (int)$intAccount;
-		$arrContact['PassWord'] = trim($strPassword);
-		if (!$arrContact['Account'] || !$arrContact['PassWord'])
-		{
-			return FALSE
-		}
+		$arrPassWord = Array();
 
 		// hash password
-		$arrContact['PassWord'] = sha1($arrContact['PassWord']);
+		$arrPassWord ['PassWord'] = sha1(trim($strPassword));
 		
 		// update record
-		return $this->_updContactPassword->Execute($arrContact);
+		return $this->_updAccountPassword->Execute($arrPassWord, Array ("Account"=>$intAccount));
 	}
 	
 	// ------------------------------------//
@@ -1027,30 +1105,57 @@ class VixenImport extends ApplicationBaseClass
 	// find Employee
 	function FindEmployee($strFirstName, $strLastName=NULL)
 	{
-		$strFirstName = trim($strFirstName);
-		$strLastName = trim($strLastName);
-		// break apart name to get last name if needed
-		if (!$strLastName)
+		$strFirstName = trim ($strFirstName, chr (194) . chr (160));
+		$strLastName = trim ($strLastName);
+		
+		if ($strFirstName == "System")
 		{
-			$arrName = explode(' ', $strFirstName, 2);
-			$strFirstName = $arrName[0];
-			$strLastName = trim($arrName[1]);
+			return NULL;
+		}
+		
+		if ($strFirstName == "Automatic Process")
+		{
+			return NULL;
+		}
+		
+		// break apart name to get last name if needed
+		if ($strLastName == NULL)
+		{
+			$arrMatches = preg_split ('/\s+/', $strFirstName, -1, PREG_SPLIT_NO_EMPTY);
+			
+			if (isset ($arrMatches[0]))
+			{
+				$strFirstName = $arrMatches[0];
+			}
+			
+			if (isset ($arrMatches[1]))
+			{
+				$strLastName = $arrMatches[1];
+			}
 		}
 		
 		// check if we have a cache of employees
-		if (!is_array($this->_arrEmployee))
+		if (!isset ($this->_arrEmployee))
 		{
 			// get an array of employees
 			$selFindEmployee = new StatementSelect("Employee", "FirstName, LastName, Id");
 			$selFindEmployee->Execute();
-			while($arrEmployee = $selFindEmployee->Fetch())
+			
+			while ($arrEmployee = $selFindEmployee->Fetch())
 			{
-				$this->_arrEmployee[$arrEmployee['LastName']][$arrEmployee['FirstName']] = $arrEmployee['Id'];
+				$this->_arrEmployee [$arrEmployee['LastName']][$arrEmployee['FirstName']] = $arrEmployee ['Id'];
 			}
 		}
 		
 		// return the employee Id
-		return $this->_arrEmployee[$strLastName][$strFirstName];
+		if (isset ($this->_arrEmployee [$strLastName] [$strFirstName]))
+		{
+			return $this->_arrEmployee [$strLastName] [$strFirstName];
+		}
+		else
+		{
+			return NULL;
+		}
 	}
 	
 	//------------------------------------------------------------------------//

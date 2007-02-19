@@ -79,11 +79,11 @@
 		$selNoteTypes	= new StatementSelect('NoteType', '*');		
 		$selNoteTypes->Execute();
 		$this->_arrNoteTypes = Array();
+		
 		while ($arrNoteType = $selNoteTypes->Fetch())
 		{
 			$this->_arrNoteTypes[$arrNoteType['TypeLabel']] = $arrNoteType['Id'];
 		}
-
 	}
 	
 	// ------------------------------------//
@@ -1406,7 +1406,7 @@
 				"June"			=> 6,
 				"July"			=> 7,
 				"August"		=> 8,
-				"September"	=> 9,
+				"September"		=> 9,
 				"October"		=> 10,
 				"November"		=> 11,
 				"December"		=> 12
