@@ -42,11 +42,11 @@ require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 
 // Tables to Truncate
-$arrTables[]	= "Invoice";
-$arrTables[]	= "InvoiceOutput";
-$arrTables[]	= "InvoicePayment";
-$arrTables[]	= "InvoiceTemp";
-$arrTables[]	= "Payment";
+//$arrTables[]	= "Invoice";
+//$arrTables[]	= "InvoiceOutput";
+//$arrTables[]	= "InvoicePayment";
+//$arrTables[]	= "InvoiceTemp";
+//$arrTables[]	= "Payment";
 $arrTables[]	= "ProvisioningExport";
 $arrTables[]	= "ProvisioningLog";
 $arrTables[]	= "Request";
