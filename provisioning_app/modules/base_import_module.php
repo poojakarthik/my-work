@@ -75,7 +75,7 @@
 		$arrServiceColumns['CarrierPreselect']	= NULL;
 				
 		$this->_selMatchRequest					= new StatementSelect("Request", "*",
-			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "RequestDate DESC", "1");
+			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "RequestDateTime DESC", "1");
 		$this->_ubiRequest						= new StatementUpdateById("Request", $arrRequestColumns);
 		$this->_selMatchService 				= new StatementSelect("Service", "*", "FNN = <FNN>", "CreatedOn DESC", "1");
 		$this->_ubiService						= new StatementUpdateById("Service", $arrServiceColumns);
@@ -333,5 +333,43 @@
 		return $strErrorDescription;
 	 }
 	 
+	//------------------------------------------------------------------------//
+	// EmailReport
+	//------------------------------------------------------------------------//
+	/**
+	 * EmailReport()
+	 *
+	 * Emails a report about the request response to the employee who requested it
+	 *
+	 * Emails a report about the request response to the employee who requested it
+	 *
+	 * @return	bool			
+	 *
+	 * @method
+	 */
+	 protected function EmailReport()
+	 {
+	 	// Get Email Report Details
+	 	$arrWhere = Array();
+	 	$arrWhere['Request']	= $this->_arrLog['Request'];
+	 	if ($this->_selEmailReportDetails->Execute($arrWhere) === FALSE)
+	 	{
+	 		// ERROR
+	 		return FALSE;
+	 	}
+	 	if (($arrDetails = $this->_selEmailReportDetails->Fetch()) === FALSE)
+	 	{
+	 		// No match -> Error
+	 		return FALSE;
+	 	}
+	 	
+	 	// TODO: Finish this
+	 	$this->_selEmailReportDetails	= new StatementSelect(	"Request JOIN Employee ON Emplyee.Id = Request.Employee, " .
+	 															"Service JOIN Account ON Service.Accout = Account.Id",
+	 															$arrColumns,
+	 															"Request.Id = <Request>");
+	 	
+	 	
+	 }
  }
 ?>

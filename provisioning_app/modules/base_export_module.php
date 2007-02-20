@@ -75,7 +75,7 @@
 		$arrServiceColumns['CarrierPreselect']	= NULL;
 				
 		$this->_selMatchRequest					= new StatementSelect("Request", "*",
-			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "RequestDate DESC", "1");
+			"Service = <Service> AND Carrier = <Carrier> AND RequestType = <RequestType>", "RequestDateTime DESC", "1");
 		$this->_ubiRequest						= new StatementUpdateById("Request", $arrRequestColumns);
 		$this->_selMatchService 				= new StatementSelect("Service", "*", "FNN = <FNN>", "CreatedOn DESC", "1");
 		$this->_ubiService						= new StatementUpdateById("Service", $arrServiceColumns);
