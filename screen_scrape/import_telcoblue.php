@@ -979,23 +979,8 @@ Blue Shared 500 						25
 			//Die();
 		}
 	}
-*/
 	
-	// Add Passwords
-	while ($arrRow = $objDecoder->FetchPassword ())
-	{
-		// add the Password Details
-		echo "Importing Password Details: {$arrRow['CustomerId']}                 ";
-		
-		if ($objImport->AddPassword($arrRow['CustomerId'], $arrRow['DataArray']['password']))
-		{
-			echo Console_Color::convert("[%g  DONE  %n]\n");
-		}
-		else
-		{
-			echo Console_Color::convert("[%r FAILED %n]\n");
-		}
-	}
+*/
 	
 	// cost centres
 	while ($arrAccount = $objDecoder->FetchCostCentre ())
@@ -1003,7 +988,7 @@ Blue Shared 500 						25
 		// Loop through each of the Services
 		foreach ($arrAccount ['DataArray'] as $arrService)
 		{
-			echo "Cost Centre Information for : {$arrService ['Account']} ({$arrService ['FNN']})    ";
+			echo "Cost Centre Information for : {$arrService ['Account']} ({$arrService ['FNN']})  ";
 			
 			// If there is a Cost Centre defined, update the Service Cost Centre
 			if ($arrService ['CostCentre'])
@@ -1168,6 +1153,23 @@ Blue Shared 500 						25
 		else
 		{
 			echo Console_Color::convert("[%b  NONE  %n]\n");
+		}
+	}
+	
+	// Add Passwords
+	// This is last because it's not as important and it takes forever
+	while ($arrRow = $objDecoder->FetchPassword ())
+	{
+		// add the Password Details
+		echo "Importing Password Details: {$arrRow['CustomerId']}                 ";
+		
+		if ($objImport->AddPassword($arrRow['CustomerId'], $arrRow['DataArray']['password']))
+		{
+			echo Console_Color::convert("[%g  DONE  %n]\n");
+		}
+		else
+		{
+			echo Console_Color::convert("[%r FAILED %n]\n");
 		}
 	}
 	
