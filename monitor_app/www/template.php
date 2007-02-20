@@ -107,8 +107,6 @@ if ($objPage->Pagination == TRUE)
 {
 ?>
 <a href="<?php $objPage->Display('PaginationFirst'); ?>">|&lt;</a> 
-&nbsp; &nbsp; 
-<a href="<?php $objPage->Display('PaginationPrevious'); ?>">&lt;&lt;</a>
 &nbsp; &nbsp; &nbsp; &nbsp; 
 <a href="<?php $objPage->Display('PaginationNext'); ?>">&gt;&gt;</a>
 &nbsp; &nbsp;

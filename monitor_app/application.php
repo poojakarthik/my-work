@@ -63,8 +63,9 @@
  	{
 		parent::__construct();
 		
-		$this->_selCDR = new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.*, FileImport.FileType AS FileType", "CDR.Id = <Id>");
-		$this->sqlQuery 				= new Query();
+		$this->_selCDR 		= new StatementSelect("CDR JOIN FileImport ON CDR.File = FileImport.Id", "CDR.*, FileImport.FileType AS FileType", "CDR.Id = <Id>");
+		$this->_selRate 	= new StatementSelect("Rate", "*", "Id = <Id>");
+		$this->sqlQuery 	= new Query();
 		
 		// get record types
 		$this->arrRecordType = Array();
@@ -74,6 +75,66 @@
 		foreach($arrRecordTypes AS $arrRecordType)
 		{
 			$this->arrRecordType[$arrRecordType['Id']] = $arrRecordType;
+		}
+	}
+	
+	// return an array of rate counts
+ 	function CountCDRRate($intRate=FALSE)
+	{
+		if ($intRate !== FALSE)
+		{
+			$strWhere = "WHERE Rate = ".(int)$intRate;
+		}
+		else
+		{
+			$strWhere = "";
+		}
+		
+		$arrOutput = Array();
+		$strQuery = "SELECT Rate.Id AS Rate, Rate.Name AS Name, Rate.Description AS Description, COUNT(CDR.Id) AS `Count`, SUM(CDR.Cost) AS `Cost`, SUM(CDR.Charge) AS `Charge` FROM CDR JOIN Rate ON (CDR.Rate = Rate.Id) $strWhere GROUP BY CDR.Rate";
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		while ($arrRow = $sqlResult->fetch_assoc())
+		{
+			$arrOutput[$arrRow['Rate']] = $arrRow;
+		}
+		if ($intRate !== FALSE)
+		{
+			return $arrOutput[(int)$intRate];
+		}
+		else
+		{
+			return $arrOutput;
+		}
+	}
+	
+	// return an array of rate counts
+ 	function CountCompareCDRRate($strCompare, $intRate=FALSE)
+	{
+		if ($intRate !== FALSE)
+		{
+			$strWhere = "WHERE CDR.Rate = ".(int)$intRate;
+		}
+		else
+		{
+			$strWhere = "";
+		}
+		
+		$arrOutput = Array();
+		$strQuery = "SELECT Rate.Id AS Rate, Rate.Name AS Name, Rate.Description AS Description, COUNT(CDR.Id) AS `Count`, SUM(CDR.Cost) AS `Cost`, SUM(CDR.Charge) AS `Charge`, COUNT(CDR{$strCompare}.Id) AS `CompareCount`, SUM(CDR{$strCompare}.Charge) AS `CompareCharge` FROM CDR LEFT JOIN Rate ON (CDR.Rate = Rate.Id) LEFT JOIN CDR{$strCompare} ON (CDR{$strCompare}.VixenCDR = CDR.Id) $strWhere GROUP BY CDR.Rate";
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		Debug($this->sqlQuery->Error());
+		
+		while ($arrRow = $sqlResult->fetch_assoc())
+		{
+			$arrOutput[$arrRow['Rate']] = $arrRow;
+		}
+		if ($intRate !== FALSE)
+		{
+			return $arrOutput[(int)$intRate];
+		}
+		else
+		{
+			return $arrOutput;
 		}
 	}
 	
@@ -162,6 +223,45 @@
 		return $selCDR->FetchAll();
 	}
 	
+	// return a Comparison list of CDRs
+	function ListCompareCDR($arrWhere, $strCompare, $intStart, $intLimit)
+	{
+		if (!$strCompare)
+		{
+			return FALSE;
+		}
+		
+		// return 1 - 1000 CDRs
+		$intLimit = (int)$intLimit;
+		$intLimit = max(1, $intLimit);
+		$intLimit = min(1000, $intLimit);
+		
+		$strTable = "CDR JOIN CDR$strCompare ON (CDR.Id = CDR{$strCompare}.VixenCDR)";
+		
+		$strData  = "CDR.*, CDR{$strCompare}.Id AS CompareId";
+		$strData .= ", CDR{$strCompare}.RecordType AS CompareRecordType";
+		$strData .= ", CDR{$strCompare}.Charge AS CompareCharge";
+		$strData .= ", CDR{$strCompare}.SequenceNo AS CompareSequenceNo";
+		$strData .= ", CDR{$strCompare}.Description AS CompareDescription";
+		
+		$intStart = (int)$intStart;
+		$strWhere = "CDR.Id > $intStart";
+		foreach($arrWhere AS $strKey=>$strValue)
+		{
+			$strFullKey = $strKey;
+			if (strpos($strKey, '.') === FALSE)
+			{
+				$strFullKey = "CDR.$strKey";
+			}
+			$strWhere .= " AND $strFullKey = <$strKey>";
+		}
+		$arrWhere[Id] = $intStart;
+
+		$selCDR = new StatementSelect($strTable, $strData, $strWhere, '', $intLimit);
+		$selCDR->Execute($arrWhere);
+		return $selCDR->FetchAll();
+	}
+	
 	// return a single CDR
 	function GetCDR($intId)
 	{
@@ -173,6 +273,20 @@
 		else
 		{
 			return $this->_selCDR->Fetch();
+		}
+	}
+	
+	// return a single Rate
+	function GetRate($intId)
+	{
+		// get Rate
+		if (!$this->_selRate->Execute(Array('Id' => $intId)))
+		{
+			return FALSE;
+		}
+		else
+		{
+			return $this->_selRate->Fetch();
 		}
 	}
 	
@@ -269,6 +383,45 @@
 	}
 	
 	// return a viXen/Etech invoice comparison
+	function ListEtechCDRsByRate($strEtechInvoice, $intRate, $intStart, $intLimit)
+	{
+		// return 1 - 1000 CDRs
+		$intLimit = (int)$intLimit;
+		$intLimit = max(1, $intLimit);
+		$intLimit = min(1000, $intLimit);
+		
+		$intRate = (int)$intRate;
+		$intStart = (int)$intStart;
+		if ($intStart)
+		{
+			$strWhere = "CDREtech.Id > $intStart AND ";
+		}
+		else
+		{
+			$strWhere = "";
+		}
+		
+		$strWhere .= "CDREtech.InvoiceRun = '$strEtechInvoice'";
+		
+		// only show rated CDRs
+		$strWhere .= " AND (CDR.Status = 150 OR CDR.Status = 198 OR CDR.Status = 199)";
+		
+		// only show CDRs for the rate
+		$strWhere .= " AND CDR.Rate = $intRate";
+		
+		$this->selEtechCDRs = new StatementSelect(	"CDREtech LEFT OUTER JOIN CDR ON (CDREtech.VixenCDR = CDR.Id) LEFT OUTER JOIN RecordType ON (CDREtech.RecordType = RecordType.Id) LEFT OUTER JOIN Rate ON (CDR.Rate = Rate.Id)",
+													"CDREtech.*, (CDREtech.Charge - CDR.Charge) AS Difference, CDR.Cost AS CDRCost, CDR.Charge AS CDRCharge, RecordType.Name AS RecordTypeName, Rate.Name AS RateName",
+													$strWhere,
+													NULL,
+													$intLimit);
+		
+
+		$this->selEtechCDRs->Execute();
+		$arrCDRs = $this->selEtechCDRs->FetchAll();
+		return $arrCDRs;
+	}
+	
+	// return a viXen/Etech invoice comparison
 	function ListEtechCDRs($strEtechInvoice, $intStart, $intLimit)
 	{
 		// return 1 - 1000 CDRs
@@ -288,6 +441,16 @@
 		
 		$strWhere .= "CDREtech.InvoiceRun = '$strEtechInvoice'";
 		
+		// only show rated CDRs
+		$strWhere .= " AND (CDR.Status = 150 OR CDR.Status = 198 OR CDR.Status = 199)";
+		
+		// destination mismatch -- WTF??? look at this later
+		//$strWhere .= " AND CDR.Destination != CDREtech.Destination";
+		$strWhere .= " AND CDR.Destination = CDREtech.Destination";
+		
+		// starting point
+		$strWhere .= " AND CDREtech.Id > 100000";
+		
 		// IGNORE
 		
 		// calls  with charge within 1c
@@ -296,40 +459,103 @@
 		// calls to 101
 		$strWhere .= " AND CDREtech.Destination != '101'";
 		
+		// rated zero by etech
+		$strWhere .= " AND CDREtech.Charge > 0";
+		
 		// National-08c-06f-01s-00m:70c10m was missing exs rate
-		$strWhere .= " AND CDR.Rate != 72";
+		//$strWhere .= " AND CDR.Rate != 72";
 		
 		// 1900 rate (etech does not have a 28c flagfall)
-		$strWhere .= " AND CDR.Rate != 151";
+		//$strWhere .= " AND CDR.Rate != 151";
 		
 		// other cost LOOK AT THIS LATER
 		$strWhere .= " AND CDR.Rate != 153";
 		$strWhere .= " AND CDR.Rate != 47";
 		
+		// All IDD Rates LOOK AT THIS LATER
+		$strWhere .= " AND CDR.RecordType != 28 AND CDR.RecordType != 27";
+		
 		// NZ Mobile
-		$strWhere .= " AND CDR.Rate != 1636";
+		//$strWhere .= " AND CDR.Rate != 1636";
 		
 		// SMS20 - we are 20c x etech is 18c x -> Shared500 plan. published rate is 20c x
 		$strWhere .= " AND CDR.Rate != 38";
+		
+		// SMS22 - we are 23c x etech is 20c x ->
+		$strWhere .= " AND CDR.Rate != 39";
 		
 		// National-08c-00f-01s-00m - was 7.5cpm
 		$strWhere .= " AND CDR.Rate != 69";
 		
 		// T3 ld NZ - we charge about 19c less per call ?? don't know why
-		$strWhere .= " AND CDR.Rate != 7377";
+		$strWhere .= " AND CDR.Rate != 7378";
 		
 		// virt voip nz - we charge less per call
-		$strWhere .= " AND CDR.Rate != 2781";
+		$strWhere .= " AND CDR.Rate != 2782";
 		
-		// rated zero by etech
-		$strWhere .= " AND CDREtech.Charge > 0";
+		// National-08c-06f-01s-00m:70c10m			-> we rate 16c lower per call, or randomly more 1c - 6c
+		//											-> this is probably a rate mismatch
+		$strWhere .= " AND CDR.Rate != 72";
 		
-		//FleetNational-30c-00f-30s-00m:00c03m		-> whole call is free
+		// National-30c-18f-30s-00m					-> we rate lower per call
+		//											-> 
+		$strWhere .= " AND CDR.Rate != 19";
+		
+		//Mobile-30c-18f-30s-00m					-> we rate lower per call
+		//											-> 
+		$strWhere .= " AND CDR.Rate != 4";
+		
+		// National VOIP BH
+		// we are 10c etech is 16c
+		$strWhere .= " AND CDR.Rate != 91";
+		
+		// Mobile-30c-00f-01s-30m					-> etech not charrging the 30c minimum
+		$strWhere .= " AND CDR.Rate != 115";
+		
+		
+		// FLEET RATES
 		//TODO!flame! I think rating is broken for this type of rate
+		// etech have some calls < 180sec rated > 0
+		// we have some calls > 180ser rated at 0
+		
+		//FleetNational-30c-00f-30s-00m:00c03m
 		$strWhere .= " AND CDR.Rate != 14";
 		
-		// AAPT BandStep 5,6,13
-		$strWhere .= " AND !(CDR.Carrier = 3 AND (CDR.CDR LIKE '%0006%' OR CDR.CDR LIKE '%0005%'  OR CDR.CDR LIKE '%0013%'))";
+		//FleetMobile-30c-00f-30s-00m:00c03m
+		$strWhere .= " AND CDR.Rate != 12";
+		
+		//FleetMobile-25c-00f-01s-00m:00c03m
+		$strWhere .= " AND CDR.Rate != 96";
+		
+		//FleetMobile-40c-00f-30s-00m:00c03m
+		$strWhere .= " AND CDR.Rate != 13";
+		
+		//FleetNational-40c-00f-30s-00m:00c03m
+		$strWhere .= " AND CDR.Rate != 15";
+		
+		
+		//PINNACLE RATES
+		// etech charge 50c any time of day
+		// we charge a different rate out of business hours
+		$strWhere .= " AND CDR.Rate != 10";
+		$strWhere .= " AND CDR.Rate != 26";
+		$strWhere .= " AND CDR.Rate != 24";
+		$strWhere .= " AND CDR.Rate != 25";
+		$strWhere .= " AND CDR.Rate != 11";
+		$strWhere .= " AND CDR.Rate != 9";
+		$strWhere .= " AND CDR.Rate != 121";
+		$strWhere .= " AND CDR.Rate != 89";
+		$strWhere .= " AND CDR.Rate != 122";
+		
+		
+		// National 14 is rating at 15C !!!!!!!!!!!!!!!!!!!!!!
+		
+		//Roaming-35
+		// etech are rating at 17.69% markup on cost
+		$strWhere .= " AND CDR.Rate != 40";
+		
+		// AAPT BandStep 4
+		$strWhere .= " AND !(CDR.Carrier = 3 AND (CDR.CDR LIKE '%0004%'))";
 		
 		// INBOUND - don't show any
 		$strWhere .= " AND CDR.ServiceType != 103";
@@ -340,7 +566,7 @@
 		
 		
 		$this->selEtechCDRs = new StatementSelect(	"CDREtech LEFT OUTER JOIN CDR ON (CDREtech.VixenCDR = CDR.Id) LEFT OUTER JOIN RecordType ON (CDREtech.RecordType = RecordType.Id) LEFT OUTER JOIN Rate ON (CDR.Rate = Rate.Id)",
-													"CDREtech.*, (CDREtech.Charge - CDR.Charge) AS Difference, CDR.Cost AS CDRCost, RecordType.Name AS RecordTypeName, Rate.Name AS RateName",
+													"CDREtech.*, (CDREtech.Charge - CDR.Charge) AS Difference, CDR.Cost AS CDRCost, CDR.Charge AS CDRCharge, RecordType.Name AS RecordTypeName, Rate.Name AS RateName",
 													$strWhere,
 													NULL,
 													$intLimit);

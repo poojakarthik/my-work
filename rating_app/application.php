@@ -709,11 +709,11 @@
 	 	// get the current charge (in $)
 		$fltCharge = $this->_arrCurrentCDR['Charge'];
 		
-		// calculate rounded charge in cents
-		$intRoundedCharge = Ceil($fltCharge * 100);
+		// round up to nearest 10th of a cent (in cents)
+		$fltRoundedCharge = Ceil($fltCharge * 1000) / 10;
 		
-		// calculate rounded charge in $
-		$fltRoundedCharge = $intRoundedCharge / 100;
+		// round to nearest cent (in $)
+		$fltRoundedCharge = round($fltRoundedCharge) / 100;
 		
 		// take the difference and deposit into an offshore bank account ;)
 		$this->_DonkeyAccount = ($fltRoundedCharge - $fltCharge) + $this->_DonkeyAccount;

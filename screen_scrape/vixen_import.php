@@ -76,6 +76,7 @@ class VixenImport extends ApplicationBaseClass
 		
 		$this->_insWithIdAccountGroup	= new StatementInsert("AccountGroup", NULL, TRUE);
 		$this->_insWithIdAccount		= new StatementInsert("Account", NULL, TRUE);
+		$this->_insWithIdInvoiceDetail	= new StatementInsert ("Invoice", NULL, TRUE);
 		
 		$this->_insAccountGroup			= new StatementInsert("AccountGroup");
 		$this->_insAccount				= new StatementInsert("Account");
@@ -99,8 +100,6 @@ class VixenImport extends ApplicationBaseClass
 		$this->_selFindServiceByAccount	= new StatementSelect("Service", "Id", "Account = <Account> AND FNN = <FNN>", "CreatedOn DESC", "1");
 		$this->_selFindServiceIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
 		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Name", "Name = <Name>", NULL, "1");
-		
-		$this->_insWithIdInvoiceDetail	= new StatementInsert ("Invoice", NULL, TRUE);
 		
 		$this->_arrCostCentres = Array ();
 	}
@@ -492,6 +491,7 @@ class VixenImport extends ApplicationBaseClass
 			$intInvoiceDate = strtotime ($arrInvoice ['Year'] . "-" . $arrInvoice ['Month'] . "-01");
 			$intInvoiceDate = strtotime ("+1 month", $intInvoiceDate);
 			
+			//(int)$arrInvoice ['InvoiceId']
 			$arrInvoiceDetails = Array (
 				"Id"				=> (int) $arrInvoice ['InvoiceId'],
 				"AccountGroup"		=> $arrInvoice ['CustomerId'],
@@ -509,6 +509,8 @@ class VixenImport extends ApplicationBaseClass
 				"Status"			=> "",
 				"InvoiceRun"		=> ""
 			);
+			//var_dump($arrInvoiceDetails);
+			//Die;
 			
 			$insId = $this->_insWithIdInvoiceDetail->Execute ($arrInvoiceDetails);
 			

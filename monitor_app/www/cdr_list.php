@@ -20,6 +20,8 @@ if (!$intLimit)
 }
 $intStatus 		= (int)$_GET['Status'];
 $intRecordType 	= (int)$_GET['RecordType'];
+$intRate	 	= (int)$_GET['Rate'];
+$strCompare		= $_GET['Compare'];
 $strStatus 		= GetConstantDescription($intStatus, 'CDR');
 $strRecordType 	= $appMonitor->arrRecordType[$intRecordType]['Name'];
 $intMaxId 		= $intStart;
@@ -28,7 +30,7 @@ $intMaxId 		= $intStart;
 $objPage->AddLink("cdr_index.php","[ CDR Menu ]");
 $objPage->AddBackLink();
 
-// get CDR Status list
+// get CDR list options
 $arrWhere = Array();
 if ($intStatus)
 {
@@ -37,6 +39,14 @@ if ($intStatus)
 if ($intRecordType)
 {
 	$arrWhere['RecordType'] = $intRecordType;
+}
+if ($intRate)
+{
+	$arrWhere['Rate'] = $intRate;
+	
+	// show rate details
+	$objPage->AddTitle('Rate Details');
+	$objPage->ShowRateSummary($intRate);
 }
 
 // show title
@@ -51,11 +61,25 @@ if ($intStatus)
 if ($intRecordType)
 {
 	$strTitle .= $strJoin." RecordType: $intRecordType - $strRecordType ";
+	$strJoin = "and";
 }
+if ($intRate)
+{
+	$strTitle .= $strJoin." Rate: $intRate ";
+	$strJoin = "and";
+}
+
 $objPage->AddTitle($strTitle);
 
 // show list
-$objPage->ShowCDRList($arrWhere, $intStart, $intLimit);
+if($strCompare)
+{
+	$objPage->ShowCDRCompareList($arrWhere, $strCompare, $intStart, $intLimit);
+}
+else	
+{
+	$objPage->ShowCDRList($arrWhere, $intStart, $intLimit);
+}
 
 // display the page
 $objPage->Render();

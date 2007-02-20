@@ -100,6 +100,62 @@
 		return TRUE;
 	}
 	
+	function ShowCDRRateList()
+	{
+		// get CDR Status list
+		$arrRates = $this->appMonitor->CountCDRRate();
+		if (is_array($arrRates))
+		{
+			// title
+			$this->AddTitle('CDRs by Rate');
+			
+			// table
+			$tblMenu = $this->NewTable('Border');
+			$tblMenu->AddRow(Array('Rate', 'Name', 'Description', 'Count', 'Cost', 'Charge', 'Compare'));
+			$tblMenu->Align(Array('Right', '', '', 'Right', 'Right', 'Right'));
+			foreach($arrRates AS $intRate=>$arrDetails)
+			{
+				$arrRow = Array($intRate, $arrDetails['Name'], $arrDetails['Description'], $arrDetails['Count'], $arrDetails['Cost'], $arrDetails['Charge'], Array('Value'=>'etech', 'Href'=>"cdr_list.php?Rate=$intRate&Compare=Etech"));
+				$tblMenu->AddRow($arrRow, "cdr_list.php?Rate=$intRate");
+			}
+			$this->AddTable($tblMenu);
+		}
+		else
+		{
+			$this->AddError("NO CDRs FOUND");
+			return FALSE;
+		}
+		return TRUE;
+	}
+	
+	function ShowCDRRateCompareList($strCompare)
+	{
+		// get CDR Status list
+		$arrRates = $this->appMonitor->CountCompareCDRRate($strCompare);
+		if (is_array($arrRates))
+		{
+			// title
+			$this->AddTitle('CDRs by Rate');
+			
+			// table
+			$tblMenu = $this->NewTable('Border');
+			$tblMenu->AddRow(Array('Rate', 'Name', 'Description', 'Count', "$strCompare Count", 'Cost', 'Charge', "$strCompare Charge", 'Compare'));
+			$tblMenu->Align(Array('Right', '', '', 'Right', 'Right', 'Right', 'Right', 'Right'));
+			foreach($arrRates AS $intRate=>$arrDetails)
+			{
+				$arrRow = Array($intRate, $arrDetails['Name'], $arrDetails['Description'], $arrDetails['Count'], $arrDetails['CompareCount'], $arrDetails['Cost'], $arrDetails['Charge'], $arrDetails['CompareCharge'], Array('Value'=>$strCompare, 'Href'=>"cdr_list.php?Rate=$intRate&Compare=$strCompare"));
+				$tblMenu->AddRow($arrRow, "cdr_list.php?Rate=$intRate");
+			}
+			$this->AddTable($tblMenu);
+		}
+		else
+		{
+			$this->AddError("NO CDRs FOUND");
+			return FALSE;
+		}
+		return TRUE;
+	}
+	
 	function ShowCDRList($arrWhere, $intStart, $intLimit)
 	{
 		$arrCDRs = $this->appMonitor->ListCDR($arrWhere, $intStart, $intLimit);
@@ -119,7 +175,73 @@
 			
 			// pagination ('previous' button won't work properly)
 			$intPaginateStart = $intMaxId - $intLimit;
-			$this->AddPagination("cdr_list.php", "Status=$intStatus", $intPaginateStart, $intLimit);
+			$arrOptions = Array();
+			foreach($arrWhere AS $strKey=>$strValue)
+			{
+				$arrOptions[] = "$strKey=$strValue";
+			}
+			$strOptions = implode('&', $arrOptions);
+			$this->AddPagination("cdr_list.php", $strOptions, $intPaginateStart, $intLimit);
+		}
+		else
+		{
+			$this->AddError("NO CDRs FOUND");
+			return FALSE;
+		}
+		return TRUE;
+	}
+	
+	function ShowCDRCompareList($arrWhere, $strCompare, $intStart, $intLimit)
+	{
+		
+		$arrCDRs = $this->appMonitor->ListCompareCDR($arrWhere, $strCompare, $intStart, $intLimit);
+		if (is_array($arrCDRs))
+		{
+			// table
+			$tblCDR = $this->NewTable('Border');
+			$tblCDR->AddRow(Array('Id', 'Account', 'Service', 'FNN', 'Source', 'Destination', 'Desc.', " $strCompare Desc.", 'Units', 'Cost', 'Charge', " $strCompare Charge", 'Diff.', 'Credit', 'Rate', 'Dest.', 'SvcType', 'RecType', " $strCompare RecType", 'Status', 'Carrier', 'Start'));
+			$tblCDR->Align(Array('Right', 'Right', 'Right', 'Right', 'Right', 'Right', '', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right'));
+			foreach($arrCDRs AS $arrCDR)
+			{
+				$intMaxId = max($intMaxId, $arrCDR['Id']);
+				$strDifference = '';
+				
+				$fltDifference = (float)$arrCDR['Charge'] - (float)$arrCDR['CompareCharge'];
+				$strDifference = number_format($fltDifference, 4);
+				
+				// colours
+				if ($fltDifference >= -0.012 && $fltDifference <= 0.012)
+				{
+					$strDifference = "<b><font color='#00AA00'>".$strDifference."</font></b>";
+				}
+				elseif ($fltDifference >= -1 && $fltDifference < 0)
+				{
+					$strDifference = "<b><font color='#FF8800'>".$strDifference."</font></b>";
+				}
+				elseif ($fltDifference > 0 && $fltDifference <= 1)
+				{
+					$strDifference = "<b><font color='#FF0088'>".$strDifference."</font></b>";
+				}
+				else
+				{
+					$strDifference = "<b><font color='#FF0000'>".$strDifference."</font></b>";
+				}
+				
+				$arrRow = Array($arrCDR['Id'], $arrCDR['Account'], $arrCDR['Service'], $arrCDR['FNN'], $arrCDR['Source'], $arrCDR['Destination'], $arrCDR['Description'], $arrCDR['CompareDescription'], $arrCDR['Units'], $arrCDR['Cost'], $arrCDR['Charge'], $arrCDR['CompareCharge'], $strDifference, $arrCDR['Credit'], $arrCDR['Rate'], $arrCDR['DestinationCode'], $arrCDR['ServiceType'], $arrCDR['RecordType'], $arrCDR['CompareRecordType'], $arrCDR['Status'], $arrCDR['Carrier'], $arrCDR['StartDatetime']);
+				$tblCDR->AddRow($arrRow, "cdr_view.php?Id={$arrCDR['Id']}");
+			}
+			$this->AddTable($tblCDR);
+			
+			// pagination ('previous' button won't work properly)
+			$intPaginateStart = $intMaxId - $intLimit;
+			$arrOptions = Array();
+			foreach($arrWhere AS $strKey=>$strValue)
+			{
+				$arrOptions[] = "$strKey=$strValue";
+			}
+			$arrOptions[] = "Compare=$strCompare";
+			$strOptions = implode('&', $arrOptions);
+			$this->AddPagination("cdr_list.php", $strOptions, $intPaginateStart, $intLimit);
 		}
 		else
 		{
@@ -294,7 +416,30 @@
 	
 	function ShowRate($intRate)
 	{
-		//TODO!rich! show details of a rate
+		$intRate = (int)$intRate;
+		$arrRate = $this->appMonitor->GetRate($intRate);
+		$tblRate = $this->NewTable('Border');
+		foreach($arrRate AS $strKey=>$mixValue)
+		{
+			$tblRate->AddRow(Array($strKey, $mixValue));
+		}
+		$this->AddTable($tblRate);
+		return TRUE;
+	}
+	
+	function ShowRateSummary($intRate)
+	{
+		$intRate = (int)$intRate;
+		$arrRate = $this->appMonitor->GetRate($intRate);
+		$tblRate = $this->NewTable('Border');
+		$tblRate->AddRow(Array('Id', 'Name', 'Description', 'RecordType'));
+		$tblRate->Align(Array('Right', '', '', '', 'Right'));
+		
+		$arrRow = Array($arrRate['Id'], $arrRate['Name'], $arrRate['Description'], $arrRate['RecordType']);
+		$tblRate->AddRow($arrRow);
+		
+		$this->AddTable($tblRate);
+		return TRUE;
 	}
 	
 	function ShowRateList($intRateGroup)
@@ -366,12 +511,12 @@
 
 			// table
 			$tblCDR = $this->NewTable('Border');
-			$tblCDR->AddRow(Array('Etech CDR Id', 'Vixen CDR Id', 'Account', 'Service', 'FNN', 'Destination', 'Description', 'Units', 'Charge', 'Cost', 'Credit', 'ServiceType', 'RecordType', 'Status', 'Start', 'Rate', 'Difference'), FALSE, TRUE);
-			$tblCDR->Align(Array('Right', 'Right', 'Right', 'Right', 'Right', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right'));
+			$tblCDR->AddRow(Array('Etech CDR Id', 'Vixen CDR Id', 'Account', 'FNN', 'Destination', 'Description', 'Units', 'Charge', 'Charge', 'Cost', 'Credit', 'ServiceType', 'RecordType', 'Status', 'Start', 'Rate', 'Difference'), FALSE, TRUE);
+			$tblCDR->Align(Array('Right', 'Right', 'Right', 'Right', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right'));
 			foreach($arrCDRs AS $arrCDR)
 			{
 				$intMaxId = max($intMaxId, $arrCDR['Id']);
-				$arrRow = Array($arrCDR['Id'], $arrCDR['VixenCDR'],  $arrCDR['Account'], $arrCDR['Service'], $arrCDR['FNN'], $arrCDR['Destination'], $arrCDR['Description'], $arrCDR['Units'], $arrCDR['Charge'], $arrCDR['CDRCost'], $arrCDR['Credit'], $arrCDR['ServiceType'], $arrCDR['RecordTypeName'], "<b>".$arrCDR['Status']."</b>", $arrCDR['StartDatetime'], $arrCDR['RateName'], $arrCDR['Difference']);
+				$arrRow = Array($arrCDR['Id'], $arrCDR['VixenCDR'],  $arrCDR['Account'], $arrCDR['FNN'], $arrCDR['Destination'], $arrCDR['Description'], $arrCDR['Units'], $arrCDR['Charge'], $arrCDR['CDRCharge'], $arrCDR['CDRCost'], $arrCDR['Credit'], $arrCDR['ServiceType'], $arrCDR['RecordTypeName'], "<b>".$arrCDR['Status']."</b>", $arrCDR['StartDatetime'], $arrCDR['RateName'], $arrCDR['Difference']);
 				$tblCDR->AddRow($arrRow, "cdr_compare_etech.php?Id={$arrCDR['Id']}");
 			}
 			$this->AddTable($tblCDR);

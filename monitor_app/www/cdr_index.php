@@ -17,7 +17,8 @@ $objPage->SetPageLink('[ CDR Menu ]');
 // menu
 $objPage->AddLink("cdr_list_status.php","[ CDRs by Status ]");
 $objPage->AddLink("cdr_list_status_recordtype.php","[ CDRs by Status, RecordType ]");
-
+$objPage->AddLink("cdr_list_rate.php","[ CDRs by Rate ]");
+$objPage->AddLink("cdr_list_rate.php?Compare=Etech","[ CDRs by Rate, Etech Comparison ]");
 // display the page
 $objPage->Render();
 
