@@ -102,11 +102,12 @@
 		$this->arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
 		$this->arrServiceColumns['Service']			= "Service.Id";
 		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
-																"RatePlan",
-																$this->arrServiceColumns,
-																"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
-																"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)",
-																"RatePlan.Id");
+																	"RatePlan",
+																	$this->arrServiceColumns,
+																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
+																	"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
+																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id ORDER BY CreatedOn DESC LIMIT 1)",
+																	"RatePlan.Id");
 		$this->strTestAccounts =		" AND " .
 																"Id = 1000009145 OR " .
 																"Id = 1000007460 OR " .
@@ -416,6 +417,7 @@
 			}
 			
 			// for each service belonging to this account
+			$arrUniqueServiceList = Array();
 			foreach ($arrServices as $arrService)
 			{
 				$fltServiceCredits	= 0.0;

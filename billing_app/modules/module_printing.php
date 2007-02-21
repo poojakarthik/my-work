@@ -271,6 +271,9 @@
 		
 		$this->_arrInvoiceDetails = $arrInvoiceDetails;
 		
+		// clean the file data array
+		$this->_arrFileData = Array();
+		
 		//--------------------------------------------------------------------//
 		//                          FRONT PAGE
 		//--------------------------------------------------------------------//
