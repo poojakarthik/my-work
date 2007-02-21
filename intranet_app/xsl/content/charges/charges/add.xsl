@@ -5,9 +5,9 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Add Charge Type</h1>
+		<h1>Add Adjustment Type</h1>
 		
-		<h2 class="Charge"> Charge Details</h2>
+		<h2 class="Adjustment">Adjustment Details</h2>
 		<form method="POST" action="charges_charge_add.php">
 			
 			<!--TODO! bash! [  DONE  ]		Add Errors for when required fields are not entered!!-->
@@ -22,13 +22,13 @@
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'CType-Blank'">
-							Please enter a Charge Code.
+							Please enter an Adjustment Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Descr-Blank'">
-							Please enter a Charge Description
+							Please enter an Adjustment Description
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CType-Exists'">
-							The Charge Code you entered already exists.  Please enter a unique Charge Code.
+							The Adjustment Code you entered already exists.  Please enter a unique Adjustment Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Nature'">
 							Please select a valid Nature.
@@ -173,7 +173,7 @@
 				<strong><span class="Red">* </span></strong>: Required field<br/>
 			</div>
 			<div class = "Right">
-			<input type="submit" value="Create Charge &#0187;" class="input-submit" />
+			<input type="submit" value="Create Adjustment &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

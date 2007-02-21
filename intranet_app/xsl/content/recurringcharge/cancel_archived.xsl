@@ -7,7 +7,7 @@
 		<h1>Cancellation Failed</h1>
 		
 		<div class = "MsgErrorWide">
-			The Recurring Charge could not be Cancelled.
+			The Recurring Adjustment could not be Cancelled.
 
 		</div>
 	</xsl:template>

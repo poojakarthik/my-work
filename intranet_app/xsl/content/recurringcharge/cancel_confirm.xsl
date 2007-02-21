@@ -6,9 +6,9 @@
 	<xsl:template name="Content">
 	<!--TODO!Bash! [  DONE  ]		Urgent - This page needs a menu back to view account-->
 	<!--TODO!Bash! [  DONE  ]		Urgent - Continuing does not work!!!!-->
-		<h1>Cancel Recurring Charge</h1>
+		<h1>Cancel Recurring Adjustment</h1>
 		
-		<h2 class="Charge"> Cancellation Details</h2>
+		<h2 class="Adjustment">Cancellation Details</h2>
 		
 		<form method="post" action="recurring_charge_cancel.php">
 			<input type="hidden" name="Id">
@@ -83,13 +83,10 @@
 							</th>
 						</tr>
 					</table>
-					</div>
-
-				
-
+				</div>
 			</xsl:if>
-			<div class = "SmallSeperator"></div>
-			<div class = "Right">
+			<div class="SmallSeperator"></div>
+			<div class="Right">
 				<input type="Submit" name="Confirm" value="Confirm Cancellation &#0187;" class="input-submit" />
 			</div>
 		</form>

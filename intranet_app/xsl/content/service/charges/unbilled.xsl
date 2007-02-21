@@ -28,17 +28,17 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<!--TODO!bash! [  DONE  ]		URGENT - Add a table for Charges & Credits -->
+		<!--TODO!bash! [  DONE  ]		URGENT - Add a table for Adjustment -->
 		<!--TODO!bash! [  DONE  ]		Show all added sevice charges with status CHARGE_APPROVED(Green) OR CHARGE_WAITING. -->
 		<!--TODO!bash! [  DONE  ]		Do NOT show CHARGE_DECLINED or CHARGE_INVOICED -->
 
 		<!-- Unbilled Charges -->
 		<xsl:if test="/Response/Charges-Unbilled">
-			<h2 class="Charge">Unbilled Charges</h2>
+			<h2 class="Adjustment">Unbilled Adjustments</h2>
 			<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 				<tr class="First">
 					<th width="30">#</th>
-					<th>Charge Code</th>
+					<th>Adjustment Code</th>
 					<th>Description</th>
 					<th>Created On</th>
 					<th>Created By</th>
@@ -123,7 +123,7 @@
 		</xsl:if>
 		
 		<!-- Unbilled Calls -->
-		<h2 class="Charge">Unbilled Calls</h2>
+		<h2 class="Adjustment">Unbilled Calls</h2>
 		
 		<form method="get" action="service_unbilled.php">
 			<input type="hidden" name="Id">
@@ -287,7 +287,7 @@
 		<xsl:choose>
 			<xsl:when test="/Response/CDRs-Unbilled/Results/collationLength = 0">
 				<div class="MsgNoticeWide">
-					There are no Unbilled Charges associated with this Service.
+					There are no Unbilled Adjustments associated with this Service.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/CDRs-Unbilled/Results/rangeSample/CDR) = 0">

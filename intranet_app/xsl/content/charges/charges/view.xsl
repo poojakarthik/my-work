@@ -6,13 +6,13 @@
 	<xsl:import href="../../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>View Charge Type Details</h1>
+		<h1>View Adjustment Type Details</h1>
 		
 		<div class="FormPopup">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<th class="JustifiedWidth">Charge Code:</th>
+						<th class="JustifiedWidth">Adjustment Code:</th>
 						<td><xsl:value-of select="/Response/ChargeType/ChargeType" /></td>
 					</tr>
 					<tr>

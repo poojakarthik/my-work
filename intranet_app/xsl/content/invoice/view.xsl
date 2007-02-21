@@ -81,7 +81,7 @@
 		
 		<!-- Credits & Debits -->
 		<xsl:if test="/Response/Charges">
-			<h2 class="Charge">Credits &amp; Debits</h2>
+			<h2 class="Adjustment">Adjustments</h2>
 			
 					<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 						<tr class="First">
@@ -89,7 +89,7 @@
 							<th>Code</th>
 							<th>Description</th>
 							<th>Service</th>
-							<th>Charge Date</th>
+							<th>Adjustment Date</th>
 							<th>Amount</th>
 							<th>Nature</th>
 						</tr>
@@ -148,7 +148,7 @@
 				<xsl:choose>
 				<xsl:when test="/Response/Charges/Results/collationLength = 0">
 					<div class="MsgNoticeWide">
-						There are no Charges associated with this Invoice.
+						There are no Adjustments associated with this Invoice.
 					</div>
 				</xsl:when>
 			</xsl:choose>

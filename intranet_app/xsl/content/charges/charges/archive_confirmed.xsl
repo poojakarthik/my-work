@@ -4,16 +4,16 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Charge Type Archive Confirmation</h1>
+		<h1>Adjustment Type Archive Confirmation</h1>
 		
 		<p>
-			The charge type has successfully been Archived.
+			The Adjustment Type has successfully been Archived.
 		</p>
 		
 		<ul>
 			<li>
 				Back to
-				<a href="charges_charge_list.php">Listing Charge Types</a>.
+				<a href="charges_charge_list.php">Adjustment Types Listing</a>.
 			</li>
 		</ul>
 	</xsl:template>

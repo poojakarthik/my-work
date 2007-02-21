@@ -50,13 +50,13 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<!-- Unbilled Charges -->
+		<!-- Unbilled Adjustments -->
 		<xsl:if test="/Response/Charges-Unbilled">
-			<h2 class="Charge">Unbilled Charges</h2>
+			<h2 class="Adjustment">Unbilled Adjustments</h2>
 			<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 				<tr class="First">
 					<th width="30">#</th>
-					<th>Charge Code</th>
+					<th>Adjustment Code</th>
 					<th>Description</th>
 					<th>Service</th>
 					<th>Created On</th>
@@ -150,7 +150,7 @@
 			<!--TODO!bash! [  DONE  ]		msgnotice === "There are no Charges or Credits associated with this Service." -->
 			<xsl:if test="/Response/Charges-Unbilled/Results/collationLength = 0">
 				<div class="MsgNoticeWide">
-					There are no Charges or Credits associated with this Service.
+					There are no Adjustments associated with this Account.
 				</div>
 			</xsl:if>
 			

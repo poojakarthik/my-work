@@ -5,10 +5,10 @@
 	<xsl:import href="../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Charge Type Added</h1>
+		<h1>Adjustment Type Added</h1>
 		
 		<div class="MsgNoticeWide">
-			The Charge Type has been successfully added.
+			The Adjustment Type has been successfully added.
 		</div>
 	</xsl:template>
 </xsl:stylesheet>

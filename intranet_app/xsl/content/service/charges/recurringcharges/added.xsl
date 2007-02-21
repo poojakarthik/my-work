@@ -5,10 +5,10 @@
 	<xsl:import href="../../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Recurring Service Charge Added</h1>
+		<h1>Recurring Service Adjustment Added</h1>
 		
 		<div class = "MsgNoticeWide">
-			The Recurring Charge has been successfully added to the service.
+			The Recurring Adjustment has been successfully added to the service.
 
 		</div>
 		

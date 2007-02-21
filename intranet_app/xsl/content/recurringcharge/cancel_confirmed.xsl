@@ -4,10 +4,10 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Recurring Charge Cancelled</h1>
+		<h1>Recurring Adjustment Cancelled</h1>
 		
 		<div class="MsgNoticeWide">
-			The Recurring Charge has successfully been cancelled.
+			The Recurring Adjustment has successfully been cancelled.
 		</div>
 	</xsl:template>
 </xsl:stylesheet>

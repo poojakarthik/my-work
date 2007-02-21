@@ -6,13 +6,13 @@
 	<xsl:import href="../../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>View Recurring Charge Type Details</h1>
+		<h1>View Recurring Adjustment Type Details</h1>
 		
 		<div class="FormPopup">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<th class="JustifiedWidth">Rec. Charge Id:</th>
+						<th class="JustifiedWidth">Rec. Adjustment Id:</th>
 						<td><xsl:value-of select="/Response/RecurringChargeType/Id" /></td>
 					</tr>
 					<tr>
@@ -21,7 +21,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th class="JustifiedWidth">Charge Code:</th>
+						<th class="JustifiedWidth">Adjustment Code:</th>
 						<td><xsl:value-of select="/Response/RecurringChargeType/ChargeType" /></td>
 					</tr>
 					<tr>
@@ -119,12 +119,12 @@
 								<xsl:choose>
 									<xsl:when test="/Response/RecurringChargeType/Continuable = 1">
 										<span class="Green">
-											Yes, this charge continues even after the Minimum Charge is reached.
+											Yes, this Adjustment continues even after the Minimum Charge is reached.
 										</span>
 									</xsl:when>
 									<xsl:otherwise>
 										<span class="Blue">
-											No, after the Minimum Charged is reached, this charge is cancelled.
+											No, after the Minimum Charged is reached, this Adjustment is cancelled.
 										</span>
 									</xsl:otherwise>
 								</xsl:choose>

@@ -5,11 +5,11 @@
 	<xsl:import href="../../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<!-- Add a Charge to a Service -->
-		<h1>Add Service Charge</h1>
+		<!-- Add a Adjustment to a Service -->
+		<h1>Add Service Adjustment</h1>
 					
 		<form method="POST" action="service_charge_add.php">
-			<h2 class="Service">Service Charge Details</h2>
+			<h2 class="Service">Service Adjustment Details</h2>
 			
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
@@ -138,7 +138,7 @@
 			</div>
 			<div class="SmallSeperator"></div>
 			<div class="Right">
-				<input type="submit" name="Confirm" value="Add Charge &#0187;" class="input-submit" />
+				<input type="submit" name="Confirm" value="Add Adjustment &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

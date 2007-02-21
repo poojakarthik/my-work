@@ -5,21 +5,21 @@
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
 		<!--TODO!bash! [  DONE  ]		URGENT - adding a recurring charge does not work - not being added to db-->		
-		<h1>Add Recurring Charge Type</h1>
+		<h1>Add Recurring Adjustment Type</h1>
 		
-		<h2 class= "Charge"> Charge Details</h2>
+		<h2 class= "Adjustment">Adjustment Details</h2>
 		<form method="POST" action="charges_recurringcharge_add.php">
 			<xsl:if test="/Response/Error != ''">
 				<div class="MsgErrorWide">
 					<xsl:choose>
 						<xsl:when test="/Response/Error = 'CType-Blank'">
-							Please enter a Charge Code.
+							Please enter an Adjustment Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Descr-Blank'">
-							Please enter a Charge Description.
+							Please enter an Adjustment Description.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'CType-Exists'">
-							The Recurring Charge Code you entered already exists.  Please enter a unique Recurring Charge Code.
+							The Recurring Adjustment Code you entered already exists.  Please enter a unique Recurring Adjustment Code.
 						</xsl:when>
 						<xsl:when test="/Response/Error = 'Frequency'">
 							Please enter a Recurring Frequency.
@@ -272,7 +272,7 @@
 										</td>
 										<td>
 											<label for="PlanCharge:TRUE">
-												Yes, this Recurring Charge is Specifically for Plans.
+												Yes, this Recurring Adjustment is Specifically for Plans.
 											</label>
 										</td>
 									</tr>
@@ -301,7 +301,7 @@
 										</td>
 										<td>
 											<label for="UniqueCharge:TRUE">
-												Yes, this is a unique charge.
+												Yes, this is a unique Adjustment.
 											</label>
 										</td>
 									</tr>
@@ -346,7 +346,7 @@
 				<strong><span class="Red">* </span></strong>: Required field<br/>
 			</div>
 			<div class = "Right">
-			<input type="submit" value="Create Recurring Charge &#0187;" class="input-submit" />
+			<input type="submit" value="Create Recurring Adjustment &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

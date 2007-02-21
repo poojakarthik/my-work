@@ -4,7 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Archive Charge Type</h1>
+		<h1>Archive Adjustment Type</h1>
 		<!--TODO!bash! [  DONE  ]		URGENT this page needs to link to a confirmation page-->
 		<!--TODO!flame! Please keep indenting consistent. I notice that the pages I format correctly come back badly indented-->
 		
@@ -18,7 +18,7 @@
 					</xsl:attribute>
 				</input>
 				
-				Are you sure you would like to Archive this charge type?
+				Are you sure you would like to Archive this Adjustment Type?
 				<div class="SmallSeperator"></div>
 				
 				<table border="0" cellpadding="3" cellspacing="0">
@@ -26,7 +26,7 @@
 						<td><input type="radio" id="Confirm:TRUE" name="Confirm" value="1" /></td>
 						<th>
 							<label for="Confirm:TRUE">
-								Yes, please Archive this Charge Type, making it unavailable for use.
+								Yes, please Archive this Adjustment Type, making it unavailable for use.
 							</label>
 						</th>
 					</tr>
@@ -34,7 +34,7 @@
 						<td><input type="radio" id="Confirm:FALSE" name="Confirm" value="0" /></td>
 						<th>
 							<label for="Confirm:FALSE">
-								No, cancel the Archive of this Charge Type and keep its availability.
+								No, cancel the Archive of this Adjustment Type and keep its availability.
 							</label>
 						</th>
 					</tr>

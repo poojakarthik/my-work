@@ -7,7 +7,7 @@
 	<xsl:import href="../../template/popup.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>View Recurring Charge Details</h1>
+		<h1>View Recurring Adjustment Details</h1>
 		
 		<div class="FormPopup">
 			<div class="Form-Content">

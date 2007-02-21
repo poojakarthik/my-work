@@ -5,10 +5,10 @@
 	<xsl:import href="../../../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Add Recurring Service Charge</h1>
+		<h1>Add Recurring Service Adjustment</h1>
+
 		<!--TODO!bash! URgent! This page needs a menu-->
-		
-		<h2 class = "Charge"> Recurring Charge Details</h2>
+		<h2 class="Adjustment"> Recurring Adjustment Details</h2>
 		<form method="post" action="service_recurringcharge_add.php">
 			<input type="hidden" name="Service">
 				<xsl:attribute name="value">
@@ -190,7 +190,7 @@
 			</div>
 			<div class = "SmallSeperator"></div>
 			<div class = "Right">
-					<input type="submit" name="Confirm" value="Add Recurring Charge &#0187;" class="input-submit" />
+					<input type="submit" name="Confirm" value="Add Recurring Adjustment &#0187;" class="input-submit" />
 			</div>
 		</form>
 	</xsl:template>

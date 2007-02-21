@@ -4,9 +4,9 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>View Charge Types</h1>
+		<h1>View Adjustment Types</h1>
 
-		<h2 class="Charge"> Charge Details</h2>
+		<h2 class="Adjustment">Adjustment Details</h2>
 		<div class="sectionContainer">
 			<div class="sectionContent">
 				<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
@@ -51,7 +51,7 @@
 								</xsl:choose>
 							</td>
 							<td>
-								<a href="#" title="Viewing Charge Information" alt="Information about this Particular Charge">
+								<a href="#" title="Viewing Adjustment Information" alt="Information about this Particular Adjustment">
 									<xsl:attribute name="onclick">
 										<xsl:text>return ModalExternal (this, </xsl:text>
 											<xsl:text>'charges_charge_view.php?Id=</xsl:text>
@@ -66,7 +66,7 @@
 										<xsl:text>charges_charge_archive.php?Id=</xsl:text>
 										<xsl:value-of select="./Id" />
 									</xsl:attribute>
-									<xsl:text>Archive Charge</xsl:text>
+									<xsl:text>Archive Adjustment</xsl:text>
 								</a>
 							</td>
 						</tr>
@@ -76,7 +76,7 @@
 				<xsl:choose>
 					<xsl:when test="/Response/ChargeTypes/Results/collationLength = 0">
 						<div class="MsgNoticeWide">
-							There are currently no Charge Types in the System.
+							There are currently no Adjustment Types in the System.
 						</div>
 					</xsl:when>
 					<xsl:when test="count(/Response/ChargeTypes/Results/rangeSample/ChargeType) = 0">
@@ -87,7 +87,7 @@
 				</xsl:choose>
 				
 				<div class= "Right">
-					<a href="charges_charge_add.php">Add Charge Type</a>
+					<a href="charges_charge_add.php">Add Adjustment Type</a>
 				</div>
 			</div>
 		</div>

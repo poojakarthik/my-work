@@ -4,7 +4,7 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Confirm Recurring Charge Type Archive</h1>
+		<h1>Confirm Recurring Adjustment Type Archive</h1>
 		
 		<form method="post" action="charges_recurringcharge_archive.php">
 			<div class="Wide-Form">
@@ -15,7 +15,7 @@
 					</xsl:attribute>
 				</input>
 				
-				Are you sure you would like to Archive this Recurring Charge Type?
+				Are you sure you would like to Archive this Recurring Adjustment Type?
 				<div class= "SmallSeperator"></div>
 				
 				<table border="0" cellpadding="3" cellspacing="0">
@@ -23,7 +23,7 @@
 						<td><input type="radio" id="Confirm:TRUE" name="Confirm" value="1" /></td>
 						<th>
 							<label for="Confirm:TRUE">
-								Yes, please Archive this Charge Type, making it unavailable for use.
+								Yes, please Archive this Adjustment Type, making it unavailable for use.
 							</label>
 						</th>
 					</tr>
@@ -31,7 +31,7 @@
 						<td><input type="radio" id="Confirm:FALSE" name="Confirm" value="0" /></td>
 						<th>
 							<label for="Confirm:FALSE">
-								No, cancel the Archive of this Charge Type and keep its availability.
+								No, cancel the Archive of this Adjustment Type and keep its availability.
 							</label>
 						</th>
 					</tr>

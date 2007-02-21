@@ -7,9 +7,9 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>Manage Charges &amp; Credits</h1>
+		<h1>Manage Adjustments</h1>
 
-		<h2 class="Charge"> Charge Details</h2>
+		<h2 class="Adjustment">Adjustment Details</h2>
 		<form method="post" action="charges_approve.php">
 			<!--TODO!bash! [  DONE  ]		This needs to have a 'Nature' column!!-->
 			<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">

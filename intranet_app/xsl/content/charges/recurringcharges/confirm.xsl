@@ -4,12 +4,10 @@
 	<xsl:import href="../../../includes/init.xsl" />
 	<xsl:import href="../../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>Recurring Charge Type Added</h1>
+		<h1>Recurring Adjustment Type Added</h1>
 		
 		<div class= "MsgNoticeWide">
-			The Recurring Charge Type has been successfully added.
+			The Recurring Adjustment Type has been successfully added.
 		</div>
-		
-
 	</xsl:template>
 </xsl:stylesheet>

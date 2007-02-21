@@ -4,7 +4,7 @@
 	<xsl:import href="../../includes/init.xsl" />
 	<xsl:import href="../../template/default.xsl" />
 	<xsl:template name="Content">
-		<h1>View Recurring Charges</h1>
+		<h1>View Recurring Adjustments</h1>
 		<!--TODO!bash! [  DONE  ]		URGENT! This page needs a menu!-->
 		
 		<h2 class="Account">Account Details</h2>
@@ -54,12 +54,12 @@
 		</div>
 		<div class="Seperator"></div>
 		
-		<!-- Recurring Charge Details -->
-		<h2 class="Charge">Recurring Charge Details</h2>
+		<!-- Recurring Adjustment Details -->
+		<h2 class="Adjustment">Recurring Adjustment Details</h2>
 		<table border="0" cellpadding="3" cellspacing="0" width="100%" class="Listing">
 			<tr class="First">
 				<th width="30">#</th>
-				<th>Charge Code</th>
+				<th>Adjustment Code</th>
 				<th>Description</th>
 				<th>Service</th>
 				<th>Amount</th>
@@ -131,7 +131,7 @@
 						</xsl:choose>
 					</td>
 					<td>
-						<a href="#" title="Recurring Charge Details" alt="Information about the attached Recurring Charge">
+						<a href="#" title="Recurring Adjustment Details" alt="Information about the attached Recurring Adjustment">
 							<xsl:attribute name="onclick">
 								<xsl:text>return ModalExternal (this, 'recurring_charge_view.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
@@ -144,7 +144,7 @@
 								<xsl:text>recurring_charge_cancel.php?Id=</xsl:text>
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
-							Cancel Charge
+							Cancel Adjustment
 						</a>
 					</td>
 				</tr>
@@ -154,7 +154,7 @@
 		<xsl:choose>
 			<xsl:when test="/Response/RecurringCharges/Results/collationLength = 0">
 				<div class="MsgNoticeWide">
-					There are no Recurring Charges associated with this Account
+					There are no Recurring Adjustments associated with this Account
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge) = 0">

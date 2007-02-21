@@ -351,10 +351,19 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
+									<xsl:text>account_charges_unbilled.php?Account=</xsl:text>
+									<xsl:value-of select="/Response/Account/Id" />
+								</xsl:attribute>
+								<xsl:text>View/Add Adjustments</xsl:text>
+							</a>
+						</li>
+						<li>
+							<a>
+								<xsl:attribute name="href">
 									<xsl:text>recurring_charge_list.php?Account=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
-								<xsl:text>View Recurring Charges</xsl:text>
+								<xsl:text>View/Add Recurring Adjustments</xsl:text>
 							</a>
 						</li>
 						<li>
@@ -364,17 +373,6 @@
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>View Cost Centres</xsl:text>
-							</a>
-						</li>
-						
-						
-						<li>
-							<a>
-								<xsl:attribute name="href">
-									<xsl:text>account_charges_unbilled.php?Account=</xsl:text>
-									<xsl:value-of select="/Response/Account/Id" />
-								</xsl:attribute>
-								<xsl:text>View Unbilled Charges</xsl:text>
 							</a>
 						</li>
 						

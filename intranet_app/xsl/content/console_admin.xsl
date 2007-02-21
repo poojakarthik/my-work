@@ -58,40 +58,40 @@
 			<tr>
 				<td>
 					<a href="charges_approve.php">
-						<img src="img/template/charge.png" title="Approve Unbilled Charges" class="MenuIcon" />
+						<img src="img/template/charge.png" title="Approve Unbilled Adjustments" class="MenuIcon" />
 					</a>
 				</td>
 				<td>
 					<strong>
-						Manage Charges &amp; Credits
+						Manage Adjustment
 					</strong><br />
-					 Approve and Decline Charges and Credits.
+					 Approve and Decline Adjustments.
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<a href="charges_charge_list.php">
-						<img src="img/template/charge.png" title="Single Charge Types" class="MenuIcon" />
+						<img src="img/template/charge.png" title="Single Adjustment Types" class="MenuIcon" />
 					</a>
 				</td>
 				<td>
 					<strong>
-						Manage Single Charge Types
+						Manage Single Adjustment Types
 					</strong><br />
-					View and Add Single Charge Types.
+					View and Add Single Adjustment Types.
 				</td>
 			</tr>
 			<tr>
 				<td>
 					<a href="charges_recurringcharge_list.php">
-						<img src="img/template/charge.png" title="Recurring Charge Types" class="MenuIcon" />
+						<img src="img/template/charge.png" title="Recurring Adjustment Types" class="MenuIcon" />
 					</a>
 				</td>
 				<td>
 					<strong>
-						Manage Recurring Charge Types
+						Manage Recurring Adjustment Types
 					</strong><br />
-					View and Add Recurring Charge Types.
+					View and Add Recurring Adjustment Types.
 				</td>
 			</tr>
 			<tr>
