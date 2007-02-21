@@ -85,6 +85,18 @@
 		$this->_selGetPreselectRequests		= new StatementSelect("Request JOIN Service ON Request.Service = Service.Id", "Request.*, Service.FNN", "Request.Carrier = <Carrier> AND Request.Status = ".REQUEST_STATUS_WAITING." AND Request.RequestType = ".REQUEST_PRESELECTION);
 		$this->_insAddToLog					= new StatementInsert("ProvisioningLog");
 		
+	 	$arrColumns = Array();
+	 	$arrColumns['Account']		= "Account.Id";
+	 	$arrColumns['BusinessName']	= "Account.BusinessName";
+	 	$arrColumns['FirstName']	= "Employee.FirstName";
+	 	$arrColumns['Email']		= "Employee.Email";
+	 	$arrColumns['RequestDate']	= "Request.RequestDateTime";
+	 	$arrColumns['Status']		= "Request.Status";
+	 	$this->_selEmailReportDetails	= new StatementSelect(	"Request JOIN Employee ON Emplyee.Id = Request.Employee, " .
+	 															"Service JOIN Account ON Service.Accout = Account.Id",
+	 															$arrColumns,
+	 															"Request.Id = <Request>");
+		
 		// Default delimeter is NULL (fixedwidth)
 		$this->_strDelimiter	= NULL;
  	}
@@ -363,13 +375,35 @@
 	 		return FALSE;
 	 	}
 	 	
-	 	// TODO: Finish this
-	 	$this->_selEmailReportDetails	= new StatementSelect(	"Request JOIN Employee ON Emplyee.Id = Request.Employee, " .
-	 															"Service JOIN Account ON Service.Accout = Account.Id",
-	 															$arrColumns,
-	 															"Request.Id = <Request>");
+	 	// Generate and send off the report
+	 	$arrVariables	= Array();
+	 	$arrVariables['<Employee>']		= $arrDetails['FirstName'];
+		$arrVariables['<RequestDate>']	= $arrDetails['RequestDate'];
+		$arrVariables['<FNN>']			= $this->_arrLog['FNN'];
+		$arrVariables['<Account>']		= $arrDetails['Account'];
+		$arrVariables['<BusinessName>']	= $arrDetails['BusinessName'];
+		$arrVariables['<ResponseDate>']	= $this->_arrLog['Date'];
+		$arrVariables['<RequestType>']	= $this->_arrLog['Type'];
+		$arrVariables['<Carrier>']		= $this->_arrLog['Carrier'];
+		$arrVariables['<Status>']		= $arrDetails['Status'];
+		$arrVariables['<Description>']	= $this->_arrLog['Description'];
+	 	$strReport		= ReplaceAliases(REQUEST_EMAIL_MESSAGE, $arrVariables);
+	 	$strHeaders 	= "From: automated@voiptelsystems.com.au";
+	 	$intCount		=  mail(	$arrDetails['Email'], 
+									"Provisioning response for ".$this->_arrLog['FNN']." (Automated Message)",
+									$strReport,
+									$strHeaders);
+		
+		// Send an email to the admins, too
+		if (REQUEST_EMAIL_ADMIN && !DEBUG_MODE)
+		{
+		 	$intCount		=  mail(	REQUEST_EMAIL_ADMIN, 
+										"Provisioning response for ".$this->_arrLog['FNN']." (Automated Message)",
+										$strReport,
+										$strHeaders);
+		}
 	 	
-	 	
+	 	return (bool)$intCount;
 	 }
  }
 ?>

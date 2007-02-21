@@ -79,4 +79,19 @@ define("UNITEL_PRESELECTION_DIR"		, "/home/vixen_upload/unitel/preselectionfiles
 // Additional Preselection Constants
 define("CUSTOMER_NUMBER_OPTUS"			,"23139716000139");
 
+// The email message sent when a request response comes in
+define("REQUEST_EMAIL_MESSAGE"			,	"Hi <Employee>,\n\n" .
+											"Your request made on <RequestDate> for the service <FNN> has been responded to.  Below are the most up to date details.\n\n" .
+											"\tRequest Date\t: <RequestDate>\n" .
+											"\tService\t\t: <FNN>\n" .
+											"\tAccount\t\t: <Account>\n" .
+											"\tBusiness Name\t: <BusinessName>\n\n" .
+											"\tResponse Date\t: <ResponseDate>\n" .
+											"\tRequest Type\t: <RequestType>\n" .
+											"\tCarrier\t\t: <Carrier>\n" .
+											"\tStatus\t\t: <Status>\n" .
+											"\tDescription\t: <Description>\n\n" .
+											" - Pablo, the Helpful Donkey\n\n" .
+											"(NOTE: This is an automated message.  Do NOT reply to this email.)");
+define("REQUEST_EMAIL_ADMIN"			,	"rich@voiptelsystems.com.au");
 ?>
