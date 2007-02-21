@@ -361,6 +361,13 @@
 	 */
 	 protected function EmailReport()
 	 {
+	 	// Make sure we've matched to a request
+	 	if (!$this->_arrLog['Request'])
+	 	{
+	 		// We don't need to send an email
+	 		return TRUE;
+	 	}	 	
+	 	
 	 	// Get Email Report Details
 	 	$arrWhere = Array();
 	 	$arrWhere['Request']	= $this->_arrLog['Request'];
