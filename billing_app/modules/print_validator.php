@@ -178,7 +178,7 @@ foreach ($arrFileContents as $strLine)
 			$strFileData	= $pdf->ezOutput();
 			
 			echo "Writing PDF to... '$strFilename'\n";
-			
+			/*
 			$ptrFile		= fopen($strFilename, "w");
 			$arrPass[]		= (bool)$ptrFile;
 			$arrPass[]		= fwrite($ptrFile, $strFileData);
@@ -190,7 +190,7 @@ foreach ($arrFileContents as $strLine)
 				{
 					echo "\t- There was an error";
 				}
-			}
+			}*/
 			
 			$arrInvoice = Array();
 			break;

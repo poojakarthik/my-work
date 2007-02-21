@@ -1765,9 +1765,14 @@ class MySQLFunction
 		 	{
 		 		$strQuery .= current($mixColumns);
 		 		
-		 		// If this column has an AS alias
-		 		if (key($mixColumns) != "")
+		 		if (current($mixColumns) == '')
 		 		{
+		 			// No alias
+		 			$strQuery .= key($mixColumns);
+		 		}
+		 		else
+		 		{
+		 			// Alias
 		 			$strQuery .= " AS ";
 		 			$strQuery .= key($mixColumns);
 		 		}

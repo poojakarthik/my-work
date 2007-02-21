@@ -176,9 +176,15 @@
 		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
 		
 		// Select CDR Query
-		//TODO!flame! fetchclean - remove CDR, Description, CarrierRef
-		// DO Similar in billing
-		$this->_selGetCDRs = new StatementSelect("CDR", "*", "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
+		$arrColumns = $this->db->FetchClean("CDR");
+		unset($arrColumns['CDR']);
+		unset($arrColumns['Description']);
+		unset($arrColumns['CarrierRef']);
+		unset($arrColumns['File']);
+		unset($arrColumns['Carrier']);
+		unset($arrColumns['NormalisedOn']);
+		unset($arrColumns['SequenceNo']);
+		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
 		
 		// Update CDR Query
 		$arrDefine = Array();
