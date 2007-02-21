@@ -868,6 +868,8 @@
 	 */
  	function GenerateServiceSummary($intService, $strFNN, $strCostCentre)
  	{
+		$arrDefine = $this->_arrDefine;
+		
 		// Service Header
 		$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
 		$arrDefine['SvcSummSvcHeader']		['CostCentre']		['Value']	= $strCostCentre;
@@ -935,6 +937,8 @@
 	 */
  	function GenerateItemisedCalls($arrService, $arrRecordGroup)
  	{
+ 		$arrDefine = $this->_arrDefine;
+ 		
  		$arrWhere = Array();
  		$arrWhere['Service']		= $arrService['Id'];
  		$arrWhere['RecordGroup']	= $arrRecordGroup['RecordGroup'];
