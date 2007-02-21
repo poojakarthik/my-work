@@ -429,7 +429,7 @@
 							</input>
 							
 							<label for="DisableDDR:TRUE">
-								Disable Direct Debit Fees from being Charged on this Account
+								Charge a fee if account is not paid by direct debit
 							</label>
 						</td>
 					</tr>

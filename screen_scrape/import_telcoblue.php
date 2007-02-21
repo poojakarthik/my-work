@@ -946,7 +946,6 @@ Blue Shared 500 						25
 		}
 	}
 */
-/*
 	// Add Mobile Details
 	while ($arrRow = $objDecoder->FetchMobileDetail())
 	{
@@ -955,32 +954,43 @@ Blue Shared 500 						25
 		$arrScrape['CustomerId'] = $arrRow['CustomerId'];
 
 		// decode the Mobile Details
-		echo "Decoding Mobile Details : {$arrRow['CustomerId']}\n";
+		echo "Decoding Mobile Details : {$arrRow['CustomerId']} ({$arrRow['FNN']})       ";
 		$arrMobile = $objDecoder->DecodeMobileDetail($arrScrape);
-		if(!$arrMobile['RatePlanName'])
+		
+		if($arrMobile['RatePlanName'])
+		{
+			echo Console_Color::convert("[%g  DONE  %n]\n");
+		}
+		else
 		{
 			if ($arrMobile['PlanName'])
 			{
-				echo "FATAL ERROR : Could not match Plan: {$arrMobile['PlanName']} for Mobile Service : {$arrMobile['FNN']}\n";
+				echo Console_Color::convert("[%rNO MATCH%n]\n");
 				Die();
 			}
 			else
 			{
-				echo "WARN : No Plan Set for Mobile Service : {$arrMobile['FNN']}\n";
+				echo Console_Color::convert("[%bPLANLESS%n]\n");
 			}
 		}
 
 		// add the Mobile Details
-		echo "Importing Mobile Details: {$arrRow['CustomerId']}\n";
-		if (!$objImport->AddMobileDetails($arrMobile))
+		echo "Importing Mobile Details: {$arrRow['CustomerId']} ({$arrRow['FNN']})       ";
+		
+		if ($objImport->AddMobileDetails($arrMobile))
 		{
-			echo "WARN : Could not add Mobile Details : {$arrRow['CustomerId']}\n";
-			//echo $objImport->ErrorLog();
-			//Die();
+			echo Console_Color::convert("[%g  DONE  %n]\n");
 		}
+		else
+		{
+			echo Console_Color::convert("[%r  DIED  %n]\n");
+			die ();
+		}
+		
+		exit;
 	}
 	
-*/
+	exit;
 	
 	// cost centres
 	while ($arrAccount = $objDecoder->FetchCostCentre ())

@@ -1104,7 +1104,7 @@ class VixenImport extends ApplicationBaseClass
 	function FindRecordType($strRecordType, $intServiceType)
 	{
 		// check if we have a cache of record types
-		if (!is_array($this->_arrRecordTypes))
+		if (!isset ($this->_arrRecordTypes) || !is_array($this->_arrRecordTypes))
 		{
 			// get an array of recordTypes
 			$selFindRecordType = new StatementSelect("RecordType", "ServiceType, Code, Id");
@@ -1123,7 +1123,7 @@ class VixenImport extends ApplicationBaseClass
 	function FindRateGroup($strRateGroupName, $intRecordType)
 	{
 		// check if we have a cache of rate groups
-		if (!is_array($this->_arrRateGroups))
+		if (!isset ($this->_arrRateGroups) || !is_array($this->_arrRateGroups))
 		{
 			// get an array of rate groups
 			$selFindRateGroup = new StatementSelect("RateGroup", "RecordType, Name, Id");
@@ -1161,7 +1161,7 @@ class VixenImport extends ApplicationBaseClass
 	function FindRatePlan($strRatePlanName, $intServiceType)
 	{
 		// check if we have a cache of rate plans
-		if (!is_array($this->_arrRatePlans))
+		if (!isset ($this->_arrRatePlans) || !is_array($this->_arrRatePlans))
 		{
 			// get an array of rate plans
 			$selFindRatePlan = new StatementSelect("RatePlan", "ServiceType, Name, Id");

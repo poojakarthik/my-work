@@ -252,7 +252,7 @@
 	
 	function FetchMobileDetail()
 	{
-		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeServiceMobile ";
+		$strQuery 	= "SELECT CustomerId, FNN, DataOriginal FROM ScrapeServiceMobile ";
 		$strName	= 'MobileDetails';
 		$arrRow = $this->FetchResult($strName, $strQuery);
 		if ($arrRow)
