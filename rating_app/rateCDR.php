@@ -23,19 +23,20 @@ $appRating = new ApplicationRating($arrConfig);
 
 
 // Get the CDR
-$selCDR = new StatementSelect("CDR", "*", "CDR.Id = <Id>");
+/*$selCDR = new StatementSelect("CDR", "*", "CDR.Id = <Id>");
 if (!$selCDR->Execute(Array('Id' => $intCDR)))
 {
 	echo "Invalid CDR record requested.  Please double-check the Id ($intCDR).\n";
 	die;
 }
 $arrCDR = $selCDR->Fetch();
+*/
 
 // Rate the CDR
 $fltCharge = $appRating->RateCDR($intCDR);
 
 // Print Output
-if ($fltCharge)
+if ($fltCharge !==FALSE)
 {
 	echo 'CDR Rated at : $'.money_format('%i',$fltCharge);
 }

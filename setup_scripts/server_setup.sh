@@ -652,8 +652,6 @@ query_cache_limit       = 1048576
 query_cache_size        = 16777216
 query_cache_type        = 1
 
-#tmp_table_size         = 2048M
-
 #server-id              = 1
 log-bin                 = /var/log/mysql/mysql-bin.log
 expire-logs-days        = 20
@@ -662,6 +660,23 @@ max_binlog_size         = 104857600
 #binlog-ignore-db       = include_database_name
 
 skip-bdb
+
+# 4GB RAM
+tmp_table_size         = 536870912
+
+innodb_buffer_pool_size			= 2147483648
+innodb_additional_mem_pool_size	= 16777216
+innodb_log_buffer_size			= 67108864
+innodb_log_file_size			= 1073741824
+
+# 2GB RAM
+tmp_table_size         			= 268435456
+
+innodb_buffer_pool_size			= 1073741824
+innodb_additional_mem_pool_size	= 16777216
+innodb_log_buffer_size			= 67108864
+innodb_log_file_size			= 536870912
+
 
 [mysqldump]
 quick

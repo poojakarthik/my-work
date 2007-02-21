@@ -152,6 +152,8 @@
 		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
 		
 		// Select CDR Query
+		//TODO!flame! fetchclean - remove CDR, Description, CarrierRef
+		// DO Similar in billing
 		$this->_selGetCDRs = new StatementSelect("CDR", "*", "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
 		
 		// Update CDR Query
@@ -211,7 +213,7 @@
 		{
 			return FALSE;
 		}
-		
+
 		if ($this->_arrCurrentRate['PassThrough'])
 		{
 			// Calculate Passthrough rate
@@ -234,14 +236,14 @@
 			{
 				return FALSE;
 			}
-			
+
 			// Calculate Prorate
 			$fltCharge = $this->_CalculateProrate();
 			if ($fltCharge === FALSE)
 			{
 				return FALSE;
 			}
-			
+
 			// Rounding
 			$this->_Rounding();
 		}
@@ -834,7 +836,7 @@
 		{
 			// not a capped rate, don't do anything
 		}
-		elseif ($fltCharge <= $fltCapCost || $intUnits <= $intCapUnits)
+		elseif (($fltCapCost && $fltCharge <= $fltCapCost) || $intUnits <= $intCapUnits)
 		{
 			// under the cap, don't do anything
 		}

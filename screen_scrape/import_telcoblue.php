@@ -572,7 +572,7 @@ Blue Shared 500 						25
 	$arrRates['natrate']				['True Blue Fleet (6ff,9cpm)']					['National']			= 'National-09c-06f-01s-00m';
 	$arrRates['natrate']				['National 8c no ff']							['National']			= 'National-08c-00f-01s-00m';
 	$arrRates['natrate']				['5.5cpm no flag']								['National']			= 'National-06c-00f-01s-00m'; // 5.5cpm
-	$arrRates['natrate']				['Residential (20ff,18cpm)']					['National']			= 'National-18c-20f-01s-00m';
+	$arrRates['natrate']				['Residential (20ff,18cpm)']					['National']			= 'National-18c-20f-01s-00m:150c30m';
 	$arrRates['natrate']				['Pinnacle (13c per call)']						['National']			= 'National-Pinnacle';
 	$arrRates['natrate']				['7cpm 0 flag']									['National']			= 'National-07c-00f-01s-00m';
 	$arrRates['natrate']				['6 cpm 0 flag']								['National']			= 'National-06c-00f-01s-00m';
@@ -594,7 +594,7 @@ Blue Shared 500 						25
 	$arrRates['mobrate']				['CTM 22 no flag']								['Mobile']				= 'Mobile-22c-00f-01s-00m';
 	$arrRates['mobrate']				['CTM 30 no ff']								['Mobile']				= 'Mobile-30c-00f-01s-00m';
 	$arrRates['mobrate']				['CTM 23cpm 0ff']								['Mobile']				= 'Mobile-23c-00f-01s-00m';
-	$arrRates['mobrate']				['Residential (20ff, 27.27cpm)']				['Mobile']				= 'Mobile-27c-20f-01s-00m'; // 27.27 INC GST
+	$arrRates['mobrate']				['Residential (20ff, 27.27cpm)']				['Mobile']				= 'Mobile-27c-20f-01s-00m:150c10m'; // 27.27 INC GST
 	$arrRates['mobrate']				['CTM 25c 0 flag']								['Mobile']				= 'Mobile-26c-00f-01s-00m';
 	$arrRates['mobrate']				['CTM 24c 0 flag']								['Mobile']				= 'Mobile-24c-00f-01s-00m';
 	$arrRates['mobrate']				['CTM 25pm 8ff']								['Mobile']				= 'Mobile-25c-08f-01s-00m';
