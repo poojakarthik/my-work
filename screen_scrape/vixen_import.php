@@ -596,19 +596,28 @@ class VixenImport extends ApplicationBaseClass
 	
 	// add mobile details
 	function AddMobileDetails($arrDetails)
-	{	
-		$strFNN 			= $arrDetails['FNN'];
-		$strRatePlanName 	= $arrDetails['RatePlanName'];
-		$intService 		= (int)$arrDetails['Service'];
-		$arrRateGroup 		= $arrDetails['RateGroup'];
+	{
+		$strFNN 			= $arrDetails ['FNN'];
+		$strRatePlanName 	= $arrDetails ['RatePlanName'];
+		$arrRateGroup 		= $arrDetails ['RateGroup'];
 		
 		// find the service
-		if (!$intService)
+		if (!isset ($arrDetails ['Service']))
 		{
 			if ($strFNN)
 			{
-				$intService = $this->FindService($strFNN);
+				$this->_selFindServiceByAccount->Execute (
+					Array (
+						"Account"		=> $arrDetails ['Account'],
+						"FNN"			=> $strFNN
+					)
+				);
+				
+				$arrService = $this->_selFindServiceByAccount->Fetch ();
+				
+				$intService = $arrService ['Id'];
 				$arrDetails['Service'] = $intService;
+				
 				if (!$intService)
 				{
 					$this->Error("Could not add MobileDetails : Service Not Found : $strFNN");
@@ -647,7 +656,13 @@ class VixenImport extends ApplicationBaseClass
 		}
 			
 		// add the details record
-		$this->insServiceMobileDetail->Execute($arrDetails);
+		$intInsert = $this->insServiceMobileDetail->Execute($arrDetails);
+		echo $this->insServiceMobileDetail->Error ();
+		
+		if (!$intInsert)
+		{
+			return FALSE;
+		}
 		
 		// add ServiceRatePlan record
 		$this->AddServiceRatePlan($intService, $intRatePlan);
@@ -698,6 +713,7 @@ class VixenImport extends ApplicationBaseClass
 			$this->Error("RatePlan Not Defined :$strRatePlanName");
 			return FALSE;
 		}
+		
 		return TRUE;
 	}
 	
@@ -935,6 +951,9 @@ class VixenImport extends ApplicationBaseClass
 		}
 		$this->strLastError = "$strError \n";
 		$this->strErrorLog .= "$strError \n";
+		
+		echo $strError;
+		
 		return TRUE;
 	}
 	
@@ -1310,6 +1329,11 @@ class VixenImport extends ApplicationBaseClass
 				// is this RateGroup part of this plan
 				if ($arrRateGroups[$strRecordType] == $strRateGroupName)
 				{
+					if (!isset ($arrPlanScores[$strPlan]))
+					{
+						$arrPlanScores[$strPlan] = 0;
+					}
+					
 					// if so, score a goal for this plan
 					$arrPlanScores[$strPlan]++;
 				}

@@ -799,7 +799,7 @@ Blue Shared 500 						25
 	$objImport->Truncate('Request');
 	//$objImport->Truncate('Service');
 	$objImport->Truncate('ServiceAddress');
-	//$objImport->Truncate('ServiceMobileDetail');
+	$objImport->Truncate('ServiceMobileDetail');
 /*
 	$objImport->Truncate('ServiceRateGroup');
 	$objImport->Truncate('ServiceRatePlan');
@@ -951,46 +951,43 @@ Blue Shared 500 						25
 	{
 		// get the etech Mobile details
 		$arrScrape = $arrRow['DataArray'];
-		$arrScrape['CustomerId'] = $arrRow['CustomerId'];
+		$arrScrape['CustomerId'] = $arrRow['CustomerId'];;
 
 		// decode the Mobile Details
 		echo "Decoding Mobile Details : {$arrRow['CustomerId']} ({$arrRow['FNN']})       ";
 		$arrMobile = $objDecoder->DecodeMobileDetail($arrScrape);
 		
-		if($arrMobile['RatePlanName'])
+		if (isset ($arrMobile['RatePlanName']))
 		{
 			echo Console_Color::convert("[%g  DONE  %n]\n");
 		}
 		else
 		{
-			if ($arrMobile['PlanName'])
+			if (isset ($arrMobile['PlanName']))
 			{
 				echo Console_Color::convert("[%rNO MATCH%n]\n");
-				Die();
 			}
 			else
 			{
 				echo Console_Color::convert("[%bPLANLESS%n]\n");
 			}
 		}
+		
+		$arrMobile ['AccountGroup'] = $arrRow['CustomerId'];
+		$arrMobile ['Account'] = $arrRow['CustomerId'];
 
 		// add the Mobile Details
 		echo "Importing Mobile Details: {$arrRow['CustomerId']} ({$arrRow['FNN']})       ";
 		
-		if ($objImport->AddMobileDetails($arrMobile))
+		if ($objImport->AddMobileDetails ($arrMobile))
 		{
 			echo Console_Color::convert("[%g  DONE  %n]\n");
 		}
 		else
 		{
 			echo Console_Color::convert("[%r  DIED  %n]\n");
-			die ();
 		}
-		
-		exit;
 	}
-	
-	exit;
 	
 	// cost centres
 	while ($arrAccount = $objDecoder->FetchCostCentre ())

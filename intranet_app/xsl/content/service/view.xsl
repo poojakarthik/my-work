@@ -221,120 +221,157 @@
 
 					
 
-						<!-- Add charge -->
-					<h2 class="Charge">Add Charge</h2>
+					<!-- Add Adjustment -->
+					<h2 class="Adjustment">Add Adjustment</h2>
 					
+					<div class="Narrow-Form">
 						<xsl:choose>
 							<xsl:when test="count(/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType) = 0">
-							<div class="Narrow-Form">
-								No charges are available.
-							</div>
+								No adjustments are available.
 							</xsl:when>
 							<xsl:otherwise>
-							
-								<form method="post" action="service_charge_add.php">
-								<div class="Narrow-Form">
-									<input type="hidden" name="Service">
-										<xsl:attribute name="value">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/Service/Id" />
-										</xsl:attribute>
-									</input>
-									
-									<table border="0" cellpadding="3" cellspacing="0">
-										<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Charge Type')" />
-												<xsl:with-param name="field" select="string('ChargeType')" />
-											</xsl:call-template>
-										</th>
-											<td>
-												<select name="ChargeType">
-													<xsl:for-each select="/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType">
-														<option>
-															<xsl:attribute name="value">
-																<xsl:text></xsl:text>
-																<xsl:value-of select="./Id" />
-															</xsl:attribute>
-															<xsl:value-of select="./Description" />
-														</option>
-													</xsl:for-each>
-												</select>
-											</td>
-										</tr>
-									</table>
-
-									</div>
-									<div class="SmallSeperator"></div>
-									<div class ="Right">
-												<input type="submit" value="Add Charge &#0187;" class="input-submit" />
-									</div>
-									</form>
+								<table border="0" cellpadding="3" cellspacing="0">
+									<xsl:if test="count(/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType[./Nature='CR']) != 0">
+										<form method="post" action="service_charge_add.php">
+											<input type="hidden" name="Service">
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/Service/Id" />
+												</xsl:attribute>
+											</input>
+											<tr>
+												<th class="JustifiedWidth">Credit Adjustment :</th>
+												<td>
+													<select name="ChargeType">
+														<xsl:for-each select="/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType[./Nature='CR']">
+															<option>
+																<xsl:attribute name="value">
+																	<xsl:text></xsl:text>
+																	<xsl:value-of select="./Id" />
+																</xsl:attribute>
+																<xsl:value-of select="./Description" />
+															</option>
+														</xsl:for-each>
+													</select>
+												</td>
+												<td>
+													<input type="submit" value="Add &#0187;" class="input-submit" />
+												</td>
+											</tr>
+										</form>
+									</xsl:if>
+									<xsl:if test="count(/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType[./Nature='DR']) != 0">
+										<form method="post" action="service_charge_add.php">
+											<input type="hidden" name="Service">
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/Service/Id" />
+												</xsl:attribute>
+											</input>
+											<tr>
+												<th class="JustifiedWidth">Debit Adjustment :</th>
+												<td>
+													<select name="ChargeType">
+														<xsl:for-each select="/Response/TemplateChargeTypes/ChargeTypes/Results/rangeSample/ChargeType[./Nature='DR']">
+															<option>
+																<xsl:attribute name="value">
+																	<xsl:text></xsl:text>
+																	<xsl:value-of select="./Id" />
+																</xsl:attribute>
+																<xsl:value-of select="./Description" />
+															</option>
+														</xsl:for-each>
+													</select>
+												</td>
+												<td>
+													<input type="submit" value="Add &#0187;" class="input-submit" />
+												</td>
+											</tr>
+										</form>
+									</xsl:if>
+								</table>
 							</xsl:otherwise>
 						</xsl:choose>
-						
-						<div class="Seperator"></div>
-						
-						<!--Add Recurring Charge -->
-						<h2 class="Charge">Add Recurring Charge</h2>
+					</div>
+					
+					<div class="Seperator"></div>
+					
+					<!--Add Recurring Adjustment -->
+					<h2 class="Adjustment">Add Recurring Adjustment</h2>
+					
+					<div class="Narrow-Form">
 						<xsl:choose>
-						
 							<xsl:when test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
-							<div class="Narrow-Form">
-								No recurring charges are available.
-							</div>
+								No recurring adjustments are available.
 							</xsl:when>
 							<xsl:otherwise>
-							
-							
-								<form method="post" action="service_recurringcharge_add.php">
-								<div class="Narrow-Form">
-									<input type="hidden" name="Service">
-										<xsl:attribute name="value">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/Service/Id" />
-										</xsl:attribute>
-									</input>
-									
-									<table border="0" cellpadding="3" cellspacing="0">
-										<tr>
-										<th class="JustifiedWidth">
-											<xsl:call-template name="Label">
-												<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
-												<xsl:with-param name="field" select="string('ChargeType')" />
-											</xsl:call-template>
-										</th>
-											<td>
-												<select name="RecurringChargeType">
-													<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType">
-														<option>
-															<xsl:attribute name="value">
-																<xsl:text></xsl:text>
-																<xsl:value-of select="./Id" />
-															</xsl:attribute>
-															<xsl:value-of select="./Description" />
-														</option>
-													</xsl:for-each>
-												</select>
-											</td>
-										</tr>
-									</table>
-							
-								</div>
-								<div class = "SmallSeperator"></div>
-								<div class = "Right">
-									<input type="submit" value="Add Recurring Charge &#0187;" class="input-submit" />
-								</div>
-								</form>
+								<table border="0" cellpadding="3" cellspacing="0">
+									<xsl:if test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='CR']) != 0">
+										<form method="post" action="service_recurringcharge_add.php">
+											<input type="hidden" name="Service">
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/Service/Id" />
+												</xsl:attribute>
+											</input>
+											<tr>
+												<th class="JustifiedWidth">
+													Credit Adjustment :
+												</th>
+												<td>
+													<select name="RecurringChargeType">
+														<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='CR']">
+															<option>
+																<xsl:attribute name="value">
+																	<xsl:text></xsl:text>
+																	<xsl:value-of select="./Id" />
+																</xsl:attribute>
+																<xsl:value-of select="./Description" />
+															</option>
+														</xsl:for-each>
+													</select>
+												</td>
+												<td>
+													<input type="submit" value="Add &#0187;" class="input-submit" />
+												</td>
+											</tr>
+										</form>
+									</xsl:if>
+									<xsl:if test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='DR']) != 0">
+										<form method="post" action="service_recurringcharge_add.php">
+											<input type="hidden" name="Service">
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="/Response/Service/Id" />
+												</xsl:attribute>
+											</input>
+											<tr>
+												<th class="JustifiedWidth">
+													Debit Adjustment :
+												</th>
+												<td>
+													<select name="RecurringChargeType">
+														<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='DR']">
+															<option>
+																<xsl:attribute name="value">
+																	<xsl:text></xsl:text>
+																	<xsl:value-of select="./Id" />
+																</xsl:attribute>
+																<xsl:value-of select="./Description" />
+															</option>
+														</xsl:for-each>
+													</select>
+												</td>
+												<td>
+													<input type="submit" value="Add &#0187;" class="input-submit" />
+												</td>
+											</tr>
+										</form>
+									</xsl:if>
+								</table>
 							</xsl:otherwise>
 						</xsl:choose>
-						
-						<div class="Clear"></div>
-					
-					
-					<div class="Seperator"></div> 
-					
+					</div>
 				</td>
 				
 				<!-- column spacer -->
@@ -360,7 +397,7 @@
 									<xsl:text>recurring_charge_list.php?Service=</xsl:text>
 									<xsl:value-of select="/Response/Service/Id" />
 								</xsl:attribute>
-								<xsl:text>View Recurring Charges</xsl:text>
+								<xsl:text>View Recurring Adjustments</xsl:text>
 							</a>
 						</li>
 						<li>

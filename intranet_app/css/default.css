@@ -685,7 +685,7 @@
 	h2.Date,
 	h2.Address,
 	h2.Payment,
-	h2.Charge,
+	h2.Adjustment,
 	h2.PDF,
 	h2.Provisioning,
 	h2.Archive,
@@ -732,7 +732,7 @@
 		background-image:              url('../img/template/payment.png');
 	}
 	
-	h2.Charge
+	h2.Adjustment
 	{
 		background-image:              url('../img/template/charge.png');
 	}

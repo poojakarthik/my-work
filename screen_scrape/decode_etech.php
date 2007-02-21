@@ -170,6 +170,14 @@
 		}
 	}
 	
+	function FetchServiceByType($intServiceType)
+	{
+		$strQuery 	= "SELECT * FROM Service WHERE ServiceType = " . $intServiceType;
+		$strName	= 'ServiceByType:' . $intServiceType;
+		$arrRow = $this->FetchResult($strName, $strQuery);
+		return $arrRow;
+	}
+	
 	function FetchSystemNote()
 	{
 		$strQuery 	= "SELECT CustomerId, DataOriginal FROM ScrapeNoteSys ";
@@ -1496,19 +1504,24 @@
 		$arrRateGroup = $this->DecodeRateGroup($arrCustomer);
 		
 		// get RatePlan Name
-		$strRatePlanName = $this->arrConfig['RatePlanConvert'][SERVICE_TYPE_MOBILE][trim($arrDetails['Plan'])];
+		if (isset ($this->arrConfig['RatePlanConvert'][SERVICE_TYPE_MOBILE][trim($arrDetails['Plan'])]))
+		{
+			$strRatePlanName = $this->arrConfig['RatePlanConvert'][SERVICE_TYPE_MOBILE][trim($arrDetails['Plan'])];
+		}
 		
 		return Array (
 			// extra information
+			"AccountGroup"		=> $intCustomer,
+			"Account"			=> $intCustomer,
 			"FNN"				=> CleanFNN($arrDetails['Number']),
-			"RatePlanName"		=> $strRatePlanName,
+			"RatePlanName"		=> (isset ($strRatePlanName) ? $strRatePlanName : NULL),
 			"PlanName"			=> $arrDetails['Plan'],
 			"ParentFNN"			=> $arrDetails['Parent'],
 			// table values
 			"SimPUK"			=> $arrDetails['SimPUK'],
 			"SimESN"			=> $arrDetails['SimESN'],
 			"SimState"			=> $arrDetails['SimState'],
-			"DOB"				=> (($arrDetails['DOB_month'] && $arrDetails['DOB_day'] && $arrDetails['DOB_year']) ? date ("Y-m-d", $arrDetails ['DOB']) : "0000-00-00"),
+			"DOB"				=> ((isset ($arrDetails ['DOB'])) ? date ("Y-m-d", $arrDetails ['DOB']) : "0000-00-00"),
 			"Comments"			=> $arrDetails['Comments'],
 			"RateGroup"			=> $arrRateGroup
 		);
@@ -1855,7 +1868,7 @@
 				$strRateName = $arrCustomer[$strRecordType];
 				
 				// try to match it to new rate groups		
-				if (is_array($this->arrConfig['RateConvert'][$strRecordType][$strRateName]))
+				if (isset ($this->arrConfig['RateConvert'][$strRecordType][$strRateName]) && is_array($this->arrConfig['RateConvert'][$strRecordType][$strRateName]))
 				{
 					foreach($this->arrConfig['RateConvert'][$strRecordType][$strRateName] AS $strNewRecordType=>$strRateGroupName)
 					{
