@@ -1013,9 +1013,11 @@ Blue Shared 500 						25
 	// Add System Notes
 	while ($arrRow = $objDecoder->FetchSystemNote())
 	{
-		echo "Assigning System Notes for : {$arrRow['CustomerId']}                ";
+		echo "Assigning System Notes for : {$arrRow ['CustomerId']}                ";
 		
-		if (count ($arrRow ['DataArray']) <> 0)
+		$arrScrape = $arrRow ['DataArray'];
+		
+		if ($arrScrape && count ($arrScrape) <> 0)
 		{
 			$arrNotes = $objDecoder->DecodeSystemNote ($arrScrape);
 			
@@ -1041,7 +1043,9 @@ Blue Shared 500 						25
 	{	
 		echo "Assigning User Notes for : {$arrRow['CustomerId']}                  ";
 		
-		if (count ($arrRow ['DataArray']) <> 0)
+		$arrScrape = $arrRow ['DataArray'];
+		
+		if ($arrScrape && count ($arrScrape) <> 0)
 		{
 			$arrNotes = $objDecoder->DecodeUserNote ($arrScrape);
 			
@@ -1074,7 +1078,7 @@ Blue Shared 500 						25
 		}
 		else
 		{
-			echo Console_Color::convert("[%r FAILED %n]\n");
+			echo Console_Color::convert("[%r  DIED  %n]\n");
 		}
 	}
 
@@ -1090,7 +1094,7 @@ Blue Shared 500 						25
 		}
 		else
 		{
-			echo Console_Color::convert("[%r FAILED %n]\n");
+			echo Console_Color::convert("[%r  DIED  %n]\n");
 		}
 	}
 	
@@ -1147,7 +1151,8 @@ Blue Shared 500 						25
 			}
 			else
 			{
-				echo Console_Color::convert("[%r FAILED %n]\n");
+				echo Console_Color::convert("[%r  DIED  %n]\n");
+				die ();
 			}
 		}
 		else

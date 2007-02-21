@@ -468,6 +468,8 @@ class VixenImport extends ApplicationBaseClass
 	// add inbound provisioning information
 	function AddInboundDetail ($arrDetails)
 	{
+		$arrInbound = $arrDetails ['DataArray'];
+		
 		// get the service id (identified by CustomerId as Account and FNN)
 		$this->_selFindServiceByAccount->Execute (
 			Array (
@@ -477,10 +479,9 @@ class VixenImport extends ApplicationBaseClass
 		);
 		
 		$arrService = $this->_selFindServiceByAccount->Fetch ();
+		$arrInbound ['Service'] = $arrService ['Id'];
 		
-		$arrDetails ['DataArray']['Service'] = $arrService ['Id'];
-		
-		return $this->_insInboundDetail->Execute ($arrDetails ['DataArray']);
+		return $this->_insInboundDetail->Execute ($arrInbound);
 	}
 	
 	// add inbound provisioning information
@@ -493,7 +494,7 @@ class VixenImport extends ApplicationBaseClass
 			
 			//(int)$arrInvoice ['InvoiceId']
 			$arrInvoiceDetails = Array (
-				"Id"				=> (int) $arrInvoice ['InvoiceId'],
+				"Id"				=> $arrInvoice ['InvoiceId'],
 				"AccountGroup"		=> $arrInvoice ['CustomerId'],
 				"Account"			=> $arrInvoice ['CustomerId'],
 				"CreatedOn"			=> date ("Y-m-d", $intInvoiceDate),
@@ -506,11 +507,9 @@ class VixenImport extends ApplicationBaseClass
 				"Balance"			=> $arrInvoice ['Owing'],
 				"Disputed"			=> "",
 				"AccountBalance"	=> "",
-				"Status"			=> "",
+				"Status"			=> ((intval ($arrInvoice ['Owing']) == 0) ? INVOICE_SETTLED : INVOICE_COMMITTED),
 				"InvoiceRun"		=> ""
 			);
-			//var_dump($arrInvoiceDetails);
-			//Die;
 			
 			$insId = $this->_insWithIdInvoiceDetail->Execute ($arrInvoiceDetails);
 			
