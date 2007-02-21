@@ -34,6 +34,9 @@
 		
 		// Create an Instance of the Monitor App
 		$this->appMonitor = new ApplicationMonitor($arrConfig);
+		
+		// Create an Instance of the Rating App
+		$this->appRating = new ApplicationRating($arrConfig);
 	}
 	
 	
@@ -156,15 +159,22 @@
 		return TRUE;
 	}
 	
-	function ShowCDRList($arrWhere, $intStart, $intLimit)
+	function ShowCDRList($arrWhere, $intStart, $intLimit, $bolReRate=FALSE)
 	{
 		$arrCDRs = $this->appMonitor->ListCDR($arrWhere, $intStart, $intLimit);
 		if (is_array($arrCDRs))
 		{
 			// table
 			$tblCDR = $this->NewTable('Border');
-			$tblCDR->AddRow(Array('Id', 'Account', 'Service', 'FNN', 'Source', 'Destination', 'Description', 'Units', 'Cost', 'Charge', 'Credit', 'Rate', 'Dest.', 'ServiceType', 'RecordType', 'Status', 'Carrier', 'Start', 'End'));
-			$tblCDR->Align(Array('Right', 'Right', 'Right', 'Right', 'Right', 'Right', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right'));
+			$arrRow = Array('Id', 'Account', 'Service', 'FNN', 'Source', 'Destination', 'Description', 'Units', 'Cost', 'Charge', 'Credit', 'Rate', 'Dest.', 'ServiceType', 'RecordType', 'Status', 'Carrier', 'Start', 'End');
+			$arrAlign = Array('Right', 'Right', 'Right', 'Right', 'Right', 'Right', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Left');
+			if ($bolReRate === TRUE)
+			{
+				$arrRow[] = 'ReRate';
+				$arrAlign[] = 'Right';
+			}
+			$tblCDR->AddRow($arrRow);
+			$tblCDR->Align($arrAlign);
 			foreach($arrCDRs AS $arrCDR)
 			{
 				$intMaxId = max($intMaxId, $arrCDR['Id']);
@@ -191,7 +201,7 @@
 		return TRUE;
 	}
 	
-	function ShowCDRCompareList($arrWhere, $strCompare, $intStart, $intLimit)
+	function ShowCDRCompareList($arrWhere, $strCompare, $intStart, $intLimit, $bolReRate=FALSE)
 	{
 		
 		$arrCDRs = $this->appMonitor->ListCompareCDR($arrWhere, $strCompare, $intStart, $intLimit);
@@ -199,8 +209,15 @@
 		{
 			// table
 			$tblCDR = $this->NewTable('Border');
-			$tblCDR->AddRow(Array('Id', 'Account', 'Service', 'FNN', 'Source', 'Destination', 'Desc.', " $strCompare Desc.", 'Units', 'Cost', 'Charge', " $strCompare Charge", 'Diff.', 'Credit', 'Rate', 'Dest.', 'SvcType', 'RecType', " $strCompare RecType", 'Status', 'Carrier', 'Start'));
-			$tblCDR->Align(Array('Right', 'Right', 'Right', 'Right', 'Right', 'Right', '', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right'));
+			$arrRow = Array('Id', 'Account', 'Service', 'FNN', 'Source', 'Destination', 'Desc.', " $strCompare Desc.", 'Units', 'Cost', 'Charge', " $strCompare Charge", 'Diff.', 'Credit', 'Rate', 'Dest.', 'SvcType', 'RecType', " $strCompare RecType", 'Status', 'Carrier', 'Start');
+			$arrAlign = Array('Right', 'Right', 'Right', 'Right', 'Right', 'Right', '', '', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right', 'Right');
+			if ($bolReRate === TRUE)
+			{
+				$arrRow[] = 'ReRate';
+				$arrAlign[] = 'Right';
+			}
+			$tblCDR->AddRow($arrRow);
+			$tblCDR->Align($arrAlign);
 			foreach($arrCDRs AS $arrCDR)
 			{
 				$intMaxId = max($intMaxId, $arrCDR['Id']);
@@ -228,6 +245,10 @@
 				}
 				
 				$arrRow = Array($arrCDR['Id'], $arrCDR['Account'], $arrCDR['Service'], $arrCDR['FNN'], $arrCDR['Source'], $arrCDR['Destination'], $arrCDR['Description'], $arrCDR['CompareDescription'], $arrCDR['Units'], $arrCDR['Cost'], $arrCDR['Charge'], $arrCDR['CompareCharge'], $strDifference, $arrCDR['Credit'], $arrCDR['Rate'], $arrCDR['DestinationCode'], $arrCDR['ServiceType'], $arrCDR['RecordType'], $arrCDR['CompareRecordType'], $arrCDR['Status'], $arrCDR['Carrier'], $arrCDR['StartDatetime']);
+				if ($bolReRate === TRUE)
+				{
+					$arrRow[] = money_format('%i',$this->appRating->RateCDR($arrCDR));
+				}
 				$tblCDR->AddRow($arrRow, "cdr_view.php?Id={$arrCDR['Id']}");
 			}
 			$this->AddTable($tblCDR);
@@ -250,6 +271,7 @@
 		}
 		return TRUE;
 	}
+	
 	
 	function ShowNormalisedCDR($intCDR)
 	{

@@ -127,6 +127,22 @@ require_once($strApplicationDir."application.php");
 require_once('page.php');
 require_once('monitor_page.php');
 
+// normalisation modules
+$strNormalisationDir = $strVixenBaseDir."normalisation_app/";
+require_once($strNormalisationDir."normalisation_modules/base_module.php");
+require_once($strNormalisationDir."normalisation_modules/module_aapt.php");
+require_once($strNormalisationDir."normalisation_modules/module_commander.php");
+require_once($strNormalisationDir."normalisation_modules/module_iseek.php");
+require_once($strNormalisationDir."normalisation_modules/module_optus.php");
+require_once($strNormalisationDir."normalisation_modules/module_rslcom.php");
+
+//rating engine
+require_once($strVixenBaseDir."rating_app/application.php");
+
+// Create an Instance of the Rating Engine
+$arrConfig['Reporting'] = FALSE;
+$appRating = new ApplicationRating($arrConfig);
+
 // Create an Instance of the Page object
 $objPage = new MonitorPage($arrConfig);
  

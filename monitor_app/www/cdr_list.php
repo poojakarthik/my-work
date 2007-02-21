@@ -74,7 +74,7 @@ $objPage->AddTitle($strTitle);
 // show list
 if($strCompare)
 {
-	$objPage->ShowCDRCompareList($arrWhere, $strCompare, $intStart, $intLimit);
+	$objPage->ShowCDRCompareList($arrWhere, $strCompare, $intStart, $intLimit, TRUE);
 }
 else	
 {
