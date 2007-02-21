@@ -74,7 +74,7 @@
 		
 		// Construct the Bill Output objects
 		$this->_arrBillOutput[BILL_PRINT]		= new BillingModulePrint(&$this->db, $arrConfig);
-		$this->_arrBillOutput[BILL_PRINT_ETECH]	= new BillingModuleEtech(&$this->db, $arrConfig);
+		//$this->_arrBillOutput[BILL_PRINT_ETECH]	= new BillingModuleEtech(&$this->db, $arrConfig);
 		
 		// Init Statements
 		$this->_selPayments = new StatementSelect(	"Payment",
