@@ -64,9 +64,9 @@ foreach($arrFilePath AS $strFilePath)
 				// check table type
 				switch ($arrLine['_Table'])
 				{
-					/*case 'CDR':
+					case 'CDR':
 						continue;
-						$mixReturn = $etbEtech->FindCDR($arrLine);
+						/*$mixReturn = $etbEtech->FindCDR($arrLine);
 						if ($mixReturn === FALSE)
 						{
 							//CliEcho("CDR NOT FOUND for : ".$arrLine['FNN']);
@@ -97,8 +97,8 @@ foreach($arrFilePath AS $strFilePath)
 							// Insert into DB
 							$arrLine['VixenCDR'] = $mixReturn['Id'];
 							$etbEtech->InsertEtechCDR($arrLine);
-						}
-						break;*/
+						}*/
+						break;
 					
 					case 'ServiceTypeTotal':
 						/*if(!AddServiceTypeTotal($arrLine))
