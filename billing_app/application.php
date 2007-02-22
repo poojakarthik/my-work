@@ -269,7 +269,7 @@
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_TEMP;
-		$updInvoiceStatus = new StatementUpdate("Invoice", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_PRINT, $arrUpdateData);
+		$updInvoiceStatus = new StatementUpdate("InvoiceTemp", "InvoiceRun = '$strInvoiceRun' AND Status = ".INVOICE_PRINT, $arrUpdateData);
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			Debug($updInvoiceStatus->Error());
