@@ -194,7 +194,7 @@
 		
 		// Select CDR Query
 		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
-		$mixColumns	= Array("" => "CDR.*", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
+		$mixColumns	= Array("CDR.*" => "", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
 		$strWhere	= "CDR.Status = ".CDR_READY." OR CDR.Status = ".CDR_FIND_OWNER." OR CDR.Status = ".CDR_RENORMALISE;
 		$strOrder	= "CDR.Status";
 		$strLimit	= "1000";
