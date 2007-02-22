@@ -142,10 +142,10 @@
 */
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
-		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, RateGroup, ServiceRateGroup";
+		/*$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
+										"RateGroup JOIN ServiceRateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup";
 										
 		$strWhere					=	"RateGroup.Id 					= RateGroupRate.RateGroup AND \n" .
-										"ServiceRateGroup.RateGroup		= RateGroup.Id AND \n" .
 										"Rate.RecordType				= <RecordType> AND \n" .
 										"Rate.Destination 				= <Destination> AND \n" .
 										"( Rate.Monday					= <Monday> OR \n" .
@@ -162,7 +162,21 @@
 										"		WHERE ServiceRateGroupSub.Service = <Service> AND \n" .
 										"		<DateTime> BETWEEN ServiceRateGroupSub.StartDatetime AND ServiceRateGroupSub.EndDatetime \n" .
 										"		ORDER BY ServiceRateGroupSub.CreatedOn DESC \n " .
-										"		LIMIT 1 )";
+										"		LIMIT 1 )";*/
+										
+		$strTables					=	"ServiceRateGroup JOIN RateGroup ON ServiceRateGroup.RateGroup = RateGroup.Id, " .
+										"RateGroupRate JOIN Rate ON RateGroupRate.Rate = Rate.Id";
+		
+		$strWhere					=	"RateGroup.Id					= RateGroupRate.RateGroup \n" .										"Rate.RecordType				= <RecordType> AND \n" .
+										"Rate.Destination 				= <Destination> AND \n" .
+										"( Rate.Monday					= <Monday> OR \n" .
+										"Rate.Tuesday					= <Tuesday> OR \n" .
+										"Rate.Wednesday					= <Wednesday> OR \n" .
+										"Rate.Thursday					= <Thursday> OR \n" .
+										"Rate.Friday					= <Friday> OR \n" .
+										"Rate.Saturday					= <Saturday> OR \n" .
+										"Rate.Sunday					= <Sunday> ) AND \n" .
+										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND\n";
 										
 		//FAKE : for testing only
 		//$strTables = "Rate";
