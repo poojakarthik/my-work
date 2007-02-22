@@ -661,7 +661,7 @@
 		elseif (is_int($mixData))
  		{
  			// It's an integer
- 			return "i";
+ 			return "d";
  		}
  		elseif (is_float($mixData))
  		{

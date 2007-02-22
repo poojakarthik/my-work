@@ -18,16 +18,29 @@
 	// call application
 	require ('config/application.php');
 	
-	
-	// Get the Service
+	// Get the Account
 	try
 	{
-		$srvService = $Style->attachObject (new Service ($_POST ['Service']));
+		$actAccount = $Style->attachObject (new Account ($_POST ['Account']));
 	}
 	catch (Exception $e)
 	{
-		$Style->Output ('xsl/content/service/notfound.xsl');
+		$Style->Output ('xsl/content/account/notfound.xsl');
 		exit;
+	}
+	
+	if ($_POST ['Service'])
+	{
+		// Get the Service
+		try
+		{
+			$srvService = $Style->attachObject (new Service ($_POST ['Service']));
+		}
+		catch (Exception $e)
+		{
+			$Style->Output ('xsl/content/service/notfound.xsl');
+			exit;
+		}
 	}
 	
 	// Get the Charge
@@ -54,6 +67,7 @@
 		$oblstrAmount->setValue ($_POST ['Amount']);
 		$fltAmount = new dataFloat ('Amount');
 		
+		// If an Invoice is assigned, check it exists
 		if ($_POST ['Invoice'])
 		{
 			try
@@ -70,7 +84,7 @@
 			// Check the Amount is actually valid
 			$oblstrError->setValue ('Invalid Amount');
 		}
-		else if ($_POST ['Invoice'] && (!$invInvoice || $srvService->Pull ('Account')->getValue () <> $invInvoice->Pull ('Account')->getValue ()))
+		else if ($_POST ['Invoice'] && (!$invInvoice || $actAccount->Pull ('Id')->getValue () <> $invInvoice->Pull ('Account')->getValue ()))
 		{
 			// Ensure that the Invoice belongs to the Account
 			$oblstrError->setValue ('Invoice Misplaced');
@@ -78,8 +92,9 @@
 		else
 		{
 			// Add the Charge
-			$srvService->ChargeAdd (
+			$actAccount->ChargeAdd (
 				$athAuthentication->AuthenticatedEmployee (),
+				isset ($srvService) ? $srvService : NULL,
 				$chgCharge,
 				$fltAmount->getValue (),
 				(($_POST ['Invoice']) ? $_POST ['Invoice'] : NULL),
@@ -93,19 +108,20 @@
 	
 	// Invoice List
 	$invInvoices = $Style->attachObject (new Invoices);
-	$invInvoices->Constrain ('Account', '=', $srvService->Pull ('Account')->getValue ());
+	$invInvoices->Constrain ('Account', '=', $actAccount->Pull ('Id')->getValue ());
 	$invInvoices->Sample (1, 6);
 	
 	// Documentation
+	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Service');
 	$docDocumentation->Explain ('Charge Type');
 	
 	// Output
 	$Style->Output (
-		'xsl/content/service/charges/charges/add.xsl',
+		'xsl/content/charges/charges/assign.xsl',
 		Array (
-			'Account'		=> $srvService->Pull ('Account')->getValue (),
-			'Service'		=> $srvService->Pull ('Id')->getValue ()
+			'Account'		=> $actAccount->Pull ('Id')->getValue (),
+			'Service'		=> (($srvService) ? $srvService->Pull ('Id')->getValue () : NULL)
 		)
 	);
 	

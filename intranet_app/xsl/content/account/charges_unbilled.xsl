@@ -6,7 +6,7 @@
 	<xsl:import href="../../lib/date-time.xsl" />
 	
 	<xsl:template name="Content">
-		<h1>View Unbilled Charges</h1>
+		<h1>View/Add Adjustments</h1>
 		
 		<!-- Service Details -->
 		<h2 class="Account">Account Details</h2>
@@ -50,6 +50,81 @@
 		</div>
 		<div class="Seperator"></div>
 		
+		<!-- Add Adjustment -->
+		<h2 class="Adjustment">Add Adjustment</h2>
+		
+		<div class="Wide-Form">
+			<xsl:choose>
+				<xsl:when test="count(/Response/ChargeTypes/Results/rangeSample/ChargeType) = 0">
+					No adjustments are available.
+				</xsl:when>
+				<xsl:otherwise>
+					<table border="0" cellpadding="3" cellspacing="0">
+						<xsl:if test="count(/Response/ChargeTypes/Results/rangeSample/ChargeType[./Nature='CR']) != 0">
+							<form method="post" action="charges_charge_assign.php">
+								<input type="hidden" name="Account">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Account/Id" />
+									</xsl:attribute>
+								</input>
+								<tr>
+									<th class="JustifiedWidth">Credit Adjustment :</th>
+									<td>
+										<select name="ChargeType">
+											<xsl:for-each select="/Response/ChargeTypes/Results/rangeSample/ChargeType[./Nature='CR']">
+												<option>
+													<xsl:attribute name="value">
+														<xsl:text></xsl:text>
+														<xsl:value-of select="./Id" />
+													</xsl:attribute>
+													<xsl:value-of select="./Description" />
+												</option>
+											</xsl:for-each>
+										</select>
+									</td>
+									<td>
+										<input type="submit" value="Add &#0187;" class="input-submit" />
+									</td>
+								</tr>
+							</form>
+						</xsl:if>
+						<xsl:if test="count(/Response/ChargeTypes/Results/rangeSample/ChargeType[./Nature='DR']) != 0">
+							<form method="post" action="charges_charge_assign.php">
+								<input type="hidden" name="Account">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Account/Id" />
+									</xsl:attribute>
+								</input>
+								<tr>
+									<th class="JustifiedWidth">Debit Adjustment :</th>
+									<td>
+										<select name="ChargeType">
+											<xsl:for-each select="/Response/ChargeTypes/Results/rangeSample/ChargeType[./Nature='DR']">
+												<option>
+													<xsl:attribute name="value">
+														<xsl:text></xsl:text>
+														<xsl:value-of select="./Id" />
+													</xsl:attribute>
+													<xsl:value-of select="./Description" />
+												</option>
+											</xsl:for-each>
+										</select>
+									</td>
+									<td>
+										<input type="submit" value="Add &#0187;" class="input-submit" />
+									</td>
+								</tr>
+							</form>
+						</xsl:if>
+					</table>
+				</xsl:otherwise>
+			</xsl:choose>
+		</div>
+		
+		<div class="Seperator"></div>
+		
 		<!-- Unbilled Adjustments -->
 		<xsl:if test="/Response/Charges-Unbilled">
 			<h2 class="Adjustment">Unbilled Adjustments</h2>
@@ -64,6 +139,7 @@
 					<th>Status</th>
 					<th class="Currency">Charge</th>
 					<th>Nature</th>
+					<th>Details</th>
 				</tr>
 				<xsl:for-each select="/Response/Charges-Unbilled/Results/rangeSample/Charge">
 					<xsl:variable name="Charge" select="." />
@@ -142,6 +218,16 @@
 									</xsl:when>
 								</xsl:choose>
 							</strong>
+						</td>
+						<td>
+							<a href="#" title="Adjustment Details" alt="View Information about an Adjustment">
+								<xsl:attribute name="onclick">
+									<xsl:text>return ModalExternal (this, </xsl:text>
+										<xsl:text>'charges_charge_details.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>'</xsl:text>
+									<xsl:text>)</xsl:text>
+								</xsl:attribute>
+								<xsl:text>Details</xsl:text>
+							</a>
 						</td>
 					</tr>
 				</xsl:for-each>

@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CHARGE | MODULE_EMPLOYEE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CHARGE | MODULE_CHARGE_TYPE | MODULE_EMPLOYEE;
 	
 	// call application
 	require ('config/application.php');
@@ -55,6 +55,11 @@
 			}
 		}
 	}
+	
+	// Get the Charge Types which can be put against this Account
+	$octChargeTypes	= $Style->attachObject (new ChargeTypes);
+	$octChargeTypes->Constrain ('Archived', '=', FALSE);
+	$octChargeTypes->Sample ();
 	
 	// Explain the Fundamentals
 	$docDocumentation->Explain ('Account');

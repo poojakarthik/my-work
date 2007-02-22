@@ -498,7 +498,7 @@ class VixenImport extends ApplicationBaseClass
 				"AccountGroup"		=> $arrInvoice ['CustomerId'],
 				"Account"			=> $arrInvoice ['CustomerId'],
 				"CreatedOn"			=> date ("Y-m-d", $intInvoiceDate),
-				"DueOn"				=> "0000-00-00",
+				"DueOn"				=> date ("Y-m-d", strtotime ("+30 days", $intInvoiceDate)),
 				"SettledOn"			=> "0000-00-00",
 				"Credits"			=> "0",
 				"Debits"			=> "0",

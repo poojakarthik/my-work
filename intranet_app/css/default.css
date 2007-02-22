@@ -471,6 +471,11 @@
 		font-family:		monospace;
 	}
 	
+	.monospace
+	{
+		font-family:		monospace;
+	}
+	
 	label
 	{
 		cursor:              pointer;

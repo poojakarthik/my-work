@@ -240,7 +240,7 @@
 		 * @method
 		 */
 		
-		public function ChargeAdd (AuthenticatedEmployee $aemAuthenticatedEmployee, ChargeType $chgChargeType, $strAmount)
+		public function ChargeAdd (AuthenticatedEmployee $aemAuthenticatedEmployee, ChargeType $chgChargeType, $strAmount, $intInvoice, $strNotes)
 		{
 			$fltAmount = 0;
 			
@@ -272,6 +272,8 @@
 				'Description'			=> $chgChargeType->Pull ('Description')->getValue (),
 				'Nature'				=> $chgChargeType->Pull ('Nature')->getValue (),
 				'Amount'				=> $fltAmount,
+				'Invoice'				=> $intInvoice,
+				'Notes'					=> $strNotes,
 				'Status'				=> CHARGE_WAITING
 			);
 			

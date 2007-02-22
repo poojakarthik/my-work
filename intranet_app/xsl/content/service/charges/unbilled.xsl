@@ -45,6 +45,7 @@
 					<th>Status</th>
 					<th class="Currency">Charge</th>
 					<th>Nature</th>
+					<th>Details</th>
 				</tr>
 				<xsl:for-each select="/Response/Charges-Unbilled/Results/rangeSample/Charge">
 					<xsl:variable name="Charge" select="." />
@@ -107,6 +108,16 @@
 									</xsl:when>
 								</xsl:choose>
 							</strong>
+						</td>
+						<td>
+							<a href="#" title="Adjustment Details" alt="View Information about an Adjustment">
+								<xsl:attribute name="onclick">
+									<xsl:text>return ModalExternal (this, </xsl:text>
+										<xsl:text>'charges_charge_details.php?Id=</xsl:text><xsl:value-of select="./Id" /><xsl:text>'</xsl:text>
+									<xsl:text>)</xsl:text>
+								</xsl:attribute>
+								<xsl:text>Details</xsl:text>
+							</a>
 						</td>
 					</tr>
 				</xsl:for-each>
