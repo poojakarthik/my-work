@@ -1757,6 +1757,25 @@ class MySQLFunction
 	 	}
  		elseif ($this->IsAssociativeArray($mixColumns))
  		{
+			foreach ($mixColumns as $strAlias=>$strColumn)
+			{
+				if (!$strColumn)
+				{
+		 			// No alias (key is the column name)
+		 			$strQuery .= $strAlias;
+				}
+				else
+				{
+		 			// Alias
+		 			$strQuery .= $strColumn." AS ".$strAlias;
+				}
+				
+		 		$strQuery .= ", ";
+			}
+			$strQuery = substr($strQuery, 0, -2);
+			
+			
+			/*
 			// If arrColumns is associative, then add keys and values with "AS" between them
 			reset($mixColumns);
 			
@@ -1779,7 +1798,7 @@ class MySQLFunction
 		 		$strQuery .= ", ";
 				next($mixColumns);
 		 	}
-			$strQuery = substr($strQuery, 0, -2);
+			$strQuery = substr($strQuery, 0, -2);*/
  		}
  		elseif (is_array($mixColumns))
  		{
