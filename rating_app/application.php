@@ -205,11 +205,12 @@
 		
 		// Update CDR Query
 		$arrDefine = Array();
-		$arrDefine['Rate'] = TRUE;
-		$arrDefine['Status'] = TRUE;
-		$arrDefine['Charge'] = TRUE;
-		$arrDefine['RatedOn'] = new MySQLFunction("NOW()");
-		$this->_updUpdateCDRs = new StatementUpdateById("CDR", $arrDefine);
+		$arrDefine['Id']		= TRUE;
+		$arrDefine['Rate']		= TRUE;
+		$arrDefine['Status']	= TRUE;
+		$arrDefine['Charge']	= TRUE;
+		$arrDefine['RatedOn']	= new MySQLFunction("NOW()");
+		$this->_updUpdateCDRs	= new StatementUpdateById("CDR", $arrDefine);
 	 	
  	}
  	
