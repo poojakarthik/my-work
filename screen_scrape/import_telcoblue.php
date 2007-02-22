@@ -568,10 +568,10 @@ Blue Shared 500 						25
 	$arrRates['natrate']				['National 16']									['National']			= 'National-Nat16';
 	$arrRates['natrate']				['Tier 3 corporate Mobile Saver (6.5ff,9cpm)']	['National']			= 'National-09c-07f-01s-00m'; // 6.5c/ff
 	$arrRates['natrate']				['Tier 3 corp. L D (0 ff,10cpm)']				['National']			= 'National-10c-00f-01s-00m';
-	$arrRates['natrate']				['7.5cpm no flag']								['National']			= 'National-08c-00f-01s-00m'; // 7.5cpm
+	$arrRates['natrate']				['7.5cpm no flag']								['National']			= 'National-075c-00f-01s-00m'; // 7.5cpm
 	$arrRates['natrate']				['True Blue Fleet (6ff,9cpm)']					['National']			= 'National-09c-06f-01s-00m';
 	$arrRates['natrate']				['National 8c no ff']							['National']			= 'National-08c-00f-01s-00m';
-	$arrRates['natrate']				['5.5cpm no flag']								['National']			= 'National-06c-00f-01s-00m'; // 5.5cpm
+	$arrRates['natrate']				['5.5cpm no flag']								['National']			= 'National-055c-00f-01s-00m'; // 5.5cpm
 	$arrRates['natrate']				['Residential (20ff,18cpm)']					['National']			= 'National-18c-20f-01s-00m:150c30m';
 	$arrRates['natrate']				['Pinnacle (13c per call)']						['National']			= 'National-Pinnacle';
 	$arrRates['natrate']				['7cpm 0 flag']									['National']			= 'National-07c-00f-01s-00m';
@@ -765,52 +765,52 @@ Blue Shared 500 						25
 
 	// Truncate Tables
 	echo "Truncating Tables\n";
-	//$objImport->Truncate('Account');
-	//$objImport->Truncate('AccountGroup');
+	$objImport->Truncate('Account');
+	$objImport->Truncate('AccountGroup');
 	//$objImport->Truncate('xxx_C_DR');
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
-	//$objImport->Truncate('Contact');
-	//$objImport->Truncate('CreditCard');
+	$objImport->Truncate('Contact');
+	$objImport->Truncate('CreditCard');
 	$objImport->Truncate('DirectDebit');
-	//$objImport->Truncate('Employee');
+	$objImport->Truncate('Employee');
 	$objImport->Truncate('EmployeeAccountAudit');
 	$objImport->Truncate('ErrorLog');
 	//$objImport->Truncate('xxx_F_ileDownload');
 	//$objImport->Truncate('xxx_F_ileImport');
-	//$objImport->Truncate('Invoice');
-	//$objImport->Truncate('InvoiceOutput');
+	$objImport->Truncate('Invoice');
+	$objImport->Truncate('InvoiceOutput');
 	$objImport->Truncate('InvoicePayment');
-	//$objImport->Truncate('InvoiceTemp');
+	$objImport->Truncate('InvoiceTemp');
 	$objImport->Truncate('Note');
 	$objImport->Truncate('Payment');
 	$objImport->Truncate('ProvisioningExport');
 	$objImport->Truncate('ProvisioningLog');
-/*	
+	
 	$objImport->Truncate('Rate');
 	$objImport->Truncate('RateGroup');
 	$objImport->Truncate('RateGroupRate');
 	$objImport->Truncate('RatePlan');
 	$objImport->Truncate('RatePlanRateGroup');
 	$objImport->Truncate('RatePlanRecurringCharge');
-*/
+
 	$objImport->Truncate('RecurringCharge');
 	$objImport->Truncate('RecurringChargeType');
 	$objImport->Truncate('Request');
-	//$objImport->Truncate('Service');
+	$objImport->Truncate('Service');
 	$objImport->Truncate('ServiceAddress');
 	$objImport->Truncate('ServiceMobileDetail');
-/*
+
 	$objImport->Truncate('ServiceRateGroup');
 	$objImport->Truncate('ServiceRatePlan');
-*/
+
 	$objImport->Truncate('ServiceRecurringCharge');
-	//$objImport->Truncate('ServiceTotal');
-	//$objImport->Truncate('ServiceTypeTotal');
+	$objImport->Truncate('ServiceTotal');
+	$objImport->Truncate('ServiceTypeTotal');
 	
 	// clean import array
 	$arrImport = Array();
-/*	
+	
 	// Import Rates
 	$arrImport['/home/vixen/vixen_seed/Rate/Rate.csv'] = 'Rate';
 	$arrIDDRates = glob('/home/vixen/vixen_seed/Rate/IDD/*.csv');
@@ -830,7 +830,7 @@ Blue Shared 500 						25
 
 	// Import Employee
 	$arrImport['/home/vixen/vixen_seed/Employee/Employee.csv'] = 'Employee';
-*/	
+	
 	// Import Charge Types
 	$arrImport['/home/vixen/vixen_seed/RecurringChargeType/RecurringChargeType.csv'] = 'RecurringChargeType';
 	$arrImport['/home/vixen/vixen_seed/ChargeType/ChargeType.csv'] = 'ChargeType';
@@ -846,7 +846,7 @@ Blue Shared 500 						25
 			Die();
 		}
 	}
-/*	
+	
 	// Validate Rates
 	$mixValid = $objImport->ValidateRates();
 	if ($mixValid === TRUE)
@@ -884,8 +884,8 @@ Blue Shared 500 						25
 		echo "FATAL ERROR : Could not match RatePlans to RecurringCharges\n";
 		Die();
 	}
-*/
-/*
+
+
 	// get delinquents
 	$arrRow = $objDecoder->FetchCustomerById(1000154916);
 	$arrScrape = $arrRow['DataArray'];
@@ -901,8 +901,8 @@ Blue Shared 500 						25
 		echo "Delinquents in system : $intDelinquents\n";
 	}
 	sleep(2);
-*/
-/*	
+
+	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
 	{	
@@ -945,7 +945,7 @@ Blue Shared 500 						25
 			Die();
 		}
 	}
-*/
+
 	// Add Mobile Details
 	while ($arrRow = $objDecoder->FetchMobileDetail())
 	{
@@ -1185,14 +1185,14 @@ Blue Shared 500 						25
 		}
 	}
 	
-	/*
+	
 	//finish
 	echo "Done\n";
 	echo "Added : $intCustomerCount Accounts\n";
 	echo "Added : $intRawServiceCount Raw Services\n";
 	echo "Added : $intServiceCount Actual Services\n";
 	Die ();
-	*/
+	
 
 // ---------------------------------------------------------------------------//
 // IMPORT CLASS
