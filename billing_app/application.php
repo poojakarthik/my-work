@@ -1089,10 +1089,10 @@
 	}
 	
 	//------------------------------------------------------------------------//
-	// _GenerateBillAudit()
+	// GenerateBillAudit()
 	//------------------------------------------------------------------------//
 	/**
-	 * _GenerateBillAudit()
+	 * GenerateBillAudit()
 	 *
 	 * Generates the Bill Audit Report
 	 *
@@ -1104,7 +1104,7 @@
 	 *
 	 * @method
 	 */
- 	function _GenerateBillAudit()
+ 	function GenerateBillAudit()
  	{
 		// Initiate and Execute Invoice Summary Statement
 		$arrInvoiceColumns['TotalInvoices']			= "COUNT(DISTINCT InvoiceTemp.Id)";
