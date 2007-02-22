@@ -142,9 +142,10 @@
 */
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
-		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, RateGroup";
+		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, RateGroup, ServiceRateGroup";
 										
 		$strWhere					=	"RateGroup.Id 					= RateGroupRate.RateGroup AND \n" .
+										"ServiceRateGroup.RateGroup		= RateGroup.Id AND \n" .
 										"Rate.RecordType				= <RecordType> AND \n" .
 										"Rate.Destination 				= <Destination> AND \n" .
 										"( Rate.Monday					= <Monday> OR \n" .
@@ -155,12 +156,12 @@
 										"Rate.Saturday					= <Saturday> OR \n" .
 										"Rate.Sunday					= <Sunday> ) AND \n" .
 										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND\n" .
-										"RateGroup.ServiceRateGroup = \n" .
-										"	(	SELECT ServiceRateGroup.Id \n " .
-										"		FROM ServiceRateGroup \n " .
-										"		WHERE ServiceRateGroup.Service = <Service> AND \n" .
-										"		<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime \n" .
-										"		ORDER BY CreatedOn DESC \n " .
+										"ServiceRateGroup.Id = \n" .
+										"	(	SELECT ServiceRateGroupSub.Id \n " .
+										"		FROM ServiceRateGroupSub \n " .
+										"		WHERE ServiceRateGroupSub.Service = <Service> AND \n" .
+										"		<DateTime> BETWEEN ServiceRateGroupSub.StartDatetime AND ServiceRateGroupSub.EndDatetime \n" .
+										"		ORDER BY ServiceRateGroupSub.CreatedOn DESC \n " .
 										"		LIMIT 1 )";
 										
 		//FAKE : for testing only
