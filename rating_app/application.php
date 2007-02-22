@@ -158,7 +158,7 @@
 										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND\n" .
 										"ServiceRateGroup.Id = \n" .
 										"	(	SELECT ServiceRateGroupSub.Id \n " .
-										"		FROM ServiceRateGroupSub \n " .
+										"		FROM ServiceRateGroup ServiceRateGroupSub \n " .
 										"		WHERE ServiceRateGroupSub.Service = <Service> AND \n" .
 										"		<DateTime> BETWEEN ServiceRateGroupSub.StartDatetime AND ServiceRateGroupSub.EndDatetime \n" .
 										"		ORDER BY ServiceRateGroupSub.CreatedOn DESC \n " .
