@@ -137,7 +137,40 @@
 		$arrInsertData['Status']			= INVOICE_COMMITTED;
 		$arrInsertData['InvoiceRun']		= $strInvoiceRun;
 		
-		return (bool)$this->_insInvoice->Execute($arrInsertData);
+		//return (bool)$this->_insInvoice->Execute($arrInsertData);
+	}
+	
+	//------------------------------------------------------------------------//
+	// UpdateInvoice
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateInvoice()
+	 *
+	 * Updates an Etech Invoice to the Invoice table
+	 *
+	 * Updates an Etech Invoice to the Invoice table
+	 * 
+	 * @param	array	$arrInvoice		associative array of invoice details
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+ 	function UpdateInvoice($arrInvoice)
+ 	{
+		// Insert into the database
+		$arrInsertData['Id']				= $arrInvoice['Id'];
+		$arrInsertData['CreatedOn']			= $arrInvoice['CreatedOn'];
+		$arrInsertData['DueOn']				= $arrInvoice['DueOn'];
+		$arrInsertData['Credits']			= $arrInvoice['Credits'];
+		$arrInsertData['Debits']			= $arrInvoice['Debits'];
+		$arrInsertData['Total']				= $arrInvoice['Total'];
+		$arrInsertData['Tax']				= $arrInvoice['Tax'];
+		$arrInsertData['AccountBalance']	= $arrInvoice['AccountBalance'];
+		
+		//TODO!rich! setup an update by id in the constructor to update these fields
+		
+		return (bool)$this->_updInvoice->Execute($arrInsertData);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -152,19 +185,29 @@
 	 * 
 	 * @param	array	$arrServiceTypeTotal	associative array to be inserted
 	 * @param	string	$strInvoiceRun			generated InvoiceRun Id
-	 * @param	string	$strInvoiceCreatedOn	date the invoice was created (from Invoice dataset)
+	 * @param	string	$strInvoiceCreatedOn	optional date the invoice was created (from Invoice dataset)
 	 *
 	 * @return			bool
 	 *
 	 * @method
 	 */
- 	function AddServiceTypeTotal($arrServiceTypeTotal, $strInvoiceRun, $strInvoiceCreatedOn)
+ 	function AddServiceTypeTotal($arrServiceTypeTotal, $strInvoiceRun=FALSE, $strInvoiceCreatedOn=FALSE)
  	{
+		// Get Invoice Run
+		if (!$strInvoiceRun)
+		{
+			$strInvoiceRun = FindInvoiceRun($arrServiceTypeTotal['Invoice']);
+			if (!$strInvoiceRun)
+			{
+				return FALSE;
+			}
+		}
+		
 		// Insert into the database
 		$arrInsertData['FNN']			= $arrServiceTypeTotal['FNN'];
 		$arrInsertData['AccountGroup']	= $arrServiceTypeTotal['AccountGroup'];
 		$arrInsertData['Account']		= $arrServiceTypeTotal['Account'];
-		$arrInsertData['Service']		= $this->FindServiceByFNN($arrServiceTypeTotal['FNN'], $arrInsertData['Account']);
+		$arrInsertData['Service']		= $this->FindServiceByFNN($arrServiceTypeTotal['FNN'], $arrInsertData['Account'], $arrInsertData['InvoiceDate']);
 		$arrInsertData['InvoiceRun']	= $strInvoiceRun;
 		$arrInsertData['RecordType']	= $arrServiceTypeTotal['RecordType'];
 		$arrInsertData['Charge']		= $arrServiceTypeTotal['Charge'];
@@ -174,30 +217,33 @@
 		$mixInsertResult = (bool)$this->_insServiceTypeTotal->Execute($arrInsertData);
 		
 		// Match with all Local CDRs
-		switch ($arrServiceTypeTotal['RecordType'])
+		/*if ($strInvoiceCreatedOn !== FALSE)
 		{
-			case 17:
-			//case 34: // <-- not sure if these are itemised on the etech bills? they probably should be
-				// Find the CDRs total
-				$strStartDate	= date("Y-m-", strtotime("-1 Month", strtotime($strInvoiceCreatedOn)))."01";
-				$strEndDate		= date("Y-m-d", strtotime("-1 Day", strtotime("+1 Month", strtotime($strStartDate))));
-				$arrWhere['Account']	= $arrServiceTypeTotal['Account'];
-				$arrWhere['StartDate']	= $strStartDate." 00:00:00";
-				$arrWhere['EndDate']	= $strEndDate." 23:59:59";
-				if (!$this->_selMatchLocal->Execute($arrWhere))
-				{
-					// Error or no matches
-					return FALSE;
-				}
-				$mixInsertResult = $this->_selMatchLocal->Fetch();
-				$mixInsertResult = $mixInsertResult['Total'];
-				
-				// Update the CDRs
-				$arrUpdateData['Status']		= CDR_INVOICED;
-				$arrUpdateData['InvoiceRun']	= $strInvoiceRun;
-				$ubiMatchLocal = new StatementUpdate("CDR", $arrWhere, $arrUpdateData, $arrServiceTypeTotal['Records']);	
-				$ubiMatchLocal->Execute($arrUpdateData);
-		}		
+			switch ($arrServiceTypeTotal['RecordType'])
+			{
+				case 17:
+				//case 34: // <-- not sure if these are itemised on the etech bills? they probably should be
+					// Find the CDRs total
+					$strStartDate	= date("Y-m-", strtotime("-1 Month", strtotime($strInvoiceCreatedOn)))."01";
+					$strEndDate		= date("Y-m-d", strtotime("-1 Day", strtotime("+1 Month", strtotime($strStartDate))));
+					$arrWhere['Account']	= $arrServiceTypeTotal['Account'];
+					$arrWhere['StartDate']	= $strStartDate." 00:00:00";
+					$arrWhere['EndDate']	= $strEndDate." 23:59:59";
+					if (!$this->_selMatchLocal->Execute($arrWhere))
+					{
+						// Error or no matches
+						return FALSE;
+					}
+					$mixInsertResult = $this->_selMatchLocal->Fetch();
+					$mixInsertResult = $mixInsertResult['Total'];
+					
+					// Update the CDRs
+					$arrUpdateData['Status']		= CDR_INVOICED;
+					$arrUpdateData['InvoiceRun']	= $strInvoiceRun;
+					$ubiMatchLocal = new StatementUpdate("CDR", $arrWhere, $arrUpdateData, $arrServiceTypeTotal['Records']);	
+					$ubiMatchLocal->Execute($arrUpdateData);
+			}
+		}*/
 		return $mixInsertResult;
 	}
 	
@@ -218,13 +264,23 @@
 	 *
 	 * @method
 	 */
- 	function AddServiceTotal($arrServiceTotal, $strInvoiceRun)
+ 	function AddServiceTotal($arrServiceTotal, $strInvoiceRun=FALSE)
  	{
+		// Get Invoice Run
+		if (!$strInvoiceRun)
+		{
+			$strInvoiceRun = FindInvoiceRun($arrServiceTotal['Invoice']);
+			if (!$strInvoiceRun)
+			{
+				return FALSE;
+			}
+		}
+		
 		// Insert into the database
 		$arrInsertData['FNN']				= $arrServiceTotal['FNN'];
 		$arrInsertData['AccountGroup']		= $arrServiceTotal['AccountGroup'];
 		$arrInsertData['Account']			= $arrServiceTotal['Account'];
-		$arrInsertData['Service']			= $this->FindServiceByFNN($arrServiceTotal['FNN'], $arrInsertData['Account']);
+		$arrInsertData['Service']			= $this->FindServiceByFNN($arrServiceTotal['FNN'], $arrInsertData['Account'], $arrInsertData['InvoiceDate']);
 		$arrInsertData['InvoiceRun']		= $strInvoiceRun;
 		$arrInsertData['CappedCharge']		= $arrServiceTotal['TotalCharge'];
 		$arrInsertData['UncappedCharge']	= 0.0;
@@ -371,6 +427,53 @@
 			Debug($this->_insEtechCDR->Error());
 		}
 		return $mixResult;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// FindInvoiceRun
+	//------------------------------------------------------------------------//
+	/**
+	 * FindInvoiceRun()
+	 *
+	 * Finds the Invoice Run for an invoice in our database.
+	 *
+	 * Finds the Invoice Run for an invoice in our database.
+	 * 
+	 * @param	int	$intInvoice				id of the invoice to find
+	 *
+	 * @return	mixed	string				Invoice Run
+	 *					bool				FALSE if a match was not found
+	 *
+	 * @method
+	 */
+ 	function FindInvoiceRun($intInvoice)
+	{
+		$intInvoice = (int)$intInvoice;
+		
+		if ($intInvoice < 1)
+		{
+			return FALSE;
+		}
+		
+		// return invoice run from cache
+		if ($this->_InvoiceRun[$intInvoice] || $this->_InvoiceRun[$intInvoice] === FALSE)
+		{
+			return $this->_InvoiceRun[$intInvoice];
+		}
+		
+		// find invoice run
+		//TODO!rich! find the invoice run
+		// $strInvoiceRun = 
+		
+		// cache invoice run
+		if (!$strInvoiceRun)
+		{
+			$strInvoiceRun = FALSE;
+		}
+		$this->_InvoiceRun[$intInvoice] = $strInvoiceRun;
+		
+		return $strInvoiceRun;
 	}
  }	
 ?>
