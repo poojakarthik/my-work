@@ -201,7 +201,7 @@
 		unset($arrColumns['Carrier']);
 		unset($arrColumns['NormalisedOn']);
 		unset($arrColumns['SequenceNo']);
-		$arrColumns['Id'] = TRUE;
+		$arrColumns['Id'] = 0;
 		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
 		
 		// Update CDR Query
