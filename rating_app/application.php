@@ -206,7 +206,6 @@
 		
 		// Update CDR Query
 		$arrDefine = Array();
-		$arrDefine['Id']		= TRUE;
 		$arrDefine['Rate']		= TRUE;
 		$arrDefine['Status']	= TRUE;
 		$arrDefine['Charge']	= TRUE;
