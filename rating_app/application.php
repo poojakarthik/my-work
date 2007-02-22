@@ -167,7 +167,8 @@
 		$strTables					=	"ServiceRateGroup JOIN RateGroup ON ServiceRateGroup.RateGroup = RateGroup.Id, " .
 										"RateGroupRate JOIN Rate ON RateGroupRate.Rate = Rate.Id";
 		
-		$strWhere					=	"RateGroup.Id					= RateGroupRate.RateGroup \n" .										"Rate.RecordType				= <RecordType> AND \n" .
+		$strWhere					=	"RateGroup.Id					= RateGroupRate.RateGroup AND \n" .	
+										"Rate.RecordType				= <RecordType> AND \n" .
 										"Rate.Destination 				= <Destination> AND \n" .
 										"( Rate.Monday					= <Monday> OR \n" .
 										"Rate.Tuesday					= <Tuesday> OR \n" .
@@ -188,7 +189,7 @@
 		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
 		
 		// fleet rate query
-		$strWhere					.=	"AND Rate.Fleet 				= 1 \n";
+		$strWhere					.=	" AND Rate.Fleet 				= 1 \n";
 		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
 		
 		// Select CDR Query
@@ -636,6 +637,8 @@
 			// look for a normal rate
 			$this->_selFindRate->Execute($strAliases);
 		}
+
+		Debug($strAliases);
 		
 		//FAKE : For testing only
 		//$this->_selFindRate->Execute();
