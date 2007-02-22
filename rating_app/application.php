@@ -142,27 +142,26 @@
 */
 		
 		// Init Rate finding (aka Dirty Huge Donkey) Query
-		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
-										"RateGroup JOIN RateGroupRate AS RateGroupRate2 ON RateGroup.Id = RateGroupRate2.RateGroup, " .
-										"ServiceRateGroup JOIN RateGroup AS RateGroup2 ON ServiceRateGroup.RateGroup = RateGroup2.Id";
+		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, RateGroup";
 										
-		$strWhere					=	"RateGroupRate.Id 				= RateGroupRate2.Id AND \n" .
-										"RateGroup.Id 					= RateGroup2.Id AND \n" .
-										"ServiceRateGroup.Service 		= <Service> AND \n" .
-										"ServiceRateGroup.StartDateTime	<= <DateTime> AND \n" .
-										"ServiceRateGroup.EndDateTime	>= <DateTime> AND \n" .
+		$strWhere					=	"RateGroup.Id 					= RateGroupRate.RateGroup AND \n" .
 										"Rate.RecordType				= <RecordType> AND \n" .
 										"Rate.Destination 				= <Destination> AND \n" .
-										"Rate.StartTime					<= <Time> AND \n" .
-										"Rate.EndTime 					>= <Time> AND \n" .
 										"( Rate.Monday					= <Monday> OR \n" .
 										"Rate.Tuesday					= <Tuesday> OR \n" .
 										"Rate.Wednesday					= <Wednesday> OR \n" .
 										"Rate.Thursday					= <Thursday> OR \n" .
 										"Rate.Friday					= <Friday> OR \n" .
 										"Rate.Saturday					= <Saturday> OR \n" .
-										"Rate.Sunday					= <Sunday> ) \n";
-//TODO!rich! CreatedOn !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+										"Rate.Sunday					= <Sunday> ) AND \n" .
+										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND\n" .
+										"RateGroup.ServiceRateGroup = \n" .
+										"	(	SELECT ServiceRateGroup.Id \n " .
+										"		FROM ServiceRateGroup \n " .
+										"		WHERE ServiceRateGroup.Service = <Service> AND \n" .
+										"		<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime \n" .
+										"		ORDER BY CreatedOn DESC \n " .
+										"		LIMIT 1 )";
 										
 		//FAKE : for testing only
 		//$strTables = "Rate";
