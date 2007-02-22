@@ -176,7 +176,9 @@
 										"Rate.Friday					= <Friday> OR \n" .
 										"Rate.Saturday					= <Saturday> OR \n" .
 										"Rate.Sunday					= <Sunday> ) AND \n" .
-										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND\n";
+										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND \n" .
+										"<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime AND\n" .
+										"ServiceRateGroup.Service = <Service>";
 										
 		//FAKE : for testing only
 		//$strTables = "Rate";
