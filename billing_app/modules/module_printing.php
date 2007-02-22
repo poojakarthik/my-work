@@ -109,9 +109,10 @@
 																NULL,
 																"RType.Id");*/
 		
-		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service, CostCentre",
-																"FNN, Service.Id AS Id, CostCentre.Name AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
-																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND Service.CostCentre = CostCentre.Id",
+		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service, " .
+																"Service Service2 LEFT OUTER JOIN CostCentre ON Service.CostCentre = CostCentre.Id",
+																"Service.FNN, Service.Id AS Id, CostCentre.Name AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
+																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND Service.Id = Service2.Id",
 																"CostCentre.Name",
 																NULL,
 																"Service.Id, ServiceExtension.RangeStart");
@@ -395,7 +396,7 @@
 		foreach($arrBillHistory as $arrBill)
 		{
 			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime($arrBill['CreatedOn']));
-			$arrDefine['GraphData']		['Value1']			['Value']	= $arrBill['Total'] + $arrBill['Tax'];
+			$arrDefine['GraphData']		['Value1']			['Value']	= max($arrBill['Total'] + $arrBill['Tax'], 0.0);
 			$this->_arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
@@ -454,7 +455,11 @@
 		
 		
 		// get details from services
-		$intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']));
+		if (($intCount = $this->_selServices->Execute(Array('Account' => $arrInvoiceDetails['Account']))) === FALSE)
+		{
+			Debug("Error on _selServices!");
+			Debug($this->_selServices->Error());
+		}
 		$arrServices = $this->_selServices->FetchAll();
 		
 		// Only generate Service Summaries and Itemised calls if there are services to generate for
@@ -586,10 +591,11 @@
 			 	
 			// add service total record (89)
 			$this->_arrFileData[] = $arrDefine['ItemSvcFooter'];
+			
+			// add end itemised charges record (79)
+			$this->_arrFileData[] = $arrDefine['ItemisedFooter'];
 		}
 		
-		// add end itemised charges record (79)
-		$this->_arrFileData[] = $arrDefine['ItemisedFooter'];
 		
 		//--------------------------------------------------------------------//
 		// INVOICE FOOTERS
