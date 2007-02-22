@@ -1761,7 +1761,7 @@ class MySQLFunction
 			reset($mixColumns);
 			
 		 	// Add the columns 	
-		 	while (current($mixColumns) != null)
+		 	while (current($mixColumns) !== null)
 		 	{
 		 		$strQuery .= current($mixColumns);
 		 		
