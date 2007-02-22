@@ -486,8 +486,6 @@
 			$arrCDR['Status'] = CDR_RATED;
 			$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
 			$this->_updUpdateCDRs->Execute($arrCDR);
-			Debug($this->_updUpdateCDRs->Error());
-			//Die();
 			$intPassed++;
 		}
 		
