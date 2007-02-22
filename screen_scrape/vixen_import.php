@@ -444,11 +444,23 @@ class VixenImport extends ApplicationBaseClass
 					if (isset ($arrNote ['EmployeeName']))
 					{
 						$arrNote ['Employee'] = $this->FindEmployee ($arrNote ['EmployeeName']);
+						
+						if (!$arrNote ['Employee'])
+						{
+							$arrNote ['Note'] = "Originally Entered by: " . $arrNote ['EmployeeName'] . "\n" . $arrNote ['Note'];
+						}
+						
 						unset ($arrNote ['EmployeeName']);
 					}
 					else if (isset ($arrNote ['EmployeeFirstName']) && isset ($arrNote ['EmployeeLastName']))
 					{
 						$arrNote ['Employee'] = $this->FindEmployee ($arrNote ['EmployeeFirstName'], $arrNote ['EmployeeLastName']);
+						
+						if (!$arrNote ['Employee'])
+						{
+							$arrNote ['Note'] = "Originally Entered by: " . $arrNote ['EmployeeFirstName'] . " " . $arrNote ['EmployeeLastName'] . "\n" . $arrNote ['Note'];
+						}
+						
 						unset ($arrNote ['EmployeeFirstName']);
 						unset ($arrNote ['EmployeeLastName']);
 					}
@@ -481,7 +493,14 @@ class VixenImport extends ApplicationBaseClass
 		$arrService = $this->_selFindServiceByAccount->Fetch ();
 		$arrInbound ['Service'] = $arrService ['Id'];
 		
-		return $this->_insInboundDetail->Execute ($arrInbound);
+		$intReturn = $this->_insInboundDetail->Execute ($arrInbound);
+		
+		if (!$intReturn)
+		{
+			echo $this->_insInboundDetail->Error ();
+		}
+		
+		return $intReturn;
 	}
 	
 	// add inbound provisioning information
@@ -499,7 +518,7 @@ class VixenImport extends ApplicationBaseClass
 				"Account"			=> $arrInvoice ['CustomerId'],
 				"CreatedOn"			=> date ("Y-m-d", $intInvoiceDate),
 				"DueOn"				=> date ("Y-m-d", strtotime ("+30 days", $intInvoiceDate)),
-				"SettledOn"			=> "0000-00-00",
+				"SettledOn"			=> NULL,
 				"Credits"			=> "0",
 				"Debits"			=> "0",
 				"Total"				=> $arrInvoice ['Amount'],
@@ -546,6 +565,9 @@ class VixenImport extends ApplicationBaseClass
 					unset ($arrCharge ['ApprovedByLastName']);
 				}
 			}
+			
+			$arrCharge ['Invoice'] = NULL;
+			$arrCharge ['Notes'] = "";
 			
 			$insId = $this->_insCharge->Execute ($arrCharge);
 			

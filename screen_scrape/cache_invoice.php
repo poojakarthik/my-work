@@ -8,7 +8,7 @@
 	
 	// Create a new Report Object
 	$rptReport = new Report (
-		"+	ETECH CUSTOMER ACCOUNT ADDITIONAL INFORMATION CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
+		"+	ETECH CUSTOMER INVOICE MANAGEMENT PAGE SETUP UTILITY: " . date ("Y-m-d h:i:s A"),
 		"bash@voiptelsystems.com.au"
 	);
 	
@@ -18,10 +18,14 @@
 	$cstCustomers = new Parser_CSV ('data/customers.csv');
 	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
 	
+	
+	/*
+	// No communication with ETECH is needed because we're going to be using the Janitor
+	
 	// Open a Connection/Session to ETECH
 	$cnnConnection = new Connection ();	
 	$rptReport->AddMessage ("+	COMMUNICATION WITH ETECH ESTABLISHED\n");
-	
+	*/
 	
 	
 	
@@ -39,9 +43,15 @@
 	// Loop through each of the Customers
 	foreach ($cstCustomers->CustomerList () AS $intCustomerId)
 	{
+		/*
+		// This is going to be uber fast - so we don't need a timer
 		
 		// Start a Timer for this Request
 		$fltStartTime = microtime (TRUE);
+		*/
+		
+		/*
+		// Janitors Job Now ...
 		
 		// Pull the Information from ETECH
 		$strResponse = $cnnConnection->Transmit (
@@ -51,25 +61,25 @@
 		
 		// Count the Total Time
 		$fltTotalTime = microtime (TRUE) - $fltStartTime;
-		
+		*/
 		
 		// Insert the Information into the Database
 		$arrScrape = Array (
-			'CustomerId'		=> $intCustomerId,
-			'DataOriginal'		=> $strResponse,
-			'DataSerialized'	=> ''
+			'CustomerId'		=> trim ($intCustomerId),
+			'DataOriginal'		=> "1",
+			'Attempt'			=> 0,
+			'TimeTaken'			=> 0
 		);
 		
 		$insScrape->Execute ($arrScrape);
 		
 		// Add something to the Report
 		$rptReport->AddMessageVariables (
-			"+	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>",
+			"+	<CurrentRow>		<CustomerID>	<Response>",
 			Array (
 				"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
-				"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),
-				"<CustomerID>"		=> $intCustomerId,
-				"<Response>"		=> "MANAGE INVOICE PAGE HAS BEEN CACHED"
+				"<CustomerID>"		=> trim ($intCustomerId),
+				"<Response>"		=> "MANAGE INVOICE PAGE HAS BEEN SET UP"
 			)
 		);
 		

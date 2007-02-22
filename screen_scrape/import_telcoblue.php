@@ -765,28 +765,28 @@ Blue Shared 500 						25
 
 	// Truncate Tables
 	echo "Truncating Tables\n";
-	$objImport->Truncate('Account');
-	$objImport->Truncate('AccountGroup');
+	//$objImport->Truncate('Account');
+	//$objImport->Truncate('AccountGroup');
 	//$objImport->Truncate('xxx_C_DR');
-	$objImport->Truncate('Charge');
-	$objImport->Truncate('ChargeType');
-	$objImport->Truncate('Contact');
-	$objImport->Truncate('CreditCard');
-	$objImport->Truncate('DirectDebit');
-	$objImport->Truncate('Employee');
-	$objImport->Truncate('EmployeeAccountAudit');
-	$objImport->Truncate('ErrorLog');
+	//$objImport->Truncate('Charge');
+	//$objImport->Truncate('ChargeType');
+	//$objImport->Truncate('Contact');
+	//$objImport->Truncate('CreditCard');
+	//$objImport->Truncate('DirectDebit');
+	//$objImport->Truncate('Employee');
+	//$objImport->Truncate('EmployeeAccountAudit');
+	//$objImport->Truncate('ErrorLog');
 	//$objImport->Truncate('xxx_F_ileDownload');
 	//$objImport->Truncate('xxx_F_ileImport');
-	$objImport->Truncate('Invoice');
-	$objImport->Truncate('InvoiceOutput');
-	$objImport->Truncate('InvoicePayment');
-	$objImport->Truncate('InvoiceTemp');
-	$objImport->Truncate('Note');
-	$objImport->Truncate('Payment');
-	$objImport->Truncate('ProvisioningExport');
-	$objImport->Truncate('ProvisioningLog');
-	
+	//$objImport->Truncate('Invoice');
+	//$objImport->Truncate('InvoiceOutput');
+	//$objImport->Truncate('InvoicePayment');
+	//$objImport->Truncate('InvoiceTemp');
+	//$objImport->Truncate('Note');
+	//$objImport->Truncate('Payment');
+	//$objImport->Truncate('ProvisioningExport');
+	//$objImport->Truncate('ProvisioningLog');
+	/*
 	$objImport->Truncate('Rate');
 	$objImport->Truncate('RateGroup');
 	$objImport->Truncate('RateGroupRate');
@@ -800,13 +800,14 @@ Blue Shared 500 						25
 	$objImport->Truncate('Service');
 	$objImport->Truncate('ServiceAddress');
 	$objImport->Truncate('ServiceMobileDetail');
-
+	
 	$objImport->Truncate('ServiceRateGroup');
 	$objImport->Truncate('ServiceRatePlan');
 
 	$objImport->Truncate('ServiceRecurringCharge');
 	$objImport->Truncate('ServiceTotal');
 	$objImport->Truncate('ServiceTypeTotal');
+	*/
 	
 	// clean import array
 	$arrImport = Array();
@@ -901,7 +902,8 @@ Blue Shared 500 						25
 		echo "Delinquents in system : $intDelinquents\n";
 	}
 	sleep(2);
-
+	
+	/*
 	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
@@ -1072,6 +1074,7 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%b  NONE  %n]\n");
 		}
 	}
+	*/
 	
 	// Add Inbound Details
 	while ($arrRow = $objDecoder->FetchInboundDetail())
@@ -1088,13 +1091,14 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%r  DIED  %n]\n");
 		}
 	}
-
+	
+	/*
 	// Add Invoice Details
 	while ($arrRow = $objDecoder->FetchInvoiceDetail())
 	{
 		echo "Fetching Invoice Details : {$arrRow['CustomerId']}                  ";
 		
-		// add the inbound details
+		// add the invoice details
 		if ($objImport->AddInvoiceDetail ($arrRow ['DataArray']))
 		{
 			echo Console_Color::convert("[%g  DONE  %n]\n");
@@ -1110,7 +1114,7 @@ Blue Shared 500 						25
 	{
 		echo "Assigning Account Options : {$arrRow['CustomerId']}                 ";
 		
-		// add the inbound details
+		// add the account option details
 		if ($objImport->SetAccountOptions ($arrRow ['CustomerId'], $arrRow ['DataArray']))
 		{
 			echo Console_Color::convert("[%g  DONE  %n]\n");
@@ -1126,7 +1130,7 @@ Blue Shared 500 						25
 	{
 		echo "Inserting Once-Off Charges : {$arrCharges['CustomerId']}                ";
 		
-		// add the inbound details
+		// add the charge details
 		if (count ($arrCharges ['DataArray']) <> 0)
 		{
 			if ($objImport->AddAccountCharge ($arrCharges ['DataArray']))
@@ -1149,7 +1153,7 @@ Blue Shared 500 						25
 	{
 		echo "Inserting Recurring Charges : {$arrRecurringCharges['CustomerId']}               ";
 		
-		// add the inbound details
+		// add the recurring charge details
 		if (count ($arrRecurringCharges ['DataArray']) <> 0)
 		{
 			if ($objImport->AddRecurringCharge ($arrRecurringCharges ['DataArray']))
@@ -1192,7 +1196,7 @@ Blue Shared 500 						25
 	echo "Added : $intRawServiceCount Raw Services\n";
 	echo "Added : $intServiceCount Actual Services\n";
 	Die ();
-	
+	*/
 
 // ---------------------------------------------------------------------------//
 // IMPORT CLASS
