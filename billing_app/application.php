@@ -1618,7 +1618,7 @@
 	 *
 	 * @method
 	 */
-	 function PrintInvoices($intPrintTartget = BILL_PRINT)
+	 function GenerateInvoiceOutput($intPrintTartget = BILL_PRINT)
 	 {		
 		$arrUpdateData = Array();
 		$arrUpdateData['Id']		= NULL;
@@ -1664,14 +1664,14 @@
 		}
 		
 		// build an output file
-		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput(BILL_PRINT))
+		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput(BILL_SAMPLE))
 		{
 			Debug("Building Output FAILED!");
 			return FALSE;
 		}
 		
 		// send billing output
-		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(BILL_PRINT))
+		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(BILL_SAMPLE))
 		{
 			Debug("Sending Output FAILED!");
 			return FALSE;
