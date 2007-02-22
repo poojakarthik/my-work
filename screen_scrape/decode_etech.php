@@ -595,8 +595,7 @@
 				"Description"	=> "",
 				"ChargedOn"		=> "",
 				"Nature"		=> "",
-				"Amount"		=> "",
-				"Status"		=> CHARGE_APPROVED
+				"Amount"		=> ""
 			);
 			
 			$strLastIndex = "";

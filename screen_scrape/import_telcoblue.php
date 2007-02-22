@@ -7,6 +7,97 @@
 	
 <?php
 
+	$GLOBALS ['InvoiceRuns'] = Array (
+		"1999"	=> Array (
+			"11"		=> uniqid (),
+			"12"		=> uniqid ()
+		),
+		
+		"2000"	=> Array (
+			"01"		=> uniqid ()
+		),
+		
+		"2002"	=> Array (
+			"01"		=> uniqid (),
+			"02"		=> uniqid (),
+			"03"		=> uniqid (),
+			"04"		=> uniqid (),
+			"05"		=> uniqid (),
+			"06"		=> uniqid (),
+			"07"		=> uniqid (),
+			"08"		=> uniqid (),
+			"09"		=> uniqid (),
+			"10"		=> uniqid (),
+			"11"		=> uniqid (),
+			"12"		=> uniqid ()
+		),
+		
+		"2003"	=> Array (
+			"01"		=> uniqid (),
+			"02"		=> uniqid (),
+			"03"		=> uniqid (),
+			"04"		=> uniqid (),
+			"05"		=> uniqid (),
+			"06"		=> uniqid (),
+			"07"		=> uniqid (),
+			"08"		=> uniqid (),
+			"09"		=> uniqid (),
+			"10"		=> uniqid (),
+			"11"		=> uniqid (),
+			"12"		=> uniqid ()
+		),
+		
+		"2004"	=> Array (
+			"01"		=> uniqid (),
+			"02"		=> uniqid (),
+			"03"		=> uniqid (),
+			"04"		=> uniqid (),
+			"05"		=> uniqid (),
+			"06"		=> uniqid (),
+			"07"		=> uniqid (),
+			"08"		=> uniqid (),
+			"09"		=> uniqid (),
+			"10"		=> uniqid (),
+			"11"		=> uniqid (),
+			"12"		=> uniqid ()
+		),
+		
+		"2005"	=> Array (
+			"01"		=> uniqid (),
+			"02"		=> uniqid (),
+			"03"		=> uniqid (),
+			"04"		=> uniqid (),
+			"05"		=> uniqid (),
+			"06"		=> uniqid (),
+			"07"		=> uniqid (),
+			"08"		=> uniqid (),
+			"09"		=> uniqid (),
+			"10"		=> uniqid (),
+			"11"		=> uniqid (),
+			"12"		=> uniqid ()
+		),
+		
+		"2006"	=> Array (
+			"01"		=> uniqid (),
+			"02"		=> uniqid (),
+			"03"		=> uniqid (),
+			"04"		=> uniqid (),
+			"05"		=> uniqid (),
+			"06"		=> uniqid (),
+			"07"		=> uniqid (),
+			"08"		=> uniqid (),
+			"09"		=> uniqid (),
+			"10"		=> uniqid (),
+			"11"		=> uniqid (),
+			"12"		=> uniqid ()
+		),
+		
+		"2007"	=> Array (
+			"01"		=> uniqid (),
+			"02"		=> uniqid ()
+		)
+	);
+	
 // ---------------------------------------------------------------------------//
 // CRAP THAT NEEDS TO GO AT THE TOP !
 // ---------------------------------------------------------------------------//
@@ -765,28 +856,28 @@ Blue Shared 500 						25
 
 	// Truncate Tables
 	echo "Truncating Tables\n";
-	//$objImport->Truncate('Account');
-	//$objImport->Truncate('AccountGroup');
+	$objImport->Truncate('Account');
+	$objImport->Truncate('AccountGroup');
 	//$objImport->Truncate('xxx_C_DR');
-	//$objImport->Truncate('Charge');
-	//$objImport->Truncate('ChargeType');
-	//$objImport->Truncate('Contact');
-	//$objImport->Truncate('CreditCard');
-	//$objImport->Truncate('DirectDebit');
-	//$objImport->Truncate('Employee');
-	//$objImport->Truncate('EmployeeAccountAudit');
-	//$objImport->Truncate('ErrorLog');
+	$objImport->Truncate('Charge');
+	$objImport->Truncate('ChargeType');
+	$objImport->Truncate('Contact');
+	$objImport->Truncate('CreditCard');
+	$objImport->Truncate('DirectDebit');
+	$objImport->Truncate('Employee');
+	$objImport->Truncate('EmployeeAccountAudit');
+	$objImport->Truncate('ErrorLog');
 	//$objImport->Truncate('xxx_F_ileDownload');
 	//$objImport->Truncate('xxx_F_ileImport');
-	//$objImport->Truncate('Invoice');
-	//$objImport->Truncate('InvoiceOutput');
-	//$objImport->Truncate('InvoicePayment');
-	//$objImport->Truncate('InvoiceTemp');
-	//$objImport->Truncate('Note');
-	//$objImport->Truncate('Payment');
-	//$objImport->Truncate('ProvisioningExport');
-	//$objImport->Truncate('ProvisioningLog');
-	/*
+	$objImport->Truncate('Invoice');
+	$objImport->Truncate('InvoiceOutput');
+	$objImport->Truncate('InvoicePayment');
+	$objImport->Truncate('InvoiceTemp');
+	$objImport->Truncate('Note');
+	$objImport->Truncate('Payment');
+	$objImport->Truncate('ProvisioningExport');
+	$objImport->Truncate('ProvisioningLog');
+	
 	$objImport->Truncate('Rate');
 	$objImport->Truncate('RateGroup');
 	$objImport->Truncate('RateGroupRate');
@@ -807,7 +898,6 @@ Blue Shared 500 						25
 	$objImport->Truncate('ServiceRecurringCharge');
 	$objImport->Truncate('ServiceTotal');
 	$objImport->Truncate('ServiceTypeTotal');
-	*/
 	
 	// clean import array
 	$arrImport = Array();
@@ -902,8 +992,6 @@ Blue Shared 500 						25
 		echo "Delinquents in system : $intDelinquents\n";
 	}
 	sleep(2);
-	
-	/*
 	
 	// Add Customers
 	while ($arrRow = $objDecoder->FetchCustomer())
@@ -1074,7 +1162,6 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%b  NONE  %n]\n");
 		}
 	}
-	*/
 	
 	// Add Inbound Details
 	while ($arrRow = $objDecoder->FetchInboundDetail())
@@ -1083,23 +1170,6 @@ Blue Shared 500 						25
 		
 		// add the inbound details
 		if ($objImport->AddInboundDetail ($arrRow))
-		{
-			echo Console_Color::convert("[%g  DONE  %n]\n");
-		}
-		else
-		{
-			echo Console_Color::convert("[%r  DIED  %n]\n");
-		}
-	}
-	
-	/*
-	// Add Invoice Details
-	while ($arrRow = $objDecoder->FetchInvoiceDetail())
-	{
-		echo "Fetching Invoice Details : {$arrRow['CustomerId']}                  ";
-		
-		// add the invoice details
-		if ($objImport->AddInvoiceDetail ($arrRow ['DataArray']))
 		{
 			echo Console_Color::convert("[%g  DONE  %n]\n");
 		}
@@ -1122,6 +1192,22 @@ Blue Shared 500 						25
 		else
 		{
 			echo Console_Color::convert("[%r FAILED %n]\n");
+		}
+	}
+	
+	// Add Invoice Details
+	while ($arrRow = $objDecoder->FetchInvoiceDetail())
+	{
+		echo "Fetching Invoice Details : {$arrRow['CustomerId']}                  ";
+		
+		// add the invoice details
+		if ($objImport->AddInvoiceDetail ($arrRow ['DataArray']))
+		{
+			echo Console_Color::convert("[%g  DONE  %n]\n");
+		}
+		else
+		{
+			echo Console_Color::convert("[%r  DIED  %n]\n");
 		}
 	}
 	
@@ -1196,7 +1282,6 @@ Blue Shared 500 						25
 	echo "Added : $intRawServiceCount Raw Services\n";
 	echo "Added : $intServiceCount Actual Services\n";
 	Die ();
-	*/
 
 // ---------------------------------------------------------------------------//
 // IMPORT CLASS

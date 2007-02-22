@@ -526,9 +526,10 @@ class VixenImport extends ApplicationBaseClass
 				"Balance"			=> $arrInvoice ['Owing'],
 				"Disputed"			=> "",
 				"AccountBalance"	=> "",
-				"Status"			=> ((intval ($arrInvoice ['Owing']) == 0) ? INVOICE_SETTLED : INVOICE_COMMITTED),
-				"InvoiceRun"		=> ""
+				"Status"			=> ((intval ($arrInvoice ['Owing']) == 0) ? INVOICE_SETTLED : INVOICE_COMMITTED)
 			);
+			
+			$arrInvoiceDetails ['InvoiceRun'] = $GLOBALS ['InvoiceRuns'][date ("Y", $intInvoiceDate)][date ("m", $intInvoiceDate)];
 			
 			$insId = $this->_insWithIdInvoiceDetail->Execute ($arrInvoiceDetails);
 			
@@ -568,6 +569,14 @@ class VixenImport extends ApplicationBaseClass
 			
 			$arrCharge ['Invoice'] = NULL;
 			$arrCharge ['Notes'] = "";
+			
+			$intCreatedOn = strtotime ($arrCharge ['CreatedOn']);
+			$intCreatedOn = mktime (0, 0, 0, date ("m", $intCreatedOn), 1, date ("Y", $intCreatedOn));
+			$intCreatedOn = strtotime ("+1 month", $intCreatedOn);
+			
+			$arrCharge ['InvoiceRun'] = $GLOBALS ['InvoiceRuns'][date ("Y", $intCreatedOn)][date ("m", $intCreatedOn)];
+			
+			$arrCharge ['Status'] = (!$arrCharge ['InvoiceRun']) ? CHARGE_APPROVED : CHARGE_INVOICED;
 			
 			$insId = $this->_insCharge->Execute ($arrCharge);
 			
