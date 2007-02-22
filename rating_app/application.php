@@ -637,8 +637,6 @@
 			// look for a normal rate
 			$this->_selFindRate->Execute($strAliases);
 		}
-
-		Debug($strAliases);
 		
 		//FAKE : For testing only
 		//$this->_selFindRate->Execute();
