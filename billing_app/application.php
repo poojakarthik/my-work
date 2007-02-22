@@ -660,7 +660,7 @@
 			$arrInvoiceData['Balance']			= $fltBalance;
 			$arrInvoiceData['Disputed']			= 0;
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
-			$arrInvoiceData['Status']			= INVOICE_PRINT;
+			$arrInvoiceData['Status']			= INVOICE_TEMP;
 			$arrInvoiceData['InvoiceRun']		= $this->_strInvoiceRun;
 			
 			// report error or success
