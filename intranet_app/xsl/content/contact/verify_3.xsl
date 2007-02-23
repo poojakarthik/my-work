@@ -11,7 +11,6 @@
 		<h2 class="Contact">Customer Verification</h2>
 		
 		<!-- TODO!bash! Entering details, and then using the Back/Forward buttons wipes the details from input boxes, but they remain green : fix this -->
-		<!-- TODO!bash! give this page a usefull name... list_3.xls wtf is that? this page is not listing anything, it's a verification page -->
 		
 		<div class="MsgNoticeWide">
 			Customers must provide verification details before being allowed access to an Account.
@@ -303,7 +302,7 @@
 											<xsl:value-of select="/Response/ui-answers/Contact/DOB/day" />
 										</xsl:attribute>
 										<option value=""></option>
-										<xsl:call-template name="Date-Loop">
+										<xsl:call-template name="DateLoop">
 											<xsl:with-param name="start" select="number('1')" />
 											<xsl:with-param name="cease" select="number('31')" />
 											<xsl:with-param name="step" select="number('1')" />
@@ -340,7 +339,7 @@
 											<xsl:value-of select="/Response/ui-answers/Contact/DOB/year" />
 										</xsl:attribute>
 										<option value=""></option>
-										<xsl:call-template name="Date-Loop">
+										<xsl:call-template name="DateLoop">
 											<xsl:with-param name="start" select="number('1900')" />
 											<xsl:with-param name="cease" select="number('1990')" />
 											<xsl:with-param name="step" select="number('1')" />
@@ -587,43 +586,13 @@
 				<input type="submit" name="Confirm" class="input-submit-locked" value="Continue &#0187;" id="Confirm" disabled="disabled" />
 			</div>
 			
+			<div class="Clear"></div>
+			<div class="Seperator"></div>
+			
+			<div class="Right">
+				<!--TODO!flame! Temporary -->
+				<input type="submit" name="Confirm" class="input-submit-unlocked" value="Skip Verification &#0187;" />
+			</div>
 		</form>
-	</xsl:template>
-	
-	<xsl:template name="Date-Loop">
-		<xsl:param name="start">1</xsl:param>
-		<xsl:param name="cease">0</xsl:param>
-		<xsl:param name="steps">1</xsl:param>
-		<xsl:param name="count">0</xsl:param>
-		
-		<xsl:param name="select">0</xsl:param>
-		
-		<xsl:if test="number($start) + number($count) &lt;= number($cease)">
-			<option>
-				<xsl:attribute name="value">
-					<xsl:text></xsl:text>
-					<xsl:value-of select="$start + $count" />
-				</xsl:attribute>
-				
-				<xsl:choose>
-					<xsl:when test="$select = $start + $count">
-						<xsl:attribute name="selected">
-							<xsl:text>selected</xsl:text>
-						</xsl:attribute>
-					</xsl:when>
-					<xsl:otherwise>
-					</xsl:otherwise>
-				</xsl:choose>
-				
-				<xsl:value-of select="$start + $count" />
-			</option>
-			<xsl:call-template name="Date-Loop">
-				<xsl:with-param name="start" select="$start" />
-				<xsl:with-param name="cease" select="$cease" />
-				<xsl:with-param name="steps" select="$steps" />
-				<xsl:with-param name="count" select="$count + $steps" />
-				<xsl:with-param name="select" select="$select" />
-			</xsl:call-template>
-		</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>
