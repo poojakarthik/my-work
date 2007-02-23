@@ -8,7 +8,7 @@
 	
 	// Create a new Report Object
 	$rptReport = new Report (
-		"+	ETECH CUSTOMER INVOICE MANAGEMENT PAGE SETUP UTILITY: " . date ("Y-m-d h:i:s A"),
+		"+	ETECH CUSTOMER INVOICE MANAGEMENT DATABASE SETUP UTILITY: " . date ("Y-m-d h:i:s A"),
 		"bash@voiptelsystems.com.au"
 	);
 	
