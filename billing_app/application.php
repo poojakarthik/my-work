@@ -618,7 +618,7 @@
 			}
 			else
 			{
-				$arrDebitsCredits = $this->selDebitsCredits->FetchAll();
+				$arrDebitsCredits = $this->selAccountDebitsCredits->FetchAll();
 				foreach($arrDebitsCredits as $arrCharge)
 				{
 					if ($arrCharge['Nature'] == "DR")
