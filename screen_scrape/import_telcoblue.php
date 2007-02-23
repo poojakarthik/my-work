@@ -976,7 +976,6 @@ Blue Shared 500 						25
 		Die();
 	}
 
-
 	// get delinquents
 	$arrRow = $objDecoder->FetchCustomerById(1000154916);
 	$arrScrape = $arrRow['DataArray'];

@@ -761,49 +761,80 @@
 	 *
 	 * @method
 	 */
-	 function MatchCredits($intStatus)
+	 function MatchCredits()
 	 {
+	 	$insCreditLink = new StatementInsert("CDRCreditLink");
+		
 	 	// Find the normalised Credit CDRs
-	 	$selCredits = new StatementSelect("CDR", "*", "Credit = 1 AND Status = ".CDR_NORMALISED);
+	 	$selCredits = new StatementSelect("CDR", "Id, FNN, Source, Destination, Cost, Units, StartDatetime", "Credit = 1 AND Status = ".CDR_NORMALISED);
 	 	if (($intTotalCount = $selCredits->Execute()) === FALSE)
 	 	{
 	 		Debug("Could not select credit CDRS!");
 	 		return FALSE;
 	 	}
  		
+		$arrUpdateColumns = Array();
  		$arrUpdateColumns['Id']		= NULL;
  		$arrUpdateColumns['Status']	= NULL;
  		$ubiCDR = new StatementUpdateById("CDR", $arrUpdateColumns);
  		
 	 	// Attempt to match the CDRs up
 	 	$intCount = 0;
+		$selDebitCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDateTime> AND Status = ".CDR_NORMALISED, NULL, 1);
+	 	$selRatedCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDateTime> AND Status = ".CDR_NORMALISED, NULL, 1);
 	 	while ($arrCreditCDR = $selCredits->Fetch())
 	 	{
 	 		// Find matching Debit
-	 		$selDebitCDR = new StatementSelect("CDR", "Id", "FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = (0 - <Cost>) AND Units = (0 - <Units>) AND StartDatetime = <StartDateTime> AND Status = ".CDR_NORMALISED);
-	 		if (!$selDebitCDR->Execute($arrCreditCDR))
+	 		if ($selDebitCDR->Execute($arrCreditCDR))
 	 		{
-	 			echo " ! Couldn't Match Debit to Credit with CDR.Id {$arrCreditCDR['Id']}!\n";
-	 			
-		 		// Update the Credit CDR
-		 		$arrUpdateColumns['Id']		= $arrCreditCDR['Id'];
-	 			$arrUpdateColumns['Status']	= CDR_CREDIT_MATCH_NOT_FOUND;
-		 		$ubiCDR->Execute($arrUpdateColumns);
-	 			continue;
+				$arrDebitCDR = $selDebitCDR->Fetch();
+			}
+			else
+			{
+				// Try to match credit to a rated CDR
+				if ($selRatedCDR->Execute($arrCreditCDR))
+				{
+					$arrDebitCDR = $selRatedCDR->Fetch();
+					
+					//unrate the CDR
+					//TODO!rich! use the UnRateCDR method from rating
+					//$bolResult = ???????UnRateCDR($arrDebitCDR['Id'], CDR_DEBIT_MATCHED);
+					if (!$bolResult)
+					{
+						$bolFail = TRUE;
+					}
+				}
+				else
+				{
+					$bolFail = TRUE;
+				}
 	 		}
-	 		$arrDebitCDR = $selDebitCDR->Fetch();
+			
+			if ($bolFail === TRUE)
+			{
+					echo " ! Couldn't Match Debit to Credit with CDR.Id {$arrCreditCDR['Id']}!\n";
+					
+					// Update the Credit CDR
+					$arrUpdateColumns['Id']		= $arrCreditCDR['Id'];
+					$arrUpdateColumns['Status']	= CDR_CREDIT_MATCH_NOT_FOUND;
+					$ubiCDR->Execute($arrUpdateColumns);
+					continue;
+			}
 	 		
 	 		// Add to the link table
+			$arrInsertColumns = Array();
 	 		$arrInsertColumns['CreditCDR']	= $arrCreditCDR['Id'];
 	 		$arrInsertColumns['DebitCDR']	= $arrDebitCDR['Id'];
-	 		$insCreditLink = new StatementInsert("CDRCreditLink");
+	 		$insCreditLink->Execute($arrInsertColumns);
 	 		
 	 		// Update the Credit CDR
+			$arrUpdateColumns = Array();
 	 		$arrUpdateColumns['Id']		= $arrCreditCDR['Id'];
  			$arrUpdateColumns['Status']	= CDR_CREDIT_MATCHED;
 	 		$ubiCDR->Execute($arrUpdateColumns);
 	 		
 	 		// Update the Debit CDR
+			$arrUpdateColumns = Array();
 	 		$arrUpdateColumns['Id']		= $arrDebitCDR['Id'];
  			$arrUpdateColumns['Status']	= CDR_DEBIT_MATCHED;
 	 		$ubiCDR->Execute($arrUpdateColumns);

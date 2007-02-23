@@ -766,7 +766,8 @@
 	 	else
 	 	{
 	 		$arrParams['fnn'] 	= substr((string)$strFNN, 0, -2) . "__";
-	 		$arrParams['date'] 	= date("Y-m-d", time());
+	 		//$arrParams['date'] 	= date("Y-m-d", time());
+			$arrParams['date'] 	= (string)$strDate;
 	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
 	 		
 	 		if ($intResult === FALSE)
@@ -776,10 +777,8 @@
 	 		
 	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
 	 		{
-	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
-	 			$this->_arrNormalisedData['Account']		= $arrResult['Account'];
-	 			$this->_arrNormalisedData['Service']		= $arrResult['Id'];
-	 			return true;
+				// found the service
+	 			return $arrResult['Id'];
 	 		}
 	 	}
 	 	
