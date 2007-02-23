@@ -177,6 +177,20 @@
 			return $arrOutput;
 		}
 		
+		// Set common fields
+		switch ($arrOutput['_Table'])
+		{
+			case "ServiceTotal":
+			case "ServiceTypeTotal":
+				$arrOutput['Invoice']		= $this->_arrStatus['Invoice'];
+				$arrOutput['InvoiceDate']	= $this->_arrStatus['CreatedOn'];
+				break;
+			case "Invoice":
+				$arrOutput['DueOn']			= $this->_arrStatus['DueOn'];
+				$arrOutput['CreatedOn']		= $this->_arrStatus['CreatedOn'];
+				break;
+		}
+		
 		// set status
 		$arrOutput['_Status'] 	= $this->_arrStatus;
 		
@@ -299,8 +313,8 @@
 				$this->_arrStatus['CreatedOn']	= $arrLine['InvoiceDate'];
 				$this->arrData['CreatedOn']		= $this->_arrStatus['CreatedOn'];
 				$this->_arrStatus['DueOn']		= $arrLine['DueByDate'];
-				$this->arrData['DueOn']			= $this->_arrStatus['DueByDate'];
-								
+				$this->arrData['DueOn']			= $this->_arrStatus['DueOn'];
+				
 				// Call DecodeData() again
 				$this->DecodeData();
 				break;
@@ -317,8 +331,6 @@
 			
 			//---------------------------- FRONT PAGE ----------------------------//
 			case 10:
-				Debug($arrLine);
-							
 				// INVOICE CHARGES
 				// Set data
 				$this->arrData['Tax']				= (float)$arrLine['NewCharges'] / 11.0;
@@ -328,8 +340,6 @@
 				// FIXME: These Credit/Debit values could be incorrect - its just a guess
 				$this->arrData['Credits']			= (float)$arrLine['Adjustments'];
 				$this->arrData['Debits']			= $this->arrData['Total'] - (float)$arrLine['Adjustments'];
-				
-				Debug($this->arrData);
 				
 				// Call DecodeData() again
 				$this->DecodeData();
