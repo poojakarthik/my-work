@@ -217,7 +217,7 @@
 		$arrInsertData['FNN']			= $arrServiceTypeTotal['FNN'];
 		$arrInsertData['AccountGroup']	= $arrServiceTypeTotal['AccountGroup'];
 		$arrInsertData['Account']		= $arrServiceTypeTotal['Account'];
-		$arrInsertData['Service']		= $this->FindServiceByFNN($arrServiceTypeTotal['FNN'], $arrInsertData['Account'], $arrInsertData['InvoiceDate']);
+		$arrInsertData['Service']		= $this->Framework->FindServiceByFNN($arrServiceTypeTotal['FNN'], $arrInsertData['Account'], $arrInsertData['InvoiceDate']);
 		$arrInsertData['InvoiceRun']	= $strInvoiceRun;
 		$arrInsertData['RecordType']	= $arrServiceTypeTotal['RecordType'];
 		$arrInsertData['Charge']		= $arrServiceTypeTotal['Charge'];
