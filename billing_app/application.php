@@ -133,7 +133,7 @@
 															  		"Nature");
 		
 		// account debits and credits		
-		$this->selAccountsDebitsCredits		= new StatementSelect(	"Charge",
+		$this->selAccountDebitsCredits		= new StatementSelect(	"Charge",
 																 	"Nature, SUM(Amount) AS Amount",
 															 		"Account = <Account> AND ISNULL(Service) AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
 															  		NULL,
@@ -601,7 +601,6 @@
 				$fltTotalDebits		+= $fltServiceDebits + $fltTotalCharge;
 				$fltTotalCredits	+= $fltServiceCredits;
 			}
-			$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 			
 			// Calculate Account Debit and Credit Totals
 			$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
@@ -633,7 +632,9 @@
 				}
 				$this->_rptBillingReport->AddMessage(MSG_OK);
 			}
-				
+			
+			$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
+			
 			// calculate invoice total
 			$fltTotal	= $fltTotalDebits - $fltTotalCredits;
 			$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
