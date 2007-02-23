@@ -583,16 +583,14 @@
 	 *
 	 * @method
 	 */
-	 protected function FindServiceByFNN($strFNN, $intAccount, $strDate=NULL)
-	 {
-		// TODO!rich! - Why aren't we using $intAccount????????
-		
+	 function FindServiceByFNN($strFNN, $strDate=NULL)
+	 {		
 		if ($strDate == NULL)
 		{
 			$strDate = date("Y-m-d", time());
 		}
 
-	 	$intResult = $this->_selFindOwner->Execute(Array("fnn" => (string)$strFNN, "date" => (string)$strDate));
+	 	$intResult = $this->_selFindOwner->Execute(Array('fnn' => (string)$strFNN, 'date' => (string)$strDate));
 	 	
 	 	if ($intResult === FALSE)
 	 	{
@@ -606,9 +604,8 @@
 	 	}
 	 	else
 	 	{
-	 		$arrParams['fnn'] 	= substr((string)$strFNN, 0, -2) . "__";
-	 		//$arrParams['date'] 	= date("Y-m-d", time());
-			$arrParams['date'] 	= (string)$strDate;
+	 		$arrParams['fnn'] 		= substr((string)$strFNN, 0, -2) . "__";
+			$arrParams['date'] 		= (string)$strDate;
 	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
 	 		
 	 		if ($intResult === FALSE)

@@ -290,7 +290,7 @@
 		$arrInsertData['FNN']				= $arrServiceTotal['FNN'];
 		$arrInsertData['AccountGroup']		= $arrServiceTotal['AccountGroup'];
 		$arrInsertData['Account']			= $arrServiceTotal['Account'];
-		$arrInsertData['Service']			= $this->FindServiceByFNN($arrServiceTotal['FNN'], $arrInsertData['Account'], $arrInsertData['InvoiceDate']);
+		$arrInsertData['Service']			= $this->FindServiceByFNN($arrServiceTotal['FNN'], $arrInsertData['InvoiceDate']);
 		$arrInsertData['InvoiceRun']		= $strInvoiceRun;
 		$arrInsertData['CappedCharge']		= $arrServiceTotal['TotalCharge'];
 		$arrInsertData['UncappedCharge']	= 0.0;
