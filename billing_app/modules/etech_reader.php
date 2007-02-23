@@ -317,6 +317,8 @@
 			
 			//---------------------------- FRONT PAGE ----------------------------//
 			case 10:
+				Debug($arrLine);
+							
 				// INVOICE CHARGES
 				// Set data
 				$this->arrData['Tax']				= (float)$arrLine['NewCharges'] / 11.0;
@@ -326,6 +328,8 @@
 				// FIXME: These Credit/Debit values could be incorrect - its just a guess
 				$this->arrData['Credits']			= (float)$arrLine['Adjustments'];
 				$this->arrData['Debits']			= $this->arrData['Total'] - (float)$arrLine['Adjustments'];
+				
+				Debug($this->arrData);
 				
 				// Call DecodeData() again
 				$this->DecodeData();
@@ -628,7 +632,15 @@
 					continue;
 				}
 				
-				$arrLine[$strKey] = trim($arrRawLine[$i]);
+				$mixData = trim($arrRawLine[$i]);
+				
+				// If it's a dollar value, then remove commas
+				if ($arrValue['Type'] == ETECH_SHORT_CURRENCY || $arrValue['Type'] == ETECH_LONG_CURRENCY)
+				{
+					$mixData = (float)str_replace(",", "", $mixData);
+				}
+				
+				$arrLine[$strKey] = $mixData;
 				$i++;
 			}
 		}
@@ -653,7 +665,15 @@
 					continue;
 				}
 				
-				$arrLine[$strKey] = trim($arrRawLine[$i]);
+				$mixData = trim($arrRawLine[$i]);
+				
+				// If it's a dollar value, then remove commas
+				if ($arrValue['Type'] == ETECH_SHORT_CURRENCY || $arrValue['Type'] == ETECH_LONG_CURRENCY)
+				{
+					$mixData = (float)str_replace(",", "", $mixData);
+				}
+				
+				$arrLine[$strKey] = $mixData;
 				$i++;
 			}
 		}
