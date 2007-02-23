@@ -169,10 +169,12 @@
 		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
 		
+		/* BROKEN : NOT USED
 		$strTables						= "DestinationCode";
 		$strData						= "Id, Code, Description";
 		$strWhere						= "Carrier = <Carrier> AND CarrierCode = <CarrierCode> AND Context = <Context>";
 		$this->_selFindDestination		= new StatementSelect($strTables, $strData, $strWhere, "", "1");
+		*/
 		
 		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
 
