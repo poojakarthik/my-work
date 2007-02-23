@@ -66,7 +66,7 @@
 		
 		// Initiate Reports
 		$this->_rptBillingReport 	= new Report("Billing Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", TRUE, "dispatch@voiptelsystems.com.au");
-		$this->_rptAuditReport		= new Report("Bill Audit Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", FALSE, "dispatch@voiptelsystems.com.au");
+		$this->_rptAuditReport		= new Report("Bill Audit Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", TRUE, "dispatch@voiptelsystems.com.au");
 		
 		// Report headers
 		$this->_rptBillingReport->AddMessage(MSG_HORIZONTAL_RULE);
@@ -299,31 +299,6 @@
 		$arrReportLines['<Pass>']	= $this->intPassed;
 		$arrReportLines['<Fail>']	= $this->intFailed;
 		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
-		
-		// FIXME: Remove if we want to do the bill audit
-		return;
-		
-		// Generate the Bill Audit Report
-		$this->_rptBillingReport->AddMessage(MSG_GENERATE_AUDIT, FALSE);
-		$mixResponse = $this->_GenerateBillAudit();
-		if($mixResponse === FALSE)
-		{
-			// Error out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\tReason: There was an error retrieving from the database", FALSE);
-		}
-		elseif($mixResponse < 0)
-		{
-			// There was no invoice data
-			$this->_rptAuditReport->AddMessage("There was no invoice data to generate this report from.");
-			$this->_rptBillingReport->AddMessage(MSG_IGNORE."\n\t- There was no invoice data", FALSE);
-		}
-		else
-		{
-			$this->_rptBillingReport->AddMessage(MSG_OK, FALSE);
-		}
-		// Add Footer and Send off the audit report
-		$this->_rptAuditReport->AddMessage(MSG_HORIZONTAL_RULE);
-		$this->_rptAuditReport->Finish();
 	}
 
 
@@ -1307,6 +1282,10 @@
 		}
 	
 		$this->_rptAuditReport->AddMessageVariables(MSG_SERVICE_TYPE_SUMMARY, Array('<Summaries>' => $strSummaries));
+		
+		// Add Footer and Send off the audit report
+		$this->_rptAuditReport->AddMessage(MSG_HORIZONTAL_RULE);
+		$this->_rptAuditReport->Finish();
 	}
 	
 
