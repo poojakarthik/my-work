@@ -123,9 +123,19 @@
 		$this->selAccounts					= new StatementSelect("Account", "*", "Archived = 0"); 
 										
 		$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
+		
+		// service debits and credits
 		$this->selDebitsCredits				= new StatementSelect(	"Charge",
 																 	"Nature, SUM(Amount) AS Amount",
 															 		"Service = <Service> AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
+															  		NULL,
+															  		"2",
+															  		"Nature");
+		
+		// account debits and credits		
+		$this->selAccountsDebitsCredits		= new StatementSelect(	"Charge",
+																 	"Nature, SUM(Amount) AS Amount",
+															 		"Account = <Account> AND ISNULL(Service) AND Status = ".CHARGE_TEMP_INVOICE." AND InvoiceRun = <InvoiceRun>",
 															  		NULL,
 															  		"2",
 															  		"Nature");
@@ -351,6 +361,13 @@
 			$this->_arrBillOutput[$strKey]->clean();
 		}
 		
+		// setup statements
+		$arrUpdateData = Array();
+		$arrUpdateData['InvoiceRun']	= '';
+		$arrUpdateData['Status']		= '';
+		$updChargeStatus = new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
+		
+		
 		// Loop through the accounts we're billing
 		foreach ($arrAccounts as $arrAccount)
 		{
@@ -415,6 +432,24 @@
 					$arrSharedPlans[$arrService['RatePlan']]['UsageCap']	= $arrService['UsageCap'];
 					$arrSharedPlans[$arrService['RatePlan']]['ChargeCap']	= $arrService['ChargeCap'];
 				}
+			}
+			
+			// Mark Credits and Debits for this account to this Invoice Run
+			$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
+			
+			$arrUpdateData = Array();
+			$arrUpdateData['InvoiceRun']	= $this->_strInvoiceRun;
+			$arrUpdateData['Status']		= CHARGE_TEMP_INVOICE;
+			if($updChargeStatus->Execute($arrUpdateData, Array('Account' => $arrAccount['Id'])) === FALSE)
+			{
+				// Report and fail out
+				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+				continue;
+			}
+			else
+			{
+				// Report and continue
+				$this->_rptBillingReport->AddMessage(MSG_OK);
 			}
 			
 			// for each service belonging to this account
@@ -505,26 +540,7 @@
 				// Add Recurring Charges
 				// this is done in the Recurring Charges engine, so there is nothing to do here
 				
-				// Mark Credits and Debits to this Invoice Run
-				$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
-				
-				$arrUpdateData = Array();
-				$arrUpdateData['InvoiceRun']	= $this->_strInvoiceRun;
-				$arrUpdateData['Status']		= CHARGE_TEMP_INVOICE;
-				$updChargeStatus = new StatementUpdate("Charge", "Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED, $arrUpdateData);
-				if($updChargeStatus->Execute($arrUpdateData, Array()) === FALSE)
-				{
-					// Report and fail out
-					$this->_rptBillingReport->AddMessage(MSG_FAILED);
-					continue;
-				}
-				else
-				{
-					// Report and continue
-					$this->_rptBillingReport->AddMessage(MSG_OK);
-				}
-				
-				// Calculate Debit and Credit Totals
+				// Calculate Service Debit and Credit Totals
 				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 				$mixResult = $this->selDebitsCredits->Execute(Array('Service' => $arrService['Id'], 'InvoiceRun' => $this->_strInvoiceRun));
 				if($mixResult > 2 || $mixResult === FALSE)
@@ -587,6 +603,37 @@
 			}
 			$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 			
+			// Calculate Account Debit and Credit Totals
+			$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
+			$mixResult = $this->selAccountDebitsCredits->Execute(Array('Account' => $arrAccount['Id'], 'InvoiceRun' => $this->_strInvoiceRun));
+			if($mixResult > 2 || $mixResult === FALSE)
+			{
+				if ($mixResult === FALSE)
+				{
+
+				}
+				
+				// Incorrect number of rows returned or an error
+				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+				continue;
+			}
+			else
+			{
+				$arrDebitsCredits = $this->selDebitsCredits->FetchAll();
+				foreach($arrDebitsCredits as $arrCharge)
+				{
+					if ($arrCharge['Nature'] == "DR")
+					{
+						$fltTotalDebits		+= $arrCharge['Amount'];
+					}
+					else
+					{
+						$fltTotalCredits	+= $arrCharge['Amount'];
+					}
+				}
+				$this->_rptBillingReport->AddMessage(MSG_OK);
+			}
+				
 			// calculate invoice total
 			$fltTotal	= $fltTotalDebits - $fltTotalCredits;
 			$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
