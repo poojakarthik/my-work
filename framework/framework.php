@@ -788,5 +788,83 @@
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
 	 	return false;
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// UnRateCDR()
+	//------------------------------------------------------------------------//
+	/**
+	 * UnRateCDR()
+	 *
+	 * UnRates a CDR
+	 *
+	 * UnRates a CDR
+	 *	 
+	 * @param	int		$intCDR		Id of the CDR to unrate
+	 * @param	int		$intStatus	optional to set for the unrated CDR
+	 *
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	 function UnRateCDR($intCDR, $intStatus = CDR_NORMALISED)
+	 {
+	 	$intCDR = (int)$intCDR;
+	 	if (!$intCDR)
+		{
+			return FALSE;
+		}
+		
+	 	// Select the CDR
+	 	$selCDR = new StatementSelect(	"CDR JOIN Rate ON CDR.Rate = Rate.Id",
+	 									"CDR.Id AS Id, CDR.Service AS Service, CDR.Charge AS Charge, Rate.Uncapped AS Uncapped",
+	 									"CDR.Status = ".CDR_RATED,
+	 									NULL,
+	 									"1");
+		$arrColumns = Array();
+	 	$arrColumns['UncappedCharge']	= new MySQLFunction("UncappedCharge - <UncappedCharge>");
+	 	$arrColumns['CappedCharge']		= new MySQLFunction("CappedCharge - <CappedCharge>");
+	 	$updServiceTotals = new StatementUpdate("Service", "Id = <Service>", $arrColumns);
+		
+		$arrColumns = Array();
+	 	$arrColumns['Status']	= CDR_NORMALISED;
+	 	$ubiCDR = new StatementUpdateById("CDR", $arrColumns);
+		
+	 	if (!$selCDR->Execute())
+	 	{
+	 		return FALSE;
+	 	}
+		
+	 	while($arrCDR = $selCDR->Fetch())
+	 	{	 	
+		 	// Uncapped or Capped
+			$arrColumns = Array();
+		 	if ($arrCDR['Uncapped'])
+		 	{
+		 		$arrColumns['UncappedCharge']	= new MySQLFunction("UncappedCharge - <UncappedCharge>", Array('UncappedCharge' => $arrCDR['Charge']));
+		 		$arrColumns['CappedCharge']		= new MySQLFunction("CappedCharge - <CappedCharge>", Array('CappedCharge' => 0));
+		 	}
+		 	else
+		 	{
+		 		$arrColumns['CappedCharge']		= new MySQLFunction("CappedCharge - <CappedCharge>", Array('CappedCharge' => $arrCDR['Charge']));
+		 		$arrColumns['UncappedCharge']	= new MySQLFunction("UncappedCharge - <UncappedCharge>", Array('UncappedCharge' => 0));
+		 	}
+		 	
+		 	// Update the Service
+		 	if ($updServiceTotals->Execute($arrColumns, Array('Service' => $arrCDR['Service'])) === FALSE)
+		 	{
+		 		return FALSE;
+		 	}
+			
+			// update the CDR
+			$arrColumns = Array();
+			$arrColumns['Id']		= $arrCDR['Id'];
+	 		$arrColumns['Status']	= $intStatus;
+			if($ubiCDR->Execute($arrColumns))
+			{
+				return TRUE;
+			}
+	 	}
+		return FALSE;
+	 }
  }
 ?>

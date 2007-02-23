@@ -780,8 +780,9 @@
  		
 	 	// Attempt to match the CDRs up
 	 	$intCount = 0;
-		$selDebitCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDateTime> AND Status = ".CDR_NORMALISED, NULL, 1);
-	 	$selRatedCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDateTime> AND Status = ".CDR_NORMALISED, NULL, 1);
+		$strStatus = " AND (Status = ".CDR_RATED." OR Status = ".CDR_BAD_OWNER." OR Status = ".CDR_BAD_RECORD_TYPE." OR Status = ".CDR_BAD_DESTINATION." OR Status = ".CDR_FIND_OWNER." OR Status = ".CDR_RENORMALISE." OR Status = ".CDR_RATE_NOT_FOUND.")";
+		$selDebitCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDateTime> $strStatus", NULL, 1);
+	 	$selRatedCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDateTime> AND Status = ".CDR_RATED, NULL, 1);
 	 	while ($arrCreditCDR = $selCredits->Fetch())
 	 	{
 	 		// Find matching Debit
@@ -797,8 +798,7 @@
 					$arrDebitCDR = $selRatedCDR->Fetch();
 					
 					//unrate the CDR
-					//TODO!rich! use the UnRateCDR method from rating
-					//$bolResult = ???????UnRateCDR($arrDebitCDR['Id'], CDR_DEBIT_MATCHED);
+					$bolResult = $this->UnRateCDR($arrDebitCDR['Id'], CDR_DEBIT_MATCHED);
 					if (!$bolResult)
 					{
 						$bolFail = TRUE;

@@ -6,8 +6,8 @@
 	
 	// Set these variables (mktime)
 	// Remember: 			mktime (	hour,	minute,	second,	month,	day,	year	)
-	$intStartDatetime	=	mktime (	0,		0,		0,		2,		1,		2007	);
-	$intEndDatetime		=	mktime (	23,		59,		59,		2,		28,		2007	);
+	$intStartDatetime	=	mktime (	0,		0,		0,		1,		5,		2007	);
+	$intEndDatetime		=	mktime (	23,		59,		59,		2,		5,		2007	);
 	
 	
 	// Update all the Charges to be "Invoiced"
