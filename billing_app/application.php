@@ -1130,19 +1130,26 @@
  	function GenerateBillAudit()
  	{
 		// Initiate and Execute Invoice Summary Statement
-		$arrInvoiceColumns['TotalInvoices']			= "COUNT(DISTINCT InvoiceTemp.Id)";
+		$arrInvoiceColumns['TotalInvoices']			= "COUNT(InvoiceTemp.Id)";
 		$arrInvoiceColumns['TotalInvoicedExGST']	= "SUM(InvoiceTemp.Total)";
 		$arrInvoiceColumns['TotalInvoicedIncGST']	= "SUM(InvoiceTemp.Total) + SUM(InvoiceTemp.Tax)";
-		$arrInvoiceColumns['TotalCDRCost']			= "SUM(CDR.Cost)";
-		$arrInvoiceColumns['TotalRated']			= "SUM(CDR.Charge)";
-		$arrInvoiceColumns['TotalCDRs']				= "COUNT(DISTINCT CDR.Id)";
-		$selInvoiceSummary	= new StatementSelect(	"InvoiceTemp, CDR",
+		$selInvoiceSummary	= new StatementSelect(	"InvoiceTemp",
 													$arrInvoiceColumns,
+													"1",
+													NULL,
+													1,
+													"InvoiceTemp.InvoiceRun");
+
+		$arrCDRTotalsColumns['TotalCDRCost']		= "SUM(CDR.Cost)";
+		$arrCDRTotalsColumns['TotalRated']			= "SUM(CDR.Charge)";
+		$arrCDRTotalsColumns['TotalCDRs']			= "COUNT(CDR.Id)";
+		$selCDRSummary		= new StatementSelect(	"CDR",
+													$arrCDRTotalsColumns,
 													"CDR.Credit = 0 AND CDR.Status = ".CDR_TEMP_INVOICE,
 													NULL,
-													NULL,
-													"InvoiceTemp.InvoiceRun");
-		if ($selInvoiceSummary->Execute() === FALSE)
+													1,
+													"CDR.InvoiceRun");
+		if ($selInvoiceSummary->Execute() === FALSE || $selCDRSummary->Execute() === FALSE)
 		{
 			// Error out
 			return FALSE;
@@ -1152,6 +1159,7 @@
 			// No data, return ERROR_NO_INVOICE_DATA
 			return ERROR_NO_INVOICE_DATA;
 		}
+		$arrInvoiceSummary = array_merge($arrInvoiceSummary, $selCDRSummary->Fetch());
 
 		// Initiate and Execute Carrier Summary Statement
 		$arrCarrierColumns['CarrierId']				= "CDR.Carrier";
