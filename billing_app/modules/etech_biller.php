@@ -101,6 +101,18 @@
 													"StartDatetime BETWEEN <StartDatetime> AND <EndDatetime>");
 			
 		$this->_insEtechCDR = new StatementInsert("CDREtech");
+		
+		$arrInsertData['Id']				= NULL;
+		$arrInsertData['CreatedOn']			= NULL;
+		$arrInsertData['DueOn']				= NULL;
+		$arrInsertData['Credits']			= NULL;
+		$arrInsertData['Debits']			= NULL;
+		$arrInsertData['Total']				= NULL;
+		$arrInsertData['Tax']				= NULL;
+		$arrInsertData['AccountBalance']	= NULL;
+		$this->_ubiInvoice	= new StatementUpdateById("Invoice", $arrInsertData); 
+		
+		$this->_selInvoiceRun	= new StatementSelect("Invoice", "InvoiceRun", "Id = <Invoice>");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -168,9 +180,7 @@
 		$arrInsertData['Tax']				= $arrInvoice['Tax'];
 		$arrInsertData['AccountBalance']	= $arrInvoice['AccountBalance'];
 		
-		//TODO!rich! setup an update by id in the constructor to update these fields
-		
-		return (bool)$this->_updInvoice->Execute($arrInsertData);
+		return (bool)$this->_ubiInvoice->Execute($arrInsertData);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -463,8 +473,12 @@
 		}
 		
 		// find invoice run
-		//TODO!rich! find the invoice run
-		// $strInvoiceRun = 
+		if (!$this->_selInvoiceRun->Execute(Array("Invoice" => $intInvoice)))
+		{
+			return FALSE;
+		}
+		$arrInvoiceRun = $this->_selInvoiceRun->Fetch();
+		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
 		
 		// cache invoice run
 		if (!$strInvoiceRun)
