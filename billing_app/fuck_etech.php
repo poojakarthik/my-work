@@ -47,12 +47,6 @@ foreach($arrFilePath AS $strFilePath)
 	{
 		$arrLine['_File']	= $strFilePath;
 		
-		/*$intCount++;
-		if ($intCount > 10000)
-		{
-			break;
-		}*/
-		
 		// check line type
 		switch($arrLine['_LineType'])
 		{
@@ -65,21 +59,14 @@ foreach($arrFilePath AS $strFilePath)
 				switch ($arrLine['_Table'])
 				{
 					case 'CDR':
-						continue;
-						/*$mixReturn = $etbEtech->FindCDR($arrLine);
+						$mixReturn = $etbEtech->FindCDR($arrLine);
 						if ($mixReturn === FALSE)
 						{
-							//CliEcho("CDR NOT FOUND for : ".$arrLine['FNN']);
-							//print_r($arrLine);
-							//Die;
+							// no match found
+							$arrLine['Status']	= CDR_ETECH_NO_MATCH;
 						}
 						else
-						{						
-							if (abs($mixReturn['Difference']) > 0.05)
-							{
-								CliEcho($arrLine['FNN']." (".$mixReturn['Id'].") =\t ".$mixReturn['Difference']."\t\t\t".GetConstantDescription($mixReturn['Status'], 'CDR'));
-							}
-			
+						{
 							// Determine status
 							if ($mixReturn['Difference'] === (float)0.0)
 							{
@@ -94,33 +81,37 @@ foreach($arrFilePath AS $strFilePath)
 								$arrLine['Status']	= CDR_ETECH_NO_MATCH;
 							}
 							
-							// Insert into DB
 							$arrLine['VixenCDR'] = $mixReturn['Id'];
-							$etbEtech->InsertEtechCDR($arrLine);
-						}*/
+						}
+						
+						// Insert into DB
+						if (!$etbEtech->InsertEtechCDR($arrLine))
+						{
+							CliEcho("CDR Insert Failed : {$arrLine['_File']} - {$arrLine['_LineNo']}");
+						}
 						break;
 					
 					case 'ServiceTypeTotal':
-						/*if(!AddServiceTypeTotal($arrLine))
+						if(!$etbEtech->AddServiceTypeTotal($arrLine))
 						{
-							CliEcho("ServiceTypeTotal Failed");
-						}*/
+							CliEcho("ServiceTypeTotal Failed : {$arrLine['FNN']}");
+						}
 						break;
 						
 					case 'ServiceTotal':
-						/*if (!AddServiceTypeTotal($arrLine))
+						if (!$etbEtech->AddServiceTypeTotal($arrLine))
 						{
-							CliEcho("ServiceTotal Failed");
-						}*/
+							CliEcho("ServiceTotal Failed : {$arrLine['FNN']}");
+						}
 						break;
 						
 					case 'Invoice':
-						CliEcho("Invoice");
-						print_r($arrLine);
-						$xc++;
-						if ($xc > 4)
+						if (!$etbEtech->UpdateInvoice($arrLine))
 						{
-							die;
+							if (!$etbEtech->AddInvoice($arrLine))
+							{
+								CliEcho("Could not add invoice : {$arrLine['Id']}");
+							}
 						}
 						break;
 					

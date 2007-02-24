@@ -132,7 +132,7 @@
 	 *
 	 * @method
 	 */
- 	function AddInvoice($arrInvoice, $strInvoiceRun)
+ 	function AddInvoice($arrInvoice, $strInvoiceRun='')
  	{
 		// Insert into the database
 		$arrInsertData['AccountGroup']		= $arrInvoice['AccountGroup'];
@@ -149,7 +149,7 @@
 		$arrInsertData['Status']			= INVOICE_COMMITTED;
 		$arrInsertData['InvoiceRun']		= $strInvoiceRun;
 		
-		//return (bool)$this->_insInvoice->Execute($arrInsertData);
+		return (bool)$this->_insInvoice->Execute($arrInsertData);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -209,7 +209,7 @@
 			$strInvoiceRun = FindInvoiceRun($arrServiceTypeTotal['Invoice']);
 			if (!$strInvoiceRun)
 			{
-				return FALSE;
+				$strInvoiceRun = '';
 			}
 		}
 		
@@ -282,7 +282,7 @@
 			$strInvoiceRun = FindInvoiceRun($arrServiceTotal['Invoice']);
 			if (!$strInvoiceRun)
 			{
-				return FALSE;
+				$strInvoiceRun = '';
 			}
 		}
 		
