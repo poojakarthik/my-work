@@ -17,9 +17,9 @@ $mixEmailAddress = 'flame@telcoblue.com.au';
 $appNormalise = new ApplicationNormalise($mixEmailAddress);
 
 // run the Normalise method until there is nothing left to normalise
-while ($appNormalise->MatchCredits())
+while ($appNormalise->MatchCredits() !== FALSE)
 {
-	break;
+	//break;
 }
 
 // finished
