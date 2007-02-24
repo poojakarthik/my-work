@@ -201,16 +201,24 @@ $GLOBALS['*arrConstant']['CDR'][198]['Constant']	= 'CDR_TEMP_INVOICE';
 $GLOBALS['*arrConstant']['CDR'][198]['Description'] = 'Temporarily Invoiced';
 $GLOBALS['*arrConstant']['CDR'][199]['Constant']	= 'CDR_INVOICED';
 $GLOBALS['*arrConstant']['CDR'][199]['Description'] = 'Invoiced';
-$GLOBALS['*arrConstant']['CDR'][170]['Constant']	= 'CDR_TEMP_CREDIT';
-$GLOBALS['*arrConstant']['CDR'][170]['Description'] = 'Temporarily Credited';
-$GLOBALS['*arrConstant']['CDR'][171]['Constant'] 	= 'CDR_CREDITED';
-$GLOBALS['*arrConstant']['CDR'][171]['Description'] = 'Credited';
 $GLOBALS['*arrConstant']['CDR'][180]['Constant'] 	= 'CDR_ETECH_PERFECT_MATCH';
 $GLOBALS['*arrConstant']['CDR'][180]['Description'] = 'Perfect Match';
 $GLOBALS['*arrConstant']['CDR'][181]['Constant'] 	= 'CDR_ETECH_IMPERFECT_MATCH';
 $GLOBALS['*arrConstant']['CDR'][181]['Description'] = 'Close Match';
 $GLOBALS['*arrConstant']['CDR'][182]['Constant'] 	= 'CDR_ETECH_NO_MATCH';
 $GLOBALS['*arrConstant']['CDR'][182]['Description'] = 'No Match';
+
+$GLOBALS['*arrConstant']['CDR'][170]['Constant']	= 'CDR_TEMP_CREDIT';
+//$GLOBALS['*arrConstant']['CDR'][170]['Description'] = 'Temporarily Credited';
+$GLOBALS['*arrConstant']['CDR'][171]['Constant'] 	= 'CDR_CREDITED';
+//$GLOBALS['*arrConstant']['CDR'][171]['Description'] = 'Credited';
+
+$GLOBALS['*arrConstant']['CDR'][179]['Constant'] 	= 'CDR_CREDIT_MATCH_NOT_FOUND';
+$GLOBALS['*arrConstant']['CDR'][179]['Description'] = 'Unmatched Credit';
+$GLOBALS['*arrConstant']['CDR'][171]['Constant'] 	= 'CDR_CREDIT_MATCHED';
+$GLOBALS['*arrConstant']['CDR'][171]['Description'] = 'Matched Credit';
+$GLOBALS['*arrConstant']['CDR'][175]['Constant'] 	= 'CDR_DEBIT_MATCHED';
+$GLOBALS['*arrConstant']['CDR'][175]['Description'] = 'CDR Credited';
 
 
 //TODO!rich! when you have time, update all constant definitons to work like the CDR ones
