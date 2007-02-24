@@ -786,7 +786,7 @@
  		
 	 	// Attempt to match the CDRs up
 	 	$intCount = FALSE;
-		while ($arrCreditCDR = $selCredits->Fetch())
+		while ($arrCreditCDR = $this->_selCreditCDRs->Fetch())
 	 	{
 			if ($intCount === FALSE)
 			{
