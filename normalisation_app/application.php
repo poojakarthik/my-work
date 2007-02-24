@@ -764,6 +764,7 @@
 	//------------------------------------------------------------------------//
 	// MatchCredits()
 	//------------------------------------------------------------------------//
+	//TODO!flame! update this
 	/**
 	 * MatchCredits()
 	 *
@@ -820,7 +821,8 @@
 			
 			if ($bolFail === TRUE)
 			{
-					echo " ! Couldn't Match Debit to Credit with CDR.Id {$arrCreditCDR['Id']}!\n";
+					//TODO!rich! add to report
+					//echo " ! Couldn't Match Debit to Credit with CDR.Id {$arrCreditCDR['Id']}!\n";
 					
 					// Update the Credit CDR
 					$arrUpdateColumns['Id']		= $arrCreditCDR['Id'];
@@ -847,12 +849,11 @@
  			$arrUpdateColumns['Status']	= CDR_DEBIT_MATCHED;
 	 		$this->_ubiCDRStatus->Execute($arrUpdateColumns);
 	 		
-	 		echo " + Credit ({$arrCreditCDR['Id']}) matched Debit ({$arrDebitCDR['Id']})";
-	 		
 	 		$intCount++;
 	 	}
 	 	
-	 	Debug("Matched $intCount out of $intTotalCount credit CDRs.");
+		//TODO!rich! add to report
+	 	echo "Matched $intCount out of $intTotalCount credit CDRs.\n";
 		return $intCount;
 	 }
  }
