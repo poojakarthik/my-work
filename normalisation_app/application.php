@@ -788,6 +788,7 @@
 	 	$intCount = FALSE;
 		while ($arrCreditCDR = $this->_selCreditCDRs->Fetch())
 	 	{
+			$bolFail = FALSE;
 			if ($intCount === FALSE)
 			{
 				$intCount = 0;
