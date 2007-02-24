@@ -800,6 +800,8 @@
 			}
 			else
 			{
+				echo $this->_selDebitCDR->Error();
+				Die();
 				// Try to match credit to a rated CDR
 				if ($this->_selRatedCDR->Execute($arrCreditCDR))
 				{
