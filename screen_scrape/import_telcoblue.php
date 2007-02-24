@@ -862,6 +862,7 @@ Blue Shared 500 						25
 	$objImport->Truncate('Charge');
 	$objImport->Truncate('ChargeType');
 	$objImport->Truncate('Contact');
+	$objImport->Truncate('CostCentre');
 	$objImport->Truncate('CreditCard');
 	$objImport->Truncate('DirectDebit');
 	$objImport->Truncate('Employee');
@@ -891,6 +892,8 @@ Blue Shared 500 						25
 	$objImport->Truncate('Service');
 	$objImport->Truncate('ServiceAddress');
 	$objImport->Truncate('ServiceMobileDetail');
+	$objImport->Truncate('ServiceInboundDetail');
+	$objImport->Truncate('ServiceExtension');
 	
 	$objImport->Truncate('ServiceRateGroup');
 	$objImport->Truncate('ServiceRatePlan');
@@ -898,6 +901,7 @@ Blue Shared 500 						25
 	$objImport->Truncate('ServiceRecurringCharge');
 	$objImport->Truncate('ServiceTotal');
 	$objImport->Truncate('ServiceTypeTotal');
+	
 	
 	// clean import array
 	$arrImport = Array();
@@ -1232,7 +1236,7 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%b  NONE  %n]\n");
 		}
 	}
-	
+/*	
 	// recurring charges
 	while ($arrRecurringCharges = $objDecoder->FetchRecurringCharges ())
 	{
@@ -1256,7 +1260,7 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%b  NONE  %n]\n");
 		}
 	}
-	
+*/	
 	// Add Passwords
 	// This is last because it's not as important and it takes forever
 	while ($arrRow = $objDecoder->FetchPassword ())

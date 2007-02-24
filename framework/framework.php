@@ -165,10 +165,13 @@
 	 														"Account = <Account> AND Status != ".INVOICE_SETTLED." AND Status != ".INVOICE_TEMP);
 	 														
 		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
-		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE) AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
 		
+		$this->_selFindOwnerAccount 			= new StatementSelect("Service", "Id", "FNN = <fnn> AND Account = <Account>", "CreatedOn DESC", "1");
+		$this->_selFindOwnerAccountIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE) AND Account = <Account>", "CreatedOn DESC", "1");
+
 		/* BROKEN : NOT USED
 		$strTables						= "DestinationCode";
 		$strData						= "Id, Code, Description";
@@ -585,15 +588,26 @@
 	 *
 	 * @method
 	 */
-	 function FindServiceByFNN($strFNN, $strDate=NULL)
+	 function FindServiceByFNN($strFNN, $strDate=NULL, $intAccount=NULL)
 	 {		
 		if ($strDate == NULL)
 		{
 			$strDate = date("Y-m-d", time());
 		}
-
-	 	$intResult = $this->_selFindOwner->Execute(Array('fnn' => (string)$strFNN, 'date' => (string)$strDate));
-	 	
+		
+		$strDate 	= (string)$strDate;
+		$strFNN 	= (string)$strFNN;
+		
+		$intAccount = (int)$intAccount;
+		if ($intAccount)
+		{
+			$intResult = $this->_selFindOwnerAccount->Execute(Array('fnn' => $strFNN, 'Account' => $intAccount));
+		}
+		else
+		{
+	 		$intResult = $this->_selFindOwner->Execute(Array('fnn' => $strFNN, 'date' => $strDate));
+	 	}
+		
 	 	if ($intResult === FALSE)
 	 	{
 
@@ -606,10 +620,19 @@
 	 	}
 	 	else
 	 	{
-	 		$arrParams['fnn'] 		= substr((string)$strFNN, 0, -2) . "__";
-			$arrParams['date'] 		= (string)$strDate;
-	 		$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
-	 		
+	 		$arrParams['fnn'] 		= substr($strFNN, 0, -2) . "__";
+			$arrParams['date'] 		= $strDate;
+			
+			if ($intAccount)
+			{
+				$arrParams['Account'] 		= $intAccount;
+				$intResult = $this->_selFindOwnerAccountIndial100->Execute($arrParams);
+			}
+			else
+			{
+	 			$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
+	 		}
+			
 	 		if ($intResult === FALSE)
 	 		{
 
@@ -622,10 +645,6 @@
 	 		}
 	 	}
 	 	
-		// Return false if there was no match, or more than one match
-		$this->_arrNormalisedData['Status']	= CDR_BAD_OWNER;
-		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
-		$this->strFNN = $this->_arrNormalisedData['FNN'];
 	 	return false;
 	 }
 	 

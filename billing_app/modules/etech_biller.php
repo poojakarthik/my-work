@@ -217,7 +217,7 @@
 		$arrInsertData['FNN']			= $arrServiceTypeTotal['FNN'];
 		$arrInsertData['AccountGroup']	= $arrServiceTypeTotal['AccountGroup'];
 		$arrInsertData['Account']		= $arrServiceTypeTotal['Account'];
-		$arrInsertData['Service']		= $this->Framework->FindServiceByFNN($arrServiceTypeTotal['FNN'], $arrInsertData['Account'], $arrInsertData['InvoiceDate']);
+		$arrInsertData['Service']		= $this->Framework->FindServiceByFNN($arrServiceTypeTotal['FNN'], NULL, $arrInsertData['Account']);
 		$arrInsertData['InvoiceRun']	= $strInvoiceRun;
 		$arrInsertData['RecordType']	= $arrServiceTypeTotal['RecordType'];
 		$arrInsertData['Charge']		= $arrServiceTypeTotal['Charge'];
@@ -290,7 +290,7 @@
 		$arrInsertData['FNN']				= $arrServiceTotal['FNN'];
 		$arrInsertData['AccountGroup']		= $arrServiceTotal['AccountGroup'];
 		$arrInsertData['Account']			= $arrServiceTotal['Account'];
-		$arrInsertData['Service']			= $this->FindServiceByFNN($arrServiceTotal['FNN'], $arrInsertData['InvoiceDate']);
+		$arrInsertData['Service']			= $this->Framework->FindServiceByFNN($arrServiceTotal['FNN'], NULL, $arrInsertData['Account']);
 		$arrInsertData['InvoiceRun']		= $strInvoiceRun;
 		$arrInsertData['CappedCharge']		= $arrServiceTotal['TotalCharge'];
 		$arrInsertData['UncappedCharge']	= 0.0;
