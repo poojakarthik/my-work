@@ -16,7 +16,7 @@ FileVixenConf="<?php
 //----------------------------------------------------------------------------//
 
 // Data Access constants
-define('DATABASE_URL', '10.11.12.13');
+define('DATABASE_URL', 'localhost');
 define('DATABASE_NAME', "vixen");
 define('DATABASE_USER', "vixen");
 define('DATABASE_PWORD', "V1x3n");
