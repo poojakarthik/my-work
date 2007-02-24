@@ -8,7 +8,7 @@
 	
 	// Create a new Report Object
 	$rptReport = new Report (
-		"+	ETECH CUSTOMER ACCOUNT ADDITIONAL INFORMATION CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
+		"+	ETECH SERVICE MOBILE CACHE RUNNER: " . date ("Y-m-d h:i:s A"),
 		"bash@voiptelsystems.com.au"
 	);
 	

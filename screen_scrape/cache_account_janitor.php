@@ -19,9 +19,11 @@
 	$rptReport->AddMessage ("+	COMMUNICATION WITH ETECH ESTABLISHED\n");
 	$rptReport->AddMessage (MSG_HORIZONTAL_RULE);
 	
+	$strWhere = 'Id > <Id> AND DataOriginal NOT LIKE "%html%"';
 	
 	// Write the Select to find Dodgy Records
-	$selScrape = new StatementSelect ('ScrapeAccount', 'CustomerId, Attempt, TimeTaken', 'DataOriginal = 1 OR DataOriginal = ""', 'RAND()', '1');
+	//$selScrape = new StatementSelect ('ScrapeAccount', 'CustomerId, Attempt, TimeTaken', 'DataOriginal NOT LIKE "%html%"', 'RAND()', '1');
+	$selScrape = new StatementSelect ('ScrapeAccount', 'Id, CustomerId, Attempt, TimeTaken', $strWhere, NULL, '1');
 	
 	$arrScrapeSave = Array (
 		'DataOriginal'	=> '',
@@ -36,10 +38,13 @@
 	
 	$intCurrentRow = 1;
 	
+	$arrWhere = Array();
+	$arrWhere['Id'] = 12349; 
+	
 	// Loop through each of the Customers
 	while (true)
 	{
-		$selScrape->Execute ();
+		$selScrape->Execute ($arrWhere);
 		
 		if ($selScrape->Count () <> 1)
 		{
@@ -47,6 +52,7 @@
 		}
 		
 		$arrScrape = $selScrape->Fetch ();
+		$arrWhere['Id'] = $arrScrape['Id']; 
 		
 		// Start a Timer for this Request
 		$fltStartTime = microtime (TRUE);

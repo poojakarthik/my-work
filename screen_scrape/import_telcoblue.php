@@ -1273,7 +1273,7 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%r FAILED %n]\n");
 		}
 	}
-	
+
 	
 	//finish
 	echo "Done\n";

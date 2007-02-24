@@ -662,12 +662,12 @@ max_binlog_size         = 104857600
 skip-bdb
 
 # 4GB RAM
-tmp_table_size         = 536870912
+#tmp_table_size         = 536870912
 
-innodb_buffer_pool_size			= 2147483648
-innodb_additional_mem_pool_size	= 16777216
-innodb_log_buffer_size			= 67108864
-innodb_log_file_size			= 1073741824
+#innodb_buffer_pool_size			= 2147483648
+#innodb_additional_mem_pool_size	= 16777216
+#innodb_log_buffer_size			= 67108864
+#innodb_log_file_size			= 1073741824
 
 # 2GB RAM
 tmp_table_size         			= 268435456
