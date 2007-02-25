@@ -28,7 +28,7 @@ function CliEcho($strOutput)
 CliEcho("STARTING");
 
 // set location of files
-$arrFilePath = glob("/home/vixen/etech_bills/2006/12/inv_telcoblue_*.txt");
+$arrFilePath = glob("/home/vixen/etech_bills/2007/01/inv_telcoblue_*.txt");
 
 foreach($arrFilePath AS $strFilePath)
 {
