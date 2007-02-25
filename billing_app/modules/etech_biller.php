@@ -69,10 +69,12 @@
 		$this->_insServiceTypeTotal = new StatementInsert("ServiceTypeTotal");
 		$this->_insServiceTotal		= new StatementInsert("ServiceTotal");
 		
+		$arrUpdateData = Array();
 		$arrUpdateData['Status']		= NULL;
 		$arrUpdateData['InvoiceRun']	= NULL;
-		$arrUpdateData['Id']			= NULL;
-		$this->_ubiMatchCDR	= new StatementUpdateById("CDR", $arrUpdateData);
+		$arrUpdateData['Charge']		= NULL;
+		$this->_ubiCDR	= new StatementUpdateById("CDR", $arrUpdateData);
+		
 		/*
 		$this->_selMatchCDR	= new StatementSelect(	"CDR",
 													"Id, Charge",
@@ -85,7 +87,7 @@
 													
 		$this->_selMatchCDR	= new StatementSelect(	"CDR",
 													"Id, Charge, Status, RecordType",
-													/*"Status != 199 AND " .*/
+													"Status != ".CDR_INVOICED." AND " .
 													"FNN = <FNN> AND " .
 													"Account = <Account> AND " .
 													"Units = <Units> AND " .
@@ -195,18 +197,17 @@
 	 * 
 	 * @param	array	$arrServiceTypeTotal	associative array to be inserted
 	 * @param	string	$strInvoiceRun			generated InvoiceRun Id
-	 * @param	string	$strInvoiceCreatedOn	optional date the invoice was created (from Invoice dataset)
 	 *
 	 * @return			bool
 	 *
 	 * @method
 	 */
- 	function AddServiceTypeTotal($arrServiceTypeTotal, $strInvoiceRun=FALSE, $strInvoiceCreatedOn=FALSE)
+ 	function AddServiceTypeTotal($arrServiceTypeTotal, $strInvoiceRun=FALSE)
  	{
 		// Get Invoice Run
 		if (!$strInvoiceRun)
 		{
-			$strInvoiceRun = FindInvoiceRun($arrServiceTypeTotal['Invoice']);
+			$strInvoiceRun = $this->FindInvoiceRun($arrServiceTypeTotal['Invoice']);
 			if (!$strInvoiceRun)
 			{
 				$strInvoiceRun = '';
@@ -222,39 +223,44 @@
 		$arrInsertData['RecordType']	= $arrServiceTypeTotal['RecordType'];
 		$arrInsertData['Charge']		= $arrServiceTypeTotal['Charge'];
 		$arrInsertData['Units']			= 0;
-		$arrInsertData['Records']		= $arrServiceTypeTotal['Records'];
+		$arrInsertData['Records']		= ;
 		
 		$mixInsertResult = (bool)$this->_insServiceTypeTotal->Execute($arrInsertData);
 		
-		// Match with all Local CDRs
-		/*if ($strInvoiceCreatedOn !== FALSE)
-		{
-			switch ($arrServiceTypeTotal['RecordType'])
-			{
-				case 17:
-				//case 34: // <-- not sure if these are itemised on the etech bills? they probably should be
-					// Find the CDRs total
-					$strStartDate	= date("Y-m-", strtotime("-1 Month", strtotime($strInvoiceCreatedOn)))."01";
-					$strEndDate		= date("Y-m-d", strtotime("-1 Day", strtotime("+1 Month", strtotime($strStartDate))));
-					$arrWhere['Account']	= $arrServiceTypeTotal['Account'];
-					$arrWhere['StartDate']	= $strStartDate." 00:00:00";
-					$arrWhere['EndDate']	= $strEndDate." 23:59:59";
-					if (!$this->_selMatchLocal->Execute($arrWhere))
-					{
-						// Error or no matches
-						return FALSE;
-					}
-					$mixInsertResult = $this->_selMatchLocal->Fetch();
-					$mixInsertResult = $mixInsertResult['Total'];
-					
-					// Update the CDRs
-					$arrUpdateData['Status']		= CDR_INVOICED;
-					$arrUpdateData['InvoiceRun']	= $strInvoiceRun;
-					$ubiMatchLocal = new StatementUpdate("CDR", $arrWhere, $arrUpdateData, $arrServiceTypeTotal['Records']);	
-					$ubiMatchLocal->Execute($arrUpdateData);
-			}
-		}*/
 		return $mixInsertResult;
+	}
+	
+	function UpdateLocalCDRs($arrServiceTypeTotal, $strInvoiceDate, $strInvoiceRun=FALSE)
+	{
+		if ($arrServiceTypeTotal['RecordType'] == 17)
+		{
+			$intRecords = (int)$arrServiceTypeTotal['Records'];
+			if (!$intRecords)
+			{
+				return FALSE;
+			}
+			
+			// Get Invoice Run
+			if (!$strInvoiceRun)
+			{
+				$strInvoiceRun = $this->FindInvoiceRun($arrServiceTypeTotal['Invoice']);
+				if (!$strInvoiceRun)
+				{
+					$strInvoiceRun = '';
+				}
+			}
+			
+			// Update the CDRs
+			$arrWhere = Array();
+			$strWhere = "FNN = <FNN> AND Account = <Account> AND RecordType = 17 AND StartDatetime < <Date>";
+			$arrUpdateData = Array();
+			$arrUpdateData['Status']		= CDR_INVOICED;
+			$arrUpdateData['InvoiceRun']	= $strInvoiceRun;
+			$updMatchLocal = new StatementUpdate("CDR", $strWhere, $arrUpdateData, $intRecords);	
+			$arrServiceTypeTotal['Date'] 	= $strInvoiceDate;
+			return $updMatchLocal->Execute($arrUpdateData, $arrServiceTypeTotal);
+		}
+		return FALSE;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -279,7 +285,7 @@
 		// Get Invoice Run
 		if (!$strInvoiceRun)
 		{
-			$strInvoiceRun = FindInvoiceRun($arrServiceTotal['Invoice']);
+			$strInvoiceRun = $this->FindInvoiceRun($arrServiceTotal['Invoice']);
 			if (!$strInvoiceRun)
 			{
 				$strInvoiceRun = '';
@@ -371,6 +377,7 @@
 	//------------------------------------------------------------------------//
 	// FindCDR
 	//------------------------------------------------------------------------//
+	//TODO!flame! fix doc
 	/**
 	 * FindCDR()
 	 *
@@ -397,13 +404,33 @@
 		}
 		$arrCDRResult = $this->_selMatchCDR->Fetch();
 		
-		$arrReturn = Array();
-		$arrReturn['Id']			= $arrCDRResult['Id'];
-		$arrReturn['Difference']	= $arrCDRResult['Charge'] - $arrCDR['Charge'];
-		$arrReturn['Status']		= $arrCDRResult['Status'];
+		$arrCDRResult['Difference']	= $arrCDRResult['Charge'] - $arrCDR['Charge'];
 		
-		// return the difference between our charge and etech's
-		return $arrReturn;
+		// return the CDR
+		return $arrCDRResult;
+	}
+	
+	function UpdateCDR($arrCDR)
+	{
+		// check Id
+		$arrCDR['Id'] = (int)$arrCDR['Id'];
+		if (!$arrCDR['Id'])
+		{
+			return FALSE;
+		}
+		
+		// Get Invoice Run
+		if (!$arrCDR['InvoiceRun'])
+		{
+			$arrCDR['InvoiceRun'] = $this->FindInvoiceRun($arrCDR['Invoice']);
+			if (!$arrCDR['InvoiceRun'])
+			{
+				$arrCDR['InvoiceRun'] = '';
+			}
+		}
+		
+		// update CDR
+		return $this->_ubiCDR($arrCDR);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -428,13 +455,13 @@
 		// Insert CDR into CDREtech table
 		$arrCDR['SequenceNo']	= $arrCDR['_LineNo'];
 		$arrCDR['CDR']			= $arrCDR['_OriginalLine'];
-		$arrCDR['File']			= $arrCDR['_File'];
+		$arrCDR['File']			= basename($arrCDR['_File']);
 		$arrCDR['InvoiceRun']	= $arrCDR['_Status']['BillingPeriod'];
 		
-		// return the difference between our charge and etech's
+		// return the Id
 		if (($mixResult = $this->_insEtechCDR->Execute($arrCDR)) === FALSE)
 		{
-			Debug($this->_insEtechCDR->Error());
+			//Debug($this->_insEtechCDR->Error());
 		}
 		return $mixResult;
 	}

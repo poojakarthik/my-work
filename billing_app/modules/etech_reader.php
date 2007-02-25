@@ -290,6 +290,7 @@
 			$this->arrData['FNN']				= $this->_arrStatus['FNN'];
 			$this->arrData['Account']			= $this->_arrStatus['Account'];
 			$this->arrData['AccountGroup']		= $this->_arrStatus['Account'];
+			$this->arrData['Invoice']			= $this->_arrStatus['Invoice'];
 			$this->arrData['StartDatetime']		= $arrLine['Datetime'];
 			$this->arrData['Destination']		= $arrLine['CalledParty'];
 			$this->arrData['Units']				= $intMinutesInSeconds + (int)$arrDuration[1];

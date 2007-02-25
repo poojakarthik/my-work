@@ -59,49 +59,73 @@ foreach($arrFilePath AS $strFilePath)
 				switch ($arrLine['_Table'])
 				{
 					case 'CDR':
-						$mixReturn = $etbEtech->FindCDR($arrLine);
-						if ($mixReturn === FALSE)
+						$arrCDR = $etbEtech->FindCDR($arrLine);
+						if ($arrCDR === FALSE)
 						{
 							// no match found
 							$arrLine['Status']	= CDR_ETECH_NO_MATCH;
 						}
 						else
 						{
+							$arrLine['VixenCDR'] = $arrCDR['Id'];
+							
 							// Determine status
-							if ($mixReturn['Difference'] === (float)0.0)
+							if ($arrCDR['Id'] && $arrCDR['Difference'] === (float)0.0)
 							{
 								$arrLine['Status']	= CDR_ETECH_PERFECT_MATCH;
 							}
-							elseif ($mixReturn['Id'])
+							elseif ($arrCDR['Id'])
 							{
 								$arrLine['Status']	= CDR_ETECH_IMPERFECT_MATCH;
 							}
 							else
 							{
-								$arrLine['Status']	= CDR_ETECH_NO_MATCH;
+								$arrCDR['Status']	= CDR_ETECH_NO_MATCH;
+								$arrLine['VixenCDR'] = 0;
 							}
-							
-							$arrLine['VixenCDR'] = $mixReturn['Id'];
 						}
 						
-						// Insert into DB
+						// Insert etech CDR into DB
 						if (!$etbEtech->InsertEtechCDR($arrLine))
 						{
 							CliEcho("CDR Insert Failed : {$arrLine['_File']} - {$arrLine['_LineNo']}");
+							break;
 						}
+						
+						// update our CDR
+						if ($arrCDR['Id'] && $arrCDR['Status'] == CDR_NORMALISED)
+						{
+							$arrUpdateCDR['Id'] 		= $arrCDR['Id'];
+							$arrUpdateCDR['Status'] 	= CDR_INVOICED;
+							$arrUpdateCDR['Charge'] 	= $arrLine['Charge'];
+							$arrUpdateCDR['Invoice'] 	= $arrLine['Invoice'];
+							if (!$etbEtech->UpdateCDR($arrCDR))
+							{
+								CliEcho("CDR Update Failed : {$arrCDR['Id']}");
+							}
+						}
+						
 						break;
 					
 					case 'ServiceTypeTotal':
 						if(!$etbEtech->AddServiceTypeTotal($arrLine))
 						{
-							CliEcho("ServiceTypeTotal Failed : {$arrLine['FNN']}");
+							CliEcho("ServiceTypeTotal Failed : {$arrLine['FNN']} - {$arrLine['_Status']['CreatedOn']}");
+						}
+						if($arrLine['RecordType'] == 17)
+						{
+							$intLocal =  $etbEtech->UpdateLocalCDRs($arrLine, $arrLine['_Status']['CreatedOn']);
+							if(!$intLocal)
+							{
+								CliEcho("UpdateLocal Failed : {$arrLine['FNN']} - {$arrLine['_Status']['CreatedOn']}");
+							}
 						}
 						break;
 						
 					case 'ServiceTotal':
 						if (!$etbEtech->AddServiceTypeTotal($arrLine))
 						{
-							CliEcho("ServiceTotal Failed : {$arrLine['FNN']}");
+							CliEcho("ServiceTotal Failed : {$arrLine['FNN']} - {$arrLine['_Status']['CreatedOn']}");
 						}
 						break;
 						
@@ -116,7 +140,6 @@ foreach($arrFilePath AS $strFilePath)
 						break;
 					
 					case 'Other':
-						//CliEcho("Other");
 						// Ignore
 						break;
 						
