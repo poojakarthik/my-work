@@ -70,9 +70,9 @@
 		$this->_insServiceTotal		= new StatementInsert("ServiceTotal");
 		
 		$arrUpdateData = Array();
-		$arrUpdateData['Status']		= NULL;
-		$arrUpdateData['InvoiceRun']	= NULL;
-		$arrUpdateData['Charge']		= NULL;
+		$arrUpdateData['Status']		= '';
+		$arrUpdateData['InvoiceRun']	= '';
+		$arrUpdateData['Charge']		= '';
 		$this->_ubiCDR	= new StatementUpdateById("CDR", $arrUpdateData);
 		
 		/*
@@ -204,6 +204,11 @@
 	 */
  	function AddServiceTypeTotal($arrServiceTypeTotal, $strInvoiceRun=FALSE)
  	{
+		if (!$arrServiceTypeTotal['FNN'])
+		{
+			return FALSE;
+		}
+		
 		// Get Invoice Run
 		if (!$strInvoiceRun)
 		{
@@ -223,10 +228,15 @@
 		$arrInsertData['RecordType']	= $arrServiceTypeTotal['RecordType'];
 		$arrInsertData['Charge']		= $arrServiceTypeTotal['Charge'];
 		$arrInsertData['Units']			= 0;
-		$arrInsertData['Records']		= ;
+		$arrInsertData['Records']		= $arrServiceTypeTotal['Records'];
 		
 		$mixInsertResult = (bool)$this->_insServiceTypeTotal->Execute($arrInsertData);
-		
+		if (!$mixInsertResult)
+		{
+			/*echo $this->_insServiceTypeTotal->Error();
+			print_r($arrServiceTypeTotal);
+			Die();*/
+		}
 		return $mixInsertResult;
 	}
 	
@@ -304,7 +314,14 @@
 		$arrInsertData['Credit']			= 0.0;
 		$arrInsertData['Debit']				= $arrServiceTotal['TotalCharge'];
 		
-		return (bool)$this->_insServiceTotal->Execute($arrInsertData);
+		$mixInsertResult = (bool)$this->_insServiceTotal->Execute($arrInsertData);
+		if (!$mixInsertResult)
+		{
+			/*echo $this->_insServiceTypeTotal->Error();
+			print_r($arrServiceTotal);
+			Die();*/
+		}
+		return $mixInsertResult;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -430,7 +447,12 @@
 		}
 		
 		// update CDR
-		return $this->_ubiCDR($arrCDR);
+		$mixResult = $this->_ubiCDR->Execute($arrCDR);
+		if (!$mixResult)
+		{
+
+		}
+		return $mixResult;
 	}
 	
 	//------------------------------------------------------------------------//

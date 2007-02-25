@@ -297,6 +297,14 @@
 			$this->arrData['Charge']			= (float)$arrLine['Charge'];
 		}
 		
+		/*if ($arrLine['RecordType'] == 40 || $arrLine['RecordType'] == 41 || $arrLine['RecordType'] == 45)
+		{
+			$this->arrData['FNN']				= $this->_arrStatus['FNN'];
+			$this->arrData['Account']			= $this->_arrStatus['Account'];
+			$this->arrData['AccountGroup']		= $this->_arrStatus['Account'];
+			$this->arrData['Invoice']			= $this->_arrStatus['Invoice'];
+		}*/
+		
 		// Determine the Row Type
 		switch ($arrLine['RecordType'])
 		{
@@ -731,6 +739,8 @@
 						return 20;
 					case "International Calls":
 						return 28;
+					case "Service & Equipment":
+						return 21;
 					case "Other Call Types":
 					default:
 						return 26;

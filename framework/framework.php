@@ -602,18 +602,21 @@
 		if ($intAccount)
 		{
 			$intResult = $this->_selFindOwnerAccount->Execute(Array('fnn' => $strFNN, 'Account' => $intAccount));
+			if ($intResult !== FALSE)
+			{
+				$arrResult = $this->_selFindOwnerAccount->Fetch();		
+			}
 		}
 		else
 		{
 	 		$intResult = $this->_selFindOwner->Execute(Array('fnn' => $strFNN, 'date' => $strDate));
+			if ($intResult !== FALSE)
+			{
+				$arrResult = $this->_selFindOwner->Fetch();		
+			}
 	 	}
 		
-	 	if ($intResult === FALSE)
-	 	{
-
-	 	}
-		
-	 	if ($arrResult = $this->_selFindOwner->Fetch())
+	 	if ($arrResult)
 	 	{
 			// found the service
 	 		return $arrResult['Id'];
@@ -627,18 +630,21 @@
 			{
 				$arrParams['Account'] 		= $intAccount;
 				$intResult = $this->_selFindOwnerAccountIndial100->Execute($arrParams);
+				if ($intResult !== FALSE)
+				{
+					$arrResult = $this->_selFindOwnerAccountIndial100->Fetch();		
+				}
 			}
 			else
 			{
 	 			$intResult = $this->_selFindOwnerIndial100->Execute($arrParams);
-	 		}
-			
-	 		if ($intResult === FALSE)
-	 		{
-
+				if ($intResult !== FALSE)
+				{
+					$arrResult = $this->_selFindOwnerIndial100->Fetch();		
+				}
 	 		}
 	 		
-	 		if(($arrResult = $this->_selFindOwnerIndial100->Fetch()))
+	 		if($arrResult)
 	 		{
 				// found the service
 	 			return $arrResult['Id'];

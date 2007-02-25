@@ -99,7 +99,7 @@ foreach($arrFilePath AS $strFilePath)
 							$arrUpdateCDR['Status'] 	= CDR_INVOICED;
 							$arrUpdateCDR['Charge'] 	= $arrLine['Charge'];
 							$arrUpdateCDR['Invoice'] 	= $arrLine['Invoice'];
-							if (!$etbEtech->UpdateCDR($arrCDR))
+							if (!$etbEtech->UpdateCDR($arrUpdateCDR))
 							{
 								CliEcho("CDR Update Failed : {$arrCDR['Id']}");
 							}
@@ -108,22 +108,23 @@ foreach($arrFilePath AS $strFilePath)
 						break;
 					
 					case 'ServiceTypeTotal':
-						if(!$etbEtech->AddServiceTypeTotal($arrLine))
+						/*if(!$etbEtech->AddServiceTypeTotal($arrLine))
 						{
 							CliEcho("ServiceTypeTotal Failed : {$arrLine['FNN']} - {$arrLine['_Status']['CreatedOn']}");
-						}
-						if($arrLine['RecordType'] == 17)
+						}*/
+					
+						/*if($arrLine['RecordType'] == 17)
 						{
 							$intLocal =  $etbEtech->UpdateLocalCDRs($arrLine, $arrLine['_Status']['CreatedOn']);
 							if(!$intLocal)
 							{
 								CliEcho("UpdateLocal Failed : {$arrLine['FNN']} - {$arrLine['_Status']['CreatedOn']}");
 							}
-						}
+						}*/
 						break;
 						
 					case 'ServiceTotal':
-						if (!$etbEtech->AddServiceTypeTotal($arrLine))
+						if (!$etbEtech->AddServiceTotal($arrLine))
 						{
 							CliEcho("ServiceTotal Failed : {$arrLine['FNN']} - {$arrLine['_Status']['CreatedOn']}");
 						}
