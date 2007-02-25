@@ -23,6 +23,7 @@
 	try
 	{
 		$srvService = $Style->attachObject (new Service ($_POST ['Service']));
+		$actAccount = $srvService->getAccount ();
 	}
 	catch (Exception $e)
 	{
@@ -78,8 +79,9 @@
 		else
 		{
 			// Add the Charge
-			$srvService->ChargeAdd (
+			$actAccount->ChargeAdd (
 				$athAuthentication->AuthenticatedEmployee (),
+				$srvService,
 				$chgCharge,
 				$fltAmount->getValue (),
 				(($_POST ['Invoice']) ? $_POST ['Invoice'] : NULL),

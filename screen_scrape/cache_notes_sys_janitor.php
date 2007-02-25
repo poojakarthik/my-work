@@ -21,7 +21,7 @@
 	
 	
 	// Write the Select to find Dodgy Records
-	$selScrape = new StatementSelect ('ScrapeNoteSys', 'CustomerId, Attempt, TimeTaken', 'DataOriginal = 1', 'RAND()', '1');
+	$selScrape = new StatementSelect ('ScrapeNoteSys', 'CustomerId, Attempt, TimeTaken', 'DataOriginal = 1 OR DataOriginal = ""', 'RAND()', '1');
 	
 	$arrScrapeSave = Array (
 		'Attempt'		=> '',

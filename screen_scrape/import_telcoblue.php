@@ -852,8 +852,8 @@ Blue Shared 500 						25
 	require_once('vixen_import.php');
 	$objImport = new VixenImport($arrConfig);
 
-	//TODO!bash! add any new tables that need to be truncated
-
+	$objImport->Truncate('RecurringCharge');
+	
 	// Truncate Tables
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');

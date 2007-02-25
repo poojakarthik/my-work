@@ -18,11 +18,6 @@
 	$cstCustomers = new Parser_CSV ('data/customers.csv');
 	$rptReport->AddMessage ("+	CUSTOMER CSV HAS BEEN PARSED");
 	
-	// Open a Connection/Session to ETECH
-	$cnnConnection = new Connection ();	
-	$rptReport->AddMessage ("+	COMMUNICATION WITH ETECH ESTABLISHED\n");
-	
-	
 	
 	
 	
@@ -39,34 +34,21 @@
 	// Loop through each of the Customers
 	foreach ($cstCustomers->CustomerList () AS $intCustomerId)
 	{
-		
-		// Start a Timer for this Request
-		$fltStartTime = microtime (TRUE);
-		
-		// Pull the Information from ETECH
-		$strResponse = $cnnConnection->Transmit (
-			"GET",
-			"https://sp.teleconsole.com.au/sp/customers/shownotes.php?customer_id=" . $intCustomerId
-		);
-		
-		// Count the Total Time
-		$fltTotalTime = microtime (TRUE) - $fltStartTime;
-		
-		
 		// Insert the Information into the Database
 		$arrScrape = Array (
 			'CustomerId'		=> $intCustomerId,
-			'DataOriginal'		=> $strResponse
+			'DataOriginal'		=> "",
+			'Attempt'			=> 0,
+			'TimeTaken'			=> 0
 		);
 		
 		$insScrape->Execute ($arrScrape);
 		
 		// Add something to the Report
 		$rptReport->AddMessageVariables (
-			"+	<CurrentRow>		<TotalTime>	<CustomerID>	<Response>\n",
+			"+	<CurrentRow>		<CustomerID>	<Response>\n",
 			Array (
 				"<CurrentRow>"		=> sprintf ("%06d",	$intCurrentRow),
-				"<TotalTime>"		=> sprintf ("%1.6f", $fltTotalTime),
 				"<CustomerID>"		=> $intCustomerId,
 				"<Response>"		=> "USER NOTE HAS BEEN CACHED"
 			)

@@ -940,12 +940,9 @@
 				
 				$intMonths = 0;
 				
-				while (true)
+				for ($i=0; $i <= 1023; ++$i)
 				{
-					if (
-						date ("Y", $intFirstThisMonth) == date ("Y", $intCurrentMonth) &&
-						date ("m", $intFirstThisMonth) == date ("m", $intCurrentMonth)
-					)
+					if ($intCurrentMonth >= $intFirstThisMonth)
 					{
 						break;
 					}
@@ -1624,6 +1621,16 @@
 		$arrOutput['Account'][0]['TradingName'] 		= $arrCustomer['tradingname'];
 		$arrOutput['Account'][0]['ABN'] 				= $arrCustomer['abn'];
 		$arrOutput['Account'][0]['ACN'] 				= $arrCustomer['acn'];
+		
+		if ($MonthAbbr [$arrCustomer['sales_month']])
+		{
+			$arrOutput['Account'][0]['CreatedOn'] 		= date ("Y-m-d", mktime (0, 0, 0, $MonthAbbr [$arrCustomer['sales_month']], $arrCustomer['sales_day'], $arrCustomer['sales_year']));
+		}
+		else
+		{
+			$arrOutput['Account'][0]['CreatedOn']		= NULL;
+		}
+		
 		$arrOutput['Account'][0]['Address1'] 		= $arrCustomer['address1'];
 		$arrOutput['Account'][0]['Address2'] 		= $arrCustomer['address2'];
 		$arrOutput['Account'][0]['Suburb'] 			= strtoupper($arrCustomer['suburb']);

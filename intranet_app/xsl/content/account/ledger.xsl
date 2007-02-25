@@ -64,6 +64,7 @@
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Invoice #</th>
+				<th>Date</th>
 				<th class="Currency" width="100">Overdue</th>
 				<th class="Currency" width="100">Credits</th>
 				<th class="Currency" width="100">Debits</th>
@@ -92,8 +93,16 @@
 								<xsl:text>invoice_view.php?Invoice=</xsl:text>
 								<xsl:value-of select="./Id" />
 							</xsl:attribute>
-							Invoice #<xsl:value-of select="./Id" />
+							<xsl:value-of select="./Id" />
 						</a>
+					</td>
+					<td>
+						<xsl:call-template name="dt:format-date-time">
+							<xsl:with-param name="year"		select="./CreatedOn/year" />
+							<xsl:with-param name="month"	select="./CreatedOn/month" />
+							<xsl:with-param name="day"		select="./CreatedOn/day" />
+							<xsl:with-param name="format"	select="'%m/%Y'"/>
+						</xsl:call-template>
 					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">

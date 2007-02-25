@@ -101,7 +101,7 @@
 				$_POST ['Notes']
 			);
 			
-			header ('Location: service_charge_added.php?Service=' . $srvService->Pull ('Id')->getValue ());
+			header ('Location: account_charges_unbilled.php?Account=' . $actAccount->Pull ('Id')->getValue ());
 			exit;
 		}
 	}

@@ -660,6 +660,65 @@
 			
 			return $intCostCentre;
 		}
+		
+		//------------------------------------------------------------------------//
+		// ChargeAdd
+		//------------------------------------------------------------------------//
+		/**
+		 * ChargeAdd()
+		 *
+		 * Add a charge against a Service
+		 *
+		 * Add a charge against a Service
+		 *
+		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmploee	The person who is adding this charge to the database
+		 * @param	ChargeType				$chgChargeType				The Type of Charge to Assign
+		 * @param	String					$strAmount					The amount to charge against. If the charge type is fixed, this value is ignored
+		 * @return	Void
+		 *
+		 * @method
+		 */
+		
+		public function ChargeAdd (AuthenticatedEmployee $aemAuthenticatedEmployee, Service $srvService=NULL, ChargeType $chgChargeType, $strAmount, $intInvoice, $strNotes)
+		{
+			$fltAmount = 0;
+			
+			if ($chgChargeType->Pull ('Fixed')->isTrue ())
+			{
+				$fltAmount = $chgChargeType->Pull ('Amount')->getValue ();
+			}
+			else
+			{
+				$fltAmount = $strAmount;
+				$fltAmount = preg_replace ('/\$/', '', $fltAmount);
+				$fltAmount = preg_replace ('/\s/', '', $fltAmount);
+				$fltAmount = preg_replace ('/\,/', '', $fltAmount);
+				
+				if (!preg_match ('/^([\d]*)(\.[\d]+){0,1}$/', $fltAmount))
+				{
+					throw new Exception ('Invalid Amount');
+				}
+			}
+			
+			$arrCharge = Array (
+				'AccountGroup'			=> $this->Pull ('AccountGroup')->getValue (),
+				'Account'				=> $this->Pull ('Id')->getValue (),
+				'Service'				=> (($srvService) ? $srvService->Pull ('Id')->getValue () : NULL),
+				'CreatedBy'				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
+				'CreatedOn'				=> new MySQLFunction ("NOW()"),
+				'ChargedOn'				=> new MySQLFunction ("NOW()"),
+				'ChargeType'			=> $chgChargeType->Pull ('ChargeType')->getValue (),
+				'Description'			=> $chgChargeType->Pull ('Description')->getValue (),
+				'Nature'				=> $chgChargeType->Pull ('Nature')->getValue (),
+				'Amount'				=> $fltAmount,
+				'Invoice'				=> $intInvoice,
+				'Notes'					=> $strNotes,
+				'Status'				=> CHARGE_WAITING
+			);
+			
+			$insCharge = new StatementInsert ('Charge', $arrCharge);
+			$insCharge->Execute ($arrCharge);
+		}
 	}
 	
 ?>
