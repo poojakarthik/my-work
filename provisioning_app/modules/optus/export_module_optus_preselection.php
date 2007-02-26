@@ -63,7 +63,7 @@
 		
 		parent::__construct($ptrDB);
 		
-		$this->_selGetRequests	= new StatementSelect("Requests", "*", "Carrier = ".CARRIER_OPTUS." AND RequestType = ".REQUEST_PRESELECTION."Status = ".REQUEST_STATUS_WAITING);
+		$this->_selGetRequests	= new StatementSelect("Request", "*", "Carrier = ".CARRIER_OPTUS." AND RequestType = ".REQUEST_PRESELECTION." AND Status = ".REQUEST_STATUS_WAITING);
  	}
 
   	//------------------------------------------------------------------------//
@@ -88,12 +88,13 @@
 		// Clean the request array
 		$arrBuiltRequest = Array();
 		
-		$this->_selGetSequenceNo->Execute();
-		if(!$this->_intSequenceNo = $this->_selGetSequenceNo->Fetch())
+		$this->_selGetSequence->Execute(Array('Name' => "OptusBatchNo", 'Module' => "Optus"));
+		if(!$arrSequenceNo = $this->_selGetSequence->Fetch())
 		{
 			// Sequence number should be set to 1
 			$this->_intSequenceNo = 1;
 		}
+		$this->_intSequenceNo = $arrSequenceNo['Value']++;
 		
 		// Build the request Array
 		$arrBuiltRequest['BatchNo']				= $this->_intSequenceNo;
@@ -107,6 +108,8 @@
 		
 		// Append this request
 		$this->_arrPreselectionRecords[]		= implode(",", $arrBuiltRequest);
+		
+		return TRUE;
 	} 	
  	
   	//------------------------------------------------------------------------//
@@ -131,9 +134,9 @@
 		
 		// Get list of requests to generate
 		$arrResults = $this->_selGetRequests->FetchAll();
-			
+		
 		$intNumPreselectionRecords	= count($this->_arrPreselectionRecords);
-	
+		
 		// Create Local Preselection File
 		if($intNumPreselectionRecords > 0)
 		{
@@ -147,12 +150,21 @@
 			}
 			fclose($resPreselectionFile);
 		}
+		else
+		{
+			return TRUE;
+		}
 		
-		// TODO: Email to Optus (as an attachement)
-		//mail("long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File");
+		// Email to Optus (as an attachment)
+		//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
+		if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename))
+		{
+			Debug("Email failed!");
+			return FALSE;
+		}
 		
-		// Update database (Request & Config tables)
-		$this->_updSequenceNo->Execute(Array('Value' => "$intPreselectionFileSequence"));
+		// Update sequence no
+		$this->_updSetSequence->Execute(Array('Value' => $this->_intSequenceNo), Array('Name' => "OptusBatchNo", 'Module' => "Optus"));
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;

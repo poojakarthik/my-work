@@ -126,6 +126,8 @@ $GLOBALS['*arrConstant']	['ProvisioningType']	[151]	['Constant']	= 'PRV_UNITEL_D
 $GLOBALS['*arrConstant']	['ProvisioningType']	[151]	['Description']	= 'Unitel Daily Order File';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[152]	['Constant']	= 'PRV_AAPT_EOE';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[152]	['Description']	= 'AAPT EOE Order File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[153]	['Constant']	= 'PRV_OPTUS_PRESELECTION_EXP';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[153]	['Description']	= 'Optus Preselection Order File';
 
 
 // Carriers

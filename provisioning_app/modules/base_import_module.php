@@ -92,8 +92,8 @@
 	 	$arrColumns['Email']		= "Employee.Email";
 	 	$arrColumns['RequestDate']	= "Request.RequestDateTime";
 	 	$arrColumns['Status']		= "Request.Status";
-	 	$this->_selEmailReportDetails	= new StatementSelect(	"Request JOIN Employee ON Emplyee.Id = Request.Employee, " .
-	 															"Service JOIN Account ON Service.Accout = Account.Id",
+	 	$this->_selEmailReportDetails	= new StatementSelect(	"Request JOIN Employee ON Employee.Id = Request.Employee, " .
+	 															"Service JOIN Account ON Service.Account = Account.Id",
 	 															$arrColumns,
 	 															"Request.Id = <Request>");
 		
@@ -382,29 +382,33 @@
 	 		return FALSE;
 	 	}
 	 	
-	 	// Generate and send off the report
-	 	$arrVariables	= Array();
-	 	$arrVariables['<Employee>']		= $arrDetails['FirstName'];
-		$arrVariables['<RequestDate>']	= $arrDetails['RequestDate'];
-		$arrVariables['<FNN>']			= $this->_arrLog['FNN'];
-		$arrVariables['<Account>']		= $arrDetails['Account'];
-		$arrVariables['<BusinessName>']	= $arrDetails['BusinessName'];
-		$arrVariables['<ResponseDate>']	= $this->_arrLog['Date'];
-		$arrVariables['<RequestType>']	= $this->_arrLog['Type'];
-		$arrVariables['<Carrier>']		= $this->_arrLog['Carrier'];
-		$arrVariables['<Status>']		= $arrDetails['Status'];
-		$arrVariables['<Description>']	= $this->_arrLog['Description'];
-	 	$strReport		= ReplaceAliases(REQUEST_EMAIL_MESSAGE, $arrVariables);
-	 	$strHeaders 	= "From: automated@voiptelsystems.com.au";
-	 	$intCount		=  mail(	$arrDetails['Email'], 
-									"Provisioning response for ".$this->_arrLog['FNN']." (Automated Message)",
-									$strReport,
-									$strHeaders);
-		
+	 	$intCount = 0;
+	 	if ($arrDetails['Email'])
+	 	{
+		 	// Generate and send off the report
+		 	$arrVariables	= Array();
+		 	$arrVariables['<Employee>']		= $arrDetails['FirstName'];
+			$arrVariables['<RequestDate>']	= $arrDetails['RequestDate'];
+			$arrVariables['<FNN>']			= $this->_arrLog['FNN'];
+			$arrVariables['<Account>']		= $arrDetails['Account'];
+			$arrVariables['<BusinessName>']	= $arrDetails['BusinessName'];
+			$arrVariables['<ResponseDate>']	= $this->_arrLog['Date'];
+			$arrVariables['<RequestType>']	= $this->_arrLog['Type'];
+			$arrVariables['<Carrier>']		= $this->_arrLog['Carrier'];
+			$arrVariables['<Status>']		= $arrDetails['Status'];
+			$arrVariables['<Description>']	= $this->_arrLog['Description'];
+		 	$strReport		= ReplaceAliases(REQUEST_EMAIL_MESSAGE, $arrVariables);
+		 	$strHeaders 	= "From: automated@voiptelsystems.com.au";
+		 	$intCount		=  mail(	$arrDetails['Email'], 
+										"Provisioning response for ".$this->_arrLog['FNN']." (Automated Message)",
+										$strReport,
+										$strHeaders);
+	 	}
+			
 		// Send an email to the admins, too
 		if (REQUEST_EMAIL_ADMIN && !DEBUG_MODE)
 		{
-		 	$intCount		=  mail(	REQUEST_EMAIL_ADMIN, 
+		 	$intCount		+=  mail(	REQUEST_EMAIL_ADMIN, 
 										"Provisioning response for ".$this->_arrLog['FNN']." (Automated Message)",
 										$strReport,
 										$strHeaders);

@@ -186,7 +186,7 @@
 		$strPreselectionHeaderRow	= "01".date("Ymd").str_pad($intPreselectionFileSequence, 4, "0", STR_PAD_LEFT)."sarsw";
 		
 		// Get list of requests to generate
-		$arrResults = $this->_selGetRequests->FetchAll();
+		$arrResults = $this->_selGetPreselectRequests->FetchAll();
 			
 		$intNumPreselectionRecords	= count($this->_arrPreselectionRecords);
 	
@@ -225,7 +225,7 @@
 		*/
 		
 		// Update database (Request & Config tables)
-		$this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence"));
+		$this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence"), Array());
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;

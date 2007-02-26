@@ -30,8 +30,8 @@ echo "<pre>";
 // Application entry point - create an instance of the application object
 $appProvisioining = new ApplicationProvisioning($arrConfig);
 
-$appProvisioining->Import();
-//$appProvisioining->Export();
+//$appProvisioining->Import();
+$appProvisioining->Export();
 
 $appProvisioining->FinaliseReport();
 
@@ -91,10 +91,10 @@ die();
  		//$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleOptus(&$this->db);
  		
  		// Init Provisioning Export Modules
-		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
+		//$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
- 		$this->_arrProvisioningModules[PRV_AAPT_EOE]				= new ProvisioningModuleExportAAPTEOE(&$this->db);
- 		//$this->_arrProvisioningModules[PROV_OPTUS_EXPORT]			= new ProvisioningModuleOptus(&$this->db);
+ 		//$this->_arrProvisioningModules[PRV_AAPT_EOE]				= new ProvisioningModuleExportAAPTEOE(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP]	= new ProvisioningModuleExportOptusPreselection(&$this->db);
  		
  		$this->Framework->StartWatch();
 	}
@@ -296,58 +296,97 @@ die();
 	 */
 	function Export()
 	{
+		$this->_rptProvisioningReport->AddMessage("[ BUILDING REQUESTS ]\n");
+		
 		// Init prepared statements
-		$selGetRequests		= new StatementSelect("Request", "*", "Status = ".REQUEST_WAITING);
+		$selGetRequests		= new StatementSelect("Request", "*", "Status = ".REQUEST_STATUS_WAITING);
 		$ubiUpdateRequest	= new StatementUpdateById("Request", Array("Status" => " "));
 		
 		// get a list of requests from the DB
 		$arrRequests = $selGetRequests->Execute();
 		
+		$arrRequests = $selGetRequests->FetchAll();
+		
 		// for each request
 		foreach($arrRequests as $arrRequest)
 		{
+			$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
+			
 			switch ($arrRequest['Carrier'])
 			{
 				case CARRIER_UNITEL:
 					switch ($arrRequest['RequestType'])
 					{
-						case REQUEST_FULL_SERVICE:
-							$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_UNITEL_DAILY_ORDER_EXP];
-							break;
+						/*case REQUEST_FULL_SERVICE:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
+							break;*/
+						/*case REQUEST_PRESELECTION:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP];
+							break;*/
 						default:
-							$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_UNITEL_PRESELECTION_EXP];
-							break;
+							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
+							continue 3;
 					}
 					break;
+					
 				case CARRIER_OPTUS:
-					//$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_OPTUS_ALL];
+					switch ($arrRequest['RequestType'])
+					{
+						/*case REQUEST_FULL_SERVICE:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
+							break;*/
+						case REQUEST_PRESELECTION:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP];
+							break;
+						default:
+							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
+							continue 3;
+					}
 					break;
-				case CARRIER_AAPT:
-					$this->_prvCurrentModule = $this->_arrProvisioningModule[PRV_AAPT_EOE];
-					break;
+					
+				/*case CARRIER_AAPT:
+					$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_AAPT_EOE];
+					break;*/
 				default:
-					// There is a problem, Report
+					$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
+					continue 2;
 			}
 			
+			
 			// build request
-			if(!$this->_prvCurrentModule()->BuildRequest($arrRequest))
+			if(!$this->_prvCurrentModule->BuildRequest($arrRequest))
 			{
 				//TODO!!!! - log error & set status
-				$this->_prvCurrentModule()->AddToProvisioningLog();
+				$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: Request Build failed");
+				$this->_prvCurrentModule->AddToProvisioningLog();
 			}
 			else
 			{
 				// set status of request in db
-				$arrRequest['Status']		= REQUEST_SENT;
+				$this->_rptProvisioningReport->AddMessage("[   OK   ]");
+				$arrRequest['Status']		= REQUEST_STATUS_PENDING;
 			}
 			$ubiUpdateRequest->Execute($arrRequest);
 		}
+		
+		$this->_rptProvisioningReport->AddMessage("\n[ SENDING REQUESTS ]\n");
 
-		// Send off requests for each module		
-		foreach ($this->_arrProvisioningModule as $prvModule)
+		// Send off requests for each module
+		foreach ($this->_arrProvisioningModules as $intKey=>$prvModule)
 		{
-			// send request
-			$prvModule->SendRequest();
+			// send request (only if its an export module)
+			if (method_exists($prvModule, "SendRequest"))
+			{
+				$this->_rptProvisioningReport->AddMessage("\t+ Sending Requests for ".str_pad(GetConstantDescription($intKey, 'ProvisioningType'), 30, " ", STR_PAD_RIGHT), FALSE);
+				if ($prvModule->SendRequest() !== FALSE)
+				{
+					$this->_rptProvisioningReport->AddMessage("\t[   OK   ]");
+				}
+				else
+				{
+					$this->_rptProvisioningReport->AddMessage("\t[ FAILED ]");
+				}
+			}
 		}
 	}
 	

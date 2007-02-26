@@ -80,11 +80,12 @@
 		$this->_selMatchService 				= new StatementSelect("Service", "*", "FNN = <FNN>", "CreatedOn DESC", "1");
 		$this->_ubiService						= new StatementUpdateById("Service", $arrServiceColumns);
 		$this->_selMatchLog						= new StatementSelect("ProvisioningLog", "Id", "Date > <Date>");
-		$this->_selGetSequence					= new StatementSelect("Config", "Name, Value", "Application = ".APPLICATION_PROVISIONING." AND Module = <Module>");
+		$this->_selGetSequence					= new StatementSelect("Config", "Name, Value", "Application = ".APPLICATION_PROVISIONING." AND Module = <Module> AND Name = <Name>");
+		$this->_updSetSequence					= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = <Module> AND Name = <Name>", Array('Value' => NULL));
 		$this->_selGetFullServiceRequests		= new StatementSelect("Request JOIN Service ON Request.Service = Service.Id", "Request.*, Service.FNN", "Request.Carrier = <Carrier> AND Request.Status = ".REQUEST_STATUS_WAITING." AND Request.RequestType = ".REQUEST_FULL_SERVICE);
 		$this->_selGetPreselectRequests			= new StatementSelect("Request JOIN Service ON Request.Service = Service.Id", "Request.*, Service.FNN", "Request.Carrier = <Carrier> AND Request.Status = ".REQUEST_STATUS_WAITING." AND Request.RequestType = ".REQUEST_PRESELECTION);
 		
-
+		$this->_insAddToLog						= new StatementInsert("ProvisioningLog");
 		
 		// Default delimeter is NULL (fixedwidth)
 		$this->_strDelimiter	= NULL;

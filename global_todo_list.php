@@ -6,8 +6,6 @@
 // RICH
 // ---------------------------------------------------------------------------//
 
-//TODO!rich! when a reply comes in on a provisioning request, email the employee who added the request + an admin adress set in config
-
 //TODO!rich! check any of our charges that do not match etech... find out why
 
 //TODO!rich! Test shared plans

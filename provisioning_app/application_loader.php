@@ -112,6 +112,7 @@ require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 require_once($strFrameworkDir."excel_export.php");
+require_once($strFrameworkDir."mail_attachment.php");
 
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
@@ -126,6 +127,12 @@ require_once($strModuleDir."unitel/export_module_unitel_preselection.php");
 require_once($strModuleDir."unitel/import_module_unitel_order.php");
 require_once($strModuleDir."unitel/import_module_unitel_preselection.php");
 require_once($strModuleDir."unitel/import_module_unitel_status.php");
+
+require_once($strModuleDir."optus/export_module_optus_preselection.php");
+require_once($strModuleDir."optus/export_module_optus_bar.php");
+require_once($strModuleDir."optus/export_module_optus_restore.php");
+require_once($strModuleDir."optus/export_module_optus_suspend.php");
+require_once($strModuleDir."optus/import_module_optus_status.php");
 
 require_once($strModuleDir."aapt/export_module_aapt_eoe.php");
 require_once($strModuleDir."aapt/import_module_aapt_eoe.php");

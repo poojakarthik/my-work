@@ -73,8 +73,9 @@ define("PROV_COMPLETED"					, 999);
 define("SEQUENCE_START_UNITEL"			, 1);
 
 // File Directories (incl trailing "/")
-define("UNITEL_DAILY_ORDER_DIR"			, "/home/vixen_upload/unitel/dailyorderfiles/");
-define("UNITEL_PRESELECTION_DIR"		, "/home/vixen_upload/unitel/preselectionfiles/");
+define("UNITEL_LOCAL_DAILY_ORDER_DIR"	, "/home/vixen_upload/unitel/dailyorder/");
+define("UNITEL_LOCAL_PRESELECTION_DIR"	, "/home/vixen_upload/unitel/preselection/");
+define("OPTUS_LOCAL_PRESELECTION_DIR"	, "/home/vixen_upload/optus/preselection/");
 
 // Additional Preselection Constants
 define("CUSTOMER_NUMBER_OPTUS"			,"23139716000139");
@@ -94,4 +95,14 @@ define("REQUEST_EMAIL_MESSAGE"			,	"Hi <Employee>,\n\n" .
 											" - Pablo, the Helpful Donkey\n\n" .
 											"(NOTE: This is an automated message.  Do NOT reply to this email.)");
 define("REQUEST_EMAIL_ADMIN"			,	"rich@voiptelsystems.com.au");
+
+
+// Connection Definitions
+//--------------------------
+
+// Unitel
+define("UNITEL_PROVISIONING_SERVER"			, "rslcom.com.au");
+define("UNITEL_PROVISIONING_USERNAME"		, "sp058");
+define("UNITEL_PROVISIONING_PASSWORD"		, "BuzzaBee06*#");
+define("UNITEL_REMOTE_DAILY_ORDER_DIR"		, "ebill_dailyorderfiles");
 ?>
