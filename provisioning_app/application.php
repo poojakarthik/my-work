@@ -317,9 +317,9 @@ die();
 				case CARRIER_UNITEL:
 					switch ($arrRequest['RequestType'])
 					{
-						/*case REQUEST_FULL_SERVICE:
+						case REQUEST_FULL_SERVICE:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
-							break;*/
+							break;
 						/*case REQUEST_PRESELECTION:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP];
 							break;*/
@@ -356,17 +356,19 @@ die();
 			// build request
 			if(!$this->_prvCurrentModule->BuildRequest($arrRequest))
 			{
-				//TODO!!!! - log error & set status
+				// log error & set status
 				$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: Request Build failed");
-				$this->_prvCurrentModule->AddToProvisioningLog();
 			}
 			else
 			{
 				// set status of request in db
 				$this->_rptProvisioningReport->AddMessage("[   OK   ]");
 				$arrRequest['Status']		= REQUEST_STATUS_PENDING;
+				//$ubiUpdateRequest->Execute($arrRequest);
+				
+				// add to provisioning log
+				$this->_prvCurrentModule->AddToProvisioningLog();
 			}
-			$ubiUpdateRequest->Execute($arrRequest);
 		}
 		
 		$this->_rptProvisioningReport->AddMessage("\n[ SENDING REQUESTS ]\n");

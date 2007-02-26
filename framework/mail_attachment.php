@@ -47,6 +47,8 @@ function mail_attachment ($from , $to, $subject, $message, $attachment){
 
 
 	$ok = mail($email_to, $email_subject, $email_message, $headers); 
+	
+	Debug($ok);
 
 	if($ok) { 
 		return TRUE;
