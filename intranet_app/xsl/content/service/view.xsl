@@ -175,6 +175,22 @@
 							<tr>
 								<td colspan="2"><div class="MicroSeperator"></div></td>
 							</tr>
+							<xsl:if test="/Response/CostCentre">
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service')" />
+											<xsl:with-param name="field" select="string('CostCentre')" />
+										</xsl:call-template>
+									</th>
+									<td>
+						       			<xsl:value-of select="/Response/CostCentre/Name" />
+							       	</td>
+								</tr>
+								<tr>
+									<td colspan="2"><div class="MicroSeperator"></div></td>
+								</tr>
+							</xsl:if>
 							<tr>
 								<th>
 									<xsl:call-template name="Label">

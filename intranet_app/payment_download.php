@@ -51,10 +51,25 @@
 			$payPayments->Constrain ('EnteredBy',	'EQUALS', $athAuthentication->AuthenticatedEmployee ()->Pull ('Id')->getValue ());
 			$payPayments->Constrain ('PaymentType',	'EQUALS', $_POST ['PaymentType']);
 			$payPayments->Constrain ('PaidOn',		'EQUALS', $strPaidOn);
-			$payPayments->Sample ();
+			$oblsamPayments = $payPayments->Sample ();
+			
+			$arrAccounts = Array ();
+			$oblarrAccounts = $Style->attachObject (new dataArray ('Accounts', 'Account'));
+			
+			foreach ($oblsamPayments as $payPayment)
+			{
+				if (!isset ($arrAccounts [$payPayment->Pull ('Account')->getValue ()]))
+				{
+					$arrAccounts [$payPayment->Pull ('Account')->getValue ()] = $oblarrAccounts->Push (
+						new Account ($payPayment->Pull ('Account')->getValue ())
+					);
+				}
+			}
 			
 			header('Content-type: text/csv');
 			header('Content-Disposition: attachment; filename="Payments-' . $strPaidOn . '.csv"');
+			header("Pragma: no-cache");
+			header("Expires: 0");
 			
 			$Style->Output ('xsl/content/payment/download_csv.xsl');
 			exit;

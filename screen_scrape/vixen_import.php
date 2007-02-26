@@ -99,7 +99,7 @@ class VixenImport extends ApplicationBaseClass
 		$this->_selFindService 			= new StatementSelect("Service", "Id", "FNN = <fnn>", "CreatedOn DESC", "1");
 		$this->_selFindServiceByAccount	= new StatementSelect("Service", "Id", "Account = <Account> AND FNN = <FNN>", "CreatedOn DESC", "1");
 		$this->_selFindServiceIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
-		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Name", "Name = <Name>", NULL, "1");
+		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Account, Name", "Account = <Account> AND Name = <Name>", NULL, "1");
 		
 		$this->_arrCostCentres = Array ();
 	}
@@ -108,7 +108,7 @@ class VixenImport extends ApplicationBaseClass
 	function SetCostCentre($strCostCentreName, $strAccount, $strFNN)
 	{
 		$arrCostCentre = Array(
-			"CostCentre"	=> $this->FindCostCentre ($strCostCentreName)
+			"CostCentre"	=> $this->FindCostCentre ($strAccount, $strCostCentreName)
 		);
 		
 		$this->_updSetCostCentre->Execute(
@@ -141,18 +141,35 @@ class VixenImport extends ApplicationBaseClass
 	}
 	
 	// get a cost centre's id by its name
-	function FindCostCentre ($strName)
+	function FindCostCentre ($strAccount, $strName)
 	{
 		if (!isset ($this->_arrCostCentres [$strName]))
 		{
-			$this->_selFindCostCentreByName->Execute (Array ("Name" => $strName));
-			$arrCostCentre = $this->_selFindCostCentreByName->Fetch ();
+			$this->_selFindCostCentreByName->Execute (Array ("Account" => $strAccount, "Name" => $strName));
 			
+			if ($this->_selFindCostCentreByName->Count () == 1)
+			{
+				$arrCostCentre = $this->_selFindCostCentreByName->Fetch ();
+			}
+			else
+			{
+				$insCostCentre = new StatementInsert ("CostCentre");
+				
+				$arrCostCentre =  Array (
+					"AccountGroup"		=> $strAccount,
+					"Account"			=> $strAccount,
+					"Name"				=> $strName
+				);
+				
+				$intCostCentre = $insCostCentre->Execute ($arrCostCentre);
+				
+				$this->_arrCostCentres [$strAccount][$strName] = $intCostCentre;
+			}
 			
-			$this->_arrCostCentres [$arrCostCentre ['Name']] = $arrCostCentre ['Id'];
+			$this->_arrCostCentres [$arrCostCentre ['Account']][$arrCostCentre ['Name']] = $arrCostCentre ['Id'];
 		}
 		
-		return $this->_arrCostCentres [$strName];
+		return $this->_arrCostCentres [$strAccount][$strName];
 	}
 	
 	

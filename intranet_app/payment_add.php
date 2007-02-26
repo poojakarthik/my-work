@@ -110,7 +110,7 @@
 					"AccountGroup"			=> ($acgAccountGroup) ? $acgAccountGroup->Pull ('Id')->getValue () : $actAccount->Pull ('AccountGroup')->getValue (),
 					"Account"				=> ($oblbolAccount_Use->isTrue ()) ? $actAccount->Pull ('Id')->getValue () : null,
 					"PaymentType"			=> $_POST ['PaymentType'],
-					"Amount"				=> $_POST ['Amount'],
+					"Amount"				=> $oblfltAmount->getValue (),
 					"TXNReference"			=> $oblstrTXNReference->getValue (),
 					"EnteredBy"				=> $athAuthentication->AuthenticatedEmployee ()->Pull ('Id')->getValue (),
 					"Status"				=> PAYMENT_WAITING

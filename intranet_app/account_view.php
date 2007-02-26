@@ -61,6 +61,9 @@
 	// Get all the Contacts
 	$ctsContacts	= $Style->attachObject ($actAccount->Contacts ());
 	
+	// Account Balance
+	$Style->attachObject (new dataFloat ('AccountBalance', $GLOBALS['fwkFramework']->GetAccountBalance ($actAccount->Pull ('Id')->getValue ())));
+	
 	// Output the Account View
 	$Style->Output ('xsl/content/account/view.xsl');
 	

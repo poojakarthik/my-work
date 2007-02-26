@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_RATE_PLAN | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_RECURRING_CHARGE | MODULE_BILLING | MODULE_CHARGE_TYPE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_RATE_PLAN | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_RECURRING_CHARGE | MODULE_BILLING | MODULE_CHARGE_TYPE | MODULE_COST_CENTRE;
 	
 	// call application
 	require ('config/application.php');
@@ -63,6 +63,20 @@
 	$octChargeTypes	= $tctCharges->Push (new ChargeTypes);
 	$octChargeTypes->Constrain ('Archived', '=', FALSE);
 	$octChargeTypes->Sample ();
+	
+	// Get the Associated Cost Centre
+	try
+	{
+		$intCostCentre = $srvService->Pull ('CostCentre')->getValue ();
+		
+		if ($intCostCentre)
+		{
+			$ccrCostCentre = $Style->AttachObject (new CostCentre ($intCostCentre));
+		}
+	}
+	catch (Exception $e)
+	{
+	}
 	
 	$Style->Output (
 		'xsl/content/service/view.xsl',

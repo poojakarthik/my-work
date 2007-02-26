@@ -4,36 +4,48 @@
 	<xsl:output method="text" encoding="utf-8" />
 	
 	<xsl:template match="/">
-		<xsl:text>"Account Group", "Account Id", "Business Name", "Reference", "Date", "Amount"</xsl:text>
+		<xsl:text>"Account Group", "Account Id", "Business Name", "Trading Name", "Reference", "Date", "Amount"</xsl:text>
 		<xsl:text>&#10;</xsl:text>
 		
 		<xsl:for-each select="/Response/Payments/Results/rangeSample/Payment">
+			<xsl:variable name="Payment" select="." />
+			
 			<xsl:text>"</xsl:text>
-			<xsl:value-of select="./AccountGroup" />
+			<xsl:value-of select="$Payment/AccountGroup" />
 			<xsl:text>"</xsl:text>
 			<xsl:text>,</xsl:text>
 			
 			<xsl:text>"</xsl:text>
-			<xsl:value-of select="./Account" />
+			<xsl:value-of select="$Payment/Account" />
 			<xsl:text>"</xsl:text>
 			<xsl:text>,</xsl:text>
 			
 			<xsl:text>"</xsl:text>
-			<xsl:value-of select="./TXNReference" />
+			<xsl:value-of select="/Response/Accounts/Account[./Id = $Payment/Account]/BusinessName" />
 			<xsl:text>"</xsl:text>
 			<xsl:text>,</xsl:text>
 			
 			<xsl:text>"</xsl:text>
-			<xsl:value-of select="./PaidOn/year" />
+			<xsl:value-of select="/Response/Accounts/Account[./Id = $Payment/Account]/TradingName" />
+			<xsl:text>"</xsl:text>
+			<xsl:text>,</xsl:text>
+			
+			<xsl:text>"</xsl:text>
+			<xsl:value-of select="$Payment/TXNReference" />
+			<xsl:text>"</xsl:text>
+			<xsl:text>,</xsl:text>
+			
+			<xsl:text>"</xsl:text>
+			<xsl:value-of select="$Payment/PaidOn/year" />
 			<xsl:text>-</xsl:text>
-			<xsl:value-of select="./PaidOn/month" />
+			<xsl:value-of select="$Payment/PaidOn/month" />
 			<xsl:text>-</xsl:text>
-			<xsl:value-of select="./PaidOn/day" />
+			<xsl:value-of select="$Payment/PaidOn/day" />
 			<xsl:text>"</xsl:text>
 			<xsl:text>,</xsl:text>
 			
 			<xsl:text>"</xsl:text>
-			<xsl:value-of select="./Amount" />
+			<xsl:value-of select="$Payment/Amount" />
 			<xsl:text>"</xsl:text>
 			<xsl:text>&#10;</xsl:text>
 		</xsl:for-each>

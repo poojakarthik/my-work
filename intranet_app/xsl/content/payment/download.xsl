@@ -89,7 +89,9 @@
 			</div>
 			<div class="Seperator"></div>
 			
-			<input type="submit" value="Download Payments &#0187;" class="input-submit" />
+			<div class="Right">
+				<input type="submit" value="Download Payments &#0187;" class="input-submit" />
+			</div>
 		</form>
 	</xsl:template>
 </xsl:stylesheet>

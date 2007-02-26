@@ -57,15 +57,15 @@
 												<xsl:attribute name="class">
 													<xsl:choose>
 														<xsl:when test="not(/Response/Account/Balance) or /Response/Account/Balance = 0">
-															<xsl:text>Green</xsl:text>
+															<xsl:text>Red</xsl:text>
 														</xsl:when>
 														<xsl:otherwise>
-															<xsl:text>Red</xsl:text>
+															<xsl:text>Green</xsl:text>
 														</xsl:otherwise>
 													</xsl:choose>
 												</xsl:attribute>
 								       			<xsl:call-template name="Currency">
-								       				<xsl:with-param name="Number" select="/Response/Account/Balance" />
+								       				<xsl:with-param name="Number" select="/Response/AccountBalance" />
 													<xsl:with-param name="Decimal" select="number('2')" />
 						       					</xsl:call-template>
 											</span>
