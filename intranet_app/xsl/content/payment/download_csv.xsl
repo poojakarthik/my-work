@@ -4,11 +4,16 @@
 	<xsl:output method="text" encoding="utf-8" />
 	
 	<xsl:template match="/">
-		<xsl:text>"Account Group", "Account Id", "Business Name", "Trading Name", "Reference", "Date", "Amount"</xsl:text>
+		<xsl:text>"Sequence","Account Group","Account Id","Business Name","Trading Name","Reference","Date","Amount"</xsl:text>
 		<xsl:text>&#10;</xsl:text>
 		
 		<xsl:for-each select="/Response/Payments/Results/rangeSample/Payment">
 			<xsl:variable name="Payment" select="." />
+			
+			<xsl:text>"</xsl:text>
+			<xsl:value-of select="position()" />
+			<xsl:text>"</xsl:text>
+			<xsl:text>,</xsl:text>
 			
 			<xsl:text>"</xsl:text>
 			<xsl:value-of select="$Payment/AccountGroup" />

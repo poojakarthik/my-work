@@ -513,11 +513,11 @@
 		{
 			// If we are choosing to Archive the Service - this is a simple proceedure.
 			// It just sets the ClosedOn Date to the Current Date.
-			if ($bolArchive == true)
+			if ($bolArchive == TRUE)
 			{
 				// Set up an Archive SET clause
 				$arrArchive = Array (
-					'ClosedOn'	=>	($bolArchive == true) ? new MySQLFunction ("NOW()") : null,
+					'ClosedOn'	=>	($bolArchive == TRUE) ? new MySQLFunction ("NOW()") : NULL,
 					'ClosedBy'	=>	$aemAuthenticatedEmployee->Pull ('Id')->getValue ()
 				);
 				
@@ -529,14 +529,23 @@
 				return $this->Pull ('Id')->getValue ();
 			}
 			
+			
+			
+			
+			
+			
+			
 			// If we're up to here, then we want to Reactivate the Service
 			
 			// Check that the Service is due to be (or is) closed. If it's not
 			// then there's no point in Reactivating because it's already active.
-			if (!$this->Pull ('ClosedOn')->Pull ('year'))
+			
+			if ($this->Pull ('ClosedOn')->Pull ('year') == NULL)
 			{
 				throw new Exception ("Not Archived");
 			}
+			
+			
 			
 			// Check if the FNN is used elsewhere [snatched] (since the date of Closure)
 			$selSnatched = new StatementSelect ('Service', 'count(*) as snatchCount', 'FNN = <FNN> AND CreatedOn > <ClosedOn>');
