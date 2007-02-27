@@ -1156,6 +1156,8 @@
 	 */
  	function GenerateBillAudit()
  	{
+		Debug("Init Bill Audit...");
+		
 		// Initiate and Execute Invoice Summary Statement
 		$arrInvoiceColumns['TotalInvoices']			= "COUNT(InvoiceTemp.Id)";
 		$arrInvoiceColumns['TotalInvoicedExGST']	= "SUM(InvoiceTemp.Total)";
@@ -1252,6 +1254,8 @@
 														  "RecordType.Name",
 														  NULL,
 														  "CDR.RecordType");
+														  
+		Debug("Init complete!  Generating Audit Report...");
 		
 		// Generate the the Audit Report
 		$arrInvoiceSummaryVars['<TotalInvoices>']		= number_format((int)$arrInvoiceSummary['TotalInvoices']);
