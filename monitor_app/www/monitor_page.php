@@ -665,7 +665,7 @@
 			//$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
 			foreach($arrRecords AS $intRecord=>$arrDetails)
 			{
-				$tblTable->AddRow($arrRecords);
+				$tblTable->AddRow($arrDetails);
 			}
 			$this->AddTable($tblTable);
 		}

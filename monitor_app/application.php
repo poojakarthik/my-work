@@ -691,7 +691,7 @@
 													"Nature");
 		
 		$selCharges->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun));
-		$arrChargess = $selCharges->FetchAll();
+		$arrCharges = $selCharges->FetchAll();
 
 		foreach($arrCharges as $arrCharge)
 		{
