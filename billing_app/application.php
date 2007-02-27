@@ -1162,6 +1162,7 @@
 		$arrInvoiceColumns['TotalInvoices']			= "COUNT(InvoiceTemp.Id)";
 		$arrInvoiceColumns['TotalInvoicedExGST']	= "SUM(InvoiceTemp.Total)";
 		$arrInvoiceColumns['TotalInvoicedIncGST']	= "SUM(InvoiceTemp.Total) + SUM(InvoiceTemp.Tax)";
+		$arrInvoiceColumns['InvoiceRun']			= "InvoiceTemp.InvoiceRun";
 		$selInvoiceSummary	= new StatementSelect(	"InvoiceTemp",
 													$arrInvoiceColumns,
 													"1",
@@ -1194,6 +1195,7 @@
 		}
 		$arrInvoiceSummary = $selInvoiceSummary->Fetch();
 		$arrInvoiceSummary = array_merge($arrInvoiceSummary, $selCDRSummary->Fetch());
+		$this->_strInvoiceRun = $arrInvoiceSummary['InvoiceRun'];
 
 		// Initiate and Execute Carrier Summary Statement
 		$arrCarrierColumns['CarrierId']				= "CDR.Carrier";
@@ -1229,7 +1231,7 @@
 		$arrServiceTypeColumns['TotalCDRs']				= "COUNT(DISTINCT CDR.Id)";
 		$selServiceTypeSummary = new StatementSelect(	"CDR, Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
 														$arrServiceTypeColumns,
-														"CDR.Credit = 0 AND CDR.Status = ".CDR_TEMP_INVOICE." AND ServiceTotal.InvoiceRun = '$this->_strInvoiceRun'",
+														"CDR.Credit = 0 AND CDR.Status = ".CDR_TEMP_INVOICE." AND ServiceTotal.InvoiceRun = '{$this->_strInvoiceRun}'",
 														"CDR.ServiceType",
 														NULL,
 														"CDR.ServiceType");
@@ -1257,7 +1259,7 @@
 														  "RecordType.Name",
 														  NULL,
 														  "CDR.RecordType");
-														  
+		
 		Debug("Init complete!  Generating Audit Report...");
 		
 		// Generate the the Audit Report
