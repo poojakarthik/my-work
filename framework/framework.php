@@ -372,6 +372,38 @@
 	 	return (float)$arrAccountBalance['AccountBalance'];
 	 }
 	 
+	 //------------------------------------------------------------------------//
+	// GetOverdueBalance()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetOverdueBalance()
+	 *
+	 * Determines the current Overdue Balance for a specified account
+	 *
+	 * Determines the current Overdue Balance for a specified account
+	 * 
+	 *
+	 * @param	integer		$intAccount		The account to determine the overdue balance total for
+	 * 
+	 * @return	mixed						float: account balance total
+	 * 										FALSE: an error occurred
+	 *
+	 * @method
+	 */
+	 function GetOverdueBalance($intAccount)
+	 {	 					
+		//TODO!bash! do this stuff if rich hasn't done it yet
+		
+	 	// get balance of any invoice that is past due
+		//TODO!rich! do this
+		
+		// get balance of unbilled debits & unbilled approved credits
+		//TODO!rich! do this
+		
+		// return the balance
+		//TODO!rich! do this
+	 }
+	 
 	//------------------------------------------------------------------------//
 	// GetDistputedBalance()
 	//------------------------------------------------------------------------//

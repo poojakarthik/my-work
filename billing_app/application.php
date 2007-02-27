@@ -435,6 +435,24 @@
 				$fltServiceDebits	= 0.0;
 				$fltTotalCharge		= 0.0;
 				
+				// get capped & uncapped charges
+				/*
+				
+				SELECT Rate.Uncapped, COUNT(CDR.Id) AS Count, SUM(Charge) AS Charge
+				FROM CDR JOIN Rate ON (CDR.Rate = Rate.Id)
+				WHERE CDR.Account = 
+				AND CDR.Service = 
+				AND CDR.Credit = 0
+				AND CDR.Status = 198
+				GROUP BY Rate.Uncapped
+				
+				$fltUncappedCDRCharge =
+				$fltCappedCDRCharge =
+				
+				
+				*/
+				
+				
 				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
 				if ($arrService['Shared'] > 0)
@@ -467,15 +485,15 @@
 				if ($arrService['ChargeCap'] > 0.0)
 				{
 					// this is a capped plan
-					if ($fltChargeCap > $arrService['CappedCharge'])
+					if ($fltChargeCap > $fltCappedCDRCharge)
 					{
 						// under the Charge Cap : add the Full Charge
-						$fltTotalCharge = (float)$arrService['CappedCharge'];
+						$fltTotalCharge = $fltCappedCDRCharge;
 					}
-					elseif ($arrService['UsageCap'] > 0 && $fltUsageCap < $arrService['CappedCharge'])
+					elseif ($arrService['UsageCap'] > 0 && $fltUsageCap < $fltCappedCDRCharge)
 					{
 						// over the Usage Cap : add the Charge Cap + Charge - Usage Cap
-						$fltTotalCharge = (float)$fltChargeCap + (float)$arrService['CappedCharge'] - (float)$fltUsageCap;
+						$fltTotalCharge = (float)$fltChargeCap + $fltCappedCDRCharge - (float)$fltUsageCap;
 					}
 					else
 					{
@@ -486,11 +504,11 @@
 				else
 				{
 					// this is not a capped plan
-					$fltTotalCharge = (float)$arrService['CappedCharge'];
+					$fltTotalCharge = $fltCappedCDRCharge;
 				}
 				
 				// add uncapped charges
-				$fltTotalCharge += (float)$arrService['UncappedCharge'];
+				$fltTotalCharge += $fltUncappedCDRCharge;
 
 				// If there is a minimum monthly charge, apply it
 				if ($fltMinMonthly > 0)
@@ -505,8 +523,8 @@
 					$arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] = $arrSharedPlans[$arrService['RatePlan']]['MinMonthly'] - $fltTotalCharge;
 					
 					// reduce caps
-					$arrSharedPlans[$arrService['RatePlan']]['ChargeCap'] -= (float)$arrService['UncappedCharge'];
-					$arrSharedPlans[$arrService['RatePlan']]['UsageCap'] -= (float)$arrService['UncappedCharge'];
+					$arrSharedPlans[$arrService['RatePlan']]['ChargeCap'] -= $fltUncappedCDRCharge;
+					$arrSharedPlans[$arrService['RatePlan']]['UsageCap'] -= $fltUncappedCDRCharge;
 				}
 				
 				// Charges and Recurring Charges (Credits and Debits) are not included
@@ -558,8 +576,8 @@
 				$arrServiceTotal['Account']			= $arrAccount['Id'];
 				$arrServiceTotal['Service']			= $arrService['Service'];
 				$arrServiceTotal['InvoiceRun']		= $this->_strInvoiceRun;
-				$arrServiceTotal['CappedCharge']	= $arrService['CappedCharge'];
-				$arrServiceTotal['UncappedCharge']	= $arrService['UncappedCharge'];
+				$arrServiceTotal['CappedCharge']	= $fltCappedCDRCharge;
+				$arrServiceTotal['UncappedCharge']	= $fltUncappedCDRCharge;
 				$arrServiceTotal['TotalCharge']		= $fltTotalCharge;
 				$arrServiceTotal['Credit']			= $fltServiceCredits;
 				$arrServiceTotal['Debit']			= $fltServiceDebits;
