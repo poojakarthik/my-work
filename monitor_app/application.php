@@ -624,6 +624,10 @@
 		$strQuery .= "ORDER BY Dif ";
 		
 		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		if (!$sqlResult)
+		{
+			echo $this->sqlQuery->Error();
+		}
 		while ($arrRow = $sqlResult->fetch_assoc())
 		{
 			$arrOutput[] = $arrRow;
