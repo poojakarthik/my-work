@@ -614,6 +614,124 @@
 		return $arrCDR[1]['Id'];
 	}
 	
+	
+	function ShowInvoiceCompareList($intMinDifference = 0)
+	{
+		$intMinDifference = (int)$intMinDifference;
+		
+		// get Invoice Compare list
+		$arrRecords = $this->appMonitor->GetInvoiceCompare();
+		if (is_array($arrRecords))
+		{
+			// title
+			$this->AddTitle('Compare Invoices');
+			
+			// table
+			$tblTable = $this->NewTable('Border');
+			$tblTable->AddRow(Array('#', 'Account', 'Vixen', 'Etech', 'Difference'));
+			$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
+			$intCount = 0;
+			foreach($arrRecords AS $intRecord=>$arrDetails)
+			{
+				if (abs($arrDetails['Dif']) > $intMinDifference)
+				{
+					$intCount++;
+					$arrRow = Array($intCount, $arrDetails['Account'], $arrDetails['VixenTotal'], $arrDetails['EtechTotal'], $arrDetails['Dif']);
+					$tblTable->AddRow($arrRow, "invoice_compare.php?Account={$arrDetails['Account']}&InvoiceRun={$arrDetails['InvoiceRun']}");
+				}
+			}
+			$this->AddTable($tblTable);
+		}
+		else
+		{
+			$this->AddError("NO Invoices FOUND");
+			return FALSE;
+		}
+		return TRUE;
+	}
+	
+	function ShowAccountServiceTotals($intAccount, $strInvoiceRun)
+	{
+		// get service totals
+		$arrRecords = $this->appMonitor->GetAccountServiceTotals($intAccount, $strInvoiceRun);
+		if (is_array($arrRecords))
+		{
+			// title
+			$this->AddTitle('Service Totals');
+			
+			// table
+			$tblTable = $this->NewTable('Border');
+			$tblTable->AddRow(Array_keys(current($arrRecords)));
+			//$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
+			foreach($arrRecords AS $intRecord=>$arrDetails)
+			{
+				$tblTable->AddRow($arrRecords);
+			}
+			$this->AddTable($tblTable);
+		}
+		else
+		{
+			$this->AddTitle('No Service Totals Found');
+		}
+		return TRUE;
+	}
+	
+	function ShowAccountCDRTotals($intAccount, $strInvoiceRun)
+	{
+		// get service totals
+		$arrRecords = $this->appMonitor->GetAccountCDRTotals($intAccount, $strInvoiceRun);
+		if (is_array($arrRecords))
+		{
+			// title
+			$this->AddTitle('CDR Totals');
+			
+			// table
+			$tblTable = $this->NewTable('Border');
+			$tblTable->AddRow(Array('Type','Count', 'Cost', 'Charge'));
+			$tblTable->Align(Array('Left', 'Right', 'Right', 'Right'));
+			foreach($arrRecords AS $strRecord=>$arrDetails)
+			{
+				$arrRow = Array($strRecord, $arrDetails['Count'], $arrDetails['Cost'], $arrDetails['Charge']);
+				$tblTable->AddRow($arrRow);
+			}
+			$this->AddTable($tblTable);
+		}
+		else
+		{
+			$this->AddTitle('No CDRs Found');
+		}
+		return TRUE;
+	}
+	
+	function ShowAccountChargeTotals($intAccount, $strInvoiceRun)
+	{
+		// get service totals
+		$arrRecords = $this->appMonitor->GetAccountChargeTotals($intAccount, $strInvoiceRun);
+		if (is_array($arrRecords))
+		{
+			// title
+			$this->AddTitle('Charge Totals');
+			
+			// table
+			$tblTable = $this->NewTable('Border');
+			$tblTable->AddRow(Array('Type', 'Charge'));
+			$tblTable->Align(Array('Left', 'Right'));
+			foreach($arrRecords AS $strRecord=>$arrDetails)
+			{
+				$arrRow = Array($strRecord, $arrDetails['Amount']);
+				$tblTable->AddRow($arrRow);
+			}
+			$this->AddTable($tblTable);
+		}
+		else
+		{
+			$this->AddTitle('No Charges Found');
+		}
+		return TRUE;
+	}
+	
+	
+	
  }
  
 ?>

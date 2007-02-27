@@ -609,6 +609,114 @@
 		}
 		return $arrResults;
 	}
+	
+	// return a list of invoice coparisons CDR
+	function GetInvoiceCompare()
+	{
+		$arrOutput = Array();
+		$strQuery  = "SELECT InvoiceTemp.Account AS Account, ";
+		$strQuery  = "InvoiceTemp.InvoiceRun AS InvoiceRun, ";
+		$strQuery .= "InvoiceTemp.Total + InvoiceTemp.Tax AS VixenTotal, ";
+		$strQuery .= "InvoiceEtech.Total AS EtechTotal, ";
+		$strQuery .= "VixenTotal - EtechTotal AS Dif ";
+		$strQuery .= "FROM InvoiceTemp, InvoiceEtech ";
+		$strQuery .= "WHERE InvoiceTemp.Account = InvoiceEtech.Account ";
+		$strQuery .= "ORDER BY Dif ";
+		
+		$sqlResult = $this->sqlQuery->Execute($strQuery);
+		while ($arrRow = $sqlResult->fetch_assoc())
+		{
+			$arrOutput[] = $arrRow;
+		}
+		
+		return $arrOutput;
+	}
+	
+	function GetAccountServiceTotals($intAccount, $strInvoiceRun)
+	{
+		$selServiceTotals	= new StatementSelect(	"ServiceTotal",
+													"*",
+													"Account = <Account> AND " .
+													"InvoiceRun = <InvoiceRun>"
+													);
+		
+		$selServiceTotals->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun));
+		$arrTotals = $selServiceTotals->FetchAll();
+		return $arrTotals;
+	}
+	
+	function GetAccountCDRTotals($intAccount, $strInvoiceRun)
+	{
+		$arrOutput = Array();
+		$selCDRTotals		= new StatementSelect(	"CDR JOIN Rate ON (CDR.Rate = Rate.Id)",
+													"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge, SUM(CDR.Cost) AS Cost, COUNT(CDR.Id) AS Count",
+													"CDR.Account = <Account> AND " .
+													"CDR.Credit = 0".
+													" AND CDR.InvoiceRun = <InvoiceRun>" ,
+													NULL,
+													NULL,
+													"Rate.Uncapped");
+		
+		$selCDRTotals->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun));
+		$arrCDRTotals = $selCDRTotals->FetchAll();
+
+		foreach($arrCDRTotals as $arrCDRTotal)
+		{
+			if ($arrCDRTotal['Uncapped'])
+			{
+				$arrOutput['Uncapped']	= $arrCDRTotal;
+			}
+			else
+			{
+				$arrOutput['Capped']	= $arrCDRTotal;
+			}
+		}
+		
+		return arrOutput;
+	}
+	
+	function GetAccountChargeTotals($intAccount, $strInvoiceRun)
+	{
+		$arrOutput = Array();
+		$selCharges		= new StatementSelect(	"Charge",
+													"SUM(Amount), COUNT(Id)",
+													"Account = <Account> " .
+													" AND InvoiceRun = <InvoiceRun>" ,
+													NULL,
+													NULL,
+													"Nature");
+		
+		$selCharges->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun));
+		$arrChargess = $selCharges->FetchAll();
+
+		foreach($arrCharges as $arrCharge)
+		{
+			if ($arrCharge['Nature'] == 'DR')
+			{
+				$arrOutput['Debit']	= $arrCharge;
+			}
+			else
+			{
+				$arrOutput['Credit']	= $arrCharge;
+			}
+		}
+		
+		return arrOutput;
+	}
+	
+	function GetAccountCharges($intAccount, $strInvoiceRun)
+	{
+		$selCharges	= new StatementSelect(	"Charge",
+													"*",
+													"Account = <Account> AND " .
+													"InvoiceRun = <InvoiceRun>"
+													);
+		
+		$selCharges->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun));
+		return $selCharges->FetchAll();
+	}
+	
+	
  }
 
 
