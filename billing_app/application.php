@@ -1189,6 +1189,7 @@
 		if (!$intCDRCount || !$intCount)
 		{
 			// No data, return ERROR_NO_INVOICE_DATA
+			Debug("No data returned from selInvoiceSummary or selCDRSummary");
 			return ERROR_NO_INVOICE_DATA;
 		}
 		$arrInvoiceSummary = $selInvoiceSummary->Fetch();
@@ -1215,6 +1216,7 @@
 		if (!$intCount)
 		{
 			// No data, return ERROR_NO_INVOICE_DATA
+			Debug("No data returned from selCarrierSummary");
 			return ERROR_NO_INVOICE_DATA;
 		}
 		$arrCarrierSummarys = $selCarrierSummary->FetchAll();
@@ -1239,6 +1241,7 @@
 		if (!$intCount)
 		{
 			// No data, return ERROR_NO_INVOICE_DATA
+			Debug("No data returned from selServiceTypeSummary");
 			return ERROR_NO_INVOICE_DATA;
 		}
 		$arrServiceTypeSummarys = $selServiceTypeSummary->FetchAll();
