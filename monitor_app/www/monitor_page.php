@@ -703,7 +703,6 @@
 		}
 		else
 		{
-			Debug($arrRecords);
 			$this->AddTitle('No CDRs Found');
 		}
 		return TRUE;

@@ -676,7 +676,7 @@
 			}
 		}
 		
-		return arrOutput;
+		return $arrOutput;
 	}
 	
 	function GetAccountChargeTotals($intAccount, $strInvoiceRun)
@@ -705,7 +705,7 @@
 			}
 		}
 		
-		return arrOutput;
+		return $arrOutput;
 	}
 	
 	function GetAccountCharges($intAccount, $strInvoiceRun)
