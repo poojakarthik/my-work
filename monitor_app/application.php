@@ -616,7 +616,7 @@
 		$arrOutput = Array();
 		$strQuery  = "SELECT InvoiceTemp.Account AS Account, ";
 		$strQuery  = "InvoiceTemp.InvoiceRun AS InvoiceRun, ";
-		$strQuery .= "InvoiceTemp.Total + InvoiceTemp.Tax AS VixenTotal, ";
+		$strQuery .= "(InvoiceTemp.Total + InvoiceTemp.Tax) AS VixenTotal, ";
 		$strQuery .= "InvoiceEtech.Total AS EtechTotal, ";
 		$strQuery .= "VixenTotal - EtechTotal AS Dif ";
 		$strQuery .= "FROM InvoiceTemp, InvoiceEtech ";
@@ -626,7 +626,7 @@
 		$sqlResult = $this->sqlQuery->Execute($strQuery);
 		if (!$sqlResult)
 		{
-			echo $this->sqlQuery->Error();
+			Debug($this->sqlQuery->Error());
 		}
 		while ($arrRow = $sqlResult->fetch_assoc())
 		{
