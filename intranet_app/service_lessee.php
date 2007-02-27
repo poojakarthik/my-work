@@ -79,7 +79,7 @@
 					{
 						$oblstrError->setValue ('Date Invalid');
 					}
-					else if ($intDate < strtotime ("+2 days"))
+					else if ($intDate < mktime (0, 0, 0))
 					{
 						$oblstrError->setValue ('Date Invalid');
 					}

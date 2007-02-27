@@ -14,8 +14,7 @@
 			<div class="MsgErrorWide">
 				<xsl:choose>
 					<xsl:when test="/Response/Error = 'Date Invalid'">
-						Please enter a valid Date .  You must enter a date at least 48 hours in the future from 12:00 AM today.
-
+						Please enter a valid Date .  You must enter a date that is either today or in the future.
 					</xsl:when>
 				</xsl:choose>
 			</div>
