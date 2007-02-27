@@ -344,11 +344,13 @@
 		$selCDRTotals		= new StatementSelect(	"CDR JOIN Rate ON (CDR.Rate = Rate.Id)",
 													"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge",
 													"CDR.Service = <Service> AND " .
-													"CDR.Credit = 0 AND " .
-													"CDR.Status = ".CDR_TEMP_INVOICE,
+													"CDR.Credit = 0",
 													NULL,
 													NULL,
 													"Rate.Uncapped");
+													
+													// .
+													//" ANDCDR.Status = ".CDR_TEMP_INVOICE
 	
 		
 		// Loop through the accounts we're billing
@@ -448,8 +450,7 @@
 				// get capped & uncapped charges
 				$selCDRTotals->Execute(Array('Service' => $arrService['Service']));
 				$arrCDRTotals = $selCDRTotals->FetchAll();
-				print_r($arrCDRTotals);
-				Die;
+
 				foreach($arrCDRTotals as $arrCDRTotal)
 				{
 					if ($arrCDRTotal['Uncapped'])
