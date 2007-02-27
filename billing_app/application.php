@@ -342,10 +342,13 @@
 		$arrUpdateData['Status']		= '';
 		$updChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
 		$selCDRTotals		= new StatementSelect(	"CDR JOIN Rate ON (CDR.Rate = Rate.Id)",
-													"Rate.Uncapped AS Uncapped, SUM(Charge) AS Charge",
+													"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge",
 													"CDR.Service = <Service> AND " .
 													"CDR.Credit = 0 AND " .
-													"CDR.Status = ".CDR_TEMP_INVOICE);
+													"CDR.Status = ".CDR_TEMP_INVOICE,
+													NULL,
+													NULL,
+													"Rate.Uncapped");
 	
 		
 		// Loop through the accounts we're billing
