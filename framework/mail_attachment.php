@@ -21,7 +21,7 @@ function mail_attachment ($from , $to, $subject, $message, $attachment){
 	$semi_rand = md5(time()); 
 	$mime_boundary = "==Multipart_Boundary_x{$semi_rand}x"; 
     
-	$headers .= "\nMIME-Version: 1.0\n" . 
+	$headers .= "\r\nMIME-Version: 1.0\r\n" . 
             "Content-Type: multipart/mixed;\n" . 
             " boundary=\"{$mime_boundary}\""; 
 
@@ -29,26 +29,23 @@ function mail_attachment ($from , $to, $subject, $message, $attachment){
 	//$email_txt .= $msg_txt;
 	
 	$email_message .= "This is a multi-part message in MIME format.\n\n" . 
-                "--{$mime_boundary}\n" . 
-                "Content-Type:text/html; charset=\"iso-8859-1\"\n" . 
+                "--{$mime_boundary}\r\n" . 
+                "Content-Type:text/html; charset=\"iso-8859-1\"\r\n" . 
                "Content-Transfer-Encoding: 7bit\n\n" . 
 	$email_txt . "\n\n"; 
 
 	$data = chunk_split(base64_encode($data)); 
 
-	$email_message .= "--{$mime_boundary}\n" . 
+	$email_message .= "--{$mime_boundary}\r\n" . 
                   "Content-Type: {$fileatt_type};\n" . 
-                  " name=\"{$fileatt_name}\"\n" . 
+                  " name=\"{$fileatt_name}\"\r\n" . 
                   //"Content-Disposition: attachment;\n" . 
                   //" filename=\"{$fileatt_name}\"\n" . 
                   "Content-Transfer-Encoding: base64\n\n" . 
                  $data . "\n\n" . 
-                  "--{$mime_boundary}--\n"; 
+                  "--{$mime_boundary}--\r\n"; 
 
-
-	$ok = mail($email_to, $email_subject, $email_message, $headers); 
-	
-	Debug($ok);
+	$ok = mail($email_to, $email_subject, $email_message, $headers);
 
 	if($ok) { 
 		return TRUE;

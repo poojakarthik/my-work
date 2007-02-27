@@ -94,20 +94,25 @@
 			// Sequence number should be set to 1
 			$this->_intSequenceNo = 1;
 		}
-		$this->_intSequenceNo = $arrSequenceNo['Value']++;
+		$this->_intSequenceNo = $arrSequenceNo['Value'] + 1;
+		
+		// Get the FNN
+		$selFNN = new StatementSelect("Service", "FNN", "Id = <Service>");
+		$selFNN->Execute(Array('Service' => $arrRequest['Service']));
+		$arrFNN = $selFNN->Fetch();
 		
 		// Build the request Array
-		$arrBuiltRequest['BatchNo']				= $this->_intSequenceNo;
-		$arrBuiltRequest['IdNo']				= "12";
-		$arrBuiltRequest['SPName']				= "Telco Blue";
-		$arrBuiltRequest['SPCassNo']			= CUSTOMER_NUMBER_OPTUS;
-		$arrBuiltRequest['ServiceNo']			= $arrRequest['FNN'];
-		$arrBuiltRequest['CADate']				= date("d/m/Y");
-		$arrBuiltRequest['CARequired']			= "n";
-		$arrBuiltRequest['Lessee']				= "n";
+		$arrBuiltRequest['BatchNo']				= '"'.$this->_intSequenceNo.'"';
+		$arrBuiltRequest['IdNo']				= '"12"';
+		$arrBuiltRequest['SPName']				= '"TelcoBlue"';
+		$arrBuiltRequest['SPCassNo']			= '"'.CUSTOMER_NUMBER_OPTUS.'"';
+		$arrBuiltRequest['ServiceNo']			= '"'.$arrFNN['FNN'].'"';
+		$arrBuiltRequest['CADate']				= '"'.date("d/m/Y").'"';
+		$arrBuiltRequest['CARequired']			= '"n"';
+		$arrBuiltRequest['Lessee']				= '"n"';
 		
 		// Append this request
-		$this->_arrPreselectionRecords[]		= implode(",", $arrBuiltRequest);
+		$this->_arrPreselectionRecords[]		= implode("\t", $arrBuiltRequest);
 		
 		return TRUE;
 	} 	
@@ -129,8 +134,9 @@
  	function SendRequest()
 	{
 		// Build Header Row
-		$strPreselectionFilename	= date("Y-m-d_Hi").".xls";	// Is actually a CSV, but try to fool Optus :P
-		$strPreselectionHeaderRow	= "Batch No,ID No,SP Name,SP CASS A/C No,Service No with area code,CA Date dd/mm/yyy,CA Required,Lessee Yes/No";
+		//$strPreselectionFilename	= date("Y-m-d_Hi").".xls";
+		$strPreselectionFilename	= date("Hi_Y-m-d_").$this->_intSequenceNo.".xls";
+		$strPreselectionHeaderRow	= '"Batch No"\t"ID No"\t"SP Name"\t"SP CASS A/C No"\t"Service No with area code"\t"CA Date dd/mm/yyy"\t"CA Required"\t"Lessee Yes/No"';
 		
 		// Get list of requests to generate
 		$arrResults = $this->_selGetRequests->FetchAll();
@@ -156,6 +162,7 @@
 		}
 		
 		// Email to Optus (as an attachment)
+		//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
 		//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
 		if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename))
 		{
@@ -164,7 +171,8 @@
 		}
 		
 		// Update sequence no
-		$this->_updSetSequence->Execute(Array('Value' => $this->_intSequenceNo), Array('Name' => "OptusBatchNo", 'Module' => "Optus"));
+		//$this->_updSetSequence->Execute(Array('Value' => $this->_intSequenceNo), Array('Name' => "OptusBatchNo", 'Module' => "Optus"));
+		// 679 is the starting sequence no
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;

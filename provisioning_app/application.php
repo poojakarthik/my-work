@@ -328,7 +328,7 @@ die();
 							continue 3;
 					}
 					break;
-					
+				
 				case CARRIER_OPTUS:
 					switch ($arrRequest['RequestType'])
 					{
@@ -343,7 +343,7 @@ die();
 							continue 3;
 					}
 					break;
-					
+				
 				/*case CARRIER_AAPT:
 					$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_AAPT_EOE];
 					break;*/
@@ -361,18 +361,23 @@ die();
 			}
 			else
 			{
-				// set status of request in db
-				$this->_rptProvisioningReport->AddMessage("[   OK   ]");
-				$arrRequest['Status']		= REQUEST_STATUS_PENDING;
-				//$ubiUpdateRequest->Execute($arrRequest);
-				
 				// add to provisioning log
-				$this->_prvCurrentModule->AddToProvisioningLog();
+				if ($this->_prvCurrentModule->AddToProvisioningLog() !== FALSE)
+				{
+					// set status of request in db
+					$this->_rptProvisioningReport->AddMessage("[   OK   ]");
+					$arrRequest['Status']		= REQUEST_STATUS_PENDING;
+					//$ubiUpdateRequest->Execute($arrRequest);
+				}
+				else
+				{
+					$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: Unable to add to log");
+				}
 			}
 		}
 		
 		$this->_rptProvisioningReport->AddMessage("\n[ SENDING REQUESTS ]\n");
-
+		
 		// Send off requests for each module
 		foreach ($this->_arrProvisioningModules as $intKey=>$prvModule)
 		{
