@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_STATE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_STATE | MODULE_CUSTOMER_GROUP;
 	
 	// call application
 	require ('config/application.php');
@@ -28,7 +28,13 @@
 		exit;
 	}
 	
+	// Define States
+	// XPath: /Response/States/State ... 
 	$sstStates				= $Style->attachObject (new ServiceStateTypes);
+	
+	// Define CustomerGroups
+	// XPath: /Response/CustomerGroups/CustomerGroup ... 
+	$cgrCustomerGroups		= $Style->attachObject (new CustomerGroups);
 	
 	// Error Handling
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
@@ -46,6 +52,7 @@
 	$oblstrState				= $oblarrUIValues->Push (new dataString ('State'				, $actAccount->Pull ('State')->getValue ()));
 	$oblbolDisableDDR			= $oblarrUIValues->Push (new dataString ('DisableDDR'			, $actAccount->Pull ('DisableDDR')->getValue ()));
 	$oblintDisableLatePayment	= $oblarrUIValues->Push (new dataInteger('DisableLatePayment'	, $actAccount->Pull ('DisableLatePayment')->getValue ()));
+	$oblintCustomerGroup		= $oblarrUIValues->Push (new dataInteger('CustomerGroup'		, $actAccount->Pull ('CustomerGroup')->getValue ()));
 	$oblbolArchived				= $oblarrUIValues->Push (new dataBoolean('Archived'));
 	
 	// Set UI Values
@@ -60,6 +67,7 @@
 	if (isset ($_POST ['State']))				$oblstrState->setValue				($_POST ['State']);
 	if (isset ($_POST ['DisableDDR']))			$oblbolDisableDDR->setValue			($_POST ['DisableDDR']);
 	if (isset ($_POST ['DisableLatePayment']))	$oblintDisableLatePayment->setValue	($_POST ['DisableLatePayment']);
+//	if (isset ($_POST ['CustomerGroup']))		$oblintCustomerGroup->setValue		($_POST ['CustomerGroup']);
 	if (isset ($_POST ['Archived']))			$oblbolArchived->setValue			(TRUE);
 	
 	// If we're wishing to save the details, we can identify this by
@@ -114,6 +122,11 @@
 			// Check the Address (State) is not Empty
 			$oblstrError->setValue ('State');
 		}
+		else if (!$cgrCustomerGroups->setValue ($_POST ['CustomerGroup']))
+		{
+			// Check the Customer Group Exists
+			$oblstrError->setValue ('Customer Group');
+		}
 		else
 		{
 			$actAccount->Update (
@@ -128,7 +141,8 @@
 					"Postcode"				=> $_POST ['Postcode'],
 					"State"					=> $_POST ['State'],
 					"DisableDDR"			=> $_POST ['DisableDDR'],
-					"DisableLatePayment"	=> $_POST ['DisableLatePayment']
+					"DisableLatePayment"	=> $_POST ['DisableLatePayment'],
+					"CustomerGroup"			=> $_POST ['CustomerGroup']
 				)
 			);
 			
@@ -147,6 +161,7 @@
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archive');
+	$docDocumentation->Explain ('CustomerGroup');
 	
 	$Style->Output (
 		'xsl/content/account/edit.xsl',

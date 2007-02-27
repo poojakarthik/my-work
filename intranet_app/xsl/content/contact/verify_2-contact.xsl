@@ -21,8 +21,6 @@
 		
 		<!--Select a Contact -->
 		<h2 class="Contact">Select a Contact</h2>
-
-			
 		
 		<form method="post" action="contact_verify.php">
 			<input type="hidden" name="ui-Account">
@@ -115,9 +113,17 @@
 												<xsl:text></xsl:text>
 												<xsl:value-of select="./Id" />
 											</xsl:attribute>
-											<xsl:value-of select="./FirstName" />
-											<xsl:text> </xsl:text>
-											<xsl:value-of select="./LastName" />
+											
+											<xsl:choose>
+												<xsl:when test="./FirstName = '' and ./LastName = ''">
+													<xsl:text>[No Name]</xsl:text>
+												</xsl:when>
+												<xsl:otherwise>
+													<xsl:value-of select="./FirstName" />
+													<xsl:text> </xsl:text>
+													<xsl:value-of select="./LastName" />
+												</xsl:otherwise>
+											</xsl:choose>
 										</option>
 									</xsl:for-each>
 								</select>

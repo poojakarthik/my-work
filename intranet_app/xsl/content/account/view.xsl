@@ -136,6 +136,7 @@
 											</th>
 											<td>
 												<xsl:value-of select="/Response/Account/ABN" />
+												<!--
 												<xsl:text> [</xsl:text>
 												<a target="_blank">
 													<xsl:attribute name="href">
@@ -145,6 +146,7 @@
 													<xsl:text>View ASIC</xsl:text>
 												</a>
 												<xsl:text>]</xsl:text>
+												-->
 											</td>
 										</tr>
 									</xsl:if>
@@ -159,6 +161,7 @@
 											</th>
 											<td>
 												<xsl:value-of select="/Response/Account/ACN" />
+												<!--
 												<xsl:text> [</xsl:text>
 												<a target="_blank">
 													<xsl:attribute name="href">
@@ -168,6 +171,7 @@
 													<xsl:text>View ASIC</xsl:text>
 												</a>
 												<xsl:text>]</xsl:text>
+												-->
 											</td>
 										</tr>
 									</xsl:if>
@@ -241,6 +245,53 @@
 									</tr>
 									<tr>
 										<td colspan="2"><div class="MicroSeperator"></div></td>
+									</tr>
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Payment')" />
+												<xsl:with-param name="field" select="string('PaymentMethod')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:value-of select="/Response/BillingType/Name" />
+										</td>
+									</tr>
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Account')" />
+												<xsl:with-param name="field" select="string('DisableLatePayment')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:choose>
+												<xsl:when test="/Response/Account/DisableLatePayment = 0">
+													<xsl:text>Charge a late payment fee</xsl:text>
+												</xsl:when>
+												<xsl:when test="/Response/Account/DisableLatePayment &lt;= -1">
+													<xsl:text>Don't charge a late payment fee on the next invoice</xsl:text>
+												</xsl:when>
+												<xsl:when test="/Response/Account/DisableLatePayment = 1">
+													<xsl:text>Never charge a late payment fee</xsl:text>
+												</xsl:when>
+											</xsl:choose>
+										</td>
+									</tr>
+									
+									<tr>
+										<td colspan="2"><div class="MicroSeperator"></div></td>
+									</tr>
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('CustomerGroup')" />
+												<xsl:with-param name="field" select="string('CustomerGroup')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:value-of select="/Response/CustomerGroup/Name" />
+										</td>
 									</tr>
 									<tr>
 										<th class="JustifiedWidth">

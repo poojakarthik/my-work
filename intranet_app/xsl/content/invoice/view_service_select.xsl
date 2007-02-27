@@ -68,6 +68,22 @@
 					</td>
 				</tr>
 				<tr>
+					<th class="JustifiedWidth">
+						<xsl:call-template name="Label">
+							<xsl:with-param name="entity" select="string('Invoice')" />
+							<xsl:with-param name="field" select="string('CreatedOn')" />
+						</xsl:call-template>
+					</th>
+					<td>
+						<xsl:call-template name="dt:format-date-time">
+							<xsl:with-param name="year"		select="/Response/Invoice/CreatedOn/year" />
+							<xsl:with-param name="month"	select="/Response/Invoice/CreatedOn/month" />
+							<xsl:with-param name="day"		select="/Response/Invoice/CreatedOn/day" />
+							<xsl:with-param name="format"	select="'%m/%Y'"/>
+						</xsl:call-template>
+					</td>
+				</tr>
+				<tr>
 					<td colspan="2">
 						<div class="Seperator"></div>
 					</td>

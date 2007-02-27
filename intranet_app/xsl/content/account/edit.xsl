@@ -36,6 +36,9 @@
 					<xsl:when test="/Response/Error = 'State'">
 						Please enter a State.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'Customer Group'">
+						Please enter a valid Customer Group.
+					</xsl:when>
 				</xsl:choose>
 			</div>
 		</xsl:if>
@@ -252,6 +255,39 @@
 							<td>
 								<!-- TODO!bash! [  DONE  ]		Country is not displaying -->
 								<xsl:value-of select="/Response/Account/Country" />
+							</td>
+						</tr>
+						<tr>
+							<td colspan="3">
+								<div class="Seperator"></div>
+							</td>
+						</tr>
+						<tr>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('CustomerGroup')" />
+									<xsl:with-param name="field" select="string('CustomerGroup')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<select name="CustomerGroup">
+									<xsl:for-each select="/Response/CustomerGroups/CustomerGroup">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:if test="/Response/ui-values/CustomerGroup = ./Id">
+												<xsl:attribute name="selected">
+													<xsl:text>selected</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+											
+											<xsl:value-of select="./Name" />
+										</option>
+									</xsl:for-each>
+								</select>
 							</td>
 						</tr>
 						<tr>

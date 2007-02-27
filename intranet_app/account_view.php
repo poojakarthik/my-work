@@ -13,7 +13,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CONTACT | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_RATE_PLAN | MODULE_STATE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_SERVICE | MODULE_CONTACT | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_RATE_PLAN | MODULE_STATE | MODULE_BILLING | MODULE_CUSTOMER_GROUP;
 	
 	// call application
 	require ('config/application.php');
@@ -21,6 +21,8 @@
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archive');
+	$docDocumentation->Explain ('Payment');
+	$docDocumentation->Explain ('CustomerGroup');
 	
 	try
 	{
@@ -36,8 +38,16 @@
 	// Get Overdue Amount
 	$actAccount->OverdueAmount ();
 	
-	// Grab States
-	$sstStates		= $Style->attachObject (new ServiceStateType ($actAccount->Pull ('State')->getValue ()));
+	// Grab State
+	$sstState		= $Style->attachObject (new ServiceStateType ($actAccount->Pull ('State')->getValue ()));
+	
+	// Billing Type
+	// XPath: /Response/BillingType/Name
+	$btyBillingType = $Style->attachObject (new BillingType ($actAccount->Pull ('BillingType')->getValue ()));
+	
+	// Billing Type
+	// XPath: /Response/CustomerGroup/Name
+	$cgrCustomerGroup = $Style->attachObject (new CustomerGroup ($actAccount->Pull ('CustomerGroup')->getValue ()));
 	
 	// Get Associated Services
 	$svsServices	= $Style->attachObject (new Services);

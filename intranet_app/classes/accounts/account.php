@@ -109,7 +109,8 @@
 				"Postcode"				=>	(($arrAccount ['Postcode'])				? $arrAccount ['Postcode']				: ''),
 				"State"					=>	(($arrAccount ['State'])				? $arrAccount ['State']					: ''),
 				"DisableDDR"			=>	(($arrAccount ['DisableDDR'])			? $arrAccount ['DisableDDR']			: 0),
-				"DisableLatePayment"	=>	(($arrAccount ['DisableLatePayment'])	? $arrAccount ['DisableLatePayment']	: 0)
+				"DisableLatePayment"	=>	(($arrAccount ['DisableLatePayment'])	? $arrAccount ['DisableLatePayment']	: 0),
+				"CustomerGroup"			=>	(($arrAccount ['CustomerGroup'])		? $arrAccount ['CustomerGroup']			: 1)
 			);
 			
 			$updAccount = new StatementUpdate ('Account', 'Id = <Id>', $arrDetails, 1);
