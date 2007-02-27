@@ -340,8 +340,13 @@
 		$arrUpdateData = Array();
 		$arrUpdateData['InvoiceRun']	= '';
 		$arrUpdateData['Status']		= '';
-		$updChargeStatus = new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
-		
+		$updChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
+		$selCDRTotals		= new StatementSelect(	"CDR JOIN Rate ON (CDR.Rate = Rate.Id)",
+													"Rate.Uncapped AS Uncapped, SUM(Charge) AS Charge",
+													"CDR.Service = <Service> AND " .
+													"CDR.Credit = 0 AND " .
+													"CDR.Status = ".CDR_TEMP_INVOICE);
+	
 		
 		// Loop through the accounts we're billing
 		foreach ($arrAccounts as $arrAccount)
@@ -431,27 +436,29 @@
 			$arrUniqueServiceList = Array();
 			foreach ($arrServices as $arrService)
 			{
-				$fltServiceCredits	= 0.0;
-				$fltServiceDebits	= 0.0;
-				$fltTotalCharge		= 0.0;
+				$fltServiceCredits		= 0.0;
+				$fltServiceDebits		= 0.0;
+				$fltTotalCharge			= 0.0;
+				$fltUncappedCDRCharge	= 0.0;
+				$fltCappedCDRCharge		= 0.0;
 				
 				// get capped & uncapped charges
-				/*
-				
-				SELECT Rate.Uncapped, COUNT(CDR.Id) AS Count, SUM(Charge) AS Charge
-				FROM CDR JOIN Rate ON (CDR.Rate = Rate.Id)
-				WHERE CDR.Account = 
-				AND CDR.Service = 
-				AND CDR.Credit = 0
-				AND CDR.Status = 198
-				GROUP BY Rate.Uncapped
-				
-				$fltUncappedCDRCharge =
-				$fltCappedCDRCharge =
-				
-				
-				*/
-				
+				$selCDRTotals->Execute(Array('Service' => $arrService['Id']));
+				if ($arrCDRTotals = $selCDRTotals->FetchAll())
+				{
+					foreach($arrCDRTotals as $arrCDRTotal)
+					{
+						if ($arrCDRTotal['Uncapped'])
+						{
+							$fltUncappedCDRCharge	= $arrCDRTotal['Charge'];
+						}
+						else
+						{
+							$fltCappedCDRCharge		= $arrCDRTotal['Charge'];
+						}
+					}
+				}
+
 				
 				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
