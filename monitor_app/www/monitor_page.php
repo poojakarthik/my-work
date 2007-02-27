@@ -665,7 +665,12 @@
 			//$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
 			foreach($arrRecords AS $intRecord=>$arrDetails)
 			{
-				$tblTable->AddRow($arrDetails);
+				$arrRow = Array();
+				foreach($arrDetails AS $mixValue)
+				{
+					$arrRow[] = $mixValue;
+				}
+				$tblTable->AddRow($arrRow);
 			}
 			$this->AddTable($tblTable);
 		}
