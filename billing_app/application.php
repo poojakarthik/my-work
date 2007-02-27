@@ -344,14 +344,11 @@
 		$selCDRTotals		= new StatementSelect(	"CDR JOIN Rate ON (CDR.Rate = Rate.Id)",
 													"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge",
 													"CDR.Service = <Service> AND " .
-													"CDR.Credit = 0",
+													"CDR.Credit = 0".
+													" AND CDR.Status = ".CDR_TEMP_INVOICE ,
 													NULL,
 													NULL,
 													"Rate.Uncapped");
-													
-													// .
-													//" ANDCDR.Status = ".CDR_TEMP_INVOICE
-	
 		
 		// Loop through the accounts we're billing
 		foreach ($arrAccounts as $arrAccount)
