@@ -618,7 +618,7 @@
 		$strQuery  = "InvoiceTemp.InvoiceRun AS InvoiceRun, ";
 		$strQuery .= "(InvoiceTemp.Total + InvoiceTemp.Tax) AS VixenTotal, ";
 		$strQuery .= "InvoiceEtech.Total AS EtechTotal, ";
-		$strQuery .= "VixenTotal - EtechTotal AS Dif ";
+		$strQuery .= "(InvoiceTemp.Total + InvoiceTemp.Tax) - InvoiceEtech.Total AS Dif ";
 		$strQuery .= "FROM InvoiceTemp, InvoiceEtech ";
 		$strQuery .= "WHERE InvoiceTemp.Account = InvoiceEtech.Account ";
 		$strQuery .= "ORDER BY Dif ";
