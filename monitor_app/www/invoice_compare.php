@@ -27,7 +27,7 @@ $strInvoiceRun = $_GET['InvoiceRun'];
 $objPage->ShowTempInvoice($intAccount, $strInvoiceRun);
 
 // display etech invoice total
-$strEtech = money_format((float)$_GET['Etech']);
+$strEtech = number_format((float)$_GET['Etech'], 2);
 $this->AddTitle("Etech Invoice Total : $strEtech");
 
 // display Service Totals
