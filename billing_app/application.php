@@ -446,7 +446,7 @@
 				$fltCappedCDRCharge		= 0.0;
 				
 				// get capped & uncapped charges
-				$selCDRTotals->Execute(Array('Service' => $arrService['Id']));
+				$selCDRTotals->Execute(Array('Service' => $arrService['Service']));
 				$arrCDRTotals = $selCDRTotals->FetchAll();
 				print_r($arrCDRTotals);
 				Die;
