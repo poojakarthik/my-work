@@ -661,7 +661,10 @@
 			
 			// table
 			$tblTable = $this->NewTable('Border');
-			$tblTable->AddRow(Array_keys(current($arrRecords)));
+			if (current($arrRecords))
+			{
+				$tblTable->AddRow(Array_keys(current($arrRecords)));
+			}
 			//$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
 			foreach($arrRecords AS $intRecord=>$arrDetails)
 			{
@@ -746,7 +749,10 @@
 			
 			// table
 			$tblTable = $this->NewTable('Border');
-			$tblTable->AddRow(Array_keys(current($arrRecords)));
+			if (current($arrRecords))
+			{
+				$tblTable->AddRow(Array_keys(current($arrRecords)));
+			}
 			//$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
 			foreach($arrRecords AS $intRecord=>$arrDetails)
 			{
@@ -777,7 +783,10 @@
 			
 			// table
 			$tblTable = $this->NewTable('Border');
-			$tblTable->AddRow(Array_keys(current($arrRecords)));
+			if (current($arrRecords))
+			{
+				$tblTable->AddRow(Array_keys(current($arrRecords)));
+			}
 			//$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
 			foreach($arrRecords AS $intRecord=>$arrDetails)
 			{
