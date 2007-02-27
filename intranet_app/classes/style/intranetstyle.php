@@ -116,6 +116,10 @@
 					}
 				}
 			}
+			
+			// Now
+			$this->attachObject (new dataDatetime ('Now', date ("Y-m-d H:i:s", time ())));
+			
 			// If the Employee is Logged in
 			if ($this->_athAuthentication->isAuthenticated ())
 			{

@@ -266,6 +266,34 @@
 							<td class="Required"><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Billing')" />
+									<xsl:with-param name="field" select="string('BillingMethod')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<select name="BillingMethod">
+									<xsl:for-each select="/Response/BillingMethods/BillingMethod">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:if test="/Response/ui-values/BillingMethod = ./Id">
+												<xsl:attribute name="selected">
+													<xsl:text>selected</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+											
+											<xsl:value-of select="./Name" />
+										</option>
+									</xsl:for-each>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<td class="Required"><strong><span class="Red">*</span></strong></td>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('CustomerGroup')" />
 									<xsl:with-param name="field" select="string('CustomerGroup')" />
 								</xsl:call-template>

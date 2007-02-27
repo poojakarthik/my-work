@@ -120,8 +120,9 @@
 	$Style->Output (
 		'xsl/content/charges/charges/assign.xsl',
 		Array (
-			'Account'		=> $actAccount->Pull ('Id')->getValue (),
-			'Service'		=> (($srvService) ? $srvService->Pull ('Id')->getValue () : NULL)
+			'Account'				=> $actAccount->Pull ('Id')->getValue (),
+			'Service'				=> (($srvService) ? $srvService->Pull ('Id')->getValue () : NULL),
+			'Adjustments-Account'	=> $actAccount->Pull ('Id')->getValue ()
 		)
 	);
 	

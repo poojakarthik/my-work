@@ -260,6 +260,17 @@
 									<tr>
 										<th class="JustifiedWidth">
 											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Billing')" />
+												<xsl:with-param name="field" select="string('BillingMethod')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:value-of select="/Response/BillingMethod/Name" />
+										</td>
+									</tr>
+									<tr>
+										<th class="JustifiedWidth">
+											<xsl:call-template name="Label">
 												<xsl:with-param name="entity" select="string('Account')" />
 												<xsl:with-param name="field" select="string('DisableLatePayment')" />
 											</xsl:call-template>
@@ -685,7 +696,14 @@
 							</xsl:when>
 							<xsl:when test="./CreatedOn/year and ./Available = 0">
 								<strong><span class="Blue">
-									Opens On:
+									<xsl:choose>
+										<xsl:when test="/Response/Now/year &lt;= ./CreatedOn/year and /Response/Now/month &lt;= ./CreatedOn/month and /Response/Now/day &lt;= ./CreatedOn/day">
+											Opens On:
+										</xsl:when>
+										<xsl:otherwise>
+											Opened On:
+										</xsl:otherwise>
+									</xsl:choose>
 									<xsl:call-template name="dt:format-date-time">
 										<xsl:with-param name="year"		select="./CreatedOn/year" />
 										<xsl:with-param name="month"	select="./CreatedOn/month" />

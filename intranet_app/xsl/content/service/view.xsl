@@ -42,23 +42,23 @@
 								</td>
 							</tr>
 							<!--Check for Trading Name-->
-						<xsl:choose>
-							<xsl:when test="/Response/Account/TradingName = ''">
-							</xsl:when>
-							<xsl:otherwise>
-								<tr>
-									<th>
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Account')" />
-											<xsl:with-param name="field" select="string('TradingName')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<xsl:value-of select="/Response/Account/TradingName" />
-									</td>
-								</tr>
-							</xsl:otherwise>
-						</xsl:choose>
+							<xsl:choose>
+								<xsl:when test="/Response/Account/TradingName = ''">
+								</xsl:when>
+								<xsl:otherwise>
+									<tr>
+										<th>
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Account')" />
+												<xsl:with-param name="field" select="string('TradingName')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:value-of select="/Response/Account/TradingName" />
+										</td>
+									</tr>
+								</xsl:otherwise>
+							</xsl:choose>
 						</table>
 						
 						<div class="Clear"></div>

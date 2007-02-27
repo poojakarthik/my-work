@@ -345,6 +345,14 @@
 														</xsl:attribute>
 														<xsl:text>Edit Employee</xsl:text>
 													</xsl:when>
+													
+													<xsl:when test="name(.) = 'Adjustments-Account'">
+														<xsl:attribute name="href">
+															<xsl:text>account_charges_unbilled.php?Account=</xsl:text>
+															<xsl:value-of select="." />
+														</xsl:attribute>
+														<xsl:text>List Adjustments</xsl:text>
+													</xsl:when>
 												</xsl:choose>
 											</a>
 										</li>

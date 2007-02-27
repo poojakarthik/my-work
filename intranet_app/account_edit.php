@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_STATE | MODULE_CUSTOMER_GROUP;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_ACCOUNT | MODULE_STATE | MODULE_CUSTOMER_GROUP | MODULE_BILLING;
 	
 	// call application
 	require ('config/application.php');
@@ -36,6 +36,10 @@
 	// XPath: /Response/CustomerGroups/CustomerGroup ... 
 	$cgrCustomerGroups		= $Style->attachObject (new CustomerGroups);
 	
+	// Define Billing Methods
+	// XPath: /Response/BillingMethods/BillingMethod ... 
+	$bmeBillingMethods		= $Style->attachObject (new BillingMethods);
+	
 	// Error Handling
 	$oblstrError = $Style->attachObject (new dataString ('Error'));
 	
@@ -52,6 +56,7 @@
 	$oblstrState				= $oblarrUIValues->Push (new dataString ('State'				, $actAccount->Pull ('State')->getValue ()));
 	$oblbolDisableDDR			= $oblarrUIValues->Push (new dataString ('DisableDDR'			, $actAccount->Pull ('DisableDDR')->getValue ()));
 	$oblintDisableLatePayment	= $oblarrUIValues->Push (new dataInteger('DisableLatePayment'	, $actAccount->Pull ('DisableLatePayment')->getValue ()));
+	$oblintBillingMethod		= $oblarrUIValues->Push (new dataInteger('BillingMethod'		, $actAccount->Pull ('BillingMethod')->getValue ()));
 	$oblintCustomerGroup		= $oblarrUIValues->Push (new dataInteger('CustomerGroup'		, $actAccount->Pull ('CustomerGroup')->getValue ()));
 	$oblbolArchived				= $oblarrUIValues->Push (new dataBoolean('Archived'));
 	
@@ -67,7 +72,7 @@
 	if (isset ($_POST ['State']))				$oblstrState->setValue				($_POST ['State']);
 	if (isset ($_POST ['DisableDDR']))			$oblbolDisableDDR->setValue			($_POST ['DisableDDR']);
 	if (isset ($_POST ['DisableLatePayment']))	$oblintDisableLatePayment->setValue	($_POST ['DisableLatePayment']);
-//	if (isset ($_POST ['CustomerGroup']))		$oblintCustomerGroup->setValue		($_POST ['CustomerGroup']);
+	if (isset ($_POST ['BillingMethod']))		$oblintBillingMethod->setValue		($_POST ['BillingMethod']);
 	if (isset ($_POST ['Archived']))			$oblbolArchived->setValue			(TRUE);
 	
 	// If we're wishing to save the details, we can identify this by
@@ -127,6 +132,11 @@
 			// Check the Customer Group Exists
 			$oblstrError->setValue ('Customer Group');
 		}
+		else if (!$bmeBillingMethods->setValue ($_POST ['BillingMethod']))
+		{
+			// Check the Billing Method Exists
+			$oblstrError->setValue ('Billing Method');
+		}
 		else
 		{
 			$actAccount->Update (
@@ -161,6 +171,7 @@
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archive');
+	$docDocumentation->Explain ('Billing');
 	$docDocumentation->Explain ('CustomerGroup');
 	
 	$Style->Output (

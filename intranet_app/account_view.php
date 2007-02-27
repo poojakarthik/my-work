@@ -21,6 +21,7 @@
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archive');
+	$docDocumentation->Explain ('Billing');
 	$docDocumentation->Explain ('Payment');
 	$docDocumentation->Explain ('CustomerGroup');
 	
@@ -40,6 +41,9 @@
 	
 	// Grab State
 	$sstState		= $Style->attachObject (new ServiceStateType ($actAccount->Pull ('State')->getValue ()));
+	
+	// Billing Methods
+	$bmeBillingMethods = $Style->attachObject (new BillingMethod ($actAccount->Pull ('BillingMethod')->getValue ()));
 	
 	// Billing Type
 	// XPath: /Response/BillingType/Name
