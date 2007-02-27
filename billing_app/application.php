@@ -1176,16 +1176,20 @@
 													NULL,
 													1,
 													"CDR.InvoiceRun");
-		if ($selInvoiceSummary->Execute() === FALSE || $selCDRSummary->Execute() === FALSE)
+		if (($intCount = $selInvoiceSummary->Execute()) === FALSE || ($intCDRCount = $selCDRSummary->Execute()) === FALSE)
 		{
 			// Error out
+			Debug("Error on selInvoiceSummary or selCDRSummary");
+			Debug($selInvoiceSummary->Error());
+			Debug($selCDRSummary->Error());
 			return FALSE;
 		}
-		if (!$arrInvoiceSummary = $selInvoiceSummary->Fetch())
+		if (!$intCDRCount || !$intCount)
 		{
 			// No data, return ERROR_NO_INVOICE_DATA
 			return ERROR_NO_INVOICE_DATA;
 		}
+		$arrInvoiceSummary = $selInvoiceSummary->Fetch();
 		$arrInvoiceSummary = array_merge($arrInvoiceSummary, $selCDRSummary->Fetch());
 
 		// Initiate and Execute Carrier Summary Statement
@@ -1199,16 +1203,19 @@
 													"CDR.Carrier",
 													NULL,
 													"CDR.Carrier");
-		if ($selCarrierSummary->Execute() === FALSE)
+		if (($intCount = $selCarrierSummary->Execute()) === FALSE)
 		{
 			// Error out
+			Debug("Error on selCarrierSummary");
+			Debug($selCarrierSummary->Error());
 			return FALSE;
 		}
-		if (!$arrCarrierSummarys = $selCarrierSummary->FetchAll())
+		if (!$intCount)
 		{
 			// No data, return ERROR_NO_INVOICE_DATA
 			return ERROR_NO_INVOICE_DATA;
 		}
+		$arrCarrierSummarys = $selCarrierSummary->FetchAll();
 		
 		// Initiate and Execute ServiceType Summary Statement
 		$arrServiceTypeColumns['ServiceType']			= "CDR.ServiceType";
@@ -1222,16 +1229,17 @@
 														"CDR.ServiceType",
 														NULL,
 														"CDR.ServiceType");
-		if ($selServiceTypeSummary->Execute() === FALSE)
+		if (($intCount = $selServiceTypeSummary->Execute()) === FALSE)
 		{
 			// Error out
 			return FALSE;
 		}
-		if (!$arrServiceTypeSummarys = $selServiceTypeSummary->FetchAll())
+		if (!$intCount)
 		{
 			// No data, return ERROR_NO_INVOICE_DATA
 			return ERROR_NO_INVOICE_DATA;
 		}
+		$arrServiceTypeSummarys = $selServiceTypeSummary->FetchAll();
 		
 		// Initiate RecordType Breakdown Statement
 		$arrCarrierRecordTypeColumns['RecordType']		= "RecordType.Name";
