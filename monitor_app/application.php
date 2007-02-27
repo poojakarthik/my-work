@@ -722,7 +722,7 @@
 	
 	function GetTempInvoice($intAccount, $strInvoiceRun)
 	{
-		$selTempInvoice	= new StatementSelect(	"TempInvoice",
+		$selTempInvoice	= new StatementSelect(	"InvoiceTemp",
 													"*",
 													"Account = <Account> AND " .
 													"InvoiceRun = <InvoiceRun>"
