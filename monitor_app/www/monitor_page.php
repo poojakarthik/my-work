@@ -637,7 +637,7 @@
 				{
 					$intCount++;
 					$arrRow = Array($intCount, $arrDetails['Account'], $arrDetails['VixenTotal'], $arrDetails['EtechTotal'], $arrDetails['Dif']);
-					$tblTable->AddRow($arrRow, "invoice_compare.php?Account={$arrDetails['Account']}&InvoiceRun={$arrDetails['InvoiceRun']}");
+					$tblTable->AddRow($arrRow, "invoice_compare.php?Account={$arrDetails['Account']}&InvoiceRun={$arrDetails['InvoiceRun']}&Etech={$arrDetails['EtechTotal']}");
 				}
 			}
 			$this->AddTable($tblTable);
