@@ -615,7 +615,7 @@
 	{
 		$arrOutput = Array();
 		$strQuery  = "SELECT InvoiceTemp.Account AS Account, ";
-		$strQuery  = "InvoiceTemp.InvoiceRun AS InvoiceRun, ";
+		$strQuery .= "InvoiceTemp.InvoiceRun AS InvoiceRun, ";
 		$strQuery .= "(InvoiceTemp.Total + InvoiceTemp.Tax) AS VixenTotal, ";
 		$strQuery .= "InvoiceEtech.Total AS EtechTotal, ";
 		$strQuery .= "(InvoiceTemp.Total + InvoiceTemp.Tax) - InvoiceEtech.Total AS Dif ";
