@@ -697,7 +697,7 @@
 		{
 			if ($arrCharge['Nature'] == 'DR')
 			{
-				$arrOutput['Debit']	= $arrCharge;
+				$arrOutput['Debit']		= $arrCharge;
 			}
 			else
 			{
