@@ -447,20 +447,19 @@
 				
 				// get capped & uncapped charges
 				$selCDRTotals->Execute(Array('Service' => $arrService['Id']));
-				if ($arrCDRTotals = $selCDRTotals->FetchAll())
+				$arrCDRTotals = $selCDRTotals->FetchAll();
+				foreach($arrCDRTotals as $arrCDRTotal)
 				{
-					foreach($arrCDRTotals as $arrCDRTotal)
+					if ($arrCDRTotal['Uncapped'])
 					{
-						if ($arrCDRTotal['Uncapped'])
-						{
-							$fltUncappedCDRCharge	= $arrCDRTotal['Charge'];
-						}
-						else
-						{
-							$fltCappedCDRCharge		= $arrCDRTotal['Charge'];
-						}
+						$fltUncappedCDRCharge	= $arrCDRTotal['Charge'];
+					}
+					else
+					{
+						$fltCappedCDRCharge		= $arrCDRTotal['Charge'];
 					}
 				}
+
 
 				
 				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
