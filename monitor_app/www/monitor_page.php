@@ -636,7 +636,7 @@
 				if (abs($arrDetails['Dif']) > $intMinDifference)
 				{
 					$intCount++;
-					$arrRow = Array($intCount, $arrDetails['Account'], number_format($arrDetails['VixenTotal'],2), $arrDetails['EtechTotal'], $arrDetails['Dif']);
+					$arrRow = Array($intCount, $arrDetails['Account'], number_format($arrDetails['VixenTotal'],2), $arrDetails['EtechTotal'], number_format($arrDetails['Dif'],2));
 					$tblTable->AddRow($arrRow, "invoice_compare.php?Account={$arrDetails['Account']}&InvoiceRun={$arrDetails['InvoiceRun']}&Etech={$arrDetails['EtechTotal']}");
 				}
 			}
