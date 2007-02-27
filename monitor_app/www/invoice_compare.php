@@ -23,6 +23,9 @@ $intAccount = (int)$_GET['Account'];
 // get Invoice Run
 $strInvoiceRun = $_GET['InvoiceRun'];
 
+// display Invoice Details
+$objPage->ShowTempInvoice($intAccount, $strInvoiceRun);
+
 // display Service Totals
 $objPage->ShowAccountServiceTotals($intAccount, $strInvoiceRun);
 
@@ -31,6 +34,9 @@ $objPage->ShowAccountCDRTotals($intAccount, $strInvoiceRun);
 
 // display Charge Totals
 $objPage->ShowAccountChargeTotals($intAccount, $strInvoiceRun);
+
+// display Charges
+$objPage->ShowAccountCharges($intAccount, $strInvoiceRun);
 
 // display the page
 $objPage->Render();

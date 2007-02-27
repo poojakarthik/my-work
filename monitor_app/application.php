@@ -683,7 +683,7 @@
 	{
 		$arrOutput = Array();
 		$selCharges		= new StatementSelect(	"Charge",
-													"SUM(Amount), COUNT(Id)",
+													"SUM(Amount) AS Amount, COUNT(Id) AS Count",
 													"Account = <Account> " .
 													" AND InvoiceRun = <InvoiceRun>" ,
 													NULL,
@@ -718,6 +718,18 @@
 		
 		$selCharges->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun));
 		return $selCharges->FetchAll();
+	}
+	
+	function GetTempInvoice($intAccount, $strInvoiceRun)
+	{
+		$selTempInvoice	= new StatementSelect(	"TempInvoice",
+													"*",
+													"Account = <Account> AND " .
+													"InvoiceRun = <InvoiceRun>"
+													);
+		
+		$selTempInvoice->Execute(Array('Account' => $intAccount, 'InvoiceRun' => $strInvoiceRun));
+		return $selTempInvoice->FetchAll();
 	}
 	
 	

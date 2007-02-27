@@ -715,22 +715,84 @@
 		if (is_array($arrRecords))
 		{
 			// title
-			$this->AddTitle('Charge Totals');
+			$this->AddTitle('Adjustment Totals');
 			
 			// table
 			$tblTable = $this->NewTable('Border');
-			$tblTable->AddRow(Array('Type', 'Charge'));
+			$tblTable->AddRow(Array('Type', 'Count', 'Charge'));
 			$tblTable->Align(Array('Left', 'Right'));
 			foreach($arrRecords AS $strRecord=>$arrDetails)
 			{
-				$arrRow = Array($strRecord, $arrDetails['Amount']);
+				$arrRow = Array($strRecord, $arrDetails['Count'], $arrDetails['Amount']);
 				$tblTable->AddRow($arrRow);
 			}
 			$this->AddTable($tblTable);
 		}
 		else
 		{
-			$this->AddTitle('No Charges Found');
+			$this->AddTitle('No Adjustments Found');
+		}
+		return TRUE;
+	}
+	
+	function ShowAccountCharges($intAccount, $strInvoiceRun)
+	{
+		// get service totals
+		$arrRecords = $this->appMonitor->GetAccountCharges($intAccount, $strInvoiceRun);
+		if (is_array($arrRecords))
+		{
+			// title
+			$this->AddTitle('Adjustments');
+			
+			// table
+			$tblTable = $this->NewTable('Border');
+			$tblTable->AddRow(Array_keys(current($arrRecords)));
+			//$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
+			foreach($arrRecords AS $intRecord=>$arrDetails)
+			{
+				$arrRow = Array();
+				foreach($arrDetails AS $mixValue)
+				{
+					$arrRow[] = $mixValue;
+				}
+				$tblTable->AddRow($arrRow);
+			}
+			$this->AddTable($tblTable);
+		}
+		else
+		{
+			$this->AddTitle('No Adjustments Found');
+		}
+		return TRUE;
+	}
+	
+	function ShowTempInvoice($intAccount, $strInvoiceRun)
+	{
+		// get service totals
+		$arrRecords = $this->appMonitor->GetTempInvoice($intAccount, $strInvoiceRun);
+		if (is_array($arrRecords))
+		{
+			// title
+			$this->AddTitle('Invoice');
+			
+			// table
+			$tblTable = $this->NewTable('Border');
+			$tblTable->AddRow(Array_keys(current($arrRecords)));
+			//$tblTable->Align(Array('Right', 'Right', 'Right', 'Right', 'Right'));
+			foreach($arrRecords AS $intRecord=>$arrDetails)
+			{
+				$arrRow = Array();
+				foreach($arrDetails AS $mixValue)
+				{
+					$arrRow[] = $mixValue;
+				}
+				$tblTable->AddRow($arrRow);
+			}
+			$this->AddTable($tblTable);
+		}
+		else
+		{
+			$this->AddTitle('No Invoice Found');
 		}
 		return TRUE;
 	}
