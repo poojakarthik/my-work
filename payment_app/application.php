@@ -105,9 +105,13 @@ die();
 		$arrColumns['Status']	= NULL;
 		$this->_ubiSavePaymentStatus	= new StatementUpdateById("Payment");
 		
-		$this->_selGetNormalisedPayments	= new StatementSelect("Payment", "*", "Status = ".PAYMENT_WAITING, NULL, "1000");
+		$this->_selGetNormalisedPayments	= new StatementSelect("Payment", "*", "Status = ".PAYMENT_WAITING);
 		
-		$this->_selOutstandingInvoices		= new StatementSelect("Invoice", "*", "Balance > 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")", "DueOn ASC", "1000");
+		$this->_selAccountInvoices			= new StatementSelect("Invoice", "*", "Account = <Account> AND Balance > 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")", "DueOn ASC");
+		
+		$this->_selAccountGroupInvoices		= new StatementSelect("Invoice", "*", "AccountGroup = <AccountGroup> AND Balance > 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")", "DueOn ASC");
+		
+		$this->_selCreditInvoices			= new StatementSelect("Invoice", "*", "Account = <Account> AND Balance < 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")");
 		
 		$this->_ubiPayment					= new StatementUpdateById("Payment");
 		
@@ -254,7 +258,7 @@ die();
 	 *
 	 * Normalise next 1000 Payment Records
 	 *
-	 * @return	bool	returns true untill all Payments have been normalised
+	 * @return	bool	returns true until all Payments have been normalised
 	 *
 	 * @method
 	 */
@@ -329,17 +333,17 @@ die();
 	/**
 	 * Process()
 	 *
-	 * Process next 1000 Payment Records
+	 * Process all outstanding Payment Records
 	 *
-	 * Process new CDRs
+	 * Process all outstanding Payment Records
 	 *
-	 * @return	bool	returns true untill all Payments have been processed
+	 * @return	bool	returns true until all Payments have been processed
 	 *
 	 * @method
 	 */
 	 function Process()
 	 {
-		// get next 1000 payments
+		// get all payments
 		$intCount = $this->_selGetNormalisedPayments->Execute();
 		if (!$intCount)
 		{
@@ -357,8 +361,19 @@ die();
 			
 			// get a list of outstanding invoices for this account group
 			//		(and account if we have one in $arrPayment) sorted oldest invoice first
-			$arrWhere['AccountGroup'] = $arrPayment['AccountGroup'];
-			if ($this->_selOutstandingInvoices->Execute($arrWhere) === FALSE)
+			$arrWhere = Array();
+			$arrWhere['AccountGroup'] 	= $arrPayment['AccountGroup'];
+			$arrWhere['Account'] 		= $arrPayment['Account'];
+			if ($arrWhere['Account'])
+			{
+				$selOutstandingInvoices = $this->_selAccountInvoices;
+			}
+			else
+			{
+				$selOutstandingInvoices = $this->_selAccountGroupInvoices;
+			}
+			
+			if ($selOutstandingInvoices->Execute($arrWhere) === FALSE)
 			{
 
 			}
@@ -367,7 +382,7 @@ die();
 			$this->_arrPayment['Status'] = PAYMENT_PAYING; 
 			
 			// while we have some payment left and an invoice to pay it against
-			while ($this->_arrPayment['Balance'] && $arrInvoice = $this->_selOutstandingInvoices->Fetch())
+			while ($this->_arrPayment['Balance'] > 0 && $arrInvoice = $selOutstandingInvoices->Fetch())
 			{
 				$this->_rptPaymentsReport->AddMessageVariables(MSG_INVOICE_LINE, Array('<Id>' => $arrInvoice['Id']));
 				
@@ -475,6 +490,109 @@ die();
 		// return the balance
 		return $fltBalance;
 		
+	 }
+	 
+	 
+	 //------------------------------------------------------------------------//
+	// ProcessCredit
+	//------------------------------------------------------------------------//
+	/**
+	 * ProcessCredit()
+	 *
+	 * Process all outstanding Credit Invoices for an account
+	 *
+	 * Process all outstanding Credit Invoices for an account
+	 *
+	 * @return
+	 *
+	 * @method
+	 */
+	 function ProcessCredit($intAccountGroup)
+	 {
+	 	/*
+	 	$intAccountGroup = (int)$intAccountGroup;
+		
+		// get all credit invoices
+		$intCount = $this->_selCreditInvoices->execute(Array('AccountGroup' => $intAccountGroup));
+		if (!$intCount)
+		{
+			// No credits left, so return false
+			return FALSE;
+		}
+		
+		while($arrCredit = $this->_selCreditInvoices->Fetch())
+		{
+			// set current payment
+			
+			
+			// get a list of outstanding invoices for this account
+			$arrWhere = Array();
+			$arrWhere['AccountGroup'] 	= $arrPayment['AccountGroup'];
+			$arrWhere['Account'] 		= $arrPayment['Account'];
+			if ($arrWhere['Account'])
+			{
+				$selOutstandingInvoices = $this->_selAccountInvoices;
+			}
+			else
+			{
+				$selOutstandingInvoices = $this->_selAccountGroupInvoices;
+			}
+			
+			if ($selOutstandingInvoices->Execute($arrWhere) === FALSE)
+			{
+
+			}
+			
+			// set default status
+			$this->_arrPayment['Status'] = PAYMENT_PAYING; 
+			
+			// while we have some payment left and an invoice to pay it against
+			while ($this->_arrPayment['Balance'] > 0 && $arrInvoice = $selOutstandingInvoices->Fetch())
+			{
+				$this->_rptPaymentsReport->AddMessageVariables(MSG_INVOICE_LINE, Array('<Id>' => $arrInvoice['Id']));
+				
+				// set current invoice
+				$this->_arrCurrentInvoice = $arrInvoice;
+				
+				// apply payment against the invoice
+				$fltBalance = $this->_PayInvoice();
+				if ($fltBalance === FALSE)
+				{
+					// something went wrong
+					$this->_rptPaymentsReport->AddMessage(MSG_FAIL.MSG_REASON);
+					
+					// set status
+					$this->_arrPayment['Status'] = PAYMENT_BAD_PROCESS;
+					
+					// don't try any more invoices					
+					break;
+				}
+				
+				// update payment table
+				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
+				{
+
+				}
+				
+				$this->_rptPaymentsReport->AddMessage(MSG_OK);
+			}
+			
+			// check if we have spent all our money
+			if ($this->_arrPayment['Balance'] == 0)
+			{
+				$this->_arrPayment['Status'] = PAYMENT_FINISHED;
+				
+				// update payment table
+				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
+				{
+
+				}
+			}
+			
+			// Process successful
+			$this->_rptPaymentsReport->AddMessage(MSG_OK);
+		}
+		*/
 	 }
  }
 

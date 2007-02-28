@@ -132,7 +132,7 @@
 		$strTestServer		= "10.11.12.13";
 		
 		// Unitel Landline and S&E Definition
-		$strUnitelTestDir = "2007/jan/";
+		$strUnitelTestDir = "2007/feb/";
 		$arrConfig['Define']["RSLCOM"]	["Name"]							= "RSLCOM";
 		$arrConfig['Define']["RSLCOM"]	["Carrier"]							= CARRIER_UNITEL;
  		$arrConfig['Define']["RSLCOM"]	["Type"]							= COLLECTION_TYPE_FTP;
@@ -150,7 +150,7 @@
 		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 
 		// Unitel Landline and S&E Definition
-		$strUnitelTestDir = "2007/jan/";
+		$strUnitelTestDir = "2007/feb/";
 		$arrConfig['Define']["Commander"]	["Name"]							= "Commander";
 		$arrConfig['Define']["Commander"]	["Carrier"]							= CARRIER_UNITEL;
  		$arrConfig['Define']["Commander"]	["Type"]							= COLLECTION_TYPE_FTP;
@@ -167,7 +167,7 @@
 		
 
 		// Optus Definition
-		$strOptusTestDir = "Jan 07/";
+		$strOptusTestDir = "feb 07/";
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;

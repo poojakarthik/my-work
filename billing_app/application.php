@@ -122,7 +122,7 @@
 																"Id = 1000160897";	//  limited to 11 specified accounts
 		$this->selAccounts					= new StatementSelect("Account", "*", "Archived = 0"); 
 										
-		$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
+		//$this->selCalcAccountBalance		= new StatementSelect("Invoice", "SUM(Balance) AS AccountBalance", "Status = ".INVOICE_COMMITTED." AND Account = <Account>");
 		
 		// service debits and credits
 		$this->selDebitsCredits				= new StatementSelect(	"Charge",
@@ -642,58 +642,63 @@
 			$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
 			$fltBalance	= $fltTotal + $fltTax;
 
-			// calculate account debit balance
-			if(!$this->selCalcAccountBalance->Execute(Array('Account' => $arrAccount['Id'])))
+			// calculate account balance from outstanding past invoices (this could give a negative value)
+			$fltAccountBalance = 0.0;
+			if(($fltAccountBalance = $this->Framework->GetAccountBalance($arrAccount['Id'])) === FALSE)
 			{				
 				// Report and fail out
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Cannot retrieve Account Balance");
 				$this->intFailed++;
 				continue;
 			}
-			$arrAccountBalance = $this->selCalcAccountBalance->Fetch();
-			if (($fltAccountDebitBalance = $arrAccountBalance['AccountBalance']) == NULL)
-			{
-				$fltAccountDebitBalance = 0.0;
-			}
 			
-			// calculate and apply account credit balance
-			$arrCreditData['Account']		= $arrAccount['Id'];
-			$arrCreditData['AccountGroup']	= $arrAccount['AccountGroup'];
-			$this->_selPayments->Execute($arrCreditData);
-			$arrPayments = $this->_selPayments->FetchAll();
-			foreach($arrPayments as $arrPayment)
+			// if the invoice total > 0 look for outstanding payments
+			if ($fltBalance > 0)
 			{
-				$fltPayment						= min($arrPayment['Balance'], $fltAccountDebitBalance);
-				$arrUpdatePayment['Balance']	= $arrPayment['Balance'] - $fltPayment;
-				$fltAccountDebitBalance			= $fltAccountDebitBalance - $fltPayment;
-				
-				// Make Invoice Payments
-				$arrInvoicePaymentData['InvoiceRun']	= $this->_strInvoiceRun;
-				$arrInvoicePaymentData['Account']		= $arrAccount['Id'];
-				$arrInvoicePaymentData['AccountGroup']	= $arrAccount['AccountGroup'];
-				$arrInvoicePaymentData['Payment']		= $arrPayment['Id'];
-				$arrInvoicePaymentData['Amount']		= $fltPayment;
-				$this->_insInvoicePayment->Execute($arrInvoicePaymentData);
-
-				// Update Payment table
-				if ($arrUpdatePayment['Balance'] == 0)
+				// find outstanding payments
+				$arrCreditData['Account']		= $arrAccount['Id'];
+				$arrCreditData['AccountGroup']	= $arrAccount['AccountGroup'];
+				$this->_selPayments->Execute($arrCreditData);
+				$arrPayments = $this->_selPayments->FetchAll();
+				foreach($arrPayments as $arrPayment)
 				{
-					$arrUpdatePayment['Status'] = PAYMENT_FINISHED;
+					// calculate payment to apply to this invoice
+					$fltPayment						= min($arrPayment['Balance'], $fltBalance);
+					$arrUpdatePayment['Balance']	= $arrPayment['Balance'] - $fltPayment;
+					
+					
+					// Make Invoice Payments
+					$arrInvoicePaymentData['InvoiceRun']	= $this->_strInvoiceRun;
+					$arrInvoicePaymentData['Account']		= $arrAccount['Id'];
+					$arrInvoicePaymentData['AccountGroup']	= $arrAccount['AccountGroup'];
+					$arrInvoicePaymentData['Payment']		= $arrPayment['Id'];
+					$arrInvoicePaymentData['Amount']		= $fltPayment;
+					$this->_insInvoicePayment->Execute($arrInvoicePaymentData);
+	
+					// Update Payment table
+					if ($arrUpdatePayment['Balance'] == 0)
+					{
+						$arrUpdatePayment['Status'] = PAYMENT_FINISHED;
+					}
+					else
+					{
+						$arrUpdatePayment['Status'] = PAYMENT_WAITING;
+					}
+					$this->_ubiPayment->Execute($arrUpdatePayment);
+					
+					//reduce balance of the invoice
+					$fltBalance 		-= $fltPayment;
+					
+					// reduce account balance
+					$fltAccountBalance 	-= $fltPayment;
+					
+					// check if there is anything left to pay on this invoice
+					if ($fltBalance == 0)
+					{
+						break;
+					}
 				}
-				else
-				{
-					$arrUpdatePayment['Status'] = PAYMENT_WAITING;
-				}
-				$this->_ubiPayment->Execute($arrUpdatePayment);
-				
-				//reduce balance of the invoice
-				$fltBalance -= $fltPayment;
 			}
-
-			
-			// calculate account balance
-			// NOTE : we don't show credit balance on the bill
-			$fltAccountBalance = $fltAccountDebitBalance;
 			
 			// write to temporary invoice table
 			$arrInvoiceData = Array();
