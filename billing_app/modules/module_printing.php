@@ -111,7 +111,7 @@
 		
 		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service, " .
 																"Service Service2 LEFT OUTER JOIN CostCentre ON Service2.CostCentre = CostCentre.Id",
-																"Service.FNN, Service.Id AS Id, CostCentre.Name AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
+																"Service.FNN AS FNN, Service.Id AS Id, CostCentre.Name AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
 																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND Service.Id = Service2.Id",
 																"CostCentre.Name",
 																NULL,
@@ -177,20 +177,20 @@
  		$this->_selItemisedCalls	= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id" .
  															", RecordType as RecordGroup",
  															$arrColumns,
- 															"Service = <Service> AND " .
+ 															"CDR.Service = <Service> AND " .
  															"RecordGroup.Id = RecordType.GroupId AND " .
  															"RecordGroup.Id = <RecordGroup> AND " .
  															"RecordGroup.Itemised = 1 AND " .
- 															"CDR.InvoiceRun = <InvoiceRun> AND " .
- 															"(" .
- 															"	<RangeStart> <=> NULL " .
+ 															"CDR.InvoiceRun = <InvoiceRun> " .
+ 															"AND (" .
+ 															"	<RangeStart> IS NULL " .
  															" OR " .
 	 														"	CAST(SUBSTRING(CDR.FNN, -2) AS UNSIGNED) BETWEEN <RangeStart> AND <RangeEnd> " .
  															")",
  															"CDR.StartDatetime");
  															
 		$this->_selItemisedRecordTypes = new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
-																"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description", 
+																"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
 	 															"Service = <Service> AND " .
 	 															"RecordGroup.Id = RecordType.GroupId AND " .
 	 															"RecordGroup.Itemised = 1 AND " .
@@ -200,7 +200,9 @@
 	 															" OR " .
 	 															"	CAST(SUBSTRING(CDR.FNN, -2) AS UNSIGNED) BETWEEN <RangeStart> AND <RangeEnd> " .
 	 															")",
-	 															"CDR.StartDatetime");
+	 															"CDR.StartDatetime",
+	 															NULL,
+	 															"RecordGroup.Id");
 																
 		$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
 																"RecordType AS RType",
@@ -270,7 +272,8 @@
  	{
 		$arrDefine = $this->_arrDefine;
 		
-		$this->_arrInvoiceDetails = $arrInvoiceDetails;
+		$this->_arrInvoiceDetails	= $arrInvoiceDetails;
+		$this->_strInvoiceRun		= $arrInvoiceDetails['InvoiceRun'];
 		
 		// clean the file data array
 		$this->_arrFileData = Array();
@@ -521,14 +524,21 @@
 			 		// ERROR
 			 		return FALSE;
 			 	}
-			 	$arrItemisedRecordTypes = $this->_selItemisedRecordTypes->FetchAll();
+			 	$arrItemisedRecordTypes	= $this->_selItemisedRecordTypes->FetchAll();
 			 	
+			 	$arrCreditRecordType['Description']	= "Other Charges & Credits";
+			 	$arrCreditRecordType['DisplayType']	= RECORD_DISPLAY_S_AND_E;
+			 	$arrCreditRecordType['IsCharge']	= TRUE;
+			 	$arrItemisedRecordTypes[] = $arrCreditRecordType;
 			 	
 			 	// Generate the Itemised Call list
-			 	if ($this->GenerateItemisedCalls($arrService, $arrItemisedRecordTypes) === FALSE)
+			 	foreach ($arrItemisedRecordTypes as $arrRecordType)
 			 	{
-			 		// ERROR
-			 		return FALSE;
+				 	if ($this->GenerateItemisedCalls($arrService, $arrRecordType) === FALSE)
+				 	{
+				 		// ERROR
+				 		return FALSE;
+				 	}
 			 	}
 			 	
 				// add service total record (89)
@@ -682,7 +692,7 @@
 		}
 		$arrMetaData = $selMetaData->Fetch();
 		
-		//Debug("{$arrMetaData['MinId']} {$arrMetaData['MaxId']} {$arrMetaData['Invoices']} {$arrMetaData['InvoiceRun']}");
+		Debug("{$arrMetaData['MinId']} {$arrMetaData['MaxId']} {$arrMetaData['Invoices']} {$arrMetaData['InvoiceRun']}");
 
 		// Set the InvoiceRun
 		$strInvoiceRun = $arrMetaData['InvoiceRun'];
@@ -705,10 +715,12 @@
 			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
 			{
 				$strQuery .= "LIMIT ".(int)$arrMetaData['MaxId'];
+				$arrMetaData['Invoices'] = (int)$arrMetaData['MaxId'];
 			}
 			else
 			{
 				$strQuery .= "LIMIT ".rand((int)$arrMetaData['MinId'] , (int)$arrMetaData['MaxId'] - BILL_PRINT_SAMPLE_LIMIT).", ".BILL_PRINT_SAMPLE_LIMIT;
+				$arrMetaData['Invoices'] = BILL_PRINT_SAMPLE_LIMIT;
 			}
 		}
 		if (file_exists($strFilename))
@@ -903,7 +915,11 @@
  			Debug($this->_selServiceChargesTotal->Error());
  			return FALSE;
  		}
- 		$arrServiceSummaries[] = $this->_selServiceChargesTotal->Fetch();
+ 		$arrChargeSummary =  $this->_selServiceChargesTotal->Fetch();
+ 		if ($arrChargeSummary['Records'] > 0)
+ 		{
+ 			$arrServiceSummaries[] = $arrChargeSummary;
+ 		}
  		
  		// Add each to the invoice
  		$fltTotal = 0.0;
@@ -945,41 +961,61 @@
  	{
  		$arrDefine = $this->_arrDefine;
  		
- 		$arrWhere = Array();
- 		$arrWhere['Service']		= $arrService['Id'];
- 		$arrWhere['RecordGroup']	= $arrRecordGroup['RecordGroup'];
- 		$arrWhere['RangeStart']		= $arrService['RangeStart'];
- 		$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
-		if ($this->_selItemisedCalls->Execute($arrWhere) === FALSE)
-		{
-			// ERROR
-			Debug($this->_selItemisedCalls->Error());
-			return FALSE;
-		}
-		$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
-		
-		// Get Service's Charges
-	 	$arrWhere = Array();
-	 	$arrWhere['Account']	= $this->_arrInvoiceDetails['Id'];
-	 	$arrWhere['InvoiceRun']	= $this->_arrInvoiceDetails['InvoiceRun'];
-	 	$arrWhere['Service']	= $arrService['Id'];
-		if (($intChargeCount = $this->_selItemisedCharges->Execute($arrWhere)) === FALSE)
-		{
-			// ERROR
-			return FALSE;
-		}
-		while ($arrCharge = $this->_selItemisedCharges->Fetch())
-		{
-			// Make sure that the Credits appear as a -ve figure
-			if ($arrCharge['Nature'] == NATURE_CR)
+ 		if ($arrRecordGroup['IsCharge'] !== TRUE)
+ 		{
+	 		$arrWhere = Array();
+	 		$arrWhere['Service']		= $arrService['Id'];
+	 		$arrWhere['RecordGroup']	= $arrRecordGroup['RecordType'];
+	 		if (!$arrService['RangeStart'])
+	 		{
+	 			$arrWhere['RangeStart']		= NULL;
+	 			$arrWhere['RangeEnd']		= NULL;
+	 		}
+	 		else
+	 		{
+	 			$arrWhere['RangeStart']		= $arrService['RangeStart'];
+	 			$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
+	 		}
+		 	$arrWhere['InvoiceRun']		= $this->_arrInvoiceDetails['InvoiceRun'];
+		 	
+			if ($this->_selItemisedCalls->Execute($arrWhere) === FALSE)
 			{
-				$arrCharge['Charge'] = 0 - $arrCharge['Charge'];
+				// ERROR
+				Debug($this->_selItemisedCalls->Error());
+				return FALSE;
 			}
-			$arrCharge['Units']			= 1;
-			$arrCharge['Description']	= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
+			$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
+ 		}
+		else
+		{
+			// Get Service's Charges
+		 	$arrWhere = Array();
+		 	$arrWhere['Account']	= $this->_arrInvoiceDetails['Id'];
+		 	$arrWhere['InvoiceRun']	= $this->_arrInvoiceDetails['InvoiceRun'];
+		 	$arrWhere['Service']	= $arrService['Id'];
+			if (($intChargeCount = $this->_selItemisedCharges->Execute($arrWhere)) === FALSE)
+			{
+				// ERROR
+				return FALSE;
+			}
+			while ($arrCharge = $this->_selItemisedCharges->Fetch())
+			{
+				// Make sure that the Credits appear as a -ve figure
+				if ($arrCharge['Nature'] == NATURE_CR)
+				{
+					$arrCharge['Charge'] = 0 - $arrCharge['Charge'];
+				}
+				$arrCharge['Units']			= 1;
+				$arrCharge['Description']	= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
+				
+				// Add to itemised calls array
+				$arrItemisedCalls[] = $arrCharge;
+			}
 			
-			// Add to itemised calls array
-			$arrItemisedCalls[] = $arrCharge;
+			if ($intChargeCount == 0)
+			{
+				return TRUE;
+			}
 		}
 		
 		// build header record (90)

@@ -1699,16 +1699,29 @@
 	 * @method
 	 */
 	 function GenerateInvoiceOutput($intPrintTartget = BILL_PRINT)
-	 {		
+	 {
+		// Truncate the InvoiceOutput table
+		$this->_rptBillingReport->AddMessage("Truncating InvoiceOutput table...\t\t\t", FALSE);
+		$qryTruncateInvoiceOutput = new QueryTruncate();
+		if ($qryTruncateInvoiceOutput->Execute("InvoiceOutput") === FALSE)
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
 		$arrUpdateData = Array();
 		$arrUpdateData['Id']		= NULL;
 		$arrUpdateData['Status']	= INVOICE_PRINT;
 		$ubiInvoiceStatus = new StatementUpdateById("InvoiceTemp", $arrUpdateData);
 		
-		$selInvoices = new StatementSelect("InvoiceTemp", "*");
+		$selInvoices = new StatementSelect("InvoiceTemp", "*", "1", NULL, 100);
 		if ($selInvoices->Execute() === FALSE)
 		{
 			// ERROR
+			Debug($selInvoices->Error());
 			return FALSE;
 		}
 		
@@ -1716,9 +1729,11 @@
 		
 		// for each invoice
 		$intPassed = 0;
+		echo "Invoices to generate: ".count($arrInvoices)."\n\n";
 		foreach($arrInvoices as $arrInvoice)
 		{			
 			echo "Generating output for {$arrInvoice['Id']}...\t\t\t";
+			ob_flush();
 			
 			// stick stuff in invoice output
 			$this->_arrBillOutput[$intPrintTartget]->AddInvoice($arrInvoice);
