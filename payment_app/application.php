@@ -107,7 +107,7 @@ die();
 		
 		$this->_selGetNormalisedPayments	= new StatementSelect("Payment", "*", "Status = ".PAYMENT_WAITING, NULL, "1000");
 		
-		$this->_selOutstandingInvoices		= new StatementSelect("Invoice", "*", "Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED, "DueOn ASC", "1000");
+		$this->_selOutstandingInvoices		= new StatementSelect("Invoice", "*", "Balance > 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")", "DueOn ASC", "1000");
 		
 		$this->_ubiPayment					= new StatementUpdateById("Payment");
 		

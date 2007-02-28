@@ -1262,6 +1262,7 @@
 		
 		Debug("Init complete!  Generating Audit Report...");
 		
+		
 		// Generate the the Audit Report
 		$arrInvoiceSummaryVars['<TotalInvoices>']		= number_format((int)$arrInvoiceSummary['TotalInvoices']);
 		$arrInvoiceSummaryVars['<TotalInvoicedExGST>']	= number_format((float)$arrInvoiceSummary['TotalInvoicedExGST'], 2);
