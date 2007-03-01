@@ -220,21 +220,20 @@
 		}
 		
 		// Upload to FTP
-		/*$resFTPConnection = ftp_connect(UNITEL_PROVISIONING_SERVER);
+		$resFTPConnection = ftp_connect(UNITEL_PROVISIONING_SERVER);
 		ftp_login($resFTPConnection, UNITEL_PROVISIONING_USERNAME, UNITEL_PROVISIONING_PASSWORD);
 		
 		if(file_exists(UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename))
 		{
 			// Upload the Preselection File
 			ftp_chdir($resFTPConnection, UNITEL_REMOTE_PRESELECTION_DIR);
-			ftp_put($resFTPConnection, $strPreselectionFilename, UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
+			ftp_put($resFTPConnection, $strPreselectionFilename, UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, FTP_ASCII);
 		}
 		
-		ftp_close($resFTPConnection);*/
-		
+		ftp_close($resFTPConnection);
 		
 		// Update database (Request & Config tables)
-		//$this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence"), Array());
+		$this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence"), Array());
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;

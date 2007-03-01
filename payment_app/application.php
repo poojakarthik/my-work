@@ -116,6 +116,11 @@ die();
 		$this->_ubiPayment					= new StatementUpdateById("Payment");
 		
 		$this->_ubiInvoice					= new StatementUpdateById("Invoice");
+		
+		// Payment modules
+		$this->_arrPaymentModules[PAYMENT_TYPE_BILLEXPRESS]	= new PaymentModuleBillExpress();
+		$this->_arrPaymentModules[PAYMENT_TYPE_BPAY]		= new PaymentModuleBPay();
+		$this->_arrPaymentModules[PAYMENT_TYPE_SECUREPAY]	= new PaymentModuleSecurePay();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -197,7 +202,7 @@ die();
 		{
 
 		}
-		while ($arrFile = _selGetPaymentFiles->Fetch())
+		while ($arrFile = $this->_selGetPaymentFiles->Fetch())
 		{
 			$intCount++;
 			$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE, Array('<File>' => TruncateName($arrFile['FileName'], 30)));

@@ -377,6 +377,8 @@ $GLOBALS['*arrConstant']	['RequestStatus']	[303]	['Constant']	= 'REQUEST_STATUS_
 $GLOBALS['*arrConstant']	['RequestStatus']	[303]	['Description']	= 'Completed';
 $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Constant']	= 'REQUEST_STATUS_CANCELLED';
 $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Description']	= 'Cancelled';
+$GLOBALS['*arrConstant']	['RequestStatus']	[305]	['Constant']	= 'REQUEST_STATUS_DUPLICATE';
+$GLOBALS['*arrConstant']	['RequestStatus']	[305]	['Description']	= 'Duplicated (Ignored)';
 
 // Provisioning Request Status
 /*define("REQUEST_DIRECTION_OUTGOING"		, 0);

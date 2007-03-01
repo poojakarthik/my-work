@@ -346,9 +346,9 @@ die();
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
 							break;*/
 							
-						case REQUEST_PRESELECTION:
+						/*case REQUEST_PRESELECTION:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP];
-							break;
+							break;*/
 							
 						default:
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
@@ -399,7 +399,7 @@ die();
 			}
 			
 			// Update the DB
-			//$ubiUpdateRequest->Execute($arrRequest);
+			$ubiUpdateRequest->Execute($arrRequest);
 		}
 		
 		$this->_rptProvisioningReport->AddMessage("\n[ SENDING REQUESTS ]\n");

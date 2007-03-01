@@ -179,7 +179,7 @@
 		}
 		
 		// Update the database
-		//$this->_updFullServiceRecordSequence->Execute(Array('Value' => "$intFullServiceRecordSequence"), Array());
+		$this->_updFullServiceRecordSequence->Execute(Array('Value' => "$intFullServiceRecordSequence"), Array());
 		// TODO: Update Request Table (sequence #)
 		
 		// Add additional logging data
@@ -253,7 +253,7 @@
 		}
 
 		// Upload to FTP
-		/*$resFTPConnection = ftp_connect(UNITEL_PROVISIONING_SERVER);
+		$resFTPConnection = ftp_connect(UNITEL_PROVISIONING_SERVER);
 		ftp_login($resFTPConnection, UNITEL_PROVISIONING_USERNAME, UNITEL_PROVISIONING_PASSWORD);
 		
 		if(file_exists(UNITEL_LOCAL_DAILY_ORDER_DIR.$strFullServiceFilename))
@@ -262,10 +262,10 @@
 			ftp_chdir($resFTPConnection, UNITEL_REMOTE_DAILY_ORDER_DIR);
 			ftp_put($resFTPConnection, $strFullServiceFilename, UNITEL_LOCAL_DAILY_ORDER_DIR.$strFullServiceFilename, FTP_ASCII);
 		}
-		ftp_close($resFTPConnection);*/
+		ftp_close($resFTPConnection);
 		
 		// Update database (Request & Config tables)
-		//$this->_updFullServiceFileSequence->Execute(Array('Value' => "$intFullServiceFileSequence"), Array());
+		$this->_updFullServiceFileSequence->Execute(Array('Value' => "$intFullServiceFileSequence"), Array());
 		
 		// Return the number of records uploaded
 		return $intNumFullServiceRecords;
