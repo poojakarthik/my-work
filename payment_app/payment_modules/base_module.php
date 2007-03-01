@@ -81,6 +81,7 @@
 		$arrValid = Array();
 		
 		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d$/", $this->_arrNormalisedData['PaidOn']);			// 1
+		Debug($this->_arrNormalisedData['PaidOn']);
 		$arrValid[] = (bool)$this->_arrNormalisedData['CarrierRef'];										// 2
 		$arrValid[] = is_float($this->_arrNormalisedData['Amount']);										// 3
 		$arrValid[] = (bool)$this->_arrNormalisedData['TXNReference'];										// 4
@@ -94,7 +95,7 @@
 			if(!$bolValid)
 			{
 				$this->_arrNormalisedData['Status']	= PAYMENT_CANT_NORMALISE_INVALID;
-				Debug($i);
+				Debug("Erroneous: ".$i);
 				return false;
 			}
 		}
