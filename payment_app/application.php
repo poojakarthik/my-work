@@ -144,6 +144,7 @@ die();
 		// IMPORT PAYMENTS
 		$this->Import();
 		
+		die;
 		
 		// NORMALISE PAYMENTS
 		$this->_rptPaymentReport->AddMessage(MSG_NORMALISE_TITLE);
