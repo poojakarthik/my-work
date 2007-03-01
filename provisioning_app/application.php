@@ -91,7 +91,7 @@ die();
  		//$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleOptus(&$this->db);
  		
  		// Init Provisioning Export Modules
-		//$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
  		//$this->_arrProvisioningModules[PRV_AAPT_EOE]				= new ProvisioningModuleExportAAPTEOE(&$this->db);
  		$this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP]	= new ProvisioningModuleExportOptusPreselection(&$this->db);
@@ -318,11 +318,21 @@ die();
 					switch ($arrRequest['RequestType'])
 					{
 						case REQUEST_FULL_SERVICE:
+						case REQUEST_FULL_SERVICE_REVERSE:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
 							break;
-						/*case REQUEST_PRESELECTION:
+							
+						case REQUEST_PRESELECTION:
+						case REQUEST_BAR_SOFT:
+						case REQUEST_UNBAR_SOFT:
+						case REQUEST_ACTIVATION:
+						case REQUEST_DEACTIVATION:
+						case REQUEST_PRESELECTION_REVERSE:
+						case REQUEST_BAR_HARD:
+						case REQUEST_UNBAR_HARD:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP];
-							break;*/
+							break;
+							
 						default:
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
 							continue 3;
@@ -335,9 +345,11 @@ die();
 						/*case REQUEST_FULL_SERVICE:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
 							break;*/
+							
 						case REQUEST_PRESELECTION:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP];
 							break;
+							
 						default:
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
 							continue 3;
@@ -354,10 +366,22 @@ die();
 			
 			
 			// build request
-			if(!$this->_prvCurrentModule->BuildRequest($arrRequest))
+			$mixResponse = $this->_prvCurrentModule->BuildRequest($arrRequest);
+			if(!$mixResponse || is_int($mixResponse))
 			{
-				// log error & set status
-				$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: Request Build failed");
+				switch ($mixResponse)
+				{
+					case REQUEST_STATUS_DUPLICATE:
+					// set status of request in db
+						$this->_rptProvisioningReport->AddMessage("[ IGNORE ]\n\t\t- Reason: Duplicate Request");
+						$arrRequest['Status']		= REQUEST_STATUS_DUPLICATE;
+						break;
+					
+					case FALSE:
+					default:
+						// log error & set status
+						$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: Request Build failed");
+				}
 			}
 			else
 			{
@@ -367,13 +391,15 @@ die();
 					// set status of request in db
 					$this->_rptProvisioningReport->AddMessage("[   OK   ]");
 					$arrRequest['Status']		= REQUEST_STATUS_PENDING;
-					//$ubiUpdateRequest->Execute($arrRequest);
 				}
 				else
 				{
 					$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: Unable to add to log");
 				}
 			}
+			
+			// Update the DB
+			//$ubiUpdateRequest->Execute($arrRequest);
 		}
 		
 		$this->_rptProvisioningReport->AddMessage("\n[ SENDING REQUESTS ]\n");

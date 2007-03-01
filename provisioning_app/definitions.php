@@ -105,4 +105,5 @@ define("UNITEL_PROVISIONING_SERVER"			, "rslcom.com.au");
 define("UNITEL_PROVISIONING_USERNAME"		, "sp058");
 define("UNITEL_PROVISIONING_PASSWORD"		, "BuzzaBee06*#");
 define("UNITEL_REMOTE_DAILY_ORDER_DIR"		, "ebill_dailyorderfiles");
+define("UNITEL_REMOTE_PRESELECTION_DIR"		, "dailychurn")
 ?>

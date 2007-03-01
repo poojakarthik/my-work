@@ -89,6 +89,9 @@
 		
 		// Default delimeter is NULL (fixedwidth)
 		$this->_strDelimiter	= NULL;
+		
+		$this->_arrFullServiceRecords	= Array();
+		$this->_arrPreselectionRecords	= Array();
  	}
  	
   	//------------------------------------------------------------------------//
@@ -154,10 +157,15 @@
 		}
 		
 		// Write to the Provisioning Log
-		$this->_arrLog['Carrier']	= $this->_strModuleName;
+		$this->_arrLog['Carrier']	= $this->_intCarrier;
 		$this->_arrLog['Direction']	= REQUEST_DIRECTION_OUTGOING;
 		$this->_arrLog['Date']		= date("Y-m-d");
-		return $this->_insAddToLog->Execute($this->_arrLog);
+		$mixResponse = $this->_insAddToLog->Execute($this->_arrLog);
+		if ($mixResponse === FALSE)
+		{
+			Debug($this->_insAddToLog->Error());
+		}
+		return $mixResponse;
 	 }
 
 	//------------------------------------------------------------------------//

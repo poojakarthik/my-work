@@ -60,6 +60,7 @@
  	function  __construct($ptrDB)
  	{
 		$this->_strModuleName = "Optus";
+		$this->_intCarrier		= CARRIER_OPTUS;
 		
 		parent::__construct($ptrDB);
 		
@@ -111,8 +112,22 @@
 		$arrBuiltRequest['CARequired']			= '"n"';
 		$arrBuiltRequest['Lessee']				= '"n"';
 		
+		foreach ($this->_arrPreselectionRecords as $arrRecord)
+		{
+			if ($arrRecord['ServiceNo'] == $arrBuiltRequest['ServiceNo'])
+			{
+				// This request already exists in the file - DO NOT DUPLICATE
+				return REQUEST_STATUS_DUPLICATE;
+			}
+		}
+		
 		// Append this request
-		$this->_arrPreselectionRecords[]		= implode("\t", $arrBuiltRequest);
+		$this->_arrPreselectionRecords[]		= $arrBuiltRequest;
+		
+		// Add additional logging data
+		$this->_arrLog['Request']	= $arrRequest['Id'];
+		$this->_arrLog['Service']	= $arrRequest['Service'];
+		$this->_arrLog['Type']		= $arrRequest['RequestType'];
 		
 		return TRUE;
 	} 	
@@ -136,7 +151,15 @@
 		// Build Header Row
 		//$strPreselectionFilename	= date("Y-m-d_Hi").".xls";
 		$strPreselectionFilename	= date("Hi_Y-m-d_").$this->_intSequenceNo.".xls";
-		$strPreselectionHeaderRow	= '"Batch No"\t"ID No"\t"SP Name"\t"SP CASS A/C No"\t"Service No with area code"\t"CA Date dd/mm/yyy"\t"CA Required"\t"Lessee Yes/No"';
+		//$strPreselectionHeaderRow	= '"Batch No"\t"ID No"\t"SP Name"\t"SP CASS A/C No"\t"Service No with area code"\t"CA Date dd/mm/yyy"\t"CA Required"\t"Lessee Yes/No"';
+		$strPreselectionHeaderRow	=	"\"Batch No\"\t" .
+										"\"ID No\"\t" .
+										"\"SP Name\"\t" .
+										"\"SP CASS A/C No\"\t" .
+										"\"Service No with area code\"\t" .
+										"\"CA Date dd/mm/yyy\"\t" .
+										"\"CA Required\"\t" .
+										"\"Lessee Yes/No\"";
 		
 		// Get list of requests to generate
 		$arrResults = $this->_selGetRequests->FetchAll();
@@ -150,8 +173,9 @@
 			$resPreselectionFile = fopen(OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
 			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\n");
 			
-			foreach($this->_arrPreselectionRecords as $strRecord)
+			foreach($this->_arrPreselectionRecords as $arrBuiltRequest)
 			{
+				$strRecord = implode("\t", $arrBuiltRequest);
 				fwrite($resPreselectionFile, $strRecord."\n");
 			}
 			fclose($resPreselectionFile);

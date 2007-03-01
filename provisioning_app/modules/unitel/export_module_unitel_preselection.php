@@ -59,7 +59,8 @@
 	 */
  	function  __construct($ptrDB)
  	{
-		$this->_strModuleName = "Unitel";
+		$this->_strModuleName	= "Unitel";
+		$this->_intCarrier		= CARRIER_UNITEL;
 		
 		parent::__construct($ptrDB);
 		
@@ -88,71 +89,79 @@
 	 */
  	function BuildRequest($arrRequest)
 	{
+		$this->_selGetAddress					= new StatementSelect(	"Service LEFT OUTER JOIN ServiceAddress ON (ServiceAddress.Service = Service.Id)",
+																		"Service.FNN AS FNN, Service.Id AS ServiceId, ServiceAddress.*",
+																		"Service.Id = <Service>");
+		// Get Service address info
+		$arrWhere = Array();
+		$arrWhere['Service']	= $arrRequest['Service'];
+		$this->_selGetAddress->Execute($arrWhere);
+		$arrAddress = $this->_selGetAddress->Fetch();
+		
 		// Clean the request array
 		$arrBuiltRequest = Array();
-				
+		
 		switch ($arrRequest['RequestType'])
 		{
 			case REQUEST_PRESELECTION:
 				$arrBuiltRequest['RecordType']			= "11";
-				$arrBuiltRequest['ServiceNumber']		= $arrRequest['FNN'];
+				$arrBuiltRequest['ServiceNumber']		= $arrAddress['FNN'];
 				$arrBuiltRequest['AgreementDate']		= date("Ymd");
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
 				break;
 				
-			case REQUEST_BAR:
+			case REQUEST_BAR_SOFT:
+			case REQUEST_BAR_HARD:
 				$arrBuiltRequest['RecordType']			= "55";
-				$arrBuiltRequest['ServiceNumber']		= $arrRequest['FNN'];
+				$arrBuiltRequest['ServiceNumber']		= $arrAddress['FNN'];
 				$arrBuiltRequest['Action']				= "1";
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
 				break;
 				
-			case REQUEST_UNBAR:
+			case REQUEST_UNBAR_SOFT:
+			case REQUEST_UNBAR_HARD:
 				$arrBuiltRequest['RecordType']			= "55";
-				$arrBuiltRequest['ServiceNumber']		= $arrRequest['FNN'];
+				$arrBuiltRequest['ServiceNumber']		= $arrAddress['FNN'];
 				$arrBuiltRequest['Action']				= "0";
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
 				break;
 				
 			case REQUEST_ACTIVATION:
 				$arrBuiltRequest['RecordType']			= "10";
-				$arrBuiltRequest['ServiceNumber']			= $arrRequest['FNN'];
+				$arrBuiltRequest['ServiceNumber']		= $arrAddress['FNN'];
 				$arrBuiltRequest['AgreementDate']		= date("Ymd");
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
 				break;
 			
 			case REQUEST_DEACTIVATION:
 				$arrBuiltRequest['RecordType']			= "20";
-				$arrBuiltRequest['ServiceNumber']		= $arrRequest['FNN'];
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
+				$arrBuiltRequest['ServiceNumber']		= $arrAddress['FNN'];
 				break;
 			
 			case REQUEST_PRESELECTION_REVERSE:
 				$arrRequest['RecordType']				= "21";
-				$arrRequest['ServiceNumber']			= $arrRequest['FNN'];
-				
-				// Append to the array for this file
-				$arrPreselectionRecords[]				= implode($arrBuiltRequest);
+				$arrRequest['ServiceNumber']			= $arrAddress['FNN'];
 				break;
 			default:
 				// Unhandled Request type -> error
 				return FALSE;
 		}
 		
+		foreach ($this->_arrPreselectionRecords as $arrRecord)
+		{
+			if ($arrRecord['ServiceNumber'] == $arrBuiltRequest['ServiceNumber'] && $arrRecord['RecordType'] == $arrBuiltRequest['RecordType'])
+			{
+				// This request already exists in the file - DO NOT DUPLICATE
+				Debug("UNITEL PRESELECTION");
+				return REQUEST_STATUS_DUPLICATE;
+			}
+		}
+		
+		// Append to the array for this file
+		$this->_arrPreselectionRecords[]	= $arrBuiltRequest;
+		
 		// Add additional logging data
 		$this->_arrLog['Request']	= $arrRequest['Id'];
 		$this->_arrLog['Service']	= $arrRequest['Service'];
-		$this->_arrLog['Type']		= $arrRequest['Type'];
+		$this->_arrLog['Type']		= $arrRequest['RequestType'];
+		
+		return TRUE;
 	} 	
  	
   	//------------------------------------------------------------------------//
@@ -172,14 +181,14 @@
  	function SendRequest()
 	{
 		// Get the latest Sequence Numbers
-		$this->_selGetSequence->Execute(Array('Module' => "Unitel"));
-		if(!($arrResult = $this->_selGetSequence->FetchAll()))
+		$this->_selGetSequence->Execute(Array('Module' => "Unitel", 'Name' => "PreselectionFileSequence"));
+		if(!($arrResult = $this->_selGetSequence->Fetch()))
 		{
 			// Missing config definitions
 			return FALSE;
 		}
 		
-		$intPreselectionFileSequence	= ((int)$arrResult['PreselectionFileSequence']) + 1;
+		$intPreselectionFileSequence	= ((int)$arrResult['Value']) + 1;
 		
 		// Build Header Row
 		$strPreselectionFilename	= "sarsw".str_pad($intPreselectionFileSequence, 4, "0", STR_PAD_LEFT).".txt";
@@ -200,18 +209,18 @@
 			$resPreselectionFile = fopen(UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
 			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\n");
 			
-			foreach($this->_arrPreselectionRecords as $strRecord)
+			foreach($this->_arrPreselectionRecords as $arrRecord)
 			{
+				$strRecord = implode($arrRecord);
 				fwrite($resPreselectionFile, $strRecord."\n");
 			}
 			
-			fwrite($resPreselectionFile, $strPreselectionFooterRow."\n");
+			fwrite($resPreselectionFile, $strPreselectionFooterRow);
 			fclose($resPreselectionFile);
 		}
 		
 		// Upload to FTP
-		/* TODO: Uncomment this later on
-		$resFTPConnection = ftp_connect(UNITEL_PROVISIONING_SERVER);
+		/*$resFTPConnection = ftp_connect(UNITEL_PROVISIONING_SERVER);
 		ftp_login($resFTPConnection, UNITEL_PROVISIONING_USERNAME, UNITEL_PROVISIONING_PASSWORD);
 		
 		if(file_exists(UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename))
@@ -221,11 +230,11 @@
 			ftp_put($resFTPConnection, $strPreselectionFilename, UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
 		}
 		
-		ftp_close($resFTPConnection);
-		*/
+		ftp_close($resFTPConnection);*/
+		
 		
 		// Update database (Request & Config tables)
-		$this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence"), Array());
+		//$this->_updPreselectSequence->Execute(Array('Value' => "$intPreselectionFileSequence"), Array());
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;
