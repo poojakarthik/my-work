@@ -247,7 +247,7 @@ die();
 				$arrData['Status']		= PAYMENT_IMPORTED;
 				if ($this->_insPayment->Execute($arrData) === FALSE)
 				{
-
+					echo "Error Inserting Payment! -> ".Debug($this->_insPayment);
 				}
 				
 				// Increment sequence number
@@ -383,7 +383,7 @@ die();
 		
 		foreach($arrPayments as $arrPayment)
 		{
-			$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_LINE, Array('<Id>' => $arrPayment['Id']));
+			$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
 			
 			// set current payment
 			$this->_arrCurrentPayment = $arrPayment;
