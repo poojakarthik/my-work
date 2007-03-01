@@ -42,7 +42,7 @@ define("MSG_IMPORT_TITLE"				, "[ Importing Payment Records ]\n");
 define("MSG_NORMALISE_TITLE"			, "[ Normalising Payment Records ]\n");
 define("MSG_PROCESS_TITLE"				, "[ Processing Payment Records ]\n");
 define("MSG_FAIL"						, "[ FAILED ]");
-define("MSG_REASON"						, "\n\t- Reason: ");
+define("MSG_REASON"						, "\n\t\t- Reason: ");
 define("MSG_OK"							, "[   OK   ]");
 define("MSG_IGNORE"						, "[ IGNORE ]");
 define("MSG_NORMALISE_SUBTOTALS"		, "\t~ Normalised <Total> records in <Time> seconds.");
