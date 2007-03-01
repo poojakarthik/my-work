@@ -182,7 +182,7 @@
 		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
 		
 		$arrColumns						= $GLOBALS['dbaDatabase']->FetchClean("Charge");
-		$arrColumns ['CreatedOn']		= new MySQLStatement("NOW()");
+		$arrColumns ['CreatedOn']		= new MySQLFunction("NOW()");
 		$this->_insCharge				= new StatementInsert("Charge");
 		
 		$this->_selFindChargeOwner		= new StatementSelect(	"Account LEFT OUTER JOIN Service ON (Service.Account = Account.Id)",
@@ -861,7 +861,7 @@
 		$arrDefaultCharge ['Description']	= "";
 		$arrDefaultCharge ['ChargeType']	= "";
 		$arrDefaultCharge ['Amount']		= 0.0;
-		$arrDefaultCharge ['CreatedOn']		= new MySQLStatement("NOW()");
+		$arrDefaultCharge ['CreatedOn']		= new MySQLFunction("NOW()");
 		$arrDefaultCharge ['Status']		= CHARGE_APPROVED;
 		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
 		
