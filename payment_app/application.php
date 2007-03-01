@@ -103,7 +103,7 @@ die();
 		$arrColumns = Array();
 		$arrColumns['Id']		= NULL;
 		$arrColumns['Status']	= NULL;
-		$this->_ubiSavePaymentStatus	= new StatementUpdateById("Payment");
+		$this->_ubiSavePaymentStatus	= new StatementUpdateById("Payment", $arrColumns);
 		
 		$this->_selGetNormalisedPayments	= new StatementSelect("Payment", "*", "Status = ".PAYMENT_WAITING);
 		
