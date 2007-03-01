@@ -185,12 +185,12 @@
 		//$strTables = "Rate";
 		//$strWhere  = "1 = 1";
 		//$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "", 1);
-		
-		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
+		$strMyWhere					=	" AND Rate.Fleet 				= 0 \n";
+		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
 		
 		// fleet rate query
-		$strWhere					.=	" AND Rate.Fleet 				= 1 \n";
-		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere, "ServiceRateGroup.CreatedOn DESC", 1);
+		$strMyWhere					=	" AND Rate.Fleet 				= 1 \n";
+		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
 		
 		// Select CDR Query
 		$arrColumns = $this->db->FetchClean("CDR");
