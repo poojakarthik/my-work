@@ -181,7 +181,7 @@
 		
 		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
 		
-		$arrColumns						= $this->db->FetchClean("Charge");
+		$arrColumns						= $GLOBALS['dbaDatabase']->FetchClean("Charge");
 		$arrColumns ['CreatedOn']		= new MySQLStatement("NOW()");
 		$this->_insCharge				= new StatementInsert("Charge");
 		
