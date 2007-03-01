@@ -56,6 +56,8 @@
 	 														"AccountGroup.Archived = 0 AND Account.Archived = 0 AND (Account.Id = <Account> OR AccountGroup.Id = <Account>)",
 	 														NULL,
 	 														"1");
+		
+		$this->_arrDefine = NULL;
  	}
 
 	//------------------------------------------------------------------------//

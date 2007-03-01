@@ -66,6 +66,8 @@
 		$arrDefine['Amount']		['Validate'] = "/^\d+$/";
 		$arrDefine['ReferenceNo']	['Validate'] = "/^\d+$/";
 		$arrDefine['DatePaid']		['Validate'] = "/^\d{8}$/";
+		
+		$this->_arrDefine = $arrDefine;
  	}
 
 	//------------------------------------------------------------------------//

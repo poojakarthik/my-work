@@ -63,6 +63,8 @@
 		
 		$arrDefine['Amount']		['Validate'] = "/^\d+(\.\d{1,2}|)$/";
 		$arrDefine['AccountNo']		['Validate'] = "/^\d+$/";
+		
+		$this->_arrDefine = $arrDefine;
  	}
 
 	//------------------------------------------------------------------------//

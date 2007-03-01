@@ -105,6 +105,8 @@
 		$arrDefine['Amount']			['Validate'] = "/^\$\d+\.\d{2}$/";
 		$arrDefine['CustomerReference']	['Validate'] = "/^\d+$/";			// FIXME: Find out how customer ref #s are generated
 		$arrDefine['RemittanceDate']	['Validate'] = "/^\d{1,2}\/\d{1,2}\/\d{2}$/";
+		
+		$this->_arrDefine = $arrDefine;
  	}
 
 	//------------------------------------------------------------------------//

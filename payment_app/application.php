@@ -205,7 +205,7 @@ die();
 		while ($arrFile = $this->_selGetPaymentFiles->Fetch())
 		{
 			$intCount++;
-			$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE, Array('<File>' => TruncateName($arrFile['FileName'], 30)), FALSE);
+			$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE, Array('<Id>' => TruncateName($arrFile['FileName'], 30)), FALSE);
 			
 			// Make sure the file exists
 			if (!file_exists($arrFile['Location']))

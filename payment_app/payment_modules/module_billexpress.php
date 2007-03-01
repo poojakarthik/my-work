@@ -67,6 +67,8 @@
 		$arrDefine['Amount']		['Validate'] = "/^\d+$/";
 		$arrDefine['AccountNo']		['Validate'] = "/^\d+$/";
 		$arrDefine['Date1']			['Validate'] = "/^\d+$/";
+		
+		$this->_arrDefine = $arrDefine;
  	}
 
 	//------------------------------------------------------------------------//
@@ -111,7 +113,7 @@
  		$this->_Append('TXNReference', $mixValue);
  		
  		// PaidOn
- 		$mixValue	= _ConvertDate($this->_FetchRaw('Date1'));
+ 		$mixValue	= $this->_ConvertDate($this->_FetchRaw('Date1'));
  		$this->_Append('PaidOn', $mixValue);
  		
  		// Call the base module's Normalise() to do general tasks
