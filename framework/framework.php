@@ -181,7 +181,14 @@
 		
 		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
 		
+		$arrColumns						= $this->db->FetchClean("Charge");
+		$arrColumns ['CreatedOn']		= new MySQLStatement("NOW()");
 		$this->_insCharge				= new StatementInsert("Charge");
+		
+		$this->_selFindChargeOwner		= new StatementSelect(	"Account LEFT OUTER JOIN Service ON (Service.Account = Account.Id)",
+																"Account.AccountGroup AS AccountGroup, Account.Id AS Account, Service.Id AS Service",
+																"( <Account> IS NULL   OR   Account.Id = <Account> ) AND " .
+																"( <Service> IS NULL   OR   Service.Id = <Service> )");
 
 	 }
 	 
@@ -803,19 +810,64 @@
 	 	return false;
 	 }
 	 
-	 
+ 	//------------------------------------------------------------------------//
+	// AddCharge
+	//------------------------------------------------------------------------//
+	/**
+	 * AddCharge()
+	 *
+	 * Find the record type from a Service Type & Record Code
+	 *
+	 * Find the record type from a Service Type & Record Code
+	 * 
+	 *
+	 * @param	int		intServiceType		Service Type Constant
+	 * @param	string	strRecordCode		Vixen Record Type Code
+	 * @return	int		Record Type Id					
+	 *
+	 * @method
+	 */
 	 function AddCharge($arrCharge)
 	 {
-		// default
-		$arrDefaultCharge ['Nature']	= 'DR';
-		$arrDefaultCharge ['Invoice']	= NULL;
-		$arrDefaultCharge ['Notes']		= "";		
-		$arrDefaultCharge ['Status']	= CHARGE_APPROVED;
+		// make sure we have enough data to insert...
+		if ($arrCharge['Service'] === NULL && $arrCharge['Account'] === NULL)
+		{
+			// not enough data to define ownership
+			return FALSE;
+		}
 		
+		// Grab ownership data
+		if ($this->_selFindChargeOwner->Execute($arrCharge) === FALSE)
+		{
+			Debug($this->_selFindChargeOwner);
+			return FALSE;
+		}
+		$arrResponse = $this->_selFindChargeOwner->Fetch();
+		
+		// Only use data we need
+		if ($arrCharge['Account'] === NULL)
+		{
+			$arrCharge['Account'] = $arrResponse['Account'];
+		}
+		if ($arrCharge['AccountGroup'] === NULL)
+		{
+			$arrCharge['AccountGroup'] = $arrResponse['AccountGroup'];
+		}
+		
+		// merge with default data
+		$arrDefaultCharge ['Nature']		= 'DR';
+		$arrDefaultCharge ['Invoice']		= NULL;
+		$arrDefaultCharge ['Notes']			= "";
+		$arrDefaultCharge ['Description']	= "";
+		$arrDefaultCharge ['ChargeType']	= "";
+		$arrDefaultCharge ['Amount']		= 0.0;
+		$arrDefaultCharge ['CreatedOn']		= new MySQLStatement("NOW()");
+		$arrDefaultCharge ['Status']		= CHARGE_APPROVED;
 		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
 		
-		$insId = $this->_insCharge->Execute ($arrCharge);
-			
+		// Insert into DB
+		$insId = $this->_insCharge->Execute($arrCharge);
+		
 		return $insId;
 	 }
  }
