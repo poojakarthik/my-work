@@ -179,6 +179,10 @@
 			{
 				$intMaxId = max($intMaxId, $arrCDR['Id']);
 				$arrRow = Array($arrCDR['Id'], $arrCDR['Account'], $arrCDR['Service'], $arrCDR['FNN'], $arrCDR['Source'], $arrCDR['Destination'], $arrCDR['Description'], $arrCDR['Units'], $arrCDR['Cost'], $arrCDR['Charge'], $arrCDR['Credit'], $arrCDR['Rate'], $arrCDR['DestinationCode'], $arrCDR['ServiceType'], $arrCDR['RecordType'], $arrCDR['Status'], $arrCDR['Carrier'], $arrCDR['StartDatetime'], $arrCDR['EndDatetime']);
+				if ($bolReRate === TRUE)
+				{
+					$arrRow[] = money_format('%i',$this->appRating->RateCDR($arrCDR));
+				}
 				$tblCDR->AddRow($arrRow, "cdr_view.php?Id={$arrCDR['Id']}");
 			}
 			$this->AddTable($tblCDR);

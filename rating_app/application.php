@@ -252,10 +252,10 @@
 
 		$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
 		$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
-		
+
 		// set current CDR
 		$this->_arrCurrentCDR = $arrCDR;
-	
+		
 		// Find Rate for this CDR
 		if (!$this->_arrCurrentRate = $this->_FindRate())
 		{
@@ -574,25 +574,27 @@
 	 {
 	 	$bolFleet = FALSE;
 	 	
+		$arrAliases = Array();
+		
 	 	// Set up the rate-finding query
-		$strAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
+		$arrAliases['Destination']	= $this->_arrCurrentCDR['DestinationCode'];
 		if (!$this->_arrCurrentCDR['DestinationCode'])
 		{
 			// TODO!!!! - Context
-			$strAliases['Destination']	= 0;
+			$arrAliases['Destination']	= 0;
 		}
-	 	$strAliases['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
+	 	$arrAliases['DateTime']		= $this->_arrCurrentCDR['StartDatetime'];
 	 	$intTime					= strtotime($this->_arrCurrentCDR['StartDatetime']);
-	 	$strAliases['Time']			= date("H:i:s", $intTime);
+	 	$arrAliases['Time']			= date("H:i:s", $intTime);
 	 	$strDay						= date("l", $intTime);
-	 	$strAliases['Monday']		= ($strDay == "Monday") ? TRUE : DONKEY;
-	 	$strAliases['Tuesday']		= ($strDay == "Tuesday") ? TRUE : DONKEY;
-	 	$strAliases['Wednesday']	= ($strDay == "Wednesday") ? TRUE : DONKEY;
-	 	$strAliases['Thursday']		= ($strDay == "Thursday") ? TRUE : DONKEY;
-	 	$strAliases['Friday']		= ($strDay == "Friday") ? TRUE : DONKEY;
-	 	$strAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
-	 	$strAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
-		$strAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
+	 	$arrAliases['Monday']		= ($strDay == "Monday") ? TRUE : DONKEY;
+	 	$arrAliases['Tuesday']		= ($strDay == "Tuesday") ? TRUE : DONKEY;
+	 	$arrAliases['Wednesday']	= ($strDay == "Wednesday") ? TRUE : DONKEY;
+	 	$arrAliases['Thursday']		= ($strDay == "Thursday") ? TRUE : DONKEY;
+	 	$arrAliases['Friday']		= ($strDay == "Friday") ? TRUE : DONKEY;
+	 	$arrAliases['Saturday']		= ($strDay == "Saturday") ? TRUE : DONKEY;
+	 	$arrAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
+		$arrAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 		
 		// find destination account & Service
 		$arrWhere['Prefix']			= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
@@ -602,13 +604,13 @@
 		$arrDestinationDetails 		= $this->_selDestinationDetails->Fetch();
 		$intDestinationAccount 		= $arrDestinationDetails['Account'];
 		$intDestinationService 		= $arrDestinationDetails['Id'];
-		
+
 		// is the destination service on the same account
 		if ($intDestinationAccount && $intDestinationAccount == $this->_arrCurrentCDR['Account'])
 		{
 			// does the destination have a fleet rate
-		 	$strAliases['Service']	= $intDestinationService;
-			$this->_selFindFleetRate->Execute($strAliases);
+		 	$arrAliases['Service']	= $intDestinationService;
+			$this->_selFindFleetRate->Execute($arrAliases);
 			$arrSourceRate = $this->_selFindFleetRate->Fetch();
 			if ($arrSourceRate['Id'])
 			{
@@ -617,7 +619,7 @@
 		}
 
 		// Set This Service
-		$strAliases['Service']		= $this->_arrCurrentCDR['Service'];
+		$arrAliases['Service']		= $this->_arrCurrentCDR['Service'];
 		
 		// no rate selected
 		$arrRate = FALSE;
@@ -626,17 +628,17 @@
 		if ($bolFleet === TRUE)
 		{
 			// look for a fleet rate
-			$this->_selFindFleetRate->Execute($strAliases);
+			$this->_selFindFleetRate->Execute($arrAliases);
 			if (!($arrRate = $this->_selFindFleetRate->Fetch()))
 			{
 				// no fleet rate, look for a normal rate
-				$this->_selFindRate->Execute($strAliases);
+				$this->_selFindRate->Execute($arrAliases);
 			}
 		}
 		else
 		{
 			// look for a normal rate
-			$this->_selFindRate->Execute($strAliases);
+			$this->_selFindRate->Execute($arrAliases);
 		}
 		
 		//FAKE : For testing only

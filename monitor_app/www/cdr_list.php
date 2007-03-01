@@ -78,7 +78,7 @@ if($strCompare)
 }
 else	
 {
-	$objPage->ShowCDRList($arrWhere, $intStart, $intLimit);
+	$objPage->ShowCDRList($arrWhere, $intStart, $intLimit, TRUE);
 }
 
 // display the page
