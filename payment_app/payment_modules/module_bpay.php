@@ -195,7 +195,7 @@
  	{
 		Debug("Date: ".$strDate);
 		$arrElements	= explode("/", $strDate);
-		$strYear		= "20".$arrElements[2];
+		$strYear		= $arrElements[2];
 		$strMonth		= str_pad($arrElements[1], 2, "0", STR_PAD_LEFT);
 		$strDay			= str_pad($arrElements[0], 2, "0", STR_PAD_LEFT);
 		$strValidDate	= $strYear."-".$strMonth."-".$strDay; 
