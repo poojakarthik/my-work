@@ -337,8 +337,6 @@ die();
 			}
 			
 			// save the payment to DB
-			echo "its good\n";
-			Debug($arrNormalised);
 			$arrNormalised['Status'] = PAYMENT_WAITING;
 			$intResult = $this->_ubiPayment->Execute($arrNormalised);
 			if($intResult === FALSE)
