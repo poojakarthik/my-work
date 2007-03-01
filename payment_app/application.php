@@ -98,7 +98,7 @@ die();
 		$arrColumns['Id']		= "Payment.Id";
 		$arrColumns['Payment']	= "Payment.Payment";
 		$arrColumns['FileType']	= "FileImport.FileType";
-		$this->_selGetImportedPayments	= new StatementSelect("Payment JOIN FileImport ON Payment.File = FileImport.Id", $arrColumns, "Status = ".PAYMENT_IMPORTED, NULL, "1000");
+		$this->_selGetImportedPayments	= new StatementSelect("Payment JOIN FileImport ON Payment.File = FileImport.Id", $arrColumns, "Payment.Status = ".PAYMENT_IMPORTED, NULL, "1000");
 		
 		$arrColumns = Array();
 		$arrColumns['Id']		= NULL;

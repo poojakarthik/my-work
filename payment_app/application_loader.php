@@ -101,6 +101,12 @@ require_once($strFrameworkDir."exception_vixen.php");
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
+// load modules
+require_once($strApplicationDir."payment_modules/base_module.php");
+require_once($strApplicationDir."payment_modules/module_billexpress.php");
+require_once($strApplicationDir."payment_modules/module_bpay.php");
+require_once($strApplicationDir."payment_modules/module_securepay.php");
+
 // load application 
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");
