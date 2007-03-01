@@ -199,7 +199,7 @@
 		//--------------------------------//
 		
 		$arrConfig['Define']["Payments"]	["Name"]														= "Payments";
-		$arrConfig['Define']["Payments"]	["Carrier"]														= 0;
+		$arrConfig['Define']["Payments"]	["Carrier"]														= CARRIER_PAYMENT;
  		$arrConfig['Define']["Payments"]	["Type"]														= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["Payments"]	["Server"]														= "192.168.1.13";
  		$arrConfig['Define']["Payments"]	["Username"]													= "telcoblue";

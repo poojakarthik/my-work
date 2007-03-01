@@ -81,7 +81,7 @@ die();
 		$this->_rptPaymentReport = new Report("Payments Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
-		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", "Carrier = 0 AND Status = ".CDRFILE_WAITING);
+		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", "Carrier = ".CARRIER_PAYMENT." AND Status = ".CDRFILE_WAITING);
 		
 		//$arrColumns['Id']			= NULL;
 		$arrColumns['Status']		= NULL;
