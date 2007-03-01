@@ -81,9 +81,9 @@ die();
 		$this->_rptPaymentReport = new Report("Payments Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
-		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", "Status = ".PAYMENT_WAITING);
+		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", "Carrier = 0 AND Status = ".CDRFILE_WAITING);
 		
-		$arrColumns['Id']			= NULL;
+		//$arrColumns['Id']			= NULL;
 		$arrColumns['Status']		= NULL;
 		$this->_ubiPaymentFile		= new StatementUpdateById("FileImport", $arrColumns);
 		
@@ -212,7 +212,7 @@ die();
 			{
 				// Report the error, and UPDATE the database with a new status, then move to the next file
 				$arrColumns['Id']		= $arrFile['Id'];
-				$arrColumns['Status']	= PAYMENT_BAD_IMPORT;
+				$arrColumns['Status']	= CDRFILE_IMPORT_FAILED;
 				if ($this->_ubiPaymentFile->Execute($arrFile) === FALSE)
 				{
 
@@ -220,6 +220,15 @@ die();
 				
 				// Add to the Normalisation report
 				$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Cannot locate file '".$arrFile['Location']."'");
+				continue;
+			}
+			
+			// update file status
+			$arrColumns = Array();
+			$arrColumns['Id']		= $arrFile['Id'];
+			$arrColumns['Status']	= CDRFILE_IMPORTING;
+			if ($this->_ubiPaymentFile->Execute($arrFile) === FALSE)
+			{
 				continue;
 			}
 
@@ -243,6 +252,15 @@ die();
 			}
 			$intPassed++;
 			$this->_rptPaymentReport->AddMessage(MSG_OK);
+			
+			// update file status
+			$arrColumns = Array();
+			$arrColumns['Id']		= $arrFile['Id'];
+			$arrColumns['Status']	= CDRFILE_IMPORTED;
+			if ($this->_ubiPaymentFile->Execute($arrFile) === FALSE)
+			{
+			
+			}
 		}
 		
 		// Report totals
