@@ -117,6 +117,8 @@ die();
 		
 		$this->_ubiInvoice					= new StatementUpdateById("Invoice");
 		
+		$this->_ubiSaveNormalisedPayment	= new StatementUpdateById("Payment");
+		
 		// Payment modules
 		$this->_arrPaymentModules[PAYMENT_TYPE_BILLEXPRESS]	= new PaymentModuleBillExpress();
 		$this->_arrPaymentModules[PAYMENT_TYPE_BPAY]		= new PaymentModuleBPay();
@@ -331,11 +333,12 @@ die();
 			}
 			
 			// save the payment to DB
+			Debug($arrNormalised);
 			$arrNormalised['Status'] = PAYMENT_WAITING;
-			$intResult = $this->_ubiSaveNormalisedPayment->Execute($arrNormalised);
+			$intResult = $this->_ubiPayment->Execute($arrNormalised);
 			if($intResult === FALSE)
 			{
-				$this->_ubiSaveNormalisedPayment->Error();
+				$this->_ubiPayment->Error();
 			}
 			elseif(!$intResult)
 			{
