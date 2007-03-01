@@ -52,7 +52,7 @@
  		$this->_strEnclosedBy	= NULL;
  		
 	 	$this->_selGetAccountGroup	= new StatementSelect(	"AccountGroup LEFT OUTER JOIN Account ON AccountGroup.Id = Account.AccountGroup",
-	 														"AccountGroup.Id, Account.Id",
+	 														"AccountGroup.Id AS AccountGroup",
 	 														"AccountGroup.Archived = 0 AND Account.Archived = 0 AND (Account.Id = <Account> OR AccountGroup.Id = <Account>)",
 	 														NULL,
 	 														"1");
@@ -342,7 +342,7 @@
 			// There was no match
 			return FALSE;
 		}
-		return $arrData[0];
+		return $arrData['AccountGroup'];
 	 }
  }
 ?>
