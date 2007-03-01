@@ -50,7 +50,7 @@ define("MSG_PROCESS_SUBTOTALS"			, "\t~ Processed <Total> records in <Time> seco
 define("MSG_IMPORT_FOOTER"				, "\nImported <Total> files in <Time> seconds.  <Passed> passed, <Failed> failed.\n");
 define("MSG_NORMALISE_FOOTER"			, "\nNormalised <Total> records in <Time> seconds.  <Passed> passed, <Failed> failed.\n");
 define("MSG_PROCESS_FOOTER"				, "\nProcessed <Total> payments in <Time> seconds.  <Passed> passed, <Failed> failed.\n");
-define("MSG_IMPORT_LINE"				, "\t+ Importing payment file #<Id>...\t\t");
+define("MSG_IMPORT_LINE"				, "\t+ Importing payment file <Id>...\t\t");
 define("MSG_NORMALISE_LINE"				, "\t+ Normalising record #<Id>...\t\t\t\t");
 define("MSG_PROCESS_LINE"				, "\t* Processing payment #<Id>...\t\t\t\t");
 define("MSG_INVOICE_LINE"				, "\t\t+ Paying Invoice #<Id>...\t\t\t");
