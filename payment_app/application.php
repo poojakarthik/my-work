@@ -205,7 +205,7 @@ die();
 		while ($arrFile = $this->_selGetPaymentFiles->Fetch())
 		{
 			$intCount++;
-			$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE, Array('<File>' => TruncateName($arrFile['FileName'], 30)));
+			$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE, Array('<File>' => TruncateName($arrFile['FileName'], 30)), FALSE);
 			
 			// Make sure the file exists
 			if (!file_exists($arrFile['Location']))
@@ -266,8 +266,8 @@ die();
 		// Report totals
 		$arrReportLine['<Total>']		= $intCount;
 		$arrReportLine['<Time>']		= $this->Framework->LapWatch();
-		$arrReportLine['<Pass>']		= $intPassed;
-		$arrReportLine['<Fail>']		= $intCount - $intPassed;
+		$arrReportLine['<Passed>']		= $intPassed;
+		$arrReportLine['<Failed>']		= $intCount - $intPassed;
 		$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_FOOTER, $arrReportLine);
 	 }
 	
