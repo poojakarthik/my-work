@@ -323,7 +323,7 @@ die();
 						$intStatus = $arrNormalised;
 						break;
 					default:
-						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."An unknown error occurred with code ".(int)$arrNormalised.".");
+						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."An unknown error occurred with code ".(int)$arrNormalised." in module ".GetConstantDescription($arrPayment['FileType'], 'PaymentStatus').".");
 						$intStatus = PAYMENT_BAD_NORMALISE;
 				}
 				$arrNormalised	= Array();
