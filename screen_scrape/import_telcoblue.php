@@ -1081,7 +1081,7 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%r  DIED  %n]\n");
 		}
 	}
-	*/
+	
 	
 	// cost centres
 	while ($arrAccount = $objDecoder->FetchCostCentre ())
