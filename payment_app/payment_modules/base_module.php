@@ -81,12 +81,11 @@
 		$arrValid = Array();
 		
 		$arrValid[] = preg_match("/^\d{4}-[01]\d-[0-3]\d$/", $this->_arrNormalisedData['PaidOn']);			// 1
-		Debug($this->_arrNormalisedData['PaidOn']);
-		$arrValid[] = (bool)$this->_arrNormalisedData['CarrierRef'];										// 2
-		$arrValid[] = is_float($this->_arrNormalisedData['Amount']);										// 3
-		$arrValid[] = (bool)$this->_arrNormalisedData['TXNReference'];										// 4
-		$arrValid[] = (bool)$this->_arrNormalisedData['EnteredBy'];											// 5
-		$arrValid[] = ($this->_arrNormalisedData['Amount'] == $this->_arrNormalisedData['Balance']);		// 6
+		//$arrValid[] = (bool)$this->_arrNormalisedData['CarrierRef'];
+		$arrValid[] = is_float($this->_arrNormalisedData['Amount']);										// 2
+		$arrValid[] = (bool)$this->_arrNormalisedData['TXNReference'];										// 3
+		$arrValid[] = (bool)$this->_arrNormalisedData['EnteredBy'];											// 4
+		$arrValid[] = ($this->_arrNormalisedData['Amount'] == $this->_arrNormalisedData['Balance']);		// 5
 
 		$i = 0;
 		foreach ($arrValid as $bolValid)

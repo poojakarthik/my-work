@@ -193,7 +193,6 @@
 	 */
  	function _ConvertDate($strDate)
  	{
-		Debug("Date: ".$strDate);
 		$arrElements	= explode("/", $strDate);
 		$strYear		= $arrElements[2];
 		$strMonth		= str_pad($arrElements[1], 2, "0", STR_PAD_LEFT);
