@@ -25,7 +25,7 @@
  *
  */
  
-echo "<pre>";
+//echo "<pre>";
 
 // Application entry point - create an instance of the application object
 $appPayment = new ApplicationPayment($arrConfig);
@@ -35,7 +35,7 @@ $appPayment->Execute();
 
 // finished
 echo("\n-- End of Payment --\n");
-echo "</pre>";
+//echo "</pre>";
 die();
 
 
@@ -432,7 +432,7 @@ die();
 			// Process successful
 			$this->_rptPaymentsReport->AddMessage(MSG_OK);
 		}
-		
+		return $intCount;
 	 }
 	 
 	//------------------------------------------------------------------------//

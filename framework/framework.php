@@ -180,6 +180,8 @@
 		*/
 		
 		$this->_selGetCDR				= new StatementSelect("CDR", "CDR.CDR AS CDR", "Id = <Id>");
+		
+		$this->_insCharge				= new StatementInsert("Charge");
 
 	 }
 	 
@@ -799,6 +801,22 @@
 		
 		// Return false if there was no match
 	 	return false;
+	 }
+	 
+	 
+	 function AddCharge($arrCharge)
+	 {
+		// default
+		$arrDefaultCharge ['Nature']	= 'DR';
+		$arrDefaultCharge ['Invoice']	= NULL;
+		$arrDefaultCharge ['Notes']		= "";		
+		$arrDefaultCharge ['Status']	= CHARGE_APPROVED;
+		
+		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
+		
+		$insId = $this->_insCharge->Execute ($arrCharge);
+			
+		return $insId;
 	 }
  }
 
