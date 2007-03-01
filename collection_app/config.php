@@ -122,7 +122,7 @@
 		*/
 		
 		
-		
+/*		
 	
 		
 		// TESTING DEFINITIONS
@@ -193,13 +193,13 @@
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
 	
-	
+*/
 		//--------------------------------//
 		// PAYMENT COLLECTION DEFINITIONS //
 		//--------------------------------//
 		
 		$arrConfig['Define']["Payments"]	["Name"]														= "Payments";
-		$arrConfig['Define']["Payments"]	["Carrier"]														= CARRIER_UNITEL;
+		$arrConfig['Define']["Payments"]	["Carrier"]														= 0;
  		$arrConfig['Define']["Payments"]	["Type"]														= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["Payments"]	["Server"]														= "192.168.1.13";
  		$arrConfig['Define']["Payments"]	["Username"]													= "telcoblue";
