@@ -304,19 +304,22 @@ die();
 			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']));
 			// use payment module to decode the payment
 			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment);
-			if($arrNormalised['Status'] != $arrPayment['Status'])
+			if($arrNormalised['Status'] !== $arrPayment['Status'] || !is_array($arrNormalised))
 			{
 				// An error has occurred
 				switch($arrNormalised)
 				{
 					case PAYMENT_CANT_NORMALISE_HEADER:
 						$this->_rptPaymentReport->AddMessage(MSG_IGNORE.MSG_REASON."Header Record");
+						$intStatus = $arrNormalised;
 						break;
 					case PAYMENT_CANT_NORMALISE_FOOTER:
 						$this->_rptPaymentReport->AddMessage(MSG_IGNORE.MSG_REASON."Footer Record");
+						$intStatus = $arrNormalised;
 						break;
 					case PAYMENT_CANT_NORMALISE_INVALID:
 						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Not a vaild Payment Record");
+						$intStatus = $arrNormalised;
 						break;
 					default:
 						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."An unknown error occurred with code ".(int)$arrNormalised.".");
