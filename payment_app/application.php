@@ -302,6 +302,13 @@ die();
 		$intPassed = 0;
 		foreach($arrPayments as $arrPayment)
 		{
+			// <DEBUG>
+			if ($arrPayment['FileType'] != PAYMENT_TYPE_BPAY)
+			{
+				continue;
+			}
+			// </DEBUG>
+			
 			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']));
 			// use payment module to decode the payment
 			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment['Payment']);
