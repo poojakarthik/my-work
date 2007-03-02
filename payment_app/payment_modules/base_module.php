@@ -89,22 +89,22 @@
 		
 		if (!$arrValid[] = is_float($this->_arrNormalisedData['Amount']))									// 2
 		{
-			Debug($this->_arrNormalisedData['PaidOn']);
+			Debug($this->_arrNormalisedData['Amount']);
 		}
 		
 		if (!$arrValid[] = (bool)$this->_arrNormalisedData['TXNReference'])									// 3
 		{
-			Debug($this->_arrNormalisedData['PaidOn']);
+			Debug($this->_arrNormalisedData['TXNReference']);
 		}
 		
 		if (!$arrValid[] = (bool)$this->_arrNormalisedData['EnteredBy'])									// 4
 		{
-			Debug($this->_arrNormalisedData['PaidOn']);
+			Debug($this->_arrNormalisedData['EnteredBy']);
 		}
 		
 		if (!$arrValid[] = ($this->_arrNormalisedData['Amount'] == $this->_arrNormalisedData['Balance']))	// 5
 		{
-			Debug($this->_arrNormalisedData['PaidOn']);
+			Debug($this->_arrNormalisedData['Balance']);
 		}
 
 		$i = 0;
