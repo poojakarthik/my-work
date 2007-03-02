@@ -320,6 +320,7 @@
 
 		
 		// change status of CDR credits
+		$arrColumns = Array();
 		$arrColumns['Status']	= CDR_CREDITED;
 		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
 		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
