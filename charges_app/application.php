@@ -424,6 +424,177 @@
 		// return count
 		return $intCount;
 	 }
+	
+	//------------------------------------------------------------------------//
+	// AddActiveInboundFees
+	//------------------------------------------------------------------------//
+	/**
+	 * AddActiveInboundFees()
+	 *
+	 * Add Active Inbound Fees
+	 *
+	 * Add Active Inbound Fees
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
+	 function AddActiveInboundFees()
+	 {
+	 	// set up charge
+		$arrCharge = Array();
+		$arrCharge ['Nature']		= 'DR';
+		$arrCharge ['Description']	= "Active Inbound Service Fee";
+		$arrCharge ['ChargeType']	= "INB15";
+		$arrCharge ['Amount']		= 15.00;
+		$arrCharge ['Status']		= CHARGE_APPROVED;
+		
+	 	// for each active inbound service
+		$intCount = 0;
+		$selINB15Services = new StatementSelect('CDR', 'Service, Account, AccountGroup, COUNT(Id) AS CDRCount', 'Credit = 0 AND Status = '.CDR_RATED.' AND ServiceType = '.SERVICE_TYPE_INBOUND, NULL, NULL, "Service \n HAVING CDRCount > 0");
+		$selINB15Services->Execute();
+		echo("Service : CDR Count\n\n");
+		while ($arrService = $selINB15Services->Fetch())
+		{
+			// add to report
+			//TODO!rich! replace this echo with report output
+			echo("{$arrService['Service']} : {$arrService['CDRCount']}");
+			
+			// add to the count
+			$intCount++;
+			
+			// charge late payment fee
+			$arrCharge['Service'] 		= $arrService['Service'];
+			$arrCharge['Account'] 		= $arrService['Account'];
+			$arrCharge['AccountGroup'] 	= $arrService['AccountGroup'];
+			$this->Framework->AddCharge($arrCharge);
+		}
+		
+		// return count
+		return $intCount;
+	 }
+	
+	//------------------------------------------------------------------------//
+	// AddPinnacleMobileFees
+	//------------------------------------------------------------------------//
+	/**
+	 * AddPinnacleMobileFees()
+	 *
+	 * Add Pinnacle Mobile Fees
+	 *
+	 * Add Pinnacle Mobile Fees
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
+	 function AddPinnacleMobileFees()
+	 {
+	 	// set up charge
+		$arrCharge = Array();
+		$arrCharge ['Nature']		= 'DR';
+		$arrCharge ['Description']	= "Pinnacle Mobile Service Fee";
+		$arrCharge ['ChargeType']	= "PM15";
+		$arrCharge ['Amount']		= 15.00;
+		$arrCharge ['Status']		= CHARGE_APPROVED;
+		
+	 	// for each Pinnacle Mobile Service
+		$intCount = 0;
+		$selPM15Services = new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, RatePlan",
+												"Service, Account, AccountGroup",
+												"RatePlan.Id = ServiceRatePlan.RatePlan AND " .
+												"RatePlan.Name = 'Pinnacle' AND " .
+												"RatePlan.ServiceType = ".SERVICE_TYPE_MOBILE." AND " .
+												"ServiceRatePlan.Id = (" .
+												" SELECT SRP.Id" .
+												" FROM ServiceRatePlan SRP" .
+												" WHERE SRP.Service = Service.Id" .
+												" AND NOW() BETWEEN SRP.StartDatetime AND SRP.EndDatetime" .
+												" ORDER BY CreatedOn DESC" .
+												" LIMIT 1 )");
+		$selPM15Services->Execute();
+		echo("Service\n\n");
+		while ($arrService = $selPM15Services->Fetch())
+		{
+			// add to report
+			//TODO!rich! replace this echo with report output
+			echo("{$arrService['Service']}");
+			
+			// add to the count
+			$intCount++;
+			
+			// charge late payment fee
+			$arrCharge['Service'] 		= $arrService['Service'];
+			$arrCharge['Account'] 		= $arrService['Account'];
+			$arrCharge['AccountGroup'] 	= $arrService['AccountGroup'];
+			$this->Framework->AddCharge($arrCharge);
+		}
+		
+		// return count
+		return $intCount;
+	 }
+	
+	//------------------------------------------------------------------------//
+	// AddLLSAndECredits
+	//------------------------------------------------------------------------//
+	/**
+	 * AddLLSAndECredits()
+	 *
+	 * Add Landline S&E Credits
+	 *
+	 * Add Landline S&E Credits
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
+	 function AddLLSAndECredits()
+	 {
+	 	// set up charge
+		$arrCharge = Array();
+		$arrCharge ['Nature']		= 'CR';
+		$arrCharge ['ChargeType']	= "SEC";
+		$arrCharge ['Status']		= CHARGE_APPROVED;
+		
+	 	// for each LL S&E Credit CDR
+		$intCount = 0;
+		// RecordType 21 is Landline S&E
+		$selSECCDRs = new StatementSelect(	"CDR",
+											"Id, Service, Account, AccountGroup, Description, Charge",
+											"Credit = 1 AND " .
+											"RecordType = 21 AND " .
+											"Status = CDR_RATED");
+		$arrCols = Array();
+		$arrCols['Status']	= NULL;
+		$ubiSECCDR = new StatementUpdateById("CDR", $arrCols);
+		
+		$selSECCDRs->Execute();
+		echo("CDR Id : Credited\n\n");
+		while ($arrCredit = $selSECCDRs->Fetch())
+		{
+			// add to report
+			//TODO!rich! replace this echo with report output
+			echo("{$arrCredit['Id']} : {$arrCredit['Charge']}");
+			
+			// add to the count
+			$intCount++;
+			
+			// charge late payment fee
+			$arrCharge['Service'] 		= $arrCredit['Service'];
+			$arrCharge['Account'] 		= $arrCredit['Account'];
+			$arrCharge['AccountGroup'] 	= $arrCredit['AccountGroup'];
+			$arrCharge['Description']	= $arrCredit['Description'];
+			$arrCharge['Amount']		= $arrCredit['Charge'];
+			$this->Framework->AddCharge($arrCharge);
+			
+			// Update the CDR
+			$arrCredit['Status']		= CDR_CREDIT_ADDED;
+			$ubiSECCDR->Execute($arrCredit);
+		}
+		
+		// return count
+		return $intCount;
+	 }
  }
 
 
