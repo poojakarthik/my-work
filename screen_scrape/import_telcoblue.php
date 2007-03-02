@@ -853,7 +853,7 @@ Blue Shared 500 						25
 	require_once('vixen_import.php');
 	$objImport = new VixenImport($arrConfig);
 	
-	
+/*	
 	// Truncate Tables
 	echo "Truncating Tables\n";
 	$objImport->Truncate('Account');
@@ -885,8 +885,9 @@ Blue Shared 500 						25
 	$objImport->Truncate('RatePlan');
 	$objImport->Truncate('RatePlanRateGroup');
 	$objImport->Truncate('RatePlanRecurringCharge');
-
+*/
 	$objImport->Truncate('RecurringCharge');
+/*
 	$objImport->Truncate('RecurringChargeType');
 	$objImport->Truncate('Request');
 	$objImport->Truncate('Service');
@@ -901,8 +902,8 @@ Blue Shared 500 						25
 	$objImport->Truncate('ServiceRecurringCharge');
 	$objImport->Truncate('ServiceTotal');
 	$objImport->Truncate('ServiceTypeTotal');
-	
-	
+*/
+/*	
 	// clean import array
 	$arrImport = Array();
 	
@@ -1237,7 +1238,7 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%b  NONE  %n]\n");
 		}
 	}
-	
+*/	
 	// recurring charges
 	while ($arrRecurringCharges = $objDecoder->FetchRecurringCharges ())
 	{
@@ -1261,7 +1262,7 @@ Blue Shared 500 						25
 			echo Console_Color::convert("[%b  NONE  %n]\n");
 		}
 	}
-	
+/*	
 	// Add Passwords
 	// This is last because it's not as important and it takes forever
 	while ($arrRow = $objDecoder->FetchPassword ())
@@ -1279,7 +1280,7 @@ Blue Shared 500 						25
 		}
 	}
 
-	
+*/
 	//finish
 	echo "Done\n";
 	echo "Added : $intCustomerCount Accounts\n";
