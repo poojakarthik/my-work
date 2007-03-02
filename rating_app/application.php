@@ -600,17 +600,17 @@
 		
 		// find destination account & Service
 		$arrWhere['Prefix']			= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
-		$arrWhere['SNN']			= '9_'.substr($this->_arrCurrentCDR['Destination'], -8);
+		$arrWhere['SNN']			= '0_'.substr($this->_arrCurrentCDR['Destination'], -8);
 		$arrWhere['FNN']			= $this->_arrCurrentCDR['Destination'];
 		$arrWhere['Date']			= $this->_arrCurrentCDR['StartDatetime'];
-Debug($arrWhere['FNN']);
-Debug($arrWhere['SNN']);
+//Debug($arrWhere['FNN']);
+//Debug($arrWhere['SNN']);
 		$this->_selDestinationDetails->Execute($arrWhere);
 		$arrDestinationDetails 		= $this->_selDestinationDetails->Fetch();
 		$intDestinationAccount 		= $arrDestinationDetails['Account'];
 		$intDestinationService 		= $arrDestinationDetails['Id'];
-Debug($intDestinationAccount);
-Debug($this->_arrCurrentCDR['Account']);
+//Debug($intDestinationAccount);
+//Debug($this->_arrCurrentCDR['Account']);
 		// is the destination service on the same account
 		if ($intDestinationAccount && $intDestinationAccount == $this->_arrCurrentCDR['Account'])
 		{
@@ -623,7 +623,7 @@ Debug($this->_arrCurrentCDR['Account']);
 				$bolFleet = TRUE;
 			}
 		}
-Debug($bolFleet);
+//Debug($bolFleet);
 		// Set This Service
 		$arrAliases['Service']		= $this->_arrCurrentCDR['Service'];
 		
