@@ -948,6 +948,9 @@ $GLOBALS['*arrConstant']	['PaymentStatus']	[204]	['Constant']	= 'PAYMENT_CANT_NO
 $GLOBALS['*arrConstant']	['PaymentStatus']	[204]	['Description']	= 'Cannot Normalise Footer Row';
 $GLOBALS['*arrConstant']	['PaymentStatus']	[205]	['Constant']	= 'PAYMENT_CANT_NORMALISE_INVALID';
 $GLOBALS['*arrConstant']	['PaymentStatus']	[205]	['Description']	= 'Cannot Normalise Unrecognised Row';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[206]	['Constant']	= 'PAYMENT_BAD_OWNER';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[206]	['Description']	= 'Cannot Match to an Account';
+
 
 // payment types
 /*define("PAYMENT_TYPE_BILLEXPRESS"	, 1);
