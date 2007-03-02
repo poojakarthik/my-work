@@ -303,7 +303,7 @@ die();
 		$intPassed = 0;
 		foreach($arrPayments as $arrPayment)
 		{			
-			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']));
+			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
 			// use payment module to decode the payment
 			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment['Payment']);
 			if($arrNormalised['Status'] !== $arrPayment['Status'] || !is_array($arrNormalised))
@@ -362,6 +362,8 @@ die();
 				$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 			}
 			$intPassed++;
+			
+			$this->_rptPaymentReport->AddMessage(MSG_OK);
 		}
 		
 		$this->_intNormalisationPassed	+= $intPassed;
@@ -419,8 +421,6 @@ die();
 			{
 				Debug($selOutstandingInvoices->Error());
 			}
-			
-			echo "Invoice Count: $intCount2; Balance: {$this->_arrCurrentPayment['Balance']}\n";
 			
 			// set default status
 			$this->_arrCurrentPayment['Status'] = PAYMENT_PAYING;
