@@ -153,13 +153,14 @@ die();
 		{
 			$arrReportLine['<Total>']	= $intCount;
 			$arrReportLine['<Time>']	= $this->Framework->LapWatch();
-			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_SUBTOTALS, $arrReportLine);
+			$this->_rptPaymentReport->AddMessageVariables("\n".MSG_NORMALISE_SUBTOTALS."\n", $arrReportLine);
 		}
 		// Report normalisation results
 		$arrReportLine['<Total>']	= $this->_intNormalisationCount;
 		$arrReportLine['<Time>']	= $this->Framework->LapWatch();
 		$arrReportLine['<Pass>']	= $this->_intNormalisationPassed;
-		$arrReportLine['<Fail>']	= $this->_intNormalisationCount - $this->_intNormalisationPassed;
+		$arrReportLine['<Fail>']	= $this->_intNormalisationCount - $this->_intNormalisationPassed - $this->_intNormalisationIgnored;
+		$arrReportLine['<Ignore>']	= $this->_intNormalisationIgnored;
 		$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_FOOTER, $arrReportLine);
 		
 		die;
@@ -322,10 +323,12 @@ die();
 					case PAYMENT_CANT_NORMALISE_HEADER:
 						$this->_rptPaymentReport->AddMessage(MSG_IGNORE.MSG_REASON."Header Record");
 						$intStatus = $arrNormalised;
+						$this->_intNormalisationIgnored++;
 						break;
 					case PAYMENT_CANT_NORMALISE_FOOTER:
 						$this->_rptPaymentReport->AddMessage(MSG_IGNORE.MSG_REASON."Footer Record");
 						$intStatus = $arrNormalised;
+						$this->_intNormalisationIgnored++;
 						break;
 					case PAYMENT_CANT_NORMALISE_INVALID:
 						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Not a vaild Payment Record");
