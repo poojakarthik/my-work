@@ -305,10 +305,10 @@ die();
 		foreach($arrPayments as $arrPayment)
 		{
 			// <DEBUG>
-			if ($arrPayment['FileType'] != PAYMENT_TYPE_BILLEXPRESS)
+			/*if ($arrPayment['FileType'] != PAYMENT_TYPE_BILLEXPRESS)
 			{
 				continue;
-			}
+			}*/
 			// </DEBUG>
 			
 			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']));
