@@ -610,6 +610,7 @@ Debug($arrWhere['SNN']);
 		$intDestinationAccount 		= $arrDestinationDetails['Account'];
 		$intDestinationService 		= $arrDestinationDetails['Id'];
 Debug($intDestinationAccount);
+Debug($this->_arrCurrentCDR['Account']);
 		// is the destination service on the same account
 		if ($intDestinationAccount && $intDestinationAccount == $this->_arrCurrentCDR['Account'])
 		{
@@ -622,7 +623,7 @@ Debug($intDestinationAccount);
 				$bolFleet = TRUE;
 			}
 		}
-
+Debug($bolFleet);
 		// Set This Service
 		$arrAliases['Service']		= $this->_arrCurrentCDR['Service'];
 		
