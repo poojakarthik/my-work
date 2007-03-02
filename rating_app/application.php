@@ -170,8 +170,6 @@
 										"RateGroupRate JOIN Rate ON RateGroupRate.Rate = Rate.Id";
 		
 		$strWhere					=	"RateGroup.Id					= RateGroupRate.RateGroup AND \n" .	
-										"Rate.RecordType				= <RecordType> AND \n" .
-										"Rate.Destination 				= <Destination> AND \n" .
 										"( Rate.Monday					= <Monday> OR \n" .
 										"Rate.Tuesday					= <Tuesday> OR \n" .
 										"Rate.Wednesday					= <Wednesday> OR \n" .
@@ -187,7 +185,9 @@
 		//$strTables = "Rate";
 		//$strWhere  = "1 = 1";
 		//$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "", 1);
-		$strMyWhere					=	" AND Rate.Fleet 				= 0 \n";
+		$strMyWhere					=	" AND Rate.RecordType				= <RecordType>";
+		$strMyWhere					.=	" AND Rate.Destination 				= <Destination> AND";
+		$strMyWhere					.=	" AND Rate.Fleet 				= 0 \n";
 		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
 		
 		// fleet rate query
