@@ -332,7 +332,7 @@
 		
 		// Report footer
 		$arrData['<Total>']		= $intTotal;
-		$arrData['<Time>']		= $this->SplitWatch();
+		$arrData['<Time>']		= $this->Framework->SplitWatch();
 		$arrData['<Passed>']	= $intPassed;
 		$arrData['<Failed>']	= $intTotal - $intPassed;
 		$this->_rptRecurringChargesReport->AddMessageVariables(MSG_FOOTER, $arrData);
