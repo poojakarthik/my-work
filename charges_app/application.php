@@ -139,7 +139,7 @@
 		$intPassed = 0;
 		$intTotal = 0;
 		$intNonUnique = 0;
-		$this->StartWatch();
+		$this->Framework->StartWatch();
 		
 		// Get list of charges that need to be generated (1000 at a time)
 		while($arrCharges = $this->_GetCharges())
