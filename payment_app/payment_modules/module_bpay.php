@@ -163,9 +163,13 @@
  			$strAccount = "1".str_pad($strAccount, 9, "0", STR_PAD_LEFT);
  		}
  		$intAccount			= (int)substr($strAccount, 0, -1);
- 		$intAccountGroup	= $this->_FindAccountGroup($intAccount);
- 		$this->_Append('AccountGroup', $intAccountGroup);
  		$this->_Append('Account', $intAccount);
+ 		if (($intAccountGroup = $this->_FindAccountGroup($intAccount)) === FALSE)
+ 		{
+			$this->_Append('Status', PAYMENT_BAD_OWNER);
+ 			return $this->_Output();
+ 		}
+ 		$this->_Append('AccountGroup', $intAccountGroup);
  		 		
  		// PaymentType
  		$this->_Append('PaymentType', PAYMENT_TYPE_BPAY);
@@ -175,7 +179,7 @@
  		// Validate Normalised Data
  		if (!$this->Validate())
  		{
- 			return PAYMENT_CANT_NORMALISE_INVALID;
+			$this->_Append('Status', PAYMENT_CANT_NORMALISE_INVALID);
  		}
  		
  		return $this->_Output();

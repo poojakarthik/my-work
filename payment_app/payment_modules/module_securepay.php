@@ -115,9 +115,13 @@
  		// Apply AccountGroup Ownership
  		$strAccount			= $this->_FetchRaw('ReferenceNo');
  		$intAccount			= (int)substr($strAccount, 6);
- 		$intAccountGroup	= $this->_FindAccountGroup($intAccount);
- 		$this->_Append('AccountGroup', $intAccountGroup);
  		$this->_Append('Account', $intAccount);
+ 		if (($intAccountGroup = $this->_FindAccountGroup($intAccount)) === FALSE)
+ 		{
+			$this->_Append('Status', PAYMENT_BAD_OWNER);
+ 			return $this->_Output();
+ 		}
+ 		$this->_Append('AccountGroup', $intAccountGroup);
  		 		
  		// PaymentType
  		$this->_Append('PaymentType', PAYMENT_TYPE_SECUREPAY);

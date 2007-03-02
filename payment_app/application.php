@@ -121,6 +121,8 @@ die();
 		
 		$this->_ubiSaveNormalisedPayment	= new StatementUpdateById("Payment");
 		
+		$this->_insInvoicePayment			= new StatementInsert("InvoicePayment");
+		
 		// Payment modules
 		$this->_arrPaymentModules[PAYMENT_TYPE_BILLEXPRESS]	= new PaymentModuleBillExpress();
 		$this->_arrPaymentModules[PAYMENT_TYPE_BPAY]		= new PaymentModuleBPay();
@@ -163,7 +165,7 @@ die();
 		$arrReportLine['<Ignore>']	= $this->_intNormalisationIgnored;
 		$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_FOOTER, $arrReportLine);
 		
-		die;
+		//die;
 		
 		// PROCESS PAYMENTS
 		$this->_rptPaymentReport->AddMessage(MSG_PROCESS_TITLE);
@@ -457,7 +459,7 @@ die();
 				// update payment table
 				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
 				{
-
+					Debug($this->_ubiPayment->Error());
 				}
 				
 				$this->_rptPaymentReport->AddMessage(MSG_OK);
@@ -471,7 +473,7 @@ die();
 				// update payment table
 				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
 				{
-
+					Debug($this->_ubiPayment->Error());
 				}
 			}
 			
@@ -521,18 +523,20 @@ die();
 		}
 		
 		// add an invoice payment record
-		$arrInvoicePayment['Invoice']	= $this->_arrCurrentInvoice['Id'];
-		$arrInvoicePayment['Payment']	= $this->_arrCurrentPayment['Id'];
-		$arrInvoicePayment['Amount']	= $fltPayment;
+		$arrInvoicePayment['InvoiceRun']	= $this->_arrCurrentInvoice['InvoiceRun'];
+		$arrInvoicePayment['Account']		= $this->_arrCurrentPayment['Account'];
+		$arrInvoicePayment['AccountGroup']	= $this->_arrCurrentPayment['AccountGroup'];
+		$arrInvoicePayment['Payment']		= $this->_arrCurrentPayment['Id'];
+		$arrInvoicePayment['Amount']		= $fltPayment;
 		if ($this->_insInvoicePayment->Execute($arrInvoicePayment) === FALSE)
 		{
-
+			Debug($this->_insInvoicePayment->Error());
 		}
 		
 		// update the invoice
 		if ($this->_ubiInvoice->Execute($this->_arrCurrentInvoice) === FALSE)
 		{
-
+			Debug($this->_ubiInvoice->Error());
 		}
 		
 		// save the balance

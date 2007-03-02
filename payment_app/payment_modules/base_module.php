@@ -359,8 +359,8 @@
 		}
 		if (count($arrData = $this->_selGetAccountGroup->Fetch()) == 0)
 		{
-			// There was no match, so assume that the account is the same as the account group
-			return $intAccount;
+			// There was no match
+			return FALSE;
 		}
 		return $arrData['AccountGroup'];
 	 }
