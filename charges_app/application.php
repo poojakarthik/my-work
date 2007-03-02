@@ -252,7 +252,7 @@
 				
 				// update RecuringCharge Table
 				$arrColumns = Array();
-				$arrColumns['LastChargedOn']		= $arrCharge['LastChargedOn'];
+				$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
 				$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
 				if ($this->_ubiRecurringCharge->Execute($arrCharge, $arrColumns) === FALSE)
