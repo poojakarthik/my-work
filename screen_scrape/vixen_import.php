@@ -101,6 +101,8 @@ class VixenImport extends ApplicationBaseClass
 		$this->_selFindServiceIndial100	= new StatementSelect("Service", "Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "CreatedOn DESC", "1");
 		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Account, Name", "Account = <Account> AND Name = <Name>", NULL, "1");
 		
+		$this->insPayment				= new StatementInsert("Payment");
+		
 		$this->_arrCostCentres = Array ();
 	}
 	
@@ -1129,6 +1131,20 @@ class VixenImport extends ApplicationBaseClass
 			}
 		}
 		return $this->insNote->Execute($arrNote);
+	}
+	
+	function InsertPayment($arrPayment)
+	{
+		$arrPayment['EnteredBy']	= USER_ID;
+		$arrPayment['Payment']		= "Scraped from Etech";
+		$arrPayment['Balance']		= 0.0;
+		$arrPayment['PaidOn']		= $arrPayment['Date'];
+		$arrPayment['Status']		= PAYMENT_FINISHED;
+		$arrPayment['AccountGroup']	= $arrPayment['Account'];
+		
+		$arrPayment	= array_merge($this->db->FetchClean("Payment"), $arrPayment);
+		
+		return $this->insPayment->Execute($arrPayment);
 	}
 	
 	// ------------------------------------//
