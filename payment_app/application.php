@@ -346,7 +346,6 @@ die();
 			}
 			
 			// save the payment to DB
-			unset($arrNormalised);
 			$arrNormalised = array_merge($arrPayment, $arrNormalised);
 			$arrNormalised['Status']	= PAYMENT_WAITING;
 			$intResult = $this->_ubiPayment->Execute($arrNormalised);
