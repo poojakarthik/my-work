@@ -19,7 +19,6 @@ $intCount = $appCharge->AddLatePaymentFees();
 // finished
 echo ("$intCount Accounts Charged a Late Payment Fee");
 echo("\n-- End of Charges --\n");
-echo "</pre>";
 die();
 
 ?>
