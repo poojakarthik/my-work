@@ -95,9 +95,11 @@ die();
 		$this->_insPayment			= new StatementInsert("Payment", $arrColumns);
 
 		$arrColumns = Array();
-		$arrColumns['Id']		= "Payment.Id";
-		$arrColumns['Payment']	= "Payment.Payment";
-		$arrColumns['FileType']	= "FileImport.FileType";
+		$arrColumns['Id']			= "Payment.Id";
+		$arrColumns['Payment']		= "Payment.Payment";
+		$arrColumns['FileType']		= "FileImport.FileType";
+		$arrColumns['File']			= "FileImport.Id";
+		$arrColumns['SequenceNo']	= "Payment.SequenceNo";
 		$this->_selGetImportedPayments	= new StatementSelect("Payment JOIN FileImport ON Payment.File = FileImport.Id", $arrColumns, "Payment.Status = ".PAYMENT_IMPORTED, NULL, "1000");
 		
 		$arrColumns = Array();
@@ -344,6 +346,7 @@ die();
 			}
 			
 			// save the payment to DB
+			unset($arrNormalised);
 			$arrNormalised = array_merge($arrPayment, $arrNormalised);
 			$arrNormalised['Status']	= PAYMENT_WAITING;
 			$intResult = $this->_ubiPayment->Execute($arrNormalised);

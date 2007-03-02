@@ -127,6 +127,11 @@
 	 */
  	function Normalise($strPaymentRecord)
  	{
+ 		if (!trim($strPaymentRecord))
+ 		{
+ 			return PAYMENT_CANT_NORMALISE_FOOTER;
+ 		}
+ 		
  		// BPay are idiots, so parse the file first, changing it from comma-delimited to pipe-delimited
  		$strRawRecord = str_replace("\",", "\"|", $strPaymentRecord);
  		$strRawRecord = str_replace(",\"", "|\"", $strRawRecord);
