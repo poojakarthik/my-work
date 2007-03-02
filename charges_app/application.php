@@ -225,10 +225,11 @@
 					if ($intNotUnique)
 					{
 						// update RecuringCharge Table
-						$arrCharge['LastChargedOn']		= $arrCharge['LastChargedOn'];
-						$arrCharge['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
-						$arrCharge['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0));
-						if ($this->_ubiRecurringCharge->Execute($arrCharge) === FALSE)
+						$arrColumns = Array();
+						$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
+						$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
+						$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0));
+						if ($this->_ubiRecurringCharge->Execute($arrCharge, $arrColumns) === FALSE)
 						{
 
 						}
@@ -249,10 +250,11 @@
 				}
 				
 				// update RecuringCharge Table
-				$arrCharge['LastChargedOn']		= $arrCharge['LastChargedOn'];
-				$arrCharge['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
-				$arrCharge['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
-				if ($this->_ubiRecurringCharge->Execute($arrCharge) === FALSE)
+				$arrColumns = Array();
+				$arrColumns['LastChargedOn']		= $arrCharge['LastChargedOn'];
+				$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
+				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
+				if ($this->_ubiRecurringCharge->Execute($arrCharge, $arrColumns) === FALSE)
 				{
 
 				}
