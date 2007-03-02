@@ -149,7 +149,7 @@
 			foreach ($arrCharges as $arrCharge)
 			{
 				$intTotal++;
-				$this->_rptRecurringChargesReport->AddMessageVariables(MSG_LINE, Array('<Id>' => $arrCharge['Id']));
+				$this->_rptRecurringChargesReport->AddMessageVariables(MSG_LINE, Array('<Id>' => $arrCharge['Id']), FALSE);
 				
 				// Calculate partial charge if needed
 				if (!$arrCharge['Continuable'] && ($arrCharge['TotalCharged'] + $arrCharge['RecursionCharge']) > $arrCharge['MinCharge'])
@@ -272,7 +272,7 @@
 		$arrColumns = Array();
 		$arrColumns['Status']	= CDR_TEMP_CREDIT;
 		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
-		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
+		if ($updCDRSetStatus->Execute($arrColumns, Array()) === FALSE)
 		{
 			// ERROR
 
