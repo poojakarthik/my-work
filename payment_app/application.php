@@ -424,13 +424,13 @@ die();
 				Debug($selOutstandingInvoices->Error());
 			}
 			
-			echo "Invoice Count: $intCount2; Balance: {$this->_arrPayment['Balance']}\n";
+			echo "Invoice Count: $intCount2; Balance: {$this->_arrCurrentPayment['Balance']}\n";
 			
 			// set default status
-			$this->_arrPayment['Status'] = PAYMENT_PAYING;
+			$this->_arrCurrentPayment['Status'] = PAYMENT_PAYING;
 			
 			// while we have some payment left and an invoice to pay it against
-			while ($this->_arrPayment['Balance'] > 0.0 && ($arrInvoice = $selOutstandingInvoices->Fetch()))
+			while ($this->_arrCurrentPayment['Balance'] > 0.0 && ($arrInvoice = $selOutstandingInvoices->Fetch()))
 			{
 				$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE, Array('<Id>' => $arrInvoice['Id']));
 				
@@ -445,14 +445,14 @@ die();
 					$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON);
 					
 					// set status
-					$this->_arrPayment['Status'] = PAYMENT_BAD_PROCESS;
+					$this->_arrCurrentPayment['Status'] = PAYMENT_BAD_PROCESS;
 					
 					// don't try any more invoices					
 					break;
 				}
 				
 				// update payment table
-				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
+				if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
 				{
 					Debug($this->_ubiPayment->Error());
 				}
@@ -461,12 +461,12 @@ die();
 			}
 			
 			// check if we have spent all our money
-			if ($this->_arrPayment['Balance'] == 0)
+			if ($this->_arrCurrentPayment['Balance'] == 0)
 			{
-				$this->_arrPayment['Status'] = PAYMENT_FINISHED;
+				$this->_arrCurrentPayment['Status'] = PAYMENT_FINISHED;
 				
 				// update payment table
-				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
+				if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
 				{
 					Debug($this->_ubiPayment->Error());
 				}
@@ -594,10 +594,10 @@ die();
 			}
 			
 			// set default status
-			$this->_arrPayment['Status'] = PAYMENT_PAYING; 
+			$this->_arrCurrentPayment['Status'] = PAYMENT_PAYING; 
 			
 			// while we have some payment left and an invoice to pay it against
-			while ($this->_arrPayment['Balance'] > 0 && $arrInvoice = $selOutstandingInvoices->Fetch())
+			while ($this->_arrCurrentPayment['Balance'] > 0 && $arrInvoice = $selOutstandingInvoices->Fetch())
 			{
 				$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE, Array('<Id>' => $arrInvoice['Id']));
 				
@@ -612,14 +612,14 @@ die();
 					$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON);
 					
 					// set status
-					$this->_arrPayment['Status'] = PAYMENT_BAD_PROCESS;
+					$this->_arrCurrentPayment['Status'] = PAYMENT_BAD_PROCESS;
 					
 					// don't try any more invoices					
 					break;
 				}
 				
 				// update payment table
-				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
+				if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
 				{
 
 				}
@@ -628,12 +628,12 @@ die();
 			}
 			
 			// check if we have spent all our money
-			if ($this->_arrPayment['Balance'] == 0)
+			if ($this->_arrCurrentPayment['Balance'] == 0)
 			{
-				$this->_arrPayment['Status'] = PAYMENT_FINISHED;
+				$this->_arrCurrentPayment['Status'] = PAYMENT_FINISHED;
 				
 				// update payment table
-				if ($this->_ubiPayment->Execute($this->_arrPayment) === FALSE)
+				if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
 				{
 
 				}
