@@ -317,31 +317,41 @@ die();
 			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment['Payment']);
 			if($arrNormalised['Status'] !== $arrPayment['Status'] || !is_array($arrNormalised))
 			{
+				if (is_array($arrNormalised))
+				{
+					$intStatus = $arrNormalised['Status'];
+				}
+				else
+				{
+					$intStatus = $arrNormalised;
+					$arrNormalised = $arrPayment;
+				}
+				
 				// An error has occurred
-				switch($arrNormalised)
+				switch($intStatus)
 				{
 					case PAYMENT_CANT_NORMALISE_HEADER:
 						$this->_rptPaymentReport->AddMessage(MSG_IGNORE.MSG_REASON."Header Record");
-						$intStatus = $arrNormalised;
 						$this->_intNormalisationIgnored++;
 						break;
 					case PAYMENT_CANT_NORMALISE_FOOTER:
 						$this->_rptPaymentReport->AddMessage(MSG_IGNORE.MSG_REASON."Footer Record");
-						$intStatus = $arrNormalised;
 						$this->_intNormalisationIgnored++;
 						break;
 					case PAYMENT_CANT_NORMALISE_INVALID:
 						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Not a vaild Payment Record");
-						$intStatus = $arrNormalised;
+						break;
+					case PAYMENT_BAD_OWNER:
+						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Cannot match to an account");
 						break;
 					default:
 						$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."An unknown error occurred with code ".(int)$arrNormalised." in module ".GetConstantDescription($arrPayment['FileType'], 'PaymentType').".");
 						$intStatus = PAYMENT_BAD_NORMALISE;
 				}
-				$arrNormalised	= Array();
+				
+				$arrNormalised = array_merge($arrPayment, $arrNormalised);
 				$arrNormalised['Status']	= $intStatus;
-				$arrNormalised['Id']		= $arrPayment['Id'];
-				if ($this->_ubiSavePaymentStatus->Execute($arrNormalised) === FALSE)
+				if ($this->_ubiPayment->Execute($arrNormalised) === FALSE)
 				{
 					$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 				}
