@@ -306,14 +306,7 @@ die();
 		
 		$intPassed = 0;
 		foreach($arrPayments as $arrPayment)
-		{
-			// <DEBUG>
-			/*if ($arrPayment['FileType'] != PAYMENT_TYPE_BILLEXPRESS)
-			{
-				continue;
-			}*/
-			// </DEBUG>
-			
+		{			
 			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']));
 			// use payment module to decode the payment
 			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment['Payment']);
@@ -426,16 +419,18 @@ die();
 				$selOutstandingInvoices = $this->_selAccountGroupInvoices;
 			}
 			
-			if ($selOutstandingInvoices->Execute($arrWhere) === FALSE)
+			if ($intCount = ($selOutstandingInvoices->Execute($arrWhere) === FALSE))
 			{
-
+				Debug($selOutstandingInvoices->Error());
 			}
 			
+			echo "Invoice Count: $intCount\n";
+			
 			// set default status
-			$this->_arrPayment['Status'] = PAYMENT_PAYING; 
+			$this->_arrPayment['Status'] = PAYMENT_PAYING;
 			
 			// while we have some payment left and an invoice to pay it against
-			while ($this->_arrPayment['Balance'] > 0 && $arrInvoice = $selOutstandingInvoices->Fetch())
+			while ($this->_arrPayment['Balance'] > 0 && ($arrInvoice = $selOutstandingInvoices->Fetch()))
 			{
 				$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE, Array('<Id>' => $arrInvoice['Id']));
 				
