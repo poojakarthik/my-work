@@ -113,7 +113,9 @@
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
 															$strWhere, 'CreatedOn DESC, Account DESC', '1');
-															
+		
+		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
+		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE <Prefix>) OR FNN LIKE <SNN>)";		
 		$this->_selDestinationDetails	=new StatementSelect(	"Service",
 																"Id, Account",
 																$strWhere, 'CreatedOn DESC, Account DESC', '1');
@@ -598,6 +600,7 @@
 		
 		// find destination account & Service
 		$arrWhere['Prefix']			= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
+		$arrWhere['SNN']			= '__'.substr($this->_arrCurrentCDR['Destination'], -8);
 		$arrWhere['FNN']			= $this->_arrCurrentCDR['Destination'];
 		$arrWhere['Date']			= $this->_arrCurrentCDR['StartDatetime'];
 		$this->_selDestinationDetails->Execute($arrWhere);

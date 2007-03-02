@@ -25,20 +25,6 @@
  *
  */
  
-echo "<pre>";
-
-// Application entry point - create an instance of the application object
-$appCharge = new ApplicationCharge($arrConfig);
-
-// Execute the application
-$appCharge->Execute();
-
-// finished
-echo("\n-- End of Charges --\n");
-echo "</pre>";
-die();
-
-
 
 //----------------------------------------------------------------------------//
 // ApplicationCharge
@@ -106,13 +92,13 @@ die();
 								  "			AND " .
 								  "			(" .
 								  "				(" .
-								  "					DATE_FORMAT(LastChargedOn, %e) < 15 " .
+								  "					DATE_FORMAT(LastChargedOn, '%e') < 15 " .
 								  "					AND " .
 								  "					NOW() >= ADDDATE(LastChargedOn, INTERVAL 14 DAY)" .
 								  "				) " .
 								  "				OR " .
 								  "				(" .
-								  "					DATE_FORMAT(LastChargedOn, %e) > 14" .
+								  "					DATE_FORMAT(LastChargedOn, '%e') > 14" .
 								  "					AND " .
 								  "					NOW() >= ADDDATE(SUBDATE(LastChargedOn, INTERVAL 14 DAY), INTERVAL 1 MONTH)" .
 								  "				)" .
@@ -129,7 +115,7 @@ die();
 		$this->_insAddToChargesTable	= new StatementInsert("Charge");
 
 		// Init Report
-		$this->_rptRecurringChargesReport	= new Report("Recurring Charges Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
+		$this->_rptRecurringChargesReport	= new Report("Charges Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->_rptRecurringChargesReport->AddMessage(MSG_HORIZONTAL_RULE);
 	}
 	
@@ -378,6 +364,66 @@ die();
 		}
 		return $this->_selGetCharges->FetchAll();
 	}
+	
+	//------------------------------------------------------------------------//
+	// AddLatePaymenFees
+	//------------------------------------------------------------------------//
+	/**
+	 * AddLatePaymenFees()
+	 *
+	 * Add Late Payment Fees
+	 *
+	 * Add Late Payment Fees
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
+	 function AddLatePaymenFees($strRef=NULL)
+	 {
+	 	if (!$strRef)
+		{
+			$strRef = date('my');
+		}
+	 	// set up charge
+		$arrCharge = Array();
+		$arrCharge ['Nature']		= 'DR';
+		//$arrCharge ['Notes']		= "Late Payment Fee";
+		$arrCharge ['Description']	= "Late Payment Fee";
+		$arrCharge ['ChargeType']	= "LP$strRef";
+		$arrCharge ['Amount']		= 17.27;
+		$arrCharge ['Status']		= CHARGE_APPROVED;
+		
+	 	// for each account that we are allowed to charge late payment fees
+		$intCount = 0;
+		$selLPAccounts = new StatementSelect('Account', 'Id, AccountGroup', 'DisableLatePayment != 1 AND Archived != 1');
+		$selLPAccounts->Execute();
+		echo("Account : Overdue\n");
+		while ($arrAccount = $selLPAccounts->Fetch())
+		{
+			// check for an overdue balance
+			if (($fltBalance = $this->Framework->GetOverdueBalance($arrAccount['Id'])) > 10)
+			{
+				// add to report
+				//TODO!rich! replace this echo with report output
+				echo("{$arrAccount['Id']} : ".number_format($fltBalance,2)."\n");
+				
+				// add to the count
+				$intCount++;
+				
+				// charge late payment fee
+				$arrCharge['Account'] 		= $arrAccount['Id'];
+				$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
+				$this->Framework->AddCharge($arrCharge);
+			}
+		}
+		
+		// Change late payment fee settings
+		// TODO!flame! make this do something
+		
+		// return count
+		return $intCount;
+	 }
  }
 
 

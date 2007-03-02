@@ -83,7 +83,7 @@ die();
 		
 		$this->_selGetPaymentFiles	= new StatementSelect("FileImport", "*", "Carrier = ".CARRIER_PAYMENT." AND Status = ".CDRFILE_WAITING);
 		
-		//$arrColumns['Id']			= NULL;
+		$arrColumns = Array();
 		$arrColumns['Status']		= NULL;
 		$this->_ubiPaymentFile		= new StatementUpdateById("FileImport", $arrColumns);
 		

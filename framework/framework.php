@@ -155,14 +155,19 @@
 															  		NULL,
 															  		"2",
 															  		"Nature");
-															  		
+		
+		//TODO!flame! is this right?		
 	 	$this->_selDisputedBalance = new StatementSelect(	"Invoice",
-	 														"SUM(Balance) AS DisputedBalance",
+	 														"SUM(Disputed) AS DisputedBalance",
 	 														"Account = <Account> AND Status = ".INVOICE_DISPUTED);
 	 	
 	 	$this->_selAccountBalance = new StatementSelect(	"Invoice",
 	 														"SUM(Balance) AS AccountBalance",
 	 														"Account = <Account> AND Status != ".INVOICE_SETTLED." AND Status != ".INVOICE_TEMP);
+															
+		$this->_selAccountOverdueBalance = new StatementSelect(	"Invoice",
+	 														"SUM(Balance) - SUM(Disputed) AS OverdueBalance",
+	 														"DueOn < NOW() AND Account = <Account> AND Status != ".INVOICE_SETTLED." AND Status != ".INVOICE_TEMP);
 	 														
 		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE) AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
@@ -183,12 +188,20 @@
 		
 		$arrColumns						= $GLOBALS['dbaDatabase']->FetchClean("Charge");
 		$arrColumns ['CreatedOn']		= new MySQLFunction("NOW()");
-		$this->_insCharge				= new StatementInsert("Charge");
+		$this->_insCharge				= new StatementInsert("Charge", $arrColumns);
 		
 		$this->_selFindChargeOwner		= new StatementSelect(	"Account LEFT OUTER JOIN Service ON (Service.Account = Account.Id)",
 																"Account.AccountGroup AS AccountGroup, Account.Id AS Account, Service.Id AS Service",
 																"( <Account> IS NULL   OR   Account.Id = <Account> ) AND " .
 																"( <Service> IS NULL   OR   Service.Id = <Service> )");
+																
+		$this->_selAccountOverdueCharges	= new StatementSelect(	"Charge",
+													"SUM(Amount) AS Amount",
+													"Account = <Account> " .
+													" AND Status = ".CHARGE_APPROVED ,
+													NULL,
+													NULL,
+													"Nature");
 
 	 }
 	 
@@ -381,7 +394,7 @@
 	 	return (float)$arrAccountBalance['AccountBalance'];
 	 }
 	 
-	 //------------------------------------------------------------------------//
+	//------------------------------------------------------------------------//
 	// GetOverdueBalance()
 	//------------------------------------------------------------------------//
 	/**
@@ -390,6 +403,7 @@
 	 * Determines the current Overdue Balance for a specified account
 	 *
 	 * Determines the current Overdue Balance for a specified account
+	 * = past due invoice balance - disputed balance - unbilled credits
 	 * 
 	 *
 	 * @param	integer		$intAccount		The account to determine the overdue balance total for
@@ -400,17 +414,60 @@
 	 * @method
 	 */
 	 function GetOverdueBalance($intAccount)
-	 {	 					
-		//TODO!bash! do this stuff if rich hasn't done it yet
-		
+	 {	 						
 	 	// get balance of any invoice that is past due
-		//TODO!rich! do this
+		if ($this->_selAccountOverdueBalance->Execute(Array('Account' => $intAccount)) === FALSE)
+	 	{
+			// ERROR
+			return FALSE;
+	 	}
+	 	
+		// set overdue balance
+	 	$arrOverdueBalance = $this->_selAccountOverdueBalance->Fetch();
+		if ($arrOverdueBalance)
+		{
+	 		$fltOverdueBalance = (float)$arrOverdueBalance['OverdueBalance'];
+		}
+		else
+		{
+			$fltOverdueBalance = 0;
+		}
 		
+		// get disputed balance of any invoices
+		if ($this->_selDisputedBalance->Execute(Array('Account' => $intAccount)) === FALSE)
+	 	{
+			// ERROR
+			return FALSE;
+	 	}
+	 	
+		// remove disputed balance from overdue balance
+	 	$arrDisputedBalance = $this->_selDisputedBalance->Fetch();
+		if ($arrDisputedBalance)
+		{
+	 		$fltOverdueBalance -= (float)$arrDisputedBalance['DisputedBalance'];
+		}
+
 		// get balance of unbilled debits & unbilled approved credits
-		//TODO!rich! do this
+		$this->_selAccountOverdueCharges->Execute(Array('Account' => $intAccount));
+		$arrCharges = $this->_selAccountOverdueCharges->FetchAll();
+
+		foreach($arrCharges as $arrCharge)
+		{
+			if ($arrCharge['Nature'] == 'DR')
+			{
+				//$fltUnbilledDebits		= (float)$arrCharge['Amount'];
+			}
+			else
+			{
+				$fltUnbilledCredits		= (float)$arrCharge['Amount'];
+			}
+		}
+		
+		// remove unbilled credits from overdue balance
+		$fltOverdueBalance 				-= max(0, ($fltUnbilledCredits + ($fltUnbilledCredits / 10)));
 		
 		// return the balance
-		//TODO!rich! do this
+		return max(0, $fltOverdueBalance);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -424,7 +481,7 @@
 	 * Determines the current Disputed Balance for a specified account
 	 * 
 	 *
-	 * @param	integer		$intAccount		The account to determine the balance total for
+	 * @param	integer		$intAccount		The account to determine the disputed balance total for
 	 * 
 	 * @return	mixed						float: account balance total
 	 * 										FALSE: an error occurred
@@ -837,21 +894,24 @@
 		}
 		
 		// Grab ownership data
-		if ($this->_selFindChargeOwner->Execute($arrCharge) === FALSE)
+		if (!$arrCharge['Account'] || !$arrCharge['AccountGroup'])
 		{
-			Debug($this->_selFindChargeOwner);
-			return FALSE;
-		}
-		$arrResponse = $this->_selFindChargeOwner->Fetch();
-		
-		// Only use data we need
-		if ($arrCharge['Account'] === NULL)
-		{
-			$arrCharge['Account'] = $arrResponse['Account'];
-		}
-		if ($arrCharge['AccountGroup'] === NULL)
-		{
-			$arrCharge['AccountGroup'] = $arrResponse['AccountGroup'];
+			if ($this->_selFindChargeOwner->Execute($arrCharge) === FALSE)
+			{
+				Debug($this->_selFindChargeOwner);
+				return FALSE;
+			}
+			$arrResponse = $this->_selFindChargeOwner->Fetch();
+			
+			// Only use data we need
+			if (!$arrCharge['Account'])
+			{
+				$arrCharge['Account'] = $arrResponse['Account'];
+			}
+			if (!$arrCharge['AccountGroup'])
+			{
+				$arrCharge['AccountGroup'] = $arrResponse['AccountGroup'];
+			}
 		}
 		
 		// merge with default data
@@ -861,9 +921,11 @@
 		$arrDefaultCharge ['Description']	= "";
 		$arrDefaultCharge ['ChargeType']	= "";
 		$arrDefaultCharge ['Amount']		= 0.0;
-		$arrDefaultCharge ['CreatedOn']		= new MySQLFunction("NOW()");
 		$arrDefaultCharge ['Status']		= CHARGE_APPROVED;
 		$arrCharge = array_merge($arrDefaultCharge, $arrCharge);
+		
+		// set date
+		$arrCharge ['CreatedOn']			= new MySQLFunction("NOW()");
 		
 		// Insert into DB
 		$insId = $this->_insCharge->Execute($arrCharge);
