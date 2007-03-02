@@ -169,12 +169,8 @@ die();
 		
 		// PROCESS PAYMENTS
 		$this->_rptPaymentReport->AddMessage(MSG_PROCESS_TITLE);
-		while($intCount = $this->Process())
-		{
-			$arrReportLine['<Total>']	= $intCount;
-			$arrReportLine['<Time>']	= $this->Framework->LapWatch();
-			$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_SUBTOTALS, $arrReportLine);
-		}
+		$intCount = $this->Process();
+
 		// Report normalisation results
 		$arrReportLine['<Total>']	= $this->_intProcessCount;
 		$arrReportLine['<Time>']	= $this->Framework->LapWatch();
