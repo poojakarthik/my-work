@@ -140,7 +140,8 @@
  		$this->_SplitRaw($strRawRecord);
  		
  		// Amount
- 		$mixValue	= (float)ltrim($this->_FetchRaw('Amount'), "$");
+ 		$mixValue	= str_replace(',', '', $this->_FetchRaw('Amount'));
+ 		$mixValue	= (float)ltrim($mixValue, "$");
  		$this->_Append('Amount', $mixValue);
  		
  		// Transaction Reference Number

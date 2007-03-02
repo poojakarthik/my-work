@@ -105,7 +105,7 @@
  		}
 		
  		// Amount
- 		$mixValue	= (float)$this->_FetchRaw('Amount');
+ 		$mixValue	= ((float)$this->_FetchRaw('Amount')) / 100;
  		$this->_Append('Amount', $mixValue);
  		
  		// Transaction Reference Number
