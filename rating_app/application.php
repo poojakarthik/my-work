@@ -603,14 +603,13 @@
 		$arrWhere['SNN']			= '0_'.substr($this->_arrCurrentCDR['Destination'], -8);
 		$arrWhere['FNN']			= $this->_arrCurrentCDR['Destination'];
 		$arrWhere['Date']			= $this->_arrCurrentCDR['StartDatetime'];
-		Debug($arrWhere['FNN']);
-		Debug($arrWhere['SNN']);
-		//Die;
+Debug($arrWhere['FNN']);
+Debug($arrWhere['SNN']);
 		$this->_selDestinationDetails->Execute($arrWhere);
 		$arrDestinationDetails 		= $this->_selDestinationDetails->Fetch();
 		$intDestinationAccount 		= $arrDestinationDetails['Account'];
 		$intDestinationService 		= $arrDestinationDetails['Id'];
-
+Debug($intDestinationAccount);
 		// is the destination service on the same account
 		if ($intDestinationAccount && $intDestinationAccount == $this->_arrCurrentCDR['Account'])
 		{
