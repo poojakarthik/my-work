@@ -419,12 +419,12 @@ die();
 				$selOutstandingInvoices = $this->_selAccountGroupInvoices;
 			}
 			
-			if ($intCount = ($selOutstandingInvoices->Execute($arrWhere) === FALSE))
+			if (($intCount2 = $selOutstandingInvoices->Execute($arrWhere)) === FALSE)
 			{
 				Debug($selOutstandingInvoices->Error());
 			}
 			
-			echo "Invoice Count: $intCount\n";
+			echo "Invoice Count: $intCount2\n";
 			
 			// set default status
 			$this->_arrPayment['Status'] = PAYMENT_PAYING;
