@@ -186,7 +186,7 @@
 		//$strWhere  = "1 = 1";
 		//$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere, "", 1);
 		$strMyWhere					=	" AND Rate.RecordType				= <RecordType>";
-		$strMyWhere					.=	" AND Rate.Destination 				= <Destination> AND";
+		$strMyWhere					.=	" AND Rate.Destination 				= <Destination>";
 		$strMyWhere					.=	" AND Rate.Fleet 				= 0 \n";
 		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
 		
