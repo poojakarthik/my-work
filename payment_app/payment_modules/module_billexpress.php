@@ -95,7 +95,7 @@
  		$strRecordType = $this->_FetchRaw('RecordType');
  		
  		// Check if this is a header or footer record...
- 		if ($strRecordType == "00")
+ 		if ($strRecordType == "00" || !trim($strPaymentRecord))
  		{
  			return PAYMENT_CANT_NORMALISE_HEADER;
  		}
