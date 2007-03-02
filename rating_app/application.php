@@ -600,7 +600,7 @@
 		
 		// find destination account & Service
 		$arrWhere['Prefix']			= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
-		$arrWhere['SNN']			= '0_'.substr($this->_arrCurrentCDR['Destination'], -8);
+		$arrWhere['SNN']			= '9_'.substr($this->_arrCurrentCDR['Destination'], -8);
 		$arrWhere['FNN']			= $this->_arrCurrentCDR['Destination'];
 		$arrWhere['Date']			= $this->_arrCurrentCDR['StartDatetime'];
 Debug($arrWhere['FNN']);
