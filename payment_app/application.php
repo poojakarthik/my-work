@@ -305,7 +305,7 @@ die();
 		foreach($arrPayments as $arrPayment)
 		{
 			// <DEBUG>
-			if ($arrPayment['FileType'] != PAYMENT_TYPE_BPAY)
+			if ($arrPayment['FileType'] != PAYMENT_TYPE_BILLEXPRESS)
 			{
 				continue;
 			}
