@@ -107,9 +107,9 @@
 								  ")";
 		$this->_selGetCharges	= new StatementSelect("RecurringCharge", "*", $arrWhere, NULL, "1000");
 		
+		$arrColumns['LastChargedOn']	= NULL;
 		$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 		$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>");
-		$arrColumns['LastChargedOn']	= NULL;
 		$this->_ubiRecurringCharge		= new StatementUpdateById("RecurringCharge", $arrColumns);
 		
 		$this->_insAddToChargesTable	= new StatementInsert("Charge");
