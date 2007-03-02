@@ -14,7 +14,7 @@ require_once('application_loader.php');
 $appCharge = new ApplicationCharge($arrConfig);
 
 // Execute the application
-$intCount = $appCharge->AddLatePaymenFees();
+$intCount = $appCharge->AddLatePaymentFees();
 
 // finished
 echo ("$intCount Accounts Charged a Late Payment Fee");

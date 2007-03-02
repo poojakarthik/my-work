@@ -379,7 +379,7 @@
 	 *
 	 * @method
 	 */
-	 function AddLatePaymenFees($strRef=NULL)
+	 function AddLatePaymentFees($strRef=NULL)
 	 {
 	 	if (!$strRef)
 		{
