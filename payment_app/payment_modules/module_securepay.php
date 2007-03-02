@@ -89,7 +89,7 @@
  	function Normalise($strPaymentRecord)
  	{
  		// Check if this is a footer record...
- 		if (!is_numeric(substr($strPaymentRecord, 0, 1)))
+ 		if (!is_numeric(substr($strPaymentRecord, 0, 1)) || !trim($strPaymentRecord))
  		{
  			return PAYMENT_CANT_NORMALISE_FOOTER;
  		}
