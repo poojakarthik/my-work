@@ -141,6 +141,7 @@
 		$intTotal = 0;
 		$intNonUnique = 0;
 		$this->Framework->StartWatch();
+		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
 		
 		// Get list of charges that need to be generated (1000 at a time)
 		while($arrCharges = $this->_GetCharges())
@@ -271,7 +272,7 @@
 		// change status of CDR Creidts
 		$arrColumns = Array();
 		$arrColumns['Status']	= CDR_TEMP_CREDIT;
-		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
+		//$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
 		if ($updCDRSetStatus->Execute($arrColumns, Array()) === FALSE)
 		{
 			// ERROR
@@ -322,8 +323,7 @@
 		// change status of CDR credits
 		$arrColumns = Array();
 		$arrColumns['Status']	= CDR_CREDITED;
-		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
-		if ($updCDRSetStatus->Execute($arrColumns) === FALSE)
+		if ($updCDRSetStatus->Execute($arrColumns, Array()) === FALSE)
 		{
 			// ERROR
 
