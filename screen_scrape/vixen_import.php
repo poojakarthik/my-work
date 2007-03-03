@@ -102,6 +102,7 @@ class VixenImport extends ApplicationBaseClass
 		$this->_selFindCostCentreByName = new StatementSelect("CostCentre", "Id, Account, Name", "Account = <Account> AND Name = <Name>", NULL, "1");
 		
 		$this->insPayment				= new StatementInsert("Payment");
+		$this->insInvoicePayment		= new StatementInsert("InvoicePayment");
 		
 		$this->_arrCostCentres = Array ();
 	}
@@ -1145,6 +1146,17 @@ class VixenImport extends ApplicationBaseClass
 		$arrPayment	= array_merge($this->db->FetchClean("Payment"), $arrPayment);
 		
 		return $this->insPayment->Execute($arrPayment);
+	}
+	
+	function InsertInvoicePayment($arrPayment)
+	{
+		$arrInvoicePayment['InvoiceRun']	= "";
+		$arrInvoicePayment['Account']		= $arrPayment['Account'];
+		$arrInvoicePayment['AccountGroup']	= $arrPayment['Account'];
+		$arrInvoicePayment['Payment']		= $arrPayment['Id'];
+		$arrInvoicePayment['Amount']		= $arrPayment['Amount'];
+		
+		return $this->insInvoicePayment->Execute($arrInvoicePayment);
 	}
 	
 	// ------------------------------------//

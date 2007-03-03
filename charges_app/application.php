@@ -610,6 +610,61 @@
 		// return count
 		return $intCount;
 	 }
+	
+	//------------------------------------------------------------------------//
+	// AddNonDDRFee
+	//------------------------------------------------------------------------//
+	/**
+	 * AddNonDDRFee()
+	 *
+	 * Add Non-Direct Debit Fees
+	 *
+	 * Add Non-Direct Debit Fees
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
+	 function AddNonDDRFee()
+	 {
+/*	 	// set up charge
+		$arrCharge = Array();
+		$arrCharge ['Nature']		= 'DR';
+		$arrCharge ['Description']	= "Non-Direct Debit Fee";
+		$arrCharge ['ChargeType']	= "NDDR";
+		$arrCharge ['ChargedOn']	= date("Y-m-d");
+		$arrCharge ['Amount']		= 2.50;
+		$arrCharge ['Status']		= CHARGE_APPROVED;
+		
+	 	// for each active inbound service
+		$intCount = 0;
+		$selNDDRServices = new StatementSelect(	'CDR', 
+												'Service, Account, AccountGroup, COUNT(Id) AS CDRCount', 
+												'Service IS NOT NULL AND Credit = 0 AND Status = '.CDR_RATED.' AND ServiceType = '.SERVICE_TYPE_INBOUND, 
+												NULL, 
+												NULL, 
+												"Service \n HAVING CDRCount > 0");
+		$selINB15Services->Execute();
+		echo("Service : CDR Count\n\n");
+		while ($arrService = $selINB15Services->Fetch())
+		{			
+			// add to report
+			//TODO!rich! replace this echo with report output
+			echo("{$arrService['Service']} : {$arrService['CDRCount']}\n");
+			
+			// add to the count
+			$intCount++;
+			
+			// charge late payment fee
+			$arrCharge['Service'] 		= $arrService['Service'];
+			$arrCharge['Account'] 		= $arrService['Account'];
+			$arrCharge['AccountGroup'] 	= $arrService['AccountGroup'];
+			$this->Framework->AddCharge($arrCharge);
+		}
+		
+		// return count
+		return $intCount;*/
+	 }
  }
 
 

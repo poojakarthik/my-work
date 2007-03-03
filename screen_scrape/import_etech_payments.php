@@ -43,9 +43,16 @@
 		{
 			echo str_pad("+ Payments for $intAccount...", 60, " ", STR_PAD_RIGHT);
 			$arrPayment['Account']	= (int)$intAccount;
-			if ($objImport->InsertPayment($arrPayment))
+			if ($arrPayment['Id'] = $objImport->InsertPayment($arrPayment))
 			{
-				echo "[   OK   ]";
+				if ($objImport->InsertInvoicePayment($arrPayment))
+				{
+					echo "[   OK   ]";
+				}
+				else
+				{
+					echo "[ FAILED ]";
+				}
 			}
 			else
 			{

@@ -211,6 +211,8 @@ $GLOBALS['*arrConstant']['CDR'][181]['Constant'] 	= 'CDR_ETECH_IMPERFECT_MATCH';
 $GLOBALS['*arrConstant']['CDR'][181]['Description'] = 'Close Match';
 $GLOBALS['*arrConstant']['CDR'][182]['Constant'] 	= 'CDR_ETECH_NO_MATCH';
 $GLOBALS['*arrConstant']['CDR'][182]['Description'] = 'No Match';
+$GLOBALS['*arrConstant']['CDR'][183]['Constant']	= 'CDR_ETECH_INVOICED';
+$GLOBALS['*arrConstant']['CDR'][183]['Description'] = 'Invoiced by Etech';
 
 $GLOBALS['*arrConstant']['CDR'][170]['Constant']	= 'CDR_TEMP_CREDIT';
 //$GLOBALS['*arrConstant']['CDR'][170]['Description'] = 'Temporarily Credited';
@@ -257,6 +259,8 @@ $GLOBALS['*arrConstant']	['CDRFileStatus']	[206]	['Constant']	= 'CDRFILE_NORMALI
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[206]	['Description']	= 'Normalisation Failed';
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[207]	['Constant']	= 'CDRFILE_NORMALISED';
 $GLOBALS['*arrConstant']	['CDRFileStatus']	[207]	['Description']	= 'Normalised';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[210]	['Constant']	= 'CDRFILE_ETECH_INVOICED';
+$GLOBALS['*arrConstant']	['CDRFileStatus']	[210]	['Description']	= 'Invoiced by Etech';
 
 // Provisioning File Handling
 /*define("PROVFILE_WAITING"			, 250);
