@@ -200,6 +200,7 @@
 				$arrData['ChargedOn']		= new MySQLFunction("NOW()"); // FIXME
 				$arrData['Nature']			= $arrCharge['Nature'];
 				$arrData['Amount']			= $arrCharge['RecursionCharge'];
+				$arrData['Notes']			= "";
 				if ($arrData['ApprovedBy'])
 				{
 					$arrData['Status']			= CHARGE_APPROVED;
@@ -234,7 +235,7 @@
 						$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0.0));
 						if ($this->_ubiRecurringCharge->Execute($arrColumns) === FALSE)
 						{
-
+							Debug($this->_ubiRecurringCharge->Error());
 						}
 						
 						// add to report
@@ -259,7 +260,7 @@
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
 				if ($this->_ubiRecurringCharge->Execute($arrColumns) === FALSE)
 				{
-
+					Debug($this->_ubiRecurringCharge->Error());
 				}
 				
 				// add to report
