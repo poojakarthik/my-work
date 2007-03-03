@@ -155,7 +155,6 @@
 				// Calculate partial charge if needed
 				if (!$arrCharge['Continuable'] && ($arrCharge['TotalCharged'] + $arrCharge['RecursionCharge']) > $arrCharge['MinCharge'])
 				{
-					echo "partial charge!\n";
 					// final (partial) charge for a non-continuable charge
 					$arrCharge['RecursionCharge'] = $arrCharge['MinCharge'] - $arrCharge['TotalCharged'];
 				}
@@ -186,7 +185,6 @@
 						continue;
 				}
 				$arrCharge['LastChargedOn'] = $strDate;
-				echo "charged on = $strDate\n";
 				
 				// Add Charge details to Charges Table
 				$arrData['AccountGroup']	= $arrCharge['AccountGroup'];
@@ -197,7 +195,7 @@
 				$arrData['ApprovedBy']		= $arrCharge['ApprovedBy'];
 				$arrData['ChargeType']		= $arrCharge['ChargeType'];
 				$arrData['Description']		= $arrCharge['Description'];
-				$arrData['ChargedOn']		= new MySQLFunction("NOW()"); // FIXME
+				$arrData['ChargedOn']		= $strDate;
 				$arrData['Nature']			= $arrCharge['Nature'];
 				$arrData['Amount']			= $arrCharge['RecursionCharge'];
 				$arrData['Notes']			= "";
