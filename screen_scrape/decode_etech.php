@@ -916,7 +916,9 @@
 				$arrRecurringCharge [$arrRecurringChargeFields [$arrData [0]]] .= $arrData [1];
 			}
 			
-			$intFirstThisMonth = mktime (0, 0, 0, 1, 1, date ("Y"));
+			// set the first day of the import month (the month you want to bill at the end of)
+			//NOTE! THIS NEEDS TO BE CHANGED BEFORE YOU RUN THE SCRIPT
+			$intFirstThisMonth = mktime (0, 0, 0, 1, 2, date ("Y"));
 			
 			if (isset ($arrRecurringCharge ['TotalPaymentsRequired']))
 			{
