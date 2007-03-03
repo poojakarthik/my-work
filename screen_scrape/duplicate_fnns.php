@@ -17,7 +17,7 @@ $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
 
-$strPath		= '/home/richdavis/Desktop/duplicate_fnn_2007_02_28.csv';
+$strPath		= '/usr/share/vixen/screen_scrape/duplicate_fnn_2007_02_28.csv';
 $strDelimiter	= ',';
 $strEnclosed	= '"';
 
@@ -94,5 +94,3 @@ foreach ($arrFNNs as $arrFNN)
 // Report and exit
 echo "\nRemoved $intClosed instances of ".count($arrFNNs)." FNNs. $intPassed passed, ".(count($arrFNNs)-$intPassed)." failed.\n\n";
 ?>
-
-
