@@ -155,6 +155,7 @@
 				// Calculate partial charge if needed
 				if (!$arrCharge['Continuable'] && ($arrCharge['TotalCharged'] + $arrCharge['RecursionCharge']) > $arrCharge['MinCharge'])
 				{
+					echo "partial charge!\n";
 					// final (partial) charge for a non-continuable charge
 					$arrCharge['RecursionCharge'] = $arrCharge['MinCharge'] - $arrCharge['TotalCharged'];
 				}
@@ -185,6 +186,7 @@
 						continue;
 				}
 				$arrCharge['LastChargedOn'] = $strDate;
+				echo "charged on = $strDate\n";
 				
 				// Add Charge details to Charges Table
 				$arrData['AccountGroup']	= $arrCharge['AccountGroup'];
@@ -247,7 +249,7 @@
 
 				if ($this->_insAddToChargesTable->Execute($arrData) === FALSE)
 				{
-
+					Debug($this->_insAddToChargesTable->Error());
 				}
 				
 				// update RecuringCharge Table
