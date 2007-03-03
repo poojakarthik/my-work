@@ -578,7 +578,7 @@
 											"Id, Service, Account, AccountGroup, Description, Charge",
 											"Credit = 1 AND " .
 											"RecordType = 21 AND " .
-											"Status = CDR_RATED");
+											"Status = ".CDR_RATED);
 		$arrCols = Array();
 		$arrCols['Status']	= NULL;
 		$ubiSECCDR = new StatementUpdateById("CDR", $arrCols);
