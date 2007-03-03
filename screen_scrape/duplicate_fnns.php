@@ -1,6 +1,7 @@
 <?php
 
 // load framework
+$strFrameworkDir = "../framework/";
 require_once($strFrameworkDir."framework.php");
 require_once($strFrameworkDir."functions.php");
 require_once($strFrameworkDir."definitions.php");
@@ -16,7 +17,7 @@ $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
 
-$strPath		= '/home/richdavis/desktop/duplicate_fnn_2007_02_28.csv';
+$strPath		= '/home/richdavis/Desktop/duplicate_fnn_2007_02_28.csv';
 $strDelimiter	= ',';
 $strEnclosed	= '"';
 
@@ -24,7 +25,7 @@ $selMatchFNNToAccount = new StatementSelect(	"Service",
 												"Id",
 												"FNN = <FNN> AND Account = <Account> AND ClosedOn IS NULL");
 $arrColumns = Array();
-$arrColumns['ClosedOn']	= "1985-10-21";
+$arrColumns['ClosedOn']	= "1987-10-21";
 $updCloseServices	= new StatementUpdate(	"Service",
 											"FNN = <FNN> AND Account != <Account>",
 											$arrColumns);
@@ -49,12 +50,13 @@ if (!$ptrFile = fopen($strPath, "r"))
 
 // Ignore the first row (header), enter all other non-blanks to an array
 fgets($ptrFile);
+$arrFNNs = Array();
 while ($strLine = fgets($ptrFile))
 {
-	if (trim($strLine))
+	if ($strLine = trim($strLine))
 	{
 		$strLine	= str_replace($strEnclosed, "", $strLine);
-		$arrFNNs[]	= explode($strLine, $strDelimiter);
+		$arrFNNs[]	= explode($strDelimiter, $strLine);
 	}
 }
 
@@ -75,7 +77,7 @@ foreach ($arrFNNs as $arrFNN)
 		echo "[ FAILED ]\n";
 		continue;
 	}
-	/*
+	
 	// Close all Services with this FNN not on this account
 	$arrColumns = Array();
 	$arrColumns['ClosedOn']	= "1985-10-21";
@@ -83,14 +85,14 @@ foreach ($arrFNNs as $arrFNN)
 	{
 		echo "[ FAILED ]\n";
 		continue;
-	}*/
+	}
 	echo "[   OK   ]\n";
 	$intPassed++;
 	$intClosed += $mixResult;
 }
 
 // Report and exit
-echo "\nRemoved $intClosed instances of ".count($arrFNNs)." FNNs. $intPassed passed, ".$intPassed-count($arrFNNs)." failed.\n\n";
+echo "\nRemoved $intClosed instances of ".count($arrFNNs)." FNNs. $intPassed passed, ".(count($arrFNNs)-$intPassed)." failed.\n\n";
 ?>
 
 
