@@ -108,6 +108,7 @@
 		$this->_selGetCharges	= new StatementSelect("RecurringCharge", "*", $arrWhere, NULL, "1000");
 		
 		$arrColumns = Array();
+		$arrColumns['Id']				= NULL;
 		$arrColumns['LastChargedOn']	= NULL;
 		$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 		$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array());
@@ -228,6 +229,7 @@
 					{
 						// update RecuringCharge Table
 						$arrColumns = Array();
+						$arrColumns['Id']				= $arrCharge['Id'];
 						$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
 						$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 						$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0.0));
@@ -253,6 +255,7 @@
 				
 				// update RecuringCharge Table
 				$arrColumns = Array();
+				$arrColumns['Id']				= $arrCharge['Id'];
 				$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
 				$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
