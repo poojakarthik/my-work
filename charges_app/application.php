@@ -454,19 +454,25 @@
 		$arrCharge ['Nature']		= 'DR';
 		$arrCharge ['Description']	= "Active Inbound Service Fee";
 		$arrCharge ['ChargeType']	= "INB15";
+		$arrCharge ['ChargedOn']	= date("Y-m-d");
 		$arrCharge ['Amount']		= 15.00;
 		$arrCharge ['Status']		= CHARGE_APPROVED;
 		
 	 	// for each active inbound service
 		$intCount = 0;
-		$selINB15Services = new StatementSelect('CDR', 'Service, Account, AccountGroup, COUNT(Id) AS CDRCount', 'Credit = 0 AND Status = '.CDR_RATED.' AND ServiceType = '.SERVICE_TYPE_INBOUND, NULL, NULL, "Service \n HAVING CDRCount > 0");
+		$selINB15Services = new StatementSelect('CDR', 
+												'Service, Account, AccountGroup, COUNT(Id) AS CDRCount', 
+												'Credit = 0 AND Status = '.CDR_RATED.' AND ServiceType = '.SERVICE_TYPE_INBOUND, 
+												NULL, 
+												NULL, 
+												"Service \n HAVING CDRCount > 0");
 		$selINB15Services->Execute();
 		echo("Service : CDR Count\n\n");
 		while ($arrService = $selINB15Services->Fetch())
 		{
 			// add to report
 			//TODO!rich! replace this echo with report output
-			echo("{$arrService['Service']} : {$arrService['CDRCount']}");
+			echo("{$arrService['Service']} : {$arrService['CDRCount']}\n");
 			
 			// add to the count
 			$intCount++;
