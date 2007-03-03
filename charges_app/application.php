@@ -120,7 +120,7 @@
 		$this->_rptRecurringChargesReport	= new Report("Charges Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->_rptRecurringChargesReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
-		echo "RETURN, YOU PRICK\n\n";
+		Debug("RETURN, YOU PRICK\n\n");
 		return;
 	}
 	
