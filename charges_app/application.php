@@ -532,7 +532,7 @@
 		{
 			// add to report
 			//TODO!rich! replace this echo with report output
-			echo("{$arrService['Service']}");
+			echo("{$arrService['Service']}\n");
 			
 			// add to the count
 			$intCount++;
@@ -588,7 +588,7 @@
 		{
 			// add to report
 			//TODO!rich! replace this echo with report output
-			echo("{$arrCredit['Id']} : {$arrCredit['Charge']}");
+			echo("{$arrCredit['Id']} : {$arrCredit['Charge']}\n");
 			
 			// add to the count
 			$intCount++;

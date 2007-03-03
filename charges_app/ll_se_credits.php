@@ -17,7 +17,7 @@ $appCharge = new ApplicationCharge($arrConfig);
 $intCount = $appCharge->AddLLSAndECredits();
 
 // finished
-echo ("$intCount Landline S&E CDRs Credited.");
+echo ("\n\n$intCount Landline S&E CDRs Credited.");
 echo("\n-- End of Charges --\n");
 die();
 

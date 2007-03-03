@@ -17,7 +17,7 @@ $appCharge = new ApplicationCharge($arrConfig);
 $intCount = $appCharge->AddPinnacleMobileFees();
 
 // finished
-echo ("$intCount Pinnacle Mobile Services Charged.");
+echo ("\n\n$intCount Pinnacle Mobile Services Charged.");
 echo("\n-- End of Charges --\n");
 die();
 
