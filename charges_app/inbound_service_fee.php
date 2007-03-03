@@ -17,7 +17,7 @@ $appCharge = new ApplicationCharge($arrConfig);
 $intCount = $appCharge->AddActiveInboundFees();
 
 // finished
-echo ("$intCount Inbound Services charged.");
+echo ("\n$intCount Inbound Services charged.");
 echo("\n-- End of Charges --\n");
 die();
 
