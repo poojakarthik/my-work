@@ -119,8 +119,6 @@
 		// Init Report
 		$this->_rptRecurringChargesReport	= new Report("Charges Report for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au");
 		$this->_rptRecurringChargesReport->AddMessage(MSG_HORIZONTAL_RULE);
-		
-		Debug("RETURN, YOU PRICK\n\n");
 		return;
 	}
 	
@@ -512,6 +510,7 @@
 		$arrCharge ['Nature']		= 'DR';
 		$arrCharge ['Description']	= "Pinnacle Mobile Service Fee";
 		$arrCharge ['ChargeType']	= "PM15";
+		$arrCharge ['ChargedOn']	= date("Y-m-d");
 		$arrCharge ['Amount']		= 15.00;
 		$arrCharge ['Status']		= CHARGE_APPROVED;
 		
@@ -568,6 +567,7 @@
 	 	// set up charge
 		$arrCharge = Array();
 		$arrCharge ['Nature']		= 'CR';
+		$arrCharge ['ChargedOn']	= date("Y-m-d");
 		$arrCharge ['ChargeType']	= "SEC";
 		$arrCharge ['Status']		= CHARGE_APPROVED;
 		
