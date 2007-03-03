@@ -517,11 +517,9 @@
 		
 	 	// for each Pinnacle Mobile Service
 		$intCount = 0;
-		$selPM15Services = new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, RatePlan",
+		$selPM15Services = new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service",
 												"Service, Account, AccountGroup",
-												"RatePlan.Id = ServiceRatePlan.RatePlan AND " .
-												"RatePlan.Name = 'Pinnacle' AND " .
-												"RatePlan.ServiceType = ".SERVICE_TYPE_MOBILE." AND " .
+												"ServiceRatePlan.RatePlan = 20 AND " .
 												"ServiceRatePlan.Id = (" .
 												" SELECT SRP.Id" .
 												" FROM ServiceRatePlan SRP" .
