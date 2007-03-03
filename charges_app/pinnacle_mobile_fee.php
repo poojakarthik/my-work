@@ -14,6 +14,7 @@ require_once('application_loader.php');
 $appCharge = new ApplicationCharge($arrConfig);
 
 // Execute the application
+echo ("\n\nPinnacle Mobile Services");
 $intCount = $appCharge->AddPinnacleMobileFees();
 
 // finished
