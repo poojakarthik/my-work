@@ -229,8 +229,8 @@
 						$arrColumns = Array();
 						$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
 						$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
-						$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0));
-						if ($this->_ubiRecurringCharge->Execute($arrCharge, $arrColumns) === FALSE)
+						$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => 0.0));
+						if ($this->_ubiRecurringCharge->Execute($arrColumns) === FALSE)
 						{
 
 						}
@@ -255,7 +255,7 @@
 				$arrColumns['LastChargedOn']	= $arrCharge['LastChargedOn'];
 				$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions + 1");
 				$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged + <Charge>", Array('Charge' => $arrCharge['RecursionCharge']));
-				if ($this->_ubiRecurringCharge->Execute($arrCharge, $arrColumns) === FALSE)
+				if ($this->_ubiRecurringCharge->Execute($arrColumns) === FALSE)
 				{
 
 				}
