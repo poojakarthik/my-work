@@ -122,7 +122,7 @@
 																"Id, Account",
 																$strWhere, 'CreatedOn DESC, Account DESC', '1');*/
 		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
-		$strWhere					= "AND Account = <Account> ";
+		$strWhere					.= "AND Account = <Account> ";
 		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE <Prefix>) OR FNN LIKE <SNN>)";	
 		$this->_selDestinationDetails	=new StatementSelect(	"Service",
 																"Id, Account",
