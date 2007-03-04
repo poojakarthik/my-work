@@ -107,18 +107,26 @@
 															" AND RateGroup.RecordType = <RecordType>" .
 															" AND RateGroup.ServiceType = <ServiceType>" .
 															" AND Service.Id = ServiceRateGroup.Service");
-								
+		
+		// not used in actual rating... may not be used at all???		
 		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
 		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE <Prefix>))";	
 		$this->_selServiceByFNN		= new StatementSelect(	"Service",
 															"Id",
 															$strWhere, 'CreatedOn DESC, Account DESC', '1');
 		
-		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
+		
+		/*$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
 		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE <Prefix>) OR FNN LIKE <SNN>)";		
 		$this->_selDestinationDetails	=new StatementSelect(	"Service",
 																"Id, Account",
-																$strWhere, 'CreatedOn DESC, Account DESC', '1');
+																$strWhere, 'CreatedOn DESC, Account DESC', '1');*/
+		$strWhere					= "(ISNULL(ClosedOn) OR ClosedOn > <Date>) ";
+		$strWhere					= "AND Account = <Account> ";
+		$strWhere					.="AND (FNN = <FNN> OR (FNN != <FNN> AND Indial100 = 1 AND FNN LIKE <Prefix>) OR FNN LIKE <SNN>)";	
+		$this->_selDestinationDetails	=new StatementSelect(	"Service",
+																"Id, Account",
+																$strWhere, NULL, '1');
 		
 /*		
 		$strTables					=	"Rate JOIN RateGroupRate ON Rate.Id = RateGroupRate.Rate, " .
@@ -604,6 +612,7 @@
 		$arrWhere['SNN']			= '0_'.substr($this->_arrCurrentCDR['Destination'], -8);
 		$arrWhere['FNN']			= $this->_arrCurrentCDR['Destination'];
 		$arrWhere['Date']			= $this->_arrCurrentCDR['StartDatetime'];
+		$arrWhere['Account']		= $this->_arrCurrentCDR['Account'];
 //Debug($arrWhere['FNN']);
 //Debug($arrWhere['SNN']);
 		$this->_selDestinationDetails->Execute($arrWhere);
