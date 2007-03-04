@@ -49,7 +49,7 @@ cp -ip $INNODB_DIR/ib_logfile* $BACKUP_DIR/$BACKUP_NAME/
 #TODO!!!!
 
 # Copy all the .frm files for your InnoDB tables to a safe place.
-cp -Rip $MYSQL_DIR/mysql/$DATABASE_NAME/*.frm $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
+cp -Rip $MYSQL_DIR/$DATABASE_NAME/*.frm $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
 
 # Copy the MySQL database
 cp -Rip $MYSQL_DIR/mysql $BACKUP_DIR/$BACKUP_NAME/
