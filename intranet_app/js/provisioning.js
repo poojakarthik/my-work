@@ -59,7 +59,7 @@
 		}
 		
 		// clean residential/business fields
-		if (document.getElementById("Residential:FALSE").checked = true)
+		if (document.getElementById("Residential:FALSE").checked == true)
 		{
 			// Business
 			
@@ -382,7 +382,7 @@
 	*/
 	function UpdateServiceAddress()
 	{		
-		if (document.getElementById("Residential:FALSE").checked = true)
+		if (document.getElementById("Residential:FALSE").checked == true)
 		{
 			ShowBusiness();
 		}
