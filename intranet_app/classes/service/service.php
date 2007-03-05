@@ -749,8 +749,8 @@
 			$sadServiceAddress = $this->ServiceAddress ();
 			$intId = $sadServiceAddress->Pull ('Id')->getValue ();
 				
-			try
-			{
+			//try
+			//{
 				
 				
 				// Update Service Address
@@ -760,7 +760,7 @@
 				Debug($arrData);
 				Die;
 				return true;
-			}
+			/*}
 			catch (Exception $e)
 			{
 				Die;
@@ -771,7 +771,7 @@
 				// Insert Service Address
 				$insServiceAddress = new StatementInsert ('ServiceAddress');
 				$intServiceAddress = $insServiceAddress->Execute ($arrData);
-			}
+			}*/
 		}
 		
 		//------------------------------------------------------------------------//
