@@ -134,9 +134,13 @@
 		SetMandatory("ServiceStreetTypeSuffix"		, false);
 		SetMandatory("ServicePropertyName"		, false);
 		
-		alert(document.getElementById("ServiceAddressType").value);
+		elmServiceAddressType = document.getElementById("ServiceAddressType");
+		
+		strServiceAddressType = elmServiceAddressType.options[elmServiceAddressType.selectedIndex];
+		
+		alert(strServiceAddressType);
 	
-		switch (document.getElementById("ServiceAddressType").value)
+		switch (strServiceAddressType)
 		{
 			// LOT Addresses
 			case "LOT":
@@ -240,7 +244,7 @@
 					SetMandatory("ServiceStreetName", true);
 				}
 				
-				if (document.getElementById("ServiceAddressType").value == null)
+				if (strServiceAddressType == null)
 				{
 					EnableElementById("ServiceAddressTypeNumber");
 					EnableElementById("ServiceAddressTypeSuffix");
