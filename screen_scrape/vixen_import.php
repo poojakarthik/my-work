@@ -1156,13 +1156,13 @@ class VixenImport extends ApplicationBaseClass
 	
 	function InsertInvoicePayment($arrPayment)
 	{
-		$arrInvoicePayment['InvoiceRun']	= "Pre-Vixen";
+		$arrInvoicePayment['InvoiceRun']	= "";
 		$arrInvoicePayment['Account']		= $arrPayment['Account'];
 		$arrInvoicePayment['AccountGroup']	= $arrPayment['Account'];
 		$arrInvoicePayment['Payment']		= $arrPayment['Id'];
 		$arrInvoicePayment['Amount']		= $arrPayment['Amount'];
 		
-		$mixResponse = $this->insInvoicePayment->Execute($arrPayment);
+		$mixResponse = $this->insInvoicePayment->Execute($arrInvoicePayment);
 		if ($mixResponse === FALSE)
 		{
 			Debug($this->insInvoicePayment->Error());
