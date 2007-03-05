@@ -665,7 +665,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceLocality" class="input-string">
+										<input type="text" name="ServiceLocality" id="ServiceLocality" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServiceLocality" />
@@ -682,7 +682,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="ServiceState">
+										<select name="ServiceState" id="ServiceState">
 											<option></option>
 											<xsl:for-each select="/Response/ServiceStateTypes/ServiceStateType">
 												<option>
@@ -712,7 +712,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServicePostcode" class="input-string">
+										<input type="text" name="ServicePostcode" id="ServicePostcode" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServicePostcode" />

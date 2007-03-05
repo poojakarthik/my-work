@@ -13,7 +13,7 @@
 	* @method
 	*/
 	function CleanInput()
-	{		
+	{
 		// Check common fields
 		if (document.getElementById("BillName").value.length == 0)
 		{
@@ -45,7 +45,7 @@
 			document.getElementById("ServiceLocality").focus();
 			return false;
 		}
-		if (document.getElementById("ServiceState").value.length == 0)
+		if (document.getElementById("ServiceState").options[document.getElementById("ServiceState").selectedIndex].value.length == 0)
 		{
 			alert("Please enter a value for the Service State field");
 			document.getElementById("ServiceState").focus();
@@ -111,9 +111,9 @@
 				document.getElementById("EndUserFamilyName").focus();
 				return false;
 			}
-			if (document.getElementByName("DateOfBirth[day]").options[document.getElementByName("DateOfBirth[day]").selectedIndex].value == "" || 
-				document.getElementByName("DateOfBirth[day]").options[document.getElementByName("DateOfBirth[month]").selectedIndex].value == "" || 
-				document.getElementByName("DateOfBirth[day]").options[document.getElementByName("DateOfBirth[year]").selectedIndex].value == "")
+			if (document.getElementByName("DateOfBirth[day]").selectedIndex < 1 || 
+				document.getElementByName("DateOfBirth[month]").selectedIndex < 1 || 
+				document.getElementByName("DateOfBirth[year]").selectedIndex < 1)
 			{
 				alert("Please enter a value for the Date Of Birth field");
 				document.getElementByName("DateOfBirth[day]").focus();
@@ -136,6 +136,12 @@
 					document.getElementById("ServiceAddressTypeNumber").focus();
 					return false;
 				}
+				if (document.getElementById("ServiceAddressType").options[document.getElementById("ServiceAddressType").selectedIndex].value.length == 0)
+				{
+					alert("Please enter a value for the Address Type field");
+					document.getElementById("ServiceAddressType").focus();
+					return false;
+				}				
 				
 				// Clean Fields
 				document.getElementById("ServiceStreetNumberStart").value	= "";
@@ -197,6 +203,12 @@
 					document.getElementById("ServiceAddressTypeNumber").focus();
 					return false;
 				}
+				if (document.getElementById("ServiceAddressType").options[document.getElementById("ServiceAddressType").selectedIndex].value.length == 0)
+				{
+					alert("Please enter a value for the Address Type field");
+					document.getElementById("ServiceAddressType").focus();
+					return false;
+				}				
 				break;
 				
 			// Standard Addresses
