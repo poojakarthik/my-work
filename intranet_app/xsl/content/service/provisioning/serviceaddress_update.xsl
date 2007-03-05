@@ -401,7 +401,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ABN" class="input-ABN">
+										<input type="text" name="ABN" id="ABN" class="input-ABN">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ABN" />
@@ -418,7 +418,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="EndUserCompanyName" class="input-string">
+										<input type="text" name="EndUserCompanyName" id="EndUserCompanyName" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/EndUserCompanyName" />
@@ -435,7 +435,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="TradingName" class="input-string">
+										<input type="text" name="TradingName" id="TradingName" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/TradingName" />
