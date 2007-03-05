@@ -62,13 +62,6 @@
 		if (document.getElementById("Residential:FALSE").checked = true)
 		{
 			// Business
-			// clean
-			document.getElementById("EndUserTitle").value		= "";
-			document.getElementById("EndUserGivenName").value	= "";
-			document.getElementById("EndUserFamilyName").value	= "";
-			document.getElementById("DateOfBirth").value		= "";
-			document.getElementById("Employer").value			= "";
-			document.getElementById("Occupation").value			= "";
 			
 			// check mandatory
 			if (document.getElementById("ABN").value.length == 0)
@@ -87,10 +80,6 @@
 		else
 		{
 			// Residential
-			// clean
-			document.getElementById("ABN").value				= "";
-			document.getElementById("EndUserCompanyName").value	= "";
-			document.getElementById("TradingName").value		= "";
 			
 			// check mandatory
 			if (document.getElementById("EndUserTitle").value.length == 0)
