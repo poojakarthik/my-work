@@ -111,10 +111,12 @@
 				document.getElementById("EndUserFamilyName").focus();
 				return false;
 			}
-			if (document.getElementById("DateOfBirth").value.length == 0)
+			if (document.getElementByName("DateOfBirth[day]").options[document.getElementByName("DateOfBirth[day]").selectedIndex].value == "" || 
+				document.getElementByName("DateOfBirth[day]").options[document.getElementByName("DateOfBirth[month]").selectedIndex].value == "" || 
+				document.getElementByName("DateOfBirth[day]").options[document.getElementByName("DateOfBirth[year]").selectedIndex].value == "")
 			{
 				alert("Please enter a value for the Date Of Birth field");
-				document.getElementById("DateOfBirth").focus();
+				document.getElementByName("DateOfBirth[day]").focus();
 				return false;
 			}
 		}

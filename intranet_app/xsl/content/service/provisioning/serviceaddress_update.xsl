@@ -175,7 +175,7 @@
 						
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
-								<tr id="BillName">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -184,7 +184,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="BillName" class="input-string">
+										<input type="text" name="BillName" id="BillName" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/BillName" />
@@ -192,7 +192,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr id="BillAddress1">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -201,7 +201,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="BillAddress1" class="input-string">
+										<input type="text" name="BillAddress1" id="BillAddress1" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/BillAddress1" />
@@ -209,7 +209,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr id="BillAddress2">
+								<tr>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -218,7 +218,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="BillAddress2" class="input-string">
+										<input type="text" name="BillAddress2" id="BillAddress2" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/BillAddress2" />
@@ -226,7 +226,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr id="BillLocality">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -235,7 +235,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="BillLocality" class="input-string">
+										<input type="text" name="BillLocality" id="BillLocality" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/BillLocality" />
@@ -244,7 +244,7 @@
 									</td>
 								</tr>
 								<!--TODO!bash! URGENT verify postcode - only 4 digit number-->
-								<tr id="BillPostcode">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -253,7 +253,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="BillPostcode" class="input-string">
+										<input type="text" name="BillPostcode" id="BillPostcode" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/BillPostcode" />
@@ -268,7 +268,7 @@
 						
 						<div class="Narrow-Form" id="ResidentialSpecific">
 							<table border="0" cellpadding="3" cellspacing="0">
-								<tr id="EndUserTitle">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -277,7 +277,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="EndUserTitle">
+										<select name="EndUserTitle" id="EndUserTitle">
 											<option></option>
 											<xsl:for-each select="/Response/TitleTypes/TitleType">
 												<option>
@@ -297,7 +297,7 @@
 										</select>
 									</td>
 								</tr>
-								<tr id="EndUserGivenName">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -306,7 +306,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="EndUserGivenName" class="input-string">
+										<input type="text" name="EndUserGivenName" id="EndUserGivenName" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/EndUserGivenName" />
@@ -314,7 +314,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr id="EndUserFamilyName">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -323,7 +323,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="EndUserFamilyName" class="input-string">
+										<input type="text" name="EndUserFamilyName" id="EndUserFamilyName" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/EndUserFamilyName" />
@@ -332,7 +332,7 @@
 									</td>
 								</tr>
 								<!--TODO!bash! Urgent! do not show dates which allow the person to be <18-->
-								<tr id="DateOfBirth">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -351,7 +351,7 @@
 										</xsl:call-template>
 									</td>
 								</tr>
-								<tr id="Employer">
+								<tr>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -360,7 +360,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="Employer" class="input-string">
+										<input type="text" name="Employer" id="Employer" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/Employer" />
@@ -368,7 +368,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr id="Occupation">
+								<tr>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -377,7 +377,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="Occupation" class="input-string">
+										<input type="text" name="Occupation" id="Occupation" class="input-string">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/Occupation" />
