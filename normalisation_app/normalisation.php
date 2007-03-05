@@ -19,10 +19,10 @@ $mixEmailAddress = 'flame@telcoblue.com.au';
 $appNormalise = new ApplicationNormalise($mixEmailAddress);
 
 // Change status of all CDRs with missing destination 
-$appNormalise->ReNormalise(CDR_BAD_DESTINATION);
+//$appNormalise->ReNormalise(CDR_BAD_DESTINATION);
 
 // Change status of all CDRs with missing owner 
-$appNormalise->ReFindOwner(CDR_BAD_OWNER);
+//$appNormalise->ReFindOwner(CDR_BAD_OWNER);
 
 // Import lines from CDR files into the database
 $appNormalise->Import();
