@@ -23,37 +23,37 @@
 			// LOT Addresses
 			case "LOT":
 				// Check Mandatory Fields
-				if (getElementById("ServiceAddressTypeNumber").value.length == 0)
+				if (document.getElementById("ServiceAddressTypeNumber").value.length == 0)
 				{
 					alert("Please enter a value for the Address Type Number field");
-					getElementById("ServiceAddressTypeNumber").focus();
+					document.getElementById("ServiceAddressTypeNumber").focus();
 					return false;
 				}
 				
 				// Clean Fields
-				getElementById("ServiceStreetNumberStart").value	= "";
-				getElementById("ServiceStreetNumberEnd").value	= "";
-				getElementById("ServiceStreetNumberSuffix").value = "";
+				document.getElementById("ServiceStreetNumberStart").value	= "";
+				document.getElementById("ServiceStreetNumberEnd").value	= "";
+				document.getElementById("ServiceStreetNumberSuffix").value = "";
 				
 				
 				// Check dependencies
 				if (document.getElementById("ServiceStreetName").value.length > 0)
 				{
-					if (getElementById("ServiceStreetType").selectedIndex < 1)
+					if (document.getElementById("ServiceStreetType").selectedIndex < 1)
 					{
 						alert("Please select a value for the Street Type field");
-						getElementById("ServiceStreetType").focus();
+						document.getElementById("ServiceStreetType").focus();
 						return false;
 					}
 				}
 				else
 				{
-					getElementById("ServiceStreetType").value		= "";
-					getElementById("ServiceStreetTypeSuffix").value	= "";
-					if (getElementById("ServicePropertyName").value.length == 0)
+					document.getElementById("ServiceStreetType").value		= "";
+					document.getElementById("ServiceStreetTypeSuffix").value	= "";
+					if (document.getElementById("ServicePropertyName").value.length == 0)
 					{
 						alert("Please enter a value for either the Property Name or Street Name field");
-						getElementById("ServiceStreetName").focus();
+						document.getElementById("ServiceStreetName").focus();
 						return false;
 					}
 				}
@@ -75,19 +75,19 @@
 			case "RMS":
 			case "RSD":				
 				// Clean fields
-				getElementById("ServiceStreetNumberStart").value		= "";
-				getElementById("ServiceStreetNumberEnd").value		= "";
-				getElementById("ServiceStreetNumberSuffix").value	= "";
-				getElementById("ServiceStreetName").value			= "";
-				getElementById("ServiceStreetType").value			= "";
-				getElementById("ServiceStreetTypeSuffix").value		= "";
-				getElementById("ServicePropertyName").value			= "";
+				document.getElementById("ServiceStreetNumberStart").value		= "";
+				document.getElementById("ServiceStreetNumberEnd").value		= "";
+				document.getElementById("ServiceStreetNumberSuffix").value	= "";
+				document.getElementById("ServiceStreetName").value			= "";
+				document.getElementById("ServiceStreetType").value			= "";
+				document.getElementById("ServiceStreetTypeSuffix").value		= "";
+				document.getElementById("ServicePropertyName").value			= "";
 				
 				// Check Mandatory Fields
-				if (getElementById("ServiceAddressTypeNumber").value < 1)
+				if (document.getElementById("ServiceAddressTypeNumber").value < 1)
 				{
 					alert("Please enter a value for the ServiceAddressTypeNumber field");
-					getElementById("ServiceAddressTypeNumber").focus();
+					document.getElementById("ServiceAddressTypeNumber").focus();
 					return false;
 				}
 				break;
@@ -97,42 +97,42 @@
 				// Check dependencies
 				if (document.getElementById("ServiceStreetName").value.length > 0)
 				{
-					if (getElementById("ServiceStreetType").value.length == 0)
+					if (document.getElementById("ServiceStreetType").value.length == 0)
 					{
 						alert("Please enter a value for the ServiceStreetType field");
-						getElementById("ServiceStreetType").focus();
+						document.getElementById("ServiceStreetType").focus();
 						return false;
 					}
 				}
 				else
 				{
-					getElementById("ServiceStreetType").value		= "";
-					getElementById("ServiceStreetTypeSuffix").value	= "";
-					if (getElementById("ServicePropertyName").value.length == 0)
+					document.getElementById("ServiceStreetType").value		= "";
+					document.getElementById("ServiceStreetTypeSuffix").value	= "";
+					if (document.getElementById("ServicePropertyName").value.length == 0)
 					{
 						alert("Please enter a value for either the Property Name or Street Name field");
-						getElementById("ServiceStreetName").focus();
+						document.getElementById("ServiceStreetName").focus();
 						return false;
 					}
 				}
 				
 				if (document.getElementById("ServiceStreetNumberStart").value.length == 0)
 				{
-					getElementById("ServiceStreetNumberEnd").value		= "";
-					getElementById("ServiceStreetNumberSuffix").value	= "";
+					document.getElementById("ServiceStreetNumberEnd").value		= "";
+					document.getElementById("ServiceStreetNumberSuffix").value	= "";
 				}
 				
 				if (strServiceAddressType == "")
 				{
-					getElementById("ServiceAddressTypeNumber").value = "";
-					getElementById("ServiceAddressTypeSuffix").value = "";
+					document.getElementById("ServiceAddressTypeNumber").value = "";
+					document.getElementById("ServiceAddressTypeSuffix").value = "";
 				}
 				else
 				{
-					if (getElementById("ServiceAddressTypeNumber").value.length == 0)
+					if (document.getElementById("ServiceAddressTypeNumber").value.length == 0)
 					{
 						alert("Please enter a value for the Address Type Number field");
-						getElementById("ServiceAddressTypeNumber").focus();
+						document.getElementById("ServiceAddressTypeNumber").focus();
 						return false;
 					}
 				}
