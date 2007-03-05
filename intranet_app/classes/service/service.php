@@ -746,16 +746,17 @@
 			// Otherwise
 				// Create a new Service Address and Update the Service to reflect this Service Address
 			
+			$sadServiceAddress = $this->ServiceAddress ();
+			$intId = $sadServiceAddress->Pull ('Id')->getValue ();
+				
 			try
 			{
-				$sadServiceAddress = $this->ServiceAddress ();
+				
 				
 				// Update Service Address
 				$updServiceAddress = new StatementUpdate ('ServiceAddress', 'Id = <Id>', $arrData, 1);
-				$updServiceAddress->Execute ($arrData, Array ('Id' => $sadServiceAddress->Pull ('Id')->getValue ()));
-				Debug($updServiceAddress->Error());
-				Debug($arrData);
-				Die;
+				$updServiceAddress->Execute ($arrData, Array ('Id' => $intId));
+
 				return true;
 			}
 			catch (Exception $e)
