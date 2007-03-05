@@ -165,7 +165,7 @@
 				SetMandatory("ServiceAddressTypeNumber", true);
 				
 				// Check dependencies
-				if (document.getElementById("ServiceStreetName").length > 0)
+				if (document.getElementById("ServiceStreetName").value.length > 0)
 				{
 					EnableElementById("ServiceStreetType");
 					EnableElementById("ServiceStreetTypeSuffix");
@@ -178,7 +178,7 @@
 					SetMandatory("ServicePropertyName", true);
 				}
 				
-				if (document.getElementById("ServiceStreetName").length > 0)
+				if (document.getElementById("ServiceStreetName").value.length > 0)
 				{
 					SetMandatory("ServiceStreetName", false);
 				}
@@ -228,7 +228,7 @@
 				EnableElementById("ServicePropertyName");
 				
 				// Check dependencies
-				if (document.getElementById("ServiceStreetName").length > 0)
+				if (document.getElementById("ServiceStreetName").value.length > 0)
 				{
 					EnableElementById("ServiceStreetType");
 					EnableElementById("ServiceStreetTypeSuffix");
@@ -241,7 +241,7 @@
 					SetMandatory("ServicePropertyName", true);
 				}
 				
-				if (document.getElementById("ServicePropertyName").length > 0)
+				if (document.getElementById("ServicePropertyName").value.length > 0)
 				{
 					SetMandatory("ServiceStreetName", false);
 				}
