@@ -136,7 +136,7 @@
 																<xsl:text>checked</xsl:text>
 															</xsl:attribute>
 														</xsl:if>
-														<xsl:if test="/Response/ServiceAddress/Residential = NULL">
+														<xsl:if test="not(boolean(/Response/ServiceAddress/Residential))">
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
 															</xsl:attribute>

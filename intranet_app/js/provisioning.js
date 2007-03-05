@@ -250,16 +250,16 @@
 					SetMandatory("ServiceStreetName", true);
 				}
 				
-				if (strServiceAddressType == null)
+				if (strServiceAddressType == "")
+				{
+					DisableElementById("ServiceAddressTypeNumber");
+					DisableElementById("ServiceAddressTypeSuffix");
+				}
+				else
 				{
 					EnableElementById("ServiceAddressTypeNumber");
 					EnableElementById("ServiceAddressTypeSuffix");
 					SetMandatory("ServiceAddressTypeNumber", true);
-				}
-				else
-				{
-					DisableElementById("ServiceAddressTypeNumber");
-					DisableElementById("ServiceAddressTypeSuffix");
 				}
 				break;
 		}
