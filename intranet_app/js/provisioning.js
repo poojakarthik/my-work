@@ -102,11 +102,11 @@
 		// set the mandatory status
 		if (bolMandatory)
 		{
-			document.getElementById(strId + "Mandatory").style.visibility = true;
+			document.getElementById(strId + "Mandatory").style.visibility = "visible";
 		}
 		else
 		{
-			document.getElementById(strId + "Mandatory").style.visibility = false;
+			document.getElementById(strId + "Mandatory").style.visibility = "hidden";
 		}
 	}
 	
