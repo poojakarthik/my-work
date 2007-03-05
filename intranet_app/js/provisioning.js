@@ -97,7 +97,7 @@
 	*
 	* @method
 	*/
-	function SetMandatory(bolMandatory)
+	function SetMandatory(strId, bolMandatory)
 	{		
 		// set the mandatory status
 		if (bolMandatory)
