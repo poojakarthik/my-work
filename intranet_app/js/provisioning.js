@@ -391,6 +391,7 @@
 			ShowResidential();
 		}
 		
+		SetMandatory("ServiceAddressType"			, false);
 		SetMandatory("ServiceAddressTypeNumber"	, false);
 		SetMandatory("ServiceAddressTypeSuffix"		, false);
 		SetMandatory("ServiceStreetNumberStart"	, false);
@@ -421,6 +422,7 @@
 				
 				// Set Mandatory Status
 				SetMandatory("ServiceAddressTypeNumber", true);
+				SetMandatory("ServiceAddressType", true);
 				
 				// Check dependencies
 				if (document.getElementById("ServiceStreetName").value.length > 0)
@@ -476,6 +478,7 @@
 				
 				// Set Mandatory Status
 				SetMandatory("ServiceAddressTypeNumber", true);
+				SetMandatory("ServiceAddressType", true);
 				break;
 				
 			// Standard Addresses
