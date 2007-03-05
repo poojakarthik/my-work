@@ -388,7 +388,7 @@
 							</table>
 						</div>
 						
-						<div class="SmallSeperator"></div>
+						<!-- <div class="SmallSeperator"></div> -->
 						
 						<div class="Narrow-Form" id="BusinessSpecific">
 							<table border="0" cellpadding="3" cellspacing="0">
@@ -459,7 +459,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="ServiceAddressType">
+										<select name="ServiceAddressType" onchange="UpdateServiceAddress()">
 											<option></option>
 											<xsl:for-each select="/Response/ServiceAddressTypes/ServiceAddressType">
 												<option>
@@ -488,7 +488,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceAddressTypeNumber" class="input-string">
+										<input type="text" name="ServiceAddressTypeNumber" class="input-string" onchange="UpdateServiceAddress()">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServiceAddressTypeNumber" />
@@ -505,7 +505,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceAddressTypeSuffix" class="input-string">
+										<input type="text" name="ServiceAddressTypeSuffix" class="input-string" onchange="UpdateServiceAddress()">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServiceAddressTypeSuffix" />
@@ -522,7 +522,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceStreetNumberStart" class="input-string">
+										<input type="text" name="ServiceStreetNumberStart" class="input-string" onchange="UpdateServiceAddress()">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServiceStreetNumberStart" />
@@ -539,7 +539,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceStreetNumberEnd" class="input-string">
+										<input type="text" name="ServiceStreetNumberEnd" class="input-string" onchange="UpdateServiceAddress()">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServiceStreetNumberEnd" />
@@ -556,7 +556,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceStreetNumberSuffix" class="input-string">
+										<input type="text" name="ServiceStreetNumberSuffix" class="input-string" onchange="UpdateServiceAddress()">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServiceStreetNumberSuffix" />
@@ -573,7 +573,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServiceStreetName" class="input-string">
+										<input type="text" name="ServiceStreetName" class="input-string" onchange="UpdateServiceAddress()">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServiceStreetName" />
@@ -590,7 +590,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="ServiceStreetType">
+										<select name="ServiceStreetType" onchange="UpdateServiceAddress()">
 											<option></option>
 											<xsl:for-each select="/Response/ServiceStreetTypes/ServiceStreetType">
 												<option>
@@ -619,7 +619,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="ServiceStreetTypeSuffix">
+										<select name="ServiceStreetTypeSuffix" onchange="UpdateServiceAddress()">
 											<option></option>
 											<xsl:for-each select="/Response/ServiceStreetSuffixTypes/ServiceStreetSuffixType">
 												<option>
@@ -648,7 +648,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<input type="text" name="ServicePropertyName" class="input-string">
+										<input type="text" name="ServicePropertyName" class="input-string" onchange="UpdateServiceAddress()">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 												<xsl:value-of select="/Response/ServiceAddress/ServicePropertyName" />
