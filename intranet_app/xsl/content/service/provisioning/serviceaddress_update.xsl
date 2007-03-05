@@ -409,7 +409,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr id="EndUserCompanyName">
+								<tr>
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -426,7 +426,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr id="TradingName">
+								<tr>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
