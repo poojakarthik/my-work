@@ -124,7 +124,7 @@
 	*/
 	function UpdateServiceAddress()
 	{		
-		if (document.getElementById("Residential").value = 0)
+		if (document.getElementById("Residential:FALSE").checked = true)
 		{
 			ShowBusiness();
 		}
