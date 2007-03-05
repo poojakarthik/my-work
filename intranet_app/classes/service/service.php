@@ -756,11 +756,14 @@
 				// Update Service Address
 				$updServiceAddress = new StatementUpdate ('ServiceAddress', 'Id = <Id>', $arrData, 1);
 				$updServiceAddress->Execute ($arrData, Array ('Id' => $intId));
-
+				Debug($updServiceAddress->Error());
+				Debug($arrData);
+				Die;
 				return true;
 			}
 			catch (Exception $e)
 			{
+				Die;
 				$arrData ['AccountGroup']	= $this->Pull ('AccountGroup')->getValue ();
 				$arrData ['Account']		= $this->Pull ('Account')->getValue ();
 				$arrData ['Service']		= $this->Pull ('Id')->getValue ();
