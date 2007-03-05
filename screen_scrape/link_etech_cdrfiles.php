@@ -28,7 +28,7 @@ $arrColumns['Status']	= NULL;
 $updUpdateCDRs	= new StatementUpdate("CDR", "File = <File> AND Status != 106 AND Status < 170", $arrColumns);
 
 $arrPaths[]		= '/usr/share/vixen/screen_scrape/2007_01.txt';
-$arrPaths[]		= '/usr/share/vixen/screen_scrape/2007_02.txt';
+//$arrPaths[]		= '/usr/share/vixen/screen_scrape/2007_02.txt';
 $strDelimiter	= ',';
 $strEnclosed	= '"';
 
