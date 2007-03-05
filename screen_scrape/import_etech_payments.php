@@ -46,7 +46,6 @@
 			foreach ($arrPayments as $arrPayment)
 			{
 				$arrPayment['Account']	= (int)$intAccount;
-				Debug($arrPayment);
 				
 				if ($arrPayment['Id'] = $objImport->InsertPayment($arrPayment))
 				{
