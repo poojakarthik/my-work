@@ -43,6 +43,8 @@
 		{
 			echo str_pad("+ Payments for $intAccount...", 60, " ", STR_PAD_RIGHT);
 			$arrPayment['Account']	= (int)$intAccount;
+			Debug($arrPayment);
+			
 			if ($arrPayment['Id'] = $objImport->InsertPayment($arrPayment))
 			{
 				if ($objImport->InsertInvoicePayment($arrPayment))
