@@ -717,9 +717,9 @@
 											</xsl:for-each>
 										</select>
 									</td>
-								</tr id="ServicePostcode">
+								</tr>
 								<!--TODO!bash! URGENT! when you're asked to fix one postcode, you should probably fix the other one too.  Don't show 0000 if no postcode is entered!!-->
-								<tr>
+								<tr id="ServicePostcode">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
