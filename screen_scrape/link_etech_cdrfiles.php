@@ -37,6 +37,7 @@ echo	"\n\n" .
 		"=-=-=-=-=-=-=-=-=-=-\n\n";
 		
 // Open and parse CSVs
+$arrFiles = Array();
 foreach ($arrPaths as $strPath)
 {
 	if (!file_exists($strPath))
@@ -55,7 +56,7 @@ foreach ($arrPaths as $strPath)
 	
 	// Ignore the first 3 rows (header), enter all other non-blanks to an array
 	fgets($ptrFile);fgets($ptrFile);fgets($ptrFile);
-	$arrFiles = Array();
+	
 	while ($strLine = fgets($ptrFile))
 	{
 		if ($strLine = trim($strLine))
