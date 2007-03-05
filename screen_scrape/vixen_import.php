@@ -1142,6 +1142,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrPayment['PaidOn']		= $arrPayment['Date'];
 		$arrPayment['Status']		= PAYMENT_FINISHED;
 		$arrPayment['AccountGroup']	= $arrPayment['Account'];
+		$arrPayment['Amount']		= (float)str_replace('$', '', $arrPayment['Amount']);
 		
 		$arrPayment	= array_merge($this->db->FetchClean("Payment"), $arrPayment);
 		
@@ -1160,7 +1161,7 @@ class VixenImport extends ApplicationBaseClass
 		$arrInvoicePayment['Account']		= $arrPayment['Account'];
 		$arrInvoicePayment['AccountGroup']	= $arrPayment['Account'];
 		$arrInvoicePayment['Payment']		= $arrPayment['Id'];
-		$arrInvoicePayment['Amount']		= $arrPayment['Amount'];
+		$arrInvoicePayment['Amount']		= (float)str_replace('$', '', $arrPayment['Amount']);
 		
 		$mixResponse = $this->insInvoicePayment->Execute($arrInvoicePayment);
 		if ($mixResponse === FALSE)
