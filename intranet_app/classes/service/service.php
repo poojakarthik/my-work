@@ -706,9 +706,7 @@
 			
 			$staServiceStateType		= new ServiceStateTypes ();
 			$bolServiceStateType		= $staServiceStateType->setValue ($arrDetails ['ServiceState']);
-			
-			Debug($arrDetails);
-			
+
 			$arrData = Array (
 				'Residential'					=> $arrDetails ['Residential'],
 				'BillName'						=> $arrDetails ['BillName'],
