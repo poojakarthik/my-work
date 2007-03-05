@@ -24,7 +24,7 @@
 		if (document.getElementById("BillAddress1").value.length == 0)
 		{
 			alert("Please enter a value for the Bill Address Line 1 field");
-			document.getElementById("BillAddress").focus();
+			document.getElementById("BillAddress1").focus();
 			return false;
 		}
 		if (document.getElementById("BillLocality").value.length == 0)
