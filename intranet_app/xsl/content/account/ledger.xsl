@@ -65,13 +65,13 @@
 				<th width="30">#</th>
 				<th>Invoice #</th>
 				<th>Date</th>
-				<th class="Currency" width="100">Overdue</th>
-				<th class="Currency" width="100">Credits</th>
-				<th class="Currency" width="100">Debits</th>
-				<th class="Currency" width="100">Total</th>
+				<th class="Currency" width="100">Opening Balance</th>
+				<th class="Currency" width="100">Credits (ex-tax)</th>
+				<th class="Currency" width="100">Debits (ex-tax)</th>
+				<th class="Currency" width="100">Total (ex-tax)</th>
 				<!--TODO!bash! [  DONE  ]		you need to have a tax column - otherwise it looks like the total and balance columns do not add up!!! -->
-				<th class="Currency" width="100">Tax</th>
-				<th class="Currency" width="100">Balance</th>
+				<!-- <th class="Currency" width="100">Total (inc-tax)</th> -->
+				<th class="Currency" width="100">Invoice Balance</th>
 				<th class="Currency" width="100">Disputed</th>
 			</tr>
 			<xsl:for-each select="/Response/Invoices/Results/rangeSample/Invoice">
@@ -128,12 +128,12 @@
 							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
        				</td>
-					<td class="Currency">
+					<!-- <td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Tax" />
 							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
-       				</td>
+       				</td> -->
 					<td class="Currency">
 						<strong>
 							<span>
@@ -260,6 +260,7 @@
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Invoice #</th>
+				<th>Payment Date</th>
 				<th>Payment Amount</th>
 				<th>Actions</th>
 			</tr>
@@ -283,7 +284,16 @@
 								<xsl:text>invoice_view.php?Invoice=</xsl:text>
 								<xsl:value-of select="./Invoice" />
 							</xsl:attribute>
-							Invoice #<xsl:value-of select="./Invoice" />
+							<xsl:value-of select="./Date" />
+						</a>
+					</td>
+					<td>
+						<a>
+							<xsl:attribute name="href">
+								<xsl:text>invoice_view.php?Invoice=</xsl:text>
+								<xsl:value-of select="./Invoice" />
+							</xsl:attribute>
+							<xsl:value-of select="./Invoice" />
 						</a>
 					</td>
 					<td>

@@ -121,6 +121,7 @@
 		 *
 		 * @method
 		 */
+		 //TODO!gui! fix this docblock
 		 
 		function __construct ($strSearchName, $strTable, $strResultClass)
 		{
@@ -173,7 +174,7 @@
 				// Make sure the Field Exists
 				if (!isset ($GLOBALS['arrDatabaseTableDefine'][$this->_strTable]['Column'][$strFieldName]))
 				{
-					throw new Exception ('Field not exists.');
+					throw new Exception ('Field does not exist.');
 				}
 				
 				// Get the definition and set the Constaint
