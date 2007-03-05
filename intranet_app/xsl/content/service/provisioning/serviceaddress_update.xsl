@@ -132,7 +132,7 @@
 											<tr>
 												<td>
 													<input type="radio" name="Service Address[Residential]" id="Residential:FALSE" value="0">
-														<xsl:if test="/Response/ui-values/Service Address/Residential = 0">
+														<xsl:if test="/Response/Service Address/Residential = 0">
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
 															</xsl:attribute>
@@ -148,7 +148,7 @@
 											<tr>
 												<td>
 													<input type="radio" name="Service Address[Residential]" id="Residential:TRUE" value="1">
-														<xsl:if test="/Response/ui-values/Service Address/Residential = 1">
+														<xsl:if test="/Response/ServiceAddress/Residential = 1">
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
 															</xsl:attribute>
