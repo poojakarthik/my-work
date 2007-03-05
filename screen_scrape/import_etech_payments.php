@@ -39,6 +39,8 @@
 	
 	if ($arrPayments = $objDecoder->FetchPayment())
 	{
+		Debug($arrPayments);
+		
 		foreach ($arrPayments as $intAccount=>$arrPayment)
 		{
 			echo str_pad("+ Payments for $intAccount...", 60, " ", STR_PAD_RIGHT);
