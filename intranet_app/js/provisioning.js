@@ -12,7 +12,7 @@
 	*
 	* @method
 	*/
-	function CleanInput(strId)
+	function CleanInput()
 	{		
 		// empty necessary fields
 		elmServiceAddressType = document.getElementById("ServiceAddressType");
