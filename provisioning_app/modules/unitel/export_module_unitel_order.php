@@ -131,7 +131,14 @@
 				$arrBuiltRequest['EndUserGivenName']			= str_pad($arrAddress['EndUserGivenName'], 30, " ", STR_PAD_RIGHT);
 				$arrBuiltRequest['EndUserLastName']				= str_pad($arrAddress['EndUserFamilyName'], 50, " ", STR_PAD_RIGHT);
 				$arrBuiltRequest['EndUserCompany']				= str_pad($arrAddress['EndUserCompany'], 50, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['DateOfBirth']					= str_pad($arrAddress['DateOfBirth'], 8, " ", STR_PAD_RIGHT);
+				if ($arrAddress['DateOfBirth'] == '00000000')
+				{
+					$arrBuiltRequest['DateOfBirth']					= "        ";
+				}
+				else
+				{
+					$arrBuiltRequest['DateOfBirth']					= str_pad($arrAddress['DateOfBirth'], 8, " ", STR_PAD_RIGHT);
+				}
 				$arrBuiltRequest['Employer']					= str_pad($arrAddress['Employer'], 30, " ", STR_PAD_RIGHT);
 				$arrBuiltRequest['Occupation']					= str_pad($arrAddress['Occupation'], 30, " ", STR_PAD_RIGHT);
 				$arrBuiltRequest['ABN']							= str_pad($arrAddress['ABN'], 11, " ", STR_PAD_RIGHT);

@@ -15,6 +15,7 @@
 		<!-- TODO!bash! [  DONE  ]		Rename this page and stick all of the 'Service address' pages in the provisioning folder where they belong -->
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/note_add.js"></script>
+		<script language="javascript" src="js/provisioning.js"</script>
 		
 		<table border="0" width="100%" cellpadding="0" cellspacing="0">
 			<tr>
@@ -98,7 +99,7 @@
 					</div>
 					
 					<div class="Seperator"></div>
-						
+					<!-- Service Address Details -->	
 					<form method="post" action="service_address.php">
 						<input type="hidden" name="Service">
 							<xsl:attribute name="value">
@@ -116,7 +117,55 @@
 						</xsl:if>
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
-								<tr>
+								<tr id="Residential">
+									<td class="Required" rowspan="2"></td>
+									<td class="Required" rowspan="2"></td>
+									<th class="JustifiedWidth" valign="top">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('Residential')" />
+										</xsl:call-template>
+									</th>
+									<td>
+
+										<table border="0" cellpadding="3" cellspacing="0">
+											<tr>
+												<td>
+													<input type="radio" name="Service Address[Residential]" id="Residential:FALSE" value="0">
+														<xsl:if test="/Response/ui-values/Service Address/Residential = 0">
+															<xsl:attribute name="checked">
+																<xsl:text>checked</xsl:text>
+															</xsl:attribute>
+														</xsl:if>
+													</input>
+												</td>
+												<td>
+													<label for="Residential:FALSE">
+														Business
+													</label>
+												</td>
+											</tr>
+											<tr>
+												<td>
+													<input type="radio" name="Service Address[Residential]" id="Residential:TRUE" value="1">
+														<xsl:if test="/Response/ui-values/Service Address/Residential = 1">
+															<xsl:attribute name="checked">
+																<xsl:text>checked</xsl:text>
+															</xsl:attribute>
+														</xsl:if>
+													</input>
+												</td>
+												<td>
+													<label for="Residential:TRUE">
+														Residential
+													</label>
+												</td>
+											</tr>
+										</table>
+
+									</td>
+								</tr>
+								<tr id="BillName">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -134,7 +183,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="BillAddress1">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -152,7 +201,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="BillAddress2">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -170,7 +219,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="BillLocality">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -189,7 +238,7 @@
 									</td>
 								</tr>
 								<!--TODO!bash! URGENT verify postcode - only 4 digit number-->
-								<tr>
+								<tr id="BillPostcode">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -212,9 +261,9 @@
 						
 						<div class="SmallSeperator"></div>
 						
-						<div class="Narrow-Form">
+						<div class="Narrow-Form" id="ResidentialSpecific">
 							<table border="0" cellpadding="3" cellspacing="0">
-								<tr>
+								<tr id="EndUserTitle">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"> </td>
 									<th class="JustifiedWidth">
@@ -244,7 +293,7 @@
 										</select>
 									</td>
 								</tr>
-								<tr>
+								<tr id="EndUserGivenName">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -262,7 +311,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="EndUserFamilyName">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -280,26 +329,8 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
-									<td class="Required"></td>
-									<td class="Required"></td>
-									<th class="JustifiedWidth">
-										<xsl:call-template name="Label">
-											<xsl:with-param name="entity" select="string('Service Address')" />
-											<xsl:with-param name="field" select="string('EndUserCompanyName')" />
-										</xsl:call-template>
-									</th>
-									<td>
-										<input type="text" name="EndUserCompanyName" class="input-string">
-											<xsl:attribute name="value">
-												<xsl:text></xsl:text>
-												<xsl:value-of select="/Response/ServiceAddress/EndUserCompanyName" />
-											</xsl:attribute>
-										</input>
-									</td>
-								</tr>
 								<!--TODO!bash! Urgent! do not show dates which allow the person to be <18-->
-								<tr>
+								<tr id="DateOfBirth">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -319,7 +350,7 @@
 										</xsl:call-template>
 									</td>
 								</tr>
-								<tr>
+								<tr id="Employer">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -337,7 +368,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="Occupation">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -360,7 +391,7 @@
 						
 						<div class="SmallSeperator"></div>
 						
-						<div class="Narrow-Form">
+						<div class="Narrow-Form" id="BusinessSpecific">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td class="Required"></td>
@@ -380,7 +411,25 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="EndUserCompanyName">
+									<td class="Required"></td>
+									<td class="Required"></td>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service Address')" />
+											<xsl:with-param name="field" select="string('EndUserCompanyName')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<input type="text" name="EndUserCompanyName" class="input-string">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="/Response/ServiceAddress/EndUserCompanyName" />
+											</xsl:attribute>
+										</input>
+									</td>
+								</tr>
+								<tr id="TradingName">
 									<td class="Required"></td>
 									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
@@ -405,7 +454,7 @@
 						
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
-								<tr>
+								<tr id="ServiceAddressType">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -435,7 +484,7 @@
 										</select>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceAddressTypeNumber">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -453,7 +502,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceAddressTypeSuffix">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -471,7 +520,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceStreetNumberStart">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
@@ -489,7 +538,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceStreetNumberEnd">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -507,7 +556,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceStreetNumberSuffix">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -525,7 +574,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceStreetName">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
@@ -543,7 +592,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceStreetType">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
@@ -573,7 +622,7 @@
 										</select>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceStreetTypeSuffix">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -603,7 +652,7 @@
 										</select>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServicePropertyName">
 									<td class="Required"></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
@@ -621,7 +670,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceLocality">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
@@ -639,7 +688,7 @@
 										</input>
 									</td>
 								</tr>
-								<tr>
+								<tr id="ServiceState">
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
 									<td class="Required"><strong><span class="Red">B</span></strong></td>
 									<th class="JustifiedWidth">
@@ -668,7 +717,7 @@
 											</xsl:for-each>
 										</select>
 									</td>
-								</tr>
+								</tr id="ServicePostcode">
 								<!--TODO!bash! URGENT! when you're asked to fix one postcode, you should probably fix the other one too.  Don't show 0000 if no postcode is entered!!-->
 								<tr>
 									<td class="Required"><strong><span class="Red">R</span></strong></td>
