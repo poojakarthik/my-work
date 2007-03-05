@@ -958,6 +958,8 @@
 			</tr>
 		</table>
 		<div class="Clear"></div>
+		
+		<script for="window" event="onload">UpdateServiceAddress()</script>
 	</xsl:template>
 	
 	

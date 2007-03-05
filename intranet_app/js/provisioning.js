@@ -252,8 +252,6 @@
 				break;
 		}
 	}
-	
-	UpdateServiceAddress();
 
 
 
