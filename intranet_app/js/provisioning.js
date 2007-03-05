@@ -123,9 +123,7 @@
 	* @method
 	*/
 	function UpdateServiceAddress()
-	{
-		alert("Updating...");
-		
+	{		
 		SetMandatory("ServiceAddressTypeNumber"	, false);
 		SetMandatory("ServiceAddressTypeSuffix"		, false);
 		SetMandatory("ServiceStreetNumberStart"	, false);
@@ -135,6 +133,8 @@
 		SetMandatory("ServiceStreetType"			, false);
 		SetMandatory("ServiceStreetTypeSuffix"		, false);
 		SetMandatory("ServicePropertyName"		, false);
+		
+		alert(document.getElementById("ServiceAddressType").value);
 	
 		switch (document.getElementById("ServiceAddressType").value)
 		{
