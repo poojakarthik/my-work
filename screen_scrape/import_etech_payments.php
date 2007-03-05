@@ -37,29 +37,32 @@
 	echo "IMPORT ETECH PAYMENTS\n";
 	echo "=-=-=-=-=-=-=-=-=-=-=\n\n";
 	
-	if ($arrPayments = $objDecoder->FetchPayment())
+	if ($arrAccounts = $objDecoder->FetchPayment())
 	{		
-		foreach ($arrPayments['DataArray'] as $intAccount=>$arrPayment)
+		foreach ($arrAccounts['DataArray'] as $intAccount=>$arrPayments)
 		{
 			echo str_pad("+ Payments for $intAccount...", 60, " ", STR_PAD_RIGHT);
-			$arrPayment['Account']	= (int)$intAccount;
-			Debug($arrPayment);
 			
-			if ($arrPayment['Id'] = $objImport->InsertPayment($arrPayment))
+			foreach ($arrPayments as $arrPayment)
 			{
-				if ($objImport->InsertInvoicePayment($arrPayment))
+				$arrPayment['Account']	= (int)$intAccount;
+				Debug($arrPayment);
+				
+				if ($arrPayment['Id'] = $objImport->InsertPayment($arrPayment))
 				{
-					echo "[   OK   ]\n";
+					if (!$objImport->InsertInvoicePayment($arrPayment))
+					{
+						echo "[ FAILED ]\n\t- Reason: InsertInvoicePayment died\n";
+						continue 2;
+					}
 				}
 				else
 				{
-					echo "[ FAILED ]\n\t- Reason: InsertInvoicePayment died\n";
+					echo "[ FAILED ]\n\t- Reason: InsertInvoice died\n";
+					continue 2;
 				}
 			}
-			else
-			{
-				echo "[ FAILED ]\n\t- Reason: InsertInvoice died\n";
-			}
+			echo "[   OK   ]\n";
 		}
 		
 		echo "Data successfully imported!\n";
