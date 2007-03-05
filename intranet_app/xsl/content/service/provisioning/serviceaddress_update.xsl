@@ -459,7 +459,7 @@
 										</xsl:call-template>
 									</th>
 									<td>
-										<select name="ServiceAddressType" onchange="UpdateServiceAddress()">
+										<select name="ServiceAddressType" id="ServiceAddressTypeCombo" onchange="UpdateServiceAddress()">
 											<option></option>
 											<xsl:for-each select="/Response/ServiceAddressTypes/ServiceAddressType">
 												<option>

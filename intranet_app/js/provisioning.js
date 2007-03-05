@@ -134,7 +134,7 @@
 		SetMandatory("ServiceStreetTypeSuffix"		, false);
 		SetMandatory("ServicePropertyName"		, false);
 		
-		elmServiceAddressType = document.getElementById("ServiceAddressType");
+		elmServiceAddressType = document.getElementById("ServiceAddressTypeCombo");
 		
 		strServiceAddressType = elmServiceAddressType.options[elmServiceAddressType.selectedIndex];
 		
