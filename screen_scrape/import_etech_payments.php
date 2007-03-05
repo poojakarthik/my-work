@@ -37,7 +37,7 @@
 	echo "IMPORT ETECH PAYMENTS\n";
 	echo "=-=-=-=-=-=-=-=-=-=-=\n\n";
 	
-	if ($arrAccounts = $objDecoder->FetchPayment())
+	while ($arrAccounts = $objDecoder->FetchPayment())
 	{		
 		foreach ($arrAccounts['DataArray'] as $intAccount=>$arrPayments)
 		{
@@ -63,13 +63,9 @@
 			}
 			echo "[   OK   ]\n";
 		}
+	}
 		
-		echo "Data successfully imported!\n";
-	}
-	else
-	{
-		echo "There was an error retrieving the data...\n";
-	}
+	echo "\nData successfully imported!\n";
 		
 	echo "\n\n</pre>";
 
