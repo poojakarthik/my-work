@@ -124,6 +124,8 @@
 	*/
 	function UpdateServiceAddress()
 	{
+		alert("Updating...");
+		
 		SetMandatory("ServiceAddressTypeNumber"	, false);
 		SetMandatory("ServiceAddressTypeSuffix"		, false);
 		SetMandatory("ServiceStreetStartNumber"	, false);
