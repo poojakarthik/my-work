@@ -124,6 +124,15 @@
 	*/
 	function UpdateServiceAddress()
 	{		
+		if (document.getElementById("Residential").value = 0)
+		{
+			ShowBusiness();
+		}
+		else
+		{
+			ShowResidential();
+		}
+		
 		SetMandatory("ServiceAddressTypeNumber"	, false);
 		SetMandatory("ServiceAddressTypeSuffix"		, false);
 		SetMandatory("ServiceStreetNumberStart"	, false);
@@ -134,7 +143,7 @@
 		SetMandatory("ServiceStreetTypeSuffix"		, false);
 		SetMandatory("ServicePropertyName"		, false);
 		
-		elmServiceAddressType = document.getElementById("ServiceAddressTypeCombo");
+		elmServiceAddressType = document.getElementById("ServiceAddressType");
 		strServiceAddressType = elmServiceAddressType.options[elmServiceAddressType.selectedIndex].value;
 	
 		switch (strServiceAddressType)
