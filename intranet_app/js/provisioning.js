@@ -135,10 +135,7 @@
 		SetMandatory("ServicePropertyName"		, false);
 		
 		elmServiceAddressType = document.getElementById("ServiceAddressTypeCombo");
-		
 		strServiceAddressType = elmServiceAddressType.options[elmServiceAddressType.selectedIndex].value;
-		
-		alert(strServiceAddressType);
 	
 		switch (strServiceAddressType)
 		{
