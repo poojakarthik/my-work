@@ -451,7 +451,7 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="ServiceAddressType">
-									<td class="Required"></td>
+									<td class="Required" id="ServiceAddressTypeMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -480,7 +480,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceAddressTypeNumber">
-									<td class="Required"></td>
+									<td class="Required" id="ServiceAddressNumberMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -497,7 +497,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceAddressTypeSuffix">
-									<td class="Required"></td>
+									<td class="Required" id="ServiceAddressTypeSuffixMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -514,7 +514,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetNumberStart">
-									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required" id="ServiceStreetNumberStartMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -531,7 +531,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetNumberEnd">
-									<td class="Required"></td>
+									<td class="Required" id="ServiceStreetNumberEndMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -548,7 +548,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetNumberSuffix">
-									<td class="Required"></td>
+									<td class="Required" id="ServiceStreetNumberSuffixMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -565,7 +565,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetName">
-									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required" id="ServiceStreetNameMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -582,7 +582,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetType">
-									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required" id="ServiceStreetTypeMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -611,7 +611,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetTypeSuffix">
-									<td class="Required"></td>
+									<td class="Required" id="ServiceStreetTypeSuffixMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -640,7 +640,7 @@
 									</td>
 								</tr>
 								<tr id="ServicePropertyName">
-									<td class="Required"></td>
+									<td class="Required" id="ServicePropertyNameMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
