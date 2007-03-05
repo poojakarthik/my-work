@@ -1156,7 +1156,7 @@ class VixenImport extends ApplicationBaseClass
 	
 	function InsertInvoicePayment($arrPayment)
 	{
-		$arrInvoicePayment['InvoiceRun']	= "0";
+		$arrInvoicePayment['InvoiceRun']	= "Pre-Vixen";
 		$arrInvoicePayment['Account']		= $arrPayment['Account'];
 		$arrInvoicePayment['AccountGroup']	= $arrPayment['Account'];
 		$arrInvoicePayment['Payment']		= $arrPayment['Id'];
