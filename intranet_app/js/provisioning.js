@@ -14,10 +14,115 @@
 	*/
 	function CleanInput()
 	{		
-		// empty necessary fields
+		// Check common fields
+		if (document.getElementById("BillName").value.length == 0)
+		{
+			alert("Please enter a value for the Bill Name field");
+			document.getElementById("BillName").focus();
+			return false;
+		}
+		if (document.getElementById("BillAddress1").value.length == 0)
+		{
+			alert("Please enter a value for the Bill Address Line 1 field");
+			document.getElementById("BillAddress").focus();
+			return false;
+		}
+		if (document.getElementById("BillLocality").value.length == 0)
+		{
+			alert("Please enter a value for the Bill Locality field");
+			document.getElementById("BillLocality").focus();
+			return false;
+		}
+		if (document.getElementById("BillPostcode").value.length != 4)
+		{
+			alert("Please enter a 4-digit value for the Bill Postcode field");
+			document.getElementById("BillPostcode").focus();
+			return false;
+		}
+		if (document.getElementById("ServiceLocality").value.length == 0)
+		{
+			alert("Please enter a value for the Service Locality field");
+			document.getElementById("ServiceLocality").focus();
+			return false;
+		}
+		if (document.getElementById("ServiceState").value.length == 0)
+		{
+			alert("Please enter a value for the Service State field");
+			document.getElementById("ServiceState").focus();
+			return false;
+		}
+		if (document.getElementById("ServicePostcode").value.length != 4)
+		{
+			alert("Please enter a 4-digit value for the Service Postcode field");
+			document.getElementById("ServicePostcode").focus();
+			return false;
+		}
+		
+		// clean residential/business fields
+		if (document.getElementById("Residential:FALSE").checked = true)
+		{
+			// Business
+			// clean
+			document.getElementById("EndUserTitle").value		= "";
+			document.getElementById("EndUserGivenName").value	= "";
+			document.getElementById("EndUserFamilyName").value	= "";
+			document.getElementById("DateOfBirth").value		= "";
+			document.getElementById("Employer").value			= "";
+			document.getElementById("Occupation").value			= "";
+			
+			// check mandatory
+			if (document.getElementById("ABN").value.length == 0)
+			{
+				alert("Please enter a value for the ABN field");
+				document.getElementById("ABN").focus();
+				return false;
+			}
+			if (document.getElementById("EndUserCompanyName").value.length == 0)
+			{
+				alert("Please enter a value for the Company Name field");
+				document.getElementById("EndUserCompanyName").focus();
+				return false;
+			}
+		}
+		else
+		{
+			// Residential
+			// clean
+			document.getElementById("ABN").value				= "";
+			document.getElementById("EndUserCompanyName").value	= "";
+			document.getElementById("TradingName").value		= "";
+			
+			// check mandatory
+			if (document.getElementById("EndUserTitle").value.length == 0)
+			{
+				alert("Please enter a value for the Title field");
+				document.getElementById("EndUserTitle").focus();
+				return false;
+			}
+			if (document.getElementById("EndUserGivenName").value.length == 0)
+			{
+				alert("Please enter a value for the Given Name field");
+				document.getElementById("EndUserGivenName").focus();
+				return false;
+			}
+			if (document.getElementById("EndUserFamilyName").value.length == 0)
+			{
+				alert("Please enter a value for the Family Name field");
+				document.getElementById("EndUserFamilyName").focus();
+				return false;
+			}
+			if (document.getElementById("DateOfBirth").value.length == 0)
+			{
+				alert("Please enter a value for the Date Of Birth field");
+				document.getElementById("DateOfBirth").focus();
+				return false;
+			}
+		}
+		
+		
+		// clean service address fields
 		elmServiceAddressType = document.getElementById("ServiceAddressType");
 		strServiceAddressType = elmServiceAddressType.options[elmServiceAddressType.selectedIndex].value;
-		
 		switch (strServiceAddressType)
 		{
 			// LOT Addresses
@@ -120,6 +225,16 @@
 				{
 					document.getElementById("ServiceStreetNumberEnd").value		= "";
 					document.getElementById("ServiceStreetNumberSuffix").value	= "";
+				}
+				
+				if (document.getElementById("ServicePropertyName").value.length == 0)
+				{
+					if (document.getElementById("ServiceStreetNumberStart").value.length == 0)
+					{
+						alert("Please enter a value for the Street Number Start field");
+						document.getElementById("ServiceStreetNumberStart").focus();
+						return false;
+					}
 				}
 				
 				if (strServiceAddressType == "")
@@ -395,10 +510,12 @@
 				if (document.getElementById("ServicePropertyName").value.length > 0)
 				{
 					SetMandatory("ServiceStreetName", false);
+					SetMandatory("ServiceStreetNumberStart", false);
 				}
 				else
 				{
 					SetMandatory("ServiceStreetName", true);
+					SetMandatory("ServiceStreetNumberStart", true);
 				}
 				
 				if (strServiceAddressType == "")
