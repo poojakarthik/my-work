@@ -13,7 +13,7 @@
 	*
 	* @method
 	*/
-	function ShowResidential(void)
+	function ShowResidential()
 	{
 		// show each of the residential-only fields
 		document.getElementById('ResidentialSpecific').display	= 'block';
@@ -34,7 +34,7 @@
 	*
 	* @method
 	*/
-	function ShowBusiness(void)
+	function ShowBusiness()
 	{
 		// show each of the business-only fields
 		document.getElementById('BusinessSpecific').display		= 'block';
