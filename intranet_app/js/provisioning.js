@@ -15,11 +15,12 @@
 	*/
 	function ShowResidential()
 	{
+		
 		// show each of the residential-only fields
-		document.getElementById('ResidentialSpecific').display	= 'block';
+		document.getElementById("ResidentialSpecific").display	= 'block';
 		
 		// hide each of the business-only fields
-		document.getElementById('BusinessSpecific').display		= 'none';
+		document.getElementById("BusinessSpecific").display		= 'none';
 	}
 	
  	//------------------------------------------------------------------------//
@@ -36,10 +37,12 @@
 	*/
 	function ShowBusiness()
 	{
+		alert("Showing Business...");
+		
 		// show each of the business-only fields
-		document.getElementById('BusinessSpecific').display		= 'block';
+		document.getElementById("BusinessSpecific").display		= 'block';
 		
 		// hide each of the residential-only fields
-		document.getElementById('ResidentialSpecific').display	= 'none';
+		document.getElementById("ResidentialSpecific").display	= 'none';
 	}
 

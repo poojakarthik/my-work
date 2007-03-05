@@ -119,7 +119,7 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="Residential">
-									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required" valign="top"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth" valign="top">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -410,7 +410,7 @@
 									</td>
 								</tr>
 								<tr id="EndUserCompanyName">
-									<td class="Required"></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -427,7 +427,7 @@
 									</td>
 								</tr>
 								<tr id="TradingName">
-									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
