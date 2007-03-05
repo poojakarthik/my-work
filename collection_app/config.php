@@ -122,7 +122,7 @@
 		*/
 		
 		
-/*		
+		
 	
 		
 		// TESTING DEFINITIONS
@@ -193,7 +193,9 @@
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
 	
-*/
+
+
+/*
 		//--------------------------------//
 		// PAYMENT COLLECTION DEFINITIONS //
 		//--------------------------------//
@@ -212,6 +214,6 @@
 		$arrConfig['Define']["Payments"]	["FileType"]['/^TELCOBLUE \d{6}\.txt$/i']							= PAYMENT_TYPE_BILLEXPRESS;
 		$arrConfig['Define']["Payments"]	["FileType"]['/^bpay \d{6}\.csv$/i']								= PAYMENT_TYPE_BPAY;
 		$arrConfig['Define']["Payments"]	["FileType"]['/^SAE\d{2}_\d{4}-\d{2}-\d{2}_\d{2}_\d{4}\.txt$/i']	= PAYMENT_TYPE_SECUREPAY;
-
+*/
 		
 ?>
