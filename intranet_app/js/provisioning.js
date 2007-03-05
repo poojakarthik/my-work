@@ -100,6 +100,7 @@
 				document.getElementById("EndUserFamilyName").focus();
 				return false;
 			}
+			/*
 			if (document.getElementByName("DateOfBirth[day]").selectedIndex < 1 || 
 				document.getElementByName("DateOfBirth[month]").selectedIndex < 1 || 
 				document.getElementByName("DateOfBirth[year]").selectedIndex < 1)
@@ -107,7 +108,7 @@
 				alert("Please enter a value for the Date Of Birth field");
 				document.getElementByName("DateOfBirth[day]").focus();
 				return false;
-			}
+			}*/
 		}
 		
 		
