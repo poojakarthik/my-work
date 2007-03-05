@@ -119,7 +119,7 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="Residential">
-									<td class="Required"><span class="Red">*</span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth" valign="top">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -176,7 +176,7 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="BillName">
-									<td class="Required"><span class="Red">*</span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -193,7 +193,7 @@
 									</td>
 								</tr>
 								<tr id="BillAddress1">
-									<td class="Required"><span class="Red">*</span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -227,7 +227,7 @@
 									</td>
 								</tr>
 								<tr id="BillLocality">
-									<td class="Required"><span class="Red">*</span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -245,7 +245,7 @@
 								</tr>
 								<!--TODO!bash! URGENT verify postcode - only 4 digit number-->
 								<tr id="BillPostcode">
-									<td class="Required"><span class="Red">*</span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -269,8 +269,7 @@
 						<div class="Narrow-Form" id="ResidentialSpecific">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="EndUserTitle">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
-									<td class="Required"> </td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -299,8 +298,7 @@
 									</td>
 								</tr>
 								<tr id="EndUserGivenName">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
-									<td class="Required"></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -317,7 +315,7 @@
 									</td>
 								</tr>
 								<tr id="EndUserFamilyName">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -336,7 +334,7 @@
 								</tr>
 								<!--TODO!bash! Urgent! do not show dates which allow the person to be <18-->
 								<tr id="DateOfBirth">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
@@ -400,7 +398,7 @@
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td class="Required"></td>
-									<td class="Required"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -436,7 +434,7 @@
 								</tr>
 								<tr id="TradingName">
 									<td class="Required"></td>
-									<td class="Required"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -526,8 +524,8 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetNumberStart">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
-									<td class="Required"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -580,8 +578,8 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetName">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
-									<td class="Required"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -598,8 +596,8 @@
 									</td>
 								</tr>
 								<tr id="ServiceStreetType">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
-									<td class="Required"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -676,8 +674,8 @@
 									</td>
 								</tr>
 								<tr id="ServiceLocality">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
-									<td class="Required"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -694,8 +692,8 @@
 									</td>
 								</tr>
 								<tr id="ServiceState">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
-									<td class="Required"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -725,8 +723,8 @@
 								</tr>
 								<!--TODO!bash! URGENT! when you're asked to fix one postcode, you should probably fix the other one too.  Don't show 0000 if no postcode is entered!!-->
 								<tr id="ServicePostcode">
-									<td class="Required"><strong><span class="Red">R</span></strong></td>
-									<td class="Required"><strong><span class="Red">B</span></strong></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
