@@ -119,8 +119,7 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="Residential">
-									<td class="Required"></td>
-									<td class="Required"></td>
+									<td class="Required"><span class="Red">*</span></td>
 									<th class="JustifiedWidth" valign="top">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -131,7 +130,7 @@
 										<table border="0" cellpadding="3" cellspacing="0">
 											<tr>
 												<td>
-													<input type="radio" name="Service Address[Residential]" id="Residential:FALSE" value="0">
+													<input type="radio" name="Service Address[Residential]" id="Residential:FALSE" value="0" onclick="ShowBusiness()">
 														<xsl:if test="/Response/ServiceAddress/Residential = 0">
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
@@ -152,7 +151,7 @@
 											</tr>
 											<tr>
 												<td>
-													<input type="radio" name="Service Address[Residential]" id="Residential:TRUE" value="1">
+													<input type="radio" name="Service Address[Residential]" id="Residential:TRUE" value="1" onclick="ShowResidential()">
 														<xsl:if test="/Response/ServiceAddress/Residential = 1">
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
@@ -177,8 +176,7 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="BillName">
-									<td class="Required"></td>
-									<td class="Required"></td>
+									<td class="Required"><span class="Red">*</span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -195,8 +193,7 @@
 									</td>
 								</tr>
 								<tr id="BillAddress1">
-									<td class="Required"></td>
-									<td class="Required"></td>
+									<td class="Required"><span class="Red">*</span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -214,7 +211,6 @@
 								</tr>
 								<tr id="BillAddress2">
 									<td class="Required"></td>
-									<td class="Required"></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -231,8 +227,7 @@
 									</td>
 								</tr>
 								<tr id="BillLocality">
-									<td class="Required"></td>
-									<td class="Required"></td>
+									<td class="Required"><span class="Red">*</span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -250,8 +245,7 @@
 								</tr>
 								<!--TODO!bash! URGENT verify postcode - only 4 digit number-->
 								<tr id="BillPostcode">
-									<td class="Required"></td>
-									<td class="Required"></td>
+									<td class="Required"><span class="Red">*</span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
