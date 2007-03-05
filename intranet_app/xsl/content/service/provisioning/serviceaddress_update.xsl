@@ -118,8 +118,8 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="Residential">
-									<td class="Required" rowspan="2"></td>
-									<td class="Required" rowspan="2"></td>
+									<td class="Required"></td>
+									<td class="Required"></td>
 									<th class="JustifiedWidth" valign="top">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
