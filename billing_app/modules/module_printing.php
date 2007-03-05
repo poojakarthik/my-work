@@ -371,9 +371,9 @@
 		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		
 		$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['BusinessName'];
-		$arrDefine['InvoiceDetails']	['AddressLine2']	['Value']	= $arrCustomerData['AddressLine1'];
-		$arrDefine['InvoiceDetails']	['AddressLine3']	['Value']	= $arrCustomerData['AddressLine2'];
-		// $arrDefine['InvoiceDetails']	['AddressLine4'] is unused at the moment
+		$arrDefine['InvoiceDetails']	['AddressLine2']	['Value']	= $arrCustomerData['TradingName'];
+		$arrDefine['InvoiceDetails']	['AddressLine3']	['Value']	= $arrCustomerData['AddressLine1'];
+		$arrDefine['InvoiceDetails']	['AddressLine4']	['Value']	= $arrCustomerData['AddressLine2'];
 
 		$arrDefine['InvoiceDetails']	['Suburb']			['Value']	= $arrCustomerData['Suburb'];
 		$arrDefine['InvoiceDetails']	['State']			['Value']	= $arrCustomerData['State'];
@@ -392,10 +392,8 @@
 		$arrDefine['GraphHeader']		['ValueCount']		['Value']	= 1;
 		$arrDefine['GraphHeader']		['LegendText1']		['Value']	= "Monthly Spending";
 		$this->_arrFileData[] = $arrDefine['GraphHeader'];
-		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", time());
-		$arrDefine['GraphData']		['Value1']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
-		$this->_arrFileData[] = $arrDefine['GraphData'];
 		$intCount = 1;
+		$arrBillHistory = array_reverse($arrBillHistory, TRUE);
 		foreach($arrBillHistory as $arrBill)
 		{
 			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime($arrBill['CreatedOn']));
@@ -403,6 +401,9 @@
 			$this->_arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
+		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", time());
+		$arrDefine['GraphData']		['Value1']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
+		$this->_arrFileData[] = $arrDefine['GraphData'];
 		$this->_arrFileData[] = $arrDefine['GraphFooter'];
 		
 		// SUMMARY CHARGES
