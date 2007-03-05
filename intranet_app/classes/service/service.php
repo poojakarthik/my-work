@@ -708,6 +708,7 @@
 			$bolServiceStateType		= $staServiceStateType->setValue ($arrDetails ['ServiceState']);
 			
 			$arrData = Array (
+				'Residential'					=> $arrDetails ['Residential'],
 				'BillName'						=> $arrDetails ['BillName'],
 				'BillAddress1'					=> $arrDetails ['BillAddress1'],
 				'BillAddress2'					=> $arrDetails ['BillAddress2'],

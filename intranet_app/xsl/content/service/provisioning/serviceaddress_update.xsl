@@ -100,7 +100,7 @@
 					
 					<div class="Seperator"></div>
 					<!-- Service Address Details -->	
-					<form method="post" action="service_address.php">
+					<form method="post" action="service_address.php" onsubmit="return CleanInput()">
 						<input type="hidden" name="Service">
 							<xsl:attribute name="value">
 								<xsl:text></xsl:text>

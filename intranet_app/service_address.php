@@ -58,6 +58,7 @@
 		// Save Information
 		$srvService->ServiceAddressUpdate (
 			Array (
+				'Residential'					=> $_POST ['Residential'],
 				'BillName'						=> $_POST ['BillName'],
 				'BillAddress1'					=> $_POST ['BillAddress1'],
 				'BillAddress2'					=> $_POST ['BillAddress2'],
