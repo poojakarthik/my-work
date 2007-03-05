@@ -20,7 +20,7 @@
  * @language	PHP 
  * @package		framework 
  * @author		Jared 'flame' Herbohn 
- * @version		7.2 
+ * @version		7.3 
  * @copyright	2006 VOIPTEL Pty Ltd 
  * @license		NOT FOR EXTERNAL DISTRIBUTION 
  * 
@@ -3518,8 +3518,8 @@
 	$strName = "AccountGroup"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
 		$arrDefine['Column'][$strName]['SqlType'] 		= "bigint(20) unsigned"; 
-		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
-		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['Null'] 			= TRUE; 
+		$arrDefine['Column'][$strName]['Default'] 		= null; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
 		 
 				 
@@ -6101,6 +6101,16 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= ""; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
+		 
+				 
+				 
+	// Define Columns 
+	$strName = "Residential"; 
+		$arrDefine['Column'][$strName]['Type'] 			= "i"; 
+		$arrDefine['Column'][$strName]['SqlType'] 		= "tinyint(1) unsigned"; 
+		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
+		$arrDefine['Column'][$strName]['Default'] 		= ""; 
+		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean"; 
 		 
 				 
 				 
