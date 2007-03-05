@@ -1145,7 +1145,13 @@ class VixenImport extends ApplicationBaseClass
 		
 		$arrPayment	= array_merge($this->db->FetchClean("Payment"), $arrPayment);
 		
-		return $this->insPayment->Execute($arrPayment);
+		$mixResponse = $this->insPayment->Execute($arrPayment);
+		if ($mixResponse === FALSE)
+		{
+			Debug($this->insPayment->Error());
+		}
+		
+		return $mixResponse;
 	}
 	
 	function InsertInvoicePayment($arrPayment)
@@ -1156,7 +1162,13 @@ class VixenImport extends ApplicationBaseClass
 		$arrInvoicePayment['Payment']		= $arrPayment['Id'];
 		$arrInvoicePayment['Amount']		= $arrPayment['Amount'];
 		
-		return $this->insInvoicePayment->Execute($arrInvoicePayment);
+		$mixResponse = $this->insInvoicePayment->Execute($arrPayment);
+		if ($mixResponse === FALSE)
+		{
+			Debug($this->insInvoicePayment->Error());
+		}
+		
+		return $mixResponse;
 	}
 	
 	// ------------------------------------//

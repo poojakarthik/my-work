@@ -47,16 +47,16 @@
 			{
 				if ($objImport->InsertInvoicePayment($arrPayment))
 				{
-					echo "[   OK   ]";
+					echo "[   OK   ]\n";
 				}
 				else
 				{
-					echo "[ FAILED ]";
+					echo "[ FAILED ]\n\t- Reason: InsertInvoicePayment died\n";
 				}
 			}
 			else
 			{
-				echo "[ FAILED ]";
+				echo "[ FAILED ]\n\t- Reason: InsertInvoice died\n";
 			}
 		}
 		
