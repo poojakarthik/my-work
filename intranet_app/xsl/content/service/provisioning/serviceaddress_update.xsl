@@ -480,7 +480,7 @@
 									</td>
 								</tr>
 								<tr id="ServiceAddressTypeNumber">
-									<td class="Required" id="ServiceAddressNumberMandatory"><span class="Red"><strong>*</strong></span></td>
+									<td class="Required" id="ServiceAddressTypeNumberMandatory"><span class="Red"><strong>*</strong></span></td>
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />

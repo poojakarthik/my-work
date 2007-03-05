@@ -128,8 +128,8 @@
 		
 		SetMandatory("ServiceAddressTypeNumber"	, false);
 		SetMandatory("ServiceAddressTypeSuffix"		, false);
-		SetMandatory("ServiceStreetStartNumber"	, false);
-		SetMandatory("ServiceStreetEndNumber"		, false);
+		SetMandatory("ServiceStreetNumberStart"	, false);
+		SetMandatory("ServiceStreetNumberEnd"		, false);
 		SetMandatory("ServiceStreetNumberSuffix"	, false);
 		SetMandatory("ServiceStreetName"			, false);
 		SetMandatory("ServiceStreetType"			, false);
@@ -147,8 +147,8 @@
 				EnableElementById("ServicePropertyName");
 				
 				// Disable fields
-				DisableElementById("ServiceStreetStartNumber");
-				DisableElementById("ServiceStreetEndNumber");
+				DisableElementById("ServiceStreetNumberStart");
+				DisableElementById("ServiceStreetNumberEnd");
 				DisableElementById("ServiceStreetNumberSuffix");
 				
 				// Set Mandatory Status
@@ -198,8 +198,8 @@
 				EnableElementById("ServiceAddressTypeSuffix");
 				
 				// Disable fields
-				DisableElementById("ServiceStreetStartNumber");
-				DisableElementById("ServiceStreetEndNumber");
+				DisableElementById("ServiceStreetNumberStart");
+				DisableElementById("ServiceStreetNumberEnd");
 				DisableElementById("ServiceStreetNumberSuffix");
 				DisableElementById("ServiceStreetName");
 				DisableElementById("ServiceStreetType");
@@ -213,7 +213,7 @@
 			// Standard Addresses
 			default:
 				// Enable fields
-				EnableElementById("ServiceStreetStartNumber");
+				EnableElementById("ServiceStreetNumberStart");
 				EnableElementById("ServiceStreetName");
 				EnableElementById("ServicePropertyName");
 				
