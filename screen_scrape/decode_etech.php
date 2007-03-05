@@ -311,10 +311,7 @@
 			$arrRow['DataArray'] = $this->ParsePayment($arrRow['DataOriginal']);
 			unset($arrRow['DataOriginal']);
 		}
-		else
-		{
-			echo "What the jew... the result is NULL or EMPTY\n";
-		}
+		
 		return $arrRow;
 	}
 	
