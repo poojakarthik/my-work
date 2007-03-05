@@ -619,16 +619,18 @@
 		 
 		public function OverdueAmount ()
 		{
-			$selOverdue = new StatementSelect ('Invoice', 'SUM(Balance) AS OverdueAmount', 'Now() > DueOn AND SettledOn IS NULL AND Account = <Account>');
+			/*$selOverdue = new StatementSelect ('Invoice', 'SUM(Balance) AS OverdueAmount', 'Now() > DueOn AND SettledOn IS NULL AND Account = <Account>');
 			$selOverdue->Execute (Array ('Account' => $this->Pull ('Id')->getValue ()));
-			
-			$oblfltOverdue = $this->Push (new dataFloat ('OverdueAmount'));
-			
 			if ($selOverdue->Count () == 1)
 			{
 				$arrOverdue = $selOverdue->Fetch ();
 				$oblfltOverdue->setValue ($arrOverdue ['OverdueAmount']);
-			}
+			}*/
+			
+			$fltOverdue = $GLOBALS['fwkFramework']->GetOverdueBalance($this->Pull ('Id')->getValue ());
+			
+			$oblfltOverdue = $this->Push (new dataFloat ('OverdueAmount'));
+			$oblfltOverdue->setValue ($fltOverdue);
 			
 			return $oblfltOverdue;
 		}

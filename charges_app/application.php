@@ -453,7 +453,7 @@
 	 	// set up charge
 		$arrCharge = Array();
 		$arrCharge ['Nature']		= 'DR';
-		$arrCharge ['Description']	= "Active Inbound Service Fee";
+		$arrCharge ['Description']	= "Inbound Service Fee";
 		$arrCharge ['ChargeType']	= "INB15";
 		$arrCharge ['ChargedOn']	= date("Y-m-d");
 		$arrCharge ['Amount']		= 15.00;

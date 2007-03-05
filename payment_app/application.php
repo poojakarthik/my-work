@@ -117,6 +117,7 @@ die();
 		
 		$this->_ubiPayment					= new StatementUpdateById("Payment");
 		
+		//TODO!rich! make this update only status & balance
 		$this->_ubiInvoice					= new StatementUpdateById("Invoice");
 		
 		$this->_ubiSaveNormalisedPayment	= new StatementUpdateById("Payment");
@@ -494,11 +495,14 @@ die();
 	 	// work out the payment amount
 		$fltPayment = Min($this->_arrCurrentPayment['Balance'], $this->_arrCurrentInvoice['Balance']);
 		
-		// work out the balance
+		// work out the payment balance
 		$fltBalance = $this->_arrCurrentPayment['Balance'] - $fltPayment;
 		
+		// work out invoice balance
+		$this->_arrCurrentInvoice['Balance'] -= $fltPayment;
+		
 		// work out if this invoice has been paid in full
-		if ($fltPayment == $this->_arrCurrentInvoice['Balance'])
+		if ($this->_arrCurrentInvoice['Balance'] < 0.01)
 		{
 			// set status
 			if ($this->_arrCurrentInvoice['Status'] == INVOICE_COMMITTED)
@@ -511,6 +515,9 @@ die();
 				// disputed invoice
 				$this->_arrCurrentInvoice['Status'] = INVOICE_DISPUTED_SETTLED;
 			}
+			
+			// force balance to 0
+			$this->_arrCurrentInvoice['Balance'] = 0;
 		}
 		
 		// add an invoice payment record
