@@ -115,6 +115,7 @@
 								No Service Address Details found.
 							</div>
 						</xsl:if>
+						
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="Residential">
@@ -127,12 +128,16 @@
 										</xsl:call-template>
 									</th>
 									<td>
-
 										<table border="0" cellpadding="3" cellspacing="0">
 											<tr>
 												<td>
 													<input type="radio" name="Service Address[Residential]" id="Residential:FALSE" value="0">
 														<xsl:if test="/Response/ServiceAddress/Residential = 0">
+															<xsl:attribute name="checked">
+																<xsl:text>checked</xsl:text>
+															</xsl:attribute>
+														</xsl:if>
+														<xsl:if test="/Response/ServiceAddress/Residential = NULL">
 															<xsl:attribute name="checked">
 																<xsl:text>checked</xsl:text>
 															</xsl:attribute>
@@ -162,9 +167,15 @@
 												</td>
 											</tr>
 										</table>
-
 									</td>
 								</tr>
+							</table>
+						</div>
+						
+						<div class="SmallSeperator"></div>
+						
+						<div class="Narrow-Form">
+							<table border="0" cellpadding="3" cellspacing="0">
 								<tr id="BillName">
 									<td class="Required"></td>
 									<td class="Required"></td>
