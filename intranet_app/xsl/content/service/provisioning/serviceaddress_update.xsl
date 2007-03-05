@@ -15,7 +15,7 @@
 		<!-- TODO!bash! [  DONE  ]		Rename this page and stick all of the 'Service address' pages in the provisioning folder where they belong -->
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/note_add.js"></script>
-		<!-- <script language="javascript" src="js/provisioning.js"</script> -->
+		<script language="javascript" src="js/provisioning.js"</script>
 		
 		<table border="0" width="100%" cellpadding="0" cellspacing="0">
 			<tr>
