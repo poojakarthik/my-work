@@ -780,7 +780,7 @@
 	 	// Select the CDR
 	 	$selCDR = new StatementSelect(	"CDR JOIN Rate ON CDR.Rate = Rate.Id",
 	 									"CDR.Id AS Id, CDR.Service AS Service, CDR.Charge AS Charge, Rate.Uncapped AS Uncapped",
-	 									"CDR.Status = ".CDR_RATED,
+	 									"CDR.Id = $intCDR AND CDR.Status = ".CDR_RATED,
 	 									NULL,
 	 									"1");
 		$arrColumns = Array();

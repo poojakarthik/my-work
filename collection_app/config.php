@@ -167,7 +167,7 @@
 		
 
 		// Optus Definition
-		$strOptusTestDir = "feb 07/";
+		$strOptusTestDir = "Feb 07/";
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
