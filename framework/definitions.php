@@ -275,6 +275,12 @@ $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[252]	['Constant']	= 'PROVFI
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[252]	['Description']	= 'Ignored';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[253]	['Constant']	= 'PROVFILE_COMPLETE';
 $GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[253]	['Description']	= 'Imported';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[280]	['Constant']	= 'PROVFILE_SENT';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[280]	['Description']	= 'Sent';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[281]	['Constant']	= 'PROVFILE_REJECTED';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[281]	['Description']	= 'Rejected';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[282]	['Constant']	= 'PROVFILE_SENT';
+$GLOBALS['*arrConstant']	['ProvisioningFileStatus']	[282]	['Description']	= 'Sent';
 
 
 // Invoice Status

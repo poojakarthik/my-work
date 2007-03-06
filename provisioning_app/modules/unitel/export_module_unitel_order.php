@@ -113,7 +113,16 @@
 		$arrAddress = $this->_selGetAddress->Fetch();
 		
 		// Validate the data
-		$arrRequestData = $this->CleanRequest();
+		$arrRequestData = $this->CleanRequest($arrAddress);
+		
+		foreach ($arrRequestData as $strKey=>$strField)
+		{
+			if ($strField === FALSE)
+			{
+				Debug("$strKey is invalid");
+				return FALSE;
+			}
+		}
 		
 		// Clean the request array
 		$arrBuiltRequest = Array();
@@ -347,10 +356,10 @@
 		$arrClean['BillName']			= (!$arrAddress['BillName']) ? FALSE : $arrAddress['BillName'];
 		$arrClean['BillAddress1']		= (!$arrAddress['BillAddress1']) ? FALSE : $arrAddress['BillAddress1'];
 		$arrClean['BillLocality']		= (!$arrAddress['BillLocality']) ? FALSE : $arrAddress['BillLocality'];
-		$arrClean['BillPostcode']		= (!$arrAddress['BillPostcode'] || strlen($arrAddress['BillPostcode'] != 4 || !is_numeric($arrAddress['BillPostcode']))) ? FALSE : $arrAddress['BillPostcode'];
+		$arrClean['BillPostcode']		= (!$arrAddress['BillPostcode']) ? FALSE : $arrAddress['BillPostcode'];
 		$arrClean['ServiceLocality']	= (!$arrAddress['ServiceLocality']) ? FALSE : $arrAddress['ServiceLocality'];
 		$arrClean['ServiceState']		= (!$arrAddress['ServiceLocality']) ? FALSE : $arrAddress['ServiceState'];
-		$arrClean['ServicePostcode']	= (!$arrAddress['ServicePostcode'] || strlen($arrAddress['ServicePostcode'] != 4 || !is_numeric($arrAddress['ServicePostcode']))) ? FALSE : $arrAddress['ServicePostcode'];
+		$arrClean['ServicePostcode']	= (!$arrAddress['ServicePostcode']) ? FALSE : $arrAddress['ServicePostcode'];
 		
 
 		if ($arrAddress['Residential'] == 1)
@@ -396,7 +405,7 @@
 			// LOTs
 			case "LOT":
 				// Mandatory
-				$arrClean['ServiceAddressTypeNumber']	=	(!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : $arrAddress['ServiceAddressTypeNumber'];
+				$arrClean['ServiceAddressTypeNumber']	=	(!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
 				
 				// Dependent
 				if ($arrAddress['ServiceStreetName'])
@@ -440,7 +449,7 @@
 			case "RMS":
 			case "RSD":
 				// Mandatory
-				$arrClean['ServiceAddressTypeNumber']	=	(!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : $arrAddress['ServiceAddressTypeNumber'];
+				$arrClean['ServiceAddressTypeNumber']	=	(!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
 				
 				// Empty
 				$arrClean['ServiceStreetNumberStart']	= "";
@@ -463,7 +472,7 @@
 				// Dependent
 				if ($arrAddress['ServiceAddressType'])
 				{
-					$arrClean['ServiceAddressTypeNumber']	= (!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : $arrAddress['ServiceAddressTypeNumber'];
+					$arrClean['ServiceAddressTypeNumber']	= (!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : trim($arrAddress['ServiceAddressTypeNumber']);
 					$arrClean['ServiceAddressTypeSuffix']	= $arrAddress['ServiceAddressTypeSuffix'];
 				}
 				else
@@ -481,8 +490,8 @@
 					
 					if ($arrAddress['ServiceStreetNumberStart'])
 					{
-						$arrClean['ServiceStreetNumberStart']	= $arrAddress['ServiceStreetNumberStart'];
-						$arrClean['ServiceStreetNumberEnd']		= $arrAddress['ServiceStreetNumberEnd'];
+						$arrClean['ServiceStreetNumberStart']	= trim($arrAddress['ServiceStreetNumberStart']);
+						$arrClean['ServiceStreetNumberEnd']		= (!$arrAddress['ServiceStreetNumberEnd']) ? "     " : trim($arrAddress['ServiceStreetNumberEnd']);
 						$arrClean['ServiceStreetNumberSuffix']	= $arrAddress['ServiceStreetNumberSuffix'];
 					}
 					else
