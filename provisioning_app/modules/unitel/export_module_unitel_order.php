@@ -112,50 +112,88 @@
 		$this->_selGetAddress->Execute($arrWhere);
 		$arrAddress = $this->_selGetAddress->Fetch();
 		
+		// Validate the data
+		$arrRequestData = $this->CleanRequest();
+		
 		// Clean the request array
 		$arrBuiltRequest = Array();
 		switch ($arrRequest['RequestType'])
 		{
 			case REQUEST_FULL_SERVICE:
-				$arrBuiltRequest['RecordType']					= "12";
-				$arrBuiltRequest['RecordSequence']				= "000000000";
-				$arrBuiltRequest['ServiceNumber']				= str_pad($arrAddress['FNN'], 17, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['BasketNumber']				= "000";
-				$arrBuiltRequest['CASignedDate']				= date("Ymd");
-				$arrBuiltRequest['BillName']					= str_pad($arrAddress['BillName'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['BillAddress1']				= str_pad($arrAddress['BillAddress1'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['BillAddress2']				= str_pad($arrAddress['BillAddress2'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['BillLocality']				= str_pad($arrAddress['BillLocality'], 23, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['BillPostcode']				= str_pad($arrAddress['BillPostcode'], 4, "0", STR_PAD_LEFT);
-				$arrBuiltRequest['EndUserTitle']				= str_pad($arrAddress['EndUserTitle'], 4, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['EndUserGivenName']			= str_pad($arrAddress['EndUserGivenName'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['EndUserLastName']				= str_pad($arrAddress['EndUserFamilyName'], 50, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['EndUserCompany']				= str_pad($arrAddress['EndUserCompany'], 50, " ", STR_PAD_RIGHT);
-				if ($arrAddress['DateOfBirth'] == '00000000')
+				switch ($arrAddress['Residential'])
 				{
-					$arrBuiltRequest['DateOfBirth']					= "        ";
+					// Business
+					case 0:
+						$arrBuiltRequest['RecordType']					= "12";
+						$arrBuiltRequest['RecordSequence']				= "000000000";
+						$arrBuiltRequest['ServiceNumber']				= str_pad($arrAddress['FNN'], 17, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BasketNumber']				= "000";
+						$arrBuiltRequest['CASignedDate']				= date("Ymd");
+						$arrBuiltRequest['BillName']					= str_pad($arrRequestData['BillName'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BillAddress1']				= str_pad($arrRequestData['BillAddress1'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BillAddress2']				= str_pad($arrRequestData['BillAddress2'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BillLocality']				= str_pad($arrRequestData['BillLocality'], 23, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BillPostcode']				= str_pad($arrRequestData['BillPostcode'], 4, "0", STR_PAD_LEFT);
+						$arrBuiltRequest['EndUserTitle']				= str_pad("", 4, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserGivenName']			= str_pad("", 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserLastName']				= str_pad("", 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserCompany']				= str_pad($arrRequestData['EndUserCompany'], 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['DateOfBirth']					= str_pad("", 8, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['Employer']					= str_pad("", 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['Occupation']					= str_pad("", 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ABN']							= str_pad($arrRequestData['ABN'], 11, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['TradingName']					= str_pad($arrRequestData['TradingName'], 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceAddressType']			= str_pad($arrRequestData['ServiceAddressType'], 3, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceAddressTypeNo']		= str_pad($arrRequestData['ServiceAddressTypeNumber'], 5, "0", STR_PAD_LEFT);
+						$arrBuiltRequest['ServiceAddressTypeSuffix']	= str_pad($arrRequestData['ServiceAddressTypeSuffix'], 2, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceStreetNumberStart']	= str_pad($arrRequestData['ServiceStreetNumberStart'], 5, "0", STR_PAD_LEFT);
+						$arrBuiltRequest['ServiceStreetNumberEnd']		= str_pad($arrRequestData['ServiceStreetNumberEnd'], 5, "0", STR_PAD_LEFT);
+						$arrBuiltRequest['ServiceStreetNoSuffix']		= str_pad($arrRequestData['ServiceStreetNumberSuffix'], 1, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceStreetName']			= str_pad($arrRequestData['ServiceStreetName'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceStreetType']			= str_pad($arrRequestData['ServiceStreetType'], 4, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceStreetTypeSuffix']		= str_pad($arrRequestData['ServiceStreetTypeSuffix'], 2, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServicePropertyName']			= str_pad($arrRequestData['ServicePropertyName'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceLocality']				= str_pad($arrRequestData['ServiceLocality'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceState']				= str_pad($arrRequestData['ServiceState'], 3, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServicePostcode']				= str_pad($arrRequestData['ServicePostcode'], 4, "0", STR_PAD_LEFT);
+						break;
+					
+					// Residential
+					case 1:
+						$arrBuiltRequest['RecordType']					= "12";
+						$arrBuiltRequest['RecordSequence']				= "000000000";
+						$arrBuiltRequest['ServiceNumber']				= str_pad($arrAddress['FNN'], 17, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BasketNumber']				= "000";
+						$arrBuiltRequest['CASignedDate']				= date("Ymd");
+						$arrBuiltRequest['BillName']					= str_pad($arrRequestData['BillName'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BillAddress1']				= str_pad($arrRequestData['BillAddress1'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BillAddress2']				= str_pad($arrRequestData['BillAddress2'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BillLocality']				= str_pad($arrRequestData['BillLocality'], 23, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['BillPostcode']				= str_pad($arrRequestData['BillPostcode'], 4, "0", STR_PAD_LEFT);
+						$arrBuiltRequest['EndUserTitle']				= str_pad($arrRequestData['EndUserTitle'], 4, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserGivenName']			= str_pad($arrRequestData['EndUserGivenName'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserLastName']				= str_pad($arrRequestData['EndUserFamilyName'], 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserCompany']				= str_pad("", 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['DateOfBirth']					= str_pad($arrRequestData['DateOfBirth'], 8, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['Employer']					= str_pad($arrRequestData['Employer'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['Occupation']					= str_pad($arrRequestData['Occupation'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ABN']							= str_pad("", 11, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['TradingName']					= str_pad("", 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceAddressType']			= str_pad($arrRequestData['ServiceAddressType'], 3, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceAddressTypeNo']		= str_pad($arrRequestData['ServiceAddressTypeNumber'], 5, "0", STR_PAD_LEFT);
+						$arrBuiltRequest['ServiceAddressTypeSuffix']	= str_pad($arrRequestData['ServiceAddressTypeSuffix'], 2, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceStreetNumberStart']	= str_pad($arrRequestData['ServiceStreetNumberStart'], 5, "0", STR_PAD_LEFT);
+						$arrBuiltRequest['ServiceStreetNumberEnd']		= str_pad($arrRequestData['ServiceStreetNumberEnd'], 5, "0", STR_PAD_LEFT);
+						$arrBuiltRequest['ServiceStreetNoSuffix']		= str_pad($arrRequestData['ServiceStreetNumberSuffix'], 1, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceStreetName']			= str_pad($arrRequestData['ServiceStreetName'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceStreetType']			= str_pad($arrRequestData['ServiceStreetType'], 4, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceStreetTypeSuffix']		= str_pad($arrRequestData['ServiceStreetTypeSuffix'], 2, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServicePropertyName']			= str_pad($arrRequestData['ServicePropertyName'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceLocality']				= str_pad($arrRequestData['ServiceLocality'], 30, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServiceState']				= str_pad($arrRequestData['ServiceState'], 3, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['ServicePostcode']				= str_pad($arrRequestData['ServicePostcode'], 4, "0", STR_PAD_LEFT);
+						break;
 				}
-				else
-				{
-					$arrBuiltRequest['DateOfBirth']					= str_pad($arrAddress['DateOfBirth'], 8, " ", STR_PAD_RIGHT);
-				}
-				$arrBuiltRequest['Employer']					= str_pad($arrAddress['Employer'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['Occupation']					= str_pad($arrAddress['Occupation'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ABN']							= str_pad($arrAddress['ABN'], 11, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['TradingName']					= str_pad($arrAddress['TradingName'], 50, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServiceAddressType']			= str_pad($arrAddress['ServiceAddressType'], 3, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServiceAddressTypeNo']		= str_pad($arrAddress['ServiceAddressTypeNumber'], 5, "0", STR_PAD_LEFT);
-				$arrBuiltRequest['ServiceAddressTypeSuffix']	= str_pad($arrAddress['ServiceAddressTypeSuffix'], 2, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServiceStreetNumberStart']	= str_pad($arrAddress['ServiceStreetNumberStart'], 5, "0", STR_PAD_LEFT);
-				$arrBuiltRequest['ServiceStreetNumberEnd']		= str_pad($arrAddress['ServiceStreetNumberEnd'], 5, "0", STR_PAD_LEFT);
-				$arrBuiltRequest['ServiceStreetNoSuffix']		= str_pad($arrAddress['ServiceStreetNumberSuffix'], 1, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServiceStreetName']			= str_pad($arrAddress['ServiceStreetName'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServiceStreetType']			= str_pad($arrAddress['ServiceStreetType'], 4, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServiceStreetTypeSuffix']		= str_pad($arrAddress['ServiceStreetTypeSuffix'], 2, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServicePropertyName']			= str_pad($arrAddress['ServicePropertyName'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServiceLocality']				= str_pad($arrAddress['ServiceLocality'], 30, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServiceState']				= str_pad($arrAddress['ServiceState'], 3, " ", STR_PAD_RIGHT);
-				$arrBuiltRequest['ServicePostcode']				= str_pad($arrAddress['ServicePostcode'], 4, "0", STR_PAD_LEFT);
 				break;
 			
 			case REQUEST_FULL_SERVICE_REVERSE:
@@ -271,13 +309,204 @@
 		}
 		ftp_close($resFTPConnection);
 		
+		// Add entry to ProvisioningExport table
+	/*	$this->_insProvisioningExport = new StatementInsert();
+		$arrData = Array();
+		$arrData['Location']	= UNITEL_LOCAL_DAILY_ORDER_DIR.$strFullServiceFilename;
+		$arrData['Carrier']		= CARRIER_UNITEL;
+		$arrData['Status']		= */
+		
 		// Update database (Request & Config tables)
 		$this->_updFullServiceFileSequence->Execute(Array('Value' => "$intFullServiceFileSequence"), Array());
 		
+		
 		// Return the number of records uploaded
 		return $intNumFullServiceRecords;
-	} 	
+	}
 	
+	
+	//------------------------------------------------------------------------//
+	// CleanRequest()
+	//------------------------------------------------------------------------//
+	/**
+	 * CleanRequest()
+	 *
+	 * Validates and Cleans Full Service Provisioning data
+	 *
+	 * Validates and Cleans Full Service Provisioning data
+	 *
+	 * @return	array				Associative array of data to be sent off
+	 *
+	 * @method
+	 */ 	
+	function CleanRequest($arrAddress)
+	{
+		$arrClean = Array( 'Residential' => $arrAddress['Residential'] );
+		
+		// Check our mandatory fields
+		$arrClean['BillName']			= (!$arrAddress['BillName']) ? FALSE : $arrAddress['BillName'];
+		$arrClean['BillAddress1']		= (!$arrAddress['BillAddress1']) ? FALSE : $arrAddress['BillAddress1'];
+		$arrClean['BillLocality']		= (!$arrAddress['BillLocality']) ? FALSE : $arrAddress['BillLocality'];
+		$arrClean['BillPostcode']		= (!$arrAddress['BillPostcode'] || strlen($arrAddress['BillPostcode'] != 4 || !is_numeric($arrAddress['BillPostcode']))) ? FALSE : $arrAddress['BillPostcode'];
+		$arrClean['ServiceLocality']	= (!$arrAddress['ServiceLocality']) ? FALSE : $arrAddress['ServiceLocality'];
+		$arrClean['ServiceState']		= (!$arrAddress['ServiceLocality']) ? FALSE : $arrAddress['ServiceState'];
+		$arrClean['ServicePostcode']	= (!$arrAddress['ServicePostcode'] || strlen($arrAddress['ServicePostcode'] != 4 || !is_numeric($arrAddress['ServicePostcode']))) ? FALSE : $arrAddress['ServicePostcode'];
+		
+
+		if ($arrAddress['Residential'] == 1)
+		{
+			// Residential-Specific
+			// Mandatory
+			$arrClean['EndUserTitle']		= (!$arrAddress['EndUserTitle']) ? FALSE : $arrAddress['EndUserTitle'];
+			$arrClean['EndUserGivenName']	= (!$arrAddress['EndUserGivenName']) ? FALSE : $arrAddress['EndUserGivenName'];
+			$arrClean['EndUserFamilyName']	= (!$arrAddress['EndUserFamilyName']) ? FALSE : $arrAddress['EndUserFamilyName'];
+			$arrClean['DateOfBirth']		= ($arrAddress['DateOfBirth'] == "000000") ? FALSE : $arrAddress['DateOfBirth'];
+			
+			// Empty
+			$arrClean['EndUserCompanyName']	= "";
+			$arrClean['ABN']				= "";
+			$arrClean['TradingName']		= "";
+			
+			// Optional
+			$arrClean['Employer']			= $arrAddress['Employer'];
+			$arrClean['Occupation']			= $arrAddress['Occupation'];
+		}
+		else
+		{
+			// Business-Specific
+			// Mandatory
+			$arrClean['EndUserCompanyName']	= (!$arrAddress['EndUserCompanyName']) ? FALSE : $arrAddress['EndUserCompanyName'];
+			$arrClean['ABN']				= (!$arrAddress['ABN']) ? FALSE : $arrAddress['ABN'];
+			
+			// Empty
+			$arrClean['EndUserTitle']		= "";
+			$arrClean['EndUserGivenName']	= "";
+			$arrClean['EndUserFamilyName']	= "";
+			$arrClean['DateOfBirth']		= "";
+			$arrClean['Employer']			= "";
+			$arrClean['Occupation']			= "";
+			
+			// Optional
+			$arrClean['TradingName']		= $arrAddress['TradingName'];
+		}
+		
+		// ServiceAddress
+		switch ($arrAddress['ServiceAddressType'])
+		{
+			// LOTs
+			case "LOT":
+				// Mandatory
+				$arrClean['ServiceAddressTypeNumber']	=	(!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : $arrAddress['ServiceAddressTypeNumber'];
+				
+				// Dependent
+				if ($arrAddress['ServiceStreetName'])
+				{
+					$arrClean['ServiceStreetName']			= $arrAddress['ServiceStreetName'];
+					$arrClean['ServiceStreetTypeSuffix']	= $arrAddress['ServiceStreetTypeSuffix'];
+					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
+					$arrClean['ServiceStreetType']			= (!$arrAddress['ServiceStreetType']) ? FALSE : $arrAddress['ServiceStreetType'];
+				}
+				elseif ($arrAddress['ServicePropertyName'])
+				{
+					$arrClean['ServicePropertyName']	= $arrAddress['ServicePropertyName'];
+				}
+				else
+				{
+					$arrClean['ServiceStreetName']		= FALSE;
+					$arrClean['ServicePropertyName']	= FALSE;
+				}
+				
+				// Empty
+				$arrClean['ServiceStreetNumberStart']	= "";
+				$arrClean['ServiceStreetNumberEnd']		= "";
+				$arrClean['ServiceStreetNumberSuffix']	= "";
+				
+				// Optional
+				$arrClean['ServiceAddressTypeSuffix']	= $arrAddress['ServiceAddressTypeSuffix'];
+				break;
+			
+			// Postal addresses
+			case "POB":
+			case "PO":
+			case "BAG":
+			case "CMA":
+			case "CMB":
+			case "PB":
+			case "GPO":
+			case "MS":
+			case "RMD":
+			case "RMB":
+			case "LB":
+			case "RMS":
+			case "RSD":
+				// Mandatory
+				$arrClean['ServiceAddressTypeNumber']	=	(!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : $arrAddress['ServiceAddressTypeNumber'];
+				
+				// Empty
+				$arrClean['ServiceStreetNumberStart']	= "";
+				$arrClean['ServiceStreetNumberEnd']		= "";
+				$arrClean['ServiceStreetNumberSuffix']	= "";
+				$arrClean['ServiceStreetName']			= "";
+				$arrClean['ServiceStreetType']			= "";
+				$arrClean['ServiceStreetTypeSuffix']	= "";
+				$arrClean['ServicePropertyName']		= "";
+				
+				// Optional	
+				$arrClean['ServiceAddressTypeSuffix']	= $arrAddress['ServiceAddressTypeSuffix'];
+				break;
+			
+			// Standard addresses
+			default:
+				// Mandatory
+				
+				
+				// Dependent
+				if ($arrAddress['ServiceAddressType'])
+				{
+					$arrClean['ServiceAddressTypeNumber']	= (!$arrAddress['ServiceAddressTypeNumber']) ? FALSE : $arrAddress['ServiceAddressTypeNumber'];
+					$arrClean['ServiceAddressTypeSuffix']	= $arrAddress['ServiceAddressTypeSuffix'];
+				}
+				else
+				{
+					$arrClean['ServiceAddressTypeNumber']	= "";
+					$arrClean['ServiceAddressTypeSuffix']	= "";
+				}
+				
+				if ($arrAddress['ServiceStreetName'])
+				{
+					$arrClean['ServiceStreetName']			= $arrAddress['ServiceStreetName'];
+					$arrClean['ServiceStreetTypeSuffix']	= $arrAddress['ServiceStreetTypeSuffix'];
+					$arrClean['ServicePropertyName']		= $arrAddress['ServicePropertyName'];
+					$arrClean['ServiceStreetType']			= (!$arrAddress['ServiceStreetType']) ? FALSE : $arrAddress['ServiceStreetType'];
+					
+					if ($arrAddress['ServiceStreetNumberStart'])
+					{
+						$arrClean['ServiceStreetNumberStart']	= $arrAddress['ServiceStreetNumberStart'];
+						$arrClean['ServiceStreetNumberEnd']		= $arrAddress['ServiceStreetNumberEnd'];
+						$arrClean['ServiceStreetNumberSuffix']	= $arrAddress['ServiceStreetNumberSuffix'];
+					}
+					else
+					{
+						$arrClean['ServiceStreetNumberStart']	= FALSE;
+					}
+				}
+				elseif ($arrAddress['ServicePropertyName'])
+				{
+					$arrClean['ServicePropertyName']	= $arrAddress['ServicePropertyName'];
+				}
+				else
+				{
+					$arrClean['ServiceStreetName']		= FALSE;
+					$arrClean['ServicePropertyName']	= FALSE;
+				}
+				break;
+		}
+		
+		// add optional fields
+		$arrClean['BillAddress2']		= $arrAddress['BillAddress2'];
+
+		return $arrClean;
+	}
  }
 
 ?>
