@@ -683,7 +683,7 @@
 	{
 		$arrOutput = Array();
 		$selCharges		= new StatementSelect(	"Charge",
-													"SUM(Amount) AS Amount, COUNT(Id) AS Count",
+													"SUM(Amount) AS Amount, COUNT(Id) AS Count, Nature",
 													"Account = <Account> " .
 													" AND InvoiceRun = <InvoiceRun>" ,
 													NULL,
