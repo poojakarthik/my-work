@@ -636,7 +636,7 @@
 			{
 				$arrAdjust[$arrAdj['Account']] = $arrAdjust[$arrAdj['Account']] - ($arrAdj['Amount'] + ($arrAdj['Amount'] / 10));
 			}
-		{
+		}
 		// get Invoice Compare list
 		$arrRecords = $this->appMonitor->GetInvoiceCompare();
 		if (is_array($arrRecords))
