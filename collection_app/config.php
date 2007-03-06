@@ -59,8 +59,8 @@
  		$arrConfig['Define']["Unitel"]	["Server"]							= "rslcom.com.au";
  		$arrConfig['Define']["Unitel"]	["Username"]						= "sp058";
  		$arrConfig['Define']["Unitel"]	["PWord"]							= "BuzzaBee06*#";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatchesoffnet/";
+ 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
+ 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatchesoffnet/";
  		$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
 /*		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
