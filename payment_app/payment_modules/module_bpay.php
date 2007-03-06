@@ -158,11 +158,11 @@
  		// Apply AccountGroup Ownership
  		$strAccount			= trim($this->_FetchRaw('CustomerReference'));
  		// Remove Check digit
- 		$strAccount			= substr($strAccount, 0, -1);
+ 		$intAccount			= (int)substr($strAccount, 0, -1);
  		// FIXME: Try to account for bad reference numbers.  Is this right?
- 		if ((int)$strAccount < 1000000000)
+ 		if ($intAccount < 1000000000)
  		{
- 			$intAccount = (int)"1".str_pad($strAccount, 9, "0", STR_PAD_LEFT);
+ 			$intAccount = (int)"1".str_pad($intAccount, 9, "0", STR_PAD_LEFT);
  		}
  		$this->_Append('Account', $intAccount);
  		if (($intAccountGroup = $this->_FindAccountGroup($intAccount)) === FALSE)
