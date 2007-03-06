@@ -623,6 +623,20 @@
 	{
 		$intMinDifference = (int)$intMinDifference;
 		
+		$sqlQuery = new Query();
+		$strQuery = "SELECT Account, Nature, SUM(Amount) AS Amount  FROM `Charge` WHERE `InvoiceRun` LIKE '45dfe46ae67cd' GROUP BY Account, Nature";
+		$sqlQuery->Execute($strQuery);
+		while($arrAdj = $sqlQuery-Fetch())
+		{
+			if ($arrAdj['Nature'] == 'DR')
+			{
+				$arrAdjust[$arrAdj['Account']] = $arrAdjust[$arrAdj['Account']] + $arrAdj['Amount'] + ($arrAdj['Amount'] / 10);
+			}
+			else
+			{
+				$arrAdjust[$arrAdj['Account']] = $arrAdjust[$arrAdj['Account']] - ($arrAdj['Amount'] + ($arrAdj['Amount'] / 10));
+			}
+		{
 		// get Invoice Compare list
 		$arrRecords = $this->appMonitor->GetInvoiceCompare();
 		if (is_array($arrRecords))
@@ -637,7 +651,7 @@
 			$intCount = 0;
 			foreach($arrRecords AS $intRecord=>$arrDetails)
 			{
-				if (abs($arrDetails['Dif']) > $intMinDifference)
+				if (abs($arrDetails['Dif'] + $arrAdjust[$arrDetails['Account']]) > $intMinDifference)
 				{
 					$intCount++;
 					$arrRow = Array($intCount, $arrDetails['Account'], number_format($arrDetails['VixenTotal'],2), $arrDetails['EtechTotal'], number_format($arrDetails['Dif'],2));
