@@ -625,8 +625,8 @@
 		
 		$sqlQuery = new Query();
 		$strQuery = "SELECT Account, Nature, SUM(Amount) AS Amount  FROM `Charge` WHERE `InvoiceRun` LIKE '45dfe46ae67cd' GROUP BY Account, Nature";
-		$sqlQuery->Execute($strQuery);
-		while($arrAdj = $sqlQuery-Fetch())
+		$sqlResult = $sqlQuery->Execute($strQuery);
+		while($arrAdj = $sqlResult->fetch_assoc())
 		{
 			if ($arrAdj['Nature'] == 'DR')
 			{
