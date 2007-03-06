@@ -52,16 +52,16 @@
  		// Define file format
  		$this->_strDelimiter	= "|";
  		
- 		$arrDefine['ReferenceNo']	['Index']	= 0;
- 		$arrDefine['DatePaid']		['Index']	= 1;
- 		$arrDefine['BSB']			['Index']	= 2;
- 		$arrDefine['Number1']		['Index']	= 3;
- 		$arrDefine['Number2']		['Index']	= 4;
- 		$arrDefine['AmountCents']	['Index']	= 5;
- 		$arrDefine['Number3']		['Index']	= 6;
- 		$arrDefine['Number4']		['Index']	= 7;
- 		$arrDefine['Number5']		['Index']	= 8;
- 		$arrDefine['FileDate']		['Index']	= 9;
+ 		$arrDefine['ReferenceNo']				['Index']	= 0;
+ 		$arrDefine['DatePaid']					['Index']	= 1;
+ 		$arrDefine['TimePaid']					['Index']	= 2;
+ 		$arrDefine['TransactionType']			['Index']	= 3;
+ 		$arrDefine['ReturnsTransactionSource']	['Index']	= 4;
+ 		$arrDefine['AmountCents']				['Index']	= 5;
+ 		$arrDefine['BankTransactionId']			['Index']	= 6;
+ 		$arrDefine['ResponseCode']				['Index']	= 7;
+ 		$arrDefine['CCNo']						['Index']	= 8;
+ 		$arrDefine['SettlementDate']			['Index']	= 9;
 
 		$arrDefine['Amount']		['Validate'] = "/^\d+$/";
 		$arrDefine['ReferenceNo']	['Validate'] = "/^\d+$/";
@@ -98,7 +98,7 @@
  		$this->_SplitRaw($strPaymentRecord);
  		
  		// Amount
- 		$mixValue	= ((float)$this->_FetchRaw('Amount')) / 100;
+ 		$mixValue	= ((float)$this->_FetchRaw('AmountCents')) / 100;
  		$this->_Append('Amount', $mixValue);
  		
  		// Transaction Reference Number
