@@ -623,20 +623,7 @@
 	{
 		$intMinDifference = (int)$intMinDifference;
 		
-		$sqlQuery = new Query();
-		$strQuery = "SELECT Account, Nature, SUM(Amount) AS Amount  FROM `Charge` WHERE `InvoiceRun` LIKE '45dfe46ae67cd' GROUP BY Account, Nature";
-		$sqlResult = $sqlQuery->Execute($strQuery);
-		while($arrAdj = $sqlResult->fetch_assoc())
-		{
-			if ($arrAdj['Nature'] == 'DR')
-			{
-				$arrAdjust[$arrAdj['Account']] = $arrAdjust[$arrAdj['Account']] + $arrAdj['Amount'] + ($arrAdj['Amount'] / 10);
-			}
-			else
-			{
-				$arrAdjust[$arrAdj['Account']] = $arrAdjust[$arrAdj['Account']] - ($arrAdj['Amount'] + ($arrAdj['Amount'] / 10));
-			}
-		}
+
 		// get Invoice Compare list
 		$arrRecords = $this->appMonitor->GetInvoiceCompare();
 		if (is_array($arrRecords))
@@ -651,10 +638,8 @@
 			$intCount = 0;
 			foreach($arrRecords AS $intRecord=>$arrDetails)
 			{
-				if (abs($arrDetails['Dif'] + $arrAdjust[$arrDetails['Account']]) > $intMinDifference)
+				if (abs($arrDetails['Dif']) > $intMinDifference)
 				{
-					$arrDetails['VixenTotal'] = $arrDetails['VixenTotal'] + $arrAdjust[$arrDetails['Account']];
-					$arrDetails['Dif'] = $arrDetails['Dif'] + $arrAdjust[$arrDetails['Account']];
 					$intCount++;
 					$arrRow = Array($intCount, $arrDetails['Account'], number_format($arrDetails['VixenTotal'],2), $arrDetails['EtechTotal'], number_format($arrDetails['Dif'],2));
 					$tblTable->AddRow($arrRow, "invoice_compare.php?Account={$arrDetails['Account']}&InvoiceRun={$arrDetails['InvoiceRun']}&Etech={$arrDetails['EtechTotal']}");
