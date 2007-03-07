@@ -226,7 +226,7 @@
 			case "E":	// Loss - commercial churn
 			case "O":	// Loss - other ASD
 			case "L":	// Loss - other CSP
-				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
+				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;
 				$arrLogData		['Type']		= LINE_ACTION_LOSS;
 				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);
 				
@@ -365,7 +365,8 @@
 			if (!$this->_selMatchLog->Fetch())
 			{
 				// Actually update the service
-				$arrResult['LineStatus'] = $this->_arrService['LineStatus'];
+				$arrResult['LineStatus']	= $this->_arrService['LineStatus'];
+				$arrResult['ClosedOn']		= $this->_arrRequest['LossDate'];
 				
 				// Update the Carrier/CarrierPreselect fields if necessary
 				if ($this->_arrLog['Type'] == LINE_ACTION_GAIN)
