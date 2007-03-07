@@ -306,10 +306,10 @@
 	 */
  	function UpdateService()
 	{
-		$arrData['FNN']	= $this->_arrRequest['ServiceId'];
+		$arrData['FNN']	= trim($this->_arrRequest['ServiceId']);
 		$this->_selMatchService->Execute($arrData);
 		
-		Debug($this->_arrRequest);
+		//Debug($this->_arrRequest);
 		
 		// Match to an entry in the Service table
 		if($arrResult = $this->_selMatchService->Fetch())
@@ -370,7 +370,7 @@
 			$arrDebug['FNN']			= $arrData['FNN'];
 			$arrDebug['RequestType']	= $this->_arrRequest['RequestType'];
 			$arrDebug['Action']			= $this->_arrLog['Type'];
-			//Debug($arrDebug);
+			Debug($arrDebug);
 			
 			return PRV_NO_SERVICE;
 		}
