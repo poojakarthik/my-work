@@ -1058,30 +1058,54 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		// clean up ServiceTotal table
-		$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
-		$qryCleanServiceTotal = new Query();
-		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
+		if (!$strInvoiceRun)
 		{
-			Debug($qryCleanServiceTotal);
-			
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-		}
-		else
-		{
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
+			// clean up ServiceTotal table
+			$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
+			$qryCleanServiceTotal = new Query();
+			if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
+			{
+				Debug($qryCleanServiceTotal);
+				
+				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			}
+			else
+			{
+				$this->_rptBillingReport->AddMessage(MSG_OK);
+			}
 
-		// clean up ServiceTypeTotal table
-		$this->_rptBillingReport->AddMessage("Cleaning ServiceTypeTotal table...\t\t\t", FALSE);
-		$qryCleanServiceTotal = new Query();
-		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
-		{
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-		}
-		else
-		{
-			$this->_rptBillingReport->AddMessage(MSG_OK);
+			// clean up ServiceTypeTotal table
+			$this->_rptBillingReport->AddMessage("Cleaning ServiceTypeTotal table...\t\t\t", FALSE);
+			$qryCleanServiceTotal = new Query();
+			if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE InvoiceRun = '$strInvoiceRun'") === FALSE)
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			}
+			else
+			{
+				$this->_rptBillingReport->AddMessage(MSG_OK);
+			}
+		
+			// reverse payments
+			$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = '$strInvoiceRun'");
+			$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
+			$arrCols['Status']	= NULL;
+			$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
+			$ubiPayments		= new StatementUpdateById("Payment", $arrCols);
+			$qryDeletePayment	= new Query();
+			$selInvoicePayments->Execute();
+			$arrInvoicePayments = $selInvoicePayments->FetchAll();
+			foreach ($arrInvoicePayments as $arrInvoicePayment)
+			{
+				// update total and status of Payment
+				$arrPayment['Balance']	= new MySQLFunction("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
+				$arrPayment['Status']	= PAYMENT_PAYING;
+				$arrPayment['Id']		= $arrInvoicePayment['Payment'];
+				$ubiPayments->Execute($arrPayment);
+				
+				// remove InvoicePayment
+				$qryDeletePayment->Execute("DELETE FROM InvoicePayment WHERE Id = ".$arrInvoicePayment['Id']);
+			}
 		}
 		
 		// Truncate the InvoiceOutput table
@@ -1094,26 +1118,6 @@
 		else
 		{
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
-		// reverse payments
-		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = '$strInvoiceRun'");
-		$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
-		$arrCols['Status']	= NULL;
-		$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
-		$ubiPayments		= new StatementUpdateById("Payment", $arrCols);
-		$qryDeletePayment	= new Query();
-		$selInvoicePayments->Execute();
-		$arrInvoicePayments = $selInvoicePayments->FetchAll();
-		foreach ($arrInvoicePayments as $arrInvoicePayment)
-		{
-			// update total and status of Payment
-			$arrPayment['Balance']	= new MySQLFunction("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
-			$arrPayment['Status']	= PAYMENT_PAYING;
-			$ubiPayments->Execute($arrPayment);
-			
-			// remove InvoicePayment
-			$qryDeletePayment->Execute("DELETE FROM InvoicePayment WHERE Id = ".$arrInvoicePayment['Id']);
 		}
 		
 		return TRUE;
@@ -1369,6 +1373,12 @@
 		// Report Title
 		$this->_rptBillingReport->AddMessage("[ REVERTING INVOICE ]"."\n");
 		
+		if (!$strInvoiceRun)
+		{
+			$this->_rptBillingReport->AddMessage("No InvoiceRun specified!");
+			return FALSE;
+		}
+		
 		// change status of CDR_INVOICED status CDRs to CDR_RATED
 		$this->_rptBillingReport->AddMessage(MSG_REVERT_CDRS, FALSE);
 		$arrColumns = Array();
@@ -1466,6 +1476,7 @@
 			// update total and status of Payment
 			$arrPayment['Balance']	= new MySQLFunction("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
 			$arrPayment['Status']	= PAYMENT_PAYING;
+			$arrPayment['Id']		= $arrInvoicePayment['Payment'];
 			$ubiPayments->Execute($arrPayment);
 			
 			// remove InvoicePayment
@@ -1625,31 +1636,55 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		// clean up ServiceTotal table
-		$this->_rptBillingReport->AddMessage("Removing ServiceTotal entries...\t\t\t\t", FALSE);
-		$qryCleanServiceTotal = new Query();
-		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'") === FALSE)
+		if ($strInvoiceRun)
 		{
-			Debug($qryCleanServiceTotal);
+			// clean up ServiceTotal table
+			$this->_rptBillingReport->AddMessage("Removing ServiceTotal entries...\t\t\t\t", FALSE);
+			$qryCleanServiceTotal = new Query();
+			if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTotal WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'") === FALSE)
+			{
+				Debug($qryCleanServiceTotal);
+				
+				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			}
+			else
+			{
+				$this->_rptBillingReport->AddMessage(MSG_OK);
+			}
+	
+			// clean up ServiceTypeTotal table
+			$this->_rptBillingReport->AddMessage("Removing ServiceTypeTotal entries...\t\t\t", FALSE);
+			$qryCleanServiceTotal = new Query();
+			if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'") === FALSE)
+			{
+				$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			}
+			else
+			{
+				$this->_rptBillingReport->AddMessage(MSG_OK);
+			}
 			
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-		}
-		else
-		{
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-
-		// clean up ServiceTypeTotal table
-		$this->_rptBillingReport->AddMessage("Removing ServiceTypeTotal entries...\t\t\t", FALSE);
-		$qryCleanServiceTotal = new Query();
-		if($qryCleanServiceTotal->Execute("DELETE FROM ServiceTypeTotal WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'") === FALSE)
-		{
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-		}
-		else
-		{
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
+			// reverse payments
+			$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
+			$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
+			$arrCols['Status']	= NULL;
+			$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
+			$ubiPayments		= new StatementUpdateById("Payment", $arrCols);
+			$qryDeletePayment	= new Query();
+			$selInvoicePayments->Execute();
+			$arrInvoicePayments = $selInvoicePayments->FetchAll();
+			foreach ($arrInvoicePayments as $arrInvoicePayment)
+			{
+				// update total and status of Payment
+				$arrPayment['Balance']	= new MySQLFunction("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
+				$arrPayment['Status']	= PAYMENT_PAYING;
+				$arrPayment['Id']		= $arrInvoicePayment['Payment'];
+				$ubiPayments->Execute($arrPayment);
+				
+				// remove InvoicePayment
+				$qryDeletePayment->Execute("DELETE FROM InvoicePayment WHERE Id = ".$arrInvoicePayment['Id']);
+			}
+ 		}
 		
 		// Truncate the InvoiceOutput table
 		$this->_rptBillingReport->AddMessage("Removing InvoiceOutput entry...\t\t\t", FALSE);
@@ -1661,26 +1696,6 @@
 		else
 		{
 			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
-		// reverse payments
-		$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
-		$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
-		$arrCols['Status']	= NULL;
-		$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
-		$ubiPayments		= new StatementUpdateById("Payment", $arrCols);
-		$qryDeletePayment	= new Query();
-		$selInvoicePayments->Execute();
-		$arrInvoicePayments = $selInvoicePayments->FetchAll();
-		foreach ($arrInvoicePayments as $arrInvoicePayment)
-		{
-			// update total and status of Payment
-			$arrPayment['Balance']	= new MySQLFunction("Balance + <Balance>", Array('Balance' => $arrInvoicePayment['Amount']));
-			$arrPayment['Status']	= PAYMENT_PAYING;
-			$ubiPayments->Execute($arrPayment);
-			
-			// remove InvoicePayment
-			$qryDeletePayment->Execute("DELETE FROM InvoicePayment WHERE Id = ".$arrInvoicePayment['Id']);
 		}
 		
 		return TRUE;
