@@ -202,7 +202,7 @@ die();
 					if ($bolError)
 					{
 						// It's an error, so give a reason
-						$this->_rptProvisioningReport->AddMessageVariables(MSG_ERROR."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
+						$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
 						$intLinesFailed++;
 					}
 					else

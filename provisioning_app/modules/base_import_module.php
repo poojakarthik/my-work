@@ -192,6 +192,7 @@
 			if (!$this->_arrLog['Service'] = $this->_selMatchService->Fetch())
 			{
 				// This request doesn't belong to us
+				Debug("Cannot find the service");
 				return FALSE;
 			}
 		}
@@ -199,7 +200,12 @@
 		// Write to the Provisioning Log
 		$this->_arrLog['Carrier']	= $this->_intCarrier;
 		$this->_arrLog['Direction']	= REQUEST_DIRECTION_INCOMING;
-		return $this->_insAddToLog->Execute($this->_arrLog);
+		$mixResult =  $this->_insAddToLog->Execute($this->_arrLog);
+		if ($mixResult === FALSE)
+		{
+			Debug($this->_insAddToLog->Error());
+		}
+		return $mixResult;
 	 }
 
 	//------------------------------------------------------------------------//
