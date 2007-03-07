@@ -309,6 +309,8 @@
 		$arrData['FNN']	= $this->_arrRequest['ServiceId'];
 		$this->_selMatchService->Execute($arrData);
 		
+		Debug($this->_arrRequest);
+		
 		// Match to an entry in the Service table
 		if($arrResult = $this->_selMatchService->Fetch())
 		{

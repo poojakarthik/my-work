@@ -168,7 +168,7 @@ die();
 				$i++;
 				
 				// Report
-				$this->_rptProvisioningReport->AddMessageVariables(MSG_READING_LINE, Array('<LineNo>' => $i));
+				$this->_rptProvisioningReport->AddMessageVariables(MSG_READING_LINE, Array('<LineNo>' => $i), FALSE);
 				
 				// normalise this line
 				if(($intError = $this->_prvCurrentModule->Normalise(fgets($resFile))) !== TRUE)
@@ -180,15 +180,18 @@ die();
 					switch ($intError)
 					{
 						case PRV_TRAILER_RECORD:
+							$bolError = FALSE;
 							$strReason = "Trailer Record";
 							break;
 						case PRV_HEADER_RECORD:
+							$bolError = FALSE;
 							$strReason = "Header Record";
 							break;
 						case PRV_BAD_RECORD_TYPE:
 							$strReason = "Unknown Record Type";
 							break;
 						case PRV_OLD_STATUS:
+							$strReason = "Outdated Status";
 							$bolError = FALSE;
 							break;
 						default:
@@ -205,7 +208,7 @@ die();
 					else
 					{
 						// It's an Ignore, so print this instead
-						$this->_rptProvisioningReport->AddMessage(MSG_IGNORE);
+						$this->_rptProvisioningReport->AddMessageVariables(MSG_IGNORE."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
 						$intLinesPassed++;
 					}
 										
