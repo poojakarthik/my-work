@@ -176,8 +176,8 @@ die();
 					$this->_rptProvisioningReport->AddMessageVariables(MSG_READING_LINE, Array('<LineNo>' => $i), FALSE);
 					
 					$strLine		= fgets($resFile);
-					$bolParseAgain	= FALSE;
 				}
+				$bolParseAgain = FALSE;
 				
 				// normalise this line
 				if(($intError = $this->_prvCurrentModule->Normalise($strLine)) !== TRUE)
