@@ -158,8 +158,13 @@
 		$arrLogData		['FNN']			= $arrRequestData['ServiceId'];
 		
 		// Date
-		$arrRequestData	['Date']		= $this->_ConvertDate($arrLineData['EffectiveDate']);
-		$arrLogData		['Date']		= $arrRequestData['Date'];
+		$strDate = trim($arrLineData['EffectiveDate']);
+		if (!$strDate)
+		{
+			$strDate = date("Y-m-d", time());
+		}
+		$arrRequestData	['Date']		= $strDate;
+		$arrLogData		['Date']		= $strDate;
 		
 		// Carrier
 		$arrLogData		['Carrier']		= CARRIER_UNITEL;
@@ -192,7 +197,7 @@
 				$arrRequestData	['RequestType']	= REQUEST_FULL_SERVICE;
 				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
 				$arrLogData		['Type']		= LINE_ACTION_GAIN;
-				$arrLogData		['Description']	= "Service Gained";
+				$arrLogData		['Description']	= "Service Gained (Basket: ".(int)$arrLineData['Basket'].")";
 				
 				// Attempt to match request
 				break;
@@ -201,12 +206,12 @@
 			case "L":	// Loss - other CSP
 				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
 				$arrLogData		['Type']		= LINE_ACTION_LOSS;
-				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);
+				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo'])." (Basket: ".(int)$arrLineData['Basket'].")";
 				break;
 			case "X":	// Loss - cancellation
 				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;
 				$arrLogData		['Type']		= LINE_ACTION_LOSS;
-				$arrLogData		['Description']	= DESCRIPTION_CANCELLED;
+				$arrLogData		['Description']	= DESCRIPTION_CANCELLED." (Basket: ".(int)$arrLineData['Basket'].")";
 				break;
 			case "N":	// Change - number
 			case "M":	// Change - address
