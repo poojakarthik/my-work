@@ -198,7 +198,7 @@
 		}
 		
 		// Write to the Provisioning Log
-		$this->_arrLog['Carrier']	= $this->_intCarrier;
+		//$this->_arrLog['Carrier']	= $this->_intCarrier;
 		$this->_arrLog['Direction']	= REQUEST_DIRECTION_INCOMING;
 		$mixResult =  $this->_insAddToLog->Execute($this->_arrLog);
 		if ($mixResult === FALSE)
