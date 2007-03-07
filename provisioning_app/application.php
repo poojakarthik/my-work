@@ -186,7 +186,6 @@ die();
 					if ($intError == CONTINUABLE_FINISHED)
 					{
 						$bolParseAgain = TRUE;
-						continue;
 					}
 					elseif ($intError == CONTINUABLE_CONTINUE)
 					{
