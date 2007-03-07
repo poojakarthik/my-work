@@ -80,7 +80,7 @@ $GLOBALS['*arrConstant']	['CDRType']	[5]	['Description']	= 'iSeek Usage';
 
 // Provisioning Types
 define("PRV_IMPORT_RANGE_MIN"			, 100);
-define("PRV_IMPORT_RANGE_MAX"			, 149);
+define("PRV_IMPORT_RANGE_MAX"			, 199);
 /*define("PRV_UNITEL_DAILY_ORDER_RPT"		, 100);
 define("PRV_UNITEL_DAILY_STATUS_RPT"	, 101);
 define("PRV_UNITEL_BASKETS_RPT"			, 102);

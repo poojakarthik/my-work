@@ -163,56 +163,78 @@ die();
 			$arrFileData	= Array();
 			
 			$i = 0;
+			$bolParseAgain = FALSE;
+			$strLine = NULL;
 			while (!feof($resFile))
 			{
-				$i++;
-				
-				// Report
-				$this->_rptProvisioningReport->AddMessageVariables(MSG_READING_LINE, Array('<LineNo>' => $i), FALSE);
+				// Check to see if we need to reparse the line
+				if (!$bolParseAgain)
+				{
+					$i++;
+					
+					// Report
+					$this->_rptProvisioningReport->AddMessageVariables(MSG_READING_LINE, Array('<LineNo>' => $i), FALSE);
+					
+					$strLine		= fgets($resFile);
+					$bolParseAgain	= FALSE;
+				}
 				
 				// normalise this line
-				if(($intError = $this->_prvCurrentModule->Normalise(fgets($resFile))) !== TRUE)
+				if(($intError = $this->_prvCurrentModule->Normalise($strLine)) !== TRUE)
 				{
-					// By default we assume its an error, not an ignore
-					$bolError = TRUE;
-					
-					// Report on error
-					switch ($intError)
+					// Check to see if we have a continuable request
+					if ($intError == CONTINUABLE_FINISHED)
 					{
-						case PRV_TRAILER_RECORD:
-							$bolError = FALSE;
-							$strReason = "Trailer Record";
-							break;
-						case PRV_HEADER_RECORD:
-							$bolError = FALSE;
-							$strReason = "Header Record";
-							break;
-						case PRV_BAD_RECORD_TYPE:
-							$strReason = "Unknown Record Type";
-							break;
-						case PRV_OLD_STATUS:
-							$strReason = "Outdated Status";
-							$bolError = FALSE;
-							break;
-						default:
-							$strReason = "Unknown Error";
-							break;
+						$bolParseAgain = TRUE;
+						continue;
 					}
-					
-					if ($bolError)
+					elseif ($intError == CONTINUABLE_CONTINUE)
 					{
-						// It's an error, so give a reason
-						$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
-						$intLinesFailed++;
+						continue;
 					}
 					else
 					{
-						// It's an Ignore, so print this instead
-						$this->_rptProvisioningReport->AddMessageVariables(MSG_IGNORE."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
-						$intLinesPassed++;
+						// By default we assume its an error, not an ignore
+						$bolError = TRUE;
+						
+						// Report on error
+						switch ($intError)
+						{
+							case PRV_TRAILER_RECORD:
+								$bolError = FALSE;
+								$strReason = "Trailer Record";
+								break;
+							case PRV_HEADER_RECORD:
+								$bolError = FALSE;
+								$strReason = "Header Record";
+								break;
+							case PRV_BAD_RECORD_TYPE:
+								$strReason = "Unknown Record Type";
+								break;
+							case PRV_OLD_STATUS:
+								$strReason = "Outdated Status";
+								$bolError = FALSE;
+								break;
+							default:
+								$strReason = "Unknown Error";
+								break;
+						}
+						
+						if ($bolError)
+						{
+							// It's an error, so give a reason
+							$this->_rptProvisioningReport->AddMessageVariables(MSG_FAILED."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
+							$intLinesFailed++;
+						}
+						else
+						{
+							// It's an Ignore, so print this instead
+							$this->_rptProvisioningReport->AddMessageVariables(MSG_IGNORE."\n".MSG_ERROR_LINE_DEEP, Array('<Reason>' => $strReason));
+							$intLinesPassed++;
+						}
+											
+						continue;
 					}
-										
-					continue;
 				}
 				
 				// update requests table

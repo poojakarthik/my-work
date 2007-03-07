@@ -61,6 +61,8 @@ define("PRV_HEADER_RECORD"				, 102);
 define("PRV_BAD_RECORD_TYPE"			, 103);
 define("PRV_NO_SERVICE"					, 104);
 define("PRV_OLD_STATUS"					, 105);
+define("CONTINUABLE_FINISHED"			, 110);
+define("CONTINUABLE_CONTINUE"			, 111);
 
 // Log Descriptions
 define("DESCRIPTION_LOST_TO"			, "Service lost to ");

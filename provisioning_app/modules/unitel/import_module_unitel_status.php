@@ -121,6 +121,8 @@
 		
 		//##----------------------------------------------------------------##//
 		
+		$this->_bolContinuable = FALSE;
+		$this->_arrContinuableBaskets = Array();	
  	}
 
  	//------------------------------------------------------------------------//
@@ -153,9 +155,25 @@
 			return PRV_HEADER_RECORD;
 		}
 		
-		// ServiceId
-		$arrRequestData	['ServiceId']	= RemoveAusCode($arrLineData['ServiceNo']);
-		$arrLogData		['FNN']			= $arrRequestData['ServiceId'];
+		// Check to see if our continuable request is finished
+		$strFNN = RemoveAusCode($arrLineData['ServiceNo']);
+		if ($this->_bolContinuable)
+		{
+			if ($strFNN != $this->_arrRequest['FNN'])
+			{
+				$this->_arrLog['Description']	.= " (Baskets ".implode(', ', $this->_arrContinuableBaskets).")";
+				$this->_arrContinuableBaskets	= Array();
+				$this->_bolContinuable			= FALSE;
+				return CONTINUABLE_FINISHED;
+			}
+			
+			$this->_arrContinuableBaskets[]	= (int)$arrLineData['Basket'];
+			return CONTINUABLE_CONTINUE;
+		}
+		
+		// FNN
+		$arrRequestData	['FNN']	= $strFNN;
+		$arrLogData		['FNN']	= $strFNN;
 		
 		// Date
 		$strDate = trim($arrLineData['EffectiveDate']);
@@ -197,7 +215,11 @@
 				$arrRequestData	['RequestType']	= REQUEST_FULL_SERVICE;
 				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
 				$arrLogData		['Type']		= LINE_ACTION_GAIN;
-				$arrLogData		['Description']	= "Service Gained (Basket: ".(int)$arrLineData['Basket'].")";
+				$arrLogData		['Description']	= "Service Gained";
+				
+				// This can span over multiple lines in the file
+				$this->_bolContinuable = TRUE;
+				$this->_arrContinuableBaskets[]	= (int)$arrLineData['Basket'];
 				
 				// Attempt to match request
 				break;
@@ -206,12 +228,20 @@
 			case "L":	// Loss - other CSP
 				$arrServiceData	['LineStatus']	= LINE_ACTIVE;
 				$arrLogData		['Type']		= LINE_ACTION_LOSS;
-				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo'])." (Basket: ".(int)$arrLineData['Basket'].")";
+				$arrLogData		['Description']	= DESCRIPTION_LOST_TO.$this->_GetCarrierName($arrLineData['LostTo']);
+				
+				// This can span over multiple lines in the file
+				$this->_bolContinuable = TRUE;
+				$this->_arrContinuableBaskets[]	= (int)$arrLineData['Basket'];
 				break;
 			case "X":	// Loss - cancellation
 				$arrServiceData	['LineStatus']	= LINE_DEACTIVATED;
 				$arrLogData		['Type']		= LINE_ACTION_LOSS;
-				$arrLogData		['Description']	= DESCRIPTION_CANCELLED." (Basket: ".(int)$arrLineData['Basket'].")";
+				$arrLogData		['Description']	= DESCRIPTION_CANCELLED;
+				
+				// This can span over multiple lines in the file
+				$this->_bolContinuable = TRUE;
+				$this->_arrContinuableBaskets[]	= (int)$arrLineData['Basket'];
 				break;
 			case "N":	// Change - number
 			case "M":	// Change - address
@@ -238,15 +268,19 @@
 				return PRV_BAD_RECORD_TYPE;
 		}
 		
-		// Basket
-		$arrServiceData['Basket']	= (int)$arrLineData['Basket'];
-		
 		// Add split line to File data array
 		$this->_arrRequest	= $arrRequestData;
 		$this->_arrService	= $arrServiceData;
 		$this->_arrLog		= $arrLogData;
 		
-		return TRUE;
+		if ($this->_bolContinuable)
+		{
+			return CONTINUABLE_CONTINUE;
+		}
+		else
+		{
+			return TRUE;
+		}
 	} 	
 
  	//------------------------------------------------------------------------//
@@ -312,7 +346,7 @@
 	 */
  	function UpdateService()
 	{
-		$arrData['FNN']	= trim($this->_arrRequest['ServiceId']);
+		$arrData['FNN']	= trim($this->_arrRequest['FNN']);
 		if ($this->_selMatchService->Execute($arrData) === FALSE)
 		{
 			Debug($this->_selMatchService->Error());
@@ -336,15 +370,19 @@
 				// Update the Carrier/CarrierPreselect fields if necessary
 				if ($this->_arrLog['Type'] == LINE_ACTION_GAIN)
 				{
-					switch ($this->_arrService['Basket'])
+					if (in_array(6, $this->_arrContinuableBaskets))
 					{
-						case BASKET_PRESELECT:
-							$arrResult['CarrierPreselect']	= CARRIER_UNITEL;
-							break;
-						default:
-							$arrResult['Carrier']			= CARRIER_UNITEL;
-							break;
+						$arrResult['CarrierPreselect']	= CARRIER_UNITEL;
+						if (count($this->_arrContinuableBaskets) > 1)
+						{
+							$arrResult['Carrier']		= CARRIER_UNITEL;
+						}
 					}
+					else
+					{
+						$arrResult['Carrier']			= CARRIER_UNITEL;
+					}
+					break;
 				}
 				
 				// <DEBUG>
