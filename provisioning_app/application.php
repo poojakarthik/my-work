@@ -30,8 +30,8 @@ echo "<pre>";
 // Application entry point - create an instance of the application object
 $appProvisioining = new ApplicationProvisioning($arrConfig);
 
-//$appProvisioining->Import();
-$appProvisioining->Export();
+$appProvisioining->Import();
+//$appProvisioining->Export();
 
 $appProvisioining->FinaliseReport();
 
@@ -85,9 +85,9 @@ die();
 		
 		// Init Provisioning Import Modules
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_STATUS_RPT]	= new ProvisioningModuleImportUnitelStatus(&$this->db);
-		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_RPT]	= new ProvisioningModuleImportUnitelPreselection(&$this->db);
-		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_RPT]	= new ProvisioningModuleImportUnitelOrder(&$this->db);
- 		$this->_arrProvisioningModules[PRV_AAPT_LSD]				= new ProvisioningModuleImportAAPTLSD(&$this->db);
+		//$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_RPT]	= new ProvisioningModuleImportUnitelPreselection(&$this->db);
+		//$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_RPT]	= new ProvisioningModuleImportUnitelOrder(&$this->db);
+ 		//$this->_arrProvisioningModules[PRV_AAPT_LSD]				= new ProvisioningModuleImportAAPTLSD(&$this->db);
  		//$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleOptus(&$this->db);
  		
  		// Init Provisioning Export Modules
@@ -117,7 +117,7 @@ die();
 	function Import()
 	{
 		// Init Statements
-		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".CDRFILE_WAITING." AND FileType >= ".PRV_IMPORT_RANGE_MIN." AND FileType <= ".PRV_IMPORT_RANGE_MAX);
+		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".CDRFILE_WAITING." AND FileType BETWEEN ".PRV_IMPORT_RANGE_MIN." AND ".PRV_IMPORT_RANGE_MAX);
 		$ubiSetFileStatus		= new StatementUpdateById("FileImport", Array('Status' => NULL));
 		$selGetLineStatus		= new StatementSelect("Service", "*", "FNN = <FNN>");
 		$updSetLineStatus		= new StatementUpdate("Service", "FNN = <FNN>", Array('LineStatus' => NULL));
