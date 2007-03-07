@@ -59,7 +59,8 @@
 	 */
  	function  __construct($ptrDB)
  	{
-		$this->_strModuleName = "Unitel";
+		$this->_strModuleName	= "Unitel";
+		$this->_intCarrier		= CARRIER_UNITEL;
 		
 		parent::__construct($ptrDB);
 		
@@ -158,7 +159,7 @@
 		
 		// Date
 		$arrRequestData	['Date']		= $this->_ConvertDate($arrLineData['EffectiveDate']);
-		$arrLogData		['Date']		= date("Y-m-d");
+		$arrLogData		['Date']		= $arrRequestData['Date'];
 		
 		// Carrier
 		$arrLogData		['Carrier']		= CARRIER_UNITEL;
@@ -307,13 +308,16 @@
  	function UpdateService()
 	{
 		$arrData['FNN']	= trim($this->_arrRequest['ServiceId']);
-		$this->_selMatchService->Execute($arrData);
-		
-		Debug($this->_arrRequest);
+		if ($this->_selMatchService->Execute($arrData) === FALSE)
+		{
+			Debug($this->_selMatchService->Error());
+		}
 		
 		// Match to an entry in the Service table
 		if($arrResult = $this->_selMatchService->Fetch())
 		{
+			$this->_arrLog['Service']	= $arrResult['Id'];
+			
 			// Make sure our status is up to date
 			$arrData = Array('Date' => $this->_arrRequest['Date']);
 			$this->_selMatchLog->Execute($arrData);

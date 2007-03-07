@@ -255,7 +255,7 @@ die();
 				}
 				
 				// Email the employee who made the request
-				$this->_prvCurrentModule->EmailReport();
+				//$this->_prvCurrentModule->EmailReport();
 				
 				// Add "OK" to report
 				$this->_rptProvisioningReport->AddMessage(MSG_OK);
