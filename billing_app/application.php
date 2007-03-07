@@ -1059,7 +1059,7 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
-		if (!$strInvoiceRun)
+		if ($strInvoiceRun)
 		{
 			// clean up ServiceTotal table
 			$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
