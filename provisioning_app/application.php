@@ -280,7 +280,10 @@ die();
 				//$this->_prvCurrentModule->EmailReport();
 				
 				// Add "OK" to report
-				$this->_rptProvisioningReport->AddMessage(MSG_OK);
+				if (!$bolParseAgain)
+				{
+					$this->_rptProvisioningReport->AddMessage(MSG_OK);
+				}
 				
 				$intLinesPassed++;
 			}
