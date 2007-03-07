@@ -189,6 +189,7 @@ die();
 					}
 					elseif ($intError == CONTINUABLE_CONTINUE)
 					{
+						$this->_rptProvisioningReport->AddMessage(MSG_OK);
 						continue;
 					}
 					else
