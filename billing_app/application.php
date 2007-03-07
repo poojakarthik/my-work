@@ -665,6 +665,7 @@
 					// calculate payment to apply to this invoice
 					$fltPayment						= min($arrPayment['Balance'], $fltBalance);
 					$arrUpdatePayment['Balance']	= $arrPayment['Balance'] - $fltPayment;
+					$arrUpdatePayment['Id']			= $arrPayment['Id'];
 					
 					
 					// Make Invoice Payments
