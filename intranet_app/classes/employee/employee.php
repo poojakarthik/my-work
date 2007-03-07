@@ -61,10 +61,11 @@
 			// Pull all the Employee information and Store it ...
 			$selEmployee = new StatementSelect ('Employee', '*', 'Id = <Id>', null, 1);
 			$selEmployee->useObLib (TRUE);
-			$selEmployee->Execute (Array ('Id' => $intId));
-			
-			if ($selEmployee->Count () <> 1)
+			$intCount = $selEmployee->Execute (Array ('Id' => $intId));
+
+			if ($intCount != 1)
 			{
+				//TODO!flame! DO NOT DIE IF EMPLOYEE DOES NOT EXIST !!!!!!!!!!!!!!!!!
 				throw new Exception ('Employee does not exist.');
 			}
 			

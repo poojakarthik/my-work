@@ -808,11 +808,11 @@
 					$arrDebitCDR = $this->_selRatedCDR->Fetch();
 					
 					//unrate the CDR
-					$bolResult = $this->Framework->UnRateCDR($arrDebitCDR['Id'], CDR_DEBIT_MATCHED);
+					/*$bolResult = $this->Framework->UnRateCDR($arrDebitCDR['Id'], CDR_DEBIT_MATCHED);
 					if (!$bolResult)
 					{
 						$bolFail = TRUE;
-					}
+					}*/
 				}
 				else
 				{

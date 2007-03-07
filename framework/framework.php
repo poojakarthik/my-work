@@ -196,7 +196,7 @@
 																"( <Service> IS NULL   OR   Service.Id = <Service> )");
 																
 		$this->_selAccountOverdueCharges	= new StatementSelect(	"Charge",
-													"SUM(Amount) AS Amount",
+													"Nature, SUM(Amount) AS Amount",
 													"Account = <Account> " .
 													" AND Status = ".CHARGE_APPROVED ,
 													NULL,
