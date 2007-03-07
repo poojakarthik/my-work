@@ -145,8 +145,8 @@
 						$arrBuiltRequest['BillPostcode']				= str_pad($arrRequestData['BillPostcode'], 4, "0", STR_PAD_LEFT);
 						$arrBuiltRequest['EndUserTitle']				= str_pad("", 4, " ", STR_PAD_RIGHT);
 						$arrBuiltRequest['EndUserGivenName']			= str_pad("", 30, " ", STR_PAD_RIGHT);
-						$arrBuiltRequest['EndUserLastName']				= str_pad("", 50, " ", STR_PAD_RIGHT);
-						$arrBuiltRequest['EndUserCompany']				= str_pad($arrRequestData['EndUserCompany'], 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserFamilyName']			= str_pad("", 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserCompanyName']			= str_pad($arrRequestData['EndUserCompanyName'], 50, " ", STR_PAD_RIGHT);
 						$arrBuiltRequest['DateOfBirth']					= str_pad("", 8, " ", STR_PAD_RIGHT);
 						$arrBuiltRequest['Employer']					= str_pad("", 30, " ", STR_PAD_RIGHT);
 						$arrBuiltRequest['Occupation']					= str_pad("", 30, " ", STR_PAD_RIGHT);
@@ -181,7 +181,7 @@
 						$arrBuiltRequest['BillPostcode']				= str_pad($arrRequestData['BillPostcode'], 4, "0", STR_PAD_LEFT);
 						$arrBuiltRequest['EndUserTitle']				= str_pad($arrRequestData['EndUserTitle'], 4, " ", STR_PAD_RIGHT);
 						$arrBuiltRequest['EndUserGivenName']			= str_pad($arrRequestData['EndUserGivenName'], 30, " ", STR_PAD_RIGHT);
-						$arrBuiltRequest['EndUserLastName']				= str_pad($arrRequestData['EndUserFamilyName'], 50, " ", STR_PAD_RIGHT);
+						$arrBuiltRequest['EndUserFamilyName']			= str_pad($arrRequestData['EndUserFamilyName'], 50, " ", STR_PAD_RIGHT);
 						$arrBuiltRequest['EndUserCompany']				= str_pad("", 50, " ", STR_PAD_RIGHT);
 						$arrBuiltRequest['DateOfBirth']					= str_pad($arrRequestData['DateOfBirth'], 8, " ", STR_PAD_RIGHT);
 						$arrBuiltRequest['Employer']					= str_pad($arrRequestData['Employer'], 30, " ", STR_PAD_RIGHT);
