@@ -1742,7 +1742,7 @@
 		$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 0", NULL, 100);
 		
 		// full run
-		//$selInvoices = new StatementSelect("InvoiceTemp", "*", "1");
+		//$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 0");
 		
 		if ($selInvoices->Execute() === FALSE)
 		{
