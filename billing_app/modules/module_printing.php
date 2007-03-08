@@ -344,7 +344,7 @@
 		$arrDefine['InvoiceDetails']	['Suburb']			['Value']	= $arrCustomerData['Suburb'];
 		$arrDefine['InvoiceDetails']	['State']			['Value']	= $arrCustomerData['State'];
 		$arrDefine['InvoiceDetails']	['Postcode']		['Value']	= $arrCustomerData['Postcode'];
-		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days", time()));
+		$arrDefine['InvoiceDetails']	['PaymentDueDate']	['Value']	= date("j M Y", strtotime($arrInvoiceDetails['DueOn']));
 		
 		$this->_arrFileData[] = $arrDefine['InvoiceDetails'];
 		
@@ -417,16 +417,8 @@
 		$arrDefine['PaymentData']		['AddressLine4']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine4']['Value'];
 		$arrDefine['PaymentData']		['AddressLine5']	['Value']	= "{$arrDefine['InvoiceDetails']['Suburb']['Value']}   {$arrDefine['InvoiceDetails']['State']['Value']}   {$arrDefine['InvoiceDetails']['Postcode']['Value']}";
 		$arrDefine['PaymentData']		['PaymentMethod']	['Value']	= $arrCustomerData['BillingType'];
-		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= "FREE One Month Trial for our unlimited " .
-																		  "Dial Up Internet. Call customer care to " .
-																		  "get connected.";
-		$arrDefine['PaymentData']		['SpecialOffer2']	['Value']	= "View your bill online, simply go to " .
-																		  "www.telcoblue.com.au click on " .
-																		  "Customer Login, and use your " .
-																		  "supplied username and password. " .
-																		  "See calls made in the last few days plus " .
-																		  "your local calls itemised, or copy all your " .
-																		  "calls to a spreadsheet for analysis.";
+		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= "";
+		$arrDefine['PaymentData']		['SpecialOffer2']	['Value']	= "";
 		$this->_arrFileData[] = $arrDefine['PaymentData'];
 		
 		
@@ -657,7 +649,7 @@
 				break;	
 		}
 		
-		$selMetaData = new StatementSelect($strInvoiceTable, "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "Status = ".INVOICE_PRINT, NULL, NULL, "Status");
+		$selMetaData = new StatementSelect("InvoiceOutput", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "1", NULL, NULL, "InvoiceRun");
 		if ($selMetaData->Execute() === FALSE)
 		{
 			Debug('$selMetaData : '.$selMetaData->Error());
