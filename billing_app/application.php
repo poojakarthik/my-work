@@ -1939,42 +1939,30 @@
 			return FALSE;
 		}
 		
-		$strAccountList = implode(', ', $arrAccounts);
-		
-		// select our accounts
-		$updInvoices = new StatementUpdate("InvoiceTemp", "Account IN ($strAccountList)", Array('Status' => NULL));
-		
-		if (($intCount = $updInvoices->Execute(Array('Status' => INVOICE_PRINT), NULL)) === FALSE)
-		{
-			// ERROR
-			Debug($updInvoices->Error());
-			return FALSE;
-		}
-		
-		echo " * $intCount of ".count($arrAccounts)." Temp Invoices Updated!";
+		echo " * Generating output for ".count($arrAccounts)." invoices...\t\t";
 		
 		// build an output file
-		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput(BILL_REPRINT_TEMP))
+		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput(BILL_REPRINT_TEMP, $arrAccounts))
 		{
-			Debug("Building Output FAILED!");
+			echo "[ FAILED ]\n\n";
 			return FALSE;
 		}
+		else
+		{
+			echo "[   OK   ]\n";
+		}
+		
+		echo " * Sending output for ".count($arrAccounts)." invoices...\t\t";
 		
 		// send billing output
 		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(BILL_REPRINT_TEMP))
 		{
-			Debug("Sending Output FAILED!");
+			echo "[ FAILED ]\n\n";
 			return FALSE;
 		}
-		
-		// update Invoice Status to INVOICE_TEMP
-		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = INVOICE_TEMP;
-		$updInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_PRINT, $arrUpdateData);
-		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+		else
 		{
-			Debug("Update status to INVOICE_TEMP failed! : ".$updInvoiceStatus->Error());
-			return FALSE;
+			echo "[   OK   ]\n\n";
 		}
 		
 		return TRUE;

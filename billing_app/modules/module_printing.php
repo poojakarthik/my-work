@@ -650,12 +650,19 @@
 	 *
 	 * @param		boolean		bolSample		optional This is a sample billing file
 	 *
+	 * @param		array		$arrAccounts	Indexed array of valid account numbers
+	 * 											which have invoices in the InvoiceTemp table
+	 * 											Only used with BILL_REPRINT_TEMP
+	 * 
 	 * @return		string						filename
 	 *
 	 * @method
 	 */
- 	function BuildOutput($intOutputType = BILL_COMPLETE)
+ 	function BuildOutput($intOutputType = BILL_COMPLETE, $arrAccounts = NULL)
  	{
+		$bolSample			= FALSE;
+		$strAccountList		= NULL;
+		
 		// generate filenames
 		switch ($intOutputType)
 		{
@@ -672,7 +679,6 @@
 				$strMetaName		= BILLING_LOCAL_PATH.date("Y-m-d").".vbm";
 				$strZipName			= BILLING_LOCAL_PATH.date("Y-m-d").".zip";
 				$strInvoiceTable	= 'Invoice';
-				$bolSample			= FALSE;
 				break;
 				
 			case BILL_REPRINT:
@@ -680,7 +686,6 @@
 				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
 				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'Invoice';
-				$bolSample			= FALSE;
 				break;	
 				
 			case BILL_REPRINT_TEMP:
@@ -688,7 +693,7 @@
 				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
 				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
 				$strInvoiceTable	= 'InvoiceTemp';
-				$bolSample			= FALSE;
+				$strAccountList		= implode(', ', $arrAccounts);
 				break;	
 		}
 		
@@ -717,7 +722,15 @@
 		$strWhere		= "InvoiceOutput.InvoiceRun = '$strInvoiceRun' AND InvoiceOutput.InvoiceRun = $strInvoiceTable.InvoiceRun";
 		$strQuery		=	"SELECT $strColumns INTO OUTFILE '$strFilename' FIELDS TERMINATED BY '' ESCAPED BY '' LINES TERMINATED BY '\\n'\n" .
 							"FROM InvoiceOutput JOIN $strInvoiceTable USING (Account)\n".
-							"WHERE $strWhere\n";
+							"WHERE $strWhere \n";
+		
+		// Add account list for Sample reprints
+		if ($strAccountList)
+		{
+			$strQuery .= " Account IN ($strAccountList) ";
+		}
+		
+		// LIMIT sample runs			
 		if($bolSample)
 		{
 			if((int)$arrMetaData['MaxId'] < BILL_PRINT_SAMPLE_LIMIT)
