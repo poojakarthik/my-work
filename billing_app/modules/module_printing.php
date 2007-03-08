@@ -727,7 +727,7 @@
 		// Add account list for Sample reprints
 		if ($strAccountList)
 		{
-			$strQuery .= " Account IN ($strAccountList) ";
+			$strQuery .= " AND Account IN ($strAccountList) ";
 		}
 		
 		// LIMIT sample runs			
