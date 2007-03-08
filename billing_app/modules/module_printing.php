@@ -539,6 +539,7 @@
 		if (($intChargeCount = $this->_selItemisedAccountCharges->Execute($arrWhere)) === FALSE)
 		{
 			// ERROR
+			Debug($this->_selItemisedAccountCharges->Error());
 			return FALSE;
 		}
 		elseif ($intChargeCount)
@@ -995,7 +996,7 @@
  		}
 		else
 		{
-			echo "\n\t\t...Looking for Service Charges on service {$arrService['Id']}...\n";
+			//echo "\n\t\t...Looking for Service Charges on service {$arrService['Id']}...\n";
 			
 			// Get Service's Charges
 		 	$arrWhere = Array();
@@ -1010,7 +1011,7 @@
 			}
 			while ($arrCharge = $this->_selItemisedServiceCharges->Fetch())
 			{
-				echo "\t\t\t...Adding Itemised Charge...\n";
+				//echo "\t\t\t...Adding Itemised Charge...\n";
 				// Make sure that the Credits appear as a -ve figure
 				if ($arrCharge['Nature'] == NATURE_CR)
 				{
@@ -1026,7 +1027,7 @@
 			
 			if ($intChargeCount === 0)
 			{
-				echo "\t\t\t...No Itemised Charges...\n";
+				//echo "\t\t\t...No Itemised Charges...\n";
 				return TRUE;
 			}
 		}
