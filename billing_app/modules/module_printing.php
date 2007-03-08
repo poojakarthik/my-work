@@ -343,7 +343,7 @@
 			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrWeReceived['WeReceived'];*/
 			
 			// HACKHACKHACK: Not calculating this properly, but need it to account for Etech's gheyness
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrDefine['InvoiceDetails']['OpeningBalance']['Value'] - $arrInvoiceDetails['AccountBalance'];
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= max($arrDefine['InvoiceDetails']['OpeningBalance']['Value'] - $arrInvoiceDetails['AccountBalance'], 0.0);
 		}
 		else
 		{
