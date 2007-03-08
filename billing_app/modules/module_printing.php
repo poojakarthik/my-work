@@ -306,7 +306,7 @@
 		{
 			// Display the previous bill details
 			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'] + $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];						
-			
+			/*
 			// WeReceived = payments from last invoice + payments from this invoice
 			$arrWeReceivedData['LastInvoiceRun']	= $arrBillHistory[0]['InvoiceRun'];
 			$arrWeReceivedData['ThisInvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
@@ -319,7 +319,10 @@
 			{
 				$arrWeReceived['WeReceived'] = 0.0;
 			}
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrWeReceived['WeReceived'];
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrWeReceived['WeReceived'];*/
+			
+			// HACKHACKHACK: Not calculating this properly, but need it to account for Etech's gheyness
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrDefine['InvoiceDetails']['OpeningBalance']['Value'] - $arrInvoiceDetails['AccountBalance'];
 		}
 		else
 		{
@@ -582,7 +585,7 @@
 		//--------------------------------------------------------------------//
 		
 		// add invoice footer (18)
-		if ($arrInvoiceDetails['Balance'] >= BILLING_MINIMUM_TOTAL || $arrCustomerData['DeliveryMethod'] == BILLING_METHOD_EMAIL)
+		if ($arrInvoiceDetails['Total']+$arrInvoiceDetails['Tax'] >= BILLING_MINIMUM_TOTAL || $arrInvoiceDetails['Balance'] >= BILLING_MINIMUM_TOTAL || $arrCustomerData['DeliveryMethod'] == BILLING_METHOD_EMAIL)
 		{
 			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= $arrCustomerData['DeliveryMethod'];
 		}
