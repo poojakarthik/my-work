@@ -533,7 +533,7 @@
 		//--------------------------------------------------------------------//
 	 	// Fetch the itemised charge data
 	 	$arrWhere = Array();
-	 	$arrWhere['Account']	= $arrInvoiceDetails['Id'];
+	 	$arrWhere['Account']	= $arrInvoiceDetails['Account'];
 	 	$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 	 	$arrWhere['Service']	= NULL;
 		if (($intChargeCount = $this->_selItemisedAccountCharges->Execute($arrWhere)) === FALSE)
@@ -554,7 +554,7 @@
 			$arrCharges = $this->_selItemisedAccountCharges->FetchAll();
 			
 			// build header records
-			$arrDefine['ItemSvcHeader']		['FNN']				['Value']	= $arrInvoiceDetails['Id'];
+			$arrDefine['ItemSvcHeader']		['FNN']				['Value']	= $arrInvoiceDetails['Account'];
 			$this->_arrFileData[] = $arrDefine['ItemSvcHeader'];
 			$arrDefine['ItemCallTypeHeader']['CallType']		['Value']	= "Account Charges and Credits";
 			$this->_arrFileData[] = $arrDefine['ItemCallTypeHeader'];
@@ -999,7 +999,7 @@
 			
 			// Get Service's Charges
 		 	$arrWhere = Array();
-		 	$arrWhere['Account']	= $this->_arrInvoiceDetails['Id'];
+		 	$arrWhere['Account']	= $this->_arrInvoiceDetails['Account'];
 		 	$arrWhere['InvoiceRun']	= $this->_arrInvoiceDetails['InvoiceRun'];
 		 	$arrWhere['Service']	= $arrService['Id'];
 			if (($intChargeCount = $this->_selItemisedServiceCharges->Execute($arrWhere)) === FALSE)
