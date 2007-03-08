@@ -30,8 +30,8 @@ echo "<pre>";
 // Application entry point - create an instance of the application object
 $appProvisioining = new ApplicationProvisioning($arrConfig);
 
-$appProvisioining->Import();
-//$appProvisioining->Export();
+//$appProvisioining->Import();
+$appProvisioining->Export();
 
 $appProvisioining->FinaliseReport();
 
