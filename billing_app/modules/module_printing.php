@@ -152,17 +152,17 @@
 																
 
 		$arrColumns = Array();
-		$arrColumns['Charge']				= "Charge.Amount";
-		$arrColumns['Description']			= "Charge.Description";
-		$arrColumns['ChargeType']			= "Charge.ChargeType";
-		$arrColumns['Nature']				= "Charge.Nature";
+		$arrColumns['Charge']				= "Amount";
+		$arrColumns['Description']			= "Description";
+		$arrColumns['ChargeType']			= "ChargeType";
+		$arrColumns['Nature']				= "Nature";
 		$this->_selItemisedServiceCharges	= new StatementSelect(	"Charge",
 																	$arrColumns,
-																	"Charge.Service = <Service> AND Charge.InvoiceRun = <InvoiceRun>");
+																	"Service = <Service> AND InvoiceRun = <InvoiceRun>");
 		
 		$this->_selItemisedAccountCharges	= new StatementSelect(	"Charge",
 																	$arrColumns,
-																	"Charge.Account = <Account> AND Charge.Service IS NULL AND Charge.InvoiceRun = <InvoiceRun>");
+																	"Account = <Account> AND Service IS NULL AND InvoiceRun = <InvoiceRun>");
 		
 		/*$arrColumns = Array();
 		$arrColumns['Charge']			= "CDR.Charge";
