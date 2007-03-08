@@ -1801,7 +1801,7 @@
 		// update Invoice Status to INVOICE_TEMP
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = INVOICE_TEMP;
-		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_PRINT, $arrUpdateData);
+		$updInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_PRINT, $arrUpdateData);
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			Debug("Update status to INVOICE_TEMP failed! : ".$updInvoiceStatus->Error());
@@ -1906,6 +1906,74 @@
 		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{
 			Debug("Update status to COMMITED/SETTLED failed! : ".$updInvoiceStatus->Error());
+			return FALSE;
+		}
+		
+		return TRUE;
+	 }
+	
+	//------------------------------------------------------------------------//
+	// PrintSampleAccounts
+	//------------------------------------------------------------------------//
+	/**
+	 * PrintSampleAccounts()
+	 *
+	 * Prints sample invoices for a list of accounts
+	 *
+	 * Prints sample invoices for a list of accounts
+	 *
+	 * @param	array	$arrAccounts		Indexed array of valid account numbers
+	 * 										which have invoices in the InvoiceTemp table
+	 * 
+	 * @param	integer	$intPrintTartget	optional Id of the Module to print from
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+	 function PrintSampleAccounts($arrAccounts, $intPrintTartget = BILL_PRINT)
+	 {
+		if (!is_array($arrAccounts))
+		{
+			echo "\$arrAccounts is not an array!\n\n";
+			return FALSE;
+		}
+		
+		$strAccountList = implode(', ', $arrAccounts);
+		
+		// select our accounts
+		$updInvoices = new StatementUpdate("InvoiceTemp", "Account IN ($strAccountList)", Array('Status' => NULL));
+		
+		if (($intCount = $updInvoices->Execute(Array('Status' => INVOICE_PRINT), NULL)) === FALSE)
+		{
+			// ERROR
+			Debug($updInvoices->Error());
+			return FALSE;
+		}
+		
+		echo " * $intCount of ".count($arrAccounts)." Temp Invoices Updated!";
+		
+		// build an output file
+		if (!$this->_arrBillOutput[$intPrintTartget]->BuildOutput(BILL_REPRINT_TEMP))
+		{
+			Debug("Building Output FAILED!");
+			return FALSE;
+		}
+		
+		// send billing output
+		if (!$this->_arrBillOutput[$intPrintTartget]->SendOutput(BILL_REPRINT_TEMP))
+		{
+			Debug("Sending Output FAILED!");
+			return FALSE;
+		}
+		
+		// update Invoice Status to INVOICE_TEMP
+		$arrUpdateData = Array();
+		$arrUpdateData['Status'] = INVOICE_TEMP;
+		$updInvoiceStatus = new StatementUpdate("InvoiceTemp", "Status = ".INVOICE_PRINT, $arrUpdateData);
+		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+		{
+			Debug("Update status to INVOICE_TEMP failed! : ".$updInvoiceStatus->Error());
 			return FALSE;
 		}
 		

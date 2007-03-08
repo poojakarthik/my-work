@@ -170,5 +170,6 @@ define("ERROR_NO_INVOICE_DATA"				, -1);
 define("BILL_COMPLETE"						, 0);
 define("BILL_SAMPLE"						, 1);
 define("BILL_REPRINT"						, 2);
+define("BILL_REPRINT_TEMP"					, 3);
 
 ?>

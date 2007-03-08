@@ -682,6 +682,14 @@
 				$strInvoiceTable	= 'Invoice';
 				$bolSample			= FALSE;
 				break;	
+				
+			case BILL_REPRINT_TEMP:
+				$strFilename		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbf";
+				$strMetaName		= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".vbm";
+				$strZipName			= BILLING_LOCAL_PATH."reprint".date("Y-m-d").".zip";
+				$strInvoiceTable	= 'InvoiceTemp';
+				$bolSample			= FALSE;
+				break;	
 		}
 		
 		$selMetaData = new StatementSelect("InvoiceOutput", "MIN(Id) AS MinId, MAX(Id) AS MaxId, COUNT(Id) AS Invoices, InvoiceRun", "1", NULL, NULL, "InvoiceRun");
