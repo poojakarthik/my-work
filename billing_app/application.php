@@ -1738,7 +1738,12 @@
 		$arrUpdateData['Status']	= INVOICE_PRINT;
 		$ubiInvoiceStatus = new StatementUpdateById("InvoiceTemp", $arrUpdateData);
 		
-		$selInvoices = new StatementSelect("InvoiceTemp", "*", "1", NULL, 100);
+		// limit to 100 non zero accounts
+		$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 0", NULL, 100);
+		
+		// full run
+		//$selInvoices = new StatementSelect("InvoiceTemp", "*", "1");
+		
 		if ($selInvoices->Execute() === FALSE)
 		{
 			// ERROR
