@@ -150,6 +150,10 @@
 																2,
 																"Nature");
 																
+		$this->_selChargeTotal	= new StatementSelect(	"Charge",
+														"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType",
+														"Account = <Account> AND InvoiceRun = <InvoiceRun>");
+																
 
 		$arrColumns = Array();
 		$arrColumns['Charge']				= "Amount";
@@ -347,7 +351,7 @@
 			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= 0;						
 			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= 0;
 		}
-		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= $arrInvoiceDetails['Credits'];
+		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= /*$arrInvoiceDetails['Credits']*/ 0.0;
 		$arrDefine['InvoiceDetails']	['Balance']			['Value']	= $arrInvoiceDetails['AccountBalance'];
 		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
 		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
@@ -384,7 +388,7 @@
 			$this->_arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
-		$arrDefine['GraphData']		['Title']			['Value']	= date("F y", strtotime("-1 month", time()));
+		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime("-1 month", time()));
 		$arrDefine['GraphData']		['Value1']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
 		$this->_arrFileData[] = $arrDefine['GraphData'];
 		$this->_arrFileData[] = $arrDefine['GraphFooter'];
@@ -414,6 +418,19 @@
 			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrTotal['Charge'];
 			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		}
+		
+		if ($this->_selChargeTotal->Execute($arrServiceTypeTotalVars) === FALSE)
+		{
+			Debug($this->_selChargeTotal->Error());
+			return FALSE;
+		}
+		if ($arrChargeTotal = $this->_selChargeTotal->Fetch())
+		{
+			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrChargeTotal['RecordType'];
+			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrChargeTotal['Charge'];
+			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
+		}
+		
 		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
 		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
 		$this->_arrFileData[] = $arrDefine['ChargeTotal'];
