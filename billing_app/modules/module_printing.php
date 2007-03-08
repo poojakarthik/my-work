@@ -134,8 +134,11 @@
  																"GroupType.Description");
  		
 		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
-																"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, COUNT(Id) AS Records",
-																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
+																"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
+																"Service = <Service> AND InvoiceRun = <InvoiceRun>",
+																"Nature",
+																2,
+																"Nature");
 																
 
 		$arrColumns = Array();
@@ -143,7 +146,7 @@
 		$arrColumns['Description']		= "Charge.Description";
 		$arrColumns['ChargeType']		= "Charge.ChargeType";
 		$arrColumns['Nature']			= "Charge.Nature";
-		$this->_selItemisedCharges		= new StatementSelect(	"Charge JOIN Service ON Service.Id = Charge.Service",
+		$this->_selItemisedCharges		= new StatementSelect(	"Charge",
 																$arrColumns,
 																"Charge.Account = <Account> AND Charge.Service <=> <Service> AND Charge.InvoiceRun = <InvoiceRun>");
 		
@@ -875,7 +878,24 @@
  			Debug($this->_selServiceChargesTotal->Error());
  			return FALSE;
  		}
- 		$arrChargeSummary =  $this->_selServiceChargesTotal->Fetch();
+ 		$arrChargeSummaries =  $this->_selServiceChargesTotal->FetchAll();
+ 		$arrChargeSummary = Array();
+ 		foreach ($arrChargeSummaries as $arrSummary)
+ 		{
+ 			if ($arrSummary['Nature'] = 'CR')
+ 			{
+ 				$arrChargeSummary['Amount']		-= $arrSummary['Amount'];
+ 				$arrChargeSummary['Records']	+= $arrSummary['Records'];
+ 				$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
+ 			}
+ 			else
+ 			{
+ 				$arrChargeSummary['Amount']		+= $arrSummary['Amount'];
+ 				$arrChargeSummary['Records']	+= $arrSummary['Records'];
+ 				$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
+ 			}
+ 		}
+ 		
  		if ($arrChargeSummary['Records'] > 0)
  		{
  			$arrServiceSummaries[] = $arrChargeSummary;
@@ -929,6 +949,7 @@
  	function GenerateItemisedCalls($arrService, $arrRecordGroup)
  	{
  		$arrDefine = $this->_arrDefine;
+ 		$arrItemisedCalls = Array();
  		
  		if ($arrRecordGroup['IsCharge'] !== TRUE)
  		{
@@ -976,12 +997,13 @@
 				}
 				$arrCharge['Units']			= 1;
 				$arrCharge['Description']	= $arrCharge['ChargeType']." - ".$arrCharge['Description'];
+				$arrCharge['DisplayType']	= RECORD_DISPLAY_S_AND_E;
 				
 				// Add to itemised calls array
 				$arrItemisedCalls[] = $arrCharge;
 			}
 			
-			if ($intChargeCount == 0)
+			if ($intChargeCount === 0)
 			{
 				return TRUE;
 			}
