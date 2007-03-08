@@ -124,14 +124,24 @@
 		
  		$arrColumns = Array();
  		$arrColumns['RecordType']	= "GroupType.Description";
- 		$arrColumns['Total']		= "SUM(ServiceTypeTotal.Charge)";
- 		$arrColumns['Records']		= "SUM(Records)";
+ 		$arrColumns['Charge']		= "SUM(ServiceTypeTotal.Charge)";
  		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
  																$arrColumns,
  																"Account = <Account> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
  																"ServiceTypeTotal.FNN, GroupType.Description",
  																NULL,
- 																"GroupType.Description");
+ 																"GroupType.Description DESC");
+		
+ 		$arrColumns = Array();
+ 		$arrColumns['RecordType']	= "GroupType.Description";
+ 		$arrColumns['Total']		= "SUM(ServiceTypeTotal.Charge)";
+ 		$arrColumns['Records']		= "SUM(Records)";
+ 		$this->_selServiceSummary	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
+ 															$arrColumns,
+ 															"Service = <Service> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
+ 															"ServiceTypeTotal.FNN, GroupType.Description",
+ 															NULL,
+ 															"GroupType.Description DESC");
  		
 		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
@@ -208,7 +218,7 @@
 	 															" OR " .
 	 															"	CAST(SUBSTRING(CDR.FNN, -2) AS UNSIGNED) BETWEEN <RangeStart> AND <RangeEnd> " .
 	 															")",
-	 															"RecordGroup.Description",
+	 															"RecordGroup.Description DESC",
 	 															NULL,
 	 															"RecordGroup.Id");
 																
@@ -400,7 +410,7 @@
 		$this->_arrFileData[] = $arrDefine['ChargeTotalsHeader'];
 		foreach($arrServiceTypeTotals as $arrTotal)
 		{
-			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrTotal['RecordTypeName'];
+			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrTotal['RecordType'];
 			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrTotal['Charge'];
 			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		}
@@ -864,13 +874,13 @@
  		$arrColumns = Array();
  		$arrColumns['Service']		= $intService;
  		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;													
- 		if ($this->_selServiceTypeTotals->Execute($arrColumns) === FALSE)
+ 		if ($this->_selServiceSummary->Execute($arrColumns) === FALSE)
  		{
  			// ERROR
- 			Debug($this->_selServiceTypeTotals->Error());
+ 			Debug($this->_selServiceSummary->Error());
  			return FALSE;
  		}
- 		$arrServiceSummaries = $this->_selServiceTypeTotals->FetchAll();
+ 		$arrServiceSummaries = $this->_selServiceSummary->FetchAll();
  		
  		// Get Charge Totals
  		$arrColumns = Array();
