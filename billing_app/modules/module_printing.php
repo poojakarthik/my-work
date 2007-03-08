@@ -158,7 +158,7 @@
 		$arrColumns['Nature']				= "Charge.Nature";
 		$this->_selItemisedServiceCharges	= new StatementSelect(	"Charge",
 																	$arrColumns,
-																	"Charge.Account = <Account> AND Charge.Service = <Service> AND Charge.InvoiceRun = <InvoiceRun>");
+																	"Charge.Service = <Service> AND Charge.InvoiceRun = <InvoiceRun>");
 		
 		$this->_selItemisedAccountCharges	= new StatementSelect(	"Charge",
 																	$arrColumns,
@@ -995,7 +995,7 @@
  		}
 		else
 		{
-			echo "\n\t\t...Looking for Service Charges...\n";
+			echo "\n\t\t...Looking for Service Charges on service {$arrService['Id']}...\n";
 			
 			// Get Service's Charges
 		 	$arrWhere = Array();
