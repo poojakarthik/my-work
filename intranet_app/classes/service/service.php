@@ -758,7 +758,6 @@
 			}
 			catch (Exception $e)
 			{
-				Die;
 				$arrData ['AccountGroup']	= $this->Pull ('AccountGroup')->getValue ();
 				$arrData ['Account']		= $this->Pull ('Account')->getValue ();
 				$arrData ['Service']		= $this->Pull ('Id')->getValue ();
