@@ -142,13 +142,17 @@
 																
 
 		$arrColumns = Array();
-		$arrColumns['Charge']			= "Charge.Amount";
-		$arrColumns['Description']		= "Charge.Description";
-		$arrColumns['ChargeType']		= "Charge.ChargeType";
-		$arrColumns['Nature']			= "Charge.Nature";
-		$this->_selItemisedCharges		= new StatementSelect(	"Charge",
-																$arrColumns,
-																"Charge.Account = <Account> AND Charge.Service <=> <Service> AND Charge.InvoiceRun = <InvoiceRun>");
+		$arrColumns['Charge']				= "Charge.Amount";
+		$arrColumns['Description']			= "Charge.Description";
+		$arrColumns['ChargeType']			= "Charge.ChargeType";
+		$arrColumns['Nature']				= "Charge.Nature";
+		$this->_selItemisedServiceCharges	= new StatementSelect(	"Charge",
+																	$arrColumns,
+																	"Charge.Account = <Account> AND Charge.Service = <Service> AND Charge.InvoiceRun = <InvoiceRun>");
+		
+		$this->_selItemisedAccountCharges	= new StatementSelect(	"Charge",
+																	$arrColumns,
+																	"Charge.Account = <Account> AND Charge.Service IS NULL AND Charge.InvoiceRun = <InvoiceRun>");
 		
 		/*$arrColumns = Array();
 		$arrColumns['Charge']			= "CDR.Charge";
@@ -204,7 +208,7 @@
 	 															" OR " .
 	 															"	CAST(SUBSTRING(CDR.FNN, -2) AS UNSIGNED) BETWEEN <RangeStart> AND <RangeEnd> " .
 	 															")",
-	 															"CDR.StartDatetime",
+	 															"RecordGroup.Description",
 	 															NULL,
 	 															"RecordGroup.Id");
 																
@@ -522,7 +526,7 @@
 	 	$arrWhere['Account']	= $arrInvoiceDetails['Id'];
 	 	$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 	 	$arrWhere['Service']	= NULL;
-		if (($intChargeCount = $this->_selItemisedCharges->Execute($arrWhere)) === FALSE)
+		if (($intChargeCount = $this->_selItemisedAccountCharges->Execute($arrWhere)) === FALSE)
 		{
 			// ERROR
 			return FALSE;
@@ -537,7 +541,7 @@
 			}
 			
 			// Add the itemised charges
-			$arrCharges = $this->_selItemisedCharges->FetchAll();
+			$arrCharges = $this->_selItemisedAccountCharges->FetchAll();
 			
 			// build header records
 			$arrDefine['ItemSvcHeader']		['FNN']				['Value']	= $arrInvoiceDetails['Id'];
@@ -884,13 +888,13 @@
  		{
  			if ($arrSummary['Nature'] = 'CR')
  			{
- 				$arrChargeSummary['Amount']		-= $arrSummary['Amount'];
+ 				$arrChargeSummary['Charge']		-= $arrSummary['Charge'];
  				$arrChargeSummary['Records']	+= $arrSummary['Records'];
  				$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
  			}
  			else
  			{
- 				$arrChargeSummary['Amount']		+= $arrSummary['Amount'];
+ 				$arrChargeSummary['Charge']		+= $arrSummary['Charge'];
  				$arrChargeSummary['Records']	+= $arrSummary['Records'];
  				$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
  			}
@@ -983,12 +987,12 @@
 		 	$arrWhere['Account']	= $this->_arrInvoiceDetails['Id'];
 		 	$arrWhere['InvoiceRun']	= $this->_arrInvoiceDetails['InvoiceRun'];
 		 	$arrWhere['Service']	= $arrService['Id'];
-			if (($intChargeCount = $this->_selItemisedCharges->Execute($arrWhere)) === FALSE)
+			if (($intChargeCount = $this->_selItemisedServiceCharges->Execute($arrWhere)) === FALSE)
 			{
 				// ERROR
 				return FALSE;
 			}
-			while ($arrCharge = $this->_selItemisedCharges->Fetch())
+			while ($arrCharge = $this->_selItemisedServiceCharges->Fetch())
 			{
 				// Make sure that the Credits appear as a -ve figure
 				if ($arrCharge['Nature'] == NATURE_CR)
