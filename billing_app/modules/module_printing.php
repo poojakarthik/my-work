@@ -1005,6 +1005,7 @@
 			if (($intChargeCount = $this->_selItemisedServiceCharges->Execute($arrWhere)) === FALSE)
 			{
 				// ERROR
+				Debug($this->_selItemisedServiceCharges->Error());
 				return FALSE;
 			}
 			while ($arrCharge = $this->_selItemisedServiceCharges->Fetch())
