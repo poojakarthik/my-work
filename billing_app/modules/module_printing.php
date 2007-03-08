@@ -894,19 +894,22 @@
  		}
  		$arrChargeSummaries =  $this->_selServiceChargesTotal->FetchAll();
  		$arrChargeSummary = Array();
+ 		$arrChargeSummary['Charge']		= 0.0;
+ 		$arrChargeSummary['Records']	= 0;
+ 		$arrChargeSummary['RecordType']	= 'Other Charges & Credits';
  		foreach ($arrChargeSummaries as $arrSummary)
  		{
- 			if ($arrSummary['Nature'] = 'CR')
+ 			if ($arrSummary['Nature'] == 'CR')
  			{
- 				$arrChargeSummary['Charge']		-= $arrSummary['Charge'];
+ 				$arrChargeSummary['Total']		-= $arrSummary['Charge'];
  				$arrChargeSummary['Records']	+= $arrSummary['Records'];
- 				$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
+ 				//$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
  			}
  			else
  			{
- 				$arrChargeSummary['Charge']		+= $arrSummary['Charge'];
+ 				$arrChargeSummary['Total']		+= $arrSummary['Charge'];
  				$arrChargeSummary['Records']	+= $arrSummary['Records'];
- 				$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
+ 				//$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
  			}
  		}
  		
@@ -992,6 +995,8 @@
  		}
 		else
 		{
+			echo "\n\t\t...Looking for Service Charges...\n";
+			
 			// Get Service's Charges
 		 	$arrWhere = Array();
 		 	$arrWhere['Account']	= $this->_arrInvoiceDetails['Id'];
@@ -1004,6 +1009,7 @@
 			}
 			while ($arrCharge = $this->_selItemisedServiceCharges->Fetch())
 			{
+				echo "\t\t\t...Adding Itemised Charge...\n";
 				// Make sure that the Credits appear as a -ve figure
 				if ($arrCharge['Nature'] == NATURE_CR)
 				{
@@ -1019,6 +1025,7 @@
 			
 			if ($intChargeCount === 0)
 			{
+				echo "\t\t\t...No Itemised Charges...\n";
 				return TRUE;
 			}
 		}
