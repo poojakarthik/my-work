@@ -127,7 +127,7 @@
  		$arrColumns['Records']		= "SUM(Records)";
  		$this->_selServiceTypeTotals	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
  																$arrColumns,
- 																"Service = <Service> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
+ 																"Account = <Account> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
  																"ServiceTypeTotal.FNN, GroupType.Description",
  																NULL,
  																"GroupType.Description");
@@ -282,44 +282,6 @@
 		//                          FRONT PAGE
 		//--------------------------------------------------------------------//
 		
-		// Invoice Detail
-		
-		// Graph
-		
-		// Charge Totals
-		
-		// Payment Information
-		
-		
-		//--------------------------------------------------------------------//
-		//                       SERVICE SUMMARIES
-		//--------------------------------------------------------------------//
-		
-		
-		//--------------------------------------------------------------------//
-		//                       ITEMISED CALLS
-		//--------------------------------------------------------------------//
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
 		// HEADER
 		// get details from invoice & customer
 		$arrWhere['Account'] = $arrInvoiceDetails['Account'];
@@ -396,12 +358,12 @@
 		$arrBillHistory = array_reverse($arrBillHistory, TRUE);
 		foreach($arrBillHistory as $arrBill)
 		{
-			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime($arrBill['CreatedOn']));
+			$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime("-1 month", strtotime($arrBill['CreatedOn'])));
 			$arrDefine['GraphData']		['Value1']			['Value']	= max($arrBill['Total'] + $arrBill['Tax'], 0.0);
 			$this->_arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
-		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", time());
+		$arrDefine['GraphData']		['Title']			['Value']	= date("F y", strtotime("-1 month", time()));
 		$arrDefine['GraphData']		['Value1']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
 		$this->_arrFileData[] = $arrDefine['GraphData'];
 		$this->_arrFileData[] = $arrDefine['GraphFooter'];
@@ -411,6 +373,12 @@
 		$arrServiceTypeTotalVars['Account']		= $arrInvoiceDetails['Account'];
 		$arrServiceTypeTotalVars['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 		$mixResult = $this->_selServiceTypeTotals->Execute($arrServiceTypeTotalVars);
+		
+		if ($mixResult === FALSE)
+		{
+			Debug($this->_selServiceTypeTotals->Error());
+			return FALSE;
+		}
 		
 		$arrServiceTypeTotals = $this->_selServiceTypeTotals->FetchAll();
 		if(!is_array($arrServiceTypeTotals))
@@ -611,7 +579,7 @@
 		//--------------------------------------------------------------------//
 		// INVOICE FOOTERS
 		//--------------------------------------------------------------------//
-	
+		
 		// add invoice footer (18)
 		if ($arrInvoiceDetails['Balance'] >= BILLING_MINIMUM_TOTAL || $arrCustomerData['DeliveryMethod'] == BILLING_METHOD_EMAIL)
 		{
@@ -889,11 +857,6 @@
  	{
 		$arrDefine = $this->_arrDefine;
 		
-		// Service Header
-		$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
-		$arrDefine['SvcSummSvcHeader']		['CostCentre']		['Value']	= $strCostCentre;
-		$this->_arrFileData[] = $arrDefine['SvcSummSvcHeader'];
- 		
   		// Get ServiceTypeTotals
  		$arrColumns = Array();
  		$arrColumns['Service']		= $intService;
@@ -922,21 +885,30 @@
  			$arrServiceSummaries[] = $arrChargeSummary;
  		}
  		
- 		// Add each to the invoice
- 		$fltTotal = 0.0;
- 		foreach ($arrServiceSummaries as $arrServiceSummary)
+ 		// if we have anything to add to the invoice...
+ 		if (count($arrServiceSummaries))
  		{
-			$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordType'];
-			$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['Records'];
-			$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Total'];
-			$this->_arrFileData[] = $arrDefine['SvcSummaryData'];
-			
-			$fltTotal += $arrServiceSummary['Total'];
+			// Service Header
+			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
+			$arrDefine['SvcSummSvcHeader']		['CostCentre']		['Value']	= $strCostCentre;
+			$this->_arrFileData[] = $arrDefine['SvcSummSvcHeader'];
+	 		 		
+	 		// Add each to the invoice
+	 		$fltTotal = 0.0;
+	 		foreach ($arrServiceSummaries as $arrServiceSummary)
+	 		{
+				$arrDefine['SvcSummaryData']	['CallType']		['Value']	= $arrServiceSummary['RecordType'];
+				$arrDefine['SvcSummaryData']	['CallCount']		['Value']	= $arrServiceSummary['Records'];
+				$arrDefine['SvcSummaryData']	['Charge']			['Value']	= $arrServiceSummary['Total'];
+				$this->_arrFileData[] = $arrDefine['SvcSummaryData'];
+				
+				$fltTotal += $arrServiceSummary['Total'];
+	 		}
+	 		
+			// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
+			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
+			$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
  		}
- 		
-		// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
-		$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
-		$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
  		
  		return $fltTotal;
  	}
