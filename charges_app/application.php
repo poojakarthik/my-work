@@ -641,8 +641,9 @@
 	 	// for each account without a DDR Fee Waive and no/out-of-date CC or DDR info
 		$intCount = 0;
 		$selNDDRAccounts = new StatementSelect(	'Account LEFT OUTER JOIN CreditCard USING(AccountGroup) LEFT OUTER JOIN DirectDebit USING (AccountGroup)', 
-												'Account.Id', 
+												'Account.*', 
 												'Account.Archived = 0 AND ' .
+												'Account.DisableDDR = 0 AND ' .
 												'(CreditCard.Archived IS NULL OR CreditCard.Archived = 1) AND ' .
 												'(DirectDebit.Archived IS NULL OR DirectDebit.Archived = 1)');
 		$selNDDRAccounts->Execute();
@@ -653,13 +654,21 @@
 			//TODO!rich! replace this echo with report output
 			echo $arrAccount['Id'];
 			
-			// add to the count
-			$intCount++;
-			
 			// charge NDDR fee
-			$arrCharge['Account'] 		= $arrAccount['Account'];
+			$arrCharge['Account'] 		= $arrAccount['Id'];
 			$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
-			$this->Framework->AddCharge($arrCharge);
+			if ($this->Framework->AddCharge($arrCharge))
+			{
+				// add to the count
+				$intCount++;
+				echo "\t\t[   OK   ]\n";
+			}
+			else
+			{
+				echo "\t\t[ FAILED ]\n";
+			}
+			
+			ob_flush();
 		}
 		
 		// return count

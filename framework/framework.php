@@ -887,7 +887,7 @@
 	 function AddCharge($arrCharge)
 	 {
 		// make sure we have enough data to insert...
-		if ($arrCharge['Service'] === NULL && $arrCharge['Account'] === NULL)
+		if ($arrCharge['Account'] === NULL)
 		{
 			// not enough data to define ownership
 			return FALSE;
@@ -929,6 +929,11 @@
 		
 		// Insert into DB
 		$insId = $this->_insCharge->Execute($arrCharge);
+		
+		if ($insId === FALSE)
+		{
+			Debug($this->_insCharge->Error());
+		}
 		
 		return $insId;
 	 }
