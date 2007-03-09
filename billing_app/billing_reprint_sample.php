@@ -83,7 +83,7 @@ $arrAccounts[]	= 1000157570;
 $arrAccounts[]	= 1000155313;
 
 // reprint
-$bolResponse = $appBilling->PrintSampleAccounts($arrInvoices);
+$bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
 
 $appBilling->FinaliseReport();
 

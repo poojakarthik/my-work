@@ -166,6 +166,62 @@
 			return FALSE;
 		}
 	}
+	
+	//------------------------------------------------------------------------//
+	// FetchCleanOblib
+	//------------------------------------------------------------------------//
+	/**
+	 * FetchCleanOblib()
+	 *
+	 * return an empty record from a database table into an oblib object
+	 *
+	 * return an empty record from a database table into an oblib object
+	 * uses the database define to create the record
+	 * does not talk to the database at all
+	 *
+	 * @param		string	$strTableName		name of the table
+	 * @param		object	$oblobjPushObject	the pile of crap oblib object to fetch into
+	 *
+	 * @return		bool
+	 *
+	 * @method
+	 */ 
+	function FetchCleanOblib($strTableName, $oblobjPushObject)
+	{
+		// return false if we were not passed an oblib object
+		if (!is_subclass_of ($oblobjPushObject, 'data') || !method_exists ($oblobjPushObject, 'Push'))
+		{
+			return FALSE;
+		}
+		
+		// retunr false if table does not exist
+		if(!$this->arrTableDefine[$strTableName])
+		{
+			return FALSE;
+		}
+		
+		foreach($this->arrTableDefine[$strTableName]['Column'] as $strKey => $strValue)
+		{
+			$arrClean[$strKey] = '';
+			// Create a new instance of an oblib object using the ObLib parameter of the database definition
+			if (isset ($strValue["ObLib"]))
+			{
+				$oblobjPushObject->Push
+				(
+					new $strValue["ObLib"]
+					(
+						$strKey, '' 
+					)
+				);
+			}
+		}
+
+		// add in an Id
+		$oblobjPushObject->Push (new dataInteger ("Id", 0));
+	
+		// is oblib a bloated pile om monkey puke ?
+		return TRUE;
+	}
  }
  
 //----------------------------------------------------------------------------//
