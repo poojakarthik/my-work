@@ -1527,7 +1527,7 @@
 		
 		// fail if there is a temp invoice for this account
 		$selFindTempInvoice = new StatementSelect("InvoiceTemp", "Id", "Account IN ($strAccounts)");
-		if (!$selFindTempInvoice->Execute())
+		if ($selFindTempInvoice->Execute())
 		{
 			Debug("Temporary Invoice found!  Aborting...");
 			return;
