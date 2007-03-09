@@ -59,20 +59,23 @@
 		function __construct ($intId)
 		{
 			// Pull all the Employee information and Store it ...
-			$selEmployee = new StatementSelect ('Employee', '*', 'Id = <Id>', null, 1);
-			$selEmployee->useObLib (TRUE);
-			$intCount = $selEmployee->Execute (Array ('Id' => $intId));
+			$selEmployee = new StatementSelect('Employee', '*', 'Id = <Id>', null, 1);
+			$selEmployee->useObLib(TRUE);
+			$intCount = $selEmployee->Execute(Array('Id' => $intId));
 
 			if ($intCount != 1)
 			{
 				//TODO!flame! DO NOT DIE IF EMPLOYEE DOES NOT EXIST !!!!!!!!!!!!!!!!!
-				throw new Exception ('Employee does not exist.');
+				//throw new Exception ('Employee does not exist.');
+				$selEmployee->db->FetchCleanOblib('Employee', $this);
+			}
+			else
+			{
+				$selEmployee->Fetch($this);
 			}
 			
-			$selEmployee->Fetch ($this);
-			
 			// Construct the object
-			parent::__construct ('Employee', $this->Pull ('Id')->getValue ());
+			parent::__construct('Employee', $this->Pull ('Id')->getValue ());
 		}
 		
 		//------------------------------------------------------------------------//

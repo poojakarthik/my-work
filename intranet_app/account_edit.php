@@ -152,7 +152,8 @@
 					"State"					=> $_POST ['State'],
 					"DisableDDR"			=> $_POST ['DisableDDR'],
 					"DisableLatePayment"	=> $_POST ['DisableLatePayment'],
-					"CustomerGroup"			=> $_POST ['CustomerGroup']
+					"CustomerGroup"			=> $_POST ['CustomerGroup'],
+					"BillingMethod"			=> $_POST ['BillingMethod']
 				)
 			);
 			
