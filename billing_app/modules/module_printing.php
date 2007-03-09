@@ -518,7 +518,8 @@
 					}
 
 					// add cost centre header
-					$strCostCentre = $arrService['CostCentre'];
+					$strCostCentre		= $arrService['CostCentre'];
+					$fltCostCentreTotal	= 0.0;
 					$arrDefine['SvcSummCCHeader']	['Name']	['Value']	= $strCostCentre;
 					$this->_arrFileData[] = $arrDefine['SvcSummCCHeader'];
 				}
@@ -528,16 +529,8 @@
 				{
 					$fltCostCentreTotal += $mixResponse;
 				}
-				else
-				{
-					// if there were no services for this costcentre, remove the header
-					if ($this->_arrFileData[count($this->_arrFileData) - 1]['RecordType']['Value'] == '0060')
-					{
-						unset($this->_arrFileData[count($this->_arrFileData) - 1]);
-					}
-				}
 			}
-			if ($this->_arrFileData[count($this->_arrFileData) - 1]['RecordType']['Value'] == '0068')
+			if ($strCostCentre !== -1)
 			{
 				// add cost centre footer
 				$arrDefine['SvcSummCCFooter']	['Total']		['Value']	= $fltCostCentreTotal;
