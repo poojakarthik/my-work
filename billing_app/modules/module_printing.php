@@ -493,6 +493,8 @@
 			//--------------------------------------------------------------------//
 			
 			// build output
+			$strCostCentre		= -1;
+			$fltCostCentreTotal	= 0.0;
 			$this->_arrFileData[] = $arrDefine['SvcSummaryHeader'];
 			foreach($arrServices as $arrService)
 			{
@@ -505,9 +507,32 @@
 					$strFNN	= $arrService['FNN'];
 				}
 				
+				// Add cost centre records
+				if ($strCostCentre != $arrService['CostCentre'])
+				{
+					if ($strCostCentre !== -1)
+					{
+						// add cost centre footer
+						$arrDefine['SvcSummCCFooter']	['Total']		['Value']	= $fltCostCentreTotal;
+						$this->_arrFileData[] = $arrDefine['SvcSummCCFooter'];
+					}
+
+					// add cost centre header
+					$strCostCentre = $arrService['CostCentre'];
+					$arrDefine['SvcSummCCHeader']	['RecordType']	['Value']	= $strCostCentre;
+					$this->_arrFileData[] = $arrDefine['SvcSummCCHeader'];
+				}
+				
 				// Add the Service Summary
-				$this->GenerateServiceSummary($arrService['Id'], $strFNN, $arrService['CostCentre']);
+				$fltCostCentreTotal += $this->GenerateServiceSummary($arrService['Id'], $strFNN, $arrService['CostCentre']);
 			}
+			if ($strCostCentre !== -1)
+			{
+				// add cost centre footer
+				$arrDefine['SvcSummCCFooter']	['Total']		['Value']	= $fltCostCentreTotal;
+				$this->_arrFileData[] = $arrDefine['SvcSummCCFooter'];
+			}
+			// add service summary footer
 			$this->_arrFileData[] = $arrDefine['SvcSummaryFooter'];
 			
 			
