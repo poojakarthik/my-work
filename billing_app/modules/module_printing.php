@@ -151,8 +151,11 @@
 																"Nature");
 																
 		$this->_selChargeTotal	= new StatementSelect(	"Charge",
-														"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType",
-														"Account = <Account> AND InvoiceRun = <InvoiceRun>");
+														"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, Nature",
+														"Account = <Account> AND InvoiceRun = <InvoiceRun>" .
+														"Nature",
+														NULL,
+														"Nature");
 																
 
 		$arrColumns = Array();
@@ -419,15 +422,33 @@
 			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		}
 		
-		if ($this->_selChargeTotal->Execute($arrServiceTypeTotalVars) === FALSE)
+		if (($intCount = $this->_selChargeTotal->Execute($arrServiceTypeTotalVars)) === FALSE)
 		{
 			Debug($this->_selChargeTotal->Error());
 			return FALSE;
 		}
-		if ($arrChargeTotal = $this->_selChargeTotal->Fetch())
+		if ($intCount)
 		{
-			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $arrChargeTotal['RecordType'];
-			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $arrChargeTotal['Charge'];
+			$arrChargeTotals = $this->_selChargeTotal->FetchAll();
+			
+			$fltTotal = 0.0;
+			foreach ($arrChargeTotals as $arrChargeTotal)
+			{
+				// Account for credits
+				if ($arrChargeTotal['Nature'] == 'CR')
+				{
+					$fltTotal -= $arrChargeTotal['Charge'];
+				}
+				else
+				{
+					$fltTotal += $arrChargeTotal['Charge'];
+				}
+				$fltChargeName = $arrChargeTotal['RecordType'];
+			}
+			
+			// add the total
+			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $fltChargeName;
+			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $fltTotal;
 			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		}
 		
