@@ -524,9 +524,20 @@
 				}
 				
 				// Add the Service Summary
-				$fltCostCentreTotal += $this->GenerateServiceSummary($arrService['Id'], $strFNN, $arrService['CostCentre']);
+				if ($mixResponse = $this->GenerateServiceSummary($arrService['Id'], $strFNN, $arrService['CostCentre']))
+				{
+					$fltCostCentreTotal += $mixResponse;
+				}
+				else
+				{
+					// if there were no services for this costcentre, remove the header
+					if ($this->_arrFileData[count($this->_arrFileData) - 1]['RecordType']['Value'] == '0060')
+					{
+						unset($this->_arrFileData[count($this->_arrFileData) - 1]);
+					}
+				}
 			}
-			if ($strCostCentre !== -1)
+			if ($this->_arrFileData[count($this->_arrFileData) - 1]['RecordType']['Value'] == '0068')
 			{
 				// add cost centre footer
 				$arrDefine['SvcSummCCFooter']	['Total']		['Value']	= $fltCostCentreTotal;
@@ -1035,9 +1046,13 @@
 			// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
 			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
 			$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
- 		}
  		
- 		return $fltTotal;
+ 			return $fltTotal;
+ 		}
+ 		else
+ 		{
+ 			return NULL;
+ 		}
  	}
  	
  	//------------------------------------------------------------------------//
