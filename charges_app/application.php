@@ -627,43 +627,43 @@
 	 */
 	 function AddNonDDRFee()
 	 {
-/*	 	// set up charge
+	 	// set up charge
 		$arrCharge = Array();
 		$arrCharge ['Nature']		= 'DR';
 		$arrCharge ['Description']	= "Non-Direct Debit Fee";
 		$arrCharge ['ChargeType']	= "NDDR";
 		$arrCharge ['ChargedOn']	= date("Y-m-d");
+		$arrCharge ['CreatedOn']	= date("Y-m-d");
 		$arrCharge ['Amount']		= 2.50;
 		$arrCharge ['Status']		= CHARGE_APPROVED;
+		$arrCharge ['Notes']		= "";
 		
-	 	// for each active inbound service
+	 	// for each account without a DDR Fee Waive and no/out-of-date CC or DDR info
 		$intCount = 0;
-		$selNDDRServices = new StatementSelect(	'CDR', 
-												'Service, Account, AccountGroup, COUNT(Id) AS CDRCount', 
-												'Service IS NOT NULL AND Credit = 0 AND Status = '.CDR_RATED.' AND ServiceType = '.SERVICE_TYPE_INBOUND, 
-												NULL, 
-												NULL, 
-												"Service \n HAVING CDRCount > 0");
-		$selINB15Services->Execute();
-		echo("Service : CDR Count\n\n");
-		while ($arrService = $selINB15Services->Fetch())
+		$selNDDRAccounts = new StatementSelect(	'Account LEFT OUTER JOIN CreditCard USING(AccountGroup) LEFT OUTER JOIN DirectDebit USING (AccountGroup)', 
+												'Account.Id', 
+												'Account.Archived = 0 AND ' .
+												'(CreditCard.Archived IS NULL OR CreditCard.Archived = 1) AND ' .
+												'(DirectDebit.Archived IS NULL OR DirectDebit.Archived = 1)');
+		$selNDDRAccounts->Execute();
+		echo("Account\n\n");
+		while ($arrAccount = $selNDDRAccounts->Fetch())
 		{			
 			// add to report
 			//TODO!rich! replace this echo with report output
-			echo("{$arrService['Service']} : {$arrService['CDRCount']}\n");
+			echo $arrAccount['Id'];
 			
 			// add to the count
 			$intCount++;
 			
-			// charge late payment fee
-			$arrCharge['Service'] 		= $arrService['Service'];
-			$arrCharge['Account'] 		= $arrService['Account'];
-			$arrCharge['AccountGroup'] 	= $arrService['AccountGroup'];
+			// charge NDDR fee
+			$arrCharge['Account'] 		= $arrAccount['Account'];
+			$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
 			$this->Framework->AddCharge($arrCharge);
 		}
 		
 		// return count
-		return $intCount;*/
+		return $intCount;
 	 }
  }
 
