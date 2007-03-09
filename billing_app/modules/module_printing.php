@@ -1008,7 +1008,7 @@
  		{
 			// Service Header
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
-			$arrDefine['SvcSummSvcHeader']		['CostCentre']		['Value']	= $strCostCentre;
+			//$arrDefine['SvcSummSvcHeader']		['CostCentre']		['Value']	= $strCostCentre;
 			$this->_arrFileData[] = $arrDefine['SvcSummSvcHeader'];
 	 		 		
 	 		// Add each to the invoice
