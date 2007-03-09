@@ -30,8 +30,8 @@ echo "<pre>";
 // Application entry point - create an instance of the application object
 $appProvisioining = new ApplicationProvisioning($arrConfig);
 
-//$appProvisioining->Import();
-$appProvisioining->Export();
+$appProvisioining->Import();
+//$appProvisioining->Export();
 
 $appProvisioining->FinaliseReport();
 
@@ -137,6 +137,11 @@ die();
 		// for each file
 		foreach ($arrFiles as $arrFile)
 		{		
+			if (!file_exists($arrFile['Location']))
+			{
+				continue;
+			}
+			
 			$this->_rptProvisioningReport->AddMessageVariables(MSG_IMPORT_LINE, Array("<Filename>" => $arrFile['FileName']), FALSE);
 			
 			// set status of file
