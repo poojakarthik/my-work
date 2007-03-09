@@ -152,7 +152,7 @@
 																
 		$this->_selChargeTotal	= new StatementSelect(	"Charge",
 														"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, Nature",
-														"Account = <Account> AND InvoiceRun = <InvoiceRun>" .
+														"Account = <Account> AND InvoiceRun = <InvoiceRun>",
 														"Nature",
 														NULL,
 														"Nature");
