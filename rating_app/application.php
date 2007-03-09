@@ -452,11 +452,10 @@
 					$intFailed++;
 					continue;
 				}
-				
+			}
 				// Rounding
 				$fltCharge = $this->_Rounding();
 				
-			}
 			// Update Service & Account Totals
 			$mixResult = $this->_UpdateTotals($arrCDR['Service']);
 			if ($mixResult === FALSE)
