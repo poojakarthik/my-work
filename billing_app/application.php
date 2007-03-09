@@ -1508,41 +1508,47 @@
 	// ExecuteAccount
 	//------------------------------------------------------------------------//
 	/**
-	 * ExecuteAccount()
+	 * ExecuteAccounts()
 	 *
-	 * Execute a single Invoice for a specified account
+	 * Execute Invoices for specified accounts
 	 *
-	 * Execute a single Invoice for a specified account
+	 * Execute Invoices for specified accounts
 	 *
-	 * @param	mixed	$intAccount		The Account to Execute an Invoice for
+	 * @param	array	$arrAccounts		Indexed array of accounts to execute
 	 *		 	 
 	 *
 	 * @return			bool
 	 *
 	 * @method
 	 */
- 	function ExecuteAccount($intAccount)
+ 	function ExecuteAccounts($arrAccounts)
  	{		
+		$strAccounts = implode(', ', $arrAccounts);
+		
 		// fail if there is a temp invoice for this account
-		$selFindTempInvoice = new StatementSelect("InvoiceTemp", "Id", "Account = $intAccount");
+		$selFindTempInvoice = new StatementSelect("InvoiceTemp", "Id", "Account IN ($strAccounts)");
 		if (!$selFindTempInvoice->Execute())
 		{
 			Debug("Temporary Invoice found!  Aborting...");
 			return;
 		}
 		
+		// generate an InvoiceRun Id
+		$strInvoiceRun = uniqid();
+		$this->_strInvoiceRun = $strInvoiceRun;
+		
 		// Select Account Details
-		$selAccountDetails	= new StatementSelect("Account", "*", "Id = $intAccount");
+		$selAccountDetails	= new StatementSelect("Account", "*", "Id IN ($strAccounts)");
 		if (!$selAccountDetails->Execute())
 		{
 			Debug("Error retrieving account data for $intAccount... : ".$selAccountDetails->Error());
 		}
 		
 		// FetchAll will automatically put it in an indexed array for us
-		$arrAccount = $selAccountDetails->FetchAll();
+		$arrAccountDetails = $selAccountDetails->FetchAll();
 		
 		// Generate the invoice
-		$this->GenerateInvoices($arrAccount);
+		$this->GenerateInvoices($arrAccountDetails);
 		
 		// Finish off Billing Report
 		$arrReportLines['<Total>']	= $this->intPassed + $this->intFailed;
