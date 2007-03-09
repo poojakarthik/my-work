@@ -31,7 +31,7 @@
 	
 	// Import data from the EFT CSV file...
 	// open the file
-	echo str_pad("Opening and parsing '$strPath'...", 70, " ", STR_PAD_RIGHT);
+	echo str_pad("Opening and parsing '$strEFTPath'...", 70, " ", STR_PAD_RIGHT);
 	if (!$ptrFile = fopen($strEFTPath, "r"))
 	{
 		echo "[ FAILED ]\n";
@@ -67,12 +67,21 @@
 		$arrInsertData[] = $arrData;
 	}
 	
+	foreach ($arrInsertData as $arrData)
+	{
+		if ($insDirectDebit->Execute($arrData) === FALSE)
+		{
+			Debug($insDirectDebit->Error());
+			die;
+		}
+	}
+	
 	echo "[   OK   ]\n";
 	
 	
 	// Import data from the CC CSV file...
 	// open the file
-	echo str_pad("Opening and parsing '$strPath'...", 70, " ", STR_PAD_RIGHT);
+	echo str_pad("Opening and parsing '$strCCPath'...", 70, " ", STR_PAD_RIGHT);
 	if (!$ptrFile = fopen($strCCPath, "r"))
 	{
 		echo "[ FAILED ]\n";
@@ -80,6 +89,7 @@
 	}
 	
 	// parse each line
+	$arrInsertData = Array();
 	while ($strLine = trim(fgets($ptrFile)))
 	{
 		// Split the line, and copy fields to our grand array
