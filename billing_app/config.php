@@ -373,19 +373,17 @@
 		$arrPrintDefine['PaymentData']		['SpecialOffer2']	['Start']	= 719;
 		$arrPrintDefine['PaymentData']		['SpecialOffer2']	['Length']	= 250;
 		$arrPrintDefine['PaymentData']		['SpecialOffer2']	['Type']	= BILL_TYPE_CHAR;
+				
 		
 		
-		
-		
-		
+				
 		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
 		$arrPrintDefine['SvcSummaryHeader']	['RecordType']		['Value']	= "0050";
 		
 		
-		
-		
+				
 		
 		$arrPrintDefine['SvcSummaryFooter']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummaryFooter']	['RecordType']		['Length']	= 4;
@@ -394,21 +392,37 @@
 		
 		
 		
+		$arrPrintDefine['SvcSummCCHeader']	['RecordType']		['Start']	= 0;
+		$arrPrintDefine['SvcSummCCHeader']	['RecordType']		['Length']	= 4;
+		$arrPrintDefine['SvcSummCCHeader']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
+		$arrPrintDefine['SvcSummCCHeader']	['RecordType']		['Value']	= "0060";
 		
+		$arrPrintDefine['SvcSummCCHeader']	['Name']			['Start']	= 4;
+		$arrPrintDefine['SvcSummCCHeader']	['Name']			['Length']	= 40;
+		$arrPrintDefine['SvcSummCCHeader']	['Name']			['Type']	= BILL_TYPE_CHAR;
+		
+		
+		
+		$arrPrintDefine['SvcSummCCFooter']	['RecordType']		['Start']	= 0;
+		$arrPrintDefine['SvcSummCCFooter']	['RecordType']		['Length']	= 4;
+		$arrPrintDefine['SvcSummCCFooter']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
+		$arrPrintDefine['SvcSummCCFooter']	['RecordType']		['Value']	= "0069";
+		
+		$arrPrintDefine['SvcSummCCFooter']	['Total']			['Start']	= 4;
+		$arrPrintDefine['SvcSummCCFooter']	['Total']			['Length']	= 11;
+		$arrPrintDefine['SvcSummCCFooter']	['Total']			['Type']	= BILL_TYPE_SHORTCURRENCY;
+		
+		
+				
 		
 		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
-		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Value']	= "0060";
+		$arrPrintDefine['SvcSummSvcHeader']	['RecordType']		['Value']	= "0061";
 		
 		$arrPrintDefine['SvcSummSvcHeader']	['FNN']				['Start']	= 4;
 		$arrPrintDefine['SvcSummSvcHeader']	['FNN']				['Length']	= 10;
 		$arrPrintDefine['SvcSummSvcHeader']	['FNN']				['Type']	= BILL_TYPE_CHAR;
-		
-		$arrPrintDefine['SvcSummSvcHeader']	['CostCentre']		['Start']	= 14;
-		$arrPrintDefine['SvcSummSvcHeader']	['CostCentre']		['Length']	= 40;
-		$arrPrintDefine['SvcSummSvcHeader']	['CostCentre']		['Type']	= BILL_TYPE_CHAR;
-		
 		
 		
 		
@@ -416,7 +430,7 @@
 		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
-		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Value']	= "0061";
+		$arrPrintDefine['SvcSummaryData']	['RecordType']		['Value']	= "0065";
 		
 		$arrPrintDefine['SvcSummaryData']	['CallType']		['Start']	= 4;
 		$arrPrintDefine['SvcSummaryData']	['CallType']		['Length']	= 40;
@@ -437,7 +451,7 @@
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Start']	= 0;
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Length']	= 4;
 		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Type']	= BILL_TYPE_CHAR;
-		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Value']	= "0069";
+		$arrPrintDefine['SvcSummSvcFooter']	['RecordType']		['Value']	= "0068";
 		
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Start']	= 4;
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Length']	= 11;
