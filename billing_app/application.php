@@ -1745,10 +1745,10 @@
 		$ubiInvoiceStatus = new StatementUpdateById("InvoiceTemp", $arrUpdateData);
 		
 		// limit to 100 non zero accounts
-		$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 0", NULL, 100);
+		//$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 3", NULL, 100);
 		
 		// full run
-		//$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 0");
+		$selInvoices = new StatementSelect("InvoiceTemp", "*", "Total > 3");
 		
 		if ($selInvoices->Execute() === FALSE)
 		{
