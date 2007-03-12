@@ -156,6 +156,13 @@
 														"Nature",
 														NULL,
 														"Nature");
+														
+		$this->_selInvoiceServiceTotal	= new StatementSelect(	"ServiceTotal",
+																"SUM(CappedCharge + UncappedCharge) AS GrandTotal",
+																"Account = <Account AND InvoiceRun = <InvoiceRun>",
+																NULL,
+																1,
+																"Account");
 																
 
 		$arrColumns = Array();
@@ -452,10 +459,21 @@
 			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		}
 		
-		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
-		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
+		// Plan Charges & Credits
+		$arrData = Array();
+		$arrData['Account']		= $arrInvoiceDetails['Account'];
+		$arrData['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+		if ($this->_selInvoiceServiceTotal->Execute($arrData) === FALSE)
+		{
+			Debug($this->_selInvoiceServiceTotal->Error());
+			return FALSE;
+		}
+		$arrInvoiceServiceTotal = $this->_selInvoiceServiceTotal->Fetch();
+		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Charges & Credits";
+		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Total'] - $arrInvoiceServiceTotal['GrandTotal'];
+		
 		$this->_arrFileData[] = $arrDefine['ChargeTotal'];
-		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
+		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
 		$this->_arrFileData[] = $arrDefine['ChargeTotalsFooter'];
 		
 		// PAYMENT DETAILS
@@ -1036,8 +1054,19 @@
 				$fltTotal += $arrServiceSummary['Total'];
 	 		}
 	 		
+	 		$arrData = Array();
+	 		$arrData['Service']		= $intService;
+	 		$arrData['InvoiceRun']	= $this->_strInvoiceRun;
+	 		if ($this->_selServiceTotal->Execute($arrData) === FALSE)
+	 		{
+	 			Debug($this->_selServiceTotal->Error());
+	 			return FALSE;
+	 		}
+	 		$arrServiceTotal = $this->_selServiceTotal->Fetch();
+	 		
 			// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
 			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
+			$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= $arrServiceTotal['TotalCharge'];
 			$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
  		
  			return $fltTotal;

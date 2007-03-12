@@ -457,6 +457,10 @@
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Length']	= 11;
 		$arrPrintDefine['SvcSummSvcFooter']	['TotalCharge']		['Type']	= BILL_TYPE_SHORTCURRENCY;
 		
+		$arrPrintDefine['SvcSummSvcFooter']	['TotalCapped']		['Start']	= 15;
+		$arrPrintDefine['SvcSummSvcFooter']	['TotalCapped']		['Length']	= 11;
+		$arrPrintDefine['SvcSummSvcFooter']	['TotalCapped']		['Type']	= BILL_TYPE_SHORTCURRENCY;
+		
 		
 		
 		
