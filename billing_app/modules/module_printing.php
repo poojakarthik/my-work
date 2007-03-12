@@ -482,12 +482,12 @@
 		$arrInvoiceServiceTotal = $this->_selInvoiceServiceTotal->Fetch();
 		
 		$fltPlanCharges = $arrInvoiceDetails['Total'] - $arrInvoiceServiceTotal['GrandTotal'] - $fltAccountCharge;
-		if ($fltPlanCharges)
+		if ($fltPlanCharges != 0.0)
 		{
 			$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Charges & Credits";
 			$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $fltPlanCharges;
+			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		}
-		$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		
 		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
 		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
