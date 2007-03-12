@@ -26,7 +26,7 @@
 													"ChargedOn = '2007-02-02' AND Nature = 'DR' AND ChargeType = ''");
 													
 	$arrColumns = Array();
-	$arrColumns['TotalCharge']		= new MySQLFunction("TotalCharge - <Amount>");
+	$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged - <Amount>");
 	$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions - 1");
 	$updRecurringCharge				= new StatementUpdate(	"RecurringCharge",
 															"Account = <Account> AND " .
@@ -60,7 +60,7 @@
 		echo str_pad("\t+ Updating RecurringCharge...", 70, " ", STR_PAD_RIGHT);
 		
 		$arrColumns = Array();
-		$arrColumns['TotalCharge']		= new MySQLFunction("TotalCharge - <Amount>", Array('Amount' => $arrCharge['Amount']));
+		$arrColumns['TotalCharged']		= new MySQLFunction("TotalCharged - <Amount>", Array('Amount' => $arrCharge['Amount']));
 		$arrColumns['TotalRecursions']	= new MySQLFunction("TotalRecursions - 1");
 		if ($updRecurringCharge->Execute($arrColumns, $arrCharge) === FALSE)
 		{
