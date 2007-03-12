@@ -341,7 +341,7 @@
 								</input>
 								
 								<label for="DisableDDR:TRUE">
-									Do NOT charge a fee if account is not paid by direct debit
+									Do NOT charge an admin fee (non direct debit fee)
 								</label>
 							</td>
 						</tr>
