@@ -84,17 +84,14 @@
 	 * @method
 	 */
  	function BuildRequest($arrRequest)
-	{
-		// Clean the request array
-		$arrBuiltRequest = Array();
-				
-		$arrBuiltRequest['ServiceNumber']		= str_pad($arrRequest['FNN'], 48, " ", STR_PAD_RIGHT);
-		$arrBuiltRequest['BillableAccountNo']	= str_pad(CUSTOMER_NUMBER_OPTUS, 14, "0", STR_PAD_LEFT);
-		$arrBuiltRequest['ServiceType']			= str_pad("UT", 10, " ", STR_PAD_RIGHT);
-		$arrBuiltRequest['CustomerReference']	= str_pad("", 10, " ", STR_PAD_RIGHT);	// No Reference needed
+	{		
+		// Get the FNN
+		$selFNN = new StatementSelect("Service", "FNN", "Id = <Service>");
+		$selFNN->Execute(Array('Service' => $arrRequest['Service']));
+		$arrFNN = $selFNN->Fetch();
 		
 		// Append to the array for this file
-		$this->_arrPreselectionRecords[]		= implode("|", $arrBuiltRequest);
+		$this->_arrPreselectionRecords[]		= $arrFNN['FNN'];
 	} 	
  	
   	//------------------------------------------------------------------------//
@@ -113,49 +110,44 @@
 	 */
  	function SendRequest()
 	{
-		// Build Header Row
-		$strPreselectionFilename	= "LOCL_".CUSTOMER_NUMBER_OPTUS."_".date("YmdHis").".dat";
-		$strPreselectionHeaderRow	= $strPreselectionFilename;
-		
-		// Get list of requests to generate
-		$this->_selGetRequests->Execute();
-		$arrResults = $this->_selGetRequests->FetchAll();
 		
 		$intNumPreselectionRecords	= count($this->_arrPreselectionRecords);
-	
-		// Build Footer Rows
-		$strPreselectionFooterRow	= "T".str_pad($intNumPreselectionRecords, 5, "0", STR_PAD_LEFT);
 		
-		// Create Local Preselection File
 		if($intNumPreselectionRecords > 0)
 		{
-			// Only do this if there are records to write
-			$resPreselectionFile = fopen(OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
-			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\n");
-			
-			foreach($this->_arrPreselectionRecords as $strRecord)
+			// Generate Excel 5 file
+			$xlsBarring					= new PhpSimpleXlsGen();
+			$xlsBarring->totalcol		= 4;
+			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."LOCL_".CUSTOMER_NUMBER_OPTUS."_".date("YmdHis").".xls";
+		
+			// Add header row
+			$xlsBarring->InsertText('Service Number');
+			$xlsBarring->InsertText('Billable Account Number');
+			$xlsBarring->InsertText('Service Type');
+			$xlsBarring->InsertText('Customer Reference');
+
+			// add data rows
+			foreach($this->_arrPreselectionRecords as $strFNN)
 			{
-				fwrite($resPreselectionFile, $strRecord."\n");
+				$xlsBarring->NewLine();
+				$xlsBarring->InsertText($strFNN);
+				$xlsBarring->InsertText(CUSTOMER_NUMBER_OPTUS);
+				$xlsBarring->InsertText('UT');
+				$xlsBarring->InsertText('');
 			}
 			
-			fwrite($resPreselectionFile, $strPreselectionFooterRow."\n");
-			fclose($resPreselectionFile);
+			// Write output
+			$xlsBarring->SendFile($strPreselectionFilename);
+			
+			// Email to Optus (as an attachment)
+			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
+			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
+			if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", $strPreselectionFilename))
+			{
+				Debug("Email failed!");
+				return FALSE;
+			}
 		}
-		
-		// Upload to FTP
-		/* TODO: Uncomment this later on
-		$resFTPConnection = ftp_connect(OPTUS_PROVISIONING_SERVER);
-		ftp_login($resFTPConnection, OPTUS_PROVISIONING_USERNAME, OPTUS_PROVISIONING_PASSWORD);
-		
-		if(file_exists(OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename))
-		{
-			// Upload the Preselection File
-			ftp_chdir($resFTPConnection, OPTUS_REMOTE_PRESELECTION_DIR);
-			ftp_put($resFTPConnection, $strPreselectionFilename, OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-		}
-		
-		ftp_close($resFTPConnection);
-		*/
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;

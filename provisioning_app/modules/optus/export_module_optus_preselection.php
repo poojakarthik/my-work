@@ -103,14 +103,14 @@
 		$arrFNN = $selFNN->Fetch();
 		
 		// Build the request Array
-		$arrBuiltRequest['BatchNo']				= '"'.$this->_intSequenceNo.'"';
-		$arrBuiltRequest['IdNo']				= '"12"';
-		$arrBuiltRequest['SPName']				= '"TelcoBlue"';
-		$arrBuiltRequest['SPCassNo']			= '"'.CUSTOMER_NUMBER_OPTUS.'"';
-		$arrBuiltRequest['ServiceNo']			= '"'.$arrFNN['FNN'].'"';
-		$arrBuiltRequest['CADate']				= '"'.date("d/m/Y").'"';
-		$arrBuiltRequest['CARequired']			= '"n"';
-		$arrBuiltRequest['Lessee']				= '"n"';
+		$arrBuiltRequest['BatchNo']				= $this->_intSequenceNo;
+		$arrBuiltRequest['IdNo']				= 12;
+		$arrBuiltRequest['SPName']				= "TelcoBlue";
+		$arrBuiltRequest['SPCassNo']			= CUSTOMER_NUMBER_OPTUS;
+		$arrBuiltRequest['ServiceNo']			= $arrFNN['FNN'];
+		$arrBuiltRequest['CADate']				= date("d/m/Y");
+		$arrBuiltRequest['CARequired']			= "n";
+		$arrBuiltRequest['Lessee']				= "n";
 		
 		foreach ($this->_arrPreselectionRecords as $arrRecord)
 		{
@@ -149,49 +149,52 @@
  	function SendRequest()
 	{
 		// Build Header Row
-		//$strPreselectionFilename	= date("Y-m-d_Hi").".xls";
-		$strPreselectionFilename	= date("Hi_Y-m-d_").$this->_intSequenceNo.".xls";
-		//$strPreselectionHeaderRow	= '"Batch No"\t"ID No"\t"SP Name"\t"SP CASS A/C No"\t"Service No with area code"\t"CA Date dd/mm/yyy"\t"CA Required"\t"Lessee Yes/No"';
-		$strPreselectionHeaderRow	=	"\"Batch No\"\t" .
-										"\"ID No\"\t" .
-										"\"SP Name\"\t" .
-										"\"SP CASS A/C No\"\t" .
-										"\"Service No with area code\"\t" .
-										"\"CA Date dd/mm/yyy\"\t" .
-										"\"CA Required\"\t" .
-										"\"Lessee Yes/No\"";
-		
-		// Get list of requests to generate
-		$arrResults = $this->_selGetRequests->FetchAll();
+		$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR.date("Hi_Y-m-d_").$this->_intSequenceNo.".xls";
 		
 		$intNumPreselectionRecords	= count($this->_arrPreselectionRecords);
 		
 		// Create Local Preselection File
 		if($intNumPreselectionRecords > 0)
 		{
-			// Only do this if there are records to write
-			$resPreselectionFile = fopen(OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
-			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\n");
+			// Generate Excel 5 file
+			$xlsBarring					= new PhpSimpleXlsGen();
+			$xlsBarring->totalcol		= 4;
+			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."LOCL_".CUSTOMER_NUMBER_OPTUS."_".date("YmdHis").".xls";
+		
+			// Add header row
+			$xlsBarring->InsertText('Batch No');
+			$xlsBarring->InsertText('ID No');
+			$xlsBarring->InsertText('SP Name');
+			$xlsBarring->InsertText('SP CASS A/C No');
+			$xlsBarring->InsertText('Service No with area code');
+			$xlsBarring->InsertText('CA Date dd/mm/yyy');
+			$xlsBarring->InsertText('CA Required');
+			$xlsBarring->InsertText('Lessee Yes/No');
 			
 			foreach($this->_arrPreselectionRecords as $arrBuiltRequest)
 			{
-				$strRecord = implode("\t", $arrBuiltRequest);
-				fwrite($resPreselectionFile, $strRecord."\n");
+				$xlsBarring->NewLine();
+				foreach ($arrBuiltRequest as $mixField)
+				{
+					$xlsBarring->InsertText($mixField);
+				}
 			}
-			fclose($resPreselectionFile);
+			
+			// Write output
+			$xlsBarring->SendFile($strPreselectionFilename);
+			
+			// Email to Optus (as an attachment)
+			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
+			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
+			if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", $strPreselectionFilename))
+			{
+				Debug("Email failed!");
+				return FALSE;
+			}
 		}
 		else
 		{
 			return TRUE;
-		}
-		
-		// Email to Optus (as an attachment)
-		//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
-		//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-		if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename))
-		{
-			Debug("Email failed!");
-			return FALSE;
 		}
 		
 		// Update sequence no
