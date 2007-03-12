@@ -119,7 +119,7 @@
 																"Service.Id, ServiceExtension.RangeStart");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
-																"TotalCharge",
+																"TotalCharge + Debit - Credit",
 																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
 		
  		$arrColumns = Array();
