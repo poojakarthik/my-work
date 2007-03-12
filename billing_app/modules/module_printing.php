@@ -142,6 +142,15 @@
  															"ServiceTypeTotal.FNN, GroupType.Description",
  															NULL,
  															"GroupType.Description DESC");
+ 															
+ 		$this->_selDisplayServiceSummary	= new StatementSelect(	"ServiceTotal",
+ 																	"Id",
+ 																	"Service = <Service> AND InvoiceRun = <InvoiceRun> AND " .
+ 																	"(CappedCharge != 0 OR " .
+ 																	"UncappedCharge != 0 OR " .
+ 																	"TotalCharge != 0 OR " .
+ 																	"Credit != 0 OR " .
+ 																	"Debit != 0)");
  		
 		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
@@ -434,6 +443,7 @@
 			Debug($this->_selChargeTotal->Error());
 			return FALSE;
 		}
+		$fltAccountCharge = 0.0;
 		if ($intCount)
 		{
 			$arrChargeTotals = $this->_selChargeTotal->FetchAll();
@@ -454,6 +464,7 @@
 			}
 			
 			// add the total
+			$fltAccountCharge = $fltTotal;
 			$arrDefine['ChargeTotal']	['ChargeName']		['Value']	= $fltChargeName;
 			$arrDefine['ChargeTotal']	['ChargeTotal']		['Value']	= $fltTotal;
 			$this->_arrFileData[] = $arrDefine['ChargeTotal'];
@@ -469,9 +480,17 @@
 			return FALSE;
 		}
 		$arrInvoiceServiceTotal = $this->_selInvoiceServiceTotal->Fetch();
-		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Charges & Credits";
-		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Total'] - $arrInvoiceServiceTotal['GrandTotal'];
 		
+		$fltPlanCharges = $arrInvoiceDetails['Total'] - $arrInvoiceServiceTotal['GrandTotal'] - $fltAccountCharge;
+		if ($fltPlanCharges)
+		{
+			$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Charges & Credits";
+			$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $fltPlanCharges;
+		}
+		$this->_arrFileData[] = $arrDefine['ChargeTotal'];
+		
+		$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "GST Total";
+		$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $arrInvoiceDetails['Tax'];
 		$this->_arrFileData[] = $arrDefine['ChargeTotal'];
 		$arrDefine['ChargeTotalsFooter']['BillTotal']		['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
 		$this->_arrFileData[] = $arrDefine['ChargeTotalsFooter'];
@@ -1035,7 +1054,10 @@
  		}
  		
  		// if we have anything to add to the invoice...
- 		if (count($arrServiceSummaries))
+ 		$arrCols = Array();
+ 		$arrCols['Service']		= $intService;
+ 		$arrCols['InvoiceRun']	= $this->_strInvoiceRun;
+ 		if ($this->_selDisplayServiceSummary->Execute($arrCols))
  		{
 			// Service Header
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
