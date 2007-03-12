@@ -2648,7 +2648,11 @@ class MySQLFunction
 		
 		// Compile the query from our passed infos
 	 	$strQuery = "UPDATE " . $strTable . "\n" . "SET ";
-	 			
+	 	
+		// account for 'USING INDEX' in table name
+		$arrTable = explode(' ', trim($strTable));
+		$strTable = $arrTable[0];
+		
 	 	$this->_strTable = $strTable;
 	 	
 	 	// Determine if it's a partial or full update

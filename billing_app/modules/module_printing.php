@@ -168,7 +168,7 @@
 														
 		$this->_selInvoiceServiceTotal	= new StatementSelect(	"ServiceTotal",
 																"SUM(CappedCharge + UncappedCharge) AS GrandTotal",
-																"Account = <Account AND InvoiceRun = <InvoiceRun>",
+																"Account = <Account> AND InvoiceRun = <InvoiceRun>",
 																NULL,
 																1,
 																"Account");

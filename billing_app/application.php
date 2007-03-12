@@ -144,7 +144,7 @@
 		$this->arrCDRCols = Array();
 		$this->arrCDRCols['Status']			= CDR_TEMP_INVOICE;
 		$this->arrCDRCols['InvoiceRun']		= NULL;
-		$this->updCDRs						= new StatementUpdate("CDR", "Account = <Account> AND Credit = 0 AND Status = ".CDR_RATED, $this->arrCDRCols);
+		$this->updCDRs						= new StatementUpdate("CDR USE INDEX (Account_2)", "Account = <Account> AND Credit = 0 AND Status = ".CDR_RATED, $this->arrCDRCols);
 		
 		// Init Insert Statements
 		$this->arrInvoiceData 						= Array();
@@ -341,7 +341,7 @@
 		$arrUpdateData['InvoiceRun']	= '';
 		$arrUpdateData['Status']		= '';
 		$updChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
-		$selCDRTotals		= new StatementSelect(	"CDR JOIN Rate ON (CDR.Rate = Rate.Id)",
+		$selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
 													"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge",
 													"CDR.Service = <Service> AND " .
 													"CDR.Credit = 0".
@@ -374,7 +374,7 @@
 			$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
 			$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
 			$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
-			$strQuery .= " FROM CDR";
+			$strQuery .= " FROM CDR USE INDEX (Account_2)";
 			$strQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
 			$strQuery .= " AND Status = ".CDR_TEMP_INVOICE;
 			$strQuery .= " AND Account = ".$arrAccount['Id'];
@@ -1611,7 +1611,7 @@
 		$arrColumns = Array();
 		$arrColumns['Status']		= CDR_RATED;
 		$arrColumns['InvoiceRun']	= NULL;
-		$updCDRStatus = new StatementUpdate("CDR", "Account = $intAccount AND CDR.Credit = 0 AND Status = ".CDR_TEMP_INVOICE, $arrColumns);
+		$updCDRStatus = new StatementUpdate("CDR USE INDEX (Account_2)", "Account = $intAccount AND CDR.Credit = 0 AND Status = ".CDR_TEMP_INVOICE, $arrColumns);
 		if($updCDRStatus->Execute($arrColumns, Array()) === FALSE)
 		{
 			Debug($updCDRStatus->Error());
