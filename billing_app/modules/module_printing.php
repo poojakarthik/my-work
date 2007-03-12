@@ -119,7 +119,7 @@
 																"Service.Id, ServiceExtension.RangeStart");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
-																"TotalCharge + Debit - Credit AS TotalCharge",
+																"(TotalCharge + Debit - Credit) AS TotalCharge",
 																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
 		
  		$arrColumns = Array();
@@ -372,8 +372,8 @@
 		}
 		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= /*$arrInvoiceDetails['Credits']*/ 0.0;
 		$arrDefine['InvoiceDetails']	['Balance']			['Value']	= $arrInvoiceDetails['AccountBalance'];
-		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= $arrInvoiceDetails['Balance'];
-		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
+		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= ((float)$arrInvoiceDetails['Total'] + (float)$arrInvoiceDetails['Tax']);
+		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Total'] + (float)$arrInvoiceDetails['Tax'] + (float)$arrInvoiceDetails['AccountBalance']);
 		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		
 		$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['BusinessName'];
@@ -501,7 +501,7 @@
 		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account'].MakeLuhn($arrInvoiceDetails['Account']);
 		$arrDefine['PaymentData']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
-		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Balance'] + (float)$arrInvoiceDetails['AccountBalance']) - (float)$arrInvoiceDetails['Credits'];
+		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Total'] + (float)$arrInvoiceDetails['Tax'] + (float)$arrInvoiceDetails['AccountBalance']);
 		$arrDefine['PaymentData']		['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		$arrDefine['PaymentData']		['AddressLine1']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine1']['Value'];
 		$arrDefine['PaymentData']		['AddressLine2']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine2']['Value'];
