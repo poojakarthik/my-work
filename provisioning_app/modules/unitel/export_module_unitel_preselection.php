@@ -207,12 +207,12 @@
 		{
 			// Only do this if there are records to write
 			$resPreselectionFile = fopen(UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
-			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\n");
+			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\r\n");
 			
 			foreach($this->_arrPreselectionRecords as $arrRecord)
 			{
 				$strRecord = implode($arrRecord);
-				fwrite($resPreselectionFile, $strRecord."\n");
+				fwrite($resPreselectionFile, $strRecord."\r\n");
 			}
 			
 			fwrite($resPreselectionFile, $strPreselectionFooterRow);
