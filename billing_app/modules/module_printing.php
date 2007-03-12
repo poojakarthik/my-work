@@ -199,7 +199,7 @@
 		$arrColumns['DestinationCode']	= "CDR.DestinationCode";
 		$arrColumns['DisplayType']		= "RecordGroup.DisplayType";
 		$arrColumns['RecordGroup']		= "RecordGroup.Description";
- 		$this->_selItemisedCalls	= new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id" .
+ 		$this->_selItemisedCalls	= new StatementSelect(	"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
  															", RecordType as RecordGroup",
  															$arrColumns,
  															"CDR.Service = <Service> AND " .
@@ -214,7 +214,7 @@
  															")",
  															"CDR.StartDatetime");
  															
-		$this->_selItemisedRecordTypes = new StatementSelect(	"CDR JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
+		$this->_selItemisedRecordTypes = new StatementSelect(	"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
 																"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
 	 															"Service = <Service> AND " .
 	 															"RecordGroup.Id = RecordType.GroupId AND " .
