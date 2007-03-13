@@ -2018,7 +2018,7 @@
  		$arrPDFPaths = glob($strPath."*.pdf");
  		
  		$selAccountEmail = new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
- 												"Email, CustomerGroup",
+ 												"Email, CustomerGroup, FirstName",
  												"Account = <Account> AND DeliveryMethod = ".BILLING_METHOD_EMAIL);
 		
  		
@@ -2057,13 +2057,19 @@
  			{
  				case CUSTOMER_GROUP_VOICETALK:
  					$strFrom	= "billing@voicetalk.com.au";
- 					$strSubject	= "Your VoiceTalk Invoice for $strBillingPeriod";
- 					$strContent	= "Attached is your VoiceTalk Invoice for $strBillingPeriod";
+ 					$strSubject	= "Telephone Billing for $strBillingPeriod";
+ 					$strContent	=	"Dear ".$arrDetails['FirstName']."\n\n" .
+ 									"Please find attached your most recent invoice from Voicetalk\n\n" .
+ 									"Regards\n" .
+ 									"The Team at Voicetalk";
  					break;
  				default:
- 					$strFrom = "billing@telcoblue.com.au";
- 					$strSubject	= "Your TelcoBlue Invoice for $strBillingPeriod";
- 					$strContent	= "Attached is your TelcoBlue Invoice for $strBillingPeriod";
+ 					$strFrom	= "billing@telcoblue.com.au";
+ 					$strSubject	= "Telephone Billing for $strBillingPeriod";
+ 					$strContent	=	"Dear ".$arrDetails['FirstName']."\n\n" .
+ 									"Please find attached your most recent invoice from Telco Blue\n\n" .
+ 									"Regards\n" .
+ 									"The Team at Telco Blue";
  					break;
  			}
  			
