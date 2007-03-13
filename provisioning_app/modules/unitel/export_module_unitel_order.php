@@ -107,9 +107,10 @@
 		$intFullServiceRecordSequence	= (int)$arrResult['Value'];
 		
 		// Add additional logging data
-		$this->_arrLog['Request']	= $arrRequest['Id'];
-		$this->_arrLog['Service']	= $arrRequest['Service'];
-		$this->_arrLog['Type']		= $arrRequest['RequestType'];
+		$this->_arrLog['Request']		= $arrRequest['Id'];
+		$this->_arrLog['Service']		= $arrRequest['Service'];
+		$this->_arrLog['Type']			= $arrRequest['RequestType'];
+		$this->_arrLog['Description']	= "Request Sent Successfully";
 		
 		// Get Service address info
 		$arrWhere = Array();

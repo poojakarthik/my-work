@@ -159,7 +159,7 @@
 			// Generate Excel 5 file
 			$xlsBarring					= new PhpSimpleXlsGen();
 			$xlsBarring->totalcol		= 4;
-			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."LOCL_".CUSTOMER_NUMBER_OPTUS."_".date("YmdHis").".xls";
+			//$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."LOCL_".CUSTOMER_NUMBER_OPTUS."_".date("YmdHis").".xls";
 		
 			// Add header row
 			$xlsBarring->InsertText('Batch No');
@@ -181,7 +181,7 @@
 			}
 			
 			// Write output
-			$xlsBarring->SendFile($strPreselectionFilename);
+			$xlsBarring->SaveFile($strPreselectionFilename);
 			
 			// Email to Optus (as an attachment)
 			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)

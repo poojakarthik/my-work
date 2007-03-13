@@ -76,10 +76,13 @@
  		$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleImportOptusStatus(&$this->db);
  		
  		// Init Provisioning Export Modules
-		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
-		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
+		//$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
+		//$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
  		//$this->_arrProvisioningModules[PRV_AAPT_EOE]				= new ProvisioningModuleExportAAPTEOE(&$this->db);
  		$this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP]	= new ProvisioningModuleExportOptusPreselection(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_RESTORE_EXP]		= new ProvisioningModuleExportOptusRestore(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_SUSPEND_EXP]		= new ProvisioningModuleExportOptusSuspend(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_BAR_EXP]			= new ProvisioningModuleExportOptusBar(&$this->db);
  		
  		$this->Framework->StartWatch();
 	}
@@ -335,7 +338,7 @@
 				case CARRIER_UNITEL:
 					switch ($arrRequest['RequestType'])
 					{
-						case REQUEST_FULL_SERVICE:
+						/*case REQUEST_FULL_SERVICE:
 						case REQUEST_FULL_SERVICE_REVERSE:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
 							break;
@@ -350,7 +353,7 @@
 						case REQUEST_UNBAR_HARD:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP];
 							break;
-							
+						*/	
 						default:
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
 							continue 3;
@@ -364,9 +367,22 @@
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
 							break;*/
 							
-						/*case REQUEST_PRESELECTION:
+						case REQUEST_PRESELECTION:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP];
-							break;*/
+							break;
+							
+						case REQUEST_BAR_SOFT:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_BAR_EXP];
+							break;
+							
+						case REQUEST_UNBAR_HARD:
+						case REQUEST_UNBAR_SOFT:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_RESTORE_EXP];
+							break;
+							
+						case REQUEST_BAR_HARD:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_SUSPEND_EXP];
+							break;
 							
 						default:
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
@@ -406,6 +422,8 @@
 						// log error & set status
 						$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: Request Build failed");
 				}
+				
+				$this->_prvCurrentModule->AddToProvisioningLog();
 			}
 			else
 			{

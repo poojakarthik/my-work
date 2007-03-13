@@ -128,6 +128,12 @@ $GLOBALS['*arrConstant']	['ProvisioningType']	[152]	['Constant']	= 'PRV_AAPT_EOE
 $GLOBALS['*arrConstant']	['ProvisioningType']	[152]	['Description']	= 'AAPT EOE Order File';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[153]	['Constant']	= 'PRV_OPTUS_PRESELECTION_EXP';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[153]	['Description']	= 'Optus Preselection Order File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[154]	['Constant']	= 'PRV_OPTUS_BAR_EXP';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[154]	['Description']	= 'Optus Barring Order File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[155]	['Constant']	= 'PRV_OPTUS_SUSPEND_EXP';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[155]	['Description']	= 'Optus Suspension Order File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[156]	['Constant']	= 'PRV_OPTUS_RESTORE_EXP';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[156]	['Description']	= 'Optus Restoration Order File';
 
 
 // Carriers

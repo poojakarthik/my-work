@@ -148,7 +148,6 @@
 			if ($arrRecord['ServiceNumber'] == $arrBuiltRequest['ServiceNumber'] && $arrRecord['RecordType'] == $arrBuiltRequest['RecordType'])
 			{
 				// This request already exists in the file - DO NOT DUPLICATE
-				Debug("UNITEL PRESELECTION");
 				return REQUEST_STATUS_DUPLICATE;
 			}
 		}

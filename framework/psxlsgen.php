@@ -140,10 +140,10 @@ if( !defined( "PHP_SIMPLE_XLS_GEN" ) ) {
      function SendFile( $filename )
      {
         $this->filename = $filename;
-        $this->SendFile();
+        $this->SendFileStream();
      }
      // send generated xls as stream file
-     function SendFile()
+     function SendFileStream()
      {
         $this->End();
         header ( "Expires: Mon, 1 Apr 1974 05:00:00 GMT" );
@@ -166,14 +166,14 @@ if( !defined( "PHP_SIMPLE_XLS_GEN" ) ) {
      function SaveFile( $filename )
      {
         $this->filename = $filename;
-        $this->SaveFile();
+        $this->Save();
      }
 
      // Save generated xls file
-     function SaveFile()
+     function Save()
      {
         $this->End();
-        $this->fname = $this->default_dir."$this->dirsep".$this->filename;
+        $this->fname = $this->filename;
         if ( !stristr( $this->fname, ".xls" ) ) {
           $this->fname .= ".xls";
         }
@@ -186,9 +186,9 @@ if( !defined( "PHP_SIMPLE_XLS_GEN" ) ) {
      // Get generated xls as specified type
      function GetXls( $type = 0 ) {
          if ( !$type && !$this->get_type ) {
-            $this->SendFile();
+            $this->SendFileStream();
          } else {
-            $this->SaveFile();
+            $this->SendFileStream();
          }
      }
    } // end of the class PHP_SIMPLE_XLS_GEN

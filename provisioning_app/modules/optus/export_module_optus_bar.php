@@ -60,6 +60,7 @@
  	function  __construct($ptrDB)
  	{
 		$this->_strModuleName 	= "Optus";
+		$this->_intCarrier		= CARRIER_OPTUS;
 		
 		parent::__construct($ptrDB);
 		
@@ -92,6 +93,14 @@
 		
 		// Append to the array for this file
 		$this->_arrPreselectionRecords[]		= $arrFNN['FNN'];
+		
+		
+		$this->_arrLog['Request']		= $arrRequest['Id'];
+		$this->_arrLog['Service']		= $arrRequest['Service'];
+		$this->_arrLog['Type']			= $arrRequest['RequestType'];
+		$this->_arrLog['Description']	= "Request Sent Successfully";
+		
+		return TRUE;
 	} 	
  	
   	//------------------------------------------------------------------------//
@@ -137,7 +146,7 @@
 			}
 			
 			// Write output
-			$xlsBarring->SendFile($strPreselectionFilename);
+			$xlsBarring->SaveFile($strPreselectionFilename);
 			
 			// Email to Optus (as an attachment)
 			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Barring File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
