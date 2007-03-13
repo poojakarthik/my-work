@@ -1973,6 +1973,111 @@
 		
 		return TRUE;
 	 }
+	 
+ 	
+  	//------------------------------------------------------------------------//
+	// EmailInvoicePDFs()
+	//------------------------------------------------------------------------//
+	/**
+	 * EmailInvoicePDFs()
+	 *
+	 * Sends invoices in emails from the specified directory
+	 *
+	 * Sends invoices in emails from the specified directory
+	 *
+	 * @return		string		$strPath			Full path for directory to send invoices from
+	 * @return		string		$strBillingPeriod	optional Billing Period this applies for.  Defaults
+	 * 												to last month.
+	 *
+	 * @method
+	 */
+ 	function EmailInvoicePDFs($strPath, $strBillingPeriod = NULL)
+ 	{
+ 		$this->_rptBillingReport->AddMessage("[ EMAILING INVOICE PDFS ]\n");
+ 		
+ 		// Make sure our path is a string
+ 		if (!is_string($strPath))
+ 		{
+ 			$this->_rptBillingReport->AddMessage('$strPath is not a string!');
+ 			return FALSE;
+ 		}
+ 		
+ 		// Set default for $strBillingPeriod
+ 		if (!$strBillingPeriod)
+ 		{
+ 			$strBillingPeriod = date("F Y", strtotime("-1 month", time()));
+ 		}
+ 		
+ 		// add trailing slash if not already there
+ 		if (substr($strPath, 0, -1) != '/')
+ 		{
+ 			$strPath .= "/";
+ 		}
+ 		
+ 		// Get all PDF paths
+ 		$arrPDFPaths = glob($strPath."*.pdf");
+ 		
+ 		$selAccountEmail = new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
+ 												"Email, CustomerGroup",
+ 												"Account = <Account> AND DeliveryMethod = ".BILLING_METHOD_EMAIL);
+		
+ 		
+ 		// Loop through each PDF
+ 		$intPassed	= 0;
+ 		$intIgnored	= 0;
+ 		foreach ($arrPDFPaths as $strPDFPath) 
+ 		{
+ 			// Get the account number from the filename, then find the account's email address
+ 			$arrSplit = explode('_', basename($strPDFPath));
+ 			
+ 			if ($selAccountEmail->Execute(Array('Account' => $arrSplit[0])) === FALSE)
+ 			{
+ 				Debug($selAccountEmail->Error());
+ 				return FALSE;
+ 			}
+ 			if (!$arrDetails = $selAccountEmail->Fetch())
+ 			{
+ 				// This is not an email account
+ 				continue;
+ 				$intIgnored++;
+ 			}
+ 			$strEmail	= trim($arrDetails['Email']);
+ 			
+ 			$this->_rptBillingReport->AddMessage("\t+ Emailing Invoice for Account #".$arrSplit[0]."...\t\t", FALSE);
+ 			
+ 			// Validate email address
+ 			if (!preg_match('/^[A-z0-9_\-]+[@][A-z0-9_\-]+([.][A-z0-9_\-]+)+[A-z]{2,4}$/', $strEmail))
+ 			{
+ 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t-Reason: Email address '$strEmail' is invalid");
+ 				continue;
+ 			}
+ 			
+ 			// Set email details based on Customer Group
+ 			switch ($arrDetails['CustomerGroup'])
+ 			{
+ 				case CUSTOMER_GROUP_VOICETALK:
+ 					$strFrom	= "billing@voicetalk.com.au";
+ 					$strSubject	= "Your VoiceTalk Invoice for $strBillingPeriod";
+ 					$strContent	= "Attached is your VoiceTalk Invoice for $strBillingPeriod";
+ 					break;
+ 				default:
+ 					$strFrom = "billing@telcoblue.com.au";
+ 					$strSubject	= "Your TelcoBlue Invoice for $strBillingPeriod";
+ 					$strContent	= "Attached is your TelcoBlue Invoice for $strBillingPeriod";
+ 					break;
+ 			}
+ 			
+ 			if (!mail_attachment($strFrom, $strEmail, $strSubject, $strContent, $strPDFPath))
+ 			{
+ 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t-Reason: Mail send failed");
+ 				continue;
+ 			}
+ 			
+ 			$this->_rptBillingReport->AddMessage("[   OK   ]");
+ 		}
+ 		
+ 		$this->_rptBillingReport->AddMessage("\t* Found ".(int)count($arrPDFPaths)."PDFs ($intIgnored ignored), $intPassed emails sent (".((int)count($arrPDFPaths)-$intIgnored-$intPassed)." failed).\n");
+ 	}
  }
 
 
