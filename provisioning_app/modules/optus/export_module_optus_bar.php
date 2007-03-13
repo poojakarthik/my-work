@@ -118,7 +118,7 @@
 			// Generate Excel 5 file
 			$xlsBarring					= new PhpSimpleXlsGen();
 			$xlsBarring->totalcol		= 4;
-			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."LOCL_".CUSTOMER_NUMBER_OPTUS."_".date("YmdHis").".xls";
+			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."bar_".date("Hi_Ymd").".xls";
 		
 			// Add header row
 			$xlsBarring->InsertText('Service Number');
@@ -140,9 +140,9 @@
 			$xlsBarring->SendFile($strPreselectionFilename);
 			
 			// Email to Optus (as an attachment)
-			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
-			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-			if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", $strPreselectionFilename))
+			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Barring File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
+			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Barring File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
+			if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Barring File", "Attached: Telco Blue Automatically Generated Barring Request File", $strPreselectionFilename))
 			{
 				Debug("Email failed!");
 				return FALSE;
