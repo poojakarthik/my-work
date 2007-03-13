@@ -25,21 +25,6 @@
  *
  */
 
-echo "<pre>";
-
-// Application entry point - create an instance of the application object
-$appProvisioining = new ApplicationProvisioning($arrConfig);
-
-$appProvisioining->Import();
-//$appProvisioining->Export();
-
-$appProvisioining->FinaliseReport();
-
-// finished
-echo("\n-- End of Provisioning --\n");
-echo "</pre>";
-die();
-
 
 
 //----------------------------------------------------------------------------//
@@ -85,10 +70,10 @@ die();
 		
 		// Init Provisioning Import Modules
 		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_STATUS_RPT]	= new ProvisioningModuleImportUnitelStatus(&$this->db);
-		//$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_RPT]	= new ProvisioningModuleImportUnitelPreselection(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_RPT]	= new ProvisioningModuleImportUnitelPreselection(&$this->db);
 		//$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_RPT]	= new ProvisioningModuleImportUnitelOrder(&$this->db);
  		//$this->_arrProvisioningModules[PRV_AAPT_LSD]				= new ProvisioningModuleImportAAPTLSD(&$this->db);
- 		//$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleOptus(&$this->db);
+ 		$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleImportOptusStatus(&$this->db);
  		
  		// Init Provisioning Export Modules
 		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
@@ -404,6 +389,12 @@ die();
 			{
 				switch ($mixResponse)
 				{
+					case REQUEST_STATUS_REJECTED:
+					// set status of request in db
+						$this->_rptProvisioningReport->AddMessage("[ IGNORE ]\n\t\t- Reason: Request Rejected (See Log)");
+						$arrRequest['Status']		= REQUEST_STATUS_REJECTED;
+						break;
+						
 					case REQUEST_STATUS_DUPLICATE:
 					// set status of request in db
 						$this->_rptProvisioningReport->AddMessage("[ IGNORE ]\n\t\t- Reason: Duplicate Request");
