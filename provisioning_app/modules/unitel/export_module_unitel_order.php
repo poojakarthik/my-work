@@ -106,6 +106,11 @@
 		}
 		$intFullServiceRecordSequence	= (int)$arrResult['Value'];
 		
+		// Add additional logging data
+		$this->_arrLog['Request']	= $arrRequest['Id'];
+		$this->_arrLog['Service']	= $arrRequest['Service'];
+		$this->_arrLog['Type']		= $arrRequest['RequestType'];
+		
 		// Get Service address info
 		$arrWhere = Array();
 		$arrWhere['Service']	= $arrRequest['Service'];
@@ -119,8 +124,8 @@
 		{
 			if ($strField === FALSE)
 			{
-				Debug("$strKey is invalid");
-				return FALSE;
+				$this->_arrLog['Description']	= "Service Address Error: $strKey is invalid";
+				return REQUEST_STATUS_REJECTED;
 			}
 		}
 		
@@ -235,11 +240,6 @@
 		// Update the database
 		$this->_updFullServiceRecordSequence->Execute(Array('Value' => "$intFullServiceRecordSequence"), Array());
 		// TODO: Update Request Table (sequence #)
-		
-		// Add additional logging data
-		$this->_arrLog['Request']	= $arrRequest['Id'];
-		$this->_arrLog['Service']	= $arrRequest['Service'];
-		$this->_arrLog['Type']		= $arrRequest['RequestType'];
 		
 		return TRUE;
 	} 
