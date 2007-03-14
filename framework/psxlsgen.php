@@ -37,7 +37,7 @@ if( !defined( "PHP_SIMPLE_XLS_GEN" ) ) {
       var  $errno    = 0;         // 0=no error
       var  $error    = "";        // error string
       var  $dirsep   = "/";       // directory separator
-      var  $header   = 1;         // 0=no header, 1=header line for xls table
+      var  $header   = 0;         // 0=no header, 1=header line for xls table
 
      // Default constructor
      function  PhpSimpleXlsGen()
@@ -84,6 +84,7 @@ if( !defined( "PHP_SIMPLE_XLS_GEN" ) ) {
      // write a Number (double) into row, col
      function WriteNumber_pos( $row, $col, $value )
      {
+        $this->xls_data .= pack( "sssss", 0x0203, 14, $row, $col, 0x00 );
         $this->xls_data .= pack( "d", $value );
         return;
      }
@@ -92,6 +93,7 @@ if( !defined( "PHP_SIMPLE_XLS_GEN" ) ) {
      function WriteText_pos( $row, $col, $value )
      {
         $len = strlen( $value );
+        $this->xls_data .= pack( "s*", 0x0204, 8 + $len, $row, $col, 0x00, $len );
         $this->xls_data .= $value;
         return;
      }

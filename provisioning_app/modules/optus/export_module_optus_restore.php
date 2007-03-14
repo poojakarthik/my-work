@@ -64,7 +64,7 @@
 		
 		parent::__construct($ptrDB);
 		
-		$this->_selGetRequests	= new StatementSelect("Requests", "*", "Carrier = ".CARRIER_OPTUS." AND RequestType = ".REQUEST_UNBAR_SOFT."Status = ".REQUEST_STATUS_WAITING);
+		//$this->_selGetRequests	= new StatementSelect("Requests", "*", "Carrier = ".CARRIER_OPTUS." AND RequestType = ".REQUEST_UNBAR_SOFT."Status = ".REQUEST_STATUS_WAITING);
  	}
 
   	//------------------------------------------------------------------------//

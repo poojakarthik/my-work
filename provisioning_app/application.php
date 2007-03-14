@@ -441,7 +441,7 @@
 			}
 			
 			// Update the DB
-			$ubiUpdateRequest->Execute($arrRequest);
+			//$ubiUpdateRequest->Execute($arrRequest);
 		}
 		
 		$this->_rptProvisioningReport->AddMessage("\n[ SENDING REQUESTS ]\n");

@@ -64,7 +64,7 @@
 		
 		parent::__construct($ptrDB);
 		
-		$this->_selGetRequests	= new StatementSelect("Request", "*", "Carrier = ".CARRIER_OPTUS." AND RequestType = ".REQUEST_PRESELECTION." AND Status = ".REQUEST_STATUS_WAITING);
+		//$this->_selGetRequests	= new StatementSelect("Request", "*", "Carrier = ".CARRIER_OPTUS." AND RequestType = ".REQUEST_PRESELECTION." AND Status = ".REQUEST_STATUS_WAITING);
  	}
 
   	//------------------------------------------------------------------------//
@@ -158,7 +158,7 @@
 		{
 			// Generate Excel 5 file
 			$xlsBarring					= new PhpSimpleXlsGen();
-			$xlsBarring->totalcol		= 4;
+			$xlsBarring->totalcol		= 8;
 			//$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."LOCL_".CUSTOMER_NUMBER_OPTUS."_".date("YmdHis").".xls";
 		
 			// Add header row
