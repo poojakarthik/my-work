@@ -315,7 +315,7 @@
 		else if (!$_POST ['Account']['ABN'] && !$_POST ['Account']['ACN'])
 		{
 			// This throws an error if the ABN and the ACN is Blank
-			$oblstrError->setValue ('Account ABN-ACN');
+			//$oblstrError->setValue ('Account ABN-ACN');
 		}
 		else if (!$abnABN->setValue ($_POST ['Account']['ABN']))
 		{

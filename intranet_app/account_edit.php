@@ -90,7 +90,7 @@
 		else if (!$_POST ['ABN'] &&  !$_POST ['ACN'])
 		{
 			// Check either an ABN or ACN exists
-			$oblstrError->setValue ('ABN-ACN');
+			//$oblstrError->setValue ('ABN-ACN');
 		}
 		else if ($_POST ['ABN'] && !$abnABN->setValue ($_POST ['ABN']))
 		{
