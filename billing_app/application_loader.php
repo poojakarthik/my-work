@@ -118,6 +118,10 @@ require_once($strFrameworkDir."mail_attachment.php");
 require_once($strModuleDir."module_printing.php");
 require_once($strModuleDir."module_etech.php");
 
+// load PEAR components
+require_once("Mail.php");
+require_once("Mail/mime.php");
+
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
