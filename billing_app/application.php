@@ -2051,23 +2051,27 @@
 	 			switch ($arrDetail['CustomerGroup'])
 	 			{
 	 				case CUSTOMER_GROUP_VOICETALK:
-	 					$strFrom	= "billing@voicetalk.com.au";
-	 					$strSubject	= "Telephone Billing for $strBillingPeriod";
+			 			$arrHeaders = Array	(
+			 									'From'		=> "billing@voicetalk.com.au",
+			 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
+			 								);
 	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\r\n\r\n" .
 	 									"Please find attached your most recent invoice from Voicetalk\r\n\r\n" .
 	 									"Regards\r\n\r\n" .
 	 									"The Team at Voicetalk";
 	 					break;
 	 				default:
-	 					$strFrom	= "billing@telcoblue.com.au";
-	 					$strSubject	= "Telephone Billing for $strBillingPeriod";
+			 			$arrHeaders = Array	(
+			 									'From'		=> "billing@telcoblue.com.au",
+			 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
+			 								);
 	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\r\n\r\n" .
 	 									"Please find attached your most recent invoice from Telco Blue\r\n\r\n" .
 	 									"Regards\r\n\r\n" .
 	 									"The Team at Telco Blue";
 	 					break;
 	 			}
-		 			
+		 		
 	 			// Account for , separated email addresses
 	 			$arrEmails = explode(',', $arrDetail['Email']);
 	 			foreach ($arrEmails as $strEmail)
@@ -2083,8 +2087,13 @@
 		 				continue;
 		 			}
 		 			
+		 			$mimMime = new Mail_mime("\n");
+		 			$mimMime->setTXTBody($strContent);
+		 			$mimMime->addAttachment($strPDFPath, 'application/pdf');
+		 			$emlMail =& Mail::factory('mail');
+		 			
 		 			// Send the email
-		 			if (!mail_attachment($strFrom, $strEmail, $strSubject, $strContent, $strPDFPath))
+		 			if (!$emlMail->send($strEmail, $mimMime->headers($arrHeaders), $mimMime->get()))
 		 			{
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 		 				continue;
