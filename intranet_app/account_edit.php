@@ -87,11 +87,11 @@
 			// Check the Business Name is not Empty
 			$oblstrError->setValue ('BusinessName');
 		}
-		else if (!$_POST ['ABN'] &&  !$_POST ['ACN'])
+		/*else if (!$_POST ['ABN'] &&  !$_POST ['ACN'])
 		{
 			// Check either an ABN or ACN exists
-			//$oblstrError->setValue ('ABN-ACN');
-		}
+			$oblstrError->setValue ('ABN-ACN');
+		}*/
 		else if ($_POST ['ABN'] && !$abnABN->setValue ($_POST ['ABN']))
 		{
 			// If the ABN is set, make sure it's valid

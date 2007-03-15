@@ -312,11 +312,11 @@
 			// This throws an error if the Business Name is Blank
 			$oblstrError->setValue ('Account BusinessName');
 		}
-		else if (!$_POST ['Account']['ABN'] && !$_POST ['Account']['ACN'])
+		/*else if (!$_POST ['Account']['ABN'] && !$_POST ['Account']['ACN'])
 		{
 			// This throws an error if the ABN and the ACN is Blank
-			//$oblstrError->setValue ('Account ABN-ACN');
-		}
+			$oblstrError->setValue ('Account ABN-ACN');
+		}*/
 		else if (!$abnABN->setValue ($_POST ['Account']['ABN']))
 		{
 			// This throws an error if the ABN is Invalid
@@ -519,7 +519,7 @@
 		
 		else
 		{
-			// If we reach this point in the Script, then we're probably going to making the Account
+			// If we reach this point in the Script, then we're probably going to make the Account
 			// All we have to do is make sure the Contact being requested to add exists in the Account
 			// that is being requested - if an account is being made in an Account Group
 			
