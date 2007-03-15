@@ -51,7 +51,42 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
+/*
+//----------------------------------------------------------------------------//
+// Debit Totals per Employee
+//----------------------------------------------------------------------------//
 
+// General
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Debit Totals per Employee";
+$arrDataReport['Summary']		= "Show the total number of Debits applied, their Total, and the Largest Debit per Employee for the last generated Bill.";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Charge, Employee";
+$arrDataReport['SQLWhere']		= "WHERE Charge.Nature = 'DR' AND " .
+								"Charge.CreatedBy = Employee.Id AND " .
+								"Charge.InvoiceRun = (SELECT InvoiceRun FROM Invoice ORDER BY CreatedOn DESC LIMIT 1)";
+$arrDataReport['SQLGroupBy']	= "Charge.CreatedBy";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "Charge";
+$arrDocReq[]	= "Employee";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Employee']			= "CONCAT(Employee.FirstName, ' ', Employee.LastName)";
+$arrSQLSelect['No. of Debits']		= "COUNT(Charge.Id)";
+$arrSQLSelect['Total']				= "SUM(Charge.Amount)";
+$arrSQLSelect['Largest Debit']		= "MAX(Charge.Amount)";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+/*
 //----------------------------------------------------------------------------//
 // Aged Receivables (30/60/90 Days) Report per Account
 //----------------------------------------------------------------------------//
@@ -64,7 +99,7 @@ $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
 $arrDataReport['SQLWhere']		= "";
-$arrDataReport['SQLGroupBy']	= "Account \nHAVING SUM(Balance) != 0";
+$arrDataReport['SQLGroupBy']	= "Invoice.Account \nHAVING SUM(Balance) > 0";
 
 // Documentation Reqs
 $arrDocReqs = Array();
@@ -91,21 +126,21 @@ $arrSQLSelect['State']					= "Account.State";
 $arrSQLSelect['Phone']					= "Contact.Phone";
 $arrSQLSelect['Mobile']					= "Contact.Mobile";
 $arrSQLSelect['Email']					= "Contact.Email";
-$arrSQLSelect['Total Oustanding']		= "SUM(Balance) AS 'Total Outstanding'";
+$arrSQLSelect['Total Oustanding']		= "SUM(Balance)";
 
 $arrSQLSelect['Total Overdue']			=	"SUM(CASE " .
 											"		WHEN NOW() > Invoice.DueOn THEN Invoice.Balance" .
 											"	END)";
-$arrSQLSelect['1-29 Days Overdue']		=	"SUM(CASE" .
+$arrSQLSelect['1-29 Days Overdue']		=	"SUM(CASE " .
 											"		WHEN NOW() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN Invoice.Balance" .
 											"	END)";
-$arrSQLSelect['30-59 Days Overdue']		=	"SUM(CASE" .
+$arrSQLSelect['30-59 Days Overdue']		=	"SUM(CASE " .
 											"		WHEN NOW() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 30 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 59 DAY) THEN Invoice.Balance" .
 											"	END)";
-$arrSQLSelect['60-89 Days Overdue']		=	"SUM(CASE" .
+$arrSQLSelect['60-89 Days Overdue']		=	"SUM(CASE " .
 											"		WHEN NOW() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 60 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 89 DAY) THEN Invoice.Balance" .
 											"	END)";
-$arrSQLSelect['90+ Days Overdue']		=	"SUM(CASE" .
+$arrSQLSelect['90+ Days Overdue']		=	"SUM(CASE " .
 											"		WHEN NOW() >= ADDDATE(Invoice.DueOn, INTERVAL 90 DAY) THEN Invoice.Balance" .
 											"	END)";
 
@@ -114,6 +149,51 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 // SQL Fields
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+
+/*
+//----------------------------------------------------------------------------//
+// Daily Loss Report
+//----------------------------------------------------------------------------//
+
+// General
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Loss Report for a Date Range";
+$arrDataReport['Summary']		= "Shows the Services that have been lost and the date they were lost on for a specified Date range";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Service";
+$arrDataReport['SQLWhere']		= "Service.ClosedOn BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "Service";
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Account No.']			= "Service.Account";
+$arrSQLSelect['Service Id']				= "Service.Id";
+$arrSQLSelect['Full National Number']	= "Service.FNN";
+$arrSQLSelect['Date Lost']				= "DATE_FORMAT(Service.ClosedOn, '%d/%m/%Y')";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
 
 //Debug($arrDataReport);
 //die;
@@ -126,6 +206,25 @@ if (!$insDataReport->Execute($arrDataReport))
 Debug("OK!");
 
 die;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
  * SELECT 
