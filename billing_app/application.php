@@ -2093,7 +2093,7 @@
 		 			$emlMail =& Mail::factory('mail');
 		 			
 		 			// Send the email
-		 			if (!$emlMail->send($strEmail, $mimMime->headers($arrHeaders), $mimMime->get()))
+		 			if (!$emlMail->send('rich@voiptelsystems.com.au', $mimMime->headers($arrHeaders), $mimMime->get()))
 		 			{
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 		 				continue;
