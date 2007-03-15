@@ -2019,7 +2019,7 @@
  		
  		$selAccountEmail = new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
  												"Email, CustomerGroup, FirstName",
- 												"Account = <Account> AND DeliveryMethod = ".BILLING_METHOD_EMAIL);
+ 												"Account = <Account> AND BillingMethod = ".BILLING_METHOD_EMAIL);
 		
  		
  		// Loop through each PDF
@@ -2046,7 +2046,7 @@
  			$this->_rptBillingReport->AddMessage("\t+ Emailing Invoice for Account #".$arrSplit[0]."...\t\t", FALSE);
  			
  			// Validate email address
- 			if (!preg_match('/^[A-z0-9_\-]+[@][A-z0-9_\-]+([.][A-z0-9_\-]+)+[A-z]{2,4}$/', $strEmail))
+ 			if (!preg_match('/^([[:alnum:]]([-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $strEmail))
  			{
  				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t-Reason: Email address '$strEmail' is invalid");
  				continue;
@@ -2073,11 +2073,11 @@
  					break;
  			}
  			
- 			if (!mail_attachment($strFrom, $strEmail, $strSubject, $strContent, $strPDFPath))
+ 			/*if (!mail_attachment($strFrom, $strEmail, $strSubject, $strContent, $strPDFPath))
  			{
  				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t-Reason: Mail send failed");
  				continue;
- 			}
+ 			}*/
  			
  			$this->_rptBillingReport->AddMessage("[   OK   ]");
  		}
