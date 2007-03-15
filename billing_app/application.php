@@ -2017,11 +2017,11 @@
  		// Get all PDF paths
  		$arrPDFPaths = glob($strPath."*.pdf");
  		
- 		$selAccountEmail = new StatementSelect(	"Account JOIN Contact ON Account.PrimaryContact = Contact.Id",
- 												"Email, CustomerGroup, FirstName",
- 												"Account = <Account> AND BillingMethod = ".BILLING_METHOD_EMAIL);
-		
- 		
+
+ 		$selAccountEmail	= new StatementSelect(	"Account JOIN Contact ON Account.Id = Contact.Account",
+ 													"CustomerGroup, Email, FirstName",
+ 													"Account = <Account> AND Email != '' AND BillingMethod = ".BILLING_METHOD_EMAIL);
+
  		// Loop through each PDF
  		$intPassed	= 0;
  		$intIgnored	= 0;
@@ -2035,54 +2035,68 @@
  				Debug($selAccountEmail->Error());
  				return FALSE;
  			}
- 			if (!$arrDetails = $selAccountEmail->Fetch())
+ 			if (!$arrDetails = $selAccountEmail->FetchAll())
  			{
- 				// This is not an email account
+ 				// Bad Account Number or Non-Email Account
  				continue;
  				$intIgnored++;
  			}
- 			$strEmail	= trim($arrDetails['Email']);
  			
- 			$this->_rptBillingReport->AddMessage("\t+ Emailing Invoice for Account #".$arrSplit[0]."...\t\t", FALSE);
+	 		$this->_rptBillingReport->AddMessage("\n\t+ Emailing Invoice(s) for Account #".$arrSplit[0]."...");
  			
- 			// Validate email address
- 			if (!preg_match('/^([[:alnum:]]([-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $strEmail))
+ 			// for each email-able contact
+ 			foreach ($arrDetails as $arrDetail)
  			{
- 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t-Reason: Email address '$strEmail' is invalid");
- 				continue;
+	 			// Set email details based on Customer Group
+	 			switch ($arrDetail['CustomerGroup'])
+	 			{
+	 				case CUSTOMER_GROUP_VOICETALK:
+	 					$strFrom	= "billing@voicetalk.com.au";
+	 					$strSubject	= "Telephone Billing for $strBillingPeriod";
+	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\n\n" .
+	 									"Please find attached your most recent invoice from Voicetalk\n\n" .
+	 									"Regards\n" .
+	 									"The Team at Voicetalk";
+	 					break;
+	 				default:
+	 					$strFrom	= "billing@telcoblue.com.au";
+	 					$strSubject	= "Telephone Billing for $strBillingPeriod";
+	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\n\n" .
+	 									"Please find attached your most recent invoice from Telco Blue\n\n" .
+	 									"Regards\n" .
+	 									"The Team at Telco Blue";
+	 					break;
+	 			}
+		 			
+	 			// Account for , separated email addresses
+	 			$arrEmails = explode(',', $arrDetail['Email']);
+	 			foreach ($arrEmails as $strEmail)
+	 			{
+		 			$strEmail = trim($strEmail);
+		 			
+		 			$this->_rptBillingReport->AddMessage(str_pad("\t\tAddress: '$strEmail'...", 70, " ", STR_PAD_RIGHT), FALSE);
+		 			
+		 			// Validate email address
+		 			if (!preg_match('/^([[:alnum:]]([-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$/', $strEmail))
+		 			{
+		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Email address is invalid");
+		 				continue;
+		 			}
+		 			
+		 			// Send the email
+		 			if (!mail_attachment($strFrom, $strEmail, $strSubject, $strContent, $strPDFPath))
+		 			{
+		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
+		 				continue;
+		 			}
+	 				
+	 				$this->_rptBillingReport->AddMessage("[   OK   ]");
+	 				$intPassed++;
+	 			}
  			}
- 			
- 			// Set email details based on Customer Group
- 			switch ($arrDetails['CustomerGroup'])
- 			{
- 				case CUSTOMER_GROUP_VOICETALK:
- 					$strFrom	= "billing@voicetalk.com.au";
- 					$strSubject	= "Telephone Billing for $strBillingPeriod";
- 					$strContent	=	"Dear ".$arrDetails['FirstName']."\n\n" .
- 									"Please find attached your most recent invoice from Voicetalk\n\n" .
- 									"Regards\n" .
- 									"The Team at Voicetalk";
- 					break;
- 				default:
- 					$strFrom	= "billing@telcoblue.com.au";
- 					$strSubject	= "Telephone Billing for $strBillingPeriod";
- 					$strContent	=	"Dear ".$arrDetails['FirstName']."\n\n" .
- 									"Please find attached your most recent invoice from Telco Blue\n\n" .
- 									"Regards\n" .
- 									"The Team at Telco Blue";
- 					break;
- 			}
- 			
- 			/*if (!mail_attachment($strFrom, $strEmail, $strSubject, $strContent, $strPDFPath))
- 			{
- 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t-Reason: Mail send failed");
- 				continue;
- 			}*/
- 			
- 			$this->_rptBillingReport->AddMessage("[   OK   ]");
  		}
  		
- 		$this->_rptBillingReport->AddMessage("\t* Found ".(int)count($arrPDFPaths)."PDFs ($intIgnored ignored), $intPassed emails sent (".((int)count($arrPDFPaths)-$intIgnored-$intPassed)." failed).\n");
+ 		$this->_rptBillingReport->AddMessage("\n\t* Found ".(int)count($arrPDFPaths)." PDFs ($intIgnored ignored), $intPassed emails sent.\n");
  	}
  }
 
