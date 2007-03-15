@@ -30,7 +30,7 @@ function mail_attachment ($from , $to, $subject, $message, $attachment){
 	
 	$email_message .= "This is a multi-part message in MIME format.\n\n" . 
                 "--{$mime_boundary}\r\n" . 
-                "Content-Type:text/html; charset=\"iso-8859-1\"\r\n" . 
+                "Content-Type:text/plain; charset=\"iso-8859-1\"\r\n" . 
                "Content-Transfer-Encoding: 7bit\n\n" . 
 	$email_txt . "\n\n"; 
 

@@ -2053,17 +2053,17 @@
 	 				case CUSTOMER_GROUP_VOICETALK:
 	 					$strFrom	= "billing@voicetalk.com.au";
 	 					$strSubject	= "Telephone Billing for $strBillingPeriod";
-	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\n\n" .
-	 									"Please find attached your most recent invoice from Voicetalk\n\n" .
-	 									"Regards\n" .
+	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\r\n\r\n" .
+	 									"Please find attached your most recent invoice from Voicetalk\r\n\r\n" .
+	 									"Regards\r\n\r\n" .
 	 									"The Team at Voicetalk";
 	 					break;
 	 				default:
 	 					$strFrom	= "billing@telcoblue.com.au";
 	 					$strSubject	= "Telephone Billing for $strBillingPeriod";
-	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\n\n" .
-	 									"Please find attached your most recent invoice from Telco Blue\n\n" .
-	 									"Regards\n" .
+	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\r\n\r\n" .
+	 									"Please find attached your most recent invoice from Telco Blue\r\n\r\n" .
+	 									"Regards\r\n\r\n" .
 	 									"The Team at Telco Blue";
 	 					break;
 	 			}
