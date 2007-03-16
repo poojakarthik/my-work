@@ -1003,6 +1003,61 @@ function CSVStatementSelect (StatementSelect $selStatement, $strSeparator=';', $
 }
 
 
+
+/**
+ * XLSStatementSelect()
+ * 
+ * Formats an executed StatementSelect object as an XLS document
+ * 
+ * Formats an executed StatementSelect object as an XLS document.
+ * 
+ * @param	StatementSelect		$selStatement		The SQL Statement (Post Execution) being parse
+ *
+ * @return	String
+ * 
+ * @function
+ */
+function XLSStatementSelect (StatementSelect $selStatement)
+{
+	// Create new instance of PsXLSGen
+	$xlsExcelDoc = new PhpSimpleXlsGen();
+	
+	// Pull the Meta Data for the Statement
+	$objMetaData = $selStatement->MetaData ();
+	
+	
+	// Get all the Fields and write a Heading row
+	$arrFields = $objMetaData->fetch_fields ();
+	$xlsExcelDoc->totalcol = count($arrFields);
+	
+	foreach ($arrFields as $intIndex => $objField)
+	{
+		$xlsExcelDoc->InsertText($objField->name);
+	}
+	
+	// Get the results one by one and write them up
+	while ($arrRow = $selStatement->Fetch ())
+	{
+		foreach ($arrRow as $intIndex => $mixField)
+		{
+			$mixCorrectedField = trim($mixField);
+			if (is_int($mixCorrectedField) || is_float($mixCorrectedField))
+			{
+				$xlsExcelDoc->InsertNumber($mixCorrectedField);
+			}
+			else
+			{
+				$xlsExcelDoc->InsertText($mixCorrectedField);
+			}
+		}
+	}
+	
+	return $xlsExcelDoc->GetFileStream();
+}
+
+
+
+
 // echo out a line
 function EchoLine($strText)
 {

@@ -86,7 +86,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-/*
+
 //----------------------------------------------------------------------------//
 // Aged Receivables (30/60/90 Days) Report per Account
 //----------------------------------------------------------------------------//
@@ -98,7 +98,7 @@ $arrDataReport['Summary']		= "Shows how much each Account owes, grouped by how o
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
-$arrDataReport['SQLWhere']		= "";
+$arrDataReport['SQLWhere']		= "(<ShowArchived> = 1) OR (<ShowArchived> = 0 AND Archived = 0)";
 $arrDataReport['SQLGroupBy']	= "Invoice.Account \nHAVING SUM(Balance) > 0";
 
 // Documentation Reqs
@@ -126,10 +126,9 @@ $arrSQLSelect['State']					= "Account.State";
 $arrSQLSelect['Phone']					= "Contact.Phone";
 $arrSQLSelect['Mobile']					= "Contact.Mobile";
 $arrSQLSelect['Email']					= "Contact.Email";
-$arrSQLSelect['Total Oustanding']		= "SUM(Balance)";
 
-$arrSQLSelect['Total Overdue']			=	"SUM(CASE " .
-											"		WHEN NOW() > Invoice.DueOn THEN Invoice.Balance" .
+$arrSQLSelect['Outstanding Not Overdue']	= "SUM(CASE " .
+											"		WHEN NOW() <= Invoice.DueOn THEN Invoice.Balance" .
 											"	END)";
 $arrSQLSelect['1-29 Days Overdue']		=	"SUM(CASE " .
 											"		WHEN NOW() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN Invoice.Balance" .
@@ -143,13 +142,22 @@ $arrSQLSelect['60-89 Days Overdue']		=	"SUM(CASE " .
 $arrSQLSelect['90+ Days Overdue']		=	"SUM(CASE " .
 											"		WHEN NOW() >= ADDDATE(Invoice.DueOn, INTERVAL 90 DAY) THEN Invoice.Balance" .
 											"	END)";
+$arrSQLSelect['Total Overdue']			=	"SUM(CASE " .
+											"		WHEN NOW() > Invoice.DueOn THEN Invoice.Balance" .
+											"	END)";
+$arrSQLSelect['Total Oustanding']		= "SUM(Balance)";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
 $arrSQLFields = Array();
+$arrSQLFields['ShowArchived']	= Array(
+											'Type'					=> "dataBoolean",
+											'Documentation-Entity'	=> "DataReport",
+											'Documentation-Field'	=> "ShowArchivedAccounts",
+										);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-*/
+
 
 /*
 //----------------------------------------------------------------------------//

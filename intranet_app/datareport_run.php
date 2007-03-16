@@ -9,6 +9,9 @@
 	// call application loader
 	require ('config/application_loader.php');
 	
+	// call XLS generator
+	require_once('../framework/psxlsgen.php');
+	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_ADMIN;
@@ -32,10 +35,10 @@
 	{
 		$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input'], $_POST ['limit']);
 		
-		header('Content-type: text/csv');
-		header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.csv"');
+		header('Content-type: application/x-msexcel');
+		header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.xls"');
 		
-		echo CSVStatementSelect ($selResult);
+		echo XLSStatementSelect ($selResult);
 		exit;
 	}
 	

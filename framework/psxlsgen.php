@@ -156,6 +156,13 @@ if( !defined( "PHP_SIMPLE_XLS_GEN" ) ) {
         header ( "Content-Description: PHP Generated XLS Data" );
         print $this->xls_data;
      }
+     
+     // return data for dumping to browser
+     function GetFileStream()
+     {
+        $this->End();
+        return $this->xls_data;
+     }
 
      // change the default saving directory
      function ChangeDefaultDir( $newdir )
