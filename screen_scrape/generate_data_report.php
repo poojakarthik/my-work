@@ -86,7 +86,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-
+/*
 //----------------------------------------------------------------------------//
 // Aged Receivables (30/60/90 Days) Report per Account
 //----------------------------------------------------------------------------//
@@ -98,7 +98,7 @@ $arrDataReport['Summary']		= "Shows how much each Account owes, grouped by how o
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "Invoice JOIN Account ON Invoice.Account = Account.Id JOIN Contact ON Account.PrimaryContact = Contact.Id";
-$arrDataReport['SQLWhere']		= "(<ShowArchived> = 1) OR (<ShowArchived> = 0 AND Archived = 0)";
+$arrDataReport['SQLWhere']		= "(<ShowArchived> = 1) OR (<ShowArchived> = 0 AND Account.Archived = 0)";
 $arrDataReport['SQLGroupBy']	= "Invoice.Account \nHAVING SUM(Balance) > 0";
 
 // Documentation Reqs
@@ -106,6 +106,7 @@ $arrDocReqs = Array();
 $arrDocReq[]	= "Invoice";
 $arrDocReq[]	= "Account";
 $arrDocReq[]	= "Contact";
+$arrDocReq[]	= "DataReport";
 $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
@@ -157,7 +158,7 @@ $arrSQLFields['ShowArchived']	= Array(
 											'Documentation-Field'	=> "ShowArchivedAccounts",
 										);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-
+*/
 
 /*
 //----------------------------------------------------------------------------//
@@ -202,6 +203,130 @@ $arrSQLFields['EndDate']	= Array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
+
+/*
+//----------------------------------------------------------------------------//
+// Non-Archived Accounts with No/Invalid Email
+//----------------------------------------------------------------------------//
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Non-Archived Accounts with No Invalid Email";
+$arrDataReport['Summary']		= "Shows all Active Accounts who have no valid Email Address, but have their Billing Method set to Email";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Account";
+$arrDataReport['SQLWhere']		= "Account.BillingMethod = ".BILLING_METHOD_EMAIL." AND " .
+								"Account.Archived = 0 AND " .
+								"0 = (SELECT COUNT(Contact.Id) " .
+									"FROM Contact " .
+									"WHERE Contact.Email LIKE '%@%.%' AND " .
+									"Contact.Email NOT LIKE '%delinquents%' AND " .
+									"Contact.Account = Account.Id)";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "Account";
+$arrDocReq[]	= "Contact";
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Account No.']	= "Account.Id";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+
+//----------------------------------------------------------------------------//
+// Daily Provisioning Report
+//----------------------------------------------------------------------------//
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Daily Provisioning Report";
+$arrDataReport['Summary']		= "Shows information on any Provisioning Requests and Responses for a specified date.  Also lists Pending Requests.";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "(ProvisioningLog PL LEFT JOIN (Service, Request) ON (PL.Service = Service.Id AND Request.Id = PL.Request)) LEFT JOIN Employee ON Employee.Id = Request.Employee";
+$arrDataReport['SQLWhere']		=	"WHERE PL.Date BETWEEN <StartDate> AND <EndDate>\n" .
+									"ORDER BY PL.Date DESC\n" .
+									"\n" .
+									"UNION\n" .
+									"\n" .
+									"SELECT Request.Service AS Service, \n" .
+									"CASE\n" .
+									"	WHEN Request.Carrier = 1 THEN 'Unitel'\n" .
+									"	WHEN Request.Carrier = 2 THEN 'Optus'\n" .
+									"	WHEN Request.Carrier = 3 THEN 'AAPT'\n" .
+									"	WHEN Request.Carrier = 4 THEN 'iSeek'\n" .
+									"END AS Carrier,\n" .
+									"'Outbound AS Direction',\n" .
+									"DATE_FORMAT(PL2.Date, '%e/%m/%Y') AS Date,\n" .
+									"PL2.Description AS Description,\n" .
+									"DATE_FORMAT(Request.RequestDateTime, '%e/%m/%Y') AS RequestDate,\n" .
+									"CASE\n" .
+									"	WHEN PL2.Type - 600 THEN 'Other Service Operation'\n" .
+									"	WHEN PL2.Type - 601 THEN 'Service Gain'\n" .
+									"	WHEN PL2.Type - 602 THEN 'Service Loss'\n" .
+									"	ELSE NULL\n" .
+									"END AS Action,\n" .
+									"CONCAT(Employee.FirstName, ' ', Employee.LastName) AS Employee,\n" .
+									"CASE\n" . 
+									"	WHEN Request.RequestType = 900 THEN 'Full Service'\n" . 
+									"	WHEN Request.RequestType = 901 THEN 'Preselection'\n" . 
+									"	WHEN Request.RequestType = 902 THEN 'Soft Bar'\n" . 
+									"	WHEN Request.RequestType = 903 THEN 'Soft UnBar'\n" . 
+									"	WHEN Request.RequestType = 904 THEN 'Activation'\n" . 
+									"	WHEN Request.RequestType = 905 THEN 'Deactivation'\n" . 
+									"	WHEN Request.RequestType = 906 THEN 'Preselection Reversal'\n" . 
+									"	WHEN Request.RequestType = 907 THEN 'Full Service Reversal'\n" . 
+									"	WHEN Request.RequestType = 908 THEN 'Hard Bar'\n" . 
+									"	WHEN Request.RequestType = 909 THEN 'Hard UnBar'\n" . 
+									"	ELSE NULL\n" .
+									"END AS RequestType,\n" .
+									"Request.Status AS RequestStatus\n\n" .
+									"FROM ((Request JOIN Service ON Service.Id = Request.Service) JOIN Employee ON Employee.Id = Request.Employee) LEFT JOIN ProvisioningLog PL2 ON Request.Id = PL2.Request\n" .
+									"WHERE DATE_FORMAT(Request.RequestDateTime, '%e/%m/%Y') BETWEEN <StartDate> AND <EndDate>\n" .
+									"ORDER BY Request.RequestDateTime DESC";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Service Id']		= "PL.Service";
+$arrSQLSelect['Service FNN']	= "Service.FNN";
+$arrSQLSelect['Carrier']		=	"CASE\n" .
+									"WHEN PL.Carrier = 1 THEN 'Unitel'\n" .
+									"WHEN PL.Carrier = 2 THEN 'Optus'\n" .
+									"WHEN PL.Carrier = 3 THEN 'AAPT'\n" .
+									"WHEN PL.Carrier = 4 THEN 'iSeek'\n" .
+									"END AS Carrier\n";
+$arrSQLSelect['Direction']		=	"CASE\n" .
+									"WHEN PL.Direction = ".REQUEST_DIRECTION_OUTGOING." THEN 'Outbound'" .
+									"ELSE 'Inbound'";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrSQLSelect['Service Id']	= "PL.Service";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+
 
 //Debug($arrDataReport);
 //die;
@@ -259,5 +384,107 @@ Debug($arrDoc);
 Debug($arrSelect);
 Debug($strWhere);
 Debug($arrFields);
+
+
+/*
+SELECT PL.Service, 
+
+Service.FNN, 
+
+CASE
+	WHEN PL.Carrier = 1 THEN 'Unitel'
+	WHEN PL.Carrier = 2 THEN 'Optus'
+	WHEN PL.Carrier = 3 THEN 'AAPT'
+	WHEN PL.Carrier = 4 THEN 'iSeek'
+END AS Carrier,
+
+CASE
+	WHEN PL.Direction = 1 THEN 'Inbound' ELSE 'Outbound'
+END AS Direction,
+
+DATE_FORMAT(PL.Date, '%e/%m/%Y') AS Date,
+
+PL.Description AS Description,
+
+NULL AS RequestDate,
+
+CASE
+	WHEN PL.Type = 600 THEN 'Other Service Operation'
+	WHEN PL.Type = 601 THEN 'Service Gain'
+	WHEN PL.Type = 602 THEN 'Service Loss'
+	ELSE NULL
+END AS Action,
+
+CONCAT(Employee.FirstName, ' ', Employee.LastName) AS Employee,
+
+CASE
+	WHEN Request.RequestType = 900 THEN 'Full Service'
+	WHEN Request.RequestType = 901 THEN 'Preselection'
+	WHEN Request.RequestType = 902 THEN 'Soft Bar'
+	WHEN Request.RequestType = 903 THEN 'Soft UnBar'
+	WHEN Request.RequestType = 904 THEN 'Activation'
+	WHEN Request.RequestType = 905 THEN 'Deactivation'
+	WHEN Request.RequestType = 906 THEN 'Preselection Reversal'
+	WHEN Request.RequestType = 907 THEN 'Full Service Reversal'
+	WHEN Request.RequestType = 908 THEN 'Hard Bar'
+	WHEN Request.RequestType = 909 THEN 'Hard UnBar'
+	ELSE NULL
+END AS RequestType,
+
+Request.Status AS RequestStatus
+
+
+FROM (ProvisioningLog PL LEFT JOIN (Service, Request) ON (PL.Service = Service.Id AND Request.Id = PL.Request)) LEFT JOIN Employee ON Employee.Id = Request.Employee
+
+
+UNION
+
+SELECT Request.Service, 
+
+Service.FNN, 
+
+CASE
+	WHEN Request.Carrier = 1 THEN 'Unitel'
+	WHEN Request.Carrier = 2 THEN 'Optus'
+	WHEN Request.Carrier = 3 THEN 'AAPT'
+	WHEN Request.Carrier = 4 THEN 'iSeek'
+END AS Carrier,
+
+'Outbound' AS Direction,
+
+DATE_FORMAT(PL2.Date, '%e/%m/%Y') AS Date,
+
+PL2.Description AS Description,
+
+DATE_FORMAT(Request.RequestDateTime, '%e/%m/%Y') AS RequestDate,
+
+CASE
+	WHEN PL2.Type = 600 THEN 'Other Service Operation'
+	WHEN PL2.Type = 601 THEN 'Service Gain'
+	WHEN PL2.Type = 602 THEN 'Service Loss'
+	ELSE NULL
+END AS Action,
+
+CONCAT(Employee.FirstName, ' ', Employee.LastName) AS Employee,
+
+CASE
+	WHEN Request.RequestType = 900 THEN 'Full Service'
+	WHEN Request.RequestType = 901 THEN 'Preselection'
+	WHEN Request.RequestType = 902 THEN 'Soft Bar'
+	WHEN Request.RequestType = 903 THEN 'Soft UnBar'
+	WHEN Request.RequestType = 904 THEN 'Activation'
+	WHEN Request.RequestType = 905 THEN 'Deactivation'
+	WHEN Request.RequestType = 906 THEN 'Preselection Reversal'
+	WHEN Request.RequestType = 907 THEN 'Full Service Reversal'
+	WHEN Request.RequestType = 908 THEN 'Hard Bar'
+	WHEN Request.RequestType = 909 THEN 'Hard UnBar'
+	ELSE NULL
+END AS RequestType,
+
+Request.Status AS RequestStatus
+
+
+FROM ((Request JOIN Service ON Service.Id = Request.Service) JOIN Employee ON Employee.Id = Request.Employee) LEFT JOIN ProvisioningLog PL2 ON Request.Id = PL2.Request
+ */
 
 ?>
