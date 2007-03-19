@@ -144,10 +144,22 @@
 			// Write output
 			$xlsBarring->SaveFile($strPreselectionFilename);
 			
+			$mimMimeEmail = new Mail_Mime("\n");
+ 			$mimMimeEmail->setTXTBody("Attached: Telco Blue Automatically Generated Suspension Request File");
+		 	$mimMimeEmail->addAttachment($strPreselectionFilename, 'application/x-msexcel');
+		 	$emlMail =& Mail::factory('mail');
+		 	
+ 			$arrExtraHeaders = Array(
+ 										'From'		=> "provisioning@voiptel.com.au",
+ 										'Subject'	=> "Suspension File"
+ 									);
+ 			$strContent = $mimMime->get();
+ 			$arrHeaders = $mimMime->headers($arrExtraHeaders);
+			
 			// Email to Optus (as an attachment)
-			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Suspension File", "Attached: Telco Blue Automatically Generated Suspension Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
-			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Suspension File", "Attached: Telco Blue Automatically Generated Suspension Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-			if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Suspension File", "Attached: Telco Blue Automatically Generated Suspension Request File", $strPreselectionFilename))
+			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Suspension File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
+			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Suspension File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
+			if (!$emlMail->send('rich@voiptelsystems.com.au', $arrHeaders, $strContent))
 			{
 				Debug("Email failed!");
 				return FALSE;

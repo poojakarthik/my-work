@@ -25,7 +25,7 @@
  *
  */
 
-
+echo "<pre>";
 
 //----------------------------------------------------------------------------//
 // ApplicationProvisioning
@@ -76,8 +76,8 @@
  		$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleImportOptusStatus(&$this->db);
  		
  		// Init Provisioning Export Modules
-		//$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
-		//$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
  		//$this->_arrProvisioningModules[PRV_AAPT_EOE]				= new ProvisioningModuleExportAAPTEOE(&$this->db);
  		$this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP]	= new ProvisioningModuleExportOptusPreselection(&$this->db);
  		$this->_arrProvisioningModules[PRV_OPTUS_RESTORE_EXP]		= new ProvisioningModuleExportOptusRestore(&$this->db);
@@ -338,7 +338,7 @@
 				case CARRIER_UNITEL:
 					switch ($arrRequest['RequestType'])
 					{
-						/*case REQUEST_FULL_SERVICE:
+						case REQUEST_FULL_SERVICE:
 						case REQUEST_FULL_SERVICE_REVERSE:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP];
 							break;
@@ -353,7 +353,7 @@
 						case REQUEST_UNBAR_HARD:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP];
 							break;
-						*/	
+						
 						default:
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
 							continue 3;
@@ -441,7 +441,7 @@
 			}
 			
 			// Update the DB
-			//$ubiUpdateRequest->Execute($arrRequest);
+			$ubiUpdateRequest->Execute($arrRequest);
 		}
 		
 		$this->_rptProvisioningReport->AddMessage("\n[ SENDING REQUESTS ]\n");

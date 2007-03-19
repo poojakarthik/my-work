@@ -114,6 +114,10 @@ require_once($strFrameworkDir."exception_vixen.php");
 require_once($strFrameworkDir."psxlsgen.php");
 require_once($strFrameworkDir."mail_attachment.php");
 
+// load PEAR components
+require_once("Mail.php");
+require_once("Mail/mime.php");
+
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];

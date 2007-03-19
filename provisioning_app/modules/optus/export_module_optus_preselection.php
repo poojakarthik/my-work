@@ -183,10 +183,22 @@
 			// Write output
 			$xlsBarring->SaveFile($strPreselectionFilename);
 			
+			$mimMimeEmail = new Mail_Mime("\n");
+ 			$mimMimeEmail->setTXTBody("Attached: Telco Blue Automatically Generated Activation Request File");
+		 	$mimMimeEmail->addAttachment($strPreselectionFilename, 'application/x-msexcel');
+		 	$emlMail =& Mail::factory('mail');
+		 	
+ 			$arrExtraHeaders = Array(
+ 										'From'		=> "provisioning@voiptel.com.au",
+ 										'Subject'	=> "Activation File"
+ 									);
+ 			$strContent = $mimMime->get();
+ 			$arrHeaders = $mimMime->headers($arrExtraHeaders);
+			
 			// Email to Optus (as an attachment)
-			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
-			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-			if (!mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation Files", "Attached: Telco Blue Automatically Generated Activation Request File", $strPreselectionFilename))
+			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
+			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
+			if (!$emlMail->send('rich@voiptelsystems.com.au', $arrHeaders, $strContent))
 			{
 				Debug("Email failed!");
 				return FALSE;
@@ -198,7 +210,7 @@
 		}
 		
 		// Update sequence no
-		//$this->_updSetSequence->Execute(Array('Value' => $this->_intSequenceNo), Array('Name' => "OptusBatchNo", 'Module' => "Optus"));
+		$this->_updSetSequence->Execute(Array('Value' => $this->_intSequenceNo), Array('Name' => "OptusBatchNo", 'Module' => "Optus"));
 		// 679 is the starting sequence no
 		
 		// Return the number of records uploaded
