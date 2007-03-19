@@ -193,10 +193,20 @@
 			
 			if ($fltCancellationAmount <> 0)
 			{
+				// set service Id to NULL if oblib is stupid and returns a 0 for non existing service
+				//TODO!nate! $this->Pull ('Service')->getValue () should return NULL if there is no service
+				// either fix it (and all other objects that return 0 when they should return NULL) or just 
+				// go ahead and replace oblib !
+				$intService = $this->Pull ('Service')->getValue ();
+				if (!$intService)
+				{
+					$intService = NULL;
+				}
+				
 				$arrCharge = Array (
 					"AccountGroup"			=> $this->Pull ('AccountGroup')->getValue (),
 					"Account"				=> $this->Pull ('Account')->getValue (),
-					"Service"				=> $this->Pull ('Service')->getValue (),
+					"Service"				=> $intService,
 					"CreatedBy"				=> $aemAuthenticatedEmployee->Pull ('Id')->getValue (),
 					"CreatedOn"				=> new MySQLFunction ("NOW()"),
 					"ChargeType"			=> $this->Pull ('ChargeType')->getValue (),

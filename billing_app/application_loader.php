@@ -112,7 +112,6 @@ require_once($strFrameworkDir."db_access.php");
 require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
-require_once($strFrameworkDir."mail_attachment.php");
 
 // load modules
 require_once($strModuleDir."module_printing.php");

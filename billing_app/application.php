@@ -2090,17 +2090,22 @@
 		 			$mimMime = new Mail_mime("\n");
 		 			$mimMime->setTXTBody($strContent);
 		 			$mimMime->addAttachment($strPDFPath, 'application/pdf');
+					$strBody = $mimMime->get();
+					$strHeaders = $mimMime->headers($arrHeaders);
 		 			$emlMail =& Mail::factory('mail');
 		 			
 		 			// Send the email
-		 			if (!$emlMail->send('rich@voiptelsystems.com.au', $mimMime->headers($arrHeaders), $mimMime->get()))
+		 			if (!$emlMail->send('flame@voiptelsystems.com.au', $strHeaders, $strBody))
 		 			{
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
+						Die();
 		 				continue;
 		 			}
+					
 	 				
 	 				$this->_rptBillingReport->AddMessage("[   OK   ]");
 	 				$intPassed++;
+					Die();
 	 			}
  			}
  		}

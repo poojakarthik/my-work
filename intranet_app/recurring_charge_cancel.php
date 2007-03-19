@@ -40,7 +40,7 @@
 	
 	if ($_POST ['Confirm'])
 	{
-		// Cancel the Account
+		// Cancel the Recurring Charge
 		$rciRecurringCharge->Cancel ($athAuthentication->AuthenticatedEmployee ());
 		
 		header ("Location: recurring_charge_cancelled.php?Id=" . $rciRecurringCharge->Pull ('Id')->getValue ());
