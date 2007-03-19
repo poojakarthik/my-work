@@ -157,8 +157,8 @@
  										'From'		=> "provisioning@voiptel.com.au",
  										'Subject'	=> "Barring File"
  									);
- 			$strContent = $mimMime->get();
- 			$arrHeaders = $mimMime->headers($arrExtraHeaders);
+ 			$strContent = $mimMimeEmail->get();
+ 			$arrHeaders = $mimMimeEmail->headers($arrExtraHeaders);
 			
 			// Email to Optus (as an attachment)
 			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Barring File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
