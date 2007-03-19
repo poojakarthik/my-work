@@ -236,6 +236,15 @@
 
 					}
 					
+					// Check the file size, sleep for a second, check the size again (make sure a file isnt current uploading to the server)
+					$intFilesize = ftp_size($this->_resConnection, key($this->_arrFileListing));
+					sleep(1);
+					if ($intFilesize != ftp_size($this->_resConnection, key($this->_arrFileListing)))
+					{
+						// File is still uploading to the server, so ignore it, and call Download() again
+						return $this->Download($strDestination);
+					}
+					
 					// set download mode
 					if(strtolower(substr(key($this->_arrFileListing), -3)) == "zip")
 					{
