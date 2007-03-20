@@ -240,7 +240,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-
+/*
 //----------------------------------------------------------------------------//
 // Daily Provisioning Report
 //----------------------------------------------------------------------------//
@@ -325,8 +325,58 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 // SQL Fields
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
 
+//----------------------------------------------------------------------------//
+// Payment Import Summary
+//----------------------------------------------------------------------------//
 
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Payment Import Summary";
+$arrDataReport['Summary']		= "Shows all Payment files imported in a specified date range, and their totals";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "FileImport JOIN Payment ON Payment.File = FileImport.Id";
+$arrDataReport['SQLWhere']		= "FileImport.ImportedOn BETWEEN <StartDate> AND <EndDate> AND " .
+								"Payment.Status BETWEEN 100 AND 199";
+$arrDataReport['SQLGroupBy']	= "FileImport.Id";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['File Id']					= "FileImport.Id";
+$arrSQLSelect['Date Imported']				= "DATE_FORMAT(FileImport.ImportedOn, '%e/%m/%Y')";
+$arrSQLSelect['Origin']						= "\nCASE\n" .
+											"WHEN FileType = 1 THEN 'BillExpress'\n" .
+											"WHEN FileType = 2 THEN 'BPay'\n" .
+											"WHEN FileType = 3 THEN 'Cheque'\n" .
+											"WHEN FileType = 4 THEN 'SecurePay'\n" .
+											"WHEN FileType = 5 THEN 'Credit Card'\n" .
+											"END\n";
+$arrSQLSelect['Filename']					= "FileImport.FileName";
+$arrSQLSelect['No. of Payments']			= "COUNT(Payment.Id)";
+$arrSQLSelect['Total Received']				= "CONCAT('$', SUM(Payment.Amount))";
+$arrSQLSelect['Total Applied']				= "CONCAT('$', SUM(Payment.Amount) - SUM(Payment.Balance))";
+$arrSQLSelect['Unapplied/Overpayments']		= "CONCAT('$', SUM(Payment.Balance))";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 //Debug($arrDataReport);
 //die;
