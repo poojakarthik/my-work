@@ -9,8 +9,8 @@
 	// call application loader
 	require ('config/application_loader.php');
 	
-	// call XLS generator
-	require_once('../framework/psxlsgen.php');
+	// include XLS generator
+	require_once('Spreadsheet/Excel/Writer.php');
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
@@ -38,7 +38,43 @@
 		header('Content-type: application/x-msexcel');
 		header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.xls"');
 		
-		echo XLSStatementSelect ($selResult);
+
+		// Generate Excel 5 Workbook
+		$wkbWorkbook = new Spreadsheet_Excel_Writer();
+		$wkbWorkbook->send($rptReport->Pull ('Name')->getValue () . " - " . date ("Y-m-d h-i-s A") . ".xls");
+		$wksWorksheet =& $wkbWorkbook->addWorksheet();
+		
+		// Set up formatting styles
+		$fmtTitle =& $wksWorksheet->addFormat();
+		$fmtTitle->setBold();
+		$fmtTitle->setFgColor(48);
+		$fmtTitle->setBorder(1);
+		
+		// Add in the title row
+		$mdtMetaData = $selResult->MetaData();
+		$arrTitles = $mdtMetaData->fetch_fields();
+		foreach ($arrTitles as $intKey=>$strTitle)
+		{
+			$wksWorksheet->write(0, $intKey, $strTitle, $fmtTitle);
+		}
+		
+		// Add in remaining rows
+		$arrData = $selResult->FetchAll();
+		foreach ($arrData as $intRow=>$arrRow)
+		{
+			$intCol = 0;
+			foreach ($arrRow as $mixField)
+			{
+				$wksWorksheet->write($intRow, $intCol, $mixField);
+				$intCol++;
+			}
+		}
+		
+		// TODO: Add totals, if specified
+		// use $wksWorksheet->writeFormula
+
+		// Send the XLS file
+		$wkbWorkbook->close();
 		exit;
 	}
 	
