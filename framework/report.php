@@ -178,8 +178,9 @@ class Report
 	 * 
 	 * Finish the report
 	 * 
-	 * Closes the report, and delivers it to the specified email address
+	 * Closes the report, and delivers it to the specified email address and saves to a logfile if specified
 	 * 
+	 * @param	string		$strPath			optional The full path where the logfile should be saved
 	 * @return	int								no of emails sent
 	 * 
 	 * @method
@@ -187,8 +188,33 @@ class Report
 	 * @see		this->_strEmailAddressee
 	 * @see		this->_arrLines
 	 */
-	public function Finish()
+	public function Finish($strPassedPath = NULL)
 	{
+		if ($strPassedPath)
+		{
+			// Set final filename
+			$strPath = $strPassedPath;
+			$intNumber = 0;
+			while (file_exists($strPath))
+			{
+				$intNumber++;
+				$strPath = $strPassedPath."($intNumber)";
+			}
+			
+			// Write log file
+			if ($ptrFile = fopen($strPath, 'w'))
+			{
+				// write
+				fwrite($ptrFile, implode($this->_arrLines));
+				fclose($ptrFile);
+			}
+			else
+			{
+				// error
+				Debug("There was an error writing to the log file.");
+			}
+		}
+		
 		// Don't send mail for now
 		unset($this->_arrLines);
 		$this->_arrLines = Array();
@@ -239,12 +265,14 @@ class Report
 	 * @param	string		$strMessage			The new message line to be added
 	 * @param	boolean		$bolNewLine			optional Whether the message will be on a new line
 	 * 											Defaults to TRUE
+	 * @param	boolean		$bolDisplay			optional Whether the message will be printed to the screen
+	 * 											Defaults to TRUE
 	 * @return	void
 	 * 
 	 * @method
 	 * @see		this->_arrLines
 	 */
-	public function AddMessage($strMessage, $bolNewLine = TRUE)
+	public function AddMessage($strMessage, $bolNewLine = TRUE, $bolDisplay = TRUE)
 	{
 		// Add a new line character to the end of the message
 		if ($bolNewLine)
@@ -256,7 +284,7 @@ class Report
 		$this->_arrLines[] = $strMessage;
 		
 		// Debug the line
-		if($this->_bolDebugPrint)
+		if($this->_bolDebugPrint && $bolDisplay)
 		{		
 			Debug($strMessage, "rpt");
 		}
@@ -283,12 +311,14 @@ class Report
 	 * 											, and the Value is the value to be inserted.
 	 * @param	boolean		$bolNewLine			optional Whether the message will be on a new line
 	 * 											Defaults to TRUE
+	 * @param	boolean		$bolDisplay			optional Whether the message will be printed to the screen
+	 * 											Defaults to TRUE
 	 * @return	void
 	 * 
 	 * @method
 	 * @see		this->_arrLines
 	 */
-	public function AddMessageVariables($strMessage, $arrAliases, $bolNewLine = TRUE)
+	public function AddMessageVariables($strMessage, $arrAliases, $bolNewLine = TRUE, $bolDisplay = TRUE)
 	{
 		if (is_array($arrAliases))
 		{
@@ -297,7 +327,7 @@ class Report
 				$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
 			}
 		}
-		$this->AddMessage($strMessage, $bolNewLine);
+		$this->AddMessage($strMessage, $bolNewLine, $bolDisplay);
 	}	
 		
 	
