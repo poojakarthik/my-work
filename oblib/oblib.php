@@ -1114,6 +1114,7 @@
 			$this->_arrOutput[$insertpoint] = $array;
 		}
 		
+		
 		//------------------------------------------------------------------------//
 		// Paginate
 		//------------------------------------------------------------------------//
@@ -1177,6 +1178,7 @@
 			
 			//Adds top node of the inserted data (from InsertDOM() above)
 			$domRoot = $domOutput->documentElement;
+		
 			//Take each array of data from the queue and add it to domOutput
 			foreach ($this->_arrOutput as $strInsertPoint=>$arrRecords)
 			{
@@ -1185,18 +1187,27 @@
 				$domRoot->appendChild($ourNode);
 				
 				//Adds each field (and the data in each field) for each record
-				foreach ($arrRecords as $intKey=>$arrRecord)
+				foreach ($arrRecords as $intKey=>$mixRecord)
 				{
 					$idNode = new DomElement('Record', (string)$intKey);
 					$ourNode->appendChild($idNode);
-					foreach ($arrRecord as $strKey=>$attrib)
+					
+					if (is_array($mixRecord))
 					{
-						$subnode = new DomElement($strKey, $attrib);
-						$idNode->appendChild($subnode);
+						foreach ($mixRecord as $strKey=>$attrib)
+						{
+							$subnode = new DomElement($strKey, $attrib);
+							$idNode->appendChild($subnode);
+						}
+					}
+					else
+					{
+						$idNode = new DomElement($intKey, $mixRecord);
+						$ourNode->appendChild($idNode);
 					}
 				}
 			}
-			
+			//Debug($domOutput->SaveXML());die;
 			//Creation of XSLT processor and final output to XSL file
 	 		$xslProcessor = new XSLTProcessor;
             $xslProcessor->importStyleSheet ($this->_domDocument);    
