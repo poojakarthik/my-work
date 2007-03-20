@@ -36,6 +36,7 @@
 	
 	// Retrieve the Payments list
 	$payPayments = $Style->attachObject ($actAccount->Payments());
+	$payPaymentsnew = $Style->attachObject ($actAccount->Payments_new());
 
 	// Retrieve the PDF Listing
 	$pdlInvoices = $Style->attachObject ($actAccount->PDFInvoices ());

@@ -174,6 +174,7 @@
 	       					</xsl:call-template>
 						</span>
 					</td>
+
 				</tr>
 			</xsl:for-each>
 		</table>
@@ -257,6 +258,68 @@
 		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
 			<tr class="First">
 				<th width="30">#</th>
+				<th>Payment Date</th>
+				<th>Payment Type</th>
+				<th class='thRight'>Payment Amount</th>
+				<th width="10%"></th>
+				<th class='thRight'>Amount Applied</th>
+				<th width="10%"></th>
+				<th class='thRight'>Balance</th>
+			</tr>
+			<!-- <xsl:for-each select="/Response/AccountPayments/Results/rangeSample/InvoicePayment"> -->
+			<xsl:for-each select="/Response/Payments/Record">
+				<tr>
+					<xsl:attribute name="class">
+						<xsl:choose>
+							<xsl:when test="position() mod 2 = 1">
+								<xsl:text>Odd</xsl:text>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:text>Even</xsl:text>
+							</xsl:otherwise>
+						</xsl:choose>
+					</xsl:attribute>
+					
+					<td><xsl:value-of select="position()" />.</td>
+					<td>
+						<xsl:value-of select="./PaidOn" />
+					</td>
+					<td>
+							<xsl:value-of select="./TypeName" />
+					</td>
+				
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Amount" />
+							<xsl:with-param name="Decimal" select="number('2')" />
+    					</xsl:call-template>
+   					</td>
+					<td></td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Applied" />
+							<xsl:with-param name="Decimal" select="number('2')" />
+    					</xsl:call-template>
+   					</td>
+					<td></td>
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./Balance" />
+							<xsl:with-param name="Decimal" select="number('2')" />
+    					</xsl:call-template>
+   					</td>
+				</tr>
+			</xsl:for-each>
+		</table>
+		
+		<div class="Seperator"></div>
+		
+		<div class="Seperator"></div>
+		
+		<h2 class="Payment">Payments Applied</h2>
+		<table border="0" cellpadding="3" cellspacing="0" class="Listing" width="100%">
+			<tr class="First">
+				<th width="30">#</th>
 				<th>Invoice #</th>
 				<th>Payment Date</th>
 				<th class='thRight'>Payment Amount</th>
@@ -264,7 +327,7 @@
 				<th>Actions</th>
 			</tr>
 			<!-- <xsl:for-each select="/Response/AccountPayments/Results/rangeSample/InvoicePayment"> -->
-			<xsl:for-each select="/Response/AccountPayments/Record">
+			<xsl:for-each select="/Response/AppliedPayments/Record">
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>

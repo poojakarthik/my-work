@@ -236,6 +236,26 @@
 		/**
 		 * Payments()
 		 *
+		 * Retrieves Applied Payments that have been made specifically against this Account
+		 *
+		 * Retrieves Applied Payments that have been made specifically against this Account
+		 *
+		 * @return	Payments
+		 *
+		 * @method
+		 */
+		 
+		public function Payments ()
+		{
+			return new AppliedPayments ($this);
+		}
+		
+		//------------------------------------------------------------------------//
+		// Payments_new
+		//------------------------------------------------------------------------//
+		/**
+		 * Payments_new()
+		 *
 		 * Retrieves Payments that have been made specifically against this Account
 		 *
 		 * Retrieves Payments that have been made specifically against this Account
@@ -245,10 +265,11 @@
 		 * @method
 		 */
 		 
-		public function Payments ()
+		public function Payments_new ()
 		{
-			return new AccountPayments ($this);
+			return new Payments_new ($this);
 		}
+		
 		
 		//------------------------------------------------------------------------//
 		// PDFInvoices
