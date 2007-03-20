@@ -24,21 +24,6 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
-//echo "<pre>";
-
-// Application entry point - create an instance of the application object
-$appPayment = new ApplicationPayment($arrConfig);
-
-// Execute the application
-$appPayment->Execute();
-
-// finished
-echo("\n-- End of Payment --\n");
-//echo "</pre>";
-die();
-
-
 
 //----------------------------------------------------------------------------//
 // ApplicationPayment
@@ -179,6 +164,8 @@ die();
 		$arrReportLine['<Fail>']	= $this->_intProcessCount - $this->_intProcessPassed;
 		$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_FOOTER, $arrReportLine);
 		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
+		
+		$this->_rptPaymentReport->Finish("/home/vixen_logs/payment_app/".date("Y-m-d_Hi", time()).".log");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -210,7 +197,6 @@ die();
 		while ($arrFile = $this->_selGetPaymentFiles->Fetch())
 		{
 			$intCount++;
-			$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE, Array('<Id>' => TruncateName($arrFile['FileName'], 30)), FALSE);
 			
 			// Make sure the file exists
 			if (!file_exists($arrFile['Location']))
@@ -224,7 +210,7 @@ die();
 				}
 				
 				// Add to the Normalisation report
-				$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Cannot locate file '".$arrFile['Location']."'");
+				$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE.MSG_FAIL.MSG_REASON."Cannot locate file '".$arrFile['Location']."'", Array('<Id>' => TruncateName($arrFile['FileName'], 30)));
 				continue;
 			}
 			
@@ -256,7 +242,7 @@ die();
 				$intSequence++;
 			}
 			$intPassed++;
-			$this->_rptPaymentReport->AddMessage(MSG_OK);
+			$this->_rptPaymentReport->AddMessageVariables(MSG_IMPORT_LINE.MSG_OK, Array('<Id>' => TruncateName($arrFile['FileName'], 30)), TRUE, FALSE);
 			
 			// update file status
 			$arrColumns = Array();
@@ -304,11 +290,12 @@ die();
 		$intPassed = 0;
 		foreach($arrPayments as $arrPayment)
 		{			
-			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
 			// use payment module to decode the payment
 			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment['Payment']);
 			if($arrNormalised['Status'] !== $arrPayment['Status'] || !is_array($arrNormalised))
 			{
+				$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
+				
 				if (is_array($arrNormalised))
 				{
 					$intStatus = $arrNormalised['Status'];
@@ -360,11 +347,12 @@ die();
 			}
 			elseif(!$intResult)
 			{
+				$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
 				$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON."Unable to modify Payment record");
 			}
 			$intPassed++;
 			
-			$this->_rptPaymentReport->AddMessage(MSG_OK);
+			$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE.MSG_OK, Array('<Id>' => $arrPayment['Id']), TRUE, FALSE);
 		}
 		
 		$this->_intNormalisationPassed	+= $intPassed;
@@ -399,7 +387,7 @@ die();
 		
 		foreach($arrPayments as $arrPayment)
 		{
-			$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
+			$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_LINE, Array('<Id>' => $arrPayment['Id']), TRUE, FALSE);
 			
 			// set current payment
 			$this->_arrCurrentPayment = $arrPayment;
@@ -428,9 +416,7 @@ die();
 			
 			// while we have some payment left and an invoice to pay it against
 			while ($this->_arrCurrentPayment['Balance'] > 0.0 && ($arrInvoice = $selOutstandingInvoices->Fetch()))
-			{
-				$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE, Array('<Id>' => $arrInvoice['Id']));
-				
+			{				
 				// set current invoice
 				$this->_arrCurrentInvoice = $arrInvoice;
 				
@@ -439,7 +425,7 @@ die();
 				if ($fltBalance === FALSE)
 				{
 					// something went wrong
-					$this->_rptPaymentReport->AddMessage(MSG_FAIL.MSG_REASON);
+					$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE.MSG_FAIL.MSG_REASON, Array('<Id>' => $arrInvoice['Id']));
 					
 					// set status
 					$this->_arrCurrentPayment['Status'] = PAYMENT_BAD_PROCESS;
@@ -454,7 +440,7 @@ die();
 					Debug($this->_ubiPayment->Error());
 				}
 				
-				$this->_rptPaymentReport->AddMessage(MSG_OK);
+				$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE.MSG_OK, Array('<Id>' => $arrInvoice['Id']), TRUE, FALSE);
 			}
 			
 			// check if we have spent all our money
@@ -468,9 +454,6 @@ die();
 					Debug($this->_ubiPayment->Error());
 				}
 			}
-			
-			// Process successful
-			$this->_rptPaymentReport->AddMessage(MSG_OK);
 		}
 		return $intCount;
 	 }
