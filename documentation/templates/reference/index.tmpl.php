@@ -1,4 +1,9 @@
-<h3>APhPLIX Packages</h3>
+<table>
+<td> &nbsp;&nbsp; </td>
+<td>
+
+<div class='td_title'>APhPLIX Packages</div>
+<br>
 <?php
 	if (is_array($document['package']))
 	{
@@ -12,3 +17,6 @@
 		echo 'no packages';
 	}
 ?>
+
+</td>
+</table>

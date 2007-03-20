@@ -1,4 +1,7 @@
-<h3>Class : <?php echo $document['class'] ?></h3>
+<table>
+<td> &nbsp;&nbsp; </td>
+<td>
+<div class='td_title'>Class : <?php echo $document['class'] ?></div>
 
 <p>
 	<?php echo $document['short_description'] ?>
@@ -6,7 +9,7 @@
 	<br>
 </p>
 
-<h3>Description</h3>
+<div class='td_heading'>Description</div>
 <p>
 	<?php
 		if (trim($document['parent']))
@@ -44,24 +47,26 @@
 <?php	
 	if (is_array($document['method']))
 	{
-		echo "<b>Methods</b>";
+		echo "<div class='td_heading'>Methods</div>";
+		echo "<table cellpadding=2>";
 		echo "<ul>";
 		foreach ($document['method'] as $method=>$description)
 		{
-			echo "<li><a href='$link$package.$instance.$method'>$method</a> -- $description</li>";
+			echo "<tr><td><a href='$link$package.$instance.$method'>$method</a></td> <td>$description</td></tr>";
 		}
-		echo "</ul><br><br>";
+		echo "</ul></table><br><br>";
 	}
 	
 	if (is_array($document['property']))
 	{
-		echo "<b>Properties</b>";
+		echo "<div class='td_heading'>Properties</div>";
+		echo "<table cellpadding=2>";
 		echo "<ul>";
 		foreach ($document['property'] as $property=>$description)
 		{
-			echo "<li><a href='$link$package.$instance.$property'>$property</a> -- $description</li>";
+			echo "<tr><td><a href='$link$package.$instance.$property'>$property</a></td> <td> $description</td></tr>";
 		}
-		echo "</ul><br><br>";
+		echo "</ul></table><br><br>";
 	}
 ?>
 <br>
@@ -89,3 +94,5 @@
 	echo '<pre>';
 	*/
 ?>
+</td>
+</table>

@@ -1,4 +1,7 @@
-<h3><?php echo $document['class'].$join.$document['title'] ?></h3>
+<table>
+<td> &nbsp;&nbsp; </td>
+<td>
+<div class='td_title'><?php echo $document['class'].$join.$document['title'] ?></div>
 
 <p>
 	<?php echo $document['short_description'] ?>
@@ -6,7 +9,7 @@
 	<br>
 </p>
 
-<h3>Description</h3>
+<div class='td_heading'>Description</div>
 <p>
 	<?php echo $document['class'].$join.$document['title'] ?>
 	<br>
@@ -22,7 +25,7 @@
 	<br>
 </p>
 
-<h3>Usage</h3>
+<div class='td_heading'>Usage</div>
 <p>
 	<br>
 	Type : &nbsp; <?php echo $document['type']; ?>
@@ -53,3 +56,5 @@
 	echo '<pre>';
 	*/
 ?>
+</td>
+</table>

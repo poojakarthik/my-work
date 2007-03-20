@@ -43,7 +43,15 @@
 			
 			return $this->_DATA [] =& $arrayItem;
 		}
+		/*
+				public function PushArray ($arrNode)
+		{
 		
+			$this->_DATA ['accountPaymentus'] =& $arrNode;
+			
+			return $this->_DATA ['accountPaymentus'];
+		}
+		*/
 		public function Pop (&$arrayItem)
 		{
 			foreach ($this->_DATA AS $index => &$_DATA)

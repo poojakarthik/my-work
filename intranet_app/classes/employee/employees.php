@@ -38,7 +38,8 @@
 	 * @extends		dataObject
 	 */
 	
-	class Employees extends Search
+	//class Employees extends Search
+	class Employees extends dataObject
 	{
 		//------------------------------------------------------------------------//
 		// __construct
@@ -53,9 +54,35 @@
 		 * @method
 		 */
 		 
-		function __construct ()
+		function __construct ($currPage, $rangeLength)
 		{
-			parent::__construct ('Employees', 'Employee', 'Employee');
+			//parent::__construct ('Employees', 'Employee', 'Employee');
+			
+			$rangeStart = ($currPage - 1) * $rangeLength;
+
+			$selInvoice = new StatementSelect ('Employee', '*', 'Archived = <Archived>', NULL, $rangeStart . ', ' . $rangeLength );
+			$selInvoice->useObLib (TRUE);
+			$selInvoice->Execute (Array ('Archived' => 0));
+			$arrResults = $selInvoice->FetchAll ($this);
+			
+			// Now that we know what we're dealing with, we can find out
+			// how many rows/results we have for this particular search.
+			
+			$selCount = $selInvoice->Count();
+			
+			//Paginate ($arrResults, $collationLength, $currPage, $rangeLength)
+			
+			$GLOBALS['Style']->Paginate($arrResults, $selCount, $currPage, $rangeLength, 'Employees');
+
+			//Debug ($arrPagination);
+			//Debug($arrResults);die;
+			//Debug ($arrLength);
+			$GLOBALS['Style']->InsertDOM($arrResults, 'Employees');
+		}
+		
+		function Sample ($intPage, $intLength)
+		{
+			return Search::Sample($intPage, $intLength);
 		}
 		
 		//------------------------------------------------------------------------//

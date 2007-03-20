@@ -1,4 +1,7 @@
-<h3><?php echo $document['title'] ?></h3>
+<table>
+<td> &nbsp;&nbsp; </td>
+<td>
+<div class='td_title'><?php echo $document['title'] ?></div>
 
 <p>
 	<?php echo $document['short_description'] ?>
@@ -6,7 +9,7 @@
 	<br>
 </p>
 
-<h3>Description</h3>
+<div class='td_heading'>Description</div>
 <p>
 	<?php echo $document['title'] ?>()
 	<br>
@@ -22,7 +25,7 @@
 	<br>
 </p>
 
-<h3>Usage</h3>
+<div class='td_heading'>Usage</div>
 <p>
 	<?php
 		$params = array();
@@ -64,7 +67,7 @@
 		if (is_array($document['param']))
 		{
 			echo "Parameters :<br>";
-			echo "<table border=0>";
+			echo "<table border=0 cellpadding='1'>";
 			foreach($document['param'] as $key=>$param)
 			{
 	?>
@@ -115,3 +118,5 @@
 	echo '<pre>';
 	*/
 ?>
+</td>
+</table>

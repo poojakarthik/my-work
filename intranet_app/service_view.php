@@ -6,13 +6,13 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 	
-	// call application loader
 	require ('config/application_loader.php');
+	// call application loader
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_RATE_PLAN | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_RECURRING_CHARGE | MODULE_BILLING | MODULE_CHARGE_TYPE | MODULE_COST_CENTRE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_RATE_PLAN | MODULE_NOTE | MODULE_EMPLOYEE | MODULE_RECURRING_CHARGE | MODULE_BILLING | MODULE_CHARGE_TYPE | MODULE_COST_CENTRE | MODULE_INBOUND;
 	
 	// call application
 	require ('config/application.php');
@@ -23,6 +23,7 @@
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Charge Type');
 	$docDocumentation->Explain ('Recurring Charge Type');
+	$docDocumentation->Explain ('Service Inbound');
 	
 	try
 	{
@@ -35,6 +36,21 @@
 		$Style->Output ('xsl/content/service/notfound.xsl');
 		exit;
 	}
+	
+	//Get the details if an Inbound Service
+	try
+	{
+		if ($srvService->Pull ('ServiceType')->getValue () == SERVICE_TYPE_INBOUND)
+		{
+			$inbInboundDetails = $Style->attachObject (new InboundDetail ($_GET ['Id']));
+			
+		}
+	}
+	catch (Exception $e)
+	{
+	
+    }
+	
 	
 	// Get the Amount of Unbilled Charges
 	$srvService->UnbilledChargeCostCurrent ();
@@ -78,6 +94,7 @@
 	{
 	}
 	
+
 	$Style->Output (
 		'xsl/content/service/view.xsl',
 		Array (

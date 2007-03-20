@@ -138,7 +138,7 @@
 			// Put all of the dataArray Constraints into a PHP Array
 			// so that we can do a Search against the constraint
 			$this->_arrConditions = Array ();
-			
+
 			foreach ($oblarrConstraints AS $Item)
 			{
 				$this->_arrConditions [uniqid ()] = Array (

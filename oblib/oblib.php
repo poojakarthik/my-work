@@ -327,10 +327,9 @@
 			}
 			
 			$this->_DATA [$nodeItem->tagName ()] =& $nodeItem;
-			
 			return $this->_DATA [$nodeItem->tagName ()];
 		}
-		
+
 		public function Pop ($nodeName)
 		{
 			$nodeItem = $this->_DATA [$nodeName];
@@ -363,7 +362,7 @@
 					)
 				);
 			}
-			
+
 			return $this->_DOMDocument;
 		}
 		
@@ -642,7 +641,22 @@
 			
 			return $this->_DATA [] =& $arrayItem;
 		}
-		
+		/*
+		public function PushArray (&$arrayItem)
+		{
+			if (!is_object ($arrayItem))
+			{
+				throw new Exception ('Variable is not an object: ' . $arrayItem);
+			}
+			
+			if (!($arrayItem instanceOf $this->nodeType))
+			{
+				throw new Exception ('Variable is not an instance of ' . $this->nodeType . ': ' . $arrayItem);
+			}
+			
+			return $this->_DATA [] =& $arrayItem;
+		}
+		*/
 		public function Pop (&$arrayItem)
 		{
 			foreach ($this->_DATA AS $index => &$_DATA)
@@ -668,14 +682,17 @@
 		{
 			foreach ($this->_DATA AS $arrItem)
 			{
-				$this->_DOMElement->appendChild
-				(
-					$this->_DOMDocument->importNode
-					(
-						$arrItem->Output ()->documentElement, 
-						true
-					)
-				);
+				$domItem = $arrItem->Output ()->documentElement;
+				if ($domItem !== NULL)
+				{
+					$domChild = $this->_DOMDocument->importNode($domItem, true);
+					$this->_DOMElement->appendChild($domChild);
+				}
+				else
+				{
+					//echo 'itdied';
+					//die;
+				}
 			}
 		
 			return $this->_DOMDocument;
@@ -1043,11 +1060,16 @@
  		
  		private $xslContent;
  		private $strApplicationDir;
+		private $topnode;
+		private $domOutput;
+		
+		
  		
  		function __construct (&$strApplicationDir)
  		{
  			$this->strApplicationDir =& $strApplicationDir;
  			$this->xslContent = new dataArray ("Response");
+			$this->_arrOutput = Array();
  		}
  		
  		public function attachObject (&$dataObject)
@@ -1068,15 +1090,81 @@
 			return '<pre>' . htmlentities ($this->xslContent->Output ()->SaveXML ()) . '</pre>';
 		}
  		
+		// add an array of data to the queue to be added to domOutput
+		public function InsertDOM ($array, $insertpoint)
+		{		
+			$this->_arrOutput[$insertpoint] = $array;
+		}
+		
+		
+		public function Paginate ($arrResults, $collationLength, $currPage, $rangeLength, $strInsertPoint)
+		{
+			$rangeStart = ($currPage - 1) * $rangeLength;
+			$arrCollection = Array ('Results' => $arrResults);
+			$totalPages = ($rangeLength <> 0 && $collationLength <> 0) ? ceil ($collationLength / $rangeLength) : 0;
+			$arrPagination = Array('collationLength' => $collationLength, 'rangeStart' => $rangeStart, 'rangeLength' => $rangeLength, 'currPage' => $currPage, 'totalPages' => $totalPages); 
+			$GLOBALS['Style']->InsertDOM($arrPagination, $strInsertPoint);
+		}
+			
+
  		public function Output ($strXSLFilename)
  		{
- 			$xslDocument = new DOMDocument ('1.0', 'utf-8');
- 			$xslDocument->load ($this->strApplicationDir . $strXSLFilename);
- 			
- 			$xslProcessor = new XSLTProcessor;
- 			$xslProcessor->importStyleSheet ($xslDocument);
- 			
- 			echo $xslProcessor->transformToXML ($this->xslContent->Output ());
+			if (!$this->_domDocument)
+			{
+				$this->_domDocument = new DomDocument ('1.0', 'utf-8');
+			}
+			//Debug($this->_arrOutput)
+            $this->_domDocument->load ($this->strApplicationDir . $strXSLFilename);
+            
+			// domOutput is the existing DOMDocument created from the oblib framework
+			// domRoot is the root node of this document, in the form of a DOMElement
+			$domOutput = $this->xslContent->Output ();
+			$domRoot = $domOutput->documentElement;
+			// take each array of data from the queue and add it to domOutput
+			foreach ($this->_arrOutput as $strInsertPoint=>$arrRecords)
+			{
+				$ourNode = new DomElement($strInsertPoint, '');
+				$domRoot->appendChild($ourNode);
+				//take first five elements, create new nodes
+				// then do rest of them by removing them
+				//Debug($arrRecords);die;
+		
+				foreach ($arrRecords as $intKey=>$arrRecord)
+				{
+					$idNode = new DomElement('Record', (string)$intKey);
+					$ourNode->appendChild($idNode);
+					foreach ($arrRecord as $strKey=>$attrib)
+					{
+						$subnode = new DomElement($strKey, $attrib);
+						$idNode->appendChild($subnode);
+					}
+				}
+				
+				
+				// all this other stuff that we dont use,
+				// but might be used elsewhere
+				
+				// if collationLength is used, reference it in xsl docs
+				// otherwise use count(record) and remove collationLength
+				
+				/*
+					<collationLength>13</collationLength> -> total number of records
+      				<rangePage>1</rangePage>
+      				<rangePages>1</rangePages>
+      				<rangeStart>0</rangeStart>
+      				<rangeLength>13</rangeLength>
+	  			*/
+				//$ourCollation = new DomElement('collationLength',$intKey);
+				//$ourNode->appendChild($ourCollation);
+			}
+			
+			//Debug($domOutput->SaveXML());die;
+			
+			$xslProcessor = new XSLTProcessor;
+            $xslProcessor->importStyleSheet ($this->_domDocument);
+			      
+            echo $xslProcessor->transformToXML ($domOutput);
+
  		}
  	}
 

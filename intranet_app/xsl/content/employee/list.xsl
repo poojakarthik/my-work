@@ -15,7 +15,7 @@
 				<th>User Name</th>
 				<th>Actions</th>
 			</tr>
-			<xsl:for-each select="/Response/Employees/Results/rangeSample/Employee">
+			<xsl:for-each select="/Response/Employees/Record">
 				<xsl:sort select="./LastName" />
 				<tr>
 					<xsl:attribute name="class">
@@ -29,7 +29,7 @@
 						</xsl:choose>
 					</xsl:attribute>
 					
-					<td><xsl:value-of select="/Response/Employees/Results/rangeStart + position()" />.</td>
+					<td><xsl:value-of select="position()" />.</td>
 					<td><xsl:value-of select="./FirstName" /></td>
 					<td><xsl:value-of select="./LastName" /></td>
 					<td><xsl:value-of select="./UserName" /></td>
@@ -53,12 +53,12 @@
 			</xsl:for-each>
 		</table>
 		<xsl:choose>
-			<xsl:when test="/Response/Employees/Results/collationLength = 0">
+			<xsl:when test="/Response/Employees/collationLength = 0">
 				<div class="MsgErrorWide">
 					There were no results matching your search. Please change your search and try again.
 				</div>
 			</xsl:when>
-			<xsl:when test="count(/Response/Employees/Results/rangeSample/Employee) = 0">
+			<xsl:when test="count(/Response/Employees/Record) = 0">
 				<div class="MsgNoticeWide">
 					There were no results matching your search. Please change your search and try again.
 				</div>

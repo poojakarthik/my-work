@@ -25,7 +25,7 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  */
 
- 	class style
+ 	/*class style
  	{
  		
  		private $xslContent;
@@ -62,9 +62,10 @@
  			
  			$xslProcessor = new XSLTProcessor;
  			$xslProcessor->importStyleSheet ($xslDocument);
+					
  			
  			echo $xslProcessor->transformToXML ($this->xslContent->Output ());
  		}
- 	}
+ 	}*/
  	
 ?>

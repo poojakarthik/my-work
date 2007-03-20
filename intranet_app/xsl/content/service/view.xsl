@@ -223,6 +223,43 @@
 									</xsl:choose>
 								</td>
 							</tr>
+							<xsl:choose>
+								<xsl:when test="/Response/InboundDetail">
+									<tr>
+										<th>
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Service Inbound')" />
+												<xsl:with-param name="field" select="string('AnswerPoint')" />							
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:choose>
+												<xsl:when test="/Response/InboundDetail/AnswerPoint">
+													<xsl:value-of select="/Response/InboundDetail/AnswerPoint" />
+												</xsl:when>
+											</xsl:choose>
+										</td>
+									</tr>
+									<tr>
+										<th>
+											<xsl:call-template name="Label">
+												<xsl:with-param name="entity" select="string('Service Inbound')" />
+												<xsl:with-param name="field" select="string('Config')" />
+											</xsl:call-template>
+										</th>
+										<td>
+											<xsl:choose>
+												<xsl:when test="/Response/InboundDetail/Config">
+													<xsl:value-of select="/Response/InboundDetail/Config" />											
+												</xsl:when>
+												<xsl:otherwise>
+													<span>None</span>
+												</xsl:otherwise>
+											</xsl:choose>
+										</td>
+									</tr>										
+								</xsl:when>
+							</xsl:choose>
 						</table>
 					</div>
 					<div class="LinkEdit">
@@ -454,18 +491,7 @@
 								</a>
 							</li>
 						</xsl:if>
-						<xsl:if test="/Response/Service/ServiceType = 101">
-							<li>
-								<!-- TODO!bash! [  DONE  ]		make this point to a mobile provisioning page -->
-								<a>
-									<xsl:attribute name="href">
-										<xsl:text>service_mobile_details.php?Service=</xsl:text>
-										<xsl:value-of select="/Response/Service/Id" />
-									</xsl:attribute>
-									<xsl:text>Mobile Provisioning</xsl:text>
-								</a>
-							</li>
-						</xsl:if>
+						
 					</ul>
 					
 					<div class="Seperator"></div>

@@ -1051,7 +1051,7 @@ class MySQLFunction
 	 */ 
 	function FetchNext()
 	{
-		// incrament the counter
+		// increment the counter
 		$this->intCounter++;
 		
 		// check if we need to get the next batch of results
@@ -2025,6 +2025,7 @@ class MySQLFunction
 		 		array_unshift($arrParams, $strType);
 				call_user_func_array(Array($this->_stmtSqlStatment,"bind_param"), $arrParams);
 			}
+			//Debug ($this);
 	 	}
 		
 	 	// Free any previous results
@@ -2057,7 +2058,6 @@ class MySQLFunction
 	 	}
 		
 		call_user_func_array(Array($this->_stmtSqlStatment,"bind_result"), $arrFields);
-		
 		return $this->_stmtSqlStatment->num_rows;
 	}
 	

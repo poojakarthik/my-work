@@ -220,9 +220,14 @@
 		 
 		public function Invoices ()
 		{
+			/* ORIGINAL
 			$ivlInvoices = new Invoices;
 			$ivlInvoices->Constrain ('Account', '=', $this->Pull ('Id')->getValue ());
 			return $ivlInvoices;
+			*/
+			
+			return new Invoices($this->Pull ('Id')->getValue ());
+			
 		}
 		
 		//------------------------------------------------------------------------//

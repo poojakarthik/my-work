@@ -30,7 +30,7 @@
 		<form method="POST" action="service_edit.php">
 			<!--Service Details -->
 			<h2 class="Service">Service Details</h2>
-			<div class="Wide-Form">
+			<div class="Narrow-Form">
 				<div class="Form-Content">
 					<input type="hidden" name="Id">
 						<xsl:attribute name="value">
@@ -130,12 +130,166 @@
 				</div>
 			</div>
 			
+
+			<xsl:if test="/Response/Service/ServiceType = 101">			
+				
+				<div class="Seperator"></div>
+				<h2 class="Service">Mobile Details</h2>
+				
+				
+							
+				<div class="Narrow-Form">
+					<table border="0" cellpadding="3" cellspacing="0">
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service Mobile')" />
+									<xsl:with-param name="field" select="string('SimPUK')" />
+								</xsl:call-template>
+							</th>
+						<td>
+							<input type="text" name="SimPUK" class="input-string">
+								<xsl:attribute name="value">
+									<xsl:text></xsl:text>
+									<xsl:value-of select="/Response/ui-values/SimPUK" />
+								</xsl:attribute>
+							</input>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service Mobile')" />
+								<xsl:with-param name="field" select="string('SimESN')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<input type="text" name="SimESN" class="input-string">
+								<xsl:attribute name="value">
+									<xsl:text></xsl:text>
+									<xsl:value-of select="/Response/ui-values/SimESN" />
+								</xsl:attribute>
+							</input>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service Mobile')" />
+								<xsl:with-param name="field" select="string('SimState')" />
+							</xsl:call-template>
+						</th>
+						<!-- TODO!flame! (originally Bash) You need to base state and date of birth on contact details-->
+						<!-- TODO!flame! 
+							Recommendation: Because this is the information stored on the service's server (eg. UNITEL),
+							I dont' know if this is since a good idea.
+						-->
+						<td>
+							<select name="SimState">
+								<xsl:for-each select="/Response/ServiceStateTypes/ServiceStateType">
+									<option>
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="./Id" />
+										</xsl:attribute>
+										<xsl:if test="./Id = /Response/ui-values/SimState">
+											<xsl:attribute name="selected">
+												<xsl:text>selected</xsl:text>
+											</xsl:attribute>
+										</xsl:if>
+										<xsl:text></xsl:text>
+										<xsl:value-of select="./Name" />
+									</option>
+								</xsl:for-each>
+							</select>
+						</td>
+					</tr>
+					<!--TODO!bash! Urgent - do not show dates which allow the person to be <18-->
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service Mobile')" />
+								<xsl:with-param name="field" select="string('DOB')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<xsl:call-template name="DOB">
+								<xsl:with-param name="Name-Day"			select="string('DOB[day]')" />
+								<xsl:with-param name="Name-Month"		select="string('DOB[month]')" />
+								<xsl:with-param name="Name-Year"		select="string('DOB[year]')" />
+								<xsl:with-param name="Selected-Day"		select="/Response/ui-values/DOB-day" />
+								<xsl:with-param name="Selected-Month"	select="/Response/ui-values/DOB-month" />
+								<xsl:with-param name="Selected-Year"	select="/Response/ui-values/DOB-year" />
+							</xsl:call-template>
+						</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth" valign="top">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service Mobile')" />
+								<xsl:with-param name="field" select="string('Comments')" />
+							</xsl:call-template>
+						</th>
+						<td>
+							<textarea name="Comments" class="input-summary">
+								<xsl:text></xsl:text>
+								<xsl:value-of select="/Response/ui-values/Comments" />
+							</textarea>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</xsl:if>
+		<xsl:if test="Response/Service/ServiceType = 103">
+		<div class="Seperator"></div>
+			<h2 class="Service">Inbound Details</h2>
+			<div class="Narrow-Form">
+				<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service Inbound')" />
+								<xsl:with-param name="field" select="string('AnswerPoint')" />
+							</xsl:call-template>
+						</th>
+					<td>
+						<input type="text" name="AnswerPoint" class="input-string">
+							<xsl:attribute name="value">
+								<xsl:text></xsl:text>
+								<xsl:value-of select="/Response/ui-values/AnswerPoint" />
+							</xsl:attribute>
+						</input>
+					</td>
+					</tr>
+					<tr>
+						<th class="JustifiedWidth">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Service Inbound')" />
+								<xsl:with-param name="field" select="string('Config')" />
+							</xsl:call-template>
+						</th>
+					<td>
+						<input type="text-area" name="Config" class="input-string">
+							<xsl:attribute name="value">
+								<xsl:text></xsl:text>
+								<xsl:value-of select="/Response/ui-values/Config" />
+							</xsl:attribute>
+						</input>
+					</td>
+					</tr>
+				</table>
+			</div>	
+		</xsl:if>		
+		
+		<div class="SmallSeperator"></div>
+						
+						
 			<div class="Seperator"></div>
 			
 			
 			<!-- Archive Status -->
 			<h2 class="Archive">Archive Status</h2>
-			<div class="Wide-Form">
+			<div class="Narrow-Form">
 				<div class="Form-Content">
 					<xsl:choose>
 						<xsl:when test="/Response/Service/ClosedOn/year">

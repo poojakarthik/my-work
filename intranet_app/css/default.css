@@ -25,6 +25,8 @@
 		float:                right;
 	}
 	
+		
+		
 	.Clear
 	{
 		clear:                both;
@@ -276,6 +278,10 @@
 		text-align:				left;
 	}
 	
+	.thRight
+	{
+		text-align:				right;
+	}
 	
 	
 	input, select

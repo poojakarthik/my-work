@@ -18,6 +18,15 @@
 		
 		private $_DATA;
 		
+		
+		/*
+						$this, 
+				$this->tagName (),
+				$this->nodeType,
+				$this->collationLength,
+				$rangePage,
+				$rangeLength
+				*/
 		function __construct (&$_COLLATION, $nodeName, $nodeType, $collationLength, $rangePage=1, $rangeLength=null)
 		{
 			parent::__construct ($nodeName, $rangePage);

@@ -176,7 +176,9 @@
 						<div class="Narrow-Form">
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
+
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -193,7 +195,9 @@
 									</td>
 								</tr>
 								<tr>
+
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -210,7 +214,9 @@
 									</td>
 								</tr>
 								<tr>
+
 									<td class="Required"></td>
+
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -227,7 +233,9 @@
 									</td>
 								</tr>
 								<tr>
+
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />
@@ -245,7 +253,9 @@
 								</tr>
 								<!--TODO!bash! URGENT verify postcode - only 4 digit number-->
 								<tr>
+
 									<td class="Required"><span class="Red"><strong>*</strong></span></td>
+
 									<th class="JustifiedWidth">
 										<xsl:call-template name="Label">
 											<xsl:with-param name="entity" select="string('Service Address')" />

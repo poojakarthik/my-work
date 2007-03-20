@@ -65,16 +65,17 @@
 				<th width="30">#</th>
 				<th>Invoice #</th>
 				<th>Date</th>
-				<th class="Currency" width="100">Opening Balance</th>
-				<th class="Currency" width="100">Credits (ex-tax)</th>
-				<th class="Currency" width="100">Debits (ex-tax)</th>
-				<th class="Currency" width="100">Total (ex-tax)</th>
+				<th class='thRight'>Opening Balance</th>
+				<th class='thRight'>Credits (ex-tax)</th>
+				<th class='thRight'>Debits (ex-tax)</th>
+				<th class='thRight'>Total</th>
 				<!--TODO!bash! [  DONE  ]		you need to have a tax column - otherwise it looks like the total and balance columns do not add up!!! -->
 				<!-- <th class="Currency" width="100">Total (inc-tax)</th> -->
-				<th class="Currency" width="100">Invoice Balance</th>
-				<th class="Currency" width="100">Disputed</th>
+				<th class='thRight'>Invoice Balance</th>
+				<th class='thRight'>Disputed</th>
 			</tr>
-			<xsl:for-each select="/Response/Invoices/Results/rangeSample/Invoice">
+			<!-- <xsl:for-each select="/Response/Invoices/Results/rangeSample/Invoice"> -->
+			<xsl:for-each select="/Response/Invoices/Record">
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>
@@ -97,12 +98,14 @@
 						</a>
 					</td>
 					<td>
-						<xsl:call-template name="dt:format-date-time">
+						<!-- <xsl:call-template name="dt:format-date-time">  
 							<xsl:with-param name="year"		select="./CreatedOn/year" />
 							<xsl:with-param name="month"	select="./CreatedOn/month" />
 							<xsl:with-param name="day"		select="./CreatedOn/day" />
 							<xsl:with-param name="format"	select="'%m/%Y'"/>
-						</xsl:call-template>
+							<xsl:with-param name="date"		select="./CreatedOn" />
+						</xsl:call-template> -->
+						<xsl:value-of select="./CreatedOn" />
 					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
@@ -128,12 +131,7 @@
 							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
        				</td>
-					<!-- <td class="Currency">
-		       			<xsl:call-template name="Currency">
-		       				<xsl:with-param name="Number" select="./Tax" />
-							<xsl:with-param name="Decimal" select="number('2')" />
-       					</xsl:call-template>
-       				</td> -->
+					
 					<td class="Currency">
 						<strong>
 							<span>
@@ -261,10 +259,12 @@
 				<th width="30">#</th>
 				<th>Invoice #</th>
 				<th>Payment Date</th>
-				<th>Payment Amount</th>
+				<th class='thRight'>Payment Amount</th>
+				<th width="10%"></th>
 				<th>Actions</th>
 			</tr>
-			<xsl:for-each select="/Response/AccountPayments/Results/rangeSample/InvoicePayment">
+			<!-- <xsl:for-each select="/Response/AccountPayments/Results/rangeSample/InvoicePayment"> -->
+			<xsl:for-each select="/Response/AccountPayments/Record">
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>
@@ -284,24 +284,20 @@
 								<xsl:text>invoice_view.php?Invoice=</xsl:text>
 								<xsl:value-of select="./Invoice" />
 							</xsl:attribute>
-							<xsl:value-of select="./Date" />
+							<!-- <xsl:value-of select="./Id" /> -->
 						</a>
 					</td>
 					<td>
-						<a>
-							<xsl:attribute name="href">
-								<xsl:text>invoice_view.php?Invoice=</xsl:text>
-								<xsl:value-of select="./Invoice" />
-							</xsl:attribute>
-							<xsl:value-of select="./Invoice" />
-						</a>
+							<xsl:value-of select="./PaidOn" />
 					</td>
-					<td>
+				
+					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Amount" />
 							<xsl:with-param name="Decimal" select="number('2')" />
     					</xsl:call-template>
    					</td>
+					<td></td>
 					<td>
 						<a href="#" title="View Invoice Payment Details" alt="Information about a payment that was made">
 							<xsl:attribute name="onclick">
@@ -316,7 +312,8 @@
 			</xsl:for-each>
 		</table>
 		<xsl:choose>
-			<xsl:when test="/Response/AccountPayments/Results/collationLength = 0">
+			<!-- <xsl:when test="count(/Response/AccountPayments/Record) = 0"> -->
+			<xsl:when test="/Response/AccountPayments/collationLength = 0">
 				<div class="MsgNoticeWide">
 					There are no Payments associated with this Account.
 				</div>

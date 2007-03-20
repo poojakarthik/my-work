@@ -850,6 +850,87 @@
 				$insMobileDetail = $insMobileDetail->Execute ($arrData);
 			}
 		}
+
+		//------------------------------------------------------------------------//
+		// InboundDetailUpdate
+		//------------------------------------------------------------------------//
+		/**
+		 * InboundDetailUpdate()
+		 *
+		 * Update information about Inbound call services
+		 *
+		 * Save the inbound information to the Database
+		 *
+		 * @param	Array		$arrDetails		An associative array of service Details
+		 *
+		 * @return	InboundDetail
+		 *
+		 * @method
+		 */
+		 
+		public function InboundDetailUpdate ($arrDetails)
+		{
+			$staServiceStateType		= new ServiceStateTypes;
+			$bolServiceStateType		= $staServiceStateType->setValue ($arrDetails ['SimState']);
+			
+			$arrData = Array (
+				'AnswerPoint'			=> $arrDetails ['AnswerPoint'],
+				'Configuration'			=> $arrDetails ['Configuration'],
+			);
+			
+			try
+			{
+				$mdeInboundDetail = $this->InboundDetail ();
+				Debug($mdeInboundDetail->Pull ('Id')->getValue ());
+				
+				
+				// Update Service Address
+				$updInboundDetail = new StatementUpdate ('ServiceInboundDetail', 'Service = <Service>', $arrData, 1);
+				$updInboundDetail->Execute ($arrData, Array ('Id' => $mdeInboundDetail->Pull ('Id')->getValue ()));
+				
+				return true;
+			}
+			catch (Exception $e)
+			{
+				$arrData ['AccountGroup']	= $this->Pull ('AccountGroup')->getValue ();
+				$arrData ['Account']		= $this->Pull ('Account')->getValue ();
+				$arrData ['Service']		= $this->Pull ('Id')->getValue ();
+				
+				// Insert Service Address
+				$insMobileDetail = new StatementInsert ('ServiceInboundDetail');
+				$insMobileDetail = $insMobileDetail->Execute ($arrData);
+			}
+		}	
+		
+		//------------------------------------------------------------------------//
+		// InboundDetail
+		//------------------------------------------------------------------------//
+		/**
+		 * InboundDetail()
+		 *
+		 * Pull the Associated Inbound call Information
+		 *
+		 * Pull the Associated Inbound call Information. This is a seperate function
+		 * to stop potential memory leakings
+		 *
+		 * @return	InboundDetail
+		 *
+		 * @method
+		 */
+		 
+		public function InboundDetail ()
+		{
+			$selInboundDetail = new StatementSelect ("ServiceInboundDetail", "Id", "Service = <Service>");
+			$selInboundDetail->Execute (Array ("Service"=>$this->Pull ('Id')->getValue ()));
+			if ($arrInboundDetail = $selInboundDetail->Fetch ())
+			{
+				return new InboundDetail ($arrInboundDetail ['Id']);
+			}
+			
+			throw new Exception ('Inbound call information Not Found');
+		}
+
+
 	}
 	
 ?>

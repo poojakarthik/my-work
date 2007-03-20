@@ -47,6 +47,7 @@ class aphplix_template_def
 				<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 				<style type="text/css">
 					a {
+						color: #0020AA;
 						text-decoration: none;
 						font-weight: normal;
 						font-family: arial, sans-serif;
@@ -90,6 +91,22 @@ class aphplix_template_def
 						font-weight: normal;
 						font-family: arial, sans-serif;
 						font-size: 12px;
+					}
+					.td_title {
+						background-color: #FFFFFF;
+						color: #0000FF;
+						text-decoration: underline;
+						font-weight: bold;
+						font-family: arial, sans-serif;
+						font-size: 16px;
+					}
+					.td_heading {
+						background-color: #FFFFFF;
+						color: #0000FF;
+						text-decoration: underline;
+						font-weight: bold;
+						font-family: arial, sans-serif;
+						font-size: 13px;
 					}
 				</style>
 			</head>
