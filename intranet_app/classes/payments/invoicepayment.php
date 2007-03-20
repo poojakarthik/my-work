@@ -59,19 +59,35 @@
 		function __construct ($intId)
 		{
 			// Pull all the InvoicePayment information and Store it ...
-			$selInvoicePayment = new StatementSelect ('InvoicePayment', '*', 'Id = <Id>', null, 1);
-			$selInvoicePayment->useObLib (TRUE);
-			$selInvoicePayment->Execute (Array ('Id' => $intId));
+			$arrColumns = Array();
+			$arrColumns['Id'] 		= "InvoicePayment.Id";
+			$arrColumns['Invoice']	= "Invoice.Id";
+			$arrColumns['Applied'] 	= "Payment.Amount - Payment.Balance";
+			$arrColumns['InvBalance']	= "Invoice.Balance";
+			$arrColumns['PaidOn']	= "DATE_FORMAT(Payment.PaidOn, '%e/%m/%Y')";
+			$arrColumns['Type'] 	= "Payment.PaymentType";
+			$arrColumns['TXN']		= "Payment.TXNReference";
+			$arrColumns['Amount'] 	= "Payment.Amount";
+			$arrColumns['PayBalance']	= "Payment.Balance";			
+		
+			//Pull information and store it
+			$selSelect = new StatementSelect("InvoicePayment LEFT OUTER JOIN Invoice USING (InvoiceRun, Account), Payment",
+							$arrColumns,
+						"InvoicePayment.Id = <Id> AND Payment.Id = InvoicePayment.Payment", '', 1);
+			$arrWhere = Array('Id'=>$intId);
+			$intCount = $selSelect->Execute ($arrWhere);
+			$arrResult = $selSelect->Fetch($this);
 			
-			if ($selInvoicePayment->Count () <> 1)
+			if ($selSelect->Count () <> 1)
 			{
 				throw new Exception ('InvoicePayment does not exist.');
 			}
 			
-			$selInvoicePayment->Fetch ($this);
+			$arrResult['TypeName'] = GetConstantDescription($arrResult['Type'], 'PaymentType');
 			
-			// Construct the object
-			parent::__construct ('InvoicePayment', $this->Pull ('Id')->getValue ());
+			
+			//Insert into the DOM Document
+			$GLOBALS['Style']->InsertDOM($arrResult, 'PaymentDetails');
 		}
 		
 		//------------------------------------------------------------------------//

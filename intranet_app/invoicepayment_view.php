@@ -32,7 +32,7 @@
 		exit;
 	}
 	
-	$payPayment = $Style->attachObject ($ivpInvoicePayment->Payment ());
+	//$payPayment = $Style->attachObject ($ivpInvoicePayment->Payment ());
 	
 	// Pull documentation information
 	$docDocumentation->Explain ('Invoice');

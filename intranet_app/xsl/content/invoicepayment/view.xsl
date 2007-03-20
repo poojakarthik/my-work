@@ -7,82 +7,52 @@
 	
 	<xsl:template name="Content">
 		<h1>Payment Details</h1>
-		
-		<h2>Invoice Specific Details</h2>
-		<div class="Seperator"></div>
-		
 		<div class="Narrow-Form">
 			<div class="Form-Content">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<th class="JustifiedWidth">Invoice Run :</th>
-						<td><xsl:value-of select="/Response/InvoicePayment/InvoiceRun" /></td>
+						<th class="JustifiedWidth">Invoice Number:</th>
+						<td><xsl:value-of select="/Response/PaymentDetails/Invoice" /></td>
 					</tr>
 					<tr>
-						<th class="JustifiedWidth">Payment #:</th>
-						<td><xsl:value-of select="/Response/InvoicePayment/Payment" /></td>
-					</tr>
-					<tr>
-						<td colspan="2">
-							<div class="Seperator"></div>
-						</td>
-					</tr>
-					<tr>
-						<th class="JustifiedWidth">Amount :</th>
-						<td>
-			       			<xsl:call-template name="Currency">
-			       				<xsl:with-param name="Number" select="/Response/InvoicePayment/Amount" />
+						<th class="JustifiedWidth">Amount Applied:</th>
+						<td><xsl:call-template name="Currency">
+			       				<xsl:with-param name="Number" select="/Response/PaymentDetails/Applied" />
 								<xsl:with-param name="Decimal" select="number('2')" />
-	       					</xsl:call-template>
-						</td>
+	       					</xsl:call-template></td>
 					</tr>
+					<tr>
+						<th class="JustifiedWidth">Paid On:</th>
+						<td><xsl:value-of select="/Response/PaymentDetails/PaidOn" /></td>
+					</tr>
+					
+					<tr>
+						<th class="JustifiedWidth">Payment Type:</th>
+						<td><xsl:value-of select="/Response/PaymentDetails/TypeName" /></td>
+					</tr>
+					
+					<tr>
+						<th class="JustifiedWidth">TXN Reference:</th>
+						<td><xsl:value-of select="/Response/PaymentDetails/TXN" /></td>
+					</tr>
+					
+					<tr>
+						<th class="JustifiedWidth">Payment Amount:</th>
+						<xsl:call-template name="Currency">
+			       			<xsl:with-param name="Number" select="/Response/PaymentDetails/Amount" />
+							<xsl:with-param name="Decimal" select="number('2')" />
+	       				</xsl:call-template>
+					</tr>
+				
+					<tr>
+						<th class="JustifiedWidth">Payment Balance:</th>
+						<xsl:call-template name="Currency">
+			       			<xsl:with-param name="Number" select="/Response/PaymentDetails/Balance" />
+							<xsl:with-param name="Decimal" select="number('2')" />
+	       				</xsl:call-template>
+					</tr>
+							
 				</table>
-				<div class="Clear"></div>
-			</div>
-		</div>
-		<div class="Seperator"></div>
-		
-		<h2>Payment Details</h2>
-		<div class="Seperator"></div>
-		
-		<div class="Narrow-Form">
-			<div class="Form-Content">
-				<table border="0" cellpadding="3" cellspacing="0">
-					<tr>
-						<th class="JustifiedWidth">Payed On :</th>
-						<td>
-							<xsl:call-template name="dt:format-date-time">
-								<xsl:with-param name="year"		select="/Response/Payment/PaidOn/year" />
-								<xsl:with-param name="month"	select="/Response/Payment/PaidOn/month" />
-								<xsl:with-param name="day"		select="/Response/Payment/PaidOn/day" />
-								<xsl:with-param name="format"	select="'%A, %b %d, %Y'"/>
-							</xsl:call-template>
-						</td>
-					</tr>
-					<tr>
-						<th class="JustifiedWidth">Amount :</th>
-						<td>
-			       			<xsl:call-template name="Currency">
-			       				<xsl:with-param name="Number" select="/Response/Payment/Amount" />
-								<xsl:with-param name="Decimal" select="number('2')" />
-	       					</xsl:call-template>
-						</td>
-					</tr>
-					<tr>
-						<th class="JustifiedWidth">TXN Reference :</th>
-						<td><xsl:value-of select="/Response/Payment/TXNReference" /></td>
-					</tr>
-					<tr>
-						<th class="JustifiedWidth">Balance :</th>
-						<td>
-			       			<xsl:call-template name="Currency">
-			       				<xsl:with-param name="Number" select="/Response/Payment/Balance" />
-								<xsl:with-param name="Decimal" select="number('2')" />
-	       					</xsl:call-template>
-						</td>
-					</tr>
-				</table>
-				<div class="Clear"></div>
 			</div>
 		</div>
 	</xsl:template>
