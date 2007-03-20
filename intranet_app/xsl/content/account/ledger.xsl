@@ -284,7 +284,7 @@
 								<xsl:text>invoice_view.php?Invoice=</xsl:text>
 								<xsl:value-of select="./Invoice" />
 							</xsl:attribute>
-							<!-- <xsl:value-of select="./Id" /> -->
+							<xsl:value-of select="./Invoice" />
 						</a>
 					</td>
 					<td>
