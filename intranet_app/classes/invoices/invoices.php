@@ -47,41 +47,25 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructs an Invoice Searching Routine
+		 * Gets Invoice information
 		 *
-		 * Constructs an Invoice Searching Routine
+		 * Gets the invoice information using a StatementSelect and outputs 
+		 * to the page using the bypass method.
+		 *
+		 * @param 	Integer		$intId			The Id number of the invoice
 		 *
 		 * @method
 		 */
 		 
 		function __construct ($intId)
 		{	
-		
-			//Problem here: the date can not be formatted (using existing structure of
-			// /invoice/createdon/year /createdon/month /createdon/day
-			// to follow this formatting system, find a way of splitting the 'createdon' field
-			// into three fields of 'day' 'month' 'year'
-		
-			//Problem here: the data is not sorted in any way, and to avoid sorting
-			// using sql, the array will need to be re-arranged using a purpose-built function
-			
 			// Pull all the Invoice information and Store it ...
 			$selInvoice = new StatementSelect ('Invoice', 'Id, DATE_FORMAT(CreatedOn, \'%e/%m/%Y\') AS CreatedOn, AccountBalance, Credits, Debits, Total+Tax AS Total, Balance, Disputed' , 'Account = <Id>', 'Id DESC');
-			$selInvoice->useObLib (TRUE);
 			$selInvoice->Execute (Array ('Id' => $intId));
-
 			$arrResults = $selInvoice->FetchAll ($this);
-			//Debug ( $arrResults);
+			
+			//Insert into the DOM Document
 			$GLOBALS['Style']->InsertDOM($arrResults, 'Invoices');
-			
-			
-			/* ORIGINAL
-			parent::__construct ('Invoices', 'Invoice', 'Invoice');
-			
-			$this->Constrain ('Status', 'NOT EQUAL', 'INVOICE_TEMP');
-			$this->Order ('CreatedOn', FALSE);
-			*/
-			
 		}
 	}
 	

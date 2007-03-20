@@ -47,36 +47,35 @@
 		/**
 		 * __construct()
 		 *
-		 * Constructs an Employee Searching Routine
+		 * Gets employee information
 		 *
-		 * Constructs an Employee Searching Routine
+		 * Gets the employee information using a StatementSelect and outputs 
+		 * to the page using the bypass method.
+		 *
+		 * @param 	Integer		$currPage		The current page to be displayed
+		 * @param 	Integer		$rangeLength	The number of records displayed
+		 *										at one time
 		 *
 		 * @method
 		 */
 		 
 		function __construct ($currPage, $rangeLength)
 		{
-			//parent::__construct ('Employees', 'Employee', 'Employee');
 			
+			//Get the results of the query (this includes LIMIT [for pagination
+			//purposes])
 			$rangeStart = ($currPage - 1) * $rangeLength;
-
 			$selInvoice = new StatementSelect ('Employee', '*', 'Archived = <Archived>', NULL, $rangeStart . ', ' . $rangeLength );
-			$selInvoice->useObLib (TRUE);
 			$selInvoice->Execute (Array ('Archived' => 0));
 			$arrResults = $selInvoice->FetchAll ($this);
-			
-			// Now that we know what we're dealing with, we can find out
-			// how many rows/results we have for this particular search.
-			
-			$selCount = $selInvoice->Count();
-			
-			//Paginate ($arrResults, $collationLength, $currPage, $rangeLength)
-			
+
+			//Find number of rows in the total query (not paginated)
+			$selCount = new StatementSelect ('Employee', 'Count(*)', 'Archived = <Archived>');
+	
+			//Extract values for pagination
 			$GLOBALS['Style']->Paginate($arrResults, $selCount, $currPage, $rangeLength, 'Employees');
 
-			//Debug ($arrPagination);
-			//Debug($arrResults);die;
-			//Debug ($arrLength);
+			//Insert into the DOM Document
 			$GLOBALS['Style']->InsertDOM($arrResults, 'Employees');
 		}
 		

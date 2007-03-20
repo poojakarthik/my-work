@@ -1090,45 +1090,101 @@
 			return '<pre>' . htmlentities ($this->xslContent->Output ()->SaveXML ()) . '</pre>';
 		}
  		
-		// add an array of data to the queue to be added to domOutput
+		//------------------------------------------------------------------------//
+		// InsertDOM
+		//------------------------------------------------------------------------//
+		/**
+		 * InsertDOM()
+		 *
+		 * Inserts data into DOMDocument
+		 *
+		 * Bypasses the previous method of DOM construction by inserting elements
+		 * into the document based on an array using Output(). Used when inserting 
+		 * results of an SQL query.
+		 *
+		 * @param	Array		$array			The array of data to insert
+		 * @param	String		$insertpoint	The name of the top node in the
+		 *										document below which the data 
+		 *										will be inserted.
+		 *
+		 * @method
+		 */
 		public function InsertDOM ($array, $insertpoint)
 		{		
 			$this->_arrOutput[$insertpoint] = $array;
 		}
 		
-		
-		public function Paginate ($arrResults, $collationLength, $currPage, $rangeLength, $strInsertPoint)
+		//------------------------------------------------------------------------//
+		// Paginate
+		//------------------------------------------------------------------------//
+		/**
+		 * Paginate()
+		 *
+		 * Creates pagination data
+		 *
+		 * Creates the data for correct handling of multiple pages when displaying
+		 * records and inserts it into the DOMDocument (using InsertDOM()) to be  
+		 * accessed later in the XSL stylesheet.
+		 *
+		 * @param	Array		$arrResults		The array of from which pagination
+		 *										data will be extracted
+		 * @param	Integer		$collLength		Total number of records in the 
+		 *										collation 
+		 * @param 	Integer		$currPage		The current page to be displayed
+		 * @param 	Integer		$rangeLength	The number of records displayed
+		 *										at one time
+		 * @param 	String		$strInsertPoint	The name of the top node in the
+		 *										document below which the data 
+		 *										will be inserted.
+		 *
+		 * @method
+		 */
+		public function Paginate ($arrResults, $collLength, $currPage, $rangeLength, $strInsertPoint)
 		{
 			$rangeStart = ($currPage - 1) * $rangeLength;
-			$arrCollection = Array ('Results' => $arrResults);
-			$totalPages = ($rangeLength <> 0 && $collationLength <> 0) ? ceil ($collationLength / $rangeLength) : 0;
-			$arrPagination = Array('collationLength' => $collationLength, 'rangeStart' => $rangeStart, 'rangeLength' => $rangeLength, 'currPage' => $currPage, 'totalPages' => $totalPages); 
+			$totalPages = ($rangeLength <> 0 && $collLength <> 0) ? ceil ($collLength / $rangeLength) : 0;
+			$arrPagination = Array('collationLength' => $collLength, 'rangeStart' => $rangeStart, 'rangeLength' => $rangeLength, 'currPage' => $currPage, 'totalPages' => $totalPages); 
 			$GLOBALS['Style']->InsertDOM($arrPagination, $strInsertPoint);
 		}
 			
 
+		//------------------------------------------------------------------------//
+		// Output
+		//------------------------------------------------------------------------//
+		/**
+		 * Output()
+		 *
+		 * Outputs data into the DOMDocument
+		 *
+		 * The main fucntion to take the info from a new DOMDocument and pass to
+		 * the XSLT processor to be rendered on the XSL page.
+		 *
+		 * @param	String		$strXSLFilename	The name of the XSL file that the
+		 *										XSLT processor outputs to
+		 *							
+		 *
+		 * @method
+		 */
  		public function Output ($strXSLFilename)
  		{
+			//Creates the new DOM Document and loads XML file
 			if (!$this->_domDocument)
 			{
 				$this->_domDocument = new DomDocument ('1.0', 'utf-8');
 			}
-			//Debug($this->_arrOutput)
             $this->_domDocument->load ($this->strApplicationDir . $strXSLFilename);
-            
-			// domOutput is the existing DOMDocument created from the oblib framework
-			// domRoot is the root node of this document, in the form of a DOMElement
 			$domOutput = $this->xslContent->Output ();
+			
+			//Adds top node of the inserted data (from InsertDOM() above)
 			$domRoot = $domOutput->documentElement;
-			// take each array of data from the queue and add it to domOutput
+			//Take each array of data from the queue and add it to domOutput
 			foreach ($this->_arrOutput as $strInsertPoint=>$arrRecords)
 			{
+				//Adds each record to the document
 				$ourNode = new DomElement($strInsertPoint, '');
 				$domRoot->appendChild($ourNode);
-				//take first five elements, create new nodes
-				// then do rest of them by removing them
-				//Debug($arrRecords);die;
-		
+				
+				//Adds each field (and the data in each field) for each record
 				foreach ($arrRecords as $intKey=>$arrRecord)
 				{
 					$idNode = new DomElement('Record', (string)$intKey);
@@ -1139,32 +1195,12 @@
 						$idNode->appendChild($subnode);
 					}
 				}
-				
-				
-				// all this other stuff that we dont use,
-				// but might be used elsewhere
-				
-				// if collationLength is used, reference it in xsl docs
-				// otherwise use count(record) and remove collationLength
-				
-				/*
-					<collationLength>13</collationLength> -> total number of records
-      				<rangePage>1</rangePage>
-      				<rangePages>1</rangePages>
-      				<rangeStart>0</rangeStart>
-      				<rangeLength>13</rangeLength>
-	  			*/
-				//$ourCollation = new DomElement('collationLength',$intKey);
-				//$ourNode->appendChild($ourCollation);
 			}
 			
-			//Debug($domOutput->SaveXML());die;
-			
-			$xslProcessor = new XSLTProcessor;
-            $xslProcessor->importStyleSheet ($this->_domDocument);
-			      
+			//Creation of XSLT processor and final output to XSL file
+	 		$xslProcessor = new XSLTProcessor;
+            $xslProcessor->importStyleSheet ($this->_domDocument);    
             echo $xslProcessor->transformToXML ($domOutput);
-
  		}
  	}
 

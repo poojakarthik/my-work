@@ -22,15 +22,7 @@
 	$emsEmployees = $Style->attachObject (new Employees(
 		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
 		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 30));
-	//$emsEmployees->Constrain ('Archived', '=', 0);
-	
-	/*
-	// Pull a Sample
-	$emsEmployees->Sample (
-		isset ($_GET ['rangePage']) ? $_GET ['rangePage'] : 1, 
-		isset ($_GET ['rangeLength']) ? $_GET ['rangeLength'] : null
-	);
-	*/
+
 	
 	// Output the Result
 	$Style->Output ('xsl/content/employee/list.xsl');
