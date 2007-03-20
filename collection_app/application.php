@@ -169,7 +169,7 @@
 		$arrColumns['Status'] 		= TRUE;
 		$arrColumns['ImportedOn']	= New MySQLFunction("NOW()");
 		$ubiFileDownload = new StatementUpdateById("FileDownload", $arrColumns);
-			
+		
 		// For each file definition...
  		foreach ($this->_arrCollectionModule as $arrModule)
  		{
@@ -182,9 +182,9 @@
 			if (!$dldDownloader)
 			{
 				// No collection module - append to report
-				$this->AddToCollectionReport(MSG_NO_COLLECTION_MODULE, Array(
+				$this->_rptCollectionReport->AddMessageVariables(MSG_NO_COLLECTION_MODULE, Array(
 						'<FriendlyName>' 	=> $this->_arrCurrentModule['Name'],
-						'<Type>'			=> $this->_arrCurrentModule['Type']));
+						'<Type>'			=> $this->_arrCurrentModule['Type']), FALSE, TRUE);
 				continue;
 			}
 			
@@ -192,23 +192,23 @@
 			if(!$dldDownloader->Connect($arrModule))
 			{
 				// Connection failed
-				$this->AddToCollectionReport(MSG_CONNECTION_FAILED, Array(
+				$this->_rptCollectionReport->AddMessageVariables(MSG_CONNECTION_FAILED, Array(
 						'<FriendlyName>' 	=> $this->_arrCurrentModule['Name'],
-						'<Type>'			=> $this->_arrCurrentModule['Type']));
+						'<Type>'			=> $this->_arrCurrentModule['Type']), FALSE, TRUE);
 			}
 			else
 			{
 				// Connection successful
-				$this->AddToCollectionReport(MSG_CONNECTED, Array(
+				$this->_rptCollectionReport->AddMessageVariables(MSG_CONNECTED, Array(
 						'<FriendlyName>' 	=> $this->_arrCurrentModule['Name'],
-						'<Type>'			=> $this->_arrCurrentModule['Type']));
+						'<Type>'			=> $this->_arrCurrentModule['Type']), FALSE, TRUE);
 				
 				// Downloading from report message
-				$this->AddToCollectionReport(MSG_DOWNLOADING_FROM);
+				$this->_rptCollectionReport->AddMessageVariables(MSG_DOWNLOADING_FROM, Array(), FALSE, TRUE);
 				//TODO!!!!
 				/*foreach ($this->_arrCurrentModule['Dir'] as $strDir)
 				{
-					$this->AddToCollectionReport(MSG_DIRS, Array('<Dir>' => $strDir));
+					$this->_rptCollectionReport->AddMessageVariables(MSG_DIRS, Array('<Dir>' => $strDir));
 				}*/
 				
 				
@@ -220,7 +220,7 @@
 					
 					// Add to report that we're downloading the file
 					$intFileSize = ceil(filesize($strFileLocation) / 1024);
-					$this->AddToCollectionReport(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation, '<FileSize>' => $intFileSize));
+					$this->_rptCollectionReport->AddMessageVariables(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation, '<FileSize>' => $intFileSize));
 					
 					// set current download file
 					$this->_arrCurrentDownloadFile = Array("Location" => $strFileLocation, "Status" => RAWFILE_DOWNLOADED);
@@ -231,15 +231,15 @@
 					// Add to report that we've unzipped files (provided we actually unzipped)
 					if (!$arrFiles || count($arrFiles) < 1)
 					{
-						$this->AddToCollectionReport(MSG_BAD_FILE);
+						$this->_rptCollectionReport->AddMessageVariables(MSG_BAD_FILE);
 					}
 					elseif (count($arrFiles) > 1)
 					{
-						$this->AddToCollectionReport(MSG_UNZIPPED_FILES);
+						$this->_rptCollectionReport->AddMessageVariables(MSG_UNZIPPED_FILES);
 						
 						foreach ($arrFiles as $strFileName)
 						{
-							$this->AddToCollectionReport(MSG_UNZIPPED_FILE, Array('<FileName>' => $strFileName));
+							$this->_rptCollectionReport->AddMessageVariables(MSG_UNZIPPED_FILE, Array('<FileName>' => $strFileName));
 						}
 					}
 					
@@ -269,7 +269,7 @@
 				}
 				
 				// End the Report, and send it off
-				$this->AddToCollectionReport(MSG_TOTALS, Array('<TotalFiles>' => $intCounter, '<Time>' => $this->Framework->Uptime()));
+				$this->_rptCollectionReport->AddMessageVariables(MSG_TOTALS, Array('<TotalFiles>' => $intCounter, '<Time>' => $this->Framework->Uptime()));
 				$this->_rptCollectionReport->Finish();
 				
 				// disconnect
@@ -307,7 +307,7 @@
 			// set status of downloaded file
 			$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
 			// Add to report that import failed
-			$this->AddToCollectionReport(MSG_IMPORT_FAILED, Array('<Reason>' => "Missing File(s)"));
+			$this->_rptCollectionReport->AddMessageVariables(MSG_IMPORT_FAILED, Array('<Reason>' => "Missing File(s)"));
 			return FALSE;
 		}
 		else
@@ -323,19 +323,19 @@
 				// copy file to final location
 				if (!$strFileLocation = $this->_StoreImportFile())
 				{
-					$this->AddToCollectionReport(MSG_MOVE_FILE_FAILED, Array('<FileName>' => $strFileName));
+					$this->_rptCollectionReport->AddMessageVariables(MSG_MOVE_FILE_FAILED, Array('<FileName>' => $strFileName));
 				}
 				
 				// find file type
 				if ($this->_FileType() == CDR_UNKNOWN)
 				{
-					$this->AddToCollectionReport(MSG_UNKNOWN_FILETYPE, Array('<FileName>' => $strFileName));
+					$this->_rptCollectionReport->AddMessageVariables(MSG_UNKNOWN_FILETYPE, Array('<FileName>' => $strFileName));
 				}
 				
 				// check uniqueness
 				if (!$strHash = $this->_IsUnique())
 				{
-					$this->AddToCollectionReport(MSG_NOT_UNIQUE, Array('<FileName>' => $strFileName));
+					$this->_rptCollectionReport->AddMessageVariables(MSG_NOT_UNIQUE, Array('<FileName>' => $strFileName));
 				}
 				
 				
@@ -350,12 +350,12 @@
 					}
 					
 					$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
-					$this->AddToCollectionReport(MSG_IMPORT_FAILED, Array('<Reason>' => "Database Failure"));
+					$this->_rptCollectionReport->AddMessageVariables(MSG_IMPORT_FAILED, Array('<Reason>' => "Database Failure"));
 					$bolReturn = FALSE;
 				}
 			}
 			// Add to report that we've imported
-			$this->AddToCollectionReport(MSG_IMPORTED);
+			$this->_rptCollectionReport->AddMessageVariables(MSG_IMPORTED);
 			return $bolReturn;
 		}
 	}
@@ -554,35 +554,6 @@
 			return $arrFiles;
 		}
 	}
-
- 	//------------------------------------------------------------------------//
-	// AddToCollectionReport
-	//------------------------------------------------------------------------//
-	/**
-	 * AddToCollectionReport()
-	 *
-	 * Adds a message to the collection report
-	 *
-	 * Adds a message to the collection report
-	 *
-	 * @param	string		$strMessage			The message - use constants
-	 * 											from definition.php.
-	 * @param	array		$arrAliases			Associative array of alises.
-	 * 											MUST use the same aliases as used in the 
-	 * 											constant being used.  Key is the alias (including the <>'s)
-	 * 											, and the Value is the value to be inserted.
-	 * 
-	 * @method
-	 */
- 	function AddToCollectionReport($strMessage, $arrAliases = Array())
- 	{
- 		foreach ($arrAliases as $arrAlias => $arrValue)
- 		{
- 			$strMessage = str_replace($arrAlias, $arrValue, $strMessage);
- 		}
- 		
- 		$this->_rptCollectionReport->AddMessage($strMessage, FALSE);
- 	}
  }
 
 ?>
