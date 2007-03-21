@@ -359,9 +359,9 @@ $arrSQLSelect['Origin']						= "\nCASE\n" .
 											"END\n";
 $arrSQLSelect['Filename']					= "FileImport.FileName";
 $arrSQLSelect['No. of Payments']			= "COUNT(Payment.Id)";
-$arrSQLSelect['Total Received']				= "CONCAT('$', SUM(Payment.Amount))";
-$arrSQLSelect['Total Applied']				= "CONCAT('$', SUM(Payment.Amount) - SUM(Payment.Balance))";
-$arrSQLSelect['Unapplied/Overpayments']		= "CONCAT('$', SUM(Payment.Balance))";
+$arrSQLSelect['Total Received']				= "SUM(Payment.Amount)";
+$arrSQLSelect['Total Applied']				= "SUM(Payment.Amount) - SUM(Payment.Balance)";
+$arrSQLSelect['Unapplied/Overpayments']		= "SUM(Payment.Balance)";
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
