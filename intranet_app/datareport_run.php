@@ -47,11 +47,11 @@
 		// Set up formatting styles
 		$fmtTitle =& $wkbWorkbook->addFormat();
 		$fmtTitle->setBold();
-		$fmtTitle->setFgColor(49);
+		$fmtTitle->setFgColor(16);
 		$fmtTitle->setBorder(1);
 		
 		$fmtCurrency =& $wkbWorkbook->addFormat();
-		$fmtCurrency->setNumFormat('("$"#,##0.00_);[Red]("$"#,##0.00)');
+		$fmtCurrency->setNumFormat('("$"#,##0.00_);-("$"#,##0.00)');
 		
 		// Add in the title row
 		$mdtMetaData = $selResult->MetaData();
