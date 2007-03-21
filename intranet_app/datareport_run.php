@@ -47,7 +47,7 @@
 		// Set up formatting styles
 		$fmtTitle =& $wkbWorkbook->addFormat();
 		$fmtTitle->setBold();
-		$fmtTitle->setFgColor(48);
+		$fmtTitle->setFgColor(47);
 		$fmtTitle->setBorder(1);
 		
 		$fmtCurrency =& $wkbWorkbook->addFormat();
