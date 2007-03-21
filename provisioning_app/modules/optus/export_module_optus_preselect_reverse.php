@@ -124,7 +124,7 @@
 		
 		if($intNumPreselectionRecords > 0)
 		{
-			$strContent = "Telco Blue (Customer ".CUSTOMER_NUMBER_OPTUS.") believes that it has received the following LD Churns in error.\n\n";
+			$strContent = "Telco Blue (Customer ".CUSTOMER_NUMBER_OPTUS.") believes that it has received LD Churns for the following Service Numbers in error.\n\n";
 			$strContent .= implode("\n", $this->_arrPreselectionRecords);
 			$strContent .= "\n\nThanks in advance\n\nTelco Blue Provisioning";
 			
