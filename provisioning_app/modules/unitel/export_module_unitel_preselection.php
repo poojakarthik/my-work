@@ -135,8 +135,8 @@
 				break;
 			
 			case REQUEST_PRESELECTION_REVERSE:
-				$arrRequest['RecordType']				= "21";
-				$arrRequest['ServiceNumber']			= $arrAddress['FNN'];
+				$arrBuiltRequest['RecordType']				= "21";
+				$arrBuiltRequest['ServiceNumber']			= $arrAddress['FNN'];
 				break;
 			default:
 				// Unhandled Request type -> error
