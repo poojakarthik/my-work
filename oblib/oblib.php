@@ -194,12 +194,12 @@
 			$nodeValue = str_replace ("$", "", $nodeValue);
 			$nodeValue = str_replace (",", "", $nodeValue);
 			
-			if (!preg_match ("/^[\d]+(\.[\d]+){0,1}$/misU", $nodeValue))
+			if (!is_numeric ($nodeValue))
 			{
-				return false;
+				return FALSE;
 			}
 			
-			return parent::setValue	(floatval ($nodeValue));
+			return parent::setValue((float)$nodeValue);
 		}
 	}
 	
@@ -219,16 +219,10 @@
 		{
 			if (!is_numeric ($nodeValue))
 			{
-				return;
+				return FALSE;
 			}
 			
-			return parent::setValue
-			(
-				intval
-				(
-					$nodeValue
-				)
-			);
+			return parent::setValue((int)$nodeValue);
 		}
 	}
 	

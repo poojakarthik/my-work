@@ -69,12 +69,9 @@
 				<th class='thRight'>Credits (ex-tax)</th>
 				<th class='thRight'>Debits (ex-tax)</th>
 				<th class='thRight'>Total</th>
-				<!--TODO!bash! [  DONE  ]		you need to have a tax column - otherwise it looks like the total and balance columns do not add up!!! -->
-				<!-- <th class="Currency" width="100">Total (inc-tax)</th> -->
 				<th class='thRight'>Invoice Balance</th>
 				<th class='thRight'>Disputed</th>
 			</tr>
-			<!-- <xsl:for-each select="/Response/Invoices/Results/rangeSample/Invoice"> -->
 			<xsl:for-each select="/Response/Invoices/Record">
 				<tr>
 					<xsl:attribute name="class">
