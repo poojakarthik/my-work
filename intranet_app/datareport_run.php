@@ -55,7 +55,7 @@
 		$arrTitles = $mdtMetaData->fetch_fields();
 		foreach ($arrTitles as $intKey=>$objTitle)
 		{
-			$wksWorksheet->write(0, $intKey, $objTitle->getValue(), $fmtTitle);
+			$wksWorksheet->write(0, $intKey, $objTitle->name, $fmtTitle);
 		}
 
 		// Add in remaining rows
@@ -63,9 +63,9 @@
 		foreach ($arrData as $intRow=>$arrRow)
 		{
 			$intCol = 0;
-			foreach ($arrRow as $objField)
+			foreach ($arrRow as $mixField)
 			{
-				$wksWorksheet->write($intRow, $intCol, $objField->getValue());
+				$wksWorksheet->write($intRow, $intCol, $mixField);
 				$intCol++;
 			}
 		}
