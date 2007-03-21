@@ -133,7 +133,7 @@ require_once($strModuleDir."unitel/import_module_unitel_preselection.php");
 require_once($strModuleDir."unitel/import_module_unitel_status.php");
 
 require_once($strModuleDir."optus/export_module_optus_preselection.php");
-require_once($strModuleDir."optus/export_module_optus_preselection_reverse.php");
+require_once($strModuleDir."optus/export_module_optus_preselect_reverse.php");
 require_once($strModuleDir."optus/export_module_optus_bar.php");
 require_once($strModuleDir."optus/export_module_optus_restore.php");
 require_once($strModuleDir."optus/export_module_optus_suspend.php");
