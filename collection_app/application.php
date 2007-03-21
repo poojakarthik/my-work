@@ -220,7 +220,6 @@
 					
 					// Add to report that we're downloading the file
 					$intFileSize = ceil(filesize($strFileLocation) / 1024);
-					$this->_rptCollectionReport->AddMessageVariables(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation, '<FileSize>' => $intFileSize));
 					
 					// set current download file
 					$this->_arrCurrentDownloadFile = Array("Location" => $strFileLocation, "Status" => RAWFILE_DOWNLOADED);
@@ -231,15 +230,16 @@
 					// Add to report that we've unzipped files (provided we actually unzipped)
 					if (!$arrFiles || count($arrFiles) < 1)
 					{
-						$this->_rptCollectionReport->AddMessageVariables(MSG_BAD_FILE);
+						$this->_rptCollectionReport->AddMessageVariables(MSG_GRABBING_FILE.MSG_BAD_FILE, Array('<FileName>' => $strFileLocation, '<FileSize>' => $intFileSize), TRUE, FALSE);
 					}
 					elseif (count($arrFiles) > 1)
 					{
-						$this->_rptCollectionReport->AddMessageVariables(MSG_UNZIPPED_FILES);
+						$this->_rptCollectionReport->AddMessageVariables(MSG_GRABBING_FILE, Array('<FileName>' => $strFileLocation, '<FileSize>' => $intFileSize), FALSE, FALSE);
+						$this->_rptCollectionReport->AddMessage(MSG_UNZIPPED_FILES, FALSE, FALSE);
 						
 						foreach ($arrFiles as $strFileName)
 						{
-							$this->_rptCollectionReport->AddMessageVariables(MSG_UNZIPPED_FILE, Array('<FileName>' => $strFileName));
+							$this->_rptCollectionReport->AddMessageVariables(MSG_UNZIPPED_FILE, Array('<FileName>' => $strFileName), FALSE, FALSE);
 						}
 					}
 					
@@ -269,7 +269,7 @@
 				}
 				
 				// End the Report, and send it off
-				$this->_rptCollectionReport->AddMessageVariables(MSG_TOTALS, Array('<TotalFiles>' => $intCounter, '<Time>' => $this->Framework->Uptime()));
+				$this->_rptCollectionReport->AddMessageVariables(MSG_TOTALS, Array('<TotalFiles>' => $intCounter, '<Time>' => $this->Framework->Uptime()), TRUE, FALSE);
 				$this->_rptCollectionReport->Finish();
 				
 				// disconnect
@@ -355,7 +355,7 @@
 				}
 			}
 			// Add to report that we've imported
-			$this->_rptCollectionReport->AddMessageVariables(MSG_IMPORTED);
+			$this->_rptCollectionReport->AddMessage(MSG_IMPORTED, FALSE, FALSE);
 			return $bolReturn;
 		}
 	}
