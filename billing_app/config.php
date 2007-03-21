@@ -311,7 +311,7 @@
 		$arrPrintDefine['PaymentData']		['BillExpBillerId']	['Start']	= 4;
 		$arrPrintDefine['PaymentData']		['BillExpBillerId']	['Length']	= 6;
 		$arrPrintDefine['PaymentData']		['BillExpBillerId']	['Type']	= BILL_TYPE_INTEGER;
-		$arrPrintDefine['PaymentData']		['BillExpBillerId']	['Value']	= 000376;
+		$arrPrintDefine['PaymentData']		['BillExpBillerId']	['Value']	= 376;
 		
 		$arrPrintDefine['PaymentData']		['BillExpRef']		['Start']	= 12;
 		$arrPrintDefine['PaymentData']		['BillExpRef']		['Length']	= 25;
