@@ -45,7 +45,7 @@
 		$wksWorksheet =& $wkbWorkbook->addWorksheet();
 		
 		// Set up formatting styles
-		$fmtTitle =& $wksWorksheet->addFormat();
+		$fmtTitle =& $wkbWorkbook->addFormat();
 		$fmtTitle->setBold();
 		$fmtTitle->setFgColor(48);
 		$fmtTitle->setBorder(1);
