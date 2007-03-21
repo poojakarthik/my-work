@@ -76,13 +76,14 @@ echo "<pre>";
  		$this->_arrProvisioningModules[PROV_OPTUS_IMPORT]			= new ProvisioningModuleImportOptusStatus(&$this->db);
  		
  		// Init Provisioning Export Modules
-		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]	= new ProvisioningModuleExportUnitelPreselection(&$this->db);
-		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]	= new ProvisioningModuleExportUnitelOrder(&$this->db);
- 		//$this->_arrProvisioningModules[PRV_AAPT_EOE]				= new ProvisioningModuleExportAAPTEOE(&$this->db);
- 		$this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP]	= new ProvisioningModuleExportOptusPreselection(&$this->db);
- 		$this->_arrProvisioningModules[PRV_OPTUS_RESTORE_EXP]		= new ProvisioningModuleExportOptusRestore(&$this->db);
- 		$this->_arrProvisioningModules[PRV_OPTUS_SUSPEND_EXP]		= new ProvisioningModuleExportOptusSuspend(&$this->db);
- 		$this->_arrProvisioningModules[PRV_OPTUS_BAR_EXP]			= new ProvisioningModuleExportOptusBar(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_PRESELECTION_EXP]		= new ProvisioningModuleExportUnitelPreselection(&$this->db);
+		$this->_arrProvisioningModules[PRV_UNITEL_DAILY_ORDER_EXP]		= new ProvisioningModuleExportUnitelOrder(&$this->db);
+ 		//$this->_arrProvisioningModules[PRV_AAPT_EOE]					= new ProvisioningModuleExportAAPTEOE(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP]		= new ProvisioningModuleExportOptusPreselection(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_RESTORE_EXP]			= new ProvisioningModuleExportOptusRestore(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_SUSPEND_EXP]			= new ProvisioningModuleExportOptusSuspend(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_BAR_EXP]				= new ProvisioningModuleExportOptusBar(&$this->db);
+ 		$this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_REV_EXP]	= new ProvisioningModuleExportOptusPreselectionReverse($this->db);
  		
  		$this->Framework->StartWatch();
 	}
@@ -370,6 +371,10 @@ echo "<pre>";
 						case REQUEST_PRESELECTION:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_EXP];
 							break;
+						
+						case REQUEST_PRESELECTION_REVERSE:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_PRESELECTION_REV_EXP];
+							break;
 							
 						case REQUEST_BAR_SOFT:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_BAR_EXP];
@@ -416,7 +421,7 @@ echo "<pre>";
 						$this->_rptProvisioningReport->AddMessage("[ IGNORE ]\n\t\t- Reason: Duplicate Request");
 						$arrRequest['Status']		= REQUEST_STATUS_DUPLICATE;
 						break;
-					
+						
 					case FALSE:
 					default:
 						// log error & set status

@@ -134,6 +134,9 @@ $GLOBALS['*arrConstant']	['ProvisioningType']	[155]	['Constant']	= 'PRV_OPTUS_SU
 $GLOBALS['*arrConstant']	['ProvisioningType']	[155]	['Description']	= 'Optus Suspension Order File';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[156]	['Constant']	= 'PRV_OPTUS_RESTORE_EXP';
 $GLOBALS['*arrConstant']	['ProvisioningType']	[156]	['Description']	= 'Optus Restoration Order File';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[157]	['Constant']	= 'PRV_OPTUS_PRESELECTION_REV_EXP';
+$GLOBALS['*arrConstant']	['ProvisioningType']	[157]	['Description']	= 'Optus Preselection Reversal Order File';
+
 
 
 // Carriers
