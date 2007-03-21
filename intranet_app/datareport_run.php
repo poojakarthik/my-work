@@ -57,13 +57,13 @@
 		{
 			$wksWorksheet->write(0, $intKey, $strTitle, $fmtTitle);
 		}
-		
+		Debug($arrData);
 		// Add in remaining rows
 		$arrData = $selResult->FetchAll();
 		foreach ($arrData as $intRow=>$arrRow)
 		{
 			$intCol = 0;
-			foreach ($arrRow as $mixField)
+			foreach ($arrRow as $objField)
 			{
 				$wksWorksheet->write($intRow, $intCol, (string)$mixField);
 				$intCol++;
