@@ -58,6 +58,7 @@
 			$wksWorksheet->write(0, $intKey, $strTitle, $fmtTitle);
 		}
 		Debug($arrData);
+		die;
 		// Add in remaining rows
 		$arrData = $selResult->FetchAll();
 		foreach ($arrData as $intRow=>$arrRow)
