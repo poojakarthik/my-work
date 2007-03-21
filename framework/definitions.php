@@ -1020,6 +1020,10 @@ $GLOBALS['*arrConstant']	['DistputeResolve']	[2]	['Description']	= 'Partial Paym
 $GLOBALS['*arrConstant']	['DistputeResolve']	[3]	['Constant']	= 'DISPUTE_RESOLVE_NO_PAYMENT';
 $GLOBALS['*arrConstant']	['DistputeResolve']	[3]	['Description']	= 'No Payment';
 
+// Commonly used Email Addresses
+$GLOBALS['*arrConstant']	['EmailAddress']	['david.g@telcoblue.com.au']	['Constant']	= 'EMAIL_CREDIT_MANAGER';
+$GLOBALS['*arrConstant']	['EmailAddress']	['david.g@telcoblue.com.au']	['Description']	= 'Credit Manager';
+
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 {

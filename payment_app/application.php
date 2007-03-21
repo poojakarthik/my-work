@@ -163,8 +163,30 @@
 		$arrReportLine['<Pass>']	= $this->_intProcessPassed;
 		$arrReportLine['<Fail>']	= $this->_intProcessCount - $this->_intProcessPassed;
 		$this->_rptPaymentReport->AddMessageVariables(MSG_PROCESS_FOOTER, $arrReportLine);
-		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
+		// Email to Payments Officer
+		$this->_rptPaymentReport->AddMessage("\nEmailing Confirmation to Payments Officer...\t\t\t", FALSE);
+		$mimMimeEmail = new Mail_Mime("\n");
+		$mimMimeEmail->setTXTBody("Payments Processing was completed at ".date("d/m/Y H:i:s", time())."\n\n - Pablo");
+	 	$emlMail =& Mail::factory('mail');
+		$arrExtraHeaders = Array(
+									'From'		=> "payments@voiptel.com.au",
+									'Subject'	=> "Payments Completed @ ".date("d/m/Y H:i:s", time())
+								);
+		$strContent = $mimMimeEmail->get();
+		$arrHeaders = $mimMimeEmail->headers($arrExtraHeaders);
+		if ($emlMail->send(EMAIL_CREDIT_MANAGER, $arrHeaders, $strContent))
+		{
+			// Success
+			$this->_rptPaymentReport->AddMessage("[   OK   ]\n");
+		}
+		else
+		{
+			// Failure
+			$this->_rptPaymentReport->AddMessage("[ FAILED ]\n");
+		}
+		
+		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
 		$this->_rptPaymentReport->Finish("/home/vixen_logs/payment_app/".date("Y-m-d_Hi", time()).".log");
 	}
 	
