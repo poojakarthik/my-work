@@ -270,8 +270,7 @@
 				
 				// End the Report, and send it off
 				$this->_rptCollectionReport->AddMessageVariables(MSG_TOTALS, Array('<TotalFiles>' => $intCounter, '<Time>' => $this->Framework->Uptime()), TRUE, FALSE);
-				$this->_rptCollectionReport->Finish();
-				
+								
 				// disconnect
 				$dldDownloader->Disconnect();
 			}

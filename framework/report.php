@@ -329,6 +329,40 @@ class Report
 		}
 		$this->AddMessage($strMessage, $bolNewLine, $bolDisplay);
 	}	
+	
+	//------------------------------------------------------------------------//
+	// AddOperation()
+	//------------------------------------------------------------------------//
+	/**
+	 * AddOperation()
+	 * 
+	 * Adds a new operation to the report
+	 * 
+	 * Adds a new operation to the report.  If the last operation hasn't been closed, then
+	 * it is assumed that this is a sub-operation
+	 * 
+	 * @param	string		$strOperation		The new message line to be added
+	 * @param	boolean		$bolAlwaysDisplay	optional Whether the message will be printed to the screen
+	 * 											Defaults to TRUE
+	 * @return	void
+	 * 
+	 * @method
+	 * @see		this->_arrLines
+	 */
+	public function AddOperation($strOperation, $bolAlwaysDisplay = TRUE)
+	{
+		$arrOperation = Array();
+		$arrOperation['Text']	= str_pad($strOperation, 70, " ", STR_PAD_RIGHT);
+		
+		if (!$this->_arrCurrentOperation)
+		{
+			$this->_arrCurrentOperation = $arrOperation;
+		}
+		
+		// TODO: Finish Me
+		
+		$this->AddMessage($strMessage, $bolNewLine, $bolDisplay);
+	}	
 		
 	
 }

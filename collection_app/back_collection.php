@@ -114,6 +114,7 @@ $appCollection = new ApplicationCollection($arrConfig);
 
 // run the thing
 $appCollection->Collect();
+$appCollection->_rptCollectionReport->Finish("/home/vixen_log/collection_app/".date("Ymd_His").".log");
 
 // finished
 echo("\n-- End of Collection --\n");

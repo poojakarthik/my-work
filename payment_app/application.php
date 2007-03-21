@@ -187,7 +187,7 @@
 		}*/
 		
 		$this->_rptPaymentReport->AddMessage(MSG_HORIZONTAL_RULE);
-		$this->_rptPaymentReport->Finish("/home/vixen_logs/payment_app/".date("Y-m-d_Hi", time()).".log");
+		$this->_rptPaymentReport->Finish("/home/vixen_log/payment_app/".date("Ymd_His").".log");
 	}
 	
 	//------------------------------------------------------------------------//
