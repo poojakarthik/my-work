@@ -55,10 +55,9 @@
 		$arrTitles = $mdtMetaData->fetch_fields();
 		foreach ($arrTitles as $intKey=>$strTitle)
 		{
-			$wksWorksheet->write(0, $intKey, $strTitle, $fmtTitle);
+			$wksWorksheet->write(0, $intKey, (string)$strTitle, $fmtTitle);
 		}
-		Debug($arrData);
-		exit;
+
 		// Add in remaining rows
 		$arrData = $selResult->FetchAll();
 		foreach ($arrData as $intRow=>$arrRow)
