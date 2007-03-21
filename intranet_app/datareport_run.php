@@ -50,6 +50,9 @@
 		$fmtTitle->setFgColor(48);
 		$fmtTitle->setBorder(1);
 		
+		$fmtCurrency =& $wkbWorkbook->addFormat();
+		$fmtCurrency->setNumFormat('("$"#,##0.00_);[Red]("$"#,##0.00)');
+		
 		// Add in the title row
 		$mdtMetaData = $selResult->MetaData();
 		$arrTitles = $mdtMetaData->fetch_fields();
@@ -65,7 +68,14 @@
 			$intCol = 0;
 			foreach ($arrRow as $mixField)
 			{
-				$wksWorksheet->write($intRow, $intCol, $mixField);
+				if (is_float($mixField))
+				{
+					$wksWorksheet->write($intRow, $intCol, $mixField, $fmtCurrency);
+				}
+				else
+				{
+					$wksWorksheet->write($intRow, $intCol, $mixField);
+				}
 				$intCol++;
 			}
 		}
