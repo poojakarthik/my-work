@@ -65,7 +65,7 @@
 			$intCol = 0;
 			foreach ($arrRow as $mixField)
 			{
-				$wksWorksheet->write($intRow, $intCol, $mixField);
+				$wksWorksheet->write($intRow, $intCol, (string)$mixField);
 				$intCol++;
 			}
 		}
