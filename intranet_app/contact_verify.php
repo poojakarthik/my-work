@@ -461,10 +461,10 @@
 			$actAccount->DirectDebit ();
 			
 			// Pull the 6 most recent invoices
-			$ivlInvoices = $oblarrAnswers->Push (new Invoices);
-			$ivlInvoices->Constrain ('Account', 'EQUALS', $actAccount->Pull ('Id')->getValue ());
-			$ivlInvoices->Order ('CreatedOn', FALSE);
-			$ivlInvoices->Sample (1, 6);
+			$ivlInvoices = $Style->attachObject ($actAccount->Invoices ());
+			//$ivlInvoices->Constrain ('Account', 'EQUALS', $actAccount->Pull ('Id')->getValue ());
+			//$ivlInvoices->Order ('CreatedOn', FALSE);
+			//$ivlInvoices->Sample (1, 6);
 			
 			// Output the Overall Verification
 			$Style->Output ('xsl/content/contact/verify_3.xsl');

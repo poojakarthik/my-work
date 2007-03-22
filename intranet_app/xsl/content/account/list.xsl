@@ -334,7 +334,7 @@
 					</th>
 					<th>Actions</th>
 				</tr>
-				<xsl:if test="/Response/Accounts/Results/collationLength &lt;= 80">
+				<xsl:if test="/Response/Accounts/Results/collationLength &lt;= 800">
 					<xsl:for-each select="/Response/Accounts/Results/rangeSample/Account">
 						<tr>
 							<xsl:attribute name="class">
@@ -371,7 +371,7 @@
 				</xsl:if>
 			</table>
 			<xsl:choose>
-				<xsl:when test="/Response/Accounts/Results/collationLength &gt; 80">
+				<xsl:when test="/Response/Accounts/Results/collationLength &gt; 800">
 					<div class="MsgErrorWide">
 						There are too many results to display.  Please refine your search and try again.
 					</div>
@@ -388,7 +388,7 @@
 				</xsl:when>
 			</xsl:choose>
 			
-			<xsl:if test="/Response/Accounts/Results/rangePages != 0 and /Response/Accounts/Results/collationLength &lt;= 80">
+			<xsl:if test="/Response/Accounts/Results/rangePages != 0 and /Response/Accounts/Results/collationLength &lt;= 800">
 				<p>
 					<table border="0" cellpadding="3" cellspacing="0" width="100%">
 						<tr>
