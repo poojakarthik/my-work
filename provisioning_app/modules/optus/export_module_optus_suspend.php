@@ -123,7 +123,7 @@
 			// Generate Excel 5 file
 			$xlsBarring					= new PhpSimpleXlsGen();
 			$xlsBarring->totalcol		= 4;
-			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."suspend_".date("Hi_Ymd").".xls";
+			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."deactivate".date("Hi_Ymd").".xls";
 		
 			// Add header row
 			$xlsBarring->InsertText('Service Number');
@@ -145,13 +145,13 @@
 			$xlsBarring->SaveFile($strPreselectionFilename);
 			
 			$mimMimeEmail = new Mail_Mime("\n");
- 			$mimMimeEmail->setTXTBody("Attached: Telco Blue Automatically Generated Suspension Request File");
+ 			$mimMimeEmail->setTXTBody("Attached: Telco Blue Automatically Generated Deactivation Request File");
 		 	$mimMimeEmail->addAttachment($strPreselectionFilename, 'application/x-msexcel');
 		 	$emlMail =& Mail::factory('mail');
 		 	
  			$arrExtraHeaders = Array(
  										'From'		=> "provisioning@voiptel.com.au",
- 										'Subject'	=> "Suspension File"
+ 										'Subject'	=> "Deactivation File"
  									);
  			$strContent = $mimMimeEmail->get();
  			$arrHeaders = $mimMimeEmail->headers($arrExtraHeaders);

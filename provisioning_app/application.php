@@ -386,6 +386,10 @@ echo "<pre>";
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_RESTORE_EXP];
 							break;
 							
+						case REQUEST_DEACTIVATION:
+							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_SUSPEND_EXP];
+							break;
+							
 						/*case REQUEST_BAR_HARD:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_SUSPEND_EXP];
 							break;*/
