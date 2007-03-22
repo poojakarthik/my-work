@@ -47,7 +47,7 @@
 		// Set up formatting styles
 		$fmtTitle =& $wkbWorkbook->addFormat();
 		$fmtTitle->setBold();
-		$fmtTitle->setFgColor(16);
+		$fmtTitle->setFgColor(22);
 		$fmtTitle->setBorder(1);
 		
 		$fmtCurrency =& $wkbWorkbook->addFormat();
@@ -70,11 +70,11 @@
 			{
 				if (is_float($mixField))
 				{
-					$wksWorksheet->write($intRow, $intCol, $mixField, $fmtCurrency);
+					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtCurrency);
 				}
 				else
 				{
-					$wksWorksheet->write($intRow, $intCol, $mixField);
+					$wksWorksheet->write($intRow+1, $intCol, $mixField);
 				}
 				$intCol++;
 			}
