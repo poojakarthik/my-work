@@ -68,7 +68,7 @@
 			$intCol = 0;
 			foreach ($arrRow as $mixField)
 			{
-				if (is_float($mixField))
+				if (preg_match('/^\d+\.\d+$/misU', $mixField))
 				{
 					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtCurrency);
 				}
