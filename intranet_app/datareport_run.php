@@ -51,7 +51,7 @@
 		$fmtTitle->setBorder(1);
 		
 		$fmtCurrency =& $wkbWorkbook->addFormat();
-		$fmtCurrency->setNumFormat('("$"#,##0.00_);-("$"#,##0.00)');
+		$fmtCurrency->setNumFormat('$#,##0.00;-$#,##0.00');
 		
 		// Add in the title row
 		$mdtMetaData = $selResult->MetaData();
