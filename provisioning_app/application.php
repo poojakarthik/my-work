@@ -377,6 +377,7 @@ echo "<pre>";
 							break;
 							
 						case REQUEST_BAR_SOFT:
+						case REQUEST_BAR_HARD:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_BAR_EXP];
 							break;
 							
@@ -385,9 +386,9 @@ echo "<pre>";
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_RESTORE_EXP];
 							break;
 							
-						case REQUEST_BAR_HARD:
+						/*case REQUEST_BAR_HARD:
 							$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_OPTUS_SUSPEND_EXP];
-							break;
+							break;*/
 							
 						default:
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
