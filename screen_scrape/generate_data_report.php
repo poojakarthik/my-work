@@ -129,22 +129,22 @@ $arrSQLSelect['Mobile']					= "Contact.Mobile";
 $arrSQLSelect['Email']					= "Contact.Email";
 
 $arrSQLSelect['Outstanding Not Overdue']	= "SUM(CASE " .
-											"		WHEN NOW() <= Invoice.DueOn THEN Invoice.Balance" .
+											"		WHEN CURDATE() <= Invoice.DueOn THEN Invoice.Balance" .
 											"	END)";
 $arrSQLSelect['1-29 Days Overdue']		=	"SUM(CASE " .
-											"		WHEN NOW() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN Invoice.Balance" .
+											"		WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 1 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 29 DAY) THEN Invoice.Balance" .
 											"	END)";
 $arrSQLSelect['30-59 Days Overdue']		=	"SUM(CASE " .
-											"		WHEN NOW() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 30 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 59 DAY) THEN Invoice.Balance" .
+											"		WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 30 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 59 DAY) THEN Invoice.Balance" .
 											"	END)";
 $arrSQLSelect['60-89 Days Overdue']		=	"SUM(CASE " .
-											"		WHEN NOW() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 60 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 89 DAY) THEN Invoice.Balance" .
+											"		WHEN CURDATE() BETWEEN ADDDATE(Invoice.DueOn, INTERVAL 60 DAY) AND ADDDATE(Invoice.DueOn, INTERVAL 89 DAY) THEN Invoice.Balance" .
 											"	END)";
 $arrSQLSelect['90+ Days Overdue']		=	"SUM(CASE " .
-											"		WHEN NOW() >= ADDDATE(Invoice.DueOn, INTERVAL 90 DAY) THEN Invoice.Balance" .
+											"		WHEN CURDATE() >= ADDDATE(Invoice.DueOn, INTERVAL 90 DAY) THEN Invoice.Balance" .
 											"	END)";
 $arrSQLSelect['Total Overdue']			=	"SUM(CASE " .
-											"		WHEN NOW() > Invoice.DueOn THEN Invoice.Balance" .
+											"		WHEN CURDATE() > Invoice.DueOn THEN Invoice.Balance" .
 											"	END)";
 $arrSQLSelect['Total Oustanding']		= "SUM(Balance)";
 
@@ -210,7 +210,7 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 //----------------------------------------------------------------------------//
 
 $arrDataReport = Array();
-$arrDataReport['Name']			= "Non-Archived Accounts with No Invalid Email";
+$arrDataReport['Name']			= "Non-Archived Accounts with and no valid Email Address";
 $arrDataReport['Summary']		= "Shows all Active Accounts who have no valid Email Address, but have their Billing Method set to Email";
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
@@ -326,7 +326,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-
+/*
 //----------------------------------------------------------------------------//
 // Payment Import Summary
 //----------------------------------------------------------------------------//
@@ -362,6 +362,117 @@ $arrSQLSelect['No. of Payments']			= "COUNT(Payment.Id)";
 $arrSQLSelect['Total Received']				= "SUM(Payment.Amount)";
 $arrSQLSelect['Total Applied']				= "SUM(Payment.Amount) - SUM(Payment.Balance)";
 $arrSQLSelect['Unapplied/Overpayments']		= "SUM(Payment.Balance)";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+
+/*
+//----------------------------------------------------------------------------//
+// Payment Totals Summary
+//----------------------------------------------------------------------------//
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Payment Totals Summary";
+$arrDataReport['Summary']		= "Shows the totals all Payments made in the specified Date Range, grouped by their Payment Type (eg. BillExpress, BPay)";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Payment";
+$arrDataReport['SQLWhere']		= "PaidOn BETWEEN <StartDate> AND <EndDate> AND " .
+								"Status BETWEEN 100 AND 199";
+$arrDataReport['SQLGroupBy']	= "PaymentType";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Payment Type']				= "\nCASE\n" .
+											"WHEN PaymentType = 1 THEN 'BillExpress'\n" .
+											"WHEN PaymentType = 2 THEN 'BPay'\n" .
+											"WHEN PaymentType = 3 THEN 'Cheque'\n" .
+											"WHEN PaymentType = 4 THEN 'SecurePay'\n" .
+											"WHEN PaymentType = 5 THEN 'Credit Card'\n" .
+											"WHEN Payment = 'Scraped From Etech' THEN Payment\n" .
+											"ELSE 'Manually Entered'\n" .
+											"END";
+$arrSQLSelect['No. of Payments']			= "COUNT(Id)";
+$arrSQLSelect['Total Received']				= "SUM(Amount)";
+$arrSQLSelect['Total Applied']				= "SUM(Amount) - SUM(Balance)";
+$arrSQLSelect['Unapplied/Overpayments']		= "SUM(Balance)";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+
+//----------------------------------------------------------------------------//
+// Payment in a Date Range
+//----------------------------------------------------------------------------//
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Payments List in a Date Range";
+$arrDataReport['Summary']		= "Shows all Payments made in the specified Date Range";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "(Payment LEFT JOIN Employee ON Payment.EnteredBy = Employee.Id) LEFT JOIN FileImport ON FileImport.Id = Payment.File";
+$arrDataReport['SQLWhere']		= "Payment.PaidOn BETWEEN <StartDate> AND <EndDate> AND " .
+								"Payment.Status BETWEEN 100 AND 199";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Payment Id']				= "Payment.Id";
+$arrSQLSelect['AccountGroup']			= "Payment.AccountGroup";
+$arrSQLSelect['Account']				= "Payment.Account";
+$arrSQLSelect['Payment Type']			= "\nCASE\n" .
+										"WHEN Payment.PaymentType = 1 THEN 'BillExpress'\n" .
+										"WHEN Payment.PaymentType = 2 THEN 'BPay'\n" .
+										"WHEN Payment.PaymentType = 3 THEN 'Cheque'\n" .
+										"WHEN Payment.PaymentType = 4 THEN 'SecurePay'\n" .
+										"WHEN Payment.PaymentType = 5 THEN 'Credit Card'\n" .
+										"WHEN Payment.Payment = 'Scraped From Etech' THEN Payment.Payment\n" .
+										"ELSE 'Manually Entered'\n" .
+										"END";
+$arrSQLSelect['Reference No.']			= "Payment.TXNReference";
+$arrSQLSelect['File/Employee']			= "CASE\n" .
+										"WHEN File IS NOT NULL THEN CONCAT(FileImport.FileName, ' Line(', Payment.SequenceNo, ')')\n" .
+										"WHEN Payment.EnteredBy != 999999999 THEN CONCAT(Employee.FirstName, ' ', Employee.LastName)\n" .
+										"WHEN Payment.EnteredBy = 999999999 THEN 'Automated Entry'" .
+										"END";
+$arrSQLSelect['Total Paid']				= "Payment.Amount";
+$arrSQLSelect['Applied to Invoices']	= "Payment.Amount - Payment.Balance";
+$arrSQLSelect['Total Unapplied']		= "Payment.Balance";
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
