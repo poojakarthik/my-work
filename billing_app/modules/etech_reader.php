@@ -345,6 +345,7 @@
 				$this->arrData['Tax']				= (float)$arrLine['NewCharges'] / 11.0;
 				$this->arrData['Total']				= (float)$arrLine['NewCharges'] - $this->arrData['Tax'];
 				$this->arrData['Balance']			= (float)$arrLine['AmountOwing'];
+				$this->arrData['TotalOwing']		= (float)$arrLine['AmountOwing'];
 				$this->arrData['AccountBalance']	= (float)$arrLine['Overdue'];
 				// FIXME: These Credit/Debit values could be incorrect - its just a guess
 				$this->arrData['Credits']			= (float)$arrLine['Adjustments'];

@@ -114,6 +114,10 @@
 		$arrInsertData['AccountBalance']	= NULL;
 		$this->_ubiInvoice	= new StatementUpdateById("Invoice", $arrInsertData); 
 		
+		$arrUpdateData = Array();
+		$arrUpdateData['TotalOwing']		= NULL;
+		$this->_updInvoiceTotalOwing = new StatementUpdate("Invoice", "<Account> = Account AND InvoiceRun = <InvoiceRun>");
+		
 		$this->_selInvoiceRun	= new StatementSelect("Invoice", "InvoiceRun", "Id = <Invoice>");
 	}
 	
@@ -183,6 +187,36 @@
 		$arrInsertData['AccountBalance']	= $arrInvoice['AccountBalance'];
 		
 		return (bool)$this->_ubiInvoice->Execute($arrInsertData);
+	}
+	
+	//------------------------------------------------------------------------//
+	// UpdateTotalOwing
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateTotalOwing()
+	 *
+	 * Updates the TotalOwing for an Etech Invoice in the Invoice table
+	 *
+	 * Updates the TotalOwing for an Etech Invoice in the Invoice table
+	 * 
+	 * @param	array	$arrInvoice		associative array of invoice details
+	 * @param	string	$strInvoiceRun	invoice run to apply to
+	 *
+	 * @return			bool
+	 *
+	 * @method
+	 */
+ 	function UpdateTotalOwing($arrInvoice, $strInvoiceRun)
+ 	{
+		// Insert into the database
+		$arrWhere = Array();
+		$arrWhere['Account']	= $arrInvoice['Account'];
+		$arrWhere['InvoiceRun']	= $strInvoiceRun;
+		
+		$arrInsertData = Array();
+		$arrInsertData['TotalOwing']	= $arrInvoice['TotalOwing'];
+		
+		return (bool)$this->_updInvoiceTotalOwing->Execute($arrInsertData);
 	}
 	
 	//------------------------------------------------------------------------//

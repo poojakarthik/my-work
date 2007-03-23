@@ -58,7 +58,7 @@ foreach($arrFilePath AS $strFilePath)
 				// check table type
 				switch ($arrLine['_Table'])
 				{
-					case 'CDR':
+					case 'CDR':/*
 						$arrCDR = $etbEtech->FindCDR($arrLine);
 						if ($arrCDR === FALSE)
 						{
@@ -104,10 +104,10 @@ foreach($arrFilePath AS $strFilePath)
 								CliEcho("CDR Update Failed : {$arrCDR['Id']}");
 							}
 						}
-						
+						*/
 						break;
 					
-					case 'ServiceTypeTotal':
+					case 'ServiceTypeTotal':/*
 						/*if(!$etbEtech->AddServiceTypeTotal($arrLine))
 						{
 							CliEcho("ServiceTypeTotal Failed : {$arrLine['FNN']} - {$arrLine['_Status']['CreatedOn']}");
@@ -123,21 +123,27 @@ foreach($arrFilePath AS $strFilePath)
 						}*/
 						break;
 						
-					case 'ServiceTotal':
+					case 'ServiceTotal':/*
 						if (!$etbEtech->AddServiceTotal($arrLine))
 						{
 							CliEcho("ServiceTotal Failed : {$arrLine['FNN']} - {$arrLine['_Status']['CreatedOn']}");
-						}
+						}*/
 						break;
 						
 					case 'Invoice':
-						if (!$etbEtech->UpdateInvoice($arrLine))
+						/*if (!$etbEtech->UpdateInvoice($arrLine))
 						{
 							if (!$etbEtech->AddInvoice($arrLine))
 							{
 								CliEcho("Could not add invoice : {$arrLine['Id']}");
 							}
+						}*/
+						
+						if (!$etbEtech->UpdateTotalOwing($arrLine, '45dfe46ae67cd'))
+						{
+							CliEcho("Could not update account : {$arrLine['Account']}");
 						}
+						
 						break;
 					
 					case 'Other':
