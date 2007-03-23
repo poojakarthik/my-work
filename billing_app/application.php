@@ -1855,6 +1855,7 @@
 		
 		// for each invoice
 		$intPassed = 0;
+		$arrInvoicesDetails = Array();
 		foreach($arrInvoices as $intInvoice)
 		{
 			// Get Invoice details
@@ -1868,6 +1869,9 @@
 				Debug("Invoice #$intAccount not found!");
 				continue;
 			}
+			
+			// Keep the old statuses
+			$arrInvoiceStatuses[$intInvoice] = $arrInvoiceData['Status'];
 			
 			// stick stuff in invoice output
 			$this->_arrBillOutput[$intPrintTartget]->AddInvoice($arrInvoiceData);
@@ -1905,14 +1909,16 @@
 			return FALSE;
 		}
 		
-		// update Invoice Status to COMMITTED, or SETTLED if the invoice balance is zero
-		$arrUpdateData = Array();
-		$arrUpdateData['Status'] = new MySQLFunction("IF(Balance > 0, ".INVOICE_COMMITTED.", ".INVOICE_SETTLED.")");
-		$updInvoiceStatus = new StatementUpdate("Invoice", "Status = ".INVOICE_PRINT, $arrUpdateData);
-		if($updInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+		// Revert to old Invoice Statuses
+		foreach ($arrInvoiceStatuses as $intInvoice=>$intStatus)
 		{
-			Debug("Update status to COMMITED/SETTLED failed! : ".$updInvoiceStatus->Error());
-			return FALSE;
+			$arrUpdateData['Id']		= $intInvoice;
+			$arrUpdateData['Status']	= $intStatus;
+			if($ubiInvoiceStatus->Execute($arrUpdateData, Array()) === FALSE)
+			{
+				Debug("Reverting Invoice Status failed! (Invoice # $intInvoice) : ".$updInvoiceStatus->Error());
+				return FALSE;
+			}
 		}
 		
 		return TRUE;
