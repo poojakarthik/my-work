@@ -1303,4 +1303,15 @@ function BankAccountValid ($strNumber)
 	return preg_match ("/^\d{4,11}$/", $strNumber);
 }
 
+// CLIecho
+function CliEcho($strOutput)
+{
+	if (!$GLOBALS['**stdout'])
+	{
+		$GLOBALS['**stdout'] = fopen("php://stdout","w"); 
+	}
+	$stdout = $GLOBALS['**stdout'];
+	fwrite($stdout, $strOutput."\n");
+}
+
 ?>

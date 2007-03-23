@@ -37,7 +37,7 @@ $arrConfig['MaxRuns']			= 100000;
 
 // Sleep
 //		Int		Time in seconds to sleep between runs
-$arrConfig['Sleep']				= 60;
+$arrConfig['Sleep']				= 30;
 
 // Verbose
 //		Bool	TRUE	Display output as the script runs
@@ -50,6 +50,7 @@ $arrConfig['Verbose']			= TRUE;
 // SCRIPT CONFIG
 //----------------------------------------------------------------------------//
 
+/*
 // Example Script
 $arrScript 							= Array();
 	
@@ -78,7 +79,36 @@ $arrScript 							= Array();
 	$arrScript['Directory']			=	'\home\vixen\scripts\\';
 	
 	$arrConfig['Script']['ScriptName'] 	= $arrScript;
+*/
 
+// Test Script
+$arrScript 							= Array();
+	
+	// StartTime
+	//		Int		Earliest time that the script can run during the day
+	//				Time in seconds from 00:00:00
+	$arrScript['StartTime']			=	0;
+	
+	// FinishTime
+	//		Int		optional Latest time that the script can run during the day
+	//				Time in seconds from 00:00:00
+	//				Defaults to 86400 (24:00:00:00)
+	$arrScript['FinishTime']		=	86400;
+	
+	// Interval
+	//		Int		Interval time in seconds. 
+	//				Script will be run every Interval seconds.
+	$arrScript['Interval']			=	300;
+	
+	// Command
+	//		String	Command to run the script (include full path to script).
+	$arrScript['Command']			=	'php /home/flame/vixen/payment_app/payments.php';
+	
+	// Directory
+	//		String	optional Directory to run the script in.
+	$arrScript['Directory']			=	'/home/flame/vixen/payment_app/';
+	
+	$arrConfig['Script']['Payment'] 	= $arrScript;
 
 
 ?>

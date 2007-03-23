@@ -25,12 +25,6 @@
  *
  */
 
-// Application entry point - create an instance of the application object
-$appMaster = new ApplicationMaster($arrConfig);
-
-// Run the application
-$appMaster->Run();
-
 //----------------------------------------------------------------------------//
 // ApplicationMaster
 //----------------------------------------------------------------------------//
@@ -126,6 +120,7 @@ $appMaster->Run();
 			// do run (unless we have been told to wait)
 			if ($this->_bolWait !== TRUE)
 			{
+				$this->Debug('Loop : '.$this->_intCurrentRun);
 				$this->_Run();
 			}
 			else
@@ -164,12 +159,14 @@ $appMaster->Run();
 		// for each script
 		foreach ($this->_arrScript as $strScriptName=>$arrScript)
 		{
+			$this->Debug("Checking Script : $strScriptName");
 			// get current time
 			$intTimeNow = time();
 			
 			// check if the script needs to be run now
-			if ($intTimeNow > $arrScript['NextRun'])
+			if ($intTimeNow > (int)$arrScript['NextRun'])
 			{
+				$this->Debug("Loading Script : $strScriptName");
 				// set run script command
 				if ($arrScript['Config']['Directory'])
 				{
@@ -185,14 +182,17 @@ $appMaster->Run();
 				if ($strCommand)
 				{
 					// write state to database
+					$this->Debug("Writing state to database");
 					$this->_arrState['CurrentScript'] = $strScriptName;
 					$this->_arrState['CurrentRunTime'] = $intTimeNow;
 					$this->_WriteState(STATE_SCRIPT_RUN);
 				
 					// actually run the thing
+					$this->Debug("Running Script : $strScriptName");
 					$this->_arrState['LastReturn'] = shell_exec($strCommand);
 					$this->_arrState['LastScript'] = $strScriptName;
 					$this->_arrState['LastRunTime'] = $intTimeNow;
+					$this->Debug("Script Returned  :\n {$this->_arrState['LastReturn']}");
 				}
 				
 				// set last run time for the script
@@ -201,6 +201,11 @@ $appMaster->Run();
 				// calculate next run time for the script
 				$intNextRun = $this->_CalculateNextRun($arrScript);
 				$this->_arrScript[$strScriptName]['NextRun'] = $intNextRun;
+			}
+			else
+			{
+				$intNextRun = (int)$arrScript['NextRun'] - $intTimeNow;
+				$this->Debug("Too soon to run script : $strScriptName , will run in $intNextRun sec.");
 			}
 		}
 	}
@@ -426,7 +431,7 @@ $appMaster->Run();
 	{
 		if ($this->_arrConfig['Verbose'] == TRUE)
 		{
-			Echo "$strText\n";
+			CLIEcho($strText);
 		}
 	}
 	
@@ -452,16 +457,20 @@ $appMaster->Run();
 		$intTimeNow = Time();
 		
 		// calculate zero time today
-		$intZeroTime = floor(($intTimeNow / 86400) * 86400);
+		$intZeroTime = floor(($intTimeNow / 86400)) * 86400;
+		//$this->Debug("Zero Hour Timestamp :$intZeroTime");
 		
 		// calculate day based timestamp
 		$intDayTimeStamp = $intTimeNow - $intZeroTime;
+		//$this->Debug("Current Day Timestamp :$intDayTimeStamp");
 		
 		// get first run time for today
 		$intFirstRun = (int)$arrScript['Config']['StartTime'] + $intZeroTime;
+		$this->Debug("First Run : $intFirstRun");
 		
 		// get final run time for today
 		$intFinalRun = (int)$arrScript['Config']['FinishTime'] + $intZeroTime;
+		$this->Debug("Final Run : $intFinalRun");
 		if ($intFinalRun == $intZeroTime)
 		{
 			// set last run to midnight
@@ -483,6 +492,7 @@ $appMaster->Run();
 		$intLastSchedualedRun = (int)$arrScript['NextRun'];
 		if ($intLastSchedualedRun)
 		{
+			$this->Debug("Last Run  : $intLastSchedualedRun");
 			// schedule next run based on previous schedule
 			$intNextRun = $intLastSchedualedRun + $intInterval;
 			
@@ -504,8 +514,17 @@ $appMaster->Run();
 		{
 			// if no previous scheduled run
 			// schedule next run for first run time
-			$intNextRun = $intFirstRun + $intZeroTime;
+			$intNextRun = $intFirstRun;
 		}
+		
+		// check if next run is more than one interval in the past
+		if ($intNextRun < ($intTimeNow - $intInterval))
+		{
+			$intIntervals = floor(($intTimeNow - $intNextRun) / $intInterval);
+			$intNextRun += $intIntervals * $intInterval;
+		}
+		
+		$this->Debug("Next Run  : $intNextRun");
 		
 		// Return Next Run TimeStamp
 		return $intNextRun;
