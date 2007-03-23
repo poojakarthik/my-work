@@ -630,8 +630,8 @@
 	 	// set up charge
 		$arrCharge = Array();
 		$arrCharge ['Nature']		= 'DR';
-		$arrCharge ['Description']	= "Non-Direct Debit Fee";
-		$arrCharge ['ChargeType']	= "NDDR";
+		$arrCharge ['Description']	= "Account Processing Fee";
+		$arrCharge ['ChargeType']	= "AP250";
 		$arrCharge ['ChargedOn']	= date("Y-m-d");
 		$arrCharge ['CreatedOn']	= date("Y-m-d");
 		$arrCharge ['Amount']		= 2.50;
@@ -640,12 +640,15 @@
 		
 	 	// for each account without a DDR Fee Waive and no/out-of-date CC or DDR info
 		$intCount = 0;
-		$selNDDRAccounts = new StatementSelect(	'Account LEFT OUTER JOIN CreditCard USING(AccountGroup) LEFT OUTER JOIN DirectDebit USING (AccountGroup)', 
-												'Account.*', 
+		$selNDDRAccounts = new StatementSelect(	'(Account LEFT OUTER JOIN CreditCard USING(AccountGroup)) LEFT OUTER JOIN DirectDebit USING (AccountGroup)', 
+												'Account.*, COUNT(CDR.Id) AS CDRCount', 
 												'Account.Archived = 0 AND ' .
 												'Account.DisableDDR = 0 AND ' .
 												'(CreditCard.Archived IS NULL OR CreditCard.Archived = 1) AND ' .
-												'(DirectDebit.Archived IS NULL OR DirectDebit.Archived = 1)');
+												'(DirectDebit.Archived IS NULL OR DirectDebit.Archived = 1) AND ',
+												NULL,
+												NULL,
+												'Account.Id');
 		$selNDDRAccounts->Execute();
 		echo("Account\n\n");
 		while ($arrAccount = $selNDDRAccounts->Fetch())
