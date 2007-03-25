@@ -88,7 +88,7 @@
 			);
 			
 			// CDR Range is between 100 and 199
-			for ($i=100; $i <= 199; ++$i)
+			for ($i=100; $i <= 299; ++$i)
 			{
 				// If this is not a Status we want to search for
 				// Block it out
