@@ -641,7 +641,7 @@
 	 	// for each account without a DDR Fee Waive and no/out-of-date CC or DDR info
 		$intCount = 0;
 		$selNDDRAccounts = new StatementSelect(	'(Account LEFT OUTER JOIN CreditCard USING(AccountGroup)) LEFT OUTER JOIN DirectDebit USING (AccountGroup)', 
-												'Account.*, COUNT(CDR.Id) AS CDRCount', 
+												'Account.*', 
 												'Account.Archived = 0 AND ' .
 												'Account.DisableDDR = 0 AND ' .
 												'(CreditCard.Archived IS NULL OR CreditCard.Archived = 1) AND ' .
@@ -649,10 +649,27 @@
 												NULL,
 												NULL,
 												'Account.Id');
+		$selTollingAccounts = new StatementSelect(	'CDR, Charge',
+													'CDR.Id, Charge.Id',
+													'CDR.Account = <Account> AND ' .
+													'CDR.Status = '.CDR_RATED.' AND ' .
+													'CDR.Credit = 0 AND ' .
+													'Charge.Account = <Account> AND ' .
+													'Charge.Status = '.CHARGE_APPROVED.' AND ' .
+													'Charge.Nature = \'DR\'');
 		$selNDDRAccounts->Execute();
 		echo("Account\n\n");
 		while ($arrAccount = $selNDDRAccounts->Fetch())
 		{			
+			// Check if this Account is tolling
+			$arrWhere = Array();
+			$arrWhere['Account']	= $arrAccount['Id'];
+			if (!$selTollingAccounts->Execute($arrWhere))
+			{
+				// There were no results, so skip the Account
+				continue;
+			}
+			
 			// add to report
 			//TODO!rich! replace this echo with report output
 			echo $arrAccount['Id'];
