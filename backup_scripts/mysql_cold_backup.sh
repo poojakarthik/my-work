@@ -16,6 +16,14 @@ BACKUP_DIR='/home/backup'
 # 	Full path to MySQL directory (do NOT include trailing slash)
 MYSQL_DIR='/var/lib/mysql'
 
+# LOG_DIR
+# 	Full path to MySQL LOG directory (do NOT include trailing slash)
+LOG_DIR='/var/log/mysql'
+
+# OLD_LOG_DIR
+# 	Full path to MySQL OLD LOG directory (do NOT include trailing slash)
+OLD_LOG_DIR='/var/log/mysql_old'
+
 # INNODB_DIR
 # 	Full path to InnoDB directory (do NOT include trailing slash)
 INNODB_DIR='/var/lib/mysql'
@@ -31,28 +39,32 @@ DATABASE_NAME='vixen'
 # Set Backup Name
 BACKUP_NAME=`date +%Y-%m-%d_%H\:%M\:%S`
 
+# Make backup dir for logs
+mkdir -pm 700 $OLD_LOG_DIR/$BACKUP_NAME/
+
 # Make Directory for this backup
-#echo $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
-mkdir -pm 700 $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
+mkdir -pm 700 $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/log/
 
 # Shut down your MySQL server and make sure that it shuts down without errors.
 /etc/init.d/mysql stop
 
 # Copy all your data files (ibdata files and .ibd files) into a safe place.
-cp -ip $INNODB_DIR/*.idb $BACKUP_DIR/$BACKUP_NAME/
 cp -ip $INNODB_DIR/ibdata* $BACKUP_DIR/$BACKUP_NAME/
 
 # Copy all your ib_logfile files to a safe place.
 cp -ip $INNODB_DIR/ib_logfile* $BACKUP_DIR/$BACKUP_NAME/
 
 # Copy your my.cnf configuration file or files to a safe place.
-#TODO!!!!
+cp -ip /etc/mysql/my.cnf $BACKUP_DIR/$BACKUP_NAME/
 
-# Copy all the .frm files for your InnoDB tables to a safe place.
-cp -Rip $MYSQL_DIR/$DATABASE_NAME/*.frm $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
+# Copy all the .frm & .idb files for your InnoDB tables to a safe place.
+cp -Rip $MYSQL_DIR/$DATABASE_NAME/* $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
 
 # Copy the MySQL database
 cp -Rip $MYSQL_DIR/mysql $BACKUP_DIR/$BACKUP_NAME/
+
+# Copy the binary logs
+cp -ip $LOG_DIR/* $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/log/
 
 # Restart the MySQL server
 /etc/init.d/mysql start

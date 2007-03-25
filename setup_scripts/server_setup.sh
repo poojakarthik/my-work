@@ -677,6 +677,7 @@ innodb_additional_mem_pool_size	= 16777216
 innodb_log_buffer_size			= 67108864
 innodb_log_file_size			= 536870912
 
+innodb_file_per_table
 
 [mysqldump]
 quick
