@@ -21,9 +21,9 @@
  * @file		svn.php
  * @language	PHP
  * @package		<package_name>
- * @author		<Author Name>
+ * @author		Andrew White
  * @version		6.10
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -49,7 +49,7 @@ echo $strLogMessage;
  * Use the repository path and transaction number passed to it to find the author
  * and log message information of the subversion commit
  *
- * @prefix	<prefix>
+ * @prefix	svn
  *
  * @package	<package_name>
  * @parent	<full.parent.path>
@@ -65,24 +65,23 @@ class SvnLookup
 	// __Construct
 	//------------------------------------------------------------------------//
 	/**
-	 * __Construct($strPath, $strRevision)
+	 * __Construct($strPath, $intRevision)
 	 *
 	 * Store the information passed from the subversion hook
 	 *
 	 * Store the repository path and revision number of the subversion commit
 	 *
-	 * @param	<type>	<$name>	[optional] <description>
-	 * @return	<type>
+	 * @param	string	$strPath		Full path to SVN repository
+	 * @param	int		$intRevision	Revision number of commit
+	 * @return	void
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	
-	
-	function __Construct ($strPath, $strRevision)
+	function __Construct ($strPath, $intRevision)
 	{
-	$this->_strPath = $strPath;
-	$this->_strRevisionNum = $strRevision;
+		$this->_strPath = $strPath;
+		$this->_intRevisionNum = $intRevision;
 	}
 	
 	
@@ -96,38 +95,34 @@ class SvnLookup
 	 *
 	 * Find the author of the subversion commit
 	 *
-	 * @param	<type>	<$name>	[optional] <description>
-	 * @return	<type>
+	 * @return	string
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	
 	function Author()
 	{
-		return shell_exec("svnlook author {$this->_strPath} -r {$this->_strRevisionNum}");
+		return shell_exec("svnlook author {$this->_strPath} -r {$this->_intRevisionNum}");
 	}
 	
 	//------------------------------------------------------------------------//
 	// LogMessage
 	//------------------------------------------------------------------------//
 	/**
-	 * Authors()
+	 * LogMessage()
 	 *
 	 * Find the log message of the subversion commit
 	 *
 	 * Find the log message of the subversion commit
 	 *
-	 * @param	<type>	<$name>	[optional] <description>
-	 * @return	<type>
+	 * @return	string
 	 *
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	
 	function LogMessage()
 	{
-		return shell_exec("svnlook log {$this->_strPath} -r {$this->_strRevisionNum}");
+		return shell_exec("svnlook log {$this->_strPath} -r {$this->_intRevisionNum}");
 	
 	
 	}
