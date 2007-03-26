@@ -25,8 +25,9 @@ $arrBalanceColumns	= Array();
 $arrVixenColumns	= Array();
 $arrBalanceColumns['Balance']		= 0;
 $arrVixenColumns['AccountBalance']	= NULL;
+$arrVixenColumns['TotalOwing']		= MySQLFunction("<AccountBalance> + Total + Tax");
 $selEtechJan		= new StatementSelect("Invoice", "Account, TotalOwing", "InvoiceRun = '45dfe46ae67cd'");
-$updVixenFeb		= new StatementUpdate("Invoice", "Account = <Account> AND InvoiceRun = '45dfe46ae67cd'");
+$updVixenFeb		= new StatementUpdate("Invoice", "Account = <Account> AND InvoiceRun = '45dfe46ae67cd'", $arrVixenColumns);
 $updEtechBalances	= new StatementUpdate("Invoice", "Account = <Account> AND CreatedOn < '2007-02-01'", $arrBalanceColumns);
 
 $rptReport->AddMessage("\n\n[ UPDATING viXen INVOICES ]\n\n");
@@ -38,9 +39,15 @@ $intPassed = 0;
 $intTotal = count($arrInvoices);
 foreach ($arrInvoices as $arrInvoice)
 {
-	$rptReport->AddMessage(" + Updating TotalOwing for Account #{$arrInvoice['Account']}...\t\t");
+	if ($arrInvoice['TotalOwing'] >= 0)
+	{
+		continue;
+	}
 	
-	$arrVixenColumns['AccountBalance'] = $arrInvoice['TotalOwing'];
+	$rptReport->AddMessage(" + Updating AccountBalance and TotalOwing for Account #{$arrInvoice['Account']}...\t\t");
+	
+	$arrVixenColumns['AccountBalance']	= $arrInvoice['TotalOwing'];
+	$arrVixenColumns['TotalOwing']		= MySQLFunction("<AccountBalance> + Total + Tax", Array('AccountBalance' => $arrInvoice['TotalOwing']));
 	if (!$updVixenFeb->Execute($arrVixenColumns, Array('Account' => $arrInvoice['Account'])))
 	{
 		$rptReport->AddMessage("[ FAILED ]\n");
