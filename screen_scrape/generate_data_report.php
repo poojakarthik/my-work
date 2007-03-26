@@ -430,9 +430,9 @@ $arrSQLFields['EndDate']	= Array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-
+/*
 //----------------------------------------------------------------------------//
-// Payment in a Date Range
+// Payment in a Date Range - FIXME
 //----------------------------------------------------------------------------//
 
 $arrDataReport = Array();
@@ -488,6 +488,80 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Field'	=> "EndDateRange",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+/*
+//----------------------------------------------------------------------------//
+// Direct Debit Report
+//----------------------------------------------------------------------------//
+
+$strStartDate	= date("Y-m-01", time());
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Direct Debit Payments Report";
+$arrDataReport['Summary']		= "Details Direct Debit information for use in automated payments";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "DirectDebit JOIN Account USING (AccountGroup) JOIN Invoice ON (Account.Id = Invoice.Account)";
+$arrDataReport['SQLWhere']		= "DirectDebit.Archived = 0 AND Invoice.TotalOwing > 0 AND Invoice.DueOn BETWEEN $strStartDate AND SUBDATE(ADDDATE($strStartDate, INTERVAL 1 MONTH), INTERVAL 1 DAY)";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['BSB']					= "DirectDebit.BSB";
+$arrSQLSelect['Bank Account Number']	= "DirectDebit.AccountNumber";
+$arrSQLSelect['Account Name']			= "DirectDebit.AccountName";
+$arrSQLSelect['Amount Charged']			= "Invoice.TotalOwing";
+$arrSQLSelect['Account Number']			= "Account.Id";
+$arrSQLSelect['Customer Name']			= "Account.BusinessName";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+/*
+//----------------------------------------------------------------------------//
+// Credit Card Report
+//----------------------------------------------------------------------------//
+
+$strStartDate	= date("Y-m-01", time());
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Credit Card Payments Report";
+$arrDataReport['Summary']		= "Details Credit Card information for use in automated payments";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "CreditCard JOIN Account USING (AccountGroup) JOIN Invoice ON (Account.Id = Invoice.Account)";
+$arrDataReport['SQLWhere']		= "CreditCard.Archived = 0 AND Invoice.TotalOwing > 0 AND Invoice.DueOn BETWEEN $strStartDate AND SUBDATE(ADDDATE($strStartDate, INTERVAL 1 MONTH), INTERVAL 1 DAY)";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['CC Number']				= "CreditCard.CardNumber";
+$arrSQLSelect['Expiry Date']			= "CONCAT(CreditCard.ExpMonth, '/', CreditCard.ExpYear)";
+$arrSQLSelect['Amount Charged']			= "Invoice.TotalOwing";
+$arrSQLSelect['Account Number']			= "Account.Id";
+$arrSQLSelect['Customer Name']			= "Account.BusinessName";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+
+
+
+
 
 //Debug($arrDataReport);
 //die;
