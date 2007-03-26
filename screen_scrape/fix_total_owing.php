@@ -19,11 +19,13 @@ $framework = $GLOBALS['fwkFramework'];
 
 
 // Search for Etech Invoices from January
-$arrColumns = Array();
-$arrColumns['Balance']	= 0;
+$arrBalanceColumns	= Array();
+$arrVixenColumns	= Array();
+$arrBalanceColumns['Balance']		= 0;
+$arrVixenColumns['AccountBalance']	= NULL;
 $selEtechJan		= new StatementSelect("Invoice", "Account, TotalOwing", "InvoiceRun = '45dfe46ae67cd'");
 $updVixenFeb		= new StatementUpdate("Invoice", "Account = <Account> AND InvoiceRun = '45dfe46ae67cd'");
-$updEtechBalances	= new StatementUpdate("Invoice", "Account = <Account> AND CreatedOn < '2007-02-01'", $arrColumns);
+$updEtechBalances	= new StatementUpdate("Invoice", "Account = <Account> AND CreatedOn < '2007-02-01'", $arrBalanceColumns);
 
 echo "\n\n[ UPDATING viXen INVOICES ]\n\n";
 
@@ -36,7 +38,8 @@ foreach ($arrInvoices as $arrInvoice)
 {
 	echo " + Updating TotalOwing for Account #{$arrInvoice['Account']}...\t\t";
 	
-	if (!$updVixenFeb->Execute(Array('Account' => $arrInvoice['Account'])))
+	$arrVixenColumns['AccountBalance'] = $arrInvoice['TotalOwing'];
+	if (!$updVixenFeb->Execute($arrVixenColumns, Array('Account' => $arrInvoice['Account'])))
 	{
 		echo "[ FAILED ]\n";
 		continue;
@@ -64,7 +67,7 @@ foreach ($arrInvoices as $arrInvoice)
 	
 	// Zero out the balances of all previous invoices
 	$intToUpdate++;
-	if (!$intUpdated = $updEtechBalances->Execute($arrColumns, Array('Account' => $arrInvoice['Account'])))
+	if (!$intUpdated = $updEtechBalances->Execute($arrBalanceColumns, Array('Account' => $arrInvoice['Account'])))
 	{
 		echo "[ FAILED ]\n";
 		continue;
