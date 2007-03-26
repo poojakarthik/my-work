@@ -16,6 +16,8 @@ require_once($strFrameworkDir."exception_vixen.php");
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
+$rptReport = new Report("Fix Total Owing for ".date("Y-m-d", time()), "rich@voiptelsystems.com.au");
+
 
 
 // Search for Etech Invoices from January
@@ -27,7 +29,7 @@ $selEtechJan		= new StatementSelect("Invoice", "Account, TotalOwing", "InvoiceRu
 $updVixenFeb		= new StatementUpdate("Invoice", "Account = <Account> AND InvoiceRun = '45dfe46ae67cd'");
 $updEtechBalances	= new StatementUpdate("Invoice", "Account = <Account> AND CreatedOn < '2007-02-01'", $arrBalanceColumns);
 
-echo "\n\n[ UPDATING viXen INVOICES ]\n\n";
+$rptReport->AddMessage("\n\n[ UPDATING viXen INVOICES ]\n\n");
 
 // for each invoice
 $selEtechJan->Execute();
@@ -36,22 +38,22 @@ $intPassed = 0;
 $intTotal = count($arrInvoices);
 foreach ($arrInvoices as $arrInvoice)
 {
-	echo " + Updating TotalOwing for Account #{$arrInvoice['Account']}...\t\t";
+	$rptReport->AddMessage(" + Updating TotalOwing for Account #{$arrInvoice['Account']}...\t\t");
 	
 	$arrVixenColumns['AccountBalance'] = $arrInvoice['TotalOwing'];
 	if (!$updVixenFeb->Execute($arrVixenColumns, Array('Account' => $arrInvoice['Account'])))
 	{
-		echo "[ FAILED ]\n";
+		$rptReport->AddMessage("[ FAILED ]\n");
 		continue;
 	}
-	echo "[   OK   ]\n";
+	$rptReport->AddMessage("[   OK   ]\n");
 	$intPassed++;
 }
 
-echo "\n * $intPassed of $intTotal Invoices updated\n";
+$rptReport->AddMessage("\n * $intPassed of $intTotal Invoices updated\n");
 
 // Zero out balances on previous invoices if a negative or zero balance
-echo "\n[ ZERO OUT PREVIOUS INVOICES ]\n\n";
+$rptReport->AddMessage("\n[ ZERO OUT PREVIOUS INVOICES ]\n\n");
 
 // for each invoice
 $intToUpdate	= 0;
@@ -69,15 +71,16 @@ foreach ($arrInvoices as $arrInvoice)
 	$intToUpdate++;
 	if (!$intUpdated = $updEtechBalances->Execute($arrBalanceColumns, Array('Account' => $arrInvoice['Account'])))
 	{
-		echo "[ FAILED ]\n";
+		$rptReport->AddMessage("[ FAILED ]\n");
 		continue;
 	}
-	echo "[   OK   ]\n";
+	$rptReport->AddMessage("[   OK   ]\n");
 	$intTotalUpdated += $intUpdated;
 	$intPassed++;
 }
 
-echo "\n * $intPassed of $intTotal Accounts updated.  Total of $intTotalUpdated Invoices updated\n\n";
+$rptReport->AddMessage("\n * $intPassed of $intTotal Accounts updated.  Total of $intTotalUpdated Invoices updated\n\n");
+$rptReport->Finish("/home/vixen_reports/fix_total_owing_".date("Y-m-d", time()).".log");
 
 ?>
 
