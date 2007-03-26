@@ -28,14 +28,16 @@
  *
  */
 
+$svnTransaction = new SvnLookup("/home/vixen/subversion/", "2049");
+$strAuthor = $svnTransaction->Author();
+$strLogMessage = $svnTransaction->LogMessage();
+
+echo $strAuthor;
+echo $strLogMessage;
+
+// echo shell_exec("svnlook author /home/vixen/subversion/ -r 2049");
 
 
-
-
-echo shell_exec("svnlook author /home/vixen/subversion/ -r 2049");
-
-
-die();
 //----------------------------------------------------------------------------//
 // SvnLookup
 //----------------------------------------------------------------------------//
@@ -85,10 +87,10 @@ class SvnLookup
 	
 	
 	//------------------------------------------------------------------------//
-	// Authors
+	// Author
 	//------------------------------------------------------------------------//
 	/**
-	 * Authors()
+	 * Author()
 	 *
 	 * Find the author of the subversion commit
 	 *
@@ -101,7 +103,7 @@ class SvnLookup
 	 * @see	<MethodName()||typePropertyName>
 	 */
 	
-	function Authors()
+	function Author()
 	{
 		return shell_exec("svnlook author {$this->_strPath} -r {$this->_strRevisionNum}");
 	}
@@ -134,9 +136,6 @@ class SvnLookup
 	
 }
 
-$svnTransaction = new SvnLookup;
-$strAuthor = $svnTransaction->Author();
-$strLogMessage = $svnTransaction->LogMessage();
 
 
 
