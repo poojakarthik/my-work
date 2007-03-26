@@ -694,6 +694,40 @@
 		// return count
 		return $intCount;
 	 }
+	
+	//------------------------------------------------------------------------//
+	// MarkInboundSAndECDR
+	//------------------------------------------------------------------------//
+	/**
+	 * MarkInboundSAndECDR()
+	 *
+	 * Marks Inbound S&E CDRs so that they are not invoiced
+	 *
+	 * Marks Inbound S&E CDRs so that they are not invoiced
+	 *
+	 * @return			VOID
+	 *
+	 * @method
+	 */
+	 function MarkInboundSAndECDR()
+	 {
+	 	$arrColumns = Array();
+	 	$arrColumns['Status']	= CDR_IGNORE_INBOUND_SE; 
+	 	$updInboundSECDRs = new StatementUpdate("CDR",
+												"Status = ".CDR_RATED." AND " .
+												"RecordType = 30 AND " .
+												"Charge < 30",
+												$arrColumns);
+												
+		echo "\n\nUpdating Inbound S&E CDRs...\t\t\t";
+		if (!$intCount = $updInboundSECDRs->Execute($arrColumns, Array()))
+		{
+			echo "[ FAILED ]\n\n";
+			return FALSE;
+		}
+		
+		echo "[   OK   ]\n\nCOMPLETED!  $intCount CDRs updated.\n";
+	 }
  }
 
 
