@@ -28,7 +28,7 @@ $arrVixenColumns['AccountBalance']	= NULL;
 $arrVixenColumns['TotalOwing']		= MySQLFunction("<AccountBalance> + Total + Tax");
 $selEtechJan		= new StatementSelect("Invoice", "Account, TotalOwing", "InvoiceRun = '45dfe46ae67cd'");
 $updVixenFeb		= new StatementUpdate("Invoice", "Account = <Account> AND InvoiceRun = '45dfe46ae67cd'", $arrVixenColumns);
-$updEtechBalances	= new StatementUpdate("Invoice", "Account = <Account> AND CreatedOn < '2007-02-01'", $arrBalanceColumns);
+$updEtechBalances	= new StatementUpdate("Invoice", "Account = <Account> AND CreatedOn < '2007-03-01'", $arrBalanceColumns);
 
 $rptReport->AddMessage("\n\n[ UPDATING viXen INVOICES ]\n\n");
 
