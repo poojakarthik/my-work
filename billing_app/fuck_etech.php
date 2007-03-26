@@ -19,11 +19,15 @@ require_once($strModuleDir."etech_biller.php");
 $suxEtech = new EtechReader();
 $etbEtech = new EtechBiller();
 
-$stdout = fopen("php://stdout","w"); 
-function CliEcho($strOutput)
+$stdout = fopen("php://stdout","w");
+
+if (!function_exists("CliEcho"))
 {
-	$stdout = $GLOBALS['stdout'];
-	fwrite($stdout, $strOutput."\n");
+	function CliEcho($strOutput)
+	{
+		$stdout = $GLOBALS['stdout'];
+		fwrite($stdout, $strOutput."\n");
+	}
 }
 CliEcho("STARTING");
 
