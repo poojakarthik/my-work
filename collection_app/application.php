@@ -417,7 +417,7 @@
 		// Find file type
 		foreach($arrFileType as $strRegEx => $intFileType)
 		{
-			if (preg_match($strRegEx, $strFileName))
+			if (preg_match($strRegEx."misU", $strFileName))
 			{
 				$this->_arrCurrentImportFile['FileType'] = $intFileType;
 				return $intFileType;
