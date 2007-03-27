@@ -94,29 +94,11 @@
 		{
 			parent::__construct ('PaymentType');
 			
-			$strName = 'Unknown';
+			$strName = GetConstantDescription($intType, 'PaymentType');
 			
-			switch ($intType)
+			if (!$strName)
 			{
-				case PAYMENT_TYPE_BILLEXPRESS:
-					$strName = 'Bill Express';
-					break;
-					
-				case PAYMENT_TYPE_BPAY:
-					$strName = 'B-Pay';
-					break;
-					
-				case PAYMENT_TYPE_CHEQUE:
-					$strName = 'Cheque';
-					break;
-					
-				case PAYMENT_TYPE_CREDIT_CARD:
-					$strName = 'Credit Card';
-					break;
-					
-				case PAYMENT_TYPE_SECUREPAY:
-					$strName = 'Secure Pay';
-					break;
+					$strName = 'Unknown';
 			}
 			
 			$this->oblintType		= $this->Push (new dataInteger	('Id',		$intType));

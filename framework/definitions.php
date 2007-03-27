@@ -989,6 +989,10 @@ $GLOBALS['*arrConstant']	['PaymentType']	[4]	['Constant']	= 'PAYMENT_TYPE_SECURE
 $GLOBALS['*arrConstant']	['PaymentType']	[4]	['Description']	= 'SecurePay';
 $GLOBALS['*arrConstant']	['PaymentType']	[5]	['Constant']	= 'PAYMENT_TYPE_CREDIT_CARD';
 $GLOBALS['*arrConstant']	['PaymentType']	[5]	['Description']	= 'Credit Card';
+$GLOBALS['*arrConstant']	['PaymentType']	[6]	['Constant']	= 'PAYMENT_TYPE_EFT';
+$GLOBALS['*arrConstant']	['PaymentType']	[6]	['Description']	= 'EFT';
+$GLOBALS['*arrConstant']	['PaymentType']	[7]	['Constant']	= 'PAYMENT_TYPE_CASH';
+$GLOBALS['*arrConstant']	['PaymentType']	[7]	['Description']	= 'Cash';
 
 // Charge Types/Codes
 define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");

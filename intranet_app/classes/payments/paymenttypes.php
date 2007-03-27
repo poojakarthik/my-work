@@ -65,6 +65,8 @@
 			$this->_CHEQUE			= $this->Push (new PaymentType (PAYMENT_TYPE_CHEQUE));
 			$this->_CREDIT_CARD		= $this->Push (new PaymentType (PAYMENT_TYPE_CREDIT_CARD));
 			$this->_SECUREPAY		= $this->Push (new PaymentType (PAYMENT_TYPE_SECUREPAY));
+			$this->_EFT				= $this->Push (new PaymentType (PAYMENT_TYPE_EFT));
+			$this->_CASH			= $this->Push (new PaymentType (PAYMENT_TYPE_CASH));
 			
 			$this->setValue ($intPaymentType);
 		}
@@ -95,6 +97,8 @@
 				case PAYMENT_TYPE_CHEQUE:			$this->Select ($this->_CHEQUE);			return true;
 				case PAYMENT_TYPE_CREDIT_CARD:		$this->Select ($this->_CREDIT_CARD);	return true;
 				case PAYMENT_TYPE_SECUREPAY:		$this->Select ($this->_SECUREPAY);		return true;
+				case PAYMENT_TYPE_EFT:				$this->Select ($this->_EFT);			return true;
+				case PAYMENT_TYPE_CASH:				$this->Select ($this->_CASH);			return true;
 				default:							return false;
 			}
 		}
