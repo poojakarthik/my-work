@@ -50,11 +50,13 @@
 		$fmtTitle->setFgColor(22);
 		$fmtTitle->setBorder(1);
 		
+		// Currency format
 		$fmtCurrency =& $wkbWorkbook->addFormat();
 		$fmtCurrency->setNumFormat('$#,##0.00;-$#,##0.00');
 		
+		// Integer format (make sure it doesn't show exponentials for large ints)
 		$fmtInteger =& $wkbWorkbook->addFormat();
-		$fmtInteger->setNumFormat('0');
+		$fmtInteger->setNumFormat('00');
 		
 		// Add in the title row
 		$mdtMetaData = $selResult->MetaData();
@@ -76,10 +78,10 @@
 					// Currency/float
 					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtCurrency);
 				}
-				elseif (is_int($mixField))
+				elseif (is_int($mixField) || preg_match('/^\d+$/misU', trim($mixField)))
 				{
 					// Integer
-					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtInteger);
+					$wksWorksheet->write($intRow+1, $intCol, (int)$mixField, $fmtInteger);
 				}
 				else
 				{
