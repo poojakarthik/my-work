@@ -17,8 +17,10 @@ $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
 // Init Statements
+$arrData = Array();
+$arrData['TotalOwing']	= NULL;
 $selInvoiceOutput	= new StatementSelect("InvoiceOutput", "InvoiceRun, Account, Data");
-$updTotalOwing		= new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>");
+$updTotalOwing		= new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND Account = <Account>", $arrData);
 
 echo "\n\n[ GRABBING TOTAL OWING AND INSERTING INTO INVOICE TABLE ]\n\n";
 
@@ -35,9 +37,10 @@ while ($arrInvoiceOutput = $selInvoiceOutput->Fetch())
 	
 	// Update the Invoice
 	$arrData['TotalOwing']	= $fltTotalOwing;
+	$arrWhere = Array();
 	$arrWhere['InvoiceRun']	= $arrInvoiceOutput['InvoiceRun'];
 	$arrWhere['Account']	= $arrInvoiceOutput['Account'];
-	if (/*$updTotalOwing->Execute($arrData, $arrWhere)*/true)
+	if ($updTotalOwing->Execute($arrData, $arrWhere))
 	{
 		echo "[   OK   ]\n";
 		$intPassed++;
