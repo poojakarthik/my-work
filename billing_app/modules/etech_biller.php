@@ -116,7 +116,7 @@
 		
 		$arrUpdateData = Array();
 		$arrUpdateData['TotalOwing']		= NULL;
-		$this->_updInvoiceTotalOwing = new StatementUpdate("Invoice", "<Account> = Account AND InvoiceRun = <InvoiceRun>");
+		$this->_updInvoiceTotalOwing = new StatementUpdate("Invoice", "<Account> = Account AND InvoiceRun = <InvoiceRun>", $arrUpdateData);
 		
 		$this->_selInvoiceRun	= new StatementSelect("Invoice", "InvoiceRun", "Id = <Invoice>");
 	}
@@ -208,6 +208,8 @@
 	 */
  	function UpdateTotalOwing($arrInvoice, $strInvoiceRun)
  	{
+		Debug("Total Owing: {$arrInvoice['TotalOwing']}\n$strInvoiceRun");
+		
 		// Insert into the database
 		$arrWhere = Array();
 		$arrWhere['Account']	= $arrInvoice['Account'];

@@ -46,7 +46,8 @@ while ($arrInvoice = $selFebNDDRInvoices->Fetch())
 	if (!$ubiFebNDDRInvoice->Execute($arrColumns))
 	{
 		echo "[ FAILED ]\n\t- Reason: Unable to update Invoice\n\n";
-		die;}
+		die;
+	}
 	
 	echo "[   OK   ]\n";
 }

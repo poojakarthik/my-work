@@ -24,7 +24,7 @@ $rptReport = new Report("Fix Total Owing for ".date("Y-m-d", time()), "rich@voip
 $arrBalanceColumns	= Array();
 $arrVixenColumns	= Array();
 $arrBalanceColumns['Balance']		= 0;
-$arrVixenColumns['TotalOwing']		= MySQLFunction("<TotalOwing> + Total + Tax");
+$arrVixenColumns['TotalOwing']		= new MySQLFunction("<TotalOwing> + Total + Tax");
 $selEtechJan		= new StatementSelect("Invoice", "Account, TotalOwing", "InvoiceRun = '45dfe46ae67cd'");
 $updVixenFeb		= new StatementUpdate("Invoice", "Account = <Account> AND InvoiceRun = '45dfe46ae67cd'", $arrVixenColumns);
 $updEtechBalances	= new StatementUpdate("Invoice", "Account = <Account> AND CreatedOn < '2007-03-01'", $arrBalanceColumns);
@@ -35,27 +35,29 @@ $rptReport->AddMessage("\n\n[ UPDATING viXen INVOICES ]\n\n");
 $selEtechJan->Execute();
 $arrInvoices = $selEtechJan->FetchAll();
 $intPassed = 0;
+$intIgnored = 0;
 $intTotal = count($arrInvoices);
 foreach ($arrInvoices as $arrInvoice)
 {
 	if ($arrInvoice['TotalOwing'] >= 0)
 	{
+		$intIgnored++;
 		continue;
 	}
 	
-	$rptReport->AddMessage(" + Updating AccountBalance and TotalOwing for Account #{$arrInvoice['Account']}...\t\t");
+	$rptReport->AddMessage(" + Updating AccountBalance and TotalOwing for Account #{$arrInvoice['Account']}...\t\t", FALSE);
 	
-	$arrVixenColumns['TotalOwing']		= MySQLFunction("<TotalOwing> + Total + Tax", Array('TotalOwing' => $arrInvoice['TotalOwing']));
-	if (!$updVixenFeb->Execute($arrVixenColumns, Array('Account' => $arrInvoice['Account'])))
+	$arrVixenColumns['TotalOwing']		= new MySQLFunction("<TotalOwing> + Total + Tax", Array('TotalOwing' => $arrInvoice['TotalOwing']));
+	if ($updVixenFeb->Execute($arrVixenColumns, Array('Account' => $arrInvoice['Account'])) === FALSE)
 	{
-		$rptReport->AddMessage("[ FAILED ]\n");
+		$rptReport->AddMessage("[ FAILED ]");
 		continue;
 	}
-	$rptReport->AddMessage("[   OK   ]\n");
+	$rptReport->AddMessage("[   OK   ]");
 	$intPassed++;
 }
 
-$rptReport->AddMessage("\n * $intPassed of $intTotal Invoices updated\n");
+$rptReport->AddMessage("\n * $intPassed of $intTotal Invoices updated ($intIgnored ignored)\n");
 
 // Zero out balances on previous invoices if a negative or zero balance
 $rptReport->AddMessage("\n[ ZERO OUT PREVIOUS INVOICES ]\n\n");
@@ -63,28 +65,31 @@ $rptReport->AddMessage("\n[ ZERO OUT PREVIOUS INVOICES ]\n\n");
 // for each invoice
 $intToUpdate	= 0;
 $intPassed		= 0;
-
+$intIgnored		= 0;
 foreach ($arrInvoices as $arrInvoice)
 {
 	// Check the balance
 	if ($arrInvoice['TotalOwing'] > 0)
 	{
+		$intIgnored++;
 		continue;
 	}
 	
+	$rptReport->AddMessage(" + Zeroing out balances for Account #{$arrInvoice['Account']}...\t\t", FALSE);
+	
 	// Zero out the balances of all previous invoices
 	$intToUpdate++;
-	if (!$intUpdated = $updEtechBalances->Execute($arrBalanceColumns, Array('Account' => $arrInvoice['Account'])))
+	if (($intUpdated = $updEtechBalances->Execute($arrBalanceColumns, Array('Account' => $arrInvoice['Account']))) === FALSE)
 	{
-		$rptReport->AddMessage("[ FAILED ]\n");
+		$rptReport->AddMessage("[ FAILED ]");
 		continue;
 	}
-	$rptReport->AddMessage("[   OK   ]\n");
+	$rptReport->AddMessage("[   OK   ]");
 	$intTotalUpdated += $intUpdated;
 	$intPassed++;
 }
 
-$rptReport->AddMessage("\n * $intPassed of $intTotal Accounts updated.  Total of $intTotalUpdated Invoices updated\n\n");
+$rptReport->AddMessage("\n * $intPassed of $intTotal Accounts updated ($intIgnored ignored).  Total of $intTotalUpdated Invoices updated\n\n");
 $rptReport->Finish("/home/vixen_reports/fix_total_owing_".date("Y-m-d", time()).".log");
 
 ?>

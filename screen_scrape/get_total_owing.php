@@ -23,7 +23,7 @@ $updTotalOwing		= new StatementUpdate("Invoice", "InvoiceRun = <InvoiceRun> AND 
 echo "\n\n[ GRABBING TOTAL OWING AND INSERTING INTO INVOICE TABLE ]\n\n";
 
 // Grab the InvoiceOutput
-$selInvoiceOutput->Execute();
+$intTotal = $selInvoiceOutput->Execute();
 $intPassed = 0;
 while ($arrInvoiceOutput = $selInvoiceOutput->Fetch())
 {
@@ -48,7 +48,7 @@ while ($arrInvoiceOutput = $selInvoiceOutput->Fetch())
 	}
 }
 
-$intFailed = count($arrInvoiceOutput) - $intPassed;
+$intFailed = $intTotal - $intPassed;
 echo "\nCompleted! $intPassed passed, $intFailed failed.\n\n";
 
 ?>
