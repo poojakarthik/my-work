@@ -107,9 +107,9 @@
 	}
 	
 	// Invoice List
-	$invInvoices = $Style->attachObject (new Invoices);
-	$invInvoices->Constrain ('Account', '=', $actAccount->Pull ('Id')->getValue ());
-	$invInvoices->Sample (1, 6);
+	$invInvoices = $Style->attachObject (new Invoices ($_POST['Id']));
+	//$invInvoices->Constrain ('Account', '=', $actAccount->Pull ('Id')->getValue ());
+	//$invInvoices->Sample (1, 6);
 	
 	// Documentation
 	$docDocumentation->Explain ('Account');
