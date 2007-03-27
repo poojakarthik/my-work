@@ -94,9 +94,9 @@
 	}
 	
 	// Invoice List
-	$invInvoices = $Style->attachObject (new Invoices);
-	$invInvoices->Constrain ('Account', '=', $srvService->Pull ('Account')->getValue ());
-	$invInvoices->Sample (1, 6);
+	$invInvoices = $Style->attachObject (new Invoices($srvService->Pull ('Account')->getValue ()));
+	//$invInvoices->Constrain ('Account', '=', $srvService->Pull ('Account')->getValue ());
+	//$invInvoices->Sample (1, 6);
 	
 	// Documentation
 	$docDocumentation->Explain ('Service');

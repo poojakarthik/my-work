@@ -101,7 +101,7 @@
 				$_POST ['Notes']
 			);
 			
-			header ('Location: account_charges_unbilled.php?Account=' . $actAccount->Pull ('Id')->getValue ());
+			header ('Location: recurring_charge_list.php?Account=' . $actAccount->Pull ('Id')->getValue ());
 			exit;
 		}
 	}
@@ -110,6 +110,7 @@
 	$invInvoices = $Style->attachObject (new Invoices ($_POST['Id']));
 	//$invInvoices->Constrain ('Account', '=', $actAccount->Pull ('Id')->getValue ());
 	//$invInvoices->Sample (1, 6);
+
 	
 	// Documentation
 	$docDocumentation->Explain ('Account');

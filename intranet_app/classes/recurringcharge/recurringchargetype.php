@@ -1,5 +1,7 @@
 <?php
 	
+	require_once("classes/billing/billingfreqtypes.php");
+	require_once("classes/billing/billingfreqtype.php");
 	//----------------------------------------------------------------------------//
 	// recurringchargetype.php
 	//----------------------------------------------------------------------------//

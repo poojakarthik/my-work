@@ -18,8 +18,17 @@
 	require ('config/application.php');
 	
 	
+		// ChargeType and RecurringChargeType
+	$tctCharges = $Style->attachObject (new dataArray ('TemplateChargeTypes'));
+	
+	// Get the Recurring ChargeTypes which can be put against this Account
+	$rclRecurringChargeTypes	= $tctCharges->Push (new RecurringChargeTypes);
+	$rclRecurringChargeTypes->Constrain ('Archived', '=', FALSE);
+	$rclRecurringChargeTypes->Sample ();
+	
 	// Start the Recurring Charges List
 	$rclRecurringCharges = $Style->attachObject (new RecurringCharges ());
+
 	
 	if ($_GET ['Account'])
 	{
@@ -64,7 +73,7 @@
 		header ('Location: console.php');
 		exit;
 	}
-	
+
 	if (isset ($_POST ['Archived']))
 	{
 		// This will allow us to choose whether or not we show Archived Recurring Charges
@@ -75,7 +84,6 @@
 		// By default, we don't want to show Archived Recurring Charges
 		$rclRecurringCharges->Constrain ('Archived', '=', 0);
 	}
-	
 	// Pull the List
 	$oblsamRecurringCharges = $rclRecurringCharges->Sample ();
 	
@@ -84,7 +92,6 @@
 	{
 		$rciRecurringCharge->Service ();
 	}
-	
 	// Explain an Account
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archived');

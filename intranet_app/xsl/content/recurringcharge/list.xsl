@@ -64,37 +64,45 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<table border="0" cellpadding="3" cellspacing="0">
-						<xsl:if test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge[./Nature='CR']) != 0">
-							<form method="post" action="charges_recurringcharge_add.php">
+						<xsl:if test="count(/Response/RecurringCharges/Results/rangeSample/RecurringChargeType[./Nature='CR']) != 0">
+							<form method="post" action="recurringcharge_assign.php">
 								<input type="hidden" name="Account">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/Id" />
 									</xsl:attribute>
 								</input>
+
+
 								<tr>
 									<th class="JustifiedWidth">Credit Adjustment :</th>
 									<td>
 										<select name="ChargeType">
-											<xsl:for-each select="/Response/RecurringCharges/Results/rangeSample/RecurringCharge[./Nature='CR']">
+											<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='CR']">
 												<option>
 													<xsl:attribute name="value">
 														<xsl:text></xsl:text>
-														<xsl:value-of select="./Id" />
+														<xsl:value-of name="Id" select="./Id" />
 													</xsl:attribute>
 													<xsl:value-of select="./Description" />
 												</option>
 											</xsl:for-each>
 										</select>
-									</td>
+									</td>							
+									<!--<td><input type="hidden" name="ChargeType">
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType/Id" />
+										</xsl:attribute>
+									</input></td>-->
 									<td>
 										<input type="submit" value="Add &#0187;" class="input-submit" />
 									</td>
 								</tr>
 							</form>
 						</xsl:if>
-						<xsl:if test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge[./Nature='DR']) != 0">
-							<form method="post" action="charges_recurringcharge_add.php">
+						<xsl:if test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='DR']) != 0">
+							<form method="post" action="recurringcharge_assign.php">
 								<input type="hidden" name="Account">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
@@ -105,17 +113,23 @@
 									<th class="JustifiedWidth">Debit Adjustment :</th>
 									<td>
 										<select name="ChargeType">
-											<xsl:for-each select="/Response/RecurringCharges/Results/rangeSample/RecurringCharge[./Nature='DR']">
+											<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='DR']">
 												<option>
 													<xsl:attribute name="value">
 														<xsl:text></xsl:text>
-														<xsl:value-of select="./Id" />
+														<xsl:value-of name="Id" select="./Id" />
 													</xsl:attribute>
 													<xsl:value-of select="./Description" />
 												</option>
 											</xsl:for-each>
 										</select>
 									</td>
+									<!--<td><input type="hidden" name="ChargeType">
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType/Id" />
+										</xsl:attribute>
+									</input></td>-->
 									<td>
 										<input type="submit" value="Add &#0187;" class="input-submit" />
 									</td>

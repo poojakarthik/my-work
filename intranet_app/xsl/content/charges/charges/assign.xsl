@@ -192,7 +192,7 @@
 							<td>
 								<select name="Invoice">
 									<option value="">No Association</option>
-									<xsl:for-each select="/Response/Invoices/Results/rangeSample/Invoice">
+									<xsl:for-each select="/Response/Invoices/Record">
 										<option>
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
@@ -201,12 +201,13 @@
 											<xsl:value-of select="./Id" />
 											
 											<xsl:text> [</xsl:text>
-											<xsl:call-template name="dt:format-date-time">
+											<!--<xsl:call-template name="dt:format-date-time">
 												<xsl:with-param name="year"		select="./CreatedOn/year" />
 												<xsl:with-param name="month"	select="./CreatedOn/month" />
 												<xsl:with-param name="day"		select="./CreatedOn/day" />
 												<xsl:with-param name="format"	select="'%b %d, %Y'"/>
-											</xsl:call-template>
+											</xsl:call-template>-->
+											<xsl:value-of select="./CreatedOn" />
 											<xsl:text>]</xsl:text>
 										</option>
 									</xsl:for-each>
