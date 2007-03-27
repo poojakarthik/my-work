@@ -53,6 +53,9 @@
 		$fmtCurrency =& $wkbWorkbook->addFormat();
 		$fmtCurrency->setNumFormat('$#,##0.00;-$#,##0.00');
 		
+		$fmtInteger =& $wkbWorkbook->addFormat();
+		$fmtInteger->setNumFormat('0');
+		
 		// Add in the title row
 		$mdtMetaData = $selResult->MetaData();
 		$arrTitles = $mdtMetaData->fetch_fields();
@@ -70,7 +73,13 @@
 			{
 				if (preg_match('/^\d+\.\d+$/misU', $mixField))
 				{
+					// Currency/float
 					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtCurrency);
+				}
+				elseif (is_int($mixField))
+				{
+					// Integer
+					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtInteger);
 				}
 				else
 				{
