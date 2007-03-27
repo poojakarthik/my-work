@@ -216,7 +216,7 @@
 		$arrInsertData = Array();
 		$arrInsertData['TotalOwing']	= $arrInvoice['TotalOwing'];
 		
-		return (bool)$this->_updInvoiceTotalOwing->Execute($arrInsertData);
+		return (bool)$this->_updInvoiceTotalOwing->Execute($arrInsertData, $arrWhere);
 	}
 	
 	//------------------------------------------------------------------------//
