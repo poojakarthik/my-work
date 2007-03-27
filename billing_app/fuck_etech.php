@@ -147,6 +147,10 @@ foreach($arrFilePath AS $strFilePath)
 						{
 							CliEcho("Could not update account : {$arrLine['Account']}");
 						}
+						else
+						{
+							CliEcho("Updated account : {$arrLine['Account']}");
+						}
 						
 						break;
 					
