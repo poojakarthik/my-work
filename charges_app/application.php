@@ -643,15 +643,21 @@
 		$selNDDRAccounts = new StatementSelect(	'Account', 
 												'*', 
 												'Archived = 0 AND BillingType = '.BILLING_TYPE_ACCOUNT);
-		$selTollingAccounts = new StatementSelect(	'CDR, Charge',
-													'CDR.Id, Charge.Id',
+		$selTollingAccounts = new StatementSelect(	'CDR USE INDEX (Account_2)',
+													'CDR.Id AS Id, Charge.Id',
 													'CDR.Account = <Account> AND ' .
 													'CDR.Status = '.CDR_RATED.' AND ' .
 													'CDR.Credit = 0 AND ' .
-													'Charge.Account = <Account> AND ' .
-													'Charge.Status = '.CHARGE_APPROVED.' AND ' .
-													'Charge.Nature = \'DR\'');
-		$selNDDRAccounts->Execute();
+													"\nLIMIT 1" .
+													"UNION\n" .
+													"SELECT Charge.Id AS Id\n" .
+													"FROM Charge\n" .
+													"WHERE Charge.Account = <Account> AND \n" .
+													"Charge.Status = ".CHARGE_APPROVED." AND " .
+													"Charge.Nature = 'DR'\n" .
+													"LIMIT 1");
+		$intTotal = $selNDDRAccounts->Execute();
+		$intSkipped = 0;
 		echo("Account\n\n");
 		while ($arrAccount = $selNDDRAccounts->Fetch())
 		{			
@@ -661,6 +667,7 @@
 			if (!$selTollingAccounts->Execute($arrWhere))
 			{
 				// There were no results, so skip the Account
+				$intSkipped++;
 				continue;
 			}
 			
@@ -684,6 +691,8 @@
 			
 			ob_flush();
 		}
+		
+		echo "\n\nTotal: $intTotal; Passed: $intCount; Skipped: $intSkipped\n\n";
 		
 		// return count
 		return $intCount;
