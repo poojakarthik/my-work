@@ -640,15 +640,9 @@
 		
 	 	// for each account without a DDR Fee Waive and no/out-of-date CC or DDR info
 		$intCount = 0;
-		$selNDDRAccounts = new StatementSelect(	'(Account LEFT OUTER JOIN CreditCard USING(AccountGroup)) LEFT OUTER JOIN DirectDebit USING (AccountGroup)', 
-												'Account.*', 
-												'Account.Archived = 0 AND ' .
-												'Account.DisableDDR = 0 AND ' .
-												'(CreditCard.Archived IS NULL OR CreditCard.Archived = 1) AND ' .
-												'(DirectDebit.Archived IS NULL OR DirectDebit.Archived = 1) AND ',
-												NULL,
-												NULL,
-												'Account.Id');
+		$selNDDRAccounts = new StatementSelect(	'Account', 
+												'*', 
+												'Archived = 0 AND BillingType = '.BILLING_TYPE_ACCOUNT);
 		$selTollingAccounts = new StatementSelect(	'CDR, Charge',
 													'CDR.Id, Charge.Id',
 													'CDR.Account = <Account> AND ' .
