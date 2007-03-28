@@ -28,19 +28,23 @@ $selFebNDDRInvoices = new StatementSelect("Invoice", "Id, Account", "Total = 2.5
 $ubiFebNDDRInvoice	= new StatementUpdateById("Invoice", $arrColumns);
 $qryRemoveCharge	= new Query();
 
+ob_start();
+
 // foreach invoice
 $intCount = $selFebNDDRInvoices->Execute();
 while ($arrInvoice = $selFebNDDRInvoices->Fetch())
 {
-	echo " + Fixing Invoice #{$arrInvoice['Id']} for Account {$arrInvoice['Account']}...\t\t";
+	ob_flush();
 	
+	echo " + Fixing Invoice #{$arrInvoice['Id']} for Account {$arrInvoice['Account']}...\t\t";
+	/*
 	// Remove the charge
 	if (!$qryRemoveCharge->Execute("DELETE FROM Charge WHERE InvoiceRun = '45f4cb0c0a135' AND ChargeType = 'NDDR' AND Account = {$arrInvoice['Account']}"))
 	{
 		echo "[ FAILED ]\n\t- Reason: Unable to remove NDDR Charge\n\n";
 		die;
 	}
-	
+	*/
 	// Update the Invoice
 	$arrColumns['Id'] = $arrInvoice['Id'];
 	if (!$ubiFebNDDRInvoice->Execute($arrColumns))

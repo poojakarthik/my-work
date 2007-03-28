@@ -40,9 +40,16 @@ while ($arrInvoiceOutput = $selInvoiceOutput->Fetch())
 	$arrWhere = Array();
 	$arrWhere['InvoiceRun']	= $arrInvoiceOutput['InvoiceRun'];
 	$arrWhere['Account']	= $arrInvoiceOutput['Account'];
-	if ($updTotalOwing->Execute($arrData, $arrWhere))
+	if (($intRowCount = $updTotalOwing->Execute($arrData, $arrWhere)) !== FALSE)
 	{
-		echo "[   OK   ]\n";
+		if ($intRowCount)
+		{
+			echo "[   OK   ]\n";
+		}
+		else
+		{
+			echo "[ IGNORE ]\n";
+		}
 		$intPassed++;
 	}
 	else

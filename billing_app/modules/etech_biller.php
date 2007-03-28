@@ -218,7 +218,14 @@
 		$arrInsertData = Array();
 		$arrInsertData['TotalOwing']	= $arrInvoice['TotalOwing'];
 		
-		return (bool)$this->_updInvoiceTotalOwing->Execute($arrInsertData, $arrWhere);
+		if ($arrInvoice['Account'] == 1000160340)
+		{
+			die;
+		}
+		
+		return TRUE;
+		
+		//return (bool)$this->_updInvoiceTotalOwing->Execute($arrInsertData, $arrWhere);
 	}
 	
 	//------------------------------------------------------------------------//

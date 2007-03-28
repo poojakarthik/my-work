@@ -498,12 +498,14 @@ $strStartDate	= date("Y-m-01", time());
 
 $arrDataReport = Array();
 $arrDataReport['Name']			= "Direct Debit Payments Report";
+//$arrDataReport['Name']			= "Direct Debit Payments Report (Hack)";
 $arrDataReport['Summary']		= "Details Direct Debit information for use in automated payments";
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "DirectDebit JOIN Account USING (AccountGroup) JOIN Invoice ON (Account.Id = Invoice.Account)";
-$arrDataReport['SQLWhere']		= "DirectDebit.Archived = 0 AND Invoice.TotalOwing > 0 AND Invoice.DueOn BETWEEN $strStartDate AND SUBDATE(ADDDATE($strStartDate, INTERVAL 1 MONTH), INTERVAL 1 DAY)";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['SQLTable']		= "DirectDebit JOIN Account ON (Account.DirectDebit = DirectDebit.Id) JOIN Invoice ON (Account.Id = Invoice.Account)";
+//$arrDataReport['SQLWhere']		= "DirectDebit.Archived = 0 AND Invoice.Balance > 0 AND Invoice.AccountBalance >= 0 AND Invoice.DueOn BETWEEN '$strStartDate' AND SUBDATE(ADDDATE('$strStartDate', INTERVAL 1 MONTH), INTERVAL 1 DAY)";
+$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND DirectDebit.Archived = 0 AND Invoice.Balance > 0 AND Account.BillingType = 1 AND Invoice.DueOn <= CURDATE()";
+$arrDataReport['SQLGroupBy']	= "Invoice.Account\n HAVING SUM(Invoice.Balance) > 3";
 
 // Documentation Reqs
 $arrDocReqs = Array();
@@ -515,7 +517,8 @@ $arrSQLSelect = Array();
 $arrSQLSelect['BSB']					= "DirectDebit.BSB";
 $arrSQLSelect['Bank Account Number']	= "DirectDebit.AccountNumber";
 $arrSQLSelect['Account Name']			= "DirectDebit.AccountName";
-$arrSQLSelect['Amount Charged']			= "Invoice.TotalOwing";
+//$arrSQLSelect['Amount Charged']			= "Invoice.Balance";
+$arrSQLSelect['Amount Charged']			= "SUM(Invoice.Balance)";
 $arrSQLSelect['Account Number']			= "Account.Id";
 $arrSQLSelect['Customer Name']			= "Account.BusinessName";
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
@@ -526,19 +529,21 @@ $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
 /*
 //----------------------------------------------------------------------------//
-// Credit Card Report
+// Credit Card Report 
 //----------------------------------------------------------------------------//
 
 $strStartDate	= date("Y-m-01", time());
 
 $arrDataReport = Array();
 $arrDataReport['Name']			= "Credit Card Payments Report";
+//$arrDataReport['Name']			= "Credit Card Payments Report (Hack)";
 $arrDataReport['Summary']		= "Details Credit Card information for use in automated payments";
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "CreditCard JOIN Account USING (AccountGroup) JOIN Invoice ON (Account.Id = Invoice.Account)";
-$arrDataReport['SQLWhere']		= "CreditCard.Archived = 0 AND Invoice.TotalOwing > 0 AND Invoice.DueOn BETWEEN $strStartDate AND SUBDATE(ADDDATE($strStartDate, INTERVAL 1 MONTH), INTERVAL 1 DAY)";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['SQLTable']		= "CreditCard JOIN Account ON (Account.CreditCard = CreditCard.Id) JOIN Invoice ON (Account.Id = Invoice.Account)";
+//$arrDataReport['SQLWhere']		= "CreditCard.Archived = 0 AND Invoice.Balance > 0 AND Invoice.AccountBalance >= 0 AND Invoice.DueOn BETWEEN '$strStartDate' AND SUBDATE(ADDDATE('$strStartDate', INTERVAL 1 MONTH), INTERVAL 1 DAY)";
+$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND CreditCard.Archived = 0 AND Invoice.Balance > 0 AND Account.BillingType = 2 AND Invoice.DueOn <= CURDATE()";
+$arrDataReport['SQLGroupBy']	= "Invoice.Account\n HAVING SUM(Invoice.Balance) > 3";
 
 // Documentation Reqs
 $arrDocReqs = Array();
@@ -547,9 +552,10 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
 $arrSQLSelect = Array();
-$arrSQLSelect['CC Number']				= "CreditCard.CardNumber";
+$arrSQLSelect['CC Number']				= "REPLACE(CreditCard.CardNumber, ' ', '')";
 $arrSQLSelect['Expiry Date']			= "CONCAT(CreditCard.ExpMonth, '/', CreditCard.ExpYear)";
-$arrSQLSelect['Amount Charged']			= "Invoice.TotalOwing";
+//$arrSQLSelect['Amount Charged']			= "Invoice.Balance";
+$arrSQLSelect['Amount Charged']			= "SUM(Invoice.Balance)";
 $arrSQLSelect['Account Number']			= "Account.Id";
 $arrSQLSelect['Customer Name']			= "Account.BusinessName";
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
@@ -558,6 +564,37 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
+
+//----------------------------------------------------------------------------//
+// Unbilled Adjustments Report 
+//----------------------------------------------------------------------------//
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Unbilled Adjustments Report";
+$arrDataReport['Summary']		= "Lists all Accounts with Unbilled Adjustments, and the total of the two.";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Charge JOIN Account ON Account.Id = Charge.Account";
+$arrDataReport['SQLWhere']		= "Charge.Status = 101 AND Account.Archived = 0";
+$arrDataReport['SQLGroupBy']	= "Charge.Account";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Account Number']			= "Charge.Account";
+$arrSQLSelect['Customer Name']			= "Account.BusinessName";
+$arrSQLSelect['Total Debits']			= "SUM(CASE WHEN Charge.Nature = 'DR' THEN Charge.Amount END)";
+$arrSQLSelect['Total Credits']			= "SUM(CASE WHEN Charge.Nature = 'CR' THEN Charge.Amount END)";
+$arrSQLSelect['Adjustment Total']		= "SUM(CASE WHEN Charge.Nature = 'DR' THEN Charge.Amount ELSE 0.0 END) - SUM(CASE WHEN Charge.Nature = 'CR' THEN Charge.Amount ELSE 0.0 END)";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 
 
