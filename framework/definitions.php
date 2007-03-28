@@ -906,7 +906,7 @@ define("BILLING_FREQ_MONTH"				, 2);
 define("BILLING_FREQ_HALF_MONTH"		, 3);
 
 // Billing Minimum Total
-define("BILLING_MINIMUM_TOTAL"			, 10.0);
+define("BILLING_MINIMUM_TOTAL"			, 1.0);
 
 // Set the defaults for Billing (Once every Month on the First)
 define("BILLING_DEFAULT_DATE"			, 1);
