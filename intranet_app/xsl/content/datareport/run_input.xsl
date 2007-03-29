@@ -304,6 +304,32 @@
 			</div>
 			<div class="Seperator"></div>
 			
+			<h2>Output Format</h2>
+			<div class="Wide-Form">
+				<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<th class="JustifiedWidth">Output Format :</th>
+						<td>
+							<table border="0" cellpadding="3" cellspacing="0">
+								<tr>
+									<td>
+										<input type="radio" value="0" name="outputcsv" />Excel 5 (XLS)
+									</td>
+									<th>Yes</th>
+								</tr>
+								<tr>
+									<td>
+										<input type="radio" value="1" name="outputcsv" />CSV
+									</td>
+									<th>No</th>
+								</tr>
+							</table>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="Seperator"></div>
+			
 			<div class="Right">
 				<input type="submit" class="input-submit" name="Confirm" value="Run Report &#0187;" />
 			</div>
