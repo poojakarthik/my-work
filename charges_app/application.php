@@ -66,6 +66,7 @@
 		
 		// Get Charges Select Statement
 		$arrWhere				= "StartedOn <= NOW() " .
+								  "AND RecurringFreq > 0 " .
 								  "AND Archived = 0 " .
 								  "AND " .
 								  "(" .
