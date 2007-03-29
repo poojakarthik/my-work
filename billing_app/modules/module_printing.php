@@ -93,6 +93,7 @@
 		$arrColumns[]					= "AccountBalance";
 		$arrColumns[]					= "CreatedOn";
 		$arrColumns[]					= "InvoiceRun";
+		$arrColumns[]					= "TotalOwing";
 		$this->_selLastBills			= new StatementSelect(	"Invoice",
 																$arrColumns,
 																"Account = <Account>",
