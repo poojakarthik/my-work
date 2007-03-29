@@ -156,6 +156,7 @@
 		$this->arrInvoiceData 	['Debits']			= NULL;
 		$this->arrInvoiceData 	['Total']			= NULL;
 		$this->arrInvoiceData 	['Tax']				= NULL;
+		$this->arrInvoiceData 	['TotalOwing']		= NULL;
 		$this->arrInvoiceData 	['Balance']			= NULL;
 		$this->arrInvoiceData 	['Disputed']		= NULL;
 		$this->arrInvoiceData 	['AccountBalance']	= NULL;
@@ -652,8 +653,12 @@
 				continue;
 			}
 			
+			// get total owing
+			// TODO
+			$fltTotalOwing = $fltBalance + $fltAccountBalance;
+			
 			// if the invoice total > 0 look for outstanding payments
-			if ($fltBalance > 0)
+			if ($fltBalance > 0 && $fltTotalOwing <= $fltBalance)
 			{
 				// find outstanding payments
 				$arrCreditData['Account']		= $arrAccount['Id'];
@@ -693,6 +698,9 @@
 					// reduce account balance
 					$fltAccountBalance 	-= $fltPayment;
 					
+					// reduce total owing
+					$fltTotalOwing 		-= $fltPayment;
+					
 					// check if there is anything left to pay on this invoice
 					if ($fltBalance == 0)
 					{
@@ -713,6 +721,7 @@
 			$arrInvoiceData['Debits']			= $fltTotalDebits;
 			$arrInvoiceData['Total']			= $fltTotal;
 			$arrInvoiceData['Tax']				= $fltTax;
+			$arrInvoiceData['TotalOwing']		= $fltTotalOwing;
 			$arrInvoiceData['Balance']			= $fltBalance;
 			$arrInvoiceData['Disputed']			= 0;
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
