@@ -53,7 +53,7 @@ define("COLLECTION_TYPE_FTP"		, 100);
 $GLOBALS['CollectionType'][COLLECTION_TYPE_FTP]	= "FTP";
 
 // Filename Regex's
-define("REGEX_OPTUS"				, "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_s\.dat$/");
+define("REGEX_OPTUS"				, "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_[sl]\.dat$/");
 define("REGEX_AAPT"					, "/^W\d{9}\.[A-La-l][0-3]\d$/");
 define("REGEX_RSLCOM"				, "/^[A-Za-z]\d{7}\.csv$/");
 define("REGEX_COMMANDER"			, "/^[A-Za-z]\d{7}\.csv$/");
