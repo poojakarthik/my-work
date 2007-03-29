@@ -78,14 +78,14 @@
 					// Currency/float
 					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtCurrency);
 				}
-				elseif (is_int($mixField) || preg_match('/^\d+$/misU', trim($mixField)))
+				elseif (is_int($mixField))
 				{
 					// Integer
 					$wksWorksheet->write($intRow+1, $intCol, (int)$mixField, $fmtInteger);
 				}
 				else
 				{
-					$wksWorksheet->write($intRow+1, $intCol, $mixField);
+					$wksWorksheet->writeString($intRow+1, $intCol, $mixField);
 				}
 				$intCol++;
 			}
