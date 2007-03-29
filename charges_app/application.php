@@ -578,7 +578,7 @@
 											"Id, Service, Account, AccountGroup, Description, Charge",
 											"Credit = 1 AND " .
 											"RecordType = 21 AND " .
-											"Status = IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.")");
+											"Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.")");
 		$arrCols = Array();
 		$arrCols['Status']	= NULL;
 		$ubiSECCDR = new StatementUpdateById("CDR", $arrCols);
