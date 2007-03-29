@@ -514,7 +514,7 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
 $arrSQLSelect = Array();
-$arrSQLSelect['BSB']					= "DirectDebit.BSB";
+$arrSQLSelect['BSB']					= "LPAD(DirectDebit.BSB, 6, '0')";
 $arrSQLSelect['Bank Account Number']	= "DirectDebit.AccountNumber";
 $arrSQLSelect['Account Name']			= "DirectDebit.AccountName";
 //$arrSQLSelect['Amount Charged']			= "Invoice.Balance";
@@ -564,7 +564,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-
+/*
 //----------------------------------------------------------------------------//
 // Unbilled Adjustments Report 
 //----------------------------------------------------------------------------//
@@ -595,7 +595,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 // SQL Fields
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-
+*/
 
 
 
