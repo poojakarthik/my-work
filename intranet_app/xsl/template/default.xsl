@@ -34,7 +34,7 @@
 									TelcoBlue Internal Management System
 								</div>
 								<div class="Right">
-									Version 7.01
+									Version 7.03
 									
 									<!-- Report Bug Button & PopUp -->
 									<div class="Menu_Button">
