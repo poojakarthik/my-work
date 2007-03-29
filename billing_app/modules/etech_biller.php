@@ -208,7 +208,7 @@
 	 */
  	function UpdateTotalOwing($arrInvoice, $strInvoiceRun)
  	{
-		Debug("Total Owing: {$arrInvoice['TotalOwing']}\n$strInvoiceRun");
+		//Debug("Total Owing: {$arrInvoice['TotalOwing']}\n$strInvoiceRun");
 		
 		// Insert into the database
 		$arrWhere = Array();
@@ -218,10 +218,10 @@
 		$arrInsertData = Array();
 		$arrInsertData['TotalOwing']	= $arrInvoice['TotalOwing'];
 		
-		if ($arrInvoice['Account'] == 1000160340)
+		/*if ($arrInvoice['Account'] == 1000160340)
 		{
 			die;
-		}
+		}*/
 		
 		return TRUE;
 		
