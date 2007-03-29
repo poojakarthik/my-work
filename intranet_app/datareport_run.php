@@ -35,9 +35,20 @@
 	{
 		$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input'], $_POST ['limit']);
 		
+		// Should be be outputting in CSV instead of XLS?
+		if ($_POST['outputcsv'])
+		{
+	        // Yes
+	        header('Content-type: text/csv');
+	        header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.csv"');
+	        
+	        echo CSVStatementSelect ($selResult);
+	        exit;
+		}
+		
+		// No, export in XLS :)		
 		header('Content-type: application/x-msexcel');
 		header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.xls"');
-		
 
 		// Generate Excel 5 Workbook
 		$wkbWorkbook = new Spreadsheet_Excel_Writer();
@@ -93,7 +104,7 @@
 		
 		// TODO: Add totals, if specified
 		// use $wksWorksheet->writeFormula
-
+		
 		// Send the XLS file
 		$wkbWorkbook->close();
 		exit;

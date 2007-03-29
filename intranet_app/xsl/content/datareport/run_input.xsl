@@ -313,7 +313,7 @@
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td>
-										<input type="radio" value="0" name="outputcsv" />Excel 5 (XLS)
+										<input type="radio" value="0" name="outputcsv" checked="checked"/>Excel 5 (XLS)
 									</td>
 									<th>Yes</th>
 								</tr>
