@@ -66,9 +66,10 @@
 				<th>Invoice #</th>
 				<th>Date</th>
 				<th class='thRight'>Opening Balance</th>
-				<th class='thRight'>Credits (ex-tax)</th>
-				<th class='thRight'>Debits (ex-tax)</th>
-				<th class='thRight'>Total</th>
+				<th class='thRight'>We Received</th>
+				<th class='thRight'>Balance</th>
+				<th class='thRight'>Total of this Bill</th>
+				<th class='thRight'>Total Owing</th>
 				<th class='thRight'>Invoice Balance</th>
 				<th class='thRight'>Disputed</th>
 			</tr>
@@ -106,19 +107,19 @@
 					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
-		       				<xsl:with-param name="Number" select="./AccountBalance" />
+		       				<xsl:with-param name="Number" select="./OpeningBalance" />
 							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
        				</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
-		       				<xsl:with-param name="Number" select="./Credits" />
+		       				<xsl:with-param name="Number" select="./Received" />
 							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
 					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
-		       				<xsl:with-param name="Number" select="./Debits" />
+		       				<xsl:with-param name="Number" select="./AccountBalance" />
 							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
        				</td>
@@ -128,7 +129,12 @@
 							<xsl:with-param name="Decimal" select="number('2')" />
        					</xsl:call-template>
        				</td>
-					
+					<td class="Currency">
+		       			<xsl:call-template name="Currency">
+		       				<xsl:with-param name="Number" select="./TotalOwing" />
+							<xsl:with-param name="Decimal" select="number('2')" />
+       					</xsl:call-template>
+       				</td>					
 					<td class="Currency">
 						<strong>
 							<span>

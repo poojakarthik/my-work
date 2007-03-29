@@ -65,7 +65,7 @@
 			$arrColumns['Id'] 		= "InvoicePayment.Id";
 			$arrColumns['Invoice']	= "Invoice.Id";
 			$arrColumns['PaidOn']	= "DATE_FORMAT(Payment.PaidOn, '%e/%m/%Y')";
-			$arrColumns['Amount']	= "Payment.Amount";			
+			$arrColumns['Amount']	= "InvoicePayment.Amount";			
 		
 			//Pull information and store it
 			$selSelect = new StatementSelect("InvoicePayment LEFT OUTER JOIN Invoice USING (InvoiceRun, Account), Payment",

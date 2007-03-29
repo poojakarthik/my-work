@@ -60,9 +60,27 @@
 		function __construct ($intId)
 		{	
 			// Pull all the Invoice information and Store it ...
-			$selInvoice = new StatementSelect ('Invoice', 'Id, DATE_FORMAT(CreatedOn, \'%e/%m/%Y\') AS CreatedOn, AccountBalance, Credits, Debits, Total+Tax AS Total, Balance, Disputed' , 'Account = <Id>', 'Id DESC');
+			$selInvoice = new StatementSelect ('Invoice', 'Id, DATE_FORMAT(CreatedOn, \'%e/%m/%Y\') AS CreatedOn, AccountBalance, Total+Tax AS Total, TotalOwing, Balance, Disputed' , 'Account = <Id>', 'Id DESC');
 			$selInvoice->Execute (Array ('Id' => $intId));
-			$arrResults = $selInvoice->FetchAll ($this);
+			$arrResults = $selInvoice->FetchAll ();
+			
+			// Get previous invoice for opening balance
+			
+			$arrColumns = Array();
+			$arrColumns[]	= "TotalOwing";
+			$selLastBill	= new StatementSelect(	"Invoice",
+													$arrColumns,
+													"Account = <Account> AND Id < <Id>",
+													"CreatedOn DESC",
+													1);
+			foreach ($arrResults as $intKey => $arrResult)
+			{
+				$selLastBill->Execute (Array ('Account' => $intId, 'Id' => $arrResult['Id']));
+				$arrLastBill = $selLastBill->Fetch ();
+				$arrResults[$intKey]['OpeningBalance'] = $arrLastBill['TotalOwing'];
+				$arrResults[$intKey]['Received'] = max(0,$arrLastBill['TotalOwing'] - $arrResults[$intKey]['AccountBalance']);
+			}
+			
 			
 			//Insert into the DOM Document
 			$GLOBALS['Style']->InsertDOM($arrResults, 'Invoices');
