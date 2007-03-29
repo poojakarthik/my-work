@@ -308,7 +308,7 @@
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr>
-						<th class="JustifiedWidth">Output Format :</th>
+						<th class="JustifiedWidth" valign="top">Output Format :</th>
 						<td>
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
