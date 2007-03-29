@@ -654,7 +654,6 @@
 			}
 			
 			// get total owing
-			// TODO
 			$fltTotalOwing = $fltBalance + $fltAccountBalance;
 			
 			// if the invoice total > 0 look for outstanding payments
