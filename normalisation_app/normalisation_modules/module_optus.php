@@ -228,7 +228,8 @@ class NormalisationModuleOptus extends NormalisationModule
 		$this->_SplitRawCDR($arrCDR["CDR"]);
 
 		// Make sure the record is a CDR
-		if ($this->_FetchRawCDR('RecordType') != "50")
+		$strRecordType = $this->_FetchRawCDR('RecordType');
+		if ($strRecordType != "50" && $strRecordType != "51")
 		{
 			return $this->_ErrorCDR(CDR_CANT_NORMALISE_NON_CDR);
 		}
@@ -289,7 +290,15 @@ class NormalisationModuleOptus extends NormalisationModule
 		$this->_AppendCDR('StartDatetime', $mixValue);
 		
 		// Units
-		$mixValue 						= $this->_FetchRawCDR('Units');
+		if ($strRecordType == "51")
+		{
+			// Credit
+			$mixValue 						= 0 - (int)$this->_FetchRawCDR('Units');
+		}
+		else
+		{
+			$mixValue 						= $this->_FetchRawCDR('Units');
+		}
 		$this->_AppendCDR('Units', $mixValue);
 		
 		// Description
@@ -318,10 +327,20 @@ class NormalisationModuleOptus extends NormalisationModule
 		$this->_AppendCDR('EndDatetime', $mixValue);
 		
 		// Cost
-		$mixValue 						= ((float)$this->_FetchRawCDR('Amount') / 100);
+		if ($strRecordType == "51")
+		{
+			$mixValue 						= 0 - ((float)$this->_FetchRawCDR('Amount') / 100);
+		}
+		else
+		{
+			$mixValue 						= ((float)$this->_FetchRawCDR('Amount') / 100);
+		}
 		$this->_AppendCDR('Cost', $mixValue);
 
 		//##----------------------------------------------------------------##//
+		
+		// Is Credit?
+		$this->_IsCredit();
 		
 		// Apply Ownership
 		$this->ApplyOwnership();
