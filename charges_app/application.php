@@ -649,7 +649,7 @@
 													"CDR.Account = <Account> AND " .
 													"CDR.Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND " .
 													"CDR.Credit = 0 " .
-													"\nLIMIT 1" .
+													"\nLIMIT 1\n" .
 													"UNION\n" .
 													"SELECT Charge.Id AS Id\n" .
 													"FROM Charge\n" .
