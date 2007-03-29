@@ -116,11 +116,11 @@
  		$strReference		= $this->_FetchRaw('ReferenceNo');
  		if (strlen(trim($strReference)) == 10)
  		{
- 			$intAccount = (int)$strReference;
+ 			$intAccount		= (int)$strReference;
  		}
  		else
  		{
- 		$intAccount			= (int)substr($strReference, 6);
+ 			$intAccount		= (int)substr($strReference, 6);
  		}
  		$this->_Append('Account', $intAccount);
  		if (($intAccountGroup = $this->_FindAccountGroup($intAccount)) === FALSE)
