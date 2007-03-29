@@ -345,8 +345,8 @@
 		if($bolHasBillHistory)
 		{
 			// Display the previous bill details
-			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['AccountBalance'] + $arrBillHistory[0]['Total'] + $arrBillHistory[0]['Tax'];						
-			/*
+			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['TotalOwing'];						
+			
 			// WeReceived = payments from last invoice + payments from this invoice
 			$arrWeReceivedData['LastInvoiceRun']	= $arrBillHistory[0]['InvoiceRun'];
 			$arrWeReceivedData['ThisInvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
@@ -359,10 +359,10 @@
 			{
 				$arrWeReceived['WeReceived'] = 0.0;
 			}
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrWeReceived['WeReceived'];*/
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrWeReceived['WeReceived'];
 			
 			// HACKHACKHACK: Not calculating this properly, but need it to account for Etech's gheyness
-			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= max($arrDefine['InvoiceDetails']['OpeningBalance']['Value'] - $arrInvoiceDetails['AccountBalance'], 0.0);
+			//$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= max($arrDefine['InvoiceDetails']['OpeningBalance']['Value'] - $arrInvoiceDetails['AccountBalance'], 0.0);
 		}
 		else
 		{
@@ -373,7 +373,7 @@
 		$arrDefine['InvoiceDetails']	['Adjustments']		['Value']	= /*$arrInvoiceDetails['Credits']*/ 0.0;
 		$arrDefine['InvoiceDetails']	['Balance']			['Value']	= $arrInvoiceDetails['AccountBalance'];
 		$arrDefine['InvoiceDetails']	['BillTotal']		['Value']	= ((float)$arrInvoiceDetails['Total'] + (float)$arrInvoiceDetails['Tax']);
-		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Total'] + (float)$arrInvoiceDetails['Tax'] + (float)$arrInvoiceDetails['AccountBalance']);
+		$arrDefine['InvoiceDetails']	['TotalOwing']		['Value']	= (float)$arrInvoiceDetails['TotalOwing'];
 		$arrDefine['InvoiceDetails']	['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		
 		$arrDefine['InvoiceDetails']	['AddressLine1']	['Value']	= $arrCustomerData['BusinessName'];
@@ -501,7 +501,7 @@
 		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account'].MakeLuhn($arrInvoiceDetails['Account']);
 		$arrDefine['PaymentData']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
-		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= ((float)$arrInvoiceDetails['Total'] + (float)$arrInvoiceDetails['Tax'] + (float)$arrInvoiceDetails['AccountBalance']);
+		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= (float)$arrInvoiceDetails['TotalOwing'];
 		$arrDefine['PaymentData']		['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		$arrDefine['PaymentData']		['AddressLine1']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine1']['Value'];
 		$arrDefine['PaymentData']		['AddressLine2']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine2']['Value'];
