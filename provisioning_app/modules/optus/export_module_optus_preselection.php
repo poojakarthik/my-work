@@ -193,13 +193,13 @@
 			$wkbWorkbook->close();
 			
 			$mimMimeEmail = new Mail_Mime("\n");
- 			$mimMimeEmail->setTXTBody("LD Churn Request File for ".date("Y-m-d", time())." for Customer ".CUSTOMER_NUMBER_OPTUS);
+ 			$mimMimeEmail->setTXTBody("LD Churn Request File for ".date("Y-m-d H:i:s", time())." for Customer ".CUSTOMER_NUMBER_OPTUS);
 		 	$mimMimeEmail->addAttachment($strPreselectionFilename, 'application/x-msexcel');
 		 	$emlMail =& Mail::factory('mail');
 		 	
  			$arrExtraHeaders = Array(
  										'From'		=> "provisioning@voiptel.com.au",
- 										'Subject'	=> "LD Churn Request File for ".date("Y-m-d", time())
+ 										'Subject'	=> "LD Churn Request File for ".date("Y-m-d H:i:s", time())
  									);
  			
  			$strContent = $mimMimeEmail->get();
