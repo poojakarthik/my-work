@@ -346,7 +346,7 @@
 		{
 			// Display the previous bill details
 			$arrDefine['InvoiceDetails']	['OpeningBalance']	['Value']	= $arrBillHistory[0]['TotalOwing'];						
-			
+			/*
 			// WeReceived = payments from last invoice + payments from this invoice
 			$arrWeReceivedData['LastInvoiceRun']	= $arrBillHistory[0]['InvoiceRun'];
 			$arrWeReceivedData['ThisInvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
@@ -360,9 +360,9 @@
 				$arrWeReceived['WeReceived'] = 0.0;
 			}
 			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= $arrWeReceived['WeReceived'];
-			
+			*/
 			// HACKHACKHACK: Not calculating this properly, but need it to account for Etech's gheyness
-			//$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= max($arrDefine['InvoiceDetails']['OpeningBalance']['Value'] - $arrInvoiceDetails['AccountBalance'], 0.0);
+			$arrDefine['InvoiceDetails']	['WeReceived']		['Value']	= max($arrDefine['InvoiceDetails']['OpeningBalance']['Value'] - $arrInvoiceDetails['AccountBalance'], 0.0);
 		}
 		else
 		{
