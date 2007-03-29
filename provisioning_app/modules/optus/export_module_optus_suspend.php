@@ -123,8 +123,7 @@
 			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."deactivate".date("Hi_Ymd").".xls";
 			
 			// Generate Excel 5 Workbook
-			$wkbWorkbook = new Spreadsheet_Excel_Writer();
-			$wkbWorkbook->send($strPreselectionFilename);
+			$wkbWorkbook = new Spreadsheet_Excel_Writer($strPreselectionFilename);
 			$wksWorksheet =& $wkbWorkbook->addWorksheet();
 			
 			// Title Row format
@@ -132,7 +131,7 @@
 			$fmtTitle->setBold();
 			$fmtTitle->setFgColor(22);
 			$fmtTitle->setBorder(1);
-		
+			
 			// Add header row
 			$wksWorksheet->writeString(0, 0, 'Service Number'			, $fmtTitle);
 			$wksWorksheet->writeString(0, 1, 'Billable Account Number'	, $fmtTitle);

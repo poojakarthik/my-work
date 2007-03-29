@@ -127,8 +127,7 @@
 			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."bar_".date("Hi_Ymd").".xls";
 			
 			// Generate Excel 5 Workbook
-			$wkbWorkbook = new Spreadsheet_Excel_Writer();
-			$wkbWorkbook->send($strPreselectionFilename);
+			$wkbWorkbook = new Spreadsheet_Excel_Writer($strPreselectionFilename);
 			$wksWorksheet =& $wkbWorkbook->addWorksheet();
 			
 			// Title Row format

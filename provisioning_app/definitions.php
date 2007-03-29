@@ -63,6 +63,7 @@ define("PRV_NO_SERVICE"					, 104);
 define("PRV_OLD_STATUS"					, 105);
 define("CONTINUABLE_FINISHED"			, 110);
 define("CONTINUABLE_CONTINUE"			, 111);
+define("REQUEST_IGNORE"					, 120);
 
 // Log Descriptions
 define("DESCRIPTION_LOST_TO"			, "Service lost to ");
@@ -81,6 +82,9 @@ define("OPTUS_LOCAL_PRESELECTION_DIR"	, "/home/vixen_upload/optus/preselection/"
 
 // Additional Preselection Constants
 define("CUSTOMER_NUMBER_OPTUS"			,"23139716000139");
+
+// Unitel Daily Order File must be sent after this time (HH:MM:SS format)
+define("DAILY_ORDER_FILE_TIME"			, "15:00:00");
 
 // The email message sent when a request response comes in
 define("REQUEST_EMAIL_MESSAGE"			,	"Hi <Employee>,\n\n" .

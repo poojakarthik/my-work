@@ -117,6 +117,7 @@ require_once($strFrameworkDir."mail_attachment.php");
 // load PEAR components
 require_once("Mail.php");
 require_once("Mail/mime.php");
+require_once("Spreadsheet/Excel/Writer.php");
 
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();

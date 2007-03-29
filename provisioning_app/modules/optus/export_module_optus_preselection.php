@@ -156,11 +156,8 @@
 		// Create Local Preselection File
 		if($intNumPreselectionRecords > 0)
 		{
-			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."deactivate".date("Hi_Ymd").".xls";
-			
 			// Generate Excel 5 Workbook
-			$wkbWorkbook = new Spreadsheet_Excel_Writer();
-			$wkbWorkbook->send($strPreselectionFilename);
+			$wkbWorkbook = new Spreadsheet_Excel_Writer($strPreselectionFilename);
 			$wksWorksheet =& $wkbWorkbook->addWorksheet();
 			
 			// Title Row format
@@ -187,7 +184,7 @@
 				$intCol = 0;
 				foreach ($arrBuiltRequest as $mixField)
 				{
-					$xlsBarring->writeString($intRow, $intCol, $mixField);
+					$wksWorksheet->writeString($intRow, $intCol, $mixField);
 					$intCol++;
 				}
 			}

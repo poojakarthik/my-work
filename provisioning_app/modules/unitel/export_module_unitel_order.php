@@ -71,6 +71,25 @@
 		/*$this->_selGetAddress					= new StatementSelect(	"Service LEFT OUTER JOIN ServiceAddress ON (ServiceAddress.Service = Service.Id)",
 																		"Service.FNN AS FNN, Service.Id AS ServiceId, ServiceAddress.*",
 																		"Service.Id = <Service>");*/
+		
+		// Make sure we're allowed to generate this file 
+		$selLastGenerated = new StatementSelect("Config", "Value", "Application = 4 AND Module = 'Unitel' AND Name = 'DailyOrderLastSent'");
+		$selLastGenerated->Execute();
+		$arrLastGenerated = $selLastGenerated->Fetch();
+		$strLastGenerated = $arrLastGenerated['Value'];
+		
+		$intCurDateTime		= time();
+		$intLastGenerated	= strtotime("+1 day", strtotime("$strLastGenerated ".DAILY_ORDER_FILE_TIME));
+		if ($intCurDateTime < $intLastGenerated)
+		{
+			// Too early, so ignore all requests
+			$this->_bolCanGenerate = FALSE;
+		}
+		else
+		{
+			// It is late enough in the day to generate
+			$this->_bolCanGenerate = TRUE;
+		}
  	}
 
   	//------------------------------------------------------------------------//
@@ -92,6 +111,14 @@
 	 */
  	function BuildRequest($arrRequest)
 	{
+		// Are we generating a file?
+		if (!$this->_bolCanGenerate)
+		{
+			// No, ignore for now (will be generated later on)
+			return;
+		}
+		
+		
 		$this->_selGetAddress					= new StatementSelect(	"Service LEFT OUTER JOIN ServiceAddress ON (ServiceAddress.Service = Service.Id)",
 																		"Service.FNN AS FNN, Service.Id AS ServiceId, ServiceAddress.*",
 																		"Service.Id = <Service>");
@@ -329,7 +356,12 @@
 		// Update database (Request & Config tables)
 		$this->_updFullServiceFileSequence->Execute(Array('Value' => "$intFullServiceFileSequence"), Array());
 		
-		
+		// Update LastSent in config
+		$arrColumns = Array();
+		$arrColumns['Value'] = date("Y-m-d", time());
+		$updLastGenerated = new StatementUpdate("Config", "Application = 4 AND Module = 'Unitel' AND Name = 'DailyOrderLastSent'", $arrColumns);
+		$updLastGenerated->Execute($arrColumns, Array());
+				
 		// Return the number of records uploaded
 		return $intNumFullServiceRecords;
 	}

@@ -427,6 +427,11 @@ echo "<pre>";
 						$arrRequest['Status']		= REQUEST_STATUS_DUPLICATE;
 						break;
 						
+					case REQUEST_IGNORE:
+						// report and continue
+						$this->_rptProvisioningReport->AddMessage("[  SKIP  ]\n\t\t- Reason: Too early to generate request file");
+						continue 2;
+						
 					case FALSE:
 					default:
 						// log error & set status
