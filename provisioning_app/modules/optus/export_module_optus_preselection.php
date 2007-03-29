@@ -156,49 +156,62 @@
 		// Create Local Preselection File
 		if($intNumPreselectionRecords > 0)
 		{
-			// Generate Excel 5 file
-			$xlsBarring					= new PhpSimpleXlsGen();
-			$xlsBarring->totalcol		= 8;
-			//$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."LOCL_".CUSTOMER_NUMBER_OPTUS."_".date("YmdHis").".xls";
+			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."deactivate".date("Hi_Ymd").".xls";
+			
+			// Generate Excel 5 Workbook
+			$wkbWorkbook = new Spreadsheet_Excel_Writer();
+			$wkbWorkbook->send($strPreselectionFilename);
+			$wksWorksheet =& $wkbWorkbook->addWorksheet();
+			
+			// Title Row format
+			$fmtTitle =& $wkbWorkbook->addFormat();
+			$fmtTitle->setBold();
+			$fmtTitle->setFgColor(22);
+			$fmtTitle->setBorder(1);
 		
 			// Add header row
-			$xlsBarring->InsertText('Batch No');
-			$xlsBarring->InsertText('ID No');
-			$xlsBarring->InsertText('SP Name');
-			$xlsBarring->InsertText('SP CASS A/C No');
-			$xlsBarring->InsertText('Service No with area code');
-			$xlsBarring->InsertText('CA Date dd/mm/yyy');
-			$xlsBarring->InsertText('CA Required');
-			$xlsBarring->InsertText('Lessee Yes/No');
-			
+			$wksWorksheet->writeString(0, 0, 'Batch No'					, $fmtTitle);
+			$wksWorksheet->writeString(0, 1, 'ID No'					, $fmtTitle);
+			$wksWorksheet->writeString(0, 2, 'SP Name'					, $fmtTitle);
+			$wksWorksheet->writeString(0, 3, 'SP CASS A/C No'			, $fmtTitle);
+			$wksWorksheet->writeString(0, 4, 'Service No with area code', $fmtTitle);
+			$wksWorksheet->writeString(0, 5, 'CA Date dd/mm/yyy'		, $fmtTitle);
+			$wksWorksheet->writeString(0, 6, 'CA Required'				, $fmtTitle);
+			$wksWorksheet->writeString(0, 7, 'Lessee Yes/No'			, $fmtTitle);
+
+			// add data rows
+			$intRow = 0;
 			foreach($this->_arrPreselectionRecords as $arrBuiltRequest)
 			{
-				$xlsBarring->NewLine();
+				$intRow++;
+				$intCol = 0;
 				foreach ($arrBuiltRequest as $mixField)
 				{
-					$xlsBarring->InsertText($mixField);
+					$xlsBarring->writeString($intRow, $intCol, $mixField);
+					$intCol++;
 				}
 			}
 			
 			// Write output
-			$xlsBarring->SaveFile($strPreselectionFilename);
+			$wkbWorkbook->close();
 			
 			$mimMimeEmail = new Mail_Mime("\n");
- 			$mimMimeEmail->setTXTBody("Attached: Telco Blue Automatically Generated Activation Request File");
+ 			$mimMimeEmail->setTXTBody("LD Churn Request File for ".date("Y-m-d", time())." for Customer ".CUSTOMER_NUMBER_OPTUS);
 		 	$mimMimeEmail->addAttachment($strPreselectionFilename, 'application/x-msexcel');
 		 	$emlMail =& Mail::factory('mail');
 		 	
  			$arrExtraHeaders = Array(
  										'From'		=> "provisioning@voiptel.com.au",
- 										'Subject'	=> "Activation File"
+ 										'Subject'	=> "LD Churn Request File for ".date("Y-m-d", time())
  									);
+ 			
  			$strContent = $mimMimeEmail->get();
  			$arrHeaders = $mimMimeEmail->headers($arrExtraHeaders);
 			
 			// Email to Optus (as an attachment)
 			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
 			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Activation File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-			if (!$emlMail->send('rich@voiptelsystems.com.au', $arrHeaders, $strContent))
+			if (!$emlMail->send('long.distance.spsg@optus.com.au', $arrHeaders, $strContent))
 			{
 				Debug("Email failed!");
 				return FALSE;

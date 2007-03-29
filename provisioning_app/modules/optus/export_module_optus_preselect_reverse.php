@@ -142,7 +142,7 @@
 			// Email to Optus (as an attachment)
 			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Barring File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
 			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Barring File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-			if (!$emlMail->send('rich@voiptelsystems.com.au', $arrHeaders, $strContent))
+			if (!$emlMail->send('long.distance.spsg@optus.com.au', $arrHeaders, $strContent))
 			{
 				Debug("Email failed!");
 				return FALSE;

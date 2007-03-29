@@ -120,46 +120,56 @@
 		
 		if($intNumPreselectionRecords > 0)
 		{
-			// Generate Excel 5 file
-			$xlsBarring					= new PhpSimpleXlsGen();
-			$xlsBarring->totalcol		= 4;
 			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."deactivate".date("Hi_Ymd").".xls";
+			
+			// Generate Excel 5 Workbook
+			$wkbWorkbook = new Spreadsheet_Excel_Writer();
+			$wkbWorkbook->send($strPreselectionFilename);
+			$wksWorksheet =& $wkbWorkbook->addWorksheet();
+			
+			// Title Row format
+			$fmtTitle =& $wkbWorkbook->addFormat();
+			$fmtTitle->setBold();
+			$fmtTitle->setFgColor(22);
+			$fmtTitle->setBorder(1);
 		
 			// Add header row
-			$xlsBarring->InsertText('Service Number');
-			$xlsBarring->InsertText('Billable Account Number');
-			$xlsBarring->InsertText('Service Type');
-			$xlsBarring->InsertText('Customer Reference');
+			$wksWorksheet->writeString(0, 0, 'Service Number'			, $fmtTitle);
+			$wksWorksheet->writeString(0, 1, 'Billable Account Number'	, $fmtTitle);
+			$wksWorksheet->writeString(0, 2, 'Service Type'				, $fmtTitle);
+			$wksWorksheet->writeString(0, 3, 'Customer Reference'		, $fmtTitle);
 
 			// add data rows
+			$intRow = 0;
 			foreach($this->_arrPreselectionRecords as $strFNN)
 			{
-				$xlsBarring->NewLine();
-				$xlsBarring->InsertText($strFNN);
-				$xlsBarring->InsertText(CUSTOMER_NUMBER_OPTUS);
-				$xlsBarring->InsertText('UT');
-				$xlsBarring->InsertText('');
+				$intRow++;
+				$wksWorksheet->writeString($intRow, 0, $strFNN);
+				$wksWorksheet->writeString($intRow, 1, CUSTOMER_NUMBER_OPTUS);
+				$wksWorksheet->writeString($intRow, 2, 'UT');
+				$wksWorksheet->writeString($intRow, 3, '');
 			}
 			
 			// Write output
-			$xlsBarring->SaveFile($strPreselectionFilename);
-			
+			$wkbWorkbook->close();
+
 			$mimMimeEmail = new Mail_Mime("\n");
- 			$mimMimeEmail->setTXTBody("Attached: Telco Blue Automatically Generated Deactivation Request File");
+ 			$mimMimeEmail->setTXTBody("Deactivation Request File for ".date("Y-m-d", time())." for Customer ".CUSTOMER_NUMBER_OPTUS);
 		 	$mimMimeEmail->addAttachment($strPreselectionFilename, 'application/x-msexcel');
 		 	$emlMail =& Mail::factory('mail');
 		 	
  			$arrExtraHeaders = Array(
  										'From'		=> "provisioning@voiptel.com.au",
- 										'Subject'	=> "Deactivation File"
+ 										'Subject'	=> "Deactivation Request File for ".date("Y-m-d", time())
  									);
+ 			
  			$strContent = $mimMimeEmail->get();
  			$arrHeaders = $mimMimeEmail->headers($arrExtraHeaders);
 			
 			// Email to Optus (as an attachment)
 			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Suspension File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
 			//mail_attachment("provisioning@voiptel.com.au", "long.distance.spsg@optus.com.au", "Suspension File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename);
-			if (!$emlMail->send('rich@voiptelsystems.com.au', $arrHeaders, $strContent))
+			if (!$emlMail->send('long.distance.spsg@optus.com.au', $arrHeaders, $strContent))
 			{
 				Debug("Email failed!");
 				return FALSE;
