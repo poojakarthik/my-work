@@ -463,7 +463,7 @@
 		$intCount = 0;
 		$selINB15Services = new StatementSelect('CDR', 
 												'Service, Account, AccountGroup, COUNT(Id) AS CDRCount', 
-												'Service IS NOT NULL AND Credit = 0 AND Status = '.CDR_RATED.' AND ServiceType = '.SERVICE_TYPE_INBOUND, 
+												"Service IS NOT NULL AND Credit = 0 AND Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND ServiceType = ".SERVICE_TYPE_INBOUND, 
 												NULL, 
 												NULL, 
 												"Service \n HAVING CDRCount > 0");
@@ -578,7 +578,7 @@
 											"Id, Service, Account, AccountGroup, Description, Charge",
 											"Credit = 1 AND " .
 											"RecordType = 21 AND " .
-											"Status = ".CDR_RATED);
+											"Status = IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.")");
 		$arrCols = Array();
 		$arrCols['Status']	= NULL;
 		$ubiSECCDR = new StatementUpdateById("CDR", $arrCols);
@@ -643,11 +643,11 @@
 		$selNDDRAccounts = new StatementSelect(	'Account', 
 												'*', 
 												'Archived = 0 AND BillingType = '.BILLING_TYPE_ACCOUNT);
-		$selTollingAccounts = new StatementSelect(	'CDR USE INDEX (Account_2)',
-													'CDR.Id AS Id, Charge.Id',
-													'CDR.Account = <Account> AND ' .
-													'CDR.Status = '.CDR_RATED.' AND ' .
-													'CDR.Credit = 0 AND ' .
+		$selTollingAccounts = new StatementSelect(	"CDR USE INDEX (Account_2)",
+													"CDR.Id AS Id",
+													"CDR.Account = <Account> AND " .
+													"CDR.Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.") AND " .
+													"CDR.Credit = 0 " .
 													"\nLIMIT 1" .
 													"UNION\n" .
 													"SELECT Charge.Id AS Id\n" .
@@ -660,7 +660,7 @@
 		$intSkipped = 0;
 		echo("Account\n\n");
 		while ($arrAccount = $selNDDRAccounts->Fetch())
-		{			
+		{
 			// Check if this Account is tolling
 			$arrWhere = Array();
 			$arrWhere['Account']	= $arrAccount['Id'];
