@@ -321,6 +321,7 @@
 	 */
 	function ParseRawlist($arrRawList, $strType = 'Unix')
 	{
+		$arrCleanList = Array();
 		foreach($arrRawList as $strFile)
 		{
 			switch ($strType)

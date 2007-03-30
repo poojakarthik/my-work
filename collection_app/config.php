@@ -62,6 +62,7 @@
  		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatchesoffnet/";
  		$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/archive";
  		$arrConfig['Define']["Unitel"]	["Dir"][]							= "dailychurn/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
 /*		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
@@ -82,18 +83,21 @@
  		$arrConfig['Define']["Unitel"]	["Dir"][]							= "mobilecdrbatches/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
-		
+		*/
 		// Optus Definition	
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Optus"]	["Server"]						= $strLocalFTPServer;
- 		$arrConfig['Define']["Optus"]	["Username"]					= $strLocalFTPUsername;
- 		$arrConfig['Define']["Optus"]	["PWord"]						= $strLocalFTPPassword;
- 		$arrConfig['Define']["Optus"]	["Dir"][]						= $strLocalFTPDir."optus/".$strDateDir."Speedi Files/";
+ 		$arrConfig['Define']["Optus"]	["Server"]						= "10.11.12.13";
+ 		$arrConfig['Define']["Optus"]	["Username"]					= "download";
+ 		$arrConfig['Define']["Optus"]	["PWord"]						= "password";
+ 		//$arrConfig['Define']["Optus"]	["Dir"][]						= $strLocalFTPDir."optus/".$strDateDir."Speedi Files/";
+ 		$arrConfig['Define']["Optus"]	["Dir"][]						= "/home/richdavis/ftp/optus/PPR/";
  		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/";
-		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
-
+		//$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
+		$arrConfig['Define']["Optus"]	["FileType"]["/^BPR\d{3}_B\d+_S\d+_\d{8}$/misU"]	= PROV_OPTUS_IMPORT;
+		
+/*
 		// AAPT Definition
 		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
 		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;

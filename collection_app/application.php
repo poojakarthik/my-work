@@ -76,7 +76,7 @@
 	 *
 	 * @property
 	 */
-	private $_rptCollectionReport;
+	public $_rptCollectionReport;
 
 	//------------------------------------------------------------------------//
 	// _insFileImport
