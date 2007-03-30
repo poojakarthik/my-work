@@ -161,6 +161,7 @@
 			case "UNSUCCESSFUL":
 				$this->_arrLog['Type']			= LINE_ACTION_LOSS; 
 				$this->_arrRequest['LossDate']	= $this->_ConvertDate($arrLineData['EndDate']);
+				$this->_arrService['ClosedOn']	= $this->_ConvertDate($arrLineData['EndDate']);
 				switch((int)$arrLineData['LossCode'])
 				{
 					case 1:
