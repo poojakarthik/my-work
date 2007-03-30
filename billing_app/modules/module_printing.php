@@ -552,7 +552,7 @@
 					{
 						// Was there any data in the last Cost Centre?
 						$arrLast = end($this->_arrFileData);
-						if ($arrLast['RecordType'] == '0060')
+						if ($arrLast['RecordType']['Value'] == '0060')
 						{
 							array_pop($this->_arrFileData);
 						}
@@ -581,7 +581,7 @@
 			{
 				// Was there any data in the last Cost Centre?
 				$arrLast = end($this->_arrFileData);
-				if ($arrLast['RecordType'] == '0060')
+				if ($arrLast['RecordType']['Value'] == '0060')
 				{
 					array_pop($this->_arrFileData);
 				}
@@ -649,7 +649,7 @@
 			 	}
 				
 				$arrLast = end($this->_arrFileData);
-			 	if ($arrLast['RecordType'] != '0099')
+			 	if ($arrLast['RecordType']['Value'] != '0099')
 			 	{
 			 		// No itemised calls, remove the header
 			 		array_pop($this->_arrFileData);
