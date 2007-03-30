@@ -207,6 +207,8 @@
 		// Create Local Preselection File
 		if($intNumPreselectionRecords > 0)
 		{
+			$this->_bolSending	= TRUE;
+			
 			// Only do this if there are records to write
 			$resPreselectionFile = fopen(UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
 			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\r\n");

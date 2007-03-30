@@ -120,6 +120,8 @@
 		
 		if($intNumPreselectionRecords > 0)
 		{
+			$this->_bolSending = TRUE;
+			
 			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."restore_".date("Hi_Ymd").".xls";
 			
 			// Generate Excel 5 Workbook

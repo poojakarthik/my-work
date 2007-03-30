@@ -92,6 +92,8 @@
 		
 		$this->_arrFullServiceRecords	= Array();
 		$this->_arrPreselectionRecords	= Array();
+		
+		$this->_bolSending = FALSE;
  	}
  	
   	//------------------------------------------------------------------------//
@@ -166,6 +168,37 @@
 			Debug($this->_insAddToLog->Error());
 		}
 		return $mixResponse;
+	 }	 	
+
+	//------------------------------------------------------------------------//
+	// AddToProvisioningExport
+	//------------------------------------------------------------------------//
+	/**
+	 * AddToProvisioningExport()
+	 *
+	 * Adds the record to the Export table
+	 *
+	 * Adds the record to the Export table
+	 * 
+	 * @return	boolean					
+	 *
+	 * @method
+	 */
+	 function AddToProvisioningExport($intStatus)
+	 {
+		// Check to see if we're sending a file
+		if ($this->_bolSending)
+		{
+			// Set the data
+			$arrInsert = Array();
+			$arrInsert['Location']	= $this->_strFile;
+			$arrInsert['Carrier']	= $this->_intCarrier;
+			$arrInsert['Status']	= $intStatus;
+			
+			$insProvisioningExport = new StatementInsert("ProvisioningExport");
+			return $insProvisioningExport->Execute($arrInsert);
+		}
+		return TRUE;
 	 }
 
 	//------------------------------------------------------------------------//

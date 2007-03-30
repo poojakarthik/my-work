@@ -83,12 +83,12 @@
 		if ($intCurDateTime < $intLastGenerated)
 		{
 			// Too early, so ignore all requests
-			$this->_bolCanGenerate = FALSE;
+			$this->_bolSending = FALSE;
 		}
 		else
 		{
 			// It is late enough in the day to generate
-			$this->_bolCanGenerate = TRUE;
+			$this->_bolSending = TRUE;
 		}
  	}
 
@@ -112,7 +112,7 @@
  	function BuildRequest($arrRequest)
 	{
 		// Are we generating a file?
-		if (!$this->_bolCanGenerate)
+		if (!$this->_bolSending)
 		{
 			// No, ignore for now (will be generated later on)
 			return;
@@ -299,8 +299,8 @@
 		$intFullServiceFileSequence		= ((int)$arrResult['Value']) + 1;
 		
 		// Build Header Rows
-		$strFullServiceFilename		= "058rslw".str_pad($intFullServiceFileSequence, 4, "0", STR_PAD_LEFT).date("Ymd").".txt";
-		$strFullServiceHeaderRow 	= "01".$strFullServiceFilename;
+		$this->_strFile		= "058rslw".str_pad($intFullServiceFileSequence, 4, "0", STR_PAD_LEFT).date("Ymd").".txt";
+		$strFullServiceHeaderRow 	= "01".$this->_strFile;
 		
 		// Get list of requests to generate
 		$this->_selGetFullServiceRequests->Execute(Array('Carrier' => CARRIER_UNITEL));
@@ -315,7 +315,7 @@
 		if($intNumFullServiceRecords > 0)
 		{
 			// Only do this if there are records to write
-			$resDailyOrderFile = fopen(UNITEL_LOCAL_DAILY_ORDER_DIR.$strFullServiceFilename, "w");
+			$resDailyOrderFile = fopen(UNITEL_LOCAL_DAILY_ORDER_DIR.$this->_strFile, "w");
 			fwrite($resDailyOrderFile, $strFullServiceHeaderRow."\n");
 			
 			foreach($this->_arrFullServiceRecords as $arrBuiltRequest)
@@ -338,18 +338,18 @@
 		$resFTPConnection = ftp_connect(UNITEL_PROVISIONING_SERVER);
 		ftp_login($resFTPConnection, UNITEL_PROVISIONING_USERNAME, UNITEL_PROVISIONING_PASSWORD);
 		
-		if(file_exists(UNITEL_LOCAL_DAILY_ORDER_DIR.$strFullServiceFilename))
+		if(file_exists(UNITEL_LOCAL_DAILY_ORDER_DIR.$this->_strFile))
 		{
 			// Upload the Daily Order File
 			ftp_chdir($resFTPConnection, UNITEL_REMOTE_DAILY_ORDER_DIR);
-			ftp_put($resFTPConnection, $strFullServiceFilename, UNITEL_LOCAL_DAILY_ORDER_DIR.$strFullServiceFilename, FTP_ASCII);
+			ftp_put($resFTPConnection, $this->_strFile, UNITEL_LOCAL_DAILY_ORDER_DIR.$this->_strFile, FTP_ASCII);
 		}
 		ftp_close($resFTPConnection);
 		
 		// Add entry to ProvisioningExport table
 	/*	$this->_insProvisioningExport = new StatementInsert();
 		$arrData = Array();
-		$arrData['Location']	= UNITEL_LOCAL_DAILY_ORDER_DIR.$strFullServiceFilename;
+		$arrData['Location']	= UNITEL_LOCAL_DAILY_ORDER_DIR.$this->_strFile;
 		$arrData['Carrier']		= CARRIER_UNITEL;
 		$arrData['Status']		= */
 		

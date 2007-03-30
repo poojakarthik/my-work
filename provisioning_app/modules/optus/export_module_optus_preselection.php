@@ -156,6 +156,8 @@
 		// Create Local Preselection File
 		if($intNumPreselectionRecords > 0)
 		{
+			$this->_bolSending = TRUE;
+			
 			// Generate Excel 5 Workbook
 			$wkbWorkbook = new Spreadsheet_Excel_Writer($strPreselectionFilename);
 			$wksWorksheet =& $wkbWorkbook->addWorksheet();
