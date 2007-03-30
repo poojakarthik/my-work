@@ -479,7 +479,10 @@
 			}
 			
 			// Add to ProvisioningExport
-			$prvModule->AddToProvisioningExport($intStatus);
+			if (method_exists($prvModule, "AddToProvisioningExport"))
+			{
+				$prvModule->AddToProvisioningExport($intStatus);
+			}
 		}
 	}
 	
