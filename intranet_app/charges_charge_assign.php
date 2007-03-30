@@ -28,7 +28,7 @@
 		$Style->Output ('xsl/content/account/notfound.xsl');
 		exit;
 	}
-	
+	//debug($_POST);die;
 	if ($_POST ['Service'])
 	{
 		// Get the Service

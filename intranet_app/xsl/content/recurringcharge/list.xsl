@@ -53,10 +53,19 @@
 			</div>
 		</div>
 		<div class="Seperator"></div>
-		
-				<!-- Add Adjustment -->
+		<!-- Add Adjustment -->
 		<h2 class="Adjustment">Add Recurring Adjustment</h2>
-		
+		<!-- Create a paramater to decide whether to add a service charge or account charge -->
+		<xsl:param name="pointTo">
+			<xsl:choose>
+				<xsl:when test="/Response/Service">
+					service_recurringcharge_add.php
+				</xsl:when>
+				<xsl:otherwise>
+					recurringcharge_assign.php
+				</xsl:otherwise>
+			</xsl:choose>		
+		</xsl:param>
 		<div class="Wide-Form">
 			<xsl:choose>
 				<xsl:when test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge) = 0">
@@ -64,20 +73,25 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<table border="0" cellpadding="3" cellspacing="0">
-						<xsl:if test="count(/Response/RecurringCharges/Results/rangeSample/RecurringChargeType[./Nature='CR']) != 0">
-							<form method="post" action="recurringcharge_assign.php">
+						<xsl:if test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='CR']) != 0">
+							<form method="post" action="{$pointTo}">
 								<input type="hidden" name="Account">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/Id" />
 									</xsl:attribute>
 								</input>
-
+								<input type="hidden" name="Service">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Service/Id" />
+									</xsl:attribute>
+								</input>
 
 								<tr>
 									<th class="JustifiedWidth">Credit Adjustment :</th>
 									<td>
-										<select name="ChargeType">
+										<select name="RecurringChargeType">
 											<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='CR']">
 												<option>
 													<xsl:attribute name="value">
@@ -89,12 +103,6 @@
 											</xsl:for-each>
 										</select>
 									</td>							
-									<!--<td><input type="hidden" name="ChargeType">
-										<xsl:attribute name="value">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType/Id" />
-										</xsl:attribute>
-									</input></td>-->
 									<td>
 										<input type="submit" value="Add &#0187;" class="input-submit" />
 									</td>
@@ -102,17 +110,23 @@
 							</form>
 						</xsl:if>
 						<xsl:if test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='DR']) != 0">
-							<form method="post" action="recurringcharge_assign.php">
+							<form method="post" action="{$pointTo}">
 								<input type="hidden" name="Account">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<xsl:value-of select="/Response/Account/Id" />
 									</xsl:attribute>
 								</input>
+								<input type="hidden" name="Service">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<xsl:value-of select="/Response/Service/Id" />
+									</xsl:attribute>
+								</input>
 								<tr>
 									<th class="JustifiedWidth">Debit Adjustment :</th>
 									<td>
-										<select name="ChargeType">
+										<select name="RecurringChargeType">
 											<xsl:for-each select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType[./Nature='DR']">
 												<option>
 													<xsl:attribute name="value">
@@ -124,12 +138,6 @@
 											</xsl:for-each>
 										</select>
 									</td>
-									<!--<td><input type="hidden" name="ChargeType">
-										<xsl:attribute name="value">
-											<xsl:text></xsl:text>
-											<xsl:value-of select="/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType/Id" />
-										</xsl:attribute>
-									</input></td>-->
 									<td>
 										<input type="submit" value="Add &#0187;" class="input-submit" />
 									</td>

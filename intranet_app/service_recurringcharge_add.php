@@ -18,7 +18,7 @@
 	// call application
 	require ('config/application.php');
 	
-	
+	//debug($_POST);die;
 	// Get the Service
 	try
 	{
