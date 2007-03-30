@@ -191,7 +191,7 @@
 								</a>
 							</xsl:when>
 							<xsl:otherwise>
-								<strong><span class="Attention">No Service</span></strong>
+								
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>
