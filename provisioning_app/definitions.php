@@ -70,7 +70,10 @@ define("DESCRIPTION_LOST_TO"			, "Service lost to ");
 define("DESCRIPTION_CANCELLED"			, "Service cancelled");
 
 // File Status
-define("PROV_COMPLETED"					, 999);
+define("PROVSIONING_FILE_SENT"			, 700);
+define("PROVSIONING_FILE_FAILED"		, 701);
+define("PROVSIONING_FILE_REJECTED"		, 702);
+define("PROVSIONING_FILE_ACCEPTED"		, 703);
 
 // Sequence number starts
 define("SEQUENCE_START_UNITEL"			, 1);

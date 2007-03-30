@@ -25,8 +25,6 @@
  *
  */
 
-echo "<pre>";
-
 //----------------------------------------------------------------------------//
 // ApplicationProvisioning
 //----------------------------------------------------------------------------//
@@ -471,12 +469,17 @@ echo "<pre>";
 				if ($prvModule->SendRequest() !== FALSE)
 				{
 					$this->_rptProvisioningReport->AddMessage("\t[   OK   ]");
+					$intStatus = PROVISIONING_FILE_SENT;
 				}
 				else
 				{
 					$this->_rptProvisioningReport->AddMessage("\t[ FAILED ]");
+					$intStatus = PROVISIONING_FILE_FAILED;
 				}
 			}
+			
+			// Add to ProvisioningExport
+			$prvModule->AddToProvisioningExport($intStatus);
 		}
 	}
 	
