@@ -550,9 +550,18 @@
 				{
 					if ($strCostCentre !== -1)
 					{
-						// add cost centre footer
-						$arrDefine['SvcSummCCFooter']	['Total']		['Value']	= $fltCostCentreTotal;
-						$this->_arrFileData[] = $arrDefine['SvcSummCCFooter'];
+						// Was there any data in the last Cost Centre?
+						$arrLast = end($this->_arrFileData);
+						if ($arrLast['RecordType'] == '0060')
+						{
+							array_pop($this->_arrFileData);
+						}
+						else
+						{
+							// add cost centre footer
+							$arrDefine['SvcSummCCFooter']	['Total']		['Value']	= $fltCostCentreTotal;
+							$this->_arrFileData[] = $arrDefine['SvcSummCCFooter'];
+						}
 					}
 
 					// add cost centre header
@@ -570,9 +579,18 @@
 			}
 			if ($strCostCentre !== -1)
 			{
-				// add cost centre footer
-				$arrDefine['SvcSummCCFooter']	['Total']		['Value']	= $fltCostCentreTotal;
-				$this->_arrFileData[] = $arrDefine['SvcSummCCFooter'];
+				// Was there any data in the last Cost Centre?
+				$arrLast = end($this->_arrFileData);
+				if ($arrLast['RecordType'] == '0060')
+				{
+					array_pop($this->_arrFileData);
+				}
+				else
+				{
+					// add cost centre footer
+					$arrDefine['SvcSummCCFooter']	['Total']		['Value']	= $fltCostCentreTotal;
+					$this->_arrFileData[] = $arrDefine['SvcSummCCFooter'];
+				}
 			}
 			// add service summary footer
 			$this->_arrFileData[] = $arrDefine['SvcSummaryFooter'];
@@ -629,11 +647,12 @@
 				 	}
 				 	$intTotal += $mixResponse;
 			 	}
-			 	
-			 	if (!$intTotal)
+				
+				$arrLast = end($this->_arrFileData);
+			 	if ($arrLast['RecordType'] != '0099')
 			 	{
-			 		// No itemised calls
-			 		unset($this->_arrFileData[count($this->_arrFileData) - 1]);
+			 		// No itemised calls, remove the header
+			 		array_pop($this->_arrFileData);
 			 		continue;
 			 	}
 			 	
