@@ -24,7 +24,7 @@ $arrColumns['Status']	= INVOICE_SETTLED;
 $arrColumns['Total']	= 0.0;
 $arrColumns['Tax']		= 0.0;
 $arrColumns['Balance']	= 0.0;
-$selFebNDDRInvoices = new StatementSelect("Invoice", "Id, Account", "Total = 2.5 AND Balance = 2.75 AND InvoiceRun = '45f4cb0c0a135'");
+$selFebNDDRInvoices = new StatementSelect("Invoice", "Id, Account", "Total = 2.5 AND Balance > 2.75 AND InvoiceRun = '45f4cb0c0a135'");
 $ubiFebNDDRInvoice	= new StatementUpdateById("Invoice", $arrColumns);
 $qryRemoveCharge	= new Query();
 
