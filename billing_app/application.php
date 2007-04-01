@@ -2069,8 +2069,7 @@
 			 									'From'		=> "billing@voicetalk.com.au",
 			 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
 			 								);
-	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\r\n\r\n" .
-	 									"Please find attached your most recent invoice from Voicetalk\r\n\r\n" .
+	 					$strContent	=	"Please find attached your most recent invoice from Voicetalk\r\n\r\n" .
 	 									"Regards\r\n\r\n" .
 	 									"The Team at Voicetalk";
 	 					break;
@@ -2079,12 +2078,17 @@
 			 									'From'		=> "billing@telcoblue.com.au",
 			 									'Subject'	=> "Telephone Billing for $strBillingPeriod"
 			 								);
-	 					$strContent	=	"Dear ".$arrDetail['FirstName']."\r\n\r\n" .
-	 									"Please find attached your most recent invoice from Telco Blue\r\n\r\n" .
+	 					$strContent	=	"Please find attached your most recent invoice from Telco Blue\r\n\r\n" .
 	 									"Regards\r\n\r\n" .
 	 									"The Team at Telco Blue";
 	 					break;
 	 			}
+		 		
+		 		// Does the customer have a first name?
+		 		if (trim($arrDetail['FirstName']))
+		 		{
+		 			$strContent = "Dear ".$arrDetail['FirstName']."\r\n\r\n" . $strContent;
+		 		}
 		 		
 	 			// Account for , separated email addresses
 	 			$arrEmails = explode(',', $arrDetail['Email']);
