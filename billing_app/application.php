@@ -2060,7 +2060,7 @@
  			
  			// for each email-able contact
  			foreach ($arrDetails as $arrDetail)
- 			{
+ 			{				
 	 			// Set email details based on Customer Group
 	 			switch ($arrDetail['CustomerGroup'])
 	 			{

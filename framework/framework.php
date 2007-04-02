@@ -163,7 +163,7 @@
 	 	
 	 	$this->_selAccountBalance = new StatementSelect(	"Invoice",
 	 														"SUM(Balance) AS AccountBalance",
-	 														"Account = <Account> AND Status != ".INVOICE_SETTLED." AND Status != ".INVOICE_TEMP);
+	 														"Account = <Account> AND (Balance < 0 OR Status != ".INVOICE_SETTLED.") AND Status != ".INVOICE_TEMP);
 															
 		$this->_selAccountOverdueBalance = new StatementSelect(	"Invoice",
 	 														"SUM(Balance) - SUM(Disputed) AS OverdueBalance",
