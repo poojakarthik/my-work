@@ -104,7 +104,7 @@
 	function Import()
 	{
 		// Init Statements
-		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".CDRFILE_WAITING." AND FileType BETWEEN ".PRV_IMPORT_RANGE_MIN." AND ".PRV_IMPORT_RANGE_MAX);
+		$selGetFiles			= new StatementSelect("FileImport", "*", "Status = ".PROVFILE_WAITING);
 		$ubiSetFileStatus		= new StatementUpdateById("FileImport", Array('Status' => NULL));
 		$selGetLineStatus		= new StatementSelect("Service", "*", "FNN = <FNN>");
 		$updSetLineStatus		= new StatementUpdate("Service", "FNN = <FNN>", Array('LineStatus' => NULL));
@@ -284,7 +284,7 @@
 			$intFilesPassed++;
 			
 			// set status of file
-			$arrStatusData['Status']	= CDRFILE_WAITING;
+			$arrStatusData['Status']	= PROVFILE_COMPLETE;
 			$ubiSetFileStatus->Execute($arrStatusData);
 		}
 		

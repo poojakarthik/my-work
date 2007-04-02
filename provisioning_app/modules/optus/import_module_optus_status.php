@@ -61,9 +61,11 @@
  	function  __construct($ptrDB)
  	{
 		$this->_strModuleName 					= "Optus";
-		$this->_strDelimiter					= ",";
+		$this->_intCarrier 						= CARRIER_OPTUS;
 		
 		parent::__construct($ptrDB);
+		
+		$this->_strDelimiter					= ",";
 		
 		$this->_updPreselectSequence			= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'PreselectionFileSequence'", Array('Value' => NULL));
 		$this->_updFullServiceFileSequence		= new StatementUpdate("Config", "Application = ".APPLICATION_PROVISIONING." AND Module = 'Unitel' AND Name = 'FullServiceFileSequence'", Array('Value' => NULL));
@@ -86,7 +88,7 @@
 		$arrDefine ['ReportDate']		['Index']		= 0;	// YYYYMMDD
 		$arrDefine ['CorpNo']			['Index']		= 1;
 		$arrDefine ['AccountNo']		['Index']		= 2;
-		$arrDefine ['FNN']				['Index']		= 3;	// "07 33531912" format
+		$arrDefine ['FNN']				['Index']		= 3;	// "07   33531912" format
 		$arrDefine ['ASDCode']			['Index']		= 4;	// Full Service Carrier ???
 		$arrDefine ['CarrierCode']		['Index']		= 5;	// Preselection Carrier
 		$arrDefine ['CarrierName']		['Index']		= 6;	// Name of Preselection Carrier
@@ -124,10 +126,12 @@
  	function Normalise($strLine)
 	{
 		// Split the line
+		Debug($strLine);
 		$arrLineData = $this->_SplitLine($strLine);
+		Debug($arrLineData);
 		
 		// Ignore header and trailer line
-		if($arrLineData['ReportDate'] == "")
+		if(!$arrLineData['ReportDate'])
 		{
 			return PRV_TRAILER_RECORD;
 		}
