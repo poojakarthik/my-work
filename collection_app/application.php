@@ -317,7 +317,6 @@
 				$this->_arrCurrentImportFile = Array("Location" => $strFileLocation,"FileName" => $strFileName);
 				
 				// set status to imported (any errors will change this later)
-				if (in_array())
 				$this->_arrCurrentImportFile['Status'] = CDRFILE_WAITING;
 				
 				// copy file to final location
