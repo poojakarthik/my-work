@@ -167,7 +167,7 @@
 															
 		$this->_selAccountOverdueBalance = new StatementSelect(	"Invoice",
 	 														"SUM(Balance) - SUM(Disputed) AS OverdueBalance",
-	 														"DueOn < NOW() AND Account = <Account> AND Status != ".INVOICE_SETTLED." AND Status != ".INVOICE_TEMP);
+	 														"DueOn < NOW() AND Account = <Account> AND (Balance < 0 OR Status != ".INVOICE_SETTLED.") AND Status != ".INVOICE_TEMP);
 	 														
 		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE) AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
