@@ -596,8 +596,109 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
+/*
+//----------------------------------------------------------------------------//
+// All Delinquents in a Date Period
+//----------------------------------------------------------------------------//
 
+$arrDataReport = Array();
+$arrDataReport['Name']			= "All Delinquents in a Date Period";
+$arrDataReport['Summary']		= "Lists all Delinquent FNNs and their associated totals and Carriers in a specified Date Range";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "CDR USE INDEX (Status)";
+$arrDataReport['SQLWhere']		= "Carrier BETWEEN 1 AND 4 AND Status = ".CDR_BAD_OWNER." AND (StartDatetime BETWEEN CONCAT(<StartDate>, ' 00:00:00') AND CONCAT(<EndDate>, ' 23:59:59') OR NormalisedOn BETWEEN CONCAT(<StartDate>, ' 00:00:00') AND CONCAT(<EndDate>, ' 23:59:59'))";
+$arrDataReport['SQLGroupBy']	= "FNN, Carrier";
 
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['FNN']				= "FNN";
+$arrSQLSelect['Total Cost $']		= "SUM(Cost)";
+$arrSQLSelect['Total Occurrences']	= "COUNT(Id)";
+$arrSQLSelect['Unitel']				= "CASE WHEN Carrier = 1 THEN 'X' END";
+$arrSQLSelect['Optus']				= "CASE WHEN Carrier = 2 THEN 'X' END";
+$arrSQLSelect['AAPT']				= "CASE WHEN Carrier = 3 THEN 'X' END";
+$arrSQLSelect['iSeek']				= "CASE WHEN Carrier = 4 THEN 'X' END";
+$arrSQLSelect['Earliest CDR']		= "MIN(StartDatetime)";
+$arrSQLSelect['Latest CDR']			= "MAX(StartDatetime)";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+
+//----------------------------------------------------------------------------//
+// Delinquent CDR Details in a Date Period
+//----------------------------------------------------------------------------//
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Delinquent CDR Details in a Date Period";
+$arrDataReport['Summary']		= "Lists all CDRs for a specified Delinquent FNN in a specified Date Range";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "(CDR USE INDEX (Status) JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN FileImport ON CDR.File = FileImport.Id";
+$arrDataReport['SQLWhere']		= "CDR.FNN = <FNN> CDR.Status = ".CDR_BAD_OWNER." AND (CDR.StartDatetime BETWEEN CONCAT(<StartDate>, ' 00:00:00') AND CONCAT(<EndDate>, ' 23:59:59') OR CDR.NormalisedOn BETWEEN CONCAT(<StartDate>, ' 00:00:00') AND CONCAT(<EndDate>, ' 23:59:59')) ORDER BY CDR.StartDatetime";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDocReq[]	= "Service";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Call Started On']	= "DATE_FORMAT(CDR.StartDatetime, '%e %b %Y, %r')";
+$arrSQLSelect['Call Type']			= "RecordType.Description";
+$arrSQLSelect['Source #']			= "CDR.Source";
+$arrSQLSelect['Destination #']		= "CDR.Destination";
+$arrSQLSelect['Duration']			= "SEC_TO_TIME(UNIX_TIMESTAMP(CDR.EndDatetime) - UNIX_TIMESTAMP(CDR.StartDatetime))";
+$arrSQLSelect['Cost $']				= "CDR.Cost";
+$arrSQLSelect['Carrier']			= "CASE\n" .
+									"WHEN CDR.Carrier = 1 THEN 'Unitel'\n" .
+									"WHEN CDR.Carrier = 2 THEN 'Optus'\n" .
+									"WHEN CDR.Carrier = 3 THEN 'AAPT'\n" .
+									"WHEN CDR.Carrier = 4 THEN 'iSeek'\n" .
+									"END";
+$arrSQLSelect['Originating File']	= "FileImport.FileName";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+$arrSQLFields['FNN']		= Array(
+										'Type'					=> "dataString",
+										'Documentation-Entity'	=> "Service",
+										'Documentation-Field'	=> "FNN",
+									);
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 
 //Debug($arrDataReport);
