@@ -317,6 +317,7 @@
 				$this->_arrCurrentImportFile = Array("Location" => $strFileLocation,"FileName" => $strFileName);
 				
 				// set status to imported (any errors will change this later)
+				if (in_array())
 				$this->_arrCurrentImportFile['Status'] = CDRFILE_WAITING;
 				
 				// copy file to final location
@@ -419,7 +420,19 @@
 		{
 			if (preg_match($strRegEx."misU", $strFileName))
 			{
+				// Set file type
 				$this->_arrCurrentImportFile['FileType'] = $intFileType;
+				
+				// Set Imported Status based on File Type
+				if (in_array($intFileType, $GLOBALS['*arrConstant']['CDRType']))
+				{
+					$this->_arrCurrentImportFile['Status'] = CDRFILE_WAITING;
+				}
+				elseif (in_array($intFileType, $GLOBALS['*arrConstant']['ProvisioningType']))
+				{
+					$this->_arrCurrentImportFile['Status'] = PROVFILE_WAITING;
+				}
+				
 				return $intFileType;
 			}
 		}

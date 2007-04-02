@@ -89,13 +89,13 @@
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
  		$arrConfig['Define']["Optus"]	["Server"]						= "10.11.12.13";
- 		$arrConfig['Define']["Optus"]	["Username"]					= "download";
- 		$arrConfig['Define']["Optus"]	["PWord"]						= "password";
+ 		$arrConfig['Define']["Optus"]	["Username"]					= "flame";
+ 		$arrConfig['Define']["Optus"]	["PWord"]						= "zeemu";
  		//$arrConfig['Define']["Optus"]	["Dir"][]						= $strLocalFTPDir."optus/".$strDateDir."Speedi Files/";
  		$arrConfig['Define']["Optus"]	["Dir"][]						= "/home/richdavis/ftp/optus/PPR/";
  		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/";
 		//$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
-		$arrConfig['Define']["Optus"]	["FileType"]["/^BPR\d{3}_B\d+_S\d+_\d{8}$/misU"]	= PROV_OPTUS_IMPORT;
+		$arrConfig['Define']["Optus"]	["FileType"]["/^BPR\d{3}\_B\d{7}\_S\d{4}\_\d{8}$/"]	= PROV_OPTUS_IMPORT;
 		
 /*
 		// AAPT Definition
