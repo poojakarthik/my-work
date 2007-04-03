@@ -98,6 +98,8 @@
 		$this->_arrLog['Service']		= $arrRequest['Service'];
 		$this->_arrLog['Type']			= $arrRequest['RequestType'];
 		$this->_arrLog['Description']	= "Request Sent Successfully";
+		
+		return TRUE;
 	} 	
  	
   	//------------------------------------------------------------------------//
