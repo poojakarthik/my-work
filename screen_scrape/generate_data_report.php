@@ -596,7 +596,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-/*
+
 //----------------------------------------------------------------------------//
 // All Delinquents in a Date Period
 //----------------------------------------------------------------------------//
@@ -642,8 +642,8 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Field'	=> "EndDateRange",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-*/
 
+/*
 //----------------------------------------------------------------------------//
 // Delinquent CDR Details in a Date Period
 //----------------------------------------------------------------------------//
@@ -654,7 +654,7 @@ $arrDataReport['Summary']		= "Lists all CDRs for a specified Delinquent FNN in a
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "(CDR USE INDEX (Status) JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN FileImport ON CDR.File = FileImport.Id";
-$arrDataReport['SQLWhere']		= "CDR.FNN = <FNN> CDR.Status = ".CDR_BAD_OWNER." AND (CDR.StartDatetime BETWEEN CONCAT(<StartDate>, ' 00:00:00') AND CONCAT(<EndDate>, ' 23:59:59') OR CDR.NormalisedOn BETWEEN CONCAT(<StartDate>, ' 00:00:00') AND CONCAT(<EndDate>, ' 23:59:59')) ORDER BY CDR.StartDatetime";
+$arrDataReport['SQLWhere']		= "CDR.FNN LIKE <FNN> AND CDR.Status = ".CDR_BAD_OWNER." AND (CAST(CDR.StartDatetime AS DATE) BETWEEN <StartDate> AND <EndDate> OR CAST(CDR.NormalisedOn AS DATE) BETWEEN <StartDate> AND <EndDate>) ORDER BY CDR.StartDatetime";
 $arrDataReport['SQLGroupBy']	= "";
 
 // Documentation Reqs
@@ -669,7 +669,7 @@ $arrSQLSelect['Call Started On']	= "DATE_FORMAT(CDR.StartDatetime, '%e %b %Y, %r
 $arrSQLSelect['Call Type']			= "RecordType.Description";
 $arrSQLSelect['Source #']			= "CDR.Source";
 $arrSQLSelect['Destination #']		= "CDR.Destination";
-$arrSQLSelect['Duration']			= "SEC_TO_TIME(UNIX_TIMESTAMP(CDR.EndDatetime) - UNIX_TIMESTAMP(CDR.StartDatetime))";
+$arrSQLSelect['Duration']			= "SEC_TO_TIME(CDR.Units)";
 $arrSQLSelect['Cost $']				= "CDR.Cost";
 $arrSQLSelect['Carrier']			= "CASE\n" .
 									"WHEN CDR.Carrier = 1 THEN 'Unitel'\n" .
@@ -699,7 +699,7 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Field'	=> "EndDateRange",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-
+*/
 
 //Debug($arrDataReport);
 //die;
