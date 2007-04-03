@@ -19,6 +19,10 @@ $framework = $GLOBALS['fwkFramework'];
 // load PEAR components
 require_once("Spreadsheet/Excel/Writer.php");
 
+// Statements
+$selExtensions = new StatementSelect(	"ServiceExtension SE JOIN Service ON SE.Service = Service.Id",
+										"Service.Id AS Service, SE.Name AS Name, CONCAT(SUBSTR(Service.FNN, 0, -2), SE.RangeStart) AS FNNMin, CONCAT(SUBSTR(Service.FNN, 0, -2), SE.RangeEnd) AS FNNMax");
+
 
 // Definitions
 $strInvoiceRun = '';
@@ -39,26 +43,48 @@ $arrAccounts = $selAccounts->FetchAll();
 $intPassed		= 0;
 foreach ($arrAccounts as $arrAccount)
 {
+	// Create a new Workbook
+	$wkbWorkbook = new Spreadsheet_Excel_Writer();
+	$wkbWorkbook->send($strXLSPath.$arrAccount['Account'].".xls");
+	$wksSummary =& $wkbWorkbook->addWorksheet();
+	$arrSummaryData = Array();
+	$arrItemisedWorksheets = Array();
+	
 	// Get all Service Extensions
-	// TODO
+	$selExtensions->Execute(Array('Account' => $arrAccount['Account']));
+	$arrServiceExtensions = $selExtensions->FetchAll();
 	
 	// For each Service Extension
 	foreach ($arrServiceExtensions as $arrServiceExtension)
 	{
 		// Add to Service Summary Worksheet
+		$arrSummaryData[$arrServiceExtension['Name']] = $fltTotal;
+		
+		// Add Header Row
 		// TODO
 		
 		// Create new Service Extension Worksheet
-		// TODO
+		$arrItemisedWorksheets[$arrServiceExtension['Name']] =& $wkbWorkbook->addWorksheet();
 		
 		// Get all RecordGroups
-		// TODO
+		$arrData = Array();
+		$arrData['FNNMin']	= $arrServiceExtension['FNNMin'];
+		$arrData['FNNMax']	= $arrServiceExtension['FNNMax'];
+		$arrData['Service']	= $arrServiceExtension['Service'];
+		$selRecordGroups->Execute($arrData);
+		$arrRecordGroups = $selRecordGroups->FetchAll();
 		
 		// For each RecordGroup
 		foreach ($arrRecordGroups as $arrRecordGroup)
 		{
 			// Get all CDRs for this RecordGroup
-			// TODO
+			$arrData = Array();
+			$arrData['FNNMin']		= $arrServiceExtension['FNNMin'];
+			$arrData['FNNMax']		= $arrServiceExtension['FNNMax'];
+			$arrData['Service']		= $arrServiceExtension['Service'];
+			$arrData['RecordGroup']	= $arrRecordGroup['RecordGroup'];
+			$selCDR->Execute($arrData);
+			$arrCDRs = $selCDR->FetchAll();
 			
 			// For each CDR
 			foreach ($arrCDRs as $arrCDR)
@@ -66,7 +92,10 @@ foreach ($arrAccounts as $arrAccount)
 				// Itemise
 				// TODO
 			}
-		} 
+			
+			// Add RecordGroupTotal
+			// TODO
+		}
 	}
 }
 

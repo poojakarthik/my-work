@@ -2031,11 +2031,11 @@
  		// Get all PDF paths
  		$arrPDFPaths = glob($strPath."*.pdf");
  		
-
+		
  		$selAccountEmail	= new StatementSelect(	"Account JOIN Contact ON Account.Id = Contact.Account",
  													"CustomerGroup, Email, FirstName",
  													"Account = <Account> AND Email != '' AND BillingMethod = ".BILLING_METHOD_EMAIL);
-
+		
  		// Loop through each PDF
  		$intPassed	= 0;
  		$intIgnored	= 0;
@@ -2146,10 +2146,12 @@
 	 */
  	function PayNegativeBalances()
  	{
+ 		ob_start();
+ 		
  		$arrInvoiceColumns = Array();
- 		$arrInvoiceColumns['Balance'] = new MySQLFunction("Balance - <Balance>");
- 		$selNegativeInvoices	= new StatementSelect("Invoice", "Id, Account, AccountGroup, Balance", "Balance < 0");
- 		$selPositiveInvoices	= new StatementSelect("Invoice", "Id, Balance, Status", "Balance > 0 AND Account = <Account>", "CreatedOn ASC");
+ 		$arrInvoiceColumns['Balance'] = NULL;
+ 		$selNegativeInvoices	= new StatementSelect("Invoice", "Id, Account, AccountGroup, Balance", "Balance < 0", "CreatedOn ASC");
+ 		$selPositiveInvoices	= new StatementSelect("Invoice", "Id, Balance, Status, InvoiceRun", "Balance > 0 AND Account = <Account>", "CreatedOn ASC");
  		$ubiInvoice				= new StatementUpdateById("Invoice", $arrInvoiceColumns);
  		$insInvoicePayment		= new StatementInsert("InvoicePayment");
  		
@@ -2163,11 +2165,12 @@
  		$arrNegativeInvoices = $selNegativeInvoices->FetchAll();
  		
  		echo " * Found $intCount Invoices with a negative Balance\n\n";
- 		
+		
  		// For each of the -ve Invoices
+ 		$intZeroed = 0;
  		foreach ($arrNegativeInvoices as $arrNegativeInvoice)
  		{
-			echo " + Paying with Invoice #{$arrNegativeInvoice['Id']}...\n";
+			echo " * Paying Account {$arrNegativeInvoice['Account']} with Invoice #{$arrNegativeInvoice['Id']}...\t\t\t";
 			
 			// Get the abs balance for this invoice
 			$fltNegativeBalance = abs((float)$arrNegativeInvoice['Balance']);
@@ -2179,46 +2182,78 @@
 				return FALSE;
 			}
 			
-			echo "\t * Paying off $intCount Invoices...\t\t";
 			if (!$intCount)
 			{
-				echo "[  SKIP  ]";
+				echo "[  SKIP  ]\n";
+				continue;
 			}
-			echo "\n";
+			echo "\n\t * Paying off $intCount Invoices...\t\t\n";
+			echo "\t * Opening Balance is \$$fltNegativeBalance\t\t\tOutstanding\tPayment\t\tBalance\t\tCredits Remaining\n";
 			
 			// For each of the +ve Invoices
-			while ($fltNegativeBalance && ($arrPositiveInvoice = $selPositiveInvoices->Fetch()))
+			$fltTotalPaid			= 0;
+			$fltTotalOutstanding	= 0;
+			$fltTotalRemaining		= 0;
+			while ($arrPositiveInvoice = $selPositiveInvoices->Fetch())
 			{
+				if ($fltNegativeBalance == 0 || $fltNegativeBalance == -0)
+				{
+					echo "\t - Insufficient Funds for Invoice #{$arrPositiveInvoice['Id']}\t\${$arrPositiveInvoice['Balance']}\t\$0\t\t\${$arrPositiveInvoice['Balance']}\t\$0\n";
+					continue;
+				}
+				
 				echo "\t - Paying off Invoice #{$arrPositiveInvoice['Id']}...\t\t";
 				
 				// Pay this Invoice off
 				$fltPositiveBalance		= $arrPositiveInvoice['Balance'];
+				$fltTotalOutstanding	+= $fltPositiveBalance;
 				$fltPositiveBalanceNew	= max(0, $fltPositiveBalance - $fltNegativeBalance);
+				$fltTotalRemaining		+= $fltPositiveBalanceNew;
 				$fltPayment				= $fltPositiveBalance - $fltPositiveBalanceNew;
-				$fltNegativeBalance		= $fltNegativeBalance - $fltPayment;
+				$fltTotalPaid			+= $fltPayment;
+				$fltNegativeBalance		= RoundCurrency($fltNegativeBalance - $fltPayment);
+				
+				echo "\$$fltPositiveBalance\t\$$fltPayment\t\t\$$fltPositiveBalanceNew\t\t\$$fltNegativeBalance\n";
 				
 				// Add Credit Payment to InvoicePayment
 				$arrInvoicePayment = Array();
-				$arrInvoicePayment['InvoiceRun']	= "Credit Payment from Invoice #".$arrNegativeInvoice['Id'];
+				$arrInvoicePayment['InvoiceRun']	= $arrPositiveInvoice['InvoiceRun'];
 				$arrInvoicePayment['Account']		= $arrNegativeInvoice['Account'];
 				$arrInvoicePayment['AccountGroup']	= $arrNegativeInvoice['AccountGroup'];
-				$arrInvoicePayment['Payment']		= 0;
+				$arrInvoicePayment['Payment']		= $arrNegativeInvoice['Id'];
 				$arrInvoicePayment['Amount']		= $fltPayment;
 				$insInvoicePayment->Execute($arrInvoicePayment);
 				
 				// Update the +ve Invoice
 				$arrInvoiceColumns['Id']		= $arrPositiveInvoice['Id'];
-				$arrInvoiceColumns['Balance']	= new MySQLFunction("Balance - <Amount>", Array('Amount' => $fltPayment));
+				$arrInvoiceColumns['Balance']	= $fltPositiveBalanceNew;
 				$ubiInvoice->Execute($arrInvoiceColumns);
 				
-				echo "\$$fltPayment\n";
 				
 				// Update the -ve Invoice
 				$arrInvoiceColumns['Id']		= $arrNegativeInvoice['Id'];
-				$arrInvoiceColumns['Balance']	= new MySQLFunction("Balance - <Amount>", Array('Amount' => 0 - $fltPayment));
+				$arrInvoiceColumns['Balance']	= 0 - $fltNegativeBalance;
 				$ubiInvoice->Execute($arrInvoiceColumns);
+				
+				ob_flush();
 			}
+			
+			if ($fltTotalPaid)
+			{
+				echo "\t\t\t\t\tTotals:\t\t\$$fltTotalOutstanding\t\t\$$fltTotalPaid\n";
+			}
+			echo "\t * Closing Balance is \$$fltNegativeBalance\n";
+			
+			if (!$fltNegativeBalance)
+			{
+				$intZeroed++;
+			}
+			
+			ob_flush();
  		}
+ 		
+ 		$intTotal = count($arrNegativeInvoices);
+ 		echo "\n * $intZeroed of $intTotal Negative Invoices completely paid off";
  	}
  }
 
