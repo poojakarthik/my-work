@@ -504,7 +504,7 @@ function GetCarrierName($intCarrier)
  */
 function IsValidFNN ($strFNN)
 {
-	return preg_match ("/^(0\d{9}[i]?)|(13\d{4})|(1[89]00\d{6})$/", $strFNN);
+	return preg_match ("/^(0\d{9}[i]?)|(13\d{4})|(1[389]00\d{6})$/", $strFNN);
 }
 
 //------------------------------------------------------------------------//
@@ -1312,6 +1312,19 @@ function CliEcho($strOutput)
 	}
 	$stdout = $GLOBALS['**stdout'];
 	fwrite($stdout, $strOutput."\n");
+}
+
+// Round Currency to X decimal places
+function RoundCurrency($fltValue, $intPlaces = 4)
+{
+	if (!is_numeric($fltValue) || !is_int($intPlaces) || $intPlaces < 1)
+	{
+		// Bad parameter list
+		return FALSE;
+	}
+	
+	$fltMultiple = (float)("1".str_repeat("0", $intPlaces));
+	return round($fltValue * $fltMultiple) / $fltMultiple;
 }
 
 ?>
