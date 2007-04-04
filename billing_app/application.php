@@ -642,11 +642,11 @@
 			$fltTotal	= $fltTotalDebits - $fltTotalCredits;
 			$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
 			$fltBalance	= $fltTotal + $fltTax;
-
+			
 			// calculate account balance from outstanding past invoices (this could give a negative value)
 			$fltAccountBalance = 0.0;
 			if(($fltAccountBalance = $this->Framework->GetAccountBalance($arrAccount['Id'])) === FALSE)
-			{				
+			{
 				// Report and fail out
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Cannot retrieve Account Balance");
 				$this->intFailed++;
