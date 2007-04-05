@@ -20,7 +20,8 @@ $framework = $GLOBALS['fwkFramework'];
 require_once("Spreadsheet/Excel/Writer.php");
 
 // Definitions
-$strInvoiceRun		= '460c6dfc434a7';
+//$strInvoiceRun		= '460c6dfc434a7';	// March
+$strInvoiceRun		= '45f4cb0c0a135';	// February
 $intRowOffset		= 1;
 $intColOffset		= 1;
 $intDividerWidth	= 3;
@@ -31,8 +32,8 @@ $selExtensions		= new StatementSelect(	"Service",
 											"Id AS Service, FNN",
 											"Indial100 = 1 AND Account = <Account>");
 $selRecordGroups	= new StatementSelect(	"(CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id) JOIN RecordType RecordGroup ON RecordType.GroupId = RecordGroup.Id",
-											"RecordGroup.DisplayType AS DisplayType, RecordGroup.Description AS Description, RecordGroup.Id AS RecordGroup",
-											"CDR.FNN LIKE <FNN> AND CDR.Service = <Service> AND CDR.Status = 199 AND CDR.InvoiceRun = '$strInvoiceRun' AND RecordType.Itemised = 1",
+											"RecordGroup.DisplayType AS DisplayType, RecordGroup.Description AS Description, RecordGroup.Id AS RecordGroup, COUNT(CDR.Id) AS CallCount, RecordGroup.Itemised AS Itemised",
+											"CDR.FNN LIKE <FNN> AND CDR.Service = <Service> AND CDR.Status = 199 AND CDR.InvoiceRun = '$strInvoiceRun'",
 											"RecordGroup.Description DESC",
 											NULL,
 											"RecordGroup.Id");
@@ -40,9 +41,17 @@ $selCDR				= new StatementSelect(	"CDR USE INDEX (FNN_2) JOIN RecordType ON CDR.
 											"CDR.*",
 											"CDR.InvoiceRun = '$strInvoiceRun' AND CDR.Service = <Service> AND CDR.FNN LIKE <FNN> AND RecordType.GroupId = <RecordGroup>",
 											"CDR.StartDatetime");
+$selIndialTotal		= new StatementSelect(	"ServiceTotal",
+											"TotalCharge",
+											"Service = <Service> AND InvoiceRun = '$strInvoiceRun'");
+$selCharges			= new StatementSelect(	"Charge",
+											"SUM(CASE WHEN Nature = 'DR' THEN Amount WHEN Nature = 'CR' THEN (Amount * -1) END) AS Total",
+											"Service = <Service> AND InvoiceRun = '$strInvoiceRun'",
+											NULL,
+											NULL,
+											"Service");
 											
-echo "\n\n[ EXTENSION-LEVEL BILLING XLS GENERATOR ]\n\n";
-Debug("_");
+Debug("\n\n[ EXTENSION-LEVEL BILLING XLS GENERATOR ]\n\n");
 ob_flush();
 /*
 // Get all Accounts with Services with Extension Level Billing
@@ -66,7 +75,7 @@ foreach ($arrAccounts as $arrAccount)
 	echo " + Generating XLS for {$arrAccount['Account']}...\n";
 	ob_flush();
 	
-	$strFileName = "/home/richdavis/Desktop/".$arrAccount['Account'].".xls";
+	$strFileName = "/home/richdavis/Desktop/".$arrAccount['Account']."_February.xls";
 	if (file_exists($strFileName))
 	{
 		unlink($strFileName);
@@ -86,6 +95,7 @@ foreach ($arrAccounts as $arrAccount)
 	$arrServiceExtensions = $selExtensions->FetchAll();
 	
 	// For each Service Extension
+	$intSummaryRow = $intRowOffset;
 	foreach ($arrServiceExtensions as $arrServiceExtension)
 	{
 		echo "\t + Generating Data for {$arrServiceExtension['FNN']}...";
@@ -97,9 +107,15 @@ foreach ($arrAccounts as $arrAccount)
 		// Create new Service Extension Worksheet
 		$arrItemisedWorksheets[$strRangeName] =& $wkbWorkbook->addWorksheet($strRangeName);
 		$arrItemisedWorksheets[$strRangeName]->hideGridlines();
+			
+		// Add to Service Summary
+		$wksSummary->writeString($intSummaryRow, 0, "Indial Summary for", $arrFormats['CostCentre']);
+		$wksSummary->writeString($intSummaryRow, 1, $strRangeName, $arrFormats['CostCentre']);
+		$intSummaryRow += $intSpacerWidth;
 		
 		// For each possible FNN
 		$intRow = $intRowOffset;
+		$fltIndialTotal = 0;
 		for ($intExtension = 0; $intExtension < 100; $intExtension++)
 		{
 			//echo ".";
@@ -117,40 +133,48 @@ foreach ($arrAccounts as $arrAccount)
 			if ($intGroups)
 			{
 				// Add to Service Summary Worksheet
-				$wksSummary->writeString($intSummaryRow, $intColOffset, "Service Summary for $strExtensionFNN", $arrFormats['Title']);
+				$wksSummary->writeString($intSummaryRow, $intColOffset, "Extension Summary for $strExtensionFNN", $arrFormats['TitleRow']);
 				$intSummaryRow++;
-								
+				$wksSummary->writeString($intSummaryRow, $intColOffset, "Service Name", $arrFormats['Bold']);
+				$wksSummary->writeString($intSummaryRow, $intColOffset+2, "Calls", $arrFormats['Bold']);
+				$wksSummary->writeString($intSummaryRow, $intColOffset+3, "Charge", $arrFormats['Bold']);
+				$intSummaryRow++;
+				
 				// Header
-				$arrItemisedWorksheets[$strRangeName]->writeString($intRow, 0, "Indial :", $arrFormats['CostCentre']);
+				$arrItemisedWorksheets[$strRangeName]->writeString($intRow, 0, "Extension :", $arrFormats['CostCentre']);
 				$arrItemisedWorksheets[$strRangeName]->writeString($intRow, 1, $strExtensionFNN, $arrFormats['CostCentre']);
 				$intRow += $intDividerWidth;
 				
 				// For each RecordGroup
+				$fltServiceTotal = 0;
 				foreach ($arrRecordGroups as $arrRecordGroup)
 				{
 					//echo ",";
 					ob_flush();
 					
-					// Header
-					$strTitle = $arrRecordGroup['Description'] . " for " . $strExtensionFNN;
-					$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset, $strTitle, $arrFormats['TitleRow']);
-					$intRow += $intSpacerWidth;
-					
-					if ($arrRecordGroup['DisplayType'] == RECORD_DISPLAY_S_AND_E)
+					if ($arrRecordGroup['Itemised'])
 					{
-						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset	, "Description"	, $arrFormats['Bold']);
-						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+5	, "Charge"		, $arrFormats['Bold']);
+						// Header
+						$strTitle = $arrRecordGroup['Description'] . " for " . $strExtensionFNN;
+						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset, $strTitle, $arrFormats['TitleRow']);
+						$intRow += $intSpacerWidth;
+						
+						if ($arrRecordGroup['DisplayType'] == RECORD_DISPLAY_S_AND_E)
+						{
+							$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset	, "Description"	, $arrFormats['Bold']);
+							$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+5	, "Charge"		, $arrFormats['Bold']);
+						}
+						else
+						{
+							$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset	, "Date"			, $arrFormats['Bold']);
+							$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+1	, "Time"			, $arrFormats['Bold']);
+							$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+2	, "Called Party"	, $arrFormats['Bold']);
+							$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+3	, "Description"		, $arrFormats['Bold']);
+							$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+4	, "Duration"		, $arrFormats['Bold']);
+							$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+5	, "Charge"			, $arrFormats['Bold']);
+						}
+						$intRow++;
 					}
-					else
-					{
-						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset	, "Date"			, $arrFormats['Bold']);
-						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+1	, "Time"			, $arrFormats['Bold']);
-						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+2	, "Calling Party"	, $arrFormats['Bold']);
-						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+3	, "Description"		, $arrFormats['Bold']);
-						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+4	, "Duration"		, $arrFormats['Bold']);
-						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+5	, "Charge"			, $arrFormats['Bold']);
-					}
-					$intRow++;
 					
 					// Get all CDRs for this RecordGroup
 					$arrData = Array();
@@ -164,52 +188,87 @@ foreach ($arrAccounts as $arrAccount)
 					$fltTotal = 0;
 					foreach ($arrCDRs as $arrCDR)
 					{
-						// Itemise
-						switch($arrRecordGroup['DisplayType'])
+						if ($arrRecordGroup['Itemised'])
 						{
-							// Type 92
-							case RECORD_DISPLAY_S_AND_E:
-								$strDescription = $arrCDR['Description'];
-								$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset, $strDescription);
-								//$arrItemisedWorksheets[$strRangeName]->writeNumber($intRow, $intColOffset+1, (int)$arrCDR['Units']);
-								$arrItemisedWorksheets[$strRangeName]->writeNumber($intRow, $intColOffset+5, (float)$arrCDR['Charge'], $arrFormats['Currency']);
-								break;
-							// Type 91
-							case RECORD_DISPLAY_CALL:
-							// Unknown Record Type (should never happen) - just display as a normal Call
-							default:
-								$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset, date("d/m/Y", strtotime($arrCDR['StartDatetime'])));
-								$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+1, date("H:i:s", strtotime($arrCDR['StartDatetime'])));
-								$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+2, $arrCDR['Destination']);
-								$intHours		= floor((int)$arrCDR['Units'] / 3600);
-								$strDuration	= "$intHours:".date("i:s", (int)$arrCDR['Units']);
-								$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+3, $arrCDR['Description']);
-								$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+4, $strDuration);
-								$arrItemisedWorksheets[$strRangeName]->writeNumber($intRow, $intColOffset+5, $arrCDR['Charge'], $arrFormats['Currency']);
-								break;
+							// Itemise
+							switch($arrRecordGroup['DisplayType'])
+							{
+								// Type 92
+								case RECORD_DISPLAY_S_AND_E:
+									$strDescription = $arrCDR['Description'];
+									$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset, $strDescription);
+									$arrItemisedWorksheets[$strRangeName]->writeNumber($intRow, $intColOffset+5, (float)$arrCDR['Charge'], $arrFormats['Currency']);
+									break;
+								// Type 91
+								case RECORD_DISPLAY_CALL:
+								// Unknown Record Type (should never happen) - just display as a normal Call
+								default:
+									$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset, date("d/m/Y", strtotime($arrCDR['StartDatetime'])));
+									$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+1, date("H:i:s", strtotime($arrCDR['StartDatetime'])));
+									$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+2, $arrCDR['Destination']);
+									$intHours		= floor((int)$arrCDR['Units'] / 3600);
+									$strDuration	= "$intHours:".date("i:s", (int)$arrCDR['Units']);
+									$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+3, $arrCDR['Description']);
+									$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset+4, $strDuration);
+									$arrItemisedWorksheets[$strRangeName]->writeNumber($intRow, $intColOffset+5, (float)$arrCDR['Charge'], $arrFormats['Currency']);
+									break;
+							}
+							$intRow++;
 						}
 						$fltTotal += (float)$arrCDR['Charge'];
-						$intRow++;
 					}
 					
-					// Add RecordGroupTotal
-					$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset	, "Total Charges"	, $arrFormats['Bold']);
-					$arrItemisedWorksheets[$strRangeName]->writeNumber($intRow, $intColOffset+5	, $fltTotal			, $arrFormats['Total']);
-					
-					$intRow += $intSpacerWidth;
+					if ($arrRecordGroup['Itemised'])
+					{
+						// Add RecordGroupTotal
+						$arrItemisedWorksheets[$strRangeName]->writeString($intRow, $intColOffset	, "Total Charges"	, $arrFormats['Bold']);
+						$arrItemisedWorksheets[$strRangeName]->writeNumber($intRow, $intColOffset+5	, $fltTotal			, $arrFormats['Total']);
+						
+						$intRow += $intSpacerWidth;
+					}
 					
 					// Add Totals to Service Summary Worksheet
-					// TODO
+					$wksSummary->writeString($intSummaryRow, $intColOffset, $arrRecordGroup['Description']);
+					$wksSummary->writeNumber($intSummaryRow, $intColOffset+2, $arrRecordGroup['CallCount']);
+					$wksSummary->writeNumber($intSummaryRow, $intColOffset+3, $fltTotal, $arrFormats['Currency']);
+					$intSummaryRow++;
+					
+					$fltServiceTotal += $fltTotal;
 				}
-			
+				
 				// Add Service Total to Service Summary
-				// TODO
-				$intSummaryRow += $intDividerWidth;
+				$wksSummary->writeString($intSummaryRow, $intColOffset, "Total Charges", $arrFormats['TitleRow']);
+				$wksSummary->writeNumber($intSummaryRow, $intColOffset+3, $fltServiceTotal, $arrFormats['TitleTotal']);
+				$intSummaryRow += $intSpacerWidth;
+				
+				$fltIndialTotal += $fltServiceTotal;
 			}
 		}
 		
+		// Charge Summary
+		$selCharges->Execute(Array('Service' => $arrServiceExtension['Service']));
+		if ($arrCharges = $selCharges->Fetch())
+		{
+			$wksSummary->writeString($intSummaryRow, $intColOffset, "Adjustments for $strRangeName", $arrFormats['TitleRow']);
+			$wksSummary->writeString($intSummaryRow, $intColOffset+3, $arrCharges['Total'], $arrFormats['Total']);
+			$intSummaryRow += $intSpacerWidth;
+		}
+		
+		$selIndialTotal->Execute(Array('Service' => $arrServiceExtension['Service']));
+		$arrIndialTotal = $selIndialTotal->Fetch();
+		
+		// Add to Service Summary
+		$wksSummary->writeString($intSummaryRow, 0, "Total Charges for", $arrFormats['CostCentre']);
+		$wksSummary->writeString($intSummaryRow, 1, $strRangeName, $arrFormats['CostCentre']);
+		$wksSummary->writeNumber($intSummaryRow, 4, $fltIndialTotal, $arrFormats['CostCentreTotal']);
+		$intSummaryRow++;
+		$wksSummary->writeString($intSummaryRow, 0, "Total Invoiced for", $arrFormats['CostCentre']);
+		$wksSummary->writeString($intSummaryRow, 1, $strRangeName, $arrFormats['CostCentre']);
+		$wksSummary->writeNumber($intSummaryRow, 4, $arrIndialTotal['TotalCharge'], $arrFormats['CostCentreTotal']);
+		$intSummaryRow += $intDividerWidth;
+		
 		echo "\t[ DONE ]\n";
-	}	
+	}
 	
 	// Send the XLS file
 	$wkbWorkbook->close();
@@ -236,13 +295,20 @@ function AssignFormats ($wkbWorkbook)
 	// Cost Centre
 	$fmtFormat = $wkbWorkbook->addFormat();
 	$fmtFormat->setBold();
-	$fmtFormat->setSize(18);
+	$fmtFormat->setSize(14);
 	$arrFormats['CostCentre']	= $fmtFormat;
+	
+	// Cost Centre Total
+	$fmtFormat = $wkbWorkbook->addFormat();
+	$fmtFormat->setBold();
+	$fmtFormat->setSize(14);
+	$fmtFormat->setNumFormat('$#,##0.00;$#,##0.00 CR');
+	$arrFormats['CostCentreTotal']	= $fmtFormat;
 	
 	// eg. Service Summary for 0409004224
 	$fmtFormat = $wkbWorkbook->addFormat();
 	$fmtFormat->setBold();
-	$fmtFormat->setSize(14);
+	$fmtFormat->setSize(12);
 	$arrFormats['TitleRow']	= $fmtFormat;
 	
 	// eg. Service Name				Calls		Charge
@@ -260,6 +326,13 @@ function AssignFormats ($wkbWorkbook)
 	$fmtFormat->setNumFormat('$#,##0.00;$#,##0.00 CR');
 	$fmtFormat->setBold();
 	$arrFormats['Total']	= $fmtFormat;
+	
+	// Title Total
+	$fmtFormat = $wkbWorkbook->addFormat();
+	$fmtFormat->setNumFormat('$#,##0.00;$#,##0.00 CR');
+	$fmtFormat->setSize(12);
+	$fmtFormat->setBold();
+	$arrFormats['TitleTotal']	= $fmtFormat;
 	
 	return $arrFormats;
 }
