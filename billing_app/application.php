@@ -653,6 +653,15 @@
 				continue;
 			}
 			
+			// check for last month's TotalOwing to Account for Credits that should be carried forward
+			$selPreviousTotalOwing->Execute(Array('Account'));
+			$arrTotalOwing = $selPreviousTotalOwing->Fetch();
+			$fltPreviousTotalOwing = $arrTotalOwing['TotalOwing'];
+			if ($fltPreviousTotalOwing < $fltAccountBalance && $fltPreviousTotalOwing < 0)
+			{
+				// TODO
+			}
+			
 			// get total owing
 			$fltTotalOwing = $fltBalance + $fltAccountBalance;
 			
