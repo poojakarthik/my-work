@@ -596,7 +596,7 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-
+/*
 //----------------------------------------------------------------------------//
 // All Delinquents in a Date Period
 //----------------------------------------------------------------------------//
@@ -642,7 +642,7 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Field'	=> "EndDateRange",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-
+*/
 /*
 //----------------------------------------------------------------------------//
 // Delinquent CDR Details in a Date Period
@@ -700,6 +700,61 @@ $arrSQLFields['EndDate']	= Array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
+//----------------------------------------------------------------------------//
+// Unrated CDR Summary in a Date Period
+//----------------------------------------------------------------------------//
+
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Unrated CDR Summary in a Date Period";
+$arrDataReport['Summary']		= "Lists a summary of Unrated CDRs for a specified Account and FNN in a specified Date Range";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "CDR USE INDEX (Status) JOIN RecordType ON CDR.RecordType = RecordType.Id";
+$arrDataReport['SQLWhere']		= "CDR.FNN LIKE <FNN> AND <Account> LIKE CAST(CDR.Account AS CHAR) AND CDR.Status = ".CDR_RATE_NOT_FOUND." AND (CAST(CDR.StartDatetime AS DATE) BETWEEN <StartDate> AND <EndDate> OR CAST(CDR.NormalisedOn AS DATE) BETWEEN <StartDate> AND <EndDate>)";
+$arrDataReport['SQLGroupBy']	= "CDR.Service, RecordType.Id";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDocReq[]	= "Service";
+$arrDocReq[]	= "Account";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Account']			= "CDR.Account";
+$arrSQLSelect['Service']			= "CDR.Service";
+$arrSQLSelect['FNN']				= "CDR.FNN";
+$arrSQLSelect['Record Type']		= "RecordType.Description";
+$arrSQLSelect['Record Type Id']		= "RecordType.Id";
+$arrSQLSelect['Total Cost $']		= "SUM(CDR.Cost)";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+$arrSQLFields['Account']	= Array(
+										'Type'					=> "dataString",
+										'Documentation-Entity'	=> "Account",
+										'Documentation-Field'	=> "Id",
+									);
+$arrSQLFields['FNN']		= Array(
+										'Type'					=> "dataString",
+										'Documentation-Entity'	=> "Service",
+										'Documentation-Field'	=> "FNN",
+									);
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
 
 //Debug($arrDataReport);
 //die;
