@@ -114,6 +114,16 @@
 												</xsl:attribute>
 											</input>
 										</xsl:when>
+										<!-- dataInteger -->
+										<xsl:when test="./Type = 'dataInteger'">
+											<input type="text" class="input-string">
+												<xsl:attribute name="name">
+													<xsl:text>input[</xsl:text>
+													<xsl:value-of select="./Name" />
+													<xsl:text>]</xsl:text>
+												</xsl:attribute>
+											</input>
+										</xsl:when>
 										<!-- dataDate -->
 										<xsl:when test="./Type = 'dataDate'">
 											<select>

@@ -162,6 +162,11 @@
 							
 							break;
 							
+						case "dataInteger":
+							$arrValues [$strName] = (int)$arrFields[$strName];
+							
+							break;
+							
 						default:
 							$arrValues [$strName] = $arrFields [$strName];
 							break;
