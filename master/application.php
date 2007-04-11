@@ -458,8 +458,8 @@
 		$this->Debug("Time Now  : ".Date("Y-m-d H:i:s", $intTimeNow));
 		
 		// calculate zero time today
-		$intZeroTime = floor(($intTimeNow / 86400)) * 86400 - ($this->_arrConfig['GMTOffset'] * 3600);
-		//$this->Debug("Zero Hour Timestamp :$intZeroTime");
+		$intZeroTime = floor((($intTimeNow + ($this->_arrConfig['GMTOffset'] * 3600)) / 86400)) * 86400 - ($this->_arrConfig['GMTOffset'] * 3600);
+		$this->Debug("Zero Time : ".Date("Y-m-d H:i:s", $intZeroTime));
 		
 		// calculate day based timestamp
 		$intDayTimeStamp = $intTimeNow - $intZeroTime;
