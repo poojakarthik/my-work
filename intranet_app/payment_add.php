@@ -17,7 +17,8 @@
 	// call application
 	require ('config/application.php');
 	
-	
+	// uncomment this to lock the page while billing is running
+	//$Style->Output ('xsl/content/locked.xsl');die();
 	
 	// Payments can be made in one of two ways:
 	// 1. Payments can be made against an Account Group. By doing this, the Invoice with

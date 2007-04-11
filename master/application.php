@@ -455,9 +455,10 @@
 	{
 		// get current time
 		$intTimeNow = Time();
+		$this->Debug("Time Now  : ".Date("Y-m-d H:i:s", $intTimeNow));
 		
 		// calculate zero time today
-		$intZeroTime = floor(($intTimeNow / 86400)) * 86400;
+		$intZeroTime = floor(($intTimeNow / 86400)) * 86400 - ($this->_arrConfig['GMTOffset'] * 3600);
 		//$this->Debug("Zero Hour Timestamp :$intZeroTime");
 		
 		// calculate day based timestamp
@@ -466,11 +467,11 @@
 		
 		// get first run time for today
 		$intFirstRun = (int)$arrScript['Config']['StartTime'] + $intZeroTime;
-		$this->Debug("First Run : $intFirstRun");
+		$this->Debug("First Run : ".Date("Y-m-d H:i:s", $intFirstRun));
 		
 		// get final run time for today
 		$intFinalRun = (int)$arrScript['Config']['FinishTime'] + $intZeroTime;
-		$this->Debug("Final Run : $intFinalRun");
+		$this->Debug("Final Run : ".Date("Y-m-d H:i:s", $intFinalRun));
 		if ($intFinalRun == $intZeroTime)
 		{
 			// set last run to midnight
@@ -492,7 +493,7 @@
 		$intLastSchedualedRun = (int)$arrScript['NextRun'];
 		if ($intLastSchedualedRun)
 		{
-			$this->Debug("Last Run  : $intLastSchedualedRun");
+			$this->Debug("Last Run  : ".Date("Y-m-d H:i:s", $intLastSchedualedRun));
 			// schedule next run based on previous schedule
 			$intNextRun = $intLastSchedualedRun + $intInterval;
 			
@@ -524,7 +525,7 @@
 			$intNextRun += $intIntervals * $intInterval;
 		}
 		
-		$this->Debug("Next Run  : $intNextRun");
+		$this->Debug("Next Run  : ".Date("Y-m-d H:i:s", $intNextRun));
 		
 		// Return Next Run TimeStamp
 		return $intNextRun;
