@@ -1173,6 +1173,7 @@
 			//Adds top node of the inserted data (from InsertDOM() above)
 			$domRoot = $domOutput->documentElement;
 		
+			//debug($this->_arrOutput);die;
 			//Take each array of data from the queue and add it to domOutput
 			foreach ($this->_arrOutput as $strInsertPoint=>$arrRecords)
 			{
@@ -1201,7 +1202,7 @@
 					}
 				}
 			}
-			//Debug($domOutput->SaveXML());die;
+			//Debug($domOutput->SaveXML());//die;
 			//Creation of XSLT processor and final output to XSL file
 	 		$xslProcessor = new XSLTProcessor;
             $xslProcessor->importStyleSheet ($this->_domDocument);    

@@ -416,6 +416,7 @@
 		
 	}
 	
+	input.input-invalid,
 	input.input-ABN-invalid,
 	input.input-ACN-invalid
 	{
@@ -423,6 +424,13 @@
 		background-color:    #f2dbdb;
 		padding:             3px;
 		width:				180px;
+	}
+	
+	input.input-drop
+	{
+		border:              solid 1px #919191;
+		vertical-align:		 bottom;
+		padding:             3px;
 	}
 	
 	div#Notices

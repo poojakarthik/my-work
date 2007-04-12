@@ -16,7 +16,7 @@
 	
 	// call application
 	require ('config/application.php');
-	
+	//debug($_POST);
 	// Pull documentation information for an Account
 	$docDocumentation->Explain ('AccountGroup');
 	$docDocumentation->Explain ('Account');
@@ -115,6 +115,7 @@
 			$ccrCostCentres = $Style->attachObject (new CostCentres);
 			$ccrCostCentres->Constrain ('Account',	'=',	$actAccount->Pull ('Id')->getValue ());
 			$ccrCostCentres->Sample ();
+			debug($ccrCostCentres);die;
 			
 			// Get the Plans that this ServiceType can have
 			$rplRatePlans = $Style->attachObject (new RatePlans);
@@ -133,6 +134,10 @@
 		
 		exit;
 	}
+	
+	// Get Cost Centres
+	$ccrCostCentres = $Style->attachObject (new DOMCostCentres ($actAccount));
+	//echo($ccrCostCentres);die;
 	
 	// Output the Information
 	$Style->Output (

@@ -68,7 +68,7 @@
 		</xsl:param>
 		<div class="Wide-Form">
 			<xsl:choose>
-				<xsl:when test="count(/Response/RecurringCharges/Results/rangeSample/RecurringCharge) = 0">
+				<xsl:when test="count(/Response/TemplateChargeTypes/RecurringChargeTypes/Results/rangeSample/RecurringChargeType) = 0">
 					No adjustments are available.
 				</xsl:when>
 				<xsl:otherwise>

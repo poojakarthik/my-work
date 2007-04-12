@@ -99,6 +99,34 @@
 			<div class="Wide-Form">
 				<div class="Form-Content">
 					<table border="0" cellpadding="3" cellspacing="0">
+					<tr>
+						<td class="Required" valign="top"><strong><span class="Red">*</span></strong></td>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service')" />
+									<xsl:with-param name="field" select="string('ServiceType')" />
+								</xsl:call-template>
+							</th>
+							<td>
+								<select name="ServiceType">
+									<xsl:for-each select="/Response/ui-values/ServiceTypes/ServiceType">
+										<option>
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Id" />
+											</xsl:attribute>
+											<xsl:if test="./@selected='selected'">
+												<xsl:attribute name="selected">
+													<xsl:text>selected</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+											<xsl:text></xsl:text>
+											<xsl:value-of select="./Name" />
+										</option>
+									</xsl:for-each>
+								</select>
+							</td>
+						</tr>
 						<tr>
 							<td><strong><span class="Red">*</span></strong></td>
 							<th class="JustifiedWidth">
