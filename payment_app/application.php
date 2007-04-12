@@ -92,7 +92,7 @@
 		$arrColumns['Status']	= NULL;
 		$this->_ubiSavePaymentStatus	= new StatementUpdateById("Payment", $arrColumns);
 		
-		$this->_selGetNormalisedPayments	= new StatementSelect("Payment", "*", "Status = ".PAYMENT_WAITING);
+		$this->_selGetNormalisedPayments	= new StatementSelect("Payment", "*", "Status = ".PAYMENT_WAITING." OR Status = ".PAYMENT_PAYING);
 		
 		$this->_selAccountInvoices			= new StatementSelect("Invoice", "*", "Account = <Account> AND Balance > 0 AND (Status = ".INVOICE_COMMITTED." OR Status = ".INVOICE_DISPUTED.")", "DueOn ASC");
 		
@@ -392,7 +392,7 @@
 	 *
 	 * Process all outstanding Payment Records
 	 *
-	 * @return	bool	returns true until all Payments have been processed
+	 * @return	bool
 	 *
 	 * @method
 	 */
