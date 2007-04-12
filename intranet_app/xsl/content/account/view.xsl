@@ -468,7 +468,7 @@
 						<li>
 							<a>
 								<xsl:attribute name="href">
-									<xsl:text>service_add.php?Account=</xsl:text>
+									<xsl:text>service_addbulk.php?Account=</xsl:text>
 									<xsl:value-of select="/Response/Account/Id" />
 								</xsl:attribute>
 								<xsl:text>Add Service</xsl:text>

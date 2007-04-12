@@ -4,7 +4,7 @@ function Init()
 	if (document.getElementById ("inputCount")) {
 		document.getElementById ("inputCount").value = 0;
 		AddManyInput(5);
-		document.getElementById ("proDetails").style.display="none";
+		document.getElementById ("provisioningDetails").style.display="none";
 		}
 	else {
 		setTimeout("Init()",100);
