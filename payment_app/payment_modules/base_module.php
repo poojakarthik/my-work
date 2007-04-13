@@ -51,11 +51,9 @@
  		$this->_strDelimiter	= NULL;
  		$this->_strEnclosedBy	= NULL;
  		
-	 	$this->_selGetAccountGroup	= new StatementSelect(	"AccountGroup LEFT OUTER JOIN Account ON AccountGroup.Id = Account.AccountGroup",
-	 														"AccountGroup.Id AS AccountGroup",
-	 														"AccountGroup.Archived = 0 AND Account.Archived = 0 AND (Account.Id = <Account> OR AccountGroup.Id = <Account>)",
-	 														NULL,
-	 														"1");
+	 	$this->_selGetAccountGroup	= new StatementSelect(	"Account",
+	 														"AccountGroup",
+	 														"Account.Id = <Account>");
 		
 		$this->_arrDefine = NULL;
  	}
@@ -353,15 +351,12 @@
 	 protected function _FindAccountGroup($intAccount)
 	 {
 		$arrParams['Account'] = $intAccount;
-		if ($this->_selGetAccountGroup->Execute($arrParams) === FALSE)
+		if (!$this->_selGetAccountGroup->Execute($arrParams))
 		{
-
-		}
-		if (count($arrData = $this->_selGetAccountGroup->Fetch()) == 0)
-		{
-			// There was no match
+			// There was no match or an error
 			return FALSE;
 		}
+		$arrData = $this->_selGetAccountGroup->Fetch();
 		return $arrData['AccountGroup'];
 	 }
  }
