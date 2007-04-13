@@ -400,6 +400,7 @@
 	 {
 		// get all payments
 		$intCount = $this->_selGetNormalisedPayments->Execute();
+		$this->_intProcessCount = $intCount;
 		if (!$intCount)
 		{
 			// No payments left, so return false
@@ -431,6 +432,7 @@
 			if (($intCount2 = $selOutstandingInvoices->Execute($arrWhere)) === FALSE)
 			{
 				Debug($selOutstandingInvoices->Error());
+				continue;
 			}
 			
 			// set default status
@@ -460,6 +462,7 @@
 				if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
 				{
 					Debug($this->_ubiPayment->Error());
+					continue;
 				}
 				
 				$this->_rptPaymentReport->AddMessageVariables(MSG_INVOICE_LINE.MSG_OK, Array('<Id>' => $arrInvoice['Id']), TRUE, FALSE);
@@ -474,8 +477,11 @@
 				if ($this->_ubiPayment->Execute($this->_arrCurrentPayment) === FALSE)
 				{
 					Debug($this->_ubiPayment->Error());
+					continue;
 				}
 			}
+			
+			$this->_intProcessPassed++;
 		}
 		return $intCount;
 	 }
