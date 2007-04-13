@@ -20,9 +20,16 @@ $framework = $GLOBALS['fwkFramework'];
 $arrColumns = Array();
 $arrColumns['BillingMethod'] = BILLING_METHOD_EMAIL;
 $ubiAccount = new StatementUpdateById("Account", $arrColumns);
+$selIsEmail = new StatementSelect("Account", "Id", "Id = <Id> AND BillingType IN (1,2) AND BillingMethod != ".BILLING_METHOD_EMAIL);
 
 // List of directories to parse (include trailing /)
 $arrDirs = Array();
+$arrDirs[]	= "/home/richdavis/invoice_temp/2007/03/1/Email/";
+$arrDirs[]	= "/home/richdavis/invoice_temp/2007/03/2/Email/";
+$arrDirs[]	= "/home/richdavis/invoice_temp/2007/03/4/Email/";
+$arrDirs[]	= "/home/richdavis/invoice_temp/2007/02/1/Email/";
+$arrDirs[]	= "/home/richdavis/invoice_temp/2007/02/2/Email/";
+$arrDirs[]	= "/home/richdavis/invoice_temp/2007/02/4/Email/";
 $arrDirs[]	= "/home/richdavis/invoice_temp/2007/01/1/Email/";
 $arrDirs[]	= "/home/richdavis/invoice_temp/2007/01/2/Email/";
 $arrDirs[]	= "/home/richdavis/invoice_temp/2007/01/4/Email/";
@@ -30,17 +37,29 @@ $arrDirs[]	= "/home/richdavis/invoice_temp/2007/01/4/Email/";
 echo "<pre>\n\n[ IMPORTING EMAIL ACCOUNTS ]\n";
 
 $intUpdated = 0;
+$arrAccounts = Array();
 foreach ($arrDirs as $strDir)
 {	
 	$arrFiles = glob($strDir."*.pdf");
-	echo "\n\n* Browsing '$strDir'... ".count($arrFiles)." files to be parsed...\n\n";
+	echo "\n* Browsing '$strDir'... ".count($arrFiles)." files to be parsed...\n\n";
 	foreach ($arrFiles as $strFilename)
 	{
-		// Update the account
 		$arrColumns['Id'] = (int)substr(basename($strFilename), 0, 10);
 		
-		echo "\t+ Updating Account #{$arrColumns['Id']}...\t\t\t";
+		// Check Account's current status
+		/* LIST */
+		if (in_array($arrColumns['Id'], $arrAccounts))
+		{
+			continue;
+		}
+		$arrAccounts[] = $arrColumns['Id'];
+		if (!$selIsEmail->Execute($arrColumns))
+		{
+			continue;
+		}
 		
+		// Update the account
+		echo "\t+ Updating Account #{$arrColumns['Id']}...\t\t\t";
 		$mixResponse = $ubiAccount->Execute($arrColumns);
 		if ($mixResponse === FALSE)
 		{
@@ -59,6 +78,7 @@ foreach ($arrDirs as $strDir)
 		ob_flush();
 	}	
 }
-echo "\n COMPLETE! $intUpdated Accounts updated! \n\n";
+$intTotal = count($arrAccounts);
+echo "\n COMPLETE! $intUpdated of $intTotal Accounts updated! \n\n";
 
 ?>
