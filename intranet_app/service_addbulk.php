@@ -5,15 +5,16 @@
 	//
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
-	
+
 	// call application loader
 	require ('config/application_loader.php');
+	require ('../framework/json.php');
 	
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_SERVICE_ADDRESS | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE | MODULE_COST_CENTRE;
-	//debug($_POST);
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_SERVICE_ADDRESS | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE | MODULE_COST_CENTRE | MODULE_STATE | MODULE_TITLE;
+
 	// call application
 	require ('config/application.php');
 	
@@ -26,8 +27,69 @@
 	$docDocumentation->Explain ('Carrier');
 	$docDocumentation->Explain ('Provisioning');
 	
+	$results=AjaxRecieve();
+	if ($results)
+	{
+		// if this page was called by ajax
+		// do something with the results
+		
+		/* $results format:
+			[$results] - 	[serviceCount]
+							[service1] - 	[FNN]
+											[CostCentre]
+											[Plan]
+											[Type]
+								|
+							[serviceN]
+		*/
+		
+		//try
+		//{
+			/*$srvService = Services::Add (
+				$athAuthentication->AuthenticatedEmployee (),
+				$actAccount,
+				$rrpPlan,
+				Array (
+					"FNN"					=> $oblstrFNN_1->getValue (),
+					"Indial100"				=> isset ($_POST ['Indial100']) ? TRUE : FALSE,
+					"CostCentre"			=> $_POST ['CostCentre'],
+					"ServiceType"			=> $_POST ['ServiceType']
+				)
+			);
+			
+			header ("Location: service_view.php?Id=" . $srvService->Pull ('Id')->getValue ());
+			*/
+			/*
+			// Get the Rate Plan. If it doesn't exist
+			// then this is an error
+			try
+			{
+				$rrpPlan = new RatePlan ($_POST ['RatePlan']);
+			}
+			catch (Exception $e)
+			{
+				$oblstrError->setValue ('Rate Plan Invalid');
+			}
+			
+			
+			$srvService = Services::Add (
+				$athAuthentication->AuthenticatedEmployee (),
+				$actAccount,
+				$
+			exit;
+		}
+		catch (Exception $e)
+		{
+			AjaxReply($e->getMessage ());
+			exit;
+		}*/
+
+		// Send stuff back to ajax
+		AjaxReply($results);
+		exit;
+	}
+
 	// Try and get the associated account
-	
 	try
 	{
 		$actAccount = $Style->attachObject (new Account (($_GET ['Account']) ? $_GET ['Account'] : $_POST ['Account']));
@@ -37,7 +99,15 @@
 		$Style->Output ('xsl/content/account/notfound.xsl');
 		exit;
 	}
+		
+	// Provisioning Selection Options
+	$Style->attachObject (new ServiceAddressTypes		( ));
+	$Style->attachObject (new ServiceStreetTypes		( ));
+	$Style->attachObject (new ServiceStreetSuffixTypes	( ));
+	$Style->attachObject (new TitleTypes				( ));
+	$Style->attachObject (new ServiceStateTypes			( ));
 	
+	// START of the functionality to save service details
 	
 	// Build a String for Remembering Errors
 	$oblstrError 		= $Style->attachObject (new dataString ('Error'));
@@ -60,19 +130,7 @@
 		}
 		else
 		{
-			if ($oblstrFNN_1->getValue () <> $oblstrFNN_2->getValue ())
-			{
-				$oblstrError->setValue ('Mismatch');
-			}
-			else if ($oblstrFNN_1->getValue () <> "" && !IsValidFNN ($oblstrFNN_1->getValue ()))
-			{
-				$oblstrError->setValue ('FNN ServiceType');
-			}
-			else if ($oblstrFNN_1->getValue () <> "" && ServiceType ($oblstrFNN_1->getValue ()) <> $_POST ['ServiceType'])
-			{
-				$oblstrError->setValue ('FNN ServiceType');
-			}
-			else if ($_POST ['RatePlan'])
+			if ($_POST ['RatePlan'])
 			{
 				// Get the Rate Plan. If it doesn't exist
 				// then this is an error
@@ -135,6 +193,10 @@
 		
 		exit;
 	}
+	
+	
+	// END of functionality to save service details
+	
 	
 	// Get the Plans for all ServiceTypes
 	$rplRatePlans = $Style->attachObject (new RatePlans);

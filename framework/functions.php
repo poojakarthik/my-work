@@ -1327,4 +1327,45 @@ function RoundCurrency($fltValue, $intPlaces = 4)
 	return round($fltValue * $fltMultiple) / $fltMultiple;
 }
 
+// AJAX Recieve
+function AjaxRecieve()
+{
+/**
+* Converts to and from JSON format.
+*
+* Brief example of use:
+*
+* <code>
+* // create a new instance of Services_JSON
+* $json = new Services_JSON();
+*
+* // convert a complexe value to JSON notation, and send it to the browser
+* $value = array('foo', 'bar', array(1, 2, 'baz'), array(3, array(4)));
+* $output = $json->encode($value);
+*
+* print($output);
+* // prints: ["foo","bar",[1,2,"baz"],[3,[4]]]
+*
+* // accept incoming POST data, assumed to be in JSON notation
+* $input = file_get_contents('php://input', 1000000);
+* $value = $json->decode($input);
+* </code>
+*/
+
+	$json = new Services_JSON();
+	// get the JSON object and decode it into an object
+	$input = file_get_contents('php://input', 1000000);
+	$input = $json->decode($input);
+	
+	// expected to return an array of data if a connection was made
+	// or false if not
+	return $input;
+}
+
+// AJAX Reply
+function AjaxReply($arrReply)
+{
+	$json = new Services_JSON();
+	echo $json->encode($arrReply);
+}
 ?>

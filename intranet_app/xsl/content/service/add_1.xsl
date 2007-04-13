@@ -12,8 +12,9 @@
 		<script language="javascript" src="js/service_add_input.js" onload="Init()"></script>
 		<script language="javascript" src="js/ABN.js"></script>
 		<script language="javascript" src="js/provisioning.js" onload="ShowBusiness()"></script>
+		<script language="javascript" src="js/ajax.js"></script>
 		
-		<form method="POST" action="service_addbulk.php">
+		<form method="POST" action="service_addbulk.php" onsubmit="return Validate()">
 			<input type="hidden" name="Account">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
@@ -76,6 +77,10 @@
 							<xsl:for-each select="/Response/CostCentres/Record/Id">
 								<xsl:sort select="./Name" />						
 									<option>
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="../Id" />
+										</xsl:attribute>
 										<xsl:value-of select="../Name" />
 									</option>
 							</xsl:for-each>
@@ -136,21 +141,17 @@
 								</xsl:if>
 							</xsl:for-each>
 					</select>
-					<!--<input type="button" value="View Plan Details &#0187;" class="input-submit" 
-								title="Viewing Plan Details" alt="Information about Charges incurred on this Plan"
-								onclick="window.open ('rates_plan_summary.php?Id=' + document.getElementById ('rateplans_1').options [document.getElementById ('rateplans_1').options.selectedIndex].value, '', '')" />
-					-->		
 					<tbody id="inputs">
 						<tr>
-						<td><input type="hidden" id="inputCount" value="0"/></td>
-						<th class="JustifiedWidth">
+						<td></td>
+						<th class="JustifiedWidth" style='width:120px'>
 							<strong><span class="Red">*</span></strong>
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Service')" />
 								<xsl:with-param name="field" select="string('FNN')" />
 							</xsl:call-template>
 						</th>
-						<th class="JustifiedWidth">
+						<th class="JustifiedWidth" style='width:120px'>
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Service')" />
 								<xsl:with-param name="field" select="string('RepeatFNN')" />
@@ -180,9 +181,9 @@
 			</div>
 			
 			<div class="Right">
-				<input type="button" value="Test" class="input-submit" onclick="Init();"/>
+				<input type="button" value="Test" class="input-submit" onclick="Test();"/>
 				<input type="button" value="More" class="input-submit" onclick="AddManyInput(1);"/>
-				<input type="submit" value="Continue &#0187;" class="input-submit" />
+				<input type="button" value="Submit &#0187;" class="input-submit" onclick="Submit();"/>
 			</div>
 		
 		<div class="Seperator"></div>
