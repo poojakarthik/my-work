@@ -206,6 +206,10 @@
  			
  			$strContent = $mimMimeEmail->get();
  			$arrHeaders = $mimMimeEmail->headers($arrExtraHeaders);
+ 			
+			// Update sequence no
+			$this->_updSetSequence->Execute(Array('Value' => $this->_intSequenceNo), Array('Name' => "OptusBatchNo", 'Module' => "Optus"));
+			// 679 is the starting sequence no
 			
 			// Email to Optus (as an attachment)
 			//mail_attachment("provisioning@voiptel.com.au", "rich@voiptelsystems.com.au", "Activation File", "Attached: Telco Blue Automatically Generated Barring Request File", OPTUS_LOCAL_PRESELECTION_DIR.$strPreselectionFilename)
@@ -216,14 +220,6 @@
 				return FALSE;
 			}
 		}
-		else
-		{
-			return TRUE;
-		}
-		
-		// Update sequence no
-		$this->_updSetSequence->Execute(Array('Value' => $this->_intSequenceNo), Array('Name' => "OptusBatchNo", 'Module' => "Optus"));
-		// 679 is the starting sequence no
 		
 		// Return the number of records uploaded
 		return $intNumPreselectionRecords;

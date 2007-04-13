@@ -330,7 +330,7 @@
 		// for each request
 		foreach($arrRequests as $arrRequest)
 		{
-			$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
+			//$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
 			
 			switch ($arrRequest['Carrier'])
 			{
@@ -354,6 +354,7 @@
 							break;
 						
 						default:
+							$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
 							continue 3;
 					}
@@ -393,6 +394,7 @@
 							break;*/
 							
 						default:
+							$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
 							$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
 							continue 3;
 					}
@@ -402,6 +404,7 @@
 					$this->_prvCurrentModule = $this->_arrProvisioningModules[PRV_AAPT_EOE];
 					break;*/
 				default:
+					$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
 					$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: No module found!");
 					continue 2;
 			}
@@ -411,6 +414,7 @@
 			$mixResponse = $this->_prvCurrentModule->BuildRequest($arrRequest);
 			if(!$mixResponse || is_int($mixResponse))
 			{
+				$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
 				switch ($mixResponse)
 				{
 					case REQUEST_STATUS_REJECTED:
@@ -444,11 +448,12 @@
 				if ($this->_prvCurrentModule->AddToProvisioningLog() !== FALSE)
 				{
 					// set status of request in db
-					$this->_rptProvisioningReport->AddMessage("[   OK   ]");
+					//$this->_rptProvisioningReport->AddMessage("[   OK   ]");
 					$arrRequest['Status']		= REQUEST_STATUS_PENDING;
 				}
 				else
 				{
+					$this->_rptProvisioningReport->AddMessage("\t+ Building Request #{$arrRequest['Id']} ...\t\t\t\t", FALSE);
 					$this->_rptProvisioningReport->AddMessage("[ FAILED ]\n\t\t- Reason: Unable to add to log");
 				}
 			}
@@ -466,10 +471,17 @@
 			if (method_exists($prvModule, "SendRequest"))
 			{
 				$this->_rptProvisioningReport->AddMessage("\t+ Sending Requests for ".str_pad(GetConstantDescription($intKey, 'ProvisioningType'), 30, " ", STR_PAD_RIGHT), FALSE);
-				if ($prvModule->SendRequest() !== FALSE)
+				if (($intCount = $prvModule->SendRequest()) !== FALSE)
 				{
-					$this->_rptProvisioningReport->AddMessage("\t[   OK   ]");
-					$intStatus = PROVISIONING_FILE_SENT;
+					if ($intCount)
+					{
+						$this->_rptProvisioningReport->AddMessage("\t[   OK   ]");
+						$intStatus = PROVISIONING_FILE_SENT;
+					}
+					else
+					{
+						$this->_rptProvisioningReport->AddMessage("\t[  SKIP  ]");
+					}
 				}
 				else
 				{
@@ -479,7 +491,7 @@
 			}
 			
 			// Add to ProvisioningExport
-			if (method_exists($prvModule, "AddToProvisioningExport"))
+			if (method_exists($prvModule, "AddToProvisioningExport") && $intCount !== 0)
 			{
 				$prvModule->AddToProvisioningExport($intStatus);
 			}
