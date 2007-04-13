@@ -96,7 +96,7 @@
 		$arrColumns[]					= "TotalOwing";
 		$this->_selLastBills			= new StatementSelect(	"Invoice",
 																$arrColumns,
-																"Account = <Account>",
+																"Account = <Account> AND CreatedOn < <CreatedOn>",
 																"CreatedOn DESC",
 																BILL_PRINT_HISTORY_LIMIT - 1);
 		/*														
@@ -333,15 +333,18 @@
 			return FALSE;
 		}
 		
-		$bolHasBillHistory	= $this->_selLastBills->Execute(Array('Account' => $arrInvoiceDetails['Account'])) ? TRUE : FALSE;
+		$arrWhere = Array();
+		$arrWhere['Account']	= $arrInvoiceDetails['Account'];
+		$arrWhere['CreatedOn']	= $arrInvoiceDetails['CreatedOn'];
+		$bolHasBillHistory	= $this->_selLastBills->Execute($arrWhere) ? TRUE : FALSE;
 		$arrCustomerData	= $this->_selCustomerDetails->Fetch();
 		$arrBillHistory		= $this->_selLastBills->FetchAll();
 		
 		// build output
 		$arrDefine['InvoiceDetails']	['InvoiceGroup']	['Value']	= $arrCustomerData['CustomerGroup'];
 		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
-		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month", time()));	// FIXME: At a later date.  This is fine for now.
-		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y");
+		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month", strtotime($arrInvoiceDetails['CreatedOn'])));
+		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y", strtotime($arrInvoiceDetails['CreatedOn']));
 		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
 		if($bolHasBillHistory)
 		{
@@ -408,7 +411,7 @@
 			$this->_arrFileData[] = $arrDefine['GraphData'];
 			$intCount++;
 		}
-		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime("-1 month", time()));
+		$arrDefine['GraphData']		['Title']			['Value']	= date("M y", strtotime("-1 month", strtotime($arrInvoiceDetails['CreatedOn'])));
 		$arrDefine['GraphData']		['Value1']			['Value']	= $arrInvoiceDetails['Total'] + $arrInvoiceDetails['Tax'];
 		$this->_arrFileData[] = $arrDefine['GraphData'];
 		$this->_arrFileData[] = $arrDefine['GraphFooter'];
