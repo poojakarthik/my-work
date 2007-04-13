@@ -172,4 +172,33 @@ $arrScript                                                      = Array();
 	$arrConfig['Script']['Collection']         = $arrScript;
 */
 
+// Provisioning Export
+$arrScript                                                      = Array();
+	
+	// StartTime
+	//              Int             Earliest time that the script can run during the day
+	//                              Time in seconds from 00:00:00
+	$arrScript['StartTime']                 =       25200;	// 0700
+	
+	// FinishTime
+	//              Int             optional Latest time that the script can run during the day
+	//                              Time in seconds from 00:00:00
+	//                              Defaults to 86400 (24:00:00:00)
+	$arrScript['FinishTime']                =       72000;	// 2000
+	
+	// Interval
+	//              Int             Interval time in seconds.
+	//                              Script will be run every Interval seconds.
+	$arrScript['Interval']                  =       3600;	// 1 hour
+	
+	// Command
+	//              String  Command to run the script (include full path to script).
+	$arrScript['Command']                   =       'php /usr/share/vixen/provisioning_app/provisioning_export.php';
+	
+	// Directory
+	//              String  optional Directory to run the script in.
+	$arrScript['Directory']                 =       '/usr/share/vixen/provisioning_app/';
+	
+	$arrConfig['Script']['Collection']         = $arrScript;
+
 ?>
