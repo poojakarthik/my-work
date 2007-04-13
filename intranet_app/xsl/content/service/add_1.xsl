@@ -11,7 +11,7 @@
 		<h1>Add Service</h1>
 		<script language="javascript" src="js/service_add_input.js" onload="Init()"></script>
 		<script language="javascript" src="js/ABN.js"></script>
-		<script language="javascript" src="js/provisioning.js" onload="ShowBusiness()"></script>
+		<script language="javascript" src="js/provisioning.js"></script>
 		<script language="javascript" src="js/ajax.js"></script>
 		
 		<form method="POST" action="service_addbulk.php" onsubmit="return Validate()">

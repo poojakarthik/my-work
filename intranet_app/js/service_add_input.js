@@ -10,6 +10,7 @@ function Init()
 		inputCount = 0;
 		AddManyInput(5);
 		document.getElementById ("provisioningDetails").style.display="none";
+		ShowBusiness();
 		}
 	else {
 		setTimeout("Init()",100);
