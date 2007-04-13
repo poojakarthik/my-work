@@ -269,8 +269,8 @@
 				}
 				
 				// End the Report, and send it off
-				$this->_rptCollectionReport->AddMessageVariables(MSG_TOTALS, Array('<TotalFiles>' => $intCounter, '<Time>' => $this->Framework->Uptime()), TRUE, FALSE);
-								
+				$this->_rptCollectionReport->AddMessage(" * Imported $intCounter files in ".$this->Framework->LapWatch()." seconds\n", TRUE, TRUE);
+				
 				// disconnect
 				$dldDownloader->Disconnect();
 			}
