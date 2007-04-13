@@ -504,8 +504,8 @@ $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "DirectDebit JOIN Account ON (Account.DirectDebit = DirectDebit.Id) JOIN Invoice ON (Account.Id = Invoice.Account)";
 //$arrDataReport['SQLWhere']		= "DirectDebit.Archived = 0 AND Invoice.Balance > 0 AND Invoice.AccountBalance >= 0 AND Invoice.DueOn BETWEEN '$strStartDate' AND SUBDATE(ADDDATE('$strStartDate', INTERVAL 1 MONTH), INTERVAL 1 DAY)";
-$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND DirectDebit.Archived = 0 AND Invoice.Balance > 0 AND Account.BillingType = 1 AND Invoice.DueOn <= CURDATE()";
-$arrDataReport['SQLGroupBy']	= "Invoice.Account\n HAVING SUM(Invoice.Balance) > 3";
+$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND DirectDebit.Archived = 0 AND Account.BillingType = 1 AND Invoice.DueOn <= CURDATE()";
+$arrDataReport['SQLGroupBy']	= "Invoice.Account\n HAVING SUM(Invoice.Balance) > 5";
 
 // Documentation Reqs
 $arrDocReqs = Array();
@@ -518,7 +518,7 @@ $arrSQLSelect['BSB']					= "LPAD(DirectDebit.BSB, 6, '0')";
 $arrSQLSelect['Bank Account Number']	= "DirectDebit.AccountNumber";
 $arrSQLSelect['Account Name']			= "DirectDebit.AccountName";
 //$arrSQLSelect['Amount Charged']			= "Invoice.Balance";
-$arrSQLSelect['Amount Charged']			= "SUM(Invoice.Balance)";
+$arrSQLSelect['Amount Charged']			= "CAST(ROUND(SUM(Invoice.Balance * 100)) AS SIGNED)";
 $arrSQLSelect['Account Number']			= "Account.Id";
 $arrSQLSelect['Customer Name']			= "Account.BusinessName";
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
@@ -542,8 +542,8 @@ $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
 $arrDataReport['SQLTable']		= "CreditCard JOIN Account ON (Account.CreditCard = CreditCard.Id) JOIN Invoice ON (Account.Id = Invoice.Account)";
 //$arrDataReport['SQLWhere']		= "CreditCard.Archived = 0 AND Invoice.Balance > 0 AND Invoice.AccountBalance >= 0 AND Invoice.DueOn BETWEEN '$strStartDate' AND SUBDATE(ADDDATE('$strStartDate', INTERVAL 1 MONTH), INTERVAL 1 DAY)";
-$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND CreditCard.Archived = 0 AND Invoice.Balance > 0 AND Account.BillingType = 2 AND Invoice.DueOn <= CURDATE()";
-$arrDataReport['SQLGroupBy']	= "Invoice.Account\n HAVING SUM(Invoice.Balance) > 3";
+$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND CreditCard.Archived = 0 AND Account.BillingType = 2 AND Invoice.DueOn <= CURDATE()";
+$arrDataReport['SQLGroupBy']	= "Invoice.Account\n HAVING SUM(Invoice.Balance) > 5";
 
 // Documentation Reqs
 $arrDocReqs = Array();
@@ -553,9 +553,9 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 // SQL Select
 $arrSQLSelect = Array();
 $arrSQLSelect['CC Number']				= "REPLACE(CreditCard.CardNumber, ' ', '')";
-$arrSQLSelect['Expiry Date']			= "CONCAT(CreditCard.ExpMonth, '/', CreditCard.ExpYear)";
+$arrSQLSelect['Expiry Date']			= "CONCAT(LPAD(CreditCard.ExpMonth, 2, '00'), '/', LPAD(SUBSTR(LPAD(CreditCard.ExpYear, 4, '2000'), -2), 2, '0'))";
 //$arrSQLSelect['Amount Charged']			= "Invoice.Balance";
-$arrSQLSelect['Amount Charged']			= "SUM(Invoice.Balance)";
+$arrSQLSelect['Amount Charged']			= "CAST(ROUND(SUM(Invoice.Balance * 100)) AS SIGNED)";
 $arrSQLSelect['Account Number']			= "Account.Id";
 $arrSQLSelect['Customer Name']			= "Account.BusinessName";
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
@@ -699,7 +699,7 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Field'	=> "EndDateRange",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-*/
+*//*
 //----------------------------------------------------------------------------//
 // Unrated CDR Summary in a Date Period
 //----------------------------------------------------------------------------//
@@ -754,7 +754,7 @@ $arrSQLFields['EndDate']	= Array(
 										'Documentation-Field'	=> "EndDateRange",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
-
+*/
 
 //Debug($arrDataReport);
 //die;
