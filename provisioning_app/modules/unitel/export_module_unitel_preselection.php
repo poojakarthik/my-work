@@ -205,18 +205,19 @@
 		$strPreselectionFooterRow	= "99".str_pad($intNumPreselectionRecords, 7, "0", STR_PAD_LEFT);
 		
 		// Create Local Preselection File
+		$strLineDelimiter = "\n";
 		if($intNumPreselectionRecords > 0)
 		{
 			$this->_bolSending	= TRUE;
 			
 			// Only do this if there are records to write
 			$resPreselectionFile = fopen(UNITEL_LOCAL_PRESELECTION_DIR.$strPreselectionFilename, "w");
-			fwrite($resPreselectionFile, $strPreselectionHeaderRow."\r\n");
+			fwrite($resPreselectionFile, $strPreselectionHeaderRow."$strLineDelimiter");
 			
 			foreach($this->_arrPreselectionRecords as $arrRecord)
 			{
 				$strRecord = implode($arrRecord);
-				fwrite($resPreselectionFile, $strRecord."\r\n");
+				fwrite($resPreselectionFile, $strRecord."$strLineDelimiter");
 			}
 			
 			fwrite($resPreselectionFile, $strPreselectionFooterRow);
