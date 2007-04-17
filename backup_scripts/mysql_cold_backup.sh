@@ -63,9 +63,6 @@ cp -Rip $MYSQL_DIR/$DATABASE_NAME/* $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/
 # Copy the MySQL database
 cp -Rip $MYSQL_DIR/mysql $BACKUP_DIR/$BACKUP_NAME/
 
-# Copy the binary logs
-cp -ip $LOG_DIR/* $BACKUP_DIR/$BACKUP_NAME/$DATABASE_NAME/log/
-
 # Restart the MySQL server
 /etc/init.d/mysql start
 
