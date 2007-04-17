@@ -4,8 +4,6 @@
 
 // tables to be skipped
 $arrSkipTables = Array();
-$arrSkipTables['CDR']	= TRUE;
-
 
 // require application loader
 require_once('application_loader.php');
