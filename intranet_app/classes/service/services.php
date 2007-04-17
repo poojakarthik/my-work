@@ -93,6 +93,40 @@
 		}
 		
 		//------------------------------------------------------------------------//
+		// DoesFNNExist
+		//------------------------------------------------------------------------//
+		/**
+		 * DoesFNNExist()
+		 *
+		 * Retrieves an Unarchived Service based on its FNN
+		 *
+		 * Retrieves an Unarchived Service based on its FNN
+		 *
+		 * @param	String		$strFNN		The Full National Number of the Service
+		 * @return	Service
+		 *
+		 * @method
+		 */
+		
+		public static function DoesFNNExist ($strFNN)
+		{
+			// Search for the Serivce
+			$selService = new StatementSelect ('Service', 'Id', 'FNN = <FNN> AND Now() >= CreatedOn AND (ClosedOn IS NULL OR ClosedOn <= Now())', null, 1);
+			$selService->Execute (Array ('FNN' => $strFNN));
+			
+			// If it wasn't found - throw an error
+			if ($selService->Count () <> 1)
+			{
+				return 0;
+			}
+			else
+			{			
+				$arrService = $selService->Fetch ();
+				return $arrService ['Id'];
+			}
+		}
+		
+		//------------------------------------------------------------------------//
 		// Add
 		//------------------------------------------------------------------------//
 		/**

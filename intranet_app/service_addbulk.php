@@ -26,15 +26,18 @@
 	$docDocumentation->Explain ('Service Address');
 	$docDocumentation->Explain ('Carrier');
 	$docDocumentation->Explain ('Provisioning');
-	
-	$results=AjaxRecieve();
-	if ($results)
+			
+	$objResults = AjaxRecieve();
+	if ($objResults)
 	{
+		//$hello = $objResults;
+		//$hey = print_r($hello, true);
 		// if this page was called by ajax
 		// do something with the results
 		
 		/* $results format:
 			[$results] - 	[serviceCount]
+							[account]
 							[service1] - 	[FNN]
 											[CostCentre]
 											[Plan]
@@ -42,50 +45,48 @@
 								|
 							[serviceN]
 		*/
-		
-		//try
-		//{
-			/*$srvService = Services::Add (
-				$athAuthentication->AuthenticatedEmployee (),
-				$actAccount,
-				$rrpPlan,
-				Array (
-					"FNN"					=> $oblstrFNN_1->getValue (),
-					"Indial100"				=> isset ($_POST ['Indial100']) ? TRUE : FALSE,
-					"CostCentre"			=> $_POST ['CostCentre'],
-					"ServiceType"			=> $_POST ['ServiceType']
-				)
-			);
-			
-			header ("Location: service_view.php?Id=" . $srvService->Pull ('Id')->getValue ());
-			*/
-			/*
-			// Get the Rate Plan. If it doesn't exist
-			// then this is an error
-			try
+		$actAccount = $Style->attachObject (new Account ($objResults->account));
+		for ($i=1; $i<=$objResults->serviceCount; $i++)
+		{		
+			$Tester = Services::DoesFNNExist($objResults->{"service$i"}->FNN);
+			if ($Tester <> 0)
 			{
-				$rrpPlan = new RatePlan ($_POST ['RatePlan']);
+				AjaxReply("The service " . $objResults->{"service$i"}->FNN . " already exists. Please enter a different number.");
+				exit;
 			}
-			catch (Exception $e)
+			else if (!$objResults->{"service$i"}->Plan)
 			{
-				$oblstrError->setValue ('Rate Plan Invalid');
+				AjaxReply("The service " . $objResults->{"service$i"}->FNN . " does not have a plan selected.");
+				exit;
 			}
-			
-			
-			$srvService = Services::Add (
-				$athAuthentication->AuthenticatedEmployee (),
-				$actAccount,
-				$
-			exit;
+			else
+			{
+				try
+				{
+					$rrpPlan = new RatePlan ($objResults->{"service$i"}->Plan);
+					$srvService = Services::Add (
+						$athAuthentication->AuthenticatedEmployee (),
+						$actAccount,
+						$rrpPlan,
+						Array (
+							"FNN"					=> $objResults->{"service$i"}->FNN,
+							"Indial100"				=> FALSE,
+							"CostCentre"			=> $objResults->{"service$i"}->CostCentre,
+							"ServiceType"			=> ServiceType($objResults->{"service$i"}->FNN)
+						)
+					);
+				}
+				catch (Exception $e)
+				{
+					AjaxReply("Error");
+					exit;
+				}
+			}
 		}
-		catch (Exception $e)
-		{
-			AjaxReply($e->getMessage ());
-			exit;
-		}*/
+		
 
 		// Send stuff back to ajax
-		AjaxReply($results);
+		AjaxReply($objResults);
 		exit;
 	}
 
@@ -100,6 +101,7 @@
 		exit;
 	}
 		
+
 	// Provisioning Selection Options
 	$Style->attachObject (new ServiceAddressTypes		( ));
 	$Style->attachObject (new ServiceStreetTypes		( ));

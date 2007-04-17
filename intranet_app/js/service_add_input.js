@@ -227,6 +227,7 @@ function Validate()
 	*/
 	
 	objSendData.serviceCount = 0;
+	objSendData.account = document.getElementById("Account").value;
 	var numGood = 0;
 	var numBad = 0;
 	for (count=1; count <= inputCount; count++)
@@ -244,8 +245,7 @@ function Validate()
 			objSendData.serviceCount++;
 			objSendData["service" + count] = { 	"FNN" 			: servicebox.value, 
 												"CostCentre" 	: ccinput.options[ccinput.selectedIndex].value,
-												"Plan"			: rpinput.options[rpinput.selectedIndex].value,
-												"Type"			: ""};
+												"Plan"			: rpinput.options[rpinput.selectedIndex].value};
 			numGood++;
 		}
 		else if (link.title == "")
@@ -310,22 +310,16 @@ function ajaxHandler(object)
 	// now we have the results back from php
 	// do something to inform user
 
-	alert(object["service1"]["FNN"] + ":" + object["service1"]["CostCentre"] + ":" + object["service1"]["Plan"]);
-	
+	alert(object);
+	/*var tobealerted = "";
+	for (i=1; i<=object["serviceCount"]; i++)
+	{
+		tobealerted = tobealerted + "\r\n" + object["service" + i]["FNN"] + ":" + object["service" + i]["CostCentre"] + ":" + object["service" + i]["Plan"] + ":" + object["service" + i]["Type"] + ";";
+	}
+	alert(tobealerted);*/
 }
 
-function Test()
+function ajaxError(er, reply)
 {
-	for (count=1; count <= 3; count++)
-	{
-		var servicebox=document.getElementById("service_" + count);
-		var confirmbox=document.getElementById("confirm_" + count);
-		servicebox.value = "0439077876";
-		confirmbox.value = servicebox.value;
-		
-	}
-	CheckInput(1);
-	CheckInput(2);
-	CheckInput(3);
-	
+	alert(reply);
 }

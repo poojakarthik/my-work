@@ -15,7 +15,7 @@
 		<script language="javascript" src="js/ajax.js"></script>
 		
 		<form method="POST" action="service_addbulk.php" onsubmit="return Validate()">
-			<input type="hidden" name="Account">
+			<input type="hidden" name="Account" id="Account">
 				<xsl:attribute name="value">
 					<xsl:text></xsl:text>
 					<xsl:value-of select="/Response/Account/Id" />
@@ -152,6 +152,7 @@
 							</xsl:call-template>
 						</th>
 						<th class="JustifiedWidth" style='width:120px'>
+						<strong><span class="Red">*</span></strong>
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Service')" />
 								<xsl:with-param name="field" select="string('RepeatFNN')" />
@@ -165,6 +166,7 @@
 							</xsl:call-template>
 						</th>
 						<th class="JustifiedWidth">
+						<strong><span class="Red">*</span></strong>
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Rate Plan')" />
 									<xsl:with-param name="field" select="string('SelectPlan')" />
@@ -181,7 +183,6 @@
 			</div>
 			
 			<div class="Right">
-				<input type="button" value="Test" class="input-submit" onclick="Test();"/>
 				<input type="button" value="More" class="input-submit" onclick="AddManyInput(1);"/>
 				<input type="button" value="Submit &#0187;" class="input-submit" onclick="Submit();"/>
 			</div>

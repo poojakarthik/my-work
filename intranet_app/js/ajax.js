@@ -290,7 +290,7 @@ function handle_reply(reply)
 	}
 	catch(er)
 	{
-		ajaxError(er);
+		ajaxError(er, reply);
 	}
 
 	// clean up
