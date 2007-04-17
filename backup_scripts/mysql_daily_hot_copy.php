@@ -4,8 +4,12 @@
 
 // tables to be skipped
 $arrSkipTables = Array();
-$arrSkipTables['CDR']	= TRUE;
-
+$arrSkipTables['CDR']					= TRUE;
+$arrSkipTables['CDRECreditLink']		= TRUE;
+$arrSkipTables['CDREtech']				= TRUE;
+$arrSkipTables['InvoiceOutput']			= TRUE;
+$arrSkipTables['InvoiceOutputArchive']	= TRUE;
+$arrSkipTables['InvoiceOutputTemp']		= TRUE;
 
 // require application loader
 require_once('application_loader.php');

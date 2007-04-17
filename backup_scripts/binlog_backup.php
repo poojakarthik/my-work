@@ -1,30 +1,33 @@
 <?php
 //Set directories
-$LogFileDir = "/var/log/mysql";
-$BackupDir = "/home/tyson/LogFileBackup";
+$strLogFileDir = "/var/log/mysql";
+$strBackupDir = "/home/backup/mysql_bin_logs";
+
+//Make Backup Dir
+mkdir($strBackupDir, 0700, TRUE);
 
 //Get file lists
-$LogFiles = scandir($LogFileDir);
-$BackupFiles = scandir($BackupDir);
+$arrLogFiles = scandir($strLogFileDir);
+$arrBackupFiles = scandir($strBackupDir);
 
 //read index file
-$IndexFile = file("$LogFileDir/mysql-bin.index");
-$CurrentLog = trim(end(explode("/", end($IndexFile))));
+$arrIndexFile = file("$strLogFileDir/mysql-bin.index");
+$strCurrentLog = trim(end(explode("/", end($arrIndexFile))));
 
 
 //remove index and current log file from file list
-$Remove = array($CurrentLog, "mysql-bin.index");
-$LogFiles = array_diff($LogFiles, $Remove);
+$arrRemove = array($strCurrentLog, "mysql-bin.index");
+$arrLogFiles = array_diff($arrLogFiles, $arrRemove);
 
 //copy each file that doesnt exist in the backup directory
-foreach ($LogFiles AS $LogFile)
+foreach ($arrLogFiles AS $strLogFile)
 {
-	If(!file_exists("$BackupDir/$LogFile"))
+	If(!file_exists("$strBackupDir/$strLogFile"))
 	{
-		echo "Copying $LogFile\n";
-		if (!copy("$LogFileDir/$LogFile", "$BackupDir/$LogFile")) 
+		echo "Copying $strLogFile\n";
+		if (!copy("$strLogFileDir/$strLogFile", "$strBackupDir/$strLogFile")) 
 		{
-   			echo "\tFailed to copy $LogFile...\n";
+   			echo "\tFailed to copy $strLogFile...\n";
 		}
 	}
 }

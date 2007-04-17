@@ -11,6 +11,9 @@ $qctCopyTable = new QueryListTables();
 // get tables from vixen
 $arrTables = $qctCopyTable->Execute('vixen');
 
+// set up copy table object
+$qctCopyTable = new QueryCopyTable();
+
 // clean tables list
 foreach($arrTables AS $mixKey=>$strTable)
 {
@@ -26,8 +29,6 @@ foreach($arrTables AS $mixKey=>$strTable)
 	else
 	{
 		echo "copy table : $strTable\n";
-		// set up copy table object
-		$qctCopyTable = new QueryCopyTable();
 		
 		// copy a table
 		$qctCopyTable->Execute($strTable, "vixen.$strTable");
