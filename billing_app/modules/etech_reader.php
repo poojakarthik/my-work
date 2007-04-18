@@ -293,7 +293,7 @@
 			$this->arrData['Invoice']			= $this->_arrStatus['Invoice'];
 			$this->arrData['StartDatetime']		= $arrLine['Datetime'];
 			$this->arrData['Destination']		= $arrLine['CalledParty'];
-			$this->arrData['Units']				= $intMinutesInSeconds + (int)$arrDuration[1];
+			$this->arrData['Units']				= (int)$intMinutesInSeconds + (int)$arrDuration[1];
 			$this->arrData['Charge']			= (float)$arrLine['Charge'];
 		}
 		
@@ -376,7 +376,7 @@
 				// LANDLINE -> NATIONAL
 				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
 				$this->arrData['RecordType']	= 19;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -384,7 +384,7 @@
 				// LANDLINE -> 13/1300
 				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
 				$this->arrData['RecordType']	= 24;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -392,7 +392,7 @@
 				// LANDLINE -> MOBILE
 				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
 				$this->arrData['RecordType']	= 20;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -400,7 +400,7 @@
 				// LANDLINE -> IDD
 				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
 				$this->arrData['RecordType']	= 28;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -408,7 +408,7 @@
 				// MOBILE -> MOBILE
 				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
 				$this->arrData['RecordType']	= 2;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -416,7 +416,7 @@
 				// MOBILE -> NATIONAL
 				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
 				$this->arrData['RecordType']	= 6;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -424,7 +424,7 @@
 				// MOBILE OTHER
 				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
 				$this->arrData['RecordType']	= 16;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -432,7 +432,7 @@
 				// MOBILE ROAMING
 				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
 				$this->arrData['RecordType']	= 11;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -440,7 +440,7 @@
 				// MOBILE -> IDD
 				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
 				$this->arrData['RecordType']	= 27;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -448,7 +448,7 @@
 				// MOBILE -> 1800
 				$this->arrData['ServiceType']	= SERVICE_TYPE_MOBILE;
 				$this->arrData['RecordType']	= 7;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -456,7 +456,7 @@
 				// 13/1300 <- IDD
 				$this->arrData['ServiceType']	= SERVICE_TYPE_INBOUND;
 				$this->arrData['RecordType']	= 29;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -464,7 +464,7 @@
 				// LANDLINE OTHER
 				$this->arrData['ServiceType']	= SERVICE_TYPE_LAND_LINE;
 				$this->arrData['RecordType']	= 26;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -472,7 +472,7 @@
 				// 1800 <- ALL
 				$this->arrData['ServiceType']	= SERVICE_TYPE_INBOUND;
 				$this->arrData['RecordType']	= 35;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -480,7 +480,7 @@
 				// 13/1300 <- ALL
 				$this->arrData['ServiceType']	= SERVICE_TYPE_INBOUND;
 				$this->arrData['RecordType']	= 35;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+ {$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;
@@ -506,7 +506,7 @@
 				// UNKNOWN
 				$this->arrData['ServiceType']	= ServiceType($this->arrData['FNN']);
 				$this->arrData['RecordType']	= 0;
-				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime("$this->arrData['StartDatetime']")));
+				$this->arrData['EndDatetime']	= date("Y-m-d H:i:s", strtotime("+{$this->arrData['Units']} seconds", strtotime($this->arrData['StartDatetime'])));
 				
 				// we have all of the data we need, so return back to FetchNext()
 				return;

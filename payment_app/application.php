@@ -658,6 +658,61 @@
 		}
 		*/
 	 }
+	 
+	 
+	 
+	//------------------------------------------------------------------------//
+	// ReversePayment
+	//------------------------------------------------------------------------//
+	/**
+	 * ReversePayment()
+	 *
+	 * Reverses a specified Payment
+	 *
+	 * Reverses a specified Payment
+	 * 
+	 * @param	integer	$intPayment		the Id of the Payment to reverse
+	 *
+	 * @return
+	 *
+	 * @method
+	 */
+	 function ReversePayment($intPayment)
+	 {
+	 	// Check validity 	
+	 	if (!is_int($intPayment) || !$intPayment)
+	 	{
+	 		return FALSE;
+	 	}
+	 	
+	 	// Find all InvoicePayments
+	 	// TODO: Write Query
+	 	$selInvoicePayments->Execute();
+	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
+	 	foreach ($arrInvoicePayments as $arrInvoicePayment)
+	 	{
+			// Add to Invoice Balance
+			$arrData = Array();
+			$arrData['Id']	= $arrInvoicePayment['Invoice'];
+			$arrData['Balance']	= new MySQLFunction("Balance + <Payment>", Array('Payment' => $arrInvoicePayment['Amount']));
+			// TODO: Write Query
+			$ubiInvoice->Execute($arrData);
+			
+			// Remove InvoicePayment
+			// TODO: Write Query
+			$qryDelete->Execute("DELETE FROM InvoicePayment WHERE Id = {$arrInvoicePayment['Id']}");
+	 	}
+	 	
+	 	// Set Payment Balance to Amount and set status to Reversed
+		$arrData = Array();
+		$arrData['Id']		= $intPayment;
+		$arrData['Balance']	= new MySQLFunction('Amount');
+		$arrData['Status']	= PAYMENT_REVERSED;
+		// TODO: Write Query
+		$ubiPayment->Execute($arrData);
+		
+		return TRUE;
+	 }
  }
 
 

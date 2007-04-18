@@ -112,7 +112,7 @@
 		$arrInsertData['Total']				= NULL;
 		$arrInsertData['Tax']				= NULL;
 		$arrInsertData['AccountBalance']	= NULL;
-		$this->_ubiInvoice	= new StatementUpdateById("Invoice", $arrInsertData); 
+		$this->_ubiInvoice	= new StatementUpdateById("Invoice", $arrInsertData);
 		
 		$arrUpdateData = Array();
 		$arrUpdateData['TotalOwing']		= NULL;
@@ -187,6 +187,34 @@
 		$arrInsertData['AccountBalance']	= $arrInvoice['AccountBalance'];
 		
 		return (bool)$this->_ubiInvoice->Execute($arrInsertData);
+	}
+	
+	//------------------------------------------------------------------------//
+	// MatchInvoices
+	//------------------------------------------------------------------------//
+	/**
+	 * MatchInvoices()
+	 *
+	 * Matches an Etech Invoice to the Invoice table
+	 *
+	 * Matches an Etech Invoice to the Invoice table
+	 * 
+	 * @param	array	$arrInvoices	indexed array of Invoice Numbers
+	 *
+	 * @return			array			associative array of Invoices that are missing
+	 *
+	 * @method
+	 */
+ 	function MatchInvoices($arrInvoices)
+ 	{
+		// Find InvoiceRun
+		$strInvoiceRun = $this->FindInvoiceRun($arrInvoices[0]);
+		
+		// Match
+		$strInvoices = implode(', ', $arrInvoices);
+		$this->_selMatchInvoice	= new StatementSelect("Invoice", "Id", "Id NOT IN ($strInvoices) AND InvoiceRun = '$strInvoiceRun'");
+		$this->_selMatchInvoice->Execute();
+		return $this->_selMatchInvoice->FetchAll();
 	}
 	
 	//------------------------------------------------------------------------//

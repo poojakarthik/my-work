@@ -32,12 +32,17 @@ if (!function_exists("CliEcho"))
 CliEcho("STARTING");
 
 // set location of files
-$arrFilePath = glob("/home/vixen/etech_bills/2007/01/inv_telcoblue_*.txt");
+$arrFilePath = glob("/home/etech_bills/2006/11/inv_telcoblue_*.txt");	// November
+//$arrFilePath = glob("/home/etech_bills/2006/12/inv_telcoblue_*.txt");	// December
+//$arrFilePath = glob("/home/etech_bills/2007/inv_telcoblue_*.txt");		// January
+
+$arrInvoices		= Array();
+//$arrCursor			= Array('|', '/', '-', '\\');
 
 foreach($arrFilePath AS $strFilePath)
 {
 	// open file
-	CliEcho("Opening $strFilePath...");
+	CliEcho("\nOpening $strFilePath...");
 	if (!$suxEtech->OpenFile($strFilePath))
 	{
 		CliEcho("Failed to open file $strFilePath");
@@ -47,6 +52,8 @@ foreach($arrFilePath AS $strFilePath)
 	// read file
 	CliEcho("Parsing file...");
 	$intCount = 0;
+	$intCDRs = 0;
+	$intMatches = 0;
 	while($arrLine = $suxEtech->FetchNext())
 	{
 		$arrLine['_File']	= $strFilePath;
@@ -88,7 +95,7 @@ foreach($arrFilePath AS $strFilePath)
 								$arrLine['VixenCDR'] = 0;
 							}
 						}
-						
+						/*
 						// Insert etech CDR into DB
 						if (!$etbEtech->InsertEtechCDR($arrLine))
 						{
@@ -109,6 +116,17 @@ foreach($arrFilePath AS $strFilePath)
 							}
 						}
 						*/
+						
+						// Save the data
+						if ($bolMatchedInvoice)
+						{
+							// Try to match to a viXen CDR
+							// TODO
+							
+							//  
+						}
+						
+						
 						break;
 					
 					case 'ServiceTypeTotal':/*
@@ -141,7 +159,7 @@ foreach($arrFilePath AS $strFilePath)
 							{
 								CliEcho("Could not add invoice : {$arrLine['Id']}");
 							}
-						}*/
+						}
 						
 						if (!$etbEtech->UpdateTotalOwing($arrLine, '45dfe46ae67cd'))
 						{
@@ -150,7 +168,20 @@ foreach($arrFilePath AS $strFilePath)
 						else
 						{
 							CliEcho("Updated account : {$arrLine['Account']}");
-						}
+						}*/
+						
+						// Add to Invoice array
+						$arrInvoices[] = $arrLine['Id'];
+						/*
+						if (($strCursor = next($arrCursor)) === FALSE)
+						{
+							$strCursor = reset($arrCursor);
+						}*/
+						$intInvCount = count($arrInvoices);
+						$strEcho = "Parsed $intInvCount Invoices...";
+						$intLen = strlen($strEcho);
+						echo "\033[".$intLen."D".$strEcho;
+						ob_flush();
 						
 						break;
 					
@@ -173,6 +204,17 @@ foreach($arrFilePath AS $strFilePath)
 		}
 	}
 }
+
+// Match Invoices
+$arrFailedInvoices	= $etbEtech->MatchInvoices($arrInvoices);
+$intFailedInvoices	= count($arrFailedInvoices);
+$intTotalInvoices	= count($arrInvoices);
+$strInvoices = implode(', ', $arrInvoices);
+$strInvoiceRun = $etbEtech->FindInvoiceRun($arrInvoices[0]);
+$selMissingInvoices = new StatementSelect("Invoice", "COUNT(Id) AS InvCount, MIN(Total + Tax) AS MinTotal, MAX(Total + Tax) AS MaxTotal", "Id NOT IN ($strInvoices) AND InvoiceRun = '$strInvoiceRun' AND Total != 0");
+$selMissingInvoices->Execute();
+$arrData = $selMissingInvoices->Fetch();
+CliEcho("\n * $intTotalInvoices with PDFs, $intFailedInvoices without PDFs, {$arrData['InvCount']} without PDFs but non-zero Total+Tax (Min: {$arrData['MinTotal']}; Max: {$arrData['MaxTotal']})");
 
 CliEcho("\n\nDone");
 fclose($stdout);
