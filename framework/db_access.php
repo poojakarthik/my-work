@@ -1403,6 +1403,193 @@ class MySQLFunction
 		//TODO!!!! - return something usefull, rows inserted?
 	 }
  }
+ 
+//----------------------------------------------------------------------------//
+// QueryCopyTable
+//----------------------------------------------------------------------------//
+/**
+ * QueryCopyTable
+ *
+ * COPY TABLE Query
+ *
+ * Implements a COPY TABLE query using mysqli
+ * Id fields WILL be kept
+ * Fields from the source table will be inserted into the destination table
+ *
+ *
+ * @prefix		qct
+ *
+ * @package		framework
+ * @class		QueryCopyTable
+ */
+class QueryCopyTable extends Query
+{
+ 	function __construct()
+	{
+		parent::__construct();
+	}
+		
+ 	//------------------------------------------------------------------------//
+	// Execute()
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Executes the Query
+	 *
+	 * Executes the Query
+	 *
+	 * @param		string	strTableDestination		name of the table to insert into
+	 * @param		string	strTableSource			name of the table to select from
+	 * @param		string	strWhere				optional A full SQL WHERE clause, minus the keyword.
+	 * @param		string	strLimit				optional A full SQL LIMIT Clause, minus the keyword.
+	 * 
+	 * @return		bool
+	 * @method
+	 */ 
+	 function Execute($strTableDestination, $strTableSource, $strWhere = NULL, $strLimit = NULL)
+	 {
+		// Trace
+		$this->Trace("Input: $strTableDestination, $strTableSource, $strWhere, $strLimit");
+
+		// build query 1
+		$strQuery = "CREATE TABLE $strTableDestination LIKE $strTableSource";
+		
+		// Trace
+		$this->Trace("Query: ".$strQuery);
+		
+		// run query
+		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+		
+		// check result
+		if ($mixReturn !== TRUE)
+		{
+			// query failed
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
+			return FALSE;
+		}
+
+		// build query 2
+		$strQuery = "INSERT INTO $strTableDestination SELECT * FROM $strTableSource ";
+		
+		// add where clause
+		if ($strWhere)
+		{
+			$strQuery .= "WHERE " . $strWhere . "\n";
+		}
+		
+		// add limit clause
+		if ($strLimit)
+		{
+			$strQuery .= "LIMIT " . $strLimit . "\n";
+		}
+		
+		// Trace
+		$this->Trace("Query: ".$strQuery);
+		
+		// run query
+		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+
+		// check result
+		if ($mixReturn !== TRUE)
+		{
+			// query failed
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
+			return FALSE;
+		}
+
+		return TRUE;
+		//TODO!!!! - return something usefull, rows inserted?
+	 }
+}
+
+//----------------------------------------------------------------------------//
+// QueryListTables
+//----------------------------------------------------------------------------//
+/**
+ * QueryListTables
+ *
+ * LIST TABLES Query
+ *
+ * Implements a LIST TABLES query using mysqli
+ *
+ *
+ * @prefix		qlt
+ *
+ * @package		framework
+ * @class		QueryListTables
+ */
+ class QueryListTables extends Query
+ {
+ 	function __construct()
+	{
+		parent::__construct();
+	}
+		
+ 	//------------------------------------------------------------------------//
+	// Execute()
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Executes the Query
+	 *
+	 * Executes the Query
+	 *
+	 * @param		string	strDatabase		optianal name of the database to show tables for
+	 * 
+	 * @return		bool
+	 * @method
+	 */ 
+	 function Execute($strDatabase=NULL)
+	 {
+		// Trace
+		$this->Trace("Input: $strDatabase");
+
+	 	// check what we were given
+		if (is_string($strDatabase))
+		{
+			$strDatabase = " FROM $strDatabase ";
+		}
+		else
+		{
+			$strDatabase = "";
+		}
+
+		// create query
+		$strQuery = "SHOW FULL TABLES $strDatabase WHERE Table_Type != 'VIEW'";
+		
+		// Trace
+		$this->Trace("Query: $strQuery");
+		
+		// run query
+		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+		
+		// check result
+		if (!$mixReturn)
+		{
+			// we will return false
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
+			$bolReturn = FALSE;
+		}
+		
+		$arrReturn = Array();
+		
+		while($arrTable = mysqli_fetch_array($mixReturn, MYSQLI_NUM))
+		{
+			$arrReturn[$arrTable[0]] = $arrTable[0];
+		}
+		
+		return $arrReturn;
+	 }
+ }
+
+
+
+
 
 //----------------------------------------------------------------------------//
 // QueryTruncate
@@ -1419,6 +1606,80 @@ class MySQLFunction
  *
  * @package		framework
  * @class		QueryTruncate
+ */
+ class QueryTruncate extends Query
+ {
+ 	function __construct()
+	{
+		parent::__construct();
+	}
+		
+ 	//------------------------------------------------------------------------//
+	// Execute()
+	//------------------------------------------------------------------------//
+	/**
+	 * Execute()
+	 *
+	 * Executes the Query
+	 *
+	 * Executes the Query
+	 *
+	 * @param		string	strTable		string containing name of the table to truncate
+	 * 
+	 * @return		bool
+	 * @method
+	 */ 
+	 function Execute($strTable)
+	 {
+		// Trace
+		$this->Trace("Input: $strTable");
+
+	 	// check what we were given
+		if (!is_string($strTable))
+		{
+			return FALSE;
+		}
+		
+		// by default we return TRUE
+		$bolReturn = TRUE;
+
+		// create query
+		$strQuery = "TRUNCATE TABLE ".$strTable;
+		
+		// Trace
+		$this->Trace("Query: $strQuery");
+		
+		// run query
+		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+		$this->Debug($mixReturn);
+		// check result
+		if ($mixReturn !== TRUE)
+		{
+			// we will return false
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
+			$bolReturn = FALSE;
+		}
+		
+		return $bolReturn;
+	 }
+ }
+ 
+//----------------------------------------------------------------------------//
+// QueryDropTable
+//----------------------------------------------------------------------------//
+/**
+ * QueryTruncate
+ *
+ * DROP TABLE Query
+ *
+ * Implements a DROP TABLE query using mysqli
+ *
+ *
+ * @prefix		qdt
+ *
+ * @package		framework
+ * @class		QueryDropTable
  */
  class QueryTruncate extends Query
  {
