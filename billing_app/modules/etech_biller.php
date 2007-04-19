@@ -88,9 +88,8 @@
 		$this->_selMatchCDR	= new StatementSelect(	"CDR",
 													"Id, Charge, Status, RecordType",
 													"Status != ".CDR_INVOICED." AND " .
-													"FNN = <FNN> AND " .
-													"Account = <Account> AND " .
-													"Units = <Units> AND " .
+													"FNN LIKE <FNN> AND " .
+													"(Units = <Units> OR (Units = 1 AND <Units> = 0)) AND " .
 													"StartDatetime = <StartDatetime> AND " .
 													"Credit = 0",
 													NULL,

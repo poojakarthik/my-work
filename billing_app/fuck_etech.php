@@ -32,12 +32,12 @@ if (!function_exists("CliEcho"))
 CliEcho("STARTING");
 
 // set location of files
-$arrFilePath = glob("/home/etech_bills/2006/11/inv_telcoblue_*.txt");	// November
+//$arrFilePath = glob("/home/etech_bills/2006/11/inv_telcoblue_*.txt");	// November
 //$arrFilePath = glob("/home/etech_bills/2006/12/inv_telcoblue_*.txt");	// December
-//$arrFilePath = glob("/home/etech_bills/2007/inv_telcoblue_*.txt");		// January
+$arrFilePath = glob("/home/etech_bills/2007/inv_telcoblue_*.txt");		// January
 
 $arrInvoices		= Array();
-//$arrCursor			= Array('|', '/', '-', '\\');
+$arrCursor			= Array('|', '/', '-', '\\');
 
 foreach($arrFilePath AS $strFilePath)
 {
@@ -107,9 +107,8 @@ foreach($arrFilePath AS $strFilePath)
 						if ($arrCDR['Id'] && $arrCDR['Status'] == CDR_NORMALISED)
 						{
 							$arrUpdateCDR['Id'] 		= $arrCDR['Id'];
-							$arrUpdateCDR['Status'] 	= CDR_INVOICED;
+							$arrUpdateCDR['Status'] 	= CDR_ETECH_INVOICED;
 							$arrUpdateCDR['Charge'] 	= $arrLine['Charge'];
-							$arrUpdateCDR['Invoice'] 	= $arrLine['Invoice'];
 							if (!$etbEtech->UpdateCDR($arrUpdateCDR))
 							{
 								CliEcho("CDR Update Failed : {$arrCDR['Id']}");
@@ -211,11 +210,28 @@ $intFailedInvoices	= count($arrFailedInvoices);
 $intTotalInvoices	= count($arrInvoices);
 $strInvoices = implode(', ', $arrInvoices);
 $strInvoiceRun = $etbEtech->FindInvoiceRun($arrInvoices[0]);
-$selMissingInvoices = new StatementSelect("Invoice", "COUNT(Id) AS InvCount, MIN(Total + Tax) AS MinTotal, MAX(Total + Tax) AS MaxTotal", "Id NOT IN ($strInvoices) AND InvoiceRun = '$strInvoiceRun' AND Total != 0");
+$selMissingInvoices = new StatementSelect("Invoice", "Id, Account", "Id NOT IN ($strInvoices) AND InvoiceRun = '$strInvoiceRun' AND Total != 0");
 $selMissingInvoices->Execute();
-$arrData = $selMissingInvoices->Fetch();
-CliEcho("\n * $intTotalInvoices with PDFs, $intFailedInvoices without PDFs, {$arrData['InvCount']} without PDFs but non-zero Total+Tax (Min: {$arrData['MinTotal']}; Max: {$arrData['MaxTotal']})");
+$arrMissingAccounts = $selMissingInvoices->FetchAll();
+CliEcho("\n * $intTotalInvoices with PDFs, $intFailedInvoices without PDFs, ".count($arrMissingAccounts)." without PDFs but non-zero Total+Tax");
 
+$strFileName = "/home/richdavis/Desktop/january_accounts_missing_pdfs.txt";
+if (file_exists($strFileName))
+{
+	unlink($strFileName);
+}
+echo " * Writing Accounts with Missing Invoices to '$strFileName'...  ";
+$ptrFile = fopen($strFileName, "w");
+foreach ($arrMissingAccounts as $arrAccount)
+{
+	if (($strCursor = next($arrCursor)) === FALSE)
+	{
+		$strCursor = reset($arrCursor);
+	}
+	echo "\033[1D$strCursor";
+	fwrite($ptrFile, $arrAccount['Account']."\n");
+}
+echo "\n\n";
 CliEcho("\n\nDone");
 fclose($stdout);
 die;
