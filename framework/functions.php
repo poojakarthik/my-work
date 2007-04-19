@@ -1368,4 +1368,73 @@ function AjaxReply($arrReply)
 	$json = new Services_JSON();
 	echo $json->encode($arrReply);
 }
+
+
+
+// Load Framework
+function LoadFramework($strFrameworkDir=NULL)
+{
+	if (is_null($strFrameworkDir))
+	{
+		if (isset(VIXEN_BASE_DIR))
+		{
+			rtrim(VIXEN_BASE_DIR, '/').'/framework/';
+		}
+		else
+		{
+			$strFrameworkDir = "../framework/";
+		}
+	}
+	else
+	{
+		$strFrameworkDir = rtrim($strFrameworkDir, '/').'/';
+	}
+	
+	// load framework
+	require_once($strFrameworkDir."framework.php");
+	require_once($strFrameworkDir."functions.php");
+	require_once($strFrameworkDir."definitions.php");
+	require_once($strFrameworkDir."config.php");
+	require_once($strFrameworkDir."database_define.php");
+	require_once($strFrameworkDir."db_access.php");
+	require_once($strFrameworkDir."report.php");
+	require_once($strFrameworkDir."error.php");
+	require_once($strFrameworkDir."exception_vixen.php");
+	
+	// create framework instance
+	$GLOBALS['fwkFramework'] = new Framework();
+	return $GLOBALS['fwkFramework'];
+}
+
+
+// Load Application
+function LoadApplication($strApplication=NULL)
+{
+	$strApplicationDir = '';
+	
+	// no application specified
+	if (!$strApplication)
+	{
+		// load from current dir
+		$strApplicationDir = '';
+		require_once("require.php");
+		return TRUE;
+	}
+	
+	// set the base dir
+	if (isset(VIXEN_BASE_DIR))
+	{
+		$strApplicationDir = rtrim(VIXEN_BASE_DIR, '/').'/';
+	}
+	
+	// set application dir
+	$strApplicationDir .= trim($strApplication, '/').'/';
+	
+	// require application
+	require_once($strApplicationDir."require.php");
+	
+	return TRUE;
+}
+
+
 ?>

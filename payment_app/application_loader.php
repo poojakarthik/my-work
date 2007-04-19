@@ -47,39 +47,6 @@
  * @package	framework
  */
  $strFrameworkDir		= "../framework/"; 
- 
-//----------------------------------------------------------------//
-// strApplicationDir
-//----------------------------------------------------------------//
-/**
- * strApplicationDir
- *
- * full path to the application directory
- *
- * full path to the application directory, including trailing slash /
- *
- * @type	string
- * @variable
- * @package	framework
- */
- $strApplicationDir		= ""; 
- 
-//----------------------------------------------------------------//
-// strWebDir
-//----------------------------------------------------------------//
-/**
- * strWebDir
- *
- * full path to the application web directory
- *
- * full path to the application web directory, including trailing slash /
- *
- * @type	string
- * @variable
- * @package	framework
- */
- $strWebDir		= ""; 
-
 
 
 //----------------------------------------------------------------------------//
@@ -87,34 +54,9 @@
 //----------------------------------------------------------------------------//
 
 // load framework
-require_once($strFrameworkDir."framework.php");
-require_once($strFrameworkDir."functions.php");
-require_once($strFrameworkDir."definitions.php");
-require_once($strFrameworkDir."config.php");
-require_once($strFrameworkDir."database_define.php");
-require_once($strFrameworkDir."db_access.php");
-require_once($strFrameworkDir."report.php");
-require_once($strFrameworkDir."error.php");
-require_once($strFrameworkDir."exception_vixen.php");
+$framework = LoadFramework($strFrameworkDir);
 
-// create framework instance
-$GLOBALS['fwkFramework'] = new Framework();
-$framework = $GLOBALS['fwkFramework'];
-
-// load PEAR Mail classes
-require_once("Mail.php");
-require_once("Mail/mime.php");
-
-// load modules
-require_once($strApplicationDir."payment_modules/base_module.php");
-require_once($strApplicationDir."payment_modules/module_billexpress.php");
-require_once($strApplicationDir."payment_modules/module_bpay.php");
-require_once($strApplicationDir."payment_modules/module_securepay.php");
-
-// load application 
-require_once($strApplicationDir."definitions.php");
-require_once($strApplicationDir."config.php");
-require_once($strApplicationDir."database_define.php");
-require_once($strApplicationDir."application.php");
+// load application
+LoadApplication();
  
  ?>
