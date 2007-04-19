@@ -971,6 +971,8 @@ $GLOBALS['*arrConstant']	['PaymentStatus']	[205]	['Constant']	= 'PAYMENT_CANT_NO
 $GLOBALS['*arrConstant']	['PaymentStatus']	[205]	['Description']	= 'Cannot Normalise Unrecognised Row';
 $GLOBALS['*arrConstant']	['PaymentStatus']	[206]	['Constant']	= 'PAYMENT_BAD_OWNER';
 $GLOBALS['*arrConstant']	['PaymentStatus']	[206]	['Description']	= 'Cannot Match to an Account';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[250]	['Constant']	= 'PAYMENT_REVERSED';
+$GLOBALS['*arrConstant']	['PaymentStatus']	[250]	['Description']	= 'Reversed';
 
 
 // payment types
