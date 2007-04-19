@@ -295,6 +295,7 @@
 			$this->arrData['Destination']		= $arrLine['CalledParty'];
 			$this->arrData['Units']				= (int)$intMinutesInSeconds + (int)$arrDuration[1];
 			$this->arrData['Charge']			= (float)$arrLine['Charge'];
+			$this->arrData['NormalisedOn']		= date("Y-m-d H:i:s", time());
 		}
 		
 		/*if ($arrLine['RecordType'] == 40 || $arrLine['RecordType'] == 41 || $arrLine['RecordType'] == 45)
