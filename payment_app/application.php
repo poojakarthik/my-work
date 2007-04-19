@@ -673,7 +673,7 @@
 	 * 
 	 * @param	integer	$intPayment		the Id of the Payment to reverse
 	 *
-	 * @return
+	 * @return	boolean					whether the removal was successful or not
 	 *
 	 * @method
 	 */
@@ -686,20 +686,21 @@
 	 	}
 	 	
 	 	// Find all InvoicePayments
-	 	// TODO: Write Query
+	 	$selInvoicePayments = new StatementSelect("InvoicePayment JOIN Invoice ON InvoicePayment.Invoice = Invoice.Id", "InvoicePayment.*, Invoice.Balance, Invoice.Status AS Status", "Payment = $intPayment");
 	 	$selInvoicePayments->Execute();
 	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
+	 	$qryDelete = new Query();
 	 	foreach ($arrInvoicePayments as $arrInvoicePayment)
 	 	{
-			// Add to Invoice Balance
+			// Add to Invoice Balance & set new Status
 			$arrData = Array();
 			$arrData['Id']	= $arrInvoicePayment['Invoice'];
 			$arrData['Balance']	= new MySQLFunction("Balance + <Payment>", Array('Payment' => $arrInvoicePayment['Amount']));
-			// TODO: Write Query
+			$arrData['Status']	= INVOICE_COMMITTED;
+			$ubiInvoice = new StatementUpdateById("Invoice", $arrData);
 			$ubiInvoice->Execute($arrData);
 			
 			// Remove InvoicePayment
-			// TODO: Write Query
 			$qryDelete->Execute("DELETE FROM InvoicePayment WHERE Id = {$arrInvoicePayment['Id']}");
 	 	}
 	 	
@@ -708,7 +709,7 @@
 		$arrData['Id']		= $intPayment;
 		$arrData['Balance']	= new MySQLFunction('Amount');
 		$arrData['Status']	= PAYMENT_REVERSED;
-		// TODO: Write Query
+		$ubiPayment = new StatementUpdateById("Payment", $arrData);
 		$ubiPayment->Execute($arrData);
 		
 		return TRUE;
