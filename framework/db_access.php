@@ -1681,7 +1681,7 @@ class QueryCopyTable extends Query
  * @package		framework
  * @class		QueryDropTable
  */
- class QueryTruncate extends Query
+ class QueryDrop extends Query
  {
  	function __construct()
 	{

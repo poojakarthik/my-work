@@ -49,6 +49,24 @@
 								</tr>
 							</xsl:otherwise>
 						</xsl:choose>
+					<!--Check for Service-->
+						<xsl:choose>
+							<xsl:when test="count(/Response/Service) = 0">
+							</xsl:when>
+							<xsl:otherwise>
+								<tr>
+									<th>
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service')" />
+											<xsl:with-param name="field" select="string('FNN')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:value-of select="/Response/Service/FNN" />
+									</td>
+								</tr>
+							</xsl:otherwise>
+						</xsl:choose>
 				</table>
 			</div>
 		</div>

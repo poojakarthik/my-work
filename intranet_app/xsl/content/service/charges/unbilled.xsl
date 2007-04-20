@@ -298,7 +298,7 @@
 		<xsl:choose>
 			<xsl:when test="/Response/CDRs-Unbilled/Results/collationLength = 0">
 				<div class="MsgNoticeWide">
-					There are no Unbilled Adjustments associated with this Service.
+					There are no Unbilled Calls associated with this Service.
 				</div>
 			</xsl:when>
 			<xsl:when test="count(/Response/CDRs-Unbilled/Results/rangeSample/CDR) = 0">

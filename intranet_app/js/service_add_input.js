@@ -1,6 +1,6 @@
 // also create objSendData on the fly
 var objSendData = new Object;
-objSendData.serviceCount=0;
+objSendData.serviceCount = 0;
 var inputCount = 0;
 
 //Initialisation	
@@ -39,7 +39,7 @@ function AddInput()
 	var id1="service_" + numInput;
 	var id2="confirm_" + numInput;
 	var id3="icon_"+ numInput;
-	var id4="link_" + numInput;
+	var id4="link_" + numInput;/*what are we linking to?? -- tooltip for images*/
 	var table=document.getElementById("thetable").insertRow(numInput);
 	var index=table.insertCell(0);
 	var box1=table.insertCell(1);
@@ -64,7 +64,6 @@ function AddManyInput(numInput)
 		AddInput();
 		RenderCostCentre(inputCount);
 	}
-	
 }
 
 //Testing for valid data and service types
@@ -77,6 +76,9 @@ function CheckInput(i)
 	{
 		switch (type)
 		{
+			// get the global definitions instead of hardcoding it
+			// ie, $GLOBALS['*arrConstant']	['ServiceType']	[100]	['Constant']	= 'SERVICE_TYPE_ADSL';
+			// (attach to the style in service_addbulk.php)
 		case 'landline':ChangeAvailablePlans(i,102);break
 		case 'adsl':ChangeAvailablePlans(i,100);break
 		case 'mobile':ChangeAvailablePlans(i,101);break
@@ -207,7 +209,7 @@ function Trim(strText)
 }
 
 //Validate data before sending off to backend
-function Validate()
+function Save()
 {
 
 	// TODO! Also check if a plan has been selected, kinda important!
@@ -217,13 +219,17 @@ function Validate()
 	// use the title of the image as reference
 	
 	/* $results format:
-	[$results] - 	[serviceCount]
+	[$results] -	[account]
+				 	[serviceCount]
 					[service1] - 	[FNN]
 									[CostCentre]
 									[Plan]
-									[Type]
+									[inputID] <- to be added
 						|
 					[serviceN]
+					
+	need to add inputID so that instead of just alerting an error, we
+	can highlight the erronous service using getElementById				
 	*/
 	
 	objSendData.serviceCount = 0;
@@ -239,18 +245,33 @@ function Validate()
 		
 		if (link.title != "None" && link.title != "" && link.title != "Invalid") 
 		{
+			// Check whether a plan has been selected
+			if (rpinput.selectedIndex == 0)
+			{
+				alert ("Please select a plan for service '" + servicebox.value + "'.");
+				return false;
+			}
+			
 			// this particular input is valid, yay
 			changeValid("confirm_" + count, 1);
 			// now add this entry to objSendData
 			objSendData.serviceCount++;
-			objSendData["service" + count] = { 	"FNN" 			: servicebox.value, 
-												"CostCentre" 	: ccinput.options[ccinput.selectedIndex].value,
-												"Plan"			: rpinput.options[rpinput.selectedIndex].value};
+			objSendData["service" + objSendData.serviceCount] = { 	"FNN" 			: servicebox.value, 
+														"CostCentre" 	: ccinput.options[ccinput.selectedIndex].value,
+														"Plan"			: rpinput.options[rpinput.selectedIndex].value};
+			
+			// if use enters in the same FNN more than once, it will successfully
+			// add the first number (with provisioning, costcentre, rate) but fail
+			// on the second, and not do any after that
+			
+			if (GetServiceType(servicebox.value) == 'landline')
+			{
+				SaveProvisioning();
+			}
 			numGood++;
 		}
 		else if (link.title == "")
 		{
-			//document.getElementById("service_" + count).className="input-string";
 			document.getElementById("confirm_" + count).className="input-string";
 		}
 		else 
@@ -269,7 +290,12 @@ function Validate()
 	}
 	else if (document.getElementById('provisioningDetails').style.display == "block")
 	{
-		return CleanInput();
+		var result = CleanInput();
+		if (result != false)
+		{
+			return true;
+		}
+		return false;
 	}
 	else 
 	{	
@@ -277,6 +303,54 @@ function Validate()
 	}
 	
 }
+
+function SaveProvisioning()
+{
+	/* Need to change the below code to reflect the elements on the page (eg line 246)
+	   plus any verification as reqd (but i'm assuming most of that has already been
+	   handled by other javascript functs)*/
+	var DOBday = document.getElementById('DOB').childNodes[0];	
+	var DOBmonth = document.getElementById('DOB').childNodes[2];
+	var DOByear = document.getElementById('DOB').childNodes[4];
+	var srvAdrTyp = document.getElementById('ServiceAddressType');
+	var srvStrTyp = document.getElementById('ServiceStreetType');
+	var srvState = document.getElementById('ServiceState');
+	
+	
+	objSendData["Provisioning"] = {
+		'Residential'					: document.getElementById('Residential:TRUE').checked,
+		'BillName'						: document.getElementById('BillName').value,
+		'BillAddress1'					: document.getElementById('BillAddress1').value,
+		'BillAddress2'					: document.getElementById('BillAddress2').value,
+		'BillLocality'					: document.getElementById('BillLocality').value,
+		'BillPostcode'					: document.getElementById('BillPostcode').value,
+		'EndUserTitle'					: document.getElementById('EndUserTitle').value,
+		'EndUserGivenName'				: document.getElementById('EndUserGivenName').value,
+		'EndUserFamilyName'				: document.getElementById('EndUserFamilyName').value,
+		'EndUserCompanyName'			: document.getElementById('EndUserCompanyName').value,
+		'DateOfBirthday'				: DOBday.options[DOBday.selectedIndex].value,
+		'DateOfBirthmonth'				: DOBmonth.options[DOBmonth.selectedIndex].value,
+		'DateOfBirthyear'				: DOByear.options[DOByear.selectedIndex].value,
+		'Employer'						: document.getElementById('Employer').value,
+		'Occupation'					: document.getElementById('Occupation').value,
+		'ABN'							: document.getElementById('ABN').value,
+		'TradingName'					: document.getElementById('TradingName').value,
+		'ServiceAddressType'			: srvAdrTyp.options[srvAdrTyp.selectedIndex].value,
+		'ServiceAddressTypeNumber'		: document.getElementById('ServiceAddressTypeNumber').value,
+		'ServiceAddressTypeSuffix'		: document.getElementById('ServiceAddressTypeSuffix').value,
+		'ServiceStreetNumberStart'		: document.getElementById('ServiceStreetNumberStart').value,
+		'ServiceStreetNumberEnd'		: document.getElementById('ServiceStreetNumberEnd').value,
+		'ServiceStreetNumberSuffix'		: document.getElementById('ServiceStreetNumberSuffix').value,
+		'ServiceStreetName'				: document.getElementById('ServiceStreetName').value,
+		'ServiceStreetType'				: srvStrTyp.options[srvStrTyp.selectedIndex].value,
+		'ServiceStreetTypeSuffix'		: document.getElementById('ServiceStreetTypeSuffix').value,
+		'ServicePropertyName'			: document.getElementById('ServicePropertyName').value,
+		'ServiceLocality'				: document.getElementById('ServiceLocality').value,
+		'ServiceState'					: srvState.options[srvState.selectedIndex].value,
+		'ServicePostcode'				: document.getElementById('ServicePostcode').value
+	};
+}
+	
 
 //Change appearance of input to valid/invalid
 function changeValid(inputID, bolValid)
@@ -297,8 +371,9 @@ function changeValid(inputID, bolValid)
 //Submit
 function Submit()
 {
-	if (Validate())
+	if (Save())
 	{
+		//alert("Number of services to be added: " + objSendData.serviceCount);
 		AjaxSend("service_addbulk.php", objSendData);
 	}
 }
@@ -307,19 +382,125 @@ function Submit()
 // AJAX handler
 function ajaxHandler(object)
 {
+	/* Reply to AJAX format:
+		[$arrReply] -	[serviceCount]
+						[service1] - 	[saved]
+										[inputID] <- to be added
+							|
+						[serviceN]
+						[errorCount]
+						[error1] -		[errorDescription]
+										[inputID] <- to be added
+							|
+						[errorN]
+	
+	
+	
+	
+	*/
 	// now we have the results back from php
 	// do something to inform user
-
-	alert(object);
-	/*var tobealerted = "";
-	for (i=1; i<=object["serviceCount"]; i++)
+	
+	/*
+	//alert ('Errors: ' + object.errorCount);
+	var alertString="";
+	for (attrib in object)
 	{
-		tobealerted = tobealerted + "\r\n" + object["service" + i]["FNN"] + ":" + object["service" + i]["CostCentre"] + ":" + object["service" + i]["Plan"] + ":" + object["service" + i]["Type"] + ";";
+		alertString = alertString + "\r\n" + attrib + ":" + object[attrib];
+	
 	}
-	alert(tobealerted);*/
+	alert(alertString);
+	
+	*/
+
+	if (object.errorCount == 0)
+	{
+		// redirect to another page
+		//alert ("All services were added successfully");
+		window.location = "./account_view.php?Id=" + document.getElementById("Account").value;
+		return;
+	}
+	else
+	{
+		var alertString = "";
+		for (count=1; count <= object.errorCount; count++)
+		{
+			alertString = alertString + "\r\n" + "Error: " + object["error" + count];
+		}	
+		
+		
+		// If for some unforseen reason, some are saved and some error, handle that
+		// here.  For instance, add flag on input saying 'already added', and ignore
+		// next time submit() is run
+		/*for (count=1; count <= object.serviceCount; count++)
+		{
+			if (object["service" + count])
+			{
+				//alertString = alertString + "\r\n" + "Success: " + "service" + count + " " + object["service" + count];
+			}
+			else
+			{
+				//alertString = alertString + "\r\n" + "Failure: " + "service" + count;
+			}
+		}*/
+	
+		alert(alertString);
+	}
 }
 
 function ajaxError(er, reply)
 {
 	alert(reply);
+}
+
+
+// TO BE DELEDTED
+// ... but not yet
+
+function Test()
+{
+/*
+	var DOBday = document.getElementById('DOB').childNodes[0];	
+	var DOBmonth = document.getElementById('DOB').childNodes[2];
+	var DOByear = document.getElementById('DOB').childNodes[4];
+	var srvAdrTyp = document.getElementById('ServiceAddressType');
+	var srvStrTyp = document.getElementById('ServiceStreetType');
+	var srvState = document.getElementById('ServiceState');
+	alert (DOBday.parentNode);
+	alert (DOBmonth);
+*/
+
+//alert (document.getElementById('DOB').firstChild.selectedIndex + ":" + document.getElementById('DOB').childNodes[2].selectedIndex);
+//alert (document.getElementById('DOB').childNodes[0].selectedIndex);
+	//document.getElementById('Residential:TRUE').checked;
+	document.getElementById('BillName').value = 'MeBill';
+	document.getElementById('BillAddress1').value = 'Somewhere';
+	document.getElementById('BillAddress2').value = '';
+	document.getElementById('BillLocality').value = 'MyTown';
+	document.getElementById('BillPostcode').value = '4056';
+	document.getElementById('EndUserTitle').value = '';
+	document.getElementById('EndUserGivenName').value = 'Bob';
+	document.getElementById('EndUserFamilyName').value = 'Marleyt';
+	document.getElementById('EndUserCompanyName').value = 'MyCompany';
+	//document.getElementById('DateOfBirth']['day').value = '';
+	//document.getElementById('DateOfBirth']['month').value = '';
+	//document.getElementById('DateOfBirth']['year').value = '';
+	document.getElementById('Employer').value = '';
+	document.getElementById('Occupation').value = '';
+	document.getElementById('ABN').value = '65108228191';
+	document.getElementById('TradingName').value = '';
+	document.getElementById('ServiceAddressType').selectedIndex = 6;
+	document.getElementById('ServiceAddressTypeNumber').value = '2';
+	document.getElementById('ServiceAddressTypeSuffix').value = '';
+	document.getElementById('ServiceStreetNumberStart').value = '3';
+	document.getElementById('ServiceStreetNumberEnd').value = '';
+	document.getElementById('ServiceStreetNumberSuffix').value = '';
+	document.getElementById('ServiceStreetName').value = 'MyStreet';
+	document.getElementById('ServiceStreetType').selectedIndex = 3;
+	document.getElementById('ServiceStreetTypeSuffix').value = '';
+	document.getElementById('ServicePropertyName').value = '';
+	document.getElementById('ServiceLocality').value = 'Somewhereovertherainnbow';
+	document.getElementById('ServiceState').selectedIndex = 4;
+	document.getElementById('ServicePostcode').value = '4032';
+
 }

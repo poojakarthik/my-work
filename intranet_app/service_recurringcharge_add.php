@@ -65,7 +65,7 @@
 				$fltAmount->getValue ()
 			);
 			
-			header ('Location: service_recurringcharge_added.php?Service=' . $srvService->Pull ('Id')->getValue ());
+			header ('Location: recurring_charge_list.php?Service=' . $srvService->Pull ('Id')->getValue ());
 			exit;
 		}
 	}

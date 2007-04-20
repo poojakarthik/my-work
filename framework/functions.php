@@ -1370,13 +1370,12 @@ function AjaxReply($arrReply)
 }
 
 
-
 // Load Framework
 function LoadFramework($strFrameworkDir=NULL)
 {
 	if (is_null($strFrameworkDir))
 	{
-		if (isset(VIXEN_BASE_DIR))
+		if (defined(VIXEN_BASE_DIR))
 		{
 			rtrim(VIXEN_BASE_DIR, '/').'/framework/';
 		}
@@ -1422,7 +1421,7 @@ function LoadApplication($strApplication=NULL)
 	}
 	
 	// set the base dir
-	if (isset(VIXEN_BASE_DIR))
+	if (defined(VIXEN_BASE_DIR))
 	{
 		$strApplicationDir = rtrim(VIXEN_BASE_DIR, '/').'/';
 	}

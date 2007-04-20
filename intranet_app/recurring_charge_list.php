@@ -36,11 +36,8 @@
 		{
 			// Try and get the Account and Constrain Against it
 			// If the Account does not exist, then throw an error
-			if ($_GET ['Account'])
-			{
-				$actAccount = $Style->attachObject (new Account ($_GET ['Account']));
-				$rclRecurringCharges->Constrain ('Account', '=', $actAccount->Pull ('Id')->getValue ());
-			}
+			$actAccount = $Style->attachObject (new Account ($_GET ['Account']));
+			$rclRecurringCharges->Constrain ('Account', '=', $actAccount->Pull ('Id')->getValue ());
 		}
 		catch (Exception $e)
 		{
@@ -54,12 +51,10 @@
 		{
 			// Try and get the Service and Constrain Against it
 			// If the Service does not exist, then throw an error
-			if ($_GET ['Service'])
-			{
-				$srvService = $Style->attachObject (new Service ($_GET ['Service']));
-				$rclRecurringCharges->Constrain ('Service', '=', $srvService->Pull ('Id')->getValue ());
-				$actAccount = $Style->attachObject ($srvService->getAccount ());
-			}
+			$srvService = $Style->attachObject (new Service ($_GET ['Service']));
+			$rclRecurringCharges->Constrain ('Service', '=', $srvService->Pull ('Id')->getValue ());
+			$actAccount = $Style->attachObject ($srvService->getAccount ());
+			
 		}
 		catch (Exception $e)
 		{
@@ -95,12 +90,17 @@
 	// Explain an Account
 	$docDocumentation->Explain ('Account');
 	$docDocumentation->Explain ('Archived');
+	$docDocumentation->Explain ('Service');
+	
+	$arrStyleOut = Array ( "Account"		=> $actAccount->Pull ('Id')->getValue ());
+	if ($_GET ['Service']) {
+		$arrStyleOut["Service"] = $srvService->Pull ('Id')->getValue ();
+	}
 	
 	$Style->Output (
 		"xsl/content/recurringcharge/list.xsl",
-		Array (
-			"Account"		=> $actAccount->Pull ('Id')->getValue ()
-		)
-	);
+		$arrStyleOut
+		);
+	
 	
 ?>

@@ -101,7 +101,7 @@
 				$_POST ['Notes']
 			);
 			
-			header ('Location: recurring_charge_list.php?Account=' . $actAccount->Pull ('Id')->getValue ());
+			header ('Location: account_charges_unbilled.php?Account=' . $actAccount->Pull ('Id')->getValue ());
 			exit;
 		}
 	}

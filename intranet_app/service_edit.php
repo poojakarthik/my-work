@@ -12,7 +12,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_COST_CENTRE | MODULE_EMPLOYEE | MODULE_MOBILE_DETAIL | MODULE_SERVICE_ADDRESS | MODULE_STATE | MODULE_INBOUND;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_COST_CENTRE | MODULE_EMPLOYEE | MODULE_MOBILE_DETAIL | MODULE_SERVICE_ADDRESS | MODULE_STATE | MODULE_INBOUND | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE;
 	
 	// call application
 	require ('config/application.php');
@@ -179,10 +179,17 @@
 					$_POST ['Archived'],
 					$athAuthentication->AuthenticatedEmployee ()
 				);
+				if (!$intService)
+				{
+					$oblstrError->setValue ('Unarchive Fail');
+				}
+			}
+			if ($intService)
+			{
+				header ("Location: service_view.php?Id=" . $intService);
+				exit;
 			}
 			
-			header ("Location: service_view.php?Id=" . $intService);
-			exit;
 		}
 	}
 	

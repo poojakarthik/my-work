@@ -23,6 +23,9 @@
 					<xsl:when test="/Response/Error = 'FNN ServiceType'">
 						Please enter a valid Service #.
 					</xsl:when>
+					<xsl:when test="/Response/Error = 'Unarchive Fail'">
+						Service could not be activated.
+					</xsl:when>
 				</xsl:choose>
 			</div>
 		</xsl:if>

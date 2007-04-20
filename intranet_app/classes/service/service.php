@@ -496,10 +496,10 @@
 		 *
 		 * Update Service Archive Status. Unarchiving a Service from the Database may
 		 * incur a few different paths.
-		 * CLAUSE 1.	If the FNN is in use (or potentially in use) by another service, a Change of Lessee will be performed.
+		 * CLAUSE 1.	If the FNN is in use by another active Service, this function will return false.
 		 * CLAUSE 2.	If the FNN is not in use by another Service AND (XOR):
-		 *		CLAUSE a.	If the Service has been in use by another Service but the Service has , a new Service will be created.
-		 *		CLAUSE b.	If the Service has not been in use by another Service, the expiration is revoked.
+		 *		CLAUSE a.	If the FNN has been used by another Service but the other Service has been closed, a new Service will be created.
+		 *		CLAUSE b.	If the FNN has not been used by another Service, the service is reopened.
 		 *
 		 * @param	Boolean					$bolArchive					TRUE / FALSE:	Depending on whether or not the service is to be Archived or Unarchived
 		 * @param	AuthenticatedEmployee	$aemAuthenticatedEmployee	The current person logged in and performing this action
@@ -522,18 +522,14 @@
 				);
 				
 				// Apply the Change
-				$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrArchive);
+				$updService = new StatementUpdate ('Service', 'Id = <Id> AND IsNull(ClosedOn)', $arrArchive);
 				$updService->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
 				
 				// We have done all we need to here. Therefore, break out
 				return $this->Pull ('Id')->getValue ();
 			}
 			
-			
-			
-			
-			
-			
+
 			
 			// If we're up to here, then we want to Reactivate the Service
 			
@@ -548,12 +544,12 @@
 			
 			
 			// Check if the FNN is used elsewhere [snatched] (since the date of Closure)
-			$selSnatched = new StatementSelect ('Service', 'count(*) as snatchCount', 'FNN = <FNN> AND CreatedOn > <ClosedOn>');
+			$selSnatched = new StatementSelect ('Service', 'count(*) as snatchCount', 'FNN = <FNN> AND CreatedOn >= <ClosedOn>');
 			$selSnatched->Execute (Array ('FNN' => $this->Pull ('FNN')->getValue (), 'ClosedOn' => $this->Pull ('ClosedOn')->getValue ()));
 			$arrSnatched = $selSnatched->Fetch ();
 			$bolSnatched = ($arrSnatched ['snatchCount'] != 0);
 			
-			// If it hasn't been used anywhere else - suspend the Service closure
+			// If it hasn't been used anywhere else - unarchive the service
 			// This is CLAUSE 1
 			if (!$bolSnatched)
 			{
@@ -575,13 +571,14 @@
 			
 			// If the Service with the FNN we want is currently in use, then we want
 			// to do a Change of Lessee (COfL)
-			$selCOfL = new StatementSelect ('Service', 'Id', 'FNN = <FNN> AND (ClosedOn IS NULL OR ClosedOn >= Now())', null, 1);
+			$selCOfL = new StatementSelect ('Service', 'Id', 'FNN = <FNN> AND (ClosedOn IS NULL OR ClosedOn > Now())', null, 1);
 			$selCOfL->Execute (Array ('FNN' => $this->Pull ('FNN')->getValue ()));
 			
 			// This is CLAUSE 2.a.
-			if ($arrCOfL = $selCOfL->Fetch ())
+			if ($selCOfL->Fetch ())
 			{
-				$srvService = new Service ($arrCOfL ['Id']);
+				return FALSE;
+				/*$srvService = new Service ($arrCOfL ['Id']);
 				$intTomorrow = strtotime ("+1 day");
 				
 				return $srvService->LesseePassthrough (
@@ -592,7 +589,7 @@
 						"year"		=> date ("Y", $intTomorrow),
 						"day"		=> date ("d", $intTomorrow)
 					)
-				);
+				);*/
 			}
 			
 			// We've failed our tests. Therefore we must create a New Service
@@ -604,11 +601,12 @@
 				$this->Plan (), 
 				Array (
 					'FNN'					=> $this->Pull ('FNN')->getValue (),
-					'ServiceType'			=> $this->Pull ('ServicType')->getValue (),
+					'ServiceType'			=> $this->Pull ('ServiceType')->getValue (),
 					'Indial100'				=> $this->Pull ('Indial100')->getValue ()
 				)
 			);
-			
+			//TODO!Sean! Need to copy service address details or additional services details
+			//TODO!Sean! Need to copy ServiceRateGroup and ServiceRatePlan - see changeoflessee
 			return $srvService->Pull ('Id')->getValue ();
 		}
 		

@@ -13,7 +13,7 @@
 	// set page details
 	$arrPage['PopUp']		= FALSE;
 	$arrPage['Permission']	= PERMISSION_OPERATOR;
-	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_SERVICE_ADDRESS | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE | MODULE_COST_CENTRE | MODULE_STATE | MODULE_TITLE;
+	$arrPage['Modules']		= MODULE_BASE | MODULE_SERVICE | MODULE_SERVICE_ADDRESS | MODULE_RATE_PLAN | MODULE_RATE_GROUP | MODULE_RECORD_TYPE | MODULE_COST_CENTRE | MODULE_STATE | MODULE_TITLE | MODULE_PROVISIONING | MODULE_CARRIER;
 
 	// call application
 	require ('config/application.php');
@@ -35,31 +35,71 @@
 		// if this page was called by ajax
 		// do something with the results
 		
-		/* $results format:
-			[$results] - 	[serviceCount]
+		/* $objResults format:
+			[$objResults] - [serviceCount]
 							[account]
 							[service1] - 	[FNN]
 											[CostCentre]
 											[Plan]
-											[Type]
+											[inputID] <- to be added
 								|
 							[serviceN]
+							[provisioning]
+									- [etc . . .]
 		*/
+		/* Reply to AJAX format:
+			[$arrReply] -	[serviceCount]
+							[service1] - 	[saved]
+											[inputID] <- to be added
+								|
+							[serviceN]
+							[errorCount]
+							[error1] -		[errorDescription]
+											[inputID] <- to be added
+								|
+							[errorN]		
+		need to add inputID so that instead of just alerting an error, we
+		can highlight the erronous service using getElementById
+		*/
+		
 		$actAccount = $Style->attachObject (new Account ($objResults->account));
+		$arrReply = Array();
+		
+		$arrReply["serviceCount"] = $objResults->serviceCount;
+		$arrReply["errorCount"] = 0;
+		
+		// Iterate through the services first, to check whether they already exist
+		// This prevents one or two services being added successfully, and then
+		// the last one failing
+		
+		$arrFNN = Array();
+		
 		for ($i=1; $i<=$objResults->serviceCount; $i++)
-		{		
+		{
 			$Tester = Services::DoesFNNExist($objResults->{"service$i"}->FNN);
-			if ($Tester <> 0)
+			if ($Tester == 0)
 			{
-				AjaxReply("The service " . $objResults->{"service$i"}->FNN . " already exists. Please enter a different number.");
-				exit;
-			}
-			else if (!$objResults->{"service$i"}->Plan)
-			{
-				AjaxReply("The service " . $objResults->{"service$i"}->FNN . " does not have a plan selected.");
-				exit;
+				$arrFNN[$objResults->{"service$i"}->FNN] = true;
 			}
 			else
+			{
+				 // Reply: !error! FNN already exists
+				 $arrReply[errorCount]++;
+				 $arrReply["error" . $arrReply[errorCount]] = "The service " . $objResults->{"service$i"}->FNN . " already exists";
+			}
+		}
+		// if any already exist, immediately tell the user
+		if ($arrReply[errorCount] <> 0)
+		{
+			AjaxReply($arrReply);
+			exit;
+		}
+		
+		for ($i=1; $i<=$objResults->serviceCount; $i++)
+		{
+			
+			$strFNN = $objResults->{"service$i"}->FNN;
+			if ($arrFNN[$strFNN])
 			{
 				try
 				{
@@ -69,24 +109,125 @@
 						$actAccount,
 						$rrpPlan,
 						Array (
-							"FNN"					=> $objResults->{"service$i"}->FNN,
+							"FNN"					=> $strFNN,
 							"Indial100"				=> FALSE,
-							"CostCentre"			=> $objResults->{"service$i"}->CostCentre,
-							"ServiceType"			=> ServiceType($objResults->{"service$i"}->FNN)
+							"CostCentre"			=> ($objResults->{"service$i"}->CostCentre == 0) ? null : $objResults->{"service$i"}->CostCentre,
+							"ServiceType"			=> ServiceType($strFNN)
 						)
 					);
 				}
 				catch (Exception $e)
 				{
-					AjaxReply("Error");
-					exit;
+					// Reply: !error! Adding service failed
+					$arrReply[errorCount]++;
+					$arrReply["error" . $arrReply[errorCount]] = "Service " . $strFNN . " could not be added";
 				}
-			}
-		}
-		
-
+				// This plan was successfuly
+				
+				// Reply: !success! Service was added
+				$arrReply["service" . $i] = true;	
+				
+				if ((ServiceType($strFNN)) == SERVICE_TYPE_LAND_LINE)
+				{
+					// Also add provisioning details if applicable (ie, landline)
+					// nb. don't really need to check provisioning, java does this first
+				
+					try
+					{
+						// Save Information	
+						$srvService->ServiceAddressUpdate (
+							Array (
+								'Residential'					=> $objResults->Provisioning->Residential,
+								'BillName'						=> $objResults->Provisioning->BillName,
+								'BillAddress1'					=> $objResults->Provisioning->BillAddress1,
+								'BillAddress2'					=> $objResults->Provisioning->BillAddress2,
+								'BillLocality'					=> $objResults->Provisioning->BillLocality,
+								'BillPostcode'					=> $objResults->Provisioning->BillPostcode,
+								'EndUserTitle'					=> $objResults->Provisioning->EndUserTitle,
+								'EndUserGivenName'				=> $objResults->Provisioning->EndUserGivenName,
+								'EndUserFamilyName'				=> $objResults->Provisioning->EndUserFamilyName,
+								'EndUserCompanyName'			=> $objResults->Provisioning->EndUserCompanyName,
+								'DateOfBirth:day'				=> $objResults->Provisioning->DateOfBirthday,
+								'DateOfBirth:month'				=> $objResults->Provisioning->DateOfBirthmonth,
+								'DateOfBirth:year'				=> $objResults->Provisioning->DateOfBirthyear,
+								'Employer'						=> $objResults->Provisioning->Employer,
+								'Occupation'					=> $objResults->Provisioning->Occupation,
+								'ABN'							=> $objResults->Provisioning->ABN,
+								'TradingName'					=> $objResults->Provisioning->TradingName,
+								'ServiceAddressType'			=> $objResults->Provisioning->ServiceAddressType,
+								'ServiceAddressTypeNumber'		=> $objResults->Provisioning->ServiceAddressTypeNumber,
+								'ServiceAddressTypeSuffix'		=> $objResults->Provisioning->ServiceAddressTypeSuffix,
+								'ServiceStreetNumberStart'		=> $objResults->Provisioning->ServiceStreetNumberStart,
+								'ServiceStreetNumberEnd'		=> $objResults->Provisioning->ServiceStreetNumberEnd,
+								'ServiceStreetNumberSuffix'		=> $objResults->Provisioning->ServiceStreetNumberSuffix,
+								'ServiceStreetName'				=> $objResults->Provisioning->ServiceStreetName,
+								'ServiceStreetType'				=> $objResults->Provisioning->ServiceStreetType,
+								'ServiceStreetTypeSuffix'		=> $objResults->Provisioning->ServiceStreetTypeSuffix,
+								'ServicePropertyName'			=> $objResults->Provisioning->ServicePropertyName,
+								'ServiceLocality'				=> $objResults->Provisioning->ServiceLocality,
+								'ServiceState'					=> $objResults->Provisioning->ServiceState,
+								'ServicePostcode'				=> $objResults->Provisioning->ServicePostcode
+							)
+						);
+					}
+					catch (Exception $e)
+					{
+						// Reply: !error! Adding provisioning failed
+						$arrReply[errorCount]++;
+						$arrReply["error" . $arrReply[errorCount]] = "Provisioning Details for service " . $strFNN . " could not be added";
+					}
+					
+					
+					try
+					{
+						// also do a provisioning request ?huh?
+						// could get data from globals, hardcoded for now
+						
+						// $GLOBALS['*arrConstant']	['Request']	[901]	['Constant']	= 'REQUEST_PRESELECTION';
+						// $GLOBALS['*arrConstant']	['Request']	[900]	['Constant']	= 'REQUEST_FULL_SERVICE';
+						// $GLOBALS['*arrConstant']	['Carrier']	[2]	['Constant']	= 'CARRIER_OPTUS';
+						// $GLOBALS['*arrConstant']	['Carrier']	[1]	['Constant']	= 'CARRIER_UNITEL';
+						// full service - unitel
+						// preselection - optus
+						
+						// Check the requested Carrier Exists
+						$carCarrier = new Carriers ();
+						if (!$carCarrier->setValue (2) || !$carCarrier->setValue (1))
+						{	
+							// Reply: !error! Provisioning request failed
+							$arrReply[errorCount]++;
+							$arrReply["error" . $arrReply[errorCount]] ="Provisioning Request for service " . $strFNN . " was not successful";
+						}
+						
+						// Check the requested Provisioning Request Type exists
+						$prtRequestType = new ProvisioningRequestTypes ();
+						if (!$prtRequestType->setValue (901) || !$prtRequestType->setValue (900))
+						{
+							// Reply: !error! Provisioning request failed
+							$arrReply[errorCount]++;
+							$arrReply["error" . $arrReply[errorCount]] ="Provisioning Request for service " . $strFNN . " was not successful";
+						}
+						
+						// Do the Provisioning Request
+						$srvService->CreateNewProvisioningRequest ($athAuthentication->AuthenticatedEmployee (), 1, 900);
+						$srvService->CreateNewProvisioningRequest ($athAuthentication->AuthenticatedEmployee (), 2, 901);
+					}
+					catch (Exception $e)
+					{
+						// Reply: !error! Provisioning request failed
+						$arrReply[errorCount]++;
+						$arrReply["error" . $arrReply[errorCount]] ="Provisioning Request for service " . $strFNN . " was not successful";
+					}
+				} // end of landline provisioning request if
+			
+			unset($arrFNN[$strFNN]);		
+				
+			} // end of service duplicate if
+				
+		} // end of service for-loop		
+			
 		// Send stuff back to ajax
-		AjaxReply($objResults);
+		AjaxReply($arrReply);
 		exit;
 	}
 

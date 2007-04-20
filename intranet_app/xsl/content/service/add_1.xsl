@@ -183,10 +183,12 @@
 			</div>
 			
 			<div class="Right">
+				<input type="button" value="Fill Provisioning Data" class="input-submit" onclick="Test();"/>
 				<input type="button" value="More" class="input-submit" onclick="AddManyInput(1);"/>
 				<input type="button" value="Submit &#0187;" class="input-submit" onclick="Submit();"/>
 			</div>
 		
+		<div class="Seperator"></div>
 		<div class="Seperator"></div>
 		
 		<!-- Service Address Details -->	
@@ -204,7 +206,7 @@
 			<div class="Narrow-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
 					<tr id="Residential">
-						<td class="Required" valign="top"><span class="Red"><strong>*</strong></span></td>
+						<td class="Required" valign="top"></td>
 						<th class="JustifiedWidth" valign="top">
 							<xsl:call-template name="Label">
 								<xsl:with-param name="entity" select="string('Service Address')" />
@@ -435,7 +437,7 @@
 								<xsl:with-param name="field" select="string('DateOfBirth')" />
 							</xsl:call-template>
 						</th>
-						<td>
+						<td id="DOB">
 							<xsl:call-template name="DOB">
 								<xsl:with-param name="Name-Day"			select="string('DateOfBirth[day]')" />
 								<xsl:with-param name="Name-Month"		select="string('DateOfBirth[month]')" />
@@ -822,7 +824,7 @@
 				<strong><span class="Red">* </span></strong>: Mandatory field<br/>
 			</div>
 			<div class="Right">
-				<input type="submit" value="Apply Changes &#0187;" class="input-submit" />
+				<input type="button" value="Submit &#0187;" class="input-submit" onclick="Submit();"/>
 			</div>
 		</div>
 		</form>
