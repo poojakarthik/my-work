@@ -76,6 +76,7 @@
 		
 		for ($i=1; $i<=$objResults->serviceCount; $i++)
 		{
+			$objResults->{"service$i"}->FNN = trim($objResults->{"service$i"}->FNN);
 			$Tester = Services::DoesFNNExist($objResults->{"service$i"}->FNN);
 			if ($Tester == 0)
 			{
