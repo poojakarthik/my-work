@@ -1669,7 +1669,7 @@ class QueryCopyTable extends Query
 // QueryDropTable
 //----------------------------------------------------------------------------//
 /**
- * QueryTruncate
+ * QueryDropTable
  *
  * DROP TABLE Query
  *
@@ -1681,7 +1681,7 @@ class QueryCopyTable extends Query
  * @package		framework
  * @class		QueryDropTable
  */
- class QueryDrop extends Query
+ class QueryDropTable extends Query
  {
  	function __construct()
 	{
@@ -1718,7 +1718,7 @@ class QueryCopyTable extends Query
 		$bolReturn = TRUE;
 
 		// create query
-		$strQuery = "TRUNCATE TABLE ".$strTable;
+		$strQuery = "DROP TABLE ".$strTable;
 		
 		// Trace
 		$this->Trace("Query: $strQuery");
