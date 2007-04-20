@@ -1428,7 +1428,7 @@ function LoadApplication($strApplication=NULL)
 	}
 	
 	// set application dir
-	$strApplicationDir .= trim($strApplication, '/').'/';
+	$strApplicationDir .= "application_".strtolower(trim($strApplication, '/')).'/';
 	
 	// require application
 	require_once($strApplicationDir."require.php");
