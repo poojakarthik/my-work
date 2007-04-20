@@ -34,7 +34,7 @@ CliEcho("STARTING");
 // set location of files
 //$arrFilePath = glob("/home/etech_bills/2006/11/inv_telcoblue_*.txt");	// November
 //$arrFilePath = glob("/home/etech_bills/2006/12/inv_telcoblue_*.txt");	// December
-$arrFilePath = glob("/home/etech_bills/2007/inv_telcoblue_*.txt");		// January
+//$arrFilePath = glob("/home/etech_bills/2007/inv_telcoblue_*.txt");	// January
 
 $arrInvoices		= Array();
 $arrCursor			= Array('|', '/', '-', '\\');
@@ -54,6 +54,7 @@ foreach($arrFilePath AS $strFilePath)
 	$intCount = 0;
 	$intCDRs = 0;
 	$intMatches = 0;
+	$intInvoiceNo = NULL;
 	while($arrLine = $suxEtech->FetchNext())
 	{
 		$arrLine['_File']	= $strFilePath;
@@ -116,15 +117,36 @@ foreach($arrFilePath AS $strFilePath)
 						}
 						*/
 						
-						// Save the data
-						if ($bolMatchedInvoice)
+						// Insert Etech CDR into CDREtech
+						$arrLine['Status']	 = CDR_ETECH_NO_MATCH;
+						if (!($intId = $etbEtech->InsertEtechCDR($arrLine)))
 						{
-							// Try to match to a viXen CDR
-							// TODO
-							
-							//  
+							CliEcho("CDR Insert Failed : {$arrLine['_File']} - {$arrLine['_LineNo']}");
+							break;
 						}
 						
+						// Try to match to a viXen CDR
+						if (($arrCDR = $etbEtech->FindCDR($arrLine)) === FALSE)
+						{
+							// Could not match
+							$arrCDRsNotInVixen[$intInvoiceNo] = $intId;
+						}
+						else
+						{
+							// Update CDREtech to reflect match
+							$arrLine['VixenCDR']	= $arrCDR['Id'];
+							$arrLine['Status']		= CDR_ETECH_PERFECT_MATCH;
+							$etbEtech->UpdateEtechCDR($arrLine);
+							
+							// Update viXen CDR
+							$arrUpdateCDR['Id'] 		= $arrCDR['Id'];
+							$arrUpdateCDR['Status'] 	= CDR_ETECH_INVOICED;
+							$arrUpdateCDR['Charge'] 	= $arrLine['Charge'];
+							if (!$etbEtech->UpdateCDR($arrUpdateCDR))
+							{
+								CliEcho("CDR Update Failed : {$arrCDR['Id']}");
+							}
+						}
 						
 						break;
 					
@@ -176,6 +198,9 @@ foreach($arrFilePath AS $strFilePath)
 						{
 							$strCursor = reset($arrCursor);
 						}*/
+						
+						$intInvoiceNo = $arrLine['Id'];
+						
 						$intInvCount = count($arrInvoices);
 						$strEcho = "Parsed $intInvCount Invoices...";
 						$intLen = strlen($strEcho);
@@ -203,7 +228,7 @@ foreach($arrFilePath AS $strFilePath)
 		}
 	}
 }
-
+/*
 // Match Invoices
 $arrFailedInvoices	= $etbEtech->MatchInvoices($arrInvoices);
 $intFailedInvoices	= count($arrFailedInvoices);
@@ -232,6 +257,36 @@ foreach ($arrMissingAccounts as $arrAccount)
 	fwrite($ptrFile, $arrAccount['Account']."\n");
 }
 echo "\n\n";
+*/
+
+
+
+
+
+// Update Local Call CDRs (impossible to match them)
+echo "\n[ Updating Local Call CDRs ]\n\n";
+$arrUpdateCols = Array();
+$arrUpdateCols['Status'] = CDR_ETECH_INVOICED;
+$strLocalRecordTypes = "17, 18"; // FIXME????
+$upd190DayCDRs = new StatementUpdate("CDR", "(StartDatetime > SUBDATE('2007-05-01 00:00:00', INTERVAL 190 DAY) OR RecordType IN ($strLocalRecordTypes)) AND Status = 250", $arrUpdateCols);
+$intCount = $sel190DayCDRs->Execute($arrUpdateCols, Array());
+echo " * $intCount Local Call CDRs Updated!\n\n";
+echo " * Writing Accounts with Missing Invoices to '$strFileName'...  ";
+
+// Write list of CDRs we couldnt match to a file
+$ptrFile = fopen("/home/richdavis/Desktop/etech_cdrs_we_cant_match_nov.txt", "w");
+foreach ($arrCDRsNotInVixen as $intAccount=>$intCDR)
+{
+	if (($strCursor = next($arrCursor)) === FALSE)
+	{
+		$strCursor = reset($arrCursor);
+	}
+	echo "\033[1D$strCursor";
+	fwrite($ptrFile, "Invoice: $intAccount; CDREtech.Id: $intCDR\n");
+}
+echo "\n\n";
+
+
 CliEcho("\n\nDone");
 fclose($stdout);
 die;

@@ -75,6 +75,8 @@
 		$arrUpdateData['Charge']		= '';
 		$this->_ubiCDR	= new StatementUpdateById("CDR", $arrUpdateData);
 		
+		$this->_ubiEtechCDR = new StatementUpdateById("CDREtech", Array('Status' => NULL, 'VixenCDR' => NULL));
+		
 		/*
 		$this->_selMatchCDR	= new StatementSelect(	"CDR",
 													"Id, Charge",
@@ -518,6 +520,34 @@
 		
 		// update CDR
 		$mixResult = $this->_ubiCDR->Execute($arrCDR);
+		if (!$mixResult)
+		{
+
+		}
+		return $mixResult;
+	}
+	
+	function UpdateEtechCDR($arrCDR)
+	{
+		// check Id
+		$arrCDR['Id'] = (int)$arrCDR['Id'];
+		if (!$arrCDR['Id'])
+		{
+			return FALSE;
+		}
+		
+		// Get Invoice Run
+		if (!$arrCDR['InvoiceRun'])
+		{
+			$arrCDR['InvoiceRun'] = $this->FindInvoiceRun($arrCDR['Invoice']);
+			if (!$arrCDR['InvoiceRun'])
+			{
+				$arrCDR['InvoiceRun'] = '';
+			}
+		}
+		
+		// update CDR
+		$mixResult = $this->_ubiEtechCDR->Execute($arrCDR);
 		if (!$mixResult)
 		{
 
