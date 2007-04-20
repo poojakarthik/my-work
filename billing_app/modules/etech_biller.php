@@ -87,7 +87,7 @@
 													"Destination = <Destination> AND " .
 													"StartDatetime = <StartDatetime> AND EndDatetime = <EndDateTime>");*/
 													
-		$this->_selMatchCDR	= new StatementSelect(	"CDR",
+		$this->_selMatchCDR	= new StatementSelect(	"CDR USE INDEX (FNN_2)",
 													"Id, Charge, Status, RecordType",
 													"Status != ".CDR_INVOICED." AND " .
 													"FNN LIKE <FNN> AND " .
