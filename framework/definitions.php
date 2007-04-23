@@ -224,6 +224,8 @@ $GLOBALS['*arrConstant']['CDR'][182]['Constant'] 	= 'CDR_ETECH_NO_MATCH';
 $GLOBALS['*arrConstant']['CDR'][182]['Description'] = 'No Match';
 $GLOBALS['*arrConstant']['CDR'][183]['Constant']	= 'CDR_ETECH_INVOICED';
 $GLOBALS['*arrConstant']['CDR'][183]['Description'] = 'Invoiced by Etech';
+$GLOBALS['*arrConstant']['CDR'][184]['Constant']	= 'CDR_ETECH_RATED';
+$GLOBALS['*arrConstant']['CDR'][184]['Description'] = 'Not Invoiced by Etech';
 
 $GLOBALS['*arrConstant']['CDR'][170]['Constant']	= 'CDR_TEMP_CREDIT';
 //$GLOBALS['*arrConstant']['CDR'][170]['Description'] = 'Temporarily Credited';
