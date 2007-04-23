@@ -720,7 +720,8 @@
 	h2.Invoice,
 	h2.Admin,
 	h2.Report,
-	h2.CostCentre
+	h2.CostCentre,
+	h2.Bug
 	{
 		background-repeat:             no-repeat;
 		background-position:           top left;
@@ -840,6 +841,10 @@
 		background-image:              url('../img/template/icon-shoppingcart_small.jpg');
 	}
 	
+	h2.Bug
+	{
+		background-image:              url('../img/template/lady-debug.png');
+	}
 	
 	.Menu_Button
 	{

@@ -3135,5 +3135,90 @@ class QueryCopyTable extends Query
 	 }
  }
 
+//----------------------------------------------------------------------------//
+// Vixen_where
+//----------------------------------------------------------------------------//
+/**
+ * Vixen_where
+ *
+ * Funky new where object
+ *
+ * New where object for nice inputs
+ *
+ * 
+ *
+ *
+ * @prefix		vxw
+ *
+ * @package		framework
+ * @class		Vixen_where
+ */
+class Vixen_where
+{
+
+	
+	//------------------------------------------------------------------------//
+	// Vixen_where() - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * Vixen_where()
+	 *
+	 * Constructor for Vixen_where object
+	 *
+	 * Constructor for Vixen_where object
+	 *
+	 * @param		string	strFunction		The function we are passing, represented as a string
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
+	
+	function __construct ($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
+	{
+		
+	}
+	
+	function AddAnd($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
+	{
+	
+	}
+	
+	function AddOr($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
+	{
+	
+	}
+	
+	function Table($strTable)
+	{
+	
+	}
+	
+	function Tables()
+	{
+	
+	}
+	
+	function Column($strColumn)
+	{
+	
+	}
+	
+	function Columns()
+	{
+	
+	}
+	
+	function WhereArray($arrWhere=NULL)
+	{
+		return Array();	
+	}
+	
+	function WhereString($strWhere=NULL)
+	{
+		return '';
+	}
+}
 
 ?>

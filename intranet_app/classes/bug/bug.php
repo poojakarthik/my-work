@@ -58,8 +58,22 @@
 		
 		function __construct ($intId)
 		{
+		
+			$arrColumns = Array();
+			$arrColumns['Id']				= "BugReport.Id";
+			$arrColumns['CreatedOn'] 		= "DATE_FORMAT(BugReport.CreatedOn, '%e/%m/%Y')";
+			$arrColumns['CreatedBy']		= "CONCAT(Employee.FirstName, ' ', Employee.LastName)";
+			$arrColumns['Comment']			= "BugReport.Comment";
+			$arrColumns['Status']			= "BugReport.Status";
+			$arrColumns['PageName'] 		= "BugReport.PageName";
+			$arrColumns['ClosedOn']			= "DATE_FORMAT(BugReport.ClosedOn,  '%e/%m/%Y')";
+			$arrColumns['Resolution'] 		= "BugReport.Resolution";
+			$arrColumns['AssignedTo'] 		= "CONCAT(Employee2.FirstName, ' ', Employee2.LastName)";
+			
+			$strTables = '(BugReport LEFT JOIN Employee ON (BugReport.CreatedBy = Employee.Id)) LEFT JOIN Employee AS Employee2 ON (BugReport.AssignedTo = Employee2.Id)';
+			
 			// Pull all the bug information and Store it ...
-			$selBug = new StatementSelect ('Bug', '*', 'Id = <Id>', null, 1);
+			/* $selBug = new StatementSelect ('BugReport', '*', 'BugReport.Id = <Id>', null, 1);
 			$selBug->useObLib (TRUE);
 			$selBug->Execute (Array ('Id' => $intId));
 			
@@ -72,6 +86,28 @@
 			
 			// Construct the object
 			parent::__construct ('Bug', $this->Pull ('Id')->getValue ());
+			*/ 
+			
+			//Pull information and store it
+			$selBug = new StatementSelect($strTables, $arrColumns, 'BugReport.Id = <Id>', null, 1);
+			$intCount = $selBug->Execute (Array ('Id' => $intId));
+			if ($selBug->Count () <> 1)
+			{
+				throw new Exception ('Bug does not exist.');
+			}
+			$arrResults = $selBug->Fetch ($this);
+
+
+				$arrResults['Status'] = GetConstantDescription($arrResults['Status'], 'BugStatus');
+				$arrPageName = explode('?', BaseName($arrResults['PageName']), 2);
+				//TODO!Sean! Comment out this line to see the Oblib '&' symbol error
+				$arrResults['PageName'] = $arrPageName[0];
+				$arrResults['Comment'] = nl2br($arrResults['Comment']);
+				$arrResults['Resolution'] = nl2br($arrResults['Resolution']);
+	
+
+			//Insert into the DOM Document
+			$GLOBALS['Style']->InsertDOM($arrResults, 'Bug');
 		}
 	}
 	
