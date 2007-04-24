@@ -25,8 +25,7 @@
 	$objWhere->AddAnd('Status', 		$_GET['Status']);
 	$objWhere->AddAnd('PageName', 		$_GET['PageName'], VIXEN_WHERE_SEARCH);
 	$objWhere->AddAnd(Array('Comment', 'Resolution', 'BugReportComment.Comment'), 		$_GET['Search'], VIXEN_WHERE_SEARCH);
-	
-	
+	$objWhere->WhereArray();	
 	
 	// Start a new Bug Search
 	$Style->attachObject (new Bug_list(

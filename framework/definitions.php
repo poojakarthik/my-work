@@ -316,6 +316,33 @@ $GLOBALS['*arrConstant']	['InvoiceStatus']	[105]	['Constant']	= 'INVOICE_PRINT';
 $GLOBALS['*arrConstant']	['InvoiceStatus']	[105]	['Description']	= 'Printing';
 
 
+//Where Constants
+$GLOBALS['*arrConstant']	['Where']			[100]	['Constant']	= 'WHERE_EQUALS';
+$GLOBALS['*arrConstant']	['Where']			[100]	['Description']	= '=';
+$GLOBALS['*arrConstant']	['Where']			[101]	['Constant']	= 'WHERE_NOT_EQUALS';
+$GLOBALS['*arrConstant']	['Where']			[101]	['Description']	= '!=';
+$GLOBALS['*arrConstant']	['Where']			[102]	['Constant']	= 'WHERE_LESS_THAN';
+$GLOBALS['*arrConstant']	['Where']			[102]	['Description']	= '<';
+$GLOBALS['*arrConstant']	['Where']			[103]	['Constant']	= 'WHERE_GREATER_THAN';
+$GLOBALS['*arrConstant']	['Where']			[103]	['Description']	= '>';
+$GLOBALS['*arrConstant']	['Where']			[104]	['Constant']	= 'WHERE_LESS_GREATER';
+$GLOBALS['*arrConstant']	['Where']			[104]	['Description']	= '<>';
+$GLOBALS['*arrConstant']	['Where']			[105]	['Constant']	= 'WHERE_LESS_EQUAL';
+$GLOBALS['*arrConstant']	['Where']			[105]	['Description']	= '<=';
+$GLOBALS['*arrConstant']	['Where']			[106]	['Constant']	= 'WHERE_GREATER_EQUAL';
+$GLOBALS['*arrConstant']	['Where']			[106]	['Description']	= '>=';
+$GLOBALS['*arrConstant']	['Where']			[107]	['Constant']	= 'WHERE_LIKE';
+$GLOBALS['*arrConstant']	['Where']			[107]	['Description']	= 'LIKE';
+$GLOBALS['*arrConstant']	['Where']			[108]	['Constant']	= 'WHERE_NOT_LIKE';
+$GLOBALS['*arrConstant']	['Where']			[108]	['Description']	= 'NOT LIKE';
+$GLOBALS['*arrConstant']	['Where']			[109]	['Constant']	= 'WHERE_NULL';
+$GLOBALS['*arrConstant']	['Where']			[109]	['Description']	= 'ISNULL';
+$GLOBALS['*arrConstant']	['Where']			[110]	['Constant']	= 'WHERE_NOT_NULL';
+$GLOBALS['*arrConstant']	['Where']			[110]	['Description']	= 'NOT ISNULL';
+$GLOBALS['*arrConstant']	['Where']			[111]	['Constant']	= 'WHERE_SEARCH';
+$GLOBALS['*arrConstant']	['Where']			[111]	['Description']	= 'SEARCH';
+
+
 // Charge Status
 /*define("CHARGE_WAITING"				, 100);
 define("CHARGE_APPROVED"			, 101);

@@ -3134,7 +3134,7 @@ class QueryCopyTable extends Query
 		}
 	 }
  }
-
+ 
 //----------------------------------------------------------------------------//
 // Vixen_where
 //----------------------------------------------------------------------------//
@@ -3148,77 +3148,205 @@ class QueryCopyTable extends Query
  * 
  *
  *
- * @prefix		vxw
+ * @prefix        vxw
  *
- * @package		framework
- * @class		Vixen_where
+ * @package        framework
+ * @class        Vixen_where
  */
 class Vixen_where
 {
 
-	
-	//------------------------------------------------------------------------//
-	// Vixen_where() - Constructor
-	//------------------------------------------------------------------------//
-	/**
-	 * Vixen_where()
-	 *
-	 * Constructor for Vixen_where object
-	 *
-	 * Constructor for Vixen_where object
-	 *
-	 * @param		string	strFunction		The function we are passing, represented as a string
-	 *
-	 * @return		void
-	 *
-	 * @method
-	 * @see			<MethodName()||typePropertyName>
-	 */ 
-	
-	function __construct ($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
-	{
-		
+    
+    //------------------------------------------------------------------------//
+    // Vixen_where() - Constructor
+    //------------------------------------------------------------------------//
+    /**
+     * Vixen_where()
+     *
+     * Constructor for Vixen_where object
+     *
+     * Constructor for Vixen_where object
+     *
+     * @param        string    strFunction        The function we are passing, represented as a string
+     *
+     * @return        void
+     *
+     * @method
+     * @see            <MethodName()||typePropertyName>
+     */ 
+    
+    function __construct ($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
+    {
+        $this->arrInternal = array();
+    }
+    
+    function AddAnd($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
+    {
+		$this->arrInternal[] = array("Column"=>$mixColumn, "Value"=>$mixValue, "Eval"=>$mixEval, "Type"=>'AND');
+    }
+    
+    function AddOr($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
+    {
+      	$this->arrInternal[] = array("Column"=>$mixColumn, "Value"=>$mixValue, "Eval"=>$mixEval, "Type"=>'OR');
+    }
+  
+    function Table($strTable)
+    {
+     	foreach ($this->arrInternal as $arrEntry)
+		{
+			if (is_array ($arrEntry["Column"]))
+			{
+				foreach ($arrEntry["Column"] as $strCol)
+				{
+					$arrExplode = explode('.', $strCol, 2);
+					if ($arrExplode[1])
+					{
+						if ($arrExplode[0] == $strTable)
+						{
+							return TRUE;
+						}
+					}
+				}					
+			}
+			elseif (is_object ($arrEntry["Column"]))
+			{
+				if ($arrEntry["Column"]->Table($strTable))
+				{
+					return TRUE;
+				}
+			}
+			else
+			{
+				$arrExplode = explode('.', $arrEntry["Column"], 2);
+				if ($arrExplode[1])
+				{
+					if ($arrExplode[0] == $strTable)
+					{
+						return TRUE;
+					}
+				}
+			}
+		}
+		return FALSE;		
+    }
+    
+    function Tables()
+    {
+		$arrReturn = Array();
+		foreach ($this->arrInternal as $arrEntry)
+		{
+			if (is_array ($arrEntry["Column"]))
+			{
+				foreach ($arrEntry["Column"] as $strCol)
+				{
+					$arrTable = explode('.', $strCol, 2); 
+					$arrReturn[$arrTable[0]] = $arrTable[0];
+				}					
+			}
+			elseif (is_object ($arrEntry["Column"]))
+			{
+				array_merge($arrReturn, $arrEntry["Column"]->Tables());
+			}
+			else
+			{
+				$arrTable = explode('.', $arrEntry["Column"], 2); 
+				$arrReturn[$arrTable[0]] = $arrTable[0];
+			}
+		}
+		return $arrReturn;		
+    }
+    
+    function Column($strColumn)
+    {
+     	foreach ($this->arrInternal as $arrEntry)
+		{
+			if (is_array ($arrEntry["Column"]))
+			{
+				foreach ($arrEntry["Column"] as $strCol)
+				{	
+					if ($strCol == $strColumn)
+					{
+						return TRUE;
+					}
+				}					
+			}
+			elseif (is_object ($arrEntry["Column"]))
+			{
+				if ($arrEntry["Column"]->Column($strColumn))
+				{
+					return TRUE;
+				}
+			}
+			else
+			{
+				if ($arrEntry["Column"] == $strColumn)
+				{
+					return TRUE;
+				}
+			}
+		}
+		return FALSE;		
+    }
+        
+    function Columns()
+    {		
+		$arrReturn = Array();
+		foreach ($this->arrInternal as $arrEntry)
+		{
+			if (is_array ($arrEntry["Column"]))
+			{
+				foreach ($arrEntry["Column"] as $strCol)
+				{
+					$arrReturn[$strCol] = $strCol;
+				}					
+			}
+			elseif (is_object ($arrEntry["Column"]))
+			{
+				array_merge($arrReturn, $arrEntry["Column"]->Columns());
+			}
+			else
+			{
+				$arrReturn[$arrEntry["Column"]] = $arrEntry["Column"];
+			}
+		}
+		return $arrReturn;
+    }
+    
+    function WhereArray($arrWhere=NULL)
+    {
+		$arrReturn = Array();
+		$intCount = 0;
+		foreach ($this->arrInternal as $arrEntry)
+		{
+			if (is_array ($arrEntry["Value"]))
+			{
+				foreach ($arrEntry["Value"] as $strCol)
+				{
+					$arrReturn["index_$intCount"] = $strCol;
+					$intCount++;
+				}					
+			}
+			elseif (is_object ($arrEntry["Value"]))
+			{
+				array_merge($arrReturn, $arrEntry["Value"]->WhereArray($arrWhere));
+			}
+			else
+			{
+				$arrReturn["index_$intCount"] = $arrEntry["Value"];
+				$intCount++;
+			}
+		}
+		if ($arrWhere)
+		{
+			array_merge($arrReturn, $arrWhere);
+		}		
+		return $arrReturn; 
 	}
-	
-	function AddAnd($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
-	{
-	
-	}
-	
-	function AddOr($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
-	{
-	
-	}
-	
-	function Table($strTable)
-	{
-	
-	}
-	
-	function Tables()
-	{
-	
-	}
-	
-	function Column($strColumn)
-	{
-	
-	}
-	
-	function Columns()
-	{
-	
-	}
-	
-	function WhereArray($arrWhere=NULL)
-	{
-		return Array();	
-	}
-	
-	function WhereString($strWhere=NULL)
-	{
-		return '';
-	}
+    
+    function WhereString($strWhere=NULL)
+    {
+        return '';
+    }
 }
 
 ?>
