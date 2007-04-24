@@ -1022,6 +1022,9 @@ define("SYSTEM_NOTE_TYPE"			, 7);
 define("REPORT_RESULT_TYPE_CSV"		, "CSV");
 define("REPORT_RESULT_TYPE_HTML"	, "HTML");
 
+// RemoteCopy Auto-Disconnect on Reconnect
+define("RCOPY_AUTO_DISCONNECT"		, TRUE);
+
 // resolve dispute status codes
 /*define("DISPUTE_RESOLVE_FULL_PAYMENT"		, 1);
 define("DISPUTE_RESOLVE_PARTIAL_PAYMENT"	, 2);

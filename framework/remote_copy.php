@@ -25,15 +25,45 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+ /*
 //----------------------------------------------------------------------------//
 // Tester Program
 //----------------------------------------------------------------------------//
 ob_start();
 echo "\n[ TESTING REMOTE_COPY.PHP ]\n\n";
-/*
-echo " * Connect to FTP...\n";
+
+echo " * Connect to FTP...";
+$rcpFTP = new RemoteCopyFTP("dps", "flame", "zeemu");
+$mixResult = $rcpFTP->Connect();
+if (is_string($mixResult))
+{
+	echo "\t\t\t[ FAILED ]\n\t- $mixResult\n";
+	die;
+}
+else
+{
+	echo "\t\t\t[   OK   ]\n";
+}
+ob_flush();
+
 echo " * Copy to FTP...\n";
-*/
+$mixResult = $rcpFTP->Copy("/home/richdavis/docco/", "/home/flame/docco_test/", RCOPY_REMOVE);
+if (is_string($mixResult))
+{
+	print_r($mixResult);
+}
+
+$rcpFTP->Disconnect();
+
+ob_flush();
+die;
+
+
+
+
+
+
+
 echo " * Connect to SSH2...";
 $rcpSSH2 = new RemoteCopySSH("192.168.1.16", "flame", "zeemu");
 $mixResult = $rcpSSH2->Connect();
@@ -59,7 +89,7 @@ $rcpSSH2->Disconnect();
 
 ob_flush();
 die;
- 
+ */
  
 //----------------------------------------------------------------------------//
 // RemoteCopy
@@ -317,6 +347,9 @@ die;
 	 */	
  	function Copy($strLocalPath, $strRemotePath, $intCopyMode = RCOPY_BACKUP, $intDepth = 0)
  	{
+ 		echo str_repeat("\t", $intDepth)." + Copying '$strLocalPath' to '$strRemotePath'...\n";
+ 		ob_flush();
+ 		
  		// Is $strLocalPath a file or directory?
  		if (is_file($strLocalPath))
  		{
@@ -384,13 +417,17 @@ die;
  			{
  				$strRemotePath .= '/';
  			}
+ 			if (substr($strLocalPath, -1) != '/')
+ 			{
+ 				$strLocalPath .= '/';
+ 			}
  			
  			// Get local directory listing, and traverse
  			$arrFiles = glob("*");
  			foreach ($arrFiles as $strFile)
  			{
  				// Copy all of the Directory's contents
- 				$mixResult = $this->Copy($strFile, $strRemotePath.basename($strFile), $intCopyMode, $intDepth);
+ 				$mixResult = $this->Copy($strLocalPath.$strFile, $strRemotePath.basename($strFile), $intCopyMode, $intDepth+1);
  				
  				// Check for error
  				if (is_string($mixResult))
@@ -416,9 +453,10 @@ die;
 	 *
 	 * @method
 	 */	
- 	function _CleanDir($strPath)
+ 	protected function _CleanDir($strPath)
  	{
- 		// Get the file list
+ 		// Change to this dir and Get the file list
+ 		ftp_chdir($this->_ptrConnection, $strPath);
  		$arrFiles = ftp_nlist($this->_ptrConnection, $strPath);
 		
 		// Remove all files
@@ -429,7 +467,6 @@ die;
  			{
  				// recursively call _CleanDir(), then remove the directory
  				$this->_CleanDir($strFile);
- 				ftp_cdup($this->_ptrConnection);
  				ftp_rmdir($this->_ptrConnection, $strFile);
  			}
  			else
@@ -439,6 +476,7 @@ die;
  			}
  		}
  		
+ 		ftp_cdup($this->_ptrConnection);
  		return TRUE;
  	}
  	
@@ -457,32 +495,41 @@ die;
 	 *
 	 * @method
 	 */	
- 	function _Backup($strPath, $intRecursion = 0)
+ 	protected function _Backup($strPath, $intRecursion = 0)
  	{
  		// Check if the file exists
- 		if (ftp_size($strPath) > 0)
+ 		if (ftp_size($this->_ptrConnection, $strPath) > 0)
  		{
+ 			echo "BACKUP";
  			// File exists, so try next filename
  			if (!$intRecursion)
  			{
- 				$strBackupPath .= ".bk0";
+ 				$strBackupPath = $strPath.".bk0";
  			}
  			else
  			{
- 				$strBackupPath = substr($strPath, -4).".bk$intRecursion";
+ 				$strBackupPath = rtrim($strPath, ".bk".($intRecursion-1)).".bk$intRecursion";
  			}
  			
  			// Call Backup() until a free filename is found
- 			$strBackupPath = $this->_Backup($strBackupPath, $intRecursion++);
+ 			$strBackupPath = $this->_Backup($strBackupPath, $intRecursion+1);
  		}
  		else
  		{
  			// Don't need to back up
- 			return TRUE;
+ 			return $strPath;
  		}
 		
-		// Back up file
-		return (bool)ftp_rename($this->_ptrConnection, $strPath, $strBackupPath);
+		// Is this the version we want?
+		if (!$intRecursion)
+		{
+			// Back up file
+			return (bool)ftp_rename($this->_ptrConnection, $strPath, $strBackupPath);
+		}
+		else
+		{
+			return $strBackupPath;
+		}
  	}
  }
  
@@ -734,7 +781,7 @@ die;
 	 *
 	 * @method
 	 */	
- 	function _CleanDir($strPath)
+ 	protected function _CleanDir($strPath)
  	{
  		// Change to the new directory and get the file list
  		$arrFiles = explode("\n", $this->_SSH2Execute("ls $strPath"));
@@ -787,7 +834,7 @@ die;
 	 *
 	 * @method
 	 */	
- 	function _Backup($strPath, $intRecursion = 0)
+ 	protected function _Backup($strPath, $intRecursion = 0)
  	{
  		// Check if the file exists
  		if ($this->_SSH2Execute("stat $strPath"))
@@ -839,7 +886,7 @@ die;
 	 *
 	 * @method
 	 */	
- 	function _SSH2Execute($strCommand)
+ 	protected function _SSH2Execute($strCommand)
  	{
  		$ptrStream = ssh2_exec($this->_ptrConnection, $strCommand);
  		stream_set_blocking($ptrStream, 1);
@@ -862,7 +909,7 @@ die;
 	 *
 	 * @method
 	 */	
- 	function _SSH2IsDir($strPath)
+ 	protected function _SSH2IsDir($strPath)
  	{
  		$strOutput = $this->_SSH2Execute("stat $strPath");
  		$arrAttribs = explode("\n", $strOutput);
