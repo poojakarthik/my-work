@@ -25,71 +25,6 @@
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- /*
-//----------------------------------------------------------------------------//
-// Tester Program
-//----------------------------------------------------------------------------//
-ob_start();
-echo "\n[ TESTING REMOTE_COPY.PHP ]\n\n";
-
-echo " * Connect to FTP...";
-$rcpFTP = new RemoteCopyFTP("dps", "flame", "zeemu");
-$mixResult = $rcpFTP->Connect();
-if (is_string($mixResult))
-{
-	echo "\t\t\t[ FAILED ]\n\t- $mixResult\n";
-	die;
-}
-else
-{
-	echo "\t\t\t[   OK   ]\n";
-}
-ob_flush();
-
-echo " * Copy to FTP...\n";
-$mixResult = $rcpFTP->Copy("/home/richdavis/docco/", "/home/flame/docco_test/", RCOPY_REMOVE);
-if (is_string($mixResult))
-{
-	print_r($mixResult);
-}
-
-$rcpFTP->Disconnect();
-
-ob_flush();
-die;
-
-
-
-
-
-
-
-echo " * Connect to SSH2...";
-$rcpSSH2 = new RemoteCopySSH("192.168.1.16", "flame", "zeemu");
-$mixResult = $rcpSSH2->Connect();
-if (is_string($mixResult))
-{
-	echo "\t\t\t[ FAILED ]\n\t- $mixResult\n";
-}
-else
-{
-	echo "\t\t\t[   OK   ]\n";
-}
-ob_flush();
-
-echo " * Copy to SSH2...\n\n";
-//$rcpSSH2->_SSH2Execute("mkdir /home/flame/docco_test");
-$mixResult = $rcpSSH2->Copy("/home/richdavis/docco/", "/home/flame/docco_test/", RCOPY_BACKUP);
-if (is_string($mixResult))
-{
-	print_r($mixResult);
-}
-
-$rcpSSH2->Disconnect();
-
-ob_flush();
-die;
- */
  
 //----------------------------------------------------------------------------//
 // RemoteCopy
@@ -119,6 +54,10 @@ die;
 	 * RemoteCopy constructor
 	 *
 	 * RemoteCopy constructor
+	 * 
+	 * @param	string		$strServer			Server to connect to
+	 * @param	string		$strUsername		Username to authenticate with
+	 * @param	string		$strPassword		Password to authenticate with
 	 *
 	 * @return		RemoteCopy
 	 *
@@ -140,8 +79,12 @@ die;
 	 * Connects to a remote server
 	 *
 	 * Connects to a remote server.  Should only be called by child objects
-	 *
-	 * @return		mixed		TRUE: Success; string: error message
+	 * 
+	 * @param	string		$strServer			optional Server to connect to
+	 * @param	string		$strUsername		optional Username to authenticate with
+	 * @param	string		$strPassword		optional Password to authenticate with
+	 * 
+	 * @return	mixed							TRUE: Success; string: error message
 	 *
 	 * @method
 	 */	
@@ -214,8 +157,13 @@ die;
 	 * Recursively copies a local path to a remote path
 	 *
 	 * Recursively copies a local path to a remote path.  Accepts Files and Directories.  Should NEVER be called
+	 * 
+	 * @param	string		$strLocalPath		The full path to recursively copy from
+	 * @param	string		$strRemotePath		The full remote path to copy to
+	 * @param	integer		$intCopyMode		optional Action to take when an existing file is encountered
+	 * @param	integer		$intDepth			optional Directory depth.  For internal use only.
 	 *
-	 * @return		mixed		TRUE: Success; string: error message
+	 * @return	mixed							TRUE: Success; string: error message
 	 *
 	 * @method
 	 */	
@@ -253,6 +201,10 @@ die;
 	 * RemoteCopyFTP constructor
 	 *
 	 * RemoteCopyFTP constructor
+	 * 
+	 * @param	string		$strServer			Server to connect to
+	 * @param	string		$strUsername		Username to authenticate with
+	 * @param	string		$strPassword		Password to authenticate with
 	 *
 	 * @return		RemoteCopyFTP
 	 *
@@ -273,8 +225,12 @@ die;
 	 * Connects to a remote FTP server
 	 *
 	 * Connects to a remote FTP server.
-	 *
-	 * @return		mixed		TRUE: Success; string: error message
+	 * 
+	 * @param	string		$strServer			optional Server to connect to
+	 * @param	string		$strUsername		optional Username to authenticate with
+	 * @param	string		$strPassword		optional Password to authenticate with
+	 * 
+	 * @return	mixed							TRUE: Success; string: error message
 	 *
 	 * @method
 	 */	
@@ -340,8 +296,13 @@ die;
 	 * Recursively copies a local path to a remote path
 	 *
 	 * Recursively copies a local path to a remote path.  Accepts Files and Directories
+	 * 
+	 * @param	string		$strLocalPath		The full path to recursively copy from
+	 * @param	string		$strRemotePath		The full remote path to copy to
+	 * @param	integer		$intCopyMode		optional Action to take when an existing file is encountered
+	 * @param	integer		$intDepth			optional Directory depth.  For internal use only.
 	 *
-	 * @return		mixed		TRUE: Success; string: error message
+	 * @return	mixed							TRUE: Success; string: error message
 	 *
 	 * @method
 	 */	
@@ -448,8 +409,10 @@ die;
 	 * Cleans a Remote Directory
 	 *
 	 * Cleans a Remote Directory
+	 * 
+	 * @param	string		$strPath		The directory to clean
 	 *
-	 * @return		boolean
+	 * @return	boolean
 	 *
 	 * @method
 	 */	
@@ -490,8 +453,12 @@ die;
 	 * Backs up a remote file if necessary
 	 *
 	 * Backs up a remote file if necessary
+	 * 
+	 * @param	string		$strPath		The proposed remote path to copy to
+	 * @param	integer		$intRecursion	optional The number component of the backup extension (ie. '.bk1').
+	 * 										For internal use only.
 	 *
-	 * @return		boolean
+	 * @return	boolean
 	 *
 	 * @method
 	 */	
@@ -564,6 +531,10 @@ die;
 	 * RemoteCopySSH constructor
 	 *
 	 * RemoteCopySSH constructor
+	 * 
+	 * @param	string		$strServer			Server to connect to
+	 * @param	string		$strUsername		Username to authenticate with
+	 * @param	string		$strPassword		Password to authenticate with
 	 *
 	 * @return		RemoteCopySSH
 	 *
@@ -584,8 +555,12 @@ die;
 	 * Connects to a remote SSH2 server
 	 *
 	 * Connects to a remote SSH2 server.
-	 *
-	 * @return		mixed		TRUE: Success; string: error message
+	 * 
+	 * @param	string		$strServer			optional Server to connect to
+	 * @param	string		$strUsername		optional Username to authenticate with
+	 * @param	string		$strPassword		optional Password to authenticate with
+	 * 
+	 * @return	mixed							TRUE: Success; string: error message
 	 *
 	 * @method
 	 */	
@@ -658,8 +633,13 @@ die;
 	 * Recursively copies a local path to a remote path
 	 *
 	 * Recursively copies a local path to a remote path.  Accepts Files and Directories
+	 * 
+	 * @param	string		$strLocalPath		The full path to recursively copy from
+	 * @param	string		$strRemotePath		The full remote path to copy to
+	 * @param	integer		$intCopyMode		optional Action to take when an existing file is encountered
+	 * @param	integer		$intDepth			optional Directory depth.  For internal use only.
 	 *
-	 * @return		mixed		TRUE: Success; string: error message
+	 * @return	mixed							TRUE: Success; string: error message
 	 *
 	 * @method
 	 */	
@@ -776,8 +756,10 @@ die;
 	 * Cleans a Remote Directory
 	 *
 	 * Cleans a Remote Directory
+	 * 
+	 * @param	string		$strPath		The directory to clean
 	 *
-	 * @return		boolean
+	 * @return	boolean
 	 *
 	 * @method
 	 */	
@@ -829,8 +811,12 @@ die;
 	 * Backs up a remote file if necessary
 	 *
 	 * Backs up a remote file if necessary
+	 * 
+	 * @param	string		$strPath		The proposed remote path to copy to
+	 * @param	integer		$intRecursion	optional The number component of the backup extension (ie. '.bk1').
+	 * 										For internal use only.
 	 *
-	 * @return		boolean
+	 * @return	boolean
 	 *
 	 * @method
 	 */	
@@ -881,8 +867,10 @@ die;
 	 * Function wrapper for ssh2_exec, with blocking enabled
 	 *
 	 * Function wrapper for ssh2_exec, with blocking enabled
+	 * 
+	 * @param	string		$strCommand		The shell command to execute
 	 *
-	 * @return	string
+	 * @return	boolean
 	 *
 	 * @method
 	 */	
@@ -904,8 +892,10 @@ die;
 	 * Implements is_dir() for SSH2 connections
 	 *
 	 * Implements is_dir() for SSH2 connections
+	 * 
+	 * @param	string		$strPath		The path to examine
 	 *
-	 * @return	string
+	 * @return	boolean
 	 *
 	 * @method
 	 */	
