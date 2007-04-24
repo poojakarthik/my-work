@@ -139,6 +139,7 @@
 			$arrColumns['Id']				= "BugReport.Id";
 			$arrColumns['CreatedOn'] 		= "DATE_FORMAT(BugReport.CreatedOn, '%e/%m/%Y')";
 			$arrColumns['CreatedBy']		= "CONCAT(Employee.FirstName, ' ', Employee.LastName)";
+			$arrColumns['AssignedTo']		= "CONCAT(Employee2.FirstName, ' ', Employee2.LastName)";
 			$arrColumns['Comment']			= "BugReport.Comment";
 			$arrColumns['Status']			= "BugReport.Status";
 			$arrColumns['PageName'] 		= "BugReport.PageName";			
