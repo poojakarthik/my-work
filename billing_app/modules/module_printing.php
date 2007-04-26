@@ -234,6 +234,7 @@
 	 															"RecordGroup.Itemised = 1 AND " .
 	 															"CDR.InvoiceRun = <InvoiceRun> AND " .
  																"FNN BETWEEN <RangeStart> AND <RangeEnd>",
+	 															"RecordGroup.Description",
 	 															NULL,
 	 															"RecordGroup.Id");
 																
