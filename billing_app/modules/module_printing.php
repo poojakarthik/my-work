@@ -604,6 +604,20 @@
 				}
 				$arrDefine['ItemSvcHeader']	['FNN']				['Value']	= $strFNN;
 				$this->_arrFileData[] = $arrDefine['ItemSvcHeader'];
+ 		
+		 		// Set up Ranges
+		 		if (!$arrService['RangeStart'])
+		 		{
+		 			// Not an Indial, fake the Range
+		 			$arrService['RangeStart']	= $arrService['FNN'];
+		 			$arrService['RangeEnd']		= $arrService['FNN'];
+		 		}
+		 		else
+		 		{
+		 			// Indial, fix the range
+		 			$arrService['RangeStart']	= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT);
+		 			$arrService['RangeEnd']		= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT);
+		 		}
 				
 			 	// Fetch the record type data
 			 	$arrWhere = Array();
@@ -1174,26 +1188,14 @@
  		$arrDefine = $this->_arrDefine;
  		$arrItemisedCalls = Array();
  		
- 		// Set up Ranges
- 		if (!$arrService['RangeStart'])
- 		{
- 			// Not an Indial, fake the Range
- 			$arrWhere['RangeStart']		= $arrService['FNN'];
- 			$arrWhere['RangeEnd']		= $arrService['FNN'];
- 		}
- 		else
- 		{
- 			// Indial, fix the range
- 			$arrWhere['RangeStart']		= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT);
- 			$arrWhere['RangeEnd']		= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT);
- 		}
- 		
  		// Is this a Charge itemisation or Call itemisation?
  		if ($arrRecordGroup['IsCharge'] !== TRUE)
  		{
 	 		// Get Service RecordGroup Calls
 	 		$arrWhere = Array();
 	 		$arrWhere['Service']		= $arrService['Id'];
+			$arrWhere['RangeStart']		= $arrService['RangeStart'];
+			$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
 	 		$arrWhere['RecordGroup']	= $arrRecordGroup['RecordType'];
 		 	$arrWhere['InvoiceRun']		= $this->_arrInvoiceDetails['InvoiceRun'];
 		 	
