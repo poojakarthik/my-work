@@ -182,7 +182,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		$arrDefine ['CDRId']		['Validate']	= "/^\d+$/";
 		$arrDefine ['CallDate']		['Validate']	= "/^\d{14}$/";
 		$arrDefine ['Units']		['Validate']	= "/^\d+$/";
-		$arrDefine ['RecordType']	['Validate']	= "/^50$/";
+		$arrDefine ['RecordType']	['Validate']	= "/^5[10]$/";
 		$arrDefine ['PointOrigin']	['Validate']	= "/^\d+$/";
 		$arrDefine ['PointTarget']	['Validate']	= "/^\d+$/";
 		$arrDefine ['Amount']		['Validate']	= "/^\d+$/";
