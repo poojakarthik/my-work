@@ -383,8 +383,8 @@
 			$strQuery .= " GROUP BY Service, RecordType";
 			
 			// build query (with Service Extensions)
-			$strExtensionsQuery	 = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
-			$strExtensionsQuery .= " SELECT FNN, AccountGroup, Service, '$this->_strInvoiceRun' AS InvoiceRun,";
+			$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
+			$strExtensionsQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
 			$strExtensionsQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
 			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2)";
 			$strExtensionsQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
