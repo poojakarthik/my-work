@@ -1052,6 +1052,16 @@ define("REPORT_RESULT_TYPE_HTML"	, "HTML");
 // RemoteCopy Auto-Disconnect on Reconnect
 define("RCOPY_AUTO_DISCONNECT"		, TRUE);
 
+// RemoteCopy Backup Methods
+$GLOBALS['*arrConstant']	['CopyMethod']	[1]	['Constant']	= 'RCOPY_BACKUP';
+$GLOBALS['*arrConstant']	['CopyMethod']	[1]	['Description']	= 'Backup Files';
+$GLOBALS['*arrConstant']	['CopyMethod']	[2]	['Constant']	= 'RCOPY_REMOVE';
+$GLOBALS['*arrConstant']	['CopyMethod']	[2]	['Description']	= 'Remove Files an Directories First';
+$GLOBALS['*arrConstant']	['CopyMethod']	[3]	['Constant']	= 'RCOPY_OVERWRITE';
+$GLOBALS['*arrConstant']	['CopyMethod']	[3]	['Description']	= 'Overwrite Files';
+
+
+
 // resolve dispute status codes
 /*define("DISPUTE_RESOLVE_FULL_PAYMENT"		, 1);
 define("DISPUTE_RESOLVE_PARTIAL_PAYMENT"	, 2);
@@ -1066,6 +1076,12 @@ $GLOBALS['*arrConstant']	['DistputeResolve']	[3]	['Description']	= 'No Payment';
 // Commonly used Email Addresses
 $GLOBALS['*arrConstant']	['EmailAddress']	['david.g@telcoblue.com.au']	['Constant']	= 'EMAIL_CREDIT_MANAGER';
 $GLOBALS['*arrConstant']	['EmailAddress']	['david.g@telcoblue.com.au']	['Description']	= 'Credit Manager';
+
+// Remote Copy Protocols
+$GLOBALS['*arrConstant']	['CopyProtocol']	[600]	['Constant']	= 'PROTOCOL_SSH2';
+$GLOBALS['*arrConstant']	['CopyProtocol']	[600]	['Description']	= 'Secure Shell 2 (SSH2)';
+$GLOBALS['*arrConstant']	['CopyProtocol']	[601]	['Constant']	= 'PROTOCOL_FTP';
+$GLOBALS['*arrConstant']	['CopyProtocol']	[601]	['Description']	= 'File Transfer Protocal (FTP)';
 
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
