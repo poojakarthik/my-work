@@ -853,7 +853,7 @@
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
-		
+		/*
 		// change status of invoices in the temp invoice table
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_TEMP_INVOICE_STATUS, FALSE);
 		$arrUpdateData = Array();
@@ -869,7 +869,24 @@
 		{
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}*/
+		
+		// empty temporary invoice table
+		$this->_rptBillingReport->AddMessage("Truncating Temp Invoice table...", FALSE);
+		$qryTruncate = new Query();
+		if (!$qryTruncate->Execute("TRUNCATE TABLE InvoiceTemp"))
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return;
 		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		
 		
 		// change status of temp invoice CDRs
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS."\t", FALSE);
