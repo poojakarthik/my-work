@@ -522,7 +522,7 @@
 		$mixResult = $this->_ubiCDR->Execute($arrCDR);
 		if (!$mixResult)
 		{
-
+			//Debug($this->_ubiCDR->Error());
 		}
 		return $mixResult;
 	}

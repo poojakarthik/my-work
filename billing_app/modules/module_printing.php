@@ -117,7 +117,7 @@
 																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND Service.Id = Service2.Id",
 																"CostCentre.Name, Service.ServiceType, Service.FNN",
 																NULL,
-																"Service.Id, ServiceExtension.RangeStart");
+																"Service.FNN, ServiceExtension.RangeStart");
 		
 		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"(TotalCharge + Debit - Credit) AS TotalCharge",
@@ -139,7 +139,7 @@
  		$arrColumns['Records']		= "SUM(Records)";
  		$this->_selServiceSummary	= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
  															$arrColumns,
- 															"Service = <Service> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
+ 															"Service = <Service> AND FNN BETWEEN <RangeStart> AND <RangeEnd> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
  															"ServiceTypeTotal.FNN, GroupType.Description",
  															NULL,
  															"GroupType.Description DESC");
@@ -223,12 +223,8 @@
  															"RecordGroup.Id = RecordType.GroupId AND " .
  															"RecordGroup.Id = <RecordGroup> AND " .
  															"RecordGroup.Itemised = 1 AND " .
- 															"CDR.InvoiceRun = <InvoiceRun> " .
- 															"AND (" .
- 															"	<RangeStart> IS NULL " .
- 															" OR " .
-	 														"	CAST(SUBSTRING(CDR.FNN, -2) AS UNSIGNED) BETWEEN <RangeStart> AND <RangeEnd> " .
- 															")",
+ 															"CDR.InvoiceRun = <InvoiceRun> AND " .
+ 															"FNN BETWEEN <RangeStart> AND <RangeEnd>",
  															"CDR.StartDatetime");
  															
 		$this->_selItemisedRecordTypes = new StatementSelect(	"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
@@ -237,21 +233,16 @@
 	 															"RecordGroup.Id = RecordType.GroupId AND " .
 	 															"RecordGroup.Itemised = 1 AND " .
 	 															"CDR.InvoiceRun = <InvoiceRun> AND " .
-	 															"(" .
-	 															"	<RangeStart> <=> NULL " .
-	 															" OR " .
-	 															"	CAST(SUBSTRING(CDR.FNN, -2) AS UNSIGNED) BETWEEN <RangeStart> AND <RangeEnd> " .
-	 															")",
-	 															"RecordGroup.Description DESC",
+ 																"FNN BETWEEN <RangeStart> AND <RangeEnd>",
 	 															NULL,
 	 															"RecordGroup.Id");
 																
-		$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
+		/*$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
 																"RecordType AS RType",
 																"ServiceTypeTotal.Charge AS Charge",
-																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND ServiceTypeTotal.FNN = <FNN> AND ServiceTypeTotal.InvoiceRun = <InvoiceRun>",
+																"RecordType.GroupId = RType.Id AND RType.Name = <RecordTypeName> AND ServiceTypeTotal.FNN BETWEEN <RangeStart> AND <RangeEnd> AND ServiceTypeTotal.InvoiceRun = <InvoiceRun>",
 																NULL,
-																"1");
+																"1");*/
 		
 		$this->_selWeReceived			= new StatementSelect(	"InvoicePayment",
 																"SUM(Amount) AS WeReceived",
@@ -394,7 +385,7 @@
 		
 		// MONTHLY COMPARISON BAR GRAPH
 		// build output
-		// FIXME
+		// FIXME... different graphs??
 		$arrDefine['GraphHeader']		['GraphType']		['Value']	= GRAPH_TYPE_VERTICALBAR;
 		$arrDefine['GraphHeader']		['GraphTitle']		['Value']	= "Account History";
 		$arrDefine['GraphHeader']		['XTitle']			['Value']	= "Month";
@@ -538,16 +529,7 @@
 			$fltCostCentreTotal	= 0.0;
 			$this->_arrFileData[] = $arrDefine['SvcSummaryHeader'];
 			foreach($arrServices as $arrService)
-			{
-				if ($arrService['RangeStart'] && $arrService['RangeEnd'])
-				{
-					$strFNN	= $arrService['FNN']."(".$arrService['ExtensionName'].")";
-				}
-				else
-				{
-					$strFNN	= $arrService['FNN'];
-				}
-				
+			{				
 				// Add cost centre records
 				if ($strCostCentre !== $arrService['CostCentre'])
 				{
@@ -575,7 +557,7 @@
 				}
 				
 				// Add the Service Summary
-				if ($mixResponse = $this->GenerateServiceSummary($arrService['Id'], $strFNN, $arrService['CostCentre']))
+				if ($mixResponse = $this->GenerateServiceSummary($arrService))
 				{
 					$fltCostCentreTotal += $mixResponse;
 				}
@@ -612,7 +594,8 @@
 				// add service record (80)
 				if ($arrService['RangeStart'] && $arrService['RangeEnd'])
 				{
-					$strFNN	= $arrService['FNN']."(".$arrService['ExtensionName'].")";
+					//$strFNN	= $arrService['FNN']."(".$arrService['ExtensionName'].")";
+					$strFNN = $arrService['ExtensionName'];
 				}
 				else
 				{
@@ -1015,23 +998,52 @@
 	 *
 	 * Generates a Service Summary for a specified service
 	 * 
-	 * @param		integer		$intService		The service to generate a summary for
-	 * @param		string		$strFNN			The FNN for this service
-	 * @param		string		$strCostCentre	The CostCentre (can be null) for this service
+	 * @param		array		$arrService		The service to generate a summary for
 	 *
 	 * @return		mixed						float: total charge
 	 * 											FALSE: an error occurred
 	 *
 	 * @method
 	 */
- 	function GenerateServiceSummary($intService, $strFNN, $strCostCentre)
+ 	function GenerateServiceSummary($arrService)
  	{
 		$arrDefine = $this->_arrDefine;
 		
+		// Check if this is an Indial Extension
+		if ($arrService['RangeStart'] && $arrService['RangeEnd'])
+		{
+			//$strFNN	= $arrService['FNN']."(".$arrService['ExtensionName'].")";
+			$strFNN	= $arrService['ExtensionName'];	// FIXME later on, when file definition is changed
+			
+			// Ranges
+			$strRangeStart	= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT);
+			$strRangeEnd	= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT);
+			
+			// Is the primary FNN in this range?
+			if ($arrService['FNN'] >= $strRangeStart && $arrService['FNN'] <= $strRangeEnd)
+			{
+				$bolPrimary = TRUE;
+			}
+			else
+			{
+				$bolPrimary = FALSE;
+			}
+		}
+		else
+		{
+			// Not an Indial, so manually set RangeStart and RangeEnd
+			$strFNN			= $arrService['FNN'];
+			$strRangeStart	= $arrService['FNN'];
+			$strRangeEnd	= $arrService['FNN'];
+			$bolPrimary		= NULL;
+		}
+		
   		// Get ServiceTypeTotals
  		$arrColumns = Array();
- 		$arrColumns['Service']		= $intService;
- 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;													
+ 		$arrColumns['Service']		= $arrService['Id'];
+ 		$arrColumns['RangeStart']	= $strRangeStart;
+ 		$arrColumns['RangeEnd']		= $strRangeEnd;
+ 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;
  		if ($this->_selServiceSummary->Execute($arrColumns) === FALSE)
  		{
  			// ERROR
@@ -1039,48 +1051,55 @@
  			return FALSE;
  		}
  		$arrServiceSummaries = $this->_selServiceSummary->FetchAll();
- 		
- 		// Get Charge Totals
- 		$arrColumns = Array();
- 		$arrColumns['Service']		= $intService;
- 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;
- 		if ($this->_selServiceChargesTotal->Execute($arrColumns) === FALSE)
- 		{
- 			// ERROR
- 			Debug($this->_selServiceChargesTotal->Error());
- 			return FALSE;
- 		}
- 		$arrChargeSummaries =  $this->_selServiceChargesTotal->FetchAll();
- 		$arrChargeSummary = Array();
- 		$arrChargeSummary['Charge']		= 0.0;
- 		$arrChargeSummary['Records']	= 0;
- 		$arrChargeSummary['RecordType']	= 'Other Charges & Credits';
- 		foreach ($arrChargeSummaries as $arrSummary)
- 		{
- 			if ($arrSummary['Nature'] == 'CR')
- 			{
- 				$arrChargeSummary['Total']		-= $arrSummary['Charge'];
- 				$arrChargeSummary['Records']	+= $arrSummary['Records'];
- 				//$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
- 			}
- 			else
- 			{
- 				$arrChargeSummary['Total']		+= $arrSummary['Charge'];
- 				$arrChargeSummary['Records']	+= $arrSummary['Records'];
- 				//$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
- 			}
- 		}
- 		
- 		if ($arrChargeSummary['Records'] > 0)
- 		{
- 			$arrServiceSummaries[] = $arrChargeSummary;
- 		}
+	 	
+	 	// Add Service Charges
+	 	if ($bolPrimary === TRUE || $bolPrimary === NULL)
+		{
+			// It's the primary number, or not an Indial
+
+	 		// Get Charge Totals
+	 		$arrColumns = Array();
+	 		$arrColumns['Service']		= $arrService['Id'];
+	 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;
+	 		if ($this->_selServiceChargesTotal->Execute($arrColumns) === FALSE)
+	 		{
+	 			// ERROR
+	 			Debug($this->_selServiceChargesTotal->Error());
+	 			return FALSE;
+	 		}
+	 		$arrChargeSummaries =  $this->_selServiceChargesTotal->FetchAll();
+	 		$arrChargeSummary = Array();
+	 		$arrChargeSummary['Charge']		= 0.0;
+	 		$arrChargeSummary['Records']	= 0;
+	 		$arrChargeSummary['RecordType']	= 'Other Charges & Credits';
+	 		foreach ($arrChargeSummaries as $arrSummary)
+	 		{
+	 			if ($arrSummary['Nature'] == 'CR')
+	 			{
+	 				$arrChargeSummary['Total']		-= $arrSummary['Charge'];
+	 				$arrChargeSummary['Records']	+= $arrSummary['Records'];
+	 				//$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
+	 			}
+	 			else
+	 			{
+	 				$arrChargeSummary['Total']		+= $arrSummary['Charge'];
+	 				$arrChargeSummary['Records']	+= $arrSummary['Records'];
+	 				//$arrChargeSummary['RecordType']	= $arrSummary['RecordType'];
+	 			}
+	 		}
+	 		
+	 		if ($arrChargeSummary['Records'] > 0)
+	 		{
+	 			$arrServiceSummaries[] = $arrChargeSummary;
+	 		}
+		}
  		
  		// if we have anything to add to the invoice...
- 		$arrCols = Array();
- 		$arrCols['Service']		= $intService;
- 		$arrCols['InvoiceRun']	= $this->_strInvoiceRun;
- 		if ($this->_selDisplayServiceSummary->Execute($arrCols))
+ 		//$arrCols = Array();
+ 		//$arrCols['Service']		= $intService;
+ 		//$arrCols['InvoiceRun']	= $this->_strInvoiceRun;
+ 		//if ($this->_selDisplayServiceSummary->Execute($arrCols))
+ 		if ($arrServiceSummaries)
  		{
 			// Service Header
 			$arrDefine['SvcSummSvcHeader']		['FNN']				['Value']	= $strFNN;
@@ -1099,21 +1118,31 @@
 				$fltTotal += $arrServiceSummary['Total'];
 	 		}
 	 		
-	 		$arrData = Array();
-	 		$arrData['Service']		= $intService;
-	 		$arrData['InvoiceRun']	= $this->_strInvoiceRun;
-	 		if ($this->_selServiceTotal->Execute($arrData) === FALSE)
-	 		{
-	 			Debug($this->_selServiceTotal->Error());
-	 			return FALSE;
-	 		}
-	 		$arrServiceTotal = $this->_selServiceTotal->Fetch();
-	 		
 			// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
 			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
-			$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= $arrServiceTotal['TotalCharge'];
+			if (is_bool($bolPrimary))
+			{
+				// An indial, so use the uncapped total
+				$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= $fltTotal;
+			}
+			else
+			{
+				// not an indial, so use the capped total
+		 		$arrData = Array();
+		 		$arrData['Service']		= $arrService['Id'];
+		 		$arrData['InvoiceRun']	= $this->_strInvoiceRun;
+		 		if ($this->_selServiceTotal->Execute($arrData) === FALSE)
+		 		{
+		 			Debug($this->_selServiceTotal->Error());
+		 			return FALSE;
+		 		}
+		 		$arrServiceTotal = $this->_selServiceTotal->Fetch();
+		 		
+				$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= $arrServiceTotal['TotalCharge'];
+			}
+			
 			$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
- 		
+ 			
  			return $fltTotal;
  		}
  		else
@@ -1144,21 +1173,27 @@
  		$arrDefine = $this->_arrDefine;
  		$arrItemisedCalls = Array();
  		
+ 		// Set up Ranges
+ 		if (!$arrService['RangeStart'])
+ 		{
+ 			// Not an Indial, fake the Range
+ 			$arrWhere['RangeStart']		= $arrService['FNN'];
+ 			$arrWhere['RangeEnd']		= $arrService['FNN'];
+ 		}
+ 		else
+ 		{
+ 			// Indial, fix the range
+ 			$arrWhere['RangeStart']		= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT);
+ 			$arrWhere['RangeEnd']		= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT);
+ 		}
+ 		
+ 		// Is this a Charge itemisation or Call itemisation?
  		if ($arrRecordGroup['IsCharge'] !== TRUE)
  		{
+	 		// Get Service RecordGroup Calls
 	 		$arrWhere = Array();
 	 		$arrWhere['Service']		= $arrService['Id'];
 	 		$arrWhere['RecordGroup']	= $arrRecordGroup['RecordType'];
-	 		if (!$arrService['RangeStart'])
-	 		{
-	 			$arrWhere['RangeStart']		= NULL;
-	 			$arrWhere['RangeEnd']		= NULL;
-	 		}
-	 		else
-	 		{
-	 			$arrWhere['RangeStart']		= $arrService['RangeStart'];
-	 			$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
-	 		}
 		 	$arrWhere['InvoiceRun']		= $this->_arrInvoiceDetails['InvoiceRun'];
 		 	
 			if ($this->_selItemisedCalls->Execute($arrWhere) === FALSE)
@@ -1169,10 +1204,8 @@
 			}
 			$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
  		}
-		else
+		elseif ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd'])
 		{
-			//echo "\n\t\t...Looking for Service Charges on service {$arrService['Id']}...\n";
-			
 			// Get Service's Charges
 		 	$arrWhere = Array();
 		 	$arrWhere['Account']	= $this->_arrInvoiceDetails['Account'];

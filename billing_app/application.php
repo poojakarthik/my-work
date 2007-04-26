@@ -371,7 +371,7 @@
 			
 			// SERVICE TYPE TOTALS
 			
-			// build query
+			// build query (no Service Extensions)
 			$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
 			$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
 			$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
@@ -382,9 +382,20 @@
 			$strQuery .= " AND CDR.Credit = 0";
 			$strQuery .= " GROUP BY Service, RecordType";
 			
+			// build query (with Service Extensions)
+			$strExtensionsQuery	 = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
+			$strExtensionsQuery .= " SELECT FNN, AccountGroup, Service, '$this->_strInvoiceRun' AS InvoiceRun,";
+			$strExtensionsQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
+			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2)";
+			$strExtensionsQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
+			$strExtensionsQuery .= " AND Status = ".CDR_TEMP_INVOICE;
+			$strExtensionsQuery .= " AND Account = ".$arrAccount['Id'];
+			$strExtensionsQuery .= " AND CDR.Credit = 0";
+			$strExtensionsQuery .= " GROUP BY Service, FNN, RecordType";
+			
 			// run query
 			$qryServiceTypeTotal = new Query();
-			$qryServiceTypeTotal->Execute($strQuery);
+			$qryServiceTypeTotal->Execute($strExtensionsQuery);
 			
 			// zero out totals
 			$fltDebits			= 0.0;
@@ -652,7 +663,7 @@
 				$this->intFailed++;
 				continue;
 			}
-			
+			/*
 			// check for last month's TotalOwing to Account for Credits that should be carried forward
 			$selPreviousTotalOwing->Execute(Array('Account'));
 			$arrTotalOwing = $selPreviousTotalOwing->Fetch();
@@ -660,7 +671,7 @@
 			if ($fltPreviousTotalOwing < $fltAccountBalance && $fltPreviousTotalOwing < 0)
 			{
 				// TODO
-			}
+			}*/
 			
 			// get total owing
 			$fltTotalOwing = $fltBalance + $fltAccountBalance;
