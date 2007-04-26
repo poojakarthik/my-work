@@ -395,11 +395,7 @@
 			
 			// run query
 			$qryServiceTypeTotal = new Query();
-			if(!$qryServiceTypeTotal->Execute($strExtensionsQuery))
-			{
-				Debug($qryServiceTypeTotal->Error());
-				die;
-			}
+			$qryServiceTypeTotal->Execute($strExtensionsQuery);
 			
 			// zero out totals
 			$fltDebits			= 0.0;
