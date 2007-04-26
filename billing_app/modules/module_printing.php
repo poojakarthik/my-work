@@ -617,8 +617,6 @@
 		 			// Indial, fix the range
 		 			$arrService['RangeStart']	= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeStart'], 2, '0', STR_PAD_LEFT);
 		 			$arrService['RangeEnd']		= substr($arrService['FNN'], 0, -2).str_pad($arrService['RangeEnd'], 2, '0', STR_PAD_LEFT);
-		 			Debug($arrService);
-		 			die;
 		 		}
 		 		
 				
