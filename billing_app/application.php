@@ -398,6 +398,7 @@
 			if(!$qryServiceTypeTotal->Execute($strExtensionsQuery))
 			{
 				Debug($qryServiceTypeTotal->Error());
+				die;
 			}
 			
 			// zero out totals
