@@ -2145,6 +2145,7 @@ class QueryCopyTable extends Query
 	 		// Find and replace the aliases in $strWhere
 	 		$this->_arrWhereAliases = $this->FindAlias($strWhere);
 			$strQuery .= $strWhere . "\n";
+			//Debug($strQuery);
 	 	}
 	 	
 	 	// Add the GROUP BY clause
@@ -2172,7 +2173,7 @@ class QueryCopyTable extends Query
 	 	
 	 	// Init and Prepare the mysqli_stmt
 	 	$this->_stmtSqlStatment = $this->db->refMysqliConnection->stmt_init();
-
+		
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
 	 		// There was problem preparing the statment
@@ -2182,6 +2183,7 @@ class QueryCopyTable extends Query
 			Debug($this->Error());
 			//throw new Exception($this->Error());
 	 	}
+		//Debug($this->_strQuery);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -2269,6 +2271,7 @@ class QueryCopyTable extends Query
 		 		$arrParams[] = $strParam;
 	 			$i++;
 		 	}
+			//Debug($arrParams);
 /*
 		 	if (count($this->_arrWhereAliases) != count($arrParams))
 		 	{
@@ -2280,7 +2283,7 @@ class QueryCopyTable extends Query
 
 		 	Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
 		 	DebugBacktrace();*/
-		 	
+		 	//Debug("Aliases: ".count($this->_arrWhereAliases)."; Params: ".count($arrParams). "; Types: $strType; Query: \n".$this->_strQuery);
 			if (isset ($arrParams) && is_array($arrParams))
 			{
 		 		array_unshift($arrParams, $strType);
@@ -3180,16 +3183,24 @@ class Vixen_where
         $this->arrInternal = array();
     }
     
-    function AddAnd($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
+    function AddAnd($mixColumn=NULL, $mixValue=NULL, $mixEval=WHERE_EQUALS)
     {
+		if (is_null($mixValue) && !is_object($mixColumn))
+		{
+			return FALSE;
+		}
 		$this->arrInternal[] = array("Column"=>$mixColumn, "Value"=>$mixValue, "Eval"=>$mixEval, "Type"=>'AND');
     }
     
-    function AddOr($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
+    function AddOr($mixColumn=NULL, $mixValue=NULL, $mixEval=WHERE_EQUALS)
     {
+		if (is_null($mixValue) && !is_object($mixColumn))
+		{
+			return FALSE;
+		}
       	$this->arrInternal[] = array("Column"=>$mixColumn, "Value"=>$mixValue, "Eval"=>$mixEval, "Type"=>'OR');
     }
-  
+		
     function Table($strTable)
     {
      	foreach ($this->arrInternal as $arrEntry)
@@ -3322,6 +3333,138 @@ class Vixen_where
 			{
 				foreach ($arrEntry["Value"] as $strCol)
 				{
+					if ($arrEntry["Eval"] == WHERE_SEARCH)
+					{
+						$arrReturn["index_$intCount"] = "%$strCol%";
+					}
+					else
+					{	
+						$arrReturn["index_$intCount"] = $strCol;
+					}
+					$intCount++;
+				}				
+			}
+			elseif (is_object ($arrEntry["Value"]))
+			{
+				array_merge($arrReturn, $arrEntry["Value"]->WhereArray($arrWhere));
+			}
+			elseif (is_array ($arrEntry["Column"]))
+			{
+				foreach ($arrEntry["Column"] as $strCol)
+				{
+					if ($arrEntry["Eval"] == WHERE_SEARCH)
+					{
+						$arrReturn["index_$intCount"] = "%{$arrEntry['Value']}%";
+					}
+					else
+					{	
+						$arrReturn["index_$intCount"] = $arrEntry['Value'];
+					}
+					$intCount++;
+				}
+			}
+			else
+			{
+				if ($arrEntry["Eval"] == WHERE_SEARCH)
+				{
+					$arrReturn["index_$intCount"] = "%{$arrEntry['Value']}%";
+				}
+				else
+				{	
+					$arrReturn["index_$intCount"] = $arrEntry['Value'];
+				}
+				$intCount++;
+			}
+		}
+		if ($arrWhere)
+		{
+			array_merge($arrReturn, $arrWhere);
+		}		
+		return $arrReturn; 
+	}
+    
+    function WhereString($strWhere=NULL)
+    {
+		$strReturn = $strWhere . $strReturn;
+		$intCount = 0;
+		
+		//Debug($this->arrInternal);
+		
+		foreach ($this->arrInternal as $arrEntry)
+		{			
+			// loop through columns
+			if (is_array ($arrEntry["Column"]))
+			{
+				$strReturn .= " " . $arrEntry['Type'] . " (";
+				$strTemp = "";
+				// add an OR between each column
+				foreach ($arrEntry["Column"] as $strCol)
+				{
+					
+					if ($arrEntry['Eval'] == "BETWEEN")
+					{
+						$strTemp .= " OR (" . $strCol . " " . $arrEntry["Eval"] . " <index_" . $intCount . "> AND <index_" . $intCount + 1 . ">)";
+						$intCount++;
+					}
+					elseif ($arrEntry['Eval'] == WHERE_SEARCH)
+					{
+						$strTemp .= " OR (" . $strCol . " LIKE <index_" . $intCount . ">)";
+					}					
+					else
+					{
+						$strTemp .= " OR (" . $strCol . " " . GetConstantDescription($arrEntry["Eval"], 'Where') . " <index_" . $intCount . ">)";
+					}
+					$intCount++;
+				}
+				$arrTemp = explode(' ', $strTemp, 3);
+				$strReturn .= $arrTemp[2] . ")";				
+			}
+			elseif (is_object ($arrEntry["Column"]))
+			{
+				//array_merge($arrReturn, $arrEntry["Column"]->WhereString($strWhere));
+				$strReturn .= $arrEntry['Column']->WhereString();
+				
+			}
+			else
+			{
+				if ($arrEntry['Eval'] == "BETWEEN")
+				{
+					$strReturn .= " " . $arrEntry["Type"] . " (" . $arrEntry["Column"] . " " . $arrEntry['Eval'] . " <index_" . $intCount . "> AND <index_" . ($intCount + 1) . ">)";
+					$intCount++;
+				}
+				elseif ($arrEntry['Eval'] == WHERE_SEARCH)
+				{
+					$strReturn .= " " . $arrEntry["Type"] . " (" . $arrEntry["Column"] . " LIKE <index_" . $intCount . ">)";
+					
+				}				
+				else
+				{
+					$strReturn .= " " . $arrEntry["Type"] . " (" . $arrEntry["Column"] . " " . GetConstantDescription($arrEntry["Eval"], 'Where') . " <index_" . $intCount . ">)";
+				}
+				$intCount++;
+			}
+		}
+		if ($strWhere)
+		{
+			$strReturn .= $strWhere;
+		}
+
+		$arrReturn = explode(' ', $strReturn,3);
+		//Debug($arrReturn);
+		$strReturn = $arrReturn[2];
+		return $strReturn; 
+    }
+	
+	function WhereBuild()
+	{
+		$arrReturn = Array();
+		$intCount = 0;
+		foreach ($this->arrInternal as $arrEntry)
+		{
+			if (is_array ($arrEntry["Value"]))
+			{
+				foreach ($arrEntry["Value"] as $strCol)
+				{
 					$arrReturn["index_$intCount"] = $strCol;
 					$intCount++;
 				}					
@@ -3342,11 +3485,6 @@ class Vixen_where
 		}		
 		return $arrReturn; 
 	}
-    
-    function WhereString($strWhere=NULL)
-    {
-        return '';
-    }
 }
 
 ?>

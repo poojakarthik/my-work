@@ -1202,7 +1202,7 @@
 					}
 				}
 			}
-			//Debug($domOutput->SaveXML());die;
+			//Debug($domOutput->SaveXML());//die;
 			//Creation of XSLT processor and final output to XSL file
 	 		$xslProcessor = new XSLTProcessor;
             $xslProcessor->importStyleSheet ($this->_domDocument);    

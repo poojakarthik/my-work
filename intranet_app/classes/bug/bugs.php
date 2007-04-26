@@ -126,7 +126,7 @@
 		 * Gets the bug information using a StatementSelect and outputs 
 		 * to the page using the bypass method.
 		 *
-		 * @param 	Object		$objWhere		
+		 * @param 	Object		$objWhere 	
 		 *										
 		 *
 		 * @method
@@ -148,14 +148,16 @@
 			
 			if($objWhere->Table('BugReportComment'))
 			{
-				$strTables = "($strTables) LEFT JOIN BugReportComment on (BugReport.Id = BugReportComment.BugReport)";
+				//TODO!Sean! Make this actually work
+				//$strTables = "($strTables) LEFT JOIN BugReportComment on (BugReport.Id = BugReportComment.BugReport)";
 			}
+				
 			
 			//Pull information and store it
 			$selSelect = new StatementSelect($strTables, $arrColumns, $objWhere->WhereString());
-			$intCount = $selSelect->Execute ($objWhere->WhereArray);
+			$intCount = $selSelect->Execute ($objWhere->WhereArray());
 			$arrResults = $selSelect->FetchAll ($this);
-
+			
 			foreach ($arrResults as $intKey=>$arrResult)
 			{
 				$arrResults[$intKey]['Status'] = GetConstantDescription($arrResults[$intKey]['Status'], 'BugStatus');

@@ -73,13 +73,13 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:call-template name="DOB">
+								<xsl:call-template name="NearPast">
 									<xsl:with-param name="Name-Day"			select="string('CreatedOnStartDay')" />
 									<xsl:with-param name="Name-Month"		select="string('CreatedOnStartMonth')" />
 									<xsl:with-param name="Name-Year"		select="string('CreatedOnStartYear')" />
 								</xsl:call-template>
 								and
-								<xsl:call-template name="DOB">
+								<xsl:call-template name="NearPast">
 									<xsl:with-param name="Name-Day"			select="string('CreatedOnEndDay')" />
 									<xsl:with-param name="Name-Month"		select="string('CreatedOnEndMonth')" />
 									<xsl:with-param name="Name-Year"		select="string('CreatedOnEndYear')" />
@@ -94,13 +94,13 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:call-template name="DOB">
+								<xsl:call-template name="NearPast">
 									<xsl:with-param name="Name-Day"			select="string('ClosedOnStartDay')" />
 									<xsl:with-param name="Name-Month"		select="string('ClosedOnStartMonth')" />
 									<xsl:with-param name="Name-Year"		select="string('ClosedOnStartYear')" />
 								</xsl:call-template>
 								and
-								<xsl:call-template name="DOB">
+								<xsl:call-template name="NearPast">
 									<xsl:with-param name="Name-Day"			select="string('ClosedOnEndDay')" />
 									<xsl:with-param name="Name-Month"		select="string('ClosedOnEndMonth')" />
 									<xsl:with-param name="Name-Year"		select="string('ClosedOnEndYear')" />
