@@ -686,7 +686,7 @@
 	 	}
 	 	
 	 	// Find all InvoicePayments
-	 	$selInvoicePayments = new StatementSelect("InvoicePayment JOIN Invoice ON InvoicePayment.Invoice = Invoice.Id", "InvoicePayment.*, Invoice.Balance, Invoice.Status AS Status", "Payment = $intPayment");
+	 	$selInvoicePayments = new StatementSelect("InvoicePayment JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", "InvoicePayment.*, Invoice.Balance, Invoice.Status AS Status", "Payment = $intPayment");
 	 	$selInvoicePayments->Execute();
 	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
 	 	$qryDelete = new Query();
