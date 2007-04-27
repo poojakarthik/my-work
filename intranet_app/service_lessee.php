@@ -85,13 +85,20 @@
 					}
 					else
 					{
-						$intNewService = $srvService->LesseePassthrough (
+						$bolTransferUnbilled = $_POST['Unbilled'];
+						//Debug($_POST);die;
+						//Debug($bolTransferUnbilled);die;
+						//Debug($actReceiving);die;
+						$arrReturnStatus = $srvService->LesseePassthrough (
 							$actReceiving, 
 							$athAuthentication->AuthenticatedEmployee (),
-							$_POST ['Date']
+							$_POST ['Date'],
+							$bolTransferUnbilled
 						);
 						
-						header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $intNewService);
+						// Transfer unbilled charges to the new lessee
+						
+						header ("Location: service_lessee_changed.php?Old=" . $srvService->Pull ('Id')->getValue () . "&New=" . $arrReturnStatus[0] . "&Updated=" . $arrReturnStatus[1]);
 						exit;
 					}
 				}

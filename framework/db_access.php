@@ -2998,7 +2998,7 @@ class QueryCopyTable extends Query
 	 	if (!$this->_stmtSqlStatment->prepare($strQuery))
 	 	{
 			Debug($strQuery);
-			
+			Debug($arrColumns);
 			// Trace
 			$this->Trace("Failed: ".$this->Error());
 	 		// There was problem preparing the statment
@@ -3180,7 +3180,7 @@ class Vixen_where
     
     function __construct ($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
     {
-        $this->arrInternal = array();
+		$this->arrInternal = array();
     }
     
     function AddAnd($mixColumn=NULL, $mixValue=NULL, $mixEval=WHERE_EQUALS)
@@ -3322,7 +3322,26 @@ class Vixen_where
 		}
 		return $arrReturn;
     }
-    
+	
+    //------------------------------------------------------------------------//
+	// WhereString()
+	//------------------------------------------------------------------------//
+	/**
+	 * WhereString()
+	 *
+	 * Assemble a where clause
+	 *
+	 * Assemble a where clause
+	 *
+	 * @param		string	strWhere		an existing where clause to be added
+	 *										to the beginning of the constructed
+	 *										string
+	 * 
+	 * @return		string					a valid where clause
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
     function WhereArray($arrWhere=NULL)
     {
 		$arrReturn = Array();
@@ -3382,7 +3401,25 @@ class Vixen_where
 		}		
 		return $arrReturn; 
 	}
-    
+    //------------------------------------------------------------------------//
+	// WhereString()
+	//------------------------------------------------------------------------//
+	/**
+	 * WhereString()
+	 *
+	 * Assemble a where clause
+	 *
+	 * Assemble a where clause
+	 *
+	 * @param		string	strWhere		an existing where clause to be added
+	 *										to the beginning of the constructed
+	 *										string
+	 * 
+	 * @return		string					a valid where clause
+	 *
+	 * @method
+	 * @see			<MethodName()||typePropertyName>
+	 */ 
     function WhereString($strWhere=NULL)
     {
 		$strReturn = $strWhere . $strReturn;
@@ -3392,15 +3429,15 @@ class Vixen_where
 		
 		foreach ($this->arrInternal as $arrEntry)
 		{			
-			// loop through columns
+			// If the column is an array of fields, loop through columns
 			if (is_array ($arrEntry["Column"]))
 			{
 				$strReturn .= " " . $arrEntry['Type'] . " (";
 				$strTemp = "";
 				// add an OR between each column
 				foreach ($arrEntry["Column"] as $strCol)
-				{
-					
+				{			
+					// Constructing part of the where string depending on evaluation type
 					if ($arrEntry['Eval'] == "BETWEEN")
 					{
 						$strTemp .= " OR (" . $strCol . " " . $arrEntry["Eval"] . " <index_" . $intCount . "> AND <index_" . $intCount + 1 . ">)";
@@ -3421,22 +3458,26 @@ class Vixen_where
 			}
 			elseif (is_object ($arrEntry["Column"]))
 			{
-				//array_merge($arrReturn, $arrEntry["Column"]->WhereString($strWhere));
+				// If the column is a where object, create a seperate where string for it
 				$strReturn .= $arrEntry['Column']->WhereString();
 				
 			}
+			// If the column is a field and can be operated on easily
 			else
 			{
+				// Construction of where clause part if it is to be a BETWEEN part
 				if ($arrEntry['Eval'] == "BETWEEN")
 				{
 					$strReturn .= " " . $arrEntry["Type"] . " (" . $arrEntry["Column"] . " " . $arrEntry['Eval'] . " <index_" . $intCount . "> AND <index_" . ($intCount + 1) . ">)";
 					$intCount++;
 				}
+				// Construction of where clause part if it is to be a LIKE part
 				elseif ($arrEntry['Eval'] == WHERE_SEARCH)
 				{
 					$strReturn .= " " . $arrEntry["Type"] . " (" . $arrEntry["Column"] . " LIKE <index_" . $intCount . ">)";
 					
-				}				
+				}	
+				// Construction of where clause part if it anything else			
 				else
 				{
 					$strReturn .= " " . $arrEntry["Type"] . " (" . $arrEntry["Column"] . " " . GetConstantDescription($arrEntry["Eval"], 'Where') . " <index_" . $intCount . ">)";
@@ -3444,6 +3485,7 @@ class Vixen_where
 				$intCount++;
 			}
 		}
+		// Append the WhereString that was passed in
 		if ($strWhere)
 		{
 			$strReturn .= $strWhere;
@@ -3455,7 +3497,7 @@ class Vixen_where
 		return $strReturn; 
     }
 	
-	function WhereBuild()
+	/*function WhereBuild()
 	{
 		$arrReturn = Array();
 		$intCount = 0;
@@ -3484,7 +3526,7 @@ class Vixen_where
 			array_merge($arrReturn, $arrWhere);
 		}		
 		return $arrReturn; 
-	}
+	}*/
 }
 
 ?>

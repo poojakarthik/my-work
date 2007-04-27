@@ -426,6 +426,7 @@
 		width:				180px;
 	}
 	
+	
 	input.input-drop
 	{
 		border:              solid 1px #919191;
@@ -594,7 +595,7 @@
 	select
 	{
 		border:              solid 1px #919191;
-		
+		background-color:    #ffffff;
 		padding:             3px;
 	}
 	
@@ -602,6 +603,13 @@
 	{
 		border:              solid 1px #89b100;
 		background-color:    #f1f7e1;
+		padding:             3px;
+	}
+	
+	select.select-invalid	
+	{
+		border:              solid 1px #CC0000;
+		background-color:    #f2dbdb;
 		padding:             3px;
 	}
 	

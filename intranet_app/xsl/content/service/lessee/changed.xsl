@@ -10,6 +10,11 @@
 		<div class = "MsgNoticeWide">
 			The Lessee for this Service has been changed. Details are listed below.
 		</div>
+		<!-- TODO Use get variables to check whether charges have actually been transferred-->
+		<div class = "MsgNoticeWide">
+			The Unbilled Charges for this Service have been transferred.
+		</div>
+
 		<div class="Seperator"></div>
 		
 		<div class="Wide-Form">

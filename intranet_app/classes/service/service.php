@@ -628,8 +628,10 @@
 		 * @method
 		 */
 		
-		public function LesseePassthrough (Account $actAccount, AuthenticatedEmployee $aemAuthenticatedEmployee, $arrDetailsDate)
+		public function LesseePassthrough (Account $actAccount, AuthenticatedEmployee $aemAuthenticatedEmployee, $arrDetailsDate, $bolTransferUnbilled)
 		{
+			
+			//Debug($this);die;
 			$intDate = mktime (0, 0, 0, $arrDetailsDate ['month'], $arrDetailsDate ['day'], $arrDetailsDate ['year']);
 			
 			// Cancel the Service on this specific date
@@ -641,7 +643,25 @@
 			$updService = new StatementUpdate ('Service', 'Id = <Id>', $arrClose);
 			$updService->Execute ($arrClose, Array ('Id' => $this->Pull ('Id')->getValue ()));
 			
-			return $actAccount->LesseeReceive ($this, $aemAuthenticatedEmployee, $arrDetailsDate);
+			// Transfer the service
+			$intService = $actAccount->LesseeReceive ($this, $aemAuthenticatedEmployee, $arrDetailsDate);			
+			
+			if ($bolTransferUnbilled)
+			{	
+				// Update the CDR table
+				$arrUpdate = Array (
+					'Status' 		=> CDR_READY,
+					'AccountGroup' 	=> $actAccount->Pull ('AccountGroup')->getValue(),
+					'Account' 		=> $actAccount->Pull ('Id')->getValue(),
+					'Service'		=> $intService
+					);
+	
+				$strStatus = CDR_RATED . ',' . CDR_NORMALISED . ',' . CDR_RATE_NOT_FOUND . ',' . CDR_RERATE;
+
+				$transferCharges = new StatementUpdate ('CDR', 'Service = <ServiceId> AND Status IN ( '.$strStatus.' )', $arrUpdate);
+				$intUpdated = $transferCharges->Execute ($arrUpdate, Array('ServiceId' => $this->Pull ('Id')->getValue ()));
+			}
+			return Array ($intService, $intUpdated);
 		}
 		
 		//------------------------------------------------------------------------//

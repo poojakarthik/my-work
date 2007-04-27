@@ -189,6 +189,21 @@
 							</xsl:call-template>
 						</td>
 					</tr>
+					<tr>
+					<td></td>
+						<th class="JustifiedWidth" valign="top">
+							<xsl:call-template name="Label">
+								<xsl:with-param name="entity" select="string('Lessee')" />
+								<xsl:with-param name="field" select="string('Unbilled')" />
+							</xsl:call-template>
+						</th>
+						<td>
+						<input type="checkbox" name="Unbilled" value="1" id="unbilledCharges"/>
+							<label for="unbilledCharges">Transfer all
+								<strong><span class="Red">unbilled</span></strong> charges.
+							</label>
+						</td>
+					</tr>
 				</table>
 			</div>
 			

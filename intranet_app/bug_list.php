@@ -24,32 +24,33 @@
 	
 	// only create WHERE for fields actually entered
 	// OR remove null where's in db_access code
-	/*
-	$objWhere->AddAnd('BugReport.CreatedBy', 		$_POST['CreatedBy']);
-	$objWhere->AddAnd('AssignedTo', 	$_POST['AssignedTo']);
-	$objWhere->AddAnd('BugReport.CreatedOn', 		Array(date('Y-m-d H-i-s', strtotime($_POST['CreatedOnStartDay'] . "/" . $_POST['CreatedOnStartMonth'] . "/" . $_POST['CreatedOnStartYear'])),
-										date('Y-m-d H-i-s', strtotime(strval(intval($_POST['CreatedOnEndDay'])+1) . "/" . $_POST['CreatedOnEndMonth'] . "/" . $_POST['CreatedOnEndYear']))),
-										"BETWEEN");
-	$objWhere->AddAnd('BugReport.ClosedOn', 		Array(date('Y-m-d H-i-s', strtotime($_POST['ClosedOnStartDay'] . "/" . $_POST['ClosedOnStartMonth'] . "/" . $_POST['ClosedOnStartYear'])),
-										date('Y-m-d H-i-s', strtotime(strval(intval($_POST['ClosedOnEndDay'])+1) . "/" . $_POST['ClosedOnEndMonth'] . "/" . $_POST['ClosedOnEndYear']))),
-										"BETWEEN");
-	$objWhere->AddAnd('Status', 		$_POST['Status']);
-	$objWhere->AddAnd('PageName', 		$_POST['PageName'], "LIKE");
-	$objWhere->AddOr(Array('BugReport.Comment', 'Resolution', 'BugReportComment.Comment'), 		$_POST['Search'], "LIKE");
+
+	if ($_POST['CreatedOnStartYear'] <> '' && $_POST['CreatedOnEndYear'] <> '')
+	{
+		$createdDate = Array(		date('Y-m-d H-i-s', strtotime($_POST['CreatedOnStartYear'] . 				"-" . $_POST['CreatedOnStartMonth'] . "-" . $_POST['CreatedOnStartDay'])),
+									date('Y-m-d H-i-s', strtotime(strval(intval($_POST['CreatedOnEndYear'])+1) . "-" . $_POST['CreatedOnEndMonth'] . "-" . $_POST['CreatedOnEndDay'])));
+	}
+	if ($_POST['ClosedOnStartYear'] <> '' && $_POST['ClosedOnEndYear'] <> '')
+	{
+		$closedDate = Array(		date('Y-m-d H-i-s', strtotime($_POST['ClosedOnStartYear'] . 				"-" . $_POST['ClosedOnStartMonth'] . "-" . $_POST['ClosedOnStartDay'])),
+									date('Y-m-d H-i-s', strtotime(strval(intval($_POST['ClosedOnEndYear'])+1) . "-" . $_POST['ClosedOnEndMonth'] . "-" . $_POST['ClosedOnEndDay'])));
+	}
+		
+	$objWhere->AddAnd('BugReport.CreatedOn', ($createdDate[0] > date('Y-m-d',strtotime('1980-01-01'))) ? $createdDate : NULL	, "BETWEEN");
+	$objWhere->AddAnd('BugReport.ClosedOn', ($closedDate[0] > date('Y-m-d',strtotime('1980-01-01'))) ? $closedDate : NULL		, "BETWEEN");
+	$objWhere->AddAnd('BugReport.CreatedBy',($_POST['CreatedBy']) 	? $_POST['CreatedBy'] 	: NULL);
+	$objWhere->AddAnd('AssignedTo', 		($_POST['AssignedTo']) 	? $_POST['AssignedTo'] 	: NULL);
+	$objWhere->AddAnd('Status', 			($_POST['Status']) 		? $_POST['Status'] 		: NULL);
+	$objWhere->AddAnd('PageName', 			($_POST['PageName']) 	? $_POST['PageName'] 	: NULL, WHERE_SEARCH);
 	
-	*/
-	
-	$objWhere->AddAnd('BugReport.CreatedBy',$_POST['CreatedBy']);
-	//$objWhere->AddAnd('AssignedTo', 	$_POST['AssignedTo']);
-	//$objWhere->AddAnd('BugReport.CreatedOn', 		Array(date('Y-m-d H-i-s', strtotime('2004-01-01')),date('Y-m-d H-i-s',strtotime('2008-01-01'))), "BETWEEN");
-	//$objWhere->AddAnd('BugReport.ClosedOn', 		Array(date('Y-m-d H-i-s', strtotime('2004-01-01')),date('Y-m-d H-i-s',strtotime('2008-01-01'))), "BETWEEN");
-	$objWhere->AddAnd('Status', 		($_POST['Status']) ? $_POST['Status'] : NULL);
-	$objWhere->AddAnd('PageName', 	($_POST['PageName']) ? $_POST['PageName'] : NULL, WHERE_SEARCH);
 	$objWhere->AddAnd(Array('BugReport.Comment', 'Resolution'), ($_POST['Search']) ? $_POST['Search'] : NULL, WHERE_SEARCH);
+	
+	
 	//TODO!Sean! searching the comments, bring back each bug only once (bugs.php)
 	//$objWhere->AddAnd(Array('BugReport.Comment', 'Resolution', 'BugReportComment.Comment'), ($_POST['Search']) ? $_POST['Search'] : NULL, WHERE_SEARCH);
+	//$objWhere->AddOr(Array('BugReport.Comment', 'Resolution', 'BugReportComment.Comment'), 		$_POST['Search'], "LIKE");
 	
-	
+	// -- example code for passing multiple where clauses
 	//$objWhere->WhereArray();	
 	/*
 	$objWhere2 = new Vixen_where();
@@ -58,11 +59,12 @@
 	// $objWhere is of type Vixen_where
 	$objWhere->AddAnd($objWhere2);
 	*/
+	
+	// -- various where debugging code
 	//Debug($objWhere);
 	//Debug($objWhere->WhereArray());
 	//Debug(explode("<", $objWhere->WhereString()));
 	//Debug($objWhere->WhereString());
-	
 	
 	// Start a new Bug Search
 	$Style->attachObject (new Bug_list(
@@ -112,6 +114,15 @@
 		{
 			$arrStatusesResults[$intKey]['Status'] = GetConstantDescription($arrStatusesResults[$intKey]['StatusId'], 'BugStatus');
 		}
+	//Returning the search keywords, to display on the page
+	if ($_POST)
+	{
+		//Debug($_POST);die;
+		$arrSearchTerms = array();
+		$arrSearchTerms = $_POST;
+		$GLOBALS['Style']->InsertDOM($arrSearchTerms, 'SearchTerms');	
+	}
+	
 	//$arrStatusesResults['Status'] = GetConstantDescription($arrStatusesResults['StatusId'], 'BugStatus');
 	$GLOBALS['Style']->InsertDOM($arrStatusesResults, 'Statuses');
 	

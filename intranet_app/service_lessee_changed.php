@@ -38,6 +38,8 @@
 		exit;
 	}
 	
+	// TODO!Sean! Pass get variable (#transferred) to page
+	
 	$Style->Output (
 		'xsl/content/service/lessee/changed.xsl',
 		
