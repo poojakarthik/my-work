@@ -677,7 +677,7 @@
 	 *
 	 * @method
 	 */
-	 function ReversePayment($intPayment)
+	 function ReversePayment($intPayment, $intReversedBy = NULL)
 	 {
 	 	// Check validity 	
 	 	if (!is_int($intPayment) || !$intPayment)
@@ -711,6 +711,36 @@
 		$arrData['Status']	= PAYMENT_REVERSED;
 		$ubiPayment = new StatementUpdateById("Payment", $arrData);
 		$ubiPayment->Execute($arrData);
+		
+		// Add a note if we have an Account
+		$selPayment = new StatementSelect("Payment", "AccountGroup, Account, Amount, PaidOn", "Id = <Id> AND Account IS NOT NULL");
+		if ($selPayment->Execute($arrData))
+		{
+			$arrPayment = $selPayment->Fetch();
+			
+			// Do we have an employee?
+			if ($intReversedBy)
+			{
+				$selEmployee = new StatementSelect("Employee", "CONCAT(FirstName, ' ', LastName) AS FullName", "Id = $intReversedBy");
+				$selEmployee->Execute();
+				$arrEmployee = $selEmployee->Fetch();
+				$strEmployee = $arrEmployee['FullName'];
+			}
+			else
+			{
+				$strEmployee = "Administrators";
+			}
+			
+			// Add the note
+			$arrNote = Array();
+			$arrNote['Note']			= "Payment made on {$arrPayment['PaidOn']} for {$arrPayment['Amount']} reversed by $strEmployee";
+			$arrNote['AccountGroup']	= $arrPayment['AccountGroup'];
+			$arrNote['Account']			= $arrPayment['Account'];
+			$arrNote['Datetime']		= new MySQLFunction("NOW()");
+			$arrNote['NoteType']		= 7;
+			$insNote = new StatementInsert("Note");
+			$insNote->Execute($arrNote);
+		}
 		
 		return TRUE;
 	 }
