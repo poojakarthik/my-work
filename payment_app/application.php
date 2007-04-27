@@ -686,7 +686,12 @@
 	 	}
 	 	
 	 	// Find all InvoicePayments
-	 	$selInvoicePayments = new StatementSelect("InvoicePayment JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", "InvoicePayment.*, Invoice.Balance, Invoice.Status AS Status", "Payment = $intPayment");
+	 	$arrCols = Array();
+	 	$arrCols['Amount']	= 'InvoicePayment.Amount';
+	 	$arrCols['Status']	= 'Invoice.Status';
+	 	$arrCols['Balance']	= 'Invoice.Balance';
+	 	$arrCols['Invoice']	= 'Invoice.Id';
+	 	$selInvoicePayments = new StatementSelect("InvoicePayment JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment = $intPayment");
 	 	$selInvoicePayments->Execute();
 	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
 	 	$qryDelete = new Query();
@@ -738,7 +743,7 @@
 			$arrNote['Account']			= $arrPayment['Account'];
 			$arrNote['Datetime']		= new MySQLFunction("NOW()");
 			$arrNote['NoteType']		= 7;
-			$insNote = new StatementInsert("Note");
+			$insNote = new StatementInsert("Note", $arrNote);
 			$insNote->Execute($arrNote);
 		}
 		
