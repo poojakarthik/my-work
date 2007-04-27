@@ -52,6 +52,7 @@
 //----------------------------------------------------------------------------//
 // LOGIC
 //----------------------------------------------------------------------------//
+require_once($strFrameworkDir."functions.php");
 
 // load framework
 $framework = LoadFramework($strFrameworkDir);
