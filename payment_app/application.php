@@ -691,6 +691,7 @@
 	 	$arrCols['Status']	= 'Invoice.Status';
 	 	$arrCols['Balance']	= 'Invoice.Balance';
 	 	$arrCols['Invoice']	= 'Invoice.Id';
+	 	$arrCols['Id']		= 'InvoicePayment.Id';
 	 	$selInvoicePayments = new StatementSelect("InvoicePayment JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment = $intPayment");
 	 	$selInvoicePayments->Execute();
 	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
