@@ -707,7 +707,7 @@
 	 	// Set Payment Balance to Amount and set status to Reversed
 		$arrData = Array();
 		$arrData['Id']		= $intPayment;
-		$arrData['Balance']	= new MySQLFunction('Amount');
+		$arrData['Balance']	= 0.0;
 		$arrData['Status']	= PAYMENT_REVERSED;
 		$ubiPayment = new StatementUpdateById("Payment", $arrData);
 		$ubiPayment->Execute($arrData);
