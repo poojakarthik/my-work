@@ -126,7 +126,7 @@
 					<br />
 						<xsl:value-of select="Response/Bug/CreatedOn" />
 				</th>
-				<th><xsl:value-of select="Response/Bug/Comment" /></th>
+				<th><xsl:value-of select="Response/Bug/Comment" disable-output-escaping="yes" /></th>
 			</tr>
 			<xsl:for-each select="/Response/BugComments/Record">
 				<tr>
@@ -145,7 +145,7 @@
 						<br />
 							<xsl:value-of select="./CreatedOn" />
 					</td>
-					<td><xsl:value-of select="./Comment" /></td>
+					<td><xsl:value-of select="./Comment" disable-output-escaping="yes" /></td>
 				</tr>
 			</xsl:for-each>
 		</table>

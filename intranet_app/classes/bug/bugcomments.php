@@ -88,12 +88,12 @@
 				$selBugComments = new StatementSelect($strTables, $arrColumns, 'BugReportComment.BugReport = <Id>', null);
 				$intCount = $selBugComments->Execute (Array ('Id' => $intId));
 				$arrResults = $selBugComments->FetchAll ($this);
-				
+								
 				//TODO!Tyson! Make this work
-				//foreach($arrResults AS $intKey => $arrResult)
-				//{
-				//	$arrResults[$intkey]['Comment'] = nl2br($arrResults[$intkey]['Comment']);
-				//}
+				foreach($arrResults AS $intKey => $arrResult)
+				{
+					$arrResults[$intKey]['Comment'] = nl2br($arrResults[$intKey]['Comment']);
+				}
 				
 				//Insert into the DOM Document
 				$GLOBALS['Style']->InsertDOM($arrResults, 'BugComments');
