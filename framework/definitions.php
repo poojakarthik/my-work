@@ -1033,7 +1033,7 @@ define("CHARGE_CODE_CALL_CREDIT"	, "Call Credit");
 define("BUG_UNASSIGNED"				, 101);
 define("BUG_UNRESOLVED"				, 102);
 define("BUG_RESOLVED"				, 103);*/
-$GLOBALS['*arrConstant']	['BugStatus']	[100]	['Constant']	= 'BUG_UNREAD';
+$GLOBALS['*arrConstant']	['BugStatus']	[100]	['Constant']	= 'BUG_UNREAD';''
 $GLOBALS['*arrConstant']	['BugStatus']	[100]	['Description']	= 'New';
 $GLOBALS['*arrConstant']	['BugStatus']	[101]	['Constant']	= 'BUG_UNASSIGNED';
 $GLOBALS['*arrConstant']	['BugStatus']	[101]	['Description']	= 'Unassigned';
@@ -1056,7 +1056,7 @@ define("RCOPY_AUTO_DISCONNECT"		, TRUE);
 $GLOBALS['*arrConstant']	['CopyMethod']	[1]	['Constant']	= 'RCOPY_BACKUP';
 $GLOBALS['*arrConstant']	['CopyMethod']	[1]	['Description']	= 'Backup Files';
 $GLOBALS['*arrConstant']	['CopyMethod']	[2]	['Constant']	= 'RCOPY_REMOVE';
-$GLOBALS['*arrConstant']	['CopyMethod']	[2]	['Description']	= 'Remove Files an Directories First';
+$GLOBALS['*arrConstant']	['CopyMethod']	[2]	['Description']	= 'Remove Files and Directories First';
 $GLOBALS['*arrConstant']	['CopyMethod']	[3]	['Constant']	= 'RCOPY_OVERWRITE';
 $GLOBALS['*arrConstant']	['CopyMethod']	[3]	['Description']	= 'Overwrite Files';
 
