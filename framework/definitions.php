@@ -1034,7 +1034,7 @@ define("BUG_UNASSIGNED"				, 101);
 define("BUG_UNRESOLVED"				, 102);
 define("BUG_RESOLVED"				, 103);*/
 $GLOBALS['*arrConstant']	['BugStatus']	[100]	['Constant']	= 'BUG_UNREAD';
-$GLOBALS['*arrConstant']	['BugStatus']	[100]	['Description']	= 'Unread';
+$GLOBALS['*arrConstant']	['BugStatus']	[100]	['Description']	= 'New';
 $GLOBALS['*arrConstant']	['BugStatus']	[101]	['Constant']	= 'BUG_UNASSIGNED';
 $GLOBALS['*arrConstant']	['BugStatus']	[101]	['Description']	= 'Unassigned';
 $GLOBALS['*arrConstant']	['BugStatus']	[102]	['Constant']	= 'BUG_UNRESOLVED';

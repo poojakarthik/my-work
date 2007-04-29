@@ -135,6 +135,21 @@
 					Need Help? Check the Manual.
 				</td>
 			</tr>
+			<!-- Bugs -->
+			<tr>
+				<td>
+					<a href="bug_list.php">
+						<img src="img/template/lady-debug.png" title="View Bug Reports" class="MenuIcon" />
+					</a>
+				</td>
+				<td>
+					<strong>
+						View Bug Reports
+					</strong>
+					<br />
+					View details of Bug Reports.
+				</td>
+			</tr>
 			<!-- Logout -->
 			<tr>
 				<td>
