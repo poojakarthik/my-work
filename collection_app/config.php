@@ -30,14 +30,15 @@
 //----------------------------------------------------------------------------//
 // CONFIG
 //----------------------------------------------------------------------------//
-		
+		/*
 		// eg. "Jan 07/"
-		$strDateDir				= date("M y/", strtotime("-1 day", time()));
+		//$strDateDir				= date("M y/", strtotime("-1 day", time()));
+		$strDateDir				= "Apr 07/";
 		$strLocalFTPUsername	= "download";
 		$strLocalFTPPassword	= "password";
 		$strLocalFTPDir			= "/home/CDR/";
 		$strLocalFTPServer		= "10.11.12.13";
-		
+		*/
 
 		/* Skeleton
 		$arrConfig['Define']["Skeleton"]	["Name"]		= "Skeleton";
@@ -52,6 +53,7 @@
 		$arrConfig['Define']["Skeleton"]	["FileType"]['/test.txt/']		= CDR_SKELETON;
 		*/
 /**/
+		/*
 		// Unitel Landline Definition
 		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel Landline/S&E";
 		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
@@ -61,16 +63,18 @@
  		$arrConfig['Define']["Unitel"]	["PWord"]							= "BuzzaBee06*#";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatchesoffnet/";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/archive";
- 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "dailychurn/";
+ 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
+ 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/archive";
+ 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "dailychurn/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
-/*		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
-		$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;*/
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
-/*		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;*/
-		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
+		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
+		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
+		*/
+		
 		/*
 		// Unitel Mobile Definition
 		// (needs a separate definition because the regex's for Commander and LL are the same, but different file format)
@@ -83,7 +87,7 @@
  		$arrConfig['Define']["Unitel"]	["Dir"][]							= "mobilecdrbatches/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
-		*/
+		*//*
 		// Optus Definition	
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
@@ -91,12 +95,12 @@
  		$arrConfig['Define']["Optus"]	["Server"]						= "10.11.12.13";
  		$arrConfig['Define']["Optus"]	["Username"]					= "flame";
  		$arrConfig['Define']["Optus"]	["PWord"]						= "zeemu";
- 		//$arrConfig['Define']["Optus"]	["Dir"][]						= $strLocalFTPDir."optus/".$strDateDir."Speedi Files/";
- 		$arrConfig['Define']["Optus"]	["Dir"][]						= "/home/richdavis/ftp/optus/PPR/";
+ 		$arrConfig['Define']["Optus"]	["Dir"][]						= $strLocalFTPDir."optus/".$strDateDir."Speedi Files/";
+ 		//$arrConfig['Define']["Optus"]	["Dir"][]						= "/home/richdavis/ftp/optus/PPR/";
  		$arrConfig['Define']["Optus"]	["FinalDir"]					= DESTINATION_ROOT."optus/";
-		//$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
-		$arrConfig['Define']["Optus"]	["FileType"]["/^BPR\d{3}\_B\d{7}\_S\d{4}\_\d{8}$/"]	= PROV_OPTUS_IMPORT;
-		
+		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
+		//$arrConfig['Define']["Optus"]	["FileType"]["/^BPR\d{3}\_B\d{7}\_S\d{4}\_\d{8}$/"]	= PROV_OPTUS_IMPORT;
+		*/
 /*
 		// AAPT Definition
 		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
@@ -129,7 +133,7 @@
 		
 		
 		// FIXME: Uncomment this
-		/*
+
 		// TESTING DEFINITIONS
 		$strTestUsername	= "download";
 		$strTestPassword	= "password";
@@ -137,7 +141,7 @@
 		$strTestServer		= "10.11.12.13";
 		
 		// Unitel Landline and S&E Definition
-		$strUnitelTestDir = "2007/feb/";
+		$strUnitelTestDir = "2007/apr/";
 		$arrConfig['Define']["RSLCOM"]	["Name"]							= "RSLCOM";
 		$arrConfig['Define']["RSLCOM"]	["Carrier"]							= CARRIER_UNITEL;
  		$arrConfig['Define']["RSLCOM"]	["Type"]							= COLLECTION_TYPE_FTP;
@@ -155,7 +159,7 @@
 		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
 
 		// Unitel Landline and S&E Definition
-		$strUnitelTestDir = "2007/feb/";
+		//$strUnitelTestDir = "2007/apr/";
 		$arrConfig['Define']["Commander"]	["Name"]							= "Commander";
 		$arrConfig['Define']["Commander"]	["Carrier"]							= CARRIER_UNITEL;
  		$arrConfig['Define']["Commander"]	["Type"]							= COLLECTION_TYPE_FTP;
@@ -172,7 +176,7 @@
 		
 
 		// Optus Definition
-		$strOptusTestDir = "Feb 07/";
+		$strOptusTestDir = "Apr 07/";
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
 		$arrConfig['Define']["Optus"]	["Carrier"]						= CARRIER_OPTUS;
  		$arrConfig['Define']["Optus"]	["Type"]						= COLLECTION_TYPE_FTP;
@@ -197,7 +201,7 @@
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
-	*/
+
 
 
 
