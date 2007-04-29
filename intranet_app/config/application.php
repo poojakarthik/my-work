@@ -30,7 +30,19 @@
 //----------------------------------------------------------------------------//
 
 // sanitize page details
-$arrPage['Permission']	= (int)$arrPage['Permission'];
+
+if (is_array($arrPage['Permission']))
+{
+	foreach($arrPage['Permission'] AS $mixKey=>$intPermission)
+	{
+		$arrPage['Permission'][$mixKey] = (int)$intPermission;
+	}
+}
+else
+{
+	$arrPage['Permission']	= Array((int)$arrPage['Permission']);
+}
+
 $arrPage['Modules']		= (int)$arrPage['Modules'];
 if ($arrPage['PopUp'])
 {
@@ -42,11 +54,14 @@ else
 }
 
 // all pages must have a permission > 0
-if ($arrPage['Permission'] == 0)
+foreach($arrPage['Permission'] AS $mixKey=>$intPermission)
 {
-	// if not we die in the arse
-	header ("Location: error_permission.php");
-	Exit;
+	if ($intPermission == 0)
+	{
+		// if not we die in the arse
+		header ("Location: error_permission.php");
+		Exit;
+	}
 }
 
 //----------------------------------------------------------------------------//
@@ -107,7 +122,6 @@ else
 }
 
 // Get user permission
-
 if (!HasPermission(PERMISSION_PUBLIC, $arrPage['Permission']))
 {
 	if ($athAuthentication->isAuthenticated ())

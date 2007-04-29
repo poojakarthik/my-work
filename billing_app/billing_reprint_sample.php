@@ -19,7 +19,7 @@ $appBilling = new ApplicationBilling($arrConfig);
 
 // Add in list of accounts
 //---------------------------
-/*
+
 // Voicetalk customers
 $arrAccounts[]	= 1000162906;
 $arrAccounts[]	= 1000162059;
@@ -82,7 +82,9 @@ $arrAccounts[]	= 1000158291;
 $arrAccounts[]	= 1000157570;
 $arrAccounts[]	= 1000155313;
 
-$arrAccounts[]	= 1000160299;*/
+// other
+$arrAccounts[]	= 1000160299;
+$arrAccounts[]  = 1000007119;
 
 // ELB Accounts
 $arrAccounts[]	= 1000156611;
@@ -98,7 +100,5 @@ $appBilling->FinaliseReport();
 echo("\n\n-- End of Billing --\n");
 echo "</pre>";
 die();
-
-?>
 
 ?>

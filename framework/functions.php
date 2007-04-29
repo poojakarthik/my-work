@@ -778,20 +778,44 @@ function RemovePermission($intUser, $intPermission)
  * 
  * Check if a user has a specified permission
  * 
- * @param	int		$intUser			Current Permissions of the user
- * @param	int		$intPermission		Permissions to be checked for
+ * @param	mix		$mixUser			Ineger Current Permissions of the user (or array of users)
+ * @param	mix		$mixPermission		Integer Permissions to be checked for (or array of permissions)
  *
  * @return	bool						TRUE if the user has the permission
  * 
  * @method
  */
-function HasPermission($intUser, $intPermission)
+function HasPermission($mixUser, $mixPermission)
 {
-	// check for the permission (Bitwise OR)
-	if ((int)$intUser && (int)$intUser == ((int)$intUser | (int)$intPermission))
+	if (is_array($mixPermission))
 	{
-		// return TRUE
-		return TRUE;
+		$arrPermission = $mixPermission;
+	}
+	else
+	{
+		$arrPermission = Array($mixPermission);
+	}
+	
+	if (is_array($mixUser))
+	{
+		$arrUser = $mixUser;
+	}
+	else
+	{
+		$arrUser = Array($mixUser);
+	}
+	
+	foreach ($arrPermission AS $intPermission)
+	{
+		foreach ($arrUser AS $intUser)
+		{
+			// check for the permission (Bitwise OR)
+			if ((int)$intUser && (int)$intUser == ((int)$intUser | (int)$intPermission))
+			{
+				// return TRUE
+				return TRUE;
+			}
+		}
 	}
 	// return FALSE
 	return FALSE;

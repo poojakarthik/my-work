@@ -55,6 +55,7 @@
 require_once($strFrameworkDir."functions.php");
 
 // load framework
+require_once($strFrameworkDir.'functions.php');
 $framework = LoadFramework($strFrameworkDir);
 
 // load application
