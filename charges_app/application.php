@@ -406,11 +406,24 @@
 		
 	 	// for each account that we are allowed to charge late payment fees
 		$intCount = 0;
-		$selLPAccounts = new StatementSelect('Account', 'Id, AccountGroup', 'DisableLatePayment != 1 AND Archived != 1');
+		$selLPAccounts = new StatementSelect('Account', 'Id, AccountGroup, DisableLatePayment', 'DisableLatePayment < 1 AND Archived != 1');
+		$ubiAccount = new StatementUpdateById("Account", Array('DisableLatePayment' => NULL));
 		$selLPAccounts->Execute();
 		echo("Account : Overdue\n");
 		while ($arrAccount = $selLPAccounts->Fetch())
 		{
+			// Reduce the number of times the customer can make a late payment & update
+			if ($arrAccount['DisableLatePayment'] < 0)
+			{
+				$arrData = Array();
+				$arrData['Id']					= $arrAccount['Id'];
+				$arrData['DisableLatePayment']	= $arrAccount['DisableLatePayment'] + 1;
+				$ubiAccount->Execute($arrData);
+				
+				// Skip this account
+				continue;
+			}
+			
 			// check for an overdue balance
 			if (($fltBalance = $this->Framework->GetOverdueBalance($arrAccount['Id'])) > 10)
 			{
