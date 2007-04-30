@@ -65,7 +65,8 @@
 			$arrColumns['Type']			= "PaymentType";
 			$arrColumns['Amount']		= "Amount";
 			$arrColumns['Applied']		= "Amount-Balance";
-			$arrColumns['Balance'] 		= "Balance";			
+			$arrColumns['Balance'] 		= "Balance";
+			$arrColumns['Status']		= "Status";			
 		
 			//Pull information and store it
 			$selSelect = new StatementSelect("Payment",	$arrColumns,"Account = <Id>", 'Payment.PaidOn DESC');
@@ -76,8 +77,13 @@
 			foreach ($arrResults as $intKey=>$arrResult)
 			{
 				$arrResults[$intKey]['TypeName'] = GetConstantDescription($arrResults[$intKey]['Type'], 'PaymentType');
+				// fixing reversed payments
+				if($arrResults[$intKey]['Status'] == 250)
+				{
+					$arrResults[$intKey]['Applied'] = 0;
+					$arrResults[$intKey]['StatusName'] = GetConstantDescription($arrResults[$intKey]['Status'], 'PaymentStatus');
+				}
 			}
-
 			//Insert into the DOM Document
 			$GLOBALS['Style']->InsertDOM($arrResults, 'Payments');
 

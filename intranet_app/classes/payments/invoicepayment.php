@@ -69,7 +69,8 @@
 			$arrColumns['TXN']		= "Payment.TXNReference";
 			$arrColumns['Amount'] 	= "Payment.Amount";
 			$arrColumns['PayBalance']	= "Payment.Balance";			
-		
+			$arrColumns['Status']		= "Payment.Status";
+			
 			//Pull information and store it
 			$selSelect = new StatementSelect("InvoicePayment LEFT OUTER JOIN Invoice USING (InvoiceRun, Account), Payment",
 							$arrColumns,
@@ -83,8 +84,13 @@
 				throw new Exception ('InvoicePayment does not exist.');
 			}
 			
+			// fixing reversed payments
+				if($arrResult['Status'] == 250)
+				{
+					$arrResult['Applied'] = 0;
+				}
+				
 			$arrResult['TypeName'] = GetConstantDescription($arrResult['Type'], 'PaymentType');
-			
 			
 			//Insert into the DOM Document
 			$GLOBALS['Style']->InsertDOM($arrResult, 'PaymentDetails');

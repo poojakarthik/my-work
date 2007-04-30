@@ -51,9 +51,15 @@
 							<xsl:with-param name="Decimal" select="number('2')" />
 	       				</xsl:call-template>
 					</tr>
-							
 				</table>
+
 			</div>
+
 		</div>
+	<xsl:if test="/Response/PaymentDetails/Status = '250'">
+		<div class="MsgNoticeNarrow">
+			This payment has been reversed
+		</div>
+	</xsl:if>
 	</xsl:template>
 </xsl:stylesheet>

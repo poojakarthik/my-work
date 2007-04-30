@@ -263,10 +263,11 @@
 				<th width="30">#</th>
 				<th>Payment Date</th>
 				<th>Payment Type</th>
+				<th>Payment Status</th>
 				<th class='thRight'>Payment Amount</th>
-				<th width="10%"></th>
+				<th width="8%"></th>
 				<th class='thRight'>Amount Applied</th>
-				<th width="10%"></th>
+				<th width="8%"></th>
 				<th class='thRight'>Balance</th>
 			</tr>
 			<!-- <xsl:for-each select="/Response/AccountPayments/Results/rangeSample/InvoicePayment"> -->
@@ -288,9 +289,11 @@
 						<xsl:value-of select="./PaidOn" />
 					</td>
 					<td>
-							<xsl:value-of select="./TypeName" />
+						<xsl:value-of select="./TypeName" />
 					</td>
-				
+					<td>
+						<xsl:value-of select="./StatusName" />
+					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
 		       				<xsl:with-param name="Number" select="./Amount" />
