@@ -1459,5 +1459,32 @@ function LoadApplication($strApplication=NULL)
 	return TRUE;
 }
 
+//------------------------------------------------------------------------//
+// MaskCreditCard
+//------------------------------------------------------------------------//
+/**
+ * MaskCreditCard()
+ *
+ * Masks the credit card number for safe output
+ *
+ * Masks the credit card number for safe output
+ *
+ * @param	string	$strCardNumber	The credit card number to mask
+ * @return	string
+ *
+ * @method
+ * @see	<MethodName()||typePropertyName>
+ */
+function MaskCreditCard($strCardNumber)
+{
+	$intLen = strlen($strCardNumber);
+	$strFilteredCC = substr($strCardNumber, 0, 4);
+	for ($i = 1; $i <= ($intLen - 8); $i++)
+	{
+		$strFilteredCC .= "*";
+	}
+	$strFilteredCC .= substr($strCardNumber, -4, 4);
+	return $strFilteredCC;
+}
 
 ?>

@@ -222,7 +222,7 @@
 						</td>
 						<td><xsl:value-of select="./CreditCardTypes/CreditCardType[@selected='selected']/Name" /></td>
 						<td><xsl:value-of select="./Name" /></td>
-						<td><xsl:value-of select="./CardNumber" /></td>
+						<td><xsl:value-of select="./Masked" /></td>
 						<td>
 							<strong>
 								<span>
