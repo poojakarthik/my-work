@@ -593,7 +593,7 @@
 			foreach($arrServices as $arrService)
 			{
 				// add service record (80)
-				if ($arrService['RangeStart'] && $arrService['RangeEnd'])
+				if (is_numeric($arrService['RangeStart']) && is_numeric($arrService['RangeEnd']))
 				{
 					//$strFNN	= $arrService['FNN']."(".$arrService['ExtensionName'].")";
 					$strFNN = $arrService['ExtensionName'];
@@ -606,7 +606,7 @@
 				$this->_arrFileData[] = $arrDefine['ItemSvcHeader'];
  		
 		 		// Set up Ranges
-		 		if (!$arrService['RangeStart'])
+		 		if (!is_numeric($arrService['RangeStart']))
 		 		{
 		 			// Not an Indial, fake the Range
 		 			$arrService['RangeStart']	= $arrService['FNN'];
@@ -1026,7 +1026,7 @@
 		$arrDefine = $this->_arrDefine;
 		
 		// Check if this is an Indial Extension
-		if ($arrService['RangeStart'] && $arrService['RangeEnd'])
+		if (is_numeric($arrService['RangeStart']) && is_numeric($arrService['RangeEnd']))
 		{
 			//$strFNN	= $arrService['FNN']."(".$arrService['ExtensionName'].")";
 			$strFNN	= $arrService['ExtensionName'];	// FIXME later on, when file definition is changed
@@ -1136,7 +1136,7 @@
 	 		
 			// Footer and total (can't use ServiceTotal, because it doesn't include credits/charges)
 			$arrDefine['SvcSummSvcFooter']		['TotalCharge']		['Value']	= $fltTotal;
-			if (is_bool($bolPrimary))
+			if ($bolPrimary === TRUE || $bolPrimary === FALSE)
 			{
 				// An indial, so use the uncapped total
 				$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= $fltTotal;
