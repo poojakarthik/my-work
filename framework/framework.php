@@ -937,6 +937,98 @@
 		
 		return $insId;
 	 }
+	 
+	 
+	//------------------------------------------------------------------------//
+	// ReversePayment
+	//------------------------------------------------------------------------//
+	/**
+	 * ReversePayment()
+	 *
+	 * Reverses a specified Payment
+	 *
+	 * Reverses a specified Payment
+	 * 
+	 * @param	integer	$intPayment		the Id of the Payment to reverse
+	 * @param	integer	$intEmployee	optional Id of the Employee who reversed
+	 *
+	 * @return	boolean					whether the removal was successful or not
+	 *
+	 * @method
+	 */
+	 function ReversePayment($intPayment, $intReversedBy = NULL)
+	 {
+	 	// Check validity 	
+	 	if (!is_int($intPayment) || !$intPayment)
+	 	{
+	 		return FALSE;
+	 	}
+	 	
+	 	// Find all InvoicePayments
+	 	$arrCols = Array();
+	 	$arrCols['Amount']	= 'InvoicePayment.Amount';
+	 	$arrCols['Status']	= 'Invoice.Status';
+	 	$arrCols['Balance']	= 'Invoice.Balance';
+	 	$arrCols['Invoice']	= 'Invoice.Id';
+	 	$arrCols['Id']		= 'InvoicePayment.Id';
+	 	$selInvoicePayments = new StatementSelect("InvoicePayment JOIN Invoice ON (InvoicePayment.InvoiceRun = Invoice.InvoiceRun AND InvoicePayment.Account = Invoice.Account)", $arrCols, "Payment = $intPayment");
+	 	$selInvoicePayments->Execute();
+	 	$arrInvoicePayments = $selInvoicePayments->FetchAll();
+	 	$qryDelete = new Query();
+	 	foreach ($arrInvoicePayments as $arrInvoicePayment)
+	 	{
+			// Add to Invoice Balance & set new Status
+			$arrData = Array();
+			$arrData['Id']	= $arrInvoicePayment['Invoice'];
+			$arrData['Balance']	= new MySQLFunction("Balance + <Payment>", Array('Payment' => $arrInvoicePayment['Amount']));
+			$arrData['Status']	= INVOICE_COMMITTED;
+			$ubiInvoice = new StatementUpdateById("Invoice", $arrData);
+			$ubiInvoice->Execute($arrData);
+			
+			// Remove InvoicePayment
+			$qryDelete->Execute("DELETE FROM InvoicePayment WHERE Id = {$arrInvoicePayment['Id']}");
+	 	}
+	 	
+	 	// Set Payment Balance to Amount and set status to Reversed
+		$arrData = Array();
+		$arrData['Id']		= $intPayment;
+		$arrData['Balance']	= 0.0;
+		$arrData['Status']	= PAYMENT_REVERSED;
+		$ubiPayment = new StatementUpdateById("Payment", $arrData);
+		$ubiPayment->Execute($arrData);
+		
+		// Add a note if we have an Account
+		$selPayment = new StatementSelect("Payment", "AccountGroup, Account, Amount, PaidOn", "Id = <Id> AND Account IS NOT NULL");
+		if ($selPayment->Execute($arrData))
+		{
+			$arrPayment = $selPayment->Fetch();
+			
+			// Do we have an employee?
+			if ($intReversedBy)
+			{
+				$selEmployee = new StatementSelect("Employee", "CONCAT(FirstName, ' ', LastName) AS FullName", "Id = $intReversedBy");
+				$selEmployee->Execute();
+				$arrEmployee = $selEmployee->Fetch();
+				$strEmployee = $arrEmployee['FullName'];
+			}
+			else
+			{
+				$strEmployee = "Administrators";
+			}
+			
+			// Add the note
+			$arrNote = Array();
+			$arrNote['Note']			= "Payment made on {$arrPayment['PaidOn']} for {$arrPayment['Amount']} reversed by $strEmployee";
+			$arrNote['AccountGroup']	= $arrPayment['AccountGroup'];
+			$arrNote['Account']			= $arrPayment['Account'];
+			$arrNote['Datetime']		= new MySQLFunction("NOW()");
+			$arrNote['NoteType']		= 7;
+			$insNote = new StatementInsert("Note", $arrNote);
+			$insNote->Execute($arrNote);
+		}
+		
+		return TRUE;
+	 }
  }
 
 //----------------------------------------------------------------------------//
