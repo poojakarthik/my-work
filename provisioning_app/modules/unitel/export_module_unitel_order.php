@@ -115,7 +115,7 @@
 		if (!$this->_bolSending)
 		{
 			// No, ignore for now (will be generated later on)
-			return;
+			return REQUEST_IGNORE;
 		}
 		
 		
