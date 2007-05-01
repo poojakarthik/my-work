@@ -111,9 +111,9 @@
 																NULL,
 																"RType.Id");*/
 		
-		$this->_selServices				= new StatementSelect(	"Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service, " .
+		$this->_selServices				= new StatementSelect(	"(Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service) LEFT JOIN CostCentre CostCentre2 ON ServiceExtension.CostCentre = CostCentre2.Id, " .
 																"Service Service2 LEFT OUTER JOIN CostCentre ON Service2.CostCentre = CostCentre.Id",
-																"Service.FNN AS FNN, Service.Id AS Id, CostCentre.Name AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
+																"Service.FNN AS FNN, Service.Id AS Id, (CASE WHEN CostCentre2.Id IS NULL THEN CostCentre.Name ELSE CostCentre2.Name END) AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
 																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND Service.Id = Service2.Id",
 																"CostCentre.Name, Service.ServiceType, Service.FNN",
 																NULL,
@@ -530,7 +530,7 @@
 			$fltCostCentreTotal	= 0.0;
 			$this->_arrFileData[] = $arrDefine['SvcSummaryHeader'];
 			foreach($arrServices as $arrService)
-			{				
+			{
 				// Add cost centre records
 				if ($strCostCentre !== $arrService['CostCentre'])
 				{
