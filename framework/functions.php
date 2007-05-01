@@ -1459,6 +1459,13 @@ function LoadApplication($strApplication=NULL)
 	return TRUE;
 }
 
+
+// Calculate starting column position to centre a line of text
+function CentreText($strText, $intWidth)
+{
+	return floor(($intWidth / 2) - (strlen($strText) / 2));
+}
+
 //------------------------------------------------------------------------//
 // MaskCreditCard
 //------------------------------------------------------------------------//
