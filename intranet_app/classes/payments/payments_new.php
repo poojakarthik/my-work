@@ -61,6 +61,7 @@
 		{
 			//Create the array of columns required for the query
 			$arrColumns = Array();
+			$arrColumns['Id']			= "Id";
 			$arrColumns['PaidOn'] 		= "DATE_FORMAT(PaidOn, '%e/%m/%Y')";
 			$arrColumns['Type']			= "PaymentType";
 			$arrColumns['Amount']		= "Amount";

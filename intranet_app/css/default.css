@@ -551,6 +551,7 @@
 		cursor:              help;
 	}
 	
+	input.input-link,
 	a:Link
 	{
 		color:               #3366cc;

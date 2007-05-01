@@ -46,7 +46,7 @@
 									<div id="modalContent-ReportBug">
 										<div class="modalContainer">
 											<div class="modalContent">
-												<form method="post" action="bug_report.php" onsubmit="return BugSubmit(this)">
+												<form method="post" name="bugreport" id="bugreport" action="bug_report.php" onsubmit="return BugSubmit(this)">
 													<input type="hidden" name="SerialisedGET">
 														<xsl:attribute name="value">
 															<xsl:text></xsl:text>
@@ -68,7 +68,7 @@
 																<textarea name="Comment" style="width: 725px; height: 225px;" class="input-summary-note" />
 																
 																<div class="Right">
-																	<input type="submit" value="Report Bug &#0187;" class="input-submit" />
+																	<input type="button" value="Report Bug &#0187;" onclick="javascript:document.forms['bugreport'].submit()" class="input-submit" />
 																</div>
 															</td>
 														</tr>

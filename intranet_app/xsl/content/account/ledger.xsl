@@ -8,6 +8,19 @@
 	
 	<!--TODO!bash! [  DONE  ]		URGENT - DO NOT have menus linking to the page you are already on!!!!-->
 	<xsl:template name="Content">
+		<script language="javascript" type="text/javascript">		
+			function validate(payment)
+			{
+				var check=confirm("Are you sure you wish to cancel this payment?");
+				if (check)
+				{
+					document.forms['payments'].Id.value=payment;
+					document.forms['payments'].submit();
+					return true;
+				}
+			}
+		</script>			
+	
 		<h1>View Invoices &amp; Payments</h1>
 		
 		<h2 class="Account">Account Details</h2>
@@ -272,6 +285,22 @@
 			</tr>
 			<!-- <xsl:for-each select="/Response/AccountPayments/Results/rangeSample/InvoicePayment"> -->
 			<xsl:for-each select="/Response/Payments/Record">
+			<form method="POST" name="payments" id="payments" action="account_ledger.php">
+				<input name="Account" type="hidden">
+					<xsl:attribute name="value">
+						<xsl:value-of select="/Response/Account/Id" />
+					</xsl:attribute>
+				</input>
+				<input name="Id" id="Id" type="hidden">
+					<xsl:attribute name="value">
+						<xsl:value-of select="./Id" />
+					</xsl:attribute>
+				</input>
+				<input name="Employee" type="hidden">
+					<xsl:attribute name="value">
+						<xsl:value-of select="/Response/Authentication/AuthenticatedEmployee/Id" />
+					</xsl:attribute>
+				</input>
 				<tr>
 					<xsl:attribute name="class">
 						<xsl:choose>
@@ -292,7 +321,21 @@
 						<xsl:value-of select="./TypeName" />
 					</td>
 					<td>
-						<xsl:value-of select="./StatusName" />
+						<xsl:choose>
+							<xsl:when test="./StatusName">
+								<xsl:value-of select="./StatusName" />
+							</xsl:when>
+							<xsl:otherwise>
+								<!--<input type="submit" class="input-link" value="Reverse Payment"/>-->
+								<a name="link">
+								<xsl:attribute name="href">
+									<xsl:text>javascript:validate(</xsl:text>
+									<xsl:value-of select="./Id"/>
+									<xsl:text>)</xsl:text>
+								</xsl:attribute>
+								Reverse Payment</a>
+							</xsl:otherwise>
+						</xsl:choose>
 					</td>
 					<td class="Currency">
 		       			<xsl:call-template name="Currency">
@@ -315,6 +358,7 @@
     					</xsl:call-template>
    					</td>
 				</tr>
+			</form>
 			</xsl:for-each>
 		</table>
 		

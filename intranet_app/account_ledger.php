@@ -17,12 +17,18 @@
 	// call application
 	require ('config/application.php');
 	
-	
 	// Get Account
 	try
 	{
 		// Try to pull the Account
-		$actAccount = $Style->attachObject (new Account ($_GET ['Id']));	
+		if ($_POST)
+		{
+			$actAccount = $Style->attachObject (new Account ($_POST ['Account']));
+		}
+		else
+		{
+			$actAccount = $Style->attachObject (new Account ($_GET ['Id']));
+		}			
 	}
 	catch (Exception $e)
 	{
@@ -31,6 +37,13 @@
 		exit;
 	}
 	
+	if ($_POST ['Id'])
+	{
+		$fwkReverse = $GLOBALS['fwkFramework']->ReversePayment((int)$_POST ['Id'], (int)$_POST ['Employee']);
+	}
+	
+	//var_dump($fwkReverse);
+	//Debug($_POST);die;
 	// Retrieve the Invoices list
 	$ivlInvoices = $Style->attachObject ($actAccount->Invoices ());
 	

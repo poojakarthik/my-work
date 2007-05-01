@@ -961,7 +961,7 @@
 	 	// Check validity 	
 	 	if (!is_int($intPayment) || !$intPayment)
 	 	{
-	 		return FALSE;
+			return FALSE;
 	 	}
 	 	
 	 	// Find all InvoicePayments
