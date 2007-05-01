@@ -1016,9 +1016,11 @@
 				$strEmployee = "Administrators";
 			}
 			
+			$strDate = date("d/M/Y", strtotime($arrPayment['PaidOn']));
+			
 			// Add the note
 			$arrNote = Array();
-			$arrNote['Note']			= "Payment made on {$arrPayment['PaidOn']} for {$arrPayment['Amount']} reversed by $strEmployee";
+			$arrNote['Note']			= "$strEmployee Reversed a Payment made on $strDate for \${$arrPayment['Amount']}";
 			$arrNote['AccountGroup']	= $arrPayment['AccountGroup'];
 			$arrNote['Account']			= $arrPayment['Account'];
 			$arrNote['Datetime']		= new MySQLFunction("NOW()");
