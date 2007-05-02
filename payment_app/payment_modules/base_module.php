@@ -169,8 +169,9 @@
 	 */
 	 protected function _SplitRaw($strPayment)
 	 {
-	 	// clean the array
+	 	// clean the arrays
 		$this->_arrRawData = array();
+		$this->_arrNormalisedData = array();
 		
 		// build the array
 	 	if ($this->_strDelimiter)
