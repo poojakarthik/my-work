@@ -222,7 +222,8 @@
 				$acsAccounts->Constrain ('BusinessName', 'LIKE', $oblstrBusinessName->getValue ());
 				$acsAccounts->Constrain ('Archived', 'EQUALS', 0);
 				$acsAccounts->Order ('BusinessName', TRUE);
-				$oblsamAccounts = $acsAccounts->Sample ();
+				//TODO!Sean! Create some pagination, rather than return everything
+				$oblsamAccounts = $acsAccounts->Sample (1,20);
 				
 				if ($oblsamAccounts->Count () == 0)
 				{
