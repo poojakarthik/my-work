@@ -1173,7 +1173,7 @@
 			//Adds top node of the inserted data (from InsertDOM() above)
 			$domRoot = $domOutput->documentElement;
 		
-			//debug($this->_arrOutput);die;
+			//debug($this->_arrOutput);
 			//Take each array of data from the queue and add it to domOutput
 			foreach ($this->_arrOutput as $strInsertPoint=>$arrRecords)
 			{
@@ -1191,23 +1191,70 @@
 					{
 						foreach ($mixRecord as $strKey=>$attrib)
 						{
-							$subnode = new DomElement($strKey, $attrib);
+							
+							$subnode = new DomElement($strKey, "");
 							$idNode->appendChild($subnode);
+							// Turn the data into a CDATA section so
+							// it will not error on unescaped symbols
+							$cdata = $domOutput->createCDATASection($this->charEscape($attrib));
+							$subnode->appendChild($cdata);
 						}
 					}
 					else
 					{
-						$idNode = new DomElement($intKey, $mixRecord);
+						$idNode = new DomElement($intKey, "");
 						$ourNode->appendChild($idNode);
+						// Turn the data into a CDATA section so
+						// it will not error on unescaped symbols
+						$cdata = $domOutput->createCDATASection($mixRecord);
+						$idNode->appendChild($cdata);
 					}
 				}
 			}
+			//Debug($this->xslContent);
 			//Debug($domOutput->SaveXML());die;
 			//Creation of XSLT processor and final output to XSL file
 	 		$xslProcessor = new XSLTProcessor;
             $xslProcessor->importStyleSheet ($this->_domDocument);    
             echo $xslProcessor->transformToXML ($domOutput);
  		}
+		
+		public function charEscape($strIllegal)
+		{
+			// this function accepts a multiline (<br /> delimited) string
+			// and returns said string with all OTHER tags removed
+			// it is used for displaying tags in a comment in bug
+			// but might come into play in other areas
+			$arrLines = explode ("<br />",$strIllegal);
+			$strLegal = "";
+			foreach ($arrLines as $strLine)
+			{
+				// replace all less-than
+				$arrPieces = explode ("<",$strLine);
+				$strReturn = "";
+				foreach ($arrPieces as $strPiece)
+				{
+					$strReturn .= "&lt;" . $strPiece;
+				}
+				$strReturn = substr($strReturn, 4);
+				
+				// replace all greater-than
+				$arrPieces = explode (">",$strReturn);
+				$strReturn = "";
+				foreach ($arrPieces as $strPiece)
+				{
+					$strReturn .= "&gt;" . $strPiece;
+				}
+				$strReturn = substr($strReturn, 4);
+				
+				$strLegal .= "<br />" . $strReturn;
+			}
+					
+			$strLegal = substr($strLegal, 6);
+			
+			return $strLegal;
+		}
+
  	}
 
 	//----------------------------------------------------------------------------//
