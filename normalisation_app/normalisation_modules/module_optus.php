@@ -265,7 +265,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		
 		// RecordType
 		$mixCarrierCode					= (int)$this->_FetchRawCDR('TypeIdUsage');
-		$strRecordCode 					= $this->FindRecordCode($mixCarrierCode);
+		$strRecordCode 					= $this->FindRecordCode((string)$mixCarrierCode);
 		$mixValue 						= $this->FindRecordType($intServiceType, $strRecordCode); 
 		$this->_AppendCDR('RecordType', $mixValue);
 		
