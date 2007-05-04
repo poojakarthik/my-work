@@ -186,8 +186,10 @@
 										"Rate.Saturday					= <Saturday> OR \n" .
 										"Rate.Sunday					= <Sunday> ) AND \n" .
 										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND \n" .
-										"<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime AND\n" .
 										"ServiceRateGroup.Service = <Service>";
+										
+		$strStandardWhere			= 	"<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime AND\n";
+		$strOldCDRWhere				=	"<DateTime> < ServiceRateGroup.StartDatetime AND\n";
 										
 		//FAKE : for testing only
 		//$strTables = "Rate";
@@ -196,11 +198,14 @@
 		$strMyWhere					=	" AND Rate.RecordType				= <RecordType>";
 		$strMyWhere					.=	" AND Rate.Destination 				= <Destination>";
 		$strMyWhere					.=	" AND Rate.Fleet 				= 0 \n";
-		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
+		$this->_selFindRate			= new StatementSelect($strTables, "Rate.*", $strWhere.$strStandardWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
+		
+		// rate query if CDR is older than oldest RateGroup
+		$this->_selFindLastRate		= new StatementSelect($strTables, "Rate.*", $strWhere.$strOldCDRWhere.$strMyWhere, "ServiceRateGroup.CreatedOn ASC, ServiceRateGroup.Id ASC", 1);
 		
 		// fleet rate query
 		$strMyWhere					=	" AND Rate.Fleet 				= 1 \n";
-		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
+		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere.$strStandardWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
 		
 		// Select CDR Query
 		$arrColumns = $this->db->FetchClean("CDR");
@@ -263,6 +268,8 @@
 
 		$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
 		$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
+		
+		Debug($arrCDR);
 
 		// set current CDR
 		$this->_arrCurrentCDR = $arrCDR;
@@ -270,6 +277,7 @@
 		// Find Rate for this CDR
 		if (!$this->_arrCurrentRate = $this->_FindRate())
 		{
+			Debug("No rate!");
 			return FALSE;
 		}
 
@@ -606,6 +614,8 @@
 	 	$arrAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
 		$arrAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 		
+		Debug($arrAliases);
+		
 		// find destination account & Service
 		$arrWhere['Prefix']			= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
 		$arrWhere['SNN']			= '0_'.substr($this->_arrCurrentCDR['Destination'], -8);
@@ -662,7 +672,12 @@
 		// check if we found a rate
 		if (!$arrRate && !($arrRate = $this->_selFindRate->Fetch()))
 		{
-			return FALSE;
+			// Look for the most recent rate
+			if (!$this->_selFindLastRate->Execute())
+			{
+				return FALSE;
+			}
+			$arrRate = $this->_selFindLastRate->Fetch();
 		}
 		
 		/* DIRTY HUGE DONKEY QUERY
