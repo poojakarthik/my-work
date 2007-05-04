@@ -11,7 +11,7 @@
 		<script language="javascript" type="text/javascript">		
 			function validate(payment)
 			{
-				var check=confirm("Are you sure you wish to cancel this payment?");
+				var check=confirm("Are you sure you want to reverse this payment?");
 				if (check)
 				{
 					document.forms['payments'].Id.value=payment;
@@ -327,7 +327,7 @@
 							</xsl:when>
 							<xsl:otherwise>
 								<xsl:choose>
-									<xsl:when test="/Response/Permission/IsAuthenticated = 1">
+									<xsl:when test="/Response/Permission/IsAuthenticated = 1 and ./Type != 0">
 										<!--<input type="submit" class="input-link" value="Reverse Payment"/>-->
 										<a name="link">
 										<xsl:attribute name="href">
