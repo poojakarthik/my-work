@@ -55,6 +55,7 @@ foreach ($arrOutput AS $intFileType=>$arrDestination)
 	// get a Description for this File Type
 	$strFileType = GetConstantDescription($intFileType, 'CDRType');
 	echo "$strFileType :\n\n";
+	echo "Raw Code\tCount\tDescription\n";
 	
 	// output Destination Codes
 	foreach ($arrDestination AS $strDestinationCode=>$arrDescription)
@@ -63,7 +64,7 @@ foreach ($arrOutput AS $intFileType=>$arrDestination)
 		$arrDescription = array_unique($arrDescription);
 		foreach ($arrDescription AS $strDescription)
 		{
-			echo "$strDestinationCode  -  $intCount - $strDescription\n";
+			echo "$strDestinationCode\t\t$intCount\t$strDescription\n";
 		}
 	}
 	
