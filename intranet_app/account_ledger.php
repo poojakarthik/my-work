@@ -43,7 +43,8 @@
 	}
 	
 	//Check if the logged-in user is Admin
-	$GLOBALS['Style']->InsertDOM(Array('IsAuthenticated'=> HasPermission ($athAuthentication->Pull ('AuthenticatedEmployee')->Pull ('Privileges')->getValue (), PERMISSION_ADMIN)), 'Permission');	
+	$chkAdmin = HasPermission ($athAuthentication->Pull ('AuthenticatedEmployee')->Pull ('Privileges')->getValue (), PERMISSION_ADMIN);
+	$GLOBALS['Style']->InsertDOM(Array('IsAuthenticated'=> $chkAdmin ), 'Permission');	
 	
 		
 	

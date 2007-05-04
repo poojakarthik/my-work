@@ -1211,8 +1211,31 @@
 					}
 				}
 			}
-			//Debug($this->xslContent);
-			//Debug($domOutput->SaveXML());//die;
+			
+			
+			// Quick little check to see if are allowed to see debug information
+		
+			// If we are in DEBUG MODE and we have permission to view a Debug then Output the Debug
+			if (DEBUG_MODE == TRUE)
+			{
+				// Get user permission
+				//debug($this->_arrOutput[PermissionDEBUG][IsDebug]);
+				$intUserPermission = $this->_arrOutput[PermissionDEBUG][IsDebug];
+
+				// Check if the user is allowed to view debug info
+				if ($intUserPermission == 1)
+				{
+					// Create DOM debug information for our testing
+					$dbgDebug = $domOutput->SaveXML();
+					$aNode = new DomElement('DOMDebug', "");
+					$domRoot->appendChild($aNode);
+					// add debug info to DOM document
+					$cdata = $domOutput->createCDATASection($dbgDebug);
+					$aNode->appendChild($cdata);
+				}
+			}
+			
+			
 			//Creation of XSLT processor and final output to XSL file
 	 		$xslProcessor = new XSLTProcessor;
             $xslProcessor->importStyleSheet ($this->_domDocument);    

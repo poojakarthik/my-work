@@ -119,6 +119,34 @@
 										</div>
 									</div>
 								</xsl:if>
+								<!-- System Debug Button & PopUp -->
+								<xsl:if test="/Response/DOMDebug">
+									<span class="Debug_Button">
+										<a href="#" onclick="return ModalDisplay ('#modalContent-domDebug')">
+											<img src="img/template/debug_dom.png" border="0" />
+										</a>
+									</span>
+									<div id="modalContent-domDebug">
+										<div class="modalContainer">
+											<div class="modalContent">
+												<pre><xsl:value-of select="/Response/DOMDebug" /></pre>
+											</div>
+											<div class="modalTitle">
+												<div class="modalIcon Left">
+													<img src="img/template/lady-debug.png" />
+												</div>
+												<div class="modalLabel Left">
+													<strong>DOM Debug</strong><br />
+													DOM Debug Information
+												</div>
+												<div class="modalClose Right">
+													<img src="img/template/closelabel.gif" class="close" />
+												</div>
+												<div class="Clear"></div>
+											</div>
+										</div>
+									</div>
+								</xsl:if>
 							</div>
 							
 							<div class="Clear"></div>

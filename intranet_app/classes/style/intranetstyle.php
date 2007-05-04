@@ -136,6 +136,7 @@
 					if (HasPermission($intUserPermission, PERMISSION_DEBUG))
 					{
 						$oblstrSystemDebug = $this->attachObject (new dataString ('SystemDebug', SystemDebug ()));
+						$this->InsertDOM (Array('IsDebug'=> "1" ), 'PermissionDEBUG');
 					}
 				}
 				
