@@ -4,7 +4,9 @@
 	<xsl:import href="../../template/default.xsl" />
 	
 	<xsl:template name="Content">
+		<script language="javascript" src="js/recurring_charge.js" onload="Init()"></script>
 		<!-- Add a Adjustment to an Account -->
+		<!--TODO!T/N/S! Only make inputs changeable if the adjustment is not fixed -->
 		<h1>Add Adjustment</h1>
 					
 		<form method="POST" action="recurringcharge_assign.php">
@@ -103,7 +105,7 @@
 							<td>
 								<xsl:choose>
 									<xsl:when test="/Response/RecurringChargeType/Fixed = 0">
-										<input type="text" name="Amount" class="input-string">
+										<input type="text" name="Amount" class="input-string" id="Amount" onkeyup="AmountChanged()" autocomplete="off">
 											<xsl:attribute name="value">
 												<xsl:text></xsl:text>
 								       			<xsl:call-template name="Currency">
@@ -148,12 +150,18 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<xsl:call-template name="Currency">
-						       		<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
-									<xsl:with-param name="Decimal" select="number('2')" />
-				       			</xsl:call-template></td>
+								<input type="text" name="MinCharge" class="input-string" id="MinCharge" onkeyup="TimesChargedChanged()" autocomplete="off">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+						       			<xsl:call-template name="Currency">
+						       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
+											<xsl:with-param name="Decimal" select="number('2')" />
+				       					</xsl:call-template>
+									</xsl:attribute>
+								</input>
+							</td>
 						</tr>
-												<tr>
+						<tr>
 							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
@@ -166,26 +174,88 @@
 									<xsl:with-param name="Decimal" select="number('2')" />
 				       			</xsl:call-template></td>
 						</tr>
-						<th class="JustifiedWidth">
+						<tr>
+							<th class="JustifiedWidth">
 								<xsl:call-template name="Label">
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
 									<xsl:with-param name="field" select="string('RecurringFrequency')" />
 								</xsl:call-template>
 							</th>
+							<td id="recurringfrequency">
+								<xsl:value-of select="/Response/RecurringChargeType/RecurringFreq" />
+								<xsl:text> </xsl:text>
+								<xsl:for-each select="/Response/RecurringChargeType/BillingFreqTypes/BillingFreqType">
+									<xsl:if test="./Id=/Response/RecurringChargeType/RecurringFreqType">
+										<xsl:value-of select="./Name"/>(s)</xsl:if>
+								</xsl:for-each>
+							
+								<!--
+									<input type="text" name="RecurringFreq" class="input-string2" size="1" id="recurringfrequency">
+										<xsl:attribute name="value">
+											<xsl:text></xsl:text>
+											<xsl:value-of select="/Response/RecurringChargeType/RecurringFreq" />
+										</xsl:attribute>
+									</input>
+									<xsl:text> </xsl:text>
+									<select name="RecurringFreqType" id="recurringfrequencytype">
+										<xsl:for-each select="/Response/RecurringChargeType/BillingFreqTypes/BillingFreqType">
+											<option>
+												<xsl:attribute name="value">
+													<xsl:text></xsl:text>
+													<xsl:value-of select="./Id" />
+												</xsl:attribute>
+												<xsl:if test="./@selected='selected'">
+													<xsl:attribute name="selected">
+														<xsl:text>selected</xsl:text>
+													</xsl:attribute>
+												</xsl:if>
+												<xsl:text></xsl:text>
+												<xsl:value-of select="./Name" />(s)
+											</option>
+										</xsl:for-each>
+									</select>
+									-->
+								</td>							
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
+									<xsl:with-param name="field" select="string('NumberOfTimes')" />
+								</xsl:call-template>
+								Times Charged
+							</th>
 							<td>
-							<xsl:value-of select="/Response/RecurringChargeType/RecurringFreq" />
-							<xsl:text> </xsl:text>
-								<label name="RecurringFreqType">
-									<xsl:for-each select="/Response/RecurringChargeType/BillingFreqTypes/BillingFreqType">
-										<option>
-											<xsl:if test="./Id=/Response/RecurringChargeType/RecurringFreqType">
-												<xsl:value-of select="./Name"/>(s)
-											</xsl:if>
-										</option>
-									</xsl:for-each>
-								</label>
+								<input type="text" name="NumOfCharges" class="input-string" id="NumOfCharges" onkeyup="TimesChargedChanged()" autocomplete="off">
+									<xsl:attribute name="value">
+										<xsl:text></xsl:text>
+										<!-- add in the post data-->
+
+									</xsl:attribute>
+								</input>
 							</td>
-						
+						</tr>
+						<tr>
+							<th class="JustifiedWidth">
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
+									<xsl:with-param name="field" select="string('LastChargedDate')" />
+								</xsl:call-template>
+								Last Charged Date
+							</th>
+							<td id="EndDate">
+							<!--
+								<xsl:call-template name="NearFuture">								
+									<xsl:with-param name="Name-Day"			select="string('LastChargedDay')" />
+									<xsl:with-param name="Name-Month"		select="string('LastChargedMonth')" />
+									<xsl:with-param name="Name-Year"		select="string('LastChargedYear')" />
+				       			</xsl:call-template>
+								-->
+								<xsl:text>
+									Invalid data
+								</xsl:text>
+							</td>
+						</tr>
 					</table>
 				</div>
 				

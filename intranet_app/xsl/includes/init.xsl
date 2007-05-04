@@ -166,6 +166,10 @@
 				<xsl:text></xsl:text>
 				<xsl:value-of select="$Name-Day" />
 			</xsl:attribute>
+			<xsl:attribute name="id">
+				<xsl:text></xsl:text>
+				<xsl:value-of select="$Name-Day" />
+			</xsl:attribute>
 			
 			<option value="">DD</option>
 			
@@ -177,6 +181,10 @@
 		</select> / 
 		<select>
 			<xsl:attribute name="name">
+				<xsl:text></xsl:text>
+				<xsl:value-of select="$Name-Month" />
+			</xsl:attribute>
+			<xsl:attribute name="id">
 				<xsl:text></xsl:text>
 				<xsl:value-of select="$Name-Month" />
 			</xsl:attribute>
@@ -194,7 +202,10 @@
 				<xsl:text></xsl:text>
 				<xsl:value-of select="$Name-Year" />
 			</xsl:attribute>
-			
+			<xsl:attribute name="id">
+				<xsl:text></xsl:text>
+				<xsl:value-of select="$Name-Year" />
+			</xsl:attribute>
 			<option value="">YYYY</option>
 			
 			<xsl:call-template name="DateLoop">

@@ -146,7 +146,6 @@
 								</xsl:call-template>
 							</th>
 							<td>
-
 								<input type="text" name="RecurringFreq" class="input-string2" size="1">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
