@@ -186,10 +186,10 @@
 										"Rate.Saturday					= <Saturday> OR \n" .
 										"Rate.Sunday					= <Sunday> ) AND \n" .
 										"<Time> BETWEEN Rate.StartTime AND Rate.EndTime AND \n" .
-										"ServiceRateGroup.Service = <Service>";
+										"ServiceRateGroup.Service = <Service> AND \n";
 										
-		$strStandardWhere			= 	"<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime AND\n";
-		$strOldCDRWhere				=	"<DateTime> < ServiceRateGroup.StartDatetime AND\n";
+		$strStandardWhere			= 	"<DateTime> BETWEEN ServiceRateGroup.StartDatetime AND ServiceRateGroup.EndDatetime\n";
+		$strOldCDRWhere				=	"<DateTime> < ServiceRateGroup.StartDatetime\n";
 										
 		//FAKE : for testing only
 		//$strTables = "Rate";
@@ -269,7 +269,7 @@
 		$arrCDR['Cost'] 	= (float)$arrCDR['Cost'];
 		$arrCDR['Charge'] 	= (float)$arrCDR['Charge'];
 		
-		Debug($arrCDR);
+		//Debug($arrCDR);
 
 		// set current CDR
 		$this->_arrCurrentCDR = $arrCDR;
@@ -277,7 +277,7 @@
 		// Find Rate for this CDR
 		if (!$this->_arrCurrentRate = $this->_FindRate())
 		{
-			Debug("No rate!");
+			//Debug("No rate!");
 			return FALSE;
 		}
 
@@ -614,7 +614,7 @@
 	 	$arrAliases['Sunday']		= ($strDay == "Sunday") ? TRUE : DONKEY;
 		$arrAliases['RecordType']	= $this->_arrCurrentCDR['RecordType'];
 		
-		Debug($arrAliases);
+		//Debug($arrAliases);
 		
 		// find destination account & Service
 		$arrWhere['Prefix']			= substr($this->_arrCurrentCDR['Destination'], 0, -2).'__';
@@ -673,7 +673,7 @@
 		if (!$arrRate && !($arrRate = $this->_selFindRate->Fetch()))
 		{
 			// Look for the most recent rate
-			if (!$this->_selFindLastRate->Execute())
+			if (!$this->_selFindLastRate->Execute($arrAliases))
 			{
 				return FALSE;
 			}
