@@ -326,14 +326,21 @@
 								<xsl:value-of select="./StatusName" />
 							</xsl:when>
 							<xsl:otherwise>
-								<!--<input type="submit" class="input-link" value="Reverse Payment"/>-->
-								<a name="link">
-								<xsl:attribute name="href">
-									<xsl:text>javascript:validate(</xsl:text>
-									<xsl:value-of select="./Id"/>
-									<xsl:text>)</xsl:text>
-								</xsl:attribute>
-								Reverse Payment</a>
+								<xsl:choose>
+									<xsl:when test="/Response/Permission/IsAuthenticated = 1">
+										<!--<input type="submit" class="input-link" value="Reverse Payment"/>-->
+										<a name="link">
+										<xsl:attribute name="href">
+											<xsl:text>javascript:validate(</xsl:text>
+											<xsl:value-of select="./Id"/>
+											<xsl:text>)</xsl:text>
+										</xsl:attribute>
+										Reverse Payment</a>
+									</xsl:when>
+									<xsl:otherwise>
+										<xsl:text></xsl:text>
+									</xsl:otherwise>
+								</xsl:choose>	
 							</xsl:otherwise>
 						</xsl:choose>
 					</td>

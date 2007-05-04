@@ -42,6 +42,11 @@
 		$fwkReverse = $GLOBALS['fwkFramework']->ReversePayment((int)$_POST ['Id'], (int)$_POST ['Employee']);
 	}
 	
+	//Check if the logged-in user is Admin
+	$GLOBALS['Style']->InsertDOM(Array('IsAuthenticated'=> HasPermission ($athAuthentication->Pull ('AuthenticatedEmployee')->Pull ('Privileges')->getValue (), PERMISSION_ADMIN)), 'Permission');	
+	
+		
+	
 	//var_dump($fwkReverse);
 	//Debug($_POST);die;
 	// Retrieve the Invoices list
