@@ -81,7 +81,7 @@ function Init()
 {
 	if (document.getElementById ("Amount")) {	
 		//AddKeyUpEvents();
-		//AmountChanged();
+		AmountChanged();
 		//alert('Page Loaded Succefully');
 		}
 	else {
