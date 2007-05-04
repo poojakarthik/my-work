@@ -40,10 +40,10 @@
 	}
 	
 	
- 	function ShowCDRStatusList()
+ 	function ShowCDRStatusList($arrPeriod = NULL)
 	{
 		// get CDR Status list
-		$arrStatus = $this->appMonitor->CountCDRStatus();
+		$arrStatus = $this->appMonitor->CountCDRStatus(FALSE, $arrPeriod);
 		if (is_array($arrStatus))
 		{
 			// title
@@ -276,6 +276,10 @@
 		return TRUE;
 	}
 	
+	function DebugBadNormalise($intStatus)
+	{
+		
+	}
 	
 	function ShowNormalisedCDR($intCDR)
 	{

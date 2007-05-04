@@ -139,7 +139,7 @@
 	}
 	
 	// return an array of status counts
- 	function CountCDRStatus($intStatus=FALSE)
+ 	function CountCDRStatus($intStatus=FALSE, $arrPeriod=NULL)
 	{
 		if ($intStatus !== FALSE)
 		{
@@ -147,7 +147,13 @@
 		}
 		else
 		{
-			$strWhere = "";
+			$strWhere = "WHERE 1";
+		}
+		
+		// Limit to a date period if needed
+		if ($arrPeriod)
+		{
+			$strWhere .= " AND StartDatetime BETWEEN '{$arrPeriod['Start']}' AND '{$arrPeriod['End']}'";
 		}
 		
 		$arrOutput = Array();

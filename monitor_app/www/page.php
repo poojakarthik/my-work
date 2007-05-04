@@ -212,6 +212,80 @@ $objPage = new VixenPage($arrConfig);
 		$this->Append('Body', "<span class=\"{$strStyle}Text\">$strValue</span>\n", FALSE);
 	}
 	
+	// Add date selector to the body
+	function AddDateRangeSelect($strLink, $strMinDate = "2000-01-01", $strMaxDate = "2010-12-31")
+	{
+		$arrStart	= explode('-', $strMinDate);
+		$arrEnd		= explode('-', $strMaxDate);
+		
+		$arrDay		= range(1, 31);
+		$arrMonth	= range(1, 12);
+		$arrYear	= range(2000, 2007);
+		
+		$this->AddText("<form name='frmDateRange' method='GET' action='{$strLink}'>");
+		
+		//$this->AddText("Start Date");
+		$strSelectors =	"<select name='intDayStart'>\n";
+		foreach ($arrDay as $intDay)
+		{
+			$strSelected = ((int)$arrStart[2] === $intDay) ? " selected='selected'" : "";
+			$strSelectors .= "\t<option value='".str_pad($intDay, 2, '0', STR_PAD_LEFT)."'{$strSelected}>$intDay</option>\n";
+		}
+		$strSelectors .= "</select>/\n";
+		
+		$strSelectors .=	"<select name='intMonthStart'>\n";
+		foreach ($arrMonth as $intMonth)
+		{
+			$strSelected = ((int)$arrStart[1] === $intMonth) ? " selected='selected'" : "";
+			$strSelectors .= "\t<option value='".str_pad($intMonth, 2, '0', STR_PAD_LEFT)."'{$strSelected}>$intMonth</option>\n";
+		}
+		$strSelectors .= "</select>/\n";
+		
+		$strSelectors .=	"<select name='intYearStart'>\n";
+		foreach ($arrYear as $intYear)
+		{
+			$strSelected = ((int)$arrStart[0] === $intYear) ? " selected='selected'" : "";
+			$strSelectors .= "\t<option value='".str_pad($intYear, 2, '0', STR_PAD_LEFT)."'{$strSelected}>$intYear</option>\n";
+		}
+		$strSelectors .= "</select>\n";
+		$this->Append('Body', $strSelectors, FALSE);
+		
+		$this->AddText(" to ");
+		
+		$strSelectors =	"<select name='intDayEnd'>\n";
+		foreach ($arrDay as $intDay)
+		{
+			$strSelected = ((int)$arrEnd[2] === $intDay) ? " selected='selected'" : "";
+			$strSelectors .= "\t<option value='".str_pad($intDay, 2, '0', STR_PAD_LEFT)."'{$strSelected}>$intDay</option>\n";
+		}
+		$strSelectors .= "</select>/\n";
+		
+		$strSelectors .=	"<select name='intMonthEnd'>\n";
+		foreach ($arrMonth as $intMonth)
+		{
+			$strSelected = ((int)$arrEnd[1] === $intMonth) ? " selected='selected'" : "";
+			$strSelectors .= "\t<option value='".str_pad($intMonth, 2, '0', STR_PAD_LEFT)."'{$strSelected}>$intMonth</option>\n";
+		}
+		$strSelectors .= "</select>/\n";
+		
+		$strSelectors .=	"<select name='intYearEnd'>\n";
+		foreach ($arrYear as $intYear)
+		{
+			$strSelected = ((int)$arrEnd[0] === $intYear) ? " selected='selected'" : "";
+			$strSelectors .= "\t<option value='".str_pad($intYear, 2, '0', STR_PAD_LEFT)."'{$strSelected}>$intYear</option>\n";
+		}
+		$strSelectors .= "</select>\n";
+		
+		$this->Append('Body', $strSelectors, TRUE);
+		
+		$this->AddText("</form>");
+		
+		
+		$this->AddLine("");
+		$this->AddLink("javascript:document.frmDateRange.submit();", "Search this range");
+		$this->AddLine("<br />");
+	}
+	
 	// Add Pagination to the body
 	function AddPagination($strHref, $strGetValues='', $intStart=0, $intLimit=20, $intMaxRecords=0)
 	{
