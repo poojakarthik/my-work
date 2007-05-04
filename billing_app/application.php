@@ -2292,6 +2292,181 @@
  		$intTotal = count($arrNegativeInvoices);
  		echo "\n * $intZeroed of $intTotal Negative Invoices completely paid off";
  	}
+ 		 
+ 	
+  	//------------------------------------------------------------------------//
+	// GenerateProfitReport()
+	//------------------------------------------------------------------------//
+	/**
+	 * GenerateProfitReport()
+	 *
+	 * Generates a Profit Report in XLS format
+	 *
+	 * Generates a Profit Report in XLS format
+	 * 
+	 * @param	string	$strFileName		Path to write the XLS document to
+	 * @param	string	$strInvoiceRun		optional InvoiceRun of the committed invoice.  If blank, then uses InvoiceTemp
+	 *
+	 * @method
+	 */
+	 function GenerateProfitReport($strFileName, $strInvoiceRun = NULL)
+	 {
+	 	// Get CLI Interface & Console window
+	 	$itfInterface	= new CLIInterface("viXen Billing Application v7.05");
+	 	$itfInterface->InitConsole("Generating Profit Report", TRUE);
+	 	
+	 	// InvoiceRun details
+	 	if ($strInvoiceRun)
+	 	{
+	 		// Committed Invoice
+	 		$itfInterface->ConsoleAddLine("Getting Details for InvoiceRun '$strInvoiceRun'...");
+	 		$selInvoices = new StatementSelect("Invoice", "*", "InvoiceRun = '$strInvoiceRun'", NULL, NULL); //FIXME (optimise)
+	 	}
+	 	else
+	 	{
+	 		// Temporary Invoice
+	 		$itfInterface->ConsoleAddLine("Getting Details for Temporary Invoice Run...");
+	 		$selInvoices = new StatementSelect("InvoiceTemp", "*", NULL, NULL, NULL); //FIXME (optimise)
+	 	}
+	 	
+	 	// Select all Invoices from selected invoice run
+	 	$intCount = $selInvoices->Execute();
+	 	$arrInvoices = $selInvoices->FetchAll();
+	 	
+	 	// Set InvoiceRun
+	 	$strInvoiceRun = $arrInvoices[0]['InvoiceRun'];
+	 	
+	 	// Statements
+	 	$strLDTypes = "6, 11, 14, 19, 27, 28, 35";
+	 	$selAccountDetails = new StatementSelect("Account", "BusinessName, CustomerGroup", "Id = <Account>");
+	 	$arrCDRColumns = Array();
+	 	$arrCDRColumns['CostNLD']		=	"SUM( CASE\n" .
+	 										"WHEN RecordType NOT IN ($strLDTypes) THEN Cost\n" .
+	 										"ELSE 0\n" .
+	 										"END )";
+	 	$arrCDRColumns['ChargeNLD']		=	"SUM( CASE\n" .
+	 										"WHEN RecordType NOT IN ($strLDTypes) THEN Charge\n" .
+	 										"ELSE 0\n" .
+	 										"END )";
+	 	$arrCDRColumns['BillCost']		=	"SUM(Cost)";
+	 	$arrCDRColumns['BillCharge']	=	"SUM(Charge)";
+	 	$selCDRTotals = new StatementSelect("CDR", $arrCDRColumns, "InvoiceRun = '$strInvoiceRun' AND Account = <Account>");
+	 	
+	 	// Init XLS file
+	 	$itfInterface->ConsoleAddLine("Initiating Excel Document '$strFileName'...");
+	 	$strPeriod = date("M y", strtotime("-1 month", strtotime($arrInvoices[0]['DueOn'])));
+		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFileName);
+		$wksProfitReport =& $wkbWorkbook->addWorksheet("$strPeriod Profit Report");
+		
+		// Init XLS Formats
+		$fmtTitle		= $wkbWorkbook->addFormat();
+		$fmtTitle->setBold();
+		
+		$fmtTotal		= $wkbWorkbook->addFormat();
+		$fmtTotal->setNumFormat('$#,##0.00;$#,##0.00 CR');
+		$fmtTotal->setBold();
+		
+		$fmtCurrency	= $wkbWorkbook->addFormat();
+		$fmtCurrency->setNumFormat('$#,##0.00;$#,##0.00 CR');
+		
+		$fmtPercentage	= $wkbWorkbook->addFormat();
+		$fmtPercentage->setNumFormat('0.00%;-0.00%');
+		
+		$fmtPCTotal		= $wkbWorkbook->addFormat();
+		$fmtPCTotal->setNumFormat('0.00%;-0.00%');
+		$fmtPCTotal->setBold();
+		
+		// Add XLS Title Row
+		$wksProfitReport->writeString(0, 0, "Account No."	, $fmtTitle);
+		$wksProfitReport->writeString(0, 1, "Customer Group", $fmtTitle);
+		$wksProfitReport->writeString(0, 2, "Customer Name"	, $fmtTitle);
+		$wksProfitReport->writeString(0, 3, "Cost NLD"		, $fmtTitle);
+		$wksProfitReport->writeString(0, 4, "Charge NLD"	, $fmtTitle);
+		$wksProfitReport->writeString(0, 5, "Bill Cost"		, $fmtTitle);
+		$wksProfitReport->writeString(0, 6, "Bill Charge"	, $fmtTitle);
+		$wksProfitReport->writeString(0, 7, "Margin"		, $fmtTitle);
+	 	
+	 	
+	 	$itfInterface->ConsoleAddLine("\n[ ACCOUNT BREAKDOWN ]\n");
+	 	// foreach Invoice
+	 	$intRow = 1;
+	 	$intAccountsDone = 0;
+	 	foreach ($arrInvoices as $arrInvoice)
+	 	{
+	 		// Calculate percentage done
+	 		$fltPercentDone = ($intAccountsDone / count($arrInvoices)) * 100;
+	 		$strConsoleText = "\t+ Account No {$arrInvoice['Account']}\t:";
+	 	
+	 		// Get Customer Details
+	 		$itfInterface->ConsoleAddLine("$strConsoleText Getting Customer Details...", $fltPercentDone);
+	 		$selAccountDetails->Execute(Array('Account' => $arrInvoice['Account']));
+	 		$arrDetails = $selAccountDetails->Fetch();
+	 		
+	 		// Get CDR Total Charge and Cost
+	 		$itfInterface->ConsoleRedrawLine("$strConsoleText Getting CDR Totals...");
+	 		$selCDRTotals->Execute(Array('Account' => $arrInvoice['Account']));
+	 		$arrCDRTotals = $selCDRTotals->Fetch();
+	 		
+	 		// Calculate Margin
+	 		$fltCharge	= (float)$arrInvoice['Total'];
+	 		$fltCost	= (float)$arrCDRTotals['BillCost'];
+	 		if ($fltCharge == 0 && $fltCost == 0)
+	 		{
+	 			$fltMargin = 0.0;
+	 		}
+	 		else
+	 		{
+	 			$fltMargin	= round((($fltCharge - $fltCost) / $fltCharge), 4);
+	 		}
+	 		
+	 		// Output to XLS file
+	 		$itfInterface->ConsoleRedrawLine("$strConsoleText Writing to XLS Document...");
+			$wksProfitReport->writeNumber($intRow, 0, $arrInvoice['Account']);
+			$wksProfitReport->writeString($intRow, 1, GetConstantDescription($arrDetails['CustomerGroup'], 'CustomerGroup'));
+			$wksProfitReport->writeString($intRow, 2, $arrDetails['BusinessName']);
+			$wksProfitReport->writeNumber($intRow, 3, $arrCDRTotals['CostNLD']		, $fmtCurrency);
+			$wksProfitReport->writeNumber($intRow, 4, $arrCDRTotals['ChargeNLD']	, $fmtCurrency);
+			$wksProfitReport->writeNumber($intRow, 5, $arrCDRTotals['BillCost']		, $fmtCurrency);
+			$wksProfitReport->writeNumber($intRow, 6, $arrInvoice['Total']			, $fmtCurrency);
+			$wksProfitReport->writeNumber($intRow, 7, $fltMargin					, $fmtPercentage);
+			
+			// DONE
+	 		$itfInterface->ConsoleRedrawLine("$strConsoleText [   OK   ]");
+	 		$intAccountsDone++;
+	 		$intRow++;
+	 	}
+	 	
+	 	// Add in Gross Totals
+	 	$itfInterface->ConsoleAddLine("\nAdding Gross Totals to XLS...");
+	 	$wksProfitReport->writeString($intRow + 1, 2, "Gross Totals: ", $fmtTitle);
+	 	$wksProfitReport->writeFormula($intRow + 1, 3, "=SUM(D2:D".($intRow).")", $fmtTotal);
+	 	$wksProfitReport->writeFormula($intRow + 1, 4, "=SUM(E2:E".($intRow).")", $fmtTotal);
+	 	$wksProfitReport->writeFormula($intRow + 1, 5, "=SUM(F2:F".($intRow).")", $fmtTotal);
+	 	$wksProfitReport->writeFormula($intRow + 1, 6, "=SUM(G2:G".($intRow).")", $fmtTotal);
+	 	$wksProfitReport->writeFormula($intRow + 1, 7, "=(G".($intRow + 2)." - F".($intRow + 2).") / G".($intRow + 2), $fmtPCTotal);
+	 	
+	 	// Close XLS File
+	 	$itfInterface->ConsoleAddLine("Saving XLS Document...");
+		$wkbWorkbook->close();
+	 	
+	 	$strDate = date("Ymd_His");
+	 	$strAutoName = "/home/vixen_log/billing_app/profit_$strDate.log";
+	 	$arrItems = Array();
+	 	$arrItems[TRUE]		["Name"] = "Save to '$strAutoName'";
+	 	$arrItems[FALSE]	["Name"] = "Do not save log";
+	 	$mixResults = $itfInterface->DrawMenu($arrItems, "Save Log to file?");
+	 	switch ($mixResults)
+	 	{
+	 		case TRUE:
+	 			// Write to default path
+	 			return file_put_contents($strAutoName, implode("\n", $itfInterface->ConsoleGetContents()));
+	 			break;
+	 			
+	 		case FALSE;
+	 			return TRUE;
+	 			break;
+	 	}
+	 }
  }
 
 

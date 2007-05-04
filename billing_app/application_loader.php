@@ -112,6 +112,7 @@ require_once($strFrameworkDir."db_access.php");
 require_once($strFrameworkDir."report.php");
 require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
+require_once($strFrameworkDir."cli_interface.php");
 
 // load modules
 require_once($strModuleDir."module_printing.php");
@@ -120,6 +121,7 @@ require_once($strModuleDir."module_etech.php");
 // load PEAR components
 require_once("Mail.php");
 require_once("Mail/mime.php");
+require_once("Spreadsheet/Excel/Writer.php");
 
 // create framework instance
 $GLOBALS['fwkFramework'] = new Framework();
