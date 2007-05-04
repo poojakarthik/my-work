@@ -76,6 +76,8 @@
 								  ") " .
 								  "AND " .
 								  "(" .
+								  "		LastChargedOn IS NULL" .
+								  "		OR" .
 								  "		(" .
 								  "			RecurringFreqType = ".BILLING_FREQ_DAY." " .
 								  "			AND " .
@@ -144,6 +146,8 @@
 		$intTotal = 0;
 		$intNonUnique = 0;
 		$this->Framework->StartWatch();
+		$arrColumns = Array();
+		$arrColumns['Status']	= CDR_TEMP_CREDIT;
 		$updCDRSetStatus = new StatementUpdate("CDR", "Credit = 1 AND Status = ".CDR_INVOICED, $arrColumns);
 		
 		// Get list of charges that need to be generated (1000 at a time)
@@ -164,28 +168,36 @@
 				
 				// Calculate the charge date
 				$strDate = $arrCharge['LastChargedOn'];
-				switch ($arrCharge['RecurringFreqType'])
+				if ($strDate === NULL)
 				{
-					case BILLING_FREQ_DAY:
-						$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." days", strtotime($arrCharge['LastChargedOn'])));
-						break;
-					case BILLING_FREQ_MONTH:
-						$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." months", strtotime($arrCharge['LastChargedOn'])));
-						break;
-					case BILLING_FREQ_HALF_MONTH:
-						if ((int)date("d", strtotime($arrCharge['LastChargedOn'])) > 14)
-						{
-							$strDate	= date("Y-m-d", strtotime("+14 days", strtotime($arrCharge['LastChargedOn'])));
-						}
-						else
-						{
-							$strDate	= date("Y-m-d", strtotime("-14 days", strtotime($arrCharge['LastChargedOn'])));
-							$strDate	= date("Y-m-d", strtotime("+1 month", strtotime($strDate)));
-						}
-						break;
-					default:
-						$this->_rptRecurringChargesReport->AddMessage(MSG_FAIL.MSG_REASON."Invalid RecurringFreqType ".$arrCharge['RecurringFreqType']);
-						continue;
+					// This charge hasn't been run before, so charge on the StartDate
+					$arrCharge['LastChargedOn'] = $arrCharge['StartDate'];
+				}
+				else
+				{
+					switch ($arrCharge['RecurringFreqType'])
+					{
+						case BILLING_FREQ_DAY:
+							$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." days", strtotime($arrCharge['LastChargedOn'])));
+							break;
+						case BILLING_FREQ_MONTH:
+							$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." months", strtotime($arrCharge['LastChargedOn'])));
+							break;
+						case BILLING_FREQ_HALF_MONTH:
+							if ((int)date("d", strtotime($arrCharge['LastChargedOn'])) > 14)
+							{
+								$strDate	= date("Y-m-d", strtotime("+14 days", strtotime($arrCharge['LastChargedOn'])));
+							}
+							else
+							{
+								$strDate	= date("Y-m-d", strtotime("-14 days", strtotime($arrCharge['LastChargedOn'])));
+								$strDate	= date("Y-m-d", strtotime("+1 month", strtotime($strDate)));
+							}
+							break;
+						default:
+							$this->_rptRecurringChargesReport->AddMessage(MSG_FAIL.MSG_REASON."Invalid RecurringFreqType ".$arrCharge['RecurringFreqType']);
+							continue;
+					}
 				}
 				$arrCharge['LastChargedOn'] = $strDate;
 				
