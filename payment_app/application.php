@@ -314,7 +314,7 @@
 		{			
 			// use payment module to decode the payment
 			$arrNormalised = $this->_arrPaymentModules[$arrPayment['FileType']]->Normalise($arrPayment['Payment']);
-			if($arrNormalised['Status'] !== $arrPayment['Status'] || !is_array($arrNormalised))
+			if($arrNormalised['Status'] || !is_array($arrNormalised))
 			{
 				$this->_rptPaymentReport->AddMessageVariables(MSG_NORMALISE_LINE, Array('<Id>' => $arrPayment['Id']), FALSE);
 				

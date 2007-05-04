@@ -14,8 +14,7 @@ require_once('application_loader.php');
 $appPayment = new ApplicationPayment($arrConfig);
 
 // Execute the application
-$appPayment->ReversePayment(33994);
-//$appPayment->ReversePayment(34942, 22);
+$appPayment->ReversePayment(39094);
 
 // finished
 echo("\n-- End of Payments --\n");
