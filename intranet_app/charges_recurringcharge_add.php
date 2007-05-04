@@ -37,12 +37,13 @@
 	$oblbolPlanCharge		= $oblarrRecurringChargeType->Push (new dataBoolean	('PlanCharge', FALSE));
 	$oblbolUniqueCharge		= $oblarrRecurringChargeType->Push (new dataBoolean	('UniqueCharge', FALSE));
 	
+	//Debug($_POST);die;
 	if ($_SERVER ['REQUEST_METHOD'] == "POST")
 	{
 		$oblstrChargeType		->setValue ($_POST ['ChargeType']);
 		$oblstrDescription		->setValue ($_POST ['Description']);
 		$natNature				->setValue ($_POST ['Nature']);
-		$oblintRecurringDate	->setValue ($_POST ['RecurringDate']);
+		$oblintRecurringDate	->setValue ($_POST ['RecurringFreq']);
 		$brqRecurringFreq		->setValue ($_POST ['RecurringFreqType']);
 		$oblbolContinuable		->setValue ($_POST ['Continuable']);
 		$oblbolFixed			->setValue ($_POST ['Fixed']);
@@ -77,6 +78,11 @@
 		{
 			// The Recursion Charge must be an Amount
 			$oblstrError->setValue ('RecursionCharge Invalid');
+		}
+		else if ($_POST ['RecurringFreq'] == 0)
+		{
+			// The Recursion Charge must be an Amount
+			$oblstrError->setValue ('Zero Freq');
 		}
 		else if (!$bolMinCharge && $oblfltMinCharge->getValue () <> 0)
 		{

@@ -24,6 +24,9 @@
 						<xsl:when test="/Response/Error = 'Frequency'">
 							Please enter a Recurring Frequency.
 						</xsl:when>
+						<xsl:when test="/Response/Error = 'Zero Freq'">
+							The Recurring Frequency must be more than zero.
+						</xsl:when>
 						<xsl:when test="/Response/Error = 'Nature'">
 							Please select a valid Nature.
 						</xsl:when>
@@ -147,7 +150,7 @@
 								<input type="text" name="RecurringFreq" class="input-string2" size="1">
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
-										<xsl:value-of select="/Response/RecurringChargeType/RecurringFreq" />
+										<xsl:value-of select="/Response/RecurringChargeType/RecurringDate" />
 									</xsl:attribute>
 								</input>
 								<xsl:text> </xsl:text>
