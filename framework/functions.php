@@ -1494,4 +1494,28 @@ function MaskCreditCard($strCardNumber)
 	return $strFilteredCC;
 }
 
+//------------------------------------------------------------------------//
+// SecsToHMS
+//------------------------------------------------------------------------//
+/**
+ * SecsToHMS()
+ *
+ * Converts an integer time to HHH:MM:SS
+ *
+ * Converts an integer time to HHH:MM:SS
+ *
+ * @param	integer	$intSeconds		The time to convert
+ * @return	string
+ *
+ * @method
+ */
+function SecsToHMS($intSeconds)
+{
+	$intHours	= floor($intSeconds / 3600);
+	$intMins	= floor(($intSeconds % 3600) / 60);
+	$intSecs	= ($intSeconds % 3600) % 60;
+	$strTime	= sprintf("%03d:%02d:%02d", $intHours, $intMins, $intSecs);
+	return $strTime;
+}
+
 ?>
