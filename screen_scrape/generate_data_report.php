@@ -732,7 +732,6 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
 $arrSQLFields = Array();
-$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 $arrSQLFields['Account']	= Array(
 										'Type'					=> "dataString",
 										'Documentation-Entity'	=> "Account",
@@ -755,6 +754,33 @@ $arrSQLFields['EndDate']	= Array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
+
+//----------------------------------------------------------------------------//
+// Services without a current Plan
+//----------------------------------------------------------------------------//
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Services Without a Current Plan";
+$arrDataReport['Summary']		= "Lists Service and Account numbers for Services which don't have an active Plan.  Ignores Archived Accounts and Closed Services";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Service JOIN Account ON Service.Account = Account.Id";
+$arrDataReport['SQLWhere']		= "Account.Archived = 0 AND (Service.ClosedOn IS NULL OR Service.ClosedOn > NOW()) AND 0 = (SELECT COUNT(SRP.Id) FROM ServiceRatePlan SRP WHERE SRP.Service = Service.Id AND NOW() BETWEEN SRP.StartDatetime AND SRP.EndDatetime)";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Account No.']	= "Account.Id";
+$arrSQLSelect['Service FNN']	= "Service.FNN";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
 
 //Debug($arrDataReport);
 //die;
