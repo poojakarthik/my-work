@@ -145,6 +145,9 @@
 		
 		// module config
 		$this->_arrCollectionModule = $arrConfig['Define'];
+		
+		// Error array
+		$this->_arrErrors = Array();
  	}
 
  	//------------------------------------------------------------------------//
@@ -256,7 +259,7 @@
 					$this->_arrCurrentDownloadFile['Id'] = $intId;
 					
 					// import files
-					$this->Import($arrFiles);
+					$this->_arrErrors = array_merge($this->_arrErrors, $this->Import($arrFiles));
 					
 					// record download in db (FileDownload) - status has now been changed
 					if ($ubiFileDownload->Execute($this->_arrCurrentDownloadFile) === FALSE)
@@ -276,7 +279,36 @@
 			}
 		}
 		
-		
+		// Are the any errors?
+		if ($this->_arrErrors)
+		{
+			// Generate Error Email
+			$strContent = "Collection/Import errors for ".date("Y-m-d H:i:s")."\n\n";
+			foreach ($this->_arrErrors as $strFile=>$arrErrors)
+			{
+				$strContent .= "\nFile: $strFile\n";
+				foreach ($arrErrors as $strError)
+				{
+					$strContent .= "\t$strError\n";
+				}
+			}
+			
+			$arrHeaders = Array();
+			$arrHeaders['From']		= 'collection@voiptelsystems.com.au';
+			$arrHeaders['Subject']	= "Collection/Import errors for ".date("Y-m-d H:i:s");
+ 			$mimMime = new Mail_mime("\n");
+ 			$mimMime->setTXTBody($strContent);
+			$strBody = $mimMime->get();
+			$strHeaders = $mimMime->headers($arrHeaders);
+ 			$emlMail =& Mail::factory('mail');
+ 			
+ 			// Send the email
+ 			if (!$emlMail->send('flame@voiptelsystems.com.au', $strHeaders, $strBody))
+ 			{
+ 				$this->_rptCollectionReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
+ 				continue;
+ 			}
+		}
 	}
 
  	//------------------------------------------------------------------------//
@@ -290,7 +322,7 @@
 	 * Copies file to permanent storage, determine file type & uniqueness
 	 * 
 	 * @param	array	$arrFiles		Files to be imported
-	 * @return	bool
+	 * @return	array					Array of Errors
 	 * 
 	 * @method
 	 */
@@ -299,6 +331,8 @@
 		// set status of downloaded file
 		$this->_arrCurrentDownloadFile['Status'] 		= RAWFILE_IMPORTED;
 		$this->_arrCurrentDownloadFile['ImportedOn']	= New MySQLFunction("NOW()");
+		
+		$arrError = Array();
 		
 		$bolReturn = TRUE;
 		if (!is_array($arrFiles) || count($arrFiles) < 1)
@@ -323,18 +357,21 @@
 				if (!$strFileLocation = $this->_StoreImportFile())
 				{
 					$this->_rptCollectionReport->AddMessageVariables(MSG_MOVE_FILE_FAILED, Array('<FileName>' => $strFileName));
+					$arrError[$strFileName][]	= "File could not be moved to final location";
 				}
 				
 				// find file type
 				if ($this->_FileType() == CDR_UNKNOWN)
 				{
 					$this->_rptCollectionReport->AddMessageVariables(MSG_UNKNOWN_FILETYPE, Array('<FileName>' => $strFileName));
+					$arrError[$strFileName][]	= "Unknown File Type!";
 				}
 				
 				// check uniqueness
 				if (!$strHash = $this->_IsUnique())
 				{
 					$this->_rptCollectionReport->AddMessageVariables(MSG_NOT_UNIQUE, Array('<FileName>' => $strFileName));
+					$arrError[$strFileName][]	= "File not unique!";
 				}
 				
 				
@@ -345,17 +382,16 @@
 				{
 					if ($this->_insFileImport->Error())
 					{
-
 					}
 					
 					$this->_arrCurrentDownloadFile['Status'] = RAWFILE_IMPORT_FAILED;
 					$this->_rptCollectionReport->AddMessageVariables(MSG_IMPORT_FAILED, Array('<Reason>' => "Database Failure"));
-					$bolReturn = FALSE;
+					$arrError[$strFileName][]	= "Insert Query Failed!";
 				}
 			}
 			// Add to report that we've imported
 			$this->_rptCollectionReport->AddMessage(MSG_IMPORTED, FALSE, FALSE);
-			return $bolReturn;
+			return $arrError;
 		}
 	}
 	
