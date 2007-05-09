@@ -113,7 +113,7 @@
 		
 		$this->_selServices				= new StatementSelect(	"(Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service) LEFT JOIN CostCentre CostCentre2 ON ServiceExtension.CostCentre = CostCentre2.Id, " .
 																"Service Service2 LEFT OUTER JOIN CostCentre ON Service2.CostCentre = CostCentre.Id",
-																"Service.FNN AS FNN, Service.Id AS Id, (CASE WHEN CostCentre2.Id IS NULL THEN CostCentre.Name ELSE CostCentre2.Name END) AS CostCentre, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
+																"Service.FNN AS FNN, Service.Id AS Id, (CASE WHEN CostCentre2.Id IS NULL THEN CostCentre.Name ELSE CostCentre2.Name END) AS CostCentre, Service.Indial100 as Indial100, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
 																"Service.Account = <Account> AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND Service.Id = Service2.Id",
 																"CostCentre, Service.ServiceType, Service.FNN, ServiceExtension.Name",
 																NULL,
@@ -297,12 +297,14 @@
 	 * Adds an invoice to the bill
 	 * 
 	 * @param		array		$arrInvoiceDetails		Associative array of details for this Invoice
+	 * @param		boolean		$bolDebug				optional TRUE	: Doesn't insert to database, returns data array
+	 * 															 FALSE	: Inserts to database, returns boolean
 	 *
-	 * @return		boolean
+	 * @return		mixed
 	 *
 	 * @method
 	 */
- 	function AddInvoice($arrInvoiceDetails)
+ 	function AddInvoice($arrInvoiceDetails, $bolDebug = FALSE)
  	{
 		$arrDefine = $this->_arrDefine;
 		
@@ -518,6 +520,8 @@
 		}
 		$arrServices = $this->_selServices->FetchAll();
 		
+		//Debug($arrServices);
+		
 		// Only generate Service Summaries and Itemised calls if there are services to generate for
 		if ($intCount >= 1)
 		{
@@ -540,6 +544,7 @@
 						$arrLast = end($this->_arrFileData);
 						if ($arrLast['RecordType']['Value'] == '0060')
 						{
+							//Debug("Popping!");
 							array_pop($this->_arrFileData);
 						}
 						else
@@ -562,6 +567,7 @@
 				{
 					$fltCostCentreTotal += $mixResponse;
 				}
+				//var_dump($mixResponse);
 			}
 			if ($strCostCentre !== -1)
 			{
@@ -570,6 +576,7 @@
 				if ($arrLast['RecordType']['Value'] == '0060')
 				{
 					array_pop($this->_arrFileData);
+					//Debug("Popping");
 				}
 				else
 				{
@@ -608,9 +615,18 @@
 		 		// Set up Ranges
 		 		if (!is_numeric($arrService['RangeStart']))
 		 		{
-		 			// Not an Indial, fake the Range
-		 			$arrService['RangeStart']	= $arrService['FNN'];
-		 			$arrService['RangeEnd']		= $arrService['FNN'];
+		 			if ($arrService['Indial100'])
+		 			{
+		 				// Indial without ELB
+			 			$arrService['RangeStart']	= substr($arrService['FNN'], 0, -2).'00';
+			 			$arrService['RangeEnd']		= substr($arrService['FNN'], 0, -2).'99';
+		 			}
+		 			else
+		 			{
+			 			// Not an Indial, fake the Range
+			 			$arrService['RangeStart']	= $arrService['FNN'];
+			 			$arrService['RangeEnd']		= $arrService['FNN'];
+		 			}
 		 		}
 		 		else
 		 		{
@@ -743,17 +759,27 @@
 		// Process and implode the data so it can be inserted into the DB
 		$strFileContents = $this->GenerateInvoiceData($this->_arrFileData);
 		
-		// Insert into InvoiceOutput table
-		$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
-		$arrWhere['Account']	= $arrInvoiceDetails['Account'];
-		$arrWhere['Data']		= $strFileContents;
-		if ($this->_insInvoiceOutput->Execute($arrWhere) === FALSE)
+		// Are we debugging?
+		if ($bolDebug)
 		{
-			// Error
-
-			return FALSE;			
+			// Yes, return data array
+			//return $this->_arrFileData;
+			return $strFileContents;
 		}
-		return TRUE;
+		else
+		{
+			// Insert into InvoiceOutput table
+			$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
+			$arrWhere['Account']	= $arrInvoiceDetails['Account'];
+			$arrWhere['Data']		= $strFileContents;
+			if ($this->_insInvoiceOutput->Execute($arrWhere) === FALSE)
+			{
+				// Error
+	
+				return FALSE;			
+			}
+			return TRUE;
+		}
  	}
  	
  	//------------------------------------------------------------------------//
@@ -1045,6 +1071,14 @@
 				$bolPrimary = FALSE;
 			}
 		}
+		elseif ($arrService['Indial100'])
+		{
+			// Indial without ELB, use full range
+			$strFNN			= $arrService['FNN'];
+			$strRangeStart	= substr($arrService['FNN'], 0, -2).'00';
+			$strRangeEnd	= substr($arrService['FNN'], 0, -2).'99';
+			$bolPrimary		= TRUE;
+		}
 		else
 		{
 			// Not an Indial, so manually set RangeStart and RangeEnd
@@ -1060,6 +1094,7 @@
  		$arrColumns['RangeStart']	= $strRangeStart;
  		$arrColumns['RangeEnd']		= $strRangeEnd;
  		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;
+ 		//Debug($arrColumns);
  		if ($this->_selServiceSummary->Execute($arrColumns) === FALSE)
  		{
  			// ERROR
@@ -1067,6 +1102,8 @@
  			return FALSE;
  		}
  		$arrServiceSummaries = $this->_selServiceSummary->FetchAll();
+ 		
+ 		//Debug($arrServiceSummaries);
 	 	
 	 	// Add Service Charges
 	 	if ($bolPrimary === TRUE || $bolPrimary === NULL)
