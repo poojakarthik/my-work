@@ -1259,7 +1259,6 @@
 			}
 			
 			$arrCharges = $this->_selItemisedServiceCharges->FetchAll();
-			
 			foreach ($arrCharges as $arrCharge)
 			{
 				//echo "\t\t\t...Adding Itemised Charge...\n";
