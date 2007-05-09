@@ -1257,7 +1257,10 @@
 				Debug($this->_selItemisedServiceCharges->Error());
 				return FALSE;
 			}
-			while ($arrCharge = $this->_selItemisedServiceCharges->Fetch())
+			
+			$arrCharges = $this->_selItemisedServiceCharges->FetchAll();
+			
+			foreach ($arrCharges as $arrCharge)
 			{
 				//echo "\t\t\t...Adding Itemised Charge...\n";
 				// Make sure that the Credits appear as a -ve figure

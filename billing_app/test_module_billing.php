@@ -18,7 +18,7 @@ require_once('application_loader.php');
 $appBilling = new ApplicationBilling($arrConfig);
 
 // Get Invoice Details
-$selInvoice = new StatementSelect("Invoice", "*", "Account = 1000158008 AND InvoiceRun = '46362bac43428'");
+$selInvoice = new StatementSelect("Invoice", "*", "Account = 1000158791 AND InvoiceRun = '46362bac43428'");
 $selInvoice->Execute();
 $arrInvoice = $selInvoice->Fetch();
 
