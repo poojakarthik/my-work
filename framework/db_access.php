@@ -2418,7 +2418,12 @@ class QueryCopyTable extends Query
 			else
 			{
 				// If we're not using oblib, return an associative array
- 				return $this->_arrBoundResults;
+ 				unset($arrResult);
+				foreach($this->_arrBoundResults as $strKey=>$mixValue)
+				{
+					$arrResult[$strKey] = $mixValue;
+				}
+				return $arrResult;
 			}
 		}
 		
