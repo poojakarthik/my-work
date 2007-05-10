@@ -184,7 +184,7 @@
 							$strDate	= date("Y-m-d", strtotime("+".$arrCharge['RecurringFreq']." months", strtotime($arrCharge['LastChargedOn'])));
 							break;
 						case BILLING_FREQ_HALF_MONTH:
-							if ((int)date("d", strtotime($arrCharge['LastChargedOn'])) > 14)
+							if ((int)date("d", strtotime($arrCharge['LastChargedOn'])) < 15)
 							{
 								$strDate	= date("Y-m-d", strtotime("+14 days", strtotime($arrCharge['LastChargedOn'])));
 							}
@@ -604,7 +604,7 @@
 											"Id, Service, Account, AccountGroup, Description, Charge",
 											"Credit = 1 AND " .
 											"RecordType = 21 AND " .
-											"Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.")");
+											"Status IN (".CDR_RATED.", ".CDR_TEMP_INVOICE.", ".CDR_CREDIT_MATCH_NOT_FOUND.")");
 		$arrCols = Array();
 		$arrCols['Status']	= NULL;
 		$ubiSECCDR = new StatementUpdateById("CDR", $arrCols);
