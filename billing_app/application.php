@@ -164,6 +164,12 @@
 		$this->arrInvoiceData 	['InvoiceRun']		= NULL;
 		$this->insTempInvoice						= new StatementInsert("InvoiceTemp", $this->arrInvoiceData 	);
 		$this->insServiceTotal						= new StatementInsert("ServiceTotal");
+		
+		
+		// Init Charge Modules
+		// TODO future: Only init these if they're enabled for this Yellow Billing client
+		$this->_arrChargeModules[CHARGE_MODULE_NON_DDR]			= new ChargeNonDirectDebit();
+		$this->_arrChargeModules[CHARGE_MODULE_LATE_PAYMENT]	= new ChargeLatePayment();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -649,11 +655,6 @@
 			
 			$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 			
-			// calculate invoice total
-			$fltTotal	= $fltTotalDebits - $fltTotalCredits;
-			$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
-			$fltBalance	= $fltTotal + $fltTax;
-			
 			// calculate account balance from outstanding past invoices (this could give a negative value)
 			$fltAccountBalance = 0.0;
 			if(($fltAccountBalance = $this->Framework->GetAccountBalance($arrAccount['Id'])) === FALSE)
@@ -663,18 +664,62 @@
 				$this->intFailed++;
 				continue;
 			}
-			/*
-			// check for last month's TotalOwing to Account for Credits that should be carried forward
-			$selPreviousTotalOwing->Execute(Array('Account'));
-			$arrTotalOwing = $selPreviousTotalOwing->Fetch();
-			$fltPreviousTotalOwing = $arrTotalOwing['TotalOwing'];
-			if ($fltPreviousTotalOwing < $fltAccountBalance && $fltPreviousTotalOwing < 0)
-			{
-				// TODO
-			}*/
 			
-			// get total owing
-			$fltTotalOwing = $fltBalance + $fltAccountBalance;
+			// calculate initial invoice total and total owing
+			$fltTotal		= $fltTotalDebits - $fltTotalCredits;
+			$fltTax			= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
+			$fltBalance		= $fltTotal + $fltTax;
+			$fltTotalOwing	= $fltBalance + $fltAccountBalance;
+			
+			// group invoice data
+			$arrInvoiceData = Array();
+			$arrInvoiceData['AccountGroup']		= $arrAccount['AccountGroup'];
+			$arrInvoiceData['Account']			= $arrAccount['Id'];
+			//$arrInvoiceData['CreatedOn']		= new MySQLFunction("NOW()");
+			$arrInvoiceData['CreatedOn']		= date("Y-m-d H:i:s");
+			//$arrInvoiceData['DueOn']			= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
+			$arrInvoiceData['DueOn']			= date("Y-m-d H:i:s", strtotime("+ ". $arrAccount['PaymentTerms'] ." days"));
+			$arrInvoiceData['Credits']			= $fltTotalCredits;
+			$arrInvoiceData['Debits']			= $fltTotalDebits;
+			$arrInvoiceData['Total']			= $fltTotal;
+			$arrInvoiceData['Tax']				= $fltTax;
+			$arrInvoiceData['TotalOwing']		= $fltTotalOwing;
+			$arrInvoiceData['Balance']			= $fltBalance;
+			$arrInvoiceData['Disputed']			= 0;
+			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
+			$arrInvoiceData['Status']			= INVOICE_TEMP;
+			$arrInvoiceData['InvoiceRun']		= $this->_strInvoiceRun;
+			
+			// Add in modular charges
+			foreach ($this->_arrChargeModules as $chgModule)
+			{
+				// Generate charge
+				$mixResult = $chgModule->Generate($arrInvoiceData, $arrAccount);
+				
+				// Add to totals
+				if ($mixResult)
+				{
+					if ($mixResult < 1)
+					{
+						// Credit
+						$fltTotalCredits	+= $mixResult;
+					}
+					else
+					{
+						// Debit
+						$fltTotalDebits		+= $mixResult;
+					}
+				}
+			}
+			
+			// recalculate initial invoice total and total owing
+			$fltTotal		= $fltTotalDebits - $fltTotalCredits;
+			$fltTax			= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
+			$fltBalance		= $fltTotal + $fltTax;
+			$fltTotalOwing	= $fltBalance + $fltAccountBalance;
+			
+			// Pay Negative Balances??
+			// TODO
 			
 			// if the invoice total > 0 look for outstanding payments
 			if ($fltBalance > 0 && $fltTotalOwing <= $fltBalance)
@@ -728,24 +773,14 @@
 				}
 			}
 			
-			// write to temporary invoice table
-			$arrInvoiceData = Array();
-			$arrInvoiceData['AccountGroup']		= $arrAccount['AccountGroup'];
-			$arrInvoiceData['Account']			= $arrAccount['Id'];
-			//$arrInvoiceData['CreatedOn']		= new MySQLFunction("NOW()");
-			$arrInvoiceData['CreatedOn']		= date("Y-m-d H:i:s");
-			//$arrInvoiceData['DueOn']			= new MySQLFunction("DATE_ADD(NOW(), INTERVAL <Days> DAY", Array("Days"=>$arrAccount['PaymentTerms']));
-			$arrInvoiceData['DueOn']			= date("Y-m-d H:i:s", strtotime("+ ". $arrAccount['PaymentTerms'] ." days"));
+			// get new values, and write to temporary invoice table
 			$arrInvoiceData['Credits']			= $fltTotalCredits;
 			$arrInvoiceData['Debits']			= $fltTotalDebits;
 			$arrInvoiceData['Total']			= $fltTotal;
 			$arrInvoiceData['Tax']				= $fltTax;
 			$arrInvoiceData['TotalOwing']		= $fltTotalOwing;
 			$arrInvoiceData['Balance']			= $fltBalance;
-			$arrInvoiceData['Disputed']			= 0;
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
-			$arrInvoiceData['Status']			= INVOICE_TEMP;
-			$arrInvoiceData['InvoiceRun']		= $this->_strInvoiceRun;
 			
 			// report error or success
 			if(!$this->insTempInvoice->Execute($arrInvoiceData))
@@ -2424,11 +2459,12 @@
 			$wksProfitReport->writeNumber($intRow, 0, $arrInvoice['Account']);
 			$wksProfitReport->writeString($intRow, 1, GetConstantDescription($arrDetails['CustomerGroup'], 'CustomerGroup'));
 			$wksProfitReport->writeString($intRow, 2, $arrDetails['BusinessName']);
-			$wksProfitReport->writeNumber($intRow, 3, $arrCDRTotals['CostNLD']		, $fmtCurrency);
-			$wksProfitReport->writeNumber($intRow, 4, $arrCDRTotals['ChargeNLD']	, $fmtCurrency);
-			$wksProfitReport->writeNumber($intRow, 5, $arrCDRTotals['BillCost']		, $fmtCurrency);
-			$wksProfitReport->writeNumber($intRow, 6, $arrInvoice['Total']			, $fmtCurrency);
-			$wksProfitReport->writeNumber($intRow, 7, $fltMargin					, $fmtPercentage);
+			$wksProfitReport->writeNumber($intRow, 3, $arrCDRTotals['CostNLD']				, $fmtCurrency);
+			$wksProfitReport->writeNumber($intRow, 4, $arrCDRTotals['ChargeNLD']			, $fmtCurrency);
+			$wksProfitReport->writeNumber($intRow, 5, $arrCDRTotals['BillCost']				, $fmtCurrency);
+			$wksProfitReport->writeNumber($intRow, 6, $arrInvoice['Total']					, $fmtCurrency);
+			//$wksProfitReport->writeNumber($intRow, 7, $fltMargin							, $fmtPercentage);
+			$wksProfitReport->writeFormula($intRow, 7, "=(G".($intRow+1)." - F".($intRow+1).") / G".($intRow+1)	, $fmtPercentage);
 			
 			// DONE
 	 		$itfInterface->ConsoleRedrawLine("$strConsoleText [   OK   ]");
