@@ -2464,7 +2464,7 @@
 			$wksProfitReport->writeNumber($intRow, 5, $arrCDRTotals['BillCost']				, $fmtCurrency);
 			$wksProfitReport->writeNumber($intRow, 6, $arrInvoice['Total']					, $fmtCurrency);
 			//$wksProfitReport->writeNumber($intRow, 7, $fltMargin							, $fmtPercentage);
-			$wksProfitReport->writeFormula($intRow, 7, "=(G".($intRow+1)." - F".($intRow+1).") / G".($intRow+1)	, $fmtPercentage);
+			$wksProfitReport->writeFormula($intRow, 7, "=(G".($intRow+1)." - F".($intRow+1).") / ABS(G".($intRow+1).")"	, $fmtPercentage);
 			
 			// DONE
 	 		$itfInterface->ConsoleRedrawLine("$strConsoleText [   OK   ]");
@@ -2479,7 +2479,7 @@
 	 	$wksProfitReport->writeFormula($intRow + 1, 4, "=SUM(E2:E".($intRow).")", $fmtTotal);
 	 	$wksProfitReport->writeFormula($intRow + 1, 5, "=SUM(F2:F".($intRow).")", $fmtTotal);
 	 	$wksProfitReport->writeFormula($intRow + 1, 6, "=SUM(G2:G".($intRow).")", $fmtTotal);
-	 	$wksProfitReport->writeFormula($intRow + 1, 7, "=(G".($intRow + 2)." - F".($intRow + 2).") / G".($intRow + 2), $fmtPCTotal);
+	 	$wksProfitReport->writeFormula($intRow + 1, 7, "=(G".($intRow + 2)." - F".($intRow + 2).") / ABS(G".($intRow + 2).")", $fmtPCTotal);
 	 	
 	 	// Close XLS File
 	 	$itfInterface->ConsoleAddLine("Saving XLS Document...");
