@@ -114,9 +114,14 @@ require_once($strFrameworkDir."error.php");
 require_once($strFrameworkDir."exception_vixen.php");
 require_once($strFrameworkDir."cli_interface.php");
 
-// load modules
+// load printing modules
 require_once($strModuleDir."module_printing.php");
 require_once($strModuleDir."module_etech.php");
+
+// load charge modules
+require_once($strModuleDir."charge_base.php");
+require_once($strModuleDir."charge_latepayment.php");
+require_once($strModuleDir."charge_nonddr.php");
 
 // load PEAR components
 require_once("Mail.php");

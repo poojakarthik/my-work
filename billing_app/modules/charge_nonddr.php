@@ -93,7 +93,8 @@
 	 *
 	 * Generates a Non Direct Debit Charge for the given Invoice
 	 *
-	 * @return	boolean
+	 * @return	mixed			float	: Amount charged
+	 * 							FALSE	: Charge could not be added 		
 	 *
 	 * @method
 	 */
@@ -103,6 +104,13 @@
  		if ($arrAccount['DisableDDR'] == 1 || $arrAccount['BillingType'] != BILLING_TYPE_ACCOUNT)
  		{
  			// No, return TRUE
+ 			return TRUE;
+ 		}
+ 		
+ 		// Is the Invoice Total > NON_DDR_MINIMUM_CHARGE?
+ 		if ($arrInvoice['Total'] < NON_DDR_MINIMUM_CHARGE)
+ 		{
+ 			// Yes, return TRUE
  			return TRUE;
  		}
  		
@@ -126,7 +134,16 @@
 		$arrCharge['Account'] 		= $arrAccount['Id'];
 		$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
 		$arrCharge['InvoiceRun']	= $arrInvoice['InvoiceRun'];
-		return (bool)$this->Framework->AddCharge($arrCharge);
+		
+		// Return FALSE or amount charged
+		if (!$this->Framework->AddCharge($arrCharge))
+		{
+			return FALSE;
+		}
+		else
+		{
+			return $arrCharge['Amount'];
+		}
  	}
  }
  

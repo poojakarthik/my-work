@@ -41,6 +41,13 @@ define("LOG_PATH"						, "/home/vixen_log/billing_app/");
 define("BILL_PRINT"						, 900);
 define("BILL_PRINT_ETECH"				, 901);
 
+// Charge Modules
+define("CHARGE_MODULE_NON_DDR"			, 666);
+define("CHARGE_MODULE_LATE_PAYMENT"		, 667);
+
+// Non-DDR minimum invoice total
+define("NON_DDR_MINIMUM_CHARGE"			, 2.50);
+
 // Reporting Messages
 define("MSG_HORIZONTAL_RULE"			, "================================================================================\n");
 define("MSG_OK"							, "\t\t[   OK   ]");

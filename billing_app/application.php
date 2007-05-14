@@ -1141,6 +1141,13 @@
 		
 		if ($strInvoiceRun)
 		{
+			// Remove Billing-time modular charges
+			foreach ($this->_arrChargeModules as $chgModule)
+			{
+				// Revoke charges
+				$mixResult = $chgModule->RevokeAll($strInvoiceRun);
+			}
+			
 			// clean up ServiceTotal table
 			$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
 			$qryCleanServiceTotal = new Query();
@@ -1517,6 +1524,13 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}		
 		
+		// Remove Billing-time modular charges
+		foreach ($this->_arrChargeModules as $chgModule)
+		{
+			// Revoke charges
+			$mixResult = $chgModule->RevokeAll($strInvoiceRun);
+		}
+		
 		// clean up ServiceTotal table
 		$this->_rptBillingReport->AddMessage("Cleaning ServiceTotal table...\t\t\t\t", FALSE);
 		$qryCleanServiceTotal = new Query();
@@ -1725,6 +1739,13 @@
 		
 		if ($strInvoiceRun)
 		{
+			// Remove Billing-time modular charges
+			foreach ($this->_arrChargeModules as $chgModule)
+			{
+				// Revoke charges
+				$mixResult = $chgModule->Revoke($strInvoiceRun, $intAccount);
+			}
+			
 			// clean up ServiceTotal table
 			$this->_rptBillingReport->AddMessage("Removing ServiceTotal entries...\t\t\t\t", FALSE);
 			$qryCleanServiceTotal = new Query();

@@ -42,7 +42,7 @@
  * @package		billing_app
  * @class		ChargeBase
  */
- abstract class BaseCharge
+ abstract class ChargeBase
  {
  	
 	//------------------------------------------------------------------------//
@@ -63,6 +63,7 @@
  	{
  		// Statements					
 		$this->_qryDelete = new Query();
+		$this->_selGetAccounts = new StatementSelect("Invoice", "Account", "InvoiceRun = <InvoiceRun>");
 		
 		$this->_strChargeType	= "Error: No charge type!";
  	}
@@ -78,7 +79,8 @@
 	 *
 	 * Generates a Charge for the given Invoice
 	 *
-	 * @return	boolean
+	 * @return	mixed			float	: Amount charged
+	 * 							FALSE	: Charge could not be added 		
 	 *
 	 * @method
 	 */
@@ -91,9 +93,9 @@
 	/**
 	 * Revoke()
 	 *
-	 * Revokes a Charge for the given Invoice
+	 * Revokes a Charge for the given Invoice Run and Account
 	 *
-	 * Revokes a Charge for the given Invoice
+	 * Revokes a Charge for the given Invoice Run and Account
 	 *
 	 * @return	boolean
 	 *
@@ -102,7 +104,32 @@
  	function Revoke($strInvoiceRun, $intAccount)
  	{
  		// Delete the charge
- 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE ChargeType = '$this->_strChargeType' AND Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
+ 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount ChargeType = '$this->_strChargeType' AND InvoiceRun = '$strInvoiceRun'");
+ 	}
+ 	
+ 	
+	//------------------------------------------------------------------------//
+	// RevokeAll
+	//------------------------------------------------------------------------//
+	/**
+	 * RevokeAll()
+	 *
+	 * Revokes all Charges for the given Invoice Run
+	 *
+	 * Revokes all Charges for the given Invoice Run
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 */
+ 	function RevokeAll($strInvoiceRun)
+ 	{
+ 		// Delete the charges
+ 		$this->_selGetAccounts->Execute(Array('InvoiceRun' => $strInvoiceRun));
+ 		while ($arrAccount = $this->_selGetAccounts->Fetch())
+ 		{
+ 			$this->Revoke($strInvoiceRun, $arrAccount['Account']);
+ 		}
  	}
  }
  

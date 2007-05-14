@@ -91,6 +91,10 @@ $arrAccounts[]	= 1000156611;
 $arrAccounts[]	= 1000160843;
 $arrAccounts[]	= 1000157789;
 
+// Indial 100 without ELB (Itemisation was missing)
+$arrAccounts[]	= 1000158008;
+$arrAccounts[]	= 1000160250;
+
 // reprint
 $bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
 

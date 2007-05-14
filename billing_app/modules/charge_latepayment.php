@@ -78,7 +78,7 @@
 															"Charge.Status = ".CHARGE_APPROVED." AND " .
 															"Charge.Nature = 'DR'\n" .
 															"LIMIT 1");
-															
+		
 		$arrData = Array();
 		$arrData['DisableLatePayment']	= new MySQLFunction("DisableLatePayment - 1");
 		$this->_ubiIncreaseLatePayment = new StatementUpdateById("Account", $arrData);
@@ -89,7 +89,11 @@
 		
 		$this->_selAccount = new StatementSelect("Account", "*", "Id = <Account>");
 		
+ 		$this->_selAccounts = new StatementSelect("Account", "Id", "Archived = 0");
+		
 		$this->_strChargeType	= "LP".date("my");
+		
+		$this->_selLatePaymentAccounts = new StatementSelect("Charge JOIN Account ON Charge.Account = Account.Id", "Account.Id AS Id, Account.DisableLatePayment AS DisableLatePayment", "Account.Archived = 0 AND Charge.InvoiceRun = <InvoiceRun> AND Charge.ChargeType = '$this->_strChargeType' AND Account = <Account>");
  	}
  	
  	
@@ -103,7 +107,8 @@
 	 *
 	 * Generates a Late Payment Charge for the given Invoice
 	 *
-	 * @return	boolean
+	 * @return	mixed			float	: Amount charged
+	 * 							FALSE	: Charge could not be added 							
 	 *
 	 * @method
 	 */
@@ -116,18 +121,31 @@
  			return TRUE;
  		}
  		
+ 		// Are we ignoring this Late Payment Fee?
+ 		if ($arrAccount['DisableLatePayment'] !== NULL)
+ 		{
+ 			$arrData = Array();
+ 			$arrData['Id']					= $arrAccount['Id'];
+ 			$arrData['DisableLatePayment']	= new MySQLFunction("CASE WHEN DisableLatePayment = 0 THEN DisableLatePayment = NULL ELSE DisableLatePayment + 1 END");
+ 			
+ 			// Update the number of times we ignore, and return
+ 			$this->_ubiDecreaseLatePayment->Execute($arrAccount);
+ 			
+ 			// Was this actually ignored?
+ 			if ($arrAccount['DisableLatePayment'] !== 0)
+ 			{
+ 				// Yes
+ 				return TRUE;
+ 			}
+ 			
+ 			// No, we were just finalising the number, continue
+ 		}
+ 		
  		// Does this Account have more than $10 Overdue?
  		if ($this->Framework->GetOverdueBalance($arrAccount['Id']) <= 10.0)
  		{
  			// No, return TRUE
  			return TRUE;
- 		}
- 		
- 		// Are we ignoring this Late Payment Fee?
- 		if ($arrAccount['DisableLatePayment'] !== NULL)
- 		{
- 			// Update the number of times we ignore, and return
- 			return (bool)$this->_ubiDecreaseLatePayment->Execute($arrAccount);
  		}
  		
  		// Add the charge
@@ -141,7 +159,16 @@
 		$arrCharge['Account'] 		= $arrAccount['Id'];
 		$arrCharge['AccountGroup'] 	= $arrAccount['AccountGroup'];
 		$arrCharge['InvoiceRun']	= $arrInvoice['InvoiceRun'];
-		return (bool)$this->Framework->AddCharge($arrCharge);
+		
+		// Return FALSE or amount charged
+		if (!$this->Framework->AddCharge($arrCharge))
+		{
+			return FALSE;
+		}
+		else
+		{
+			return $arrCharge['Amount'];
+		}
  	}
  	
  	
@@ -161,26 +188,22 @@
 	 */
  	function Revoke($strInvoiceRun, $intAccount)
  	{
- 		// Do we have a Late Payment Fee?
- 		if (!$this->_selHasLatePayment->Execute(Array('InvoiceRun' => $strInvoiceRun, 'Account' => $intAccount)))
+ 		// Update LP Ignoring Accounts
+ 		$this->_selLatePaymentAccounts->Execute(Array('Account' => $intAccount));
+ 		while ($arrAccount = $this->_selLatePaymentAccounts->Fetch())
  		{
- 			// No, do we have a limited number of times we're ignoring Late Payment?
- 			$this->_selAccount->Execute(Array('Account' => $intAccount));
- 			$arrData = $this->_selAccount->Fetch();
- 			if ($arrData['DisableLatePayment'] <= 0)
- 			{
- 				return (bool)$this->_ubiIncreaseLatePayment->Execute($arrData);
+	 		// Do we have a limited number of times we're ignoring Late Payment?
+	 		if ($arrAccount['DisableLatePayment'] !== NULL)
+	 		{
+	 			$arrData = Array();
+	 			$arrData['Id']					= $intAccount;
+	 			$arrData['DisableLatePayment']	= new MySQLFunction("DisableLatePayment - 1");
+	 			$this->_ubiIncreaseLatePayment->Execute($arrData);
  			}
- 			
- 			// No, just return TRUE
- 			return TRUE;
  		}
  		
  		// Call Parent Revoke()
- 		if (!parent::Revoke($strInvoiceRun))
- 		{
- 			return FALSE;
- 		}
+ 		return parent::Revoke($strInvoiceRun);
  	}
  }
  
