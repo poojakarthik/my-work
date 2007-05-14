@@ -201,12 +201,12 @@
 		$strLimit	= "1000";
  		$this->_selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
 		
-		$this->_selCreditCDRs = new StatementSelect("CDR", "Id, FNN, Source, Destination, Cost, Units, StartDatetime", "Credit = 1 AND Status = ".CDR_NORMALISED, NULL, "1000");
+		$this->_selCreditCDRs = new StatementSelect("CDR", "Id, FNN, Source, Destination, Cost, Units, StartDatetime", "Credit = 1 AND Status = ".CDR_RATED, NULL, "1000");
 		
 		
-		$strStatus = " AND (Status = ".CDR_NORMALISED." OR Status = ".CDR_BAD_OWNER." OR Status = ".CDR_BAD_RECORD_TYPE." OR Status = ".CDR_BAD_DESTINATION." OR Status = ".CDR_FIND_OWNER." OR Status = ".CDR_RENORMALISE." OR Status = ".CDR_RATE_NOT_FOUND.")";
+		$strStatus = " AND (Status = ".CDR_RATED." OR Status = ".CDR_NORMALISED." OR Status = ".CDR_BAD_OWNER." OR Status = ".CDR_BAD_RECORD_TYPE." OR Status = ".CDR_BAD_DESTINATION." OR Status = ".CDR_FIND_OWNER." OR Status = ".CDR_RENORMALISE." OR Status = ".CDR_RATE_NOT_FOUND.")";
 		$this->_selDebitCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDatetime> $strStatus", NULL, 1);
-	 	$this->_selRatedCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDatetime> AND Status = ".CDR_RATED, NULL, 1);
+	 	//$this->_selRatedCDR = new StatementSelect("CDR", "Id", "Id != <Id> AND FNN = <FNN> AND Source = <Source> AND Destination = <Destination> AND Cost = <Cost> AND Units = <Units> AND StartDatetime = <StartDatetime> AND Status = ".CDR_RATED, NULL, 1);
 
 		
 		$arrUpdateColumns = Array();
@@ -803,7 +803,7 @@
 			else
 			{
 				// Try to match credit to a rated CDR
-				if ($this->_selRatedCDR->Execute($arrCreditCDR))
+				/*if ($this->_selRatedCDR->Execute($arrCreditCDR))
 				{
 					$arrDebitCDR = $this->_selRatedCDR->Fetch();
 					
@@ -813,11 +813,11 @@
 					{
 						$bolFail = TRUE;
 					}*/
-				}
+				/*}
 				else
 				{
 					$bolFail = TRUE;
-				}
+				}*/
 	 		}
 			
 			if ($bolFail === TRUE)
