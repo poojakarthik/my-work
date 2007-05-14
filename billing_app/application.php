@@ -80,7 +80,7 @@
 		$this->_selPayments = new StatementSelect(	"Payment",
 													"Id, Balance",
 													"Balance > 0 AND AccountGroup = <AccountGroup> AND " .
-													"(Account = <Account> OR ISNULL(Account))",
+													"ISNULL(Account)",
 													"PaidOn",
 													NULL);
 		$this->_insInvoicePayment = new StatementInsert("InvoicePayment");

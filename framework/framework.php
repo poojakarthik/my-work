@@ -164,7 +164,11 @@
 	 	$this->_selAccountBalance = new StatementSelect(	"Invoice",
 	 														"SUM(Balance) AS AccountBalance",
 	 														"Account = <Account> AND (Balance < 0 OR Status != ".INVOICE_SETTLED.") AND Status != ".INVOICE_TEMP);
-															
+		
+		$this->_selAccountPayments = new StatementSelect(	"Balance",
+															"SUM(Balance) AS TotalBalance",
+															"Account = <Account>");
+		
 		$this->_selAccountOverdueBalance = new StatementSelect(	"Invoice",
 	 														"SUM(Balance) - SUM(Disputed) AS OverdueBalance",
 	 														"DueOn < NOW() AND Account = <Account> AND (Balance < 0 OR Status != ".INVOICE_SETTLED.") AND Status != ".INVOICE_TEMP);
@@ -384,14 +388,27 @@
 	 */
 	 function GetAccountBalance($intAccount)
 	 {	 								
+	 	// Get sum of invoice balances
 	 	if ($this->_selAccountBalance->Execute(Array('Account' => $intAccount)) === FALSE)
 	 	{
 			// ERROR
 			return FALSE;
 	 	}
-	 	
 	 	$arrAccountBalance = $this->_selAccountBalance->Fetch();
-	 	return (float)$arrAccountBalance['AccountBalance'];
+	 	$fltAccountBalance = (float)$arrAccountBalance['AccountBalance'];
+	 	
+	 	/* UNCOMMENT ME
+	 	// Get sum of account payment balances
+	 	if ($this->_selAccountPayments->Execute((Array('Account' => $intAccount))) === FALSE)
+	 	{
+			// ERROR
+			return FALSE;
+	 	}
+	 	$arrAccountPayments = $this->_selAccountBalance->Fetch();
+	 	$fltAccountBalance += (float)$arrAccountPayments['TotalBalance'];
+	 	*/
+	 	
+	 	return $fltAccountBalance;
 	 }
 	 
 	//------------------------------------------------------------------------//

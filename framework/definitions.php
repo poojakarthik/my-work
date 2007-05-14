@@ -1083,6 +1083,22 @@ $GLOBALS['*arrConstant']	['CopyProtocol']	[600]	['Description']	= 'Secure Shell 
 $GLOBALS['*arrConstant']	['CopyProtocol']	[601]	['Constant']	= 'PROTOCOL_FTP';
 $GLOBALS['*arrConstant']	['CopyProtocol']	[601]	['Description']	= 'File Transfer Protocal (FTP)';
 
+// CLI Window States
+$GLOBALS['*arrConstant']	['WindowState']		[100]	['Constant']	= 'WINDOW_REGULAR';
+$GLOBALS['*arrConstant']	['WindowState']		[100]	['Description']	= 'Regular';
+$GLOBALS['*arrConstant']	['WindowState']		[101]	['Constant']	= 'WINDOW_MAXIMISED';
+$GLOBALS['*arrConstant']	['WindowState']		[101]	['Description']	= 'Maximised';
+$GLOBALS['*arrConstant']	['WindowState']		[102]	['Constant']	= 'WINDOW_MINIMISED';
+$GLOBALS['*arrConstant']	['WindowState']		[102]	['Description']	= 'Minimised';
+$GLOBALS['*arrConstant']	['WindowState']		[103]	['Constant']	= 'WINDOW_TASKBAR_ITEM';
+$GLOBALS['*arrConstant']	['WindowState']		[103]	['Description']	= 'Taskbar Item';
+$GLOBALS['*arrConstant']	['WindowState']		[104]	['Constant']	= 'WINDOW_PROGRESS';
+$GLOBALS['*arrConstant']	['WindowState']		[104]	['Description']	= 'Progress Bar';
+
+
+// CLI Console Docked
+define("CONSOLE_DOCKED"		, DONKEY);
+
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 {
