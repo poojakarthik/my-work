@@ -57,6 +57,7 @@ fclose($ptrFile);
 $rcpRemoteCopy = new RemoteCopyFTP("203.201.137.55", "vixen", "v1xen");
 $rcpRemoteCopy->Connect();
 $rcpRemoteCopy->Copy($strLocalPath.$strFilename, "/Incoming/Samples/$strFilename");
+$rcpRemoteCopy->Disconnect();
 
 $appBilling->FinaliseReport();
 
