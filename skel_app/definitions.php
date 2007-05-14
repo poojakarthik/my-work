@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2006 VOIPTEL Pty Ltd
+// (c) copyright 2007 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
@@ -20,8 +20,8 @@
  * @language	PHP
  * @package		framework
  * @author		Rich Davis
- * @version		6.10
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @version		7.05
+ * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -32,6 +32,6 @@
 //----------------------------------------------------------------------------//
 
 // user name
-define("USER_NAME"						, "Skell_app");
+define("USER_NAME"						, "Skel_app");
 
 ?>

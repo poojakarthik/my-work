@@ -5,33 +5,37 @@
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
 
+
 //----------------------------------------------------------------------------//
-// skeleton
+// require
 //----------------------------------------------------------------------------//
 /**
- * skeleton
+ * require
  *
- * Description
+ * Handles all file requirements for an application
  *
- * Description
+ * This file should load all files required by an application.
+ * This file should not set up any objects or produce any output
  *
- * @file		skel.php
+ * @file		require.php
  * @language	PHP
- * @package		skel
+ * @package		framework
  * @author		Rich 'Waste' Davis
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+ 
+ // Framework Requirements
+require_once("../framework/require.php");
 
-// Include Application's Require file
-require_once("require.php");
+// Application Requirements
+require_once("application.php");
+require_once("definitions.php");
+require_once("config.php");
 
-// Load the application
-LoadApplication();
-
-// Initiate application and run code (always pass in $arrConfig, even if not using it)
-$appSkeleton = new ApplicationSkeleton($arrConfig);
-$appSkeleton->Execute();
-?>
+// Module Requirements
+// OPTIONAL
+ 
+ ?>
