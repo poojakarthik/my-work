@@ -165,7 +165,7 @@
 	 														"SUM(Balance) AS AccountBalance",
 	 														"Account = <Account> AND (Balance < 0 OR Status != ".INVOICE_SETTLED.") AND Status != ".INVOICE_TEMP);
 		
-		$this->_selAccountPayments = new StatementSelect(	"Balance",
+		$this->_selAccountPayments = new StatementSelect(	"Payment",
 															"SUM(Balance) AS TotalBalance",
 															"Account = <Account>");
 		
