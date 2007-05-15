@@ -397,7 +397,6 @@
 	 	$arrAccountBalance = $this->_selAccountBalance->Fetch();
 	 	$fltAccountBalance = (float)$arrAccountBalance['AccountBalance'];
 	 	
-	 	/* UNCOMMENT ME
 	 	// Get sum of account payment balances
 	 	if ($this->_selAccountPayments->Execute((Array('Account' => $intAccount))) === FALSE)
 	 	{
@@ -406,7 +405,6 @@
 	 	}
 	 	$arrAccountPayments = $this->_selAccountBalance->Fetch();
 	 	$fltAccountBalance += (float)$arrAccountPayments['TotalBalance'];
-	 	*/
 	 	
 	 	return $fltAccountBalance;
 	 }
