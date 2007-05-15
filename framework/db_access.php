@@ -3490,7 +3490,7 @@ class VixenWhere
     function WhereArray($arrWhere=NULL)
     {
 		$arrReturn = Array();
-		$intCount = 0
+		$intCount = 0;
 		foreach ($this->arrInternal as $arrEntry)
 		{
 			// If the value of the entry is an array, loop through
