@@ -9,7 +9,7 @@
 		<h1>Payment Added</h1>
 		
 		<div class = "MsgNoticeWide">
-			The Payment has been successfully added.  Please not that it may take up to 24 hours to be processed.
+			The Payment has been successfully added. Payments will normally become visible within five minutes.
 		</div>
 	</xsl:template>
 </xsl:stylesheet>

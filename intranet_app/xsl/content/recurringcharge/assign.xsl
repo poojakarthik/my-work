@@ -230,7 +230,7 @@
 									<xsl:attribute name="value">
 										<xsl:text></xsl:text>
 										<!-- add in the post data-->
-
+										
 									</xsl:attribute>
 								</input>
 							</td>
@@ -241,7 +241,7 @@
 									<xsl:with-param name="entity" select="string('Recurring Charge Type')" />
 									<xsl:with-param name="field" select="string('LastChargedDate')" />
 								</xsl:call-template>
-								Last Charged Date
+								End Date
 							</th>
 							<td id="EndDate">
 							<!--

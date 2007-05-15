@@ -119,48 +119,67 @@ function addDollars()
 
 }
 
+function Mod(X, Y) 
+{
+    return X - Math.floor(X / Y) * Y;
+}
+
 function calculateEndDate(recurringfrequency, recurringfrequencytype, timescharged)
 {
 	// Take number of days/months/half-months, and number of times to charge
 	// and return the last charge date
+	var monthname= new Array("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG", "SEP","OCT","NOV","DEC");
 	var now = new Date();
+	var future = new Date();
 	if (recurringfrequencytype == "Day(s)")
 	{
-		//var daysinfuture = eNumOfCharges.value * RecurFreq;
-		alert ('asdf');
+		var daysinfuture = timescharged * recurringfrequency;
+		
+		//Add days and format
+		future.setDate(now.getDate()+daysinfuture);
+		var endDate = future.getDate() + " " + monthname[future.getMonth()] + ", " + future.getFullYear();
+		return endDate;
 	}
 	else if (recurringfrequencytype == "Month(s)")
 	{
 		var monthsinfuture = timescharged * recurringfrequency;
-		
-		var targetyear = now.getFullYear() + Math.floor((monthsinfuture + now.getMonth()) / 12);
-		var targetmonth = (now.getMonth() + monthsinfuture) % 12;
-		var targetday = now.getDay();
-		
-		//alert (eEndDate);
-		var monthname= new Array("JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG", "SEP","OCT","NOV","DEC");
-		endDate = targetday + " " + monthname[targetmonth] + ", " + targetyear;
-		return endDate;	
+		//Change the day number so that we won't have issues with being charged on say the 31st of Feb
+		if (now.getDate() > 28)
+		{
+			future.setDate(28);
+		}
+		//Add months and format
+		future.setMonth(now.getMonth()+monthsinfuture);
+		var endDate = future.getDate() + " " + monthname[future.getMonth()] + ", " + future.getFullYear();
+		return endDate;
 	}
-	else if (recurringfrequencytype == "Half Month(s)")
+	else if (recurringfrequencytype == "Half")
 	{
 		// half months... umm, lets just pretend half a month if 14 days
-		var monthsinfuture = eNumOfCharges.value * Math.floor(RecurFreq / 2);
-		// floor (/2) to get full month
-		// add 14 days for half month (if needed, use mod)
+		var halfmonthsinfuture = timescharged * recurringfrequency;
 		
-		// if odd number of half-months, 
-		// if in first half (<15)
-			//  add 14 days
-		// else second half
-			// add month  then minus 14 days
-		// when adding full months
-		// if date > day of target month
-			// day = last day of month
-	}
-	else
-	{
-		alert ('ahh, why wont you work');
+		//Change the day number to get around silly dates
+		if (now.getDate() > 28)
+		{
+			future.setDate(28);
+		}
+		
+		//If it's an odd number of half months, then add the corresponding 
+		//number of whole months, and 14 days
+		if ((Mod(halfmonthsinfuture, 2)) == 1)
+		{
+			halfmonthsinfuture--;
+			future.setMonth(now.getMonth()+(halfmonthsinfuture / 2));
+			future.setDate(now.getDate()+14);
+		}
+		
+		//If not, just add corresponding number of months
+		else
+		{
+			future.setMonth(now.getMonth()+(halfmonthsinfuture / 2));
+		}			
+		var endDate = future.getDate() + " " + monthname[future.getMonth()] + ", " + future.getFullYear();
+		return endDate;
 	}
 }
 
