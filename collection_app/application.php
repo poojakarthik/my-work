@@ -141,7 +141,8 @@
 		$this->_selIsUnique = new StatementSelect("FileImport", "Id", "Carrier = <Carrier> AND (SHA1 = <SHA1> OR FileName = <FileName>)");
 		
 		// instanciate collection downloaders
-		$this->_arrDownloader[COLLECTION_TYPE_FTP] = new CollectionModuleFTP();
+		$this->_arrDownloader[COLLECTION_TYPE_FTP]	= new CollectionModuleFTP();
+		$this->_arrDownloader[COLLECTION_TYPE_AAPT]	= new CollectionModuleAAPT();
 		
 		// module config
 		$this->_arrCollectionModule = $arrConfig['Define'];

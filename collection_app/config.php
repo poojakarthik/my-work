@@ -101,21 +101,21 @@
 		$arrConfig['Define']["Optus"]	["FileType"][REGEX_OPTUS]		= CDR_OPTUS_STANDARD;
 		//$arrConfig['Define']["Optus"]	["FileType"]["/^BPR\d{3}\_B\d{7}\_S\d{4}\_\d{8}$/"]	= PROV_OPTUS_IMPORT;
 		*/
-/*
+
 		// AAPT Definition
 		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
 		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;
- 		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["AAPT"]	["Server"]						= $strLocalFTPServer;
- 		$arrConfig['Define']["AAPT"]	["Username"]					= $strLocalFTPUsername;
- 		$arrConfig['Define']["AAPT"]	["PWord"]						= $strLocalFTPPassword;
- 		$arrConfig['Define']["AAPT"]	["Dir"][]						= $strLocalFTPDir."aapt/".$strDateDir;
+ 		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_AAPT;
+ 		$arrConfig['Define']["AAPT"]	["Server"]						= "https://wholesalebbs.aapt.com.au/";
+ 		$arrConfig['Define']["AAPT"]	["Username"]					= "telcoblue";
+ 		$arrConfig['Define']["AAPT"]	["PWord"]						= "zbj6v04ls";
+ 		$arrConfig['Define']["AAPT"]	["ZipPWord"]					= "zbj6v04ls";
  		$arrConfig['Define']["AAPT"]	["FinalDir"]					= DESTINATION_ROOT."aapt/";
 		$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT]		= CDR_AAPT_STANDARD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_EOE]	= PRV_AAPT_EOE_RETURN;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_LSD]	= PRV_AAPT_LSD;
 		//$arrConfig['Define']["AAPT"]	["FileType"][REGEX_AAPT_REJECT]	= PRV_AAPT_REJECT;
-*/		
+		
 		/*
 		TODO!rich! Write this definition when you get the details
 		// iSeek Definition
