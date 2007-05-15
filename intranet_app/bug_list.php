@@ -20,7 +20,7 @@
 	// Pull documentation information
 	$docDocumentation->Explain ('Bugs');
 	
-	$objWhere = new Vixen_where();
+	$objWhere = new VixenWhere();
 	
 	// only create WHERE for fields actually entered
 	// OR remove null where's in db_access code
@@ -56,7 +56,7 @@
 	$objWhere2 = new Vixen_where();
 	$objWhere2->AddAnd('CreatedBy', 		$_POST['CreatedBy']);
 	$objWhere2->AddAnd('AssignedTo', 	$_POST['AssignedTo']);
-	// $objWhere is of type Vixen_where
+	// $objWhere is of type VixenWhere
 	$objWhere->AddAnd($objWhere2);
 	*/
 	

@@ -3144,10 +3144,10 @@ class QueryCopyTable extends Query
  }
  
 //----------------------------------------------------------------------------//
-// Vixen_where
+// VixenWhere
 //----------------------------------------------------------------------------//
 /**
- * Vixen_where
+ * VixenWhere
  *
  * Funky new where object
  *
@@ -3156,40 +3156,58 @@ class QueryCopyTable extends Query
  * 
  *
  *
- * @prefix        vxw
+ * @prefix       vxw
  *
- * @package        framework
- * @class        Vixen_where
+ * @package      framework
+ * @class        VixenWhere
  */
-class Vixen_where
+class VixenWhere
 {
-
-    
     //------------------------------------------------------------------------//
-    // Vixen_where() - Constructor
+    // VixenWhere() - Constructor
     //------------------------------------------------------------------------//
     /**
-     * Vixen_where()
+     * VixenWhere()
      *
-     * Constructor for Vixen_where object
+     * Constructor for VixenWhere object
      *
-     * Constructor for Vixen_where object
+     * Constructor for VixenWhere object
      *
-     * @param        string    strFunction        The function we are passing, represented as a string
+     * @param    	string		strFunction		The function we are passing, represented as a string
      *
-     * @return        void
+     * @return   	void
      *
      * @method
-     * @see            <MethodName()||typePropertyName>
+     * @see			<MethodName()||typePropertyName>
      */ 
-    
     function __construct ($mixColumn=NULL, $mixValue=NULL, $mixEval=NULL)
     {
 		$this->arrInternal = array();
     }
     
+	//------------------------------------------------------------------------//
+    // AddAnd()
+    //------------------------------------------------------------------------//
+    /**
+     * AddAnd()
+     *
+     * Adds AND statement to array
+     *
+     * Adds an entry into the internal array for a where statement of type AND
+	 * e.g WHERE Id = 3 AND Account = 1000056654
+     *
+     * @param    	mix		mixColumn	The name of the column to be entered
+	 * @param    	mix		mixValue	The value of said column
+	 * @param    	mix		mixEval	 	The operator involved (e.g. =, <, >, etc)
+     *
+     * @return   	boolean
+     *
+     * @method
+     * @see			<MethodName()||typePropertyName>
+     */ 
     function AddAnd($mixColumn=NULL, $mixValue=NULL, $mixEval=WHERE_EQUALS)
     {
+		// Check for null input values
 		if (is_null($mixValue) && !is_object($mixColumn))
 		{
 			return FALSE;
@@ -3197,23 +3215,67 @@ class Vixen_where
 		$this->arrInternal[] = array("Column"=>$mixColumn, "Value"=>$mixValue, "Eval"=>$mixEval, "Type"=>'AND');
     }
     
+	//------------------------------------------------------------------------//
+    // AddOr()
+    //------------------------------------------------------------------------//
+    /**
+     * AddOr()
+     *
+     * Adds OR statement to array
+     *
+     * Adds an entry into the internal array for a where statement of type OR
+	 * e.g WHERE Id = 3 OR Account = 1000056654
+     *
+     * @param    	mix		mixColumn	The name of the column to be entered 
+	 *									in the format TableName.ColumnName
+	 * @param    	mix		mixValue	The value of said column
+	 * @param    	mix		mixEval	 	The operator involved (e.g. =, <, >, etc)
+     *
+     * @return   	boolean
+     *
+     * @method
+     * @see			<MethodName()||typePropertyName>
+     */ 
     function AddOr($mixColumn=NULL, $mixValue=NULL, $mixEval=WHERE_EQUALS)
     {
+		// Check for null input values
 		if (is_null($mixValue) && !is_object($mixColumn))
 		{
 			return FALSE;
 		}
       	$this->arrInternal[] = array("Column"=>$mixColumn, "Value"=>$mixValue, "Eval"=>$mixEval, "Type"=>'OR');
     }
-		
+	
+	//------------------------------------------------------------------------//
+    // Table()
+    //------------------------------------------------------------------------//
+    /**
+     * Table()
+     *
+     * Checks if table exists in the internal array
+     *
+     * Checks if table exists in the internal array by looking at the TableName
+	 * part of TableName.ColumnName
+     *
+     * @param    	string	strTable	The name of the table to be tested
+     *
+     * @return   	boolean
+     *
+     * @method
+     * @see			<MethodName()||typePropertyName>
+     */ 	
     function Table($strTable)
     {
-     	foreach ($this->arrInternal as $arrEntry)
+     	// Cycle through each of the entries in the internal array
+		foreach ($this->arrInternal as $arrEntry)
 		{
+			// If the column entry is an array
 			if (is_array ($arrEntry["Column"]))
 			{
+				// Cycle through column array
 				foreach ($arrEntry["Column"] as $strCol)
 				{
+					// Disassemble the formatting and check
 					$arrExplode = explode('.', $strCol, 2);
 					if ($arrExplode[1])
 					{
@@ -3224,15 +3286,19 @@ class Vixen_where
 					}
 				}					
 			}
+			// If the column entry is an object
 			elseif (is_object ($arrEntry["Column"]))
 			{
+				// Check by reexecuting the function on this object
 				if ($arrEntry["Column"]->Table($strTable))
 				{
 					return TRUE;
 				}
 			}
+			// Assume it's a string
 			else
 			{
+				// Disassemble the formatting and check
 				$arrExplode = explode('.', $arrEntry["Column"], 2);
 				if ($arrExplode[1])
 				{
@@ -3243,106 +3309,180 @@ class Vixen_where
 				}
 			}
 		}
+		// Otherwise return FALSE
 		return FALSE;		
     }
-    
+	
+	//------------------------------------------------------------------------//
+    // Tables()
+    //------------------------------------------------------------------------//
+    /**
+     * Tables()
+     *
+     * Returns a list of tables
+     *
+     * Returns a list of all tables added to the internal array
+     *
+     * @return   	array					array of tables returned
+     *
+     * @method
+     * @see			<MethodName()||typePropertyName>
+     */ 	
     function Tables()
     {
 		$arrReturn = Array();
+		// Cycle through each of the entries in the internal array
 		foreach ($this->arrInternal as $arrEntry)
 		{
+			// If the column entry is an array
 			if (is_array ($arrEntry["Column"]))
 			{
+				// Cycle through column array
 				foreach ($arrEntry["Column"] as $strCol)
 				{
+					// Disassemble the formatting and return list
 					$arrTable = explode('.', $strCol, 2); 
 					$arrReturn[$arrTable[0]] = $arrTable[0];
 				}					
 			}
+			// If the column entry is an object
 			elseif (is_object ($arrEntry["Column"]))
-			{
+			{	
+				// Merge the array to return with the returned array
+				// when the column entry is reexecuted through the function
 				array_merge($arrReturn, $arrEntry["Column"]->Tables());
 			}
+			// Assume it's a string
 			else
-			{
+			{	
+				// Disassemble the formatting and return list
 				$arrTable = explode('.', $arrEntry["Column"], 2); 
 				$arrReturn[$arrTable[0]] = $arrTable[0];
 			}
 		}
+		// Return the array
 		return $arrReturn;		
     }
-    
+	
+    //------------------------------------------------------------------------//
+    // Column()
+    //------------------------------------------------------------------------//
+    /**
+     * Column()
+     *
+     * Checks if column exists in the internal array
+     *
+     * Checks if column exists in the internal array
+     *
+     * @param    	string	strColumn	The name of the column to be tested
+	 *									in the format TableName.ColumnName
+     *
+     * @return   	boolean
+     *
+     * @method
+     * @see			<MethodName()||typePropertyName>
+     */ 	
     function Column($strColumn)
     {
+		// Cycle through each of the entries in the internal array
      	foreach ($this->arrInternal as $arrEntry)
 		{
+			// If the column entry is an array
 			if (is_array ($arrEntry["Column"]))
-			{
+			{	
+				// Cycle through column array
 				foreach ($arrEntry["Column"] as $strCol)
 				{	
+					// Check
 					if ($strCol == $strColumn)
 					{
 						return TRUE;
 					}
 				}					
 			}
+			// If the column entry is an object
 			elseif (is_object ($arrEntry["Column"]))
 			{
+				// Check by reexecuting the function on this object
 				if ($arrEntry["Column"]->Column($strColumn))
 				{
 					return TRUE;
 				}
 			}
+			// Assume it's a string
 			else
 			{
+				// Check
 				if ($arrEntry["Column"] == $strColumn)
 				{
 					return TRUE;
 				}
 			}
 		}
+		// Otherwise return FALSE
 		return FALSE;		
     }
-        
+    
+    //------------------------------------------------------------------------//
+    // Columns()
+    //------------------------------------------------------------------------//
+    /**
+     * Columns()
+     *
+     * Returns an array of columns
+     *
+     * Returns an array of all columns added to the internal array in the format
+	 * TableName.ColumnName
+     *
+     * @return   	array					array of columns returned
+     *
+     * @method
+     * @see			<MethodName()||typePropertyName>
+     */ 
     function Columns()
     {		
 		$arrReturn = Array();
+		// Cycle through each of the entries in the internal array
 		foreach ($this->arrInternal as $arrEntry)
 		{
+			// If the column entry is an array
 			if (is_array ($arrEntry["Column"]))
 			{
+				// Cycle through column array, add entries to return array
 				foreach ($arrEntry["Column"] as $strCol)
 				{
 					$arrReturn[$strCol] = $strCol;
 				}					
 			}
+			// Merge the array to return with the returned array
+			// when the column entry is reexecuted through the function
 			elseif (is_object ($arrEntry["Column"]))
 			{
 				array_merge($arrReturn, $arrEntry["Column"]->Columns());
 			}
+			// Assume it's a string, add entries to return array
 			else
 			{
 				$arrReturn[$arrEntry["Column"]] = $arrEntry["Column"];
 			}
 		}
+		// Return the array
 		return $arrReturn;
     }
 	
     //------------------------------------------------------------------------//
-	// WhereString()
+	// WhereArray()
 	//------------------------------------------------------------------------//
 	/**
-	 * WhereString()
+	 * WhereArray()
 	 *
 	 * Assemble a where clause
 	 *
-	 * Assemble a where clause
+	 * Assemble a where clause into an array
 	 *
-	 * @param		string	strWhere		an existing where clause to be added
-	 *										to the beginning of the constructed
-	 *										string
-	 * 
-	 * @return		string					a valid where clause
+	 * @param		string	arrWhere		an existing array that can be added
+	 *
+	 * @return		array					array of values from the where clause
 	 *
 	 * @method
 	 * @see			<MethodName()||typePropertyName>
@@ -3350,56 +3490,74 @@ class Vixen_where
     function WhereArray($arrWhere=NULL)
     {
 		$arrReturn = Array();
-		$intCount = 0;
+		$intCount = 0
 		foreach ($this->arrInternal as $arrEntry)
 		{
+			// If the value of the entry is an array, loop through
 			if (is_array ($arrEntry["Value"]))
 			{
 				foreach ($arrEntry["Value"] as $strCol)
 				{
+					// Format differently for a SEARCH operator
 					if ($arrEntry["Eval"] == WHERE_SEARCH)
 					{
+						// LIKE uses percentage marks
 						$arrReturn["index_$intCount"] = "%$strCol%";
 					}
 					else
 					{	
+						// Add the value of the entry to the return array
 						$arrReturn["index_$intCount"] = $strCol;
 					}
 					$intCount++;
 				}				
 			}
+			// If the entry is an object
 			elseif (is_object ($arrEntry["Value"]))
 			{
+				// Merge the returned array with an array returned after executing
+				// the function on this object
 				array_merge($arrReturn, $arrEntry["Value"]->WhereArray($arrWhere));
 			}
+			// If the column of the entry is an array, loop through
 			elseif (is_array ($arrEntry["Column"]))
 			{
+				// Cycle through each column in the array, but there is
+				// only ONE value for all of the columns
 				foreach ($arrEntry["Column"] as $strCol)
 				{
+					// Format differently for a SEARCH operator
 					if ($arrEntry["Eval"] == WHERE_SEARCH)
 					{
+						// LIKE uses percentage marks
 						$arrReturn["index_$intCount"] = "%{$arrEntry['Value']}%";
 					}
 					else
 					{	
+						// Add the value of the entry (of the column array) to the return array
 						$arrReturn["index_$intCount"] = $arrEntry['Value'];
 					}
 					$intCount++;
 				}
 			}
+			// Assume it's a string
 			else
 			{
+				// Format differently for a SEARCH operator
 				if ($arrEntry["Eval"] == WHERE_SEARCH)
-				{
+				{	
+					// LIKE uses percentage marks
 					$arrReturn["index_$intCount"] = "%{$arrEntry['Value']}%";
 				}
 				else
 				{	
+					// Add the value of the entry to the return array
 					$arrReturn["index_$intCount"] = $arrEntry['Value'];
 				}
 				$intCount++;
 			}
 		}
+		// If another array has been passed in, merge this array to the return array
 		if ($arrWhere)
 		{
 			array_merge($arrReturn, $arrWhere);
@@ -3429,8 +3587,6 @@ class Vixen_where
     {
 		$strReturn = $strWhere . $strReturn;
 		$intCount = 0;
-		
-		//Debug($this->arrInternal);
 		
 		foreach ($this->arrInternal as $arrEntry)
 		{			
@@ -3497,7 +3653,6 @@ class Vixen_where
 		}
 
 		$arrReturn = explode(' ', $strReturn,3);
-		//Debug($arrReturn);
 		$strReturn = $arrReturn[2];
 		return $strReturn; 
     }
