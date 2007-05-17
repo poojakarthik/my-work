@@ -78,6 +78,17 @@
 															"Charge.Status = ".CHARGE_APPROVED." AND " .
 															"Charge.Nature = 'DR'\n" .
 															"LIMIT 1");
+															
+		$this->_selCreditCard = new StatementSelect(	"CreditCard",
+														"Id",
+														"AccountGroup = <AccountGroup> AND " .
+														"Archived = 0 AND " .
+														"DATE(CONCAT(ExpYear, '-', ExpMonth, '-01')) >= CURDATE()");
+		
+		$this->_selDirectDebit = new StatementSelect(	"DirectDebit",
+														"Id",
+														"AccountGroup = <AccountGroup> AND " .
+														"Archived = 0");
 		
 		$this->_strChargeType	= "AP250";
  	}
@@ -101,10 +112,30 @@
  	function Generate($arrInvoice, $arrAccount)
  	{
  		// Does this account qualify?
- 		if ($arrAccount['DisableDDR'] == 1 || $arrAccount['BillingType'] != BILLING_TYPE_ACCOUNT)
+ 		if ($arrAccount['DisableDDR'] == 1)
  		{
  			// No, return TRUE
  			return TRUE;
+ 		}
+ 		
+ 		// Do we have a valid CreditCard/DirectDebit entry?
+ 		if ($arrAccount['BillingType'] == BILLING_TYPE_CREDIT_CARD)
+ 		{
+ 			// Check for Credit Card
+ 			if ($this->_selCreditCard->Execute(Array('AccountGroup' => $arrAccount['AccountGroup'])))
+ 			{
+ 				// Valid Credit Card
+ 				return TRUE; 
+ 			}
+ 		}
+ 		elseif ($arrAccount['BillingType'] == BILLING_TYPE_DIRECT_DEBIT)
+ 		{
+ 			// Check for DD Details
+ 			if ($this->_selDirectDebit->Execute(Array('AccountGroup' => $arrAccount['AccountGroup'])))
+ 			{
+ 				// Valid DD Details
+ 				return TRUE;
+ 			}
  		}
  		
  		// Is the Invoice Total > NON_DDR_MINIMUM_CHARGE?
