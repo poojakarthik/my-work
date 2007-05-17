@@ -309,7 +309,7 @@
  	function Copy($strLocalPath, $strRemotePath, $intCopyMode = RCOPY_BACKUP, $intDepth = 0)
  	{
  		echo str_repeat("\t", $intDepth)." + Copying '$strLocalPath' to '$strRemotePath'...\n";
- 		ob_flush();
+ 		//ob_flush();
  		
  		// Is $strLocalPath a file or directory?
  		if (is_file($strLocalPath))
@@ -649,13 +649,13 @@
  		$strRemotePathEscaped	= str_replace(" ", "\ ", str_replace("\ ", " ", $strRemotePath));
  		
  		echo str_repeat("\t", $intDepth)." + Copying '$strLocalPath' to '$strRemotePath'...\n";
- 		ob_flush();
+ 		//ob_flush();
  		
  		// Is $strLocalPath a file or directory?
  		if (is_file($strLocalPath))
  		{
  			//echo "FILE\n";
- 			ob_flush();
+ 			//ob_flush();
  			// FILE
  			// move to the right directory
  			//echo rtrim($strLocalPath, basename($strLocalPath));
@@ -689,7 +689,7 @@
  		{
  			// DIRECTORY
  			//echo "DIR\n";
- 			ob_flush();
+ 			//ob_flush();
  			// move to the right directory
  			chdir($strLocalPath);
 	 		
@@ -767,7 +767,7 @@
  	{
  		// Change to the new directory and get the file list
  		$arrFiles = explode("\n", $this->_SSH2Execute("ls $strPath"));
- 		ob_flush();
+ 		//ob_flush();
 		
 		// Remove all files
  		foreach ($arrFiles as $strFile)
@@ -833,7 +833,7 @@
  			else
  			{
  				$strBackupPath = rtrim($strPath, ".bk".($intRecursion-1)).".bk$intRecursion";
- 				ob_flush();
+ 				//ob_flush();
  			}
  			
  			// Call Backup() until a free filename is found
