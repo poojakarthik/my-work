@@ -9,8 +9,6 @@
 // Emails Invoices to specified accounts
 //----------------------------------------------------------------------------//
  
- echo "<pre>";
-
 // load application
 require_once('application_loader.php');
 
@@ -20,21 +18,53 @@ require_once('../framework/remote_copy.php');
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
 
-$arrAccounts = Array();
-$arrAccounts[]	= 1000155934;
-$arrAccounts[]	= 1000162306;
 
-$selInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND InvoiceRun = '46362bac43428'");
+
+
+//----------------------------------------------------------------------------//
+// CONFIG
+//----------------------------------------------------------------------------//
+
+// TODO:Sean -> Put the InvoiceRun Here
+$strInvoiceRun = "";
+
+// TODO:Sean -> Put the Account numbers here!
+$arrAccounts = Array();
+$arrAccounts[]	= 1000154811;
+$arrAccounts[]	= 1000154842;
+$arrAccounts[]	= 1000154843;
+$arrAccounts[]	= 1000154937;
+
+//----------------------------------------------------------------------------//
+// /CONFIG
+//----------------------------------------------------------------------------//
+
+
+// make sure output buffering is off before we start it
+// this will ensure same effect whether or not ob is enabled already
+while (ob_get_level()) {
+    ob_end_flush();
+}
+// start output buffering
+if (ob_get_length() === false) {
+    ob_start();
+}
+
+$selInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND InvoiceRun = '$strInvoiceRun'");
 $strFileData = "";
 foreach ($arrAccounts as $intAccount)
 {
+	echo "$intAccount...\n";
+	ob_flush();
 	// Get Invoice Details
-	$selInvoice->Execute(Array('Account' => $intAccount));
+	if (!$selInvoice->Execute(Array('Account' => $intAccount)))
+	{
+		// No invoice for this account
+		continue;
+	}
 	$arrInvoice = $selInvoice->Fetch();
-	
 	$strFileData .= "0010{$arrInvoice['Id']}".$appBilling->_arrBillOutput[BILL_PRINT]->AddInvoice($arrInvoice, TRUE)."\n";
 }
-
 // Add footer
 $strFileData .= "0019" .
 				date("d/m/Y") .
@@ -46,14 +76,20 @@ $strFileData .= "0019" .
 				str_pad(0, 10, "0", STR_PAD_LEFT) .
 				str_pad(0, 10, "0", STR_PAD_LEFT);
 				
+
+				
 // Write to file
 $strLocalPath = "/home/vixen_bill_output/";
 $strFilename = "reprint".date("Y-m-d_His", time()).".vbf";
+echo "\nWriting to '{$strLocalPath}$strFilename'...\n";
+ob_flush();
 $ptrFile = fopen($strLocalPath.$strFilename, 'w');
 fwrite($ptrFile, $strFileData);
 fclose($ptrFile);
 
 // Remote Copy
+echo "\nCopying to BillPrint...\n";
+ob_flush();
 $rcpRemoteCopy = new RemoteCopyFTP("203.201.137.55", "vixen", "v1xen");
 $rcpRemoteCopy->Connect();
 $rcpRemoteCopy->Copy($strLocalPath.$strFilename, "/Incoming/Samples/$strFilename");
