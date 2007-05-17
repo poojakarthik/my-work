@@ -129,7 +129,7 @@
  			$arrData['DisableLatePayment']	= new MySQLFunction("CASE WHEN DisableLatePayment = 0 THEN DisableLatePayment = NULL ELSE DisableLatePayment + 1 END");
  			
  			// Update the number of times we ignore, and return
- 			$this->_ubiDecreaseLatePayment->Execute($arrAccount);
+ 			$this->_ubiDecreaseLatePayment->Execute($arrData);
  			
  			// Was this actually ignored?
  			if ($arrAccount['DisableLatePayment'] !== 0)
