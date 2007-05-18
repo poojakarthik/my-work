@@ -13,8 +13,17 @@ require_once('application_loader.php');
 // Application entry point - create an instance of the application object
 $appPayment = new ApplicationPayment($arrConfig);
 
+$intPaymentId = (int)trim($argv[1]);
+
 // Execute the application
-$appPayment->ReversePayment(39094);
+if ($intPaymentId)
+{
+	echo ($appPayment->ReversePayment($intPaymentId)) ? "Reversed Payment #$intPaymentId\n" : "FAILED!\n" ;
+}
+else
+{
+	echo "FAILED: '".trim($argv[1])."' is not a valid Payment Id\n";
+}
 
 // finished
 echo("\n-- End of Payments --\n");
