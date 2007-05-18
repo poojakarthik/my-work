@@ -93,7 +93,7 @@
 		
 		$this->_strChargeType	= "LP".date("my");
 		
-		$this->_selLatePaymentAccounts = new StatementSelect("Account", "Id, DisableLatePayment", "DisableLatePayment < 1 AND DisableLatePayment IS NOT NULL AND Archived = 0");
+		$this->_selLatePaymentAccounts = new StatementSelect("Account", "Id, DisableLatePayment", "DisableLatePayment < 1 AND DisableLatePayment IS NOT NULL AND Archived = 0 AND Id = <Account>");
  	}
  	
  	
@@ -186,10 +186,10 @@
 	 *
 	 * @method
 	 */
- 	function Revoke($strInvoiceRun)
+ 	function Revoke($strInvoiceRun, $intAccount)
  	{
  		// Update LP Ignoring Accounts
- 		$this->_selLatePaymentAccounts->Execute();
+ 		$this->_selLatePaymentAccounts->Execute(Array('Account' => $intAccount));
  		while ($arrAccount = $this->_selLatePaymentAccounts->Fetch())
  		{
 	 		// Do we have a limited number of times we're ignoring Late Payment?
