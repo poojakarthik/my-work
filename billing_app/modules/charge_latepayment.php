@@ -93,7 +93,7 @@
 		
 		$this->_strChargeType	= "LP".date("my");
 		
-		$this->_selLatePaymentAccounts = new StatementSelect("Account", "Id, DisableLatePayment", "DisableLatePayment < 1 AND DisableLatePayment IS NOT NULL AND Archived = 0 AND Id = <Account>");
+		$this->_selLatePaymentAccounts = new StatementSelect("Account", "Id, DisableLatePayment", "DisableLatePayment < 1 AND DisableLatePayment IS NOT NULL AND Archived = 0");
  	}
  	
  	
@@ -186,15 +186,15 @@
 	 *
 	 * @method
 	 */
- 	function Revoke($strInvoiceRun, $intAccount)
+ 	function Revoke($strInvoiceRun)
  	{
  		// Update LP Ignoring Accounts
- 		$this->_selLatePaymentAccounts->Execute(Array('Account' => $intAccount));
+ 		$this->_selLatePaymentAccounts->Execute();
  		while ($arrAccount = $this->_selLatePaymentAccounts->Fetch())
  		{
 	 		// Do we have a limited number of times we're ignoring Late Payment?
  			$arrData = Array();
- 			$arrData['Id']					= $intAccount;
+ 			$arrData['Id']					= $arrAccount['Id'];
  			$arrData['DisableLatePayment']	= new MySQLFunction("DisableLatePayment - 1");
  			$this->_ubiIncreaseLatePayment->Execute($arrData);
  		}
