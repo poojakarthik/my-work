@@ -167,7 +167,7 @@
 		$arrCharge['InvoiceRun']	= $arrInvoice['InvoiceRun'];
 		
 		// Return FALSE or amount charged
-		if (!$this->Framework->AddCharge($arrCharge))
+		if (!$GLOBALS['fwkFramework']->AddCharge($arrCharge))
 		{
 			return FALSE;
 		}

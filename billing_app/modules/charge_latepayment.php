@@ -84,7 +84,7 @@
 		$this->_ubiIncreaseLatePayment = new StatementUpdateById("Account", $arrData);
 		
 		$arrData = Array();
-		$arrData['DisableLatePayment']	= new MySQLFunction("CASE WHEN DisableLatePayment = 0 THEN DisableLatePayment = NULL ELSE DisableLatePayment + 1 END");
+		$arrData['DisableLatePayment']	= new MySQLFunction("CASE WHEN DisableLatePayment = 0 THEN NULL ELSE DisableLatePayment + 1 END");
 		$this->_ubiDecreaseLatePayment = new StatementUpdateById("Account", $arrData);
 		
 		$this->_selAccount = new StatementSelect("Account", "*", "Id = <Account>");
@@ -93,7 +93,7 @@
 		
 		$this->_strChargeType	= "LP".date("my");
 		
-		$this->_selLatePaymentAccounts = new StatementSelect("Charge JOIN Account ON Charge.Account = Account.Id", "Account.Id AS Id, Account.DisableLatePayment AS DisableLatePayment", "Account.Archived = 0 AND Charge.InvoiceRun = <InvoiceRun> AND Charge.ChargeType = '$this->_strChargeType' AND Account = <Account>");
+		$this->_selLatePaymentAccounts = new StatementSelect("Account", "Id, DisableLatePayment", "Archived = 0 AND Account = <Account>");
  	}
  	
  	
@@ -113,9 +113,9 @@
 	 * @method
 	 */
  	function Generate($arrInvoice, $arrAccount)
- 	{
+ 	{ 		
  		// Does this account qualify?
- 		if ($arrAccount['DisableLatePayment'] == 1)
+ 		if ($arrAccount['DisableLatePayment'] === 1)
  		{
  			// No, return TRUE
  			return TRUE;
@@ -126,7 +126,7 @@
  		{
  			$arrData = Array();
  			$arrData['Id']					= $arrAccount['Id'];
- 			$arrData['DisableLatePayment']	= new MySQLFunction("CASE WHEN DisableLatePayment = 0 THEN DisableLatePayment = NULL ELSE DisableLatePayment + 1 END");
+ 			$arrData['DisableLatePayment']	= new MySQLFunction("CASE WHEN DisableLatePayment = 0 THEN NULL ELSE DisableLatePayment + 1 END");
  			
  			// Update the number of times we ignore, and return
  			$this->_ubiDecreaseLatePayment->Execute($arrData);
@@ -142,7 +142,7 @@
  		}
  		
  		// Does this Account have more than $10 Overdue?
- 		if ($this->Framework->GetOverdueBalance($arrAccount['Id']) <= 10.0)
+ 		if ($GLOBALS['fwkFramework']->GetOverdueBalance($arrAccount['Id']) <= 10.0)
  		{
  			// No, return TRUE
  			return TRUE;
@@ -161,7 +161,7 @@
 		$arrCharge['InvoiceRun']	= $arrInvoice['InvoiceRun'];
 		
 		// Return FALSE or amount charged
-		if (!$this->Framework->AddCharge($arrCharge))
+		if (!$GLOBALS['fwkFramework']->AddCharge($arrCharge))
 		{
 			return FALSE;
 		}
@@ -201,7 +201,7 @@
 	 			$this->_ubiIncreaseLatePayment->Execute($arrData);
  			}
  		}
- 		
+		
  		// Call Parent Revoke()
  		return parent::Revoke($strInvoiceRun);
  	}
