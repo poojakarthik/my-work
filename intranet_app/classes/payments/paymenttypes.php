@@ -67,6 +67,7 @@
 			$this->_SECUREPAY		= $this->Push (new PaymentType (PAYMENT_TYPE_SECUREPAY));
 			$this->_EFT				= $this->Push (new PaymentType (PAYMENT_TYPE_EFT));
 			$this->_CASH			= $this->Push (new PaymentType (PAYMENT_TYPE_CASH));
+			$this->_AUSTRAL			= $this->Push (new PaymentType (PAYMENT_TYPE_AUSTRAL));
 			
 			$this->setValue ($intPaymentType);
 		}
@@ -99,6 +100,7 @@
 				case PAYMENT_TYPE_SECUREPAY:		$this->Select ($this->_SECUREPAY);		return true;
 				case PAYMENT_TYPE_EFT:				$this->Select ($this->_EFT);			return true;
 				case PAYMENT_TYPE_CASH:				$this->Select ($this->_CASH);			return true;
+				case PAYMENT_TYPE_AUSTRAL:			$this->Select ($this->_AUSTRAL);		return true;
 				default:							return false;
 			}
 		}
