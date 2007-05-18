@@ -93,7 +93,7 @@
 		
 		$this->_strChargeType	= "LP".date("my");
 		
-		$this->_selLatePaymentAccounts = new StatementSelect("Account", "Id, DisableLatePayment", "DisableLatePayment < 1 AND DisableLatePayment NOT NULL AND Archived = 0 AND Account = <Account>");
+		$this->_selLatePaymentAccounts = new StatementSelect("Account", "Id, DisableLatePayment", "DisableLatePayment < 1 AND DisableLatePayment IS NOT NULL AND Archived = 0 AND Account = <Account>");
  	}
  	
  	
