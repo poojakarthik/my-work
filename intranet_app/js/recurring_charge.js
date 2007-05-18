@@ -11,7 +11,7 @@ function TimesChargedChanged()
 	
 	// - Amount = min charge / times charged
 	// - End date = times charged * recurring freq
-	
+		
 	var eAmount = document.getElementById("Amount");
 	var eMinCharge = document.getElementById("MinCharge");
 	var eNumOfCharges = document.getElementById("NumOfCharges");
@@ -59,6 +59,20 @@ function AmountChanged()
 	var RecurFreq = eRecurFreq.innerHTML.split(" ")[0];
 	var RecurFreqType = eRecurFreq.innerHTML.split(" ")[1];
 	
+	// check if it is fixed or not
+	var fixed = document.getElementById('NumOfChargesFixed');
+	if (fixed)
+	{
+		stripDollars();
+		fixed.innerHTML = Math.ceil(eMinCharge.value / eAmount.value);
+		endDate = calculateEndDate(RecurFreq, RecurFreqType, fixed.innerHTML);
+		eEndDate.innerHTML = endDate;
+		
+		addDollars;
+		
+		return;
+	}
+	
 	stripDollars();
 	
 	// Work out number of times charged
@@ -70,16 +84,9 @@ function AmountChanged()
 	addDollars();
 }
 
-function MinChargeChanged()
-{
-	// Minumum charge is set, assume amount is also set
-	// So calculate how many times to charge
-	// ie AmountChanged();
-}
-
 function Init()
 {
-	if (document.getElementById ("Amount")) {	
+	if (document.getElementById ("EndDate")) {	
 		//AddKeyUpEvents();
 		AmountChanged();
 		//alert('Page Loaded Succefully');
@@ -117,11 +124,6 @@ function addDollars()
 	
 	eMinCharge.value = "$" + eMinCharge.value;
 
-}
-
-function Mod(X, Y) 
-{
-    return X - Math.floor(X / Y) * Y;
 }
 
 function calculateEndDate(recurringfrequency, recurringfrequencytype, timescharged)
@@ -166,7 +168,7 @@ function calculateEndDate(recurringfrequency, recurringfrequencytype, timescharg
 		
 		//If it's an odd number of half months, then add the corresponding 
 		//number of whole months, and 14 days
-		if ((Mod(halfmonthsinfuture, 2)) == 1)
+		if ((halfmonthsinfuture % 2) == 1)
 		{
 			halfmonthsinfuture--;
 			future.setMonth(now.getMonth()+(halfmonthsinfuture / 2));

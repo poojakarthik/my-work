@@ -115,11 +115,20 @@
 											</xsl:attribute>
 										</input>	
 									</xsl:when>
-									<xsl:otherwise>
-						       			<xsl:call-template name="Currency">
-						       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
+									<xsl:otherwise>		
+										<input type="hidden" name="Amount" id="Amount">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+								       			<xsl:call-template name="Currency">
+								       				<xsl:with-param name="Number" select="/Response/ui-values/RecursionCharge" />
+													<xsl:with-param name="Decimal" select="number('2')" />
+						       					</xsl:call-template>
+											</xsl:attribute>
+										</input>									
+										<xsl:call-template name="Currency">
+											<xsl:with-param name="Number" select="/Response/RecurringChargeType/RecursionCharge" />
 											<xsl:with-param name="Decimal" select="number('2')" />
-				       					</xsl:call-template>
+										</xsl:call-template>
 									</xsl:otherwise>
 								</xsl:choose>
 							</td>
@@ -150,15 +159,34 @@
 								</xsl:call-template>
 							</th>
 							<td>
-								<input type="text" name="MinCharge" class="input-string" id="MinCharge" onkeyup="TimesChargedChanged()" autocomplete="off">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-						       			<xsl:call-template name="Currency">
-						       				<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
+								<xsl:choose>
+									<xsl:when test="/Response/RecurringChargeType/Fixed = 0">
+										<input type="text" name="MinCharge" class="input-string" id="MinCharge" onkeyup="TimesChargedChanged()" autocomplete="off">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:call-template name="Currency">
+													<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
+													<xsl:with-param name="Decimal" select="number('2')" />
+												</xsl:call-template>
+											</xsl:attribute>
+										</input>
+									</xsl:when>
+									<xsl:otherwise>
+										<input type="hidden" name="MinCharge" id="MinCharge">
+											<xsl:attribute name="value">
+												<xsl:text></xsl:text>
+												<xsl:call-template name="Currency">
+													<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
+													<xsl:with-param name="Decimal" select="number('2')" />
+												</xsl:call-template>
+											</xsl:attribute>
+										</input>
+										<xsl:call-template name="Currency">
+											<xsl:with-param name="Number" select="/Response/RecurringChargeType/MinCharge" />
 											<xsl:with-param name="Decimal" select="number('2')" />
-				       					</xsl:call-template>
-									</xsl:attribute>
-								</input>
+										</xsl:call-template>
+									</xsl:otherwise>
+								</xsl:choose>
 							</td>
 						</tr>
 						<tr>
@@ -226,13 +254,20 @@
 								Times Charged
 							</th>
 							<td>
-								<input type="text" name="NumOfCharges" class="input-string" id="NumOfCharges" onkeyup="TimesChargedChanged()" autocomplete="off">
-									<xsl:attribute name="value">
-										<xsl:text></xsl:text>
-										<!-- add in the post data-->
-										
-									</xsl:attribute>
-								</input>
+								<xsl:choose>
+									<xsl:when test="/Response/RecurringChargeType/Fixed = 0">
+										<input type="text" name="NumOfCharges" class="input-string" id="NumOfCharges" onkeyup="TimesChargedChanged()" autocomplete="off">
+											<xsl:attribute name="value">
+												<xsl:text>0</xsl:text>
+												<!-- add in the post data-->
+												
+											</xsl:attribute>
+										</input>
+									</xsl:when>
+									<xsl:otherwise>
+						       			<div id="NumOfChargesFixed">0</div>
+									</xsl:otherwise>
+								</xsl:choose>
 							</td>
 						</tr>
 						<tr>
