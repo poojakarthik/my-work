@@ -63,7 +63,7 @@
  	{
  		// Statements					
 		$this->_qryDelete = new Query();
-		$this->_selGetAccounts = new StatementSelect("Invoice", "Account", "InvoiceRun = <InvoiceRun>");
+		$this->_selGetAccounts = new StatementSelect("Invoice", "Account", "InvoiceRun = <InvoiceRun> UNION SELECT Account FROM InvoiceTemp WHERE InvoiceRun = <InvoiceRun>");
 		
 		$this->_strChargeType	= "Error: No charge type!";
  	}
