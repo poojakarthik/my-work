@@ -12,25 +12,40 @@ class HTMLTemplate
 	$arrParams['Required'] 		= $bolRequired;*/
 	function Input($arrParams)
 	{
+		// get documentation for label
+		$strDocumentation = explode(".",$arrParams['Name']);
+			
 		echo "<td>";
-		echo "{$arrParams['Name']}:";
+		echo "$strDocumentation[1]:";
 		echo "</td>";
 		echo "<td>";
-		echo "<input name='account.id' value='{$arrParams['Value']}'></input>";
+		echo "<input name='account.id' value='{$arrParams['Value']}' class='{$arrParams['Definition']['Class']}'></input>";
 		echo "</td>";
 	}
 	
 	function Label($arrParams)
 	{
+
+		// get documentation for label
+		$strDocumentation = explode(".",$arrParams['Name']);
+		
 		echo "<td>";
-		echo "<div id='{$arrParams['Name']}'>{$arrParams['Value']}</div>";
+		echo "$strDocumentation[1]:";
+		echo "</td>";
+		echo "<td>";
+		echo "<input name='account.id' value='{$arrParams['Value']}' class='input-string' style='text-align:right'></input>";
 		echo "</td>";
 	}
 	
 	function Other($arrParams)
 	{
 		echo "<td>";
-		echo "<div id='{$arrParams['Name']}'>{$arrParams['Value']}</div>";
+		// get documentation for label
+		$strDocumentation = explode(".",$arrParams['Name']);
+		echo "$strDocumentation[1]:";
+		echo "</td>";
+		echo "<td>";
+		echo "<div id='{$arrParams['Name']}' class='right'>{$arrParams['Value']}</div>";
 		echo "</td>";
 	
 	}

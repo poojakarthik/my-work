@@ -44,6 +44,7 @@ class Application
 		//Add in documentation
 	
 		// RENDER
+		//Page()->Render();
 		Page::Render();
 		/*
 		??? call the render function of the page object

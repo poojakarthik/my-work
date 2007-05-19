@@ -26,8 +26,10 @@ function dboRender($strTemplateType, $bolRequired)
 	// $templatetype = input;
 	// lookup database definition to see what type to use
 	//$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
-	$arrType = $GLOBALS['arrDatabaseTableDefine']['Account']['Column']['Id'];
-	// $arrType = Template -> WIDE_INPUT
+	//$arrType = $GLOBALS['arrDatabaseTableDefine']['Account']['Column']['Id'];
+	
+	$arrType = Array();
+	$arrType['Class'] 	= 'input-string-valid';
 	
 	$arrParams = Array();
 	/*$arrParams['Definition'] 	= $arrType;
@@ -36,7 +38,7 @@ function dboRender($strTemplateType, $bolRequired)
 	$arrParams['Name'] 			= $this->Name;
 	$arrParams['Valid'] 		= $this->Valid;
 	$arrParams['Required'] 		= $bolRequired;*/
-	
+		
 	$arrParams['Definition'] 	= $arrType;
 	$arrParams['Template'] 		= $strTemplateType;
 	$arrParams['Value'] 		= '100012345';
@@ -88,7 +90,9 @@ class Page
 		
 		// this echo will be replaced by a page template
 		// and a header template
-		echo "<html>\r\n<head></head>\r\n<body>\r\n";
+		echo "<html>\r\n<head>\r\n";
+		echo "<link rel='stylesheet' type='text/css' href='default.css' />\r\n";
+		echo "</head>\r\n<body>\r\n";
 		//var_dump($this->Page->arrObjects);
 		foreach($this->Page->arrObjects as $myObject)
 		{

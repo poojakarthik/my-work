@@ -10,8 +10,8 @@ class AccountDetails
 
 		
 		/*
-		$this->Dbo->Account->Id->Render('input',    );
-		$this->Dbo->Account->BusinessName->Render('label',    );
+		$this->Dbo->Account->Id->dboRender('input');
+		$this->Dbo->Account->BusinessName->dboRender('label');
 		*/
 		
 		/*
