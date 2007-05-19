@@ -13,22 +13,25 @@ class HTMLTemplate
 	function Input($arrParams)
 	{
 		echo "<td>";
+		echo "{$arrParams['Name']}:";
+		echo "</td>";
+		echo "<td>";
 		echo "<input name='account.id' value='{$arrParams['Value']}'></input>";
-		echo "</td>\r\n";
+		echo "</td>";
 	}
 	
 	function Label($arrParams)
 	{
 		echo "<td>";
 		echo "<div id='{$arrParams['Name']}'>{$arrParams['Value']}</div>";
-		echo "</td>\r\n";
+		echo "</td>";
 	}
 	
 	function Other($arrParams)
 	{
 		echo "<td>";
 		echo "<div id='{$arrParams['Name']}'>{$arrParams['Value']}</div>";
-		echo "</td>\r\n";
+		echo "</td>";
 	
 	}
 	// function which handles any method calls which dont exist
@@ -37,7 +40,7 @@ class HTMLTemplate
 		$arrParams = $arrMethodParams[0];
 		echo "<td>";
 		echo "<div id='$strMethodName():{$arrParams['Name']}'>{$arrParams['Value']}</div>";
-		echo "</td>\r\n";
+		echo "</td>";
     }
 }
 

@@ -34,10 +34,7 @@ class Account
 		$someThing = $this->Module->Account->Function()
 		??? how do modules appear in the map ???
 		*/
-		
-		$myApplication->Page = new Page;
-		
-		LoadPage('Account_View');
+		$this->LoadPage('Account_View');
 		
 	}
 }

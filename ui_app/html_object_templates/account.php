@@ -1,16 +1,13 @@
 <?php
-// HTML ObjectGroup AccountDetails
-
-
-
+// HTMLObjectGroup AccountDetails
 
 class AccountDetails
 {
 	// Class AccountDetails
-	function Render()
+	function objRender()
 	{
 		//User HTML element Tempaltes
-		echo "<table>";
+
 		
 		/*
 		$this->Dbo->Account->Id->Render('input',    );
@@ -20,6 +17,22 @@ class AccountDetails
 		/*
 		?> </table> <.... insert html here> 	<?php
 		*/
+		
+		//var_dump($this);
+		?>
+		<table>
+			<tr>
+				<?php dboRender('Input',TRUE); ?>	
+			</tr>
+			<tr>
+				<?php dboRender('Label',TRUE); ?>	
+			</tr>
+			<tr>
+				<?php dboRender('Other',TRUE); ?>	
+			</tr>
+		</table>
+		<?php
+		
 		//HTML is OK here, to define structures which enclose these objects
 	}
 }
