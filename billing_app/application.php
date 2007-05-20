@@ -200,7 +200,7 @@
 		if (!$this->Revoke())
 		{
 			return;		// Return if this fails
-		}*/die;
+		}*/
 		
 		// generate an InvoiceRun Id
 		$strInvoiceRun = uniqid();
