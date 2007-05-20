@@ -194,13 +194,13 @@
  	{
 		// Start the stopwatch
 		$this->Framework->StartWatch();
-
+/*
 		// Empty the temporary invoice table
 		// This is safe, because there should be no CDRs with CDR_TEMP_INVOICE status anyway
 		if (!$this->Revoke())
 		{
 			return;		// Return if this fails
-		}
+		}*/die;
 		
 		// generate an InvoiceRun Id
 		$strInvoiceRun = uniqid();

@@ -80,6 +80,7 @@
 															"LIMIT 1");
 		
 		$arrData = Array();
+ 		$arrData['Id']					= NULL;
 		$arrData['DisableLatePayment']	= new MySQLFunction("DisableLatePayment - 1");
 		$this->_ubiIncreaseLatePayment = new StatementUpdateById("Account", $arrData);
 		
@@ -194,13 +195,13 @@
  		{
 	 		// Do we have a limited number of times we're ignoring Late Payment?
  			$arrData = Array();
- 			$arrData['Id']					= $arrAccount['Id'];
+ 			$arrData['Id']					= $intAccount;
  			$arrData['DisableLatePayment']	= new MySQLFunction("DisableLatePayment - 1");
  			$this->_ubiIncreaseLatePayment->Execute($arrData);
  		}
 		
  		// Call Parent Revoke()
- 		return parent::Revoke($strInvoiceRun);
+ 		return parent::Revoke($strInvoiceRun, $intAccount);
  	}
  }
  
