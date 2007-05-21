@@ -1255,7 +1255,7 @@ function CheckCC($mixNumber, $intCreditCardType)
 // check valid email address
 // comes from: http://www.ilovejackdaniels.com/php/email-address-validation/
 
-// code has been modified to reflect the coding standards
+// code has been modified to reflect the coding standards and allow for comma-separated emails
 
 // "RFC 2822, that specifies what is and is not allowed in an email address, 
 // states that the form of an email address must be of the form "local-part @ domain"."
@@ -1279,13 +1279,13 @@ function EmailAddressValid ($strEmail)
 		// length. Labels may contain letters, digits and hyphens, however must not 
 		// begin or end with a hyphen
 		
-		if (!ereg("^[^@]{1,64}@[^@]{1,255}$", $strEmail)) {
+		if (!ereg("^[^@]{1,64}@[^@]{1,255}$", $strEmailAddress)) {
 			// Email invalid because wrong number of characters in one section, or wrong number of @ symbols.
 			return false;
 		}
 		
 		// Split it into sections to make life easier
-		$arrEmail = explode("@", $strEmail);
+		$arrEmail = explode("@", $strEmailAddress);
 		$arrLocal = explode(".", $arrEmail [0]);
 		
 		for ($i = 0; $i < sizeof($arrLocal); $i++) {
