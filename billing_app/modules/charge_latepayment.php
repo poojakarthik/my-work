@@ -197,7 +197,10 @@
  			$arrData = Array();
  			$arrData['Id']					= $intAccount;
  			$arrData['DisableLatePayment']	= new MySQLFunction("DisableLatePayment - 1");
- 			$this->_ubiIncreaseLatePayment->Execute($arrData);
+ 			if (!$this->_ubiIncreaseLatePayment->Execute($arrData))
+ 			{
+ 				Debug($this->_ubiIncreaseLatePayment->Error());
+ 			}
  		}
 		
  		// Call Parent Revoke()

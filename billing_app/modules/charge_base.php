@@ -125,7 +125,10 @@
  	function RevokeAll($strInvoiceRun)
  	{
  		// Delete the charges
- 		$this->_selGetAccounts->Execute(Array('InvoiceRun' => $strInvoiceRun));
+ 		if (!$this->_selGetAccounts->Execute(Array('InvoiceRun' => $strInvoiceRun)))
+ 		{
+ 			Debug($this->_selGetAccounts->Error());
+ 		}
  		while ($arrAccount = $this->_selGetAccounts->Fetch())
  		{
  			$this->Revoke($strInvoiceRun, $arrAccount['Account']);

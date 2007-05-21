@@ -1087,21 +1087,6 @@
 		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
 		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
 		
-		// empty temp invoice table
-		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
-		$trqTruncateTempTable = new QueryTruncate();
-		if(!$trqTruncateTempTable->Execute("InvoiceTemp"))
-		{			
-			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return FALSE;
-		}
-		else
-		{
-			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
 		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
 		$this->_rptBillingReport->AddMessage(MSG_REVERT_CDRS, FALSE);
 		$arrColumns = Array();
@@ -1205,6 +1190,21 @@
 		}
 		else
 		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// empty temp invoice table
+		$this->_rptBillingReport->AddMessage(MSG_CLEAR_TEMP_TABLE, FALSE);
+		$trqTruncateTempTable = new QueryTruncate();
+		if(!$trqTruncateTempTable->Execute("InvoiceTemp"))
+		{			
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return FALSE;
+		}
+		else
+		{
+			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
@@ -1685,21 +1685,6 @@
 		$arrInvoiceRun = $selGetInvoiceRun->Fetch();
 		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
 		
-		// remove temporary invoice
-		$this->_rptBillingReport->AddMessage("Revoking invoice for $intAccount...\t\t\t", FALSE);
-		$qryDeleteTempInvoice = new Query();
-		if(!$qryDeleteTempInvoice->Execute("DELETE FROM InvoiceTemp WHERE Account = $intAccount"))
-		{
-			// Report and fail out
-			$this->_rptBillingReport->AddMessage(MSG_FAILED);
-			return FALSE;
-		}
-		else
-		{
-			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK);
-		}
-		
 		// change status of CDR_TEMP_INVOICE status CDRs to CDR_RATED
 		$this->_rptBillingReport->AddMessage(MSG_REVERT_CDRS, FALSE);
 		$arrColumns = Array();
@@ -1794,7 +1779,22 @@
 			}
  		}
 		
-		// Truncate the InvoiceOutput table
+		// remove temporary invoice
+		$this->_rptBillingReport->AddMessage("Revoking invoice for $intAccount...\t\t\t", FALSE);
+		$qryDeleteTempInvoice = new Query();
+		if(!$qryDeleteTempInvoice->Execute("DELETE FROM InvoiceTemp WHERE Account = $intAccount"))
+		{
+			// Report and fail out
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+			return FALSE;
+		}
+		else
+		{
+			// Report and continue
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		
+		// Remove from the InvoiceOutput table
 		$this->_rptBillingReport->AddMessage("Removing InvoiceOutput entry...\t\t\t", FALSE);
 		$qryDeleteInvoiceOutput = new Query();
 		if ($qryDeleteInvoiceOutput->Execute("DELETE FROM InvoiceOutput WHERE Account = $intAccount") === FALSE)
