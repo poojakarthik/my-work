@@ -775,7 +775,7 @@
 			if ($this->_insInvoiceOutput->Execute($arrWhere) === FALSE)
 			{
 				// Error
-	
+				Debug($this->_insInvoiceOutput->Error());
 				return FALSE;			
 			}
 			return TRUE;
