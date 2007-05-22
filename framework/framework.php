@@ -403,8 +403,8 @@
 			// ERROR
 			return FALSE;
 	 	}
-	 	$arrAccountPayments = $this->_selAccountBalance->Fetch();
-	 	$fltAccountBalance += (float)$arrAccountPayments['TotalBalance'];
+	 	$arrAccountPayments = $this->_selAccountPayments->Fetch();
+	 	$fltAccountBalance -= (float)$arrAccountPayments['TotalBalance'];
 	 	
 	 	return $fltAccountBalance;
 	 }
