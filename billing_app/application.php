@@ -718,61 +718,6 @@
 			$fltBalance		= $fltTotal + $fltTax;
 			$fltTotalOwing	= $fltBalance + $fltAccountBalance;
 			
-			// Pay Negative Balances??
-			// TODO
-			
-			// if the invoice total > 0 look for outstanding payments
-			if ($fltBalance > 0 && $fltTotalOwing <= $fltBalance)
-			{
-				// find outstanding payments
-				$arrCreditData['Account']		= $arrAccount['Id'];
-				$arrCreditData['AccountGroup']	= $arrAccount['AccountGroup'];
-				$this->_selPayments->Execute($arrCreditData);
-				$arrPayments = $this->_selPayments->FetchAll();
-				foreach($arrPayments as $arrPayment)
-				{
-					// calculate payment to apply to this invoice
-					$fltPayment						= min($arrPayment['Balance'], $fltBalance);
-					$arrUpdatePayment['Balance']	= $arrPayment['Balance'] - $fltPayment;
-					$arrUpdatePayment['Id']			= $arrPayment['Id'];
-					
-					
-					// Make Invoice Payments
-					$arrInvoicePaymentData['InvoiceRun']	= $this->_strInvoiceRun;
-					$arrInvoicePaymentData['Account']		= $arrAccount['Id'];
-					$arrInvoicePaymentData['AccountGroup']	= $arrAccount['AccountGroup'];
-					$arrInvoicePaymentData['Payment']		= $arrPayment['Id'];
-					$arrInvoicePaymentData['Amount']		= $fltPayment;
-					$this->_insInvoicePayment->Execute($arrInvoicePaymentData);
-	
-					// Update Payment table
-					if ($arrUpdatePayment['Balance'] == 0)
-					{
-						$arrUpdatePayment['Status'] = PAYMENT_FINISHED;
-					}
-					else
-					{
-						$arrUpdatePayment['Status'] = PAYMENT_WAITING;
-					}
-					$this->_ubiPayment->Execute($arrUpdatePayment);
-					
-					//reduce balance of the invoice
-					$fltBalance 		-= $fltPayment;
-					
-					// reduce account balance
-					$fltAccountBalance 	-= $fltPayment;
-					
-					// reduce total owing
-					$fltTotalOwing 		-= $fltPayment;
-					
-					// check if there is anything left to pay on this invoice
-					if ($fltBalance == 0)
-					{
-						break;
-					}
-				}
-			}
-			
 			// get new values, and write to temporary invoice table
 			$arrInvoiceData['Credits']			= $fltTotalCredits;
 			$arrInvoiceData['Debits']			= $fltTotalDebits;
