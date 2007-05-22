@@ -927,7 +927,7 @@ $GLOBALS['*arrConstant']	['BillingType']	[3]	['Constant']	= 'BILLING_TYPE_ACCOUN
 $GLOBALS['*arrConstant']	['BillingType']	[3]	['Description']	= 'Account';
 
 // Payment Terms
-define("PAYMENT_TERMS_DEFAULT"			, 30);
+define("PAYMENT_TERMS_DEFAULT"			, 14);
 
 // Billing Frequency Constants
 define("BILLING_FREQ_DAY"				, 1);
