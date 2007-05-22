@@ -6,8 +6,41 @@
 	// NOT FOR EXTERNAL DISTRIBUTION
 	//----------------------------------------------------------------------------//
 
+	//----------------------------------------------------------------------------//
+	// cdrcheck
+	//----------------------------------------------------------------------------//
+	/**
+	 * cdrcheck
+	 *
+	 * Check for CDRs
+	 *
+	 * Checks for complete collection of CDR files at the end of the month
+	 *
+	 * @file		cdrcheck.php
+	 * @language	PHP
+	 * @package		billing_app
+	 * @author		Nathan Abussi and Joel Dawkins
+	 * @version		7.05
+	 * @copyright	2007 VOIPTEL Pty Ltd
+	 * @license		NOT FOR EXTERNAL DISTRIBUTION
+	 *
+	 */
+	 
 	// call application
 	require_once("../framework/require.php");
+	
+	//------------------------------------------------------------------------//
+	// AAPT
+	//------------------------------------------------------------------------//
+	/**
+	 * AAPT()
+	 *
+	 * Checks for AAPT records
+	 *
+	 * Checks for AAPT records
+	 * 
+	 * @function
+	 */
 	
 	// Checking for AAPT records
 	function AAPT()
@@ -59,6 +92,19 @@
 		ob_flush();		
 	}
 	
+	//------------------------------------------------------------------------//
+	// Optus
+	//------------------------------------------------------------------------//
+	/**
+	 * Optus()
+	 *
+	 * Checks for Optus records
+	 *
+	 * Checks for Optus records
+	 * 
+	 * @function
+	 */
+	 
 	// Checking for Optus records
 	function Optus()
 	{
@@ -107,6 +153,19 @@
 		}
 		ob_flush();	
 	}
+	
+	//------------------------------------------------------------------------//
+	// Unitel
+	//------------------------------------------------------------------------//
+	/**
+	 * Unitel()
+	 *
+	 * Checks for Unitel records
+	 *
+	 * Checks for Unitel records
+	 * 
+	 * @function
+	 */
 	
 	// Checking for Unitel records
 	function Unitel()
