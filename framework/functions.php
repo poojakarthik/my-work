@@ -32,58 +32,59 @@
 //----------------------------------------------------------------------------//
 
 
- 	//------------------------------------------------------------------------//
-	// CleanDir
-	//------------------------------------------------------------------------//
-	/**
-	 * CleanDir()
-	 *
-	 * Cleans a directory
-	 *
-	 * Cleans a directory recursively
-	 * 
-	 * @param	string	$strDirectory		Directory to flush
-	 * 
-	 * @function
-	 */
- 	function CleanDir($strDirectory)
- 	{
-		$arrContents = scandir($strDirectory);
-		foreach ($arrContents as $strItem) {
-			if (is_dir($strDirectory.$strItem) && $strItem != '.' && $strItem != '..')
-			{
-				RemoveDir($strDirectory.$strItem.'/');
-				rmdir($strDirectory.$strItem);
-			}
-			elseif ((file_exists($strDirectory.$strItem)) && ($strItem != '.') && ($strItem != '..'))
-			{
-				unlink($strDirectory.$strItem);
-			}
+//------------------------------------------------------------------------//
+// CleanDir INCOMPLETE
+//------------------------------------------------------------------------//
+/**
+ * CleanDir()
+ *
+ * Cleans a directory
+ *
+ * Cleans a directory recursively
+ * 
+ * @param	string	$strDirectory		Directory to flush
+ * 
+ * @comments
+ * @function
+ */
+function CleanDir($strDirectory)
+{
+	$arrContents = scandir($strDirectory);
+	foreach ($arrContents as $strItem) {
+		if (is_dir($strDirectory.$strItem) && $strItem != '.' && $strItem != '..')
+		{
+			RemoveDir($strDirectory.$strItem.'/');
+			rmdir($strDirectory.$strItem);
+		}
+		elseif ((file_exists($strDirectory.$strItem)) && ($strItem != '.') && ($strItem != '..'))
+		{
+			unlink($strDirectory.$strItem);
 		}
 	}
-	
- 	//------------------------------------------------------------------------//
-	// RemoveDir
-	//------------------------------------------------------------------------//
-	/**
-	 * RemoveDir()
-	 *
-	 * Removes a directory
-	 *
-	 * Removes a directory and all of its files
-	 * 
-	 * @param	string	$strDirectory		Directory to flush
-	 * 
-	 * @function
-	 */
- 	function RemoveDir($strDirectory)
- 	{
-		CleanDir($strDirectory);
-		rmdir($strDirectory);		
-	}
+}
 
 //------------------------------------------------------------------------//
-// Debug
+// RemoveDir
+//------------------------------------------------------------------------//
+/**
+ * RemoveDir()
+ *
+ * Removes a directory
+ *
+ * Removes a directory and all of its files
+ * 
+ * @param	string	$strDirectory		Directory to flush
+ * 
+ * @function
+ */
+function RemoveDir($strDirectory)
+{
+	CleanDir($strDirectory);
+	rmdir($strDirectory);		
+}
+
+//------------------------------------------------------------------------//
+// Debug INCOMPLETE
 //------------------------------------------------------------------------//
 /**
  * Debug()
@@ -96,6 +97,7 @@
  * @param	string	$strMode	optional mode, html (default) or txt 
  * @return	bool
  *
+ * @comments
  * @function
  * @package	framework
  */
@@ -279,7 +281,7 @@ function Trace($strString, $strLogname = 'Debug')
 
 
 //------------------------------------------------------------------------//
-// Backtrace
+// Backtrace INCOMPLETE
 //------------------------------------------------------------------------//
 /**
  * Backtrace()
@@ -292,6 +294,7 @@ function Trace($strString, $strLogname = 'Debug')
  *
  * @return	string
  *
+ * @comments
  * @function
  * @package	framework
  */
@@ -352,7 +355,7 @@ function Backtrace($backtrace = NULL)
 }
 
 //------------------------------------------------------------------------//
-// TruncateName
+// TruncateName INCOMPLETE
 //------------------------------------------------------------------------//
 /**
  * TruncateName()
@@ -368,6 +371,7 @@ function Backtrace($backtrace = NULL)
  * @return	mixed					string	: Truncated filename
  * 									FALSE	: Invalid filename
  *
+ * @brokenreturn
  * @function
  * @package	framework
  */
@@ -422,7 +426,7 @@ function RemoveAusCode($strFNN)
 }
 
 //------------------------------------------------------------------------//
-// ReplaceAliases()
+// ReplaceAliases
 //------------------------------------------------------------------------//
 /**
  * ReplaceAliases()
@@ -453,7 +457,7 @@ function ReplaceAliases($strMessage, $arrAliases)
 }	
 
 //------------------------------------------------------------------------//
-// GetCarrierName()
+// GetCarrierName
 //------------------------------------------------------------------------//
 /**
  * GetCarrierName()
@@ -487,7 +491,7 @@ function GetCarrierName($intCarrier)
 }	
 
 //------------------------------------------------------------------------//
-// IsValidFNN()
+// IsValidFNN
 //------------------------------------------------------------------------//
 /**
  * IsValidFNN()
@@ -508,7 +512,7 @@ function IsValidFNN ($strFNN)
 }
 
 //------------------------------------------------------------------------//
-// CleanFNN()
+// CleanFNN
 //------------------------------------------------------------------------//
 /**
  * CleanFNN()
@@ -559,7 +563,7 @@ function CleanFNN($strFNN, $strAreaCode=NULL)
 }
 
 //------------------------------------------------------------------------//
-// ServiceType()
+// ServiceType INCOMPLETE
 //------------------------------------------------------------------------//
 /**
  * ServiceType()
@@ -573,6 +577,7 @@ function CleanFNN($strFNN, $strAreaCode=NULL)
  * @return	mixed					int		Service Type Constant
  *									FALSE	Service Type not found
  * 
+ * @comments
  * @method
  */
 function ServiceType($strFNN)
@@ -620,7 +625,7 @@ function ServiceType($strFNN)
 }
 
 //------------------------------------------------------------------------//
-// GetConstantName()
+// GetConstantName
 //------------------------------------------------------------------------//
 /**
  * GetConstantName()
@@ -650,7 +655,7 @@ function GetConstantName($intCode, $strType='CDR')
 }
 
 //------------------------------------------------------------------------//
-// GetConstantDescription()
+// GetConstantDescription
 //------------------------------------------------------------------------//
 /**
  * GetConstantDescription()
@@ -680,7 +685,7 @@ function GetConstantDescription($intCode, $strType='CDR')
 }
 
 //------------------------------------------------------------------------//
-// EvalReturn()
+// EvalReturn
 //------------------------------------------------------------------------//
 /**
  * EvalReturn()
@@ -722,6 +727,9 @@ function EvalReturn ($strCode)
 // Permission Functions
 // -------------------------------------------------------------------------- //
 
+//------------------------------------------------------------------------//
+// AddPermission
+//------------------------------------------------------------------------//
 /**
  * AddPermission()
  * 
@@ -745,6 +753,9 @@ function AddPermission($intUser, $intPermission)
 	return $intUser;
 }
 
+//------------------------------------------------------------------------//
+// RemovePermission
+//------------------------------------------------------------------------//
 /**
  * RemovePermission()
  * 
@@ -771,6 +782,9 @@ function RemovePermission($intUser, $intPermission)
 	return $intUser;
 }
 
+//------------------------------------------------------------------------//
+// HasPermission INCOMPLETE
+//------------------------------------------------------------------------//
 /**
  * HasPermission()
  * 
@@ -783,6 +797,7 @@ function RemovePermission($intUser, $intPermission)
  *
  * @return	bool						TRUE if the user has the permission
  * 
+ * @comments
  * @method
  */
 function HasPermission($mixUser, $mixPermission)
@@ -825,6 +840,9 @@ function HasPermission($mixUser, $mixPermission)
 // PDF FUNCTIONS
 // -------------------------------------------------------------------------- //
 
+//------------------------------------------------------------------------//
+// ListPDF INCOMPLETE
+//------------------------------------------------------------------------//
 /**
  * ListPDF()
  * 
@@ -837,6 +855,7 @@ function HasPermission($mixUser, $mixPermission)
  * @return	mixed						array: Associative array of PDFs
  * 										FALSE: there was an error
  * 
+ * @brokenreturn
  * @function
  */
 function ListPDF($intAccount)
@@ -864,7 +883,9 @@ function ListPDF($intAccount)
 	
 	return $arrReturn;
 }
-
+//------------------------------------------------------------------------//
+// GetPDF
+//------------------------------------------------------------------------//
 /**
  * GetPDF()
  * 
@@ -903,6 +924,9 @@ function GetPDF($intAccount, $intYear, $intMonth)
 // CSV FUNCTIONS
 // -------------------------------------------------------------------------- //
 
+//------------------------------------------------------------------------//
+// CSVRow
+//------------------------------------------------------------------------//
 /**
  * CSVRow()
  * 
@@ -937,6 +961,9 @@ function CSVRow($strTable, $arrData, $strSeparator=';', $strTerminator="\n")
 	return $strReturn;
 }
 
+//------------------------------------------------------------------------//
+// CSVHeader
+//------------------------------------------------------------------------//
 /**
  * CSVHeader()
  * 
@@ -970,7 +997,9 @@ function CSVHeader($strTable, $strSeparator=';', $strTerminator="\n")
 	return $strReturn;
 }
 
-
+//------------------------------------------------------------------------//
+// CSVStatementSelect
+//------------------------------------------------------------------------//
 /**
  * CSVStatementSelect()
  * 
@@ -1027,7 +1056,9 @@ function CSVStatementSelect (StatementSelect $selStatement, $strSeparator=';', $
 }
 
 
-
+//------------------------------------------------------------------------//
+// XLSStatementSelect
+//------------------------------------------------------------------------//
 /**
  * XLSStatementSelect()
  * 
@@ -1040,6 +1071,7 @@ function CSVStatementSelect (StatementSelect $selStatement, $strSeparator=';', $
  * @return	String
  * 
  * @function
+ * 
  */
 function XLSStatementSelect (StatementSelect $selStatement)
 {
@@ -1079,10 +1111,23 @@ function XLSStatementSelect (StatementSelect $selStatement)
 	return $xlsExcelDoc->GetFileStream();
 }
 
-
-
-
-// echo out a line
+//------------------------------------------------------------------------//
+// EchoLine
+//------------------------------------------------------------------------//
+/**
+ * EchoLine()
+ * 
+ * Echos out a line to the output
+ *
+ * Echos out a line to the output
+ * 
+ * @param	string	$strText	The string to be echoed
+ *
+ * @return	void
+ * 
+ * @function
+ * 
+ */
 function EchoLine($strText)
 {
 	echo $strText;
@@ -1093,7 +1138,24 @@ function EchoLine($strText)
 }
 
 
-//  LUHN formula
+//------------------------------------------------------------------------//
+// CheckLuhn INCOMPLETE
+//------------------------------------------------------------------------//
+/**
+ * CheckLuhn()
+ * 
+ * Verify a number using the Luhn algorithm
+ *
+ * Verify a number using the Luhn algorithm
+ * 
+ * @param	mix	$mixNumber	the number to be checked
+ *
+ * @return	bool
+ * 
+ * @comments
+ * @function
+ * 
+ */
 function CheckLuhn($mixNumber)
 {
 	$card = (string)$mixNumber;
@@ -1123,7 +1185,24 @@ function CheckLuhn($mixNumber)
 	}
 }
 
-//  LUHN formula
+//------------------------------------------------------------------------//
+// MakeLuhn INCOMPLETE
+//------------------------------------------------------------------------//
+/**
+ * MakeLuhn()
+ * 
+ * Create a check digit using the Luhn formula
+ *
+ * Create a check digit using the Luhn formula
+ * 
+ * @param	mix	$mixNumber	the number to be used
+ *
+ * @return	int
+ * 
+ * @comments
+ * @function
+ * 
+ */
 function MakeLuhn($mixNumber)
 {
 	$card = (string)$mixNumber;
@@ -1151,7 +1230,24 @@ function MakeLuhn($mixNumber)
 	return $intCheckDigit;
 }
 
-// Check the expiry date of a credit card
+//------------------------------------------------------------------------//
+// expdate
+//------------------------------------------------------------------------//
+/**
+ * expdate()
+ * 
+ * Check if credit card has not expired
+ *
+ * Check if credit card has not expired
+ * 
+ * @param	int	$month	The month to check against
+ * @param	int	$year	The year to check against
+ *
+ * @return	bool		FALSE if the date passed is in the past
+ * 
+ * @function
+ * 
+ */
 function expdate($month,$year)
 {
 	if ( $year < date('Y') )
@@ -1168,7 +1264,25 @@ function expdate($month,$year)
 	return true;
 }
 
-// check the validity of a credit card
+//------------------------------------------------------------------------//
+// CheckCC
+//------------------------------------------------------------------------//
+/**
+ * CheckCC()
+ * 
+ * Check the validity of a credit card
+ * 
+ * Check the validity of a credit card 
+ *
+ * @param	mix	$mixNumber			The cc number to check
+ * @param	int	$intCreditCardType 	The constant which describes what type 
+ *									of credit card (e.g Visa, Mastercard, etc) 
+ *
+ * @return	bool
+ * 
+ * @function
+ * 
+ */
 function CheckCC($mixNumber, $intCreditCardType)
 {
 	$strNumber = str_replace (" ", "", $mixNumber);
@@ -1252,6 +1366,23 @@ function CheckCC($mixNumber, $intCreditCardType)
 	return true;
 }
 
+//------------------------------------------------------------------------//
+// EmailAddressValid
+//------------------------------------------------------------------------//
+/**
+ * EmailAddressValid()
+ * 
+ * Check the format of an email address
+ * 
+ * Check the format of an email address 
+ *
+ * @param	str	$strEmail			The email to check
+ *
+ * @return	bool
+ * 
+ * @function
+ */
+ 
 // check valid email address
 // comes from: http://www.ilovejackdaniels.com/php/email-address-validation/
 
@@ -1259,9 +1390,9 @@ function CheckCC($mixNumber, $intCreditCardType)
 
 // "RFC 2822, that specifies what is and is not allowed in an email address, 
 // states that the form of an email address must be of the form "local-part @ domain"."
-
 function EmailAddressValid ($strEmail)
 {
+	//TODO!flame! Fix this p.o.s up
 	// First we split on ',' to allow multiple email addresses
 	$arrEmails = explode(',', $strEmail);
 	
@@ -1312,32 +1443,106 @@ function EmailAddressValid ($strEmail)
 	return true;
 }
 
-// postcode valid
+//------------------------------------------------------------------------//
+// PostcodeValid
+//------------------------------------------------------------------------//
+/**
+ * PostcodeValid()
+ * 
+ * Check the format of a postcode
+ * 
+ * Check the format of a postcode
+ *
+ * @param	str	$strPostcode	The postcode to check
+ *
+ * @return	bool
+ * 
+ * @function
+ */
 function PostcodeValid ($strPostcode)
 {
 	return preg_match ("/^\d{4}$/", $strPostcode);
 }
 
-// valid phone number (international ok)
+//------------------------------------------------------------------------//
+// PhoneNumberValid
+//------------------------------------------------------------------------//
+/**
+ * PhoneNumberValid()
+ * 
+ * Check the format of a postcode
+ * 
+ * Check the format of a postcode
+ *
+ * @param	str	$strPostcode	The postcode to check
+ *
+ * @return	bool
+ * 
+ * @function
+ */
 function PhoneNumberValid ($strNumber)
 {
 	return preg_match ("/^\+?[\d\s]{10,}$/", $strNumber);
 }
 
-// valid bsb number
+//------------------------------------------------------------------------//
+// BSBValid
+//------------------------------------------------------------------------//
+/**
+ * BSBValid()
+ * 
+ * Check the format of a BSB
+ * 
+ * Check the format of a BSB
+ *
+ * @param	str	$strNumber	The BSB to check
+ *
+ * @return	bool
+ * 
+ * @function
+ */
 function BSBValid ($strNumber)
 {
 	return preg_match ("/^\d{6}$/", $strNumber);
 }
 
-
-// valid account number
+//------------------------------------------------------------------------//
+// BankAccountValid
+//------------------------------------------------------------------------//
+/**
+ * BankAccountValid()
+ * 
+ * Check the validity of a bank account number
+ * 
+ * Check the validity of a bank account number
+ *
+ * @param	str	$strNumber	The number to check
+ *
+ * @return	bool
+ * 
+ * @function
+ */
 function BankAccountValid ($strNumber)
 {
 	return preg_match ("/^\d{4,11}$/", $strNumber);
 }
 
-// CLIecho
+//------------------------------------------------------------------------//
+// CliEcho
+//------------------------------------------------------------------------//
+/**
+ * CliEcho()
+ * 
+ * Writes a string to stdout
+ * 
+ * Writes a string to stdout
+ *
+ * @param	str	$strOutput	The string to write to stdout
+ *
+ * @return	void
+ * 
+ * @function
+ */
 function CliEcho($strOutput)
 {
 	if (!$GLOBALS['**stdout'])
@@ -1348,7 +1553,24 @@ function CliEcho($strOutput)
 	fwrite($stdout, $strOutput."\n");
 }
 
-// Round Currency to X decimal places
+//------------------------------------------------------------------------//
+// RoundCurrency
+//------------------------------------------------------------------------//
+/**
+ * RoundCurrency()
+ * 
+ * Rounds a currency  
+ * 
+ * Rounds a currency to a specified number of places
+ *
+ * @param	float	$fltValue	The value to round
+ * @param	int		$intPlaces	The number of places to round it to (default 4)
+ *
+ * @return	mix					float: the rounded number
+ *								FALSE: if there is an error
+ * 
+ * @function
+ */
 function RoundCurrency($fltValue, $intPlaces = 4)
 {
 	if (!is_numeric($fltValue) || !is_int($intPlaces) || $intPlaces < 1)
@@ -1361,31 +1583,25 @@ function RoundCurrency($fltValue, $intPlaces = 4)
 	return round($fltValue * $fltMultiple) / $fltMultiple;
 }
 
-// AJAX Recieve
+//------------------------------------------------------------------------//
+// AjaxRecieve INCOMPLETE
+//------------------------------------------------------------------------//
+/**
+ * AjaxRecieve()
+ * 
+ * Function to act as a reciever for AJAX data.  
+ * 
+ * Function to act as a reciever for AJAX data. Converts to and from JSON format.
+ *
+ * @return	str				
+ *
+ * @brokenreturn
+ * @comments
+ * 
+ * @function
+ */
 function AjaxRecieve()
 {
-/**
-* Converts to and from JSON format.
-*
-* Brief example of use:
-*
-* <code>
-* // create a new instance of Services_JSON
-* $json = new Services_JSON();
-*
-* // convert a complexe value to JSON notation, and send it to the browser
-* $value = array('foo', 'bar', array(1, 2, 'baz'), array(3, array(4)));
-* $output = $json->encode($value);
-*
-* print($output);
-* // prints: ["foo","bar",[1,2,"baz"],[3,[4]]]
-*
-* // accept incoming POST data, assumed to be in JSON notation
-* $input = file_get_contents('php://input', 1000000);
-* $value = $json->decode($input);
-* </code>
-*/
-	
 	$json = new Services_JSON();
 	// get the JSON object and decode it into an object
 	$input = file_get_contents('php://input', 1000000);
@@ -1396,7 +1612,22 @@ function AjaxRecieve()
 	return $input;
 }
 
-// AJAX Reply
+//------------------------------------------------------------------------//
+// AjaxReply
+//------------------------------------------------------------------------//
+/**
+ * AjaxReply()
+ * 
+ * Send data via AJAX.
+ * 
+ * Send data via AJAX.
+ *
+ * @param	array	$arrReply				The array of data to send
+ *
+ * @return	void 
+ *
+ * @function
+ */
 function AjaxReply($arrReply)
 {
 	$json = new Services_JSON();
@@ -1404,7 +1635,20 @@ function AjaxReply($arrReply)
 }
 
 
-// Load Framework
+//------------------------------------------------------------------------//
+// LoadFramework
+//------------------------------------------------------------------------//
+/**
+ * LoadFramework()
+ * 
+ * Load the framework.
+ * 
+ * Load the framework.
+ *
+ * @param	str	$strFrameworkDir			The directory of the framework (default: NULL)
+ *
+ * @function
+ */
 function LoadFramework($strFrameworkDir=NULL)
 {
 	if (is_null($strFrameworkDir))
@@ -1439,8 +1683,21 @@ function LoadFramework($strFrameworkDir=NULL)
 	return $GLOBALS['fwkFramework'];
 }
 
-
-// Load Application
+//------------------------------------------------------------------------//
+// LoadApplication 
+//------------------------------------------------------------------------//
+/**
+ * LoadApplication()
+ * 
+ * Load the application.
+ * 
+ * Load the application.
+ *
+ * @param	str	$strApplication		The directory of the application (default: NULL)
+ *
+ * @incomplete
+ * @function
+ */
 function LoadApplication($strApplication=NULL)
 {
 	$strApplicationDir = '';
@@ -1469,8 +1726,23 @@ function LoadApplication($strApplication=NULL)
 	return TRUE;
 }
 
-
-// Calculate starting column position to centre a line of text
+//------------------------------------------------------------------------//
+// CentreText 
+//------------------------------------------------------------------------//
+/**
+ * CentreText()
+ * 
+ * Calculate starting column position to centre a line of text
+ * 
+ * Calculate starting column position to centre a line of text
+ *
+ * @param	str	$strText		The text to be input
+ * @param 	int	$intWidth		The width of the text
+ *
+ * @return 	int					Starting column position
+ *
+ * @function
+ */
 function CentreText($strText, $intWidth)
 {
 	return floor(($intWidth / 2) - (strlen($strText) / 2));
