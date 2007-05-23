@@ -103,6 +103,10 @@
 			throw new Exception();
 		}
 		
+		// Enable AutoCommit
+		$this->refMysqliConnection->autocommit(TRUE);
+		$this->_bolHasTransaction = FALSE;
+		
 		// make global database definitions available
 		$this->arrTableDefine = &$GLOBALS['arrDatabaseTableDefine'];
 	}
@@ -222,6 +226,114 @@
 		// is oblib a bloated pile om monkey puke ?
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// TransactionStart
+	//------------------------------------------------------------------------//
+	/**
+	 * TransactionStart()
+	 *
+	 * Starts a Transaction
+	 *
+	 * Starts a Transaction
+	 *
+	 * @return		boolean					TRUE	: Committed
+	 * 										FALSE	: Failed
+	 *
+	 * @method
+	 */ 
+	function TransactionStart()
+	{
+		if ($this->_bolHasTransaction)
+		{
+			// Can't start a new transaction if we already have one
+			return FALSE;
+		}
+		$this->_bolHasTransaction = TRUE;
+		
+		// Make sure the table doesn't lock if PHP dies
+		register_shutdown_function(Array($this, "__shutdown"));
+		
+		// Disable Auto-Commit
+		return $this->refMysqliConnection->autocommit(FALSE);
+	}
+	
+	//------------------------------------------------------------------------//
+	// TransactionRollback
+	//------------------------------------------------------------------------//
+	/**
+	 * TransactionRollback()
+	 *
+	 * Rolls back the current Transaction, then re-enables AutoCommit
+	 *
+	 * Rolls back the current Transaction, then re-enables AutoCommit
+	 *
+	 * @return		boolean					TRUE	: Rolled back
+	 * 										FALSE	: Failed
+	 *
+	 * @method
+	 */ 
+	function TransactionRollback()
+	{
+		if (!$this->_bolHasTransaction)
+		{
+			// No transaction to roll back
+			return FALSE;
+		}
+		
+		// Roll back, then disable transactioning
+		return ($this->refMysqliConnection->rollback() && $this->refMysqliConnection->autocommit(TRUE));
+	}
+	
+	//------------------------------------------------------------------------//
+	// TransactionCommit
+	//------------------------------------------------------------------------//
+	/**
+	 * TransactionCommit()
+	 *
+	 * Commits the current Transaction, then re-enables AutoCommit
+	 *
+	 * Commits the current Transaction, then re-enables AutoCommit
+	 *
+	 * @return		boolean					TRUE	: Started
+	 * 										FALSE	: Failed
+	 *
+	 * @method
+	 */ 
+	function TransactionCommit()
+	{
+		if (!$this->_bolHasTransaction)
+		{
+			// No transaction to commit
+			return FALSE;
+		}
+		
+		// Commit, then disable transactioning
+		return ($this->refMysqliConnection->commit() && $this->refMysqliConnection->autocommit(TRUE));
+	}
+	
+	//------------------------------------------------------------------------//
+	// __shutdown
+	//------------------------------------------------------------------------//
+	/**
+	 * __shutdown()
+	 *
+	 * If PHP dies, this will prevent table locking
+	 *
+	 * If PHP dies, this will prevent table locking
+	 *
+	 * @method
+	 */ 
+	function __shutdown()
+	{
+		if ($this->_bolHasTransaction)
+		{
+			// No transaction to roll back
+			$this->refMysqliConnection->rollback();
+		}
+	}
+	
+	
  }
  
 //----------------------------------------------------------------------------//
