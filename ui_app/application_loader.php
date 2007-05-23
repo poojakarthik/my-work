@@ -6,9 +6,32 @@ $myApplication = new Application;
 
 function __autoload($strClassName)
 {
-	//no exceptions can be thrown, so an errors will be fatal
-	require_once("apptemplate/" . strtolower($strClassName) . ".php");
-
+	// Class Names must be like;
+	// app_template/account.php			AppTemplateAccount
+	// html_template/account_view.php	HtmlTemplateAccountView
+	// html_template/cdr_view.php		HtmlTemplateCdrView
+	
+	// if the class is a template
+	
+		// split on 'Template'	HtmlTemplateCdrView
+				// $strFolder 		= 'html_template'
+				// $strFileIndex	= 'cdrview'
+		// build the folder name (eg. html_template)
+		// get a directory listing (if we don't have it already)
+		// make a directory listing array $array['cdrview'] = 'cdr_view.php'
+				// $filename = $array[$strFileIndex]
+		// save the directory listing array to globals
+		// check the array to find the file name
+		// build the class path
+	
+	// else
+		// nothing for now
+	
+	// try and load the class file
+	if ($strClassPath)
+	{
+		require_once($strClassPath);
+	}
 }
 
 //------------------------
