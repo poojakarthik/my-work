@@ -22,6 +22,7 @@ function __autoload($strClassName)
 				// $filename = $array[$strFileIndex]
 		// save the directory listing array to globals
 		// check the array to find the file name
+		// use a constant to specify the absolute path to the template base dir
 		// build the class path
 	
 	// else
