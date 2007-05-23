@@ -4,7 +4,7 @@
 class AccountDetails
 {
 	// Class AccountDetails
-	function objRender()
+	function Render()
 	{
 		//User HTML element Tempaltes
 
@@ -22,7 +22,12 @@ class AccountDetails
 		?>
 		<table>
 			<tr>
-				<?php dboRender('Input',TRUE); ?>	
+				<?php
+					// Dbo()->Object->Property->Render(CONSTANT_ELEMENT_TYPE|$strElementType??, [$bolRequired], [$strContext]);
+					// Dbo()->Object->Property->Render(ELEMENT_INPUT, TRUE);
+					// Dbo()->Object->Property->Render('Input', TRUE);					
+					dboRender('Input',TRUE);
+				?>	
 			</tr>
 			<tr>
 				<?php dboRender('Label',TRUE); ?>	

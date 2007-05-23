@@ -14,12 +14,23 @@ class HTMLTemplate
 	{
 		// get documentation for label
 		$strDocumentation = explode(".",$arrParams['Name']);
-			
+		
+		// work out the class to use
+		if (!$arrParams['Definition']['Class'])
+		{
+			$arrParams['Definition']['Class'] = CLASS_DEFAULT; // Default
+		}
+		$strClass = $arrParams['Definition']['Class']."Input"; // DefaultInput
+		if ($arrParams['Valid'] === FALSE)
+		{
+			$strClass .= "Invalid"; // DefaultInputInvalid
+		}
+		
 		echo "<td>";
 		echo "$strDocumentation[1]:";
 		echo "</td>";
 		echo "<td>";
-		echo "<input name='account.id' value='{$arrParams['Value']}' class='{$arrParams['Definition']['Class']}'></input>";
+		echo "<input name='account.id' value='{$arrParams['Value']}' class='$strClass'></input>";
 		echo "</td>";
 	}
 	
@@ -33,7 +44,8 @@ class HTMLTemplate
 		echo "$strDocumentation[1]:";
 		echo "</td>";
 		echo "<td>";
-		echo "<input name='account.id' value='{$arrParams['Value']}' class='input-string' style='text-align:right'></input>";
+		//echo "<input name='account.id' value='{$arrParams['Value']}' class='input-string' style='text-align:right'></input>";
+		echo "<div id='{$arrParams['Name']}' class='right'>{$arrParams['Value']}</div>";
 		echo "</td>";
 	}
 	
