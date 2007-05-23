@@ -776,7 +776,7 @@
 			{
 				// Error
 				Debug($this->_insInvoiceOutput->Error());
-				return FALSE;			
+				return FALSE;
 			}
 			return TRUE;
 		}
