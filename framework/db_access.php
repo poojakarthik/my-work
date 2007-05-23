@@ -699,6 +699,54 @@
 		return $strWhere;
 	}
 	
+	//------------------------------------------------------------------------//
+	// ImplodeTables
+	//------------------------------------------------------------------------//
+	/**
+	 * ImplodeTables()
+	 *
+	 * Implodes an array of tables to a FROM string
+	 *
+	 * Implodes an array of tables to a FROM string
+	 *
+	 * @param	array	$arrTables		Associative array of tables to implode
+	 * @return	string					FROM clause (without the FROM keyword)
+	 *
+	 * @method
+	 */
+	function ImplodeTables($arrTables)
+	{
+		$arrReturn = Array();
+		
+		if (!is_array($arrTables))
+		{
+			return FALSE;
+		}
+		
+		foreach ($arrTables AS $strAlias=>$arrTable)
+		{
+			// Name & Alias
+			if ($strAlias != $arrTable['Table'])
+			{
+				$strTable = "{$arrTable['Table']} {$this->_strAs} {$strAlias}";
+			}
+			else
+			{
+				$strTable = $arrTable['Table'];
+			}
+			
+			// Index
+			if ($arrTable['Index'])
+			{
+				$strTable .= " {$this->_UseIndex} ({$arrTable['Index']})";
+			}
+			
+			// add to return array
+			$arrReturn[] = $strTable;
+		}
+		
+		return implode(', ', $arrReturn);
+	}
  }
  
 

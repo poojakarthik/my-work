@@ -746,6 +746,28 @@
  		}
  	}
  	
+	//------------------------------------------------------------------------//
+	// RemoveFile
+	//------------------------------------------------------------------------//
+	/**
+	 * RemoveFile()
+	 *
+	 * Removes a specified file from the server
+	 *
+	 * Removes a specified file from the server
+	 * 
+	 * @param	string		$strRemotePath		The full remote path to delete
+	 *
+	 * @return	mixed							TRUE: Success; FALSE: Failed
+	 *
+	 * @method
+	 */	
+	 function RemoveFile($strRemotePath)
+	 {
+	 	$this->_SSH2Execute("unlink $strRemotePath");
+	 	return (bool)$this->_SSH2Execute("stat $strRemotePath");
+	 }
+ 	
  	
 	//------------------------------------------------------------------------//
 	// _CleanDir
