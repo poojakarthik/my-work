@@ -38,6 +38,20 @@ function __autoload($strClassName)
 	// else
 		// nothing for now
 	
+	$arrClassName = explode("template", $strClassName);
+	$strClassPath = $arrClassName[0] . "_template";
+	
+	if (unset($arrAvailableFiles[$strClassPath]))
+	{
+		$arrAvailableFiles[$strClassPath] = new array();
+		
+		// add each filename in the $strClassPath directory to a list and check if 
+		// the desired class name can be found
+		
+		
+	}	
+	$arrAvailableFiles[$strClassPath] = glob(
+	
 	// try and load the class file
 	if ($strClassPath)
 	{

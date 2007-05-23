@@ -45,7 +45,7 @@ function dboRender($strTemplateType, $bolRequired)
 	$arrParams['Name'] 			= 'account.id';
 	$arrParams['Valid'] 		= TRUE;
 	$arrParams['Required'] 		= $bolRequired;
-	
+
 	RenderHTMLTemplate($arrParams);
 	
 	// $strTag = "<input name=[name] class='input-wide-string'>[value]</input>"
