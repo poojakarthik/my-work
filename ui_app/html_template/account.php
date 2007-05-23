@@ -1,7 +1,7 @@
 <?php
 // HTMLObjectGroup AccountDetails
 
-class AccountDetails
+class AccountDetails extends HtmlTemplate
 {
 	// Class AccountDetails
 	function Render()
