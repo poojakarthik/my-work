@@ -1,6 +1,6 @@
 <?php
 
-class Account
+class AppTemplateAccount extends ApplicationTemplate
 {
 	function View()
 	{	
@@ -34,7 +34,7 @@ class Account
 		$someThing = $this->Module->Account->Function()
 		??? how do modules appear in the map ???
 		*/
-		$this->LoadPage('Account_View');
+		$this->LoadPage('account_view');
 		
 	}
 }

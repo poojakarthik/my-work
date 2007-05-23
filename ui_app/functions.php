@@ -2,7 +2,7 @@
 //---------------
 // functions.php
 //---------------
-require_once('html_elements.php');
+require_once(TEMPLATE_STYLE_DIR.'html_elements.php');
 
 // RenderHTMLTemplate will be one of the global functions of the framework, which
 // accepts a set of definitions, and creates a html tag from them.
@@ -19,7 +19,7 @@ function RenderHTMLTemplate($arrParams)
 	// it only works if the class has been instantiated first,
 	// cant be used without
 	
-	$rah = new HTMLTemplate;
+	$rah = new HTMLElements;
 	$rah->$arrParams['Template']($arrParams);
 	//HTMLTemplate::$arrParams['Template']($arrParams);
 

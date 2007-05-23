@@ -2,7 +2,7 @@
 // This is the file which handles the HTML Element Templates
 // I am unsure where it should reside, it is kinda part of the framework, but
 // not entirely.
-class HTMLTemplate
+class HTMLElements
 {
 	/*$arrParams['Definition'] 	= $arrType;
 	$arrParams['Template'] 		= $strTemplateType;

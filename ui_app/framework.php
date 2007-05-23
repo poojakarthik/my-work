@@ -60,9 +60,14 @@ class Page
 
 	private $strPageName;
 	private $strPageLayout;
-	private $arrObjects;
+	private $arrObjects = Array();
 	private $intColumns;
 
+	function __construct()
+	{
+		$this->arrObjects = Array();
+	}
+	
 	function SetName($strName)
 	{
 		//var_dump($this);
@@ -75,66 +80,36 @@ class Page
 		$this->strPageLayout = $strLayout;
 	}
 	
-	function AddObject($name,$column,$id)
+	function AddObject($strName, $intColumn, $strId=NULL)
 	{
-		$myObject = Array();
-		$myObject['Name'] = $name;
-		$myObject['Column'] = $column;
-		$myObject['Id'] = $id;
-		$this->arrObjects[0] = $myObject;
-
+		// set UID for this object
+		if ($strId)
+		{
+			// check if this object already exists and die (or something) if it does
+		}
+		else
+		{
+			$strId = uniqid();
+		}
+		
+		// set the class name
+		$strClassName = "HtmlTemplate$strName";
+		
+		// set up the object
+		$objObject = Array();
+		$objObject['Name'] = $strName;
+		$objObject['Column'] = $intColumn;
+		$objObject['Object'] = new $strClassName;
+		$this->arrObjects[$strId] = $objObject;
+		
+		// return the object id
+		return $strId;
 	}
 	
 	function Render()
 	{
-		// Select page layout using $this->strPageLayout
-		
-		// set page title using $this->strPageName
-		
-		// render page layout
-			// page layout renders objects in the columns
-			/*
-				// this code needs to live somewhere else
-				// this is what the LAYOUT TEMPLATE will do
-				render header bar
-				render context menu
-				render breadcrumbs
-				echo start of column structure
-				render objects in column 1
-				echo part of column structure
-				render objects in column 2
-				echo end of column structure
-				
-				$this->RenderHeader();
-				$this->RenderContextMenu();
-				echo "<table><tr><td>";
-				//foreach (object in column 1)
-				{
-					// render the object
-				}
-				echo "</td><td>";
-				//foreach (object in column 2)
-				{
-					// render the object
-				}
-				echo "</td></tr></table>";
-				
-			*/
-		
-		// this echo will be replaced by a page template
-		// and a header template
-		echo "<html>\r\n<head>\r\n";
-		echo "<link rel='stylesheet' type='text/css' href='default.css' />\r\n";
-		echo "</head>\r\n<body>\r\n";
-		//var_dump($this->Page->arrObjects);
-		foreach($this->Page->arrObjects as $myObject)
-		{
-			//Name = 'AccountDetails';
-			require_once('html_object_templates/account.php');
-			AccountDetails::objRender();
-		}
-		// this echo will be replaced by a page-end template
-		echo "</body>\r\n</html>";
+		// load required layout
+		require_once(TEMPLATE_BASE_DIR."layout_template/" . strtolower($this->strPageLayout) . ".php");
 	}
 
 }

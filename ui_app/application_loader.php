@@ -1,5 +1,15 @@
 <?php
 
+// Definitions
+
+Define ('TEMPLATE_BASE_DIR', "");
+Define ('TEMPLATE_STYLE_DIR', "style_template/");
+
+Define ('COLUMN_ONE'	, 1);
+Define ('COLUMN_TWO'	, 2);
+Define ('COLUMN_THREE'	, 3);
+Define ('COLUMN_FOUR'	, 4);
+
 require_once('functions.php');
 require_once('framework.php');
 $myApplication = new Application;
@@ -33,6 +43,16 @@ function __autoload($strClassName)
 	{
 		require_once($strClassPath);
 	}
+	
+	//remove this once the function works
+		if (substr($strClassName, 0, 11) == 'AppTemplate')
+		{
+			include_once(TEMPLATE_BASE_DIR."app_template/".strtolower(substr($strClassName, 11)).".php");
+		}
+		elseif (substr($strClassName, 0, 12) == 'HtmlTemplate')
+		{
+			include_once(TEMPLATE_BASE_DIR."html_template/".strtolower(substr($strClassName, 12)).".php");
+		}
 }
 
 //------------------------
@@ -44,47 +64,73 @@ class Application
 
 	function Load($strTemplateName)
 	{
-		//split name
-		$arrThing = explode ('.', $strTemplateName);
-		$Type = $arrThing[0];
-		$Name = $arrThing[1];
+		//split template name
+		$arrTemplate 	= explode ('.', $strTemplateName);
+		$strClass 		= 'AppTemplate'.$arrTemplate[0];
+		$strMethod 		= $arrTemplate[1];
+		
 		//Get user details (inc Permissions)
 		//$this->Dbo->Session->AuthenticatedEmployee->GetDetails();
 		/*???can't this be done in the framework at the same time you build the Dbo object of 	variables
 		--at this stage we ahavent defined this anywhere, needs to be somewhere\
 		-- could be here or lower level*/
 	
-		/*
-		//Create AppTemplate Object
-		$this->objAppTemplate = new $Type;	// new Account
-		//Run AppTemplate
-		$this->objAppTemplate->{$Name}();		// ->View()
-		*/
 		
-		Account::View();
+		
+		//Create AppTemplate Object
+		$this->objAppTemplate = new $strClass;
+		
+		//Run AppTemplate
+		$this->objAppTemplate->{$strMethod}();
 		
 		//Add context menu
 		//Add in JS & CSS
 		//Add in documentation
 	
-		// RENDER
-		//Page()->Render();
-		Page::Render();
+		// Render Page
+		$this->objAppTemplate->Page->Render();
+		
 		/*
 		??? call the render function of the page object
 		??? decide where context, doco and js/css go, and also include breadcrumbs
 		*/
 	}
 	
+}
+
+class ApplicationTemplate extends BaseTemplate
+{
+	
 	function LoadPage($strPageName)
 	{
-		//var_dump($myApplication);
+		// create new page object
 		$this->Page = new Page;
-		require_once("php_page_templates/" . strtolower($strPageName) . ".php");
-		//echo $myApplication->Page;
+		
+		// load required page
+		require_once(TEMPLATE_BASE_DIR."page_template/" . strtolower($strPageName) . ".php");
 	}
 }
 
+class PageTemplate extends BaseTemplate
+{
+
+}
+
+class HtmlTemplate extends BaseTemplate
+{
+
+}
+
+class LayoutTemplate extends BaseTemplate
+{
+
+}
+
+
+class BaseTemplate
+{
+
+}
 
 
 ?>

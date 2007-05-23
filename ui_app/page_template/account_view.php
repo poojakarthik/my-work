@@ -4,14 +4,14 @@
 
 // The page object already exists
 
+// set the page title
 $this->Page->SetName('Account View');
 
 //$this->Page->SetLayout(CONSTANT_LAYOUT_TYPE|$strLayoutType??);
-$this->Page->SetLayout('1');
+$strLayout = '3Column';
+$this->Page->SetLayout($strLayout);
 
 // many other functions which arent needed, but could be included like destroy, getObjByID
-$id = $this->Page->AddObject('Account.Details',1,'blkAccountDetails');
-
-
+$id = $this->Page->AddObject('AccountDetails', COLUMN_ONE);
 
 ?>
