@@ -498,7 +498,7 @@
 		$arrDefine['PaymentData']		['BillExpRef']		['Value']	= $arrInvoiceDetails['Account'].MakeLuhn($arrInvoiceDetails['Account']);
 		$arrDefine['PaymentData']		['BPayCustomerRef']	['Value']	= $arrInvoiceDetails['Account'].MakeLuhn($arrInvoiceDetails['Account']);
 		$arrDefine['PaymentData']		['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
-		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime("+".$arrCustomerData['PaymentTerms']." days"));
+		$arrDefine['PaymentData']		['DateDue']			['Value']	= date("j M Y", strtotime($arrInvoiceDetails['DueOn']));
 		$arrDefine['PaymentData']		['TotalOwing']		['Value']	= (float)$arrInvoiceDetails['TotalOwing'];
 		$arrDefine['PaymentData']		['CustomerName']	['Value']	= $arrCustomerData['FirstName']." ".$arrCustomerData['LastName'];
 		$arrDefine['PaymentData']		['AddressLine1']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine1']['Value'];
