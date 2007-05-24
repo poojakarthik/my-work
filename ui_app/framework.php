@@ -146,7 +146,7 @@ function dboRender($strTemplateType, $bolRequired)
 	$arrDefinition['OutputOptions']	= $;				// ['-1'] = "blah <value> blah"
 														// ['0']  = "blah bleh blah"
 	$arrDefinition['DefaultOutput']	= $;				// "Do not charge for <value> months"
-	$arrDefinition['OutputMask']	= $;				// 
+	$arrDefinition['OutputMask']	= $;				// how data is output
 	
 	*/
 		

@@ -39,6 +39,9 @@ Define ('COLUMN_TWO'	, 2);
 Define ('COLUMN_THREE'	, 3);
 Define ('COLUMN_FOUR'	, 4);
 
+Define ('AJAX_MODE'		, 1);
+Define ('HTML_MODE'		, 2);
+
 require_once('functions.php');
 require_once('framework.php');
 $myApplication = new Application;
@@ -159,6 +162,7 @@ class Application
 		
 		//Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
+		$this->objAppTemplate->SetMode(HTML_MODE);
 		
 		//Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
@@ -176,6 +180,49 @@ class Application
 		*/
 	}
 	
+	function AjaxLoad()
+	{
+		$objAjax = AjaxRecieve();
+		//TODO!Interface-kids!Get the class name and the method name
+		//Create AppTemplate Object
+		$this->objAppTemplate = new $objAjax->strClass;
+		$this->objAppTemplate->SetMode(AJAX_MODE);
+		
+		//Run AppTemplate
+		$this->objAppTemplate->{$objAjax->strMethod}();
+		
+		$arrReply = Array();
+		
+		if (is_array($this->arrSend['Dbo'])
+		{
+			foreach ($this->arrSend['Dbo'] as $strObject=>$mixValue)
+			{
+				//TODO!Interface-kids!Add the Dbo object to the reply
+				if (is_array($mixValue))
+				{
+					foreach ($mixValue as $strProperty=>$bolValue)
+					{
+						// add just the property to the reply
+					}
+				}
+				else
+				{
+					// add the whole object to the reply
+				}
+			}
+		}
+		if (is_array($this->arrSend['Dbl'])
+		{
+			foreach ($this->arrSend['Dbl'] as $strKey=>$bolValue)
+			{
+				//TODO!Interface-kids!Add the Dbl object to the reply 
+			}
+		}
+		
+		AjaxReply($arrReply);
+		
+	}
+	
 }
 
 class ApplicationTemplate extends BaseTemplate
@@ -183,11 +230,25 @@ class ApplicationTemplate extends BaseTemplate
 	
 	function LoadPage($strPageName)
 	{
-		// create new page object
-		$this->Page = new Page;
-		
-		// load required page
-		require_once(TEMPLATE_BASE_DIR."page_template/" . strtolower($strPageName) . ".php");
+	
+		if ($this->_intTemplateMode == AJAX_MODE)
+		{
+			// load AJAX template
+			require_once(TEMPLATE_BASE_DIR."ajax_template/" . strtolower($strPageName) . ".php");
+		}
+		else 
+		{
+			// create new page object
+			$this->Page = new Page;
+			
+			// load required page
+			require_once(TEMPLATE_BASE_DIR."page_template/" . strtolower($strPageName) . ".php");
+		}
+	}
+	
+	function SetMode($intMode)
+	{
+		$this->_intTemplateMode = $intMode;
 	}
 }
 
