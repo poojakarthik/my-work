@@ -1,4 +1,33 @@
 <?php
+//----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+
+//----------------------------------------------------------------------------//
+// application_loader
+//----------------------------------------------------------------------------//
+/**
+ * application_loader
+ *
+ * contains the Application class and the __autoload function
+ *
+ * contains the Application class and the __autoload function.
+ * The __autoload function is used to dynamically include the php file
+ * required to instantiate a class
+ *
+ * @file		application_loader.php
+ * @language	PHP
+ * @package		framework
+ * @author		Jared 'flame' Herbohn
+ * @version		7.05
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+
 
 // Definitions
 
@@ -14,59 +43,96 @@ require_once('functions.php');
 require_once('framework.php');
 $myApplication = new Application;
 
+
+//------------------------------------------------------------------------//
+// __autoload
+//------------------------------------------------------------------------//
+/**
+ * __autoload()
+ *
+ * Dynamically loads a php file
+ *
+ * Dynamically loads a php file.  If it cannot be loaded then an exception
+ * is thrown.
+ * 
+ *
+ *
+ *
+ * @param	string	$strClassName	The class to load
+ *									Note that there is a very specific format for this class name to be in.
+ *									Class names must be like:
+ *									ClassName					Location
+ *									AppTemplateAccount			app_template/account.php
+ *									HtmlTemplateAccountView		html_template/account_view.php
+ *									HtmlTemplateCdrView			html_template/cdr_view.php
+ *									The function explodes $strClassName on "template" to retrieve 
+ *									the desired class name and its associated directory
+ *									relative to TEMPLATE_BASE_DIR
+ * @return	void
+ *
+ * @function
+ */
 function __autoload($strClassName)
 {
-	// Class Names must be like;
-	// app_template/account.php			AppTemplateAccount
-	// html_template/account_view.php	HtmlTemplateAccountView
-	// html_template/cdr_view.php		HtmlTemplateCdrView
-	
-	// if the class is a template
-	
-		// split on 'Template'	HtmlTemplateCdrView
-				// $strFolder 		= 'html_template'
-				// $strFileIndex	= 'cdrview'
-		// build the folder name (eg. html_template)
-		// get a directory listing (if we don't have it already)
-		// make a directory listing array $array['cdrview'] = 'cdr_view.php'
-				// $filename = $array[$strFileIndex]
-		// save the directory listing array to globals
-		// check the array to find the file name
-		// use a constant to specify the absolute path to the template base dir
-		// build the class path
-	
-	// else
-		// nothing for now
-	
-	$arrClassName = explode("template", $strClassName);
+	/* 	What the function currently does:
+	 *		if the class is a template
+	 *			load the appropriate file	
+	 *		else
+	 *			nothing for now
+	 */		
+
+	// retrieve the class name and its associated directory
+	$arrClassName = explode("template", strtolower($strClassName));
 	$strClassPath = $arrClassName[0] . "_template";
+	$strClassName = $arrClassName[1];
 	
-	if (unset($arrAvailableFiles[$strClassPath]))
+	// if $strClassName couldn't be exploded on "template" then die
+	if (count($arrClassName) == 1)
 	{
-		$arrAvailableFiles[$strClassPath] = new array();
-		
-		// add each filename in the $strClassPath directory to a list and check if 
-		// the desired class name can be found
-		
-		
-	}	
-	$arrAvailableFiles[$strClassPath] = glob(
-	
-	// try and load the class file
-	if ($strClassPath)
-	{
-		require_once($strClassPath);
+		// The class trying to be loaded is not a template class
+		// This function does not currently handle any other kinds of class
+		$strErrorMsg = 	"ERROR: The class '". $strClassName.
+						"' is not a template class as it does not include the keyword 'Template'. ".
+						"currently the autoloader only handles template classes.";
+		Debug($strErrorMsg);
+		throw new Exception($strErrorMsg);
+		die;  // I don't think this will ever actually be called
 	}
 	
-	//remove this once the function works
-		if (substr($strClassName, 0, 11) == 'AppTemplate')
+	// check if a directory listing for $strClassPath has already been created
+	if (!isset($GLOBALS['*arrAvailableFiles'][$strClassPath]))
+	{  
+		// $strClassPath has not had its directory listing loaded before, so do it now
+		foreach (glob(TEMPLATE_BASE_DIR . $strClassPath . "/*.php") as $strAbsoluteFilename)
 		{
-			include_once(TEMPLATE_BASE_DIR."app_template/".strtolower(substr($strClassName, 11)).".php");
+			//grab the filename part
+			$arrFilename = explode("/", $strAbsoluteFilename);
+			$strFilename = $arrFilename[count($arrFilename)-1];
+			
+			// $strClassName will have to be compared with each file in the directory, therefore
+			// a modified version of the filename (all lowercase and underscores removed) should be stored
+			// and the actual filename should be stored
+			$GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][] = $strFilename;
+			$GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename'][] = strtolower(str_replace("_", "", $strFilename));
 		}
-		elseif (substr($strClassName, 0, 12) == 'HtmlTemplate')
-		{
-			include_once(TEMPLATE_BASE_DIR."html_template/".strtolower(substr($strClassName, 12)).".php");
-		}
+	}	
+
+	// find the file that should contain the class which needs to be loaded
+	$mixClassPointer = array_search($strClassName . ".php", $GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename']);
+
+	// check if it could be found
+	if ($mixClassPointer === FALSE)
+	{
+		// the file containing the class could not be found.  The program should die here
+		$strErrorMsg = "ERROR: Could not find the class that was trying to autoload. The class '". 
+							$arrClassName[1] . "' could not be found in the directory '$strClassPath'";
+		Debug($strErrorMsg);
+		throw new Exception($strErrorMsg);
+		die;  // I don't think this will ever actually be called
+	}
+
+	// include the php file that defines the class
+	include_once(TEMPLATE_BASE_DIR . $strClassPath . "/" . $GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][$mixClassPointer]);
 }
 
 //------------------------
