@@ -336,7 +336,23 @@ class Page
 		// load required layout
 		require_once(TEMPLATE_BASE_DIR."layout_template/" . strtolower($this->_strPageLayout) . ".php");
 	}
-
+	
+	function RenderCSS()
+	{
+		echo "<link rel='stylesheet' type='text/css' href='css.php' />\n";
+	}
+	
+	function RenderJS()
+	{
+		// for each on global array
+		if (is_array($GLOBALS['*arrJavaScript']))
+		{
+			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
+			{
+				echo "<script type='text/javascript' src='javascript/$strValue' />\n";
+			}	
+		}
+	}
 }
 
 

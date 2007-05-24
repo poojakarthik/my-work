@@ -198,7 +198,12 @@ class PageTemplate extends BaseTemplate
 
 class HtmlTemplate extends BaseTemplate
 {
-
+	
+	function LoadJavascript($strFilename)
+	{
+		// add $strFilename to global javascript function array
+		$GLOBALS['*arrJavaScript'][$strFilename] = $strFilename;
+	}
 }
 
 class LayoutTemplate extends BaseTemplate

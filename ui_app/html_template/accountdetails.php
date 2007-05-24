@@ -1,31 +1,48 @@
 <?php
-// HTMLObjectGroup AccountDetails
-
+//----------------------------------------------------------------------------//
+// HtmlTemplateAccountDetails
+//----------------------------------------------------------------------------//
+/**
+ * HtmlTemplateAccountDetails
+ *
+ * A specific HTML Template object
+ *
+ * An Account Details HTML Template object
+ *
+ *
+ * @prefix	<prefix>
+ *
+ * @package	ui_app
+ * @class	HtmlTemplateAccountDetails
+ * @extends	HtmlTemplate
+ */
 class HtmlTemplateAccountDetails extends HtmlTemplate
 {
-	// Class AccountDetails
-	function Render()
+	function __construct()
 	{
-		//User HTML element Tempaltes
-
-		
-		/*
-		$this->Dbo->Account->Id->dboRender('input');
-		$this->Dbo->Account->BusinessName->dboRender('label');
-		*/
-		
-		/*
-		?> </table> <.... insert html here> 	<?php
-		*/
-		
-		//var_dump($this);
+		//$this->LoadJavascript("thing.js");
+	}
+	//------------------------------------------------------------------------//
+	// Render
+	//------------------------------------------------------------------------//
+	/**
+	 * Render()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	function Render()
+	{		
 		?>
 		<table>
 			<tr>
 				<?php
-					// Dbo()->Object->Property->Render([$bolRequired], [$strContext]);
-					// Dbo()->Object->Property->Render(ELEMENT_INPUT, TRUE);
-					// Dbo()->Object->Property->Render('Input', TRUE);					
+					// Dbo()->Object->Property->RenderInput([$bolRequired], [$strContext]);
+					// Dbo()->Object->Property->RenderInput(TRUE, 'Account');
+					// Dbo()->Object->Property->RenderInput(TRUE);					
 					dboRender('Input',TRUE);
 				?>	
 			</tr>

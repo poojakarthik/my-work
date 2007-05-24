@@ -33,15 +33,19 @@
 		
 		// this echo will be replaced by a page template
 		// and a header template
-		echo "<html>\r\n<head>\r\n";
-		echo "<link rel='stylesheet' type='text/css' href='css.php' />\r\n";
-		echo "</head>\r\n<body>\r\n";
+		echo "<html>\n<head>\n";
+		
+		// add Javascript and CSS requirements right here
+		$this->RenderJS();
+		$this->RenderCSS();
+		
+		echo "</head>\n<body>\n";
 		//var_dump($this->Page->arrObjects);
-		foreach($this->arrObjects as $objObject)
+		foreach($this->_arrObjects as $objObject)
 		{
 			$objObject['Object']->Render();
 		}
 		// this echo will be replaced by a page-end template
-		echo "</body>\r\n</html>";
+		echo "</body>\n</html>";
 		
 ?>

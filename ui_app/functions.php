@@ -4,26 +4,32 @@
 //---------------
 require_once(TEMPLATE_STYLE_DIR.'html_elements.php');
 
-// RenderHTMLTemplate will be one of the global functions of the framework, which
-// accepts a set of definitions, and creates a html tag from them.
+
+//------------------------------------------------------------------------//
+// RenderHTMLTemplate
+//------------------------------------------------------------------------//
+/**
+ * RenderHTMLTemplate()
+ *
+ * Render a HTML Element
+ *
+ * Render a HTML Element by calling the associated function of the
+ * HTMLElements class and passing in the array of parameters to use.
+ *
+ * @param	Array	$arrParams	The parameters to use when building the element
+ *
+ * @function
+ */
 function RenderHTMLTemplate($arrParams)
 {
-	/*$arrParams['Definition'] 	= $arrType;
-	$arrParams['Template'] 		= $strTemplateType;
-	$arrParams['Value'] 		= $this->Value;
-	$arrParams['Name'] 			= $this->Name;
-	$arrParams['Valid'] 		= $this->Valid;
-	$arrParams['Required'] 		= $bolRequired;*/
-	
-	// problem with using method overloading:
-	// it only works if the class has been instantiated first,
-	// cant be used without
-	
+	// With overloading
 	$rah = new HTMLElements;
 	$rah->$arrParams['Template']($arrParams);
+	
+	// Without overloading
 	//HTMLTemplate::$arrParams['Template']($arrParams);
-
 }
+
 
 
 ?>
