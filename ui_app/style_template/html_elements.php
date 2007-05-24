@@ -61,6 +61,33 @@ class HTMLElements
 		echo "</td>";
 	
 	}
+	
+	// an example of Late Payments radio buttons on account_edit.php
+	// $arrParams has an array of keys=>values for the options
+	function RadioButtons($arrParams)
+	{
+		// get documentation for label
+		$strDocumentation = explode(".",$arrParams['Name']);
+		
+		// work out the class to use
+		if (!$arrParams['Definition']['Class'])
+		{
+			$arrParams['Definition']['Class'] = CLASS_DEFAULT; // Default
+		}
+		$strClass = $arrParams['Definition']['Class']."Input"; // DefaultInput
+		if ($arrParams['Valid'] === FALSE)
+		{
+			$strClass .= "Invalid"; // DefaultInputInvalid
+		}
+		
+		echo "<td>";
+		echo "$strDocumentation[1]:";
+		echo "</td>";
+		echo "<td>";
+		echo "<input name='account.id' value='{$arrParams['Value']}' class='$strClass'></input>";
+		echo "</td>";
+	}
+	
 	// function which handles any method calls which dont exist
     function __call($strMethodName, $arrMethodParams)
     {

@@ -5,7 +5,32 @@
 // framework.php
 //---------------
 
-// of Dbo->Account->Id->Render($templatetype)
+// Add this to the 'real' PropertyToken class
+class PropertyToken
+{
+
+	function RenderInput($bolRequired=NULL, $strContext=NULL)
+	{
+		// Build up parameters for RenderHTMLTemplate()
+		//TODO!Interface-kids!Actually do this
+		
+		RenderHTMLTemplate($arrParams);
+	}
+
+	function RenderOutput($bolRequired=NULL, $strContext=NULL)
+	{
+		// Build up parameters for RenderHTMLTemplate()
+		//TODO!Interface-kids!Actually do this
+		
+		RenderHTMLTemplate($arrParams);
+	}
+
+}
+
+
+// of Dbo()->Account->Id->RenderInput($bolRequired, $strContext)
+// Dbo()->Object->Property->Render([$bolRequired], [$strContext]);
+//DEPRECIATED
 function dboRender($strTemplateType, $bolRequired)
 {
 
@@ -32,12 +57,26 @@ function dboRender($strTemplateType, $bolRequired)
 	$arrType['Class'] 	= 'input-string-valid';
 	
 	$arrParams = Array();
-	/*$arrParams['Definition'] 	= $arrType;
-	$arrParams['Template'] 		= $templatetype;
-	$arrParams['Value'] 		= $this->Value;
-	$arrParams['Name'] 			= $this->Name;
-	$arrParams['Valid'] 		= $this->Valid;
-	$arrParams['Required'] 		= $bolRequired;*/
+	/*
+	$arrParams['Object'] 		= $this->object;		// 'Account'
+	$arrParams['Property'] 		= $this->property;		// 'Id'
+	$arrParams['Context'] 		= $this->context;		// DEFAULT
+	$arrParams['Definition'] 	= $;					// definition array
+	$arrParams['Value'] 		= $this->Value;			// '1000123456'
+	$arrParams['Valid']			= $;					// TRUE
+	$arrParams['Required'] 		= $bolRequired;			// TRUE
+	
+	$arrDefinition['ValidationRule']	= $;			// VALID_EMAIL
+	$arrDefinition['InputType']	= $;					// 
+	$arrDefinition['OutputType']	= $;				//
+	$arrDefinition['Label']	= $;						//
+	$arrDefinition['InputOptions']	= $;				//
+	$arrDefinition['OutputOptions']	= $;				// ['-1'] = "blah <value> blah"
+														// ['0']  = "blah bleh blah"
+	$arrDefinition['DefaultOutput']	= $;				// "Do not charge for <value> months"
+	$arrDefinition['OutputMask']	= $;				// 
+	
+	*/
 		
 	$arrParams['Definition'] 	= $arrType;
 	$arrParams['Template'] 		= $strTemplateType;

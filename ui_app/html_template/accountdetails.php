@@ -23,7 +23,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		<table>
 			<tr>
 				<?php
-					// Dbo()->Object->Property->Render(CONSTANT_ELEMENT_TYPE|$strElementType??, [$bolRequired], [$strContext]);
+					// Dbo()->Object->Property->Render([$bolRequired], [$strContext]);
 					// Dbo()->Object->Property->Render(ELEMENT_INPUT, TRUE);
 					// Dbo()->Object->Property->Render('Input', TRUE);					
 					dboRender('Input',TRUE);
