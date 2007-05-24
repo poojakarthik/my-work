@@ -1,14 +1,67 @@
 <?php
 
+//----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
 
-//---------------
+
+//----------------------------------------------------------------------------//
 // framework.php
-//---------------
+//----------------------------------------------------------------------------//
+/**
+ * framework
+ *
+ * Defines the framework classes for ui_app
+ *
+ * Defines the framework classes for ui_app
+ *
+ * @file		framework.php
+ * @language	PHP
+ * @package		framework
+ * @author		Jared, Sean and Joel
+ * @version		7.05
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
 
+//----------------------------------------------------------------------------//
+// PropertyToken
+//----------------------------------------------------------------------------//
+/**
+ * PropertyToken
+ *
+ * The PropertyToken logically represents a single property of a single object
+ *
+ * The PropertyToken logically represents a single property of a single object
+ *
+ *
+ * @package	ui_app
+ * @class	PropertyToken
+ */
 // Add this to the 'real' PropertyToken class
 class PropertyToken
 {
-
+	//------------------------------------------------------------------------//
+	// RenderInput
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderInput
+	 *
+	 * Renders the property as an input element
+	 *
+	 * Organises the data required to render the property as an input element
+	 * and then renders it.
+	 *
+	 *
+	 * @param		bool	$bolRequired
+	 * @param		string	$strContext		the context in which the property will be rendered as an input element
+	 *
+	 * @return		void
+	 *
+	 */
 	function RenderInput($bolRequired=NULL, $strContext=NULL)
 	{
 		// Build up parameters for RenderHTMLTemplate()
@@ -17,6 +70,24 @@ class PropertyToken
 		RenderHTMLTemplate($arrParams);
 	}
 
+	//------------------------------------------------------------------------//
+	// RenderOutput
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderOutput
+	 *
+	 * Renders the property as an output element
+	 *
+	 * Organises the data required to render the property as an output element
+	 * and then renders it.
+	 *
+	 *
+	 * @param		bool	$bolRequired
+	 * @param		string	$strContext		the context in which the property will be rendered as an output element
+	 *
+	 * @return		void
+	 *
+	 */
 	function RenderOutput($bolRequired=NULL, $strContext=NULL)
 	{
 		// Build up parameters for RenderHTMLTemplate()
@@ -94,31 +165,146 @@ function dboRender($strTemplateType, $bolRequired)
 	
 }
 
+//----------------------------------------------------------------------------//
+// Page
+//----------------------------------------------------------------------------//
+/**
+ * Page
+ *
+ * The Page class.  Logically represents a single webpage
+ *
+ * The Page class.  Logically represents a single webpage
+ *
+ * @package	ui_app
+ * @class	Page
+ */
 class Page
 {
+	//------------------------------------------------------------------------//
+	// _strPageName
+	//------------------------------------------------------------------------//
+	/**
+	 * _strPageName
+	 *
+	 * Stores the title of the webpage
+	 *
+	 * Stores the title of the webpage
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 */
+	private $_strPageName;
+	
+	//------------------------------------------------------------------------//
+	// _strPageLayout
+	//------------------------------------------------------------------------//
+	/**
+	 * _strPageLayout
+	 *
+	 * Defines the page's layout type
+	 *
+	 * Defines the page's layout type.  For example, it could be "2COLUMN", "3COLUMN", etc
+	 * This will directly reference a php script in the "layout_template" directory.
+	 * For example "3COLUMN" will reference the file "layout_template/3column.php"
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 */
+	private $_strPageLayout;
 
-	private $strPageName;
-	private $strPageLayout;
-	private $arrObjects = Array();
-	private $intColumns;
-
+	//------------------------------------------------------------------------//
+	// _arrObjects
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrObjects
+	 *
+	 * list of extended Html_Template objects that will be included in the page
+	 *
+	 * List of extended html_template objects that will be included in the page.
+	 * Each object is stored in an associated array which also defines the type 
+	 * of extended html_template object it is and which column it will belong to
+	 * in the page layout.
+	 *
+	 * @type		array 
+	 *
+	 * @property
+	 */
+	private $_arrObjects = Array();
+	
+	//------------------------------------------------------------------------//
+	// Page - Constructor
+	//------------------------------------------------------------------------//
+	/**
+	 * Page()
+	 *
+	 * Constructor for the Page object
+	 *
+	 * Constructor for the Page object
+	 *
+	 * @method
+	 */
 	function __construct()
 	{
-		$this->arrObjects = Array();
+		$this->_arrObjects = Array();
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetName()
+	//------------------------------------------------------------------------//
+	/**
+	 * SetName()
+	 *
+	 * Sets the name of the page (the title of the webpage)
+	 *
+	 * Sets the name of the page (the title of the webpage)
+	 * 
+	 * @param	string	$strName		the value to set the page name to
+	 *
+	 * @method
+	 */
 	function SetName($strName)
 	{
 		//var_dump($this);
-		echo "<br />";
-		$this->strPageName = $strName;
+		//echo "<br />";
+		$this->_strPageName = $strName;
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// SetLayout()
+	//------------------------------------------------------------------------//
+	/**
+	 * SetLayout()
+	 *
+	 * Sets the layout of the page
+	 *
+	 * Sets the layout of the page.  See comments regarding the _strPageLayout property
+	 * 
+	 * @param	string	$strLayout		the value to set the page layout to
+	 *
+	 * @method
+	 */
 	function SetLayout($strLayout)
 	{
-		$this->strPageLayout = $strLayout;
+		$this->_strPageLayout = $strLayout;
 	}
 	
+	//------------------------------------------------------------------------//
+	// AddObject()
+	//------------------------------------------------------------------------//
+	/**
+	 * AddObject()
+	 *
+	 * Adds an extended Html_Template object to the page 
+	 *
+	 * Adds an extended Html_Template object to the page
+	 * Extended Html_Template classes can be found in the 
+	 * 
+	 * @param	string	$str		the value to set the page layout to
+	 *
+	 * @method
+	 */
 	function AddObject($strName, $intColumn, $strId=NULL)
 	{
 		// set UID for this object
@@ -135,11 +321,11 @@ class Page
 		$strClassName = "HtmlTemplate$strName";
 		
 		// set up the object
-		$objObject = Array();
-		$objObject['Name'] = $strName;
-		$objObject['Column'] = $intColumn;
-		$objObject['Object'] = new $strClassName;
-		$this->arrObjects[$strId] = $objObject;
+		$arrObject = Array();
+		$arrObject['Name'] = $strName;
+		$arrObject['Column'] = $intColumn;
+		$arrObject['Object'] = new $strClassName;
+		$this->_arrObjects[$strId] = $arrObject;
 		
 		// return the object id
 		return $strId;
@@ -148,7 +334,7 @@ class Page
 	function Render()
 	{
 		// load required layout
-		require_once(TEMPLATE_BASE_DIR."layout_template/" . strtolower($this->strPageLayout) . ".php");
+		require_once(TEMPLATE_BASE_DIR."layout_template/" . strtolower($this->_strPageLayout) . ".php");
 	}
 
 }
