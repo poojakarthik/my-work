@@ -41,10 +41,7 @@
 		
 		echo "</head>\n<body>\n";
 		//var_dump($this->Page->arrObjects);
-		foreach($this->_arrObjects as $objObject)
-		{
-			$objObject['Object']->Render();
-		}
+		$this->RenderColumn(COLUMN_ONE);
 		// this echo will be replaced by a page-end template
 		echo "</body>\n</html>";
 		

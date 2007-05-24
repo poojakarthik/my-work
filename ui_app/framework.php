@@ -353,6 +353,17 @@ class Page
 			}	
 		}
 	}
+	
+	function RenderColumn($intColumn)
+	{
+		foreach ($this->_arrObjects as $arrObject)
+		{
+			if ($arrObject['Column'] == $intColumn)
+			{
+				$arrObject['Object']->Render();
+			}
+		}
+	}
 }
 
 
