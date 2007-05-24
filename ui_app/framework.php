@@ -20,7 +20,7 @@
  * @file		framework.php
  * @language	PHP
  * @package		framework
- * @author		Jared, Sean and Joel
+ * @author		Jared
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -60,6 +60,7 @@ class PropertyToken
 	 * @param		string	$strContext		the context in which the property will be rendered as an input element
 	 *
 	 * @return		void
+	 * @method
 	 *
 	 */
 	function RenderInput($bolRequired=NULL, $strContext=NULL)
@@ -86,7 +87,7 @@ class PropertyToken
 	 * @param		string	$strContext		the context in which the property will be rendered as an output element
 	 *
 	 * @return		void
-	 *
+	 * @method
 	 */
 	function RenderOutput($bolRequired=NULL, $strContext=NULL)
 	{
@@ -298,10 +299,14 @@ class Page
 	 *
 	 * Adds an extended Html_Template object to the page 
 	 *
-	 * Adds an extended Html_Template object to the page
-	 * Extended Html_Template classes can be found in the 
+	 * Adds an extended Html_Template object to the page.
+	 * Extended Html_Template classes must be located in the html_template directory
+	 * The order in which objects are added will be the order in which they will be
+	 * displayed in their associated column
 	 * 
-	 * @param	string	$str		the value to set the page layout to
+	 * @param	string	$strName		The template name (does not include the 'HtmlTemplate' prefix)
+	 * @param	integer	$intColumn		the column number which the object will be positioned in
+	 * @param	string	$strId			uniquely identifies the object. Defaults to null
 	 *
 	 * @method
 	 */
