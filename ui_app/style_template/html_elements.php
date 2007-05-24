@@ -1,7 +1,41 @@
 <?php
-// This is the file which handles the HTML Element Templates
-// I am unsure where it should reside, it is kinda part of the framework, but
-// not entirely.
+
+//----------------------------------------------------------------------------//
+// html_elements.php
+//----------------------------------------------------------------------------//
+/**
+ * html_elements.php
+ *
+ * File containing HTML Elements Class
+ *
+ * File containing HTML Elements Class
+ *
+ * @file		html_elements.php
+ * @language	PHP
+ * @package		ui_app
+ * @author		Sean Mailander
+ * @version		7.05
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+
+
+//----------------------------------------------------------------------------//
+// HTMLElements
+//----------------------------------------------------------------------------//
+/**
+ * HTMLElements
+ *
+ * HTML Elements class
+ *
+ * HTML Elements class
+ *
+ *
+ * @package	ui_app
+ * @class	HTMLElements
+ */
+
 class HTMLElements
 {
 	// Definition of array of parameters which gets passed to all methods
