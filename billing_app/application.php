@@ -105,7 +105,7 @@
 																	"RatePlan",
 																	$this->arrServiceColumns,
 																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
-																	"Service.CreatedOn <= NOW() AND (ISNULL(Service.ClosedOn) OR Service.ClosedOn > NOW()) AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
+																	"Service.CreatedOn <= NOW() AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
 																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id ORDER BY CreatedOn DESC LIMIT 1)",
 																	"RatePlan.Id");
 		$this->strTestAccounts =		" AND " .
