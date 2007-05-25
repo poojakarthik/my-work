@@ -49,8 +49,15 @@ Define ('GOD_TIMEOUT'	, 60*60*24*7);
 
 Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
 
+define('DATABASE_URL', '10.11.12.13');
+define('DATABASE_NAME', vixen);
+define('DATABASE_USER', vixen);
+define('DATABASE_PWORD', V1x3n);
+
+
 require_once('functions.php');
 require_once('framework.php');
+require_once('db_access_old.php');
 $myApplication = new Application;
 
 
@@ -111,7 +118,7 @@ function __autoload($strClassName)
 		$strErrorMsg = 	"ERROR: The class '". $strClassName.
 						"' is not a template class as it does not include the keyword 'Template'. ".
 						"currently the autoloader only handles template classes.";
-		Debug($strErrorMsg);
+		//Debug($strErrorMsg);
 		throw new Exception($strErrorMsg);
 		die;  // I don't think this will ever actually be called
 	}
@@ -300,30 +307,56 @@ class Application
 	
 	function CheckAuth()
 	{
-		if (isset ($_COOKIE ['Id']) && isset ($_COOKIE ['SessionId']))
+		if (isset($_COOKIE['Id']) && isset($_COOKIE['SessionId']))
 		{
-			$selAuthenticated = new StatementSelect (
+			$selAuthenticated = new StatementSelect(
 					"Employee",
-					"count(Id) as length, MAX(Privileges) as Privileges", 
+					"count(Id) as length", 
 					"Id = <Id> AND SessionId = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
 					null,
 					1
 				);
 				
-			$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
-			$arrAuthentication = $selAuthenticated->Fetch ();
-			
-			if ($arrAuthentication ['length'] == 1)
+			$selAuthenticated->Execute(Array("Id" => $_COOKIE['Id'], "SessionId" => $_COOKIE['SessionId']));
+			$arrAuthentication = $selAuthenticated->Fetch();
+
+			if ($arrAuthentication['length'] == 1)
 			{
-				$selUser = new StatementSelect("Employee", "Id = <Id
 				//Load user object from db
-				//setupo to send cookie
-				//save new session details in db		
+				$selUser = new StatementSelect("Employee", "*", "Id = <Id>");
+				$selUser->Execute(Array("Id" => $_COOKIE['Id']));
+				$this->_arrUser = $selUser->Fetch();
+
+				//save new session details in db
+				if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
+				{
+					$arrUpdate = Array("SessionExpire" => new MySQLFunction("ADDTIME(NOW(), SEC_TO_TIME(" . GOD_TIMEOUT . "))"));
+					$intTime = time() + GOD_TIMEOUT;
+				}
+				else
+				{
+					$arrUpdate = Array("SessionExpire" => new MySQLFunction("ADDTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
+					$intTime = time() + USER_TIMEOUT;
+				}
+				$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
+				$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE['Id']));
+				
+				//cookie setup
+				$this->_arrCookie = Array();
+				$this->_arrCookie["Id"]["Value"] = $_COOKIE['Id'];
+				$this->_arrCookie["Id"]["ExpDate"] = $intTime;
+				$this->_arrCookie["SessionId"]["Value"] = $_COOKIE['SessionId'];
+				$this->_arrCookie["SessionId"]["ExpDate"] = $intTime;
+				//print_r($this->_arrCookie);
 			}
 			else
 			{
-				
+				$this->_arrUser = "";
 			}
+		}
+		else
+		{
+			$this->_arrUser = "";
 		}
 	}
 	
