@@ -27,78 +27,6 @@
  *
  */
 
-//----------------------------------------------------------------------------//
-// PropertyToken
-//----------------------------------------------------------------------------//
-/**
- * PropertyToken
- *
- * The PropertyToken logically represents a single property of a single object
- *
- * The PropertyToken logically represents a single property of a single object
- *
- *
- * @package	ui_app
- * @class	PropertyToken
- */
-// Add this to the 'real' PropertyToken class
-class PropertyToken
-{
-	//------------------------------------------------------------------------//
-	// RenderInput
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderInput()
-	 *
-	 * Renders the property as an input element
-	 *
-	 * Organises the data required to render the property as an input element
-	 * and then renders it.
-	 *
-	 *
-	 * @param		bool	$bolRequired
-	 * @param		string	$strContext		the context in which the property will be rendered as an input element
-	 *
-	 * @return		void
-	 * @method
-	 *
-	 */
-	function RenderInput($bolRequired=NULL, $strContext=NULL)
-	{
-		// Build up parameters for RenderHTMLTemplate()
-		//TODO!Interface-kids!Actually do this
-		
-		RenderHTMLTemplate($arrParams);
-	}
-
-	//------------------------------------------------------------------------//
-	// RenderOutput
-	//------------------------------------------------------------------------//
-	/**
-	 * RenderOutput()
-	 *
-	 * Renders the property as an output element
-	 *
-	 * Organises the data required to render the property as an output element
-	 * and then renders it.
-	 *
-	 *
-	 * @param		bool	$bolRequired
-	 * @param		string	$strContext		the context in which the property will be rendered as an output element
-	 *
-	 * @return		void
-	 * @method
-	 */
-	function RenderOutput($bolRequired=NULL, $strContext=NULL)
-	{
-		// Build up parameters for RenderHTMLTemplate()
-		//TODO!Interface-kids!Actually do this
-		
-		RenderHTMLTemplate($arrParams);
-	}
-
-}
-
 
 // of Dbo()->Account->Id->RenderInput($bolRequired, $strContext)
 // Dbo()->Object->Property->Render([$bolRequired], [$strContext]);
@@ -420,4 +348,53 @@ class Page
 }
 
 
+
+//----------------------------------------------------------------------------//
+// DBOFramework
+//----------------------------------------------------------------------------//
+/**
+ * DBOFramework
+ *
+ * Database Object Framework container
+ *
+ * Database Object Framework container
+ *
+ * @prefix	dbo
+ *
+ * @package	framework_ui
+ * @class	DBOFramework
+ */
+class DBOFramework
+{
+	public	$_arrOptions	= Array();
+	private	$_arrProperty	= Array();
+	
+	//------------------------------------------------------------------------//
+	// __get
+	//------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 *
+	 * Generic GET function for returning Database Objects
+	 *
+	 * Generic GET function for returning Database Objects
+	 *
+	 * @param	string	$strName	Name of the Database Object
+	 * 
+	 * @return	DBObject
+	 *
+	 * @method
+	 */
+	function __get($strName)
+	{
+		// Instanciate the DBObject if we can't find an instance
+		if (!$this->_arrProperty[$strName])
+		{
+			$this->_arrProperty[$strName] = new DBObject($strName);
+		}
+		
+		// Return the DBObject
+		return $this->_arrProperty[$strName];
+	}
+}
 ?>

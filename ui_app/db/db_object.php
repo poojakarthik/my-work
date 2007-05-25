@@ -19,7 +19,6 @@
  */
 class DBObject extends DBObjectBase
 {
-	public $_intMode 		= DBO_RETURN;
 	public $_strIdColumn 	= 'Id';
 	public $_arrColumns 	= Array();
 	public $_arrTables		= Array();
@@ -30,7 +29,6 @@ class DBObject extends DBObjectBase
 	public $_arrProperty	= Array();
 	public $_intStatus		= 0;
 	public $_arrOptions		= Array();
-	public $_db				= NULL;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -52,6 +50,9 @@ class DBObject extends DBObjectBase
 	 */
 	function __construct($strName, $mixTable=NULL, $mixColumns=NULL)
 	{
+		// Parent Constructor
+		parent::__construct();
+		
 		// set name
 		$this->_strName = $strName;
 		
@@ -69,12 +70,16 @@ class DBObject extends DBObjectBase
 		}
 		elseif($mixTable)
 		{
-			//TODO!!!! convert table names into an array
+			$arrTables = explode(',', $mixTable);
+			foreach ($arrTables as $strTable)
+			{
+				$this->_arrTables[] = trim($strTable);
+			}
 		}
 		else
 		{
 			// as a last resort use the dbo name as the table name
-			$this->_arrTables[$strName]['Table'] = $strName;
+			$this->_arrTables[$strName]['Name'] = $strName;
 		}
 
 		// set columns
@@ -109,7 +114,7 @@ class DBObject extends DBObjectBase
 	/**
 	 * __call()
 	 *
-	 * <short description>
+	 * Calls a private for this object method
 	 *
 	 * <long description>
 	 *
@@ -130,19 +135,19 @@ class DBObject extends DBObjectBase
 	/**
 	 * __get()
 	 *
-	 * <short description>
+	 * Generic Property GET function
 	 *
-	 * <long description>
+	 * Generic Property GET function
 	 *
-	 * @param	string	$strName	<description>
-	 * @return	<type>
+	 * @param	string		$strProperty	The property's name
+	 * 
+	 * @return	PropertyToken
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
-	function __get($strName)
+	function __get($strProperty)
 	{
-		return PropertyToken()->Property($this, $strName);
+		return PropertyToken()->Property($this, $strProperty);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -151,14 +156,13 @@ class DBObject extends DBObjectBase
 	/**
 	 * Clean()
 	 *
-	 * <short description>
+	 * Cleans the object
 	 *
-	 * <long description>
+	 * Cleans the object
 	 *
-	 * @return	<type>
+	 * @return	void
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function Clean()
 	{
@@ -166,33 +170,98 @@ class DBObject extends DBObjectBase
 		$this->dboObject->_arrRequest	= Array();
 		$this->dboObject->_arrResult	= Array();
 		$this->dboObject->_arrValid 	= Array();
-		$_intStatus						= 0;
 	}
 	
 	//------------------------------------------------------------------------//
-	// SetMode
+	// Load
 	//------------------------------------------------------------------------//
 	/**
-	 * SetMode()
+	 * Load()
 	 *
-	 * <short description>
+	 * Loads the object from the Database
 	 *
-	 * <long description>
+	 * Loads the object from the Database
 	 *
-	 * @param	integer	$intMode	<description>
-	 * @param	array	$arrOptions	[optional] <description>
-	 * @return	<type>
+	 * @param	integer		$intId		The Id of the record we want to load
+	 *
+	 * @return	bool
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
-	function SetMode($intMode, $arrOptions=NULL)
-	{
-		$this->_intMode 				= (int)$intMode;
-		$this->_arrOptions['Output']	= $arrOptions;
-	}
+	 function Load($intId = NULL)
+	 {
+		// Set Id if we need to
+		$this->_arrProperties['Id'] = ($intId == (int)$intId) ? $intId : $this->_arrProperties['Id'];
+		
+		// Make sure we have an Id
+		if ($this->_arrProperties['Id'])
+		{
+	 		return $this->LoadData($this->SelectById($this->_arrTables, $this->_arrColumns, $intId));
+		}
+		else
+		{
+			return FALSE;
+		}
+	 }
 	
-
+	//------------------------------------------------------------------------//
+	// LoadData
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadData()
+	 *
+	 * Loads a MySQL result associative array as property data
+	 *
+	 * Loads a MySQL result associative array as property data
+	 *
+	 * @param	integer		$intId		The Id of the record we want to load
+	 *
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	 function LoadData($arrData)
+	 {
+	 	// Assign data
+	 	$this->_arrProperty = array_merge($this->_arrProperty, $arrData);
+	 	return TRUE;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// Save
+	//------------------------------------------------------------------------//
+	/**
+	 * Save()
+	 *
+	 * Saves current object data to the Database
+	 *
+	 * Saves current object data to the Database
+	 *
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	 function Save()
+	 {				
+		// Is this a new record?
+		if ($this->_arrProperties['Id'] > 0)
+		{
+			// Update by Id
+			return (bool)$this->UpdateById($this->_arrTables, $this->_arrColumns, $this->_arrProperties);
+		}
+		else
+		{
+			// Insert, and set the new Id
+			if ($mixResult = $this->Insert($this->_arrTables, $this->_arrColumns, $this->_arrProperties))
+			{
+				return (bool)($this->_arrProperties['Id'] = $mixResult);
+			}
+			else
+			{
+				return FALSE;
+			}
+		}
+	 }
 }
 
 

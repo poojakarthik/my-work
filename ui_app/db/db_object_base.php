@@ -42,8 +42,9 @@
  *
  * @package	framework_ui
  * @class	DBObjectBase
+ * @extends	ApplicationBaseClass
  */
-class DBObjectBase implements Iterator
+class DBObjectBase extends DataAccessUI implements Iterator
 {
 	protected $_arrProperty = Array();
 	
@@ -80,7 +81,7 @@ class DBObjectBase implements Iterator
 	 */
 	public function current()
 	{
-		return current($this->_arrProperty);
+		return PropertyToken->Property($this, current($this->_arrProperty));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -118,7 +119,7 @@ class DBObjectBase implements Iterator
 	 */
 	public function next()
 	{
-		return next($this->_arrProperty);
+		return PropertyToken->Property($this, next($this->_arrProperty));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -231,7 +232,15 @@ class PropertyToken
 	 */
 	function __get($strName)
 	{
-		// If this property exists, then return it, else return NULL
+		// Are we after one of our "magic" variables?
+		switch (strtolower($strName))
+		{
+			// The property's value
+			case "value":
+				return $this->_dboObject->_arrProperties[$this->_strProperty];
+		}
+		
+		// Do we have a column property by this name?
 		if (isset($this->_dboObject->_arrProperties[$this->_strProperty][$strName]))
 		{
 			return $this->_dboObject->_arrProperties[$this->_strProperty][$strName];
@@ -263,10 +272,8 @@ class PropertyToken
 		// TODO: Validate
 		
 		// Set the value & return
-		return (bool)($this->_dboObject->_arrProperties[$this->_strProperty][$strName] = $mixValue);
+		return (bool)($this->_dboObject->_arrProperties[$this->_strProperty] = $mixValue);
 	}
-	
-	
 	
 	//------------------------------------------------------------------------//
 	// __call
@@ -299,6 +306,56 @@ class PropertyToken
 		{
 			return FALSE;
 		}
+	}
+
+	//------------------------------------------------------------------------//
+	// RenderInput
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderInput()
+	 *
+	 * Renders the property in it's HTML input form
+	 *
+	 * Renders the property in it's HTML input form
+	 *
+	 * @param	bool	$bolRequired	Whether the field should be mandatory
+	 * @param	string	$strContext		???????
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function RenderInput($bolRequired=NULL, $strContext=NULL)
+	{
+		// Build up parameters for RenderHTMLTemplate()
+		//TODO!Interface-kids!Actually do this
+		
+		RenderHTMLTemplate($arrParams);
+	}
+
+	//------------------------------------------------------------------------//
+	// RenderOutput
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderOutput()
+	 *
+	 * Renders the property in it's standard label form
+	 *
+	 * Renders the property in it's standard label form
+	 *
+	 * @param	bool	$bolRequired	Whether the field should be mandatory
+	 * @param	string	$strContext		???????
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function RenderOutput($bolRequired=NULL, $strContext=NULL)
+	{
+		// Build up parameters for RenderHTMLTemplate()
+		//TODO!Interface-kids!Actually do this
+		
+		RenderHTMLTemplate($arrParams);
 	}
 }
 ?>

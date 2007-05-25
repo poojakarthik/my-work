@@ -32,4 +32,75 @@ function RenderHTMLTemplate($arrParams)
 
 
 
+//------------------------------------------------------------------------//
+// DBO
+//------------------------------------------------------------------------//
+/**
+ * DBO()
+ *
+ * Returns an instance of the Database Object Framework
+ *
+ * Returns an instance of the Database Object Framework
+ *
+ * @return	DBOFramework
+ *
+ * @method
+ */
+function DBO()
+{
+	return Singleton::Instance('DBOFramework');
+}
+
+
+//------------------------------------------------------------------------//
+// ImplodeTables
+//------------------------------------------------------------------------//
+/**
+ * ImplodeTables()
+ *
+ * Takes a Database Definition of a list of tables, and implodes to a FROM string
+ *
+ * Takes a Database Definition of a list of tables, and implodes to a FROM string
+ *
+ * @param	array		$arrTables		Table Definition list
+ * 
+ * @return	string
+ *
+ * @method
+ */
+function ImplodeTables($arrTables)
+{
+	$arrReturn = Array();
+	
+	// Make sure we are sane
+	if (!is_array($arrTables))
+	{
+		return FALSE;
+	}
+	
+	// Implode
+	foreach ($arrTables AS $strAlias=>$arrTable)
+	{
+		// Name & Alias
+		if ($strAlias != $arrTable['Table'])
+		{
+			$strTable = "{$arrTable['Table']} AS $strAlias";
+		}
+		else
+		{
+			$strTable = $arrTable['Table'];
+		}
+		
+		// Index
+		if ($arrTable['Index'])
+		{
+			$strTable .= " USE INDEX ({$arrTable['Index']})";
+		}
+		
+		// add to return array
+		$arrReturn[] = $strTable;
+	}
+	
+	return implode(', ', $arrReturn);
+}
 ?>

@@ -185,7 +185,7 @@ class DataAccessUI extends DatabaseAccess
 	 *
 	 * Updates a Database entry by its Unique Id
 	 *
-	 * @param	string		$strTable					Table to update
+	 * @param	string		$arrTables					Tables to update
 	 * @param	array		$arrColumns					Columns to update
 	 * @param	array		$arrData	 				Data to update with
 	 * 
@@ -194,10 +194,10 @@ class DataAccessUI extends DatabaseAccess
 	 *
 	 * @method
 	 */
-	function UpdateById($strTable, $arrColumns, $arrData)
+	function UpdateById($arrTables, $arrColumns, $arrData)
 	{
 		// table (don't allow more than 1)
-		if (!$strTable || !is_string($strTable) || count(explode(',', $strTable) > 1) || count(explode('JOIN', $strTable) > 1))
+		if (!$strTable = ImplodeTables($arrTables))
 		{
 			return FALSE;
 		}
