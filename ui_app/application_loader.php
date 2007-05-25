@@ -311,21 +311,19 @@ class Application
 		{
 			$selAuthenticated = new StatementSelect(
 					"Employee",
-					"count(Id) as length", 
+					"*", 
 					"Id = <Id> AND SessionId = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
 					null,
 					1
 				);
 				
-			$selAuthenticated->Execute(Array("Id" => $_COOKIE['Id'], "SessionId" => $_COOKIE['SessionId']));
+			$intRowsReturned = $selAuthenticated->Execute(Array("Id" => $_COOKIE['Id'], "SessionId" => $_COOKIE['SessionId']));
 			$arrAuthentication = $selAuthenticated->Fetch();
 
-			if ($arrAuthentication['length'] == 1)
+			if ($intRowsReturned)
 			{
 				//Load user object from db
-				$selUser = new StatementSelect("Employee", "*", "Id = <Id>");
-				$selUser->Execute(Array("Id" => $_COOKIE['Id']));
-				$this->_arrUser = $selUser->Fetch();
+				$this->_arrUser = $arrAuthentication;
 
 				//save new session details in db
 				if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
@@ -340,6 +338,7 @@ class Application
 				}
 				$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
 				$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE['Id']));
+
 				
 				//cookie setup
 				$this->_arrCookie = Array();
