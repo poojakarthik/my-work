@@ -48,7 +48,7 @@ class PropertyToken
 	// RenderInput
 	//------------------------------------------------------------------------//
 	/**
-	 * RenderInput
+	 * RenderInput()
 	 *
 	 * Renders the property as an input element
 	 *
@@ -75,7 +75,7 @@ class PropertyToken
 	// RenderOutput
 	//------------------------------------------------------------------------//
 	/**
-	 * RenderOutput
+	 * RenderOutput()
 	 *
 	 * Renders the property as an output element
 	 *
@@ -252,7 +252,7 @@ class Page
 	}
 	
 	//------------------------------------------------------------------------//
-	// SetName()
+	// SetName
 	//------------------------------------------------------------------------//
 	/**
 	 * SetName()
@@ -273,7 +273,7 @@ class Page
 	}
 
 	//------------------------------------------------------------------------//
-	// SetLayout()
+	// SetLayout
 	//------------------------------------------------------------------------//
 	/**
 	 * SetLayout()
@@ -292,7 +292,7 @@ class Page
 	}
 	
 	//------------------------------------------------------------------------//
-	// AddObject()
+	// AddObject
 	//------------------------------------------------------------------------//
 	/**
 	 * AddObject()
@@ -336,17 +336,53 @@ class Page
 		return $strId;
 	}
 	
+	//------------------------------------------------------------------------//
+	// Render
+	//------------------------------------------------------------------------//
+	/**
+	 * Render()
+	 *
+	 * Renders the page 
+	 *
+	 * Renders the page 
+	 * 
+	 * @method
+	 */
 	function Render()
 	{
 		// load required layout
 		require_once(TEMPLATE_BASE_DIR."layout_template/" . strtolower($this->_strPageLayout) . ".php");
 	}
 	
+	//------------------------------------------------------------------------//
+	// RenderCSS
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderCSS()
+	 *
+	 * Renders the CSS part of the page
+	 *
+	 * Renders the CSS part of the page
+	 * 
+	 * @method
+	 */
 	function RenderCSS()
 	{
 		echo "<link rel='stylesheet' type='text/css' href='css.php' />\n";
 	}
 	
+	//------------------------------------------------------------------------//
+	// RenderJS
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderJS()
+	 *
+	 * Renders the JS part of the page
+	 *
+	 * Renders the JS part of the page
+	 * 
+	 * @method
+	 */
 	function RenderJS()
 	{
 		// for each on global array
@@ -359,6 +395,18 @@ class Page
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// RenderColumn
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderColumn()
+	 *
+	 * Renders a single column of the page
+	 *
+	 * Renders a single column of the page
+	 * 
+	 * @method
+	 */
 	function RenderColumn($intColumn)
 	{
 		foreach ($this->_arrObjects as $arrObject)

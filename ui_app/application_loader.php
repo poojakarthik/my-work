@@ -138,13 +138,45 @@ function __autoload($strClassName)
 	include_once(TEMPLATE_BASE_DIR . $strClassPath . "/" . $GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][$mixClassPointer]);
 }
 
-//------------------------
-// application_loader.php
-//------------------------
-
+//----------------------------------------------------------------------------//
+// Application INCOMPLETE
+//----------------------------------------------------------------------------//
+/**
+ * Application
+ *
+ * The Application class
+ *
+ * The Application class
+ *
+ *
+ * @package	ui_app
+ * @class	Application
+ */
 class Application
 {
 
+	//------------------------------------------------------------------------//
+	// Load INCOMPLETE
+	//------------------------------------------------------------------------//
+	/**
+	 * Load()
+	 *
+	 * Loads an extended ApplicationTemplate object which represents all the logic and layout of a single webpage of the application
+	 *
+	 * Loads an extended ApplicationTemplate object which represents all the logic and layout of a single webpage of the application
+	 *
+	 *
+	 * @param		string	$strTemplateName	The name of the application template to load.
+	 *											This template must be located in the "app_template"
+	 *											directory and be named FileName.Method
+	 *											For example: $strTemplateName = "Account.View"
+	 *											This will instantiate an object of type AppTemplateAccount
+	 *											which will be located in app_template/account.php
+	 *											and run the View method of AppTemplateAccount
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function Load($strTemplateName)
 	{
 		//split template name
@@ -180,6 +212,20 @@ class Application
 		*/
 	}
 	
+	//------------------------------------------------------------------------//
+	// AjaxLoad INCOMPLETE
+	//------------------------------------------------------------------------//
+	/**
+	 * AjaxLoad()
+	 *
+	 * Loads an Ajax Template 
+	 * 
+	 * Loads an Ajax Template
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function AjaxLoad()
 	{
 		$objAjax = AjaxRecieve();
@@ -225,9 +271,39 @@ class Application
 	
 }
 
+//----------------------------------------------------------------------------//
+// ApplicationTemplate
+//----------------------------------------------------------------------------//
+/**
+ * ApplicationTemplate
+ *
+ * The ApplicationTemplate class
+ *
+ * The ApplicationTemplate class
+ *
+ *
+ * @package	ui_app
+ * @class	ApplicationTemplate
+ * @extends BaseTemplate
+ */
 class ApplicationTemplate extends BaseTemplate
 {
-	
+	//------------------------------------------------------------------------//
+	// LoadPage
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadPage()
+	 *
+	 * Loads a Page to the Application
+	 * 
+	 * Loads a Page to the Application, using any AJAX templates it finds
+	 *
+	 * @param		string	$strPageName	The name of the page to load
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function LoadPage($strPageName)
 	{
 	
@@ -246,20 +322,82 @@ class ApplicationTemplate extends BaseTemplate
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetMode
+	//------------------------------------------------------------------------//
+	/**
+	 * SetMode()
+	 *
+	 * Sets the mode of the template
+	 * 
+	 * Sets the mode of the template
+	 *
+	 * @param		int	$intMode	The mode number to set
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function SetMode($intMode)
 	{
 		$this->_intTemplateMode = $intMode;
 	}
 }
 
+//----------------------------------------------------------------------------//
+// PageTemplate
+//----------------------------------------------------------------------------//
+/**
+ * PageTemplate
+ *
+ * The PageTemplate class
+ *
+ * The PageTemplate class
+ *
+ *
+ * @package	ui_app
+ * @class	PageTemplate
+ * @extends BaseTemplate
+ */
 class PageTemplate extends BaseTemplate
 {
 
 }
 
+//----------------------------------------------------------------------------//
+// HtmlTemplate
+//----------------------------------------------------------------------------//
+/**
+ * HtmlTemplate
+ *
+ * The HtmlTemplate class
+ *
+ * The HtmlTemplate class
+ *
+ *
+ * @package	ui_app
+ * @class	HtmlTemplate
+ * @extends BaseTemplate
+ */
 class HtmlTemplate extends BaseTemplate
 {
 	
+	//------------------------------------------------------------------------//
+	// LoadJavascript
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadJavascript()
+	 *
+	 * Loads a js file to the internal array
+	 * 
+	 * Loads a js file to the internal array
+	 *
+	 * @param		string	$strFilename	The name of the js file to load
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function LoadJavascript($strFilename)
 	{
 		// add $strFilename to global javascript function array
@@ -267,12 +405,40 @@ class HtmlTemplate extends BaseTemplate
 	}
 }
 
+//----------------------------------------------------------------------------//
+// LayoutTemplate
+//----------------------------------------------------------------------------//
+/**
+ * LayoutTemplate
+ *
+ * The LayoutTemplate class
+ *
+ * The LayoutTemplate class
+ *
+ *
+ * @package	ui_app
+ * @class	LayoutTemplate
+ * @extends BaseTemplate
+ */
 class LayoutTemplate extends BaseTemplate
 {
 
 }
 
-
+//----------------------------------------------------------------------------//
+// BaseTemplate
+//----------------------------------------------------------------------------//
+/**
+ * BaseTemplate
+ *
+ * The BaseTemplate class
+ *
+ * The BaseTemplate class
+ *
+ *
+ * @package	ui_app
+ * @class	BaseTemplate
+ */
 class BaseTemplate
 {
 
