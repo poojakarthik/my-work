@@ -15,9 +15,9 @@
  *
  * @package	framework_ui
  * @class	DBList
- * @extends	DBObjectBase
+ * @extends	DBListBase
  */
-class DBList extends DBObjectBase
+class DBList extends DBListBase
 {
 	public $objWhere;
 	public $arrDataArray	= Array();
