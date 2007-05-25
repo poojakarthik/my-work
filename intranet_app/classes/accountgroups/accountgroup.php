@@ -1,24 +1,24 @@
 <?php
 	
-	//----------------------------------------------------------------------------//
-	// accountgroup.php
-	//----------------------------------------------------------------------------//
-	/**
-	 * accountgroup.php
-	 *
-	 * File containing Account Group Class
-	 *
-	 * File containing Account Group Class
-	 *
-	 * @file		accountgroup.php
-	 * @language	PHP
-	 * @package		intranet_app
-	 * @author		Bashkim 'bash' Isai
-	 * @version		6.11
-	 * @copyright	2006 VOIPTEL Pty Ltd
-	 * @license		NOT FOR EXTERNAL DISTRIBUTION
-	 *
-	 */
+//----------------------------------------------------------------------------//
+// accountgroup.php
+//----------------------------------------------------------------------------//
+/**
+ * accountgroup.php
+ *
+ * File containing Account Group Class
+ *
+ * File containing Account Group Class
+ *
+ * @file		accountgroup.php
+ * @language	PHP
+ * @package		intranet_app
+ * @author		Bashkim 'bash' Isai
+ * @version		6.11
+ * @copyright	2006 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
 	
 	//----------------------------------------------------------------------------//
 	// AccountGroup

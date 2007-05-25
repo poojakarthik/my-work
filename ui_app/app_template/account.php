@@ -89,8 +89,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		/*
 		//for additional functionality like change of lessee
 		$someThing = $this->Module->Account->Function()
-		??? how do modules appear in the map ???
+		
 		*/
+		$this->Module->Account->Method();
+		
 		$this->LoadPage('account_view');
 		
 	}

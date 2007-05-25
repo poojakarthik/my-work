@@ -1612,6 +1612,24 @@ class QueryCopyTable extends Query
 		// Trace
 		$this->Trace("Input: $strTableDestination, $strTableSource, $strWhere, $strLimit");
 
+		// build query 0
+		$strQuery = "DROP TABLE $strTableDestination ";
+		
+		// Trace
+		$this->Trace("Query: ".$strQuery);
+		
+		// run query
+		$mixReturn = mysqli_query($this->db->refMysqliConnection, $strQuery);
+		
+		// check result
+		if ($mixReturn !== TRUE)
+		{
+			// query failed
+			// Trace
+			$this->Trace("Failed: ".$this->Error());
+			return FALSE;
+		}
+		
 		// build query 1
 		$strQuery = "CREATE TABLE $strTableDestination LIKE $strTableSource";
 		

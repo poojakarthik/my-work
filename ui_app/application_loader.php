@@ -33,6 +33,7 @@
 
 Define ('TEMPLATE_BASE_DIR', "");
 Define ('TEMPLATE_STYLE_DIR', "style_template/");
+Define ('MODULE_BASE_DIR', "");
 
 Define ('COLUMN_ONE'	, 1);
 Define ('COLUMN_TWO'	, 2);
@@ -85,12 +86,19 @@ function __autoload($strClassName)
 	 */		
 
 	// retrieve the class name and its associated directory
-	$arrClassName = explode("template", strtolower($strClassName));
-	$strClassPath = $arrClassName[0] . "_template";
-	$strClassName = $arrClassName[1];
-	
+	if (substr($strClassName, 0, 6) == "Module")
+	{
+		$strClassPath = MODULE_BASE_DIR . "module";
+		$strClassName = substr($strClassName, 6);
+	}
+	else
+	{
+		$arrClassName = explode("template", strtolower($strClassName));
+		$strClassPath = TEMPLATE_BASE_DIR . $arrClassName[0] . "_template";
+		$strClassName = $arrClassName[1];
+	}		
 	// if $strClassName couldn't be exploded on "template" then die
-	if (count($arrClassName) == 1)
+	if (!$strClassName)
 	{
 		// The class trying to be loaded is not a template class
 		// This function does not currently handle any other kinds of class
@@ -104,9 +112,11 @@ function __autoload($strClassName)
 	
 	// check if a directory listing for $strClassPath has already been created
 	if (!isset($GLOBALS['*arrAvailableFiles'][$strClassPath]))
-	{  
+	{ 
+		$GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'] = Array();
+		$GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename'] = Array();	
 		// $strClassPath has not had its directory listing loaded before, so do it now
-		foreach (glob(TEMPLATE_BASE_DIR . $strClassPath . "/*.php") as $strAbsoluteFilename)
+		foreach (glob($strClassPath . "/*.php") as $strAbsoluteFilename)
 		{
 			//grab the filename part
 			$arrFilename = explode("/", $strAbsoluteFilename);
@@ -122,20 +132,9 @@ function __autoload($strClassName)
 
 	// find the file that should contain the class which needs to be loaded
 	$mixClassPointer = array_search($strClassName . ".php", $GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename']);
-
-	// check if it could be found
-	if ($mixClassPointer === FALSE)
-	{
-		// the file containing the class could not be found.  The program should die here
-		$strErrorMsg = "ERROR: Could not find the class that was trying to autoload. The class '". 
-							$arrClassName[1] . "' could not be found in the directory '$strClassPath'";
-		Debug($strErrorMsg);
-		throw new Exception($strErrorMsg);
-		die;  // I don't think this will ever actually be called
-	}
-
+	
 	// include the php file that defines the class
-	include_once(TEMPLATE_BASE_DIR . $strClassPath . "/" . $GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][$mixClassPointer]);
+	include_once($strClassPath . "/" . $GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][$mixClassPointer]);
 }
 
 //----------------------------------------------------------------------------//
@@ -239,7 +238,7 @@ class Application
 		
 		$arrReply = Array();
 		
-		if (is_array($this->arrSend['Dbo'])
+		if (is_array($this->arrSend['Dbo']))
 		{
 			foreach ($this->arrSend['Dbo'] as $strObject=>$mixValue)
 			{
@@ -257,7 +256,7 @@ class Application
 				}
 			}
 		}
-		if (is_array($this->arrSend['Dbl'])
+		if (is_array($this->arrSend['Dbl']))
 		{
 			foreach ($this->arrSend['Dbl'] as $strKey=>$bolValue)
 			{
@@ -288,6 +287,12 @@ class Application
  */
 class ApplicationTemplate extends BaseTemplate
 {
+
+	function __construct()
+	{
+		$this->Module = new ModuleLoader();
+	}
+
 	//------------------------------------------------------------------------//
 	// LoadPage
 	//------------------------------------------------------------------------//
@@ -444,5 +449,21 @@ class BaseTemplate
 
 }
 
+class ModuleLoader
+{
+	private $_arrModules;
+	function __get($strPropertyName)
+	{
+		
+		if (!is_object($this->_arrModules[$strPropertyName]))
+		{
+			// try to instantiate the object
+			$strClassName = "Module" . $strPropertyName;
+			$this->_arrModules[$strPropertyName] = new $strClassName;			
+		}
+		
+		return $this->_arrModules[$strPropertyName];
+	}
+}
 
 ?>

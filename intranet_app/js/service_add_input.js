@@ -406,7 +406,7 @@ function ajaxHandler(object)
 	var alertString="";
 	for (attrib in object)
 	{
-		alertString = alertString + "\r\n" + attrib + ":" + object[attrib];
+		alertString = alertString + "\n" + attrib + ":" + object[attrib];
 	
 	}
 	alert(alertString);
@@ -425,7 +425,7 @@ function ajaxHandler(object)
 		var alertString = "";
 		for (count=1; count <= object.errorCount; count++)
 		{
-			alertString = alertString + "\r\n" + "Error: " + object["error" + count];
+			alertString = alertString + "\n" + "Error: " + object["error" + count];
 		}	
 		
 		
@@ -436,11 +436,11 @@ function ajaxHandler(object)
 		{
 			if (object["service" + count])
 			{
-				//alertString = alertString + "\r\n" + "Success: " + "service" + count + " " + object["service" + count];
+				//alertString = alertString + "\n" + "Success: " + "service" + count + " " + object["service" + count];
 			}
 			else
 			{
-				//alertString = alertString + "\r\n" + "Failure: " + "service" + count;
+				//alertString = alertString + "\n" + "Failure: " + "service" + count;
 			}
 		}*/
 	
