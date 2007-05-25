@@ -43,6 +43,11 @@ Define ('COLUMN_FOUR'	, 4);
 Define ('AJAX_MODE'		, 1);
 Define ('HTML_MODE'		, 2);
 
+Define ('USER_TIMEOUT'	, 1200);
+Define ('GOD_TIMEOUT'	, 60*60*24*7);
+
+Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
+
 require_once('functions.php');
 require_once('framework.php');
 $myApplication = new Application;
