@@ -298,6 +298,35 @@ class Application
 		
 	}
 	
+	function CheckAuth()
+	{
+		if (isset ($_COOKIE ['Id']) && isset ($_COOKIE ['SessionId']))
+		{
+			$selAuthenticated = new StatementSelect (
+					"Employee",
+					"count(Id) as length, MAX(Privileges) as Privileges", 
+					"Id = <Id> AND SessionId = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
+					null,
+					1
+				);
+				
+			$selAuthenticated->Execute(Array("Id" => $_COOKIE ['Id'], "SessionId" => $_COOKIE ['SessionId']));
+			$arrAuthentication = $selAuthenticated->Fetch ();
+			
+			if ($arrAuthentication ['length'] == 1)
+			{
+				$selUser = new StatementSelect("Employee", "Id = <Id
+				//Load user object from db
+				//setupo to send cookie
+				//save new session details in db		
+			}
+			else
+			{
+				
+			}
+		}
+	}
+	
 }
 
 //----------------------------------------------------------------------------//
