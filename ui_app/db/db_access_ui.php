@@ -196,8 +196,8 @@ class DataAccessUI extends DatabaseAccess
 	 */
 	function UpdateById($arrTables, $arrColumns, $arrData)
 	{
-		// table (don't allow more than 1)
-		if (!$strTable = ImplodeTables($arrTables))
+		// table (assume that the first is our "master")
+		if (!$strTable = $arrTables[0])
 		{
 			return FALSE;
 		}
