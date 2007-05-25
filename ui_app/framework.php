@@ -318,7 +318,7 @@ class Page
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
 			{
-				echo "<script type='text/javascript' src='javascript/$strValue' />\n";
+				echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' />\n";
 			}	
 		}
 	}

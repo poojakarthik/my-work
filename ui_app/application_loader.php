@@ -34,6 +34,7 @@
 Define ('TEMPLATE_BASE_DIR', "");
 Define ('TEMPLATE_STYLE_DIR', "style_template/");
 Define ('MODULE_BASE_DIR', "");
+Define ('JAVASCRIPT_BASE_DIR', "");
 
 Define ('COLUMN_ONE'	, 1);
 Define ('COLUMN_TWO'	, 2);
@@ -193,6 +194,11 @@ class Application
 		/*???can't this be done in the framework at the same time you build the Dbo object of 	variables
 		--at this stage we ahavent defined this anywhere, needs to be somewhere\
 		-- could be here or lower level*/
+		
+		// get submitted data
+		$objSubmit = new submitted_data();
+		$objSubmit->Get();
+		$objSubmit->POST();
 	
 		
 		
@@ -233,7 +239,13 @@ class Application
 	function AjaxLoad()
 	{
 		$objAjax = AjaxRecieve();
-		//TODO!Interface-kids!Get the class name and the method name
+		
+		// get submitted data
+		$objSubmit = new submitted_data();
+		$objSubmit->Ajax($objAjax);
+	
+		
+		
 		//Create AppTemplate Object
 		$this->objAppTemplate = new $objAjax->strClass;
 		$this->objAppTemplate->SetMode(AJAX_MODE);
@@ -247,25 +259,38 @@ class Application
 		{
 			foreach ($this->arrSend['Dbo'] as $strObject=>$mixValue)
 			{
-				//TODO!Interface-kids!Add the Dbo object to the reply
 				if (is_array($mixValue))
 				{
 					foreach ($mixValue as $strProperty=>$bolValue)
 					{
 						// add just the property to the reply
+						$arrReply['DBO'][$strObject][$strProperty] = DBO()->{$strObject}->{$strProperty}->Value;
 					}
 				}
 				else
 				{
 					// add the whole object to the reply
+					foreach (DBO()->{$strObject} as $strProperty=>$objProperty)
+					{
+						// add just the property to the reply
+						$arrReply['DBO'][$strObject][$strProperty] = $objProperty->Value;
+					}
 				}
 			}
 		}
 		if (is_array($this->arrSend['Dbl']))
 		{
-			foreach ($this->arrSend['Dbl'] as $strKey=>$bolValue)
+			foreach ($this->arrSend['Dbl'] as $strList=>$bolValue)
 			{
 				//TODO!Interface-kids!Add the Dbl object to the reply 
+				foreach (DBL()->{$strList} as $intObject=>$objObject)
+				{
+					foreach ($objObject as $strProperty=>$objProperty)
+					{
+						// add just the property to the reply
+						$arrReply['DBL'][$strList][$intObject][$strProperty] = $objProperty->Value;
+					}
+				}
 			}
 		}
 		
@@ -468,6 +493,242 @@ class ModuleLoader
 		}
 		
 		return $this->_arrModules[$strPropertyName];
+	}
+}
+
+
+//----------------------------------------------------------------------------//
+// submitted_data
+//----------------------------------------------------------------------------//
+/**
+ * submitted_data
+ *
+ * <short description>
+ *
+ * <long description>
+ *
+ *
+ * @prefix	<prefix>
+ *
+ * @package	<package_name>
+ * @parent	<full.parent.path>
+ * @class	<ClassName||InstanceName>
+ * @extends	<ClassName>
+ */
+class submitted_data
+{
+
+	//------------------------------------------------------------------------//
+	// __Construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __Construct()
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 * @param	array	$arrDefine	[optional] <description>
+	 * @return	void
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	function __Construct($arrDefine=NULL)
+	{
+		// save local copy of define
+		$this->_arrDefine = $arrDefine;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Request
+	//------------------------------------------------------------------------//
+	/**
+	 * Request()
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	function Request()
+	{
+		// for each request variable
+		if(is_array($_REQUEST))
+		{
+			foreach($_REQUEST AS $strName=>$strValue)
+			{
+				// parse variable
+				$this->_ParseData($strName, $strValue);
+			}
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Get
+	//------------------------------------------------------------------------//
+	/**
+	 * Get()
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */	
+	function Get()
+	{
+		// for each get variable
+		if(is_array($_GET))
+		{
+			foreach($_GET AS $strName=>$strValue)
+			{
+				// parse variable
+				$this->_ParseData($strName, $strValue);
+			}
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Post
+	//------------------------------------------------------------------------//
+	/**
+	 * Post()
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	function Post()
+	{
+		// for each post variable
+		if(is_array($_POST))
+		{
+			foreach($_POST AS $strName=>$strValue)
+			{
+				// parse variable
+				$this->_ParseData($strName, $strValue);
+			}
+			return TRUE;
+		}
+		return FALSE;
+	}
+
+	//------------------------------------------------------------------------//
+	// Cookie
+	//------------------------------------------------------------------------//
+	/**
+	 * Cookie()
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	function Cookie()
+	{
+		// for each cookie variable
+			if(is_array($_COOKIE))
+		{
+			foreach($_COOKIE AS $strName=>$strValue)
+			{
+				// parse variable
+				$this->_ParseData($strName, $strValue);
+			}
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Ajax
+	//------------------------------------------------------------------------//
+	/**
+	 * Ajax()
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 * @param   object	 $objAjax	The submitted data from AJAX
+	 *
+	 * @return	boolean
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	function Ajax($objAjax)
+	{
+		// for each post variable
+		if(is_object($objAjax) && is_object($objAjax->Objects))
+		{
+			foreach($objAjax->Objects AS $strObject=>$objObject)
+			{
+				foreach($objObject AS $strProperty=>$mixValue)
+				{
+					// parse variable
+					$this->_ParseData("$strObject.$strProperty", $mixValue);
+				}
+			}
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _ParseData
+	//------------------------------------------------------------------------//
+	/**
+	 * _ParseData()
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 * @param	string	$strName	<description>
+	 * @param	mixed	$mixValue	<description>
+	 * @return	boolean
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	function _ParseData($strName, $mixValue)
+	{
+		// print_r($strName);
+		// split name into object & property
+		$arrName = explode("_", $strName, 2);
+		if(!$arrName[0] || !$arrName[1])
+		{
+			return FALSE;
+		}
+		
+		// add property to object
+		Dbo()->{$arrName[0]}->AddProperty($arrName[1], $mixValue);
+		return TRUE;
 	}
 }
 
