@@ -229,10 +229,14 @@ var JSON = function () {
     };
 }();
 
+var myData = Object();
+
 // AJAX Send
 function AjaxSend(object)
 {
-
+	// store our object before sending, along with a transaction ID
+	myData = object;
+	
 	//return(JSON.stringify(object));
 	var page_url = "ajax_link.php";
 	// register the callbacks
@@ -281,11 +285,20 @@ function AjaxSend(object)
 // AJAX handle_reply
 function handle_reply(reply)
 {
+	// if our reply is asking for a login, prompt the user to login
+	
 	var return_data = {};
 	try
 	{
 		// convert reply into data object
 		eval("return_data = " + reply);
+		
+		if (return_data)
+		{
+			ajaxHandler(FALSE);
+			return;
+		}
+
 		ajaxHandler(return_data);
 	}
 	catch(er)

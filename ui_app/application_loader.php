@@ -57,7 +57,9 @@ define('DATABASE_PWORD', V1x3n);
 
 require_once('functions.php');
 require_once('framework.php');
+require_once('json.php');
 require_once('db_access_old.php');
+
 $myApplication = new Application;
 
 
@@ -115,12 +117,7 @@ function __autoload($strClassName)
 	{
 		// The class trying to be loaded is not a template class
 		// This function does not currently handle any other kinds of class
-		$strErrorMsg = 	"ERROR: The class '". $strClassName.
-						"' is not a template class as it does not include the keyword 'Template'. ".
-						"currently the autoloader only handles template classes.";
-		//Debug($strErrorMsg);
-		throw new Exception($strErrorMsg);
-		die;  // I don't think this will ever actually be called
+		return FALSE;
 	}
 	
 	// check if a directory listing for $strClassPath has already been created
@@ -251,17 +248,21 @@ class Application
 		$objSubmit = new submitted_data();
 		$objSubmit->Ajax($objAjax);
 	
+		// YAY, this far is great!
+
 		
-		
+		$strClassName = "AppTemplate" . $objAjax->Object;
 		//Create AppTemplate Object
-		$this->objAppTemplate = new $objAjax->strClass;
+		// new AppTemplateAccount->View
+		$this->objAppTemplate = new $strClassName;
 		$this->objAppTemplate->SetMode(AJAX_MODE);
 		
 		//Run AppTemplate
-		$this->objAppTemplate->{$objAjax->strMethod}();
+		$this->objAppTemplate->View();
 		
 		$arrReply = Array();
-		
+		//var_dump($this->objAppTemplate->arrSend);
+		/*
 		if (is_array($this->arrSend['Dbo']))
 		{
 			foreach ($this->arrSend['Dbo'] as $strObject=>$mixValue)
@@ -300,9 +301,9 @@ class Application
 				}
 			}
 		}
-		
-		AjaxReply($arrReply);
-		
+		*/
+		//AjaxReply($arrReply);
+		AjaxReply(Array("yay","yayas"));
 	}
 	
 	function CheckAuth()

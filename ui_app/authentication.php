@@ -1,6 +1,17 @@
 <?php
 	
+	$authAuthentication = new Authentication();
 	
+	// If the User is not logged into the system
+	if (!$authAuthentication->isAuthenticated ())
+	{
+		// Foward to Login Interface
+		header ('Location: login.php'); exit;
+	}
+	else
+	{
+		header ('Location: account_view.php'); exit;
+	}
 	//----------------------------------------------------------------------------//
 	// authentication.php
 	//----------------------------------------------------------------------------//
@@ -40,7 +51,7 @@
 	 * @extends	dataObject
 	 */
 	
-	class Authentication extends dataObject
+	class Authentication 
 	{
 		
 		//------------------------------------------------------------------------//
@@ -78,7 +89,7 @@
 		function __construct ()
 		{
 			// Construct the Object
-			parent::__construct ("Authentication");
+			//parent::__construct ("Authentication");
 			
 			// If the authentication wants to see if it can come through ...
 			if (isset ($_COOKIE ['Id']) && isset ($_COOKIE ['SessionId']))

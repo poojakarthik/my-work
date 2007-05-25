@@ -103,4 +103,57 @@ function ImplodeTables($arrTables)
 	
 	return implode(', ', $arrReturn);
 }
+
+
+//------------------------------------------------------------------------//
+// AjaxRecieve INCOMPLETE
+//------------------------------------------------------------------------//
+/**
+ * AjaxRecieve()
+ * 
+ * Function to act as a reciever for AJAX data.  
+ * 
+ * Function to act as a reciever for AJAX data. Converts to and from JSON format.
+ *
+ * @return	str				
+ *
+ * @brokenreturn
+ * @comments
+ * 
+ * @function
+ */
+function AjaxRecieve()
+{
+	$json = new Services_JSON();
+	// get the JSON object and decode it into an object
+	$input = file_get_contents('php://input', 1000000);
+	$input = $json->decode($input);
+	
+	// expected to return an array of data if a connection was made
+	// or false if not
+	return $input;
+}
+
+//------------------------------------------------------------------------//
+// AjaxReply
+//------------------------------------------------------------------------//
+/**
+ * AjaxReply()
+ * 
+ * Send data via AJAX.
+ * 
+ * Send data via AJAX.
+ *
+ * @param	array	$arrReply				The array of data to send
+ *
+ * @return	void 
+ *
+ * @function
+ */
+function AjaxReply($arrReply)
+{
+	$json = new Services_JSON();
+	echo $json->encode($arrReply);
+}
+
 ?>

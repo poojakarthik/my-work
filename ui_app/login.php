@@ -1,5 +1,10 @@
 
-<html xmlns="http://www.w3.org/1999/xhtml"><head><title>TelcoBlue.com.au Internal Systems Login</title><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head><style type="text/css" media="screen">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><title>TelcoBlue.com.au Internal Systems Login</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/></head>
+<script type="text/javascript" src="javascript/sha1.js"></script>
+
+
+<style type="text/css" media="screen">
 				
 				body {margin: 0; font-family: "Nimbus Sans L", "Tahoma"; }
 			    #topContainer { padding-top: 6em; background: #FFF; }
@@ -41,6 +46,7 @@
 			    
 			    
 			</style>
+			
 			<body>
 				<div id="topContainer">
 					<div id="loginContainer">
