@@ -241,10 +241,11 @@
 	 * Rate a single CDR Record
 	 *
 	 * @param	array	$arrCDR			CDR Array from database
+	 * @param	bool	$bolReturnCDR	optional Return the whole CDR instead of just the rated amount
 	 * @return	float	Rated Charge
 	 * @method
 	 */
-	function RateCDR($mixCDR)
+	function RateCDR($mixCDR, $bolReturnCDR = FALSE)
 	{
 		if (is_array($mixCDR))
 		{
@@ -315,7 +316,15 @@
 			$this->_Rounding();
 		}
 		
-		return $this->_arrCurrentCDR['Charge'];
+		if ($bolReturnCDR)
+		{
+			$this->_arrCurrentCDR['Rate'] = $this->_arrCurrentRate['Id'];
+			return $this->_arrCurrentCDR;
+		}
+		else
+		{
+			return $this->_arrCurrentCDR['Charge'];
+		}
 	}
  	
  	//------------------------------------------------------------------------//
