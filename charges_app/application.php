@@ -743,7 +743,7 @@
 	 	$arrColumns = Array();
 	 	$arrColumns['Status']	= CDR_IGNORE_INBOUND_SE; 
 	 	$updInboundSECDRs = new StatementUpdate("CDR",
-												"Status = ".CDR_RATED." AND " .
+												/*"Status = ".CDR_RATED." AND " .*/
 												"RecordType = 30 AND " .
 												"Charge < 30",
 												$arrColumns);
