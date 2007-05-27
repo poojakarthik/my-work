@@ -278,7 +278,7 @@
 		// Find Rate for this CDR
 		if (!$this->_arrCurrentRate = $this->_FindRate())
 		{
-			//Debug("No rate!");
+			Debug("No rate!");
 			return FALSE;
 		}
 
@@ -295,6 +295,7 @@
 			$fltCharge = $this->_CalculateCharge();
 			if ($fltCharge === FALSE)
 			{
+				Debug("_CalculateCharge() Failed!");
 				return FALSE;
 			}
 		
@@ -302,6 +303,7 @@
 			$fltCharge = $this->_CalculateCap();
 			if ($fltCharge === FALSE)
 			{
+				Debug("_CalculateCap() Failed!");
 				return FALSE;
 			}
 
@@ -309,6 +311,7 @@
 			$fltCharge = $this->_CalculateProrate();
 			if ($fltCharge === FALSE)
 			{
+				Debug("_CalculateProrate() Failed!");
 				return FALSE;
 			}
 
