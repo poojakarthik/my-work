@@ -76,30 +76,23 @@ class DataAccessUI extends DatabaseAccess
 	 *
 	 * Performs a MySQLi SELECT using only the field's Id as a restraint
 	 *
-	 * @param	array	$arrTables					Table definitions we want to use
+	 * @param	array	$strTable					Table name we want to use
 	 * @param	array	$arrColumns					Can be either associative or indexed array.
 	 * 												Use indexed for normal column referencing.
 	 * 												Use associated arrays for either renaming of
 	 * 												columns (eg. ["ColumnAlias"] = "ColumnName") and
 	 *		 										special SQL funcion calls (eg. ["NowAlias"] = new MySQLFunction("NOW()"))
 	 * @param	integer	$intId						Unique Id for this data record
-	 * @param	string	$strTable		optional	Master Table for Joining
 	 * 
 	 * @return	mixed								FALSE: Query failed
 	 * 												array: Result row as Associative Array
 	 *
 	 * @method
 	 */
-	 function SelectById($arrTables, $arrColumns, $intId, $strTable = NULL)
+	 function SelectById($strTable, $arrColumns, $intId)
 	 {
 	 	// Convert SelectById parameters to StatementSelect equivelants
 	 	$intId = (int)$intId;
-	 	
-	 	// Create FROM clause
-	 	if (!$strTables = $this->ImplodeTables($arrTables))
-	 	{
-	 		return FALSE;
-	 	}
 	 	
 		// TODO: Generate WHERE based on Foreign Key Joins.  Just force to only Id for now.
 		$strWhere = "Id = <Id>";
@@ -107,7 +100,7 @@ class DataAccessUI extends DatabaseAccess
 		$arrWhere['Id']	= $intId;
 	 	
 	 	// Statement Construct, Execute, Fetch, Return :D
-	 	$selStatement = new StatementSelect($strTables, $arrColumns, $strWhere, NULL, 1);
+	 	$selStatement = new StatementSelect($strTable, $arrColumns, $strWhere, NULL, 1);
 	 	$selStatement->Execute($arrWhere);
 	 	return $selStatement->Fetch();
 	 }
@@ -123,14 +116,13 @@ class DataAccessUI extends DatabaseAccess
 	 *
 	 * Performs a MySQLi SELECT
 	 *
-	 * @param	array		$arrTables					Table definitions we want to use
+	 * @param	array		$strTable					Name of table to select from
 	 * @param	array		$arrColumns					Can be either associative or indexed array.
 	 * 													Use indexed for normal column referencing.
 	 * 													Use associated arrays for either renaming of
 	 * 													columns (eg. ["ColumnAlias"] = "ColumnName") and
 	 *		 											special SQL funcion calls (eg. ["NowAlias"] = new MySQLFunction("NOW()"))
 	 * @param	VixenWhere	$objWhere					Unique Id for this data record
-	 * @param	string		$strTable		optional	Master Table for Joining
 	 * @param	integer		$intLimitStart	optional	Starting row for Result Set
 	 * @param	integer		$intLimitCount	optional	Number of rows in Result Set
 	 * 
@@ -139,14 +131,8 @@ class DataAccessUI extends DatabaseAccess
 	 *
 	 * @method
 	 */
-	function Select($arrTables, $arrColumns=NULL, $objWhere=NULL, $intLimitStart=NULL, $strLimitCount=NULL)
+	function Select($strTable, $arrColumns=NULL, $objWhere=NULL, $intLimitStart=NULL, $strLimitCount=NULL)
 	{
-	 	// Create FROM clause
-	 	if (!$strTables = $this->ImplodeTables($arrTables))
-	 	{
-	 		return FALSE;
-	 	}
-	 	
 	 	// Create SELECT clause
 		if (!$arrColumns)
 		{
@@ -170,7 +156,7 @@ class DataAccessUI extends DatabaseAccess
 		}
 		
 	 	// Statement Construct, Execute, Fetch, Return :D
-	 	$selStatement = new StatementSelect($strTables, $arrColumns, $objWhere->strWhere, NULL, $strLimit);
+	 	$selStatement = new StatementSelect($strTable, $arrColumns, $objWhere->strWhere, NULL, $strLimit);
 	 	$selStatement->Execute($objWhere->arrWhere);
 	 	return $selStatement->FetchAll();
 	}
@@ -185,7 +171,7 @@ class DataAccessUI extends DatabaseAccess
 	 *
 	 * Updates a Database entry by its Unique Id
 	 *
-	 * @param	string		$arrTables					Tables to update
+	 * @param	string		$strTable					Table to update
 	 * @param	array		$arrColumns					Columns to update
 	 * @param	array		$arrData	 				Data to update with
 	 * 
@@ -194,14 +180,8 @@ class DataAccessUI extends DatabaseAccess
 	 *
 	 * @method
 	 */
-	function UpdateById($arrTables, $arrColumns, $arrData)
+	function UpdateById($strTable, $arrColumns, $arrData)
 	{
-		// table (assume that the first is our "master")
-		if (!$strTable = $arrTables[0])
-		{
-			return FALSE;
-		}
-		
 		// run query
 	 	$ubiUpdate = new StatementUpdateById($strTable, $arrColumns);
 	 	return $ubiUpdate->Execute($arrData);

@@ -479,6 +479,29 @@ class Config
 		}
 		else
 		{
+			if (!isset($this->_arrConfig[$strType][$strName]))
+			{
+				switch (strtolower($strType))
+				{
+					case "dbo":
+						// TODO!Joel! Load and cache config for this object (from somewhere)
+						// $this->_arrConfig[$strType][$strName] = 
+						// possibly retrieve this data from the database using a direct query
+						
+						// The "documentation" is being cached here.
+							// When it is first required, it is retrieved from the database and stored
+							// here.  Therefore subsequent requests will not require access to the database.
+						break;
+						
+					case "dbl":
+						// TODO!Joel! Load and cache config for this object (from somewhere)
+						// $this->_arrConfig[$strType][$strName] = 
+						break;
+						
+					default:
+						break;
+				}
+			}
 			return $this->_arrConfig[$strType][$strName];
 		}
 	}

@@ -21,12 +21,12 @@ class DBObject extends DBObjectBase
 {
 	public $_strIdColumn 	= 'Id';
 	public $_arrColumns 	= Array();
-	public $_arrTables		= Array();
+	public $_strTable		= '';
 	public $_strName		= '';
 	public $_arrResult		= Array();
 	public $_arrRequest		= Array();
 	public $_arrValid		= Array();
-	public $_arrProperty	= Array();
+	public $_arrProperties	= Array();
 	public $_intStatus		= 0;
 	public $_arrOptions		= Array();
 	
@@ -41,14 +41,14 @@ class DBObject extends DBObjectBase
 	 * construct a new Database Object
 	 *
 	 * @param	string	$strName					Name of the object to create
-	 * @param	mixed	$mixTable		optional	Database table to connect the data object to 
+	 * @param	string	$strTable		optional	Database table to connect the data object to 
 	 * @param	mixed	$mixColumns		optional	Columns to include in the data object
 	 * 
 	 * @return	DBObject
 	 *
 	 * @method
 	 */
-	function __construct($strName, $mixTable=NULL, $mixColumns=NULL)
+	function __construct($strName, $strTable=NULL, $mixColumns=NULL)
 	{
 		// Parent Constructor
 		parent::__construct();
@@ -60,26 +60,20 @@ class DBObject extends DBObjectBase
 		$this->_arrOptions = Config()->Get('Dbo', $strName);
 		
 		// set table
-		if (is_array($mixTable))
+		if ($strTable)
 		{
-			$this->_arrTables = $mixTable;
+			// use the table from parameters
+			$this->_strTable = $strTable;
 		}
 		elseif ($this->_arrOptions['Table'])
 		{
-			$this->_arrTables = $this->_arrOptions['Table'];
-		}
-		elseif($mixTable)
-		{
-			$arrTables = explode(',', $mixTable);
-			foreach ($arrTables as $strTable)
-			{
-				$this->_arrTables[] = trim($strTable);
-			}
+			// use the table from the definition
+			$this->_strTable = $this->_arrOptions['Table'];
 		}
 		else
 		{
 			// as a last resort use the dbo name as the table name
-			$this->_arrTables[$strName]['Name'] = $strName;
+			$this->_strTable = $strName;
 		}
 
 		// set columns
@@ -190,10 +184,10 @@ class DBObject extends DBObjectBase
 	 */
 	function Clean()
 	{
-		$this->dboObject->_arrProperty 	= Array();
-		$this->dboObject->_arrRequest	= Array();
-		$this->dboObject->_arrResult	= Array();
-		$this->dboObject->_arrValid 	= Array();
+		$this->dboObject->_arrProperties 	= Array();
+		$this->dboObject->_arrRequest		= Array();
+		$this->dboObject->_arrResult		= Array();
+		$this->dboObject->_arrValid 		= Array();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -220,7 +214,7 @@ class DBObject extends DBObjectBase
 		// Make sure we have an Id
 		if ($this->_arrProperties['Id'])
 		{
-	 		return $this->LoadData($this->SelectById($this->_arrTables, $this->_arrColumns, $intId));
+	 		return $this->LoadData($this->SelectById($this->_strTable, $this->_arrColumns, $intId));
 		}
 		else
 		{
@@ -247,7 +241,7 @@ class DBObject extends DBObjectBase
 	 function LoadData($arrData)
 	 {
 	 	// Assign data
-	 	$this->_arrProperty = array_merge($this->_arrProperty, $arrData);
+	 	$this->_arrProperties = array_merge($this->_arrProperties, $arrData);
 	 	return TRUE;
 	 }
 	 
@@ -271,12 +265,12 @@ class DBObject extends DBObjectBase
 		if ($this->_arrProperties['Id'] > 0)
 		{
 			// Update by Id
-			return (bool)$this->UpdateById($this->_arrTables, $this->_arrColumns, $this->_arrProperties);
+			return (bool)$this->UpdateById($this->_strTable, $this->_arrColumns, $this->_arrProperties);
 		}
 		else
 		{
 			// Insert, and set the new Id
-			if ($mixResult = $this->Insert($this->_arrTables, $this->_arrColumns, $this->_arrProperties))
+			if ($mixResult = $this->Insert($this->_strTable, $this->_arrColumns, $this->_arrProperties))
 			{
 				return (bool)($this->_arrProperties['Id'] = $mixResult);
 			}

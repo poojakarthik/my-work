@@ -46,7 +46,7 @@
  */
 class DBObjectBase extends DataAccessUI implements Iterator
 {
-	protected $_arrProperty = Array();
+	protected $_arrProperties = Array();
 	
 	//------------------------------------------------------------------------//
 	// rewind
@@ -62,7 +62,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
 	 */
 	public function rewind()
 	{
-		reset($this->_arrProperty);
+		reset($this->_arrProperties);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -81,7 +81,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
 	 */
 	public function current()
 	{
-		return PropertyToken()->Property($this, current($this->_arrProperty));
+		return PropertyToken()->Property($this, current($this->_arrProperties));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -100,7 +100,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
 	 */
 	public function key()
 	{
-		return key($this->_arrProperty);
+		return key($this->_arrProperties);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -119,7 +119,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
 	 */
 	public function next()
 	{
-		return PropertyToken()->Property($this, next($this->_arrProperty));
+		return PropertyToken()->Property($this, next($this->_arrProperties));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -162,7 +162,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
  */
 class DBListBase extends DataAccessUI implements Iterator
 {
-	protected $_arrProperty = Array();
+	protected $_arrProperties = Array();
 	
 	//------------------------------------------------------------------------//
 	// rewind
@@ -178,7 +178,7 @@ class DBListBase extends DataAccessUI implements Iterator
 	 */
 	public function rewind()
 	{
-		reset($this->_arrProperty);
+		reset($this->_arrProperties);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -197,7 +197,7 @@ class DBListBase extends DataAccessUI implements Iterator
 	 */
 	public function current()
 	{
-		return current($this->_arrProperty);
+		return current($this->_arrProperties);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -216,7 +216,7 @@ class DBListBase extends DataAccessUI implements Iterator
 	 */
 	public function key()
 	{
-		return key($this->_arrProperty);
+		return key($this->_arrProperties);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -235,7 +235,7 @@ class DBListBase extends DataAccessUI implements Iterator
 	 */
 	public function next()
 	{
-		return next($this->_arrProperty);
+		return next($this->_arrProperties);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -356,7 +356,7 @@ class PropertyToken
 		{
 			// The property's value
 			case "value":
-				return $this->_dboOwner->_arrProperty[$this->_strProperty];
+				return $this->_dboOwner->_arrProperties[$this->_strProperty];
 		}
 		
 		// Do we have a column property by this name?
@@ -396,7 +396,7 @@ class PropertyToken
 		{
 			// The property's value
 			case "value":
-				return (bool)($this->_dboOwner->_arrProperty[$this->_strProperty] = $mixValue);
+				return (bool)($this->_dboOwner->_arrProperties[$this->_strProperty] = $mixValue);
 		}
 		
 		// Do we have a column property by this name?
@@ -449,7 +449,7 @@ class PropertyToken
 	 * @param	bool	$bolRequired	Whether the field should be mandatory
 	 * @param	string	$strContext		???????
 	 * 
-	 * @return	void
+	 * @return	mixed	PropertyValue
 	 *
 	 * @method
 	 */
@@ -459,6 +459,7 @@ class PropertyToken
 		//TODO!Interface-kids!Actually do this
 		
 		RenderHTMLTemplate($arrParams);
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
 	//------------------------------------------------------------------------//
@@ -474,7 +475,7 @@ class PropertyToken
 	 * @param	bool	$bolRequired	Whether the field should be mandatory
 	 * @param	string	$strContext		???????
 	 * 
-	 * @return	void
+	 * @return	mixed	PropertyValue
 	 *
 	 * @method
 	 */
@@ -484,6 +485,30 @@ class PropertyToken
 		//TODO!Interface-kids!Actually do this
 		
 		RenderHTMLTemplate($arrParams);
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
+	
+	//------------------------------------------------------------------------//
+	// Render
+	//------------------------------------------------------------------------//
+	/**
+	 * Render()
+	 *
+	 * Renders the property in it's standard label form
+	 *
+	 * Renders the property in it's standard label form
+	 *
+	 * @param	string	$strOutputMask	optional output mask 
+	 * 
+	 * @return	mixed PropertyValue
+	 *
+	 * @method
+	 */
+	function Render($strOutputMask=NULL)
+	{
+		echo $this->_dboOwner->_arrProperties[$this->_strProperty];
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
+	}
+	
 }
 ?>
