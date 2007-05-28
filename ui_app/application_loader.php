@@ -54,11 +54,18 @@ define('DATABASE_NAME', vixen);
 define('DATABASE_USER', vixen);
 define('DATABASE_PWORD', V1x3n);
 
-
+require_once('../framework/functions.php');
+LoadFramework();
 require_once('functions.php');
 require_once('framework.php');
+
+require_once('db/db_access_ui.php');
+require_once('db/db_object_base.php');
+require_once('db/db_object.php');
+require_once('db/db_list.php');
+
 require_once('json.php');
-require_once('db_access_old.php');
+//require_once('db_access_old.php');
 
 $myApplication = new Application;
 

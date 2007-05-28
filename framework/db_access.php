@@ -373,6 +373,22 @@
 	public $intSQLMode;
 	
  	//------------------------------------------------------------------------//
+	// db	
+	//------------------------------------------------------------------------//
+	/**
+	 * db
+	 *
+	 * reference to the global database connection object
+	 *
+	 * reference to the global database connection object
+	 *
+	 * @type		reference
+	 *
+	 * @property
+	 */
+	public $db;
+
+	//------------------------------------------------------------------------//
 	// DatabaseAccess() - Constructor
 	//------------------------------------------------------------------------//
 	/**

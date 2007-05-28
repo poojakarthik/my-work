@@ -122,7 +122,7 @@ function ImplodeTables($arrTables)
  * 
  * @function
  */
-function AjaxRecieve()
+function _AjaxRecieve()
 {
 	$json = new Services_JSON();
 	// get the JSON object and decode it into an object
@@ -150,7 +150,7 @@ function AjaxRecieve()
  *
  * @function
  */
-function AjaxReply($arrReply)
+function _AjaxReply($arrReply)
 {
 	$json = new Services_JSON();
 	echo $json->encode($arrReply);
@@ -178,6 +178,30 @@ function Config()
 	$objConfig = Singleton::Instance('Config');
 	return $objConfig;
 }
+
+//------------------------------------------------------------------------//
+// PropertyToken
+//------------------------------------------------------------------------//
+/**
+ * PropertyToken()
+ *
+ * Returns the singleton PropertyToken object
+ *
+ * Returns the singleton PropertyToken object
+ * Note that this will return a new PropertyToken object if one has not yet been
+ * created.  If one has been created, it will return a reference to it.
+ *
+ * @return	PropertyToken object
+ *
+ * @function
+ * 
+ */
+function PropertyToken()
+{
+	$objPropertyToken = Singleton::Instance('PropertyToken');
+	return $objPropertyToken;
+}
+
 
 
 ?>

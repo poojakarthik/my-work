@@ -81,7 +81,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
 	 */
 	public function current()
 	{
-		return PropertyToken->Property($this, current($this->_arrProperty));
+		return PropertyToken()->Property($this, current($this->_arrProperty));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -119,7 +119,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
 	 */
 	public function next()
 	{
-		return PropertyToken->Property($this, next($this->_arrProperty));
+		return PropertyToken()->Property($this, next($this->_arrProperty));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -388,7 +388,7 @@ class PropertyToken
 		// TODO: Validate
 		
 		// Set the value & return
-		return (bool)($this->_dboObject->_arrProperties[$this->_strProperty] = $mixValue);
+		return (bool)($this->_dboObject->_arrProperties[$this->_strProperty][$strName] = $mixValue);
 	}
 	
 	//------------------------------------------------------------------------//
