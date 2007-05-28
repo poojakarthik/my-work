@@ -16,7 +16,7 @@ $appRating = new ApplicationRating($arrConfig);
 
 // get all of the CDRs we need
 $selSECCDRs = new StatementSelect(	"CDR",
-									"Id, Service, Account, AccountGroup, Description, Charge",
+									"*",
 									"Credit = 1 AND " .
 									"RecordType = 21 AND " .
 									"Status IN (".CDR_CREDIT_MATCH_NOT_FOUND.")");
