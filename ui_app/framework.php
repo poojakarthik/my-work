@@ -397,4 +397,91 @@ class DBOFramework
 		return $this->_arrProperty[$strName];
 	}
 }
+
+//----------------------------------------------------------------------------//
+// Config
+//----------------------------------------------------------------------------//
+/**
+ * Config
+ *
+ * The Config class
+ *
+ * The Config class - encapsulates all configuration settings
+ *
+ *
+ * @package	ui_app
+ * @class	Config
+ */
+class Config
+{
+	//------------------------------------------------------------------------//
+	// _arrConfig
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrConfig
+	 *
+	 * Stores all configuration settings
+	 *
+	 * Stores all configuration settings
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
+	private $_arrConfig = Array();
+	
+	//------------------------------------------------------------------------//
+	// Set
+	//------------------------------------------------------------------------//
+	/**
+	 * Set()
+	 *
+	 * Set configuration parameters
+	 *
+	 * Set configuration parameters
+	 *
+	 * @param	array	$arrConfig	the complete set of configuration settings
+	 * @return	void
+	 *
+	 * @method
+	 * 
+	 */
+	function Set($arrConfig)
+	{
+		$this->_arrConfig = $arrConfig;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Get
+	//------------------------------------------------------------------------//
+	/**
+	 * Get()
+	 *
+	 * retrieves part of the configuration array
+	 *
+	 * retrieves part of the configuration array
+	 *
+	 * @param	string	$strType	the name of a first level parameter stored
+	 *								in the configuration array
+	 * @param	string	$strName	[optional] the name of a second level parameter
+	 *								stored in the configuration array.
+	 *	 
+	 * @return	array
+	 *
+	 * @method
+	 * 
+	 */
+	function Get($strType, $strName=NULL)
+	{
+		if ($strName === NULL)
+		{
+			return $this->_arrConfig[$strType];
+		}
+		else
+		{
+			return $this->_arrConfig[$strType][$strName];
+		}
+	}
+}
+
 ?>

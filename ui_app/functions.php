@@ -156,4 +156,28 @@ function AjaxReply($arrReply)
 	echo $json->encode($arrReply);
 }
 
+//------------------------------------------------------------------------//
+// Config
+//------------------------------------------------------------------------//
+/**
+ * Config()
+ *
+ * Returns the singleton Config object
+ *
+ * Returns the singleton Config object
+ * Note that this will return a new Config object if one has not yet been
+ * created.  If one has been created, it will return a reference to it.
+ *
+ * @return	Config object
+ *
+ * @function
+ * 
+ */
+function Config()
+{
+	$objConfig = Singleton::Instance('Config');
+	return $objConfig;
+}
+
+
 ?>
