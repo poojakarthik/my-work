@@ -49,6 +49,7 @@ while ($arrCDR = $selSECCDRs->Fetch())
 	}
 	
 	// Rated fine, update CDR
+	$arrCols['Id']		= $arrCDR['Id'];
 	$arrCols['Rate']	= $arrCDR['Rate'];
 	$arrCols['Charge']	= $arrCDR['Charge'];
 	$ubiCDR->Execute($arrCols);
