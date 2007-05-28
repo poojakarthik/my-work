@@ -147,7 +147,31 @@ class DBObject extends DBObjectBase
 	 */
 	function __get($strProperty)
 	{
+		//Debug("GET $strProperty");
 		return PropertyToken()->Property($this, $strProperty);
+	}
+	
+	//------------------------------------------------------------------------//
+	// __set
+	//------------------------------------------------------------------------//
+	/**
+	 * __set()
+	 *
+	 * Sets the value to this property
+	 *
+	 * Sets the value to this property
+	 *
+	 * @param	string		$strProperty	The property's name
+	 * 
+	 * @return	PropertyToken
+	 *
+	 * @method
+	 */
+	function __set($strProperty, $mixValue)
+	{
+		//Debug("GET $strProperty");
+		$objToken = PropertyToken()->Property($this, $strProperty);
+		return ($this->$strProperty->value = $mixValue);
 	}
 	
 	//------------------------------------------------------------------------//

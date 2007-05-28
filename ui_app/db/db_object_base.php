@@ -327,6 +327,7 @@ class PropertyToken
 	{
 		$this->_dboOwner	= $dboOwner;
 		$this->_strProperty	= $strProperty;
+		//Debug("Token = {$dboOwner->_strName}->$strProperty");
 		return $this;
 	}	
 	
@@ -348,18 +349,20 @@ class PropertyToken
 	 */
 	function __get($strName)
 	{
+		//Debug("Get: {$this->_dboOwner->_strName}->{$this->_strProperty}->$strName");
+		
 		// Are we after one of our "magic" variables?
 		switch (strtolower($strName))
 		{
 			// The property's value
 			case "value":
-				return $this->_dboObject->_arrProperties[$this->_strProperty];
+				return $this->_dboOwner->_arrProperty[$this->_strProperty];
 		}
 		
 		// Do we have a column property by this name?
-		if (isset($this->_dboObject->_arrProperties[$this->_strProperty][$strName]))
+		if (isset($this->_dboOwner->_arrColumns[$this->_strProperty][$strName]))
 		{
-			return $this->_dboObject->_arrProperties[$this->_strProperty][$strName];
+			return $this->_dboOwner->_arrColumns[$this->_strProperty][$strName];
 		}
 		
 		return NULL;
@@ -385,10 +388,19 @@ class PropertyToken
 	 */
 	function __set($strName, $mixValue)
 	{		
-		// TODO: Validate
+		// Validate
+		// TODO
 		
 		// Set the value & return
-		return (bool)($this->_dboObject->_arrProperties[$this->_strProperty][$strName] = $mixValue);
+		switch (strtolower($strName))
+		{
+			// The property's value
+			case "value":
+				return (bool)($this->_dboOwner->_arrProperty[$this->_strProperty] = $mixValue);
+		}
+		
+		// Do we have a column property by this name?
+		return $this->_dboOwner->_arrColumns[$this->_strProperty][$strName] = $mixValue;
 	}
 	
 	//------------------------------------------------------------------------//
