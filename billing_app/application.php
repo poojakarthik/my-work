@@ -322,13 +322,17 @@
 	 * Generates Invoices for an array of accounts
 	 *
 	 * @param	array	$arrAccount		Indexed array of accounts to generate invoices for
+	 * @param	bool	$bolReturnData	Return the Invoice data as an array instead of inserting into the
+	 * 									database.
 	 *
 	 * @return			bool
 	 *
 	 * @method
 	 */
-	function GenerateInvoices($arrAccounts)
+	function GenerateInvoices($arrAccounts, $bolReturnData = FALSE)
 	{
+		$arrReturnData = Array();
+		
 		if (!is_array($arrAccounts))
 		{
 			return FALSE;
@@ -360,6 +364,8 @@
 		// Loop through the accounts we're billing
 		foreach ($arrAccounts as $arrAccount)
 		{
+			$arrAccountReturn = Array();
+			
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
 			$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 			
@@ -433,6 +439,7 @@
 					$arrSharedPlans[$arrService['RatePlan']]['ChargeCap']	= $arrService['ChargeCap'];
 				}
 			}
+			$arrAccountReturn['SharedPlans']	= $arrSharedPlans;
 			
 			// Mark Credits and Debits for this account to this Invoice Run
 			$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
@@ -456,6 +463,8 @@
 			$arrUniqueServiceList = Array();
 			foreach ($arrServices as $arrService)
 			{
+				$arrServiceReturn = Array();
+				
 				$fltServiceCredits		= 0.0;
 				$fltServiceDebits		= 0.0;
 				$fltTotalCharge			= 0.0;
@@ -609,7 +618,7 @@
 				$arrServiceTotal['Credit']			= $fltServiceCredits;
 				$arrServiceTotal['Debit']			= $fltServiceDebits;
 				
-				if (!$this->insServiceTotal->Execute($arrServiceTotal))
+				if (!$this->insServiceTotal->Execute($arrServiceTotal) && !$bolReturnData)
 				{
 					Debug($this->insServiceTotal->Error());
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
@@ -620,6 +629,8 @@
 				// add to invoice totals
 				$fltTotalDebits		+= $fltServiceDebits + $fltTotalCharge;
 				$fltTotalCredits	+= $fltServiceCredits;
+				
+				$arrAccountReturn['Services'][] = $arrServiceTotal;
 			}
 			
 			// Calculate Account Debit and Credit Totals
@@ -651,6 +662,7 @@
 					}
 				}
 				$this->_rptBillingReport->AddMessage(MSG_OK);
+				$arrAccountReturn['AccountAdjustments']	= $arrDebitsCredits;
 			}
 			
 			$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
@@ -690,6 +702,8 @@
 			$arrInvoiceData['Status']			= INVOICE_TEMP;
 			$arrInvoiceData['InvoiceRun']		= $this->_strInvoiceRun;
 			
+			$arrAccountReturn['InitialInvoiceData'] = $arrInvoiceData;
+			
 			// Add in modular charges
 			foreach ($this->_arrChargeModules as $chgModule)
 			{
@@ -697,9 +711,9 @@
 				$mixResult = $chgModule->Generate($arrInvoiceData, $arrAccount);
 				
 				// Add to totals
-				if ($mixResult)
+				if (!is_bool($mixResult))
 				{
-					if ($mixResult < 1)
+					if ($mixResult < 0)
 					{
 						// Credit
 						$fltTotalCredits	+= $mixResult;
@@ -709,6 +723,8 @@
 						// Debit
 						$fltTotalDebits		+= $mixResult;
 					}
+					
+					$arrAccountReturn['ChargeModules'][] = $mixResult;
 				}
 			}
 			
@@ -726,6 +742,8 @@
 			$arrInvoiceData['TotalOwing']		= $fltTotalOwing;
 			$arrInvoiceData['Balance']			= $fltBalance;
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
+			
+			$arrAccountReturn['FinalInvoiceData'] = $arrInvoiceData;
 			
 			// report error or success
 			if(!$this->insTempInvoice->Execute($arrInvoiceData))
@@ -747,6 +765,14 @@
 			
 			// Report and continue
 			$this->_rptBillingReport->AddMessage(MSG_OK."\n");
+			
+			$arrReturnData[$arrInvoiceData['Account']] = $arrAccountReturn;
+		}
+		
+		// Return Data if debugging
+		if ($bolReturnData)
+		{
+			return $arrReturnData;
 		}
 	}
 

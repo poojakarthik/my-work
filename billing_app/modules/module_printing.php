@@ -480,7 +480,7 @@
 		$arrInvoiceServiceTotal = $this->_selInvoiceServiceTotal->Fetch();
 		
 		$fltPlanCharges = $arrInvoiceDetails['Total'] - $arrInvoiceServiceTotal['GrandTotal'] - $fltAccountCharge;
-		if ((float)$fltPlanCharges != 0.0)
+		if (round($fltPlanCharges, 2) != 0.0)
 		{
 			$arrDefine['ChargeTotal']		['ChargeName']		['Value']	= "Plan Charges & Credits";
 			$arrDefine['ChargeTotal']		['ChargeTotal']		['Value']	= $fltPlanCharges;

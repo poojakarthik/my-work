@@ -26,14 +26,19 @@ $appBilling = new ApplicationBilling($arrConfig);
 //----------------------------------------------------------------------------//
 
 // TODO:Sean -> Put the InvoiceRun Here
-$strInvoiceRun = "";
+$strInvoiceRun = "46362bac43428";
 
 // TODO:Sean -> Put the Account numbers here!
 $arrAccounts = Array();
-$arrAccounts[]	= 1000154811;
-$arrAccounts[]	= 1000154842;
-$arrAccounts[]	= 1000154843;
-$arrAccounts[]	= 1000154937;
+$arrAccounts[]	= 1000158123;
+
+/*$selAccounts = new StatementSelect("Charge", "Account", "InvoiceRun = '$strInvoiceRun'", NULL, NULL, "Account HAVING COUNT(Id) > 1");
+$selAccounts->Execute();
+while ($arrAccount = $selAccounts->Fetch())
+{
+	$arrAccounts[] = $arrAccount['Account'];
+}*/
+//Debug($arrAccounts);
 
 //----------------------------------------------------------------------------//
 // /CONFIG
@@ -56,6 +61,7 @@ foreach ($arrAccounts as $intAccount)
 {
 	echo "$intAccount...\n";
 	ob_flush();
+	
 	// Get Invoice Details
 	if (!$selInvoice->Execute(Array('Account' => $intAccount)))
 	{
@@ -75,7 +81,7 @@ $strFileData .= "0019" .
 				str_pad(0, 10, "0", STR_PAD_LEFT) .
 				str_pad(0, 10, "0", STR_PAD_LEFT) .
 				str_pad(0, 10, "0", STR_PAD_LEFT);
-				
+Debug(count($arrAccounts));
 
 				
 // Write to file
@@ -91,7 +97,10 @@ fclose($ptrFile);
 echo "\nCopying to BillPrint...\n";
 ob_flush();
 $rcpRemoteCopy = new RemoteCopyFTP("203.201.137.55", "vixen", "v1xen");
-$rcpRemoteCopy->Connect();
+if (is_string($mixResult = $rcpRemoteCopy->Connect()))
+{
+	echo "$mixResult \n";
+}
 $rcpRemoteCopy->Copy($strLocalPath.$strFilename, "/Incoming/Samples/$strFilename");
 $rcpRemoteCopy->Disconnect();
 

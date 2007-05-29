@@ -16,12 +16,27 @@ require_once($strFrameworkDir."exception_vixen.php");
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
-
-// Accounts to generate for
+// Read command line arguments as Account list
+$bolFirst = TRUE;
 $arrAccounts	= Array();
-$arrAccounts[]	= Array('Account' => 1000156611);
-$arrAccounts[]	= Array('Account' => 1000160843);
-$arrAccounts[]	= Array('Account' => 1000157789);
+foreach ($argv as $strArgument)
+{
+	if ($bolFirst)
+	{
+		$bolFirst = FALSE;
+		continue;
+	}
+	$arrAccounts[] = (int)trim($strArgument);
+}
+
+if (!$arrAccounts)
+{
+	echo "\nERROR: No Accounts to Generate for!\n\n";
+	die;
+}
+
+//Debug($arrAccounts);
+//die;
 
 // Array of 00-99
 $arrRange	= range(0, 99);
@@ -33,12 +48,12 @@ $insExtension	= new StatementInsert("ServiceExtension");
 echo "\n\n";
 
 // Foreach account
-foreach ($arrAccounts as $arrAccount)
+foreach ($arrAccounts as $intAccount)
 {
-	echo " + Creating Extensions for Account {$arrAccount['Account']}...\n";
+	echo " + Creating Extensions for Account $intAccount...\n";
 	ob_flush();
 	
-	$selServices->Execute($arrAccount);
+	$selServices->Execute(Array('Account' => $intAccount));
 	$arrServices = $selServices->FetchAll();
 	
 	// Foreach service
