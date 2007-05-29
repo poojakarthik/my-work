@@ -44,6 +44,7 @@
  */
  abstract class ChargeBase
  {
+ 	public $strChargeType;
  	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -65,7 +66,7 @@
 		$this->_qryDelete = new Query();
 		$this->_selGetAccounts = new StatementSelect("Invoice", "Account", "InvoiceRun = <InvoiceRun> UNION SELECT Account FROM InvoiceTemp WHERE InvoiceRun = <InvoiceRun>");
 		
-		$this->_strChargeType	= "Error: No charge type!";
+		$this->_strChargeType	= NULL;
  	}
  	
  	
@@ -103,8 +104,10 @@
 	 */
  	function Revoke($strInvoiceRun, $intAccount)
  	{
+ 		Debug("InvoiceRun: '$strInvoiceRun'\nAccount: $intAccount\nCharge Type: '$this->_strChargeType'");
+ 		
  		// Delete the charge
- 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount ChargeType = '$this->_strChargeType' AND InvoiceRun = '$strInvoiceRun'");
+ 		return (bool)$this->_qryDelete->Execute("DELETE FROM Charge WHERE Account = $intAccount AND ChargeType = '$this->_strChargeType' AND InvoiceRun = '$strInvoiceRun'");
  	}
  	
  	
