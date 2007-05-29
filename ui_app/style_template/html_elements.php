@@ -126,17 +126,14 @@ class HTMLElements
 	 */
 	function Label($arrParams)
 	{
-
-		// get documentation for label
-		$strDocumentation = explode(".",$arrParams['Name']);
-		
-		echo "<td>";
-		echo "$strDocumentation[1]:";
-		echo "</td>";
-		echo "<td>";
-		//echo "<input name='account.id' value='{$arrParams['Value']}' class='input-string' style='text-align:right'></input>";
-		echo "<div id='{$arrParams['Name']}' class='right'>{$arrParams['Value']}</div>";
-		echo "</td>";
+		echo "	<tr>\n";
+		echo "		<td>\n";
+		echo "			{$arrParams['Definition']['Label']} : \n";
+		echo "		</td>\n";
+		echo "		<td>\n";
+		echo "			<div class='{$arrParams['Definition']['FullClass']}'>{$arrParams['Value']}</div>\n";
+		echo "		</td>\n";
+		echo "	</tr>\n";
 	}
 	
 	//------------------------------------------------------------------------//

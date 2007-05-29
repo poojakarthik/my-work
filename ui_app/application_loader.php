@@ -54,6 +54,17 @@ define('DATABASE_NAME', vixen);
 define('DATABASE_USER', vixen);
 define('DATABASE_PWORD', V1x3n);
 
+// database documentation contexts
+define('CONTEXT_DEFAULT', 0);
+
+define('OUTPUT_TYPE_LABEL', 1);
+define('OUTPUT_TYPE_RADIO', 2);
+
+// CSS classes
+define('CLASS_DEFAULT', 'Default');
+
+
+
 require_once('../framework/functions.php');
 LoadFramework();
 require_once('functions.php');

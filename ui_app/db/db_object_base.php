@@ -453,13 +453,9 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function RenderInput($bolRequired=NULL, $strContext=NULL)
+	function RenderInput($bolRequired=NULL, $intContext=CONTEXT_DEFAULT)
 	{
-		// Build up parameters for RenderHTMLTemplate()
-		//TODO!Interface-kids!Actually do this
-		
-		RenderHTMLTemplate($arrParams);
-		return $this->_dboOwner->_arrProperties[$this->_strProperty];
+		return $this->_RenderIO("Input", $bolRequired, $intContext);
 	}
 
 	//------------------------------------------------------------------------//
@@ -479,12 +475,81 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function RenderOutput($bolRequired=NULL, $strContext=NULL)
+	/*
+	$arrParams['Object'] 		= $this->object;		// 'Account'
+	$arrParams['Property'] 		= $this->property;		// 'Id'
+	$arrParams['Context'] 		= $this->context;		// DEFAULT = 0
+	$arrParams['Definition'] 	= $;					// definition array
+	$arrParams['Value'] 		= $this->Value;			// '1000123456'
+	$arrParams['Valid']			= $;					// TRUE
+	$arrParams['Required'] 		= $bolRequired;			// TRUE
+	
+	$arrDefinition['ValidationRule']	= $;			// VALID_EMAIL
+	$arrDefinition['InputType']	= $;					// 
+	$arrDefinition['OutputType']	= $;				//
+	$arrDefinition['Label']	= $;						//
+	$arrDefinition['InputOptions']	= $;				//
+	$arrDefinition['OutputOptions']	= $;				// ['-1'] = "blah <value> blah"
+														// ['0']  = "blah bleh blah"
+	$arrDefinition['DefaultOutput']	= $;				// "Do not charge for <value> months"
+	$arrDefinition['OutputMask']	= $;				// 
+	
+	*/
+	function RenderOutput($bolRequired=NULL, $intContext=CONTEXT_DEFAULT)
 	{
-		// Build up parameters for RenderHTMLTemplate()
-		//TODO!Interface-kids!Actually do this
+		return $this->_RenderIO("Output", $bolRequired, $intContext);
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderIO
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderIO()
+	 *
+	 * Renders the property in its specified template
+	 *
+	 * Renders the property in its specified template
+	 *
+	 * @param	string	$strType		either "Output" or "Input"
+	 * @param	bool	$bolRequired	Whether the field should be mandatory
+	 * @param	string	$strContext		???????
+	 * 
+	 * @return	mixed	PropertyValue
+	 *
+	 * @method
+	 */
+	private function _RenderIO($strType, $bolRequired=NULL, $intContext=CONTEXT_DEFAULT)
+	{
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			return FALSE;
+		}
 		
-		RenderHTMLTemplate($arrParams);
+		// Build up parameters for RenderHTMLTemplate()
+		$arrParams = Array();
+		$arrParams['Object'] 	= $this->_dboOwner->_strName;
+		$arrParams['Property'] 	= $this->_strProperty;
+		$arrParams['Context'] 	= $intContext;
+		$arrParams['Value'] 	= DBO()->$arrParams['Object']->$arrParams['Property']->Value;
+		
+		$arrParams['Valid'] 	= DBO()->$arrParams['Object']->$arrParams['Property']->Valid;
+		$arrParams['Required'] 	= $bolRequired;
+		$arrParams['Definition'] = $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
+		
+		// work out the class to use
+		if (!$arrParams['Definition']['Class'])
+		{
+			$arrParams['Definition']['FullClass'] = CLASS_DEFAULT; // Default
+		}
+		$arrParams['Definition']['FullClass'] .= $strType; // DefaultInput
+		if ($arrParams['Valid'] === FALSE)
+		{
+			$arrParams['Definition']['FullClass'] .= "Invalid"; // DefaultInputInvalid
+		}
+
+		
+		HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 	

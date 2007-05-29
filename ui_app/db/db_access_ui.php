@@ -91,6 +91,12 @@ class DataAccessUI extends DatabaseAccess
 	 */
 	 function SelectById($strTable, $arrColumns, $intId)
 	 {
+	 	// Make sure we are actually selecting something
+		if (!$arrColumns)
+		{
+			$arrColumns = "*";
+		}
+	 
 	 	// Convert SelectById parameters to StatementSelect equivelants
 	 	$intId = (int)$intId;
 	 	
@@ -133,7 +139,7 @@ class DataAccessUI extends DatabaseAccess
 	 */
 	function Select($strTable, $arrColumns=NULL, $objWhere=NULL, $intLimitStart=NULL, $strLimitCount=NULL)
 	{
-	 	// Create SELECT clause
+		// Create SELECT clause
 		if (!$arrColumns)
 		{
 			// default to select *
@@ -183,6 +189,10 @@ class DataAccessUI extends DatabaseAccess
 	function UpdateById($strTable, $arrColumns, $arrData)
 	{
 		// run query
+		if (!is_array($arrColumns))
+		{
+			$arrColumns = NULL;
+		}
 	 	$ubiUpdate = new StatementUpdateById($strTable, $arrColumns);
 	 	return $ubiUpdate->Execute($arrData);
 	}
@@ -207,7 +217,11 @@ class DataAccessUI extends DatabaseAccess
 	 * @method
 	 */
 	function Insert($strTable, $arrColumns, $arrData)
-	{		
+	{	
+		if (!is_array($arrColumns))
+		{
+			$arrColumns = NULL;
+		}
 		$insInsert = new StatementInsert($strTable, $arrColumns);
 		return $insInsert->Execute($arrData);
 	}

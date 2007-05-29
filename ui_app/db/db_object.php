@@ -28,7 +28,7 @@ class DBObject extends DBObjectBase
 	public $_arrValid		= Array();
 	public $_arrProperties	= Array();
 	public $_intStatus		= 0;
-	public $_arrOptions		= Array();
+	public $_arrDefine		= Array();
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -50,6 +50,8 @@ class DBObject extends DBObjectBase
 	 */
 	function __construct($strName, $strTable=NULL, $mixColumns=NULL)
 	{
+		//_arrDefine does not currently contain 'Table' or 'Columns' or 'IdColumn'
+		
 		// Parent Constructor
 		parent::__construct();
 		
@@ -57,7 +59,7 @@ class DBObject extends DBObjectBase
 		$this->_strName = $strName;
 		
 		// get config
-		$this->_arrOptions = Config()->Get('Dbo', $strName);
+		$this->_arrDefine = Config()->Get('Dbo', $strName);
 		
 		// set table
 		if ($strTable)
@@ -65,10 +67,10 @@ class DBObject extends DBObjectBase
 			// use the table from parameters
 			$this->_strTable = $strTable;
 		}
-		elseif ($this->_arrOptions['Table'])
+		elseif ($this->_arrDefine['Table'])
 		{
 			// use the table from the definition
-			$this->_strTable = $this->_arrOptions['Table'];
+			$this->_strTable = $this->_arrDefine['Table'];
 		}
 		else
 		{
@@ -85,20 +87,22 @@ class DBObject extends DBObjectBase
 		{
 			//TODO!!!! convert column names into an array
 		}
-		elseif ($this->_arrOptions['Columns'])
+		elseif ($this->_arrDefine['Columns'])
 		{
-			$this->_arrColumns = $this->_arrOptions['Columns'];
+			$this->_arrColumns = $this->_arrDefine['Columns'];
 		}
 		else
 		{
-			//TODO!!!! get * column names for tables
+			// get * column names for tables
+			//TODO!!!! I think you have to explicitly define the column names
+			//$this->_arrColumns = "*";
 		}
 		
 		// set ID column name
 		//TODO!!!! look harder to find this
-		if ($this->_arrOptions['IdColumn'])
+		if ($this->_arrDefine['IdColumn'])
 		{
-			$this->_strIdColumn = $this->_arrOptions['IdColumn'];
+			$this->_strIdColumn = $this->_arrDefine['IdColumn'];
 		}
 	}
 	
@@ -209,12 +213,15 @@ class DBObject extends DBObjectBase
 	 function Load($intId = NULL)
 	 {
 		// Set Id if we need to
-		$this->_arrProperties['Id'] = ($intId == (int)$intId) ? $intId : $this->_arrProperties['Id'];
+		if ((int)$intId)
+		{
+			$this->_arrProperties[$this->_strIdColumn] = $intId;
+		}
 		
 		// Make sure we have an Id
-		if ($this->_arrProperties['Id'])
+		if ($this->_arrProperties[$this->_strIdColumn])
 		{
-	 		return $this->LoadData($this->SelectById($this->_strTable, $this->_arrColumns, $intId));
+	 		return $this->LoadData($this->SelectById($this->_strTable, $this->_arrColumns, $this->_arrProperties[$this->_strIdColumn]));
 		}
 		else
 		{
@@ -262,7 +269,7 @@ class DBObject extends DBObjectBase
 	 function Save()
 	 {				
 		// Is this a new record?
-		if ($this->_arrProperties['Id'] > 0)
+		if ($this->_arrProperties[$this->_strIdColumn] > 0)
 		{
 			// Update by Id
 			return (bool)$this->UpdateById($this->_strTable, $this->_arrColumns, $this->_arrProperties);
@@ -272,7 +279,7 @@ class DBObject extends DBObjectBase
 			// Insert, and set the new Id
 			if ($mixResult = $this->Insert($this->_strTable, $this->_arrColumns, $this->_arrProperties))
 			{
-				return (bool)($this->_arrProperties['Id'] = $mixResult);
+				return (bool)($this->_arrProperties[$this->_strIdColumn] = $mixResult);
 			}
 			else
 			{

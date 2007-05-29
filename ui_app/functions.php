@@ -1,7 +1,30 @@
 <?php
-//---------------
+//----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
 // functions.php
-//---------------
+//----------------------------------------------------------------------------//
+/**
+ * functions
+ *
+ * general functions used within ui_app
+ *
+ * general functions used within ui_app
+ *
+ * @file		functions.php
+ * @language	PHP
+ * @package		ui_app
+ * @author		Jared, Sean
+ * @version		7.05
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
+
 require_once(TEMPLATE_STYLE_DIR.'html_elements.php');
 
 
@@ -20,14 +43,12 @@ require_once(TEMPLATE_STYLE_DIR.'html_elements.php');
  *
  * @function
  */
+ //DEPRECIATED
 function RenderHTMLTemplate($arrParams)
 {
 	// With overloading
-	$rah = new HTMLElements;
-	$rah->$arrParams['Template']($arrParams);
+	HTMLElements()->$arrParams['Template']($arrParams);
 	
-	// Without overloading
-	//HTMLTemplate::$arrParams['Template']($arrParams);
 }
 
 
@@ -178,6 +199,30 @@ function Config()
 	$objConfig = Singleton::Instance('Config');
 	return $objConfig;
 }
+
+//------------------------------------------------------------------------//
+// HTMLElements
+//------------------------------------------------------------------------//
+/**
+ * HTMLElements()
+ *
+ * Returns the singleton HTMLElements object
+ *
+ * Returns the singleton HTMLElements object
+ * Note that this will return a new HTMLElements object if one has not yet been
+ * created.  If one has been created, it will return a reference to it.
+ *
+ * @return	HTMLElements object
+ *
+ * @function
+ * 
+ */
+function HTMLElements()
+{
+	$objHTMLElements = Singleton::Instance('HTMLElements');
+	return $objHTMLElements;
+}
+
 
 //------------------------------------------------------------------------//
 // PropertyToken

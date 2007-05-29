@@ -484,13 +484,42 @@ class Config
 				switch (strtolower($strType))
 				{
 					case "dbo":
-						// TODO!Joel! Load and cache config for this object (from somewhere)
-						// $this->_arrConfig[$strType][$strName] = 
-						// possibly retrieve this data from the database using a direct query
-						
-						// The "documentation" is being cached here.
-							// When it is first required, it is retrieved from the database and stored
-							// here.  Therefore subsequent requests will not require access to the database.
+						// Retrieve the documentation so that it can be cached
+						$selDocumentation = new StatementSelect("UIAppDocumentation",
+															"*", 
+															"Object = <Object>");
+	 					$selDocumentation->Execute(Array('Object' => $strName));	
+						$arrDocumentation = $selDocumentation->FetchAll();
+					
+						if (is_array($arrDocumentation))
+						{
+							// Add each record into the $this->_arrConfig[$strType] array
+							// This data can be accessed by: $this->_arrConfig['dbo'][object][property][context][field] = value
+							foreach ($arrDocumentation as $arrRecord)
+							{	
+								$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']] = $arrRecord;
+								unset($this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Id']);
+								unset($this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Object']);
+								unset($this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Property']);
+								unset($this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Context']);
+							}
+							
+							// Retrieve further documentation options such as radio button values and labels
+							$selOptions = new StatementSelect("UIAppDocumentationOptions", "*", "Object = <Object>");
+							$selOptions->Execute(Array('Object' => $strName));
+							$arrOptions = $selOptions->FetchAll();						
+	
+							if (is_array($arrOptions))
+							{
+								foreach ($arrOptions as $arrRecord)
+								{
+									// Add each record to an array called 'Options' inside its associated property array
+									// This data can be accessed by: $this->_arrConfig['dbo'][object][property][context]['Options'][value][field] = value
+									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Options'][$arrRecord['Value']]['Type'] = $arrRecord['Type'];
+									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Options'][$arrRecord['Value']]['Label'] = $arrRecord['Label'];
+								}
+							}
+						}
 						break;
 						
 					case "dbl":
