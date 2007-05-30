@@ -564,9 +564,10 @@ class Config
 								foreach ($arrOptions as $arrRecord)
 								{
 									// Add each record to an array called 'Options' inside its associated property array
-									// This data can be accessed by: $this->_arrConfig['dbo'][object][property][context]['Options'][value][field] = value
-									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Options'][$arrRecord['Value']]['Type'] = $arrRecord['Type'];
-									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Options'][$arrRecord['Value']]['Label'] = $arrRecord['Label'];
+									// This data can be accessed by: $this->_arrConfig['dbo'][object][property][context]['Options'][Group][][field] = value
+									$arrOption['Value'] = $arrRecord['Value'];
+									$arrOption['Label'] = $arrRecord['Label'];
+									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Options'][$arrRecord['Group']][] = $arrOption;
 								}
 							}
 						}

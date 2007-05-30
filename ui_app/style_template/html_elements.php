@@ -116,22 +116,26 @@ class HTMLElements
 					[Class] => Default
 					[Options] => Array
 						(
-							[-1] => Array
+							[0] => Array				<-- this is the Group column found in UIAppDocumentation
 								(
-									[Type] => 0
-									[Label] => Credit Card
-								)
+									[0] => Array
+										(
+											[Value] => -1
+											[Label] => Credit Card
+										)
 		
-							[2] => Array
-								(
-									[Type] => 0
-									[Label] => Direct Debit
-								)
+									[1] => Array
+										(
+											[Value] => 2
+											[Label] => Direct Debit
+										)
 		
-							[3] => Array
-								(
-									[Type] => 0
-									[Label] => Cheque
+									[2] => Array
+										(
+											[Value] => 3
+											[Label] => Cheque
+										)
+		
 								)
 		
 						)
@@ -141,8 +145,8 @@ class HTMLElements
 		
 		)
 
-		The Options array is an associated array where the key is the "value" that
-		relates to the Label.  Type should either be "Input" or "Output" or a constant
+		The Options array is an associated array where the key is the "Group" that
+		relates to the radio buttons group.  Group should either be "Input" or "Output" or a constant
 		defining these two options.
 
 	*/

@@ -431,7 +431,7 @@ class DBList extends DBListBase
 	 */
 	function __set($strProperty, $mixValue)
 	{
-		return ($this->$objWhere->$strProperty = $mixValue);
+		return ($this->objWhere->$strProperty = $mixValue);
 	}
 }
 ?>
