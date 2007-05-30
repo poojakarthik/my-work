@@ -282,15 +282,12 @@ class DBObject extends DBObjectBase
 	/**
 	 * IsValid()
 	 *
-	 * Checks validation of entire object
+	 * Checks that each validated property of the object, is valid.
 	 *
-	 * Validates the entire object
-	 * If any property is found to be invalid then the object is set to invalid
-	 * as well as the individual property
+	 * Checks that each validated property of the object, is valid.
+	 * If a validated property is invalid then the object is set to invalid
+	 * Else it returns the current state of the object's validation
 	 *
-	 * @param	string		$intContext		context which is used to select the 
-	 *										specific validation rule for each property
-	 * 
 	 * @return	bool
 	 *
 	 * @method
@@ -308,6 +305,22 @@ class DBObject extends DBObjectBase
 		return $this->_bolValid;
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetValid
+	//------------------------------------------------------------------------//
+	/**
+	 * SetValid()
+	 *
+	 * Checks that each validated property of the object, is valid
+	 *
+	 * Checks that each validated property of the object, is valid
+	 * If a validated property is invalid then the object is set to invalid
+	 * Else it sets the object to valid
+	 *
+	 * @return	bool
+	 *
+	 * @method
+	 */
 	// checks validation on the entire object and also sets the object to valid
 	function SetValid()
 	{

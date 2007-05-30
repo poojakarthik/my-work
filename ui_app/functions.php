@@ -266,7 +266,26 @@ function PropertyToken()
 	return $objPropertyToken;
 }
 
-
+//------------------------------------------------------------------------//
+// Validate
+//------------------------------------------------------------------------//
+/**
+ * Validate()
+ *
+ * Validates the given value using the specified validation rule or regular expression
+ *
+ * Validates the given value using the specified validation rule or regular expression
+ *
+ * @param	string	$strValidationRule	name of the validation rule's method which must
+ *										be a method of the Validation class; 
+ *										OR a regex to use for validation
+ * @param	mixed	$mixValue			the value to validate
+ *										
+ * @return	bool
+ *
+ * @function
+ * 
+ */
 function Validate($strValidationRule, $mixValue)
 {
 	$objValidation = Singleton::Instance('Validation');

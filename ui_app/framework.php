@@ -616,4 +616,47 @@ class Config
 	}
 }
 
+//----------------------------------------------------------------------------//
+// Validation
+//----------------------------------------------------------------------------//
+/**
+ * Validation
+ *
+ * The Validation class
+ *
+ * The Validation class - encapsulates all validation rules
+ * It can also handle validation against a regex
+ * Each validation rule that isn't a regex will have a method defined in this class.
+ *
+ * @package	ui_app
+ * @class	Validation
+ */
+class Validation
+{
+	//------------------------------------------------------------------------//
+	// RegexValidate
+	//------------------------------------------------------------------------//
+	/**
+	 * RegexValidate()
+	 *
+	 * Validates a value using a regular expression as the validation rule
+	 *
+	 * Validates a value using a regular expression as the validation rule
+	 *
+	 * @param	string		$strValidationRule	the validation rule as a regex
+	 * @param	mix			$mixValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function RegexValidate($strValidationRule, $mixValue)
+	{
+		return TRUE;
+	}
+}
+
+
+
+
 ?>
