@@ -308,6 +308,17 @@ class DbWhere
 		}
 	}
 	
+
+	function __set($strProperty, $strValue)
+	{
+		$this->_arrWhere[$strProperty] = $strValue;
+	}
+	
+	function __get($strProperty)
+	{
+		return $this->_arrWhere[$strProperty];
+	}
+	
 	//------------------------------------------------------------------------//
 	// SetArray
 	//------------------------------------------------------------------------//
@@ -324,9 +335,9 @@ class DbWhere
 	 *
 	 * @method
 	 */
-	function SetArray($arrWhere, $strValue=NULL)
+	function SetArray($arrWhere)
 	{
-	
+		$this->_arrWhere = $arrWhere;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -366,18 +377,22 @@ class DbWhere
 	 */
 	function GetArray()
 	{
-		if (empty($this->_arrWhere))
-		{
-		
-		}
-		else
-		{
-			return $this->_arrWhere;
-		}
+		return $this->_arrWhere;
 	}
 	
 	function GetString()
 	{
+		if (!trim($this->_strWhere)))
+		{
+			$arrWhere = Array();
+			foreach($this->_arrWhere AS $strKey=>$strValue)
+			{
+				$arrWhere[] = "$strKey = <$strKey>"; 
+			}
+			$strWhere
+			return $strWhere;
+		}
+		
 		return $this->_strWhere;
 	}
 }
