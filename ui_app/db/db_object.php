@@ -264,7 +264,7 @@ class DBObject extends DBObjectBase
 	{
 		$this->_bolValid = TRUE;
 		$this->_arrValid = Array();
-		foreach ($_arrProperties AS $strProperty=>$mixValue)
+		foreach ($this->_arrProperties AS $strProperty=>$mixValue)
 		{
 			// validate property
 			if (!$this->_arrValid[$strProperty] = $this->ValidateProperty($strProperty, $mixValue, $intContext))
@@ -295,7 +295,7 @@ class DBObject extends DBObjectBase
 	// checks validation on the entire object
 	function IsValid()
 	{
-		foreach($_arrValid AS $bolValid)
+		foreach($this->_arrValid AS $bolValid)
 		{
 			if ($bolValid === FALSE)
 			{
@@ -610,6 +610,31 @@ class DBObject extends DBObjectBase
 			}
 		}
 	 }
+	 
+	//------------------------------------------------------------------------//
+	// Info
+	//------------------------------------------------------------------------//
+	/**
+	 * Info()
+	 *
+	 * return info about the DBO object
+	 *
+	 * return info about the DBO object
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function Info()
+	{
+		
+		$arrReturn['Properties'] = $this->_arrProperties;
+		if (!empty($this->_arrValid))
+		{
+			$arrReturn['Valid'] = $this->_arrValid;
+		}
+		return $arrReturn;
+	}
 }
 
 

@@ -1,13 +1,17 @@
 <?php
 
 include_once('application_loader.php');
+$Application->Load('Test.Test');
 
 // **************************DBO() Tests******************************
 
 DBO()->Table1->BlowMe = "test";
 DBO()->Table2->BlowMe = "This is stored in Table2";
 
-DBO()->Account->Id = 1000004777;
+DBO()->ShowInfo();
+Die();
+
+//DBO()->Account->Id = 1000004777;
 DBO()->Account->Load();
 //DBO()->Contact->Id = 1000004777;
 

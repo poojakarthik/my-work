@@ -425,6 +425,47 @@ class DBOFramework
 		
 		return $bolReturn;
 	}
+	
+	//------------------------------------------------------------------------//
+	// Info
+	//------------------------------------------------------------------------//
+	/**
+	 * Info()
+	 *
+	 * return info about all DBO object
+	 *
+	 * return info about all DBO object
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function Info()
+	{
+		foreach ($this->_arrProperty AS $strObject=>$objObject)
+		{
+			$arrReturn[$strObject] = $objObject->Info();
+		}
+		return $arrReturn;
+	}
+	
+	function ShowInfo()
+	{
+		$arrInfo = $this->Info();
+		foreach ($arrInfo AS $strObject=>$arrObject)
+		{
+			$strOutput .= "$strObject\n";
+			foreach ($arrObject AS $strKey=>$arrValue)
+			{
+				$strOutput .= "	$strKey\n";
+				foreach ($arrValue AS $strProperty=>$mixValue)
+				{
+					$strOutput .= "		$strProperty : $mixValue\n";
+				}
+			}
+		}
+		Debug($strOutput);
+	}	
 }
 
 //----------------------------------------------------------------------------//

@@ -82,11 +82,12 @@ require_once('db/db_access_ui.php');
 require_once('db/db_object_base.php');
 require_once('db/db_object.php');
 require_once('db/db_list.php');
+require_once('db/token.php');
 
 require_once('json.php');
 //require_once('db_access_old.php');
 
-$myApplication = new Application;
+$Application = new Application;
 
 
 //------------------------------------------------------------------------//

@@ -123,6 +123,9 @@ class PropertyToken
 			// The property's value
 			case "value":
 				return $this->_dboOwner->_arrProperties[$this->_strProperty];
+			// The properties validity
+			case "valid":
+				return $this->_dboOwner->_arrValid[$this->_strProperty];
 		}
 		
 		// Do we have a column property by this name?
@@ -322,6 +325,25 @@ class PropertyToken
 	{
 		echo $this->_dboOwner->_arrProperties[$this->_strProperty];
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
+	}
+	
+	//------------------------------------------------------------------------//
+	// Validate
+	//------------------------------------------------------------------------//
+	/**
+	 * Validate()
+	 *
+	 * Validate the property
+	 *
+	 * Validate the property
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function Valid()
+	{
+		return $this->_dboOwner->ValidateProperty($this->_strProperty);
 	}
 	
 }

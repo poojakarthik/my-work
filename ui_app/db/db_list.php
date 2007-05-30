@@ -128,10 +128,10 @@ class DBList extends DBListBase
 		}
 		
 		// set USE INDEX
-		$this->_strUseIndex = $this->_arrDefine['UseIndex']
+		$this->_strUseIndex = $this->_arrDefine['UseIndex'];
 		
 		// set ORDER BY
-		$this->_strOrderBy = $this->_arrDefine['OrderBy']
+		$this->_strOrderBy = $this->_arrDefine['OrderBy'];
 		
 		// set up where object
 		if (!is_null($strWhere))
