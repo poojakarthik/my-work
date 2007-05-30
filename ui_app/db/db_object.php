@@ -339,9 +339,11 @@ class DBObject extends DBObjectBase
 	/**
 	 * LoadMerge()
 	 *
-	 * <short description>
+	 * Merges data from the database into the existing property data
 	 *
-	 * <long description>
+	 * Merges data from the database into the existing property data
+	 * Each individual property is only loaded from the database, if it is 
+	 * currently undefined in the object
 	 *
 	 * @param	integer	$intId	[optional] <description>
 	 * @return	boolean
@@ -413,12 +415,13 @@ class DBObject extends DBObjectBase
 	/**
 	 * MergeData()
 	 *
-	 * Merges a MySQL result associative array with existing property data
+	 * Merges a MySQL result associative array into the existing property data
 	 *
-	 * Merges a MySQL result associative array with existing property data
-	 * If 
+	 * Merges a MySQL result associative array into the existing property data
+	 * Each individual property is only loaded from $arrData, if it is currently
+	 * undefined in the object
 	 *
-	 * @param	array		$arrData	the raw data to be loaded into the object
+	 * @param	array		$arrData	the raw data to be merged into the object
 	 *									(MySQL result associative array)
 	 * @return	bool
 	 *
@@ -442,6 +445,22 @@ class DBObject extends DBObjectBase
 		return TRUE;
 	 }
 	 
+	//------------------------------------------------------------------------//
+	// UpdateData
+	//------------------------------------------------------------------------//
+	/**
+	 * UpdateData()
+	 *
+	 * Updates the object's property data from a MySQL result associative array
+	 *
+	 * Updates the object's property data from a MySQL result associative array
+	 *
+	 * @param	array		$arrData	the raw data used to update the object
+	 *									(MySQL result associative array)
+	 * @return	bool
+	 *
+	 * @method
+	 */
 	 function UpdateData($arrData)
 	 {
 	 	// store the raw result
