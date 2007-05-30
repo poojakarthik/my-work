@@ -433,7 +433,7 @@ class DbWhere
 	 */
 	function GetString()
 	{
-		if (!trim($this->_strWhere)))
+		if (!trim($this->_strWhere))
 		{
 			$arrWhere = Array();
 			foreach($this->_arrWhere AS $strKey=>$strValue)
