@@ -315,12 +315,42 @@ class DbWhere
 		}
 	}
 	
-
+	//------------------------------------------------------------------------//
+	// __set
+	//------------------------------------------------------------------------//
+	/**
+	 * __set()
+	 *
+	 * Modifier for the value of a specified placeholder
+	 *
+	 * Modifier for the value of a specified placeholder
+	 *
+	 * @param	string	$strProperty	the placeholder to modify the value of
+	 * @param	array	$strValue		the new value to associate with the placeholder
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function __set($strProperty, $strValue)
 	{
 		$this->_arrWhere[$strProperty] = $strValue;
 	}
 	
+	//------------------------------------------------------------------------//
+	// __get
+	//------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 *
+	 * Accessor for the value of a specified placeholder
+	 *
+	 * Accessor for the value of a specified placeholder
+	 *
+	 * @param	string	$strProperty	the placeholder to access the value of
+	 * @return	string					the value associated with the placeholder
+	 *
+	 * @method
+	 */
 	function __get($strProperty)
 	{
 		return $this->_arrWhere[$strProperty];
@@ -395,9 +425,9 @@ class DbWhere
 	 *
 	 * Retrieves the SQL WHERE clause with named placeholders for values
 	 *
-	 * @return	string	compiled SQL WHERE clause with named placeholders for values
+	 * @return	string	Compiled SQL WHERE clause with named placeholders for values.
 	 * 					If the object is currently storing an array of placeholders and values
-	 *					then this string is compiled from that.  Else it returns the stored
+	 *					then this return string is compiled from that.  Else it returns the stored
 	 *					SQL WHERE clause string.
 	 * @method
 	 */
