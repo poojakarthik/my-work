@@ -25,13 +25,14 @@ class DBList extends DBListBase
 	public $_intLimitCount	= NULL;
 	public $_intMode 		= DBO_RETURN;
 	public $_strIdColumn 	= 'Id';
+	public $_strUseIndex 	= NULL;
+	public $_strOrderBy 	= NULL;
 	public $_arrColumns 	= Array();
 	public $_strTable		= '';
 	public $_strName		= '';
 	public $_arrResult		= Array();
 	public $_arrRequest		= Array();
 	public $_arrValid		= Array();
-	public $_arrProperty	= Array();
 	public $_intStatus		= 0;
 	public $_arrDefine		= Array();
 	public $_db				= NULL;
@@ -60,7 +61,7 @@ class DBList extends DBListBase
 	function __construct($strName, $strTable=NULL, $mixColumns=NULL, $strWhere=NULL, $arrWhere=NULL, $intLimitStart=NULL, $intLimitCount=NULL)
 	{
 		// Parent Constructor
-		parent::__construct();		// !!!!!I'm not sure if it needs this, but the DBObject class has it here
+		parent::__construct();
 		
 		// set name
 		$this->_strName = $strName;
@@ -128,6 +129,12 @@ class DBList extends DBListBase
 		{
 			$this->_intLimitCount = $this->_arrDefine['LimitCount'];
 		}
+		
+		// set USE INDEX
+		//$this->_strUseIndex = 
+		
+		// set ORDER BY
+		//$this->_strOrderBy = 
 		
 		// set up where object
 		if (!is_null($strWhere))
@@ -328,10 +335,6 @@ class DBList extends DBListBase
 
 			$this->arrDataArray[$this->_intCount]->_arrResult	= $arrRecord;
 			$this->arrDataArray[$this->_intCount]->LoadProperties($arrRecord);  //this method doesn't exist at the moment
-			
-			// for each index
-				// create index entry for object
-				//TODO!!!!
 				
 			// return key
 			return $this->_intCount;
@@ -385,7 +388,7 @@ class DBList extends DBListBase
 	 */
 	function UseIndex($strProperty)
 	{
-		$this->strUseIndex = $strProperty;
+		$this->_strUseIndex = $strProperty;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -406,7 +409,7 @@ class DBList extends DBListBase
 	 */
 	function OrderBy($strProperty)
 	{
-		$this->strOrderBy = $strProperty;
+		$this->_strOrderBy = $strProperty;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -422,7 +425,7 @@ class DBList extends DBListBase
 	 * @param	string		$strProperty	The property's name
 	 * @param	mixed		$mixValue		The property's value
 	 * 
-	 * @return	PropertyToken
+	 * @return	mixed
 	 *
 	 * @method
 	 */
