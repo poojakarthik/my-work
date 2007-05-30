@@ -184,7 +184,8 @@ class DBObject extends DBObjectBase
 	 *
 	 * @param	string		$strProperty	The new property's name
 	 * @param	mix			$mixValue		The new property's value
-	 * @param	string		$intContext		The new property's context for validation
+	 * @param	string		$intContext		The new property's context which is 
+	 *										used to select the specific validation rule
 	 * 
 	 * @return	void
 	 *
@@ -199,15 +200,35 @@ class DBObject extends DBObjectBase
 		$this->ValidateProperty($strProperty, $intContext);
 	}
 	
+	//------------------------------------------------------------------------//
+	// ValidateProperty
+	//------------------------------------------------------------------------//
+	/**
+	 * ValidateProperty()
+	 *
+	 * Validates a property
+	 *
+	 * Validates a property
+	 * If the property is found to be invalid then the object is set to invalid
+	 * as well as the individual property
+	 *
+	 * @param	string		$strProperty	name of property to validate
+	 * @param	string		$intContext		the property's context which is 
+	 *										used to select the specific validation rule
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
 	function ValidateProperty($strProperty, $intContext=CONTEXT_DEFAULT)
 	{
 		// find validation rule
-		$mixValidationRule = $this->_arrDefine[$strProperty][$intContext]['ValidationRule'];
+		$strValidationRule = $this->_arrDefine[$strProperty][$intContext]['ValidationRule'];
 		
 		// do validation
-		if ($mixValidationRule)
+		if ($strValidationRule)
 		{
-			if (!$this->_arrValid[$strProperty] = Validate($mixValidationRule, $this->_arrProperties[$strProperty]))
+			if (!$this->_arrValid[$strProperty] = Validate($strValidationRule, $this->_arrProperties[$strProperty]))
 			{
 				$this->_bolValid = FALSE;
 			}
@@ -220,7 +241,25 @@ class DBObject extends DBObjectBase
 		}
 	}
 	
-	// validates the entire object
+	//------------------------------------------------------------------------//
+	// Validate
+	//------------------------------------------------------------------------//
+	/**
+	 * Validate()
+	 *
+	 * Validates the entire object
+	 *
+	 * Validates the entire object
+	 * If any property is found to be invalid then the object is set to invalid
+	 * as well as the individual property
+	 *
+	 * @param	string		$intContext		context which is used to select the 
+	 *										specific validation rule for each property
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
 	function Validate($intContext=CONTEXT_DEFAULT)
 	{
 		$this->_bolValid = TRUE;
@@ -237,6 +276,25 @@ class DBObject extends DBObjectBase
 		return $this->_bolValid;
 	}
 	
+	//------------------------------------------------------------------------//
+	// IsValid
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValid()
+	 *
+	 * Checks validation of entire object
+	 *
+	 * Validates the entire object
+	 * If any property is found to be invalid then the object is set to invalid
+	 * as well as the individual property
+	 *
+	 * @param	string		$intContext		context which is used to select the 
+	 *										specific validation rule for each property
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
 	// checks validation on the entire object
 	function IsValid()
 	{
@@ -250,6 +308,7 @@ class DBObject extends DBObjectBase
 		return $this->_bolValid;
 	}
 	
+	// checks validation on the entire object and also sets the object to valid
 	function SetValid()
 	{
 		$this->_bolValid = TRUE;
