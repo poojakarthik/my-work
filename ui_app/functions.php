@@ -266,9 +266,19 @@ function PropertyToken()
 	return $objPropertyToken;
 }
 
-function Validate($mixValidationRule, $mixValue)
+
+function Validate($strValidationRule, $mixValue)
 {
-	//TODO!!!!
-	return TRUE;
+	$objValidation = Singleton::Instance('Validation');
+	if (method_exists($objValidation, $strValidationRule))
+	{
+		// use validation method
+		return $objValidation->$strValidationRule($mixValue);
+	}
+	else
+	{
+		// use regex validation
+		return $objValidation->RegexValidate($strValidationRule, $mixValue);
+	}
 }
 ?>

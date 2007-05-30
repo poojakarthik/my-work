@@ -417,7 +417,7 @@ class DBOFramework
 		
 		foreach($this->_arrProperty AS $dboObject)
 		{
-			if (!$dboObject->SetValid)
+			if (!$dboObject->SetValid())
 			{
 				$bolReturn = FALSE;
 			}
