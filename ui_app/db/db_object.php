@@ -173,28 +173,28 @@ class DBObject extends DBObjectBase
 	}
 	
 	
-	function AddProperty($strProperty, $mixValue)
+	function AddProperty($strProperty, $mixValue, $intContext=CONTEXT_DEFAULT)
 	{
 		// store property
 		$this->_arrProperties[$strProperty] = $mixValue;
 		
 		// validate property
-		if (!$this->_arrValid[$strProperty] = $this->ValidateProperty($strProperty, $mixValue))
-		{
-			// invalid
-			$this->_bolValid = FALSE;
-		}
+		$this->ValidateProperty($strProperty, $intContext);
 	}
 	
-	function ValidateProperty($strProperty, $mixValue)
+	function ValidateProperty($strProperty, $intContext=CONTEXT_DEFAULT)
 	{
 		// find validation rule
-		// TODO!!!!
+		$mixValidationRule = $this->_arrDefine[$strProperty][$intContext]['ValidationRule'];
 		
 		// do validation
 		if ($mixValidationRule)
 		{
-			return Validate($mixValidationRule, $mixValue);
+			if (!$this->_arrValid[$strProperty] = Validate($mixValidationRule, $this->_arrProperties[$strProperty]))
+			{
+				$this->_bolValid = FALSE;
+			}
+			return $this->_arrValid[$strProperty];
 		}
 		else
 		{
@@ -203,14 +203,14 @@ class DBObject extends DBObjectBase
 		}
 	}
 	
-	function Validate()
+	function Validate($intContext=CONTEXT_DEFAULT)
 	{
 		$this->_bolValid = TRUE;
 		$this->_arrValid = Array();
 		foreach ($_arrProperties AS $strProperty=>$mixValue)
 		{
 			// validate property
-			if (!$this->_arrValid[$strProperty] = $this->ValidateProperty($strProperty, $mixValue))
+			if (!$this->_arrValid[$strProperty] = $this->ValidateProperty($strProperty, $mixValue, $intContext))
 			{
 				// invalid
 				$this->_bolValid = FALSE;

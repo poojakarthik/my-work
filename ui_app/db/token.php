@@ -274,14 +274,14 @@ class PropertyToken
 		
 		// Build up parameters for RenderHTMLTemplate()
 		$arrParams = Array();
-		$arrParams['Object'] 	= $this->_dboOwner->_strName;
-		$arrParams['Property'] 	= $this->_strProperty;
-		$arrParams['Context'] 	= $intContext;
-		$arrParams['Value'] 	= DBO()->$arrParams['Object']->$arrParams['Property']->Value;
+		$arrParams['Object'] 		= $this->_dboOwner->_strName;
+		$arrParams['Property'] 		= $this->_strProperty;
+		$arrParams['Context'] 		= $intContext;
+		$arrParams['Value'] 		= $this->_dboOwner->_arrProperties[$this->_strProperty];
 		
-		$arrParams['Valid'] 	= DBO()->$arrParams['Object']->$arrParams['Property']->Valid;
-		$arrParams['Required'] 	= $bolRequired;
-		$arrParams['Definition'] = $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
+		$arrParams['Valid'] 		= $this->_dboOwner->_arrValid[$this->_strProperty];
+		$arrParams['Required'] 		= $bolRequired;
+		$arrParams['Definition'] 	= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
 
 		// work out the class to use
 		if (!$arrParams['Definition']['Class'])
