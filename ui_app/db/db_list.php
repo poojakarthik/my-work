@@ -26,14 +26,14 @@ class DBList extends DBListBase
 	public $_intMode 		= DBO_RETURN;
 	public $_strIdColumn 	= 'Id';
 	public $_arrColumns 	= Array();
-	public $_arrTables		= Array();
+	public $_strTable		= '';
 	public $_strName		= '';
 	public $_arrResult		= Array();
 	public $_arrRequest		= Array();
 	public $_arrValid		= Array();
 	public $_arrProperty	= Array();
 	public $_intStatus		= 0;
-	public $_arrOptions		= Array();
+	public $_arrDefine		= Array();
 	public $_db				= NULL;
 	
 	
@@ -48,7 +48,7 @@ class DBList extends DBListBase
 	 * Database Object List Constructor
 	 *
 	 * @param	string	$strName					Name of the List Template to load
-	 * @param	mixed	$mixTable		optional	Tables to load from
+	 * @param	mixed	$strTable		optional	Database table to connect the data object to 
 	 * @param	mixed	$mixColumns		optional	Columns to load
 	 * @param	string	$strWhere		optional	WHERE Clause
 	 * @param	array	$arrWhere		optional	WHERE Data
@@ -57,33 +57,34 @@ class DBList extends DBListBase
 	 *
 	 * @method
 	 */
-	function __construct($strName, $mixTable=NULL, $mixColumns=NULL, $strWhere=NULL, $arrWhere=NULL, $intLimitStart=NULL, $intLimitCount=NULL)
+	function __construct($strName, $strTable=NULL, $mixColumns=NULL, $strWhere=NULL, $arrWhere=NULL, $intLimitStart=NULL, $intLimitCount=NULL)
 	{
+		// Parent Constructor
+		parent::__construct();		// !!!!!I'm not sure if it needs this, but the DBObject class has it here
+		
 		// set name
 		$this->_strName = $strName;
 		
 		// get config
-		$this->_arrOptions = Config()->Get('Dbl', $strName);
+		$this->_arrDefine = Config()->Get('Dbl', $strName);  // !!!!!this 'Dbl' option is not yet implemented in the Config class
 		
 		// set table
-		if (is_array($mixTable))
+		if ($strTable)
 		{
-			$this->_arrTables = $mixTable;
+			// use the table from parameters
+			$this->_strTable = $strTable;
 		}
-		elseif ($this->_arrOptions['Tables'])
+		elseif ($this->_arrDefine['Table'])
 		{
-			$this->_arrTables = $this->_arrOptions['Tables'];
-		}
-		elseif($mixTable)
-		{
-			//TODO!!!! convert table names into an array
+			// use the table from the definition
+			$this->_strTable = $this->_arrDefine['Table'];
 		}
 		else
 		{
-			// as a last resort use the dbl name as the table name
-			$this->_arrTables[$strName]['Table'] = $strName;
+			// as a last resort use the dbo name as the table name
+			$this->_strTable = $strName;
 		}
-
+		
 		// set columns
 		if (is_array($mixColumns))
 		{
@@ -93,9 +94,9 @@ class DBList extends DBListBase
 		{
 			//TODO!!!! convert column names into an array
 		}
-		elseif ($this->_arrOptions['Columns'])
+		elseif ($this->_arrDefine['Columns'])
 		{
-			$this->_arrColumns = $this->_arrOptions['Columns'];
+			$this->_arrColumns = $this->_arrDefine['Columns'];
 		}
 		else
 		{
@@ -104,9 +105,9 @@ class DBList extends DBListBase
 		
 		// set ID column name
 		//TODO!!!! look harder to find this
-		if ($this->_arrOptions['IdColumn'])
+		if ($this->_arrDefine['IdColumn'])
 		{
-			$this->_strIdColumn = $this->_arrOptions['IdColumn'];
+			$this->_strIdColumn = $this->_arrDefine['IdColumn'];
 		}
 		
 		// set limit
@@ -116,7 +117,7 @@ class DBList extends DBListBase
 		}
 		else
 		{
-			$this->_intLimitStart = $this->_arrOptions['LimitStart'];
+			$this->_intLimitStart = $this->_arrDefine['LimitStart'];
 		}
 		
 		if (!is_null($intLimitCount))
@@ -125,7 +126,7 @@ class DBList extends DBListBase
 		}
 		else
 		{
-			$this->_intLimitCount = $this->_arrOptions['LimitCount'];
+			$this->_intLimitCount = $this->_arrDefine['LimitCount'];
 		}
 		
 		// set up where object
@@ -135,7 +136,7 @@ class DBList extends DBListBase
 		}
 		else
 		{
-			$this->objWhere 	= new DbWhere($this->_arrOptions['Where'], $this->_arrOptions['WhereData']);
+			$this->objWhere 	= new DbWhere($this->_arrDefine['Where'], $this->_arrDefine['WhereData']);
 		}
 	}
 	
@@ -263,7 +264,7 @@ class DBList extends DBListBase
 	function Select()
 	{
 		// select the record
-		if ($arrResult = $this->_db->Select($this->_arrTables, $this->_arrColumns, $this->objWhere, $this->intLimitStart, $this->intLimitCount))
+		if ($arrResult = $this->_db->Select($this->_strTable, $this->_arrColumns, $this->objWhere, $this->intLimitStart, $this->intLimitCount))
 		{
 			$this->_arrResult = $arrResult;
 		}
@@ -323,10 +324,10 @@ class DBList extends DBListBase
 			$this->_intCount++;
 			
 			// create object with count key
-			$this->arrDataArray[$this->_intCount] = new DBObject($this->_strName, $this->_arrTables, $this->arrColumns);
+			$this->arrDataArray[$this->_intCount] = new DBObject($this->_strName, $this->_strTable, $this->arrColumns);
 
 			$this->arrDataArray[$this->_intCount]->_arrResult	= $arrRecord;
-			$this->arrDataArray[$this->_intCount]->LoadProperties($arrRecord);
+			$this->arrDataArray[$this->_intCount]->LoadProperties($arrRecord);  //this method doesn't exist at the moment
 			
 			// for each index
 				// create index entry for object

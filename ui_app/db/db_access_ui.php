@@ -162,7 +162,7 @@ class DataAccessUI extends DatabaseAccess
 		}
 		
 	 	// Statement Construct, Execute, Fetch, Return :D
-	 	$selStatement = new StatementSelect($strTable, $arrColumns, $objWhere->strWhere, NULL, $strLimit);
+	 	$selStatement = new StatementSelect($strTable, $mixColumns, $objWhere->strWhere, NULL, $strLimit);
 	 	$selStatement->Execute($objWhere->arrWhere);
 	 	return $selStatement->FetchAll();
 	}

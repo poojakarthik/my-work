@@ -447,9 +447,9 @@ class PropertyToken
 	 * Renders the property in it's HTML input form
 	 *
 	 * @param	bool	$bolRequired	Whether the field should be mandatory
-	 * @param	string	$strContext		???????
+	 * @param	string	$strContext		The context in which the property will be displayed
 	 * 
-	 * @return	mixed	PropertyValue
+	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
 	 *
 	 * @method
 	 */
@@ -469,32 +469,12 @@ class PropertyToken
 	 * Renders the property in it's standard label form
 	 *
 	 * @param	bool	$bolRequired	Whether the field should be mandatory
-	 * @param	string	$strContext		???????
+	 * @param	string	$strContext		The context in which the property will be displayed
 	 * 
-	 * @return	mixed	PropertyValue
+	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
 	 *
 	 * @method
 	 */
-	/*
-	$arrParams['Object'] 		= $this->object;		// 'Account'
-	$arrParams['Property'] 		= $this->property;		// 'Id'
-	$arrParams['Context'] 		= $this->context;		// DEFAULT = 0
-	$arrParams['Definition'] 	= $;					// definition array
-	$arrParams['Value'] 		= $this->Value;			// '1000123456'
-	$arrParams['Valid']			= $;					// TRUE
-	$arrParams['Required'] 		= $bolRequired;			// TRUE
-	
-	$arrDefinition['ValidationRule']	= $;			// VALID_EMAIL
-	$arrDefinition['InputType']	= $;					// 
-	$arrDefinition['OutputType']	= $;				//
-	$arrDefinition['Label']	= $;						//
-	$arrDefinition['InputOptions']	= $;				//
-	$arrDefinition['OutputOptions']	= $;				// ['-1'] = "blah <value> blah"
-														// ['0']  = "blah bleh blah"
-	$arrDefinition['DefaultOutput']	= $;				// "Do not charge for <value> months"
-	$arrDefinition['OutputMask']	= $;				// 
-	
-	*/
 	function RenderOutput($bolRequired=NULL, $intContext=CONTEXT_DEFAULT)
 	{
 		return $this->_RenderIO("Output", $bolRequired, $intContext);
@@ -512,9 +492,9 @@ class PropertyToken
 	 *
 	 * @param	string	$strType		either "Output" or "Input"
 	 * @param	bool	$bolRequired	Whether the field should be mandatory
-	 * @param	string	$strContext		???????
+	 * @param	string	$strContext		The context in which the property will be displayed
 	 * 
-	 * @return	mixed	PropertyValue
+	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
 	 *
 	 * @method
 	 */
@@ -536,19 +516,22 @@ class PropertyToken
 		$arrParams['Valid'] 	= DBO()->$arrParams['Object']->$arrParams['Property']->Valid;
 		$arrParams['Required'] 	= $bolRequired;
 		$arrParams['Definition'] = $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
-		
+
 		// work out the class to use
 		if (!$arrParams['Definition']['Class'])
 		{
 			$arrParams['Definition']['FullClass'] = CLASS_DEFAULT; // Default
 		}
-		$arrParams['Definition']['FullClass'] .= $strType; // DefaultInput
+		else
+		{
+			$arrParams['Definition']['FullClass'] = $arrParams['Definition']['Class'];
+		}
+		$arrParams['Definition']['FullClass'] .= $strType; // DefaultInput or DefaultOutput
 		if ($arrParams['Valid'] === FALSE)
 		{
-			$arrParams['Definition']['FullClass'] .= "Invalid"; // DefaultInputInvalid
+			$arrParams['Definition']['FullClass'] .= "Invalid"; // DefaultInputInvalid or DefaultOutput
 		}
 
-		
 		HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}

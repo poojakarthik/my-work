@@ -47,7 +47,7 @@ class HTMLElements
 	//			require it (eg, onkeyup=Validate(this) for inputs which are ABNs
 	//		o Need to find some way to parse masking data and add values in
 	
-	/*
+	/*  ******************This structure is not actually used any more********
 	$arrParams['Object'] 		= $this->object;		// 'Account'
 	$arrParams['Property'] 		= $this->property;		// 'Id'
 	$arrParams['Context'] 		= $this->context;		// DEFAULT
@@ -66,6 +66,85 @@ class HTMLElements
 	$arrDefinition['DefaultOutput']	= $;				// "Do not charge for <value> months"
 	$arrDefinition['OutputMask']	= $;				// 
 	
+	*************************************************************************/
+	/* 
+		An example of the $arrParams array that is passed to each of these functions
+		is as follows.  Note that this can have a more complex structure to it if it is
+		defining a set of radio buttons, or a similar control
+	 
+		Array
+		(
+			[Object] => Account
+			[Property] => BusinessName
+			[Context] => 0
+			[Value] => West Trend Interiors
+			[Valid] => 
+			[Required] => 
+			[Definition] => Array
+				(
+					[ValidationRule] => 0
+					[InputType] => Text
+					[OutputType] => Label
+					[Label] => Business Name
+					[DefaultOutput] => 
+					[OutputMask] => 0
+					[Class] => Default
+					[FullClass] => DefaultOutput
+				)
+		
+		)	
+		
+		A property that can be displayed as a group of radio buttons, will have the 
+		$arrParams structure:
+		
+		Array
+		(
+			[Object] => Account
+			[Property] => BillingType
+			[Context] => 1
+			[Value] => 3
+			[Valid] => 
+			[Required] => 1
+			[Definition] => Array
+				(
+					[ValidationRule] => 0
+					[InputType] => ComboBox
+					[OutputType] => Radio
+					[Label] => Billing Type Context 2
+					[DefaultOutput] => hello
+					[OutputMask] => 0
+					[Class] => Default
+					[Options] => Array
+						(
+							[-1] => Array
+								(
+									[Type] => 0
+									[Label] => Credit Card
+								)
+		
+							[2] => Array
+								(
+									[Type] => 0
+									[Label] => Direct Debit
+								)
+		
+							[3] => Array
+								(
+									[Type] => 0
+									[Label] => Cheque
+								)
+		
+						)
+		
+					[FullClass] => DefaultOutput
+				)
+		
+		)
+
+		The Options array is an associated array where the key is the "value" that
+		relates to the Label.  Type should either be "Input" or "Output" or a constant
+		defining these two options.
+
 	*/
 	
 	//------------------------------------------------------------------------//

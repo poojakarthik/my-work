@@ -72,6 +72,25 @@ function DBO()
 	return Singleton::Instance('DBOFramework');
 }
 
+//------------------------------------------------------------------------//
+// DBL
+//------------------------------------------------------------------------//
+/**
+ * DBL()
+ *
+ * Returns an instance of the Database Object List Framework
+ *
+ * Returns an instance of the Database Object List Framework
+ *
+ * @return	DBLFramework
+ *
+ * @method
+ */
+function DBL()
+{
+	return Singleton::Instance('DBLFramework');
+}
+
 
 //------------------------------------------------------------------------//
 // ImplodeTables

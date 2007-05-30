@@ -399,6 +399,56 @@ class DBOFramework
 }
 
 //----------------------------------------------------------------------------//
+// DBLFramework
+//----------------------------------------------------------------------------//
+/**
+ * DBLFramework
+ *
+ * Database Object List Framework container
+ *
+ * Database Object List Framework container
+ *
+ * @prefix	dbl
+ *
+ * @package	framework_ui
+ * @class	DBLFramework
+ */
+class DBLFramework
+{
+	public	$_arrOptions	= Array();
+	private	$_arrProperty	= Array();
+	
+	//------------------------------------------------------------------------//
+	// __get
+	//------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 *
+	 * Generic GET function for returning Database Object Lists
+	 *
+	 * Generic GET function for returning Database Object Lists
+	 *
+	 * @param	string	$strName	Name of the Database Object List
+	 * 
+	 * @return	DBList
+	 *
+	 * @method
+	 */
+	function __get($strName)
+	{
+		// Instanciate the DBList if we can't find an instance
+		if (!$this->_arrProperty[$strName])
+		{
+			$this->_arrProperty[$strName] = new DBList($strName);
+		}
+		
+		// Return the DBList
+		return $this->_arrProperty[$strName];
+	}
+}
+
+
+//----------------------------------------------------------------------------//
 // Config
 //----------------------------------------------------------------------------//
 /**

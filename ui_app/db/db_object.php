@@ -51,7 +51,7 @@ class DBObject extends DBObjectBase
 	function __construct($strName, $strTable=NULL, $mixColumns=NULL)
 	{
 		//_arrDefine does not currently contain 'Table' or 'Columns' or 'IdColumn'
-		
+
 		// Parent Constructor
 		parent::__construct();
 		
