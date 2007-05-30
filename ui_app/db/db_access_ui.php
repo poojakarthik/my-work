@@ -247,8 +247,8 @@ class DataAccessUI extends DatabaseAccess
  */
 class DbWhere
 {
-	public $strWhere	= '';
-	public $arrWhere	= Array();
+	private $_strWhere	= '';
+	private $_arrWhere	= Array();
 	
 	//------------------------------------------------------------------------//
 	// __Construct
@@ -271,20 +271,20 @@ class DbWhere
 	{
 		if ($strWhere)
 		{
-			$this->strWhere = $strWhere;
+			$this->_strWhere = $strWhere;
 		}
 		
 		if (is_array($arrWhere) || is_object($arrWhere))
 		{
-			$this->arrWhere = $arrWhere;
+			$this->_arrWhere = $arrWhere;
 		}
 	}
 	
 	//------------------------------------------------------------------------//
-	// Load
+	// Set
 	//------------------------------------------------------------------------//
 	/**
-	 * Load()
+	 * Set()
 	 *
 	 * <short description>
 	 *
@@ -297,17 +297,44 @@ class DbWhere
 	 * @method
 	 * @see	<MethodName()||typePropertyName>
 	 */
-	function Load($strWhere=NULL, $arrWhere=NULL)
+	function Set($strWhere=NULL, $arrWhere=NULL)
 	{
 		if (!is_null($strWhere))
 		{
-			$this->strWhere = $strWhere;
+			$this->_strWhere = $strWhere;
 		}
 		
 		if (is_array($arrWhere) || is_object($arrWhere))
 		{
-			$this->arrWhere = $arrWhere;
+			$this->_arrWhere = $arrWhere;
 		}
+	}
+	
+	function SetArray($arrWhere, $strValue=NULL)
+	{
+	
+	}
+	
+	function SetString($strWhere)
+	{
+		$this->_strWhere = $strWhere;
+	}
+	
+	function GetArray()
+	{
+		if (empty($this->_arrWhere))
+		{
+		
+		}
+		else
+		{
+			return $this->_arrWhere;
+		}
+	}
+	
+	function GetString()
+	{
+		return $this->_strWhere;
 	}
 }
 
