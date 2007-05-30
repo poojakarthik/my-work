@@ -29,6 +29,8 @@ DBO()->Account->{DBO()->Account->key()}->Render();
 // **************************DBL() Tests******************************
 
 //Debug(DBL());
-Debug(DBL()->Accounts);
+DBL()->Account->Id = 1000004777;
+
+
 
 ?>

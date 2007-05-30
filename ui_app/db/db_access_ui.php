@@ -256,16 +256,15 @@ class DbWhere
 	/**
 	 * __Construct()
 	 *
-	 * <short description>
+	 * Constructor for the DbWhere class
 	 *
-	 * <long description>
+	 * Constructor for the DbWhere class
 	 *
-	 * @param	string	$strWhere	[optional] <description>
-	 * @param	array	$arrWhere	[optional] <description>
+	 * @param	string	$strWhere	[optional] SQL WHERE clause with named placeholders for values
+	 * @param	array	$arrWhere	[optional] associative array for the values (key = placeholder)
 	 * @return	void
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function __construct($strWhere=NULL, $arrWhere=NULL)
 	{
@@ -286,16 +285,15 @@ class DbWhere
 	/**
 	 * Set()
 	 *
-	 * <short description>
+	 * Sets the WHERE string and WHERE array for the object
 	 *
-	 * <long description>
+	 * Sets the WHERE string and WHERE array for the object
 	 *
-	 * @param	string	$strWhere	[optional] <description>
-	 * @param	array	$arrWhere	[optional] <description>
-	 * @return	<type>
+	 * @param	string	$strWhere	[optional] SQL WHERE clause with named placeholders for values
+	 * @param	array	$arrWhere	[optional] associative array for the values (key = placeholder)
+	 * @return	void
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function Set($strWhere=NULL, $arrWhere=NULL)
 	{
@@ -310,16 +308,62 @@ class DbWhere
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetArray
+	//------------------------------------------------------------------------//
+	/**
+	 * SetArray()
+	 *
+	 * Sets the WHERE array for the object FIX THESE COMMENTS
+	 *
+	 * Sets the WHERE array for the object
+	 *
+	 * @param	string	$strWhere	[optional] SQL WHERE clause with named placeholders for values
+	 * @param	array	$arrWhere	[optional] associative array for the values (key = placeholder)
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function SetArray($arrWhere, $strValue=NULL)
 	{
 	
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetString
+	//------------------------------------------------------------------------//
+	/**
+	 * SetString()
+	 *
+	 * Sets just the WHERE clause string of the DbWhere object
+	 *
+	 * Sets just the WHERE clause string of the DbWhere object
+	 *
+	 * @param	string	$strWhere	SQL WHERE clause with named placeholders for values
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function SetString($strWhere)
 	{
 		$this->_strWhere = $strWhere;
 	}
 	
+	//------------------------------------------------------------------------//
+	// GetArray
+	//------------------------------------------------------------------------//
+	/**
+	 * GetArray()
+	 *
+	 * Sets just the WHERE clause string of the DbWhere object
+	 *
+	 * Sets just the WHERE clause string of the DbWhere object
+	 *
+	 * @param	string	$strWhere	SQL WHERE clause with named placeholders for values
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function GetArray()
 	{
 		if (empty($this->_arrWhere))
