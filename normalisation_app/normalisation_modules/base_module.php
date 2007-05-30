@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2006 VOIPTEL Pty Ltd
+// (c) copyright 2006-7 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
@@ -20,8 +20,8 @@
  * @language	PHP
  * @package		vixen
  * @author		Rich Davis
- * @version		6.11
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @version		7.05
+ * @copyright	2006-7 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -238,9 +238,12 @@ abstract class NormalisationModule
 		
 		$this->_errErrorHander 			= $errErrorHandler;
 		$this->_rptNormalisationReport 	= $rptNormalisationReport;
-		
+
 		$this->_selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
 		$this->_selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+		
+		$this->_selFindOwnerNow 			= new StatementSelect("Service", "AccountGroup, Account, Id", "FNN = <fnn>", "ISNULL(ClosedOn) DESC, ClosedOn DESC, Account DESC", "1");
+		$this->_selFindOwnerNowIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)", "ISNULL(ClosedOn) DESC, ClosedOn DESC, Account DESC", "1");
 		
 		$this->_selFindRecordType		= new StatementSelect("RecordType", "Id, Context", "ServiceType = <ServiceType> AND Code = <Code>", "", "1");
 		$this->_selFindRecordCode		= new StatementSelect("RecordTypeTranslation", "Code", "Carrier = <Carrier> AND CarrierCode = <CarrierCode>", "", "1");
@@ -714,6 +717,53 @@ abstract class NormalisationModule
 		$this->strFNN = $this->_arrNormalisedData['FNN'];
 	 	return false;
 	 }
+	 
+
+	//------------------------------------------------------------------------//
+	// ApplyOwnershipNow
+	//------------------------------------------------------------------------//
+	/**
+	 * ApplyOwnershipNow()
+	 *
+	 * Applies the current or most recent owner based on the FNN
+	 *
+	 * Applies the current or most recent owner based on the FNN
+	 * 
+	 *
+	 * @return	bool					
+	 *
+	 * @method
+	 */
+	 protected function ApplyOwnershipNow()
+	 {
+
+	 	$intResult = $this->_selFindOwnerNow->Execute(Array("fnn" => (string)$this->_arrNormalisedData['FNN']));
+	 	if ($arrResult = $this->_selFindOwnerNow->Fetch())
+	 	{
+	 		$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
+	 		$this->_arrNormalisedData['Account']		= $arrResult['Account'];
+	 		$this->_arrNormalisedData['Service']		= $arrResult['Id'];
+	 		return true;
+	 	}
+	 	else
+	 	{
+	 		$arrParams['fnn']	= substr((string)$this->_arrNormalisedData['FNN'], 0, -2) . "__";
+	 		$intResult = $this->_selFindOwnerNowIndial100->Execute($arrParams);
+	 		if(($arrResult = $this->_selFindOwnerNowIndial100->Fetch()))
+	 		{
+	 			$this->_arrNormalisedData['AccountGroup']	= $arrResult['AccountGroup'];
+	 			$this->_arrNormalisedData['Account']		= $arrResult['Account'];
+	 			$this->_arrNormalisedData['Service']		= $arrResult['Id'];
+	 			return true;
+	 		}
+	 	}
+	 	
+		// Return false if there was no match, or more than one match
+		$this->_UpdateStatus(CDR_BAD_OWNER);
+		//Debug("Cannot match FNN: ".$this->_arrNormalisedData['FNN']);
+		$this->strFNN = $this->_arrNormalisedData['FNN'];
+	 	return false;
+	 }
 	
 	
 	//------------------------------------------------------------------------//
@@ -744,7 +794,16 @@ abstract class NormalisationModule
 		$this->_arrNormalisedData['Status']	= CDR_NORMALISED;
 		
 		// apply ownership
-		$this->ApplyOwnership();
+		if ($arrCDR['Status'] === CDR_NORMALISE_NOW)
+		{
+			// Find the current or most recent owner
+			$this->ApplyOwnershipNow();
+		}
+		else
+		{
+			// Find the owner at the time the call was made
+			$this->ApplyOwnership();
+		}
 		
 		// validate
 		$this->Validate();
