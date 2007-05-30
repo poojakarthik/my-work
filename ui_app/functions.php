@@ -266,5 +266,9 @@ function PropertyToken()
 	return $objPropertyToken;
 }
 
-
+function Validate($mixValidationRule, $mixValue)
+{
+	//TODO!!!!
+	return TRUE;
+}
 ?>

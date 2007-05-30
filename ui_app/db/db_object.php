@@ -172,6 +172,65 @@ class DBObject extends DBObjectBase
 		return ($this->$strProperty->value = $mixValue);
 	}
 	
+	
+	function AddProperty($strProperty, $mixValue)
+	{
+		// store property
+		$this->_arrProperties[$strProperty] = $mixValue;
+		
+		// validate property
+		if (!$this->_arrValid[$strProperty] = $this->ValidateProperty($strProperty, $mixValue))
+		{
+			// invalid
+			$this->_bolValid = FALSE;
+		}
+	}
+	
+	function ValidateProperty($strProperty, $mixValue)
+	{
+		// find validation rule
+		// TODO!!!!
+		
+		// do validation
+		if ($mixValidationRule)
+		{
+			return Validate($mixValidationRule, $mixValue);
+		}
+		else
+		{
+			// no validation rule
+			return TRUE;
+		}
+	}
+	
+	function Validate()
+	{
+		$this->_bolValid = TRUE;
+		$this->_arrValid = Array();
+		foreach ($_arrProperties AS $strProperty=>$mixValue)
+		{
+			// validate property
+			if (!$this->_arrValid[$strProperty] = $this->ValidateProperty($strProperty, $mixValue))
+			{
+				// invalid
+				$this->_bolValid = FALSE;
+			}
+		}
+		return $this->_bolValid;
+	}
+	
+	function IsValid()
+	{
+		foreach($_arrValid AS $bolValid)
+		{
+			if ($bolValid === FALSE)
+			{
+				return $this->_bolValid = FALSE;
+			}
+		}
+		return $this->_bolValid;
+	}
+	
 	//------------------------------------------------------------------------//
 	// Clean
 	//------------------------------------------------------------------------//
