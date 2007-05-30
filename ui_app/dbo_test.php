@@ -28,6 +28,7 @@ DBO()->Account->{DBO()->Account->key()}->Render();
 */
 // **************************DBL() Tests******************************
 
-DBL()->Accounts->Load();
+//Debug(DBL());
+Debug(DBL()->Accounts);
 
 ?>
