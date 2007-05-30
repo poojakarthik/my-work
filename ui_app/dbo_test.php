@@ -3,7 +3,7 @@
 include_once('application_loader.php');
 
 // **************************DBO() Tests******************************
-/*
+
 DBO()->Table1->BlowMe = "test";
 DBO()->Table2->BlowMe = "This is stored in Table2";
 
@@ -25,7 +25,7 @@ DBO()->Account->BusinessName->RenderOutput();
 //print_r(DBO()->Account->key());
 
 //DBO()->Account->{DBO()->Account->key()}->Render();
-*/
+
 // **************************DBL() Tests******************************
 
 //Debug(DBL());

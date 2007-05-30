@@ -114,17 +114,17 @@ class DBObject extends DBObjectBase
 	 *
 	 * Calls a private for this object method
 	 *
-	 * <long description>
+	 * Calls a private for this object method
 	 *
-	 * @param	string	$strName	<description>
-	 * @param	array	$arrArguments	<description>
-	 * @return	<type>
+	 * @param	string	$strName		The name of the method that was called
+	 * @param	array	$arrArguments	the arguements that were passed
+	 * @return	bool
 	 *
 	 * @method
 	 */
 	function __call($strName, $arrArguments)
 	{
-		return PropertyToken()->Method($this, $strName, $arrArguments);
+		return TRUE;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -193,7 +193,6 @@ class DBObject extends DBObjectBase
 		$this->_arrValid 		= Array();
 		$this->_bolValid		= NULL;
 		$this->_intStatus		= STATUS_CLEANED;
-		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -207,7 +206,7 @@ class DBObject extends DBObjectBase
 	 * Loads the object from the Database
 	 * Cleans the object if load is sucessful
 	 *
-	 * @param	integer		$intId		optional The Id of the record we want to load
+	 * @param	integer		$intId		[optional] The Id of the record we want to load
 	 *
 	 * @return	bool
 	 *
@@ -245,7 +244,24 @@ class DBObject extends DBObjectBase
 		return $bolReturn;
 	 }
 	 
-	 // always cleans the object
+	//------------------------------------------------------------------------//
+	// LoadClean
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadClean()
+	 *
+	 * Peforms a clean load of the object from the Database
+	 *
+	 * Peforms a clean load of the object from the Database
+	 * This always cleans the object regardless of whether or not anything could
+	 * be loaded from the database.
+	 *
+	 * @param	integer		$intId		[optional] The Id of the record we want to load
+	 *
+	 * @return	bool
+	 *
+	 * @method
+	 */
 	 function LoadClean($intId = NULL)
 	 {
 	 	$bolReturn = $this->Load($intId, $strType='LoadData');
@@ -259,10 +275,10 @@ class DBObject extends DBObjectBase
 	 }
 	 
 	//------------------------------------------------------------------------//
-	// _LoadMerge
+	// LoadMerge
 	//------------------------------------------------------------------------//
 	/**
-	 * _LoadMerge()
+	 * LoadMerge()
 	 *
 	 * <short description>
 	 *
@@ -310,8 +326,8 @@ class DBObject extends DBObjectBase
 	 *
 	 * Loads a MySQL result associative array as property data
 	 *
-	 * @param	integer		$intId		The Id of the record we want to load
-	 *
+	 * @param	array		$arrData	the raw data to be loaded into the object
+	 *									(MySQL result associative array)
 	 * @return	bool
 	 *
 	 * @method
@@ -332,6 +348,23 @@ class DBObject extends DBObjectBase
 		return TRUE;
 	 }
 	 
+	//------------------------------------------------------------------------//
+	// MergeData
+	//------------------------------------------------------------------------//
+	/**
+	 * MergeData()
+	 *
+	 * Merges a MySQL result associative array with existing property data
+	 *
+	 * Merges a MySQL result associative array with existing property data
+	 * If 
+	 *
+	 * @param	array		$arrData	the raw data to be loaded into the object
+	 *									(MySQL result associative array)
+	 * @return	bool
+	 *
+	 * @method
+	 */
 	 function MergeData($arrData)
 	 {
 	 	// store the raw result
