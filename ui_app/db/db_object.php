@@ -172,7 +172,24 @@ class DBObject extends DBObjectBase
 		return ($this->$strProperty->value = $mixValue);
 	}
 	
-	
+	//------------------------------------------------------------------------//
+	// AddProperty
+	//------------------------------------------------------------------------//
+	/**
+	 * AddProperty()
+	 *
+	 * Adds a property to the object and validates it
+	 *
+	 * Adds a property to the object and validates it
+	 *
+	 * @param	string		$strProperty	The new property's name
+	 * @param	mix			$mixValue		The new property's value
+	 * @param	string		$intContext		The new property's context for validation
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function AddProperty($strProperty, $mixValue, $intContext=CONTEXT_DEFAULT)
 	{
 		// store property
@@ -203,6 +220,7 @@ class DBObject extends DBObjectBase
 		}
 	}
 	
+	// validates the entire object
 	function Validate($intContext=CONTEXT_DEFAULT)
 	{
 		$this->_bolValid = TRUE;
@@ -219,6 +237,7 @@ class DBObject extends DBObjectBase
 		return $this->_bolValid;
 	}
 	
+	// checks validation on the entire object
 	function IsValid()
 	{
 		foreach($_arrValid AS $bolValid)
@@ -342,14 +361,13 @@ class DBObject extends DBObjectBase
 	 * Merges data from the database into the existing property data
 	 *
 	 * Merges data from the database into the existing property data
-	 * Each individual property is only loaded from the database, if it is 
+	 * Each individual property is only loaded from the database if it is 
 	 * currently undefined in the object
 	 *
-	 * @param	integer	$intId	[optional] <description>
-	 * @return	boolean
+	 * @param	integer	$intId	[optional] The Id of the record we want to load
+	 * @return	bool
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function LoadMerge($intId=NULL)
 	{		
@@ -357,20 +375,21 @@ class DBObject extends DBObjectBase
 	}
 	
 	//------------------------------------------------------------------------//
-	// _LoadUpdate
+	// LoadUpdate
 	//------------------------------------------------------------------------//
 	/**
-	 * _LoadUpdate
+	 * LoadUpdate()
 	 *
-	 * <short description>
+	 * Updates the existing property data with data taken from the database
 	 *
-	 * <long description>
+	 * Updates the existing property data with data taken from the database
+	 * This only updates the properties specified in $_arrColumns
+	 * All other properties are left unchanged
 	 *
-	 * @param	integer	$intId	[optional] <description>
-	 * @return	<type>
+	 * @param	integer	$intId	[optional] The Id of the record we want to load
+	 * @return	bool
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function LoadUpdate($intId=NULL)
 	{
@@ -451,9 +470,11 @@ class DBObject extends DBObjectBase
 	/**
 	 * UpdateData()
 	 *
-	 * Updates the object's property data from a MySQL result associative array
+	 * Partially updates the object's property data from a MySQL result associative array
 	 *
 	 * Updates the object's property data from a MySQL result associative array
+	 * This is used to partially update the object's property data as it will 
+	 * only update the properties that are specified in $arrData
 	 *
 	 * @param	array		$arrData	the raw data used to update the object
 	 *									(MySQL result associative array)
