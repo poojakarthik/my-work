@@ -396,6 +396,35 @@ class DBOFramework
 		// Return the DBObject
 		return $this->_arrProperty[$strName];
 	}
+	
+	//------------------------------------------------------------------------//
+	// Validate
+	//------------------------------------------------------------------------//
+	/**
+	 * Validate()
+	 *
+	 * Validate all Database Objects
+	 *
+	 * Validate all Database Objects
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function Validate()
+	{
+		$bolReturn = TRUE;
+		
+		foreach($this->_arrProperty AS $dboObject)
+		{
+			if (!$dboObject->SetValid)
+			{
+				$bolReturn = FALSE;
+			}
+		}
+		
+		return $bolReturn;
+	}
 }
 
 //----------------------------------------------------------------------------//

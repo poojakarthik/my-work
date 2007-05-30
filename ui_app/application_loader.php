@@ -230,7 +230,8 @@ class Application
 		$objSubmit->Get();
 		$objSubmit->POST();
 	
-		
+		// validata all submitted objects
+		DBO()->Validate();
 		
 		//Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
@@ -806,16 +807,25 @@ class submitted_data
 	 */
 	function _ParseData($strName, $mixValue)
 	{
-		// print_r($strName);
-		// split name into object & property
-		$arrName = explode("_", $strName, 2);
+		// split name into object, property & [optional] context
+		$arrName = explode("_", $strName, 3);
+		
+		// fail if we don't have object and property
 		if(!$arrName[0] || !$arrName[1])
 		{
 			return FALSE;
 		}
 		
+		// make sure context is an int
+		$intContext = (int)$arrName[2];
+		if (!$intContext)
+		{
+			// if not set it to the default context
+			$intContext = CONTEXT_DEFAULT;
+		}
+		
 		// add property to object
-		Dbo()->{$arrName[0]}->AddProperty($arrName[1], $mixValue);
+		Dbo()->{$arrName[0]}->AddProperty($arrName[1], $mixValue, $intContext);
 		return TRUE;
 	}
 }

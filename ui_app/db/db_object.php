@@ -250,6 +250,12 @@ class DBObject extends DBObjectBase
 		return $this->_bolValid;
 	}
 	
+	function SetValid()
+	{
+		$this->_bolValid = TRUE;
+		return $this->IsValid();
+	}
+	
 	//------------------------------------------------------------------------//
 	// Clean
 	//------------------------------------------------------------------------//
