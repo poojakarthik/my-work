@@ -261,7 +261,7 @@ class DbWhere
 	 * Constructor for the DbWhere class
 	 *
 	 * @param	string	$strWhere	[optional] SQL WHERE clause with named placeholders for values
-	 * @param	array	$arrWhere	[optional] associative array for the values (key = placeholder)
+	 * @param	array	$arrWhere	[optional] WHERE clause placeholder associative array (placeholder => value)
 	 * @return	void
 	 *
 	 * @method
@@ -290,7 +290,7 @@ class DbWhere
 	 * Sets the WHERE string and WHERE array for the object
 	 *
 	 * @param	string	$strWhere	[optional] SQL WHERE clause with named placeholders for values
-	 * @param	array	$arrWhere	[optional] associative array for the values (key = placeholder)
+	 * @param	array	$arrWhere	[optional] WHERE clause placeholder associative array (placeholder => value)
 	 * @return	void
 	 *
 	 * @method
@@ -325,12 +325,11 @@ class DbWhere
 	/**
 	 * SetArray()
 	 *
-	 * Sets the WHERE array for the object FIX THESE COMMENTS
+	 * Sets the WHERE array for the DbWhere object 
 	 *
-	 * Sets the WHERE array for the object
+	 * Sets the WHERE array for the DbWhere object 
 	 *
-	 * @param	string	$strWhere	[optional] SQL WHERE clause with named placeholders for values
-	 * @param	array	$arrWhere	[optional] associative array for the values (key = placeholder)
+	 * @param	array	$arrWhere	WHERE clause placeholder associative array (placeholder => value)
 	 * @return	void
 	 *
 	 * @method
@@ -346,9 +345,9 @@ class DbWhere
 	/**
 	 * SetString()
 	 *
-	 * Sets just the WHERE clause string of the DbWhere object
+	 * Sets the WHERE clause string of the DbWhere object
 	 *
-	 * Sets just the WHERE clause string of the DbWhere object
+	 * Sets the WHERE clause string of the DbWhere object
 	 *
 	 * @param	string	$strWhere	SQL WHERE clause with named placeholders for values
 	 * @return	void
@@ -366,12 +365,11 @@ class DbWhere
 	/**
 	 * GetArray()
 	 *
-	 * Sets just the WHERE clause string of the DbWhere object
+	 * Retrieves the WHERE clause placeholder associative array
 	 *
-	 * Sets just the WHERE clause string of the DbWhere object
+	 * Retrieves the WHERE clause placeholder associative array
 	 *
-	 * @param	string	$strWhere	SQL WHERE clause with named placeholders for values
-	 * @return	void
+	 * @return	array	WHERE clause placeholder associative array (placeholder => value)
 	 *
 	 * @method
 	 */
@@ -380,6 +378,22 @@ class DbWhere
 		return $this->_arrWhere;
 	}
 	
+	//------------------------------------------------------------------------//
+	// GetString
+	//------------------------------------------------------------------------//
+	/**
+	 * GetString()
+	 *
+	 * Retrieves the SQL WHERE clause with named placeholders for values 
+	 *
+	 * Retrieves the SQL WHERE clause with named placeholders for values
+	 *
+	 * @return	string	compiled SQL WHERE clause with named placeholders for values
+	 * 					If the object is currently storing an array of placeholders and values
+	 *					then this string is compiled from that.  Else it returns the stored
+	 *					SQL WHERE clause string.
+	 * @method
+	 */
 	function GetString()
 	{
 		if (!trim($this->_strWhere)))
