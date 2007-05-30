@@ -217,10 +217,10 @@ class DBList extends DBListBase
 	
 	
 	//------------------------------------------------------------------------//
-	// SetLimit
+	// Limit
 	//------------------------------------------------------------------------//
 	/**
-	 * SetLimit()
+	 * Limit()
 	 *
 	 * Limits the number of Database Objects in the List
 	 *
@@ -233,7 +233,7 @@ class DBList extends DBListBase
 	 *
 	 * @method
 	 */
-	function SetLimit($intLimitCount=NULL, $intLimitStart=NULL)
+	function Limit($intLimitCount=NULL, $intLimitStart=NULL)
 	{
 		if (!is_null($intLimitStart))
 		{
@@ -368,27 +368,6 @@ class DBList extends DBListBase
 	}
 	
 	//------------------------------------------------------------------------//
-	// Index
-	//------------------------------------------------------------------------//
-	/**
-	 * Index()
-	 *
-	 * <short description>
-	 *
-	 * <long description>
-	 *
-	 * @param	string	$strProperty	<description>
-	 * @return	<type>
-	 *
-	 * @method
-	 * @see	<MethodName()||typePropertyName>
-	 */
-	function Index($strProperty)
-	{
-		// create new index
-	}
-	
-	//------------------------------------------------------------------------//
 	// UseIndex
 	//------------------------------------------------------------------------//
 	/**
@@ -406,7 +385,7 @@ class DBList extends DBListBase
 	 */
 	function UseIndex($strProperty)
 	{
-		// use the index
+		$this->strUseIndex = $strProperty;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -427,28 +406,29 @@ class DBList extends DBListBase
 	 */
 	function OrderBy($strProperty)
 	{
-	
+		$this->strOrderBy = $strProperty;
 	}
 	
 	//------------------------------------------------------------------------//
-	// Where
+	// __set
 	//------------------------------------------------------------------------//
 	/**
-	 * Where()
+	 * __set()
 	 *
-	 * <short description>
+	 * Sets a value in the where array
 	 *
-	 * <long description>
+	 * Sets a value in the where array
 	 *
-	 * @param	string	$strWhere	<description>
-	 * @return	<type>
+	 * @param	string		$strProperty	The property's name
+	 * @param	mixed		$mixValue		The property's value
+	 * 
+	 * @return	PropertyToken
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
-	function Where($strWhere)
+	function __set($strProperty, $mixValue)
 	{
-	
+		return ($this->$objWhere->arrWhere[$strProperty] = $mixValue);
 	}
 }
 ?>
