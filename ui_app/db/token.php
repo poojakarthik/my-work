@@ -95,7 +95,7 @@ class PropertyToken
 		$this->_strProperty	= $strProperty;
 		//Debug("Token = {$dboOwner->_strName}->$strProperty");
 		return $this;
-	}	
+	}
 	
 	//------------------------------------------------------------------------//
 	// __get
@@ -326,4 +326,133 @@ class PropertyToken
 	
 }
 
+
+
+//----------------------------------------------------------------------------//
+// MenuToken
+//----------------------------------------------------------------------------//
+/**
+ * MenuToken
+ *
+ * Token Menu Object for Inteface Context Menu
+ *
+ * Token Menu Object for Inteface Context Menu
+ *
+ * @prefix	tok
+ *
+ * @package	framework_ui
+ * @class	MenuToken
+ */
+class MenuToken
+{
+	//------------------------------------------------------------------------//
+	// Properties
+	//------------------------------------------------------------------------//
+	private $_objOwner;
+	private $_strProperty;
+	private $_arrPath;
+	
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Token constructor
+	 *
+	 * Token constructor
+	 *
+	 * @return	MenuToken
+	 *
+	 * @method
+	 */
+	function __construct()
+	{
+		$this->_objOwner	= NULL;
+		$this->_strMenu		= NULL;
+		$this->_arrPath		= NULL;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// Menu
+	//------------------------------------------------------------------------//
+	/**
+	 * Menu()
+	 *
+	 * Token Object takes form of the passed Menu and returns itself
+	 *
+	 * Token Object takes form of the passed Menu and returns itself
+	 *
+	 * @param	DBObject		$objOwner		The owner object
+	 * @param	string			$strMenu		The Menu to take form of
+	 *
+	 * @return	MenuToken
+	 *
+	 * @method
+	 */
+	function Property($objOwner, $strMenu)
+	{
+		$this->_objOwner	= $objOwner;
+		$this->_strMenu		= $strMenu;
+		$this->_arrPath		= Array($strMenu);
+		return $this;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// __get
+	//------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 *
+	 * Token Object takes form of the passed Menu and returns itself
+	 *
+	 * Token Object takes form of the passed Menu and returns itself
+	 *
+	 * @param	string	$strName	Menu Option name
+	 * 
+	 * @return	mixed
+	 *
+	 * @method
+	 */
+	function __get($strName)
+	{
+		$this->_strMenu		= $strName;
+		$this->_arrPath[]	= $strName;
+		return $this;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// __call
+	//------------------------------------------------------------------------//
+	/**
+	 * __call()
+	 *
+	 * Creates a new Menu item with this name
+	 *
+	 * Creates a new Menu item with this name
+	 *
+	 * @param	string	$strItem		Item to create
+	 * @param	array	$arrArguments	Passed Arguments where first and only member should be the value
+	 * 
+	 * @return	mixed
+	 *
+	 * @method
+	 */
+	function __call($strItem, $arrArguments)
+	{
+		// Dereference the Item
+		$arrMenu = $this->_objOwner->arrProperties;
+		foreach ($this->_arrPath as $strPathItem)
+		{
+			$arrMenu = $arrMenu[$strPathItem];
+		}
+		
+		// Set item value
+		$arrMenu[$strItem]	= $arrArguments[0];
+		return TRUE;
+	}
+}
 ?>
