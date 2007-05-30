@@ -271,7 +271,7 @@ class DBList extends DBListBase
 	function Select()
 	{
 		// select the record
-		if ($arrResult = $this->_db->Select($this->_strTable, $this->_arrColumns, $this->objWhere, $this->intLimitStart, $this->intLimitCount))
+		if ($arrResult = $this->_db->Select($this->_strTable, $this->_arrColumns, $this->objWhere, $this->_intLimitStart, $this->_intLimitCount, $this->_strOrderBy, $this->_strUseIndex))
 		{
 			$this->_arrResult = $arrResult;
 		}
@@ -431,7 +431,7 @@ class DBList extends DBListBase
 	 */
 	function __set($strProperty, $mixValue)
 	{
-		return ($this->$objWhere->arrWhere[$strProperty] = $mixValue);
+		return ($this->$objWhere->$strProperty = $mixValue);
 	}
 }
 ?>

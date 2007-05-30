@@ -131,13 +131,14 @@ class DataAccessUI extends DatabaseAccess
 	 * @param	VixenWhere	$objWhere					Unique Id for this data record
 	 * @param	integer		$intLimitStart	optional	Starting row for Result Set
 	 * @param	integer		$intLimitCount	optional	Number of rows in Result Set
+	 * @param	string		$strOrderBy		optional	SQL ORDER BY clause
 	 * 
 	 * @return	mixed									FALSE: Query failed
 	 * 													array: Result set as an Indexed Array of Result Rows
 	 *
 	 * @method
 	 */
-	function Select($strTable, $arrColumns=NULL, $objWhere=NULL, $intLimitStart=NULL, $strLimitCount=NULL)
+	function Select($strTable, $arrColumns=NULL, $objWhere=NULL, $intLimitStart=NULL, $strLimitCount=NULL, $strOrderBy=NULL, $strUseIndex=NULL)
 	{
 		// Create SELECT clause
 		if (!$arrColumns)
@@ -161,9 +162,15 @@ class DataAccessUI extends DatabaseAccess
 			}
 		}
 		
+		// set "USE INDEX" if we were passed an index
+		if ($strUseIndex)
+		{
+			$strTable = "$strTable USE INDEX ($strUseIndex)";
+		}
+		
 	 	// Statement Construct, Execute, Fetch, Return :D
-	 	$selStatement = new StatementSelect($strTable, $mixColumns, $objWhere->strWhere, NULL, $strLimit);
-	 	$selStatement->Execute($objWhere->arrWhere);
+	 	$selStatement = new StatementSelect($strTable, $mixColumns, $objWhere->GetString(), $strOrderBy, $strLimit);
+	 	$selStatement->Execute($objWhere->GetArray());
 	 	return $selStatement->FetchAll();
 	}
 	
@@ -403,7 +410,7 @@ class DbWhere
 			{
 				$arrWhere[] = "$strKey = <$strKey>"; 
 			}
-			$strWhere
+			$strWhere = trim(implode(" AND ", $arrWhere));
 			return $strWhere;
 		}
 		
