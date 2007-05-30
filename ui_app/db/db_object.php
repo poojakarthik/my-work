@@ -24,8 +24,8 @@ class DBObject extends DBObjectBase
 	public $_strTable		= '';
 	public $_strName		= '';
 	public $_arrResult		= Array();
-	public $_arrRequest		= Array();
 	public $_arrValid		= Array();
+	public $_bolValid		= NULL;
 	public $_arrProperties	= Array();
 	public $_intStatus		= 0;
 	public $_arrDefine		= Array();
@@ -188,10 +188,12 @@ class DBObject extends DBObjectBase
 	 */
 	function Clean()
 	{
-		$this->dboObject->_arrProperties 	= Array();
-		$this->dboObject->_arrRequest		= Array();
-		$this->dboObject->_arrResult		= Array();
-		$this->dboObject->_arrValid 		= Array();
+		$this->_arrProperties 	= Array();
+		$this->_arrResult		= Array();
+		$this->_arrValid 		= Array();
+		$this->_bolValid		= NULL;
+		$this->_intStatus		= STATUS_CLEANED;
+		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -203,31 +205,100 @@ class DBObject extends DBObjectBase
 	 * Loads the object from the Database
 	 *
 	 * Loads the object from the Database
+	 * Cleans the object if load is sucessful
 	 *
-	 * @param	integer		$intId		The Id of the record we want to load
+	 * @param	integer		$intId		optional The Id of the record we want to load
 	 *
 	 * @return	bool
 	 *
 	 * @method
 	 */
-	 function Load($intId = NULL)
+	 function Load($intId = NULL, $strType='LoadData')
 	 {
-		// Set Id if we need to
-		if ((int)$intId)
+		// Set Id
+		$intId = (int)$intId;
+		if (!$intId)
 		{
-			$this->_arrProperties[$this->_strIdColumn] = $intId;
+			$intId = (int)$this->_arrProperties[$this->_strIdColumn];
 		}
 		
 		// Make sure we have an Id
-		if ($this->_arrProperties[$this->_strIdColumn])
-		{
-	 		return $this->LoadData($this->SelectById($this->_strTable, $this->_arrColumns, $this->_arrProperties[$this->_strIdColumn]));
-		}
-		else
+		if (!$intId)
 		{
 			return FALSE;
 		}
+		
+		// get data
+		if ($arrResult = $this->SelectById($this->_strTable, $this->_arrColumns, $intId))
+		{
+			// load the data into the object
+			$bolReturn = $this->$strType($arrResult);
+		}
+		else
+		{
+			$bolReturn = FALSE;
+		}
+		
+		// set Id
+		$this->_arrProperties[$this->_strIdColumn] = $intId;
+		
+		return $bolReturn;
 	 }
+	 
+	 // always cleans the object
+	 function LoadClean($intId = NULL)
+	 {
+	 	$bolReturn = $this->Load($intId, $strType='LoadData');
+		if (!$bolReturn)
+		{
+	 		// clean the object
+			$this->Clean();
+		}
+		
+		return $bolReturn;
+	 }
+	 
+	//------------------------------------------------------------------------//
+	// _LoadMerge
+	//------------------------------------------------------------------------//
+	/**
+	 * _LoadMerge()
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 * @param	integer	$intId	[optional] <description>
+	 * @return	boolean
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	function LoadMerge($intId=NULL)
+	{		
+		return $this->Load($intId, $strType='MergeData');
+	}
+	
+	//------------------------------------------------------------------------//
+	// _LoadUpdate
+	//------------------------------------------------------------------------//
+	/**
+	 * _LoadUpdate
+	 *
+	 * <short description>
+	 *
+	 * <long description>
+	 *
+	 * @param	integer	$intId	[optional] <description>
+	 * @return	<type>
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	function LoadUpdate($intId=NULL)
+	{
+		return $this->Load($intId, $strType='UpdateData');
+	}
 	
 	//------------------------------------------------------------------------//
 	// LoadData
@@ -247,9 +318,51 @@ class DBObject extends DBObjectBase
 	 */
 	 function LoadData($arrData)
 	 {
-	 	// Assign data
-	 	$this->_arrProperties = array_merge($this->_arrProperties, $arrData);
-	 	return TRUE;
+	 	// clean the object
+		$this->Clean();
+		
+	 	// store the raw result
+		$this->_arrResult = $arrData;
+			
+		// store the data in the property list
+		$this->_arrProperties = $arrData;
+	 	
+		$this->_intStatus		= STATUS_LOADED;
+		
+		return TRUE;
+	 }
+	 
+	 function MergeData($arrData)
+	 {
+	 	// store the raw result
+		$this->_arrResult = $arrData;
+		
+		foreach ($arrData AS $strKey=>$mixValue)
+		{
+			if (!isset($this->_arrProperties[$strKey]))
+			{
+				$this->_arrProperties[$strKey] = $mixValue;
+			}
+		}
+		
+		$this->_intStatus		= STATUS_MERGED;
+		
+		return TRUE;
+	 }
+	 
+	 function UpdateData($arrData)
+	 {
+	 	// store the raw result
+		$this->_arrResult = $arrData;
+		
+		foreach ($arrData AS $strKey=>$mixValue)
+		{
+			$this->_arrProperties[$strKey] = $mixValue;
+		}
+		
+		$this->_intStatus		= STATUS_UPDATED;
+		
+		return TRUE;
 	 }
 	 
 	//------------------------------------------------------------------------//

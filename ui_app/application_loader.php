@@ -64,6 +64,14 @@ define('OUTPUT_TYPE_RADIO', 2);
 define('CLASS_DEFAULT', 'Default');
 
 
+// Object Status
+define('STATUS_NEW',	 	100);
+define('STATUS_CLEANED', 	101);
+define('STATUS_LOADED', 	102);
+define('STATUS_UPDATED', 	102);
+define('STATUS_MERGED', 	102);
+define('STATUS_SAVED', 		102);
+
 
 require_once('../framework/functions.php');
 LoadFramework();

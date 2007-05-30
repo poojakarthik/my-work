@@ -19,8 +19,7 @@
  */
 class DBList extends DBListBase
 {
-	public $objWhere;
-	public $arrDataArray	= Array();
+	public $_objWhere;
 	public $_intLimitStart	= NULL;
 	public $_intLimitCount	= NULL;
 	public $_intMode 		= DBO_RETURN;
@@ -30,8 +29,6 @@ class DBList extends DBListBase
 	public $_arrColumns 	= Array();
 	public $_strTable		= '';
 	public $_strName		= '';
-	public $_arrResult		= Array();
-	public $_arrRequest		= Array();
 	public $_arrValid		= Array();
 	public $_intStatus		= 0;
 	public $_arrDefine		= Array();
@@ -131,19 +128,19 @@ class DBList extends DBListBase
 		}
 		
 		// set USE INDEX
-		//$this->_strUseIndex = 
+		$this->_strUseIndex = $this->_arrDefine['UseIndex']
 		
 		// set ORDER BY
-		//$this->_strOrderBy = 
+		$this->_strOrderBy = $this->_arrDefine['OrderBy']
 		
 		// set up where object
 		if (!is_null($strWhere))
 		{
-			$this->objWhere 	= new DbWhere($strWhere, $arrWhere);
+			$this->_objWhere 	= new DbWhere($strWhere, $arrWhere);
 		}
 		else
 		{
-			$this->objWhere 	= new DbWhere($this->_arrDefine['Where'], $this->_arrDefine['WhereData']);
+			$this->_objWhere 	= new DbWhere($this->_arrDefine['Where'], $this->_arrDefine['WhereData']);
 		}
 	}
 	
@@ -169,15 +166,21 @@ class DBList extends DBListBase
 	function Load($arrWhere=NULL, $strWhere=NULL, $intLimitCount=NULL, $intLimitStart=NULL)
 	{
 		// setup where object
-		$this->objWhere->Load($strWhere, $arrWhere);
+		$this->_objWhere->Load($strWhere, $arrWhere);
 		
 		// setup limit
 		$this->SetLimit($intLimitCount, $intLimitStart);
 		
-		if ($this->Select())
+		// empty records
+		$this->EmptyRecords();
+		
+		if ($arrResult = $this->Select())
 		{
 			// load results into data objects
-			$this->LoadResults();
+			foreach($arrResult AS $arrRow)
+			{
+				$this->AddRecord($arrRow);
+			}
 			return TRUE;
 		}
 		else
@@ -186,42 +189,6 @@ class DBList extends DBListBase
 		}
 		
 	}
-	
-	
-	//------------------------------------------------------------------------//
-	// LoadResults
-	//------------------------------------------------------------------------//
-	/**
-	 * LoadResults()
-	 *
-	 * Populate the Database Object List with latest Load() results
-	 *
-	 * Populate the Database Object List with latest Load() results
-	 * 
-	 * @return	bool
-	 *
-	 * @method
-	 */
-	function LoadResults()
-	{
-		if (is_array($this->_arrResult))
-		{
-			// empty records
-			$this->EmptyRecords();
-			
-			// load records
-			foreach($this->_arrResult AS $intKey=>$arrResult)
-			{
-				$this->AddRecord($arrResult);
-			}
-		}
-		else
-		{
-			return FALSE;
-		}
-		return TRUE;
-	}
-	
 	
 	//------------------------------------------------------------------------//
 	// Limit
@@ -271,38 +238,14 @@ class DBList extends DBListBase
 	function Select()
 	{
 		// select the record
-		if ($arrResult = $this->_db->Select($this->_strTable, $this->_arrColumns, $this->objWhere, $this->_intLimitStart, $this->_intLimitCount, $this->_strOrderBy, $this->_strUseIndex))
+		if ($arrResult = $this->_db->Select($this->_strTable, $this->_arrColumns, $this->_objWhere, $this->_intLimitStart, $this->_intLimitCount, $this->_strOrderBy, $this->_strUseIndex))
 		{
-			$this->_arrResult = $arrResult;
+			return $arrResult;
 		}
 		else
 		{
 			return FALSE;
 		}
-		
-		return TRUE;
-	}
-	
-	//------------------------------------------------------------------------//
-	// LoadRecord
-	//------------------------------------------------------------------------//
-	/**
-	 * LoadRecord()
-	 *
-	 * Alias for AddRecord
-	 *
-	 * Alias for AddRecord
-	 *
-	 * @param	array	$arrRecord	 Record to add to the list
-	 * 
-	 * @return	mixed				FALSE	: Failed
-	 * 								integer	: Number of records loaded so far
-	 *
-	 * @method
-	 */
-	function LoadRecord($arrRecord)
-	{
-		return $this->AddRecord($arrRecord);
 	}
 	
 	
@@ -331,10 +274,10 @@ class DBList extends DBListBase
 			$this->_intCount++;
 			
 			// create object with count key
-			$this->arrDataArray[$this->_intCount] = new DBObject($this->_strName, $this->_strTable, $this->arrColumns);
+			$this->_arrDataArray[$this->_intCount] = new DBObject($this->_strName, $this->_strTable, $this->arrColumns);
 
-			$this->arrDataArray[$this->_intCount]->_arrResult	= $arrRecord;
-			$this->arrDataArray[$this->_intCount]->LoadProperties($arrRecord);  //this method doesn't exist at the moment
+			// load data into object
+			$this->_arrDataArray[$this->_intCount]->LoadData($arrRecord);
 				
 			// return key
 			return $this->_intCount;
@@ -362,12 +305,17 @@ class DBList extends DBListBase
 	function EmptyRecords()
 	{
 		// empty data array
-		$this->arrDataArray = Array();
+		$this->_arrDataArray = Array();
 		
 		// reset counter
 		$this->_intCount = 0;
 		
 		return TRUE;
+	}
+	
+	function Count()
+	{
+		return $this->_intCount;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -431,7 +379,28 @@ class DBList extends DBListBase
 	 */
 	function __set($strProperty, $mixValue)
 	{
-		return ($this->objWhere->$strProperty = $mixValue);
+		return ($this->_objWhere->$strProperty = $mixValue);
+	}
+	
+	//------------------------------------------------------------------------//
+	// __get
+	//------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 *
+	 * Gets a value from the where array
+	 *
+	 * Sets a value from the where array
+	 *
+	 * @param	string		$strProperty	The property's name
+	 * 
+	 * @return	mixed
+	 *
+	 * @method
+	 */
+	function __get($strProperty)
+	{
+		return $this->_objWhere->$strProperty;
 	}
 }
 ?>

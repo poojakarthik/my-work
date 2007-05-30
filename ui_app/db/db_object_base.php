@@ -162,7 +162,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
  */
 class DBListBase extends DataAccessUI implements Iterator
 {
-	protected $_arrProperties = Array();
+	protected $_arrDataArray = Array();
 	
 	//------------------------------------------------------------------------//
 	// rewind
@@ -178,7 +178,7 @@ class DBListBase extends DataAccessUI implements Iterator
 	 */
 	public function rewind()
 	{
-		reset($this->_arrProperties);
+		reset($this->_arrDataArray);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -197,7 +197,7 @@ class DBListBase extends DataAccessUI implements Iterator
 	 */
 	public function current()
 	{
-		return current($this->_arrProperties);
+		return current($this->_arrDataArray);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -216,7 +216,7 @@ class DBListBase extends DataAccessUI implements Iterator
 	 */
 	public function key()
 	{
-		return key($this->_arrProperties);
+		return key($this->_arrDataArray);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -235,7 +235,7 @@ class DBListBase extends DataAccessUI implements Iterator
 	 */
 	public function next()
 	{
-		return next($this->_arrProperties);
+		return next($this->_arrDataArray);
 	}
 	
 	//------------------------------------------------------------------------//
