@@ -34,6 +34,8 @@ class DBList extends DBListBase
 	public $_arrDefine		= Array();
 	public $_db				= NULL;
 	
+	private $_intCount		= 0;
+	
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -166,7 +168,7 @@ class DBList extends DBListBase
 	function Load($arrWhere=NULL, $strWhere=NULL, $intLimitCount=NULL, $intLimitStart=NULL)
 	{
 		// setup where object
-		$this->_objWhere->Load($strWhere, $arrWhere);
+		$this->_objWhere = new DbWhere($strWhere, $arrWhere);
 		
 		// setup limit
 		$this->SetLimit($intLimitCount, $intLimitStart);
@@ -191,10 +193,10 @@ class DBList extends DBListBase
 	}
 	
 	//------------------------------------------------------------------------//
-	// Limit
+	// SetLimit
 	//------------------------------------------------------------------------//
 	/**
-	 * Limit()
+	 * SetLimit()
 	 *
 	 * Limits the number of Database Objects in the List
 	 *
@@ -207,7 +209,7 @@ class DBList extends DBListBase
 	 *
 	 * @method
 	 */
-	function Limit($intLimitCount=NULL, $intLimitStart=NULL)
+	function SetLimit($intLimitCount=NULL, $intLimitStart=NULL)
 	{
 		if (!is_null($intLimitStart))
 		{
@@ -238,7 +240,7 @@ class DBList extends DBListBase
 	function Select()
 	{
 		// select the record
-		if ($arrResult = $this->_db->Select($this->_strTable, $this->_arrColumns, $this->_objWhere, $this->_intLimitStart, $this->_intLimitCount, $this->_strOrderBy, $this->_strUseIndex))
+		if ($arrResult = parent::Select($this->_strTable, $this->_arrColumns, $this->_objWhere, $this->_intLimitStart, $this->_intLimitCount, $this->_strOrderBy, $this->_strUseIndex))
 		{
 			return $arrResult;
 		}
@@ -274,7 +276,7 @@ class DBList extends DBListBase
 			$this->_intCount++;
 			
 			// create object with count key
-			$this->_arrDataArray[$this->_intCount] = new DBObject($this->_strName, $this->_strTable, $this->arrColumns);
+			$this->_arrDataArray[$this->_intCount] = new DBObject($this->_strName, $this->_strTable, $this->_arrColumns);
 
 			// load data into object
 			$this->_arrDataArray[$this->_intCount]->LoadData($arrRecord);
@@ -402,5 +404,33 @@ class DBList extends DBListBase
 	{
 		return $this->_objWhere->$strProperty;
 	}
+	
+	//------------------------------------------------------------------------//
+	// Info
+	//------------------------------------------------------------------------//
+	/**
+	 * Info()
+	 *
+	 * return info about the DB object list
+	 *
+	 * return info about the DB object list
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function Info()
+	{
+		$arrReturn = Array();
+		foreach (parent::$_arrDataArray as $objDBObject)
+		{
+			// the index of $arrReturn is the value of the DB object's unique Id column
+			// or should it just be a linear array?
+			$arrReturn[$objDBObject->_arrProperties[$objDBObject->_strIdColumn]] = $objDBObject->Info();
+		}
+		
+		return $arrReturn;
+	}
+
 }
 ?>

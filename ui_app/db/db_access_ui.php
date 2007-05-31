@@ -258,10 +258,10 @@ class DbWhere
 	private $_arrWhere	= Array();
 	
 	//------------------------------------------------------------------------//
-	// __Construct
+	// __construct
 	//------------------------------------------------------------------------//
 	/**
-	 * __Construct()
+	 * __construct()
 	 *
 	 * Constructor for the DbWhere class
 	 *
