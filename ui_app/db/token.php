@@ -378,6 +378,7 @@ class MenuToken
 	private $_objOwner;
 	private $_strProperty;
 	private $_arrPath;
+	private $_strMenu;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -402,27 +403,27 @@ class MenuToken
 	
 	
 	//------------------------------------------------------------------------//
-	// Menu
+	// NewPath
 	//------------------------------------------------------------------------//
 	/**
-	 * Menu()
+	 * NewPath()
 	 *
 	 * Token Object takes form of the passed Menu and returns itself
 	 *
 	 * Token Object takes form of the passed Menu and returns itself
 	 *
 	 * @param	DBObject		$objOwner		The owner object
-	 * @param	string			$strMenu		The Menu to take form of
+	 * @param	string			$strName		The name of the first level in the path
 	 *
 	 * @return	MenuToken
 	 *
 	 * @method
 	 */
-	function Property($objOwner, $strMenu)
+	function NewPath($objOwner, $strName)
 	{
 		$this->_objOwner	= $objOwner;
-		$this->_strMenu		= $strMenu;
-		$this->_arrPath		= Array($strMenu);
+		$this->_strMenu		= $strName;
+		$this->_arrPath		= Array($strName);
 		return $this;
 	}
 	
@@ -471,15 +472,40 @@ class MenuToken
 	function __call($strItem, $arrArguments)
 	{
 		// Dereference the Item
-		$arrMenu = $this->_objOwner->arrProperties;
+		$arrMenu = &$this->_objOwner->arrProperties;
 		foreach ($this->_arrPath as $strPathItem)
 		{
-			$arrMenu = $arrMenu[$strPathItem];
+			if (!isset($arrMenu[$strPathItem]))
+			{
+				$arrMenu[$strPathItem] = Array();
+			}
+			$arrMenu = &$arrMenu[$strPathItem];
 		}
 		
 		// Set item value
-		$arrMenu[$strItem]	= $arrArguments[0];
+		$arrMenu[$strItem]	= $arrArguments;
 		return TRUE;
+	}
+	
+	function Info()
+	{
+	
+	}
+	
+	// recursively printout the names from the array, until it gets to the final
+	// one where it will printout value
+	function ShowInfo($strTabs='')
+	{
+		foreach ($this->_arrPath as $strPathItem)
+		{
+			$strOutput .=  $strTabs.$strPathItem."\n";
+		}
+		
+		if (!$strTabs)
+		{
+			Debug($strOutput);
+		}
+		return $strOutput;
 	}
 }
 ?>

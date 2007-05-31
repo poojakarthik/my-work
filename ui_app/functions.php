@@ -301,6 +301,30 @@ function Validate($strValidationRule, $mixValue)
 	}
 }
 
+
+//------------------------------------------------------------------------//
+// ContextMenu
+//------------------------------------------------------------------------//
+/**
+ * ContextMenu()
+ *
+ * Returns the singleton ContextMenuFramework object
+ *
+ * Returns the singleton ContextMenuFramework object
+ *
+ * @return	ContextMenuFramework object
+ *
+ * @function
+ * 
+ */
+function ContextMenu()
+{
+	return Singleton::Instance('ContextMenuFramework');
+}
+
+
+
+
 //------------------------------------------------------------------------//
 // AuthenticatedUser
 //------------------------------------------------------------------------//
@@ -323,5 +347,6 @@ function AuthenticatedUser()
 	$objAuthenticatedUser = Singleton::Instance('Application');
 	return $objAuthenticatedUser;
 }
+
 
 ?>

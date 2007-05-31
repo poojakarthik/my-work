@@ -1057,7 +1057,190 @@ class Validation
 	}
 }
 
+// this will be implemented as a singleton object
+//ALL THIS CODE HAS BEEN COPIED AND PASTED FROM DBOFramework
+class ContextMenuFramework
+{
+	public	$arrProperties	= Array();
+	private	$_objMenuToken	= NULL;
+	private $_objMenuItems;
+	
+	function __construct()
+	{
+		$this->_objMenuToken = new MenuToken();
+	}
+	
+	//------------------------------------------------------------------------//
+	// __get
+	//------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 *
+	 * <Short Description>
+	 *
+	 * Generic GET function for returning Database Objects
+	 *
+	 * @param	string	$strName	Name of the Database Object
+	 * 
+	 * @return	DBObject
+	 *
+	 * @method
+	 */
+	function __get($strName)
+	{
+		$this->_objMenuToken->NewPath($this, $strName);
+
+		// Return the MenuToken
+		return $this->_objMenuToken;
+	}
+	
+	function Reset()
+	{
+		$this->arrProperties = Array();
+	}
+	
+	function _Render($arrMenu)
+	{
+		$arrReturn = Array();
+
+		foreach ($arrMenu as $strMenu=>$arrSubMenu)
+		{
+			// add menu item
+			$strMenu = str_replace("_", " ", $strMenu);  //replace _'s with spaces
+			
+			if (!is_array(current($arrSubMenu)))
+			{
+				$strMethod = str_replace(" ", "", $strMenu);
+				// add menu link
+				$arrReturn[$strMenu] = call_user_func_array(array($this->_objMenuItems, $strMethod), $arrSubMenu);
+			}
+			else
+			{
+				$arrReturn[$strMenu] = $this->_Render($arrSubMenu);
+			}
+		}
+		
+		return $arrReturn;
+	}
+	
+	function Render()
+	{
+		$this->_objMenuItems = new MenuItems();
+		
+		$arrOutput = $this->_Render($this->arrProperties);
+		
+		// convert $arrOutput to JSON
+		//TODO!
+		
+		// output JSON
+		//TODO!
+		
+		Debug($arrOutput);
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// Info
+	//------------------------------------------------------------------------//
+	/**
+	 * Info()
+	 *
+	 * returns info about each DBO object contained in the framework
+	 *
+	 * returns info about each DBO object contained in the framework
+	 * 
+	 * @return	array		[DBObjectName=>DBObjectInfo]
+	 *
+	 * @method
+	 */
+	function Info()
+	{
+		$this->_objMenuItems = new MenuItems();
+		
+		return $this->_Render($this->arrProperties);
+	}
+
+	private function _ShowMenu($arrMenu, $strTabs='')
+	{
+		foreach ($arrMenu AS $strMenu=>$arrSubMenu)
+		{
+			//$strOutput .= $strTabs."$strMenu\n";
+			//$strOutput .= $this->_ShowMenu($strMenu, $arrSubMenu, $strTabs."\t");
+			if (!is_array(current($arrSubMenu)))
+			{
+				// it's a command
+				//$strMethod = str_replace(" ", "", $strMenu);
+				$strReturn .= $strTabs . $strMenu . " => " . $arrSubMenu . "\n";
+			}
+			else
+			{
+				// it's a submenu
+				$strReturn .= $strTabs . $strMenu . "\n";
+				$strReturn .= $this->_ShowMenu($arrSubMenu, $strTabs."\t");
+			}
+		}
+		return $strReturn;
+		
+	}
+
+	//------------------------------------------------------------------------//
+	// ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowInfo()
+	 *
+	 * Formats a list containing information regarding each DBObject object, so that it can be displayed
+	 *
+	 * Formats a list containing information regarding each DBObject object, so that it can be displayed
+	 * 
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the list should be tabbed.
+	 * @return	string								returns the list as a formatted string.
+	 *												If strTabs is not given then this string is
+	 *												also output using Debug()
+	 *
+	 * @method
+	 */
+	function ShowInfo($strTabs='')
+	{
+		$arrMenu = $this->Info();
+		
+		//make this a tabable version of the _Render method
+		
+		$strOutput = $this->_ShowMenu($arrMenu, $strTabs);
+		
+		if (!$strTabs)
+		{
+			Debug($strOutput);
+		}
+		return $strOutput;
+	}	
+
+}
 
 
+class MenuItems
+{
+	// all menu items have to return an array like this
+	function ViewAccount($intId)
+	{
+		return "Account_view.php?Account.Id=$intId";
+	}
+	
+	function __call($strName, $arrParams)
+	{
+		switch ($strName)
+		{
+			case "ViewAccount":
+				return "Account_view.php?Account.Id={$arrParams[0]}";
+				break;
+			
+			default;
+				break;
+		}
+	}
+	
+	
+}
 
 ?>
