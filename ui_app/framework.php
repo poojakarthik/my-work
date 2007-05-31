@@ -448,7 +448,7 @@ class DBOFramework
 		}
 		return $arrReturn;
 	}
-	
+
 	function ShowInfo($strTabs='')
 	{
 		foreach ($this->_arrProperty AS $strObject=>$objObject)
