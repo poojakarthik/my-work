@@ -621,7 +621,7 @@ class DBObject extends DBObjectBase
 	 *
 	 * return info about the DBO object
 	 * 
-	 * @return	bool
+	 * @return	array		stores all properties ['Properties'] and all valid properties ['Valid']
 	 *
 	 * @method
 	 */
@@ -636,6 +636,25 @@ class DBObject extends DBObjectBase
 		return $arrReturn;
 	}
 	
+	//------------------------------------------------------------------------//
+	// ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowInfo()
+	 *
+	 * Formats info about the DBO object so that it can be displayed
+	 *
+	 * Formats info about the DBO object so that it can be displayed
+	 * 
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the object's 
+	 *												info should be tabbed.
+	 * @return	string								returns the object's info as a formatted string.
+	 *												If strTabs is not given then this string is
+	 *												also output using Debug()
+	 *
+	 * @method
+	 */
 	function ShowInfo($strTabs='')
 	{
 		$arrInfo = $this->Info();
@@ -644,7 +663,7 @@ class DBObject extends DBObjectBase
 			$strOutput .= $strTabs."$strKey\n";
 			foreach ($arrValue AS $strProperty=>$mixValue)
 			{
-				$strOutput .= $strTabs."	$strProperty : $mixValue\n";
+				$strOutput .= $strTabs."\t$strProperty : $mixValue\n";
 			}
 		}
 		if (!$strTabs)

@@ -50,5 +50,7 @@ DBL()->Account->Load();
 //Debug(DBL()->Account->Info());
 //Debug(DBL());
 DBL()->ShowInfo();
+//Debug(DBL());
+
 
 ?>

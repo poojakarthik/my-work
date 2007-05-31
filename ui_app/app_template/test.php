@@ -17,10 +17,13 @@ class AppTemplateTest extends ApplicationTemplate
 		{
 			DBO()->Account->Load();
 			DBL()->Service->Account = DBO()->Account->Id->Value;
+			DBL()->Note->AccountGroup = DBO()->Account->Id->Value;
 			DBL()->Service->Load();
+			DBL()->Note->Load();
 		}
-		DBO()->ShowInfo();
-		DBL()->ShowInfo();
+		Debug(DBO()->ShowInfo("\t"));
+		Debug(DBL()->ShowInfo("\t\t"));
+		
 		
 		
 		Die();

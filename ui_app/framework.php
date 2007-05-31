@@ -432,11 +432,11 @@ class DBOFramework
 	/**
 	 * Info()
 	 *
-	 * return info about all DBO object
+	 * returns info about each DBO object contained in the framework
 	 *
-	 * return info about all DBO object
+	 * returns info about each DBO object contained in the framework
 	 * 
-	 * @return	bool
+	 * @return	array		[DBObjectName=>DBObjectInfo]
 	 *
 	 * @method
 	 */
@@ -449,12 +449,30 @@ class DBOFramework
 		return $arrReturn;
 	}
 
+	//------------------------------------------------------------------------//
+	// ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowInfo()
+	 *
+	 * Formats a list containing information regarding each DBObject object, so that it can be displayed
+	 *
+	 * Formats a list containing information regarding each DBObject object, so that it can be displayed
+	 * 
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the list should be tabbed.
+	 * @return	string								returns the list as a formatted string.
+	 *												If strTabs is not given then this string is
+	 *												also output using Debug()
+	 *
+	 * @method
+	 */
 	function ShowInfo($strTabs='')
 	{
 		foreach ($this->_arrProperty AS $strObject=>$objObject)
 		{
 			$strOutput .= $strTabs."$strObject\n";
-			$strOutput .= $strTabs.$objObject->ShowInfo("\t");
+			$strOutput .= $objObject->ShowInfo($strTabs."\t");
 		}
 		if (!$strTabs)
 		{
@@ -511,18 +529,20 @@ class DBLFramework
 		// Return the DBList
 		return $this->_arrProperty[$strName];
 	}
-	
+
+
+
 	//------------------------------------------------------------------------//
 	// Info
 	//------------------------------------------------------------------------//
 	/**
 	 * Info()
 	 *
-	 * return info about all DBO object
+	 * return info about all DBL objects
 	 *
-	 * return info about all DBO object
+	 * return info about all DBL objects
 	 * 
-	 * @return	bool
+	 * @return	array		[DBListName=>DBListInfo]
 	 *
 	 * @method
 	 */
@@ -535,27 +555,37 @@ class DBLFramework
 		return $arrReturn;
 	}
 	
-	function ShowInfo()
+	//------------------------------------------------------------------------//
+	// ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowInfo()
+	 *
+	 * Formats a list containing information regarding each DBList object, so that it can be displayed
+	 *
+	 * Formats a list containing information regarding each DBList object, so that it can be displayed
+	 * 
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the list should be tabbed.
+	 * @return	string								returns the list as a formatted string.
+	 *												If strTabs is not given then this string is
+	 *												also output using Debug()
+	 *
+	 * @method
+	 */
+	function ShowInfo($strTabs='')
 	{
-		$arrInfo = $this->Info();
-		foreach ($arrInfo AS $strList=>$arrList)
+		foreach ($this->_arrProperty AS $strObject=>$objObject)
 		{
-			$strOutput .= "$strList\n";
-			foreach ($arrList AS $intId=>$arrObject)
-			{
-				$strOutput .= "	$intId\n";
-				foreach ($arrObject AS $strKey=>$arrValue)
-				{
-					$strOutput .= "		$strKey\n";
-					foreach ($arrValue AS $strProperty=>$mixValue)
-					{
-						$strOutput .= "			$strProperty : $mixValue\n";
-					}
-				}
-			}
+			$strOutput .= $strTabs."$strObject\n";
+			$strOutput .= $objObject->ShowInfo($strTabs."\t");
 		}
-		Debug($strOutput);
-	}
+		if (!$strTabs)
+		{
+			Debug($strOutput);
+		}
+		return $strOutput;
+	}	
 }
 
 

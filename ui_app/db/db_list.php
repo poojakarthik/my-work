@@ -419,7 +419,7 @@ class DBList extends DBListBase
 	 *
 	 * return info about the DB object list
 	 * 
-	 * @return	bool
+	 * @return	array		associative array (ObjectUniqueId=>ObjectInfo)
 	 *
 	 * @method
 	 */
@@ -435,6 +435,54 @@ class DBList extends DBListBase
 		
 		return $arrReturn;
 	}
+	
+	//------------------------------------------------------------------------//
+	// ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowInfo()
+	 *
+	 * Formats info about the DB object list so that it can be displayed
+	 *
+	 * Formats info about the DB object list so that it can be displayed
+	 * 
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the object list's 
+	 *												info should be tabbed.
+	 * @return	string								returns the object list's info as a formatted string.
+	 *												If strTabs is not given then this string is
+	 *												also output using Debug()
+	 *
+	 * @method
+	 */
+	function ShowInfo($strTabs='')
+	{
+		$arrInfo = $this->Info();
+		
+		// for each object in the list...
+		foreach ($arrInfo AS $strKey=>$arrValue)
+		{
+			$strOutput .= $strTabs."$strKey\n";
+			
+			// for each Info property of the object...
+			foreach ($arrValue AS $strInfoProperty=>$mixInfoValue)
+			{
+				$strOutput .= $strTabs."\t$strInfoProperty\n";
+				
+				// for each element of the Info property...
+				foreach ($mixInfoValue as $strProperty=>$mixValue)
+				{
+					$strOutput .= $strTabs."\t\t$strProperty : $mixValue\n";
+				}
+			}
+		}
+		if (!$strTabs)
+		{
+			Debug($strOutput);
+		}
+		return $strOutput;
+	}
+	
 
 }
 ?>
