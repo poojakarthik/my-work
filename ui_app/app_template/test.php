@@ -11,8 +11,6 @@ class AppTemplateTest extends ApplicationTemplate
 
 	function Test()
 	{
-		//DBO()->Table1->BlowMe = "test";
-		//DBO()->Table2->BlowMe = "This is stored in Table2";
 		if (DBO()->Account->Id->Valid())
 		{
 			DBO()->Account->Load();
@@ -23,7 +21,6 @@ class AppTemplateTest extends ApplicationTemplate
 		}
 		Debug(DBO()->ShowInfo("\t"));
 		Debug(DBL()->ShowInfo("\t\t"));
-		
 		
 		
 		Die();

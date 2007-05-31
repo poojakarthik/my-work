@@ -548,6 +548,7 @@ class DBLFramework
 	 */
 	function Info()
 	{
+		$arrReturn = Array();
 		foreach ($this->_arrProperty AS $strObject=>$objObject)
 		{
 			$arrReturn[$strObject] = $objObject->Info();
@@ -764,7 +765,122 @@ class Validation
 	 */
 	function RegexValidate($strValidationRule, $mixValue)
 	{
-		return TRUE;
+		// return false if not a valid regex
+		if (substr($strValidationRule, 0, 1) != '/' || !strrpos($strValidationRule, '/') > 0)
+		{
+			return FALSE;
+		}
+
+		// try to match with a regex
+		if (preg_match($strValidationRule, $mixValue))
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// Integer
+	//------------------------------------------------------------------------//
+	/**
+	 * Integer()
+	 *
+	 * Checks if a value is a valid integer
+	 *
+	 * Checks if a value is a valid integer
+	 *
+	 * @param	mix			$mixValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function Integer($mixValue)
+	{
+		if ((string)(int)$mixValue == (string)$mixValue)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// UnsignedInteger
+	//------------------------------------------------------------------------//
+	/**
+	 * UnsignedInteger()
+	 *
+	 * Checks if a value is a valid unsigned integer
+	 *
+	 * Checks if a value is a valid unsigned integer
+	 *
+	 * @param	mix			$mixValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function UnsignedInteger($mixValue)
+	{
+		if ((int)$mixValue > -1 && (string)(int)$mixValue == (string)$mixValue)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// NonZeroInteger
+	//------------------------------------------------------------------------//
+	/**
+	 * UnsignedInteger()
+	 *
+	 * Checks if a value is a valid non-zero integer
+	 *
+	 * Checks if a value is a valid non-zero integer
+	 *
+	 * @param	mix			$mixValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function NonZeroInteger($mixValue)
+	{
+		if ((int)$mixValue != 0 && (string)(int)$mixValue == (string)$mixValue)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// UnsignedNonZeroInteger
+	//------------------------------------------------------------------------//
+	/**
+	 * UnsignedNonZeroInteger()
+	 *
+	 * Checks if a value is a valid unsigned non-zero integer
+	 *
+	 * Checks if a value is a valid unsigned non-zero integer
+	 *
+	 * @param	mix			$mixValue			the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function UnsignedNonZeroInteger($mixValue)
+	{
+		if ((int)$mixValue > 0 && (string)(int)$mixValue == (string)$mixValue)
+		{
+			return TRUE;
+		}
+		
+		return FALSE;
 	}
 }
 
