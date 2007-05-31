@@ -1057,8 +1057,6 @@ class Validation
 	}
 }
 
-// this will be implemented as a singleton object
-//ALL THIS CODE HAS BEEN COPIED AND PASTED FROM DBOFramework
 class ContextMenuFramework
 {
 	public	$arrProperties	= Array();
@@ -1162,25 +1160,28 @@ class ContextMenuFramework
 
 	private function _ShowMenu($arrMenu, $strTabs='')
 	{
-		foreach ($arrMenu AS $strMenu=>$arrSubMenu)
+		// Output each element of the array $mixSubMenu
+		if (!is_array($arrMenu))
 		{
-			//$strOutput .= $strTabs."$strMenu\n";
-			//$strOutput .= $this->_ShowMenu($strMenu, $arrSubMenu, $strTabs."\t");
-			if (!is_array(current($arrSubMenu)))
+			// This should never actually happen
+			return "";
+		}
+		foreach ($arrMenu as $strMenu=>$mixSubMenu)
+		{
+			if (!is_array($mixSubMenu))
 			{
-				// it's a command
-				//$strMethod = str_replace(" ", "", $strMenu);
-				$strReturn .= $strTabs . $strMenu . " => " . $arrSubMenu . "\n";
+				// this is a command
+				$strOutput .= $strTabs . $strMenu . " => " . $mixSubMenu . "\n";
 			}
 			else
 			{
-				// it's a submenu
-				$strReturn .= $strTabs . $strMenu . "\n";
-				$strReturn .= $this->_ShowMenu($arrSubMenu, $strTabs."\t");
+				// this is a menu
+				$strOutput .= $strTabs . $strMenu . "\n";
+				$strOutput .= $this->_ShowMenu($mixSubMenu, $strTabs . "\t");
 			}
 		}
-		return $strReturn;
-		
+	
+		return $strOutput;
 	}
 
 	//------------------------------------------------------------------------//
@@ -1189,13 +1190,13 @@ class ContextMenuFramework
 	/**
 	 * ShowInfo()
 	 *
-	 * Formats a list containing information regarding each DBObject object, so that it can be displayed
+	 * Formats a string representing the layout of the Context Menu
 	 *
-	 * Formats a list containing information regarding each DBObject object, so that it can be displayed
+	 * Formats a string representing the layout of the Context Menu
 	 * 
 	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
-	 *												used to define how far the list should be tabbed.
-	 * @return	string								returns the list as a formatted string.
+	 *												used to define how far the menu structure should be tabbed.
+	 * @return	string								returns the menu as a formatted string.
 	 *												If strTabs is not given then this string is
 	 *												also output using Debug()
 	 *
@@ -1204,8 +1205,6 @@ class ContextMenuFramework
 	function ShowInfo($strTabs='')
 	{
 		$arrMenu = $this->Info();
-		
-		//make this a tabable version of the _Render method
 		
 		$strOutput = $this->_ShowMenu($arrMenu, $strTabs);
 		
@@ -1236,6 +1235,8 @@ class MenuItems
 				break;
 			
 			default;
+				return "[insert generic HREF here]";
+				
 				break;
 		}
 	}

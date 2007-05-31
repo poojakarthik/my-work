@@ -489,13 +489,14 @@ class MenuToken
 	
 	function Info()
 	{
-	
+		// TODO!!!
 	}
 	
 	// recursively printout the names from the array, until it gets to the final
 	// one where it will printout value
 	function ShowInfo($strTabs='')
 	{
+		// TODO!!! I don't think this currently works
 		foreach ($this->_arrPath as $strPathItem)
 		{
 			$strOutput .=  $strTabs.$strPathItem."\n";
