@@ -449,22 +449,18 @@ class DBOFramework
 		return $arrReturn;
 	}
 	
-	function ShowInfo()
+	function ShowInfo($strTabs='')
 	{
-		$arrInfo = $this->Info();
-		foreach ($arrInfo AS $strObject=>$arrObject)
+		foreach ($this->_arrProperty AS $strObject=>$objObject)
 		{
-			$strOutput .= "$strObject\n";
-			foreach ($arrObject AS $strKey=>$arrValue)
-			{
-				$strOutput .= "	$strKey\n";
-				foreach ($arrValue AS $strProperty=>$mixValue)
-				{
-					$strOutput .= "		$strProperty : $mixValue\n";
-				}
-			}
+			$strOutput .= $strTabs."$strObject\n";
+			$strOutput .= $strTabs.$objObject->ShowInfo("\t");
 		}
-		Debug($strOutput);
+		if (!$strTabs)
+		{
+			Debug($strOutput);
+		}
+		return $strOutput;
 	}	
 }
 
@@ -514,6 +510,51 @@ class DBLFramework
 		
 		// Return the DBList
 		return $this->_arrProperty[$strName];
+	}
+	
+	//------------------------------------------------------------------------//
+	// Info
+	//------------------------------------------------------------------------//
+	/**
+	 * Info()
+	 *
+	 * return info about all DBO object
+	 *
+	 * return info about all DBO object
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function Info()
+	{
+		foreach ($this->_arrProperty AS $strObject=>$objObject)
+		{
+			$arrReturn[$strObject] = $objObject->Info();
+		}
+		return $arrReturn;
+	}
+	
+	function ShowInfo()
+	{
+		$arrInfo = $this->Info();
+		foreach ($arrInfo AS $strList=>$arrList)
+		{
+			$strOutput .= "$strList\n";
+			foreach ($arrList AS $intId=>$arrObject)
+			{
+				$strOutput .= "	$intId\n";
+				foreach ($arrObject AS $strKey=>$arrValue)
+				{
+					$strOutput .= "		$strKey\n";
+					foreach ($arrValue AS $strProperty=>$mixValue)
+					{
+						$strOutput .= "			$strProperty : $mixValue\n";
+					}
+				}
+			}
+		}
+		Debug($strOutput);
 	}
 }
 

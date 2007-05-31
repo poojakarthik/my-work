@@ -635,6 +635,24 @@ class DBObject extends DBObjectBase
 		}
 		return $arrReturn;
 	}
+	
+	function ShowInfo($strTabs='')
+	{
+		$arrInfo = $this->Info();
+		foreach ($arrInfo AS $strKey=>$arrValue)
+		{
+			$strOutput .= $strTabs."$strKey\n";
+			foreach ($arrValue AS $strProperty=>$mixValue)
+			{
+				$strOutput .= $strTabs."	$strProperty : $mixValue\n";
+			}
+		}
+		if (!$strTabs)
+		{
+			Debug($strOutput);
+		}
+		return $strOutput;
+	}
 }
 
 

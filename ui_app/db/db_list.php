@@ -20,6 +20,7 @@
 class DBList extends DBListBase
 {
 	public $_objWhere;
+	public $Where;
 	public $_intLimitStart	= NULL;
 	public $_intLimitCount	= NULL;
 	public $_intMode 		= DBO_RETURN;
@@ -144,6 +145,9 @@ class DBList extends DBListBase
 		{
 			$this->_objWhere 	= new DbWhere($this->_arrDefine['Where'], $this->_arrDefine['WhereData']);
 		}
+		
+		// set up a public ref to the where object
+		$this->Where = $this->_objWhere;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -168,7 +172,7 @@ class DBList extends DBListBase
 	function Load($arrWhere=NULL, $strWhere=NULL, $intLimitCount=NULL, $intLimitStart=NULL)
 	{
 		// setup where object
-		$this->_objWhere = new DbWhere($strWhere, $arrWhere);
+		$this->_objWhere->Set($strWhere, $arrWhere);
 		
 		// setup limit
 		$this->SetLimit($intLimitCount, $intLimitStart);
@@ -422,7 +426,7 @@ class DBList extends DBListBase
 	function Info()
 	{
 		$arrReturn = Array();
-		foreach (parent::$_arrDataArray as $objDBObject)
+		foreach ($this->_arrDataArray as $objDBObject)
 		{
 			// the index of $arrReturn is the value of the DB object's unique Id column
 			// or should it just be a linear array?

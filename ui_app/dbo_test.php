@@ -2,9 +2,9 @@
 
 
 include_once('application_loader.php');
-/*
+
 $Application->Load('Test.Test');
-*/
+
 // **************************DBO() Tests******************************
 /*
 DBO()->Table1->BlowMe = "test";
@@ -43,12 +43,12 @@ DBL()->Account->Id = 1000004777;
 // defining "DBL()->Account->Id = 1000004777" doesn't affect the where clause of the DBList
 // If you were to now run "DBL()->Account->Load()" it will retrieve every record from the Account table
 // and create a DBObject for it
-DBL()->Account->_objWhere->Set("Id < 1000004780");
-Debug(DBL()->Account->_objWhere->GetString());
+DBL()->Account->Where->SetString("Id < 1000004780");
+Debug(DBL()->Account->Where->GetString());
 DBL()->Account->Load();
-die;
+//die;
 //Debug(DBL()->Account->Info());
-Debug(DBL());
-
+//Debug(DBL());
+DBL()->ShowInfo();
 
 ?>
