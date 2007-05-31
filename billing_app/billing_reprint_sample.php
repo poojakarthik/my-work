@@ -96,6 +96,9 @@ $arrAccounts[]	= 1000157789;
 $arrAccounts[]	= 1000158008;
 $arrAccounts[]	= 1000160250;
 
+// Telco Blue
+$arrAccounts[]	= 1000154811;
+
 // reprint
 $bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
 

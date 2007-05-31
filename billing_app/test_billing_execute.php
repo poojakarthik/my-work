@@ -18,5 +18,7 @@ $arrAccounts = $selAccounts->FetchAll();
 $appBilling->_strInvoiceRun = "465a21828604a";
 Debug($appBilling->GenerateInvoices($arrAccounts, TRUE));
 
+$appBilling->Revoke();
+
 $appBilling->db->TransactionRollback();
 ?>
