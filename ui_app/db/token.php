@@ -269,9 +269,14 @@ class PropertyToken
 	 */
 	private function _RenderIO($strType, $bolRequired=NULL, $intContext=CONTEXT_DEFAULT)
 	{
+		//TODO!Rich!Why does the contect array start at 1 (when CONTEXT_DEFAULT = 0)
+		//$intContext = 1;
+		
 		// require a definition
 		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
 		{
+			//var_dump($this->_dboOwner->_arrDefine[$this->_strProperty][$intContext]);
+			//echo "<br />" . $intContext . "=" . CONTEXT_DEFAULT;
 			return FALSE;
 		}
 		
@@ -285,7 +290,7 @@ class PropertyToken
 		$arrParams['Valid'] 		= $this->_dboOwner->_arrValid[$this->_strProperty];
 		$arrParams['Required'] 		= $bolRequired;
 		$arrParams['Definition'] 	= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
-
+		
 		// work out the class to use
 		if (!$arrParams['Definition']['Class'])
 		{
@@ -300,7 +305,7 @@ class PropertyToken
 		{
 			$arrParams['Definition']['FullClass'] .= "Invalid"; // DefaultInputInvalid or DefaultOutput
 		}
-
+		
 		HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}

@@ -61,39 +61,43 @@ class AppTemplateAccount extends ApplicationTemplate
 	 */
 	function View()
 	{	
-		/*
-		// Check perms
-		$this->PermissionOrDie($pagePerms)	// dies if no permissions
-		$this->UserHasPerm($pagePerms) 		// returns false if none, true if they do
-		*/
 		
-		/*
-		if ($this->Dbo->Account->Id->IsValid())
+		$pagePerms = USER_PERMISSION_GOD;
+		AuthenticatedUser()->CheckAuth();
+		// Check perms
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
+		AuthenticatedUser()->UserHasPerm($pagePerms);	// returns false if none, true if they do
+		
+		if (DBO()->Account->Id->Valid())
+		{
 			//Load account + stuff
-			$this->Dbo->Account->Load()
-			$this->Dbo->MyObject->Account = $this->Dbo->Account->Id->Value
-			$this->Dbo->MyObject->Load()
+			DBO()->Account->Load();
+			DBO()->Service->Account = DBO()->Account->Id->Value;
+			DBO()->Service->Load();
 		
 			// Context menu options
-			$this->ContextMenu->Account->ViewAccount($this->Dbo->Account-Id->Value)
-			Menu
+			//$this->ContextMenu->Account->ViewAccount($this->Dbo->Account-Id->Value);
+			
+			/*Menu
 			   |--Account
 				|--View Account
+				*/
 			// Load page
-			$this->LoadPage('AccountView')
-		
+			$this->LoadPage('Account_View');
+		}
 		else
+		{		
 			// Load error page
-			$this->LoadPage('AccountError')
-		*/
+			$this->LoadPage('Account_Error');
+		}
 		/*
 		//for additional functionality like change of lessee
 		$someThing = $this->Module->Account->Function()
 		
 		*/
-		$this->Module->Account->Method();
+		//$this->Module->Account->Method();
 		
-		$this->LoadPage('account_view');
+		//$this->LoadPage('account_view');
 		
 	}
 }

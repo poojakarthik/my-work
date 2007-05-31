@@ -345,6 +345,133 @@ class Page
 			}
 		}
 	}
+	
+	//------------------------------------------------------------------------//
+	// RenderHeader
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderHeader()
+	 *
+	 * Renders a single column of the page
+	 *
+	 * Renders a single column of the page
+	 * 
+	 * @method
+	 */
+	function RenderHeader($strPageTitle)
+	{
+		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>";
+		echo "<title>viXen : Employee Intranet System - $strPageTitle</title>";
+		$this->RenderJS();
+		$this->RenderCSS();
+		echo "</head> ";
+		
+		echo "
+<body>
+    <div class='Logo'>
+      <img src='img/template/vixen_logo.png' border='0'>
+    </div>
+    <div id='Header' class='sectionContainer'>
+      <span class='LogoSpacer'></span>
+      <div class='sectionContent'>
+        <div class='Left'>
+			TelcoBlue Internal Management System
+		</div>
+        <div class='Right'>
+			Version 7.03
+									
+			<div class='Menu_Button'>
+				<a href='#' onclick=\"return ModalDisplay ('#modalContent-ReportBug')\">
+					<img src='img/template/bug.png' alt='Report Bug' title='Report Bug' border='0'>
+				</a>
+			</div>
+		</div>
+
+
+        <div class='Clear'></div>
+      </div>
+      <div class='Clear'></div>
+    </div>
+    <div class='Clear'></div>
+    <div class='Seperator'></div>";
+		
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderContextMenu
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderContextMenu()
+	 *
+	 * Renders a single column of the page
+	 *
+	 * Renders a single column of the page
+	 * 
+	 * @method
+	 */
+	function RenderContextMenu()
+	{
+	echo "
+	<div id='Content'>
+      <table border='0' cellpadding='0' cellspacing='0' width='100%'>
+        <tbody><tr>
+          <td nowrap='nowrap' valign='top' width='75'>
+            <div id='Navigation' class='Left sectionContent Navigation'>
+              <table border='0' cellpadding='0' cellspacing='0'>
+                <tbody><tr>
+                  <td>
+                    <a href='http://localhost/sean/vixen/intranet_app/console.php'>
+                      <img src='img/template/home.png' title='Employee Console' class='MenuIcon'>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href='http://localhost/sean/vixen/intranet_app/account_add.php'>
+                      <img src='img/template/contact_add.png' title='Add Customer' class='MenuIcon'>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href='http://localhost/sean/vixen/intranet_app/contact_verify.php'>
+                      <img src='img/template/contact_retrieve.png' title='Find Customer' class='MenuIcon'>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href='#' onclick='return ModalDisplay ('#modalContent-recentCustomers')'>
+                      <img src='img/template/history.png' title='Recent Customers' class='MenuIcon'>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href='http://localhost/sean/vixen/intranet_app/rates_plan_list.php'>
+                      <img src='img/template/plans.png' title='View Available Plans' class='MenuIcon'>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href='http://localhost/sean/vixen/intranet_app/console_admin.php'>
+                      <img src='img/template/admin_console.png' title='Administrative Console' class='MenuIcon'>
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <a href='#' onclick='return Logout()'>
+                      <img src='img/template/logout.png' title='Logout' class='MenuIcon'>
+                    </a>
+                  </td>
+                </tr>
+              </tbody></table>
+            </div>
+          </td>
+		  <td valign='top'>";
+	}
 }
 
 

@@ -177,14 +177,14 @@ class HTMLElements
 		{
 			$arrParams['Definition']['Class'] = CLASS_DEFAULT; // Default
 		}
-		$strClass = $arrParams['Definition']['Class']."Input"; // DefaultInput
+		$strClass = $arrParams['Definition']['FullClass']; // DefaultInput
 		if ($arrParams['Valid'] === FALSE)
 		{
 			$strClass .= "Invalid"; // DefaultInputInvalid
 		}
 		
 		echo "<td>";
-		echo "$strDocumentation[1]:";
+		echo "{$arrParams['Definition']['Label']} : \n";
 		echo "</td>";
 		echo "<td>";
 		echo "<input name='account.id' value='{$arrParams['Value']}' class='$strClass'></input>";
@@ -277,7 +277,7 @@ class HTMLElements
 	 *
 	 * @method
 	 */
-	function RadioButtons($arrParams)
+	function Radio($arrParams)
 	{
 		// an example of Late Payments radio buttons on account_edit.php
 		// $arrParams has an array of keys=>values for the options

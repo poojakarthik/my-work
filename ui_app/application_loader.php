@@ -87,7 +87,7 @@ require_once('db/token.php');
 require_once('json.php');
 //require_once('db_access_old.php');
 
-$Application = new Application;
+$Application = Singleton::Instance('Application');
 
 
 //------------------------------------------------------------------------//
@@ -387,6 +387,42 @@ class Application
 			$this->_arrUser = "";
 		}
 	}
+	
+	/*
+	// Check perms
+	$this->PermissionOrDie($minimumPerms)	// dies if no permissions
+	$this->UserHasPerm($pagePerms) 		// returns false if none, true if they do
+	*/
+	
+	function PermissionOrDie($intPagePerms)
+	{
+		// check the current user permission against permissions passed in
+		if ($this->_arrUser->Permissions != "temp permissions fix")
+		{
+			//var_dump ($this->_arrUser);
+			return TRUE;
+		}
+		else
+		{
+			// ask user to login, then return to page
+			header ('Location: login.php');
+			exit;
+		}
+
+	}
+	
+	function UserHasPerm($intPerms)
+	{
+		// check the permissions are greater/equal
+		if ($this->_arrUser->Permissions >= $intPerms)
+		{
+			echo "User has permission";
+			return TRUE;
+		}
+		// else return false
+		return FALSE;
+	}
+	
 	
 }
 

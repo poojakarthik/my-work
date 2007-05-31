@@ -39,18 +39,21 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		?>
 		<table>
 			<tr>
+				<h1>Account Details</h1>
+			</tr>
+			<tr>
 				<?php
 					// Dbo()->Object->Property->RenderInput([$bolRequired], [$strContext]);
 					// Dbo()->Object->Property->RenderInput(TRUE, 'Account');
-					// Dbo()->Object->Property->RenderInput(TRUE);					
-					dboRender('Input',TRUE);
+					// Dbo()->Object->Property->RenderInput(TRUE);				
+					DBO()->Account->Id->RenderOutput(TRUE, 1);					
+					DBO()->Account->BusinessName->RenderOutput(TRUE);
+					DBO()->Account->TradingName->RenderOutput(TRUE,1);
+					DBO()->Account->ABN->RenderOutput(TRUE,1);
+					DBO()->Account->FirstName->RenderOutput(TRUE,1);
+					DBO()->Account->BillingType->RenderOutput(TRUE);
+					
 				?>	
-			</tr>
-			<tr>
-				<?php dboRender('Label',TRUE); ?>	
-			</tr>
-			<tr>
-				<?php dboRender('Other',TRUE); ?>	
 			</tr>
 		</table>
 		<?php

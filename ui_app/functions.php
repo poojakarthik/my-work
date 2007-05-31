@@ -300,4 +300,28 @@ function Validate($strValidationRule, $mixValue)
 		return $objValidation->RegexValidate($strValidationRule, $mixValue);
 	}
 }
+
+//------------------------------------------------------------------------//
+// AuthenticatedUser
+//------------------------------------------------------------------------//
+/**
+ * AuthenticatedUser()
+ *
+ * Returns the authenticated user object
+ *
+ * Returns the singleton PropertyToken object
+ * Note that this will return a new PropertyToken object if one has not yet been
+ * created.  If one has been created, it will return a reference to it.
+ *
+ * @return	PropertyToken object
+ *
+ * @function
+ * 
+ */
+function AuthenticatedUser()
+{
+	$objAuthenticatedUser = Singleton::Instance('Application');
+	return $objAuthenticatedUser;
+}
+
 ?>
