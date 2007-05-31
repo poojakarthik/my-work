@@ -62,11 +62,16 @@ class AppTemplateAccount extends ApplicationTemplate
 	function View()
 	{	
 		
-		$pagePerms = USER_PERMISSION_GOD;
+		$pagePerms = PERMISSION_ADMIN;
+		
 		AuthenticatedUser()->CheckAuth();
 		// Check perms
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
-		AuthenticatedUser()->UserHasPerm($pagePerms);	// returns false if none, true if they do
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			echo "God!";
+			// add in debug info
+		}
 		
 		if (DBO()->Account->Id->Valid())
 		{
@@ -95,9 +100,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		$someThing = $this->Module->Account->Function()
 		
 		*/
-		//$this->Module->Account->Method();
-		
-		//$this->LoadPage('account_view');
-		
+		//$this->Module->Account->Method();	
 	}
 }

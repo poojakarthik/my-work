@@ -358,16 +358,62 @@ class Page
 	 * 
 	 * @method
 	 */
-	function RenderHeader($strPageTitle)
+	function RenderHeader()
 	{
+		// build referring string from _GET
+		$strTarget = DBO()->Account->Id->Value;
+		
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>";
-		echo "<title>viXen : Employee Intranet System - $strPageTitle</title>";
+		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>";
 		$this->RenderJS();
 		$this->RenderCSS();
+		echo "
+		
+		<script type='text/javascript'>
+
+function toggleBox(szDivID, iState) // 1 visible, 0 hidden
+{
+    var obj = document.getElementById(szDivID);
+    obj.style.visibility = iState ? 'visible' : 'hidden'; 
+}
+
+</script>
+";
 		echo "</head> ";
 		
 		echo "
-<body>
+<body >
+
+	<div id='LoginBox'>
+			<h1>TelcoBlue Internal System</h1>
+			
+			<form method='POST' action='account_view.php?Account.Id=$strTarget'>
+				<table>
+					<tr>
+						<td>
+							<label for='UserName'>Username:</label>
+						</td>
+						<td>
+							<input type='text' name='UserName' class='LoginBox' maxlength='21'/>
+						</td>
+					</tr>
+					<tr>
+						<td>
+							<label for='PassWord'>Password:</label>
+						</td>
+						<td>
+							<input type='password' name='PassWord' class='LoginBox'/>
+						</td>
+					</tr>
+					<tr>
+						<td/>
+						<td>
+							<input type='submit' value='Continue &#xBB;' class='Right'/>
+						</td>
+					</tr>
+				</table>
+			</form>
+	</div>
     <div class='Logo'>
       <img src='img/template/vixen_logo.png' border='0'>
     </div>
@@ -441,7 +487,7 @@ class Page
                 </tr>
                 <tr>
                   <td>
-                    <a href='#' onclick='return ModalDisplay ('#modalContent-recentCustomers')'>
+                    <a href='#' onclick='return ModalDisplay (\"#modalContent-recentCustomers\")'>
                       <img src='img/template/history.png' title='Recent Customers' class='MenuIcon'>
                     </a>
                   </td>
@@ -462,7 +508,7 @@ class Page
                 </tr>
                 <tr>
                   <td>
-                    <a href='#' onclick='return Logout()'>
+                    <a href='#' onclick=\"toggleBox('LoginBox',1);\">
                       <img src='img/template/logout.png' title='Logout' class='MenuIcon'>
                     </a>
                   </td>

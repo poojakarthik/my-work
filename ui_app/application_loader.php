@@ -336,6 +336,7 @@ class Application
 	
 	function CheckAuth()
 	{
+		//var_dump($_COOKIE);die;
 		if (isset($_COOKIE['Id']) && isset($_COOKIE['SessionId']))
 		{
 			$selAuthenticated = new StatementSelect(
@@ -397,7 +398,7 @@ class Application
 	function PermissionOrDie($intPagePerms)
 	{
 		// check the current user permission against permissions passed in
-		if ($this->_arrUser->Permissions != "temp permissions fix")
+		if ($this->_arrUser['Privileges'] > $intPagePerms)
 		{
 			//var_dump ($this->_arrUser);
 			return TRUE;
@@ -406,6 +407,8 @@ class Application
 		{
 			// ask user to login, then return to page
 			header ('Location: login.php');
+			//header ('Referer: http://www.something.com/account_view.php');
+			//var_dump($this->_arrUser->Permissions);
 			exit;
 		}
 
@@ -414,15 +417,15 @@ class Application
 	function UserHasPerm($intPerms)
 	{
 		// check the permissions are greater/equal
-		if ($this->_arrUser->Permissions >= $intPerms)
+		if ($this->_arrUser['Privileges'] >= $intPerms)
 		{
-			echo "User has permission";
 			return TRUE;
 		}
 		// else return false
 		return FALSE;
 	}
-	
+		
+
 	
 }
 

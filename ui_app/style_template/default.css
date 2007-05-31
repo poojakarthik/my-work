@@ -92,7 +92,6 @@
 		color:                #FFFFFF;
 	}
 	
-	
 	.sectionContent
 	{
 		margin:               auto;
@@ -985,4 +984,14 @@
 	tr.RecentCustomers td
 	{
 		cursor:					pointer;
+	}
+	
+	div#LoginBox
+	{
+		position: absolute;
+		top: 200px;
+		left: 500px;
+		visibility: hidden;
+		border: 1px solid green;
+		background-color: #ffffff;
 	}

@@ -34,7 +34,7 @@
 		// this echo will be replaced by a page template
 		// and a header template
 		
-		$this->RenderHeader($this->_strPageName);
+		$this->RenderHeader();
 		$this->RenderContextMenu();
 
 		//var_dump($this->Page->arrObjects);
