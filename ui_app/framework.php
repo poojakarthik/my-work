@@ -370,22 +370,37 @@ class Page
 		echo "
 		
 		<script type='text/javascript'>
-
-function toggleBox(szDivID, iState) // 1 visible, 0 hidden
+var iState = 0;
+function toggleBox(szDivID) // 1 visible, 0 hidden
 {
     var obj = document.getElementById(szDivID);
     obj.style.visibility = iState ? 'visible' : 'hidden'; 
+	iState ^= 1;
+	
+	dragObj = document.getElementById('TopBar');
+	dragObj.addEventListener('mousedown', LoginHandler, false);
+	
 }
+
+function LoginHandler(event)
+{
+	aphplix.dhtml.drag(event, 'LoginBox');
+}
+//dragObject = document.getElementById('TopBar');
 
 </script>
 ";
+	
 		echo "</head> ";
 		
 		echo "
-<body >
+<body onload='toggleBox(\"LoginBox\");'>
 
-	<div id='LoginBox'>
-			<h1>TelcoBlue Internal System</h1>
+	<div id='LoginBox' class='LoginBox' style='left: 400px; top:300px;'>
+		<div id='TopBar' class='TopBar'>
+		TelcoBlue Internal System
+		</div>
+			
 			
 			<form method='POST' action='account_view.php?Account.Id=$strTarget'>
 				<table>
@@ -394,7 +409,7 @@ function toggleBox(szDivID, iState) // 1 visible, 0 hidden
 							<label for='UserName'>Username:</label>
 						</td>
 						<td>
-							<input type='text' name='UserName' class='LoginBox' maxlength='21'/>
+							<input type='text' name='UserName' id='UserName' maxlength='21'/>
 						</td>
 					</tr>
 					<tr>
@@ -402,7 +417,7 @@ function toggleBox(szDivID, iState) // 1 visible, 0 hidden
 							<label for='PassWord'>Password:</label>
 						</td>
 						<td>
-							<input type='password' name='PassWord' class='LoginBox'/>
+							<input type='password' name='PassWord' />
 						</td>
 					</tr>
 					<tr>
@@ -440,6 +455,79 @@ function toggleBox(szDivID, iState) // 1 visible, 0 hidden
     </div>
     <div class='Clear'></div>
     <div class='Seperator'></div>";
+	
+	echo "<table class='Listing' border='0' cellpadding='3' cellspacing='0' width='auto'>
+              <tbody><tr class='First'>
+                <th width='30'>#</th>
+                <th>Invoice #</th>
+
+                <th>Date</th>
+                <th class='thRight'>Invoice Amount</th>
+                <th class='thRight'>Applied Amount</th>
+                <th class='thRight'>Amount Owing</th>
+                <th class='thRight'>Sent</th>
+                <th class='thRight'>Blank</th>
+
+              </tr>";
+	$strTableName = "Invoices";
+	$intMaxRows = 10;
+	for ($i = 0; $i <= $intMaxRows; $i++)
+	{
+		?>
+        <tr id='<?php echo $strTableName . $i; ?>' class='Odd' onmouseover='highlight(this.id, "<?php echo $strTableName; echo '", "'; echo $intMaxRows;  ?>");' onclick='toggleSelection(this.id, "<?php echo $strTableName; echo '", "'; echo $intMaxRows;  ?>")'>
+		<?php
+		echo "
+                <td>$i.</td>
+                <td>
+                  <a href='javascript:ToggleSlide('mydiv');'>3000306989</a>
+                </td>
+                <td>1/02/2007</td>
+
+                <td class='Currency'>" . rand() . "</td>
+                <td class='Currency'>$0.00</td>
+                <td class='Currency'>
+                  <strong>
+                    <span class='Red'>$2,405.15</span>
+                  </strong>
+                </td>
+
+                <td align='right'>
+                  <img src='console_admin_files/btn_unlocked.png' height=20px></img>
+                </td>
+				<td align='right'> 
+					<img src='console_admin_files/pdf.png' height=20px></img>
+					<img src='console_admin_files/invoice.png' height=20px></img>
+				</td>
+              </tr>
+			  <tr><td colspan=7><div id='mydiv' style='display:none; overflow:hidden; height:180px;'>
+
+			  <table cellspacing=2 align='right' >
+			  <th>
+			  	<td>Date</td>
+				<td style='padding-left:30px'>Total Applied</td>
+				<td style='padding-left:30px'>Type</td>
+			</th>  	
+				<tr align='right' onmouseover='return escape(getHTML(1))'>
+					<td></td><td>16/03/2007</td><td class='Currency' >$2,522.20</td><td>BPay</td>
+
+				</tr>
+				<tr align='right'>
+					<td></td><td>03/02/2007</td><td class='Currency'>$678.20</td><td>Eftpos</td>
+				</tr>
+				<tr align='right'>
+					<td></td><td>19/08/2006</td><td class='Currency'>$1,034.20</td><td>DD</td>
+
+				</tr>
+				<tr align='right'>
+					<td></td><td>23/02/2006</td><td class='Currency'>$25.20</td><td>BPay</td>
+				</tr>
+				<tr align='right'>
+					<td></td><td>06/12/2005</td><td class='Currency'>$822.20</td><td>Eftpos</td>
+
+				</tr>
+				</table>
+			  </div></td></tr>";
+		}
 		
 	}
 	
@@ -501,8 +589,8 @@ function toggleBox(szDivID, iState) // 1 visible, 0 hidden
                 </tr>
                 <tr>
                   <td>
-                    <a href='http://localhost/sean/vixen/intranet_app/console_admin.php'>
-                      <img src='img/template/admin_console.png' title='Administrative Console' class='MenuIcon'>
+                    <a href='#' onclick='toggleBox(\"LoginBox\");'>
+                      <img src='img/template/admin_console.png' title='Test Button' class='MenuIcon'>
                     </a>
                   </td>
                 </tr>

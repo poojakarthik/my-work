@@ -46,7 +46,8 @@
  * @todo
  *
  */
-
+var FALSE = 0;
+var TRUE = 1;
 //----------------------------------------------------------------------------//
 // DHTML CLASS
 //----------------------------------------------------------------------------//
@@ -63,92 +64,7 @@
  */
 function aphplix_dhtml_class()
 {
-	//----------------------------------------------------------------//
-	// grid_x
-	//----------------------------------------------------------------//
-	/**
-	 * this.grid_x
-	 *
-	 * x axis grid spacing
-	 *
-	 * x axis grid spacing, used if aphplix.dhtml.snap_to_grid = TRUE
-	 *
-	 * @type	int
-	 * @property
-	 * @see		aphplix.dhtml.grid_y
-	 * @see		aphplix.dhtml.snap_to_grid
-	 * @private
-	 */
-	this.grid_x = 5;
-	
-	//----------------------------------------------------------------//
-	// grid_y
-	//----------------------------------------------------------------//
-	/**
-	 * this.grid_y
-	 *
-	 * y axis grid spacing
-	 *
-	 * y axis grid spacing, used if aphplix.dhtml.snap_to_grid = TRUE
-	 *
-	 * @type	int
-	 * @property
-	 * @see		aphplix.dhtml.grid_x
-	 * @see		aphplix.dhtml.snap_to_grid
-	 * @private
-	 */
-	this.grid_y = 5;
-	
-	//----------------------------------------------------------------//
-	// snap_to_grid
-	//----------------------------------------------------------------//
-	/**
-	 * this.snap_to_grid
-	 *
-	 * snap to grid
-	 *
-	 * snap dragged objects to a grid defined by aphplix.dhtml.grid_x and
-	 * aphplix.dhtml.grid_y
-	 *
-	 * @type	bool
-	 * @property
-	 * @see		aphplix.dhtml.grid_x
-	 * @see		aphplix.dhtml.grid_y
-	 * @private
-	 */
-	this.snap_to_grid = FALSE;
-	
-	//----------------------------------------------------------------//
-	// front_object
-	//----------------------------------------------------------------//
-	/**
-	 * this.front_object
-	 *
-	 * ID of the current front object
-	 *
-	 * ID of the current front object
-	 *
-	 * @type	string
-	 * @property
-	 * @see		aphplix.dhtml.front()
-	 */
-	this.front_object = '';
-	
-	//----------------------------------------------------------------//
-	// front_form
-	//----------------------------------------------------------------//
-	/**
-	 * this.front_form
-	 *
-	 * ID of the current front form
-	 *
-	 * ID of the current front form
-	 *
-	 * @type	string
-	 * @property
-	 */
-	this.front_form = '';
-	
+
 	//------------------------------------------------------------------------//
 	// this.drag
 	//------------------------------------------------------------------------//
@@ -169,50 +85,6 @@ function aphplix_dhtml_class()
 	this.drag = function(evt, object_id)
 	{
 		dragStart(evt, object_id);
-	}
-	
-	//------------------------------------------------------------------------//
-	// this.front
-	//------------------------------------------------------------------------//
-	/**
-	 * this.front()
-	 *
-	 * Bring an object to the front
-	 *
-	 * Bring an object to the front
-	 *
-	 * @param	string	$name	[optional] [description]
-	 * @return	void
-	 *
-	 * @method
-	 * @see		aphplix.dhtml.front_object
-	 */
-	this.front = function(object_id)
-	{
-		aphplix.html.set_style(object_id, 'zIndex', ++dragObj.zIndex);
-		this.front_object = object_id;
-	}
-	
-	//------------------------------------------------------------------------//
-	// METHOD
-	//------------------------------------------------------------------------//
-	/**
-	 * Method_Name()
-	 *
-	 * short description
-	 *
-	 * long description
-	 *
-	 * @param	type	$name	[optional] [description]
-	 * @return	type			[description]
-	 *
-	 * @method
-	 * @see		method_name
-	 * @private
-	 */
-	this.zindex =function()
-	{
-		return ++dragObj.zIndex;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -271,7 +143,7 @@ function aphplix_dhtml_class()
 		return y;
 	}
 }
-
+var aphplix = new Object();
 // instanciate the dhtml object
 aphplix.dhtml = new aphplix_dhtml_class;
 
@@ -417,7 +289,7 @@ else
 // Global object to hold drag information.
 
 var dragObj = new Object();
-dragObj.zIndex = 0;
+
 
 function dragStart(event, id) {
 	if (aphplix.dragging_now === TRUE)
@@ -453,6 +325,7 @@ function dragStart(event, id) {
       dragObj.elNode = dragObj.elNode.parentNode;
   }
   
+  /*
 	// check if we need to detach the element
 	if (typeof(aphplix.objects[dragObj.elNode.id]) == 'object')
 	{
@@ -460,7 +333,7 @@ function dragStart(event, id) {
 		{
 			aphplix.html.detach(dragObj.elNode.id);
 		}
-	}
+	}*/
 
   // Get cursor position with respect to the page.
 
@@ -474,20 +347,20 @@ function dragStart(event, id) {
     x = event.clientX + window.scrollX;
     y = event.clientY + window.scrollY;
   }
-
+	
+	
   // Save starting positions of cursor and element.
-
   dragObj.cursorStartX = x;
   dragObj.cursorStartY = y;
   dragObj.elStartLeft  = parseInt(dragObj.elNode.style.left, 10);
   dragObj.elStartTop   = parseInt(dragObj.elNode.style.top,  10);
-
+	
   if (isNaN(dragObj.elStartLeft)) dragObj.elStartLeft = 0;
   if (isNaN(dragObj.elStartTop))  dragObj.elStartTop  = 0;
 
   // Update element's z-index.
 
-  dragObj.elNode.style.zIndex = ++dragObj.zIndex;
+  //dragObj.elNode.style.zIndex = ++dragObj.zIndex;
 
   // Capture mousemove and mouseup events on the page.
 
@@ -503,7 +376,7 @@ function dragStart(event, id) {
     event.preventDefault();
   }
   
-  aphplix.fire_event(dragObj.elNode.event_target, 'pickup');
+  //aphplix.fire_event(dragObj.elNode.event_target, 'pickup');
 }
 
 function dragGo(event) {
@@ -569,7 +442,7 @@ function dragGo(event) {
     event.preventDefault();
 	
 	// TODO !!!! where is the event object ?
-	aphplix.fire_event(dragObj.elNode.event_target, 'drag');
+	//aphplix.fire_event(dragObj.elNode.event_target, 'drag');
 }
 
 function dragStop(evt) {
@@ -596,5 +469,5 @@ function dragStop(evt) {
 	{
 		evt.target = evt.srcElement;
 	}
-	aphplix.real_event(dragObj.elNode.event_target, 'drop', evt);
+	//aphplix.real_event(dragObj.elNode.event_target, 'drop', evt);
 }

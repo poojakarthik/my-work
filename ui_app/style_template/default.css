@@ -532,6 +532,18 @@
 		background-color:    #D5E0F8;
 	}
 	
+	table.Listing tr.Selected th,
+	table.Listing tr.Selected td
+	{
+		background-color:    #99CCFF;
+	}
+	
+	table.Listing tr.Hover th,
+	table.Listing tr.Hover td
+	{
+		background-color:    #FFFFAA;
+	}
+	
 	.Currency
 	{
 		text-align:          right;
@@ -986,12 +998,26 @@
 		cursor:					pointer;
 	}
 	
-	div#LoginBox
+	.LoginBox
 	{
 		position: absolute;
-		top: 200px;
-		left: 500px;
 		visibility: hidden;
-		border: 1px solid green;
+		border: 1px solid #000000;
 		background-color: #ffffff;
+		z-index: 2;
+	}
+	.TopBar
+	{
+		font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		font-size: 10pt;
+		line-height: 18pt;
+		color: #FFFFFF;
+		background-color: #000000;
+		background-image:     url('img/template/background.png');
+		background-repeat:    repeat-x;
+		padding: 0px;
+		margin: 0px;
+		padding-left: 5px;
+		cursor: default;
+		
 	}

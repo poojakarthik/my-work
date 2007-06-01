@@ -21,6 +21,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	function __construct()
 	{
 		$this->LoadJavascript("dhtml");
+		$this->LoadJavascript("highlight");
 	}
 	//------------------------------------------------------------------------//
 	// Render
@@ -61,7 +62,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 			</tr>
 		</table>
 		<?php
-		var_dump($_POST);
+		//var_dump($_POST);
 		//HTML is OK here, to define structures which enclose these objects
 	}
 }

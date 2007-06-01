@@ -73,12 +73,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			echo "God!";
 			// add in debug info
 		}
-		if (time() % 10 > 5)
-		{
-			echo time();
-			require_once("page_template/login.php");
-			exit;
-		}
+
 		if (DBO()->Account->Id->Valid())
 		{
 			//Load account + stuff
