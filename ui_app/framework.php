@@ -1145,12 +1145,41 @@ class Validation
 	}
 }
 
+//----------------------------------------------------------------------------//
+// ContextMenuFramework
+//----------------------------------------------------------------------------//
+/**
+ * ContextMenuFramework
+ *
+ * Context Menu container
+ *
+ * Context Menu container.  Manages a context menu.
+ *
+ * @prefix	cmf
+ *
+ * @package	ui_app
+ * @class	ContextMenuFramework
+ */
 class ContextMenuFramework
 {
 	public	$arrProperties	= Array();
 	private	$_objMenuToken	= NULL;
 	private $_objMenuItems;
 	
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * Constructor for a ContextMenuFramework object
+	 *
+	 * Constructor for a ContextMenuFramework object
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function __construct()
 	{
 		$this->_objMenuToken = new MenuToken();
@@ -1162,13 +1191,13 @@ class ContextMenuFramework
 	/**
 	 * __get()
 	 *
-	 * <Short Description>
+	 * Creates a new context menu path and returns a reference to it
 	 *
-	 * Generic GET function for returning Database Objects
+	 * Creates a new context menu path and returns a reference to it 
 	 *
-	 * @param	string	$strName	Name of the Database Object
+	 * @param	string	$strName	Name of the new menu path to create
 	 * 
-	 * @return	DBObject
+	 * @return	MenuToken
 	 *
 	 * @method
 	 */
@@ -1180,11 +1209,35 @@ class ContextMenuFramework
 		return $this->_objMenuToken;
 	}
 	
+	//------------------------------------------------------------------------//
+	// Reset
+	//------------------------------------------------------------------------//
+	/**
+	 * Reset()
+	 *
+	 * Resets the context menu (empties it)
+	 *
+	 * Resets the context menu (empties it)
+	 * 
+	 * @method
+	 */
 	function Reset()
 	{
 		$this->arrProperties = Array();
 	}
 	
+	//------------------------------------------------------------------------//
+	// _Render
+	//------------------------------------------------------------------------//
+	/**
+	 * _Render()
+	 *
+	 * Used recursively by the method Render() to prepare the Context Menu for rendering
+	 *
+	 * Used recursively by the method Render() to prepare the Context Menu for rendering
+	 * 
+	 * @method
+	 */
 	function _Render($arrMenu)
 	{
 		$arrReturn = Array();
@@ -1209,6 +1262,18 @@ class ContextMenuFramework
 		return $arrReturn;
 	}
 	
+	//------------------------------------------------------------------------//
+	// Render
+	//------------------------------------------------------------------------//
+	/**
+	 * Render()
+	 *
+	 * Renders the Context Menu
+	 *
+	 * Renders the Context Menu
+	 * 
+	 * @method
+	 */
 	function Render()
 	{
 		$this->_objMenuItems = new MenuItems();
@@ -1231,11 +1296,11 @@ class ContextMenuFramework
 	/**
 	 * Info()
 	 *
-	 * returns info about each DBO object contained in the framework
+	 * returns a multi-dimensional array representing the contents of the ContextMenu
 	 *
-	 * returns info about each DBO object contained in the framework
+	 * returns a multi-dimensional array representing the contents of the ContextMenu
 	 * 
-	 * @return	array		[DBObjectName=>DBObjectInfo]
+	 * @return	array
 	 *
 	 * @method
 	 */
@@ -1246,9 +1311,27 @@ class ContextMenuFramework
 		return $this->_Render($this->arrProperties);
 	}
 
+	//------------------------------------------------------------------------//
+	// _ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * _ShowInfo()
+	 *
+	 * Formats a string representing the layout of the Context Menu (used recursively)
+	 *
+	 * Formats a string representing the layout of the Context Menu (used recursively)
+	 * 
+	 * @param	array		$arrMenu				the multi-dimensional menu structure to process
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the menu structure should be tabbed.
+	 * @return	string								returns the menu as a formatted string.
+	 *												If strTabs is not given then this string is
+	 *												also output using Debug()
+	 * @method
+	 */
 	private function _ShowMenu($arrMenu, $strTabs='')
 	{
-		// Output each element of the array $mixSubMenu
+		// Output each element of the array $arrMenu
 		if (!is_array($arrMenu))
 		{
 			// This should never actually happen
@@ -1306,14 +1389,67 @@ class ContextMenuFramework
 }
 
 
+//----------------------------------------------------------------------------//
+// MenuItems
+//----------------------------------------------------------------------------//
+/**
+ * MenuItems
+ *
+ * Defines the resultant HREF for each paricular item that can be included in a menu
+ *
+ * Defines the resultant HREF for each paricular item that can be included in a menu.
+ * Each type of menu item (a command in the context menu) should have a method
+ * defined here which returns the HREF that should be used when the menu item is 
+ * clicked.  Alternatively the menu item can be handled by the __call function.
+ * You will notice that the menu item "ViewAccount" has been handled both ways as
+ * an example of how they work.
+ *
+ * @prefix	mit
+ *
+ * @package	ui_app
+ * @class	MenuItems
+ */
 class MenuItems
 {
-	// all menu items have to return an array like this
+	
+	//------------------------------------------------------------------------//
+	// ViewAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewAccount()
+	 *
+	 * Compiles the HREF to be executed when the ViewAccount menu item is clicked
+	 *
+	 * Compiles the HREF to be executed when the ViewAccount menu item is clicked
+	 * 
+	 * @param	int		$intId		the id of the account to view
+	 *
+	 * @return	string				the HREF to be executed when the ViewAccount menu item is clicked
+	 *
+	 * @method
+	 */
 	function ViewAccount($intId)
 	{
 		return "Account_view.php?Account.Id=$intId";
 	}
 	
+	//------------------------------------------------------------------------//
+	// __call
+	//------------------------------------------------------------------------//
+	/**
+	 * __call()
+	 *
+	 * Handles all menu items that have not had a specific method defined in this class
+	 *
+	 * Handles all menu items that have not had a specific method defined in this class
+	 * 
+	 * @param	string		$strName		The name of the menu item
+	 * @param	array		$arrParams		any parameters defined for the menu item
+	 *
+	 * @return	string						the HREF to be executed when menu item is clicked
+	 *
+	 * @method
+	 */
 	function __call($strName, $arrParams)
 	{
 		switch ($strName)
@@ -1328,7 +1464,69 @@ class MenuItems
 				break;
 		}
 	}
+}
+
+class BreadCrumbFramework
+{
+	private $_arrCrumbs = NULL;
+
+	function __construct()
+	{
+	}
+
 	
+
+	function AddCrumb($strLabel, $strHREF, $arrAttributes=NULL)
+	{
+		$this->_arrCrumbs[] = new BreadCrumb($strLabel, $strHREF, $arrAttributes);
+	}
+
+	function Render()
+	{
+		foreach ($this->_arrCrumbs as $objCrumb)
+		{
+			$arrCrumb['Label'] = $objCrumb->_strLabel;
+			$arrCrumb['HREF'] = $objCrumb->_strHREF;
+			//stick the value of the attributes into the HREF
+			if (is_array($objCrumb->_arrAttributes))
+			{
+				foreach ($objCrumb->_arrAttributes as $strKey=>$mixValue)
+				{
+					$arrCrumb['Label'] = str_replace("<".strtolower($strKey).">", $mixValue, $arrCrumb['Label']);
+					$arrCrumb['HREF'] = str_replace("<".strtolower($strKey).">", $mixValue, $arrCrumb['HREF']);
+				}
+			}
+			$arrOutput[] = $arrCrumb;
+		}
+		// convert $arrOutput to JSON
+		//TODO!
+		
+		// output JSON
+		//TODO!
+		
+		Debug($arrOutput);
+	}
+	
+	function ShowInfo()
+	{
+		Debug($this->_arrCrumbs);
+	}
+
+
+}
+
+class BreadCrumb
+{
+	public $_arrAttributes = NULL;
+	public $_strLabel = "";	//defines how the crumb is displayed
+	public $_strHREF = "";
+	
+	function __construct($strLabel, $strHREF, $arrAttributes=NULL)
+	{
+		$this->_strLabel = $strLabel;
+		$this->_strHREF = $strHREF;
+		$this->_arrAttributes = $arrAttributes;
+	}
 	
 }
 

@@ -322,6 +322,25 @@ function ContextMenu()
 	return Singleton::Instance('ContextMenuFramework');
 }
 
+//------------------------------------------------------------------------//
+// BreadCrumbs
+//------------------------------------------------------------------------//
+/**
+ * BreadCrumbs()
+ *
+ * Returns the singleton BreadCrumbsFramework object
+ *
+ * Returns the singleton BreadCrumbsFramework object
+ *
+ * @return	BreadCrumbsFramework object
+ *
+ * @function
+ * 
+ */
+function BreadCrumbs()
+{
+	return Singleton::Instance('BreadCrumbFramework');
+}
 
 
 

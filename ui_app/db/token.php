@@ -487,15 +487,50 @@ class MenuToken
 		return TRUE;
 	}
 	
+	//------------------------------------------------------------------------//
+	// Info
+	//------------------------------------------------------------------------//
+	/**
+	 * Info()
+	 *
+	 * Returns all private data attributes
+	 *
+	 * Returns all private data attributes
+	 *
+	 * @return	array
+	 *
+	 * @method
+	 */
 	function Info()
 	{
-		// TODO!!!
+		$arrReturn['Owner'] = $this->_objOwner;
+		$arrReturn['Property'] = $this->_strProperty;
+		$arrReturn['Path'] = $this->_arrPath;
+		$arrReturn['Menu'] = $this->_strMenu;
+	
+		return $arrReturn;
 	}
 	
-	// recursively printout the names from the array, until it gets to the final
-	// one where it will printout value
+	//------------------------------------------------------------------------//
+	// ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowInfo()
+	 *
+	 * Formats a string representing where the menu item is located in the context menu
+	 *
+	 * Formats a string representing where the menu item is located in the context menu
+	 *
+	 * @params	string		$strTabs	[optional] used to indent the formatted string.
+	 *									if not inlcuded then the string is output.
+	 * @return	string
+	 *
+	 * @method
+	 */
 	function ShowInfo($strTabs='')
 	{
+		// recursively printout the names from the array, until it gets to the final
+		// one where it will printout value
 		// TODO!!! I don't think this currently works
 		foreach ($this->_arrPath as $strPathItem)
 		{
