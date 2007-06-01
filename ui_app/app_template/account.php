@@ -67,12 +67,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		// Check perms
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
+		//AuthenticatedUser()->PermissionOrDie(USER_PERMISSION_GOD);	// dies if no permissions
 		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
 		{
 			echo "God!";
 			// add in debug info
 		}
-		
+		if (time() % 10 > 5)
+		{
+			echo time();
+			require_once("page_template/login.php");
+			exit;
+		}
 		if (DBO()->Account->Id->Valid())
 		{
 			//Load account + stuff

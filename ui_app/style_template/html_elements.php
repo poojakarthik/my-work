@@ -187,7 +187,7 @@ class HTMLElements
 		echo "{$arrParams['Definition']['Label']} : \n";
 		echo "</td>";
 		echo "<td>";
-		echo "<input name='account.id' value='{$arrParams['Value']}' class='$strClass'></input>";
+		echo "<input name='{$arrParams['Object']}.{$arrParams['Property']}' value='{$arrParams['Value']}' class='$strClass'></input>";
 		echo "</td>";
 	}
 	

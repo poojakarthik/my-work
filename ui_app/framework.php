@@ -318,7 +318,7 @@ class Page
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
 			{
-				echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' />\n";
+				echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' ></script>\n";
 			}	
 		}
 	}
@@ -508,7 +508,7 @@ function toggleBox(szDivID, iState) // 1 visible, 0 hidden
                 </tr>
                 <tr>
                   <td>
-                    <a href='#' onclick=\"toggleBox('LoginBox',1);\">
+                    <a href='logout.php'>
                       <img src='img/template/logout.png' title='Logout' class='MenuIcon'>
                     </a>
                   </td>

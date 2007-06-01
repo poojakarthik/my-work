@@ -20,7 +20,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 {
 	function __construct()
 	{
-		//$this->LoadJavascript("thing.js");
+		$this->LoadJavascript("dhtml");
 	}
 	//------------------------------------------------------------------------//
 	// Render
@@ -37,6 +37,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	function Render()
 	{		
 		?>
+		<form method='POST' action='account_view.php'>
 		<table>
 			<tr>
 				<h1>Account Details</h1>
@@ -50,14 +51,17 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 					DBO()->Account->BusinessName->RenderOutput(TRUE);
 					DBO()->Account->TradingName->RenderOutput(TRUE,1);
 					DBO()->Account->ABN->RenderOutput(TRUE,1);
-					DBO()->Account->FirstName->RenderOutput(TRUE,1);
+					DBO()->Account->ABN->RenderInput(TRUE,1);
 					DBO()->Account->BillingType->RenderOutput(TRUE);
 					
 				?>	
 			</tr>
+			<tr>
+				<input type='submit' value='Submit'></input>
+			</tr>
 		</table>
 		<?php
-		
+		var_dump($_POST);
 		//HTML is OK here, to define structures which enclose these objects
 	}
 }

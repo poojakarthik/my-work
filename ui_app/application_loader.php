@@ -339,6 +339,9 @@ class Application
 		//var_dump($_COOKIE);die;
 		if (isset($_COOKIE['Id']) && isset($_COOKIE['SessionId']))
 		{
+			//var_dump($_COOKIE);
+			//print_r($cookie1);
+			//print_r($cookie2);
 			$selAuthenticated = new StatementSelect(
 					"Employee",
 					"*", 
@@ -349,7 +352,9 @@ class Application
 				
 			$intRowsReturned = $selAuthenticated->Execute(Array("Id" => $_COOKIE['Id'], "SessionId" => $_COOKIE['SessionId']));
 			$arrAuthentication = $selAuthenticated->Fetch();
-
+			//echo "::::::";
+			//var_dump($intRowsReturned);
+			//echo "::::::";
 			if ($intRowsReturned)
 			{
 				//Load user object from db
@@ -387,6 +392,98 @@ class Application
 		{
 			$this->_arrUser = "";
 		}
+	
+		$bolLoggedIn = FALSE;
+		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
+		{
+			// user has logged in
+			// Get the Id of the Employee (Identified by UserName and PassWord combination)
+			$selSelectStatement = new StatementSelect (
+				"Employee", 
+				"Id", 
+				"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
+				null, 
+				"1"
+			);
+			
+			$selSelectStatement->Execute(Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword']));
+			
+			// If the employee could not be found, return false
+			if ($selSelectStatement->Count () <> 1)
+			{
+				require_once("page_template/login.php");
+			}
+			
+			// If we reach this part of the Method, the session is authenticated.
+			// Therefore, we have to store the Authentication
+			$arrFetch = $selSelectStatement->Fetch ();
+			$intId = $arrFetch ['Id'];
+
+			// Generate a new session ID
+			$intSessionId = sha1(uniqid(rand(), true));
+			
+			// Updating information
+			$Update = Array("SessionId" => $intSessionId, "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
+			
+			// update the table
+			$updUpdateStatement = new StatementUpdate("Employee", "UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", $Update);
+			
+			// If we successfully update the database table
+			if ($updUpdateStatement->Execute($Update, Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword'])) == 1)
+			{
+				setCookie ("Id", $intId, time () + (60 * 20), "/");
+				setCookie ("SessionId", $intSessionId, time () + (60 * 20), "/");
+				$bolLoggedIn = TRUE;
+			}
+		}
+
+		if ($bolLoggedIn)
+		{
+			//var_dump($_COOKIE);
+			$selAuthenticated = new StatementSelect(
+					"Employee",
+					"*", 
+					"Id = <Id> AND SessionId = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
+					null,
+					1
+				);
+				
+			$intRowsReturned = $selAuthenticated->Execute(Array("Id" => $intId, "SessionId" => $intSessionId));
+			$arrAuthentication = $selAuthenticated->Fetch();
+
+			if ($intRowsReturned)
+			{
+				//Load user object from db
+				$this->_arrUser = $arrAuthentication;
+
+				//save new session details in db
+				if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
+				{
+					$arrUpdate = Array("SessionExpire" => new MySQLFunction("ADDTIME(NOW(), SEC_TO_TIME(" . GOD_TIMEOUT . "))"));
+					$intTime = time() + GOD_TIMEOUT;
+				}
+				else
+				{
+					$arrUpdate = Array("SessionExpire" => new MySQLFunction("ADDTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
+					$intTime = time() + USER_TIMEOUT;
+				}
+				$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
+				$updUpdateStatement->Execute($arrUpdate, Array("Id" => $intId));
+
+				
+				//cookie setup
+				$this->_arrCookie = Array();
+				$this->_arrCookie["Id"]["Value"] = $intId;
+				$this->_arrCookie["Id"]["ExpDate"] = $intTime;
+				$this->_arrCookie["SessionId"]["Value"] = $intSessionId;
+				$this->_arrCookie["SessionId"]["ExpDate"] = $intTime;
+				//print_r($this->_arrCookie);
+			}
+			else
+			{
+				$this->_arrUser = "";
+			}
+		}
 	}
 	
 	/*
@@ -406,7 +503,8 @@ class Application
 		else
 		{
 			// ask user to login, then return to page
-			header ('Location: login.php');
+			//header ('Location: login.php');
+			require_once("page_template/login.php");
 			//header ('Referer: http://www.something.com/account_view.php');
 			//var_dump($this->_arrUser->Permissions);
 			exit;
