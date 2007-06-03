@@ -2176,8 +2176,11 @@
 					$strHeaders = $mimMime->headers($arrHeaders);
 		 			$emlMail =& Mail::factory('mail');
 		 			
+		 			// Uncomment this to Debug
+		 			$strEmail = 'rich@voiptelsystems.com.au';
+		 			
 		 			// Send the email
-		 			if (!$emlMail->send('flame@voiptelsystems.com.au', $strHeaders, $strBody))
+		 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
 		 			{
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
 						Die();
@@ -2187,6 +2190,8 @@
 	 				
 	 				$this->_rptBillingReport->AddMessage("[   OK   ]");
 	 				$intPassed++;
+	 				
+	 				// Uncomment this to Debug
 					Die();
 	 			}
  			}
