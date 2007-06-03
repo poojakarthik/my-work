@@ -1219,6 +1219,7 @@ class ContextMenuFramework
 	 *
 	 * Resets the context menu (empties it)
 	 * 
+	 * @return	void
 	 * @method
 	 */
 	function Reset()
@@ -1236,6 +1237,7 @@ class ContextMenuFramework
 	 *
 	 * Used recursively by the method Render() to prepare the Context Menu for rendering
 	 * 
+	 * @return	array	
 	 * @method
 	 */
 	function _Render($arrMenu)
@@ -1272,6 +1274,7 @@ class ContextMenuFramework
 	 *
 	 * Renders the Context Menu
 	 * 
+	 * @return	void
 	 * @method
 	 */
 	function Render()
@@ -1329,7 +1332,7 @@ class ContextMenuFramework
 	 *												also output using Debug()
 	 * @method
 	 */
-	private function _ShowMenu($arrMenu, $strTabs='')
+	private function _ShowInfo($arrMenu, $strTabs='')
 	{
 		// Output each element of the array $arrMenu
 		if (!is_array($arrMenu))
@@ -1377,7 +1380,7 @@ class ContextMenuFramework
 	{
 		$arrMenu = $this->Info();
 		
-		$strOutput = $this->_ShowMenu($arrMenu, $strTabs);
+		$strOutput = $this->_ShowInfo($arrMenu, $strTabs);
 		
 		if (!$strTabs)
 		{
@@ -1466,28 +1469,72 @@ class MenuItems
 	}
 }
 
+//----------------------------------------------------------------------------//
+// BreadCrumbFramework
+//----------------------------------------------------------------------------//
+/**
+ * BreadCrumbFramework
+ *
+ * Manages the bread crumb menu
+ *
+ * Manages the bread crumb menu
+ *
+ * @prefix	bcf
+ *
+ * @package	ui_app
+ * @class	BreadCrumbFramework
+ */
 class BreadCrumbFramework
 {
 	private $_arrCrumbs = NULL;
 
-	function __construct()
-	{
-	}
-
-	
-
+	//------------------------------------------------------------------------//
+	// AddCrumb
+	//------------------------------------------------------------------------//
+	/**
+	 * AddCrumb()
+	 *
+	 * Appends a bread crumb to the end of the bread crumb menu
+	 *
+	 * Appends a bread crumb to the end of the bread crumb menu
+	 * 
+	 * @param	string		$strLabel		The label to be displayed in the bread crumb menu (include placeholders for variables)
+	 *										ie $strLabel = "Acc:<id>"
+	 * @param	string		$strHREF		The HREF to execute when the crumb is clicked (include placeholders for variables)
+	 *										ie $strHREF = "view_account.php?Account.Id=<id>"
+	 * @param	array		$arrAttributes	An associated array storing all variables used in $strLabel and $strHREF
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function AddCrumb($strLabel, $strHREF, $arrAttributes=NULL)
 	{
 		$this->_arrCrumbs[] = new BreadCrumb($strLabel, $strHREF, $arrAttributes);
 	}
 
+	//------------------------------------------------------------------------//
+	// Render
+	//------------------------------------------------------------------------//
+	/**
+	 * Render()
+	 *
+	 * Renders the Bread Crumb Menu
+	 *
+	 * Renders the Bread Crumb Menu
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function Render()
 	{
 		foreach ($this->_arrCrumbs as $objCrumb)
 		{
 			$arrCrumb['Label'] = $objCrumb->_strLabel;
 			$arrCrumb['HREF'] = $objCrumb->_strHREF;
-			//stick the value of the attributes into the HREF
+			
+			// stick the values of the attributes into the HREF and label
 			if (is_array($objCrumb->_arrAttributes))
 			{
 				foreach ($objCrumb->_arrAttributes as $strKey=>$mixValue)
@@ -1507,20 +1554,122 @@ class BreadCrumbFramework
 		Debug($arrOutput);
 	}
 	
-	function ShowInfo()
+	//------------------------------------------------------------------------//
+	// Info
+	//------------------------------------------------------------------------//
+	/**
+	 * Info()
+	 *
+	 * returns an array representing the contents of the Bread Crumb Menu
+	 *
+	 * returns an array representing the contents of the Bread Crumb Menu
+	 * 
+	 * @return	array
+	 *
+	 * @method
+	 */
+	function Info()
 	{
-		Debug($this->_arrCrumbs);
+		return $this->_arrCrumbs;
 	}
 
-
+	//------------------------------------------------------------------------//
+	// ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * ShowInfo()
+	 *
+	 * Formats a string representing the layout of the Bread Crumb Menu
+	 *
+	 * Formats a string representing the layout of the Bread Crumb Menu
+	 * 
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the menu structure should be tabbed.
+	 * @return	string								returns the menu as a formatted string.
+	 *												If strTabs is not given then this string is
+	 *												also output using Debug()
+	 *
+	 * @method
+	 */
+	function ShowInfo($strTabs='')
+	{
+		foreach ($this->_arrCrumbs as $objCrumb)
+		{
+			$arrCrumb['LabelFormat'] = $objCrumb->_strLabel;
+			$arrCrumb['Label'] = $objCrumb->_strLabel;
+			$arrCrumb['HREFFormat'] = $objCrumb->_strHREF;
+			$arrCrumb['HREF'] = $objCrumb->_strHREF;
+			
+			// prepare the place holders in the format strings for displaying in html code
+			$arrCrumb['LabelFormat'] = str_replace("<", "&lt;", $arrCrumb['LabelFormat']);
+			$arrCrumb['LabelFormat'] = str_replace(">", "&gt;", $arrCrumb['LabelFormat']);
+			$arrCrumb['HREFFormat'] = str_replace("<", "&lt;", $arrCrumb['HREFFormat']);
+			$arrCrumb['HREFFormat'] = str_replace(">", "&gt;", $arrCrumb['HREFFormat']);
+			
+			// stick the values of the attributes into the HREF and label
+			if (is_array($objCrumb->_arrAttributes))
+			{
+				foreach ($objCrumb->_arrAttributes as $strKey=>$mixValue)
+				{
+					$arrCrumb['Label'] = str_replace("<".strtolower($strKey).">", $mixValue, $arrCrumb['Label']);
+					$arrCrumb['HREF'] = str_replace("<".strtolower($strKey).">", $mixValue, $arrCrumb['HREF']);
+				}
+			}
+			$arrOutput[] = $arrCrumb;
+		}
+		
+		//  Prepare the output string
+		for ($i=0; $i<count($arrOutput); $i++)
+		{
+			$strOutput .= $strTabs . "BreadCrumb Menu Item $i:\n";
+			$strOutput .= $strTabs . "\tLabel format:\t" . $arrOutput[$i]['LabelFormat'] . "\n";
+			$strOutput .= $strTabs . "\tActual label:\t" . $arrOutput[$i]['Label'] . "\n";
+			$strOutput .= $strTabs . "\tHREF format:\t" . $arrOutput[$i]['HREFFormat'] . "\n";
+			$strOutput .= $strTabs . "\tActual HREF:\t" . $arrOutput[$i]['HREF'] . "\n";
+		}
+		
+		if (!$strTabs)
+		{
+			Debug($strOutput);
+		}
+		return $strOutput;
+	}
 }
 
+//----------------------------------------------------------------------------//
+// BreadCrumb
+//----------------------------------------------------------------------------//
+/**
+ * BreadCrumb
+ *
+ * Represents a single bread crumb in the bread crumb menu
+ *
+ * Represents a single bread crumb in the bread crumb menu
+ *
+ * @prefix	cmb
+ *
+ * @package	ui_app
+ * @class	BreadCrumb
+ */
 class BreadCrumb
 {
 	public $_arrAttributes = NULL;
 	public $_strLabel = "";	//defines how the crumb is displayed
 	public $_strHREF = "";
 	
+	//----------------------------------------------------------------------------//
+	// __construct
+	//----------------------------------------------------------------------------//
+	/**
+	 * __construct
+	 *
+	 * BreadCrumb constructor
+	 *
+	 * BreadCrumb constructor - sets BreadCrumb data attributes
+	 *
+	 * @return void
+	 * @method
+	 */
 	function __construct($strLabel, $strHREF, $arrAttributes=NULL)
 	{
 		$this->_strLabel = $strLabel;

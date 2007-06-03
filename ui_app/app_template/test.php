@@ -51,7 +51,8 @@ class AppTemplateTest extends ApplicationTemplate
 		
 		
 		BreadCrumbs()->AddCrumb("Acc:<id>", "view_account.php?Account.Id=<id>", Array('Id'=>100004777));
-		BreadCrumbs()->AddCrumb("Service:<service>", "view_service.php?Service.Id=<service>", Array('Service'=>0732504200));
+		BreadCrumbs()->AddCrumb("Service:<service>-<account>", "view_service.php?Service.Id=<service>&Account=<account>", 
+								Array('Service'=>0732504200, 'Account'=>100004777));
 		BreadCrumbs()->AddCrumb("Provisioning", "provisioning.php");
 		
 		/*
@@ -63,8 +64,15 @@ class AppTemplateTest extends ApplicationTemplate
 		*/
 		
 		//BreadCrumbs()->ShowInfo();
+		echo "BreadCrumbs()->Render()...<br>";
 		BreadCrumbs()->Render();
 		
-		Die();
+		echo "<br><br>BreadCrumbs()->Info()...<br>";
+		Debug(BreadCrumbs()->Info());
+		
+		echo "<br><br>BreadCrumbs()->ShowInfo()...<br>";
+		BreadCrumbs()->ShowInfo();
+		
+		die;
 	}
 }
