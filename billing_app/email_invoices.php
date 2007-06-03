@@ -18,7 +18,7 @@ require_once('application_loader.php');
 $appBilling = new ApplicationBilling($arrConfig);
 
 // execute bill
-$strPath = "/home/vixen_invoices/2007/2";
+$strPath = "/home/vixen_invoices/2007/5";
 $bolResponse = $appBilling->EmailInvoicePDFs($strPath);
 
 $appBilling->FinaliseReport();
