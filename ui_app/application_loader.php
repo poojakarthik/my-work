@@ -233,14 +233,12 @@ class Application
 	
 		// validata all submitted objects
 		DBO()->Validate();
-		
+
 		//Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
 		$this->objAppTemplate->SetMode(HTML_MODE);
-		
 		//Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
-		
 		//Add context menu
 		//Add in JS & CSS
 		//Add in documentation
