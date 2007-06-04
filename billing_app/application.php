@@ -2369,15 +2369,15 @@
 	 	$strInvoiceRun = $arrInvoices[0]['InvoiceRun'];
 	 	
 	 	// Statements
-	 	$strLDTypes = "6, 11, 14, 19, 27, 28, 35";
+	 	$strNLDTypes = "2, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 18, 19, 20, 27, 28, 33, 35, 36, 38";
 	 	$selAccountDetails = new StatementSelect("Account", "BusinessName, CustomerGroup", "Id = <Account>");
 	 	$arrCDRColumns = Array();
 	 	$arrCDRColumns['CostNLD']		=	"SUM( CASE\n" .
-	 										"WHEN RecordType NOT IN ($strLDTypes) THEN Cost\n" .
+	 										"WHEN RecordType IN ($strNLDTypes) THEN Cost\n" .
 	 										"ELSE 0\n" .
 	 										"END )";
 	 	$arrCDRColumns['ChargeNLD']		=	"SUM( CASE\n" .
-	 										"WHEN RecordType NOT IN ($strLDTypes) THEN Charge\n" .
+	 										"WHEN RecordType IN ($strNLDTypes) THEN Charge\n" .
 	 										"ELSE 0\n" .
 	 										"END )";
 	 	$arrCDRColumns['BillCost']		=	"SUM(Cost)";

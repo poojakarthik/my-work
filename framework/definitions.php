@@ -1099,6 +1099,22 @@ $GLOBALS['*arrConstant']	['WindowState']		[103]	['Description']	= 'Taskbar Item'
 $GLOBALS['*arrConstant']	['WindowState']		[104]	['Constant']	= 'WINDOW_PROGRESS';
 $GLOBALS['*arrConstant']	['WindowState']		[104]	['Description']	= 'Progress Bar';
 
+// Data Report Render Mode
+$GLOBALS['*arrConstant']	['ReportRender']	[0]	['Constant']	= 'REPORT_RENDER_INSTANT';
+$GLOBALS['*arrConstant']	['ReportRender']	[0]	['Description']	= 'Instant Render-to-Screen';
+$GLOBALS['*arrConstant']	['ReportRender']	[1]	['Constant']	= 'REPORT_RENDER_EMAIL';
+$GLOBALS['*arrConstant']	['ReportRender']	[1]	['Description']	= 'Email Report after Rendering';
+
+// Data Report Status
+$GLOBALS['*arrConstant']	['ReportStatus']	[200]	['Constant']	= 'REPORT_WAITING';
+$GLOBALS['*arrConstant']	['ReportStatus']	[200]	['Description']	= 'Waiting to be Processed';
+$GLOBALS['*arrConstant']	['ReportStatus']	[201]	['Constant']	= 'REPORT_GENERATE_FAILED';
+$GLOBALS['*arrConstant']	['ReportStatus']	[201]	['Description']	= 'Report Failed while attempting to Generate';
+$GLOBALS['*arrConstant']	['ReportStatus']	[202]	['Constant']	= 'REPORT_EMAIL_FAILED';
+$GLOBALS['*arrConstant']	['ReportStatus']	[202]	['Description']	= 'Attempt to Email the Report failed';
+$GLOBALS['*arrConstant']	['ReportStatus']	[203]	['Constant']	= 'REPORT_GENERATED';
+$GLOBALS['*arrConstant']	['ReportStatus']	[203]	['Description']	= 'Report Generated';
+
 
 // CLI Console Docked
 define("CONSOLE_DOCKED"		, DONKEY);
