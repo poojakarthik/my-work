@@ -25,10 +25,13 @@ class AppTemplateTest extends ApplicationTemplate
 		Debug(DBL()->ShowInfo("\t\t"));
 		*/
 		
-		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account(1000004777);
-		ContextMenu()->Menu_1->Menu_2->Menu_3->View_Account->ShowInfo();
-		die;
+		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account(1000004777, "Arguement 2");
+		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->ShowInfo();
+		//Debug(ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->Info());
 		ContextMenu()->Menu_1->Menu_2->Menu_121->Do_Something();
+		ContextMenu()->Menu_1->Menu_2->Menu_121->Do_Something->ShowInfo();
+		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->ShowInfo();
+		die;
 		//ContextMenu()->Menu_1->Menu_12->Menu_121->Do_Something->ShowInfo();
 		ContextMenu()->Menu_1->Menu_5->Menu_3->Delete_Account();
 		ContextMenu()->Menu_1->Menu_5->Menu_3->Add_Account();

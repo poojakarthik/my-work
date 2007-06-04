@@ -531,13 +531,27 @@ class MenuToken
 	{
 		// recursively printout the names from the array, until it gets to the final
 		// one where it will printout value
-		// TODO!!! I don't think this currently works
+		$arrMenu = $this->_objOwner->arrProperties;
 		foreach ($this->_arrPath as $strPathItem)
 		{
-			$strOutput .=  $strExtraTabs . $strTabs.$strPathItem."\n";
+			$strOutput .=  $strExtraTabs . $strTabs.$strPathItem . "\n";
 			$strExtraTabs .= "\t";
+			
+			$arrMenu = $arrMenu[$strPathItem];
 		}
 		
+		// remove the last new line char from $strOutput
+		$strOutput = substr($strOutput, 0, strlen($strOutput)-1);
+		
+		// add the parameters associated with the menu token
+		$strOutput .= "(";
+		foreach ($arrMenu as $strValue)
+		{
+			$strParams .=  "$strValue, ";
+		}
+		$strParams = substr($strParams, 0, strlen($strParams)-2);
+		$strOutput .= $strParams . ")\n";
+
 		if (!$strTabs)
 		{
 			Debug($strOutput);
