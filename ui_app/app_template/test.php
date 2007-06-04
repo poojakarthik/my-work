@@ -12,25 +12,54 @@ class AppTemplateTest extends ApplicationTemplate
 	function Test()
 	{
 
-		/*
-		if (DBO()->Account->Id->Valid())
+		
+		if (DBO()->KnowledgeBase->Id->Valid())
 		{
-			DBO()->Account->Load();
-			DBL()->Service->Account = DBO()->Account->Id->Value;
-			DBL()->Note->AccountGroup = DBO()->Account->Id->Value;
-			DBL()->Service->Load();
-			DBL()->Note->Load();
+			DBO()->KnowledgeBase->Load();
+			//DBL()->KnowledgeBaseLink->ArticleLeft = DBO()->KnowledgeBase->Id->Value;
+			
+			DBL()->KnowledgeBaseLink->Where->Set("ArticleLeft = <id> OR ArticleRight = <id>", Array('id'=>DBO()->KnowledgeBase->Id->Value));
+			//DBL()->KnowledgeBaseLink->Where->Set("ArticleLeft = 1");
+			DBL()->KnowledgeBaseLink->Load();
+			
+			//DBL()->Note->AccountGroup = DBO()->Account->Id->Value;
+			//DBL()->Service->Load();
+			//DBL()->Note->Load();
+// I need to be able to search both the ArticleLeft and ArticleRight columns of the KnowledgeBaseLink table
+// so I have to make sure that the where clause reads "WHERE ArticleLeft = <id> or ArticleRight = <id>"
+// I might have to explicitly define the WHERE clause
 		}
-		Debug(DBO()->ShowInfo("\t"));
-		Debug(DBL()->ShowInfo("\t\t"));
-		*/
+		//DBO()->ShowInfo();
+		DBL()->KnowledgeBaseLink->ShowInfo();
+		
+		//echo "<br><br>" . DBO()->KnowledgeBase->Id->Value;
+		
+		
+		
+		die;
+		// check if the menu is built in the order that it is defined
 		
 		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account(1000004777, "Arguement 2");
-		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->ShowInfo();
+		ContextMenu()->Do_Something();
+		ContextMenu()->Menu_1->Should_Be_Second_In_The_List("well, is it?");
+		ContextMenu()->This_Should_Be_The_Third_Item_In_The_Lowest_Level_Menu("Arg1", "Arg2");
+		ContextMenu()->Menu_1->Menu_5->Menu_3->Ta_Da();
+		ContextMenu()->Menu_1->Menu_1->Generic_Func("well, is it?");
+		ContextMenu()->ShowInfo();
+		//echo "<br>";
+		$strOutput = ContextMenu()->This_Should_Be_The_Third_Item_In_The_Lowest_Level_Menu->ShowInfo("\t");
+		echo $strOutput;
+		
+		die;
+		
 		//Debug(ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->Info());
 		ContextMenu()->Menu_1->Menu_2->Menu_121->Do_Something();
 		ContextMenu()->Menu_1->Menu_2->Menu_121->Do_Something->ShowInfo();
-		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->ShowInfo();
+		$strOutput = ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->ShowInfo("\t\t");
+		$strOutput .= ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->ShowInfo("\t");
+		Debug($strOutput);
+		//Debug(ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->ShowInfo("\t\t"));
+		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account->Info();
 		die;
 		//ContextMenu()->Menu_1->Menu_12->Menu_121->Do_Something->ShowInfo();
 		ContextMenu()->Menu_1->Menu_5->Menu_3->Delete_Account();

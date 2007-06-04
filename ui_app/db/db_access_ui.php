@@ -427,8 +427,8 @@ class DbWhere
 	 *
 	 * @return	string	Compiled SQL WHERE clause with named placeholders for values.
 	 * 					If the object is currently storing an array of placeholders and values
-	 *					then this return string is compiled from that.  Else it returns the stored
-	 *					SQL WHERE clause string.
+	 *					then this return string is compiled from that, with each individual condition being ANDed together.  
+	 *					Else it returns the stored SQL WHERE clause string.
 	 * @method
 	 */
 	function GetString()
@@ -438,7 +438,7 @@ class DbWhere
 			$arrWhere = Array();
 			foreach($this->_arrWhere AS $strKey=>$strValue)
 			{
-				$arrWhere[] = "$strKey = <$strKey>"; 
+				$arrWhere[] = "$strKey = <$strValue>"; 
 			}
 			$strWhere = trim(implode(" AND ", $arrWhere));
 			return $strWhere;

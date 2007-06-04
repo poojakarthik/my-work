@@ -169,10 +169,18 @@ class DBList extends DBListBase
 	 *
 	 * @method
 	 */
-	function Load($arrWhere=NULL, $strWhere=NULL, $intLimitCount=NULL, $intLimitStart=NULL)
+	function Load($strWhere=NULL, $arrWhere=NULL, $intLimitCount=NULL, $intLimitStart=NULL)
 	{
-		// setup where object
-		$this->_objWhere->Set($strWhere, $arrWhere);
+		// if WHERE parameters were passed then use them
+		if ($strWhere || $arrWhere)
+		{
+			$this->_objWhere->Set($strWhere, $arrWhere);
+		} 
+		elseif (!$this->_objWhere->GetString())
+		{
+			// WHERE parameters have not been passed and a WHERE clause has not been predefined for this list so use the default
+			$this->_objWhere->Set($strWhere, $arrWhere);
+		}
 		
 		// setup limit
 		$this->SetLimit($intLimitCount, $intLimitStart);

@@ -963,7 +963,7 @@ class submitted_data
 		}
 		
 		// add property to object
-		Dbo()->{$arrName[0]}->AddProperty($arrName[1], $mixValue, $intContext);
+		DBO()->{$arrName[0]}->AddProperty($arrName[1], $mixValue, $intContext);
 		return TRUE;
 	}
 }
