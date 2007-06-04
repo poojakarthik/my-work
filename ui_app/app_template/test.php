@@ -25,18 +25,26 @@ class AppTemplateTest extends ApplicationTemplate
 		Debug(DBL()->ShowInfo("\t\t"));
 		*/
 		
-		/*ContextMenu()->Menu_1->Menu_2->Menu_3->View_Account(1000004777);
+		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account(1000004777);
 		ContextMenu()->Menu_1->Menu_2->Menu_3->View_Account->ShowInfo();
-		ContextMenu()->Menu_1->Menu_12->Menu_121->Do_Something();
-		ContextMenu()->Menu_1->Menu_12->Menu_121->Do_Something->ShowInfo();
-		*/
+		die;
+		ContextMenu()->Menu_1->Menu_2->Menu_121->Do_Something();
+		//ContextMenu()->Menu_1->Menu_12->Menu_121->Do_Something->ShowInfo();
+		ContextMenu()->Menu_1->Menu_5->Menu_3->Delete_Account();
+		ContextMenu()->Menu_1->Menu_5->Menu_3->Add_Account();
+		
+		
+		ContextMenu()->ShowInfo();
+		
+		Debug(ContextMenu()->Menu_1->Menu_2->Menu_3->View_Account->Info());
+		
 		//ContextMenu()->Menu_1->Menu_2->Menu_3->Do_Something(123);
 /*		
 		ContextMenu()->Menu_1->Menu_11->Menu_111->View_Account(1000004777);
 		ContextMenu()->Menu_1->Menu_12->Menu_121->Do_Something();
 		
 		//!!!!!!!!!!!!!!!!!!!!!!!!!!!The following line crashes.  Apparently you can't have a menu item in the lowest menu level
-		ContextMenu()->Do_Something_Bitch(122121212);  
+		ContextMenu()->Do_Something_Bitch(122121212);
 		
 		ContextMenu()->Menu_1->Menu_12->Menu_122->Do_Something_Else();
 			
@@ -50,18 +58,10 @@ class AppTemplateTest extends ApplicationTemplate
 		//Debug(ContextMenu()->Info());
 		
 		
-		BreadCrumbs()->AddCrumb("Acc:<id>", "view_account.php?Account.Id=<id>", Array('Id'=>100004777));
+/*		BreadCrumbs()->AddCrumb("Acc:<id>", "view_account.php?Account.Id=<id>", Array('Id'=>100004777));
 		BreadCrumbs()->AddCrumb("Service:<service>-<account>", "view_service.php?Service.Id=<service>&Account=<account>", 
 								Array('Service'=>0732504200, 'Account'=>100004777));
 		BreadCrumbs()->AddCrumb("Provisioning", "provisioning.php");
-		
-		/*
-		How I would like to define the bread crumbs is:
-			BreadCrumbs()->Account(1000004777);
-			BreadCrumbs()->Account->Service(0732504200);
-			
-		but there will only be a list of these, it is not as complex as the context menu
-		*/
 		
 		//BreadCrumbs()->ShowInfo();
 		echo "BreadCrumbs()->Render()...<br>";
@@ -72,7 +72,7 @@ class AppTemplateTest extends ApplicationTemplate
 		
 		echo "<br><br>BreadCrumbs()->ShowInfo()...<br>";
 		BreadCrumbs()->ShowInfo();
-		
+*/		
 		die;
 	}
 }

@@ -534,7 +534,8 @@ class MenuToken
 		// TODO!!! I don't think this currently works
 		foreach ($this->_arrPath as $strPathItem)
 		{
-			$strOutput .=  $strTabs.$strPathItem."\n";
+			$strOutput .=  $strExtraTabs . $strTabs.$strPathItem."\n";
+			$strExtraTabs .= "\t";
 		}
 		
 		if (!$strTabs)

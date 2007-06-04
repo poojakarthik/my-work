@@ -1351,7 +1351,7 @@ class ContextMenuFramework
 			{
 				// this is a menu
 				$strOutput .= $strTabs . $strMenu . "\n";
-				$strOutput .= $this->_ShowMenu($mixSubMenu, $strTabs . "\t");
+				$strOutput .= $this->_ShowInfo($mixSubMenu, $strTabs . "\t");
 			}
 		}
 	
