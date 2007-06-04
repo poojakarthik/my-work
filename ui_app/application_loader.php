@@ -247,7 +247,7 @@ class Application
 	
 		// Render Page
 		$this->objAppTemplate->Page->Render();
-		
+echo "<br>this is the last thing run";
 		/*
 		??? call the render function of the page object
 		??? decide where context, doco and js/css go, and also include breadcrumbs
