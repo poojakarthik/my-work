@@ -1292,6 +1292,30 @@ class ContextMenuFramework
 		Debug($arrOutput);
 	}
 	
+	//------------------------------------------------------------------------//
+	// __call
+	//------------------------------------------------------------------------//
+	/**
+	 * __call()
+	 *
+	 * Creates a new root Menu item with this name
+	 *
+	 * Creates a new root Menu item with this name
+	 *
+	 * @param	string	$strItem		Item to create
+	 * @param	array	$arrArguments	Passed Arguments where first and only member should be the value
+	 * 
+	 * @return	mixed
+	 *
+	 * @method
+	 */
+	function __call($strItem, $arrArguments)
+	{
+		// Set item value
+		$this->arrProperties[$strItem]	= $arrArguments;
+		return TRUE;
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// Info
