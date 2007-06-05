@@ -153,9 +153,9 @@ function Debug($mixOutput, $strMode="html")
 			break;
 			
 		default:
-			echo "\n<pre>\n";
-			print_r($mixOutput);
-			echo "\n</pre>\n";
+			$strPrintR = print_r($mixOutput, TRUE);
+			$strOutput = ($_SERVER['TERM']) ? "\n$strPrintR\n" : "\n<pre>\n$strPrintR\n</pre>\n";
+			echo $strOutput;
 			if($bolLog)
 			{
 				$strData = "\n";
