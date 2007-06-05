@@ -220,6 +220,36 @@ class HTMLElements
 	}
 	
 	//------------------------------------------------------------------------//
+	// MultiLinedLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * MultiLinedLabel()
+	 * 
+	 * Creates a label that can have new line characters in it
+	 * 
+	 * Echoes out a formatted HTML div tag, using data from an array to build
+	 * the element's attributes like class, id and value
+	 *
+	 * @param	Array	$arrParams		The parameters to use when building the
+	 * 									label (see above for format).
+	 *
+	 * @method
+	 */
+	function MultiLinedLabel($arrParams)
+	{
+		$strValue = str_replace("\n", "<br>", $arrParams['Value']);
+		$strValue = str_replace("\r", "", $strValue);  //data entered using MySqlAdmin which contains new line chars also includes '\r' characters
+		echo "	<tr>\n";
+		echo "		<td>\n";
+		echo "			{$arrParams['Definition']['Label']} : \n";
+		echo "		</td>\n";
+		echo "		<td>\n";
+		echo "			<div class='{$arrParams['Definition']['FullClass']}'>{$strValue}</div>\n";
+		echo "		</td>\n";
+		echo "	</tr>\n";
+	}
+	
+	//------------------------------------------------------------------------//
 	// CheckBox
 	//------------------------------------------------------------------------//
 	/**

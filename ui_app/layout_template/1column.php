@@ -30,11 +30,15 @@
 //$this->RenderContextMenu();
 
 //var_dump($this->Page->arrObjects);
+?>
+<!--  ABOUT TO RENDER COLUMN ONE  -->
+<?php
 $this->RenderColumn(COLUMN_ONE);
 
-//TODO!!!Joel make sure you finish this		
+//TODO!!!Joel make sure you finish this	
 
 ?>
+<!--  FINISHED RENDERING COLUMN ONE  -->
 <!--  INSERT HTML HERE (if you like)-->
 <?php
 

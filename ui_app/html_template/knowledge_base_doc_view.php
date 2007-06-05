@@ -75,11 +75,15 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		// This should eventually utilise the RenderOutput methods of the PropertyToken class
 		// however display data (relating to the knowledge base) is not currently stored in the
 		// UIAppDocumentation table of the database
-		echo "<br><b>Article Id: </b>" . DBO()->KnowledgeBase->Id->Value ."\n";
+		//echo "<br><b>Article Id: </b>" . DBO()->KnowledgeBase->Id->Value ."\n";
+		echo "<table border='5'>\n";
+		DBO()->KnowledgeBase->Id->RenderOutput();
+		DBO()->KnowledgeBase->Title->RenderOutput();
+		DBO()->KnowledgeBase->Abstract->RenderOutput();
+		DBO()->KnowledgeBase->Content->RenderOutput();
+		echo "</table>\n";
 		
-		echo "<br><b>Title: </b>" . DBO()->KnowledgeBase->Title->Value ."\n";
 		
-		echo "<br><b>Abstract: </b>" . DBO()->KnowledgeBase->Abstract->Value ."\n";
 		
 		echo "<br><b>Content: </b>" . DBO()->KnowledgeBase->Content->Value ."\n";
 		
