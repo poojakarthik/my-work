@@ -104,6 +104,10 @@ class DBObject extends DBObjectBase
 		{
 			$this->_strIdColumn = $this->_arrDefine['IdColumn'];
 		}
+		
+		// validate the object (considering nothing has been actually loaded into the object
+		// this should just set $_bolValid to TRUE
+		$this->Validate();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -376,7 +380,7 @@ class DBObject extends DBObjectBase
 		{
 			$intId = (int)$this->_arrProperties[$this->_strIdColumn];
 		}
-		
+
 		// Make sure we have an Id
 		if (!$intId)
 		{
@@ -671,6 +675,49 @@ class DBObject extends DBObjectBase
 			Debug($strOutput);
 		}
 		return $strOutput;
+	}
+	
+	//------------------------------------------------------------------------//
+	// SetTable
+	//------------------------------------------------------------------------//
+	/**
+	 * SetTable()
+	 *
+	 * Set the table associated with this DBObject
+	 *
+	 * Set the table associated with this DBObject
+	 * 
+	 * @param	string		$strTable	The name of the table.  Note that this can be
+	 *									anything that can go in a SQL "FROM" clause.
+	 *									tables can be joined so long as you specify how
+	 *
+	 * @return	string					returns the data attribute storing the table name ($_strTable)
+	 *
+	 * @method
+	 */
+	function SetTable($strTable)
+	{
+		return $this->_strTable = $strTable;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetTable
+	//------------------------------------------------------------------------//
+	/**
+	 * GetTable()
+	 *
+	 * Get the table name associated with this DBObject
+	 *
+	 * Get the table name associated with this DBObject
+	 * 
+	 * @return	string					The name of the table.  Note that this can be
+	 *									anything that can go in a SQL "FROM" clause.
+	 *									tables can be joined.
+	 * @method
+	 */
+	function GetTable()
+	{
+		return $this->_strTable;
 	}
 }
 

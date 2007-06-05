@@ -87,22 +87,7 @@ class DBList extends DBListBase
 		}
 		
 		// set columns
-		if (is_array($mixColumns))
-		{
-			$this->_arrColumns = $mixColumns;
-		}
-		elseif ($mixColumns)
-		{
-			//TODO!!!! convert column names into an array
-		}
-		elseif ($this->_arrDefine['Columns'])
-		{
-			$this->_arrColumns = $this->_arrDefine['Columns'];
-		}
-		else
-		{
-			//TODO!!!! get * column names for tables
-		}
+		$this->SetColumns($mixColumns);
 		
 		// set ID column name
 		//TODO!!!! look harder to find this
@@ -178,7 +163,7 @@ class DBList extends DBListBase
 		} 
 		elseif (!$this->_objWhere->GetString())
 		{
-			// WHERE parameters have not been passed and a WHERE clause has not been predefined for this list so use the default
+			// WHERE parameters have not been passed and a WHERE clause has not been predefined for this list so use the passed parameters
 			$this->_objWhere->Set($strWhere, $arrWhere);
 		}
 		
@@ -492,6 +477,71 @@ class DBList extends DBListBase
 		return $strOutput;
 	}
 	
+	
+	//------------------------------------------------------------------------//
+	// SetColumns
+	//------------------------------------------------------------------------//
+	/**
+	 * SetColumns()
+	 *
+	 * Set the columns to retrieve
+	 *
+	 * Set the columns to retrieve
+	 * 
+	 * @param	mix		$mixColumns		Either an associated array of columns and their alias's (Alias=>ColumnName)
+	 *									OR 
+	 *									an indexed array of column names (Array("Column1", "Column2", etc)
+	 *									OR
+	 *									a comma separated string of columns ("Column1, Column2, etc")
+	 *
+	 * @return	array					returns the data attribute storing the column names ($_arrColumns)
+	 *
+	 * @method
+	 */
+	function SetColumns($mixColumns)
+	{
+		if (is_array($mixColumns))
+		{
+			$this->_arrColumns = $mixColumns;
+		}
+		elseif ($mixColumns)
+		{
+			// convert column names into an array
+			$mixColumns = str_replace(" ", "", $mixColumns);
+			$arrColumns = explode(",", $mixColumns);
+			$this->_arrColumns = $arrColumns;
+		}
+		elseif ($this->_arrDefine['Columns'])
+		{
+			$this->_arrColumns = $this->_arrDefine['Columns'];
+		}
+		else
+		{
+			//TODO!!!! get * column names for tables
+			// This scenario is currently handled by DataAccessUI::Select and DataAccessUI::SelectById
+			// If either of these methods are called and $_arrColumns is empty, it selects all
+			// columns from the table of the database
+		}
+		return $this->_arrColumns;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetColumns
+	//------------------------------------------------------------------------//
+	/**
+	 * GetColumns()
+	 *
+	 * Accessor for the list of columns which this object retrieves from the database
+	 *
+	 * Accessor for the list of columns which this object retrieves from the database
+	 * 
+	 * @return	array					returns the data attribute storing the column names ($_arrColumns)
+	 * @method
+	 */
+	function GetColumns()
+	{
+		return $this->_arrColumns;
+	}
 
 }
 ?>

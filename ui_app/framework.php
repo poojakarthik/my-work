@@ -225,17 +225,23 @@ class Page
 	/**
 	 * AddObject()
 	 *
-	 * Adds an extended Html_Template object to the page 
+	 * Adds an extended HtmlTemplate object to the page 
 	 *
-	 * Adds an extended Html_Template object to the page.
-	 * Extended Html_Template classes must be located in the html_template directory
+	 * Adds an extended HtmlTemplate object to the page.
+	 * Extended HtmlTemplate classes must be located in the html_template directory
 	 * The order in which objects are added will be the order in which they will be
 	 * displayed in their associated column
 	 * 
 	 * @param	string	$strName		The template name (does not include the 'HtmlTemplate' prefix)
+	 *									A file must exist in the html_template directory.
+	 *									For example if the class to load is called HtmlTemplateKnowledgeBaseDocView
+	 *									then $strName must be "KnowledgeBaseDocView" and the class must be defined
+	 *									in the file "html_template/knowledge_base_doc_view.php"
+	 *
 	 * @param	integer	$intColumn		the column number which the object will be positioned in
 	 * @param	string	$strId			uniquely identifies the object. Defaults to null
 	 *
+	 * @return	string					unique id for the object. ($strId if specified as a parameter)
 	 * @method
 	 */
 	function AddObject($strName, $intColumn, $strId=NULL)
@@ -648,6 +654,7 @@ class DBOFramework
 	 */
 	function __get($strName)
 	{
+	
 		// Instanciate the DBObject if we can't find an instance
 		if (!$this->_arrProperty[$strName])
 		{

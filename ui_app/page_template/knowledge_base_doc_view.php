@@ -18,7 +18,7 @@
  * This file specifies the layout to use and the HTML Template objects to put 
  * into each column on the page
  * Most code in this file (if not all) will manipulate the $this->Page object
- * which has already been instantiated
+ * which has already been instantiated.
  *
  * @file		knowledge_base_doc_view.php
  * @language	PHP

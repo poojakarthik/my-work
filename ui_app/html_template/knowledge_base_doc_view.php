@@ -83,13 +83,34 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		
 		echo "<br><b>Content: </b>" . DBO()->KnowledgeBase->Content->Value ."\n";
 		
-		echo "<br><b>Created by: </b>" . DBO()->Author->FirstName->Value . " " . DBO()->Author->LastName->Value ."\n";
+		// check that an author could be found
+		if (DBO()->Author->IsValid())
+		{
+			// the author was found
+			echo "<br><b>Created by: </b>" . DBO()->Author->FirstName->Value . " " . DBO()->Author->LastName->Value ."\n";
+		}
+		else
+		{
+			// the author could not be found so just output their employee id
+			echo "<br><b>Created by: </b>employee id ". DBO()->KnowledgeBase->CreatedBy->Value . " (unknown)\n";
+		}
+		
 		
 		echo "<br><b>Created on: </b>" . DBO()->KnowledgeBase->CreatedOn->Value ."\n";
 		
 		echo "<br><b>Last updated: </b>". DBO()->KnowledgeBase->LastUpdated->Value ."\n";
 		
-		echo "<br><b>Authorised by: </b>" . DBO()->Authoriser->FirstName->Value . " " . DBO()->Authoriser->LastName->Value ."\n";
+		// check that an authoriser could be found
+		if (DBO()->Authoriser->IsValid())
+		{
+			// the authoriser was found
+			echo "<br><b>Authorised by: </b>" . DBO()->Authoriser->FirstName->Value . " " . DBO()->Authoriser->LastName->Value ."\n";
+		}
+		else
+		{
+			// the authoriser could not be found so just output their employee id
+			echo "<br><b>Authorised by: </b>employee id ". DBO()->KnowledgeBase->AuthorisedBy->Value . " (unknown)\n";
+		}
 		echo "<br><b>Authorised on: </b>" . DBO()->KnowledgeBase->AuthorisedOn->Value ."\n";
 		
 		// Output links to all related documents

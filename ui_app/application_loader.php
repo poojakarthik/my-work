@@ -231,7 +231,7 @@ class Application
 		$objSubmit->Get();
 		$objSubmit->POST();
 	
-		// validata all submitted objects
+		// validate all submitted objects
 		DBO()->Validate();
 
 		//Create AppTemplate Object
@@ -929,12 +929,14 @@ class submitted_data
 	/**
 	 * _ParseData()
 	 *
-	 * <short description>
+	 * Tries to load a DBO object using a Get or Post variable name and values
 	 *
-	 * <long description>
+	 * Tries to load a DBO object using a Get or Post variable name and values
 	 *
-	 * @param	string	$strName	<description>
-	 * @param	mixed	$mixValue	<description>
+	 * @param	string	$strName	the Get or Post variable name.  This must be
+	 *								in the format ObjectName_PropertyName_Context
+	 *								where Context is an integer
+	 * @param	mixed	$mixValue	the value for the property
 	 * @return	boolean
 	 *
 	 * @method
