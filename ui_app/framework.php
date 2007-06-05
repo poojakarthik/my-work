@@ -485,7 +485,7 @@ function LoginHandler(event)
 		echo "
                 <td>$i.</td>
                 <td>
-                  <a href='javascript:ToggleSlide('mydiv');'>3000306989</a>
+                  <a href='javascript:ToggleSlide(\"mydiv$i\");'>3000306989</a>
                 </td>
                 <td>1/02/2007</td>
 
@@ -505,7 +505,7 @@ function LoginHandler(event)
 					<img src='console_admin_files/invoice.png' height=20px></img>
 				</td>
               </tr>
-			  <tr><td colspan=7><div id='mydiv' style='display:none; overflow:hidden; height:180px;'>
+			  <tr><td colspan=7><div id='mydiv$i' style='display:none; overflow:hidden; height:180px;'>
 
 			  <table cellspacing=2 align='right' >
 			  <th>

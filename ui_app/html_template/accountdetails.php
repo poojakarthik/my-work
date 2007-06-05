@@ -22,6 +22,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
+		$this->LoadJavascript("retractable");
 	}
 	//------------------------------------------------------------------------//
 	// Render
