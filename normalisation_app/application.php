@@ -818,6 +818,7 @@
 				{
 					$bolFail = TRUE;
 				}*/
+				$bolFail = TRUE;
 	 		}
 			
 			if ($bolFail === TRUE)

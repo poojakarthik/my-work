@@ -204,9 +204,16 @@
 		$this->_selFindLastRate		= new StatementSelect($strTables, "Rate.*", $strWhere.$strOldCDRWhere.$strMyWhere, "ServiceRateGroup.CreatedOn ASC, ServiceRateGroup.Id ASC", 1);
 		
 		// fleet rate query
-		$strMyWhere					=	" AND Rate.Fleet 				= 1 \n";
+		//TODO!flame! this is broken and fleet rates sms... needs to have RecordType and Destination ?? will that work?
+		$strMyWhere					 =	" AND Rate.RecordType				= <RecordType>";
+		$strMyWhere					.=	" AND Rate.Destination 				= <Destination>";
+		$strMyWhere					.=	" AND Rate.Fleet 				= 1 \n";
 		$this->_selFindFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere.$strStandardWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
 		
+		$strMyWhere					=	" AND Rate.Fleet 				= 1 \n";
+		$this->_selFindDestFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere.$strStandardWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
+
+
 		// Select CDR Query
 		$arrColumns = $this->db->FetchClean("CDR");
 		unset($arrColumns['CDR']);
@@ -647,8 +654,8 @@
 		{
 			// does the destination have a fleet rate
 		 	$arrAliases['Service']	= $intDestinationService;
-			$this->_selFindFleetRate->Execute($arrAliases);
-			$arrSourceRate = $this->_selFindFleetRate->Fetch();
+			$this->_selFindDestFleetRate->Execute($arrAliases);
+			$arrSourceRate = $this->_selFindDestFleetRate->Fetch();
 			if ($arrSourceRate['Id'])
 			{
 				$bolFleet = TRUE;
