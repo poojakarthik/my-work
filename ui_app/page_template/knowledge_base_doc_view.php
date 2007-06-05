@@ -30,7 +30,6 @@
  *
  */
 
-echo "<br>THIS IS WITHIN THE PAGE TEMPLATE";
 
 // set the page title
 $this->Page->SetName('Knowledge Base Document Viewer');

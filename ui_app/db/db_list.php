@@ -415,6 +415,7 @@ class DBList extends DBListBase
 	function __get($strProperty)
 	{
 		return $this->_objWhere->$strProperty;
+
 	}
 	
 	//------------------------------------------------------------------------//

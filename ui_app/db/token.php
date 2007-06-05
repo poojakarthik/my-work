@@ -116,7 +116,7 @@ class PropertyToken
 	function __get($strName)
 	{
 		//Debug("Get: {$this->_dboOwner->_strName}->{$this->_strProperty}->$strName");
-		
+
 		// Are we after one of our "magic" variables?
 		switch (strtolower($strName))
 		{

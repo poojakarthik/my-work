@@ -71,44 +71,37 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 	 */
 	function Render()
 	{		
-echo "<br>THIS IS WITHIN THE HTML TEMPLATE Render() METHOD";		
 		// output the information about the document
-		//TODO!!Joel, finish this off
-		echo "<br>Article Id: " . DBO()->KnowledgeBase->Id->Value;
+		// This should eventually utilise the RenderOutput methods of the PropertyToken class
+		// however display data (relating to the knowledge base) is not currently stored in the
+		// UIAppDocumentation table of the database
+		echo "<br><b>Article Id: </b>" . DBO()->KnowledgeBase->Id->Value ."\n";
 		
-		echo "<br>Title: " . DBO()->KnowledgeBase->Title->Value;
+		echo "<br><b>Title: </b>" . DBO()->KnowledgeBase->Title->Value ."\n";
 		
-		echo "<br>Abstract"
+		echo "<br><b>Abstract: </b>" . DBO()->KnowledgeBase->Abstract->Value ."\n";
 		
-/*		
-		?>
-		<form method='POST' action='account_view.php'>
-		<table>
-			<tr>
-				<h1>Account Details</h1>
-			</tr>
-			<tr>
-				<?php
-					// Dbo()->Object->Property->RenderInput([$bolRequired], [$strContext]);
-					// Dbo()->Object->Property->RenderInput(TRUE, 'Account');
-					// Dbo()->Object->Property->RenderInput(TRUE);				
-					DBO()->Account->Id->RenderOutput(TRUE, 1);					
-					DBO()->Account->BusinessName->RenderOutput(TRUE);
-					DBO()->Account->TradingName->RenderOutput(TRUE,1);
-					DBO()->Account->ABN->RenderOutput(TRUE,1);
-					DBO()->Account->ABN->RenderInput(TRUE,1);
-					DBO()->Account->BillingType->RenderOutput(TRUE);
-					
-				?>	
-			</tr>
-			<tr>
-				<input type='submit' value='Submit'></input>
-			</tr>
-		</table>
-		<?php
-		//var_dump($_POST);
-		//HTML is OK here, to define structures which enclose these objects
-*/
+		echo "<br><b>Content: </b>" . DBO()->KnowledgeBase->Content->Value ."\n";
+		
+		echo "<br><b>Created by: </b>" . DBO()->Author->FirstName->Value . " " . DBO()->Author->LastName->Value ."\n";
+		
+		echo "<br><b>Created on: </b>" . DBO()->KnowledgeBase->CreatedOn->Value ."\n";
+		
+		echo "<br><b>Last updated: </b>". DBO()->KnowledgeBase->LastUpdated->Value ."\n";
+		
+		echo "<br><b>Authorised by: </b>" . DBO()->Authoriser->FirstName->Value . " " . DBO()->Authoriser->LastName->Value ."\n";
+		echo "<br><b>Authorised on: </b>" . DBO()->KnowledgeBase->AuthorisedOn->Value ."\n";
+		
+		// Output links to all related documents
+		// have the link label be the id and title of the document  "title (id:123)"
+		
+		foreach (DBL()->KnowledgeBase AS $dboKnowledgeBase)
+		{
+			echo "<br><b>Related Article: </b>";
+			echo "<A href='knowledge_base_doc_view.php?KnowledgeBase_Id=". $dboKnowledgeBase->Id->Value ."'>".$dboKnowledgeBase->Title->Value . " (doc id: ". $dboKnowledgeBase->Id->Value .")"."</A>" ."\n";
+		}
+		
+		
 	}
 }
 
