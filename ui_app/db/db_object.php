@@ -79,24 +79,7 @@ class DBObject extends DBObjectBase
 		}
 
 		// set columns
-		if (is_array($mixColumns))
-		{
-			$this->_arrColumns = $mixColumns;
-		}
-		elseif ($mixColumns)
-		{
-			//TODO!!!! convert column names into an array
-		}
-		elseif ($this->_arrDefine['Columns'])
-		{
-			$this->_arrColumns = $this->_arrDefine['Columns'];
-		}
-		else
-		{
-			// get * column names for tables
-			//TODO!!!! I think you have to explicitly define the column names
-			//$this->_arrColumns = "*";
-		}
+		$this->SetColumns($mixColumns);
 		
 		// set ID column name
 		//TODO!!!! look harder to find this
@@ -296,7 +279,6 @@ class DBObject extends DBObjectBase
 	 *
 	 * @method
 	 */
-	// checks validation on the entire object
 	function IsValid()
 	{
 		foreach($this->_arrValid AS $bolValid)
@@ -309,8 +291,27 @@ class DBObject extends DBObjectBase
 		return $this->_bolValid;
 	}
 	
-	// IsValid can return true, false, or null
-	// this function tells you specificly if it has been marked as invalid
+	//------------------------------------------------------------------------//
+	// IsInvalid
+	//------------------------------------------------------------------------//
+	/**
+	 * IsInvalid()
+	 *
+	 * Checks if the DBObject has been explicitly set to invalid
+	 *
+	 * Checks if the DBObject has been explicitly set to invalid or
+	 * any of the properties of the object have been set to invalid.
+	 * IsValid can return true, false, or null
+	 * this function tells you specificly if it has been marked as invalid
+	 *
+	 * @return	bool		If any of the object's properties have been flagged as invalid
+	 *						or if the DBObject itself has been flagged as invalid then
+	 *						the method returns TRUE. 
+	 *						Else the method returns FALSE, meaning the object is either valid
+	 *						or has not had its validity checked yet.
+	 *
+	 * @method
+	 */
 	function IsInvalid()
 	{
 		if ($this->IsValid() === FALSE)
@@ -399,7 +400,7 @@ class DBObject extends DBObjectBase
 		}
 		
 		// get data
-		$arrResult = $this->SelectById($this->_strTable, $this->_arrColumns, $intId)
+		$arrResult = $this->SelectById($this->_strTable, $this->_arrColumns, $intId);
 		if (!empty($arrResult))
 		{
 			// load the data into the object
@@ -647,7 +648,6 @@ class DBObject extends DBObjectBase
 	 */
 	function Info()
 	{
-		
 		$arrReturn['Properties'] = $this->_arrProperties;
 		if (!empty($this->_arrValid))
 		{
@@ -735,6 +735,72 @@ class DBObject extends DBObjectBase
 	{
 		return $this->_strTable;
 	}
+	
+		//------------------------------------------------------------------------//
+	// SetColumns
+	//------------------------------------------------------------------------//
+	/**
+	 * SetColumns()
+	 *
+	 * Set the columns to retrieve
+	 *
+	 * Set the columns to retrieve
+	 * 
+	 * @param	mix		$mixColumns		Either an associated array of columns and their alias's (Alias=>ColumnName)
+	 *									OR 
+	 *									an indexed array of column names (Array("Column1", "Column2", etc)
+	 *									OR
+	 *									a comma separated string of columns ("Column1, Column2, etc")
+	 *
+	 * @return	array					returns the data attribute storing the column names ($_arrColumns)
+	 *
+	 * @method
+	 */
+	function SetColumns($mixColumns)
+	{
+		if (is_array($mixColumns))
+		{
+			$this->_arrColumns = $mixColumns;
+		}
+		elseif ($mixColumns)
+		{
+			// convert column names into an array
+			$mixColumns = str_replace(" ", "", $mixColumns);
+			$arrColumns = explode(",", $mixColumns);
+			$this->_arrColumns = $arrColumns;
+		}
+		elseif ($this->_arrDefine['Columns'])
+		{
+			$this->_arrColumns = $this->_arrDefine['Columns'];
+		}
+		else
+		{
+			//TODO!!!! get * column names for tables
+			// This scenario is currently handled by DataAccessUI::Select and DataAccessUI::SelectById
+			// If either of these methods are called and $_arrColumns is empty, it selects all
+			// columns from the table of the database
+		}
+		return $this->_arrColumns;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetColumns
+	//------------------------------------------------------------------------//
+	/**
+	 * GetColumns()
+	 *
+	 * Accessor for the list of columns which this object retrieves from the database
+	 *
+	 * Accessor for the list of columns which this object retrieves from the database
+	 * 
+	 * @return	array					returns the data attribute storing the column names ($_arrColumns)
+	 * @method
+	 */
+	function GetColumns()
+	{
+		return $this->_arrColumns;
+	}
+
 }
 
 

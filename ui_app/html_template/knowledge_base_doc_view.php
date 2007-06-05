@@ -84,9 +84,6 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		echo "</table>\n";
 		
 		
-		
-		echo "<br><b>Content: </b>" . DBO()->KnowledgeBase->Content->Value ."\n";
-		
 		// check that an author could be found
 		if (!DBO()->Author->IsInvalid())
 		{
