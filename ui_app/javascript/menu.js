@@ -177,14 +177,6 @@ function MenuClass(objMenu)
 		this.timeoutClose = setTimeout("vixen.menu.Close(1)", this.config.waitClose);
 	}
 	
-	function GetInfo(element)
-	{
-		element.style.top = '10px';
-		element.style.left = '25px';
-		string = "Id: " + element.id + "\n" + "Top: " + element.style.visibility
-		
-	}
-	
 	this.RemovePx = function(value)
 	{
 		if (value != Number(value))
