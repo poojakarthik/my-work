@@ -309,6 +309,17 @@ class DBObject extends DBObjectBase
 		return $this->_bolValid;
 	}
 	
+	// IsValid can return true, false, or null
+	// this function tells you specificly if it has been marked as invalid
+	function IsInvalid()
+	{
+		if ($this->IsValid() === FALSE)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
 	//------------------------------------------------------------------------//
 	// SetValid
 	//------------------------------------------------------------------------//
@@ -388,13 +399,16 @@ class DBObject extends DBObjectBase
 		}
 		
 		// get data
-		if ($arrResult = $this->SelectById($this->_strTable, $this->_arrColumns, $intId))
+		$arrResult = $this->SelectById($this->_strTable, $this->_arrColumns, $intId)
+		if (!empty($arrResult))
 		{
 			// load the data into the object
 			$bolReturn = $this->$strType($arrResult);
 		}
 		else
 		{
+			$this->_arrValid[$this->_strIdColumn] = FALSE;
+			$this->_bolValid = FALSE;
 			$bolReturn = FALSE;
 		}
 		
@@ -424,6 +438,8 @@ class DBObject extends DBObjectBase
 	 */
 	 function LoadClean($intId = NULL)
 	 {
+	 	//TODO! we need to make a descision as to what to do when no data is retrieved
+		
 	 	$bolReturn = $this->Load($intId, $strType='LoadData');
 		if (!$bolReturn)
 		{

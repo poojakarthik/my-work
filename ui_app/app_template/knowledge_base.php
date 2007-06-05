@@ -88,35 +88,12 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		// Load the name of the employee who created the KnowledgeBase document
 		DBO()->Author->Id = DBO()->KnowledgeBase->CreatedBy->Value;
 		DBO()->Author->SetTable("Employee");
-		if (!DBO()->Author->Load())
-		{
-			// could not find the author in the Employee table
-			// should probably set DBO()->Author to be invalid
-			
-			// currently there is no way to explicitly set a DBObject to invalid, or a single property within
-			// a DBObject unless I access its data attributes which should be private
-			DBO()->Author->_arrValid['Id'] = FALSE;
-		} 
-		else
-		{
-			// set the object to being valid
-			DBO()->Author->SetValid();
-		}
+		DBO()->Author->Load();
 		
 		// Load the name of the employee who authorised the KnowledgeBase document
 		DBO()->Authoriser->Id = DBO()->KnowledgeBase->AuthorisedBy->Value;
 		DBO()->Authoriser->SetTable("Employee");
-		if (!DBO()->Authoriser->Load())
-		{
-			// could not find the Authoriser in the Employee table
-			// should probably set DBO()->Authoriser to be invalid
-			DBO()->Authoriser->_arrValid['Id'] = FALSE;
-		}
-		else
-		{
-			// set the object to being valid
-			DBO()->Authoriser->SetValid();
-		}
+		DBO()->Authoriser->Load();
 		
 		// All data relating to the document has been retrieved from the database so now load the page template
 		$this->LoadPage('knowledge_base_doc_view');
