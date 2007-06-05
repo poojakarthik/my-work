@@ -10,8 +10,8 @@
 require_once("../framework/require.php");
 
 // Get STT Entries
-$selServiceTypeTotal	= new StatementSelect("ServiceTypeTotal", "*", "Id > <MaxId>", NULL, 1000);
-$selSTTCost				= new StatementSelect("CDR", "SUM(Cost) AS Cost", "RecordType = <RecordType> AND FNN = <FNN> AND InvoiceRun = <InvoiceRun>");
+$selServiceTypeTotal	= new StatementSelect("ServiceTypeTotal", "*", "Id > <MaxId> AND RateGroup = 0", NULL, 1000);
+$selSTTCost				= new StatementSelect("CDR USE INDEX (Service_3)", "SUM(Cost) AS Cost", "Service = <Service> AND RecordType = <RecordType> AND FNN = <FNN> AND InvoiceRun = <InvoiceRun>");
 $selRateGroup			= new StatementSelect(	"((ServiceRateGroup JOIN RateGroup ON RateGroup.Id = ServiceRateGroup.RateGroup) JOIN Service ON Service.Id = ServiceRateGroup.Service) JOIN Invoice USING(Account)",
 												"RateGroup.Id AS RateGroup",
 												"ServiceRateGroup.Service = <Service> AND RateGroup.RecordType = <RecordType> AND Invoice.InvoiceRun = <InvoiceRun>",
@@ -52,7 +52,7 @@ while ($selServiceTypeTotal->Execute($arrWhere))
 		$arrData['Id']			= $arrServiceTypeTotal['Id'];
 		$arrData['Cost']		= $arrSTTCost['Cost'];
 		$arrData['RateGroup']	= $arrRateGroup['RateGroup'];
-		if ($ubiServiceTypeTotal->Execute($arrSTTCost) === FALSE)
+		if ($ubiServiceTypeTotal->Execute($arrData) === FALSE)
 		{
 			echo "[ FAILED ]\n";
 		}
@@ -70,8 +70,8 @@ echo " * Updated $intPassed of $intTotal ServiceTypeTotals.\n\n";
 ob_flush();
 
 
-$selServiceTotal	= new StatementSelect(	"ServiceTotal", "*", "Id > <MaxId>", NULL, 1000);
-$selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
+$selServiceTotal	= new StatementSelect(	"ServiceTotal", "*", "Id > <MaxId> AND RatePlan = 0", NULL, 1000);
+$selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_3) JOIN Rate ON (CDR.Rate = Rate.Id)",
 											"Rate.Uncapped AS Uncapped, SUM(CDR.Cost) AS Cost",
 											"CDR.Service = <Service> AND " .
 											"CDR.Credit = 0".
@@ -133,7 +133,7 @@ while ($selServiceTotal->Execute($arrWhere))
 		
 		// Update
 		$arrData['Id']			= $arrServiceTotal['Id'];
-		if ($ubiServiceTotal->Execute($arrCDRTotals) === FALSE)
+		if ($ubiServiceTotal->Execute($arrData) === FALSE)
 		{
 			echo "[ FAILED ]\n";
 		}
