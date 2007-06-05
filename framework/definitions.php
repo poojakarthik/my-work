@@ -1112,8 +1112,10 @@ $GLOBALS['*arrConstant']	['ReportStatus']	[201]	['Constant']	= 'REPORT_GENERATE_
 $GLOBALS['*arrConstant']	['ReportStatus']	[201]	['Description']	= 'Report Failed while attempting to Generate';
 $GLOBALS['*arrConstant']	['ReportStatus']	[202]	['Constant']	= 'REPORT_EMAIL_FAILED';
 $GLOBALS['*arrConstant']	['ReportStatus']	[202]	['Description']	= 'Attempt to Email the Report failed';
-$GLOBALS['*arrConstant']	['ReportStatus']	[203]	['Constant']	= 'REPORT_GENERATED';
-$GLOBALS['*arrConstant']	['ReportStatus']	[203]	['Description']	= 'Report Generated';
+$GLOBALS['*arrConstant']	['ReportStatus']	[203]	['Constant']	= 'REPORT_BAD_RENDER_TARGET';
+$GLOBALS['*arrConstant']	['ReportStatus']	[203]	['Description']	= 'Invalid Render Target Specified';
+$GLOBALS['*arrConstant']	['ReportStatus']	[204]	['Constant']	= 'REPORT_GENERATED';
+$GLOBALS['*arrConstant']	['ReportStatus']	[204]	['Description']	= 'Report Generated';
 
 
 // CLI Console Docked
