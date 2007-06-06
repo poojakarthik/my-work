@@ -319,6 +319,12 @@ class Page
 	 */
 	function RenderJS()
 	{
+		// always render the root js class
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/vixen.js' ></script>\n";
+		
+		// always render the menu js class
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/menu.js' ></script>\n";
+		
 		// for each on global array
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
@@ -353,188 +359,42 @@ class Page
 	}
 	
 	//------------------------------------------------------------------------//
+	// RenderFooter
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderFooter()
+	 *
+	 * Renders the footer of a page
+	 *
+	 * Renders the footer of a page
+	 * 
+	 * @method
+	 */
+	function RenderFooter()
+	{
+		echo "</body>\n";
+	}
+		
+	//------------------------------------------------------------------------//
 	// RenderHeader
 	//------------------------------------------------------------------------//
 	/**
 	 * RenderHeader()
 	 *
-	 * Renders a single column of the page
+	 * Renders the header of a page
 	 *
-	 * Renders a single column of the page
+	 * Renders the header of a page
 	 * 
 	 * @method
 	 */
 	function RenderHeader()
-	{
-		// build referring string from _GET
-		$strTarget = DBO()->Account->Id->Value;
-		
-		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>";
-		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>";
+	{	
+		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
+		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>\n";
 		$this->RenderJS();
 		$this->RenderCSS();
-		echo "
-		
-		<script type='text/javascript'>
-var iState = 0;
-function toggleBox(szDivID) // 1 visible, 0 hidden
-{
-    var obj = document.getElementById(szDivID);
-    obj.style.visibility = iState ? 'visible' : 'hidden'; 
-	iState ^= 1;
-	
-	dragObj = document.getElementById('TopBar');
-	dragObj.addEventListener('mousedown', LoginHandler, false);
-	
-}
-
-function LoginHandler(event)
-{
-	aphplix.dhtml.drag(event, 'LoginBox');
-}
-//dragObject = document.getElementById('TopBar');
-
-</script>
-";
-	
-		echo "</head> ";
-		
-		echo "
-<body onload='toggleBox(\"LoginBox\");'>
-
-	<div id='LoginBox' class='LoginBox' style='left: 400px; top:300px;'>
-		<div id='TopBar' class='TopBar'>
-		TelcoBlue Internal System
-		</div>
-			
-			
-			<form method='POST' action='account_view.php?Account.Id=$strTarget'>
-				<table>
-					<tr>
-						<td>
-							<label for='UserName'>Username:</label>
-						</td>
-						<td>
-							<input type='text' name='UserName' id='UserName' maxlength='21'/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<label for='PassWord'>Password:</label>
-						</td>
-						<td>
-							<input type='password' name='PassWord' />
-						</td>
-					</tr>
-					<tr>
-						<td/>
-						<td>
-							<input type='submit' value='Continue &#xBB;' class='Right'/>
-						</td>
-					</tr>
-				</table>
-			</form>
-	</div>
-    <div class='Logo'>
-      <img src='img/template/vixen_logo.png' border='0'>
-    </div>
-    <div id='Header' class='sectionContainer'>
-      <span class='LogoSpacer'></span>
-      <div class='sectionContent'>
-        <div class='Left'>
-			TelcoBlue Internal Management System
-		</div>
-        <div class='Right'>
-			Version 7.03
-									
-			<div class='Menu_Button'>
-				<a href='#' onclick=\"return ModalDisplay ('#modalContent-ReportBug')\">
-					<img src='img/template/bug.png' alt='Report Bug' title='Report Bug' border='0'>
-				</a>
-			</div>
-		</div>
-
-
-        <div class='Clear'></div>
-      </div>
-      <div class='Clear'></div>
-    </div>
-    <div class='Clear'></div>
-    <div class='Seperator'></div>";
-	
-	echo "<table class='Listing' border='0' cellpadding='3' cellspacing='0' width='auto'>
-              <tbody><tr class='First'>
-                <th width='30'>#</th>
-                <th>Invoice #</th>
-
-                <th>Date</th>
-                <th class='thRight'>Invoice Amount</th>
-                <th class='thRight'>Applied Amount</th>
-                <th class='thRight'>Amount Owing</th>
-                <th class='thRight'>Sent</th>
-                <th class='thRight'>Blank</th>
-
-              </tr>";
-	$strTableName = "Invoices";
-	$intMaxRows = 10;
-	for ($i = 0; $i <= $intMaxRows; $i++)
-	{
-		?>
-        <tr id='<?php echo $strTableName . $i; ?>' class='Odd' onmouseover='highlight(this.id, "<?php echo $strTableName; echo '", "'; echo $intMaxRows;  ?>");' onclick='toggleSelection(this.id, "<?php echo $strTableName; echo '", "'; echo $intMaxRows;  ?>")'>
-		<?php
-		echo "
-                <td>$i.</td>
-                <td>
-                  <a href='javascript:ToggleSlide(\"mydiv$i\");'>3000306989</a>
-                </td>
-                <td>1/02/2007</td>
-
-                <td class='Currency'>" . rand() . "</td>
-                <td class='Currency'>$0.00</td>
-                <td class='Currency'>
-                  <strong>
-                    <span class='Red'>$2,405.15</span>
-                  </strong>
-                </td>
-
-                <td align='right'>
-                  <img src='console_admin_files/btn_unlocked.png' height=20px></img>
-                </td>
-				<td align='right'> 
-					<img src='console_admin_files/pdf.png' height=20px></img>
-					<img src='console_admin_files/invoice.png' height=20px></img>
-				</td>
-              </tr>
-			  <tr><td colspan=7><div id='mydiv$i' style='display:none; overflow:hidden; height:180px;'>
-
-			  <table cellspacing=2 align='right' >
-			  <th>
-			  	<td>Date</td>
-				<td style='padding-left:30px'>Total Applied</td>
-				<td style='padding-left:30px'>Type</td>
-			</th>  	
-				<tr align='right' onmouseover='return escape(getHTML(1))'>
-					<td></td><td>16/03/2007</td><td class='Currency' >$2,522.20</td><td>BPay</td>
-
-				</tr>
-				<tr align='right'>
-					<td></td><td>03/02/2007</td><td class='Currency'>$678.20</td><td>Eftpos</td>
-				</tr>
-				<tr align='right'>
-					<td></td><td>19/08/2006</td><td class='Currency'>$1,034.20</td><td>DD</td>
-
-				</tr>
-				<tr align='right'>
-					<td></td><td>23/02/2006</td><td class='Currency'>$25.20</td><td>BPay</td>
-				</tr>
-				<tr align='right'>
-					<td></td><td>06/12/2005</td><td class='Currency'>$822.20</td><td>Eftpos</td>
-
-				</tr>
-				</table>
-			  </div></td></tr>";
-		}
-		
+		echo "</head>\n";
+		echo "<body>\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -543,74 +403,44 @@ function LoginHandler(event)
 	/**
 	 * RenderContextMenu()
 	 *
-	 * Renders a single column of the page
+	 * Renders the context menu
 	 *
-	 * Renders a single column of the page
+	 * Renders the context menu
 	 * 
 	 * @method
 	 */
 	function RenderContextMenu()
 	{
-	echo "
-	<div id='Content'>
-      <table border='0' cellpadding='0' cellspacing='0' width='100%'>
-        <tbody><tr>
-          <td nowrap='nowrap' valign='top' width='75'>
-            <div id='Navigation' class='Left sectionContent Navigation'>
-              <table border='0' cellpadding='0' cellspacing='0'>
-                <tbody><tr>
-                  <td>
-                    <a href='http://localhost/sean/vixen/intranet_app/console.php'>
-                      <img src='img/template/home.png' title='Employee Console' class='MenuIcon'>
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href='http://localhost/sean/vixen/intranet_app/account_add.php'>
-                      <img src='img/template/contact_add.png' title='Add Customer' class='MenuIcon'>
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href='http://localhost/sean/vixen/intranet_app/contact_verify.php'>
-                      <img src='img/template/contact_retrieve.png' title='Find Customer' class='MenuIcon'>
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href='#' onclick='return ModalDisplay (\"#modalContent-recentCustomers\")'>
-                      <img src='img/template/history.png' title='Recent Customers' class='MenuIcon'>
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href='http://localhost/sean/vixen/intranet_app/rates_plan_list.php'>
-                      <img src='img/template/plans.png' title='View Available Plans' class='MenuIcon'>
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href='#' onclick='toggleBox(\"LoginBox\");'>
-                      <img src='img/template/admin_console.png' title='Test Button' class='MenuIcon'>
-                    </a>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <a href='logout.php'>
-                      <img src='img/template/logout.png' title='Logout' class='MenuIcon'>
-                    </a>
-                  </td>
-                </tr>
-              </tbody></table>
-            </div>
-          </td>
-		  <td valign='top'>";
+		// build array
+		$arrContextMenu = ContextMenu()->BuildArray();
+		
+		// convert to json
+		$strContextMenu = Json()->Encode($arrContextMenu);
+		
+		// add to html
+		echo "<div id='VixenMenu' class='Left sectionContent Navigation' width='75'></div>\n";
+		echo "<script type='text/javascript'>Vixen.Menu.objMenu = $strContextMenu ; </script>\n";
+		
+		// run js
+		echo "<script type='text/javascript'>Vixen.Menu.Render()</script>\n";
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderBreadCrumbMenu
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderBreadCrumbMenu()
+	 *
+	 * Renders the breadcrumb menu
+	 *
+	 * Renders the breadcrumb menu
+	 * 
+	 * @method
+	 */
+	function RenderBreadCrumbMenu()
+	{
+		$objBreadCrumb = new HtmlTemplateBreadCrumb;
+		$objBreadCrumb->Render();
 	}
 }
 
@@ -1235,19 +1065,19 @@ class ContextMenuFramework
 	}
 	
 	//------------------------------------------------------------------------//
-	// _Render
+	// _BuildArray
 	//------------------------------------------------------------------------//
 	/**
-	 * _Render()
+	 * _BuildArray()
 	 *
-	 * Used recursively by the method Render() to prepare the Context Menu for rendering
+	 * Used recursively by the method BuildArray() to build the Context Menu array
 	 *
-	 * Used recursively by the method Render() to prepare the Context Menu for rendering
+	 * Used recursively by the method BuildArray() to build the Context Menu array
 	 * 
 	 * @return	array	
 	 * @method
 	 */
-	function _Render($arrMenu)
+	function _BuildArray($arrMenu)
 	{
 		$arrReturn = Array();
 
@@ -1264,7 +1094,7 @@ class ContextMenuFramework
 			}
 			else
 			{
-				$arrReturn[$strMenu] = $this->_Render($arrSubMenu);
+				$arrReturn[$strMenu] = $this->_BuildArray($arrSubMenu);
 			}
 		}
 		
@@ -1272,31 +1102,26 @@ class ContextMenuFramework
 	}
 	
 	//------------------------------------------------------------------------//
-	// Render
+	// BuildArray
 	//------------------------------------------------------------------------//
 	/**
-	 * Render()
+	 * BuildArray()
 	 *
-	 * Renders the Context Menu
+	 * Builds the Context Menu Array
 	 *
-	 * Renders the Context Menu
+	 * Builds the Context Menu Array
 	 * 
-	 * @return	void
+	 * @return	array
 	 * @method
 	 */
-	function Render()
+	function BuildArray()
 	{
 		$this->_objMenuItems = new MenuItems();
 		
-		$arrOutput = $this->_Render($this->arrProperties);
+		$arrOutput = $this->_BuildArray($this->arrProperties);
 		
-		// convert $arrOutput to JSON
-		//TODO!
-		
-		// output JSON
-		//TODO!
-		
-		Debug($arrOutput);
+		return $arrOutput;
+
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1342,7 +1167,7 @@ class ContextMenuFramework
 	{
 		$this->_objMenuItems = new MenuItems();
 		
-		return $this->_Render($this->arrProperties);
+		return $this->_BuildArray($this->arrProperties);
 	}
 
 	//------------------------------------------------------------------------//
@@ -1445,6 +1270,7 @@ class ContextMenuFramework
  */
 class MenuItems
 {
+	public $strLabel;
 	
 	//------------------------------------------------------------------------//
 	// ViewAccount
@@ -1464,7 +1290,46 @@ class MenuItems
 	 */
 	function ViewAccount($intId)
 	{
+		$this->strLabel	= "acc : $intId";
 		return "Account_view.php?Account.Id=$intId";
+	}
+	
+	//------------------------------------------------------------------------//
+	// ViewService
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewService()
+	 *
+	 * Compiles the HREF to be executed when the ViewService menu item is clicked
+	 *
+	 * Compiles the HREF to be executed when the ViewService menu item is clicked
+	 * 
+	 * @param	int		$intId		id of the service to view
+	 * @param	int		$strFNN		optional FNN of the service to view
+	 *
+	 * @return	string				the HREF to be executed when the ViewService menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewService($intId, $strFNN=NULL)
+	{
+		$this->strLabel	= "service : $strFNN";
+		return "Service_view.php?Service.Id=$intId";
+	}
+	
+	function BreadCrumb($strName, $arrParams)
+	{
+		$this->strLabel = NULL;
+		$arrReturn = Array();
+		$strName = str_replace('_', '', $strName);
+		$arrReturn['Href'] = call_user_func_array(array($this, $strName), $arrParams);
+		if (!$this->strLabel)
+		{
+			return FALSE;
+		}
+		$arrReturn['Label'] = $this->strLabel;
+		
+		return $arrReturn;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1517,72 +1382,20 @@ class MenuItems
  */
 class BreadCrumbFramework
 {
-	private $_arrCrumbs = NULL;
-
-	//------------------------------------------------------------------------//
-	// AddCrumb
-	//------------------------------------------------------------------------//
-	/**
-	 * AddCrumb()
-	 *
-	 * Appends a bread crumb to the end of the bread crumb menu
-	 *
-	 * Appends a bread crumb to the end of the bread crumb menu
-	 * 
-	 * @param	string		$strLabel		The label to be displayed in the bread crumb menu (include placeholders for variables)
-	 *										ie $strLabel = "Acc:<id>"
-	 * @param	string		$strHREF		The HREF to execute when the crumb is clicked (include placeholders for variables)
-	 *										ie $strHREF = "view_account.php?Account.Id=<id>"
-	 * @param	array		$arrAttributes	An associated array storing all variables used in $strLabel and $strHREF
-	 *
-	 * @return	void
-	 *
-	 * @method
-	 */
-	function AddCrumb($strLabel, $strHREF, $arrAttributes=NULL)
+	function __construct()
 	{
-		$this->_arrCrumbs[] = new BreadCrumb($strLabel, $strHREF, $arrAttributes);
+		$this->_mitMenuItems = new MenuItems();
 	}
-
-	//------------------------------------------------------------------------//
-	// Render
-	//------------------------------------------------------------------------//
-	/**
-	 * Render()
-	 *
-	 * Renders the Bread Crumb Menu
-	 *
-	 * Renders the Bread Crumb Menu
-	 * 
-	 * @return	void
-	 *
-	 * @method
-	 */
-	function Render()
+	
+	function __call($strName, $arrParams)
 	{
-		foreach ($this->_arrCrumbs as $objCrumb)
+		$arrBreadCrumb = $this->_mitMenuItems->BreadCrumb($strName, $arrParams);
+		if (is_array($arrBreadCrumb))
 		{
-			$arrCrumb['Label'] = $objCrumb->_strLabel;
-			$arrCrumb['HREF'] = $objCrumb->_strHREF;
-			
-			// stick the values of the attributes into the HREF and label
-			if (is_array($objCrumb->_arrAttributes))
-			{
-				foreach ($objCrumb->_arrAttributes as $strKey=>$mixValue)
-				{
-					$arrCrumb['Label'] = str_replace("<".strtolower($strKey).">", $mixValue, $arrCrumb['Label']);
-					$arrCrumb['HREF'] = str_replace("<".strtolower($strKey).">", $mixValue, $arrCrumb['HREF']);
-				}
-			}
-			$arrOutput[] = $arrCrumb;
+			DBO()->BreadCrumb->$strName 		= $arrBreadCrumb['Href'];
+			DBO()->BreadCrumb->$strName->Label 	= $arrBreadCrumb['Label'];
 		}
-		// convert $arrOutput to JSON
-		//TODO!
-		
-		// output JSON
-		//TODO!
-		
-		Debug($arrOutput);
+		return $arrBreadCrumb;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1601,7 +1414,7 @@ class BreadCrumbFramework
 	 */
 	function Info()
 	{
-		return $this->_arrCrumbs;
+		return DBO()->BreadCrumb->Info();
 	}
 
 	//------------------------------------------------------------------------//
@@ -1665,49 +1478,6 @@ class BreadCrumbFramework
 		}
 		return $strOutput;
 	}
-}
-
-//----------------------------------------------------------------------------//
-// BreadCrumb
-//----------------------------------------------------------------------------//
-/**
- * BreadCrumb
- *
- * Represents a single bread crumb in the bread crumb menu
- *
- * Represents a single bread crumb in the bread crumb menu
- *
- * @prefix	cmb
- *
- * @package	ui_app
- * @class	BreadCrumb
- */
-class BreadCrumb
-{
-	public $_arrAttributes = NULL;
-	public $_strLabel = "";	//defines how the crumb is displayed
-	public $_strHREF = "";
-	
-	//----------------------------------------------------------------------------//
-	// __construct
-	//----------------------------------------------------------------------------//
-	/**
-	 * __construct
-	 *
-	 * BreadCrumb constructor
-	 *
-	 * BreadCrumb constructor - sets BreadCrumb data attributes
-	 *
-	 * @return void
-	 * @method
-	 */
-	function __construct($strLabel, $strHREF, $arrAttributes=NULL)
-	{
-		$this->_strLabel = $strLabel;
-		$this->_strHREF = $strHREF;
-		$this->_arrAttributes = $arrAttributes;
-	}
-	
 }
 
 ?>

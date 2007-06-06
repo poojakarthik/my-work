@@ -73,7 +73,8 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		{
 			// the document was not specified so display an appropriate error message and return them to the document selection page
 			//$this->LoadPage('knowledge_base_doc_select');
-			echo("<br> The document requested could not be found");
+			//echo("<br> The document requested could not be found");
+			$this->LoadPage('error');
 			return FALSE;
 		}
 		
@@ -97,6 +98,14 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		
 		// All data relating to the document has been retrieved from the database so now load the page template
 		$this->LoadPage('knowledge_base_doc_view');
+		
+		// context menu
+		ContextMenu()->Level_1->Level_2->View_Account(1);
+		
+		// add to breadcrumb menu
+		BreadCrumb()->ViewAccount(1000006574);
+		BreadCrumb()->ViewService(1, '0787321549875');
+		
 		
 		return TRUE;
 	}

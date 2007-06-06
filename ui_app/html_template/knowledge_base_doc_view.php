@@ -52,7 +52,7 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 {
 	function __construct()
 	{
-		// I don't currently know if this is necessary for this page
+		// Load all java script specific to the page here
 		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
 	}
@@ -70,7 +70,16 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{		
+	{	
+		echo "<table border='5'>\n";
+		foreach (DBO()->KnowledgeBase AS $strProperty=>$objValue)
+		{
+			$objValue->RenderOutput();
+		}
+		echo "</table>\n";
+		die();
+		DBO()->KnowledgeBase->Id->Label = 'xxxxx';
+		echo DBO()->KnowledgeBase->Id->Label;
 		// output the information about the document
 		// This should eventually utilise the RenderOutput methods of the PropertyToken class
 		// however display data (relating to the knowledge base) is not currently stored in the

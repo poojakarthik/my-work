@@ -29,6 +29,7 @@ class DBObject extends DBObjectBase
 	public $_arrProperties	= Array();
 	public $_intStatus		= 0;
 	public $_arrDefine		= Array();
+	public $_intContext		= 0;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -133,7 +134,7 @@ class DBObject extends DBObjectBase
 	function __get($strProperty)
 	{
 		//Debug("GET $strProperty");
-		return PropertyToken()->Property($this, $strProperty);
+		return PropertyToken()->_Property($this, $strProperty);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -155,8 +156,8 @@ class DBObject extends DBObjectBase
 	function __set($strProperty, $mixValue)
 	{
 		//Debug("GET $strProperty");
-		$objToken = PropertyToken()->Property($this, $strProperty);
-		return ($this->$strProperty->value = $mixValue);
+		//$objToken = PropertyToken()->_Property($this, $strProperty);
+		return ($this->_arrProperties[$strProperty] = $mixValue);
 	}
 	
 	//------------------------------------------------------------------------//

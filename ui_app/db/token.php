@@ -89,7 +89,7 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function Property($dboOwner, $strProperty)
+	function _Property($dboOwner, $strProperty)
 	{
 		$this->_dboOwner	= $dboOwner;
 		$this->_strProperty	= $strProperty;
@@ -128,10 +128,11 @@ class PropertyToken
 				return $this->_dboOwner->_arrValid[$this->_strProperty];
 		}
 		
-		// Do we have a column property by this name?
-		if (isset($this->_dboOwner->_arrColumns[$this->_strProperty][$strName]))
+		// Do we have a Define property by this name?
+		$intContext = (int)$this->_dboOwner->_intContext;
+		if (isset($this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName]))
 		{
-			return $this->_dboOwner->_arrColumns[$this->_strProperty][$strName];
+			return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName];
 		}
 		
 		return NULL;
@@ -168,8 +169,9 @@ class PropertyToken
 				return (bool)($this->_dboOwner->_arrProperties[$this->_strProperty] = $mixValue);
 		}
 		
-		// Do we have a column property by this name?
-		return $this->_dboOwner->_arrColumns[$this->_strProperty][$strName] = $mixValue;
+		// Do we have a define property by this name?
+		$intContext = (int)$this->_dboOwner->_intContext;
+		return $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext][$strName] = $mixValue;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -178,9 +180,9 @@ class PropertyToken
 	/**
 	 * __call()
 	 *
-	 * Call Private Property Methods
+	 * 
 	 *
-	 * Call Private Property Methods
+	 * 
 	 *
 	 * @param	dbo		$dboObject		The owner object
 	 * @param	string	$strMethod		Method to run
@@ -190,20 +192,10 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function __call($strMethod, $arrArguments)
+	/*function __call($strMethod, $arrArguments)
 	{
-		// call private method
-		$strPrivateMethod = "_$strMethod";
-		if (method_exists($this, $strPrivateMethod))
-		{
-			$arrCallback = Array($this, $strPrivateMethod);
-			return call_user_func_array($arrCallback, $arrArguments);
-		}
-		else
-		{
-			return FALSE;
-		}
-	}
+	
+	}*/
 
 	//------------------------------------------------------------------------//
 	// RenderInput

@@ -35,6 +35,7 @@
 		// and a header template
 		
 		$this->RenderHeader();
+		$this->RenderBreadCrumbMenu();
 		$this->RenderContextMenu();
 
 		//var_dump($this->Page->arrObjects);

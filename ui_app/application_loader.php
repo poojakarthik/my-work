@@ -239,16 +239,9 @@ class Application
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		//Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
-		//Add context menu
-		//Add in JS & CSS
-		//Add in documentation
-	
+		
 		// Render Page
 		$this->objAppTemplate->Page->Render();
-		/*
-		??? call the render function of the page object
-		??? decide where context, doco and js/css go, and also include breadcrumbs
-		*/
 	}
 	
 	//------------------------------------------------------------------------//

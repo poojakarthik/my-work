@@ -33,8 +33,11 @@
 ?>
 <!--  ABOUT TO RENDER COLUMN ONE  -->
 <?php
+$this->RenderHeader();
+$this->RenderBreadCrumbMenu();
+$this->RenderContextMenu();
 $this->RenderColumn(COLUMN_ONE);
-
+$this->RenderFooter();
 //TODO!!!Joel make sure you finish this	
 
 ?>

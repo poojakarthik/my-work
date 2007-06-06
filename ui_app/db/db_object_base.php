@@ -81,7 +81,7 @@ class DBObjectBase extends DataAccessUI implements Iterator
 	 */
 	public function current()
 	{
-		return PropertyToken()->Property($this, current($this->_arrProperties));
+		return PropertyToken()->_Property($this, key($this->_arrProperties));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -119,7 +119,8 @@ class DBObjectBase extends DataAccessUI implements Iterator
 	 */
 	public function next()
 	{
-		return PropertyToken()->Property($this, next($this->_arrProperties));
+		next($this->_arrProperties);
+		return PropertyToken()->_Property($this, key($this->_arrProperties));
 	}
 	
 	//------------------------------------------------------------------------//
