@@ -76,28 +76,31 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		{
 			$objValue->RenderOutput();
 		}
+		echo "</table>\n";
+		
 		// check that an author could be found
 		if (!DBO()->Author->IsInvalid())
 		{
 			// the author was found
-			echo "<br><b>Created by: </b>" . DBO()->Author->FirstName->Value . " " . DBO()->Author->LastName->Value ."\n";
+			echo "\t<br><b>Created by: </b>" . DBO()->Author->FirstName->Value . " " . DBO()->Author->LastName->Value ."\n";
 		}
 		else
 		{
 			// the author could not be found so just output their employee id
-			echo "<br><b>Created by: </b>employee id ". DBO()->KnowledgeBase->CreatedBy->Value . " (unknown)\n";
+			echo "\t<br><b>Created by: </b>employee id ". DBO()->KnowledgeBase->CreatedBy->Value . " (unknown)\n";
 		}
+		
 		
 		// check that an authoriser could be found
 		if (!DBO()->Authoriser->IsInvalid())
 		{
 			// the authoriser was found
-			echo "<br><b>Authorised by: </b>" . DBO()->Authoriser->FirstName->Value . " " . DBO()->Authoriser->LastName->Value ."\n";
+			echo "\t<br><b>Authorised by: </b>" . DBO()->Authoriser->FirstName->Value . " " . DBO()->Authoriser->LastName->Value ."\n";
 		}
 		else
 		{
 			// the authoriser could not be found so just output their employee id
-			echo "<br><b>Authorised by: </b>employee id ". DBO()->KnowledgeBase->AuthorisedBy->Value . " (unknown)\n";
+			echo "\t<br><b>Authorised by: </b>employee id ". DBO()->KnowledgeBase->AuthorisedBy->Value . " (unknown)\n";
 		}
 		
 		// Output links to all related documents
@@ -109,7 +112,7 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 			echo "<A href='knowledge_base_doc_view.php?KnowledgeBase_Id=". $dboKnowledgeBase->Id->Value ."'>".$dboKnowledgeBase->Title->Value . " (doc id: ". $dboKnowledgeBase->Id->Value .")"."</A>" ."\n";
 		}
 		
-		echo "</table>\n";
+		
 		
 	}
 }
