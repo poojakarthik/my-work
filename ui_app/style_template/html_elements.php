@@ -237,8 +237,12 @@ class HTMLElements
 	 */
 	function MultiLinedLabel($arrParams)
 	{
+		// replace new line chars for <br> tags
 		$strValue = str_replace("\n", "<br>", $arrParams['Value']);
-		$strValue = str_replace("\r", "", $strValue);  //data entered using MySqlAdmin which contains new line chars also includes '\r' characters
+		
+		// data entered using MySqlAdmin which contains new line chars also includes '\r' characters
+		$strValue = str_replace("\r", "", $strValue);  
+		
 		echo "	<tr>\n";
 		echo "		<td>\n";
 		echo "			{$arrParams['Definition']['Label']} : \n";

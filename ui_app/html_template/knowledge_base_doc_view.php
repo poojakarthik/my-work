@@ -76,23 +76,6 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		{
 			$objValue->RenderOutput();
 		}
-		echo "</table>\n";
-		die();
-		DBO()->KnowledgeBase->Id->Label = 'xxxxx';
-		echo DBO()->KnowledgeBase->Id->Label;
-		// output the information about the document
-		// This should eventually utilise the RenderOutput methods of the PropertyToken class
-		// however display data (relating to the knowledge base) is not currently stored in the
-		// UIAppDocumentation table of the database
-		//echo "<br><b>Article Id: </b>" . DBO()->KnowledgeBase->Id->Value ."\n";
-		echo "<table border='5'>\n";
-		DBO()->KnowledgeBase->Id->RenderOutput();
-		DBO()->KnowledgeBase->Title->RenderOutput();
-		DBO()->KnowledgeBase->Abstract->RenderOutput();
-		DBO()->KnowledgeBase->Content->RenderOutput();
-		echo "</table>\n";
-		
-		
 		// check that an author could be found
 		if (!DBO()->Author->IsInvalid())
 		{
@@ -105,13 +88,8 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 			echo "<br><b>Created by: </b>employee id ". DBO()->KnowledgeBase->CreatedBy->Value . " (unknown)\n";
 		}
 		
-		
-		echo "<br><b>Created on: </b>" . DBO()->KnowledgeBase->CreatedOn->Value ."\n";
-		
-		echo "<br><b>Last updated: </b>". DBO()->KnowledgeBase->LastUpdated->Value ."\n";
-		
 		// check that an authoriser could be found
-		if (DBO()->Authoriser->IsValid())
+		if (!DBO()->Authoriser->IsInvalid())
 		{
 			// the authoriser was found
 			echo "<br><b>Authorised by: </b>" . DBO()->Authoriser->FirstName->Value . " " . DBO()->Authoriser->LastName->Value ."\n";
@@ -121,7 +99,6 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 			// the authoriser could not be found so just output their employee id
 			echo "<br><b>Authorised by: </b>employee id ". DBO()->KnowledgeBase->AuthorisedBy->Value . " (unknown)\n";
 		}
-		echo "<br><b>Authorised on: </b>" . DBO()->KnowledgeBase->AuthorisedOn->Value ."\n";
 		
 		// Output links to all related documents
 		// have the link label be the id and title of the document  "title (id:123)"
@@ -132,6 +109,7 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 			echo "<A href='knowledge_base_doc_view.php?KnowledgeBase_Id=". $dboKnowledgeBase->Id->Value ."'>".$dboKnowledgeBase->Title->Value . " (doc id: ". $dboKnowledgeBase->Id->Value .")"."</A>" ."\n";
 		}
 		
+		echo "</table>\n";
 		
 	}
 }

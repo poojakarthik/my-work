@@ -351,11 +351,11 @@ function ContextMenu()
 /**
  * BreadCrumb()
  *
- * Returns the singleton BreadCrumbsFramework object
+ * Returns the singleton BreadCrumbFramework object
  *
- * Returns the singleton BreadCrumbsFramework object
+ * Returns the singleton BreadCrumbFramework object
  *
- * @return    BreadCrumbsFramework object
+ * @return    BreadCrumbFramework object
  *
  * @function
  * 

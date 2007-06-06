@@ -453,23 +453,8 @@ class DBList extends DBListBase
 	{
 		$arrInfo = $this->Info();
 		
-		// for each object in the list...
-		foreach ($arrInfo AS $strKey=>$arrValue)
-		{
-			$strOutput .= $strTabs."$strKey\n";
-			
-			// for each Info property of the object...
-			foreach ($arrValue AS $strInfoProperty=>$mixInfoValue)
-			{
-				$strOutput .= $strTabs."\t$strInfoProperty\n";
-				
-				// for each element of the Info property...
-				foreach ($mixInfoValue as $strProperty=>$mixValue)
-				{
-					$strOutput .= $strTabs."\t\t$strProperty : $mixValue\n";
-				}
-			}
-		}
+		$strOutput = $this->_ShowInfo($arrInfo, $strTabs);
+
 		if (!$strTabs)
 		{
 			Debug($strOutput);
@@ -477,6 +462,52 @@ class DBList extends DBListBase
 		return $strOutput;
 	}
 	
+	//------------------------------------------------------------------------//
+	// _ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * _ShowInfo()
+	 *
+	 * Recursively formats data which may or may not be a multi-dimensional array
+	 *
+	 * Recursively formats data which may or may not be a multi-dimensional array
+	 * This is used by the ShowInfo method
+	 *
+	 * @param	mix			$mixData				Data to format
+	 *												this can be a single value, array
+	 *												or multi-dimensional array
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the object's 
+	 *												info should be tabbed.
+	 * @return	string								returns the object's info as a formatted string.
+	 *
+	 * @method
+	 */
+	private function _ShowInfo($mixData, $strTabs='')
+	{
+		if (is_array($mixData))
+		{
+			foreach ($mixData as $mixKey=>$mixValue)
+			{
+				if (!is_array($mixValue))
+				{
+					// $mixValue is not an array
+					$strOutput .= $strTabs . $mixKey . " : " . $mixValue . "\n";
+				}
+				else
+				{
+					// $mixValue is an array so output its contents
+					$strOutput .= $strTabs . $mixKey . "\n";
+					$strOutput .= $this->_ShowInfo($mixValue, $strTabs."\t");
+				}
+			}
+		} 
+		else
+		{
+			$strOutput = $mixData . "\n";
+		}
+		return $strOutput;
+	}
 	
 	//------------------------------------------------------------------------//
 	// SetColumns

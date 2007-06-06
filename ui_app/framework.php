@@ -1272,14 +1272,16 @@ class ContextMenuFramework
 /**
  * MenuItems
  *
- * Defines the resultant HREF for each paricular item that can be included in a menu
+ * Defines the resultant Href for each paricular item that can be included in a menu
  *
- * Defines the resultant HREF for each paricular item that can be included in a menu.
+ * Defines the resultant Href for each paricular item that can be included in a menu.
  * Each type of menu item (a command in the context menu) should have a method
- * defined here which returns the HREF that should be used when the menu item is 
+ * defined here which returns the Href that should be used when the menu item is 
  * clicked.  Alternatively the menu item can be handled by the __call function.
  * You will notice that the menu item "ViewAccount" has been handled both ways as
  * an example of how they work.
+ * These menu items can also be expressed as BreadCrumbMenu items, so long as they 
+ * set $strLabel to the label that will be displayed for the BreadCrumb.
  *
  * @prefix	mit
  *
@@ -1296,13 +1298,14 @@ class MenuItems
 	/**
 	 * ViewAccount()
 	 *
-	 * Compiles the HREF to be executed when the ViewAccount menu item is clicked
+	 * Compiles the Href to be executed when the ViewAccount menu item is clicked
 	 *
-	 * Compiles the HREF to be executed when the ViewAccount menu item is clicked
+	 * Compiles the Href to be executed when the ViewAccount menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intId		the id of the account to view
+	 * @param	int		$intId		id of the account to view
 	 *
-	 * @return	string				the HREF to be executed when the ViewAccount menu item is clicked
+	 * @return	string				Href to be executed when the ViewAccount menu item is clicked
 	 *
 	 * @method
 	 */
@@ -1318,14 +1321,15 @@ class MenuItems
 	/**
 	 * ViewService()
 	 *
-	 * Compiles the HREF to be executed when the ViewService menu item is clicked
+	 * Compiles the Href to be executed when the ViewService menu item is clicked
 	 *
-	 * Compiles the HREF to be executed when the ViewService menu item is clicked
-	 * 
+	 * Compiles the Href to be executed when the ViewService menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
 	 * @param	int		$intId		id of the service to view
-	 * @param	int		$strFNN		optional FNN of the service to view
+	 * @param	int		$strFNN		[optional] FNN of the service to view
 	 *
-	 * @return	string				the HREF to be executed when the ViewService menu item is clicked
+	 * @return	string				Href to be executed when the ViewService menu item is clicked
 	 *
 	 * @method
 	 */
@@ -1335,14 +1339,40 @@ class MenuItems
 		return "Service_view.php?Service.Id=$intId";
 	}
 	
+	//------------------------------------------------------------------------//
+	// BreadCrumb
+	//------------------------------------------------------------------------//
+	/**
+	 * BreadCrumb()
+	 *
+	 * Compiles the passed menu item as a breadcrumb to be used in the breadcrumb menu
+	 *
+	 * Compiles the passed menu item as a breadcrumb to be used in the breadcrumb menu
+	 * Any menu item can be used as a breadcrumb so long as it defines a value for 
+	 * the public data attribute $strLabel
+	 *
+	 * @param	string	$strName	Name of the menu item to be used as a breadcrumb
+	 *								ie "ViewAccount" or "View_Account"
+	 * @param	array	$arrParams	Parameters to be passed to the MenuItem method associated
+	 *								with $strName
+	 *
+	 * @return	array				['Href'] 	= Href to be executed when the breadcrumb is clicked
+	 *								['Label'] 	= breadcrumb's label
+	 *
+	 * @method
+	 */
 	function BreadCrumb($strName, $arrParams)
 	{
 		$this->strLabel = NULL;
 		$arrReturn = Array();
 		$strName = str_replace('_', '', $strName);
+		
+		// call the menu item method specific to $strName
 		$arrReturn['Href'] = call_user_func_array(array($this, $strName), $arrParams);
+		
 		if (!$this->strLabel)
 		{
+			// the menu item cannot be used as a breadcrumb
 			return FALSE;
 		}
 		$arrReturn['Label'] = $this->strLabel;
@@ -1363,7 +1393,7 @@ class MenuItems
 	 * @param	string		$strName		The name of the menu item
 	 * @param	array		$arrParams		any parameters defined for the menu item
 	 *
-	 * @return	string						the HREF to be executed when menu item is clicked
+	 * @return	string						the Href to be executed when menu item is clicked
 	 *
 	 * @method
 	 */
@@ -1405,6 +1435,25 @@ class BreadCrumbFramework
 		$this->_mitMenuItems = new MenuItems();
 	}
 	
+	//------------------------------------------------------------------------//
+	// __call
+	//------------------------------------------------------------------------//
+	/**
+	 * __call()
+	 *
+	 * Adds a breadcrumb to the menu so long as $strName is a valid menu item that can be expressed as a breadcrumb
+	 *
+	 * Adds a breadcrumb to the menu so long as $strName is a valid menu item that can be expressed as a breadcrumb
+	 * Menu items are defined in the MenuItems class
+	 * 
+	 * @param	string		$strName		Name of the menu item to be used as a bread crumb
+	 * @param	array		$arrParams		Any parameters required by the menu item
+	 *
+	 * @return	array				['Href'] 	= Href to be executed when the breadcrumb is clicked
+	 *								['Label'] 	= breadcrumb's label
+	 *
+	 * @method
+	 */
 	function __call($strName, $arrParams)
 	{
 		$arrBreadCrumb = $this->_mitMenuItems->BreadCrumb($strName, $arrParams);
@@ -1455,46 +1504,7 @@ class BreadCrumbFramework
 	 */
 	function ShowInfo($strTabs='')
 	{
-		foreach ($this->_arrCrumbs as $objCrumb)
-		{
-			$arrCrumb['LabelFormat'] = $objCrumb->_strLabel;
-			$arrCrumb['Label'] = $objCrumb->_strLabel;
-			$arrCrumb['HREFFormat'] = $objCrumb->_strHREF;
-			$arrCrumb['HREF'] = $objCrumb->_strHREF;
-			
-			// prepare the place holders in the format strings for displaying in html code
-			$arrCrumb['LabelFormat'] = str_replace("<", "&lt;", $arrCrumb['LabelFormat']);
-			$arrCrumb['LabelFormat'] = str_replace(">", "&gt;", $arrCrumb['LabelFormat']);
-			$arrCrumb['HREFFormat'] = str_replace("<", "&lt;", $arrCrumb['HREFFormat']);
-			$arrCrumb['HREFFormat'] = str_replace(">", "&gt;", $arrCrumb['HREFFormat']);
-			
-			// stick the values of the attributes into the HREF and label
-			if (is_array($objCrumb->_arrAttributes))
-			{
-				foreach ($objCrumb->_arrAttributes as $strKey=>$mixValue)
-				{
-					$arrCrumb['Label'] = str_replace("<".strtolower($strKey).">", $mixValue, $arrCrumb['Label']);
-					$arrCrumb['HREF'] = str_replace("<".strtolower($strKey).">", $mixValue, $arrCrumb['HREF']);
-				}
-			}
-			$arrOutput[] = $arrCrumb;
-		}
-		
-		//  Prepare the output string
-		for ($i=0; $i<count($arrOutput); $i++)
-		{
-			$strOutput .= $strTabs . "BreadCrumb Menu Item $i:\n";
-			$strOutput .= $strTabs . "\tLabel format:\t" . $arrOutput[$i]['LabelFormat'] . "\n";
-			$strOutput .= $strTabs . "\tActual label:\t" . $arrOutput[$i]['Label'] . "\n";
-			$strOutput .= $strTabs . "\tHREF format:\t" . $arrOutput[$i]['HREFFormat'] . "\n";
-			$strOutput .= $strTabs . "\tActual HREF:\t" . $arrOutput[$i]['HREF'] . "\n";
-		}
-		
-		if (!$strTabs)
-		{
-			Debug($strOutput);
-		}
-		return $strOutput;
+		return DBO()->BreadCrumb->ShowInfo($strTabs);
 	}
 }
 

@@ -6,22 +6,22 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// knowledge_base_doc_view.php
+// breadcrumb.php
 //----------------------------------------------------------------------------//
 /**
- * knowledge_base_doc_view
+ * breadcrumb
  *
- * HTML Template for the knowledge base doc view HTML object
+ * HTML Template for the breadcrumb HTML object
  *
- * HTML Template for the knowledge base doc view HTML object
+ * HTML Template for the breadcrumb HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays all information relating to a knowledge base document and can be embedded in
- * various Page Templates
+ * which displays the breadcrumb menu and can be embedded in various Page Templates
+ * 
  *
- * @file		knowledge_base_doc_view.php
+ * @file		breadcrumb.php
  * @language	PHP
  * @package		ui_app
- * @author		Joel Dawkins
+ * @author		Jared 'flame' Herbohn
  * @version		7.06
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -30,20 +30,20 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateKnowledgeBaseDocView
+// HtmlTemplateBreadCrumb
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateKnowledgeBaseDocView
+ * HtmlTemplateBreadCrumb
  *
- * HTML Template class for the knowledge base doc view HTML object
+ * HTML Template class for the breadcrumb HTML object
  *
- * HTML Template class for the knowledge base doc view HTML object
+ * HTML Template class for the breadcrumb HTML object
  *
  *
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateKnowledgeBaseDocView
+ * @class	HtmlTemplateBreadCrumb
  * @extends	HtmlTemplate
  */
  

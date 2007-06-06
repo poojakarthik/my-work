@@ -11,10 +11,28 @@ class AppTemplateTest extends ApplicationTemplate
 
 	function Test()
 	{
-
+		/*
+		echo "Hello";
 		
-		if (DBO()->KnowledgeBase->Id->Valid())
-		{
+		BreadCrumb()->ViewAccount(1000006574);
+		BreadCrumb()->ViewService(1, '0787321549');
+
+		Debug(BreadCrumb()->Info());
+		
+		BreadCrumb()->ShowInfo();
+		
+		DBO()->Account->Id = 1000004777;
+		DBO()->Account->Load();
+		//Debug(DBO()->Account->Info());
+		//DBO()->Account->ShowInfo();
+		//DBO()->Account->Info();
+		
+		echo "<br>die!";
+		die;
+		*/
+		
+		echo "Hello";
+		
 			DBO()->KnowledgeBase->Load();
 			//DBL()->KnowledgeBaseLink->ArticleLeft = DBO()->KnowledgeBase->Id->Value;
 			
@@ -28,14 +46,14 @@ class AppTemplateTest extends ApplicationTemplate
 // I need to be able to search both the ArticleLeft and ArticleRight columns of the KnowledgeBaseLink table
 // so I have to make sure that the where clause reads "WHERE ArticleLeft = <id> or ArticleRight = <id>"
 // I might have to explicitly define the WHERE clause
-		}
-		//DBO()->ShowInfo();
+		
+		Debug(DBL()->KnowledgeBaseLink->Info());
 		DBL()->KnowledgeBaseLink->ShowInfo();
 		
 		//echo "<br><br>" . DBO()->KnowledgeBase->Id->Value;
 		
 		
-		
+		echo "die!";
 		die;
 		// check if the menu is built in the order that it is defined
 		

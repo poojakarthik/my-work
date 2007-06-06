@@ -649,11 +649,28 @@ class DBObject extends DBObjectBase
 	 */
 	function Info()
 	{
-		$arrReturn['Properties'] = $this->_arrProperties;
+		// load the values of each property
+		foreach ($this->_arrProperties as $strProperty=>$mixValue)
+		{
+			$arrReturn['Properties'][$strProperty]['Value'] = $mixValue;
+		}
+
+		// load property definition data
+		foreach ($this->_arrProperties as $strProperty=>$mixValue)
+		{
+			//for each property and for the current context, load the definition data if it exists
+			if (isset($this->_arrDefine[$strProperty][$this->_intContext]))
+			{
+				$arrReturn['Properties'][$strProperty] = array_merge($arrReturn['Properties'][$strProperty], $this->_arrDefine[$strProperty][$this->_intContext]);
+			}
+		}
+
+		// load validation information
 		if (!empty($this->_arrValid))
 		{
 			$arrReturn['Valid'] = $this->_arrValid;
 		}
+
 		return $arrReturn;
 	}
 	
@@ -679,17 +696,58 @@ class DBObject extends DBObjectBase
 	function ShowInfo($strTabs='')
 	{
 		$arrInfo = $this->Info();
-		foreach ($arrInfo AS $strKey=>$arrValue)
-		{
-			$strOutput .= $strTabs."$strKey\n";
-			foreach ($arrValue AS $strProperty=>$mixValue)
-			{
-				$strOutput .= $strTabs."\t$strProperty : $mixValue\n";
-			}
-		}
+		$strOutput = $this->_ShowInfo($arrInfo, $strTabs);
+
 		if (!$strTabs)
 		{
 			Debug($strOutput);
+		}
+		return $strOutput;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _ShowInfo
+	//------------------------------------------------------------------------//
+	/**
+	 * _ShowInfo()
+	 *
+	 * Recursively formats data which may or may not be a multi-dimensional array
+	 *
+	 * Recursively formats data which may or may not be a multi-dimensional array
+	 * This is used by the ShowInfo method
+	 *
+	 * @param	mix			$mixData				Data to format
+	 *												this can be a single value, array
+	 *												or multi-dimensional array
+	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 *												used to define how far the object's 
+	 *												info should be tabbed.
+	 * @return	string								returns the object's info as a formatted string.
+	 *
+	 * @method
+	 */
+	private function _ShowInfo($mixData, $strTabs='')
+	{
+		if (is_array($mixData))
+		{
+			foreach ($mixData as $mixKey=>$mixValue)
+			{
+				if (!is_array($mixValue))
+				{
+					// $mixValue is not an array
+					$strOutput .= $strTabs . $mixKey . " : " . $mixValue . "\n";
+				}
+				else
+				{
+					// $mixValue is an array so output its contents
+					$strOutput .= $strTabs . $mixKey . "\n";
+					$strOutput .= $this->_ShowInfo($mixValue, $strTabs."\t");
+				}
+			}
+		} 
+		else
+		{
+			$strOutput = $mixData . "\n";
 		}
 		return $strOutput;
 	}
