@@ -418,7 +418,7 @@ class Page
 		$strContextMenu = Json()->Encode($arrContextMenu);
 		
 		// add to html
-		echo "<div id='VixenMenu' class='Left sectionContent Navigation' width='75'></div>\n";
+		echo "<div id='VixenMenu' class='ContextMenu'></div>\n";
 		echo "<script type='text/javascript'>Vixen.Menu.objMenu = $strContextMenu ; </script>\n";
 		
 		// run js

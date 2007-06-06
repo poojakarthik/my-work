@@ -29,21 +29,18 @@
 //$this->RenderHeader();
 //$this->RenderContextMenu();
 
-//var_dump($this->Page->arrObjects);
-?>
-<!--  ABOUT TO RENDER COLUMN ONE  -->
-<?php
 $this->RenderHeader();
 $this->RenderVixenHeader();
 $this->RenderBreadCrumbMenu();
 $this->RenderContextMenu();
-$this->RenderColumn(COLUMN_ONE);
+?>
+
+<div Class = 'PageBody'>
+	<?php $this->RenderColumn(COLUMN_ONE); ?>
+</div>
+
+<?php
 $this->RenderFooter();
 //TODO!!!Joel make sure you finish this	
-
-?>
-<!--  FINISHED RENDERING COLUMN ONE  -->
-<!--  INSERT HTML HERE (if you like)-->
-<?php
 
 ?>

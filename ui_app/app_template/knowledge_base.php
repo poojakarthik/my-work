@@ -63,6 +63,13 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		// Should probably check user authorization here
 		//TODO!include user authorisation
 
+		// context menu
+		ContextMenu()->Contact_Retrieve->Account->View_Account(1);
+		
+		// add to breadcrumb menu
+		BreadCrumb()->ViewAccount(1000006574);
+		BreadCrumb()->ViewService(1, '0787321549');
+		
 		// retrieve the requested document...
 		// The contents of $_GET is set up in the DBO() object within submitted_data::Get() which has already
 		// been called within Application::Load
@@ -99,15 +106,7 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		
 		// All data relating to the document has been retrieved from the database so now load the page template
 		$this->LoadPage('knowledge_base_doc_view');
-		
-		// context menu
-		ContextMenu()->Level_1->Level_2->View_Account(1);
-		
-		// add to breadcrumb menu
-		BreadCrumb()->ViewAccount(1000006574);
-		BreadCrumb()->ViewService(1, '0787321549');
-		
-		
+
 		return TRUE;
 	}
 }

@@ -69,7 +69,7 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<div Id='VixenBreadCrumb' Class=''>\n	";
+		echo "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n	";
 		foreach (DBO()->BreadCrumb AS $objProperty)
 		{
 			echo " / <a href ='".$objProperty->Value."'>".$objProperty->Label."</a>";

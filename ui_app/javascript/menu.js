@@ -22,13 +22,13 @@ function VixenMenuClass(objMenu)
 		'Level1': 
 		{
 			'left': 10,
-			'width': 75,
-			'height': 75,
+			'width': 50,
+			'height': 50,
 			'spacing': 5
 		},
 		'Level2': 
 		{
-			'left': 10,
+			'left': 0,
 			'width': 100,
 			'height': 20,
 			'spacing': 5
@@ -61,8 +61,11 @@ function VixenMenuClass(objMenu)
 		{
 			
 			//Build new element
-			objNode = document.createElement('div');
-			//objNode.setAttribute('className', '');
+			objNode = document.createElement('img');
+			objNode.setAttribute('src', 'img/template/' + strKey.toLowerCase().replace(/ /, '_') + '.png');
+			
+			objNode.setAttribute('className', 'ContextMenuItem');
+			objNode.setAttribute('class', 'ContextMenuItem');
 			objNode.setAttribute('Id', 'VixenMenu_' + strKey);
 			
 			//Attach to elmMenu
@@ -71,18 +74,17 @@ function VixenMenuClass(objMenu)
 			
 			//Add styles
 			//new_node.style[c_attrib] = value
-			elmNode.style['top'] = top;
-			elmNode.style['border'] = '1px solid'; 
-			elmNode.style['left'] =	this.config.Level1.left; 
-			elmNode.style['width'] = this.config.Level1.width;
-			elmNode.style['height'] = this.config.Level1.height;
-			elmNode.style['position'] = 'absolute';
+			elmNode.style['top'] 				= top;
+			elmNode.style['left'] 				= this.config.Level1.left; 
+			elmNode.style['width'] 				= this.config.Level1.width;
+			elmNode.style['height'] 			= this.config.Level1.height;
+			elmNode.style['position'] 			= 'absolute';
 			top = top + this.config.Level1.height + this.config.Level1.spacing;
 			
 			//Add events
 			elmNode.onclick = function(event) {Vixen.Menu.HandleClick(this)};
 			elmNode.onmouseover = function(event) {Vixen.Menu.HandleMouseOver(this)};
-			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut()};
+			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut(this)};
 			
 			//Add some more crap
 			elmNode.action = this.objMenu[strKey];
@@ -94,6 +96,7 @@ function VixenMenuClass(objMenu)
 	{
 		var strKey;
 		var objNode;
+		var objTextNode;
 		var elmNode;
 		var top = 0;
 		
@@ -118,22 +121,24 @@ function VixenMenuClass(objMenu)
 		elmContainer.style['position'] = 'absolute';
 		elmContainer.style['overflow'] = 'visible';
 		
-		//Render the initial menu (top-level)
+		//Render the menu
 		for (strKey in elmMenuItem.action)
 		{
 			//Build new element
 			objNode = document.createElement('div');
-			//objNode.setAttribute('className', '');
 			objNode.setAttribute('Id', elmMenuItem.id + "_" + strKey);
 			
 			//Attach to elmMenu
 			elmContainer.appendChild(objNode);
 			elmNode = document.getElementById(elmMenuItem.id + "_" + strKey);
 			
+			// add text to the node
+			objTextNode = document.createTextNode(strKey);
+			elmNode.appendChild(objTextNode);
+			
 			//Add styles
 			//new_node.style[c_attrib] = value
 			elmNode.style['top'] = top;
-			elmNode.style['border'] = '1px solid'; 
 			elmNode.style['left'] =	this.config.Level2.left; 
 			elmNode.style['width'] = this.config.Level2.width;
 			elmNode.style['height'] = this.config.Level2.height;
@@ -143,11 +148,15 @@ function VixenMenuClass(objMenu)
 			//Add events
 			elmNode.onclick = function(event) {Vixen.Menu.HandleClick(this)};
 			elmNode.onmouseover = function(event) {Vixen.Menu.HandleMouseOver(this)};
-			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut()};
+			elmNode.onmouseout = function(event) {Vixen.Menu.HandleMouseOut(this)};
 			
 			//Add some more crap
 			elmNode.action = elmMenuItem.action[strKey];
 			elmNode.level = elmMenuItem.level + 1;
+			
+			// set the class
+			objNode.className 	= 'ContextMenuItem';
+			objNode.class 		= 'ContextMenuItem';
 		}
 	}
 	
@@ -180,6 +189,10 @@ function VixenMenuClass(objMenu)
 	this.HandleMouseOver = function(objMenuItem)
 	{
 		clearTimeout(this.timeoutClose);
+		
+		objMenuItem.setAttribute('className', 'ContextMenuItemHighlight');
+		objMenuItem.setAttribute('class', 'ContextMenuItemHighlight');
+		
 		if (typeof(objMenuItem.action) == 'string')
 		{
 			this.timeoutOpen = setTimeout("Vixen.Menu.Close('" + objMenuItem.level + "');", this.config.waitCloseLevel);		
@@ -193,9 +206,13 @@ function VixenMenuClass(objMenu)
 		}
 	}
 	
-	this.HandleMouseOut = function()
+	this.HandleMouseOut = function(objMenuItem)
 	{
 		clearTimeout(this.timeoutOpen);
+		
+		objMenuItem.setAttribute('className', 'ContextMenuItem');
+		objMenuItem.setAttribute('class', 'ContextMenuItem');
+		
 		this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitClose);
 	}
 	
