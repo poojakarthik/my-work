@@ -744,7 +744,7 @@
 		$this->_arrCurrentRate['CapLimit'] 			= (float)$this->_arrCurrentRate['CapLimit'];		
 		
 		// return something
-		return $arrRate;
+		return $this->_arrCurrentRate;
 	 }
 	 
  
