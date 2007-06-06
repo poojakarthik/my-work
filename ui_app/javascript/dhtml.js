@@ -1,75 +1,26 @@
 //----------------------------------------------------------------------------//
-// APhPLIX (c) copyright 2005-2006 Jared 'flame' Herbohn (aphplix.org)
-//
-// APhPLIX website :
-//		http://www.aphplix.org
-//
-// APhPLIX developers :
-//		Jared 'flame' Herbohn
-//		Dani 'zeemu' Prescott
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-// THIS SOFTWARE IS GPL LICENSED
-//----------------------------------------------------------------------------//
-//  This program is free software; you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License (version 2) as 
-//  published by the Free Software Foundation.
-//
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Library General Public License for more details.
-//
-//  You should have received a copy of the GNU General Public License
-//  along with this program; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-// NOTES
+// VixenDhtmlClass
 //----------------------------------------------------------------------------//
 /**
- * APhPLIX DHTML CLASS
+ * VixenDhtmlClass
  *
- * drag/drop dhtml class
+ * Vixen DHTML class
  *
- * these functions work directly with elements(nodes) in the browser DOM
- * not with aphplix objects
+ * Vixen DHTML class
  *
- * @file	dhtml.js
- * @package APhPLIX_Javascript_Client
- * @author Jared 'flame' Herbohn
- * @version 6.05
- * @copyright 2005-2006 Jared 'flame' Herbohn, http://www.aphplix.org
- * @license http://opensource.org/licenses/gpl-license.php GNU Public License (version 2)
- * @todo
  *
+ *
+ * @package	framework_ui
+ * @class	Vixen.Dhtml
  */
-var FALSE = 0;
-var TRUE = 1;
-//----------------------------------------------------------------------------//
-// DHTML CLASS
-//----------------------------------------------------------------------------//
-/**
- * aphplix_dhtml_class()
- *
- * DHTML class
- *
- * Provides drag/drop & other DHTML services
- *
- * @package APhPLIX_Javascript_Client
- * @parent	aphplix
- * @class	dhtml
- */
-function aphplix_dhtml_class()
+function VixenDhtmlClass()
 {
 
 	//------------------------------------------------------------------------//
-	// this.drag
+	// this.Drag
 	//------------------------------------------------------------------------//
 	/**
-	 * this.drag()
+	 * this.Drag()
 	 *
 	 * Drag an object
 	 *
@@ -82,7 +33,7 @@ function aphplix_dhtml_class()
 	 *
 	 * @method
 	 */
-	this.drag = function(evt, object_id)
+	this.Drag = function(evt, object_id)
 	{
 		dragStart(evt, object_id);
 	}
@@ -143,9 +94,12 @@ function aphplix_dhtml_class()
 		return y;
 	}
 }
-var aphplix = new Object();
+
 // instanciate the dhtml object
-aphplix.dhtml = new aphplix_dhtml_class;
+Vixen.Dhtml = new VixenDhtmlClass;
+
+
+
 
 //----------------------------------------------------------------------------//
 // NEW DRAG/DROP CLASS
@@ -161,13 +115,13 @@ aphplix.dhtml = new aphplix_dhtml_class;
  *
  * Identifies the browser
  *
- * Holds browser identification details and sets the browser mode that APhPLIX
- * will use. APhPLIX will automatically detect the browser mode to use, this 
+ * Holds browser identification details and sets the browser mode that Vixen
+ * will use. Vixen will automatically detect the browser mode to use, this 
  * browser mode (and the browser identification details) may not match the actual
  * client web browser.
  *
- * @package APhPLIX_Javascript_Client
- * @parent	aphplix
+ * @package Vixen_Javascript_Client
+ * @parent	Vixen
  * @class	browser
  */
 function browser_type()
@@ -223,10 +177,10 @@ function browser_type()
 	/**
 	 * this.mode
 	 *
-	 * APhPLIX browser mode
+	 * Vixen browser mode
 	 *
-	 * identifies/sets the browser mode that APhPLIX is using. Normally this
-	 * property would be set automatically by APhPLIX and used for reference only
+	 * identifies/sets the browser mode that Vixen is using. Normally this
+	 * property would be set automatically by Vixen and used for reference only
 	 *
 	 *
 	 * IE = Internet Explorer and Opera browsers
@@ -261,7 +215,7 @@ function browser_type()
 		}
 	}
 }
-aphplix.browser = new browser_type();
+Vixen.Browser = new browser_type();
 
 // DRAGDROP
 // originaly based on code from brainjar.com
@@ -274,8 +228,8 @@ aphplix.browser = new browser_type();
 //*****************************************************************************
 
 // Determine browser and version.
-var browser = aphplix.browser;
-if (aphplix.browser.mode == 'IE')
+var browser = Vixen.Browser;
+if (Vixen.Browser.mode == 'IE')
 {
 	browser.isIE = TRUE;
 	browser.isNS = FALSE;
@@ -292,7 +246,7 @@ var dragObj = new Object();
 
 
 function dragStart(event, id) {
-	if (aphplix.dragging_now === TRUE)
+	if (Vixen.dragging_now === TRUE)
 	{
 		dragStop(event);
 		return FALSE;
@@ -301,8 +255,8 @@ function dragStart(event, id) {
 	{
 
 	}
-	aphplix.dragging_now = TRUE;
-	aphplix.dhtml.dragging = TRUE;
+	Vixen.dragging_now = TRUE;
+	Vixen.dhtml.dragging = TRUE;
 	
 	
   var el;
@@ -327,11 +281,11 @@ function dragStart(event, id) {
   
   /*
 	// check if we need to detach the element
-	if (typeof(aphplix.objects[dragObj.elNode.id]) == 'object')
+	if (typeof(Vixen.objects[dragObj.elNode.id]) == 'object')
 	{
-		if (aphplix.objects[dragObj.elNode.id].detach_on_drag === TRUE)
+		if (Vixen.objects[dragObj.elNode.id].detach_on_drag === TRUE)
 		{
-			aphplix.html.detach(dragObj.elNode.id);
+			Vixen.html.detach(dragObj.elNode.id);
 		}
 	}*/
 
@@ -376,7 +330,7 @@ function dragStart(event, id) {
     event.preventDefault();
   }
   
-  //aphplix.fire_event(dragObj.elNode.event_target, 'pickup');
+  //Vixen.fire_event(dragObj.elNode.event_target, 'pickup');
 }
 
 function dragGo(event) {
@@ -442,12 +396,12 @@ function dragGo(event) {
     event.preventDefault();
 	
 	// TODO !!!! where is the event object ?
-	//aphplix.fire_event(dragObj.elNode.event_target, 'drag');
+	//Vixen.fire_event(dragObj.elNode.event_target, 'drag');
 }
 
 function dragStop(evt) {
-	aphplix.dragging_now = FALSE;
-	aphplix.dhtml.dragging = FALSE;
+	Vixen.dragging_now = FALSE;
+	Vixen.dhtml.dragging = FALSE;
 	// Stop capturing mousemove and mouseup events.
 	if (browser.isIE)
 	{
@@ -469,5 +423,5 @@ function dragStop(evt) {
 	{
 		evt.target = evt.srcElement;
 	}
-	//aphplix.real_event(dragObj.elNode.event_target, 'drop', evt);
+	//Vixen.real_event(dragObj.elNode.event_target, 'drop', evt);
 }

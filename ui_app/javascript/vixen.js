@@ -19,6 +19,8 @@ function VixenRootClass()
 
 }
 
-
 // Create an instance of the Vixen root class
 Vixen = new VixenRootClass();
+
+var FALSE = 0;
+var TRUE = 1;
