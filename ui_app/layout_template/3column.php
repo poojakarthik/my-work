@@ -35,6 +35,7 @@
 		// and a header template
 		
 		$this->RenderHeader();
+		$this->RenderVixenHeader();
 		$this->RenderBreadCrumbMenu();
 		$this->RenderContextMenu();
 

@@ -442,6 +442,24 @@ class Page
 		$objBreadCrumb = new HtmlTemplateBreadCrumb;
 		$objBreadCrumb->Render();
 	}
+	
+	//------------------------------------------------------------------------//
+	// RenderVixenHeader
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderVixenHeader()
+	 *
+	 * Renders the breadcrumb menu
+	 *
+	 * Renders the breadcrumb menu
+	 * 
+	 * @method
+	 */
+	function RenderVixenHeader()
+	{
+		$objHeader = new HtmlTemplateVixenHeader;
+		$objHeader->Render();
+	}
 }
 
 

@@ -34,6 +34,7 @@
 <!--  ABOUT TO RENDER COLUMN ONE  -->
 <?php
 $this->RenderHeader();
+$this->RenderVixenHeader();
 $this->RenderBreadCrumbMenu();
 $this->RenderContextMenu();
 $this->RenderColumn(COLUMN_ONE);
