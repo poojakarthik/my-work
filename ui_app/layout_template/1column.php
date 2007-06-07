@@ -25,9 +25,6 @@
  *
  */
 
-// include the following lines, when they work
-//$this->RenderHeader();
-//$this->RenderContextMenu();
 
 $this->RenderHeader();
 $this->RenderVixenHeader();
@@ -41,6 +38,6 @@ $this->RenderContextMenu();
 
 <?php
 $this->RenderFooter();
-//TODO!!!Joel make sure you finish this	
+
 
 ?>

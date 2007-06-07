@@ -15,8 +15,10 @@
  * contains the Application class and the __autoload function
  *
  * contains the Application class and the __autoload function.
- * The __autoload function is used to dynamically include the php file
+ * The __autoload function is used to dynamically include a php file
  * required to instantiate a class
+ * Also currently contains all constants required of ui_app
+ * 
  *
  * @file		application_loader.php
  * @language	PHP
@@ -104,7 +106,7 @@ $Application = Singleton::Instance('Application');
  *
  *
  *
- * @param	string	$strClassName	The class to load
+ * @param	string	$strClassName	Class to load
  *									Note that there is a very specific format for this class name to be in.
  *									Class names must be like:
  *									ClassName					Location
@@ -202,7 +204,7 @@ class Application
 	 * Loads an extended ApplicationTemplate object which represents all the logic and layout of a single webpage of the application
 	 *
 	 *
-	 * @param		string	$strTemplateName	The name of the application template to load.
+	 * @param		string	$strTemplateName	Name of the application template to load.
 	 *											This template must be located in the "app_template"
 	 *											directory and be named FileName.Method
 	 *											For example: $strTemplateName = "Account.View"
@@ -227,16 +229,19 @@ class Application
 		-- could be here or lower level*/
 		
 		// get submitted data
-		$objSubmit = new submitted_data();
+		$objSubmit = new SubmittedData();
 		$objSubmit->Get();
-		$objSubmit->POST();
+		$objSubmit->Post();
 	
 		// validate all submitted objects
+		// Note that while $objSubmit->Get() and ->POST set up the submitted objects, they have not actually 
+		// been loaded from the database, so validating them at this stage should always return TRUE
 		DBO()->Validate();
 
 		//Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
 		$this->objAppTemplate->SetMode(HTML_MODE);
+		
 		//Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
 		
@@ -324,6 +329,20 @@ class Application
 		AjaxReply(Array("yay","yayas"));
 	}
 	
+	//------------------------------------------------------------------------//
+	// CheckAuth
+	//------------------------------------------------------------------------//
+	/**
+	 * CheckAuth()
+	 *
+	 * Checks user authentication
+	 * 
+	 * Checks user authentication
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function CheckAuth()
 	{
 		//var_dump($_COOKIE);die;
@@ -476,12 +495,23 @@ class Application
 		}
 	}
 	
-	/*
-	// Check perms
-	$this->PermissionOrDie($minimumPerms)	// dies if no permissions
-	$this->UserHasPerm($pagePerms) 		// returns false if none, true if they do
-	*/
 	
+	//------------------------------------------------------------------------//
+	// PermissionOrDie
+	//------------------------------------------------------------------------//
+	/**
+	 * PermissionOrDie()
+	 *
+	 * Checks the user's permissions against the permissions required to view the current page
+	 * 
+	 * Checks the user's permissions against the permissions required to view the current page
+	 * If the user does not have the required permissions then the login screen is loaded
+	 *
+	 * @param		int		$intPagePerms	permissions required to use the page
+	 * @return		void
+	 * @method
+	 *
+	 */
 	function PermissionOrDie($intPagePerms)
 	{
 		// check the current user permission against permissions passed in
@@ -502,6 +532,22 @@ class Application
 
 	}
 	
+	//------------------------------------------------------------------------//
+	// UserHasPerm
+	//------------------------------------------------------------------------//
+	/**
+	 * UserHasPerm()
+	 *
+	 * Checks the user's permissions against the permissions passed in
+	 * 
+	 * Checks the user's permissions against the permissions passed in
+	 * 
+	 *
+	 * @param		int		$intPerms	permissions to check the user's permissions against
+	 * @return		bool				
+	 * @method
+	 *
+	 */
 	function UserHasPerm($intPerms)
 	{
 		// check the permissions are greater/equal
@@ -512,9 +558,6 @@ class Application
 		// else return false
 		return FALSE;
 	}
-		
-
-	
 }
 
 //----------------------------------------------------------------------------//
@@ -526,7 +569,7 @@ class Application
  * The ApplicationTemplate class
  *
  * The ApplicationTemplate class
- *
+ * 
  *
  * @package	ui_app
  * @class	ApplicationTemplate
@@ -535,6 +578,19 @@ class Application
 class ApplicationTemplate extends BaseTemplate
 {
 
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * constructor
+	 * 
+	 * constructor
+	 *
+	 * @return		void
+	 * @method
+	 */
 	function __construct()
 	{
 		$this->Module = new ModuleLoader();
@@ -554,11 +610,9 @@ class ApplicationTemplate extends BaseTemplate
 	 *
 	 * @return		void
 	 * @method
-	 *
 	 */
 	function LoadPage($strPageName)
 	{
-	
 		if ($this->_intTemplateMode == AJAX_MODE)
 		{
 			// load AJAX template
@@ -585,6 +639,7 @@ class ApplicationTemplate extends BaseTemplate
 	 * Sets the mode of the template
 	 *
 	 * @param		int	$intMode	The mode number to set
+	 *								ie AJAX_MODE, HTML_MODE
 	 *
 	 * @return		void
 	 * @method
@@ -696,9 +751,53 @@ class BaseTemplate
 
 }
 
+//----------------------------------------------------------------------------//
+// ModuleLoader
+//----------------------------------------------------------------------------//
+/**
+ * ModuleLoader
+ *
+ * The ModuleLoader class - loads modules when requested
+ *
+ * The ModuleLoader class - loads modules when requested
+ *
+ *
+ * @package	ui_app
+ * @class	ModuleLoader
+ */
 class ModuleLoader
 {
+	//------------------------------------------------------------------------//
+	// _arrModules
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrModules
+	 *
+	 * list of modules currently loaded
+	 *
+	 * list of modules currently loaded
+	 *
+	 * @type		array 
+	 *
+	 * @property
+	 */
 	private $_arrModules;
+	
+	
+	//------------------------------------------------------------------------//
+	// __get
+	//------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 *
+	 * returns the requested module
+	 *
+	 * returns the requested module.
+	 * 
+	 * @param	string	$strPropertyName		Name of the module to load
+	 *
+	 * @method
+	 */
 	function __get($strPropertyName)
 	{
 		
@@ -715,63 +814,56 @@ class ModuleLoader
 
 
 //----------------------------------------------------------------------------//
-// submitted_data
+// SubmittedData
 //----------------------------------------------------------------------------//
 /**
- * submitted_data
+ * SubmittedData
  *
- * <short description>
+ * Handles all GET and POST data that has been sent to the page
  *
- * <long description>
+ * Handles all GET and POST data that has been sent to the page
  *
- *
- * @prefix	<prefix>
- *
- * @package	<package_name>
- * @parent	<full.parent.path>
- * @class	<ClassName||InstanceName>
- * @extends	<ClassName>
+ * @package	ui_app
+ * @class	SubmittedData
  */
-class submitted_data
+class SubmittedData
 {
 
 	//------------------------------------------------------------------------//
-	// __Construct
+	// __construct
 	//------------------------------------------------------------------------//
 	/**
-	 * __Construct()
+	 * __construct()
 	 *
-	 * <short description>
+	 * Constructor 
 	 *
-	 * <long description>
+	 * Constructor
 	 *
-	 * @param	array	$arrDefine	[optional] <description>
+	 * @param	array	$arrDefine	[optional] This currently isn't actually used anywhere
 	 * @return	void
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
-	function __Construct($arrDefine=NULL)
+	function __construct($arrDefine=NULL)
 	{
 		// save local copy of define
 		$this->_arrDefine = $arrDefine;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Request
 	//------------------------------------------------------------------------//
 	/**
 	 * Request()
 	 *
-	 * <short description>
+	 * Attempts to convert each variable from $_REQUEST into a DBObject in DBO()
 	 *
-	 * <long description>
+	 * Attempts to convert each variable from $_REQUEST into a DBObject in DBO()
 	 *
 	 *
 	 * @return	boolean
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function Request()
 	{
@@ -794,15 +886,14 @@ class submitted_data
 	/**
 	 * Get()
 	 *
-	 * <short description>
+	 * Attempts to convert each variable from $_GET into a DBObject in DBO()
 	 *
-	 * <long description>
+	 * Attempts to convert each variable from $_GET into a DBObject in DBO()
 	 *
 	 *
 	 * @return	boolean
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */	
 	function Get()
 	{
@@ -825,15 +916,14 @@ class submitted_data
 	/**
 	 * Post()
 	 *
-	 * <short description>
+	 * Attempts to convert each variable from $_POST into a DBObject in DBO()
 	 *
-	 * <long description>
+	 * Attempts to convert each variable from $_POST into a DBObject in DBO()
 	 *
 	 *
 	 * @return	boolean
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function Post()
 	{
@@ -856,20 +946,19 @@ class submitted_data
 	/**
 	 * Cookie()
 	 *
-	 * <short description>
+	 * Attempts to convert each variable from $_COOKIE into a DBObject in DBO()
 	 *
-	 * <long description>
+	 * Attempts to convert each variable from $_COOKIE into a DBObject in DBO()
 	 *
 	 *
 	 * @return	boolean
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function Cookie()
 	{
 		// for each cookie variable
-			if(is_array($_COOKIE))
+		if(is_array($_COOKIE))
 		{
 			foreach($_COOKIE AS $strName=>$strValue)
 			{
@@ -887,16 +976,15 @@ class submitted_data
 	/**
 	 * Ajax()
 	 *
-	 * <short description>
+	 * Attempts to convert AJAX data into DBObjects in DBO()
 	 *
-	 * <long description>
+	 * Attempts to convert AJAX data into DBObjects in DBO()
 	 *
 	 * @param   object	 $objAjax	The submitted data from AJAX
 	 *
 	 * @return	boolean
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function Ajax($objAjax)
 	{
@@ -908,7 +996,7 @@ class submitted_data
 				foreach($objObject AS $strProperty=>$mixValue)
 				{
 					// parse variable
-					$this->_ParseData("$strObject.$strProperty", $mixValue);
+					$this->_ParseData("$strObject_$strProperty", $mixValue);
 				}
 			}
 			return TRUE;
@@ -922,18 +1010,19 @@ class submitted_data
 	/**
 	 * _ParseData()
 	 *
-	 * Tries to load a DBO object using a Get or Post variable name and values
+	 * Attempts to create a DBO object using the passed data
 	 *
-	 * Tries to load a DBO object using a Get or Post variable name and values
+	 * Attempts to create a DBO object using the passed data
 	 *
 	 * @param	string	$strName	the Get or Post variable name.  This must be
 	 *								in the format ObjectName_PropertyName_Context
 	 *								where Context is an integer
+	 *								the Context is optional, ObjectName_PropertyName
+	 *								will suffice
 	 * @param	mixed	$mixValue	the value for the property
 	 * @return	boolean
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function _ParseData($strName, $mixValue)
 	{

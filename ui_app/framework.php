@@ -27,73 +27,6 @@
  *
  */
 
-
-// of Dbo()->Account->Id->RenderInput($bolRequired, $strContext)
-// Dbo()->Object->Property->Render([$bolRequired], [$strContext]);
-//DEPRECIATED
-function dboRender($strTemplateType, $bolRequired)
-{
-
-/*
-	// $templatetype = label;
-	$strTag = $this->GetHTMLTag($templatetype);
-	// $strTag = ""
-	
-	
-	$myTarget = $this->Dbo->Account->Id->Value;
-	$newTag = strReplace($strTag, "[location]", "localhost/intran...../account_view.php?Id=" . $myTarget);
-	$newTag = strReplace($newTage, "[pagename]", "View Account");
-	echo $newTag;*/
-	
-	
-	
-	
-	// $templatetype = input;
-	// lookup database definition to see what type to use
-	//$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 
-	//$arrType = $GLOBALS['arrDatabaseTableDefine']['Account']['Column']['Id'];
-	
-	$arrType = Array();
-	$arrType['Class'] 	= 'input-string-valid';
-	
-	$arrParams = Array();
-	/*
-	$arrParams['Object'] 		= $this->object;		// 'Account'
-	$arrParams['Property'] 		= $this->property;		// 'Id'
-	$arrParams['Context'] 		= $this->context;		// DEFAULT
-	$arrParams['Definition'] 	= $;					// definition array
-	$arrParams['Value'] 		= $this->Value;			// '1000123456'
-	$arrParams['Valid']			= $;					// TRUE
-	$arrParams['Required'] 		= $bolRequired;			// TRUE
-	
-	$arrDefinition['ValidationRule']	= $;			// VALID_EMAIL
-	$arrDefinition['InputType']	= $;					// 
-	$arrDefinition['OutputType']	= $;				//
-	$arrDefinition['Label']	= $;						//
-	$arrDefinition['InputOptions']	= $;				//
-	$arrDefinition['OutputOptions']	= $;				// ['-1'] = "blah <value> blah"
-														// ['0']  = "blah bleh blah"
-	$arrDefinition['DefaultOutput']	= $;				// "Do not charge for <value> months"
-	$arrDefinition['OutputMask']	= $;				// how data is output
-	
-	*/
-		
-	$arrParams['Definition'] 	= $arrType;
-	$arrParams['Template'] 		= $strTemplateType;
-	$arrParams['Value'] 		= '100012345';
-	$arrParams['Name'] 			= 'account.id';
-	$arrParams['Valid'] 		= TRUE;
-	$arrParams['Required'] 		= $bolRequired;
-
-	RenderHTMLTemplate($arrParams);
-	
-	// $strTag = "<input name=[name] class='input-wide-string'>[value]</input>"
-	// what we want:
-	// 	<input name='Account.Id' class='input-wide-string'>100012345</input>
-	
-	
-}
-
 //----------------------------------------------------------------------------//
 // Page
 //----------------------------------------------------------------------------//
@@ -476,12 +409,28 @@ class Page
  *
  * @prefix	dbo
  *
- * @package	framework_ui
+ * @package	ui_app
  * @class	DBOFramework
  */
 class DBOFramework
 {
+	// this member variable is not currently used for anything
 	public	$_arrOptions	= Array();
+	
+	//------------------------------------------------------------------------//
+	// _arrProperty
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrProperty
+	 *
+	 * Stores all DBObject objects in the DBOFramework
+	 *
+	 * Stores all DBObject objects in the DBOFramework
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
 	private	$_arrProperty	= Array();
 	
 	//------------------------------------------------------------------------//
@@ -493,6 +442,7 @@ class DBOFramework
 	 * Generic GET function for returning Database Objects
 	 *
 	 * Generic GET function for returning Database Objects
+	 * If the database object requested doesn't exist, it created and returned.
 	 *
 	 * @param	string	$strName	Name of the Database Object
 	 * 
@@ -523,7 +473,7 @@ class DBOFramework
 	 *
 	 * Validate all Database Objects
 	 * 
-	 * @return	bool
+	 * @return	bool		TRUE if all database objects are valid; else FALSE
 	 *
 	 * @method
 	 */
@@ -610,12 +560,28 @@ class DBOFramework
  *
  * @prefix	dbl
  *
- * @package	framework_ui
+ * @package	ui_app
  * @class	DBLFramework
  */
 class DBLFramework
 {
+	// this member variable is not currently used for anything
 	public	$_arrOptions	= Array();
+
+	//------------------------------------------------------------------------//
+	// _arrProperty
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrProperty
+	 *
+	 * Stores all DBList objects in the DBLFramework
+	 *
+	 * Stores all DBList objects in the DBLFramework
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
 	private	$_arrProperty	= Array();
 	
 	//------------------------------------------------------------------------//
@@ -645,8 +611,6 @@ class DBLFramework
 		// Return the DBList
 		return $this->_arrProperty[$strName];
 	}
-
-
 
 	//------------------------------------------------------------------------//
 	// Info
@@ -834,6 +798,8 @@ class Config
 					case "dbl":
 						// TODO!Joel! Load and cache config for this object (from somewhere)
 						// $this->_arrConfig[$strType][$strName] = 
+						// What config data is necessary for DBList objects?
+						// possibly information describing how the DBList would be displayed as a table
 						break;
 						
 					default:
@@ -998,6 +964,29 @@ class Validation
 		
 		return FALSE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// DateAndTime
+	//------------------------------------------------------------------------//
+	/**
+	 * DateAndTime()
+	 *
+	 * Checks if a value is in a valid date and time format
+	 *
+	 * Checks if a value is in a valid date and time format
+	 *
+	 * @param	mix			$strDateAndTime		the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function DateAndTime($strDateAndTime)
+	{
+		// TODO! Joel  Test against all variations of the MySql datetime data type
+		return TRUE;
+	}
+	
 }
 
 //----------------------------------------------------------------------------//
@@ -1017,8 +1006,52 @@ class Validation
  */
 class ContextMenuFramework
 {
+	//------------------------------------------------------------------------//
+	// _arrProperties
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrProperties
+	 *
+	 * Multi-dimensional array storing all submenus and menu items
+	 *
+	 * Multi-dimensional array storing all submenus and menu items
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
 	public	$arrProperties	= Array();
+	
+	//------------------------------------------------------------------------//
+	// _objMenuToken
+	//------------------------------------------------------------------------//
+	/**
+	 * _objMenuToken
+	 *
+	 * Token object used to represent a single menu item that is stored in $arrProperties
+	 *
+	 * Token object used to represent a single menu item that is stored in $arrProperties
+	 *
+	 * @type		MenuToken
+	 *
+	 * @property
+	 */
 	private	$_objMenuToken	= NULL;
+	
+	//------------------------------------------------------------------------//
+	// _objMenuItems
+	//------------------------------------------------------------------------//
+	/**
+	 * _objMenuItems
+	 *
+	 * MenuItems object, used to compile Hrefs for the menu items
+	 *
+	 * MenuItems object, used to compile Hrefs for the menu items
+	 *
+	 * @type		MenuItems
+	 *
+	 * @property
+	 */
 	private $_objMenuItems;
 	
 	//------------------------------------------------------------------------//
@@ -1091,8 +1124,10 @@ class ContextMenuFramework
 	 * Used recursively by the method BuildArray() to build the Context Menu array
 	 *
 	 * Used recursively by the method BuildArray() to build the Context Menu array
+	 *
+	 * @param	array	$arrMenu	the menu to build the Context Menu array from
 	 * 
-	 * @return	array	
+	 * @return	array				the built Context Menu array
 	 * @method
 	 */
 	function _BuildArray($arrMenu)
@@ -1198,7 +1233,7 @@ class ContextMenuFramework
 	 *
 	 * Formats a string representing the layout of the Context Menu (used recursively)
 	 * 
-	 * @param	array		$arrMenu				the multi-dimensional menu structure to process
+	 * @param	array		$arrMenu				multi-dimensional menu structure to process
 	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
 	 *												used to define how far the menu structure should be tabbed.
 	 * @return	string								returns the menu as a formatted string.
@@ -1242,7 +1277,7 @@ class ContextMenuFramework
 	 *
 	 * Formats a string representing the layout of the Context Menu
 	 * 
-	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 * @param	string		$strTabs	[optional]	string containing tab chars '\t'
 	 *												used to define how far the menu structure should be tabbed.
 	 * @return	string								returns the menu as a formatted string.
 	 *												If strTabs is not given then this string is
@@ -1290,6 +1325,20 @@ class ContextMenuFramework
  */
 class MenuItems
 {
+	//------------------------------------------------------------------------//
+	// strLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * strLabel
+	 *
+	 * Stores the accompanying label if the last menu item processed can be used as a breadcrumb
+	 *
+	 * Stores the accompanying label if the last menu item processed can be used as a breadcrumb
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 */
 	public $strLabel;
 	
 	//------------------------------------------------------------------------//
@@ -1390,7 +1439,7 @@ class MenuItems
 	 *
 	 * Handles all menu items that have not had a specific method defined in this class
 	 * 
-	 * @param	string		$strName		The name of the menu item
+	 * @param	string		$strName		name of the menu item
 	 * @param	array		$arrParams		any parameters defined for the menu item
 	 *
 	 * @return	string						the Href to be executed when menu item is clicked
@@ -1402,6 +1451,7 @@ class MenuItems
 		switch ($strName)
 		{
 			case "ViewAccount":
+				$this->strLabel	= "acc : $intId";
 				return "Account_view.php?Account.Id={$arrParams[0]}";
 				break;
 			
@@ -1430,6 +1480,21 @@ class MenuItems
  */
 class BreadCrumbFramework
 {
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct()
+	 *
+	 * constructor
+	 *
+	 * constructor
+	 * 
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function __construct()
 	{
 		$this->_mitMenuItems = new MenuItems();

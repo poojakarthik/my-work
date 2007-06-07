@@ -71,7 +71,7 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		BreadCrumb()->ViewService(1, '0787321549');
 		
 		// retrieve the requested document...
-		// The contents of $_GET is set up in the DBO() object within submitted_data::Get() which has already
+		// The contents of $_GET is set up in the DBO() object within SubmittedData::Get() which has already
 		// been called within Application::Load
 		// however the actual DBO()->...->Load() method is not run
 		// This is only set up for the GET variables defined in the format "Object_Property=value"

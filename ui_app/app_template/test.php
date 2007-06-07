@@ -11,26 +11,27 @@ class AppTemplateTest extends ApplicationTemplate
 
 	function Test()
 	{
-		/*
+		
 		echo "Hello";
 		
 		BreadCrumb()->ViewAccount(1000006574);
 		BreadCrumb()->ViewService(1, '0787321549');
 
-		Debug(BreadCrumb()->Info());
+		//Debug(BreadCrumb()->Info());
 		
-		BreadCrumb()->ShowInfo();
+		//BreadCrumb()->ShowInfo();
 		
 		DBO()->Account->Id = 1000004777;
 		DBO()->Account->Load();
 		//Debug(DBO()->Account->Info());
 		//DBO()->Account->ShowInfo();
 		//DBO()->Account->Info();
+		DBO()->ShowInfo();
 		
 		echo "<br>die!";
 		die;
-		*/
 		
+/*		
 		echo "Hello";
 		
 			DBO()->KnowledgeBase->Load();
@@ -55,6 +56,7 @@ class AppTemplateTest extends ApplicationTemplate
 		
 		echo "die!";
 		die;
+*/
 		// check if the menu is built in the order that it is defined
 		
 		ContextMenu()->Menu_1->Menu_5->Menu_3->View_Account(1000004777, "Arguement 2");

@@ -27,32 +27,6 @@
 
 require_once(TEMPLATE_STYLE_DIR.'html_elements.php');
 
-
-//------------------------------------------------------------------------//
-// RenderHTMLTemplate
-//------------------------------------------------------------------------//
-/**
- * RenderHTMLTemplate()
- *
- * Render a HTML Element
- *
- * Render a HTML Element by calling the associated function of the
- * HTMLElements class and passing in the array of parameters to use.
- *
- * @param	Array	$arrParams	The parameters to use when building the element
- *
- * @function
- */
- //DEPRECIATED
-function RenderHTMLTemplate($arrParams)
-{
-	// With overloading
-	HTMLElements()->$arrParams['Template']($arrParams);
-	
-}
-
-
-
 //------------------------------------------------------------------------//
 // DBO
 //------------------------------------------------------------------------//
