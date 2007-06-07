@@ -90,8 +90,28 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 					
 				?>	
 			</tr>
+			<tr><td>
+				<select name='Mode'>
+					<option value="modal">Modal</option>
+					<option value="modeless">Modeless</option>
+					<option value="autohide">Autohide</option>
+				</td>
+				<td>
+				<select name='Size'>
+					<option value='small'>Small</option>
+					<option value='medium'>Medium</option>
+					<option value='large'>Large</option>
+				</select>
+				</td></tr><tr>
+				<td>
+					Popup Id: </td><td><input type='text' name='PopupId' value='MyLogin'></input>
+				</td>
+				</tr>
+			</select>
 			<tr>
-				<input type='button' value='Popup' onclick='Vixen.Popup.Create(PopupContent.value, "MyLogin", "medium", "centre", "autohide")'></input>
+				<input type='button' value='Popup-Centre' onclick='Vixen.Popup.Create(PopupContent.value, PopupId.value, Size.value, "centre", Mode.value)'></input>
+				<input type='button' value='Popup-Cursor' onclick='Vixen.Popup.Create(PopupContent.value, PopupId.value, Size.value, event, Mode.value)'></input>
+				<input type='button' value='Popup-Target' onclick='Vixen.Popup.Create(PopupContent.value, PopupId.value, Size.value, this, Mode.value)'></input>
 			</tr>
 		</table>
 				<textarea name='PopupContent' rows=20 cols=100></textarea>

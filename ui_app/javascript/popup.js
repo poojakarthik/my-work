@@ -36,7 +36,7 @@ function VixenPopupClass()
 		
 		if (!strContent)
 		{
-			strContent = "No data";
+			strContent = "No data<br />Id: " + strId;
 		}
 		
 
