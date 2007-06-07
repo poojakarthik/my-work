@@ -33,6 +33,28 @@
 	
 	if ($_POST ['Confirm'])
 	{
+		// Is this an email report?
+		if ($rptReport->Pull('RenderMode')->getValue() == REPORT_RENDER_EMAIL)
+		{
+			// Add to DataReportSchedule table
+			$arrInsertData = Array();
+			$arrInsertData['DataReport']	= $rptReport->Pull('Id')->getValue();
+			$arrInsertData['Employee']		= $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
+			$arrInsertData['CreatedOn']		= new MySQLFunction("NOW()");
+			$arrInsertData['SQLSelect']		= serialize($_POST['select']);
+			$arrInsertData['SQLWhere']		= serialize($rptReport->ConvertInput($_POST['input']));
+			$arrInsertData['RenderTarget']	= ($_POST['outputcsv']) ? REPORT_TARGET_CSV : REPORT_TARGET_XLS;
+			$arrInsertData['Status']		= REPORT_WAITING;
+			Debug($arrInsertData);
+			
+			//$insDataReportSchedule = new StatementInsert("DataReportSchedule", $arrInsertData);
+			//$insDataReportSchedule->Execute($arrInsertData);
+			
+			// TODO: Some form of confirmation?
+			Debug("Emailed!");
+			exit;
+		}
+		
 		$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input'], $_POST ['limit']);
 		
 		// Should be be outputting in CSV instead of XLS?

@@ -103,8 +103,16 @@
 			$this->_selDataReport->Execute($arrReport);
 			$arrDataReport = $this->_selDataReport->Fetch();
 			
+			// Prepare Columns and Where Array
+			$arrAliases	= unserialize($arrReport['SQLSelect']);
+			$arrColumns = Array();			
+			foreach ($arrAliases as $strAlias)
+			{
+				$arrColumns[$strAlias] = $arrDataReport[$strAlias];
+			}
+			$arrWhere	= unserialize();
+			
 			// Instanciate & Run Data Report
-			$arrColumns = unserialize($arrDataReport['SQLColumns']);
 			$selReportSelect = new StatementSelect($arrDataReport['SQLTable'], $arrColumns, $arrDataReport['SQLWhere']);
 			$selReport->Execute();
 			$arrData = $selReport->FetchAll();
@@ -232,9 +240,9 @@
  		// Write the data
  		foreach ($arrData as $arrRow)
  		{
- 			foreach ($arrRow as $mixValue)
+ 			foreach ($arrRow as $arrField)
  			{
- 				fwrite("\"$mixValue\";");
+ 				fwrite("\"{$arrField['Value']}\";");
  			}
  			fwrite("\n");
  		}
@@ -272,57 +280,212 @@
 		$wksWorksheet =& $wkbWorkbook->addWorksheet();
 		
 		// Set up formatting styles
-		$fmtTitle =& $wkbWorkbook->addFormat();
-		$fmtTitle->setBold();
-		$fmtTitle->setFgColor(22);
-		$fmtTitle->setBorder(1);
-		
-		// Currency format
-		$fmtCurrency =& $wkbWorkbook->addFormat();
-		$fmtCurrency->setNumFormat('$#,##0.00;-$#,##0.00');
-		
-		// Integer format (make sure it doesn't show exponentials for large ints)
-		$fmtInteger =& $wkbWorkbook->addFormat();
-		$fmtInteger->setNumFormat('00');
+		$arrFormat = $this->_InitExcelFormats($wkbWorkbook);
 		
 		// Add in the title row
  		$arrColumns	= array_keys($arrData[0]);
  		foreach ($arrColumns as $intKey=>$strColumn)
  		{
- 			$wksWorksheet->write(0, $intKey, $strColumn, $fmtTitle);
+ 			$wksWorksheet->write(0, $intKey+1, $strColumn, $arrFormat['Title']);
  		}
 		
-		// Add in remaining rows
+		// Add in data rows
+		$arrSQLSelect	= unserialize($arrReport['SQLSelect']);
+		$arrExcelCols	= Array();
+		$intRow			= 0;
 		foreach ($arrData as $intRow=>$arrRow)
 		{
-			$intCol = 0;
-			foreach ($arrRow as $mixField)
+			$intCol = 1;
+			foreach ($arrRow as $strName=>$mixField)
 			{
-				if (preg_match('/^\d+\.\d+$/misU', $mixField))
+				$arrExcelCols[$strName]['Col'] = $intCol;
+				
+				// If an output type is specified then use it, else 'best guess'
+				switch ($arrSQLSelect[$strName]['Type'])
 				{
-					// Currency/float
-					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtCurrency);
-				}
-				elseif (is_int($mixField))
-				{
-					// Integer
-					$wksWorksheet->write($intRow+1, $intCol, (int)$mixField, $fmtInteger);
-				}
-				else
-				{
-					$wksWorksheet->writeString($intRow+1, $intCol, $mixField);
+					case EXCEL_TYPE_CURRENCY:
+						$wksWorksheet->writeNumber($intRow+1, $intCol, (float)$mixField	, $arrFormat['Currency']);
+						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['CurrencyTotal'];
+						break;
+						
+					case EXCEL_TYPE_INTEGER:
+						$wksWorksheet->writeNumber($intRow+1, $intCol, (int)$mixField	, $arrFormat['Integer']);
+						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['IntegerTotal'];
+						break;
+						
+					case EXCEL_TYPE_PERCENTAGE:
+						$wksWorksheet->writeNumber($intRow+1, $intCol, (int)$mixField	, $arrFormat['Percentage']);
+						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['PercentageTotal'];
+						break;
+					
+					// Best Guess
+					default:
+						if (is_int($mixField['Value']))
+						{
+							// Integer
+							$wksWorksheet->write($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
+							$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['IntegerTotal'];
+						}
+						elseif (IsValidFNN($mixField))
+						{
+							// FNN
+							$wksWorksheet->write($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
+						}
+						else
+						{
+							// Just a string
+							$wksWorksheet->writeString($intRow+1, $intCol, $mixField);
+						}
 				}
 				$intCol++;
 			}
 		}
 		
-		// TODO: Add totals, if specified
-		// use $wksWorksheet->writeFormula
+		// Draw a Horizontal Line to separate totals from data
+		$wksWorksheet->writeString($intRow+2, 0, "Grand Totals:", $arrFormat['TotalText']);
+		for ($intCol = 1; $intCol < count($arrExcelCols); $intCol++)
+		{
+			$wksWorksheet->writeString($intRow+2, $intCol, "", $arrFormat['TotalText']);
+		}
+		
+		// Add totals, if specified
+		foreach ($arrSQLSelect as $strName=>$arrField)
+		{
+			// Calculate Cell Range
+			$strCellStart	= Spreadsheet_Excel_Writer::rowcolToCell(2					, $arrExcelCols[$strName]['Col']);
+			$strCellEnd		= Spreadsheet_Excel_Writer::rowcolToCell(count($arrData)+2	, $arrExcelCols[$strName]['Col']);
+			
+			// Construct the Excel Function
+			switch ($arrField['Total'])
+			{
+				case EXCEL_TOTAL_SUM:
+	 				// Standard SUM
+	 				$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], "=SUM($strCellStart:$strCellEnd)", $arrExcelCols[$strName]['TotalFormat']);
+					break;
+					
+				case EXCEL_TOTAL_AVG:
+	 				// Standard AVG
+	 				$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], "=AVG($strCellStart:$strCellEnd)", $arrExcelCols[$strName]['TotalFormat']);
+					break;
+					
+				// TODO: More specific cases?
+					
+				default:
+					// Do we even have a total?
+					if (is_string($arrField['Total']))
+					{
+						// A custom formula, based off other totals
+						$strFunction = $arrField['Total'];
+						foreach ($arrSQLSelect as $strSubName=>$arrSubField)
+						{
+							$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow + 2, $arrExcelCols[$strSubName]['Col']);
+							$strFunction = str_replace("<$strSubName>", $strCell, $strFunction);
+						}
+					}
+			}
+		}
 		
 		// Send the XLS file
 		$wkbWorkbook->close();
  		
+ 		// return the path
  		return $strPath;
+ 	}
+ 	
+ 	
+	//------------------------------------------------------------------------//
+	// _InitExcelFormats
+	//------------------------------------------------------------------------//
+	/**
+	 * _InitExcelFormats()
+	 *
+	 * Initialises Number Formats for Excel Export
+	 *
+	 * Initialises Number Formats for Excel Export
+	 *
+	 * @param	Spreadsheet_Excel_Writer	$wkbWorkbook	Workbook to create formats for
+	 *
+	 * @return	array										Associative Array of Formats
+	 *
+	 * @method
+	 */
+ 	private function _InitExcelFormats($wkbWorkbook)
+ 	{		
+ 		$arrFormat = Array();
+ 		
+ 		// Integer format (make sure it doesn't show exponentials for large ints)
+		$fmtInteger =& $wkbWorkbook->addFormat();
+		$fmtInteger->setNumFormat('00');
+		$arrFormat['Integer']		= $fmtInteger;
+		
+		// Bold Text
+		$fmtBold		= $wkbWorkbook->addFormat();
+		$fmtBold->setBold();
+		$arrFormat['TextBold']		= $fmtBold;
+		
+		// Title Row
+		$fmtTitle =& $wkbWorkbook->addFormat();
+		$fmtTitle->setBold();
+		$fmtTitle->setFgColor(22);
+		$fmtTitle->setBorder(1);
+		$arrFormat['Title']			= $fmtTitle;
+		
+		// Total Text Cell
+		$fmtTotalText	= $wkbWorkbook->addFormat();
+		$fmtTotalText->setTopColor('black');
+		$fmtTotalText->setTop(1);
+		$arrFormat['TotalText']		= $fmtTotalText;
+		
+		
+		
+		// Currency
+		$fmtCurrency	= $wkbWorkbook->addFormat();
+		$fmtCurrency->setNumFormat('$#,##0.00;$#,##0.00 CR');
+		$arrFormat['Currency']		= $fmtCurrency;
+		
+		// Bold Currency
+		$fmtCurrencyBold	= $wkbWorkbook->addFormat();
+		$fmtCurrencyBold->setNumFormat('$#,##0.00;$#,##0.00 CR');
+		$fmtCurrencyBold->setBold();
+		$arrFormat['CurrencyBold']	= $fmtCurrencyBold;
+		
+		// Total Currency
+		$fmtTotal		= $wkbWorkbook->addFormat();
+		$fmtTotal->setNumFormat('$#,##0.00;$#,##0.00 CR');
+		$fmtTotal->setBold();
+		$fmtTotal->setTopColor('black');
+		$fmtTotal->setTop(1);
+		$arrFormat['CurrencyBold']	= $fmtTotal;
+		
+		
+		
+		// Percentage
+		$fmtPercentage	= $wkbWorkbook->addFormat();
+		$fmtPercentage->setNumFormat('0.00%;-0.00%');
+		$arrFormat['Percentage']	= $fmtPercentage;
+		
+		// Bold Percentage
+		$fmtPCBold		= $wkbWorkbook->addFormat();
+		$fmtPCBold->setNumFormat('0.00%;-0.00%');
+		$fmtPCBold->setBold();
+		$arrFormat['PercentageBold']	= $fmtPCBold;
+		
+		// Total Percentage
+		$fmtPCTotal		= $wkbWorkbook->addFormat();
+		$fmtPCTotal->setNumFormat('0.00%;-0.00%');
+		$fmtPCTotal->setBold();
+		$fmtPCTotal->setTopColor('black');
+		$fmtPCTotal->setTop(1);
+		$arrFormat['PercentageBold']	= $fmtPCTotal;
+		
+		
+		
+		// FNN
+		$fmtFNN			= $wkbWorkbook->addFormat();
+		$fmtFNN->setNumFormat('0000000000');
+		$arrFormat['FNN']				= $fmtFNN;
+		
+		return $arrFormat; 		
  	}
  }
 

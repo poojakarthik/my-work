@@ -12,7 +12,6 @@
 // load application
 require_once('require.php');
 
-
 //----------------------------------------------------------------------------//
 // TODO: Specify the DataReport here!  See report_skeleton.php for tut
 //----------------------------------------------------------------------------//
@@ -39,9 +38,11 @@ $arrDataReport['Documentation']	= serialize($arrDocReq);
 
 // SQL Select
 $arrSQLSelect['Account No.']	['Value']	= "Invoice.Account";
-$arrSQLSelect['Account No.']	['Type']	= EXCEL_TYPE_INTEGER;
 
-$arrSQLSelect['Customer Group']	['Value']	= "Account.CustomerGroup";
+$arrSQLSelect['Customer Group']	['Value']	=	"CASE " .
+												"WHEN Account.CustomerGroup = 2 THEN 'VoiceTalk' " .
+												"ELSE 'Telco Blue' " .
+												"END";
 
 $arrSQLSelect['Customer Name']	['Value']	= "Account.BusinessName";
 

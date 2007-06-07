@@ -128,51 +128,7 @@
 			// From here, we may need to process values. For example, dates
 			// come into the system as an Array [day, month, year]. We need
 			// to change them to a string of YYYY-MM-DD
-			
-			$arrInputs = unserialize ($this->Pull ('SQLFields')->getValue ());
-			$arrValues = Array ();
-			
-			if (is_array ($arrInputs))
-			{
-				foreach ($arrInputs as $strName => $arrInput)
-				{
-					switch ($arrInput ['Type'])
-					{
-						case "dataDate":
-							$arrValues [$strName] = date (
-								"Y-m-d", 
-								mktime (0, 0, 0, $arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year'])
-							);
-							
-							break;
-							
-						case "dataDatetime":
-							$arrValues [$strName] = date (
-								"Y-m-d H:i:s", 
-								mktime (
-									$arrFields [$strName]['hour'], $arrFields [$strName]['minute'], $arrFields [$strName]['second'],
-									$arrFields [$strName]['month'], $arrFields [$strName]['day'], $arrFields [$strName]['year']
-								)
-							);
-							
-							break;
-							
-						case "dataString":
-							$arrValues [$strName] = "%" . $arrFields [$strName] . "%";
-							
-							break;
-							
-						case "dataInteger":
-							$arrValues [$strName] = (int)$arrFields[$strName];
-							
-							break;
-							
-						default:
-							$arrValues [$strName] = $arrFields [$strName];
-							break;
-					}
-				}
-			}
+			$arrValues = $this->ConvertInput($arrFields);
 			
 			// Execute the Result
 			$selResult->Execute ($arrValues);
@@ -246,6 +202,17 @@
 							$oblarrValue->Push (new $arrInput ['Type'] ());
 						}
 					}
+					else
+					{
+						switch ($arrInput['Type'])
+						{
+							case 'dataInvoiceRun':
+								$selInvoiceRun = new StatementSelect("InvoiceRun", "InvoiceRun, BillingDate", "", "CreatedOn DESC");
+								$selInvoiceRun->Execute();
+								// TODO: FINISH!
+								break;
+						}
+					}
 				}
 			}
 			
@@ -284,6 +251,70 @@
 			}
 			
 			return $oblarrSelects;
+		}
+		
+		
+		//------------------------------------------------------------------------//
+		// ConvertInputToWhere
+		//------------------------------------------------------------------------//
+		/**
+		 * ConvertInputToWhere()
+		 *
+		 * Turn the Serialised Input Array into Statement Where Array
+		 *
+		 * Turn the Serialised Input Array into Statement Where Array
+		 *
+		 * @return	array
+		 *
+		 * @method
+		 */
+		public function ConvertInput($arrRaw)
+		{
+			$arrFields	= unserialize($this->Pull('SQLFields')->getValue());
+			
+			if (is_array($arrRaw))
+			{
+				foreach ($arrFields as $strName=>$arrInput)
+				{
+					switch ($arrInput['Type'])
+					{
+						case "dataDate":
+							$arrWhere[$strName] = date(
+								"Y-m-d", 
+								mktime (0, 0, 0, $arrRaw[$strName]['month'], $arrRaw[$strName]['day'], $arrRaw[$strName]['year'])
+							);
+							
+							break;
+							
+						case "dataDatetime":
+							$arrWhere[$strName] = date(
+								"Y-m-d H:i:s", 
+								mktime (
+									$arrRaw[$strName]['hour']	, $arrRaw[$strName]['minute']	, $arrRaw[$strName]['second'],
+									$arrRaw[$strName]['month']	, $arrRaw[$strName]['day']		, $arrRaw[$strName]['year']
+								)
+							);
+							
+							break;
+							
+						case "dataString":
+							$arrWhere[$strName] = "%" . $arrRaw[$strName] . "%";
+							
+							break;
+							
+						case "dataInteger":
+							$arrWhere[$strName] = (int)$arrRaw[$strName];
+							
+							break;
+							
+						default:
+							$arrWhere[$strName] = $arrRaw[$strName];
+							break;
+					}
+				}
+			}
+			
+			return $arrWhere;
 		}
 	}
 	

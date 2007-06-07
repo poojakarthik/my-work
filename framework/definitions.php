@@ -1105,6 +1105,12 @@ $GLOBALS['*arrConstant']	['ReportRender']	[0]	['Description']	= 'Instant Render-
 $GLOBALS['*arrConstant']	['ReportRender']	[1]	['Constant']	= 'REPORT_RENDER_EMAIL';
 $GLOBALS['*arrConstant']	['ReportRender']	[1]	['Description']	= 'Email Report after Rendering';
 
+// Data Report Render Targets
+$GLOBALS['*arrConstant']	['ReportTarget']	[0]	['Constant']	= 'REPORT_TARGET_XLS';
+$GLOBALS['*arrConstant']	['ReportTarget']	[0]	['Description']	= 'Renders to an Excel 5.0 Spreadsheet';
+$GLOBALS['*arrConstant']	['ReportTarget']	[1]	['Constant']	= 'REPORT_TARGET_CSV';
+$GLOBALS['*arrConstant']	['ReportTarget']	[1]	['Description']	= 'Renders to a CSV document';
+
 // Data Report Status
 $GLOBALS['*arrConstant']	['ReportStatus']	[200]	['Constant']	= 'REPORT_WAITING';
 $GLOBALS['*arrConstant']	['ReportStatus']	[200]	['Description']	= 'Waiting to be Processed';
