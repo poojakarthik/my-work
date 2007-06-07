@@ -70,6 +70,13 @@
 			
 			$selAccount->Fetch ($this);
 			
+			// allow for DisableLatePayment = NULL
+			if (!$this->Pull('DisableLatePayment')->getValue())
+			{
+				// set DisableLatePayment to 0
+				$this->Pull('DisableLatePayment')->setValue(0);
+			}
+			
 			// Construct the object
 			parent::__construct ('Account', $this->Pull ('Id')->getValue ());
 		}
