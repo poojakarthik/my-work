@@ -1,4 +1,29 @@
 <?php
+//----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+// db_object.php
+//----------------------------------------------------------------------------//
+/**
+ * db_object
+ *
+ * contains the DBObject class which represents a single record of a table in the database
+ *
+ * contains the DBObject class which represents a single record of a table in the database
+ *
+ * @file		db_object.php
+ * @language	PHP
+ * @package		ui_app
+ * @author		Rich Davis
+ * @version		7.05
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
 
 //----------------------------------------------------------------------------//
 // DBObject
@@ -6,14 +31,14 @@
 /**
  * DBObject
  *
- * Database Object
+ * Database Object - represents a single record of a table in the database
  *
- * Database Object
+ * Database Object - represents a single record of a table in the database
  *
  *
  * @prefix	dbo
  *
- * @package	framework_ui
+ * @package	ui_app
  * @class	DBObject
  * @extends	DBObjectBase
  */
@@ -104,8 +129,8 @@ class DBObject extends DBObjectBase
 	 *
 	 * Calls a private for this object method
 	 *
-	 * @param	string	$strName		The name of the method that was called
-	 * @param	array	$arrArguments	the arguements that were passed
+	 * @param	string	$strName		name of the method that was called
+	 * @param	array	$arrArguments	arguements that were passed
 	 * @return	bool
 	 *
 	 * @method
@@ -125,7 +150,7 @@ class DBObject extends DBObjectBase
 	 *
 	 * Generic Property GET function
 	 *
-	 * @param	string		$strProperty	The property's name
+	 * @param	string		$strProperty	property's name
 	 * 
 	 * @return	PropertyToken
 	 *
@@ -147,7 +172,8 @@ class DBObject extends DBObjectBase
 	 *
 	 * Sets the value to this property
 	 *
-	 * @param	string		$strProperty	The property's name
+	 * @param	string		$strProperty	property's name
+	 * @param	mix			$mixValue		property's value
 	 * 
 	 * @return	PropertyToken
 	 *
@@ -170,9 +196,9 @@ class DBObject extends DBObjectBase
 	 *
 	 * Adds a property to the object and validates it
 	 *
-	 * @param	string		$strProperty	The new property's name
-	 * @param	mix			$mixValue		The new property's value
-	 * @param	string		$intContext		The new property's context which is 
+	 * @param	string		$strProperty	new property's name
+	 * @param	mix			$mixValue		new property's value
+	 * @param	string		$intContext		new property's context which is 
 	 *										used to select the specific validation rule
 	 * 
 	 * @return	void
@@ -201,7 +227,7 @@ class DBObject extends DBObjectBase
 	 * as well as the individual property
 	 *
 	 * @param	string		$strProperty	name of property to validate
-	 * @param	string		$intContext		the property's context which is 
+	 * @param	string		$intContext		property's context which is 
 	 *										used to select the specific validation rule
 	 * 
 	 * @return	bool
@@ -432,7 +458,7 @@ class DBObject extends DBObjectBase
 	 * This always cleans the object regardless of whether or not anything could
 	 * be loaded from the database.
 	 *
-	 * @param	integer		$intId		[optional] The Id of the record we want to load
+	 * @param	integer		$intId		[optional] Id of the record we want to load
 	 *
 	 * @return	bool
 	 *
@@ -464,7 +490,7 @@ class DBObject extends DBObjectBase
 	 * Each individual property is only loaded from the database if it is 
 	 * currently undefined in the object
 	 *
-	 * @param	integer	$intId	[optional] The Id of the record we want to load
+	 * @param	integer	$intId	[optional] Id of the record we want to load
 	 * @return	bool
 	 *
 	 * @method
@@ -486,7 +512,7 @@ class DBObject extends DBObjectBase
 	 * This only updates the properties specified in $_arrColumns
 	 * All other properties are left unchanged
 	 *
-	 * @param	integer	$intId	[optional] The Id of the record we want to load
+	 * @param	integer	$intId	[optional] Id of the record we want to load
 	 * @return	bool
 	 *
 	 * @method
@@ -506,7 +532,7 @@ class DBObject extends DBObjectBase
 	 *
 	 * Loads a MySQL result associative array as property data
 	 *
-	 * @param	array		$arrData	the raw data to be loaded into the object
+	 * @param	array		$arrData	raw data to be loaded into the object
 	 *									(MySQL result associative array)
 	 * @return	bool
 	 *
@@ -684,7 +710,7 @@ class DBObject extends DBObjectBase
 	 *
 	 * Formats info about the DBO object so that it can be displayed
 	 * 
-	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 * @param	string		$strTabs	[optional]	string containing tab chars '\t'
 	 *												used to define how far the object's 
 	 *												info should be tabbed.
 	 * @return	string								returns the object's info as a formatted string.
@@ -719,7 +745,7 @@ class DBObject extends DBObjectBase
 	 * @param	mix			$mixData				Data to format
 	 *												this can be a single value, array
 	 *												or multi-dimensional array
-	 * @param	string		$strTabs	[optional]	a string containing tab chars '\t'
+	 * @param	string		$strTabs	[optional]	string containing tab chars '\t'
 	 *												used to define how far the object's 
 	 *												info should be tabbed.
 	 * @return	string								returns the object's info as a formatted string.
@@ -762,7 +788,7 @@ class DBObject extends DBObjectBase
 	 *
 	 * Set the table associated with this DBObject
 	 * 
-	 * @param	string		$strTable	The name of the table.  Note that this can be
+	 * @param	string		$strTable	name of the table.  Note that this can be
 	 *									anything that can go in a SQL "FROM" clause.
 	 *									tables can be joined so long as you specify how
 	 *
@@ -786,7 +812,7 @@ class DBObject extends DBObjectBase
 	 * Get the table name associated with this DBObject
 	 * 
 	 * @return	string					The name of the table.  Note that this can be
-	 *									anything that can go in a SQL "FROM" clause.
+	 *									anything that can go in an SQL "FROM" clause.
 	 *									tables can be joined.
 	 * @method
 	 */
@@ -795,7 +821,7 @@ class DBObject extends DBObjectBase
 		return $this->_strTable;
 	}
 	
-		//------------------------------------------------------------------------//
+	//------------------------------------------------------------------------//
 	// SetColumns
 	//------------------------------------------------------------------------//
 	/**

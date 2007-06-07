@@ -18,7 +18,7 @@
  *
  * @file		token.php
  * @language	PHP
- * @package		framework_ui
+ * @package		ui_app
  * @author		Rich 'Waste Davis
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd

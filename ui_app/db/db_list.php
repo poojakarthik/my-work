@@ -1,4 +1,29 @@
 <?php
+//----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
+// db_list.php
+//----------------------------------------------------------------------------//
+/**
+ * db_list
+ *
+ * contains the DBList class which can represent multiple records of a table in the database
+ *
+ * contains the DBList class which can represent multiple records of a table in the database
+ *
+ * @file		db_list.php
+ * @language	PHP
+ * @package		ui_app
+ * @author		Rich Davis
+ * @version		7.05
+ * @copyright	2007 VOIPTEL Pty Ltd
+ * @license		NOT FOR EXTERNAL DISTRIBUTION
+ *
+ */
 
 //----------------------------------------------------------------------------//
 // DBList
@@ -13,7 +38,7 @@
  *
  * @prefix	dbl
  *
- * @package	framework_ui
+ * @package	ui_app
  * @class	DBList
  * @extends	DBListBase
  */
@@ -49,10 +74,10 @@ class DBList extends DBListBase
 	 * Database Object List Constructor
 	 *
 	 * @param	string	$strName					Name of the List Template to load
-	 * @param	mixed	$strTable		optional	Database table to connect the data object to 
-	 * @param	mixed	$mixColumns		optional	Columns to load
-	 * @param	string	$strWhere		optional	WHERE Clause
-	 * @param	array	$arrWhere		optional	WHERE Data
+	 * @param	mixed	$strTable		[optional]	Database table to connect the data object to 
+	 * @param	mixed	$mixColumns		[optional]	Columns to load
+	 * @param	string	$strWhere		[optional]	WHERE Clause
+	 * @param	array	$arrWhere		[optional]	WHERE Data
 	 * 
 	 * @return	DBList
 	 *
@@ -323,15 +348,14 @@ class DBList extends DBListBase
 	/**
 	 * UseIndex()
 	 *
-	 * <short description>
+	 * sets the USE INDEX clause for the select statement
 	 *
-	 * <long description>
+	 * sets the USE INDEX clause for the select statement
 	 *
-	 * @param	string	$strProperty	<description>
-	 * @return	<type>
+	 * @param	string	$strProperty	property to be used as the index
+	 * @return	void
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function UseIndex($strProperty)
 	{
@@ -344,15 +368,16 @@ class DBList extends DBListBase
 	/**
 	 * OrderBy()
 	 *
-	 * <short description>
+	 * sets the ORDER BY clause for the select statement
 	 *
-	 * <long description>
+	 * sets the ORDER BY clause for the select statement
 	 *
-	 * @param	string	$strProperty	<description>
-	 * @return	<type>
+	 * @param	string	$strProperty	property to be used for ordering
+	 *									You should be able to use a list of comma
+	 *									separated properties
+	 * @return	void
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
 	function OrderBy($strProperty)
 	{
@@ -369,8 +394,8 @@ class DBList extends DBListBase
 	 *
 	 * Sets a value in the where array
 	 *
-	 * @param	string		$strProperty	The property's name
-	 * @param	mixed		$mixValue		The property's value
+	 * @param	string		$strProperty	property name
+	 * @param	mixed		$mixValue		property value
 	 * 
 	 * @return	mixed
 	 *
@@ -391,7 +416,7 @@ class DBList extends DBListBase
 	 *
 	 * Sets a value from the where array
 	 *
-	 * @param	string		$strProperty	The property's name
+	 * @param	string		$strProperty	property name
 	 * 
 	 * @return	mixed
 	 *
