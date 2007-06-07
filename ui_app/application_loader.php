@@ -74,6 +74,13 @@ define('STATUS_UPDATED', 	102);
 define('STATUS_MERGED', 	102);
 define('STATUS_SAVED', 		102);
 
+// HTML Template contexts - defines in which context a HTML Template will be displayed
+define('HTML_CONTEXT_DEFAULT',			100);
+define('HTML_CONTEXT_FULL_DETAIL',		101);
+define('HTML_CONTEXT_MINIMUM_DETAIL',	102);
+define('HTML_CONTEXT_LEDGER_DETAIL',	103);
+
+
 
 require_once('../framework/functions.php');
 LoadFramework();
@@ -154,6 +161,7 @@ function __autoload($strClassName)
 	{ 
 		$GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'] = Array();
 		$GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename'] = Array();	
+		
 		// $strClassPath has not had its directory listing loaded before, so do it now
 		foreach (glob($strClassPath . "/*.php") as $strAbsoluteFilename)
 		{

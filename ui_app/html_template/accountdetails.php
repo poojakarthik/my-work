@@ -18,8 +18,40 @@
  */
 class HtmlTemplateAccountDetails extends HtmlTemplate
 {
-	function __construct()
+	//------------------------------------------------------------------------//
+	// _intContext
+	//------------------------------------------------------------------------//
+	/**
+	 * _intContext
+	 *
+	 * the context in which the html object will be rendered
+	 *
+	 * the context in which the html object will be rendered
+	 *
+	 * @type		integer
+	 *
+	 * @property
+	 */
+	public $_intContext;
+
+	//------------------------------------------------------------------------//
+	// __construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __construct
+	 *
+	 * Constructor
+	 *
+	 * Constructor - java script required by the HTML object is loaded here
+	 *
+	 * @param	int		$intContext		context in which the html object will be rendered
+	 *
+	 * @method
+	 */
+	function __construct($intContext)
 	{
+		$this->_intContext = $intContext;
+		
 		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");

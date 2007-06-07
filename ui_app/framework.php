@@ -165,19 +165,20 @@ class Page
 	 * The order in which objects are added will be the order in which they will be
 	 * displayed in their associated column
 	 * 
-	 * @param	string	$strName		The template name (does not include the 'HtmlTemplate' prefix)
+	 * @param	string	$strName		template name (does not include the 'HtmlTemplate' prefix)
 	 *									A file must exist in the html_template directory.
 	 *									For example if the class to load is called HtmlTemplateKnowledgeBaseDocView
 	 *									then $strName must be "KnowledgeBaseDocView" and the class must be defined
 	 *									in the file "html_template/knowledge_base_doc_view.php"
 	 *
-	 * @param	integer	$intColumn		the column number which the object will be positioned in
+	 * @param	integer	$intColumn		column number which the object will be positioned in
+	 * @param	integer	$intContext		context in which the HTML template will be used
 	 * @param	string	$strId			uniquely identifies the object. Defaults to null
 	 *
 	 * @return	string					unique id for the object. ($strId if specified as a parameter)
 	 * @method
 	 */
-	function AddObject($strName, $intColumn, $strId=NULL)
+	function AddObject($strName, $intColumn, $intContext, $strId=NULL)
 	{
 		// set UID for this object
 		if ($strId)
@@ -196,7 +197,7 @@ class Page
 		$arrObject = Array();
 		$arrObject['Name'] = $strName;
 		$arrObject['Column'] = $intColumn;
-		$arrObject['Object'] = new $strClassName;
+		$arrObject['Object'] = new $strClassName($intContext);
 		$this->_arrObjects[$strId] = $arrObject;
 		
 		// return the object id
@@ -375,7 +376,7 @@ class Page
 	 */
 	function RenderBreadCrumbMenu()
 	{
-		$objBreadCrumb = new HtmlTemplateBreadCrumb;
+		$objBreadCrumb = new HtmlTemplateBreadCrumb(HTML_CONTEXT_DEFAULT);
 		$objBreadCrumb->Render();
 	}
 	
@@ -393,7 +394,7 @@ class Page
 	 */
 	function RenderVixenHeader()
 	{
-		$objHeader = new HtmlTemplateVixenHeader;
+		$objHeader = new HtmlTemplateVixenHeader(HTML_CONTEXT_DEFAULT);
 		$objHeader->Render();
 	}
 }

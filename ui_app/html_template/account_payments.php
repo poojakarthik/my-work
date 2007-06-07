@@ -6,19 +6,22 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// vixen_header.php
+// account_payments.php
 //----------------------------------------------------------------------------//
 /**
- * vixen_header
+ * account_payments
  *
- * HTML Template for the vixen header object
+ * HTML Template for the Account Payments HTML object
  *
- * HTML Template for the vixen header object
+ * HTML Template for the Account Payments HTML object
+ * This class is responsible for defining and rendering the layout of the HTML Template object
+ * which displays all payments relating to an account and can be embedded in
+ * various Page Templates
  *
- * @file		vixen_header.php
+ * @file		account_payments.php
  * @language	PHP
  * @package		ui_app
- * @author		Jared 'flame' Herbohn
+ * @author		Joel Dawkins
  * @version		7.06
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -27,22 +30,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateVixenHeader
+// HtmlTemplateAccountPayments
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateVixenHeader
+ * HtmlTemplateAccountPayments
  *
- * HTML Template class for the HTML Vixen header object
+ * HTML Template class for the Account Payments HTML object
  *
- * HTML Template class for the HTML Vixen header object
- *
- *
+ * HTML Template class for the Account Payments HTML object
+ * Lists all payments related to an account
  *
  * @package	ui_app
- * @class	HtmlTemplateVixenHeader
+ * @class	HtmlTemplateAccountPayments
  * @extends	HtmlTemplate
  */
-class HtmlTemplateVixenHeader extends HtmlTemplate
+class HtmlTemplateAccountPayments extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -79,6 +81,8 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
+		//$this->LoadJavascript("dhtml");
+		//$this->LoadJavascript("highlight");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -95,37 +99,18 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 	 */
 	function Render()
 	{	
+		// Render each of the account invoices
+		//TODO!
+		echo "<br> INSERT ACCOUNT PAYMENTS HERE";
 		
-		echo "
-		<div id='PopupHolder'></div>
-	
-    <div class='Logo'>
-      <img src='img/template/vixen_logo.png' border='0'>
-    </div>
-    <div id='Header' class='sectionContainer'>
-      <span class='LogoSpacer'></span>
-      <div class='sectionContent'>
-        <div class='Left'>
-			TelcoBlue Internal Management System
-		</div>
-        <div class='Right'>
-			Version 7.03
-									
-			<div class='Menu_Button'>
-				<a href='#' onclick=\"return ModalDisplay ('#modalContent-ReportBug')\">
-					<img src='img/template/bug.png' alt='Report Bug' title='Report Bug' border='0'>
-				</a>
-			</div>
-		</div>
-
-
-        <div class='Clear'></div>
-      </div>
-      <div class='Clear'></div>
-    </div>
-    <div class='Clear'></div>
-    <div class='Seperator'></div>";
-
+		/*
+		echo "<table border='5'>\n";
+		foreach (DBO()->KnowledgeBase AS $strProperty=>$objValue)
+		{
+			$objValue->RenderOutput();
+		}
+		echo "</table>\n";
+		*/
 	}
 }
 

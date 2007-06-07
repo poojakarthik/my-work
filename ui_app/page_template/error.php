@@ -8,6 +8,6 @@ $this->Page->SetName('Error');
 $this->Page->SetLayout('1Column');
 
 // display the error object
-$this->Page->AddObject('Error', COLUMN_ONE);
+$this->Page->AddObject('Error', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
 ?>

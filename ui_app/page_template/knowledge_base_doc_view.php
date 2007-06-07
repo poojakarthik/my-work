@@ -41,7 +41,7 @@ $strLayout = '1Column';
 $this->Page->SetLayout($strLayout);
 
 // add the Knowledge Base Document View HTML template object to this page 
-$this->Page->AddObject('KnowledgeBaseDocView', COLUMN_ONE);
+$this->Page->AddObject('KnowledgeBaseDocView', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 
 
 ?>

@@ -108,4 +108,57 @@ class AppTemplateAccount extends ApplicationTemplate
 		*/
 		//$this->Module->Account->Method();	
 	}
+	
+	
+	//------------------------------------------------------------------------//
+	// Ledger
+	//------------------------------------------------------------------------//
+	/**
+	 * Ledger()
+	 *
+	 * Performs the logic for the account_ledger.php webpage
+	 * 
+	 * Performs the logic for the account_ledger.php webpage
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Ledger()
+	{
+		// Should probably check user authorization here
+		//TODO!include user authorisation
+
+		// context menu
+		//TODO! define what goes in the context menu
+		//ContextMenu()->Contact_Retrieve->Account->View_Account(1);
+		
+		// breadcrumb menu
+		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
+		//BreadCrumb()->ViewAccount(1000006574);
+		//BreadCrumb()->ViewService(1, '0787321549');
+		
+		// Setup all DBO and DBL objects required for the page
+		//TODO!
+		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		
+		
+		// the DBList storing the invoices should be order so that the most recent is first
+		// same with the payments list
+		
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('account_ledger');
+
+		return TRUE;
+	
+	}
+	
 }
