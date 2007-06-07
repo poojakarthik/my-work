@@ -83,7 +83,12 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 			// Context menu options
 			//$this->ContextMenu->Account->ViewAccount($this->Dbo->Account-Id->Value);
+			// context menu
+			ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
 			
+			// add to breadcrumb menu
+			BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
+			//BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
 			/*Menu
 			   |--Account
 				|--View Account

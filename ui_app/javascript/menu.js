@@ -229,24 +229,5 @@ function VixenMenuClass(objMenu)
 	}  
 }
 
-/*
-objMenu = 
-{
-	'Menu1': 'http://www.google.com',
-	'Menu2':
-	{
-		'SubMenu1': 'http://www.digg.com',
-		'SubMenu2': 
-			{
-				'Link': 'http://www.voiptelsystems.com.au'
-			}
-	},
-	'Menu3': 
-	{
-		'SubMenu1': 'http://www.google.com'
-	}
-}
-*/
-
 // Create an instance of the Vixen menu class
 Vixen.Menu = new VixenMenuClass({});

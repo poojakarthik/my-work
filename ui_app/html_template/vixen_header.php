@@ -65,39 +65,8 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 	{	
 		
 		echo "
-	<div id='LoginBox' class='LoginBox' style='left: 400px; top:300px;'>
-		<div id='TopBar' class='TopBar'>
-		TelcoBlue Internal System
-		</div>
-			
-			
-			<form method='POST' action='account_view.php?Account.Id=$strTarget'>
-				<table>
-					<tr>
-						<td>
-							<label for='UserName'>Username:</label>
-						</td>
-						<td>
-							<input type='text' name='UserName' id='UserName' maxlength='21'/>
-						</td>
-					</tr>
-					<tr>
-						<td>
-							<label for='PassWord'>Password:</label>
-						</td>
-						<td>
-							<input type='password' name='PassWord' />
-						</td>
-					</tr>
-					<tr>
-						<td/>
-						<td>
-							<input type='submit' value='Continue &#xBB;' class='Right'/>
-						</td>
-					</tr>
-				</table>
-			</form>
-	</div>
+		<div id='PopupHolder'></div>
+	
     <div class='Logo'>
       <img src='img/template/vixen_logo.png' border='0'>
     </div>

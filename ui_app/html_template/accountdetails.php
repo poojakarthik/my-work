@@ -39,7 +39,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	function Render()
 	{		
 		?>
-		<form method='POST' action='account_view.php'>
+		<form method='POST' action=''>
 		<table>
 			<tr>
 				<h1>Account Details</h1>
@@ -53,15 +53,16 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 					DBO()->Account->BusinessName->RenderOutput(TRUE);
 					DBO()->Account->TradingName->RenderOutput(TRUE,1);
 					DBO()->Account->ABN->RenderOutput(TRUE,1);
-					DBO()->Account->ABN->RenderInput(TRUE,1);
+					// DBO()->Account->ABN->RenderInput(TRUE,1);
 					DBO()->Account->BillingType->RenderOutput(TRUE);
 					
 				?>	
 			</tr>
 			<tr>
-				<input type='submit' value='Submit'></input>
+				<input type='button' value='Popup' onclick='Vixen.Popup.Create(PopupContent.value, "MyLogin", "medium", "centre", "autohide")'></input>
 			</tr>
 		</table>
+				<textarea name='PopupContent' rows=20 cols=100></textarea>
 		<?php
 		//var_dump($_POST);
 		//HTML is OK here, to define structures which enclose these objects

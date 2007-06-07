@@ -256,7 +256,7 @@ function dragStart(event, id) {
 
 	}
 	Vixen.dragging_now = TRUE;
-	Vixen.dhtml.dragging = TRUE;
+	Vixen.Dhtml.dragging = TRUE;
 	
 	
   var el;
@@ -279,16 +279,6 @@ function dragStart(event, id) {
       dragObj.elNode = dragObj.elNode.parentNode;
   }
   
-  /*
-	// check if we need to detach the element
-	if (typeof(Vixen.objects[dragObj.elNode.id]) == 'object')
-	{
-		if (Vixen.objects[dragObj.elNode.id].detach_on_drag === TRUE)
-		{
-			Vixen.html.detach(dragObj.elNode.id);
-		}
-	}*/
-
   // Get cursor position with respect to the page.
 
   if (browser.isIE) {
@@ -306,12 +296,20 @@ function dragStart(event, id) {
   // Save starting positions of cursor and element.
   dragObj.cursorStartX = x;
   dragObj.cursorStartY = y;
-  dragObj.elStartLeft  = parseInt(dragObj.elNode.style.left, 10);
-  dragObj.elStartTop   = parseInt(dragObj.elNode.style.top,  10);
+  dragObj.elStartLeft  = parseInt(dragObj.elNode.offsetLeft, 10);
+  dragObj.elStartTop   = parseInt(dragObj.elNode.offsetTop,  10);
 	
   if (isNaN(dragObj.elStartLeft)) dragObj.elStartLeft = 0;
   if (isNaN(dragObj.elStartTop))  dragObj.elStartTop  = 0;
 
+  // Set limits of movement
+  dragObj.elNode.limits = Object();
+  dragObj.elNode.limits.drag_horizontal = TRUE;
+  dragObj.elNode.limits.drag_vertical = TRUE;
+  dragObj.elNode.limits.drag_left = 1;
+  dragObj.elNode.limits.drag_top = 1;
+  
+  
   // Update element's z-index.
 
   //dragObj.elNode.style.zIndex = ++dragObj.zIndex;
@@ -354,35 +352,35 @@ function dragGo(event) {
 	var drag_left = dragObj.elStartLeft + x - dragObj.cursorStartX;
 	var drag_top = dragObj.elStartTop  + y - dragObj.cursorStartY;
 	
-	if (!dragObj.elNode.dhtml)
+	if (!dragObj.elNode.limits)
 	{
 		dragObj.elNode.style.left = drag_left + "px";
 		dragObj.elNode.style.top  = drag_top + "px";
 	}
 	else
 	{
-		if (dragObj.elNode.dhtml.drag_horizontal !== FALSE)
+		if (dragObj.elNode.limits.drag_horizontal !== FALSE)
 		{
-			if (dragObj.elNode.dhtml.drag_left && drag_left < dragObj.elNode.dhtml.drag_left)
+			if (dragObj.elNode.limits.drag_left && drag_left < dragObj.elNode.limits.drag_left)
 			{
-				drag_left = dragObj.elNode.dhtml.drag_left;
+				drag_left = dragObj.elNode.limits.drag_left;
 			}
-			else if (dragObj.elNode.dhtml.drag_right && drag_left > dragObj.elNode.dhtml.drag_right)
+			else if (dragObj.elNode.limits.drag_right && drag_left > dragObj.elNode.limits.drag_right)
 			{
-				drag_left = dragObj.elNode.dhtml.drag_right;
+				drag_left = dragObj.elNode.limits.drag_right;
 			}
 			dragObj.elNode.style.left = drag_left + "px";
 		}
 		
-		if(dragObj.elNode.dhtml.drag_vertical !== FALSE)
+		if(dragObj.elNode.limits.drag_vertical !== FALSE)
 		{
-			if (dragObj.elNode.dhtml.drag_top && drag_top < dragObj.elNode.dhtml.drag_top)
+			if (dragObj.elNode.limits.drag_top && drag_top < dragObj.elNode.limits.drag_top)
 			{
-				drag_top = dragObj.elNode.dhtml.drag_top;
+				drag_top = dragObj.elNode.limits.drag_top;
 			}
-			else if (dragObj.elNode.dhtml.drag_bottom && drag_top > dragObj.elNode.dhtml.drag_bottom)
+			else if (dragObj.elNode.limits.drag_bottom && drag_top > dragObj.elNode.limits.drag_bottom)
 			{
-				drag_top = dragObj.elNode.dhtml.drag_bottom;
+				drag_top = dragObj.elNode.limits.drag_bottom;
 			}
 			dragObj.elNode.style.top  = drag_top + "px";
 		}
@@ -401,7 +399,7 @@ function dragGo(event) {
 
 function dragStop(evt) {
 	Vixen.dragging_now = FALSE;
-	Vixen.dhtml.dragging = FALSE;
+	Vixen.Dhtml.dragging = FALSE;
 	// Stop capturing mousemove and mouseup events.
 	if (browser.isIE)
 	{

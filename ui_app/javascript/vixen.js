@@ -16,7 +16,19 @@
  */
 function VixenRootClass()
 {
-
+	// Vixen Login
+	this.Login = function(username, password)
+	{
+		//document.getElementById('LoginBox').style.visibility = 'visible';
+		// AJAX transaction to login in user
+	}
+	
+	// Vixen Logout
+	this.Logout = function()
+	{
+		//alert ('logging out');
+		
+	}
 }
 
 // Create an instance of the Vixen root class

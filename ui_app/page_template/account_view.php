@@ -8,7 +8,7 @@
 $this->Page->SetName('Account View');
 
 //$this->Page->SetLayout(CONSTANT_LAYOUT_TYPE|$strLayoutType??);
-$strLayout = '3Column';
+$strLayout = '1Column';
 $this->Page->SetLayout($strLayout);
 
 // many other functions which arent needed, but could be included like destroy, getObjByID

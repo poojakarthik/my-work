@@ -258,6 +258,9 @@ class Page
 		// always render the menu js class
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/menu.js' ></script>\n";
 		
+		// always render the popup js class
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/popup.js' ></script>\n";
+		
 		// for each on global array
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
@@ -305,7 +308,7 @@ class Page
 	 */
 	function RenderFooter()
 	{
-		echo "</body>\n";
+		echo "</body>\n</html>";
 	}
 		
 	//------------------------------------------------------------------------//
@@ -1361,7 +1364,7 @@ class MenuItems
 	function ViewAccount($intId)
 	{
 		$this->strLabel	= "acc : $intId";
-		return "Account_view.php?Account.Id=$intId";
+		return "account_view.php?Account.Id=$intId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1385,7 +1388,7 @@ class MenuItems
 	function ViewService($intId, $strFNN=NULL)
 	{
 		$this->strLabel	= "service : $strFNN";
-		return "Service_view.php?Service.Id=$intId";
+		return "service_view.php?Service.Id=$intId";
 	}
 	
 	//------------------------------------------------------------------------//
