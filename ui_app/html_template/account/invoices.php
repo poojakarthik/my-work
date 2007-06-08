@@ -81,8 +81,8 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
+		$this->LoadJavascript("highlight");
+		$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -101,16 +101,50 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 	{	
 		// Render each of the account invoices
 		//TODO!
-		echo "<br> INSERT ACCOUNT INVOICES HERE";
+		//echo "<br> INSERT ACCOUNT INVOICES HERE";
 		
-		/*
-		echo "<table border='5'>\n";
-		foreach (DBO()->KnowledgeBase AS $strProperty=>$objValue)
+		//DBL()->ShowInfo();
+				
+		echo "<table class='Listing' id='AccountInvoices'>\n";
+		echo "<tr class='First'>\n";
+		echo " <th>Account Id</th>\n";
+		echo " <th>Invoice Id</th>\n";
+		echo " <th>Account Balance</th>\n";
+		echo " <th>Total Owing</th>\n";
+		echo "</tr>\n";
+		$intRowCount = 0;
+		foreach (DBL()->Invoice AS $strProperty=>$objValue)
 		{
-			$objValue->RenderOutput();
+			$intRowCount++;
+			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
+			echo "<tr id='AccountInvoices_$intRowCount' class='$strClass'>\n";
+			// change these to Render (not RenderOutput)
+			$objValue->Account->RenderOutput(TRUE, 1);
+			$objValue->Id->RenderOutput(TRUE, 1);
+			if ($objValue->AccountBalance > 0)
+			{
+				$objValue->AccountBalance->RenderOutput(TRUE, CONTEXT_OVERPAID);
+			}
+			else if ($objValue->AccountBalance < 0)
+			{
+				$objValue->AccountBalance->RenderOutput(TRUE, CONTEXT_OVERDUE);
+			}
+			else
+			{
+				$objValue->AccountBalance->RenderOutput(TRUE, 1);
+			}
+			$objValue->TotalOwing->RenderOutput(TRUE, 1);
+			echo "</tr>\n";
+			echo "<tr><td colspan=4>\n";
+			echo "<div id='AccountInvoices_" . $intRowCount . "DIV' style='height: 650px; display: none'>";
+			$objValue->ShowInfo();
+			echo "</div>";
+			echo "</td></tr>\n";
 		}
 		echo "</table>\n";
-		*/
+		echo "<script type='text/javascript'>Vixen.Highlight.Attach('AccountInvoices', $intRowCount);</script>";
+		echo "<script type='text/javascript'>Vixen.Slide.Attach('AccountInvoices', $intRowCount);</script>";
+		
 	}
 }
 

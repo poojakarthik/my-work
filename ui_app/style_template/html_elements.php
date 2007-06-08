@@ -182,7 +182,6 @@ class HTMLElements
 		{
 			$strClass .= "Invalid"; // DefaultInputInvalid
 		}
-		
 		echo "<td>";
 		echo "{$arrParams['Definition']['Label']} : \n";
 		echo "</td>";
@@ -209,14 +208,14 @@ class HTMLElements
 	 */
 	function Label($arrParams)
 	{
-		echo "	<tr>\n";
-		echo "		<td>\n";
-		echo "			{$arrParams['Definition']['Label']} : \n";
-		echo "		</td>\n";
-		echo "		<td>\n";
-		echo "			<div class='{$arrParams['Definition']['FullClass']}'>{$arrParams['Value']}</div>\n";
-		echo "		</td>\n";
-		echo "	</tr>\n";
+	
+		if ($arrParams['Context'] == 0)
+		{
+			echo "  <td>\n";
+			echo "    {$arrParams['Definition']['Label']} : \n";
+			echo "  </td>\n";
+		}
+		echo "   <td class='{$arrParams['Definition']['FullClass']}'>{$arrParams['Value']}</td>\n";
 	}
 	
 	//------------------------------------------------------------------------//

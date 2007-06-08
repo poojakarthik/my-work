@@ -35,7 +35,7 @@ $this->RenderContextMenu();
 //TODO! how do I specify the widths of the columns?
 ?>
 
-<div Class = 'PageBody'>
+<div class='Pagebody'>
 	<?php $this->RenderColumn(COLUMN_ONE); ?>
 	<?php $this->RenderColumn(COLUMN_TWO); ?>
 </div>

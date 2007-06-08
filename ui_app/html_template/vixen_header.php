@@ -96,9 +96,7 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 	function Render()
 	{	
 		
-		echo "
-		<div id='PopupHolder'></div>
-	
+		echo "    <div id='PopupHolder'></div>
     <div class='Logo'>
       <img src='img/template/vixen_logo.png' border='0'>
     </div>
@@ -117,8 +115,6 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 				</a>
 			</div>
 		</div>
-
-
         <div class='Clear'></div>
       </div>
       <div class='Clear'></div>

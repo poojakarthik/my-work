@@ -81,14 +81,23 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 					// Dbo()->Object->Property->RenderInput([$bolRequired], [$strContext]);
 					// Dbo()->Object->Property->RenderInput(TRUE, 'Account');
 					// Dbo()->Object->Property->RenderInput(TRUE);				
-					DBO()->Account->Id->RenderOutput(TRUE, 1);					
-					DBO()->Account->BusinessName->RenderOutput(TRUE);
-					DBO()->Account->TradingName->RenderOutput(TRUE,1);
-					DBO()->Account->ABN->RenderOutput(TRUE,1);
-					// DBO()->Account->ABN->RenderInput(TRUE,1);
-					DBO()->Account->BillingType->RenderOutput(TRUE);
-					
-				?>	
+					DBO()->Account->Id->RenderOutput(TRUE, 1);
+				?>
+			</tr>
+			<tr>
+					<?php DBO()->Account->BusinessName->RenderOutput(TRUE); ?>
+			</tr>
+			<tr>
+					<?php DBO()->Account->TradingName->RenderOutput(TRUE,1); ?>
+			</tr>
+			<tr>
+					<?php DBO()->Account->ABN->RenderOutput(TRUE,1);?>
+			</tr>
+			<tr>
+					<?php // DBO()->Account->ABN->RenderInput(TRUE,1);?>
+			</tr>
+			<tr>
+					<?php DBO()->Account->BillingType->RenderOutput(TRUE);?>
 			</tr>
 			<tr><td>
 				<select name='Mode'>

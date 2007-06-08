@@ -267,7 +267,7 @@ class PropertyToken
 		// require a definition
 		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
 		{
-			//var_dump($this->_dboOwner->_arrDefine[$this->_strProperty][$intContext]);
+			//var_dump($this->_dboOwner->_arrDefine);
 			//echo "<br />" . $intContext . "=" . CONTEXT_DEFAULT;
 			return FALSE;
 		}

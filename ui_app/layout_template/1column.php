@@ -32,7 +32,7 @@ $this->RenderBreadCrumbMenu();
 $this->RenderContextMenu();
 ?>
 
-<div Class = 'PageBody'>
+<div class='PageBody'>
 	<?php $this->RenderColumn(COLUMN_ONE); ?>
 </div>
 

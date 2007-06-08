@@ -15,51 +15,92 @@
  */
 function VixenHighlightClass()
 {
-	this.Highlight =function (target, table, maxRows)
-	{
-		//alert(table);
-		var selected="";
-		for (i = 0; i <= maxRows; i++)
+	this.tables = 
+	{ 
+		'Example': 
 		{
-			var myElement = document.getElementById(table + i);
-			if (myElement.className == "Selected")
+			'totalRows': 10,
+			'selected': 50
+		},
+	};
+		
+	this.ToggleSelect =function (elmRow)
+	{
+		for (i = 1; i <= this.tables[elmRow.parentNode.parentNode.id].totalRows; i++)
+		{
+			var elmRowUnselect = document.getElementById(elmRow.parentNode.parentNode.id + '_' + i);
+			if (elmRowUnselect.id.substr(elmRowUnselect.id.indexOf('_') + 1) % 2)
 			{
-				selected = "myrow" + i;
-				
-			}			
-			if (i % 2 == 0)
-			{
-				myElement.className = "Even";
+				elmRowUnselect.className = "Odd";
 			}
 			else
 			{
-				myElement.className = "Odd";
+				elmRowUnselect.className = "Even";
 			}
-			
 		}
-		document.getElementById(target).className = "Hover";
-		if (selected != "" )
+		if (elmRow.id == this.tables[elmRow.parentNode.parentNode.id].selected)
 		{
-			document.getElementById(target).className = "Selected";
+			elmRow.className = "Hover";
+			this.tables[elmRow.parentNode.parentNode.id].selected = "NULL";
+		}
+		else
+		{
+			elmRow.className = "Selected";
+			this.tables[elmRow.parentNode.parentNode.id].selected = elmRow.id;
 		}
 	}
 	
-	this.ToggleSelection =function (target, table, maxRows)
+	this.LightsUp =function (elmRow)
 	{
-		if (document.getElementById(target).className == "Selected")
+		elmRow.className = "Hover";
+	}
+	
+	this.LightsDown =function (elmRow)
+	{
+		if (elmRow.id == this.tables[elmRow.parentNode.parentNode.id].selected)
 		{
-			var alreadyselected = true;
+			elmRow.className = "Selected";
 		}
-		for (i = 1; i <= maxRows; i++)
+		else
 		{
-			var myElement = document.getElementById(table + i);
-			myElement.className = "";
+			if (elmRow.id.substr(elmRow.id.indexOf('_') + 1) % 2)
+			{
+				elmRow.className = "Odd";
+			}
+			else
+			{
+				elmRow.className = "Even";
+			}
 		}
-		if (!alreadyselected)
+	}
+	
+	this.Attach =function (strTableId, totalRows)
+	{
+		this.tables[strTableId] = new Object();
+		this.tables[strTableId] = { 'totalRows' : totalRows,
+									'selected' : ''};
+		for (i = 1; i <=totalRows; i++)
 		{
-			document.getElementById(target).className = "Selected";
+			var elmRow = document.getElementById(strTableId + '_' + i);
+			elmRow.addEventListener('mousedown', MouseDownHandler, TRUE);
+			elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
+			elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
 		}
-		highlight(target, table, maxRows);
+	}
+	
+	function MouseDownHandler ()
+	{
+		Vixen.Highlight.ToggleSelect(this);
+	}
+	
+	function MouseOverHandler ()
+	{
+		Vixen.Highlight.LightsUp(this);
+	}
+
+	function MouseOutHandler ()
+	{
+		Vixen.Highlight.LightsDown(this);
 	}
 }	
 

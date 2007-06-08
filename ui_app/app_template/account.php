@@ -131,12 +131,12 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// context menu
 		//TODO! define what goes in the context menu
-		//ContextMenu()->Contact_Retrieve->Account->View_Account(1);
+		ContextMenu()->Contact_Retrieve->Account->Account_Ledger(DBO()->Account->Id->Value);
 		
 		// breadcrumb menu
 		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		//BreadCrumb()->ViewAccount(1000006574);
-		//BreadCrumb()->ViewService(1, '0787321549');
+		BreadCrumb()->Account_Ledger(DBO()->Account->Id->Value);
+		
 		
 		// Setup all DBO and DBL objects required for the page
 		//TODO!
@@ -148,11 +148,14 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		
+		// * @param	string	$strWhere		[optional]	WHERE Clause with <> placeholders
+		// * @param	array	$arrWhere		[optional]	WHERE parameter data
 		
 		// the DBList storing the invoices should be order so that the most recent is first
 		// same with the payments list
 		
+		DBL()->Invoice->Where->Set("Account = <id>", Array('id'=>DBO()->Account->Id->Value));
+		DBL()->Invoice->Load();
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_ledger');
