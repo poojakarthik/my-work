@@ -58,6 +58,8 @@ define('DATABASE_PWORD', V1x3n);
 
 // database documentation contexts
 define('CONTEXT_DEFAULT', 0);
+define('CONTEXT_SUPRESS_LABEL', 1);
+define('CONTEXT_TABLE_ROW', 2);
 
 define('OUTPUT_TYPE_LABEL', 1);
 define('OUTPUT_TYPE_RADIO', 2);
