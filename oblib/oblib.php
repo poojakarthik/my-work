@@ -247,6 +247,8 @@
 				return false;
 			}
 			
+			
+			
 			return parent::setValue
 			(
 				$nodeValue
@@ -621,7 +623,7 @@
 			$this->nodeType = ($nodeType === null) ? "data" : $nodeType;
 		}
 		
-		public function Push (&$arrayItem, $mixKey = NULL)
+		public function Push (&$arrayItem)
 		{
 			if (!is_object ($arrayItem))
 			{
@@ -633,18 +635,7 @@
 				throw new Exception ('Variable is not an instance of ' . $this->nodeType . ': ' . $arrayItem);
 			}
 			
-			if ($mixKey === NULL)
-			{
-				return $this->_DATA [] =& $arrayItem;
-			}
-			elseif (is_int($mixKey) || is_string($mixKey))
-			{
-				return $this->_DATA [$mixKey] =& $arrayItem;
-			}
-			else
-			{
-				throw new Exception ('Invalid Key: ('.gettype($mixKey).")$mixKey");
-			}
+			return $this->_DATA [] =& $arrayItem;
 		}
 		/*
 		public function PushArray (&$arrayItem)
