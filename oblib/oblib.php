@@ -621,7 +621,7 @@
 			$this->nodeType = ($nodeType === null) ? "data" : $nodeType;
 		}
 		
-		public function Push (&$arrayItem)
+		public function Push (&$arrayItem, $mixKey = NULL)
 		{
 			if (!is_object ($arrayItem))
 			{
@@ -633,7 +633,18 @@
 				throw new Exception ('Variable is not an instance of ' . $this->nodeType . ': ' . $arrayItem);
 			}
 			
-			return $this->_DATA [] =& $arrayItem;
+			if ($mixKey === NULL)
+			{
+				return $this->_DATA [] =& $arrayItem;
+			}
+			elseif (is_int($mixKey) || is_string($mixKey))
+			{
+				return $this->_DATA [$mixKey] =& $arrayItem;
+			}
+			else
+			{
+				throw new Exception ('Invalid Key: ('.gettype($mixKey).")$mixKey");
+			}
 		}
 		/*
 		public function PushArray (&$arrayItem)
