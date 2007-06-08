@@ -119,10 +119,14 @@ $Application = Singleton::Instance('Application');
  *									ClassName					Location
  *									AppTemplateAccount			app_template/account.php
  *									HtmlTemplateAccountView		html_template/account_view.php
- *									HtmlTemplateCdrView			html_template/cdr_view.php
+ *									OR HtmlTemplateAccountView	html_template/account/view.php 
+ *									If the above 2 files exist then $strClassName = HtmlTemplateAccountView
+ *									will load html_template/account_view.php
  *									The function explodes $strClassName on "template" to retrieve 
  *									the desired class name and its associated directory
- *									relative to TEMPLATE_BASE_DIR
+ *									relative to TEMPLATE_BASE_DIR.  If the file cannot be found
+ *									in this directory it then trys finding it in a subdirectory
+ *									matching the first word in $strClassName after the "Template" token.
  * @return	void
  *
  * @function
@@ -144,11 +148,12 @@ function __autoload($strClassName)
 	}
 	else
 	{
-		$arrClassName = explode("template", strtolower($strClassName));
-		$strClassPath = TEMPLATE_BASE_DIR . $arrClassName[0] . "_template";
+		$arrClassName = explode("Template", $strClassName);
+		$strClassPath = TEMPLATE_BASE_DIR . strtolower($arrClassName[0]) . "_template";
 		$strClassName = $arrClassName[1];
 	}		
-	// if $strClassName couldn't be exploded on "template" then die
+
+	// if $strClassName couldn't be exploded on "template" or "module" then die
 	if (!$strClassName)
 	{
 		// The class trying to be loaded is not a template class
@@ -156,14 +161,73 @@ function __autoload($strClassName)
 		return FALSE;
 	}
 	
-	// check if a directory listing for $strClassPath has already been created
-	if (!isset($GLOBALS['*arrAvailableFiles'][$strClassPath]))
+	// Load a directory listing for $strClassPath
+	_LoadDirectoryListing($strClassPath);
+
+	// find the file that should contain the class which needs to be loaded
+	$mixClassPointer = array_search(strtolower($strClassName) . ".php", $GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename']);
+	
+	if ($mixClassPointer === FALSE)
+	{
+		// the file could not be found so check for a subdirectory of $strClassPath matching the first word in $strClassName
+		$strRegex = "^[A-Z][a-z]+[A-Z]";
+		$mixLength = ereg($strRegex, $strClassName, $regs);
+		if ($mixLength === FALSE)
+		{
+			// The class name is only one word long therefore it couldn't possibly be in a subdirectory
+			// the class's file cannot be found
+			return FALSE;
+		}
+		
+		// subtract 1 from $mixLength as it will have included the first letter of the second word
+		$mixLength--;
+		
+		// grab the first word (the sub directory)
+		$strSubDir = substr($strClassName, 0, $mixLength);
+		$strClassPath .= strtolower("/$strSubDir");
+		
+		// grab the filename
+		$strClassName = substr($strClassName, $mixLength);
+		
+		// Load a directory listing for $strClassPath
+		_LoadDirectoryListing($strClassPath);
+		
+		// search again for the file that should contain the class which needs to be loaded
+		$mixClassPointer = array_search(strtolower($strClassName) . ".php", $GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename']);
+	}
+	
+	// include the php file that defines the class
+	if ($mixClassPointer !== FALSE)
+	{
+		include_once($strClassPath . "/" . $GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][$mixClassPointer]);
+	}
+}
+
+//------------------------------------------------------------------------//
+// _LoadDirectoryListing
+//------------------------------------------------------------------------//
+/**
+ * _LoadDirectoryListing()
+ *
+ * Finds all php files in the supplied directory and loads their names into $GLOBALS['*arrAvailableFiles'][$strPath]
+ *
+ * Finds all php files in the supplied directory and loads their names into $GLOBALS['*arrAvailableFiles'][$strPath]
+ *
+ * @param	string	$strPath	path to find all available php files
+ *								ie "html_template" or "html_template/account"
+ * @return	void
+ *
+ * @function
+ */
+function _LoadDirectoryListing($strPath)
+{
+	if (!isset($GLOBALS['*arrAvailableFiles'][$strPath]))
 	{ 
-		$GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'] = Array();
-		$GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename'] = Array();	
+		$GLOBALS['*arrAvailableFiles'][$strPath]['ActualFilename'] = Array();
+		$GLOBALS['*arrAvailableFiles'][$strPath]['CorrectedFilename'] = Array();	
 		
 		// $strClassPath has not had its directory listing loaded before, so do it now
-		foreach (glob($strClassPath . "/*.php") as $strAbsoluteFilename)
+		foreach (glob($strPath . "/*.php") as $strAbsoluteFilename)
 		{
 			//grab the filename part
 			$arrFilename = explode("/", $strAbsoluteFilename);
@@ -172,17 +236,12 @@ function __autoload($strClassName)
 			// $strClassName will have to be compared with each file in the directory, therefore
 			// a modified version of the filename (all lowercase and underscores removed) should be stored
 			// and the actual filename should be stored
-			$GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][] = $strFilename;
-			$GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename'][] = strtolower(str_replace("_", "", $strFilename));
+			$GLOBALS['*arrAvailableFiles'][$strPath]['ActualFilename'][] = $strFilename;
+			$GLOBALS['*arrAvailableFiles'][$strPath]['CorrectedFilename'][] = strtolower(str_replace("_", "", $strFilename));
 		}
-	}	
-
-	// find the file that should contain the class which needs to be loaded
-	$mixClassPointer = array_search($strClassName . ".php", $GLOBALS['*arrAvailableFiles'][$strClassPath]['CorrectedFilename']);
-	
-	// include the php file that defines the class
-	include_once($strClassPath . "/" . $GLOBALS['*arrAvailableFiles'][$strClassPath]['ActualFilename'][$mixClassPointer]);
+	}
 }
+
 
 //----------------------------------------------------------------------------//
 // Application INCOMPLETE
