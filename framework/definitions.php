@@ -1123,6 +1123,21 @@ $GLOBALS['*arrConstant']	['ReportStatus']	[203]	['Description']	= 'Invalid Rende
 $GLOBALS['*arrConstant']	['ReportStatus']	[204]	['Constant']	= 'REPORT_GENERATED';
 $GLOBALS['*arrConstant']	['ReportStatus']	[204]	['Description']	= 'Report Generated';
 
+// Data Report XLS Types
+$GLOBALS['*arrConstant']	['XLSType']	[500]	['Constant']	= 'EXCEL_TYPE_CURRENCY';
+$GLOBALS['*arrConstant']	['XLSType']	[500]	['Description']	= 'Currency';
+$GLOBALS['*arrConstant']	['XLSType']	[501]	['Constant']	= 'EXCEL_TYPE_INTEGER';
+$GLOBALS['*arrConstant']	['XLSType']	[501]	['Description']	= 'Integer';
+$GLOBALS['*arrConstant']	['XLSType']	[502]	['Constant']	= 'EXCEL_TYPE_PERCENTAGE';
+$GLOBALS['*arrConstant']	['XLSType']	[502]	['Description']	= 'Percentage';
+
+//Data Report XLS Total Types
+$GLOBALS['*arrConstant']	['XLSTotal']	[600]	['Constant']	= 'EXCEL_TOTAL_SUM';
+$GLOBALS['*arrConstant']	['XLSTotal']	[600]	['Description']	= 'Sum';
+$GLOBALS['*arrConstant']	['XLSTotal']	[601]	['Constant']	= 'EXCEL_TOTAL_AVG';
+$GLOBALS['*arrConstant']	['XLSTotal']	[601]	['Description']	= 'Average';
+
+
 
 // CLI Console Docked
 define("CONSOLE_DOCKED"		, DONKEY);

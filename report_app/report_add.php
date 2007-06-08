@@ -28,9 +28,9 @@ $arrDataReport['Summary']		= "Lists Profit Data for every Invoice generated in a
 $arrDataReport['RenderMode']	= REPORT_RENDER_EMAIL;
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "Invoice";
-$arrDataReport['SQLWhere']		= "DueOn BETWEEN <StartDate> AND <EndDate>";
-$arrDataReport['SQLGroupBy']	= "";
+$arrDataReport['SQLTable']		= "(Invoice JOIN Account ON Account.Id = Invoice.Account) JOIN ServiceTypeTotal USING (Account, InvoiceRun)";
+$arrDataReport['SQLWhere']		= "Invoice.InvoiceRun = <InvoiceRun>";
+$arrDataReport['SQLGroupBy']	= "Account.Id";
 
 // Documentation Reqs
 $arrDocReq[]	= "DataReport";
@@ -69,17 +69,32 @@ $arrSQLSelect['Bill Charge']	['Value']	= "Invoice.Total + Invoice.Tax";
 $arrSQLSelect['Bill Charge']	['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Bill Charge']	['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['Margin']			['Value']	= "((Invoice.Total + Invoice.Tax) - SUM(ServiceTypeTotal.Cost)) / ABS(Invoice.Total + Invoice.Tax)";
-$arrSQLSelect['Margin']			['Type']	= EXCEL_TYPE_PERCENTAGE;
-$arrSQLSelect['Margin']			['Total']	= "(<Bill Charge> - <Bill Cost>) / ABS(<Bill Charge>)";
+$arrSQLSelect['Margin']			['Value']		= "NULL";
+$arrSQLSelect['Margin']			['Function']	= "=(<Bill Charge> - <Bill Cost>) / ABS(<Bill Charge>)";
+$arrSQLSelect['Margin']			['Type']		= EXCEL_TYPE_PERCENTAGE;
+$arrSQLSelect['Margin']			['Total']		= "=(<Bill Charge> - <Bill Cost>) / ABS(<Bill Charge>)";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
+$arrColumns = Array();
+$arrColumns['Label']	= "DATE_FORMAT(BillingDate, '%d/%m/%Y')";
+$arrColumns['Value']	= "InvoiceRun";
+
+$arrSelect = Array();
+$arrSelect['Table']		= "InvoiceRun";
+$arrSelect['Columns']	= $arrColumns;
+$arrSelect['Where']		= "BillingDate > '2007-03-01'";
+$arrSelect['OrderBy']	= "BillingDate DESC";
+$arrSelect['Limit']		= NULL;
+$arrSelect['GroupBy']	= NULL;
+$arrSelect['ValueType']	= "dataString";
+
 $arrSQLFields['InvoiceRun']	= Array(
-										'Type'					=> "dataInvoiceRun",
+										'Type'					=> "StatementSelect",
+										'DBSelect'				=> $arrSelect,
 										'Documentation-Entity'	=> "DataReport",
-										'Documentation-Field'	=> "BillingPeriod",
+										'Documentation-Field'	=> "BillingDate",
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 

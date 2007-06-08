@@ -708,6 +708,11 @@
 		font-weight:         bold;
 	}
 	
+	a.Disabled
+	{
+		text-decoration:	line-through underline;
+	}
+	
 	h2.CDR,
 	h2.Plan,
 	h2.Date,

@@ -174,7 +174,9 @@
 		
 		public function Inputs ()
 		{
-			$arrInputs = unserialize ($this->Pull ('SQLFields')->getValue ());
+			$arrInputs = unserialize($this->Pull('SQLFields')->getValue());
+			//Debug(unserialize($this->Pull('SQLFields')->getValue()));
+			//die;
 			
 			$oblarrInputs = new dataArray ('Inputs');
 			
@@ -190,9 +192,29 @@
 					
 					$oblstrType			= $oblarrField->Push (new dataString ('Type',					$arrInput ['Type']));
 					
-					if (class_exists ($arrInput ['Type']))
-					{
-						if (is_subclass_of ($arrInput ['Type'], "dataPrimitive") || is_subclass_of ($arrInput ['Type'], "dataObject"))
+					if (class_exists($arrInput['Type']))
+					{						
+						// Is it a Statement?
+						if ($arrInput['DBSelect'])
+						{
+							$oblarrValue		= $oblarrField->Push(new dataArray('Options'));
+							
+							// We need to fetch values from the DB
+							$selStatement = new StatementSelect($arrInput['DBSelect']['Table'], $arrInput['DBSelect']['Columns'], $arrInput['DBSelect']['Where'], $arrInput['DBSelect']['OrderBy'], $arrInput['DBSelect']['Limit'], $arrInput['DBSelect']['GroupBy']);
+							//Debug($selStatement);
+							//die;
+							$selStatement->Execute();
+							while ($arrStatement = $selStatement->Fetch())
+							{
+								//Debug($arrStatement);
+								unset($oblOption);
+								$oblOption = new $arrInput['DBSelect']['ValueType']('Option', $arrStatement['Value']);
+								$oblOption->setAttribute('Label', $arrStatement['Label']);
+								$oblarrValue->Push($oblOption);
+							}
+							//die;
+						}
+						elseif (is_subclass_of ($arrInput ['Type'], "dataPrimitive") || is_subclass_of ($arrInput ['Type'], "dataObject"))
 						{
 							$oblarrField->Push (new $arrInput ['Type'] ('Value'));
 						}
@@ -200,17 +222,6 @@
 						{
 							$oblarrValue		= $oblarrField->Push (new dataArray  ('Value'));
 							$oblarrValue->Push (new $arrInput ['Type'] ());
-						}
-					}
-					else
-					{
-						switch ($arrInput['Type'])
-						{
-							case 'dataInvoiceRun':
-								$selInvoiceRun = new StatementSelect("InvoiceRun", "InvoiceRun, BillingDate", "", "CreatedOn DESC");
-								$selInvoiceRun->Execute();
-								// TODO: FINISH!
-								break;
 						}
 					}
 				}
@@ -242,11 +253,11 @@
 			
 			if (is_array ($arrInputs))
 			{
-				foreach ($arrInputs as $strName => $strValue)
+				foreach ($arrInputs as $strName => $arrProperties)
 				{
 					$oblarrSelect		= $oblarrSelects->Push	(new dataArray	('Select'));
 					$oblstrName			= $oblarrSelect->Push	(new dataString	('Name', $strName));
-					$oblstrValue		= $oblarrSelect->Push	(new dataString	('Value', $strValue));
+					$oblstrValue		= $oblarrSelect->Push	(new dataString	('Value', $arrProperties['Value']));
 				}
 			}
 			

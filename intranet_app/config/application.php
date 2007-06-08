@@ -178,4 +178,19 @@ $Style = new IntranetStyle ($strWebDir, $athAuthentication);
 $docDocumentation = new Documentation ();
 $docDocumentation = $Style->attachObject ($docDocumentation);
 
+
+
+//----------------------------------------------------------------------------//
+// PAGE LOCKING
+//----------------------------------------------------------------------------//
+/*
+// Is this page locked?
+$selLocked = new StatementSelect("Lock", "*");
+if ($selLocked->Execute())
+{
+	// Yes, disallow access
+	$Style->Output('xsl/content/locked.xsl');
+	die;
+}
+*/
 ?>

@@ -32,7 +32,7 @@
 	}
 	
 	if ($_POST ['Confirm'])
-	{
+	{		
 		// Is this an email report?
 		if ($rptReport->Pull('RenderMode')->getValue() == REPORT_RENDER_EMAIL)
 		{
@@ -47,8 +47,8 @@
 			$arrInsertData['Status']		= REPORT_WAITING;
 			Debug($arrInsertData);
 			
-			//$insDataReportSchedule = new StatementInsert("DataReportSchedule", $arrInsertData);
-			//$insDataReportSchedule->Execute($arrInsertData);
+			$insDataReportSchedule = new StatementInsert("DataReportSchedule", $arrInsertData);
+			$insDataReportSchedule->Execute($arrInsertData);
 			
 			// TODO: Some form of confirmation?
 			Debug("Emailed!");

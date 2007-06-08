@@ -36,6 +36,8 @@ require_once("definitions.php");
 require_once("config.php");
 
 // Module Requirements
-// OPTIONAL
+require_once("Spreadsheet/Excel/Writer.php");
+require_once("Mail.php");
+require_once("Mail/mime.php");
  
  ?>

@@ -11,6 +11,7 @@
 			<tr class="First">
 				<th width="30">#</th>
 				<th>Report Name</th>
+				<th width="30">Type</th>
 				<th>Report Summary</th>
 			</tr>
 			<xsl:for-each select="/Response/DataReports/Results/rangeSample/DataReport">
@@ -28,12 +29,35 @@
 					<td><xsl:value-of select="/Response/DataReports/Results/rangeStart + position()" />.</td>
 					<td>
 						<a>
-							<xsl:attribute name="href">
-								<xsl:text>datareport_run.php?Id=</xsl:text>
-								<xsl:value-of select="./Id" />
-							</xsl:attribute>
+							<xsl:choose>
+								<xsl:when test="(/Response/Authentication/AuthenticatedEmployee/Email = '') and (./RenderMode = 1)">
+									<xsl:attribute name="href">
+										<!-- TODO: Make this prettier -->
+										<xsl:text>javascript:alert("You must set your Employee Email Address before requesting Email Reports")</xsl:text>
+									</xsl:attribute>
+									<xsl:attribute name="class">
+										<xsl:text>Disabled</xsl:text>
+									</xsl:attribute>
+								</xsl:when>
+								<xsl:otherwise>
+									<xsl:attribute name="href">
+										<xsl:text>datareport_run.php?Id=</xsl:text>
+										<xsl:value-of select="./Id" />
+									</xsl:attribute>
+								</xsl:otherwise>
+							</xsl:choose>
 							<xsl:value-of select="./Name" />
 						</a>
+					</td>
+					<td align="center" valign="middle">
+						<xsl:choose>
+							<xsl:when test="./RenderMode = 1">
+								<img src="img/template/report_email.png" alt="Email" title="Email" />
+							</xsl:when>
+							<xsl:otherwise>
+								<img src="img/template/report_instant.png" alt="Screen" title="Screen" />
+							</xsl:otherwise>
+						</xsl:choose>
 					</td>
 					<td><xsl:value-of select="./Summary" /></td>
 					
@@ -54,6 +78,27 @@
 
 				</div>
 			</xsl:when>
+			<xsl:otherwise>
+				<div class="SmallSeperator"></div>
+				<table cellpadding="0">
+					<tr>
+						<td valign="middle">
+							<img src="img/template/report_instant.png" alt="Screen" title="Screen" />
+						</td>
+						<td valign="middle">
+							: The Report will be generated immediately and display on screen
+						</td>
+					</tr>
+					<tr>
+						<td valign="middle">
+							<img src="img/template/report_email.png" alt="Email" title="Email" />
+						</td>
+						<td valign="middle">
+							: The Report (due to size and complexity) will be emailed to you once generated
+						</td>
+					</tr>
+				</table>
+			</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
 </xsl:stylesheet>

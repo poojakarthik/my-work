@@ -64,10 +64,12 @@
 		parent::__construct();
 		
 		$this->_rptReport	= new Report("Report Report (wtfmate) for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", TRUE, "dispatch@voiptelsystems.com.au");
+		$this->_rptReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Statements
 		$this->_selReports		= new StatementSelect("DataReportSchedule", "*", "Status = ".REPORT_WAITING);
 		$this->_selDataReport	= new StatementSelect("DataReport", "Name, SQLTable, SQLSelect, SQLWhere, SQLGroupBy", "Id = <DataReport>");
+		$this->_selEmployee		= new StatementSelect("Employee", "*", "Id = <Id>");
 		
 		$arrColumns = Array();
 		$arrColumns['Status']		= NULL;
@@ -105,17 +107,25 @@
 			
 			// Prepare Columns and Where Array
 			$arrAliases	= unserialize($arrReport['SQLSelect']);
+			$arrValues	= unserialize($arrDataReport['SQLSelect']);
 			$arrColumns = Array();			
 			foreach ($arrAliases as $strAlias)
 			{
-				$arrColumns[$strAlias] = $arrDataReport[$strAlias];
+				$arrColumns["'$strAlias'"] = $arrValues[$strAlias]['Value'];
 			}
-			$arrWhere	= unserialize();
+			$arrWhere	= unserialize($arrReport['SQLWhere']);
 			
 			// Instanciate & Run Data Report
-			$selReportSelect = new StatementSelect($arrDataReport['SQLTable'], $arrColumns, $arrDataReport['SQLWhere']);
-			$selReport->Execute();
+			$selReport = new StatementSelect($arrDataReport['SQLTable'], $arrColumns, $arrDataReport['SQLWhere'], NULL, NULL, $arrDataReport['SQLGroupBy']);
+			if (!$selReport->Execute($arrWhere))
+			{
+				Debug($selReport->Error());
+				Debug($selReport->_strQuery);
+			}
 			$arrData = $selReport->FetchAll();
+			//Debug($arrData);
+			//Debug($arrDataReport);
+			//Debug($arrWhere);
 			
 			// Export Data
 			switch ($arrReport['RenderTarget'])
@@ -125,7 +135,7 @@
 					break;
 				
 				case REPORT_TARGET_XLS:
-					$arrReport['Status'] = ($strFile = $this->_ExportXLS($arrData, $arrDataReport['Name'], $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
+					$arrReport['Status'] = ($strFile = $this->_ExportXLS($arrData, $arrDataReport['Name'], $arrDataReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
 					break;
 					
 				default:
@@ -273,7 +283,7 @@
 	 */
  	private function _ExportXLS($arrData, $strReportName, $arrReport)
  	{
- 		$strPath		= "/home/vixen_upload/datareport/$strName - ".date("d/M/Y h:i:s A").".xls";
+ 		$strPath		= "/home/vixen_upload/datareport/$strReportName - ".date("d-M-Y h:i:s A").".xls";
  		
 		// Generate Excel 5 Workbook
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strPath);
@@ -291,6 +301,7 @@
 		
 		// Add in data rows
 		$arrSQLSelect	= unserialize($arrReport['SQLSelect']);
+		//Debug($arrSQLSelect);
 		$arrExcelCols	= Array();
 		$intRow			= 0;
 		foreach ($arrData as $intRow=>$arrRow)
@@ -300,21 +311,52 @@
 			{
 				$arrExcelCols[$strName]['Col'] = $intCol;
 				
+				// Is this field a function?
+				if ($mixField = $arrSQLSelect[$strName]['Function'])
+				{
+					foreach ($arrSQLSelect as $strSubName=>$arrSubField)
+					{
+						$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow + 2, $arrExcelCols[$strSubName]['Col']);
+						$mixField = str_replace("<$strSubName>", $strCell, $mixField);
+					}
+				}
+				
 				// If an output type is specified then use it, else 'best guess'
 				switch ($arrSQLSelect[$strName]['Type'])
 				{
 					case EXCEL_TYPE_CURRENCY:
-						$wksWorksheet->writeNumber($intRow+1, $intCol, (float)$mixField	, $arrFormat['Currency']);
+						if (!$arrSQLSelect[$strName]['Function'])
+						{
+							$wksWorksheet->writeNumber($intRow+1, $intCol, (float)$mixField, $arrFormat['Currency']);
+						}
+						else
+						{
+							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Currency']);
+						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['CurrencyTotal'];
 						break;
 						
 					case EXCEL_TYPE_INTEGER:
-						$wksWorksheet->writeNumber($intRow+1, $intCol, (int)$mixField	, $arrFormat['Integer']);
+						if (!$arrSQLSelect[$strName]['Function'])
+						{
+							$wksWorksheet->writeNumber($intRow+1, $intCol, (int)$mixField, $arrFormat['Integer']);
+						}
+						else
+						{
+							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Currency']);
+						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['IntegerTotal'];
 						break;
 						
 					case EXCEL_TYPE_PERCENTAGE:
-						$wksWorksheet->writeNumber($intRow+1, $intCol, (int)$mixField	, $arrFormat['Percentage']);
+						if (!$arrSQLSelect[$strName]['Function'])
+						{
+							$wksWorksheet->writeNumber($intRow+1, $intCol, (float)$mixField	, $arrFormat['Percentage']);
+						}
+						else
+						{
+							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Currency']);
+						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['PercentageTotal'];
 						break;
 					
@@ -352,8 +394,8 @@
 		foreach ($arrSQLSelect as $strName=>$arrField)
 		{
 			// Calculate Cell Range
-			$strCellStart	= Spreadsheet_Excel_Writer::rowcolToCell(2					, $arrExcelCols[$strName]['Col']);
-			$strCellEnd		= Spreadsheet_Excel_Writer::rowcolToCell(count($arrData)+2	, $arrExcelCols[$strName]['Col']);
+			$strCellStart	= Spreadsheet_Excel_Writer::rowcolToCell(1					, $arrExcelCols[$strName]['Col']);
+			$strCellEnd		= Spreadsheet_Excel_Writer::rowcolToCell(count($arrData)	, $arrExcelCols[$strName]['Col']);
 			
 			// Construct the Excel Function
 			switch ($arrField['Total'])
@@ -381,14 +423,16 @@
 							$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow + 2, $arrExcelCols[$strSubName]['Col']);
 							$strFunction = str_replace("<$strSubName>", $strCell, $strFunction);
 						}
+						$strFunction = (substr($strFunction, 0, 1) == "=") ? $strFunction : "=$strFunction";
+						$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], $strFunction, $arrExcelCols[$strName]['TotalFormat']);
+						//Debug($strFunction);
 					}
 			}
 		}
 		
-		// Send the XLS file
+		// Save the XLS file, CHMOD, return path
 		$wkbWorkbook->close();
- 		
- 		// return the path
+ 		chmod($strPath, 0777);
  		return $strPath;
  	}
  	
@@ -455,7 +499,7 @@
 		$fmtTotal->setBold();
 		$fmtTotal->setTopColor('black');
 		$fmtTotal->setTop(1);
-		$arrFormat['CurrencyBold']	= $fmtTotal;
+		$arrFormat['CurrencyTotal']	= $fmtTotal;
 		
 		
 		
@@ -476,7 +520,7 @@
 		$fmtPCTotal->setBold();
 		$fmtPCTotal->setTopColor('black');
 		$fmtPCTotal->setTop(1);
-		$arrFormat['PercentageBold']	= $fmtPCTotal;
+		$arrFormat['PercentageTotal']	= $fmtPCTotal;
 		
 		
 		
