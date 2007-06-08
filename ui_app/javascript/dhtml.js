@@ -15,7 +15,6 @@
  */
 function VixenDhtmlClass()
 {
-
 	//------------------------------------------------------------------------//
 	// this.Drag
 	//------------------------------------------------------------------------//
@@ -33,7 +32,7 @@ function VixenDhtmlClass()
 	 *
 	 * @method
 	 */
-	this.Drag = function(evt, object_id)
+	this.Drag =function(evt, object_id)
 	{
 		dragStart(evt, object_id);
 	}
@@ -243,7 +242,7 @@ else
 // Global object to hold drag information.
 
 var dragObj = new Object();
-
+dragObj.zIndex = 0;
 
 function dragStart(event, id) {
 	if (Vixen.dragging_now === TRUE)
@@ -311,9 +310,8 @@ function dragStart(event, id) {
   
   
   // Update element's z-index.
-
-  //dragObj.elNode.style.zIndex = ++dragObj.zIndex;
-
+  dragObj.elNode.style.zIndex = ++dragObj.zIndex;
+  
   // Capture mousemove and mouseup events on the page.
 
   if (browser.isIE) {
@@ -327,8 +325,6 @@ function dragStart(event, id) {
     document.addEventListener("mouseup",   dragStop, true);
     event.preventDefault();
   }
-  
-  //Vixen.fire_event(dragObj.elNode.event_target, 'pickup');
 }
 
 function dragGo(event) {
@@ -392,14 +388,12 @@ function dragGo(event) {
   }
   if (browser.isNS)
     event.preventDefault();
-	
-	// TODO !!!! where is the event object ?
-	//Vixen.fire_event(dragObj.elNode.event_target, 'drag');
 }
 
 function dragStop(evt) {
 	Vixen.dragging_now = FALSE;
 	Vixen.Dhtml.dragging = FALSE;
+	
 	// Stop capturing mousemove and mouseup events.
 	if (browser.isIE)
 	{
@@ -411,15 +405,4 @@ function dragStop(evt) {
 		document.removeEventListener("mousemove", dragGo,   true);
 		document.removeEventListener("mouseup",   dragStop, true);
 	}
-	// get the event object
-	if (!evt)
-	{
-		var evt = window.event;
-	}
-
-	if (!evt.target && evt.srcElement)
-	{
-		evt.target = evt.srcElement;
-	}
-	//Vixen.real_event(dragObj.elNode.event_target, 'drop', evt);
 }

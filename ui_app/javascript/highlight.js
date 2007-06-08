@@ -1,46 +1,67 @@
-function highlight(target, table, maxRows)
+//----------------------------------------------------------------------------//
+// VixenHighlightClass
+//----------------------------------------------------------------------------//
+/**
+ * VixenHighlightClass
+ *
+ * Vixen highlight class
+ *
+ * Vixen highlight class
+ *
+ *
+ *
+ * @package	framework_ui
+ * @class	Vixen.Highlight
+ */
+function VixenHighlightClass()
 {
-	//alert(table);
-	var selected="";
-	for (i = 0; i <= maxRows; i++)
+	this.Highlight =function (target, table, maxRows)
 	{
-		var myElement = document.getElementById(table + i);
-		if (myElement.className == "Selected")
+		//alert(table);
+		var selected="";
+		for (i = 0; i <= maxRows; i++)
 		{
-			selected = "myrow" + i;
+			var myElement = document.getElementById(table + i);
+			if (myElement.className == "Selected")
+			{
+				selected = "myrow" + i;
+				
+			}			
+			if (i % 2 == 0)
+			{
+				myElement.className = "Even";
+			}
+			else
+			{
+				myElement.className = "Odd";
+			}
 			
-		}			
-		if (i % 2 == 0)
-		{
-			myElement.className = "Even";
 		}
-		else
+		document.getElementById(target).className = "Hover";
+		if (selected != "" )
 		{
-			myElement.className = "Odd";
+			document.getElementById(target).className = "Selected";
 		}
-		
 	}
-	document.getElementById(target).className = "Hover";
-	if (selected != "" )
+	
+	this.ToggleSelection =function (target, table, maxRows)
 	{
-		document.getElementById(target).className = "Selected";
+		if (document.getElementById(target).className == "Selected")
+		{
+			var alreadyselected = true;
+		}
+		for (i = 1; i <= maxRows; i++)
+		{
+			var myElement = document.getElementById(table + i);
+			myElement.className = "";
+		}
+		if (!alreadyselected)
+		{
+			document.getElementById(target).className = "Selected";
+		}
+		highlight(target, table, maxRows);
 	}
-}
+}	
 
-function toggleSelection(target, table, maxRows)
-{
-	if (document.getElementById(target).className == "Selected")
-	{
-		var alreadyselected = true;
-	}
-	for (i = 1; i <= maxRows; i++)
-	{
-		var myElement = document.getElementById(table + i);
-		myElement.className = "";
-	}
-	if (!alreadyselected)
-	{
-		document.getElementById(target).className = "Selected";
-	}
-	highlight(target, table, maxRows);
-}
+// Create an instance of the Vixen highlight class
+Vixen.Highlight = new VixenHighlightClass();

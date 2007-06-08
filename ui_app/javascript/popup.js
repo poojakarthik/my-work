@@ -64,6 +64,8 @@ function VixenPopupClass()
 				elmOverlay = document.createElement('div');
 				elmOverlay.setAttribute('Id', 'overlay');
 				elmRoot.appendChild(elmOverlay);
+				elmOverlay.style.zIndex = ++dragObj.zIndex;
+				
 				break;
 			}
 			case "modeless":
@@ -83,8 +85,9 @@ function VixenPopupClass()
 			}
 		}
 		
+		// Bring the box to the front
+		elmPopup.style.zIndex = ++dragObj.zIndex;
 
-		
 		// Set the size of the popup box
 		switch (strSize)
 		{
@@ -141,19 +144,29 @@ function VixenPopupClass()
 		}
 		
 		// Add the handler for dragging the box around
-    	dragObj = document.getElementById('VixenPopupTopBar__' + strId);
-    	dragObj.addEventListener('mousedown', LoginHandler, false);
-
-		function LoginHandler(event)
+    	mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
+    	mydragObj.addEventListener('mousedown', OpenHandler, false);
+		
+		function OpenHandler(event)
 		{
+			//debug(event.target);
 			Vixen.Dhtml.Drag(event, 'VixenPopup__' + strId);
+			
 		}
 		function CloseHandler(event)
 		{
-			Vixen.Popup.Close(strId);
+			debug (event.target.id);
+			if (event.target.id.indexOf(strId) >= 0)
+			{
+				//debug (event.target.id.substr(18));
+				// Top bar, looking to drag
+			}			
+			else
+			{
+				Vixen.Popup.Close(strId);
+				document.removeEventListener('mousedown', CloseHandler, TRUE);
+			}
 		}
-		
-		
 	}
 	
 	this.Close = function(strId)
@@ -161,7 +174,9 @@ function VixenPopupClass()
 		var objClose = document.getElementById('VixenPopup__' + strId);
 		if (objClose)
 		{
+			//objClose.removeEventListener('mousedown', OpenHandler, false);
 			objClose.parentNode.removeChild(objClose);
+			
 		}
 		var elmOverlay = document.getElementById('overlay');
 		if (elmOverlay)
