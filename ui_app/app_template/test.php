@@ -28,10 +28,14 @@ class AppTemplateTest extends ApplicationTemplate
 		DBO()->Account->BillingType = 3;
 		echo "<br>";
 		DBO()->Account->BillingType->RenderOutput();
+		DBO()->Account->BillingType = 10;
+		echo "<br>";
+		DBO()->Account->BillingType->RenderOutput();
 		DBO()->Account->BillingType = 0;
 		echo "<br>";
 		DBO()->Account->BillingType->RenderOutput();
 		echo "<br>";
+		DBO()->Account->Balance = 500;
 		DBO()->Account->Balance->RenderOutput(0);
 		
 

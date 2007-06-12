@@ -114,7 +114,10 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		if (!DBO()->Author->IsInvalid())
 		{
 			// the author was found
-			echo "\t<br><b>Created by: </b>" . DBO()->Author->FirstName->Value . " " . DBO()->Author->LastName->Value ."\n";
+			echo "\t<br><b>Created by: </b>";
+			DBO()->Author->FirstName->RenderOutput();
+			DBO()->Author->LastName->RenderOutput();
+			echo "\n";
 		}
 		else
 		{
@@ -127,7 +130,10 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		if (!DBO()->Authoriser->IsInvalid())
 		{
 			// the authoriser was found
-			echo "\t<br><b>Authorised by: </b>" . DBO()->Authoriser->FirstName->Value . " " . DBO()->Authoriser->LastName->Value ."\n";
+			echo "\t<br><b>Authorised by: </b>";
+			DBO()->Authoriser->FirstName->RenderOutput();
+			DBO()->Authoriser->LastName->RenderOutput();
+			echo "\n";
 		}
 		else
 		{

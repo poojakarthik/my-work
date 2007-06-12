@@ -209,33 +209,9 @@ class HTMLElements
 	function Label($arrParams)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
-		$strValue = $arrParams['Value'];
+		$strValue = $this->_BuildOutputValue($arrParams);
 		
-		// check if there is any options data related to this property
-		if (is_array($arrParams['Definition']['Options']))
-		{
-			$bolSet = FALSE;
-			
-			// find the correct output label to use instead of the value
-			foreach ($arrParams['Definition']['Options'] as $arrOption)
-			{
-				if ($strValue == $arrOption['Value'])
-				{
-					// set the new value to output
-					$strValue = str_replace("<value>", $strValue, $arrOption['OutputLabel']);
-					$bolSet = TRUE;
-					break;
-				}
-			}
-			
-			// if the value has not been found in the list of values in 'Options' then use 
-			// the default OutputLabel for this context, assuming there is one
-			if ((!$bolSet) && ($arrParams['Definition']['OutputLabel']))
-			{
-				$strValue = str_replace("<value>", $strValue, $arrParams['Definition']['OutputLabel']);
-			}
-		}
-
+		
 		if ($arrParams['Context'] == 0)
 		{
 			echo "  <td>\n";
@@ -245,6 +221,113 @@ class HTMLElements
 		echo "   <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
 	}
 	
+	//------------------------------------------------------------------------//
+	// _OutputValue
+	//------------------------------------------------------------------------//
+	/**
+	 * _OutputValue()
+	 * 
+	 * Formats an output string based on the value and output string passed in
+	 * 
+	 * Formats an output string based on the value and output string passed in
+	 * 
+	 *
+	 * @param	mix		$mixValue			Value to use in the output string
+	 * @param	string	$strOutputString	String to output. This can utilise the <value> placeholder
+	 * @return	mix							If $strOutputString is not null, then it is returned with $mixValue
+	 *										substittuted for the placeholder <value>
+	 *										Else, $mixValue is returned
+	 *
+	 * @method
+	 */
+	function _OutputValue($mixValue, $strOutputString)
+	{
+		$mixReturn = $mixValue;
+		
+		// replace <value> case-insensitive
+		if ($strOutputString)
+		{
+			$mixReturn = str_ireplace("<value>", $mixValue, $strOutputString);
+		}
+		
+		return $mixReturn;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _BuildOutputValue
+	//------------------------------------------------------------------------//
+	/**
+	 * _BuildOutputValue()
+	 * 
+	 * Builds the output value based on the property definition in UIAppDocumentation and UIAppDocumentationOptions tables
+	 * 
+	 * Builds the output value based on the property definition in UIAppDocumentation and UIAppDocumentationOptions tables
+	 * 
+	 *
+	 * @param	Array	$arrParams		The standard set of parameters passed to all HtmlElement public methods
+	 * 									(see above for format).
+	 *
+	 * @method
+	 */
+	function _BuildOutputValue($arrParams)
+	{
+		$strValue = NULL;
+
+		// check if there is any options data related to this property
+		if (is_array($arrParams['Definition']['Options']))
+		{			
+			// find the correct output label to use instead of the value
+			foreach ($arrParams['Definition']['Options'] as $arrOption)
+			{
+				if ($arrParams['Value'] == $arrOption['Value'])
+				{
+					// set the new value to output
+					$strValue = $this->_OutputValue($arrParams['Value'], $arrOption['OutputLabel']);
+					break;
+				}
+			}
+			
+			// if the value has not been found in the list of values in 'Options' then use 
+			// the default OutputLabel for this context
+			if (!$strValue)
+			{
+				$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel']);
+			}
+		}
+		else
+		{
+			$strValue = $arrParams['Value'];
+		}
+		
+		return $strValue;
+	}
+	
+	//------------------------------------------------------------------------//
+	// OutputLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * OutputLabel()
+	 * 
+	 * Outputs the property's value embedded in the string defined as the OutputLabel property of the table UIAppDocumentation
+	 * 
+	 * Outputs the property's value embedded in the string defined as the OutputLabel property of the table UIAppDocumentation
+	 * The label associated with the property is not output.  The OutputLabel string is output
+	 * with the <value> placeholder substittuted with the property's value.
+	 * If an OutputLabel is not defined for the property (is NULL) then the value is output.
+	 * If there are multiple OutputLabels defined in UIAppDocumentationOptions then these are used, if associated with the
+	 * property's value.
+	 *
+	 * @param	Array	$arrParams		The parameters to use when building the
+	 * 									label (see above for format).
+	 *
+	 * @method
+	 */
+	function OutputLabel($arrParams)
+	{
+		$strValue = $this->_BuildOutputValue($arrParams);
+
+		echo "  <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
+	}
 	//------------------------------------------------------------------------//
 	// MultiLinedLabel
 	//------------------------------------------------------------------------//
@@ -447,6 +530,8 @@ class HTMLElements
 		echo "<div>$strMethodName() was called with paramaters: <br />{$arrParams['Value']}</div>";
 		echo "</td>";
     }
+	
+	
 }
 
 

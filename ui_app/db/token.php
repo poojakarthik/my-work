@@ -292,16 +292,6 @@ class PropertyToken
 		}
 		
 		$arrParams['Context'] 		= $intContext;
-		
-		// if for the given context there are options, then:
-		// if an OutputLabel is defined in UIAppDocumentation then use this instead of the value (note that this may contain the <value> placeholder)
-		//						Is this only when the value is being output and not being input?  I think it should be left up to the 
-		//						individual html element to decide whether to use the value or the OutputLabel
-		//						Yes, it should be left up to the individual HtmlElement method because if it's outputting radio buttons to be used as an input,
-		//						then the method will want to output each option
-		//						but what about when it is 
-		// when do we go looking in the UIAppDocumentationOptions table?
-		
 
 		$arrParams['Value'] 		= $this->_dboOwner->_arrProperties[$this->_strProperty];
 		$arrParams['Valid'] 		= $this->_dboOwner->_arrValid[$this->_strProperty];

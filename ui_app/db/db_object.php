@@ -886,6 +886,48 @@ class DBObject extends DBObjectBase
 		return $this->_arrColumns;
 	}
 
+	//------------------------------------------------------------------------//
+	// SetContext
+	//------------------------------------------------------------------------//
+	/**
+	 * SetContext()
+	 *
+	 * Set the current context associated with this DBObject
+	 *
+	 * Set the current context associated with this DBObject
+	 * The DBObject's current context is used when retrieving definition data for 
+	 * a property using the token's __get method
+	 * 
+	 * @param	int		$intContext		Context to set the DBObject to
+	 *
+	 * @return	int						returns the data attribute declaring the current context ($_intContext)
+	 *
+	 * @method
+	 */
+	function SetContext($intContext)
+	{
+		return $this->_intContext = $intContext;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetContext
+	//------------------------------------------------------------------------//
+	/**
+	 * GetContext()
+	 *
+	 * Get the context currently associated with this DBObject
+	 *
+	 * Get the context currently associated with this DBObject
+	 * 
+	 * @return	int						returns the data attribute declaring the current context ($_intContext)
+	 * @method
+	 */
+	function GetContext()
+	{
+		return $this->_intContext;
+	}
+
+
 }
 
 
