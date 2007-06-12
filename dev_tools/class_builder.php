@@ -719,7 +719,7 @@ class ClassBuilderPHP
  }
  
  
- //----------------------------------------------------------------------------//
+//----------------------------------------------------------------------------//
 // ClassBuilder
 //----------------------------------------------------------------------------//
 /**
@@ -809,8 +809,9 @@ class ClassBuilderPHP
 			$strFirstChar = strtolower(substr($strLine, 0, 1));
 			switch ($strFirstChar)
 			{	
-				// Blank line
+				// Blank lines and ignored comments
 				case '':
+				case '#':
 					break;
 				
 				// Language
