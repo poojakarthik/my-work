@@ -19,29 +19,23 @@
  * @license	NOT FOR EXTERNAL DISTRIBUTION
  *
  */
+ 
+//TODO!Andrew! add support for building javascript classes
+//TODO!Andrew! add support for building class properties
 
-//----------------------------------------------------------------------------//
-// ClassBuilder
-//----------------------------------------------------------------------------//
-/**
- * ClassBuilder
- *
- * Build a class from the given input
- *
- * Build a class from the given input
- *
- *
- * @prefix	<prefix>
- *
- * @package	<package_name>
- * @parent	<full.parent.path>
- * @class	<ClassName||InstanceName>
- * @extends	<ClassName>
- */
- 
- class ClassBuilder {
- 
- 	//------------------------------------------------------------------------//
+
+
+class ClassBuilderJS
+{
+	function Process($strLine)
+	{
+		return FALSE;
+	}
+}
+
+class ClassBuilderPHP
+{
+	//------------------------------------------------------------------------//
 	// __Construct
 	//------------------------------------------------------------------------//
 	/**
@@ -59,17 +53,16 @@
 	 */
  
  
- 	function __Construct($strInput)
+ 	function __Construct()
 	{
-		$this->arrInput = explode("\n", $strInput);
 		
 		// keeps track of whether or not the method or class is the first one
 		// therefore don't add a closing bracket
-		$this->bolFirstClass = TRUE;
-		$this->bolFirstMethod = TRUE;
+		$this->bolFirstClass 	= TRUE;
+		$this->bolFirstMethod 	= TRUE;
 		
 		// keeps track of tabbing space for comments
-		$this->bolCommentClass = FALSE;
+		$this->bolCommentClass 	= FALSE;
 		$this->bolCommentMethod = FALSE;
  	}
  
@@ -90,49 +83,57 @@
 	 * @see	<MethodName()||typePropertyName>
 	 */
 	 
- 	function Process()
+ 	function Process($strLine)
 	{
-		$this->intLineNumber = 0;
-		$this->arrOutput = array();
-		
-		foreach ($this->arrInput as $intKey=>$strLine)
-		{
 			$this->intLineNumber++;
-			$this->arrInput[$intKey] = str_replace("\t", ' ', $this->arrInput[$intKey]);
-			$strFirstChar = substr($this->arrInput[$intKey], 0, 1);
-			if ($strFirstChar == 'c')
+			$strLine = trim(str_replace("\t", ' ', $strLine));
+			$strFirstChar = strtolower(substr($strLine, 0, 1));
+			switch ($strFirstChar)
 			{
-				$this->arrOutput[$intKey] = $this->BuildClass($this->arrInput[$intKey]);
-				if ($this->arrOutput[$intKey] === FALSE) 
-				{
+				// Class
+				case 'c':
+					if (($this->arrOutput[$intKey] = $this->BuildClass($strLine)) === FALSE)
+					{
+						return FALSE;
+					}
+					break;
+				
+				// Method
+				case 'm':
+				case 'f':
+					$this->arrOutput[$intKey] = $this->BuildMethod($strLine);
+					if ($this->arrOutput[$intKey] === FALSE) 
+					{
+						return FALSE;
+					}
+					break;
+				
+				// Property
+				case 'p':
+					//TODO!Andrew!add support for properties
+					if (($this->arrOutput[$intKey] = $this->BuildProperty($strLine)) === FALSE)
+					{
+						return FALSE;
+					}
+					break;
+				
+				// Comment
+				case '/':
+					$this->arrOutput[$intKey] = $this->BuildComment($strLine);
+					if ($this->arrOutput[$intKey] === FALSE) 
+					{
+						return FALSE;
+					}
+					break;
+				
+				// Blank line
+				case '':
+					break;
+				
+				// Invalid
+				default:
 					return FALSE;
-				}
-			}
-			elseif ($strFirstChar == 'm')
-			{
-				$this->arrOutput[$intKey] = $this->BuildMethod($this->arrInput[$intKey]);
-				if ($this->arrOutput[$intKey] === FALSE) 
-				{
-					return FALSE;
-				}
-			}
-			elseif ($strFirstChar == '/')
-			{
-				$this->arrOutput[$intKey] = $this->BuildComment($this->arrInput[$intKey]);
-				if ($this->arrOutput[$intKey] === FALSE) 
-				{
-					return FALSE;
-				}
-			}
-			else 
-			{
-				//$this->arrOutput[$intKey] = 'other';
-				return FALSE;
-			}
 		}
-		
-		
-		
 		
 		$this->strOutput = '';
 		foreach ($this->arrOutput as $strLine)
@@ -155,7 +156,7 @@
 			
 		return $this->strOutput;
 	}
-      
+	
  	//------------------------------------------------------------------------//
 	// BuildClass
 	//------------------------------------------------------------------------//
@@ -716,5 +717,157 @@
 	}
  
  }
+ 
+ 
+ //----------------------------------------------------------------------------//
+// ClassBuilder
+//----------------------------------------------------------------------------//
+/**
+ * ClassBuilder
+ *
+ * Build a class from the given input
+ *
+ * Build a class from the given input
+ *
+ *
+ * @prefix	<prefix>
+ *
+ * @package	<package_name>
+ * @parent	<full.parent.path>
+ * @class	<ClassName||InstanceName>
+ * @extends	<ClassName>
+ */
+ 
+ class ClassBuilder {
+ 
+ 	//------------------------------------------------------------------------//
+	// __Construct
+	//------------------------------------------------------------------------//
+	/**
+	 * __Construct()
+	 *
+	 * Take the given input and make into an array of lines
+	 *
+	 * Take the given input and make into an array of lines
+	 *
+	 * @param	string	$strInput	The file of shorthand to convert
+	 * 
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+ 
+ 
+ 	function __Construct($strInput)
+	{
+		$this->arrInput = explode("\n", $strInput);
+		
+		// load language modules
+		$this->_arrModules = Array();
+		$this->_arrModules['php'] = new ClassBuilderPHP();
+		$this->_arrModules['js'] = new ClassBuilderJS();
+		
+		// set defaflt language
+		$this->strLanguage = 'php';
+		
+		// keeps track of whether or not the method or class is the first one
+		// therefore don't add a closing bracket
+		$this->bolFirstClass 	= TRUE;
+		$this->bolFirstMethod 	= TRUE;
+		
+		// keeps track of tabbing space for comments
+		$this->bolCommentClass 	= FALSE;
+		$this->bolCommentMethod = FALSE;
+ 	}
+ 
+ 
+   	//------------------------------------------------------------------------//
+	// Process
+	//------------------------------------------------------------------------//
+	/**
+	 * Process()
+	 *
+	 * Work through $arrInput and convert the shorthand
+	 *
+	 * Work through $arrInput and convert the shorthand
+	 *
+	 * @return	<type>
+	 *
+	 * @method
+	 * @see	<MethodName()||typePropertyName>
+	 */
+	 
+ 	function Process()
+	{
+		$this->intLineNumber = 0;
+		$this->arrOutput = array();
+		
+		foreach ($this->arrInput as $intKey=>$strLine)
+		{
+			$this->intLineNumber++;
+			$strLine = trim(str_replace("\t", ' ', $strLine));
+			$strFirstChar = strtolower(substr($strLine, 0, 1));
+			switch ($strFirstChar)
+			{	
+				// Blank line
+				case '':
+					break;
+				
+				// Language
+				case 'l':
+					$arrLanguage = explode(' ', $strLine);
+					switch (trim(strtolower($arrLanguage[1])))
+					{
+						// javascript
+						case 'js':
+						case 'javascript':
+							$this->strLanguage = 'js';
+							break;
+						
+						// php
+						case 'php':
+							$this->strLanguage = 'php';
+							break;
+						
+						// invalid
+						default:
+							return FALSE;
+					}
+					break;
+				
+				// process line
+				default:
+					if (($this->arrOutput[$intKey] = $this->_arrModules[$this->strLanguage]->Process($strLine)) === FALSE)
+					{
+						return FALSE;
+					}	
+			}
+		}
+		
+		
+		
+		
+		$this->strOutput = '';
+		foreach ($this->arrOutput as $strLine)
+		{
+			$this->strOutput .= $strLine;
+			$this->strOutput .= "\n";
+		}
+		
+		// close the class and methods
+		
+			if(!$this->bolFirstMethod)
+			{
+				$this->strOutput .= "\t }";
+			}
+			$this->strOutput .= "\n";
+			if(!$this->bolFirstClass)
+			{
+			$this->strOutput .= '}';
+			}
+			
+		return $this->strOutput;
+	}
+}
  
  ?>

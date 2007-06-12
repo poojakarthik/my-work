@@ -24,14 +24,9 @@ if (!$strOutputText = $objClass->Process())
 	<body>
 		<form method="POST">
 			<textarea name="InputText" style="height: 500px; width: 800px;"><?php echo $strInputText; ?></textarea>
+			<textarea name="OutputText" style="height: 500px; width: 800px;"><?php echo $strOutputText; ?></textarea>
 			<br>
 			<input type="submit" value="Build Class">
 		</form>
-		<br>
-		<br>
-		<hr>
-		<br>
-		<br>
-		<textarea name="OutputText" style="height: 500px; width: 800px;"><?php echo $strOutputText; ?></textarea>
 	</body>
 </html>
