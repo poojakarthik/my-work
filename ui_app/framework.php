@@ -783,17 +783,36 @@ class Config
 							// Retrieve further documentation options such as radio button values and labels
 							$selOptions = new StatementSelect("UIAppDocumentationOptions", "*", "Object = <Object>");
 							$selOptions->Execute(Array('Object' => $strName));
-							$arrOptions = $selOptions->FetchAll();						
+							$arrOptions = $selOptions->FetchAll();
 	
 							if (is_array($arrOptions))
 							{
 								foreach ($arrOptions as $arrRecord)
 								{
 									// Add each record to an array called 'Options' inside its associated property array
-									// This data can be accessed by: $this->_arrConfig['dbo'][object][property][context]['Options'][Group][][field] = value
+									// This data can be accessed by: $this->_arrConfig['dbo'][object][property][context]['Options'][][field] = value
 									$arrOption['Value'] = $arrRecord['Value'];
-									$arrOption['Label'] = $arrRecord['Label'];
-									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Options'][$arrRecord['Group']][] = $arrOption;
+									$arrOption['OutputLabel'] = $arrRecord['OutputLabel'];
+									$arrOption['InputLabel'] = $arrRecord['InputLabel'];
+									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']][$arrRecord['Context']]['Options'][] = $arrOption;
+								}
+							}
+							
+							// Retrieve conditional context information from the ConditionalContexts table
+							$selCondContexts = new StatementSelect("ConditionalContexts", "*", "Object = <Object>", "Id");
+							$selCondContexts->Execute(Array('Object' => $strName));
+							$arrCondContexts = $selCondContexts->FetchAll();
+	
+							if (is_array($arrCondContexts))
+							{
+								foreach ($arrCondContexts as $arrRecord)
+								{
+									// Add each record to an array called 'ConditionalContexts' inside its associated property array
+									// This data can be accessed by: $this->_arrConfig['dbo'][object][property]['ConditionalContexts'][][field] = value
+									$arrCondition['Operator'] = $arrRecord['Operator'];
+									$arrCondition['Value'] = $arrRecord['Value'];
+									$arrCondition['Context'] = $arrRecord['Context'];
+									$this->_arrConfig[$strType][$arrRecord['Object']][$arrRecord['Property']]['ConditionalContexts'][] = $arrCondition;
 								}
 							}
 						}

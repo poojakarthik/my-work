@@ -208,14 +208,41 @@ class HTMLElements
 	 */
 	function Label($arrParams)
 	{
-	
+		$strLabel = $arrParams['Definition']['Label'];
+		$strValue = $arrParams['Value'];
+		
+		// check if there is any options data related to this property
+		if (is_array($arrParams['Definition']['Options']))
+		{
+			$bolSet = FALSE;
+			
+			// find the correct output label to use instead of the value
+			foreach ($arrParams['Definition']['Options'] as $arrOption)
+			{
+				if ($strValue == $arrOption['Value'])
+				{
+					// set the new value to output
+					$strValue = str_replace("<value>", $strValue, $arrOption['OutputLabel']);
+					$bolSet = TRUE;
+					break;
+				}
+			}
+			
+			// if the value has not been found in the list of values in 'Options' then use 
+			// the default OutputLabel for this context, assuming there is one
+			if ((!$bolSet) && ($arrParams['Definition']['OutputLabel']))
+			{
+				$strValue = str_replace("<value>", $strValue, $arrParams['Definition']['OutputLabel']);
+			}
+		}
+
 		if ($arrParams['Context'] == 0)
 		{
 			echo "  <td>\n";
-			echo "    {$arrParams['Definition']['Label']} : \n";
+			echo "    {$strLabel} : \n";
 			echo "  </td>\n";
 		}
-		echo "   <td class='{$arrParams['Definition']['FullClass']}'>{$arrParams['Value']}</td>\n";
+		echo "   <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
 	}
 	
 	//------------------------------------------------------------------------//

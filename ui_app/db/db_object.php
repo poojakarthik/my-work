@@ -684,10 +684,10 @@ class DBObject extends DBObjectBase
 		// load property definition data
 		foreach ($this->_arrProperties as $strProperty=>$mixValue)
 		{
-			//for each property and for the current context, load the definition data if it exists
-			if (isset($this->_arrDefine[$strProperty][$this->_intContext]))
+			// for each context of each property, load the definition data if it exists (this will also load conditional context data)
+			if (isset($this->_arrDefine[$strProperty]))
 			{
-				$arrReturn['Properties'][$strProperty] = array_merge($arrReturn['Properties'][$strProperty], $this->_arrDefine[$strProperty][$this->_intContext]);
+				$arrReturn['Properties'][$strProperty]['Context'] = $this->_arrDefine[$strProperty];
 			}
 		}
 
@@ -699,7 +699,7 @@ class DBObject extends DBObjectBase
 
 		return $arrReturn;
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// ShowInfo
 	//------------------------------------------------------------------------//

@@ -13,7 +13,32 @@ class AppTemplateTest extends ApplicationTemplate
 	{
 		
 		echo "Hello";
+
+		DBO()->Account->Load();
+		DBO()->Account->Balance = -500;
 		
+		DBO()->Account->Balance->RenderOutput(0);  // the conditions will force this to be rendered using context 1
+		
+		DBO()->Account->BillingType = -1;
+		echo "<br>";
+		DBO()->Account->BillingType->RenderOutput();
+		DBO()->Account->BillingType = 2;
+		echo "<br>";
+		DBO()->Account->BillingType->RenderOutput();
+		DBO()->Account->BillingType = 3;
+		echo "<br>";
+		DBO()->Account->BillingType->RenderOutput();
+		DBO()->Account->BillingType = 0;
+		echo "<br>";
+		DBO()->Account->BillingType->RenderOutput();
+		echo "<br>";
+		DBO()->Account->Balance->RenderOutput(0);
+		
+
+		echo "<br>die!";
+		die;
+		
+/*		
 		BreadCrumb()->ViewAccount(1000006574);
 		BreadCrumb()->ViewService(1, '0787321549');
 

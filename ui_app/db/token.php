@@ -207,16 +207,16 @@ class PropertyToken
 	 *
 	 * Renders the property in it's HTML input form
 	 *
-	 * @param	bool	$bolRequired	Whether the field should be mandatory
-	 * @param	string	$strContext		The context in which the property will be displayed
+	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @param	bool	$bolRequired	[optional] Whether the field should be mandatory
 	 * 
 	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
 	 *
 	 * @method
 	 */
-	function RenderInput($bolRequired=NULL, $intContext=CONTEXT_DEFAULT)
+	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
 	{
-		return $this->_RenderIO("Input", $bolRequired, $intContext);
+		return $this->_RenderIO("Input", $intContext, $bolRequired);
 	}
 
 	//------------------------------------------------------------------------//
@@ -229,16 +229,15 @@ class PropertyToken
 	 *
 	 * Renders the property in it's standard label form
 	 *
-	 * @param	bool	$bolRequired	Whether the field should be mandatory
-	 * @param	string	$strContext		The context in which the property will be displayed
+	 * @param	string	$strContext		[optional] The context in which the property will be displayed
 	 * 
 	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
 	 *
 	 * @method
 	 */
-	function RenderOutput($bolRequired=NULL, $intContext=CONTEXT_DEFAULT)
+	function RenderOutput($intContext=CONTEXT_DEFAULT)
 	{
-		return $this->_RenderIO("Output", $bolRequired, $intContext);
+		return $this->_RenderIO("Output", $intContext);
 	}
 
 	//------------------------------------------------------------------------//
@@ -252,14 +251,14 @@ class PropertyToken
 	 * Renders the property in its specified template
 	 *
 	 * @param	string	$strType		either "Output" or "Input"
-	 * @param	bool	$bolRequired	Whether the field should be mandatory
-	 * @param	string	$strContext		The context in which the property will be displayed
+	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @param	bool	$bolRequired	[optional] Whether the field should be mandatory
 	 * 
 	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
 	 *
 	 * @method
 	 */
-	private function _RenderIO($strType, $bolRequired=NULL, $intContext=CONTEXT_DEFAULT)
+	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
 	{
 		//TODO!Rich!Why does the contect array start at 1 (when CONTEXT_DEFAULT = 0)
 		//$intContext = 1;
@@ -272,17 +271,43 @@ class PropertyToken
 			return FALSE;
 		}
 		
-		// Build up parameters for RenderHTMLTemplate()
+		// build up parameters for RenderHTMLTemplate()
 		$arrParams = Array();
 		$arrParams['Object'] 		= $this->_dboOwner->_strName;
 		$arrParams['Property'] 		= $this->_strProperty;
-		$arrParams['Context'] 		= $intContext;
-		$arrParams['Value'] 		= $this->_dboOwner->_arrProperties[$this->_strProperty];
 		
+		// work out if the context of the property is subject to its value
+		if (is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts']))
+		{
+			// test each defined condition and use the context of the first one that is found to be true
+			foreach ($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts'] as $arrCondition)
+			{
+				if (IsConditionTrue($this->_dboOwner->_arrProperties[$this->_strProperty], $arrCondition['Operator'], $arrCondition['Value']))
+				{
+					// set the context to use
+					$intContext = $arrCondition['Context'];
+					break;
+				}
+			}
+		}
+		
+		$arrParams['Context'] 		= $intContext;
+		
+		// if for the given context there are options, then:
+		// if an OutputLabel is defined in UIAppDocumentation then use this instead of the value (note that this may contain the <value> placeholder)
+		//						Is this only when the value is being output and not being input?  I think it should be left up to the 
+		//						individual html element to decide whether to use the value or the OutputLabel
+		//						Yes, it should be left up to the individual HtmlElement method because if it's outputting radio buttons to be used as an input,
+		//						then the method will want to output each option
+		//						but what about when it is 
+		// when do we go looking in the UIAppDocumentationOptions table?
+		
+
+		$arrParams['Value'] 		= $this->_dboOwner->_arrProperties[$this->_strProperty];
 		$arrParams['Valid'] 		= $this->_dboOwner->_arrValid[$this->_strProperty];
 		$arrParams['Required'] 		= $bolRequired;
 		$arrParams['Definition'] 	= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
-		
+
 		// work out the class to use
 		if (!$arrParams['Definition']['Class'])
 		{
@@ -303,23 +328,25 @@ class PropertyToken
 	}
 	
 	//------------------------------------------------------------------------//
-	// Render
+	// RenderValue
 	//------------------------------------------------------------------------//
 	/**
-	 * Render()
+	 * RenderValue()
 	 *
 	 * Renders the property in it's standard label form
 	 *
 	 * Renders the property in it's standard label form
 	 *
-	 * @param	string	$strOutputMask	optional output mask 
+	 * @param	string	$strOutputMask	[optional] output mask 
 	 * 
 	 * @return	mixed PropertyValue
 	 *
 	 * @method
 	 */
-	function Render($strOutputMask=NULL)
+	function RenderValue($strOutputMask=NULL)
 	{
+		//TODO! implement $strOutputMask
+		
 		echo $this->_dboOwner->_arrProperties[$this->_strProperty];
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
 	}

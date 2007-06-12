@@ -364,5 +364,57 @@ function AuthenticatedUser()
 	return $objAuthenticatedUser;
 }
 
+//------------------------------------------------------------------------//
+// IsConditionTrue
+//------------------------------------------------------------------------//
+/**
+ * IsConditionTrue()
+ *
+ * Tests the condition defined in the parameters
+ *
+ * Tests the condition defined in the parameters
+ * it will effectively test the condition 	($mixLeftValue $strOperator $mixRightValue)
+ * for example								(1 "<=" 6) will return TRUE
+ *
+ * @param	mix		$mixLeftValue	the value that will be left of the operator used in the condition
+ * @param	string	$strOperator	the operator that will be used to compare the other to parameters
+ *									current acceptable operators:
+ *									<, >, <=, >=, ==, !=
+ * @param	mix		$mixRightValue	the value that will be right of the operator used in the condition
+ *
+ * @return	mix						returns NULL if the condition could not be tested, ELSE
+ *									it returns the result of testing the condition
+ *
+ * @function
+ */
+function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue)
+{
+	switch ($strOperator)
+	{
+		case "==":
+			$bolReturn = ($mixLeftValue == $mixRightValue);
+			break;
+		case "!=":
+			$bolReturn = ($mixLeftValue != $mixRightValue);
+			break;
+		case "<":
+			$bolReturn = ($mixLeftValue < $mixRightValue);
+			break;
+		case ">":
+			$bolReturn = ($mixLeftValue > $mixRightValue);
+			break;
+		case "<=":
+			$bolReturn = ($mixLeftValue <= $mixRightValue);
+			break;
+		case ">=":
+			$bolReturn = ($mixLeftValue >= $mixRightValue);
+			break;
+		default:
+			$bolReturn = NULL;
+			break;
+	}
+	return $bolReturn;
+}
+
 
 ?>
