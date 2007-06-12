@@ -105,7 +105,7 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 		
 		//DBL()->ShowInfo();
 				
-		echo "<table class='Listing' id='AccountInvoices'>\n";
+		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='AccountInvoices'>\n";
 		echo "<tr class='First'>\n";
 		echo " <th>Account Id</th>\n";
 		echo " <th>Invoice Id</th>\n";
@@ -119,25 +119,24 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
 			echo "<tr id='AccountInvoices_$intRowCount' class='$strClass'>\n";
 			// change these to Render (not RenderOutput)
-			$objValue->Account->RenderOutput(TRUE, 1);
-			$objValue->Id->RenderOutput(TRUE, 1);
-			if ($objValue->AccountBalance > 0)
-			{
-				$objValue->AccountBalance->RenderOutput(TRUE, CONTEXT_OVERPAID);
-			}
-			else if ($objValue->AccountBalance < 0)
-			{
-				$objValue->AccountBalance->RenderOutput(TRUE, CONTEXT_OVERDUE);
-			}
-			else
-			{
-				$objValue->AccountBalance->RenderOutput(TRUE, 1);
-			}
-			$objValue->TotalOwing->RenderOutput(TRUE, 1);
-			echo "</tr>\n";
-			echo "<tr><td colspan=4>\n";
-			echo "<div id='AccountInvoices_" . $intRowCount . "DIV' style='height: 650px; display: none'>";
-			$objValue->ShowInfo();
+			echo "<td>";
+			$objValue->Account->RenderValue();
+			echo "</td>";
+			echo "<td>";
+			$objValue->Id->RenderValue();
+			echo "</td>";
+			echo "<td>";
+			$objValue->AccountBalance->RenderValue();
+			echo "</td>";
+			echo "<td>";
+			$objValue->TotalOwing->RenderValue();
+			echo "</td>";			
+			echo "</tr><tr>";
+			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
+			echo "<div id='AccountInvoices_" . $intRowCount . "DIV' style='height: 20px; display: none; overflow:hidden;'>";
+			//$objValue->ShowInfo();
+			echo $objValue->Status->Label . ":";
+			$objValue->Status->RenderValue();
 			echo "</div>";
 			echo "</td></tr>\n";
 		}

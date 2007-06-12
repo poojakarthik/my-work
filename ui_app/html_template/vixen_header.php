@@ -110,7 +110,7 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 			Version 7.03
 									
 			<div class='Menu_Button'>
-				<a href='#' onclick=\"return ModalDisplay ('#modalContent-ReportBug')\">
+				<a href='#' onclick=''>
 					<img src='img/template/bug.png' alt='Report Bug' title='Report Bug' border='0'>
 				</a>
 			</div>
@@ -121,7 +121,6 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
     </div>
     <div class='Clear'></div>
     <div class='Seperator'></div>";
-
 	}
 }
 

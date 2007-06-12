@@ -298,7 +298,6 @@ class HTMLElements
 		{
 			$strValue = $arrParams['Value'];
 		}
-		
 		return $strValue;
 	}
 	

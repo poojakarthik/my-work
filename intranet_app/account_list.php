@@ -55,7 +55,6 @@
 			($_GET ['rangeLength']) ? $_GET ['rangeLength'] : 20
 		);
 	}
-	
 	$Style->Output ("xsl/content/account/list.xsl");
 	
 ?>

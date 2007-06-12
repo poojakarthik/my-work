@@ -1,8 +1,17 @@
-
-	.PageBody
+	body
+	{
+		margin:               0px;
+		
+		font-family:          "Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height:          18pt;
+		font-size:            10pt;
+	}
+	
+	div#PageBody
 	{
 		margin-left:		75px;
 		margin-top:			20px;
+		width:					950px;
 	}
 	
 	.ContextMenu
@@ -35,14 +44,7 @@
 		left:				5px;
 	}
 	
-	body
-	{
-		margin:               0px;
-		
-		font-family:          "Nimbus Sans L", Arial, Tahoma, Sans-serif;
-		line-height:          18pt;
-		font-size:            10pt;
-	}
+
 	
 	img
 	{
@@ -484,41 +486,6 @@
 		border:              solid 1px #999999;
 	}
 	
-	.Pablo-Section
-	{
-		background-image:    url('img/template/donkey_icon.png');
-		background-repeat:   no-repeat;
-		background-position: top right;
-		
-		min-width:           700px;
-	}
-	
-	.Pablo-Section-Container
-	{
-		background-image:    url('img/template/talk_balloon.png');
-		background-repeat:   no-repeat;
-		background-position: top right;
-		margin-right:        180px;
-	}
-	
-	.Pablo-Section-Content
-	{
-		min-height:          200px;
-		margin-right:        19px;
-		background-color:    #ebd6b8;
-		
-		padding-top:         15px;
-		padding-left:        20px;
-		padding-right:       20px;
-		padding-bottom:      5px;
-	}
-	
-	.Pablo-Section-Content p
-	{
-		line-height:		200%;
-		font-family:		monospace;
-	}
-	
 	.monospace
 	{
 		font-family:		monospace;
@@ -543,6 +510,8 @@
 		
 		background-color:    #45a0f3;
 		color:               #FFFFFF;
+		
+		font-size:			 10pt;
 	}
 	
 	table.Listing .Icon
@@ -594,6 +563,7 @@
 		border-bottom:       dashed 1px #45a0f3;
 		text-decoration:     none;
 		cursor:              help;
+		font-size:			 10pt;
 	}
 	
 	input.input-link,
@@ -1073,4 +1043,10 @@
      z-index: 1000;
 	 background-color:	#000000;
 	 opacity: .50;
+	}
+	.DefaultOutput
+	{
+		font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 18pt;
+		font-size: 10pt;
 	}

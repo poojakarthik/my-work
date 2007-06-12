@@ -71,33 +71,23 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	function Render()
 	{		
 		?>
-		<form method='POST' action=''>
-		<table>
+			<h2 class='Account'>Account Details</h2>
+			<div class='Narrow-Form'>
+			<table border='0' cellpadding='3' cellspacing='0'>
 			<tr>
-				<h1>Account Details</h1>
+				<?php DBO()->Account->Id->RenderOutput(); ?>
 			</tr>
 			<tr>
-				<?php
-					// Dbo()->Object->Property->RenderInput([$bolRequired], [$strContext]);
-					// Dbo()->Object->Property->RenderInput(TRUE, 'Account');
-					// Dbo()->Object->Property->RenderInput(TRUE);				
-					DBO()->Account->Id->RenderOutput(TRUE, 1);
-				?>
+					<?php DBO()->Account->BusinessName->RenderOutput(); ?>
 			</tr>
 			<tr>
-					<?php DBO()->Account->BusinessName->RenderOutput(TRUE); ?>
+					<?php DBO()->Account->TradingName->RenderOutput(); ?>
 			</tr>
 			<tr>
-					<?php DBO()->Account->TradingName->RenderOutput(TRUE,1); ?>
+					<?php DBO()->Account->ABN->RenderOutput();?>
 			</tr>
 			<tr>
-					<?php DBO()->Account->ABN->RenderOutput(TRUE,1);?>
-			</tr>
-			<tr>
-					<?php // DBO()->Account->ABN->RenderInput(TRUE,1);?>
-			</tr>
-			<tr>
-					<?php DBO()->Account->BillingType->RenderOutput(TRUE);?>
+					<?php DBO()->Account->BillingType->RenderOutput();?>
 			</tr>
 			<tr><td>
 				<select name='Mode'>
@@ -123,7 +113,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 				<input type='button' value='Popup-Target' onclick='Vixen.Popup.Create(PopupContent.value, PopupId.value, Size.value, this, Mode.value)'></input>
 			</tr>
 		</table>
-				<textarea name='PopupContent' rows=20 cols=100></textarea>
+		</div>
+		<div class='Seperator'></div>
+		HTML for popup:
+				<textarea name='PopupContent' cols=59></textarea>
+		<div class='Seperator'></div>
 		<?php
 		//var_dump($_POST);
 		//HTML is OK here, to define structures which enclose these objects

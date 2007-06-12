@@ -16,8 +16,8 @@
  
 function VixenSlidingClass()
 {
-	this.slideInUse = new Array();
-	this.slideUp = TRUE;
+	this.slideInUse = new Object();
+	this.slideTarget = "";
 	
 	this.Slide =function(objId) 
 	{
@@ -29,10 +29,15 @@ function VixenSlidingClass()
 		{
 			this.curHeight = this.height;
 			this.newHeight = '0';
-			if(Vixen.Slide.slideInUse[objId] != TRUE) 
+			if(Vixen.Slide.slideInUse[objId].Sliding != TRUE) 
 			{
 				var finishTime = this.slide();
 				window.setTimeout("Vixen.Slide.Slide('"+objId+"').finishup("+this.height+");",finishTime);
+			}
+			else
+			{
+				
+				//Vixen.Slide.slideUp = FALSE;
 			}
 		}
 	
@@ -40,17 +45,23 @@ function VixenSlidingClass()
 		{
 			this.newHeight = this.height;
 			this.curHeight = '0';
-			if(!Vixen.Slide.slideInUse[objId]) 
+			if(Vixen.Slide.slideInUse[objId].Sliding != TRUE) 
 			{
 				this.obj.style.height = '0px';
-				this.obj.style.display = 'block';
-				this.slide();
+				//this.obj.style.display = 'none';
+				var finishTime = this.slide();
+				window.setTimeout("Vixen.Slide.Slide('"+objId+"').finishdown("+this.height+");",finishTime);
+			}
+			else
+			{
+				
+				//Vixen.Slide.slideUp = TRUE;
 			}
 		}
 		
 		this.slide = function() 
 		{
-			Vixen.Slide.slideInUse[objId] = TRUE;
+			Vixen.Slide.slideInUse[objId].Sliding = TRUE;
 			var frames = 15 * this.duration; // Running at 30 fps
 	
 			var tIncrement = (this.duration*500) / frames;
@@ -76,8 +87,8 @@ function VixenSlidingClass()
 				window.setTimeout("document.getElementById('"+objId+"').style.height='"+Math.round(this.curHeight)+"px';",tIncrement * i);
 			}
 			
-			window.setTimeout("delete(Vixen.Slide.slideInUse['"+objId+"']);",tIncrement * i);
-			
+			//window.setTimeout("Vixen.Slide.slideInUse['"+objId+"'] = FALSE; debug('slideup:' + Vixen.Slide.slideUp);",tIncrement * i);
+			window.setTimeout("Vixen.Slide.slideInUse['"+objId+"'].Sliding = FALSE;",tIncrement * i);			
 	
 			return tIncrement * i;
 			
@@ -87,6 +98,13 @@ function VixenSlidingClass()
 		{
 			this.obj.style.display = 'none';
 			this.obj.style.height = height + 'px';
+			Vixen.Slide.slideInUse[objId].Up = TRUE;
+		}
+		this.finishdown = function(height) 
+		{
+			this.obj.style.display = 'block';
+			this.obj.style.height = height + 'px';
+			Vixen.Slide.slideInUse[objId].Up = FALSE;
 		}
 		
 		return this;
@@ -95,19 +113,51 @@ function VixenSlidingClass()
 	
 	this.ToggleSlide =function(target)
 	{
-		if (this.slideUp)
+		if (!this.slideInUse[target] || this.slideInUse[target].Up == TRUE)
 		{
-			this.Slide(target).down();
-			document.getElementById(target).style.display ="block";
-			this.slideUp = FALSE;
+			this.slideInUse[target] = new Array();
+			if (this.slideTarget == target || this.slideTarget == "")
+			{
+				this.Slide(target).down();
+			}
+			else
+			{
+				if (this.slideInUse[this.slideTarget].Up == TRUE)
+				{
+					this.Slide(this.slideTarget).down();
+				}
+				else
+				{
+					this.Slide(this.slideTarget).up();
+					this.slideTarget = "";
+				}
+				this.Slide(target).down();				
+			}
+			//this.slideTarget = target;
 			
 		}
 		else
 		{
-			this.Slide(target).up();
-			document.getElementById(target).style.display ="block";
-			this.slideUp = TRUE;
+			if (this.slideTarget == target || this.slideTarget == "")
+			{
+				this.Slide(target).up();
+				this.slideTarget = "";
+			}
+			else
+			{
+				if (this.slideInUse[this.slideTarget].Up == TRUE)
+				{
+					this.Slide(this.slideTarget).down();
+				}
+				else
+				{
+					this.Slide(this.slideTarget).up();
+					this.slideTarget = "";
+				}
+				this.Slide(target).up();
+			}
 		}
+		document.getElementById(target).style.display ="block";
 	}
 	
 	this.Attach =function (strTableId, totalRows)

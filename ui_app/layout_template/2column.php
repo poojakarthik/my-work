@@ -35,9 +35,22 @@ $this->RenderContextMenu();
 //TODO! how do I specify the widths of the columns?
 ?>
 
-<div class='Pagebody'>
-	<?php $this->RenderColumn(COLUMN_ONE); ?>
-	<?php $this->RenderColumn(COLUMN_TWO); ?>
+<div id='PageBody'>
+<h1> <?php echo $this->_strPageName; ?></h1>
+<table width='100%' border='0'>
+	<tr>
+		<td width='50%' valign='top'>
+			
+			<?php $this->RenderColumn(COLUMN_ONE); ?>
+			
+		</td>
+		<td width='50%' valign='top'>
+			
+			<?php $this->RenderColumn(COLUMN_TWO); ?>
+			
+		</td>
+	</tr>
+</table>
 </div>
 
 <?php
