@@ -313,7 +313,7 @@ class ClassBuilderPHP
 		else
 		{
 			//add method closing bracket
-			$strMethodDoc .= "\t }";
+			$strMethodDoc .= "\t";
 			$strMethodDoc .= "\n";
 			$strMethodDoc .= "\n";
 

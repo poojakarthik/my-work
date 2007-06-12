@@ -18,28 +18,28 @@
  * @file		application.php
  * @language	PHP
  * @package		skeleton_application
- * @author		Rich 'Waste' Davis
- * @version		7.05
+ * @author		<author>
+ * @version		<version>
  * @copyright	2006-2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
 
 //----------------------------------------------------------------------------//
-// ApplicationSkel
+// Application<skeleton>
 //----------------------------------------------------------------------------//
 /**
- * ApplicationSkel
+ * Application<skeleton>
  *
- * Skeleton Module
+ * <skeleton> Module
  *
- * Skeleton Module
+ * <skeleton> Module
  *
  *
  * @prefix		app
  *
- * @package		skeleton_application
- * @class		ApplicationSkel
+ * @package		<skeleton>_application
+ * @class		Application<skeleton>
  */
  class ApplicationSkel extends ApplicationBaseClass
  {
