@@ -87,7 +87,7 @@
 		        header('Content-type: text/csv');
 		        header('Content-Disposition: attachment; filename="' . $arrCSV['FileName'] .'"');
 		        
-		        echo $arrResult['Output'];
+		        echo $arrCSV['Output'];
 		        exit;
 			}
 			else
