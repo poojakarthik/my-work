@@ -28,7 +28,7 @@ $arrDataReport['Summary']		= "Lists Profit Data for every Invoice generated in a
 $arrDataReport['RenderMode']	= REPORT_RENDER_EMAIL;
 $arrDataReport['Priviledges']	= 0;
 $arrDataReport['CreatedOn']		= date("Y-m-d");
-$arrDataReport['SQLTable']		= "(Invoice JOIN Account ON Account.Id = Invoice.Account) JOIN ServiceTypeTotal USING (Account, InvoiceRun)";
+$arrDataReport['SQLTable']		= "(Invoice JOIN Account ON Account.Id = Invoice.Account) LEFT JOIN ServiceTypeTotal USING (Account, InvoiceRun)";
 $arrDataReport['SQLWhere']		= "Invoice.InvoiceRun = <InvoiceRun>";
 $arrDataReport['SQLGroupBy']	= "Account.Id";
 
@@ -65,20 +65,20 @@ $arrSQLSelect['Bill Cost']		['Value']	= "SUM(ServiceTypeTotal.Cost)";
 $arrSQLSelect['Bill Cost']		['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Bill Cost']		['Total']	= EXCEL_TOTAL_SUM;
 
-$arrSQLSelect['Bill Charge']	['Value']	= "Invoice.Total + Invoice.Tax";
+$arrSQLSelect['Bill Charge']	['Value']	= "Invoice.Total";
 $arrSQLSelect['Bill Charge']	['Type']	= EXCEL_TYPE_CURRENCY;
 $arrSQLSelect['Bill Charge']	['Total']	= EXCEL_TOTAL_SUM;
 
 $arrSQLSelect['Margin']			['Value']		= "NULL";
-$arrSQLSelect['Margin']			['Function']	= "=(<Bill Charge> - <Bill Cost>) / ABS(<Bill Charge>)";
+$arrSQLSelect['Margin']			['Function']	= "=IF(<Bill Charge>=0; 0; (<Bill Charge> - <Bill Cost>) / ABS(<Bill Charge>))";
 $arrSQLSelect['Margin']			['Type']		= EXCEL_TYPE_PERCENTAGE;
-$arrSQLSelect['Margin']			['Total']		= "=(<Bill Charge> - <Bill Cost>) / ABS(<Bill Charge>)";
+$arrSQLSelect['Margin']			['Total']		= "=IF(<Bill Charge>=0; 0; (<Bill Charge> - <Bill Cost>) / ABS(<Bill Charge>))";
 
 $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 
 // SQL Fields
 $arrColumns = Array();
-$arrColumns['Label']	= "DATE_FORMAT(BillingDate, '%d/%m/%Y')";
+$arrColumns['Label']	= "DATE_FORMAT(BillingDate, '%d %M %Y')";
 $arrColumns['Value']	= "InvoiceRun";
 
 $arrSelect = Array();

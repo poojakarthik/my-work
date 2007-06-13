@@ -38,7 +38,10 @@ while ($arrReport = $selReports->Fetch())
 	$arrSQLSelect = Array();
 	foreach ($mixSQLSelect as $strAlias=>$strValue)
 	{
-		$arrSQLSelect[$strAlias]['Value']	= $strValue;
+		if (!is_array($strValue))
+		{
+			$arrSQLSelect[$strAlias]['Value']	= $strValue;
+		}
 	}
 	
 	// Save

@@ -33,9 +33,7 @@
 
 $arrConfig = Array();
 
-// Example (remove me)
-$arrConfig['Section']	['Case']	= "Value";
-$arrConfig['Section']	['Case']	= "Value2";
-$arrConfig['Section']	['Case']	= "Value3";
+// Display Reporting Output?
+$arrConfig['Display']	= TRUE;
 
 ?>

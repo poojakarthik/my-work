@@ -63,12 +63,12 @@
  	{
 		parent::__construct();
 		
-		$this->_rptReport	= new Report("Report Report (wtfmate) for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", TRUE, "dispatch@voiptelsystems.com.au");
+		$this->_rptReport	= new Report("Report Report (wtfmate) for ".date("Y-m-d H:i:s"), "rich@voiptelsystems.com.au", (bool)$arrConfig['Display'], "dispatch@voiptelsystems.com.au");
 		$this->_rptReport->AddMessage(MSG_HORIZONTAL_RULE);
 		
 		// Statements
 		$this->_selReports		= new StatementSelect("DataReportSchedule", "*", "Status = ".REPORT_WAITING);
-		$this->_selDataReport	= new StatementSelect("DataReport", "Name, SQLTable, SQLSelect, SQLWhere, SQLGroupBy", "Id = <DataReport>");
+		$this->_selDataReport	= new StatementSelect("DataReport", "*", "Id = <DataReport>");
 		$this->_selEmployee		= new StatementSelect("Employee", "*", "Id = <Id>");
 		
 		$arrColumns = Array();
@@ -117,7 +117,7 @@
 			
 			// Instanciate & Run Data Report
 			$selReport = new StatementSelect($arrDataReport['SQLTable'], $arrColumns, $arrDataReport['SQLWhere'], NULL, NULL, $arrDataReport['SQLGroupBy']);
-			if (!$selReport->Execute($arrWhere))
+			if (($intResultCount = $selReport->Execute($arrWhere)) === FALSE)
 			{
 				Debug($selReport->Error());
 				Debug($selReport->_strQuery);
@@ -128,19 +128,30 @@
 			//Debug($arrWhere);
 			
 			// Export Data
-			switch ($arrReport['RenderTarget'])
+			if ($intResultCount)
 			{
-				case REPORT_TARGET_CSV:
-					$arrReport['Status'] = ($strFile = $this->_ExportCSV($arrData, $arrDataReport['Name'])) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
-					break;
-				
-				case REPORT_TARGET_XLS:
-					$arrReport['Status'] = ($strFile = $this->_ExportXLS($arrData, $arrDataReport['Name'], $arrDataReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
-					break;
+				switch ($arrReport['RenderTarget'])
+				{
+					case REPORT_TARGET_CSV:
+						$arrReport['Status'] = ($arrReturn = $this->ExportCSV($arrData, $arrDataReport, $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
+						$strFile = $arrReturn['FileName'];
+						break;
 					
-				default:
-					$arrReport['Status'] = REPORT_BAD_RENDER_TARGET;
+					case REPORT_TARGET_XLS:
+						$arrReport['Status'] = ($strFile = $this->ExportXLS($arrData, $arrDataReport, $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
+						break;
+						
+					default:
+						$arrReport['Status'] = REPORT_BAD_RENDER_TARGET;
+				}
 			}
+			else
+			{
+				// If there are no results, treat it as a success
+				$arrReport['Status'] = REPORT_GENERATED;
+			}
+			Debug($strFile);
+			die;
 			
 			// Email report
 			if ($arrReport['Status'] == REPORT_GENERATED)
@@ -156,18 +167,31 @@
 					$arrEmployee = $this->_selEmployee->Fetch();
 					
 					// Generate Content
-					$strContent	=	"Dear {$arrEmployee['FirstName']},\n\n" .
-									"Attached is the viXen Data Report ({$arrDataReport['Name']}) you requested on {$arrReport['CreatedOn']}.\n\n" .
-									"Pablo\nYellow Billing Mascot";
+		 			$mimMime	= new Mail_mime("\n");
+					$strContent	=	"Dear {$arrEmployee['FirstName']},\n\n";
+					
+					if ($intResultCount)
+					{
+						$strContent .= "Attached is the viXen Data Report ({$arrDataReport['Name']}) you requested on {$arrReport['CreatedOn']}.";
+					}
+					else
+					{
+						$strContent .= "There were no results for your requested Data Report ({$arrDataReport['Name']}).  Please try a different set of constraints.";
+					}
+					$strContent 	.= "\n\nPablo\nYellow Billing Mascot";
 					
 		 			$arrHeaders = Array	(
 						'From'		=> "reports@yellowbilling.com.au",
 						'Subject'	=> "{$arrDataReport['Name']} requested on {$arrReport['CreatedOn']}"
 					);
 					
-		 			$mimMime	= new Mail_mime("\n");
 		 			$mimMime->setTXTBody($strContent);
-		 			$mimMime->addAttachment($strFile, 'application/x-msexcel');
+		 			
+		 			// Add attachment if there are any results
+		 			if ($intResultCount)
+					{
+		 				$mimMime->addAttachment($strFile, 'application/x-msexcel');
+					}
 		 			
 					$strBody	= $mimMime->get();
 					$strHeaders	= $mimMime->headers($arrHeaders);
@@ -216,77 +240,108 @@
 	
 	
 	//------------------------------------------------------------------------//
-	// _ExportCSV
+	// ExportCSV
 	//------------------------------------------------------------------------//
 	/**
-	 * _ExportCSV()
+	 * ExportCSV()
 	 *
 	 * Exports a MySQL resultset to a CSV document
 	 *
 	 * Exports a MySQL resultset to a CSV document
 	 *
-	 * @param	array	$arrData	MySQL resultset to generate from
-	 * @param	string	$strName	Name of the Report
+	 * @param	array	$arrData				MySQL resultset to generate from
+	 * @param	array	$arrReport				Report data
+	 * @param	array	$arrReportParameters	DataReport parameters stored in DataReportSchedule
+	 * @param	boolean	$bolSave				TRUE	: Save the file to a temporary location
+	 * 											FALSE	: Send the file to the browser
 	 *
-	 * @return	string				Path to the file generated
+	 * @return	array							Array containing the filename/path of the report and
+	 * 											the raw data for the report
 	 *
 	 * @method
 	 */
- 	private function _ExportCSV($arrData, $strReportName)
+ 	function ExportCSV($arrData, $arrReport, $arrReportParameters, $bolSave = TRUE)
  	{
- 		// Open file
- 		$strPath		= "/home/vixen_upload/datareport/$strName - ".date("d/M/Y h:i:s A").".csv";
- 		$ptrFile		= fopen($strPath, "w");
+		$strName = $this->_MakeFileName($arrReport, $arrReportParameters);
+ 		
+ 		// Saving?
+ 		if ($bolSave)
+ 		{
+	 		// Open file
+	 		$strPath		= "/home/vixen_upload/datareport/$strName";
+	 		$ptrFile		= fopen($strPath, "w");
+ 		}
  		$strDelimiter	= ';';
 		
  		// Set column headers
  		$arrColumns		= array_keys($arrData[0]);
  		foreach ($arrColumns as $strColumn)
  		{
- 			fwrite("\"$strColumn\";");
+ 			$strReturn .= ($bolSave) ? fwrite($ptrFile, "\"$strColumn\"$strDelimiter") : "\"$strColumn\"$strDelimiter";
  		}
- 		fwrite("\n");
+ 		$strReturn .= ($bolSave) ? fwrite($ptrFile, "\n") : "\n";
  		
  		// Write the data
  		foreach ($arrData as $arrRow)
  		{
- 			foreach ($arrRow as $arrField)
+ 			foreach ($arrRow as $mixField)
  			{
- 				fwrite("\"{$arrField['Value']}\";");
+ 				$strReturn .= ($bolSave) ? fwrite($ptrFile, "\"{$mixField}\"$strDelimiter") : "\"{$mixField}\"$strDelimiter";
  			}
- 			fwrite("\n");
+ 			$strReturn .= ($bolSave) ? fwrite($ptrFile, "\n") : "\n";
  		}
  		
- 		fclose($ptrFile);
+ 		//Debug($strReturn);
+ 		//die;
  		
- 		return $strPath;
+ 		if ($bolSave) 
+ 		{
+ 			fclose($ptrFile);
+ 			return $strPath;
+ 		}
+ 		return $strReturn;
  	}
 	
 	
 	//------------------------------------------------------------------------//
-	// _ExportXLS
+	// ExportXLS
 	//------------------------------------------------------------------------//
 	/**
-	 * _ExportXLS()
+	 * ExportXLS()
 	 *
 	 * Exports a MySQL resultset to an XLS document
 	 *
 	 * Exports a MySQL resultset to an XLS document
 	 *
-	 * @param	array	$arrData	MySQL resultset to generate from
-	 * @param	string	$strName	Name of the Report
-	 * @param	array	$arrReport	Report data
+	 * @param	array	$arrData				MySQL resultset to generate from
+	 * @param	array	$arrReport				Report data
+	 * @param	array	$arrReportParameters	DataReport parameters stored in DataReportSchedule
+	 * @param	boolean	$bolSave				TRUE	: Save the file to a temporary location
+	 * 											FALSE	: Send the file to the browser
 	 *
-	 * @return	string				Path to the file generated
+	 * @return	string							Path to the file generated
 	 *
 	 * @method
 	 */
- 	private function _ExportXLS($arrData, $strReportName, $arrReport)
- 	{
- 		$strPath		= "/home/vixen_upload/datareport/$strReportName - ".date("d-M-Y h:i:s A").".xls";
- 		
+ 	function ExportXLS($arrData, $arrReport, $arrReportParameters, $bolSave = TRUE)
+ 	{ 		
 		// Generate Excel 5 Workbook
-		$wkbWorkbook = new Spreadsheet_Excel_Writer($strPath);
+ 		$strFileName = $this->_MakeFileName($arrReport, $arrReportParameters);
+ 		
+ 		// Saving?
+ 		if ($bolSave)
+ 		{
+ 			$strPath		= "/home/vixen_upload/datareport/$strFileName";
+			$wkbWorkbook	= new Spreadsheet_Excel_Writer($strPath);
+ 		}
+ 		else
+ 		{
+			$wkbWorkbook	= new Spreadsheet_Excel_Writer();
+			$strPath		= $strFileName;
+			$wkbWorkbook->send($strFileName);
+ 		}
+ 		
+ 		// Add the worksheet
 		$wksWorksheet =& $wkbWorkbook->addWorksheet();
 		
 		// Set up formatting styles
@@ -312,13 +367,15 @@
 				$arrExcelCols[$strName]['Col'] = $intCol;
 				
 				// Is this field a function?
-				if ($mixField = $arrSQLSelect[$strName]['Function'])
+				if ($strFunction = $arrSQLSelect[$strName]['Function'])
 				{
 					foreach ($arrSQLSelect as $strSubName=>$arrSubField)
 					{
-						$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow + 2, $arrExcelCols[$strSubName]['Col']);
-						$mixField = str_replace("<$strSubName>", $strCell, $mixField);
+						$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow+1, $arrExcelCols[$strSubName]['Col']);
+						$strFunction = str_replace("<$strSubName>", $strCell, $strFunction);
 					}
+					$mixField = $strFunction;
+					//Debug($mixField);
 				}
 				
 				// If an output type is specified then use it, else 'best guess'
@@ -343,7 +400,7 @@
 						}
 						else
 						{
-							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Currency']);
+							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
 						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['IntegerTotal'];
 						break;
@@ -355,7 +412,7 @@
 						}
 						else
 						{
-							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Currency']);
+							$wksWorksheet->writeFormula($intRow+1, $intCol, $mixField, $arrFormat['Percentage']);
 						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['PercentageTotal'];
 						break;
@@ -365,13 +422,13 @@
 						if (is_int($mixField['Value']))
 						{
 							// Integer
-							$wksWorksheet->write($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
+							$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
 							$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['IntegerTotal'];
 						}
 						elseif (IsValidFNN($mixField))
 						{
 							// FNN
-							$wksWorksheet->write($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
+							$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
 						}
 						else
 						{
@@ -383,56 +440,74 @@
 			}
 		}
 		
-		// Draw a Horizontal Line to separate totals from data
-		$wksWorksheet->writeString($intRow+2, 0, "Grand Totals:", $arrFormat['TotalText']);
-		for ($intCol = 1; $intCol < count($arrExcelCols); $intCol++)
-		{
-			$wksWorksheet->writeString($intRow+2, $intCol, "", $arrFormat['TotalText']);
-		}
-		
-		// Add totals, if specified
+		// Do we have any Totals?
+		$bolTotals = FALSE;
 		foreach ($arrSQLSelect as $strName=>$arrField)
 		{
-			// Calculate Cell Range
-			$strCellStart	= Spreadsheet_Excel_Writer::rowcolToCell(1					, $arrExcelCols[$strName]['Col']);
-			$strCellEnd		= Spreadsheet_Excel_Writer::rowcolToCell(count($arrData)	, $arrExcelCols[$strName]['Col']);
-			
-			// Construct the Excel Function
-			switch ($arrField['Total'])
+			$bolTotals = ($arrField['Total']) ? TRUE : $bolTotals;
+		}
+		
+		if ($bolTotals)
+		{
+			// Draw a Horizontal Line to separate totals from data
+			$wksWorksheet->writeString($intRow+2, 0, "Grand Totals", $arrFormat['TotalText']);
+			for ($intCol = 1; $intCol <= count($arrExcelCols); $intCol++)
 			{
-				case EXCEL_TOTAL_SUM:
-	 				// Standard SUM
-	 				$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], "=SUM($strCellStart:$strCellEnd)", $arrExcelCols[$strName]['TotalFormat']);
-					break;
-					
-				case EXCEL_TOTAL_AVG:
-	 				// Standard AVG
-	 				$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], "=AVG($strCellStart:$strCellEnd)", $arrExcelCols[$strName]['TotalFormat']);
-					break;
-					
-				// TODO: More specific cases?
-					
-				default:
-					// Do we even have a total?
-					if (is_string($arrField['Total']))
-					{
-						// A custom formula, based off other totals
-						$strFunction = $arrField['Total'];
-						foreach ($arrSQLSelect as $strSubName=>$arrSubField)
+				$wksWorksheet->writeString($intRow+2, $intCol, "", $arrFormat['TotalText']);
+			}
+			
+			// Add totals, if specified
+			foreach ($arrSQLSelect as $strName=>$arrField)
+			{
+				if (!$arrField['Total'])
+				{
+					continue;
+				}
+				
+				// Calculate Cell Range
+				$strCellStart	= Spreadsheet_Excel_Writer::rowcolToCell(1					, $arrExcelCols[$strName]['Col']);
+				$strCellEnd		= Spreadsheet_Excel_Writer::rowcolToCell(count($arrData)	, $arrExcelCols[$strName]['Col']);
+				
+				// Construct the Excel Function
+				switch ($arrField['Total'])
+				{
+					case EXCEL_TOTAL_SUM:
+		 				// Standard SUM
+		 				$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], "=SUM($strCellStart:$strCellEnd)", $arrExcelCols[$strName]['TotalFormat']);
+						break;
+						
+					case EXCEL_TOTAL_AVG:
+		 				// Standard AVG
+		 				$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], "=AVG($strCellStart:$strCellEnd)", $arrExcelCols[$strName]['TotalFormat']);
+						break;
+						
+					// TODO: More specific cases?
+						
+					default:
+						// Do we even have a total?
+						if (is_string($arrField['Total']))
 						{
-							$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow + 2, $arrExcelCols[$strSubName]['Col']);
-							$strFunction = str_replace("<$strSubName>", $strCell, $strFunction);
+							// A custom formula, based off other totals
+							$strFunction = $arrField['Total'];
+							foreach ($arrSQLSelect as $strSubName=>$arrSubField)
+							{
+								$strCell	= Spreadsheet_Excel_Writer::rowcolToCell($intRow + 2, $arrExcelCols[$strSubName]['Col']);
+								$strFunction = str_replace("<$strSubName>", $strCell, $strFunction);
+							}
+							$strFunction = (substr($strFunction, 0, 1) == "=") ? $strFunction : "=$strFunction";
+							$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], $strFunction, $arrExcelCols[$strName]['TotalFormat']);
+							//Debug($strFunction);
 						}
-						$strFunction = (substr($strFunction, 0, 1) == "=") ? $strFunction : "=$strFunction";
-						$wksWorksheet->writeFormula($intRow + 2, $arrExcelCols[$strName]['Col'], $strFunction, $arrExcelCols[$strName]['TotalFormat']);
-						//Debug($strFunction);
-					}
+				}
 			}
 		}
 		
 		// Save the XLS file, CHMOD, return path
 		$wkbWorkbook->close();
- 		chmod($strPath, 0777);
+		if ($bolSave)
+		{
+ 			chmod($strPath, 0777);
+		}
  		return $strPath;
  	}
  	
@@ -478,6 +553,7 @@
 		$fmtTotalText	= $wkbWorkbook->addFormat();
 		$fmtTotalText->setTopColor('black');
 		$fmtTotalText->setTop(1);
+		$fmtTotalText->setBold();
 		$arrFormat['TotalText']		= $fmtTotalText;
 		
 		
@@ -505,7 +581,7 @@
 		
 		// Percentage
 		$fmtPercentage	= $wkbWorkbook->addFormat();
-		$fmtPercentage->setNumFormat('0.00%;-0.00%');
+		$fmtPercentage->setNumFormat('0.00%;[red]-0.00%');
 		$arrFormat['Percentage']	= $fmtPercentage;
 		
 		// Bold Percentage
@@ -530,6 +606,82 @@
 		$arrFormat['FNN']				= $fmtFNN;
 		
 		return $arrFormat; 		
+ 	}
+ 	
+ 	
+ 	
+	//------------------------------------------------------------------------//
+	// _MakeFileName
+	//------------------------------------------------------------------------//
+	/**
+	 * _MakeFileName()
+	 *
+	 * Generates the file name to save the report as
+	 *
+	 * Generates the file name to save the report as
+	 *
+	 * @param	array	$arrReport				Report data
+	 * @param	array	$arrReportParameters	DataReport parameters stored in DataReportSchedule
+	 *
+	 * @return	string							File name
+	 *
+	 * @method
+	 */
+ 	private function _MakeFileName($arrReport, $arrReportParameters)
+ 	{
+ 		$arrReport['SQLSelect'] = unserialize($arrReport['SQLSelect']);
+ 		$arrReport['SQLFields'] = unserialize($arrReport['SQLFields']);
+ 		$arrReportParameters['SQLSelect'] = unserialize($arrReportParameters['SQLSelect']);
+ 		$arrReportParameters['SQLWhere'] = unserialize($arrReportParameters['SQLWhere']);
+ 		
+ 		if ($arrReport['FileName'])
+ 		{
+ 			// Parse Filename Template
+ 			$arrTemplate = Array();
+ 			$strFileName = $arrReport['FileName'];
+ 			preg_match_all("/<([\d\w\s\:]+)>/misU", $strFileName, $arrTemplate, PREG_SET_ORDER);
+ 			
+ 			foreach ($arrTemplate as $arrMatch)
+ 			{
+ 				// Get the value we want
+ 				$arrVariable = explode('::', $arrMatch[1]);
+ 				
+				if (count($arrVariable) == 2)
+				{
+					// Using namespace, need to do a DB Select
+					$arrDBSelect = $arrReport['SQLFields'][$arrVariable[0]]['DBSelect'];
+					$selVariable = new StatementSelect($arrDBSelect['Table'], $arrDBSelect['Columns'], $arrDBSelect['Where'] . " AND {$arrVariable[0]} = <Value>", $arrDBSelect['OrderBy'], $arrDBSelect['Limit'], $arrDBSelect['GroupBy']);
+					$selVariable->Execute(Array('Value' => $arrReportParameters['SQLWhere'][$arrVariable[0]]));
+					$arrVariableData = $selVariable->Fetch();
+					$strVariable = $arrVariableData[$arrVariable[1]];
+				}
+				else
+				{
+					$strVariable = $arrVariable[0];
+				}
+				
+				$strFileName = str_replace($arrMatch[0], $strVariable, $strFileName);
+ 			}
+ 		}
+ 		else
+ 		{
+ 			$strFileName = $arrReport['Name'];
+ 		}
+ 		
+ 		$strFileName .= " - " . date("d M Y h:i:s A");
+ 		
+ 		switch ($arrReportParameters['RenderTarget'])
+ 		{
+ 			case REPORT_TARGET_XLS:
+ 				$strFileName .= ".xls";
+ 				break;
+ 			
+ 			case REPORT_TARGET_CSV:
+ 				$strFileName .= ".csv";
+ 				break;
+ 		}
+ 		
+ 		return $strFileName;
  	}
  }
 
