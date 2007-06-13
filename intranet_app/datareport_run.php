@@ -32,104 +32,77 @@
 	}
 	
 	if ($_POST ['Confirm'])
-	{		
+	{
+		$arrInsertData = Array();
+		$arrInsertData['DataReport']	= $rptReport->Pull('Id')->getValue();
+		$arrInsertData['Employee']		= $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
+		$arrInsertData['CreatedOn']		= new MySQLFunction("NOW()");
+		$arrInsertData['SQLSelect']		= serialize($_POST['select']);
+		$arrInsertData['SQLWhere']		= serialize($rptReport->ConvertInput($_POST['input']));
+		//$arrInsertData['SQLOrder']		= serialize($rptReport->ConvertInput($_POST['order']));
+		$arrInsertData['SQLLimit']		= serialize((int)$rptReport->ConvertInput($_POST['limit']));
+		$arrInsertData['RenderTarget']	= ($_POST['outputcsv']) ? REPORT_TARGET_CSV : REPORT_TARGET_XLS;
+		$arrInsertData['Status']		= REPORT_WAITING;
+		
 		// Is this an email report?
 		if ($rptReport->Pull('RenderMode')->getValue() == REPORT_RENDER_EMAIL)
 		{
-			// Add to DataReportSchedule table
-			$arrInsertData = Array();
-			$arrInsertData['DataReport']	= $rptReport->Pull('Id')->getValue();
-			$arrInsertData['Employee']		= $athAuthentication->AuthenticatedEmployee()->Pull('Id')->getValue();
-			$arrInsertData['CreatedOn']		= new MySQLFunction("NOW()");
-			$arrInsertData['SQLSelect']		= serialize($_POST['select']);
-			$arrInsertData['SQLWhere']		= serialize($rptReport->ConvertInput($_POST['input']));
-			$arrInsertData['RenderTarget']	= ($_POST['outputcsv']) ? REPORT_TARGET_CSV : REPORT_TARGET_XLS;
-			$arrInsertData['Status']		= REPORT_WAITING;
-			Debug($arrInsertData);
-			
+			// Add to DataReportSchedule table			
 			$insDataReportSchedule = new StatementInsert("DataReportSchedule", $arrInsertData);
 			$insDataReportSchedule->Execute($arrInsertData);
 			
-			// TODO: Some form of confirmation?
-			Debug("Emailed!");
+			// Tell the user that their Report has been scheduled
+			$Style->Output ('xsl/content/datareport/scheduled.xsl');
 			exit;
 		}
-		
+
+		// Generate on the fly
 		$selResult = $rptReport->Execute ($_POST ['select'], $_POST ['input'], $_POST ['limit']);
-		
-		// Should be be outputting in CSV instead of XLS?
-		if ($_POST['outputcsv'])
+		if ($arrResult = $selResult->FetchAll())
 		{
-	        // Yes
-	        header('Content-type: text/csv');
-	        header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.csv"');
-	        
-	        echo CSVStatementSelect ($selResult);
-	        exit;
-		}
-		
-		// No, export in XLS :)		
-		header('Content-type: application/x-msexcel');
-		header('Content-Disposition: attachment; filename="' . $rptReport->Pull ('Name')->getValue () . ' - ' . date ("Y-m-d h-i-s A") . '.xls"');
-
-		// Generate Excel 5 Workbook
-		$wkbWorkbook = new Spreadsheet_Excel_Writer();
-		$wkbWorkbook->send($rptReport->Pull ('Name')->getValue () . " - " . date ("Y-m-d h-i-s A") . ".xls");
-		$wksWorksheet =& $wkbWorkbook->addWorksheet();
-		
-		// Set up formatting styles
-		$fmtTitle =& $wkbWorkbook->addFormat();
-		$fmtTitle->setBold();
-		$fmtTitle->setFgColor(22);
-		$fmtTitle->setBorder(1);
-		
-		// Currency format
-		$fmtCurrency =& $wkbWorkbook->addFormat();
-		$fmtCurrency->setNumFormat('$#,##0.00;-$#,##0.00');
-		
-		// Integer format (make sure it doesn't show exponentials for large ints)
-		$fmtInteger =& $wkbWorkbook->addFormat();
-		$fmtInteger->setNumFormat('00');
-		
-		// Add in the title row
-		$mdtMetaData = $selResult->MetaData();
-		$arrTitles = $mdtMetaData->fetch_fields();
-		foreach ($arrTitles as $intKey=>$objTitle)
-		{
-			$wksWorksheet->write(0, $intKey, $objTitle->name, $fmtTitle);
-		}
-
-		// Add in remaining rows
-		$arrData = $selResult->FetchAll();
-		foreach ($arrData as $intRow=>$arrRow)
-		{
-			$intCol = 0;
-			foreach ($arrRow as $mixField)
+			// Load Report Application
+			LoadApplication("report_app");
+			$appReport = new ApplicationReport(Array('Display' => FALSE));
+			
+			// Prepare Columns
+			$arrColumns	= Array();
+			$arrReportData['SQLSelect'] = $rptReport->Pull('SQLSelect')->getValue();
+			$arrValues	= unserialize($rptReport->Pull('SQLSelect')->getValue());
+			foreach ($_POST['select'] as $strAlias)
 			{
-				if (preg_match('/^\d+\.\d+$/misU', $mixField))
-				{
-					// Currency/float
-					$wksWorksheet->write($intRow+1, $intCol, $mixField, $fmtCurrency);
-				}
-				elseif (is_int($mixField))
-				{
-					// Integer
-					$wksWorksheet->write($intRow+1, $intCol, (int)$mixField, $fmtInteger);
-				}
-				else
-				{
-					$wksWorksheet->writeString($intRow+1, $intCol, $mixField);
-				}
-				$intCol++;
+				$arrColumns["'$strAlias'"] = $arrValues[$strAlias]['Value'];
+			}
+			
+			// Merge with StatementSelect results, because ObLib sucks dick
+			$selReport = new StatementSelect("DataReport", "*", "Id = <Id>");
+			$selReport->Execute(Array('Id' => $rptReport->Pull('Id')->getValue()));
+			$arrReport = array_merge($arrReportData, $selReport->Fetch());
+			
+			// Should be be outputting in CSV instead of XLS?
+			if ($_POST['outputcsv'])
+			{
+		        // Yes
+		        $arrCSV = $appReport->ExportCSV($arrResult, $arrReport, $arrInsertData, FALSE);
+		        
+		        header('Content-type: text/csv');
+		        header('Content-Disposition: attachment; filename="' . $arrCSV['FileName'] .'"');
+		        
+		        echo $arrResult['Output'];
+		        exit;
+			}
+			else
+			{
+				// No, export in XLS :)		
+				//header('Content-type: application/x-msexcel');
+				//header('Content-Disposition: attachment; filename="' . $rptReport->Pull('Name')->getValue() . ' - ' . date("Y-m-d h-i-s A") . '.xls"');
+				
+				$appReport->ExportXLS($arrResult, $arrReport, $arrInsertData, FALSE);
+				exit;
 			}
 		}
 		
-		// TODO: Add totals, if specified
-		// use $wksWorksheet->writeFormula
-		
-		// Send the XLS file
-		$wkbWorkbook->close();
-		exit;
+		// Else, No results
+		$Style->attachObject(new dataBoolean('NoResults', TRUE));
 	}
 	
 	$Style->attachObject ($rptReport->Selects ());
