@@ -1716,9 +1716,28 @@ function LoadApplication($strApplication=NULL)
 	{
 		$strApplicationDir = rtrim(VIXEN_BASE_DIR, '/').'/';
 	}
+	else
+	{
+		// Interpret current dir
+		$arrPath = explode('/', getcwd());
+		$strVixenRoot	= "/";
+		$strCurrent		= "";
+		foreach ($arrPath as $strDir)
+		{
+			$strCurrent .= "$strDir/";
+			if ($strDir === "vixen")
+			{
+				$strVixenRoot = $strCurrent;
+			}
+		}
+		$strApplicationDir = $strVixenRoot;
+	}
 	
 	// set application dir
-	$strApplicationDir .= "application_".strtolower(trim($strApplication, '/')).'/';
+	//$strApplicationDir .= "application_".strtolower(trim($strApplication, '/')).'/';
+	$strApplicationDir .= $strApplication."/";
+	
+	//Debug($strApplicationDir);
 	
 	// require application
 	require_once($strApplicationDir."require.php");
