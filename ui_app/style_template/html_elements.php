@@ -318,10 +318,10 @@ class HTMLElements
 	}
 	
 	//------------------------------------------------------------------------//
-	// ValueLabelOnly
+	// ValueOnly
 	//------------------------------------------------------------------------//
 	/**
-	 * ValueLabelOnly()
+	 * ValueOnly()
 	 * 
 	 * Outputs the property's value embedded in the string defined as the OutputLabel property of the table UIAppDocumentation
 	 * 
@@ -333,7 +333,7 @@ class HTMLElements
 	 *
 	 * @method
 	 */
-	function ValueLabelOnly($arrParams)
+	function ValueOnly($arrParams)
 	{
 		$strValue = $this->_BuildOutputValue($arrParams);
 

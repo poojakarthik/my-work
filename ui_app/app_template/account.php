@@ -148,13 +148,10 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		// * @param	string	$strWhere		[optional]	WHERE Clause with <> placeholders
-		// * @param	array	$arrWhere		[optional]	WHERE parameter data
-		
-		// the DBList storing the invoices should be order so that the most recent is first
+		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
-		
 		DBL()->Invoice->Account = DBO()->Account->Id->Value;
+		DBL()->Invoice->OrderBy("CreatedOn Desc");
 		DBL()->Invoice->Load();
 		
 		// Calculate the Account Balance
