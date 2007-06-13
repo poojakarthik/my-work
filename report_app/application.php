@@ -135,10 +135,12 @@
 					case REPORT_TARGET_CSV:
 						$arrReport['Status'] = ($arrReturn = $this->ExportCSV($arrData, $arrDataReport, $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
 						$strFile = $arrReturn['FileName'];
+						$strMime = 'application/x-msexcel';
 						break;
 					
 					case REPORT_TARGET_XLS:
 						$arrReport['Status'] = ($strFile = $this->ExportXLS($arrData, $arrDataReport, $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
+						$strMime = 'text/csv';
 						break;
 						
 					default:
@@ -150,8 +152,8 @@
 				// If there are no results, treat it as a success
 				$arrReport['Status'] = REPORT_GENERATED;
 			}
-			Debug($strFile);
-			die;
+			//Debug($strFile);
+			//die;
 			
 			// Email report
 			if ($arrReport['Status'] == REPORT_GENERATED)
@@ -190,7 +192,7 @@
 		 			// Add attachment if there are any results
 		 			if ($intResultCount)
 					{
-		 				$mimMime->addAttachment($strFile, 'application/x-msexcel');
+		 				$mimMime->addAttachment($strFile, $strMime);
 					}
 		 			
 					$strBody	= $mimMime->get();
@@ -271,6 +273,10 @@
 	 		$strPath		= "/home/vixen_upload/datareport/$strName";
 	 		$ptrFile		= fopen($strPath, "w");
  		}
+ 		else
+ 		{
+ 			$strPath = $strName;
+ 		}
  		$strDelimiter	= ';';
 		
  		// Set column headers
@@ -294,12 +300,10 @@
  		//Debug($strReturn);
  		//die;
  		
- 		if ($bolSave) 
- 		{
- 			fclose($ptrFile);
- 			return $strPath;
- 		}
- 		return $strReturn;
+ 		$arrReturn = Array();
+ 		$arrReturn['Output']	= $strReturn;
+ 		$arrReturn['FileName']	= $strPath;
+ 		return $arrReturn;
  	}
 	
 	
@@ -639,6 +643,7 @@
  			// Parse Filename Template
  			$arrTemplate = Array();
  			$strFileName = $arrReport['FileName'];
+ 			
  			preg_match_all("/<([\d\w\s\:]+)>/misU", $strFileName, $arrTemplate, PREG_SET_ORDER);
  			
  			foreach ($arrTemplate as $arrMatch)
