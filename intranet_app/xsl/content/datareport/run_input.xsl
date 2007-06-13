@@ -16,6 +16,12 @@
 				</xsl:attribute>
 			</input>
 			
+			<xsl:if test="/Response/NoResults">
+				<div class = "MsgNoticeWide">
+					There were no results for your requested Data Report.  Please try a different set of constraints.
+				</div>
+			</xsl:if>
+			
 			<h2>Report Details</h2>
 			<div class="Wide-Form">
 				<table border="0" cellpadding="3" cellspacing="0">
