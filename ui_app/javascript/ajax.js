@@ -16,102 +16,102 @@
 function VixenAjaxClass()
 {
 
-	// AJAX Send
-	this.Send = function(objObject)
-	{
-		// store our object before sending, along with a transaction ID
-		this.objData = objObject;
-		
-		//return(JSON.stringify(object));
-		var page_url = "ajax_link.php";
-		// register the callbacks
-		var local_handle_reply = this.HandleReply;
-		var local_handle_error = this.HandleError;
-	
-		// callback binder
-		function bindcallback()
-		{
-			if (req.readyState == 4) {
-				if (req.status == 200) {
-					TEST:local_handle_reply(req.responseText);
-					//handle_reply();
-				} else {
-					local_handle_error(req);
-				}
-			}
-		}
-	
-		// send request to the server
-		if (window.XMLHttpRequest)
-		{
-			//native XMLHttpRequest browsers
-			var req = new XMLHttpRequest();
-			req.onreadystatechange = bindcallback;
-			req.open("POST", page_url, true);
-			req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-			req.send(JSON.stringify(objObject));
-		}
-		
-		else if (window.ActiveXObject)
-		{
-			// IE/Windows ActiveX browsers
-			var req = new ActiveXObject("Microsoft.XMLHTTP");
-			if (req)
-			{
-				req.onreadystatechange = bindcallback;
-				req.open("POST", page_url, true);
-				req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-				req.send(JSON.stringify(objObject));
-			}
-		}
-		return TRUE;
-	}
-	
-	// AJAX handle_reply
-	this.HandleReply = function(strReply)
-	{
-		// if our reply is asking for a login, prompt the user to login
-		
-		var objData = {};
-		try
-		{
-			// convert reply into data object
-			eval("objData = " + strReply);
-			
-			if (objData)
-			{
-				ajaxHandler(FALSE);
-				return;
-			}
-	
-			ajaxHandler(objData);
-		}
-		catch(er)
-		{
-			ajaxError(er, strReply);
-		}
-	
-		// clean up
-		delete(strReply);
-		delete(objData);
-	}	
-		
-	
-	
-	// AJAX handle_error
-	this.HandleError = function(req)
-	{
-	
-	}
-	
-	this.AjaxObject = function(strClass, strMethod, objObjects)
-	{
-		return {
-					'Class': strClass,
-					'Method': strMethod,
-					'Objects': objObjects
-				};
-	}
+        // AJAX Send
+        this.Send = function(objObject)
+        {
+                // store our object before sending, along with a transaction ID
+                this.objData = objObject;
+                
+                //return(JSON.stringify(object));
+                var page_url = "ajax_link.php";
+                // register the callbacks
+                var local_handle_reply = this.HandleReply;
+                var local_handle_error = this.HandleError;
+        
+                // callback binder
+                function bindcallback()
+                {
+                        if (req.readyState == 4) {
+                                if (req.status == 200) {
+                                        TEST:local_handle_reply(req.responseText);
+                                        //handle_reply();
+                                } else {
+                                        local_handle_error(req);
+                                }
+                        }
+                }
+        
+                // send request to the server
+                if (window.XMLHttpRequest)
+                {
+                        //native XMLHttpRequest browsers
+                        var req = new XMLHttpRequest();
+                        req.onreadystatechange = bindcallback;
+                        req.open("POST", page_url, true);
+                        req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                        req.send(JSON.stringify(objObject));
+                }
+                
+                else if (window.ActiveXObject)
+                {
+                        // IE/Windows ActiveX browsers
+                        var req = new ActiveXObject("Microsoft.XMLHTTP");
+                        if (req)
+                        {
+                                req.onreadystatechange = bindcallback;
+                                req.open("POST", page_url, true);
+                                req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+                                req.send(JSON.stringify(objObject));
+                        }
+                }
+                return TRUE;
+        }
+        
+        // AJAX handle_reply
+        this.HandleReply = function(strReply)
+        {
+                // if our reply is asking for a login, prompt the user to login
+                
+                var objData = {};
+                try
+                {
+                        // convert reply into data object
+                        eval("objData = " + strReply);
+                        
+                        if (objData)
+                        {
+                                ajaxHandler(FALSE);
+                                return;
+                        }
+        
+                        ajaxHandler(objData);
+                }
+                catch(er)
+                {
+                        ajaxError(er, strReply);
+                }
+        
+                // clean up
+                delete(strReply);
+                delete(objData);
+        }	
+                
+        
+        
+        // AJAX handle_error
+        this.HandleError = function(req)
+        {
+        
+        }
+        
+        this.AjaxObject = function(strClass, strMethod, objObjects)
+        {
+                return {
+                                        'Class': strClass,
+                                        'Method': strMethod,
+                                        'Objects': objObjects
+                                };
+        }
 }
 
 // Create an instance of the Vixen menu class
@@ -198,22 +198,22 @@ var JSON = function () {
             },
             object: function (x,fmt, tb) {
                 if (x) {
-					if (fmt == true)
-					{
-						var tb;
-						if (typeof(tb) == 'undefined')
-						{
-							tb = "";
-						}
-						var cr = '<br />';
-						var ntb = tb + "&nbsp;";
-					}
-					else
-					{
-						var cr = '';
-						var tb = '';
-						var ntb = '';
-					}
+                                        if (fmt == true)
+                                        {
+                                                var tb;
+                                                if (typeof(tb) == 'undefined')
+                                                {
+                                                        tb = "";
+                                                }
+                                                var cr = "\n";
+                                                var ntb = tb + "\t";
+                                        }
+                                        else
+                                        {
+                                                var cr = '';
+                                                var tb = '';
+                                                var ntb = '';
+                                        }
                     var a = [], b, f, i, l, v;
                     if (x instanceof Array) {
                         a[0] = cr + tb + '[' + cr;
@@ -225,7 +225,7 @@ var JSON = function () {
                                 v = f(v, fmt, ntb);
                                 if (typeof v == 'string') {
                                     if (b) {
-                                        a[a.length] = '2' + cr + tb;
+                                        a[a.length] = ',' + cr;
                                     }
                                     a[a.length] = v;
                                     b = true;
@@ -234,7 +234,7 @@ var JSON = function () {
                         }
                         a[a.length] = cr + tb + ']' + cr;
                     } else if (x instanceof Object) {
-                        a[0] = ' {' + cr + tb;
+                        a[0] = cr + tb + '{' + cr;
                         for (i in x) {
                             v = x[i];
                             f = s[typeof v];
@@ -242,14 +242,14 @@ var JSON = function () {
                                 v = f(v, fmt, ntb);
                                 if (typeof v == 'string') {
                                     if (b) {
-                                        a[a.length] = cr + tb;
+                                        a[a.length] = ','  + cr;
                                     }
-                                    a.push(ntb + s.string(i), ' : ', v);
+                                    a.push(ntb + s.string(i), ':', v);
                                     b = true;
                                 }
                             }
                         }
-                        a[a.length] = tb + '}';
+                        a[a.length] = cr + tb + '}';
                     } else {
                         return;
                     }
@@ -262,23 +262,23 @@ var JSON = function () {
         copyright: '(c)2005 JSON.org',
         license: 'http://www.crockford.com/JSON/license.html',
 
-	//------------------------------------------------------------------------//
-	// stringify
-	//------------------------------------------------------------------------//
-	/**
-	 * stringify()
-	 *
-	 * convert a Javascript value to a JSON string
-	 *
-	 * convert a Javascript value to a JSON string
-	 *
-	 * @param	mixed	value	any Javascript value
-	 * @return	string			JSON string
-	 *
-	 * @method
-	 * @see		JSON.fstringify()
-	 * @see		JSON.parse()
-	 */
+        //------------------------------------------------------------------------//
+        // stringify
+        //------------------------------------------------------------------------//
+        /**
+         * stringify()
+         *
+         * convert a Javascript value to a JSON string
+         *
+         * convert a Javascript value to a JSON string
+         *
+         * @param	mixed	value	any Javascript value
+         * @return	string			JSON string
+         *
+         * @method
+         * @see		JSON.fstringify()
+         * @see		JSON.parse()
+         */
         stringify: function (v) {
             var f = s[typeof v];
             if (f) {
@@ -290,25 +290,25 @@ var JSON = function () {
             return null;
         },
 
-	//------------------------------------------------------------------------//
-	// fstringify
-	//------------------------------------------------------------------------//
-	/**
-	 * fstringify()
-	 *
-	 * convert a Javascript value to a JSON string
-	 *
-	 * convert a Javascript value to a JSON string with formating (tabs and newlines)
-	 * to make the output string easier to read. The output of fstringify is slightly
-	 * larger then the output of stringify but is much easier to read.
-	 *
-	 * @param	mixed	value	any Javascript value
-	 * @return	string			formated JSON string
-	 *
-	 * @method
-	 * @see		JSON.stringify()
-	 * @see		JSON.parse()
-	 */
+        //------------------------------------------------------------------------//
+        // fstringify
+        //------------------------------------------------------------------------//
+        /**
+         * fstringify()
+         *
+         * convert a Javascript value to a JSON string
+         *
+         * convert a Javascript value to a JSON string with formating (tabs and newlines)
+         * to make the output string easier to read. The output of fstringify is slightly
+         * larger then the output of stringify but is much easier to read.
+         *
+         * @param	mixed	value	any Javascript value
+         * @return	string			formated JSON string
+         *
+         * @method
+         * @see		JSON.stringify()
+         * @see		JSON.parse()
+         */
         fstringify: function (v) {
             var f = s[typeof v];
             if (f) {
@@ -320,23 +320,23 @@ var JSON = function () {
             return null;
         },
 
-	//------------------------------------------------------------------------//
-	// parse
-	//------------------------------------------------------------------------//
-	/**
-	 * parse()
-	 *
-	 * Parse a JSON string into a Javascript value.
-	 *
-	 * Parse a JSON string into Javascript value(s).
-	 *
-	 * @param	string	text	JSON string to be parsed
-	 * @return	bool	returns FALSE on error
-	 *
-	 * @method
-	 * @see		JSON.stringify()
-	 * @see		JSON.fstringify()
-	 */
+        //------------------------------------------------------------------------//
+        // parse
+        //------------------------------------------------------------------------//
+        /**
+         * parse()
+         *
+         * Parse a JSON string into a Javascript value.
+         *
+         * Parse a JSON string into Javascript value(s).
+         *
+         * @param	string	text	JSON string to be parsed
+         * @return	bool	returns FALSE on error
+         *
+         * @method
+         * @see		JSON.stringify()
+         * @see		JSON.fstringify()
+         */
         parse: function (text) {
             try {
                 return !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
