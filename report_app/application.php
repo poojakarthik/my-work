@@ -135,12 +135,12 @@
 					case REPORT_TARGET_CSV:
 						$arrReport['Status'] = ($arrReturn = $this->ExportCSV($arrData, $arrDataReport, $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
 						$strFile = $arrReturn['FileName'];
-						$strMime = 'application/x-msexcel';
+						$strMime = 'text/csv';
 						break;
 					
 					case REPORT_TARGET_XLS:
 						$arrReport['Status'] = ($strFile = $this->ExportXLS($arrData, $arrDataReport, $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
-						$strMime = 'text/csv';
+						$strMime = 'application/x-msexcel';
 						break;
 						
 					default:
