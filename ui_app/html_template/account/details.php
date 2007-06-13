@@ -56,6 +56,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
 	}
+	
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -69,7 +70,94 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{		
+	{
+		switch ($this->_intContext)
+		{
+			case HTML_CONTEXT_SEANS_DETAIL:
+				$this->_RenderSeansDetail();
+				break;
+			case HTML_CONTEXT_LEDGER_DETAIL:
+				$this->_RenderLedgerDetail();
+				break;
+			case HTML_CONTEXT_FULL_DETAIL:
+				$this->_RenderFullDetail();
+				break;
+			default:
+				$this->_RenderFullDetail();
+				break;
+		}
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderFullDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderFullDetail()
+	 *
+	 * Render this HTML Template with full detail
+	 *
+	 * Render this HTML Template with full detail
+	 *
+	 * @method
+	 */
+	private function _RenderFullDetail()
+	{
+		$this->_RenderLedgerDetail();
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderLedgerDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderLedgerDetail()
+	 *
+	 * Render this HTML Template with ledger detail
+	 *
+	 * Render this HTML Template with ledger detail
+	 *
+	 * @method
+	 */
+	private function _RenderLedgerDetail()
+	{
+		?>
+		<h2 class='Account'>Account Details</h2>
+		<div class='Narrow-Form'>
+			<table border='0' cellpadding='3' cellspacing='0'>
+				<tr>
+					<?php DBO()->Account->Id->RenderOutput(); ?>
+				</tr>
+				<tr>
+						<?php DBO()->Account->BusinessName->RenderOutput(); ?>
+				</tr>
+				<tr>
+						<?php DBO()->Account->Balance->RenderOutput();?>
+				</tr>
+				<tr>
+						<?php DBO()->Account->Overdue->RenderOutput();?>
+				</tr>
+				<tr>
+						<?php DBO()->Account->TotalUnbilledAdjustments->RenderOutput();?>
+				</tr>
+			</table>
+		</div>
+		<div class='Seperator'></div>
+		<?php
+	}
+	
+	//------------------------------------------------------------------------//
+	// _RenderSeansDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderSeansDetail()
+	 *
+	 * Render this HTML Template with Sean's detail
+	 *
+	 * Render this HTML Template with Sean's detail
+	 *
+	 * @method
+	 */
+	private function _RenderSeansDetail()
+	{
 		?>
 			<h2 class='Account'>Account Details</h2>
 			<div class='Narrow-Form'>

@@ -37,7 +37,7 @@ $this->Page->SetName('Invoices and Payments');
 $this->Page->SetLayout('2Column');
 
 // add the Html Objects to their respective columns
-$this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
+$this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('AccountOptions', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
 $this->Page->AddObject('AccountInvoices', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('AccountPayments', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);

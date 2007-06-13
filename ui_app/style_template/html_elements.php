@@ -200,6 +200,9 @@ class HTMLElements
 	 * 
 	 * Echoes out a formatted HTML div tag, using data from an array to build
 	 * the element's attributes like class, id and value
+	 * The value of the property is inserted into the OutputLabel string, if 
+	 * an appropriate string is defined in the UIAppDocumentation or 
+	 * UIAppDocumentationOptions tables of the database
 	 *
 	 * @param	Array	$arrParams		The parameters to use when building the
 	 * 									label (see above for format).
@@ -211,13 +214,18 @@ class HTMLElements
 		$strLabel = $arrParams['Definition']['Label'];
 		$strValue = $this->_BuildOutputValue($arrParams);
 		
-		
-		if ($arrParams['Context'] == 0)
+		/*
+		if ($arrParams['Context'] == CONTEXT_DEFAULT)
 		{
 			echo "  <td>\n";
 			echo "    {$strLabel} : \n";
 			echo "  </td>\n";
 		}
+		*/
+		echo "  <td>\n";
+		echo "    {$strLabel} : \n";
+		echo "  </td>\n";
+		
 		echo "   <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
 	}
 	
@@ -240,9 +248,10 @@ class HTMLElements
 	 *
 	 * @method
 	 */
-	function _OutputValue($mixValue, $strOutputString)
+	private function _OutputValue($mixValue, $strOutputString)
 	{
 		$mixReturn = $mixValue;
+		$strOutputString = trim($strOutputString);
 		
 		// replace <value> case-insensitive
 		if ($strOutputString)
@@ -269,7 +278,7 @@ class HTMLElements
 	 *
 	 * @method
 	 */
-	function _BuildOutputValue($arrParams)
+	private function _BuildOutputValue($arrParams)
 	{
 		$strValue = NULL;
 
@@ -294,39 +303,43 @@ class HTMLElements
 				$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel']);
 			}
 		}
+		elseif ($arrParams['Definition']['OutputLabel'])
+		{
+			// Use the default OutputLabel
+			$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel']);
+		}
 		else
 		{
+			// Use the actual value
 			$strValue = $arrParams['Value'];
 		}
+		
 		return $strValue;
 	}
 	
 	//------------------------------------------------------------------------//
-	// OutputLabel
+	// ValueLabelOnly
 	//------------------------------------------------------------------------//
 	/**
-	 * OutputLabel()
+	 * ValueLabelOnly()
 	 * 
 	 * Outputs the property's value embedded in the string defined as the OutputLabel property of the table UIAppDocumentation
 	 * 
 	 * Outputs the property's value embedded in the string defined as the OutputLabel property of the table UIAppDocumentation
-	 * The label associated with the property is not output.  The OutputLabel string is output
-	 * with the <value> placeholder substittuted with the property's value.
-	 * If an OutputLabel is not defined for the property (is NULL) then the value is output.
-	 * If there are multiple OutputLabels defined in UIAppDocumentationOptions then these are used, if associated with the
-	 * property's value.
+	 * This works just like the method "Label", but does not output the accompanying label (which is usually the property's name)
 	 *
 	 * @param	Array	$arrParams		The parameters to use when building the
 	 * 									label (see above for format).
 	 *
 	 * @method
 	 */
-	function OutputLabel($arrParams)
+	function ValueLabelOnly($arrParams)
 	{
 		$strValue = $this->_BuildOutputValue($arrParams);
 
 		echo "  <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
 	}
+	
 	//------------------------------------------------------------------------//
 	// MultiLinedLabel
 	//------------------------------------------------------------------------//

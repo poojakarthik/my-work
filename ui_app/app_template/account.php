@@ -157,6 +157,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->Where->Set("Account = <id>", Array('id'=>DBO()->Account->Id->Value));
 		DBL()->Invoice->Load();
 		
+		// Calculate the Account Balance
+		//TODO!
+		DBO()->Account->Balance = 50000;
+		
+		// Calculate the Account Overdue Amount
+		//TODO!
+		DBO()->Account->Overdue = 450;
+		
+		// Calculate the Account's total unbilled adjustments
+		//TODO!
+		DBO()->Account->TotalUnbilledAdjustments = 1200;
+		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_ledger');
 
