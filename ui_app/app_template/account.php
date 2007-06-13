@@ -154,7 +154,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// the DBList storing the invoices should be order so that the most recent is first
 		// same with the payments list
 		
-		DBL()->Invoice->Where->Set("Account = <id>", Array('id'=>DBO()->Account->Id->Value));
+		DBL()->Invoice->Account = DBO()->Account->Id->Value;
 		DBL()->Invoice->Load();
 		
 		// Calculate the Account Balance

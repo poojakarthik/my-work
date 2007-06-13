@@ -438,12 +438,12 @@ class DbWhere
 			$arrWhere = Array();
 			foreach($this->_arrWhere AS $strKey=>$strValue)
 			{
-				$arrWhere[] = "$strKey = <$strValue>"; 
+				$arrWhere[] = "$strKey = $strValue"; 
 			}
 			$strWhere = trim(implode(" AND ", $arrWhere));
 			return $strWhere;
 		}
-		
+
 		return $this->_strWhere;
 	}
 }

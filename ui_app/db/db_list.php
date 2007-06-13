@@ -414,7 +414,7 @@ class DBList extends DBListBase
 	 *
 	 * Gets a value from the where array
 	 *
-	 * Sets a value from the where array
+	 * Gets a value from the where array
 	 *
 	 * @param	string		$strProperty	property name
 	 * 
