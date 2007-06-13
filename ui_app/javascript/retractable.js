@@ -16,23 +16,36 @@
  
 function VixenSlidingClass()
 {
-	this.slideInUse = new Object();
+	this.table = new Object();
 	this.slideTarget = "";
 	
-	this.Slide =function(objId) 
+	this.Slide =function(tblId, objId) 
 	{
 		this.obj = document.getElementById(objId);
 		this.duration = 1;
-		this.height = parseInt(this.obj.style.height);
+		//this.height = parseInt(this.obj.style.height);
+		
+		this.height =function()
+		{
+			if (this.obj.style.height)
+			{
+				this.myheight = this.obj.style.height;
+			}
+			else
+			{
+				this.myheight = this.obj.clientHeight;
+			}
+			return parseInt(this.myheight);
+		}
 		
 		this.up = function() 
 		{
-			this.curHeight = this.height;
+			this.curHeight = this.height();
 			this.newHeight = '0';
-			if(Vixen.Slide.slideInUse[objId].Sliding != TRUE) 
+			if(Vixen.Slide.table[tblId].row[objId].Sliding != TRUE) 
 			{
 				var finishTime = this.slide();
-				window.setTimeout("Vixen.Slide.Slide('"+objId+"').finishup("+this.height+");",finishTime);
+				window.setTimeout("Vixen.Slide.Slide('"+tblId+"','"+objId+"').finishup("+this.height()+");",finishTime);
 			}
 			else
 			{
@@ -43,14 +56,14 @@ function VixenSlidingClass()
 	
 		this.down = function() 
 		{
-			this.newHeight = this.height;
+			this.newHeight = this.height();
 			this.curHeight = '0';
-			if(Vixen.Slide.slideInUse[objId].Sliding != TRUE) 
+			if(Vixen.Slide.table[tblId].row[objId].Sliding != TRUE) 
 			{
-				this.obj.style.height = '0px';
-				//this.obj.style.display = 'none';
+				this.obj.style.height = '1px';
+				//this.obj.style.display = 'block';
 				var finishTime = this.slide();
-				window.setTimeout("Vixen.Slide.Slide('"+objId+"').finishdown("+this.height+");",finishTime);
+				window.setTimeout("Vixen.Slide.Slide('"+tblId+"','"+objId+"').finishdown("+this.newHeight+");",finishTime);
 			}
 			else
 			{
@@ -61,7 +74,7 @@ function VixenSlidingClass()
 		
 		this.slide = function() 
 		{
-			Vixen.Slide.slideInUse[objId].Sliding = TRUE;
+			Vixen.Slide.table[tblId].row[objId].Sliding = TRUE;
 			var frames = 15 * this.duration; // Running at 30 fps
 	
 			var tIncrement = (this.duration*500) / frames;
@@ -86,9 +99,8 @@ function VixenSlidingClass()
 				this.curHeight = this.curHeight - frameSizes[i];
 				window.setTimeout("document.getElementById('"+objId+"').style.height='"+Math.round(this.curHeight)+"px';",tIncrement * i);
 			}
-			
-			//window.setTimeout("Vixen.Slide.slideInUse['"+objId+"'] = FALSE; debug('slideup:' + Vixen.Slide.slideUp);",tIncrement * i);
-			window.setTimeout("Vixen.Slide.slideInUse['"+objId+"'].Sliding = FALSE;",tIncrement * i);			
+
+			window.setTimeout("Vixen.Slide.table['"+tblId+"'].row['"+objId+"'].Sliding = FALSE;",tIncrement * i);			
 	
 			return tIncrement * i;
 			
@@ -96,82 +108,70 @@ function VixenSlidingClass()
 		
 		this.finishup = function(height) 
 		{
+			//debug (this.obj.clientHeight + "up" + height + ":myheight:" + this.height());
 			this.obj.style.display = 'none';
 			this.obj.style.height = height + 'px';
-			Vixen.Slide.slideInUse[objId].Up = TRUE;
+			Vixen.Slide.table[tblId].row[objId].Up = TRUE;
 		}
 		this.finishdown = function(height) 
 		{
+			//debug (this.obj.clientHeight + "down" + height);
 			this.obj.style.display = 'block';
 			this.obj.style.height = height + 'px';
-			Vixen.Slide.slideInUse[objId].Up = FALSE;
+			Vixen.Slide.table[tblId].row[objId].Up = FALSE;
 		}
 		
 		return this;
 	
 	}
 	
-	this.ToggleSlide =function(target)
+	this.ToggleSlide =function(strTableId, strTargetId)
 	{
-		if (!this.slideInUse[target] || this.slideInUse[target].Up == TRUE)
+		
+		if (this.table[strTableId].collapseAll == TRUE)
 		{
-			this.slideInUse[target] = new Array();
-			if (this.slideTarget == target || this.slideTarget == "")
-			{
-				this.Slide(target).down();
-			}
-			else
-			{
-				if (this.slideInUse[this.slideTarget].Up == TRUE)
+			for (var key in this.table[strTableId].row) {
+  				var objRow = this.table[strTableId].row[key];
+				if (this.table[strTableId].row[key].Up != TRUE)
 				{
-					this.Slide(this.slideTarget).down();
+					this.Slide(strTableId, key).up();
+					this.table[strTableId].row[key].Up = TRUE;
 				}
-				else
-				{
-					this.Slide(this.slideTarget).up();
-					this.slideTarget = "";
-				}
-				this.Slide(target).down();				
 			}
-			//this.slideTarget = target;
-			
+		}
+		if (this.table[strTableId].row[strTargetId].Up == TRUE)
+		{
+			this.Slide(strTableId, strTargetId).down();
+			this.table[strTableId].row[strTargetId].Up = FALSE;			
 		}
 		else
 		{
-			if (this.slideTarget == target || this.slideTarget == "")
-			{
-				this.Slide(target).up();
-				this.slideTarget = "";
-			}
-			else
-			{
-				if (this.slideInUse[this.slideTarget].Up == TRUE)
-				{
-					this.Slide(this.slideTarget).down();
-				}
-				else
-				{
-					this.Slide(this.slideTarget).up();
-					this.slideTarget = "";
-				}
-				this.Slide(target).up();
-			}
+			this.Slide(strTableId, strTargetId).up();
+			this.table[strTableId].row[strTargetId].Up = TRUE;
 		}
-		document.getElementById(target).style.display ="block";
+		document.getElementById(strTargetId).style.display ="block";
 	}
 	
-	this.Attach =function (strTableId, totalRows)
+	this.Attach =function (strTableId, totalRows, bolOneOnly)
 	{
+		Vixen.Slide.table[strTableId] = new Object();
+		Vixen.Slide.table[strTableId].collapseAll = bolOneOnly;	
+		Vixen.Slide.table[strTableId].row = new Object();
 		for (i = 1; i <=totalRows; i++)
-		{
+		{	
+			Vixen.Slide.table[strTableId].row[strTableId + '_' + i + "DIV"] = new Object();
+			Vixen.Slide.table[strTableId].row[strTableId + '_' + i + "DIV"].Up = TRUE;			
 			var elmRow = document.getElementById(strTableId + '_' + i);
 			elmRow.addEventListener('mousedown', MouseDownHandler, TRUE);
+			intHeight = Vixen.Slide.Slide(strTableId, strTableId + '_' + i + 'DIV').height();
+			Vixen.Slide.Slide(strTableId, strTableId + '_' + i + 'DIV').finishup(intHeight);
 		}
+		//debug (Vixen.Slide.table[strTableId], 1);
 	}
 	
 	function MouseDownHandler ()
 	{
-		Vixen.Slide.ToggleSlide(this.id + "DIV");
+		Vixen.Slide.ToggleSlide(this.parentNode.parentNode.id, this.id + "DIV");
 	}
 }
 

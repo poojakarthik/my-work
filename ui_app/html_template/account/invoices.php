@@ -107,10 +107,14 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 				
 		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='AccountInvoices'>\n";
 		echo "<tr class='First'>\n";
-		echo " <th>Account Id</th>\n";
+		echo " <th>Invoice Date</th>\n";
 		echo " <th>Invoice Id</th>\n";
-		echo " <th>Account Balance</th>\n";
-		echo " <th>Total Owing</th>\n";
+		echo " <th>Invoice Amount</th>\n";
+		echo " <th>Applied Amount (balance)</th>\n";
+		echo " <th>Amount Owing (accountbalance)</th>\n";
+		echo " <th>Invoice Sent (status)</th>\n";
+		echo " <th>View PDF</th>\n";
+		echo " <th>View Invoice Details</th>\n";
 		echo "</tr>\n";
 		$intRowCount = 0;
 		foreach (DBL()->Invoice AS $strProperty=>$objValue)
@@ -118,31 +122,41 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 			$intRowCount++;
 			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
 			echo "<tr id='AccountInvoices_$intRowCount' class='$strClass'>\n";
-			// change these to Render (not RenderOutput)
 			echo "<td>";
-			$objValue->Account->RenderValue();
+			$objValue->DueOn->RenderValue();
 			echo "</td>";
 			echo "<td>";
 			$objValue->Id->RenderValue();
 			echo "</td>";
 			echo "<td>";
+			$objValue->Total->RenderValue();	// Invoice Amount
+			echo "</td>";			
+			echo "<td>";
+			$objValue->Balance->RenderValue();
+			echo "</td>";			
+			echo "<td>";
 			$objValue->AccountBalance->RenderValue();
 			echo "</td>";
 			echo "<td>";
-			$objValue->TotalOwing->RenderValue();
-			echo "</td>";			
-			echo "</tr><tr>";
-			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
-			echo "<div id='AccountInvoices_" . $intRowCount . "DIV' style='height: 20px; display: none; overflow:hidden;'>";
-			//$objValue->ShowInfo();
-			echo $objValue->Status->Label . ":";
 			$objValue->Status->RenderValue();
+			echo "</td>";
+			echo "<td>";
+			echo "<img src='img/template/pdf.png' height=20px></img>";	// View PDF icon
+			echo "</td>";
+			echo "<td>";
+			echo "<img src='img/template/invoice.png' height=20px></img>";			// View Invoice Details icon
+			echo "</td>";
+			echo "</tr><tr>";
+			echo "<td colspan=8 style='padding-top: 0px; padding-bottom: 0px'>";
+			echo "<div id='AccountInvoices_" . $intRowCount . "DIV' style='display: block; overflow:hidden;'>";
+			// todo - add the payment applied details in here
+			$objValue->ShowInfo();
 			echo "</div>";
 			echo "</td></tr>\n";
 		}
 		echo "</table>\n";
 		echo "<script type='text/javascript'>Vixen.Highlight.Attach('AccountInvoices', $intRowCount);</script>";
-		echo "<script type='text/javascript'>Vixen.Slide.Attach('AccountInvoices', $intRowCount);</script>";
+		echo "<script type='text/javascript'>Vixen.Slide.Attach('AccountInvoices', $intRowCount, TRUE);</script>";
 		
 	}
 }

@@ -262,6 +262,9 @@ class Page
 		// always render the popup js class
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/popup.js' ></script>\n";
 		
+		// always render the dhtml js class
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/dhtml.js' ></script>\n";
+		
 		// for each on global array
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{

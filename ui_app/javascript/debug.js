@@ -1,123 +1,6 @@
-//----------------------------------------------------------------------------//
-// VixenAjaxClass
-//----------------------------------------------------------------------------//
-/**
- * VixenAjaxClass
- *
- * Vixen ajax class
- *
- * Vixen ajax class
- *
- *
- *
- * @package	framework_ui
- * @class	Vixen.Ajax
- */
-function VixenAjaxClass()
-{
-
-	// AJAX Send
-	this.Send = function(objObject)
-	{
-		// store our object before sending, along with a transaction ID
-		this.objData = objObject;
-		
-		//return(JSON.stringify(object));
-		var page_url = "ajax_link.php";
-		// register the callbacks
-		var local_handle_reply = this.HandleReply;
-		var local_handle_error = this.HandleError;
-	
-		// callback binder
-		function bindcallback()
-		{
-			if (req.readyState == 4) {
-				if (req.status == 200) {
-					TEST:local_handle_reply(req.responseText);
-					//handle_reply();
-				} else {
-					local_handle_error(req);
-				}
-			}
-		}
-	
-		// send request to the server
-		if (window.XMLHttpRequest)
-		{
-			//native XMLHttpRequest browsers
-			var req = new XMLHttpRequest();
-			req.onreadystatechange = bindcallback;
-			req.open("POST", page_url, true);
-			req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-			req.send(JSON.stringify(objObject));
-		}
-		
-		else if (window.ActiveXObject)
-		{
-			// IE/Windows ActiveX browsers
-			var req = new ActiveXObject("Microsoft.XMLHTTP");
-			if (req)
-			{
-				req.onreadystatechange = bindcallback;
-				req.open("POST", page_url, true);
-				req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-				req.send(JSON.stringify(objObject));
-			}
-		}
-		return TRUE;
-	}
-	
-	// AJAX handle_reply
-	this.HandleReply = function(strReply)
-	{
-		// if our reply is asking for a login, prompt the user to login
-		
-		var objData = {};
-		try
-		{
-			// convert reply into data object
-			eval("objData = " + strReply);
-			
-			if (objData)
-			{
-				ajaxHandler(FALSE);
-				return;
-			}
-	
-			ajaxHandler(objData);
-		}
-		catch(er)
-		{
-			ajaxError(er, strReply);
-		}
-	
-		// clean up
-		delete(strReply);
-		delete(objData);
-	}	
-		
-	
-	
-	// AJAX handle_error
-	this.HandleError = function(req)
-	{
-	
-	}
-	
-	this.AjaxObject = function(strClass, strMethod, objObjects)
-	{
-		return {
-					'Class': strClass,
-					'Method': strMethod,
-					'Objects': objObjects
-				};
-	}
-}
-
-// Create an instance of the Vixen menu class
-Vixen.Ajax = new VixenAjaxClass();
-
-
+// MODIFIED BY: Sean
+// CHANGES: completely rooted up the lovely JSON code, so it will debug out
+// 			a mutli-leveled javascript object nicely
 
 /*
 Copyright (c) 2005 JSON.org
@@ -164,7 +47,7 @@ SOFTWARE.
  * @package APhPLIX_Javascript_Client
  * @class	JSON
  */
-var JSON = function () {
+var DEBUG = function () {
     var m = {
             '\b': '\\b',
             '\t': '\\t',

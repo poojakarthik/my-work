@@ -86,6 +86,7 @@ function VixenHighlightClass()
 			elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
 			elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
 		}
+
 	}
 	
 	function MouseDownHandler ()

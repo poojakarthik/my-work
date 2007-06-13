@@ -154,6 +154,27 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("CreatedOn Desc");
 		DBL()->Invoice->Load();
 		
+		// todo - need to load applied payments for particular invoices
+		// join invoice, invoicepayment, payment
+		// see below
+		
+		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		DBL()->Payment->Load();
+		/*
+		$arrColumns = array("InvoiceId" 		=> 'Invoice.Id',
+							'PaymentAmount' 	=> 'Payment.Amount',
+							'AccountBalance'	=> 'Invoice.AccountBalance',
+							'InvoiceAmount'		=> 'Invoice.TotalOwing',
+							'PaymentDate'	 	=> 'Payment.PaidOn',
+							'PaymentId'			=> 'Payment.Id',
+							'InvoiceDueOn'		=> 'Invoice.DueOn');
+		
+		DBL()->PaidInvoices->_strTable = "Invoice, InvoicePayment, Payment";
+		DBL()->PaidInvoices->Where->Set("Invoice.Account = <id> AND InvoicePayment.Account = <id> AND InvoicePayment.Payment = Payment.Id AND Payment.Account = <id>", Array('id'=>DBO()->Account->Id->Value));
+		DBL()->PaidInvoices->_arrColumns = $arrColumns;
+		DBL()->PaidInvoices->Load();
+		*/
+		
 		// Calculate the Account Balance
 		//TODO!
 		DBO()->Account->Balance = -50000;
