@@ -95,18 +95,45 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 		DBL()->KnowledgeBase->Load();
 
 		// Load the name of the employee who created the KnowledgeBase document
-		DBO()->Author->Id = DBO()->KnowledgeBase->CreatedBy->Value;
-		DBO()->Author->SetTable("Employee");
-		DBO()->Author->Load();
+		if (DBO()->KnowledgeBase->CreatedBy->Value)
+		{
+			DBO()->Employee->Id = DBO()->KnowledgeBase->CreatedBy->Value;
+			DBO()->Employee->Load();
+			
+			// check that an author could be found
+			if (!DBO()->Employee->IsInvalid())
+			{
+				// the author was found
+				DBO()->KnowledgeBase->Author = DBO()->Employee->FirstName->Value . " " . DBO()->Employee->LastName->Value;
+			}
+			else
+			{
+				// the author could not be found so just output their employee id
+				DBO()->KnowledgeBase->Author = "employee id: ". DBO()->KnowledgeBase->CreatedBy->Value;
+			}
+		}
 		
 		// Load the name of the employee who authorised the KnowledgeBase document
-		DBO()->Authoriser->Id = DBO()->KnowledgeBase->AuthorisedBy->Value;
-		DBO()->Authoriser->SetTable("Employee");
-		DBO()->Authoriser->Load();
-		
+		if (DBO()->KnowledgeBase->AuthorisedBy->Value)
+		{
+			DBO()->Employee->Id = DBO()->KnowledgeBase->AuthorisedBy->Value;
+			DBO()->Employee->Load();
+			
+			// check that an authoriser could be found
+			if (!DBO()->Employee->IsInvalid())
+			{
+				// the authoriser was found
+				DBO()->KnowledgeBase->Authoriser = DBO()->Employee->FirstName->Value . " " . DBO()->Employee->LastName->Value;
+			}
+			else
+			{
+				// the authoriser could not be found so just output their employee id
+				DBO()->KnowledgeBase->Authoriser = "employee id: ". DBO()->KnowledgeBase->AuthorisedBy->Value;
+			}
+		}
 		// All data relating to the document has been retrieved from the database so now load the page template
 		$this->LoadPage('knowledge_base_doc_view');
-
+		
 		return TRUE;
 	}
 }

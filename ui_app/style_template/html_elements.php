@@ -78,6 +78,7 @@ class HTMLElements
 			[Property] => BusinessName
 			[Context] => 0
 			[Value] => West Trend Interiors
+			[Type] => Output
 			[Valid] => 
 			[Required] => 
 			[Definition] => Array
@@ -89,7 +90,7 @@ class HTMLElements
 					[DefaultOutput] => 
 					[OutputMask] => 0
 					[Class] => Default
-					[FullClass] => DefaultOutput
+					[BaseClass] => Default
 				)
 		
 		)	
@@ -169,24 +170,11 @@ class HTMLElements
 	 */
 	function Input($arrParams)
 	{
-		// get documentation for label
-		$strDocumentation = explode(".",$arrParams['Name']);
-		
-		// work out the class to use
-		if (!$arrParams['Definition']['Class'])
-		{
-			$arrParams['Definition']['Class'] = CLASS_DEFAULT; // Default
-		}
-		$strClass = $arrParams['Definition']['FullClass']; // DefaultInput
-		if ($arrParams['Valid'] === FALSE)
-		{
-			$strClass .= "Invalid"; // DefaultInputInvalid
-		}
 		echo "<td>";
 		echo "{$arrParams['Definition']['Label']} : \n";
 		echo "</td>";
 		echo "<td>";
-		echo "<input name='{$arrParams['Object']}.{$arrParams['Property']}' value='{$arrParams['Value']}' class='$strClass'></input>";
+		echo "<input name='{$arrParams['Object']}.{$arrParams['Property']}' value='{$arrParams['Value']}' class='{$arrParams['Definition']['FullClass']}'></input>";
 		echo "</td>";
 	}
 	
@@ -213,20 +201,14 @@ class HTMLElements
 	{
 		$strLabel = $arrParams['Definition']['Label'];
 		$strValue = $this->_BuildOutputValue($arrParams);
+		$strValue = nl2br($strValue);
 		
-		/*
-		if ($arrParams['Context'] == CONTEXT_DEFAULT)
-		{
-			echo "  <td>\n";
-			echo "    {$strLabel} : \n";
-			echo "  </td>\n";
-		}
-		*/
-		echo "  <td>\n";
-		echo "    {$strLabel} : \n";
-		echo "  </td>\n";
+		echo "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		
-		echo "   <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
+		// The potentially taller of the two divs must go first
+		echo "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'>{$strValue}</div>\n";
+		echo "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		echo "</div>\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -275,6 +257,8 @@ class HTMLElements
 	 *
 	 * @param	Array	$arrParams		The standard set of parameters passed to all HtmlElement public methods
 	 * 									(see above for format).
+	 * @return	string					The value to output.  This will never be an empty string
+	 *									at the very least it will be "&nbsp;"
 	 *
 	 * @method
 	 */
@@ -314,6 +298,12 @@ class HTMLElements
 			$strValue = $arrParams['Value'];
 		}
 		
+		// An empty string cannot be used 
+		if (trim($strValue) == "")
+		{
+			$strValue = "&nbsp;";
+		}
+		
 		return $strValue;
 	}
 	
@@ -336,42 +326,13 @@ class HTMLElements
 	function ValueOnly($arrParams)
 	{
 		$strValue = $this->_BuildOutputValue($arrParams);
+		$strValue = nl2br($strValue);
+		
+		echo "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		echo "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'>{$strValue}</div>\n";
+		echo "</div>\n";
 
-		echo "  <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
-	}
-	
-	//------------------------------------------------------------------------//
-	// MultiLinedLabel
-	//------------------------------------------------------------------------//
-	/**
-	 * MultiLinedLabel()
-	 * 
-	 * Creates a label that can have new line characters in it
-	 * 
-	 * Echoes out a formatted HTML div tag, using data from an array to build
-	 * the element's attributes like class, id and value
-	 *
-	 * @param	Array	$arrParams		The parameters to use when building the
-	 * 									label (see above for format).
-	 *
-	 * @method
-	 */
-	function MultiLinedLabel($arrParams)
-	{
-		// replace new line chars for <br> tags
-		$strValue = str_replace("\n", "<br>", $arrParams['Value']);
-		
-		// data entered using MySqlAdmin which contains new line chars also includes '\r' characters
-		$strValue = str_replace("\r", "", $strValue);  
-		
-		echo "	<tr>\n";
-		echo "		<td>\n";
-		echo "			{$arrParams['Definition']['Label']} : \n";
-		echo "		</td>\n";
-		echo "		<td>\n";
-		echo "			<div class='{$arrParams['Definition']['FullClass']}'>{$strValue}</div>\n";
-		echo "		</td>\n";
-		echo "	</tr>\n";
+		//echo "  <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
 	}
 	
 	//------------------------------------------------------------------------//

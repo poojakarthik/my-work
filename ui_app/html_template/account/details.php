@@ -135,29 +135,15 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	 */
 	private function _RenderLedgerDetail()
 	{
-		?>
-		<h2 class='Account'>Account Details</h2>
-		<div class='Narrow-Form'>
-			<table border='0' cellpadding='3' cellspacing='0'>
-				<tr>
-					<?php DBO()->Account->Id->RenderOutput(); ?>
-				</tr>
-				<tr>
-					<?php DBO()->Account->BusinessName->RenderOutput(); ?>
-				</tr>
-				<tr>
-					<?php DBO()->Account->Balance->RenderOutput();?>
-				</tr>
-				<tr>
-					<?php DBO()->Account->Overdue->RenderOutput();?>
-				</tr>
-				<tr>
-					<?php DBO()->Account->TotalUnbilledAdjustments->RenderOutput();?>
-				</tr>
-			</table>
-		</div>
-		<div class='Seperator'></div>
-		<?php
+		echo "<h2 class='Account'>Account Details</h2>\n";
+		echo "<div class='NarrowContent'>\n";
+		DBO()->Account->Id->RenderOutput();
+		DBO()->Account->BusinessName->RenderOutput();
+		DBO()->Account->Balance->RenderOutput();
+		DBO()->Account->Overdue->RenderOutput();
+		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";
 	}
 	
 	//------------------------------------------------------------------------//

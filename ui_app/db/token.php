@@ -297,20 +297,13 @@ class PropertyToken
 		$arrParams['Valid'] 		= $this->_dboOwner->_arrValid[$this->_strProperty];
 		$arrParams['Required'] 		= $bolRequired;
 		$arrParams['Definition'] 	= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
+		$arrParams['Type']			= $strType;
 
-		// work out the class to use
-		if (!$arrParams['Definition']['Class'])
-		{
-			$arrParams['Definition']['FullClass'] = CLASS_DEFAULT; // Default
-		}
-		else
-		{
-			$arrParams['Definition']['FullClass'] = $arrParams['Definition']['Class'];
-		}
-		$arrParams['Definition']['FullClass'] .= $strType; // DefaultInput or DefaultOutput
+		// work out the base class to use
+		$arrParams['Definition']['BaseClass'] = CLASS_DEFAULT; // Default
 		if ($arrParams['Valid'] === FALSE)
 		{
-			$arrParams['Definition']['FullClass'] .= "Invalid"; // DefaultInputInvalid or DefaultOutput
+			$arrParams['Definition']['BaseClass'] .= "Invalid"; // DefaultInvalid
 		}
 		
 		HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);

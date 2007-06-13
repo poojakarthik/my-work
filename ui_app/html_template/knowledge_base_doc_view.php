@@ -103,43 +103,13 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<table border='5'>\n";
+		echo "<div class='WideContent'>\n";
+	
 		foreach (DBO()->KnowledgeBase AS $strProperty=>$objValue)
 		{
 			$objValue->RenderOutput();
 		}
-		echo "</table>\n";
 		
-		// check that an author could be found
-		if (!DBO()->Author->IsInvalid())
-		{
-			// the author was found
-			echo "\t<br><b>Created by: </b>";
-			DBO()->Author->FirstName->RenderOutput();
-			DBO()->Author->LastName->RenderOutput();
-			echo "\n";
-		}
-		else
-		{
-			// the author could not be found so just output their employee id
-			echo "\t<br><b>Created by: </b>employee id ". DBO()->KnowledgeBase->CreatedBy->Value . " (unknown)\n";
-		}
-		
-		
-		// check that an authoriser could be found
-		if (!DBO()->Authoriser->IsInvalid())
-		{
-			// the authoriser was found
-			echo "\t<br><b>Authorised by: </b>";
-			DBO()->Authoriser->FirstName->RenderOutput();
-			DBO()->Authoriser->LastName->RenderOutput();
-			echo "\n";
-		}
-		else
-		{
-			// the authoriser could not be found so just output their employee id
-			echo "\t<br><b>Authorised by: </b>employee id ". DBO()->KnowledgeBase->AuthorisedBy->Value . " (unknown)\n";
-		}
 		
 		// Output links to all related documents
 		// have the link label be the id and title of the document  "title (id:123)"
@@ -147,10 +117,10 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		foreach (DBL()->KnowledgeBase AS $dboKnowledgeBase)
 		{
 			echo "<br><b>Related Article: </b>";
-			echo "<A href='knowledge_base_doc_view.php?KnowledgeBase_Id=". $dboKnowledgeBase->Id->Value ."'>".$dboKnowledgeBase->Title->Value . " (doc id: ". $dboKnowledgeBase->Id->Value .")"."</A>" ."\n";
+			echo "<A href='knowledge_base_doc_view.php?KnowledgeBase.Id=". $dboKnowledgeBase->Id->Value ."'>".$dboKnowledgeBase->Title->Value . " (doc id: ". $dboKnowledgeBase->Id->Value .")"."</A>" ."\n";
 		}
 		
-		
+		echo "</div>\n";
 		
 	}
 }
