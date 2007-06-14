@@ -123,7 +123,7 @@ class PropertyToken
 			// The property's value
 			case "value":
 				return $this->_dboOwner->_arrProperties[$this->_strProperty];
-			// The properties validity
+			// The property's validity
 			case "valid":
 				return $this->_dboOwner->_arrValid[$this->_strProperty];
 		}
@@ -250,18 +250,19 @@ class PropertyToken
 	 *
 	 * Renders the property in its specified template
 	 *
-	 * @param	string	$strType		either "Output" or "Input"
-	 * @param	string	$strContext		[optional] The context in which the property will be displayed
-	 * @param	bool	$bolRequired	[optional] Whether the field should be mandatory
-	 * 
-	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
+	 * @param	string	$strType			either "Output" or "Input"
+	 * @param	int		$intContext			[optional] The context in which the property will be displayed
+	 * @param	bool	$bolRequired		[optional] Whether the field should be mandatory
+	 * @param	bool	$bolReturnHtml		If FALSE then the html generated is echoed
+	 *										If TRUE then the html generated is returned but not echoed
+	 * @return	mixed						If $bolReturnHtml == FALSE then return the property's value
+	 *										Else return the html generated
 	 *
 	 * @method
 	 */
-	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
+	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=NULL, $bolReturnHtml=FALSE)
 	{
-		//TODO!Rich!Why does the contect array start at 1 (when CONTEXT_DEFAULT = 0)
-		//$intContext = 1;
+		$intContext = $this->_CalculateContext($intContext);
 		
 		// require a definition
 		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
@@ -271,10 +272,36 @@ class PropertyToken
 			return FALSE;
 		}
 		
-		// build up parameters for RenderHTMLTemplate()
-		$arrParams = Array();
-		$arrParams['Object'] 		= $this->_dboOwner->_strName;
-		$arrParams['Property'] 		= $this->_strProperty;
+		// build up parameters for HtmlElements
+		$arrParams = $this->_BuildParams($intContext, $bolRequired);
+		$arrParams['Type'] = $strType;
+
+		$mixReturn = HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams, $bolReturnHtml);
+		return $mixReturn;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _CalculateContext
+	//------------------------------------------------------------------------//
+	/**
+	 * _CalculateContext()
+	 *
+	 * Calculates what context to use when rendering a property
+	 *
+	 * Calculates what context to use when rendering a property 
+	 * The property's context can be conditional based on the property's value.
+	 * These conditions are defined in the database table ConditionalContexts
+	 *
+	 * @param	int		$intCurrentContext		The context in which the property will be 
+	 *											displayed if it is not subject to conditions
+	 * 
+	 * @return	int								context to use
+	 *
+	 * @method
+	 */
+	private function _CalculateContext($intCurrentContext)
+	{
+		$intContext = $intCurrentContext;
 		
 		// work out if the context of the property is subject to its value
 		if (is_array($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts']))
@@ -290,14 +317,37 @@ class PropertyToken
 				}
 			}
 		}
-		
-		$arrParams['Context'] 		= $intContext;
 
+		return $intContext;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _BuildParams
+	//------------------------------------------------------------------------//
+	/**
+	 * _BuildParams()
+	 *
+	 * Builds the parameter array which is then used by the HtmlElements class to render properties
+	 *
+	 * Builds the parameter array which is then used by the HtmlElements class to render properties
+	 *
+	 * @param	int		$intContext			context in which the property will be rendered
+	 * @param	bool	$bolRequired		[optional] Whether the field should be mandatory
+	 * 
+	 * @return	array						This array is defined at the top of the HtmlElements class
+	 *
+	 * @method
+	 */
+	private function _BuildParams($intContext, $bolRequired=NULL)
+	{
+		$arrParams = Array();
+		$arrParams['Object'] 		= $this->_dboOwner->_strName;
+		$arrParams['Property'] 		= $this->_strProperty;
+		$arrParams['Context'] 		= $intContext;
 		$arrParams['Value'] 		= $this->_dboOwner->_arrProperties[$this->_strProperty];
 		$arrParams['Valid'] 		= $this->_dboOwner->_arrValid[$this->_strProperty];
 		$arrParams['Required'] 		= $bolRequired;
 		$arrParams['Definition'] 	= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
-		$arrParams['Type']			= $strType;
 
 		// work out the base class to use
 		$arrParams['Definition']['BaseClass'] = CLASS_DEFAULT; // Default
@@ -306,34 +356,174 @@ class PropertyToken
 			$arrParams['Definition']['BaseClass'] .= "Invalid"; // DefaultInvalid
 		}
 		
-		HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);
-		return $this->_dboOwner->_arrProperties[$this->_strProperty];
+		return $arrParams;
 	}
 	
 	//------------------------------------------------------------------------//
-	// RenderValue
+	// Render
 	//------------------------------------------------------------------------//
 	/**
-	 * RenderValue()
+	 * Render()
 	 *
-	 * Renders the property in it's standard label form
+	 * Renders the property's value without formating or mark-up
 	 *
-	 * Renders the property in it's standard label form
+	 * Renders the property's value without formating or mark-up
 	 *
 	 * @param	string	$strOutputMask	[optional] output mask 
 	 * 
-	 * @return	mixed PropertyValue
+	 * @return	mixed					property's value
 	 *
 	 * @method
 	 */
-	function RenderValue($strOutputMask=NULL)
+	function Render($strOutputMask=NULL)
 	{
 		//TODO! implement $strOutputMask
 		
 		echo $this->_dboOwner->_arrProperties[$this->_strProperty];
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
 	}
+
+	//------------------------------------------------------------------------//
+	// RenderValue
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderValue()
+	 *
+	 * Renders the property's value with formating and mark-up
+	 *
+	 * Renders the property's value with formating and mark-up
+	 *
+	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @return	string					property's value
+	 * @method
+	 */
+	function RenderValue($intContext=CONTEXT_DEFAULT)
+	{
+		$intContext = $this->_CalculateContext($intContext);
+
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			return NULL;
+		}
+
+		// build up parameters
+		$arrParams = $this->_BuildParams($intContext);
+		
+		HTMLElements()->RenderValue($arrParams);
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
+	}
 	
+	//------------------------------------------------------------------------//
+	// AsValue
+	//------------------------------------------------------------------------//
+	/**
+	 * AsValue()
+	 *
+	 * Returns the html code used to render the property's value with formating and mark-up
+	 *
+	 * Returns the html code used to render the property's value with formating and mark-up
+	 *
+	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @return	string					html code
+	 * @method
+	 */
+	function AsValue($intContext=CONTEXT_DEFAULT)
+	{
+		$intContext = $this->_CalculateContext($intContext);
+
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			return NULL;
+		}
+
+		// build up parameters
+		$arrParams = $this->_BuildParams($intContext);
+		
+		$strFormattedValue = HTMLElements()->RenderValue($arrParams, TRUE);
+		return $strFormattedValue;
+	}
+
+	//------------------------------------------------------------------------//
+	// AsInput
+	//------------------------------------------------------------------------//
+	/**
+	 * AsInput()
+	 *
+	 * Returns the html code used to render the property as an input
+	 *
+	 * Returns the html code used to render the property as an input
+	 *
+	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @param	bool	$bolRequired	[optional] Whether the field should be mandatory
+	 * 
+	 * @return	string 					html code
+	 *
+	 * @method
+	 */
+	function AsInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
+	{
+		return $this->_RenderIO("Input", $intContext, $bolRequired, TRUE);
+	}
+
+	//------------------------------------------------------------------------//
+	// AsOutput
+	//------------------------------------------------------------------------//
+	/**
+	 * AsOutput()
+	 *
+	 * Returns the html code used to render the property as an output
+	 *
+	 * Returns the html code used to render the property as an output
+	 *
+	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * 
+	 * @return	string					html code
+	 *
+	 * @method
+	 */
+	function AsOutput($intContext=CONTEXT_DEFAULT)
+	{
+		return $this->_RenderIO("Output", $intContext, NULL, TRUE);
+	}
+	
+	//------------------------------------------------------------------------//
+	// FormattedValue
+	//------------------------------------------------------------------------//
+	/**
+	 * FormattedValue()
+	 *
+	 * Returns the property's value, formatted
+	 *
+	 * Returns the property's value, formatted
+	 *
+	 * @param	string	$strContext		[optional] The context in which the property will be formatted
+	 * @return	mixed					property's formatted value
+	 *									If the context could not be found
+	 *									then NULL is returned
+	 *
+	 * @method
+	 */
+	function FormattedValue($intContext=CONTEXT_DEFAULT)
+	{
+		$intContext = $this->_CalculateContext($intContext);
+
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			return NULL;
+		}
+
+		// build up parameters for HtmlElements
+		$arrParams = $this->_BuildParams($intContext);
+		
+		$strFormattedValue = HTMLElements()->BuildOutputValue($arrParams);
+		return $strFormattedValue;
+	}
+	
+
+
 	//------------------------------------------------------------------------//
 	// Validate
 	//------------------------------------------------------------------------//

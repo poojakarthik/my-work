@@ -38,35 +38,6 @@
 
 class HTMLElements
 {
-	// Definition of array of parameters which gets passed to all methods
-	// Quite a few things still to do:
-	//		o For drop downs / radio buttons / check boxes, we need to have some
-	//			way of selecting one of them
-	//		o Need to write code to add '*' to required inputs
-	//		o Need to write code to add javascript validation to elements which
-	//			require it (eg, onkeyup=Validate(this) for inputs which are ABNs
-	//		o Need to find some way to parse masking data and add values in
-	
-	/*  ******************This structure is not actually used any more********
-	$arrParams['Object'] 		= $this->object;		// 'Account'
-	$arrParams['Property'] 		= $this->property;		// 'Id'
-	$arrParams['Context'] 		= $this->context;		// DEFAULT
-	$arrParams['Definition'] 	= $;					// definition array
-	$arrParams['Value'] 		= $this->Value;			// '1000123456'
-	$arrParams['Valid']			= $;					// TRUE
-	$arrParams['Required'] 		= $bolRequired;			// TRUE
-	
-	$arrDefinition['ValidationRule']	= $;			// VALID_EMAIL
-	$arrDefinition['InputType']	= $;					// 
-	$arrDefinition['OutputType']	= $;				//
-	$arrDefinition['Label']	= $;						//
-	$arrDefinition['InputOptions']	= $;				//
-	$arrDefinition['OutputOptions']	= $;				// ['-1'] = "blah <value> blah"
-														// ['0']  = "blah bleh blah"
-	$arrDefinition['DefaultOutput']	= $;				// "Do not charge for <value> months"
-	$arrDefinition['OutputMask']	= $;				// 
-	
-	*************************************************************************/
 	/* 
 		An example of the $arrParams array that is passed to each of these functions
 		is as follows.  Note that this can have a more complex structure to it if it is
@@ -75,107 +46,134 @@ class HTMLElements
 		Array
 		(
 			[Object] => Account
-			[Property] => BusinessName
-			[Context] => 0
-			[Value] => West Trend Interiors
-			[Type] => Output
+			[Property] => Balance
+			[Context] => 1
+			[Value] => -50000
 			[Valid] => 
 			[Required] => 
 			[Definition] => Array
 				(
-					[ValidationRule] => 0
-					[InputType] => Text
+					[ValidationRule] => 
+					[InputType] => NA
 					[OutputType] => Label
-					[Label] => Business Name
-					[DefaultOutput] => 
-					[OutputMask] => 0
-					[Class] => Default
+					[Label] => Balance
+					[OutputLabel] => $<value>
+					[OutputMask] => 
+					[Class] => Red
 					[BaseClass] => Default
 				)
+			[Type] => Output
+		)
 		
-		)	
-		
-		A property that can be displayed as a group of radio buttons, will have the 
+		A property who's output label is dependent on its value (ie radio buttons), will have the 
 		$arrParams structure:
 		
 		Array
 		(
 			[Object] => Account
 			[Property] => BillingType
-			[Context] => 1
+			[Context] => 0
 			[Value] => 3
 			[Valid] => 
-			[Required] => 1
+			[Required] => 
 			[Definition] => Array
 				(
-					[ValidationRule] => 0
-					[InputType] => ComboBox
-					[OutputType] => Radio
-					[Label] => Billing Type Context 2
-					[DefaultOutput] => hello
-					[OutputMask] => 0
+					[ValidationRule] => 
+					[InputType] => Text
+					[OutputType] => Label
+					[Label] => Billing Type
+					[OutputLabel] => Unknown billing type (BillingType = <value>)
+					[OutputMask] => 
 					[Class] => Default
 					[Options] => Array
 						(
-							[0] => Array				<-- this is the Group column found in UIAppDocumentation
+							[0] => Array
 								(
-									[0] => Array
-										(
-											[Value] => -1
-											[Label] => Credit Card
-										)
-		
-									[1] => Array
-										(
-											[Value] => 2
-											[Label] => Direct Debit
-										)
-		
-									[2] => Array
-										(
-											[Value] => 3
-											[Label] => Cheque
-										)
-		
+									[Value] => -1
+									[OutputLabel] => Not Assigned Yet
+									[InputLabel] => 
 								)
-		
+							[1] => Array
+								(
+									[Value] => 1
+									[OutputLabel] => Credit Card (<value>)
+									[InputLabel] => 
+								)
+							[2] => Array
+								(
+									[Value] => 2
+									[OutputLabel] => Direct Debit (<value>)
+									[InputLabel] => 
+								)
+							[3] => Array
+								(
+									[Value] => 3
+									[OutputLabel] => Cheque (<value>)
+									[InputLabel] => 
+								)
+							[4] => Array
+								(
+									[Value] => 10
+									[OutputLabel] => 
+									[InputLabel] => 
+								)
 						)
-		
-					[FullClass] => DefaultOutput
+					[BaseClass] => Default
 				)
-		
+			[Type] => Output
 		)
-
-		The Options array is an associated array where the key is the "Group" that
-		relates to the radio buttons group.  Group should either be "Input" or "Output" or a constant
-		defining these two options.
-
 	*/
 	
 	//------------------------------------------------------------------------//
-	// Input
+	// InputText
 	//------------------------------------------------------------------------//
 	/**
-	 * Input()
+	 * InputText()
 	 * 
-	 * Creates an input box
+	 * Creates an input with type='text'
 	 * 
 	 * Echoes out a formatted HTML input tag, using data from an array to build
 	 * the element's attributes like class, name, id and value
 	 *
-	 * @param	Array	$arrParams		The parameters to use when building the
-	 * 									input box (see above for format).
+	 * @param	Array	$arrParams			The parameters to use when building the
+	 * 										input box (see above for format).
+	 * @param	bool	$bolReturnHtml		If FALSE then the html generated is echoed
+	 *										If TRUE then the html generated is returned but not echoed
+	 * @return	mix							If $bolReturnHtml == FALSE then return the property's value
+	 *										Else return the html generated
 	 *
 	 * @method
 	 */
-	function Input($arrParams)
+	function InputText($arrParams, $bolReturnHtml=FALSE)
 	{
+		$strLabel = $arrParams['Definition']['Label'];
+		$strValue = nl2br($arrParams['Value']);
+		
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		// The potentially taller of the two divs must go first
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}'>\n";
+		// create the input box
+		$strHtml .= "		<input type='text' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$strValue'/>";
+		$strHtml .= "   </div>\n";
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "</div>\n";
+		
+		if ($bolReturnHtml)
+		{
+			return $strHtml;
+		}
+		
+		echo $strHtml;
+		return $arrParams['Value'];
+		
+		/*
 		echo "<td>";
 		echo "{$arrParams['Definition']['Label']} : \n";
 		echo "</td>";
 		echo "<td>";
 		echo "<input name='{$arrParams['Object']}.{$arrParams['Property']}' value='{$arrParams['Value']}' class='{$arrParams['Definition']['FullClass']}'></input>";
 		echo "</td>";
+		*/
 	}
 	
 	//------------------------------------------------------------------------//
@@ -192,23 +190,70 @@ class HTMLElements
 	 * an appropriate string is defined in the UIAppDocumentation or 
 	 * UIAppDocumentationOptions tables of the database
 	 *
-	 * @param	Array	$arrParams		The parameters to use when building the
-	 * 									label (see above for format).
+	 * @param	Array	$arrParams			The parameters to use when building the
+	 * 										label (see above for format).
+	 * @param	bool	$bolReturnHtml		If FALSE then the html generated is echoed
+	 *										If TRUE then the html generated is returned but not echoed
+	 * @return	mix							If $bolReturnHtml == FALSE then return the property's value
+	 *										Else return the html generated
 	 *
 	 * @method
 	 */
-	function Label($arrParams)
+	function Label($arrParams, $bolReturnHtml=FALSE)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
-		$strValue = $this->_BuildOutputValue($arrParams);
+		$strValue = $this->BuildOutputValue($arrParams);
 		$strValue = nl2br($strValue);
 		
-		echo "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
-		
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
-		echo "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'>{$strValue}</div>\n";
-		echo "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
-		echo "</div>\n";
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'>{$strValue}</div>\n";
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "</div>\n";
+		
+		if ($bolReturnHtml)
+		{
+			return $strHtml;
+		}
+		
+		echo $strHtml;
+		return $arrParams['Value'];
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderValue
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderValue()
+	 * 
+	 * Renders a value as a label, within <span></span> tags instead of <div> tags
+	 * 
+	 * Renders a value just like HtmlElements->Label(), except within <span></span> tags instead of <div> tags.
+	 * The value's accompanying descriptive label is not rendered
+	 *
+	 * @param	Array	$arrParams			The parameters to use when building the
+	 * 										label (see above for format).
+	 * @param	bool	$bolReturnHtml		If FALSE then the html generated is echoed
+	 *										If TRUE then the html generated is returned but not echoed
+	 * @return	mix							If $bolReturnHtml == FALSE then return the property's value
+	 *										Else return the html generated
+	 * @method
+	 */
+	function RenderValue($arrParams, $bolReturnHtml=FALSE)
+	{
+		$strValue = $this->BuildOutputValue($arrParams);
+		$strValue = nl2br($strValue);
+		
+		// output the formatted value in <span> tags
+		$strHtml = "<span class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'>{$strValue}</span>\n";
+
+		if ($bolReturnHtml)
+		{
+			return $strHtml;
+		}
+		
+		echo $strHtml;
+		return $arrParams['Value'];
 	}
 	
 	//------------------------------------------------------------------------//
@@ -245,10 +290,10 @@ class HTMLElements
 	}
 	
 	//------------------------------------------------------------------------//
-	// _BuildOutputValue
+	// BuildOutputValue
 	//------------------------------------------------------------------------//
 	/**
-	 * _BuildOutputValue()
+	 * BuildOutputValue()
 	 * 
 	 * Builds the output value based on the property definition in UIAppDocumentation and UIAppDocumentationOptions tables
 	 * 
@@ -262,7 +307,7 @@ class HTMLElements
 	 *
 	 * @method
 	 */
-	private function _BuildOutputValue($arrParams)
+	function BuildOutputValue($arrParams)
 	{
 		$strValue = NULL;
 
@@ -297,46 +342,23 @@ class HTMLElements
 			// Use the actual value
 			$strValue = $arrParams['Value'];
 		}
-		
+						
 		// An empty string cannot be used 
 		if (trim($strValue) == "")
 		{
 			$strValue = "&nbsp;";
+		}
+		else
+		{
+			// Apply the mask as defined in UIAppDocumentation
+			//TODO!
 		}
 		
 		return $strValue;
 	}
 	
 	//------------------------------------------------------------------------//
-	// ValueOnly
-	//------------------------------------------------------------------------//
-	/**
-	 * ValueOnly()
-	 * 
-	 * Outputs the property's value embedded in the string defined as the OutputLabel property of the table UIAppDocumentation
-	 * 
-	 * Outputs the property's value embedded in the string defined as the OutputLabel property of the table UIAppDocumentation
-	 * This works just like the method "Label", but does not output the accompanying label (which is usually the property's name)
-	 *
-	 * @param	Array	$arrParams		The parameters to use when building the
-	 * 									label (see above for format).
-	 *
-	 * @method
-	 */
-	function ValueOnly($arrParams)
-	{
-		$strValue = $this->_BuildOutputValue($arrParams);
-		$strValue = nl2br($strValue);
-		
-		echo "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
-		echo "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'>{$strValue}</div>\n";
-		echo "</div>\n";
-
-		//echo "  <td class='{$arrParams['Definition']['FullClass']}'>{$strValue}</td>\n";
-	}
-	
-	//------------------------------------------------------------------------//
-	// CheckBox
+	// CheckBox TODO
 	//------------------------------------------------------------------------//
 	/**
 	 * CheckBox()
@@ -378,7 +400,7 @@ class HTMLElements
 	}
 
 	//------------------------------------------------------------------------//
-	// RadioButtons
+	// RadioButtons TODO
 	//------------------------------------------------------------------------//
 	/**
 	 * RadioButtons()
@@ -434,7 +456,7 @@ class HTMLElements
 	}
 
 	//------------------------------------------------------------------------//
-	// ComboBox
+	// ComboBox TODO
 	//------------------------------------------------------------------------//
 	/**
 	 * ComboBox()

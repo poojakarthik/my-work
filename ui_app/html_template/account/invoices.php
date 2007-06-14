@@ -138,7 +138,7 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 			$objValue->AccountBalance->RenderValue();
 			echo "</td>";
 			echo "<td>";
-			$objValue->Status->RenderValue();
+			echo GetConstantDescription($objValue->Status->Value, "InvoiceStatus");
 			echo "</td>";
 			echo "<td>";
 			echo "<img src='img/template/pdf.png' height=20px></img>";	// View PDF icon

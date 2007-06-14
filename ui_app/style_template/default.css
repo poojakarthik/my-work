@@ -1,17 +1,16 @@
 	body
 	{
-		margin:               0px;
-		
-		font-family:          "Nimbus Sans L", Arial, Tahoma, Sans-serif;
-		line-height:          18pt;
-		font-size:            10pt;
+		margin:				0px;
+		font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height:		18pt;
+		font-size:			10pt;
 	}
 	
 	div#PageBody
 	{
 		margin-left:		75px;
 		margin-top:			20px;
-		width:					950px;
+		width:				950px;
 	}
 	
 	.Default
@@ -56,6 +55,47 @@
 		color:				#CC0000;
 	}
 	
+	.DefaultInput
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		left:				200px;
+		top:				0px;
+		overflow:			hidden;
+	}
+	
+	.DefaultInvalidInput
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			absolute;
+		left:				200px;
+		top:				0px;
+		height:				20px;
+		overflow:			hidden;
+		color:				#CC0000;
+	}
+	
+	.DefaultOutputSpan,
+	.DefaultInvalidOutputSpan
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		left:				0px;
+		top:				0px;
+		overflow:			hidden;
+	}
+	
+	.DefaultInvalidOutputSpan
+	{
+		color:				#CC0000;
+	}
+	
 	.DefaultElement,
 	.DefaultInvalidElement
 	{
@@ -64,6 +104,11 @@
 		height:				auto;
 	}
 		
+	.Red
+	{
+		color:               #CC0000;
+	}
+
 	.WideContent
 	{
 		margin:              0;
@@ -766,10 +811,6 @@
 		color:               #008000;
 	}
 
-	.Red
-	{
-		color:               #CC0000;
-	}
 
 	.Blue
 	{
