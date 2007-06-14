@@ -334,7 +334,7 @@ class Page
 		$this->RenderJS();
 		$this->RenderCSS();
 		echo "</head>\n";
-		echo "<body>\n";
+		echo "<body onload='Vixen.Init()'>\n";
 	}
 	
 	//------------------------------------------------------------------------//

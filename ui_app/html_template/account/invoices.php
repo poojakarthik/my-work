@@ -83,6 +83,7 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
 		$this->LoadJavascript("retractable");
+		$this->LoadJavascript("tooltip");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -102,10 +103,10 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 		// Render each of the account invoices
 		//TODO!
 		//echo "<br> INSERT ACCOUNT INVOICES HERE";
-		
+		$strTableName = 'AccountInvoices';
 		//DBL()->ShowInfo();
 				
-		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='AccountInvoices'>\n";
+		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
 		echo "<tr class='First'>\n";
 		echo " <th>Invoice Date</th>\n";
 		echo " <th>Invoice Id</th>\n";
@@ -116,47 +117,51 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 		echo " <th>View PDF</th>\n";
 		echo " <th>View Invoice Details</th>\n";
 		echo "</tr>\n";
-		$intRowCount = 0;
+		$intRowCount = -1;
 		foreach (DBL()->Invoice AS $strProperty=>$objValue)
 		{
 			$intRowCount++;
-			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
-			echo "<tr id='AccountInvoices_$intRowCount' class='$strClass'>\n";
+			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd' ;
+			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
 			echo "<td>";
 			$objValue->DueOn->RenderValue();
-			echo "</td>";
+			echo "</td>\n";
 			echo "<td>";
 			$objValue->Id->RenderValue();
-			echo "</td>";
+			echo "</td>\n";
 			echo "<td>";
 			$objValue->Total->RenderValue();	// Invoice Amount
-			echo "</td>";			
+			echo "</td>\n";			
 			echo "<td>";
 			$objValue->Balance->RenderValue();
-			echo "</td>";			
+			echo "</td>\n";			
 			echo "<td>";
 			$objValue->AccountBalance->RenderValue();
-			echo "</td>";
+			echo "</td>\n";
 			echo "<td>";
 			echo GetConstantDescription($objValue->Status->Value, "InvoiceStatus");
-			echo "</td>";
+			echo "</td>\n";
 			echo "<td>";
 			echo "<img src='img/template/pdf.png' height=20px></img>";	// View PDF icon
-			echo "</td>";
+			echo "</td>\n";
 			echo "<td>";
-			echo "<img src='img/template/invoice.png' height=20px></img>";			// View Invoice Details icon
-			echo "</td>";
-			echo "</tr><tr>";
-			echo "<td colspan=8 style='padding-top: 0px; padding-bottom: 0px'>";
-			echo "<div id='AccountInvoices_" . $intRowCount . "DIV' style='display: block; overflow:hidden;'>";
+			echo "<a href=''><img src='img/template/invoice.png' height=20px></img></a>";			// View Invoice Details icon
+			echo "</td>\n";
+			echo "</tr>\n<tr>";
+			echo "<td colspan=8 style='padding-top: 0px; padding-bottom: 0px'>\n";
+			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-DETAIL' style='display: block; overflow:hidden;'>";
 			// todo - add the payment applied details in here
-			$objValue->ShowInfo();
-			echo "</div>";
-			echo "</td></tr>\n";
+			echo $objValue->Info();
+			echo "</div>\n";
+			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-TOOLTIP' style='display: none;'>";
+			echo "Tooltip goes here";
+			echo "</div>\n";
+			echo "</td>\n</tr>\n";
 		}
 		echo "</table>\n";
-		echo "<script type='text/javascript'>Vixen.Highlight.Attach('AccountInvoices', $intRowCount);</script>";
-		echo "<script type='text/javascript'>Vixen.Slide.Attach('AccountInvoices', $intRowCount, TRUE);</script>";
+		echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
+		echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>";
+		echo "<script type='text/javascript'>Vixen.Tooltip.Attach('$strTableName', $intRowCount);</script>";
 		
 	}
 }

@@ -159,8 +159,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		// see below
 		
 		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		
 		DBL()->Payment->Load();
-		/*
+		DBL()->Charge->Account = DBO()->Account->Id->Value;
+		DBL()->Charge->Load();
+		
 		$arrColumns = array("InvoiceId" 		=> 'Invoice.Id',
 							'PaymentAmount' 	=> 'Payment.Amount',
 							'AccountBalance'	=> 'Invoice.AccountBalance',
@@ -173,7 +176,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->PaidInvoices->Where->Set("Invoice.Account = <id> AND InvoicePayment.Account = <id> AND InvoicePayment.Payment = Payment.Id AND Payment.Account = <id>", Array('id'=>DBO()->Account->Id->Value));
 		DBL()->PaidInvoices->_arrColumns = $arrColumns;
 		DBL()->PaidInvoices->Load();
-		*/
+		
 		
 		// Calculate the Account Balance
 		//TODO!

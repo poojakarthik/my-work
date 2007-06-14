@@ -15,38 +15,47 @@
  */
 function VixenHighlightClass()
 {
-	this.tables = 
-	{ 
-		'Example': 
-		{
-			'totalRows': 10,
-			'selected': 50
-		},
-	};
-		
-	this.ToggleSelect =function (elmRow)
+	this.Unselect =function(strTableId)
 	{
-		for (i = 1; i <= this.tables[elmRow.parentNode.parentNode.id].totalRows; i++)
+		//debug (strTableId);
+		for (var i=0; i <= Vixen.table[strTableId].totalRows; i++)
 		{
-			var elmRowUnselect = document.getElementById(elmRow.parentNode.parentNode.id + '_' + i);
+			var elmRowUnselect = document.getElementById(strTableId + '_' + i);
 			if (elmRowUnselect.id.substr(elmRowUnselect.id.indexOf('_') + 1) % 2)
-			{
-				elmRowUnselect.className = "Odd";
-			}
-			else
 			{
 				elmRowUnselect.className = "Even";
 			}
+			else
+			{
+				elmRowUnselect.className = "Odd";
+			}
+			
+			Vixen.table[strTableId].row[i].selected = FALSE;
+			
 		}
-		if (elmRow.id == this.tables[elmRow.parentNode.parentNode.id].selected)
+	}
+	this.ToggleSelect =function (elmRow)
+	{
+		//debug (elmRow.id);
+		// get row number from elmRow
+		intRow = elmRow.id.lastIndexOf('_');
+		intRow = elmRow.id.substr(intRow + 1);
+		
+		objRow = Vixen.table[elmRow.parentNode.parentNode.id].row[intRow];
+		
+		bolSelected = objRow.selected;
+		
+		this.Unselect(elmRow.parentNode.parentNode.id);
+		
+		if (bolSelected && (!objRow.Up))
 		{
 			elmRow.className = "Hover";
-			this.tables[elmRow.parentNode.parentNode.id].selected = "NULL";
+			objRow.selected = FALSE;
 		}
 		else
 		{
 			elmRow.className = "Selected";
-			this.tables[elmRow.parentNode.parentNode.id].selected = elmRow.id;
+			objRow.selected = TRUE;
 		}
 	}
 	
@@ -57,40 +66,66 @@ function VixenHighlightClass()
 	
 	this.LightsDown =function (elmRow)
 	{
-		if (elmRow.id == this.tables[elmRow.parentNode.parentNode.id].selected)
+		// get row number from elmRow
+		intRow = elmRow.id.lastIndexOf('_');
+		intRow = elmRow.id.substr(intRow + 1);
+		
+		//debug (Vixen.table[elmRow.parentNode.parentNode.id].row[intRow]);
+		
+		if (Vixen.table[elmRow.parentNode.parentNode.id].row[intRow].selected)
 		{
+			//debug (elmRow.id);
 			elmRow.className = "Selected";
 		}
 		else
 		{
 			if (elmRow.id.substr(elmRow.id.indexOf('_') + 1) % 2)
 			{
-				elmRow.className = "Odd";
+				elmRow.className = "Even";
 			}
 			else
 			{
-				elmRow.className = "Even";
+				elmRow.className = "Odd";
 			}
 		}
 	}
 	
 	this.Attach =function (strTableId, totalRows)
 	{
-		this.tables[strTableId] = new Object();
-		this.tables[strTableId] = { 'totalRows' : totalRows,
-									'selected' : ''};
-		for (i = 1; i <=totalRows; i++)
+		for (var i=0; i <=totalRows; i++)
 		{
 			var elmRow = document.getElementById(strTableId + '_' + i);
 			elmRow.addEventListener('mousedown', MouseDownHandler, TRUE);
 			elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
 			elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
 		}
-
 	}
 	
 	function MouseDownHandler ()
 	{
+		objTable = Vixen.table[this.parentNode.parentNode.id];
+		
+		if (objTable.linked)
+		{
+			// get row number from elmRow
+			intRow = this.id.lastIndexOf('_');
+			intRow = this.id.substr(intRow + 1);
+			
+			// call updatelink
+			arrTables = [];
+			arrIndexes = [];
+			for (var objLink in objTable.link)
+			{
+				arrTables.push(objLink);
+				
+				for (var j=0; j<objTable.link[objLink].length; j++)
+				{
+					strKey = objTable.link[objLink][j];
+					arrIndexes.push({'name' : strKey, 'value': objTable.row[intRow].index[strKey]});
+				}
+			}
+			Vixen.Highlight.UpdateLink(arrTables,arrIndexes,[]);
+		}
 		Vixen.Highlight.ToggleSelect(this);
 	}
 	
@@ -102,6 +137,43 @@ function VixenHighlightClass()
 	function MouseOutHandler ()
 	{
 		Vixen.Highlight.LightsDown(this);
+	}
+	
+	this.UpdateLink =function(arrTables, arrIndexes, arrSkipTables)
+	{
+		//debug (arrTables);
+		for (var i=0; i<arrTables.length; i++)
+		{
+			strTargetId = arrTables[i];
+			tblTarget = Vixen.table[strTargetId];
+			
+			// Unselect all on target (& collapse?)
+			Vixen.Highlight.Unselect(strTargetId);
+			Vixen.Slide.CollapseAll(strTargetId);
+			
+			for (var j=0; j<tblTarget.row.length; j++)
+			{
+				objRow = tblTarget.row[j];
+				for (var k=0; k<arrIndexes.length; k++)
+				{
+					//debug (objRow.index[arrIndexes[k].name],1);
+					if (objRow.index[arrIndexes[k].name] == arrIndexes[k].value)
+					{
+						// Highlight if index matches
+						//.selected = TRUE lightsdown();
+						
+						strRowId = strTargetId + "_" + j;
+						Vixen.table[strTargetId].row[j].selected = TRUE;
+						Vixen.Highlight.LightsDown(document.getElementById(strRowId));
+						
+						// Add row indexes to arrTargetIndexes
+					}	
+				}
+				
+			}
+			// if we are linked to talkbes
+			//	call update link (arrtargettables, arrtargetindeces, arrskiptables)
+		}
 	}
 }	
 

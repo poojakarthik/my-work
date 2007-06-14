@@ -99,7 +99,7 @@ var DEBUG = function () {
 					}
                     var a = [], b, f, i, l, v;
                     if (x instanceof Array) {
-                        a[0] = cr + tb + '[' + cr;
+                        a[0] = '[' + cr + tb;
                         l = x.length;
                         for (i = 0; i < l; i += 1) {
                             v = x[i];
@@ -108,7 +108,7 @@ var DEBUG = function () {
                                 v = f(v, fmt, ntb);
                                 if (typeof v == 'string') {
                                     if (b) {
-                                        a[a.length] = '2' + cr + tb;
+                                        a[a.length] = cr + tb;
                                     }
                                     a[a.length] = v;
                                     b = true;

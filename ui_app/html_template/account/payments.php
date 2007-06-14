@@ -83,7 +83,7 @@ class HtmlTemplateAccountPayments extends HtmlTemplate
 		// Load all java script specific to the page here
 		//$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
-		$this->LoadJavascript("debug");
+		$this->LoadJavascript("debug");  // Tools for debugging, only use when js-ing
 	}
 	
 	//------------------------------------------------------------------------//
@@ -112,11 +112,11 @@ class HtmlTemplateAccountPayments extends HtmlTemplate
 		echo " <th>Payment Date</th>\n";
 		echo " <th>Account Balance</th>\n";
 		echo "</tr>\n";
-		$intRowCount = 0;
+		$intRowCount = -1;
 		foreach (DBL()->Payment AS $strProperty=>$objValue)
 		{
 			$intRowCount++;
-			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
+			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd' ;
 			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
 			echo "<td>";
 			$objValue->Id->RenderValue();
@@ -132,46 +132,105 @@ class HtmlTemplateAccountPayments extends HtmlTemplate
 			echo "</td>";		
 			echo "</tr><tr>";
 			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
-			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV' style='display: block; overflow:hidden;'>";
+			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-DETAIL' style='display: block; overflow:hidden;'>";
+			//$objValue->ShowInfo();
+			echo $objValue->Info();
+			//echo $objValue->Status->Label . ":";
+			//$objValue->Status->RenderValue();
+			echo "</div>";
+			echo "</td></tr>\n";
+		}
+		
+		echo "</table>\n";
+		echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
+		echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>";
+		
+		echo "<div class='seperator'></div>";
+		/*
+		$strTableName = 'PaidInvoices';
+		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
+		echo "<tr class='First'>\n";
+		echo " <th>Payment Id</th>\n";
+		echo " <th>Invoice Id</th>\n";
+		echo " <th>Payment Amount</th>\n";
+		echo " <th>Invoice Amount</th>\n";
+		echo "</tr>\n";
+		$intRowCount = 0;
+		
+		foreach (DBL()->$strTableName AS $strProperty=>$objValue)
+		{
+			$intRowCount++;
+			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
+			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
+			// foreach of row array
+			echo "<td>";
+			$objValue->PaymentId->RenderValue();
+			echo "</td>\n";
+			//
+			echo "<td>";
+			$objValue->InvoiceId->RenderValue();
+			echo "</td>\n";	
+			echo "<td>";
+			$objValue->PaymentAmount->RenderValue();
+			echo "</td>\n";
+			echo "<td>";
+			$objValue->InvoiceAmount->RenderValue();
+			echo "</td>\n";			
+			echo "</tr>\n<tr>";
+			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>\n";
+			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV' style='display: block; overflow:hidden;'>\n";
 			$objValue->ShowInfo();
 			//echo $objValue->Status->Label . ":";
 			//$objValue->Status->RenderValue();
 			echo "</div>";
 			echo "</td></tr>\n";
 		}
-		/*foreach (DBL()->PaidInvoices AS $strProperty=>$objValue)
+		
+		echo "</table>\n";
+		echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
+		echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>";
+*/
+
+/*
+		$strTableName = 'Charge';
+		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
+		echo "<tr class='First'>\n";
+		echo " <th>Date (Invoice)</th>\n";
+		echo " <th>Code (Service)</th>\n";
+		echo " <th>Amount</th>\n";
+		echo "</tr>\n";
+		$intRowCount = 0;
+		
+		foreach (DBL()->$strTableName AS $strProperty=>$objValue)
 		{
 			$intRowCount++;
 			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
 			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
+			// foreach of row array
 			echo "<td>";
-			$objValue->InvoiceId->RenderValue();
-			echo "</td>";
+			$objValue->Invoice->RenderValue();
+			echo "</td>\n";
+			//
 			echo "<td>";
-			$objValue->InvoiceAmount->RenderValue();
-			echo "</td>";	
+			$objValue->Service->RenderValue();
+			echo "</td>\n";	
 			echo "<td>";
-			$objValue->PaymentAmount->RenderValue();
-			echo "</td>";
-			echo "<td>";
-			$objValue->AccountBalance->RenderValue();
-			echo "</td>";		
-			echo "<td>";
-			$objValue->PaymentDate->RenderValue();
-			echo "</td>";			
-			echo "</tr><tr>";
-			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
-			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV' style='display: block; overflow:hidden;'>";
+			$objValue->Amount->RenderValue();
+			echo "</td>\n";		
+			echo "</tr>\n<tr>";
+			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>\n";
+			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV' style='display: block; overflow:hidden;'>\n";
 			$objValue->ShowInfo();
 			//echo $objValue->Status->Label . ":";
 			//$objValue->Status->RenderValue();
 			echo "</div>";
 			echo "</td></tr>\n";
-		}*/
+		}
+		
 		echo "</table>\n";
-		echo "<script type='text/javascript'>Vixen.Highlight.Attach('$strTableName', $intRowCount);</script>";
+		echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
 		echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>";
-
+*/
 	}
 }
 

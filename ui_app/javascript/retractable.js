@@ -19,11 +19,11 @@ function VixenSlidingClass()
 	this.table = new Object();
 	this.slideTarget = "";
 	
-	this.Slide =function(tblId, objId) 
+	this.Slide =function(tblId, intRow) 
 	{
+		objId = tblId + '_' + intRow + 'DIV-DETAIL';
 		this.obj = document.getElementById(objId);
 		this.duration = 1;
-		//this.height = parseInt(this.obj.style.height);
 		
 		this.height =function()
 		{
@@ -42,10 +42,10 @@ function VixenSlidingClass()
 		{
 			this.curHeight = this.height();
 			this.newHeight = '0';
-			if(Vixen.Slide.table[tblId].row[objId].Sliding != TRUE) 
+			if(Vixen.table[tblId].row[intRow].Sliding != TRUE) 
 			{
 				var finishTime = this.slide();
-				window.setTimeout("Vixen.Slide.Slide('"+tblId+"','"+objId+"').finishup("+this.height()+");",finishTime);
+				window.setTimeout("Vixen.Slide.Slide('"+tblId+"','"+intRow+"').finishup("+this.height()+");",finishTime);
 			}
 			else
 			{
@@ -58,12 +58,12 @@ function VixenSlidingClass()
 		{
 			this.newHeight = this.height();
 			this.curHeight = '0';
-			if(Vixen.Slide.table[tblId].row[objId].Sliding != TRUE) 
+			if(Vixen.table[tblId].row[intRow].Sliding != TRUE) 
 			{
 				this.obj.style.height = '1px';
 				//this.obj.style.display = 'block';
 				var finishTime = this.slide();
-				window.setTimeout("Vixen.Slide.Slide('"+tblId+"','"+objId+"').finishdown("+this.newHeight+");",finishTime);
+				window.setTimeout("Vixen.Slide.Slide('"+tblId+"','"+intRow+"').finishdown("+this.newHeight+");",finishTime);
 			}
 			else
 			{
@@ -74,7 +74,7 @@ function VixenSlidingClass()
 		
 		this.slide = function() 
 		{
-			Vixen.Slide.table[tblId].row[objId].Sliding = TRUE;
+			Vixen.table[tblId].row[intRow].Sliding = TRUE;
 			var frames = 15 * this.duration; // Running at 30 fps
 	
 			var tIncrement = (this.duration*500) / frames;
@@ -100,7 +100,7 @@ function VixenSlidingClass()
 				window.setTimeout("document.getElementById('"+objId+"').style.height='"+Math.round(this.curHeight)+"px';",tIncrement * i);
 			}
 
-			window.setTimeout("Vixen.Slide.table['"+tblId+"'].row['"+objId+"'].Sliding = FALSE;",tIncrement * i);			
+			window.setTimeout("Vixen.table['"+tblId+"'].row['"+intRow+"'].Sliding = FALSE;",tIncrement * i);			
 	
 			return tIncrement * i;
 			
@@ -111,67 +111,87 @@ function VixenSlidingClass()
 			//debug (this.obj.clientHeight + "up" + height + ":myheight:" + this.height());
 			this.obj.style.display = 'none';
 			this.obj.style.height = height + 'px';
-			Vixen.Slide.table[tblId].row[objId].Up = TRUE;
+			Vixen.table[tblId].row[intRow].Up = TRUE;
 		}
 		this.finishdown = function(height) 
 		{
 			//debug (this.obj.clientHeight + "down" + height);
 			this.obj.style.display = 'block';
 			this.obj.style.height = height + 'px';
-			Vixen.Slide.table[tblId].row[objId].Up = FALSE;
+			Vixen.table[tblId].row[intRow].Up = FALSE;
 		}
 		
 		return this;
 	
 	}
 	
-	this.ToggleSlide =function(strTableId, strTargetId)
+	this.CollapseAll =function(strTableId)
 	{
+		objTable = Vixen.table[strTableId];
 		
-		if (this.table[strTableId].collapseAll == TRUE)
+		for (var i=0; i<=objTable.totalRows; i++)
 		{
-			for (var key in this.table[strTableId].row) {
-  				var objRow = this.table[strTableId].row[key];
-				if (this.table[strTableId].row[key].Up != TRUE)
-				{
-					this.Slide(strTableId, key).up();
-					this.table[strTableId].row[key].Up = TRUE;
-				}
+			var objRow = objTable.row[i];
+			if (objTable.row[i].Up != TRUE)
+			{
+				this.Slide(strTableId, i).up();
+				objTable.row[i].Up = TRUE;
 			}
 		}
-		if (this.table[strTableId].row[strTargetId].Up == TRUE)
+	}
+	
+	this.ToggleSlide =function(strTableId, strTargetId)
+	{
+		// get row number from strTargetId
+		intIndex = strTargetId.lastIndexOf('_');
+		intIndex = strTargetId.substr(intIndex + 1);
+
+		// hack until changes
+		strTargetId += "DIV-DETAIL";
+
+		objTable = Vixen.table[strTableId];
+
+		if (objTable.collapseAll)
 		{
-			this.Slide(strTableId, strTargetId).down();
-			this.table[strTableId].row[strTargetId].Up = FALSE;			
+			Vixen.Slide.CollapseAll(strTableId);
+		}
+		if (objTable.row[intIndex].Up == TRUE)
+		{
+			this.Slide(strTableId, intIndex).down();
+			objTable.row[intIndex].Up = FALSE;			
 		}
 		else
 		{
-			this.Slide(strTableId, strTargetId).up();
-			this.table[strTableId].row[strTargetId].Up = TRUE;
+			this.Slide(strTableId, intIndex).up();
+			objTable.row[intIndex].Up = TRUE;
 		}
 		document.getElementById(strTargetId).style.display ="block";
 	}
 	
 	this.Attach =function (strTableId, totalRows, bolOneOnly)
 	{
-		Vixen.Slide.table[strTableId] = new Object();
-		Vixen.Slide.table[strTableId].collapseAll = bolOneOnly;	
-		Vixen.Slide.table[strTableId].row = new Object();
-		for (i = 1; i <=totalRows; i++)
+		objTable = Vixen.table[strTableId];
+		objTable.collapseAll = bolOneOnly;
+		objTable.totalRows = totalRows;
+		
+		for (var i=0; i <=totalRows; i++)
 		{	
-			Vixen.Slide.table[strTableId].row[strTableId + '_' + i + "DIV"] = new Object();
-			Vixen.Slide.table[strTableId].row[strTableId + '_' + i + "DIV"].Up = TRUE;			
+			objTable.row[i].Up = TRUE;			
+			
 			var elmRow = document.getElementById(strTableId + '_' + i);
-			elmRow.addEventListener('mousedown', MouseDownHandler, TRUE);
-			intHeight = Vixen.Slide.Slide(strTableId, strTableId + '_' + i + 'DIV').height();
-			Vixen.Slide.Slide(strTableId, strTableId + '_' + i + 'DIV').finishup(intHeight);
+			
+			elmRow.addEventListener('mousedown', MouseDownHandler, FALSE);
+			
+			intHeight = Vixen.Slide.Slide(strTableId, i).height();
+			Vixen.Slide.Slide(strTableId, i).finishup(intHeight);
 		}
+		//debug ("Table-- " + strTableId);
 		//debug (Vixen.Slide.table[strTableId], 1);
 	}
 	
 	function MouseDownHandler ()
 	{
-		Vixen.Slide.ToggleSlide(this.parentNode.parentNode.id, this.id + "DIV");
+		Vixen.Slide.ToggleSlide(this.parentNode.parentNode.id, this.id);
 	}
 }
 

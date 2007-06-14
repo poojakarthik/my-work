@@ -661,7 +661,7 @@
 	table.Listing tr.Selected th,
 	table.Listing tr.Selected td
 	{
-		background-color:    #99CCFF;
+		background-color:    #66FFFF;
 	}
 	
 	table.Listing tr.Hover th,
@@ -1160,4 +1160,9 @@
      z-index: 1000;
 	 background-color:	#000000;
 	 opacity: .50;
+	}
+	.VixenTooltip
+	{
+		border: 1px solid #000000;
+		background-color: #ffffff;
 	}

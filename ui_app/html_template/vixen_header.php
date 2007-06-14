@@ -97,6 +97,7 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 	{	
 		
 		echo "    <div id='PopupHolder'></div>
+	<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>
     <div class='Logo'>
       <img src='img/template/vixen_logo.png' border='0'>
     </div>
