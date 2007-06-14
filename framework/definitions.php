@@ -1130,6 +1130,8 @@ $GLOBALS['*arrConstant']	['XLSType']	[501]	['Constant']	= 'EXCEL_TYPE_INTEGER';
 $GLOBALS['*arrConstant']	['XLSType']	[501]	['Description']	= 'Integer';
 $GLOBALS['*arrConstant']	['XLSType']	[502]	['Constant']	= 'EXCEL_TYPE_PERCENTAGE';
 $GLOBALS['*arrConstant']	['XLSType']	[502]	['Description']	= 'Percentage';
+$GLOBALS['*arrConstant']	['XLSType']	[503]	['Constant']	= 'EXCEL_TYPE_FNN';
+$GLOBALS['*arrConstant']	['XLSType']	[503]	['Description']	= 'FNN';
 
 //Data Report XLS Total Types
 $GLOBALS['*arrConstant']	['XLSTotal']	[600]	['Constant']	= 'EXCEL_TOTAL_SUM';
