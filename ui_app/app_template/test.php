@@ -14,7 +14,15 @@ class AppTemplateTest extends ApplicationTemplate
 		
 		echo "Hello";
 
+		Table()->AccountTable->AddRow("Col1.Value1", "Col2.Value1", "Col3.Value1");
+		Table()->AccountTable->AddRow("Col1.Value2", "Col2.Value2", "Col3.Value2");
+		Debug(Table()->AccountTable->Info());
+		
+		echo "<br>die!";
+		die;
+		
 		DBO()->Account->Load();
+		
 		DBO()->Account->Balance = -500;
 		
 		DBO()->Account->Balance->RenderOutput(0);  // the conditions will force this to be rendered using context 1

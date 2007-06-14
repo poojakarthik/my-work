@@ -65,6 +65,26 @@ function DBL()
 	return Singleton::Instance('DBLFramework');
 }
 
+//------------------------------------------------------------------------//
+// Table
+//------------------------------------------------------------------------//
+/**
+ * Table()
+ *
+ * Returns an instance of the TableFramework
+ *
+ * Returns an instance of the TableFramework
+ *
+ * @return	TableFramework
+ *
+ * @method
+ */
+function Table()
+{
+	return Singleton::Instance('VixenTableFramework');
+}
+
+
 
 //------------------------------------------------------------------------//
 // ImplodeTables
