@@ -420,10 +420,19 @@
 						}
 						$arrExcelCols[$strName]['TotalFormat'] = $arrFormat['PercentageTotal'];
 						break;
+						
+					case EXCEL_TYPE_FNN:
+						$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
+						break;
 					
 					// Best Guess
 					default:
-						if (is_int($mixField['Value']))
+						if (IsValidFNN($mixField))
+						{
+							// FNN
+							$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['FNN']);
+						}
+						elseif (is_int($mixField['Value']))
 						{
 							// Integer
 							$wksWorksheet->writeNumber($intRow+1, $intCol, $mixField, $arrFormat['Integer']);
