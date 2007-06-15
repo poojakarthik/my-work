@@ -149,9 +149,9 @@
 		$this->_arrDefine = $arrDefine;
 		
 		// Connect to the remote server
-		$arrParams['username']		= $this->_arrDefine['Username'];
-		$arrParams['password']		= $this->_arrDefine['PWord'];
-		$arrParams['fileAction']	= "allNew";
+		$arrParams['username']		= "username=".urlencode($this->_arrDefine['Username']);
+		$arrParams['password']		= "password=".urlencode($this->_arrDefine['PWord']);
+		//$arrParams['fileAction']	= "fileAction=".urlencode("allNew");
 		curl_setopt($this->_ptrSession, CURLOPT_URL				, "https://wholesalebbs.aapt.com.au/preparedownloads.asp");
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
