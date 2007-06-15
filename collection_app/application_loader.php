@@ -110,6 +110,8 @@ require_once("Mail/mime.php");
 
 // load collection modules
 require_once($strApplicationDir."collection_modules/module_ftp.php");
+require_once($strApplicationDir."collection_modules/module_aapt.php");
+require_once($strApplicationDir."collection_modules/module_optus.php");
 
 
 // load application 
