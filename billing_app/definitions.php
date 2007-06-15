@@ -179,4 +179,12 @@ define("BILL_SAMPLE"						, 1);
 define("BILL_REPRINT"						, 2);
 define("BILL_REPRINT_TEMP"					, 3);
 
+// Bill Factory Types
+define("BILL_FACTORY_SERVICE_SUMMARY"		, 200);
+define("BILL_FACTORY_ITEMISE_RECORD_TYPES"	, 201);
+define("BILL_FACTORY_ITEMISE_CALLS"			, 202);
+define("BILL_FACTORY_ITEMISE_CHARGES"		, 203);
+define("BILL_FACTORY_SERVICE_TOTAL"			, 204);
+define("BILL_FACTORY_SERVICE_CHARGES_TOTAL"	, 205);
+
 ?>

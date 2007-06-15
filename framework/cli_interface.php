@@ -118,6 +118,9 @@
 	 	//ncurses_attroff(NCURSES_A_REVERSE);
 	 	
 	 	ncurses_refresh();
+	 	
+	 	// Init variables
+	 	$this->_arrWindows = Array();
 	 }
 	 
 	//------------------------------------------------------------------------//

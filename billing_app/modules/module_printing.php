@@ -69,6 +69,7 @@
 		// Init database statements
 		$this->_insInvoiceOutput		= new StatementInsert("InvoiceOutput");
 		
+		$arrColumns = Array();
 		$arrColumns['CustomerGroup']	= "Account.CustomerGroup";
 		$arrColumns['Account']			= "Account.Id";
 		$arrColumns['PaymentTerms']		= "Account.PaymentTerms";
@@ -111,17 +112,28 @@
 																NULL,
 																"RType.Id");*/
 		
-		$this->_selServices				= new StatementSelect(	"(Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service) LEFT JOIN CostCentre CostCentre2 ON ServiceExtension.CostCentre = CostCentre2.Id, " .
+		/*$this->_selServices				= new StatementSelect(	"(Service LEFT OUTER JOIN ServiceExtension ON Service.Id = ServiceExtension.Service) LEFT JOIN CostCentre CostCentre2 ON ServiceExtension.CostCentre = CostCentre2.Id, " .
 																"Service Service2 LEFT OUTER JOIN CostCentre ON Service2.CostCentre = CostCentre.Id",
 																"Service.FNN AS FNN, Service.Id AS Id, (CASE WHEN CostCentre2.Id IS NULL THEN CostCentre.Name ELSE CostCentre2.Name END) AS CostCentre, Service.Indial100 as Indial100, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
 																"Service.Account = <Account> AND Service.Id = Service2.Id",
 																"CostCentre, Service.ServiceType, Service.FNN, ServiceExtension.Name",
 																NULL,
+																"Service.FNN, ServiceExtension.RangeStart");*/
+																
+		$this->_selServices				= new StatementSelect(	"((Service LEFT JOIN ServiceExtension ON Service.Id = ServiceExtension.Service) LEFT JOIN CostCentre CostCentreExtension ON ServiceExtension.CostCentre = CostCentreExtension.Id) LEFT JOIN CostCentre ON Service.CostCentre = CostCentre.Id",
+																"Service.FNN AS FNN, COUNT(Service.Id) AS ServiceCount, (CASE WHEN CostCentreExtension.Id IS NULL THEN CostCentre.Name ELSE CostCentreExtension.Name END) AS CostCentre, Service.Indial100 as Indial100, ServiceExtension.Name AS ExtensionName, ServiceExtension.RangeStart AS RangeStart, ServiceExtension.RangeEnd as RangeEnd",
+																"Service.Account = <Account>",
+																"CostCentre, Service.ServiceType, Service.FNN, ServiceExtension.Name",
+																NULL,
 																"Service.FNN, ServiceExtension.RangeStart");
+																
+		$this->_selServiceInstances		= new StatementSelect(	"Service LEFT JOIN ServiceExtension ON Service.Id = ServiceExtension.Service", 
+																"Service.Id AS Id", 
+																"Service.Account = <Account> AND Service.FNN = <FNN> AND (ServiceExtension.RangeStart <=> <RangeStart>)");
 		
-		$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
+		/*$this->_selServiceTotal			= new StatementSelect(	"ServiceTotal",
 																"(TotalCharge + Debit - Credit) AS TotalCharge",
-																"Service = <Service> AND InvoiceRun = <InvoiceRun>");
+																"Service = <Service> AND InvoiceRun = <InvoiceRun>");*/
 		
  		$arrColumns = Array();
  		$arrColumns['RecordType']	= "GroupType.Description";
@@ -133,7 +145,7 @@
  																NULL,
  																"GroupType.Description DESC");
 		
- 		$arrColumns = Array();
+ 		/*$arrColumns = Array();
  		$arrColumns['RecordType']	= "GroupType.Description";
  		$arrColumns['Total']		= "SUM(ServiceTypeTotal.Charge)";
  		$arrColumns['Records']		= "SUM(Records)";
@@ -142,23 +154,23 @@
  															"Service = <Service> AND FNN BETWEEN <RangeStart> AND <RangeEnd> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
  															"ServiceTypeTotal.FNN, GroupType.Description",
  															NULL,
- 															"GroupType.Description DESC");
+ 															"GroupType.Description DESC");*/
  															
- 		$this->_selDisplayServiceSummary	= new StatementSelect(	"ServiceTotal",
+ 		/*$this->_selDisplayServiceSummary	= new StatementSelect(	"ServiceTotal",
  																	"Id",
  																	"Service = <Service> AND InvoiceRun = <InvoiceRun> AND " .
  																	"(CappedCharge != 0 OR " .
  																	"UncappedCharge != 0 OR " .
  																	"TotalCharge != 0 OR " .
  																	"Credit != 0 OR " .
- 																	"Debit != 0)");
+ 																	"Debit != 0)");*/
  		
-		$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
+		/*$this->_selServiceChargesTotal	= new StatementSelect(	"Charge",
 																"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
 																"Service = <Service> AND InvoiceRun = <InvoiceRun>",
 																"Nature",
 																2,
-																"Nature");
+																"Nature");*/
 																
 		$this->_selChargeTotal	= new StatementSelect(	"Charge",
 														"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, Nature",
@@ -180,9 +192,9 @@
 		$arrColumns['Description']			= "Description";
 		$arrColumns['ChargeType']			= "ChargeType";
 		$arrColumns['Nature']				= "Nature";
-		$this->_selItemisedServiceCharges	= new StatementSelect(	"Charge",
+		/*$this->_selItemisedServiceCharges	= new StatementSelect(	"Charge",
 																	$arrColumns,
-																	"Service = <Service> AND InvoiceRun = <InvoiceRun>");
+																	"Service = <Service> AND InvoiceRun = <InvoiceRun>");*/
 		
 		$this->_selItemisedAccountCharges	= new StatementSelect(	"Charge",
 																	$arrColumns,
@@ -205,7 +217,7 @@
 																$arrColumns,
 																"RType.Itemised = 1 AND CDR.Account = <Account> AND RecordType.GroupId = RType.Id AND CDR.Credit = 0 AND CDR.InvoiceRun = <InvoiceRun> AND Status = ".CDR_TEMP_INVOICE,
 																"CDR.FNN, RType.Name, CDR.StartDatetime");*/
-		$arrColumns = Array();
+		/*$arrColumns = Array();
 		$arrColumns['Charge']			= "CDR.Charge";
 		$arrColumns['Source']			= "CDR.Source";
 		$arrColumns['Destination']		= "CDR.Destination";
@@ -225,9 +237,9 @@
  															"RecordGroup.Itemised = 1 AND " .
  															"CDR.InvoiceRun = <InvoiceRun> AND " .
  															"FNN BETWEEN <RangeStart> AND <RangeEnd>",
- 															"CDR.StartDatetime");
+ 															"CDR.StartDatetime");*/
  															
-		$this->_selItemisedRecordTypes = new StatementSelect(	"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
+		/*$this->_selItemisedRecordTypes = new StatementSelect(	"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
 																"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
 	 															"Service = <Service> AND " .
 	 															"RecordGroup.Id = RecordType.GroupId AND " .
@@ -236,7 +248,7 @@
  																"FNN BETWEEN <RangeStart> AND <RangeEnd>",
 	 															"RecordGroup.Description",
 	 															NULL,
-	 															"RecordGroup.Id");
+	 															"RecordGroup.Id");*/
 																
 		/*$this->_selRecordTypeTotal		= new StatementSelect(	"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id," .
 																"RecordType AS RType",
@@ -522,6 +534,31 @@
 		
 		//Debug($arrServices);
 		
+		// Get the Service Ids
+		foreach ($arrServices as $intKey=>$arrService)
+		{
+			$arrWhere = Array();
+			$arrWhere['Account']	= $arrInvoiceDetails['Account'];
+			$arrWhere['FNN']		= $arrService['FNN'];
+			$arrWhere['RangeStart']	= $arrService['RangeStart'];
+			//Debug($arrWhere);
+			if (!$this->_selServiceInstances->Execute($arrWhere))
+			{
+				Debug("Error on _selServiceInstances!");
+				Debug($this->_selServiceInstances->Error());
+			}
+			else
+			{
+				$arrService['Id']	= Array();
+				while ($arrId = $this->_selServiceInstances->Fetch())
+				{
+					$arrService['Id'][] = $arrId['Id'];
+				}
+			}
+			$arrServices[$intKey] = $arrService;
+		}
+		
+	
 		// Only generate Service Summaries and Itemised calls if there are services to generate for
 		if ($intCount >= 1)
 		{
@@ -535,6 +572,8 @@
 			$this->_arrFileData[] = $arrDefine['SvcSummaryHeader'];
 			foreach($arrServices as $arrService)
 			{
+				//Debug($arrService);
+				
 				// Add cost centre records
 				if ($strCostCentre !== $arrService['CostCentre'])
 				{
@@ -544,8 +583,8 @@
 						$arrLast = end($this->_arrFileData);
 						if ($arrLast['RecordType']['Value'] == '0060')
 						{
-							//Debug("Popping!");
-							array_pop($this->_arrFileData);
+							//Debug("Popping: ");
+							//Debug(array_pop($this->_arrFileData));
 						}
 						else
 						{
@@ -642,12 +681,11 @@
 			 	$arrWhere['InvoiceRun']	= $arrInvoiceDetails['InvoiceRun'];
 			 	$arrWhere['RangeStart']	= $arrService['RangeStart'];
 			 	$arrWhere['RangeEnd']	= $arrService['RangeEnd'];
-			 	if ($this->_selItemisedRecordTypes->Execute($arrWhere) === FALSE)
-			 	{
-			 		// ERROR
-			 		return FALSE;
-			 	}
-			 	$arrItemisedRecordTypes	= $this->_selItemisedRecordTypes->FetchAll();
+				if (($arrItemisedRecordTypes = $this->_BillingFactory(BILL_FACTORY_ITEMISE_RECORD_TYPES, $arrService, $arrWhere)) === FALSE)
+				{
+					// ERROR
+					return FALSE;
+				}
 			 	
 			 	$arrCreditRecordType['Description']	= "Other Charges & Credits";
 			 	$arrCreditRecordType['DisplayType']	= RECORD_DISPLAY_S_AND_E;
@@ -1093,15 +1131,13 @@
  		$arrColumns['Service']		= $arrService['Id'];
  		$arrColumns['RangeStart']	= $strRangeStart;
  		$arrColumns['RangeEnd']		= $strRangeEnd;
- 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;
- 		//Debug($arrColumns);
- 		if ($this->_selServiceSummary->Execute($arrColumns) === FALSE)
+ 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun; 		
+ 		
+ 		// Generate Query and Execute
+ 		if (($arrServiceSummaries = $this->_BillingFactory(BILL_FACTORY_SERVICE_SUMMARY, $arrService, $arrColumns)) === FALSE)
  		{
- 			// ERROR
- 			Debug($this->_selServiceSummary->Error());
  			return FALSE;
  		}
- 		$arrServiceSummaries = $this->_selServiceSummary->FetchAll();
  		
  		//Debug($arrServiceSummaries);
 	 	
@@ -1114,13 +1150,12 @@
 	 		$arrColumns = Array();
 	 		$arrColumns['Service']		= $arrService['Id'];
 	 		$arrColumns['InvoiceRun']	= $this->_strInvoiceRun;
-	 		if ($this->_selServiceChargesTotal->Execute($arrColumns) === FALSE)
+	 		if (($arrChargeSummaries = $this->_BillingFactory(BILL_FACTORY_SERVICE_CHARGES_TOTAL, $arrService, $arrColumns)) === FALSE)
 	 		{
 	 			// ERROR
-	 			Debug($this->_selServiceChargesTotal->Error());
 	 			return FALSE;
 	 		}
-	 		$arrChargeSummaries =  $this->_selServiceChargesTotal->FetchAll();
+			
 	 		$arrChargeSummary = Array();
 	 		$arrChargeSummary['Charge']		= 0.0;
 	 		$arrChargeSummary['Records']	= 0;
@@ -1184,14 +1219,13 @@
 		 		$arrData = Array();
 		 		$arrData['Service']		= $arrService['Id'];
 		 		$arrData['InvoiceRun']	= $this->_strInvoiceRun;
-		 		if ($this->_selServiceTotal->Execute($arrData) === FALSE)
+		 		if (($arrServiceTotal = $this->_BillingFactory(BILL_FACTORY_SERVICE_TOTAL, $arrService, $arrData)) === FALSE)
 		 		{
-		 			Debug($this->_selServiceTotal->Error());
+		 			// ERROR
 		 			return FALSE;
 		 		}
-		 		$arrServiceTotal = $this->_selServiceTotal->Fetch();
 		 		
-				$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= $arrServiceTotal['TotalCharge'];
+				$arrDefine['SvcSummSvcFooter']		['TotalCapped']		['Value']	= (float)$arrServiceTotal[0]['TotalCharge'];
 			}
 			
 			$this->_arrFileData[] = $arrDefine['SvcSummSvcFooter'];
@@ -1236,13 +1270,11 @@
 			$arrWhere['RangeEnd']		= $arrService['RangeEnd'];
 	 		$arrWhere['RecordGroup']	= $arrRecordGroup['RecordType'];
 		 	$arrWhere['InvoiceRun']		= $this->_arrInvoiceDetails['InvoiceRun'];
-			if ($this->_selItemisedCalls->Execute($arrWhere) === FALSE)
+			if (($arrItemisedCalls = $this->_BillingFactory(BILL_FACTORY_ITEMISE_CALLS, $arrService, $arrWhere)) === FALSE)
 			{
 				// ERROR
-				Debug($this->_selItemisedCalls->Error());
 				return FALSE;
 			}
-			$arrItemisedCalls = $this->_selItemisedCalls->FetchAll();
  		}
 		elseif ($arrService['FNN'] >= $arrService['RangeStart'] && $arrService['FNN'] <= $arrService['RangeEnd'])
 		{
@@ -1251,14 +1283,12 @@
 		 	$arrWhere['Account']	= $this->_arrInvoiceDetails['Account'];
 		 	$arrWhere['InvoiceRun']	= $this->_arrInvoiceDetails['InvoiceRun'];
 		 	$arrWhere['Service']	= $arrService['Id'];
-			if (($intChargeCount = $this->_selItemisedServiceCharges->Execute($arrWhere)) === FALSE)
+			if (($arrCharges = $this->_BillingFactory(BILL_FACTORY_ITEMISE_CHARGES, $arrService, $arrWhere)) === FALSE)
 			{
 				// ERROR
-				Debug($this->_selItemisedServiceCharges->Error());
 				return FALSE;
 			}
 			
-			$arrCharges = $this->_selItemisedServiceCharges->FetchAll();
 			foreach ($arrCharges as $arrCharge)
 			{
 				//echo "\t\t\t...Adding Itemised Charge...\n";
@@ -1480,6 +1510,163 @@
 				
 		// Return the data
 		return rtrim($strFileContents);
+ 	}
+ 	
+ 	
+ 	
+  	//------------------------------------------------------------------------//
+	// _BillingFactory()
+	//------------------------------------------------------------------------//
+	/**
+	 * _BillingFactory()
+	 *
+	 * Creates and executes a Bill Printing Query, summing values for all of the services
+	 * passed in
+	 *
+	 * Creates and executes a Bill Printing Query, summing values for all of the services
+	 * passed in
+	 * 
+	 * @param	integer	$intType		The type of query to run
+	 * @param	array	$arrService		MySQL resultset from _selService with additional 'Id' array
+	 * @param	array	$arrParams		WHERE parameters
+	 *
+	 * @return	mixed					string	: invoice data
+	 * 									FALSE	: invalid input
+	 *
+	 * @method
+	 */
+ 	protected function _BillingFactory($intType, $arrService, $arrParams)
+ 	{
+ 		$intCount = count($arrService['Id']);
+ 		
+ 		// Is there a Statement for this many Service Ids and Type?
+ 		if (!$this->_arrFactoryQueries[$intType][$intCount])
+ 		{
+	 		$arrWhere = Array();
+	 		foreach ($arrService['Id'] as $intKey=>$intId)
+	 		{
+	 			$arrWhere[] = "Service = <Service$intKey>";
+	 		}
+	 		$strWhereService = "(".implode(' OR ', $arrWhere).")";
+	 		
+	 		switch ($intType)
+	 		{
+	 			case BILL_FACTORY_SERVICE_SUMMARY:
+	 				$arrColumns = Array();
+			 		$arrColumns['RecordType']	= "GroupType.Description";
+			 		$arrColumns['Total']		= "SUM(ServiceTypeTotal.Charge)";
+			 		$arrColumns['Records']		= "SUM(Records)";
+ 					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
+ 						(
+							"ServiceTypeTotal JOIN RecordType ON ServiceTypeTotal.RecordType = RecordType.Id, RecordType AS GroupType",
+							$arrColumns,
+		 					"$strWhereService AND FNN BETWEEN <RangeStart> AND <RangeEnd> AND InvoiceRun = <InvoiceRun> AND GroupType.Id = RecordType.GroupId",
+		 					"ServiceTypeTotal.FNN, GroupType.Description",
+		 					NULL,
+		 					"GroupType.Description DESC"
+	 					);
+	 				break;
+	 				
+	 			case BILL_FACTORY_ITEMISE_RECORD_TYPES:
+	 				$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
+						(	
+							"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id, RecordType AS RecordGroup",
+							"RecordGroup.Id AS RecordType, RecordGroup.Description AS Description, RecordGroup.DisplayType AS DisplayType", 
+							"$strWhereService AND " .
+							"RecordGroup.Id = RecordType.GroupId AND " .
+							"RecordGroup.Itemised = 1 AND " .
+							"CDR.InvoiceRun = <InvoiceRun> AND " .
+							"FNN BETWEEN <RangeStart> AND <RangeEnd>",
+							"RecordGroup.Description",
+							NULL,
+							"RecordGroup.Id"
+	 					);
+	 				break;
+	 				
+	 			case BILL_FACTORY_ITEMISE_CALLS:
+					$arrColumns = Array();
+					$arrColumns['Charge']			= "CDR.Charge";
+					$arrColumns['Source']			= "CDR.Source";
+					$arrColumns['Destination']		= "CDR.Destination";
+					$arrColumns['StartDatetime']	= "CDR.StartDatetime";
+					$arrColumns['EndDatetime']		= "CDR.EndDatetime";
+					$arrColumns['Units']			= "CDR.Units";
+					$arrColumns['Description']		= "CDR.Description";
+					$arrColumns['DestinationCode']	= "CDR.DestinationCode";
+					$arrColumns['DisplayType']		= "RecordGroup.DisplayType";
+					$arrColumns['RecordGroup']		= "RecordGroup.Description";
+ 					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
+ 					(	
+						"CDR USE INDEX (Service_3) JOIN RecordType ON CDR.RecordType = RecordType.Id" .
+						", RecordType as RecordGroup",
+						$arrColumns,
+						"$strWhereService AND " .
+						"RecordGroup.Id = RecordType.GroupId AND " .
+						"RecordGroup.Id = <RecordGroup> AND " .
+						"RecordGroup.Itemised = 1 AND " .
+						"CDR.InvoiceRun = <InvoiceRun> AND " .
+						"FNN BETWEEN <RangeStart> AND <RangeEnd>",
+						"CDR.StartDatetime"
+ 					);
+	 				break;
+	 				
+	 			case BILL_FACTORY_ITEMISE_CHARGES:
+	 				$arrColumns['Charge']				= "Amount";
+					$arrColumns['Description']			= "Description";
+					$arrColumns['ChargeType']			= "ChargeType";
+					$arrColumns['Nature']				= "Nature";
+					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
+					(	
+						"Charge",
+						$arrColumns,
+						"$strWhereService AND InvoiceRun = <InvoiceRun>"
+					);
+	 				break;
+	 				
+	 			case BILL_FACTORY_SERVICE_TOTAL:
+					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
+					(
+						"ServiceTotal",
+						"SUM(TotalCharge + Debit - Credit) AS TotalCharge",
+						"$strWhereService AND InvoiceRun = <InvoiceRun>"
+					);
+	 				break;
+	 				
+	 			case BILL_FACTORY_SERVICE_CHARGES_TOTAL:
+					$this->_arrFactoryQueries[$intType][$intCount] = new StatementSelect
+					(
+	 					"Charge",
+						"SUM(Amount) AS Charge, 'Other Charges & Credits' AS RecordType, COUNT(Id) AS Records, Nature",
+						"$strWhereService AND InvoiceRun = <InvoiceRun>",
+						"Nature",
+						2,
+						"Nature"
+					);
+	 				break;
+	 			
+	 			default:
+	 				// No such Type
+	 				return FALSE;
+	 		}
+ 		}
+ 		
+ 		// Prepare WHERE parameters
+ 		foreach ($arrService['Id'] as $intKey=>$intId)
+ 		{
+ 			$arrParams["Service$intKey"] = $intId;
+ 		}
+ 		
+ 		// Execute and return data
+ 		if ($this->_arrFactoryQueries[$intType][$intCount]->Execute($arrParams) === FALSE)
+ 		{
+ 			Debug($this->_arrFactoryQueries[$intType][$intCount]->Error());
+ 			Debug($this->_arrFactoryQueries[$intType][$intCount]->_strQuery);
+ 			return FALSE;
+ 		}
+ 		else
+ 		{
+ 			return $this->_arrFactoryQueries[$intType][$intCount]->FetchAll();
+ 		}
  	}
  }
 

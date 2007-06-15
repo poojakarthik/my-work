@@ -233,12 +233,14 @@
 	 * Imports CDRs from CDR Files
 	 *
 	 * Imports CDRs from CDR Files
+	 * 
+	 * @param	integer	$intLimit	optional	Limits the number of files processed
 	 *
-	 * @return		void
+	 * @return	void
 	 *
 	 * @method
 	 */
- 	function Import()
+ 	function Import($intLimit=NULL)
  	{
 		$this->AddToNormalisationReport("\n\n".MSG_HORIZONTAL_RULE);
 		$this->AddToNormalisationReport(MSG_IMPORTING_TITLE);
@@ -248,7 +250,7 @@
 		$strWhere			= "Status = <status1> OR Status = <status2>";
 		$arrWhere[status1]	= CDRFILE_WAITING;
 		$arrWhere[status2]	= CDRFILE_REIMPORT;
-		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere);
+		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere, NULL, $intLimit);
 		$insInsertCDRLine	= new StatementInsert("CDR");
 		$arrDefine = Array();
 		$arrDefine['Status']		= TRUE;

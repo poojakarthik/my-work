@@ -206,7 +206,16 @@
 													NULL,
 													NULL,
 													"Nature");
-
+		$arrData = Array();
+	 	$arrData['Note']			= NULL;
+	 	$arrData['AccountGroup']	= NULL;
+	 	$arrData['Contact']			= NULL;
+	 	$arrData['Account']			= NULL;
+	 	$arrData['Service']			= NULL;
+	 	$arrData['Employee']		= NULL;
+	 	$arrData['Datetime']		= new MySQLFunction("NOW()");
+	 	$arrData['NoteType']		= NULL;			
+		$this->_insAddNote	= new StatementInsert("Note", $arrData);
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -1045,6 +1054,51 @@
 		}
 		
 		return TRUE;
+	 }
+	 
+	 
+		 
+	//------------------------------------------------------------------------//
+	// AddNote
+	//------------------------------------------------------------------------//
+	/**
+	 * AddNote()
+	 *
+	 * Adds a Note to a particular AccountGroup, Account, Service, or Contact
+	 *
+	 * Adds a Note to a particular AccountGroup, Account, Service, or Contact.
+	 * You can specify either a Service OR a Contact to add a note to.
+	 *
+	 * @param	string	$strContent						Note content
+	 * @param	integer	$intType						The Type of note to insert
+	 * @param	integer	$intEmployee					Employee who is making the note
+ 	 * @param	integer	$intAccountGroup				The AccountGroup to add a note to
+	 * @param	integer	$intAccount						The Account to add a note to
+	 * @param	integer	$intService			optional	The Service to add a note to
+	 * @param	integer	$intContact			optional	The Contact to add a note to
+	 *
+	 * @return	boolean
+	 */
+	 function AddNote($strContent, $intType, $intEmployee, $intAccountGroup, $intAccount, $intService=NULL, $intContact=NULL)
+	 {
+	 	// Sanity Check
+	 	if ($intService && $intContact)
+	 	{
+	 		// Can't have both Contact and Service
+	 		return FALSE;
+	 	}
+	 	
+	 	// Insert the note
+	 	$arrData = Array();
+	 	$arrData['Note']			= (string)$strContent;
+	 	$arrData['AccountGroup']	= $intAccountGroup;
+	 	$arrData['Contact']			= $intContact;
+	 	$arrData['Account']			= $intAccount;
+	 	$arrData['Service']			= $intService;
+	 	$arrData['Employee']		= $intEmployee;
+	 	$arrData['Datetime']		= new MySQLFunction("NOW()");
+	 	$arrData['NoteType']		= $intType;
+	 	return (bool)$this->_insNote->Execute($arrData);
 	 }
  }
 

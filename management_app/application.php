@@ -180,6 +180,99 @@ class ApplicationManagement extends ApplicationBaseClass
 			
 		}
 	 }
+	 
+	 
+	 
+ 	//------------------------------------------------------------------------//
+	// RebillCDRs
+	//------------------------------------------------------------------------//
+	/**
+	 * RebillCDRs()
+	 *
+	 * Forces a change of ownership on already invoiced CDRs, and sets status for
+	 * rerating
+	 *
+	 * Forces a change of ownership on already invoiced CDRs, and sets status for
+	 * rerating.  Used in cases of Late/Early Change of Lessee
+	 *
+	 * @param	integer		$intCurrentService				The current Service Id
+	 * @param	integer		$intTargetService				The target Service Id
+	 * @param	string		$strStartDate					The earliest date to move CDRs across
+	 * @param	string		$strEndDate			optional	The latest date to move CDRs across
+	 *
+	 * @return	integer								Number of CDRs moved
+	 *
+	 * @method
+	 */
+	 function RebillCDRs($intCurrentService, $intTargetService, $strStartDate, $strEndDate = NULL)
+	 {	 	
+		// Statements
+	 	$selServiceData	= new StatementSelect("Service", "Id AS Service, Account, AccountGroup", "Id = <Id>");
+	 	
+	 	$arrColumns = Array();
+	 	$arrColumns['Service']		= NULL;
+	 	$arrColumns['Account']		= NULL;
+	 	$arrColumns['AccountGroup']	= NULL;
+	 	$updCDROwner	= new StatementUpdate("CDR", "Service = <Service> AND StartDatetime >= <StartDate> AND (StartDatetime <= <EndDate> OR <EndDate> <=> NULL)", $arrColumns);
+	 	
+	 	$strStatuses = "101, 150, 151, 199, 179, 171, 170, 156, 176";
+	 	$arrColumns = Array();
+	 	$arrColumns['Status']	= NULL;
+	 	$upCDRStatus	= new StatementUpdate("CDR", "Service = <Service> AND StartDatetime >= <StartDate> AND (StartDatetime <= <EndDate> OR <EndDate> <=> NULL) AND Status IN ($strStatuses)", $arrColumns);
+		
+	 	// Start Transaction
+	 	$this->db->TransactionStart();
+	 	
+	 	// Get Current and Target Service Data
+	 	$selServiceData->Execute(Array('Id' => $intCurrentService));
+	 	$arrCurrentService = $selServiceData->Fetch();
+	 	$selServiceData->Execute(Array('Id' => $intTargetService));
+	 	$arrTargetService = $selServiceData->Fetch();
+	 	
+	 	// Change ownership on all CDRs in the specified period
+	 	$arrWhere = Array();
+	 	$arrWhere['Service']	= $arrCurrentService['Service'];
+	 	$arrWhere['StartDate']	= $strStartDate." 00:00:00";
+	 	$arrWhere['EndDate']	= ($strEndDate) ? $strEndDate." 23:59:59" : NULL;
+	 	if (($intReOwned = $updCDROwner->Execute($arrTargetService, $arrWhere)) === FALSE)
+	 	{
+		 	$this->db->TransactionRollback();
+		 	return FALSE;
+	 	}
+	 	
+	 	// Change Statuses on all CDRs with 150, 151, 101, 199, and special statuses
+	 	if (($intStatusChanged = $updCDRStatus->Execute(Array('Status' => CDR_NORMALISED), $arrTargetService)) === FALSE)
+	 	{
+		 	$this->db->TransactionRollback();
+		 	return FALSE;
+	 	}
+	 	
+	 	//--------------------------------------------------------------------//
+	 	// DEBUG: Print Results, Don't add Notes
+	 	Debug("From\t\t: $intCurrentService");
+	 	Debug("To\t\t\t: $intTargetService");
+	 	Debug("Moved\t\t: $intReOwned");
+	 	Debug("Status Changed\t: $intStatusChanged");
+	 	
+	 	$this->db->TransactionRollback();
+	 	return TRUE;
+	 	//--------------------------------------------------------------------//
+	 	
+	 	// Commit Transaction
+	 	$this->db->TransactionCommit();
+	 	
+	 	// Note Content
+	 	$strContent = "Change of Lessee: All Call data from ".date("d M Y", strtotime($strStartDate));
+	 	$strContent .= ($strEndDate) ? " to ".date("d M Y", strtotime($strEndDate)) : " onwards ";
+	 	
+	 	// Add a note to the Current Service
+	 	$this->Framework->AddNote($strContent." has been moved to Account {$arrTargetService['Account']}, and will be included in its ".date("F")." Invoice", 3, NULL, $arrCurrentService['AccountGroup'], $arrCurrentService['Account'], $intCurrentService);
+	 	
+	 	// Add a note to the Target Service
+	 	$this->Framework->AddNote($strContent." has been moved from Account {$arrCurrentService['Account']}, and will be included in the ".date("F")." Invoice", 3, NULL, $arrTargetService['AccountGroup'], $arrTargetService['Account'], $intTargetService);
+	 }
+	 
+	 
 }
 
 
