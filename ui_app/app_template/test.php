@@ -12,11 +12,177 @@ class AppTemplateTest extends ApplicationTemplate
 	function Test()
 	{
 		
+		// My method  (MAKE SURE YOU HAVE THIS USING THE CATWALK DATABASE WHEN TESTING)
 		echo "Hello";
 
-		Table()->AccountTable->AddRow("Col1.Value1", "Col2.Value1", "Col3.Value1");
-		Table()->AccountTable->AddRow("Col1.Value2", "Col2.Value2", "Col3.Value2");
-		Debug(Table()->AccountTable->Info());
+		DBO()->Account->Load();
+		
+		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		DBL()->Payment->Load();
+		
+		DBL()->Invoice->Account = DBO()->Account->Id->Value;
+		DBL()->Invoice->Load();
+		
+		DBL()->InvoicePayment->Account = DBO()->Account->Id->Value;
+		DBL()->InvoicePayment->Load();
+		
+		// This array is used by the DBO()->Invoices to store what payment relates to what Invoice
+		// It is necessary to build it over time as many payments can relate to the one invoice
+		$arrPayments = Array;
+		
+		// try and stick this in a functionality module  
+		// It should really be done in two parts
+		// One to find all the invoices related to each payment
+		// and one to find all the payments related to each invoice
+		// because you make these tables separately
+		// Maybe it should be made so that you specify what table needs this one to link to it
+		//		For example: 	I'm building a Payments table and want to highlight Invoices that relate to the highlighted payment
+		//				or:		I'm building a Payments table and want to highlight the Account
+		foreach (DBL()->Payment as $dboPayment)
+		{
+			$arrInvoices = Array;
+			
+			// find each InvoicePayment record that relates to the current Payment record
+			foreach (DBL()->InvoicePayment as $dboInvoicePayment)
+			{
+				if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
+				{
+					// the current InvoicePayment record relates to the current Payment record
+					
+					// find each Invoice that relates to the current InvoicePayment record
+					foreach (DBL()->Invoice as $dboInvoice)
+					{
+						if ($dboInvoice->InvoiceRun->Value == $dboInvoicePayment->InvoiceRun->Value)
+						{
+							// the current Invoice record relates to the current InvoicePayment record
+							// this means that the current Invoice record relates to the current Payment Record
+							// so store this information in both of them so that it can be used as an index when VixenTables are being built
+							// also rememeber that a payment can be linked to multiple invoices
+							// and an invoice can be linked to multiple payments
+							
+							$arrInvoices[] = $dboInvoice->Id->Value;
+							$arrPayments[$dboInvoice->Id->Value][] = $dboPayment->Id->Value;
+						}
+					}
+				}
+			}
+			$dboPayment->Invoices = $arrInvoices;
+		}
+		// for each invoice, set the payments that relate to it
+		foreach ($DBL()->Invoice as $dboInvoice)
+		{
+			$dboInvoice->Payments = $arrPayments[$dboInvoice->Id->Value];
+		}
+		
+		// Create a payment table and an invoice table
+		// Create the payment table
+		Table()->Payment->SetHeader("PaymentId", "Account", "Paid On", "Amount");
+		foreach (DBL()->Payment as $dboPayment)
+		{
+			Table()->Payment->AddRow($dboPayment->Id->Value, $dboPayment->Account->Value, $dboPayment->PaidOn->Value, $dboPayment->Amount->Value);
+			foreach ($dboPayment->Invoices->Value as $intInvoice)
+			{
+				Table()->Payment->AddIndex("Invoice", $intInvoice);
+			}
+		}
+		// Link the invoice table to the payment table so that highlighting a record in the payment table, will highlight related records in the invoice table
+		Table()->Payment->LinkTable("Invoice", "Invoice");
+		
+		// Create the invoice table
+		Table()->Invoice->SetHeader("InvoiceId", "Account", "Due On", "Total", "Balance");
+		foreach (DBL()->Invoice as $dboInvoice)
+		{
+			
+		}
+		
+		
+		
+		
+		
+		//build functionality module for this
+		// linking a payment to an invoice through the InvoicePayment table (Invoice <==> InvoiceRun,Account <==> Payment)
+		
+
+		Table()->PaymentTable->SetHeader("Col1 Title", "Col2 Title", "Col3 Title");
+		Table()->PaymentTable->SetWidth("20%", "30%", "50%");
+		Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
+		
+		// row 1 definition
+		Table()->PaymentTable->AddRow("Col1.Value1", "Col2.Value1", "Col3.Value1");
+		Table()->PaymentTable->SetDetail("[INSERT HTML CODE HERE]");
+		Table()->PaymentTable->SetToolTip("[INSERT HTML CODE HERE FOR THE TOOL TIP FOR ROW1]");
+		Table()->PaymentTable->AddIndex("Invoice", $intInvoiceNumber);
+		
+		// row 2 definition
+		Table()->PaymentTable->AddRow("Col1.Value2", "Col2.Value2", "Col3.Value2");
+		Table()->PaymentTable->SetDetail("[INSERT HTML CODE HERE ALSO]");
+		Table()->PaymentTable->SetToolTip("[INSERT HTML CODE HERE FOR THE TOOL TIP FOR ROW2]");
+		
+		
+		
+		Table()->PaymentTable->RowHighlighting = TRUE;
+		
+		Debug(Table()->PaymentTable->Info());
+		
+		echo "<br>die!";
+		die;
+		
+		// Jared's method
+		echo "Hello";
+
+		DBO()->Account->Load();
+		
+		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		DBL()->Payment->Load();
+		
+		DBL()->Invoice->Account = DBO()->Account->Id->Value;
+		DBL()->Invoice->Load();
+		
+		
+		// try and stick this in a functionality module
+		foreach (DBL()->Payment as $dboPayment)
+		{
+			DBL()->InvoicePayment->Account = $dboPayment->Account->Value;
+			DBL()->InvoicePayment->Payment = $dboPayment->Id->Value;
+			DBL()->InvoicePayment->Load();
+			
+			foreach (DBL()->InvoicePayment as $dboInvoicePayment)
+			{
+				foreach (DBL()->Invoice as $dboInvoice)
+				{
+					if ($dboInvoice->InvoiceRun->Value == $dboInvoicePayment->InvoiceRun->Value)
+					{
+						//if it matches then that is the (invoice) Id that you use
+						
+					}
+				}
+			}
+		}
+		
+		//build functionality module for this
+		// linking a payment to an invoice through the InvoicePayment table (Invoice <==> InvoiceRun,Account <==> Payment)
+		
+
+		Table()->PaymentTable->SetHeader("Col1 Title", "Col2 Title", "Col3 Title");
+		Table()->PaymentTable->SetWidth("20%", "30%", "50%");
+		Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
+		
+		// row 1 definition
+		Table()->PaymentTable->AddRow("Col1.Value1", "Col2.Value1", "Col3.Value1");
+		Table()->PaymentTable->SetDetail("[INSERT HTML CODE HERE]");
+		Table()->PaymentTable->SetToolTip("[INSERT HTML CODE HERE FOR THE TOOL TIP FOR ROW1]");
+		Table()->PaymentTable->AddIndex("Invoice", $intInvoiceNumber);
+		
+		// row 2 definition
+		Table()->PaymentTable->AddRow("Col1.Value2", "Col2.Value2", "Col3.Value2");
+		Table()->PaymentTable->SetDetail("[INSERT HTML CODE HERE ALSO]");
+		Table()->PaymentTable->SetToolTip("[INSERT HTML CODE HERE FOR THE TOOL TIP FOR ROW2]");
+		
+		
+		
+		Table()->PaymentTable->RowHighlighting = TRUE;
+		
+		Debug(Table()->PaymentTable->Info());
 		
 		echo "<br>die!";
 		die;

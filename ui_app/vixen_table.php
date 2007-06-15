@@ -61,15 +61,16 @@ class VixenTable
 	 *
 	 * @property
 	 */
-	public $_arrRow				= Array();
+	public $_arrRows			= Array();
 	
 	public $_arrHeader			= Array();
-	public $_arrWidths			= Array(); //as % or px
-	public $_arrAlignment		= Array();
-	public $_bolRowHighlighting = FALSE;
-	public $_strName			= '';
+	public $_arrWidths			= Array();
+	public $_arrAlignments		= Array();
 	public $_arrlinkedTables	= Array();
-		//$this->_arrLinkedTables[] = Array($strTableName => $strIndexName)
+	public $_strName			= '';
+	public $_bolRowHighlighting = FALSE;
+	public $_bolDetails			= FALSE;
+	public $_bolToolTips		= FALSE;
 	public $_intCurrentRow		= 0;
 	
 	//------------------------------------------------------------------------//
@@ -98,39 +99,110 @@ class VixenTable
 	
 	
 	//------------------------------------------------------------------------//
-	// AddHeader
+	// SetHeader
 	//------------------------------------------------------------------------//
 	/**
-	 * AddHeader()
+	 * SetHeader()
 	 *
-	 * Adds the header to the table
+	 * Sets the header to the table
 	 *
-	 * Adds the header to the table
-	 *
-	 * @param	string		$strProperty	new property's name
-	 * @param	mix			$mixValue		new property's value
-	 * @param	string		$intContext		new property's context which is 
-	 *										used to select the specific validation rule
+	 * Sets the header to the table.
 	 * 
-	 * @return	void
+	 *
+	 * @param	string		$strColTitle, [$strColTitle]	Specify any number of column titles as separate parameters
+	 * 
+	 * @return	mixed										Indexed	array of column titles.
+	 *														If nothing was passed to the method, then it returns NULL
 	 *
 	 * @method
 	 */
-	function AddHeader()
+	function SetHeader()
 	{
-		// for each string passed, add it to $this->_arrHeader
+		if (!func_num_args())
+		{
+			// no parameters were passed
+			return NULL;
+		}
 		
-		//check out the GetFuncArgs function of php (or something to that effect)
-		
+		// retrieve the header values
+		$this->_arrHeader = func_get_args();
+
+		return $this->_arrHeader;
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetWidth
+	//------------------------------------------------------------------------//
+	/**
+	 * SetWidth()
+	 *
+	 * Sets the Width of each column of the table
+	 *
+	 * Sets the Width of each column of the table
+	 * 
+	 *
+	 * @param	string		$strColWidth, [$strColWidth]	Specify a width for each column as a separate parameter
+	 *														For example ("20%", "30%", "50%") or ("40px","30px","10px")
+	 * 
+	 * @return	mixed										Indexed	array of column widths.
+	 *														If nothing was passed to the method, then it returns NULL
+	 *
+	 * @method
+	 */
+	function SetWidth()
+	{
+		if (!func_num_args())
+		{
+			// no parameters were passed
+			return NULL;
+		}
+		
+		// retrieve the width values
+		$this->_arrWidths = func_get_args();
+
+		return $this->_arrWidths;
+	}
+
+	//------------------------------------------------------------------------//
+	// SetAlignment
+	//------------------------------------------------------------------------//
+	/**
+	 * SetAlignment()
+	 *
+	 * Sets the alignment of each column of the table
+	 *
+	 * Sets the alignment of each column of the table
+	 * 
+	 *
+	 * @param	string		$strColAlignment, [$strColAlignment]	Specify an alignment for each column as a separate parameter
+	 *																For example ("Left", NULL, "Right")
+	 * 
+	 * @return	mixed												Indexed	array of column alignments.
+	 *																If nothing was passed to the method, then it returns NULL
+	 *
+	 * @method
+	 */
+	function SetAlignment()
+	{
+		if (!func_num_args())
+		{
+			// no parameters were passed
+			return NULL;
+		}
+		
+		// retrieve the alignment values
+		$this->_arrAlignments = func_get_args();
+
+		return $this->_arrAlignments;
+	}
+
 	// this should probably return the row number of the added row, or NULL if it failed to add the row
 	function AddRow()
 	{
 		if (!func_num_args())
 		{
 			// no parameters were passed
-			return FALSE;
+			return NULL;
 		}
 		
 		// increment the row pointer
@@ -146,8 +218,84 @@ class VixenTable
 		// build the array of column values		
 		$arrColumns = func_get_args();
 		$this->_arrRows[] = Array('Columns'=>$arrColumns);
+		
+		return $this->_intCurrentRow;
 	}
-	 
+	
+	function SetDetail($strHtmlContent)
+	{
+		if (!isset($this->_intCurrentRow))
+		{
+			// a row has not yet been added yet
+			return NULL;
+		}
+		
+		// Flag this table as having detail
+		$this->_bolDetails = TRUE;
+		
+		$this->_arrRows[$this->_intCurrentRow]['Detail'] = $strHtmlContent;
+		return $this->_intCurrentRow;
+	}
+	
+	function SetToolTip($strHtmlContent)
+	{
+		if (!isset($this->_intCurrentRow))
+		{
+			// a row has not yet been added yet
+			return NULL;
+		}
+		
+		$this->_bolToolTips = TRUE;
+		
+		$this->_arrRows[$this->_intCurrentRow]['ToolTip'] = $strHtmlContent;
+		return $this->_intCurrentRow;
+	}
+	
+	function AddIndex($strName, $mixValue)
+	{
+		if (!isset($this->_intCurrentRow))
+		{
+			// a row has not yet been added yet
+			return NULL;
+		}
+
+		$this->_arrRows[$this->_intCurrentRow]['Index'][$strName][] = $mixValue;
+
+		return $this->_intCurrentRow;
+	}
+	
+	function LinkTable($strTableName, $strIndexName)
+	{
+		$this->_arrlinkedTables[$strTableName][] = $strIndexName;
+	}
+	
+	
+	function __get($strMagicVar)
+	{
+		switch ($strMagicVar)
+		{
+			case "RowHighlighting":
+				return $this->_bolRowHighlighting;
+		}
+		
+		return NULL;
+	}
+	
+	function __set($strMagicVar, $mixValue)
+	{
+		switch ($strMagicVar)
+		{
+			case "RowHighlighting":
+				return (bool)($this->_bolRowHighlighting = $mixValue);
+		}
+		
+		return NULL;
+	}
+	
+	function Render()
+	{
+	}
+	
 	//------------------------------------------------------------------------//
 	// Info
 	//------------------------------------------------------------------------//
@@ -164,7 +312,33 @@ class VixenTable
 	 */
 	function Info()
 	{
-		return $this->_arrRows;
+		if ($this->_bolRowHighlighting)
+		{
+			$arrReturn['RowHighlighting'] = "True";
+		}
+		else
+		{
+			$arrReturn['RowHighlighting'] = "False";
+		}
+		
+		if ($this->_bolDetail)
+		{
+			$arrReturn['ShowDetail'] = "True";
+		}
+		else
+		{
+			$arrReturn['ShowDetail'] = "False";
+		}
+		
+		
+		$arrReturn['Header']		= $this->_arrHeader;
+		$arrReturn['Widths']		= $this->_arrWidths;
+		$arrReturn['Alignments']	= $this->_arrAlignments;
+		$arrReturn['LinkedTables']	= $this->_arrlinkedTables;
+		$arrReturn['Rows']			= $this->_arrRows;
+		
+		
+		return $arrReturn;
 	}
 
 	//------------------------------------------------------------------------//
