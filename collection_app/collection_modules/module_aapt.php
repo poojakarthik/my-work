@@ -165,6 +165,7 @@
 		if (!$strXML = curl_exec($this->_ptrSession))
 		{
 			// Can't connect (probably no internet)
+			Debug($strXML);
 			return FALSE;
 		}
 		$this->_domDocument = new DOMDocument('1.0', 'iso-8859-1');
