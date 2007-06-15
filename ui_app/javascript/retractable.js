@@ -170,6 +170,10 @@ function VixenSlidingClass()
 	
 	this.Attach =function (strTableId, totalRows, bolOneOnly)
 	{
+	
+		//debug ("Table-- " + strTableId);
+		//debug (Vixen.table[strTableId], 1);
+		
 		objTable = Vixen.table[strTableId];
 		objTable.collapseAll = bolOneOnly;
 		objTable.totalRows = totalRows;
@@ -185,12 +189,11 @@ function VixenSlidingClass()
 			intHeight = Vixen.Slide.Slide(strTableId, i).height();
 			Vixen.Slide.Slide(strTableId, i).finishup(intHeight);
 		}
-		//debug ("Table-- " + strTableId);
-		//debug (Vixen.Slide.table[strTableId], 1);
 	}
 	
 	function MouseDownHandler ()
 	{
+		//debug (Vixen.table, 1);
 		Vixen.Slide.ToggleSlide(this.parentNode.parentNode.id, this.id);
 	}
 }

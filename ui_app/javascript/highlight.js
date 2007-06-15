@@ -121,7 +121,19 @@ function VixenHighlightClass()
 				for (var j=0; j<objTable.link[objLink].length; j++)
 				{
 					strKey = objTable.link[objLink][j];
-					arrIndexes.push({'name' : strKey, 'value': objTable.row[intRow].index[strKey]});
+					//debug (strKey);
+					if (!objTable.row[intRow].index)
+					{
+						//debug ('no index');
+					}
+					else
+					{
+						//debug (objTable.row[intRow].index[strKey] + "aeeeeeeeee");
+						for (var k=0; k<objTable.row[intRow].index[strKey].length; k++)
+						{
+							arrIndexes.push({'name' : strKey, 'value': objTable.row[intRow].index[strKey][k]});
+						}
+					}
 				}
 			}
 			Vixen.Highlight.UpdateLink(arrTables,arrIndexes,[]);
@@ -157,17 +169,31 @@ function VixenHighlightClass()
 				for (var k=0; k<arrIndexes.length; k++)
 				{
 					//debug (objRow.index[arrIndexes[k].name],1);
-					if (objRow.index[arrIndexes[k].name] == arrIndexes[k].value)
+					if (!objRow.index)
 					{
-						// Highlight if index matches
-						//.selected = TRUE lightsdown();
-						
-						strRowId = strTargetId + "_" + j;
-						Vixen.table[strTargetId].row[j].selected = TRUE;
-						Vixen.Highlight.LightsDown(document.getElementById(strRowId));
-						
-						// Add row indexes to arrTargetIndexes
-					}	
+						//debug ('again, no index');
+					}
+					else
+					{
+						//debug (objRow.index[arrIndexes[k].name]);
+						//debug (arrIndexes[k].value);
+						//debug ('-----------');
+						// .value is a value, but objrow.index[]is an array
+						for (var l=0; l<objRow.index[arrIndexes[k].name].length; l++)
+						{
+							if (objRow.index[arrIndexes[k].name][l] == arrIndexes[k].value)
+							{
+								// Highlight if index matches
+								//.selected = TRUE lightsdown();
+								//debug ('asfasdfsad');
+								strRowId = strTargetId + "_" + j;
+								Vixen.table[strTargetId].row[j].selected = TRUE;
+								Vixen.Highlight.LightsDown(document.getElementById(strRowId));
+								
+								// Add row indexes to arrTargetIndexes
+							}
+						}
+					}
 				}
 				
 			}

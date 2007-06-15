@@ -1211,6 +1211,7 @@ class ContextMenuFramework
 	function __construct()
 	{
 		$this->_objMenuToken = new MenuToken();
+		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1615,9 +1616,14 @@ class MenuItems
 		{
 			case "ViewAccount":
 				$this->strLabel	= "acc : $intId";
-				return "Account_view.php?Account.Id={$arrParams[0]}";
+				return "account_view.php?Account.Id={$arrParams[0]}";
 				break;
-			
+			case "Logout":
+				return "logout.php";
+				break;
+			case "Console":
+				return "console.php";
+				break;
 			default;
 				return "[insert generic HREF here]";
 				

@@ -72,7 +72,8 @@
 	{
 		if (Login($_POST['UserName'], $_POST['PassWord']))
 		{
-			Header('Location: account_view.php');
+			// pass to console (which doesnt yet exist)
+			Header('Location: console.php');
 			exit;
 		}
 		

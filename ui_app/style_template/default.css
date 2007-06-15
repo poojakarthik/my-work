@@ -661,7 +661,7 @@
 	table.Listing tr.Selected th,
 	table.Listing tr.Selected td
 	{
-		background-color:    #66FFFF;
+		background-color:    #99FF33;
 	}
 	
 	table.Listing tr.Hover th,
@@ -1165,4 +1165,5 @@
 	{
 		border: 1px solid #000000;
 		background-color: #ffffff;
+		z-index: 100001;
 	}

@@ -380,6 +380,7 @@ function BreadCrumb()
  */
 function AuthenticatedUser()
 {
+	// woah, do we really need to return the entire application, or just user?
 	$objAuthenticatedUser = Singleton::Instance('Application');
 	return $objAuthenticatedUser;
 }

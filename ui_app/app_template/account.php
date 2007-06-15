@@ -85,6 +85,7 @@ class AppTemplateAccount extends ApplicationTemplate
 			//$this->ContextMenu->Account->ViewAccount($this->Dbo->Account-Id->Value);
 			// context menu
 			ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+			ContextMenu()->Logout();
 			
 			// add to breadcrumb menu
 			BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
@@ -132,7 +133,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		// context menu
 		//TODO! define what goes in the context menu
 		ContextMenu()->Contact_Retrieve->Account->Account_Ledger(DBO()->Account->Id->Value);
-		
+		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Service->Account_Ledger(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Console();
+		ContextMenu()->Logout();
 		// breadcrumb menu
 		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
 		BreadCrumb()->Account_Ledger(DBO()->Account->Id->Value);
@@ -154,11 +159,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("CreatedOn Desc");
 		DBL()->Invoice->Load();
 		
+		
+		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		DBL()->Payment->Load();
+		
+		
+		DBL()->InvoicePayment->Account = DBO()->Account->Id->Value;
+		DBL()->InvoicePayment->Load();
 		// todo - need to load applied payments for particular invoices
 		// join invoice, invoicepayment, payment
 		// see below
 		
-		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		/*DBL()->Payment->Account = DBO()->Account->Id->Value;
 		
 		DBL()->Payment->Load();
 		DBL()->Charge->Account = DBO()->Account->Id->Value;
@@ -177,7 +189,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->PaidInvoices->_arrColumns = $arrColumns;
 		DBL()->PaidInvoices->Load();
 		
-		
+		*/
 		// Calculate the Account Balance
 		//TODO!
 		DBO()->Account->Balance = -50000;

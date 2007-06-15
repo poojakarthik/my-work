@@ -110,6 +110,7 @@ function VixenTooltipClass()
 		if (objClose)
 		{
 			this.timer.push( window.setTimeout('document.getElementById("VixenTooltip").style.display = "none";', 500));
+			this.timer.push( window.setTimeout('Vixen.Tooltip.target = "";', 500));
 		}
 	}
 
@@ -140,7 +141,10 @@ function VixenTooltipClass()
 	}
 	function MouseOutHandler (evtHover)
 	{
-		Vixen.Tooltip.Close();
+		if (evtHover.relatedTarget.id != 'VixenTooltip')
+		{
+			Vixen.Tooltip.Close();
+		}
 	}
 }
 

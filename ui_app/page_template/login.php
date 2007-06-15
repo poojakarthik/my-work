@@ -66,7 +66,7 @@
 				<h1>TelcoBlue Internal System</h1>
 				<div class="Seperator"/>
 				<?php 
-				echo "<form method='POST' action='" . $_SERVER['PHP_SELF'] . "'>";
+				echo "<form method='POST' action='" . $_SERVER['REQUEST_URI'] . "'>";
 				?>
 				
 				<table>

@@ -102,135 +102,67 @@ class HtmlTemplateAccountPayments extends HtmlTemplate
 	{	
 		// Render each of the account invoices
 		//TODO!
-		//DBL()->PaidInvoices->ShowInfo();
-		$strTableName = 'AccountPayments';
 		
-		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
-		echo "<tr class='First'>\n";
-		echo " <th>Payment Id</th>\n";
-		echo " <th>Payment Amount</th>\n";
-		echo " <th>Payment Date</th>\n";
-		echo " <th>Account Balance</th>\n";
-		echo "</tr>\n";
-		$intRowCount = -1;
-		foreach (DBL()->Payment AS $strProperty=>$objValue)
+		Table()->PaymentTable->SetHeader("Payment Id", "Payment Amount", "Payment Date", "Account Balance");
+		//Table()->PaymentTable->SetWidth("20%", "30%", "50%");
+		//Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
+		
+		foreach (DBL()->Payment as $dboPayment)
 		{
-			$intRowCount++;
-			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd' ;
-			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
-			echo "<td>";
-			$objValue->Id->RenderValue();
-			echo "</td>";
-			echo "<td>";
-			$objValue->Amount->RenderValue();
-			echo "</td>";	
-			echo "<td>";
-			$objValue->PaidOn->RenderValue();
-			echo "</td>";
-			echo "<td>";
-			$objValue->Balance->RenderValue();
-			echo "</td>";		
-			echo "</tr><tr>";
-			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
-			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-DETAIL' style='display: block; overflow:hidden;'>";
-			//$objValue->ShowInfo();
-			echo $objValue->Info();
-			//echo $objValue->Status->Label . ":";
-			//$objValue->Status->RenderValue();
-			echo "</div>";
-			echo "</td></tr>\n";
-		}
+			$arrInvoices = Array();
+			
+			// Add this row to Payment table
+			//$dboPayment->ShowInfo();
+			Table()->PaymentTable->AddRow($dboPayment->Id->Value, $dboPayment->Amount->Value, $dboPayment->PaidOn->Value, $dboPayment->Balance->Value);
+			Table()->PaymentTable->SetDetail("INSERT HTML CODE HERE");
+			//Table()->PaymentTable->SetToolTip("[INSERT HTML CODE HERE FOR THE TOOL TIP FOR ROW]");
+			
+			foreach (DBL()->InvoicePayment as $dboInvoicePayment)
+            {
+                if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
+                {
+                    // The current InvoicePayment record relates to the payment so add it as an index
+                    Table()->PaymentTable->AddIndex("InvoiceRun", $dboInvoicePayment->InvoiceRun->Value);
+                }
+            }
+			
+			// find each InvoicePayment record that relates to the current Payment record
+			/*foreach (DBL()->InvoicePayment as $dboInvoicePayment)
+			{
+				if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
+				{
+					// the current InvoicePayment record relates to the current Payment record
+					
+					// find each Invoice that relates to the current InvoicePayment record
+					foreach (DBL()->Invoice as $dboInvoice)
+					{
+						if ($dboInvoice->InvoiceRun->Value == $dboInvoicePayment->InvoiceRun->Value)
+						{
+						
+						
+							Table()->PaymentTable->AddIndex("Invoice", $intInvoiceNumber);
 		
-		echo "</table>\n";
-		echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
-		echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>";
+							// the current Invoice record relates to the current InvoicePayment record
+							// this means that the current Invoice record relates to the current Payment Record
+							// so store this information in both of them so that it can be used as an index when VixenTables are being built
+							// also rememeber that a payment can be linked to multiple invoices
+							// and an invoice can be linked to multiple payments
+							
+							$arrInvoices[] = $dboInvoice->Id->Value;
+							$arrPayments[$dboInvoice->Id->Value][] = $dboPayment->Id->Value;
+						}
+					}
+				}
+			}*/
+			//$dboPayment->Invoices = $arrInvoices;
+		}		
 		
-		echo "<div class='seperator'></div>";
-		/*
-		$strTableName = 'PaidInvoices';
-		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
-		echo "<tr class='First'>\n";
-		echo " <th>Payment Id</th>\n";
-		echo " <th>Invoice Id</th>\n";
-		echo " <th>Payment Amount</th>\n";
-		echo " <th>Invoice Amount</th>\n";
-		echo "</tr>\n";
-		$intRowCount = 0;
+		Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
+		Table()->PaymentTable->RowHighlighting = TRUE;
 		
-		foreach (DBL()->$strTableName AS $strProperty=>$objValue)
-		{
-			$intRowCount++;
-			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
-			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
-			// foreach of row array
-			echo "<td>";
-			$objValue->PaymentId->RenderValue();
-			echo "</td>\n";
-			//
-			echo "<td>";
-			$objValue->InvoiceId->RenderValue();
-			echo "</td>\n";	
-			echo "<td>";
-			$objValue->PaymentAmount->RenderValue();
-			echo "</td>\n";
-			echo "<td>";
-			$objValue->InvoiceAmount->RenderValue();
-			echo "</td>\n";			
-			echo "</tr>\n<tr>";
-			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>\n";
-			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV' style='display: block; overflow:hidden;'>\n";
-			$objValue->ShowInfo();
-			//echo $objValue->Status->Label . ":";
-			//$objValue->Status->RenderValue();
-			echo "</div>";
-			echo "</td></tr>\n";
-		}
+		Table()->PaymentTable->Render();
 		
-		echo "</table>\n";
-		echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
-		echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>";
-*/
-
-/*
-		$strTableName = 'Charge';
-		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
-		echo "<tr class='First'>\n";
-		echo " <th>Date (Invoice)</th>\n";
-		echo " <th>Code (Service)</th>\n";
-		echo " <th>Amount</th>\n";
-		echo "</tr>\n";
-		$intRowCount = 0;
-		
-		foreach (DBL()->$strTableName AS $strProperty=>$objValue)
-		{
-			$intRowCount++;
-			$strClass = ($intRowCount % 2) ? 'Odd' : 'Even' ;
-			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
-			// foreach of row array
-			echo "<td>";
-			$objValue->Invoice->RenderValue();
-			echo "</td>\n";
-			//
-			echo "<td>";
-			$objValue->Service->RenderValue();
-			echo "</td>\n";	
-			echo "<td>";
-			$objValue->Amount->RenderValue();
-			echo "</td>\n";		
-			echo "</tr>\n<tr>";
-			echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>\n";
-			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV' style='display: block; overflow:hidden;'>\n";
-			$objValue->ShowInfo();
-			//echo $objValue->Status->Label . ":";
-			//$objValue->Status->RenderValue();
-			echo "</div>";
-			echo "</td></tr>\n";
-		}
-		
-		echo "</table>\n";
-		echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
-		echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>";
-*/
+	
 	}
 }
 

@@ -66,11 +66,12 @@ class VixenTable
 	public $_arrHeader			= Array();
 	public $_arrWidths			= Array();
 	public $_arrAlignments		= Array();
-	public $_arrlinkedTables	= Array();
+	public $_arrLinkedTables	= Array();
 	public $_strName			= '';
 	public $_bolRowHighlighting = FALSE;
 	public $_bolDetails			= FALSE;
 	public $_bolToolTips		= FALSE;
+	public $_bolLinked			= FALSE;
 	public $_intCurrentRow		= 0;
 	
 	//------------------------------------------------------------------------//
@@ -278,6 +279,9 @@ class VixenTable
 			return NULL;
 		}
 
+		// Flag this table as having a link
+		$this->_bolLinked = TRUE;
+
 		$this->_arrRows[$this->_intCurrentRow]['Index'][$strName][] = $mixValue;
 
 		return $this->_intCurrentRow;
@@ -285,7 +289,7 @@ class VixenTable
 	
 	function LinkTable($strTableName, $strIndexName)
 	{
-		$this->_arrlinkedTables[$strTableName][] = $strIndexName;
+		$this->_arrLinkedTables[$strTableName][] = $strIndexName;
 	}
 	
 	
@@ -313,6 +317,173 @@ class VixenTable
 	
 	function Render()
 	{
+		// render header
+	/*
+	 * Stores row data and information relating to the row (for each row)
+	 * $this->_arrRow[]['Detail'] 	= $strDetail (HTML -> detial div)
+	 *                 ['Columns'] 	= $arrColumns (indexed array of HTML output)
+	 *                 ['ToolTip']	= $strToolTip (HTML -> tooltip div)
+	 *                 ['index']	= [name][] = value
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 */
+
+		$strTableName = $this->_strName;
+
+		if ($this->_bolDetails || $this->_bolRowHighlighting || $this->_bolToolTips || $this->_bolLinked)
+		{
+			echo "<script type='text/javascript'>\n";
+			
+		$strVixenTable = "Vixen.table." . $strTableName;
+		echo $strVixenTable . " = Object(); \n";
+		echo $strVixenTable . ".collapseAll = TRUE;\n";
+		echo $strVixenTable . ".linked = TRUE;\n";
+		echo $strVixenTable . ".totalRows = 0;\n";
+		echo $strVixenTable . ".row = Array(); \n";
+		echo "</script>\n";
+		}
+
+		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
+		
+		// Build headers
+		echo "<tr class='First'>\n";
+		foreach ($this->_arrHeader AS $objField)
+		{
+			echo " <th>". $objField ."</th>\n";
+		}
+		echo "</tr>\n";
+		
+		// Build rows
+		$intRowCount = -1;
+		foreach ($this->_arrRows AS $objRow)
+		{
+			$intRowCount++;
+			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd' ;
+			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
+			// Build fields
+			foreach ($objRow['Columns'] as $objField)
+			{
+				echo "<td>";
+				echo $objField;
+				echo "</td>\n";			
+			}
+			// Build detail
+			if ($this->_bolDetails)
+			{
+				echo "</tr>";
+				echo "<tr>";
+				echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
+				echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-DETAIL' style='display: block; overflow:hidden;'>";
+				echo $objRow['Detail'];
+				echo "</div>";
+				echo "</td>\n";
+			}
+			
+			// Build tooltip
+			if ($this->_bolToolTips)
+			{
+				echo "</tr>";
+				echo "<tr>";
+				echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
+				echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-TOOLTIP' style='display: none;'>";
+				echo "Tooltip goes here";
+				echo "</div>\n";
+				echo "</td>";
+			}
+			
+			echo "\n<script type='text/javascript'>";
+						/*
+						{
+				'selected' : FALSE,
+				'up' : TRUE,
+				'index' : 
+				{
+					'Invoice' :'3000308781',
+					'Service' :'6123'
+				}
+			},*/
+			
+			echo "objRow = Object();\n";
+			
+			echo "objRow.selected = FALSE;\n";
+			echo "objRow.up = TRUE;\n";			
+
+			if ($this->_bolLinked)
+			{
+				if (is_array($objRow['Index']))
+				{
+					// add Indexes to objRow
+					echo "objIndex = Object();";
+					
+					foreach ($objRow['Index'] as $strIndexName=>$arrValues)
+					{
+						echo "objIndex. " .$strIndexName. " = Array();";
+						foreach ($arrValues as $strValue)
+						{
+							echo "objIndex. " .$strIndexName. ".push('" .$strValue. "');";
+						}
+					}
+					echo "objRow.index = objIndex;";
+				}
+			}
+			
+			echo $strVixenTable . ".row.push(objRow);\n";
+			echo "</script>\n";
+			
+			echo "</tr>\n";
+		}
+		
+		echo "</table>\n";
+		
+		echo "<script>" . $strVixenTable . ".totalRows = " . $intRowCount . ";</script>\n";	
+		
+		if ($this->_bolRowHighlighting)
+		{
+			echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
+		}
+		
+		if ($this->_bolToolTips)
+		{
+			echo "<script type='text/javascript'>Vixen.Tooltip.Attach('$strTableName', $intRowCount);</script>";
+		}
+		
+		if ($this->_bolDetails)
+		{
+			echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>\n";
+		}
+		
+		if ($this->_bolLinked)
+		{
+			echo "<script type='text/javascript'>";
+			echo $strVixenTable . ".linked = TRUE;";
+			
+			echo "objLink = Object();\n";
+			
+			foreach ($this->_arrLinkedTables AS $strTableName=>$arrIndexes)
+			{
+				echo "objLink." . $strTableName . " = Array();\n";
+				foreach ($arrIndexes AS $strIndex)
+				{
+					echo "objLink. " . $strTableName . ".push('" . $strIndex . "');\n";
+				}
+			}
+			echo $strVixenTable . ".link = objLink;\n";
+			
+			echo "</script>\n";
+				/*'link':
+			{
+				'AccountInvoices' :
+				[
+					'Invoice'
+				]
+			},*/
+		}
+		
+		echo "<div class='seperator'></div>";
+	
+	
 	}
 	
 	//------------------------------------------------------------------------//

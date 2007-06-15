@@ -1,5 +1,5 @@
-var FALSE = 0;
-var TRUE = 1;
+var FALSE = false;
+var TRUE = true;
 
 //----------------------------------------------------------------------------//
 // VixenRootClass
@@ -21,195 +21,7 @@ function VixenRootClass()
 {
 	this.initCommands = Array();
 	
-	this.table = 
-	{ 
-		'AccountPayments': 
-		{
-			'totalRows': 9,
-			'collapseAll' : TRUE,
-			'linked': TRUE,
-			'link':
-			{
-				'AccountInvoices' :
-				[
-					'Invoice'
-				]
-			},
-			'row' :
-			[
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000308781',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : FALSE,
-					'index' : 
-					{
-						'Invoice' :'3000213123',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000295048',
-						'Service' :'7209'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : FALSE,
-					'index' : 
-					{
-						'Invoice' :'3000213123',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000213123',
-						'Service' :'7209'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000308781',
-						'Service' :'7209'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000213123',
-						'Service' :'7209'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000308781',
-						'Service' :'7209'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000308781',
-						'Service' :'7209'
-					}
-				}
-			]
-		},
-		'AccountInvoices': 
-		{
-			'totalRows': 8,
-			'selected': 0,
-			'collapseAll' : TRUE,
-			'linked': TRUE,
-			'link':
-			{
-				'AccountPayments' :
-				[
-					'Invoice'
-				]
-			},
-			'row' :
-			[
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000308781',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : FALSE,
-					'index' : 
-					{
-						'Invoice' :'3000295048',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : TRUE,
-					'index' : 
-					{
-						'Invoice' :'3000281455',
-						'Service' :'7209'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : FALSE,
-					'index' : 
-					{
-						'Invoice' :'3000268045',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : FALSE,
-					'index' : 
-					{
-						'Invoice' :'3000213123',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : FALSE,
-					'index' : 
-					{
-						'Invoice' :'3000213123',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : FALSE,
-					'index' : 
-					{
-						'Invoice' :'3000213123',
-						'Service' :'6123'
-					}
-				},
-				{
-					'selected' : FALSE,
-					'up' : FALSE,
-					'index' : 
-					{
-						'Invoice' :'3000213123',
-						'Service' :'6123'
-					}
-				}
-			]
-		}
-	}
+	this.table = Object();
 	
 	// Vixen Login
 	this.Login = function(username, password)
@@ -221,14 +33,17 @@ function VixenRootClass()
 	// Vixen Logout
 	this.Logout = function()
 	{
-		//alert ('logging out');
-		
+		var x = window.confirm ("Are you sure you would like to Logout?");
+		if (x)
+		{
+			return TRUE;
+		}
+		return FALSE;
 	}
 	
 	this.Init =function()
 	{
-		debug ('Page has loaded');
-		if (debug && Vixen.Highlight && document.getElementById('AccountPayments'))
+		if (debug)
 		{
 			for (var i = 0; i < this.initCommands.length; i++)
 			{
@@ -240,8 +55,6 @@ function VixenRootClass()
 		{
 			window.setTimeout('Vixen.Init()',5);
 		}
-		//debug (this.table, 1);
-		
 	}
 	
 	this.AddCommand =function(strCommand)
@@ -264,9 +77,12 @@ var dwin = null;
 function debug(msg, bolFullShow) {
 	if ((dwin == null) || (dwin.closed))
 	{
-		dwin = window.open("","debugconsole","scrollbars=yes,resizable=yes,height=100,width=500");
+		dwin = window.open("","debugconsole","scrollbars=yes,resizable=yes,height=100,width=500, menubar=yes");
+		//dwin.document.close();
+		
 		dwin.title = "debugconsole";
 		dwin.document.open("text/html", "replace");
+		dwin.document.writeln('<title>Debug Console</title>');
 	}
 	if (bolFullShow == TRUE)
 	{

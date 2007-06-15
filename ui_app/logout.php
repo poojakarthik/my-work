@@ -24,7 +24,7 @@
 	setCookie ("Id", "", time () - 3600);
 	setCookie ("SessionId", "", time () - 3600);
 
-	header('Location: ' . $_SERVER['HTTP_REFERER']);
+	header('Location: console.php');
 	exit;
 	
 ?>

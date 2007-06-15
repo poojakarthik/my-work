@@ -33,7 +33,7 @@ function VixenMenuClass(objMenu)
 			'height': 20,
 			'spacing': 5
 		},
-		'waitOpen': 250,
+		'waitOpen': 0,
 		'waitCloseLevel': 500,
 		'waitClose': 3000
 	};
@@ -47,6 +47,7 @@ function VixenMenuClass(objMenu)
 	
 	this.Render = function()
 	{
+		//debug ('firsttime');
 		var strKey;
 		var objNode;
 		var elmNode;
@@ -162,6 +163,7 @@ function VixenMenuClass(objMenu)
 	
 	this.Close = function(intLevel)
 	{
+		debug (intLevel);
 		var object = document.getElementById('VixenMenu__' + intLevel);
 		if (object)
 		{
@@ -182,7 +184,8 @@ function VixenMenuClass(objMenu)
 		else if (typeof(objMenuItem.action) == 'object')
 		{
 			//display submenu
-			this.RenderSubMenu(objMenuItem);			
+			// no need, it adds unnecessary overhead
+			//this.RenderSubMenu(objMenuItem);			
 		}
 	}
 	
@@ -212,8 +215,8 @@ function VixenMenuClass(objMenu)
 		
 		objMenuItem.setAttribute('className', 'ContextMenuItem');
 		objMenuItem.setAttribute('class', 'ContextMenuItem');
-		
 		this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitClose);
+
 	}
 	
 	this.RemovePx = function(value)

@@ -101,67 +101,34 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 	function Render()
 	{	
 		// Render each of the account invoices
-		//TODO!
-		//echo "<br> INSERT ACCOUNT INVOICES HERE";
-		$strTableName = 'AccountInvoices';
-		//DBL()->ShowInfo();
-				
-		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
-		echo "<tr class='First'>\n";
-		echo " <th>Invoice Date</th>\n";
-		echo " <th>Invoice Id</th>\n";
-		echo " <th>Invoice Amount</th>\n";
-		echo " <th>Applied Amount (balance)</th>\n";
-		echo " <th>Amount Owing (accountbalance)</th>\n";
-		echo " <th>Invoice Sent (status)</th>\n";
-		echo " <th>View PDF</th>\n";
-		echo " <th>View Invoice Details</th>\n";
-		echo "</tr>\n";
-		$intRowCount = -1;
-		foreach (DBL()->Invoice AS $strProperty=>$objValue)
+
+		
+		Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Invoice Sent", "View PDF", "View Invoice Details");
+		//Table()->PaymentTable->SetWidth("20%", "30%", "50%");
+		//Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
+		
+		foreach (DBL()->Invoice as $dboInvoice)
 		{
-			$intRowCount++;
-			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd' ;
-			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
-			echo "<td>";
-			$objValue->DueOn->RenderValue();
-			echo "</td>\n";
-			echo "<td>";
-			$objValue->Id->RenderValue();
-			echo "</td>\n";
-			echo "<td>";
-			$objValue->Total->RenderValue();	// Invoice Amount
-			echo "</td>\n";			
-			echo "<td>";
-			$objValue->Balance->RenderValue();
-			echo "</td>\n";			
-			echo "<td>";
-			$objValue->AccountBalance->RenderValue();
-			echo "</td>\n";
-			echo "<td>";
-			echo GetConstantDescription($objValue->Status->Value, "InvoiceStatus");
-			echo "</td>\n";
-			echo "<td>";
-			echo "<img src='img/template/pdf.png' height=20px></img>";	// View PDF icon
-			echo "</td>\n";
-			echo "<td>";
-			echo "<a href=''><img src='img/template/invoice.png' height=20px></img></a>";			// View Invoice Details icon
-			echo "</td>\n";
-			echo "</tr>\n<tr>";
-			echo "<td colspan=8 style='padding-top: 0px; padding-bottom: 0px'>\n";
-			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-DETAIL' style='display: block; overflow:hidden;'>";
-			// todo - add the payment applied details in here
-			echo $objValue->Info();
-			echo "</div>\n";
-			echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-TOOLTIP' style='display: none;'>";
-			echo "Tooltip goes here";
-			echo "</div>\n";
-			echo "</td>\n</tr>\n";
-		}
-		echo "</table>\n";
-		echo "<script type='text/javascript'>Vixen.AddCommand('Vixen.Highlight.Attach','\'$strTableName\'', $intRowCount);</script>";
-		echo "<script type='text/javascript'>Vixen.Slide.Attach('$strTableName', $intRowCount, TRUE);</script>";
-		echo "<script type='text/javascript'>Vixen.Tooltip.Attach('$strTableName', $intRowCount);</script>";
+			$arrInvoices = Array();
+			
+			// Add this row to Payment table
+			Table()->InvoiceTable->AddRow(  $dboInvoice->DueOn->Value,
+											$dboInvoice->Id->Value, 
+											$dboInvoice->Total->Value, 
+											$dboInvoice->Balance->Value, 
+											$dboInvoice->TotalOwing->Value, 
+											"Yes", 
+											"PDF LINK",
+											"DETAIL LINK");
+			Table()->InvoiceTable->SetDetail("INSERT HTML CODE HERE");
+			//Table()->InvoiceTable->SetToolTip("[INSERT HTML CODE HERE FOR THE TOOL TIP FOR ROW]");
+			Table()->InvoiceTable->AddIndex("InvoiceRun", $dboInvoice->InvoiceRun->Value);
+		}		
+		
+		Table()->InvoiceTable->LinkTable("PaymentTable", "InvoiceRun");
+		Table()->InvoiceTable->RowHighlighting = TRUE;
+		
+		Table()->InvoiceTable->Render();
 		
 	}
 }
