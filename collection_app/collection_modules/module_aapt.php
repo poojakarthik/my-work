@@ -174,7 +174,7 @@
 		// Find token
 		foreach ($this->_dxpPath->query("/PrepareDownloadsResponse/ResultSet") as $xndFileNode)
 		{
-			$this->_strToken = $dxpPath->query("token", $xndFileNode)->Item(0)->nodeValue;
+			$this->_strToken = $this->_dxpPath->query("token", $xndFileNode)->Item(0)->nodeValue;
 		}
 		return (bool)$this->_strToken;
  	}
