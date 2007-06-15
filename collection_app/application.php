@@ -189,7 +189,7 @@
 				// No collection module - append to report
 				$this->_rptCollectionReport->AddMessageVariables(MSG_NO_COLLECTION_MODULE, Array(
 						'<FriendlyName>' 	=> $this->_arrCurrentModule['Name'],
-						'<Type>'			=> $this->_arrCurrentModule['Type']), FALSE, TRUE);
+						'<Type>'			=> $GLOBALS['CollectionType'][$this->_arrCurrentModule['Type']]), FALSE, TRUE);
 				continue;
 			}
 			
@@ -570,7 +570,7 @@
 			// set password
 			if ($this->_arrCurrentModule['ZipPword'])
 			{
-				$strPassword = "-p {$this->_arrCurrentModule['ZipPword']}";
+				$strPassword = "-P {$this->_arrCurrentModule['ZipPword']}";
 			}
 			else
 			{
