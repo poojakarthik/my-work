@@ -240,7 +240,7 @@
 			fclose($ptrTempFile);
 			
 			// Return file path
-			return $strDestination.$arrCurrent['FileName'];
+			return $arrCurrent['FileName'];
 		}
 		else
 		{
