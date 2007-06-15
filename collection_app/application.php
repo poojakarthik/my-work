@@ -372,8 +372,8 @@
 				// check uniqueness
 				if (!$strHash = $this->_IsUnique())
 				{
-					$this->_rptCollectionReport->AddMessageVariables(MSG_NOT_UNIQUE, Array('<FileName>' => $strFileName));
-					//$arrError[$strFileName][]	= "File not unique!";
+					//$this->_rptCollectionReport->AddMessageVariables(MSG_NOT_UNIQUE, Array('<FileName>' => $strFileName));
+					$arrError[$strFileName][]	= "File not unique!";
 				}
 				
 				

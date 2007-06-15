@@ -152,7 +152,7 @@
 		$intCustId	= $arrDefine['Username'];
 		$intCheckId	= $arrDefine['PWord'];
 		$strURL		= "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=$intCustId&check=$intCheckId&_function=catalog&_filetype=Speedi";
-		Debug($strURL);
+		//Debug($strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
