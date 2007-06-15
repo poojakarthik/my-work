@@ -30,7 +30,7 @@ $strInvoiceRun = "46362bac43428";
 
 // TODO:Sean -> Put the Account numbers here!
 $arrAccounts = Array();
-$arrAccounts[]	= 1000158123;
+$arrAccounts[]	= 1000155675;
 
 /*$selAccounts = new StatementSelect("Charge", "Account", "InvoiceRun = '$strInvoiceRun'", NULL, NULL, "Account HAVING COUNT(Id) > 1");
 $selAccounts->Execute();
@@ -81,6 +81,8 @@ $strFileData .= "0019" .
 				str_pad(0, 10, "0", STR_PAD_LEFT) .
 				str_pad(0, 10, "0", STR_PAD_LEFT) .
 				str_pad(0, 10, "0", STR_PAD_LEFT);
+	Debug($strFileData);
+	//die;
 Debug(count($arrAccounts));
 
 				
