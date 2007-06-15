@@ -280,7 +280,7 @@
 				$dldDownloader->Disconnect();
 			}
 		}
-		
+		/*
 		// Are the any errors?
 		if ($this->_arrErrors)
 		{
@@ -310,7 +310,7 @@
  				$this->_rptCollectionReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
  				continue;
  			}
-		}
+		}*/
 	}
 
  	//------------------------------------------------------------------------//
@@ -373,7 +373,7 @@
 				if (!$strHash = $this->_IsUnique())
 				{
 					$this->_rptCollectionReport->AddMessageVariables(MSG_NOT_UNIQUE, Array('<FileName>' => $strFileName));
-					$arrError[$strFileName][]	= "File not unique!";
+					//$arrError[$strFileName][]	= "File not unique!";
 				}
 				
 				
