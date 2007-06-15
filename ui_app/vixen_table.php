@@ -55,7 +55,7 @@ class VixenTable
 	 * $this->_arrRow[]['Detail'] 	= $strDetail (HTML -> detial div)
 	 *                 ['Columns'] 	= $arrColumns (indexed array of HTML output)
 	 *                 ['ToolTip']	= $strToolTip (HTML -> tooltip div)
-	 *                 ['index']	= [name][] = value
+	 *                 ['Index']	= [name][] = value
 	 *
 	 * @type	array
 	 *
@@ -196,7 +196,26 @@ class VixenTable
 		return $this->_arrAlignments;
 	}
 
-	// this should probably return the row number of the added row, or NULL if it failed to add the row
+
+	//------------------------------------------------------------------------//
+	// AddRow
+	//------------------------------------------------------------------------//
+	/**
+	 * AddRow()
+	 *
+	 * Adds a row of values to the table
+	 *
+	 * Adds a row of values to the table
+	 * 
+	 *
+	 * @param	string		$strColValue, [$strColValue]	HTML code for each column as a separate parameter
+	 *														For example ("value1", "$100.00", "<span class='BlahClass'>Blah blah</span>")
+	 * 
+	 * @return	mixed										row number of the added row
+	 *														If nothing was passed to the method, then it returns NULL
+	 *
+	 * @method
+	 */
 	function AddRow()
 	{
 		if (!func_num_args())
