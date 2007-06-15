@@ -51,8 +51,10 @@ define("DEFAULT_FTP_PWORD"				, "flame");
 // Collection Types
 define("COLLECTION_TYPE_FTP"		, 100);
 define("COLLECTION_TYPE_AAPT"		, 101);
+define("COLLECTION_TYPE_OPTUS"		, 102);
 $GLOBALS['CollectionType'][COLLECTION_TYPE_FTP]		= "FTP";
 $GLOBALS['CollectionType'][COLLECTION_TYPE_AAPT]	= "HTTPS/AAPT";
+$GLOBALS['CollectionType'][COLLECTION_TYPE_OPTUS]	= "HTTPS/OPTUS";
 
 // Filename Regex's
 define("REGEX_OPTUS"				, "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_[sl]\.dat$/");
