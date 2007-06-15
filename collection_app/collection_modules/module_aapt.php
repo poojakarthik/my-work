@@ -235,6 +235,8 @@
 		fwrite($ptrTempFile, $strZIPData);
 		fclose($ptrTempFile);
 		
+		$this->_strToken = FALSE;
+		
 		// Return file name, or FALSE on failure
 		return (@filesize($strDestination.$strBasename)) ? $strBasename : FALSE;
  	}
