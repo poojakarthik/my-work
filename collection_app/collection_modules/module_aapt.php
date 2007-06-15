@@ -161,7 +161,11 @@
 		curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
 		
 		// Prepare the download and retrieve token
-		$strXML = curl_exec($this->_ptrSession);
+		if (!$strXML = curl_exec($this->_ptrSession))
+		{
+			// Can't connect (probably no internet)
+			return FALSE;
+		}
 		$this->_domDocument = new DOMDocument('1.0', 'iso-8859-1');
 		$this->_domDocument->loadXML($strXML);
 		$this->_dxpPath = new DOMXPath($this->_domDocument);

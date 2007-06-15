@@ -151,14 +151,21 @@
 		// Get the Catalogue File
 		$intCustId	= $arrDefine['Username'];
 		$intCheckId	= $arrDefine['PWord'];
-		curl_setopt($this->_ptrSession, CURLOPT_URL				, "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=$intCustId&check=$intCheckId&_function=catalog&_filetype=Speedi");
+		$strURL		= "https://www.optus.com.au/wholesalenet/catalog/catalog.taf?custid=$intCustId&check=$intCheckId&_function=catalog&_filetype=Speedi";
+		Debug($strURL);
+		curl_setopt($this->_ptrSession, CURLOPT_URL				, $strURL);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_HEADER			, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_RETURNTRANSFER	, TRUE);
 		curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
 		curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
-		$strCatalogFile = curl_exec($this->_ptrSession);
+		
+		if (!$strCatalogFile = curl_exec($this->_ptrSession))
+		{
+			// Can't connect (probably no internet)
+			return FALSE;
+		}
 		
 		// Parse Catalogue File
 		$this->_arrFiles = Array();
