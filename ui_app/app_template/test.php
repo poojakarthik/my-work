@@ -76,9 +76,12 @@ class AppTemplateTest extends ApplicationTemplate
 		// Link the payment table to the invoice table so that highlighting a record in the invoice table, will highlight related records in the invoice table
 		Table()->Payment->LinkTable("Payment", "InvoiceRun");
 		
-		Debug(Table()->Payment->Info());
-		Debug(Table()->Invoice->Info());
-		
+		//Debug(Table()->Payment->Info());
+		//Debug(Table()->Invoice->Info());
+		//Debug(Table()->Payment->ShowInfo("\t"));
+		//Table()->Invoice->ShowInfo();
+		//Debug(Table()->Info());
+		Table()->ShowInfo();
 		
 		echo "<br>die!";
 		die;

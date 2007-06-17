@@ -11,9 +11,9 @@
 /**
  * vixen_table
  *
- * contains the VixenTable class which represents a table that can be displayed in a HtmlTemplate
+ * Contains the VixenTable class which represents a table that can be displayed in a HtmlTemplate
  *
- * contains the VixenTable class which represents a table that can be displayed in a HtmlTemplate
+ * Contains the VixenTable class which represents a table that can be displayed in a HtmlTemplate
  *
  * @file		vixen_table.php
  * @language	PHP
@@ -61,18 +61,167 @@ class VixenTable
 	 *
 	 * @property
 	 */
-	public $_arrRows			= Array();
+	private $_arrRows				= Array();
 	
-	public $_arrHeader			= Array();
-	public $_arrWidths			= Array();
-	public $_arrAlignments		= Array();
-	public $_arrLinkedTables	= Array();
-	public $_strName			= '';
-	public $_bolRowHighlighting = FALSE;
-	public $_bolDetails			= FALSE;
-	public $_bolToolTips		= FALSE;
-	public $_bolLinked			= FALSE;
-	public $_intCurrentRow		= 0;
+	//------------------------------------------------------------------------//
+	// _arrHeader
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrHeader
+	 *
+	 * Stores the title of each column
+	 *
+	 * Stores the title of each column
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 */
+	private $_arrHeader				= Array();
+
+	//------------------------------------------------------------------------//
+	// _arrWidths
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrWidths
+	 *
+	 * Stores the width of each column, specified as px or %
+	 *
+	 * Stores the width of each column, specified as px or %
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 */
+	private $_arrWidths				= Array();
+
+	//------------------------------------------------------------------------//
+	// _arrAlignments
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrAlignments
+	 *
+	 * Stores the alignment of each column
+	 *
+	 * Stores the alignment of each column
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 */
+	private $_arrAlignments			= Array();
+
+	//------------------------------------------------------------------------//
+	// _arrLinkedTables
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrLinkedTables
+	 *
+	 * Stores the name of each VixenTable object that is linked to this one and the name of the index on which they are linked
+	 *
+	 * Stores the name of each VixenTable object that is linked to this one and the name of the index on which they are linked
+	 *
+	 * @type	array
+	 *
+	 * @property
+	 */
+	private $_arrLinkedTables		= Array();
+
+	//------------------------------------------------------------------------//
+	// _strName
+	//------------------------------------------------------------------------//
+	/**
+	 * _strName
+	 *
+	 * The name of the table
+	 *
+	 * The name of the table
+	 *
+	 * @type	string
+	 *
+	 * @property
+	 */
+	private $_strName				= '';
+	
+	//------------------------------------------------------------------------//
+	// _bolRowHighlighting
+	//------------------------------------------------------------------------//
+	/**
+	 * _bolRowHighlighting
+	 *
+	 * Flag for enabling/disabling row highlighting
+	 *
+	 * Flag for enabling/disabling row highlighting
+	 *
+	 * @type	bool
+	 *
+	 * @property
+	 */
+	private $_bolRowHighlighting 	= FALSE;
+	
+	//------------------------------------------------------------------------//
+	// _bolDetails
+	//------------------------------------------------------------------------//
+	/**
+	 * _bolDetails
+	 *
+	 * Flag for enabling/disabling the showing of details when a row is selected
+	 *
+	 * Flag for enabling/disabling the showing of details when a row is selected
+	 *
+	 * @type	bool
+	 *
+	 * @property
+	 */
+	private $_bolDetails			= FALSE;
+	
+	//------------------------------------------------------------------------//
+	// _bolToolTips
+	//------------------------------------------------------------------------//
+	/**
+	 * _bolToolTips
+	 *
+	 * Flag for enabling/disabling the showing of tool tips when the mouse is over a row
+	 *
+	 * Flag for enabling/disabling the showing of tool tips when the mouse is over a row
+	 *
+	 * @type	bool
+	 *
+	 * @property
+	 */
+	private $_bolToolTips			= FALSE;
+	
+	//------------------------------------------------------------------------//
+	// _bolLinked
+	//------------------------------------------------------------------------//
+	/**
+	 * _bolLinked
+	 *
+	 * Flag for enabling/disabling the linking of tables to this one
+	 *
+	 * Flag for enabling/disabling the linking of tables to this one
+	 *
+	 * @type	bool
+	 *
+	 * @property
+	 */
+	private $_bolLinked				= FALSE;
+	
+	//------------------------------------------------------------------------//
+	// _intCurrentRow
+	//------------------------------------------------------------------------//
+	/**
+	 * _intCurrentRow
+	 *
+	 * Pointer to the current row.
+	 *
+	 * Pointer to the current row.
+	 *
+	 * @type	int
+	 *
+	 * @property
+	 */
+	private $_intCurrentRow			= 0;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -85,10 +234,8 @@ class VixenTable
 	 * construct a new VixenTable Object
 	 *
 	 * @param	string	$strName					Name of the object to create
-	 * @param	string	$strTable		optional	Database table to connect the data object to 
-	 * @param	mixed	$mixColumns		optional	Columns to include in the data object
 	 * 
-	 * @return	DBObject
+	 * @return	VixenTable
 	 *
 	 * @method
 	 */
@@ -107,7 +254,7 @@ class VixenTable
 	 *
 	 * Sets the header to the table
 	 *
-	 * Sets the header to the table.
+	 * Sets the header to the table
 	 * 
 	 *
 	 * @param	string		$strColTitle, [$strColTitle]	Specify any number of column titles as separate parameters
@@ -242,6 +389,24 @@ class VixenTable
 		return $this->_intCurrentRow;
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * SetDetail()
+	 *
+	 * Sets the detail for the current row, which is displayed when the row is selected
+	 *
+	 * Sets the detail for the current row, which is displayed when the row is selected
+	 * 
+	 *
+	 * @param	string		$strHtmlContent		HTML code defining the detail and its layout
+	 * 
+	 * @return	mixed							row number of the current row
+	 *											If there is no current row, then it returns NULL
+	 *
+	 * @method
+	 */
 	function SetDetail($strHtmlContent)
 	{
 		if (!isset($this->_intCurrentRow))
@@ -257,6 +422,24 @@ class VixenTable
 		return $this->_intCurrentRow;
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetToolTip
+	//------------------------------------------------------------------------//
+	/**
+	 * SetToolTip()
+	 *
+	 * Sets the ToolTip for the current row, which is displayed when the mouse is over the row
+	 *
+	 * Sets the ToolTip for the current row, which is displayed when the mouse is over the row
+	 * 
+	 *
+	 * @param	string		$strHtmlContent		HTML code defining the ToolTip and its layout
+	 * 
+	 * @return	mixed							row number of the current row
+	 *											If there is no current row, then it returns NULL
+	 *
+	 * @method
+	 */
 	function SetToolTip($strHtmlContent)
 	{
 		if (!isset($this->_intCurrentRow))
@@ -271,6 +454,26 @@ class VixenTable
 		return $this->_intCurrentRow;
 	}
 	
+	//------------------------------------------------------------------------//
+	// AddIndex
+	//------------------------------------------------------------------------//
+	/**
+	 * AddIndex()
+	 *
+	 * Adds and index for the current row
+	 *
+	 * Adds and index for the current row
+	 * If a row in a linked table has the same index (and same value), then it will be highlighted when this row is selected
+	 * 
+	 *
+	 * @param	string		$strName	The name of the index 
+	 * @param	mixed		$mixValue	The value of the index
+	 * 
+	 * @return	mixed							row number of the current row
+	 *											If there is no current row, then it returns NULL
+	 *
+	 * @method
+	 */
 	function AddIndex($strName, $mixValue)
 	{
 		if (!isset($this->_intCurrentRow))
@@ -287,12 +490,47 @@ class VixenTable
 		return $this->_intCurrentRow;
 	}
 	
+	//------------------------------------------------------------------------//
+	// LinkTable
+	//------------------------------------------------------------------------//
+	/**
+	 * LinkTable()
+	 *
+	 * Links a VixenTable to this one so that corresponding rows can be highlighted
+	 *
+	 * Links a VixenTable to this one so that corresponding rows can be highlighted
+	 * 
+	 *
+	 * @param	string		$strTableName		The name of the VixenTable to link to this one
+	 * @param	string		$strIndexName		The name of the index, which both tables should have in common
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function LinkTable($strTableName, $strIndexName)
 	{
 		$this->_arrLinkedTables[$strTableName][] = $strIndexName;
 	}
 	
-	
+	//------------------------------------------------------------------------//
+	// __get
+	//------------------------------------------------------------------------//
+	/**
+	 * __get()
+	 *
+	 * Accessor method for magic variables
+	 *
+	 * Accessor method for magic variables
+	 * 
+	 *
+	 * @param	string		$strMagicVar		The name of the Magic Variable to retrieve
+	 * 
+	 * @return	mixed							the value of the Magic Variable
+	 *											NULL if the variable could not be found
+	 *
+	 * @method
+	 */
 	function __get($strMagicVar)
 	{
 		switch ($strMagicVar)
@@ -304,6 +542,25 @@ class VixenTable
 		return NULL;
 	}
 	
+	//------------------------------------------------------------------------//
+	// __set
+	//------------------------------------------------------------------------//
+	/**
+	 * __set()
+	 *
+	 * Mutator method for magic variables
+	 *
+	 * Mutator method for magic variables
+	 * 
+	 *
+	 * @param	string		$strMagicVar		The name of the Magic Variable
+	 * @param	mixed		$mixValue			The value to set the Magic Variable to
+	 * 
+	 * @return	mixed							TRUE if the variable could be changed
+	 *											NULL if the variable was not found
+	 *
+	 * @method
+	 */
 	function __set($strMagicVar, $mixValue)
 	{
 		switch ($strMagicVar)
@@ -315,34 +572,35 @@ class VixenTable
 		return NULL;
 	}
 	
+	//------------------------------------------------------------------------//
+	// Render
+	//------------------------------------------------------------------------//
+	/**
+	 * Render()
+	 *
+	 * Renders the table along with all required javascript
+	 *
+	 * Renders the table along with all required javascript
+	 * 
+	 * @return	void
+	 *
+	 * @method
+	 */
 	function Render()
 	{
-		// render header
-	/*
-	 * Stores row data and information relating to the row (for each row)
-	 * $this->_arrRow[]['Detail'] 	= $strDetail (HTML -> detial div)
-	 *                 ['Columns'] 	= $arrColumns (indexed array of HTML output)
-	 *                 ['ToolTip']	= $strToolTip (HTML -> tooltip div)
-	 *                 ['index']	= [name][] = value
-	 *
-	 * @type	array
-	 *
-	 * @property
-	 */
-
 		$strTableName = $this->_strName;
 
 		if ($this->_bolDetails || $this->_bolRowHighlighting || $this->_bolToolTips || $this->_bolLinked)
 		{
 			echo "<script type='text/javascript'>\n";
 			
-		$strVixenTable = "Vixen.table." . $strTableName;
-		echo $strVixenTable . " = Object(); \n";
-		echo $strVixenTable . ".collapseAll = TRUE;\n";
-		echo $strVixenTable . ".linked = TRUE;\n";
-		echo $strVixenTable . ".totalRows = 0;\n";
-		echo $strVixenTable . ".row = Array(); \n";
-		echo "</script>\n";
+			$strVixenTable = "Vixen.table." . $strTableName;
+			echo $strVixenTable . " = Object(); \n";
+			echo $strVixenTable . ".collapseAll = TRUE;\n";
+			echo $strVixenTable . ".linked = TRUE;\n";
+			echo $strVixenTable . ".totalRows = 0;\n";
+			echo $strVixenTable . ".row = Array(); \n";
+			echo "</script>\n";
 		}
 
 		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
@@ -362,6 +620,7 @@ class VixenTable
 			$intRowCount++;
 			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd' ;
 			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
+			
 			// Build fields
 			foreach ($objRow['Columns'] as $objField)
 			{
@@ -369,6 +628,7 @@ class VixenTable
 				echo $objField;
 				echo "</td>\n";			
 			}
+			
 			// Build detail
 			if ($this->_bolDetails)
 			{
@@ -492,16 +752,17 @@ class VixenTable
 	/**
 	 * Info()
 	 *
-	 * return info about the DBO object
+	 * Return info about the Vixen table
 	 *
-	 * return info about the DBO object
+	 * Return info about the Vixen table
 	 * 
-	 * @return	array		stores all properties ['Properties'] and all valid properties ['Valid']
+	 * @return	array		
 	 *
 	 * @method
 	 */
 	function Info()
 	{
+		$arrReturn['TableName'] = $this->_strName;
 		if ($this->_bolRowHighlighting)
 		{
 			$arrReturn['RowHighlighting'] = "True";
@@ -519,7 +780,24 @@ class VixenTable
 		{
 			$arrReturn['ShowDetail'] = "False";
 		}
+
+		if ($this->_bolToolTips)
+		{
+			$arrReturn['ToolTips'] = "True";
+		}
+		else
+		{
+			$arrReturn['ToolTips'] = "False";
+		}
 		
+		if ($this->_bolLinked)
+		{
+			$arrReturn['Linked'] = "True";
+		}
+		else
+		{
+			$arrReturn['Linked'] = "False";
+		}
 		
 		$arrReturn['Header']		= $this->_arrHeader;
 		$arrReturn['Widths']		= $this->_arrWidths;
@@ -537,9 +815,9 @@ class VixenTable
 	/**
 	 * ShowInfo()
 	 *
-	 * Formats info about the DBO object so that it can be displayed
+	 * Formats info about the VixenTable so that it can be displayed
 	 *
-	 * Formats info about the DBO object so that it can be displayed
+	 * Formats info about the VixenTable so that it can be displayed
 	 * 
 	 * @param	string		$strTabs	[optional]	string containing tab chars '\t'
 	 *												used to define how far the object's 
@@ -552,6 +830,14 @@ class VixenTable
 	 */
 	function ShowInfo($strTabs='')
 	{
+		$arrInfo = $this->Info();
+		$strOutput = $this->_ShowInfo($arrInfo, $strTabs);
+
+		if (!$strTabs)
+		{
+			Debug($strOutput);
+		}
+		return $strOutput;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -577,6 +863,28 @@ class VixenTable
 	 */
 	private function _ShowInfo($mixData, $strTabs='')
 	{
+		if (is_array($mixData))
+		{
+			foreach ($mixData as $mixKey=>$mixValue)
+			{
+				if (!is_array($mixValue))
+				{
+					// $mixValue is not an array
+					$strOutput .= $strTabs . $mixKey . " : " . $mixValue . "\n";
+				}
+				else
+				{
+					// $mixValue is an array so output its contents
+					$strOutput .= $strTabs . $mixKey . "\n";
+					$strOutput .= $this->_ShowInfo($mixValue, $strTabs."\t");
+				}
+			}
+		} 
+		else
+		{
+			$strOutput = $mixData . "\n";
+		}
+		return $strOutput;
 	}
 	
 

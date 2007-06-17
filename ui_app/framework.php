@@ -755,7 +755,10 @@ class VixenTableFramework
 	 */
 	function Info()
 	{
-		//TODO!
+		foreach ($this->_arrTable as $objTable)
+		{
+			$arrReturn[] = $objTable->Info();
+		}
 		
 		return $arrReturn;
 	}
@@ -780,7 +783,11 @@ class VixenTableFramework
 	 */
 	function ShowInfo($strTabs='')
 	{
-		//TODO!
+		$strOutput = "Vixen Tables:\n";
+		foreach ($this->_arrTable as $objTable)
+		{
+			$strOutput .= $objTable->ShowInfo("\t");
+		}
 		
 		if (!$strTabs)
 		{
