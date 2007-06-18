@@ -116,6 +116,11 @@ function DBO()
 }
 
 
+
+
+echo (float)NULL + 100;
+die;
+
 echo DBO()->Honda->Prelude->Type ."\n";
 DBO()->Honda->Prelude->Colour = "Black";
 echo DBO()->Honda->Prelude->Colour."\n";
