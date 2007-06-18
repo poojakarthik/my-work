@@ -6,19 +6,19 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// account_recurring_adjustments.php
+// recurring_adjustment_list.php
 //----------------------------------------------------------------------------//
 /**
- * account_recurring_adjustments
+ * recurring_adjustment_list
  *
- * HTML Template for the Account Recurring Adjustments HTML object
+ * HTML Template for the Recurring Adjustment List HTML object
  *
- * HTML Template for the Account Recurring Adjustments HTML object
+ * HTML Template for the Recurring Adjustment List HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
  * which displays all recurring adjustments relating to an account and can be embedded in
  * various Page Templates
  *
- * @file		account_recurring_adjustments.php
+ * @file		recurring_adjustment_list.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -30,21 +30,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateAccountRecurringAdjustments
+// HtmlTemplateRecurringAdjustmentList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAccountRecurringAdjustments
+ * HtmlTemplateRecurringAdjustmentList
  *
- * HTML Template class for the Account Recurring Adjustments HTML object
+ * HTML Template class for the Recurring Adjustment List HTML object
  *
- * HTML Template class for the Account Recurring Adjustments HTML object
+ * HTML Template class for the Recurring Adjustment List HTML object
  * Lists all adjustments related to an account
  *
  * @package	ui_app
- * @class	HtmlTemplateAccountRecurringAdjustments
+ * @class	HtmlTemplateRecurringAdjustmentList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountRecurringAdjustments extends HtmlTemplate
+class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext

@@ -6,19 +6,19 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// account_adjustments.php
+// adjustment_list.php
 //----------------------------------------------------------------------------//
 /**
- * account_adjustments
+ * adjustment_list
  *
- * HTML Template for the Account Adjustments HTML object
+ * HTML Template for the Adjustment List HTML object
  *
- * HTML Template for the Account Adjustments HTML object
+ * HTML Template for the Adjustment List HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
  * which displays all adjustments relating to an account and can be embedded in
  * various Page Templates
  *
- * @file		account_adjustments.php
+ * @file		adjustment_list.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -30,21 +30,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateAccountAdjustments
+// HtmlTemplateAdjustmentList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAccountAdjustments
+ * HtmlTemplateAdjustmentList
  *
- * HTML Template class for the Account Adjustments HTML object
+ * HTML Template class for the Adjustment List HTML object
  *
- * HTML Template class for the Account Adjustments HTML object
+ * HTML Template class for the Adjustment List HTML object
  * Lists all adjustments related to an account
  *
  * @package	ui_app
- * @class	HtmlTemplateAccountAdjustments
+ * @class	HtmlTemplateAdjustmentList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountAdjustments extends HtmlTemplate
+class HtmlTemplateAdjustmentList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext

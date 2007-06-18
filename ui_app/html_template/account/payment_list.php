@@ -6,19 +6,19 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// account_payments.php
+// payment_list.php
 //----------------------------------------------------------------------------//
 /**
- * account_payments
+ * payment_list
  *
- * HTML Template for the Account Payments HTML object
+ * HTML Template for the Payment List HTML object
  *
- * HTML Template for the Account Payments HTML object
+ * HTML Template for the Payment List HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
  * which displays all payments relating to an account and can be embedded in
  * various Page Templates
  *
- * @file		account_payments.php
+ * @file		payment_list.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -30,21 +30,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateAccountPayments
+// HtmlTemplateAccountPaymentList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAccountPayments
+ * HtmlTemplateAccountPaymentList
  *
- * HTML Template class for the Account Payments HTML object
+ * HTML Template class for the Payment List HTML object
  *
- * HTML Template class for the Account Payments HTML object
+ * HTML Template class for the Payment List HTML object
  * Lists all payments related to an account
  *
  * @package	ui_app
- * @class	HtmlTemplateAccountPayments
+ * @class	HtmlTemplateAccountPaymentList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountPayments extends HtmlTemplate
+class HtmlTemplateAccountPaymentList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext

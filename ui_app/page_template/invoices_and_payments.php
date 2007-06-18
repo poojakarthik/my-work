@@ -7,20 +7,20 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// account_ledger.php
+// invoices_and_payments.php
 //----------------------------------------------------------------------------//
 /**
- * account_ledger
+ * invoices_and_payments
  *
- * Page Template for the account_ledger webpage
+ * Page Template for the invoices_and_payments webpage
  *
- * Page Template for the account_ledger webpage
+ * Page Template for the invoices_and_payments webpage
  * This file specifies the layout to use and the HTML Template objects to put 
  * into each column on the page
  * Most code in this file (if not all) will manipulate the $this->Page object
  * which has already been instantiated.
  *
- * @file		account_ledger.php
+ * @file		invoices_and_payments.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -39,9 +39,9 @@ $this->Page->SetLayout('2Column');
 // add the Html Objects to their respective columns
 $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
 $this->Page->AddObject('AccountOptions', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
-$this->Page->AddObject('AccountInvoices', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
-$this->Page->AddObject('AccountPayments', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
-$this->Page->AddObject('AccountAdjustments', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
-$this->Page->AddObject('AccountRecurringAdjustments', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
+$this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
+$this->Page->AddObject('AccountPaymentList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
+$this->Page->AddObject('AdjustmentList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
+$this->Page->AddObject('RecurringAdjustmentList', COLUMN_TWO, HTML_CONTEXT_LEDGER_DETAIL);
 
 ?>

@@ -6,19 +6,19 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// account_invoices.php
+// list.php
 //----------------------------------------------------------------------------//
 /**
- * account_invoices
+ * list
  *
- * HTML Template for the Account Invoices HTML object
+ * HTML Template for the Invoice List HTML object
  *
- * HTML Template for the Account Invoices HTML object
+ * HTML Template for the Invoice List HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
  * which displays all invoices relating to an account and can be embedded in
  * various Page Templates
  *
- * @file		account_invoices.php
+ * @file		list.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
@@ -30,21 +30,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateAccountInvoices
+// HtmlTemplateInvoiceList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAccountInvoices
+ * HtmlTemplateInvoiceList
  *
- * HTML Template class for the Account Invoices HTML object
+ * HTML Template class for the Invoice List HTML object
  *
- * HTML Template class for the Account Invoices HTML object
+ * HTML Template class for the Invoice List HTML object
  * Lists all invoices related to an account
  *
  * @package	ui_app
- * @class	HtmlTemplateAccountInvoices
+ * @class	HtmlTemplateInvoiceList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountInvoices extends HtmlTemplate
+class HtmlTemplateInvoiceList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext

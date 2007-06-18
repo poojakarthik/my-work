@@ -112,20 +112,20 @@ class AppTemplateAccount extends ApplicationTemplate
 	
 	
 	//------------------------------------------------------------------------//
-	// Ledger
+	// InvoicesAndPayments
 	//------------------------------------------------------------------------//
 	/**
-	 * Ledger()
+	 * InvoicesAndPayments()
 	 *
-	 * Performs the logic for the account_ledger.php webpage
+	 * Performs the logic for the invoices_and_payments.php webpage
 	 * 
-	 * Performs the logic for the account_ledger.php webpage
+	 * Performs the logic for the invoices_and_payments.php webpage
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function Ledger()
+	function InvoicesAndPayments()
 	{
 		// Should probably check user authorization here
 		//TODO!include user authorisation
@@ -203,7 +203,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBO()->Account->TotalUnbilledAdjustments = 1200;
 		
 		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('account_ledger');
+		$this->LoadPage('invoices_and_payments');
 
 		return TRUE;
 	
