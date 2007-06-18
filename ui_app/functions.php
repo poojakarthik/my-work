@@ -259,6 +259,26 @@ function HTMLElements()
 	return $objHTMLElements;
 }
 
+//------------------------------------------------------------------------//
+// Href
+//------------------------------------------------------------------------//
+/**
+ * Href()
+ *
+ * Returns the singleton HrefFramework object
+ *
+ * Returns the singleton HrefFramework object
+ *
+ * @return	HrefFramework object
+ *
+ * @function
+ * 
+ */
+function Href()
+{
+	$objHrefFramework = Singleton::Instance('HrefFramework');
+	return $objHrefFramework;
+}
 
 //------------------------------------------------------------------------//
 // PropertyToken
@@ -400,15 +420,15 @@ function AuthenticatedUser()
  * @param	mix		$mixLeftValue	the value that will be left of the operator used in the condition
  * @param	string	$strOperator	the operator that will be used to compare the other to parameters
  *									current acceptable operators:
- *									<, >, <=, >=, ==, !=
- * @param	mix		$mixRightValue	the value that will be right of the operator used in the condition
+ *									<, >, <=, >=, ==, !=, IsEmpty
+ * @param	mix		$mixRightValue	[optional]the value that will be right of the operator used in the condition
  *
  * @return	mix						returns NULL if the condition could not be tested, ELSE
  *									it returns the result of testing the condition
  *
  * @function
  */
-function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue)
+function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue = NULL)
 {
 	switch ($strOperator)
 	{
@@ -430,12 +450,17 @@ function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue)
 		case ">=":
 			$bolReturn = ($mixLeftValue >= $mixRightValue);
 			break;
+		case "IsEmpty":
+			$bolReturn = (strlen(trim($mixLeftValue)) == 0);
+			break;
+		case "IsNull":
+			$bolReturn = ($mixLeftValue == NULL);
+			break;
 		default:
 			$bolReturn = NULL;
 			break;
 	}
 	return $bolReturn;
 }
-
 
 ?>

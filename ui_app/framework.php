@@ -1291,7 +1291,7 @@ class ContextMenuFramework
 			{
 				$strMethod = str_replace(" ", "", $strMenu);
 				// add menu link
-				$arrReturn[$strMenu] = call_user_func_array(array($this->_objMenuItems, $strMethod), $arrSubMenu);
+				$arrReturn[$strMenu] = call_user_func_array(Array($this->_objMenuItems, $strMethod), $arrSubMenu);
 			}
 			else
 			{
@@ -1447,6 +1447,51 @@ class ContextMenuFramework
 	}	
 
 }
+
+
+//----------------------------------------------------------------------------//
+// HrefFramework
+//----------------------------------------------------------------------------//
+/**
+ * HrefFramework
+ *
+ * Wrapper for the MenuItems class.  Used to return the resultant Href for a given menu item.
+ *
+ * Wrapper for the MenuItems class.  Used to return the resultant Href for a given menu item.
+ *
+ * @prefix	hrf
+ *
+ * @package	ui_app
+ * @class	HrefFramework
+ */
+class HrefFramework
+{
+	//------------------------------------------------------------------------//
+	// __call
+	//------------------------------------------------------------------------//
+	/**
+	 * __call()
+	 *
+	 * Should only call the names of methods belonging to the MenuItems class
+	 *
+	 * Should only call the names of methods belonging to the MenuItems class
+	 *
+	 * @param	string	$strMethod		name of MenuItem method to use to produce a Href
+	 * @param	array	$arrArguments	arguments required of $strMethod
+	 * @return	string					resultant href
+	 *
+	 * @method
+	 */
+	function __call($strMethod, $arrArguments)
+	{
+		$objMenuItems = new MenuItems();
+		
+		$strHref = call_user_func_array(Array($objMenuItems, $strMethod), $arrArguments);
+
+		return $strHref;
+	}
+}
+
 
 
 //----------------------------------------------------------------------------//

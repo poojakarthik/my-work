@@ -103,7 +103,8 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 		// Render each of the account invoices
 
 		
-		Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Invoice Sent", "View PDF", "View Invoice Details");
+		//Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Invoice Sent", "View PDF", "View Invoice Details");
+		Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Status", "View PDF", "View Invoice Details");
 		//Table()->PaymentTable->SetWidth("20%", "30%", "50%");
 		//Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
 		
@@ -111,13 +112,13 @@ class HtmlTemplateAccountInvoices extends HtmlTemplate
 		{
 			$arrInvoices = Array();
 			
-			// Add this row to Payment table
-			Table()->InvoiceTable->AddRow(  $dboInvoice->DueOn->Value,
-											$dboInvoice->Id->Value, 
-											$dboInvoice->Total->Value, 
-											$dboInvoice->Balance->Value, 
-											$dboInvoice->TotalOwing->Value, 
-											"Yes", 
+			// Add this row to Invoice table
+			Table()->InvoiceTable->AddRow(  $dboInvoice->DueOn->AsValue(),
+											$dboInvoice->Id->AsValue(), 
+											$dboInvoice->Total->AsValue(), 
+											$dboInvoice->Balance->AsValue(), 
+											$dboInvoice->TotalOwing->AsValue(), 
+											$dboInvoice->Status->AsCallback("GetConstantDescription", Array("InvoiceStatus")), 
 											"PDF LINK",
 											"DETAIL LINK");
 			Table()->InvoiceTable->SetDetail("INSERT HTML CODE HERE");

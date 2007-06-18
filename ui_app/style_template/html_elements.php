@@ -132,19 +132,16 @@ class HTMLElements
 	 * 
 	 * Creates an input with type='text'
 	 * 
-	 * Echoes out a formatted HTML input tag, using data from an array to build
+	 * Returns a formatted HTML input tag, using data from an array to build
 	 * the element's attributes like class, name, id and value
 	 *
-	 * @param	Array	$arrParams			The parameters to use when building the
+	 * @param	array	$arrParams			parameters to use when building the
 	 * 										input box (see above for format).
-	 * @param	bool	$bolReturnHtml		If FALSE then the html generated is echoed
-	 *										If TRUE then the html generated is returned but not echoed
-	 * @return	mix							If $bolReturnHtml == FALSE then return the property's value
-	 *										Else return the html generated
+	 * @return	string						html code
 	 *
 	 * @method
 	 */
-	function InputText($arrParams, $bolReturnHtml=FALSE)
+	function InputText($arrParams)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
 		$strValue = nl2br($arrParams['Value']);
@@ -158,22 +155,7 @@ class HTMLElements
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		
-		if ($bolReturnHtml)
-		{
-			return $strHtml;
-		}
-		
-		echo $strHtml;
-		return $arrParams['Value'];
-		
-		/*
-		echo "<td>";
-		echo "{$arrParams['Definition']['Label']} : \n";
-		echo "</td>";
-		echo "<td>";
-		echo "<input name='{$arrParams['Object']}.{$arrParams['Property']}' value='{$arrParams['Value']}' class='{$arrParams['Definition']['FullClass']}'></input>";
-		echo "</td>";
-		*/
+		return $strHtml;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -184,22 +166,19 @@ class HTMLElements
 	 * 
 	 * Creates a label
 	 * 
-	 * Echoes out a formatted HTML div tag, using data from an array to build
+	 * Returns a formatted HTML div tag, using data from an array to build
 	 * the element's attributes like class, id and value
 	 * The value of the property is inserted into the OutputLabel string, if 
 	 * an appropriate string is defined in the UIAppDocumentation or 
 	 * UIAppDocumentationOptions tables of the database
 	 *
-	 * @param	Array	$arrParams			The parameters to use when building the
+	 * @param	array	$arrParams			parameters to use when building the
 	 * 										label (see above for format).
-	 * @param	bool	$bolReturnHtml		If FALSE then the html generated is echoed
-	 *										If TRUE then the html generated is returned but not echoed
-	 * @return	mix							If $bolReturnHtml == FALSE then return the property's value
-	 *										Else return the html generated
+	 * @return	string						html code
 	 *
 	 * @method
 	 */
-	function Label($arrParams, $bolReturnHtml=FALSE)
+	function Label($arrParams)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
 		$strValue = $this->BuildOutputValue($arrParams);
@@ -210,14 +189,8 @@ class HTMLElements
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'>{$strValue}</div>\n";
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
-		
-		if ($bolReturnHtml)
-		{
-			return $strHtml;
-		}
-		
-		echo $strHtml;
-		return $arrParams['Value'];
+
+		return $strHtml;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -231,15 +204,12 @@ class HTMLElements
 	 * Renders a value just like HtmlElements->Label(), except within <span></span> tags instead of <div> tags.
 	 * The value's accompanying descriptive label is not rendered
 	 *
-	 * @param	Array	$arrParams			The parameters to use when building the
+	 * @param	array	$arrParams			The parameters to use when building the
 	 * 										label (see above for format).
-	 * @param	bool	$bolReturnHtml		If FALSE then the html generated is echoed
-	 *										If TRUE then the html generated is returned but not echoed
-	 * @return	mix							If $bolReturnHtml == FALSE then return the property's value
-	 *										Else return the html generated
+	 * @return	string						html code
 	 * @method
 	 */
-	function RenderValue($arrParams, $bolReturnHtml=FALSE)
+	function RenderValue($arrParams)
 	{
 		$strValue = $this->BuildOutputValue($arrParams);
 		$strValue = nl2br($strValue);
@@ -247,13 +217,112 @@ class HTMLElements
 		// output the formatted value in <span> tags
 		$strHtml = "<span class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'>{$strValue}</span>\n";
 
-		if ($bolReturnHtml)
+		return $strHtml;
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderLink
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderLink()
+	 * 
+	 * Renders a value as a hyperlink, within <span></span> tags
+	 * 
+	 * Renders a value as a hyperlink, within <span></span> tags
+	 * The value's accompanying descriptive label is not rendered
+	 *
+	 * @param	array	$arrParams			The parameters to use when building the
+	 * 										label (see above for format).
+	 * @param	string	$strHref			href to use
+	 * @return	string						html code
+	 * @method
+	 */
+	function RenderLink($arrParams, $strHref)
+	{
+		// format the value
+		$strValue = $this->BuildOutputValue($arrParams);
+
+		// output the formatted value in a hyperlink tag, in a <span> tag
+		$strHtml = "<span class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'><a href='{$strHref}'>{$strValue}</a></span>\n";
+		
+		return $strHtml;
+	}
+	
+	
+	
+	//------------------------------------------------------------------------//
+	// EmailLinkLabel
+	//------------------------------------------------------------------------//
+	/**
+	 * EmailLinkLabel()
+	 * 
+	 * Renders a value as a "mailto:" hyperlink, within <div></div> tags
+	 * 
+	 * Renders a value as a "mailto:" hyperlink, within <div></div> tags
+	 * The value's accompanying descriptive label is also included
+	 *
+	 * @param	array	$arrParams			The parameters to use when building the
+	 * 										email address (see above for format).
+	 * @return	string						html code
+	 * @method
+	 */
+	function EmailLinkLabel($arrParams)
+	{
+		// The fact that an email address might have the value "no email" is handled by the
+		// ConditionalContexts table
+	
+		// explode on whitespace
+		$arrRawEmails = explode(" ", $arrParams['Value']);
+
+		// remove all whitespace and commas from the email addresses
+		foreach ($arrRawEmails as $strEmail)
 		{
-			return $strHtml;
+			$strEmail = trim($strEmail, " ,");
+			if ($strEmail)
+			{
+				$arrEmail[] = $strEmail;
+			}
 		}
 		
-		echo $strHtml;
-		return $arrParams['Value'];
+		$strLabel = $arrParams['Definition']['Label'];
+		$strValue = implode(", ", $arrEmail);
+		
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'><a href='mailto:{$strValue}'>{$strValue}</a></div>\n";
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "</div>\n";
+
+		return $strHtml;
+	}
+	
+	//------------------------------------------------------------------------//
+	// ApplyOutputMask TODO
+	//------------------------------------------------------------------------//
+	/**
+	 * ApplyOutputMask()
+	 * 
+	 * Applies an output mask to a value
+	 * 
+	 * Applies an output mask to a value
+	 * 
+	 *
+	 * @param	mix		$mixValue			Value to apply the mask to
+	 * @param	string	$strMask			mask to apply to the value
+	 *
+	 * @return	mix							$mixValue formatted to comply with $strMask
+	 *										If $strMask is NULL or whitespace, then $mixValue is returned, unchanged.
+	 *
+	 * @method
+	 */
+	function ApplyOutputMask($mixValue, $strMask)
+	{
+		$strMask = trim($strMask);
+		if ($strMask)
+		{
+			//TODO! JOEL format the value so that it complies to the mask
+		}
+		
+		return $mixValue;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -269,24 +338,28 @@ class HTMLElements
 	 *
 	 * @param	mix		$mixValue			Value to use in the output string
 	 * @param	string	$strOutputString	String to output. This can utilise the <value> placeholder
+	 * @param	string	$strMask			mask to apply to the value, before the value is embedded in $strOutputString
+	 *
 	 * @return	mix							If $strOutputString is not null, then it is returned with $mixValue
 	 *										substittuted for the placeholder <value>
 	 *										Else, $mixValue is returned
 	 *
 	 * @method
 	 */
-	private function _OutputValue($mixValue, $strOutputString)
+	private function _OutputValue($mixValue, $strOutputString, $strMask)
 	{
-		$mixReturn = $mixValue;
 		$strOutputString = trim($strOutputString);
+		
+		// apply output mask to the value (if defined in UIAppDocumentation)
+		$mixValue = $this->ApplyOutputMask($mixValue, $strMask);
 		
 		// replace <value> case-insensitive
 		if ($strOutputString)
 		{
-			$mixReturn = str_ireplace("<value>", $mixValue, $strOutputString);
+			$mixValue = str_ireplace("<value>", $mixValue, $strOutputString);
 		}
 		
-		return $mixReturn;
+		return $mixValue;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -320,7 +393,7 @@ class HTMLElements
 				if ($arrParams['Value'] == $arrOption['Value'])
 				{
 					// set the new value to output
-					$strValue = $this->_OutputValue($arrParams['Value'], $arrOption['OutputLabel']);
+					$strValue = $this->_OutputValue($arrParams['Value'], $arrOption['OutputLabel'], $arrParams['OutputMask']);
 					break;
 				}
 			}
@@ -329,29 +402,19 @@ class HTMLElements
 			// the default OutputLabel for this context
 			if (!$strValue)
 			{
-				$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel']);
+				$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel'], $arrParams['OutputMask']);
 			}
-		}
-		elseif ($arrParams['Definition']['OutputLabel'])
-		{
-			// Use the default OutputLabel
-			$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel']);
 		}
 		else
 		{
-			// Use the actual value
-			$strValue = $arrParams['Value'];
+			// Use the default OutputLabel
+			$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel'], $arrParams['OutputMask']);
 		}
-						
+
 		// An empty string cannot be used 
 		if (trim($strValue) == "")
 		{
 			$strValue = "&nbsp;";
-		}
-		else
-		{
-			// Apply the mask as defined in UIAppDocumentation
-			//TODO!
 		}
 		
 		return $strValue;

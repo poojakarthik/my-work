@@ -203,20 +203,22 @@ class PropertyToken
 	/**
 	 * RenderInput()
 	 *
-	 * Renders the property in it's HTML input form
+	 * Renders the property in its HTML input form
 	 *
-	 * Renders the property in it's HTML input form
+	 * Renders the property in its HTML input form
 	 *
-	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @param	int		$intContext		[optional] The context in which the property will be displayed
 	 * @param	bool	$bolRequired	[optional] Whether the field should be mandatory
 	 * 
-	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
+	 * @return	mixed	PropertyValue	returns the value of the property
 	 *
 	 * @method
 	 */
 	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
 	{
-		return $this->_RenderIO("Input", $intContext, $bolRequired);
+		echo $this->_RenderIO("Input", $intContext, $bolRequired);
+		
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
 	//------------------------------------------------------------------------//
@@ -225,19 +227,21 @@ class PropertyToken
 	/**
 	 * RenderOutput()
 	 *
-	 * Renders the property in it's standard label form
+	 * Renders the property in its standard label form
 	 *
-	 * Renders the property in it's standard label form
+	 * Renders the property in its standard label form
 	 *
-	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @param	int		$intContext		[optional] The context in which the property will be displayed
 	 * 
-	 * @return	mixed	PropertyValue	returns the value of the property or FALSE if it failed to render
+	 * @return	mixed	PropertyValue	returns the value of the property
 	 *
 	 * @method
 	 */
 	function RenderOutput($intContext=CONTEXT_DEFAULT)
 	{
-		return $this->_RenderIO("Output", $intContext);
+		echo $this->_RenderIO("Output", $intContext);
+		
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 
 	//------------------------------------------------------------------------//
@@ -253,14 +257,13 @@ class PropertyToken
 	 * @param	string	$strType			either "Output" or "Input"
 	 * @param	int		$intContext			[optional] The context in which the property will be displayed
 	 * @param	bool	$bolRequired		[optional] Whether the field should be mandatory
-	 * @param	bool	$bolReturnHtml		If FALSE then the html generated is echoed
-	 *										If TRUE then the html generated is returned but not echoed
-	 * @return	mixed						If $bolReturnHtml == FALSE then return the property's value
-	 *										Else return the html generated
+	 *
+	 * @return	mixed						Html generated
+	 *										If there was no definition data for this property/context, then returns NULL
 	 *
 	 * @method
 	 */
-	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=NULL, $bolReturnHtml=FALSE)
+	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
 	{
 		$intContext = $this->_CalculateContext($intContext);
 		
@@ -269,15 +272,15 @@ class PropertyToken
 		{
 			//var_dump($this->_dboOwner->_arrDefine);
 			//echo "<br />" . $intContext . "=" . CONTEXT_DEFAULT;
-			return FALSE;
+			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
+			return NULL;
 		}
 		
 		// build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext, $bolRequired);
 		$arrParams['Type'] = $strType;
 
-		$mixReturn = HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams, $bolReturnHtml);
-		return $mixReturn;
+		return HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -294,13 +297,21 @@ class PropertyToken
 	 *
 	 * @param	int		$intCurrentContext		The context in which the property will be 
 	 *											displayed if it is not subject to conditions
+	 * @param	mixed	$mixValue				[optional] the value to check the conditions against.
+	 *											if not supplied then the property's actual value will be used
 	 * 
 	 * @return	int								context to use
 	 *
 	 * @method
 	 */
-	private function _CalculateContext($intCurrentContext)
+	private function _CalculateContext($intCurrentContext, $mixValue = NULL)
 	{
+		// if a value has not been specified then use the current value of the property
+		if ($mixValue === NULL)
+		{
+			$mixValue = $this->_dboOwner->_arrProperties[$this->_strProperty];
+		}
+		
 		$intContext = $intCurrentContext;
 		
 		// work out if the context of the property is subject to its value
@@ -309,7 +320,7 @@ class PropertyToken
 			// test each defined condition and use the context of the first one that is found to be true
 			foreach ($this->_dboOwner->_arrDefine[$this->_strProperty]['ConditionalContexts'] as $arrCondition)
 			{
-				if (IsConditionTrue($this->_dboOwner->_arrProperties[$this->_strProperty], $arrCondition['Operator'], $arrCondition['Value']))
+				if (IsConditionTrue($mixValue, $arrCondition['Operator'], $arrCondition['Value']))
 				{
 					// set the context to use
 					$intContext = $arrCondition['Context'];
@@ -377,10 +388,42 @@ class PropertyToken
 	 */
 	function Render($strOutputMask=NULL)
 	{
-		//TODO! implement $strOutputMask
+		$strValue = HTMLElements()->ApplyOutputMask($this->_dboOwner->_arrProperties[$this->_strProperty], $strOutputMask);
 		
-		echo $this->_dboOwner->_arrProperties[$this->_strProperty];
+		echo $strValue;
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
+	}
+
+
+	//------------------------------------------------------------------------//
+	// _Value
+	//------------------------------------------------------------------------//
+	/**
+	 * _Value()
+	 *
+	 * Used by RenderValue and AsValue to build the html required
+	 *
+	 * Used by RenderValue and AsValue to build the html required
+	 *
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
+	 * @return	mixed					html code, or NULL
+	 * @method
+	 */
+	private function _Value($intContext=CONTEXT_DEFAULT)
+	{
+		$intContext = $this->_CalculateContext($intContext);
+
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
+			return NULL;
+		}
+
+		// build up parameters
+		$arrParams = $this->_BuildParams($intContext);
+		
+		return HTMLElements()->RenderValue($arrParams);
 	}
 
 	//------------------------------------------------------------------------//
@@ -392,26 +435,17 @@ class PropertyToken
 	 * Renders the property's value with formating and mark-up
 	 *
 	 * Renders the property's value with formating and mark-up
+	 * The value's accompanying label is not included
 	 *
-	 * @param	string	$strContext		[optional] The context in which the property will be displayed
-	 * @return	string					property's value
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
+	 * @return	mixed					property's value
 	 * @method
 	 */
 	function RenderValue($intContext=CONTEXT_DEFAULT)
 	{
-		$intContext = $this->_CalculateContext($intContext);
-
-		// require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			return NULL;
-		}
-
-		// build up parameters
-		$arrParams = $this->_BuildParams($intContext);
+		echo $this->_Value($intContext);
 		
-		HTMLElements()->RenderValue($arrParams);
-		return $this->_dboOwner->_arrProperties[$this->_strProperty];		
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 	
 	//------------------------------------------------------------------------//
@@ -423,26 +457,15 @@ class PropertyToken
 	 * Returns the html code used to render the property's value with formating and mark-up
 	 *
 	 * Returns the html code used to render the property's value with formating and mark-up
+	 * The value's accompanying label is not included
 	 *
-	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
 	 * @return	string					html code
 	 * @method
 	 */
 	function AsValue($intContext=CONTEXT_DEFAULT)
 	{
-		$intContext = $this->_CalculateContext($intContext);
-
-		// require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			return NULL;
-		}
-
-		// build up parameters
-		$arrParams = $this->_BuildParams($intContext);
-		
-		$strFormattedValue = HTMLElements()->RenderValue($arrParams, TRUE);
-		return $strFormattedValue;
+		return $this->_Value($intContext);
 	}
 
 	//------------------------------------------------------------------------//
@@ -455,7 +478,7 @@ class PropertyToken
 	 *
 	 * Returns the html code used to render the property as an input
 	 *
-	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @param	int		$intContext		[optional] The context in which the property will be displayed
 	 * @param	bool	$bolRequired	[optional] Whether the field should be mandatory
 	 * 
 	 * @return	string 					html code
@@ -464,7 +487,7 @@ class PropertyToken
 	 */
 	function AsInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
 	{
-		return $this->_RenderIO("Input", $intContext, $bolRequired, TRUE);
+		return $this->_RenderIO("Input", $intContext, $bolRequired);
 	}
 
 	//------------------------------------------------------------------------//
@@ -477,7 +500,7 @@ class PropertyToken
 	 *
 	 * Returns the html code used to render the property as an output
 	 *
-	 * @param	string	$strContext		[optional] The context in which the property will be displayed
+	 * @param	int		$intContext		[optional] The context in which the property will be displayed
 	 * 
 	 * @return	string					html code
 	 *
@@ -485,7 +508,7 @@ class PropertyToken
 	 */
 	function AsOutput($intContext=CONTEXT_DEFAULT)
 	{
-		return $this->_RenderIO("Output", $intContext, NULL, TRUE);
+		return $this->_RenderIO("Output", $intContext);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -498,7 +521,7 @@ class PropertyToken
 	 *
 	 * Returns the property's value, formatted
 	 *
-	 * @param	string	$strContext		[optional] The context in which the property will be formatted
+	 * @param	int		$intContext		[optional] context in which the property will be formatted
 	 * @return	mixed					property's formatted value
 	 *									If the context could not be found
 	 *									then NULL is returned
@@ -522,7 +545,266 @@ class PropertyToken
 		return $strFormattedValue;
 	}
 	
+	//------------------------------------------------------------------------//
+	// _Link
+	//------------------------------------------------------------------------//
+	/**
+	 * _Link()
+	 *
+	 * Used by RenderLink and AsLink to build the html required
+	 *
+	 * Used by RenderLink and AsLink to build the html required
+	 *
+	 * @param	string	$strHref		href for the hyperlink
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
+	 *
+	 * @return	string					html code
+	 * @method
+	 */
+	private function _Link($strHref, $intContext = CONTEXT_DEFAULT)
+	{
+		$intContext = $this->_CalculateContext($intContext);
 
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
+			return NULL;
+		}
+
+		// build up parameters
+		$arrParams = $this->_BuildParams($intContext);
+		
+		return HTMLElements()->RenderLink($arrParams, $strHref);
+	}
+	
+	//------------------------------------------------------------------------//
+	// AsLink
+	//------------------------------------------------------------------------//
+	/**
+	 * AsLink()
+	 *
+	 * Returns the html code used to render the property as a hyperlink
+	 *
+	 * Returns the html code used to render the property as a hyperlink
+	 *
+	 * @param	string	$strHref		href for the hyperlink
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
+	 *
+	 * @return	string					html code
+	 * @method
+	 */
+	function AsLink($strHref, $intContext=CONTEXT_DEFAULT)
+	{
+		return $this->_Link($strHref, $intContext);
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderLink
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderLink()
+	 *
+	 * Renders the property's value with formating and mark-up within a hyperlink
+	 *
+	 * Renders the property's value with formating and mark-up within a hyperlink
+	 *
+	 * @param	string	$strHref		href for the hyperlink
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
+	 *
+	 * @return	mix						property's value
+	 * @method
+	 */
+	function RenderLink($strHref, $intContext=CONTEXT_DEFAULT)
+	{
+		echo $this->_Link($strHref, $intContext);
+		
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
+	}
+
+	//------------------------------------------------------------------------//
+	// _Arbitrary
+	//------------------------------------------------------------------------//
+	/**
+	 * _Arbitrary()
+	 *
+	 * Used by RenderArbitrary and AsArbitrary to build the html required
+	 *
+	 * Used by RenderArbitrary and AsArbitrary to build the html required
+	 *
+	 * @param	mixed	$mixValue		href for the hyperlink
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
+	 *
+	 * @return	string					html code
+	 * @method
+	 */
+	private function _Arbitrary($mixValue, $intContext=CONTEXT_DEFAULT)
+	{
+		$intContext = $this->_CalculateContext($intContext, $mixValue);
+
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
+			return NULL;
+		}
+
+		// build up parameters
+		$arrParams = $this->_BuildParams($intContext);
+		
+		// set the arbitrary value as the value to render
+		$arrParams['Value'] = $mixValue;
+		
+		return HTMLElements()->RenderValue($arrParams);
+	}
+	
+	//------------------------------------------------------------------------//
+	// AsArbitrary
+	//------------------------------------------------------------------------//
+	/**
+	 * AsArbitrary()
+	 *
+	 * Returns the html code used to render $mixValue as the value of the property (with formatting and <span> mark-up)
+	 *
+	 * Returns the html code used to render $mixValue as the value of the property (with formatting and <span> mark-up)
+	 * $mixValue will be subject to conditions defined in the ConditionalContexts and UIAppDocumentationOptions tables
+	 *
+	 * @param	mixed	$mixValue		The value to substitute for the property's value
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
+	 *
+	 * @return	string					html code
+	 * @method
+	 */
+	function AsArbitrary($mixValue, $intContext=CONTEXT_DEFAULT)
+	{
+		return $this->_Arbitrary($mixValue, $intContext);
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderArbitrary
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderArbitrary()
+	 *
+	 * Renders $mixValue as the value of the property (with formatting and <span> mark-up)
+	 *
+	 * Renders $mixValue as the value of the property (with formatting and <span> mark-up)
+	 * $mixValue will be subject to conditions defined in the ConditionalContexts and UIAppDocumentationOptions tables
+	 *
+	 * @param	mixed	$mixValue		The value to substitute for the property's value
+	 * @param	int		$intContext		[optional] context in which the property will be displayed
+	 *
+	 * @return	mixed	PropertyValue	returns the actual value of the property
+	 * @method
+	 */
+	function RenderArbitrary($mixValue, $intContext=CONTEXT_DEFAULT)
+	{
+		echo $this->_Arbitrary($mixValue, $intContext);
+		
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
+	}
+
+	//------------------------------------------------------------------------//
+	// _Callback
+	//------------------------------------------------------------------------//
+	/**
+	 * _Callback()
+	 *
+	 * Used by RenderCallback and AsCallback to build the html required
+	 *
+	 * Used by RenderCallback and AsCallback to build the html required
+	 *
+	 * @param	mixed	$mixCallbackFunc	name of the function to call
+	 *										This can be specified as "FunctionName"
+	 *										or Array("ClassName", "MethodName")
+	 * @param	int		$intContext			context in which the property will be displayed
+	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
+	 *
+	 * @return	string					html code
+	 * @method
+	 */
+	private function _Callback($mixCallbackFunc, $intContext, $arrAdditionalArgs=NULL)
+	{
+		$intContext = $this->_CalculateContext($intContext);
+
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
+			return NULL;
+		}
+
+		// build up parameters
+		$arrParams = $this->_BuildParams($intContext);
+		
+		// build arguement array for the callback function
+		$arrArgs = Array($arrParams['Value']);
+		if (is_array($arrAdditionalArgs))
+		{
+			$arrArgs = array_merge($arrArgs, $arrAdditionalArgs);
+		}
+		
+		// execute the callback function
+		$arrParams['Value'] = call_user_func_array($mixCallbackFunc, $arrArgs);
+		
+		return HTMLElements()->RenderValue($arrParams);
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderCallback
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderCallback()
+	 *
+	 * Returns the html code used to render the value of the property (with formatting and <span>) after having modified it using the callback function
+	 *
+	 * Returns the html code used to render the value of the property (with formatting and <span>) after having modified it using the callback function
+	 * The property's value will be the first argument passed to the callback function, 
+	 * followed by any other arguements defined in $arrAdditionalArgs
+	 *
+	 * @param	mixed	$mixCallbackFunc	name of the function to call
+	 *										This can be specified as "FunctionName"
+	 *										or Array("ClassName", "MethodName")
+	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
+	 * @param	int		$intContext			[optional] context in which the property will be displayed
+	 *
+	 * @return	string						html code
+	 * @method
+	 */
+	function AsCallback($strCallbackFunc, $arrAdditionalArgs=NULL, $intContext=CONTEXT_DEFAULT)
+	{
+		return $this->_Callback($strCallbackFunc, $intContext, $arrAdditionalArgs);
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderCallback
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderCallback()
+	 *
+	 * Renders the value of the property (with formatting and <span>) after having modified the property's value using the callback function
+	 *
+	 * Renders the value of the property (with formatting and <span>) after having modified the property's value using the callback function
+	 * The property's value will be the first argument passed to the callback function, 
+	 * followed by any other arguements defined in $arrAdditionalArgs
+	 *
+	 * @param	mixed	$mixCallbackFunc	name of the function to call
+	 *										This can be specified as "FunctionName"
+	 *										or Array("ClassName", "MethodName")
+	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
+	 * @param	int		$intContext			[optional] context in which the property will be displayed
+	 *
+	 * @return	mixed	PropertyValue	returns the actual value of the property
+	 * @method
+	 */
+	function RenderCallback($mixCallbackFunc, $arrAdditionalArgs=NULL, $intContext=CONTEXT_DEFAULT)
+	{
+		echo $this->_Callback($mixCallbackFunc, $intContext, $arrAdditionalArgs);
+		
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
+	}
+	
+	
 
 	//------------------------------------------------------------------------//
 	// Validate
