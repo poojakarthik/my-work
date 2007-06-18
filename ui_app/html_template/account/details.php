@@ -142,14 +142,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-//DBO()->Account->Balance->RenderArbitrary(-10000);
-DBO()->Contact->Id = 14285;
-DBO()->Contact->Load();
-DBO()->Contact->Email->RenderOutput();
-$intAccount = DBO()->Account->Id->Value;
-DBO()->Account->BusinessName->RenderLink(Href()->ViewAccount($intAccount));
-//echo Href()->ViewAccount(DBO()->Account->Id->Value);
-		
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}

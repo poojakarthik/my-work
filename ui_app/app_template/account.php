@@ -132,15 +132,15 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// context menu
 		//TODO! define what goes in the context menu
-		ContextMenu()->Contact_Retrieve->Account->Account_Ledger(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Service->Account_Ledger(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Console();
 		ContextMenu()->Logout();
 		// breadcrumb menu
 		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		BreadCrumb()->Account_Ledger(DBO()->Account->Id->Value);
+		BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
 		
 		
 		// Setup all DBO and DBL objects required for the page
