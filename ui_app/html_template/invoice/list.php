@@ -101,6 +101,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	function Render()
 	{	
 		// Render each of the account invoices
+		echo "<h2 class='Invoice'>Invoices</h2>\n";
+		//echo "<div class='WideContent'>\n";
 
 		
 		//Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Invoice Sent", "View PDF", "View Invoice Details");
@@ -110,7 +112,14 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
-			$arrInvoices = Array();
+			// build the "View pdf" link
+			$strPdfHref = Href()->ViewInvoicePdf($dboInvoice->Id->Value);
+			$strPdfLabel = "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><h2 class='PDF'></h2></a></span>";
+			
+			// build the "View Invoice Details" link
+			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
+			$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><h2 class='Invoice'></h2></a></span>";
+			
 			
 			// Add this row to Invoice table
 			Table()->InvoiceTable->AddRow(  $dboInvoice->DueOn->AsValue(),
@@ -119,17 +128,21 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 											$dboInvoice->Balance->AsValue(), 
 											$dboInvoice->TotalOwing->AsValue(), 
 											$dboInvoice->Status->AsCallback("GetConstantDescription", Array("InvoiceStatus")), 
-											"PDF LINK",
-											"DETAIL LINK");
+											$strPdfLabel,
+											$strViewInvoiceLabel);
 			Table()->InvoiceTable->SetDetail("INSERT HTML CODE HERE");
 			//Table()->InvoiceTable->SetToolTip("[INSERT HTML CODE HERE FOR THE TOOL TIP FOR ROW]");
 			Table()->InvoiceTable->AddIndex("InvoiceRun", $dboInvoice->InvoiceRun->Value);
-		}		
+		}
 		
 		Table()->InvoiceTable->LinkTable("PaymentTable", "InvoiceRun");
+		Table()->InvoiceTable->LinkTable("AdjustmentTable", "InvoiceRun");
+		
 		Table()->InvoiceTable->RowHighlighting = TRUE;
 		
 		Table()->InvoiceTable->Render();
+		//echo "</div>\n";
+		//echo "<div class='Seperator'></div>\n";
 		
 	}
 }

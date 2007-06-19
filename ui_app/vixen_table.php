@@ -618,7 +618,7 @@ class VixenTable
 		foreach ($this->_arrRows AS $objRow)
 		{
 			$intRowCount++;
-			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd' ;
+			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd';
 			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
 			
 			// Build fields
@@ -648,7 +648,7 @@ class VixenTable
 				echo "<tr>";
 				echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
 				echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-TOOLTIP' style='display: none;'>";
-				echo "Tooltip goes here";
+				echo $objRow['ToolTip'];
 				echo "</div>\n";
 				echo "</td>";
 			}

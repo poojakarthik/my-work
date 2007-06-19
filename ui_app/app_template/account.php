@@ -156,16 +156,27 @@ class AppTemplateAccount extends ApplicationTemplate
 		// the DBList storing the invoices should be ordered so that the most recent is first
 		// same with the payments list
 		DBL()->Invoice->Account = DBO()->Account->Id->Value;
-		DBL()->Invoice->OrderBy("CreatedOn Desc");
+		DBL()->Invoice->OrderBy("CreatedOn DESC");
 		DBL()->Invoice->Load();
 		
 		
 		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		DBL()->Payment->OrderBy("PaidOn DESC");
 		DBL()->Payment->Load();
 		
 		
 		DBL()->InvoicePayment->Account = DBO()->Account->Id->Value;
 		DBL()->InvoicePayment->Load();
+		
+		DBL()->Charge->Account = DBO()->Account->Id->Value;
+		DBL()->Charge->OrderBy("CreatedOn DESC");
+		DBL()->Charge->Load();
+		
+		DBL()->RecurringCharge->Account = DBO()->Account->Id->Value;
+		DBL()->RecurringCharge->OrderBy("CreatedOn DESC");
+		DBL()->RecurringCharge->Load();
+		
+		
 		// todo - need to load applied payments for particular invoices
 		// join invoice, invoicepayment, payment
 		// see below

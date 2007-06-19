@@ -278,7 +278,6 @@ class PropertyToken
 		
 		// build up parameters for HtmlElements
 		$arrParams = $this->_BuildParams($intContext, $bolRequired);
-		$arrParams['Type'] = $strType;
 
 		return HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);
 	}
@@ -633,12 +632,13 @@ class PropertyToken
 	 * Used by RenderArbitrary and AsArbitrary to build the html required
 	 *
 	 * @param	mixed	$mixValue		href for the hyperlink
+	 * @param	int		$intRenderType	[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
 	 * @param	int		$intContext		[optional] context in which the property will be displayed
 	 *
 	 * @return	string					html code
 	 * @method
 	 */
-	private function _Arbitrary($mixValue, $intContext=CONTEXT_DEFAULT)
+	private function _Arbitrary($mixValue, $intRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
 	{
 		$intContext = $this->_CalculateContext($intContext, $mixValue);
 
@@ -655,7 +655,20 @@ class PropertyToken
 		// set the arbitrary value as the value to render
 		$arrParams['Value'] = $mixValue;
 		
-		return HTMLElements()->RenderValue($arrParams);
+		// Render the value
+		switch ($intRenderType)
+		{
+			case RENDER_INPUT:
+				return HTMLElements()->$arrParams['Definition']['InputType']($arrParams);
+				break;
+			case RENDER_OUTPUT:
+				return HTMLElements()->$arrParams['Definition']['OutputType']($arrParams);
+				break;
+			case RENDER_VALUE:
+			default:
+				return HTMLElements()->RenderValue($arrParams);
+				break;
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -664,20 +677,21 @@ class PropertyToken
 	/**
 	 * AsArbitrary()
 	 *
-	 * Returns the html code used to render $mixValue as the value of the property (with formatting and <span> mark-up)
+	 * Returns the html code used to render $mixValue as the value of the property (with formatting and mark-up)
 	 *
-	 * Returns the html code used to render $mixValue as the value of the property (with formatting and <span> mark-up)
+	 * Returns the html code used to render $mixValue as the value of the property (with formatting and mark-up)
 	 * $mixValue will be subject to conditions defined in the ConditionalContexts and UIAppDocumentationOptions tables
 	 *
 	 * @param	mixed	$mixValue		The value to substitute for the property's value
+	 * @param	int		$intRenderType	[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
 	 * @param	int		$intContext		[optional] context in which the property will be displayed
 	 *
 	 * @return	string					html code
 	 * @method
 	 */
-	function AsArbitrary($mixValue, $intContext=CONTEXT_DEFAULT)
+	function AsArbitrary($mixValue, $intRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
 	{
-		return $this->_Arbitrary($mixValue, $intContext);
+		return $this->_Arbitrary($mixValue, $intRenderType, $intContext);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -686,20 +700,21 @@ class PropertyToken
 	/**
 	 * RenderArbitrary()
 	 *
-	 * Renders $mixValue as the value of the property (with formatting and <span> mark-up)
+	 * Renders $mixValue as the value of the property (with formatting and mark-up)
 	 *
-	 * Renders $mixValue as the value of the property (with formatting and <span> mark-up)
+	 * Renders $mixValue as the value of the property (with formatting and mark-up)
 	 * $mixValue will be subject to conditions defined in the ConditionalContexts and UIAppDocumentationOptions tables
 	 *
 	 * @param	mixed	$mixValue		The value to substitute for the property's value
+	 * @param	int		$intRenderType	[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
 	 * @param	int		$intContext		[optional] context in which the property will be displayed
 	 *
 	 * @return	mixed	PropertyValue	returns the actual value of the property
 	 * @method
 	 */
-	function RenderArbitrary($mixValue, $intContext=CONTEXT_DEFAULT)
+	function RenderArbitrary($mixValue, $intRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
 	{
-		echo $this->_Arbitrary($mixValue, $intContext);
+		echo $this->_Arbitrary($mixValue, $intRenderType, $intContext);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
@@ -717,13 +732,14 @@ class PropertyToken
 	 * @param	mixed	$mixCallbackFunc	name of the function to call
 	 *										This can be specified as "FunctionName"
 	 *										or Array("ClassName", "MethodName")
-	 * @param	int		$intContext			context in which the property will be displayed
 	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
+ 	 * @param	int		$intRenderType		[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
+	 * @param	int		$intContext			[optional] context in which the property will be displayed
 	 *
-	 * @return	string					html code
+	 * @return	string						html code
 	 * @method
 	 */
-	private function _Callback($mixCallbackFunc, $intContext, $arrAdditionalArgs=NULL)
+	private function _Callback($mixCallbackFunc, $arrAdditionalArgs=NULL, $intRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
 	{
 		$intContext = $this->_CalculateContext($intContext);
 
@@ -746,8 +762,21 @@ class PropertyToken
 		
 		// execute the callback function
 		$arrParams['Value'] = call_user_func_array($mixCallbackFunc, $arrArgs);
-		
-		return HTMLElements()->RenderValue($arrParams);
+
+		// Render the value
+		switch ($intRenderType)
+		{
+			case RENDER_INPUT:
+				return HTMLElements()->$arrParams['Definition']['InputType']($arrParams);
+				break;
+			case RENDER_OUTPUT:
+				return HTMLElements()->$arrParams['Definition']['OutputType']($arrParams);
+				break;
+			case RENDER_VALUE:
+			default:
+				return HTMLElements()->RenderValue($arrParams);
+				break;
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -756,9 +785,9 @@ class PropertyToken
 	/**
 	 * RenderCallback()
 	 *
-	 * Returns the html code used to render the value of the property (with formatting and <span>) after having modified it using the callback function
+	 * Returns the html code used to render the value of the property (with formatting and markup) after having modified it using the callback function
 	 *
-	 * Returns the html code used to render the value of the property (with formatting and <span>) after having modified it using the callback function
+	 * Returns the html code used to render the value of the property (with formatting and markup) after having modified it using the callback function
 	 * The property's value will be the first argument passed to the callback function, 
 	 * followed by any other arguements defined in $arrAdditionalArgs
 	 *
@@ -766,14 +795,15 @@ class PropertyToken
 	 *										This can be specified as "FunctionName"
 	 *										or Array("ClassName", "MethodName")
 	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
+	 * @param	int		$intRenderType		[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
 	 * @param	int		$intContext			[optional] context in which the property will be displayed
 	 *
 	 * @return	string						html code
 	 * @method
 	 */
-	function AsCallback($strCallbackFunc, $arrAdditionalArgs=NULL, $intContext=CONTEXT_DEFAULT)
+	function AsCallback($strCallbackFunc, $arrAdditionalArgs=NULL, $intRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
 	{
-		return $this->_Callback($strCallbackFunc, $intContext, $arrAdditionalArgs);
+		return $this->_Callback($strCallbackFunc, $arrAdditionalArgs, $intRenderType, $intContext);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -782,9 +812,9 @@ class PropertyToken
 	/**
 	 * RenderCallback()
 	 *
-	 * Renders the value of the property (with formatting and <span>) after having modified the property's value using the callback function
+	 * Renders the value of the property (with formatting and markup) after having modified the property's value using the callback function
 	 *
-	 * Renders the value of the property (with formatting and <span>) after having modified the property's value using the callback function
+	 * Renders the value of the property (with formatting and markup) after having modified the property's value using the callback function
 	 * The property's value will be the first argument passed to the callback function, 
 	 * followed by any other arguements defined in $arrAdditionalArgs
 	 *
@@ -792,14 +822,15 @@ class PropertyToken
 	 *										This can be specified as "FunctionName"
 	 *										or Array("ClassName", "MethodName")
 	 * @param	array	$arrAdditionalArgs	[optional] additional arguments required of the callback function
+	 * @param	int		$intRenderType		[optional] either RENDER_VALUE, RENDER_OUTPUT or RENDER_INPUT
 	 * @param	int		$intContext			[optional] context in which the property will be displayed
 	 *
-	 * @return	mixed	PropertyValue	returns the actual value of the property
+	 * @return	mixed	PropertyValue		returns the actual value of the property
 	 * @method
 	 */
-	function RenderCallback($mixCallbackFunc, $arrAdditionalArgs=NULL, $intContext=CONTEXT_DEFAULT)
+	function RenderCallback($mixCallbackFunc, $arrAdditionalArgs=NULL, $intRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
 	{
-		echo $this->_Callback($mixCallbackFunc, $intContext, $arrAdditionalArgs);
+		echo $this->_Callback($mixCallbackFunc, $arrAdditionalArgs, $intRenderType, $intContext);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}

@@ -142,6 +142,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
+		DBO()->Account->DisableDDR->RenderInput();
+		DBO()->Account->DisableLatePayment->RenderInput();
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}

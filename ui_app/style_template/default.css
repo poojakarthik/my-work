@@ -55,6 +55,8 @@
 		color:				#CC0000;
 	}
 	
+	.DefaultInputRadioButtons,
+	.DefaultInputCheckBox,
 	.DefaultInput
 	{
 		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
@@ -64,6 +66,16 @@
 		left:				200px;
 		top:				0px;
 		overflow:			hidden;
+	}
+	
+	.DefaultInputCheckBox
+	{
+		left:				0px;
+	}
+	
+	.DefaultInputRadioButtons
+	{
+		left:				0px;
 	}
 	
 	.DefaultInvalidInput
@@ -164,6 +176,154 @@
 		top:				55px;
 		left:				5px;
 	}
+	
+	h2.CDR,
+	h2.Plan,
+	h2.Date,
+	h2.Address,
+	h2.Payment,
+	h2.Adjustment,
+	h2.PDF,
+	h2.Provisioning,
+	h2.Archive,
+	h2.Accounts,
+	h2.Account,
+	h2.Options,
+	h2.Notes,
+	h2.Note,
+	h2.Services,
+	h2.Service,
+	h2.Contacts,
+	h2.Contact,
+	h2.Invoice,
+	h2.Admin,
+	h2.Report,
+	h2.CostCentre,
+	h2.Bug
+	{
+		background-repeat:             no-repeat;
+		background-position:           top left;
+		
+		padding-top:                   5px;
+		padding-left:                  30px;
+		
+		height:                        25px;
+	}
+	
+	h2.CDR
+	{
+		background-image:              url('img/template/cdr.png');
+	}
+	
+	h2.Plan
+	{
+		background-image:              url('img/template/plan.png');
+	}
+	
+	h2.Date
+	{
+		background-image:              url('img/template/date.png');
+	}
+	
+	h2.Payment
+	{
+		background-image:              url('img/template/payment_small.png');
+	}
+	
+	h2.Adjustment
+	{
+		background-image:              url('img/template/charge_small.png');
+	}
+	h2.Address
+	{
+		background-image:              url('img/template/address.png');
+	}
+	
+	h2.Provisioning
+	{
+		background-image:              url('img/template/provisioning.png');
+	}
+	
+	h2.PDF
+	{
+		background-image:              url('img/template/pdf_small.png');
+	}
+	
+	h2.Archive
+	{
+		background-image:              url('img/template/archive.png');
+	}
+	
+	h2.Notes
+	{
+		background-image:              url('img/template/note.png');
+	}
+	
+	h2.Note
+	{
+		background-image:              url('img/template/note.png');
+	}
+	
+	h2.Services
+	{
+		background-image:              url('img/template/service.png');
+	}
+	
+	h2.Service
+	{
+		background-image:              url('img/template/service.png');
+	}
+	
+	h2.Contacts
+	{
+		background-image:              url('img/template/contacts.png');
+	}
+	
+	h2.Contact
+	{
+		background-image:              url('img/template/contact.png');
+	}
+	
+	h2.Accounts
+	{
+		background-image:              url('img/template/accounts.png');
+	}
+	
+	h2.Account
+	{
+		background-image:              url('img/template/account_small.png');
+	}
+	
+	h2.Options
+	{
+		background-image:              url('img/template/options.png');
+	}
+	
+	h2.Invoice
+	{
+		background-image:              url('img/template/invoice_small.png');
+	}
+	
+	h2.Admin
+	{
+		background-image:              url('img/template/admin_console.png');
+	}
+	
+	h2.Report
+	{
+		background-image:              url('img/template/report.png');
+	}
+	
+	h2.CostCentre
+	{
+		background-image:              url('img/template/icon-shoppingcart_small.jpg');
+	}
+	
+	h2.Bug
+	{
+		background-image:              url('img/template/lady-debug.png');
+	}
+	
 	
 /******************************************************************************/
 	
@@ -840,152 +1000,6 @@
 		font-weight:         bold;
 	}
 	
-	h2.CDR,
-	h2.Plan,
-	h2.Date,
-	h2.Address,
-	h2.Payment,
-	h2.Adjustment,
-	h2.PDF,
-	h2.Provisioning,
-	h2.Archive,
-	h2.Accounts,
-	h2.Account,
-	h2.Options,
-	h2.Notes,
-	h2.Note,
-	h2.Services,
-	h2.Service,
-	h2.Contacts,
-	h2.Contact,
-	h2.Invoice,
-	h2.Admin,
-	h2.Report,
-	h2.CostCentre,
-	h2.Bug
-	{
-		background-repeat:             no-repeat;
-		background-position:           top left;
-		
-		padding-top:                   10px;
-		padding-left:                  70px;
-		
-		height:                        50px;
-	}
-	
-	h2.CDR
-	{
-		background-image:              url('img/template/cdr.png');
-	}
-	
-	h2.Plan
-	{
-		background-image:              url('img/template/plan.png');
-	}
-	
-	h2.Date
-	{
-		background-image:              url('img/template/date.png');
-	}
-	
-	h2.Payment
-	{
-		background-image:              url('img/template/payment.png');
-	}
-	
-	h2.Adjustment
-	{
-		background-image:              url('img/template/charge.png');
-	}
-	h2.Address
-	{
-		background-image:              url('img/template/address.png');
-	}
-	
-	h2.Provisioning
-	{
-		background-image:              url('img/template/provisioning.png');
-	}
-	
-	h2.PDF
-	{
-		background-image:              url('img/template/pdf.png');
-	}
-	
-	h2.Archive
-	{
-		background-image:              url('img/template/archive.png');
-	}
-	
-	h2.Notes
-	{
-		background-image:              url('img/template/note.png');
-	}
-	
-	h2.Note
-	{
-		background-image:              url('img/template/note.png');
-	}
-	
-	h2.Services
-	{
-		background-image:              url('img/template/service.png');
-	}
-	
-	h2.Service
-	{
-		background-image:              url('img/template/service.png');
-	}
-	
-	h2.Contacts
-	{
-		background-image:              url('img/template/contacts.png');
-	}
-	
-	h2.Contact
-	{
-		background-image:              url('img/template/contact.png');
-	}
-	
-	h2.Accounts
-	{
-		background-image:              url('img/template/accounts.png');
-	}
-	
-	h2.Account
-	{
-		background-image:              url('img/template/account.png');
-	}
-	
-	h2.Options
-	{
-		background-image:              url('img/template/options.png');
-	}
-	
-	h2.Invoice
-	{
-		background-image:              url('img/template/invoice.png');
-	}
-	
-	h2.Admin
-	{
-		background-image:              url('img/template/admin_console.png');
-	}
-	
-	h2.Report
-	{
-		background-image:              url('img/template/report.png');
-	}
-	
-	h2.CostCentre
-	{
-		background-image:              url('img/template/icon-shoppingcart_small.jpg');
-	}
-	
-	h2.Bug
-	{
-		background-image:              url('img/template/lady-debug.png');
-	}
 	
 	.Menu_Button
 	{

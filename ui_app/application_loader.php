@@ -83,7 +83,10 @@ define('HTML_CONTEXT_MINIMUM_DETAIL',	102);
 define('HTML_CONTEXT_LEDGER_DETAIL',	103);
 define('HTML_CONTEXT_SEANS_DETAIL',		500);
 
-
+// PropertyToken Render method constants
+define('RENDER_VALUE',	100);
+define('RENDER_OUTPUT',	101);
+define('RENDER_INPUT',	102);
 
 require_once('../framework/functions.php');
 LoadFramework();

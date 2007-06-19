@@ -100,23 +100,34 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		// Render each of the account invoices
-		//TODO!
+		echo "<h2 class='Payment'>Payments</h2>\n";
+		//echo "<div class='NarrowContent'>\n";
 		
-		Table()->PaymentTable->SetHeader("Payment Id", "Payment Amount", "Payment Date", "Account Balance");
-		//Table()->PaymentTable->SetWidth("20%", "30%", "50%");
-		//Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
+		Table()->PaymentTable->SetHeader("Date", "Amount");
+		Table()->PaymentTable->SetWidth("30%", "70%");
+		Table()->PaymentTable->SetAlignment("Left", "Right");
 		
 		foreach (DBL()->Payment as $dboPayment)
 		{
-			$arrInvoices = Array();
-			
 			// Add this row to Payment table
-			//$dboPayment->ShowInfo();
-			Table()->PaymentTable->AddRow($dboPayment->Id->Value, $dboPayment->Amount->Value, $dboPayment->PaidOn->Value, $dboPayment->Balance->Value);
-			Table()->PaymentTable->SetDetail("INSERT HTML CODE HERE");
-			//Table()->PaymentTable->SetToolTip("[INSERT HTML CODE HERE FOR THE TOOL TIP FOR ROW]");
+			Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $dboPayment->Amount->AsValue());
 			
+			// Add tooltip
+			$strPaymentType 	= GetConstantDescription($dboPayment->PaymentType->Value, "PaymentType");
+			$strToolTipHtml 	= $dboPayment->PaymentType->AsArbitrary($strPaymentType, RENDER_OUTPUT);
+			$strEnteredByName 	= GetEmployeeName($dboPayment->EnteredBy->Value);
+			$strToolTipHtml 	.= $dboPayment->EnteredBy->AsArbitrary($strEnteredByName, RENDER_OUTPUT);
+			$strStatus 			= GetConstantDescription($dboPayment->Status->Value, "PaymentStatus");
+			$strToolTipHtml 	.= $dboPayment->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
+			$strToolTipHtml 	.= $dboPayment->AmountApplied->AsOutput();
+			$strToolTipHtml 	.= $dboPayment->Balance->AsOutput();
+			Table()->PaymentTable->SetToolTip($strToolTipHtml);
+			
+			// Add drop down detail
+			//TODO! work out what should go here
+			Table()->PaymentTable->SetDetail($strToolTipHtml);
+			
+			// Add indexes
 			foreach (DBL()->InvoicePayment as $dboInvoicePayment)
             {
                 if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
@@ -125,43 +136,15 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
                     Table()->PaymentTable->AddIndex("InvoiceRun", $dboInvoicePayment->InvoiceRun->Value);
                 }
             }
-			
-			// find each InvoicePayment record that relates to the current Payment record
-			/*foreach (DBL()->InvoicePayment as $dboInvoicePayment)
-			{
-				if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
-				{
-					// the current InvoicePayment record relates to the current Payment record
-					
-					// find each Invoice that relates to the current InvoicePayment record
-					foreach (DBL()->Invoice as $dboInvoice)
-					{
-						if ($dboInvoice->InvoiceRun->Value == $dboInvoicePayment->InvoiceRun->Value)
-						{
-						
-						
-							Table()->PaymentTable->AddIndex("Invoice", $intInvoiceNumber);
-		
-							// the current Invoice record relates to the current InvoicePayment record
-							// this means that the current Invoice record relates to the current Payment Record
-							// so store this information in both of them so that it can be used as an index when VixenTables are being built
-							// also rememeber that a payment can be linked to multiple invoices
-							// and an invoice can be linked to multiple payments
-							
-							$arrInvoices[] = $dboInvoice->Id->Value;
-							$arrPayments[$dboInvoice->Id->Value][] = $dboPayment->Id->Value;
-						}
-					}
-				}
-			}*/
-			//$dboPayment->Invoices = $arrInvoices;
-		}		
+		}
 		
 		Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
 		Table()->PaymentTable->RowHighlighting = TRUE;
 		
 		Table()->PaymentTable->Render();
 		
+		//echo "</div>\n";
+		//echo "<div class='Seperator'></div>\n";
 	
 	}
 }

@@ -62,7 +62,6 @@ class HTMLElements
 					[Class] => Red
 					[BaseClass] => Default
 				)
-			[Type] => Output
 		)
 		
 		A property who's output label is dependent on its value (ie radio buttons), will have the 
@@ -120,7 +119,6 @@ class HTMLElements
 						)
 					[BaseClass] => Default
 				)
-			[Type] => Output
 		)
 	*/
 	
@@ -256,10 +254,10 @@ class HTMLElements
 	/**
 	 * EmailLinkLabel()
 	 * 
-	 * Renders a value as a "mailto:" hyperlink, within <div></div> tags
+	 * Renders a property as a "mailto:" hyperlink, within <div></div> tags
 	 * 
-	 * Renders a value as a "mailto:" hyperlink, within <div></div> tags
-	 * The value's accompanying descriptive label is also included
+	 * Renders a property as a "mailto:" hyperlink, within <div></div> tags
+	 * The property's accompanying descriptive label is also included
 	 *
 	 * @param	array	$arrParams			The parameters to use when building the
 	 * 										email address (see above for format).
@@ -421,45 +419,43 @@ class HTMLElements
 	}
 	
 	//------------------------------------------------------------------------//
-	// CheckBox TODO
+	// CheckBox
 	//------------------------------------------------------------------------//
 	/**
 	 * CheckBox()
 	 * 
 	 * Creates a check box
 	 * 
-	 * Echoes out a formatted HTML input check-box tag, using data from an array
-	 * to build the element's attributes like class, name, id and value
+	 * Creates a check box
+	 * Returns a formatted HTML div tag, using data from an array to build
+	 * the element's attributes like class, id and value
 	 *
-	 * @param	Array	$arrParams		The parameters to use when building the
-	 * 									input check-box (see above for format).
+	 * @param	array	$arrParams			parameters to use when building the
+	 * 										checkbox (see above for format).
+	 * @return	string						html code
 	 *
 	 * @method
 	 */
 	function CheckBox($arrParams)
 	{
-		// get documentation for label
-		$strDocumentation = explode(".",$arrParams['Name']);
+		$strLabel = $arrParams['Definition']['Label'];
 		
-		// work out the class to use
-		if (!$arrParams['Definition']['Class'])
+		// determine whether the checkbox should be checked
+		$strChecked = "";
+		if ($arrParams['Value'])
 		{
-			$arrParams['Definition']['Class'] = CLASS_DEFAULT; // Default
-		}
-		$strClass = $arrParams['Definition']['Class']."Input"; // DefaultInput
-		if ($arrParams['Valid'] === FALSE)
-		{
-			$strClass .= "Invalid"; // DefaultInputInvalid
+			$strChecked = "checked";
 		}
 		
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		// The potentially taller of the two divs must go first
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputCheckBox {$arrParams['Definition']['Class']}'>\n";
+		// create the checkbox
+		$strHtml .= "		<input type='checkbox' name='{$arrParams['Object']}.{$arrParams['Property']}' $strChecked>$strLabel</input>\n";
+		$strHtml .= "   </div>\n";
+		$strHtml .= "</div>\n";
 		
-		echo "<td>";
-		echo "$strDocumentation[1]:";
-		echo "</td>";
-		echo "<td>";
-		echo "<input type='checkbox' name='" . $arrParams['Object'] . $arrParams['Property'] . "' value='{$arrParams['Value']}' class='$strClass'></input>";
-		echo "</td>";
-	
+		return $strHtml;
 	}
 
 	//------------------------------------------------------------------------//
@@ -468,54 +464,53 @@ class HTMLElements
 	/**
 	 * RadioButtons()
 	 * 
-	 * Creates a set of linked radio buttons
+	 * Creates a set of radio buttons
 	 * 
-	 * Echoes out a block of formatted HTML input radio tags, using data from an
-	 * array to build the element's attributes like class, name, id and value
+	 * Creates a set of radio buttons
+	 * Returns a formatted HTML div tag, using data from an array to build
+	 * the element's attributes like class, id and value
 	 *
-	 * @param	Array	$arrParams		The parameters to use when building the
-	 * 									input radio-buttons (see above for format).
+	 * @param	array	$arrParams			parameters to use when building the
+	 * 										set of radio buttons (see above for format).
+	 * @return	string						html code
 	 *
 	 * @method
 	 */
-	function Radio($arrParams)
+	function RadioButtons($arrParams)
 	{
-		// an example of Late Payments radio buttons on account_edit.php
-		// $arrParams has an array of keys=>values for the options
-
-		// get documentation for label
-		$strDocumentation = explode(".",$arrParams['Name']);
+		/*  HTML radio button syntax
+		<INPUT TYPE=RADIO NAME="pizzasize" VALUE="S">small<BR>
+		<INPUT TYPE=RADIO NAME="pizzasize" VALUE="M" checked >medium<BR>
+		<INPUT TYPE=RADIO NAME="pizzasize" VALUE="L">large<P>
+		*/
 		
-		// work out the class to use
-		if (!$arrParams['Definition']['Class'])
+		//$strLabel = $arrParams['Definition']['Label'];
+		$mixValue = $arrParams['Value'];
+		
+		if (!is_array($arrParams['Definition']['Options']))
 		{
-			$arrParams['Definition']['Class'] = CLASS_DEFAULT; // Default
-		}
-		$strClass = $arrParams['Definition']['Class']."Input"; // DefaultInput
-		if ($arrParams['Valid'] === FALSE)
-		{
-			$strClass .= "Invalid"; // DefaultInputInvalid
+			return "HtmlElements->Radio: ERROR: no options are specified for property {$arrParams['Object']}.{$arrParams['Property']}";
 		}
 		
-		echo "<td>";
-		echo "$strDocumentation[1]:";
-		echo "</td>";
-		echo "<td>";
-		echo "<table border='0' cellpadding='3' cellspacing='0'>";
-		foreach ($arrParams['OutputOptions'] as $key=>$value)
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
+		
+		foreach ($arrParams['Definition']['Options'] as $arrOption)
 		{
-			echo "<tr>";
-			echo "<td>";
-			echo "<input type='radio' name='{$arrParams['Property']}' id='{$arrParams['Property']}:$key' value='$key' />";
-			echo "</td>";
-			echo "<td>";
-			echo "<label for='{$arrParams['Property']}:$key'>$value</label>";
-			echo "</td>";
-			echo "</tr>";
+			// check if this is the option that is currently selected
+			$strChecked = "";
+			if ($mixValue == $arrOption['Value'])
+			{
+				$strChecked = "checked";
+			}
+			
+			$strHtml .= "<input type='radio' name='{$arrParams['Object']}.{$arrParams['Property']}' value='{$arrOption['Value']}' $strChecked>{$arrOption['InputLabel']}</input>\n";
 		}
-
-		echo "</table>";
-		echo "</td>";
+		
+		$strHtml .= "   </div>\n";
+		$strHtml .= "</div>\n";
+		
+		return $strHtml;
 	}
 
 	//------------------------------------------------------------------------//

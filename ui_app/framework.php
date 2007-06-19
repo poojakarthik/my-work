@@ -1605,6 +1605,52 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// ViewInvoicePdf
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewInvoicePdf()
+	 *
+	 * Compiles the Href to be executed when the View Invoice Pdf menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the View Invoice Pdf menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intInvoice		invoice number of the invoice to view
+	 *
+	 * @return	string					Href to be executed when the View Invoice Pdf menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewInvoicePdf($intInvoice)
+	{
+		$this->strLabel = "pdf inv: $intInvoice";
+		return "build_invoice_pdf.php?Invoice.Id=$intInvoice";
+	}
+	
+	//------------------------------------------------------------------------//
+	// ViewInvoice
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewInvoice()
+	 *
+	 * Compiles the Href to be executed when the View Invoice menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the View Invoice menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intInvoice		invoice number of the invoice to view
+	 *
+	 * @return	string					Href to be executed when the View Invoice menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewInvoice($intInvoice)
+	{
+		$this->strLabel = "inv: $intInvoice";
+		return "view_invoice.php?Invoice.Id=$intInvoice";
+	}
+	
+	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
 	/**

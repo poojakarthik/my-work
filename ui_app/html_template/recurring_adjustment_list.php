@@ -99,18 +99,40 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		// Render each of the account invoices
-		//TODO!
-		echo "<br> INSERT ACCOUNT RECURRING ADJUSTMENTS HERE";
+		echo "<h2 class='Adjustment'>Recurring Adjustments</h2>\n";
+		//echo "<div class='WideContent'>\n";
+
 		
-		/*
-		echo "<table border='5'>\n";
-		foreach (DBO()->KnowledgeBase AS $strProperty=>$objValue)
+		// define the table's header
+		Table()->RecurringAdjustmentTable->SetHeader("Date", "Description");
+		
+		// NOTE: Currently widths and alignments are not taken into account when the table is rendered
+		Table()->RecurringAdjustmentTable->SetWidth("20%", "80%");
+		Table()->RecurringAdjustmentTable->SetAlignment("Left", "Left");
+		
+		// add the rows
+		foreach (DBL()->RecurringCharge as $dboRecurringCharge)
 		{
-			$objValue->RenderOutput();
-		}
-		echo "</table>\n";
-		*/
+			Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->CreatedOn->AsValue(), $dboRecurringCharge->Description->AsValue());
+			
+			// add tooltip
+			$strToolTipHtml = $dboRecurringCharge->LastChargedOn->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsOutput();
+			
+			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
+			
+			// add indexes
+			//TODO! 
+		}		
+		
+		// Link other tables to this one
+		//TODO!
+		
+		Table()->RecurringAdjustmentTable->RowHighlighting = TRUE;
+
+		Table()->RecurringAdjustmentTable->Render();
+		//echo "</div>\n";
+		//echo "<div class='Seperator'></div>\n";
 	}
 }
 

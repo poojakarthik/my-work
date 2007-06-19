@@ -99,18 +99,45 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		// Render each of the account invoices
-		//TODO!
-		echo "<br> INSERT ACCOUNT ADJUSTMENTS HERE";
+		echo "<h2 class='Adjustment'>Adjustments</h2>\n";
+		//echo "<div class='WideContent'>\n";
+
 		
-		/*
-		echo "<table border='5'>\n";
-		foreach (DBO()->KnowledgeBase AS $strProperty=>$objValue)
+		// define the table's header
+		Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount");
+		
+		// NOTE: Currently widths and alignments are not taken into account when the table is rendered
+		Table()->AdjustmentTable->SetWidth("20%", "30%", "50%");
+		Table()->AdjustmentTable->SetAlignment("Left", "Left", "Right");
+		
+		// add the rows
+		foreach (DBL()->Charge as $dboCharge)
 		{
-			$objValue->RenderOutput();
+			Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
+												$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
+												$dboCharge->Amount->AsValue());
+			
+			// add tooltip
+			$strToolTipHtml = $dboCharge->CreatedBy->AsOutput();
+			$strToolTipHtml .= $dboCharge->ApprovedBy->AsOutput();
+			$strToolTipHtml .= $dboCharge->Description->AsOutput();
+			$strToolTipHtml .= $dboCharge->Notes->AsOutput();
+			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);
+			
+			// add indexes
+			Table()->AdjustmentTable->AddIndex("InvoiceRun", $dboCharge->InvoiceRun->Value);
+
+//Currently the invoice table will only select associated rows in this table if Details have been defined for each row
+//Table()->AdjustmentTable->SetDetail("[INSERT DETAILS HERE]");
 		}
-		echo "</table>\n";
-		*/
+		
+		// Link other tables to this one
+		Table()->AdjustmentTable->LinkTable("InvoiceTable", "InvoiceRun");
+		
+		Table()->AdjustmentTable->RowHighlighting = TRUE;
+		Table()->AdjustmentTable->Render();
+		//echo "</div>\n";
+		//echo "<div class='Seperator'></div>\n";
 	}
 }
 

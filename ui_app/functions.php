@@ -463,4 +463,16 @@ function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue = NULL)
 	return $bolReturn;
 }
 
+
+function GetEmployeeName($intEmployeeId)
+{
+	DBO()->EmployeeName->Id = $intEmployeeId;
+	DBO()->EmployeeName->SetTable("Employee");
+	DBO()->EmployeeName->Load();
+	
+	$strEmployeeName = DBO()->EmployeeName->FirstName->Value ." ". DBO()->EmployeeName->LastName->Value;
+	
+	return $strEmployeeName;
+}
+
 ?>
