@@ -108,15 +108,6 @@ class ClassBuilderPHP
 					}
 					break;
 				
-				// Property
-				case 'p':
-					//TODO!Andrew!add support for properties
-					if (($this->arrOutput[$intKey] = $this->BuildProperty($strLine)) === FALSE)
-					{
-						return FALSE;
-					}
-					break;
-				
 				// Comment
 				case '/':
 					$this->arrOutput[$intKey] = $this->BuildComment($strLine);
@@ -142,18 +133,8 @@ class ClassBuilderPHP
 			$this->strOutput .= "\n";
 		}
 		
-		// close the class and methods
 		
-			if(!$this->bolFirstMethod)
-			{
-				$this->strOutput .= "\t }";
-			}
-			$this->strOutput .= "\n";
-			if(!$this->bolFirstClass)
-			{
-			$this->strOutput .= '}';
-			}
-			
+		
 		return $this->strOutput;
 	}
 	
@@ -177,28 +158,35 @@ class ClassBuilderPHP
 	{
 		$strClass = '';
 		
+		//add previos method and class closing bracket
+		if(!$this->bolFirstMethod)
+		{
+			$strClassDoc .= "\n\t}";
+			$strClassDoc .= "\n";
+		}
+		if(!$this->bolFirstClass)
+		{
+		$strClassDoc .= '}';
+		}
+		
+		$strClassDoc .= "\n";
+		$strClassDoc .= "\n";
+		
 		// set commenting info
 		$this->bolCommentClass = TRUE;
 		$this->bolCommentMethod = FALSE;
+		
+		$this->bolFirstMethod = TRUE;
 		
 		if($this->bolFirstClass)
 		{
 			// don't add closing brackets
 			//echo "T $this->intLineNumber ";
 			$this->bolFirstClass = FALSE;
-			$this->bolFirstMethod = TRUE;
 		}
 		else
 		{
-			//add method and class closing bracket
-			//echo "F $this->intLineNumber ";
-			$strClassDoc .= "\t }";
-			$strClassDoc .= "\n";
-			$strClassDoc .= '}';
-			$strClassDoc .= "\n";
-			$strClassDoc .= "\n";
-			
-			$this->bolFirstMethod = TRUE;
+
 		}
 		
 		$strClass .= "\n";
@@ -215,10 +203,8 @@ class ClassBuilderPHP
 			return FALSE;
 		}
 		
-		
 		$strClassName[0]=strtoupper($strClassName[0]);
 						
-
 		// start of the class
 		$strClass .= "class $strClassName ";
 		
@@ -296,8 +282,6 @@ class ClassBuilderPHP
 		if($this->bolFirstMethod)
 		{
 			// don't add closing brackets
-			
-			
 			if($arrMethodData[1] == '__construct' || $arrMethodData[1] == '__Construct')
 			{
 			
@@ -305,7 +289,7 @@ class ClassBuilderPHP
 			else
 			{
 				$strConstruct = $this->BuildMethod('m __construct $strVar $arrVar [$intVar]');
-				$strConstruct .= "\n \t } \n \n";
+				$strConstruct .= "\n \t} \n \n";
 			}
 			
 			$this->bolFirstMethod = FALSE;
@@ -313,14 +297,13 @@ class ClassBuilderPHP
 		else
 		{
 			//add method closing bracket
-			$strMethodDoc .= "\t";
+			$strMethodDoc .= "\t}";
 			$strMethodDoc .= "\n";
 			$strMethodDoc .= "\n";
 
 		}
 	
 		$strMethod .= "\n";
-
 		
 		foreach($arrMethodData as $intKey=>$arrValue)
 		{
@@ -448,7 +431,7 @@ class ClassBuilderPHP
 		
 		$strMethod .= ')';
 		$strMethod .= "\n";
-		$strMethod .= "\t {";
+		$strMethod .= "\t{";
 		$strMethod .= "\n";
 		
 		$strMethodDoc .= $this->BuildMethodDoc($strMethodName, $arrParameters, $strReturnType);
@@ -474,6 +457,10 @@ class ClassBuilderPHP
 	 */
 	function BuildComment($strCommentInput)
 	{
+		if ($strCommentInput[1]!='/')
+		{
+			$strCommentInput = '/'.$strCommentInput;
+		}
 		if($this->bolCommentClass)
 		{
 			$strComment = "\t";
@@ -716,7 +703,7 @@ class ClassBuilderPHP
 		echo $this->strOutput;
 	}
  
- }
+}
  
  
 //----------------------------------------------------------------------------//
@@ -856,17 +843,10 @@ class ClassBuilderPHP
 		}
 		
 		// close the class and methods
+		$this->strOutput .= "\t}";
+		$this->strOutput .= "\n";
+		$this->strOutput .= '}';
 		
-			if(!$this->bolFirstMethod)
-			{
-				$this->strOutput .= "\t }";
-			}
-			$this->strOutput .= "\n";
-			if(!$this->bolFirstClass)
-			{
-			$this->strOutput .= '}';
-			}
-			
 		return $this->strOutput;
 	}
 }

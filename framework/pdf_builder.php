@@ -19,7 +19,7 @@
 
 require_once('pdf/class.ezpdf.php');
 
-class VixenPdf  
+class VixenPdf
 {
 
 
@@ -225,7 +225,7 @@ class VixenPdf
 	*/
 	 function RevisionHistory($arrRevisionHistory)
 	 {
-		$this->$arrRevisionHistory = $arrRevisionHistory;
+		$this->arrRevisionHistory = $arrRevisionHistory;
 	 }
 
 
@@ -248,7 +248,10 @@ class VixenPdf
 	*/
 	 function AddHeading($strHeading, $intType=NULL)
 	 {
-
+		$arrHeading = array("Type" => "Heading", "Value" => $strHeading);
+		$this->arrDocumentData[] = $arrHeading;
+		
+		$this->arrContents[] = $strHeading;
 	 }
 
 
@@ -270,7 +273,8 @@ class VixenPdf
 	*/
 	 function AddText($strText)
 	 {
-
+		$arrText = array("Type" => "Text", "Value" => $strText);
+		$this->arrDocumentData[] = $arrText;
 	 }
 
 
@@ -286,9 +290,9 @@ class VixenPdf
 	*
 	* @param	array	$arrTable		array containing rows for the table
 	*									$arrTable[RowNumber]['ColumnName'] = ColumnValue
-	* @param	array	$arrColumns		optional array of colums to use from arrTable
-	*									$arrColumns[ColumnName]['Alias'] = optional Column Alias
-	*									$arrColumns[ColumnName]['Width'] = optional Column Width
+	* @param	array	$arrColumns		optional array of colums to use form arrTable
+	*									$arrColumns[ColumnName]['alias'] = optional Column Alias
+	*									$arrColumns[ColumnName]['width'] = optional Column Width
 	*
 	* @return 
 	*
@@ -296,7 +300,28 @@ class VixenPdf
 	*/
 	 function AddTable($arrTable, $arrColumns=NULL)
 	 {
-
+	 	$arrTableDetails = array();
+		$arrTableDetails["Type"] = "Table";
+		$arrTableDetails["Value"] = $arrTable;
+		
+		if ($arrColumns)
+		{
+			foreach ($arrColumns as $key=>$value)
+			{
+				$arrTableDetails["ColWidths"][$key]['width'] = $arrColumns[$key]['width'];
+				
+				if ($arrColumns[$key]['alias'])
+				{
+					$arrTableDetails["ColNames"][$key] = $arrColumns[$key]['alias'];
+				}
+				else
+				{
+					$arrTableDetails["ColNames"][$key] = $key;
+				}
+			}
+		}
+		
+		$this->arrDocumentData[] = $arrTableDetails;
 	 }
 
 
@@ -380,11 +405,54 @@ class VixenPdf
 		$this->pdf->ezNewPage();
 		
 		// REVISION HISTORY
-		$arrRevisionHistoryOptions = array('width'=>550);
+		$this->pdf->ezStartPageNumbers(300,30,8,'','',1);
+		$arrRevisionHistoryOptions = array('width'=>500);
 		$strTableTitle = 'Revision History';
-		$strTableTitle = $strTableTitle.'<C:rf:1'.rawurlencode($strTableTitle).'>'."\n";
-    	$this->pdf->ezText($strTableTitle,26,array('justification'=>'centre'));
+		$strTableTitle = "<b>".$strTableTitle.'<C:rf:1'.rawurlencode($strTableTitle).'>'."</b>\n";
+    	$this->pdf->ezText($strTableTitle,20);
 		$this->pdf->ezTable($this->arrRevisionHistory, '', '', $arrRevisionHistoryOptions);
+		$intContentsPageNum = $this->pdf->ezGetCurrentPageNumber();
+		
+		// Rest of the document
+		foreach ($this->arrDocumentData as $data)
+		{
+			switch($data["Type"])
+			{
+				case "Heading":
+					$this->pdf->ezNewPage();
+					$this->pdf->ezText("<b>".$data["Value"].'<C:rf:1'.rawurlencode($data["Value"]).'>'."</b>\n", 20);
+					break;
+				case "Text":
+					$this->pdf->ezText($data["Value"], 12);
+					break;
+				case "Table":
+					$this->pdf->ezTable($data["Value"], $data["ColNames"], '', array('width'=>500, 'cols'=>$data["ColWidths"]));
+					break;
+			}
+		}
+
+		//Insert Table of Contents
+		$this->pdf->ezStopPageNumbers(1,1);
+		$this->pdf->ezInsertMode(1,$intContentsPageNum,'after');
+		$this->pdf->ezNewPage();
+		$strContentsTitle = 'Table of Contents';
+		$this->pdf->ezText("<b>".$strContentsTitle."</b>\n",20);
+		$xpos = 520;
+		$contents = $this->pdf->reportContents;
+		$this->pdf->setStrokeColor(0,0,0,1);
+		
+		foreach($contents as $k=>$v)
+		{
+  			switch ($v[2])
+			{
+    			case '1':
+      				$y=$this->pdf->ezText('<c:ilink:toc'.$k.'>'.$v[0].'</c:ilink><C:dots:1'.$v[1].'>',12,array('aright'=>$xpos));
+      				break;
+    			case '2':
+      				$this->pdf->ezText('<c:ilink:toc'.$k.'>'.$v[0].'</c:ilink><C:dots:2'.$v[1].'>',10,array('left'=>50,'aright'=>$xpos));
+      				break;
+			}
+		}
 	 }
 
 
@@ -409,7 +477,7 @@ class VixenPdf
 	 }
 }
 
-// from readme.php by 'R&OS Ltd' provided with ezpdf class
+
 
 class Creport extends Cezpdf {
 
@@ -456,7 +524,6 @@ function dots($info){
 
 
 }
-
 
 }
 ?>
