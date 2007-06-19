@@ -165,7 +165,7 @@
 			
 			// check if the script needs to be run now
 			if ($intTimeNow > (int)$arrScript['NextRun'])
-			{
+			{				
 				$this->Debug("Loading Script : $strScriptName");
 				// set run script command
 				if ($arrScript['Config']['Directory'])
@@ -463,7 +463,6 @@
 		
 		// calculate day based timestamp
 		$intDayTimeStamp = $intTimeNow - $intZeroTime;
-		//$this->Debug("Current Day Timestamp :$intDayTimeStamp");
 		
 		// get first run time for today
 		$intFirstRun = (int)$arrScript['Config']['StartTime'] + $intZeroTime;
@@ -491,38 +490,68 @@
 		
 		// get time last scheduled to run
 		$intLastSchedualedRun = (int)$arrScript['NextRun'];
-		if ($intLastSchedualedRun)
+		if ($arrScript['Config']['RecurringDay'])
 		{
-			$this->Debug("Last Run  : ".Date("Y-m-d H:i:s", $intLastSchedualedRun));
-			// schedule next run based on previous schedule
-			$intNextRun = $intLastSchedualedRun + $intInterval;
-			
-			// check run time constraints
-			if ($intFirstRun > $intNextRun)
+			// Monthly Script
+			if ($intLastSchedualedRun)
 			{
-				// if next run is earlier then first run...
-				// run at first run time
-				$intNextRun = $intFirstRun;
+				$intNextRun = strtotime("+1 month", $intLastSchedualedRun);
 			}
-			elseif ($intFinalRun < $intNextRun)
+			else
 			{
-				// if next run is later then last run...
-				// run at first run time tomorrow
-				$intNextRun = $intFirstRun + 86400;
+				// Are we too late to run?
+				$strZeroPaddedDay	= str_pad($arrScript['Config']['RecurringDay'], 2, '0', STR_PAD_LEFT);
+				$strFirstOfMonth	= date("Y-m-$strZeroPaddedDay", $intLastSchedualedRun);
+				$strEarliestRun		= $strFirstOfMonth . date(" H:i:s", (int)$arrScript['Config']['StartTime']);
+				$strLatestRun		= $strFirstOfMonth . date(" H:i:s", (int)$arrScript['Config']['FinishTime']);
+				if (date("Y-m-d", $intLastSchedualedRun) < $strLatestRun)
+				{
+					// Nope
+					$intNextRun = strtotime($strEarliestRun);
+				}
+				else
+				{
+					// Yup, set it to next month
+					$intNextRun = strtotime("+1 month", strtotime($strEarliestRun));
+				}
 			}
 		}
 		else
 		{
-			// if no previous scheduled run
-			// schedule next run for first run time
-			$intNextRun = $intFirstRun;
-		}
+			// Normal Script
+			if ($intLastSchedualedRun)
+			{
+				$this->Debug("Last Run  : ".Date("Y-m-d H:i:s", $intLastSchedualedRun));
+				// schedule next run based on previous schedule
+				$intNextRun = $intLastSchedualedRun + $intInterval;
+				
+				// check run time constraints
+				if ($intFirstRun > $intNextRun)
+				{
+					// if next run is earlier then first run...
+					// run at first run time
+					$intNextRun = $intFirstRun;
+				}
+				elseif ($intFinalRun < $intNextRun)
+				{
+					// if next run is later then last run...
+					// run at first run time tomorrow
+					$intNextRun = $intFirstRun + 86400;
+				}
+			}
+			else
+			{
+				// if no previous scheduled run
+				// schedule next run for first run time
+				$intNextRun = $intFirstRun;
+			}
 		
-		// check if next run is more than one interval in the past
-		if ($intNextRun < ($intTimeNow - $intInterval))
-		{
-			$intIntervals = floor(($intTimeNow - $intNextRun) / $intInterval);
-			$intNextRun += $intIntervals * $intInterval;
+			// check if next run is more than one interval in the past
+			if ($intNextRun < ($intTimeNow - $intInterval))
+			{
+				$intIntervals = floor(($intTimeNow - $intNextRun) / $intInterval);
+				$intNextRun += $intIntervals * $intInterval;
+			}
 		}
 		
 		$this->Debug("Next Run  : ".Date("Y-m-d H:i:s", $intNextRun));
