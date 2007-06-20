@@ -531,15 +531,11 @@ class ClassBuilderPHP
 		$strClassDoc .= "\n";
 		$strClassDoc .= '* @package	<package_name>';
 		$strClassDoc .= "\n";
-		$strClassDoc .= '* @parent	<full.parent.path>';
-		$strClassDoc .= "\n";
-		$strClassDoc .= '* @class	<ClassName||InstanceName>';
+		$strClassDoc .= "* @class	$strClassName";
 		$strClassDoc .= "\n";
 		if($strClassExtends)
 		{
-			$strClassDoc .= '* @extends';
-			$strClassDoc .= "\t $strClassExtends";
-			$strClassDoc .= "\n";
+			$strClassDoc .= "* @extends \t$strClassExtends\n";
 		}
 		$strClassDoc .= '*/';
 		$strClassDoc .= "\n";

@@ -155,7 +155,7 @@ class VixenPdf
 	*/
 	 function Author($strAuthor)
 	 {
-		$this->$strAuthor = $strAuthor;
+		$this->strAuthor = $strAuthor;
 	 }
 
 

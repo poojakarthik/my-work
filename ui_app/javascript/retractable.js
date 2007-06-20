@@ -23,10 +23,15 @@ function VixenSlidingClass()
 	{
 		objId = tblId + '_' + intRow + 'DIV-DETAIL';
 		this.obj = document.getElementById(objId);
+		
 		this.duration = 1;
 		
 		this.height =function()
 		{
+			if (!this.obj)
+			{
+				return FALSE;
+			}
 			if (this.obj.style.height)
 			{
 				this.myheight = this.obj.style.height;
@@ -40,6 +45,10 @@ function VixenSlidingClass()
 		
 		this.up = function() 
 		{
+			if (!this.obj)
+			{
+				return FALSE;
+			}
 			this.curHeight = this.height();
 			this.newHeight = '0';
 			if(Vixen.table[tblId].row[intRow].Sliding != TRUE) 
