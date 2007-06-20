@@ -53,7 +53,7 @@
 		$arrConfig['Define']["Skeleton"]	["FileType"]['/test.txt/']		= CDR_SKELETON;
 		*/
 /**/
-		/*
+		
 		// Unitel Landline Definition
 		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel Landline/S&E";
 		$arrConfig['Define']["Unitel"]	["Carrier"]							= CARRIER_UNITEL;
@@ -61,21 +61,21 @@
  		$arrConfig['Define']["Unitel"]	["Server"]							= "rslcom.com.au";
  		$arrConfig['Define']["Unitel"]	["Username"]						= "sp058";
  		$arrConfig['Define']["Unitel"]	["PWord"]							= "BuzzaBee06*#";
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
- 		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatchesoffnet/";
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatches/";
+ 		$arrConfig['Define']["Unitel"]	["Dir"][]							= "cdrbatchesoffnet/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "ebill_dailyorderfiles/dsc_reports/archive";
  		//$arrConfig['Define']["Unitel"]	["Dir"][]							= "dailychurn/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
-		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
-		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;
+		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSLCOM]			= CDR_UNITEL_RSLCOM;
+		$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_UNITEL_SE]		= CDR_UNITEL_RSLCOM;
 		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_ORDER_RPT]	= PRV_UNITEL_DAILY_ORDER_RPT;
 		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
 		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
 		//$arrConfig['Define']["Unitel"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
-		*/
 		
-		/*
+		
+		
 		// Unitel Mobile Definition
 		// (needs a separate definition because the regex's for Commander and LL are the same, but different file format)
 		$arrConfig['Define']["Unitel"]	["Name"]							= "Unitel Commander Mobile";
@@ -87,7 +87,7 @@
  		$arrConfig['Define']["Unitel"]	["Dir"][]							= "mobilecdrbatches/";
  		$arrConfig['Define']["Unitel"]	["FinalDir"]						= DESTINATION_ROOT.'unitel/';
 		$arrConfig['Define']["Unitel"]	["FileType"][REGEX_COMMANDER]		= CDR_UNITEL_COMMANDER;
-		*/
+		
 		
 		// Optus Definition	
 		$arrConfig['Define']["Optus"]	["Name"]						= "Optus";
