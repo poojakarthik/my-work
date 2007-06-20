@@ -137,13 +137,21 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		echo "<h2 class='Account'>Account Details</h2>\n";
 		echo "<div class='NarrowContent'>\n";
+		//echo "<table border='0' cellpadding='0' cellspacing='0' width='100%'>\n";
+		//echo "<tr>\n";
+		//echo "<td>\n";
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-		DBO()->Account->DisableDDR->RenderInput();
-		DBO()->Account->DisableLatePayment->RenderInput();
+		//echo "</td>\n";
+		//echo "<td>\n";
+		DBO()->Account->DisableDDR->RenderOutput();
+		DBO()->Account->DisableLatePayment->RenderOutput();
+		//echo "</td>\n";
+		//echo "</tr>\n";
+		//echo "</table>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 	}

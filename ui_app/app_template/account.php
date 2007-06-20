@@ -161,11 +161,17 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		
 		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		$strWhere = "(Account = ". DBO()->Account->Id->Value .")";
+		$strWhere .= " AND ((Status = ". PAYMENT_WAITING .")";
+		$strWhere .= " OR (Status = ". PAYMENT_PAYING .")";
+		$strWhere .= " OR (Status = ". PAYMENT_FINISHED .")";
+		$strWhere .= " OR (Status = ". PAYMENT_REVERSED ."))";
+		DBL()->Payment->Where->SetString($strWhere);
 		DBL()->Payment->OrderBy("PaidOn DESC");
 		DBL()->Payment->Load();
 		
-		
 		DBL()->InvoicePayment->Account = DBO()->Account->Id->Value;
+		DBL()->InvoicePayment->OrderBy("Id DESC");
 		DBL()->InvoicePayment->Load();
 		
 		DBL()->Charge->Account = DBO()->Account->Id->Value;

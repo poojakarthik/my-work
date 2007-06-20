@@ -100,7 +100,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 	function Render()
 	{	
 		echo "<h2 class='Adjustment'>Adjustments</h2>\n";
-		//echo "<div class='WideContent'>\n";
+		echo "<div class='NarrowColumn'>\n";
 
 		
 		// define the table's header
@@ -114,7 +114,8 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		foreach (DBL()->Charge as $dboCharge)
 		{
 			Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
-												$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
+												//$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
+												$dboCharge->ChargeType->AsValue(),
 												$dboCharge->Amount->AsValue());
 			
 			// add tooltip
@@ -136,7 +137,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		
 		Table()->AdjustmentTable->RowHighlighting = TRUE;
 		Table()->AdjustmentTable->Render();
-		//echo "</div>\n";
+		echo "</div>\n";
 		//echo "<div class='Seperator'></div>\n";
 	}
 }

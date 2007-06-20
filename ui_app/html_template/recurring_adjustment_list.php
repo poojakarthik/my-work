@@ -100,7 +100,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 	function Render()
 	{	
 		echo "<h2 class='Adjustment'>Recurring Adjustments</h2>\n";
-		//echo "<div class='WideContent'>\n";
+		echo "<div class='NarrowColumn'>\n";
 
 		
 		// define the table's header
@@ -131,7 +131,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		Table()->RecurringAdjustmentTable->RowHighlighting = TRUE;
 
 		Table()->RecurringAdjustmentTable->Render();
-		//echo "</div>\n";
+		echo "</div>\n";
 		//echo "<div class='Seperator'></div>\n";
 	}
 }

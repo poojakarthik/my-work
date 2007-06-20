@@ -102,6 +102,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 	{	
 		echo "<h2 class='Payment'>Payments</h2>\n";
 		//echo "<div class='NarrowContent'>\n";
+		echo "<div class='NarrowColumn'>\n";
 		
 		Table()->PaymentTable->SetHeader("Date", "Amount");
 		Table()->PaymentTable->SetWidth("30%", "70%");
@@ -112,30 +113,85 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			// Add this row to Payment table
 			Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $dboPayment->Amount->AsValue());
 			
-			// Add tooltip
-			$strPaymentType 	= GetConstantDescription($dboPayment->PaymentType->Value, "PaymentType");
-			$strToolTipHtml 	= $dboPayment->PaymentType->AsArbitrary($strPaymentType, RENDER_OUTPUT);
-			$strEnteredByName 	= GetEmployeeName($dboPayment->EnteredBy->Value);
-			$strToolTipHtml 	.= $dboPayment->EnteredBy->AsArbitrary($strEnteredByName, RENDER_OUTPUT);
-			$strStatus 			= GetConstantDescription($dboPayment->Status->Value, "PaymentStatus");
-			$strToolTipHtml 	.= $dboPayment->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
-			$strToolTipHtml 	.= $dboPayment->AmountApplied->AsOutput();
-			$strToolTipHtml 	.= $dboPayment->Balance->AsOutput();
-			Table()->PaymentTable->SetToolTip($strToolTipHtml);
+			// initialise variables
+			$arrInvoiceId = Array();
+			$arrInvoiceAmount = Array();
 			
-			// Add drop down detail
-			//TODO! work out what should go here
-			Table()->PaymentTable->SetDetail($strToolTipHtml);
-			
-			// Add indexes
+			// Add indexes, and calculate applied payments (for the drop down details)
 			foreach (DBL()->InvoicePayment as $dboInvoicePayment)
             {
                 if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
                 {
                     // The current InvoicePayment record relates to the payment so add it as an index
                     Table()->PaymentTable->AddIndex("InvoiceRun", $dboInvoicePayment->InvoiceRun->Value);
+					
+					// find the invoice that relates to this InvoiceRun
+					$strInvoiceRun = $dboInvoicePayment->InvoiceRun->Value;
+					foreach (DBL()->Invoice as $dboInvoice)
+					{
+						if ($dboInvoice->InvoiceRun->Value == $strInvoiceRun)
+						{
+							// the current invoice relates to the current payment
+							// define data for the row's drop down details
+							$arrInvoiceAmount[$dboInvoice->Id->AsValue()] = $dboInvoicePayment->Amount->AsValue();
+							$arrInvoiceId[] = $dboInvoice->Id->AsValue();
+						}
+					}
                 }
             }
+
+			// Set the drop down detail, if there is anything to put in it
+			if (count($arrInvoiceId))
+			{
+				$strDetailHtml = "<div class='VixenTableDetail'>\n";
+				$strDetailHtml .= "<table border='0' cellpadding='0' cellspacing='0' width='100%'>\n";
+				$strDetailHtml .= "<tr><th>Invoice#</th><th>Amount</th></tr>\n";
+				
+				// sort the list of invoices
+				sort($arrInvoiceId);
+
+				// render the details of each invoice payment
+				foreach ($arrInvoiceId as $intInvoiceId)
+				{
+					$strDetailHtml .= "<tr>\n";
+					$strDetailHtml .= "	<td>$intInvoiceId</td>\n";
+					$strDetailHtml .= "	<td>{$arrInvoiceAmount[$intInvoiceId]}</td>\n";
+					$strDetailHtml .= "</tr>\n";
+				}
+				$strDetailHtml .= "</table>\n";
+				$strDetailHtml .= "</div>\n";
+				
+				Table()->PaymentTable->SetDetail($strDetailHtml);
+			}
+			
+			// Set the tooltip
+			// Payment Type
+			$strPaymentType = GetConstantDescription($dboPayment->PaymentType->Value, "PaymentType");
+			$strToolTipHtml = $dboPayment->PaymentType->AsArbitrary($strPaymentType, RENDER_OUTPUT);
+			
+			// EnteredBy
+			$strEnteredByName = GetEmployeeName($dboPayment->EnteredBy->Value);
+			$strToolTipHtml .= $dboPayment->EnteredBy->AsArbitrary($strEnteredByName, RENDER_OUTPUT);
+			
+			// Status
+			$strStatus = GetConstantDescription($dboPayment->Status->Value, "PaymentStatus");
+			$strToolTipHtml .= $dboPayment->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
+			
+			// if the payment's status is PAYMENT_REVERSED then AmmountApplied = 0 else AmountApplied = Amount - Balance
+			if ($dboStatus != PAYMENT_REVERSED)
+			{
+				$dboPayment->AmountApplied = $dboPayment->Amount->Value - $dboPayment->Balance->Value;
+			}
+			else
+			{
+				$dboPayment->AmountApplied = 0;
+			}
+			
+			$strToolTipHtml .= $dboPayment->AmountApplied->AsOutput();
+			
+			// Balance
+			$strToolTipHtml .= $dboPayment->Balance->AsOutput();
+			//Table()->PaymentTable->SetToolTip($strToolTipHtml);
 		}
 		
 		Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
@@ -143,7 +199,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		
 		Table()->PaymentTable->Render();
 		
-		//echo "</div>\n";
+		echo "</div>\n";
 		//echo "<div class='Seperator'></div>\n";
 	
 	}

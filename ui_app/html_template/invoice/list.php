@@ -106,7 +106,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 
 		
 		//Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Invoice Sent", "View PDF", "View Invoice Details");
-		Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Status", "View PDF", "View Invoice Details");
+		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Invoice Sent (status)", "View PDF", "View Invoice Details");
 		//Table()->PaymentTable->SetWidth("20%", "30%", "50%");
 		//Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
 		
@@ -120,13 +120,17 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
 			$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><h2 class='Invoice'></h2></a></span>";
 			
+			// calculate Invoice Amount
+			$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
+			// calculate AppliedAmount
+			$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance;
 			
 			// Add this row to Invoice table
-			Table()->InvoiceTable->AddRow(  $dboInvoice->DueOn->AsValue(),
+			Table()->InvoiceTable->AddRow(  $dboInvoice->CreatedOn->AsValue(),
 											$dboInvoice->Id->AsValue(), 
-											$dboInvoice->Total->AsValue(), 
+											$dboInvoice->Amount->AsValue(), 
+											$dboInvoice->AppliedAmount->AsValue(), 
 											$dboInvoice->Balance->AsValue(), 
-											$dboInvoice->TotalOwing->AsValue(), 
 											$dboInvoice->Status->AsCallback("GetConstantDescription", Array("InvoiceStatus")), 
 											$strPdfLabel,
 											$strViewInvoiceLabel);
