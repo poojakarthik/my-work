@@ -432,6 +432,10 @@ $arrScript                                                      = Array();
 	//								eg. value of "1" would run on the first of every month
 	$arrScript['RecurringDay']				= 		1;
 	
+	// DieOnChildDeath
+	//				Boolean			Whether the failure of a child script should kill the parent
+	$arrScript['DieOnChildDeath']			=		TRUE;
+	
 	// Subscripts
 	//				Array			List of subscripts to run
 	//								Each each script requires the preceeding script to finish
@@ -484,6 +488,12 @@ $arrScript                                                      = Array();
 		$arrSubscript['Command']	=       'php /usr/share/vixen/payment_app/payments.php';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/payment_app/';
 		$arrScript['SubScript']['Payments']				= $arrSubscript;
+		
+		// Check CDR Files
+		$arrSubscript = Array();
+		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/cdrcheck.php';
+		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrScript['SubScript']['CDRFileCheck']				= $arrSubscript;		
 		
 		// Billing Execute
 		$arrSubscript = Array();

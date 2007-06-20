@@ -167,33 +167,33 @@
 			if ($intTimeNow > (int)$arrScript['NextRun'])
 			{				
 				$this->Debug("Loading Script : $strScriptName");
-				// set run script command
-				if ($arrScript['Config']['Directory'])
+				
+				// write state to database
+				$this->Debug("Writing state to database");
+				$this->_arrState['CurrentScript'] = $strScriptName;
+				$this->_arrState['CurrentRunTime'] = $intTimeNow;
+				$this->_WriteState(STATE_SCRIPT_RUN);
+				
+				// actually run the thing
+				$this->Debug("Running Script : $strScriptName");
+				if ($arrScript['Config']['SubSript'])
 				{
-					// change directory first
-					$strCommand  = "cd {$arrScript['Config']['Directory']};";
-					$strCommand .= $arrScript['Config']['Command'];
+					// Monthly script
+					$bolPassed = TRUE;
+					foreach ($arrScript['Config']['SubSript'] as $arrSubscript)
+					{
+							$bolPassed = ($this->_RunScript($arrScript, $arrSubscript)) ? $bolPassed : FALSE;
+					}
+					$this->_arrState['LastReturn'] = ($bolPassed) ? 1 : 0;
 				}
 				else
 				{
-					// run it right where we are
-					$strCommand = $arrScript['Config']['Command'];
+					// Standard script
+					$this->_arrState['LastReturn']		= $this->_RunScript($arrScript);
 				}
-				if ($strCommand)
-				{
-					// write state to database
-					$this->Debug("Writing state to database");
-					$this->_arrState['CurrentScript'] = $strScriptName;
-					$this->_arrState['CurrentRunTime'] = $intTimeNow;
-					$this->_WriteState(STATE_SCRIPT_RUN);
-				
-					// actually run the thing
-					$this->Debug("Running Script : $strScriptName");
-					$this->_arrState['LastReturn'] = shell_exec($strCommand);
-					$this->_arrState['LastScript'] = $strScriptName;
-					$this->_arrState['LastRunTime'] = $intTimeNow;
-					$this->Debug("Script Returned  :\n {$this->_arrState['LastReturn']}");
-				}
+				$this->_arrState['LastScript'] = $strScriptName;
+				$this->_arrState['LastRunTime'] = $intTimeNow;
+				$this->Debug("Script Returned  :\n {$this->_arrState['LastReturn']}");
 				
 				// set last run time for the script
 				$this->_arrScript[$strScriptName]['LastRun'] = $intTimeNow;
@@ -209,6 +209,53 @@
 			}
 		}
 	}
+	
+	//------------------------------------------------------------------------//
+	// _RunScript
+	//------------------------------------------------------------------------//
+	/**
+	 * _RunScript()
+	 *
+	 * Executes a script
+	 *
+	 * Executes a script
+	 * 
+	 * @param	array	$arrScript					Script details array
+	 * @param	arrat	$arrSubScript	optional	SubScript to run
+	 * 
+	 * @return	int									Script Exit Code
+	 *
+	 * @method
+	 */
+	function _RunScript($arrScript, $arrSubScript=NULL)
+	{
+		if ($arrSubScript)
+		{
+			$strDirectory	= $arrSubScript['Directory'];
+			$strCmd			= $arrSubScript['Command'];
+		}
+		else
+		{
+			
+		}
+		
+		// set run script command
+		if ($arrScript['Config']['Directory'])
+		{
+			// change directory first
+			$strCommand  = "cd {$arrScript['Config']['Directory']};";
+			$strCommand .= $arrScript['Config']['Command'];
+		}
+		else
+		{
+			// run it right where we are
+			$strCommand = $arrScript['Config']['Command'];
+		}
+		
+		// Run
+		return shell_exec($strCommand);
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// _WriteState
