@@ -104,6 +104,10 @@ require_once($strFrameworkDir."exception_vixen.php");
 $GLOBALS['fwkFramework'] = new Framework();
 $framework = $GLOBALS['fwkFramework'];
 
+// PEAR
+require_once("Mail.php");
+require_once("Mail/mime.php");
+
 // load application 
 require_once($strApplicationDir."definitions.php");
 require_once($strApplicationDir."config.php");

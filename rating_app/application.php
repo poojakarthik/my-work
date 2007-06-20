@@ -214,19 +214,6 @@
 		$this->_selFindDestFleetRate	= new StatementSelect($strTables, "Rate.*", $strWhere.$strStandardWhere.$strMyWhere, "ServiceRateGroup.CreatedOn DESC, ServiceRateGroup.Id DESC", 1);
 
 
-		// Select CDR Query
-		$arrColumns = $this->db->FetchClean("CDR");
-		unset($arrColumns['CDR']);
-		unset($arrColumns['Description']);
-		unset($arrColumns['CarrierRef']);
-		unset($arrColumns['File']);
-		unset($arrColumns['Carrier']);
-		unset($arrColumns['NormalisedOn']);
-		unset($arrColumns['SequenceNo']);
-		$arrColumns['Id'] = 0;
-		//$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
-		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, NULL, "1000");
-		
 		// Update CDR Query
 		$arrDefine = Array();
 		$arrDefine['Rate']		= TRUE;
@@ -234,7 +221,10 @@
 		$arrDefine['Charge']	= TRUE;
 		$arrDefine['RatedOn']	= new MySQLFunction("NOW()");
 		$this->_updUpdateCDRs	= new StatementUpdateById("CDR", $arrDefine);
-	 	
+		
+		// Cost & Charge totals
+		$this->_fltTotalCost	= 0;
+		$this->_fltTotalCharge	= 0;
  	}
  	
 	//------------------------------------------------------------------------//
@@ -347,12 +337,33 @@
 	 *
 	 * Rates CDR Records
 	 * Rates the next batch of 1000 normalised ready to rate CDRs in the database
+	 * 
+	 * @param	bool	$bolOnlyNew		optional	Only Rate new CDRs [FALSE]
 	 *
 	 * @return	bool	returns true untill all CDRs have been rated
 	 * @method
 	 */
-	 function Rate()
+	 function Rate($bolOnlyNew = FALSE)
 	 {
+		$strWhere = "Status = ".CDR_NORMALISED;	
+		if (!$bolOnlyNew)
+		{
+			$strWhere .= " OR Status = ".CDR_RERATE;
+		}
+		
+		// Select CDR Query
+		$arrColumns = $this->db->FetchClean("CDR");
+		unset($arrColumns['CDR']);
+		unset($arrColumns['Description']);
+		unset($arrColumns['CarrierRef']);
+		unset($arrColumns['File']);
+		unset($arrColumns['Carrier']);
+		unset($arrColumns['NormalisedOn']);
+		unset($arrColumns['SequenceNo']);
+		$arrColumns['Id'] = 0;
+		//$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, "Status = ".CDR_NORMALISED." OR Status = ".CDR_RERATE, "Status ASC", "1000");
+		$this->_selGetCDRs = new StatementSelect("CDR", $arrColumns, $strWhere, NULL, "1000");
+		
 	 	// get list of CDRs to rate (limit results to 1000)
 	 	$this->_selGetCDRs->Execute();
 		$arrCDRList = $this->_selGetCDRs->FetchAll();
@@ -524,6 +535,11 @@
 			$arrCDR['RatedOn']	= new MySQLFunction('NOW()');
 			$this->_updUpdateCDRs->Execute($arrCDR);
 			$intPassed++;
+			
+			// Add to Cost/Charge Totals
+			$this->_fltTotalCost	+= $this->_arrCurrentCDR['Cost'];
+			$this->_fltTotalCharge	+= $this->_arrCurrentCDR['Charge'];
+			$this->_intTotalRated++;
 		}
 		
 		// Report footer
@@ -1277,6 +1293,60 @@
 	 	return $updCDRStatus->Execute($arrColumns);
 	 }
 
+
+	
+	//------------------------------------------------------------------------//
+	// GetMargin
+	//------------------------------------------------------------------------//
+	/**
+	 * GetMargin()
+	 *
+	 * Gets the Profit Margin for this current Rating Run
+	 *
+	 * Gets the Profit Margin for this current Rating Run.  If it breaches the
+	 * Margin warning level, it will email an admin
+	 *
+	 * @param	integer	$intWarningLevel	Profit Margin Warning Level (percentage)
+	 * @param	integer	$intWarningCount	Minimum number of CDRs to Rate before Warning
+	 * @param	string	$strEmailAddress	Admin's email address
+	 *
+	 * @return	float						Profit Margin
+	 * @method
+	 */
+	 function GetMargin($intWarningLevel, $intWarningCount, $strEmailAddress)
+	 {
+	 	// Calculate Margin
+	 	$fltMargin = (($this->_fltTotalCharge - $this->_fltTotalCost) / abs($this->_fltTotalCharge)) * 100;
+	 	
+	 	// Did we exceed?
+	 	if ($fltMargin >= $intWarningLevel && $this->_intTotalRated >= $intWarningCount)
+	 	{
+	 		// Email
+			$strContent =	"Rating Profit Margin Warning (".date("Y-m-d H:i:s").")\n\n" .
+							"\tCDRs Successfully Rated\t:$this->_intTotalRated" .
+							"\tTotal Cost\t\t: $this->_fltTotalCost\n" .
+							"\tTotal Charge\t\t: $this->_fltTotalCharge\n" .
+							"\tProfit Margin\t\t: $fltMargin% (Limit: $intWarningLevel%)";
+			
+			$arrHeaders = Array();
+			$arrHeaders['From']		= 'rating@yellowbilling.com.au';
+			$arrHeaders['Subject']	= "Rating Profit Margin Warning (".date("Y-m-d H:i:s").")";
+ 			$mimMime = new Mail_mime("\n");
+ 			$mimMime->setTXTBody($strContent);
+			$strBody = $mimMime->get();
+			$strHeaders = $mimMime->headers($arrHeaders);
+ 			$emlMail =& Mail::factory('mail');
+ 			
+ 			// Send the email
+ 			if (!$emlMail->send($strEmailAddress, $strHeaders, $strBody))
+ 			{
+ 				$this->_rptCollectionReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
+ 				continue;
+ 			}
+	 	}
+
+	 	return $fltMargin;
+	 }
  }
 
 
