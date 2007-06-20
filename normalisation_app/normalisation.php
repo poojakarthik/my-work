@@ -12,25 +12,50 @@ require_once('application_loader.php');
 
 echo "<pre>\n";
 
+// Parse Command Line Arguments
+$bolOnlyNew	= FALSE;
+$bolImport	= FALSE;
+foreach ($argv as $strArg)
+{
+	switch (trim($strArg))
+	{
+		case '-n':
+			// Only Normalise new CDRs
+			$bolOnlyNew = TRUE;
+			break;
+		
+		case '-i':
+			// Import before normalise
+			$bolImport = TRUE;
+			break;
+	}
+	
+	// Parse LIMIT
+	$intRemaining = ((int)$strArg) ? ((int)$strArg) : NULL;
+}
+
 // set addresses for report
 $mixEmailAddress = 'flame@telcoblue.com.au';
 
 // Application entry point - create an instance of the application object
 $appNormalise = new ApplicationNormalise($mixEmailAddress);
 
-// Change status of all CDRs with missing destination 
-//$appNormalise->ReNormalise(CDR_BAD_DESTINATION);
-
-// Change status of all CDRs with missing owner 
-//$appNormalise->ReFindOwner(CDR_BAD_OWNER);
-
-// Import lines from CDR files into the database
-$appNormalise->Import();
+// Import if its a full run
+if ($bolImport)
+{
+	$appNormalise->Import();
+}
 
 // run the Normalise method until there is nothing left to normalise
-while ($appNormalise->Normalise())
+$intNormalisedTotal = 0;
+while (($intRemaining > 0 || $intRemaining === NULL) && $intNormalised = $appNormalise->Normalise($intRemaining, $bolOnlyNew))
 {
-	//break;
+	// Subtract from remaining (if a limit was specified)
+	if ($intRemaining)
+	{
+		$intRemaining -= $intNormalised;
+	}
+	// break;
 }
 
 // finished

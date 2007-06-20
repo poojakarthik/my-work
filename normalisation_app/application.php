@@ -192,15 +192,6 @@
  		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
 		
-		// Select CDR Query
-		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
-		$mixColumns	= Array("CDR.*" => "", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
-		$strWhere	= "CDR.Status = ".CDR_READY." OR CDR.Status = ".CDR_FIND_OWNER." OR CDR.Status = ".CDR_RENORMALISE." OR CDR.Status = ".CDR_NORMALISE_NOW;
-		//$strOrder	= "CDR.Status";
-		$strOrder	= NULL;
-		$strLimit	= "1000";
- 		$this->_selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $strLimit);
-		
 		$this->_selCreditCDRs = new StatementSelect("CDR", "Id, FNN, Source, Destination, Cost, Units, StartDatetime", "Credit = 1 AND Status = ".CDR_RATED, NULL, "1000");
 		
 		
@@ -556,13 +547,33 @@
 	 *
 	 * Normalises new CDRs
 	 *
-	 * @return	bool	returns true untill all CDRs have been normalised
+	 * @param	integer	$intRemaining	optional	Number of CDRs left to normalise [NULL]
+	 * @param	bool	$bolOnlyNew		optional	Only normalises new CDRs [FALSE]
+	 *
+	 * @return	bool	returns true until all CDRs have been normalised
 	 *
 	 * @method
-	 * @see	<MethodName()||typePropertyName>
 	 */
- 	function Normalise()
+ 	function Normalise($intRemaining = NULL, $bolOnlyNew = FALSE)
  	{
+		// Only new CDRs?
+		if ($bolOnlyNew)
+		{
+			$strWhere	= "CDR.Status = ".CDR_READY;
+		}
+		else
+		{
+			$strWhere	= "CDR.Status = ".CDR_READY." OR CDR.Status = ".CDR_FIND_OWNER." OR CDR.Status = ".CDR_RENORMALISE." OR CDR.Status = ".CDR_NORMALISE_NOW;
+		}
+		
+		// Select CDR Query
+		$strTables	= "CDR INNER JOIN FileImport ON CDR.File = FileImport.Id";
+		$mixColumns	= Array("CDR.*" => "", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
+		//$strOrder	= "CDR.Status";
+		$strOrder	= NULL;
+		$intLimit	= ($intRemaining < 1000) ? $intRemaining : 1000;
+ 		$this->_selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $intLimit);
+ 		
  		// Select all CDRs ready to be Normalised
 		if ($this->_selSelectCDRs->Execute() === FALSE)
 		{
@@ -708,8 +719,8 @@
 		$this->rptNormalisationReport->Finish();
 		$this->rptDelinquentsReport->Finish();
 		
-		// Return TRUE or FALSE
-		return $bolReturn;
+		// Return number normalised or FALSE
+		return ($bolReturn) ? $intNormaliseTotal : FALSE;
  	}
 	
 	//------------------------------------------------------------------------//
