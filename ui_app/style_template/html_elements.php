@@ -321,7 +321,22 @@ class HTMLElements
 		$strMask = trim($strMask);
 		if ($strMask)
 		{
-			//TODO! JOEL format the value so that it complies to the mask
+			switch ($strMask)
+			{
+				case "Currency2DecPlaces":
+					if ($mixValue < 0)
+					{
+						// negative currency value
+						$mixValue = $mixValue * (-1.0);
+						$mixValue = "($". number_format($mixValue, 2, ".", ",") .")";
+					}
+					else
+					{
+						// possitive currency value
+						$mixValue = "$". number_format($mixValue, 2, ".", ",") ."";
+					}
+					break;
+			}
 		}
 		
 		return $mixValue;
@@ -395,7 +410,7 @@ class HTMLElements
 				if ($arrParams['Value'] == $arrOption['Value'])
 				{
 					// set the new value to output
-					$strValue = $this->_OutputValue($arrParams['Value'], $arrOption['OutputLabel'], $arrParams['OutputMask']);
+					$strValue = $this->_OutputValue($arrParams['Value'], $arrOption['OutputLabel'], $arrParams['Definition']['OutputMask']);
 					break;
 				}
 			}
@@ -404,13 +419,13 @@ class HTMLElements
 			// the default OutputLabel for this context
 			if (!$strValue)
 			{
-				$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel'], $arrParams['OutputMask']);
+				$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel'], $arrParams['Definition']['OutputMask']);
 			}
 		}
 		else
 		{
 			// Use the default OutputLabel
-			$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel'], $arrParams['OutputMask']);
+			$strValue = $this->_OutputValue($arrParams['Value'], $arrParams['Definition']['OutputLabel'], $arrParams['Definition']['OutputMask']);
 		}
 
 		// An empty string cannot be used 
