@@ -975,6 +975,92 @@
 		$arrConfig['FileFormatEtech']	= $arrPrintDefineEtech;
 		
 		//----------------------------------------------------------------------------//
+		
+		
+		
+		
+// CDR CHECK DEFINITION
 
+// Unitel Standard CDR
+$arrCDRCheck = Array();
+$arrCDRCheck['Label']				= "Unitel LandLine CDR";
+$arrCDRCheck['Carrier']				= CARRIER_UNITEL;
+$arrCDRCheck['FileType']			= CDR_UNITEL_RSLCOM;
+$arrCDRCheck['FileNameRegex']		= "/^[A-Za-z]\d{7}\.csv$/";
+$arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_DAY;
+$arrCDRCheck['MinCountPerFreq']		= 1;
+$arrCDRCheck['PrefCountPerFreq']	= 1;
+$arrConfig['CDRCheck']['UnitelStandard']	= $arrCDRCheck;
+
+// Unitel Mobile CDR
+$arrCDRCheck = Array();
+$arrCDRCheck['Label']				= "Unitel Mobile CDR";
+$arrCDRCheck['Carrier']				= CARRIER_UNITEL;
+$arrCDRCheck['FileType']			= CDR_UNITEL_COMMANDER;
+$arrCDRCheck['FileNameRegex']		= "/^[A-Za-z]\d{7}\.csv$/";
+$arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_DAY;
+$arrCDRCheck['MinCountPerFreq']		= 1;
+$arrCDRCheck['PrefCountPerFreq']	= 1;
+$arrConfig['CDRCheck']['UnitelMobile']	= $arrCDRCheck;
+
+// Unitel Onnet CDR
+$arrCDRCheck = Array();
+$arrCDRCheck['Label']				= "Unitel Onnet S&E CDR";
+$arrCDRCheck['Carrier']				= CARRIER_UNITEL;
+$arrCDRCheck['FileType']			= CDR_UNITEL_RSLCOM;
+$arrCDRCheck['FileNameRegex']		= "/^STAOnnetBatch_SE_[A-Z]\d{5}_\d{8}.csv$/";
+$arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_MONTH;
+$arrCDRCheck['MinCountPerFreq']		= 0;
+$arrCDRCheck['PrefCountPerFreq']	= 1;
+$arrCDRCheck['ExpectedByMin']		= Array();
+$arrCDRCheck['ExpectedByPref']		= Array(14);
+$arrConfig['CDRCheck']['UnitelOnnet']	= $arrCDRCheck;
+
+// Unitel Offnet CDR
+$arrCDRCheck = Array();
+$arrCDRCheck['Label']				= "Unitel Offnet S&E CDR";
+$arrCDRCheck['Carrier']				= CARRIER_UNITEL;
+$arrCDRCheck['FileType']			= CDR_UNITEL_RSLCOM;
+$arrCDRCheck['FileNameRegex']		= "/^STAOffnetBatch_SE_[A-Z]\d{5}_\d{8}.csv$/";
+$arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_MONTH;
+$arrCDRCheck['MinCountPerFreq']		= 1;
+$arrCDRCheck['PrefCountPerFreq']	= 2;
+$arrCDRCheck['ExpectedByMin']		= Array(28);
+$arrCDRCheck['ExpectedByPref']		= Array(14, 28);
+$arrConfig['CDRCheck']['UnitelOffnet']	= $arrCDRCheck;
+
+// Optus CDR
+$arrCDRCheck = Array();
+$arrCDRCheck['Label']				= "Optus Standard CDR";
+$arrCDRCheck['Carrier']				= CARRIER_OPTUS;
+$arrCDRCheck['FileType']			= CDR_OPTUS_STANDARD;
+$arrCDRCheck['FileNameRegex']		= "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_s\.dat$/";
+$arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_DAY;
+$arrCDRCheck['MinCountPerFreq']		= 2;
+$arrCDRCheck['PrefCountPerFreq']	= 2;
+$arrConfig['CDRCheck']['OptusSpeedi']	= $arrCDRCheck;
+
+// Optus CDR
+$arrCDRCheck = Array();
+$arrCDRCheck['Label']				= "Optus Late Provisioning Credits CDR";
+$arrCDRCheck['Carrier']				= CARRIER_OPTUS;
+$arrCDRCheck['FileType']			= CDR_OPTUS_STANDARD;
+$arrCDRCheck['FileNameRegex']		= "/^tap_[A-Za-z]{3}\d_\d{14}_\d{4}[01]\d[0-3]\d_\d{6}_a_l\.dat$/";
+$arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_DAY;
+$arrCDRCheck['MinCountPerFreq']		= 0;
+$arrCDRCheck['PrefCountPerFreq']	= 1;
+$arrConfig['CDRCheck']['OptusLateProvisioning']	= $arrCDRCheck;
+
+
+// AAPT CDR
+$arrCDRCheck = Array();
+$arrCDRCheck['Label']				= "AAPT CDR";
+$arrCDRCheck['Carrier']				= CARRIER_AAPT;
+$arrCDRCheck['FileType']			= CDR_AAPT_STANDARD;
+$arrCDRCheck['FileNameRegex']		= "/^W\d{9}\.[A-La-l][0-3]\d$/";
+$arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_DAY;
+$arrCDRCheck['MinCountPerFreq']		= 1;
+$arrCDRCheck['PrefCountPerFreq']	= 1;
+$arrConfig['CDRCheck']['AAPTCDR']	= $arrCDRCheck;
 
 ?>

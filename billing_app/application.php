@@ -235,7 +235,7 @@
 			OR SUM( ServiceTotal.TotalCharge ) != InvoiceTemp.Total
 			)
 		 */
-		$this->_rptBillingReport->AddMessage("Validating Invoice Totals...\t\t\t", FALSE);
+		/*$this->_rptBillingReport->AddMessage("Validating Invoice Totals...\t\t\t", FALSE);
 		$strSelect	=	"InvoiceTemp.Account AS Account, InvoiceTemp.Id AS TempInvoice, SUM(ServiceTypeTotal.Charge) AS SumServiceTypeTotal, ServiceTotal.TotalCharge AS ServiceTypeTotal, SUM(ServiceTotal.TotalCharge) AS AccountTotal, InvoiceTemp.Total AS InvoiceTotal";
 		$strFrom	=	"ServiceTotal, ServiceTypeTotal, InvoiceTemp";
 		$strWhere	=	"ServiceTypeTotal.Service = ServiceTotal.Service AND " .
@@ -258,7 +258,7 @@
 		{
 			// Report Bad Match & how many didn't match
 			$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t- $intInvalid invalid invoices");
-		}
+		}*/
 		
 		/*
 		// BILLING OUTPUT
@@ -339,7 +339,7 @@
 		}
 		
 		// Report Title
-		$this->_rptBillingReport->AddMessage("\n".MSG_BILLING_TITLE."\n");
+		//$this->_rptBillingReport->AddMessage("\n".MSG_BILLING_TITLE."\n");
 		
 		// prepare (clean) billing files
 		foreach ($this->_arrBillOutput AS $strKey=>$strValue)
@@ -367,18 +367,18 @@
 			$arrAccountReturn = Array();
 			
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
-			$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
+			//$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 			
 			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
 			$this->arrCDRCols['InvoiceRun'] = $this->_strInvoiceRun;
 			if(!$this->updCDRs->Execute($this->arrCDRCols, Array('Account' => $arrAccount['Id'])))
 			{
 				// Report and continue
-				$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
+				//$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
 			}
 			else
 			{
-				$this->_rptBillingReport->AddMessage(MSG_OK);
+				//$this->_rptBillingReport->AddMessage(MSG_OK);
 			}
 			
 			// SERVICE TYPE TOTALS
@@ -415,17 +415,17 @@
 			$fltTotalCredits	= 0.0;
 			$fltTotalDebits		= 0.0;
 
-			$this->_rptBillingReport->AddMessage(MSG_GET_SERVICES, FALSE);
+			//$this->_rptBillingReport->AddMessage(MSG_GET_SERVICES, FALSE);
 
 			// Retrieve list of services for this account
 			$this->selServices->Execute(Array('Account' => $arrAccount['Id']));
 			if(!$arrServices = $this->selServices->FetchAll())
 			{
 				// Report and continue
-				$this->_rptBillingReport->AddMessageVariables(MSG_LINE_FAILED, Array('<Reason>' => "No Services for this Account"));
+				//$this->_rptBillingReport->AddMessageVariables(MSG_LINE_FAILED, Array('<Reason>' => "No Services for this Account"));
 				continue;
 			}
-			$this->_rptBillingReport->AddMessage(MSG_OK);
+			//$this->_rptBillingReport->AddMessage(MSG_OK);
 			
 			// Get a list of shared plans for this account
 			$arrSharedPlans = Array();
@@ -442,7 +442,7 @@
 			$arrAccountReturn['SharedPlans']	= $arrSharedPlans;
 			
 			// Mark Credits and Debits for this account to this Invoice Run
-			$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
+			//$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
 			
 			$arrUpdateData = Array();
 			$arrUpdateData['InvoiceRun']	= $this->_strInvoiceRun;
@@ -450,13 +450,15 @@
 			if($updChargeStatus->Execute($arrUpdateData, Array('Account' => $arrAccount['Id'])) === FALSE)
 			{
 				// Report and fail out
+				$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
+				$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED);
 				continue;
 			}
 			else
 			{
 				// Report and continue
-				$this->_rptBillingReport->AddMessage(MSG_OK);
+				//$this->_rptBillingReport->AddMessage(MSG_OK);
 			}
 			
 			// for each service belonging to this account
@@ -489,7 +491,7 @@
 
 
 				
-				$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
+				//$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
 				
 				if ($arrService['Shared'] > 0)
 				{
@@ -570,7 +572,7 @@
 				// this is done in the Recurring Charges engine, so there is nothing to do here
 				
 				// Calculate Service Debit and Credit Totals
-				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
+				//$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 				$mixResult = $this->selDebitsCredits->Execute(Array('Service' => $arrService['Service'], 'InvoiceRun' => $this->_strInvoiceRun));
 				if($mixResult > 2 || $mixResult === FALSE)
 				{
@@ -580,6 +582,8 @@
 					}
 					
 					// Incorrect number of rows returned or an error
+					$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
+					$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
 					continue;
 				}
@@ -597,7 +601,7 @@
 							$fltServiceCredits	+= $arrCharge['Amount'];
 						}
 					}
-					$this->_rptBillingReport->AddMessage(MSG_OK);
+					//$this->_rptBillingReport->AddMessage(MSG_OK);
 				}
 				
 				
@@ -605,7 +609,7 @@
 				$fltServiceTotal	= $fltTotalCharge + $fltServiceDebits - $fltServiceCredits;
 				
 				// insert into ServiceTotal
-				$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
+				//$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
 				$arrServiceTotal = Array();
 				$arrServiceTotal['FNN']				= $arrService['FNN'];
 				$arrServiceTotal['AccountGroup']	= $arrAccount['AccountGroup'];
@@ -621,10 +625,12 @@
 				if (!$this->insServiceTotal->Execute($arrServiceTotal) && !$bolReturnData)
 				{
 					Debug($this->insServiceTotal->Error());
+					$this->_rptBillingReport->AddMessageVariables(MSG_SERVICE_TITLE, Array('<FNN>' => $arrService['FNN']));
+					$this->_rptBillingReport->AddMessage(MSG_SERVICE_TOTAL, FALSE);
 					$this->_rptBillingReport->AddMessage(MSG_FAILED);
 					continue;
 				}
-				$this->_rptBillingReport->AddMessage(MSG_OK);
+				//$this->_rptBillingReport->AddMessage(MSG_OK);
 				
 				// add to invoice totals
 				$fltTotalDebits		+= $fltServiceDebits + $fltTotalCharge;
@@ -634,7 +640,7 @@
 			}
 			
 			// Calculate Account Debit and Credit Totals
-			$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
+			//$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 			$mixResult = $this->selAccountDebitsCredits->Execute(Array('Account' => $arrAccount['Id'], 'InvoiceRun' => $this->_strInvoiceRun));
 			if($mixResult > 2 || $mixResult === FALSE)
 			{
@@ -644,6 +650,8 @@
 				}
 				
 				// Incorrect number of rows returned or an error
+				$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
+				$this->_rptBillingReport->AddMessage(MSG_DEBITS_CREDITS, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED);
 				continue;
 			}
@@ -661,17 +669,19 @@
 						$fltTotalCredits	+= $arrCharge['Amount'];
 					}
 				}
-				$this->_rptBillingReport->AddMessage(MSG_OK);
+				//$this->_rptBillingReport->AddMessage(MSG_OK);
 				$arrAccountReturn['AccountAdjustments']	= $arrDebitsCredits;
 			}
 			
-			$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
+			//$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 			
 			// calculate account balance from outstanding past invoices (this could give a negative value)
 			$fltAccountBalance = 0.0;
 			if(($fltAccountBalance = $this->Framework->GetAccountBalance($arrAccount['Id'])) === FALSE)
 			{
 				// Report and fail out
+				$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
+				$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Cannot retrieve Account Balance");
 				$this->intFailed++;
 				continue;
@@ -749,6 +759,8 @@
 			if(!$this->insTempInvoice->Execute($arrInvoiceData))
 			{				
 				// Report and fail out
+				$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
+				$this->_rptBillingReport->AddMessage(MSG_TEMP_INVOICE, FALSE);
 				$this->_rptBillingReport->AddMessage(MSG_FAILED."\n\t\t-Reason: Insert failed");
 				$this->intFailed++;
 				continue;
@@ -764,7 +776,7 @@
 			$this->intPassed++;
 			
 			// Report and continue
-			$this->_rptBillingReport->AddMessage(MSG_OK."\n");
+			//$this->_rptBillingReport->AddMessage(MSG_OK."\n");
 			
 			$arrReturnData[$arrInvoiceData['Account']] = $arrAccountReturn;
 		}
