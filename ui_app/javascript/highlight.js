@@ -108,35 +108,11 @@ function VixenHighlightClass()
 		if (objTable.linked)
 		{
 			// get row number from elmRow
-			intRow = this.id.lastIndexOf('_');
+			var intRow = this.id.lastIndexOf('_');
 			intRow = this.id.substr(intRow + 1);
 			
-			// call updatelink
-			arrTables = [];
-			arrIndexes = [];
-			for (var objLink in objTable.link)
-			{
-				arrTables.push(objLink);
-				
-				for (var j=0; j<objTable.link[objLink].length; j++)
-				{
-					strKey = objTable.link[objLink][j];
-					//debug (strKey);
-					if (!objTable.row[intRow].index)
-					{
-						//debug ('no index');
-					}
-					else
-					{
-						//debug (objTable.row[intRow].index[strKey] + "aeeeeeeeee");
-						for (var k=0; k<objTable.row[intRow].index[strKey].length; k++)
-						{
-							arrIndexes.push({'name' : strKey, 'value': objTable.row[intRow].index[strKey][k]});
-						}
-					}
-				}
-			}
-			Vixen.Highlight.UpdateLink(arrTables,arrIndexes,[]);
+			// update table links
+			Vixen.Highlight.UpdateLink(objTable.link, [objTable.row[intRow].index],[this.parentNode.parentNode.id]);
 		}
 		Vixen.Highlight.ToggleSelect(this);
 	}
@@ -153,55 +129,104 @@ function VixenHighlightClass()
 	
 	this.UpdateLink =function(arrTables, arrIndexes, arrSkipTables)
 	{
-		//debug (arrTables);
-		for (var i=0; i<arrTables.length; i++)
-		{
-			strTargetId = arrTables[i];
-			tblTarget = Vixen.table[strTargetId];
-			
-			// Unselect all on target (& collapse?)
-			Vixen.Highlight.Unselect(strTargetId);
-			Vixen.Slide.CollapseAll(strTargetId);
-			
-			for (var j=0; j<tblTarget.row.length; j++)
+		// declare variables
+		var intTable;
+		var strTable;
+		var tblTarget;
+		var bolSkip = FALSE;
+		var objRow;
+		var intRow;
+		var intIndex;
+		var intRowIndex;
+		var strIndex;
+		var arrSubIndexes = Array();
+		
+		// for each linked table
+		for (strTable in arrTables)
+		{	
+			tblTarget 	= Vixen.table[strTable];
+		
+			// check for skip table
+			for (intTable in arrSkipTables)
 			{
-				objRow = tblTarget.row[j];
-				for (var k=0; k<arrIndexes.length; k++)
+				if (arrSkipTables[intTable] == strTable)
 				{
-					//debug (objRow.index[arrIndexes[k].name],1);
-					if (!objRow.index)
+					bolSkip = TRUE;
+					break;
+				}
+			}
+		
+			// skip this table if it has already been done
+			if (bolSkip == TRUE)
+			{
+				continue;
+			}
+		
+			// Unselect all on target (& collapse?)
+			Vixen.Highlight.Unselect(strTable);
+			Vixen.Slide.CollapseAll(strTable);
+		
+			// for each row
+			for (intRow in tblTarget.row)
+			{
+				objRow = tblTarget.row[intRow];
+				
+				// for each index
+				for (intIndex in arrIndexes)
+				{
+					for (strIndex in arrIndexes[intIndex])
 					{
-						//debug ('again, no index');
-					}
-					else
-					{
-						//debug (objRow.index[arrIndexes[k].name]);
-						//debug (arrIndexes[k].value);
-						//debug ('-----------');
-						// .value is a value, but objrow.index[]is an array
-						for (var l=0; l<objRow.index[arrIndexes[k].name].length; l++)
+						// check if we are linked on this index
+						if (arrTables[strTable] != strIndex)
 						{
-							if (objRow.index[arrIndexes[k].name][l] == arrIndexes[k].value)
-							{
-								// Highlight if index matches
-								//.selected = TRUE lightsdown();
-								//debug ('asfasdfsad');
-								strRowId = strTargetId + "_" + j;
-								Vixen.table[strTargetId].row[j].selected = TRUE;
-								Vixen.Highlight.LightsDown(document.getElementById(strRowId));
-								
-								// Add row indexes to arrTargetIndexes
+							// not linked
+							continue;							
+						}
+					
+						// check if the row has an index
+						if (!objRow.index)
+						{
+							// no index
+						}
+						else
+						{
+							// for each row index that matches index
+							if (objRow.index[strIndex])
+							{					
+								for (intRowIndex in objRow.index[strIndex])
+								{
+									if (objRow.index[strIndex][intRowIndex] == arrIndexes[intIndex][strIndex])
+									{
+										// Highlight if index matches
+										//.selected = TRUE lightsdown();
+										//debug ('asfasdfsad');
+										strRowId = strTable + "_" + intRow;
+										Vixen.table[strTable].row[intRow].selected = TRUE;
+										Vixen.Highlight.LightsDown(document.getElementById(strRowId));
+										
+										// Add row indexes to arrSubIndexes
+										arrSubIndexes.push(objRow.index);
+									}
+								}
 							}
 						}
 					}
 				}
 				
 			}
-			// if we are linked to talkbes
-			//	call update link (arrtargettables, arrtargetindeces, arrskiptables)
+			
+			// if we are linked to other tables
+			if (tblTarget.linked)
+			{				
+				// add table to skip tables
+				arrSkipTables.push(strTable);
+				
+				// update table links
+				Vixen.Highlight.UpdateLink(tblTarget.link, arrSubIndexes, arrSkipTables);
+			}
 		}
 	}
-}	
+}
 
 // Create an instance of the Vixen highlight class
 Vixen.Highlight = new VixenHighlightClass();

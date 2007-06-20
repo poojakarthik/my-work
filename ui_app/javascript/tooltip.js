@@ -82,8 +82,8 @@ function VixenTooltipClass()
 		{
 			// set the popup to the cursor
 			elmTooltip.style.position = 'absolute';
-			elmTooltip.style.left = evtHover.clientX;
-			elmTooltip.style.top = evtHover.clientY;
+			elmTooltip.style.left = evtHover.clientX + 25;
+			elmTooltip.style.top = evtHover.clientY + 25;
 			elmTooltip.style.display = 'block';
 		}
 		
