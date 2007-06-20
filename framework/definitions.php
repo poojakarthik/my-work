@@ -1139,6 +1139,14 @@ $GLOBALS['*arrConstant']	['XLSTotal']	[600]	['Description']	= 'Sum';
 $GLOBALS['*arrConstant']	['XLSTotal']	[601]	['Constant']	= 'EXCEL_TOTAL_AVG';
 $GLOBALS['*arrConstant']	['XLSTotal']	[601]	['Description']	= 'Average';
 
+// Output Report Modes
+$GLOBALS['*arrConstant']	['ReportMode']	[800]	['Constant']	= 'REPORT_MODE_VERBOSE';
+$GLOBALS['*arrConstant']	['ReportMode']	[800]	['Description']	= 'Everything';
+$GLOBALS['*arrConstant']	['ReportMode']	[801]	['Constant']	= 'REPORT_MODE_ERRORS';
+$GLOBALS['*arrConstant']	['ReportMode']	[801]	['Description']	= 'Errors and Totals Only';
+$GLOBALS['*arrConstant']	['ReportMode']	[802]	['Constant']	= 'REPORT_MODE_NONE';
+$GLOBALS['*arrConstant']	['ReportMode']	[802]	['Description']	= 'Nothing';
+
 
 
 // CLI Console Docked
