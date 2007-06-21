@@ -1098,7 +1098,7 @@
 	 	$arrData['Employee']		= $intEmployee;
 	 	$arrData['Datetime']		= new MySQLFunction("NOW()");
 	 	$arrData['NoteType']		= $intType;
-	 	return (bool)$this->_insNote->Execute($arrData);
+	 	return (bool)$this->_insAddNote->Execute($arrData);
 	 }
  }
 
