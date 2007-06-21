@@ -147,8 +147,12 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
 		//echo "</td>\n";
 		//echo "<td>\n";
-		DBO()->Account->DisableDDR->RenderOutput();
-		DBO()->Account->DisableLatePayment->RenderOutput();
+		DBO()->Account->DisableDDR->RenderInput();
+		DBO()->Account->DisableLatePayment->RenderInput();
+		echo "<div class='Right'>\n";
+		echo "   <input type='submit' class='input-submit' value='Apply Changes' />\n";
+		echo "</div>\n";
+		
 		//echo "</td>\n";
 		//echo "</tr>\n";
 		//echo "</table>\n";

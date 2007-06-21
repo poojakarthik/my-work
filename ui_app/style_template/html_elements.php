@@ -336,6 +336,21 @@ class HTMLElements
 						$mixValue = "$". number_format($mixValue, 2, ".", ",") ."";
 					}
 					break;
+				case "ShortDate":
+					// MySql Dates are of the format YYYY-MM-DD
+					// convert this to DD/MM/YYYY
+					$arrDate = explode("-", $mixValue);
+					$mixValue = $arrDate[2] ."/". $arrDate[1] ."/". $arrDate[0];
+					break;
+				case "LongDateAndTime":
+					// MySql Datetime is in the format YYYY-MM-DD HH:MM:SS
+					// convert this to the format "Wednesday, Jun 21, 2007 11:36:54 AM"
+					$arrDateAndTime = explode(" ", $mixValue);
+					$arrTime = explode(":", $arrDateAndTime[1]);
+					$arrDate = explode("-", $arrDateAndTime[0]);
+					$intUnixTime = mktime($arrTime[0], $arrTime[1], $arrTime[2], $arrDate[1], $arrDate[2], $arrDate[0]);
+					$mixValue = date("l, M j, Y g:i:s A", $intUnixTime);
+					break;
 			}
 		}
 		
@@ -479,8 +494,8 @@ class HTMLElements
 
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputCheckBox {$arrParams['Definition']['Class']}'>\n";
-		$strHtml .= "		<input type='checkbox' name='$strName' id='$strId' $strChecked $strDisabled></input>\n";
-		$strHtml .= "		<label for='$strId'>$strLabel</label>\n";
+		$strHtml .= "      <input type='checkbox' name='$strName' id='$strId' $strChecked $strDisabled></input>\n";
+		$strHtml .= "      <label for='$strId'>$strLabel</label>\n";
 		$strHtml .= "   </div>\n";
 		$strHtml .= "</div>\n";
 		
@@ -537,10 +552,10 @@ class HTMLElements
 			$strId		= $strRadioName ."(". $arrOption['Value'] .")";
 			
 			// define the button
-			$strHtml .= "	<div class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
-			$strHtml .= "		<input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
-			$strHtml .= "		<label for='$strId'>{$arrOption['InputLabel']}</label>\n";
-			$strHtml .= "	</div>\n";
+			$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
+			$strHtml .= "      <input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
+			$strHtml .= "      <label for='$strId'>{$arrOption['InputLabel']}</label>\n";
+			$strHtml .= "   </div>\n";
 		}
 		
 		$strHtml .= "</div>\n";

@@ -189,6 +189,9 @@ class DBList extends DBListBase
 		elseif (!$this->_objWhere->GetString())
 		{
 			// WHERE parameters have not been passed and a WHERE clause has not been predefined for this list so use the passed parameters
+			
+			//FIXME! The below line will currently not do anything because to get to this stage, both $strWhere and $arrWhere are equal to NULL
+			//and DbWhere->Set does not do anything with a parameter if it is null
 			$this->_objWhere->Set($strWhere, $arrWhere);
 		}
 		

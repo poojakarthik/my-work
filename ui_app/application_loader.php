@@ -339,68 +339,47 @@ class Application
 	 */
 	function AjaxLoad()
 	{
-		$objAjax = AjaxRecieve();
-		
 		// get submitted data
-		$objSubmit = new submitted_data();
-		$objSubmit->Ajax($objAjax);
-	
-		// YAY, this far is great!
+		$objSubmit = new SubmittedData();
+		$strTemplateName = $objSubmit->Ajax();
 
+		//split template name
+		$arrTemplate 	= explode ('.', $strTemplateName);
+		$strClass 		= 'AppTemplate'.$arrTemplate[0];
+		$strMethod 		= $arrTemplate[1];
 		
-		$strClassName = "AppTemplate" . $objAjax->Object;
+		//Get user details (inc Permissions)
+		//$this->Dbo->Session->AuthenticatedEmployee->GetDetails();
+		/*???can't this be done in the framework at the same time you build the Dbo object of 	variables
+		--at this stage we ahavent defined this anywhere, needs to be somewhere\
+		-- could be here or lower level*/
+		
+		
+	
+		// validate all submitted objects
+		// Note that while $objSubmit->Get() and ->POST set up the submitted objects, they have not actually 
+		// been loaded from the database, so validating them at this stage should always return TRUE
+		DBO()->Validate();
+
 		//Create AppTemplate Object
-		// new AppTemplateAccount->View
-		$this->objAppTemplate = new $strClassName;
-		$this->objAppTemplate->SetMode(AJAX_MODE);
+		$this->objAppTemplate = new $strClass;
+		
+		
+		$this->objAppTemplate->SetMode($objSubmit->Mode);
 		
 		//Run AppTemplate
-		$this->objAppTemplate->View();
+		$this->objAppTemplate->{$strMethod}();
 		
-		$arrReply = Array();
-		//var_dump($this->objAppTemplate->arrSend);
-		/*
-		if (is_array($this->arrSend['Dbo']))
+		// Render Page
+		if ($objSubmit->Mode == HTML_MODE)
 		{
-			foreach ($this->arrSend['Dbo'] as $strObject=>$mixValue)
-			{
-				if (is_array($mixValue))
-				{
-					foreach ($mixValue as $strProperty=>$bolValue)
-					{
-						// add just the property to the reply
-						$arrReply['DBO'][$strObject][$strProperty] = DBO()->{$strObject}->{$strProperty}->Value;
-					}
-				}
-				else
-				{
-					// add the whole object to the reply
-					foreach (DBO()->{$strObject} as $strProperty=>$objProperty)
-					{
-						// add just the property to the reply
-						$arrReply['DBO'][$strObject][$strProperty] = $objProperty->Value;
-					}
-				}
-			}
+			$this->objAppTemplate->Page->Render();
 		}
-		if (is_array($this->arrSend['Dbl']))
+		else
 		{
-			foreach ($this->arrSend['Dbl'] as $strList=>$bolValue)
-			{
-				//TODO!Interface-kids!Add the Dbl object to the reply 
-				foreach (DBL()->{$strList} as $intObject=>$objObject)
-				{
-					foreach ($objObject as $strProperty=>$objProperty)
-					{
-						// add just the property to the reply
-						$arrReply['DBL'][$strList][$intObject][$strProperty] = $objProperty->Value;
-					}
-				}
-			}
+			// Send back AJAX data as JSON
+			//AjaxReply(Array("yay","yayas"));
 		}
-		*/
-		//AjaxReply($arrReply);
-		AjaxReply(Array("yay","yayas"));
 	}
 	
 	//------------------------------------------------------------------------//
@@ -902,6 +881,7 @@ class ModuleLoader
  */
 class SubmittedData
 {
+	public $Mode;
 
 	//------------------------------------------------------------------------//
 	// __construct
@@ -1054,17 +1034,28 @@ class SubmittedData
 	 *
 	 * Attempts to convert AJAX data into DBObjects in DBO()
 	 *
-	 * @param   object	 $objAjax	The submitted data from AJAX
-	 *
 	 * @return	boolean
 	 *
 	 * @method
 	 */
-	function Ajax($objAjax)
+	function Ajax()
 	{
+		// Get Ajax Data
+		$objAjax = AjaxReceive();
+		
 		// for each post variable
 		if(is_object($objAjax) && is_object($objAjax->Objects))
 		{
+			// Set output mode
+			if ($objAjax->HtmlMode)
+			{
+				$this->Mode = HTML_MODE;
+			}
+			else
+			{
+				$this->Mode = AJAX_MODE;
+			}
+			
 			foreach($objAjax->Objects AS $strObject=>$objObject)
 			{
 				foreach($objObject AS $strProperty=>$mixValue)

@@ -182,6 +182,12 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->RecurringCharge->OrderBy("CreatedOn DESC");
 		DBL()->RecurringCharge->Load();
 		
+		DBL()->Note->Account = DBO()->Account->Id->Value;
+		DBL()->Note->OrderBy("Datetime DESC");
+		DBL()->Note->Load();
+		DBL()->NoteType->Load();
+		
+		
 		
 		// todo - need to load applied payments for particular invoices
 		// join invoice, invoicepayment, payment

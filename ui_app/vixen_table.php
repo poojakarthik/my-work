@@ -634,7 +634,7 @@ class VixenTable
 			{
 				echo "</tr>";
 				echo "<tr>";
-				echo "<td colspan=4 style='padding-top: 0px; padding-bottom: 0px'>";
+				echo "<td colspan=". count($this->_arrHeader) ." style='padding-top: 0px; padding-bottom: 0px'>";
 				echo "<div id='" . $strTableName . "_" . $intRowCount . "DIV-DETAIL' style='display: block; overflow:hidden;'>";
 				echo $objRow['Detail'];
 				echo "</div>";

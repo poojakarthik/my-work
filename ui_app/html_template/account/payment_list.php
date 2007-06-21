@@ -191,7 +191,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			
 			// Balance
 			$strToolTipHtml .= $dboPayment->Balance->AsOutput();
-			//Table()->PaymentTable->SetToolTip($strToolTipHtml);
+			Table()->PaymentTable->SetToolTip($strToolTipHtml);
 		}
 		
 		Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
