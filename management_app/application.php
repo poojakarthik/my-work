@@ -207,7 +207,7 @@ class ApplicationManagement extends ApplicationBaseClass
 	 function RebillCDRs($intCurrentService, $intTargetService, $strStartDate, $strEndDate = NULL)
 	 {	 	
 		// Statements
-	 	$selServiceData	= new StatementSelect("Service", "Id AS Service, Account, AccountGroup", "Id = <Id>");
+	 	$selServiceData	= new StatementSelect("Service", "Id AS Service, Account, AccountGroup, FNN", "Id = <Id>");
 	 	
 	 	$arrColumns = Array();
 	 	$arrColumns['Service']		= NULL;
@@ -218,10 +218,21 @@ class ApplicationManagement extends ApplicationBaseClass
 	 	$strStatuses = "101, 150, 151, 199, 179, 171, 170, 156, 176";
 	 	$arrColumns = Array();
 	 	$arrColumns['Status']	= NULL;
-	 	$upCDRStatus	= new StatementUpdate("CDR", "Service = <Service> AND StartDatetime >= <StartDate> AND (StartDatetime <= <EndDate> OR <EndDate> <=> NULL) AND Status IN ($strStatuses)", $arrColumns);
+	 	$updCDRStatus	= new StatementUpdate("CDR", "Service = <Service> AND StartDatetime >= <StartDate> AND (StartDatetime <= <EndDate> OR <EndDate> <=> NULL) AND Status IN ($strStatuses)", $arrColumns);
+	 	
+	 	$selCDRCount = new StatementSelect("CDR", "Id", "Service = <Service> AND StartDatetime >= <StartDate> AND (StartDatetime <= <EndDate> OR <EndDate> <=> NULL)");
 		
 	 	// Start Transaction
 	 	$this->db->TransactionStart();
+	 	
+	 	// DEBUG
+	 	$arrWhere = Array();
+	 	$arrWhere['Service']	= $intCurrentService;
+	 	$arrWhere['StartDate']	= $strStartDate." 00:00:00";
+	 	$arrWhere['EndDate']	= ($strEndDate) ? $strEndDate." 23:59:59" : NULL;
+	 	Debug("Initial CDR count on $intCurrentService: ".$selCDRCount->Execute($arrWhere));
+	 	$arrWhere['Service']	= $intTargetService;
+	 	Debug("Initial CDR count on $intTargetService: ".$selCDRCount->Execute($arrWhere));
 	 	
 	 	// Get Current and Target Service Data
 	 	$selServiceData->Execute(Array('Id' => $intCurrentService));
@@ -241,7 +252,11 @@ class ApplicationManagement extends ApplicationBaseClass
 	 	}
 	 	
 	 	// Change Statuses on all CDRs with 150, 151, 101, 199, and special statuses
-	 	if (($intStatusChanged = $updCDRStatus->Execute(Array('Status' => CDR_NORMALISED), $arrTargetService)) === FALSE)
+	 	$arrWhere = Array();
+	 	$arrWhere['Service']	= $arrTargetService['Service'];
+	 	$arrWhere['StartDate']	= $strStartDate." 00:00:00";
+	 	$arrWhere['EndDate']	= ($strEndDate) ? $strEndDate." 23:59:59" : NULL;
+	 	if (($intStatusChanged = $updCDRStatus->Execute(Array('Status' => CDR_NORMALISED), $arrWhere)) === FALSE)
 	 	{
 		 	$this->db->TransactionRollback();
 		 	return FALSE;
@@ -250,26 +265,37 @@ class ApplicationManagement extends ApplicationBaseClass
 	 	//--------------------------------------------------------------------//
 	 	// DEBUG: Print Results, Don't add Notes
 	 	Debug("From\t\t: $intCurrentService");
-	 	Debug("To\t\t\t: $intTargetService");
+	 	Debug("To\t\t: $intTargetService");
 	 	Debug("Moved\t\t: $intReOwned");
 	 	Debug("Status Changed\t: $intStatusChanged");
 	 	
-	 	$this->db->TransactionRollback();
-	 	return TRUE;
+	 	
+	 	// DEBUG
+	 	$arrWhere = Array();
+	 	$arrWhere['Service']	= $intCurrentService;
+	 	$arrWhere['StartDate']	= $strStartDate." 00:00:00";
+	 	$arrWhere['EndDate']	= ($strEndDate) ? $strEndDate." 23:59:59" : NULL;
+	 	Debug("Final CDR count on $intCurrentService: ".$selCDRCount->Execute($arrWhere));
+	 	$arrWhere['Service']	= $intTargetService;
+	 	Debug("Final CDR count on $intTargetService: ".$selCDRCount->Execute($arrWhere));
+	 	
+	 	//$this->db->TransactionRollback();
+	 	//return TRUE;
 	 	//--------------------------------------------------------------------//
 	 	
 	 	// Commit Transaction
 	 	$this->db->TransactionCommit();
 	 	
 	 	// Note Content
-	 	$strContent = "Change of Lessee: All Call data from ".date("d M Y", strtotime($strStartDate));
-	 	$strContent .= ($strEndDate) ? " to ".date("d M Y", strtotime($strEndDate)) : " onwards ";
+	 	$strContent = "Change of Lessee: All Call data for ";
+	 	$strContent2 = " from ".date("d M Y", strtotime($strStartDate));
+	 	$strContent .= ($strEndDate) ? " to ".date("d M Y", strtotime($strEndDate)) : " onwards";
 	 	
 	 	// Add a note to the Current Service
-	 	$this->Framework->AddNote($strContent." has been moved to Account {$arrTargetService['Account']}, and will be included in its ".date("F")." Invoice", 3, NULL, $arrCurrentService['AccountGroup'], $arrCurrentService['Account'], $intCurrentService);
+	 	$this->Framework->AddNote($strContent.$arrCurrentService['FNN'].$strContent2." has been moved to Account {$arrTargetService['Account']}, and will be included in that Account's ".date("F")." Invoice", 3, NULL, $arrCurrentService['AccountGroup'], $arrCurrentService['Account'], $intCurrentService);
 	 	
 	 	// Add a note to the Target Service
-	 	$this->Framework->AddNote($strContent." has been moved from Account {$arrCurrentService['Account']}, and will be included in the ".date("F")." Invoice", 3, NULL, $arrTargetService['AccountGroup'], $arrTargetService['Account'], $intTargetService);
+	 	$this->Framework->AddNote($strContent.$arrTargetService['FNN'].$strContent2." has been moved here from Account {$arrCurrentService['Account']}, and will be included in this Account's ".date("F")." Invoice", 3, NULL, $arrTargetService['AccountGroup'], $arrTargetService['Account'], $intTargetService);
 	 }
 	 
 	 
