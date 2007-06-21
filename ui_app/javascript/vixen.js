@@ -20,14 +20,15 @@ var TRUE = true;
 function VixenRootClass()
 {
 	this.initCommands = Array();
-	
+	this.debug = FALSE;
 	this.table = Object();
 	
 	// Vixen Login
 	this.Login = function(username, password)
 	{
-		//document.getElementById('LoginBox').style.visibility = 'visible';
 		// AJAX transaction to login in user
+		// SHA1.js has already been included, used to hash the password
+		
 	}
 	
 	// Vixen Logout
@@ -43,12 +44,15 @@ function VixenRootClass()
 	
 	this.Init =function()
 	{
-		if (debug)
+		// An optional way to run code when the page loads
+		//  this code does not execute until bodyload
+		//    -- maybe change it so it can be called at any time, but will only
+		//       ever run once
+		if (TRUE == TRUE)
 		{
 			for (var i = 0; i < this.initCommands.length; i++)
 			{
 				eval (this.initCommands[i]);
-				//debug (this.initCommands[i]);
 			}
 		}
 		else
@@ -73,27 +77,49 @@ function VixenRootClass()
 // Create an instance of the Vixen root class
 Vixen = new VixenRootClass();
 
+//----------------------------------------------------------------------------//
+// Debug
+//----------------------------------------------------------------------------//
+/**
+ * Debug
+ *
+ * Debug Javascript function
+ *
+ * Debug Javascript function
+ *
+ *
+ *
+ * @package	framework_ui
+ */
 var dwin = null;
-function debug(msg, bolFullShow) {
+function debug(msg, bolFullShow)
+{
+	// Check for debug mode (set when page loads by php, check vixen_header) 
+	if (!Vixen.debug)
+	{
+		return;
+	}
+
 	if ((dwin == null) || (dwin.closed))
 	{
-		dwin = window.open("","debugconsole","scrollbars=yes,resizable=yes,height=100,width=500, menubar=yes");
-		//dwin.document.close();
-		
+		dwin = window.open("","debugconsole","scrollbars=yes,resizable=yes,height=100,width=500, menubar=yes");		
 		dwin.title = "debugconsole";
 		dwin.document.open("text/html", "replace");
-		dwin.document.writeln('<title>Debug Console</title>');
+		dwin.document.writeln("<title>Debug Console</title>");
 	}
 	if (bolFullShow == TRUE)
 	{
+		// Optional, show full tree listing of object (recursive)
+		//  uses a chopped version of JSON stringify
 		strDebug = DEBUG.fstringify(msg);
 	}
 	else
 	{
+		// Otherwise, just show whatever it is passed in
 		strDebug = msg;
 	}
 	dwin.document.writeln('<br />'+strDebug + '');
 	dwin.scrollTo(0,10000);
-	//dwin.focus();
-	//dwin.document.close();  // uncomment this if you want to see only last message , not all the previous messages
+	//dwin.focus();				// giving it focus is annoying, just let it sit on your third monitor with javascript console
+	//dwin.document.close();    // uncomment this if you want to see only last message , not all the previous messages
 }

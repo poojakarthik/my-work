@@ -70,7 +70,7 @@ class AppTemplateDefault extends ApplicationTemplate
 		//AuthenticatedUser()->PermissionOrDie(USER_PERMISSION_GOD);	// dies if no permissions
 		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
 		{
-			echo "God!";
+			//echo "God!";
 			// add in debug info
 		}
 

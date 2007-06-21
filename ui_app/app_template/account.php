@@ -70,7 +70,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		//AuthenticatedUser()->PermissionOrDie(USER_PERMISSION_GOD);	// dies if no permissions
 		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
 		{
-			echo "God!";
+			//echo "God!";
 			// add in debug info
 		}
 
@@ -129,15 +129,18 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		// Should probably check user authorization here
 		//TODO!include user authorisation
-
+		AuthenticatedUser()->CheckAuth();
 		// context menu
 		//TODO! define what goes in the context menu
 		ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
+		
+		// Console and logout should appear by default, no?
 		ContextMenu()->Console();
 		ContextMenu()->Logout();
+		
 		// breadcrumb menu
 		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
 		BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);

@@ -273,6 +273,7 @@ class Page
 				echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' ></script>\n";
 			}	
 		}
+		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -311,7 +312,7 @@ class Page
 	 * @method
 	 */
 	function RenderFooter()
-	{
+	{	
 		echo "</body>\n</html>";
 	}
 		
@@ -389,9 +390,9 @@ class Page
 	/**
 	 * RenderVixenHeader()
 	 *
-	 * Renders the breadcrumb menu
+	 * Renders the Vixen header
 	 *
-	 * Renders the breadcrumb menu
+	 * Renders the Vixen header
 	 * 
 	 * @method
 	 */

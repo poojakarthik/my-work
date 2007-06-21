@@ -1,3 +1,7 @@
+// Code from oblib which was used specifically for service_addbulk.php
+// The functionality will be somewhat usefuly (particularly the validation and AJAX)
+//  but most of it is hardcoded for the HTML used in oblib
+
 // also create objSendData on the fly
 var objSendData = new Object;
 objSendData.serviceCount = 0;

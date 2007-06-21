@@ -49,6 +49,7 @@ Define ('HTML_MODE'		, 2);
 Define ('USER_TIMEOUT'	, 1200);
 Define ('GOD_TIMEOUT'	, 60*60*24*7);
 
+Define("PERMISSION_DEBUG"		, 0x80000000);
 Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
 
 define('DATABASE_URL', '10.11.12.13');
@@ -568,18 +569,14 @@ class Application
 	function PermissionOrDie($intPagePerms)
 	{
 		// check the current user permission against permissions passed in
-		if ($this->_arrUser['Privileges'] > $intPagePerms)
+		if ($this->_arrUser['Privileges'] >= $intPagePerms)
 		{
-			//var_dump ($this->_arrUser);
 			return TRUE;
 		}
 		else
 		{
 			// ask user to login, then return to page
-			//header ('Location: login.php');
 			require_once("page_template/login.php");
-			//header ('Referer: http://www.something.com/account_view.php');
-			//var_dump($this->_arrUser->Permissions);
 			exit;
 		}
 

@@ -15,16 +15,16 @@
  */
 function VixenAjaxClass()
 {
-
         // AJAX Send
         this.Send = function(objObject)
         {
                 // store our object before sending, along with a transaction ID
                 this.objData = objObject;
                 
-                //return(JSON.stringify(object));
+				// set the target page
                 var page_url = "ajax_link.php";
-                // register the callbacks
+                
+				// register the callbacks
                 var local_handle_reply = this.HandleReply;
                 var local_handle_error = this.HandleError;
         
@@ -70,7 +70,7 @@ function VixenAjaxClass()
         // AJAX handle_reply
         this.HandleReply = function(strReply)
         {
-                // if our reply is asking for a login, prompt the user to login
+                // the reply is a JSON string, need to eval it to get an object
                 
                 var objData = {};
                 try

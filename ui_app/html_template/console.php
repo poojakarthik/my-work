@@ -105,12 +105,10 @@ class HtmlTemplateConsole extends HtmlTemplate
 			//debug (AuthenticatedUser()->_arrUser,1 );
 			if (AuthenticatedUser()->_arrUser['FirstName'])
 			{
-				//debug ('asdf');
 				echo AuthenticatedUser()->_arrUser['FirstName'];
 			} 
 			else
 			{
-				//debug (AuthenticatedUser()->_arrUser['UserName']);
 				echo ucfirst(AuthenticatedUser()->_arrUser['UserName']);
 			}
 			?> .
@@ -159,14 +157,11 @@ class HtmlTemplateConsole extends HtmlTemplate
 						Account Details
 					</strong><br />
 					Go to the <a href="account_view.php?Account.Id=1000160841">account details</a> page of 1000160841<br />
-					Go to the <a href="account_ledger.php?Account.Id=1000160841">invoices and payments</a> page of 1000160841
+					Go to the <a href="invoices_and_payments.php?Account.Id=1000160841">invoices and payments</a> page of 1000160841
 				</td>
 
               </tr>
-			  
-			  			  
-			  
-			  
+
               <tr>
                 <td>
                   <a href="#" onclick="return ModalDisplay ('#modalContent-recentCustomers')">

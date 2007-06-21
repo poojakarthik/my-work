@@ -140,14 +140,14 @@ function ImplodeTables($arrTables)
 
 
 //------------------------------------------------------------------------//
-// AjaxRecieve INCOMPLETE
+// AjaxReceive INCOMPLETE
 //------------------------------------------------------------------------//
 /**
- * AjaxRecieve()
+ * AjaxReceive()
  * 
- * Function to act as a reciever for AJAX data.  
+ * Function to act as a receiver for AJAX data.  
  * 
- * Function to act as a reciever for AJAX data. Converts to and from JSON format.
+ * Function to act as a receiver for AJAX data. Converts to and from JSON format.
  *
  * @return	str				
  *
@@ -156,7 +156,7 @@ function ImplodeTables($arrTables)
  * 
  * @function
  */
-function _AjaxRecieve()
+function AjaxReceive()
 {
 	$objJson = Json();
 	// get the JSON object and decode it into an object

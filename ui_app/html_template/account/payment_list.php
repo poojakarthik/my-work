@@ -83,7 +83,6 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		// Load all java script specific to the page here
 		//$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
-		$this->LoadJavascript("debug");  // Tools for debugging, only use when js-ing
 	}
 	
 	//------------------------------------------------------------------------//

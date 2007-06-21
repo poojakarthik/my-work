@@ -21,9 +21,11 @@ function VixenSlidingClass()
 	
 	this.Slide =function(tblId, intRow) 
 	{
+		// Grab the div which we want to slide
 		objId = tblId + '_' + intRow + 'DIV-DETAIL';
 		this.obj = document.getElementById(objId);
 		
+		// How long to slide for (seconds)
 		this.duration = 1;
 		
 		this.height =function()
@@ -34,10 +36,12 @@ function VixenSlidingClass()
 			}
 			if (this.obj.style.height)
 			{
+				// style will only be set AFTER sliding
 				this.myheight = this.obj.style.height;
 			}
 			else
 			{
+				// grab the size it appears to be instead
 				this.myheight = this.obj.clientHeight;
 			}
 			return parseInt(this.myheight);
@@ -45,28 +49,27 @@ function VixenSlidingClass()
 		
 		this.up = function() 
 		{
+			// The div is down, lets bring it up
 			if (!this.obj)
 			{
 				return FALSE;
 			}
 			this.curHeight = this.height();
 			this.newHeight = '0';
+			// If the div is not currently sliding, start sliding
 			if(Vixen.table[tblId].row[intRow].Sliding != TRUE) 
 			{
 				var finishTime = this.slide();
 				window.setTimeout("Vixen.Slide.Slide('"+tblId+"','"+intRow+"').finishup("+this.height()+");",finishTime);
 			}
-			else
-			{
-				
-				//Vixen.Slide.slideUp = FALSE;
-			}
 		}
 	
 		this.down = function() 
 		{
+			// The div is up, lets take it down
 			this.newHeight = this.height();
 			this.curHeight = '0';
+			// If the div is not currently sliding, start sliding
 			if(Vixen.table[tblId].row[intRow].Sliding != TRUE) 
 			{
 				this.obj.style.height = '1px';
@@ -74,19 +77,16 @@ function VixenSlidingClass()
 				var finishTime = this.slide();
 				window.setTimeout("Vixen.Slide.Slide('"+tblId+"','"+intRow+"').finishdown("+this.newHeight+");",finishTime);
 			}
-			else
-			{
-				
-				//Vixen.Slide.slideUp = TRUE;
-			}
 		}
 		
 		this.slide = function() 
 		{
+			// Generic function to change height of div over time
 			Vixen.table[tblId].row[intRow].Sliding = TRUE;
-			var frames = 15 * this.duration; // Running at 30 fps
+			var intFPS = 10; // Running at 10 fps
+			var frames = intFPS * (this.duration); 
 	
-			var tIncrement = (this.duration*500) / frames;
+			var tIncrement = 500 / intFPS;
 			tIncrement = Math.round(tIncrement);
 			var sIncrement = (this.curHeight-this.newHeight) / frames;
 	
@@ -108,23 +108,24 @@ function VixenSlidingClass()
 				this.curHeight = this.curHeight - frameSizes[i];
 				window.setTimeout("document.getElementById('"+objId+"').style.height='"+Math.round(this.curHeight)+"px';",tIncrement * i);
 			}
-
+			
+			// Once we finish sliding
 			window.setTimeout("Vixen.table['"+tblId+"'].row['"+intRow+"'].Sliding = FALSE;",tIncrement * i);			
-	
+
 			return tIncrement * i;
 			
 		}
 		
 		this.finishup = function(height) 
 		{
-			//debug (this.obj.clientHeight + "up" + height + ":myheight:" + this.height());
+			// Make sure the div can't be seen
 			this.obj.style.display = 'none';
 			this.obj.style.height = height + 'px';
 			Vixen.table[tblId].row[intRow].Up = TRUE;
 		}
 		this.finishdown = function(height) 
 		{
-			//debug (this.obj.clientHeight + "down" + height);
+			// Make sure the div is quite visible
 			this.obj.style.display = 'block';
 			this.obj.style.height = height + 'px';
 			Vixen.table[tblId].row[intRow].Up = FALSE;
@@ -136,6 +137,7 @@ function VixenSlidingClass()
 	
 	this.CollapseAll =function(strTableId)
 	{
+		// Slide up any divs which are currently down
 		objTable = Vixen.table[strTableId];
 		
 		for (var i=0; i<=objTable.totalRows; i++)
@@ -151,11 +153,13 @@ function VixenSlidingClass()
 	
 	this.ToggleSlide =function(strTableId, strTargetId)
 	{
+		// Slide this div
+		
 		// get row number from strTargetId
 		intIndex = strTargetId.lastIndexOf('_');
 		intIndex = strTargetId.substr(intIndex + 1);
 
-		// hack until changes
+		// hardcoded until a naming convention is figured out
 		strTargetId += "DIV-DETAIL";
 
 		objTable = Vixen.table[strTableId];
@@ -166,11 +170,13 @@ function VixenSlidingClass()
 		}
 		if (objTable.row[intIndex].Up == TRUE)
 		{
+			// Our div is up, lets send it down
 			this.Slide(strTableId, intIndex).down();
 			objTable.row[intIndex].Up = FALSE;			
 		}
 		else
 		{
+			// Our div is down, bring it back up
 			this.Slide(strTableId, intIndex).up();
 			objTable.row[intIndex].Up = TRUE;
 		}
@@ -179,10 +185,9 @@ function VixenSlidingClass()
 	
 	this.Attach =function (strTableId, totalRows, bolOneOnly)
 	{
-	
-		//debug ("Table-- " + strTableId);
-		//debug (Vixen.table[strTableId], 1);
-		
+		// Add behaviour to the rows of the table
+
+		// Grab the javascript table object
 		objTable = Vixen.table[strTableId];
 		objTable.collapseAll = bolOneOnly;
 		objTable.totalRows = totalRows;
@@ -195,6 +200,8 @@ function VixenSlidingClass()
 			
 			elmRow.addEventListener('mousedown', MouseDownHandler, FALSE);
 			
+			// Table is just loaded, collapse all the expanded divs
+			//  this is needed so the div will figure out the correct height itself
 			intHeight = Vixen.Slide.Slide(strTableId, i).height();
 			Vixen.Slide.Slide(strTableId, i).finishup(intHeight);
 		}
@@ -202,9 +209,10 @@ function VixenSlidingClass()
 	
 	function MouseDownHandler ()
 	{
-		//debug (Vixen.table, 1);
+		// MouseDown on row, slide the div
 		Vixen.Slide.ToggleSlide(this.parentNode.parentNode.id, this.id);
 	}
 }
 
+// Create an instance of the Vixen Sliding class
 Vixen.Slide = new VixenSlidingClass();

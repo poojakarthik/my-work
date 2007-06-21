@@ -17,36 +17,36 @@ function VixenPopupClass()
 {
 	this.Create = function(strContent, strId, strSize, mixPosition, strModal)
 	{
-		// try to find a previous object
+		// Try to find a previous popup
 		elmExists = document.getElementById('VixenPopup__' + strId);
 		if (elmExists)
 		{
-			// destroy it
+			// destroy it . . .
 			elmExists.parentNode.removeChild(elmExists);
 		}
 		
+		// . . . and create it
 		elmPopup = document.createElement('div');
 		elmPopup.setAttribute('className', 'PopupBox');
 		elmPopup.setAttribute('class', 'PopupBox');
 		elmPopup.setAttribute('Id', 'VixenPopup__' + strId);
 		
-		
+		// Quote the id of the popup (argh, double quoting kills me)
+		strTempId = '"' + strId + '"';
+				
 		// Set the content of the popup box
-		tempId = '"' + strId + '"';
-		
 		if (!strContent)
 		{
 			strContent = "No data<br />Id: " + strId;
 		}
-		
-
-
+				
 		strContent = 
 		"<div id='VixenPopupTopBar__" + strId + "' class='PopupBox_TopBar'>" +
-		"<img src='img/template/close.png' class='PopupBox_Close' onclick='Vixen.Popup.Close(" + tempId + ")'>" + 
+		"<img src='img/template/close.png' class='PopupBox_Close' onclick='Vixen.Popup.Close(" + strTempId + ")'>" + 
 		"TelcoBlue Internal System" +
 		"</div>" +	strContent;
 
+		// Add the popup to the holder
 		//elmPopup.style.visibility = 'visible';			
 		elmPopup.innerHTML = strContent;
 		elmRoot = document.getElementById('PopupHolder');
@@ -54,7 +54,8 @@ function VixenPopupClass()
 
 		//Going to run into some problems when having multiple popups
 		// on a single page, especially of different types
-
+		//  -think this is fixed, havent comprehensively tested though
+		
 		// Set the behaviour (modal/modeless/autohide)
 		switch (strModal)
 		{
@@ -76,6 +77,7 @@ function VixenPopupClass()
 			case "autohide":
 			{
 				// clicking ANYWHERE will close the div
+				//  what about on the div itself?
 				document.addEventListener('mousedown', CloseHandler, TRUE);
 				break;
 			}
@@ -85,10 +87,11 @@ function VixenPopupClass()
 			}
 		}
 		
-		// Bring the box to the front
+		// Bring the popup to the front
+		//  check the zindex in CSS, might need to be increased somewhat
 		elmPopup.style.zIndex = ++dragObj.zIndex;
 
-		// Set the size of the popup box
+		// Set the size of the popup
 		switch (strSize)
 		{
 			case "small":
@@ -107,8 +110,7 @@ function VixenPopupClass()
 					break;
 				}
 			default:
-				{
-					//default
+				{   //default
 					elmPopup.style.width = '450px';
 					break;
 				}
@@ -118,7 +120,6 @@ function VixenPopupClass()
 		if (mixPosition == "centre")
 		{
 			// center the popup
-			//strContent += "str: " + mixPosition;
 			elmPopup.style.left = (window.innerWidth / 2) - (elmPopup.offsetWidth / 2);
 			elmPopup.style.top = (window.innerHeight / 2) - (elmPopup.offsetHeight / 2);
 			
@@ -126,7 +127,6 @@ function VixenPopupClass()
 		else if (mixPosition == "[object MouseEvent]")
 		{
 			// set the popup to the cursor
-			//strContent += "eve: " + mixPosition;
 			elmPopup.style.left = mixPosition.clientX;
 			elmPopup.style.top = mixPosition.clientY;
 			
@@ -134,35 +134,32 @@ function VixenPopupClass()
 		else if (typeof(mixPosition) == 'object')
 		{
 			// set the popup to the target
-			//strContent += "obj: " + mixPosition;
 			elmPopup.style.left = mixPosition.offsetLeft;
 			elmPopup.style.top = mixPosition.offsetTop;
 		}
 		else
 		{
-			//strContent += "dunnoh";
+			// set the popup, well, where ever it wants
 		}
 		
-		// Add the handler for dragging the box around
+		// Add the handler for dragging the popup around
     	mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
     	mydragObj.addEventListener('mousedown', OpenHandler, false);
 		
 		function OpenHandler(event)
 		{
-			//debug(event.target);
-			Vixen.Dhtml.Drag(event, 'VixenPopup__' + strId);
-			
+			Vixen.Dhtml.Drag(event, 'VixenPopup__' + strId);	
 		}
 		function CloseHandler(event)
 		{
-			debug (event.target.id);
+			// for AUTOHIDE only
 			if (event.target.id.indexOf(strId) >= 0)
 			{
-				//debug (event.target.id.substr(18));
 				// Top bar, looking to drag
 			}			
 			else
 			{
+				// MouseDown on page
 				Vixen.Popup.Close(strId);
 				document.removeEventListener('mousedown', CloseHandler, TRUE);
 			}
@@ -178,6 +175,7 @@ function VixenPopupClass()
 			objClose.parentNode.removeChild(objClose);
 			
 		}
+		// If it was modal (overlay hiding everything)
 		var elmOverlay = document.getElementById('overlay');
 		if (elmOverlay)
 		{

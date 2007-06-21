@@ -1,6 +1,17 @@
-// MODIFIED BY: Sean
-// CHANGES: completely rooted up the lovely JSON code, so it will debug out
-// 			a mutli-leveled javascript object nicely
+/* Modified By: Sean
+ * Date:		21-06-07
+ *
+ * CHANGES: completely rooted up the lovely JSON code, so it will debug out
+ * 			a mutli-leveled javascript object nicely
+ *
+ * PLANS:   at the moment, it will die disgracefully if you pass a cyclic
+ *			object, it will recursive for half a minute, and then fail
+ *				-- maybe add some code so it recognises and ignores a cycle
+ *			the code is still quite reminiscent of the JSON code, and as such
+ *			has terrible naming of methods/variables
+ *				-- clean it up, to follow our coding standard
+ *
+*/
 
 /*
 Copyright (c) 2005 JSON.org
@@ -24,13 +35,12 @@ SOFTWARE.
 */
 
 /*
-    The global object JSON contains two methods.
+    The global object DEBUG contains one method.
 
-    JSON.stringify(value) takes a JavaScript value and produces a JSON text.
+    DEBUG.fstringify(value) takes a JavaScript value and produces a JSON text.
     The value must not be cyclical.
 
-    JSON.parse(text) takes a JSON text and produces a JavaScript value. It will
-    return false if there is an error.
+
 */
 
 
@@ -146,34 +156,6 @@ var DEBUG = function () {
         license: 'http://www.crockford.com/JSON/license.html',
 
 	//------------------------------------------------------------------------//
-	// stringify
-	//------------------------------------------------------------------------//
-	/**
-	 * stringify()
-	 *
-	 * convert a Javascript value to a JSON string
-	 *
-	 * convert a Javascript value to a JSON string
-	 *
-	 * @param	mixed	value	any Javascript value
-	 * @return	string			JSON string
-	 *
-	 * @method
-	 * @see		JSON.fstringify()
-	 * @see		JSON.parse()
-	 */
-        stringify: function (v) {
-            var f = s[typeof v];
-            if (f) {
-                v = f(v, false);
-                if (typeof v == 'string') {
-                    return v;
-                }
-            }
-            return null;
-        },
-
-	//------------------------------------------------------------------------//
 	// fstringify
 	//------------------------------------------------------------------------//
 	/**
@@ -203,31 +185,6 @@ var DEBUG = function () {
             return null;
         },
 
-	//------------------------------------------------------------------------//
-	// parse
-	//------------------------------------------------------------------------//
-	/**
-	 * parse()
-	 *
-	 * Parse a JSON string into a Javascript value.
-	 *
-	 * Parse a JSON string into Javascript value(s).
-	 *
-	 * @param	string	text	JSON string to be parsed
-	 * @return	bool	returns FALSE on error
-	 *
-	 * @method
-	 * @see		JSON.stringify()
-	 * @see		JSON.fstringify()
-	 */
-        parse: function (text) {
-            try {
-                return !(/[^,:{}\[\]0-9.\-+Eaeflnr-u \n\r\t]/.test(
-                        text.replace(/"(\\.|[^"\\])*"/g, ''))) &&
-                    eval('(' + text + ')');
-            } catch (e) {
-                return false;
-            }
-        }
+
     };
 }();

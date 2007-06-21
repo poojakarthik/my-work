@@ -6213,7 +6213,7 @@
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataInteger"; 
 		 
 				 
-				 
+	/*			 
 	// Define Columns 
 	$strName = "CostCentre"; 
 		$arrDefine['Column'][$strName]['Type'] 			= "d"; 
@@ -6231,7 +6231,7 @@
 		$arrDefine['Column'][$strName]['Null'] 			= FALSE; 
 		$arrDefine['Column'][$strName]['Default'] 		= "0"; 
 		$arrDefine['Column'][$strName]['ObLib'] 		= "dataBoolean"; 
-		 
+		*/ 
 					 
 	// Save Table Define
 	$GLOBALS['arrDatabaseTableDefine'][$arrDefine['Name']] = $arrDefine; 

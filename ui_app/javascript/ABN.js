@@ -1,4 +1,6 @@
-	
+// Code from oblib to validate ABNs
+// We can use the actual validation code, but incorporate it into our existing
+//  class structure
 	window.addEventListener (
 		"load",
 		function ()
@@ -120,4 +122,3 @@
 		
 		this.init ();
 	}
-	

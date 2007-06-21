@@ -163,7 +163,6 @@ function VixenMenuClass(objMenu)
 	
 	this.Close = function(intLevel)
 	{
-		debug (intLevel);
 		var object = document.getElementById('VixenMenu__' + intLevel);
 		if (object)
 		{

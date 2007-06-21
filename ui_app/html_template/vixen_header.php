@@ -108,14 +108,23 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 			TelcoBlue Internal Management System
 		</div>
         <div class='Right'>
-			Version 7.03
+            Version 7.03
 									
-			<div class='Menu_Button'>
-				<a href='#' onclick=''>
-					<img src='img/template/bug.png' alt='Report Bug' title='Report Bug' border='0'>
-				</a>
-			</div>
-		</div>
+            <div class='Menu_Button'>
+            	<a href='#' onclick=''>
+                	<img src='img/template/bug.png' alt='Report Bug' title='Report Bug' border='0' /></a>\n";
+            
+			// Add debug button, which doesnt do much yet, just set debug to true;
+			//  eventually move this somewhere more appropriate
+		if (AuthenticatedUser()->_arrUser['Privileges'] >= PERMISSION_DEBUG)
+		{
+			echo "            	<a href='#' onclick='Vixen.debug^=TRUE;alert(\"Vixen.debug now is: \" + Vixen.debug );'>
+            		<img src='img/template/debug.png' alt='Debug' title='Debug' border='0' >            	</a>			
+            	<script type='text/javascript'>Vixen.debug = TRUE;</script>
+            	<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/debug.js'></script>\n";
+		}
+		echo "            </div>\n
+        </div>
         <div class='Clear'></div>
       </div>
       <div class='Clear'></div>

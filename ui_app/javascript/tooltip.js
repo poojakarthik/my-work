@@ -17,41 +17,46 @@ function VixenTooltipClass()
 {
 	this.target = "";
 	this.timer = [];
+	this.bolExists = FALSE;
 	
 	this.Create = function(strRowId, evtHover)
 	{
-		// try to find a previous object
-		elmExists = document.getElementById('VixenTooltip');
-		if (elmExists)
+		if (this.bolExists)
 		{
-			// destroy it
-			elmTooltip = elmExists;
-		}
+			// Grab tooltip
+			elmTooltip = document.getElementById('VixenTooltip');
 		else
+q		}
 		{
-			return FALSE;
+			// Add event listeners only ONCE
+			elmTooltip = document.getElementById('VixenTooltip');
+			
+			// Set the behaviour of the tooltip
+			elmTooltip.addEventListener('mouseover', HoverHandler, TRUE);
+			elmTooltip.addEventListener('mouseout', LeaveHandler, TRUE);
+			document.addEventListener('mousedown', CloseHandler, TRUE);
+			
+			this.bolExists = TRUE;
 		}
 		
-		
-		
-		// assign to current object
+		// Used to identify which row the current tooltip is for
 		this.target = strRowId;
 		
+		
+		// Get the content of the tooltip
 		strContent = document.getElementById(strRowId + 'DIV-TOOLTIP').innerHTML;
-		// Set the content of the popup box		
 		if (!strContent)
 		{
 			strContent = "No data<br />";
 		}
 		
-		//elmPopup.style.visibility = 'visible';			
+		// Set the content of the tooltip			
 		elmTooltip.innerHTML = strContent;
 
-		// Set the behaviour autohide
-		document.addEventListener('mousedown', CloseHandler, TRUE);
-	
-		strSize = "small";
-		// Set the size of the popup box
+
+		
+		strSize = "medium";
+		// Set the size of the tooltip (leftover from popup code)
 		switch (strSize)
 		{
 			case "small":
@@ -77,38 +82,94 @@ function VixenTooltipClass()
 				}
 		}
 		
-		// Set the position (centre/pointer/target)
-		if (evtHover == "[object MouseEvent]")
+		// Set the position (centre/pointer/target) (leftover from popup code)
+
+		var objTarget = evtHover.target;
+		//while ((objTarget = objTarget.parentNode).id.indexOf('T') != "[object HTMLTableRowElement]")
+		while ((objTarget = objTarget.parentNode).id != strRowId)
 		{
-			// set the popup to the cursor
-			elmTooltip.style.position = 'absolute';
-			elmTooltip.style.left = evtHover.clientX + 25;
-			elmTooltip.style.top = evtHover.clientY + 25;
-			elmTooltip.style.display = 'block';
+			// Find me that damn table!
+			//if (objTarget == "[object HTMLTableElement]") {debug ("a: " + objTarget.id); break;}
 		}
 		
+		arrPos = findPos(objTarget);
 		
-		function CloseHandler(event)
+		// set the popup to beside the table
+		elmTooltip.style.position = 'absolute';
+		elmTooltip.style.display = 'block';
+		elmTooltip.style.top = arrPos[1];
+		elmTooltip.style.left = arrPos[0] - elmTooltip.clientWidth - 5;
+		
+		/*
+		// set the popup to the cursor
+		elmTooltip.style.position = 'absolute';
+		elmTooltip.style.left = evtHover.clientX + 25;
+		elmTooltip.style.top = evtHover.clientY + 25;
+		elmTooltip.style.display = 'block';
+		*/
+
+
+		// www.quirksmode.org == awesome
+		function findPos(obj)
 		{
-			//debug (event.target.id);
-			if (event.target.id.indexOf('VixenTooltip') >= 0)
+			var curleft = curtop = 0;
+			if (obj.offsetParent) {
+				curleft = obj.offsetLeft
+				curtop = obj.offsetTop
+				while (obj = obj.offsetParent) {
+					curleft += obj.offsetLeft
+					curtop += obj.offsetTop
+				}
+			}
+			return [curleft,curtop];
+		}
+		
+		function CloseHandler(evt)
+		{
+			var objTarget = evt.target;
+			
+			while (((objTarget = objTarget.parentNode).id.indexOf('Table') == -1) && (objTarget.id.indexOf('VixenTooltip') == -1))
 			{
-				//debug (event.target.id.substr(18));
-				// Top bar, looking to drag
-			}			
+				// Find me that damn table!
+				if (objTarget == "[object HTMLHtmlElement]") {break;}
+			}
+			
+			if (objTarget.id.indexOf('Table') >= 0 || objTarget.id.indexOf('VixenTooltip') >= 0)
+			{
+				return;
+			}
 			else
 			{
+				// MouseDown on other element, close tooltip
 				Vixen.Tooltip.Close();
-				document.removeEventListener('mousedown', CloseHandler, TRUE);
+			}
+		}
+		function HoverHandler(evt)
+		{
+			// destroy previous destroyer
+			for (var i=0; i<Vixen.Tooltip.timer.length; i++)
+			{
+				window.clearTimeout(Vixen.Tooltip.timer[i]);
+			}
+		}
+		
+		function LeaveHandler(evt)
+		{
+			if (evtHover.relatedTarget.id != 'VixenTooltip')
+			{
+				// MouseOut on Tooltip, close tooltip
+				Vixen.Tooltip.Close();
 			}
 		}
 	}
 	
 	this.Close = function()
 	{
+		// Get the tooltip
 		var objClose = document.getElementById('VixenTooltip');
 		if (objClose)
 		{
+			// Close the tooltip
 			this.timer.push( window.setTimeout('document.getElementById("VixenTooltip").style.display = "none";', 500));
 			this.timer.push( window.setTimeout('Vixen.Tooltip.target = "";', 500));
 		}
@@ -118,6 +179,7 @@ function VixenTooltipClass()
 	{
 		for (var i=0; i <=intTotalRows; i++)
 		{
+			// Add some behaviour to the row
 			var elmRow = document.getElementById(strTableId + '_' + i);
 			elmRow.addEventListener('mouseover', MouseOverHandler, TRUE);
 			elmRow.addEventListener('mouseout', MouseOutHandler, TRUE);
@@ -128,11 +190,17 @@ function VixenTooltipClass()
 	{
 		if (Vixen.Tooltip.target != this.id)
 		{
+			// If the tooltip is not already on this row, create it on this row
 			Vixen.Tooltip.Create(this.id, evtHover);
+			// Stop any previous destroyers
+			for (var i=0; i<Vixen.Tooltip.timer.length; i++)
+			{
+				window.clearTimeout(Vixen.Tooltip.timer[i]);
+			}
 		}
 		else
 		{
-			// destroy previous destroyer
+			// Stop any previous destroyers
 			for (var i=0; i<Vixen.Tooltip.timer.length; i++)
 			{
 				window.clearTimeout(Vixen.Tooltip.timer[i]);
@@ -143,6 +211,7 @@ function VixenTooltipClass()
 	{
 		if (evtHover.relatedTarget.id != 'VixenTooltip')
 		{
+			// MouseOut on row, close tooltip
 			Vixen.Tooltip.Close();
 		}
 	}

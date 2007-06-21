@@ -17,10 +17,12 @@ function VixenHighlightClass()
 {
 	this.Unselect =function(strTableId)
 	{
-		//debug (strTableId);
+		// Remove all highlighting/selection from a table
 		for (var i=0; i <= Vixen.table[strTableId].totalRows; i++)
 		{
 			var elmRowUnselect = document.getElementById(strTableId + '_' + i);
+			
+			// Change the class back to even/odd
 			if (elmRowUnselect.id.substr(elmRowUnselect.id.indexOf('_') + 1) % 2)
 			{
 				elmRowUnselect.className = "Even";
@@ -29,31 +31,36 @@ function VixenHighlightClass()
 			{
 				elmRowUnselect.className = "Odd";
 			}
-			
+			// Deselect the row
 			Vixen.table[strTableId].row[i].selected = FALSE;
 			
 		}
 	}
 	this.ToggleSelect =function (elmRow)
 	{
-		//debug (elmRow.id);
 		// get row number from elmRow
-		intRow = elmRow.id.lastIndexOf('_');
-		intRow = elmRow.id.substr(intRow + 1);
+		intPos = elmRow.id.lastIndexOf('_');
+		intRow = elmRow.id.substr(intPos + 1);
 		
+		// Grab the javascript row object
 		objRow = Vixen.table[elmRow.parentNode.parentNode.id].row[intRow];
 		
+		// We are about to clear all selections, so have to save current status
 		bolSelected = objRow.selected;
 		
+		// Clear all selections from this table
 		this.Unselect(elmRow.parentNode.parentNode.id);
 		
+		// Toggle the row
 		if (bolSelected && (!objRow.Up))
 		{
+			// if the row is selected and down, unselect it
 			elmRow.className = "Hover";
 			objRow.selected = FALSE;
 		}
 		else
 		{
+			// otherwise select it
 			elmRow.className = "Selected";
 			objRow.selected = TRUE;
 		}
@@ -61,24 +68,26 @@ function VixenHighlightClass()
 	
 	this.LightsUp =function (elmRow)
 	{
+		// MouseOver on row, highlight the row
 		elmRow.className = "Hover";
 	}
 	
 	this.LightsDown =function (elmRow)
 	{
-		// get row number from elmRow
-		intRow = elmRow.id.lastIndexOf('_');
-		intRow = elmRow.id.substr(intRow + 1);
+		// MouseOut on row, remove highlight
 		
-		//debug (Vixen.table[elmRow.parentNode.parentNode.id].row[intRow]);
+		// get row number from elmRow
+		intPos = elmRow.id.lastIndexOf('_');
+		intRow = elmRow.id.substr(intPos + 1);
 		
 		if (Vixen.table[elmRow.parentNode.parentNode.id].row[intRow].selected)
 		{
-			//debug (elmRow.id);
+			// Row is selected
 			elmRow.className = "Selected";
 		}
 		else
 		{
+			// Change the class back to even/odd
 			if (elmRow.id.substr(elmRow.id.indexOf('_') + 1) % 2)
 			{
 				elmRow.className = "Even";
@@ -92,6 +101,7 @@ function VixenHighlightClass()
 	
 	this.Attach =function (strTableId, totalRows)
 	{
+		// Add behaviour to the table
 		for (var i=0; i <=totalRows; i++)
 		{
 			var elmRow = document.getElementById(strTableId + '_' + i);
@@ -103,8 +113,10 @@ function VixenHighlightClass()
 	
 	function MouseDownHandler ()
 	{
+		// MouseDown on row, toggle row and propagate selection
 		objTable = Vixen.table[this.parentNode.parentNode.id];
 		
+		// Propagate selection to linked tables
 		if (objTable.linked)
 		{
 			// get row number from elmRow
@@ -114,21 +126,27 @@ function VixenHighlightClass()
 			// update table links
 			Vixen.Highlight.UpdateLink(objTable.link, [objTable.row[intRow].index],[this.parentNode.parentNode.id]);
 		}
+		
+		// Toggle row
 		Vixen.Highlight.ToggleSelect(this);
 	}
 	
 	function MouseOverHandler ()
 	{
+		// MouseOver on row, highlight it
 		Vixen.Highlight.LightsUp(this);
 	}
 
 	function MouseOutHandler ()
 	{
+		// MouseOut on row, remove highlight
 		Vixen.Highlight.LightsDown(this);
 	}
 	
 	this.UpdateLink =function(arrTables, arrIndexes, arrSkipTables)
 	{
+		// Propagate selection from one table to next
+		
 		// declare variables
 		var intTable;
 		var strTable;
@@ -145,7 +163,7 @@ function VixenHighlightClass()
 		for (strTable in arrTables)
 		{	
 			tblTarget 	= Vixen.table[strTable];
-		
+			// bolSkip = FALSE;
 			// check for skip table
 			for (intTable in arrSkipTables)
 			{
@@ -198,8 +216,6 @@ function VixenHighlightClass()
 									if (objRow.index[strIndex][intRowIndex] == arrIndexes[intIndex][strIndex])
 									{
 										// Highlight if index matches
-										//.selected = TRUE lightsdown();
-										//debug ('asfasdfsad');
 										strRowId = strTable + "_" + intRow;
 										Vixen.table[strTable].row[intRow].selected = TRUE;
 										Vixen.Highlight.LightsDown(document.getElementById(strRowId));

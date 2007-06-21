@@ -1,4 +1,5 @@
-	
+// Code from oblib which runs on page load
+// It could be incorporated into our Vixen.Init, not much of it is useful
 	window.addEventListener (
 		"load",
 		function ()
@@ -91,4 +92,3 @@
 		
 		window.location = 'contact_view.php?Id=' + intCustomer;
 	}
-	

@@ -221,7 +221,7 @@
 		
 		$this->_insAddExtension = new StatementInsert("ServiceExtension");
 		
-		$this->_updServiceExtension = new StatementUpdate("ServiceExtension", "Service = <Service>", Array('Archived' => NULL));
+		$this->_updServiceExtension = new StatementUpdate("ServiceExtension", "Service = <Service>", Array("Archived" => NULL));
 	 }
 	 
 	//------------------------------------------------------------------------//
