@@ -146,7 +146,7 @@ function VixenHighlightClass()
 	this.UpdateLink =function(arrTables, arrIndexes, arrSkipTables)
 	{
 		// Propagate selection from one table to next
-		
+
 		// declare variables
 		var intTable;
 		var strTable;
@@ -158,6 +158,7 @@ function VixenHighlightClass()
 		var intRowIndex;
 		var strIndex;
 		var arrSubIndexes = Array();
+		var intIndexEntry;
 		
 		// for each linked table
 		for (strTable in arrTables)
@@ -171,6 +172,10 @@ function VixenHighlightClass()
 				{
 					bolSkip = TRUE;
 					break;
+				}
+				else
+				{
+					bolSkip = FALSE;
 				}
 			}
 		
@@ -213,15 +218,18 @@ function VixenHighlightClass()
 							{					
 								for (intRowIndex in objRow.index[strIndex])
 								{
-									if (objRow.index[strIndex][intRowIndex] == arrIndexes[intIndex][strIndex])
+									for (intIndexEntry in arrIndexes[intIndex][strIndex])
 									{
-										// Highlight if index matches
-										strRowId = strTable + "_" + intRow;
-										Vixen.table[strTable].row[intRow].selected = TRUE;
-										Vixen.Highlight.LightsDown(document.getElementById(strRowId));
-										
-										// Add row indexes to arrSubIndexes
-										arrSubIndexes.push(objRow.index);
+										if (objRow.index[strIndex][intRowIndex] == arrIndexes[intIndex][strIndex][intIndexEntry])
+										{
+											// Highlight if index matches
+											strRowId = strTable + "_" + intRow;
+											Vixen.table[strTable].row[intRow].selected = TRUE;
+											Vixen.Highlight.LightsDown(document.getElementById(strRowId));
+											
+											// Add row indexes to arrSubIndexes
+											arrSubIndexes.push(objRow.index);
+										}
 									}
 								}
 							}

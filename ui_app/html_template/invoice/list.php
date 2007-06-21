@@ -154,7 +154,6 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			// Add the row index
 			Table()->InvoiceTable->AddIndex("InvoiceRun", $dboInvoice->InvoiceRun->Value);
 		}
-		
 		Table()->InvoiceTable->LinkTable("PaymentTable", "InvoiceRun");
 		Table()->InvoiceTable->LinkTable("AdjustmentTable", "InvoiceRun");
 		

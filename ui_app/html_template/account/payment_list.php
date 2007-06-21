@@ -176,7 +176,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			$strStatus = GetConstantDescription($dboPayment->Status->Value, "PaymentStatus");
 			$strToolTipHtml .= $dboPayment->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
 			
-			// if the payment's status is PAYMENT_REVERSED then AmmountApplied = 0 else AmountApplied = Amount - Balance
+			// if the payment's status is PAYMENT_REVERSED then AmountApplied = 0 else AmountApplied = Amount - Balance
 			if ($dboStatus != PAYMENT_REVERSED)
 			{
 				$dboPayment->AmountApplied = $dboPayment->Amount->Value - $dboPayment->Balance->Value;
@@ -192,7 +192,6 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			$strToolTipHtml .= $dboPayment->Balance->AsOutput();
 			Table()->PaymentTable->SetToolTip($strToolTipHtml);
 		}
-		
 		Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
 		Table()->PaymentTable->RowHighlighting = TRUE;
 		
