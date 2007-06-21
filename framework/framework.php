@@ -217,7 +217,7 @@
 	 	$arrData['NoteType']		= NULL;			
 		$this->_insAddNote	= new StatementInsert("Note", $arrData);
 		
-		$this->_selCheckELB = new StatementSelect("ServiceExtension", "Service = <Service>");
+		$this->_selCheckELB = new StatementSelect("ServiceExtension", "*", "Service = <Service>");
 		
 		$this->_insAddExtension = new StatementInsert("ServiceExtension");
 		
@@ -1132,7 +1132,7 @@
 	 	if ($this->_selCheckELB->Execute($arrWhere))
 	 	{
 	 		// Unarchive the old data
-	 		return ($this->_updServiceExtension(Array('Archived' => 0), $arrWhere) === FALSE) ? FALSE : TRUE;
+	 		return ($this->_updServiceExtension->Execute(Array('Archived' => 0), $arrWhere) === FALSE) ? FALSE : TRUE;
 	 	}
 	 	else
 	 	{
@@ -1174,7 +1174,7 @@
 	 	// Archive the ELB data
 	 	$arrWhere = Array();
 	 	$arrWhere['Service']	= $intService;
-	 	return ($this->_updServiceExtension(Array('Archived' => 1), $arrWhere) === FALSE) ? FALSE : TRUE;
+	 	return ($this->_updServiceExtension->Execute(Array('Archived' => 1), $arrWhere) === FALSE) ? FALSE : TRUE;
 	 }
  }
 
