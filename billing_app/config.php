@@ -1040,7 +1040,8 @@ $arrCDRCheck['MinCountPerFreq']		= 2;
 $arrCDRCheck['PrefCountPerFreq']	= 2;
 $arrConfig['CDRCheck']['OptusSpeedi']	= $arrCDRCheck;
 
-// Optus CDR
+/*
+// Optus Late Provisioning Credit CDR (not really needed)
 $arrCDRCheck = Array();
 $arrCDRCheck['Label']				= "Optus Late Provisioning Credits CDR";
 $arrCDRCheck['Carrier']				= CARRIER_OPTUS;
@@ -1050,7 +1051,7 @@ $arrCDRCheck['RecurringFreqType']	= BILLING_FREQ_DAY;
 $arrCDRCheck['MinCountPerFreq']		= 0;
 $arrCDRCheck['PrefCountPerFreq']	= 1;
 $arrConfig['CDRCheck']['OptusLateProvisioning']	= $arrCDRCheck;
-
+*/
 
 // AAPT CDR
 $arrCDRCheck = Array();
