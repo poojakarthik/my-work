@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2006 VOIPTEL Pty Ltd
+// (c) copyright 2006-7 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
@@ -20,8 +20,8 @@
  * @language	PHP
  * @package		framework
  * @author		Rich Davis
- * @version		6.10
- * @copyright	2006 VOIPTEL Pty Ltd
+ * @version		7.06
+ * @copyright	2006-7 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
@@ -216,6 +216,12 @@
 	 	$arrData['Datetime']		= new MySQLFunction("NOW()");
 	 	$arrData['NoteType']		= NULL;			
 		$this->_insAddNote	= new StatementInsert("Note", $arrData);
+		
+		$this->_selCheckELB = new StatementSelect("ServiceExtension", "Service = <Service>");
+		
+		$this->_insAddExtension = new StatementInsert("ServiceExtension");
+		
+		$this->_updServiceExtension = new StatementUpdate("ServiceExtension", "Service = <Service>", Array('Archived' => NULL));
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -1099,6 +1105,76 @@
 	 	$arrData['Datetime']		= new MySQLFunction("NOW()");
 	 	$arrData['NoteType']		= $intType;
 	 	return (bool)$this->_insAddNote->Execute($arrData);
+	 }
+	 
+	 
+		 
+	//------------------------------------------------------------------------//
+	// EnableELB
+	//------------------------------------------------------------------------//
+	/**
+	 * EnableELB()
+	 *
+	 * Enables Extension-Level Billing for the specified Service
+	 *
+	 * Enables Extension-Level Billing for the specified Service.  It will not add
+	 * new entries if there are old ones archived
+	 *
+	 * @param	integer	$intService		The Service to enable ELB on
+	 *
+	 * @return	boolean					Pass/Fail				
+	 */
+	 function EnableELB($intService)
+	 {
+	 	// Check for ELB in table
+	 	$arrWhere = Array();
+	 	$arrWhere['Service']	= $intService;
+	 	if ($this->_selCheckELB->Execute($arrWhere))
+	 	{
+	 		// Unarchive the old data
+	 		return ($this->_updServiceExtension(Array('Archived' => 0), $arrWhere) === FALSE) ? FALSE : TRUE;
+	 	}
+	 	else
+	 	{
+	 		$this->_selFNN->Execute($arrWhere);
+	 		$arrData = $this->_selFNN->Fetch();
+	 		
+	 		// Insert new data
+	 		for ($i = 0; $i < 100; $i++)
+	 		{
+	 			$arrData['RangeStart'] = $arrData['RangeEnd'] = $i;	 			
+	 			if (!$this->_insAddExtension->Execute($arrData))
+	 			{
+	 				return FALSE;
+	 			}
+	 		}
+	 		
+	 		return TRUE;	 		
+	 	}
+	 }
+	 
+	 
+		 
+	//------------------------------------------------------------------------//
+	// DisableELB
+	//------------------------------------------------------------------------//
+	/**
+	 * DisableELB()
+	 *
+	 * Disables Extension-Level Billing for the specified Service
+	 *
+	 * Disables Extension-Level Billing for the specified Service
+	 *
+	 * @param	integer	$intService		The Service to disable ELB on
+	 *
+	 * @return	boolean					Pass/Fail				
+	 */
+	 function DisableELB($intService)
+	 {
+	 	// Archive the ELB data
+	 	$arrWhere = Array();
+	 	$arrWhere['Service']	= $intService;
+	 	return ($this->_updServiceExtension(Array('Archived' => 1), $arrWhere) === FALSE) ? FALSE : TRUE;
 	 }
  }
 
