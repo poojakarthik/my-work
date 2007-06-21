@@ -171,7 +171,16 @@
 					)
 				);
 			}
-				
+			
+			// Set ELB Status
+			if (trim(strtoupper($_POST['ELB'])) == 'ON')
+			{
+				$GLOBALS['fwkFramework']->EnableELB($intService);
+			}
+			else
+			{
+				$GLOBALS['fwkFramework']->DisableELB($intService);
+			}		
 			
 			if (isset ($_POST ['Archived']))
 			{
