@@ -129,6 +129,31 @@
 								</td>
 							</tr>
 						</xsl:if>
+						<xsl:if test="/Response/Service/Indial100 = 1">
+							<tr>
+								<td class = "Required"></td>
+								<th class="JustifiedWidth">
+									<xsl:call-template name="Label">
+										<xsl:with-param name="entity" select="string('Service')" />
+										<xsl:with-param name="field" select="string('ELB')" />
+									</xsl:call-template>
+								</th>
+								<td>
+									<input type="checkbox" name="ELB">
+										<xsl:choose>
+											<xsl:when test="/Response/Service/ELB = 1">
+												<xsl:attribute name="checked">
+													<xsl:text>checked</xsl:text>
+												</xsl:attribute>
+											</xsl:when>
+											<xsl:otherwise>
+												<xsl:text></xsl:text>
+											</xsl:otherwise>
+										</xsl:choose>
+									</input>
+								</td>
+							</tr>
+						</xsl:if>
 					</table>
 				</div>
 			</div>

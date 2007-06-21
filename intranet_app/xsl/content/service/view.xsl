@@ -122,6 +122,24 @@
 										</xsl:choose>
 									</td>
 								</tr>
+								<tr>
+									<th class="JustifiedWidth">
+										<xsl:call-template name="Label">
+											<xsl:with-param name="entity" select="string('Service')" />
+											<xsl:with-param name="field" select="string('ELB')" />
+										</xsl:call-template>
+									</th>
+									<td>
+										<xsl:choose>
+											<xsl:when test="/Response/Service/ELB = 1">
+												<strong><span class="Green">Yes</span></strong>
+											</xsl:when>
+											<xsl:otherwise>
+												No
+											</xsl:otherwise>
+										</xsl:choose>
+									</td>
+								</tr>
 							</xsl:if>
 							<tr>
 								<td colspan="2"><div class="MicroSeperator"></div></td>
