@@ -59,7 +59,7 @@
 		function __construct ($intId)
 		{
 			// Pull all the Service information and Store it ...
-			$selService = new StatementSelect ('Service', '*', 'Id = <Id>', null, '1');
+			$selService = new StatementSelect ('Service', '*', 'Service.Id = <Id>', null, '1');
 			$selService->useObLib (TRUE);
 			$selService->Execute (Array ('Id' => $intId));
 			
@@ -75,6 +75,10 @@
 			
 			// Pull the Service Type(s)
 			$this->Push (new ServiceTypes ($this->Pull ('ServiceType')->getValue ()));
+			
+			// Get ELB Status
+			$selELB = new StatementSelect("ServiceExtension", "Id", "Service = <Service> AND Archived = 0", NULL, 1);
+			$this->Push(new dataBoolean('ELB', (bool)$selELB->Execute(Array('Service' => $this->Pull('Id')->getValue()))));
 			
 			// Set a Archived Boolean
 			$this->Push (
@@ -525,6 +529,19 @@
 				$updService = new StatementUpdate ('Service', 'Id = <Id> AND IsNull(ClosedOn)', $arrArchive);
 				$updService->Execute ($arrArchive, Array ('Id' => $this->Pull ('Id')->getValue ()));
 				
+				// Add a system note to track history
+				$strContent	= "Service Archived on " .
+								date("d F Y") .
+								" by " .
+								$aemAuthenticatedEmployee->Pull('FirstName')->getValue() . " " .
+								$aemAuthenticatedEmployee->Pull('LastName')->getValue();
+				$GLOBALS['fwkFramework']->AddNote(	$strContent,
+													7, 
+													$aemAuthenticatedEmployee->Pull('Id')->getValue(),
+													$this->Pull('AccountGroup')->getValue(),
+													$this->Pull('Account')->getValue(),
+													$this->Pull('Id')->getValue());
+				
 				// We have done all we need to here. Therefore, break out
 				return $this->Pull ('Id')->getValue ();
 			}
@@ -542,6 +559,18 @@
 			}
 			
 			
+			// Add a system note to track history
+			$strContent	= "Service Unarchived on " .
+							date("d F Y") .
+							" by " .
+							$aemAuthenticatedEmployee->Pull('FirstName')->getValue() . " " .
+							$aemAuthenticatedEmployee->Pull('LastName')->getValue();
+			$GLOBALS['fwkFramework']->AddNote(	$strContent,
+												7, 
+												$aemAuthenticatedEmployee->Pull('Id')->getValue(),
+												$this->Pull('AccountGroup')->getValue(),
+												$this->Pull('Account')->getValue(),
+												$this->Pull('Id')->getValue());
 			
 			// Check if the FNN is used elsewhere [snatched] (since the date of Closure)
 			$selSnatched = new StatementSelect ('Service', 'count(*) as snatchCount', 'FNN = <FNN> AND CreatedOn >= <ClosedOn>');
