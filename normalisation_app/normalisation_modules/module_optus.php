@@ -256,6 +256,7 @@ class NormalisationModuleOptus extends NormalisationModule
 		if ($this->_IsInbound($strFNN))
 		{
 			$intServiceType 			= SERVICE_TYPE_INBOUND;
+			$this->_AppendCDR('Description', $this->_FetchRawCDR('PointOrigin'));
 		}
 		else
 		{

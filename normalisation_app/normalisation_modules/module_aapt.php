@@ -286,6 +286,10 @@ class NormalisationModuleAAPT extends NormalisationModule
 			$mixValue = NULL;
 		}
 		$this->_AppendCDR('Destination', $mixValue);
+		if ($intServiceType == SERVICE_TYPE_INBOUND)
+		{
+			$this->_AppendCDR('Description', $mixValue);
+		}
 		
 		// Cost
 		$mixValue 						= ((int)$this->_FetchRawCDR('CallCharge')) / 100.0;
