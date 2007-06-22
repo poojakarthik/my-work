@@ -222,6 +222,8 @@
 		$this->_insAddExtension = new StatementInsert("ServiceExtension");
 		
 		$this->_updServiceExtension = new StatementUpdate("ServiceExtension", "Service = <Service>", Array("Archived" => NULL));
+		
+		$this->_selFNN = new StatementSelect("Service", "FNN", "Id = <Service>");
 	 }
 	 
 	//------------------------------------------------------------------------//
@@ -1125,7 +1127,7 @@
 	 * @return	boolean					Pass/Fail				
 	 */
 	 function EnableELB($intService)
-	 {
+	 {	 	
 	 	// Check for ELB in table
 	 	$arrWhere = Array();
 	 	$arrWhere['Service']	= $intService;
@@ -1142,7 +1144,10 @@
 	 		// Insert new data
 	 		for ($i = 0; $i < 100; $i++)
 	 		{
-	 			$arrData['RangeStart'] = $arrData['RangeEnd'] = $i;	 			
+	 			$arrData['RangeStart']	= $arrData['RangeEnd'] = $i;
+	 			$arrData['Name']		= substr($arrData['FNN'], 0, -2) . str_pad($arrData['RangeStart'], 2, '0', STR_PAD_LEFT);
+	 			$arrData['Service']		= $intService;
+	 			$arrData['Archived']	= 0;
 	 			if (!$this->_insAddExtension->Execute($arrData))
 	 			{
 	 				return FALSE;
