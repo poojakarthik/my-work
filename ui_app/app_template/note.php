@@ -42,7 +42,7 @@
  * @class	AppTemplateNote
  * @extends	ApplicationTemplate
  */
-class AppTemplateAccount extends ApplicationTemplate
+class AppTemplateNote extends ApplicationTemplate
 {
 
 	//------------------------------------------------------------------------//

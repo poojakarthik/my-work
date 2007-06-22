@@ -182,6 +182,21 @@ function VixenPopupClass()
 			elmOverlay.parentNode.removeChild(elmOverlay);
 		}
 	}
+	
+	this.ShowAjaxPopup = function(strId, strSize, objParams)
+	{
+		// We want to call Vixen.Ajax.Send passing objParams 
+		// objParams is currently in JSON notation, but I think Vixen.Ajax.Send is expecting it to be in some other format
+		
+		// Vixen.Ajax.Send will execute the application template.
+		// We want to use the output of the application template (echoed html code) and pass it to a popup window
+
+		objParams.strSize 		= strSize;
+		objParams.strId 		= strId;
+		objParams.TargetType 	= "Popup";
+		
+		Vixen.Ajax.Send(objParams);
+	}
 }
 
 // Create an instance of the Vixen menu class

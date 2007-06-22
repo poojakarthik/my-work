@@ -135,7 +135,6 @@ function VixenMenuClass(objMenu)
 			
 			// add text to the node
 			objTextNode = document.createTextNode(strKey);
-//alert(objTextNode);
 			elmNode.appendChild(objTextNode);
 			
 			//Add styles
@@ -177,9 +176,18 @@ function VixenMenuClass(objMenu)
 		clearTimeout(this.timeoutClose);
 		if (typeof(objMenuItem.action) == 'string')
 		{
-			//Follow the link
-			document.location.href = objMenuItem.action;
-			
+			// Check if the menu item is a href or a call to javascript code
+			if (objMenuItem.action.substr(0, 11) == "javascript:")
+			{
+				// Execute objMenuItem.action as javascript
+				eval(objMenuItem.action.substr(11, 500));				
+				
+			} 
+			else
+			{
+				//Follow the link
+				document.location.href = objMenuItem.action;
+			}
 		}
 		else if (typeof(objMenuItem.action) == 'object')
 		{

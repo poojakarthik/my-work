@@ -3,7 +3,7 @@
 	require_once('application_loader.php');
 	
 	// call ajax_load
-	$myApplication->AjaxLoad();
+	$Application->AjaxLoad();
 
 
 ?>

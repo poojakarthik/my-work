@@ -1040,6 +1040,7 @@ class SubmittedData
 	{
 		// Get Ajax Data
 		$objAjax = AjaxReceive();
+		//Debug($objAjax);die;
 		
 		// for each post variable
 		if(is_object($objAjax) && is_object($objAjax->Objects))
@@ -1062,7 +1063,9 @@ class SubmittedData
 					$this->_ParseData("$strObject_$strProperty", $mixValue);
 				}
 			}
-			return TRUE;
+			
+			
+			return $objAjax->Application;
 		}
 		return FALSE;
 	}

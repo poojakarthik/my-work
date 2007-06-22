@@ -265,6 +265,10 @@ class Page
 		// always render the dhtml js class
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/dhtml.js' ></script>\n";
 		
+		// always render the ajax js class
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/ajax.js' ></script>\n";
+		
+		
 		// for each on global array
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
@@ -1675,12 +1679,14 @@ class MenuItems
 		
 		// Setup data to send
 		$arrData['HtmlMode'] = TRUE;
+		$arrData['Application'] = "Note.View";
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:ShowAjaxPopup(medium, Note.View, $strJsonCode)";
+		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup('ViewNotesPopupId', 'medium', $strJsonCode)";
 	}
 	
 	

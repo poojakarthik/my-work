@@ -19,7 +19,7 @@ function VixenAjaxClass()
         this.Send = function(objObject)
         {
                 // store our object before sending, along with a transaction ID
-                this.objData = objObject;
+                //this.objData = objObject;
                 
 				// set the target page
                 var page_url = "ajax_link.php";
@@ -33,7 +33,7 @@ function VixenAjaxClass()
                 {
                         if (req.readyState == 4) {
                                 if (req.status == 200) {
-                                        TEST:local_handle_reply(req.responseText);
+                                        TEST:local_handle_reply(req.responseText, objObject);
                                         //handle_reply();
                                 } else {
                                         local_handle_error(req);
@@ -68,16 +68,30 @@ function VixenAjaxClass()
         }
         
         // AJAX handle_reply
-        this.HandleReply = function(strReply)
+        this.HandleReply = function(strReply, objObject)
         {
-                // the reply is a JSON string, need to eval it to get an object
-                
+                //alert(strReply);
+				// the reply is a JSON string, need to eval it to get an object
+                if (objObject.HtmlMode)
+				{
+					switch (objObject.TargetType)
+					{
+						case "Popup":
+							//strContent, strId, strSize, mixPosition, strModal						
+							Vixen.Popup.Create(strReply, objObject.strId, objObject.strSize);
+							break;
+						case "Div":
+							break;
+						default:
+							ajaxError(null, strReply);
+					}
+				}
                 var objData = {};
                 try
                 {
                         // convert reply into data object
                         eval("objData = " + strReply);
-                        
+                       
                         if (objData)
                         {
                                 ajaxHandler(FALSE);
@@ -96,7 +110,10 @@ function VixenAjaxClass()
                 delete(objData);
         }	
                 
-        
+        this.ajaxHandler = function(objInput)
+		{
+			
+		}
         
         // AJAX handle_error
         this.HandleError = function(req)
