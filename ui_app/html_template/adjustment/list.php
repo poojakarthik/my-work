@@ -116,11 +116,11 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
 												//$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
 												$dboCharge->ChargeType->AsValue(),
-												$dboCharge->Amount->AsValue());
+												$dboCharge->Amount->AsCallback("AddGST"));
 			
 			// add tooltip
-			$strToolTipHtml = $dboCharge->CreatedBy->AsOutput();
-			$strToolTipHtml .= $dboCharge->ApprovedBy->AsOutput();
+			$strToolTipHtml = $dboCharge->CreatedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+			$strToolTipHtml .= $dboCharge->ApprovedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
 			$strToolTipHtml .= $dboCharge->Description->AsOutput();
 			$strToolTipHtml .= $dboCharge->Notes->AsOutput();
 			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);

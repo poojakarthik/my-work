@@ -466,6 +466,7 @@ function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue = NULL)
 
 function GetEmployeeName($intEmployeeId)
 {
+	//TODO!Joel! add caching, see screen_scrape/vixen_import.php/FindEmployee()
 	DBO()->EmployeeName->Id = $intEmployeeId;
 	DBO()->EmployeeName->SetTable("Employee");
 	DBO()->EmployeeName->Load();

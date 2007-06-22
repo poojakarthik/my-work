@@ -218,15 +218,15 @@ class AppTemplateAccount extends ApplicationTemplate
 		*/
 		// Calculate the Account Balance
 		//TODO!
-		DBO()->Account->Balance = -50000;
+		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 
 		// Calculate the Account Overdue Amount
 		//TODO!
-		DBO()->Account->Overdue = 450;
+		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
 		
 		// Calculate the Account's total unbilled adjustments
 		//TODO!
-		DBO()->Account->TotalUnbilledAdjustments = 1200;
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('invoices_and_payments');

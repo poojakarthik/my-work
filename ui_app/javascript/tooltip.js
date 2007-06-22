@@ -25,8 +25,8 @@ function VixenTooltipClass()
 		{
 			// Grab tooltip
 			elmTooltip = document.getElementById('VixenTooltip');
+		}
 		else
-q		}
 		{
 			// Add event listeners only ONCE
 			elmTooltip = document.getElementById('VixenTooltip');

@@ -117,7 +117,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			
 			// add tooltip
 			$strToolTipHtml = $dboRecurringCharge->LastChargedOn->AsOutput();
-			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsOutput();
+			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT);
 			
 			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
 			

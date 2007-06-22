@@ -625,7 +625,7 @@ class Application
  * @class	ApplicationTemplate
  * @extends BaseTemplate
  */
-class ApplicationTemplate extends BaseTemplate
+class ApplicationTemplate extends ApplicationBaseClass
 {
 
 	//------------------------------------------------------------------------//
@@ -643,6 +643,7 @@ class ApplicationTemplate extends BaseTemplate
 	 */
 	function __construct()
 	{
+		parent::__construct();
 		$this->Module = new ModuleLoader();
 	}
 
@@ -777,10 +778,10 @@ class HtmlTemplate extends BaseTemplate
  * @class	LayoutTemplate
  * @extends BaseTemplate
  */
-class LayoutTemplate extends BaseTemplate
+/*class LayoutTemplate extends BaseTemplate
 {
 
-}
+}*/
 
 //----------------------------------------------------------------------------//
 // BaseTemplate

@@ -783,10 +783,10 @@ class PropertyToken
 	}
 	
 	//------------------------------------------------------------------------//
-	// RenderCallback
+	// AsCallback
 	//------------------------------------------------------------------------//
 	/**
-	 * RenderCallback()
+	 * AsCallBack()
 	 *
 	 * Returns the html code used to render the value of the property (with formatting and markup) after having modified it using the callback function
 	 *

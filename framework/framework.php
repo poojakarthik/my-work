@@ -199,7 +199,7 @@
 																"( <Account> IS NULL   OR   Account.Id = <Account> ) AND " .
 																"( <Service> IS NULL   OR   Service.Id = <Service> )");
 																
-		$this->_selAccountOverdueCharges	= new StatementSelect(	"Charge",
+		$this->_selAccountUnbilledCharges	= new StatementSelect(	"Charge",
 													"Nature, SUM(Amount) AS Amount",
 													"Account = <Account> " .
 													" AND Status = ".CHARGE_APPROVED ,
@@ -394,6 +394,7 @@
 	 * Determines the current Account Balance for a specified account
 	 *
 	 * Determines the current Account Balance for a specified account
+	 * Return value includes tax.
 	 * 
 	 *
 	 * @param	integer		$intAccount		The account to determine the balance total for
@@ -436,7 +437,8 @@
 	 *
 	 * Determines the current Overdue Balance for a specified account
 	 * = past due invoice balance - disputed balance - unbilled credits
-	 * 
+	 * Return amount includes GST
+	 *
 	 *
 	 * @param	integer		$intAccount		The account to determine the overdue balance total for
 	 * 
@@ -465,7 +467,7 @@
 			$fltOverdueBalance = 0;
 		}
 		
-		// get disputed balance of any invoices
+		// get disputed balance of any invoices (does this include tax?????)
 		if ($this->_selDisputedBalance->Execute(Array('Account' => $intAccount)) === FALSE)
 	 	{
 			// ERROR
@@ -479,9 +481,9 @@
 	 		$fltOverdueBalance -= (float)$arrDisputedBalance['DisputedBalance'];
 		}
 
-		// get balance of unbilled debits & unbilled approved credits
-		$this->_selAccountOverdueCharges->Execute(Array('Account' => $intAccount));
-		$arrCharges = $this->_selAccountOverdueCharges->FetchAll();
+		// get balance of unbilled debits & unbilled approved credits (does NOT include tax)
+		$this->_selAccountUnbilledCharges->Execute(Array('Account' => $intAccount));
+		$arrCharges = $this->_selAccountUnbilledCharges->FetchAll();
 
 		foreach($arrCharges as $arrCharge)
 		{
@@ -492,6 +494,7 @@
 			else
 			{
 				$fltUnbilledCredits		= (float)$arrCharge['Amount'];
+				$fltUnbilledCredits		= AddGST($fltUnbilledCredits);
 			}
 		}
 		
@@ -501,6 +504,49 @@
 		// return the balance
 		return max(0, $fltOverdueBalance);
 	 }
+	
+	//------------------------------------------------------------------------//
+	// GetUnbilledCharges()
+	//------------------------------------------------------------------------//
+	/**
+	 * GetUnbilledCharges()
+	 *
+	 * Determines the current unbilled charges (adjustments) for a specified account
+	 *
+	 * Determines the current unbilled charges (adjustments) for a specified account
+	 * Return amount includes GST
+	 * 
+	 *
+	 * @param	integer		$intAccount		The account to determine the unbilled charges total for
+	 * 
+	 * @return	mixed						float: unbilled charges total
+	 * 										FALSE: an error occurred
+	 *
+	 * @method
+	 */
+	 function GetUnbilledCharges($intAccount)
+	 {	 						
+		// get balance of unbilled debits & unbilled approved credits
+		$this->_selAccountUnbilledCharges->Execute(Array('Account' => $intAccount));
+		$arrCharges = $this->_selAccountUnbilledCharges->FetchAll();
+
+		foreach($arrCharges as $arrCharge)
+		{
+			if ($arrCharge['Nature'] == 'DR')
+			{
+				$fltUnbilledDebits		= (float)$arrCharge['Amount'];
+				$fltUnbilledDebits		= AddGST($fltUnbilledDebits);
+			}
+			else
+			{
+				$fltUnbilledCredits		= (float)$arrCharge['Amount'];
+				$fltUnbilledCredits		= AddGST($fltUnbilledCredits);
+			}
+		}
+		
+		// return the balance
+		return $fltUnbilledDebits - $fltUnbilledCredits;
+	 }	
 	 
 	//------------------------------------------------------------------------//
 	// GetDistputedBalance()
@@ -541,6 +587,7 @@
 	 * Determine the total of an invoice before having generated one
 	 *
 	 * Determine the total of an invoice before having generated one
+	 * Returns inc tax total
 	 * 
 	 *
 	 * @param	integer		$intAccount		The account to determine the invoice total for
@@ -699,8 +746,8 @@
 		$fltTax		= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
 		$fltBalance	= $fltTotal + $fltTax;
 		
-		// Return ex. Tax total
-		return $fltTotal;
+		// Return inc. Tax total
+		return AddGST($fltTotal);
 	 }
 	
 	//------------------------------------------------------------------------//

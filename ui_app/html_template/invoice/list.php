@@ -138,15 +138,21 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			// Set the drop down detail
 			$strDetailHtml = "<div class='VixenTableDetail'>\n";
 			$strDetailHtml .= $dboInvoice->DueOn->AsOutput();
-			$strDetialHtml .= $dboInvoice->SettledOn->AsOutput();
-			$strDetailHtml .= $dboInvoice->Credits->AsOutput();
-			$strDetailHtml .= $dboInvoice->Debits->AsOutput();
-			$strDetailHtml .= $dboInvoice->Total->AsOutput();
-			$strDetailHtml .= $dboInvoice->Tax->AsOutput();
+			if ($dboInvoice->SettledOn->Value)
+			{
+				$strDetailHtml .= $dboInvoice->SettledOn->AsOutput();
+			}
+			//$strDetailHtml .= $dboInvoice->Credits->AsOutput();
+			//$strDetailHtml .= $dboInvoice->Debits->AsOutput();
+			//$strDetailHtml .= $dboInvoice->Total->AsOutput();
+			//$strDetailHtml .= $dboInvoice->Tax->AsOutput();
 			$strDetailHtml .= $dboInvoice->TotalOwing->AsOutput();
-			$strDetailHtml .= $dboInvoice->Balance->AsOutput();
-			$strDetailHtml .= $dboInvoice->Disputed->AsOutput();
-			$strDetailHtml .= $dboInvoice->AccountBalance->AsOutput();
+			//$strDetailHtml .= $dboInvoice->Balance->AsOutput();
+			if ($dboInvoice->Disputed->Value > 0)//does this include GST??????
+			{
+				$strDetailHtml .= $dboInvoice->Disputed->AsOutput();
+			}
+			//$strDetailHtml .= $dboInvoice->AccountBalance->AsOutput();
 			$strDetailHtml .= "</div>\n";
 			
 			Table()->InvoiceTable->SetDetail($strDetailHtml);

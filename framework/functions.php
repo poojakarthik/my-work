@@ -1985,5 +1985,54 @@ function AccountExists($intAccNum)
 	return FALSE;
 }
 
+//------------------------------------------------------------------------//
+// AddGST
+//------------------------------------------------------------------------//
+/**
+ * AddGST()
+ * 
+ * Adds GST to the input amount
+ * 
+ * Adds GST to the input amount
+ * 
+ * @param	flt		$fltAmount			The input amount
+ * 
+ * @return	flt
+ * 
+ * @method
+ */
+function AddGST($fltAmount)
+{
+	if (!(float)$fltAmount)
+	{
+		return 0;
+	}
+	return (float)($fltAmount * ((TAX_RATE_GST / 100) + 1));
+}
+
+//------------------------------------------------------------------------//
+// RemoveGST
+//------------------------------------------------------------------------//
+/**
+ * RemoveGST()
+ * 
+ * Removes GST from the input amount
+ * 
+ * Removes GST from the input amount
+ * 
+ * @param	flt		$fltAmount			The input amount
+ * 
+ * @return	flt
+ * 
+ * @method
+ */
+function RemoveGST($fltAmount)
+{
+	if (!(float)$fltAmount)
+	{
+		return 0;
+	}
+	return (float)($fltAmount / ((TAX_RATE_GST / 100) + 1));
+}
 
 ?>
