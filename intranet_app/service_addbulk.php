@@ -62,6 +62,9 @@
 		can highlight the erronous service using getElementById
 		*/
 		
+		//AjaxReply(print_r($objResults), TRUE);
+		//exit;
+		
 		$actAccount = $Style->attachObject (new Account ($objResults->account));
 		$arrReply = Array();
 		
@@ -111,11 +114,17 @@
 						$rrpPlan,
 						Array (
 							"FNN"					=> $strFNN,
-							"Indial100"				=> FALSE,
+							"Indial100"				=> (int)$objResults->{"service$i"}->Indial100,
 							"CostCentre"			=> ($objResults->{"service$i"}->CostCentre == 0) ? null : $objResults->{"service$i"}->CostCentre,
 							"ServiceType"			=> ServiceType($strFNN)
 						)
 					);
+					
+					// ELB
+					if ((int)$objResults->{"service$i"}->Indial100 && (int)$objResults->{"service$i"}->ELB)
+					{
+						$GLOBALS['fwkFramework']->EnableELB((int)$srvService->Pull('Id')->getValue());
+					}
 				}
 				catch (Exception $e)
 				{

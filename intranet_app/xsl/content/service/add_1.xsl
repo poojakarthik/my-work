@@ -172,6 +172,20 @@
 									<xsl:with-param name="field" select="string('SelectPlan')" />
 								</xsl:call-template>
 							</th>
+						<th class="JustifiedWidth">
+						<strong><span class="Red"></span></strong>
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service')" />
+									<xsl:with-param name="field" select="string('Indial100')" />
+								</xsl:call-template>
+							</th>
+						<th class="JustifiedWidth">
+						<strong><span class="Red"></span></strong>
+								<xsl:call-template name="Label">
+									<xsl:with-param name="entity" select="string('Service')" />
+									<xsl:with-param name="field" select="string('ELB')" />
+								</xsl:call-template>
+							</th>
 						</tr>
 					</tbody>
 					</table>

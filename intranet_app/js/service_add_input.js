@@ -40,6 +40,8 @@ function AddInput()
 	var id2="confirm_" + numInput;
 	var id3="icon_"+ numInput;
 	var id4="link_" + numInput;/*what are we linking to?? -- tooltip for images*/
+	var id5="indial_" + numInput;
+	var id6="elb_" + numInput;
 	var table=document.getElementById("thetable").insertRow(numInput);
 	var index=table.insertCell(0);
 	var box1=table.insertCell(1);
@@ -47,13 +49,19 @@ function AddInput()
 	var icon=table.insertCell(3);
 	var costcentres=table.insertCell(4);
 	var rateplans=table.insertCell(5);
-	var rateplanlink=table.insertCell(6);
+	//var rateplanlink=table.insertCell(6);
+	var indial100=table.insertCell(6);
+	var elb=table.insertCell(7);
 	index.innerHTML=numInput + ".";
 	box1.innerHTML="<input class='input-string' name='" + id1 + "' id='" + id1 + "' onkeyup='CheckInput(" + numInput + ")' style='width:120px' />";
 	box2.innerHTML="<input class='input-string' name='"+ id2 + "' id='" + id2 + "' onkeyup='CheckInput(" + numInput + ")' style='width:120px' />";
 	icon.innerHTML="<a href='#' id='" + id4 + "'><img id='"+ id3 + "' name='" + id3 + "' width=20 height=20 src='img/template/phonetypes/blank.png'/></a>";
 	costcentres.innerHTML="<select class='input-drop' name='costcentres_" + numInput + "' id='costcentres_" + numInput + "'></select>";
 	rateplans.innerHTML="<select class='input-drop' name='rateplans_" + numInput + "' id='rateplans_" + numInput + "'></select>";
+	indial100.innerHTML="<input type='checkbox' name='" + id5 + "' id='" + id5 + "' onclick='CheckInput(" + numInput + ")' />";
+	elb.innerHTML="<input type='checkbox' name='" + id6 + "' id='" + id6 + "' />";
+	document.getElementById(id5).disabled = true;
+	document.getElementById(id6).disabled = true;
 }
 
 //Add multiple inputs with costcentre box filled
@@ -79,10 +87,37 @@ function CheckInput(i)
 			// get the global definitions instead of hardcoding it
 			// ie, $GLOBALS['*arrConstant']	['ServiceType']	[100]	['Constant']	= 'SERVICE_TYPE_ADSL';
 			// (attach to the style in service_addbulk.php)
-		case 'landline':ChangeAvailablePlans(i,102);break
 		case 'adsl':ChangeAvailablePlans(i,100);break
 		case 'mobile':ChangeAvailablePlans(i,101);break
 		case 'inbound':ChangeAvailablePlans(i,103);break
+		
+		case 'landline':
+			ChangeAvailablePlans(i,102);
+			break
+		}
+	
+		// Indial Checkbox
+		if (type == 'landline')
+		{
+			// Is the Indial box checked?
+			if (document.getElementById('indial_' + i).checked)
+			{
+				// Enable ELB Checkbox
+				document.getElementById('elb_' + i).disabled = false;
+			}
+			else
+			{
+				document.getElementById('indial_' + i).disabled	= false;	// Enable Indial100 Checkbox
+				document.getElementById('elb_' + i).disabled	= true;	// Disable ELB Checkbox
+				document.getElementById('elb_' + i).checked		= false;	// Clear ELB Checkbox
+			}
+		}
+		else
+		{
+			document.getElementById('indial_' + i).disabled	= true;	// Disable Indial100 Checkbox
+			document.getElementById('indial_' + i).checked	= false;	// Clear Indial100 Checkbox
+			document.getElementById('elb_' + i).disabled	= true;	// Disable ELB Checkbox
+			document.getElementById('elb_' + i).checked		= false;	// Clear ELB Checkbox
 		}
 	}
 
@@ -242,6 +277,8 @@ function Save()
 		var servicebox=document.getElementById("service_" + count);
 		var ccinput=document.getElementById("costcentres_" + count);
 		var rpinput=document.getElementById("rateplans_" + count);
+		var indial=document.getElementById("indial_" + count);
+		var elb=document.getElementById("elb_" + count);
 		
 		if (link.title != "None" && link.title != "" && link.title != "Invalid") 
 		{
@@ -258,7 +295,10 @@ function Save()
 			objSendData.serviceCount++;
 			objSendData["service" + objSendData.serviceCount] = { 	"FNN" 			: servicebox.value, 
 														"CostCentre" 	: ccinput.options[ccinput.selectedIndex].value,
-														"Plan"			: rpinput.options[rpinput.selectedIndex].value};
+														"Plan"			: rpinput.options[rpinput.selectedIndex].value,
+														"Indial100"	: indial.checked,
+														"ELB"		: elb.checked
+														};
 			
 			// if use enters in the same FNN more than once, it will successfully
 			// add the first number (with provisioning, costcentre, rate) but fail
