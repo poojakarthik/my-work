@@ -136,6 +136,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);
 		
 		// Console and logout should appear by default, no?
 		ContextMenu()->Console();

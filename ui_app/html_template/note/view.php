@@ -11,9 +11,9 @@
 /**
  * view
  *
- * HTML Template for the Notes View HTML object
+ * HTML Template for the View Notes HTML object
  *
- * HTML Template for the Notes View HTML object
+ * HTML Template for the View Notes HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
  * which displays all notes relating to either an account, contact or service and can be embedded in
  * various Page Templates or popup windows
@@ -100,7 +100,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<div id='NotesHolder' style='display:none;'>\n";
+		//echo "<div id='NotesHolder' style='display:none;'>\n";
 		echo "<h2 class='Notes'>Notes</h2>\n";
 		
 		// It is assumed that both DBL()->Note and DBL()->NoteType have been loaded
@@ -142,7 +142,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			$dboNote->Note->RenderValue();
 			echo "</div>\n";
 		}
-		echo "</div>\n";
+		//echo "</div>\n";
 	}
 }
 

@@ -360,7 +360,7 @@ class Page
 		
 		// add to html
 		echo "<div id='VixenMenu' class='ContextMenu'></div>\n";
-		echo "<script type='text/javascript'>Vixen.Menu.objMenu = $strContextMenu ; </script>\n";
+		echo "<script type='text/javascript'>Vixen.Menu.objMenu = $strContextMenu; </script>\n";
 		
 		// run js
 		echo "<script type='text/javascript'>Vixen.Menu.Render()</script>\n";
@@ -1648,8 +1648,41 @@ class MenuItems
 	function ViewInvoice($intInvoice)
 	{
 		$this->strLabel = "inv: $intInvoice";
-		return "view_invoice.php?Invoice.Id=$intInvoice";
+		return "invoice_view.php?Invoice.Id=$intInvoice";
+		
 	}
+	
+	//------------------------------------------------------------------------//
+	// ViewNotes
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewNotes()
+	 *
+	 * Compiles the Href to be executed when the ViewNotes menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewNotes menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account associated with the notes to view
+	 *
+	 * @return	string				action to be executed when the ViewNotes menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewNotes($intId)
+	{
+		$this->strLabel	= "view notes";
+		
+		// Setup data to send
+		$arrData['HtmlMode'] = TRUE;
+		$arrData['Objects']['Account']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:ShowAjaxPopup(medium, Note.View, $strJsonCode)";
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// BreadCrumb

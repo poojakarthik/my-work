@@ -29,7 +29,7 @@ function VixenMenuClass(objMenu)
 		'Level2': 
 		{
 			'left': 0,
-			'width': 100,
+			'width': 150,
 			'height': 20,
 			'spacing': 5
 		},
@@ -135,6 +135,7 @@ function VixenMenuClass(objMenu)
 			
 			// add text to the node
 			objTextNode = document.createTextNode(strKey);
+//alert(objTextNode);
 			elmNode.appendChild(objTextNode);
 			
 			//Add styles
