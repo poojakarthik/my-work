@@ -568,9 +568,9 @@
 		else
 		{
 			// set password
-			if ($this->_arrCurrentModule['ZipPword'])
+			if ($this->_arrCurrentModule['ZipPWord'])
 			{
-				$strPassword = "-P {$this->_arrCurrentModule['ZipPword']}";
+				$strPassword = "-P {$this->_arrCurrentModule['ZipPWord']}";
 			}
 			else
 			{
@@ -582,7 +582,7 @@
 			CleanDir($strOutputDir);
 			
 			// unzip files
-			$strCommand = "unzip $strPassword $strFileLocation -d $strOutputDir";
+			$strCommand = "unzip -q $strPassword $strFileLocation -d $strOutputDir";
 			exec($strCommand);
 			
 			// get list of files (full path)
