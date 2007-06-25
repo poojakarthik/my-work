@@ -87,12 +87,12 @@
  	function BuildRequest($arrRequest)
 	{		
 		// Get the FNN
-		$selFNN = new StatementSelect("Service", "FNN", "Id = <Service>");
+		$selFNN = new StatementSelect("Service", "Account, FNN", "Id = <Service>");
 		$selFNN->Execute(Array('Service' => $arrRequest['Service']));
 		$arrFNN = $selFNN->Fetch();
 		
 		// Append to the array for this file
-		$this->_arrPreselectionRecords[]		= $arrFNN['FNN'];
+		$this->_arrPreselectionRecords[]		= $arrFNN;
 		
 		
 		$this->_arrLog['Request']		= $arrRequest['Id'];
@@ -143,16 +143,18 @@
 			$wksWorksheet->writeString(0, 1, 'Billable Account Number'	, $fmtTitle);
 			$wksWorksheet->writeString(0, 2, 'Service Type'				, $fmtTitle);
 			$wksWorksheet->writeString(0, 3, 'Customer Reference'		, $fmtTitle);
-
+			$wksWorksheet->writeString(0, 4, 'TelcoBlue Account Number'	, $fmtTitle);
+			
 			// add data rows
 			$intRow = 0;
-			foreach($this->_arrPreselectionRecords as $strFNN)
+			foreach($this->_arrPreselectionRecords as $arrRecord)
 			{
 				$intRow++;
-				$wksWorksheet->writeString($intRow, 0, $strFNN);
+				$wksWorksheet->writeString($intRow, 0, $arrRecord['FNN']);
 				$wksWorksheet->writeString($intRow, 1, CUSTOMER_NUMBER_OPTUS);
 				$wksWorksheet->writeString($intRow, 2, 'UT');
 				$wksWorksheet->writeString($intRow, 3, '');
+				$wksWorksheet->writeString($intRow, 4, $arrRecord['Account']);
 			}
 			
 			// Write output
@@ -161,6 +163,8 @@
 			$mimMimeEmail = new Mail_Mime("\n");
  			$mimMimeEmail->setTXTBody("Barring Request File for ".date("Y-m-d H:i:s", time())." for Customer ".CUSTOMER_NUMBER_OPTUS);
 		 	$mimMimeEmail->addAttachment($strPreselectionFilename, 'application/x-msexcel');
+		 	$mimMimeEmail->addCc('adele.k@telcoblue.com.au');
+		 	$mimMimeEmail->addCc('andrew.p@telcoblue.com.au');
 		 	$emlMail =& Mail::factory('mail');
 		 	
  			$arrExtraHeaders = Array(
