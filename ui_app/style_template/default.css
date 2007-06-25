@@ -12,7 +12,14 @@
 		margin-top:			20px;
 		width:				950px;
 	}
-	
+
+	div#PopupPageBody
+	{
+		margin-left:		5px;
+		margin-top:			10px;
+		width:				950px;
+	}
+
 	.Default
 	{
 	}
@@ -159,7 +166,20 @@
 		/*background-color:    #F3F3F3;*/
 		width:				 300px;
 	}
-
+	
+	.PopupMedium
+	{
+		margin:              0;
+		padding-top:         0px;
+		padding-left:        0px;
+		padding-right:       0px;
+		padding-bottom:      0px;
+		
+		/*border:              solid 1px #D1D1D1;*/
+		/*background-color:    #F3F3F3;*/
+		width:				 450px;
+	}
+	
 
 	.VixenTableDetail
 	{
@@ -280,12 +300,12 @@
 	
 	h2.Notes
 	{
-		background-image:              url('img/template/note.png');
+		background-image:              url('img/template/note_small.png');
 	}
 	
 	h2.Note
 	{
-		background-image:              url('img/template/note.png');
+		background-image:              url('img/template/note_small.png');
 	}
 	
 	h2.Services

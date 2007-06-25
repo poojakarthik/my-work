@@ -180,8 +180,7 @@ function VixenMenuClass(objMenu)
 			if (objMenuItem.action.substr(0, 11) == "javascript:")
 			{
 				// Execute objMenuItem.action as javascript
-				eval(objMenuItem.action.substr(11, 500));				
-				
+				eval(objMenuItem.action.substr(11, objMenuItem.action.length));
 			} 
 			else
 			{

@@ -30,7 +30,7 @@
 //$this->RenderVixenHeader();
 ?>
 
-<div id='PageBody'>
+<div id='PopupPageBody'>
 	<?php $this->RenderColumn(COLUMN_ONE); ?>
 </div>
 

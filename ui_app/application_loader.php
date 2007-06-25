@@ -365,9 +365,8 @@ class Application
 		//Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
 		
-		
 		$this->objAppTemplate->SetMode($objSubmit->Mode);
-		
+
 		//Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
 		
@@ -1040,8 +1039,7 @@ class SubmittedData
 	{
 		// Get Ajax Data
 		$objAjax = AjaxReceive();
-		//Debug($objAjax);die;
-		
+
 		// for each post variable
 		if(is_object($objAjax) && is_object($objAjax->Objects))
 		{
@@ -1054,17 +1052,16 @@ class SubmittedData
 			{
 				$this->Mode = AJAX_MODE;
 			}
-			
+
 			foreach($objAjax->Objects AS $strObject=>$objObject)
 			{
 				foreach($objObject AS $strProperty=>$mixValue)
 				{
 					// parse variable
-					$this->_ParseData("$strObject_$strProperty", $mixValue);
+					$this->_ParseData("{$strObject}_{$strProperty}", $mixValue);
 				}
 			}
-			
-			
+
 			return $objAjax->Application;
 		}
 		return FALSE;

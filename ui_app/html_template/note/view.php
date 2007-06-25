@@ -101,9 +101,13 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	function Render()
 	{	
 		//echo "<div id='NotesHolder' style='display:none;'>\n";
+		echo "<div class='PopupMedium'>\n";
 		echo "<h2 class='Notes'>Notes</h2>\n";
 		
-		// It is assumed that both DBL()->Note and DBL()->NoteType have been loaded
+		// TODO! Each note should have its own border
+		// TODO! The notes should have a scroll bar down the right hand side.
+		// TODO! there should be some sort of pagation so that only 5 or 10 notes are shown at any one time
+		// TODO! Each note should be rendered in its specific NoteType colouring.  I have implemented this below but it's not working
 		
 		// Display each note
 		foreach (DBL()->Note as $dboNote)
@@ -121,7 +125,8 @@ class HtmlTemplateNoteView extends HtmlTemplate
 				}
 			}
 			
-			echo "<div style='border: solid 1px #$strBorderColor; background-color: #$strBackgroundColor; color: #$strTextColor;'>\n";
+			// setup the div to reflect the Note Type
+			echo "<div style='border: solid 1px #{$strBorderColor}; background-color: #{$strBackgroundColor}; color: #{$strTextColor};'>\n";
 			
 			// Note details
 			$strDetailsHtml = "Created on ";
@@ -136,13 +141,17 @@ class HtmlTemplateNoteView extends HtmlTemplate
 				$strDetailsHtml .= "Automated System.";
 			}
 			
-			echo "<div class='DefaultOutput'>". $strDetailsHtml ."</div>\n";
+			// Output the note details
+			echo $strDetailsHtml;
 			
-			// The actual note
+			// Output the actual note
 			$dboNote->Note->RenderValue();
 			echo "</div>\n";
+			
+			// Include a separator
+			echo "<div class='Seperator'></div>\n";
 		}
-		//echo "</div>\n";
+		echo "</div>\n";
 	}
 }
 
