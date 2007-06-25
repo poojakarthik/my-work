@@ -368,14 +368,6 @@
 		background-image:              url('img/template/lady-debug.png');
 	}
 	
-	
-/******************************************************************************/
-	
-	img
-	{
-		border:               0;
-	}
-	
 	.Left
 	{
 		float:                left;
@@ -386,13 +378,6 @@
 		float:                right;
 	}
 	
-		
-		
-	.Clear
-	{
-		clear:                both;
-	}
-	
 	.Seperator
 	{
 		height:               20px;
@@ -401,6 +386,85 @@
 	.SmallSeperator
 	{
 		height:               10px;
+	}
+
+	input.input-submit,
+	input.input-submit-disabled
+	{
+		background-repeat:   repeat-x;
+		
+		font-weight:         bold;
+		
+		padding-top:         3px;
+		padding-left:        6px;
+		padding-right:       6px;
+		padding-bottom:      3px;
+	}
+	
+	input.input-submit
+	{
+		background-image:    url('img/template/button_background.png');
+		
+		border:              solid 1px #07548e;
+		
+		color:               #FFFFFF;
+		background-color:    #07548e;
+	}
+	
+	input.input-submit-disabled
+	{
+		background-image:    url('img/template/button_background_disabled.png');
+		
+		border:              solid 1px #434343;
+		
+		color:               #FFFFFF;
+		background-color:    #434343;
+	}
+	
+	input.input-submit-locked,
+	input.input-submit-unlocked
+	{
+		background-repeat:   no-repeat;
+		
+		font-weight:         bold;
+		
+		padding-top:         15px;
+		padding-left:        60px;
+		padding-right:       6px;
+		padding-bottom:      15px;
+	}
+	
+	input.input-submit-unlocked
+	{
+		background-image:    url('img/template/btn_unlocked.png');
+		
+		border:              solid 1px #89b100;
+		
+		color:               #89b100;
+		background-color:    #f1f7e1;
+	}
+	
+	input.input-submit-locked
+	{
+		background-image:    url('img/template/btn_locked.png');
+		
+		border:              solid 1px #CC0000;
+		
+		color:               #CC0000;
+		background-color:    #f2dbdb;
+	}
+
+
+/******************************************************************************/
+	
+	img
+	{
+		border:               0;
+	}
+	
+	.Clear
+	{
+		clear:                both;
 	}
 	
 	.TinySeperator
@@ -700,71 +764,6 @@
 
 	}
 	
-	input.input-submit,
-	input.input-submit-disabled
-	{
-		background-repeat:   repeat-x;
-		
-		font-weight:         bold;
-		
-		padding-top:         3px;
-		padding-left:        6px;
-		padding-right:       6px;
-		padding-bottom:      3px;
-	}
-	
-	input.input-submit
-	{
-		background-image:    url('img/template/button_background.png');
-		
-		border:              solid 1px #07548e;
-		
-		color:               #FFFFFF;
-		background-color:    #07548e;
-	}
-	
-	input.input-submit-disabled
-	{
-		background-image:    url('img/template/button_background_disabled.png');
-		
-		border:              solid 1px #434343;
-		
-		color:               #FFFFFF;
-		background-color:    #434343;
-	}
-	
-	input.input-submit-locked,
-	input.input-submit-unlocked
-	{
-		background-repeat:   no-repeat;
-		
-		font-weight:         bold;
-		
-		padding-top:         15px;
-		padding-left:        60px;
-		padding-right:       6px;
-		padding-bottom:      15px;
-	}
-	
-	input.input-submit-unlocked
-	{
-		background-image:    url('img/template/btn_unlocked.png');
-		
-		border:              solid 1px #89b100;
-		
-		color:               #89b100;
-		background-color:    #f1f7e1;
-	}
-	
-	input.input-submit-locked
-	{
-		background-image:    url('img/template/btn_locked.png');
-		
-		border:              solid 1px #CC0000;
-		
-		color:               #CC0000;
-		background-color:    #f2dbdb;
-	}
 	
 	input.input-ABN-valid,
 	input.input-ACN-valid

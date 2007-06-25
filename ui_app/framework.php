@@ -317,7 +317,7 @@ class Page
 	 */
 	function RenderFooter()
 	{	
-		echo "</body>\n</html>";
+		echo "</body>\n</html>\n";
 	}
 		
 	//------------------------------------------------------------------------//
@@ -1662,9 +1662,9 @@ class MenuItems
 	/**
 	 * ViewNotes()
 	 *
-	 * Compiles the Href to be executed when the ViewNotes menu item is clicked
+	 * Compiles the javascript to be executed when the ViewNotes menu item is clicked
 	 *
-	 * Compiles the Href to be executed when the ViewNotes menu item is clicked
+	 * Compiles the javascript to be executed when the ViewNotes menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intId		id of the account associated with the notes to view
@@ -1689,6 +1689,37 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup('ViewNotesPopupId', 'medium', $strJsonCode)";
 	}
 	
+	//------------------------------------------------------------------------//
+	// AddAdjustment
+	//------------------------------------------------------------------------//
+	/**
+	 * AddAdjustment()
+	 *
+	 * Compiles the javascript to be executed when the AddAdjustment menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the AddAdjustment menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account that the Adjustment will be added to
+	 *
+	 * @return	string				action to be executed when the AddAdjustment menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddAdjustment($intId)
+	{
+		$this->strLabel	= "add adjustment";
+		
+		// Setup data to send
+		$arrData['HtmlMode'] = TRUE;
+		$arrData['Application'] = "Adjustment.Add";
+		$arrData['Objects']['Account']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup('AddAdjustmentPopupId', 'medium', $strJsonCode)";
+	}
 	
 	//------------------------------------------------------------------------//
 	// BreadCrumb

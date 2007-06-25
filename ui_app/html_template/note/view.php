@@ -106,7 +106,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		
 		// TODO! Each note should have its own border
 		// TODO! The notes should have a scroll bar down the right hand side.
-		// TODO! there should be some sort of pagation so that only 5 or 10 notes are shown at any one time
+		// TODO! there should be some sort of pagination so that only 5 or 10 notes are shown at any one time
 		// TODO! Each note should be rendered in its specific NoteType colouring.  I have implemented this below but it's not working
 		
 		// Display each note

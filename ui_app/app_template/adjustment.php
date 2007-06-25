@@ -7,16 +7,16 @@
 
 
 //----------------------------------------------------------------------------//
-// note.php
+// adjustment.php
 //----------------------------------------------------------------------------//
 /**
- * note
+ * adjustment
  *
- * contains all ApplicationTemplate extended classes relating to Note functionality
+ * contains all ApplicationTemplate extended classes relating to Adjustment functionality
  *
- * contains all ApplicationTemplate extended classes relating to Note functionality
+ * contains all ApplicationTemplate extended classes relating to Adjustment functionality
  *
- * @file		note.php
+ * @file		adjustment.php
  * @language	PHP
  * @package		framework
  * @author		Joel Dawkins
@@ -27,39 +27,39 @@
  */
 
 //----------------------------------------------------------------------------//
-// AppTemplateNote
+// AppTemplateAdjustment
 //----------------------------------------------------------------------------//
 /**
- * AppTemplateNote
+ * AppTemplateAdjustment
  *
- * The AppTemplateNote class
+ * The AppTemplateAdjustment class
  *
- * The AppTemplateNote class.  This incorporates all logic for all pages
- * relating to notes
+ * The AppTemplateAdjustment class.  This incorporates all logic for all pages
+ * relating to Adjustments
  *
  *
  * @package	ui_app
- * @class	AppTemplateNote
+ * @class	AppTemplateAdjustment
  * @extends	ApplicationTemplate
  */
-class AppTemplateNote extends ApplicationTemplate
+class AppTemplateAdjustment extends ApplicationTemplate
 {
 
 	//------------------------------------------------------------------------//
-	// View
+	// Add
 	//------------------------------------------------------------------------//
 	/**
-	 * View()
+	 * Add()
 	 *
-	 * Performs the logic for the View Notes popup window
+	 * Performs the logic for the Add Adjustment popup window
 	 * 
-	 * Performs the logic for the View Notes popup window
+	 * Performs the logic for the Add Adjustment popup window
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function View()
+	function Add()
 	{
 		// Should probably check user authorization here
 		//TODO!include user authorisation
@@ -74,14 +74,24 @@ class AppTemplateNote extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		// Check if this charge is being added to a service, instead of an account
+		//TODO! Joel: check if DBO()->Serivce->Id has been set.  
+		// Currently you can not add an adjustment to a service using the 
+		// invoices_and_payments page, so it will not be implemented at this stage
 		
-		DBL()->Note->Account = DBO()->Account->Id->Value;
-		DBL()->Note->OrderBy("Datetime DESC");
-		DBL()->Note->Load();
-		DBL()->NoteType->Load();
+		// Load all charge types that aren't archived
+		DBL()->ChargeType->Archived = 0;
+		DBL()->ChargeType->OrderBy("Nature DESC");
+		DBL()->ChargeType->Load();
+		
+		// load the last 6 invoices with the most recent being first
+		DBL()->Invoice->Account = DBO()->Account->Id->Value;
+		DBL()->Invoice->OrderBy("CreatedOn DESC");
+		DBL()->Invoice->SetLimit(6);
+		DBL()->Invoice->Load();
 		
 		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('view_notes');
+		$this->LoadPage('adjustment_add');
 
 		return TRUE;
 	}

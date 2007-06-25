@@ -144,13 +144,49 @@ class HTMLElements
 	function InputText($arrParams)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
-		$strValue = nl2br($arrParams['Value']);
+		$strValue = $this->BuildOutputValue($arrParams);
+		$strValue = nl2br($strValue);
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}'>\n";
 		// create the input box
-		$strHtml .= "		<input type='text' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$strValue'/>";
+		$strHtml .= "		<input type='text' id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$strValue'/>\n";
+		$strHtml .= "   </div>\n";
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "</div>\n";
+		
+		return $strHtml;
+	}
+	
+	//------------------------------------------------------------------------//
+	// TextArea
+	//------------------------------------------------------------------------//
+	/**
+	 * TextArea()
+	 * 
+	 * Creates a HTML text area
+	 * 
+	 * Returns a formatted HTML input tag, using data from an array to build
+	 * the element's attributes like class, name, id and value
+	 *
+	 * @param	array	$arrParams			parameters to use when building the
+	 * 										text area (see above for format).
+	 * @return	string						html code
+	 *
+	 * @method
+	 */
+	function TextArea($arrParams)
+	{
+		$strLabel = $arrParams['Definition']['Label'];
+		$strValue = $this->BuildOutputValue($arrParams);
+		
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		// The potentially taller of the two divs must go first
+		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}'>\n";
+		// create the text area
+		//TODO! Find out if the number of rows and columns in the textarea should be hard coded here
+		$strHtml .= "		<textarea id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' rows='6' cols='30'>$strValue</textarea>\n";
 		$strHtml .= "   </div>\n";
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
@@ -187,7 +223,7 @@ class HTMLElements
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'>{$strValue}</div>\n";
-		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 
 		return $strHtml;
@@ -215,7 +251,7 @@ class HTMLElements
 		$strValue = nl2br($strValue);
 		
 		// output the formatted value in <span> tags
-		$strHtml = "<span class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'>{$strValue}</span>\n";
+		$strHtml = "<span id='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'>{$strValue}</span>\n";
 
 		return $strHtml;
 	}
@@ -243,7 +279,7 @@ class HTMLElements
 		$strValue = $this->BuildOutputValue($arrParams);
 
 		// output the formatted value in a hyperlink tag, in a <span> tag
-		$strHtml = "<span class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'><a href='{$strHref}'>{$strValue}</a></span>\n";
+		$strHtml = "<span id='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'><a href='{$strHref}'>{$strValue}</a></span>\n";
 		
 		return $strHtml;
 	}
@@ -291,7 +327,7 @@ class HTMLElements
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'><a href='mailto:{$strValue}'>{$strValue}</a></div>\n";
-		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 
 		return $strHtml;
