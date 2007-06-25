@@ -163,6 +163,13 @@
 			// get current time
 			$intTimeNow = time();
 			
+			if (!$arrScript['NextRun'])
+			{
+				// calculate next run time for the script
+				$intNextRun = $this->_CalculateNextRun($arrScript);
+				$this->_arrScript[$strScriptName]['NextRun'] = $intNextRun;
+			}
+			
 			// check if the script needs to be run now
 			if ($intTimeNow > (int)$arrScript['NextRun'])
 			{				
@@ -176,24 +183,27 @@
 				
 				// actually run the thing
 				$this->Debug("Running Script : $strScriptName");
-				if ($arrScript['Config']['SubSript'])
+				if ($arrScript['Config']['SubScript'])
 				{
 					// Monthly script
 					$bolPassed = TRUE;
-					foreach ($arrScript['Config']['SubSript'] as $arrSubscript)
+					$this->_arrState['LastReturn'] = "";
+					foreach ($arrScript['Config']['SubScript'] as $strName=>$arrSubscript)
 					{
-							$bolPassed = ($this->_RunScript($arrScript, $arrSubscript)) ? $bolPassed : FALSE;
+						$this->Debug("\tRunning SubScript: $strName");
+						$strReturn = $this->_RunScript($arrScript, $arrSubscript);
+						$this->Debug("SubScript Returned  :\n $strReturn");
+						$this->_arrState['LastReturn'] .= $strReturn;
 					}
-					$this->_arrState['LastReturn'] = ($bolPassed) ? 1 : 0;
 				}
 				else
 				{
 					// Standard script
 					$this->_arrState['LastReturn']		= $this->_RunScript($arrScript);
+					$this->Debug("Script Returned  :\n {$this->_arrState['LastReturn']}");
 				}
 				$this->_arrState['LastScript'] = $strScriptName;
 				$this->_arrState['LastRunTime'] = $intTimeNow;
-				$this->Debug("Script Returned  :\n {$this->_arrState['LastReturn']}");
 				
 				// set last run time for the script
 				$this->_arrScript[$strScriptName]['LastRun'] = $intTimeNow;
@@ -236,20 +246,21 @@
 		}
 		else
 		{
-			
+			$strDirectory	= $arrScript['Config']['Directory'];
+			$strCmd			= $arrScript['Config']['Command'];
 		}
 		
 		// set run script command
 		if ($arrScript['Config']['Directory'])
 		{
 			// change directory first
-			$strCommand  = "cd {$arrScript['Config']['Directory']};";
-			$strCommand .= $arrScript['Config']['Command'];
+			$strCommand  = "cd $strDirectory;";
+			$strCommand .= $strCmd;
 		}
 		else
 		{
 			// run it right where we are
-			$strCommand = $arrScript['Config']['Command'];
+			$strCommand = $strCmd;
 		}
 		
 		// Run
@@ -542,16 +553,22 @@
 			// Monthly Script
 			if ($intLastSchedualedRun)
 			{
+				//Debug("LOL");
 				$intNextRun = strtotime("+1 month", $intLastSchedualedRun);
 			}
 			else
 			{
 				// Are we too late to run?
 				$strZeroPaddedDay	= str_pad($arrScript['Config']['RecurringDay'], 2, '0', STR_PAD_LEFT);
-				$strFirstOfMonth	= date("Y-m-$strZeroPaddedDay", $intLastSchedualedRun);
-				$strEarliestRun		= $strFirstOfMonth . date(" H:i:s", (int)$arrScript['Config']['StartTime']);
-				$strLatestRun		= $strFirstOfMonth . date(" H:i:s", (int)$arrScript['Config']['FinishTime']);
-				if (date("Y-m-d", $intLastSchedualedRun) < $strLatestRun)
+				$strFirstOfMonth	= date("Y-m-$strZeroPaddedDay", $intTimeNow);
+				$strEarliestRun		= date("Y-m-d H:i:s", strtotime("+{$arrScript['Config']['StartTime']} seconds", strtotime($strFirstOfMonth)));
+				//$strEarliestRun		= $strFirstOfMonth . date(" H:i:s", (int)$arrScript['Config']['StartTime']);
+				//Debug("\$strEarliestRun: $strEarliestRun");
+				//$strLatestRun		= $strFirstOfMonth . date(" H:i:s", (int)$arrScript['Config']['FinishTime']);
+				$strLatestRun		= date("Y-m-d H:i:s", strtotime("+{$arrScript['Config']['FinishTime']} seconds", strtotime($strFirstOfMonth)));
+				//Debug("\$strLatestRun: $strLatestRun");
+				//Debug("$intTimeNow < ".strtotime($strLatestRun));
+				if ($intTimeNow < strtotime($strLatestRun))
 				{
 					// Nope
 					$intNextRun = strtotime($strEarliestRun);

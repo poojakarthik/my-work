@@ -84,7 +84,7 @@ $arrScript 							= Array();
 */
 
 
-
+/*
 //----------------------------------------------------------------------------//
 // Payments
 $arrScript                                                      = Array();
@@ -269,7 +269,7 @@ $arrScript                                                      = Array();
 	
 	// Command
 	//              String  Command to run the script (include full path to script).
-	$arrScript['Command']                   =       'php /usr/share/vixen/normalisation_app/normalise.php -n 10000';
+	$arrScript['Command']                   =       'php /usr/share/vixen/normalisation_app/normalisation.php -n 10000';
 	
 	// Directory
 	//              String  optional Directory to run the script in.
@@ -301,7 +301,7 @@ $arrScript                                                      = Array();
 	
 	// Command
 	//              String  Command to run the script (include full path to script).
-	$arrScript['Command']                   =       'php /usr/share/vixen/normalisation_app/normalise.php -i';
+	$arrScript['Command']                   =       'php /usr/share/vixen/normalisation_app/normalisation.php -i';
 	
 	// Directory
 	//              String  optional Directory to run the script in.
@@ -449,7 +449,7 @@ $arrScript                                                      = Array();
 		
 		// Normalisation
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/normalisation_app/normalise.php -i';
+		$arrSubscript['Command']	=       'php /usr/share/vixen/normalisation_app/normalisation.php -i';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/normalisation_app/';
 		$arrScript['SubScript']['Normalise']		= $arrSubscript;
 		
@@ -517,6 +517,54 @@ $arrScript                                                      = Array();
 //----------------------------------------------------------------------------//
 
 
+*/
 
 
+//----------------------------------------------------------------------------//
+// Monthly Test
+$arrScript                                                      = Array();
+	
+	// StartTime
+	//              Int             Earliest time that the script can run during the day
+	//                              Time in seconds from 00:00:00
+	$arrScript['StartTime']                 =       3600*9;	// 0900
+	
+	// FinishTime
+	//              Int             optional Latest time that the script can run during the day
+	//                              Time in seconds from 00:00:00
+	//                              Defaults to 86400 (24:00:00:00)
+	$arrScript['FinishTime']                =       3600*11;	// 1000 - 1 Hour Window
+	
+	// Interval
+	//              Int             Interval time in seconds.
+	//                              Script will be run every Interval seconds.
+	$arrScript['Interval']                  =       2419200;	// 28 Days (this is really irrelevant)
+	
+	// RecurringDay
+	//              Int				The Day on which the script is to run
+	//								eg. value of "1" would run on the first of every month
+	$arrScript['RecurringDay']				= 		25;
+	
+	// DieOnChildDeath
+	//				Boolean			Whether the failure of a child script should kill the parent
+	$arrScript['DieOnChildDeath']			=		TRUE;
+	
+	// Subscripts
+	//				Array			List of subscripts to run
+	//								Each each script requires the preceeding script to finish
+	$arrScript['SubScript'] = Array();
+		
+		// Billing Print
+		$arrSubscript = Array();
+		$arrSubscript['Command']	=       'php /usr/share/vixen/billing_app/cdrcheck.php';
+		$arrSubscript['Directory']	=       '/usr/share/vixen/billing_app/';
+		$arrScript['SubScript']['CDRCheck']				= $arrSubscript;
+		
+		// Billing Samples
+		$arrSubscript = Array();
+		$arrSubscript['Command']	=       'php /usr/share/vixen/rating_app/rating.php';
+		$arrSubscript['Directory']	=       '/usr/share/vixen/rating_app/';
+		$arrScript['SubScript']['Rating']				= $arrSubscript;
+	
+	$arrConfig['Script']['TestMonthly']	= $arrScript;
 ?>
