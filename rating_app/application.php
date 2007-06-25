@@ -1323,7 +1323,7 @@
 	 	{
 	 		// Email
 			$strContent =	"Rating Profit Margin Warning (".date("Y-m-d H:i:s").")\n\n" .
-							"\tCDRs Successfully Rated\t:$this->_intTotalRated" .
+							"\tCDRs Rated\t\t:$this->_intTotalRated\n" .
 							"\tTotal Cost\t\t: $this->_fltTotalCost\n" .
 							"\tTotal Charge\t\t: $this->_fltTotalCharge\n" .
 							"\tProfit Margin\t\t: $fltMargin% (Limit: $intWarningLevel%)";

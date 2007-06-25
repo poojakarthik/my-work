@@ -41,7 +41,7 @@ while ($appRating->Rate($bolOnlyNew))
 }
 
 // Check our profit margin
-Debug("Profit Margin: ".$appRating->GetMargin(25, 1000, 'flame@voiptelsystems.com.au')."%");
+Debug("Profit Margin: ".$appRating->GetMargin(49, 1000, 'flame@voiptelsystems.com.au, rich@voiptelsystems.com.au')."%");
 
 // Empty the Donkey Account
 Debug("Donkey Account = $".$appRating->_DonkeyAccount);
