@@ -52,9 +52,9 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		
-		$this->LoadJavascript("dhtml");
-		$this->LoadJavascript("highlight");
-		$this->LoadJavascript("retractable");
+		//$this->LoadJavascript("dhtml");
+		//$this->LoadJavascript("highlight");
+		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
