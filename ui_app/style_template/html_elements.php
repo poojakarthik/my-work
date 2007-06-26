@@ -153,7 +153,7 @@ class HTMLElements
 		// create the input box
 		$strHtml .= "		<input type='text' id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$strValue'/>\n";
 		$strHtml .= "   </div>\n";
-		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		
 		return $strHtml;
@@ -188,7 +188,7 @@ class HTMLElements
 		//TODO! Find out if the number of rows and columns in the textarea should be hard coded here
 		$strHtml .= "		<textarea id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' rows='6' cols='30'>$strValue</textarea>\n";
 		$strHtml .= "   </div>\n";
-		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		
 		return $strHtml;
@@ -222,8 +222,8 @@ class HTMLElements
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
-		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'>{$strValue}</div>\n";
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']} '>{$strValue}</div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 
 		return $strHtml;
@@ -326,8 +326,8 @@ class HTMLElements
 		$strLabel = $arrParams['Definition']['Label'];
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
-		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'><a href='mailto:{$strValue}'>{$strValue}</a></div>\n";
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'><a href='mailto:{$strValue}'>{$strValue}</a></div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 
 		return $strHtml;
@@ -531,7 +531,7 @@ class HTMLElements
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputCheckBox {$arrParams['Definition']['Class']}'>\n";
 		$strHtml .= "      <input type='checkbox' name='$strName' id='$strId' $strChecked $strDisabled></input>\n";
-		$strHtml .= "      <label for='$strId'>$strLabel</label>\n";
+		$strHtml .= "      <label id='$strId.Label' for='$strId'>$strLabel</label>\n";
 		$strHtml .= "   </div>\n";
 		$strHtml .= "</div>\n";
 		
@@ -585,12 +585,13 @@ class HTMLElements
 			
 			// create the name and id for the radio button
 			$strName 	= $arrParams['Object'] .".". $arrParams['Property'];
-			$strId		= $strRadioName ."(". $arrOption['Value'] .")";
+			//$strId		= $strRadioName ."(". $arrOption['Value'] .")";
+			$strId		= $strRadioName ."_". $arrOption['Value'];
 			
 			// define the button
 			$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
 			$strHtml .= "      <input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
-			$strHtml .= "      <label for='$strId'>{$arrOption['InputLabel']}</label>\n";
+			$strHtml .= "      <label id='$strId.Label' for='$strId'>{$arrOption['InputLabel']}</label>\n";
 			$strHtml .= "   </div>\n";
 		}
 		

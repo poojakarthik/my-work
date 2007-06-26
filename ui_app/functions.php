@@ -304,6 +304,33 @@ function PropertyToken()
 }
 
 //------------------------------------------------------------------------//
+// AuthenticatedUser HACK HACK HACK
+//------------------------------------------------------------------------//
+/**
+ * AuthenticatedUser()
+ *
+ * Returns a DBObject object with employee details of the currently authenticated user
+ *
+ * Returns a DBObject object with employee details of the currently authenticated user
+ *
+ * @return	DBObject object
+ *
+ * @function
+ * 
+ */
+function GetAuthenticatedUserDBObject()
+{
+	//HACK HACK HACK! Currently I have set the logged in user to me, Joel Dawkins, employee Id 29
+	/**************************************************************************/
+	$intEmployeeId = 29;
+	/**************************************************************************/
+	$dboUser = new DBObject("Employee");
+	$dboUser->Id = $intEmployeeId;
+	$dboUser->Load();
+	return $dboUser;
+}
+
+//------------------------------------------------------------------------//
 // Validate
 //------------------------------------------------------------------------//
 /**

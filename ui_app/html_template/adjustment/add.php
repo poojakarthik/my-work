@@ -103,10 +103,11 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='PopupMedium'>\n";
 		echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
 		
-		echo "<form method='POST' action='INSERT ACTION HERE (probably javascript)'>\n";
+		//echo "<form method='POST' action='javascript:Vixen.ValidateAdjustment.AddAdjustment()'>\n";
 		
-		// define hidden variables
-		echo "<input type='hidden' name='Account.Id' value='{DBO()->Account->Id->Value}'>\n";
+		//echo "<div id='StatusMsg' class='DefaultHiddenElement'>Status messages go here</div>\n";
+		echo "<div id='StatusMsg' class='DefaultHiddenElement'>Status messages go here</div>\n";
+		
 		
 		
 		// Display account details
@@ -124,43 +125,33 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='ChargeType.ChargeType' id='ChargeType.ChargeType' onclick='ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select name='ChargeType.ChargeType' id='ChargeType.ChargeType' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeType as $dboChargeType)
 		{
 			$strChargeType = $dboChargeType->ChargeType->Value;
-			$strDefaultAmount = $dboChargeType->Amount->Value;
 			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value;
-			echo "         <option id='ChargeType.$strChargeType' value='$strChargeType' DefaultAmount='$strDefaultAmount'>$strDescription</option>\n";
-			//TODO! Add to the structure of data that will be stored in the javascript
+			echo "         <option id='ChargeType.$strChargeType' value='$strChargeType'>$strDescription</option>\n";
+			
+			// add ChargeType details to an array that will be passed to the javascript that handles events on th
+			$arrChargeTypeData['Nature']	= $dboChargeType->Nature->Value;
+			$arrChargeTypeData['Fixed']		= $dboChargeType->Fixed->Value;
+			$arrChargeTypeData['Amount']	= $dboChargeType->Amount->Value;
+			$arrChargeTypeData['Description'] = $dboChargeType->Description->Value;
+			$arrChargeTypes[$dboChargeType->ChargeType->Value] = $arrChargeTypeData;
+			
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
-		//TODO! add some javascript which loads the default charge when the charge type is selected, and gives focus to the Amount textbox
 		
 		// display the charge code when the Charge Type has been selected
-		//TODO! This is only set after the user chooses from the combp box
-		//echo "<div class='DefaultElement'>\n";
-		//echo "   <div class='DefaultLabel'>Charge Code:</div>\n";
-		//echo "   <div id='ChargeCode' class='DefaultOutput'>&nbsp;</div>\n";
-		//echo "</div>\n";
-		
-		//DBO()->Charge->ChargeType = "CRG";
 		DBO()->Charge->ChargeType->RenderOutput();
 		
-		// display the nature of the charge
-		//TODO! this has to be set first, based on what the user chooses from the combo box
-		DBO()->Charge->Nature = "CR";
-		if (DBO()->Charge->Nature->Value == "CR")
-		{
-			DBO()->Charge->Nature->RenderArbitrary("Credit", RENDER_OUTPUT);
-		}
-		else
-		{
-			DBO()->Charge->Nature->RenderArbitrary("Debit", RENDER_OUTPUT);
-		}
+		// display the description
+		DBO()->ChargeType->Description->RenderOutput();
 		
-		//DBO()->Charge->Amount = 55.00;
+		// display the nature of the charge
+		DBO()->Charge->Nature->RenderOutput();
 		
 		DBO()->Charge->Amount->RenderInput();
 		
@@ -168,7 +159,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Invoice:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='InvoiceComboBox'>\n";
+		echo "      <select id='InvoiceComboBox' name='InvoiceComboBox'>\n";
 		echo "         <option value='0'>No Association</option>\n";
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
@@ -180,21 +171,37 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "</div>\n";
 
 		// Create a textbox for including a note
-		DBO()->Charge->Notes = "INSERT NOTE HERE\nTHIS IS LINE TWO";
 		DBO()->Charge->Notes->RenderInput();
 		
 		
 		// create the submit button
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		echo "   <input type='submit' name='Confirm' value='Add Adjustment &#xBB;' class='input-submit'></input>\n";
+		echo "   <input type='button' id='btnAddAdjustment' value='Add Adjustment &#xBB;' class='input-submit' onclick='Vixen.ValidateAdjustment.AddAdjustment()'></input>\n";
 		echo "</div>\n";
 		
-		// define the data in javascript:ValidateAdjustment
-		//TODO! Joel
-		echo "<script ></script>\n";
+		// define the data required of the javacode that handles events and validation of this form
+		$strJsonCode = Json()->encode($arrChargeTypes);
+		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
+			
+		// define the set data required for adding the adjustment
 		
-		echo "</form>\n";
+		$arrAdjustmentData['AccountGroup'] = DBO()->Account->AccountGroup->Value;
+		$arrAdjustmentData['Account'] = DBO()->Account->Id->Value;
+		$arrAdjustmentData['Service'] = NULL;
+		$arrAdjustmentData['InvoiceRun'] = NULL;
+		$dboUser = GetAuthenticatedUserDBObject();
+		$arrAdjustmentData['CreatedBy'] = $dboUser->Id->Value;
+		// CreatedOn should be set just before the record is inserted
+		$arrAdjustmentData['CreatedOn'] = NULL;
+		$arrAdjustmentData['ApprovedBy'] = NULL;
+		$arrAdjustmentData['ChargeType'] = NULL;
+
+		
+		$strJsonCode = Json()->encode($arrAdjustmentData);
+		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetAdjustmentData($strJsonCode)</script>\n";
+
+		//echo "</form>\n";
 		echo "</div>\n";
 	}
 }

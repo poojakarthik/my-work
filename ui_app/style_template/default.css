@@ -115,12 +115,18 @@
 		color:				#CC0000;
 	}
 	
+	.DefaultHiddenElement,
 	.DefaultElement,
 	.DefaultInvalidElement
 	{
 		position:			relative;
 		overflow:			visible;
 		height:				auto;
+	}
+	
+	.DefaultHiddenElement
+	{
+		display: none;
 	}
 		
 	.Red

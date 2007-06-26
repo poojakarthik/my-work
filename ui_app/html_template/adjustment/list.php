@@ -83,6 +83,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		// Load all java script specific to the page here
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
+		//$this->LoadJavascript("validate_adjustment");
 	}
 	
 	//------------------------------------------------------------------------//
