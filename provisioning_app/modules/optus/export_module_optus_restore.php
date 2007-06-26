@@ -163,7 +163,7 @@
 		 	
  			$arrExtraHeaders = Array(
  										'From'		=> "provisioning@voiptel.com.au",
- 										'Subject'	=> "Restoration Request File for ".date("Y-m-d H:i:s", time())
+ 										'Subject'	=> "Unbar Request File for ".date("Y-m-d H:i:s", time())
  									);
  			
  			$strContent = $mimMimeEmail->get();
