@@ -123,7 +123,7 @@
 	 */
  	function __construct()
  	{
- 		$this->_selFileExists = new StatementSelect("FileDownload", "Id", "FileName = <filename>");
+ 		$this->_selFileExists = new StatementSelect("FileImport", "Id", "FileName = <filename>");
  		
  		// Init CURL session
  		$this->_ptrSession = curl_init();
@@ -173,7 +173,7 @@
 		foreach ($arrLines as $intIndex=>$strLine)
 		{
 			$arrLine = explode("\t", $strLine);
-			$this->_arrFiles[] = Array('FileName'=>$arrLine[0], 'URL'=>$arrLine[1]);
+			$this->_arrFiles[] = Array('FileName'=>trim($arrLine[0]), 'URL'=>$arrLine[1]);
 		}
 		reset($this->_arrFiles);
 		return (bool)$this->_arrFiles;
@@ -233,6 +233,14 @@
 			curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
 			curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
 			$strDownloadedFile = curl_exec($this->_ptrSession);
+			
+			// Do we already have this file?
+			if ($this->_selFileExists->Execute($arrCurrent))
+			{
+				// Yes, recursively call until we find a new file (or FALSE)
+				return Download($strDestination);
+			}
+			
 			
 			// Write to temporary directory
 			$ptrTempFile	= fopen($strDestination.$arrCurrent['FileName'], 'w');
