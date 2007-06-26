@@ -314,7 +314,10 @@ class Application
 		DBO()->Validate();
 
 		//Create AppTemplate Object
+		
+		
 		$this->objAppTemplate = new $strClass;
+		
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		
 		//Run AppTemplate
