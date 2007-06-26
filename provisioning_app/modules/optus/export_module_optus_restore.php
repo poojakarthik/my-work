@@ -124,7 +124,7 @@
 		{
 			$this->_bolSending = TRUE;
 			
-			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."restore_".date("Hi_Ymd").".xls";
+			$strPreselectionFilename	= OPTUS_LOCAL_PRESELECTION_DIR."unbar_".date("Hi_Ymd").".xls";
 			
 			// Generate Excel 5 Workbook
 			$wkbWorkbook = new Spreadsheet_Excel_Writer($strPreselectionFilename);
@@ -157,7 +157,7 @@
 			$wkbWorkbook->close();
 
 			$mimMimeEmail = new Mail_Mime("\n");
- 			$mimMimeEmail->setTXTBody("Restoration Request File for ".date("Y-m-d H:i:s", time())." for Customer ".CUSTOMER_NUMBER_OPTUS);
+ 			$mimMimeEmail->setTXTBody("Unbar Request File for ".date("Y-m-d H:i:s", time())." for Customer ".CUSTOMER_NUMBER_OPTUS);
 		 	$mimMimeEmail->addAttachment($strPreselectionFilename, 'application/x-msexcel');
 		 	$emlMail =& Mail::factory('mail');
 		 	
