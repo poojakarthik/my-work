@@ -52,12 +52,12 @@ class AppTemplateEmployee extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		// context menu
 		//TODO! define what goes in the context menu
-		/*ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
-		ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);
+		//ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
+		//ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
+		//ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
+		//ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
+		//ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
+		//ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);
 		
 		// Console and logout should appear by default, no?
 		ContextMenu()->Console();
@@ -65,8 +65,8 @@ class AppTemplateEmployee extends ApplicationTemplate
 		
 		// breadcrumb menu
 		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
-		*/
+		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
+		
 		
 		// Setup all DBO and DBL objects required for the page
 		//TODO!

@@ -1610,6 +1610,29 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// EditEmployee
+	//------------------------------------------------------------------------//
+	/**
+	 * EditEmployee()
+	 *
+	 * Compiles the Href to be executed when the EditEmployee menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the EditEmployee menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the Employee to view
+	 *
+	 * @return	string				Href to be executed when the EditEmployee menu item is clicked
+	 *
+	 * @method
+	 */
+	function EditEmployee($intId)
+	{
+		$this->strLabel	= "emp : $intId";
+		return "edit_employee.php?Employee.Id=$intId";
+	}
+	
+	//------------------------------------------------------------------------//
 	// ViewInvoicePdf
 	//------------------------------------------------------------------------//
 	/**

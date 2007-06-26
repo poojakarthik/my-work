@@ -104,12 +104,15 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<div class='NarrowTable'>\n";
-		Table()->EmployeeTable->SetHeader("FirstName", "LastName", "UserName");
+		Table()->EmployeeTable->SetHeader("FirstName", "LastName", "UserName","View Employee");
 		foreach (DBL()->Employee as $dboEmployee)
-		{	
+		{
+			$strEditHref = Href()->EditEmployee($dboEmployee->Id->Value);
+			$strEditLabel = "<span class='DefaultOutputSpan Default'><a href='$strEditHref'>Edit Employee</a></span>";	
 			Table()->EmployeeTable->AddRow(  $dboEmployee->FirstName->AsValue(),
 												$dboEmployee->LastName->AsValue(), 
-												$dboEmployee->UserName->AsValue());
+												$dboEmployee->UserName->AsValue(),
+												$strEditLabel);
 		}
 		Table()->EmployeeTable->Render();
 		echo "</div>\n";
