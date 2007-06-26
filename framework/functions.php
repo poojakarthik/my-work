@@ -1537,19 +1537,21 @@ function BankAccountValid ($strNumber)
  * 
  * Writes a string to stdout
  *
- * @param	str	$strOutput	The string to write to stdout
+ * @param	string	$strOutput				The string to write to stdout
+ * @param	boolean	$bolNewLine	optional	Whether to automatically add a new line character
  *
  * @return	void
  * 
  * @function
  */
-function CliEcho($strOutput)
+function CliEcho($strOutput, $bolNewLine=TRUE)
 {
 	if (!$GLOBALS['**stdout'])
 	{
 		$GLOBALS['**stdout'] = fopen("php://stdout","w"); 
 	}
 	$stdout = $GLOBALS['**stdout'];
+	$strOutput .= ($bolNewLine) ? "\n" : "";
 	fwrite($stdout, $strOutput."\n");
 }
 
@@ -1677,6 +1679,9 @@ function LoadFramework($strFrameworkDir=NULL)
 	require_once($strFrameworkDir."report.php");
 	require_once($strFrameworkDir."error.php");
 	require_once($strFrameworkDir."exception_vixen.php");
+	
+	// PEAR Packages
+	require_once("Console/Getopt.php");
 	
 	// create framework instance
 	$GLOBALS['fwkFramework'] = new Framework();
@@ -2033,6 +2038,109 @@ function RemoveGST($fltAmount)
 		return 0;
 	}
 	return (float)($fltAmount / ((TAX_RATE_GST / 100) + 1));
+}
+
+//------------------------------------------------------------------------//
+// ClearScreen()
+//------------------------------------------------------------------------//
+/**
+ * ClearScreen()
+ *
+ * Emulates a "clear" or "cls" shell command
+ *
+ * Emulates a "clear" or "cls" shell command
+ *
+ * @param	boolean	$bolReturn	optional	Returns the string value of screen clear
+ * 											instead of outputting it (defaults to FALSE)
+ *
+ * @function
+ */
+ function ClearScreen($bolReturn = FALSE)
+ {
+ 	if ($bolReturn)
+ 	{
+ 		return chr(27)."[H".chr(27)."[2J";
+ 	}
+ 	echo chr(27)."[H".chr(27)."[2J";
+ }
+
+
+//------------------------------------------------------------------------//
+// ParseArguments
+//------------------------------------------------------------------------//
+/**
+ * ParseArguments()
+ *
+ * Parses command line arguments and puts the data in a meaningful array
+ *
+ * Parses command line arguments and puts the data in a meaningful array
+ * 
+ * @param	array 	$arrConfig	Configuration for parsing the arguments
+ *
+ * @return	array 				Array of arguments and values
+ *
+ * @function
+ */
+function ParseArguments($arrConfig)
+{
+	// Use Console_Getopt to parse arguments
+	$argGetOpt	= new Console_Getopt();
+	$arrArgV	= $argGetOpt->readPHPArgv();
+	
+	// Get list of options
+	$strAllowedOptions = "";
+	foreach ($arrConfig['Option'] as $strName=>$arrDefinition)
+	{
+		$strAllowedOptions .= $arrDefinition['Switch'];
+		$strAllowedOptions .= (isset($arrDefinition['Value']))			? ":" : "";	// Value optional
+		$strAllowedOptions .= (isset($arrDefinition['MandatoryValue']))	? ":" : "";	// Value mandatory
+	}
+	
+	// Parse arguments and check for error
+	$arrArguments = $argGetOpt->getopt($arrArgV, $strAllowedOptions);
+	if (PEAR::isError($arrArguments))
+	{
+		Debug("Fatal Error: Unsupported command line argument ('".$arrArguments->getMessage()."')");
+		die;
+	}
+	
+	// Check for -? switch
+	if (in_array(Array('?', ''), $arrArguments[0]))
+	{
+		// FIXME: Remove this when HELP is implemented
+		echo "\nHELP function currently unavailable\n\n";
+		return FALSE;
+		
+		// Print the command line options
+		// TODO
+		return FALSE;
+	}
+	
+	// Convert options to meaningful variables
+	$arrReturn = Array();
+	foreach ($arrConfig['Option'] as $strName=>$arrDefinition)
+	{
+		foreach ($arrArguments[0] as $arrArgument)
+		{
+			if ($arrDefinition['Switch'] == $arrArgument[0])
+			{
+				$arrReturn[$strName] = ($arrArgument[1]) ? $arrArgument[1] : TRUE;
+			}
+		}
+	}
+	
+	// Any additional arguments
+	$strCurrent = reset($arrArguments[1]);
+	foreach ($arrConfig['Arguments'] as $strName=>$arrDefinition)
+	{
+		$arrReturn[$strName] = $strCurrent;
+		if (!$strCurrent = next($strCurrent))
+		{
+			break;
+		}
+	}
+	
+	return $arrReturn;
 }
 
 ?>
