@@ -741,6 +741,9 @@ class PageTemplate extends BaseTemplate
  */
 class HtmlTemplate extends BaseTemplate
 {
+	private $_strMethod;
+	private $_strForm;
+	private $_strTemplate;
 	
 	//------------------------------------------------------------------------//
 	// LoadJavascript
@@ -762,6 +765,30 @@ class HtmlTemplate extends BaseTemplate
 	{
 		// add $strFilename to global javascript function array
 		$GLOBALS['*arrJavaScript'][$strFilename] = $strFilename;
+	}
+	
+	function FormStart($strId, $strTemplate, $strMethod)
+	{
+		$this->_strMethod = $strMethod;
+		$this->_strForm = $strId;
+		$this->_strTemplate = $strTemplate;
+		echo "<form id='VixenForm_$strId' action='vixen.php/$strTemplate/$strMethod'>\n";
+		echo "<input type='hidden' value='$strId' name='VixenFormId'>";
+	}
+	
+	function FormEnd()
+	{
+		echo "</form>\n";
+	}
+	
+	function Submit($strLabel, $strId)
+	{
+		
+		echo "<submit name='VixenButtonId' id='VixenButton_".$this->strForm."_$strId' value='$strLabel'></submit>\n";
+	}
+	
+	function AjaxSubmit()
+	{
 	}
 }
 
@@ -900,6 +927,16 @@ class SubmittedData
 	 */
 	function __construct($arrDefine=NULL)
 	{
+		// get form and button Id
+		if ($_REQUEST['VixenFormId'])
+		{
+			$GLOBALS['*SubmittedForm'] = $_REQUEST['VixenFormId'];	
+		}
+		if ($_REQUEST['VixenButtonId'])
+		{
+			$GLOBALS['*SubmittedButton'] = $_REQUEST['VixenButtonId'];	
+		}
+		
 		// save local copy of define
 		$this->_arrDefine = $arrDefine;
 	}
@@ -1043,6 +1080,16 @@ class SubmittedData
 		// Get Ajax Data
 		$objAjax = AjaxReceive();
 
+		// get form Id and Button Id
+		if ($objAjax->FormId)
+		{
+			$GLOBALS['*SubmittedForm'] = $objAjax->FormId;	
+		}
+		if ($objAjax->ButtonId)
+		{
+			$GLOBALS['*SubmittedButton'] = $objAjax->ButtonId;	
+		}
+		
 		// for each post variable
 		if(is_object($objAjax) && is_object($objAjax->Objects))
 		{

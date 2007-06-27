@@ -503,4 +503,20 @@ function GetEmployeeName($intEmployeeId)
 	return $strEmployeeName;
 }
 
+function SubmittedForm($strFormId, $strButtonId=NULL)
+{
+	if ($strFormId == $GLOBALS['*SubmittedForm'])
+	{
+		if ($strButtonId && $strButtonId == $GLOBALS['*SubmittedButton'])
+		{
+			return TRUE;
+		}
+		elseif (!$strButtonId)
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
 ?>

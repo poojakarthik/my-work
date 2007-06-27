@@ -1628,8 +1628,20 @@ class MenuItems
 	 */
 	function EditEmployee($intId)
 	{
-		$this->strLabel	= "emp : $intId";
-		return "edit_employee.php?Employee.Id=$intId";
+		
+		$this->strLabel	= "edit emp: $intId";
+		
+		// Setup data to send
+		$arrData['HtmlMode'] = TRUE;
+		$arrData['Application'] = "Employee.Edit";
+		$arrData['Objects']['Employee']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}EditPopup\", \"medium\", $strJsonCode)";
+
 	}
 	
 	//------------------------------------------------------------------------//

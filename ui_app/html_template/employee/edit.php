@@ -16,7 +16,7 @@
  * @class	HtmlTemplateEmployeeDetails
  * @extends	HtmlTemplate
  */
-class HtmlTemplateEmployeeDetails extends HtmlTemplate
+class HtmlTemplateEmployeeEdit extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -54,7 +54,7 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 		
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
+		$this->LoadJavascript("permissions");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -103,7 +103,7 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 	 */
 	private function _RenderFullDetail()
 	{
-		echo "<h2 class='Employees'>Employees</h2>";
+		/*echo "<h2 class='Employees'>Employees</h2>";
 		
 		if ($_GET['Archived'])
 		{
@@ -116,9 +116,6 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 		{
 			$strEditHref = Href()->EditEmployee($dboEmployee->Id->Value);
 			$strEditLabel = "<span class='DefaultOutputSpan Default'><a href='$strEditHref'>Edit Employee</a></span>";	
-			
-			
-			
 			Table()->EmployeeTable->AddRow(  $dboEmployee->FirstName->AsValue(),
 												$dboEmployee->LastName->AsValue(), 
 												$dboEmployee->UserName->AsValue(),
@@ -126,7 +123,71 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 												$strEditLabel);
 		}
 		Table()->EmployeeTable->Render();
-		echo "</div>\n";
+		echo "</div>\n";*/
+		
+		echo "<h2 class='Employee'> Edit Employee</h2>";
+		$this->FormStart('Employee', 'Employee', 'Edit');
+		
+		DBO()->Employee->FirstName->RenderInput();
+		DBO()->Employee->LastName->RenderInput();
+		DBO()->Employee->Email->RenderInput();
+		DBO()->Employee->Extension->RenderInput();
+		DBO()->Employee->Phone->RenderInput();
+		DBO()->Employee->Mobile->RenderInput();
+		DBO()->Employee->Password->RenderInput();
+		DBO()->Employee->Archived->RenderInput();	
+		
+		echo "<p><h2 class='Permissions'> Permissions</h2>
+              
+			  <div class='Narrow-Form'>
+			  
+			  	<input type='hidden' name='Id' value='27' />
+				Select multiple Permissions by holding the CTRL key while you click options from
+				either of the lists.
+					<div class='SmallSeperator'></div>
+						<table border='0' cellpadding='3' cellspacing='0'>
+							<tr>
+								<th>Available Permissions :</th>
+								<th></th>
+								<th>Selected Permissions :</th>
+							</tr>
+							<tr>
+								<td>
+									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection' multiple='multiple'></select>
+								</td>
+								<td>
+									<div>
+										<input type='button' value='&#xBB;' onclick='addIt()' />
+									</div>
+									<div class='Seperator'></div>
+									<div>
+										<input type='button' value='&#xAB;' onclick='delIt ()' />
+									</div>
+								</td>
+								<td>
+									<select id='SelectedPermissions' name='SelectedPermissions[]' size='8' class='SmallSelection' multiple='multiple'>
+										<option value='16'>Accounts</option>
+										<option value='2'>Admin</option>
+										<option value='4'>Operator</option>
+										<option value='1'>Public</option>
+										<option value='8'>Sales</option>
+									</select>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</div>
+              <div class='Seperator'></div>";
+			  
+			  //echo "<a href='Javascript:alert(document.getElementById(\"anid\").elements[1]);'>links</a>";
+			  //echo "<a href='Javascript:if(document.anid.elements[0].toString().indexOf(\"Select\")==-1){alert(\"is a select box\");}'>link</a>";
+			  //echo "<a href='Javascript:alert(document.getElementById(\"anid"\).elements[0])'>link1</a>";
+			  //alert(document.getElementById(\"anid\").elements[0])'>LINK</a>";
+			  //echo "<script type='text/javascript'>document.innerHTML;</script>";
+			  //echo "<a href='Javascript:this.document.forms[0].elements[0].name;' target='_blank'>asdf</a>";
+			  //echo "<a href='Javascript:this.document.innerHTML;' target='_new'>adsg</a>";
+			  $this->AjaxSubmit('Save', 'Save', HTML_MODE);
+			  $this->FormEnd();
 	}
 
 	//------------------------------------------------------------------------//

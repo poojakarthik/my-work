@@ -44,7 +44,6 @@
  */
 class AppTemplateEmployee extends ApplicationTemplate
 {
-
 	function ViewEmployees()
 	{
 		// Should probably check user authorization here
@@ -79,7 +78,11 @@ class AppTemplateEmployee extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("CreatedOn DESC");
 		DBL()->Invoice->Load();
 		*/
-
+		if ($_GET['Archived'] != 1)
+		{
+			DBL()->Employee->Archived = 0;
+		}
+		
 		DBL()->Employee->Load();
 		
 	
@@ -88,5 +91,23 @@ class AppTemplateEmployee extends ApplicationTemplate
 		return TRUE;
 	
 	}
-	
+
+	function Edit()
+	{
+		AuthenticatedUser()->CheckAuth();
+		//check if the form was submitted
+		if (SubmittedForm('Employee', 'Save'))
+		{
+			//Save the employee
+			if (!DBO()->Employee->IsInvalid())
+			{
+				DBO()->Employee->Save();
+			}
+		}
+		DBO()->Employee->Load();
+		$this->LoadPage('edit_employee');
+		
+		return TRUE;
+	}
+
 }

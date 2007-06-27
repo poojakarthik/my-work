@@ -585,7 +585,7 @@ class VixenTable
 	 * @return	void
 	 *
 	 * @method
-	 */
+	 */	 
 	function Render()
 	{
 		$strTableName = $this->_strName;

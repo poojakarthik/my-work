@@ -255,6 +255,9 @@
 	h2.Admin,
 	h2.Report,
 	h2.CostCentre,
+	h2.Employees,
+	h2.Employee,
+	h2.Permissions,
 	h2.Bug
 	{
 		background-repeat:             no-repeat;
@@ -300,6 +303,12 @@
 		background-image:              url('img/template/provisioning.png');
 	}
 	
+	h2.Permissions
+	{
+		background-image:              url('img/template/console_admin_small.png');
+	}
+	
+	
 	h2.PDF
 	{
 		background-image:              url('img/template/pdf_small.png');
@@ -333,6 +342,16 @@
 	h2.Contacts
 	{
 		background-image:              url('img/template/contacts.png');
+	}
+	
+	h2.Employees
+	{
+		background-image:              url('img/template/contacts_small.png');
+	}
+	
+	h2.Employee
+	{
+		background-image:              url('img/template/contact_small.png');
 	}
 	
 	h2.Contact
@@ -872,7 +891,12 @@
 	{
 		background-color:    #D5E0F8;
 	}
-	
+
+	table.Listing tr.Archived td
+	{
+		background-color:    #C0C0C0;
+	}
+
 	table.Listing tr.Selected th,
 	table.Listing tr.Selected td
 	{
@@ -942,6 +966,11 @@
 	.LargeSelection
 	{
 		width:               325px;
+	}
+	
+	.SmallSelection
+	{
+		width:               180px;
 	}
 	
 	select
