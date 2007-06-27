@@ -101,12 +101,13 @@
 		$this->arrServiceColumns['CappedCharge']	= "Service.CappedCharge";
 		$this->arrServiceColumns['UncappedCharge']	= "Service.UncappedCharge";
 		$this->arrServiceColumns['Service']			= "Service.Id";
+		$this->arrServiceColumns['RatePlan']		= "RatePlan.Id";
 		$this->selServices					= new StatementSelect(	"Service JOIN ServiceRatePlan ON Service.Id = ServiceRatePlan.Service, " .
 																	"RatePlan",
 																	$this->arrServiceColumns,
 																	"Service.Account = <Account> AND RatePlan.Id = ServiceRatePlan.RatePlan AND " .
 																	"Service.CreatedOn <= NOW() AND (NOW() BETWEEN ServiceRatePlan.StartDatetime AND ServiceRatePlan.EndDatetime)" .
-																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id ORDER BY CreatedOn DESC LIMIT 1)",
+																	" AND ServiceRatePlan.Id = ( SELECT Id FROM ServiceRatePlan WHERE Service = Service.Id AND NOW() BETWEEN StartDatetime AND EndDatetime ORDER BY CreatedOn DESC LIMIT 1)",
 																	"RatePlan.Id");
 		$this->strTestAccounts =		" AND " .
 																"Id = 1000009145 OR " .
@@ -384,10 +385,10 @@
 			// SERVICE TYPE TOTALS
 			
 			// build query (no Service Extensions)
-			$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
+			$strQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup)";
 			$strQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
-			$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
-			$strQuery .= " FROM CDR USE INDEX (Account_2)";
+			$strQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup";
+			$strQuery .= " FROM CDR USE INDEX (Account_2) JOIN ServiceRateGroup ON ServiceRateGroup.Service = CDR.Service";
 			$strQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
 			$strQuery .= " AND Status = ".CDR_TEMP_INVOICE;
 			$strQuery .= " AND Account = ".$arrAccount['Id'];
@@ -395,14 +396,15 @@
 			$strQuery .= " GROUP BY Service, RecordType";
 			
 			// build query (with Service Extensions)
-			$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records)";
+			$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup)";
 			$strExtensionsQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
-			$strExtensionsQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records";
-			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2)";
+			$strExtensionsQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup";
+			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2), ServiceRateGroup ON ServiceRateGroup.Service = CDR.Service";
 			$strExtensionsQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
 			$strExtensionsQuery .= " AND Status = ".CDR_TEMP_INVOICE;
 			$strExtensionsQuery .= " AND Account = ".$arrAccount['Id'];
-			$strExtensionsQuery .= " AND CDR.Credit = 0";
+			$strExtensionsQuery .= " AND CDR.Credit = 0 ";
+			$strExtensionsQuery .= " ServiceRateGroup.Id = (SELECT Id FROM ServiceRateGroup SRG WHERE NOW() BETWEEN StartDatetime AND EndDatetime AND SRG.Service = Service.Id ORDER BY CreatedOn DESC LIMIT 1) ";
 			$strExtensionsQuery .= " GROUP BY Service, FNN, RecordType";
 			
 			// run query
@@ -621,6 +623,7 @@
 				$arrServiceTotal['TotalCharge']		= $fltTotalCharge;
 				$arrServiceTotal['Credit']			= $fltServiceCredits;
 				$arrServiceTotal['Debit']			= $fltServiceDebits;
+				$arrServiceTotal['RatePlan']		= $arrService['RatePlan'];
 				
 				if (!$this->insServiceTotal->Execute($arrServiceTotal) && !$bolReturnData)
 				{
