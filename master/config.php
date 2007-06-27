@@ -42,10 +42,15 @@ $arrConfig['Sleep']				= 60;
 // Verbose
 //		Bool	TRUE	Display output as the script runs
 //				FALSE	Quiet mode
-$arrConfig['Verbose']			= TRUE;
+//$arrConfig['Verbose']			= TRUE;
+$arrConfig['Verbose']			= FALSE;
 
 
 $arrConfig['GMTOffset']			= 10;
+
+// RefreshRate
+//		Int		Number of seconds between each refresh
+$arrConfig['RefreshRate']		= 1;
 
 
 //----------------------------------------------------------------------------//
@@ -84,7 +89,7 @@ $arrScript 							= Array();
 */
 
 
-/*
+
 //----------------------------------------------------------------------------//
 // Payments
 $arrScript                                                      = Array();
@@ -517,7 +522,7 @@ $arrScript                                                      = Array();
 //----------------------------------------------------------------------------//
 
 
-*/
+/*
 
 
 //----------------------------------------------------------------------------//
@@ -567,4 +572,5 @@ $arrScript                                                      = Array();
 		$arrScript['SubScript']['Rating']				= $arrSubscript;
 	
 	$arrConfig['Script']['TestMonthly']	= $arrScript;
+*/
 ?>
