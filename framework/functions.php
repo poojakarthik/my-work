@@ -2146,6 +2146,8 @@ function ParseArguments($arrConfig)
 function Donkey()
 {
 ?>
+
+
                           /\          /\
                          ( \\        // )
                           \ \\      // /
@@ -2166,6 +2168,7 @@ function Donkey()
       | |  | |        | ||  
       |_|  |_|        |_||       
        \_\  \_\        \_\\
+
 <?php
 }
 
