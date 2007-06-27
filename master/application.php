@@ -251,7 +251,7 @@
 		}
 		
 		// set run script command
-		if ($arrScript['Config']['Directory'])
+		if ($strDirectory)
 		{
 			// change directory first
 			$strCommand  = "cd $strDirectory;";

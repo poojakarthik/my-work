@@ -460,7 +460,7 @@ $arrScript                                                      = Array();
 		
 		// Rating
 		$arrSubscript = Array();
-		$arrSubscript['Command']	=       'php /usr/share/vixen/rating_app/rate_ll_se_credits.php';
+		$arrSubscript['Command']	=       'php /usr/share/vixen/rating_app/rating.php';
 		$arrSubscript['Directory']	=       '/usr/share/vixen/rating_app/';
 		$arrScript['SubScript']['Rate']		= $arrSubscript;
 		
