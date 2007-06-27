@@ -126,6 +126,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select name='ChargeType.ChargeType' id='ChargeType.ChargeType' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "         <option id='ChargeTypeNotSelected' value='NoSelection'>&nbsp;</option>\n";
 		foreach (DBL()->ChargeType as $dboChargeType)
 		{
 			$strChargeType = $dboChargeType->ChargeType->Value;
@@ -177,13 +178,16 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// create the submit button
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		echo "   <input type='button' id='btnAddAdjustment' value='Add Adjustment &#xBB;' class='input-submit' onclick='Vixen.ValidateAdjustment.AddAdjustment()'></input>\n";
+		//echo "   <input type='button' id='btnAddAdjustment' value='Add Adjustment &#xBB;' class='input-submit' onclick='Vixen.ValidateAdjustment.AddAdjustment()'>Click Me</input>\n";
+		echo "<button class='input-submit' id='btnAddAdjustment' value='submit' onclick='javascript:alert(document.getElementById(\"btnAddAdjustment\").value)'>Hey hey</button>\n";
+		//echo "<input type='submit' name='btnAddAdjustment' value='ThisIsTheValue'>HeyHey</submit>\n";
+		//echo "<label for='btnAddAdjustment'>TESTING</label>\n";
 		echo "</div>\n";
 		
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
 		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
-			
+
 		// define the set data required for adding the adjustment
 		
 		$arrAdjustmentData['AccountGroup'] = DBO()->Account->AccountGroup->Value;
@@ -195,7 +199,6 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// CreatedOn should be set just before the record is inserted
 		$arrAdjustmentData['CreatedOn'] = NULL;
 		$arrAdjustmentData['ApprovedBy'] = NULL;
-		$arrAdjustmentData['ChargeType'] = NULL;
 
 		
 		$strJsonCode = Json()->encode($arrAdjustmentData);

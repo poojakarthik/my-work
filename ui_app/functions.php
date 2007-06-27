@@ -491,16 +491,54 @@ function IsConditionTrue($mixLeftValue, $strOperator, $mixRightValue = NULL)
 }
 
 
+//------------------------------------------------------------------------//
+// GetEmployeeName
+//------------------------------------------------------------------------//
+/**
+ * GetEmployeeName()
+ *
+ * Retrieves the name of an employee as "FirstName LastName"
+ *
+ * Retrieves the name of an employee as "FirstName LastName"
+ *
+ * @param	int		$intEmployeeId	The Id of the employee
+ * @return	mix						returns "FirstName LastName" of the employee.
+ *									If the employee could not be found then it returns NULL
+ *
+ * @function
+ */
 function GetEmployeeName($intEmployeeId)
 {
-	//TODO!Joel! add caching, see screen_scrape/vixen_import.php/FindEmployee()
-	DBO()->EmployeeName->Id = $intEmployeeId;
-	DBO()->EmployeeName->SetTable("Employee");
-	DBO()->EmployeeName->Load();
-	
-	$strEmployeeName = DBO()->EmployeeName->FirstName->Value ." ". DBO()->EmployeeName->LastName->Value;
-	
-	return $strEmployeeName;
+	// check if we have a cache of employees
+	if (!isset($GLOBALS['*arrEmployee']))
+	{
+		// retrieve all employees from the Employee table of the database and cache it in the global array
+		$selFindEmployee = new StatementSelect("Employee", "FirstName, LastName, Id");
+		$selFindEmployee->Execute();
+		$arrEmployees = $selFindEmployee->Fetch();
+		
+		foreach ($arrEmployees as $arrEmployee)
+		{
+			$arrName['FirstName'] = $arrEmployee['FirstName'];
+			$arrName['LastName'] = $arrEmployee['LastName'];
+			
+			// add the employee to the global employee array
+			$GLOBALS['*arrEmployee'][$arrEmployee['Id']] = $arrName;
+		}
+	}
+
+	// check that an employee exists with id == $intEmployeeId
+	if (isset($GLOBALS['*arrEmployee'][$intEmployeeId]))
+	{
+		// build the employee's name
+		$strName = $GLOBALS['*arrEmployee'][$intEmployeeId]['FirstName'] ." ". $GLOBALS['*arrEmployee'][$intEmployeeId]['LastName'];
+	}
+	else
+	{
+		$strName = NULL;
+	}
+
+	return $strName;
 }
 
 function SubmittedForm($strFormId, $strButtonId=NULL)
