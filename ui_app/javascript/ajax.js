@@ -16,7 +16,7 @@
 function VixenAjaxClass()
 {
 	// Send form
-	this.SendForm = function(strFormId, strButton, strClass, strMethod, strTargetType=NULL, strId=NULL, strSize=NULL)
+	this.SendForm = function(strFormId, strButton, strClass, strMethod, strTargetType, strId, strSize)
 	{
 		// create object to send
 		var objSend = {};
@@ -31,6 +31,13 @@ function VixenAjaxClass()
 		// add values from form to object
 		//TODO! Find each element and load it into objSend.Objects.Object.Property
 		
+		
+		objSend.Objects = {};
+		objSend.Objects.Employee = {};
+		objSend.Objects.Employee.Id = 7;
+		
+		
+		
 		// send object
 		this.Send(objSend);
 	}
@@ -41,7 +48,7 @@ function VixenAjaxClass()
         {
                 // store our object before sending, along with a transaction ID
                 //this.objData = objObject;
-                
+                //alert("Vixen.Ajax.Send() has been called. objObject.Class = " + objObject.Class);
 				// set the target page
                 var page_url = "ajax_link.php";
                 

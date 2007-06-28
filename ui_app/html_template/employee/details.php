@@ -115,6 +115,7 @@ class HtmlTemplateEmployeeDetails extends HtmlTemplate
 		foreach (DBL()->Employee as $dboEmployee)
 		{
 			$strEditHref = Href()->EditEmployee($dboEmployee->Id->Value);
+			
 			$strEditLabel = "<span class='DefaultOutputSpan Default'><a href='$strEditHref'>Edit Employee</a></span>";	
 			
 			

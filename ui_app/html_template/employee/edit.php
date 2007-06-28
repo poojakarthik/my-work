@@ -186,7 +186,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			  //echo "<script type='text/javascript'>document.innerHTML;</script>";
 			  //echo "<a href='Javascript:this.document.forms[0].elements[0].name;' target='_blank'>asdf</a>";
 			  //echo "<a href='Javascript:this.document.innerHTML;' target='_new'>adsg</a>";
-			  $this->AjaxSubmit('Save', 'Save', HTML_MODE);
+			  $this->AjaxSubmit('Save', HTML_MODE);
 			  $this->FormEnd();
 	}
 

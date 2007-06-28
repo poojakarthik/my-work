@@ -24,6 +24,8 @@
  * @language	PHP
  * @package		framework
  * @author		Jared 'flame' Herbohn
+ * @package		framework
+ * @author		Jared 'flame' Herbohn
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -364,6 +366,7 @@ class Application
 		DBO()->Validate();
 
 		//Create AppTemplate Object
+		//echo $strClass;
 		$this->objAppTemplate = new $strClass;
 		
 		$this->objAppTemplate->SetMode($objSubmit->Mode, $objAjax);
@@ -806,11 +809,12 @@ class HtmlTemplate extends BaseTemplate
 		}
 		if (is_object($this->_objAjax))
 		{
-			$strTarget = $this->_objAjax['TargetType'];
-			$strId = $this->_objAjax['strId'];
-			$strSize = $this->_objAjax['strSize'];
+			//echo $this->_objAjax->TargetType;
+			$strTarget = $this->_objAjax->TargetType;
+			$strId = $this->_objAjax->strId;
+			$strSize = $this->_objAjax->strSize;
 		}
-		echo "<input type='button' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->strForm}', $strLabel,'$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\">";
+		echo "<input type='button' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\">";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1158,10 +1162,9 @@ class SubmittedData
 					$this->_ParseData("{$strObject}_{$strProperty}", $mixValue);
 				}
 			}
-		
-			return $objAjax;
 		}
-		return FALSE;
+		return $objAjax;
+		//return FALSE;
 	}
 	
 	//------------------------------------------------------------------------//

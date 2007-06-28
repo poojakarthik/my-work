@@ -191,6 +191,8 @@ function VixenPopupClass()
 		// Vixen.Ajax.Send will execute the application template.
 		// We want to use the output of the application template (echoed html code) and pass it to a popup window
 
+		//alert("class -"+strClass+" ----- "+"method -"+strMethod);
+
 		objParams.strSize 		= strSize;
 		objParams.strId 		= strId;
 		objParams.TargetType 	= "Popup";
