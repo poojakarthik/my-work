@@ -125,7 +125,10 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		DBO()->Charge->CreatedBy->RenderInput();
 		
 		// I don't think CreatedOn should be set until the record is added to the database
-		DBO()->Charge->CreatedOn = NULl;
+		DBO()->Charge->CreatedOn = NULL;
+		DBO()->Charge->CreatedOn->RenderInput();
+		
+		DBO()->
 		
 		
 		

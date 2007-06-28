@@ -1127,17 +1127,48 @@ class Validation
 	 *
 	 * Checks if a value is in a valid date and time format
 	 *
-	 * @param	mix			$strDateAndTime		the value to validate
+	 * @param	mix			$mixDateAndTime		the value to validate
 	 * 
 	 * @return	bool
 	 *
 	 * @method
 	 */
-	function DateAndTime($strDateAndTime)
+	function DateAndTime($mixDateAndTime)
 	{
 		// TODO! Joel  Test against all variations of the MySql datetime data type
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// MoneyValue
+	//------------------------------------------------------------------------//
+	/**
+	 * MoneyValue()
+	 *
+	 * Checks if a value is in a valid monetary format 
+	 *
+	 * Checks if a value is in a valid monetary format.
+	 * The valid format is a float that can start with a '$' char
+	 *
+	 * @param	mix			$mixValue		the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function MoneyValue($mixValue)
+	{
+		// remove whitespace and the $ if they are present
+		$mixValue = trim($mixValue);
+		$mixValue = ltrim($mixValue, "$");
+		
+		//check that the value is a float
+		$fltValue = sscanf($mixValue);
+		
+		
+		return TRUE;
+	}
+	
 	
 }
 
@@ -1746,8 +1777,6 @@ class MenuItems
 		$this->strLabel	= "add adjustment";
 		
 		// Setup data to send
-		$arrData['HtmlMode'] 	= TRUE;
-		$arrData['Application'] = "Adjustment.Add";
 		$arrData['Class'] 		= "Adjustment";
 		$arrData['Method'] 		= "Add";
 		$arrData['Objects']['Account']['Id'] = $intId;

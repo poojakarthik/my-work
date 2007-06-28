@@ -28,6 +28,15 @@ function VixenAjaxClass()
                 var local_handle_reply = this.HandleReply;
                 var local_handle_error = this.HandleError;
         
+				switch (objObject.TargetType)
+				{
+					case "Div":
+					case "Popup":
+						objObject.HtmlMode = TRUE;
+						break;
+					default:
+				}
+		
                 // callback binder
                 function bindcallback()
                 {
