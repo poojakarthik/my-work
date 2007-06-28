@@ -838,6 +838,74 @@ class PropertyToken
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
 	
+	//------------------------------------------------------------------------//
+	// _Hidden
+	//------------------------------------------------------------------------//
+	/**
+	 * _Hidden()
+	 *
+	 * Used by RenderHidden and AsHidden to build the html required
+	 *
+	 * Used by RenderHidden and AsHidden to build the html required
+	 *
+	 * @return	string					html code
+	 * @method
+	 */
+	private function _Hidden()
+	{
+		$intContext = CONTEXT_DEFAULT;
+
+		// require a definition
+		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
+		{
+			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
+			return NULL;
+		}
+
+		// build up parameters
+		$arrParams = $this->_BuildParams($intContext);
+		
+		// Render the value as hidden
+		return HTMLElements()->RenderHidden($arrParams);
+	}
+	
+	//------------------------------------------------------------------------//
+	// AsHidden
+	//------------------------------------------------------------------------//
+	/**
+	 * AsHidden()
+	 *
+	 * Returns the html code used to render the property as a hidden input
+	 *
+	 * Returns the html code used to render the property as a hidden input
+	 *
+	 * @return	string					html code
+	 * @method
+	 */
+	function AsHidden()
+	{
+		return $this->_Hidden();
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderHidden
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderHidden()
+	 *
+	 * Renders the property as a hidden input
+	 *
+	 * Renders the property as a hidden input
+	 *
+	 * @return	mixed	PropertyValue	returns the actual value of the property
+	 * @method
+	 */
+	function RenderHidden()
+	{
+		echo $this->_Hidden();
+		
+		return $this->_dboOwner->_arrProperties[$this->_strProperty];
+	}
 
 	//------------------------------------------------------------------------//
 	// Validate
