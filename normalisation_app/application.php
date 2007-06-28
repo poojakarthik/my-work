@@ -571,7 +571,7 @@
 		$mixColumns	= Array("CDR.*" => "", "FileType" => "FileImport.FileType", "FileName" => "FileImport.FileName");
 		//$strOrder	= "CDR.Status";
 		$strOrder	= NULL;
-		$intLimit	= ($intRemaining < 1000) ? $intRemaining : 1000;
+		$intLimit	= ($intRemaining < 1000 && $intRemaining > 0) ? $intRemaining : 1000;
  		$this->_selSelectCDRs = new StatementSelect($strTables, $mixColumns, $strWhere, $strOrder, $intLimit);
  		
  		// Select all CDRs ready to be Normalised
