@@ -354,7 +354,7 @@
 		$arrUpdateData['Status']		= '';
 		$updChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
 		$selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
-													"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge",
+													"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge, SUM(CDR.Cost) AS Cost",
 													"CDR.Service = <Service> AND " .
 													"CDR.Credit = 0".
 													" AND CDR.Status = ".CDR_TEMP_INVOICE ,
@@ -396,15 +396,15 @@
 			$strQuery .= " GROUP BY Service, RecordType";
 			
 			// build query (with Service Extensions)
-			$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup)";
+			$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup, Cost)";
 			$strExtensionsQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
-			$strExtensionsQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup";
+			$strExtensionsQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup, SUM(Cost) AS Cost";
 			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2), ServiceRateGroup ON ServiceRateGroup.Service = CDR.Service";
 			$strExtensionsQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
 			$strExtensionsQuery .= " AND Status = ".CDR_TEMP_INVOICE;
 			$strExtensionsQuery .= " AND Account = ".$arrAccount['Id'];
 			$strExtensionsQuery .= " AND CDR.Credit = 0 ";
-			$strExtensionsQuery .= " ServiceRateGroup.Id = (SELECT Id FROM ServiceRateGroup SRG WHERE NOW() BETWEEN StartDatetime AND EndDatetime AND SRG.Service = Service.Id ORDER BY CreatedOn DESC LIMIT 1) ";
+			$strExtensionsQuery .= " AND ServiceRateGroup.Id = (SELECT SRG.Id FROM ServiceRateGroup SRG WHERE NOW() BETWEEN SRG.StartDatetime AND SRG.EndDatetime AND SRG.Service = CDR.Service ORDER BY CreatedOn DESC LIMIT 1) ";
 			$strExtensionsQuery .= " GROUP BY Service, FNN, RecordType";
 			
 			// run query
@@ -474,6 +474,8 @@
 				$fltTotalCharge			= 0.0;
 				$fltUncappedCDRCharge	= 0.0;
 				$fltCappedCDRCharge		= 0.0;
+				$fltUncappedCDRCost		= 0.0;
+				$fltCappedCDRCost		= 0.0;
 				
 				// get capped & uncapped charges
 				$selCDRTotals->Execute(Array('Service' => $arrService['Service']));
@@ -484,10 +486,12 @@
 					if ($arrCDRTotal['Uncapped'])
 					{
 						$fltUncappedCDRCharge	= $arrCDRTotal['Charge'];
+						$fltUncappedCDRCost		= $arrCDRTotal['Cost'];
 					}
 					else
 					{
 						$fltCappedCDRCharge		= $arrCDRTotal['Charge'];
+						$fltCappedCDRCost		= $arrCDRTotal['Cost'];
 					}
 				}
 
@@ -624,6 +628,8 @@
 				$arrServiceTotal['Credit']			= $fltServiceCredits;
 				$arrServiceTotal['Debit']			= $fltServiceDebits;
 				$arrServiceTotal['RatePlan']		= $arrService['RatePlan'];
+				$arrServiceTotal['CappedCost']		= $fltCappedCDRCost;
+				$arrServiceTotal['UncappedCost']	= $fltUncappedCDRCost;
 				
 				if (!$this->insServiceTotal->Execute($arrServiceTotal) && !$bolReturnData)
 				{
