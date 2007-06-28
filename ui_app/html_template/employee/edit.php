@@ -128,6 +128,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		echo "<h2 class='Employee'> Edit Employee</h2>";
 		$this->FormStart('Employee', 'Employee', 'Edit');
 		
+		DBO()->Employee->Id->RenderHidden();
 		DBO()->Employee->FirstName->RenderInput();
 		DBO()->Employee->LastName->RenderInput();
 		DBO()->Employee->Email->RenderInput();

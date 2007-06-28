@@ -866,7 +866,7 @@ class PropertyToken
 		$arrParams = $this->_BuildParams($intContext);
 		
 		// Render the value as hidden
-		return HTMLElements()->RenderHidden($arrParams);
+		return HTMLElements()->InputHidden($arrParams);
 	}
 	
 	//------------------------------------------------------------------------//

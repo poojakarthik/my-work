@@ -780,9 +780,9 @@ class HtmlTemplate extends BaseTemplate
 	function FormStart($strId, $strTemplate, $strMethod)
 	{
 		$this->_strMethod = $strMethod;
-		$this->_strForm = $strId;
+		$this->_strForm = "VixenForm_$strId";
 		$this->_strTemplate = $strTemplate;
-		echo "<form id='VixenForm_$strId' action='vixen.php/$strTemplate/$strMethod'>\n";
+		echo "<form id='{$this->_strForm}' action='vixen.php/$strTemplate/$strMethod'>\n";
 		echo "<input type='hidden' value='$strId' name='VixenFormId'>";
 	}
 	
@@ -814,7 +814,7 @@ class HtmlTemplate extends BaseTemplate
 			$strId = $this->_objAjax->strId;
 			$strSize = $this->_objAjax->strSize;
 		}
-		echo "<input type='button' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\">";
+		echo "<input type='button' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\">";
 	}
 
 	//------------------------------------------------------------------------//

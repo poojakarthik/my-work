@@ -18,6 +18,12 @@ function VixenAjaxClass()
 	// Send form
 	this.SendForm = function(strFormId, strButton, strClass, strMethod, strTargetType, strId, strSize)
 	{
+		var intKey;
+		var strType;
+		var objFormElement;
+		var strElementName;
+		var mixValue;
+		
 		// create object to send
 		var objSend = {};
 		objSend.Class = strClass;
@@ -33,10 +39,51 @@ function VixenAjaxClass()
 		
 		
 		objSend.Objects = {};
-		objSend.Objects.Employee = {};
-		objSend.Objects.Employee.Id = 7;
 		
+		//objSend.Objects.Employee = {};
+		//objSend.Objects.Employee.Id = 7;
 		
+		//beginning of for loop to pull from form name, create new array in opjects named that and then add its value;
+		
+			//for (i = 0;i < = document.
+			//strObject = object    "Employee"
+			//strProperty = property   "Id"
+			//strValue = value  "29"
+			
+			//Step1: For each element in the form...
+			objFormElement = document.getElementById(objSend.FormId);
+			//alert(objFormElement.elements.length);
+			//return;
+			for (intKey in objFormElement.elements)
+			{
+				//check if the element's name is in the form Object.Property
+				strElementName	= objFormElement.elements[intKey].name;
+				strType			= objFormElement.elements[intKey].type;
+				alert(strType + " value= " + objFormElement.elements[intKey].value + " name=" + strElementName);
+				switch (strType)
+				{
+					case "list":
+						break;
+					case "checkbox":
+						break;
+					case "listbox":
+						break;
+					case "undefined":
+					case "button":
+						break;
+					default:
+						mixValue = objFormElement.elements[intKey].value;
+						break;
+				}
+				
+				intDotIndex = strElementName.indexOf(".", 0);
+				strObjectName = strElementName.substr(0, intDotIndex);
+				strPropertyName = strElementName.substr(intDotIndex + 1, strElementName.length);
+				alert("strObjectName = " + strObjectName + "strPropertyName = " + strPropertyName);
+				//FINISH ME!!!
+				
+			}			
+			
 		
 		// send object
 		this.Send(objSend);
