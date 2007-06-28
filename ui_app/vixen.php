@@ -11,4 +11,9 @@ $strMethod 		= $arrScript[1];
 // load stuff here
 //TODO!!!!
 
+require_once('application_loader.php');
+$TemplateName = $strTemplate .".". $strMethod;
+$Application->Load($TemplateName);
+
+
 ?>

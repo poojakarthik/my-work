@@ -106,8 +106,30 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		//echo "<form method='POST' action='javascript:Vixen.ValidateAdjustment.AddAdjustment()'>\n";
 		
 		//echo "<div id='StatusMsg' class='DefaultHiddenElement'>Status messages go here</div>\n";
-		echo "<div id='StatusMsg' class='DefaultHiddenElement'>Status messages go here</div>\n";
+		//echo "<div id='StatusMsg' class='DefaultHiddenElement'>Status messages go here</div>\n";
 		
+		// include all the propeties necessary to add the record, which shouldn't have controls visible on the form
+		echo "<div class='DefaultHiddenElement'>\n";
+		//can labels be passed as input?
+		//what happens if you have two elements on the one form with the same Id?
+		DBO()->Charge->Account = DBO()->Account->Id->Value;
+		DBO()->Charge->Account->RenderInput();
+		DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->Value;
+		DBO()->Charge->AccountGroup->RenderInput();
+		DBO()->Charge->Service = NULL;
+		DBO()->Charge->Service->RenderInput();
+		DBO()->Charge->InvoiceRun = NULL;
+		DBO()->Charge->InvoiceRun->RenderInput();
+		$dboUser = GetAuthenticatedUserDBObject();
+		DBO()->Charge->CreatedBy = $dboUser->Id->Value;
+		DBO()->Charge->CreatedBy->RenderInput();
+		
+		// I don't think CreatedOn should be set until the record is added to the database
+		DBO()->Charge->CreatedOn = NULl;
+		
+		
+		
+		echo "</div>\n";
 		
 		
 		// Display account details

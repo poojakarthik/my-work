@@ -1746,8 +1746,10 @@ class MenuItems
 		$this->strLabel	= "add adjustment";
 		
 		// Setup data to send
-		$arrData['HtmlMode'] = TRUE;
+		$arrData['HtmlMode'] 	= TRUE;
 		$arrData['Application'] = "Adjustment.Add";
+		$arrData['Class'] 		= "Adjustment";
+		$arrData['Method'] 		= "Add";
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation

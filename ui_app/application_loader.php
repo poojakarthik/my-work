@@ -345,12 +345,10 @@ class Application
 	{
 		// get submitted data
 		$objSubmit = new SubmittedData();
-		$strTemplateName = $objSubmit->Ajax();
+		$objAjax = $objSubmit->Ajax();
 
-		//split template name
-		$arrTemplate 	= explode ('.', $strTemplateName);
-		$strClass 		= 'AppTemplate'.$arrTemplate[0];
-		$strMethod 		= $arrTemplate[1];
+		$strClass 		= 'AppTemplate'.$objAjax->Class;
+		$strMethod 		= $objAjax->Method;
 		
 		//Get user details (inc Permissions)
 		//$this->Dbo->Session->AuthenticatedEmployee->GetDetails();
@@ -1111,8 +1109,8 @@ class SubmittedData
 					$this->_ParseData("{$strObject}_{$strProperty}", $mixValue);
 				}
 			}
-
-			return $objAjax->Application;
+		
+			return $objAjax;
 		}
 		return FALSE;
 	}
