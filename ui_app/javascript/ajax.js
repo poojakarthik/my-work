@@ -15,6 +15,26 @@
  */
 function VixenAjaxClass()
 {
+	// Send form
+	this.SendForm = function(strFormId, strButton, strClass, strMethod, strTargetType=NULL, strId=NULL, strSize=NULL)
+	{
+		// create object to send
+		var objSend = {};
+		objSend.Class = strClass;
+		objSend.Method = strMethod;
+		objSend.FormId = strFormId;
+		objSend.ButtonId = strButton;
+		objSend.TargetType = strTargetType;
+		objSend.strId = strId;
+		objSend.strSize = strSize;
+		
+		// add values from form to object
+		
+		// send object
+		this.Send(objSend);
+	}
+	
+	
         // AJAX Send
         this.Send = function(objObject)
         {
@@ -135,7 +155,12 @@ function VixenAjaxClass()
                 return {
                                         'Class': strClass,
                                         'Method': strMethod,
-                                        'Objects': objObjects
+                                        'Objects': objObjects,
+										'FormId' : NULL,
+										'ButtonId' : NULL,
+										'TargetType' : NULL,
+										'strId' : NULL,
+										'strSize' : NULL
                                 };
         }
 }

@@ -101,7 +101,8 @@ class AppTemplateEmployee extends ApplicationTemplate
 			//Save the employee
 			if (!DBO()->Employee->IsInvalid())
 			{
-				DBO()->Employee->Save();
+				echo "Employee is NOT invalid Employee would be saved";
+				//DBO()->Employee->Save();
 			}
 		}
 		DBO()->Employee->Load();

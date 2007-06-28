@@ -48,10 +48,10 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
-		
+		$this->_strId = $strId;
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
 		$this->LoadJavascript("permissions");

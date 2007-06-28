@@ -788,14 +788,23 @@ class HtmlTemplate extends BaseTemplate
 		echo "</form>\n";
 	}
 	
-	function Submit($strLabel, $strId)
+	function Submit($strLabel)
 	{
 		
-		echo "<submit name='VixenButtonId' id='VixenButton_".$this->strForm."_$strId' value='$strLabel'></submit>\n";
+		echo "<submit name='VixenButtonId' value='$strLabel'></submit>\n";
 	}
 	
-	function AjaxSubmit()
+	function AjaxSubmit($strLabel, $intOutputMode=AJAX_MODE, $strTemplate=NULL, $strMethod=NULL)
 	{
+		if (!$strTemplate)
+		{
+			$strTemplate = $this->_strTemplate;
+		}
+		if (!$strMethod)
+		{
+			$strMethod = $this->_strMethod;
+		}
+		echo "<input type='button' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->strForm}', $strLabel,'$strTemplate', '$strMethod', '$intOutputMode')\">";
 	}
 
 	//------------------------------------------------------------------------//
