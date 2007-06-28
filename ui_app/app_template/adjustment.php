@@ -65,6 +65,19 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
 		
+		//Check if the form was submitted
+		if (SubmittedForm('Details', 'Save'))
+		{
+			//Save the Account Details
+			if (!DBO()->Account->IsInvalid())
+			{
+				echo "Account is NOT invalid.  Account would be saved";
+				//DBO()->Account->Save();
+			}
+		}
+		
+		
+		
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())

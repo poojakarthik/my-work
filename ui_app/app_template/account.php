@@ -130,6 +130,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Should probably check user authorization here
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
+		
+		
+		
 		// context menu
 		//TODO! define what goes in the context menu
 		ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
@@ -149,7 +152,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		
 		// Setup all DBO and DBL objects required for the page
-		//TODO!
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Account->Load())
 		{
@@ -193,31 +195,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->NoteType->Load();
 		
 		
-		
-		// todo - need to load applied payments for particular invoices
-		// join invoice, invoicepayment, payment
-		// see below
-		
-		/*DBL()->Payment->Account = DBO()->Account->Id->Value;
-		
-		DBL()->Payment->Load();
-		DBL()->Charge->Account = DBO()->Account->Id->Value;
-		DBL()->Charge->Load();
-		
-		$arrColumns = array("InvoiceId" 		=> 'Invoice.Id',
-							'PaymentAmount' 	=> 'Payment.Amount',
-							'AccountBalance'	=> 'Invoice.AccountBalance',
-							'InvoiceAmount'		=> 'Invoice.TotalOwing',
-							'PaymentDate'	 	=> 'Payment.PaidOn',
-							'PaymentId'			=> 'Payment.Id',
-							'InvoiceDueOn'		=> 'Invoice.DueOn');
-		
-		DBL()->PaidInvoices->_strTable = "Invoice, InvoicePayment, Payment";
-		DBL()->PaidInvoices->Where->Set("Invoice.Account = <id> AND InvoicePayment.Account = <id> AND InvoicePayment.Payment = Payment.Id AND Payment.Account = <id>", Array('id'=>DBO()->Account->Id->Value));
-		DBL()->PaidInvoices->_arrColumns = $arrColumns;
-		DBL()->PaidInvoices->Load();
-		
-		*/
 		// Calculate the Account Balance
 		//TODO!
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);

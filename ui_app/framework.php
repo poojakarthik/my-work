@@ -341,8 +341,26 @@ class Page
 	 */
 	function RenderHeader()
 	{	
+		$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
+		$intLastSlash = strrpos($arrScript[0], "/");
+		$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
+		if ($_SERVER['HTTPS'])
+		{
+			$strBaseDir = "https://{$_SERVER['SERVER_NAME']}$strBaseDir";
+		}
+		else
+		{
+			$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
+		}
+//echo $_SERVER['SERVER_NAME'] ."<br>";
+//echo $strBaseDir;
+//die;
+
+		
+	
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>\n";
+		echo "<base href='$strBaseDir'/>\n";
 		$this->RenderJS();
 		$this->RenderCSS();
 		echo "</head>\n";

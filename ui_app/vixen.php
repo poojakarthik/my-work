@@ -1,5 +1,4 @@
 <?php
-
 // Work out the application template and method from the URL
 // takes a URL like : http://.../vixen.php/ApplicationTemplate/Method/?Object.Property=Value
 $arrScript 		= explode('.php', $_SERVER['PHP_SELF'], 2);
