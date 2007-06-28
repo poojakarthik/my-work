@@ -42,6 +42,9 @@
  */
 class Page
 {
+	private $_objAjax;
+	private $_intTemplateMode;
+
 	//------------------------------------------------------------------------//
 	// _strPageName
 	//------------------------------------------------------------------------//
@@ -195,9 +198,10 @@ class Page
 		
 		// set up the object
 		$arrObject = Array();
-		$arrObject['Name'] = $strName;
-		$arrObject['Column'] = $intColumn;
-		$arrObject['Object'] = new $strClassName($intContext);
+		$arrObject['Name']		= $strName;
+		$arrObject['Id']		= $strId;
+		$arrObject['Column']	= $intColumn;
+		$arrObject['Object']	= new $strClassName($intContext, $strId);
 		$this->_arrObjects[$strId] = $arrObject;
 		
 		// return the object id
@@ -298,7 +302,10 @@ class Page
 		{
 			if ($arrObject['Column'] == $intColumn)
 			{
+				echo "<div id='{$arrObject['Id']}'>\n";
+				$arrObject['Object']->SetMode($this->_intTemplateMode, $this->_objAjax);
 				$arrObject['Object']->Render();
+				echo "</div>\n";
 			}
 		}
 	}
@@ -405,6 +412,31 @@ class Page
 		$objHeader = new HtmlTemplateVixenHeader(HTML_CONTEXT_DEFAULT);
 		$objHeader->Render();
 	}
+	
+	//------------------------------------------------------------------------//
+	// SetMode
+	//------------------------------------------------------------------------//
+	/**
+	 * SetMode()
+	 *
+	 * Sets the mode of the template
+	 * 
+	 * Sets the mode of the template
+	 *
+	 * @param		int	$intMode	The mode number to set
+	 *								ie AJAX_MODE, HTML_MODE
+	 * @param		obj	$objAjax	optional Ajax object
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function SetMode($intMode, $objAjax=NULL)
+	{
+		$this->_intTemplateMode = $intMode;
+		$this->_objAjax = $objAjax;
+	}
+	
 }
 
 
@@ -1163,8 +1195,11 @@ class Validation
 		$mixValue = ltrim($mixValue, "$");
 		
 		//check that the value is a float
-		$fltValue = sscanf($mixValue);
+		list($fltValue) = sscanf($mixValue, "%f");
 		
+		if (isset($fltValue) && ($fltValue == $mixValue))
+		{
+		}
 		
 		return TRUE;
 	}

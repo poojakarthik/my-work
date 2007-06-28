@@ -128,7 +128,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		DBO()->Charge->CreatedOn = NULL;
 		DBO()->Charge->CreatedOn->RenderInput();
 		
-		DBO()->
+		
 		
 		
 		

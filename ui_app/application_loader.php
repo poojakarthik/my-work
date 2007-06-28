@@ -366,7 +366,7 @@ class Application
 		//Create AppTemplate Object
 		$this->objAppTemplate = new $strClass;
 		
-		$this->objAppTemplate->SetMode($objSubmit->Mode);
+		$this->objAppTemplate->SetMode($objSubmit->Mode, $objAjax);
 
 		//Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
@@ -374,6 +374,7 @@ class Application
 		// Render Page
 		if ($objSubmit->Mode == HTML_MODE)
 		{
+			$this->objAppTemplate->Page->SetMode($objSubmit->Mode, $objAjax);
 			$this->objAppTemplate->Page->Render();
 		}
 		else
@@ -627,7 +628,10 @@ class Application
  */
 class ApplicationTemplate extends ApplicationBaseClass
 {
-
+	public $Module;
+	protected $_objAjax;
+	protected $_intTemplateMode;
+	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -691,14 +695,16 @@ class ApplicationTemplate extends ApplicationBaseClass
 	 *
 	 * @param		int	$intMode	The mode number to set
 	 *								ie AJAX_MODE, HTML_MODE
+	 * @param		obj	$objAjax	optional Ajax object
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function SetMode($intMode)
+	function SetMode($intMode, $objAjax=NULL)
 	{
 		$this->_intTemplateMode = $intMode;
+		$this->_objAjax = $objAjax;
 	}
 }
 
@@ -739,9 +745,12 @@ class PageTemplate extends BaseTemplate
  */
 class HtmlTemplate extends BaseTemplate
 {
-	private $_strMethod;
-	private $_strForm;
-	private $_strTemplate;
+	protected $_strMethod;
+	protected $_strForm;
+	protected $_strTemplate;
+	protected $_objAjax;
+	protected $_intTemplateMode;
+	
 	
 	//------------------------------------------------------------------------//
 	// LoadJavascript
@@ -788,6 +797,31 @@ class HtmlTemplate extends BaseTemplate
 	function AjaxSubmit()
 	{
 	}
+
+	//------------------------------------------------------------------------//
+	// SetMode
+	//------------------------------------------------------------------------//
+	/**
+	 * SetMode()
+	 *
+	 * Sets the mode of the template
+	 * 
+	 * Sets the mode of the template
+	 *
+	 * @param		int	$intMode	The mode number to set
+	 *								ie AJAX_MODE, HTML_MODE
+	 * @param		obj	$objAjax	optional Ajax object
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function SetMode($intMode, $objAjax=NULL)
+	{
+		$this->_intTemplateMode = $intMode;
+		$this->_objAjax = $objAjax;
+	}
+	
 }
 
 //----------------------------------------------------------------------------//
