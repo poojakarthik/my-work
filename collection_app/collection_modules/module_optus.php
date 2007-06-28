@@ -225,6 +225,14 @@
 		// Download the next file
 		if ($arrCurrent = next($this->_arrFiles))
 		{
+			// Do we already have this file?
+			if ($this->_selFileExists->Execute($arrCurrent))
+			{
+				// Yes, recursively call until we find a new file (or FALSE)
+				return Download($strDestination);
+			}
+			
+			// Download the file
 			curl_setopt($this->_ptrSession, CURLOPT_URL				, trim($arrCurrent['URL']));
 			curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYPEER	, FALSE);
 			curl_setopt($this->_ptrSession, CURLOPT_SSL_VERIFYHOST	, FALSE);
@@ -233,14 +241,6 @@
 			curl_setopt($this->_ptrSession, CURLOPT_POST			, FALSE);
 			curl_setopt($this->_ptrSession, CURLOPT_BINARYTRANSFER	, FALSE);
 			$strDownloadedFile = curl_exec($this->_ptrSession);
-			
-			// Do we already have this file?
-			if ($this->_selFileExists->Execute($arrCurrent))
-			{
-				// Yes, recursively call until we find a new file (or FALSE)
-				return Download($strDestination);
-			}
-			
 			
 			// Write to temporary directory
 			$ptrTempFile	= fopen($strDestination.$arrCurrent['FileName'], 'w');
