@@ -160,6 +160,32 @@ class HTMLElements
 	}
 	
 	//------------------------------------------------------------------------//
+	// InputHidden
+	//------------------------------------------------------------------------//
+	/**
+	 * InputHidden()
+	 * 
+	 * Creates an input with type='hidden'
+	 * 
+	 * Returns a formatted HTML input tag, using data from an array to build
+	 * the element's attributes like class, name, id and value
+	 * Note that this does not modify the value with OutputMask, or OutputLabel.
+	 * It just sets the hidden input's value to the value of the property.
+	 *
+	 * @param	array	$arrParams			parameters to use when building the
+	 * 										input box (see above for format).
+	 * @return	string						html code
+	 *
+	 * @method
+	 */
+	function InputHidden($arrParams)
+	{
+		$strValue = $arrParams['Value'];
+		$strHtml .= "<input type='hidden' id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$strValue'/>\n";
+		return $strHtml;
+	}
+	
+	//------------------------------------------------------------------------//
 	// TextArea
 	//------------------------------------------------------------------------//
 	/**

@@ -112,7 +112,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultHiddenElement'>\n";
 		//can labels be passed as input?
 		//what happens if you have two elements on the one form with the same Id?
-		DBO()->Charge->Account = DBO()->Account->Id->Value;
+		/*DBO()->Charge->Account = DBO()->Account->Id->Value;
 		DBO()->Charge->Account->RenderInput();
 		DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->Value;
 		DBO()->Charge->AccountGroup->RenderInput();
@@ -127,7 +127,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// I don't think CreatedOn should be set until the record is added to the database
 		DBO()->Charge->CreatedOn = NULL;
 		DBO()->Charge->CreatedOn->RenderInput();
-		
+		*/
 		
 		
 		

@@ -29,6 +29,7 @@ function VixenAjaxClass()
 		objSend.strSize = strSize;
 		
 		// add values from form to object
+		//TODO! Find each element and load it into objSend.Objects.Object.Property
 		
 		// send object
 		this.Send(objSend);

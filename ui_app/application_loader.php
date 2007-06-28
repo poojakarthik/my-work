@@ -804,7 +804,13 @@ class HtmlTemplate extends BaseTemplate
 		{
 			$strMethod = $this->_strMethod;
 		}
-		echo "<input type='button' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->strForm}', $strLabel,'$strTemplate', '$strMethod', '$intOutputMode')\">";
+		if (is_object($this->_objAjax))
+		{
+			$strTarget = $this->_objAjax['TargetType'];
+			$strId = $this->_objAjax['strId'];
+			$strSize = $this->_objAjax['strSize'];
+		}
+		echo "<input type='button' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->strForm}', $strLabel,'$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\">";
 	}
 
 	//------------------------------------------------------------------------//
