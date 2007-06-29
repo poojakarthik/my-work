@@ -154,7 +154,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 							</tr>
 							<tr>
 								<td>
-									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection' multiple='multiple'></select>
+									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection'  multiple='multiple'></select>
 								</td>
 								<td>
 									<div>
@@ -166,7 +166,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 									</div>
 								</td>
 								<td>
-									<select id='SelectedPermissions' name='Employee.Privileges' size='8' class='SmallSelection' multiple='multiple'>
+									<select id='SelectedPermissions' name='Employee.Privileges' size='8' class='SmallSelection' valueIsList multiple='multiple'>
 										<option value='16'>Accounts</option>
 										<option value='2'>Admin</option>
 										<option value='4'>Operator</option>

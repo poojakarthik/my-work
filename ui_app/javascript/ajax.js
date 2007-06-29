@@ -46,6 +46,7 @@ function VixenAjaxClass()
 		// instantiate the Objects structure
 		objSend.Objects = {};
 		
+
 		// retrieve the form which is being submitted (the form as an element)
 		objFormElement = document.getElementById(strFormId);
 
@@ -88,20 +89,18 @@ function VixenAjaxClass()
 			switch (strType)
 			{
 				case "select-multiple":
-					var intPermissions = 0;
+					var intSelections = 0;
+					alert(objFormElement.elements[intKey].getAttribute('valueIsList'));
+					alert(objFormElement.elements[intKey].getAttribute('safsfdvalueAsList'));
 					for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
 					{
-						intPermissions += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+						intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
 					}
-					mixValue = intPermissions;
+					mixValue = intSelections;
 					break;
 				case "checkbox":
 					mixValue = objFormElement.elements[intKey].checked;
 					break;
-				case "listbox":
-					continue;
-				case "undefined":
-					continue;
 				case "radio":
 					// only use the value of the radio button, if it is the one that is currently selected
 					if (!objFormElement.elements[intKey].checked)
@@ -120,7 +119,7 @@ function VixenAjaxClass()
 			objSend.Objects[strObjectName][strPropertyName] = mixValue;
 		}			
 
-		/*
+		
 		// Output each Object.Property stored in objSend.Objects
 		for (strObject in objSend.Objects)
 		{
@@ -129,7 +128,7 @@ function VixenAjaxClass()
 				alert("objSend.Objects."+ strObject +"."+ strProperty +" = "+ objSend.Objects[strObject][strProperty]);
 			}
 		}
-		*/		
+				
 		
 		// send object
 		this.Send(objSend);
