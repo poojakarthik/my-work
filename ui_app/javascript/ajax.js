@@ -28,7 +28,7 @@ function VixenAjaxClass()
 		var objSend = {};
 		objSend.Class = strClass;
 		objSend.Method = strMethod;
-		objSend.FormId = strFormId;
+		//objSend.FormId = strFormId;
 		objSend.ButtonId = strButton;
 		objSend.TargetType = strTargetType;
 		objSend.strId = strId;
@@ -49,39 +49,54 @@ function VixenAjaxClass()
 			//strObject = object    "Employee"
 			//strProperty = property   "Id"
 			//strValue = value  "29"
-			
+			//alert(objSend.Objects.Employee);
 			//Step1: For each element in the form...
-			objFormElement = document.getElementById(objSend.FormId);
+			objFormElement = document.getElementById(strFormId);
 			//alert(objFormElement.elements.length);
 			//return;
 			for (intKey in objFormElement.elements)
 			{
-				//check if the element's name is in the form Object.Property
 				strElementName	= objFormElement.elements[intKey].name;
+				//strElementValue = objFormElement.elements[intKey].value;
 				strType			= objFormElement.elements[intKey].type;
-				alert(strType + " value= " + objFormElement.elements[intKey].value + " name=" + strElementName);
-				switch (strType)
+				
+				// check for the special case of VixenFormId hidden input
+				if (strElementName == "VixenFormId")
 				{
-					case "list":
-						break;
-					case "checkbox":
-						break;
-					case "listbox":
-						break;
-					case "undefined":
-					case "button":
-						break;
-					default:
-						mixValue = objFormElement.elements[intKey].value;
-						break;
+					objSend.FormId = objFormElement.elements[intKey].value;
+					continue;
 				}
 				
 				intDotIndex = strElementName.indexOf(".", 0);
 				strObjectName = strElementName.substr(0, intDotIndex);
 				strPropertyName = strElementName.substr(intDotIndex + 1, strElementName.length);
-				alert("strObjectName = " + strObjectName + "strPropertyName = " + strPropertyName);
-				//FINISH ME!!!
 				
+				if (strObjectName.length!=0 || strPropertyName!=0)
+				{				
+					if (objSend.Objects[strObjectName]==undefined)
+					{
+						objSend.Objects[strObjectName] = {};
+					}
+					
+					switch (strType)
+					{
+						case "select_multiple":
+							
+							break;
+						case "checkbox":
+							mixValue = objFormElement.elements[intKey].checked;
+							break;
+						case "listbox":
+							break;
+						case "undefined":
+						case "button":
+							break;
+						default:
+							mixValue = objFormElement.elements[intKey].value;			
+							break;
+					}
+					objSend.Objects[strObjectName][strPropertyName] = mixValue;	
+				}}
 			}			
 			
 		
