@@ -88,16 +88,60 @@ function VixenAjaxClass()
 			strType = objFormElement.elements[intKey].type;
 			switch (strType)
 			{
-				case "select-multiple":
-					var intSelections = 0;
-					alert(objFormElement.elements[intKey].getAttribute('valueIsList'));
-					alert(objFormElement.elements[intKey].getAttribute('safsfdvalueAsList'));
-					for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
+				case "select-one": //not accurately working yet
+					alert("select box select singular");
+					if (objFormElement.elements[intKey].getAttribute('valueIsList')==null)
 					{
-						intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+						//select only highlighted items in list
+						var intSelections = 0;
+						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
+						{
+							if (objFormElement.elements[intKey].options[intInnerKey].selected)
+							{
+								intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+							}
+						}
+						mixValue = intSelections;
+						break;
 					}
-					mixValue = intSelections;
+					else
+					{
+						var intSelections = 0;
+						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
+						{
+							intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+						}
+						mixValue = intSelections;
+						break;
+					}
 					break;
+				case "select-multiple":
+					//if not null then calculate only whats in the list
+					//if null only calculate highlighted values in the list
+					if (objFormElement.elements[intKey].getAttribute('valueIsList')==null)
+					{
+						//select only highlighted items in list
+						var intSelections = 0;
+						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
+						{
+							if (objFormElement.elements[intKey].options[intInnerKey].selected)
+							{
+								intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+							}
+						}
+						mixValue = intSelections;
+						break;
+					}
+					else
+					{
+						var intSelections = 0;
+						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
+						{
+							intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+						}
+						mixValue = intSelections;
+						break;
+					}
 				case "checkbox":
 					mixValue = objFormElement.elements[intKey].checked;
 					break;
@@ -113,9 +157,12 @@ function VixenAjaxClass()
 				case "button":
 					continue;
 				default:
+					alert(strType);
 					mixValue = objFormElement.elements[intKey].value;			
 					break;
 			}
+			
+			
 			objSend.Objects[strObjectName][strPropertyName] = mixValue;
 		}			
 
