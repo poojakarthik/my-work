@@ -34,74 +34,102 @@ function VixenAjaxClass()
 		objSend.strId = strId;
 		objSend.strSize = strSize;
 		
+		// HACK HACK HACK!!! ******************************************************************************************************************
+		// I'm setting this to FALSE because it is not defined anywhere
+		// If objSend.TargetType == 'Popup' or 'div' then Ajax.send will set HtmlMode = TRUE
+		objSend.HtmlMode = FALSE;
+		// HACK HACK HACK *********************************************************************************************************************
+		
 		// add values from form to object
 		//TODO! Find each element and load it into objSend.Objects.Object.Property
 		
-		
+		// instantiate the Objects structure
 		objSend.Objects = {};
 		
-		objSend.Objects.Employee = {};
-		objSend.Objects.Employee.Id = 7;
-		
-		//beginning of for loop to pull from form name, create new array in opjects named that and then add its value;
-		
-			//for (i = 0;i < = document.
-			//strObject = object    "Employee"
-			//strProperty = property   "Id"
-			//strValue = value  "29"
-			//alert(objSend.Objects.Employee);
-			//Step1: For each element in the form...
-			objFormElement = document.getElementById(strFormId);
-			//alert(objFormElement.elements.length);
-			//return;
-			for (intKey in objFormElement.elements)
+		// retrieve the form which is being submitted (the form as an element)
+		objFormElement = document.getElementById(strFormId);
+
+		for (intKey in objFormElement.elements)
+		{
+			strElementName	= objFormElement.elements[intKey].name;
+
+			// only process input elements that have names
+			if (strElementName == null)
 			{
-				//strElementName	= objFormElement.elements[intKey].name;
-				//strElementValue = objFormElement.elements[intKey].value;
-				//strType			= objFormElement.elements[intKey].type;
-				
-				// check for the special case of VixenFormId hidden input
-				if (strElementName == "VixenFormId")
-				{
-					objSend.FormId = objFormElement.elements[intKey].value;
-					continue;
-				}
-				
-				intDotIndex = strElementName.indexOf(".", 0);				
-				strObjectName = strElementName.substr(0, intDotIndex);
-				strPropertyName = strElementName.substr(intDotIndex + 1, strElementName.length);
-				
-				if (strObjectName.length!=0 || strPropertyName!=0 && intDotIndex!=-1)
-				{				
-					if (objSend.Objects[strObjectName]==undefined)
-					{
-						objSend.Objects[strObjectName] = {};
-					}
-					switch (strType)
-					{
-						case "select-multiple":
-							var intPermissions = 0;
-							for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
-							{
-								intPermissions += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
-							}
-							mixValue = intPermissions;
-							break;
-						case "checkbox":
-							mixValue = objFormElement.elements[intKey].checked;
-							break;
-						case "undefined":
-						case "button":
-							break;
-						default:
-							mixValue = objFormElement.elements[intKey].value;			
-							break;
-					}
-					alert(strObjectName+" . "+strPropertyName+" - "+mixValue);
-					objSend.Objects[strObjectName][strPropertyName] = mixValue;	
-				}
-			}			
+				continue;
+			}
 			
+			// check for the special case of VixenFormId hidden input
+			if (strElementName == "VixenFormId")
+			{
+				objSend.FormId = objFormElement.elements[intKey].value;
+				continue;
+			}
+			
+			// process the name of the element
+			intDotIndex = strElementName.indexOf(".", 0);
+			strObjectName = strElementName.substr(0, intDotIndex);
+			strPropertyName = strElementName.substr(intDotIndex + 1, strElementName.length);
+			
+			// if the element's name is not in the form Object.Property then do not process it further
+			if ((strObjectName.length == 0) || (strPropertyName.length == 0))
+			{
+				continue;
+			}
+			
+			// Check if the Object already exists in the objSend.Objects struct
+			if (objSend.Objects[strObjectName] == undefined)
+			{
+				// Instantiate the Object
+				objSend.Objects[strObjectName] = {};
+			}
+			
+			strType = objFormElement.elements[intKey].type;
+			switch (strType)
+			{
+				case "select-multiple":
+					var intPermissions = 0;
+					for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
+					{
+						intPermissions += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+					}
+					mixValue = intPermissions;
+					break;
+				case "checkbox":
+					mixValue = objFormElement.elements[intKey].checked;
+					break;
+				case "listbox":
+					continue;
+				case "undefined":
+					continue;
+				case "radio":
+					// only use the value of the radio button, if it is the one that is currently selected
+					if (!objFormElement.elements[intKey].checked)
+					{
+						// this radio button isn't selected so don't process it
+						continue;
+					}
+					mixValue = objFormElement.elements[intKey].value;
+					break;
+				case "button":
+					continue;
+				default:
+					mixValue = objFormElement.elements[intKey].value;			
+					break;
+			}
+			objSend.Objects[strObjectName][strPropertyName] = mixValue;
+		}			
+
+		/*
+		// Output each Object.Property stored in objSend.Objects
+		for (strObject in objSend.Objects)
+		{
+			for (strProperty in objSend.Objects[strObject])
+			{
+				alert("objSend.Objects."+ strObject +"."+ strProperty +" = "+ objSend.Objects[strObject][strProperty]);
+			}
+		}
+		*/		
 		
 		// send object
 		this.Send(objSend);

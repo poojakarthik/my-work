@@ -131,7 +131,20 @@ class AppTemplateAccount extends ApplicationTemplate
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
 		
+		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
+		//check if the form was submitted
+		if (SubmittedForm('VixenForm_AccountDetails', 'Save'))
+		{
+			//Save the AccountDetails
+			if (!DBO()->Account->IsInvalid())
+			{
+				//echo "Account details are NOT invalid therefore the Account details will be saved";
+				DBO()->Account->Save();
+			}
+		}
 		
+
+
 		
 		// context menu
 		//TODO! define what goes in the context menu
@@ -141,8 +154,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);
-		
-		// Console and logout should appear by default, no?
 		ContextMenu()->Console();
 		ContextMenu()->Logout();
 		

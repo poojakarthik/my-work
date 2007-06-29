@@ -137,27 +137,36 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		echo "<h2 class='Account'>Account Details</h2>\n";
 		echo "<div class='NarrowContent'>\n";
-		//echo "<table border='0' cellpadding='0' cellspacing='0' width='100%'>\n";
-		//echo "<tr>\n";
-		//echo "<td>\n";
+
+		// Declare the start of the form
+		$this->FormStart('AccountDetails', 'Account', 'Details');
+		
+		// Render the Id of the Account as a hidden input
+		DBO()->Account->Id->RenderHidden();
+
+		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-		//echo "</td>\n";
-		//echo "<td>\n";
+
+
+		// Render the properties that can be changed
 		DBO()->Account->DisableDDR->RenderInput();
 		DBO()->Account->DisableLatePayment->RenderInput();
+		
+		// Render the submit button
 		echo "<div class='Right'>\n";
-		echo "   <input type='submit' class='input-submit' value='Apply Changes' />\n";
+		//echo "   <input type='submit' class='input-submit' value='Apply Changes' />\n";
+		$this->AjaxSubmit("Apply Changes");
 		echo "</div>\n";
 		
-		//echo "</td>\n";
-		//echo "</tr>\n";
-		//echo "</table>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
+		
+		// Declare the end of the form
+		$this->FormEnd();
 	}
 	
 	//------------------------------------------------------------------------//

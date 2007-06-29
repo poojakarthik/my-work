@@ -294,12 +294,12 @@ class Application
 	 */
 	function Load($strTemplateName)
 	{
-		//split template name
+		// split template name
 		$arrTemplate 	= explode ('.', $strTemplateName);
 		$strClass 		= 'AppTemplate'.$arrTemplate[0];
 		$strMethod 		= $arrTemplate[1];
 		
-		//Get user details (inc Permissions)
+		// Get user details (inc Permissions)
 		//$this->Dbo->Session->AuthenticatedEmployee->GetDetails();
 		/*???can't this be done in the framework at the same time you build the Dbo object of 	variables
 		--at this stage we ahavent defined this anywhere, needs to be somewhere\
@@ -315,14 +315,14 @@ class Application
 		// been loaded from the database, so validating them at this stage should always return TRUE
 		DBO()->Validate();
 
-		//Create AppTemplate Object
+		// Create AppTemplate Object
 		
 		
 		$this->objAppTemplate = new $strClass;
 		
 		$this->objAppTemplate->SetMode(HTML_MODE);
 		
-		//Run AppTemplate
+		// Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
 		
 		// Render Page
@@ -382,6 +382,7 @@ class Application
 		}
 		else
 		{
+			echo "Mode == AJAX_MODE.  This is currently not handled\n";
 			// Send back AJAX data as JSON
 			//AjaxReply(Array("yay","yayas"));
 		}
@@ -783,7 +784,7 @@ class HtmlTemplate extends BaseTemplate
 		$this->_strForm = "VixenForm_$strId";
 		$this->_strTemplate = $strTemplate;
 		echo "<form id='{$this->_strForm}' action='vixen.php/$strTemplate/$strMethod'>\n";
-		echo "<input type='hidden' value='$strId' name='VixenFormId'>";
+		echo "<input type='hidden' value='$strId' name='VixenFormId'>\n";
 	}
 	
 	function FormEnd()
@@ -814,7 +815,10 @@ class HtmlTemplate extends BaseTemplate
 			$strId = $this->_objAjax->strId;
 			$strSize = $this->_objAjax->strSize;
 		}
-		echo "<input type='button' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\">";
+		
+		//TODO! What do we do with $intOutputMode?
+		
+		echo "<input type='button' name='TheButton' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\"></input>\n";
 	}
 
 	//------------------------------------------------------------------------//
