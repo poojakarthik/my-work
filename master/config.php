@@ -425,7 +425,7 @@ $arrScript                                                      = Array();
 	//              Int             optional Latest time that the script can run during the day
 	//                              Time in seconds from 00:00:00
 	//                              Defaults to 86400 (24:00:00:00)
-	$arrScript['FinishTime']                =       3600*5;	// 0500 - 1 Hour Window
+	$arrScript['FinishTime']                =       3600*12;	// 1200 - 6 Hour Window
 	
 	// Interval
 	//              Int             Interval time in seconds.
