@@ -14,6 +14,9 @@
 // load application
 require_once('application_loader.php');
 
+// load remote copy
+require_once('../framework/remote_copy.php');
+
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);
 
@@ -100,13 +103,133 @@ $arrAccounts[]	= 1000160250;
 $arrAccounts[]	= 1000154811;
 
 // reprint
-$bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
+//$bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
 
 $appBilling->FinaliseReport();
+ob_end_clean();
+
+// Remote Copy
+//$strFilename	= "reprint".date("Y-m-d").".vbf";
+$strFilename	= "reprint2007-06-30.vbf";
+$strLocalPath	= "/home/vixen_bill_output/";
+echo "\nCopying '$strFilename' to BillPrint...\n";
+ob_flush();
+$rcpRemoteCopy = new RemoteCopyFTP("203.201.137.55", "vixen", "v1xen");
+if (is_string($mixResult = $rcpRemoteCopy->Connect()))
+{
+	echo "$mixResult \n";
+}
+$rcpRemoteCopy->Copy($strLocalPath.$strFilename, "/Incoming/Samples/$strFilename", RCOPY_REMOVE);
+$rcpRemoteCopy->Disconnect();
+
+// Sleep for a bit, allowing the server to pick up the vbf file
+Debug("Sleeping...");
+sleep(60);
+
+// Monitor FTP until all PDFs have appeared
+echo "Downloading PDFs from BillPrint...\n\n";
+ob_flush();
+// Connect to FTP
+$ptrConnection = ftp_connect("203.201.137.55");
+ftp_login($ptrConnection, "vixen", "v1xen");
+ftp_chdir($ptrConnection, "/Outgoing/Samples");
+
+// Wait for our batch to appear
+$intLatest = 0;
+while (date("Y-m-d", $intLatest) != date("Y-m-d", time()))
+{
+	$arrListing = ftp_nlist($ptrConnection, "-p");
+	foreach ($arrListing as $strFile)
+	{
+		if ($intTime = strtotime(rtrim($strFile, '/')));
+		{
+			$intLatest = ($intTime > $intLatest) ? $intTime : $intLatest;
+		}
+	}
+}
+
+$strDirectory = "/Outgoing/Samples/".date("YmdHis/", $intLatest);
+Debug("Using directory: '$strDirectory'");
+
+// Parse all directories (except 'Processed'), counting the number of completed PDFs (monitor file size fluctuation)
+$arrDownloaded		= Array();
+$arrDirList			= Array();
+$arrDirList[]		= "001/";
+$arrDirList[]		= "002/";
+$arrDirList[]		= "003/";
+$intLastDownload	= time();
+$strDownloadDir		= "/home/vixen_bill_output/sample_pdf_temp/";
+if (!file_exists($strDownloadDir))
+{
+	mkdir($strDownloadDir, 0777);
+}
+chdir($strDownloadDir);
+exec("rm *.*");
+while (($intLastDownload + 60) > time())
+{
+	$intPDFCount = 0;
+	foreach ($arrDirList as $strDir)
+	{
+		if (ftp_chdir($ptrConnection, $strDirectory.$strDir))
+		{
+			$arrFiles = ftp_nlist($ptrConnection, "*");
+			foreach ($arrFiles as $strFile)
+			{
+				if (!in_array($strFile, $arrDownloaded))
+				{
+					$intLastSize	= ftp_size($ptrConnection, $strFile);
+					$fltTime		= 0;
+					while ($fltTime < microtime(TRUE))
+					{
+						if ($intLastSize && $intLastSize === ftp_size($ptrConnection, $strFile))
+						{
+							break;
+						}
+						$fltTime = microtime(TRUE) + 0.25;
+					}
+					echo "\t+ Downloading '$strFile'\t(".ceil($intLastSize/1024)."KB)...\t\t";
+					if (ftp_get($ptrConnection, $strDownloadDir.$strFile, $strDirectory.$strDir.$strFile, FTP_BINARY))
+					{
+						echo "[   OK   ]\n";
+					}
+					else
+					{
+						echo "[ FAILED ]\n";
+					}
+					$intLastDownload = time();
+					ob_flush();
+					$arrDownloaded[] = $strFile;
+				}
+			}
+		}
+	}
+}
+
+// ZIP (1 file for most people, 2 split files for Paula)
+chdir($strDownloadDir);
+$strZipname = date("F", strtotime("-1 day", time()))." Signoff Samples"; 
+echo shell_exec("zip -qj '$strZipname' *.pdf");
+echo shell_exec("zipsplit '$strZipname'");
+
+// Email
+$arrHeaders = Array	(
+						'From'		=> "billing@telcoblue.com.au",
+						'Subject'	=> $strZipname
+					);
+$mimMime = new Mail_mime("\n");
+$mimMime->setTXTBody("Here are the final sign-off PDFs for the ".date("F", strtotime("-1 day", time()))." billing period.");
+$mimMime->addAttachment($strPDFPath, 'application/zip');
+$strBody = $mimMime->get();
+$strHeaders = $mimMime->headers($arrHeaders);
+$emlMail =& Mail::factory('mail');
+
+// Send the email
+$strEmail = "adele.k@telcoblue.com.au, andrew.p@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rich@voiptelsystems.com.au";
+$emlMail->send($strEmail, $strHeaders, $strBody);
+
 
 // finished
 echo("\n\n-- End of Billing --\n");
 echo "</pre>";
-die();
 
 ?>

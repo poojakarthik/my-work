@@ -32,6 +32,12 @@ require_once("config.php");
 require_once("Mail.php");
 require_once("Mail/mime.php");
 
+$bolVerbose = FALSE;
+if (trim($argv[1] == '-v'))
+{
+	$bolVerbose = TRUE;
+}
+
 
 if (date("d") == '01')
 {
@@ -45,7 +51,7 @@ else
 }
 
 // Init Statements
-$selFiles = new StatementSelect("FileImport", "*", "Carrier = <Carrier> AND FileType = <FileType> AND Status = 207 AND ImportedOn >= '$strStartOfMonth'", "Id DESC");
+$selFiles = new StatementSelect("FileImport", "*", "Carrier = <Carrier> AND FileType = <FileType> AND Status = 207 AND ImportedOn >= '$strStartOfMonth'", "FileName");
 $selCDRCheck = new StatementSelect("CDR", "Id", "Status >= 198 AND File = <File>", NULL, 1);
 
 $GLOBALS['*strEmailContents']	= "";
@@ -108,29 +114,43 @@ foreach ($arrConfig['CDRCheck'] as $arrCDRCheck)
 	}
 	
 	// Check matches
-	if ($intMinCount > count($arrMatches))
-	{
-		// Not enough matches
-		CLIEchoString("[ FAILED ]\n");
-		
-	}
-	elseif (count($arrMatches) == $intPreferredCount)
+	if (count($arrMatches) == $intPreferredCount)
 	{
 		// Perfect number of matches
 		CLIEchoString("[  PASS  ]\n\n");
 	}
-	elseif (count($arrMatches) > $intPreferredCount)
-	{
-		// Too many matches
-		CLIEchoString("[  WARN ]\n");
-	}
 	else
 	{
-		// Between minimum and preferred matches
-		CLIEchoString("[  WARN  ]\n");
-	}
+		if ($intMinCount > count($arrMatches))
+		{
+			// Not enough matches
+			CLIEchoString("[ FAILED ]\n");
+			
+		}
+		elseif (count($arrMatches) > $intPreferredCount)
+		{
+			// Too many matches
+			CLIEchoString("[  WARN ]\n");
+		}
+		else
+		{
+			// Between minimum and preferred matches
+			CLIEchoString("[  WARN  ]\n");
+		}
 	
-	CLIEchoString("\t- Minimum: $intMinCount;\tPreferred: $intPreferredCount;\tFound: ".count($arrMatches)."\n\n");
+		CLIEchoString("\t- Minimum: $intMinCount;\tPreferred: $intPreferredCount;\tFound: ".count($arrMatches)."\n\n");
+		
+		// Print out matches if in verbose mode
+		if ($bolVerbose)
+		{
+			foreach ($arrMatches as $arrFile)
+			{
+				CLIEchoString("\t* {$arrFile['FileName']}\t({$arrFile['ImportedOn']})\n");
+			}
+		}
+		
+		CLIEchoString("\n");
+	}
 }
 
 CLIEchoString("Emailing results...", 70, FALSE);

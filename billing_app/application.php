@@ -2198,7 +2198,7 @@
 		 			$emlMail =& Mail::factory('mail');
 		 			
 		 			// Uncomment this to Debug
-		 			$strEmail = 'rich@voiptelsystems.com.au';
+		 			//$strEmail = 'rich@voiptelsystems.com.au';
 		 			
 		 			// Send the email
 		 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
@@ -2213,7 +2213,7 @@
 	 				$intPassed++;
 	 				
 	 				// Uncomment this to Debug
-					Die();
+					//Die();
 	 			}
  			}
  		}
