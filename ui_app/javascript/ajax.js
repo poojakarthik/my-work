@@ -40,8 +40,8 @@ function VixenAjaxClass()
 		
 		objSend.Objects = {};
 		
-		//objSend.Objects.Employee = {};
-		//objSend.Objects.Employee.Id = 7;
+		objSend.Objects.Employee = {};
+		objSend.Objects.Employee.Id = 7;
 		
 		//beginning of for loop to pull from form name, create new array in opjects named that and then add its value;
 		
@@ -56,9 +56,9 @@ function VixenAjaxClass()
 			//return;
 			for (intKey in objFormElement.elements)
 			{
-				strElementName	= objFormElement.elements[intKey].name;
+				//strElementName	= objFormElement.elements[intKey].name;
 				//strElementValue = objFormElement.elements[intKey].value;
-				strType			= objFormElement.elements[intKey].type;
+				//strType			= objFormElement.elements[intKey].type;
 				
 				// check for the special case of VixenFormId hidden input
 				if (strElementName == "VixenFormId")
@@ -67,26 +67,28 @@ function VixenAjaxClass()
 					continue;
 				}
 				
-				intDotIndex = strElementName.indexOf(".", 0);
+				intDotIndex = strElementName.indexOf(".", 0);				
 				strObjectName = strElementName.substr(0, intDotIndex);
 				strPropertyName = strElementName.substr(intDotIndex + 1, strElementName.length);
 				
-				if (strObjectName.length!=0 || strPropertyName!=0)
+				if (strObjectName.length!=0 || strPropertyName!=0 && intDotIndex!=-1)
 				{				
 					if (objSend.Objects[strObjectName]==undefined)
 					{
 						objSend.Objects[strObjectName] = {};
 					}
-					
 					switch (strType)
 					{
-						case "select_multiple":
-							
+						case "select-multiple":
+							var intPermissions = 0;
+							for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
+							{
+								intPermissions += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+							}
+							mixValue = intPermissions;
 							break;
 						case "checkbox":
 							mixValue = objFormElement.elements[intKey].checked;
-							break;
-						case "listbox":
 							break;
 						case "undefined":
 						case "button":
@@ -95,8 +97,9 @@ function VixenAjaxClass()
 							mixValue = objFormElement.elements[intKey].value;			
 							break;
 					}
+					alert(strObjectName+" . "+strPropertyName+" - "+mixValue);
 					objSend.Objects[strObjectName][strPropertyName] = mixValue;	
-				}}
+				}
 			}			
 			
 		
@@ -121,8 +124,7 @@ function VixenAjaxClass()
 				switch (objObject.TargetType)
 				{
 					case "Div":
-					case "Popup":
-						objObject.HtmlMode = TRUE;
+					case "Popup":						objObject.HtmlMode = TRUE;
 						break;
 					default:
 				}

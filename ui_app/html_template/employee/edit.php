@@ -166,7 +166,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 									</div>
 								</td>
 								<td>
-									<select id='SelectedPermissions' name='SelectedPermissions[]' size='8' class='SmallSelection' multiple='multiple'>
+									<select id='SelectedPermissions' name='Employee.Privileges' size='8' class='SmallSelection' multiple='multiple'>
 										<option value='16'>Accounts</option>
 										<option value='2'>Admin</option>
 										<option value='4'>Operator</option>
