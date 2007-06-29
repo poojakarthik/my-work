@@ -139,7 +139,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='NarrowContent'>\n";
 
 		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'Details');
+		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
 		
 		// Render the Id of the Account as a hidden input
 		DBO()->Account->Id->RenderHidden();
@@ -159,7 +159,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		// Render the submit button
 		echo "<div class='Right'>\n";
 		//echo "   <input type='submit' class='input-submit' value='Apply Changes' />\n";
-		$this->AjaxSubmit("Apply Changes");
+		//$this->AjaxSubmit("Apply Changes");
+		$this->Submit("Apply Changes");
 		echo "</div>\n";
 		
 		echo "</div>\n";

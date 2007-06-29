@@ -37,7 +37,8 @@ function VixenAjaxClass()
 		// HACK HACK HACK!!! ******************************************************************************************************************
 		// I'm setting this to FALSE because it is not defined anywhere
 		// If objSend.TargetType == 'Popup' or 'div' then Ajax.send will set HtmlMode = TRUE
-		objSend.HtmlMode = FALSE;
+		//objSend.HtmlMode = TRUE;
+		objSend.TargetType = "Div";
 		// HACK HACK HACK *********************************************************************************************************************
 		
 		// add values from form to object
@@ -143,7 +144,14 @@ function VixenAjaxClass()
 						break;
 					}
 				case "checkbox":
-					mixValue = objFormElement.elements[intKey].checked;
+					if (objFormElement.elements[intKey].checked)
+					{
+						mixValue = 1;
+					}
+					else
+					{
+						mixValue = 0;
+					}
 					break;
 				case "radio":
 					// only use the value of the radio button, if it is the one that is currently selected
@@ -180,135 +188,142 @@ function VixenAjaxClass()
 		// send object
 		this.Send(objSend);
 	}
-	
-	
-        // AJAX Send
-        this.Send = function(objObject)
-        {
-                // store our object before sending, along with a transaction ID
-                //this.objData = objObject;
-                //alert("Vixen.Ajax.Send() has been called. objObject.Class = " + objObject.Class);
-				// set the target page
-                var page_url = "ajax_link.php";
-                
-				// register the callbacks
-                var local_handle_reply = this.HandleReply;
-                var local_handle_error = this.HandleError;
-        
-				switch (objObject.TargetType)
-				{
-					case "Div":
-					case "Popup":						objObject.HtmlMode = TRUE;
-						break;
-					default:
-				}
+
+	// AJAX Send
+	this.Send = function(objObject)
+	{
+		// store our object before sending, along with a transaction ID
+		//this.objData = objObject;
+		//alert("Vixen.Ajax.Send() has been called. objObject.Class = " + objObject.Class);
+		// set the target page
+		var page_url = "ajax_link.php";
 		
-                // callback binder
-                function bindcallback()
-                {
-                        if (req.readyState == 4) {
-                                if (req.status == 200) {
-                                        TEST:local_handle_reply(req.responseText, objObject);
-                                        //handle_reply();
-                                } else {
-                                        local_handle_error(req);
-                                }
-                        }
-                }
-        
-                // send request to the server
-                if (window.XMLHttpRequest)
-                {
-                        //native XMLHttpRequest browsers
-                        var req = new XMLHttpRequest();
-                        req.onreadystatechange = bindcallback;
-                        req.open("POST", page_url, true);
-                        req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-                        req.send(JSON.stringify(objObject));
-                }
-                
-                else if (window.ActiveXObject)
-                {
-                        // IE/Windows ActiveX browsers
-                        var req = new ActiveXObject("Microsoft.XMLHTTP");
-                        if (req)
-                        {
-                                req.onreadystatechange = bindcallback;
-                                req.open("POST", page_url, true);
-                                req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
-                                req.send(JSON.stringify(objObject));
-                        }
-                }
-                return TRUE;
-        }
-        
-        // AJAX handle_reply
-        this.HandleReply = function(strReply, objObject)
-        {
-                //alert(strReply);
-				// the reply is a JSON string, need to eval it to get an object
-                if (objObject.HtmlMode)
-				{
-					switch (objObject.TargetType)
-					{
-						case "Popup":
-							//strContent, strId, strSize, mixPosition, strModal						
-							Vixen.Popup.Create(strReply, objObject.strId, objObject.strSize);
-							break;
-						case "Div":
-							break;
-						default:
-							ajaxError(null, strReply);
-					}
-				}
-                var objData = {};
-                try
-                {
-                        // convert reply into data object
-                        eval("objData = " + strReply);
-                       
-                        if (objData)
-                        {
-                                ajaxHandler(FALSE);
-                                return;
-                        }
-        
-                        ajaxHandler(objData);
-                }
-                catch(er)
-                {
-                        ajaxError(er, strReply);
-                }
-        
-                // clean up
-                delete(strReply);
-                delete(objData);
-        }	
-                
-        this.ajaxHandler = function(objInput)
+		// register the callbacks
+		var local_handle_reply = this.HandleReply;
+		var local_handle_error = this.HandleError;
+	
+		switch (objObject.TargetType)
 		{
-			
+			case "Div":
+			case "Popup":
+				objObject.HtmlMode = TRUE;
+				break;
+			default:
 		}
-        
-        // AJAX handle_error
-        this.HandleError = function(req)
-        {
-        
-        }
-        
-        this.AjaxObject = function(strClass, strMethod, objObjects)
-        {
-                return {
-                                        'Class': strClass,
-                                        'Method': strMethod,
-                                        'Objects': objObjects,
-										'FormId' : NULL,
-										'ButtonId' : NULL,
-										'TargetType' : NULL,
-										'strId' : NULL,
-										'strSize' : NULL
-                                };
-        }
+	
+		// callback binder
+		function bindcallback()
+		{
+			if (req.readyState == 4)
+			{
+				if (req.status == 200)
+				{
+					TEST:local_handle_reply(req.responseText, objObject);
+					//handle_reply();
+				}
+				else
+				{
+					local_handle_error(req);
+				}
+			}
+		}
+	
+		// send request to the server
+		if (window.XMLHttpRequest)
+		{
+			//native XMLHttpRequest browsers
+			var req = new XMLHttpRequest();
+			req.onreadystatechange = bindcallback;
+			req.open("POST", page_url, true);
+			req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+			req.send(JSON.stringify(objObject));
+		}
+		
+		else if (window.ActiveXObject)
+		{
+			// IE/Windows ActiveX browsers
+			var req = new ActiveXObject("Microsoft.XMLHTTP");
+			if (req)
+			{
+				req.onreadystatechange = bindcallback;
+				req.open("POST", page_url, true);
+				req.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+				req.send(JSON.stringify(objObject));
+			}
+		}
+		return TRUE;
+	}
+	
+	// AJAX handle_reply
+	this.HandleReply = function(strReply, objObject)
+	{
+		//alert(strReply);
+		// the reply is a JSON string, need to eval it to get an object
+		if (objObject.HtmlMode)
+		{
+alert("Ajax.HandleReply: objObject.HtmlMode == TRUE");
+			switch (objObject.TargetType)
+			{
+				case "Popup":
+					//strContent, strId, strSize, mixPosition, strModal						
+					Vixen.Popup.Create(strReply, objObject.strId, objObject.strSize);
+					break;
+				case "Div":
+					break;
+				default:
+					ajaxError(null, strReply);
+			}
+		}
+		var objData = {};
+		try
+		{
+alert("try: Begining. strReply = " + strReply);
+			// convert reply into data object
+			eval("objData = " + strReply);
+alert("try: eval('objData = ' + strReply)");
+alert(objData);
+			if (objData)
+			{
+				ajaxHandler(FALSE);
+				return;
+			}
+		
+			ajaxHandler(objData);
+		}
+		catch(er)
+		{
+			ajaxError(er, strReply);
+		}
+		
+		// clean up
+		delete(strReply);
+		delete(objData);
+	}	
+			
+	this.ajaxHandler = function(objInput)
+	{
+		
+	}
+	
+	// AJAX handle_error
+	this.HandleError = function(req)
+	{
+	
+	}
+	
+	this.AjaxObject = function(strClass, strMethod, objObjects)
+	{
+		return {
+			'Class': strClass,
+			'Method': strMethod,
+			'Objects': objObjects,
+			'FormId' : NULL,
+			'ButtonId' : NULL,
+			'TargetType' : NULL,
+			'strId' : NULL,
+			'strSize' : NULL
+		};
+	}
 }
 
 // Create an instance of the Vixen menu class

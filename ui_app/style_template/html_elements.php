@@ -385,24 +385,44 @@ class HTMLElements
 		$strChecked = "";
 		if ($arrParams['Value'])
 		{
-			$strChecked = "checked";
+			$strChecked	= "checked";
+			$intValue	= 1;
+		}
+		else
+		{
+			$intValue = 0;
 		}
 		
 		// determine whether the checkbox should be disabled
 		$strDisabled = "";
 		if ($arrParams['Type'] != RENDER_INPUT)
 		{
-			$strDisabled = "disabled";
+			$strDisabled	= "disabled";
 		}
 
 		// create the name and id for the radio button
 		$strName 	= $arrParams['Object'] .".". $arrParams['Property'];
-		$strId		= $strName;
+	
 
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputCheckBox {$arrParams['Definition']['Class']}'>\n";
-		$strHtml .= "      <input type='checkbox' name='$strName' id='$strId' $strChecked $strDisabled></input>\n";
-		$strHtml .= "      <label id='$strId.Label' for='$strId'>$strLabel</label>\n";
+		$strHtml .= "      <input type='checkbox' id='$strName' $strChecked $strDisabled \n";
+		
+		// include the onchange javascript to handle the changing of the checkbox
+		// 
+		$strHtml .= "         onchange='javascript:
+					if (this.checked)
+					{
+						document.getElementById(\"{$strName}_hidden\").value = 1;
+					}
+					else
+					{
+						document.getElementById(\"{$strName}_hidden\").value = 0;
+					}
+					'";
+		$strHtml .= "      ></input>\n";
+		$strHtml .= "      <label id='$strName.Label' for='$strName'>$strLabel</label>\n";
+		$strHtml .= "      <input type='hidden' id='{$strName}_hidden' name='$strName' value='$intValue'></input>";
 		$strHtml .= "   </div>\n";
 		$strHtml .= "</div>\n";
 		

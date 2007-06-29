@@ -677,7 +677,7 @@ class ApplicationTemplate extends ApplicationBaseClass
 			// load AJAX template
 			require_once(TEMPLATE_BASE_DIR."ajax_template/" . strtolower($strPageName) . ".php");
 		}
-		else 
+		else
 		{
 			// create new page object
 			$this->Page = new Page;
@@ -783,6 +783,7 @@ class HtmlTemplate extends BaseTemplate
 		$this->_strMethod = $strMethod;
 		$this->_strForm = "VixenForm_$strId";
 		$this->_strTemplate = $strTemplate;
+		//echo "<form id='{$this->_strForm}' method='post' action='vixen.php/$strTemplate/$strMethod'>\n";
 		echo "<form id='{$this->_strForm}' action='vixen.php/$strTemplate/$strMethod'>\n";
 		echo "<input type='hidden' value='$strId' name='VixenFormId'>\n";
 	}
@@ -792,13 +793,14 @@ class HtmlTemplate extends BaseTemplate
 		echo "</form>\n";
 	}
 	
-	function Submit($strLabel)
+	function Submit($strLabel, $strStyleClass="input-submit")
 	{
 		
-		echo "<submit name='VixenButtonId' value='$strLabel'></submit>\n";
+		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
+		echo "<input type='submit' class='$strStyleClass' name='VixenButtonId' value='$strLabel'></input>\n";
 	}
 	
-	function AjaxSubmit($strLabel, $intOutputMode=AJAX_MODE, $strTemplate=NULL, $strMethod=NULL)
+	function AjaxSubmit($strLabel, $intOutputMode=AJAX_MODE, $strTemplate=NULL, $strMethod=NULL, $strStyleClass="input-submit")
 	{
 		if (!$strTemplate)
 		{
@@ -818,7 +820,7 @@ class HtmlTemplate extends BaseTemplate
 		
 		//TODO! What do we do with $intOutputMode?
 		
-		echo "<input type='button' name='TheButton' value='$strLabel' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\"></input>\n";
+		echo "<input type='button' value='$strLabel' class='$strStyleClass' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\"></input>\n";
 	}
 
 	//------------------------------------------------------------------------//
@@ -1144,7 +1146,7 @@ class SubmittedData
 		{
 			$GLOBALS['*SubmittedButton'] = $objAjax->ButtonId;	
 		}
-		
+echo "objAjax->FormId = {$objAjax->FormId}, objAjax->ButtonId = {$objAjax->ButtonId}\n";
 		// for each post variable
 		if(is_object($objAjax) && is_object($objAjax->Objects))
 		{
@@ -1193,6 +1195,18 @@ class SubmittedData
 	 */
 	function _ParseData($strName, $mixValue)
 	{
+		// check if $strName is either "VixenFormId" or "VixenButtonId"
+		if ($strName == "VixenFormId")
+		{
+			$GLOBALS['*SubmittedForm'] = $mixValue;
+			return TRUE;
+		}
+		if ($strName == "VixenButtonId")
+		{
+			$GLOBALS['*SubmittedButton'] = $mixValue;
+			return TRUE;
+		}
+	
 		// split name into object, property & [optional] context
 		$arrName = explode("_", $strName, 3);
 		

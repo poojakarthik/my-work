@@ -133,8 +133,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
 		//check if the form was submitted
-		if (SubmittedForm('VixenForm_AccountDetails', 'Save'))
+		if (SubmittedForm('AccountDetails', 'Apply Changes'))
 		{
+echo "AppTemplateAccount->InvoicesAndPayments(): saving the submitted form (formId = AccountDetails, buttonId = 'Apply Changes')<br>\n";
+DBO()->Account->ShowInfo();
+die;
 			//Save the AccountDetails
 			if (!DBO()->Account->IsInvalid())
 			{
