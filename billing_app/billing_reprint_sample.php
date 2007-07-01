@@ -13,7 +13,7 @@
 
 // load application
 require_once('application_loader.php');
-
+ 
 // load remote copy
 require_once('../framework/remote_copy.php');
 
@@ -103,14 +103,14 @@ $arrAccounts[]	= 1000160250;
 $arrAccounts[]	= 1000154811;
 
 // reprint
-//$bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
+$bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
 
 $appBilling->FinaliseReport();
 ob_end_clean();
 
 // Remote Copy
-//$strFilename	= "reprint".date("Y-m-d").".vbf";
-$strFilename	= "reprint2007-06-30.vbf";
+$strFilename	= "reprint".date("Y-m-d").".vbf";
+//$strFilename	= "reprint2007-06-30.vbf";
 $strLocalPath	= "/home/vixen_bill_output/";
 echo "\nCopying '$strFilename' to BillPrint...\n";
 ob_flush();
@@ -209,8 +209,8 @@ while (($intLastDownload + 60) > time())
 chdir($strDownloadDir);
 $strZipname = date("F", strtotime("-1 day", time()))." Signoff Samples"; 
 echo shell_exec("zip -qj '$strZipname' *.pdf");
-echo shell_exec("zipsplit '$strZipname'");
-
+echo shell_exec("zipsplit -n 5242880 '$strZipname'");
+die;
 // Email
 $arrHeaders = Array	(
 						'From'		=> "billing@telcoblue.com.au",
@@ -218,7 +218,7 @@ $arrHeaders = Array	(
 					);
 $mimMime = new Mail_mime("\n");
 $mimMime->setTXTBody("Here are the final sign-off PDFs for the ".date("F", strtotime("-1 day", time()))." billing period.");
-$mimMime->addAttachment($strPDFPath, 'application/zip');
+$mimMime->addAttachment($strZipname, 'application/zip');
 $strBody = $mimMime->get();
 $strHeaders = $mimMime->headers($arrHeaders);
 $emlMail =& Mail::factory('mail');
