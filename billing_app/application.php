@@ -397,9 +397,9 @@
 			
 			// build query (with Service Extensions)
 			$strExtensionsQuery  = "INSERT INTO ServiceTypeTotal (FNN, AccountGroup, Account, Service, InvoiceRun, RecordType, Charge, Units, Records, RateGroup, Cost)";
-			$strExtensionsQuery .= " SELECT FNN, AccountGroup, Account, Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
+			$strExtensionsQuery .= " SELECT FNN, AccountGroup, Account, CDR.Service, '".$this->_strInvoiceRun."' AS InvoiceRun,";
 			$strExtensionsQuery .= " RecordType, SUM(Charge) AS Charge, SUM(Units) AS Units, COUNT(Charge) AS Records, ServiceRateGroup.RateGroup AS RateGroup, SUM(Cost) AS Cost";
-			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2), ServiceRateGroup ON ServiceRateGroup.Service = CDR.Service";
+			$strExtensionsQuery .= " FROM CDR USE INDEX (Account_2), ServiceRateGroup";
 			$strExtensionsQuery .= " WHERE FNN IS NOT NULL AND RecordType IS NOT NULL";
 			$strExtensionsQuery .= " AND Status = ".CDR_TEMP_INVOICE;
 			$strExtensionsQuery .= " AND Account = ".$arrAccount['Id'];
@@ -410,6 +410,7 @@
 			// run query
 			$qryServiceTypeTotal = new Query();
 			$qryServiceTypeTotal->Execute($strExtensionsQuery);
+			Debug($qryServiceTypeTotal->Error());
 			
 			// zero out totals
 			$fltDebits			= 0.0;
