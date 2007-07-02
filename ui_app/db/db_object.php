@@ -831,17 +831,19 @@ class DBObject extends DBObjectBase
 	 *
 	 * Set the columns to retrieve
 	 * 
-	 * @param	mix		$mixColumns		Either an associated array of columns and their alias's (Alias=>ColumnName)
+	 * @param	mix		$mixColumns		optional; Either an associated array of columns and their alias's (Alias=>ColumnName)
 	 *									OR 
 	 *									an indexed array of column names (Array("Column1", "Column2", etc)
 	 *									OR
 	 *									a comma separated string of columns ("Column1, Column2, etc")
+	 *									OR 
+	 *									NULL to retrive columns from the database definition file
 	 *
 	 * @return	array					returns the data attribute storing the column names ($_arrColumns)
 	 *
 	 * @method
 	 */
-	function SetColumns($mixColumns)
+	function SetColumns($mixColumns=NULL)
 	{
 		if (is_array($mixColumns))
 		{
@@ -856,15 +858,29 @@ class DBObject extends DBObjectBase
 		}
 		elseif ($this->_arrDefine['Columns'])
 		{
+			// currently $this->_arrDefine['Columns'] is not defined so this
+			// block of code will never be run
 			$this->_arrColumns = $this->_arrDefine['Columns'];
 		}
 		else
 		{
+			$this->_arrColumns = NULL;
 			//TODO!!!! get * column names for tables
 			// This scenario is currently handled by DataAccessUI::Select and DataAccessUI::SelectById
 			// If either of these methods are called and $_arrColumns is empty, it selects all
 			// columns from the table of the database
 		}
+		
+		if (is_array($this->_arrColumns) && !IsAssociativeArray($this->_arrColumns))
+		{
+			$arrColumns = Array();
+			foreach ($this->_arrColumns as $strColumn)
+			{
+				$arrColumns[$strColumn] = $strColumns;
+			}
+			$this->_arrColumns = $arrColumns;
+		}
+		
 		return $this->_arrColumns;
 	}
 	

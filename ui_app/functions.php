@@ -514,9 +514,9 @@ function GetEmployeeName($intEmployeeId)
 	{
 		// retrieve all employees from the Employee table of the database and cache it in the global array
 		$selFindEmployee = new StatementSelect("Employee", "FirstName, LastName, Id");
-		$selFindEmployee->Execute();
-		$arrEmployees = $selFindEmployee->Fetch();
-		
+		$selFindEmployee->Execute(NULL);
+		$arrEmployees = $selFindEmployee->FetchAll();
+
 		foreach ($arrEmployees as $arrEmployee)
 		{
 			$arrName['FirstName'] = $arrEmployee['FirstName'];
@@ -555,6 +555,26 @@ function SubmittedForm($strFormId, $strButtonId=NULL)
 		}
 	}
 	return FALSE;
+}
+
+
+//------------------------------------------------------------------------//
+// GetCurrentDateForMySQL
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentDateForMySQL()
+ *
+ * Retrieves the current date in the format that MySql expects Date attributes to be in
+ *
+ * Retrieves the current date in the format that MySql expects Date attributes to be in
+ *
+ * @return	mix					current date as a string, properly formatted for MySql
+ *
+ * @function
+ */
+function GetCurrentDateForMySQL()
+{
+	return date("Y-m-d");
 }
 
 ?>

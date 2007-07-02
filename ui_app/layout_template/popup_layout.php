@@ -26,7 +26,9 @@
  */
 
 
-$this->RenderHeader();
+//$this->RenderHeader();
+$this->RenderJS();
+//$this->RenderCSS();
 //$this->RenderVixenHeader();
 ?>
 

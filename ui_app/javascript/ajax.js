@@ -38,7 +38,7 @@ function VixenAjaxClass()
 		// I'm setting this to FALSE because it is not defined anywhere
 		// If objSend.TargetType == 'Popup' or 'div' then Ajax.send will set HtmlMode = TRUE
 		//objSend.HtmlMode = TRUE;
-		objSend.TargetType = "Div";
+		//objSend.TargetType = "Div";
 		// HACK HACK HACK *********************************************************************************************************************
 		
 		// add values from form to object
@@ -90,19 +90,22 @@ function VixenAjaxClass()
 			switch (strType)
 			{
 				case "select-one": //not accurately working yet
-					alert("select box select singular");
-					if (objFormElement.elements[intKey].getAttribute('valueIsList')==null)
+					//alert("select box select singular");
+					if (objFormElement.elements[intKey].getAttribute('valueIsList') == null)
 					{
+						mixValue = objFormElement.elements[intKey].value;
+						/*
 						//select only highlighted items in list
 						var intSelections = 0;
 						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
 						{
 							if (objFormElement.elements[intKey].options[intInnerKey].selected)
 							{
-								intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+								intSelections = parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
 							}
 						}
 						mixValue = intSelections;
+						*/
 						break;
 					}
 					else
@@ -165,7 +168,7 @@ function VixenAjaxClass()
 				case "button":
 					continue;
 				default:
-					alert(strType);
+					//alert(strType);
 					mixValue = objFormElement.elements[intKey].value;			
 					break;
 			}
@@ -174,7 +177,7 @@ function VixenAjaxClass()
 			objSend.Objects[strObjectName][strPropertyName] = mixValue;
 		}			
 
-		
+		/*
 		// Output each Object.Property stored in objSend.Objects
 		for (strObject in objSend.Objects)
 		{
@@ -183,8 +186,7 @@ function VixenAjaxClass()
 				alert("objSend.Objects."+ strObject +"."+ strProperty +" = "+ objSend.Objects[strObject][strProperty]);
 			}
 		}
-				
-		
+		*/		
 		// send object
 		this.Send(objSend);
 	}
@@ -201,7 +203,8 @@ function VixenAjaxClass()
 		// register the callbacks
 		var local_handle_reply = this.HandleReply;
 		var local_handle_error = this.HandleError;
-	
+//alert("Target type = " + objObject.TargetType);
+
 		switch (objObject.TargetType)
 		{
 			case "Div":
@@ -261,12 +264,12 @@ function VixenAjaxClass()
 		// the reply is a JSON string, need to eval it to get an object
 		if (objObject.HtmlMode)
 		{
-alert("Ajax.HandleReply: objObject.HtmlMode == TRUE");
+//alert("Ajax.HandleReply: objObject.HtmlMode == TRUE");
 			switch (objObject.TargetType)
 			{
 				case "Popup":
 					//strContent, strId, strSize, mixPosition, strModal						
-					Vixen.Popup.Create(strReply, objObject.strId, objObject.strSize);
+					Vixen.Popup.Create(strReply, objObject.strId, objObject.strSize, "centre", "modal");
 					break;
 				case "Div":
 					break;
@@ -277,11 +280,11 @@ alert("Ajax.HandleReply: objObject.HtmlMode == TRUE");
 		var objData = {};
 		try
 		{
-alert("try: Begining. strReply = " + strReply);
+//alert("try: Begining. strReply = " + strReply);
 			// convert reply into data object
 			eval("objData = " + strReply);
-alert("try: eval('objData = ' + strReply)");
-alert(objData);
+//alert("try: eval('objData = ' + strReply)");
+//alert(objData);
 			if (objData)
 			{
 				ajaxHandler(FALSE);
@@ -304,6 +307,7 @@ alert(objData);
 	{
 		
 	}
+	
 	
 	// AJAX handle_error
 	this.HandleError = function(req)

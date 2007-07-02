@@ -2143,6 +2143,30 @@ function ParseArguments($arrConfig)
 	return $arrReturn;
 }
 
+//------------------------------------------------------------------------//
+// IsAssociativeArray()
+//------------------------------------------------------------------------//
+/**
+ * IsAssociativeArray()
+ *
+ * Determines if a passed array is associative or not
+ *
+ * Determines if a passed array is associative or not
+ *
+ * @param		array	$arrArray		Array to be checked
+ * 
+ * @return		boolean					true	: Associative array
+ * 										false	: Indexed array
+ *
+ * @method
+ * @see			<MethodName()||typePropertyName>
+ */ 
+function IsAssociativeArray($arrArray) 
+{
+	return (is_array($arrArray) && !is_numeric(implode(array_keys($arrArray))));
+}
+
+
 function Donkey()
 {
 ?>

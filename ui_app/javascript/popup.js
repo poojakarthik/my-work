@@ -15,6 +15,16 @@
  */
 function VixenPopupClass()
 {
+	this.strSourceCode = "";
+
+	this.ViewSourceCode = function()
+	{
+		//Vixen.debug = TRUE;
+		//debug(this.strSourceCode);
+		alert(this.strSourceCode);
+	}
+
+
 	this.Create = function(strContent, strId, strSize, mixPosition, strModal)
 	{
 		// Try to find a previous popup
@@ -41,10 +51,12 @@ function VixenPopupClass()
 		}
 				
 		strContent = 
-		"<div id='VixenPopupTopBar__" + strId + "' class='PopupBox_TopBar'>" +
-		"<img src='img/template/close.png' class='PopupBox_Close' onclick='Vixen.Popup.Close(" + strTempId + ")'>" + 
+		"<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
+		"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(" + strTempId + ")'>" + 
+		"<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewSourceCode()'>" +
 		"TelcoBlue Internal System" +
 		"</div>" +	strContent;
+		this.strSourceCode = strContent;
 
 		// Add the popup to the holder
 		//elmPopup.style.visibility = 'visible';			
@@ -165,6 +177,7 @@ function VixenPopupClass()
 			}
 		}
 	}
+	
 	
 	this.Close = function(strId)
 	{

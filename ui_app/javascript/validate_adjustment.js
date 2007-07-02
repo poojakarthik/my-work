@@ -120,6 +120,7 @@ function VixenValidateAdjustmentClass()
 		this._objChargeTypeData.NoSelection.Nature = "&nbsp;";
 		this._objChargeTypeData.NoSelection.Fixed = "&nbsp;";
 		this._objChargeTypeData.NoSelection.Amount = "";
+		this._objChargeTypeData.NoSelection.Id = "";	
 		this._objChargeTypeData.NoSelection.Description = "&nbsp;";
 		this._objChargeTypeData.NoSelection.NoSelection = true;
 	}
@@ -225,6 +226,7 @@ function VixenValidateAdjustmentClass()
 		document.getElementById('ChargeType.Description').innerHTML = strDescription;
 		document.getElementById('Charge.Nature').innerHTML = strNature;
 		document.getElementById('Charge.Amount').value = strDefaultAmount;
+		document.getElementById('ChargeType.Id').value = this._objChargeTypeData[strChargeType].Id;
 		
 		// If the charge type has a fixed amount then disable the amount textbox, else enable it
 		if (this._objChargeTypeData[strChargeType].Fixed == 1)
@@ -363,7 +365,6 @@ function VixenValidateAdjustmentClass()
 		
 	}
 }
-
 
 // instanciate the object
 Vixen.ValidateAdjustment = new VixenValidateAdjustmentClass;

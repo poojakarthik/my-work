@@ -410,19 +410,18 @@ class HTMLElements
 		
 		// include the onchange javascript to handle the changing of the checkbox
 		// 
-		$strHtml .= "         onchange='javascript:
-					if (this.checked)
-					{
-						document.getElementById(\"{$strName}_hidden\").value = 1;
-					}
-					else
-					{
-						document.getElementById(\"{$strName}_hidden\").value = 0;
-					}
-					'";
+		$strHtml .= "         onchange='javascript:\n";
+		$strHtml .= "            if (this.checked)\n";
+		$strHtml .= "            {\n";
+		$strHtml .= "               document.getElementById(\"{$strName}_hidden\").value = 1;\n";
+		$strHtml .= "            }\n";
+		$strHtml .= "            else\n";
+		$strHtml .= "            {\n";
+		$strHtml .= "               document.getElementById(\"{$strName}_hidden\").value = 0;\n";
+		$strHtml .= "            }'\n";
 		$strHtml .= "      ></input>\n";
 		$strHtml .= "      <label id='$strName.Label' for='$strName'>$strLabel</label>\n";
-		$strHtml .= "      <input type='hidden' id='{$strName}_hidden' name='$strName' value='$intValue'></input>";
+		$strHtml .= "      <input type='hidden' id='{$strName}_hidden' name='$strName' value='$intValue'></input>\n";
 		$strHtml .= "   </div>\n";
 		$strHtml .= "</div>\n";
 		

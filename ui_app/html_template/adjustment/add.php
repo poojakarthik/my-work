@@ -82,7 +82,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// Load all java script specific to the page here
 		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("debug");  // Tools for debugging, only use when js-ing
-		$this->LoadJavascript("validate_adjustment");
+		//$this->LoadJavascript("validate_adjustment");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -103,37 +103,14 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='PopupMedium'>\n";
 		echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
 		
-		//echo "<form method='POST' action='javascript:Vixen.ValidateAdjustment.AddAdjustment()'>\n";
+		// currently this javascript file has to be included here, otherwise it is not instantiated before other calls
+		// to it get executed
+		echo "<script type='text/javascript' src='javascript/validate_adjustment.js'></script>\n";
 		
-		//echo "<div id='StatusMsg' class='DefaultHiddenElement'>Status messages go here</div>\n";
-		//echo "<div id='StatusMsg' class='DefaultHiddenElement'>Status messages go here</div>\n";
+		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		
 		// include all the propeties necessary to add the record, which shouldn't have controls visible on the form
-		echo "<div class='DefaultHiddenElement'>\n";
-		//can labels be passed as input?
-		//what happens if you have two elements on the one form with the same Id?
-		/*DBO()->Charge->Account = DBO()->Account->Id->Value;
-		DBO()->Charge->Account->RenderInput();
-		DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->Value;
-		DBO()->Charge->AccountGroup->RenderInput();
-		DBO()->Charge->Service = NULL;
-		DBO()->Charge->Service->RenderInput();
-		DBO()->Charge->InvoiceRun = NULL;
-		DBO()->Charge->InvoiceRun->RenderInput();
-		$dboUser = GetAuthenticatedUserDBObject();
-		DBO()->Charge->CreatedBy = $dboUser->Id->Value;
-		DBO()->Charge->CreatedBy->RenderInput();
-		
-		// I don't think CreatedOn should be set until the record is added to the database
-		DBO()->Charge->CreatedOn = NULL;
-		DBO()->Charge->CreatedOn->RenderInput();
-		*/
-		
-		
-		
-		
-		echo "</div>\n";
-		
+		DBO()->Account->Id->RenderHidden();
 		
 		// Display account details
 		DBO()->Account->Id->RenderOutput();
@@ -150,7 +127,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='ChargeType.ChargeType' id='ChargeType.ChargeType' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		//echo "      <select name='ChargeType.ChargeType' id='ChargeType.ChargeType' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select id='ChargeType.ChargeType' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
 		echo "         <option id='ChargeTypeNotSelected' value='NoSelection'>&nbsp;</option>\n";
 		foreach (DBL()->ChargeType as $dboChargeType)
 		{
@@ -163,12 +141,16 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			$arrChargeTypeData['Fixed']		= $dboChargeType->Fixed->Value;
 			$arrChargeTypeData['Amount']	= $dboChargeType->Amount->Value;
 			$arrChargeTypeData['Description'] = $dboChargeType->Description->Value;
+			$arrChargeTypeData['Id']		= $dboChargeType->Id->Value;
 			$arrChargeTypes[$dboChargeType->ChargeType->Value] = $arrChargeTypeData;
 			
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
+		
+		DBO()->ChargeType->Id = "";
+		DBO()->ChargeType->Id->RenderHidden();
 		
 		// display the charge code when the Charge Type has been selected
 		DBO()->Charge->ChargeType->RenderOutput();
@@ -185,8 +167,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Invoice:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='InvoiceComboBox' name='InvoiceComboBox'>\n";
-		echo "         <option value='0'>No Association</option>\n";
+		echo "      <select id='InvoiceComboBox' name='Charge.Invoice'>\n";
+		echo "         <option value=''>No Association</option>\n";
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
 			$strInvoice = $dboInvoice->Id->Value;
@@ -204,7 +186,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
 		//echo "   <input type='button' id='btnAddAdjustment' value='Add Adjustment &#xBB;' class='input-submit' onclick='Vixen.ValidateAdjustment.AddAdjustment()'>Click Me</input>\n";
-		echo "<button class='input-submit' id='btnAddAdjustment' value='submit' onclick='javascript:alert(document.getElementById(\"btnAddAdjustment\").value)'>Hey hey</button>\n";
+		//echo "<button class='input-submit' id='btnAddAdjustment' value='submit' onclick='javascript:alert(document.getElementById(\"btnAddAdjustment\").value)'>Hey hey</button>\n";
+		$this->AjaxSubmit("Add Adjustment");
 		//echo "<input type='submit' name='btnAddAdjustment' value='ThisIsTheValue'>HeyHey</submit>\n";
 		//echo "<label for='btnAddAdjustment'>TESTING</label>\n";
 		echo "</div>\n";
@@ -213,23 +196,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		$strJsonCode = Json()->encode($arrChargeTypes);
 		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
 
-		// define the set data required for adding the adjustment
 		
-		$arrAdjustmentData['AccountGroup'] = DBO()->Account->AccountGroup->Value;
-		$arrAdjustmentData['Account'] = DBO()->Account->Id->Value;
-		$arrAdjustmentData['Service'] = NULL;
-		$arrAdjustmentData['InvoiceRun'] = NULL;
-		$dboUser = GetAuthenticatedUserDBObject();
-		$arrAdjustmentData['CreatedBy'] = $dboUser->Id->Value;
-		// CreatedOn should be set just before the record is inserted
-		$arrAdjustmentData['CreatedOn'] = NULL;
-		$arrAdjustmentData['ApprovedBy'] = NULL;
-
-		
-		$strJsonCode = Json()->encode($arrAdjustmentData);
-		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetAdjustmentData($strJsonCode)</script>\n";
-
-		//echo "</form>\n";
+		$this->FormEnd();
 		echo "</div>\n";
 	}
 }

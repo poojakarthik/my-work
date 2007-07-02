@@ -128,9 +128,6 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			
 			// add indexes
 			Table()->AdjustmentTable->AddIndex("InvoiceRun", $dboCharge->InvoiceRun->Value);
-
-//Currently the invoice table will only select associated rows in this table if Details have been defined for each row
-//Table()->AdjustmentTable->SetDetail("[INSERT DETAILS HERE]");
 		}
 		
 		// Link other tables to this one

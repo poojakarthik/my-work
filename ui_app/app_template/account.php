@@ -135,19 +135,17 @@ class AppTemplateAccount extends ApplicationTemplate
 		//check if the form was submitted
 		if (SubmittedForm('AccountDetails', 'Apply Changes'))
 		{
-echo "AppTemplateAccount->InvoicesAndPayments(): saving the submitted form (formId = AccountDetails, buttonId = 'Apply Changes')<br>\n";
-DBO()->Account->ShowInfo();
-die;
 			//Save the AccountDetails
 			if (!DBO()->Account->IsInvalid())
 			{
-				//echo "Account details are NOT invalid therefore the Account details will be saved";
+				// update the record in the Account table
+				DBO()->Account->SetColumns("DisableDDR, DisableLatePayment");
 				DBO()->Account->Save();
+				
+				// reset the columns, so that they are all retrived when the data is loaded
+				DBO()->Account->SetColumns();
 			}
 		}
-		
-
-
 		
 		// context menu
 		//TODO! define what goes in the context menu

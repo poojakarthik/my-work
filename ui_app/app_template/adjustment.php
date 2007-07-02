@@ -64,20 +64,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Should probably check user authorization here
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
-		
-		//Check if the form was submitted
-		if (SubmittedForm('Details', 'Save'))
-		{
-			//Save the Account Details
-			if (!DBO()->Account->IsInvalid())
-			{
-				echo "Account is NOT invalid.  Account would be saved";
-				//DBO()->Account->Save();
-			}
-		}
-		
-		
-		
+
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -86,6 +73,46 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
+
+		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
+		//check if the form was submitted
+		if (SubmittedForm('AddAdjustment', 'Add Adjustment'))
+		{
+			//Save the AccountDetails
+			if (!DBO()->Account->IsInvalid() && !DBO()->Charge->IsInvalid() && !DBO()->ChargeType->IsInvalid)
+			{
+				DBO()->ChargeType->Load();
+				DBO()->Charge->Account = DBO()->Account->Id->value;
+				DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->value;
+				
+				$dboUser = GetAuthenticatedUserDBObject();
+				
+				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
+				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
+				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
+				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
+				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
+				
+				// status is dependent on the nature of the charge
+				if (DBO()->Charge->Nature->Value == "CR")
+				{
+					DBO()->Charge->Status	= CHARGE_WAITING;
+				}
+				else
+				{
+					DBO()->Charge->Status	= CHARGE_APPROVED;
+				}
+
+				// Add the adjustment to the charge table of the database
+				if (!DBO()->Charge->Save())
+				{
+					echo "The charge did not save";
+					die;
+				}
+echo "Saved<br>\n";				
+			}
+		}
+		
 		
 		// Check if this charge is being added to a service, instead of an account
 		//TODO! Joel: check if DBO()->Serivce->Id has been set.  

@@ -257,6 +257,7 @@ class Page
 	 */
 	function RenderJS()
 	{
+		/*
 		// always render the root js class
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/vixen.js' ></script>\n";
 		
@@ -281,6 +282,26 @@ class Page
 				echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' ></script>\n";
 			}	
 		}
+		*/
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/autoloader.js' ></script>\n";
+		echo "<script type='text/javascript'>VixenSetJavascriptBaseDir('". JAVASCRIPT_BASE_DIR ."')</script>\n";
+		echo "<script type='text/javascript'>VixenIncludeJSOnce('vixen')</script>\n";
+		echo "<script type='text/javascript'>VixenIncludeJSOnce('menu')</script>\n";
+		echo "<script type='text/javascript'>VixenIncludeJSOnce('popup')</script>\n";
+		echo "<script type='text/javascript'>VixenIncludeJSOnce('dhtml')</script>\n";
+		echo "<script type='text/javascript'>VixenIncludeJSOnce('ajax')</script>\n";
+		
+		if (is_array($GLOBALS['*arrJavaScript']))
+		{
+			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
+			{
+				
+				echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
+			}
+		}
+		
+		
+		
 		
 	}
 	
@@ -1831,14 +1852,14 @@ class MenuItems
 		$this->strLabel	= "add adjustment";
 		
 		// Setup data to send
-		$arrData['Class'] 		= "Adjustment";
-		$arrData['Method'] 		= "Add";
+		//$arrData['Class'] 		= "Adjustment";
+		//$arrData['Method'] 		= "Add";
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup('AddAdjustmentPopupId', 'medium', $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Adjustment\", \"Add\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//

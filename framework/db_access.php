@@ -544,7 +544,7 @@
 	 */ 
 	function IsAssociativeArray($arrArray) 
 	{
-		return (is_array($arrArray) && !is_numeric(implode(array_keys($arrArray))));
+		return IsAssociativeArray($arrArray);
 	}
 	
 	//------------------------------------------------------------------------//

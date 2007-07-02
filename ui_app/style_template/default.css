@@ -17,7 +17,7 @@
 	{
 		margin-left:		5px;
 		margin-top:			10px;
-		width:				950px;
+		/*width:				450px;*/
 	}
 
 	.Default
@@ -419,8 +419,8 @@
 		height:               10px;
 	}
 
-	input.input-submit,
-	input.input-submit-disabled
+	input.InputSubmit,
+	input.InputSubmitDisabled
 	{
 		background-repeat:   repeat-x;
 		
@@ -432,7 +432,7 @@
 		padding-bottom:      3px;
 	}
 	
-	input.input-submit
+	input.InputSubmit
 	{
 		background-image:    url('img/template/button_background.png');
 		
@@ -442,7 +442,7 @@
 		background-color:    #07548e;
 	}
 	
-	input.input-submit-disabled
+	input.InputSubmitDisabled
 	{
 		background-image:    url('img/template/button_background_disabled.png');
 		
@@ -452,8 +452,8 @@
 		background-color:    #434343;
 	}
 	
-	input.input-submit-locked,
-	input.input-submit-unlocked
+	input.InputSubmitLocked,
+	input.InputSubmitUnlocked
 	{
 		background-repeat:   no-repeat;
 		
@@ -465,7 +465,7 @@
 		padding-bottom:      15px;
 	}
 	
-	input.input-submit-unlocked
+	input.InputSubmitUnlocked
 	{
 		background-image:    url('img/template/btn_unlocked.png');
 		
@@ -475,7 +475,7 @@
 		background-color:    #f1f7e1;
 	}
 	
-	input.input-submit-locked
+	input.InputSubmitLocked
 	{
 		background-image:    url('img/template/btn_locked.png');
 		
@@ -483,6 +483,54 @@
 		
 		color:               #CC0000;
 		background-color:    #f2dbdb;
+	}
+
+	.PopupBox
+	{
+		position: absolute;
+		border: 1px solid #000000;
+		background-color: #ffffff;
+		z-index: 1001;
+	}
+
+	.PopupBoxTopBar
+	{
+		font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		font-size: 10pt;
+		line-height: 18pt;
+		color: #FFFFFF;
+		background-color: #000000;
+		background-image:     url('img/template/background.png');
+		background-repeat:    repeat-x;
+		padding: 0px;
+		margin: 0px;
+		padding-left: 5px;
+		cursor: default;
+		
+	}
+	.PopupBoxClose
+	{
+		float: right;
+		text-align: right;
+		height: 14px;
+		padding: 3px;
+	}
+	
+	#overlay {
+     position: absolute;
+     left: 0px;
+     top: 0px;
+     width:100%;
+     height:100%;
+     z-index: 1000;
+	 background-color:	#000000;
+	 opacity: .50;
+	}
+	.VixenTooltip
+	{
+		border: 1px solid #000000;
+		background-color: #ffffff;
+		z-index: 100001;
 	}
 
 
@@ -1217,51 +1265,4 @@
 	tr.RecentCustomers td
 	{
 		cursor:					pointer;
-	}
-	
-	.PopupBox
-	{
-		position: absolute;
-		border: 1px solid #000000;
-		background-color: #ffffff;
-		z-index: 1001;
-	}
-
-	.PopupBox_TopBar
-	{
-		font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
-		font-size: 10pt;
-		line-height: 18pt;
-		color: #FFFFFF;
-		background-color: #000000;
-		background-image:     url('img/template/background.png');
-		background-repeat:    repeat-x;
-		padding: 0px;
-		margin: 0px;
-		padding-left: 5px;
-		cursor: default;
-		
-	}
-	.PopupBox_Close
-	{
-		float: right;
-		text-align: right;
-		height: 14px;
-		padding: 3px;
-	}
-	#overlay {
-     position: absolute;
-     left: 0px;
-     top: 0px;
-     width:100%;
-     height:100%;
-     z-index: 1000;
-	 background-color:	#000000;
-	 opacity: .50;
-	}
-	.VixenTooltip
-	{
-		border: 1px solid #000000;
-		background-color: #ffffff;
-		z-index: 100001;
 	}

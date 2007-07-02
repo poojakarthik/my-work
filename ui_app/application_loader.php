@@ -783,8 +783,8 @@ class HtmlTemplate extends BaseTemplate
 		$this->_strMethod = $strMethod;
 		$this->_strForm = "VixenForm_$strId";
 		$this->_strTemplate = $strTemplate;
-		//echo "<form id='{$this->_strForm}' method='post' action='vixen.php/$strTemplate/$strMethod'>\n";
-		echo "<form id='{$this->_strForm}' action='vixen.php/$strTemplate/$strMethod'>\n";
+		echo "<form id='{$this->_strForm}' method='post' action='vixen.php/$strTemplate/$strMethod'>\n";
+		//echo "<form id='{$this->_strForm}' method='get' action='vixen.php/$strTemplate/$strMethod'>\n";
 		echo "<input type='hidden' value='$strId' name='VixenFormId'>\n";
 	}
 	
@@ -793,14 +793,14 @@ class HtmlTemplate extends BaseTemplate
 		echo "</form>\n";
 	}
 	
-	function Submit($strLabel, $strStyleClass="input-submit")
+	function Submit($strLabel, $strStyleClass="InputSubmit")
 	{
 		
 		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
 		echo "<input type='submit' class='$strStyleClass' name='VixenButtonId' value='$strLabel'></input>\n";
 	}
 	
-	function AjaxSubmit($strLabel, $intOutputMode=AJAX_MODE, $strTemplate=NULL, $strMethod=NULL, $strStyleClass="input-submit")
+	function AjaxSubmit($strLabel, $intOutputMode=AJAX_MODE, $strTemplate=NULL, $strMethod=NULL, $strStyleClass="InputSubmit")
 	{
 		if (!$strTemplate)
 		{
@@ -1146,7 +1146,7 @@ class SubmittedData
 		{
 			$GLOBALS['*SubmittedButton'] = $objAjax->ButtonId;	
 		}
-echo "objAjax->FormId = {$objAjax->FormId}, objAjax->ButtonId = {$objAjax->ButtonId}\n";
+
 		// for each post variable
 		if(is_object($objAjax) && is_object($objAjax->Objects))
 		{
@@ -1182,6 +1182,8 @@ echo "objAjax->FormId = {$objAjax->FormId}, objAjax->ButtonId = {$objAjax->Butto
 	 * Attempts to create a DBO object using the passed data
 	 *
 	 * Attempts to create a DBO object using the passed data
+	 * This will also load the global variables $GLOBALS['*SubmittedForm']
+	 * and $GLOBALS['*SubmittedButtin'] if $strName equals "VixenFormId" or "VixenButtonId"
 	 *
 	 * @param	string	$strName	the Get or Post variable name.  This must be
 	 *								in the format ObjectName_PropertyName_Context
