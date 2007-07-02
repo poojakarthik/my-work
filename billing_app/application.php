@@ -2279,7 +2279,7 @@
 				continue;
 			}
 			echo "\n\t * Paying off $intCount Invoices...\t\t\n";
-			echo "\t * Opening Balance is \$$fltNegativeBalance\t\t\tOutstanding\tPayment\t\tBalance\t\tCredits Remaining\n";
+			//echo "\t * Opening Balance is \$$fltNegativeBalance\t\t\tOutstanding\tPayment\t\tBalance\t\tCredits Remaining\n";
 			
 			// For each of the +ve Invoices
 			$fltTotalPaid			= 0;
@@ -2289,11 +2289,11 @@
 			{
 				if ($fltNegativeBalance == 0 || $fltNegativeBalance == -0)
 				{
-					echo "\t - Insufficient Funds for Invoice #{$arrPositiveInvoice['Id']}\t\${$arrPositiveInvoice['Balance']}\t\$0\t\t\${$arrPositiveInvoice['Balance']}\t\$0\n";
+					//echo "\t - Insufficient Funds for Invoice #{$arrPositiveInvoice['Id']}\t\${$arrPositiveInvoice['Balance']}\t\$0\t\t\${$arrPositiveInvoice['Balance']}\t\$0\n";
 					continue;
 				}
 				
-				echo "\t - Paying off Invoice #{$arrPositiveInvoice['Id']}...\t\t";
+				//echo "\t - Paying off Invoice #{$arrPositiveInvoice['Id']}...\t\t";
 				
 				// Pay this Invoice off
 				$fltPositiveBalance		= $arrPositiveInvoice['Balance'];
@@ -2304,7 +2304,7 @@
 				$fltTotalPaid			+= $fltPayment;
 				$fltNegativeBalance		= RoundCurrency($fltNegativeBalance - $fltPayment);
 				
-				echo "\$$fltPositiveBalance\t\$$fltPayment\t\t\$$fltPositiveBalanceNew\t\t\$$fltNegativeBalance\n";
+				//echo "\$$fltPositiveBalance\t\$$fltPayment\t\t\$$fltPositiveBalanceNew\t\t\$$fltNegativeBalance\n";
 				
 				// Add Credit Payment to InvoicePayment
 				$arrInvoicePayment = Array();
@@ -2331,7 +2331,7 @@
 			
 			if ($fltTotalPaid)
 			{
-				echo "\t\t\t\t\tTotals:\t\t\$$fltTotalOutstanding\t\t\$$fltTotalPaid\n";
+				//echo "\t\t\t\t\tTotals:\t\t\$$fltTotalOutstanding\t\t\$$fltTotalPaid\n";
 			}
 			echo "\t * Closing Balance is \$$fltNegativeBalance\n";
 			
