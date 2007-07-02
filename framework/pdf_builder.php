@@ -46,7 +46,7 @@ class VixenPdf
 	 {
 		$this->pdf = new Creport('a4','portrait');
 		
-		$this->pdf->ezSetCmMargins(1.5,1.0,2.0,2.0);
+		$this->pdf->ezSetCmMargins(1.5,1.5,2.0,2.0);
 		$this->strTitle = $strTitle;
 		$this->strSubTitle = $strSubTitle;
 		$this->strDocumentTitle = $strDocumentTitle;
