@@ -413,6 +413,38 @@ $arrScript                                                      = Array();
 
 
 //----------------------------------------------------------------------------//
+// Pay Negative Invoice Balances
+$arrScript                                                      = Array();
+	
+	// StartTime
+	//              Int             Earliest time that the script can run during the day
+	//                              Time in seconds from 00:00:00
+	$arrScript['StartTime']                 =       0;	// 0000
+	
+	// FinishTime
+	//              Int             optional Latest time that the script can run during the day
+	//                              Time in seconds from 00:00:00
+	//                              Defaults to 86400 (24:00:00:00)
+	$arrScript['FinishTime']                =       86400;	// 2400
+	
+	// Interval
+	//              Int             Interval time in seconds.
+	//                              Script will be run every Interval seconds.
+	$arrScript['Interval']                  =       86400;	// 24 Hours
+	
+	// Command
+	//              String  Command to run the script (include full path to script).
+	$arrScript['Command']                   =       'php /usr/share/vixen/billing_app/pay_negative_balances.php';
+	
+	// Directory
+	//              String  optional Directory to run the script in.
+	$arrScript['Directory']                 =       '/usr/share/vixen/billing_app/';
+	
+	$arrConfig['Script']['PayNegativeBalances']	= $arrScript;
+//----------------------------------------------------------------------------//
+
+
+//----------------------------------------------------------------------------//
 // Billing
 $arrScript                                                      = Array();
 	
