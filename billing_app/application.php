@@ -1151,9 +1151,9 @@
 			{
 				$this->_rptBillingReport->AddMessage(MSG_OK);
 			}
-		
+			
 			// reverse payments
-			$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = '$strInvoiceRun'");
+			/*$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "InvoiceRun = '$strInvoiceRun'");
 			$selPayments		= new StatementSelect("Payment", "*", "Id = <Id>");
 			$arrCols['Status']	= NULL;
 			$arrCols['Balance']	= new MySQLFunction("Balance + <Balance>");
@@ -1171,7 +1171,7 @@
 				
 				// remove InvoicePayment
 				$qryDeletePayment->Execute("DELETE FROM InvoicePayment WHERE Id = ".$arrInvoicePayment['Id']);
-			}
+			}*/
 		}
 		
 		// Truncate the InvoiceOutput table
@@ -2241,12 +2241,12 @@
  		
  		$arrInvoiceColumns = Array();
  		$arrInvoiceColumns['Balance'] = NULL;
- 		$selNegativeInvoices	= new StatementSelect("Invoice", "Id, Account, AccountGroup, Balance", "Balance < 0", "CreatedOn ASC");
- 		$selPositiveInvoices	= new StatementSelect("Invoice", "Id, Balance, Status, InvoiceRun", "Balance > 0 AND Account = <Account>", "CreatedOn ASC");
+ 		$selNegativeInvoices	= new StatementSelect("Invoice", "Id, Account, AccountGroup, Balance", "Balance < 0 AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
+ 		$selPositiveInvoices	= new StatementSelect("Invoice", "Id, Balance, Status, InvoiceRun", "Balance > 0 AND Account = <Account> AND CURDATE() >= ADDDATE(CreatedOn, INTERVAL 3 DAY)", "CreatedOn ASC");
  		$ubiInvoice				= new StatementUpdateById("Invoice", $arrInvoiceColumns);
  		$insInvoicePayment		= new StatementInsert("InvoicePayment");
  		
- 		// Get all invoices with negative Balances
+ 		// Get all invoices with negative Balances and are more than 3 days old
  		$intCount = $selNegativeInvoices->Execute();
  		if ($intCount === FALSE)
  		{
