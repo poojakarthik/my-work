@@ -2571,7 +2571,10 @@
 			// Temp Invoice
 			$selInvoiceData	= new StatementSelect("InvoiceTemp", "InvoiceRun, CreatedOn AS BillingDate, SUM(Total) AS BillInvoiced, SUM(Tax) AS BillTax, COUNT(Id) AS InvoiceCount", "1", "CreatedOn", NULL, "InvoiceRun");
 		}
-		$selInvoiceData->Execute(Array('InvoiceRun' => $strInvoiceRun));
+		if (!$selInvoiceData->Execute(Array('InvoiceRun' => $strInvoiceRun)))
+		{
+			return FALSE;
+		}
 		$arrInvoiceRun = $selInvoiceData->Fetch();
 		
 		// Get additional Details
@@ -2598,6 +2601,11 @@
 		// Insert data to DB if flag is set & using committed invoices
 		if ($bolInsert && $strInvoiceRun)
 		{
+			// Try to delete an older version of this entry
+			$qryDelete = new Query();
+			$qryDelete->Execute("DELETE FROM InvoiceRun WHERE InvoiceRun = '$strInvoiceRun'");
+			
+			// Insert new data
 			$arrInvoiceRun['Id'] = $insInvoiceRun->Execute($arrInvoiceRun);
 		}
 		
