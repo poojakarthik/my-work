@@ -77,6 +77,9 @@ $GLOBALS['*arrConstant']	['CDRType']	[4]	['Constant']	= 'CDR_AAPT_STANDARD';
 $GLOBALS['*arrConstant']	['CDRType']	[4]	['Description']	= 'AAPT Usage';
 $GLOBALS['*arrConstant']	['CDRType']	[5]	['Constant']	= 'CDR_ISEEK_STANDARD';
 $GLOBALS['*arrConstant']	['CDRType']	[5]	['Description']	= 'iSeek Usage';
+$GLOBALS['*arrConstant']	['CDRType']	[6]	['Constant']	= 'CDR_ISEEK_BROADBAND';
+$GLOBALS['*arrConstant']	['CDRType']	[6]	['Description']	= 'iSeek Broadband Usage';
+
 
 // Provisioning Types
 define("PRV_IMPORT_RANGE_MIN"			, 100);

@@ -186,11 +186,12 @@
 		
 		// Create an instance of each Normalisation module
  		$this->_arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();
- 		$this->_arrNormalisationModule[CDR_UNTIEL_SE]			= new NormalisationModuleRSLCOM();
+ 		$this->_arrNormalisationModule[CDR_UNTIEL_SE]			&= $this->_arrNormalisationModule[CDR_UNITEL_RSLCOM];
  		$this->_arrNormalisationModule[CDR_ISEEK_STANDARD]		= new NormalisationModuleIseek();
  		$this->_arrNormalisationModule[CDR_UNITEL_COMMANDER]	= new NormalisationModuleCommander();
  		$this->_arrNormalisationModule[CDR_AAPT_STANDARD]		= new NormalisationModuleAAPT();
  		$this->_arrNormalisationModule[CDR_OPTUS_STANDARD]		= new NormalisationModuleOptus();
+ 		$this->_arrNormalisationModule[CDR_ISEEK_BROADBAND]		&= $this->_arrNormalisationModule[CDR_OPTUS_STANDARD];
 		
 		$this->_selCreditCDRs = new StatementSelect("CDR", "Id, FNN, Source, Destination, Cost, Units, StartDatetime", "Credit = 1 AND Status = ".CDR_RATED, NULL, "1000");
 		
@@ -238,7 +239,7 @@
 		$this->Framework->StartWatch();
 		
 		// Retrieve list of CDR Files marked as either ready to process, or failed process
-		$strWhere			= "Status = <status1> OR Status = <status2> AND Carrier != 10";
+		$strWhere			= "(Status = <status1> OR Status = <status2>) AND Carrier != 10";
 		$arrWhere[status1]	= CDRFILE_WAITING;
 		$arrWhere[status2]	= CDRFILE_REIMPORT;
 		$selSelectCDRFiles 	= new StatementSelect("FileImport", "*", $strWhere, NULL, $intLimit);
