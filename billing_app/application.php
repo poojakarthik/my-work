@@ -1048,6 +1048,17 @@
 			$this->_rptBillingReport->AddMessage(MSG_OK);
 		}
 		
+		// Generate InvoiceRun table entry
+		$this->_rptBillingReport->AddMessage("Generating Profit Data...", FALSE);
+		$arrResponse = CalculateProfitData($strInvoiceRun, TRUE);
+		if ($arrResponse['Id'])
+		{
+			$this->_rptBillingReport->AddMessage(MSG_OK);
+		}
+		else
+		{
+			$this->_rptBillingReport->AddMessage(MSG_FAILED);
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -2521,6 +2532,77 @@
 	 			return TRUE;
 	 			break;
 	 	}
+	 }
+	 
+	 
+	 
+  	//------------------------------------------------------------------------//
+	// CalculateProfitData()
+	//------------------------------------------------------------------------//
+	/**
+	 * CalculateProfitData()
+	 *
+	 * Calculates Profit Data for an Invoice Run
+	 *
+	 * Calculates Profit Data for an Invoice Run.  
+	 * 
+	 * @param	string	$strInvoiceRun	optional	InvoiceRun of the committed invoice.  If blank, then uses InvoiceTemp
+	 * @param	boolean	$bolInsert		optional	TRUE: Add to InvoiceRun table; FALSE: Don't Insert
+	 * 												NOTE: Will not insert at all if $strInvoiceRun is NULL (Temp Invoices)
+	 * 
+	 * @return	array								DB Array of InvoiceRun table insert data
+	 *
+	 * @method
+	 */
+	 function CalculateProfitData($strInvoiceRun = NULL, $bolInsert = FALSE)
+	 {
+		$selCDRTotals		= new StatementSelect("CDR", "SUM(Cost) AS BillCost, SUM(Charge) AS BillRated", "InvoiceRun = <InvoiceRun>");
+		$selChargeTotals	= new StatementSelect("Charge", "SUM(CASE WHEN Nature = 'CR' THEN (0 - Amount) ELSE Amount END) AS Total", "InvoiceRun = <InvoiceRun>");
+		$insInvoiceRun		= new StatementInsert("InvoiceRun");
+		
+		// Get InvoiceRun data
+		if ($strInvoiceRun)
+		{
+			// Committed Invoice
+			$selInvoiceData	= new StatementSelect("Invoice", "InvoiceRun, CreatedOn AS BillingDate, SUM(Total) AS BillInvoiced, SUM(Tax) AS BillTax, COUNT(Id) AS InvoiceCount", "InvoiceRun = <InvoiceRun>", "CreatedOn", NULL, "InvoiceRun");
+		}
+		else
+		{
+			// Temp Invoice
+			$selInvoiceData	= new StatementSelect("InvoiceTemp", "InvoiceRun, CreatedOn AS BillingDate, SUM(Total) AS BillInvoiced, SUM(Tax) AS BillTax, COUNT(Id) AS InvoiceCount", "1", "CreatedOn", NULL, "InvoiceRun");
+		}
+		$selInvoiceData->Execute(Array('InvoiceRun' => $strInvoiceRun));
+		$arrInvoiceRun = $selInvoiceData->Fetch();
+		
+		// Get additional Details
+		$selCDRTotals->Execute($arrInvoiceRun);
+		$arrInvoiceRun = array_merge($arrInvoiceRun, $selCDRTotals->Fetch());
+		$selChargeTotals->Execute($arrInvoiceRun);
+		$arrChargeTotals = $selChargeTotals->Fetch();
+		$arrInvoiceRun['BillRated'] += $arrChargeTotals['Total'];
+		
+		// Handle Etech Invoices
+		if (!$arrInvoiceRun['BillCost'])
+		{
+			$arrInvoiceRun['BillCost']		= 0;
+			$arrInvoiceRun['BillRated']		= 0;
+		}
+		
+		// Date hack for invoice run on the 30th
+		$arrDate = explode('-', $arrInvoiceRun['BillDate']);
+		if ((int)$arrDate[2] >= 28)
+		{
+			$arrInvoiceRun['BillDate'] = date("Y-m-d", strtotime("+1 month", strtotime("{$arrDate[0]}-$arrDate[1]-01")));
+		}
+		
+		// Insert data to DB if flag is set & using committed invoices
+		if ($bolInsert && $strInvoiceRun)
+		{
+			$arrInvoiceRun['Id'] = $insInvoiceRun->Execute($arrInvoiceRun);
+		}
+		
+		$arrInvoiceRun['ProfitMargin']	= ($arrInvoiceRun['BillInvoiced'] - $arrInvoiceRun['BillCost']) / abs($arrInvoiceRun['BillInvoiced']);
+		return $arrInvoiceRun;
 	 }
  }
 
