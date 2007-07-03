@@ -103,6 +103,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='PopupMedium'>\n";
 		echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
 		
+		// HACK HACK HACK
 		// currently this javascript file has to be included here, otherwise it is not instantiated before other calls
 		// to it get executed
 		echo "<script type='text/javascript' src='javascript/validate_adjustment.js'></script>\n";
@@ -123,18 +124,29 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			DBO()->Account->TradingName->RenderOutput();
 		}
 		
+		DBO()->ChargeType->Id->RenderHidden();
+		//TODO!I think I should add some javascript here that loads the previously selected option into ChargeTypeCombo, if one has been selected
+		if (DBO()->ChargeType->IsInvalid())
+		{
+			$strChargeTypeComboClass = "class='DefaultInvalidInput'";  //This is not currently working
+		}
+		else
+		{
+			$strChargeTypeComboClass = "";
+		}
+		
 		// create a combobox containing all the charge types
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		//echo "      <select name='ChargeType.ChargeType' id='ChargeType.ChargeType' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
-		echo "      <select id='ChargeType.ChargeType' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
-		echo "         <option id='ChargeTypeNotSelected' value='NoSelection'>&nbsp;</option>\n";
-		foreach (DBL()->ChargeType as $dboChargeType)
+		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "         <option id='ChargeTypeNotSelected' $strChargeTypeComboClass value='NoSelection'>&nbsp;</option>\n";
+		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$strChargeType = $dboChargeType->ChargeType->Value;
 			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value;
-			echo "         <option id='ChargeType.$strChargeType' value='$strChargeType'>$strDescription</option>\n";
+			echo "         <option id='ChargeType.$strChargeType'  $strChargeTypeComboClass value='$strChargeType'>$strDescription</option>\n";
 			
 			// add ChargeType details to an array that will be passed to the javascript that handles events on th
 			$arrChargeTypeData['Nature']	= $dboChargeType->Nature->Value;
@@ -149,17 +161,18 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
-		DBO()->ChargeType->Id = "";
-		DBO()->ChargeType->Id->RenderHidden();
+		
+		//TODO!if DBO()->ChargeType->IsInvalid() then you want to highlight the ChargeTypeCombo pink
+		
 		
 		// display the charge code when the Charge Type has been selected
-		DBO()->Charge->ChargeType->RenderOutput();
+		DBO()->ChargeType->ChargeType->RenderOutput();
 		
 		// display the description
 		DBO()->ChargeType->Description->RenderOutput();
 		
 		// display the nature of the charge
-		DBO()->Charge->Nature->RenderOutput();
+		DBO()->ChargeType->Nature->RenderOutput();
 		
 		DBO()->Charge->Amount->RenderInput();
 		
@@ -181,15 +194,14 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// Create a textbox for including a note
 		DBO()->Charge->Notes->RenderInput();
 		
+		// Render the status message, if there is one
+		DBO()->Status->Message->RenderOutput();
 		
 		// create the submit button
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		//echo "   <input type='button' id='btnAddAdjustment' value='Add Adjustment &#xBB;' class='input-submit' onclick='Vixen.ValidateAdjustment.AddAdjustment()'>Click Me</input>\n";
-		//echo "<button class='input-submit' id='btnAddAdjustment' value='submit' onclick='javascript:alert(document.getElementById(\"btnAddAdjustment\").value)'>Hey hey</button>\n";
+		echo "<input type='button' value='Close' class='InputSubmit' onclick=\"Vixen.Popup.Close('AddAdjustmentPopupId');\"></input>\n";
 		$this->AjaxSubmit("Add Adjustment");
-		//echo "<input type='submit' name='btnAddAdjustment' value='ThisIsTheValue'>HeyHey</submit>\n";
-		//echo "<label for='btnAddAdjustment'>TESTING</label>\n";
 		echo "</div>\n";
 		
 		// define the data required of the javacode that handles events and validation of this form

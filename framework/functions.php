@@ -1586,6 +1586,29 @@ function RoundCurrency($fltValue, $intPlaces = 4)
 }
 
 //------------------------------------------------------------------------//
+// Json
+//------------------------------------------------------------------------//
+/**
+ * Json()
+ *
+ * Returns the singleton Json object
+ *
+ * Returns the singleton Json object
+ * Note that this will return a new Json object if one has not yet been
+ * created.  If one has been created, it will return a reference to it.
+ *
+ * @return	Json object
+ *
+ * @function
+ * 
+ */
+function Json()
+{
+	$objJson = Singleton::Instance('Services_JSON');
+	return $objJson;
+}
+
+//------------------------------------------------------------------------//
 // AjaxRecieve INCOMPLETE
 //------------------------------------------------------------------------//
 /**
@@ -1604,10 +1627,11 @@ function RoundCurrency($fltValue, $intPlaces = 4)
  */
 function AjaxRecieve()
 {
-	$json = new Services_JSON();
+	//$json = new Services_JSON();
 	// get the JSON object and decode it into an object
 	$input = file_get_contents('php://input', 1000000);
-	$input = $json->decode($input);
+	//$input = $json->decode($input);
+	$input = Json()->decode($input);
 	
 	// expected to return an array of data if a connection was made
 	// or false if not
@@ -1632,8 +1656,9 @@ function AjaxRecieve()
  */
 function AjaxReply($arrReply)
 {
-	$json = new Services_JSON();
-	echo $json->encode($arrReply);
+	echo Json()->encode($arrReply);
+	//$json = new Services_JSON();
+	//echo $json->encode($arrReply);
 }
 
 

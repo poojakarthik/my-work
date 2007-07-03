@@ -1221,7 +1221,7 @@ class Validation
 	 * Checks if a value is in a valid monetary format.
 	 * The valid format is a float that can start with a '$' char
 	 *
-	 * @param	mix			$mixValue		the value to validate
+	 * @param	mix			$mixValue		value to validate
 	 * 
 	 * @return	bool
 	 *
@@ -1234,12 +1234,40 @@ class Validation
 		$mixValue = ltrim($mixValue, "$");
 		
 		//check that the value is a float
-		list($fltValue) = sscanf($mixValue, "%f");
+		list($fltValue, $strAppendedText) = sscanf($mixValue, "%f%s");
 		
-		if (isset($fltValue) && ($fltValue == $mixValue))
+		if ($strAppendedText)
 		{
+			// there was some text asfter the float
+			return FALSE;
 		}
 		
+		return (isset($fltValue));
+	}
+	
+	//------------------------------------------------------------------------//
+	// IsNotNullOrZero
+	//------------------------------------------------------------------------//
+	/**
+	 * IsNotNullOrZero()
+	 *
+	 * Returns TRUE if the value is not NULL or ZERO, else returns FALSE
+	 *
+	 * Returns TRUE if the value is not NULL or ZERO, else returns FALSE
+	 * 
+	 *
+	 * @param	mix			$mixValue		value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function IsNotNullOrZero($mixValue)
+	{
+		if (!$mixValue)
+		{
+			return FALSE;
+		}
 		return TRUE;
 	}
 	
@@ -1558,6 +1586,80 @@ class ContextMenuFramework
 
 }
 
+//----------------------------------------------------------------------------//
+// AjaxFramework
+//----------------------------------------------------------------------------//
+/**
+ * AjaxFramework
+ *
+ * Ajax container
+ *
+ * Ajax container. Manages the construction of a JSON object to send as a reply for an AJAX request
+ *
+ * @prefix	ajax
+ *
+ * @package	ui_app
+ * @class	AjaxFramework
+ */
+class AjaxFramework
+{
+	//------------------------------------------------------------------------//
+	// _arrCommands
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrCommands
+	 *
+	 * List of commands which will be handled by the Vixen.Ajax.HandleReply
+	 *
+	 * List of commands which will be handled by the Vixen.Ajax.HandleReply
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
+	private $_arrCommands = Array();
+	
+	//------------------------------------------------------------------------//
+	// Reply
+	//------------------------------------------------------------------------//
+	/**
+	 * Reply()
+	 *
+	 * Sends the list of commands as an AjaxReply
+	 *
+	 * Sends the list of commands as an AjaxReply
+	 * 
+	 * @return	void		
+	 *
+	 * @method
+	 */
+	function Reply()
+	{
+		return AjaxReply($this->_arrCommands);
+	}
+	
+	//------------------------------------------------------------------------//
+	// AddCommand
+	//------------------------------------------------------------------------//
+	/**
+	 * AddCommand()
+	 *
+	 * Adds a javascript command to the list of commands that will be returned to Vixen.Ajax.HandleReply
+	 *
+	 * Adds a javascript command to the list of commands that will be returned to Vixen.Ajax.HandleReply
+	 * 
+	 * @param	string		$strType	command type
+	 * @param	mixed		$mixData	command data
+	 *
+	 * @method
+	 */
+	function AddCommand($strType, $mixData=NULL)
+	{
+		$arrCommand['Type'] = $strType;
+		$arrCommand['Data'] = $mixData;
+		$this->_arrCommands[] = $arrCommand;
+	}
+}
 
 //----------------------------------------------------------------------------//
 // HrefFramework

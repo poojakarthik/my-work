@@ -15,17 +15,50 @@
  */
 function VixenPopupClass()
 {
-	this.strSourceCode = "";
+	this.strContentCode = "";
 
-	this.ViewSourceCode = function()
+	this.ViewContentCode = function()
 	{
 		//Vixen.debug = TRUE;
 		//debug(this.strSourceCode);
-		alert(this.strSourceCode);
+		alert(this.strContentCode);
 	}
 
+	this.Exists = function(strId)
+	{
+		elmExists = document.getElementById('VixenPopup__' + strId);
+		if (elmExists)
+		{
+			return TRUE;
+		}
+		return FALSE;
+	}
+	
+	this.SetContent = function(strId, strContent)
+	{
+		//check that the popup exists; if it doesn't then return false
+		if (!(this.Exists(strId)))
+		{
+			return FALSE;
+		}
+		
+		// Retrieve the popup element
+		elmPopupContent = document.getElementById("VixenPopupContent__" + strId);
+		
+		// Set the content of the popup box
+		if (!strContent)
+		{
+			strContent = "No data<br />Id: " + strId;
+		}
+				
+		this.strContentCode = strContent;
 
-	this.Create = function(strContent, strId, strSize, mixPosition, strModal)
+		// Add the popup to the holder
+		elmPopupContent.innerHTML = strContent;
+		return TRUE;
+	}
+
+	this.Create = function(strId, strContent, strSize, mixPosition, strModal)
 	{
 		// Try to find a previous popup
 		elmExists = document.getElementById('VixenPopup__' + strId);
@@ -50,13 +83,16 @@ function VixenPopupClass()
 			strContent = "No data<br />Id: " + strId;
 		}
 				
+		this.strContentCode = strContent;
+		
 		strContent = 
 		"<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
 		"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(" + strTempId + ")'>" + 
-		"<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewSourceCode()'>" +
+		"<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()'>" +
 		"TelcoBlue Internal System" +
-		"</div>" +	strContent;
-		this.strSourceCode = strContent;
+		"</div>" + 
+		"<div id='VixenPopupContent__" + strId + "'>" + strContent + "</div>";
+		
 
 		// Add the popup to the holder
 		//elmPopup.style.visibility = 'visible';			

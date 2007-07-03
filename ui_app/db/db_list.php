@@ -601,6 +601,30 @@ class DBList extends DBListBase
 	{
 		return $this->_arrColumns;
 	}
+	
+	//------------------------------------------------------------------------//
+	// SetTable
+	//------------------------------------------------------------------------//
+	/**
+	 * SetTable()
+	 *
+	 * Set the table associated with this DBList
+	 *
+	 * Set the table associated with this DBList
+	 * 
+	 * @param	string		$strTable	name of the table.  Note that this can be
+	 *									anything that can go in a SQL "FROM" clause.
+	 *									tables can be joined so long as you specify how
+	 *
+	 * @return	string					returns the data attribute storing the table name ($_strTable)
+	 *
+	 * @method
+	 */
+	function SetTable($strTable)
+	{
+		return $this->_strTable = $strTable;
+	}
+
 
 }
 ?>

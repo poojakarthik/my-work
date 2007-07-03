@@ -65,7 +65,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
 
-		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
@@ -73,20 +72,111 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
-
-		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
-		//check if the form was submitted
+		
 		if (SubmittedForm('AddAdjustment', 'Add Adjustment'))
 		{
-			//Save the AccountDetails
-			if (!DBO()->Account->IsInvalid() && !DBO()->Charge->IsInvalid() && !DBO()->ChargeType->IsInvalid)
+			//DBO()->ChargeTypeSelected->Id = DBO()->ChargeType->Id->Value;
+			
+			// Load the relating Account and ChargeType records
+			DBO()->ChargeType->Load();
+
+			// Define all the required properties for the Charge record
+			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
 			{
-				DBO()->ChargeType->Load();
-				DBO()->Charge->Account = DBO()->Account->Id->value;
-				DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->value;
-				
+				DBO()->Charge->Account = DBO()->Account->Id->Value;
+				DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->Value;
 				$dboUser = GetAuthenticatedUserDBObject();
+				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
+				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
+				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
+				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
+				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
 				
+				// if DBO()->Charge->Invoice->Value == 0 then set it to NULL;
+				if (!DBO()->Charge->Invoice->Value)
+				{
+					DBO()->Charge->Invoice = NULL;
+				}
+				
+				// status is dependent on the nature of the charge
+				if (DBO()->Charge->Nature->Value == "CR")
+				{
+					DBO()->Charge->Status	= CHARGE_WAITING;
+				}
+				else
+				{
+					DBO()->Charge->Status	= CHARGE_APPROVED;
+				}
+
+				// Add the adjustment to the charge table of the database
+				if (!DBO()->Charge->Save())
+				{
+					//echo "The charge did not save\n";
+					DBO()->Status->Message = "The adjustment did not save";
+				}
+				else
+				{
+					//echo "Saved<br>\n";
+					DBO()->Status->Message = "The adjustment was successfully saved";
+					
+				}
+			}
+			else
+			{
+				// something was invalid 
+				// the HtmlTemplate will check if DBO()->Charge exists and is valid, if it is not then it will 
+				// render the invalid properties using CONTEXT_INVALID
+				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are shown in red";
+			}
+		}
+		
+		// Load all charge types that aren't archived
+		DBL()->ChargeTypesAvailable->Archived = 0;
+		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC");
+		DBL()->ChargeTypesAvailable->Load();
+
+		// load the last 6 invoices with the most recent being first
+		DBL()->Invoice->Account = DBO()->Account->Id->Value;
+		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->Invoice->SetLimit(6);
+		DBL()->Invoice->Load();
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('adjustment_add');
+
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// InsertAdjustment  (This was made to be run in AJAX_MODE with the idea that it won't create a page)
+	//------------------------------------------------------------------------//
+	/**
+	 * InsertAdjustment()
+	 *
+	 * Inserts a new record into the Charge table
+	 * 
+	 * Inserts a new record into the Charge table
+	 * Also creates the reply JSON object that is sent back to the javascript ajaxHandler that called it
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function InsertAdjustment()
+	{
+		if (SubmittedForm('AddAdjustment', 'AddAdjustment'))
+		{
+			// Load the relating Account and ChargeType records
+			DBO()->Account->Load();
+			DBO()->ChargeType->Load();
+
+			// Define all the required properties for the Charge record
+			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
+			{
+				DBO()->Charge->Account = DBO()->Account->Id->Value;
+				DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->Value;
+				$dboUser = GetAuthenticatedUserDBObject();
 				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
 				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
 				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
@@ -109,30 +199,17 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					echo "The charge did not save";
 					die;
 				}
-echo "Saved<br>\n";				
+				echo "Saved<br>\n";
+				die;
 			}
+			die;
+		}
+		else
+		{
+			echo "SubmittedForm('AddAdjustment','AddAdjustment') returned false\n";
+			die;
 		}
 		
-		
-		// Check if this charge is being added to a service, instead of an account
-		//TODO! Joel: check if DBO()->Serivce->Id has been set.  
-		// Currently you can not add an adjustment to a service using the 
-		// invoices_and_payments page, so it will not be implemented at this stage
-		
-		// Load all charge types that aren't archived
-		DBL()->ChargeType->Archived = 0;
-		DBL()->ChargeType->OrderBy("Nature DESC");
-		DBL()->ChargeType->Load();
-		
-		// load the last 6 invoices with the most recent being first
-		DBL()->Invoice->Account = DBO()->Account->Id->Value;
-		DBL()->Invoice->OrderBy("CreatedOn DESC");
-		DBL()->Invoice->SetLimit(6);
-		DBL()->Invoice->Load();
-		
-		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('adjustment_add');
-
-		return TRUE;
 	}
+	
 }

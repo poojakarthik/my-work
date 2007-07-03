@@ -147,13 +147,15 @@ class HTMLElements
 		$strValue = $this->BuildOutputValue($arrParams);
 		$strValue = nl2br($strValue);
 		
+		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strClass	= "{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}";
+		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
-		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}'>\n";
 		// create the input box
-		$strHtml .= "		<input type='text' id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' value='$strValue'/>\n";
-		$strHtml .= "   </div>\n";
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "		<input type='text' id='$strId' name='$strName' value='$strValue' class='$strClass'/>\n";
+		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		
 		return $strHtml;

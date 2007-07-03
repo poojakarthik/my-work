@@ -196,14 +196,13 @@ function VixenAjaxClass()
 	{
 		// store our object before sending, along with a transaction ID
 		//this.objData = objObject;
-		//alert("Vixen.Ajax.Send() has been called. objObject.Class = " + objObject.Class);
+
 		// set the target page
 		var page_url = "ajax_link.php";
 		
 		// register the callbacks
 		var local_handle_reply = this.HandleReply;
 		var local_handle_error = this.HandleError;
-//alert("Target type = " + objObject.TargetType);
 
 		switch (objObject.TargetType)
 		{
@@ -260,51 +259,71 @@ function VixenAjaxClass()
 	// AJAX handle_reply
 	this.HandleReply = function(strReply, objObject)
 	{
-		//alert(strReply);
-		// the reply is a JSON string, need to eval it to get an object
-		if (objObject.HtmlMode)
-		{
-//alert("Ajax.HandleReply: objObject.HtmlMode == TRUE");
-			switch (objObject.TargetType)
-			{
-				case "Popup":
-					//strContent, strId, strSize, mixPosition, strModal						
-					Vixen.Popup.Create(strReply, objObject.strId, objObject.strSize, "centre", "modal");
-					break;
-				case "Div":
-					break;
-				default:
-					ajaxError(null, strReply);
-			}
-		}
 		var objData = {};
-		try
-		{
-//alert("try: Begining. strReply = " + strReply);
-			// convert reply into data object
-			eval("objData = " + strReply);
-//alert("try: eval('objData = ' + strReply)");
-//alert(objData);
-			if (objData)
-			{
-				ajaxHandler(FALSE);
-				return;
-			}
 		
-			ajaxHandler(objData);
-		}
-		catch(er)
+		//if the reply starts with "//JSON" then this is a json object storing a list of commands
+		if (strReply.substr(0, 6) == "//JSON")
 		{
-			ajaxError(er, strReply);
+			// we are working with a JSON object so convert it to a javascript object
+			try
+			{
+				// convert reply into data object
+				eval("objData = " + strReply);
+				if (!objData)
+				{
+					ajaxHandler(FALSE);
+					return;
+				}
+			
+				ajaxHandler(objData);
+			}
+			catch(er)
+			{
+				ajaxError(er, strReply);
+			}
+		}
+		else
+		{
+			// the reply must be HTML code
+			if (objObject.HtmlMode)
+			{
+				switch (objObject.TargetType)
+				{
+					case "Popup":
+						if (Vixen.Popup.Exists(objObject.strId))
+						{
+							Vixen.Popup.SetContent(objObject.strId, strReply);
+						}
+						else
+						{
+							Vixen.Popup.Create(objObject.strId, strReply, objObject.strSize, "centre", "modal");
+						}
+						break;
+					case "Div":
+						break;
+					default:
+						ajaxError(null, strReply);
+				}
+			}
 		}
 		
 		// clean up
 		delete(strReply);
 		delete(objData);
 	}	
-			
+	
+	// Handle each command in the AJAX reply
 	this.ajaxHandler = function(objInput)
 	{
+		for (intKey in objInput)
+		{
+			switch (objInput[intKey].Type)
+			{
+				default:
+					alert("Don't know how to process command type '" + objInput[intKey].Type + "'");
+					break;
+			}
+		}
 		
 	}
 	

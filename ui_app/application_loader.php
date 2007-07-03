@@ -63,6 +63,7 @@ define('DATABASE_PWORD', V1x3n);
 define('CONTEXT_DEFAULT', 0);
 define('CONTEXT_SUPRESS_LABEL', 1);
 define('CONTEXT_TABLE_ROW', 2);
+define('CONTEXT_INVALID', 10);
 
 define('OUTPUT_TYPE_LABEL', 1);
 define('OUTPUT_TYPE_RADIO', 2);
@@ -382,9 +383,9 @@ class Application
 		}
 		else
 		{
-			echo "Mode == AJAX_MODE.  This is currently not handled\n";
 			// Send back AJAX data as JSON
-			//AjaxReply(Array("yay","yayas"));
+			//AjaxReply($mixReply);
+			Ajax()->Reply();
 		}
 	}
 	
@@ -800,7 +801,7 @@ class HtmlTemplate extends BaseTemplate
 		echo "<input type='submit' class='$strStyleClass' name='VixenButtonId' value='$strLabel'></input>\n";
 	}
 	
-	function AjaxSubmit($strLabel, $intOutputMode=AJAX_MODE, $strTemplate=NULL, $strMethod=NULL, $strStyleClass="InputSubmit")
+	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strStyleClass="InputSubmit")
 	{
 		if (!$strTemplate)
 		{
@@ -817,8 +818,6 @@ class HtmlTemplate extends BaseTemplate
 			$strId = $this->_objAjax->strId;
 			$strSize = $this->_objAjax->strSize;
 		}
-		
-		//TODO! What do we do with $intOutputMode?
 		
 		echo "<input type='button' value='$strLabel' class='$strStyleClass' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\"></input>\n";
 	}
@@ -1037,6 +1036,7 @@ class SubmittedData
 	 * Attempts to convert each variable from $_GET into a DBObject in DBO()
 	 *
 	 * Attempts to convert each variable from $_GET into a DBObject in DBO()
+	 * Also handles the submitted form's Id and the submitted button's Id
 	 *
 	 *
 	 * @return	boolean
@@ -1067,6 +1067,7 @@ class SubmittedData
 	 * Attempts to convert each variable from $_POST into a DBObject in DBO()
 	 *
 	 * Attempts to convert each variable from $_POST into a DBObject in DBO()
+	 * Also handles the submitted form's Id and the submitted button's Id
 	 *
 	 *
 	 * @return	boolean
@@ -1127,6 +1128,7 @@ class SubmittedData
 	 * Attempts to convert AJAX data into DBObjects in DBO()
 	 *
 	 * Attempts to convert AJAX data into DBObjects in DBO()
+	 * Also handles the submitted form's Id and the submitted button's Id
 	 *
 	 * @return	boolean
 	 *
@@ -1135,16 +1137,16 @@ class SubmittedData
 	function Ajax()
 	{
 		// Get Ajax Data
-		$objAjax = AjaxReceive();
+		$objAjax = AjaxRecieve();
 
 		// get form Id and Button Id
 		if ($objAjax->FormId)
 		{
-			$GLOBALS['*SubmittedForm'] = $objAjax->FormId;	
+			$GLOBALS['*SubmittedForm'] = $objAjax->FormId;
 		}
 		if ($objAjax->ButtonId)
 		{
-			$GLOBALS['*SubmittedButton'] = $objAjax->ButtonId;	
+			$GLOBALS['*SubmittedButton'] = $objAjax->ButtonId;
 		}
 
 		// for each post variable

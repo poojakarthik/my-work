@@ -138,58 +138,6 @@ function ImplodeTables($arrTables)
 	return implode(', ', $arrReturn);
 }
 
-
-//------------------------------------------------------------------------//
-// AjaxReceive INCOMPLETE
-//------------------------------------------------------------------------//
-/**
- * AjaxReceive()
- * 
- * Function to act as a receiver for AJAX data.  
- * 
- * Function to act as a receiver for AJAX data. Converts to and from JSON format.
- *
- * @return	str				
- *
- * @brokenreturn
- * @comments
- * 
- * @function
- */
-function AjaxReceive()
-{
-	$objJson = Json();
-	// get the JSON object and decode it into an object
-	$strInput = file_get_contents('php://input', 1000000);
-	$strInput = $objJson->decode($strInput);
-	
-	// expected to return an array of data if a connection was made
-	// or false if not
-	return $strInput;
-}
-
-//------------------------------------------------------------------------//
-// AjaxReply
-//------------------------------------------------------------------------//
-/**
- * AjaxReply()
- * 
- * Send data via AJAX.
- * 
- * Send data via AJAX.
- *
- * @param	array	$arrReply				The array of data to send
- *
- * @return	void 
- *
- * @function
- */
-function _AjaxReply($arrReply)
-{
-	$objJson = Json();
-	echo $objJson->encode($arrReply);
-}
-
 //------------------------------------------------------------------------//
 // Config
 //------------------------------------------------------------------------//
@@ -213,28 +161,6 @@ function Config()
 	return $objConfig;
 }
 
-//------------------------------------------------------------------------//
-// Json
-//------------------------------------------------------------------------//
-/**
- * Json()
- *
- * Returns the singleton Json object
- *
- * Returns the singleton Json object
- * Note that this will return a new Json object if one has not yet been
- * created.  If one has been created, it will return a reference to it.
- *
- * @return	Json object
- *
- * @function
- * 
- */
-function Json()
-{
-	$objJson = Singleton::Instance('Services_JSON');
-	return $objJson;
-}
 
 //------------------------------------------------------------------------//
 // HTMLElements
@@ -279,6 +205,28 @@ function Href()
 	$objHrefFramework = Singleton::Instance('HrefFramework');
 	return $objHrefFramework;
 }
+
+//------------------------------------------------------------------------//
+// Ajax
+//------------------------------------------------------------------------//
+/**
+ * Ajax()
+ *
+ * Returns the singleton AjaxFramework object
+ *
+ * Returns the singleton AjaxFramework object
+ *
+ * @return	AjaxFramework object
+ *
+ * @function
+ * 
+ */
+function Ajax()
+{
+	$objAjaxFramework = Singleton::Instance('AjaxFramework');
+	return $objAjaxFramework;
+}
+
 
 //------------------------------------------------------------------------//
 // PropertyToken
