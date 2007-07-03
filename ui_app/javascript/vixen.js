@@ -92,7 +92,7 @@ Vixen = new VixenRootClass();
  * @package	framework_ui
  */
 var dwin = null;
-function debug(msg, bolFullShow)
+function debug(mixMsg, bolFullShow)
 {
 	// Check for debug mode (set when page loads by php, check vixen_header) 
 	if (!Vixen.debug)
@@ -111,12 +111,13 @@ function debug(msg, bolFullShow)
 	{
 		// Optional, show full tree listing of object (recursive)
 		//  uses a chopped version of JSON stringify
-		strDebug = DEBUG.fstringify(msg);
+		//  will die if object is cyclic
+		strDebug = DEBUG.fstringify(mixMsg);
 	}
 	else
 	{
 		// Otherwise, just show whatever it is passed in
-		strDebug = msg;
+		strDebug = mixMsg;
 	}
 	dwin.document.writeln('<br />'+strDebug + '');
 	dwin.scrollTo(0,10000);

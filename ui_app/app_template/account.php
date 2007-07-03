@@ -226,4 +226,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	
 	}
 	
+
+    //----- DO NOT REMOVE -----//
+	
 }
