@@ -26,11 +26,11 @@ $appBilling = new ApplicationBilling($arrConfig);
 //----------------------------------------------------------------------------//
 
 // TODO:Sean -> Put the InvoiceRun Here
-$strInvoiceRun = "46362bac43428";
+$strInvoiceRun = "46869bf443d26";
 
 // TODO:Sean -> Put the Account numbers here!
 $arrAccounts = Array();
-$arrAccounts[]	= 1000155675;
+$arrAccounts[]	= 1000005197;
 
 /*$selAccounts = new StatementSelect("Charge", "Account", "InvoiceRun = '$strInvoiceRun'", NULL, NULL, "Account HAVING COUNT(Id) > 1");
 $selAccounts->Execute();
@@ -55,7 +55,7 @@ if (ob_get_length() === false) {
     ob_start();
 }
 
-$selInvoice = new StatementSelect("Invoice", "*", "Account = <Account> AND InvoiceRun = '$strInvoiceRun'");
+$selInvoice = new StatementSelect("InvoiceTemp", "*", "Account = <Account> AND InvoiceRun = '$strInvoiceRun'");
 $strFileData = "";
 foreach ($arrAccounts as $intAccount)
 {
@@ -82,7 +82,7 @@ $strFileData .= "0019" .
 				str_pad(0, 10, "0", STR_PAD_LEFT) .
 				str_pad(0, 10, "0", STR_PAD_LEFT);
 	Debug($strFileData);
-	//die;
+	die;
 Debug(count($arrAccounts));
 
 				

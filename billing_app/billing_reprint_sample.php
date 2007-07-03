@@ -89,6 +89,7 @@ $arrAccounts[]	= 1000155313;
 $arrAccounts[]	= 1000160299;
 $arrAccounts[]  = 1000007119;
 $arrAccounts[]	= 1000162429;
+$arrAccounts[]	= 1000163167;
 
 // ELB Accounts
 $arrAccounts[]	= 1000156611;
@@ -170,7 +171,7 @@ while (($intLastDownload + 60) > time())
 	$intPDFCount = 0;
 	foreach ($arrDirList as $strDir)
 	{
-		if (ftp_chdir($ptrConnection, $strDirectory.$strDir))
+		if (@ftp_chdir($ptrConnection, $strDirectory.$strDir))
 		{
 			$arrFiles = ftp_nlist($ptrConnection, "*");
 			foreach ($arrFiles as $strFile)
@@ -210,7 +211,8 @@ chdir($strDownloadDir);
 $strZipname = date("F", strtotime("-1 day", time()))." Signoff Samples"; 
 echo shell_exec("zip -qj '$strZipname' *.pdf");
 echo shell_exec("zipsplit -n 5242880 '$strZipname'");
-die;
+
+/*
 // Email
 $arrHeaders = Array	(
 						'From'		=> "billing@telcoblue.com.au",
@@ -218,7 +220,7 @@ $arrHeaders = Array	(
 					);
 $mimMime = new Mail_mime("\n");
 $mimMime->setTXTBody("Here are the final sign-off PDFs for the ".date("F", strtotime("-1 day", time()))." billing period.");
-$mimMime->addAttachment($strZipname, 'application/zip');
+$mimMime->addAttachment("$strDownloadDir{$strZipname}.zip", 'application/zip');
 $strBody = $mimMime->get();
 $strHeaders = $mimMime->headers($arrHeaders);
 $emlMail =& Mail::factory('mail');
@@ -226,7 +228,7 @@ $emlMail =& Mail::factory('mail');
 // Send the email
 $strEmail = "adele.k@telcoblue.com.au, andrew.p@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rich@voiptelsystems.com.au";
 $emlMail->send($strEmail, $strHeaders, $strBody);
-
+*/
 
 // finished
 echo("\n\n-- End of Billing --\n");

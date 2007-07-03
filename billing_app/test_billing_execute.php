@@ -11,14 +11,14 @@ $appBilling = new ApplicationBilling($arrConfig);
 // Use transactions so we don't fuck the database :D
 $appBilling->db->TransactionStart();
 
-$selAccounts = new StatementSelect("Account", "*", "Id = 1000155226");
+$selAccounts = new StatementSelect("Account", "*", "Id = 1000155448");
 $selAccounts->Execute();
 $arrAccounts = $selAccounts->FetchAll();
 
-$appBilling->_strInvoiceRun = "465a21828604a";
-Debug($appBilling->GenerateInvoices($arrAccounts, TRUE));
+$appBilling->_strInvoiceRun = "465f4b2218916";
+/*Debug(*/$appBilling->GenerateInvoices($arrAccounts, TRUE)/*)*/;
 
-$appBilling->Revoke();
+//$appBilling->Revoke();
 
 $appBilling->db->TransactionRollback();
 ?>

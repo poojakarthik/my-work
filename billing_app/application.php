@@ -2601,7 +2601,7 @@
 			$arrInvoiceRun['Id'] = $insInvoiceRun->Execute($arrInvoiceRun);
 		}
 		
-		$arrInvoiceRun['ProfitMargin']	= ($arrInvoiceRun['BillInvoiced'] - $arrInvoiceRun['BillCost']) / abs($arrInvoiceRun['BillInvoiced']);
+		$arrInvoiceRun['ProfitMargin']	= round((($arrInvoiceRun['BillInvoiced'] - $arrInvoiceRun['BillCost']) / abs($arrInvoiceRun['BillInvoiced'])) * 100, 2)."%";
 		return $arrInvoiceRun;
 	 }
  }
