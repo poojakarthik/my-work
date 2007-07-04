@@ -1552,7 +1552,7 @@ function CliEcho($strOutput, $bolNewLine=TRUE)
 	}
 	$stdout = $GLOBALS['**stdout'];
 	$strOutput .= ($bolNewLine) ? "\n" : "";
-	fwrite($stdout, $strOutput."\n");
+	fwrite($stdout, $strOutput);
 }
 
 //------------------------------------------------------------------------//
@@ -2219,6 +2219,34 @@ function Donkey()
        \_\  \_\        \_\\
 
 <?php
+}
+
+//------------------------------------------------------------------------//
+// ArchiveAccounts()
+//------------------------------------------------------------------------//
+/**
+ * ArchiveAccounts()
+ *
+ * Bulk Archives Accounts
+ *
+ * Bulk Archives Accounts
+ *
+ * @param		array	$arrArray		Array of Accounts to Archive
+ * 
+ * @return		integer					Number of Accounts affected
+ *
+ * @method
+ */ 
+function ArchiveAccounts($arrAccounts)
+{
+	if (!$arrAccounts)
+	{
+		return 0;
+	}
+	
+	$strIn = implode(', ', $arrAccounts);
+	$updAccounts = new StatementUpdate("Account", "Id IN ($strIn)", Array('Archived' => 1));
+	return $updAccounts->Execute(Array('Archived' => 1), Array());
 }
 
 ?>
