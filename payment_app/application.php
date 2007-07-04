@@ -682,6 +682,51 @@
 	 {
 	 	return $this->Framework->ReversePayment($intPayment, $intReversedBy);
 	 }
+	 
+	 
+	 
+	//------------------------------------------------------------------------//
+	// ConsolidateInvoicePayments
+	//------------------------------------------------------------------------//
+	/**
+	 * ConsolidateInvoicePayments()
+	 *
+	 * Merges InvoicePayments where the Payment and Invoice are the same
+	 *
+	 * Merges InvoicePayments where the Payment and Invoice are the same
+	 *
+	 * @return	boolean					whether the removal was successful or not
+	 *
+	 * @method
+	 */
+	 function ConsolidateInvoicePayments()
+	 {
+	 	$selDuplicates		= new StatementSelect("InvoicePayment", "Payment, InvoiceRun", "InvoiceRun != 'Etech'", NULL, NULL, "Payment, Invoice HAVING COUNT(Id) > 1");
+	 	$selInvoicePayments = new StatementSelect("InvoicePayment", "*", "Payment = <Payment> AND InvoiceRun = <InvoiceRun> AND Id != <Id>");
+	 	$ubiInvoicePayment	= new StatementUpdateById("InvoicePayment", Array('Amount' => NULL));
+	 	$qryDelete			= new Query();
+	 	
+	 	// Find duplicated entries
+	 	$selDuplicates->Execute();
+	 	while ($arrDuplicate = $selDuplicates->Fetch())
+	 	{
+	 		// Find entries to consolidate with
+	 		$selInvoicePayments->Execute($arrDuplicate);
+	 		
+	 		// We will consolidate to this IP entry
+	 		$arrBaseIP = $selInvoicePayments->Fetch();
+	 		
+	 		// Merge and delete duplicates
+	 		while ($arrIP = $selInvoicePayments->Fetch())
+	 		{
+	 			$arrBaseIP['Amount'] += $arrIP['Amount'];
+	 			$qryDelete->Execute("DELETE FROM InvoicePayment WHERE Id = {$arrIP['Id']}");
+	 		}
+	 		
+	 		// Save base IP entry
+	 		$ubiInvoicePayment->Execute($arrBaseIP);
+	 	}
+	 }
  }
 
 
