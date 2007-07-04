@@ -2249,4 +2249,92 @@ function ArchiveAccounts($arrAccounts)
 	return $updAccounts->Execute(Array('Archived' => 1), Array());
 }
 
+
+
+
+//------------------------------------------------------------------------//
+// TransactionStart
+//------------------------------------------------------------------------//
+/**
+ * TransactionStart()
+ *
+ * Starts a Transaction
+ *
+ * Starts a Transaction on the primary Database connection (when multiple connections
+ * are supported)
+ *
+ * @return		boolean					TRUE	: Committed
+ * 										FALSE	: Failed
+ *
+ * @method
+ */ 
+function TransactionStart()
+{
+	if (!$GLOBALS['dbaDatabase'])
+	{
+		// Can't start a new transaction if not connected
+		return FALSE;
+	}
+	
+	// Start Transaction
+	return $GLOBALS['dbaDatabase']->TransactionStart();
+}
+
+//------------------------------------------------------------------------//
+// TransactionRollback
+//------------------------------------------------------------------------//
+/**
+ * TransactionRollback()
+ *
+ * Rolls back the current Transaction, then re-enables AutoCommit
+ *
+ * Rolls back the current Transaction, then re-enables AutoCommit
+ *
+ * @return		boolean					TRUE	: Rolled back
+ * 										FALSE	: Failed
+ *
+ * @method
+ */ 
+function TransactionRollback()
+{
+	if (!$GLOBALS['dbaDatabase'])
+	{
+		// Can't start a new transaction if not connected
+		return FALSE;
+	}
+	
+	// Rollback Transaction
+	return $GLOBALS['dbaDatabase']->TransactionRollback();
+}
+
+//------------------------------------------------------------------------//
+// TransactionCommit
+//------------------------------------------------------------------------//
+/**
+ * TransactionCommit()
+ *
+ * Commits the current Transaction, then re-enables AutoCommit
+ *
+ * Commits the current Transaction, then re-enables AutoCommit
+ *
+ * @return		boolean					TRUE	: Started
+ * 										FALSE	: Failed
+ *
+ * @method
+ */ 
+function TransactionCommit()
+{
+	if (!$GLOBALS['dbaDatabase'])
+	{
+		// Can't start a new transaction if not connected
+		return FALSE;
+	}
+	
+	// Commit Transaction
+	return $GLOBALS['dbaDatabase']->TransactionCommit();
+}
+
+
+
+
 ?>
