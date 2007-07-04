@@ -82,7 +82,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// Load all java script specific to the page here
 		// validate_adjustment is currently being explicitly included in the Render method as there was a 
 		// problem with it being accessed before it was included, when using $this->LoadJavascript(...)
-		//$this->LoadJavascript("validate_adjustment");
+		$this->LoadJavascript("validate_adjustment");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -105,7 +105,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// HACK HACK HACK
 		// currently this javascript file has to be included here, otherwise it is not instantiated before other calls
 		// to it get executed
-		echo "<script type='text/javascript' src='javascript/validate_adjustment.js'></script>\n";
+		//echo "<script type='text/javascript' src='javascript/validate_adjustment.js'></script>\n";
 		
 		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		

@@ -26,10 +26,7 @@
  */
 
 
-//$this->RenderHeader();
 $this->RenderJS();
-//$this->RenderCSS();
-//$this->RenderVixenHeader();
 ?>
 
 <div id='PopupPageBody'>

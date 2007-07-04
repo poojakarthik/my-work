@@ -1742,7 +1742,7 @@ function LoadApplication($strApplication=NULL)
 	}
 	
 	// set the base dir
-	if (defined(VIXEN_BASE_DIR))
+	if (defined(VIXEN_BASE_DIR) && trim(VIXEN_BASE_DIR, '/'))
 	{
 		$strApplicationDir = rtrim(VIXEN_BASE_DIR, '/').'/';
 	}

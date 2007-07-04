@@ -255,34 +255,8 @@ class Page
 	 * 
 	 * @method
 	 */
-	function RenderJS()
+	function RenderHeaderJS()
 	{
-		/*
-		// always render the root js class
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/vixen.js' ></script>\n";
-		
-		// always render the menu js class
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/menu.js' ></script>\n";
-		
-		// always render the popup js class
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/popup.js' ></script>\n";
-		
-		// always render the dhtml js class
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/dhtml.js' ></script>\n";
-		
-		// always render the ajax js class
-		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/ajax.js' ></script>\n";
-		
-		
-		// for each on global array
-		if (is_array($GLOBALS['*arrJavaScript']))
-		{
-			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
-			{
-				echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strValue.js' ></script>\n";
-			}	
-		}
-		*/
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/autoloader.js' ></script>\n";
 		echo "<script type='text/javascript'>VixenSetJavascriptBaseDir('". JAVASCRIPT_BASE_DIR ."')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('vixen')</script>\n";
@@ -290,19 +264,27 @@ class Page
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('popup')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('dhtml')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('ajax')</script>\n";
-		
+
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
 			{
-				
 				echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
 			}
 		}
-		
-		
-		
-		
+	}
+	
+	function RenderJS()
+	{
+		if (is_array($GLOBALS['*arrJavaScript']))
+		{
+			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
+			{
+				//TODO!!!!!!!!!!!!!
+				echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
+				echo "<script type='text/javascript' src='".JAVASCRIPT_BASE_DIR."/validate_adjustment.js'></script>\n";
+			}
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -382,7 +364,7 @@ class Page
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
-		$this->RenderJS();
+		$this->RenderJS('Header');
 		$this->RenderCSS();
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init()'>\n";

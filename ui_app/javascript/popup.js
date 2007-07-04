@@ -43,7 +43,7 @@ function VixenPopupClass()
 		}
 		
 		// Retrieve the popup element
-		elmPopupContent = document.getElementById("VixenPopupContent__" + strId);
+		var elmPopupContent = document.getElementById("VixenPopupContent__" + strId);
 		
 		// Set the content of the popup box
 		if (!strContent)

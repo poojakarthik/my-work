@@ -87,7 +87,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
 				
 				// User's details
-				$dboUser = GetAuthenticatedUserDBObject();
+				$dboUser 					= GetAuthenticatedUserDBObject();
 				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
 				
 				// Date the adjustment was created (the current date)
@@ -125,6 +125,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					//echo "Saved<br>\n";
 					DBO()->Status->Message = "The adjustment was successfully saved";
 					
+					// Tell the page to reload
+					//TODO!
+					//$this->ReLoadPage();
+					//$this->Location($href);
+					return TRUE;
 				}
 			}
 			else

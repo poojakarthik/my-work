@@ -34,7 +34,7 @@
 
 
 // Definitions
-
+Define ('VIXEN_BASE_DIR', "");
 Define ('TEMPLATE_BASE_DIR', "");
 Define ('TEMPLATE_STYLE_DIR', "style_template/");
 Define ('MODULE_BASE_DIR', "");

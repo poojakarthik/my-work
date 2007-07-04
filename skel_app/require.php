@@ -27,13 +27,17 @@
  *
  */
  
- // Framework Requirements
-require_once("../framework/require.php");
+// Define File Locations
+Define ('VIXEN_BASE_DIR', "../");
+Define ('VIXEN_APP_DIR', "");
+
+// Framework Requirements
+require_once(VIXEN_BASE_DIR."framework/require.php");
 
 // Application Requirements
-require_once("application.php");
-require_once("definitions.php");
-require_once("config.php");
+require_once(VIXEN_APP_DIR."application.php");
+require_once(VIXEN_APP_DIR."definitions.php");
+require_once(VIXEN_APP_DIR."config.php");
 
 // Module Requirements
 // OPTIONAL
