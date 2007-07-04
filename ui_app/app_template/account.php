@@ -154,6 +154,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Service->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);
 		ContextMenu()->Console();
 		ContextMenu()->Logout();

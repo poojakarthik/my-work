@@ -81,9 +81,6 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("validate_adjustment");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -135,8 +132,18 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		
 		Table()->AdjustmentTable->RowHighlighting = TRUE;
 		Table()->AdjustmentTable->Render();
+		
+		// button to add an adjustment
+		$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);
+		$strHref = substr($strHref, 11, 500);
+		echo "<div class='Right'>\n";
+		//echo "<input type='button' class='InputSubmit' value='Add Adjustment' onlick='$strHref'></input>\n";
+		echo "<input type='button' class='InputSubmit' value='Add Adjustment' onlick='javascript:alert(\"GIDDY UP\")'></input>\n";
 		echo "</div>\n";
-		//echo "<div class='Seperator'></div>\n";
+		
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";
+		echo "<div class='Seperator'></div>\n";
 	}
 }
 

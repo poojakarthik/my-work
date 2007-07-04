@@ -73,21 +73,27 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		// check if an adjustment is being submitted
 		if (SubmittedForm('AddAdjustment', 'Add Adjustment'))
 		{
-			//DBO()->ChargeTypeSelected->Id = DBO()->ChargeType->Id->Value;
-			
 			// Load the relating Account and ChargeType records
 			DBO()->ChargeType->Load();
 
 			// Define all the required properties for the Charge record
 			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
 			{
-				DBO()->Charge->Account = DBO()->Account->Id->Value;
-				DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->Value;
+				// Account details
+				DBO()->Charge->Account		= DBO()->Account->Id->Value;
+				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
+				
+				// User's details
 				$dboUser = GetAuthenticatedUserDBObject();
 				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
+				
+				// Date the adjustment was created (the current date)
 				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
+				
+				// Details regarding the type of charge
 				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
 				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
 				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
@@ -124,8 +130,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			else
 			{
 				// something was invalid 
-				// the HtmlTemplate will check if DBO()->Charge exists and is valid, if it is not then it will 
-				// render the invalid properties using CONTEXT_INVALID
 				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are shown in red";
 			}
 		}
@@ -137,10 +141,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		DBL()->ChargeTypesAvailable->Load();
 
 		// load the last 6 invoices with the most recent being first
-		DBL()->Invoice->Account = DBO()->Account->Id->Value;
-		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
-		DBL()->Invoice->SetLimit(6);
-		DBL()->Invoice->Load();
+		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
+		DBL()->AccountInvoices->SetTable("Invoice");
+		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->AccountInvoices->SetLimit(6);
+		DBL()->AccountInvoices->Load();
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('adjustment_add');

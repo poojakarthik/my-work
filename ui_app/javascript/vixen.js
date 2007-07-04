@@ -72,6 +72,58 @@ function VixenRootClass()
 		
 		this.initCommands.push (strCommand + "(" + strParameters + ")");
 	}
+	
+	// --------------------------------------------------------------------------------------------------------------//
+	// BROWSER BEHAVIOUR
+	// --------------------------------------------------------------------------------------------------------------//
+	
+	//------------------------------------------------------------------------//
+	// EnterKiller
+	//------------------------------------------------------------------------//
+	/**
+	 * EnterKiller()
+	 *
+	 * stop enter key from submiting a form
+	 *
+	 * stop enter key from submiting a form
+	 *
+	 * @param	object	evt		browser event object
+	 * @return	void
+	 * @private
+	 */
+	this.EnterKiller = function(evt) 
+	{
+		// get the event object
+		if (!evt)
+		{
+			var evt = window.event;
+		}
+		
+		if (evt.KeyCode)
+		{
+			var keycode = evt.KeyCode;
+		}
+		else if (evt.which)
+		{
+			var keycode = evt.which;
+		}
+		
+		// prevent enter key being pressed
+		if (keycode == 13)
+		{
+			// stupid browsers
+			if (evt.srcElement && !evt.srcElement.aphplix_id)
+			{
+				evt.returnValue = FALSE;
+			}
+			// real browsers
+			if (evt.preventDefault)
+			{
+				evt.preventDefault();
+			}
+		}
+	}
+	
 }
 
 // Create an instance of the Vixen root class
@@ -124,3 +176,8 @@ function debug(mixMsg, bolFullShow)
 	//dwin.focus();				// giving it focus is annoying, just let it sit on your third monitor with javascript console
 	//dwin.document.close();    // uncomment this if you want to see only last message , not all the previous messages
 }
+
+// prevent Enter key from being pressed
+document.onkeydown = function(event) {Vixen.EnterKiller(event)};
+document.onkeypress = function(event) {Vixen.EnterKiller(event)};
+document.onkeyup = function(event) {Vixen.EnterKiller(event)};

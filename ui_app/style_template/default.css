@@ -1025,7 +1025,7 @@
 		width:               180px;
 	}
 	
-	select
+	/*select
 	{
 		border:              solid 1px #919191;
 		background-color:    #ffffff;
@@ -1044,7 +1044,7 @@
 		border:              solid 1px #CC0000;
 		background-color:    #f2dbdb;
 		padding:             3px;
-	}
+	}*/
 	
 	table.summary-table
 	{

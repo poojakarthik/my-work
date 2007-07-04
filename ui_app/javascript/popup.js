@@ -234,22 +234,12 @@ function VixenPopupClass()
 	
 	this.ShowAjaxPopup = function(strId, strSize, strClass, strMethod, objParams)
 	{
-		// We want to call Vixen.Ajax.Send passing objParams 
-		// objParams is currently in JSON notation, but I think Vixen.Ajax.Send is expecting it to be in some other format
-		
-		// Vixen.Ajax.Send will execute the application template.
-		// We want to use the output of the application template (echoed html code) and pass it to a popup window
-
-		//alert("class -"+strClass+" ----- "+"method -"+strMethod);
-
 		objParams.strSize 		= strSize;
 		objParams.strId 		= strId;
 		objParams.TargetType 	= "Popup";
 		
 		objParams.Class = strClass;
 		objParams.Method = strMethod;
-		//objParams.FormId = strFormId;
-		//objParams.ButtonId = strButton;
 		
 		Vixen.Ajax.Send(objParams);
 	}

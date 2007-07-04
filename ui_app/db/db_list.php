@@ -625,6 +625,25 @@ class DBList extends DBListBase
 		return $this->_strTable = $strTable;
 	}
 
+	//------------------------------------------------------------------------//
+	// RecordCount
+	//------------------------------------------------------------------------//
+	/**
+	 * RecordCount()
+	 *
+	 * Returns the number of records in the DBList
+	 *
+	 * Returns the number of records in the DBList
+	 * 
+	 * @return	int					number of records in the DBList
+	 *
+	 * @method
+	 */
+	function RecordCount()
+	{
+		return $this->_intCount;
+	}
+
 
 }
 ?>

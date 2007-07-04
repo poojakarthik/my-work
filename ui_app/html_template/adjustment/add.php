@@ -80,8 +80,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
-		$this->LoadJavascript("dhtml");
-		$this->LoadJavascript("debug");  // Tools for debugging, only use when js-ing
+		// validate_adjustment is currently being explicitly included in the Render method as there was a 
+		// problem with it being accessed before it was included, when using $this->LoadJavascript(...)
 		//$this->LoadJavascript("validate_adjustment");
 	}
 	
@@ -99,7 +99,6 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		//echo "<div id='NotesHolder' style='display:none;'>\n";
 		echo "<div class='PopupMedium'>\n";
 		echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
 		
@@ -110,8 +109,9 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		
 		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		
-		// include all the propeties necessary to add the record, which shouldn't have controls visible on the form
+		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		DBO()->Account->Id->RenderHidden();
+		DBO()->ChargeType->Id->RenderHidden();
 		
 		// Display account details
 		DBO()->Account->Id->RenderOutput();
@@ -124,8 +124,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			DBO()->Account->TradingName->RenderOutput();
 		}
 		
-		DBO()->ChargeType->Id->RenderHidden();
-		//TODO!I think I should add some javascript here that loads the previously selected option into ChargeTypeCombo, if one has been selected
+		// Check if there was an attempt to add an adjustment, without specifying a Charge Type for the adjustment
 		if (DBO()->ChargeType->IsInvalid())
 		{
 			$strChargeTypeComboClass = "class='DefaultInvalidInput'";  //This is not currently working
@@ -145,8 +144,17 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$strChargeType = $dboChargeType->ChargeType->Value;
+			// check if this ChargeType was the last one selected
+			if ($dboChargeType->Id->Value == DBO()->ChargeType->Id->Value)
+			{
+				$strSelected = "selected='selected'";
+			}
+			else
+			{
+				$strSelected = "";
+			}
 			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value;
-			echo "         <option id='ChargeType.$strChargeType'  $strChargeTypeComboClass value='$strChargeType'>$strDescription</option>\n";
+			echo "         <option id='ChargeType.$strChargeType' $strSelected $strChargeTypeComboClass value='$strChargeType'>$strDescription</option>\n";
 			
 			// add ChargeType details to an array that will be passed to the javascript that handles events on th
 			$arrChargeTypeData['Nature']	= $dboChargeType->Nature->Value;
@@ -160,9 +168,6 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
-		
-		
-		//TODO!if DBO()->ChargeType->IsInvalid() then you want to highlight the ChargeTypeCombo pink
 		
 		
 		// display the charge code when the Charge Type has been selected
@@ -182,10 +187,20 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='InvoiceComboBox' name='Charge.Invoice'>\n";
 		echo "         <option value=''>No Association</option>\n";
-		foreach (DBL()->Invoice as $dboInvoice)
+		foreach (DBL()->AccountInvoices as $dboInvoice)
 		{
-			$strInvoice = $dboInvoice->Id->Value;
-			echo "         <option value='$strInvoice'>$strInvoice</option>\n";
+			$strInvoiceId = $dboInvoice->Id->Value;
+			// Check if this invoice Id was the last one selected
+			if ($strInvoiceId == DBO()->Charge->Invoice->Value)
+			{
+				$strSelected = "selected='selected'";
+			}
+			else
+			{
+				$strSelected = "";
+			}
+			
+			echo "         <option value='$strInvoiceId' $strSelected>$strInvoiceId</option>\n";
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
