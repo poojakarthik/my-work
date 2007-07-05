@@ -1991,8 +1991,6 @@ class MenuItems
 		$this->strLabel	= "add adjustment";
 		
 		// Setup data to send
-		//$arrData['Class'] 		= "Adjustment";
-		//$arrData['Method'] 		= "Add";
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
@@ -2000,6 +1998,37 @@ class MenuItems
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddAdjustmentPopupId\", \"medium\", \"Adjustment\", \"Add\", $strJsonCode)";
 	}
+	
+	//------------------------------------------------------------------------//
+	// AddRecurringAdjustment
+	//------------------------------------------------------------------------//
+	/**
+	 * AddRecurringAdjustment()
+	 *
+	 * Compiles the javascript to be executed when the AddRecurringAdjustment menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the AddRecurringAdjustment menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account that the Adjustment will be added to
+	 *
+	 * @return	string				action to be executed when the AddRecurringAdjustment menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddRecurringAdjustment($intId)
+	{
+		$this->strLabel	= "add recurring adjustment";
+		
+		// Setup data to send
+		$arrData['Objects']['Account']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddRecurringAdjustmentPopupId\", \"medium\", \"Adjustment\", \"AddRecurring\", $strJsonCode)";
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// MakePayment

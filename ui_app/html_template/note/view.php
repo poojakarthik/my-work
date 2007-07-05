@@ -143,6 +143,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 			
 			// Output the note details
 			echo $strDetailsHtml;
+			echo "<div class='TinySeperator'></div>\n";
 			
 			// Output the actual note
 			$dboNote->Note->RenderValue();

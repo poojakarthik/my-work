@@ -27,7 +27,7 @@
  */
 
 //DELETE ME DELETE ME DELETE ME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-alert("validate_adjustment.js: validate_adjustment.js is being included now");  //Why isn't this being called?
+//alert("validate_adjustment.js: validate_adjustment.js is being included now");  //Why isn't this being called?
 //DELETE ME DELETE ME DELETE ME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 //----------------------------------------------------------------------------//
@@ -64,22 +64,6 @@ function VixenValidateAdjustmentClass()
 	this._objChargeTypeData = {};
 
 	//------------------------------------------------------------------------//
-	// _strErrorMsg
-	//------------------------------------------------------------------------//
-	/**
-	 * _strErrorMsg
-	 *
-	 * Stores a specific error message describing why validation failed
-	 *
-	 * Stores a specific error message describing why validation failed
-	 * 
-	 * @type		string
-	 *
-	 * @property
-	 */
-	this._strErrorMsg = "";
-	
-	//------------------------------------------------------------------------//
 	// SetChargeTypes
 	//------------------------------------------------------------------------//
 	/**
@@ -101,15 +85,6 @@ function VixenValidateAdjustmentClass()
 	this.SetChargeTypes = function(objChargeTypeData)
 	{
 		this._objChargeTypeData = objChargeTypeData;
-
-		// add details regarding what should be displayed when the blank option of the ChargeType combobox is selected
-		this._objChargeTypeData.NoSelection = {};
-		this._objChargeTypeData.NoSelection.Nature = "&nbsp;";
-		this._objChargeTypeData.NoSelection.Fixed = "&nbsp;";
-		this._objChargeTypeData.NoSelection.Amount = "";
-		this._objChargeTypeData.NoSelection.Id = "";	
-		this._objChargeTypeData.NoSelection.Description = "&nbsp;";
-		this._objChargeTypeData.NoSelection.NoSelection = true;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -136,6 +111,7 @@ function VixenValidateAdjustmentClass()
 		var strDescription;
 		var strNature;
 		var strFixed;
+		var intChargeTypeId
 		
 		// make sure there is a value specificed
 		if (!objComboBox.value)
@@ -143,59 +119,46 @@ function VixenValidateAdjustmentClass()
 			return;
 		}
 
-		strChargeType = objComboBox.value;
-		strDefaultAmount = this._objChargeTypeData[strChargeType].Amount;
-		strDescription = this._objChargeTypeData[strChargeType].Description;
+		// retrieve values relating to the Charge Type selected
+		intChargeTypeId		= objComboBox.value;
+		strDefaultAmount	= this._objChargeTypeData[intChargeTypeId].Amount;
+		strDescription		= this._objChargeTypeData[intChargeTypeId].Description;
+		strChargeType		= this._objChargeTypeData[intChargeTypeId].ChargeType;
 		
-		if (this._objChargeTypeData[strChargeType].Nature == "CR")
+		if (this._objChargeTypeData[intChargeTypeId].Nature == "CR")
 		{
 			strNature = "Credit";
 		}
-		else if (this._objChargeTypeData[strChargeType].Nature == "DR")
+		else if (this._objChargeTypeData[intChargeTypeId].Nature == "DR")
 		{
 			strNature = "Debit";
 		}
 		else
 		{
-			strNature = this._objChargeTypeData[strChargeType].Nature;
+			strNature = this._objChargeTypeData[intChargeTypeId].Nature;
 		}
 		
 		// setup values on the form
-		if (this._objChargeTypeData[strChargeType].NoSelection)
-		{
-			document.getElementById('ChargeType.ChargeType').innerHTML = "&nbsp;";
-		}
-		else
-		{
-			document.getElementById('ChargeType.ChargeType').innerHTML = strChargeType;
-		}
-		
+		document.getElementById('ChargeType.ChargeType').innerHTML = strChargeType;
 		document.getElementById('ChargeType.Description').innerHTML = strDescription;
 		document.getElementById('ChargeType.Nature').innerHTML = strNature;
 		document.getElementById('Charge.Amount').value = strDefaultAmount;
-		document.getElementById('ChargeType.Id').value = this._objChargeTypeData[strChargeType].Id;
+		document.getElementById('ChargeType.Id').value = intChargeTypeId;
 		
 		// If the charge type has a fixed amount then disable the amount textbox, else enable it
-		if (this._objChargeTypeData[strChargeType].Fixed == 1)
+		if (this._objChargeTypeData[intChargeTypeId].Fixed == 1)
 		{
 			// disable the charge amount textbox
 			document.getElementById('Charge.Amount').disabled = true;
 			document.getElementById('InvoiceComboBox').focus();
 		}
-		else if (this._objChargeTypeData[strChargeType].Fixed == 0)
-		{	
+		else
+		{
 			// enable the charge amount textbox
 			document.getElementById('Charge.Amount').disabled = false;
 			document.getElementById('Charge.Amount').focus();
 		}
-		else
-		{
-			// for when "NoSelection" has been selected as the ChargeType
-			document.getElementById('Charge.Amount').disabled = false;
-		}
-
 	}
-
 }
 
 // instanciate the object

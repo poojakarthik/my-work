@@ -566,4 +566,56 @@ function GetCurrentDateAndTimeForMySQL()
 	return GetCurrentDateForMySQL() ." ". GetCurrentTimeForMySQL();
 }
 
+//------------------------------------------------------------------------//
+// FormatAsCurrency
+//------------------------------------------------------------------------//
+/**
+ * FormatAsCurrency()
+ *
+ * Formats a float as a money value
+ *
+ * Formats a float as a money value
+ *
+ * @param	float	$fltValue					value to format as a money value
+ * @param	int		$intDecPlaces				optional; number of decimal places to show
+ * @param	bool	$bolIncludeDollarSign		optional; should a dollar sign be included
+ * @param	bool	$bolUseBracketsForNegative	optional; should brackets be used to denote a negative value
+ * @return	string								$fltValue formatted as a money value
+ *
+ * @function
+ */
+function FormatAsCurrency($fltValue, $intDecPlaces=2, $bolIncludeDollarSign=FALSE, $bolUseBracketsForNegative=FALSE)
+{
+	if (fltValue < 0)
+	{
+		$bolIsNegative = TRUE;
+		// Change it to a positive
+		$fltValue = fltValue * (-1.0);
+	}
+	else
+	{
+		$bolIsNegative = FALSE;
+	}
+	
+	$strValue = number_format($fltValue, $intDecPlaces, ".", "");
+	
+	if ($bolIsNegative)
+	{
+		if ($bolUseBracketsForNegative)
+		{
+			$strValue = '($' . $strValue . ')';
+		}
+		else
+		{
+			$strValue = '$-' . $strValue;
+		}
+	}
+	else
+	{
+		$strValue = '$' . $strValue;
+	}
+	
+	return $strValue;	
+}
+
 ?>

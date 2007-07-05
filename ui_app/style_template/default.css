@@ -433,6 +433,16 @@
 		height:               10px;
 	}
 
+	.TinySeperator
+	{
+		height:               5px;
+	}
+	
+	.MicroSeperator
+	{
+		height:               0px;
+	}
+
 	input.InputSubmit,
 	input.InputSubmitDisabled
 	{
@@ -558,16 +568,6 @@
 	.Clear
 	{
 		clear:                both;
-	}
-	
-	.TinySeperator
-	{
-		height:               5px;
-	}
-	
-	.MicroSeperator
-	{
-		height:               0px;
 	}
 	
 	.ColumnSpacer

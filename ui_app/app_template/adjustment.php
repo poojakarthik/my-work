@@ -117,12 +117,10 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Save the adjustment to the charge table of the vixen database
 				if (!DBO()->Charge->Save())
 				{
-					//echo "The charge did not save\n";
 					DBO()->Status->Message = "The adjustment did not save";
 				}
 				else
 				{
-					//echo "Saved<br>\n";
 					DBO()->Status->Message = "The adjustment was successfully saved";
 					
 					// Tell the page to reload
@@ -157,4 +155,116 @@ class AppTemplateAdjustment extends ApplicationTemplate
 
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// AddRecurring
+	//------------------------------------------------------------------------//
+	/**
+	 * AddRecurring()
+	 *
+	 * Performs the logic for the Add Recurring Adjustment popup window
+	 * 
+	 * Performs the logic for the Add Recurring Adjustment popup window
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function AddRecurring()
+	{
+		// Should probably check user authorization here
+		//TODO!include user authorisation
+		AuthenticatedUser()->CheckAuth();
+
+		// The account should already be set up as a DBObject
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		// check if an adjustment is being submitted
+		if (SubmittedForm('AddRecurringAdjustment', 'Add Adjustment'))
+		{
+			// Load the relating Account and ChargeType records
+			DBO()->ChargeType->Load();
+
+			// Define all the required properties for the Charge record
+			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
+			{
+				// Account details
+				DBO()->Charge->Account		= DBO()->Account->Id->Value;
+				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
+				
+				// User's details
+				$dboUser 					= GetAuthenticatedUserDBObject();
+				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
+				
+				// Date the adjustment was created (the current date)
+				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
+				
+				// Details regarding the type of charge
+				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
+				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
+				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
+				
+				// if DBO()->Charge->Invoice->Value == 0 then set it to NULL;
+				if (!DBO()->Charge->Invoice->Value)
+				{
+					DBO()->Charge->Invoice = NULL;
+				}
+				
+				// status is dependent on the nature of the charge
+				if (DBO()->Charge->Nature->Value == "CR")
+				{
+					DBO()->Charge->Status	= CHARGE_WAITING;
+				}
+				else
+				{
+					DBO()->Charge->Status	= CHARGE_APPROVED;
+				}
+
+				// Save the adjustment to the charge table of the vixen database
+				if (!DBO()->Charge->Save())
+				{
+					DBO()->Status->Message = "The adjustment did not save";
+				}
+				else
+				{
+					DBO()->Status->Message = "The adjustment was successfully saved";
+					
+					// Tell the page to reload
+					//TODO!
+					//$this->ReLoadPage();
+					//$this->Location($href);
+					//return TRUE;
+				}
+			}
+			else
+			{
+				// Something was invalid 
+				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are shown in red";
+			}
+		}
+		
+		// Load all charge types that aren't archived
+		DBL()->ChargeTypesAvailable->Archived = 0;
+		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC");
+		DBL()->ChargeTypesAvailable->Load();
+
+		// load the last 6 invoices with the most recent being first
+		DBL()->AccountInvoices->Account = DBO()->Account->Id->Value;
+		DBL()->AccountInvoices->SetTable("Invoice");
+		DBL()->AccountInvoices->OrderBy("CreatedOn DESC, Id DESC");
+		DBL()->AccountInvoices->SetLimit(6);
+		DBL()->AccountInvoices->Load();
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('recurring_adjustment_add');
+
+		return TRUE;
+	}
+	
 }

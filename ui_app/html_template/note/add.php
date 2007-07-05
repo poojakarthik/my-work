@@ -134,17 +134,6 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		DBO()->Account->BusinessName->RenderOutput();
 		DBO()->Note->Note->RenderInput();
 		
-		// check if the popup is being opened or being redrawn
-		// DBO()->NoteType->Id is set in the SubmittedForm block of code, in the application template
-		/*if (!DBO()->NoteType->Id->Value)
-		{
-			// The popup has just been opened and nothing has been sent yet, so set the Note Type to the first one in the list
-			DBL()->AvailableNoteTypes->rewind();
-			//HACK HACK HACK (This makes it default to the NoteType with Id == 1)
-			DBO()->Note->NoteType = DBL()->AvailableNoteTypes->current()->Id->Value;
-		}*/
-		//DBO()->NoteType->Id->RenderHidden();
-		
 		// create a combobox containing all Note Types
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Note Type:</div>\n";

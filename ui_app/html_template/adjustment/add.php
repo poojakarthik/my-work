@@ -82,7 +82,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// Load all java script specific to the page here
 		// validate_adjustment is currently being explicitly included in the Render method as there was a 
 		// problem with it being accessed before it was included, when using $this->LoadJavascript(...)
-		$this->LoadJavascript("validate_adjustment");
+		//$this->LoadJavascript("validate_adjustment");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -105,13 +105,13 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// HACK HACK HACK
 		// currently this javascript file has to be included here, otherwise it is not instantiated before other calls
 		// to it get executed
-		//echo "<script type='text/javascript' src='javascript/validate_adjustment.js'></script>\n";
+		echo "<script type='text/javascript' src='javascript/validate_adjustment.js'></script>\n";
 		
 		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		DBO()->Account->Id->RenderHidden();
-		DBO()->ChargeType->Id->RenderHidden();
+		//DBO()->ChargeType->Id->RenderHidden();
 		
 		// Display account details
 		DBO()->Account->Id->RenderOutput();
@@ -124,28 +124,16 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			DBO()->Account->TradingName->RenderOutput();
 		}
 		
-		// Check if there was an attempt to add an adjustment, without specifying a Charge Type for the adjustment
-		if (DBO()->ChargeType->IsInvalid())
-		{
-			$strChargeTypeComboClass = "class='DefaultInvalidInput'";  //This is not currently working
-		}
-		else
-		{
-			$strChargeTypeComboClass = "";
-		}
-		
 		// create a combobox containing all the charge types
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		//echo "      <select name='ChargeType.ChargeType' id='ChargeType.ChargeType' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
 		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
-		echo "         <option id='ChargeTypeNotSelected' $strChargeTypeComboClass value='NoSelection'>&nbsp;</option>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
-			$strChargeType = $dboChargeType->ChargeType->Value;
+			$intChargeTypeId = $dboChargeType->Id->Value;
 			// check if this ChargeType was the last one selected
-			if ($dboChargeType->Id->Value == DBO()->ChargeType->Id->Value)
+			if ((DBO()->ChargeType->Id->Value) && ($intChargeTypeId == DBO()->ChargeType->Id->Value))
 			{
 				$strSelected = "selected='selected'";
 			}
@@ -154,31 +142,51 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 				$strSelected = "";
 			}
 			$strDescription = $dboChargeType->Nature->Value .": ". $dboChargeType->Description->Value;
-			echo "         <option id='ChargeType.$strChargeType' $strSelected $strChargeTypeComboClass value='$strChargeType'>$strDescription</option>\n";
+			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>$strDescription</option>\n";
 			
-			// add ChargeType details to an array that will be passed to the javascript that handles events on th
-			$arrChargeTypeData['Nature']	= $dboChargeType->Nature->Value;
-			$arrChargeTypeData['Fixed']		= $dboChargeType->Fixed->Value;
-			$arrChargeTypeData['Amount']	= $dboChargeType->Amount->Value;
-			$arrChargeTypeData['Description'] = $dboChargeType->Description->Value;
-			$arrChargeTypeData['Id']		= $dboChargeType->Id->Value;
-			$arrChargeTypes[$dboChargeType->ChargeType->Value] = $arrChargeTypeData;
+			// add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
+			$arrChargeTypeData['ChargeType']	= $dboChargeType->ChargeType->Value;
+			$arrChargeTypeData['Nature']		= $dboChargeType->Nature->Value;
+			$arrChargeTypeData['Fixed']			= $dboChargeType->Fixed->Value;
 			
+			// the amounts should be formatted as money values before being added to this array
+			$arrChargeTypeData['Amount']		= $dboChargeType->Amount->Value;//FormatAsCurrency($dboChargeType->Amount->Value, 4, TRUE);
+			$arrChargeTypeData['Description']	= $dboChargeType->Description->Value;
+			//$arrChargeTypeData['Id']		= $dboChargeType->Id->Value;
+			
+			$arrChargeTypes[$intChargeTypeId] = $arrChargeTypeData;
 		}
 		echo "      </select>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
 		
+		// if a charge type hasn't been selected then use the first one from the list
+		if (!DBO()->ChargeType->Id->Value)
+		{
+	
+			reset($arrChargeTypes);
+			DBO()->ChargeType->Id = key($arrChargeTypes);
+//			DBO()->Charge->Amount = $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
+//echo "Being Opened for the first time, ChargeType.Id = " . DBO()->ChargeType->Id->Value;
+//echo " amount = ". $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
+
+		}
+		DBO()->ChargeType->Id->RenderHidden();
+		$intChargeTypeId = DBO()->ChargeType->Id->Value;
 		
 		// display the charge code when the Charge Type has been selected
+		DBO()->ChargeType->ChargeType = $arrChargeTypes[$intChargeTypeId]['ChargeType'];
 		DBO()->ChargeType->ChargeType->RenderOutput();
 		
 		// display the description
+		DBO()->ChargeType->Description = $arrChargeTypes[$intChargeTypeId]['Description'];
 		DBO()->ChargeType->Description->RenderOutput();
 		
 		// display the nature of the charge
+		DBO()->ChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->ChargeType->Nature->RenderOutput();
 		
+		DBO()->Charge->Amount->RenderOutput();
 		DBO()->Charge->Amount->RenderInput();
 		
 		// Create a combo box containing the last 6 invoices associated with the account
