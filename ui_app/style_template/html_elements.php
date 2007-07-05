@@ -144,7 +144,7 @@ class HTMLElements
 	function InputText($arrParams)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
-		$strValue = $this->BuildOutputValue($arrParams);
+		$strValue = $this->BuildInputValue($arrParams);
 		$strValue = nl2br($strValue);
 		
 		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
@@ -207,7 +207,7 @@ class HTMLElements
 	function TextArea($arrParams)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
-		$strValue = $this->BuildOutputValue($arrParams);
+		$strValue = $this->BuildInputValue($arrParams);
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
@@ -587,6 +587,36 @@ class HTMLElements
 		}
 		
 		return $mixValue;
+	}
+
+	//------------------------------------------------------------------------//
+	// BuildInputValue
+	//------------------------------------------------------------------------//
+	/**
+	 * BuildInputValue()
+	 * 
+	 * Builds the input value based on the property definition in UIAppDocumentation and UIAppDocumentationOptions tables
+	 * 
+	 * Builds the input value based on the property definition in UIAppDocumentation and UIAppDocumentationOptions tables
+	 * 
+	 *
+	 * @param	Array	$arrParams		The standard set of parameters passed to all HtmlElement public methods
+	 * 									(see above for format).
+	 * @return	string					The value to output as the default input for the property.
+	 *
+	 * @method
+	 */
+	function BuildInputValue($arrParams)
+	{
+		$strValue = $this->BuildOutputValue($arrParams);
+		
+		// BuildOutputValue will never return an empty string, but BuildInputValue should be able to
+		if ($strValue == "&nbsp;")
+		{
+			$strValue = "";
+		}
+		
+		return $strValue;
 	}
 	
 	//------------------------------------------------------------------------//

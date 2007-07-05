@@ -183,7 +183,8 @@
 		width:				 300px;
 	}
 	
-	.PopupMedium
+	.PopupMedium,
+	.PopupLarge
 	{
 		margin:              0;
 		padding-top:         0px;
@@ -193,9 +194,18 @@
 		
 		/*border:              solid 1px #D1D1D1;*/
 		/*background-color:    #F3F3F3;*/
+	}
+
+	.PopupMedium
+	{
 		width:				 450px;
 	}
-	
+
+	.PopupLarge
+	{
+		width:				 700px;
+	}
+
 
 	.VixenTableDetail
 	{

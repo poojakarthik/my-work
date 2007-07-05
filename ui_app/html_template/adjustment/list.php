@@ -135,15 +135,17 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		
 		// button to add an adjustment
 		$strHref = Href()->AddAdjustment(DBO()->Account->Id->Value);
-		$strHref = substr($strHref, 11, 500);
+		//$strHref = substr($strHref, 11, 500);
 		echo "<div class='Right'>\n";
 		//echo "<input type='button' class='InputSubmit' value='Add Adjustment' onlick='$strHref'></input>\n";
-		echo "<input type='button' class='InputSubmit' value='Add Adjustment' onlick='javascript:alert(\"GIDDY UP\")'></input>\n";
+		//echo "<input type='button' class='InputSubmit' value='Add Adjustment' onlick='javascript:alert(\"GIDDY UP\")'></input>\n";
+		//echo "<a class='InputSubmit' href='javascript:alert(\"GIDDY UP\");'>Add Adjustment</a>";
+		echo "<a class='InputSubmit' href='$strHref'>Add Adjustment</a>";
 		echo "</div>\n";
 		
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
-		echo "<div class='Seperator'></div>\n";
+		//echo "<div class='Seperator'></div>\n";
 	}
 }
 

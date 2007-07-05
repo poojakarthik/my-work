@@ -26,6 +26,9 @@
  *
  */
 
+//DELETE ME DELETE ME DELETE ME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+alert("validate_adjustment.js: validate_adjustment.js is being included now");  //Why isn't this being called?
+//DELETE ME DELETE ME DELETE ME !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 //----------------------------------------------------------------------------//
 // VixenValidateAdjustmentClass

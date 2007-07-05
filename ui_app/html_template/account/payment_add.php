@@ -101,7 +101,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<div class='PopupMedium'>\n";
+		echo "<div class='PopupLarge'>\n";
 		echo "<h2 class='Payment'>Make Payment</h2>\n";
 		
 		$this->FormStart("MakePayment", "Payment", "Add");

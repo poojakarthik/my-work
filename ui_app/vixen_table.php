@@ -741,7 +741,7 @@ class VixenTable
 			},*/
 		}
 		
-		echo "<div class='seperator'></div>";
+		//echo "<div class='seperator'></div>";
 	
 	
 	}

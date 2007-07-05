@@ -114,7 +114,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Charge->Status	= CHARGE_APPROVED;
 				}
 
-				// Add the adjustment to the charge table of the database
+				// Save the adjustment to the charge table of the vixen database
 				if (!DBO()->Charge->Save())
 				{
 					//echo "The charge did not save\n";
@@ -129,12 +129,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					//TODO!
 					//$this->ReLoadPage();
 					//$this->Location($href);
-					return TRUE;
+					//return TRUE;
 				}
 			}
 			else
 			{
-				// something was invalid 
+				// Something was invalid 
 				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are shown in red";
 			}
 		}
@@ -157,69 +157,4 @@ class AppTemplateAdjustment extends ApplicationTemplate
 
 		return TRUE;
 	}
-	
-	//------------------------------------------------------------------------//
-	// InsertAdjustment  (This was made to be run in AJAX_MODE with the idea that it won't create a page)
-	//------------------------------------------------------------------------//
-	/**
-	 * InsertAdjustment()
-	 *
-	 * Inserts a new record into the Charge table
-	 * 
-	 * Inserts a new record into the Charge table
-	 * Also creates the reply JSON object that is sent back to the javascript ajaxHandler that called it
-	 *
-	 * @return		void
-	 * @method
-	 *
-	 */
-	function InsertAdjustment()
-	{
-		if (SubmittedForm('AddAdjustment', 'AddAdjustment'))
-		{
-			// Load the relating Account and ChargeType records
-			DBO()->Account->Load();
-			DBO()->ChargeType->Load();
-
-			// Define all the required properties for the Charge record
-			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
-			{
-				DBO()->Charge->Account = DBO()->Account->Id->Value;
-				DBO()->Charge->AccountGroup = DBO()->Account->AccountGroup->Value;
-				$dboUser = GetAuthenticatedUserDBObject();
-				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
-				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
-				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
-				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
-				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
-				
-				// status is dependent on the nature of the charge
-				if (DBO()->Charge->Nature->Value == "CR")
-				{
-					DBO()->Charge->Status	= CHARGE_WAITING;
-				}
-				else
-				{
-					DBO()->Charge->Status	= CHARGE_APPROVED;
-				}
-
-				// Add the adjustment to the charge table of the database
-				if (!DBO()->Charge->Save())
-				{
-					echo "The charge did not save";
-					die;
-				}
-				echo "Saved<br>\n";
-				die;
-			}
-			die;
-		}
-		else
-		{
-			echo "SubmittedForm('AddAdjustment','AddAdjustment') returned false\n";
-			die;
-		}
-		
-	}
-	
 }

@@ -282,7 +282,7 @@ class Page
 			{
 				//TODO!!!!!!!!!!!!!
 				echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
-				echo "<script type='text/javascript' src='".JAVASCRIPT_BASE_DIR."/validate_adjustment.js'></script>\n";
+				//echo "<script type='text/javascript' src='".JAVASCRIPT_BASE_DIR."/validate_adjustment.js'></script>\n";
 			}
 		}
 	}
@@ -364,7 +364,7 @@ class Page
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
 		echo "<title>viXen : Employee Intranet System - $this->_strPageName</title>\n";
 		echo "<base href='$strBaseDir'/>\n";
-		$this->RenderJS('Header');
+		$this->RenderHeaderJS();
 		$this->RenderCSS();
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init()'>\n";
@@ -1903,15 +1903,15 @@ class MenuItems
 		$this->strLabel	= "view notes";
 		
 		// Setup data to send
-		$arrData['HtmlMode'] = TRUE;
-		$arrData['Application'] = "Note.View";
+		//$arrData['HtmlMode'] = TRUE;
+		//$arrData['Application'] = "Note.View";
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
-		return "javascript:Vixen.Popup.ShowAjaxPopup('ViewNotesPopupId', 'medium', $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Note\", \"View\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//

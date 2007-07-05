@@ -76,9 +76,9 @@ class AppTemplatePayment extends ApplicationTemplate
 		// check if a new payment is being submitted
 		if (SubmittedForm('MakePayment', 'Make Payment'))
 		{
-			//NOTE: when a payment gets applied to an account group, just a single record is added to the payment table.
-			//It will have an AccountGroup specified, but the account field will be set to NULL.  When a payment is 
-			//Applied to a single account (not its account group) then both AccountGroup and Account are specified in the Payment record.
+			// NOTE: when a payment gets applied to an account group, just a single record is added to the payment table.
+			// It will have an AccountGroup specified, but the account field will be set to NULL.  When a payment is 
+			// Applied to a single account (not its account group) then both AccountGroup and Account are specified in the Payment record.
 			
 			// Check if the payment is being applied to a single account, or an account group
 			if (DBO()->AccountToApplyTo->IsGroup->Value)
@@ -90,19 +90,26 @@ class AppTemplatePayment extends ApplicationTemplate
 			{
 				// set the Payment->AccountGroup to the AccountGroup of the Account that the payment is being applied to.
 				// Note that this will not always be DBO()->Account->AccountGroup
-				DBO()->PaymentAccount->Id = DBO()->AccountToApplyTo->Id->Value;
-				DBO()->PaymentAcocunt->SetTable("Account");
-				DBO()->PaymentAccount->Load();
-				DBO()->Payment->AccountGroup = DBO()->PaymentAccount->AccountGroup->Value;
-				DBO()->Payment->Account = DBO()->AccountToApplyTo->Id->Value;
+				// UPDATE: Actually I think it will always be the same as DBO()->Account->AccountGroup because if it wasn't then it
+				// wouldn't have been listed in the Account(s) combobox to begin with
+				//DBO()->PaymentAccount->Id = DBO()->AccountToApplyTo->Id->Value;
+				//DBO()->PaymentAccount->SetTable("Account");
+				//DBO()->PaymentAccount->Load();
+				//DBO()->Payment->AccountGroup = DBO()->PaymentAccount->AccountGroup->Value;
+				//DBO()->Payment->Account = DBO()->AccountToApplyTo->Id->Value;
+				
+				// If the payment is to be applied to a single account (which belongs to the same account group that DBO()->Account->Id belongs to)
+				// then the account group will have to be the same as DBO()->Account->Id's account group
+				DBO()->Payment->AccountGroup	= DBO()->Account->AccountGroup->Value;
+				DBO()->Payment->Account			= DBO()->AccountToApplyTo->Id->Value;
 			}
 			
 			// Only add the payment if it is not invalid
 			if (!DBO()->Payment->IsInvalid())
 			{
-				//DBO()->Payment->PaymentType is already set
-				//DBO()->Payment->Amount is already set
-				//DBO()->Payment->TXNReference is already set
+				// DBO()->Payment->PaymentType is already set
+				// DBO()->Payment->Amount is already set
+				// DBO()->Payment->TXNReference is already set
 				
 				DBO()->Payment->PaidOn = GetCurrentDateForMySQL();
 				
@@ -110,37 +117,39 @@ class AppTemplatePayment extends ApplicationTemplate
 				$dboUser = GetAuthenticatedUserDBObject();
 				DBO()->Payment->EnteredBy = $dboUser->Id->Value;
 				
-				//Payment (don't worry about this property)
+				// Payment (don't worry about this property)
 				DBO()->Payment->Payment = "";
 				
-				//DBO()->Payment->File does not need to be set
-				//DBO()->Payment->SequenceNumber does not need to be set
+				// DBO()->Payment->File does not need to be set
+				// DBO()->Payment->SequenceNumber does not need to be set
 				
 				DBO()->Payment->Balance = DBO()->Payment->Amount->Value;
 				
 				DBO()->Payment->Status = PAYMENT_WAITING;
 				
-				//Save the payment
-
-			}
-			
-			
-			
-			
-			
-			if (DBO()->AccountGroup->Id->Value)
-			{
-				//the payment is being applied to an account group
-				DBO()->Status->Message = "DBO()->AccountGroup->Id->Value is set";
+				// Save the payment to the payment table of the vixen database
+				if (!DBO()->Payment->Save())
+				{
+					//echo "The charge did not save\n";
+					DBO()->Status->Message = "The payment did not save";
+				}
+				else
+				{
+					//echo "Saved<br>\n";
+					DBO()->Status->Message = "The payment was successfully saved";
+					
+					// Tell the page to reload
+					//TODO!
+					//$this->ReLoadPage();
+					//$this->Location($href);
+					//return TRUE;
+				}
 			}
 			else
 			{
-				DBO()->Status->Message = "DBO()AccountGroup->Id->Value is null";
+				// Something was invalid 
+				DBO()->Status->Message = "The Payment could not be saved. Invalid fields are shown in red";
 			}
-			
-			
-		
-			
 		}
 		
 		

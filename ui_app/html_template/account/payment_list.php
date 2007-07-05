@@ -198,7 +198,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		Table()->PaymentTable->Render();
 		
 		echo "</div>\n";
-		//echo "<div class='Seperator'></div>\n";
+		echo "<div class='Seperator'></div>\n";
 	
 	}
 }
