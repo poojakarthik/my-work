@@ -85,6 +85,7 @@ define('HTML_CONTEXT_DEFAULT',			100);
 define('HTML_CONTEXT_FULL_DETAIL',		101);
 define('HTML_CONTEXT_MINIMUM_DETAIL',	102);
 define('HTML_CONTEXT_LEDGER_DETAIL',	103);
+define('HTML_CONTEXT_ACCOUNT_NOTE',		300);
 define('HTML_CONTEXT_SEANS_DETAIL',		500);
 
 // PropertyToken Render method constants

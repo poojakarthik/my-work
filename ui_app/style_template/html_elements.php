@@ -208,14 +208,16 @@ class HTMLElements
 	{
 		$strLabel = $arrParams['Definition']['Label'];
 		$strValue = $this->BuildInputValue($arrParams);
+
+		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
+		$strClass	= "{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}";
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
-		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}'>\n";
 		// create the text area
 		//TODO! Find out if the number of rows and columns in the textarea should be hard coded here
-		$strHtml .= "		<textarea id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' rows='6' cols='30'>$strValue</textarea>\n";
-		$strHtml .= "   </div>\n";
+		$strHtml .= "		<textarea id='$strId' name='$strName' class='$strClass' rows='6' cols='30'>$strValue</textarea>\n";
 		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		

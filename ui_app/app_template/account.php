@@ -148,7 +148,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// context menu
-		//TODO! define what goes in the context menu
 		ContextMenu()->Contact_Retrieve->Account->Invoices_And_Payments(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Account->View_Account(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Service->Invoices_And_Payments(DBO()->Account->Id->Value);
@@ -156,6 +155,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		ContextMenu()->Contact_Retrieve->Add_Adjustment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->Make_Payment(DBO()->Account->Id->Value);
 		ContextMenu()->Contact_Retrieve->View_Notes(DBO()->Account->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Note(DBO()->Account->Id->Value);
+		
+		
 		ContextMenu()->Console();
 		ContextMenu()->Logout();
 		

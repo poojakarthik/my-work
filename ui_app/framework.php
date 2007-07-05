@@ -1253,6 +1253,32 @@ class Validation
 		return TRUE;
 	}
 	
+	//------------------------------------------------------------------------//
+	// IsNonEmptyString
+	//------------------------------------------------------------------------//
+	/**
+	 * IsNonEmptyString()
+	 *
+	 * Returns TRUE if the value is not === NULL and is not whitespace, else returns FALSE
+	 *
+	 * Returns TRUE if the value is not === NULL and is not whitespace, else returns FALSE
+	 * 
+	 *
+	 * @param	mix			$mixValue		value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function IsNonEmptyString($mixValue)
+	{
+		if (($mixValue === NULL) || (strlen(trim($mixValue)) == 0))
+		{
+			return FALSE;
+		}
+		return TRUE;
+	}
+	
 	
 }
 
@@ -1903,8 +1929,6 @@ class MenuItems
 		$this->strLabel	= "view notes";
 		
 		// Setup data to send
-		//$arrData['HtmlMode'] = TRUE;
-		//$arrData['Application'] = "Note.View";
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
@@ -1914,6 +1938,37 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Note\", \"View\", $strJsonCode)";
 	}
 	
+	//------------------------------------------------------------------------//
+	// AddNote
+	//------------------------------------------------------------------------//
+	/**
+	 * AddNote()
+	 *
+	 * Compiles the javascript to be executed when the AddNote menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the AddNote menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account associated with the note to add
+	 *
+	 * @return	string				action to be executed when the AddNotes menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddNote($intId)
+	{
+		$this->strLabel	= "add note";
+		
+		// Setup data to send
+		$arrData['Objects']['Account']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
+	}
+
 	//------------------------------------------------------------------------//
 	// AddAdjustment
 	//------------------------------------------------------------------------//

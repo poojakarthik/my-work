@@ -517,12 +517,53 @@ function SubmittedForm($strFormId, $strButtonId=NULL)
  * Retrieves the current date in the format that MySql expects Date attributes to be in
  *
  * @return	mix					current date as a string, properly formatted for MySql
+ *								(YYYY-MM-DD)
  *
  * @function
  */
 function GetCurrentDateForMySQL()
 {
 	return date("Y-m-d");
+}
+
+//------------------------------------------------------------------------//
+// GetCurrentTimeForMySQL
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentTimeForMySQL()
+ *
+ * Retrieves the current time in the format that MySql expects time attributes to be in
+ *
+ * Retrieves the current time in the format that MySql expects time attributes to be in
+ *
+ * @return	mix					current time as a string, properly formatted for MySql
+ *								(HH:MM:SS)
+ *
+ * @function
+ */
+function GetCurrentTimeForMySQL()
+{
+	return date("H:i:s");
+}
+
+//------------------------------------------------------------------------//
+// GetCurrentDateAndTimeForMySQL
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentDateAndTimeForMySQL()
+ *
+ * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
+ *
+ * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
+ *
+ * @return	mix					current date and time as a string, properly formatted for MySql
+ *								(YYYY-MM-DD HH:MM:SS)
+ *
+ * @function
+ */
+function GetCurrentDateAndTimeForMySQL()
+{
+	return GetCurrentDateForMySQL() ." ". GetCurrentTimeForMySQL();
 }
 
 ?>
