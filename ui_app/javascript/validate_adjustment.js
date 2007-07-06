@@ -139,9 +139,9 @@ function VixenValidateAdjustmentClass()
 		}
 		
 		// setup values on the form
-		document.getElementById('ChargeType.ChargeType').innerHTML = strChargeType;
-		document.getElementById('ChargeType.Description').innerHTML = strDescription;
-		document.getElementById('ChargeType.Nature').innerHTML = strNature;
+		document.getElementById('ChargeType.ChargeType.Output').innerHTML = strChargeType;
+		document.getElementById('ChargeType.Description.Output').innerHTML = strDescription;
+		document.getElementById('ChargeType.Nature.Output').innerHTML = strNature;
 		document.getElementById('Charge.Amount').value = strDefaultAmount;
 		document.getElementById('ChargeType.Id').value = intChargeTypeId;
 		
@@ -161,7 +161,7 @@ function VixenValidateAdjustmentClass()
 	}
 }
 
-// instanciate the object
+// instanciate the objects
 Vixen.ValidateAdjustment = new VixenValidateAdjustmentClass;
 
 /*

@@ -252,7 +252,7 @@ class HTMLElements
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']} '>{$strValue}</div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Output' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']} '>{$strValue}</div>\n";
 		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 
@@ -281,7 +281,7 @@ class HTMLElements
 		$strValue = nl2br($strValue);
 		
 		// output the formatted value in <span> tags
-		$strHtml = "<span id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'>{$strValue}</span>\n";
+		$strHtml = "<span id='{$arrParams['Object']}.{$arrParams['Property']}.Output' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'>{$strValue}</span>\n";
 
 		return $strHtml;
 	}
@@ -309,7 +309,7 @@ class HTMLElements
 		$strValue = $this->BuildOutputValue($arrParams);
 
 		// output the formatted value in a hyperlink tag, in a <span> tag
-		$strHtml = "<span id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'><a href='{$strHref}'>{$strValue}</a></span>\n";
+		$strHtml = "<span id='{$arrParams['Object']}.{$arrParams['Property']}.Output' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}OutputSpan {$arrParams['Definition']['Class']}'><a href='{$strHref}'>{$strValue}</a></span>\n";
 		
 		return $strHtml;
 	}
@@ -356,7 +356,7 @@ class HTMLElements
 		$strLabel = $arrParams['Definition']['Label'];
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'><a href='mailto:{$strValue}'>{$strValue}</a></div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Output' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']}'><a href='mailto:{$strValue}'>{$strValue}</a></div>\n";
 		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 

@@ -6,22 +6,22 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// add.php
+// recurring_adjustment_add.php
 //----------------------------------------------------------------------------//
 /**
- * add
+ * recurring_adjustment_add
  *
- * HTML Template for the Add Adjustment HTML object
+ * HTML Template for the Add Recurring Adjustment HTML object
  *
- * HTML Template for the Add Adjustment HTML object
+ * HTML Template for the Add Recurring Adjustment HTML object
  * This class is responsible for defining and rendering the layout of the HTML Template object
- * which displays the form used to add an adjustment.
+ * which displays the form used to add a recurring adjustment.
  *
- * @file		add.php
+ * @file		recurring_adjustment_add.php
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins
- * @version		7.06
+ * @version		7.07
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -29,21 +29,21 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateAdjustmentAdd
+// HtmlTemplateRecurringAdjustmentAdd
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAdjustmentAdd
+ * HtmlTemplateRecurringAdjustmentAdd
  *
- * HTML Template class for the Add Adjustment HTML object
+ * HTML Template class for the Add Recurring Adjustment HTML object
  *
- * HTML Template class for the Add Adjustment HTML object
- * displays the form used to add an adjustment
+ * HTML Template class for the Add Recurring Adjustment HTML object
+ * displays the form used to add a recurring adjustment
  *
  * @package	ui_app
- * @class	HtmlTemplateAdjustmentAdd
+ * @class	HtmlTemplateRecurringAdjustmentAdd
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAdjustmentAdd extends HtmlTemplate
+class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -82,7 +82,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// Load all java script specific to the page here
 		// validate_adjustment is currently being explicitly included in the Render method as there was a 
 		// problem with it being accessed before it was included, when using $this->LoadJavascript(...)
-		//$this->LoadJavascript("validate_adjustment");
+		//$this->LoadJavascript("validate_recurring_adjustment");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -100,17 +100,18 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 	function Render()
 	{	
 		echo "<div class='PopupMedium'>\n";
-		echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
+		echo "<h2 class='Adjustment'>Add Recurring Adjustment</h2>\n";
 		
 		// HACK HACK HACK
 		// currently this javascript file has to be included here, otherwise it is not instantiated before other calls
 		// to it get executed
-		echo "<script type='text/javascript' src='javascript/validate_adjustment.js'></script>\n";
+		echo "<script type='text/javascript' src='javascript/validate_recurring_adjustment.js'></script>\n";
 		
-		$this->FormStart("AddAdjustment", "Adjustment", "Add");
+		$this->FormStart("AddRecurringAdjustment", "Adjustment", "AddRecurring");
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		DBO()->Account->Id->RenderHidden();
+		//DBO()->ChargeType->Id->RenderHidden();
 		
 		// Display account details
 		DBO()->Account->Id->RenderOutput();
@@ -127,12 +128,12 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateRecurringAdjustment.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
 			// check if this ChargeType was the last one selected
-			if ((DBO()->ChargeType->Id->Value) && ($intChargeTypeId == DBO()->ChargeType->Id->Value))
+			if ((DBO()->RecurringChargeType->Id->Value) && ($intChargeTypeId == DBO()->RecurringChargeType->Id->Value))
 			{
 				$strSelected = "selected='selected'";
 			}
@@ -144,14 +145,19 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>$strDescription</option>\n";
 			
 			// add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
-			$arrChargeTypeData['ChargeType']	= $dboChargeType->ChargeType->Value;
-			$arrChargeTypeData['Nature']		= $dboChargeType->Nature->Value;
-			$arrChargeTypeData['Fixed']			= $dboChargeType->Fixed->Value;
+			$arrChargeTypeData['ChargeType']		= $dboChargeType->ChargeType->Value;
+			$arrChargeTypeData['Nature']			= $dboChargeType->Nature->Value;
+			$arrChargeTypeData['Fixed']				= $dboChargeType->Fixed->Value;
+			$arrChargeTypeData['Description']		= $dboChargeType->Description->Value;
+			$arrChargeTypeData['RecurringFreqType']	= $dboChargeType->RecurringFreqType->FormattedValue();
+			$arrChargeTypeData['RecurringFreq']		= $dboChargeType->RecurringFreq->Value;
+			
 			
 			// the amounts should be formatted as money values before being added to this array
-			$arrChargeTypeData['Amount']		= FormatAsCurrency($dboChargeType->Amount->Value, 2, TRUE);
-			$arrChargeTypeData['Description']	= $dboChargeType->Description->Value;
-			//$arrChargeTypeData['Id']		= $dboChargeType->Id->Value;
+			$arrChargeTypeData['MinCharge']			= FormatAsCurrency($dboChargeType->MinCharge->Value, 2, TRUE);
+			$arrChargeTypeData['RecursionCharge']	= FormatAsCurrency($dboChargeType->RecursionCharge->Value, 2, TRUE);
+			$arrChargeTypeData['CancellationFee']	= FormatAsCurrency($dboChargeType->CancellationFee->Value, 2, TRUE);
+			
 			
 			$arrChargeTypes[$intChargeTypeId] = $arrChargeTypeData;
 		}
@@ -160,56 +166,56 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "</div>\n";
 		
 		// if a charge type hasn't been selected then use the first one from the list
-		if (!DBO()->ChargeType->Id->Value)
+		if (!DBO()->RecurringChargeType->Id->Value)
 		{
 			reset($arrChargeTypes);
-			DBO()->ChargeType->Id = key($arrChargeTypes);
-			DBO()->Charge->Amount = $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
+			DBO()->RecurringChargeType->Id			= key($arrChargeTypes);
+			DBO()->RecurringCharge->RecursionCharge	= $arrChargeTypes[DBO()->RecurringChargeType->Id->Value]['RecursionCharge'];
+			DBO()->RecurringCharge->MinCharge		= $arrChargeTypes[DBO()->RecurringChargeType->Id->Value]['MinCharge'];
 		}
-		DBO()->ChargeType->Id->RenderHidden();
-		$intChargeTypeId = DBO()->ChargeType->Id->Value;
+		DBO()->RecurringChargeType->Id->RenderHidden();
+		$intChargeTypeId = DBO()->RecurringChargeType->Id->Value;
 		
 		// display the charge code when the Charge Type has been selected
-		DBO()->ChargeType->ChargeType = $arrChargeTypes[$intChargeTypeId]['ChargeType'];
-		DBO()->ChargeType->ChargeType->RenderOutput();
+		DBO()->RecurringChargeType->ChargeType = $arrChargeTypes[$intChargeTypeId]['ChargeType'];
+		DBO()->RecurringChargeType->ChargeType->RenderOutput();
 		
 		// display the description
-		DBO()->ChargeType->Description = $arrChargeTypes[$intChargeTypeId]['Description'];
-		DBO()->ChargeType->Description->RenderOutput();
+		DBO()->RecurringChargeType->Description = $arrChargeTypes[$intChargeTypeId]['Description'];
+		DBO()->RecurringChargeType->Description->RenderOutput();
 		
 		// display the nature of the charge
-		DBO()->ChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
-		DBO()->ChargeType->Nature->RenderOutput();
+		DBO()->RecurringChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
+		DBO()->RecurringChargeType->Nature->RenderOutput();
 		
-		DBO()->Charge->Amount->RenderInput();
+		// display the cancellation fee
+		DBO()->RecurringChargeType->CancellationFee = $arrChargeTypes[$intChargeTypeId]['CancellationFee'];
+		DBO()->RecurringChargeType->CancellationFee->RenderOutput();
 		
-		// Create a combo box containing the last 6 invoices associated with the account
+		// display the Recurring Frequency
+		DBO()->RecurringChargeType->RecurringFreq = $arrChargeTypes[$intChargeTypeId]['RecurringFreq'];
+		$strRecurringFreq = $arrChargeTypes[$intChargeTypeId]['RecurringFreq'] ." ". $arrChargeTypes[$intChargeTypeId]['RecurringFreqType'];
+		DBO()->RecurringChargeType->RecurringFreq->RenderArbitrary($strRecurringFreq, RENDER_OUTPUT);
+
+		// display the Minimum Charge
+		DBO()->RecurringCharge->MinCharge->RenderInput();
+
+		// display the RecursionCharge
+		DBO()->RecurringCharge->RecursionCharge->RenderInput();
+		
+		// create the TimesToCharge textbox
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Invoice:</div>\n";
+		echo "   <div class='DefaultLabel'>Times to Charge</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='InvoiceComboBox' name='Charge.Invoice'>\n";
-		echo "         <option value=''>No Association</option>\n";
-		foreach (DBL()->AccountInvoices as $dboInvoice)
-		{
-			$strInvoiceId = $dboInvoice->Id->Value;
-			// Check if this invoice Id was the last one selected
-			if ($strInvoiceId == DBO()->Charge->Invoice->Value)
-			{
-				$strSelected = "selected='selected'";
-			}
-			else
-			{
-				$strSelected = "";
-			}
-			
-			echo "         <option value='$strInvoiceId' $strSelected>$strInvoiceId</option>\n";
-		}
-		echo "      </select>\n";
+		echo "      <input type='text' id='TimesToCharge' value=''></input>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
-
-		// Create a textbox for including a note
-		DBO()->Charge->Notes->RenderInput();
+		
+		// create the EndDate label
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'>End Date:</div>\n";
+		echo "   <div id='EndDate' class='DefaultOutput'>&nbsp;</div>\n";
+		echo "</div>\n";
 		
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
@@ -217,14 +223,13 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// create the submit button
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		echo "<input type='button' value='Close' class='InputSubmit' onclick=\"Vixen.Popup.Close('AddAdjustmentPopupId');\"></input>\n";
+		echo "<input type='button' value='Close' class='InputSubmit' onclick=\"Vixen.Popup.Close('AddRecurringAdjustmentPopupId');\"></input>\n";
 		$this->AjaxSubmit("Add Adjustment");
 		echo "</div>\n";
 		
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
-		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
-
+		echo "<script type='text/javascript'>Vixen.ValidateRecurringAdjustment.InitialiseForm($strJsonCode);</script>\n";
 		
 		$this->FormEnd();
 		echo "</div>\n";

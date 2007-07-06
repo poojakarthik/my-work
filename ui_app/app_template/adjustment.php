@@ -124,8 +124,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				}
 				else
 				{
-					//DBO()->Status->Message = "The adjustment was successfully saved";
-					DBO()->Status->Message = "Saved. the amount was ". DBO()->Charge->Amount->Value;
+					DBO()->Status->Message = "The adjustment was successfully saved";
 					
 					// Tell the page to reload
 					//TODO!
@@ -197,6 +196,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			// Define all the required properties for the Charge record
 			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
 			{
+				// if the charge amount has a leading dollar sign then strip it off
+				DBO()->Charge->Amount = ltrim(trim(DBO()->Charge->Amount->Value), '$');
+			
 				// Account details
 				DBO()->Charge->Account		= DBO()->Account->Id->Value;
 				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
@@ -237,12 +239,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				else
 				{
 					DBO()->Status->Message = "The adjustment was successfully saved";
-					
-					// Tell the page to reload
-					//TODO!
-					//$this->ReLoadPage();
-					//$this->Location($href);
-					//return TRUE;
 				}
 			}
 			else
@@ -254,7 +250,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		
 		// Load all charge types that aren't archived
 		DBL()->ChargeTypesAvailable->Archived = 0;
-		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
+		DBL()->ChargeTypesAvailable->SetTable("RecurringChargeType");
 		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC");
 		DBL()->ChargeTypesAvailable->Load();
 
