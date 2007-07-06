@@ -1193,14 +1193,14 @@ class Validation
 	}
 	
 	//------------------------------------------------------------------------//
-	// MoneyValue
+	// IsMoneyValue
 	//------------------------------------------------------------------------//
 	/**
-	 * MoneyValue()
+	 * IsMoneyValue()
 	 *
-	 * Checks if a value is in a valid monetary format 
+	 * Checks if a value is in a valid monetary format and is not NULL
 	 *
-	 * Checks if a value is in a valid monetary format.
+	 * Checks if a value is in a valid monetary format and is not NULL
 	 * The valid format is a float that can start with a '$' char
 	 *
 	 * @param	mix			$mixValue		value to validate
@@ -1209,7 +1209,7 @@ class Validation
 	 *
 	 * @method
 	 */
-	function MoneyValue($mixValue)
+	function IsMoneyValue($mixValue)
 	{
 		// remove whitespace and the $ if they are present
 		$mixValue = trim($mixValue);
@@ -1220,22 +1220,23 @@ class Validation
 		
 		if ($strAppendedText)
 		{
-			// there was some text asfter the float
+			// there was some text after the float
 			return FALSE;
 		}
 		
-		return (isset($fltValue));
+		return (is_numeric($fltValue));
 	}
 	
 	//------------------------------------------------------------------------//
-	// IsNotNullOrZero
+	// IsNotNull
 	//------------------------------------------------------------------------//
 	/**
-	 * IsNotNullOrZero()
+	 * IsNotNull()
 	 *
-	 * Returns TRUE if the value is not NULL or ZERO, else returns FALSE
+	 * Returns TRUE if the value is not NULL
 	 *
-	 * Returns TRUE if the value is not NULL or ZERO, else returns FALSE
+	 * Returns TRUE if the value is not NULL
+	 * This will return TRUE if $mixValue == 0
 	 * 
 	 *
 	 * @param	mix			$mixValue		value to validate
@@ -1244,24 +1245,27 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsNotNullOrZero($mixValue)
+	function IsNotNull($mixValue)
 	{
-		if (!$mixValue)
+		// take care of the special case where $mixValue == 0
+		if (is_numeric($mixValue))
 		{
-			return FALSE;
+			// if the value is a number then it can't be NULL
+			return TRUE;
 		}
-		return TRUE;
+		
+		return (bool)($mixValue != NULL);
 	}
-	
+
 	//------------------------------------------------------------------------//
-	// IsNonEmptyString
+	// IsNotEmptyString
 	//------------------------------------------------------------------------//
 	/**
-	 * IsNonEmptyString()
+	 * IsNotEmptyString()
 	 *
-	 * Returns TRUE if the value is not === NULL and is not whitespace, else returns FALSE
+	 * Returns TRUE if the value is not an empty string and is not just whitespace
 	 *
-	 * Returns TRUE if the value is not === NULL and is not whitespace, else returns FALSE
+	 * Returns TRUE if the value is not an empty string and is not just whitespace
 	 * 
 	 *
 	 * @param	mix			$mixValue		value to validate
@@ -1270,16 +1274,12 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsNonEmptyString($mixValue)
+	function IsNotEmptyString($mixValue)
 	{
-		if (($mixValue === NULL) || (strlen(trim($mixValue)) == 0))
-		{
-			return FALSE;
-		}
-		return TRUE;
+		$mixValue = trim($mixValue);
+		
+		return (bool)(strlen($mixValue) > 0);
 	}
-	
-	
 }
 
 //----------------------------------------------------------------------------//

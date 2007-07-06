@@ -146,7 +146,7 @@ class HTMLElements
 		$strLabel = $arrParams['Definition']['Label'];
 		$strValue = $this->BuildInputValue($arrParams);
 		$strValue = nl2br($strValue);
-		
+
 		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
 		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
 		$strClass	= "{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}";
@@ -521,16 +521,19 @@ class HTMLElements
 			switch ($strMask)
 			{
 				case "Currency2DecPlaces":
+					// remove the dollar sign if it is already present
+					$mixValue = ltrim($mixValue, '$');
+					
 					if ($mixValue < 0)
 					{
 						// negative currency value
 						$mixValue = $mixValue * (-1.0);
-						$mixValue = "($". number_format($mixValue, 2, ".", ",") .")";
+						$mixValue = "($". number_format($mixValue, 2, ".", "") .")";
 					}
 					else
 					{
 						// possitive currency value
-						$mixValue = "$". number_format($mixValue, 2, ".", ",") ."";
+						$mixValue = "$". number_format($mixValue, 2, ".", "") ."";
 					}
 					break;
 				case "ShortDate":
@@ -578,7 +581,7 @@ class HTMLElements
 	private function _OutputValue($mixValue, $strOutputString, $strMask)
 	{
 		$strOutputString = trim($strOutputString);
-		
+
 		// apply output mask to the value (if defined in UIAppDocumentation)
 		$mixValue = $this->ApplyOutputMask($mixValue, $strMask);
 		
@@ -611,7 +614,7 @@ class HTMLElements
 	function BuildInputValue($arrParams)
 	{
 		$strValue = $this->BuildOutputValue($arrParams);
-		
+
 		// BuildOutputValue will never return an empty string, but BuildInputValue should be able to
 		if ($strValue == "&nbsp;")
 		{

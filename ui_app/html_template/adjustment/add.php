@@ -150,7 +150,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			$arrChargeTypeData['Fixed']			= $dboChargeType->Fixed->Value;
 			
 			// the amounts should be formatted as money values before being added to this array
-			$arrChargeTypeData['Amount']		= $dboChargeType->Amount->Value;//FormatAsCurrency($dboChargeType->Amount->Value, 4, TRUE);
+			$arrChargeTypeData['Amount']		= FormatAsCurrency($dboChargeType->Amount->Value, 2, TRUE);
 			$arrChargeTypeData['Description']	= $dboChargeType->Description->Value;
 			//$arrChargeTypeData['Id']		= $dboChargeType->Id->Value;
 			
@@ -163,13 +163,9 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// if a charge type hasn't been selected then use the first one from the list
 		if (!DBO()->ChargeType->Id->Value)
 		{
-	
 			reset($arrChargeTypes);
 			DBO()->ChargeType->Id = key($arrChargeTypes);
-//			DBO()->Charge->Amount = $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
-//echo "Being Opened for the first time, ChargeType.Id = " . DBO()->ChargeType->Id->Value;
-//echo " amount = ". $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
-
+			DBO()->Charge->Amount = $arrChargeTypes[DBO()->ChargeType->Id->Value]['Amount'];
 		}
 		DBO()->ChargeType->Id->RenderHidden();
 		$intChargeTypeId = DBO()->ChargeType->Id->Value;
@@ -186,7 +182,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		DBO()->ChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->ChargeType->Nature->RenderOutput();
 		
-		DBO()->Charge->Amount->RenderOutput();
+		//DBO()->Charge->Amount->RenderOutput();
 		DBO()->Charge->Amount->RenderInput();
 		
 		// Create a combo box containing the last 6 invoices associated with the account

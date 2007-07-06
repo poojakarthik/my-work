@@ -289,7 +289,8 @@ function GetAuthenticatedUserDBObject()
  * Validates the given value using the specified validation rule or regular expression
  *
  * @param	string	$strValidationRule	name of the validation rule's method which must
- *										be a method of the Validation class; 
+ *										be a method of the Validation class;
+ *										OR a list of comma separted method names 
  *										OR a regex to use for validation
  * @param	mixed	$mixValue			the value to validate
  *										
@@ -301,16 +302,34 @@ function GetAuthenticatedUserDBObject()
 function Validate($strValidationRule, $mixValue)
 {
 	$objValidation = Singleton::Instance('Validation');
-	if (method_exists($objValidation, $strValidationRule))
+	
+	// Check if the validation rule is a REGEX or list of methods
+	if (substr($strValidationRule, 0, 6) == "REGEX:")
 	{
-		// use validation method
-		return $objValidation->$strValidationRule($mixValue);
-	}
-	else
-	{
-		// use regex validation
+		// We are dealing with a regex.  Remove the prefix
+		$strValidationRule = substr($strValidationRule, 6, strlen($strValidationRule));
+		
+		// Use regex validation
 		return $objValidation->RegexValidate($strValidationRule, $mixValue);
 	}
+
+	// Create a list of the validation rules
+	$strValidationRule = str_replace(' ', '', $strValidationRule);
+	$arrValidationMethods = explode(',', $strValidationRule);
+
+	// The value is only valid if each validation rule returns TRUE
+	$bolIsValid = TRUE;
+	
+	// Run each validation rule
+	foreach ($arrValidationMethods as $strMethod)
+	{
+		if (method_exists($objValidation, $strMethod))
+		{
+			$bolIsValid = $bolIsValid && $objValidation->$strMethod($mixValue);
+		}
+	}
+
+	return $bolIsValid;
 }
 
 

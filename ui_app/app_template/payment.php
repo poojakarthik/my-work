@@ -111,6 +111,9 @@ class AppTemplatePayment extends ApplicationTemplate
 				// DBO()->Payment->Amount is already set
 				// DBO()->Payment->TXNReference is already set
 				
+				// if the payment amount has a leading dollar sign then strip it off
+				DBO()->Payment->Amount = ltrim(trim(DBO()->Payment->Amount->Value), '$');
+				
 				DBO()->Payment->PaidOn = GetCurrentDateForMySQL();
 				
 				// User's details
