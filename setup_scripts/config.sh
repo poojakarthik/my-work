@@ -9,6 +9,9 @@
 # make dir
 mkdir -m 755 /etc/vixen
 
+# remove file if it exists
+rm vixen.conf
+
 # write conf file
 FileVixenConf="<?php
 //----------------------------------------------------------------------------//
@@ -16,12 +19,43 @@ FileVixenConf="<?php
 //----------------------------------------------------------------------------//
 
 // Data Access constants
-define('DATABASE_URL', 'localhost');
-define('DATABASE_NAME', "vixen");
-define('DATABASE_USER', "vixen");
-define('DATABASE_PWORD', "V1x3n");
 
-?>"
+$strDBServer = 'DPS';
+//$strDBServer = 'CATWALK';
+//$strDBServer = 'MINX';
+
+// Defaults
+$strDBUser        = 'vixen';
+$strDBPassword    = 'V1x3n';
+$strDBDatabase    = 'vixen';
+switch ($strDBServer)
+{
+	case 'DPS':
+		$strDBURL		= '10.11.12.13';
+		break;
+
+	case 'MINX':
+		$strDBURL		= '10.11.12.16';
+		break;
+	
+	case 'CATWALK':
+		$strDBURL		= '10.11.12.14';
+		$strDBPassword		= 'vixen';
+		$strDBDatabase		= 'vixenworking';
+		break;
+
+	default:
+		throw new Exception('Bad Database Connection Definition');
+		die;
+}
+
+
+$GLOBALS['**arrDatabase']['URL']		= $strDBURL;
+$GLOBALS['**arrDatabase']['User']		= $strDBUser;
+$GLOBALS['**arrDatabase']['Password']	= $strDBPassword;
+$GLOBALS['**arrDatabase']['Database']	= $strDBDatabase;
+?>
+"
 echo "$FileVixenConf" > /etc/vixen/vixen.conf
 
 # set permissions

@@ -93,8 +93,14 @@
 	 */ 
 	function __construct()
 	{
+		// Make sure we have a config
+		if (!$arrDBConfig = $GLOBALS['**arrDatabase'])
+		{
+			throw new Exception("Database Configuration not found!");
+		}
+		
 		// Connect to MySQL database
-		$this->refMysqliConnection = new mysqli(DATABASE_URL, DATABASE_USER, DATABASE_PWORD, DATABASE_NAME);
+		$this->refMysqliConnection = new mysqli($arrDBConfig['URL'], $arrDBConfig['User'], $arrDBConfig['Password'], $arrDBConfig['Database']);
 		
 		// Make sure the connection was successful
 		if(mysqli_connect_errno())

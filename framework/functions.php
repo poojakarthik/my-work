@@ -1771,6 +1771,9 @@ function LoadApplication($strApplication=NULL)
 	
 	// require application
 	require_once($strApplicationDir."require.php");
+	require_once($strApplicationDir."application.php");
+	require_once($strApplicationDir."definitions.php");
+	require_once($strApplicationDir."config.php");
 	
 	return TRUE;
 }
@@ -2332,6 +2335,44 @@ function TransactionCommit()
 	
 	// Commit Transaction
 	return $GLOBALS['dbaDatabase']->TransactionCommit();
+}
+
+//------------------------------------------------------------------------//
+// SetDBConfig
+//------------------------------------------------------------------------//
+/**
+ * SetDBConfig()
+ *
+ * Overrides the default connection config
+ *
+ * Overrides the default connection config.  MUST be run before an Application is 
+ * created/loaded
+ * 
+ * @param		string	$strURL			optional	URL to connect to
+ * @param		string	$strDatabase	optional	Database to connect to
+ * @param		string	$strUser		optional	User to connect as
+ * @param		string	$strPassword	optional	Password to connect with
+ *
+ * @return		boolean								TRUE	: Overridden
+ * 													FALSE	: Failed
+ *
+ * @method
+ */ 
+function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPassword=NULL)
+{
+	if ($GLOBALS['dbaDatabase'])
+	{
+		// Can't override if already connected
+		return FALSE;
+	}
+	
+	// Override
+	$GLOBALS['**arrDatabase']['URL']		= ($strURL)			? $strURL		: $GLOBALS['**arrDatabase']['URL'];
+	$GLOBALS['**arrDatabase']['Database']	= ($strDatabase)	? $strDatabase	: $GLOBALS['**arrDatabase']['Database'];
+	$GLOBALS['**arrDatabase']['User']		= ($strUser)		? $strUser		: $GLOBALS['**arrDatabase']['User'];
+	$GLOBALS['**arrDatabase']['Password']	= ($strPassword)	? $strPassword	: $GLOBALS['**arrDatabase']['Password'];
+	
+	return TRUE;
 }
 
 
