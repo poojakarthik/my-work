@@ -118,6 +118,7 @@ function VixenPopupClass()
 				document.body.style.overflow = "hidden";
 				document.body.scrollTop = intScroll;
 				elmOverlay.style.top = intScroll;
+				elmRoot.style.top = intScroll;
 				
 				
 				break;
@@ -174,8 +175,7 @@ function VixenPopupClass()
 		{
 			// center the popup
 			elmPopup.style.left = (window.innerWidth / 2) - (elmPopup.offsetWidth / 2);
-			elmPopup.style.top = (window.innerHeight / 2) - (elmPopup.offsetHeight / 2);
-			
+			elmPopup.style.top = ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
 		}
 		else if (mixPosition == "[object MouseEvent]")
 		{
@@ -194,7 +194,6 @@ function VixenPopupClass()
 		{
 			// set the popup, well, where ever it wants
 		}
-		
 		// Add the handler for dragging the popup around
     	mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
     	mydragObj.addEventListener('mousedown', OpenHandler, false);
