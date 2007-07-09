@@ -13,7 +13,7 @@ mkdir -m 755 /etc/vixen
 rm /etc/vixen/vixen.conf
 
 # write conf file
-echo vixen.conf > /etc/vixen/vixen.conf
+cp vixen.conf /etc/vixen/vixen.conf
 
 # set permissions
 chmod 644 /etc/vixen/vixen.conf
