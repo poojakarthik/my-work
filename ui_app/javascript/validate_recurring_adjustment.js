@@ -43,10 +43,14 @@
  */
 function VixenValidateRecurringAdjustmentClass()
 {
-	var elmRecursionCharge;
-	var elmMinCharge;
-	var elmTimesToCharge;
-	var elmRecurringChargeTypeId;
+	var _elmRecursionCharge;
+	var _elmMinCharge;
+	var _elmTimesToCharge;
+	var _elmRecurringChargeTypeId;
+	
+	var _fltRecursionCharge;
+	var _fltMinCharge;
+	var _intTimesToCharge;
 
 	//------------------------------------------------------------------------//
 	// _objChargeTypeData
@@ -79,25 +83,32 @@ function VixenValidateRecurringAdjustmentClass()
 	 *											objChargeTypeData.{ChargeType}.Nature
 	 *																		  .Fixed
 	 *																		  .Amount
-	 *																		  .Description
+	 *																		  .Description FIX THIS DESCRIPTION
 	 * @return	void
 	 * @method
 	 */
 	this.InitialiseForm = function(objChargeTypeData)
 	{
+		var intKey;
 		this._objChargeTypeData = objChargeTypeData;
 		
-		// attach events to the input textboxes
-		//TODO!
-		this.elmRecursionCharge	= document.getElementById("RecurringCharge.RecursionCharge");
-		this.elmMinCharge		= document.getElementById("RecurringCharge.MinCharge");
-		this.elmTimesToCharge	= document.getElementById("TimesToCharge");
-		this.elmRecurringChargeTypeId = document.getElementById("RecurringChargeType.Id");
+		// retrieve references to the elements
+		this._elmRecursionCharge		= document.getElementById("RecurringCharge.RecursionCharge");
+		this._elmMinCharge				= document.getElementById("RecurringCharge.MinCharge");
+		this._elmTimesToCharge			= document.getElementById("TimesToCharge");
+		this._elmRecurringChargeTypeId	= document.getElementById("RecurringChargeType.Id");
+
+		//add event listeners
+		//TODO! I don't know how to add event listeners to elements
+		this._elmRecursionCharge.onkeyup	= "Vixen.ValidateRecurringAdjustment.RecursionChargeChanged()";
 		
-		//var elmTemp	= document.getElementById("ChargeTypeCombo");
-		
-		//this.DisplayChargeType(elmTemp.value);
-		
+		// set up the form to display the details of the first item in the Charge Type Combobox
+		for (intKey in this._objChargeTypeData)
+		{
+			var intFirstChargeTypeId = intKey;
+			break;
+		}
+		this.DeclareChargeType(intFirstChargeTypeId);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -115,22 +126,16 @@ function VixenValidateRecurringAdjustmentClass()
 	 * @return	void
 	 * @method
 	 */
-	this.DeclareChargeType = function(objComboBox)
+	this.DeclareChargeType = function(intChargeTypeId)
 	{
-		// make sure there is a value specificed
-		if (!objComboBox.value)
-		{
-			return;
-		}
-
 		// retrieve values relating to the Recurring Charge Type selected
-		var intChargeTypeId		= objComboBox.value;
+		//var intChargeTypeId		= objComboBox.value;
 		var strRecursionCharge	= this._objChargeTypeData[intChargeTypeId].RecursionCharge;
 		var strMinCharge		= this._objChargeTypeData[intChargeTypeId].MinCharge;
 		var strCancellationFee	= this._objChargeTypeData[intChargeTypeId].CancellationFee;
 		var strDescription		= this._objChargeTypeData[intChargeTypeId].Description;
 		var strChargeType		= this._objChargeTypeData[intChargeTypeId].ChargeType;
-		var strRecurringFreq	= this._objChargeTypeData[intChargeTypeId].RecurringFreq +" "+ this._objChargeTypeData[intChargeTypeId].RecurringFreqType;
+		var strRecurringFreq	= this._objChargeTypeData[intChargeTypeId].RecurringFreq +" "+ this._objChargeTypeData[intChargeTypeId].RecurringFreqTypeAsText;
 		
 		
 		if (this._objChargeTypeData[intChargeTypeId].Nature == "CR")
@@ -153,9 +158,8 @@ function VixenValidateRecurringAdjustmentClass()
 		document.getElementById('RecurringChargeType.CancellationFee.Output').innerHTML = strCancellationFee;
 		document.getElementById('RecurringChargeType.RecurringFreq.Output').innerHTML = strRecurringFreq;
 		
-		
-		document.getElementById('RecurringCharge.RecursionCharge').value = strRecursionCharge;
-		document.getElementById('RecurringCharge.MinCharge').value = strMinCharge;
+		this._elmRecursionCharge.value = strRecursionCharge;
+		this._elmMinCharge.value = strMinCharge;
 		
 		document.getElementById('RecurringChargeType.Id').value = intChargeTypeId;
 		
@@ -169,55 +173,60 @@ function VixenValidateRecurringAdjustmentClass()
 		if (this._objChargeTypeData[intChargeTypeId].Fixed == 1)
 		{
 			// disable the textboxes
-			document.getElementById('RecurringCharge.RecursionCharge').disabled = TRUE;
-			document.getElementById('RecurringCharge.MinCharge').disabled = TRUE;
-			document.getElementById('TimesToCharge').disabled = TRUE;
-			
-			//document.getElementById('InvoiceComboBox').focus();
+			this._elmRecursionCharge.disabled = TRUE;
+			this._elmMinCharge.disabled = TRUE;
+			this._elmTimesToCharge.disabled = TRUE;
 		}
 		else
 		{
 			// enable the textboxes
-			document.getElementById('RecurringCharge.RecursionCharge').disabled = FALSE;
-			document.getElementById('RecurringCharge.MinCharge').disabled = FALSE;
-			document.getElementById('TimesToCharge').disabled = FALSE;
-			
-			//document.getElementById('Charge.Amount').focus();
+			this._elmRecursionCharge.disabled = FALSE;
+			this._elmMinCharge.disabled = FALSE;
+			this._elmTimesToCharge.disabled = FALSE;
 		}
 	}
 	
 	//Sets the TimesToCharge textbox, based on the RecursionCharge and the MinCharge
 	this.SetTimesToCharge = function()
 	{
-		var fltRecursionCharge	= this.StripDollars(this.elmRecursionCharge.value);
-		var fltMinCharge		= this.StripDollars(this.elmMinCharge.value);
-		var intTimesCharged;
-		
-		if (fltRecursionCharge > fltMinCharge)
+		this.GetTextFields();
+
+		if (this._fltRecursionCharge > this._fltMinCharge)
 		{
-			this.elmTimesToCharge.value = 0;
+			this._elmTimesToCharge.value = 1;
 			return;
 		}
 		
 		// Work out number of times charged
-		intTimesCharged = Math.ceil(fltMinCharge / fltRecursionCharge);
+		this._intTimesCharged = Math.ceil(this._fltMinCharge / this._fltRecursionCharge);
 		
 		// Set the TimesToCharge textbox
-		this.elmTimesToCharge.value = intTimesCharged;
+		if (isNaN(this._intTimesCharged))
+		{
+			this._elmTimesToCharge.value = "";
+		}
+		else
+		{
+			this._elmTimesToCharge.value = this._intTimesCharged;
+		}
 	}
 	
 	this.SetEndDate = function()
 	{
-		var intTimesCharged = this.elmTimesToCharge.value;
-		var intRecurringFreq = this._objChargeTypeData[this.elmRecurringChargeTypeId.value].RecurringFreq;
-		var intRecurringFreqType = this._objChargeTypeData[this.elmRecurringChargeTypeId.value].RecurringFreqType;
-		
-		var strEndDate = this.CalculateEndDate(intRecurringFreq, intRecurringFreqType, intTimesCharged);
+		var intTimesCharged = parseInt(this._elmTimesToCharge.value);
+		var intRecurringFreq = this._objChargeTypeData[this._elmRecurringChargeTypeId.value].RecurringFreq;
+		var intRecurringFreqType = this._objChargeTypeData[this._elmRecurringChargeTypeId.value].RecurringFreqType;
 
-		document.getElementById("EndDate").innerHTML = strEndDate;
+		if (isNaN(intTimesCharged))
+		{
+			document.getElementById("EndDate").innerHTML = "&nbsp;";
+		}
+		else
+		{
+			var strEndDate = this.CalculateEndDate(intRecurringFreq, intRecurringFreqType, intTimesCharged);
+			document.getElementById("EndDate").innerHTML = strEndDate;
+		}
 	}
-	
-	
 	
 	//strips the dollar sign off the parameter
 	this.StripDollars = function(mixMoneyValue)
@@ -295,6 +304,79 @@ function VixenValidateRecurringAdjustmentClass()
 		}
 	}
 
+
+	//Event handler for when the text within the Times to Charge text box, is changed
+	this.TimesChargedChanged = function()
+	{
+		this.GetTextFields();
+	
+		if ((isNaN(this._intTimesToCharge)) || (this._intTimesToCharge <= 0))
+		{
+			return;
+		}
+		
+		this._fltRecursionCharge = this._fltMinCharge / this._intTimesToCharge;
+
+		this.SetTextFields();
+		
+		this.SetEndDate();
+	}
+	
+	//Event handler for when the text within the Recursion charge text box, is changed
+	this.RecursionChargeChanged = function()
+	{
+		alert("RecursionChargeChanged() has been executed");
+		return;
+	
+		//TODO! Fix this method.  This has just been copied from the original system
+		var eAmount = document.getElementById("Amount");
+		var eMinCharge = document.getElementById("MinCharge");
+		var eNumOfCharges = document.getElementById("NumOfCharges");
+		var eEndDate = document.getElementById("EndDate");
+		var eRecurFreq = document.getElementById("recurringfrequency");
+		
+		var RecurFreq = eRecurFreq.innerHTML.split(" ")[0];
+		var RecurFreqType = eRecurFreq.innerHTML.split(" ")[1];
+		
+		// check if it is fixed or not
+		var fixed = document.getElementById('NumOfChargesFixed');
+		if (fixed)
+		{
+			stripDollars();
+			fixed.innerHTML = Math.ceil(eMinCharge.value / eAmount.value);
+			endDate = calculateEndDate(RecurFreq, RecurFreqType, fixed.innerHTML);
+			eEndDate.innerHTML = endDate;
+			
+			addDollars;
+			
+			return;
+		}
+		
+		stripDollars();
+		
+		// Work out number of times charged
+		eNumOfCharges.value = Math.ceil(eMinCharge.value / eAmount.value);
+		
+		endDate = calculateEndDate(RecurFreq, RecurFreqType, eNumOfCharges.value);
+		eEndDate.innerHTML = endDate;
+		
+		addDollars();
+	}
+	
+
+	this.GetTextFields = function()
+	{
+		this._fltRecursionCharge = parseFloat(this.StripDollars(this._elmRecursionCharge.value));
+		this._fltMinCharge = parseFloat(this.StripDollars(this._elmMinCharge.value));
+		this._intTimesToCharge = parseInt(this._elmTimesToCharge.value);
+	}
+
+	this.SetTextFields = function()
+	{
+		this._elmRecursionCharge.value	= "$" + (this._fltRecursionCharge).toFixed(4);
+		this._elmMinCharge.value		= "$" + (this._fltMinCharge).toFixed(2);
+		this._elmTimesToCharge.value	= this._intTimesToCharge;
+	}
 
 }
 

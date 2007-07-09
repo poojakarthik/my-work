@@ -99,7 +99,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<div class='PopupMedium'>\n";
+		echo "<div class='PopupLarge'>\n";
 		echo "<h2 class='Adjustment'>Add Recurring Adjustment</h2>\n";
 		
 		// HACK HACK HACK
@@ -128,7 +128,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateRecurringAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateRecurringAdjustment.DeclareChargeType(this.value)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
@@ -145,12 +145,13 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 			echo "         <option id='ChargeType.$intChargeTypeId' $strSelected value='$intChargeTypeId'>$strDescription</option>\n";
 			
 			// add ChargeType details to an array that will be passed to the javascript that handles events on the ChargeTypeCombo
-			$arrChargeTypeData['ChargeType']		= $dboChargeType->ChargeType->Value;
-			$arrChargeTypeData['Nature']			= $dboChargeType->Nature->Value;
-			$arrChargeTypeData['Fixed']				= $dboChargeType->Fixed->Value;
-			$arrChargeTypeData['Description']		= $dboChargeType->Description->Value;
-			$arrChargeTypeData['RecurringFreqType']	= $dboChargeType->RecurringFreqType->FormattedValue();
-			$arrChargeTypeData['RecurringFreq']		= $dboChargeType->RecurringFreq->Value;
+			$arrChargeTypeData['ChargeType']				= $dboChargeType->ChargeType->Value;
+			$arrChargeTypeData['Nature']					= $dboChargeType->Nature->FormattedValue();
+			$arrChargeTypeData['Fixed']						= $dboChargeType->Fixed->Value;
+			$arrChargeTypeData['Description']				= $dboChargeType->Description->Value;
+			$arrChargeTypeData['RecurringFreqTypeAsText']	= $dboChargeType->RecurringFreqType->FormattedValue();
+			$arrChargeTypeData['RecurringFreqType']			= $dboChargeType->RecurringFreqType->Value;
+			$arrChargeTypeData['RecurringFreq']				= $dboChargeType->RecurringFreq->Value;
 			
 			
 			// the amounts should be formatted as money values before being added to this array
@@ -207,7 +208,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Times to Charge</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <input type='text' id='TimesToCharge' value=''></input>\n";
+		echo "      <input type='text' id='TimesToCharge' value='' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged()'></input>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
 		

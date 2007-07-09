@@ -193,54 +193,63 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		if (SubmittedForm('AddRecurringAdjustment', 'Add Adjustment'))
 		{
 			// Load the relating Account and ChargeType records
-			DBO()->ChargeType->Load();
+			DBO()->RecurringChargeType->Load();
 
 			// Define all the required properties for the Charge record
-			if ((!DBO()->Account->IsInvalid()) && (!DBO()->Charge->IsInvalid()) && (!DBO()->ChargeType->IsInvalid()))
+			if ((!DBO()->Account->IsInvalid()) && (!DBO()->RecurringCharge->IsInvalid()) && (!DBO()->RecurringChargeType->IsInvalid()))
 			{
-				// if the charge amount has a leading dollar sign then strip it off
-				DBO()->Charge->Amount = ltrim(trim(DBO()->Charge->Amount->Value), '$');
+				// if the money values have leading dollar signs then strip it off
+				DBO()->RecurringCharge->MinCharge = ltrim(trim(DBO()->RecurringCharge->MinCharge->Value), '$');
+				DBO()->RecurringCharge->RecursionCharge = ltrim(trim(DBO()->RecurringCharge->RecursionCharge->Value), '$');
 			
+				
 				// Account details
-				DBO()->Charge->Account		= DBO()->Account->Id->Value;
-				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
+				DBO()->RecurringCharge->Account			= DBO()->Account->Id->Value;
+				DBO()->RecurringCharge->AccountGroup	= DBO()->Account->AccountGroup->Value;
+				
+				// Service details
+				DBO()->RecurringCharge->Service			= NULL;
 				
 				// User's details
-				$dboUser 					= GetAuthenticatedUserDBObject();
-				DBO()->Charge->CreatedBy	= $dboUser->Id->Value;
+				DBO()->RecurringCharge->CreatedBy		= AuthenticatedUser()->_arrUser['Id'];
+				
+				// Approved By
+				DBO()->RecurringCharge->ApprovedBy		= NULL;
 				
 				// Date the adjustment was created (the current date)
-				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
+				DBO()->RecurringCharge->CreatedOn		= GetCurrentDateForMySQL();
 				
 				// Details regarding the type of charge
-				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
-				DBO()->Charge->Description	= DBO()->ChargeType->Description->Value;
-				DBO()->Charge->Nature		= DBO()->ChargeType->Nature->Value;
+				DBO()->RecurringCharge->ChargeType			= DBO()->RecurringChargeType->ChargeType->Value;
+				DBO()->RecurringCharge->Description			= DBO()->RecurringChargeType->Description->Value;
+				DBO()->RecurringCharge->Nature				= DBO()->RecurringChargeType->Nature->Value;
 				
-				// if DBO()->Charge->Invoice->Value == 0 then set it to NULL;
-				if (!DBO()->Charge->Invoice->Value)
-				{
-					DBO()->Charge->Invoice = NULL;
-				}
+				DBO()->RecurringCharge->StartedOn			= "";
+				DBO()->RecurringCharge->LastChargedOn		= NULL;
 				
-				// status is dependent on the nature of the charge
-				if (DBO()->Charge->Nature->Value == "CR")
+				DBO()->RecurringCharge->RecurringFreqType	= DBO()->RecurringChargeType->RecurringFreqType->Value;
+				DBO()->RecurringCharge->RecurringFreq		= DBO()->RecurringChargeType->RecurringFreq->Value;
+				
+				// These have already been set				
+				//DBO()->RecurringCharge->MinCharge
+				//DBO()->RecurringCharge->RecursionCharge
+				
+				DBO()->RecurringCharge->CancellationFee		= DBO()->RecurringChargeType->CancellationFee->Value;
+				DBO()->RecurringCharge->Continuable			= DBO()->RecurringChargeType->Continuable->Value;
+				DBO()->RecurringCharge->PlanCharge			= DBO()->RecurringChargeType->PlanCharge->Value;
+				DBO()->RecurringCharge->UniqueCharge		= DBO()->RecurringChargeType->UniqueCharge->Value;
+				DBO()->RecurringCharge->TotalCharged		= 0;
+				DBO()->RecurringCharge->TotalRecursions		= 0;
+				DBO()->RecurringCharge->Archived			= 0;
+				
+				// Save the recurring adjustment to the charge table of the vixen database
+				if (!DBO()->RecurringCharge->Save())
 				{
-					DBO()->Charge->Status	= CHARGE_WAITING;
+					DBO()->Status->Message = "The recurring adjustment did not save";
 				}
 				else
 				{
-					DBO()->Charge->Status	= CHARGE_APPROVED;
-				}
-
-				// Save the adjustment to the charge table of the vixen database
-				if (!DBO()->Charge->Save())
-				{
-					DBO()->Status->Message = "The adjustment did not save";
-				}
-				else
-				{
-					DBO()->Status->Message = "The adjustment was successfully saved";
+					DBO()->Status->Message = "The recurring adjustment was successfully saved";
 				}
 			}
 			else

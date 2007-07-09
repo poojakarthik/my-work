@@ -131,6 +131,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
 		
+		
 		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
 		//check if the form was submitted
 		if (SubmittedForm('AccountDetails', 'Apply Changes'))
