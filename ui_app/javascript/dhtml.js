@@ -242,7 +242,7 @@ else
 // Global object to hold drag information.
 
 var dragObj = new Object();
-dragObj.zIndex = 0;
+dragObj.zIndex = 2;
 
 function dragStart(event, id) {
 	if (Vixen.dragging_now === TRUE)

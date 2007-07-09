@@ -80,6 +80,7 @@ function VixenMenuClass(objMenu)
 			elmNode.style['width'] 				= this.config.Level1.width;
 			elmNode.style['height'] 			= this.config.Level1.height;
 			elmNode.style['position'] 			= 'absolute';
+			
 			top = top + this.config.Level1.height + this.config.Level1.spacing;
 			
 			//Add events
@@ -121,6 +122,8 @@ function VixenMenuClass(objMenu)
 		elmContainer.style['left'] = this.RemovePx(elmMenuItem.style['left']) + this.RemovePx(elmMenuItem.style['width']) + this.config.Level2.spacing;
 		elmContainer.style['position'] = 'absolute';
 		elmContainer.style['overflow'] = 'visible';
+		elmContainer.style['background'] = '#A2BD35';
+		elmContainer.style['z-index']			= 10002;
 		
 		//Render the menu
 		for (strKey in elmMenuItem.action)
@@ -144,6 +147,9 @@ function VixenMenuClass(objMenu)
 			elmNode.style['width'] = this.config.Level2.width;
 			elmNode.style['height'] = this.config.Level2.height;
 			elmNode.style['position'] = 'absolute';
+			elmNode.style['background'] = '#22FEEF';
+			elmNode.style['z-index']	= 10002;
+			
 			top = top + this.config.Level2.height + this.config.Level2.spacing;
 			
 			//Add events
