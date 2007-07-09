@@ -20,28 +20,28 @@ FileVixenConf="<?php
 
 // Data Access constants
 
-$strDBServer = 'DPS';
-//$strDBServer = 'CATWALK';
-//$strDBServer = 'MINX';
+\$strDBServer = 'DPS';
+//\$strDBServer = 'CATWALK';
+//\$strDBServer = 'MINX';
 
 // Defaults
-$strDBUser        = 'vixen';
-$strDBPassword    = 'V1x3n';
-$strDBDatabase    = 'vixen';
+\$strDBUser        = 'vixen';
+\$strDBPassword    = 'V1x3n';
+\$strDBDatabase    = 'vixen';
 switch ($strDBServer)
 {
 	case 'DPS':
-		$strDBURL		= '10.11.12.13';
+		\$strDBURL		= '10.11.12.13';
 		break;
 
 	case 'MINX':
-		$strDBURL		= '10.11.12.16';
+		\$strDBURL		= '10.11.12.16';
 		break;
 	
 	case 'CATWALK':
-		$strDBURL		= '10.11.12.14';
-		$strDBPassword		= 'vixen';
-		$strDBDatabase		= 'vixenworking';
+		\$strDBURL		= '10.11.12.14';
+		\$strDBPassword		= 'vixen';
+		\$strDBDatabase		= 'vixenworking';
 		break;
 
 	default:
@@ -50,10 +50,10 @@ switch ($strDBServer)
 }
 
 
-$GLOBALS['**arrDatabase']['URL']		= $strDBURL;
-$GLOBALS['**arrDatabase']['User']		= $strDBUser;
-$GLOBALS['**arrDatabase']['Password']	= $strDBPassword;
-$GLOBALS['**arrDatabase']['Database']	= $strDBDatabase;
+\$GLOBALS['**arrDatabase']['URL']		= \$strDBURL;
+\$GLOBALS['**arrDatabase']['User']		= \$strDBUser;
+\$GLOBALS['**arrDatabase']['Password']	= \$strDBPassword;
+\$GLOBALS['**arrDatabase']['Database']	= \$strDBDatabase;
 ?>
 "
 echo "$FileVixenConf" > /etc/vixen/vixen.conf
