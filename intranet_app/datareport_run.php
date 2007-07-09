@@ -79,6 +79,8 @@
 			$arrReport = array_merge($arrReportData, $selReport->Fetch());
 			
 			// Should be be outputting in CSV instead of XLS?
+			//Debug($_POST['outputcsv']);
+			//die;
 			if ($_POST['outputcsv'])
 			{
 		        // Yes
@@ -107,6 +109,7 @@
 	
 	$Style->attachObject ($rptReport->Selects ());
 	$Style->attachObject ($rptReport->Inputs ());
+	$Style->attachObject(new dataInteger('ForceRenderTarget', $rptReport->Pull('RenderTarget')->getValue()));
 	
 	// In terms of Documentation, we want to show the 
 	// Report documentation, along with any documentation

@@ -165,6 +165,15 @@
 				case '!=':
 				case 'NOT EQUAL':
 					return '!=';
+				case 'AND':
+				case '&':
+					return '&'; 
+				case 'OR':
+				case '|':
+					return '|'; 
+				case 'XOR':
+				case '^':
+					return '^'; 
 				default:
 					throw new Exception (
 						'The Constraint Operator that you wished to search with is Invalid.'
@@ -193,11 +202,7 @@
 			{
 				case 'LIKE':
 					return $this->_processLIKE ();
-				case '=':
-				case 'EQUALS':
-					return $this->_processEQUALS ();
-				case '!=':
-				case 'NOT EQUAL':
+				default:
 					return $this->_processEQUALS ();
 			}
 		}
