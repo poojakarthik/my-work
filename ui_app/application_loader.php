@@ -378,17 +378,24 @@ class Application
 		$this->objAppTemplate->{$strMethod}();
 		
 		// Render Page
-		if ($objSubmit->Mode == HTML_MODE)
+		if (Ajax()->HasCommands())
+		{
+			// Send back AJAX data as JSON
+			//AjaxReply($mixReply);
+
+			Ajax()->Reply();
+		}
+		else //($objSubmit->Mode == HTML_MODE)
 		{
 			$this->objAppTemplate->Page->SetMode($objSubmit->Mode, $objAjax);
 			$this->objAppTemplate->Page->Render();
 		}
-		else
-		{
+		//else
+		//{
 			// Send back AJAX data as JSON
 			//AjaxReply($mixReply);
-			Ajax()->Reply();
-		}
+			//Ajax()->Reply();
+		//}
 	}
 	
 	//------------------------------------------------------------------------//

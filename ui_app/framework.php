@@ -1643,7 +1643,10 @@ class AjaxFramework
 	 */
 	function Reply()
 	{
-		return AjaxReply($this->_arrCommands);
+		$strReply = Json()->encode($this->_arrCommands);
+		$strReply = "//JSON" . $strReply;
+		//return AjaxReply($this->_arrCommands);
+		echo $strReply;
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1666,6 +1669,11 @@ class AjaxFramework
 		$arrCommand['Type'] = $strType;
 		$arrCommand['Data'] = $mixData;
 		$this->_arrCommands[] = $arrCommand;
+	}
+	
+	function HasCommands()
+	{
+		return count($this->_arrCommands);
 	}
 }
 

@@ -263,18 +263,19 @@ function VixenAjaxClass()
 		
 		//if the reply starts with "//JSON" then this is a json object storing a list of commands
 		if (strReply.substr(0, 6) == "//JSON")
-		{
+		{	
 			// we are working with a JSON object so convert it to a javascript object
 			try
 			{
 				// convert reply into data object
-				eval("objData = " + strReply);
+				eval("objData = " + strReply.substr(6));
+
 				if (!objData)
 				{
 					ajaxHandler(FALSE);
 					return;
 				}
-			
+					
 				ajaxHandler(objData);
 			}
 			catch(er)
@@ -313,12 +314,19 @@ function VixenAjaxClass()
 	}	
 	
 	// Handle each command in the AJAX reply
-	this.ajaxHandler = function(objInput)
+	//Below is the orginal sig.. but it didn't work :(
+	//this.ajaxHandler = function(objInput)
+	function ajaxHandler(objInput)
 	{
 		for (intKey in objInput)
 		{
 			switch (objInput[intKey].Type)
 			{
+				case "LoadCurrentPage":
+					Vixen.Popup.Close('AddAdjustmentPopupId');
+					alert("Record has been successfully added.");
+					window.location.reload();
+					break;
 				default:
 					alert("Don't know how to process command type '" + objInput[intKey].Type + "'");
 					break;

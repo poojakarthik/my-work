@@ -126,11 +126,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				{
 					DBO()->Status->Message = "The adjustment was successfully saved";
 					
+					Ajax()->AddCommand('LoadCurrentPage');
+					
 					// Tell the page to reload
 					//TODO!
 					//$this->ReLoadPage();
 					//$this->Location($href);
-					//return TRUE;
+					return TRUE;
 				}
 			}
 			else
