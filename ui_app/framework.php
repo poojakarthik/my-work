@@ -1885,10 +1885,10 @@ class MenuItems
 	 *
 	 * @method
 	 */
-	function ViewInvoicePdf($intInvoice)
+	function ViewInvoicePdf($intAccount, $intMonth, $intYear)
 	{
-		$this->strLabel = "pdf inv: $intInvoice";
-		return "build_invoice_pdf.php?Invoice.Id=$intInvoice";
+		$this->strLabel = "pdf acct: $intAccount, $intMonth/$intYear";
+		return "../intranet_app/invoice_pdf.php?Account=$intAccount&Year=$intYear&Month=$intMonth";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1911,7 +1911,7 @@ class MenuItems
 	function ViewInvoice($intInvoice)
 	{
 		$this->strLabel = "inv: $intInvoice";
-		return "invoice_view.php?Invoice.Id=$intInvoice";
+		return "../intranet_app/invoice_view.php?Invoice=$intInvoice";
 		
 	}
 	

@@ -7,7 +7,7 @@
 # run this script as root to add a default config file
 
 # make dir
-mkdir -m 755 /etc/vixen
+mkdir -m 755 /etc/vixen/
 
 # remove file if it exists
 rm /etc/vixen/vixen.conf

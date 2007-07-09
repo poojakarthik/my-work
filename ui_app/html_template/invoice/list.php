@@ -113,8 +113,16 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
 			// build the "View pdf" link
-			$strPdfHref = Href()->ViewInvoicePdf($dboInvoice->Id->Value);
-			$strPdfLabel = "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><h2 class='PDF'></h2></a></span>";
+			$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
+			$intYear = (int)date("Y", $intDate);
+			$intMonth = (int)date("m", $intDate);
+			$strPath = "/home/vixen_invoices/$intYear/$intMonth/{$dboInvoice->Account->Value}_*";
+			$arrFiles = glob($strPath);
+			//if ($arrFiles[0])
+			//{
+				$strPdfHref = Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intMonth, $intYear);
+				$strPdfLabel = "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><h2 class='PDF'></h2></a></span>";
+			//}
 			
 			// build the "View Invoice Details" link
 			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
