@@ -74,6 +74,13 @@ class AppTemplateNote extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		if (SubmittedForm("SystemNotesOnlyForm"))
+		{
+			if (DBO()->Note->SystemOnly->Value == 1)
+			{
+				DBL()->Note->NoteType = SYSTEM_NOTE;
+			}
+		}
 		
 		DBL()->Note->Account = DBO()->Account->Id->Value;
 		DBL()->Note->OrderBy("Datetime DESC");

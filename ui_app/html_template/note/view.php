@@ -101,13 +101,22 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	function Render()
 	{	
 		//echo "<div id='NotesHolder' style='display:none;'>\n";
-		echo "<div class='PopupMedium'>\n";
+		echo "<div  style='overflow:scroll; height:500px'>\n";
 		echo "<h2 class='Notes'>Notes</h2>\n";
 		
 		// TODO! Each note should have its own border
 		// TODO! The notes should have a scroll bar down the right hand side.
 		// TODO! there should be some sort of pagination so that only 5 or 10 notes are shown at any one time
-		// TODO! Each note should be rendered in its specific NoteType colouring.  I have implemented this below but it's not working
+		
+		$this->FormStart("SystemNotesOnlyForm", "Note", "View");
+		DBO()->Account->Id->RenderHidden();
+		if (DBO()->Note->SystemOnly->Value == 1)
+		{
+			$strChecked = 'checked';
+		}
+		
+		echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
+		$this->FormEnd();
 		
 		// Display each note
 		foreach (DBL()->Note as $dboNote)
@@ -118,9 +127,9 @@ class HtmlTemplateNoteView extends HtmlTemplate
 				if ($dboNoteType->Id->Value == $dboNote->NoteType->Value)
 				{
 					// Use this NoteType 
-					$strBorderColor = DBO()->NoteType->BorderColor->Value;
-					$strBackgroundColor = DBO()->NoteType->BackgroundColor->Value;
-					$strTextColor = DBO()->NotType->TextColor->Value;
+					$strBorderColor 	= $dboNoteType->BorderColor->Value;
+					$strBackgroundColor = $dboNoteType->BackgroundColor->Value;
+					$strTextColor 		= $dboNoteType->TextColor->Value;
 					break;
 				}
 			}

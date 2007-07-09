@@ -71,6 +71,7 @@ define('OUTPUT_TYPE_RADIO', 2);
 // CSS classes
 define('CLASS_DEFAULT', 'Default');
 
+define('SYSTEM_NOTE', 7);
 
 // Object Status
 define('STATUS_NEW',	 	100);
