@@ -274,6 +274,7 @@ class Page
 		}
 	}
 	
+	
 	function RenderJS()
 	{
 		if (is_array($GLOBALS['*arrJavaScript']))

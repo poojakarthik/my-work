@@ -26,7 +26,8 @@ function VixenIncludeJavascript(strFilename, strElement)
 
 function VixenIncludeJSOnce(strFilename, strElement) 
 {
-    if (!VixenInArray(strFilename, VixenIncludedJSFiles)) {
+    if (!VixenInArray(strFilename, VixenIncludedJSFiles)) 
+	{
         VixenIncludedJSFiles[VixenIncludedJSFiles.length] = strFilename;
         VixenIncludeJavascript(strFilename, strElement);
     }

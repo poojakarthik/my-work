@@ -784,6 +784,11 @@ class HtmlTemplate extends BaseTemplate
 		$GLOBALS['*arrJavaScript'][$strFilename] = $strFilename;
 	}
 	
+	function LoadAjaxJavascript($strFilename)
+	{
+		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strFilename.js'></script>\n";
+	}
+	
 	function FormStart($strId, $strTemplate, $strMethod)
 	{
 		$this->_strMethod = $strMethod;
