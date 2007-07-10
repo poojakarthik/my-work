@@ -126,12 +126,10 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				{
 					DBO()->Status->Message = "The adjustment was successfully saved";
 					
+					Ajax()->AddCommand("ClosePopup", "AddAdjustmentPopupId");
+					Ajax()->AddCommand("Alert", "The Adjustment has been successfully added");
 					Ajax()->AddCommand('LoadCurrentPage');
 					
-					// Tell the page to reload
-					//TODO!
-					//$this->ReLoadPage();
-					//$this->Location($href);
 					return TRUE;
 				}
 			}
@@ -250,6 +248,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				else
 				{
 					DBO()->Status->Message = "The recurring adjustment was successfully saved";
+
+					Ajax()->AddCommand("ClosePopup", "AddRecurringAdjustmentPopupId");
+					Ajax()->AddCommand("Alert", "The recurring adjustment has been successfully added");
+					Ajax()->AddCommand('LoadCurrentPage');
+					return TRUE;
 				}
 			}
 			else

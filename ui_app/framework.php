@@ -1973,7 +1973,6 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
 	}
 
@@ -2060,14 +2059,44 @@ class MenuItems
 		$this->strLabel	= "make payment";
 		
 		// Setup data to send
-		//$arrData['Class'] 		= "Adjustment";
-		//$arrData['Method'] 		= "Add";
 		$arrData['Objects']['Account']['Id'] = $intId;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"MakePaymentPopupId\", \"large\", \"Payment\", \"Add\", $strJsonCode)";
+	}
+	
+	//------------------------------------------------------------------------//
+	// DeletePayment
+	//------------------------------------------------------------------------//
+	/**
+	 * DeletePayment()
+	 *
+	 * Compiles the javascript to be executed when the DeletePayment menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the DeletePayment menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intPaymentId		id of the payment to delete
+	 *
+	 * @return	string				action to be executed when the DeletePayment menu item is clicked
+	 *
+	 * @method
+	 */
+	function DeletePayment($intPaymentId)
+	{
+		$this->strLabel	= "delete payment: $intPaymentId";
+		
+		// Setup data to send
+		$arrData['Objects']['Payment']['Id'] = $intPaymentId;
+				
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		//return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeletePaymentPopupId\", \"medium\", \"Payment\", \"Delete\", $strJsonCode)";
+		return "javascript:Vixen.Popup.DeleteRecordPopup(\"Delete Payment\", \"DeletePaymentPopupId\", \"Payment\", \"Delete\")";
+		
 	}
 	
 	

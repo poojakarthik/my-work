@@ -50,6 +50,7 @@ Define ('HTML_MODE'		, 2);
 
 Define ('USER_TIMEOUT'	, 1200);
 Define ('GOD_TIMEOUT'	, 60*60*24*7);
+Define ('PRIVILEGE_ADMIN', 2);
 
 Define("PERMISSION_DEBUG"		, 0x80000000);
 Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
@@ -382,20 +383,14 @@ class Application
 		{
 			// Send back AJAX data as JSON
 			//AjaxReply($mixReply);
-
 			Ajax()->Reply();
 		}
-		else //($objSubmit->Mode == HTML_MODE)
+		else 
 		{
+			//($objSubmit->Mode == HTML_MODE)
 			$this->objAppTemplate->Page->SetMode($objSubmit->Mode, $objAjax);
 			$this->objAppTemplate->Page->Render();
 		}
-		//else
-		//{
-			// Send back AJAX data as JSON
-			//AjaxReply($mixReply);
-			//Ajax()->Reply();
-		//}
 	}
 	
 	//------------------------------------------------------------------------//

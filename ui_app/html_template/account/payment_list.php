@@ -103,14 +103,44 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		//echo "<div class='NarrowContent'>\n";
 		echo "<div class='NarrowColumn'>\n";
 		
-		Table()->PaymentTable->SetHeader("Date", "Amount");
-		Table()->PaymentTable->SetWidth("30%", "70%");
-		Table()->PaymentTable->SetAlignment("Left", "Right");
+		// Check if the user has admin privileges
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
 		
+		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
+		$bolHasAdminPerm = TRUE;
+		//HACK HACK HACK!!!!
+		
+		if ($bolHasAdminPerm)
+		{
+			// User has admin permisions and can therefore delete a payment
+			Table()->PaymentTable->SetHeader("Date", "Amount", "");
+			Table()->PaymentTable->SetWidth("30%", "60%", "%10");
+			Table()->PaymentTable->SetAlignment("Left", "Right", "Center");
+		}
+		else
+		{
+			// User cannot delete payments
+			Table()->PaymentTable->SetHeader("Date", "Amount");
+			Table()->PaymentTable->SetWidth("30%", "70%");
+			Table()->PaymentTable->SetAlignment("Left", "Right");
+		}
 		foreach (DBL()->Payment as $dboPayment)
 		{
-			// Add this row to Payment table
-			Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $dboPayment->Amount->AsValue());
+			if ($bolHasAdminPerm)
+			{
+				// build the "Delete Payment" link
+				$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
+				//$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref'><img src='img/template/delete_small.png'></img></a></span>";
+				$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref' class='DeleteButton'></a></span>";
+
+				// Add this row to Payment table
+				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $dboPayment->Amount->AsValue(), $strDeletePaymentLabel);
+			}
+			else
+			{
+				// Add this row to Payment table
+				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $dboPayment->Amount->AsValue());
+			}
 			
 			// initialise variables
 			$arrInvoiceId = Array();

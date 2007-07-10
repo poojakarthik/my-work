@@ -133,19 +133,16 @@ class AppTemplatePayment extends ApplicationTemplate
 				// Save the payment to the payment table of the vixen database
 				if (!DBO()->Payment->Save())
 				{
-					//echo "The charge did not save\n";
 					DBO()->Status->Message = "The payment did not save";
 				}
 				else
 				{
-					//echo "Saved<br>\n";
 					DBO()->Status->Message = "The payment was successfully saved";
 					
-					// Tell the page to reload
-					//TODO!
-					//$this->ReLoadPage();
-					//$this->Location($href);
-					//return TRUE;
+					Ajax()->AddCommand("ClosePopup", "MakePaymentPopupId");
+					Ajax()->AddCommand("Alert", "The payment has been successfully added");
+					Ajax()->AddCommand('LoadCurrentPage');
+					return TRUE;
 				}
 			}
 			else

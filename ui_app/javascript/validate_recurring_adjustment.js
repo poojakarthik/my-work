@@ -89,6 +89,7 @@ function VixenValidateRecurringAdjustmentClass()
 	 */
 	this.InitialiseForm = function(objChargeTypeData)
 	{
+alert("Vixen.ValidateRecurringAdjustment.InitialiseForm() has been called");	
 		var intKey;
 		this._objChargeTypeData = objChargeTypeData;
 		
@@ -160,7 +161,7 @@ function VixenValidateRecurringAdjustmentClass()
 		
 		this._elmRecursionCharge.value = strRecursionCharge;
 		this._elmMinCharge.value = strMinCharge;
-		
+
 		document.getElementById('RecurringChargeType.Id').value = intChargeTypeId;
 		
 		// Set TimesToCharge

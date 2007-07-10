@@ -179,9 +179,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->Invoice->Load();
 		
-		
-		DBL()->Payment->Account = DBO()->Account->Id->Value;
-		$strWhere = "(Account = ". DBO()->Account->Id->Value .")";
+		//"WHERE ((Account = <accId>) OR (AccountGroup = <accGrpId>)) AND (Status conditions)"
+		$strWhere  = "((Account = ". DBO()->Account->Id->Value .")";
+		$strWhere .= " OR (AccountGroup = ". DBO()->Account->AccountGroup->Value ."))";
 		$strWhere .= " AND ((Status = ". PAYMENT_WAITING .")";
 		$strWhere .= " OR (Status = ". PAYMENT_PAYING .")";
 		$strWhere .= " OR (Status = ". PAYMENT_FINISHED .")";

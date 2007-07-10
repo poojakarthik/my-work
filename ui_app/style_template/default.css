@@ -327,7 +327,6 @@
 		background-image:              url('img/template/console_admin_small.png');
 	}
 	
-	
 	h2.PDF
 	{
 		background-image:              url('img/template/pdf_small.png');
@@ -417,6 +416,19 @@
 	{
 		background-image:              url('img/template/lady-debug.png');
 	}
+	
+	.DeleteButton
+	{
+		background-repeat:			no-repeat;
+		background-position:		center;
+		background-image:			url('img/template/delete.png');
+		
+		padding-left:				15px;
+		
+		height:						25px;
+
+	}
+
 	
 	.Left
 	{

@@ -177,7 +177,7 @@ function VixenAjaxClass()
 			objSend.Objects[strObjectName][strPropertyName] = mixValue;
 		}			
 
-		
+		/*
 		// Output each Object.Property stored in objSend.Objects
 		for (strObject in objSend.Objects)
 		{
@@ -185,7 +185,7 @@ function VixenAjaxClass()
 			{
 				alert("objSend.Objects."+ strObject +"."+ strProperty +" = "+ objSend.Objects[strObject][strProperty]);
 			}
-		}
+		}*/
 
 		// send object
 		this.Send(objSend);
@@ -322,9 +322,13 @@ function VixenAjaxClass()
 		{
 			switch (objInput[intKey].Type)
 			{
+				case "ClosePopup":
+					Vixen.Popup.Close(objInput[intKey].Data);
+					break;
+				case "Alert":
+					alert(objInput[intKey].Data);
+					break;
 				case "LoadCurrentPage":
-					Vixen.Popup.Close('AddAdjustmentPopupId');
-					alert("Record has been successfully added.");
 					window.location.reload();
 					break;
 				default:
