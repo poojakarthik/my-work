@@ -257,6 +257,8 @@ class Page
 	 */
 	function RenderHeaderJS()
 	{
+
+		
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/autoloader.js' ></script>\n";
 		echo "<script type='text/javascript'>VixenSetJavascriptBaseDir('". JAVASCRIPT_BASE_DIR ."')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('vixen')</script>\n";
@@ -282,8 +284,8 @@ class Page
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
 			{
 				//TODO!!!!!!!!!!!!!
-				echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
-				//echo "<script type='text/javascript' src='".JAVASCRIPT_BASE_DIR."/validate_adjustment.js'></script>\n";
+				//echo "<script type='text/javascript'>VixenIncludeJSOnce('". $strValue ."')</script>\n";
+				echo "<script type='text/javascript' src='".JAVASCRIPT_BASE_DIR."javascript/$strValue.js'></script>\n";
 			}
 		}
 	}
