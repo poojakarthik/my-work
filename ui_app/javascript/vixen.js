@@ -93,11 +93,16 @@ function VixenRootClass()
 	 * @private
 	 */
 	this.EnterKiller = function(evt) 
-	{
+	{		
 		// get the event object
 		if (!evt)
 		{
 			var evt = window.event;
+		}
+		
+		if (evt.target.type == "textarea")
+		{
+			return TRUE;	
 		}
 		
 		if (evt.KeyCode)
