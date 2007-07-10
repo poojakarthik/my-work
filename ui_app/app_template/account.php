@@ -228,6 +228,47 @@ class AppTemplateAccount extends ApplicationTemplate
 	}
 	
 
+	//------------------------------------------------------------------------//
+	// DeleteRecord
+	//------------------------------------------------------------------------//
+	/**
+	 * DeleteRecord()
+	 *
+	 * Creates a generic Delete Popup for either a Payment, Adjustment or Recurring Adjustment record
+	 * 
+	 * Creates a generic Delete Popup for either a Payment, Adjustment or Recurring Adjustment record
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function DeleteRecord()
+	{
+		// Should probably check user authorization here
+		//TODO!include user authorisation
+		AuthenticatedUser()->CheckAuth();
+
+		//Check what sort of record is being deleted
+		switch (DBO()->DeleteRecord->RecordType->Value)
+		{
+			case "Payment":
+				DBO()->DeleteRecord->Description = "Are you sure you want to reverse the payment with payment Id: ". DBO()->Payment->Id->Value ." ?\n";
+				DBO()->DeleteRecord->Application = "Payment";
+				DBO()->DeleteRecord->Method = "Delete";
+				break;
+			default:
+				DBO()->Error->Message = "No record type has been declared to be deleted";
+				$this->LoadPage('error');
+				return FALSE;
+				break;
+		}
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('delete_record');
+
+		return TRUE;
+	}
+
     //----- DO NOT REMOVE -----//
 	
 }

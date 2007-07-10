@@ -28,6 +28,26 @@
 require_once(TEMPLATE_STYLE_DIR.'html_elements.php');
 
 //------------------------------------------------------------------------//
+// Framework
+//------------------------------------------------------------------------//
+/**
+ * Framework()
+ *
+ * Returns an instance of the Framework class (which is located in vixen/framework/framework.php)
+ *
+ * Returns an instance of the Framework class (which is located in vixen/framework/framework.php)
+ *
+ * @return	Framework
+ *
+ * @method
+ */
+function Framework()
+{
+	return $GLOBALS['fwkFramework'];
+}
+
+
+//------------------------------------------------------------------------//
 // DBO
 //------------------------------------------------------------------------//
 /**

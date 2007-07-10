@@ -89,7 +89,7 @@ function VixenValidateRecurringAdjustmentClass()
 	 */
 	this.InitialiseForm = function(objChargeTypeData)
 	{
-alert("Vixen.ValidateRecurringAdjustment.InitialiseForm() has been called");	
+alert("RecurringsAdjustments.InitialiseForm()");
 		var intKey;
 		this._objChargeTypeData = objChargeTypeData;
 		
@@ -101,7 +101,8 @@ alert("Vixen.ValidateRecurringAdjustment.InitialiseForm() has been called");
 
 		//add event listeners
 		//TODO! I don't know how to add event listeners to elements
-		this._elmRecursionCharge.onkeyup	= "Vixen.ValidateRecurringAdjustment.RecursionChargeChanged()";
+		//this._elmRecursionCharge.onkeyup	= "Vixen.ValidateRecurringAdjustment.RecursionChargeChanged()";
+		//this._elmRecursionCharge.addEventListener("keyup", "Vixen.ValidateRecurringAdjustment.RecursionChargeChanged", TRUE);
 		
 		// set up the form to display the details of the first item in the Charge Type Combobox
 		for (intKey in this._objChargeTypeData)

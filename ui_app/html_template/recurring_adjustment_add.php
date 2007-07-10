@@ -98,7 +98,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
+	{
 		echo "<div class='PopupLarge'>\n";
 		echo "<h2 class='Adjustment'>Add Recurring Adjustment</h2>\n";
 		
@@ -230,7 +230,9 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
+
 		echo "<script type='text/javascript'>Vixen.ValidateRecurringAdjustment.InitialiseForm($strJsonCode);</script>\n";
+		
 		
 		$this->FormEnd();
 		echo "</div>\n";

@@ -279,6 +279,11 @@ class Page
 	
 	function RenderJS()
 	{
+header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
+header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
+header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+header( 'Cache-Control: post-check=0, pre-check=0', false );
+header( 'Pragma: no-cache' );	
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
@@ -362,6 +367,11 @@ class Page
 //echo $strBaseDir;
 //die;
 
+header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
+header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
+header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+header( 'Cache-Control: post-check=0, pre-check=0', false );
+header( 'Pragma: no-cache' );
 		
 	
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
@@ -2092,14 +2102,14 @@ class MenuItems
 		$this->strLabel	= "delete payment: $intPaymentId";
 		
 		// Setup data to send
+		$arrData['Objects']['DeleteRecord']['RecordType'] = "Payment";
 		$arrData['Objects']['Payment']['Id'] = $intPaymentId;
 				
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		//return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeletePaymentPopupId\", \"medium\", \"Payment\", \"Delete\", $strJsonCode)";
-		return "javascript:Vixen.Popup.DeleteRecordPopup(\"Delete Payment\", \"DeletePaymentPopupId\", \"Payment\", \"Delete\")";
-		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeletePaymentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		//return "javascript:Vixen.Popup.DeleteRecordPopup(\"DeletePaymentPopupId\", \"Payment\", $strJsonCode)";
 	}
 	
 	

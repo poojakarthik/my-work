@@ -165,4 +165,70 @@ class AppTemplatePayment extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	
+	//------------------------------------------------------------------------//
+	// Delete
+	//------------------------------------------------------------------------//
+	/**
+	 * Delete()
+	 *
+	 * Performs Delete Payment functionality
+	 * 
+	 * Performs Delete Payment functionality
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Delete()
+	{
+		// Should probably check user authorization here
+		//TODO!include user authorisation AND MAKE SURE THEY HAVE PAYMENT REVERSE PERMISSIONS
+		AuthenticatedUser()->CheckAuth();
+
+		// Make sure the correct form was submitted
+		if (SubmittedForm('DeleteRecord', 'Delete'))
+		{
+			if (!DBO()->Payment->Load())
+			{
+				DBO()->Error->Message = "The payment with payment id: '". DBO()->Payment->Id->value ."' could not be found";
+				$this->LoadPage('error');
+				return FALSE;
+			}
+			
+			//reverse the payment
+			$bolPaymentReversed = Framework()->ReversePayment(DBO()->Payment->Id->Value, AuthenticatedUser()->_arrUser['Id']);
+			
+			if ($bolPaymentReversed)
+			{
+				// Add the user's note, if one was specified
+				if (!DBO()->Note->IsInvalid())
+				{
+					DBO()->Note->NoteType = 1;
+					DBO()->Note->AccountGroup = DBO()->Payment->AccountGroup->Value;
+					DBO()->Note->Account = DBO()->Payment->Account->Value;
+					DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
+					DBO()->Note->DateTime = GetCurrentDateAndTimeForMySQL();
+					
+					DBO()->Note->Save();
+				}
+				
+				Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
+				Ajax()->AddCommand("Alert", "The payment was successfully revered");
+				Ajax()->AddCommand("LoadCurrentPage");
+				return TRUE;
+			}
+			else
+			{
+				Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
+				Ajax()->AddCommand("Alert", "Reversing the payment failed");
+				// You shouldn't have to reload the current page unless the javascript objects have been destroyed
+				//Ajax()->AddCommand("LoadCurrentPage");
+				return TRUE;
+			}
+		}
+		
+		return TRUE;
+	}
+	
 }

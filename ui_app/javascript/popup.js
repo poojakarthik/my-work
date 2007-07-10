@@ -16,6 +16,16 @@
 function VixenPopupClass()
 {
 	this.strContentCode = "";
+	
+	this.objDeleteData = 
+	{
+		Payment:
+		{
+			strDescription:			"This is the Delete Payment Description",
+			strApplcationTemplate:	"Account",
+			strDeleteMethod:		"DeletePayment"
+		}
+	};
 
 	this.ViewContentCode = function()
 	{
@@ -48,7 +58,34 @@ function VixenPopupClass()
 		
 		// Retrieve the popup element
 		var elmPopupContent = document.getElementById("VixenPopupContent__" + strId);
+
+
+		// . . . and create it
+		elmPopup = document.createElement('div');
+		elmPopup.setAttribute('className', 'PopupBox');
+		elmPopup.setAttribute('class', 'PopupBox');
+		elmPopup.setAttribute('Id', 'VixenPopup__' + strId);
 		
+		// Quote the id of the popup (argh, double quoting kills me)
+		strTempId = '"' + strId + '"';
+				
+		// Set the content of the popup box
+		if (!strContent)
+		{
+			strContent = "No data<br />Id: " + strId;
+		}
+				
+		// Add the popup to the holder
+		//elmPopup.style.visibility = 'visible';			
+		elmPopup.innerHTML = strContent;
+		
+		while (elmPopupContent.childNodes[0])
+		{
+    		elmPopupContent.removeChild(elmPopupContent.childNodes[0]);
+		}
+		
+		elmPopupContent.appendChild(elmPopup);
+
 		// Set the content of the popup box
 		if (!strContent)
 		{
@@ -250,6 +287,33 @@ function VixenPopupClass()
 		
 		Vixen.Ajax.Send(objParams);
 	}
+	
+	this.DeleteRecordPopup = function(strPopupId, strRecordType, objParams)
+	{
+		var strPopupContent;
+		
+		//alert("DeleteRecordPopup(): objDeleteData['Payment'].Description = '"+ this.objDeleteData['Payment'].strDescription +"'");
+		
+		//create the content for the popup 
+		
+		//var elmPopupContent = document.createElement('div');
+		//elmPopupContent.setAttribute("class", "PopupMedium");
+		//elmPopupContent.innerHtml = "Hello World";
+		
+		var strDescription = this.objDeleteData[strRecordType].Description;
+		
+		
+		strPopupContent  = "<div class='PopupMedium'><h2>Delete "+ strRecordType +"</h2>\n"
+		strPopupContent += "<div class='DefaultOutput Default'>"+ this.objDeleteData[strRecordType].Description +"</div>\n";
+		strPopupContent += "</div>\n";
+		
+		
+		
+		this.Create(strPopupId, strPopupContent, "medium", "centre", "modal");
+		
+		
+	}
+	
 }
 
 // Create an instance of the Vixen menu class
