@@ -1,6 +1,6 @@
 <?php
 	
-	$authAuthentication = new Authentication();
+	/*$authAuthentication = new Authentication();
 	
 	// If the User is not logged into the system
 	if (!$authAuthentication->isAuthenticated ())
@@ -11,7 +11,7 @@
 	else
 	{
 		header ('Location: account_view.php'); exit;
-	}
+	}*/
 	//----------------------------------------------------------------------------//
 	// authentication.php
 	//----------------------------------------------------------------------------//

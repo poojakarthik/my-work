@@ -467,6 +467,7 @@ class Application
 		}
 	
 		$bolLoggedIn = FALSE;
+		//Debug($_POST);
 		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
 		{
 			// user has logged in
@@ -512,7 +513,7 @@ class Application
 
 		if ($bolLoggedIn)
 		{
-			//var_dump($_COOKIE);
+			var_dump($_COOKIE);
 			$selAuthenticated = new StatementSelect(
 					"Employee",
 					"*", 
@@ -579,7 +580,7 @@ class Application
 	function PermissionOrDie($intPagePerms)
 	{
 		// check the current user permission against permissions passed in
-		if ($this->_arrUser['Privileges'] >= $intPagePerms)
+		if ($this->UserHasPerm($intPagePerms))
 		{
 			return TRUE;
 		}
@@ -805,6 +806,13 @@ class HtmlTemplate extends BaseTemplate
 		echo "<input type='submit' class='$strStyleClass' name='VixenButtonId' value='$strLabel'></input>\n";
 	}
 	
+	function Button($strLabel, $strHref, $strStyleClass="InputSubmit")
+	{
+		
+		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
+		echo "<input type='button' class='$strStyleClass' name='VixenButtonId' value='$strLabel' onClick='$strHref'></input>\n";
+	}
+	
 	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strStyleClass="InputSubmit")
 	{
 		if (!$strTemplate)
@@ -823,7 +831,7 @@ class HtmlTemplate extends BaseTemplate
 			$strSize = $this->_objAjax->strSize;
 		}
 		
-		echo "<input type='button' value='$strLabel' class='$strStyleClass' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\"></input>\n";
+		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenPopupButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\"></input>\n";
 	}
 
 	//------------------------------------------------------------------------//

@@ -217,7 +217,8 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// create the submit button
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		echo "<input type='button' value='Close' class='InputSubmit' onclick=\"Vixen.Popup.Close('AddAdjustmentPopupId');\"></input>\n";
+		//echo "<input type='button' value='Close' class='InputSubmit' onclick='Vixen.Popup.Close(\"AddAdjustmentPopupId\");'/>\n";
+		$this->Button("Close", "Vixen.Popup.Close(\"AddAdjustmentPopupId\");");
 		$this->AjaxSubmit("Add Adjustment");
 		echo "</div>\n";
 		

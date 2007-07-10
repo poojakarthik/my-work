@@ -21,7 +21,11 @@ function VixenPopupClass()
 	{
 		//Vixen.debug = TRUE;
 		//debug(this.strSourceCode);
-		alert(this.strContentCode);
+		DebugWindow = window.open("", 'Debug Mode', 'scrollbars=yes');
+		DebugWindow.document.write('<xmp>');
+		DebugWindow.document.write(this.strContentCode);
+		DebugWindow.document.write('</xmp>');
+		DebugWindow.document.close();
 	}
 
 	this.Exists = function(strId)
@@ -118,9 +122,7 @@ function VixenPopupClass()
 				document.body.style.overflow = "hidden";
 				document.body.scrollTop = intScroll;
 				elmOverlay.style.top = intScroll;
-				elmRoot.style.top = intScroll;
-				
-				
+				//elmRoot.style.top = intScroll;
 				break;
 			}
 			case "modeless":
@@ -192,7 +194,7 @@ function VixenPopupClass()
 		}
 		else
 		{
-			// set the popup, well, where ever it wants
+			// set the popup, well, wherever it wants
 		}
 		// Add the handler for dragging the popup around
     	mydragObj = document.getElementById('VixenPopupTopBar__' + strId);

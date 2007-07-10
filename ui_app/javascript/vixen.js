@@ -1,5 +1,6 @@
 var FALSE = false;
 var TRUE = true;
+var DEBUG_MODE = FALSE;
 
 //----------------------------------------------------------------------------//
 // VixenRootClass

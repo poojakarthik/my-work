@@ -131,6 +131,11 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		Table()->RecurringAdjustmentTable->RowHighlighting = TRUE;
 
 		Table()->RecurringAdjustmentTable->Render();
+		
+		$strHref = Href()->AddRecurringAdjustment(DBO()->Account->Id->Value);
+		echo "<div class='Right'>\n";
+		$this->Button("Add Recurring Adjustment", $strHref);
+		echo "</div>\n";
 		echo "</div>\n";
 		//echo "<div class='Seperator'></div>\n";
 	}

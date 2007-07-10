@@ -29,13 +29,14 @@ function VixenMenuClass(objMenu)
 		'Level2': 
 		{
 			'left': 0,
-			'width': 150,
+			'width': 200,
 			'height': 20,
 			'spacing': 5
 		},
 		'waitOpen': 0,
 		'waitCloseLevel': 500,
-		'waitClose': 3000
+		'waitClose': 3000,
+		'waitCloseWhenSelected': 400
 	};
 	
 	this.objMenu = objMenu;
@@ -198,6 +199,7 @@ function VixenMenuClass(objMenu)
 			// no need, it adds unnecessary overhead
 			//this.RenderSubMenu(objMenuItem);			
 		}
+		this.timeoutClose = setTimeout("Vixen.Menu.Close(1)", this.config.waitCloseWhenSelected);
 	}
 	
 	this.HandleMouseOver = function(objMenuItem)

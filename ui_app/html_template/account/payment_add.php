@@ -197,7 +197,7 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		// create the submit button
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		echo "<input type='button' value='Close' class='InputSubmit' onclick=\"Vixen.Popup.Close('MakePaymentPopupId');\"></input>\n";
+		echo "<input type='button' value='Close' name='VixenPopupButtonId' class='InputSubmit' onclick=\"Vixen.Popup.Close('MakePaymentPopupId');\"></input>\n";
 		$this->AjaxSubmit("Make Payment");
 		echo "</div>\n";
 		
