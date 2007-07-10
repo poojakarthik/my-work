@@ -125,6 +125,33 @@ function VixenRootClass()
 		}
 	}
 	
+	/*this.FixFocus = function(div) 
+	{
+		var objInputs = div.getElementsByTagName("form");
+		for (var theform in objInputs)
+		{
+			DumperWrite(theform);
+			//alert(theform.id);
+			for (var objElement in theform.elements)
+			{
+				//alert("hey");
+			}
+		}
+		if (theform.elements[theform.length - 1].focus)
+			{
+				alert "sadjasdgjhkdhjd";
+			}
+		
+		
+		for (var i=0;i<theform.length;i++)
+  		{
+  			if (theform.elements[theform.length - 1].focus)
+			{
+				alert "sadjasdgjhkdhjd";
+			}
+  		}
+	}*/
+	
 }
 
 // Create an instance of the Vixen root class

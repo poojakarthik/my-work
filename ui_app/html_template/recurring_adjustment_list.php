@@ -137,6 +137,8 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		$this->Button("Add Recurring Adjustment", $strHref);
 		echo "</div>\n";
 		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";
+		echo "<div class='Seperator'></div>\n";
 		//echo "<div class='Seperator'></div>\n";
 	}
 }

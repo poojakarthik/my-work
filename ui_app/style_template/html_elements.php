@@ -144,6 +144,15 @@ class HTMLElements
 	function InputText($arrParams)
 	{
 		$strLabel = $arrParams['Definition']['Label'];
+		if ($arrParams['Required'])
+		{
+			$strRequired = "*";
+		}
+		else
+		{
+			$strRequired = "";
+		}
+		
 		$strValue = $this->BuildInputValue($arrParams);
 		$strValue = nl2br($strValue);
 
@@ -154,7 +163,7 @@ class HTMLElements
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
 		// create the input box
-		$strHtml .= "		<input type='text' id='$strId' name='$strName' value='$strValue' class='$strClass'/>\n";
+		$strHtml .= "		$strRequired<input type='text' id='$strId' name='$strName' value='$strValue' class='$strClass'/>\n";
 		$strHtml .= "   <div id='$strId.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		
@@ -206,6 +215,15 @@ class HTMLElements
 	 */
 	function TextArea($arrParams)
 	{
+		if ($arrParams['Required'])
+		{
+			//its mandatory, modify
+		}
+		else
+		{
+			$strRequired = "";
+		}
+		
 		$strLabel = $arrParams['Definition']['Label'];
 		$strValue = $this->BuildInputValue($arrParams);
 
@@ -217,7 +235,7 @@ class HTMLElements
 		// The potentially taller of the two divs must go first
 		// create the text area
 		//TODO! Find out if the number of rows and columns in the textarea should be hard coded here
-		$strHtml .= "		<textarea id='$strId' name='$strName' class='$strClass' rows='6' cols='30'>$strValue</textarea>\n";
+		$strHtml .= "		$strRequired<textarea id='$strId' name='$strName' class='$strClass' rows='6' cols='30'>$strValue</textarea>\n";
 		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		

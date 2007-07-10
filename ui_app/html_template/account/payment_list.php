@@ -234,6 +234,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
+		echo "<div class='Seperator'></div>\n";
 	
 	}
 }

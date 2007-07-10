@@ -210,7 +210,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "</div>\n";
 
 		// Create a textbox for including a note
-		DBO()->Charge->Notes->RenderInput();
+		DBO()->Charge->Notes->RenderInput(CONTEXT_DEFAULT, TRUE);
 		
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
@@ -225,6 +225,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
+		echo "<script type='text/javascript'>Vixen;</script>";
 		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
 
 		

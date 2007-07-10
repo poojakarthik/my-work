@@ -813,9 +813,9 @@ class HtmlTemplate extends BaseTemplate
 	
 	function Button($strLabel, $strHref, $strStyleClass="InputSubmit")
 	{
-		
+		$strRand = rand();
 		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
-		echo "<input type='button' class='$strStyleClass' name='VixenButtonId' value='$strLabel' onClick='$strHref'></input>\n";
+		echo "<input type='button' class='$strStyleClass' id='$strRand' name='VixenButtonId' value='$strLabel' onClick='$strHref'></input>\n";
 	}
 	
 	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strStyleClass="InputSubmit")
