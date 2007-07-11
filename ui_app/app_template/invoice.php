@@ -106,7 +106,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 			// Do stuff with the array
 			$strGlob = "/home/vixen_invoices/". DBO()->Invoice->Year->Value . "/" . DBO()->Invoice->Month->Value . "/" . DBO()->Account->Id->Value . "_*.pdf";
 			$arrPDFtoSend = glob($strGlob);
-			print_r($arrPDFtoSend);
+			print_r($strGlob);
 	
 		}
 		// Setup all DBO and DBL objects required for the page
