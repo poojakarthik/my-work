@@ -75,7 +75,6 @@ class AppTemplateInvoice extends ApplicationTemplate
 		//check if the form was submitted
 		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice'))
 		{		
-			
 			foreach (DBO()->Email as $strPropertyName=>$mixProperty)
 			{
 				// Using the custom email box
@@ -122,7 +121,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 											'From'		=> "billing@voicetalk.com.au",
 											'Subject'	=> "Telephone Billing for $strBillingPeriod"
 										);
-					$strContent	=	"Please find attached your most recent invoice from Voicetalk\r\n\r\n" .
+					$strContent	=	"Please find attached your most recent invoice from Voicetalk.\r\n\r\n" .
 									"Regards\r\n\r\n" .
 									"The Team at Voicetalk";
 					break;
@@ -131,7 +130,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 											'From'		=> "billing@telcoblue.com.au",
 											'Subject'	=> "Telephone Billing for $strBillingPeriod"
 										);
-					$strContent	=	"Please find attached your most recent invoice from Telco Blue\r\n\r\n" .
+					$strContent	=	"Please find attached your most recent invoice from Telco Blue.\r\n\r\n" .
 									"Regards\r\n\r\n" .
 									"The Team at Telco Blue";
 					break;

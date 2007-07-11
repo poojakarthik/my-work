@@ -106,7 +106,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 
 		
 		//Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Invoice Sent", "View PDF", "View Invoice Details");
-		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Invoice Sent (status)", "View PDF", "View Invoice Details", "Email PDF Invoice");
+		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "PDF", "Details", "Email");
 		//Table()->PaymentTable->SetWidth("20%", "30%", "50%");
 		//Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
 		
