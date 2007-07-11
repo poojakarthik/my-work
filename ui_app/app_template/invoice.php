@@ -121,7 +121,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 											'From'		=> "billing@voicetalk.com.au",
 											'Subject'	=> "Telephone Billing for $strBillingPeriod"
 										);
-					$strContent	=	"Please find attached your most recent invoice from Voicetalk.\r\n\r\n" .
+					$strContent	=	"Please find attached your invoice from Voicetalk.\r\n\r\n" .
 									"Regards\r\n\r\n" .
 									"The Team at Voicetalk";
 					break;
@@ -130,7 +130,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 											'From'		=> "billing@telcoblue.com.au",
 											'Subject'	=> "Telephone Billing for $strBillingPeriod"
 										);
-					$strContent	=	"Please find attached your most recent invoice from Telco Blue.\r\n\r\n" .
+					$strContent	=	"Please find attached your invoice from Telco Blue.\r\n\r\n" .
 									"Regards\r\n\r\n" .
 									"The Team at Telco Blue";
 					break;
@@ -150,16 +150,13 @@ class AppTemplateInvoice extends ApplicationTemplate
 				$strHeaders = $mimMime->headers($arrHeaders);
 				$emlMail =& Mail::factory('mail');
 				
-				if ($emlMail->send($strEmailAddress, $strHeaders, $strBody))
-				{
-					Ajax()->AddCommand("ClosePopup", "EmailPDFInvoicePopupId");
-					Ajax()->AddCommand("Alert", "Email(s) successfully sent.");
-					Ajax()->AddCommand('LoadCurrentPage');
-				}
-				
-				else
+				if (!$emlMail->send($strEmailAddress, $strHeaders, $strBody))
 				{
 					Ajax()->AddCommand("Alert", "Emails not send successfully. The email addresses may be incorrect or there could be a problem with the email system.");
+				}
+				else
+				{
+					Ajax()->AddCommand("ClosePopup", "EmailPDFInvoicePopupId");
 				}
 			}
 		}

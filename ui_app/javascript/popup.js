@@ -155,12 +155,15 @@ function VixenPopupClass()
 				elmOverlay.setAttribute('Id', 'overlay');
 				elmRoot.appendChild(elmOverlay);
 				elmOverlay.style.zIndex = ++dragObj.zIndex;
+				
 				intScroll = document.body.scrollTop;
-				document.body.style.overflow = "hidden";
-				document.body.scrollTop = intScroll;
-				elmOverlay.style.top = intScroll;
-				//elmRoot.style.top = intScroll;
-				break;
+                document.body.style.overflow = "hidden";
+               	document.body.scrollTop = intScroll;
+                elmOverlay.style.height = document.body.offsetHeight;
+                break;
+				
+				
+				
 			}
 			case "modeless":
 			{

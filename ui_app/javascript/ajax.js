@@ -178,14 +178,14 @@ function VixenAjaxClass()
 		}			
 
 		
-		// Output each Object.Property stored in objSend.Objects
+		/*// Output each Object.Property stored in objSend.Objects
 		for (strObject in objSend.Objects)
 		{
 			for (strProperty in objSend.Objects[strObject])
 			{
 				alert("objSend.Objects."+ strObject +"."+ strProperty +" = "+ objSend.Objects[strObject][strProperty]);
 			}
-		}
+		}*/
 
 		// send object
 		this.Send(objSend);
