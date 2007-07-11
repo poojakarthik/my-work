@@ -124,15 +124,24 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			Table()->PaymentTable->SetWidth("30%", "70%");
 			Table()->PaymentTable->SetAlignment("Left", "Right");
 		}
+		
 		foreach (DBL()->Payment as $dboPayment)
 		{
 			if ($bolHasAdminPerm)
 			{
-				// build the "Delete Payment" link
-				$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
-				//$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref'><img src='img/template/delete_small.png'></img></a></span>";
-				$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref' class='DeleteButton'></a></span>";
-
+				// Check if the payment can be reversed
+				if ($dboPayment->Status->Value != PAYMENT_REVERSED)
+				{
+					// build the "Delete Payment" link
+					$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
+					$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref' class='DeleteButton'></a></span>";
+				}
+				else
+				{
+					// Payment can not be reversed
+					$strDeletePaymentLabel = "";
+				}
+				
 				// Add this row to Payment table
 				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $dboPayment->Amount->AsValue(), $strDeletePaymentLabel);
 			}

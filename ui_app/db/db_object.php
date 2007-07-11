@@ -876,7 +876,7 @@ class DBObject extends DBObjectBase
 			$arrColumns = Array();
 			foreach ($this->_arrColumns as $strColumn)
 			{
-				$arrColumns[$strColumn] = $strColumns;
+				$arrColumns[$strColumn] = $strColumn;
 			}
 			$this->_arrColumns = $arrColumns;
 		}

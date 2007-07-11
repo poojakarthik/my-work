@@ -256,6 +256,11 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBO()->DeleteRecord->Application = "Payment";
 				DBO()->DeleteRecord->Method = "Delete";
 				break;
+			case "Adjustment":
+				DBO()->DeleteRecord->Description = "Are you sure you want to delete the adjustment with adjustment Id: ". DBO()->Charge->Id->Value ." ?\n";
+				DBO()->DeleteRecord->Application = "Adjustment";
+				DBO()->DeleteRecord->Method = "DeleteAdjustment";
+				break;
 			default:
 				DBO()->Error->Message = "No record type has been declared to be deleted";
 				$this->LoadPage('error');

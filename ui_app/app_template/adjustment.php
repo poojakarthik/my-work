@@ -281,4 +281,97 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	//------------------------------------------------------------------------//
+	// DeleteAdjustment
+	//------------------------------------------------------------------------//
+	/**
+	 * DeleteAdjustment()
+	 *
+	 * Performs Delete Adjustment functionality
+	 * 
+	 * Performs Delete Adjustment functionality
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function DeleteAdjustment()
+	{
+		// Should probably check user authorization here
+		//TODO!include user authorisation AND MAKE SURE THEY HAVE PAYMENT REVERSE PERMISSIONS
+		AuthenticatedUser()->CheckAuth();
+
+		// Make sure the correct form was submitted
+		if (SubmittedForm('DeleteRecord', 'Delete'))
+		{
+			if (!DBO()->Charge->Load())
+			{
+				DBO()->Error->Message = "The Charge with charge id: '". DBO()->Charge->Id->value ."' could not be found";
+				$this->LoadPage('error');
+				return FALSE;
+			}
+			
+			// The charge can only be deleted if its status is CHARGE_WAITING or CHARGE_APPROVED
+			if ((DBO()->Charge->Status->Value == CHARGE_WAITING) || (DBO()->Charge->Status->Value == CHARGE_APPROVED))
+			{
+				// Delete the charge
+				DBO()->Charge->Status = CHARGE_DELETED;
+				
+				// Update the charge
+				if (!DBO()->Charge->Save())
+				{
+					// The charge could not be updated
+					Ajax()->AddCommand("ClosePopup", "DeleteAdjustmentPopupId");
+					Ajax()->AddCommand("Alert", "The adjustment could not be deleted.\nThere was a problem with updating the record in the database.");
+					Ajax()->AddCommand("LoadCurrentPage");
+					return TRUE;
+				}
+				else
+				{
+					// The Charge was successfully updated.  Now add the user's note, if one was specified
+					if (!DBO()->Note->IsInvalid())
+					{
+						DBO()->Note->NoteType = GENERAL_NOTE_TYPE;
+						DBO()->Note->AccountGroup = DBO()->Charge->AccountGroup->Value;
+						DBO()->Note->Account = DBO()->Charge->Account->Value;
+						DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
+						DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
+						
+						if (!DBO()->Note->Save())
+						{
+							Ajax()->AddCommand("Alert", "The note could not be saved");
+						}
+					}
+					
+					// Add a system generated note regarding the deleting of the charge
+					DBO()->Note->Clean();
+					DBO()->Note->NoteType = SYSTEM_NOTE_TYPE;
+					DBO()->Note->AccountGroup = DBO()->Charge->AccountGroup->Value;
+					DBO()->Note->Account = DBO()->Charge->Account->Value;
+					DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
+					DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
+					DBO()->Note->Note = "Charge with Id: ". DBO()->Charge->Id->Value ." has been deleted";
+					
+					if (!DBO()->Note->Save())
+					{
+						Ajax()->AddCommand("Alert", "The automatic system note could not be saved");
+					}
+					
+					Ajax()->AddCommand("ClosePopup", "DeleteAdjustmentPopupId");
+					Ajax()->AddCommand("Alert", "The adjustment was successfully deleted");
+					Ajax()->AddCommand("LoadCurrentPage");
+					return TRUE;
+				}
+			}
+			else
+			{
+				//the charge cannot be deleted 
+				Ajax()->AddCommand("ClosePopup", "DeleteAdjustmentPopupId");
+				Ajax()->AddCommand("Alert", "The adjustment could not be deleted.\nCheck the status of the adjustment.");
+				Ajax()->AddCommand("LoadCurrentPage");
+				return TRUE;
+			}
+		}
+		return TRUE;
+	}
 }

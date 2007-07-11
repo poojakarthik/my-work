@@ -100,21 +100,61 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		echo "<h2 class='Adjustment'>Adjustments</h2>\n";
 		echo "<div class='NarrowColumn'>\n";
 
+		// Check if the user has admin privileges
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
+		
+		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
+		$bolHasAdminPerm = TRUE;
+		//HACK HACK HACK!!!!
 		
 		// define the table's header
-		Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount");
+		if ($bolHasAdminPerm)
+		{
+			// User has admin permisions and can therefore delete an adjustment
+			Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount", "");
+			Table()->AdjustmentTable->SetWidth("20%", "30%", "40%", "10%");
+			Table()->AdjustmentTable->SetAlignment("Left", "Left", "Right", "Center");
+		}
+		else
+		{
+			// User cannot delete adjustments
+			Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount");
+			Table()->AdjustmentTable->SetWidth("20%", "30%", "50%");
+			Table()->AdjustmentTable->SetAlignment("Left", "Left", "Right");
 		
-		// NOTE: Currently widths and alignments are not taken into account when the table is rendered
-		Table()->AdjustmentTable->SetWidth("20%", "30%", "50%");
-		Table()->AdjustmentTable->SetAlignment("Left", "Left", "Right");
+		}
 		
 		// add the rows
 		foreach (DBL()->Charge as $dboCharge)
 		{
-			Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
+			// add the row
+			if ($bolHasAdminPerm)
+			{
+				// Only charges having status = waiting or approved can be deleted
+				if (($dboCharge->Status->Value == CHARGE_WAITING) || ($dboCharge->Status->Value == CHARGE_APPROVED))
+				{
+					// build the "Delete Adjustment" link
+					$strDeleteAdjustmentHref  = Href()->DeleteAdjustment($dboCharge->Id->Value);
+					$strDeleteAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteAdjustmentHref' class='DeleteButton'></a></span>";
+				}
+				else
+				{
+					$strDeleteAdjustmentLabel = "";
+				}
+				
+				Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
+												//$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
+												$dboCharge->ChargeType->AsValue(),
+												$dboCharge->Amount->AsCallback("AddGST"),
+												$strDeleteAdjustmentLabel);
+			}
+			else
+			{
+				Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
 												//$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
 												$dboCharge->ChargeType->AsValue(),
 												$dboCharge->Amount->AsCallback("AddGST"));
+			}
 			
 			// add tooltip
 			$strToolTipHtml = $dboCharge->CreatedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);

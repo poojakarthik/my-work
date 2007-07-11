@@ -2112,6 +2112,37 @@ class MenuItems
 		//return "javascript:Vixen.Popup.DeleteRecordPopup(\"DeletePaymentPopupId\", \"Payment\", $strJsonCode)";
 	}
 	
+	//------------------------------------------------------------------------//
+	// DeleteAdjustment
+	//------------------------------------------------------------------------//
+	/**
+	 * DeleteAdjustment()
+	 *
+	 * Compiles the javascript to be executed when the DeleteAdjustment menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the DeleteAdjustment menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAdjustmentId		id of the adjustment to delete
+	 *
+	 * @return	string				action to be executed when the DeleteAdjustment menu item is clicked
+	 *
+	 * @method
+	 */
+	function DeleteAdjustment($intAdjustmentId)
+	{
+		$this->strLabel	= "delete adjustment: $intAdjustmentId";
+		
+		// Setup data to send
+		$arrData['Objects']['DeleteRecord']['RecordType'] = "Adjustment";
+		$arrData['Objects']['Charge']['Id'] = $intAdjustmentId;
+				
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteAdjustmentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+		//return "javascript:Vixen.Popup.DeleteRecordPopup(\"DeletePaymentPopupId\", \"Payment\", $strJsonCode)";
+	}
 	
 	//------------------------------------------------------------------------//
 	// BreadCrumb

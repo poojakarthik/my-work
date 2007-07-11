@@ -225,7 +225,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
-		echo "<script type='text/javascript'>Vixen;</script>";
+		
 		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
 
 		

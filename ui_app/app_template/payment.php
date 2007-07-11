@@ -214,7 +214,7 @@ class AppTemplatePayment extends ApplicationTemplate
 				}
 				
 				Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
-				Ajax()->AddCommand("Alert", "The payment was successfully revered");
+				Ajax()->AddCommand("Alert", "The payment was successfully reversed");
 				Ajax()->AddCommand("LoadCurrentPage");
 				return TRUE;
 			}

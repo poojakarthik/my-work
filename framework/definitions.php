@@ -364,6 +364,9 @@ $GLOBALS['*arrConstant']	['ChargeStatus']	[103]	['Constant']	= 'CHARGE_INVOICED'
 $GLOBALS['*arrConstant']	['ChargeStatus']	[103]	['Description']	= 'Invoiced';
 $GLOBALS['*arrConstant']	['ChargeStatus']	[104]	['Constant']	= 'CHARGE_DECLINED';
 $GLOBALS['*arrConstant']	['ChargeStatus']	[104]	['Description']	= 'Declined';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[105]	['Constant']	= 'CHARGE_DELETED';
+$GLOBALS['*arrConstant']	['ChargeStatus']	[105]	['Description']	= 'Deleted';
+
 
 // Customer Group Constants
 /*define("CUSTOMER_GROUP_TELCOBLUE"	, 1);
@@ -1050,7 +1053,8 @@ $GLOBALS['*arrConstant']	['BugStatus']	[103]	['Constant']	= 'BUG_RESOLVED';
 $GLOBALS['*arrConstant']	['BugStatus']	[103]	['Description']	= 'Resolved';
 
 // Note parsing
-define("SYSTEM_NOTE_TYPE"			, 7);
+define("SYSTEM_NOTE_TYPE",	7);
+define("GENERAL_NOTE_TYPE",	1);
 
 //Report Result Types
 define("REPORT_RESULT_TYPE_CSV"		, "CSV");
