@@ -69,16 +69,19 @@ class AppTemplateInvoice extends ApplicationTemplate
 		$arrEmailList = Array();
 		$arrExploded = Array();
 		$arrPDFtoSend = Array();
+		$intYear = DBO()->Invoice->Year->Value;
+		$intMonth = DBO()->Invoice->Month->Value;
 
 		//check if the form was submitted
 		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice'))
-		{
+		{		
+			
 			foreach (DBO()->Email as $strPropertyName=>$mixProperty)
 			{
 				// Using the custom email box
 				if ($strPropertyName == "Extra" && $mixProperty->Value != '')
 				{
-					$arrEmails[] = $mixProperty->Value; // NOT WORKING!!!
+					$arrEmails[] = $mixProperty->Value; 
 				}
 				
 				// Using the checkboxes
@@ -103,11 +106,63 @@ class AppTemplateInvoice extends ApplicationTemplate
 				}
 			}
 			
-			// Do stuff with the array
+			// Get PDF filenames
 			$strGlob = "/home/vixen_invoices/". DBO()->Invoice->Year->Value . "/" . DBO()->Invoice->Month->Value . "/" . DBO()->Account->Id->Value . "_*.pdf";
 			$arrPDFtoSend = glob($strGlob);
-			print_r($strGlob);
-	
+			$strPDFtoSend = $arrPDFtoSend[0];
+			
+			DBO()->Account->Load();
+			
+			// Set up the email message
+			$strBillingPeriod = date("F", strtotime("2007-$intMonth-01")) . " " . $intYear;
+			switch (DBO()->Account->CustomerGroup->Value)
+	 		{
+				case CUSTOMER_GROUP_VOICETALK:
+					$arrHeaders = Array	(
+											'From'		=> "billing@voicetalk.com.au",
+											'Subject'	=> "Telephone Billing for $strBillingPeriod"
+										);
+					$strContent	=	"Please find attached your most recent invoice from Voicetalk\r\n\r\n" .
+									"Regards\r\n\r\n" .
+									"The Team at Voicetalk";
+					break;
+				default:
+					$arrHeaders = Array	(
+											'From'		=> "billing@telcoblue.com.au",
+											'Subject'	=> "Telephone Billing for $strBillingPeriod"
+										);
+					$strContent	=	"Please find attached your most recent invoice from Telco Blue\r\n\r\n" .
+									"Regards\r\n\r\n" .
+									"The Team at Telco Blue";
+					break;
+	 		}
+			if (DBO()->Account->FirstName->Value)
+		 	{
+		 		$strContent = "Dear ".DBO()->Account->FirstName->Value."\r\n\r\n" . $strContent;
+		 	}
+			
+			// Send them
+			foreach ($arrEmails as $strEmailAddress)
+			{
+				$mimMime = new Mail_mime("\n");
+				$mimMime->setTXTBody($strContent);
+				$mimMime->addAttachment($strPDFtoSend, 'application/pdf');
+				$strBody = $mimMime->get();
+				$strHeaders = $mimMime->headers($arrHeaders);
+				$emlMail =& Mail::factory('mail');
+				
+				if ($emlMail->send($strEmailAddress, $strHeaders, $strBody))
+				{
+					Ajax()->AddCommand("ClosePopup", "EmailPDFInvoicePopupId");
+					Ajax()->AddCommand("Alert", "Email(s) successfully sent.");
+					Ajax()->AddCommand('LoadCurrentPage');
+				}
+				
+				else
+				{
+					Ajax()->AddCommand("Alert", "Emails not send successfully. The email addresses may be incorrect or there could be a problem with the email system.");
+				}
+			}
 		}
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
