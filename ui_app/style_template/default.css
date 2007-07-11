@@ -276,6 +276,7 @@
 	h2.CostCentre,
 	h2.Employees,
 	h2.Employee,
+	h2.Email,
 	h2.Permissions,
 	h2.Bug
 	{
@@ -306,6 +307,11 @@
 	h2.Payment
 	{
 		background-image:              url('img/template/payment_small.png');
+	}
+	
+	h2.Email
+	{
+		background-image:              url('img/template/report_email.png');
 	}
 	
 	h2.Adjustment

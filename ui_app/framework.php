@@ -257,8 +257,6 @@ class Page
 	 */
 	function RenderHeaderJS()
 	{
-
-		
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/autoloader.js' ></script>\n";
 		echo "<script type='text/javascript'>VixenSetJavascriptBaseDir('". JAVASCRIPT_BASE_DIR ."')</script>\n";
 		echo "<script type='text/javascript'>VixenIncludeJSOnce('vixen')</script>\n";
@@ -1987,6 +1985,39 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
+	}
+	
+	//------------------------------------------------------------------------//
+	// EmailPDFInvoice
+	//------------------------------------------------------------------------//
+	/**
+	 * EmailPDFInvoice()
+	 *
+	 * Compiles the javascript to be executed when the EmailPDFInvoice menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the EmailPDFInvoice menu item is clicked
+	 * 
+	 * @param	int		$intId		id of the account associated with the invoice to email
+	 * @param	int		$intYear	year part of the date of the invoice to email
+	 * @param	int		$intMonth	month part of the date of the invoice to email
+	 *
+	 * @return	string				action to be executed when the AddNotes menu item is clicked
+	 *
+	 * @method
+	 */
+	function EmailPDFInvoice($intId, $intYear, $intMonth)
+	{
+		$this->strLabel	= "email pdf invoice";
+		
+		// Setup data to send
+		$arrData['Objects']['Account']['Id'] = $intId;
+		$arrData['Objects']['Invoice']['Year'] = $intYear;
+		$arrData['Objects']['Invoice']['Month'] = $intMonth;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmailPDFInvoicePopupId\", \"medium\", \"Invoice\", \"EmailPDFInvoice\", $strJsonCode)";
 	}
 
 	//------------------------------------------------------------------------//

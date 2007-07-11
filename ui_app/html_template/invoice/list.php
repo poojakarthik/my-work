@@ -106,7 +106,7 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 
 		
 		//Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Invoice Sent", "View PDF", "View Invoice Details");
-		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Invoice Sent (status)", "View PDF", "View Invoice Details");
+		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Invoice Sent (status)", "View PDF", "View Invoice Details", "Email PDF Invoice");
 		//Table()->PaymentTable->SetWidth("20%", "30%", "50%");
 		//Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");
 		
@@ -128,6 +128,10 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
 			$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><h2 class='Invoice'></h2></a></span>";
 			
+			//build Email Invoice link
+			$strEmailHref = Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
+			$strEmailLabel = "<span class='DefaultOutputSpan Default'><a href='$strEmailHref'><h2 class='Email'></h2></a></span>";
+			
 			// calculate Invoice Amount
 			$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
 			// calculate AppliedAmount
@@ -141,7 +145,8 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 											$dboInvoice->Balance->AsValue(), 
 											$dboInvoice->Status->AsCallback("GetConstantDescription", Array("InvoiceStatus")), 
 											$strPdfLabel,
-											$strViewInvoiceLabel);
+											$strViewInvoiceLabel,
+											$strEmailLabel);
 											
 			// Set the drop down detail
 			$strDetailHtml = "<div class='VixenTableDetail'>\n";
