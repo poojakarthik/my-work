@@ -63,7 +63,7 @@ class AppTemplateAccount extends ApplicationTemplate
 	{	
 		
 		$pagePerms = PERMISSION_ADMIN;
-		
+
 		AuthenticatedUser()->CheckAuth();
 		// Check perms
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_PUBLIC);	// dies if no permissions
@@ -130,7 +130,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Should probably check user authorization here
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
-		
 		
 		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
 		//check if the form was submitted
@@ -260,6 +259,11 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBO()->DeleteRecord->Description = "Are you sure you want to delete the adjustment with adjustment Id: ". DBO()->Charge->Id->Value ." ?\n";
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteAdjustment";
+				break;
+			case "RecurringAdjustment":
+				DBO()->DeleteRecord->Description = "Are you sure you want to delete the recurring adjustment with Id: ". DBO()->RecurringCharge->Id->Value ." ?\n";
+				DBO()->DeleteRecord->Application = "Adjustment";
+				DBO()->DeleteRecord->Method = "DeleteRecurringAdjustment";
 				break;
 			default:
 				DBO()->Error->Message = "No record type has been declared to be deleted";

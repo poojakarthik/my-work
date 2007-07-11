@@ -102,19 +102,53 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		echo "<h2 class='Adjustment'>Recurring Adjustments</h2>\n";
 		echo "<div class='NarrowColumn'>\n";
 
+		// Check if the user has admin privileges
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
+		
+		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
+		$bolHasAdminPerm = TRUE;
+		//HACK HACK HACK!!!!
 		
 		// define the table's header
-		Table()->RecurringAdjustmentTable->SetHeader("Date", "Description");
-		
-		// NOTE: Currently widths and alignments are not taken into account when the table is rendered
-		Table()->RecurringAdjustmentTable->SetWidth("20%", "80%");
-		Table()->RecurringAdjustmentTable->SetAlignment("Left", "Left");
+		if ($bolHasAdminPerm)
+		{
+			// User has admin permisions and can therefore delete an adjustment
+			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "");
+			Table()->RecurringAdjustmentTable->SetWidth("20%", "70%", "10%");
+			Table()->RecurringAdjustmentTable->SetAlignment("Left", "Left", "Center");
+		}
+		else
+		{
+			// User cannot delete adjustments
+			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description");
+			Table()->RecurringAdjustmentTable->SetWidth("20%", "80%");
+			Table()->RecurringAdjustmentTable->SetAlignment("Left", "Left");
+		}
 		
 		// add the rows
 		foreach (DBL()->RecurringCharge as $dboRecurringCharge)
 		{
-			Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->CreatedOn->AsValue(), $dboRecurringCharge->Description->AsValue());
-			
+			// add the row
+			if ($bolHasAdminPerm)
+			{
+				// You can only delete recurring charges that aren't archived
+				if ($dboRecurringCharge->Archived->Value == 0)
+				{
+					// build the "Delete Recurring Adjustment" link
+					$strDeleteRecurringAdjustmentHref  = Href()->DeleteRecurringAdjustment($dboRecurringCharge->Id->Value);
+					$strDeleteRecurringAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteRecurringAdjustmentHref' class='DeleteButton'></a></span>";
+				}
+				else
+				{
+					$strDeleteRecurringAdjustmentLabel = "";
+				}
+				
+				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->CreatedOn->AsValue(), $dboRecurringCharge->Description->AsValue(), $strDeleteRecurringAdjustmentLabel);
+			}
+			else
+			{
+				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->CreatedOn->AsValue(), $dboRecurringCharge->Description->AsValue());
+			}
 			// add tooltip
 			$strToolTipHtml = $dboRecurringCharge->LastChargedOn->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT);

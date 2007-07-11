@@ -2124,7 +2124,7 @@ class MenuItems
 	 * 
 	 * @param	int		$intPaymentId		id of the payment to delete
 	 *
-	 * @return	string				action to be executed when the DeletePayment menu item is clicked
+	 * @return	string						action to be executed when the DeletePayment menu item is clicked
 	 *
 	 * @method
 	 */
@@ -2140,7 +2140,6 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeletePaymentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
-		//return "javascript:Vixen.Popup.DeleteRecordPopup(\"DeletePaymentPopupId\", \"Payment\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -2156,7 +2155,7 @@ class MenuItems
 	 * 
 	 * @param	int		$intAdjustmentId		id of the adjustment to delete
 	 *
-	 * @return	string				action to be executed when the DeleteAdjustment menu item is clicked
+	 * @return	string							action to be executed when the DeleteAdjustment menu item is clicked
 	 *
 	 * @method
 	 */
@@ -2172,9 +2171,40 @@ class MenuItems
 		$strJsonCode = Json()->encode($arrData);
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteAdjustmentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
-		//return "javascript:Vixen.Popup.DeleteRecordPopup(\"DeletePaymentPopupId\", \"Payment\", $strJsonCode)";
 	}
 	
+	//------------------------------------------------------------------------//
+	// DeleteRecurringAdjustment
+	//------------------------------------------------------------------------//
+	/**
+	 * DeleteRecurringAdjustment()
+	 *
+	 * Compiles the javascript to be executed when the DeleteRecurringAdjustment menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the DeleteRecurringAdjustment menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intRecurringAdjustmentId		id of the recurring adjustment to delete
+	 *
+	 * @return	string									action to be executed when the DeleteRecurringAdjustment menu item is clicked
+	 *
+	 * @method
+	 */
+	function DeleteRecurringAdjustment($intRecurringAdjustmentId)
+	{
+		$this->strLabel	= "delete recurring adjustment: $intRecurringAdjustmentId";
+		
+		// Setup data to send
+		$arrData['Objects']['DeleteRecord']['RecordType'] = "RecurringAdjustment";
+		$arrData['Objects']['RecurringCharge']['Id'] = $intRecurringAdjustmentId;
+				
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
+	}
+	
+
 	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//

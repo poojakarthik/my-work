@@ -298,17 +298,34 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	function DeleteAdjustment()
 	{
 		// Should probably check user authorization here
-		//TODO!include user authorisation AND MAKE SURE THEY HAVE PAYMENT REVERSE PERMISSIONS
+		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
+		
+		// Check if the user has admin privileges
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
+		
+		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
+		$bolHasAdminPerm = TRUE;
+		//HACK HACK HACK!!!!
+		
+		if (!$bolHasAdminPerm)
+		{
+			// The user does not have permission to delete the adjustment
+			Ajax()->AddCommand("ClosePopup", "DeleteAdjustmentPopupId");
+			Ajax()->AddCommand("Alert", "ERROR: Cannot complete delete operation.\nUser does not have permission to delete adjustment records");
+			Ajax()->AddCommand("LoadCurrentPage");
+			return TRUE;
+		}
 
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord', 'Delete'))
 		{
 			if (!DBO()->Charge->Load())
 			{
-				DBO()->Error->Message = "The Charge with charge id: '". DBO()->Charge->Id->value ."' could not be found";
-				$this->LoadPage('error');
-				return FALSE;
+				Ajax()->AddCommand("ClosePopup", "DeleteChargePopupId");
+				Ajax()->AddCommand("Alert", "The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
+				Ajax()->AddCommand("LoadCurrentPage");
+				return TRUE;
 			}
 			
 			// The charge can only be deleted if its status is CHARGE_WAITING or CHARGE_APPROVED
@@ -374,4 +391,166 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		}
 		return TRUE;
 	}
+
+	//------------------------------------------------------------------------//
+	// DeleteRecurringAdjustment
+	//------------------------------------------------------------------------//
+	/**
+	 * DeleteRecurringAdjustment()
+	 *
+	 * Performs Delete Recurring Adjustment functionality
+	 * 
+	 * Performs Delete Recurring Adjustment functionality
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function DeleteRecurringAdjustment()
+	{
+		// Should probably check user authorization here
+		//TODO!include user authorisation
+		AuthenticatedUser()->CheckAuth();
+		
+		// Check if the user has admin privileges
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
+		
+		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
+		$bolHasAdminPerm = TRUE;
+		//HACK HACK HACK!!!!
+		
+		if (!$bolHasAdminPerm)
+		{
+			// The user does not have permission to delete the recurring adjustment
+			Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
+			Ajax()->AddCommand("Alert", "ERROR: Cannot complete delete operation.\nUser does not have permission to delete recurring adjustment records");
+			Ajax()->AddCommand("LoadCurrentPage");
+			return TRUE;
+		}
+
+		// Make sure the correct form was submitted
+		if (SubmittedForm('DeleteRecord', 'Delete'))
+		{
+			if (!DBO()->RecurringCharge->Load())
+			{
+				Ajax()->AddCommand("ClosePopup", "DeleteRecurringChargePopupId");
+				Ajax()->AddCommand("Alert", "The recurring adjustment with id: ". DBO()->RecurringCharge->Id->Value ." could not be found");
+				Ajax()->AddCommand("LoadCurrentPage");
+				return TRUE;
+			}
+			
+			// The recurring charge can only be deleted if it is not currently archived
+			if (DBO()->RecurringCharge->Archived->Value == 0)
+			{
+				// Declare the transaction
+				TransactionStart();
+			
+				//TODO! work out what needs to be done when deleting a recurring charge
+				//To my understanding I have to archive the RecurringCharge record and if there is a cancellation fee, then 
+				//a charge has to be created equalling the cancellation fee (and possibly the remainder of the minimum charge that is owing)
+				
+				// Set the archive status of the recurring charge to ARCHIVED
+				DBO()->RecurringCharge->Archived = 1;
+				
+				// Update the recurring charge
+				if (!DBO()->RecurringCharge->Save())
+				{
+					// The recurring charge could not be updated
+					
+					// rollback the Transaction (although it really doesn't matter at this stage)
+					TransactionCommit();
+					
+					// Close the popup gracefully
+					Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
+					Ajax()->AddCommand("Alert", "The recurring adjustment could not be deleted.\nThere was a problem with updating the RecurringCharge record in the database.");
+					Ajax()->AddCommand("LoadCurrentPage");
+					return TRUE;
+				}
+				
+				// The recurring charge was successfully updated.
+				
+				// Add a new debit charge if the Recurring Charge was a Debit and there is still money left owing on it
+				if (DBO()->RecurringCharge->Nature->Value == NATURE_DR)
+				{
+					$fltChargeAmount = (DBO()->RecurringCharge->MinCharge->Value - DBO()->RecurringCharge->TotalCharged->Value) + DBO()->RecurringCharge->CancellationFee->Value;
+					DBO()->Charge->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
+					DBO()->Charge->Account = DBO()->RecurringCharge->Account->Value;
+					DBO()->Charge->Service = DBO()->RecurringCharge->Service->Value;
+					DBO()->Charge->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
+					DBO()->Charge->CreatedOn = GetCurrentDateForMySQL();
+					DBO()->Charge->ApprovedBy = NULL;
+					DBO()->Charge->ChargeType = DBO()->RecurringCharge->ChargeType->Value;
+					DBO()->Charge->Description = "CANCELLATION: ". DBO()->RecurringCharge->Description->Value;
+					DBO()->Charge->ChargedOn = NULL;
+					DBO()->Charge->Nature = NATURE_DR;
+					DBO()->Charge->Amount = $fltChargeAmount;
+					DBO()->Charge->Invoice = NULL;
+					DBO()->Charge->Notes = DBO()->Note->Note->Value;
+					DBO()->Charge->Status = CHARGE_APPROVED;
+					
+					// Save the charge
+					if (!DBO()->Charge->Save())
+					{
+						// The charge could not be saved so rollback the transaction
+						TransactionRollback();
+						
+						// Close the popup gracefully
+						Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
+						Ajax()->AddCommand("Alert", "The recurring adjustment could not be deleted.\nThere was a problem with generating the cancellation charge.");
+						Ajax()->AddCommand("LoadCurrentPage");
+						return TRUE;
+					}
+				}
+				
+				// Commit the transaction
+				TransactionCommit();
+				
+				// Now add the user's note and the automatic note
+				if (!DBO()->Note->IsInvalid())
+				{
+					DBO()->Note->NoteType = GENERAL_NOTE_TYPE;
+					DBO()->Note->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
+					DBO()->Note->Account = DBO()->RecurringCharge->Account->Value;
+					DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
+					DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
+					
+					if (!DBO()->Note->Save())
+					{
+						Ajax()->AddCommand("Alert", "The note could not be saved");
+					}
+				}
+				
+				// Add a system generated note regarding the deleting of the charge
+				DBO()->Note->Clean();
+				DBO()->Note->NoteType = SYSTEM_NOTE_TYPE;
+				DBO()->Note->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
+				DBO()->Note->Account = DBO()->RecurringCharge->Account->Value;
+				DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
+				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
+				DBO()->Note->Note = "Recurring charge with Id: ". DBO()->RecurringCharge->Id->Value ." has been deleted";
+				
+				if (!DBO()->Note->Save())
+				{
+					Ajax()->AddCommand("Alert", "The automatic system note could not be saved");
+				}
+				
+				
+				Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
+				Ajax()->AddCommand("Alert", "The adjustment was successfully deleted");
+				Ajax()->AddCommand("LoadCurrentPage");
+				return TRUE;
+
+			}
+			else
+			{
+				// the recurring charge cannot be deleted 
+				Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
+				Ajax()->AddCommand("Alert", "The recurring adjustment could not be deleted.\nCheck the archive status of the adjustment.");
+				Ajax()->AddCommand("LoadCurrentPage");
+				return TRUE;
+			}
+		}
+		return TRUE;
+	}
+
 }

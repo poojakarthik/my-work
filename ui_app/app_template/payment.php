@@ -186,14 +186,31 @@ class AppTemplatePayment extends ApplicationTemplate
 		//TODO!include user authorisation AND MAKE SURE THEY HAVE PAYMENT REVERSE PERMISSIONS
 		AuthenticatedUser()->CheckAuth();
 
+		// Check if the user has admin privileges
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
+		
+		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
+		$bolHasAdminPerm = TRUE;
+		//HACK HACK HACK!!!!
+		
+		if (!$bolHasAdminPerm)
+		{
+			// The user does not have permission to delete the adjustment
+			Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
+			Ajax()->AddCommand("Alert", "ERROR: Cannot complete payment reverse operation.\nUser does not have permission to reverse payment records");
+			Ajax()->AddCommand("LoadCurrentPage");
+			return TRUE;
+		}
+
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord', 'Delete'))
 		{
 			if (!DBO()->Payment->Load())
 			{
-				DBO()->Error->Message = "The payment with payment id: '". DBO()->Payment->Id->value ."' could not be found";
-				$this->LoadPage('error');
-				return FALSE;
+				Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
+				Ajax()->AddCommand("Alert", "The payment with id: ". DBO()->Payment->Id->Value ." could not be found");
+				Ajax()->AddCommand("LoadCurrentPage");
+				return TRUE;
 			}
 			
 			//reverse the payment
@@ -204,13 +221,16 @@ class AppTemplatePayment extends ApplicationTemplate
 				// Add the user's note, if one was specified
 				if (!DBO()->Note->IsInvalid())
 				{
-					DBO()->Note->NoteType = 1;
+					DBO()->Note->NoteType = GENERAL_NOTE_TYPE;
 					DBO()->Note->AccountGroup = DBO()->Payment->AccountGroup->Value;
 					DBO()->Note->Account = DBO()->Payment->Account->Value;
 					DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
-					DBO()->Note->DateTime = GetCurrentDateAndTimeForMySQL();
+					DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
 					
-					DBO()->Note->Save();
+					if (!DBO()->Note->Save())
+					{
+						Ajax()->AddCommand("Alert", "The note could not be saved");
+					}
 				}
 				
 				Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
