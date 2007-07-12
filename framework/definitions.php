@@ -379,11 +379,23 @@ $GLOBALS['*arrConstant']	['CustomerGroup']	[2]	['Description']	= 'VoiceTalk';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Constant']	= 'CUSTOMER_GROUP_IMAGINE';
 $GLOBALS['*arrConstant']	['CustomerGroup']	[3]	['Description']	= 'Imagine';
 
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Constant']	= 'CUSTOMER_GROUP_TELCOBLUE_EMAIL';
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[1]	['Description']	= 'billing@telcoblue.com.au';
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Constant']	= 'CUSTOMER_GROUP_VOICETALK_EMAIL';
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[2]	['Description']	= 'billing@voicetalk.com.au';
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Constant']	= 'CUSTOMER_GROUP_IMAGINE_EMAIL';
+$GLOBALS['*arrConstant']	['CustomerGroupEmail']	[3]	['Description']	= 'Imagine';
+
 // Credit Card Constants
 define("CREDIT_CARD_VISA"			, 1);
 define("CREDIT_CARD_MASTERCARD"		, 2);
 define("CREDIT_CARD_AMEX"			, 4);
 define("CREDIT_CARD_DINERS"			, 5);
+
+define("INVOICE_EMAIL_CONTENT", "Please find attached your invoice from %custgrp%.\r\n\r\n" .
+								"Regards\r\n\r\n" .
+								"The Team at %custgrp%");
+define("INVOICE_EMAIL_SUBJECT", "Telephone Billing for %billperiod%");
 
 // DONKEY (neither TRUE nor FALSE)
 define("DONKEY"						, -1);

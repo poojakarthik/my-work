@@ -114,9 +114,17 @@ class AppTemplateInvoice extends ApplicationTemplate
 			
 			// Set up the email message
 			$strBillingPeriod = date("F", strtotime("2007-$intMonth-01")) . " " . $intYear;
-			//$strCustomerGroup = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroup');
-			//echo $strCustomerGroup;
-			switch (DBO()->Account->CustomerGroup->Value)
+			$strCustomerGroup = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroup');
+			$strFromAddress = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroupEmail');
+			$strContent = INVOICE_EMAIL_CONTENT;
+			$strSubject = INVOICE_EMAIL_SUBJECT;
+			str_replace("%custgrp%", $strCustomerGroup, $strContent);
+			str_replace("%billperiod%", $strBillingPeriod, $strSubject);
+			$arrHeaders = Array	('From'=> $strFromAddress, 'Subject'	=> $strSubject);
+
+			
+			
+			/*switch (DBO()->Account->CustomerGroup->Value)
 	 		{
 				case CUSTOMER_GROUP_VOICETALK:
 					$arrHeaders = Array	(
@@ -136,7 +144,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 									"Regards\r\n\r\n" .
 									"The Team at Telco Blue";
 					break;
-	 		}
+	 		}*/
 			if (DBO()->Account->FirstName->Value)
 		 	{
 		 		$strContent = "Dear ".DBO()->Account->FirstName->Value."\r\n\r\n" . $strContent;
