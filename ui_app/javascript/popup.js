@@ -147,8 +147,8 @@ function VixenPopupClass()
 				elmOverlay.style.zIndex = ++dragObj.zIndex;
 				
 				intScroll = document.body.scrollTop;
-                document.body.style.overflow = "hidden";
-               	document.body.scrollTop = intScroll;
+                //document.body.style.overflow = "hidden";
+               	//document.body.scrollTop = intScroll;
                 elmOverlay.style.height = document.body.offsetHeight;
                 break;
 				
@@ -226,9 +226,13 @@ function VixenPopupClass()
 		{
 			// set the popup, well, wherever it wants
 		}
+		
 		// Add the handler for dragging the popup around
-    	mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
-    	mydragObj.addEventListener('mousedown', OpenHandler, false);
+		if (strModal != "modal")
+		{
+    		mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
+    		mydragObj.addEventListener('mousedown', OpenHandler, false);
+		}
 		
 		function OpenHandler(event)
 		{
