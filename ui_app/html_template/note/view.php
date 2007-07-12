@@ -108,14 +108,22 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		// TODO! The notes should have a scroll bar down the right hand side.
 		// TODO! there should be some sort of pagination so that only 5 or 10 notes are shown at any one time
 		
-		$this->FormStart("SystemNotesOnlyForm", "Note", "View");
+		//$this->FormStart("SystemNotesOnlyForm", "Note", "View");
+		$this->FormStart("NoteTypeForm", "Note", "View");
 		DBO()->Account->Id->RenderHidden();
-		if (DBO()->Note->SystemOnly->Value == 1)
+		if (DBO()->Note->NoteType->Value == "All")
 		{
 			$strChecked = 'checked';
 		}
 		
-		echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
+		/*<input type="radio" name="group1" value="Milk"> Milk<br>
+		<input type="radio" name="group1" value="Butter" checked> Butter<br>
+		<input type="radio" name="group1" value="Cheese"> Cheese*/
+
+		echo "<input type='radio' name='Note.NoteType' value='All' $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
+		echo "<input type='radio' name='Note.NoteType' value='System' $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
+		echo "<input type='radio' name='Note.NoteType' value='User' $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
+		//echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
 		$this->FormEnd();
 		
 		// Display each note

@@ -280,8 +280,8 @@ function dragStart(event, id) {
   }
   
   var popup_width = dragObj.elNode.style.width.substr(0, dragObj.elNode.style.width.length - 2) * 1;
-  var popup_height = dragObj.elNode.style.height.substr(0, dragObj.elNode.style.height.length - 2) * 1;
-  //alert(dragObj.elNode.style.width);
+  // HACK HACK HACK This is hardcoded to be the height of the top bar of the popup (18px currently) + a little bit
+  var header_height = 25; 
  
   // Get cursor position with respect to the page.
 
@@ -311,11 +311,9 @@ function dragStart(event, id) {
   dragObj.elNode.limits.drag_horizontal = TRUE;
   dragObj.elNode.limits.drag_vertical = TRUE;
   dragObj.elNode.limits.drag_left = 1;
-  dragObj.elNode.limits.drag_top = 1;
+  dragObj.elNode.limits.drag_top = document.body.scrollTop + 1;
   dragObj.elNode.limits.drag_right = document.body.offsetWidth - popup_width;
-  
-  // HACK HACK HACK This is hardcoded to be the height of the top bar of the popup (18px currently) + a little bit
-  dragObj.elNode.limits.drag_bottom = window.innerHeight - 25; 
+  dragObj.elNode.limits.drag_bottom = document.body.scrollTop + window.innerHeight - header_height; 
   
   // Update element's z-index.
   dragObj.elNode.style.zIndex = ++dragObj.zIndex;
@@ -374,9 +372,7 @@ function dragGo(event) {
 			{
 				drag_left = dragObj.elNode.limits.drag_right;
 			}
-			//var towrite = towrite + " " + drag_left;
 			dragObj.elNode.style.left = drag_left;
-			//alert(dragObj.elNode.style.width);
 		}
 		
 		if(dragObj.elNode.limits.drag_vertical !== FALSE)
