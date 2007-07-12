@@ -326,7 +326,12 @@ function VixenAjaxClass()
 					Vixen.Popup.Close(objInput[intKey].Data);
 					break;
 				case "Alert":
-					alert(objInput[intKey].Data);
+					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>";
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre');
+					break;
+				case "AlertReload":
+					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location.reload();'><br></div>";
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre');
 					break;
 				case "LoadCurrentPage":
 					window.location.reload();
@@ -338,7 +343,6 @@ function VixenAjaxClass()
 		}
 		
 	}
-	
 	
 	// AJAX handle_error
 	this.HandleError = function(req)

@@ -122,16 +122,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				{
 					// The adjustment did not save
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "ERROR: The Adjustment did not save");
-					Ajax()->AddCommand('LoadCurrentPage');
+					Ajax()->AddCommand("AlertReload", "ERROR: The Adjustment did not save.");
 					return TRUE;
 				}
 				else
 				{
 					// The adjustment was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "The Adjustment has been successfully added");
-					Ajax()->AddCommand('LoadCurrentPage');
+					Ajax()->AddCommand("AlertReload", "The Adjustment has been successfully added.");
 					return TRUE;
 				}
 			}

@@ -152,11 +152,12 @@ class AppTemplateInvoice extends ApplicationTemplate
 				
 				if (!$emlMail->send($strEmailAddress, $strHeaders, $strBody))
 				{
-					Ajax()->AddCommand("Alert", "Emails not send successfully. The email addresses may be incorrect or there could be a problem with the email system.");
+					Ajax()->AddCommand("Alert", "Emails not sent successfully. The email addresses may be incorrect or there could be a problem with the email system.");
 				}
 				else
 				{
 					Ajax()->AddCommand("ClosePopup", "EmailPDFInvoicePopupId");
+					Ajax()->AddCommand("Alert", "Email(s) successfully sent.");
 				}
 			}
 		}

@@ -163,16 +163,17 @@ class AppTemplateNote extends ApplicationTemplate
 				{
 					// The note could not be saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "ERROR: The note did not save");
-					Ajax()->AddCommand('LoadCurrentPage');
+					Ajax()->AddCommand("AlertReload", "ERROR: The note did not save.");
+					//Ajax()->AddCommand('LoadCurrentPage');
 					return TRUE;
 				}
 				else
 				{
 					// The note was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "The note has been successfully added");
-					Ajax()->AddCommand('LoadCurrentPage');
+					Ajax()->AddCommand("AlertReload", "The note has been successfully added.");
+					//echo "The note has been successfully added.\n stuff";
+					//Ajax()->AddCommand('LoadCurrentPage');
 					return TRUE;
 				}
 			}

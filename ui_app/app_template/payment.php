@@ -135,16 +135,14 @@ class AppTemplatePayment extends ApplicationTemplate
 				{
 					// The payment could not be saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "ERROR: The payment did not save");
-					Ajax()->AddCommand('LoadCurrentPage');
+					Ajax()->AddCommand("AlertReload", "ERROR: The payment did not save.");
 					return TRUE;
 				}
 				else
 				{
 					// The payment was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "The payment has been successfully added");
-					Ajax()->AddCommand('LoadCurrentPage');
+					Ajax()->AddCommand("AlertReload", "The payment has been successfully added.");
 					return TRUE;
 				}
 			}

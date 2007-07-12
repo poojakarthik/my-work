@@ -111,7 +111,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		//$this->FormStart("SystemNotesOnlyForm", "Note", "View");
 		$this->FormStart("NoteTypeForm", "Note", "View");
 		DBO()->Account->Id->RenderHidden();
-		
+		$strAll = 'checked';
 		switch (DBO()->Note->NoteType->Value)
 		{
 			case "All":
@@ -124,7 +124,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 				$strUser = 'checked';
 				break;				
 		}
-		
+		echo "<br>";
 		echo "<input type='radio' name='Note.NoteType' value='All' $strAll onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
 		echo "<input type='radio' name='Note.NoteType' value='System' $strSystem onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
 		echo "<input type='radio' name='Note.NoteType' value='User' $strUser onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
