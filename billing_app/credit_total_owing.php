@@ -1,25 +1,7 @@
 <?php
 
 // load framework
-$strFrameworkDir = "../framework/";
-require_once($strFrameworkDir."framework.php");
-require_once($strFrameworkDir."functions.php");
-require_once($strFrameworkDir."definitions.php");
-require_once($strFrameworkDir."config.php");
-require_once($strFrameworkDir."database_define.php");
-require_once($strFrameworkDir."db_access.php");
-require_once($strFrameworkDir."report.php");
-require_once($strFrameworkDir."error.php");
-require_once($strFrameworkDir."exception_vixen.php");
-
-// create framework instance
-$GLOBALS['fwkFramework'] = new Framework();
-$framework = $GLOBALS['fwkFramework'];
-
-// load PEAR components
-require_once("Mail.php");
-require_once("Mail/mime.php");
-
+LoadFramework();
 
 $selCreditAccounts	= new StatementSelect(	"(Invoice I1 JOIN Invoice I2 USING (Account)) JOIN Invoice I3 USING (Account)",
 											"I1.Account AS Account, I1.Id AS Jan, I2.Id AS Feb, I3.Id AS Mar, I1.TotalOwing AS JanTotalOwing", 

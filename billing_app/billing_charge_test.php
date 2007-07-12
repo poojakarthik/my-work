@@ -1,7 +1,7 @@
 <?php
 
 // Load app
-require_once("application_loader.php");
+LoacApplication();
 
 $chgLatePayment = new ChargeLatePayment();
 

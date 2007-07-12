@@ -10,7 +10,7 @@
 //----------------------------------------------------------------------------//
 
 // load application
-require_once('application_loader.php');
+LoadApplication();
 
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);

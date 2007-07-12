@@ -10,10 +10,10 @@
 //----------------------------------------------------------------------------//
  
 // load application
-require_once('application_loader.php');
+LoadApplication();
 
 // load remote copy
-require_once('../framework/remote_copy.php');
+VixenRequire('framework/remote_copy.php');
 
 // Application entry point - create an instance of the application object
 $appBilling = new ApplicationBilling($arrConfig);

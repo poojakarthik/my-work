@@ -10,7 +10,7 @@
 //----------------------------------------------------------------------------//
 
 // load application
-require_once('application_loader.php');
+LoadApplication();
 
 // load etech modules
 require_once($strModuleDir."etech_reader.php");

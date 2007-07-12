@@ -1,6 +1,6 @@
 <?php
 
-require_once("application_loader.php");
+LoadApplication();
 
 //$GLOBALS['dbaDatabase']->TransactionStart();
 

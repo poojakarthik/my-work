@@ -27,10 +27,8 @@
  */
  
 // call application
-require_once("../framework/require.php");
-require_once("config.php");
-require_once("Mail.php");
-require_once("Mail/mime.php");
+LoadFramework();
+VixenRequire("billing_app/config.php");
 
 $bolVerbose = FALSE;
 if (trim($argv[1] == '-v'))
