@@ -1,5 +1,4 @@
 <?php
-
 	// load framework
 	require_once('../ui_app/require.php');
 	
