@@ -89,7 +89,6 @@ function VixenValidateRecurringAdjustmentClass()
 	 */
 	this.InitialiseForm = function(objChargeTypeData)
 	{
-alert("RecurringsAdjustments.InitialiseForm()");
 		var intKey;
 		this._objChargeTypeData = objChargeTypeData;
 		
@@ -100,9 +99,12 @@ alert("RecurringsAdjustments.InitialiseForm()");
 		this._elmRecurringChargeTypeId	= document.getElementById("RecurringChargeType.Id");
 
 		//add event listeners
-		//TODO! I don't know how to add event listeners to elements
-		//this._elmRecursionCharge.onkeyup	= "Vixen.ValidateRecurringAdjustment.RecursionChargeChanged()";
-		//this._elmRecursionCharge.addEventListener("keyup", "Vixen.ValidateRecurringAdjustment.RecursionChargeChanged", TRUE);
+		//BUG! The proper way to add this event listener is the following commented out line.  However this method doesn't currently work.
+		//so I am using the old method
+		//this._elmRecursionCharge.addEventListener('keyup', "Vixen.ValidateRecurringAdjustment.RecursionChargeChanged", FALSE);
+		//document.getElementById("RecurringCharge.RecursionCharge").onkeyup = Vixen.ValidateRecurringAdjustment.RecursionChargeChanged;
+		//this._elmRecursionCharge.onkeyup = Vixen.ValidateRecurringAdjustment.RecursionChargeChanged;
+		this._elmRecursionCharge.onkeyup = this.RecursionChargeChanged;
 		
 		// set up the form to display the details of the first item in the Charge Type Combobox
 		for (intKey in this._objChargeTypeData)
@@ -325,44 +327,24 @@ alert("RecurringsAdjustments.InitialiseForm()");
 	}
 	
 	//Event handler for when the text within the Recursion charge text box, is changed
+	//HACK HACK HACK!!!
+	//I should be using the "this" pointer instead of using the Vixen.ValidateRecurringAdjustment object
+	//but the "this" pointer is pointing to the textbox on which the event was caught.
+	//Perhaps this function should not be a part of this class?
+	//HACK HACK HACK!!!
 	this.RecursionChargeChanged = function()
 	{
-		alert("RecursionChargeChanged() has been executed");
-		return;
-	
-		//TODO! Fix this method.  This has just been copied from the original system
-		var eAmount = document.getElementById("Amount");
-		var eMinCharge = document.getElementById("MinCharge");
-		var eNumOfCharges = document.getElementById("NumOfCharges");
-		var eEndDate = document.getElementById("EndDate");
-		var eRecurFreq = document.getElementById("recurringfrequency");
+		Vixen.ValidateRecurringAdjustment.GetTextFields();
 		
-		var RecurFreq = eRecurFreq.innerHTML.split(" ")[0];
-		var RecurFreqType = eRecurFreq.innerHTML.split(" ")[1];
-		
-		// check if it is fixed or not
-		var fixed = document.getElementById('NumOfChargesFixed');
-		if (fixed)
+		if ((isNaN(Vixen.ValidateRecurringAdjustment._fltRecursionCharge)) || (Vixen.ValidateRecurringAdjustment._fltRecursionCharge <= 0))
 		{
-			stripDollars();
-			fixed.innerHTML = Math.ceil(eMinCharge.value / eAmount.value);
-			endDate = calculateEndDate(RecurFreq, RecurFreqType, fixed.innerHTML);
-			eEndDate.innerHTML = endDate;
-			
-			addDollars;
-			
 			return;
 		}
 		
-		stripDollars();
+		Vixen.ValidateRecurringAdjustment._intTimesToCharge = Math.ceil(Vixen.ValidateRecurringAdjustment._fltMinCharge / Vixen.ValidateRecurringAdjustment._fltRecursionCharge);
 		
-		// Work out number of times charged
-		eNumOfCharges.value = Math.ceil(eMinCharge.value / eAmount.value);
-		
-		endDate = calculateEndDate(RecurFreq, RecurFreqType, eNumOfCharges.value);
-		eEndDate.innerHTML = endDate;
-		
-		addDollars();
+		Vixen.ValidateRecurringAdjustment.SetTimesToChargeTextField();
+		Vixen.ValidateRecurringAdjustment.SetEndDate();
 	}
 	
 
@@ -375,8 +357,23 @@ alert("RecurringsAdjustments.InitialiseForm()");
 
 	this.SetTextFields = function()
 	{
-		this._elmRecursionCharge.value	= "$" + (this._fltRecursionCharge).toFixed(4);
+		this._elmRecursionCharge.value	= "$" + (this._fltRecursionCharge).toFixed(2);
 		this._elmMinCharge.value		= "$" + (this._fltMinCharge).toFixed(2);
+		this._elmTimesToCharge.value	= this._intTimesToCharge;
+	}
+
+	this.SetRecursionChargeTextField = function()
+	{
+		this._elmRecursionCharge.value	= "$" + (this._fltRecursionCharge).toFixed(2);
+	}
+	
+	this.SetMinChargeTextField = function()
+	{
+		this._elmMinCharge.value		= "$" + (this._fltMinCharge).toFixed(2);
+	}
+	
+	this.SetTimesToChargeTextField = function()
+	{
 		this._elmTimesToCharge.value	= this._intTimesToCharge;
 	}
 

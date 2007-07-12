@@ -149,8 +149,10 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 			$arrChargeTypeData['Nature']		= $dboChargeType->Nature->Value;
 			$arrChargeTypeData['Fixed']			= $dboChargeType->Fixed->Value;
 			
-			// the amounts should be formatted as money values before being added to this array
-			$arrChargeTypeData['Amount']		= FormatAsCurrency($dboChargeType->Amount->Value, 2, TRUE);
+			// Add GST to the default amount and format it as a money value
+			$fltAmountIncGST = AddGST($dboChargeType->Amount->Value);
+			$strAmount = FormatAsCurrency($fltAmountIncGST, 2, TRUE);
+			$arrChargeTypeData['Amount']		= $strAmount;
 			$arrChargeTypeData['Description']	= $dboChargeType->Description->Value;
 			//$arrChargeTypeData['Id']		= $dboChargeType->Id->Value;
 			

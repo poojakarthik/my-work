@@ -133,11 +133,11 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 					// The recurring charge is a debit.  A charge will be made to cover the remaining minimum cost, and cancellation fee
 					DBO()->DeleteRecord->Description->RenderArbitrary("Warning: Cancelling this adjustment will incur a cost to the customer");
 					
-					DBO()->RecurringCharge->MinCharge->RenderOutput();
-					DBO()->RecurringCharge->TotalCharged->RenderOutput();
-					DBO()->RecurringCharge->CancellationFee->RenderOutput();
+					DBO()->RecurringCharge->MinCharge->RenderCallback("AddGST", NULL, RENDER_OUTPUT);
+					DBO()->RecurringCharge->TotalCharged->RenderCallback("AddGST", NULL, RENDER_OUTPUT);
+					DBO()->RecurringCharge->CancellationFee->RenderCallback("AddGST", NULL, RENDER_OUTPUT);
 					
-					DBO()->RecurringCharge->TotalAdditionalCharge = $fltAmountOwing + DBO()->RecurringAdjustment->CancellationFee->Value;
+					DBO()->RecurringCharge->TotalAdditionalCharge = AddGST($fltAmountOwing + DBO()->RecurringCharge->CancellationFee->Value);
 					DBO()->RecurringCharge->TotalAdditionalCharge->RenderOutput();
 				}
 				

@@ -85,6 +85,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// if the charge amount has a leading dollar sign then strip it off
 				DBO()->Charge->Amount = ltrim(trim(DBO()->Charge->Amount->Value), '$');
 				
+				// Remove GST from this amount
+				DBO()->Charge->Amount = RemoveGST(DBO()->Charge->Amount->Value);
+				
 				// Account details
 				DBO()->Charge->Account		= DBO()->Account->Id->Value;
 				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
@@ -200,6 +203,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->RecurringCharge->MinCharge = ltrim(trim(DBO()->RecurringCharge->MinCharge->Value), '$');
 				DBO()->RecurringCharge->RecursionCharge = ltrim(trim(DBO()->RecurringCharge->RecursionCharge->Value), '$');
 			
+				// Remove GST from Minimum Charge and Recursion Charge
+				DBO()->RecurringCharge->MinCharge = RemoveGST(DBO()->RecurringCharge->MinCharge->Value);
+				DBO()->RecurringCharge->RecursionCharge = RemoveGST(DBO()->RecurringCharge->RecursionCharge->Value);
 				
 				// Account details
 				DBO()->RecurringCharge->Account			= DBO()->Account->Id->Value;
@@ -477,7 +483,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Add a new debit charge if the Recurring Charge was a Debit and there is still money left owing on it
 				if ((DBO()->RecurringCharge->Nature->Value == NATURE_DR) && ($fltAmountOwing > 0.0))
 				{
-					// The additional charge is equal to the money left owing plus the cancellation fee
+					// The additional charge is equal to the money left owing plus the cancellation fee (excluding GST)
 					$fltChargeAmount = $fltAmountOwing + DBO()->RecurringCharge->CancellationFee->Value;
 					DBO()->Charge->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
 					DBO()->Charge->Account = DBO()->RecurringCharge->Account->Value;

@@ -557,8 +557,16 @@ class HTMLElements
 				case "ShortDate":
 					// MySql Dates are of the format YYYY-MM-DD
 					// convert this to DD/MM/YYYY
-					$arrDate = explode("-", $mixValue);
-					$mixValue = $arrDate[2] ."/". $arrDate[1] ."/". $arrDate[0];
+					if ($mixValue)
+					{
+						$arrDate = explode("-", $mixValue);
+						$mixValue = $arrDate[2] ."/". $arrDate[1] ."/". $arrDate[0];
+					}
+					else
+					{
+						// The value is null
+						$mixValue = "&nbsp;";
+					}
 					break;
 				case "LongDateAndTime":
 					// MySql Datetime is in the format YYYY-MM-DD HH:MM:SS

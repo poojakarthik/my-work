@@ -153,12 +153,20 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 			$arrChargeTypeData['RecurringFreqType']			= $dboChargeType->RecurringFreqType->Value;
 			$arrChargeTypeData['RecurringFreq']				= $dboChargeType->RecurringFreq->Value;
 			
+			// Add GST to the Minimum Charge and format it as a money value
+			$fltMinChargeIncGST = AddGST($dboChargeType->MinCharge->Value);
+			$strMinCharge = FormatAsCurrency($fltMinChargeIncGST, 2, TRUE);
+			$arrChargeTypeData['MinCharge'] = $strMinCharge;
 			
-			// the amounts should be formatted as money values before being added to this array
-			$arrChargeTypeData['MinCharge']			= FormatAsCurrency($dboChargeType->MinCharge->Value, 2, TRUE);
-			$arrChargeTypeData['RecursionCharge']	= FormatAsCurrency($dboChargeType->RecursionCharge->Value, 2, TRUE);
-			$arrChargeTypeData['CancellationFee']	= FormatAsCurrency($dboChargeType->CancellationFee->Value, 2, TRUE);
+			// Add GST to the Recursion Charge and format it as a money value
+			$fltRecursionChargeIncGST = AddGST($dboChargeType->RecursionCharge->Value);
+			$strRecursionCharge = FormatAsCurrency($fltRecursionChargeIncGST, 2, TRUE);
+			$arrChargeTypeData['RecursionCharge'] = $strRecursionCharge;
 			
+			// Add GST to the Cancellation Fee and format it as a money value
+			$fltCancellationFeeIncGST = AddGST($dboChargeType->CancellationFee->Value);
+			$strCancellationFee = FormatAsCurrency($fltCancellationFeeIncGST, 2, TRUE);
+			$arrChargeTypeData['CancellationFee'] = $strCancellationFee;
 			
 			$arrChargeTypes[$intChargeTypeId] = $arrChargeTypeData;
 		}
