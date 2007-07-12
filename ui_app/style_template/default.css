@@ -280,13 +280,11 @@
 	h2.Permissions,
 	h2.Bug
 	{
-		background-repeat:             no-repeat;
-		background-position:           top left;
-		
-		padding-top:                   5px;
-		padding-left:                  30px;
-		
-		height:                        25px;
+		background-repeat:		no-repeat;
+		background-position:	bottom left;
+		padding-left:			22px;
+		margin-bottom:			5px;
+		height:					21px;
 	}
 	
 	h2.CDR
@@ -306,17 +304,17 @@
 	
 	h2.Payment
 	{
-		background-image:              url('img/template/payment_small.png');
+		background-image:              url('img/template/payment.png');
 	}
 	
 	h2.Email
 	{
-		background-image:              url('img/template/report_email.png');
+		background-image:              url('img/template/email.png');
 	}
 	
 	h2.Adjustment
 	{
-		background-image:              url('img/template/charge_small.png');
+		background-image:              url('img/template/charge.png');
 	}
 	h2.Address
 	{
@@ -330,12 +328,12 @@
 	
 	h2.Permissions
 	{
-		background-image:              url('img/template/console_admin_small.png');
+		background-image:              url('img/template/console_admin.png');
 	}
 	
 	h2.PDF
 	{
-		background-image:              url('img/template/pdf_small.png');
+		background-image:              url('img/template/pdf.png');
 	}
 	
 	h2.Archive
@@ -345,12 +343,12 @@
 	
 	h2.Notes
 	{
-		background-image:              url('img/template/note_small.png');
+		background-image:              url('img/template/note.png');
 	}
 	
 	h2.Note
 	{
-		background-image:              url('img/template/note_small.png');
+		background-image:              url('img/template/note.png');
 	}
 	
 	h2.Services
@@ -370,12 +368,12 @@
 	
 	h2.Employees
 	{
-		background-image:              url('img/template/contacts_small.png');
+		background-image:              url('img/template/contacts.png');
 	}
 	
 	h2.Employee
 	{
-		background-image:              url('img/template/contact_small.png');
+		background-image:              url('img/template/contact.png');
 	}
 	
 	h2.Contact
@@ -390,7 +388,7 @@
 	
 	h2.Account
 	{
-		background-image:              url('img/template/account_small.png');
+		background-image:              url('img/template/account.png');
 	}
 	
 	h2.Options
@@ -400,7 +398,7 @@
 	
 	h2.Invoice
 	{
-		background-image:              url('img/template/invoice_small.png');
+		background-image:              url('img/template/invoice.png');
 	}
 	
 	h2.Admin
@@ -421,6 +419,35 @@
 	h2.Bug
 	{
 		background-image:              url('img/template/lady-debug.png');
+	}
+	
+	h1
+	{
+		color:                #006599;
+		
+		font-size:            18pt;
+		
+		margin-top:           0;
+		
+		margin-bottom:			20px;
+		padding-bottom:			5px;
+		
+		border-bottom:			solid 1px #006599;
+	}
+	
+	h2
+	{
+		margin:              0;
+		font-size:           12pt;
+	}
+	
+	h3
+	{
+		margin-top:          20px;
+		margin-left:         0;
+		margin-right:        0;
+		margin-bottom:       0;
+		font-size:           12pt;
 	}
 	
 	.DeleteButton
@@ -787,34 +814,7 @@
 		width:					100%;
 	}
 	
-	h1
-	{
-		color:                #006599;
-		
-		font-size:            18pt;
-		
-		margin-top:           0;
-		
-		margin-bottom:			20px;
-		padding-bottom:			5px;
-		
-		border-bottom:			solid 1px #006599;
-	}
-	
-	h2
-	{
-		margin:              0;
-		font-size:           12pt;
-	}
-	
-	h3
-	{
-		margin-top:          20px;
-		margin-left:         0;
-		margin-right:        0;
-		margin-bottom:       0;
-		font-size:           12pt;
-	}
+
 	
 	form
 	{
