@@ -8,7 +8,10 @@ $strTemplate 	= $arrScript[0];
 $strMethod 		= $arrScript[1];
 
 // load framework
-require_once('require.php');
+require_once('../ui_app/require.php');
+
+// instanciate application
+$Application = Singleton::Instance('Application');
 
 // load application
 $TemplateName = $strTemplate .".". $strMethod;
