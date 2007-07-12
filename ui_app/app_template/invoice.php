@@ -116,39 +116,9 @@ class AppTemplateInvoice extends ApplicationTemplate
 			$strBillingPeriod = date("F", strtotime("2007-$intMonth-01")) . " " . $intYear;
 			$strCustomerGroup = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroup');
 			$strFromAddress = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroupEmail');
-			$strContent = INVOICE_EMAIL_CONTENT;
-			$strSubject = INVOICE_EMAIL_SUBJECT;
-			str_replace("%custgrp%", $strCustomerGroup, $strContent);
-			str_replace("%billperiod%", $strBillingPeriod, $strSubject);
+			$strContent = str_replace("<custgrp>", $strCustomerGroup, INVOICE_EMAIL_CONTENT);
+			$strSubject = str_replace("<billperiod>", $strBillingPeriod, INVOICE_EMAIL_SUBJECT);
 			$arrHeaders = Array	('From'=> $strFromAddress, 'Subject'	=> $strSubject);
-
-			
-			
-			/*switch (DBO()->Account->CustomerGroup->Value)
-	 		{
-				case CUSTOMER_GROUP_VOICETALK:
-					$arrHeaders = Array	(
-											'From'		=> "billing@voicetalk.com.au",
-											'Subject'	=> "Telephone Billing for $strBillingPeriod"
-										);
-					$strContent	=	"Please find attached your invoice from Voicetalk.\r\n\r\n" .
-									"Regards\r\n\r\n" .
-									"The Team at Voicetalk";
-					break;
-				default:
-					$arrHeaders = Array	(
-											'From'		=> "billing@telcoblue.com.au",
-											'Subject'	=> "Telephone Billing for $strBillingPeriod"
-										);
-					$strContent	=	"Please find attached your invoice from Telco Blue.\r\n\r\n" .
-									"Regards\r\n\r\n" .
-									"The Team at Telco Blue";
-					break;
-	 		}*/
-			if (DBO()->Account->FirstName->Value)
-		 	{
-		 		$strContent = "Dear ".DBO()->Account->FirstName->Value."\r\n\r\n" . $strContent;
-		 	}
 			
 			// Send them
 			foreach ($arrEmails as $strEmailAddress)
