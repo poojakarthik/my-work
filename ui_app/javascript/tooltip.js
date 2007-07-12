@@ -153,7 +153,7 @@ function VixenTooltipClass()
 			}
 		}
 		
-		function LeaveHandler(evt)
+		function LeaveHandler(evtHover)
 		{
 			if (evtHover.relatedTarget.id != 'VixenTooltip')
 			{
@@ -170,8 +170,8 @@ function VixenTooltipClass()
 		if (objClose)
 		{
 			// Close the tooltip
-			this.timer.push( window.setTimeout('document.getElementById("VixenTooltip").style.display = "none";', 500));
-			this.timer.push( window.setTimeout('Vixen.Tooltip.target = "";', 500));
+			this.timer.push( window.setTimeout('document.getElementById("VixenTooltip").style.display = "none";', 250));
+			this.timer.push( window.setTimeout('Vixen.Tooltip.target = "";', 250));
 		}
 	}
 
