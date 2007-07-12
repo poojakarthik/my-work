@@ -146,11 +146,19 @@ class AppTemplateNote extends ApplicationTemplate
 				// Save the note to the Note table of the vixen database
 				if (!DBO()->Note->Save())
 				{
-					DBO()->Status->Message = "The note did not save";
+					// The note could not be saved
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("Alert", "ERROR: The note did not save");
+					Ajax()->AddCommand('LoadCurrentPage');
+					return TRUE;
 				}
 				else
 				{
-					DBO()->Status->Message = "The note was successfully saved";
+					// The note was successfully saved
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("Alert", "The note has been successfully added");
+					Ajax()->AddCommand('LoadCurrentPage');
+					return TRUE;
 				}
 			}
 			else

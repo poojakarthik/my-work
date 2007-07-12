@@ -215,11 +215,10 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
 		
-		// create the submit button
+		// create the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		//echo "<input type='button' value='Close' class='InputSubmit' onclick='Vixen.Popup.Close(\"AddAdjustmentPopupId\");'/>\n";
-		$this->Button("Close", "Vixen.Popup.Close(\"AddAdjustmentPopupId\");");
+		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Adjustment");
 		echo "</div>\n";
 		

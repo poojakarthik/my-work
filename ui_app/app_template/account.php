@@ -193,11 +193,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->InvoicePayment->OrderBy("Id DESC");
 		DBL()->InvoicePayment->Load();
 		
-		DBL()->Charge->Account = DBO()->Account->Id->Value;
+		//"WHERE (Account = <accId>) AND (Status conditions)"
+		$strWhere  = "(Account = ". DBO()->Account->Id->Value .")";
+		$strWhere .= " AND ((Status = ". CHARGE_WAITING .")";
+		$strWhere .= " OR (Status = ". CHARGE_APPROVED .")";
+		$strWhere .= " OR (Status = ". CHARGE_TEMP_INVOICE .")";
+		$strWhere .= " OR (Status = ". CHARGE_INVOICED ."))";
+		DBL()->Charge->Where->SetString($strWhere);
 		DBL()->Charge->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->Charge->Load();
 		
 		DBL()->RecurringCharge->Account = DBO()->Account->Id->Value;
+		DBL()->RecurringCharge->Archived = 0;
 		DBL()->RecurringCharge->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->RecurringCharge->Load();
 		
@@ -261,6 +268,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				DBO()->DeleteRecord->Method = "DeleteAdjustment";
 				break;
 			case "RecurringAdjustment":
+				DBO()->RecurringCharge->Load();
 				DBO()->DeleteRecord->Description = "Are you sure you want to delete the recurring adjustment with Id: ". DBO()->RecurringCharge->Id->Value ." ?\n";
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteRecurringAdjustment";

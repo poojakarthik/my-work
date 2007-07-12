@@ -110,23 +110,42 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		{
 			case "Payment":
 				echo "<h2 class='Payment'>Delete Payment</h2>\n";
+				// Display the description for the delete operation
+				DBO()->DeleteRecord->Description->RenderValue();
 				DBO()->Payment->Id->RenderHidden();
 				break;
 			case "Adjustment":
 				echo "<h2 class='Adjustment'>Delete Adjustment</h2>\n";
+				// Display the description for the delete operation
+				DBO()->DeleteRecord->Description->RenderValue();
 				DBO()->Charge->Id->RenderHidden();
 				break;
 			case "RecurringAdjustment":
 				echo "<h2 class='Adjustment'>Delete Recurring Adjustment</h2>\n";
+				// Display the description for the delete operation
+				DBO()->DeleteRecord->Description->RenderValue();
+				
+				// calculate the amount owing on the recurring charge
+				$fltAmountOwing = DBO()->RecurringCharge->MinCharge->Value - DBO()->RecurringCharge->TotalCharged->Value;
+				
+				if ((DBO()->RecurringCharge->Nature->Value == NATURE_DR) && ($fltAmountOwing > 0.0))
+				{	
+					// The recurring charge is a debit.  A charge will be made to cover the remaining minimum cost, and cancellation fee
+					DBO()->DeleteRecord->Description->RenderArbitrary("Warning: Cancelling this adjustment will incur a cost to the customer");
+					
+					DBO()->RecurringCharge->MinCharge->RenderOutput();
+					DBO()->RecurringCharge->TotalCharged->RenderOutput();
+					DBO()->RecurringCharge->CancellationFee->RenderOutput();
+					
+					DBO()->RecurringCharge->TotalAdditionalCharge = $fltAmountOwing + DBO()->RecurringAdjustment->CancellationFee->Value;
+					DBO()->RecurringCharge->TotalAdditionalCharge->RenderOutput();
+				}
+				
 				DBO()->RecurringCharge->Id->RenderHidden();
 				break;
 			default:
 				die;
 		}
-		
-		// Display the description for the delete operation
-		DBO()->DeleteRecord->Description->RenderValue();
-				
 		
 		// display the textarea for the accompanying note
 		DBO()->Note->Note->RenderInput();
@@ -134,6 +153,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		// display the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Delete");
 		echo "</div>\n";
 		

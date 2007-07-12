@@ -102,11 +102,11 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 
 		// Check if the user has admin privileges
 		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
-		
+
 		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
 		$bolHasAdminPerm = TRUE;
 		//HACK HACK HACK!!!!
-		
+
 		// define the table's header
 		if ($bolHasAdminPerm)
 		{
@@ -159,6 +159,8 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			// add tooltip
 			$strToolTipHtml = $dboCharge->CreatedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
 			$strToolTipHtml .= $dboCharge->ApprovedBy->AsCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+			$strStatus = GetConstantDescription($dboCharge->Status->Value, "ChargeStatus");
+			$strToolTipHtml .= $dboCharge->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
 			$strToolTipHtml .= $dboCharge->Description->AsOutput();
 			$strToolTipHtml .= $dboCharge->Notes->AsOutput();
 			Table()->AdjustmentTable->SetToolTip($strToolTipHtml);

@@ -120,16 +120,18 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Save the adjustment to the charge table of the vixen database
 				if (!DBO()->Charge->Save())
 				{
-					DBO()->Status->Message = "The adjustment did not save";
+					// The adjustment did not save
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("Alert", "ERROR: The Adjustment did not save");
+					Ajax()->AddCommand('LoadCurrentPage');
+					return TRUE;
 				}
 				else
 				{
-					DBO()->Status->Message = "The adjustment was successfully saved";
-					
-					Ajax()->AddCommand("ClosePopup", "AddAdjustmentPopupId");
+					// The adjustment was successfully saved
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("Alert", "The Adjustment has been successfully added");
 					Ajax()->AddCommand('LoadCurrentPage');
-					
 					return TRUE;
 				}
 			}
@@ -243,13 +245,16 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Save the recurring adjustment to the charge table of the vixen database
 				if (!DBO()->RecurringCharge->Save())
 				{
-					DBO()->Status->Message = "The recurring adjustment did not save";
+					// The recurring adjustment did not save
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("Alert", "ERROR: The recurring adjustment did not save");
+					Ajax()->AddCommand('LoadCurrentPage');
+					return TRUE;
 				}
 				else
 				{
-					DBO()->Status->Message = "The recurring adjustment was successfully saved";
-
-					Ajax()->AddCommand("ClosePopup", "AddRecurringAdjustmentPopupId");
+					// The recurring adjustment was successfully saved
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("Alert", "The recurring adjustment has been successfully added");
 					Ajax()->AddCommand('LoadCurrentPage');
 					return TRUE;
@@ -466,13 +471,16 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					Ajax()->AddCommand("LoadCurrentPage");
 					return TRUE;
 				}
-				
 				// The recurring charge was successfully updated.
 				
+				// Calculate the amount left owing on the recurring adjustment
+				$fltAmountOwing = DBO()->RecurringCharge->MinCharge->Value - DBO()->RecurringCharge->TotalCharged->Value;
+				
 				// Add a new debit charge if the Recurring Charge was a Debit and there is still money left owing on it
-				if (DBO()->RecurringCharge->Nature->Value == NATURE_DR)
+				if ((DBO()->RecurringCharge->Nature->Value == NATURE_DR) && ($fltAmountOwing > 0.0))
 				{
-					$fltChargeAmount = (DBO()->RecurringCharge->MinCharge->Value - DBO()->RecurringCharge->TotalCharged->Value) + DBO()->RecurringCharge->CancellationFee->Value;
+					// The additional charge is equal to the money left owing plus the cancellation fee
+					$fltChargeAmount = $fltAmountOwing + DBO()->RecurringCharge->CancellationFee->Value;
 					DBO()->Charge->AccountGroup = DBO()->RecurringCharge->AccountGroup->Value;
 					DBO()->Charge->Account = DBO()->RecurringCharge->Account->Value;
 					DBO()->Charge->Service = DBO()->RecurringCharge->Service->Value;

@@ -194,10 +194,10 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
 		
-		// create the submit button
+		// create the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		echo "<input type='button' value='Close' name='VixenPopupButtonId' class='InputSubmit' onclick=\"Vixen.Popup.Close('MakePaymentPopupId');\"></input>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Make Payment");
 		echo "</div>\n";
 		

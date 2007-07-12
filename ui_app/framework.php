@@ -2135,6 +2135,7 @@ class MenuItems
 		// Setup data to send
 		$arrData['Objects']['DeleteRecord']['RecordType'] = "Payment";
 		$arrData['Objects']['Payment']['Id'] = $intPaymentId;
+		
 				
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -2162,7 +2163,7 @@ class MenuItems
 	function DeleteAdjustment($intAdjustmentId)
 	{
 		$this->strLabel	= "delete adjustment: $intAdjustmentId";
-		
+				
 		// Setup data to send
 		$arrData['Objects']['DeleteRecord']['RecordType'] = "Adjustment";
 		$arrData['Objects']['Charge']['Id'] = $intAdjustmentId;

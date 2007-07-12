@@ -17,16 +17,6 @@ function VixenPopupClass()
 {
 	this.strContentCode = "";
 	
-	this.objDeleteData = 
-	{
-		Payment:
-		{
-			strDescription:			"This is the Delete Payment Description",
-			strApplcationTemplate:	"Account",
-			strDeleteMethod:		"DeletePayment"
-		}
-	};
-
 	this.ViewContentCode = function()
 	{
 		//Vixen.debug = TRUE;
@@ -291,31 +281,6 @@ function VixenPopupClass()
 		Vixen.Ajax.Send(objParams);
 	}
 	
-	this.DeleteRecordPopup = function(strPopupId, strRecordType, objParams)
-	{
-		var strPopupContent;
-		
-		//alert("DeleteRecordPopup(): objDeleteData['Payment'].Description = '"+ this.objDeleteData['Payment'].strDescription +"'");
-		
-		//create the content for the popup 
-		
-		//var elmPopupContent = document.createElement('div');
-		//elmPopupContent.setAttribute("class", "PopupMedium");
-		//elmPopupContent.innerHtml = "Hello World";
-		
-		var strDescription = this.objDeleteData[strRecordType].Description;
-		
-		
-		strPopupContent  = "<div class='PopupMedium'><h2>Delete "+ strRecordType +"</h2>\n"
-		strPopupContent += "<div class='DefaultOutput Default'>"+ this.objDeleteData[strRecordType].Description +"</div>\n";
-		strPopupContent += "</div>\n";
-		
-		
-		
-		this.Create(strPopupId, strPopupContent, "medium", "centre", "modal");
-		
-		
-	}
 	
 }
 

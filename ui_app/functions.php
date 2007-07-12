@@ -516,6 +516,10 @@ function GetEmployeeName($intEmployeeId)
 		// build the employee's name
 		$strName = $GLOBALS['*arrEmployee'][$intEmployeeId]['FirstName'] ." ". $GLOBALS['*arrEmployee'][$intEmployeeId]['LastName'];
 	}
+	elseif ($intEmployeeId === SYSTEM_EMPLOYEE_ID)
+	{
+		$strName = SYSTEM_EMPLOYEE_NAME;
+	}
 	else
 	{
 		$strName = NULL;

@@ -92,4 +92,9 @@ define('RENDER_VALUE',	"Value");
 define('RENDER_OUTPUT',	"Output");
 define('RENDER_INPUT',	"Input");
 
+// constant Employee Ids
+define('SYSTEM_EMPLOYEE_ID',	0);
+define('SYSTEM_EMPLOYEE_NAME', 	"Automated System");
+
+
 ?>

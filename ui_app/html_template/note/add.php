@@ -171,7 +171,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		// create the submit button
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		echo "<input type='button' value='Close' class='InputSubmit' onclick=\"Vixen.Popup.Close('AddNotePopupId');\"></input>\n";
+		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Note");
 		echo "</div>\n";
 		
