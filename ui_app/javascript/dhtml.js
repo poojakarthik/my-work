@@ -363,6 +363,7 @@ function dragGo(event) {
 	}
 	else
 	{
+		window.status = "bottom : " + drag_top + " - " + dragObj.elNode.limits.drag_bottom + " right : " + drag_left + " - " + dragObj.elNode.limits.drag_right;
 		if (dragObj.elNode.limits.drag_horizontal !== FALSE)
 		{
 			if (dragObj.elNode.limits.drag_left && drag_left < dragObj.elNode.limits.drag_left)
