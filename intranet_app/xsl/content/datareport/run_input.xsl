@@ -349,13 +349,31 @@
 							<table border="0" cellpadding="3" cellspacing="0">
 								<tr>
 									<td>
-										<input type="radio" value="0" name="outputcsv" checked="checked"/>
+										<input type="radio" value="0" name="outputcsv">
+											<xsl:if test="/Response/ForceRenderTarget = 0 or not(string(/Response/ForceRenderTarget))">
+												<xsl:attribute name="checked">
+														<xsl:text>checked</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+											<xsl:if test="string(/Response/ForceRenderTarget) and /Response/ForceRenderTarget = 1">
+												<xsl:attribute name="disabled" />
+											</xsl:if>
+										</input>
 									</td>
 									<th>Excel 5 (XLS)</th>
 								</tr>
 								<tr>
 									<td>
-										<input type="radio" value="1" name="outputcsv" />
+										<input type="radio" value="1" name="outputcsv">
+											<xsl:if test="/Response/ForceRenderTarget = 1">
+												<xsl:attribute name="checked">
+														<xsl:text>checked</xsl:text>
+												</xsl:attribute>
+											</xsl:if>
+											<xsl:if test="string(/Response/ForceRenderTarget) and /Response/ForceRenderTarget = 0">
+												<xsl:attribute name="disabled" />
+											</xsl:if>
+										</input>
 									</td>
 									<th>CSV</th>
 								</tr>

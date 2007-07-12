@@ -1159,6 +1159,11 @@ $GLOBALS['*arrConstant']	['ReportMode']	[802]	['Description']	= 'Nothing';
 // CLI Console Docked
 define("CONSOLE_DOCKED"		, DONKEY);
 
+
+
+// Special paths
+define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
+
 // Define all Constants
 foreach ($GLOBALS['*arrConstant'] AS $arrConstants)
 {

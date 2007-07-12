@@ -28,12 +28,6 @@
  */
  
  // Framework Requirements
-require_once("../framework/require.php");
-require_once("../framework/cli_interface.php");
-
-// Application Requirements
-require_once("application.php");
-require_once("definitions.php");
-require_once("config.php");
+VixenRequire("framework/cli_interface.php");
  
  ?>

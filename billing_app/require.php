@@ -20,18 +20,22 @@
  * @file		require.php
  * @language	PHP
  * @package		framework
- * @author		Jared 'flame' Herbohn
- * @version		7.04
+ * @author		Rich 'Waste' Davis
+ * @version		7.07
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
- 
-// load modules
-$strApplicationDir = "payment_app/modules/";
-VixenRequire($strApplicationDir."base_module.php");
-VixenRequire($strApplicationDir."module_billexpress.php");
-VixenRequire($strApplicationDir."module_bpay.php");
-VixenRequire($strApplicationDir."module_securepay.php");
 
-?>
+$strModuleDir = "billing_app/modules/";
+
+// load printing modules
+VixenRequire($strModuleDir."module_printing.php");
+VixenRequire($strModuleDir."module_etech.php");
+
+// load charge modules
+VixenRequire($strModuleDir."charge_base.php");
+VixenRequire($strModuleDir."charge_latepayment.php");
+VixenRequire($strModuleDir."charge_nonddr.php");
+
+ ?>

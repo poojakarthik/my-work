@@ -28,4 +28,4 @@
 require_once("require.php");
 
 $appManagement = new ApplicationManagement($arrConfig);
-$appManagement->RebillCDRs(39381, 39225, "2007-02-13");
+$appManagement->RebillCDRs(37935, 39225, "2007-02-13");

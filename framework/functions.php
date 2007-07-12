@@ -1662,6 +1662,107 @@ function AjaxReply($arrReply)
 }
 
 
+
+//------------------------------------------------------------------------//
+// VixenRequire()
+//------------------------------------------------------------------------//
+/**
+ * VixenRequire()
+ * 
+ * require_once's a viXen file.
+ * 
+ * require_once's a viXen file, relative to the vixen base path.
+ *
+ * @param	string	$strFilename			The viXen-relative path to include
+ *
+ * @function
+ */
+function VixenRequire($strFilename)
+{
+	// Make sure we have a base path to work from
+	if (!$GLOBALS['**strVixenBasePath'])
+	{
+		if (defined(VIXEN_BASE_DIR))
+		{
+			$GLOBALS['**strVixenBasePath'] = VIXEN_BASE_DIR;
+		}
+		else
+		{
+			// Interpret current dir
+			$arrPath = explode('/', getcwd());
+			$strVixenRoot	= "/";
+			$strCurrent		= "";
+			foreach ($arrPath as $strDir)
+			{
+				$strCurrent .= "$strDir/";
+				if ($strDir === "vixen")
+				{
+					$strVixenRoot = $strCurrent;
+				}
+			}
+			
+			$GLOBALS['**strVixenBasePath'] = $strVixenRoot;
+		}
+	}
+	
+	require_once($GLOBALS['**strVixenBasePath'].$strFilename);
+	return TRUE;
+}
+
+
+//------------------------------------------------------------------------//
+// GetVixenBase()
+//------------------------------------------------------------------------//
+/**
+ * GetVixenBase()
+ * 
+ * Finds the viXen base directory
+ * 
+ * Finds the viXen base directory.  Throws an exception if it can't resolve path
+ *
+ * @return		string			Full viXen base path
+ *
+ * @function
+ */
+function GetVixenBase()
+{
+	// Determin base dir
+	if (!$GLOBALS['**strVixenBasePath'])
+	{
+		if (defined(VIXEN_BASE_DIR))
+		{
+			$GLOBALS['**strVixenBasePath'] = VIXEN_BASE_DIR;
+		}
+		else
+		{
+			// Interpret current dir
+			$arrPath = explode('/', getcwd());
+			$strVixenRoot	= "/";
+			$strCurrent		= "";
+			foreach ($arrPath as $strDir)
+			{
+				$strCurrent .= "$strDir/";
+				if ($strDir === "vixen")
+				{
+					$strVixenRoot = $strCurrent;
+				}
+			}
+			
+			// Set path
+			if ($strVixenRoot !== '/')
+			{
+				$GLOBALS['**strVixenBasePath'] = $strVixenRoot;
+			}
+			else
+			{
+				throw new Exception("Cannot find viXen base path");
+			}
+		}
+	}
+	return $GLOBALS['**strVixenBasePath'];
+}
+
+
 //------------------------------------------------------------------------//
 // LoadFramework
 //------------------------------------------------------------------------//
@@ -1678,20 +1779,10 @@ function AjaxReply($arrReply)
  */
 function LoadFramework($strFrameworkDir=NULL)
 {
-	if (is_null($strFrameworkDir))
+	// Get viXen base dir
+	if (!$strFrameworkDir)
 	{
-		if (defined(VIXEN_BASE_DIR))
-		{
-			rtrim(VIXEN_BASE_DIR, '/').'/framework/';
-		}
-		else
-		{
-			$strFrameworkDir = "../framework/";
-		}
-	}
-	else
-	{
-		$strFrameworkDir = rtrim($strFrameworkDir, '/').'/';
+		$strFrameworkDir = GetVixenBase();
 	}
 	
 	// load framework
@@ -1709,6 +1800,9 @@ function LoadFramework($strFrameworkDir=NULL)
 	
 	// PEAR Packages
 	require_once("Console/Getopt.php");
+	require_once("Spreadsheet/Excel/Writer.php");
+	require_once("Mail.php");
+	require_once("Mail/Mime.php");
 	
 	// create framework instance
 	$GLOBALS['fwkFramework'] = new Framework();
@@ -1732,9 +1826,14 @@ function LoadFramework($strFrameworkDir=NULL)
  */
 function LoadApplication($strApplication=NULL)
 {
-	$strApplicationDir = '';
+	// Has the framework been loaded?
+	if (!$GLOBALS['fwkFramework'])
+	{
+		LoadFramework();
+	}
 	
 	// no application specified
+	$strApplicationDir = '';
 	if (!$strApplication)
 	{
 		// load from current dir
@@ -1743,40 +1842,14 @@ function LoadApplication($strApplication=NULL)
 		return TRUE;
 	}
 	
-	// set the base dir
-	if (defined(VIXEN_BASE_DIR) && trim(VIXEN_BASE_DIR, '/'))
-	{
-		$strApplicationDir = rtrim(VIXEN_BASE_DIR, '/').'/';
-	}
-	else
-	{
-		// Interpret current dir
-		$arrPath = explode('/', getcwd());
-		$strVixenRoot	= "/";
-		$strCurrent		= "";
-		foreach ($arrPath as $strDir)
-		{
-			$strCurrent .= "$strDir/";
-			if ($strDir === "vixen")
-			{
-				$strVixenRoot = $strCurrent;
-			}
-		}
-		$strApplicationDir = $strVixenRoot;
-	}
-	
 	// set application dir
-	//$strApplicationDir .= "application_".strtolower(trim($strApplication, '/')).'/';
-	$strApplicationDir .= $strApplication."/";
-	
-	//Debug($strApplicationDir);
+	$strApplicationDir = $strApplication."/";
 	
 	// require application
-	require_once($strApplicationDir."require.php");
-	require_once($strApplicationDir."application.php");
-	require_once($strApplicationDir."definitions.php");
-	require_once($strApplicationDir."config.php");
-	
+	VixenRequire($strApplicationDir."require.php");
+	VixenRequire($strApplicationDir."application.php");
+	VixenRequire($strApplicationDir."definitions.php");
+	VixenRequire($strApplicationDir."config.php");
 	return TRUE;
 }
 

@@ -24,13 +24,13 @@ CliEcho("\n[ Generating Debug Data ]\n");
 
 // Email Invoice Total Data
 CliEcho(" + Calculating Profit Data...");
-if ($arrResponse = $appBilling->CalculateProfitData())
-//if ($arrResponse = $appBilling->CalculateProfitData("468865b79ffa3", TRUE))
+//if ($arrResponse = $appBilling->CalculateProfitData())
+if ($arrResponse = $appBilling->CalculateProfitData("468865b79ffa3", TRUE))
 {
 	
 	CliEcho(" + Calculating Debug Data...");
-	$selBillingDebug = new StatementSelect("InvoiceTemp", "DueOn, COUNT(Id) AS InvoiceCount, SUM(Total) + SUM(Tax) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR Invoice.TotalOwing != 0)", "DueOn", NULL, "DueOn");
-	//$selBillingDebug = new StatementSelect("Invoice", "DueOn, COUNT(Id) AS InvoiceCount, (SUM(Total) + SUM(Tax)) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR Invoice.TotalOwing != 0)", "DueOn", NULL, "DueOn");
+	//$selBillingDebug = new StatementSelect("InvoiceTemp", "DueOn, COUNT(Id) AS InvoiceCount, SUM(Total) + SUM(Tax) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR Invoice.TotalOwing != 0)", "DueOn", NULL, "DueOn");
+	$selBillingDebug = new StatementSelect("Invoice", "DueOn, COUNT(Id) AS InvoiceCount, (SUM(Total) + SUM(Tax)) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR Invoice.TotalOwing != 0)", "DueOn", NULL, "DueOn");
 	$selBillingDebug->Execute($arrResponse);
 	$arrBillingDebug = $selBillingDebug->FetchAll();
 	
@@ -60,31 +60,32 @@ if ($arrResponse = $appBilling->CalculateProfitData())
 	$strContent	=	"Invoice Total Data for {$arrResponse['BillingDate']} Invoice Run\n\n" .
 					"\t+ InvoiceRun\t\t\t: {$arrResponse['InvoiceRun']}\n" .
 					"\t+ Invoice Count\t\t\t: {$arrResponse['InvoiceCount']}\n" .
-					"\t+ Total Cost\t\t\t: \${$arrResponse['BillCost']}\n" .
-					"\t+ Total Rated\t\t\t: \${$arrResponse['BillRated']}\n" .
-					"\t+ Total Invoiced (ex Tax)\t: \${$arrResponse['BillInvoiced']}\n" .
-					"\t+ Total Taxed\t\t\t: \${$arrResponse['BillTax']}\n" .
+					"\t+ Total Cost\t\t\t: \$".sprintf("%01.2f", $arrResponse['BillCost'])."\n" .
+					"\t+ Total Rated\t\t\t: \$".sprintf("%01.2f", $arrResponse['BillRated'])."\n" .
+					"\t+ Total Invoiced (ex Tax)\t: \$".sprintf("%01.2f", $arrResponse['BillInvoiced'])."\n" .
+					"\t+ Total Taxed\t\t\t: \$".sprintf("%01.2f", $arrResponse['BillTax'])."\n" .
+					"\t+ Gross Profit (ex Tax)\t\t: \$".sprintf("%01.2f", $arrResponse['GrossProfit'])."\n" .
 					"\t+ Profit Margin\t\t\t: {$arrResponse['ProfitMargin']}\n\n" .
 					str_repeat("=", 80) .
-					"\n\nBilling Debug by Due Date\n\n" .
+					"\n\nBilling Data by Due Date\n\n" .
 					"\t  Due Date\tInvoice Count\tInvoice Total (inc Tax)\t\tTotal Owing\n";
 					
 	foreach ($arrBillingDebug as $arrDebug)
 	{
-		$strContent .= "\t+ {$arrDebug['DueOn']}\t{$arrDebug['InvoiceCount']}\t\t\${$arrDebug['TotalInvoiced']}\t\t\t\${$arrDebug['TotalOwing']}\n";	
+		$strContent .= "\t+ {$arrDebug['DueOn']}\t{$arrDebug['InvoiceCount']}\t\t\$".sprintf("%01.2f", $arrDebug['TotalInvoiced'])."\t\t\t\$".sprintf("%01.2f", $arrDebug['TotalOwing'])."\n";	
 	}
 	
 	$strContent	.=	"\n\n" .
 					str_repeat("=", 80) .
-					"\n\nCharge Debug Data (Totals are inc Tax)\n\n" .
-					"\t+ Late Payment (LPmmyy)\tCount: {$arrChargeDebug['LPCount']};\tTotal: \${$arrChargeDebug['LPTotal']}\n" .
-					"\t+ Non-DDR (AP250)\tCount: {$arrChargeDebug['APCount']};\tTotal: \${$arrChargeDebug['APTotal']}\n" .
-					"\t+ LL S&E Creditts (SEC)\tCount: {$arrChargeDebug['SECCount']};\tTotal: \${$arrChargeDebug['SECTotal']}\n" .
-					"\t+ Inbound Fee (INB15)\tCount: {$arrChargeDebug['INBCount']};\tTotal: \${$arrChargeDebug['INBTotal']}\n\n" .
-					"\t+ Misc Credit\t\tCount: {$arrChargeDebug['OtherCRCount']};\tTotal: \${$arrChargeDebug['OtherCRTotal']}\n" .
-					"\t+ Misc Debit\t\tCount: {$arrChargeDebug['OtherDRCount']};\tTotal: \${$arrChargeDebug['OtherDRTotal']}\n\n" .
-					"\t+ Credit\t\tCount: {$arrChargeDebug['CRCount']};\tTotal: \${$arrChargeDebug['CRTotal']}\n" .
-					"\t+ Debit\t\t\tCount: {$arrChargeDebug['DRCount']};\tTotal: \${$arrChargeDebug['DRTotal']}\n";
+					"\n\nCharge Data (Totals are inc Tax)\n\n" .
+					"\t+ Late Payment (LPmmyy)\tCount: {$arrChargeDebug['LPCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['LPTotal'])."\n" .
+					"\t+ Non-DDR (AP250)\tCount: {$arrChargeDebug['APCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['APTotal'])."\n" .
+					"\t+ LL S&E Creditts (SEC)\tCount: {$arrChargeDebug['SECCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['SECTotal'])."\n" .
+					"\t+ Inbound Fee (INB15)\tCount: {$arrChargeDebug['INBCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['INBTotal'])."\n\n" .
+					"\t+ Misc Credit\t\tCount: {$arrChargeDebug['OtherCRCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['OtherCRTotal'])."\n" .
+					"\t+ Misc Debit\t\tCount: {$arrChargeDebug['OtherDRCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['OtherDRTotal'])."\n\n" .
+					"\t+ Total Credit\t\tCount: {$arrChargeDebug['CRCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['CRTotal'])."\n" .
+					"\t+ Total Debit\t\tCount: {$arrChargeDebug['DRCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['DRTotal'])."\n";
 	
 	$arrHeaders = Array	(
 							'From'		=> "billing@telcoblue.com.au",

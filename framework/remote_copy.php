@@ -313,7 +313,7 @@
  		
  		// Is $strLocalPath a file or directory?
  		if (is_file($strLocalPath))
- 		{
+ 		{ 			
  			// move to the right directory
  			chdir(rtrim($strLocalPath, basename($strLocalPath)));
  			

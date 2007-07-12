@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2006 VOIPTEL Pty Ltd
+// (c) copyright 2006-7 VOIPTEL Pty Ltd
 //
 // NOT FOR EXTERNAL DISTRIBUTION
 //----------------------------------------------------------------------------//
@@ -12,7 +12,7 @@
 /**
  * config
  *
- * Config Definitions
+ * Per-Customer Config Definitions
  *
  * This file exclusively declares global config constants
  *
@@ -20,7 +20,7 @@
  * @language	PHP
  * @package		framework
  * @author		Rich Davis
- * @version		6.10
+ * @version		7.07
  * @copyright	2006 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -31,25 +31,14 @@
 // CONFIG
 //----------------------------------------------------------------------------//
 
- 
-// Reporting constants
-define("AUTOMATED_REPORT_HEADER", 	"===================================\n" .
-									"THIS IS AN AUTOMATED REPORT MESSAGE\n" .
-									"===================================\n\n");
-									
-define("AUTOMATED_REPORT_FOOTER", 	"\n -- END OF REPORT --\n");
-
 // Data Access constants
-// MOVED TO /etc/vixen/vixen.conf
 // run setup_scripts/config.sh as root to add a default config file
 if (!@include_once("/etc/vixen/vixen.conf"))
 {
 	echo "Missing config script";
-	Die;
+	die;
 }
 
+$GLOBALS['**arrVixenConfig'] = Array();
 
-define("DATABASE_ERROR_TABLE", "Error");
-
-define("PATH_PAYMENT_UPLOADS"			, "/home/vixen_payments/");
 ?>

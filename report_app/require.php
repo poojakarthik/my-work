@@ -27,17 +27,4 @@
  *
  */
  
- // Framework Requirements
-require_once("../framework/require.php");
-
-// Application Requirements
-require_once("application.php");
-require_once("definitions.php");
-require_once("config.php");
-
-// Module Requirements
-require_once("Spreadsheet/Excel/Writer.php");
-require_once("Mail.php");
-require_once("Mail/mime.php");
- 
  ?>

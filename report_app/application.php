@@ -123,6 +123,21 @@
 				Debug($selReport->_strQuery);
 			}
 			$arrData = $selReport->FetchAll();
+			
+			// Check for overrides
+			$arrDataReport['Overrides']	= ($arrDataReport['Overrides']) ? unserialize($arrDataReport['Overrides']) : Array();
+			$arrDataReport['Overrides']['Delimeter']	= ($arrDataReport['Overrides']['Delimeter']) ? $arrDataReport['Overrides']['Delimeter'] : ';';
+			$arrDataReport['Overrides']['Enclose']		= ($arrDataReport['Overrides']['Enclose']) ? $arrDataReport['Overrides']['Enclose'] : '"';
+			$arrDataReport['Overrides']['NoTitles']		= ($arrDataReport['Overrides']['NoTitles']) ? $arrDataReport['Overrides']['Delimeter'] : FALSE;
+			
+			if (!$arrDataReport['Overrides']['Extension'])
+			{
+				switch ($arrReport['RenderTarget'])
+				{
+					case REPORT_TARGET_CSV:
+				}
+			}
+			
 			//Debug($arrData);
 			//Debug($arrDataReport);
 			//Debug($arrWhere);
@@ -133,12 +148,14 @@
 				switch ($arrReport['RenderTarget'])
 				{
 					case REPORT_TARGET_CSV:
+						$arrDataReport['Overrides']['Extension'] = ($arrDataReport['Overrides']['Extension']) ? $arrDataReport['Overrides']['Extension'] : 'csv';
 						$arrReport['Status'] = ($arrReturn = $this->ExportCSV($arrData, $arrDataReport, $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
 						$strFile = $arrReturn['FileName'];
 						$strMime = 'text/csv';
 						break;
 					
 					case REPORT_TARGET_XLS:
+						$arrDataReport['Overrides']['Extension'] = ($arrDataReport['Overrides']['Extension']) ? $arrDataReport['Overrides']['Extension'] : 'xls';
 						$arrReport['Status'] = ($strFile = $this->ExportXLS($arrData, $arrDataReport, $arrReport)) ? REPORT_GENERATED : REPORT_GENERATE_FAILED;
 						$strMime = 'application/x-msexcel';
 						break;
@@ -277,22 +294,27 @@
  		{
  			$strPath = $strName;
  		}
- 		$strDelimiter	= ';';
+ 		$strDelimiter	= $arrReport['Overrides']['Delimiter'];
+ 		$strEnclose		= $arrReport['Overrides']['Enclose'];
 		
  		// Set column headers
- 		$arrColumns		= array_keys($arrData[0]);
- 		foreach ($arrColumns as $strColumn)
+ 		if (!$arrReport['Overrides']['NoTitles'])
  		{
- 			$strReturn .= ($bolSave) ? fwrite($ptrFile, "\"$strColumn\"$strDelimiter") : "\"$strColumn\"$strDelimiter";
+	 		$arrColumns		= array_keys($arrData[0]);
+	 		foreach ($arrColumns as $strColumn)
+	 		{
+	 			$strReturn .= ($bolSave) ? fwrite($ptrFile, "{$strEnclose}$strColumn{$strEnclose}$strDelimiter") : "{$strEnclose}$strColumn{$strEnclose}$strDelimiter";
+	 		}
+	 		
+	 		$strReturn .= ($bolSave) ? fwrite($ptrFile, "\n") : "\n";
  		}
- 		$strReturn .= ($bolSave) ? fwrite($ptrFile, "\n") : "\n";
  		
  		// Write the data
  		foreach ($arrData as $arrRow)
  		{
  			foreach ($arrRow as $mixField)
  			{
- 				$strReturn .= ($bolSave) ? fwrite($ptrFile, "\"{$mixField}\"$strDelimiter") : "\"{$mixField}\"$strDelimiter";
+ 				$strReturn .= ($bolSave) ? fwrite($ptrFile, "{$strEnclose}{$mixField}{$strEnclose}$strDelimiter") : "{$strEnclose}{$mixField}{$strEnclose}$strDelimiter";
  			}
  			$strReturn .= ($bolSave) ? fwrite($ptrFile, "\n") : "\n";
  		}
@@ -684,15 +706,23 @@
  		
  		$strFileName .= " - " . date("d M Y h:i:s A");
  		
- 		switch ($arrReportParameters['RenderTarget'])
+ 		// Add file extension
+ 		if ($arrReport['Overrides']['Extension'])
  		{
- 			case REPORT_TARGET_XLS:
- 				$strFileName .= ".xls";
- 				break;
- 			
- 			case REPORT_TARGET_CSV:
- 				$strFileName .= ".csv";
- 				break;
+ 			$strFileName .= $arrReport['Overrides']['Extension'];
+ 		}
+ 		else
+ 		{
+	 		switch ($arrReportParameters['RenderTarget'])
+	 		{
+	 			case REPORT_TARGET_XLS:
+	 				$strFileName .= ".xls";
+	 				break;
+	 			
+	 			case REPORT_TARGET_CSV:
+	 				$strFileName .= ".csv";
+	 				break;
+	 		}
  		}
  		
  		return $strFileName;

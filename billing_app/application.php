@@ -140,6 +140,9 @@
 															  		NULL,
 															  		"2",
 															  		"Nature");
+															  		
+		// service silos
+		$this->selSilos	= new StatementSelect("Silo", "*", "RatePlan = <RatePlan> AND RecordType = <RecordType>");
 
 		// Init Update Statements
 		$this->arrCDRCols = Array();
@@ -353,14 +356,18 @@
 		$arrUpdateData['InvoiceRun']	= '';
 		$arrUpdateData['Status']		= '';
 		$updChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
-		$selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
-													"Rate.Uncapped AS Uncapped, SUM(CDR.Charge) AS Charge, SUM(CDR.Cost) AS Cost",
+		$selCDRTotals		= new StatementSelect(	"(CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)) JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service) LEFT JOIN Silo USING (RatePlan, RecordType)",
+													"SUM(CASE WHEN Rate.Uncapped THEN CDR.Charge ELSE 0 END) AS UncappedCharge, " .
+													"SUM(CASE WHEN Rate.Uncapped THEN CDR.Cost ELSE 0 END) AS UncappedCost, " .
+													"SUM(CASE WHEN Rate.Uncapped THEN 0 ELSE CDR.Charge END) AS CappedCharge, " .
+													"SUM(CASE WHEN Rate.Uncapped THEN 0 ELSE CDR.Cost END) AS CappedCost, " .
+													"CDR.RecordType AS RecordType, Silo.Cap AS SiloCap",
 													"CDR.Service = <Service> AND " .
 													"CDR.Credit = 0".
 													" AND CDR.Status = ".CDR_TEMP_INVOICE ,
 													NULL,
 													NULL,
-													"Rate.Uncapped");
+													"CDR.RecordType, Rate.Uncapped");
 		
 		// Loop through the accounts we're billing
 		foreach ($arrAccounts as $arrAccount)
@@ -478,21 +485,24 @@
 				$fltUncappedCDRCost		= 0.0;
 				$fltCappedCDRCost		= 0.0;
 				
-				// get capped & uncapped charges
-				$selCDRTotals->Execute(Array('Service' => $arrService['Service']));
+				// get capped & uncapped charges & apply silo discounts
+				$selCDRTotals->Execute($arrService);
 				$arrCDRTotals = $selCDRTotals->FetchAll();
-
 				foreach($arrCDRTotals as $arrCDRTotal)
 				{
-					if ($arrCDRTotal['Uncapped'])
+					$fltCappedCDRCost		+= $arrCDRTotal['CappedCost'];
+					$fltUncappedCDRCost		+= $arrCDRTotal['UncappedCost'];
+					
+					if ($arrCDRTotal['SiloCap'])
 					{
-						$fltUncappedCDRCharge	= $arrCDRTotal['Charge'];
-						$fltUncappedCDRCost		= $arrCDRTotal['Cost'];
+						// Apply Silo Discount
+						$fltCappedCDRCharge		+= max(0.0, ($arrCDRTotal['UncappedCharge'] + $arrCDRTotal['CappedCharge']) - $arrCDRTotal['SiloCap']);
 					}
 					else
 					{
-						$fltCappedCDRCharge		= $arrCDRTotal['Charge'];
-						$fltCappedCDRCost		= $arrCDRTotal['Cost'];
+						// No Silo, just add to Capped/Uncapped totals
+						$fltUncappedCDRCharge	+= $arrCDRTotal['UncappedCharge'];
+						$fltCappedCDRCharge		+= $arrCDRTotal['CappedCharge'];
 					}
 				}
 
@@ -2216,7 +2226,7 @@
 		 			if (!$emlMail->send($strEmail, $strHeaders, $strBody))
 		 			{
 		 				$this->_rptBillingReport->AddMessage("[ FAILED ]\n\t\t\t-Reason: Mail send failed");
-						Die();
+						//Die();
 		 				continue;
 		 			}
 					
@@ -2609,6 +2619,7 @@
 			$arrInvoiceRun['Id'] = $insInvoiceRun->Execute($arrInvoiceRun);
 		}
 		
+		$arrInvoiceRun['GrossProfit']	= $arrInvoiceRun['BillInvoiced'] - $arrInvoiceRun['BillCost'];
 		$arrInvoiceRun['ProfitMargin']	= round((($arrInvoiceRun['BillInvoiced'] - $arrInvoiceRun['BillCost']) / abs($arrInvoiceRun['BillInvoiced'])) * 100, 2)."%";
 		return $arrInvoiceRun;
 	 }

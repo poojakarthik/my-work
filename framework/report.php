@@ -219,10 +219,6 @@ class Report
 		unset($this->_arrLines);
 		$this->_arrLines = Array();
 		return 0;
-		
-		// Create the final email message from _arrLines, _strTitle,
-		//									 and a predifined message
-		$strEmailMessage = 	AUTOMATED_REPORT_HEADER;
 				
 		// Loop through _arrLines, appending each line to the email.
 		// Using "for" loop instead of "foreach" for improved performance
@@ -230,8 +226,6 @@ class Report
 		{
 			$strEmailMessage .= $this->_arrLines[$i];
 		}
-		
-		$strEmailMessage .= AUTOMATED_REPORT_FOOTER;
 		
 		// set sender address
 		$strMailHeaders = "From: {$this->_strEmailFrom}";

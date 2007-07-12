@@ -754,7 +754,7 @@ $arrSQLFields['EndDate']	= Array(
 									);
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
 */
-
+/*
 //----------------------------------------------------------------------------//
 // Services without a current Plan
 //----------------------------------------------------------------------------//
@@ -781,6 +781,117 @@ $arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
 // SQL Fields
 $arrSQLFields = Array();
 $arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+/*
+//----------------------------------------------------------------------------//
+// Invoiced Accounts for a Billing Period
+//----------------------------------------------------------------------------//
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Invoiced Accounts for a Billing Period";
+$arrDataReport['Summary']		= "Lists the Accounts which had Invoices generated for them, and their Bill Total (not Total Owing), for a given Billing Period.  NOTE: 'Start Date' must be the first date in the month, and 'End Date' the last date.";
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Invoice";
+$arrDataReport['SQLWhere']		= "DueOn BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Account No.']	= "Invoice.Account";
+$arrSQLSelect['Bill Total']		= "Invoice.Total + Invoice.Tax";
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+*/
+
+//----------------------------------------------------------------------------//
+// Emailed Profit Report
+//----------------------------------------------------------------------------//
+$arrDataReport = Array();
+$arrDataReport['Name']			= "Profit Report for a Billing Period";
+$arrDataReport['Summary']		= "Lists Profit Data for every Invoice generated in a specified Billing Period";
+$arrDataReport['RenderMode']	= REPORT_RENDER_EMAIL;
+$arrDataReport['Priviledges']	= 0;
+$arrDataReport['CreatedOn']		= date("Y-m-d");
+$arrDataReport['SQLTable']		= "Invoice";
+$arrDataReport['SQLWhere']		= "DueOn BETWEEN <StartDate> AND <EndDate>";
+$arrDataReport['SQLGroupBy']	= "";
+
+// Documentation Reqs
+$arrDocReqs = Array();
+$arrDocReq[]	= "DataReport";
+$arrDataReport['Documentation']	= serialize($arrDocReq);
+
+// SQL Select
+$arrSQLSelect = Array();
+$arrSQLSelect['Account No.']	['Value']	= "Invoice.Account";
+$arrSQLSelect['Account No.']	['Type']	= EXCEL_TYPE_INTEGER;
+
+$arrSQLSelect['Customer Group']	['Value']	= "Account.CustomerGroup";
+
+$arrSQLSelect['Customer Name']	['Value']	= "Account.BusinessName";
+
+$strNLDTypes = "2, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 18, 19, 20, 27, 28, 33, 35, 36, 38";
+$arrSQLSelect['Cost NLD']		['Value']	=	"SUM(CASE " .
+												"WHEN ServiceTypeTotal.RecordType IN ($strNLDTypes) THEN ServiceTypeTotal.Cost " .
+												"ELSE 0 " .
+												"END)";
+$arrSQLSelect['Cost NLD']		['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Cost NLD']		['Total']	= EXCEL_TOTAL_SUM;
+
+$arrSQLSelect['Charge NLD']		['Value']	=	"SUM(CASE " .
+												"WHEN ServiceTypeTotal.RecordType IN ($strNLDTypes) THEN ServiceTypeTotal.Charge " .
+												"ELSE 0 " .
+												"END)";
+$arrSQLSelect['Charge NLD']		['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Charge NLD']		['Total']	= EXCEL_TOTAL_SUM;
+
+$arrSQLSelect['Bill Cost']		['Value']	= "SUM(ServiceTypeTotal.Cost)";
+$arrSQLSelect['Bill Cost']		['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Bill Cost']		['Total']	= EXCEL_TOTAL_SUM;
+
+$arrSQLSelect['Bill Charge']	['Value']	= "Invoice.Total + Invoice.Tax";
+$arrSQLSelect['Bill Charge']	['Type']	= EXCEL_TYPE_CURRENCY;
+$arrSQLSelect['Bill Charge']	['Total']	= EXCEL_TOTAL_SUM;
+
+$arrSQLSelect['Margin']			['Value']	= "((Invoice.Total + Invoice.Tax) - SUM(ServiceTypeTotal.Cost)) / ABS(Invoice.Total + Invoice.Tax)";
+$arrSQLSelect['Margin']			['Type']	= EXCEL_TYPE_PERCENTAGE;
+$arrSQLSelect['Margin']			['Total']	= "(<Bill Charge> - <Bill Cost>) / ABS(<Bill Charge>)";
+
+$arrDataReport['SQLSelect'] = serialize($arrSQLSelect);
+
+// SQL Fields
+$arrSQLFields = Array();
+$arrSQLFields['StartDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "StartDateRange",
+									);
+$arrSQLFields['EndDate']	= Array(
+										'Type'					=> "dataDate",
+										'Documentation-Entity'	=> "DataReport",
+										'Documentation-Field'	=> "EndDateRange",
+									);
+$arrDataReport['SQLFields'] = serialize($arrSQLFields);
+
+
 
 //Debug($arrDataReport);
 //die;

@@ -637,6 +637,7 @@
 		position:	absolute;
 		left:		1px;
 		top:		1px;
+		z-index:	1000000;
 	}
 	
 	.LogoSpacer
@@ -1301,4 +1302,137 @@
 	tr.RecentCustomers td
 	{
 		cursor:					pointer;
+	}
+
+	.PopupBox
+	{
+		position: absolute;
+		border: 1px solid #000000;
+		background-color: #ffffff;
+		z-index: 1001;
+	}
+
+	.PopupBox_TopBar
+	{
+		font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		font-size: 10pt;
+		line-height: 18pt;
+		color: #FFFFFF;
+		background-color: #000000;
+		background-image:     url('img/template/background.png');
+		background-repeat:    repeat-x;
+		padding: 0px;
+		margin: 0px;
+		padding-left: 5px;
+		cursor: default;
+		
+	}
+	.PopupBox_Close
+	{
+		float: right;
+		text-align: right;
+		height: 14px;
+		padding: 3px;
+	}
+	#overlay {
+     position: absolute;
+     left: 0px;
+     top: 0px;
+     width:100%;
+     height:100%;
+     z-index: 1000;
+	 background-color:	#000000;
+	 opacity: .50;
+	}
+	.VixenTooltip
+	{
+		border: 1px solid #000000;
+		background-color: #ffffff;
+		z-index: 100001;
+	}
+	
+	/* Taskbar */
+	.VixenTaskbar
+	{
+		float:			left;
+		position: 		fixed;
+		top:				44px;
+		width:			100%;
+		height:			28px;
+		color:			#FFFFFF;
+		background-color:	#000000;
+		background-image:	url('img/template/taskbar.png');
+		background-repeat:	repeat-x;
+		padding:			0px;
+		margin:			0px;
+		padding-top:		2px;
+		/*padding-left:		80px;*/
+		display:			block;
+	}
+	
+	.TaskbarItem
+	{
+		border:				1px	solid	#EEEEEE;
+		border-top-color:		#CCCCCC;
+		border-left-color:		#CCCCCC;
+		border-right-color:		#333333;
+		border-bottom-color:	#333333;
+		width:				150px;
+		height:				20px;
+		background-color:		#444444;
+		color:				#CCCCCC;
+		vertical-align:		middle;
+		float:				left;
+		overflow:				hidden;
+		padding-left:			1px;
+		cursor:				default;
+	}
+	
+	.TaskbarItemSelected
+	{
+		border:				1px	solid	#EEEEEE;
+		border-top-color:		#333333;
+		border-left-color:		#333333;
+		border-right-color:		#CCCCCC;
+		border-bottom-color:	#CCCCCC;
+		width:				150px;
+		height:				20px;
+		background-color:		#BBBBBB;
+		color:				#000000;
+		font-weight:			bold;
+		vertical-align:		middle;
+		float:				left;
+		overflow:				hidden;
+		padding-left:			1px;
+		cursor:				default;
+	}
+	
+	.TaskbarSpacer
+	{
+		width:				1px;
+		height:				20px;
+		float:				left;
+	}
+	
+	.TaskbarIcon
+	{
+		/*display:			inline;*/
+		width:			16px;
+		height:			16px;
+		vertical-align:	text-top;
+		/*border:			1px solid #000000;*/
+	}
+	
+	.MasterWatermark
+	{
+		position:				fixed;
+		opacity:				.25;
+		width:				768px;
+		height:				256px;
+		background-image:		url('img/template/master_watermark.png');
+		background-position:	center center;
+		background-repeat:		no-repeat;
+		margin-left:			auto;
+		margin-right:			auto;
+		text-align:			left;
 	}
