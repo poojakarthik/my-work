@@ -81,8 +81,23 @@ class AppTemplateNote extends ApplicationTemplate
 				DBL()->Note->NoteType = SYSTEM_NOTE;
 			}
 		}*/
+		$strWhere = "Account=" . DBO()->Account->Id->Value;
+		if (SubmittedForm("NoteTypeForm"))
+		{
+			switch (DBO()->Note->NoteType->Value)
+			{
+				case "All":
+					break;
+				case "System":
+					$strWhere .= " AND NoteType = ". SYSTEM_NOTE;
+					break;
+				case "User":
+					$strWhere .= " AND NoteType != ". SYSTEM_NOTE;
+					break;
+			}
+		}
 		
-		DBL()->Note->Account = DBO()->Account->Id->Value;
+		DBL()->Note->Where->SetString($strWhere);
 		DBL()->Note->OrderBy("Datetime DESC");
 		DBL()->Note->Load();
 		DBL()->NoteType->Load();

@@ -111,18 +111,23 @@ class HtmlTemplateNoteView extends HtmlTemplate
 		//$this->FormStart("SystemNotesOnlyForm", "Note", "View");
 		$this->FormStart("NoteTypeForm", "Note", "View");
 		DBO()->Account->Id->RenderHidden();
-		if (DBO()->Note->NoteType->Value == "All")
+		
+		switch (DBO()->Note->NoteType->Value)
 		{
-			$strChecked = 'checked';
+			case "All":
+				$strAll = 'checked';
+				break;
+			case "System":
+				$strSystem = 'checked';	
+				break;
+			case "User":
+				$strUser = 'checked';
+				break;				
 		}
 		
-		/*<input type="radio" name="group1" value="Milk"> Milk<br>
-		<input type="radio" name="group1" value="Butter" checked> Butter<br>
-		<input type="radio" name="group1" value="Cheese"> Cheese*/
-
-		echo "<input type='radio' name='Note.NoteType' value='All' $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
-		echo "<input type='radio' name='Note.NoteType' value='System' $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
-		echo "<input type='radio' name='Note.NoteType' value='User' $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
+		echo "<input type='radio' name='Note.NoteType' value='All' $strAll onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
+		echo "<input type='radio' name='Note.NoteType' value='System' $strSystem onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
+		echo "<input type='radio' name='Note.NoteType' value='User' $strUser onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
 		//echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
 		$this->FormEnd();
 		
