@@ -1783,6 +1783,7 @@ function LoadFramework($strFrameworkDir=NULL)
 	if (!$strFrameworkDir)
 	{
 		$strFrameworkDir = GetVixenBase();
+		$strFrameworkDir .= 'framework/';
 	}
 	
 	// load framework
@@ -1795,14 +1796,13 @@ function LoadFramework($strFrameworkDir=NULL)
 	require_once($strFrameworkDir."report.php");
 	require_once($strFrameworkDir."error.php");
 	require_once($strFrameworkDir."exception_vixen.php");
-	require_once("Mail.php");
-	require_once("Mail/mime.php");
+
 	
 	// PEAR Packages
 	require_once("Console/Getopt.php");
 	require_once("Spreadsheet/Excel/Writer.php");
 	require_once("Mail.php");
-	require_once("Mail/Mime.php");
+	require_once("Mail/mime.php");
 	
 	// create framework instance
 	$GLOBALS['fwkFramework'] = new Framework();

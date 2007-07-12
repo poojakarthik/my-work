@@ -114,6 +114,8 @@ class AppTemplateInvoice extends ApplicationTemplate
 			
 			// Set up the email message
 			$strBillingPeriod = date("F", strtotime("2007-$intMonth-01")) . " " . $intYear;
+			//$strCustomerGroup = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroup');
+			//echo $strCustomerGroup;
 			switch (DBO()->Account->CustomerGroup->Value)
 	 		{
 				case CUSTOMER_GROUP_VOICETALK:
