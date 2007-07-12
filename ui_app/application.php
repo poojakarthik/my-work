@@ -432,7 +432,7 @@ class Application
 
 		if ($bolLoggedIn)
 		{
-			var_dump($_COOKIE);
+			//var_dump($_COOKIE);
 			$selAuthenticated = new StatementSelect(
 					"Employee",
 					"*", 
@@ -530,8 +530,10 @@ class Application
 	 */
 	function UserHasPerm($intPerms)
 	{
+		$intChecked = $this->_arrUser['Privileges'] & $intPerms;
+		
 		// check the permissions are greater/equal
-		if ($this->_arrUser['Privileges'] >= $intPerms)
+		if ($intChecked == $intPerms)
 		{
 			return TRUE;
 		}

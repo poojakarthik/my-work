@@ -130,6 +130,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Should probably check user authorization here
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
 		//check if the form was submitted

@@ -47,7 +47,6 @@ Define ('HTML_MODE'		, 2);
 
 Define ('USER_TIMEOUT'	, 1200);
 Define ('GOD_TIMEOUT'	, 60*60*24*7);
-Define ('PRIVILEGE_ADMIN', 2);
 
 Define("PERMISSION_DEBUG"		, 0x80000000);
 Define("USER_PERMISSION_GOD"	, 0x7FFFFFFFFFFFFFFF);
@@ -95,6 +94,14 @@ define('RENDER_INPUT',	"Input");
 // constant Employee Ids
 define('SYSTEM_EMPLOYEE_ID',	0);
 define('SYSTEM_EMPLOYEE_NAME', 	"Automated System");
+
+													$arrPermissions = Array ();
+define("PERMISSION_PUBLIC"				, 0x1);		$arrPermissions[PERMISSION_PUBLIC]		= "Public";			// 1
+define("PERMISSION_ADMIN"				, 0x2);		$arrPermissions[PERMISSION_ADMIN]		= "Admin";			// 2	
+define("PERMISSION_OPERATOR"			, 0x4);		$arrPermissions[PERMISSION_OPERATOR]	= "Operator";		// 4
+define("PERMISSION_SALES"				, 0x8);		$arrPermissions[PERMISSION_SALES]		= "Sales";			// 8
+define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "Accounts";		// 16
+													$GLOBALS['Permissions']	= $arrPermissions;
 
 
 ?>
