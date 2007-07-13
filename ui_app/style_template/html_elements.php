@@ -158,7 +158,7 @@ class HTMLElements
 
 		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
 		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
-		$strClass	= "{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}";
+		$strClass	=  "{$arrParams['Definition']['BaseClass']}InputText {$arrParams['Definition']['Class']}";
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
@@ -229,7 +229,7 @@ class HTMLElements
 
 		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
 		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";
-		$strClass	= "{$arrParams['Definition']['BaseClass']}Input {$arrParams['Definition']['Class']}";
+		$strClass	= "{$arrParams['Definition']['BaseClass']}InputTextArea {$arrParams['Definition']['Class']}";
 		
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
@@ -737,17 +737,17 @@ class HTMLElements
 		{
 			$arrParams['Definition']['Class'] = CLASS_DEFAULT; // Default
 		}
-		$strClass = $arrParams['Definition']['Class']."Input"; // DefaultInput
+		$strClass = $arrParams['Definition']['Class']."InputComboBox"; // DefaultInputComboBox
 		if ($arrParams['Valid'] === FALSE)
 		{
-			$strClass .= "Invalid"; // DefaultInputInvalid
+			$strClass .= "Invalid"; // DefaultInputComboBoxInvalid
 		}
 		
 		echo "<td>";
 		echo "$strDocumentation[1]:";
 		echo "</td>";
 		echo "<td>";
-		echo "<select name='{$arrParams['Property']}'>";
+		echo "<select name='{$arrParams['Property']}' class='$strClass'>";
 		foreach ($arrParams['OutputOptions'] as $key=>$value)
 		{
 			echo "<option value='$key'>$value</option>";

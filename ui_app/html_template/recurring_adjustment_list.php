@@ -115,7 +115,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			// User has admin permisions and can therefore delete an adjustment
 			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "&nbsp;");
 			Table()->RecurringAdjustmentTable->SetWidth("20%", "70%", "10%");
-			Table()->RecurringAdjustmentTable->SetAlignment("Left", "Left", "Center");
+			Table()->RecurringAdjustmentTable->SetAlignment("left", "left", "center");
 		}
 		else
 		{
@@ -136,7 +136,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				{
 					// build the "Delete Recurring Adjustment" link
 					$strDeleteRecurringAdjustmentHref  = Href()->DeleteRecurringAdjustment($dboRecurringCharge->Id->Value);
-					$strDeleteRecurringAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteRecurringAdjustmentHref' class='DeleteButton'></a></span>";
+					$strDeleteRecurringAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteRecurringAdjustmentHref'><img src='img/template/delete.png' alt='Delete Adjustment' /></a></span>";
 				}
 				else
 				{

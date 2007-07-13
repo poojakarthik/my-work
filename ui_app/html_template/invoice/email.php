@@ -116,7 +116,7 @@ class HtmlTemplateInvoiceEmail extends HtmlTemplate
 			echo "<br>";
 		}
 		echo "<div class='SmallSeperator'></div>\n";
-		echo "Other Email Address:  <input type='text' id='ExtraEmail' name='Email.Extra'></input>";
+		echo "Other Email Address:<input type='text' id='ExtraEmail' name='Email.Extra' class='DefaultInputTextSmall'></input>";
 		echo "<div class='SmallSeperator'></div>\n";
 		
 		echo "<div align='right'>\n";

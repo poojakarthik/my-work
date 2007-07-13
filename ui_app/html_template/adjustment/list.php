@@ -111,16 +111,16 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		if ($bolHasAdminPerm)
 		{
 			// User has admin permisions and can therefore delete an adjustment
-			Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount", "");
+			Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount", "&nbsp;");
 			Table()->AdjustmentTable->SetWidth("20%", "30%", "40%", "10%");
-			Table()->AdjustmentTable->SetAlignment("Left", "Left", "Right", "Center");
+			Table()->AdjustmentTable->SetAlignment("left", "left", "right", "center");
 		}
 		else
 		{
 			// User cannot delete adjustments
 			Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount");
 			Table()->AdjustmentTable->SetWidth("20%", "30%", "50%");
-			Table()->AdjustmentTable->SetAlignment("Left", "Left", "Right");
+			Table()->AdjustmentTable->SetAlignment("left", "left", "right");
 		
 		}
 		
@@ -135,7 +135,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				{
 					// build the "Delete Adjustment" link
 					$strDeleteAdjustmentHref  = Href()->DeleteAdjustment($dboCharge->Id->Value);
-					$strDeleteAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteAdjustmentHref' class='DeleteButton'></a></span>";
+					$strDeleteAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteAdjustmentHref'><img src='img/template/delete.png' alt='Delete Adjustment' /></a></span>";
 				}
 				else
 				{

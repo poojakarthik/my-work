@@ -607,9 +607,12 @@ class VixenTable
 		
 		// Build headers
 		echo "<tr class='First'>\n";
+		$intHeaderCount = 0;
 		foreach ($this->_arrHeader AS $objField)
 		{
-			echo " <th>". $objField ."</th>\n";
+			$strAlign = $this->_arrAlignments[$intHeaderCount];
+			echo " <th width='{$this->_arrWidths[$intHeaderCount]}' align='$strAlign'>". $objField ."</th>\n";
+			$intHeaderCount++;
 		}
 		echo "</tr>\n";
 		
@@ -621,12 +624,14 @@ class VixenTable
 			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd';
 			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
 			
+			$intColCount = 0;
 			// Build fields
 			foreach ($objRow['Columns'] as $objField)
 			{
-				echo "<td>";
+				echo "<td width='{$this->_arrWidths[$intColCount]}' align='{$this->_arrAlignments[$intColCount]}'>";
 				echo $objField;
-				echo "</td>\n";			
+				echo "</td>\n";
+				$intColCount++;				
 			}
 			
 			// Build detail
