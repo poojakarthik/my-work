@@ -1792,8 +1792,8 @@ class MenuItems
 	 */
 	function ViewAccount($intId)
 	{
-		$this->strLabel	= "acc : $intId";
-		return "account_view.php?Account.Id=$intId";
+		$this->strLabel	= "acc: $intId";
+		return "account_view.php?Id=$intId";
 	}
 	
 	//------------------------------------------------------------------------//

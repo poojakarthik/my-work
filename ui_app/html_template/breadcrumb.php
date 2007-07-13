@@ -100,13 +100,16 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
-		echo "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n	";
+	{
+		$strHtmlCode = "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n	";
 		foreach (DBO()->BreadCrumb AS $objProperty)
 		{
-			echo " / <a href ='".$objProperty->Value."'>".$objProperty->Label."</a>";
+			$strHtmlCode .= "<a href ='".$objProperty->Value."'>".$objProperty->Label."</a> / ";
 		}
-		echo "\n</div>\n";
+		$strHtmlCode = substr($strHtmlCode, 0, -3);
+		$strHtmlCode .= "\n</div>\n";
+		
+		echo $strHtmlCode;
 	}
 }
 

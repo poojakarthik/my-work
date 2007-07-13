@@ -61,9 +61,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	 */
 	function Add()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -178,9 +178,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	 */
 	function AddRecurring()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -306,16 +306,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	 */
 	function DeleteAdjustment()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
+		/*
 		// Check if the user has admin privileges
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
-		
-		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
-		$bolHasAdminPerm = TRUE;
-		//HACK HACK HACK!!!!
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		if (!$bolHasAdminPerm)
 		{
@@ -325,6 +322,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			Ajax()->AddCommand("LoadCurrentPage");
 			return TRUE;
 		}
+		*/
 
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord', 'Delete'))
@@ -417,16 +415,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 	 */
 	function DeleteRecurringAdjustment()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
+		/*
 		// Check if the user has admin privileges
 		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
-		
-		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
-		$bolHasAdminPerm = TRUE;
-		//HACK HACK HACK!!!!
 		
 		if (!$bolHasAdminPerm)
 		{
@@ -436,6 +431,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			Ajax()->AddCommand("LoadCurrentPage");
 			return TRUE;
 		}
+		*/
 
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord', 'Delete'))

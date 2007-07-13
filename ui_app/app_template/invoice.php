@@ -61,9 +61,9 @@ class AppTemplateInvoice extends ApplicationTemplate
 	 */
 	function EmailPDFInvoice()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		$arrEmails = Array();
 		$arrEmailList = Array();

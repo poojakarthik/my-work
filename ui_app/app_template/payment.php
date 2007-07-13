@@ -61,9 +61,9 @@ class AppTemplatePayment extends ApplicationTemplate
 	 */
 	function Add()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
@@ -183,16 +183,13 @@ class AppTemplatePayment extends ApplicationTemplate
 	 */
 	function Delete()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation AND MAKE SURE THEY HAVE PAYMENT REVERSE PERMISSIONS
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
+		/*
 		// Check if the user has admin privileges
 		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
-		
-		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
-		$bolHasAdminPerm = TRUE;
-		//HACK HACK HACK!!!!
 		
 		if (!$bolHasAdminPerm)
 		{
@@ -202,6 +199,7 @@ class AppTemplatePayment extends ApplicationTemplate
 			Ajax()->AddCommand("LoadCurrentPage");
 			return TRUE;
 		}
+		*/
 
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord', 'Delete'))

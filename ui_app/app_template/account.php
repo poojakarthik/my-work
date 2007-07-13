@@ -127,10 +127,9 @@ class AppTemplateAccount extends ApplicationTemplate
 	 */
 	function InvoicesAndPayments()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
-		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		//handle saving of data on this screen (the admin fee checkbox and the payment fee radio buttons)
 		//check if the form was submitted
@@ -161,7 +160,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// breadcrumb menu
 		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
-		BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
+		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
+		BreadCrumb()->View_Account(DBO()->Account->Id->Value);
 		
 		
 		// Setup all DBO and DBL objects required for the page
@@ -254,6 +254,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Should probably check user authorization here
 		//TODO!include user authorisation
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
 		//Check what sort of record is being deleted
 		switch (DBO()->DeleteRecord->RecordType->Value)

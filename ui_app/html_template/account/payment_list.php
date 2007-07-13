@@ -104,11 +104,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		echo "<div class='NarrowColumn'>\n";
 		
 		// Check if the user has admin privileges
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
-		
-		//HACK HACK HACK!!!! remove this line when we have properly implemented users loging in
-		$bolHasAdminPerm = TRUE;
-		//HACK HACK HACK!!!!
+		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
 		
 		if ($bolHasAdminPerm)
 		{

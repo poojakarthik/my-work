@@ -61,9 +61,9 @@ class AppTemplateNote extends ApplicationTemplate
 	 */
 	function View()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject
@@ -124,9 +124,9 @@ class AppTemplateNote extends ApplicationTemplate
 	 */
 	function Add()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
