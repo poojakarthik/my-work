@@ -114,7 +114,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		{
 			// User has admin permisions and can therefore delete a payment
 			Table()->PaymentTable->SetHeader("Date", "Amount", "&nbsp;");
-			Table()->PaymentTable->SetWidth("30%", "40%", "%20");
+			Table()->PaymentTable->SetWidth("40%", "50%", "10%");
 			Table()->PaymentTable->SetAlignment("Left", "Right", "Center");
 		}
 		else

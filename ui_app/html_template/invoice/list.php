@@ -124,16 +124,16 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			//if ($arrFiles[0])
 			//{
 				$strPdfHref = Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intMonth, $intYear);
-				$strPdfLabel = "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf.png' alt='View PDF Invoice' /></a></span>";
+				$strPdfLabel = "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf.png' title='View PDF Invoice' /></a></span>";
 			//}
 			
 			// build the "View Invoice Details" link
 			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
-			$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><img src='img/template/invoice.png' alt='View Invoice Details' /></a></span>";
+			$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a></span>";
 			
 			//build Email Invoice link
 			$strEmailHref = Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
-			$strEmailLabel = "<span class='DefaultOutputSpan Default'><a href='$strEmailHref'><img src='img/template/email.png' alt='Email PDF Invoice' /></a></span>";
+			$strEmailLabel = "<span class='DefaultOutputSpan Default'><a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a></span>";
 			
 			// calculate Invoice Amount
 			$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
