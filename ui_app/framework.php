@@ -277,11 +277,11 @@ class Page
 	
 	function RenderJS()
 	{
-header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
-header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
-header( 'Cache-Control: no-store, no-cache, must-revalidate' );
-header( 'Cache-Control: post-check=0, pre-check=0', false );
-header( 'Pragma: no-cache' );	
+		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
+		header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
+		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+		header( 'Cache-Control: post-check=0, pre-check=0', false );
+		header( 'Pragma: no-cache' );	
 		if (is_array($GLOBALS['*arrJavaScript']))
 		{
 			foreach ($GLOBALS['*arrJavaScript'] as $strValue)
@@ -1293,6 +1293,124 @@ class Validation
 	}
 }
 
+
+//----------------------------------------------------------------------------//
+// OutputMasks
+//----------------------------------------------------------------------------//
+/**
+ * OutputMasks
+ *
+ * The OutputMasks class
+ *
+ * The OutputMasks class - encapsulates all output masks
+ *
+ * @package	ui_app
+ * @class	OutputMasks
+ */
+class OutputMasks
+{
+	//------------------------------------------------------------------------//
+	// MoneyValue
+	//------------------------------------------------------------------------//
+	/**
+	 * MoneyValue()
+	 *
+	 * Formats a float as a money value
+	 *
+	 * Formats a float as a money value
+	 *
+	 * @param	float	$fltValue					value to format as a money value
+	 * @param	int		$intDecPlaces				optional; number of decimal places to show
+	 * @param	bool	$bolIncludeDollarSign		optional; should a dollar sign be included
+	 * @param	bool	$bolUseBracketsForNegative	optional; should brackets be used to denote a negative value
+	 * @return	string								$fltValue formatted as a money value
+	 *
+	 * @method
+	 */
+	function MoneyValue($fltValue, $intDecPlaces=2, $bolIncludeDollarSign=FALSE, $bolUseBracketsForNegative=FALSE)
+	{
+		if (fltValue < 0)
+		{
+			$bolIsNegative = TRUE;
+			// Change it to a positive
+			$fltValue = fltValue * (-1.0);
+		}
+		else
+		{
+			$bolIsNegative = FALSE;
+		}
+		
+		$strValue = number_format($fltValue, $intDecPlaces, ".", "");
+		
+		if ($bolIsNegative)
+		{
+			if ($bolUseBracketsForNegative)
+			{
+				$strValue = '($' . $strValue . ')';
+			}
+			else
+			{
+				$strValue = '$-' . $strValue;
+			}
+		}
+		else
+		{
+			$strValue = '$' . $strValue;
+		}
+		
+		return $strValue;	
+	}
+
+	//------------------------------------------------------------------------//
+	// ShortDate
+	//------------------------------------------------------------------------//
+	/**
+	 * ShortDate()
+	 *
+	 * Converts a Date from YYYY-MM-DD (MySql Date) to DD/MM/YYYY
+	 *
+	 * Converts a Date from YYYY-MM-DD (MySql Date) to DD/MM/YYYY
+	 *
+	 * @param	string	$strMySqlDate				in the format YYYY-MM-DD (standard MySql Date data type)
+	 * @return	string								date in format DD/MM/YYYY
+	 *
+	 * @method
+	 */
+	function ShortDate($strMySqlDate)
+	{
+		$arrDate = explode("-", $strMySqlDate);
+		$strDate = $arrDate[2] ."/". $arrDate[1] ."/". $arrDate[0];
+		return $strDate;
+	}
+
+	//------------------------------------------------------------------------//
+	// LongDateAndTime
+	//------------------------------------------------------------------------//
+	/**
+	 * LongDateAndTime()
+	 *
+	 * Converts date and time from YYYY-MM-DD HH:MM:SS (MySql Datetime) to "Wednesday, Jun 21, 2007 11:36:54 AM" format
+	 *
+	 * Converts date and time from YYYY-MM-DD HH:MM:SS (MySql Datetime) to "Wednesday, Jun 21, 2007 11:36:54 AM" format
+	 *
+	 * @param	string	$strMySqlDatetime			in the format YYYY-MM-DD HH:MM:SS (MySql Datetime data type)
+	 * @return	string								date in format "Wednesday, Jun 21, 2007 11:36:54 AM"
+	 *
+	 * @method
+	 */
+	function LongDateAndTime($strMySqlDatetime)
+	{
+		$arrDateAndTime = explode(" ", $strMySqlDatetime);
+		$arrTime = explode(":", $arrDateAndTime[1]);
+		$arrDate = explode("-", $arrDateAndTime[0]);
+		$intUnixTime = mktime($arrTime[0], $arrTime[1], $arrTime[2], $arrDate[1], $arrDate[2], $arrDate[0]);
+		$strDateAndTime = date("l, M j, Y g:i:s A", $intUnixTime);
+	
+		return $strDateAndTime;
+	}
+
+}
+
 //----------------------------------------------------------------------------//
 // ContextMenuFramework
 //----------------------------------------------------------------------------//
@@ -1839,8 +1957,8 @@ class MenuItems
 	 */
 	function InvoicesAndPayments($intId)
 	{
-		$this->strLabel	= "acc : $intId";
-		return "invoices_and_payments.php?Account.Id=$intId";
+		$this->strLabel	= "acc: $intId";
+		return "vixen.php/Account/InvoicesAndPayments/?Account.Id=$intId";
 	}
 	
 	//------------------------------------------------------------------------//

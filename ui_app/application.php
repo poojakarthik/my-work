@@ -530,14 +530,15 @@ class Application
 	 */
 	function UserHasPerm($intPerms)
 	{
+		// Do a binary 'AND' between the user's privilages and the paramerter
 		$intChecked = $this->_arrUser['Privileges'] & $intPerms;
 		
-		// check the permissions are greater/equal
+		// If the user has all the privileges defined in $intPerms, then $intChecked will equal $intPerms
 		if ($intChecked == $intPerms)
 		{
 			return TRUE;
 		}
-		// else return false
+		
 		return FALSE;
 	}
 }

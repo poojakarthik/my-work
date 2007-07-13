@@ -542,25 +542,15 @@ class HTMLElements
 					// remove the dollar sign if it is already present
 					$mixValue = ltrim($mixValue, '$');
 					
-					if ($mixValue < 0)
-					{
-						// negative currency value
-						$mixValue = $mixValue * (-1.0);
-						$mixValue = "($". number_format($mixValue, 2, ".", "") .")";
-					}
-					else
-					{
-						// possitive currency value
-						$mixValue = "$". number_format($mixValue, 2, ".", "") ."";
-					}
+					$mixValue = OutputMask()->MoneyValue($mixValue, 2, TRUE);
+					
 					break;
 				case "ShortDate":
 					// MySql Dates are of the format YYYY-MM-DD
 					// convert this to DD/MM/YYYY
 					if ($mixValue)
 					{
-						$arrDate = explode("-", $mixValue);
-						$mixValue = $arrDate[2] ."/". $arrDate[1] ."/". $arrDate[0];
+						$mixValue = OutputMask()->ShortDate($mixValue);
 					}
 					else
 					{
@@ -571,11 +561,7 @@ class HTMLElements
 				case "LongDateAndTime":
 					// MySql Datetime is in the format YYYY-MM-DD HH:MM:SS
 					// convert this to the format "Wednesday, Jun 21, 2007 11:36:54 AM"
-					$arrDateAndTime = explode(" ", $mixValue);
-					$arrTime = explode(":", $arrDateAndTime[1]);
-					$arrDate = explode("-", $arrDateAndTime[0]);
-					$intUnixTime = mktime($arrTime[0], $arrTime[1], $arrTime[2], $arrDate[1], $arrDate[2], $arrDate[0]);
-					$mixValue = date("l, M j, Y g:i:s A", $intUnixTime);
+					$mixValue = OutputMask()->LongDateAndTime($mixValue);
 					break;
 			}
 		}
