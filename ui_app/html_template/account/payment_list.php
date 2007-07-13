@@ -200,16 +200,13 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			
 			// Set the tooltip
 			// Payment Type
-			$strPaymentType = GetConstantDescription($dboPayment->PaymentType->Value, "PaymentType");
-			$strToolTipHtml = $dboPayment->PaymentType->AsArbitrary($strPaymentType, RENDER_OUTPUT);
+			$strToolTipHtml = $dboPayment->PaymentType->AsCallBack("GetConstantDescription", Array("PaymentType"), RENDER_OUTPUT);
 			
 			// EnteredBy
-			$strEnteredByName = GetEmployeeName($dboPayment->EnteredBy->Value);
-			$strToolTipHtml .= $dboPayment->EnteredBy->AsArbitrary($strEnteredByName, RENDER_OUTPUT);
+			$strToolTipHtml .= $dboPayment->EnteredBy->AsCallBack("GetEmployeeName", NULL, RENDER_OUTPUT);
 			
 			// Status
-			$strStatus = GetConstantDescription($dboPayment->Status->Value, "PaymentStatus");
-			$strToolTipHtml .= $dboPayment->Status->AsArbitrary($strStatus, RENDER_OUTPUT);
+			$strToolTipHtml .= $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"), RENDER_OUTPUT);
 			
 			// if the payment's status is PAYMENT_REVERSED then AmountApplied = 0 else AmountApplied = Amount - Balance
 			if ($dboStatus != PAYMENT_REVERSED)

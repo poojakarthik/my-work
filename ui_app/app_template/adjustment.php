@@ -387,9 +387,19 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			}
 			else
 			{
-				//the charge cannot be deleted 
+				// The Charge can not be deleted
+				$strErrorMsg  = "<div class='PopupMedium'>\n";
+				$strErrorMsg .= "ERROR: The adjustment can not be deleted due to its status.\n";
+				$strErrorMsg .= DBO()->Charge->Id->AsOutput();
+				$strErrorMsg .= DBO()->Charge->CreatedOn->AsOutput();
+				$strErrorMsg .= DBO()->Charge->AccountGroup->AsOutput();
+				$strErrorMsg .= DBO()->Charge->Account->AsOutput();
+				$strErrorMsg .= DBO()->Charge->Amount->AsCallback("addGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+				$strErrorMsg .= DBO()->Charge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus"), RENDER_OUTPUT);
+				$strErrorMsg .= "</div>\n";
+				
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", nl2br("The adjustment could not be deleted.\nCheck the status of the adjustment."));
+				Ajax()->AddCommand("AlertReload", $strErrorMsg);
 				return TRUE;
 			}
 		}
@@ -546,8 +556,20 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			else
 			{
 				// the recurring charge cannot be deleted 
+				$strErrorMsg  = "<div class='PopupMedium'>\n";
+				$strErrorMsg .= "ERROR: The Recurring adjustment can not be deleted as it is already marked as being deleted.\n";
+				$strErrorMsg .= DBO()->RecurringCharge->Id->AsOutput();
+				$strErrorMsg .= DBO()->RecurringCharge->CreatedOn->AsOutput();
+				$strErrorMsg .= DBO()->RecurringCharge->AccountGroup->AsOutput();
+				$strErrorMsg .= DBO()->RecurringCharge->Account->AsOutput();
+				$strErrorMsg .= DBO()->RecurringCharge->MinCharge->AsCallback("addGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+				$strErrorMsg .= DBO()->RecurringCharge->RecursionCharge->AsCallback("addGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+				$strErrorMsg .= DBO()->RecurringCharge->TotalCharged->AsCallback("addGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+				$strErrorMsg .= DBO()->RecurringCharge->Archived->AsOutput();
+				$strErrorMsg .= "</div>\n";
+				
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be deleted.\nCheck the archive status of the adjustment."));
+				Ajax()->AddCommand("AlertReload", $strErrorMsg);
 				return TRUE;
 			}
 		}

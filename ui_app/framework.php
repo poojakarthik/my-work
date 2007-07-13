@@ -1409,6 +1409,31 @@ class OutputMasks
 		return $strDateAndTime;
 	}
 
+	//------------------------------------------------------------------------//
+	// BooleanYesNo
+	//------------------------------------------------------------------------//
+	/**
+	 * BooleanYesNo()
+	 *
+	 * Converts a boolean into a string of either "Yes" or "No"
+	 *
+	 * Converts a boolean into a string of either "Yes" or "No"
+	 *
+	 * @param	bool	$bolYes				boolean value
+	 * @return	string						"Yes" or "No"
+	 *
+	 * @method
+	 */
+	function BooleanYesNo($bolYes)
+	{
+		if ($bolYes)
+		{
+			return "Yes";
+		}
+		
+		return "No";
+	}
+	
 }
 
 //----------------------------------------------------------------------------//

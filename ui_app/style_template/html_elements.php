@@ -563,6 +563,10 @@ class HTMLElements
 					// convert this to the format "Wednesday, Jun 21, 2007 11:36:54 AM"
 					$mixValue = OutputMask()->LongDateAndTime($mixValue);
 					break;
+				case "BooleanYesNo":
+					// convert boolean value into either "Yes" or "No"
+					$mixValue = OutputMask()->BooleanYesNo($mixValue);
+					break;
 			}
 		}
 		

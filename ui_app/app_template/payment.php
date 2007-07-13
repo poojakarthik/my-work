@@ -196,10 +196,31 @@ class AppTemplatePayment extends ApplicationTemplate
 		{
 			$strNoteMsg = "";
 			
+			// Make sure the payment can be retrieved from the database
 			if (!DBO()->Payment->Load())
 			{
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 				Ajax()->AddCommand("AlertReload", "The payment with id: ". DBO()->Payment->Id->Value ." could not be found");
+				return TRUE;
+			}
+			
+			// Make sure the payment can be reversed
+			$intPaymentStatus = DBO()->Payment->Status->Value;
+			if (($intPaymentStatus != PAYMENT_WAITING) && ($intPaymentStatus != PAYMENT_PAYING) && ($intPaymentStatus != PAYMENT_FINISHED))
+			{
+				// The payment can not be reversed
+				$strErrorMsg  = "<div class='PopupMedium'>";
+				$strErrorMsg .= "ERROR: The payment can not be reversed due to its status.";
+				$strErrorMsg .= DBO()->Payment->Id->AsOutput();
+				$strErrorMsg .= DBO()->Payment->PaidOn->AsOutput();
+				$strErrorMsg .= DBO()->Payment->AccountGroup->AsOutput();
+				$strErrorMsg .= DBO()->Payment->Account->AsOutput();
+				$strErrorMsg .= DBO()->Payment->Amount->AsOutput();
+				$strErrorMsg .= DBO()->Payment->Status->AsCallback("GetConstantDescription", Array("PaymentStatus"), RENDER_OUTPUT);
+				$strErrorMsg .= "</div>";
+				
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", $strErrorMsg);
 				return TRUE;
 			}
 			
