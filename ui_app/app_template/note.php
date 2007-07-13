@@ -69,18 +69,11 @@ class AppTemplateNote extends ApplicationTemplate
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
-			$this->LoadPage('error');
-			return FALSE;
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			return TRUE;
 		}
 		
-		/*if (SubmittedForm("SystemNotesOnlyForm"))
-		{
-			if (DBO()->Note->SystemOnly->Value == 1)
-			{
-				DBL()->Note->NoteType = SYSTEM_NOTE;
-			}
-		}*/
 		$strWhere = "Account=" . DBO()->Account->Id->Value;
 		if (SubmittedForm("NoteTypeForm"))
 		{
@@ -131,9 +124,9 @@ class AppTemplateNote extends ApplicationTemplate
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id: '". DBO()->Account->Id->value ."' could not be found";
-			$this->LoadPage('error');
-			return FALSE;
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			return TRUE;
 		}
 		
 		// check if a new note is being submitted
@@ -164,7 +157,6 @@ class AppTemplateNote extends ApplicationTemplate
 					// The note could not be saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("AlertReload", "ERROR: The note did not save.");
-					//Ajax()->AddCommand('LoadCurrentPage');
 					return TRUE;
 				}
 				else
@@ -172,8 +164,6 @@ class AppTemplateNote extends ApplicationTemplate
 					// The note was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					Ajax()->AddCommand("AlertReload", "The note has been successfully added.");
-					//echo "The note has been successfully added.\n stuff";
-					//Ajax()->AddCommand('LoadCurrentPage');
 					return TRUE;
 				}
 			}
@@ -182,9 +172,7 @@ class AppTemplateNote extends ApplicationTemplate
 				// Something was invalid 
 				DBO()->Status->Message = "The Note could not be saved. Invalid fields are shown in red";
 			}
-			
 		}
-		
 		
 		// Load DBO and DBL objects required of the page
 		// Get all Note Types
@@ -196,5 +184,4 @@ class AppTemplateNote extends ApplicationTemplate
 
 		return TRUE;
 	}
-	
 }

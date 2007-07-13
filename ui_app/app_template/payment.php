@@ -68,9 +68,9 @@ class AppTemplatePayment extends ApplicationTemplate
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id: '". DBO()->Account->Id->value ."' could not be found";
-			$this->LoadPage('error');
-			return FALSE;
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			return TRUE;
 		}
 		
 		// check if a new payment is being submitted
@@ -88,16 +88,6 @@ class AppTemplatePayment extends ApplicationTemplate
 			}
 			else
 			{
-				// set the Payment->AccountGroup to the AccountGroup of the Account that the payment is being applied to.
-				// Note that this will not always be DBO()->Account->AccountGroup
-				// UPDATE: Actually I think it will always be the same as DBO()->Account->AccountGroup because if it wasn't then it
-				// wouldn't have been listed in the Account(s) combobox to begin with
-				//DBO()->PaymentAccount->Id = DBO()->AccountToApplyTo->Id->Value;
-				//DBO()->PaymentAccount->SetTable("Account");
-				//DBO()->PaymentAccount->Load();
-				//DBO()->Payment->AccountGroup = DBO()->PaymentAccount->AccountGroup->Value;
-				//DBO()->Payment->Account = DBO()->AccountToApplyTo->Id->Value;
-				
 				// If the payment is to be applied to a single account (which belongs to the same account group that DBO()->Account->Id belongs to)
 				// then the account group will have to be the same as DBO()->Account->Id's account group
 				DBO()->Payment->AccountGroup	= DBO()->Account->AccountGroup->Value;
@@ -204,11 +194,12 @@ class AppTemplatePayment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord', 'Delete'))
 		{
+			$strNoteMsg = "";
+			
 			if (!DBO()->Payment->Load())
 			{
-				Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
-				Ajax()->AddCommand("Alert", "The payment with id: ". DBO()->Payment->Id->Value ." could not be found");
-				Ajax()->AddCommand("LoadCurrentPage");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", "The payment with id: ". DBO()->Payment->Id->Value ." could not be found");
 				return TRUE;
 			}
 			
@@ -228,21 +219,18 @@ class AppTemplatePayment extends ApplicationTemplate
 					
 					if (!DBO()->Note->Save())
 					{
-						Ajax()->AddCommand("Alert", "The note could not be saved");
+						$strNoteMsg = "\nWarning: The operator's note could not be saved.";
 					}
 				}
 				
-				Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
-				Ajax()->AddCommand("Alert", "The payment was successfully reversed");
-				Ajax()->AddCommand("LoadCurrentPage");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", nl2br("The payment was successfully reversed.{$strNoteMsg}"));
 				return TRUE;
 			}
 			else
 			{
-				Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
-				Ajax()->AddCommand("Alert", "Reversing the payment failed");
-				// You shouldn't have to reload the current page unless the javascript objects have been destroyed
-				//Ajax()->AddCommand("LoadCurrentPage");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", "Reversing the payment failed");
 				return TRUE;
 			}
 		}

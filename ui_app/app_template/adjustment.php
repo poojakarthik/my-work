@@ -68,9 +68,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
-			$this->LoadPage('error');
-			return FALSE;
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			return TRUE;
 		}
 		
 		// check if an adjustment is being submitted
@@ -185,9 +185,9 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// The account should already be set up as a DBObject
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
-			$this->LoadPage('error');
-			return FALSE;
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
+			return TRUE;
 		}
 		
 		// check if an adjustment is being submitted
@@ -251,16 +251,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				{
 					// The recurring adjustment did not save
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "ERROR: The recurring adjustment did not save");
-					Ajax()->AddCommand('LoadCurrentPage');
+					Ajax()->AddCommand("AlertReload", "ERROR: The recurring adjustment did not save");
 					return TRUE;
 				}
 				else
 				{
 					// The recurring adjustment was successfully saved
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("Alert", "The recurring adjustment has been successfully added");
-					Ajax()->AddCommand('LoadCurrentPage');
+					Ajax()->AddCommand("AlertReload", "The recurring adjustment has been successfully added");
 					return TRUE;
 				}
 			}
@@ -327,11 +325,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord', 'Delete'))
 		{
+			$strNoteMsg = "";
+			$strSystemNoteMsg = "";
+		
 			if (!DBO()->Charge->Load())
 			{
-				Ajax()->AddCommand("ClosePopup", "DeleteChargePopupId");
-				Ajax()->AddCommand("Alert", "The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
-				Ajax()->AddCommand("LoadCurrentPage");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", "The adjustment with id: ". DBO()->Charge->Id->Value ." could not be found");
 				return TRUE;
 			}
 			
@@ -345,9 +345,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				if (!DBO()->Charge->Save())
 				{
 					// The charge could not be updated
-					Ajax()->AddCommand("ClosePopup", "DeleteAdjustmentPopupId");
-					Ajax()->AddCommand("Alert", "The adjustment could not be deleted.\nThere was a problem with updating the record in the database.");
-					Ajax()->AddCommand("LoadCurrentPage");
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("AlertReload", nl2br("The adjustment could not be deleted.\nThere was a problem with updating the record in the database."));
 					return TRUE;
 				}
 				else
@@ -363,7 +362,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 						
 						if (!DBO()->Note->Save())
 						{
-							Ajax()->AddCommand("Alert", "The note could not be saved");
+							$strNoteMsg = "\nWarning: The operator's note could not be saved.";
 						}
 					}
 					
@@ -378,21 +377,19 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					
 					if (!DBO()->Note->Save())
 					{
-						Ajax()->AddCommand("Alert", "The automatic system note could not be saved");
+						$strSystemNoteMsg = "\nWarning: The automatic system note could not be saved.";
 					}
 					
-					Ajax()->AddCommand("ClosePopup", "DeleteAdjustmentPopupId");
-					Ajax()->AddCommand("Alert", "The adjustment was successfully deleted");
-					Ajax()->AddCommand("LoadCurrentPage");
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("AlertReload", nl2br("The adjustment was successfully deleted.{$strNoteMsg}{$strSystemNoteMsg}"));
 					return TRUE;
 				}
 			}
 			else
 			{
 				//the charge cannot be deleted 
-				Ajax()->AddCommand("ClosePopup", "DeleteAdjustmentPopupId");
-				Ajax()->AddCommand("Alert", "The adjustment could not be deleted.\nCheck the status of the adjustment.");
-				Ajax()->AddCommand("LoadCurrentPage");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", nl2br("The adjustment could not be deleted.\nCheck the status of the adjustment."));
 				return TRUE;
 			}
 		}
@@ -436,11 +433,13 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord', 'Delete'))
 		{
+			$strNoteMsg = "";
+			$strSystemNoteMsg = "";
+			
 			if (!DBO()->RecurringCharge->Load())
 			{
-				Ajax()->AddCommand("ClosePopup", "DeleteRecurringChargePopupId");
-				Ajax()->AddCommand("Alert", "The recurring adjustment with id: ". DBO()->RecurringCharge->Id->Value ." could not be found");
-				Ajax()->AddCommand("LoadCurrentPage");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", "The recurring adjustment with id: ". DBO()->RecurringCharge->Id->Value ." could not be found");
 				return TRUE;
 			}
 			
@@ -466,9 +465,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					TransactionCommit();
 					
 					// Close the popup gracefully
-					Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
-					Ajax()->AddCommand("Alert", "The recurring adjustment could not be deleted.\nThere was a problem with updating the RecurringCharge record in the database.");
-					Ajax()->AddCommand("LoadCurrentPage");
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be deleted.\nThere was a problem with updating the RecurringCharge record in the database."));
 					return TRUE;
 				}
 				// The recurring charge was successfully updated.
@@ -503,9 +501,8 @@ class AppTemplateAdjustment extends ApplicationTemplate
 						TransactionRollback();
 						
 						// Close the popup gracefully
-						Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
-						Ajax()->AddCommand("Alert", "The recurring adjustment could not be deleted.\nThere was a problem with generating the cancellation charge.");
-						Ajax()->AddCommand("LoadCurrentPage");
+						Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+						Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be deleted.\nThere was a problem with generating the cancellation charge."));
 						return TRUE;
 					}
 				}
@@ -524,7 +521,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					
 					if (!DBO()->Note->Save())
 					{
-						Ajax()->AddCommand("Alert", "The note could not be saved");
+						$strNoteMsg = "\nWarning: The operator's note could not be saved.";
 					}
 				}
 				
@@ -539,22 +536,18 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				
 				if (!DBO()->Note->Save())
 				{
-					Ajax()->AddCommand("Alert", "The automatic system note could not be saved");
+					$strSystemNoteMsg = "\nWarning: The automatic system note could not be saved.";
 				}
 				
-				
-				Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
-				Ajax()->AddCommand("Alert", "The adjustment was successfully deleted");
-				Ajax()->AddCommand("LoadCurrentPage");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", nl2br("The adjustment was successfully deleted.{$strNoteMsg}{$strSystemNoteMsg}"));
 				return TRUE;
-
 			}
 			else
 			{
 				// the recurring charge cannot be deleted 
-				Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
-				Ajax()->AddCommand("Alert", "The recurring adjustment could not be deleted.\nCheck the archive status of the adjustment.");
-				Ajax()->AddCommand("LoadCurrentPage");
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be deleted.\nCheck the archive status of the adjustment."));
 				return TRUE;
 			}
 		}
