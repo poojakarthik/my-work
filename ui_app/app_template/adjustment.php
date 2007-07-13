@@ -555,7 +555,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			}
 			else
 			{
-				// the recurring charge cannot be deleted 
+				// the recurring charge cannot be deleted
 				$strErrorMsg  = "<div class='PopupMedium'>\n";
 				$strErrorMsg .= "ERROR: The Recurring adjustment can not be deleted as it is already marked as being deleted.\n";
 				$strErrorMsg .= DBO()->RecurringCharge->Id->AsOutput();
