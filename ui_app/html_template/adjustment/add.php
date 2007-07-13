@@ -184,7 +184,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		DBO()->ChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->ChargeType->Nature->RenderOutput();
 		
-		DBO()->Charge->Amount->RenderInput();
+		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST);
 		
 		// Create a combo box containing the last 6 invoices associated with the account
 		echo "<div class='DefaultElement'>\n";

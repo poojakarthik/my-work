@@ -113,7 +113,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 		if ($bolHasAdminPerm)
 		{
 			// User has admin permisions and can therefore delete an adjustment
-			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "");
+			Table()->RecurringAdjustmentTable->SetHeader("Date", "Description", "&nbsp;");
 			Table()->RecurringAdjustmentTable->SetWidth("20%", "70%", "10%");
 			Table()->RecurringAdjustmentTable->SetAlignment("Left", "Left", "Center");
 		}
@@ -151,7 +151,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			}
 			// add tooltip
 			$strToolTipHtml = $dboRecurringCharge->LastChargedOn->AsOutput();
-			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT);
+			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 			
 			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
 			

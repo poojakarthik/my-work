@@ -199,7 +199,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		// display the cancellation fee
 		DBO()->RecurringChargeType->CancellationFee = $arrChargeTypes[$intChargeTypeId]['CancellationFee'];
-		DBO()->RecurringChargeType->CancellationFee->RenderOutput();
+		DBO()->RecurringChargeType->CancellationFee->RenderOutput(CONTEXT_INCLUDES_GST);
 		
 		// display the Recurring Frequency
 		DBO()->RecurringChargeType->RecurringFreq = $arrChargeTypes[$intChargeTypeId]['RecurringFreq'];
@@ -207,10 +207,10 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		DBO()->RecurringChargeType->RecurringFreq->RenderArbitrary($strRecurringFreq, RENDER_OUTPUT);
 
 		// display the Minimum Charge
-		DBO()->RecurringCharge->MinCharge->RenderInput();
+		DBO()->RecurringCharge->MinCharge->RenderInput(CONTEXT_INCLUDES_GST);
 
 		// display the RecursionCharge
-		DBO()->RecurringCharge->RecursionCharge->RenderInput();
+		DBO()->RecurringCharge->RecursionCharge->RenderInput(CONTEXT_INCLUDES_GST);
 		
 		// create the TimesToCharge textbox
 		echo "<div class='DefaultElement'>\n";
