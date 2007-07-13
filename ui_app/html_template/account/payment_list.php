@@ -134,7 +134,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 				{
 					// build the "Delete Payment" link
 					$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
-					$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref' class='DeleteButton'></a></span>";
+					$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Delete Adjustment' /></a></span>";
 				}
 				else
 				{

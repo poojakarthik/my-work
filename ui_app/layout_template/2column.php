@@ -39,12 +39,13 @@ $this->RenderContextMenu();
 <h1> <?php echo $this->_strPageName; ?></h1>
 <table width='100%' border='0'>
 	<tr>
-		<td width='50%' valign='top'>
+		<td width='49%' valign='top'>
 			
 			<?php $this->RenderColumn(COLUMN_ONE); ?>
 			
 		</td>
-		<td width='50%' valign='top'>
+		<td width='2%'></td>
+		<td width='49%' valign='top'>
 			
 			<?php $this->RenderColumn(COLUMN_TWO); ?>
 			

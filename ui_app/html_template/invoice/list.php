@@ -102,13 +102,13 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 	{	
 		// Render each of the account invoices
 		echo "<h2 class='Invoice'>Invoices</h2>\n";
-		//echo "<div class='NarrowContent'>\n";
+		//echo "<div class='NarrowCo'>\n";
 
 		
 		//Table()->InvoiceTable->SetHeader("Date", "Invoice No", "Amount(total)", "Applied Amount(balance)", "Amount Owing(totalowing)", "Invoice Sent", "View PDF", "View Invoice Details");
 		Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "&nbsp;", "&nbsp;", "&nbsp;");
 		Table()->InvoiceTable->SetWidth("20%", "20%", "10%", "10%", "10%", "15%", "5%", "5%", "5%");
-		Table()->InvoiceTable->SetAlignment("Left", "Left", "Left", "Left", "Left", "Left", "Center", "Center", "Center");
+		Table()->InvoiceTable->SetAlignment("Left", "Left", "Right", "Right", "Right", "Left", "Center", "Center", "Center");
 		//Table()->InvoiceTable->SetHeader("Date", "Invoice #", "Invoice Amount", "Applied Amount", "Amount Owing", "Status", "PDF", "Details", "Email");
 		Table()->PaymentTable->SetWidth("20%", "30%", "50%");
 		Table()->PaymentTable->SetAlignment("Left", FALSE, "Right");

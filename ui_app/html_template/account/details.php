@@ -163,10 +163,8 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->Submit("Apply Changes");
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
-		echo "<div class='Seperator'></div>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
-		
 		// Declare the end of the form
 		$this->FormEnd();
 	}
