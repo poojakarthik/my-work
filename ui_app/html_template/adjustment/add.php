@@ -128,7 +128,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
+		echo "      <select id='ChargeTypeCombo' style='width:240px' onchange='Vixen.ValidateAdjustment.DeclareChargeType(this)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
 		{
 			$intChargeTypeId = $dboChargeType->Id->Value;
