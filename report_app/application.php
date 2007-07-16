@@ -269,7 +269,8 @@
  	{
 		// Check for overrides
 		$arrReport['Overrides']	= ($arrReport['Overrides']) ? unserialize($arrReport['Overrides']) : Array();
-		$arrReport['Overrides']['NoTitles']		= ($arrReport['Overrides']['NoTitles'])		? $arrReport['Overrides']['Delimeter']	: FALSE;
+		//Debug($arrReport['Overrides']);
+		$arrReport['Overrides']['NoTitles']		= ($arrReport['Overrides']['NoTitles'])		? $arrReport['Overrides']['NoTitles']	: FALSE;
 		
 		$strName = $this->_MakeFileName($arrReport, $arrReportParameters);
  		
@@ -284,8 +285,11 @@
  		{
  			$strPath = $strName;
  		}
- 		$strDelimiter	= ($arrReport['Overrides']['Delimeter'])	? $arrReport['Overrides']['Delimeter']	: ';';
- 		$strEnclose		= ($arrReport['Overrides']['Enclose'])		? $arrReport['Overrides']['Enclose']	: '"';
+ 		$strDelimiter	= ($arrReport['Overrides']['Delimiter'])		? $arrReport['Overrides']['Delimiter']	: ';';
+ 		$strEnclose		= (isset($arrReport['Overrides']['Enclose']))	? $arrReport['Overrides']['Enclose']	: '"';
+ 		
+ 		//Debug($strDelimiter);
+ 		//Debug($strEnclose);
 		
  		// Set column headers
  		if (!$arrReport['Overrides']['NoTitles'])
@@ -302,12 +306,17 @@
  		// Write the data
  		foreach ($arrData as $arrRow)
  		{
+ 			$arrLine = Array();
  			foreach ($arrRow as $mixField)
  			{
- 				$strReturn .= ($bolSave) ? fwrite($ptrFile, "{$strEnclose}{$mixField}{$strEnclose}$strDelimiter") : "{$strEnclose}{$mixField}{$strEnclose}$strDelimiter";
+ 				$arrLine[]	= "{$strEnclose}{$mixField}{$strEnclose}";
+ 				//$strReturn .= ($bolSave) ? fwrite($ptrFile, "{$strEnclose}{$mixField}{$strEnclose}$strDelimiter") : "{$strEnclose}{$mixField}{$strEnclose}$strDelimiter";
  			}
- 			$strReturn .= ($bolSave) ? fwrite($ptrFile, "\n") : "\n";
+ 			$strReturn .= ($bolSave) ? fwrite($ptrFile, implode($strDelimiter, $arrLine)."\n") : implode($strDelimiter, $arrLine)."\n";
  		}
+ 		
+ 		//Debug($strReturn);
+ 		//die;
  		
  		$arrReturn = Array();
  		$arrReturn['Output']	= $strReturn;
