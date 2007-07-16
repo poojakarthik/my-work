@@ -88,6 +88,7 @@ function VixenValidateRecurringAdjustmentClass()
 	 *																		  .Fixed
 	 *																		  .Amount
 	 *																		  .Description FIX THIS DESCRIPTION
+	 * @param	int		intCurrentChargeTypeId	id of the charge type that should have its details listed in the popup
 	 * @return	void
 	 * @method
 	 */

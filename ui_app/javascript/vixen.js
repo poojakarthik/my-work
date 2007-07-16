@@ -1,7 +1,6 @@
 var FALSE = false;
 var TRUE = true;
 var DEBUG_MODE = FALSE;
-var TAB_KEY = 9;
 
 //----------------------------------------------------------------------------//
 // VixenRootClass

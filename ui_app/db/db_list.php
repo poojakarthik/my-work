@@ -126,18 +126,26 @@ class DBList extends DBListBase
 		{
 			$this->_intLimitStart = $intLimitStart;
 		}
-		else
+		elseif ($this->_arrDefine['LimitStart'])
 		{
 			$this->_intLimitStart = $this->_arrDefine['LimitStart'];
+		}
+		else
+		{
+			$this->_intLimitStart = NULL;
 		}
 		
 		if (!is_null($intLimitCount))
 		{
 			$this->_intLimitCount = $intLimitCount;
 		}
-		else
+		elseif ($this->_arrDefine['LimitCount'])
 		{
 			$this->_intLimitCount = $this->_arrDefine['LimitCount'];
+		}
+		else
+		{
+			$this->_intLimitCount = NULL;
 		}
 		
 		// set USE INDEX
@@ -195,8 +203,12 @@ class DBList extends DBListBase
 			$this->_objWhere->Set($strWhere, $arrWhere);
 		}
 		
-		// setup limit
-		$this->SetLimit($intLimitCount, $intLimitStart);
+		
+		// setup limit, if one has been specified
+		if ($intLimitCount || $intLimitStart)
+		{
+			$this->SetLimit($intLimitCount, $intLimitStart);
+		}
 		
 		// empty records
 		$this->EmptyRecords();

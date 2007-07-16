@@ -138,7 +138,7 @@ class DataAccessUI extends DatabaseAccess
 	 *
 	 * @method
 	 */
-	function Select($strTable, $arrColumns=NULL, $objWhere=NULL, $intLimitStart=NULL, $strLimitCount=NULL, $strOrderBy=NULL, $strUseIndex=NULL)
+	function Select($strTable, $arrColumns=NULL, $objWhere=NULL, $intLimitStart=NULL, $intLimitCount=NULL, $strOrderBy=NULL, $strUseIndex=NULL)
 	{
 		// Create SELECT clause
 		if (!$arrColumns)
@@ -153,13 +153,17 @@ class DataAccessUI extends DatabaseAccess
 		
 		// LIMIT clause
 		$strLimit = NULL;
-		if ($intLimitStart)
+		if ($intLimitStart !== NULL)
 		{
 			$strLimit = "$intLimitStart";
-			if ($strLimitCount)
+			if ($intLimitCount)
 			{
-				$strLimit .= ", $strLimitCount";
+				$strLimit .= ", $intLimitCount";
 			}
+		}
+		elseif ($intLimitCount)
+		{
+			$strLimit = "0, $intLimitCount";
 		}
 		
 		// set "USE INDEX" if we were passed an index
@@ -167,7 +171,7 @@ class DataAccessUI extends DatabaseAccess
 		{
 			$strTable = "$strTable USE INDEX ($strUseIndex)";
 		}
-		
+
 	 	// Statement Construct, Execute, Fetch, Return :D
 	 	$selStatement = new StatementSelect($strTable, $mixColumns, $objWhere->GetString(), $strOrderBy, $strLimit);
 	 	$selStatement->Execute($objWhere->GetArray());
