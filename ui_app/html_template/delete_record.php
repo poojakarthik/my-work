@@ -109,7 +109,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		switch (DBO()->DeleteRecord->RecordType->Value)
 		{
 			case "Payment":
-				echo "<h2 class='Payment'>Delete Payment</h2>\n";
+				echo "<h2 class='Payment'>Reverse Payment</h2>\n";
 				// Display the description for the delete operation
 				DBO()->DeleteRecord->Description->RenderValue();
 				DBO()->Payment->Id->RenderHidden();
@@ -121,7 +121,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 				DBO()->Charge->Id->RenderHidden();
 				break;
 			case "RecurringAdjustment":
-				echo "<h2 class='Adjustment'>Delete Recurring Adjustment</h2>\n";
+				echo "<h2 class='Adjustment'>Cancel Recurring Adjustment</h2>\n";
 				// Display the description for the delete operation
 				DBO()->DeleteRecord->Description->RenderValue();
 				
@@ -153,8 +153,8 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		// display the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-		$this->AjaxSubmit("Delete");
+		$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+		$this->AjaxSubmit("OK");
 		echo "</div>\n";
 		
 		$this->FormEnd();

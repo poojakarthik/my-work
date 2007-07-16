@@ -100,81 +100,88 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		//echo "<div id='NotesHolder' style='display:none;'>\n";
-		echo "<div  style='overflow:scroll; height:500px'>\n";
-		echo "<h2 class='Notes'>Notes</h2>\n";
-		
-		// TODO! Each note should have its own border
-		// TODO! The notes should have a scroll bar down the right hand side.
-		// TODO! there should be some sort of pagination so that only 5 or 10 notes are shown at any one time
-		
-		//$this->FormStart("SystemNotesOnlyForm", "Note", "View");
-		$this->FormStart("NoteTypeForm", "Note", "View");
-		DBO()->Account->Id->RenderHidden();
-		$strAll = 'checked';
-		switch (DBO()->Note->NoteType->Value)
+		if (DBL()->Note->Count() == 0)
 		{
-			case "All":
-				$strAll = 'checked';
-				break;
-			case "System":
-				$strSystem = 'checked';	
-				break;
-			case "User":
-				$strUser = 'checked';
-				break;				
+			echo "There are no viewable Notes for this Account.";
 		}
-		echo "<br>";
-		echo "<input type='radio' name='Note.NoteType' value='All' $strAll onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
-		echo "<input type='radio' name='Note.NoteType' value='System' $strSystem onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
-		echo "<input type='radio' name='Note.NoteType' value='User' $strUser onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
-		//echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
-		$this->FormEnd();
-		
-		// Display each note
-		foreach (DBL()->Note as $dboNote)
+		else
 		{
-			// Find what NoteType this note is and render it accordingly
-			foreach (DBL()->NoteType as $dboNoteType)
+			//echo "<div id='NotesHolder' style='display:none;'>\n";
+			echo "<div  style='overflow:scroll; height:500px'>\n";
+			echo "<h2 class='Notes'>Notes</h2>\n";
+			
+			// TODO! Each note should have its own border
+			// TODO! The notes should have a scroll bar down the right hand side.
+			// TODO! there should be some sort of pagination so that only 5 or 10 notes are shown at any one time
+			
+			//$this->FormStart("SystemNotesOnlyForm", "Note", "View");
+			$this->FormStart("NoteTypeForm", "Note", "View");
+			DBO()->Account->Id->RenderHidden();
+			$strAll = 'checked';
+			switch (DBO()->Note->NoteType->Value)
 			{
-				if ($dboNoteType->Id->Value == $dboNote->NoteType->Value)
-				{
-					// Use this NoteType 
-					$strBorderColor 	= $dboNoteType->BorderColor->Value;
-					$strBackgroundColor = $dboNoteType->BackgroundColor->Value;
-					$strTextColor 		= $dboNoteType->TextColor->Value;
+				case "All":
+					$strAll = 'checked';
 					break;
+				case "System":
+					$strSystem = 'checked';	
+					break;
+				case "User":
+					$strUser = 'checked';
+					break;				
+			}
+			echo "<br>";
+			echo "<input type='radio' name='Note.NoteType' value='All' $strAll onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>All Notes</input>";
+			echo "<input type='radio' name='Note.NoteType' value='System' $strSystem onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>System Notes Only</input>";
+			echo "<input type='radio' name='Note.NoteType' value='User' $strUser onClick='Vixen.Ajax.SendForm(\"VixenForm_NoteTypeForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>User Notes Only</input>";
+			//echo "<input type='checkbox' name='Note.SystemOnly' value=1 $strChecked onClick='Vixen.Ajax.SendForm(\"VixenForm_SystemNotesOnlyForm\", \"\", \"Note\", \"View\", \"Popup\", \"ViewNotesPopupId\");'>Show System Notes Only</input>";
+			$this->FormEnd();
+			
+			// Display each note
+			foreach (DBL()->Note as $dboNote)
+			{
+				// Find what NoteType this note is and render it accordingly
+				foreach (DBL()->NoteType as $dboNoteType)
+				{
+					if ($dboNoteType->Id->Value == $dboNote->NoteType->Value)
+					{
+						// Use this NoteType 
+						$strBorderColor 	= $dboNoteType->BorderColor->Value;
+						$strBackgroundColor = $dboNoteType->BackgroundColor->Value;
+						$strTextColor 		= $dboNoteType->TextColor->Value;
+						break;
+					}
 				}
+				
+				// setup the div to reflect the Note Type
+				echo "<div style='border: solid 1px #{$strBorderColor}; background-color: #{$strBackgroundColor}; color: #{$strTextColor};'>\n";
+				
+				// Note details
+				$strDetailsHtml = "Created on ";
+				$strDetailsHtml .= $dboNote->Datetime->FormattedValue();
+				$strDetailsHtml .= " by ";
+				if ($dboNote->Employee->Value)
+				{
+					$strDetailsHtml .= GetEmployeeName($dboNote->Employee->Value) . ".";
+				}
+				else
+				{
+					$strDetailsHtml .= "Automated System.";
+				}
+				
+				// Output the note details
+				echo $strDetailsHtml;
+				echo "<div class='TinySeperator'></div>\n";
+				
+				// Output the actual note
+				$dboNote->Note->RenderValue();
+				echo "</div>\n";
+				
+				// Include a separator
+				echo "<div class='Seperator'></div>\n";
 			}
-			
-			// setup the div to reflect the Note Type
-			echo "<div style='border: solid 1px #{$strBorderColor}; background-color: #{$strBackgroundColor}; color: #{$strTextColor};'>\n";
-			
-			// Note details
-			$strDetailsHtml = "Created on ";
-			$strDetailsHtml .= $dboNote->Datetime->FormattedValue();
-			$strDetailsHtml .= " by ";
-			if ($dboNote->Employee->Value)
-			{
-				$strDetailsHtml .= GetEmployeeName($dboNote->Employee->Value) . ".";
-			}
-			else
-			{
-				$strDetailsHtml .= "Automated System.";
-			}
-			
-			// Output the note details
-			echo $strDetailsHtml;
-			echo "<div class='TinySeperator'></div>\n";
-			
-			// Output the actual note
-			$dboNote->Note->RenderValue();
 			echo "</div>\n";
-			
-			// Include a separator
-			echo "<div class='Seperator'></div>\n";
 		}
-		echo "</div>\n";
 	}
 }
 

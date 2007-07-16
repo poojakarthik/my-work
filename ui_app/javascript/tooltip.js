@@ -66,7 +66,7 @@ function VixenTooltipClass()
 				}
 			case "medium":
 				{	//medium
-					elmTooltip.style.width = '450px';
+					elmTooltip.style.width = '400px';
 					break;
 				}
 			case "large":

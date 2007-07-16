@@ -132,7 +132,7 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 				{
 					// build the "Delete Recurring Adjustment" link
 					$strDeleteRecurringAdjustmentHref  = Href()->DeleteRecurringAdjustment($dboRecurringCharge->Id->Value);
-					$strDeleteRecurringAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteRecurringAdjustmentHref'><img src='img/template/delete.png' title='Delete Adjustment' /></a></span>";
+					$strDeleteRecurringAdjustmentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeleteRecurringAdjustmentHref'><img src='img/template/delete.png' title='Cancel Recurring Adjustment' /></a></span>";
 				}
 				else
 				{

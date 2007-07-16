@@ -130,7 +130,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 				{
 					// build the "Delete Payment" link
 					$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
-					$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Delete Adjustment' /></a></span>";
+					$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Reverse Payment' /></a></span>";
 				}
 				else
 				{
@@ -179,7 +179,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			{
 				$strDetailHtml = "<div class='VixenTableDetail'>\n";
 				$strDetailHtml .= "<table border='0' cellpadding='0' cellspacing='0' width='100%'>\n";
-				$strDetailHtml .= "<tr><th>Invoice#</th><th>Amount</th></tr>\n";
+				$strDetailHtml .= "<tr><td><b>Invoice#</b></td><td><b>Amount</b></td></tr>\n";
 				
 				// sort the list of invoices
 				sort($arrInvoiceId);

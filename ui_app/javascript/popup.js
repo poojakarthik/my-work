@@ -149,7 +149,8 @@ function VixenPopupClass()
 				intScroll = document.body.scrollTop;
                 //document.body.style.overflow = "hidden";
                	//document.body.scrollTop = intScroll;
-                elmOverlay.style.height = document.body.offsetHeight;
+				//alert(window.innerHeight);
+                elmOverlay.style.height = Math.max(document.body.offsetHeight, window.innerHeight);
                 break;
 				
 				

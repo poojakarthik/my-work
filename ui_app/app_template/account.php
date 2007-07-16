@@ -271,7 +271,7 @@ class AppTemplateAccount extends ApplicationTemplate
 				break;
 			case "RecurringAdjustment":
 				DBO()->RecurringCharge->Load();
-				DBO()->DeleteRecord->Description = "Are you sure you want to delete the recurring adjustment with Id: ". DBO()->RecurringCharge->Id->Value ." ?\n";
+				DBO()->DeleteRecord->Description = "Are you sure you want to cancel the recurring adjustment with Id: ". DBO()->RecurringCharge->Id->Value ." ?\n";
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteRecurringAdjustment";
 				break;
