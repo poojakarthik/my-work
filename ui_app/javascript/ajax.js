@@ -330,7 +330,7 @@ function VixenAjaxClass()
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre');
 					break;
 				case "AlertReload":
-					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location.reload();'><br></div>";
+					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = window.location;'><br></div>";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre');
 					break;
 				case "LoadCurrentPage":
