@@ -711,12 +711,23 @@ class HtmlTemplate extends BaseTemplate
 		echo "<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/$strFilename.js'></script>\n";
 	}
 	
-	function FormStart($strId, $strTemplate, $strMethod)
+	function FormStart($strId, $strTemplate, $strMethod, $arrParams=NULL)
 	{
 		$this->_strMethod = $strMethod;
 		$this->_strForm = "VixenForm_$strId";
 		$this->_strTemplate = $strTemplate;
-		echo "<form id='{$this->_strForm}' method='post' action='vixen.php/$strTemplate/$strMethod'>\n";
+		
+		$strParams = "";
+		if (is_array($arrParams))
+		{
+			foreach($arrParams AS $strKey=>$strValue)
+			{
+				$arrParams[$strKey] = "$strKey=$strValue";
+			}
+			$strParams = "?".implode('&', $arrParams);
+		}
+		
+		echo "<form id='{$this->_strForm}' method='post' action='vixen.php/$strTemplate/$strMethod/$strParams'>\n";
 		//echo "<form id='{$this->_strForm}' method='get' action='vixen.php/$strTemplate/$strMethod'>\n";
 		echo "<input type='hidden' value='$strId' name='VixenFormId'>\n";
 	}

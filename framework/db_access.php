@@ -1120,7 +1120,7 @@ class MySQLFunction
  * Fetch Query
  *
  * Implements a Fetch query using mysqli
- * Used for fetching recordsets from lare tables
+ * Used for fetching recordsets from large tables
  * Fetches and caches batches of records
  *
  *

@@ -139,7 +139,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='NarrowContent'>\n";
 
 		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
+		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments', $_GET);
 		
 		// Render the Id of the Account as a hidden input
 		DBO()->Account->Id->RenderHidden();
