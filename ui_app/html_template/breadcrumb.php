@@ -101,11 +101,14 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 	 */
 	function Render()
 	{
-		$strHtmlCode = "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n	";
+		// The 3 spaces at the end of the below string are there intentionally and should not be removed
+		$strHtmlCode = "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n   ";
 		foreach (DBO()->BreadCrumb AS $objProperty)
 		{
 			$strHtmlCode .= "<a href ='".$objProperty->Value."'>".$objProperty->Label."</a> / ";
 		}
+		
+		// Remove the last 3 chars from html code
 		$strHtmlCode = substr($strHtmlCode, 0, -3);
 		$strHtmlCode .= "\n</div>\n";
 		

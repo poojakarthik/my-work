@@ -209,7 +209,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			$strToolTipHtml .= $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"), RENDER_OUTPUT);
 			
 			// if the payment's status is PAYMENT_REVERSED then AmountApplied = 0 else AmountApplied = Amount - Balance
-			if ($dboStatus != PAYMENT_REVERSED)
+			if ($dboPayment->Status->Value != PAYMENT_REVERSED)
 			{
 				$dboPayment->AmountApplied = $dboPayment->Amount->Value - $dboPayment->Balance->Value;
 			}
