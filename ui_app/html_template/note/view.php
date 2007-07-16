@@ -100,7 +100,7 @@ class HtmlTemplateNoteView extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		if (DBL()->Note->Count() == 0)
+		if (DBL()->Note->RecordCount() == 0)
 		{
 			echo "There are no viewable Notes for this Account.";
 		}
