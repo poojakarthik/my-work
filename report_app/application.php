@@ -124,20 +124,6 @@
 			}
 			$arrData = $selReport->FetchAll();
 			
-			// Check for overrides
-			$arrDataReport['Overrides']	= ($arrDataReport['Overrides']) ? unserialize($arrDataReport['Overrides']) : Array();
-			$arrDataReport['Overrides']['Delimeter']	= ($arrDataReport['Overrides']['Delimeter']) ? $arrDataReport['Overrides']['Delimeter'] : ';';
-			$arrDataReport['Overrides']['Enclose']		= ($arrDataReport['Overrides']['Enclose']) ? $arrDataReport['Overrides']['Enclose'] : '"';
-			$arrDataReport['Overrides']['NoTitles']		= ($arrDataReport['Overrides']['NoTitles']) ? $arrDataReport['Overrides']['Delimeter'] : FALSE;
-			
-			if (!$arrDataReport['Overrides']['Extension'])
-			{
-				switch ($arrReport['RenderTarget'])
-				{
-					case REPORT_TARGET_CSV:
-				}
-			}
-			
 			//Debug($arrData);
 			//Debug($arrDataReport);
 			//Debug($arrWhere);
@@ -281,6 +267,10 @@
 	 */
  	function ExportCSV($arrData, $arrReport, $arrReportParameters, $bolSave = TRUE)
  	{
+		// Check for overrides
+		$arrReport['Overrides']	= ($arrReport['Overrides']) ? unserialize($arrReport['Overrides']) : Array();
+		$arrReport['Overrides']['NoTitles']		= ($arrReport['Overrides']['NoTitles'])		? $arrReport['Overrides']['Delimeter']	: FALSE;
+		
 		$strName = $this->_MakeFileName($arrReport, $arrReportParameters);
  		
  		// Saving?
@@ -294,8 +284,8 @@
  		{
  			$strPath = $strName;
  		}
- 		$strDelimiter	= $arrReport['Overrides']['Delimiter'];
- 		$strEnclose		= $arrReport['Overrides']['Enclose'];
+ 		$strDelimiter	= ($arrReport['Overrides']['Delimeter'])	? $arrReport['Overrides']['Delimeter']	: ';';
+ 		$strEnclose		= ($arrReport['Overrides']['Enclose'])		? $arrReport['Overrides']['Enclose']	: '"';
 		
  		// Set column headers
  		if (!$arrReport['Overrides']['NoTitles'])
@@ -318,9 +308,6 @@
  			}
  			$strReturn .= ($bolSave) ? fwrite($ptrFile, "\n") : "\n";
  		}
- 		
- 		//Debug($strReturn);
- 		//die;
  		
  		$arrReturn = Array();
  		$arrReturn['Output']	= $strReturn;
@@ -702,14 +689,13 @@
  		else
  		{
  			$strFileName = $arrReport['Name'];
+ 			$strFileName .= " - " . date("d M Y h:i:s A");
  		}
- 		
- 		$strFileName .= " - " . date("d M Y h:i:s A");
  		
  		// Add file extension
  		if ($arrReport['Overrides']['Extension'])
  		{
- 			$strFileName .= $arrReport['Overrides']['Extension'];
+ 			$strFileName .= '.' . $arrReport['Overrides']['Extension'];
  		}
  		else
  		{
