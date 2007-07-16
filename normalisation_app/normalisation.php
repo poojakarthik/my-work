@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // normalisation application
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once('../framework/require.php');
+LoadApplication();
 
 echo "<pre>\n";
 

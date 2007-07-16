@@ -9,7 +9,7 @@
 //----------------------------------------------------------------------------//
 // master application
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once('../framework/require.php');
 
 // Application entry point - create an instance of the application object
 $appMaster = new ApplicationMaster($arrConfig);
@@ -18,6 +18,6 @@ $appMaster = new ApplicationMaster($arrConfig);
 $appMaster->Run();
 
 // finished
-die();
+die;
 
 ?>

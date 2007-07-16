@@ -10,6 +10,7 @@
 //----------------------------------------------------------------------------//
  
 // load application
+require_once("../framework/require.php");
 LoadApplication();
 
 // load remote copy

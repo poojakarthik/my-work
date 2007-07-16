@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // add recurring charges
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once("../framework/require.php");
+LoadApplication();
 
 // Application entry point - create an instance of the application object
 $appCharge = new ApplicationCharge($arrConfig);
@@ -19,6 +20,6 @@ $appCharge->Execute();
 // finished
 echo("\n-- End of Charges::Recurring --\n");
 echo "</pre>";
-die();
+die;
 
 ?>

@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // normalisation application
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once('../framework/require.php');
+LoadApplication();
 
 // set addresses for report
 $mixEmailAddress = 'flame@telcoblue.com.au';

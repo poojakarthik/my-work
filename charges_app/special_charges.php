@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // add special charges
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once("../framework/require.php");
+LoadApplication();
 
 // Application entry point - create an instance of the application object
 $appCharge = new ApplicationCharge($arrConfig);

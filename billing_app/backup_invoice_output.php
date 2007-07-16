@@ -1,7 +1,8 @@
 <?php
 
 // load framework
-LoadFramework();
+require_once("../framework/require.php");
+
 ob_start();
 echo "\n\n[ INVOICE OUTPUT BACKUP ]\n\n";
 

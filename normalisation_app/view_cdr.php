@@ -1,7 +1,7 @@
 <?php
 
 // require stuff
-require_once("include.php");
+require_once('../framework/require.php');
 
 echo "<pre>";
 

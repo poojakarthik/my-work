@@ -3,7 +3,7 @@
 // display a list of bad destinations
 
 // require stuff
-require_once("include.php");
+require_once("../framework/require.php");
 
 // Create an instance of each Normalisation module
 $arrNormalisationModule[CDR_UNITEL_RSLCOM]		= new NormalisationModuleRSLCOM();

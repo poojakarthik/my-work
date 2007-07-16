@@ -27,7 +27,7 @@
  */
  
 // call application
-LoadFramework();
+require_once("../framework/require.php");
 VixenRequire("billing_app/config.php");
 
 $bolVerbose = FALSE;

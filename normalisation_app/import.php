@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // normalisation application
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once('../framework/require.php');
+LoadApplication();
 
 // Check for command line args
 $intLimit = ((int)trim($argv[1])) ? (int)trim($argv[1]) : NULL;
