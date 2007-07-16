@@ -323,7 +323,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		*/
 
 		// Make sure the correct form was submitted
-		if (SubmittedForm('DeleteRecord', 'Delete'))
+		if (SubmittedForm('DeleteRecord'))
 		{
 			$strNoteMsg = "";
 			$strSystemNoteMsg = "";
@@ -441,7 +441,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		*/
 
 		// Make sure the correct form was submitted
-		if (SubmittedForm('DeleteRecord', 'Delete'))
+		if (SubmittedForm('DeleteRecord'))
 		{
 			$strNoteMsg = "";
 			$strSystemNoteMsg = "";
@@ -476,7 +476,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					
 					// Close the popup gracefully
 					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-					Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be deleted.\nThere was a problem with updating the RecurringCharge record in the database."));
+					Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be cancelled.\nThere was a problem with updating the RecurringCharge record in the database."));
 					return TRUE;
 				}
 				// The recurring charge was successfully updated.
@@ -512,7 +512,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 						
 						// Close the popup gracefully
 						Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-						Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be deleted.\nThere was a problem with generating the cancellation charge."));
+						Ajax()->AddCommand("AlertReload", nl2br("The recurring adjustment could not be cancelled.\nThere was a problem with generating the cancellation charge."));
 						return TRUE;
 					}
 				}
@@ -542,7 +542,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Note->Account = DBO()->RecurringCharge->Account->Value;
 				DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
 				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
-				DBO()->Note->Note = "Recurring charge with Id: ". DBO()->RecurringCharge->Id->Value ." has been deleted";
+				DBO()->Note->Note = "Recurring charge with Id: ". DBO()->RecurringCharge->Id->Value ." has been cancelled.";
 				
 				if (!DBO()->Note->Save())
 				{
@@ -550,14 +550,14 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				}
 				
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-				Ajax()->AddCommand("AlertReload", nl2br("The adjustment was successfully deleted.{$strNoteMsg}{$strSystemNoteMsg}"));
+				Ajax()->AddCommand("AlertReload", nl2br("The adjustment was successfully cancelled.{$strNoteMsg}{$strSystemNoteMsg}"));
 				return TRUE;
 			}
 			else
 			{
 				// the recurring charge cannot be deleted
 				$strErrorMsg  = "<div class='PopupMedium'>\n";
-				$strErrorMsg .= "ERROR: The Recurring adjustment can not be deleted as it is already marked as being deleted.\n";
+				$strErrorMsg .= "ERROR: The Recurring adjustment can not be cancelled as it is already marked as being cancelled.\n";
 				$strErrorMsg .= DBO()->RecurringCharge->Id->AsOutput();
 				$strErrorMsg .= DBO()->RecurringCharge->CreatedOn->AsOutput();
 				$strErrorMsg .= DBO()->RecurringCharge->AccountGroup->AsOutput();

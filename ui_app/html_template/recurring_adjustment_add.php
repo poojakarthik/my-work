@@ -216,7 +216,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>Times to Charge</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <input type='text' id='TimesToCharge' value='' class='DefaultInputTextSmall' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged()'></input>\n";
+		echo "      <input type='text' id='TimesToCharge' value='' class='DefaultInputTextSmall' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged(event)'></input>\n";
 		echo "   </div>\n";
 		echo "</div>\n";
 		
@@ -239,7 +239,8 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
 
-		echo "<script type='text/javascript'>Vixen.ValidateRecurringAdjustment.InitialiseForm($strJsonCode);</script>\n";
+		$intCurrentChargeTypeId = DBO()->RecurringChargeType->Id->Value;
+		echo "<script type='text/javascript'>Vixen.ValidateRecurringAdjustment.InitialiseForm($strJsonCode, $intCurrentChargeTypeId);</script>\n";
 		
 		
 		$this->FormEnd();

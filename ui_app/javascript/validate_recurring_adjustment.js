@@ -51,6 +51,10 @@ function VixenValidateRecurringAdjustmentClass()
 	var _fltRecursionCharge;
 	var _fltMinCharge;
 	var _intTimesToCharge;
+	
+	var _fltCurrentRecursionCharge;
+	var _fltCurrentMinCharge;
+	var _intCurrentTimesToCharge;
 
 	//------------------------------------------------------------------------//
 	// _objChargeTypeData
@@ -87,7 +91,7 @@ function VixenValidateRecurringAdjustmentClass()
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseForm = function(objChargeTypeData)
+	this.InitialiseForm = function(objChargeTypeData, intCurrentChargeTypeId)
 	{
 		var intKey;
 		this._objChargeTypeData = objChargeTypeData;
@@ -105,16 +109,13 @@ function VixenValidateRecurringAdjustmentClass()
 		//document.getElementById("RecurringCharge.RecursionCharge").onkeyup = Vixen.ValidateRecurringAdjustment.RecursionChargeChanged;
 		//this._elmRecursionCharge.onkeyup = Vixen.ValidateRecurringAdjustment.RecursionChargeChanged;
 		this._elmRecursionCharge.onkeyup	= this.RecursionChargeChanged;
+		this._elmRecursionCharge.onblur		= this.RecursionChargeLostFocus;
 		this._elmMinCharge.onkeyup			= this.MinChargeChanged;
 		this._elmMinCharge.onblur			= this.MinChargeLostFocus;
 		
-		// set up the form to display the details of the first item in the Charge Type Combobox
-		for (intKey in this._objChargeTypeData)
-		{
-			var intFirstChargeTypeId = intKey;
-			break;
-		}
-		this.DeclareChargeType(intFirstChargeTypeId);
+		this.DeclareChargeType(intCurrentChargeTypeId);
+
+		document.getElementById("ChargeTypeCombo").focus();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -165,8 +166,10 @@ function VixenValidateRecurringAdjustmentClass()
 		document.getElementById('RecurringChargeType.RecurringFreq.Output').innerHTML = strRecurringFreq;
 		
 		this._elmRecursionCharge.value = strRecursionCharge;
+		this._fltCurrentRecursionCharge = parseFloat(this.StripDollars(strRecursionCharge));
 		this._elmMinCharge.value = strMinCharge;
-
+		this._fltCurrentMinCharge = parseFloat(this.StripDollars(strMinCharge));
+		
 		document.getElementById('RecurringChargeType.Id').value = intChargeTypeId;
 		
 		// Set TimesToCharge
@@ -196,24 +199,27 @@ function VixenValidateRecurringAdjustmentClass()
 	this.SetTimesToCharge = function()
 	{
 		this.GetTextFields();
-
+		
 		if (this._fltRecursionCharge > this._fltMinCharge)
 		{
 			this._elmTimesToCharge.value = 1;
+			this._intCurrentTimesToCharge = 1;
 			return;
 		}
 		
 		// Work out number of times charged
-		this._intTimesCharged = Math.ceil(this._fltMinCharge / this._fltRecursionCharge);
+		this._intTimesToCharge = Math.ceil(this._fltMinCharge / this._fltRecursionCharge);
 		
 		// Set the TimesToCharge textbox
-		if (isNaN(this._intTimesCharged))
+		if (isNaN(this._intTimesToCharge))
 		{
 			this._elmTimesToCharge.value = "";
+			this._intCurrentTimesToCharge = NULL;
 		}
 		else
 		{
-			this._elmTimesToCharge.value = this._intTimesCharged;
+			this.SetTimesToChargeTextField();
+			this._intCurrentTimesToCharge 	= this._intTimesToCharge;
 		}
 	}
 	
@@ -310,14 +316,21 @@ function VixenValidateRecurringAdjustmentClass()
 		}
 	}
 
-
 	//Event handler for when the text within the Times to Charge text box, is changed
-	this.TimesChargedChanged = function()
+	this.TimesChargedChanged = function(objEvent)
 	{
 		this.GetTextFields();
 	
+		// if the event did not actually change the value (time to charge) then don't do anything
+		if (this._intCurrentTimesToCharge == this._intTimesToCharge)
+		{
+			return;
+		}
+		
+		// if the value is not a number or less than 1 then don't do anything
 		if ((isNaN(this._intTimesToCharge)) || (this._intTimesToCharge <= 0))
 		{
+			this._intCurrentTimesToCharge = null;
 			return;
 		}
 		
@@ -338,8 +351,15 @@ function VixenValidateRecurringAdjustmentClass()
 	{
 		Vixen.ValidateRecurringAdjustment.GetTextFields();
 		
+		// if the event did not actually change the value (recursion charge) then don't do anything
+		if (Vixen.ValidateRecurringAdjustment._fltCurrentRecursionCharge == Vixen.ValidateRecurringAdjustment._fltRecursionCharge)
+		{
+			return;
+		}
+		
 		if ((isNaN(Vixen.ValidateRecurringAdjustment._fltRecursionCharge)) || (Vixen.ValidateRecurringAdjustment._fltRecursionCharge <= 0))
 		{
+			Vixen.ValidateRecurringAdjustment._fltCurrentRecursionCharge = null;
 			return;
 		}
 		
@@ -355,12 +375,20 @@ function VixenValidateRecurringAdjustmentClass()
 		//Maybe you could check if the key is a TAB key and disregard it if it is
 	}
 	
-	this.MinChargeChanged = function()
+	this.MinChargeChanged = function(objEvent)
 	{
 		Vixen.ValidateRecurringAdjustment.GetTextFields();
 
+		// check if the Minimum charge has actually changed
+		if (Vixen.ValidateRecurringAdjustment._fltCurrentMinCharge == Vixen.ValidateRecurringAdjustment._fltMinCharge)
+		{
+			// the value has not changed.
+			return;
+		}
+
 		if ((isNaN(Vixen.ValidateRecurringAdjustment._fltMinCharge)) || (Vixen.ValidateRecurringAdjustment._fltMinCharge <= 0))
 		{
+			Vixen.ValidateRecurringAdjustment._fltCurrentMinCharge = null;
 			return;
 		}
 		
@@ -380,14 +408,12 @@ function VixenValidateRecurringAdjustmentClass()
 	
 	this.MinChargeLostFocus = function()
 	{
-		Vixen.ValidateRecurringAdjustment.GetTextFields();
-		
-		//TODO!
-		// MAKE SURE THIS CAN HANDLE MinCharge not being a number
-		
 		Vixen.ValidateRecurringAdjustment.SetMinChargeTextField();
-		
+	}
 	
+	this.RecursionChargeLostFocus = function()
+	{
+		Vixen.ValidateRecurringAdjustment.SetRecursionChargeTextField();
 	}
 	
 
@@ -403,21 +429,35 @@ function VixenValidateRecurringAdjustmentClass()
 		this._elmRecursionCharge.value	= "$" + (this._fltRecursionCharge).toFixed(2);
 		this._elmMinCharge.value		= "$" + (this._fltMinCharge).toFixed(2);
 		this._elmTimesToCharge.value	= this._intTimesToCharge;
+		
+		// store the current values of the text fields
+		this._fltCurrentMinCharge = this._fltMinCharge;
+		this._fltCurrentRecursionCharge = this._fltRecursionCharge;
+		this._intCurrentTimesToCharge = this._intTimesToCharge;
 	}
 
 	this.SetRecursionChargeTextField = function()
 	{
 		this._elmRecursionCharge.value	= "$" + (this._fltRecursionCharge).toFixed(2);
+		
+		// store the current value of the text field
+		this._fltCurrentRecursionCharge = this._fltRecursionCharge;
 	}
 	
 	this.SetMinChargeTextField = function()
 	{
 		this._elmMinCharge.value		= "$" + (this._fltMinCharge).toFixed(2);
+		
+		// store the current value of the text field
+		this._fltCurrentMinCharge = this._fltMinCharge;
 	}
 	
 	this.SetTimesToChargeTextField = function()
 	{
 		this._elmTimesToCharge.value	= this._intTimesToCharge;
+		
+		// store the current value of the text field
+		this._intCurrentTimesToCharge = this._intTimesToCharge;
 	}
 
 }

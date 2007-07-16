@@ -192,7 +192,7 @@ class AppTemplatePayment extends ApplicationTemplate
 		*/
 
 		// Make sure the correct form was submitted
-		if (SubmittedForm('DeleteRecord', 'Delete'))
+		if (SubmittedForm('DeleteRecord'))
 		{
 			$strNoteMsg = "";
 			

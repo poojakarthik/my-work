@@ -114,6 +114,11 @@
 		left:				0px;
 	}
 	
+	.DefaultInvalidInputRadioButtons,
+	.DefaultInvalidInputCheckBox,
+	.DefaultInvalidInputComboBox,
+	.DefaultInvalidInputText,
+	.DefaultInvalidInputTextArea,
 	.DefaultInvalidInput
 	{
 		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
@@ -126,6 +131,14 @@
 		overflow:			hidden;
 		background-color:	#CC66FF;
 	}
+	
+	.DefaultInvalidInputComboBox,
+	.DefaultInvalidInputText,
+	.DefaultInvalidInputTextArea
+	{
+		border:				solid 1px #000000;
+	}
+	
 	
 	.DefaultOutputSpan,
 	.DefaultInvalidOutputSpan
