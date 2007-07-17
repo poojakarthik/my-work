@@ -78,13 +78,6 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		// Load all java script specific to the page here
-		// Note that if you execute any javascript in the Render function, that is included here, it will not have physically included it
-		// in time to execute it.  In that case you will have to explicitly include the javascript file in the Render method
-		// For example: echo "<script type='text/javascript' src='javascript/payment_popup.js'></script>\n";
-		
-		//$this->LoadJavascript("payment_popup");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -110,28 +103,42 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		{
 			case "Payment":
 				echo "<h2 class='Payment'>Reverse Payment</h2>\n";
-				// Display the description for the delete operation
-				DBO()->DeleteRecord->Description->RenderValue();
+				// Display the description for the reverse payment operation
+				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to reverse the payment with the following details?");
+				DBO()->Payment->PaidOn->RenderOutput();
+				DBO()->Payment->Amount->RenderOutput();
+				DBO()->Payment->Balance->RenderOutput();
+				DBO()->Payment->PaymentType->RenderCallback("GetConstantDescription", Array("PaymentType"), RENDER_OUTPUT);
 				DBO()->Payment->Id->RenderHidden();
 				break;
 			case "Adjustment":
 				echo "<h2 class='Adjustment'>Delete Adjustment</h2>\n";
 				// Display the description for the delete operation
-				DBO()->DeleteRecord->Description->RenderValue();
+				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to delete the adjustment with the following details?");
+				DBO()->Charge->CreatedOn->RenderOutput();
+				DBO()->Charge->ChargeType->RenderOutput();
+				DBO()->Charge->Description->RenderOutput();
+				DBO()->Charge->Nature->RenderOutput();
+				DBO()->Charge->Amount->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 				DBO()->Charge->Id->RenderHidden();
 				break;
 			case "RecurringAdjustment":
 				echo "<h2 class='Adjustment'>Cancel Recurring Adjustment</h2>\n";
 				// Display the description for the delete operation
-				DBO()->DeleteRecord->Description->RenderValue();
+				DBO()->DeleteRecord->Description->RenderArbitrary("Are you sure you want to cancel the recurring adjustment with the following details?");
+				DBO()->RecurringCharge->CreatedOn->RenderOutput();
+				DBO()->RecurringCharge->Description->RenderOutput();
+				DBO()->RecurringCharge->MinCharge->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
+				DBO()->RecurringCharge->TotalCharged->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 				
 				// calculate the amount owing on the recurring charge
 				$fltAmountOwing = DBO()->RecurringCharge->MinCharge->Value - DBO()->RecurringCharge->TotalCharged->Value;
-				
 				if ((DBO()->RecurringCharge->Nature->Value == NATURE_DR) && ($fltAmountOwing > 0.0))
 				{	
+					echo "<div class='SmallSeperator'></div>\n";
+					
 					// The recurring charge is a debit.  A charge will be made to cover the remaining minimum cost, and cancellation fee
-					DBO()->DeleteRecord->Description->RenderArbitrary("Warning: Cancelling this adjustment will incur a cost to the customer");
+					DBO()->DeleteRecord->Description->RenderArbitrary("WARNING: Cancelling this adjustment will incur a cost to the customer");
 					
 					DBO()->RecurringCharge->MinCharge->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 					DBO()->RecurringCharge->TotalCharged->RenderCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
@@ -148,6 +155,7 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		}
 		
 		// display the textarea for the accompanying note
+		echo "<div class='Seperator'></div>\n";
 		DBO()->Note->Note->RenderInput();
 		
 		// display the buttons
@@ -156,6 +164,8 @@ class HtmlTemplateDeleteRecord extends HtmlTemplate
 		$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("OK");
 		echo "</div>\n";
+		echo "<div class='SmallSeperator'></div>\n";
+		echo "<div class='Seperator'></div>\n";
 		
 		$this->FormEnd();
 		echo "</div>\n";

@@ -308,20 +308,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
-		/*
-		// Check if the user has admin privileges
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PERMISSION_ADMIN);
-		
-		if (!$bolHasAdminPerm)
-		{
-			// The user does not have permission to delete the adjustment
-			Ajax()->AddCommand("ClosePopup", "DeleteAdjustmentPopupId");
-			Ajax()->AddCommand("Alert", "ERROR: Cannot complete delete operation.\nUser does not have permission to delete adjustment records");
-			Ajax()->AddCommand("LoadCurrentPage");
-			return TRUE;
-		}
-		*/
-
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
 		{
@@ -373,7 +359,15 @@ class AppTemplateAdjustment extends ApplicationTemplate
 					DBO()->Note->Account = DBO()->Charge->Account->Value;
 					DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
 					DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
-					DBO()->Note->Note = "Charge with Id: ". DBO()->Charge->Id->Value ." has been deleted";
+					$strNote  = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']) . " deleted a " . DBO()->Charge->Nature->FormattedValue();
+					$strNote .= " adjustment made on " . DBO()->Charge->CreatedOn->FormattedValue();
+					// add GST to the charge amount
+					$strChargeAmount = OutputMask()->MoneyValue(addGST(DBO()->Charge->Amount->Value), 2, TRUE);
+					$strNote .= " for " . $strChargeAmount . " (inc GST)";
+					$strNote .= "\nAdjustment Id: " . DBO()->Charge->Id->FormattedValue();
+					$strNote .= "\nAdjustment Type: " . DBO()->Charge->ChargeType->FormattedValue();
+					$strNote .= "\nDescription: " . DBO()->Charge->Description->FormattedValue();
+					DBO()->Note->Note = $strNote;
 					
 					if (!DBO()->Note->Save())
 					{
@@ -426,20 +420,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
-		/*
-		// Check if the user has admin privileges
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
-		
-		if (!$bolHasAdminPerm)
-		{
-			// The user does not have permission to delete the recurring adjustment
-			Ajax()->AddCommand("ClosePopup", "DeleteRecurringAdjustmentPopupId");
-			Ajax()->AddCommand("Alert", "ERROR: Cannot complete delete operation.\nUser does not have permission to delete recurring adjustment records");
-			Ajax()->AddCommand("LoadCurrentPage");
-			return TRUE;
-		}
-		*/
-
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))
 		{
@@ -458,10 +438,6 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			{
 				// Declare the transaction
 				TransactionStart();
-			
-				//TODO! work out what needs to be done when deleting a recurring charge
-				//To my understanding I have to archive the RecurringCharge record and if there is a cancellation fee, then 
-				//a charge has to be created equalling the cancellation fee (and possibly the remainder of the minimum charge that is owing)
 				
 				// Set the archive status of the recurring charge to ARCHIVED
 				DBO()->RecurringCharge->Archived = 1;
@@ -542,7 +518,20 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->Note->Account = DBO()->RecurringCharge->Account->Value;
 				DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
 				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
-				DBO()->Note->Note = "Recurring charge with Id: ". DBO()->RecurringCharge->Id->Value ." has been cancelled.";
+				$strNote  = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']) . " cancelled the recurring adjustment created on ";
+				$strNote .= DBO()->RecurringCharge->CreatedOn->FormattedValue(); 
+				$strNote .= "\nRecurring Adjustment Id: " . DBO()->RecurringCharge->Id->FormattedValue();
+				$strNote .= "\nType: " . DBO()->RecurringCharge->ChargeType->FormattedValue();
+				$strNote .= "\nDescription: " . DBO()->RecurringCharge->Description->FormattedValue();
+				$strNote .= "\nNature: " . DBO()->RecurringCharge->Nature->FormattedValue();
+				// add GST to the minimum charge
+				$strMinCharge = OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->MinCharge->Value), 2, TRUE);
+				$strNote .= "\nMinimum Charge: " . $strMinCharge . " (inc GST)";
+				// add GST to the recursion charge
+				$strRecursionCharge = OutputMask()->MoneyValue(addGST(DBO()->RecurringCharge->RecursionCharge->Value), 2, TRUE);
+				$strNote .= "\nRecursion Charge: " . $strRecursionCharge . " (inc GST)";
+				
+				DBO()->Note->Note = $strNote;
 				
 				if (!DBO()->Note->Save())
 				{

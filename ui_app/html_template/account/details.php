@@ -73,9 +73,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 	{
 		switch ($this->_intContext)
 		{
-			case HTML_CONTEXT_SEANS_DETAIL:
-				$this->_RenderSeansDetail();
-				break;
 			case HTML_CONTEXT_LEDGER_DETAIL:
 				$this->_RenderLedgerDetail();
 				break;

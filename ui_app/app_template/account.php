@@ -256,28 +256,29 @@ class AppTemplateAccount extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 
+		
+
 		//Check what sort of record is being deleted
 		switch (DBO()->DeleteRecord->RecordType->Value)
 		{
 			case "Payment":
-				DBO()->DeleteRecord->Description = "Are you sure you want to reverse the payment with payment Id: ". DBO()->Payment->Id->Value ." ?\n";
 				DBO()->DeleteRecord->Application = "Payment";
 				DBO()->DeleteRecord->Method = "Delete";
+				DBO()->Payment->Load();
 				break;
 			case "Adjustment":
-				DBO()->DeleteRecord->Description = "Are you sure you want to delete the adjustment with adjustment Id: ". DBO()->Charge->Id->Value ." ?\n";
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteAdjustment";
+				DBO()->Charge->Load();
 				break;
 			case "RecurringAdjustment":
-				DBO()->RecurringCharge->Load();
-				DBO()->DeleteRecord->Description = "Are you sure you want to cancel the recurring adjustment with Id: ". DBO()->RecurringCharge->Id->Value ." ?\n";
 				DBO()->DeleteRecord->Application = "Adjustment";
 				DBO()->DeleteRecord->Method = "DeleteRecurringAdjustment";
+				DBO()->RecurringCharge->Load();
 				break;
 			default:
-				DBO()->Error->Message = "No record type has been declared to be deleted";
-				$this->LoadPage('error');
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", "ERROR: No record type has been declared to be deleted");
 				return FALSE;
 				break;
 		}

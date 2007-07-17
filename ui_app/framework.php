@@ -1358,6 +1358,11 @@ class OutputMasks
 			$strValue = '$' . $strValue;
 		}
 		
+		if (!$bolIncludeDollarSign)
+		{
+			$strValue = str_replace('$', '', $strValue);
+		}
+		
 		return $strValue;	
 	}
 
