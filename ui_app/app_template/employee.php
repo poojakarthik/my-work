@@ -27,15 +27,15 @@
  */
 
 //----------------------------------------------------------------------------//
-// AppTemplateAccount
+// AppTemplateEmployee
 //----------------------------------------------------------------------------//
 /**
- * AppTemplateAccount
+ * AppTemplateEmployee
  *
- * The AppTemplateAccount class
+ * The AppTemplateEmployee class
  *
- * The AppTemplateAccount class.  This incorporates all logic for all pages
- * relating to Available Plans
+ * The AppTemplateEmployee class.  This incorporates all logic for all pages
+ * relating to Employees
  *
  *
  * @package	ui_app
@@ -44,7 +44,7 @@
  */
 class AppTemplateEmployee extends ApplicationTemplate
 {
-	function ViewEmployees()
+	function View()
 	{
 		// Should probably check user authorization here
 		//TODO!include user authorisation
@@ -78,7 +78,7 @@ class AppTemplateEmployee extends ApplicationTemplate
 		DBL()->Invoice->OrderBy("CreatedOn DESC");
 		DBL()->Invoice->Load();
 		*/
-		if ($_GET['Archived'] != 1)
+		if ($_POST['Archived'] != 1)
 		{
 			DBL()->Employee->Archived = 0;
 		}
@@ -101,8 +101,10 @@ class AppTemplateEmployee extends ApplicationTemplate
 			//Save the employee
 			if (!DBO()->Employee->IsInvalid())
 			{
-				echo "Employee is NOT invalid Employee would be saved";
-				//DBO()->Employee->Save();
+				//echo "Employee is NOT invalid Employee would be saved";
+				DBO()->Employee->Save();
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("Alert", "The information was successfully saved.");
 			}
 		}
 		DBO()->Employee->Load();

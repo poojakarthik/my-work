@@ -168,6 +168,13 @@ function VixenPopupClass()
 				document.addEventListener('mousedown', CloseHandler, TRUE);
 				break;
 			}
+			case "autohide-reload":
+			{
+				// clicking ANYWHERE will close the div
+				//  what about on the div itself?
+				document.addEventListener('mousedown', CloseReloadHandler, TRUE);
+				break;
+			}
 			default:
 			{
 				break;
@@ -250,6 +257,21 @@ function VixenPopupClass()
 			{
 				// MouseDown on page
 				Vixen.Popup.Close(strId);
+				document.removeEventListener('mousedown', CloseHandler, TRUE);
+			}
+		}
+		function CloseReloadHandler(event)
+		{
+			// for AUTOHIDE only
+			if (event.target.id.indexOf(strId) >= 0)
+			{
+				// Top bar, looking to drag
+			}			
+			else
+			{
+				// MouseDown on page
+				Vixen.Popup.Close(strId);
+				window.location = window.location;
 				document.removeEventListener('mousedown', CloseHandler, TRUE);
 			}
 		}

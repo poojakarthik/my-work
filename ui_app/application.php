@@ -244,10 +244,10 @@ class Application
 		$this->objAppTemplate = new $strClass;
 		
 		$this->objAppTemplate->SetMode(HTML_MODE);
-		
+	
 		// Run AppTemplate
 		$this->objAppTemplate->{$strMethod}();
-		
+
 		// Render Page
 		$this->objAppTemplate->Page->Render();
 	}

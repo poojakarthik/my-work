@@ -245,6 +245,37 @@ function Ajax()
 	return $objAjaxFramework;
 }
 
+//------------------------------------------------------------------------//
+// PermCheck
+//------------------------------------------------------------------------//
+/**
+ * PermCheck()
+ *
+ * Checks a set of permissions to the permission passed in
+ * 
+ * Checks a set of permissions to the permission passed in
+ * 
+ *
+ * @param		int		$intPermSet	set of permissions to check against
+ * @param		int		$intPerm	permission to check set against
+ * @return		bool				
+ * @method
+ *
+ */
+function PermCheck($intPermSet, $intPerm)
+{
+	// Do a binary 'AND' between the user's privilages and the paramerter
+	$intChecked = $intPermSet & $intPerm;
+	
+	// If the user has all the privileges defined in $intPerms, then $intChecked will equal $intPerms
+	if ($intChecked == $intPerm)
+	{
+		return TRUE;
+	}
+	
+	return FALSE;
+}
+
 
 //------------------------------------------------------------------------//
 // PropertyToken

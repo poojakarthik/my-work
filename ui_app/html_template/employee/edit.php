@@ -136,7 +136,20 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 		DBO()->Employee->Phone->RenderInput();
 		DBO()->Employee->Mobile->RenderInput();
 		DBO()->Employee->Password->RenderInput();
-		DBO()->Employee->Archived->RenderInput();	
+		DBO()->Employee->Archived->RenderInput();
+		
+		// Control the display of the permissions lists
+		foreach ($GLOBALS['Permissions'] as $intKey => $strValue)
+		{
+			if (PermCheck(DBO()->Employee->Privileges->Value, $intKey))
+			{
+				$strSelectedPerms .= "<option value='$intKey'>$strValue</option>";
+			}
+			else
+			{
+				$strAvailPerms .= "<option value='$intKey'>$strValue</option>";
+			}
+		}
 		
 		echo "<p><h2 class='Permissions'> Permissions</h2>
               
@@ -154,7 +167,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 							</tr>
 							<tr>
 								<td>
-									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection'  multiple='multiple'></select>
+									<select id='AvailablePermissions' name='AvailablePermissions[]' size='8' class='SmallSelection'  multiple='multiple'>$strAvailPerms</select> 
 								</td>
 								<td>
 									<div>
@@ -166,12 +179,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 									</div>
 								</td>
 								<td>
-									<select id='SelectedPermissions' name='Employee.Privileges' size='8' class='SmallSelection' valueIsList>
-										<option value='16'>Accounts</option>
-										<option value='2'>Admin</option>
-										<option value='4'>Operator</option>
-										<option value='1'>Public</option>
-										<option value='8'>Sales</option>
+									<select id='SelectedPermissions' name='Employee.Privileges' size='8' class='SmallSelection' multiple='multiple' valueIsList>$strSelectedPerms
 									</select>
 								</td>
 							</tr>
@@ -187,7 +195,7 @@ class HtmlTemplateEmployeeEdit extends HtmlTemplate
 			  //echo "<script type='text/javascript'>document.innerHTML;</script>";
 			  //echo "<a href='Javascript:this.document.forms[0].elements[0].name;' target='_blank'>asdf</a>";
 			  //echo "<a href='Javascript:this.document.innerHTML;' target='_new'>adsg</a>";
-			  $this->AjaxSubmit('Save', HTML_MODE);
+			  $this->AjaxSubmit('Save');
 			  $this->FormEnd();
 	}
 

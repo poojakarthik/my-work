@@ -207,12 +207,13 @@ function VixenAjaxClass()
 		switch (objObject.TargetType)
 		{
 			case "Div":
+			//case "Page":
 			case "Popup":
 				objObject.HtmlMode = TRUE;
 				break;
 			default:
 		}
-	
+
 		// callback binder
 		function bindcallback()
 		{
@@ -302,6 +303,8 @@ function VixenAjaxClass()
 						break;
 					case "Div":
 						break;
+					//case "Page":
+						//break;
 					default:
 						ajaxError(null, strReply);
 				}
@@ -327,11 +330,11 @@ function VixenAjaxClass()
 					break;
 				case "Alert":
 					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>";
-					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre');
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide');
 					break;
 				case "AlertReload":
-					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = window.location;'><br></div>";
-					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre');
+					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");'><br></div>";
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide-reload');
 					break;
 				case "LoadCurrentPage":
 					window.location.reload();

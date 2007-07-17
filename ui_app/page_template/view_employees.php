@@ -24,7 +24,7 @@ $this->Page->SetLayout('1Column');
 //$this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);
 
 
-$this->Page->AddObject('EmployeeDetails', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
+$this->Page->AddObject('EmployeeView', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
 
 //$this->Page->AddObject('InvoiceList', COLUMN_ONE, HTML_CONTEXT_LEDGE_DETAIL);
 

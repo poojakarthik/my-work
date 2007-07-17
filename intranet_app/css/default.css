@@ -737,13 +737,11 @@
 	h2.CostCentre,
 	h2.Bug
 	{
-		background-repeat:             no-repeat;
-		background-position:           top left;
-		
-		padding-top:                   10px;
-		padding-left:                  70px;
-		
-		height:                        50px;
+		background-repeat:		no-repeat;
+		background-position:	bottom left;
+		padding-left:			22px;
+		margin-bottom:			5px;
+		height:					21px;
 	}
 	
 	h2.CDR
