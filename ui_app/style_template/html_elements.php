@@ -472,6 +472,12 @@ class HTMLElements
 	{
 		$mixValue = $arrParams['Value'];
 		
+		// if the property is equal to null, then convert this to zero
+		if ($mixValue === NULL)
+		{
+			$mixValue = 0;
+		}
+		
 		if (!is_array($arrParams['Definition']['Options']))
 		{
 			return "HtmlElements->Radio: ERROR: no options are specified for property {$arrParams['Object']}.{$arrParams['Property']}";
@@ -490,25 +496,42 @@ class HTMLElements
 		{
 			// check if this is the option that is currently selected
 			$strChecked = "";
+
 			if ($mixValue == $arrOption['Value'])
 			{
 				$strChecked = "checked";
 			}
-			
+
+			//convert any \n placesholders in the radio option's label to actual new line chars and then convert these to <br> tags
+			$strOptionLabel = str_replace("\\n", "\n", $arrOption['InputLabel']);
+			$strOptionLabel = nl2br($strOptionLabel);
+
 			// create the name and id for the radio button
 			$strName 	= $arrParams['Object'] .".". $arrParams['Property'];
 			//$strId		= $strRadioName ."(". $arrOption['Value'] .")";
 			$strId		= $strRadioName ."_". $arrOption['Value'];
 			
 			// define the button
-			$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
-			$strHtml .= "      <input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
-			$strHtml .= "      <label id='$strId.Label' for='$strId'>{$arrOption['InputLabel']}</label>\n";
-			$strHtml .= "   </div>\n";
+			$strHtml .= "   <table border=0 cellspacing=0 cellpadding=0 class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
+			$strHtml .= "      <tr>\n";
+			$strHtml .= "         <td>\n";
+			$strHtml .= "            <input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
+			$strHtml .= "         </td>\n";
+			$strHtml .= "         <td>\n";
+			$strHtml .= "            <div><label id='$strId.Label' for='$strId'>$strOptionLabel</label></div>\n";
+			$strHtml .= "         </td>\n";
+			$strHtml .= "      </tr>\n";
+			$strHtml .= "   </table>\n";
+			
+			// Old method of rendering the radio buttons, which doesn't handle new line chars
+			//$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
+			//$strHtml .= "      <input type='radio' name='$strName' id='$strId' value='{$arrOption['Value']}' $strChecked $strDisabled></input>\n";
+			//$strHtml .= "      <label id='$strId.Label' for='$strId'>$strOptionLabel</label>\n";
+			//$strHtml .= "   </div>\n";
 		}
 		
 		$strHtml .= "</div>\n";
-		
+
 		return $strHtml;
 	}
 
