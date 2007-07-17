@@ -181,7 +181,7 @@ class Page
 	 * @return	string					unique id for the object. ($strId if specified as a parameter)
 	 * @method
 	 */
-	function AddObject($strName, $intColumn, $intContext, $strId=NULL)
+	function AddObject($strName, $intColumn, $intContext=HTML_CONTEXT_DEFAULT, $strId=NULL)
 	{
 		// set UID for this object
 		if ($strId)
