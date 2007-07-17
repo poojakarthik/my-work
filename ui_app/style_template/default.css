@@ -1,3 +1,72 @@
+/**************************************************************************/
+/* ViXen CSS file														  */
+/*																		  */
+/* Contains these sections:												  */
+/* 	GENERIC																  */							
+/*	DIVS																  */																		
+/*	IMAGES																  */
+/*	DEFAULT I/O															  */
+/*	POSITIONS															  */	
+/*	COLOURS																  */
+/*	SIZES																  */
+/*	BLOCK LAYOUTS														  */
+/*	TABLES																  */
+/*	MENUS																  */
+/*	TITLES																  */
+/*	HEADER																  */
+/*	BUTTONS															  	  */
+/*	SEPARATORS															  */
+/*	INPUTS																  */
+/*	POPUPS																  */
+/*	TOOLTIPS														   	  */
+/*	DISPLAY FORMATS														  */
+/*	TASKBAR														  		  */
+/**************************************************************************/
+
+/**************************************************************************/
+/* GENERIC																  */
+/**************************************************************************/
+	input, select
+	{
+		font-family:		"Nimbus Sans NL", Tahoma, sans-serif;
+		margin-bottom:		1px;
+		border:				solid 1px #000000;
+	}
+	
+	img
+	{
+		border:               0;
+	}
+	
+	h1
+	{
+		color:                #006599;
+		
+		font-size:            18pt;
+		
+		margin-top:           0;
+		
+		margin-bottom:			20px;
+		padding-bottom:			5px;
+		
+		border-bottom:			solid 1px #006599;
+	}
+	
+	h2
+	{
+		margin:              0;
+		font-size:           12pt;
+	}
+	
+	h3
+	{
+		margin-top:          20px;
+		margin-left:         0;
+		margin-right:        0;
+		margin-bottom:       0;
+		font-size:           12pt;
+	}
+	
 	body
 	{
 		margin:				0px;
@@ -5,7 +74,20 @@
 		line-height:		18pt;
 		font-size:			10pt;
 	}
+
+	form
+	{
+		margin:               0;
+	}
 	
+	label
+	{
+		cursor:              pointer;
+	}
+	
+/**************************************************************************/
+/* DIVS														  			  */
+/**************************************************************************/
 	div#PageBody
 	{
 		margin-left:		75px;
@@ -19,7 +101,46 @@
 		margin-top:			10px;
 		/*width:				450px;*/
 	}
+	
+	div#Header
+	{
+		background-color:     #000000;
+		color:                #FFFFFF;
+		
+		padding:              10px;
+		
+		background-image:     url('img/template/background.png');
+		background-repeat:    repeat-x;
+	}
+	
+	div#Header a
+	{
+		color:                #FFFFFF;
+	}
+	
 
+	
+/**************************************************************************/
+/* IMAGES														  		  */
+/**************************************************************************/	
+	.Logo
+	{
+		position:	absolute;
+		left:		1px;
+		top:		1px;
+		z-index:	1000000;
+	}
+	
+	.LogoSpacer
+	{
+		float:		left;
+		height:		1px;
+		width:		70px;
+	}	
+	
+/**************************************************************************/
+/* DEFAULT I/O															  */
+/**************************************************************************/
 	.Default
 	{
 	}
@@ -170,12 +291,55 @@
 	{
 		display: none;
 	}
-		
+
+/**************************************************************************/
+/* POSITIONS													  		  */
+/**************************************************************************/
+	.Left
+	{
+		float:                left;
+	}
+	
+	.Right
+	{
+		float:                right;
+	}
+	
+/**************************************************************************/
+/* COLOURS														  		  */
+/**************************************************************************/
 	.Red
 	{
 		color:               #CC0000;
 	}
+	
+	.Green
+	{
+		color:               #008000;
+	}
 
+	.Blue
+	{
+		color:               #006599;
+	}
+	
+/**************************************************************************/
+/* SIZES														  		  */
+/**************************************************************************/
+	.small
+	{
+		font-size:          smaller;
+	}
+	
+	.Large
+	{
+		font-size:			35px;
+		line-height:		150%;
+	}
+	
+/**************************************************************************/
+/* BLOCK LAYOUTS														  */
+/**************************************************************************/
 	.WideContent
 	{
 		margin:              0;
@@ -221,31 +385,35 @@
 		width:				 300px;
 	}
 	
-	.PopupMedium,
-	.PopupLarge
+	.Wide-Form
 	{
 		margin:              0;
-		padding-top:         0px;
-		padding-left:        0px;
+		padding-top:         5px;
+		padding-left:        5px;
 		padding-right:       0px;
-		padding-bottom:      0px;
+		padding-bottom:      5px;
 		
-		/*border:              solid 1px #D1D1D1;*/
-		/*background-color:    #F3F3F3;*/
-	}
-
-	.PopupMedium
-	{
-		width:				 440px;
+		border:              solid 1px #D1D1D1;
+		background-color:    #F3F3F3;
+		width:				 875px;
 	}
 	
-
-	.PopupLarge
+	.Narrow-Form
 	{
-		width:				 690px;
+		margin:              0;
+		padding-top:         5px;
+		padding-left:        5px;
+		padding-right:       0px;
+		padding-bottom:      5px;
+		
+		border:              solid 1px #D1D1D1;
+		background-color:    #F3F3F3;
+		width:				 425px;
 	}
 
-
+/**************************************************************************/
+/* TABLES																  */
+/**************************************************************************/
 	.VixenTableDetail
 	{
 		background-color:	#D4D4D4;
@@ -255,7 +423,67 @@
 		height:				auto;
 	}
 
+	table.Listing
+	{
+		border:              solid 1px #C1C1C1;
+	}
+	
+	table.Listing tr.First th
+	{
+		border-bottom:       solid 1px #C1C1C1;
+		
+		background-repeat:   repeat-x;
+		background-image:    url('img/template/table_first_bg.png');
+		
+		background-color:    #45a0f3;
+		color:               #FFFFFF;
+		
+		font-size:			 10pt;
+	}
+	
+	table.Listing .Icon
+	{
+		width:               20px;
+	}
+	
+	table.Listing tr.First th a
+	{
+		color:               #FFFFFF;
+		text-decoration:     none;
+	}
+	
+	table.Listing tr.Odd th,
+	table.Listing tr.Odd td
+	{
+		background-color:    #FFFFFF;
+	}
+	
+	table.Listing tr.Even th,
+	table.Listing tr.Even td
+	{
+		background-color:    #D5E0F8;
+	}
 
+	table.Listing tr.Archived td
+	{
+		background-color:    #C0C0C0;
+	}
+
+	table.Listing tr.Selected th,
+	table.Listing tr.Selected td
+	{
+		background-color:    #99FF33;
+	}
+	
+	table.Listing tr.Hover th,
+	table.Listing tr.Hover td
+	{
+		background-color:    #FFFFAA;
+	}
+	
+/**************************************************************************/
+/* MENUS																  */
+/**************************************************************************/
 	.ContextMenu
 	{
 		float:				left;
@@ -286,6 +514,14 @@
 		left:				5px;
 	}
 	
+	.MenuIcon
+	{
+		border:              solid 1px #999999;
+	}
+	
+/**************************************************************************/
+/* TITLES															  	  */
+/**************************************************************************/
 	h2.CDR,
 	h2.Plan,
 	h2.Date,
@@ -350,6 +586,7 @@
 	{
 		background-image:              url('img/template/charge.png');
 	}
+	
 	h2.Address
 	{
 		background-image:              url('img/template/address.png');
@@ -455,45 +692,42 @@
 		background-image:              url('img/template/lady-debug.png');
 	}
 	
-	h1
+
+/**************************************************************************/
+/* HEADER															  	  */
+/**************************************************************************/
+	.sectionContent
 	{
-		color:                #006599;
-		
-		font-size:            18pt;
-		
-		margin-top:           0;
-		
-		margin-bottom:			20px;
-		padding-bottom:			5px;
-		
-		border-bottom:			solid 1px #006599;
+		margin:               auto;
+	}
+
+	.Clear
+	{
+		clear:                both;
+	}
+
+/**************************************************************************/
+/* BUTTONS															  	  */
+/**************************************************************************/	
+	.Menu_Button
+	{
+		display:                       inline;
+		margin-left:                   30px;
+		line-height:                   20px;
+		vertical-align:                bottom;
 	}
 	
-	h2
+	.Debug_Button
 	{
-		margin:              0;
-		font-size:           12pt;
+		display:                       inline;
+		margin-left:                   5px;
+		line-height:                   20px;
+		vertical-align:                bottom;
 	}
 	
-	h3
-	{
-		margin-top:          20px;
-		margin-left:         0;
-		margin-right:        0;
-		margin-bottom:       0;
-		font-size:           12pt;
-	}
-	
-	.Left
-	{
-		float:                left;
-	}
-	
-	.Right
-	{
-		float:                right;
-	}
-	
+/**************************************************************************/
+/* SEPARATORS															  */
+/**************************************************************************/
 	.Seperator
 	{
 		height:               20px;
@@ -513,7 +747,15 @@
 	{
 		height:               0px;
 	}
+		
+	.ColumnSpacer
+	{
+		width:					30px;
+	}
 	
+/**************************************************************************/
+/* INPUTS																  */
+/**************************************************************************/
 	input.InputSubmit,
 	input.InputSubmitDisabled
 	{
@@ -587,6 +829,14 @@
 		font-size:			10pt;
 	}
 
+	input.time
+	{
+		width:               50px;
+	}
+	
+/**************************************************************************/
+/* POPUPS																  */
+/**************************************************************************/
 	.PopupBox
 	{
 		position: absolute;
@@ -618,6 +868,30 @@
 		padding: 3px;
 	}
 	
+	.PopupMedium,
+	.PopupLarge
+	{
+		margin:              0;
+		padding-top:         0px;
+		padding-left:        0px;
+		padding-right:       0px;
+		padding-bottom:      0px;
+		
+		/*border:              solid 1px #D1D1D1;*/
+		/*background-color:    #F3F3F3;*/
+	}
+
+	.PopupMedium
+	{
+		width:				 440px;
+	}
+	
+
+	.PopupLarge
+	{
+		width:				 690px;
+	}
+	
 	#overlay {
      position: absolute;
      left: 0px;
@@ -628,747 +902,30 @@
 	 background-color:	#000000;
 	 opacity: .50;
 	}
+	
+/**************************************************************************/
+/* TOOLTIPS																  */
+/**************************************************************************/
+
 	.VixenTooltip
 	{
 		border: 1px solid #000000;
 		background-color: #ffffff;
 		z-index: 100001;
 	}
-
-
-/******************************************************************************/
 	
-	img
-	{
-		border:               0;
-	}
-	
-	.Clear
-	{
-		clear:                both;
-	}
-	
-	.ColumnSpacer
-	{
-		width:					30px;
-	}
-	
-	.Logo
-	{
-		position:	absolute;
-		left:		1px;
-		top:		1px;
-		z-index:	1000000;
-	}
-	
-	.LogoSpacer
-	{
-		float:		left;
-		height:		1px;
-		width:		70px;
-	}
-	
-	.Navigation
-	{
-		position: 	fixed;
-		top:		70px;
-		left:		1px;
-	}
-	
-	div#Header
-	{
-		background-color:     #000000;
-		color:                #FFFFFF;
-		
-		padding:              10px;
-		
-		background-image:     url('img/template/background.png');
-		background-repeat:    repeat-x;
-	}
-	
-	div#Header a
-	{
-		color:                #FFFFFF;
-	}
-	
-	.sectionContent
-	{
-		margin:               auto;
-	}
-	
-	div#Controller
-	{
-		margin:               10px;
-	}
-	
-	div#Content
-	{
-		padding:              10px;
-		
-		width:					950px;
-	}
-	
-	.Nbsp
-	{
-			padding-left:        5px;
-	}
-	
-	.Wide-Form
-	{
-		margin:              0;
-		padding-top:         5px;
-		padding-left:        5px;
-		padding-right:       0px;
-		padding-bottom:      5px;
-		
-		border:              solid 1px #D1D1D1;
-		background-color:    #F3F3F3;
-		width:				 875px;
-	}
-	
-	.Narrow-Form
-	{
-		margin:              0;
-		padding-top:         5px;
-		padding-left:        5px;
-		padding-right:       0px;
-		padding-bottom:      5px;
-		
-		border:              solid 1px #D1D1D1;
-		background-color:    #F3F3F3;
-		width:				 425px;
-	}
-	
-	.FormPopup
-	{
-		margin:              0;
-		padding-top:         5px;
-		padding-left:        5px;
-		padding-right:       0px;
-		padding-bottom:      5px;
-		
-		border:              solid 1px #D1D1D1;
-		background-color:    #F3F3F3;
-		width:				 716px;
-	}
-	
-	.Form-Content
-	{
-		margin-right:        20px;
-	}
-	
-	.Required
-	{
-		width:				10px;
-		padding:			0px;
-	}
-	
-
-	div.MsgNoticeNarrow,
-	div.MsgNoticeWide,
-	div.MsgNoticeModal
-	{
-		border:              solid 1px #868735;
-		background-color:    #FFFFC0;
-		
-		background-image:    url('img/template/MsgNotice.png');
-		background-repeat:   no-repeat;
-		background-position: top left;
-		
-		padding-top:         5px;
-		padding-left:        40px;
-		padding-right:       5px;
-		padding-bottom:      5px;
-		
-		line-height:         25px;
-		
-		margin-bottom:       10px;
-	}
-	
-	div.MsgNoticeNarrow
-	{
-		width:					385px;
-	}
-	
-	div.MsgNoticeWide
-	{
-		width:					835px;
-	}
-	
-	div.MsgNoticeModal
-	{
-		width:					693px;
-	}
-	
-	div.MsgErrorNarrow,
-	div.MsgErrorWide,
-	div.MsgErrorModal
-	{
-		border:              solid 1px #CC0000;
-		background-color:    #f2dbdb;
-		
-		background-image:    url('img/template/MsgError.png');
-		background-repeat:   no-repeat;
-		background-position: top left;
-		
-		padding-top:         5px;
-		padding-left:        40px;
-		padding-right:       5px;
-		padding-bottom:      5px;
-		
-		line-height:         25px;
-		
-		margin-bottom:       10px;
-	}
-	
-	div.MsgErrorNarrow
-	{
-		width:					385px;
-	}
-	
-	div.MsgErrorWide
-	{
-		width:					835px;
-	}
-	
-	div.MsgErrorModal
-	{
-		width:					100%;
-	}
-	
-
-	
-	form
-	{
-		margin:               0;
-	}
-	
-		
-	.thRight
-	{
-		text-align:				right;
-	}
-	
-	
-	input, select
-	{
-		font-family:         "Nimbus Sans NL", Tahoma, sans-serif;
-	}
-	
-	textarea.input-summary
-	{
-		border:              solid 1px #919191;
-		width:               100%;
-		padding:             3px;
-	}
-	
-	textarea.input-summary-note
-	{
-		border:              solid 1px #868735;
-		background-color:    #FFFFC0;
-		
-		width:               100%;
-		
-		padding:             3px;
-	}
-	
-	input.input-string,
-	input.input-string2,
-	input.input-ABN,
-	input.input-ACN,
-	input.input-ABN-incomplete,
-	input.input-ACN-incomplete
-	{
-		border:              solid 1px #919191;
-		
-		padding:             3px;
-		
-		width:				180px;
-	}
-	
-	input.input-string2
-	{
-		width:			85px;
-	}
-	input.input-string-valid
-	{
-		border:              solid 1px #89b100;
-		background-color:    #f1f7e1;
-		padding:             3px;
-		width:				180px;
-	}
-	
-	input.input-label
-	{
-		border:              solid 1px #868735;
-		background-color:    #FFFFC0;
-		padding:             3px;
-
-	}
-	
-	
-	input.input-ABN-valid,
-	input.input-ACN-valid
-	{
-		border:              solid 1px #89b100;
-		background-color:    #f1f7e1;
-		padding:             3px;
-		width:				180px;
-		
-	}
-	
-	input.input-invalid,
-	input.input-ABN-invalid,
-	input.input-ACN-invalid
-	{
-		border:              solid 1px #CC0000;
-		background-color:    #f2dbdb;
-		padding:             3px;
-		width:				180px;
-	}
-	
-	
-	input.input-drop
-	{
-		border:              solid 1px #919191;
-		vertical-align:		 bottom;
-		padding:             3px;
-	}
-	
-	div#Notices
-	{
-		border-left:         solid 1px #999999;
-		
-		padding-top:         0;
-		padding-left:        20px;
-		padding-right:       0;
-		padding-bottom:      0;
-		
-		width:               350px;
-	}
-	
-	.MenuIcon
-	{
-		border:              solid 1px #999999;
-	}
-	
-	.monospace
-	{
-		font-family:		monospace;
-	}
-	
-	label
-	{
-		cursor:              pointer;
-	}
-	
-	table.Listing
-	{
-		border:              solid 1px #C1C1C1;
-	}
-	
-	table.Listing tr.First th
-	{
-		border-bottom:       solid 1px #C1C1C1;
-		
-		background-repeat:   repeat-x;
-		background-image:    url('img/template/table_first_bg.png');
-		
-		background-color:    #45a0f3;
-		color:               #FFFFFF;
-		
-		font-size:			 10pt;
-	}
-	
-	table.Listing .Icon
-	{
-		width:               20px;
-	}
-	
-	table.Listing tr.First th a
-	{
-		color:               #FFFFFF;
-		text-decoration:     none;
-	}
-	
-	table.Listing tr.Odd th,
-	table.Listing tr.Odd td
-	{
-		background-color:    #FFFFFF;
-	}
-	
-	table.Listing tr.Even th,
-	table.Listing tr.Even td
-	{
-		background-color:    #D5E0F8;
-	}
-
-	table.Listing tr.Archived td
-	{
-		background-color:    #C0C0C0;
-	}
-
-	table.Listing tr.Selected th,
-	table.Listing tr.Selected td
-	{
-		background-color:    #99FF33;
-	}
-	
-	table.Listing tr.Hover th,
-	table.Listing tr.Hover td
-	{
-		background-color:    #FFFFAA;
-	}
-	
+/**************************************************************************/
+/* DISPLAY FORMATS														  */
+/**************************************************************************/	
 	.Currency
 	{
-		text-align:          right;
 		
 		font-family:		"Courier New", monospace;
 	}
-	
-	a.Label:Link,
-	a.Label:Visited
-	{
-		color:               #45a0f3;
-		border-bottom:       dashed 1px #45a0f3;
-		text-decoration:     none;
-		cursor:              help;
-		font-size:			 10pt;
-	}
-	
-	input.input-link,
-	a:Link
-	{
-		color:               #3366cc;
-	}
-	
-	a:Visited
-	{
-		color:               #45a0f3;
-	}
-	
-	input.time
-	{
-		width:               50px;
-	}
-	
-	.Somebody_doesn_t_know_about_spacing th
-	{
-		padding-right: 10px;
-	}
-	
-	th.JustifiedWidth
-	{
-		width:               150px;
-	}
-	
-	tr.Required th
-	{
-		background-color:    #ae4545;
-		color:               #FFFFFF;
-	}
-	
-	.Indent
-	{
-		margin-left:         25px;
-	}
-	
-	.LargeSelection
-	{
-		width:               325px;
-	}
-	
-	.SmallSelection
-	{
-		width:               180px;
-	}
-	
-	/*select
-	{
-		border:              solid 1px #919191;
-		background-color:    #ffffff;
-		padding:             3px;
-	}
-	
-	select.select-valid
-	{
-		border:              solid 1px #89b100;
-		background-color:    #f1f7e1;
-		padding:             3px;
-	}
-	
-	select.select-invalid	
-	{
-		border:              solid 1px #CC0000;
-		background-color:    #f2dbdb;
-		padding:             3px;
-	}*/
-	
-	table.summary-table
-	{
-		border:              solid 1px #000000;
-	}
-	
-	td.summary-blank
-	{
-		background-color:    #FFFFFF;
-	}
-	
-	td.summary-single
-	{
-		background-color:    #45a0f3;
-	}
-	
-	td.summary-overlap
-	{
-		background-color:    #CC0000;
-	}
-	
-	td.cell-0
-	{
-		border-left:         solid 1px #000000;
-	}
-	
-	.black-border-top
-	{
-		border-top:          solid 1px #000000;
-	}
-	
-	.black-border
-	{
-		border:              solid 1px #000000;
-	}
-	
-	div#Navigation
-	{
-		width:               50px;
-	}
-	
-	ul#Navigation-Root
-	{
-		margin-left:         0;
-		padding-left:        0;
-	}
-	
-	ul#Navigation-Root > li
-	{
-		list-style-type:     none;
-	}
-	
-	ul#Navigation-Root > li
-	{
-		margin-bottom:       20px;
-	}
-	
-	.Green
-	{
-		color:               #008000;
-	}
 
-
-	.Blue
-	{
-		color:               #006599;
-	}
-	
-	.Large
-	{
-		font-size:			35px;
-		line-height:		150%;
-	}
-	
-	.Note
-	{
-		padding:            5px;
-	}
-	
-	.small
-	{
-		font-size:          smaller;
-	}
-	
-	.Attention
-	{
-		color:               #CC0000;
-		border-bottom:       dashed 1px #CC0000;
-		font-weight:         bold;
-	}
-	
-	
-	.Menu_Button
-	{
-		display:                       inline;
-		margin-left:                   30px;
-		line-height:                   20px;
-		vertical-align:                bottom;
-	}
-	
-	.Debug_Button
-	{
-		display:                       inline;
-		margin-left:                   5px;
-		line-height:                   20px;
-		vertical-align:                bottom;
-	}
-
-	
-	#modalContent-ReportBug,
-	#modalContent-systemDebug,
-	#modalContent-domDebug,
-	#modalContent-recentCustomers,
-	#modalContent-PabloSays,
-	#modalContent-Popup
-	{
-		display:				none;
-	}
-	
-	.modalContainer
-	{
-		width:					760px;
-		padding:				5px;
-		background-color:		#FFFFFF;
-		border:					solid 1px #000000;
-	}
-	
-	.modalContent
-	{
-		height:					340px;
-		margin:					5px;
-		padding:				5px;
-		overflow-y:				auto;
-	}
-	
-	.modalIcon, .modalLabel, .modalClose
-	{
-		padding:				5px;
-		font-family:			Tahoma, Arial, Helvetica, sans-serif;
-		font-size:				8pt;
-	}
-	
-	.modalLabel
-	{
-		line-height:			200%;
-	}
-	
-	.modalClose
-	{
-		margin-top:				14px;
-		margin-right:			14px;
-		margin-bottom:			14px;
-		cursor:					pointer;
-	}
-	
-	.modalClose img
-	{
-		vertical-align:			middle;
-	}
-	
-	#modalContent-recentCustomers .modalContent tbody td
-	{
-		cursor:					pointer;
-	}
-	
-	.LinkEdit
-	{
-		text-align: Right;
-	}
-	
-	.LinkAdd
-	{
-		text-align: Right;
-	}
-	
-	#QuickList
-	{
-		margin-top:				0;
-		margin-left:			0;
-		margin-right:			0;
-		margin-bottom:			0;
-		
-		padding-left:			0;
-		white-space:			nowrap;
-	}
-	
-	#QuickList li
-	{
-		display:				inline;
-		list-style-type:		none;
-	}
-
-	#QuickList a
-	{
-		padding:				3px 10px;
-		text-decoration:		none;
-	}
-	
-	#QuickList a:link, #QuickList a:visited
-	{
-		color:					#fff;
-		background-color:		#036;
-		text-decoration:		none;
-	}
-
-	#QuickList a:hover
-	{
-		color:					#fff;
-		background-color:		#369;
-		text-decoration:		none;
-	}
-	
-	tr.RecentCustomers td
-	{
-		cursor:					pointer;
-	}
-
-	.PopupBox
-	{
-		position: absolute;
-		border: 1px solid #000000;
-		background-color: #ffffff;
-		z-index: 1001;
-	}
-
-	.PopupBox_TopBar
-	{
-		font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
-		font-size: 10pt;
-		line-height: 18pt;
-		color: #FFFFFF;
-		background-color: #000000;
-		background-image:     url('img/template/background.png');
-		background-repeat:    repeat-x;
-		padding: 0px;
-		margin: 0px;
-		padding-left: 5px;
-		cursor: default;
-		
-	}
-	.PopupBox_Close
-	{
-		float: right;
-		text-align: right;
-		height: 14px;
-		padding: 3px;
-	}
-	#overlay {
-     position: absolute;
-     left: 0px;
-     top: 0px;
-     width:100%;
-     height:100%;
-     z-index: 1000;
-	 background-color:	#000000;
-	 opacity: .50;
-	}
-	.VixenTooltip
-	{
-		border: 1px solid #000000;
-		background-color: #ffffff;
-		z-index: 100001;
-	}
-	
-	/* Taskbar */
+/**************************************************************************/
+/* TASKBAR													   			  */
+/**************************************************************************/
 	.VixenTaskbar
 	{
 		float:			left;
@@ -1438,18 +995,4 @@
 		height:			16px;
 		vertical-align:	text-top;
 		/*border:			1px solid #000000;*/
-	}
-	
-	.MasterWatermark
-	{
-		position:				fixed;
-		opacity:				.25;
-		width:				768px;
-		height:				256px;
-		background-image:		url('img/template/master_watermark.png');
-		background-position:	center center;
-		background-repeat:		no-repeat;
-		margin-left:			auto;
-		margin-right:			auto;
-		text-align:			left;
 	}
