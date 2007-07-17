@@ -136,32 +136,43 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "<div class='NarrowContent'>\n";
 
 		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments', $_GET);
+		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
 		
 		// Render the Id of the Account as a hidden input
 		DBO()->Account->Id->RenderHidden();
 
+		// Use a table to stick the account details and the checkbox and radio buttons next to each other
+
+		echo "<table border=0 cellspacing=0 cellpadding=0>\n";
+		echo "   <tr>\n";
+		echo "      <td>\n";
 		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-
-
+		echo "      </td>\n";
+		
+		echo "      <td>\n";
 		// Render the properties that can be changed
 		DBO()->Account->DisableDDR->RenderInput();
 		DBO()->Account->DisableLatePayment->RenderInput();
+		echo "      </td>\n";
+		echo "   </tr>\n";
+		echo "</table>\n";
+
 		
 		// Render the submit button
 		echo "<div class='Right'>\n";
 		//echo "   <input type='submit' class='input-submit' value='Apply Changes' />\n";
 		//$this->AjaxSubmit("Apply Changes");
-		$this->Submit("Apply Changes");
+		$this->AjaxSubmit("Apply Changes");
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
+		
 		// Declare the end of the form
 		$this->FormEnd();
 	}

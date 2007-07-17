@@ -34,7 +34,7 @@
 $this->Page->SetName('Invoices and Payments');
 
 // set the layout template for the page.
-$this->Page->SetLayout('2Column');
+$this->Page->SetLayout('2Column_75_25');
 
 // add the Html Objects to their respective columns
 $this->Page->AddObject('AccountDetails', COLUMN_ONE, HTML_CONTEXT_LEDGER_DETAIL);

@@ -140,10 +140,20 @@ class AppTemplateAccount extends ApplicationTemplate
 			{
 				// update the record in the Account table
 				DBO()->Account->SetColumns("DisableDDR, DisableLatePayment");
-				DBO()->Account->Save();
 				
-				// reset the columns, so that they are all retrived when the data is loaded
-				DBO()->Account->SetColumns();
+				// Save the payment to the payment table of the vixen database
+				if (!DBO()->Account->Save())
+				{
+					// The account details could not be updated
+					Ajax()->AddCommand("AlertReload", "ERROR: The Account could not be updated.");
+					return TRUE;
+				}
+				else
+				{
+					// The account details were successfully updated
+					Ajax()->AddCommand("AlertReload", "The Account details have been successfully updated.");
+					return TRUE;
+				}
 			}
 		}
 		
