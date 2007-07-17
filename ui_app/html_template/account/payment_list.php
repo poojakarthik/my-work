@@ -128,9 +128,48 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 				// Check if the payment can be reversed
 				if ($dboPayment->Status->Value != PAYMENT_REVERSED)
 				{
-					// build the "Delete Payment" link
-					$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
-					$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Reverse Payment' /></a></span>";
+					$bolOldEtechPaymentWithNoInvoices = FALSE;
+					// Check if the payment is an old Etech one which can't be reversed
+					if (($dboPayment->Status->Value == PAYMENT_FINISHED) && ($dboPayment->Balance->Value == 0))
+					{
+						$bolHasInvoice = FALSE;
+						
+						// Check if there are any invoices related to this payment
+						foreach (DBL()->InvoicePayment as $dboInvoicePayment)
+            			{
+							if ($dboInvoicePayment->Payment->Value == $dboPayment->Id->Value)
+							{
+								// The current InvoicePayment record relates to the payment.
+								// Find the invoice that relates to this InvoiceRun
+								foreach (DBL()->Invoice as $dboInvoice)
+								{
+									if ($dboInvoice->InvoiceRun->Value == $dboInvoicePayment->InvoiceRun->Value)
+									{
+										// An invoice has been found
+										$bolHasInvoice = TRUE;
+									}
+								}
+							}
+						}
+						
+						// If the current payment has no invoices associated with it, then it is an old Etech one which can't be reversed
+						if (!$bolHasInvoice)
+						{
+							$bolOldEtechPaymentWithNoInvoices = TRUE;
+						}
+            		}
+					
+					if ($bolOldEtechPaymentWithNoInvoices)
+					{
+						// Payment cannot be reversed, but should be marked as being a special case
+						$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><img src='img/template/etech_payment_notice.png' title=\"Etech payment which can't be reversed\" /></span>";
+					}
+					else
+					{
+						// build the "Reverse Payment" link
+						$strDeletePaymentHref  = Href()->DeletePayment($dboPayment->Id->Value);
+						$strDeletePaymentLabel = "<span class='DefaultOutputSpan Default'><a href='$strDeletePaymentHref'><img src='img/template/delete.png' title='Reverse Payment' /></a></span>";
+					}
 				}
 				else
 				{
