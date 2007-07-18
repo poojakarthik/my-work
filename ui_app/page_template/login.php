@@ -3,13 +3,25 @@
 	//$strPageURL=$_SERVER['HTTP_REFERER'];
 	//echo $strPageURL;
 	
+
+	$arrScript = explode('.php', $_SERVER['REQUEST_URI'], 2);
+	$intLastSlash = strrpos($arrScript[0], "/");
+	$strBaseDir = substr($arrScript[0], 0, $intLastSlash + 1);
+	if ($_SERVER['HTTPS'])
+	{
+		$strBaseDir = "https://{$_SERVER['SERVER_NAME']}$strBaseDir";
+	}
+	else
+	{
+		$strBaseDir = "http://{$_SERVER['SERVER_NAME']}$strBaseDir";
+	}
 	
 
 ?>
 
 <html xmlns="http://www.w3.org/1999/xhtml"><head><title>TelcoBlue.com.au Internal Systems Login</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-
+<base href='<?php echo $strBaseDir ?>'/>
 </head>
 <script type="text/javascript" src="javascript/sha1.js"></script>
 

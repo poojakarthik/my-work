@@ -192,7 +192,7 @@ function _LoadDirectoryListing($strPath)
  */
 class Application
 {
-
+	public $_intMode;
 	//------------------------------------------------------------------------//
 	// Load INCOMPLETE
 	//------------------------------------------------------------------------//
@@ -268,6 +268,7 @@ class Application
 	 */
 	function AjaxLoad()
 	{
+		$this->_intMode = AJAX_MODE;
 		// get submitted data
 		$objSubmit = new SubmittedData();
 		$objAjax = $objSubmit->Ajax();
@@ -404,7 +405,17 @@ class Application
 			// If the employee could not be found, return false
 			if ($selSelectStatement->Count () <> 1)
 			{
-				require_once("page_template/login.php");
+				if ($this->_intMode == AJAX_MODE)
+				{
+					Ajax()->AddCommand("Reload");
+					Ajax()->Reply();
+					die;
+				}
+				else
+				{				
+					require_once("page_template/login.php");
+					die;
+				}	
 			}
 			
 			// If we reach this part of the Method, the session is authenticated.
@@ -506,8 +517,18 @@ class Application
 		else
 		{
 			// ask user to login, then return to page
-			require_once("page_template/login.php");
-			exit;
+			if ($this->_intMode == AJAX_MODE)
+			{
+				Ajax()->AddCommand("Reload");
+				Ajax()->Reply();
+				die;
+			}
+			else
+			{				
+				require_once("page_template/login.php");
+				die;
+			}	
+		exit;
 		}
 
 	}

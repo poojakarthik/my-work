@@ -341,6 +341,9 @@ function VixenAjaxClass()
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide-reload');
 					break;
+				case "Reload":
+					window.location = window.location;
+					break;
 				case "LoadCurrentPage":
 					window.location.reload();
 					break;
