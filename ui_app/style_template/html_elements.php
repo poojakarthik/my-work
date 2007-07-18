@@ -421,6 +421,10 @@ class HTMLElements
 
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		$strHtml .= "   <div class='{$arrParams['Definition']['BaseClass']}InputCheckBox {$arrParams['Definition']['Class']}'>\n";
+		if ($arrParams['Required'])
+		{
+			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
+		}		
 		$strHtml .= "      <input type='checkbox' id='$strName' $strChecked $strDisabled \n";
 		
 		// include the onchange javascript to handle the changing of the checkbox

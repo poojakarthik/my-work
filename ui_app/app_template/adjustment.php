@@ -98,6 +98,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				
 				// Date the adjustment was created (the current date)
 				DBO()->Charge->CreatedOn	= GetCurrentDateForMySQL();
+				DBO()->Charge->ChargedOn	= GetCurrentDateForMySQL();
 				
 				// Details regarding the type of charge
 				DBO()->Charge->ChargeType	= DBO()->ChargeType->ChargeType->Value;
@@ -221,15 +222,15 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->RecurringCharge->ApprovedBy		= NULL;
 				
 				// Date the adjustment was created (the current date)
-				DBO()->RecurringCharge->CreatedOn		= GetCurrentDateForMySQL();
+				$strCurrentDate = GetCurrentDateForMySQL();
+				DBO()->RecurringCharge->CreatedOn		= $strCurrentDate;
+				DBO()->RecurringCharge->StartedOn		= $strCurrentDate;
+				DBO()->RecurringCharge->LastChargedOn	= $strCurrentDate;
 				
 				// Details regarding the type of charge
 				DBO()->RecurringCharge->ChargeType			= DBO()->RecurringChargeType->ChargeType->Value;
 				DBO()->RecurringCharge->Description			= DBO()->RecurringChargeType->Description->Value;
 				DBO()->RecurringCharge->Nature				= DBO()->RecurringChargeType->Nature->Value;
-				
-				DBO()->RecurringCharge->StartedOn			= "";
-				DBO()->RecurringCharge->LastChargedOn		= NULL;
 				
 				DBO()->RecurringCharge->RecurringFreqType	= DBO()->RecurringChargeType->RecurringFreqType->Value;
 				DBO()->RecurringCharge->RecurringFreq		= DBO()->RecurringChargeType->RecurringFreq->Value;

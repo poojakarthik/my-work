@@ -185,6 +185,13 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		DBO()->ChargeType->Nature->RenderOutput();
 		
 		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST, TRUE);
+		// if the charge type has a fixed amount then disable the amount textbox
+		if ($arrChargeTypes[$intChargeTypeId]['Fixed'])
+		{
+			echo "<script type='text/javascript'>document.getElementById('Charge.Amount').disabled = TRUE;</script>\n";
+		}
+		
+
 		
 		// Create a combo box containing the last 6 invoices associated with the account
 		echo "<div class='DefaultElement'>\n";

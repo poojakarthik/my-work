@@ -145,13 +145,13 @@ function VixenValidateAdjustmentClass()
 		if (this._objChargeTypeData[intChargeTypeId].Fixed == 1)
 		{
 			// disable the charge amount textbox
-			document.getElementById('Charge.Amount').disabled = true;
+			document.getElementById('Charge.Amount').disabled = TRUE;
 			document.getElementById('InvoiceComboBox').focus();
 		}
 		else
 		{
 			// enable the charge amount textbox
-			document.getElementById('Charge.Amount').disabled = false;
+			document.getElementById('Charge.Amount').disabled = FALSE;
 			document.getElementById('Charge.Amount').focus();
 		}
 	}

@@ -2448,14 +2448,10 @@ class MenuItems
 	{
 		switch ($strName)
 		{
-			case "ViewAccount":
-				$this->strLabel	= "acc : $intId";
-				return "account_view.php?Account.Id={$arrParams[0]}";
-				break;
 			case "Logout":
 				return "logout.php";
 				break;
-			case "Console":
+			case "AdminConsole":
 				return "console.php";
 				break;
 			default;

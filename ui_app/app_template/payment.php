@@ -203,7 +203,7 @@ class AppTemplatePayment extends ApplicationTemplate
 				$strErrorMsg .= DBO()->Payment->Account->AsOutput();
 				$strErrorMsg .= DBO()->Payment->Amount->AsOutput();
 				$strErrorMsg .= DBO()->Payment->Status->AsCallback("GetConstantDescription", Array("PaymentStatus"), RENDER_OUTPUT);
-				$strErrorMsg .= "</div>";
+				$strErrorMsg .= "</div>\n";
 				
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 				Ajax()->AddCommand("AlertReload", $strErrorMsg);
