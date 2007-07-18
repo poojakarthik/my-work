@@ -188,9 +188,12 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 
-		DBO()->Payment->Amount->RenderInput();
-		DBO()->Payment->TXNReference->RenderInput();
+		DBO()->Payment->Amount->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->Payment->TXNReference->RenderInput(CONTEXT_DEFAULT, TRUE);
 		
+		// output the manditory field message
+		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
+
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
 		
@@ -202,6 +205,9 @@ class HtmlTemplateAccountPaymentAdd extends HtmlTemplate
 		echo "</div>\n";
 		
 		$this->FormEnd();
+		
+		// give the AccountCombo initial focus
+		echo "<script type='text/javascript'>document.getElementById('AccountCombo').focus();</script>\n";
 		echo "</div>\n";
 	}
 }

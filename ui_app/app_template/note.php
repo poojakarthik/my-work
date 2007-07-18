@@ -169,8 +169,8 @@ class AppTemplateNote extends ApplicationTemplate
 			}
 			else
 			{
-				// Something was invalid 
-				DBO()->Status->Message = "The Note could not be saved. Invalid fields are shown in red";
+				// Something was invalid
+				DBO()->Status->Message = "The Note could not be saved. Invalid fields are highlighted.";
 			}
 		}
 		

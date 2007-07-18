@@ -184,7 +184,7 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		DBO()->ChargeType->Nature = $arrChargeTypes[$intChargeTypeId]['Nature'];
 		DBO()->ChargeType->Nature->RenderOutput();
 		
-		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST);
+		DBO()->Charge->Amount->RenderInput(CONTEXT_INCLUDES_GST, TRUE);
 		
 		// Create a combo box containing the last 6 invoices associated with the account
 		echo "<div class='DefaultElement'>\n";
@@ -212,7 +212,10 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		echo "</div>\n";
 
 		// Create a textbox for including a note
-		DBO()->Charge->Notes->RenderInput(CONTEXT_DEFAULT, TRUE);
+		DBO()->Charge->Notes->RenderInput(CONTEXT_DEFAULT);
+		
+		// output the manditory field message
+		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
 		
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
@@ -227,8 +230,11 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 		// define the data required of the javacode that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrChargeTypes);
 		
+		// Set the charge types in the javascript object that handles interactions with this popup window
 		echo "<script type='text/javascript'>Vixen.ValidateAdjustment.SetChargeTypes($strJsonCode);</script>\n";
 
+		// give the ChargeTypeCombo initial focus
+		echo "<script type='text/javascript'>document.getElementById('ChargeTypeCombo').focus();</script>\n";
 		
 		$this->FormEnd();
 		echo "</div>\n";

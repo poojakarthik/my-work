@@ -102,11 +102,6 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "<div class='PopupLarge'>\n";
 		echo "<h2 class='Adjustment'>Add Recurring Adjustment</h2>\n";
 		
-		// HACK HACK HACK
-		// currently this javascript file has to be included here, otherwise it is not instantiated before other calls
-		// to it get executed
-		//echo "<script type='text/javascript' src='javascript/validate_recurring_adjustment.js'></script>\n";
-		
 		$this->FormStart("AddRecurringAdjustment", "Adjustment", "AddRecurring");
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
@@ -207,10 +202,10 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		DBO()->RecurringChargeType->RecurringFreq->RenderArbitrary($strRecurringFreq, RENDER_OUTPUT);
 
 		// display the Minimum Charge
-		DBO()->RecurringCharge->MinCharge->RenderInput(CONTEXT_INCLUDES_GST);
+		DBO()->RecurringCharge->MinCharge->RenderInput(CONTEXT_INCLUDES_GST, TRUE);
 
 		// display the RecursionCharge
-		DBO()->RecurringCharge->RecursionCharge->RenderInput(CONTEXT_INCLUDES_GST);
+		DBO()->RecurringCharge->RecursionCharge->RenderInput(CONTEXT_INCLUDES_GST, TRUE);
 		
 		// create the TimesToCharge textbox
 		echo "<div class='DefaultElement'>\n";
@@ -225,6 +220,9 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		echo "   <div class='DefaultLabel'>End Date:</div>\n";
 		echo "   <div id='EndDate' class='DefaultOutput'>&nbsp;</div>\n";
 		echo "</div>\n";
+		
+		// output the manditory field message
+		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
 		
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
@@ -241,8 +239,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 
 		$intCurrentChargeTypeId = DBO()->RecurringChargeType->Id->Value;
 		echo "<script type='text/javascript'>Vixen.ValidateRecurringAdjustment.InitialiseForm($strJsonCode, $intCurrentChargeTypeId);</script>\n";
-		
-		
+				
 		$this->FormEnd();
 		echo "</div>\n";
 	}

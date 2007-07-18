@@ -139,7 +139,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			else
 			{
 				// Something was invalid 
-				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are shown in red";
+				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are highlighted";
 			}
 		}
 		
@@ -265,7 +265,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			else
 			{
 				// Something was invalid 
-				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are shown in red";
+				DBO()->Status->Message = "Adjustment could not be saved. Invalid fields are highlighted";
 			}
 		}
 		

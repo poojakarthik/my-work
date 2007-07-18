@@ -145,7 +145,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 		echo "<table border=0 cellspacing=0 cellpadding=0>\n";
 		echo "   <tr>\n";
-		echo "      <td>\n";
+		echo "      <td width='65%'>\n";
 		// Render the details of the Account
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
@@ -154,7 +154,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
 		echo "      </td>\n";
 		
-		echo "      <td>\n";
+		echo "      <td width='35%'>\n";
 		// Render the properties that can be changed
 		DBO()->Account->DisableDDR->RenderInput();
 		DBO()->Account->DisableLatePayment->RenderInput();
@@ -171,7 +171,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
+		echo "<div class='SmallSeperator'></div>\n";
 		
 		// Declare the end of the form
 		$this->FormEnd();

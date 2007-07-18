@@ -116,13 +116,18 @@ function VixenPopupClass()
 				
 		this.strContentCode = strContent;
 		
-		strContent = 
-		"<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
-		"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(" + strTempId + ")'>" + 
-		"<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()'>" +
-		"TelcoBlue Internal System" +
-		"</div>" + 
-		"<div id='VixenPopupContent__" + strId + "'>" + strContent + "</div>";
+		strContent = "<div id='VixenPopupTopBar__" + strId + "' class='PopupBoxTopBar'>" +
+						"<img src='img/template/close.png' class='PopupBoxClose' onclick='Vixen.Popup.Close(" + strTempId + ")'>";
+		
+		// only display the debug button if we are operating in debug mode
+		if (DEBUG_MODE)
+		{
+			strContent += "<img src='img/template/debug.png' class='PopupBoxClose' onclick='Vixen.Popup.ViewContentCode()'>";
+		}
+		
+		strContent += "TelcoBlue Internal System" +
+						"</div>" + 
+						"<div id='VixenPopupContent__" + strId + "'>" + this.strContentCode + "</div>";
 		
 
 		// Add the popup to the holder

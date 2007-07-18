@@ -214,7 +214,7 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
+	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=FALSE)
 	{
 		echo $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired);
 		
@@ -263,7 +263,7 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
+	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE)
 	{
 		$intContext = $this->_CalculateContext($intContext);
 		
@@ -350,7 +350,7 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	private function _BuildParams($intContext, $strType=RENDER_OUTPUT, $bolRequired=NULL)
+	private function _BuildParams($intContext, $strType=RENDER_OUTPUT, $bolRequired=FALSE)
 	{
 		$arrParams = Array();
 		$arrParams['Object'] 		= $this->_dboOwner->_strName;

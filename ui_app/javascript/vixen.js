@@ -113,9 +113,9 @@ function VixenRootClass()
 		{
 			var keycode = evt.which;
 		}
-		
-		// prevent enter key being pressed
-		if (keycode == 13)
+
+		// prevent enter key being pressed, unless it is on a button or submit button
+		if ((keycode == 13) && (evt.target.type != "button") && (evt.target.type != "submit"))
 		{
 			// stupid browsers
 			if (evt.srcElement && !evt.srcElement.aphplix_id)

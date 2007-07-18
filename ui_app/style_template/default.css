@@ -145,6 +145,11 @@
 	{
 	}
 	
+	.RequiredInput
+	{
+		color:               #CC0000;
+	}
+	
 	.DefaultLabel,
 	.DefaultInvalidLabel
 	{
@@ -250,7 +255,7 @@
 		top:				0px;
 		/*height:				20px;*/
 		overflow:			hidden;
-		background-color:	#CC66FF;
+		background-color:	#FA8072;
 	}
 	
 	.DefaultInvalidInputComboBox,

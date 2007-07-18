@@ -177,7 +177,7 @@ function VixenAjaxClass()
 			objSend.Objects[strObjectName][strPropertyName] = mixValue;
 		}			
 
-		
+		/*
 		// Output each Object.Property stored in objSend.Objects
 		for (strObject in objSend.Objects)
 		{
@@ -186,7 +186,7 @@ function VixenAjaxClass()
 				alert("objSend.Objects."+ strObject +"."+ strProperty +" = "+ objSend.Objects[strObject][strProperty]);
 			}
 		}
-		
+		*/
 
 		// send object
 		this.Send(objSend);
@@ -330,11 +330,15 @@ function VixenAjaxClass()
 					Vixen.Popup.Close(objInput[intKey].Data);
 					break;
 				case "Alert":
-					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>";
+					strContent = "<p><div align='center'>" + objInput[intKey].Data + 
+									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
+									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide');
 					break;
 				case "AlertReload":
-					strContent = "<p><div align='center'>" + objInput[intKey].Data + "<p><input type='submit' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");'><br></div>";
+					strContent = "<p><div align='center'>" + objInput[intKey].Data + 
+									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = window.location;'><br></div>\n" +
+									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide-reload');
 					break;
 				case "LoadCurrentPage":

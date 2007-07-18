@@ -643,14 +643,16 @@ class DBObject extends DBObjectBase
 		if ($this->_arrProperties[$this->_strIdColumn] > 0)
 		{
 			// Update by Id
-			return (bool)$this->UpdateById($this->_strTable, $this->_arrColumns, $this->_arrProperties);
+			$mixReturnValue = $this->UpdateById($this->_strTable, $this->_arrColumns, $this->_arrProperties);
+			return ($mixReturnValue !== FALSE);
 		}
 		else
 		{
 			// Insert, and set the new Id
 			if ($mixResult = $this->Insert($this->_strTable, $this->_arrColumns, $this->_arrProperties))
 			{
-				return (bool)($this->_arrProperties[$this->_strIdColumn] = $mixResult);
+				$mixReturnValue = ($this->_arrProperties[$this->_strIdColumn] = $mixResult);
+				return ($mixReturnValue !== FALSE);
 			}
 			else
 			{

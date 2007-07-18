@@ -139,7 +139,7 @@ class AppTemplatePayment extends ApplicationTemplate
 			else
 			{
 				// Something was invalid 
-				DBO()->Status->Message = "The Payment could not be saved. Invalid fields are shown in red";
+				DBO()->Status->Message = "The Payment could not be saved. Invalid fields are highlighted.";
 			}
 		}
 		
@@ -176,20 +176,6 @@ class AppTemplatePayment extends ApplicationTemplate
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
-
-		/*
-		// Check if the user has admin privileges
-		$bolHasAdminPerm = AuthenticatedUser()->UserHasPerm(PRIVILEGE_ADMIN);
-		
-		if (!$bolHasAdminPerm)
-		{
-			// The user does not have permission to delete the adjustment
-			Ajax()->AddCommand("ClosePopup", "DeletePaymentPopupId");
-			Ajax()->AddCommand("Alert", "ERROR: Cannot complete payment reverse operation.\nUser does not have permission to reverse payment records");
-			Ajax()->AddCommand("LoadCurrentPage");
-			return TRUE;
-		}
-		*/
 
 		// Make sure the correct form was submitted
 		if (SubmittedForm('DeleteRecord'))

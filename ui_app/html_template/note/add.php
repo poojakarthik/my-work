@@ -132,7 +132,7 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		
 		DBO()->Account->Id->RenderOutput();
 		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Note->Note->RenderInput();
+		DBO()->Note->Note->RenderInput(CONTEXT_DEFAULT, TRUE);
 		
 		// create a combobox containing all Note Types
 		echo "<div class='DefaultElement'>\n";
@@ -165,6 +165,9 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		echo "   </div>\n";
 		echo "</div>\n";
 		
+		// output the manditory field message
+		echo "<div class='DefaultElement'><span class='RequiredInput'>*</span> : Required Field</div>\n";
+		
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
 		
@@ -174,6 +177,9 @@ class HtmlTemplateNoteAdd extends HtmlTemplate
 		$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 		$this->AjaxSubmit("Add Note");
 		echo "</div>\n";
+		
+		// give the Note text area initial focus
+		echo "<script type='text/javascript'>document.getElementById('Note.Note').focus();</script>\n";
 		
 		$this->FormEnd();
 		echo "</div>\n";
