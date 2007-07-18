@@ -2167,6 +2167,38 @@ class MenuItems
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"EmailPDFInvoicePopupId\", \"medium\", \"Invoice\", \"EmailPDFInvoice\", $strJsonCode)";
 	}
+	
+	//------------------------------------------------------------------------//
+	// RatesList
+	//------------------------------------------------------------------------//
+	/**
+	 * RatesList()
+	 *
+	 * Compiles the javascript to be executed when the RatesList menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the RatesList menu item is clicked
+	 * 
+	 * @param	int		$intId		id of the account associated with the invoice to email
+	 * @param	int		$intYear	year part of the date of the invoice to email
+	 * @param	int		$intMonth	month part of the date of the invoice to email
+	 *
+	 * @return	string				action to be executed when the AddNotes menu item is clicked
+	 *
+	 * @method
+	 */
+	function RatesList($intId)
+	{
+		$this->strLabel	= "rates list";
+		
+		// Setup data to send
+		$arrData['Objects']['RatePlan']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RatesListPopupId\", \"large\", \"Plan\", \"RateList\", $strJsonCode)";
+	}
+	
 
 	//------------------------------------------------------------------------//
 	// AddAdjustment

@@ -109,13 +109,17 @@ class HtmlTemplatePlanList extends HtmlTemplate
 		$this->FormEnd();
 		echo "<div class='Seperator'></div>\n";
 		
-		Table()->PlanTable->SetHeader("Name", "Service Type");
-		Table()->PlanTable->SetWidth("60%", "40%");
-		Table()->PlanTable->SetAlignment("Left", "Left");
+		Table()->PlanTable->SetHeader("Name", "Service Type", "&nbsp;");
+		Table()->PlanTable->SetWidth("57%", "37%", "6%");
+		Table()->PlanTable->SetAlignment("Left", "Left", "Center");
 
 		foreach (DBL()->RatePlan as $dboPlan)
 		{
-			Table()->PlanTable->AddRow($dboPlan->Name->AsValue(), GetConstantDescription($dboPlan->ServiceType->Value, 'ServiceType'));									
+			//build Rates Summary link
+			$strRatesHref = Href()->RatesList($dboPlan->Id->Value);
+			$strRatesLabel = "<span class='DefaultOutputSpan Default'><a href='$strRatesHref'><img src='img/template/charge.png' title='Rates Summary' /></a></span>";
+			
+			Table()->PlanTable->AddRow($dboPlan->Name->AsValue(), GetConstantDescription($dboPlan->ServiceType->Value, 'ServiceType'), $strRatesLabel);									
 		
 		
 			// Set the drop down detail
