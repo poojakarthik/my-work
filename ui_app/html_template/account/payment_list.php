@@ -109,20 +109,29 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		if ($bolHasAdminPerm)
 		{
 			// User has admin permisions and can therefore delete a payment
-			Table()->PaymentTable->SetHeader("Date", "Amount", "&nbsp;");
-			Table()->PaymentTable->SetWidth("40%", "50%", "10%");
-			Table()->PaymentTable->SetAlignment("Left", "Right", "Center");
+			Table()->PaymentTable->SetHeader("Date", "&nbsp;", "Amount", "&nbsp;");
+			Table()->PaymentTable->SetWidth("30%", "10%", "50%", "10%");
+			Table()->PaymentTable->SetAlignment("Left", "Left", "Right", "Center");
 		}
 		else
 		{
 			// User cannot delete payments
-			Table()->PaymentTable->SetHeader("Date", "Amount");
-			Table()->PaymentTable->SetWidth("30%", "70%");
-			Table()->PaymentTable->SetAlignment("Left", "Right");
+			Table()->PaymentTable->SetHeader("Date", "&nbsp;", "Amount");
+			Table()->PaymentTable->SetWidth("30%", "10%", "60%");
+			Table()->PaymentTable->SetAlignment("Left", "Left", "Right");
 		}
 		
 		foreach (DBL()->Payment as $dboPayment)
 		{
+			if ($dboPayment->Status->Value == PAYMENT_REVERSED)
+			{
+				$strStatus = $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"));
+			}
+			else
+			{
+				$strStatus = "&nbsp;";
+			}
+			
 			if ($bolHasAdminPerm)
 			{
 				// Check if the payment can be reversed
@@ -178,12 +187,12 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 				}
 				
 				// Add this row to Payment table
-				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $dboPayment->Amount->AsValue(), $strDeletePaymentLabel);
+				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $strStatus, $dboPayment->Amount->AsValue(), $strDeletePaymentLabel);
 			}
 			else
 			{
 				// Add this row to Payment table
-				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $dboPayment->Amount->AsValue());
+				Table()->PaymentTable->AddRow($dboPayment->PaidOn->AsValue(), $strStatus, $dboPayment->Amount->AsValue());
 			}
 			
 			// initialise variables

@@ -224,7 +224,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Note->Load();
 		DBL()->NoteType->Load();
 		
-		
 		// Calculate the Account Balance
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 
