@@ -164,7 +164,7 @@ function VixenPopupClass()
 				//alert(window.innerHeight);
                 elmOverlay.style.height	= Math.max(document.body.offsetHeight, window.innerHeight);
 				
-				// This line currently isn't working because document.body.offsetWidth does not return the width of the document.  
+				// BUG! FIXIT! FIX IT! TODO! This line currently isn't working because document.body.offsetWidth does not return the width of the document.  
 				// (Not like how document.body.offsetHeight does, anyway)
 				// The Vixen title bar always resizes horizontally to fit the window, maybe you should check out how it does it
 				elmOverlay.style.width	= Math.max(document.body.offsetWidth, window.innerWidth);
