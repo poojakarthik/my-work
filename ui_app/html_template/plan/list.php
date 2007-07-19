@@ -119,7 +119,7 @@ class HtmlTemplatePlanList extends HtmlTemplate
 			$strRatesHref = Href()->RatesList($dboPlan->Id->Value);
 			$strRatesLabel = "<span class='DefaultOutputSpan Default'><a href='$strRatesHref'><img src='img/template/charge.png' title='Rates Summary' /></a></span>";
 			
-			Table()->PlanTable->AddRow($dboPlan->Name->AsValue(), GetConstantDescription($dboPlan->ServiceType->Value, 'ServiceType'), $strRatesLabel);									
+			Table()->PlanTable->AddRow($dboPlan->Name->AsValue(), $dboPlan->ServiceType->AsCallBack('GetConstantDescription', Array('ServiceType')), $strRatesLabel);									
 		
 		
 			// Set the drop down detail

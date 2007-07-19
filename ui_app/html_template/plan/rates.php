@@ -103,7 +103,7 @@ class HtmlTemplatePlanRates extends HtmlTemplate
 				}
 				
 				//Misc strings to store things to pass as AsArbitrary
-				$strCharge = OutputMask()->MoneyValue(DBO()->Rate->StdRatePerUnit->Value, 2, TRUE) . " per " . DBO()->Rate->StdUnits->Value . " " . $GLOBALS['RecordDisplayRateSuffix'][DBO()->RecordType->DisplayType->Value]; 
+				$strCharge = OutputMask()->MoneyValue(DBO()->Rate->StdRatePerUnit->Value, 4, TRUE) . " per " . DBO()->Rate->StdUnits->Value . " " . $GLOBALS['RecordDisplayRateSuffix'][DBO()->RecordType->DisplayType->Value]; 
 				$strDaysAvailable = DBO()->Rate->Monday->AsValue() . " " . 
 									DBO()->Rate->Tuesday->AsValue() . " " . 
 									DBO()->Rate->Wednesday->AsValue() . " " . 
