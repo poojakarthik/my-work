@@ -123,6 +123,7 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 		
 		foreach (DBL()->Payment as $dboPayment)
 		{
+			// Reversed payments have to be obvious when looking at the table
 			if ($dboPayment->Status->Value == PAYMENT_REVERSED)
 			{
 				$strStatus = $dboPayment->Status->AsCallBack("GetConstantDescription", Array("PaymentStatus"));

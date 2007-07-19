@@ -329,12 +329,10 @@ class Application
 	 */
 	function CheckAuth()
 	{
-		//var_dump($_COOKIE);die;
+		// If there is a cookie then use it to find the details of the user and check if their session is still valid
 		if (isset($_COOKIE['Id']) && isset($_COOKIE['SessionId']))
 		{
-			//var_dump($_COOKIE);
-			//print_r($cookie1);
-			//print_r($cookie2);
+			// Find the employee information for the employee declared in the cookie
 			$selAuthenticated = new StatementSelect(
 					"Employee",
 					"*", 
@@ -345,56 +343,37 @@ class Application
 				
 			$intRowsReturned = $selAuthenticated->Execute(Array("Id" => $_COOKIE['Id'], "SessionId" => $_COOKIE['SessionId']));
 			$arrAuthentication = $selAuthenticated->Fetch();
-			//echo "::::::";
-			//var_dump($intRowsReturned);
-			//echo "::::::";
+
+			// check if an employee could be found
 			if ($intRowsReturned)
 			{
+				// Employee was found.
+				$bolLoggedIn = TRUE;
+				
 				//Load user object from db
 				$this->_arrUser = $arrAuthentication;
-
-				//save new session details in db
-				if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
-				{
-					$arrUpdate = Array("SessionExpire" => new MySQLFunction("ADDTIME(NOW(), SEC_TO_TIME(" . GOD_TIMEOUT . "))"));
-					$intTime = time() + GOD_TIMEOUT;
-				}
-				else
-				{
-					$arrUpdate = Array("SessionExpire" => new MySQLFunction("ADDTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
-					$intTime = time() + USER_TIMEOUT;
-				}
-				$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
-				$updUpdateStatement->Execute($arrUpdate, Array("Id" => $_COOKIE['Id']));
-
-				
-				//cookie setup
-				$this->_arrCookie = Array();
-				$this->_arrCookie["Id"]["Value"] = $_COOKIE['Id'];
-				$this->_arrCookie["Id"]["ExpDate"] = $intTime;
-				$this->_arrCookie["SessionId"]["Value"] = $_COOKIE['SessionId'];
-				$this->_arrCookie["SessionId"]["ExpDate"] = $intTime;
-				//print_r($this->_arrCookie);
 			}
 			else
 			{
-				$this->_arrUser = "";
+				// the employee could not be found
+				$this->_arrUser = NULL;
+				$bolLoggedIn = FALSE;
 			}
 		}
 		else
 		{
-			$this->_arrUser = "";
+			// There was no cookie found
+			$this->_arrUser = NULL;
+			$bolLoggedIn = FALSE;
 		}
-	
-		$bolLoggedIn = FALSE;
-		//Debug($_POST);
+		
+		// Check if the user has just logged in
 		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
 		{
-			// user has logged in
-			// Get the Id of the Employee (Identified by UserName and PassWord combination)
+			// user has just logged in. Get the Id of the Employee (Identified by UserName and PassWord combination)
 			$selSelectStatement = new StatementSelect (
 				"Employee", 
-				"Id", 
+				"*", 
 				"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
 				null, 
 				"1"
@@ -402,91 +381,68 @@ class Application
 			
 			$selSelectStatement->Execute(Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword']));
 			
-			// If the employee could not be found, return false
-			if ($selSelectStatement->Count () <> 1)
+			// Check if an employee was found
+			if ($selSelectStatement->Count() == 1)
 			{
-				if ($this->_intMode == AJAX_MODE)
-				{
-					Ajax()->AddCommand("Reload");
-					Ajax()->Reply();
-					die;
-				}
-				else
-				{				
-					require_once("page_template/login.php");
-					die;
-				}	
-			}
-			
-			// If we reach this part of the Method, the session is authenticated.
-			// Therefore, we have to store the Authentication
-			$arrFetch = $selSelectStatement->Fetch ();
-			$intId = $arrFetch ['Id'];
+				// The session is authenticated.
+				// Therefore, we have to store the Authentication
+				$this->_arrUser = $selSelectStatement->Fetch();
 
-			// Generate a new session ID
-			$intSessionId = sha1(uniqid(rand(), true));
-			
-			// Updating information
-			$Update = Array("SessionId" => $intSessionId, "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(),'00:20:00')"));
-			
-			// update the table
-			$updUpdateStatement = new StatementUpdate("Employee", "UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", $Update);
-			
-			// If we successfully update the database table
-			if ($updUpdateStatement->Execute($Update, Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword'])) == 1)
-			{
-				setCookie ("Id", $intId, time () + (60 * 20), "/");
-				setCookie ("SessionId", $intSessionId, time () + (60 * 20), "/");
+				// We have to create a new session Id for the user
+				$this->_arrUser['SessionId'] = sha1(uniqid(rand(), true));
+
 				$bolLoggedIn = TRUE;
+			}
+			else
+			{
+				// Could not find the user.  Login failed.
+				$bolLoggedIn = FALSE;
 			}
 		}
 
 		if ($bolLoggedIn)
 		{
-			//var_dump($_COOKIE);
-			$selAuthenticated = new StatementSelect(
-					"Employee",
-					"*", 
-					"Id = <Id> AND SessionId = <SessionId> AND SessionExpire > NOW() AND Archived = 0",
-					null,
-					1
-				);
-				
-			$intRowsReturned = $selAuthenticated->Execute(Array("Id" => $intId, "SessionId" => $intSessionId));
-			$arrAuthentication = $selAuthenticated->Fetch();
-
-			if ($intRowsReturned)
+			//Update the user's session details in the employee table of the database
+			if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
 			{
-				//Load user object from db
-				$this->_arrUser = $arrAuthentication;
-
-				//save new session details in db
-				if ($arrAuthentication['Privileges'] == USER_PERMISSION_GOD)
-				{
-					$arrUpdate = Array("SessionExpire" => new MySQLFunction("ADDTIME(NOW(), SEC_TO_TIME(" . GOD_TIMEOUT . "))"));
-					$intTime = time() + GOD_TIMEOUT;
-				}
-				else
-				{
-					$arrUpdate = Array("SessionExpire" => new MySQLFunction("ADDTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
-					$intTime = time() + USER_TIMEOUT;
-				}
-				$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id>", $arrUpdate);
-				$updUpdateStatement->Execute($arrUpdate, Array("Id" => $intId));
-
-				
-				//cookie setup
-				$this->_arrCookie = Array();
-				$this->_arrCookie["Id"]["Value"] = $intId;
-				$this->_arrCookie["Id"]["ExpDate"] = $intTime;
-				$this->_arrCookie["SessionId"]["Value"] = $intSessionId;
-				$this->_arrCookie["SessionId"]["ExpDate"] = $intTime;
-				//print_r($this->_arrCookie);
+				$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(), SEC_TO_TIME(" . GOD_TIMEOUT . "))"));
+				$intTime = time() + GOD_TIMEOUT;
 			}
 			else
 			{
-				$this->_arrUser = "";
+				$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
+				$intTime = time() + USER_TIMEOUT;
 			}
+
+			// update the table
+			$updUpdateStatement = new StatementUpdate("Employee", "Id = <Id> AND Archived = 0", $arrUpdate);
+			if ($updUpdateStatement->Execute($arrUpdate, Array("Id"=>$this->_arrUser['Id'])) === FALSE)
+			{
+				// could not update the user's session details in the database.  Mark user as not logged in
+				$bolLoggedIn = FALSE;
+			}
+		}
+		
+		if ($bolLoggedIn)
+		{
+			//set the cookie
+			setCookie("Id", $this->_arrUser['Id'], $intTime, "/");
+			setCookie("SessionId", $this->_arrUser['SessionId'], $intTime, "/");
+		}
+		else
+		{
+			//The user is not logged in.  Redirect them to the login page
+			if ($this->_intMode == AJAX_MODE)
+			{
+				Ajax()->AddCommand("Reload");
+				Ajax()->Reply();
+				die;
+			}
+			else
+			{				
+				require_once("page_template/login.php");
+				die;
+			}	
 		}
 	}
 	
