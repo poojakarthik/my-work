@@ -394,7 +394,7 @@ define("CREDIT_CARD_DINERS"			, 5);
 
 define("INVOICE_EMAIL_CONTENT", "Please find attached your invoice from <custgrp>.\r\n\r\n" .
 								"Regards\r\n\r\n" .
-								"The Team at <custgrp>");
+								"The Team at <custgrp>.");
 define("INVOICE_EMAIL_SUBJECT", "Telephone Billing for <billperiod>.");
 
 // DONKEY (neither TRUE nor FALSE)
