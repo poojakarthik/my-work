@@ -107,22 +107,31 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 		if ($bolHasAdminPerm)
 		{
 			// User has admin permisions and can therefore delete an adjustment
-			Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount", "&nbsp;");
-			Table()->AdjustmentTable->SetWidth("20%", "30%", "40%", "10%");
-			Table()->AdjustmentTable->SetAlignment("left", "left", "right", "center");
+			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;","Amount", "&nbsp;");
+			Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "38%", "10%");
+			Table()->AdjustmentTable->SetAlignment("left", "left", "left", "right", "center");
 		}
 		else
 		{
 			// User cannot delete adjustments
-			Table()->AdjustmentTable->SetHeader("Date", "Code", "Amount");
-			Table()->AdjustmentTable->SetWidth("20%", "30%", "50%");
-			Table()->AdjustmentTable->SetAlignment("left", "left", "right");
+			Table()->AdjustmentTable->SetHeader("Date", "Code", "&nbsp;", "Amount");
+			Table()->AdjustmentTable->SetWidth("20%", "29%", "3%", "48%");
+			Table()->AdjustmentTable->SetAlignment("left", "left", "left", "right");
 		
 		}
 		
 		// add the rows
 		foreach (DBL()->Charge as $dboCharge)
 		{
+			if ($dboCharge->Nature->Value == NATURE_CR)
+			{
+				$strNature = $dboCharge->Nature->AsValue();
+			}
+			else
+			{
+				$strNature = '&nbsp;';
+			}
+		
 			// add the row
 			if ($bolHasAdminPerm)
 			{
@@ -135,12 +144,15 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				}
 				else
 				{
-					$strDeleteAdjustmentLabel = "";
+					$strDeleteAdjustmentLabel = '&nbsp;';
 				}
+				
+				
 				
 				Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
 												//$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
 												$dboCharge->ChargeType->AsValue(),
+												$strNature,
 												$dboCharge->Amount->AsCallback("AddGST"),
 												$strDeleteAdjustmentLabel);
 			}
@@ -149,6 +161,7 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 				Table()->AdjustmentTable->AddRow(	$dboCharge->CreatedOn->AsValue(),
 												//$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")), 
 												$dboCharge->ChargeType->AsValue(),
+												$strNature,
 												$dboCharge->Amount->AsCallback("AddGST"));
 			}
 			

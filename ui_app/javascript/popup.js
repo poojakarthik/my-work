@@ -130,11 +130,18 @@ function VixenPopupClass()
 						"<div id='VixenPopupContent__" + strId + "'>" + this.strContentCode + "</div>";
 		
 
-		// Add the popup to the holder
-		//elmPopup.style.visibility = 'visible';			
+		
+		// initially hide the popup
+		elmPopup.style.visibility = 'hidden';
+		
+		// set the content of the popup
 		elmPopup.innerHTML = strContent;
+		
+		// Add the popup to the PopupFolder element
 		elmRoot = document.getElementById('PopupHolder');
 		elmRoot.appendChild(elmPopup);
+		
+		
 
 		//Going to run into some problems when having multiple popups
 		// on a single page, especially of different types
@@ -148,14 +155,21 @@ function VixenPopupClass()
 				// Create a div to capture all events
 				elmOverlay = document.createElement('div');
 				elmOverlay.setAttribute('Id', 'overlay');
-				elmRoot.appendChild(elmOverlay);
+				
 				elmOverlay.style.zIndex = ++dragObj.zIndex;
 				
 				intScroll = document.body.scrollTop;
                 //document.body.style.overflow = "hidden";
                	//document.body.scrollTop = intScroll;
 				//alert(window.innerHeight);
-                elmOverlay.style.height = Math.max(document.body.offsetHeight, window.innerHeight);
+                elmOverlay.style.height	= Math.max(document.body.offsetHeight, window.innerHeight);
+				
+				// This line currently isn't working because document.body.offsetWidth does not return the width of the document.  
+				// (Not like how document.body.offsetHeight does, anyway)
+				// The Vixen title bar always resizes horizontally to fit the window, maybe you should check out how it does it
+				elmOverlay.style.width	= Math.max(document.body.offsetWidth, window.innerWidth);
+				
+				elmRoot.appendChild(elmOverlay);
                 break;
 				
 				
@@ -219,8 +233,8 @@ function VixenPopupClass()
 		if (mixPosition == "centre")
 		{
 			// center the popup
-			elmPopup.style.left = (window.innerWidth / 2) - (elmPopup.offsetWidth / 2);
-			elmPopup.style.top = ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
+			elmPopup.style.left	= ((window.innerWidth / 2) - (elmPopup.offsetWidth / 2)) + document.body.scrollLeft;
+			elmPopup.style.top	= ((window.innerHeight / 2) - (elmPopup.offsetHeight / 2)) + document.body.scrollTop;
 		}
 		else if (mixPosition == "[object MouseEvent]")
 		{
@@ -246,6 +260,9 @@ function VixenPopupClass()
     		mydragObj = document.getElementById('VixenPopupTopBar__' + strId);
     		mydragObj.addEventListener('mousedown', OpenHandler, false);
 		}
+		
+		// Display the popup
+		elmPopup.style.visibility = 'visible';
 		
 		function OpenHandler(event)
 		{

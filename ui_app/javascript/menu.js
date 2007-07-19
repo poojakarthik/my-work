@@ -81,6 +81,7 @@ function VixenMenuClass(objMenu)
 			elmNode.style['width'] 				= this.config.Level1.width;
 			elmNode.style['height'] 			= this.config.Level1.height;
 			elmNode.style['position'] 			= 'absolute';
+			elmNode.style['zIndex']				= 2;
 			
 			top = top + this.config.Level1.height + this.config.Level1.spacing;
 			
