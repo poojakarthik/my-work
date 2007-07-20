@@ -112,7 +112,7 @@ class AppTemplatePlan extends ApplicationTemplate
 					"AND RecordType.Id = Rate.RecordType ".
 					"AND RatePlanRateGroup.RatePlan = $intRatePlan";
 		DBL()->RateList->Where->SetString($strWhere);
-		DBL()->RateList->OrderBy("RecordType.Description DESC ");
+		DBL()->RateList->OrderBy("Rate.Description ");
 		DBL()->RateList->SetLimit(30);
 		DBL()->RateList->Load();
 		

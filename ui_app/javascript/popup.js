@@ -159,6 +159,7 @@ function VixenPopupClass()
 				elmOverlay.style.zIndex = ++dragObj.zIndex;
 				
 				intScroll = document.body.scrollTop;
+				//intScrollLeft = document.body.scrollLeft;
                 //document.body.style.overflow = "hidden";
                	//document.body.scrollTop = intScroll;
 				//alert(window.innerHeight);
@@ -168,7 +169,6 @@ function VixenPopupClass()
 				// (Not like how document.body.offsetHeight does, anyway)
 				// The Vixen title bar always resizes horizontally to fit the window, maybe you should check out how it does it
 				elmOverlay.style.width	= Math.max(document.body.offsetWidth, window.innerWidth);
-				
 				elmRoot.appendChild(elmOverlay);
                 break;
 				
