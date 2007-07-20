@@ -223,7 +223,7 @@ class Page
 	function Render()
 	{
 		// load required layout
-		require_once(TEMPLATE_BASE_DIR."layout_template/" . strtolower($this->_strPageLayout) . ".php");
+		require_once(TEMPLATE_LAYOUT_DIR . strtolower($this->_strPageLayout) . ".php");
 	}
 	
 	//------------------------------------------------------------------------//

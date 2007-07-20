@@ -34,6 +34,7 @@
 Define ('VIXEN_BASE_DIR', "../");
 Define ('TEMPLATE_BASE_DIR', "../ui_app/");
 Define ('TEMPLATE_STYLE_DIR', "../ui_app/style_template/");
+Define ('TEMPLATE_LAYOUT_DIR', "../ui_app/layout_template/");
 Define ('MODULE_BASE_DIR', "../ui_app/");
 Define ('JAVASCRIPT_BASE_DIR', "../ui_app/");
 
