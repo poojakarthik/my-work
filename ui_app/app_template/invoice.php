@@ -65,14 +65,15 @@ class AppTemplateInvoice extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
-		$arrEmails = Array();
-		$arrEmailList = Array();
+		// Set up some variables to use
+		$arrEmails = Array(); // List of emails from Other Email address box
+		$arrEmailList = Array(); // Emails from checkboxes
 		$arrExploded = Array();
 		$arrPDFtoSend = Array();
 		$intYear = DBO()->Invoice->Year->Value;
 		$intMonth = DBO()->Invoice->Month->Value;
 
-		//check if the form was submitted
+		// check if the form was submitted
 		if (SubmittedForm('EmailPDFInvoice', 'Email Invoice'))
 		{		
 			foreach (DBO()->Email as $strPropertyName=>$mixProperty)
@@ -80,12 +81,14 @@ class AppTemplateInvoice extends ApplicationTemplate
 				// Using the custom email box
 				if ($strPropertyName == "Extra" && $mixProperty->Value != '')
 				{
+					// Load the email to the emails array
 					$arrEmails[] = $mixProperty->Value; 
 				}
 				
 				// Using the checkboxes
 				elseif ($strPropertyName != "Extra" && $mixProperty->Value == 1)
 				{
+					// Load the Contact's info				
 					DBO()->Contact->Id = $strPropertyName;
 					DBO()->Contact->Load();
 					
@@ -97,10 +100,11 @@ class AppTemplateInvoice extends ApplicationTemplate
 					}
 					if (sizeof($arrEmailList) > 1)
 					{
+						// We have emails from checkboxes, merge with $arrEmails
 						array_merge($arrEmails, $arrEmailList);
 					}
 					
-					// Add all emails to internal array
+					// Add emails not in a list (i.e single ones)
 					$arrEmails[] = DBO()->Contact->Email->Value;
 				}
 			}
@@ -110,15 +114,16 @@ class AppTemplateInvoice extends ApplicationTemplate
 			$arrPDFtoSend = glob($strGlob);
 			$strPDFtoSend = $arrPDFtoSend[0];
 			
+			// Load account details for sending the email
 			DBO()->Account->Load();
 			
 			// Set up the email message
-			$strBillingPeriod = date("F", strtotime("2007-$intMonth-01")) . " " . $intYear;
+			$strBillingPeriod = date("F", strtotime("2007-$intMonth-01")) . " " . $intYear; // eg 'May 2007'
 			$strCustomerGroup = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroup');
 			$strFromAddress = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroupEmail');
 			$strContent = str_replace("<custgrp>", $strCustomerGroup, INVOICE_EMAIL_CONTENT);
 			$strSubject = str_replace("<billperiod>", $strBillingPeriod, INVOICE_EMAIL_SUBJECT);
-			$arrHeaders = Array	('From'=> $strFromAddress, 'Subject'	=> $strSubject);
+			$arrHeaders = Array	('From' => $strFromAddress, 'Subject' => $strSubject);
 			
 			// Send them
 			foreach ($arrEmails as $strEmailAddress)
@@ -132,15 +137,18 @@ class AppTemplateInvoice extends ApplicationTemplate
 				
 				if (!$emlMail->send($strEmailAddress, $strHeaders, $strBody))
 				{
+					// email sending died :(
 					Ajax()->AddCommand("Alert", "Emails not sent successfully. The email addresses may be incorrect or there could be a problem with the email system.");
 				}
 				else
 				{
+					// email sending worked!!				
 					Ajax()->AddCommand("ClosePopup", "EmailPDFInvoicePopupId");
 					Ajax()->AddCommand("Alert", "Email(s) successfully sent.");
 				}
 			}
 		}
+		
 		// Setup all DBO and DBL objects required for the page
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Account->Load())

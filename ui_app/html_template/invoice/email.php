@@ -106,20 +106,28 @@ class HtmlTemplateInvoiceEmail extends HtmlTemplate
 		
 		//var_dump(DBL()->Contact;
 		$this->FormStart("EmailPDFInvoice", "Invoice", "EmailPDFInvoice");
+		
+		// We need the Account Id, Invoice Year and Invoice Month 
+		// to get the right PDF to send, render as hidden
 		DBO()->Account->Id->RenderHidden();
 		DBO()->Invoice->Year->RenderHidden();
 		DBO()->Invoice->Month->RenderHidden();
 		
 		foreach (DBL()->Contact as $dboContact)
 		{
+			// Checkboxes are the format 'FirstName LastName - Email', have id of ID, and name of "Email." + Id
 			echo "<input type='checkbox' id='{$dboContact->Id->Value}' name='Email.{$dboContact->Id->Value}'>{$dboContact->FirstName->Value} {$dboContact->LastName->Value} - {$dboContact->Email->Value}</input>";
 			echo "<br>";
 		}
 		echo "<div class='SmallSeperator'></div>\n";
+		
+		// Insert Other Email Address box
 		echo "Other Email Address: <input type='text' id='ExtraEmail' name='Email.Extra' class='DefaultInputTextSmall'></input>";
 		echo "<div class='SmallSeperator'></div>\n";
 		
 		echo "<div align='right'>\n";
+		
+		// Submit-over-Ajax button
 		$this->AjaxSubmit("Email Invoice");
 		echo "</div>";
 		echo "<div class='SmallSeperator'></div>\n";

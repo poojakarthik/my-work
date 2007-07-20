@@ -83,7 +83,7 @@ function VixenSlidingClass()
 		{
 			// Generic function to change height of div over time
 			Vixen.table[tblId].row[intRow].Sliding = TRUE;
-			var intFPS = 10; // Running at 10 fps
+			var intFPS = 20; // Running at 10 fps
 			var frames = intFPS * (this.duration); 
 	
 			var tIncrement = 500 / intFPS;
