@@ -6,20 +6,20 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// vixen_header.php
+// client_app_header.php
 //----------------------------------------------------------------------------//
 /**
- * vixen_header
+ * client_app_header
  *
- * HTML Template for the vixen header object
+ * HTML Template for the client app header object
  *
- * HTML Template for the vixen header object
+ * HTML Template for the client app header object
  *
- * @file		vixen_header.php
+ * @file		client_app_header.php
  * @language	PHP
- * @package		ui_app
- * @author		Jared 'flame' Herbohn
- * @version		7.06
+ * @package		web_app
+ * @author		Joel 'MagnumSwordFortress' Dawkins
+ * @version		7.07
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -27,22 +27,22 @@
 
 
 //----------------------------------------------------------------------------//
-// HtmlTemplateVixenHeader
+// HtmlTemplateClientAppHeader
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateVixenHeader
+ * HtmlTemplateClientAppHeader
  *
- * HTML Template class for the HTML Vixen header object
+ * HTML Template class for the HTML client app header object
  *
- * HTML Template class for the HTML Vixen header object
+ * HTML Template class for the HTML client app header object
  *
  *
  *
- * @package	ui_app
- * @class	HtmlTemplateVixenHeader
+ * @package	web_app
+ * @class	HtmlTemplateClientAppHeader
  * @extends	HtmlTemplate
  */
-class HtmlTemplateVixenHeader extends HtmlTemplate
+class HtmlTemplateClientAppHeader extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -95,7 +95,12 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 	 */
 	function Render()
 	{	
-echo "html_template/vixen_header.php: HtmlTempalteVixenHeader->Render() has been called";		
+		// This line should probably go in Page->RenderHeader as it should be included in every page
+		echo "<div id='PopupHolder'></div>";
+		
+		echo "<div>[INSERT CLIENT APP HEADER HERE]</div>";
+		return;
+		
 		echo "    <div id='PopupHolder'></div>
 	<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>
     <div class='Logo'>

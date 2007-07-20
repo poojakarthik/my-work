@@ -223,7 +223,7 @@ class Page
 	function Render()
 	{
 		// load required layout
-		require_once(TEMPLATE_LAYOUT_DIR . strtolower($this->_strPageLayout) . ".php");
+		require_once(TEMPLATE_BASE_DIR."layout_template/" . strtolower($this->_strPageLayout) . ".php");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -442,6 +442,24 @@ header( 'Pragma: no-cache' );
 	function RenderVixenHeader()
 	{
 		$objHeader = new HtmlTemplateVixenHeader(HTML_CONTEXT_DEFAULT);
+		$objHeader->Render();
+	}
+	
+	//------------------------------------------------------------------------//
+	// RenderClientAppHeader
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderClientAppHeader()
+	 *
+	 * Renders the Client App header
+	 *
+	 * Renders the Client App header
+	 * 
+	 * @method
+	 */
+	function RenderClientAppHeader()
+	{
+		$objHeader = new HtmlTemplateClientAppHeader(HTML_CONTEXT_DEFAULT);
 		$objHeader->Render();
 	}
 	

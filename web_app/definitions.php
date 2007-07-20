@@ -14,12 +14,12 @@
  *
  * Global Definitions
  *
- * This file exclusively declares application constants
+ * This file exclusively declares application constants for the client app
  *
  * @file		definitions.php
  * @language	PHP
- * @package		ui_app
- * @author		Jared 'flame' Herbohn
+ * @package		web_app
+ * @author		Jared 'flame' Herbohn modified by Joel 'MagnumSwordFortress' Dawkins
  * @version		7.07
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -32,10 +32,14 @@
 //----------------------------------------------------------------------------//
 
 Define ('VIXEN_BASE_DIR', "../");
-Define ('TEMPLATE_BASE_DIR', "../ui_app/");
-Define ('TEMPLATE_STYLE_DIR', "../ui_app/style_template/");
-Define ('MODULE_BASE_DIR', "../ui_app/");
-Define ('JAVASCRIPT_BASE_DIR', "../ui_app/");
+Define ('TEMPLATE_BASE_DIR', "");
+Define ('TEMPLATE_STYLE_DIR', "../ui_app/style_template/");  //only used to load the html_elements.php file which is part of the app framework
+Define ('MODULE_BASE_DIR', "");
+
+//This should probably be changed to "" and there should be a "web_app/javascript/" directory, 
+//as there will be javascript specific to the client app.  There will also be javascript that is part of the framework (ajax.js, vixen.js, popup.js, menu.js)
+//but they shouldn't need to be changed at all, and could just be copied into the javascript directory of each app
+Define ('JAVASCRIPT_BASE_DIR', "../ui_app/");  
 
 Define ('COLUMN_ONE'	, 1);
 Define ('COLUMN_TWO'	, 2);

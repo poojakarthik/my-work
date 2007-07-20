@@ -1,0 +1,1003 @@
+/**************************************************************************/
+/* ViXen CSS file														  */
+/*																		  */
+/* Contains these sections:												  */
+/* 	GENERIC																  */							
+/*	DIVS																  */																		
+/*	IMAGES																  */
+/*	DEFAULT I/O															  */
+/*	POSITIONS															  */	
+/*	COLOURS																  */
+/*	SIZES																  */
+/*	BLOCK LAYOUTS														  */
+/*	TABLES																  */
+/*	MENUS																  */
+/*	TITLES																  */
+/*	HEADER																  */
+/*	BUTTONS															  	  */
+/*	SEPARATORS															  */
+/*	INPUTS																  */
+/*	POPUPS																  */
+/*	TOOLTIPS														   	  */
+/*	DISPLAY FORMATS														  */
+/*	TASKBAR														  		  */
+/**************************************************************************/
+
+/**************************************************************************/
+/* GENERIC																  */
+/**************************************************************************/
+	input, select
+	{
+		font-family:		"Nimbus Sans NL", Tahoma, sans-serif;
+		margin-bottom:		1px;
+		border:				solid 1px #000000;
+	}
+	
+	img
+	{
+		border:               0;
+	}
+	
+	h1
+	{
+		color:                #006599;
+		
+		font-size:            18pt;
+		
+		margin-top:           0;
+		
+		margin-bottom:			20px;
+		padding-bottom:			5px;
+		
+		border-bottom:			solid 1px #006599;
+	}
+	
+	h2
+	{
+		margin:              0;
+		font-size:           12pt;
+	}
+	
+	h3
+	{
+		margin-top:          20px;
+		margin-left:         0;
+		margin-right:        0;
+		margin-bottom:       0;
+		font-size:           12pt;
+	}
+	
+	body
+	{
+		margin:				0px;
+		font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height:		18pt;
+		font-size:			10pt;
+	}
+
+	form
+	{
+		margin:               0;
+	}
+	
+	label
+	{
+		cursor:              pointer;
+	}
+	
+/**************************************************************************/
+/* DIVS														  			  */
+/**************************************************************************/
+	div#PageBody
+	{
+		margin-left:		75px;
+		margin-top:			20px;
+		width:				950px;
+	}
+
+	div#PopupPageBody
+	{
+		margin-left:		5px;
+		margin-top:			10px;
+		/*width:				450px;*/
+	}
+	
+	div#Header
+	{
+		background-color:     #000000;
+		color:                #FFFFFF;
+		
+		padding:              10px;
+		
+		background-image:     url('img/template/background.png');
+		background-repeat:    repeat-x;
+	}
+	
+	div#Header a
+	{
+		color:                #FFFFFF;
+	}
+	
+
+	
+/**************************************************************************/
+/* IMAGES														  		  */
+/**************************************************************************/	
+	.Logo
+	{
+		position:	absolute;
+		left:		1px;
+		top:		1px;
+		z-index:	1000000;
+	}
+	
+	.LogoSpacer
+	{
+		float:		left;
+		height:		1px;
+		width:		70px;
+	}	
+	
+/**************************************************************************/
+/* DEFAULT I/O															  */
+/**************************************************************************/
+	.Default
+	{
+	}
+	
+	.RequiredInput
+	{
+		color:               #CC0000;
+	}
+	
+	.DefaultLabel,
+	.DefaultInvalidLabel
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			absolute;
+		height:				20px;
+		overflow:			hidden;
+		float:				left;
+		top:				0px;
+		left:				0px;
+	}
+	
+	.DefaultOutput
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		top:				0px;
+		padding-left:		200px;
+		overflow:			hidden;
+	}
+	
+	.StatusMessage
+	{
+		padding-left:		55px;
+	}
+	
+	.DefaultInvalidOutput
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		top:				0px;
+		padding-left:		200px;
+		overflow:			hidden;
+		color:				#CC0000;
+	}
+	
+	.DefaultInputRadioButtons,
+	.DefaultInputCheckBox,
+	.DefaultInputComboBox,
+	.DefaultInputText,
+	.DefaultInputTextArea,
+	.DefaultInput
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		left:				200px;
+		top:				0px;
+		overflow:			hidden;
+
+	}
+	
+	.DefaultInputComboBox,
+	.DefaultInputText,
+	.DefaultInputTextArea
+	{
+		border:				solid 1px #000000;
+	}
+	
+
+	.DefaultInputTextSmall
+	{
+		
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		left:				0px;
+		top:				0px;
+		overflow:			hidden;
+		border:				solid 1px #000000;
+	}
+	
+	.DefaultInputCheckBox
+	{
+		left:				0px;
+	}
+	
+	.DefaultInputRadioButtons
+	{
+		left:				0px;
+	}
+	
+	.DefaultInvalidInputRadioButtons,
+	.DefaultInvalidInputCheckBox,
+	.DefaultInvalidInputComboBox,
+	.DefaultInvalidInputText,
+	.DefaultInvalidInputTextArea,
+	.DefaultInvalidInput
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		left:				200px;
+		top:				0px;
+		/*height:				20px;*/
+		overflow:			hidden;
+		background-color:	#FA8072;
+	}
+	
+	.DefaultInvalidInputComboBox,
+	.DefaultInvalidInputText,
+	.DefaultInvalidInputTextArea
+	{
+		border:				solid 1px #000000;
+	}
+	
+	
+	.DefaultOutputSpan,
+	.DefaultInvalidOutputSpan
+	{
+		font-family: 		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		line-height: 		18pt;
+		font-size: 			10pt;
+		position:			relative;
+		left:				0px;
+		top:				0px;
+		overflow:			hidden;
+	}
+	
+	.DefaultInvalidOutputSpan
+	{
+		color:				#CC0000;
+	}
+	
+	.DefaultHiddenElement,
+	.DefaultElement,
+	.DefaultInvalidElement
+	{
+		position:			relative;
+		overflow:			visible;
+		height:				auto;
+	}
+	
+	.DefaultHiddenElement
+	{
+		display: none;
+	}
+
+/**************************************************************************/
+/* POSITIONS													  		  */
+/**************************************************************************/
+	.Left
+	{
+		float:                left;
+	}
+	
+	.Right
+	{
+		float:                right;
+	}
+	
+/**************************************************************************/
+/* COLOURS														  		  */
+/**************************************************************************/
+	.Red
+	{
+		color:               #CC0000;
+	}
+	
+	.Green
+	{
+		color:               #008000;
+	}
+
+	.Blue
+	{
+		color:               #006599;
+	}
+	
+/**************************************************************************/
+/* SIZES														  		  */
+/**************************************************************************/
+	.small
+	{
+		font-size:          smaller;
+	}
+	
+	.Large
+	{
+		font-size:			35px;
+		line-height:		150%;
+	}
+	
+/**************************************************************************/
+/* BLOCK LAYOUTS														  */
+/**************************************************************************/
+	.WideContent
+	{
+		margin:              0;
+		padding-top:         5px;
+		padding-left:        5px;
+		padding-right:       0px;
+		padding-bottom:      5px;
+		
+		border:              solid 1px #D1D1D1;
+		background-color:    #F3F3F3;
+		width:				 875px;
+	}
+	
+	.NarrowContent
+	{
+		margin:              0;
+		padding-top:         5px;
+		padding-left:        5px;
+		padding-right:       0px;
+		padding-bottom:      5px;
+		
+		border:              solid 1px #D1D1D1;
+		background-color:    #F3F3F3;
+		/*width:				 425px;*/
+	}
+	
+	.NarrowTable
+	{
+		margin:              0;
+		width:				 425px;
+	}
+
+	.NarrowColumn
+	{
+		margin:              0;
+		padding-top:         0px;
+		padding-left:        0px;
+		padding-right:       0px;
+		padding-bottom:      0px;
+		
+		/*border:              solid 1px #D1D1D1;*/
+		/*background-color:    #F3F3F3;*/
+		width:				 300px;
+	}
+	
+	.Wide-Form
+	{
+		margin:              0;
+		padding-top:         5px;
+		padding-left:        5px;
+		padding-right:       0px;
+		padding-bottom:      5px;
+		
+		border:              solid 1px #D1D1D1;
+		background-color:    #F3F3F3;
+		width:				 875px;
+	}
+	
+	.Narrow-Form
+	{
+		margin:              0;
+		padding-top:         5px;
+		padding-left:        5px;
+		padding-right:       0px;
+		padding-bottom:      5px;
+		
+		border:              solid 1px #D1D1D1;
+		background-color:    #F3F3F3;
+		width:				 425px;
+	}
+
+/**************************************************************************/
+/* TABLES																  */
+/**************************************************************************/
+	.VixenTableDetail
+	{
+		background-color:	#D4D4D4;
+
+		position:			relative;
+		overflow:			visible;
+		height:				auto;
+	}
+
+	table.Listing
+	{
+		border:              solid 1px #C1C1C1;
+	}
+	
+	table.Listing tr.First th
+	{
+		border-bottom:       solid 1px #C1C1C1;
+		
+		background-repeat:   repeat-x;
+		background-image:    url('img/template/table_first_bg.png');
+		
+		background-color:    #45a0f3;
+		color:               #FFFFFF;
+		
+		font-size:			 10pt;
+	}
+	
+	table.Listing .Icon
+	{
+		width:               20px;
+	}
+	
+	table.Listing tr.First th a
+	{
+		color:               #FFFFFF;
+		text-decoration:     none;
+	}
+	
+	table.Listing tr.Odd th,
+	table.Listing tr.Odd td
+	{
+		background-color:    #FFFFFF;
+	}
+	
+	table.Listing tr.Even th,
+	table.Listing tr.Even td
+	{
+		background-color:    #D5E0F8;
+	}
+
+	table.Listing tr.Archived td
+	{
+		background-color:    #C0C0C0;
+	}
+
+	table.Listing tr.Selected th,
+	table.Listing tr.Selected td
+	{
+		background-color:    #99FF33;
+	}
+	
+	table.Listing tr.Hover th,
+	table.Listing tr.Hover td
+	{
+		background-color:    #FFFFAA;
+	}
+	
+/**************************************************************************/
+/* MENUS																  */
+/**************************************************************************/
+	.ContextMenu
+	{
+		float:				left;
+		position: 			fixed;
+		top:				80px;
+		left:				1px;
+	}
+	
+	.ContextMenuItem
+	{
+		border:              solid 1px #999999;
+		background-color:    #FFFFFF;
+		background-repeat:   no-repeat;
+		background-position: top left;
+	}
+	
+	.ContextMenuItemHighlight
+	{
+		border:              solid 1px #999999;
+		background-color:    #FFFFCC;
+	}
+	
+	.BreadCrumbMenu
+	{
+		float:				left;
+		position: 			absolute;
+		top:				55px;
+		left:				5px;
+	}
+	
+	.MenuIcon
+	{
+		border:              solid 1px #999999;
+	}
+	
+/**************************************************************************/
+/* TITLES															  	  */
+/**************************************************************************/
+	h2.CDR,
+	h2.Plan,
+	h2.Date,
+	h2.Address,
+	h2.Payment,
+	h2.Adjustment,
+	h2.PDF,
+	h2.Provisioning,
+	h2.Archive,
+	h2.Accounts,
+	h2.Account,
+	h2.Options,
+	h2.Notes,
+	h2.Note,
+	h2.Services,
+	h2.Service,
+	h2.Contacts,
+	h2.Contact,
+	h2.Invoice,
+	h2.Admin,
+	h2.Report,
+	h2.CostCentre,
+	h2.Employees,
+	h2.Employee,
+	h2.Email,
+	h2.Permissions,
+	h2.Bug
+	{
+		background-repeat:		no-repeat;
+		background-position:	bottom left;
+		padding-left:			22px;
+		margin-bottom:			5px;
+		height:					21px;
+	}
+	
+	h2.CDR
+	{
+		background-image:              url('img/template/cdr.png');
+	}
+	
+	h2.Plan
+	{
+		background-image:              url('img/template/plan.png');
+	}
+	
+	h2.Date
+	{
+		background-image:              url('img/template/date.png');
+	}
+	
+	h2.Payment
+	{
+		background-image:              url('img/template/payment.png');
+	}
+	
+	h2.Email
+	{
+		background-image:              url('img/template/email.png');
+	}
+	
+	h2.Adjustment
+	{
+		background-image:              url('img/template/charge.png');
+	}
+	
+	h2.Address
+	{
+		background-image:              url('img/template/address.png');
+	}
+	
+	h2.Provisioning
+	{
+		background-image:              url('img/template/provisioning.png');
+	}
+	
+	h2.Permissions
+	{
+		background-image:              url('img/template/console_admin.png');
+	}
+	
+	h2.PDF
+	{
+		background-image:              url('img/template/pdf.png');
+	}
+	
+	h2.Archive
+	{
+		background-image:              url('img/template/archive.png');
+	}
+	
+	h2.Notes
+	{
+		background-image:              url('img/template/note.png');
+	}
+	
+	h2.Note
+	{
+		background-image:              url('img/template/note.png');
+	}
+	
+	h2.Services
+	{
+		background-image:              url('img/template/service.png');
+	}
+	
+	h2.Service
+	{
+		background-image:              url('img/template/service.png');
+	}
+	
+	h2.Contacts
+	{
+		background-image:              url('img/template/contacts.png');
+	}
+	
+	h2.Employees
+	{
+		background-image:              url('img/template/contacts.png');
+	}
+	
+	h2.Employee
+	{
+		background-image:              url('img/template/contact.png');
+	}
+	
+	h2.Contact
+	{
+		background-image:              url('img/template/contact.png');
+	}
+	
+	h2.Accounts
+	{
+		background-image:              url('img/template/accounts.png');
+	}
+	
+	h2.Account
+	{
+		background-image:              url('img/template/account.png');
+	}
+	
+	h2.Options
+	{
+		background-image:              url('img/template/options.png');
+	}
+	
+	h2.Invoice
+	{
+		background-image:              url('img/template/invoice.png');
+	}
+	
+	h2.Admin
+	{
+		background-image:              url('img/template/admin_console.png');
+	}
+	
+	h2.Report
+	{
+		background-image:              url('img/template/report.png');
+	}
+	
+	h2.CostCentre
+	{
+		background-image:              url('img/template/icon-shoppingcart_small.jpg');
+	}
+	
+	h2.Bug
+	{
+		background-image:              url('img/template/lady-debug.png');
+	}
+	
+
+/**************************************************************************/
+/* HEADER															  	  */
+/**************************************************************************/
+	.sectionContent
+	{
+		margin:               auto;
+	}
+
+	.Clear
+	{
+		clear:                both;
+	}
+
+/**************************************************************************/
+/* BUTTONS															  	  */
+/**************************************************************************/	
+	.Menu_Button
+	{
+		display:                       inline;
+		margin-left:                   30px;
+		line-height:                   20px;
+		vertical-align:                bottom;
+	}
+	
+	.Debug_Button
+	{
+		display:                       inline;
+		margin-left:                   5px;
+		line-height:                   20px;
+		vertical-align:                bottom;
+	}
+	
+/**************************************************************************/
+/* SEPARATORS															  */
+/**************************************************************************/
+	.Seperator
+	{
+		height:               20px;
+	}
+	
+	.SmallSeperator
+	{
+		height:               10px;
+	}
+
+	.TinySeperator
+	{
+		height:               5px;
+	}
+	
+	.MicroSeperator
+	{
+		height:               0px;
+	}
+		
+	.ColumnSpacer
+	{
+		width:					30px;
+	}
+	
+/**************************************************************************/
+/* INPUTS																  */
+/**************************************************************************/
+	input.InputSubmit,
+	input.InputSubmitDisabled
+	{
+		background-repeat:   repeat-x;
+		
+		font-weight:         bold;
+		
+		padding-top:         3px;
+		padding-left:        6px;
+		padding-right:       6px;
+		padding-bottom:      3px;
+		font-size:			10pt;
+	}
+	
+	input.InputSubmit
+	{
+		background-image:    url('img/template/button_background.png');
+		
+		border:              solid 1px #07548e;
+		
+		color:               #FFFFFF;
+		background-color:    #07548e;
+		
+		font-size:			10pt;
+	}
+	
+	input.InputSubmitDisabled
+	{
+		background-image:    url('img/template/button_background_disabled.png');
+		
+		border:              solid 1px #434343;
+		
+		color:               #FFFFFF;
+		background-color:    #434343;
+		font-size:			10pt;
+	}
+	
+	input.InputSubmitLocked,
+	input.InputSubmitUnlocked
+	{
+		background-repeat:   no-repeat;
+		
+		font-weight:         bold;
+		
+		padding-top:         15px;
+		padding-left:        60px;
+		padding-right:       6px;
+		padding-bottom:      15px;
+		font-size:			10pt;
+	}
+	
+	input.InputSubmitUnlocked
+	{
+		background-image:    url('img/template/btn_unlocked.png');
+		
+		border:              solid 1px #89b100;
+		
+		color:               #89b100;
+		background-color:    #f1f7e1;
+		font-size:			10pt;
+	}
+	
+	input.InputSubmitLocked
+	{
+		background-image:    url('img/template/btn_locked.png');
+		
+		border:              solid 1px #CC0000;
+		
+		color:               #CC0000;
+		background-color:    #f2dbdb;
+		font-size:			10pt;
+	}
+
+	input.time
+	{
+		width:               50px;
+	}
+	
+/**************************************************************************/
+/* POPUPS																  */
+/**************************************************************************/
+	.PopupBox
+	{
+		position: absolute;
+		border: 1px solid #000000;
+		background-color: #ffffff;
+		z-index: 1001;
+	}
+
+	.PopupBoxTopBar
+	{
+		font-family: "Nimbus Sans L", Arial, Tahoma, Sans-serif;
+		font-size: 10pt;
+		line-height: 18pt;
+		color: #FFFFFF;
+		background-color: #000000;
+		background-image:     url('img/template/background.png');
+		background-repeat:    repeat-x;
+		padding: 0px;
+		margin: 0px;
+		padding-left: 5px;
+		cursor: default;
+		
+	}
+	.PopupBoxClose
+	{
+		float: right;
+		text-align: right;
+		height: 14px;
+		padding: 3px;
+	}
+	
+	.PopupMedium,
+	.PopupLarge
+	{
+		margin:              0;
+		padding-top:         0px;
+		padding-left:        0px;
+		padding-right:       0px;
+		padding-bottom:      0px;
+		
+		/*border:              solid 1px #D1D1D1;*/
+		/*background-color:    #F3F3F3;*/
+	}
+
+	.PopupMedium
+	{
+		width:				 440px;
+	}
+	
+
+	.PopupLarge
+	{
+		width:				 690px;
+	}
+	
+	#overlay {
+     position: absolute;
+     left: 0px;
+     top: 0px;
+     width:100%;
+     height:100%;
+     z-index: 1000;
+	 background-color:	#000000;
+	 opacity: .50;
+	}
+	
+/**************************************************************************/
+/* TOOLTIPS																  */
+/**************************************************************************/
+
+	.VixenTooltip
+	{
+		border: 1px solid #000000;
+		background-color: #ffffff;
+		z-index: 100001;
+	}
+	
+/**************************************************************************/
+/* DISPLAY FORMATS														  */
+/**************************************************************************/	
+	.Currency
+	{
+		
+		font-family:		"Courier New", monospace;
+	}
+
+/**************************************************************************/
+/* TASKBAR													   			  */
+/**************************************************************************/
+	.VixenTaskbar
+	{
+		float:			left;
+		position: 		fixed;
+		top:				44px;
+		width:			100%;
+		height:			28px;
+		color:			#FFFFFF;
+		background-color:	#000000;
+		background-image:	url('img/template/taskbar.png');
+		background-repeat:	repeat-x;
+		padding:			0px;
+		margin:			0px;
+		padding-top:		2px;
+		/*padding-left:		80px;*/
+		display:			block;
+	}
+	
+	.TaskbarItem
+	{
+		border:				1px	solid	#EEEEEE;
+		border-top-color:		#CCCCCC;
+		border-left-color:		#CCCCCC;
+		border-right-color:		#333333;
+		border-bottom-color:	#333333;
+		width:				150px;
+		height:				20px;
+		background-color:		#444444;
+		color:				#CCCCCC;
+		vertical-align:		middle;
+		float:				left;
+		overflow:				hidden;
+		padding-left:			1px;
+		cursor:				default;
+	}
+	
+	.TaskbarItemSelected
+	{
+		border:				1px	solid	#EEEEEE;
+		border-top-color:		#333333;
+		border-left-color:		#333333;
+		border-right-color:		#CCCCCC;
+		border-bottom-color:	#CCCCCC;
+		width:				150px;
+		height:				20px;
+		background-color:		#BBBBBB;
+		color:				#000000;
+		font-weight:			bold;
+		vertical-align:		middle;
+		float:				left;
+		overflow:				hidden;
+		padding-left:			1px;
+		cursor:				default;
+	}
+	
+	.TaskbarSpacer
+	{
+		width:				1px;
+		height:				20px;
+		float:				left;
+	}
+	
+	.TaskbarIcon
+	{
+		/*display:			inline;*/
+		width:			16px;
+		height:			16px;
+		vertical-align:	text-top;
+		/*border:			1px solid #000000;*/
+	}

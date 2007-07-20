@@ -7,10 +7,10 @@
 
 
 //----------------------------------------------------------------------------//
-// application_loader
+// application
 //----------------------------------------------------------------------------//
 /**
- * application_loader
+ * application
  *
  * contains the Application class and the __autoload function
  *
@@ -20,10 +20,8 @@
  * Also currently contains all constants required of ui_app
  * 
  *
- * @file		application_loader.php
+ * @file		application.php
  * @language	PHP
- * @package		framework
- * @author		Jared 'flame' Herbohn
  * @package		framework
  * @author		Jared 'flame' Herbohn
  * @version		7.05
@@ -440,7 +438,7 @@ class Application
 			}
 			else
 			{				
-				require_once("page_template/login.php");
+				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
 			}	
 		}
@@ -481,7 +479,7 @@ class Application
 			}
 			else
 			{				
-				require_once("page_template/login.php");
+				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
 				die;
 			}	
 		exit;
@@ -518,6 +516,132 @@ class Application
 		
 		return FALSE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// CheckClientAuth
+	//------------------------------------------------------------------------//
+	/**
+	 * CheckClientAuth()
+	 *
+	 * Checks user authentication for clients (used by web_app)
+	 * 
+	 * Checks user authentication for clients (used by web_app)
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function CheckClientAuth()
+	{
+		// If there is a cookie then use it to find the details of the user and check if their session is still valid
+		if (isset($_COOKIE['ClientId']) && isset($_COOKIE['ClientSessionId']))
+		{
+			// Find the contact information for the client declared in the cookie
+			$selAuthenticated = new StatementSelect(
+					"Contact",
+					"*", 
+					"Id = <ClientId> AND SessionId = <ClientSessionId> AND SessionExpire > NOW() AND Archived = 0",
+					null,
+					1
+				);
+				
+			$intRowsReturned = $selAuthenticated->Execute(Array("Id" => $_COOKIE['ClientId'], "SessionId" => $_COOKIE['ClientSessionId']));
+			$arrAuthentication = $selAuthenticated->Fetch();
+
+			// check if the user could be found
+			if ($intRowsReturned)
+			{
+				// user was found.
+				$bolLoggedIn = TRUE;
+				
+				// Load user object from db
+				$this->_arrUser = $arrAuthentication;
+			}
+			else
+			{
+				// the user could not be found
+				$this->_arrUser = NULL;
+				$bolLoggedIn = FALSE;
+			}
+		}
+		else
+		{
+			// There was no cookie found
+			$this->_arrUser = NULL;
+			$bolLoggedIn = FALSE;
+		}
+		
+		// Check if the user has just logged in
+		if (isset($_POST['VixenUserName']) && isset($_POST['VixenPassword']))
+		{
+			// user has just logged in. Get the Id of the contact (Identified by UserName and PassWord combination)
+			$selSelectStatement = new StatementSelect (
+				"Contact", 
+				"*", 
+				"UserName = <UserName> AND PassWord = SHA1(<PassWord>) AND Archived = 0", 
+				null, 
+				"1"
+			);
+			
+			$selSelectStatement->Execute(Array("UserName"=>$_POST['VixenUserName'], "PassWord"=>$_POST['VixenPassword']));
+			
+			// Check if the contact was found
+			if ($selSelectStatement->Count() == 1)
+			{
+				// The session is authenticated.
+				// Therefore, we have to store the Authentication
+				$this->_arrUser = $selSelectStatement->Fetch();
+
+				// We have to create a new session Id for the user
+				$this->_arrUser['SessionId'] = sha1(uniqid(rand(), true));
+
+				$bolLoggedIn = TRUE;
+			}
+			else
+			{
+				// Could not find the user.  Login failed.
+				$bolLoggedIn = FALSE;
+			}
+		}
+
+		if ($bolLoggedIn)
+		{
+			//Update the user's session details in the contact table of the database
+			$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction ("ADDTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
+			$intTime = time() + USER_TIMEOUT;
+
+			// update the table
+			$updUpdateStatement = new StatementUpdate("Contact", "Id = <Id> AND Archived = 0", $arrUpdate);
+			if ($updUpdateStatement->Execute($arrUpdate, Array("Id"=>$this->_arrUser['Id'])) === FALSE)
+			{
+				// could not update the user's session details in the database.  Mark user as not logged in
+				$bolLoggedIn = FALSE;
+			}
+		}
+		
+		if ($bolLoggedIn)
+		{
+			//set the cookie
+			setCookie("ClientId", $this->_arrUser['Id'], $intTime, "/");
+			setCookie("ClientSessionId", $this->_arrUser['SessionId'], $intTime, "/");
+		}
+		else
+		{
+			//The user is not logged in.  Redirect them to the login page
+			if ($this->_intMode == AJAX_MODE)
+			{
+				Ajax()->AddCommand("Reload");
+				Ajax()->Reply();
+				die;
+			}
+			else
+			{				
+				require_once(TEMPLATE_BASE_DIR . "page_template/login.php");
+				die;
+			}	
+		}
+	}
+	
 }
 
 //----------------------------------------------------------------------------//
