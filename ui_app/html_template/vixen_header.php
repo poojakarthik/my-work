@@ -95,7 +95,6 @@ class HtmlTemplateVixenHeader extends HtmlTemplate
 	 */
 	function Render()
 	{	
-echo "html_template/vixen_header.php: HtmlTempalteVixenHeader->Render() has been called";		
 		echo "    <div id='PopupHolder'></div>
 	<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>
     <div class='Logo'>
