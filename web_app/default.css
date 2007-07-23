@@ -69,12 +69,13 @@
 	
 	body
 	{
-		margin:				0px;
+		margin:				20px;
 		font-family:		"Nimbus Sans L", Arial, Tahoma, Sans-serif;
 		line-height:		18pt;
 		font-size:			10pt;
+		background-color:              #006599;
 	}
-
+	
 	form
 	{
 		margin:               0;
@@ -101,7 +102,7 @@
 		margin-top:			10px;
 		/*width:				450px;*/
 	}
-	
+	/*
 	div#Header
 	{
 		background-color:     #000000;
@@ -117,8 +118,89 @@
 	{
 		color:                #FFFFFF;
 	}
-	
+	*/
 
+/******************************************************************************/
+/* This stuff was taken from client_app/css/default.css                       */
+/******************************************************************************/
+
+	div.documentContainer
+	{
+		margin:							0 auto;
+		padding:						0;
+		
+		width:							900px;
+	}
+	
+	div#Document
+	{
+		background-color:              #FFFFFF;
+	}
+	
+	div.documentCurve
+	{
+		margin:                        0;
+		padding:                       0;
+		
+		width:                         25px;
+		height:                        25px;
+	}
+	
+	div.Left
+	{
+		float:                         left;
+	}
+	
+	div.Right
+	{
+		float:                         right;
+	}
+	
+	.documentCurveTopLeft
+	{
+		background-image:              url('./img/template/curve_top_left.png');
+	}
+	
+	.documentCurveTopRight
+	{
+		background-image:              url('./img/template/curve_top_right.png');
+	}
+	
+	.documentCurveBottomLeft
+	{
+		background-image:              url('./img/template/curve_bottom_left.png');
+	}
+	
+	.documentCurveBottomRight
+	{
+		background-image:              url('./img/template/curve_bottom_right.png');
+	}
+	
+	.clear
+	{
+		clear:                         both;
+	}
+	
+	.pageContainer
+	{
+		margin-left:                   25px;
+		margin-right:                  25px;
+	}
+	
+	.sectionContainer
+	{
+	}
+	
+	.sectionContent
+	{
+	}
+
+	div#Logo
+	{
+		margin-right:                  25px;
+		margin-bottom:                 25px;
+		height:                        95px;
+	}
 	
 /**************************************************************************/
 /* IMAGES														  		  */
@@ -137,7 +219,16 @@
 		height:		1px;
 		width:		70px;
 	}	
-	
+
+/******************************************************************************/
+/* This stuff was taken from client_app/css/default.css                       */
+/******************************************************************************/
+	img
+	{
+		border:                        0;
+	}
+
+
 /**************************************************************************/
 /* DEFAULT I/O															  */
 /**************************************************************************/
@@ -348,13 +439,14 @@
 	.WideContent
 	{
 		margin:              0;
-		padding-top:         5px;
-		padding-left:        5px;
+		padding-top:         0px;
+		padding-left:        0px;
 		padding-right:       0px;
-		padding-bottom:      5px;
-		
+		padding-bottom:      0px;
+		/*
 		border:              solid 1px #D1D1D1;
 		background-color:    #F3F3F3;
+		*/
 		width:				 875px;
 	}
 	

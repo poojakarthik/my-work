@@ -6,7 +6,7 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// client_app_header.php
+// client_app_header.php DEPRECIATED
 //----------------------------------------------------------------------------//
 /**
  * client_app_header
@@ -95,47 +95,18 @@ class HtmlTemplateClientAppHeader extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		// This line should probably go in Page->RenderHeader as it should be included in every page
-		echo "<div id='PopupHolder'></div>";
+	
+		// NOTE: this html Template has been depricated.  Its contents are now output in the layout_template
+		echo "<div id='Document' class='documentContainer'>\n";
 		
-		echo "<div>[INSERT CLIENT APP HEADER HERE]</div>";
+		echo "<div class='documentCurve Left documentCurveTopLeft'></div>\n";
+		echo "<div class='documentCurve Right documentCurveTopRight'></div>\n";
+		echo "<div class='clear'></div>\n";
+		echo "<div class='pageContainer'>\n";
+		
+		
 		return;
 		
-		echo "    <div id='PopupHolder'></div>
-	<div id='VixenTooltip' style='display: none;' class='VixenTooltip'></div>
-    <div class='Logo'>
-      <img src='img/template/vixen_logo.png' border='0'>
-    </div>
-    <div id='Header' class='sectionContainer'>
-      <span class='LogoSpacer'></span>
-      <div class='sectionContent'>
-        <div class='Left'>
-			TelcoBlue Internal Management System
-		</div>
-        <div class='Right'>
-            Version 7.03
-									
-            <div class='Menu_Button'>
-            	<a href='#' onclick=''>
-                	<img src='img/template/bug.png' alt='Report Bug' title='Report Bug' border='0' /></a>\n";
-            
-			// Add debug button, which doesnt do much yet, just set debug to true;
-			//  eventually move this somewhere more appropriate
-		if (AuthenticatedUser()->_arrUser['Privileges'] >= PERMISSION_DEBUG)
-		{
-			echo "            	<a href='#' onclick='Vixen.debug^=TRUE;alert(\"Vixen.debug now is: \" + Vixen.debug );'>
-            		<img src='img/template/debug.png' alt='Debug' title='Debug' border='0' >            	</a>			
-            	<script type='text/javascript'>Vixen.debug = TRUE;</script>
-            	<script type='text/javascript' src='" . JAVASCRIPT_BASE_DIR . "javascript/debug.js'></script>\n";
-		}
-		echo "            </div>\n
-        </div>
-        <div class='Clear'></div>
-      </div>
-      <div class='Clear'></div>
-    </div>
-    <div class='Clear'></div>
-    <div class='Seperator'></div>";
 	}
 }
 

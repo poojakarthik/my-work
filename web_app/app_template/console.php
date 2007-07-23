@@ -61,13 +61,35 @@ class AppTemplateConsole extends ApplicationTemplate
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckClientAuth();
-		//AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
-		echo "[INSERT PAGE HERE]\n";
-		die;
+		// retrieve the client's details
+		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
+		if (!DBO()->Contact->Load())
+		{
+			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
 		
+		// retrive the client's account details
+		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		{
+			// Retrieve all accounts from the AccountGroup that the user belongs to
+			// NOTE: Each account has a primary contact, and each AccountGroup can have a contact assocciated with it, defined as its manager
+			// But each contact can only have one AccountGroup, so it would not be feasible for a contact to manage more than one AccountGroup
+			// or accounts not belonging to the contact's account group.
+			DBL()->Account->AccountGroup = AuthenticatedUser()->_arrUser['AccountGroup'];
+		}
+		else
+		{
+			// The user can only access their specified account
+			DBL()->Account->Account = AuthenticatedUser()->_arrUser['Account'];
+		}
 		
-		$this->LoadPage('invoices_and_payments');
+		// only retrieve accounts that are not archived
+		DBL()->Account->Archived = 0;
+				
+		$this->LoadPage('console');
 
 		return TRUE;
 	}

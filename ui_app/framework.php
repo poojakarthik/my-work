@@ -365,11 +365,11 @@ class Page
 //echo $strBaseDir;
 //die;
 
-header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
-header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
-header( 'Cache-Control: no-store, no-cache, must-revalidate' );
-header( 'Cache-Control: post-check=0, pre-check=0', false );
-header( 'Pragma: no-cache' );
+		header( 'Expires: Mon, 26 Jul 1997 05:00:00 GMT' );
+		header( 'Last-Modified: ' . gmdate( 'D, d M Y H:i:s' ) . ' GMT' );
+		header( 'Cache-Control: no-store, no-cache, must-revalidate' );
+		header( 'Cache-Control: post-check=0, pre-check=0', false );
+		header( 'Pragma: no-cache' );
 		
 	
 		echo "<html><head><meta http-equiv='Content-Type' content='text/html; charset=iso-8859-1'>\n";
@@ -379,6 +379,9 @@ header( 'Pragma: no-cache' );
 		$this->RenderCSS();
 		echo "</head>\n";
 		echo "<body onload='Vixen.Init()'>\n";
+		
+		// the following div holds any popup windows that are instantiated within the page
+		echo "<div id='PopupHolder'></div>\n";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -446,7 +449,7 @@ header( 'Pragma: no-cache' );
 	}
 	
 	//------------------------------------------------------------------------//
-	// RenderClientAppHeader
+	// RenderClientAppHeader DEPRECIATED
 	//------------------------------------------------------------------------//
 	/**
 	 * RenderClientAppHeader()

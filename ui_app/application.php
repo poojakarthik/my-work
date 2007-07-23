@@ -545,7 +545,7 @@ class Application
 					1
 				);
 				
-			$intRowsReturned = $selAuthenticated->Execute(Array("Id" => $_COOKIE['ClientId'], "SessionId" => $_COOKIE['ClientSessionId']));
+			$intRowsReturned = $selAuthenticated->Execute(Array("ClientId" => $_COOKIE['ClientId'], "ClientSessionId" => $_COOKIE['ClientSessionId']));
 			$arrAuthentication = $selAuthenticated->Fetch();
 
 			// check if the user could be found

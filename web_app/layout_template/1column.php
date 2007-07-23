@@ -28,13 +28,33 @@
 
 
 $this->RenderHeader();
-$this->RenderClientAppHeader();
+//$this->RenderClientAppHeader();
 //$this->RenderBreadCrumbMenu();
-$this->RenderContextMenu();
+//$this->RenderContextMenu();
 ?>
 
-<div id='PageBody'>
-	<?php $this->RenderColumn(COLUMN_ONE); ?>
+<div id="Document" class="documentContainer">
+
+	<div class="documentCurve Left documentCurveTopLeft"></div>
+	<div class="documentCurve Right documentCurveTopRight"></div>
+	<div class="clear"></div>
+	<div class="pageContainer">
+	
+	<div id="Header" class="sectionContainer">
+		<div id="Logo" class="Left sectionContent">
+			<img src="img/header.jpg" width="597" height="95" />
+		</div>
+	</div>
+
+		<div id='PageBody'>
+			<?php $this->RenderColumn(COLUMN_ONE); ?>
+		</div>
+
+	</div>
+	<div class="clear"></div>
+	<div class="documentCurve Left documentCurveBottomLeft"></div>
+	<div class="documentCurve Right documentCurveBottomRight"></div>
+	<div class="clear"></div>
 </div>
 
 <?php
