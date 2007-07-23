@@ -40,17 +40,32 @@
 		$this->RenderContextMenu();
 
 		//var_dump($this->Page->arrObjects);
-		$this->RenderColumn(COLUMN_ONE);
+		//$this->RenderColumn(COLUMN_ONE);
 		
 		?>
-		
-		  </td>
-		</tr>
-        </tbody>
-	  </table>
+	<div id='PageBody'>
+		<h1> <?php echo $this->_strPageName; ?></h1>
+		<table width='100%' border='0'>
+			<tr>
+				<td width='49%' valign='top'>
+					<?php $this->RenderColumn(COLUMN_ONE); ?>
+				</td>
+				<td width='2%'></td>
+				<td width='49%' valign='top'>
+					<?php $this->RenderColumn(COLUMN_TWO); ?>
+				</td>
+			</tr>
+		</table>
+		<table width='100%' border='0'>
+			<tr>
+				<td width='100%' valign='top'>
+					<?php $this->RenderColumn(COLUMN_THREE); ?>
+				</td>
+			</tr>
+		</table>
 	</div>
 		<?php
-		// this echo will be replaced by a page-end template
-		echo "</body>\n</html>";
+		
+		$this->RenderFooter();
 		
 ?>

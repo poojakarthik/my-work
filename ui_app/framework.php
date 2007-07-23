@@ -1966,6 +1966,29 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// EditContact
+	//------------------------------------------------------------------------//
+	/**
+	 * EditContact()
+	 *
+	 * Compiles the Href to be executed when the EditContact menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the EditContact menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the contact to edit
+	 *
+	 * @return	string				Href to be executed when the EditContact menu item is clicked
+	 *
+	 * @method
+	 */
+	function EditContact($intId)
+	{
+		$this->strLabel	= "contact: $intId";
+		return "contact_edit.php?Id=$intId";
+	}
+	
+	//------------------------------------------------------------------------//
 	// ViewService
 	//------------------------------------------------------------------------//
 	/**

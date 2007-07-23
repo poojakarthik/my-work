@@ -73,7 +73,7 @@ class <ClassName> extends ApplicationTemplate
 		}
 
 		// Context menu
-		ContextMenu()->Console();
+		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
