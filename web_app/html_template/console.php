@@ -116,7 +116,7 @@ class HtmlTemplateConsole extends HtmlTemplate
 			{
 				Table()->Accounts->AddRow($dboAccount->Id->AsValue(), $dboAccount->BusinessName->AsValue(), $dboAccount->TradingName->AsValue());
 			}
-			Table()->Accounts->
+			Table()->Accounts->RowHighlighting = TRUE;
 			Table()->Accounts->Render();
 			
 		}
