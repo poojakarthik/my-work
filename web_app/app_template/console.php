@@ -71,23 +71,26 @@ class AppTemplateConsole extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		// retrive the client's account details
-		if (AuthenticatedUser()->_arrUser['CustomerContact'])
-		{
-			// Retrieve all accounts from the AccountGroup that the user belongs to
-			// NOTE: Each account has a primary contact, and each AccountGroup can have a contact assocciated with it, defined as its manager
-			// But each contact can only have one AccountGroup, so it would not be feasible for a contact to manage more than one AccountGroup
-			// or accounts not belonging to the contact's account group.
-			DBL()->Account->AccountGroup = AuthenticatedUser()->_arrUser['AccountGroup'];
-		}
-		else
-		{
-			// The user can only access their specified account
-			DBL()->Account->Account = AuthenticatedUser()->_arrUser['Account'];
-		}
+		// Load the clients primary account
+		DBO()->Account->Id = DBO()->Contact->Account->Value;
+		DBO()->Account->Load();
 		
-		// only retrieve accounts that are not archived
-		DBL()->Account->Archived = 0;
+		// Calculate the Account Balance
+		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+
+		// Calculate the Account Overdue Amount
+		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
+		
+		// Calculate the Account's total unbilled adjustments
+		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		
+		// If the user can view all accounts in their account group then load these too
+		if (DBO()->Contact->CustomerContact->Value)
+		{
+			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
+			DBL()->Account->Archived = 0;
+			DBL()->Account->Load();
+		}
 				
 		$this->LoadPage('console');
 
