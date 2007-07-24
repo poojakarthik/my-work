@@ -442,6 +442,47 @@ class Application
 				die;
 			}	
 		}
+		
+		// by default set user as local
+		$this->_arrUser['IsLocal'] = TRUE;
+		
+		// user is logged in at this point
+		
+		// check for a server forced login
+		if ($_SERVER['PHP_AUTH_USER'])
+		{
+			$arrServerLogin = explode('@', $_SERVER['PHP_AUTH_USER']);
+			
+			// check for username match
+			if (strtolower($arrServerLogin[0]) != strtolower($this->_arrUser['UserName']))
+			{
+				// send login headers and die
+				header('WWW-Authenticate: Basic realm="Yellow Billing"');
+				header('HTTP/1.0 401 Unauthorized');
+				die;
+			}
+			
+			// check for customer match
+			/*
+			//TODO!flame! Make this work
+			if (strtolower($arrServerLogin[1]) != strtolower(*************))
+			{
+				header('WWW-Authenticate: Basic realm="Yellow Billing"');
+				header('HTTP/1.0 401 Unauthorized');
+				die;
+			}
+			*/
+			
+			//TODO!flame! Ban Users/IP Addresses that try to hack the system
+			
+			
+			// Set user Privileges to public + operator
+			$this->_arrUser['Privileges'] = PERMISSION_OPERATOR | PERMISSION_PUBLIC;
+			
+			// Set user as remote
+			$this->_arrUser['IsLocal'] = FALSE;
+			
+		}
 	}
 	
 	
@@ -456,15 +497,16 @@ class Application
 	 * Checks the user's permissions against the permissions required to view the current page
 	 * If the user does not have the required permissions then the login screen is loaded
 	 *
-	 * @param		int		$intPagePerms	permissions required to use the page
+	 * @param		int		$intPagePerms		permissions required to use the page
+	 * @param		bool	$bolRequireLocal	require the user to be local
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function PermissionOrDie($intPagePerms)
+	function PermissionOrDie($intPagePerms, $bolRequireLocal=NULL)
 	{
 		// check the current user permission against permissions passed in
-		if ($this->UserHasPerm($intPagePerms))
+		if ($this->UserHasPerm($intPagePerms, $bolRequireLocal))
 		{
 			return TRUE;
 		}
@@ -498,13 +540,19 @@ class Application
 	 * Checks the user's permissions against the permissions passed in
 	 * 
 	 *
-	 * @param		int		$intPerms	permissions to check the user's permissions against
+	 * @param		int		$intPerms			permissions to check the user's permissions against
+	 * @param		bool	$bolRequireLocal	require the user to be local
 	 * @return		bool				
 	 * @method
 	 *
 	 */
-	function UserHasPerm($intPerms)
+	function UserHasPerm($intPerms, $bolRequireLocal=NULL)
 	{
+		// check for local user
+		if ($bolRequireLocal == TRUE && $this->_arrUser['IsLocal'] !== TRUE)
+		{
+			return FALSE;
+		}
 		// Do a binary 'AND' between the user's privilages and the paramerter
 		$intChecked = $this->_arrUser['Privileges'] & $intPerms;
 		
