@@ -66,15 +66,24 @@ class AppTemplateNote extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
 		
 		// Setup all DBO and DBL objects required for the page
-		// The account should already be set up as a DBObject
-		if (!DBO()->Account->Load())
+		
+		// Check what sort of notes you want to retrieve (ie Account notes, or Contact Notes)
+		switch (DBO()->Note->NoteClass->Value)
 		{
-			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
-			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
-			return TRUE;
+			case NOTE_CLASS_ACCOUNT_NOTES:
+				$strWhere = "Account=" . DBO()->Note->NoteGroupId->Value;
+				break;
+			case NOTE_CLASS_CONTACT_NOTES:
+				$strWhere = "Contact=" . DBO()->Note->NoteGroupId->Value;
+				break;
+			default:
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", "ERROR: Note class was not defined");
+				return TRUE;
+				break;
 		}
 		
-		$strWhere = "Account=" . DBO()->Account->Id->Value;
+		// Check if the user wants to filter the notes
 		if (SubmittedForm("NoteTypeForm"))
 		{
 			switch (DBO()->Note->NoteType->Value)
@@ -90,6 +99,7 @@ class AppTemplateNote extends ApplicationTemplate
 			}
 		}
 		
+		// Retrieve the notes
 		DBL()->Note->Where->SetString($strWhere);
 		DBL()->Note->OrderBy("Datetime DESC");
 		DBL()->Note->Load();
@@ -102,20 +112,20 @@ class AppTemplateNote extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
-	// Add
+	// AddAccount
 	//------------------------------------------------------------------------//
 	/**
-	 * Add()
+	 * AddAccount()
 	 *
-	 * Performs the logic for the Add Note popup window
+	 * Performs the logic for the Add Account Note popup window
 	 * 
-	 * Performs the logic for the Add Note popup window
+	 * Performs the logic for the Add Account Note popup window
 	 *
 	 * @return		void
 	 * @method
 	 *
 	 */
-	function Add()
+	function AddAccount()
 	{
 		// Check user authorization and permissions
 		AuthenticatedUser()->CheckAuth();
@@ -206,19 +216,24 @@ class AppTemplateNote extends ApplicationTemplate
 			if (!DBO()->Note->IsInvalid())
 			{
 				// Set the properties for the new note
-				DBO()->Note->AccountGroup	= DBO()->Account->AccountGroup->Value;
-				DBO()->Note->Account		= DBO()->Account->Id->Value;
+				DBO()->Note->AccountGroup	= DBO()->Contact->AccountGroup->Value;
+				
+				if (DBO()->Note->IsAccountNote->Value)
+				{
+					DBO()->Note->Account	= DBO()->Contact->Account->Value;
+				}
 				
 				// User's details
-				$dboUser = GetAuthenticatedUserDBObject();
-				DBO()->Note->Employee = $dboUser->Id->Value;
+				DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
 				
 				// Time stamp
 				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
+				
+				// Set the Note's contact
+				DBO()->Note->Contact = DBO()->Contact->Id->Value;
 								
 				// DBO()->Note->Note should already be set
 				// DBO()->Note->NoteType should already be set
-				// DBO()->Note->Contact is not set
 				// DBO()->Note->Service is not set
 				
 				// Save the note to the Note table of the vixen database
@@ -249,8 +264,12 @@ class AppTemplateNote extends ApplicationTemplate
 		DBL()->AvailableNoteTypes->SetTable("NoteType");
 		DBL()->AvailableNoteTypes->Load();
 		
+		// Get the contact's primary account
+		DBO()->Account->Id = DBO()->Contact->Account->Value;
+		DBO()->Account->Load();
+		
 		// All required data has been retrieved from the database so now load the page template
-		$this->LoadPage('note_add');
+		$this->LoadPage('note_add_contact');
 
 		return TRUE;
 	}	

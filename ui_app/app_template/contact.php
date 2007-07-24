@@ -72,9 +72,6 @@ class AppTemplateContact extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 
-		// Context menu
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
 		
 		// Breadcrumb menu
 				
@@ -88,6 +85,14 @@ class AppTemplateContact extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
+		
+		// Context menu
+		ContextMenu()->Contact_Retrieve->Notes->View_Contact_Notes(DBO()->Contact->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Contact_Note(DBO()->Contact->Id->Value);
+		ContextMenu()->Contact_Retrieve->Edit_Contact(DBO()->Contact->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Associated_Account(DBO()->Contact->Account->Value);
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
 		
 		// Retrieve all accounts that the contact is allowed to view
 		if (DBO()->Contact->CustomerContact->Value)
@@ -117,6 +122,91 @@ class AppTemplateContact extends ApplicationTemplate
 
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// edit
+	//------------------------------------------------------------------------//
+	/**
+	 * edit()
+	 *
+	 * Performs the logic for the contact_edit.php webpage
+	 * 
+	 * Performs the logic for the contact_edit.php webpage
+	 *
+	 * @return		void
+	 * @method		view
+	 *
+	 */
+	function edit()
+	{
+		$pagePerms = PERMISSION_ADMIN;
+		
+		// Should probably check user authorization here
+		AuthenticatedUser()->CheckAuth();
+		
+		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			// Add extra functionality for super-users
+		}
+
+		if (SubmittedForm("EditContact"))
+		{
+			if (!DBO()->Contact->IsInvalid())
+			{
+				// Work out what needs to be set to update a contact
+				//TODO!
+				// Work out what needs to be set to add a new contact
+				//TODO!
+				DBO()->Status->Message = "Everything is A Okay";
+			}
+			else
+			{
+				DBO()->Status->Message = "ERROR: Could not save the contact.  Invalid fields are highlighted.";
+			}
+		}
+		else
+		{
+			//Ajax()->AddCommand("Alert", "")
+			//echo "The form has not been submitted yet";
+		}
+		
+		
+		// Breadcrumb menu
+				
+		// Setup all DBO and DBL objects required for the page
+		
+		// Check if we are editing an existing contact or adding a new one
+		if (DBO()->Contact->Id->Value)
+		{
+			//we are editing an existing contact
+			// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
+			if (!DBO()->Contact->Load())
+			{
+				DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
+				$this->LoadPage('error');
+				return FALSE;
+			}
+			$this->LoadPage('contact_edit');
+		}
+		else
+		{
+			//we are adding a new contact
+			$this->LoadPage('contact_add');
+		}
+
+	
+		// Context menu
+		ContextMenu()->Contact_Retrieve->Notes->View_Contact_Notes(DBO()->Contact->Id->Value);
+		ContextMenu()->Contact_Retrieve->Notes->Add_Contact_Note(DBO()->Contact->Id->Value);
+		ContextMenu()->Contact_Retrieve->Edit_Contact(DBO()->Contact->Id->Value);
+		ContextMenu()->Contact_Retrieve->Add_Associated_Account(DBO()->Contact->Account->Value);
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+		
+
+		return TRUE;
+	}	
 	
 	//----- DO NOT REMOVE -----//
 	

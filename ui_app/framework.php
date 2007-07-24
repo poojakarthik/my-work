@@ -1964,7 +1964,7 @@ class MenuItems
 		$this->strLabel	= "acc: $intId";
 		return "account_view.php?Id=$intId";
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// EditContact
 	//------------------------------------------------------------------------//
@@ -2070,7 +2070,29 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}EditPopup\", \"medium\", \"Employee\", \"Edit\", $strJsonCode)";
 
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// AddAssociatedAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * AddAssociatedAccount()
+	 *
+	 * Compiles the Href to be executed when the AddAssociatedAccount menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddAssociatedAccount menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intInvoice		account number of the calling account
+	 *
+	 * @return	string					Href to be executed when the AddAssociatedAccount menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddAssociatedAccount($intAccount)
+	{
+		return "account_add.php?Associated=$intAccount";
+	}
+
 	//------------------------------------------------------------------------//
 	// ViewInvoicePdf
 	//------------------------------------------------------------------------//
@@ -2119,28 +2141,29 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
-	// ViewNotes
+	// ViewAccountNotes
 	//------------------------------------------------------------------------//
 	/**
-	 * ViewNotes()
+	 * ViewAccountNotes()
 	 *
-	 * Compiles the javascript to be executed when the ViewNotes menu item is clicked
+	 * Compiles the javascript to be executed when the ViewAccountNotes menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the ViewNotes menu item is clicked
+	 * Compiles the javascript to be executed when the ViewAccountNotes menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intId		id of the account associated with the notes to view
 	 *
-	 * @return	string				action to be executed when the ViewNotes menu item is clicked
+	 * @return	string				action to be executed when the ViewAccountNotes menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewNotes($intId)
+	function ViewAccountNotes($intId)
 	{
-		$this->strLabel	= "view notes";
+		$this->strLabel	= "view account notes";
 		
 		// Setup data to send
-		$arrData['Objects']['Account']['Id'] = $intId;
+		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
+		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_ACCOUNT_NOTES;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
@@ -2148,27 +2171,89 @@ class MenuItems
 		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Note\", \"View\", $strJsonCode)";
 	}
-	
+
 	//------------------------------------------------------------------------//
-	// AddNote
+	// ViewContactNotes
 	//------------------------------------------------------------------------//
 	/**
-	 * AddNote()
+	 * ViewContactNotes()
 	 *
-	 * Compiles the javascript to be executed when the AddNote menu item is clicked
+	 * Compiles the javascript to be executed when the ViewContactNotes menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the AddNote menu item is clicked
+	 * Compiles the javascript to be executed when the ViewContactNotes menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account associated with the notes to view
+	 *
+	 * @return	string				action to be executed when the ViewContactNotes menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewContactNotes($intId)
+	{
+		$this->strLabel	= "view contact notes";
+		
+		// Setup data to send
+		$arrData['Objects']['Note']['NoteGroupId'] = $intId;
+		$arrData['Objects']['Note']['NoteClass'] = NOTE_CLASS_CONTACT_NOTES;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		//return "javascript:ShowAjaxPopup('ViewNotes', medium, Note.View, $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"ViewNotesPopupId\", \"medium\", \"Note\", \"View\", $strJsonCode)";
+	}
+
+	//------------------------------------------------------------------------//
+	// AddContactNote
+	//------------------------------------------------------------------------//
+	/**
+	 * AddContactNote()
+	 *
+	 * Compiles the javascript to be executed when the AddContactNote menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the AddContactNote menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intId		id of the account associated with the note to add
 	 *
-	 * @return	string				action to be executed when the AddNotes menu item is clicked
+	 * @return	string				action to be executed when the AddContactNotes menu item is clicked
 	 *
 	 * @method
 	 */
-	function AddNote($intId)
+	function AddContactNote($intId)
 	{
 		$this->strLabel	= "add note";
+		
+		// Setup data to send
+		$arrData['Objects']['Contact']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"AddContact\", $strJsonCode)";
+	}
+
+	//------------------------------------------------------------------------//
+	// AddAccountNote
+	//------------------------------------------------------------------------//
+	/**
+	 * AddAccountNote()
+	 *
+	 * Compiles the javascript to be executed when the AddAccountNote menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the AddAccountNote menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account associated with the note to add
+	 *
+	 * @return	string				action to be executed when the AddAccountNotes menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddAccountNote($intId)
+	{
+		$this->strLabel	= "add account note";
 		
 		// Setup data to send
 		$arrData['Objects']['Account']['Id'] = $intId;
@@ -2176,7 +2261,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"AddAccount\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//

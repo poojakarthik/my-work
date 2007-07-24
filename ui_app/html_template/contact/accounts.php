@@ -71,18 +71,7 @@ class HtmlTemplateContactAccounts extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch ($this->_intContext)
-		{
-			case HTML_CONTEXT_LEDGER_DETAIL:
-				$this->_RenderLedgerDetail();
-				break;
-			case HTML_CONTEXT_FULL_DETAIL:
-				$this->_RenderFullDetail();
-				break;
-			default:
-				$this->_RenderFullDetail();
-				break;
-		}
+		$this->_RenderFullDetail();
 	}
 
 	//------------------------------------------------------------------------//
@@ -109,18 +98,6 @@ class HtmlTemplateContactAccounts extends HtmlTemplate
 		
 		foreach (DBL()->Account as $dboAccount)
 		{
-			// build the "View pdf" link
-			//$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
-			//$intYear = (int)date("Y", $intDate);
-			//$intMonth = (int)date("m", $intDate);
-			//$strPath = "/home/vixen_invoices/$intYear/$intMonth/{$dboInvoice->Account->Value}_*";
-			//$arrFiles = glob($strPath);
-			//if ($arrFiles[0])
-			//{
-			//	$strPdfHref = Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intMonth, $intYear);
-			//	$strPdfLabel = "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf.png' title='View PDF Invoice' /></a></span>";
-			//}
-			
 			// build the "View Account Details" link
 			$strViewAccountHref = Href()->ViewAccount($dboAccount->Id->Value);
 			$strViewAccountLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewAccountHref'>".'View Account'."</a></span>";
@@ -133,121 +110,18 @@ class HtmlTemplateContactAccounts extends HtmlTemplate
 			$strViewNotesHref = Href()->ViewNotes($dboAccount->Id->Value);
 			$strViewNotesLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewNotesHref'>".'View Notes'."</a></span>";
 			
-			//build Email Invoice link
-			//$strEmailHref = Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
-			//$strEmailLabel = "<span class='DefaultOutputSpan Default'><a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a></span>";
-			
-			// calculate Invoice Amount
-			//$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
-			// calculate AppliedAmount
-			//$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
-			
 			// Add this row to Invoice table
 			Table()->AccountTable->AddRow($dboAccount->Id->AsValue(),
 											$dboAccount->BusinessName->AsValue(), 
 											$dboAccount->TradingName->AsValue(),
 											$dboAccount->Overdue->AsValue(),
 											$strViewNotesLabel, $strViewAccountLabel, $strViewInvoiceAndPaymentsLabel
-											//$dboInvoice->->AsValue(), 
-											//$dboInvoice->Balance->AsValue(), 
-											//$dboInvoice->Status->AsCallback("GetConstantDescription", Array("InvoiceStatus")), 
-											//$strPdfLabel,
-											//$strViewInvoiceLabel,
-											//$strEmailLabel);
 											);
-			// Set the drop down detail
-			/*$strDetailHtml = "<div class='VixenTableDetail'>\n";
-			$strDetailHtml .= $dboInvoice->DueOn->AsOutput();
-			if ($dboInvoice->SettledOn->Value)
-			{
-				$strDetailHtml .= $dboInvoice->SettledOn->AsOutput();
-			}
-			//$strDetailHtml .= $dboInvoice->Credits->AsOutput();
-			//$strDetailHtml .= $dboInvoice->Debits->AsOutput();
-			//$strDetailHtml .= $dboInvoice->Total->AsOutput();
-			//$strDetailHtml .= $dboInvoice->Tax->AsOutput();
-			$strDetailHtml .= $dboInvoice->TotalOwing->AsOutput();
-			//$strDetailHtml .= $dboInvoice->Balance->AsOutput();
-			if ($dboInvoice->Disputed->Value > 0)//does this include GST??????
-			{
-				$strDetailHtml .= $dboInvoice->Disputed->AsOutput();
-			}
-			//$strDetailHtml .= $dboInvoice->AccountBalance->AsOutput();
-			$strDetailHtml .= "</div>\n";
-			
-			Table()->InvoiceTable->SetDetail($strDetailHtml);
-			
-			// Add the row index
-			Table()->InvoiceTable->AddIndex("InvoiceRun", $dboInvoice->InvoiceRun->Value);
-		*/
 		}
-		//Table()->InvoiceTable->LinkTable("PaymentTable", "InvoiceRun");
-		//Table()->InvoiceTable->LinkTable("AdjustmentTable", "InvoiceRun");
-		
 		Table()->AccountTable->RowHighlighting = TRUE;
-		
 		Table()->AccountTable->Render();
 		
-		//DBL()->Account->ShowInfo();
-		
-		//echo "</div>\n";
-		//echo "<div class='Seperator'></div>\n";
-		
 		echo "<div class='Seperator'></div>\n";
-	
-
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderLedgerDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderLedgerDetail()
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * @method
-	 */
-	private function _RenderLedgerDetail()
-	{
-		echo "<h2 class='Contact'>Contact Accounts</h2>\n";
-		
-		//EXAMPLE:
-		/*
-		echo "<div class='NarrowContent'>\n";
-		
-		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
-		
-		// Render the Id of the Account as a hidden input
-		DBO()->Account->Id->RenderHidden();
-
-		// Render the details of the Account
-		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Account->Balance->RenderOutput();
-		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-
-
-		// Render the properties that can be changed
-		DBO()->Account->DisableDDR->RenderInput();
-		DBO()->Account->DisableLatePayment->RenderInput();
-		
-		// Render the submit button
-		echo "<div class='Right'>\n";
-		$this->Submit("Apply Changes");
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		
-		// Declare the end of the form
-		$this->FormEnd();
-		*/
 	}
 }
 

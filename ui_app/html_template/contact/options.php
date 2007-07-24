@@ -71,18 +71,7 @@ class HtmlTemplateContactOptions extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch ($this->_intContext)
-		{
-			case HTML_CONTEXT_LEDGER_DETAIL:
-				$this->_RenderLedgerDetail();
-				break;
-			case HTML_CONTEXT_FULL_DETAIL:
-				$this->_RenderFullDetail();
-				break;
-			default:
-				$this->_RenderFullDetail();
-				break;
-		}
+		$this->_RenderFullDetail();
 	}
 
 	//------------------------------------------------------------------------//
@@ -100,69 +89,19 @@ class HtmlTemplateContactOptions extends HtmlTemplate
 	private function _RenderFullDetail()
 	{
 		echo "<h2 class='Options'>Contact Options</h2>\n";
+		echo "<div class='Narrow-Form'>\n";
 		
 		$strEditContactLink = Href()->EditContact(DBO()->Contact->Id->Value);
-		echo "<a href='$strEditContactLink'>Edit Contact Details</a><br>\n";
-		
-		$strAddContactLink = Href()->AddNote(DBO()->Contact->Id->Value);
-		echo "<a href='$strAddContactLink'>[todo] Add Contact Note</a><br>\n";
+		echo "<li><a href='$strEditContactLink'>Edit Contact Details</a></li>\n";
+		$strAddContactNoteLink = Href()->AddContactNote(DBO()->Contact->Id->Value);
+		echo "<li><a href='$strAddContactNoteLink'>Add Contact Note</a></li>\n";
+		$strViewContactNotesLink = Href()->ViewContactNotes(DBO()->Contact->Id->Value);
+		echo "<li><a href='$strViewContactNotesLink'>View Contact Notes</a></li>\n";
+		$strAddAssociateAccountLink = Href()->AddAssociatedAccount(DBO()->Contact->Account->Value);
+		echo "<li><a href='$strAddAssociateAccountLink'>Add Associated Account</a></li>\n";
 
-		$strAddContactLink = Href()->AddNote(DBO()->Contact->Id->Value);
-		echo "<a href='$strAddContactLink'>[todo] View Contact Note</a><br>\n";
-
-		echo "<div class='Seperator'></div>\n";
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderLedgerDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderLedgerDetail()
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * @method
-	 */
-	private function _RenderLedgerDetail()
-	{
-		echo "<h2 class='Options'>Contact Options</h2>\n";
-		
-		//EXAMPLE:
-		/*
-		echo "<div class='NarrowContent'>\n";
-		
-		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
-		
-		// Render the Id of the Account as a hidden input
-		DBO()->Account->Id->RenderHidden();
-
-		// Render the details of the Account
-		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Account->Balance->RenderOutput();
-		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-
-
-		// Render the properties that can be changed
-		DBO()->Account->DisableDDR->RenderInput();
-		DBO()->Account->DisableLatePayment->RenderInput();
-		
-		// Render the submit button
-		echo "<div class='Right'>\n";
-		$this->Submit("Apply Changes");
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		
-		// Declare the end of the form
-		$this->FormEnd();
-		*/
 	}
 }
 

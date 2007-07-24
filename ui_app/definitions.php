@@ -71,6 +71,11 @@ define('CLASS_DEFAULT', 'Default');
 
 define('SYSTEM_NOTE', 7);
 
+// Note Classes
+define('NOTE_CLASS_ACCOUNT_NOTES', 1);
+define('NOTE_CLASS_CONTACT_NOTES', 2);
+define('NOTE_CLASS_SERVICE_NOTES', 3);
+
 // Object Status
 define('STATUS_NEW',	 	100);
 define('STATUS_CLEANED', 	101);
@@ -85,6 +90,8 @@ define('HTML_CONTEXT_FULL_DETAIL',		101);
 define('HTML_CONTEXT_MINIMUM_DETAIL',	102);
 define('HTML_CONTEXT_LEDGER_DETAIL',	103);
 define('HTML_CONTEXT_ACCOUNT_NOTE',		300);
+define('HTML_CONTEXT_CONTACT_NOTE',		301);
+define('HTML_CONTEXT_CONTACT_ADD',		200);
 
 // PropertyToken Render method constants
 define('RENDER_VALUE',	"Value");

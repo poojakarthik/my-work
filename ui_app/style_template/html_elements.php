@@ -161,6 +161,10 @@ class HTMLElements
 		{
 			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
 		}
+		else
+		{
+			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
+		}
 		$strHtml .= "   {$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		
