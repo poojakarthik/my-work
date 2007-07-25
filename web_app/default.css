@@ -172,11 +172,6 @@
 		background-image:              url('./img/template/curve_bottom_right.png');
 	}
 	
-	.clear
-	{
-		clear:                         both;
-	}
-	
 	.pageContainer
 	{
 		margin-left:                   25px;
@@ -187,10 +182,6 @@
 	{
 	}
 	
-	.sectionContent
-	{
-	}
-
 	div#Logo
 	{
 		margin-right:                  25px;
@@ -215,15 +206,6 @@
 		height:		1px;
 		width:		70px;
 	}	
-
-/******************************************************************************/
-/* This stuff was taken from client_app/css/default.css                       */
-/******************************************************************************/
-	img
-	{
-		border:                        0;
-	}
-
 
 /**************************************************************************/
 /* DEFAULT I/O															  */
@@ -610,8 +592,8 @@
 	{
 		float:				left;
 		position: 			absolute;
-		top:				55px;
-		left:				5px;
+		/*height:				20px;*/
+		
 	}
 	
 	.MenuIcon

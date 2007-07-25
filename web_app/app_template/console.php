@@ -71,10 +71,27 @@ class AppTemplateConsole extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		if (DBO()->Account->Id->Value)
+		{
+			// A specific account has been specified, so load the details of it
+			// DBO()->Account->Id has already been initialised
+		}
+		else
+		{
+			// no specific account has been specified, so load the contact's primary account
+			DBO()->Account->Id = DBO()->Contact->Account->Value;
+		}
+		
 		// Load the clients primary account
-		DBO()->Account->Id = DBO()->Contact->Account->Value;
 		DBO()->Account->Load();
 		
+		// add to breadcrumb menu
+		//TODO!
+		BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
+		
+		// Add a context menu
+		//TODO!
+
 		// Calculate the Account Balance
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 
@@ -90,6 +107,30 @@ class AppTemplateConsole extends ApplicationTemplate
 			DBL()->Account->AccountGroup = DBO()->Contact->AccountGroup->Value;
 			DBL()->Account->Archived = 0;
 			DBL()->Account->Load();
+		}
+		
+		// Make sure that the Account requested belongs to the account group that the contact belongs to
+		$bolUserCanViewAccount = FALSE;
+		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		{
+			// The user can only view the account, if it belongs to the account group that they belong to
+			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
+			{
+				$bolUserCanViewAccount = TRUE;
+			}
+		}
+		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		{
+			// The user can only view the account, if it is their primary account
+			$bolUserCanViewAccount = TRUE;
+		}
+		
+		if (!$bolUserCanViewAccount)
+		{
+			// The user does not have permission to view the requested account
+			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value ." as it is not part of their Account Group";
+			$this->LoadPage('Error');
+			return FALSE;
 		}
 				
 		$this->LoadPage('console');

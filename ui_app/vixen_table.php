@@ -55,6 +55,7 @@ class VixenTable
 	 * $this->_arrRow[]['Detail'] 	= $strDetail (HTML -> detial div)
 	 *                 ['Columns'] 	= $arrColumns (indexed array of HTML output)
 	 *                 ['ToolTip']	= $strToolTip (HTML -> tooltip div)
+	 *                 ['OnClick']	= $strOnClick (if set, this will be executed when the row is clicked)
 	 *                 ['Index']	= [name][] = value
 	 *
 	 * @type	array
@@ -455,6 +456,39 @@ class VixenTable
 	}
 	
 	//------------------------------------------------------------------------//
+	// SetOnClick
+	//------------------------------------------------------------------------//
+	/**
+	 * SetOnClick()
+	 *
+	 * Sets the OnClick code for the current row, which is executed when the row is clicked
+	 *
+	 * Sets the OnClick code for the current row, which is executed when the row is clicked
+	 * 
+	 *
+	 * @param	string		$strCodeToExecute	javascript code or Href to execute when the row is clicked
+	 * 
+	 * @return	mixed							row number of the current row
+	 *											If there is no current row, then it returns NULL
+	 *
+	 * @method
+	 */
+	function SetOnClick($strCodeToExecute)
+	{
+		if (!isset($this->_intCurrentRow))
+		{
+			// a row has not yet been added yet
+			return NULL;
+		}
+		
+		//$this->_bolToolTips = TRUE;
+		
+		$this->_arrRows[$this->_intCurrentRow]['OnClick'] = $strCodeToExecute;
+		return $this->_intCurrentRow;
+	}
+	
+	
+	//------------------------------------------------------------------------//
 	// AddIndex
 	//------------------------------------------------------------------------//
 	/**
@@ -590,8 +624,9 @@ class VixenTable
 	{
 		$strTableName = $this->_strName;
 
-		if ($this->_bolDetails || $this->_bolRowHighlighting || $this->_bolToolTips || $this->_bolLinked)
-		{
+		// I don't know why this block of code was placed in this condition, because further blocks of code require it to have been executed
+		//if ($this->_bolDetails || $this->_bolRowHighlighting || $this->_bolToolTips || $this->_bolLinked)
+		//{
 			echo "<script type='text/javascript'>\n";
 			
 			$strVixenTable = "Vixen.table." . $strTableName;
@@ -601,7 +636,7 @@ class VixenTable
 			echo $strVixenTable . ".totalRows = 0;\n";
 			echo $strVixenTable . ".row = Array(); \n";
 			echo "</script>\n";
-		}
+		//}
 
 		echo "<table border='0' cellpadding='3' cellspacing='0' class='Listing' width='100%' id='$strTableName'>\n";
 		
@@ -622,7 +657,17 @@ class VixenTable
 		{
 			$intRowCount++;
 			$strClass = ($intRowCount % 2) ? 'Even' : 'Odd';
-			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass'>\n";
+			
+			if (isset($objRow['OnClick']))
+			{
+				$strOnClick = "onclick=\"{$objRow['OnClick']}\"";
+			}
+			else
+			{
+				$strOnClick = "";
+			}
+			
+			echo "<tr id='" . $strTableName . "_" . $intRowCount . "' class='$strClass' $strOnClick>\n";
 			
 			$intColCount = 0;
 			// Build fields
@@ -657,19 +702,8 @@ class VixenTable
 				echo "</div>\n";
 				echo "</td>";
 			}
-			
+		
 			echo "\n<script type='text/javascript'>";
-						/*
-						{
-				'selected' : FALSE,
-				'up' : TRUE,
-				'index' : 
-				{
-					'Invoice' :'3000308781',
-					'Service' :'6123'
-				}
-			},*/
-			
 			echo "objRow = Object();\n";
 			
 			echo "objRow.selected = FALSE;\n";
@@ -696,7 +730,6 @@ class VixenTable
 			
 			echo $strVixenTable . ".row.push(objRow);\n";
 			echo "</script>\n";
-			
 			echo "</tr>\n";
 		}
 		

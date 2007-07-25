@@ -7,20 +7,20 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// console.php
+// account_view_unbilled_charges.php
 //----------------------------------------------------------------------------//
 /**
- * console
+ * account_view_unbilled_charges
  *
- * Page Template for the client app console page
+ * Page Template for the client app View Unbilled Charges page
  *
- * Page Template for the client app console page
+ * Page Template for the client app View Unbilled Charges page
  * This file specifies the layout to use and the HTML Template objects to put 
  * into each column on the page
  * Most code in this file (if not all) will manipulate the $this->Page object
  * which has already been instantiated.
  *
- * @file		console.php
+ * @file		account_view_unbilled_charges.php
  * @language	PHP
  * @package		web_app
  * @author		Joel 'MagnumSwordFortress' Dawkins
@@ -30,13 +30,19 @@
  *
  */
 
-// set the page title
-$this->Page->SetName('Console');
 
-// set the layout template for the page.
-$this->Page->SetLayout('1column');
+// Set the page title
+$this->Page->SetName('View Unbilled Charges for Account');
 
-// add the Html Objects to their respective columns
-$this->Page->AddObject('Console', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$strLayout = '1Column';
+$this->Page->SetLayout($strLayout);
+
+// Add each html object to the appropriate column
+$this->Page->AddObject('AccountUnbilledChargeTotal', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('AccountUnbilledChargeList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('AccountServiceList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+
+
+
 
 ?>

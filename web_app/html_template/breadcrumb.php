@@ -20,7 +20,7 @@
  *
  * @file		breadcrumb.php
  * @language	PHP
- * @package		ui_app
+ * @package		web_app
  * @author		Jared 'flame' Herbohn
  * @version		7.06
  * @copyright	2007 VOIPTEL Pty Ltd

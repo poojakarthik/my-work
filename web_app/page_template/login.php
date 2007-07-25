@@ -68,7 +68,7 @@
 			     
 			</style>
 			
-			<body>
+			<body onload='document.getElementById("VixenUserNameId").focus()'>
 			<div id="topContainer">
 				<div id="loginContainer">
 				<div id="logoImage">
@@ -87,7 +87,7 @@
 					<label for="UserName">Username:</label>
 					</td>
 					<td>
-					<input type="text" name="VixenUserName" class="LoginBox" maxlength="21"/>
+					<input type="text" id='VixenUserNameId' name="VixenUserName" class="LoginBox" maxlength="21"/>
 					</td>
 					</tr>
 					<tr>

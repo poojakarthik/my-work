@@ -1,48 +1,22 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2007 VOIPTEL Pty Ltd
-//
-// NOT FOR EXTERNAL DISTRIBUTION
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-// error.php
+// HtmlTemplateAccountUnbilledChargeList
 //----------------------------------------------------------------------------//
 /**
- * error
+ * HtmlTemplateAccountUnbilledChargeList
  *
- * HTML Template for the HTML Error object
+ * HTML Template object for the client app, List of all Unbilled charges for account
  *
- * HTML Template for the HTML Error object
- *
- * @file		error.php
- * @language	PHP
- * @package		web_app
- * @author		Jared 'flame' Herbohn
- * @version		7.06
- * @copyright	2007 VOIPTEL Pty Ltd
- * @license		NOT FOR EXTERNAL DISTRIBUTION
- *
- */
-
-
-//----------------------------------------------------------------------------//
-// HtmlTemplateError
-//----------------------------------------------------------------------------//
-/**
- * HtmlTemplateError
- *
- * HTML Template class for the HTML Error object
- *
- * HTML Template class for the HTML Error object
+ * HTML Template object for the client app, List of all Unbilled charges for account
  *
  *
+ * @prefix	<prefix>
  *
  * @package	web_app
- * @class	HtmlTemplateError
+ * @class	HtmlTemplateAccountUnbilledChargeList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateError extends HtmlTemplate
+class HtmlTemplateAccountUnbilledChargeList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -79,6 +53,10 @@ class HtmlTemplateError extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
+		$this->LoadJavascript("highlight");
+		//$this->LoadJavascript("retractable");
+		//$this->LoadJavascript("tooltip");
+		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -94,10 +72,30 @@ class HtmlTemplateError extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
-		echo "<div Id='VixenError' Class=''>\n	";
-		DBO()->Error->Message->Render();
-		echo "\n</div>\n";
+	{
+		echo "<div class='WideContent'>\n";
+				
+		// User cannot delete adjustments
+		Table()->AdjustmentTable->SetHeader("Date", "Code", "Description", "Nature", "Status", "Amount (inc GST)");
+		Table()->AdjustmentTable->SetWidth("10%", "15%", "30%", "10%", "15%", "20%");
+		Table()->AdjustmentTable->SetAlignment("left", "left", "left", "left", "right", "left");
+		
+		// add the rows
+		foreach (DBL()->Charge as $dboCharge)
+		{
+			Table()->AdjustmentTable->AddRow($dboCharge->CreatedOn->AsValue(),
+											$dboCharge->ChargeType->AsValue(),
+											$dboCharge->Description->AsValue(),
+											$dboCharge->Nature->AsValue(),
+											$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")),
+											$dboCharge->Amount->AsCallback("AddGST"));
+		}
+		
+		Table()->AdjustmentTable->Render();
+		
+		echo "<div class='Seperator'></div>\n";
+		
+		echo "</div>\n";
 	}
 }
 

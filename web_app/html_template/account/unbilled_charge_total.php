@@ -1,48 +1,22 @@
 <?php
 //----------------------------------------------------------------------------//
-// (c) copyright 2007 VOIPTEL Pty Ltd
-//
-// NOT FOR EXTERNAL DISTRIBUTION
-//----------------------------------------------------------------------------//
-
-//----------------------------------------------------------------------------//
-// error.php
+// HtmlTemplateAccountUnbilledChargeTotal
 //----------------------------------------------------------------------------//
 /**
- * error
+ * HtmlTemplateAccountUnbilledChargeTotal
  *
- * HTML Template for the HTML Error object
+ * HTML Template object for the client app, Total Unbilled charges for account
  *
- * HTML Template for the HTML Error object
- *
- * @file		error.php
- * @language	PHP
- * @package		web_app
- * @author		Jared 'flame' Herbohn
- * @version		7.06
- * @copyright	2007 VOIPTEL Pty Ltd
- * @license		NOT FOR EXTERNAL DISTRIBUTION
- *
- */
-
-
-//----------------------------------------------------------------------------//
-// HtmlTemplateError
-//----------------------------------------------------------------------------//
-/**
- * HtmlTemplateError
- *
- * HTML Template class for the HTML Error object
- *
- * HTML Template class for the HTML Error object
+ * HTML Template object for the client app, Total Unbilled charges for account
  *
  *
+ * @prefix	<prefix>
  *
  * @package	web_app
- * @class	HtmlTemplateError
+ * @class	HtmlTemplateAccountUnbilledChargeTotal
  * @extends	HtmlTemplate
  */
-class HtmlTemplateError extends HtmlTemplate
+class HtmlTemplateAccountUnbilledChargeTotal extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -79,6 +53,10 @@ class HtmlTemplateError extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
+		//$this->LoadJavascript("highlight");
+		//$this->LoadJavascript("retractable");
+		//$this->LoadJavascript("tooltip");
+		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -94,10 +72,28 @@ class HtmlTemplateError extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
-	{	
-		echo "<div Id='VixenError' Class=''>\n	";
-		DBO()->Error->Message->Render();
-		echo "\n</div>\n";
+	{
+		echo "<div class='WideContent'>\n";
+		echo "<h2 class='Adjustment'>Unbilled Charges for Account# ". DBO()->Account->Id->Value ."</h2>\n";
+		
+		// Display the details of the nominated account
+		//echo "<h2 class='Account'>Account Details</h2>\n";
+		if (DBO()->Account->BusinessName->Value)
+		{
+			DBO()->Account->BusinessName->RenderOutput();
+		}
+		if (DBO()->Account->TradingName->Value)
+		{
+			DBO()->Account->TradingName->RenderOutput();
+		}
+		
+		// Display the Total Unbilled Adjustments for this account
+		// NOTE! this is only the adjustments with nature == debit
+		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
+		
+		echo "<div class='Seperator'></div>\n";
+		
+		echo "</div>\n";
 	}
 }
 

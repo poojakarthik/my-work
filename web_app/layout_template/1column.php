@@ -29,7 +29,6 @@
 
 $this->RenderHeader();
 //$this->RenderClientAppHeader();
-//$this->RenderBreadCrumbMenu();
 //$this->RenderContextMenu();
 ?>
 
@@ -45,9 +44,15 @@ $this->RenderHeader();
 			<img src="img/header.jpg" width="597" height="95" />
 		</div>
 	</div>
-
+	<div class="sectionContent">
+		<?php $this->RenderBreadCrumbMenu();?>
+	</div>
+	<div class="clear"></div>
 		<div id='PageBody'>
-			<?php $this->RenderColumn(COLUMN_ONE); ?>
+			<?php 
+				//$this->RenderBreadCrumbMenu();
+				$this->RenderColumn(COLUMN_ONE);
+			?>
 		</div>
 
 	</div>

@@ -2514,6 +2514,39 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"DeleteRecurringAdjustmentPopupId\", \"medium\", \"Account\", \"DeleteRecord\", $strJsonCode)";
 	}
 	
+//---------------------------------------------------------------------------------------------------------------------------------------------------------//
+// THE FOLLOWING MENU ITEMS ARE SPECIFICALLY FOR THE CLIENT WEB APP.  THESE SHOULD PROBABLY BE PUT IN THEIR OWN FILE
+//---------------------------------------------------------------------------------------------------------------------------------------------------------//
+	//------------------------------------------------------------------------//
+	// LoadAccountInConsole
+	//------------------------------------------------------------------------//
+	/**
+	 * LoadAccountInConsole()
+	 *
+	 * Compiles the javascript to be executed when the LoadAccountInConsole menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the LoadAccountInConsole menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		account id to load
+	 *
+	 * @return	string						action to be executed when the LoadAccountInConsole menu item is clicked
+	 *
+	 * @method
+	 */
+	function LoadAccountInConsole($intAccountId)
+	{
+		$this->strLabel	= "acc: $intAccountId";
+		
+		return "vixen.php/Console/Console/?Account.Id=$intAccountId";
+	}
+
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------//
+// THIS DENOTES THE END OF THE CLIENT WEB APP MENU ITEMS
+//---------------------------------------------------------------------------------------------------------------------------------------------------------//
+
+	
 
 	//------------------------------------------------------------------------//
 	// BreadCrumb

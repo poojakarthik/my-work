@@ -147,7 +147,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Load all charge types that aren't archived
 		DBL()->ChargeTypesAvailable->Archived = 0;
 		DBL()->ChargeTypesAvailable->SetTable("ChargeType");
-		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
 		DBL()->ChargeTypesAvailable->Load();
 
 		// load the last 6 invoices with the most recent being first
@@ -273,7 +273,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Load all charge types that aren't archived
 		DBL()->ChargeTypesAvailable->Archived = 0;
 		DBL()->ChargeTypesAvailable->SetTable("RecurringChargeType");
-		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC");
+		DBL()->ChargeTypesAvailable->OrderBy("Nature DESC, Description");
 		DBL()->ChargeTypesAvailable->Load();
 
 		// load the last 6 invoices with the most recent being first
