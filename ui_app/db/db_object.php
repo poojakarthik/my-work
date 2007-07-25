@@ -372,6 +372,25 @@ class DBObject extends DBObjectBase
 	}
 	
 	//------------------------------------------------------------------------//
+	// SetToInvalid
+	//------------------------------------------------------------------------//
+	/**
+	 * SetToInvalid()
+	 *
+	 * Explicitly sets the object to invalid
+	 *
+	 * Explicitly sets the object to invalid
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function SetToInvalid()
+	{
+		$this->_bolValid = FALSE;
+	}
+	
+	//------------------------------------------------------------------------//
 	// Clean
 	//------------------------------------------------------------------------//
 	/**

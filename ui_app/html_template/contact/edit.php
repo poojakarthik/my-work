@@ -103,7 +103,6 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 		DBO()->Contact->LastName->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->Contact->JobTitle->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		DBO()->Contact->DOB->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		echo "DOB = " . DBO()->Contact->DOB->Value;
 		DBO()->Contact->Email->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->Contact->Phone->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
 		DBO()->Contact->Mobile->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);

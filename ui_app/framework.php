@@ -1084,11 +1084,14 @@ class Validation
 	 */
 	function RegexValidate($strValidationRule, $mixValue)
 	{
+		//echo "entered";
 		// return false if not a valid regex
-		if (substr($strValidationRule, 0, 1) != '/' || !strrpos($strValidationRule, '/') > 0)
+		/*
+		if ((substr($strValidationRule, 0, 1) != '/') || (!strrpos($strValidationRule, '/') > 0))
 		{
 			return FALSE;
 		}
+		*/
 
 		// try to match with a regex
 		if (preg_match($strValidationRule, $mixValue))
@@ -1203,6 +1206,27 @@ class Validation
 	}
 	
 	//------------------------------------------------------------------------//
+	// ShortDate
+	//------------------------------------------------------------------------//
+	/**
+	 * ShortDate()
+	 *
+	 * Checks if a value is in a valid date format
+	 *
+	 * Checks if a value is in a valid date format
+	 *
+	 * @param	mix			$mixDateAndTime		the value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function ShortDate($mixDateAndTime)
+	{
+		return $this->RegexValidate('^(0[1-9]|[12][0-9]|3[01])[- /.](0[1-9]|1[012])[- /.](19|20)[0-9]{2}$^' , $mixDateAndTime);
+	}	
+	
+	//------------------------------------------------------------------------//
 	// DateAndTime
 	//------------------------------------------------------------------------//
 	/**
@@ -1312,8 +1336,70 @@ class Validation
 		
 		return (bool)(strlen($mixValue) > 0);
 	}
-}
+	
+	//------------------------------------------------------------------------//
+	// IsValidEmail
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidEmail()
+	 *
+	 * Returns TRUE if the value has all the components of a valid email 
+	 * address i.e. minimum length the '@' symbol and atleast one period '.'
+	 *
+	 * Returns FALSE if the value has some components of a valid email
+	 * address missing
+	 *
+	 * Uses RegexValidate and custom regex validation to check email address
+	 * 
+	 *
+	 * @param	mix			$mixValue		value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function IsValidEmail($mixValue)
+	{
+		return $this->RegexValidate('^([[:alnum:]]([-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$^', $mixValue);
+	}
 
+	//------------------------------------------------------------------------//
+	// IsValidPhoneNumber
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidPhoneNumber()
+	 *
+	 * Returns TRUE if the value is valid
+	 *
+	 * @param	mix			$mixValue		value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function IsValidPhoneNumber($mixValue)
+	{
+		return is_numeric($mixValue);
+	}	
+	//------------------------------------------------------------------------//
+	// IsValidMobileNumber
+	//------------------------------------------------------------------------//
+	/**
+	 * IsValidMobileNumber()
+	 *
+	 * Returns TRUE if the value is valid
+	 *
+	 * @param	mix			$mixValue		value to validate
+	 * 
+	 * @return	bool
+	 *
+	 * @method
+	 */
+	function IsValidMobileNumber($mixValue)
+	{
+		return is_numeric($mixValue);
+	}	
+}
 
 //----------------------------------------------------------------------------//
 // OutputMasks

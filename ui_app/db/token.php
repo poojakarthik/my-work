@@ -927,6 +927,24 @@ class PropertyToken
 		return $this->_dboOwner->ValidateProperty($this->_strProperty);
 	}
 	
+	//------------------------------------------------------------------------//
+	// SetToInvalid
+	//------------------------------------------------------------------------//
+	/**
+	 * SetToInvalid()
+	 *
+	 * Explicitly sets the property to invalid
+	 *
+	 * Explicitly sets the property to invalid
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function SetToInvalid()
+	{
+		$this->_dboOwner->_arrValid[$this->_strProperty] = FALSE;
+	}
 }
 
 
