@@ -685,9 +685,14 @@ class HTMLElements
 	function BuildOutputValue($arrParams)
 	{
 		$strValue = NULL;
-
-		// check if there is any options data related to this property
-		if (is_array($arrParams['Definition']['Options']))
+		
+		// Check if the output mask should be applied
+		if ($arrParams['ApplyOutputMask'] === FALSE)
+		{
+			// Don't apply output mask
+			$strValue = $arrParams['Value'];
+		}
+		elseif (is_array($arrParams['Definition']['Options']))
 		{			
 			// find the correct output label to use instead of the value
 			foreach ($arrParams['Definition']['Options'] as $arrOption)

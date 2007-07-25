@@ -149,8 +149,9 @@ class AppTemplateContact extends ApplicationTemplate
 		{
 			// Add extra functionality for super-users
 		}
-
-		if (SubmittedForm("EditContact"))
+		
+		// handle form submittion if the user is editing an existing contact
+		if (SubmittedForm("EditContact", "Apply Changes"))
 		{
 			if (!DBO()->Contact->IsInvalid())
 			{
@@ -163,12 +164,25 @@ class AppTemplateContact extends ApplicationTemplate
 			else
 			{
 				DBO()->Status->Message = "ERROR: Could not save the contact.  Invalid fields are highlighted.";
+				
+				// Context menu
+				ContextMenu()->Contact_Retrieve->Notes->View_Contact_Notes(DBO()->Contact->Id->Value);
+				ContextMenu()->Contact_Retrieve->Notes->Add_Contact_Note(DBO()->Contact->Id->Value);
+				ContextMenu()->Contact_Retrieve->Edit_Contact(DBO()->Contact->Id->Value);
+				ContextMenu()->Contact_Retrieve->Add_Associated_Account(DBO()->Contact->Account->Value);
+				ContextMenu()->Admin_Console();
+				ContextMenu()->Logout();
+				
+				$this->LoadPage('contact_edit');
+				return TRUE;
+				
 			}
 		}
-		else
+		
+		// handle form submittion if the user is editing an existing contact
+		if (SubmittedForm("EditContact", "Add Contact"))
 		{
-			//Ajax()->AddCommand("Alert", "")
-			//echo "The form has not been submitted yet";
+			//TODO!
 		}
 		
 		

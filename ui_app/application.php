@@ -901,7 +901,9 @@ class HtmlTemplate extends BaseTemplate
 		echo "<input type='button' class='$strStyleClass' id='$strName' name='$strName' value='$strLabel' onClick='$strHref'></input>\n";
 	}
 	
-	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strStyleClass="InputSubmit")
+	// You may wish to include $strTarget as a parameter as it is what is used to determine
+	// whther you are working in HtmlMode or AjaxMode
+	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strTargetType=NULL, $strStyleClass="InputSubmit")
 	{
 		if (!$strTemplate)
 		{
@@ -917,6 +919,11 @@ class HtmlTemplate extends BaseTemplate
 			$strTarget = $this->_objAjax->TargetType;
 			$strId = $this->_objAjax->strId;
 			$strSize = $this->_objAjax->strSize;
+		}
+		
+		if ($strTargetType !== NULL)
+		{
+			$strTarget = $strTargetType;
 		}
 		
 		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenPopupButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\"></input>\n";

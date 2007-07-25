@@ -214,9 +214,9 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=FALSE)
+	function RenderInput($intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
-		echo $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired);
+		echo $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
@@ -263,7 +263,7 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE)
+	private function _RenderIO($strType, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
 		$intContext = $this->_CalculateContext($intContext);
 		
@@ -277,7 +277,7 @@ class PropertyToken
 		}
 		
 		// build up parameters for HtmlElements
-		$arrParams = $this->_BuildParams($intContext, $strType, $bolRequired);
+		$arrParams = $this->_BuildParams($intContext, $strType, $bolRequired, $bolApplyOutputMask);
 
 		return HTMLElements()->$arrParams['Definition'][$strType.'Type']($arrParams);
 	}
@@ -350,17 +350,18 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	private function _BuildParams($intContext, $strType=RENDER_OUTPUT, $bolRequired=FALSE)
+	private function _BuildParams($intContext, $strType=RENDER_OUTPUT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
 		$arrParams = Array();
-		$arrParams['Object'] 		= $this->_dboOwner->_strName;
-		$arrParams['Property'] 		= $this->_strProperty;
-		$arrParams['Context'] 		= $intContext;
-		$arrParams['Value'] 		= $this->_dboOwner->_arrProperties[$this->_strProperty];
-		$arrParams['Valid'] 		= $this->_dboOwner->_arrValid[$this->_strProperty];
-		$arrParams['Required'] 		= $bolRequired;
-		$arrParams['Definition'] 	= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
-		$arrParams['Type']			= $strType;
+		$arrParams['Object'] 			= $this->_dboOwner->_strName;
+		$arrParams['Property'] 			= $this->_strProperty;
+		$arrParams['Context'] 			= $intContext;
+		$arrParams['Value'] 			= $this->_dboOwner->_arrProperties[$this->_strProperty];
+		$arrParams['Valid'] 			= $this->_dboOwner->_arrValid[$this->_strProperty];
+		$arrParams['Required'] 			= $bolRequired;
+		$arrParams['Definition'] 		= $this->_dboOwner->_arrDefine[$this->_strProperty][$intContext];
+		$arrParams['Type']				= $strType;
+		$arrParams['ApplyOutputMask']	= $bolApplyOutputMask;
 
 		// work out the base class to use
 		$arrParams['Definition']['BaseClass'] = CLASS_DEFAULT; // Default
@@ -487,9 +488,9 @@ class PropertyToken
 	 *
 	 * @method
 	 */
-	function AsInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL)
+	function AsInput($intContext=CONTEXT_DEFAULT, $bolRequired=NULL, $bolApplyOutputMask=TRUE)
 	{
-		return $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired);
+		return $this->_RenderIO(RENDER_INPUT, $intContext, $bolRequired, $bolApplyOutputMask);
 	}
 
 	//------------------------------------------------------------------------//
@@ -641,7 +642,7 @@ class PropertyToken
 	 * @return	string					html code
 	 * @method
 	 */
-	private function _Arbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
+	private function _Arbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
 		$intContext = $this->_CalculateContext($intContext, $mixValue);
 
@@ -653,7 +654,7 @@ class PropertyToken
 		}
 
 		// build up parameters
-		$arrParams = $this->_BuildParams($intContext, $strRenderType);
+		$arrParams = $this->_BuildParams($intContext, $strRenderType, $bolRequired, $bolApplyOutputMask);
 		
 		// set the arbitrary value as the value to render
 		$arrParams['Value'] = $mixValue;
@@ -692,9 +693,9 @@ class PropertyToken
 	 * @return	string					html code
 	 * @method
 	 */
-	function AsArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
+	function AsArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
-		return $this->_Arbitrary($mixValue, $strRenderType, $intContext);
+		return $this->_Arbitrary($mixValue, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -715,9 +716,9 @@ class PropertyToken
 	 * @return	mixed	PropertyValue	returns the actual value of the property
 	 * @method
 	 */
-	function RenderArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
+	function RenderArbitrary($mixValue, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
-		echo $this->_Arbitrary($mixValue, $strRenderType, $intContext);
+		echo $this->_Arbitrary($mixValue, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
@@ -742,7 +743,7 @@ class PropertyToken
 	 * @return	string						html code
 	 * @method
 	 */
-	private function _Callback($mixCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
+	private function _Callback($mixCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
 		$intContext = $this->_CalculateContext($intContext);
 
@@ -754,7 +755,7 @@ class PropertyToken
 		}
 
 		// build up parameters
-		$arrParams = $this->_BuildParams($intContext, $strRenderType);
+		$arrParams = $this->_BuildParams($intContext, $strRenderType, $bolRequired, $bolApplyOutputMask);
 		
 		// build arguement array for the callback function
 		$arrArgs = Array($arrParams['Value']);
@@ -804,9 +805,9 @@ class PropertyToken
 	 * @return	string						html code
 	 * @method
 	 */
-	function AsCallback($strCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
+	function AsCallback($strCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
-		return $this->_Callback($strCallbackFunc, $arrAdditionalArgs, $strRenderType, $intContext);
+		return $this->_Callback($strCallbackFunc, $arrAdditionalArgs, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -831,9 +832,9 @@ class PropertyToken
 	 * @return	mixed	PropertyValue		returns the actual value of the property
 	 * @method
 	 */
-	function RenderCallback($mixCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT)
+	function RenderCallback($mixCallbackFunc, $arrAdditionalArgs=NULL, $strRenderType=RENDER_VALUE, $intContext=CONTEXT_DEFAULT, $bolRequired=FALSE, $bolApplyOutputMask=TRUE)
 	{
-		echo $this->_Callback($mixCallbackFunc, $arrAdditionalArgs, $strRenderType, $intContext);
+		echo $this->_Callback($mixCallbackFunc, $arrAdditionalArgs, $strRenderType, $intContext, $bolRequired, $bolApplyOutputMask);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}

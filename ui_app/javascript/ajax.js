@@ -212,7 +212,12 @@ function VixenAjaxClass()
 			case "Popup":
 				objObject.HtmlMode = TRUE;
 				break;
+			case "Page":
+				objObject.HtmlMode = TRUE;
 			default:
+				objObject.TargetType = "Page";
+				objObject.HtmlMode = TRUE;
+				break;
 		}
 
 		// callback binder
@@ -304,8 +309,12 @@ function VixenAjaxClass()
 						break;
 					case "Div":
 						break;
-					//case "Page":
-						//break;
+					case "Page":
+						//FIX ME! This looks like it's working properly, but if you reload the page, none of the styling is loaded
+						objDoc = document.open("text/html", "replace");
+						objDoc.write(strReply);
+						objDoc.close();
+						break;
 					default:
 						ajaxError(null, strReply);
 				}
