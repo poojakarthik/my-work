@@ -11,7 +11,7 @@ $this->Page->SetLayout($strLayout);
 
 // Add each html object to the appropriate column
 //EXAMPLE:
-$id = $this->Page->AddObject('ContactEdit', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$id = $this->Page->AddObject('ContactEdit', COLUMN_ONE, HTML_CONTEXT_CONTACT_EDIT);
 //$this->Page->AddObject('ContactOptions', COLUMN_TWO, HTML_CONTEXT_DEFAULT);
 //$this->Page->AddObject('ContactAccounts', COLUMN_THREE, HTML_CONTEXT_DEFAULT);
 

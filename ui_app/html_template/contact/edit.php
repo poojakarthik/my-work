@@ -71,23 +71,28 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
+		switch ($this->_intContext)
+		{
+			case HTML_CONTEXT_CONTACT_ADD:
+				$this->_RenderContactAdd();
+				break;
+			case HTML_CONTEXT_CONTACT_EDIT:
+				$this->_RenderContactEdit();
+				break;
+			default:
+				echo "ERROR: There is no default render context for HtmlTemplateContactEdit";
+				break;
+		}
+	}
+	
+	function _RenderContactEdit()
+	{
 		echo "<h2 class='Contact'>Contact Details</h2>\n";
 		echo "<div class='Narrow-Form'>\n";
 
-		// Start the form
+		// Set Up the form for editting an existing user
 		$this->FormStart("EditContact", "Contact", "Edit");
-
-		if ($this->_intContext == HTML_CONTEXT_CONTACT_ADD)
-		{
-			// Set up the form for adding a new user
-			$strButton = "Add Contact";
-		}
-		else
-		{
-			// Set Up the form for editting an existing user
-			$strButton = "Apply Changes";
-			DBO()->Contact->Id->RenderHidden();
-		}
+		DBO()->Contact->Id->RenderHidden();
 		
 		if (DBO()->Contact->IsInvalid())
 		{
@@ -125,20 +130,97 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 		echo "		</td>";
 		echo "	</tr>";
 		echo "</table>\n";
-		
-		
+
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();
 
 		// create the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		$this->Submit($strButton);
+		if (DBO()->Status->FormSubmitted->Value)
+		{
+			$this->FormEnd();
+			$this->FormStart("ContactDetails", "Contact", "View");
+			DBO()->Contact->Id->RenderHidden();
+			$this->Submit("Back To Contact Details");
+		}
+		else
+		{
+			$this->Submit("Apply Changes");
+			$this->FormEnd();
+		}
 		echo "</div>\n";
-		$this->FormEnd();
 		
 		echo "<div class='Seperator'></div>\n";
+		echo "</div>";
+	}
+	
+	function _RenderContactAdd()
+	{
+		echo "<h2 class='Contact'>Contact Details</h2>\n";
+		echo "<div class='Narrow-Form'>\n";
+
+		// Set up the form for adding a new user
+		$this->FormStart("AddContact", "Contact", "Add");
+		DBO()->Account->Id->RenderHidden();
 		
+		if (DBO()->Contact->IsInvalid())
+		{
+			$bolApplyOutputMask = FALSE;
+		}
+		else
+		{
+			$bolApplyOutputMask = TRUE;
+		}
+			
+		DBO()->Contact->Title->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Contact->FirstName->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Contact->LastName->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Contact->JobTitle->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
+		DBO()->Contact->DOB->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Contact->Email->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Contact->Phone->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
+		DBO()->Contact->Mobile->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
+		DBO()->Contact->Fax->RenderInput(CONTEXT_DEFAULT, FALSE, $bolApplyOutputMask);
+		DBO()->Contact->UserName->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		DBO()->Contact->PassWord->RenderArbitrary("", RENDER_INPUT, CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+
+		echo "<table border='0' cellpadding='0' cellspacing='0'>\n";
+		echo "	<tr>";
+		echo "		<td width='54%' valign='top' rowspan='2'>";
+		echo "			<div class='DefaultElement DefaultLabel'>&nbsp;&nbsp;Account Access :</div>";
+		echo "		</td>";
+		echo "		<td>";
+		DBO()->Contact->CustomerContact->RenderInput();
+		echo "		</td>";
+		echo "	</tr>\n";
+		echo "	<tr>";
+		echo "		<td>";
+		DBO()->Contact->Archived->RenderInput();
+		echo "		</td>";
+		echo "	</tr>";
+		echo "</table>\n";
+
+		// Render the status message, if there is one
+		DBO()->Status->Message->RenderOutput();
+
+		// create the buttons
+		echo "<div class='SmallSeperator'></div>\n";
+		echo "<div class='Right'>\n";
+		if (DBO()->Status->FormSubmitted->Value)
+		{
+			$this->FormEnd();
+			$this->FormStart("ContactDetails", "Contact", "View");
+			DBO()->Contact->Id->RenderHidden();
+			$this->Submit("Back To Contact Details");
+		}
+		else
+		{
+			$this->Submit("Add Contact");
+			$this->FormEnd();
+		}
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";
 		echo "</div>";
 	}
 }

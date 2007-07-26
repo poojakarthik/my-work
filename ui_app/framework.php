@@ -1379,7 +1379,15 @@ class Validation
 	 */
 	function IsValidPhoneNumber($mixValue)
 	{
-		return is_numeric($mixValue);
+		$mixValue = str_replace(" ", "", $mixValue);
+		if(strlen($mixValue) < 10)
+		{
+			return false;
+		}
+		else
+		{
+			return is_numeric($mixValue);
+		}
 	}	
 	//------------------------------------------------------------------------//
 	// IsValidMobileNumber
@@ -1397,7 +1405,15 @@ class Validation
 	 */
 	function IsValidMobileNumber($mixValue)
 	{
-		return is_numeric($mixValue);
+		$mixValue = str_replace(" ","", $mixValue);
+		if(strlen($mixValue) < 10)
+		{
+			return false;
+		}
+		else
+		{		
+			return is_numeric($mixValue);
+		}
 	}	
 }
 
@@ -1491,7 +1507,15 @@ class OutputMasks
 	function ShortDate($strMySqlDate)
 	{
 		$arrDate = explode("-", $strMySqlDate);
-		$strDate = $arrDate[2] ."/". $arrDate[1] ."/". $arrDate[0];
+		
+		if (count($arrDate) > 1)
+		{
+			$strDate = $arrDate[2] ."/". $arrDate[1] ."/". $arrDate[0];
+		}
+		else
+		{
+			$strDate = $strMySqlDate;
+		}
 		return $strDate;
 	}
 

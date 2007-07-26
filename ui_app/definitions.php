@@ -92,6 +92,7 @@ define('HTML_CONTEXT_LEDGER_DETAIL',	103);
 define('HTML_CONTEXT_ACCOUNT_NOTE',		300);
 define('HTML_CONTEXT_CONTACT_NOTE',		301);
 define('HTML_CONTEXT_CONTACT_ADD',		200);
+define('HTML_CONTEXT_CONTACT_EDIT',		201);
 
 // PropertyToken Render method constants
 define('RENDER_VALUE',	"Value");

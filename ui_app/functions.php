@@ -597,6 +597,27 @@ function GetCurrentDateForMySQL()
 }
 
 //------------------------------------------------------------------------//
+// ConvertUserDateToMySqlDate
+//------------------------------------------------------------------------//
+/**
+ * ConvertUserDateToMySqlDate()
+ *
+ * Converts a date from the user format (DD/MM/YYYY) to MySql Date format (YYYY-MM-DD)
+ *
+ * Converts a date from the user format (DD/MM/YYYY) to MySql Date format (YYYY-MM-DD)
+ *
+ * @param	string	$strUserDate	date in format DD/MM/YYYY
+ * @return	string					date in format YYYY-MM-DD
+ *
+ * @function
+ */
+function ConvertUserDateToMySqlDate($strUserDate)
+{
+	$arrDate = explode("/", $strUserDate);
+	return "{$arrDate[2]}-{$arrDate[1]}-{$arrDate[0]}";
+}
+
+//------------------------------------------------------------------------//
 // GetCurrentTimeForMySQL
 //------------------------------------------------------------------------//
 /**
