@@ -2453,4 +2453,57 @@ function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPasswor
 
 
 
+//------------------------------------------------------------------------//
+// UnbilledServiceTotal
+//------------------------------------------------------------------------//
+/**
+ * UnbilledServiceTotal()
+ *
+ * Calculates the Unbilled Total for a Service
+ *
+ * Calculates the Unbilled Total for a Service.  Does not account for Adjustments
+ * 
+ * @param		integer	$intService					Service to generate total for
+ * 
+ * @return		float								Total excluding Tax
+ *
+ * @method
+ */ 
+function UnbilledServiceTotal($intService)
+{
+	// Get CDR Total
+	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN (0-Charge) ELSE Charge) AS TotalCharged", "Service = <Service> AND Status = ".CDR_RATED);
+	$selCDRTotal->Execute(Array('Service' => $intService));
+	$arrCDRTotal = $selCDRTotal->Fetch();
+	
+	return $arrCDRTotal['TotalCharged'];
+}
+
+//------------------------------------------------------------------------//
+// UnbilledAccountTotal
+//------------------------------------------------------------------------//
+/**
+ * UnbilledAccountTotal()
+ *
+ * Calculates the Unbilled Total for an Account
+ *
+ * Calculates the Unbilled Total for an Account.  Does not account for Adjustments
+ * 
+ * @param		integer	$intAccount					Account to generate total for
+ *
+ * @return		float								Total excluding Tax
+ *
+ * @method
+ */ 
+function UnbilledAccountTotal($intAccount)
+{
+	// Get CDR Total
+	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN (0-Charge) ELSE Charge) AS TotalCharged", "Account = <Account> AND Status = ".CDR_RATED);
+	$selCDRTotal->Execute(Array('Account' => $intAccount));
+	$arrCDRTotal = $selCDRTotal->Fetch();
+	
+	return $arrCDRTotal['TotalCharged'];
+}
+
+
 ?>
