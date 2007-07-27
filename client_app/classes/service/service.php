@@ -120,7 +120,7 @@
 				
 				if ($rrpPlan->Pull ("UsageCap")->getValue () > 0 && $rrpPlan->Pull ("UsageCap")->getValue () < $this->Pull ("CappedCharge")->getValue ())
 				{
-					$fltTotalCharge += floatval ($this->Pull ("UncappedCharge")->getValue () - $rrpPlan->Pull ("UseageCap")->getValue ());
+					$fltTotalCharge += floatval ($this->Pull ("UncappedCharge")->getValue () - $rrpPlan->Pull ("UsageCap")->getValue ());
 				}
 			}
 			else 

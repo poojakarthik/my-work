@@ -1916,6 +1916,7 @@ class AjaxFramework
 	 * @property
 	 */
 	private $_arrCommands = Array();
+	private $_arrHtmlTemplate = NULL;
 	
 	//------------------------------------------------------------------------//
 	// Reply
@@ -1933,10 +1934,31 @@ class AjaxFramework
 	 */
 	function Reply()
 	{
+		// We have to start output buffering as we want to be able to capture rendered HtmlTemplates and stick them in the JSON object
+		ob_start();
+		
+	
+		// Convert the commands to a json object
 		$strReply = Json()->encode($this->_arrCommands);
-		$strReply = "//JSON" . $strReply;
-		//return AjaxReply($this->_arrCommands);
+		
+		// Workout how many bytes the Json object is as this is needed for the reply's Header
+		$intLength = strlen($strReply);
+		$strHeader = "//JSON". $intLength;
+		$strHeader = str_pad($strHeader, 20);
+		
+		$strReply = $strHeader . $strReply;
+		
+		// Send the reply
 		echo $strReply;
+		
+		// Check if a HtmlTemplate requires rendering
+		if ($this->_arrHtmlTemplate)
+		{
+			// We have to render a HtmlTemplate
+			$strClass = $this->_arrHtmlTemplate['Class'];
+			$objHtmlTemplate = new {$strClass}($this->_arrHtmlTemplate['Context'], $this->_arrHtmlTemplate['ContainerDivId']);
+			$objHtmlTemplate->Render();
+		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1952,6 +1974,7 @@ class AjaxFramework
 	 * @param	string		$strType	command type
 	 * @param	mixed		$mixData	command data
 	 *
+	 * @return	void
 	 * @method
 	 */
 	function AddCommand($strType, $mixData=NULL)
@@ -1961,10 +1984,35 @@ class AjaxFramework
 		$this->_arrCommands[] = $arrCommand;
 	}
 	
+	//------------------------------------------------------------------------//
+	// HasCommands
+	//------------------------------------------------------------------------//
+	/**
+	 * HasCommands()
+	 *
+	 * Returns TRUE if any commands have been added to this object, else returns FALSE
+	 *
+	 * Returns TRUE if any commands have been added to this object, else returns FALSE
+	 * 
+	 * @return	void
+	 * @method
+	 */
 	function HasCommands()
 	{
 		return count($this->_arrCommands);
 	}
+	
+	// you must pass through a HtmlTemplate object which you want rendered
+	// the defined _strContainerDivId will be the element it is placed in
+	function RenderHtmlTemplate($strHtmlTemplate, $intContext, $intContainerDivId)
+	{
+		$this->_arrHtmlTemplate = Array();
+		$this->_arrHtmlTemplate['Class'] 			= $strHtmlTemplate;
+		$this->_arrHtmlTemplate['Context'] 			= $intContext;
+		$this->_arrHtmlTemplate['ContainerDivId'] 	= $intContainerDivId
+	}
+	
+	
 }
 
 //----------------------------------------------------------------------------//

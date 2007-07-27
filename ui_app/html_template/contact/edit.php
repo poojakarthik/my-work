@@ -33,7 +33,7 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 	 * @property
 	 */
 	public $_intContext;
-
+	
 	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
@@ -45,12 +45,14 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
+	 * @param	string	$_strDivId		the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
-	function __construct($intContext)
+	function __construct($intContext, $strId)
 	{
 		$this->_intContext = $intContext;
+		$this->_strContainerDivId = $strId;
 		
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
@@ -85,6 +87,18 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// _RenderContactEdit
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderContactEdit()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
 	function _RenderContactEdit()
 	{
 		echo "<h2 class='Contact'>Contact Details</h2>\n";
@@ -137,24 +151,27 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 		// create the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		if (DBO()->Status->FormSubmitted->Value)
-		{
-			$this->FormEnd();
-			$this->FormStart("ContactDetails", "Contact", "View");
-			DBO()->Contact->Id->RenderHidden();
-			$this->Submit("Back To Contact Details");
-		}
-		else
-		{
-			$this->Submit("Apply Changes");
-			$this->FormEnd();
-		}
+		$this->AjaxSubmit("Apply Changes", NULL, NULL, TARGET_TYPE_DIV);
 		echo "</div>\n";
+		$this->FormEnd();
 		
+		echo "<script type='text/javascript'>document.getElementById('Contact.Title').focus();</script>";		
 		echo "<div class='Seperator'></div>\n";
 		echo "</div>";
 	}
 	
+	//------------------------------------------------------------------------//
+	// _RenderContactAdd
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderContactAdd()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
 	function _RenderContactAdd()
 	{
 		echo "<h2 class='Contact'>Contact Details</h2>\n";
@@ -207,18 +224,8 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 		// create the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		if (DBO()->Status->FormSubmitted->Value)
-		{
-			$this->FormEnd();
-			$this->FormStart("ContactDetails", "Contact", "View");
-			DBO()->Contact->Id->RenderHidden();
-			$this->Submit("Back To Contact Details");
-		}
-		else
-		{
-			$this->Submit("Add Contact");
-			$this->FormEnd();
-		}
+		$this->AjaxSubmit("Add Contact", NULL, NULL, TARGET_TYPE_DIV);
+		$this->FormEnd();
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
 		echo "</div>";

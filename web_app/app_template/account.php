@@ -70,7 +70,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Breadcrumb menu
 				
-		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
+		// Load the account
 		if (!DBO()->Account->Load())
 		{
 			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
@@ -102,8 +102,51 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		// Calculate the Account's total unbilled adjustments
+		// Calculate the unbilled total for the account
+		// The unbilled total = TotalUnbilledAdjustments + sum of unbilled charges for each service
+		
+		// Calculate the Account's total unbilled adjustments (inc GST)
 		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		
+		// Calculate the Account's total unbilled CDRs (For every service) (inc GST)
+		//DBO()->Account->TotalUnbilledCDRs = $this->Framework->GetUnbilledCDRs(DBO()->Account->Id->Value);
+		// HACK!
+		DBO()->Account->TotalUnbilledCDRs = 1000.00;
+		// HACK!
+		
+		/*
+		// Retrieve the list of services for the account
+		DBL()->Service->Account = DBO()->Account->Id->Value;
+		DBL()->Service->Load();
+		
+		// prepare query for finding the current plan for a given service
+		$selCurrentPlan = new StatementSelect('ServiceRatePlan', 'RatePlan', 
+												'Service = <Service> AND (Now() BETWEEN StartDatetime AND EndDatetime)', 
+												'CreatedOn DESC',	1);
+		
+		// For each service of the Account, calculate the unbilled charges
+		foreach (DBL()->Service as $dboService)
+		{
+			// Find the rateplan for the service
+			$selCurrentPlan->Execute(Array("Service" => $dboService->Id->Value));
+			
+			// this can return 0 or 1 records
+			if ($selCurrentPlan->Count() == 1)
+			{
+				//There is a current plan for this record
+				$arrCurrentPlan = $selCurrentPlan->Fetch();
+				$dboService->CurrentPlan = $arrCurrentPlan['RatePlan'];
+			}
+			else
+			{
+				//There is no rateplan for this service
+				
+			}
+			
+			
+		}
+		*/
+		
 
 		// Retrieve all unbilled adjustments for the account
 		$strWhere  = "(Account = ". DBO()->Account->Id->Value .")";
@@ -114,6 +157,41 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Charge->Load();
 		
 		// Retrieve all Services for the account
+		DBL()->Service->Account = DBO()->Account->Id->Value;
+		DBL()->Service->Load();
+		
+		// prepare query for finding the current plan and plan name for a given service
+		// FIX IT! I've tested this query and it works, but I don't think the StatementSelect is working
+		/*
+		SELECT srpT.Service, srpT.RatePlan, rpT.Name, rpT.Description
+		FROM ServiceRatePlan AS srpT inner join RatePlan AS rpT ON srpT.RatePlan = rpT.Id
+		WHERE (srpT.Service = <Service>) AND (Now() BETWEEN srpT.StartDatetime AND srpT.EndDatetime)
+		ORDER BY srpT.CreatedOn DESC
+		LIMIT 0, 1
+		*/
+		$selCurrentPlan = new StatementSelect('ServiceRatePlan AS srpT INNER JOIN RatePlan AS rpT ON srpT.RatePlan = rpT.Id', 
+												'srpT.Service, srpT.RatePlan, rpT.Name, rpT.Description', 
+												'(srpT.Service = <Service>) AND (Now() BETWEEN srpT.StartDatetime AND srpT.EndDatetime)', 
+												'srpT.CreatedOn DESC',	1);
+		
+		// For each service, find the current RatePlan
+		foreach (DBL()->Service as $dboService)
+		{
+			// Find the rateplan for the service
+			$selCurrentPlan->Execute(Array("Service" => $dboService->Id->Value));
+			
+			// this can return 0 or 1 records
+			if ($selCurrentPlan->Count() == 1)
+			{
+				//There is a current plan for this record
+				$arrCurrentPlan = $selCurrentPlan->Fetch();
+				$dboService->CurrentPlan = $arrCurrentPlan['RatePlan'];
+			}
+			else
+			{
+				//There is no rateplan for this service
+			}
+		}
 		
 
 

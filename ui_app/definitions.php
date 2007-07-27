@@ -94,6 +94,11 @@ define('HTML_CONTEXT_CONTACT_NOTE',		301);
 define('HTML_CONTEXT_CONTACT_ADD',		200);
 define('HTML_CONTEXT_CONTACT_EDIT',		201);
 
+// Target Types - used to determine how to handle an ajax call
+define("TARGET_TYPE_DIV", 	"Div");
+define("TARGET_TYPE_POPUP",	"Popup");
+define("TARGET_TYPE_PAGE",	"Page");
+
 // PropertyToken Render method constants
 define('RENDER_VALUE',	"Value");
 define('RENDER_OUTPUT',	"Output");

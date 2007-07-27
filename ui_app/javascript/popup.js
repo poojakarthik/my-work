@@ -16,6 +16,7 @@
 function VixenPopupClass()
 {
 	this.strContentCode = "";
+	this.strLocationOnClose = "";
 	
 	this.ViewContentCode = function()
 	{
@@ -46,19 +47,13 @@ function VixenPopupClass()
 			return FALSE;
 		}
 		
-		// Retrieve the popup element
-		var elmPopupContent = document.getElementById("VixenPopupContent__" + strId);
+		// Retrieve the current popup content element
+		var elmOldPopupContent = document.getElementById("VixenPopupContent__" + strId);
 
-
-		// . . . and create it
-		elmPopup = document.createElement('div');
-		elmPopup.setAttribute('className', 'PopupBox');
-		elmPopup.setAttribute('class', 'PopupBox');
-		elmPopup.setAttribute('Id', 'VixenPopup__' + strId);
+		// create a new one which will replace the old one
+		var elmNewPopupContent = document.createElement('div');
+		elmNewPopupContent.setAttribute('Id', 'VixenPopupContent__' + strId);
 		
-		// Quote the id of the popup (argh, double quoting kills me)
-		strTempId = '"' + strId + '"';
-				
 		// Set the content of the popup box
 		if (!strContent)
 		{
@@ -66,31 +61,28 @@ function VixenPopupClass()
 		}
 				
 		// Add the popup to the holder
-		//elmPopup.style.visibility = 'visible';			
-		elmPopup.innerHTML = strContent;
-		
-		while (elmPopupContent.childNodes[0])
-		{
-    		elmPopupContent.removeChild(elmPopupContent.childNodes[0]);
-		}
-		
-		elmPopupContent.appendChild(elmPopup);
+		//elmPopup.style.visibility = 'visible';
+		elmNewPopupContent.innerHTML = strContent;
 
-		// Set the content of the popup box
-		if (!strContent)
-		{
-			strContent = "No data<br />Id: " + strId;
-		}
-				
+		// Retrieve the container div of the VixenPopupContent__ div
+		var elmPopupContainer = elmOldPopupContent.parentNode;
+		
+		// Remove the old content div and add the new one
+		elmPopupContainer.removeChild(elmOldPopupContent);
+		elmPopupContainer.appendChild(elmNewPopupContent);
+		
+		// Save the new content
 		this.strContentCode = strContent;
-
-		// Add the popup to the holder
-		elmPopupContent.innerHTML = strContent;
 		return TRUE;
 	}
-
-	this.Create = function(strId, strContent, strSize, mixPosition, strModal)
+	
+	this.Create = function(strId, strContent, strSize, mixPosition, strModal, strLocationOnClose)
 	{
+		// set the location to relocate to, when the popup is closed.
+		// If null, then a page reload is not performed
+		// currently this only works when strModel == autohide 
+		this.strLocationOnClose = strLocationOnClose;
+	
 		// Try to find a previous popup
 		elmExists = document.getElementById('VixenPopup__' + strId);
 		if (elmExists)
@@ -280,6 +272,13 @@ function VixenPopupClass()
 				// MouseDown on page
 				Vixen.Popup.Close(strId);
 				document.removeEventListener('mousedown', CloseHandler, TRUE);
+				
+				// load the new location if one was specified
+				if (Vixen.Popup.strLocationOnClose)
+				{
+					//FIX IT! I don't know if this will work if there are multiple popups open
+					window.location = Vixen.Popup.strLocationOnClose;
+				}
 			}
 		}
 		function CloseReloadHandler(event)
@@ -293,8 +292,8 @@ function VixenPopupClass()
 			{
 				// MouseDown on page
 				Vixen.Popup.Close(strId);
-				window.location = window.location;
 				document.removeEventListener('mousedown', CloseHandler, TRUE);
+				window.location = window.location;
 			}
 		}
 	}

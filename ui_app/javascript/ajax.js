@@ -16,7 +16,7 @@
 function VixenAjaxClass()
 {
 	// Send form
-	this.SendForm = function(strFormId, strButton, strClass, strMethod, strTargetType, strId, strSize)
+	this.SendForm = function(strFormId, strButton, strClass, strMethod, strTargetType, strId, strSize, strContainerDivId)
 	{
 		var intKey;
 		var strType;
@@ -33,6 +33,7 @@ function VixenAjaxClass()
 		objSend.TargetType = strTargetType;
 		objSend.strId = strId;
 		objSend.strSize = strSize;
+		objSend.strContainerDivId = strContainerDivId;
 		
 		// HACK HACK HACK!!! ******************************************************************************************************************
 		// I'm setting this to FALSE because it is not defined anywhere
@@ -208,7 +209,8 @@ function VixenAjaxClass()
 		switch (objObject.TargetType)
 		{
 			case "Div":
-			//case "Page":
+				objObject.HtmlMode = TRUE;
+				break;
 			case "Popup":
 				objObject.HtmlMode = TRUE;
 				break;
@@ -269,13 +271,25 @@ function VixenAjaxClass()
 		var objData = {};
 		
 		//if the reply starts with "//JSON" then this is a json object storing a list of commands
-		if (strReply.substr(0, 6) == "//JSON")
+		var strJsonHeader = strReply.substr(0, 20);
+		if (strJsonHeader.substr(0, 6) == "//JSON")
 		{	
 			// we are working with a JSON object so convert it to a javascript object
+			// but first check if there is any html appended to the end of the reply.  If so, render it as a div before processing the list of Ajax Commands
+			var intCommandListLength = parseInt(strJsonHeader.substr(6));
+			var strJsonCommands = strReply.substr(20, intCommandListLength);
+			
+			var strHtmlCode = strReply.substr(20 + intCommandListLength);
+			
+			alert(strHtmlCode);
+			//if (strHtmlCode.)
+			
+			
+			
 			try
 			{
 				// convert reply into data object
-				eval("objData = " + strReply.substr(6));
+				eval("objData = " + strJsonCommands);
 
 				if (!objData)
 				{
@@ -293,6 +307,16 @@ function VixenAjaxClass()
 		else
 		{
 			// the reply must be HTML code
+			this.HandleHtmlModeReply(strReply, objObject);
+		}
+		
+		// clean up
+		delete(strReply);
+		delete(objData);
+	}
+	
+	this.HandleHtmlModeReply = function(strReply, objObject)
+	{
 			if (objObject.HtmlMode)
 			{
 				switch (objObject.TargetType)
@@ -308,6 +332,25 @@ function VixenAjaxClass()
 						}
 						break;
 					case "Div":
+						// retrieve the current container div element
+						var elmOldContainer = document.getElementById(objObject.strContainerDivId);
+						if (!elmOldContainer)
+						{
+							alert("Error: The container div does not exist.\nContainer Div Id = '" + objObject.strContainerDivId +"'");
+							return FALSE;
+						}
+						
+						// Create a new container div
+						var elmNewContainer = document.createElement('div');
+						elmNewContainer.setAttribute('Id', objObject.strContainerDivId);
+						elmNewContainer.innerHTML = strReply;
+						
+						// Retrieve the parent element of the current container div element
+						var elmParent = elmOldContainer.parentNode;
+						
+						// Remove the old content div and add the new one
+						elmParent.removeChild(elmOldContainer);
+						elmParent.appendChild(elmNewContainer);
 						break;
 					case "Page":
 						//FIX ME! This looks like it's working properly, but if you reload the page, none of the styling is loaded
@@ -319,12 +362,8 @@ function VixenAjaxClass()
 						ajaxError(null, strReply);
 				}
 			}
-		}
-		
-		// clean up
-		delete(strReply);
-		delete(objData);
-	}	
+	}
+	
 	
 	// Handle each command in the AJAX reply
 	//Below is the orginal sig.. but it didn't work :(
@@ -355,6 +394,12 @@ function VixenAjaxClass()
 					break;
 				case "LoadCurrentPage":
 					window.location.reload();
+					break;
+				case "AlertAndRelocate":
+					strContent = "<p><div align='center'>" + objInput[intKey].Data.Alert + 
+									"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");window.location = \""+ objInput[intKey].Data.Location +"\";'><br></div>\n" +
+									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
+					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', objInput[intKey].Data.Location);
 					break;
 				default:
 					alert("Don't know how to process command type '" + objInput[intKey].Type + "'");

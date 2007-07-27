@@ -303,9 +303,10 @@ class Application
 			//AjaxReply($mixReply);
 			Ajax()->Reply();
 		}
-		else 
+		elseif (isset($this->objAppTemplate->Page))
 		{
-			//($objSubmit->Mode == HTML_MODE)
+			// Only do a page render if a Page has been declared
+			// if you are just rendering a single div, then a Page wont have been declared
 			$this->objAppTemplate->Page->SetMode($objSubmit->Mode, $objAjax);
 			$this->objAppTemplate->Page->Render();
 		}
@@ -831,7 +832,24 @@ class HtmlTemplate extends BaseTemplate
 	protected $_strTemplate;
 	protected $_objAjax;
 	protected $_intTemplateMode;
-	
+
+	//------------------------------------------------------------------------//
+	// _strContainerDivId
+	//------------------------------------------------------------------------//
+	/**
+	 * _strContainerDivId
+	 *
+	 * Stores the Id of the div element that contains the rendered contents of this HtmlTemplate
+	 *
+	 * Stores the Id of the div element that contains the rendered contents of this HtmlTemplate
+	 * Currently this is only used for updating a div through an ajax call
+	 * If required, it should be set in the constructor of the HtmlTemplate
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 */
+	protected $_strContainerDivId;
 	
 	//------------------------------------------------------------------------//
 	// LoadJavascript
@@ -902,7 +920,7 @@ class HtmlTemplate extends BaseTemplate
 	}
 	
 	// You may wish to include $strTarget as a parameter as it is what is used to determine
-	// whther you are working in HtmlMode or AjaxMode
+	// whether you are working in HtmlMode or AjaxMode
 	function AjaxSubmit($strLabel, $strTemplate=NULL, $strMethod=NULL, $strTargetType=NULL, $strStyleClass="InputSubmit")
 	{
 		if (!$strTemplate)
@@ -926,7 +944,7 @@ class HtmlTemplate extends BaseTemplate
 			$strTarget = $strTargetType;
 		}
 		
-		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenPopupButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize')\"></input>\n";
+		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenPopupButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}')\"></input>\n";
 	}
 
 	//------------------------------------------------------------------------//

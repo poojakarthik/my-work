@@ -238,6 +238,140 @@ class AppTemplateContact extends ApplicationTemplate
 				}
 				
 				// The contact details were successfully loaded so go back to the last page
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The contact's details were successfully updated", "Location" => "vixen.php/Contact/View/?Contact.Id=" . DBO()->Contact->Id->Value));
+				return TRUE;
+			}
+			else
+			{
+				// Some of the fields were invalid
+				DBO()->Status->Message = "Could not save the contact.  Invalid fields are highlighted.";
+				$objHtmlTemplate = new HtmlTemplateContactEdit(HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
+				$objHtmlTemplate->Render();
+				return TRUE;
+			}
+		}
+		
+		// Load the page
+		return $this->_LoadEditContactPage();
+	}	
+	
+	
+	
+	//------------------------------------------------------------------------//
+	// Edit
+	//------------------------------------------------------------------------//
+	/**
+	 * Edit()
+	 *
+	 * Performs the logic for the contact_edit.php webpage
+	 * 
+	 * Performs the logic for the contact_edit.php webpage
+	 *
+	 * @return		void
+	 * @method		Edit
+	 *
+	 */
+/*	function Edit()
+	{
+		$pagePerms = PERMISSION_ADMIN;
+		
+		// Should probably check user authorization here
+		AuthenticatedUser()->CheckAuth();
+		
+		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			// Add extra functionality for super-users
+		}
+
+		// handle form submittion if the user is editing an existing contact
+		if (SubmittedForm("EditContact", "Apply Changes"))
+		{
+			// The user is trying to edit an existing contact
+			// Entered via url http://localhost/ross/vixen/intranet_app/vixen.php/Contact/Edit/?Contact.Id=14286
+			if (!DBO()->Contact->IsInvalid())
+			{
+				// The form passed initial validation, however we must manually perform validation for the Phone and Mobile properties
+				$bolPhonePresent = Validate("IsNotEmptyString", DBO()->Contact->Phone->Value);
+				$bolMobilePresent = Validate("IsNotEmptyString", DBO()->Contact->Mobile->Value);
+				if (!$bolPhonePresent && !$bolMobilePresent)
+				{
+					// Neither a phone number nor mobile number were specified
+					
+					DBO()->Status->Message = "Please include either a phone number or mobile number";
+					
+					// Flag the properties as being invalid
+					DBO()->Contact->Phone->SetToInvalid();
+					//DBO()->Contact->Mobile->SetToInvalid();
+					DBO()->Contact->SetToInvalid();
+					
+					// Set up the remaining page characteristics
+					return $this->_LoadEditContactPage();
+				}
+				
+				// Phone or Mobile or both are present.  Now make sure they are valid numbers
+				$bolPhoneValid = Validate("IsValidPhoneNumber", DBO()->Contact->Phone->Value);
+				$bolMobileValid = Validate("IsValidMobileNumber", DBO()->Contact->Mobile->Value);
+				if ($bolPhonePresent)
+				{
+					DBO()->Contact->Phone = trim(DBO()->Contact->Phone->Value);
+					if(!Validate("IsValidPhoneNumber", DBO()->Contact->Phone->Value))
+					{
+						DBO()->Status->Message = "invalid phone number";
+						DBO()->Contact->Phone->SetToInvalid();
+						return $this->_LoadEditContactPage();
+					}
+				}
+				if ($bolMobilePresent)
+				{
+					DBO()->Contact->Mobile = trim(DBO()->Contact->Mobile->Value);
+					if(!Validate("IsValidMobileNumber", DBO()->Contact->Mobile->Value))
+					{
+						DBO()->Status->Message = "invalid mobile number";
+						DBO()->Contact->Mobile->SetToInvalid();
+						return $this->_LoadEditContactPage();
+					}
+				}
+				
+				// Check that the contact's username is not currently being used by another contact
+				$strWhere = "UserName LIKE \"". DBO()->Contact->UserName->Value ."\" AND Id != " . DBO()->Contact->Id->Value;
+				DBL()->Contact->Where->SetString($strWhere);
+				DBL()->Contact->Load();
+				if (DBL()->Contact->RecordCount() > 0)
+				{
+					// the username is currently being used by another contact.
+					DBO()->Status->Message = "This username is currently being used by another contact";
+					DBO()->Contact->UserName->SetToInvalid();
+					return $this->_LoadEditContactPage();
+				}
+				
+				// Everything has been validated on the form, so commit it to the database
+				
+				// Convert the DOB to the standard MySql Date format
+				DBO()->Contact->DOB = ConvertUserDateToMySqlDate(DBO()->Contact->DOB->Value);
+
+				// Set which columns to update in the Contact table
+				if (Validate("IsNotEmptyString", DBO()->Contact->PassWord->Value))
+				{
+					// A new password has been declared.  Hash it.
+					DBO()->Contact->PassWord = sha1(DBO()->Contact->PassWord->Value);
+					$strIncludePasswordProperty = ", PassWord";
+				}
+				else
+				{
+					// don't include the password when updating the contact's details in the database
+					$strIncludePasswordProperty = "";
+				}
+				$strColumnsToUpdate = "Title, FirstName, LastName, DOB, JobTitle, Email, CustomerContact, Phone, Mobile, Fax, UserName, Archived $strIncludePasswordProperty";
+				DBO()->Contact->SetColumns($strColumnsToUpdate);
+				if (!DBO()->Contact->Save())
+				{
+					DBO()->Contact->SetToInvalid();
+					DBO()->Status->Message = "Updating the contact details failed";
+					return $this->_LoadEditContactPage();
+				}
+				
+				// The contact details were successfully loaded so go back to the last page
 				//TODO!
 				// I think eventually this method will be executed via AjaxLoad, in which case specifying a new page to load is easy.
 				// But first we have to work out how to load a page in javascript, if you have the html for the page stored as a string.
@@ -261,7 +395,7 @@ class AppTemplateContact extends ApplicationTemplate
 		// Load the page
 		return $this->_LoadEditContactPage();
 	}	
-	
+*/	
 	// Handles loading DB objects, context menu, breadcrumb menu, for the edit contact page
 	private function _LoadEditContactPage()
 	{
