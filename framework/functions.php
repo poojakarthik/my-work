@@ -2472,7 +2472,7 @@ function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPasswor
 function UnbilledServiceCDRTotal($intService)
 {
 	// Get CDR Total
-	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN (0-Charge) ELSE Charge) AS TotalCharged", "Service = <Service> AND Status = ".CDR_RATED);
+	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged", "Service = <Service> AND Status = ".CDR_RATED);
 	$selCDRTotal->Execute(Array('Service' => $intService));
 	$arrCDRTotal = $selCDRTotal->Fetch();
 	
@@ -2498,7 +2498,7 @@ function UnbilledServiceCDRTotal($intService)
 function UnbilledServiceChargeTotal($intService)
 {
 	// Get Adjustment Total
-	$selChargeTotal = new StatementSelect("Charge", "SUM(CASE WHEN Nature = 'CR' THEN (0-Amount) ELSE Amount) AS TotalCharged", "Service = <Service> AND Status = ".CHARGE_APPROVED);
+	$selChargeTotal = new StatementSelect("Charge", "SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS TotalCharged", "Service = <Service> AND Status = ".CHARGE_APPROVED);
 	$selChargeTotal->Execute(Array('Service' => $intService));
 	$selChargeTotal = $selCDRTotal->Fetch();
 	
@@ -2524,7 +2524,7 @@ function UnbilledServiceChargeTotal($intService)
 function UnbilledAccountCDRTotal($intAccount)
 {
 	// Get CDR Total
-	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN (0-Charge) ELSE Charge) AS TotalCharged", "Account = <Account> AND Status = ".CDR_RATED);
+	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged", "Account = <Account> AND Status = ".CDR_RATED);
 	$selCDRTotal->Execute(Array('Account' => $intAccount));
 	$arrCDRTotal = $selCDRTotal->Fetch();
 	
