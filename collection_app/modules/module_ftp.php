@@ -288,7 +288,11 @@
 				}
 			}
 			//Debug("Changing directory to: '$strDotDotSlash$strDir'");
-			ftp_chdir($this->_resConnection, $strDotDotSlash.$strDir);
+			if (!ftp_chdir($this->_resConnection, $strDotDotSlash.$strDir))
+			{
+				// Problem changing directory, error out
+				return FALSE;
+			}
 			
 			// Get our new list of files
 			$this->_arrFileListing = $this->ParseRawlist(ftp_rawlist($this->_resConnection, "."), $this->_strConnectionType);
