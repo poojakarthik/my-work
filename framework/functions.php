@@ -2454,14 +2454,14 @@ function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPasswor
 
 
 //------------------------------------------------------------------------//
-// UnbilledServiceTotal
+// UnbilledServiceCDRTotal
 //------------------------------------------------------------------------//
 /**
- * UnbilledServiceTotal()
+ * UnbilledServiceCDRTotal()
  *
- * Calculates the Unbilled Total for a Service
+ * Calculates the Unbilled CDR Total for a Service
  *
- * Calculates the Unbilled Total for a Service.  Does not account for Adjustments
+ * Calculates the Unbilled CDR Total for a Service
  * 
  * @param		integer	$intService					Service to generate total for
  * 
@@ -2469,7 +2469,7 @@ function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPasswor
  *
  * @method
  */ 
-function UnbilledServiceTotal($intService)
+function UnbilledServiceCDRTotal($intService)
 {
 	// Get CDR Total
 	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN (0-Charge) ELSE Charge) AS TotalCharged", "Service = <Service> AND Status = ".CDR_RATED);
@@ -2480,14 +2480,40 @@ function UnbilledServiceTotal($intService)
 }
 
 //------------------------------------------------------------------------//
-// UnbilledAccountTotal
+// UnbilledServiceChargeTotal
 //------------------------------------------------------------------------//
 /**
- * UnbilledAccountTotal()
+ * UnbilledServiceChargeTotal()
  *
- * Calculates the Unbilled Total for an Account
+ * Calculates the Unbilled Adjustment Total for a Service
  *
- * Calculates the Unbilled Total for an Account.  Does not account for Adjustments
+ * Calculates the Unbilled Adjustment Total for a Service.  Only includes Approved Adjustments
+ * 
+ * @param		integer	$intService					Service to generate total for
+ * 
+ * @return		float								Total excluding Tax
+ *
+ * @method
+ */ 
+function UnbilledServiceChargeTotal($intService)
+{
+	// Get Adjustment Total
+	$selChargeTotal = new StatementSelect("Charge", "SUM(CASE WHEN Nature = 'CR' THEN (0-Amount) ELSE Amount) AS TotalCharged", "Service = <Service> AND Status = ".CHARGE_APPROVED);
+	$selChargeTotal->Execute(Array('Service' => $intService));
+	$selChargeTotal = $selCDRTotal->Fetch();
+	
+	return $selChargeTotal['TotalCharged'];
+}
+
+//------------------------------------------------------------------------//
+// UnbilledAccountCDRTotal
+//------------------------------------------------------------------------//
+/**
+ * UnbilledAccountCDRTotal()
+ *
+ * Calculates the Unbilled CDR Total for an Account
+ *
+ * Calculates the Unbilled CDR Total for an Account.  Does not account for Adjustments
  * 
  * @param		integer	$intAccount					Account to generate total for
  *
@@ -2495,7 +2521,7 @@ function UnbilledServiceTotal($intService)
  *
  * @method
  */ 
-function UnbilledAccountTotal($intAccount)
+function UnbilledAccountCDRTotal($intAccount)
 {
 	// Get CDR Total
 	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN (0-Charge) ELSE Charge) AS TotalCharged", "Account = <Account> AND Status = ".CDR_RATED);
@@ -2506,4 +2532,27 @@ function UnbilledAccountTotal($intAccount)
 }
 
 
+//------------------------------------------------------------------------//
+// GetCurrentPlan
+//------------------------------------------------------------------------//
+/**
+ * GetCurrentPlan()
+ *
+ * Gets the current plan for a specified Service
+ *
+ * Gets the current plan for a specified Service
+ * 
+ * @param		integer	$intService					Service to find a plan for
+ *
+ * @return		integer								Plan Id
+ *
+ * @method
+ */ 
+ function GetCurrentPlan($intService)
+ {
+ 	$selRatePlan = new StatementSelect("ServiceRatePlan", "Id", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
+ 	$selRatePlan->Execute(Array('Service' => $intService));
+ 	$arrRatePlan = $selRatePlan->Fetch();
+ 	return ($arrRatePlan) ? $arrRatePlan['Id'] : FALSE;
+ }
 ?>
