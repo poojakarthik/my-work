@@ -43,6 +43,7 @@ require_once($strFrameworkDir."require.php");
 require_once($strApplicationDir.'definitions.php');
 require_once($strApplicationDir.'functions.php');
 require_once($strApplicationDir.'framework.php');
+require_once($strApplicationDir.'menu_items.php');
 require_once($strApplicationDir.'application.php');
 
 require_once($strApplicationDir.'db/db_access_ui.php');

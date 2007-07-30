@@ -436,6 +436,10 @@ function VixenAjaxClass()
 					
 					break;
 				case "SetFocus":
+					// Currently this is causing an exception to be thrown.  It is a well known bug in FireFox caused by having autocomplete default
+					// to being on for textboxes and similar input elements.  I don't think the throwing of the exception is actually crashing anything.
+					// One way of getting around this is to declare all input boxes with autocomplete="off"
+					// For example: <input type="text" autocomplete="off" name="fname">blah blah, etc</input>
 					var elmElement = document.getElementById(objInput[intKey].Data);
 					if (!elmElement)
 					{
