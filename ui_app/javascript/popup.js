@@ -177,6 +177,7 @@ function VixenPopupClass()
 				// clicking ANYWHERE will close the div
 				//  what about on the div itself?
 				document.addEventListener('mousedown', CloseHandler, TRUE);
+				document.addEventListener('keyup', CloseHandler, TRUE);
 				break;
 			}
 			case "autohide-reload":
@@ -184,6 +185,7 @@ function VixenPopupClass()
 				// clicking ANYWHERE will close the div
 				//  what about on the div itself?
 				document.addEventListener('mousedown', CloseReloadHandler, TRUE);
+				document.addEventListener('keyup', CloseReloadHandler, TRUE);
 				break;
 			}
 			default:
@@ -260,6 +262,7 @@ function VixenPopupClass()
 		{
 			Vixen.Dhtml.Drag(event, 'VixenPopup__' + strId);	
 		}
+		
 		function CloseHandler(event)
 		{
 			// for AUTOHIDE only
@@ -272,15 +275,17 @@ function VixenPopupClass()
 				// MouseDown on page
 				Vixen.Popup.Close(strId);
 				document.removeEventListener('mousedown', CloseHandler, TRUE);
+				document.removeEventListener('keyup', CloseHandler, TRUE);
 				
 				// load the new location if one was specified
 				if (Vixen.Popup.strLocationOnClose)
 				{
-					//FIX IT! I don't know if this will work if there are multiple popups open
+					//FIX IT! I don't know if this will work if there are multiple popups open which set Vixen.Popup.strLocationOnClose
 					window.location = Vixen.Popup.strLocationOnClose;
 				}
 			}
 		}
+		
 		function CloseReloadHandler(event)
 		{
 			// for AUTOHIDE only
@@ -292,7 +297,8 @@ function VixenPopupClass()
 			{
 				// MouseDown on page
 				Vixen.Popup.Close(strId);
-				document.removeEventListener('mousedown', CloseHandler, TRUE);
+				document.removeEventListener('mousedown', CloseReloadHandler, TRUE);
+				document.removeEventListener('keyup', CloseReloadHandler, TRUE);
 				window.location = window.location;
 			}
 		}

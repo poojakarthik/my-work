@@ -1934,31 +1934,14 @@ class AjaxFramework
 	 */
 	function Reply()
 	{
-		// We have to start output buffering as we want to be able to capture rendered HtmlTemplates and stick them in the JSON object
-		ob_start();
-		
-	
 		// Convert the commands to a json object
 		$strReply = Json()->encode($this->_arrCommands);
 		
-		// Workout how many bytes the Json object is as this is needed for the reply's Header
-		$intLength = strlen($strReply);
-		$strHeader = "//JSON". $intLength;
-		$strHeader = str_pad($strHeader, 20);
-		
-		$strReply = $strHeader . $strReply;
+		// Append "//JSON" to the front of the json object so that the reply handler knows it is a json object and not anything else (like html code)
+		$strReply = "//JSON". $strReply;
 		
 		// Send the reply
 		echo $strReply;
-		
-		// Check if a HtmlTemplate requires rendering
-		if ($this->_arrHtmlTemplate)
-		{
-			// We have to render a HtmlTemplate
-			$strClass = $this->_arrHtmlTemplate['Class'];
-			$objHtmlTemplate = new {$strClass}($this->_arrHtmlTemplate['Context'], $this->_arrHtmlTemplate['ContainerDivId']);
-			$objHtmlTemplate->Render();
-		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -1999,19 +1982,108 @@ class AjaxFramework
 	 */
 	function HasCommands()
 	{
-		return count($this->_arrCommands);
+		return (bool)count($this->_arrCommands);
 	}
 	
-	// you must pass through a HtmlTemplate object which you want rendered
-	// the defined _strContainerDivId will be the element it is placed in
+	//------------------------------------------------------------------------//
+	// RenderHtmlTemplate
+	//------------------------------------------------------------------------//
+	/**
+	 * RenderHtmlTemplate()
+	 *
+	 * Adds a command to the list of commands, that is handled by the AjaxReplyHandler, which renders the Html Template
+	 *
+	 * Adds a command to the list of commands, that is handled by the AjaxReplyHandler, which renders the Html Template
+	 * The rendered Html code will be placed in the div defined by $intContainerDivId.  The existing contents of the div will be destroyed.
+	 * This command will actually destroy the div identified by $intContainerDivId, and create a new one.  Therefore any attributes declared
+	 * for the div will be lost.
+	 * 
+	 * @param	string		$strHtmlTemplate	Full name of the HtmlTemplate class, to be rendered (ie HtmlTemplateContactEdit)
+	 * @param	integer		$intContext			Context with which to render the Html Template (ie HTML_CONTEXT_CONTACT_EDIT)
+	 * @param	integer		$intContainerDivId	The id of the Div that the HtmlTemplate will be rendered in.
+	 *											Anything currently in this div will be destroyed.
+	 *
+	 * @return	void
+	 * @method
+	 */
 	function RenderHtmlTemplate($strHtmlTemplate, $intContext, $intContainerDivId)
 	{
-		$this->_arrHtmlTemplate = Array();
-		$this->_arrHtmlTemplate['Class'] 			= $strHtmlTemplate;
-		$this->_arrHtmlTemplate['Context'] 			= $intContext;
-		$this->_arrHtmlTemplate['ContainerDivId'] 	= $intContainerDivId
+		// Start output buffering as we want to be able to capture rendered Html code
+		ob_start();
+		
+		// Create the Html Template object
+		$objHtmlTemplate = new $strHtmlTemplate($intContext, $intContainerDivId);
+		
+		// Capture the rendered html code
+		$objHtmlTemplate->Render();
+		$strHtmlCode = ob_get_contents();
+		
+		// Set up the command object
+		$arrCommand['Type'] = "ReplaceDivContents";
+		$arrCommand['ContainerDivId'] = $intContainerDivId;
+		$arrCommand['Data'] = $strHtmlCode;
+		
+		// Clean the output buffer
+		ob_end_clean();
+		
+		$this->_arrCommands[] = $arrCommand;
 	}
 	
+	//------------------------------------------------------------------------//
+	// ReplaceDivContents
+	//------------------------------------------------------------------------//
+	/**
+	 * ReplaceDivContents()
+	 *
+	 * Adds a command to the list of commands, that is handled by the AjaxReplyHandler, which replaces the contents of a div
+	 *
+	 * Adds a command to the list of commands, that is handled by the AjaxReplyHandler, which replaces the contents of a div
+	 * The Html code will be placed in the div defined by $intContainerDivId.  The existing contents of the div will be destroyed.
+	 * This command will actually destroy the div identified by $intContainerDivId, and create a new one.  Therefore any attributes declared
+	 * for the div will be lost.
+	 * 
+	 * @param	string		$strHtmlCode		The html code to place in the div
+	 * @param	integer		$intContainerDivId	The id of the Div who's innerHTML will be set to $strHtmlCode.
+	 *											Anything currently in this div will be destroyed.
+	 *
+	 * @return	void
+	 * @method
+	 */
+	function ReplaceDivContents($strHtmlCode, $intContainerDivId)
+	{
+		$arrCommand['Type'] = "ReplaceDivContents";
+		$arrCommand['ContainerDivId'] = $intContainerDivId;
+		$arrCommand['Data'] = $strHtmlCode;
+		
+		$this->_arrCommand[] = $arrCommand;
+	}
+	
+	//------------------------------------------------------------------------//
+	// AppendHtmlToElement
+	//------------------------------------------------------------------------//
+	/**
+	 * AppendHtmlToElement()
+	 *
+	 * Adds a command to the list of commands, that is handled by the AjaxReplyHandler, which appends html code to the specified element
+	 *
+	 * Adds a command to the list of commands, that is handled by the AjaxReplyHandler, which appends html code to the specified element
+	 * The Html code will be appended to the element's innerHTML.
+	 * Note that this might not execute any javascript defined in $strHtmlCode.
+	 * 
+	 * @param	string		$strHtmlCode		html code to append to the element
+	 * @param	integer		$intElementId		id of the element with which the html code will be appended to
+	 *
+	 * @return	void
+	 * @method
+	 */
+	function AppendHtmlToElement($strHtmlCode, $intElementId)
+	{
+		$arrCommand['Type'] = "AppendHtmlToElement";
+		$arrCommand['ElementId'] = $intElementId;
+		$arrCommand['Data'] = $strHtmlCode;
+		
+		$this->_arrCommand[] = $arrCommand;
+	}
 	
 }
 
@@ -2124,6 +2196,29 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// EmployeeConsole
+	//------------------------------------------------------------------------//
+	/**
+	 * EmployeeConsole()
+	 *
+	 * Compiles the Href to be executed when the EmployeeConsole menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the EmployeeConsolet menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string				Href to be executed when the EmployeeConsole menu item is clicked
+	 *
+	 * @method
+	 */
+	function EmployeeConsole()
+	{
+		$this->strLabel	= "console";
+		return "console.php";
+	}
+
+	
+
+	//------------------------------------------------------------------------//
 	// EditContact
 	//------------------------------------------------------------------------//
 	/**
@@ -2145,6 +2240,30 @@ class MenuItems
 		$this->strLabel	= "contact: $intId";
 		return "contact_edit.php?Id=$intId";
 	}
+	
+	//------------------------------------------------------------------------//
+	// ViewContact
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewContact()
+	 *
+	 * Compiles the Href to be executed when the ViewContact menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewContact menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the contact to view
+	 *
+	 * @return	string				Href to be executed when the ViewContact menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewContact($intId)
+	{
+		$this->strLabel	= "contact: $intId";
+		return "vixen.php/Contact/View/?Contact.Id=$intId";
+	}
+	
 	
 	//------------------------------------------------------------------------//
 	// ViewService

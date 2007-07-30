@@ -271,20 +271,10 @@ function VixenAjaxClass()
 		var objData = {};
 		
 		//if the reply starts with "//JSON" then this is a json object storing a list of commands
-		var strJsonHeader = strReply.substr(0, 20);
-		if (strJsonHeader.substr(0, 6) == "//JSON")
+		if (strReply.substr(0, 6) == "//JSON")
 		{	
 			// we are working with a JSON object so convert it to a javascript object
-			// but first check if there is any html appended to the end of the reply.  If so, render it as a div before processing the list of Ajax Commands
-			var intCommandListLength = parseInt(strJsonHeader.substr(6));
-			var strJsonCommands = strReply.substr(20, intCommandListLength);
-			
-			var strHtmlCode = strReply.substr(20 + intCommandListLength);
-			
-			alert(strHtmlCode);
-			//if (strHtmlCode.)
-			
-			
+			var strJsonCommands = strReply.substr(6);
 			
 			try
 			{
@@ -307,7 +297,7 @@ function VixenAjaxClass()
 		else
 		{
 			// the reply must be HTML code
-			this.HandleHtmlModeReply(strReply, objObject);
+			HandleHtmlModeReply(strReply, objObject);
 		}
 		
 		// clean up
@@ -315,7 +305,7 @@ function VixenAjaxClass()
 		delete(objData);
 	}
 	
-	this.HandleHtmlModeReply = function(strReply, objObject)
+	HandleHtmlModeReply = function(strReply, objObject)
 	{
 			if (objObject.HtmlMode)
 			{
@@ -401,12 +391,65 @@ function VixenAjaxClass()
 									"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
 					Vixen.Popup.Create('VixenAlertBox', strContent, 'medium', 'centre', 'autohide', objInput[intKey].Data.Location);
 					break;
+				case "ReplaceDivContents":
+					// The html code defined in objInput[intKey].Data will be placed in the declared Container Div
+					// The current contents of the Container Div will be destroyed
+				
+					// retrieve the current container div element
+					var elmOldContainer = document.getElementById(objInput[intKey].ContainerDivId);
+					if (!elmOldContainer)
+					{
+						alert("Command: ReplaceDivContents\nError: The container div does not exist\nContainer Div Id = '" + objInput[intKey].ContainerDivId +"'");
+						return FALSE;
+					}
+					
+					// Create a new container div
+					var elmNewContainer = document.createElement('div');
+					elmNewContainer.setAttribute('Id', objInput[intKey].ContainerDivId);
+					elmNewContainer.innerHTML = objInput[intKey].Data;
+					
+					// Retrieve the parent element of the current container div element
+					var elmParent = elmOldContainer.parentNode;
+					
+					// Remove the old content div and add the new one
+					elmParent.removeChild(elmOldContainer);
+					elmParent.appendChild(elmNewContainer);
+					
+					break;
+				case "AppendHtmlToElement":
+					// The html code defined in objInput[intKey].Data will be Appended to the end of innerHtml of the parent element
+					// Note that this is just appending the html to the innerHTML of the declared "Parent" element.  It may not be
+					// executing any defined javascript contained within the appended html.  This will have to be tested at some stage.
+					// TODO! Test that javascript is working properly, if defined in the html to append
+				
+					// retrieve the current Parent element
+					var elmParent = document.getElementById(objInput[intKey].ElementId);
+					if (!elmParent)
+					{
+						alert("Command: AppendHtmlToElement\nError: The element does not exist\nElement Id = '" + objInput[intKey].ElementId +"'");
+						return FALSE;
+					}
+					
+					// Append the html
+					var strNewInnerHtml = elmParent.innerHTML + objInput[intKey].Data;
+					elmParent.innerHTML = strNewInnerHtml;
+					
+					break;
+				case "SetFocus":
+					var elmElement = document.getElementById(objInput[intKey].Data);
+					if (!elmElement)
+					{
+						alert("Command: SetFocus\nError: The element does not exist\nElement Id = '" + objInput[intKey].Data +"'");
+						return FALSE;
+					}
+					
+					elmElement.focus();
+					break;
 				default:
-					alert("Don't know how to process command type '" + objInput[intKey].Type + "'");
+					alert("Command: (default case)\nError: Don't know how to process command type '" + objInput[intKey].Type + "'");
 					break;
 			}
 		}
-		
 	}
 	
 	// AJAX handle_error

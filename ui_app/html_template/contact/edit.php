@@ -45,7 +45,7 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 	 * Constructor - java script required by the HTML object is loaded here
 	 *
 	 * @param	int		$intContext		context in which the html object will be rendered
-	 * @param	string	$_strDivId		the id of the div that this HtmlTemplate is rendered in
+	 * @param	string	$_strId			the id of the div that this HtmlTemplate is rendered in
 	 *
 	 * @method
 	 */
@@ -145,13 +145,10 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 		echo "	</tr>";
 		echo "</table>\n";
 
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
-
 		// create the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		$this->AjaxSubmit("Apply Changes", NULL, NULL, TARGET_TYPE_DIV);
+		$this->AjaxSubmit("Apply Changes");
 		echo "</div>\n";
 		$this->FormEnd();
 		
@@ -218,15 +215,13 @@ class HtmlTemplateContactEdit extends HtmlTemplate
 		echo "	</tr>";
 		echo "</table>\n";
 
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
-
 		// create the buttons
 		echo "<div class='SmallSeperator'></div>\n";
 		echo "<div class='Right'>\n";
-		$this->AjaxSubmit("Add Contact", NULL, NULL, TARGET_TYPE_DIV);
+		$this->AjaxSubmit("Add Contact");
 		$this->FormEnd();
 		echo "</div>\n";
+		echo "<script type='text/javascript'>document.getElementById('Contact.Title').focus();</script>";		
 		echo "<div class='Seperator'></div>\n";
 		echo "</div>";
 	}

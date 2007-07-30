@@ -300,7 +300,6 @@ class Application
 		if (Ajax()->HasCommands())
 		{
 			// Send back AJAX data as JSON
-			//AjaxReply($mixReply);
 			Ajax()->Reply();
 		}
 		elseif (isset($this->objAppTemplate->Page))
