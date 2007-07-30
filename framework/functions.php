@@ -2500,7 +2500,7 @@ function UnbilledServiceChargeTotal($intService)
 	// Get Adjustment Total
 	$selChargeTotal = new StatementSelect("Charge", "SUM(CASE WHEN Nature = 'CR' THEN 0 - Amount ELSE Amount END) AS TotalCharged", "Service = <Service> AND Status = ".CHARGE_APPROVED);
 	$selChargeTotal->Execute(Array('Service' => $intService));
-	$selChargeTotal = $selCDRTotal->Fetch();
+	$selChargeTotal = $selChargeTotal->Fetch();
 	
 	return $selChargeTotal['TotalCharged'];
 }
@@ -2548,11 +2548,11 @@ function UnbilledAccountCDRTotal($intAccount)
  *
  * @method
  */ 
- function GetCurrentPlan($intService)
- {
- 	$selRatePlan = new StatementSelect("ServiceRatePlan", "Id", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
- 	$selRatePlan->Execute(Array('Service' => $intService));
- 	$arrRatePlan = $selRatePlan->Fetch();
- 	return ($arrRatePlan) ? $arrRatePlan['Id'] : FALSE;
- }
+function GetCurrentPlan($intService)
+{
+	$selRatePlan = new StatementSelect("ServiceRatePlan", "RatePlan", "Service = <Service> AND NOW() BETWEEN StartDatetime AND EndDatetime", "StartDatetime DESC", 1);
+	$selRatePlan->Execute(Array('Service' => $intService));
+	$arrRatePlan = $selRatePlan->Fetch();
+	return ($arrRatePlan) ? $arrRatePlan['RatePlan'] : FALSE;
+}
 ?>

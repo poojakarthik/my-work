@@ -558,6 +558,7 @@ class HTMLElements
 	function ApplyOutputMask($mixValue, $strMask)
 	{
 		$strMask = trim($strMask);
+		
 		if ($strMask)
 		{
 			switch ($strMask)
@@ -567,29 +568,10 @@ class HTMLElements
 					$mixValue = ltrim($mixValue, '$');
 					
 					$mixValue = OutputMask()->MoneyValue($mixValue, 2, TRUE);
-					
 					break;
-				case "ShortDate":
-					// MySql Dates are of the format YYYY-MM-DD
-					// convert this to DD/MM/YYYY
-					if ($mixValue)
-					{
-						$mixValue = OutputMask()->ShortDate($mixValue);
-					}
-					else
-					{
-						// The value is null
-						$mixValue = "&nbsp;";
-					}
-					break;
-				case "LongDateAndTime":
-					// MySql Datetime is in the format YYYY-MM-DD HH:MM:SS
-					// convert this to the format "Wednesday, Jun 21, 2007 11:36:54 AM"
-					$mixValue = OutputMask()->LongDateAndTime($mixValue);
-					break;
-				case "BooleanYesNo":
-					// convert boolean value into either "Yes" or "No"
-					$mixValue = OutputMask()->BooleanYesNo($mixValue);
+				default:
+					// Try running the name of the output mask, as a method of OutputMask()
+					$mixValue = OutputMask()->{$strMask}($mixValue);
 					break;
 			}
 		}

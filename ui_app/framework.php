@@ -1514,7 +1514,7 @@ class OutputMasks
 		}
 		else
 		{
-			$strDate = $strMySqlDate;
+			$strDate = "not defined";
 		}
 		return $strDate;
 	}
@@ -1542,6 +1542,35 @@ class OutputMasks
 		$intUnixTime = mktime($arrTime[0], $arrTime[1], $arrTime[2], $arrDate[1], $arrDate[2], $arrDate[0]);
 		$strDateAndTime = date("l, M j, Y g:i:s A", $intUnixTime);
 	
+		return $strDateAndTime;
+	}
+
+	//------------------------------------------------------------------------//
+	// MidDate
+	//------------------------------------------------------------------------//
+	/**
+	 * MidDate
+	 *
+	 * Converts date and time from YYYY-MM-DD to "Wednesday, Jun 21, 2007" format
+	 *
+	 * Converts date and time from YYYY-MM-DD to "Wednesday, Jun 21, 2007" format
+	 *
+	 * @param	string	$strMySqlDate				in the format YYYY-MM-DD
+	 * @return	string								date in format "Wednesday, Jun 21, 2007"
+	 *
+	 * @method
+	 */
+	function LongDate($strMySqlDate)
+	{
+		//echo "entered";
+		$arrDate = explode(" ", $strMySqlDate);
+		//$arrTime = explode(":", $arrDateAndTime[1]);
+		
+		$arrDate = explode("-", $strMySqlDate);
+		$intUnixTime = mktime($arrDate[1], $arrDate[2], $arrDate[0]);
+		$strDateAndTime = date("l, M j, Y", $intUnixTime);
+		//echo "----------->>>".$intUnixTime;
+		
 		return $strDateAndTime;
 	}
 
@@ -2242,6 +2271,28 @@ class MenuItems
 	}
 	
 	//------------------------------------------------------------------------//
+	// EditService
+	//------------------------------------------------------------------------//
+	/**
+	 * EditService()
+	 *
+	 * Compiles the Href to be executed when the EditService menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the EditService menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
+	 * @param	int		$intId		id of the service to view
+	 *
+	 * @return	string				Href to be executed when the EditService menu item is clicked
+	 *
+	 * @method
+	 */
+	function EditService($intId)
+	{
+		return "vixen.php/Service/Edit/?Service.Id=$intId";
+	}	
+	
+	//------------------------------------------------------------------------//
 	// ViewContact
 	//------------------------------------------------------------------------//
 	/**
@@ -2286,7 +2337,7 @@ class MenuItems
 	function ViewService($intId, $strFNN=NULL)
 	{
 		$this->strLabel	= "service : $strFNN";
-		return "service_view.php?Service.Id=$intId";
+		return "vixen.php/Service/View/?Service.Id=$intId";
 	}
 	
 	//------------------------------------------------------------------------//
