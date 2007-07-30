@@ -83,7 +83,7 @@ class HtmlTemplateConsole extends HtmlTemplate
 		// each account listed should have a link to a page listing all the details for that account
 		
 		
-		//TODO! INSERT BREAD CRUMB MENU AND POSSIBLY A LOG OUT BUTTON
+		//TODO! INSERT A LOG OUT BUTTON
 		
 		echo "<h2 class='Console'>Console</h2>\n";
 		

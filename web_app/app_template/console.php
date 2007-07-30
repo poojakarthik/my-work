@@ -87,7 +87,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		
 		// add to breadcrumb menu
 		//TODO!
-		BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
+		//BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
 		
 		// Add a context menu
 		//TODO!

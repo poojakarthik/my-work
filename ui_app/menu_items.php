@@ -783,3 +783,5 @@ class MenuItems
 		}
 	}
 }
+
+?>
