@@ -110,8 +110,6 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->Charge->Load();
 		
 		// Retrieve the first 20 unbilled CDRs for the service, starting with the oldest
-		// NOTE! rich's code to calculate the total unbilled CDRS only retrieves CDRs with status == CDR_RATED
-		// where as the current client_app (when displying unbilled CDRs) will also retrieve all CDRs with status == CDR_TEMP_INVOICE
 		$strWhere  = "(Service = ". DBO()->Service->Id->Value .")";
 		$strWhere .= " AND (Status = ". CDR_RATED .")";
 		$strWhere .= " AND (Status = ". CDR_TEMP_INVOICE .")";		

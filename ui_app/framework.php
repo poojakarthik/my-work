@@ -1945,7 +1945,6 @@ class AjaxFramework
 	 * @property
 	 */
 	private $_arrCommands = Array();
-	private $_arrHtmlTemplate = NULL;
 	
 	//------------------------------------------------------------------------//
 	// Reply
@@ -2041,7 +2040,8 @@ class AjaxFramework
 		ob_start();
 		
 		// Create the Html Template object
-		$objHtmlTemplate = new $strHtmlTemplate($intContext, $intContainerDivId);
+		$strClassName = "HtmlTemplate$strHtmlTemplate";
+		$objHtmlTemplate = new $strClassName($intContext, $intContainerDivId);
 		
 		// Capture the rendered html code
 		$objHtmlTemplate->Render();

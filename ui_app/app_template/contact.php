@@ -158,7 +158,7 @@ class AppTemplateContact extends ApplicationTemplate
 			{
 				// The form has not passed initial validation
 				Ajax()->AddCommand("Alert", "Could not save the contact.  Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
+				Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
 				return TRUE;
 			}
 			
@@ -174,7 +174,7 @@ class AppTemplateContact extends ApplicationTemplate
 				DBO()->Contact->Mobile->SetToInvalid();
 				
 				Ajax()->AddCommand("Alert", "Please include either a phone number or mobile number");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
+				Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
 				Ajax()->AddCommand("SetFocus", "Contact.Phone");
 				return TRUE;
 			}
@@ -189,7 +189,7 @@ class AppTemplateContact extends ApplicationTemplate
 				{
 					DBO()->Contact->Phone->SetToInvalid();
 					Ajax()->AddCommand("Alert", "Invalid phone number");
-					Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
+					Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
 					Ajax()->AddCommand("SetFocus", "Contact.Phone");
 					return TRUE;
 				}
@@ -201,7 +201,7 @@ class AppTemplateContact extends ApplicationTemplate
 				{
 					DBO()->Contact->Mobile->SetToInvalid();
 					Ajax()->AddCommand("Alert", "Invalid mobile number");
-					Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
+					Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
 					Ajax()->AddCommand("SetFocus", "Contact.Mobile");
 					return TRUE;
 				}
@@ -216,7 +216,7 @@ class AppTemplateContact extends ApplicationTemplate
 				// the username is currently being used by another contact.
 				DBO()->Contact->UserName->SetToInvalid();
 				Ajax()->AddCommand("Alert", "This username is currently being used by another contact");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
+				Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_EDIT, "ContactEditDiv");
 				Ajax()->AddCommand("SetFocus", "Contact.UserName");
 				return TRUE;
 			}
@@ -311,7 +311,7 @@ class AppTemplateContact extends ApplicationTemplate
 			{
 				// The form has not passed initial validation
 				Ajax()->AddCommand("Alert", "Could not save the contact.  Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
+				Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
 				return TRUE;
 			}
 		
@@ -327,7 +327,7 @@ class AppTemplateContact extends ApplicationTemplate
 				DBO()->Contact->Mobile->SetToInvalid();
 				
 				Ajax()->AddCommand("Alert", "Please include either a phone number or mobile number");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
+				Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
 				Ajax()->AddCommand("SetFocus", "Contact.Phone");
 				return TRUE;
 			}
@@ -342,7 +342,7 @@ class AppTemplateContact extends ApplicationTemplate
 				{
 					DBO()->Contact->Phone->SetToInvalid();
 					Ajax()->AddCommand("Alert", "Invalid phone number");
-					Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
+					Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
 					Ajax()->AddCommand("SetFocus", "Contact.Phone");
 					return TRUE;
 				}
@@ -354,7 +354,7 @@ class AppTemplateContact extends ApplicationTemplate
 				{
 					DBO()->Contact->Mobile->SetToInvalid();
 					Ajax()->AddCommand("Alert", "Invalid mobile number");
-					Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
+					Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
 					Ajax()->AddCommand("SetFocus", "Contact.Mobile");
 					return TRUE;
 				}
@@ -369,7 +369,7 @@ class AppTemplateContact extends ApplicationTemplate
 				// the username is currently being used by another contact.
 				DBO()->Contact->UserName->SetToInvalid();
 				Ajax()->AddCommand("Alert", "This username is currently being used by another contact");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
+				Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
 				Ajax()->AddCommand("SetFocus", "Contact.UserName");
 				return TRUE;
 			}
@@ -381,7 +381,7 @@ class AppTemplateContact extends ApplicationTemplate
 				// the password is invalid
 				DBO()->Contact->PassWord->SetToInvalid();
 				Ajax()->AddCommand("Alert", "The current password is invalid");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
+				Ajax()->RenderHtmlTemplate("ContactEdit", HTML_CONTEXT_CONTACT_ADD, "ContactAddDiv");
 				Ajax()->AddCommand("SetFocus", "Contact.PassWord");
 				return TRUE;
 			}

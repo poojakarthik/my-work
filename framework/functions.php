@@ -2472,7 +2472,7 @@ function SetDBConfig($strURL=NULL, $strDatabase=NULL, $strUser=NULL, $strPasswor
 function UnbilledServiceCDRTotal($intService)
 {
 	// Get CDR Total
-	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged", "Service = <Service> AND Status = ".CDR_RATED);
+	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged", "Service = <Service> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")");
 	$selCDRTotal->Execute(Array('Service' => $intService));
 	$arrCDRTotal = $selCDRTotal->Fetch();
 	
@@ -2524,7 +2524,7 @@ function UnbilledServiceChargeTotal($intService)
 function UnbilledAccountCDRTotal($intAccount)
 {
 	// Get CDR Total
-	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged", "Account = <Account> AND Status = ".CDR_RATED);
+	$selCDRTotal = new StatementSelect("CDR", "SUM(CASE WHEN Credit = 1 THEN 0 - Charge ELSE Charge END) AS TotalCharged", "Account = <Account> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")");
 	$selCDRTotal->Execute(Array('Account' => $intAccount));
 	$arrCDRTotal = $selCDRTotal->Fetch();
 	
