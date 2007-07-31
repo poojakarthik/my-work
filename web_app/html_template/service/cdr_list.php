@@ -1,22 +1,22 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateAccountServiceList
+// HtmlTemplateServiceCDRList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAccountServiceList
+ * HtmlTemplateServiceCDRList
  *
- * HTML Template object for the client app, List of all Services for account
+ * HTML Template object for the client app, Displays a paginated list of CDRs for a given service
  *
- * HTML Template object for the client app, List of all Services for account
+ * HTML Template object for the client app, Displays a paginated list of CDRs for a given service
  *
  *
  * @prefix	<prefix>
  *
  * @package	web_app
- * @class	HtmlTemplateAccountServiceList
+ * @class	HtmlTemplateServiceCDRList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountServiceList extends HtmlTemplate
+class HtmlTemplateServiceCDRList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -74,7 +74,8 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='WideContent'>\n";
-		echo "<h2 class='Services'>Services</h2>\n";
+		echo "<h2 class='CDR'>Call Information</h2>\n";
+		//TODO!
 		
 		Table()->Services->SetHeader("FNN", "Service Type", "Current Plan", "Current Unbilled Charges (inc GST)", "&nbsp;");
 		Table()->Services->SetWidth("10%", "15%", "35%", "15%", "25%");

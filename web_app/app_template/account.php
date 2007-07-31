@@ -51,9 +51,9 @@ class AppTemplateAccount extends ApplicationTemplate
 	/**
 	 * ViewUnbilledCharges()
 	 *
-	 * Performs the logic for the Account_ViewUnbilledCharges.php webpage
+	 * Performs the logic for the account_view_unbilled_charges.php webpage
 	 * 
-	 * Performs the logic for the Account_ViewUnbilledCharges.php webpage
+	 * Performs the logic for the account_view_unbilled_charges.php webpage
 	 *
 	 * @return		void
 	 * @method		ViewUnbilledCharges
@@ -68,12 +68,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		//ContextMenu()->Admin_Console();
 		//ContextMenu()->Logout();
 		
-		// Breadcrumb menu
 				
 		// Load the account
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
@@ -161,6 +160,9 @@ class AppTemplateAccount extends ApplicationTemplate
 			}
 		}
 		*/
+
+		// Breadcrumb menu
+		BreadCrumbMenu()->LoadAccountInConsole(DBO()->Account->Id->Value);
 
 
 		// All required data has been retrieved from the database so now load the page template

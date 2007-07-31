@@ -92,6 +92,55 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// ViewUnbilledChargesForService
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewUnbilledChargesForService()
+	 *
+	 * Compiles the javascript to be executed when the ViewUnbilledChargesForService menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the ViewUnbilledChargesForService menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intServiceId		service id to load
+	 *
+	 * @return	string						action to be executed when the ViewUnbilledChargesForService menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewUnbilledChargesForService($intServiceId)
+	{
+		$this->strLabel	= "service: $intServiceId";
+		
+		return "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId";
+	}
+	
+	//------------------------------------------------------------------------//
+	// ViewUnbilledChargesForAccount
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewUnbilledChargesForAccount()
+	 *
+	 * Compiles the javascript to be executed when the ViewUnbilledChargesForAccount menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the ViewUnbilledChargesForAccount menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		Account id to load
+	 *
+	 * @return	string						action to be executed when the ViewUnbilledChargesForAccount menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewUnbilledChargesForAccount($intAccountId)
+	{
+		$this->strLabel	= "account: $intAccountId";
+		
+		return "vixen.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
+	}
+	
+	
+	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
 	/**
