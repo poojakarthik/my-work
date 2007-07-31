@@ -105,53 +105,20 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Calculate the unbilled total for the account
 		// The unbilled total = TotalUnbilledAdjustments + sum of unbilled charges for each service
 		
-		// Calculate the Account's total unbilled adjustments (inc GST)
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		// Calculate the Account's total unbilled adjustments
+		$fltTotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
-		// Calculate the Account's total unbilled CDRs (For every service) (inc GST)
-		//DBO()->Account->TotalUnbilledCDRs = $this->Framework->GetUnbilledCDRs(DBO()->Account->Id->Value);
-		// HACK!
-		DBO()->Account->TotalUnbilledCDRs = 1000.00;
-		// HACK!
+		// Calculate the total unbilled CDRs for the account
+		$fltTotalUnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value));
 		
-		/*
-		// Retrieve the list of services for the account
-		DBL()->Service->Account = DBO()->Account->Id->Value;
-		DBL()->Service->Load();
+		// Calculate the current unbilled total for the account
+		DBO()->Account->CurrentUnbilledTotal = $fltTotalUnbilledAdjustments + $fltTotalUnbilledCDRs;
 		
-		// prepare query for finding the current plan for a given service
-		$selCurrentPlan = new StatementSelect('ServiceRatePlan', 'RatePlan', 
-												'Service = <Service> AND (Now() BETWEEN StartDatetime AND EndDatetime)', 
-												'CreatedOn DESC',	1);
-		
-		// For each service of the Account, calculate the unbilled charges
-		foreach (DBL()->Service as $dboService)
-		{
-			// Find the rateplan for the service
-			$selCurrentPlan->Execute(Array("Service" => $dboService->Id->Value));
-			
-			// this can return 0 or 1 records
-			if ($selCurrentPlan->Count() == 1)
-			{
-				//There is a current plan for this record
-				$arrCurrentPlan = $selCurrentPlan->Fetch();
-				$dboService->CurrentPlan = $arrCurrentPlan['RatePlan'];
-			}
-			else
-			{
-				//There is no rateplan for this service
-				
-			}
-			
-			
-		}
-		*/
 		
 
 		// Retrieve all unbilled adjustments for the account
 		$strWhere  = "(Account = ". DBO()->Account->Id->Value .")";
-		$strWhere .= " AND ((Status = ". CHARGE_WAITING .")";
-		$strWhere .= " OR (Status = ". CHARGE_APPROVED ."))";
+		$strWhere .= " AND (Status = ". CHARGE_APPROVED .")";
 		DBL()->Charge->Where->SetString($strWhere);
 		DBL()->Charge->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->Charge->Load();
@@ -160,22 +127,18 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Service->Account = DBO()->Account->Id->Value;
 		DBL()->Service->Load();
 		
-		// prepare query for finding the current plan and plan name for a given service
-		// FIX IT! I've tested this query and it works, but I don't think the StatementSelect is working
+		// Find the current Plan for each service and the current unbilled charges and CDRs for each service
+		// This is currently handled in HtmlTemplateAccountServiceList->Render() 
+		// I wanted to use the following block of code, but you can't add anything to a DBList within a foreach loop because
+		// with the current implementation of the iterator interface for DBListBase, everything is returned as copies instead of references.
 		/*
-		SELECT srpT.Service, srpT.RatePlan, rpT.Name, rpT.Description
-		FROM ServiceRatePlan AS srpT inner join RatePlan AS rpT ON srpT.RatePlan = rpT.Id
-		WHERE (srpT.Service = <Service>) AND (Now() BETWEEN srpT.StartDatetime AND srpT.EndDatetime)
-		ORDER BY srpT.CreatedOn DESC
-		LIMIT 0, 1
-		*/
 		$selCurrentPlan = new StatementSelect('ServiceRatePlan AS srpT INNER JOIN RatePlan AS rpT ON srpT.RatePlan = rpT.Id', 
-												'srpT.Service, srpT.RatePlan, rpT.Name, rpT.Description', 
-												'(srpT.Service = <Service>) AND (Now() BETWEEN srpT.StartDatetime AND srpT.EndDatetime)', 
-												'srpT.CreatedOn DESC',	1);
+										'srpT.Service, srpT.RatePlan, rpT.Name, rpT.Description', 
+										'(srpT.Service = <Service>) AND (Now() BETWEEN srpT.StartDatetime AND srpT.EndDatetime)', 
+										'srpT.StartDatetime DESC',	1);
 		
-		// For each service, find the current RatePlan
-		foreach (DBL()->Service as $dboService)
+		// For each service, find the current rate plan and the name of the current rate plan AND the total unbilled charges and CDRs
+		foreach (DBL()->Service as &$dboService)
 		{
 			// Find the rateplan for the service
 			$selCurrentPlan->Execute(Array("Service" => $dboService->Id->Value));
@@ -185,14 +148,19 @@ class AppTemplateAccount extends ApplicationTemplate
 			{
 				//There is a current plan for this record
 				$arrCurrentPlan = $selCurrentPlan->Fetch();
-				$dboService->CurrentPlan = $arrCurrentPlan['RatePlan'];
+				$dboService->CurrentPlan 		= $arrCurrentPlan['RatePlan'];
+				$dboService->CurrentPlanName 	= $arrCurrentPlan['Name'];
+				$dboService->TotalUnbilled 		= AddGST(UnbilledServiceCDRTotal($dboService->Id->Value) + UnbilledServiceChargeTotal($dboService->Id->Value));
 			}
 			else
 			{
 				//There is no rateplan for this service
+				$dboService->CurrentPlan 		= NULL;
+				$dboService->CurrentPlanName 	= NULL;
+				$dboService->TotalUnbilled 		= NULL;
 			}
 		}
-		
+		*/
 
 
 		// All required data has been retrieved from the database so now load the page template

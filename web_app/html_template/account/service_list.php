@@ -1,22 +1,22 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateAccountUnbilledChargeTotal
+// HtmlTemplateAccountServiceList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAccountUnbilledChargeTotal
+ * HtmlTemplateAccountServiceList
  *
- * HTML Template object for the client app, Total Unbilled charges for account
+ * HTML Template object for the client app, List of all Services for account
  *
- * HTML Template object for the client app, Total Unbilled charges for account
+ * HTML Template object for the client app, List of all Services for account
  *
  *
  * @prefix	<prefix>
  *
  * @package	web_app
- * @class	HtmlTemplateAccountUnbilledChargeTotal
+ * @class	HtmlTemplateAccountServiceList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountUnbilledChargeTotal extends HtmlTemplate
+class HtmlTemplateAccountServiceList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -53,7 +53,7 @@ class HtmlTemplateAccountUnbilledChargeTotal extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
-		//$this->LoadJavascript("highlight");
+		$this->LoadJavascript("highlight");
 		//$this->LoadJavascript("retractable");
 		//$this->LoadJavascript("tooltip");
 		
@@ -74,21 +74,39 @@ class HtmlTemplateAccountUnbilledChargeTotal extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='WideContent'>\n";
-		echo "<h2 class='Adjustment'>Unbilled Charges for Account# ". DBO()->Account->Id->Value ."</h2>\n";
+		echo "<h2 class='Services'>Services</h2>\n";
 		
-		// Display the details of the nominated account
-		//echo "<h2 class='Account'>Account Details</h2>\n";
-		if (DBO()->Account->BusinessName->Value)
+		Table()->Services->SetHeader("FNN", "Service Type", "Current Plan", "Current Unbilled Charges (inc GST)");
+		Table()->Services->SetWidth("15%", "20%", "35%", "30%");
+		Table()->Services->SetAlignment("left", "left", "left", "right");
+		
+		// add the rows
+		foreach (DBL()->Service as $dboService)
 		{
-			DBO()->Account->BusinessName->RenderOutput();
-		}
-		if (DBO()->Account->TradingName->Value)
-		{
-			DBO()->Account->TradingName->RenderOutput();
+			// Find the current plan for the service
+			$mixCurrentPlan = GetCurrentPlan($dboService->Id->Value);
+			if ($mixCurrentPlan === FALSE)
+			{
+				// There is no current plan for this service
+				//TODO! do something to error trap this scenario
+			}
+			else
+			{
+				// a plan was found
+				DBO()->RatePlan->Id = $mixCurrentPlan;
+				DBO()->RatePlan->Load();
+			}
+			
+			// Calculate the total unbilled charges for this service (inc GST)
+			$dboService->TotalUnbilled = AddGST(UnbilledServiceCDRTotal($dboService->Id->Value) + UnbilledServiceChargeTotal($dboService->Id->Value));
+			
+			Table()->Services->AddRow($dboService->FNN->AsValue(),
+										$dboService->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType")),
+										DBO()->RatePlan->Name->AsValue(),
+										$dboService->TotalUnbilled->AsValue());
 		}
 		
-		// Display the current unbilled Total for this account (unbilled charges + unbilled CDRs)
-		DBO()->Account->CurrentUnbilledTotal->RenderOutput();
+		Table()->Services->Render();
 		
 		echo "<div class='Seperator'></div>\n";
 		

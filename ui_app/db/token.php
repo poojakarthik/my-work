@@ -854,18 +854,10 @@ class PropertyToken
 	 */
 	private function _Hidden()
 	{
-		$intContext = CONTEXT_DEFAULT;
+		$arrParams['Object']	= $this->_dboOwner->_strName;
+		$arrParams['Property']	= $this->_strProperty;
+		$arrParams['Value']		= $this->_dboOwner->_arrProperties[$this->_strProperty];
 
-		// require a definition
-		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
-		{
-			echo "ERROR: Could not render '".$this->_strProperty ."' with context $intContext; No documentation data";
-			return NULL;
-		}
-
-		// build up parameters
-		$arrParams = $this->_BuildParams($intContext);
-		
 		// Render the value as hidden
 		return HTMLElements()->InputHidden($arrParams);
 	}

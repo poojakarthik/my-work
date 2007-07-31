@@ -74,24 +74,25 @@ class HtmlTemplateAccountUnbilledChargeList extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='WideContent'>\n";
+		echo "<h2 class='Adjustment'>Unbilled Adjustments</h2>\n";
 				
-		// User cannot delete adjustments
-		Table()->AdjustmentTable->SetHeader("Date", "Code", "Description", "Nature", "Status", "Amount (inc GST)");
-		Table()->AdjustmentTable->SetWidth("10%", "15%", "30%", "10%", "15%", "20%");
-		Table()->AdjustmentTable->SetAlignment("left", "left", "left", "left", "right", "left");
+		Table()->Adjustments->SetHeader("Date", "Code", "Description", "Nature", "Amount (inc GST)");
+		Table()->Adjustments->SetWidth("10%", "15%", "45%", "10%", "20%");
+		Table()->Adjustments->SetAlignment("left", "left", "left", "left", "right");
 		
 		// add the rows
 		foreach (DBL()->Charge as $dboCharge)
 		{
-			Table()->AdjustmentTable->AddRow($dboCharge->CreatedOn->AsValue(),
+			Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
 											$dboCharge->ChargeType->AsValue(),
 											$dboCharge->Description->AsValue(),
 											$dboCharge->Nature->AsValue(),
-											$dboCharge->Status->AsCallback("GetConstantDescription", Array("ChargeStatus")),
 											$dboCharge->Amount->AsCallback("AddGST"));
 		}
 		
-		Table()->AdjustmentTable->Render();
+		// You may want to Append a row to the end of this table which displays the total value of the adjustments
+		
+		Table()->Adjustments->Render();
 		
 		echo "<div class='Seperator'></div>\n";
 		

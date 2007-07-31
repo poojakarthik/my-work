@@ -99,7 +99,13 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
 		
 		// Calculate the Account's total unbilled adjustments
-		DBO()->Account->TotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		$fltTotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		
+		// Calculate the total unbilled CDRs for the account
+		$fltTotalUnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value));
+		
+		// Calculate the current unbilled total for the account
+		DBO()->Account->CurrentUnbilledTotal = $fltTotalUnbilledAdjustments + $fltTotalUnbilledCDRs;
 		
 		// If the user can view all accounts in their account group then load these too
 		if (DBO()->Contact->CustomerContact->Value)

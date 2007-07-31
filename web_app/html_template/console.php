@@ -104,7 +104,7 @@ class HtmlTemplateConsole extends HtmlTemplate
 		
 		DBO()->Account->Balance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
+		DBO()->Account->CurrentUnbilledTotal->RenderOutput();
 		
 		
 		echo "<div class='Seperator'></div>\n";
