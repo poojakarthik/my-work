@@ -51,7 +51,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
+			
 		//$this->LoadJavascript("dhtml");
 		//$this->LoadJavascript("highlight");
 		//$this->LoadJavascript("retractable");
@@ -71,39 +71,15 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch ($this->_intContext)
-		{
-			case HTML_CONTEXT_LEDGER_DETAIL:
-				$this->_RenderLedgerDetail();
-				break;
-			case HTML_CONTEXT_FULL_DETAIL:
-				$this->_RenderFullDetail();
-				break;
-			default:
-				$this->_RenderFullDetail();
-				break;
-		}
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderFullDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderFullDetail()
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * @method
-	 */
-	private function _RenderFullDetail()
-	{
 		echo "<h2 class='service'>Service Details</h2>\n";
 		echo "<div class='Narrow-Form'>\n";
 		// Set Up the form for editting an existing user
 		$this->FormStart("EditService", "Service", "Edit");
-		DBO()->Contact->Id->RenderHidden();
+		DBO()->Service->Id->RenderHidden();
+		DBO()->Service->ServiceType->RenderHidden();
+		DBO()->Service->ClosedOn->RenderHidden();
+		DBO()->Service->CreatedOn->RenderHidden();
+		DBO()->Service->CurrentFNN->RenderHidden();
 		
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
@@ -112,11 +88,11 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		
 		if((DBO()->Service->ClosedOn->Value == NULL) || (DBO()->Service->ClosedOn->Value > GetCurrentDateForMySQL()))
 		{
-			echo "This service opens on: ".DBO()->Service->CreatedOn->Value."\n";
+			echo "&nbsp;This service opens on: ".DBO()->Service->CreatedOn->FormattedValue()."\n";
 		}
 		else
 		{
-			echo "This service closed on: ".DBO()->Service->ClosedOn->Value."\n";
+			echo "&nbsp;&nbsp;This service closed on: ".DBO()->Service->ClosedOn->FormattedValue()."\n";
 		}
 		
 		DBO()->Service->Archive->RenderInput();
@@ -144,62 +120,10 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		}*/
 		
 		echo "<div class='Right'>\n";
-		$this->AjaxSubmit("Apply Changes", NULL, NULL, TARGET_TYPE_DIV);
+		$this->AjaxSubmit("Apply Changes");
 		echo "</div>\n";
 		$this->FormEnd();
-		echo "<div class='Seperator'></div>\n";
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderLedgerDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderLedgerDetail()
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * @method
-	 */
-	private function _RenderLedgerDetail()
-	{
-		echo "<h2 class='service'>service details</h2>\n";
-		
-		//EXAMPLE:
-		/*
-		echo "<div class='NarrowContent'>\n";
-		
-		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
-		
-		// Render the Id of the Account as a hidden input
-		DBO()->Account->Id->RenderHidden();
-
-		// Render the details of the Account
-		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Account->Balance->RenderOutput();
-		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-
-
-		// Render the properties that can be changed
-		DBO()->Account->DisableDDR->RenderInput();
-		DBO()->Account->DisableLatePayment->RenderInput();
-		
-		// Render the submit button
-		echo "<div class='Right'>\n";
-		$this->Submit("Apply Changes");
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		
-		// Declare the end of the form
-		$this->FormEnd();
-		*/
+		echo "<div class='Seperator'></div>\n";		
 	}
 }
 

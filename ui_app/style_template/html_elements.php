@@ -268,7 +268,10 @@ class HTMLElements
 		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
 		// The potentially taller of the two divs must go first
 		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Output' name='{$arrParams['Object']}.{$arrParams['Property']}' class='{$arrParams['Definition']['BaseClass']}Output {$arrParams['Definition']['Class']} '>{$strValue}</div>\n";
-		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>{$strLabel} : </div>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		$strHtml .= "      <span> &nbsp;</span>\n";
+		$strHtml .= "      {$strLabel} : \n";
+		$strHtml .= "   </div>\n";
 		$strHtml .= "</div>\n";
 
 		return $strHtml;

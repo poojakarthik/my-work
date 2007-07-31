@@ -140,31 +140,98 @@ class AppTemplateservice extends ApplicationTemplate
 
 		if (SubmittedForm("EditService","Apply Changes"))
 		{
-			// Context menu
-
-			DBO()->Status->Message = "entered";
-			return TRUE;
-			// Breadcrumb menu
-					
-			// Setup all DBO and DBL objects required for the page
+			$bolUpdateFNN = FALSE;
+			$bolUpdateArchiveStatus = FALSE;
+			if (DBO()->Service->IsInvalid())
+			{
+				// The form has not passed initial validation
+				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
+				Ajax()->RenderHtmlTemplate("HtmlTemplateServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+				return TRUE;
+			}
 			
-			//EXAMPLE:
-			// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
+			//if outputting invalid use the below lines
+			//DBO()->Service->FNNConfirm->SetToInvalid();
+			
+			//echo "------------------------------------->>>".DBO()->Service->CurrentFNN->Value;
+			
+			if (DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value)
+			{		
+				//Ajax()->AddCommand("Alert", "Could not save the service.".DBO()->Service->CurrentFNN->Value);
+				/*Ajax()->AddCommand("Alert", "Could not save the service.  Service # and Confirm Service # must be the same");
+				Ajax()->RenderHtmlTemplate("HtmlTemplateServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+				return TRUE;*/
+				if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
+				{
+					DBO()->Service->FNN->SetToInvalid();
+					DBO()->Service->FNNConfirm->SetToInvalid();
+					Ajax()->AddCommand("Alert", "Could not save the service.  Service # and Confirm Service # must be the same");
+					Ajax()->RenderHtmlTemplate("HtmlTemplateServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					return TRUE;
+				}
+				
+				// The user wants to update the FNN and the new FNN has passed all validation
+				// Include the FNN column in the list of columns to update in the Service table of the database
+				$bolUpdateFNN = TRUE;
+				$strColumnsToUpdate = "FNN";
+			}
+			else
+			{
+				// The user does not want to update the FNN, just the archive status
+				//$strColumnsToUpdate = "Archive";
+				$bolUpdateArchive = TRUE;
+				DBO()->Service->ClosedOn = todaysDate;
+				DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
+				$strColumnsToUpdate."ClosedOn, ClosedBy";
+			}
+			
+			if (($bolUpdateFNN)||($bolUpdateArchive))
+			{
+				// Everything has been validated on the form, so commit it to the database
+				DBO()->Service->SetColumns($strColumnsToUpdate);
+			}
 
-			//return TRUE;
+			if (!DBO()->Service->Save())
+			{
+				// The Service failed to update
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Updating the service details failed, unexpectedly", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				return TRUE;
+			}
+			
+			// The service details were successfully saved so go back to the last page
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service details were successfully updated", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			return TRUE;
 		}
-
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
+		
 		if (!DBO()->Service->Load())
 		{
-			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ."you were attempting to view could not be found";
+			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->Value ."you were attempting to view could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
 
-		// All required data has been retrieved from the database so now load the page template
-		return $this->LoadPage('service_edit');
+		//store the current FNN to check between states that the FNN textbox has been changed
+		DBO()->Service->CurrentFNN = DBO()->Service->FNN->Value;
+		
+		//TODO workout checkbox archive value on startup and change visual checkbox accordingly i.e. 1 = checked
+		// *********
+		//if (DBO()->Service->CreatedOn
+		//	  DBO()->Service->ClosedBy
+		// *********
+		
+		
+		
+		// Load context menu items specific to the View Service page
+		// Context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+
+		// Bread Crumb Menu
+		BreadCrumb()->View_Service(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
+
+		// Declare which page to use
+		$this->LoadPage('service_edit');
+		return TRUE;
 	}	
 	
 	//----- DO NOT REMOVE -----//
