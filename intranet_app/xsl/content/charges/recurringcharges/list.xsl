@@ -51,7 +51,7 @@
 							</td>
 							<td>
 								<xsl:text>Every </xsl:text>
-								<xsl:value-of select="./RecurringDate" />
+								<xsl:value-of select="./RecurringFreq" />
 								<xsl:text> </xsl:text>
 								<xsl:value-of select="./BillingFreqTypes/BillingFreqType[@selected='selected']/Name" />
 							</td>

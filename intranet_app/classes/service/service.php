@@ -409,6 +409,9 @@
 		
 		public function PlanSelect (AuthenticatedEmployee $aemAuthenticatedEmployee, RatePlan $rplRatePlan)
 		{
+			//TODO!flame! all current ServiceRateGroup and ServiceRatePlan records must have EndDatetime set to NOW()
+		
+		
 			// Start the Skeleton
 			$arrServiceRateGroup = Array (
 				'Service'			=> $this->Pull ('Id')->getValue (),
