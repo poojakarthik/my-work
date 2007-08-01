@@ -146,7 +146,7 @@ class AppTemplateservice extends ApplicationTemplate
 			{
 				// The form has not passed initial validation
 				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 				return TRUE;
 			}
 			
@@ -166,29 +166,29 @@ class AppTemplateservice extends ApplicationTemplate
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
 					Ajax()->AddCommand("Alert", "Could not save the service.  Service # and Confirm Service # must be the same");
-					Ajax()->RenderHtmlTemplate("HtmlTemplateServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
 				
 				// The user wants to update the FNN and the new FNN has passed all validation
-				// Include the FNN column in the list of columns to update in the Service table of the database
+				// Check to see if the FNN is in-use
+				
+				
+				//$strWhere = "FNN
+				
 				$bolUpdateFNN = TRUE;
-				$strColumnsToUpdate = "FNN";
 			}
-			else
-			{
-				// The user does not want to update the FNN, just the archive status
-				//$strColumnsToUpdate = "Archive";
-				$bolUpdateArchive = TRUE;
-				DBO()->Service->ClosedOn = todaysDate;
-				DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
-				$strColumnsToUpdate."ClosedOn, ClosedBy";
-			}
+			// Check if we have to activate or de-activate the service
+			// TODO 			
 			
 			if (($bolUpdateFNN)||($bolUpdateArchive))
 			{
 				// Everything has been validated on the form, so commit it to the database
-				DBO()->Service->SetColumns($strColumnsToUpdate);
+				//DBO()->Service->SetColumns($strColumnsToUpdate);
+				if($bolUpdateArchive)
+				{
+					//check which checkbox is selected
+				}
 			}
 
 			if (!DBO()->Service->Save())
@@ -210,16 +210,17 @@ class AppTemplateservice extends ApplicationTemplate
 			return FALSE;
 		}
 
-		//store the current FNN to check between states that the FNN textbox has been changed
+		
+		// Store the current FNN to check between states that the FNN textbox has been changed
 		DBO()->Service->CurrentFNN = DBO()->Service->FNN->Value;
+
+		// Check if the service has been closed and if so check the checkbox
 		
-		//TODO workout checkbox archive value on startup and change visual checkbox accordingly i.e. 1 = checked
-		// *********
-		//if (DBO()->Service->CreatedOn
-		//	  DBO()->Service->ClosedBy
-		// *********
-		
-		
+			/*if (($intClosedOn > $intTodaysDate))
+			{
+				DBO()->Service->Archive = ;
+			}*/
+		//}
 		
 		// Load context menu items specific to the View Service page
 		// Context menu

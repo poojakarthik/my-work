@@ -86,16 +86,51 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->FNN->RenderInput();
 		DBO()->Service->FNNConfirm->RenderInput();
 		
-		if((DBO()->Service->ClosedOn->Value == NULL) || (DBO()->Service->ClosedOn->Value > GetCurrentDateForMySQL()))
+		$intClosedOn = ConvertMySQLDateToUnixTimeStamp(DBO()->Service->ClosedOn->Value);
+		$intCurrentDate = ConvertMySQLDateToUnixTimeStamp(GetCurrentDateForMySQL());
+		
+		$intClosedOn = ConvertMySQLDateToUnixTimeStamp(DBO()->Service->ClosedOn->Value);
+		$intTodaysDate = time();
+		
+		// Check if the closedon date has been set i.e. not null
+		if (DBO()->Service->ClosedOn->Value == NULL)
 		{
-			echo "&nbsp;This service opens on: ".DBO()->Service->CreatedOn->FormattedValue()."\n";
+			// The service is not scheduled to close it is either active or hasn't been activated yet
+			// Check if it is currently active
+			$intCreatedOn = ConvertMySQLDateToUnixTimeStamp(DBO()->Service->CreatedOn->Value);
+			if ($intTodaysDate > $intCreatedOn)
+			{
+				// The service is currently active
+				echo "This service opened on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
+				DBO()->Service->ArchiveService->RenderInput();
+				// We want the checkbox action to be "archive this service"
+			}
+			else
+			{
+				// This service hasn't yet been activated
+				echo "This service will be actived on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
+				DBO()->Service->ArchiveService->RenderInput();
+				// We want the checkbox action to be "archive this service"
+			}
 		}
 		else
 		{
-			echo "&nbsp;&nbsp;This service closed on: ".DBO()->Service->ClosedOn->FormattedValue()."\n";
+			// The service has a closedon date check if it is in the future or past
+			if ($intClosedOn <= $intTodaysDate)
+			{
+				// The service has been closed
+				echo "This service was closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+				DBO()->Service->ActivateService->RenderInput();
+				// We want the checkbox action to be "activate this service"
+			}
+			else
+			{
+				// The service is scheduled to be closed in the future
+				echo "This service is scheduled to be closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+				DBO()->Service->CancelScheduledClosure->RenderInput();
+				// We want the checkbox action to be "cancel scheduled closure"
+			}
 		}
-		
-		DBO()->Service->Archive->RenderInput();
 	
 		// Render the status message, if there is one
 		DBO()->Status->Message->RenderOutput();

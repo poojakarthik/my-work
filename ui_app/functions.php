@@ -618,6 +618,27 @@ function ConvertUserDateToMySqlDate($strUserDate)
 }
 
 //------------------------------------------------------------------------//
+// ConvertMySQLDateToUnixTimeStamp
+//------------------------------------------------------------------------//
+/**
+ * ConvertMySQLDateToUnixTimeStamp()
+ *
+ * Converts a date to Unix Date Time format
+ *
+ * Converts a date to Unix Date Time format
+ *
+ * @param	string	$strUserDate	date in format YYYY-MM-DD
+ * @return	int						unix time stamp
+ *
+ * @function
+ */
+function ConvertMySQLDateToUnixTimeStamp($strUserDate)
+{
+	$arrDate = explode("-", $strUserDate);
+	return(mktime(0,0,0,$arrDate[1],$arrDate[2],$arrDate[0]));
+}
+
+//------------------------------------------------------------------------//
 // GetCurrentTimeForMySQL
 //------------------------------------------------------------------------//
 /**

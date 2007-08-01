@@ -1546,10 +1546,10 @@ class OutputMasks
 	}
 
 	//------------------------------------------------------------------------//
-	// MidDate
+	// LongDate
 	//------------------------------------------------------------------------//
 	/**
-	 * MidDate
+	 * LongDate
 	 *
 	 * Converts date and time from YYYY-MM-DD to "Wednesday, Jun 21, 2007" format
 	 *
@@ -1562,15 +1562,9 @@ class OutputMasks
 	 */
 	function LongDate($strMySqlDate)
 	{
-		//echo "entered";
-		$arrDate = explode(" ", $strMySqlDate);
-		//$arrTime = explode(":", $arrDateAndTime[1]);
-		
 		$arrDate = explode("-", $strMySqlDate);
-		$intUnixTime = mktime($arrDate[1], $arrDate[2], $arrDate[0]);
+		$intUnixTime = mktime(0,0,0,$arrDate[1], $arrDate[2], $arrDate[0]);
 		$strDateAndTime = date("l, M j, Y", $intUnixTime);
-		//echo "----------->>>".$intUnixTime;
-		
 		return $strDateAndTime;
 	}
 

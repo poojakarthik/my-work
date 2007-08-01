@@ -104,6 +104,18 @@ class HtmlTemplateservicedetails extends HtmlTemplate
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->FNN->RenderOutput();	
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
+		
+		// Switch statements for showing the extra information for the serviceType
+		switch (DBO()->Service->ServiceType->Value)
+		{
+			case 100: //adsl
+				break;
+			case 101: //mobile
+				break;
+			case 103: //inbound
+				break;
+		}		
+		
 		DBO()->Service->Indial100->RenderOutput();
 		if (DBO()->Service->Indial100->Value)
 		{
