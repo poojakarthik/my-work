@@ -123,7 +123,7 @@ class AppTemplateInvoice extends ApplicationTemplate
 			$strFromAddress = GetConstantDescription(DBO()->Account->CustomerGroup->Value, 'CustomerGroupEmail');
 			$strContent = str_replace("<custgrp>", $strCustomerGroup, INVOICE_EMAIL_CONTENT);
 			$strSubject = str_replace("<billperiod>", $strBillingPeriod, INVOICE_EMAIL_SUBJECT);
-			$arrHeaders = Array	('From' => $strFromAddress, 'Subject' => $strSubject);
+			$arrHeaders = Array('From' => $strFromAddress, 'Subject' => $strSubject);
 			
 			// Send them
 			foreach ($arrEmails as $strEmailAddress)

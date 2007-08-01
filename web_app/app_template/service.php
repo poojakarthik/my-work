@@ -101,6 +101,36 @@ class AppTemplateService extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		// Find out how many records we are dealing with in the CDR table
+		$selCDRCount = new StatementSelect("CDR", "COUNT(Id) AS NumOfCDRs", "Service = <Service> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")");
+		$selCDRCount->Execute(Array('Service' => DBO()->Service->Id->Value));
+		$arrCDRCount = $selCDRCount->Fetch();
+	
+		$intNumOfCDRs = $arrCDRCount['NumOfCDRs'];
+		$intMaxPossiblePage = (int)ceil($intNumOfCDRs / MAX_RECORDS_PER_PAGE);
+		
+		// Work out what page of the Call Information table has been requested
+		if (DBO()->Page->PageToLoad->Value)
+		{
+			// A request has been made to load a particular page.  
+			$intRequestedPage = DBO()->Page->PageToLoad->Value;
+			
+			// Check if it is within range
+			if ($intRequestedPage < 1 || $intRequestedPage > $intMaxPossiblePage)
+			{
+				// The page is not within the allowable range so display the first page
+				$intRequestedPage = 1;
+			}
+		}
+		else
+		{
+			// A page to load has not been requested so display the first page
+			$intRequestedPage = 1;
+		}
+		
+		// calculate the Start Record value for the limit clause of the sql query to pull the CDRs from the database
+		$intStartRecord = ($intRequestedPage - 1) * MAX_RECORDS_PER_PAGE;
+		
 		// Retrieve all unbilled adjustments for the service
 		$strWhere  = "(Account = ". DBO()->Service->Account->Value .")";
 		$strWhere .= " AND (Service = ". DBO()->Service->Id->Value .")";
@@ -109,18 +139,23 @@ class AppTemplateService extends ApplicationTemplate
 		DBL()->Charge->OrderBy("CreatedOn DESC, Id DESC");
 		DBL()->Charge->Load();
 		
-		// Retrieve the first 20 unbilled CDRs for the service, starting with the oldest
+		// Retrieve the desired unbilled CDRs for the service
 		$strWhere  = "(Service = ". DBO()->Service->Id->Value .")";
-		$strWhere .= " AND (Status = ". CDR_RATED .")";
-		$strWhere .= " AND (Status = ". CDR_TEMP_INVOICE .")";		
+		$strWhere .= " AND ((Status = ". CDR_RATED .")";
+		$strWhere .= " OR (Status = ". CDR_TEMP_INVOICE ."))";
 		DBL()->CDR->Where->SetString($strWhere);
 		DBL()->CDR->OrderBy("StartDatetime DESC, Id DESC");
-		DBL()->CDR->SetLimit(20, 0);
+		DBL()->CDR->SetLimit(MAX_RECORDS_PER_PAGE, $intStartRecord);
 		DBL()->CDR->Load();
+		
+		// Define details required of the pagination controls
+		DBO()->Page->CurrentPage = $intRequestedPage;
+		DBO()->Page->FirstPage = 1;  //probably not required
+		DBO()->Page->LastPage = $intMaxPossiblePage;
 
 		// Breadcrumb menu
-		BreadCrumbMenu()->LoadAccountInConsole(DBO()->Service->Account->Value);
-		BreadCrumbMenu()->ViewUnbilledChargesForAccount(DBO()->Service->Account->Value);
+		BreadCrumb()->LoadAccountInConsole(DBO()->Service->Account->Value);
+		BreadCrumb()->ViewUnbilledChargesForAccount(DBO()->Service->Account->Value);
 		
 
 

@@ -162,7 +162,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		*/
 
 		// Breadcrumb menu
-		BreadCrumbMenu()->LoadAccountInConsole(DBO()->Account->Id->Value);
+		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
 
 
 		// All required data has been retrieved from the database so now load the page template

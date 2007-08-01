@@ -86,7 +86,7 @@ class MenuItems
 	 */
 	function LoadAccountInConsole($intAccountId)
 	{
-		$this->strLabel	= "acc: $intAccountId";
+		$this->strLabel	= "console";
 		
 		return "vixen.php/Console/Console/?Account.Id=$intAccountId";
 	}
@@ -103,12 +103,13 @@ class MenuItems
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intServiceId		service id to load
+	 * @param	int		$intPage			[optional] page number of the paginated CDR table to load
 	 *
 	 * @return	string						action to be executed when the ViewUnbilledChargesForService menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewUnbilledChargesForService($intServiceId)
+	function ViewUnbilledChargesForService($intServiceId, $intPage=1)
 	{
 		$this->strLabel	= "service: $intServiceId";
 		

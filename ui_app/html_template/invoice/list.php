@@ -110,25 +110,33 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 		
 		foreach (DBL()->Invoice as $dboInvoice)
 		{
-			// build the "View pdf" link
+			// build the links 
 			$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
 			$intYear = (int)date("Y", $intDate);
 			$intMonth = (int)date("m", $intDate);
-			$strPath = "/home/vixen_invoices/$intYear/$intMonth/{$dboInvoice->Account->Value}_*";
-			$arrFiles = glob($strPath);
-			//if ($arrFiles[0])
-			//{
-				$strPdfHref = Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intMonth, $intYear);
-				$strPdfLabel = "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf.png' title='View PDF Invoice' /></a></span>";
-			//}
+			
+			// check if a pdf exists for the invoice
+			if (InvoicePdfExists($dboInvoice->Account->Value, $intMonth, $intYear))
+			{
+				// The pdf exists
+				// Build "view invoice pdf" link
+				$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intMonth, $intYear);
+				$strPdfLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf.png' title='View PDF Invoice' /></a></span>";
+				
+				// build "Email invoice pdf" link
+				$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
+				$strEmailLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a></span>";
+			}
+			else
+			{
+				// don't allow the user to view the pdf for this invoice (or email it) because it doesn't exist
+				$strPdfLabel	= "&nbsp;";
+				$strEmailLabel	= "&nbsp;";
+			}
 			
 			// build the "View Invoice Details" link
 			$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
 			$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a></span>";
-			
-			//build Email Invoice link
-			$strEmailHref = Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
-			$strEmailLabel = "<span class='DefaultOutputSpan Default'><a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a></span>";
 			
 			// calculate Invoice Amount
 			$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;

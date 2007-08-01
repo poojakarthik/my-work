@@ -38,7 +38,12 @@ $strLayout = '1Column';
 $this->Page->SetLayout($strLayout);
 
 // Add each html object to the appropriate column
-$this->Page->AddObject('ServiceUnbilledChargeList', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ChargeListDiv");
+//Only add the list of unbilled Charges if on the first page
+if (DBO()->Page->CurrentPage->Value == 1)
+{
+	$this->Page->AddObject('ServiceUnbilledChargeList', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ChargeListDiv");
+}
+
 $this->Page->AddObject('ServiceCDRList', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "CDRListDiv");
 
 
