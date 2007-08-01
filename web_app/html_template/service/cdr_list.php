@@ -79,6 +79,8 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		// This is used to store the various record types that a CDR can be
 		$arrRecordTypes = Array();
 		
+		
+		
 		// Retrieve all the record type definitions and store it in an associative array
 		// This information could have been linked to DBL()->CDR through joined tables but is probably much faster this way
 		DBL()->RecordType->Load();
@@ -86,9 +88,10 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		{
 			$arrRecordTypes[$dboRecordType->Id->Value]['DisplayType']	= $dboRecordType->DisplayType->Value;
 			$arrRecordTypes[$dboRecordType->Id->Value]['Output']		= $dboRecordType->DisplayType->AsCallback("GetConstantDescription", Array("DisplayType"));
+			
 		}
 		
-		Table()->CDRs->SetHeader("Date & Time", "Called Party", "Duration", "&nbsp;", "Charge (inc GST)");
+		Table()->CDRs->SetHeader("Time", "Called Party", "Duration", "&nbsp;", "Charge (inc GST)");
 		Table()->CDRs->SetWidth("30%", "30%", "20%", "5%", "15%");
 		Table()->CDRs->SetAlignment("left", "left", "left", "left", "right");
 		
@@ -131,16 +134,54 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 									$dboCDR->Charge->AsCallback("AddGST"));
 		}
 		
+		// Render the Call Information table
 		Table()->CDRs->Render();
 		
 		
 		// Now display the pagination controls
-		$strHtmlPageLeft = 
+		// Left side controls
+		if (DBO()->Page->CurrentPage->Value > 1)
+		{
+			// Not currently on the first page
+			$strFirstPageHref 		= Href()->ViewUnbilledChargesForService(DBO()->Service->Id->Value, DBO()->Page->FirstPage->Value);
+			$strFirstPageLabel 		= "<span class='DefaultOutputSpan Default'><a href='$strFirstPageHref'>&lt;&lt;&nbsp;First</a></span>";
+			$strPreviousPageHref 	= Href()->ViewUnbilledChargesForService(DBO()->Service->Id->Value, (DBO()->Page->CurrentPage->Value - 1));
+			$strPreviousPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPreviousPageHref'>&lt;&nbsp;Previous</a></span>";
+		}
+		else
+		{
+			// currently on the first page
+			$strFirstPageLabel 		= "&nbsp;";
+			$strPreviousPageLabel	= "&nbsp;";
+		}
+		
+		// Right Side Controls
+		if (DBO()->Page->CurrentPage->Value != DBO()->Page->LastPage->Value)
+		{
+			// Not currently on the last page
+			$strLastPageHref 	= Href()->ViewUnbilledChargesForService(DBO()->Service->Id->Value, DBO()->Page->LastPage->Value);
+			$strLastPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strLastPageHref'>Last&nbsp;&gt;&gt;</a></span>";
+			$strNextPageHref 	= Href()->ViewUnbilledChargesForService(DBO()->Service->Id->Value, (DBO()->Page->CurrentPage->Value + 1));
+			$strNextPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strNextPageHref'>Next&nbsp;&gt;</a></span>";
+		}
+		else
+		{
+			// currently on the last page
+			$strLastPageLabel 	= "&nbsp;";
+			$strNextPageLabel	= "&nbsp;";
+		}
+		
+		$strRecordsDetails  = "<span class='DefaultOutputSpan Default'>Page ". DBO()->Page->CurrentPage->Value ." of ". DBO()->Page->LastPage->Value;
+		$strRecordsDetails .= "<br>Results per page: ". MAX_RECORDS_PER_PAGE ."</span>";
 		
 		echo "<table border=0 cellspacing=0 cellpadding=0 width=100%>\n";
-		echo "   <tr>";
-		
-		echo "   </tr>";
+		echo "   <tr>\n";
+		echo "      <td width='10%' align='left'>$strFirstPageLabel</td>\n";
+		echo "      <td width='15%' align='left'>$strPreviousPageLabel</td>\n";
+		echo "      <td width='50%' align='center'>$strRecordsDetails</td>\n";
+		echo "      <td width='15%' align='right'>$strNextPageLabel</td>\n";
+		echo "      <td width='10%' align='right'>$strLastPageLabel</td>\n";
+		echo "   </tr>\n";
 		echo "</table>\n";
 		
 		echo "<div class='Seperator'></div>\n";

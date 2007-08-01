@@ -113,7 +113,7 @@ class MenuItems
 	{
 		$this->strLabel	= "service: $intServiceId";
 		
-		return "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId";
+		return "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage";
 	}
 	
 	//------------------------------------------------------------------------//
