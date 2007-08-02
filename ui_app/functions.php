@@ -634,8 +634,15 @@ function ConvertUserDateToMySqlDate($strUserDate)
  */
 function ConvertMySQLDateToUnixTimeStamp($strUserDate)
 {
-	$arrDate = explode("-", $strUserDate);
-	return(mktime(0,0,0,$arrDate[1],$arrDate[2],$arrDate[0]));
+	if ($strUserDate == NULL)
+	{
+		return $strUserDate;
+	}
+	else
+	{
+		$arrDate = explode("-", $strUserDate);
+		return(mktime(0,0,0,$arrDate[1],$arrDate[2],$arrDate[0]));
+	}
 }
 
 //------------------------------------------------------------------------//

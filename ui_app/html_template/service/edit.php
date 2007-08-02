@@ -85,7 +85,45 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderInput();
 		DBO()->Service->FNNConfirm->RenderInput();
-		
+
+
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_ADSL)
+		{
+			
+			DBL()->CostCentre->Account = DBO()->Service->Account->Value;
+			DBL()->CostCentre->Load();
+			
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre:</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select name='Service.CostCentre' style='width:150px'>\n";
+			
+			if (DBO()->Service->CostCentre->Value == NULL)
+			{
+				echo "	<option value='0' selected='selected'>&nbsp;</option>";
+			}
+			else
+			{
+				echo "	<option value='0'>&nbsp;</option>";				
+			}
+			
+			foreach (DBL()->CostCentre as $dboCostCentre)
+			{
+				if (DBO()->Service->CostCentre->Value == $dboCostCentre->Id->Value)
+				{
+					echo "<option value='".$dboCostCentre->Id->Value."' selected='selected'>".$dboCostCentre->Name->Value."</option>";
+				}
+				else
+				{
+					echo "<option value='".$dboCostCentre->Id->Value."'>".$dboCostCentre->Name->Value."</option>";
+				}
+			}
+			
+			echo "      </select>\n";
+			echo "   </div>\n";
+			echo "</div>\n";
+		}
+
 		$intClosedOn = ConvertMySQLDateToUnixTimeStamp(DBO()->Service->ClosedOn->Value);
 		$intCurrentDate = ConvertMySQLDateToUnixTimeStamp(GetCurrentDateForMySQL());
 		
@@ -101,14 +139,14 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			if ($intTodaysDate > $intCreatedOn)
 			{
 				// The service is currently active
-				echo "This service opened on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
+				echo "&nbsp;&nbsp;This service opened on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
 				DBO()->Service->ArchiveService->RenderInput();
 				// We want the checkbox action to be "archive this service"
 			}
 			else
 			{
 				// This service hasn't yet been activated
-				echo "This service will be actived on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
+				echo "&nbsp;&nbsp;This service will be activated on: ".DBO()->Service->CreatedOn->FormattedValue()."<br>";
 				DBO()->Service->ArchiveService->RenderInput();
 				// We want the checkbox action to be "archive this service"
 			}
@@ -119,44 +157,90 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			if ($intClosedOn <= $intTodaysDate)
 			{
 				// The service has been closed
-				echo "This service was closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+				echo "&nbsp;&nbsp;This service was closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
 				DBO()->Service->ActivateService->RenderInput();
 				// We want the checkbox action to be "activate this service"
 			}
 			else
 			{
 				// The service is scheduled to be closed in the future
-				echo "This service is scheduled to be closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
+				echo "&nbsp;&nbsp;This service is scheduled to be closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
 				DBO()->Service->CancelScheduledClosure->RenderInput();
 				// We want the checkbox action to be "cancel scheduled closure"
 			}
 		}
 	
-		// Render the status message, if there is one
-		DBO()->Status->Message->RenderOutput();
-
-		/*DBO()->Service->Indial100->RenderOutput();
-		if (DBO()->Service->Indial100->Value)
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
 		{
-			// only render the Extensive Level Billing boolean, if the service is an Indial100
-			DBO()->Service->ELB->RenderOutput();
+			echo "<div class='Seperator'></div>\n";
+			echo "<h2 class='service'>Inbound Details</h2>\n";
+			
+			DBL()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
+			DBL()->ServiceInboundDetail->Load();
+			
+			foreach (DBL()->ServiceInboundDetail as $dboServiceInboundDetail)
+			{
+				$dboServiceInboundDetail->AnswerPoint->RenderInput();
+				$dboServiceInboundDetail->Configuration->RenderInput();
+			}
 		}
-		DBO()->Service->CreatedOn->RenderOutput();
-		DBO()->Service->ClosedOn->RenderOutput();
-		DBO()->Service->TotalUnbilledCharges->RenderOutput();
-		//Only display the current rate plan if there is one
-		if (DBO()->RatePlan->Id->Value !== FALSE)
-		{
-			DBO()->RatePlan->Name->RenderOutput(1);
-		}
-		else
-		{
-			DBO()->RatePlan->Name->RenderArbitrary("No Plan", RENDER_OUTPUT, 1);
-		}*/
 		
+		
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
+		{
+			DBL()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
+			DBL()->ServiceMobileDetail->Load();
+		
+			// note it is assumed that we will only retrieve one record
+			foreach (DBL()->ServiceMobileDetail as $dboServiceMobileDetail)
+			{
+				echo "<div class='Seperator'></div>\n";
+				echo "<h2 class='service'>Mobile Details</h2>\n";
+				$dboServiceMobileDetail->SimPUK->RenderInput();
+				$dboServiceMobileDetail->SimESN->RenderInput();
+								
+				$arrState = array();
+				$arrState[SERVICE_STATE_TYPE_ACT] = "Australian Capital Territory";
+				$arrState['NSW'] = "New South Wales";
+				$arrState['VIC'] = "Victoria";
+				$arrState['SA'] = "South Australia";
+				$arrState['WA'] = "Western Australia";
+				$arrState['TAS'] = "Tasmania";
+				$arrState['NT'] = "Northern Territory";
+				$arrState['QLD'] = "Queensland";
+				
+				echo "<div class='DefaultElement'>\n";
+				echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
+				echo "   <div class='DefaultOutput'>\n";
+				echo "      <select name='ServiceMobileDetail.SimState' style='width:180px'>\n";
+			
+				foreach ($arrState as $strKey=>$strStateSelection)
+				{
+					if ($dboServiceMobileDetail->SimState->Value == $strKey)
+					{
+						// this is the currently selected combobox option
+						echo "		<option value='". $strKey . "' selected='selected'>$strStateSelection</option>\n";
+					}
+					else
+					{
+						// this is currently not the selected combobox option
+						echo "		<option value='". $strKey . "'>$strStateSelection</option>\n";
+					}
+				}
+				
+				echo "      </select>\n";
+				echo "   </div>\n";
+				echo "</div>\n";
+				
+				$dboServiceMobileDetail->DOB->RenderInput();				
+				$dboServiceMobileDetail->Comments->RenderInput();		
+			}
+		}
+		echo "<div class='Seperator'></div>\n";			
 		echo "<div class='Right'>\n";
 		$this->AjaxSubmit("Apply Changes");
 		echo "</div>\n";
+		
 		$this->FormEnd();
 		echo "<div class='Seperator'></div>\n";		
 	}
