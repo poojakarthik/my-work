@@ -15,6 +15,21 @@
  */
 function VixenAjaxClass()
 {
+
+	// execute an app template through an ajax call, which doesn't involve form submission
+	this.CallAppTemplate(strClass, strMethod, objObjects, strTargetType)
+	{
+		var objSend = {};
+		objSend.Class = strClass;
+		objSend.Method = strMethod;
+		objSend.Objects = objObjects;
+		objSend.TargetType = strTargetType;
+		
+		// send object
+		this.Send(objSend);
+	}
+	
+
 	// Send form
 	this.SendForm = function(strFormId, strButton, strClass, strMethod, strTargetType, strId, strSize, strContainerDivId)
 	{

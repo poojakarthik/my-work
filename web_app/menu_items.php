@@ -73,9 +73,9 @@ class MenuItems
 	/**
 	 * LoadAccountInConsole()
 	 *
-	 * Compiles the javascript to be executed when the LoadAccountInConsole menu item is clicked
+	 * Compiles the url to be executed when the LoadAccountInConsole menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the LoadAccountInConsole menu item is clicked
+	 * Compiles the url to be executed when the LoadAccountInConsole menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intAccountId		account id to load
@@ -97,23 +97,24 @@ class MenuItems
 	/**
 	 * ViewUnbilledChargesForService()
 	 *
-	 * Compiles the javascript to be executed when the ViewUnbilledChargesForService menu item is clicked
+	 * Compiles the url to be executed when the ViewUnbilledChargesForService menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the ViewUnbilledChargesForService menu item is clicked
+	 * Compiles the url to be executed when the ViewUnbilledChargesForService menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intServiceId		service id to load
 	 * @param	int		$intPage			[optional] page number of the paginated CDR table to load
+	 * @param 	int		$intFilterId		[optional] id of the record type to use as a filter for the CDR table
 	 *
 	 * @return	string						action to be executed when the ViewUnbilledChargesForService menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewUnbilledChargesForService($intServiceId, $intPage=1)
+	function ViewUnbilledChargesForService($intServiceId, $intPage=1, $intFilterId=0)
 	{
 		$this->strLabel	= "service: $intServiceId";
 		
-		return "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage";
+		return "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage&Filter.Id=$intFilterId";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -122,9 +123,9 @@ class MenuItems
 	/**
 	 * ViewUnbilledChargesForAccount()
 	 *
-	 * Compiles the javascript to be executed when the ViewUnbilledChargesForAccount menu item is clicked
+	 * Compiles the url to be executed when the ViewUnbilledChargesForAccount menu item is clicked
 	 *
-	 * Compiles the javascript to be executed when the ViewUnbilledChargesForAccount menu item is clicked
+	 * Compiles the url to be executed when the ViewUnbilledChargesForAccount menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intAccountId		Account id to load
@@ -140,6 +141,40 @@ class MenuItems
 		return "vixen.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
 	}
 	
+	//------------------------------------------------------------------------//
+	// DownloadInvoicePDF
+	//------------------------------------------------------------------------//
+	/**
+	 * DownloadInvoicePDF()
+	 *
+	 * Compiles the javascript to be executed when the DownloadInvoicePDF menu item is triggered
+	 *
+	 * Compiles the javascript to be executed when the DownloadInvoicePDF menu item is triggered
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		Account id that the invoice belongs to
+	 * @param	int		$intYear			year the invoice relates to
+	 * @param	int 	$intMonth			month the invoice relates to
+	 *
+	 * @return	string						action to be executed when the DownloadInvoicePDF menu item is clicked
+	 *
+	 * @method
+	 */
+	function DownloadInvoicePDF($intAccountId, $intYear, $intMonth)
+	{
+		$this->strLabel	= "download invoice pdf";
+		
+		// Setup data to send
+		$arrData['Account']['Id']		= $intAccountId;
+		$arrData['Invoice']['Year']		= $intYear;
+		$arrData['Invoice']['Month']	= $intMonth;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Ajax.CallAppTemplate(\"Account\", \"DownloadInvoicePDF\", $strJsonCode)";
+		//return "vixen.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth";
+	}
 	
 	//------------------------------------------------------------------------//
 	// BreadCrumb

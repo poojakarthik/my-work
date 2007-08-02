@@ -101,14 +101,31 @@ class AppTemplateService extends ApplicationTemplate
 			return FALSE;
 		}
 		
+		// if no filter is specified then retrieve all CDRs
+		if (!DBO()->Filter->Id->Value)
+		{
+			DBO()->Filter->Id = 0;
+			$strFilter = "";
+		}
+		else
+		{
+			// set up the phrase in the Where clause to facilitate filtering
+			$strFilter = " AND RecordType = ". DBO()->Filter->Id->Value;
+		}
+		
 		// Find out how many records we are dealing with in the CDR table
-		$selCDRCount = new StatementSelect("CDR", "COUNT(Id) AS NumOfCDRs", "Service = <Service> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")");
+		$selCDRCount = new StatementSelect("CDR", "COUNT(Id) AS NumOfCDRs", "Service = <Service> AND (Status = ".CDR_RATED ." OR Status = ". CDR_TEMP_INVOICE .")$strFilter");
 		$selCDRCount->Execute(Array('Service' => DBO()->Service->Id->Value));
 		$arrCDRCount = $selCDRCount->Fetch();
 	
 		$intNumOfCDRs = $arrCDRCount['NumOfCDRs'];
 		$intMaxPossiblePage = (int)ceil($intNumOfCDRs / MAX_RECORDS_PER_PAGE);
-		
+		if ($intNumOfCDRs == 0)
+		{
+			// No records were retrieved
+			$intMaxPossiblePage = 1;
+		}
+
 		// Work out what page of the Call Information table has been requested
 		if (DBO()->Page->PageToLoad->Value)
 		{
@@ -142,7 +159,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Retrieve the desired unbilled CDRs for the service
 		$strWhere  = "(Service = ". DBO()->Service->Id->Value .")";
 		$strWhere .= " AND ((Status = ". CDR_RATED .")";
-		$strWhere .= " OR (Status = ". CDR_TEMP_INVOICE ."))";
+		$strWhere .= " OR (Status = ". CDR_TEMP_INVOICE ."))$strFilter";
 		DBL()->CDR->Where->SetString($strWhere);
 		DBL()->CDR->OrderBy("StartDatetime DESC, Id DESC");
 		DBL()->CDR->SetLimit(MAX_RECORDS_PER_PAGE, $intStartRecord);

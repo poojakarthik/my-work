@@ -222,7 +222,7 @@ class VixenTable
 	 *
 	 * @property
 	 */
-	private $_intCurrentRow			= 0;
+	private $_intCurrentRow;
 	
 	//------------------------------------------------------------------------//
 	// __construct
@@ -522,6 +522,32 @@ class VixenTable
 		$this->_arrRows[$this->_intCurrentRow]['Index'][$strName][] = $mixValue;
 
 		return $this->_intCurrentRow;
+	}
+	
+	//------------------------------------------------------------------------//
+	// RowCount
+	//------------------------------------------------------------------------//
+	/**
+	 * RowCount()
+	 *
+	 * Returns the number of rows currently in the table
+	 *
+	 * Returns the number of rows currently in the table
+	 *
+	 * 
+	 * @return	int				number of rows in the table
+	 * @method
+	 */
+	function RowCount()
+	{
+		if (!isset($this->_intCurrentRow))
+		{
+			return 0;
+		}
+		else
+		{
+			return ($this->_intCurrentRow + 1);
+		}
 	}
 	
 	//------------------------------------------------------------------------//

@@ -298,13 +298,15 @@ class MenuItems
 	 * Compiles the Href to be executed when the View Invoice Pdf menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
-	 * @param	int		$intInvoice		invoice number of the invoice to view
+	 * @param	int		$intAccount		Account Id of the invoice to view
+	 * @param	int		$intYear		year the invoice relates to
+	 * @param	int		$intMonth		month the invoice relates to
 	 *
 	 * @return	string					Href to be executed when the View Invoice Pdf menu item is clicked
 	 *
 	 * @method
 	 */
-	function ViewInvoicePdf($intAccount, $intMonth, $intYear)
+	function ViewInvoicePDF($intAccount, $intYear, $intMonth)
 	{
 		$this->strLabel = "pdf acct: $intAccount, $intMonth/$intYear";
 		return "invoice_pdf.php?Account=$intAccount&Year=$intYear&Month=$intMonth";

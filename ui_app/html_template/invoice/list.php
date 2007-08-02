@@ -116,11 +116,11 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			$intMonth = (int)date("m", $intDate);
 			
 			// check if a pdf exists for the invoice
-			if (InvoicePdfExists($dboInvoice->Account->Value, $intMonth, $intYear))
+			if (InvoicePdfExists($dboInvoice->Account->Value, $intYear, $intMonth))
 			{
 				// The pdf exists
 				// Build "view invoice pdf" link
-				$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intMonth, $intYear);
+				$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intYear, $intMonth);
 				$strPdfLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf.png' title='View PDF Invoice' /></a></span>";
 				
 				// build "Email invoice pdf" link

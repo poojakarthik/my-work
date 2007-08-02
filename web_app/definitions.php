@@ -108,6 +108,6 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "
 													$GLOBALS['Permissions']	= $arrPermissions;
 
 // number of records to show in a single page of a paginated table
-define("MAX_RECORDS_PER_PAGE",	3);
+define("MAX_RECORDS_PER_PAGE",	2);
 
 ?>

@@ -2557,26 +2557,26 @@ function GetCurrentPlan($intService)
 }
 
 //------------------------------------------------------------------------//
-// InvoicePdfExists
+// InvoicePDFExists
 //------------------------------------------------------------------------//
 /**
- * InvoicePdfExists()
+ * InvoicePDFExists()
  *
  * Checks if the invoice pdf exists for the given month, year and account id
  *
  * Checks if the invoice pdf exists for the given month, year and account id
  * 
  * @param		integer	$intAccountId		the invoice's associated Account
- * @param		integer	$intMonth			numeric repressentation of the month relating to the invoice's pdf
  * @param		integer $intYear			numeric repressentation of the year relating to the invoice's pdf (4 digit year)
+ * @param		integer	$intMonth			numeric repressentation of the month relating to the invoice's pdf
  *
  * @return		boolean						TRUE if the pdf was found, else 
  *
  * @method
  */ 
-function InvoicePdfExists($intAccountId, $intMonth, $intYear)
+function InvoicePDFExists($intAccountId, $intYear, $intMonth)
 {
-	$strGlob = "/home/vixen_invoices/". $intYear . "/" . $intMonth . "/" . $intAccountId . "_*.pdf";
+	$strGlob = "/home/vixen_invoices/$intYear/$intMonth/{$intAccountId}_*.pdf";
 	$arrPDFs = glob($strGlob);
 	
 	if (count($arrPDFs))

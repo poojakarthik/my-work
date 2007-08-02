@@ -75,11 +75,12 @@ class HtmlTemplateServiceUnbilledChargeList extends HtmlTemplate
 	{
 		echo "<div class='WideContent'>\n";
 		echo "<h2 class='Adjustment'>Unbilled Adjustments</h2>\n";
-				
+		
+		// There are records to show in the table
 		Table()->Adjustments->SetHeader("Date", "Code", "Description", "Nature", "Amount (inc GST)");
 		Table()->Adjustments->SetWidth("10%", "15%", "45%", "10%", "20%");
 		Table()->Adjustments->SetAlignment("left", "left", "left", "left", "right");
-		
+
 		// add the rows
 		foreach (DBL()->Charge as $dboCharge)
 		{
@@ -88,6 +89,12 @@ class HtmlTemplateServiceUnbilledChargeList extends HtmlTemplate
 											$dboCharge->Description->AsValue(),
 											$dboCharge->Nature->AsValue(),
 											$dboCharge->Amount->AsCallback("AddGST"));
+		}
+		
+		if (Table()->Adjustments->RowCount() == 0)
+		{
+			// There are no adjustments to display in the table
+			Table()->Adjustments->AddRow("<span class='DefaultOutputSpan'>No records to display</span>", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
 		}
 				
 		Table()->Adjustments->Render();

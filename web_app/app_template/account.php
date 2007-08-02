@@ -164,12 +164,171 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
 
-
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_view_unbilled_charges');
 		
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// ListInvoicesAndPayments
+	//------------------------------------------------------------------------//
+	/**
+	 * ListInvoicesAndPayments()
+	 *
+	 * Performs the logic for the list_invoices_and_payments.php webpage
+	 * 
+	 * Performs the logic for the list_invoices_and_payments.php webpage
+	 *
+	 * @return		void
+	 * @method		ListInvoicesAndPayments
+	 *
+	 */
+	function ListInvoicesAndPayments()
+	{
+		// Check user authorization
+		AuthenticatedUser()->CheckClientAuth();
+
+		// Context menu
+		//ContextMenu()->Admin_Console();
+		//ContextMenu()->Logout();
+		
+				
+		// Load the account
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		// Check that the user can view this account
+		$bolUserCanViewAccount = FALSE;
+		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		{
+			// The user can only view the account, if it belongs to the account group that they belong to
+			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
+			{
+				$bolUserCanViewAccount = TRUE;
+			}
+		}
+		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		{
+			// The user can only view the account, if it is their primary account
+			$bolUserCanViewAccount = TRUE;
+		}
+		
+		if (!$bolUserCanViewAccount)
+		{
+			// The user does not have permission to view the requested account
+			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value ." as it is not part of their Account Group";
+			$this->LoadPage('Error');
+			return FALSE;
+		}
+		
+		// Retrieve all Invoices and all Payments for the account
+		DBL()->Invoice->Account = DBO()->Account->Id->Value;
+		DBL()->Invoice->OrderBy("CreatedOn DESC");
+		DBL()->Invoice->Load();
+		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		DBL()->Payment->OrderBy("PaidOn DESC");
+		DBL()->Payment->Load();
+		
+		// Breadcrumb menu
+		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
+		BreadCrumb()->ViewUnbilledChargesForAccount(DBO()->Account->Id->Value);
+
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('list_invoices_and_payments');
+		
+		return TRUE;
+	
+	}
+	
+	//------------------------------------------------------------------------//
+	// DownloadInvoicePDF
+	//------------------------------------------------------------------------//
+	/**
+	 * DownloadInvoicePDF()
+	 *
+	 * Performs the logic for when a client wants to download a pdf
+	 * 
+	 * Performs the logic for when a client wants to download a pdf
+	 *
+	 * @return		void
+	 * @method		DownloadInvoicePDF
+	 *
+	 */
+	function DownloadInvoicePDF()
+	{
+		// Check user authorization
+		AuthenticatedUser()->CheckClientAuth();
+
+		// Context menu
+		//ContextMenu()->Admin_Console();
+		//ContextMenu()->Logout();
+		
+				
+		// Load the account
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		// Check that the user can view this account
+		$bolUserCanViewAccount = FALSE;
+		if (AuthenticatedUser()->_arrUser['CustomerContact'])
+		{
+			// The user can only view the account, if it belongs to the account group that they belong to
+			if (AuthenticatedUser()->_arrUser['AccountGroup'] == DBO()->Account->AccountGroup->Value)
+			{
+				$bolUserCanViewAccount = TRUE;
+			}
+		}
+		elseif (AuthenticatedUser()->_arrUser['Account'] == DBO()->Account->Id->Value)
+		{
+			// The user can only view the account, if it is their primary account
+			$bolUserCanViewAccount = TRUE;
+		}
+		
+		if (!$bolUserCanViewAccount)
+		{
+			// The user does not have permission to view any information about the requested account
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: You do not have permission to view the details of account# ". DBO()->Account->Id->Value, "Location" => "vixen.php/Console/Console/"));
+			return TRUE;
+		}
+		
+		// check if a pdf exists for the invoice
+		if (InvoicePdfExists(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value))
+		{
+			// Try to pull the Invoice PDF
+			$strInvoice = GetPDF(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value);
+			header ("Content-Type: application/pdf");
+			echo $strInvoice;
+			exit;
+		}
+		else
+		{
+			// The invoice could not be found
+			$intUnixTime = mktime(0, 0, 0, DBO()->Invoice->Month->Value, 0, DBO()->Invoice->Year->Value);
+			$strDate = date("F, Y", $intUnixTime);
+
+			DBO()->Error->Message = "ERROR: Could not find the pdf relating to the $strDate invoice for Account# ". DBO()->Account->Id->Value;
+			$this->LoadPage('Error');
+			return FALSE;
+		}
+
+		// Breadcrumb menu
+		// I don't know if we are actually displaying a page here
+
+		// We shouldn't need to load a page
+		//$this->LoadPage('list_invoices_and_payments');
+		
+		return TRUE;
+	}
+	
 	
 	//----- DO NOT REMOVE -----//
 	

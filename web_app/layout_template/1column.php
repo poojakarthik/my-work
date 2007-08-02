@@ -50,7 +50,6 @@ $this->RenderHeader();
 	<div class="clear"></div>
 		<div id='PageBody'>
 			<?php 
-				//$this->RenderBreadCrumbMenu();
 				$this->RenderColumn(COLUMN_ONE);
 			?>
 		</div>
