@@ -72,6 +72,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Load the account
 		if (!DBO()->Account->Load())
 		{
+			// Could not load the account
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
 			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
@@ -96,15 +99,17 @@ class AppTemplateAccount extends ApplicationTemplate
 		if (!$bolUserCanViewAccount)
 		{
 			// The user does not have permission to view the requested account
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
 			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value ." as it is not part of their Account Group";
 			$this->LoadPage('Error');
 			return FALSE;
 		}
 		
-		// Calculate the unbilled total for the account
-		// The unbilled total = TotalUnbilledAdjustments + sum of unbilled charges for each service
+		// Calculate the unbilled total for the account (including GST)
+		// The unbilled total = TotalUnbilledAdjustments(Account adjustments and Service adjustments) + sum of unbilled CDRs for each service
 		
-		// Calculate the Account's total unbilled adjustments
+		// Calculate the Account's total unbilled adjustments (Account Adjustments and Service Adjustments)(this function already includes GST)
 		$fltTotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
 		
 		// Calculate the total unbilled CDRs for the account
@@ -112,8 +117,6 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Calculate the current unbilled total for the account
 		DBO()->Account->CurrentUnbilledTotal = $fltTotalUnbilledAdjustments + $fltTotalUnbilledCDRs;
-		
-		
 
 		// Retrieve all unbilled adjustments for the account
 		$strWhere  = "(Account = ". DBO()->Account->Id->Value .")";
@@ -163,6 +166,7 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Account Charges");
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_view_unbilled_charges');
@@ -236,7 +240,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
-		BreadCrumb()->ViewUnbilledChargesForAccount(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Invoices and Payments");
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('list_invoices_and_payments');

@@ -76,9 +76,13 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 		echo "<div class='WideContent'>\n";
 		echo "<h2 class='Services'>Services</h2>\n";
 		
+		
 		Table()->Services->SetHeader("FNN", "Service Type", "Current Plan", "Current Unbilled Charges (inc GST)", "&nbsp;");
 		Table()->Services->SetWidth("10%", "15%", "35%", "15%", "25%");
-		Table()->Services->SetAlignment("left", "left", "left", "right", "left");
+		Table()->Services->SetAlignment("left", "left", "left", "right", "center");
+		
+		// Declare variable to store the Total Charges
+		$fltTotalCharges = 0;
 		
 		// add the rows
 		foreach (DBL()->Service as $dboService)
@@ -98,7 +102,8 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 			}
 			
 			// Calculate the total unbilled charges for this service (inc GST)
-			$dboService->TotalUnbilled = AddGST(UnbilledServiceCDRTotal($dboService->Id->Value) + UnbilledServiceChargeTotal($dboService->Id->Value));
+			// Note that we are not including service adjustments in this calculation, just unbilled CDRs relating to the service
+			$dboService->TotalUnbilled = AddGST(UnbilledServiceCDRTotal($dboService->Id->Value));
 
 			// build the "View Unbilled Charges for Service" link
 			$strViewUnbilledCharges = Href()->ViewUnbilledChargesForService($dboService->Id->Value);
@@ -110,6 +115,27 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 										DBO()->RatePlan->Name->AsValue(),
 										$dboService->TotalUnbilled->AsValue(),
 										$strViewUnbilledChargesLabel);
+			
+			// add the total charges for this service to the total for all services of the account. (this already includes GST)
+			$fltTotalCharges += $dboService->TotalUnbilled->Value;
+		}
+		
+		if (Table()->Services->RowCount() == 0)
+		{
+			// There are no services to stick in this table
+			Table()->Services->AddRow("<span class='DefaultOutputSpan Default'>No services to list</span>");
+			Table()->Services->SetRowAlignmnet("center");
+			Table()->Services->SetRowColumnSpan(5);
+		}
+		else
+		{
+			// Append the total to the table
+			$strTotal			= "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>Total Charges:</span>\n";
+			$strTotalCharges	= "<span class='DefaultOutputSpan Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltTotalCharges, 2, TRUE) ."</span>\n";
+			
+			Table()->Services->AddRow($strTotal, $strTotalCharges, "&nbsp;");
+			Table()->Services->SetRowAlignment("left", "right", "center");
+			Table()->Services->SetRowColumnSpan(3, 1, 1);
 		}
 		
 		Table()->Services->Render();

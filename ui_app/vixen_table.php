@@ -52,11 +52,16 @@ class VixenTable
 	 * Stores row data and information relating to the row (for each row)
 	 *
 	 * Stores row data and information relating to the row (for each row)
-	 * $this->_arrRow[]['Detail'] 	= $strDetail (HTML -> detial div)
-	 *                 ['Columns'] 	= $arrColumns (indexed array of HTML output)
-	 *                 ['ToolTip']	= $strToolTip (HTML -> tooltip div)
-	 *                 ['OnClick']	= $strOnClick (if set, this will be executed when the row is clicked)
-	 *                 ['Index']	= [name][] = value
+	 * $this->_arrRow[]['Detail'] 			= $strDetail (HTML -> detial div)
+	 *                 ['Columns'] 			= $arrColumns (indexed array of HTML output)
+	 *                 ['ToolTip']			= $strToolTip (HTML -> tooltip div)
+	 *                 ['OnClick']			= $strOnClick (if set, this will be executed when the row is clicked)
+	 *                 ['Index']			= [name][] = value
+	 *                 ['Widths'] 			= $arrWidths (indexed array of widths for each column specific to this row, specified as px or %)
+	 *										  This can be used to override the column widths defined for the table [currently doesn't work]
+	 *                 ['Alignments'] 		= $arrAlignments (indexed array of alignments for each column specific to this row)
+	 *										  This can be used to override the column alignments defined for the table
+	 *                 ['ColSpans']			= $arrColSpans (indexed array of integers denoting how many columns, each of the current row's column's span)
 	 *
 	 * @type	array
 	 *
@@ -391,6 +396,119 @@ class VixenTable
 	}
 	
 	//------------------------------------------------------------------------//
+	// SetRowColumnSpan
+	//------------------------------------------------------------------------//
+	/**
+	 * SetRowColumnSpan()
+	 *
+	 * Sets the column spans for each column for the current row
+	 *
+	 * Sets the column spans for each column for the current row
+	 *
+	 * @param	string		$intColSpan, [$intColSpan]	Specify a colspan for each column as a separate parameter
+	 *													For example (3, 1, 2)
+	 * 
+	 * @return	mixed									Row number of the current row
+	 *													If nothing was passed to the method, or there is no current row then it returns NULL
+	 *
+	 * @method
+	 */
+	function SetRowColumnSpan()
+	{
+		if ((!func_num_args()) || (!isset($this->_intCurrentRow)))
+		{
+			// no parameters were passed or there is no current row
+			return NULL;
+		}
+		
+		// retrieve the width values
+		$arrColSpans = func_get_args();
+		
+		$this->_arrRows[$this->_intCurrentRow]['ColSpans'] = $arrColSpans;
+
+		return $this->_intCurrentRow;
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// SetRowWidth [CURRENTLY DOESN'T WORK]
+	//------------------------------------------------------------------------//
+	/**
+	 * SetRowWidth()
+	 *
+	 * Sets the Width of each column for the current row
+	 *
+	 * Sets the Width of each column for the current row
+	 * This will override the widths defined for the entire table
+	 * 
+	 *
+	 * @param	string		$strRowWidth, [$strRowWidth]	Specify a width for each column as a separate parameter
+	 *														For example ("20%", "30%", "50%") or ("40px","30px","10px")
+	 * 
+	 * @return	mixed										Row number of the current row
+	 *														If nothing was passed to the method, or there is no current row then it returns NULL
+	 *
+	 * @method
+	 */
+	function SetRowWidth()
+	{
+		// FIX IT!
+		// Defining column widths to be applied to a single row, doesn't currently work.
+		// For some annoying reason you can specify the alignment of columns at the <td></td> level, but if you
+		// specify column widths at this level, they get applied to all the other columns
+		// For now just use the SetRowColumnSpan method, although this means you can't add a row that has more columns than previous rows have had
+		
+		if ((!func_num_args()) || (!isset($this->_intCurrentRow)))
+		{
+			// no parameters were passed or there is no current row
+			return NULL;
+		}
+		
+		// retrieve the width values
+		$arrRowWidths = func_get_args();
+		
+		$this->_arrRows[$this->_intCurrentRow]['Widths'] = $arrRowWidths;
+
+		return $this->_intCurrentRow;
+	}
+
+	//------------------------------------------------------------------------//
+	// SetRowAlignment
+	//------------------------------------------------------------------------//
+	/**
+	 * SetRowAlignment()
+	 *
+	 * Sets the Alignment of each column for the current row
+	 *
+	 * Sets the Alignment of each column for the current row
+	 * This will override the alignments defined for the entire table
+	 *
+	 * @param	string		$strAlignment, [$strAlignment]	Specify an alignment for each column as a separate parameter
+	 *														For example ("left", "center", "right")
+	 * 
+	 * @return	mixed										Row number of the current row
+	 *														If nothing was passed to the method, or there is no current row then it returns NULL
+	 *
+	 * @method
+	 */
+	function SetRowAlignment()
+	{
+		if ((!func_num_args()) || (!isset($this->_intCurrentRow)))
+		{
+			// no parameters were passed or there is no current row
+			return NULL;
+		}
+		
+		// retrieve the alignment values
+		$arrRowAlignments = func_get_args();
+		
+		$this->_arrRows[$this->_intCurrentRow]['Alignments'] = $arrRowAlignments;
+
+		return $this->_intCurrentRow;
+	}
+
+
+	//------------------------------------------------------------------------//
 	// SetDetail
 	//------------------------------------------------------------------------//
 	/**
@@ -699,8 +817,44 @@ class VixenTable
 			// Build fields
 			foreach ($objRow['Columns'] as $objField)
 			{
-				echo "<td width='{$this->_arrWidths[$intColCount]}' align='{$this->_arrAlignments[$intColCount]}'>";
-				echo $objField;
+				// Work out which width to use
+				//TODO! After setting the widths once in the header, you shouldn't have to set them again, but we are anyway.
+				//This could cut down the size of the html file generated
+				if (isset($objRow['Widths']))
+				{
+					// Use the width specific to this row and column
+					$strWidth = "width='". $objRow['Widths'][$intColCount] ."'";
+				}
+				else
+				{
+					// Use the general width of this column
+					$strWidth = "width='". $this->_arrWidths[$intColCount] ."'";
+				}
+				
+				// Work out which alignment to use
+				if (isset($objRow['Alignments']))
+				{
+					// Use the alignment specific to this row and column
+					$strAlignment = "align='". $objRow['Alignments'][$intColCount] ."'";
+					
+				}
+				else
+				{
+					// Use the general alignment of this column
+					$strAlignment = "align='". $this->_arrAlignments[$intColCount] ."'";
+				}
+				
+				// Work out how many columns, this column spans
+				$strColSpan = "";
+				if (isset($objRow['ColSpans']))
+				{
+					// colspan values have been declared for this row
+					$strColSpan = "colspan='". $objRow['ColSpans'][$intColCount] ."'";
+					//$strWidth = "";
+				}
+				
+				echo "<td $strWidth $strAlignment $strColSpan>";
+				echo "$objField";
 				echo "</td>\n";
 				$intColCount++;				
 			}

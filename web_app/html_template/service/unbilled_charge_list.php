@@ -1,6 +1,6 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateServiceUnbilledChargeList
+// HtmlTemplateServiceUnbilledChargeList DEPRECIATED use HtmlTemplateUnbilledChargeList instead
 //----------------------------------------------------------------------------//
 /**
  * HtmlTemplateServiceUnbilledChargeList
@@ -75,28 +75,58 @@ class HtmlTemplateServiceUnbilledChargeList extends HtmlTemplate
 	{
 		echo "<div class='WideContent'>\n";
 		echo "<h2 class='Adjustment'>Unbilled Adjustments</h2>\n";
+				
+		Table()->Adjustments->SetHeader("Date", "Code", "Description", "Amount (inc GST)", "&nbsp;");
+		Table()->Adjustments->SetWidth("10%", "15%", "50%", "20%", "5%");
+		Table()->Adjustments->SetAlignment("left", "left", "left", "right", "left");
 		
-		// There are records to show in the table
-		Table()->Adjustments->SetHeader("Date", "Code", "Description", "Nature", "Amount (inc GST)");
-		Table()->Adjustments->SetWidth("10%", "15%", "45%", "10%", "20%");
-		Table()->Adjustments->SetAlignment("left", "left", "left", "left", "right");
-
+		// Declare variable to store the Total adjustments
+		$fltTotalAdjustments = 0;
+		
 		// add the rows
 		foreach (DBL()->Charge as $dboCharge)
 		{
 			Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
 											$dboCharge->ChargeType->AsValue(),
 											$dboCharge->Description->AsValue(),
-											$dboCharge->Nature->AsValue(),
-											$dboCharge->Amount->AsCallback("AddGST"));
+											$dboCharge->Amount->AsCallback("AddGST"),
+											$dboCharge->Nature->AsValue());
+
+			if ($dboCharge->Nature->Value == NATURE_DR)
+			{
+				// Add the charge to the total adjustments
+				$fltTotalAdjustments += $dboCharge->Amount->Value;
+			}
+			else
+			{
+				// Subtract the charge from the total adjustments
+				$fltTotalAdjustments -= $dboCharge->Amount->Value;
+			}
 		}
+		
+		// Add GST to the total adjustments
+		$fltTotalAdjustments = AddGST($fltTotalAdjustments);
 		
 		if (Table()->Adjustments->RowCount() == 0)
 		{
-			// There are no adjustments to display in the table
-			Table()->Adjustments->AddRow("<span class='DefaultOutputSpan'>No records to display</span>", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+			// There are no adjustments to stick in this table
+			Table()->Adjustments->AddRow("<span class='DefaultOutputSpan Default'>No adjustments to list</span>");
+			Table()->Adjustments->SetRowAlignmnet("center");
+			Table()->Adjustments->SetRowColumnSpan(5);
 		}
-				
+		else
+		{
+			// Append the total to the table
+			$strTotal				= "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>Total Adjustments:</span>\n";
+			$strTotalAdjustments	= "<span class='DefaultOutputSpan Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltTotalAdjustments, 2, TRUE) ."</span>\n";
+			
+			Table()->Adjustments->AddRow($strTotal, $strTotalAdjustments, "&nbsp;");
+			Table()->Adjustments->SetRowAlignment("left", "right", "&nbsp;");
+			Table()->Adjustments->SetRowColumnSpan(3, 1, 1);
+		}
+		
+		// You may want to Append a row to the end of this table which displays the total value of the adjustments
+		
 		Table()->Adjustments->Render();
 		
 		echo "<div class='Seperator'></div>\n";

@@ -2144,6 +2144,22 @@ class HrefFramework
 class BreadCrumbFramework
 {
 	//------------------------------------------------------------------------//
+	// _strCurrentPage
+	//------------------------------------------------------------------------//
+	/**
+	 * _strCurrentPage
+	 *
+	 * The current page (not a link)
+	 *
+	 * The current page (not a link)
+	 *
+	 * @type		string
+	 *
+	 * @property
+	 */
+	private $_strCurrentPage = NULL;
+
+	//------------------------------------------------------------------------//
 	// __construct
 	//------------------------------------------------------------------------//
 	/**
@@ -2191,6 +2207,50 @@ class BreadCrumbFramework
 			DBO()->BreadCrumb->$strName->Label 	= $arrBreadCrumb['Label'];
 		}
 		return $arrBreadCrumb;
+	}
+	
+	//------------------------------------------------------------------------//
+	// SetCurrentPage
+	//------------------------------------------------------------------------//
+	/**
+	 * SetCurrentPage()
+	 *
+	 * Set the name of the current page, which will be displayed as the last breadcrumb and not be a link
+	 *
+	 * Set the name of the current page, which will be displayed as the last breadcrumb and not be a link
+	 * 
+	 * @param	string		$strName		Name of the current page
+	 *
+	 * @return	void
+	 *
+	 * @method
+	 */
+	function SetCurrentPage($strName)
+	{
+		$this->_strCurrentPage = $strName;
+	}
+	
+	//------------------------------------------------------------------------//
+	// GetCurrentPage
+	//------------------------------------------------------------------------//
+	/**
+	 * GetCurrentPage()
+	 *
+	 * Accessor method for the name of the current page, which will be displayed as the last breadcrumb
+	 *
+	 * Accessor method for the name of the current page, which will be displayed as the last breadcrumb
+	 * 
+	 * @return	mix				If the current page breadcrumb has been set then it is returned; else returns FALSE
+	 *
+	 * @method
+	 */
+	function GetCurrentPage()
+	{
+		if ($this->_strCurrentPage === NULL)
+		{
+			return FALSE;
+		}
+		return $this->_strCurrentPage;
 	}
 	
 	//------------------------------------------------------------------------//

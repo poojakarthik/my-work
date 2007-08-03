@@ -68,6 +68,28 @@ class MenuItems
 	public $strLabel;
 	
 	//------------------------------------------------------------------------//
+	// Console
+	//------------------------------------------------------------------------//
+	/**
+	 * Console()
+	 *
+	 * Compiles the url to be executed when the Console menu item is clicked
+	 *
+	 * Compiles the url to be executed when the Console menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string						action to be executed when the Console menu item is clicked
+	 *
+	 * @method
+	 */
+	function Console()
+	{
+		$this->strLabel	= "Console";
+		
+		return "vixen.php/Console/Console/";
+	}
+
+	//------------------------------------------------------------------------//
 	// LoadAccountInConsole
 	//------------------------------------------------------------------------//
 	/**
@@ -86,7 +108,7 @@ class MenuItems
 	 */
 	function LoadAccountInConsole($intAccountId)
 	{
-		$this->strLabel	= "console";
+		$this->strLabel	= "Console";
 		
 		return "vixen.php/Console/Console/?Account.Id=$intAccountId";
 	}
@@ -112,7 +134,7 @@ class MenuItems
 	 */
 	function ViewUnbilledChargesForService($intServiceId, $intPage=1, $intFilterId=0)
 	{
-		$this->strLabel	= "service: $intServiceId";
+		$this->strLabel	= "Service: $intServiceId";
 		
 		return "vixen.php/Service/ViewUnbilledCharges/?Service.Id=$intServiceId&Page.PageToLoad=$intPage&Filter.Id=$intFilterId";
 	}
@@ -136,7 +158,7 @@ class MenuItems
 	 */
 	function ViewUnbilledChargesForAccount($intAccountId)
 	{
-		$this->strLabel	= "account: $intAccountId";
+		$this->strLabel	= "Account Charges";
 		
 		return "vixen.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
 	}
@@ -162,7 +184,7 @@ class MenuItems
 	 */
 	function DownloadInvoicePDF($intAccountId, $intYear, $intMonth)
 	{
-		$this->strLabel	= "download invoice pdf";
+		$this->strLabel	= "Download Invoice Pdf";
 		
 		// Setup data to send
 		$arrData['Account']['Id']		= $intAccountId;

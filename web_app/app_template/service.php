@@ -173,7 +173,7 @@ class AppTemplateService extends ApplicationTemplate
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Service->Account->Value);
 		BreadCrumb()->ViewUnbilledChargesForAccount(DBO()->Service->Account->Value);
-		
+		BreadCrumb()->SetCurrentPage("Service Charges");
 
 
 		// All required data has been retrieved from the database so now load the page template

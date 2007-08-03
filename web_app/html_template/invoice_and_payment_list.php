@@ -80,6 +80,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
+		$this->LoadJavascript("highlight");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -109,15 +110,31 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			$arrRecord['Type'] 					= "Invoice";  // This may not be required, but if it is, it should probably be changed to a constant.  Although it's only ever going to be used in this function
 			$arrRecord['DateCreatedTimeStamp'] 	= strtotime($dboInvoice->CreatedOn->Value);
 			$arrRecord['Id'] 					= $dboInvoice->Id->AsValue();
-			
-			// Store data properties specifically required of invoices
-			$arrRecord['DateCreated'] 			= $dboInvoice->CreatedOn->AsValue();
-			$arrRecord['Debit'] 				= $dboInvoice->Total->AsValue();
-			$arrRecord['Tax'] 					= $dboInvoice->Tax->AsValue();
-			//TODO! there are probably more of these to add
+			$arrRecord['Date'] 					= $dboInvoice->CreatedOn->AsValue();
+
+			// Work out what will be displayed in the Debit and Credit columns of the table
+			$fltDebit = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
+			if ($fltDebit < 0)
+			{
+				// The invoice value (Total + Tax) should be listed in the Credit column
+				// Change $fltDebit from a negative value to a positive value
+				$fltDebit					= $fltDebit * (-1.0);
+				$arrRecord['Credit']		= $dboInvoice->Total->AsArbitrary($fltDebit);
+				$arrRecord['CreditValue'] 	= $fltDebit;
+				$arrRecord['Debit']			= "&nbsp;";
+				$arrRecord['DebitValue'] 	= 0;
+			}
+			else
+			{
+				// The invoice value should be listed in the Debit column
+				$arrRecord['Debit']			= $dboInvoice->Total->AsArbitrary($fltDebit);
+				$arrRecord['DebitValue']	= $fltDebit;
+				$arrRecord['Credit']		= "&nbsp;";
+				$arrRecord['CreditValue'] 	= 0;
+			}
 			
 			// Append the record to the array to sort
-			$arrInvoicesAndPayments[] 			= $arrRecord;
+			$arrInvoicesAndPayments[] 		= $arrRecord;
 		}
 		
 		// Add all the payments to the array to sort
@@ -125,11 +142,14 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		{
 			$arrRecord['Type'] 					= "Payment";  // This may not be required, but if it is, it should probably be changed to a constant.  Although it's only ever going to be used in this function
 			$arrRecord['DateCreatedTimeStamp'] 	= strtotime($dboPayment->PaidOn->Value);
-			$arrRecord['Id'] 					= $dboPayment->Id->AsValue();
+			$arrRecord['Id'] 					= $dboPayment->TXNReference->AsValue();
+			$arrRecord['Date'] 					= $dboPayment->PaidOn->AsValue();
 			
-			// Store data properties specifically required of payments
-			$arrRecord['DatePaidOn'] 			= $dboPayment->PaidOn->AsValue();
-			$arrRecord['Amount'] 				= $dboPayment->Amount->AsValue();
+			// Work out what will be displayed in the Debit and Credit columns of the table
+			$arrRecord['Credit']				= $dboPayment->Amount->AsValue();
+			$arrRecord['CreditValue']			= $dboPayment->Amount->Value;
+			$arrRecord['Debit']					= "&nbsp;";
+			$arrRecord['DebitValue']			= 0;
 			
 			// Append the record to the array to sort
 			$arrInvoicesAndPayments[] 			= $arrRecord;
@@ -138,11 +158,14 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		// sort the array in descending order of the date they were created on. (most recent record first)
 		usort($arrInvoicesAndPayments, "CompareInvoiceAndPaymentRecords");
 		
-		
-		
-		Table()->InvoicesAndPayments->SetHeader("Type", "Date", "Ref #", "Amount (inc GST)", "Balance (inc GST)", "&nbsp;");
+		// create the Invoices and Payments table
+		Table()->InvoicesAndPayments->SetHeader("Type", "Date", "Ref #", "Credit (inc GST)", "Debit (inc GST)", "&nbsp;");
 		Table()->InvoicesAndPayments->SetWidth("15%", "15%", "15%", "25%", "25%", "5%");
 		Table()->InvoicesAndPayments->SetAlignment("left", "left", "left", "right", "right", "center");
+		
+		// Declare variables used to calculate the total Credits and Debits
+		$fltCreditTotal	= 0;
+		$fltDebitTotal	= 0;
 		
 		// add the rows
 		foreach ($arrInvoicesAndPayments as $arrRecord)
@@ -150,14 +173,13 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			// build values for the columns of the table
 			$strRecordType 	= "<span class='DefaultOutputSpan'>{$arrRecord['Type']}</span>";
 			$strRefNum		= $arrRecord['Id'];
-			$strBalance 	= $arrRecord['Balance'];
+			$strDate		= $arrRecord['Date'];
+			$strCredit		= $arrRecord['Credit'];
+			$strDebit		= $arrRecord['Debit'];
+			
 			
 			if ($arrRecord['Type'] == 'Invoice')
 			{	
-				// Values specific to Invoices
-				$strDate 	= $arrRecord['DateCreated'];
-				$strAmount 	= $arrRecord['TotalOwing'];
-				
 				// Find out if there is a pdf for this invoice
 				$intInvoiceDate 	= strtotime("-1 month", $arrRecord['DateCreatedTimeStamp']);
 				$intInvoiceYear 	= (int)date("Y", $intInvoiceDate);
@@ -168,7 +190,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 					// The pdf exists
 					// Build "download invoice pdf" link
 					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Value, $intInvoiceYear, $intInvoiceMonth);
-					$strInvoicePdfLabel	= "<span class='DefaultOutputSpan'><a href='$strInvoicePdfHref'><img src='img/template/pdf.png' title='Download PDF Invoice' /></a></span>";
+					$strInvoicePdfLabel	= "<span class='DefaultOutputSpan Default'><a href='$strInvoicePdfHref'><img src='img/template/pdf.png' title='Download PDF Invoice' /></a></span>";
 				}
 				else
 				{
@@ -179,21 +201,35 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			else
 			{
 				// Values specific to Payments
-				$strDate = $arrRecord['DatePaidOn'];
-				$strAmount = $arrRecord['Amount'];
 				$strInvoicePdfLabel = "&nbsp;";
 			}
 			
-			Table()->InvoicesAndPayments->AddRow($strRecordType, $strDate, $strRefNum, $strAmount, $strBalance, $strInvoicePdfLabel);
+			Table()->InvoicesAndPayments->AddRow($strRecordType, $strDate, $strRefNum, $strCredit, $strDebit, $strInvoicePdfLabel);
+			
+			$fltCreditTotal	+= $arrRecord['CreditValue'];
+			$fltDebitTotal	+= $arrRecord['DebitValue'];
 		}
 		
 		if (Table()->InvoicesAndPayments->RowCount() == 0)
 		{
-			// There aren't any CDRs to display in the CDR table
-			Table()->InvoicesAndPayments->AddRow("<span class='DefaultOutputSpan'>No records to display</span>", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;", "&nbsp;");
+			// There aren't any Invoices or Payments to display in the table
+			Table()->InvoicesAndPayments->AddRow("<span class='DefaultOutputSpan Default'>No records to display</span>\n");
+			Table()->InvoicesAndPayments->SetRowColumnSpan(6);
+		}
+		else
+		{
+			// Append the sub-totals and total rows
+			$strTotals			= "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>Total:</span>\n";
+			$strTotalCredits	= "<span class='DefaultOutputSpan Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltCreditTotal, 2, TRUE) ."</span>\n";
+			$strTotalDebits		= "<span class='DefaultOutputSpan Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltDebitTotal, 2, TRUE) ."</span>\n";
+			
+			Table()->InvoicesAndPayments->AddRow($strTotals, $strTotalCredits, $strTotalDebits, "&nbsp;");
+			Table()->InvoicesAndPayments->SetRowAlignment("left", "right", "right", "center");
+			Table()->InvoicesAndPayments->SetRowColumnSpan(3, 1, 1, 1);
 		}
 		
-		// Render the Call Information table
+		// Render the table
+		Table()->InvoicesAndPayments->RowHighlighting = TRUE;
 		Table()->InvoicesAndPayments->Render();
 		
 		echo "<div class='Seperator'></div>\n";

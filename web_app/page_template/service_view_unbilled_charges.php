@@ -41,7 +41,7 @@ $this->Page->SetLayout($strLayout);
 //Only add the list of unbilled Charges if on the first page
 if (DBO()->Page->CurrentPage->Value == 1)
 {
-	$this->Page->AddObject('ServiceUnbilledChargeList', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ChargeListDiv");
+	$this->Page->AddObject('UnbilledChargeList', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ChargeListDiv");
 }
 
 $this->Page->AddObject('ServiceCDRList', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "CDRListDiv");

@@ -1,22 +1,22 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateAccountUnbilledChargeList DEPRECIATED use HtmlTemplateUnbilledChargeList instead
+// HtmlTemplateUnbilledChargeList
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateAccountUnbilledChargeList
+ * HtmlTemplateUnbilledChargeList
  *
- * HTML Template object for the client app, List of all Unbilled charges for account
+ * HTML Template object for the client app, List of all Unbilled charges for an Account or a specific service
  *
- * HTML Template object for the client app, List of all Unbilled charges for account
+ * HTML Template object for the client app, List of all Unbilled charges for an Account or a specific service
  *
  *
  * @prefix	<prefix>
  *
  * @package	web_app
- * @class	HtmlTemplateAccountUnbilledChargeList
+ * @class	HtmlTemplateUnbilledChargeList
  * @extends	HtmlTemplate
  */
-class HtmlTemplateAccountUnbilledChargeList extends HtmlTemplate
+class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -111,7 +111,7 @@ class HtmlTemplateAccountUnbilledChargeList extends HtmlTemplate
 		{
 			// There are no adjustments to stick in this table
 			Table()->Adjustments->AddRow("<span class='DefaultOutputSpan Default'>No adjustments to list</span>");
-			Table()->Adjustments->SetRowAlignmnet("center");
+			Table()->Adjustments->SetRowAlignment("center");
 			Table()->Adjustments->SetRowColumnSpan(5);
 		}
 		else
