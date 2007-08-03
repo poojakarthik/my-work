@@ -127,7 +127,6 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		$intClosedOn = ConvertMySQLDateToUnixTimeStamp(DBO()->Service->ClosedOn->Value);
 		$intCurrentDate = ConvertMySQLDateToUnixTimeStamp(GetCurrentDateForMySQL());
 		
-		$intClosedOn = ConvertMySQLDateToUnixTimeStamp(DBO()->Service->ClosedOn->Value);
 		$intTodaysDate = time();
 		
 		// Check if the closedon date has been set i.e. not null
@@ -165,8 +164,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			{
 				// The service is scheduled to be closed in the future
 				echo "&nbsp;&nbsp;This service is scheduled to be closed on: ".DBO()->Service->ClosedOn->FormattedValue()."<br>";
-				DBO()->Service->CancelScheduledClosure->RenderInput();
-				// We want the checkbox action to be "cancel scheduled closure"
+				// We dont want the user to cancel the scheduled closure of the service
 			}
 		}
 	

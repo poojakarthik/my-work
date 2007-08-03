@@ -140,8 +140,8 @@ class AppTemplateservice extends ApplicationTemplate
 
 		if (SubmittedForm("EditService","Apply Changes"))
 		{
-			$bolUpdateFNN = FALSE;
-			$bolUpdateArchiveStatus = FALSE;
+			//$bolUpdateFNN = FALSE;
+			//$bolUpdateArchiveStatus = FALSE;
 			if (DBO()->Service->IsInvalid())
 			{
 				// The form has not passed initial validation
@@ -150,46 +150,159 @@ class AppTemplateservice extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			//if outputting invalid use the below lines
-			//DBO()->Service->FNNConfirm->SetToInvalid();
-			
-			//echo "------------------------------------->>>".DBO()->Service->CurrentFNN->Value;
-			
+			$bolUpdateFNN = FALSE;
 			if (DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value)
 			{		
-				//Ajax()->AddCommand("Alert", "Could not save the service.".DBO()->Service->CurrentFNN->Value);
-				/*Ajax()->AddCommand("Alert", "Could not save the service.  Service # and Confirm Service # must be the same");
-				Ajax()->RenderHtmlTemplate("HtmlTemplateServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
-				return TRUE;*/
+				// This is entered if the FNN entered is different to the 
+				// current FNN i.e. the user has entered a new FNN
+				// ------------------------------------------------------
+		
 				if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
 				{
+					// This is entered if the FNN is different from FNNConfirm 
+					// i.e. a typo when entering on the form
+					// -------------------------------------------------------				
+				
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
-					Ajax()->AddCommand("Alert", "Could not save the service.  Service # and Confirm Service # must be the same");
+					Ajax()->AddCommand("Alert", "*Could not save the service.  Service # and Confirm Service # must be the same");
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
 				
-				// The user wants to update the FNN and the new FNN has passed all validation
-				// Check to see if the FNN is in-use
+				// Make sure the new FNN is valid for the service type
+				$intServiceType = ServiceType(DBO()->Service->FNN->Value);
+				if ($intServiceType != DBO()->Service->ServiceType->Value)
+				{
+					// The FNN is invalid for the services servicetype, output an appropriate message
+					DBO()->Service->FNN->SetToInvalid();
+					Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					return TRUE;
+				}
 				
+				// Test if the FNN is currently not being used
+				$strWhere = "FNN LIKE \"". DBO()->Service->FNN->Value . "\"";
+				DBL()->Service->Where->SetString($strWhere);
+				DBL()->Service->Load();
+				if (DBL()->Service->RecordCount() > 0)
+				{	
+					DBO()->Service->FNN->SetToInvalid();
+					DBO()->Service->FNNConfirm->SetToInvalid();
+					Ajax()->AddCommand("Alert", "This Service Number already exists in the Database");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					return TRUE;
+				}
 				
-				//$strWhere = "FNN
-				
+				// the new FNN is valid flag it to update in the service record in the database
 				$bolUpdateFNN = TRUE;
+				
+				// Declare properties to update
+				$arrUpdateProperties[] = "FNN";
+			}
+			
+			// test archive action
+			if (DBO()->Service->ArchiveService->Value)
+			{
+				// we want to archive the service
+				$bolArchiveService = TRUE;
+				// set closedon date to todays date
+				DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
+				// set closedby to authenticated user ID
+				DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
+				//TODO! probably need to run DisableELB
+				
+				// Declare properties to update
+				$arrUpdateProperties[] = "ClosedOn";
+				$arrUpdateProperties[] = "ClosedBy";
+			}
+			if (DBO()->Service->ActivateService->Value)
+			{
+				// we want to activate this service
+				$bolActivateService = TRUE;
+				
+				// set ClosedOn date to null
+				DBO()->Service->ClosedOn = NULL;
+				
+				// set ClosedBy to null
+				DBO()->Service->ClosedBy = NULL;
+				
+				//TODO! probably need to run EnableELB
+				
+				// Declare properties to update
+				$arrUpdateProperties[] = "ClosedOn";
+				$arrUpdateProperties[] = "ClosedBy";
+			}
+			
+			//TODO! If the service is being updated, an automatic note should be generated describing what happened
+			// Check if the existing system does this
+			
+			// Save the changes to the Service Table, if count($arrUpdateProperties) > 0
+			//TODO! (Start the transaction here)
+			
+				else
+				{
+					// all validation done and ok to write to database
+					switch(DBO()->Service->ServiceType->Value)
+					{
+						case SERVICE_TYPE_MOBILE:
+							$strColumnsToUpdate = "FNN";
+							break;
+						case SERVICE_TYPE_INBOUND:
+							if (DBO()->ServiceInboundDetails->AnswerPoint->Value == "")
+							{
+								//
+							}elseif (DBO()->ServiceInboundDetails->Configuration->Value == "")
+							{
+								//
+							}
+							else
+							{
+								//
+							}
+							break;
+						case SERVICE_TYPE_LANDLINE:
+							$strColumnsToUpdate = "FNN";
+							beak;
+						case SERVICE_TYPE_ADSL:
+							$strColumnsToUpdate = "FNN, CostCentre";
+							break;
+					}
+				}
+				DBO()->Service->SetColumns($strColumnsToUpdate);
+				
+				Ajax()->AddCommand("Alert", "Service # and Confirm Service # the same, commit to database");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+				return TRUE;
+				
+				// case statements multiple SERVICE_TYPE
+				
+				// then commit to database (one line)
 			}
 			// Check if we have to activate or de-activate the service
 			// TODO 			
 			
-			if (($bolUpdateFNN)||($bolUpdateArchive))
+			// if the FNN hasn't changed but user has selected archive this service
+			// --------------------------------------------------------------------
+			
+			/*
+			
+			if ()
 			{
+				//($bolUpdateFNN)//||
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "bolUpdateFNN entered", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			
 				// Everything has been validated on the form, so commit it to the database
 				//DBO()->Service->SetColumns($strColumnsToUpdate);
-				if($bolUpdateArchive)
+				/*if($bolUpdateArchive)
 				{
 					//check which checkbox is selected
+					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "bolUpdateArchive entered", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+					return TRUE;
 				}
 			}
+
+			*/
 
 			if (!DBO()->Service->Save())
 			{

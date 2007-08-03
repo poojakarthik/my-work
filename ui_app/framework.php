@@ -1363,13 +1363,17 @@ class Validation
 		return $this->RegexValidate('^([[:alnum:]]([-_.]?[[:alnum:]])*)@([[:alnum:]]([.]?[-[:alnum:]])*[[:alnum:]])\.([[:alpha:]]){2,25}$^', $mixValue);
 	}
 
+		
 	//------------------------------------------------------------------------//
-	// IsValidPhoneNumber
+	// IsValidFNN
 	//------------------------------------------------------------------------//
 	/**
-	 * IsValidPhoneNumber()
+	 * IsValidFNN()
 	 *
-	 * Returns TRUE if the value is valid
+	 * Returns TRUE if the value is a valid FNN
+	 *
+	 * Returns TRUE if the value is a valid FNN
+	 * Wrapper for the function IsValidFNN found in framework/functions.php
 	 *
 	 * @param	mix			$mixValue		value to validate
 	 * 
@@ -1377,43 +1381,9 @@ class Validation
 	 *
 	 * @method
 	 */
-	function IsValidPhoneNumber($mixValue)
+	function IsValidFNN($mixValue)
 	{
-		$mixValue = str_replace(" ", "", $mixValue);
-		if(strlen($mixValue) < 10)
-		{
-			return false;
-		}
-		else
-		{
-			return is_numeric($mixValue);
-		}
-	}	
-	//------------------------------------------------------------------------//
-	// IsValidMobileNumber
-	//------------------------------------------------------------------------//
-	/**
-	 * IsValidMobileNumber()
-	 *
-	 * Returns TRUE if the value is valid
-	 *
-	 * @param	mix			$mixValue		value to validate
-	 * 
-	 * @return	bool
-	 *
-	 * @method
-	 */
-	function IsValidMobileNumber($mixValue)
-	{
-		$mixValue = str_replace(" ","", $mixValue);
-		if(strlen($mixValue) < 10)
-		{
-			return false;
-		}
-		else
-		{		
-			return is_numeric($mixValue);
-		}
+		return IsValidFNN($mixValue);
 	}	
 }
 

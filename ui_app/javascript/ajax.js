@@ -17,7 +17,7 @@ function VixenAjaxClass()
 {
 
 	// execute an app template through an ajax call, which doesn't involve form submission
-	this.CallAppTemplate(strClass, strMethod, objObjects, strTargetType)
+	this.CallAppTemplate = function(strClass, strMethod, objObjects, strTargetType)
 	{
 		var objSend = {};
 		objSend.Class = strClass;
