@@ -32,7 +32,7 @@
 
 
 // Set the page title
-$this->Page->SetName('View Unbilled Charges for Service# '. DBO()->Service->FNN->Value);
+$this->Page->SetName('Unbilled Charges for Service# '. DBO()->Service->FNN->Value);
 
 $strLayout = '1Column';
 $this->Page->SetLayout($strLayout);

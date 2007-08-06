@@ -97,7 +97,9 @@ class HtmlTemplateError extends HtmlTemplate
 	{	
 		echo "<div Id='VixenError' Class=''>\n	";
 		DBO()->Error->Message->Render();
-		echo "\n</div>\n";
+		echo "</div>\n";
+		
+		echo "<div style='height:300px;'></div>\n";
 	}
 }
 

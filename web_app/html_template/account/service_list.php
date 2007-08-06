@@ -107,7 +107,7 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 
 			// build the "View Unbilled Charges for Service" link
 			$strViewUnbilledCharges = Href()->ViewUnbilledChargesForService($dboService->Id->Value);
-			$strViewUnbilledChargesLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewUnbilledCharges'>View Unbilled Charges</a></span>";
+			$strViewUnbilledChargesLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewUnbilledCharges' style='color:blue; text-decoration: none;'>View Unbilled Charges</a></span>";
 
 
 			Table()->Services->AddRow($dboService->FNN->AsValue(),
@@ -123,8 +123,8 @@ class HtmlTemplateAccountServiceList extends HtmlTemplate
 		if (Table()->Services->RowCount() == 0)
 		{
 			// There are no services to stick in this table
-			Table()->Services->AddRow("<span class='DefaultOutputSpan Default'>No services to list</span>");
-			Table()->Services->SetRowAlignmnet("center");
+			Table()->Services->AddRow("<span class='DefaultOutputSpan Default'>No services to display</span>");
+			Table()->Services->SetRowAlignment("left");
 			Table()->Services->SetRowColumnSpan(5);
 		}
 		else

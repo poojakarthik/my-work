@@ -1,22 +1,22 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateConsole
+// HtmlTemplateAccountDetails
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateConsole
+ * HtmlTemplateAccountDetails
  *
- * HTML Template object for the client app console 
+ * HTML Template object for the Account Details
  *
- * HTML Template object for the client app console
+ * HTML Template object for the Account Details
  *
  *
  * @prefix	<prefix>
  *
  * @package	web_app
- * @class	HtmlTemplateConsole
+ * @class	HtmlTemplateAccountDetails
  * @extends	HtmlTemplate
  */
-class HtmlTemplateConsole extends HtmlTemplate
+class HtmlTemplateAccountDetails extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -75,21 +75,25 @@ class HtmlTemplateConsole extends HtmlTemplate
 	{
 		echo "<div class='NarrowContent'>\n";
 		
+		// Display the details of their primary account
+		echo "<h2 class='Account'>Account Details</h2>\n";
+		DBO()->Account->Id->RenderOutput();
+		if (DBO()->Account->BusinessName->Value)
+		{
+			DBO()->Account->BusinessName->RenderOutput();
+		}
+		if (DBO()->Account->TradingName->Value)
+		{
+			DBO()->Account->TradingName->RenderOutput();
+		}
+		DBO()->Account->ABN->RenderOutput();
 		
-		// For the console page, we need display some of the contact's details
-		// We need to display account details for each account that the contact belongs to.
-		// This will usually just be the one account, but we have to make provisions for multiple accounts
-		// You may want to display the account details differently if they have more than one account
-		// each account listed should have a link to a page listing all the details for that account
+		DBO()->Account->Balance->RenderOutput();
+		DBO()->Account->Overdue->RenderOutput();
+		DBO()->Account->CurrentUnbilledTotal->RenderOutput();
 		
 		
-		//TODO! INSERT A LOG OUT BUTTON
-		
-		echo "<h2 class='Console'>Console</h2>\n";
-		
-		$strWelcome = "Welcome " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
-		
-		echo "<span class='DefaultOutputSpan Default'>$strWelcome</span>";
+		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";
 	}

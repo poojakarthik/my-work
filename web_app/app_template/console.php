@@ -66,6 +66,7 @@ class AppTemplateConsole extends ApplicationTemplate
 		DBO()->Contact->Id = AuthenticatedUser()->_arrUser['Id'];
 		if (!DBO()->Contact->Load())
 		{
+			// This should never actually occur because if the contact can't be loaded then AuthenticatedUser()->CheckClientAuth() would have failed
 			DBO()->Error->Message = "The contact with contact id: ". DBO()->Contact->Id->Value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
@@ -85,13 +86,6 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Load the clients primary account
 		DBO()->Account->Load();
 		
-		// add to breadcrumb menu
-		//TODO!
-		//BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
-		
-		// Add a context menu
-		//TODO!
-
 		// Calculate the Account Balance
 		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
 
@@ -134,7 +128,9 @@ class AppTemplateConsole extends ApplicationTemplate
 		if (!$bolUserCanViewAccount)
 		{
 			// The user does not have permission to view the requested account
-			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value ." as it is not part of their Account Group";
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
+			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value;
 			$this->LoadPage('Error');
 			return FALSE;
 		}
@@ -143,6 +139,30 @@ class AppTemplateConsole extends ApplicationTemplate
 
 		return TRUE;
 	}
+
+	//------------------------------------------------------------------------//
+	// Logout
+	//------------------------------------------------------------------------//
+	/**
+	 * Logout()
+	 *
+	 * Performs the logic for logging out the user
+	 * 
+	 * Performs the logic for logging out the user
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Logout()
+	{
+		AuthenticatedUser()->LogoutClient();
+		
+		Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "Logout successful", "Location" => Href()->MainPage()));
+		
+		return TRUE;
+	}
+
 
     //----- DO NOT REMOVE -----//
 	

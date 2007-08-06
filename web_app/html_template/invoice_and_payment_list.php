@@ -214,6 +214,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		{
 			// There aren't any Invoices or Payments to display in the table
 			Table()->InvoicesAndPayments->AddRow("<span class='DefaultOutputSpan Default'>No records to display</span>\n");
+			Table()->InvoicesAndPayments->SetRowAlignment("left");
 			Table()->InvoicesAndPayments->SetRowColumnSpan(6);
 		}
 		else

@@ -34,9 +34,17 @@
 $this->Page->SetName('Console');
 
 // set the layout template for the page.
-$this->Page->SetLayout('1column');
+$this->Page->SetLayout('4column');
 
 // add the Html Objects to their respective columns
 $this->Page->AddObject('Console', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('AccountDetails', COLUMN_TWO, HTML_CONTEXT_DEFAULT);
+$this->Page->AddObject('ConsoleOptions', COLUMN_THREE, HTML_CONTEXT_DEFAULT);
+
+// Only list all the user's available accounts if there is more than 1
+if (DBL()->Account->RecordCount() > 1)
+{
+	$this->Page->AddObject('AccountList', COLUMN_FOUR, HTML_CONTEXT_DEFAULT);
+}
 
 ?>

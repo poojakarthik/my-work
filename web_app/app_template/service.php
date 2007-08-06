@@ -63,15 +63,12 @@ class AppTemplateService extends ApplicationTemplate
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckClientAuth();
-
-		// Context menu
-		//ContextMenu()->Admin_Console();
-		//ContextMenu()->Logout();
-		
 				
-		// Load the account
+		// Load the service
 		if (!DBO()->Service->Load())
 		{
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
 			DBO()->Error->Message = "The service with service id: ". DBO()->Service->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
@@ -96,6 +93,8 @@ class AppTemplateService extends ApplicationTemplate
 		if (!$bolUserCanViewService)
 		{
 			// The user does not have permission to view the requested Service
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
 			DBO()->Error->Message = "ERROR: The user does not have permission to view service# ". DBO()->Service->Id->Value ." as it does not belong to any of their available accounts";
 			$this->LoadPage('Error');
 			return FALSE;

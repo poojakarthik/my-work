@@ -689,7 +689,80 @@ class Application
 			}	
 		}
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// LogoutClient
+	//------------------------------------------------------------------------//
+	/**
+	 * LogoutClient()
+	 *
+	 * Logs out the current "client" user (used by web_app.  users are defined in the Contact table of Vixen)
+	 * 
+	 * Logs out the current "client" user (used by web_app.  users are defined in the Contact table of Vixen)
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function LogoutClient()
+	{
+		// We only need to log the client out, if they are currently logged in	
+		if (isset($_COOKIE['ClientId']) && isset($_COOKIE['ClientSessionId']))
+		{
+			// Find the contact information for the client declared in the cookie
+			// I'm doing this as a safety measure so as to only logout the user if they are the proper user
+			$selAuthenticated = new StatementSelect(
+					"Contact",
+					"*", 
+					"Id = <ClientId> AND SessionId = <ClientSessionId> AND SessionExpire > NOW() AND Archived = 0",
+					null,
+					1
+				);
+				
+			$intRowsReturned = $selAuthenticated->Execute(Array("ClientId" => $_COOKIE['ClientId'], "ClientSessionId" => $_COOKIE['ClientSessionId']));
+			$arrAuthentication = $selAuthenticated->Fetch();
+
+			// check if the user could be found
+			if ($intRowsReturned)
+			{
+				// user was found.
+				$bolLoggedIn = TRUE;
+				
+				// Load user object from db
+				$this->_arrUser = $arrAuthentication;
+			}
+			else
+			{
+				// the user could not be found
+				$this->_arrUser = NULL;
+				$bolLoggedIn = FALSE;
+			}
+		}
+		else
+		{
+			// There was no cookie found
+			$this->_arrUser = NULL;
+			$bolLoggedIn = FALSE;
+		}
+		
+		if ($bolLoggedIn)
+		{
+			// Update the user's session details in the contact table of the database, so that the SessionExpire time is in the past
+			$arrUpdate = Array("SessionId" => $this->_arrUser['SessionId'], "SessionExpire" => new MySQLFunction ("SUBTIME(NOW(), SEC_TO_TIME(" . USER_TIMEOUT . "))"));
+			
+			// update the table
+			$updUpdateStatement = new StatementUpdate("Contact", "Id = <Id> AND Archived = 0", $arrUpdate);
+			if ($updUpdateStatement->Execute($arrUpdate, Array("Id"=>$this->_arrUser['Id'])) === FALSE)
+			{
+				// could not update the user's session details in the database.  Mark user as not logged in
+				$bolLoggedIn = FALSE;
+			}
+		}
+
+		// If ($bolLoggedIn === TRUE) then loggin out the user has failed.  I don't know what to do in this situation.  It probably wont ever occur.
+	}
+
+
 }
 
 //----------------------------------------------------------------------------//

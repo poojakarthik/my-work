@@ -110,8 +110,8 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 		if (Table()->Adjustments->RowCount() == 0)
 		{
 			// There are no adjustments to stick in this table
-			Table()->Adjustments->AddRow("<span class='DefaultOutputSpan Default'>No adjustments to list</span>");
-			Table()->Adjustments->SetRowAlignment("center");
+			Table()->Adjustments->AddRow("<span class='DefaultOutputSpan Default'>No adjustments to display</span>");
+			Table()->Adjustments->SetRowAlignment("left");
 			Table()->Adjustments->SetRowColumnSpan(5);
 		}
 		else

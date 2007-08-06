@@ -6,17 +6,18 @@
 //----------------------------------------------------------------------------//
 
 //----------------------------------------------------------------------------//
-// 1column.php
+// 4column.php
 //----------------------------------------------------------------------------//
 /**
- * 1column
+ * 4column
  *
- * Layout Template defining how to display a page that has only a single column of HTML Template objects
+ * Layout Template defining how to display a page that has 4 columns of HTML Template objects
  *
- * Layout Template defining how to display a page that has only a single column of HTML Template objects
+ * Layout Template defining how to display a page that has 4 columns of HTML Template objects
  * Specificly for the Client Web Application
+ * This will display the first column as a header, the next 2 columns side by side, and the 4th column as a footer
  *
- * @file		1column.php
+ * @file		4column.php
  * @language	PHP
  * @package		web_app
  * @author		Joel Dawkins
@@ -56,11 +57,28 @@ $this->RenderClientHeader();
 	<div class="sectionContent">
 		<?php $this->RenderBreadCrumbMenu();?>
 	</div>
-	
 	<div class="clear"></div>
 		<div id='PageBody'>
 			<?php 
 				$this->RenderColumn(COLUMN_ONE);
+			?>
+			<table width='100%' border='0'>
+				<tr>
+					<td width='49%' valign='top'>
+						
+						<?php $this->RenderColumn(COLUMN_TWO); ?>
+						
+					</td>
+					<td width='2%'></td>
+					<td width='49%' valign='top'>
+						
+						<?php $this->RenderColumn(COLUMN_THREE); ?>
+						
+					</td>
+				</tr>
+			</table>
+			<?php 
+				$this->RenderColumn(COLUMN_FOUR);
 			?>
 		</div>
 

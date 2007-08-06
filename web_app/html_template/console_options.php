@@ -1,22 +1,22 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateConsole
+// HtmlTemplateConsoleOptions
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateConsole
+ * HtmlTemplateConsoleOptions
  *
- * HTML Template object for the client app console 
+ * HTML Template object for the client app console options
  *
- * HTML Template object for the client app console
+ * HTML Template object for the client app console options
  *
  *
  * @prefix	<prefix>
  *
  * @package	web_app
- * @class	HtmlTemplateConsole
+ * @class	HtmlTemplateConsoleOptions
  * @extends	HtmlTemplate
  */
-class HtmlTemplateConsole extends HtmlTemplate
+class HtmlTemplateConsoleOptions extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -74,23 +74,30 @@ class HtmlTemplateConsole extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='NarrowContent'>\n";
+
+		echo "<h2 class='Options'>Options</h2>\n";
 		
+		// build the "View Unbilled Charges for Account" link
+		$strViewUnbilledCharges = Href()->ViewUnbilledChargesForAccount(DBO()->Account->Id->Value);
+		$strViewUnbilledChargesLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewUnbilledCharges' style='color:blue; text-decoration: none;'>&nbsp;&nbsp;View Unbilled Charges</a></span>";
+
+		// build the "View Invoices and Payments" link
+		$strViewInvoicesAndPayments = Href()->ViewInvoicesAndPayments(DBO()->Account->Id->Value);
+		$strViewInvoicesAndPaymentsLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoicesAndPayments' style='color:blue; text-decoration: none;'>&nbsp;&nbsp;View Invoices and Payments</a></span>";
 		
-		// For the console page, we need display some of the contact's details
-		// We need to display account details for each account that the contact belongs to.
-		// This will usually just be the one account, but we have to make provisions for multiple accounts
-		// You may want to display the account details differently if they have more than one account
-		// each account listed should have a link to a page listing all the details for that account
-		
-		
-		//TODO! INSERT A LOG OUT BUTTON
-		
-		echo "<h2 class='Console'>Console</h2>\n";
-		
-		$strWelcome = "Welcome " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
-		
-		echo "<span class='DefaultOutputSpan Default'>$strWelcome</span>";
-		
+		echo "<table width='100%' border='0'>\n";
+		echo "   <tr>\n";
+		echo "      <td>\n";
+		echo "         $strViewUnbilledChargesLabel\n";
+		echo "      </td>\n";
+		echo "   </tr>\n";
+		echo "   <tr>\n";
+		echo "      <td>\n";
+		echo "         $strViewInvoicesAndPaymentsLabel\n";
+		echo "      </td>\n";
+		echo "   </tr>\n";
+		echo "</table>\n";
+				
 		echo "</div>\n";
 	}
 }

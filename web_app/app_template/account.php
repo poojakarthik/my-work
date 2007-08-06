@@ -63,11 +63,6 @@ class AppTemplateAccount extends ApplicationTemplate
 	{
 		// Check user authorization
 		AuthenticatedUser()->CheckClientAuth();
-
-		// Context menu
-		//ContextMenu()->Admin_Console();
-		//ContextMenu()->Logout();
-		
 				
 		// Load the account
 		if (!DBO()->Account->Load())
@@ -193,14 +188,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization
 		AuthenticatedUser()->CheckClientAuth();
 
-		// Context menu
-		//ContextMenu()->Admin_Console();
-		//ContextMenu()->Logout();
-		
-				
 		// Load the account
 		if (!DBO()->Account->Load())
 		{
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
 			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
@@ -225,7 +217,9 @@ class AppTemplateAccount extends ApplicationTemplate
 		if (!$bolUserCanViewAccount)
 		{
 			// The user does not have permission to view the requested account
-			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value ." as it is not part of their Account Group";
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
+			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value;
 			$this->LoadPage('Error');
 			return FALSE;
 		}
@@ -268,17 +262,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Check user authorization
 		AuthenticatedUser()->CheckClientAuth();
 
-		// Context menu
-		//ContextMenu()->Admin_Console();
-		//ContextMenu()->Logout();
-		
-				
 		// Load the account
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
-			$this->LoadPage('error');
-			return FALSE;
+			// The account could not be loaded
+			$strErrorMsg = "ERROR: The account with account id: ". DBO()->Account->Id->Value ." could not be found";
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strErrorMsg, "Location" => Href()->Console()));
+			return TRUE;
 		}
 		
 		// Check that the user can view this account
@@ -300,7 +290,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		if (!$bolUserCanViewAccount)
 		{
 			// The user does not have permission to view any information about the requested account
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: You do not have permission to view the details of account# ". DBO()->Account->Id->Value, "Location" => "vixen.php/Console/Console/"));
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: You do not have permission to view the details of account# ". DBO()->Account->Id->Value, "Location" => Href()->Console()));
 			return TRUE;
 		}
 		
@@ -319,16 +309,10 @@ class AppTemplateAccount extends ApplicationTemplate
 			$intUnixTime = mktime(0, 0, 0, DBO()->Invoice->Month->Value, 0, DBO()->Invoice->Year->Value);
 			$strDate = date("F, Y", $intUnixTime);
 
-			DBO()->Error->Message = "ERROR: Could not find the pdf relating to the $strDate invoice for Account# ". DBO()->Account->Id->Value;
-			$this->LoadPage('Error');
-			return FALSE;
+			$strErrorMsg = "ERROR: Could not find the pdf relating to the $strDate invoice for Account# ". DBO()->Account->Id->Value;
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strErrorMsg, "Location" => Href()->Console()));
+			return TRUE;
 		}
-
-		// Breadcrumb menu
-		// I don't know if we are actually displaying a page here
-
-		// We shouldn't need to load a page
-		//$this->LoadPage('list_invoices_and_payments');
 		
 		return TRUE;
 	}

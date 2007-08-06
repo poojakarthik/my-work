@@ -90,6 +90,7 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		
 		// Retrieve all the record type definitions and store it in an associative array
 		// This information could have been linked to DBL()->CDR through joined tables but is probably much faster this way
+		DBL()->RecordType->ServiceType = DBO()->Service->ServiceType->Value;
 		DBL()->RecordType->Load();
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
@@ -182,9 +183,9 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		{
 			// Not currently on the first page
 			$strFirstPageHref 		= Href()->ViewUnbilledChargesForService($intServiceId, DBO()->Page->FirstPage->Value, $intFilterId);
-			$strFirstPageLabel 		= "<span class='DefaultOutputSpan Default'><a href='$strFirstPageHref'>&lt;&lt;&nbsp;First</a></span>";
+			$strFirstPageLabel 		= "<span class='DefaultOutputSpan Default'><a href='$strFirstPageHref' style='color:blue; text-decoration: none;'>&lt;&lt;&nbsp;First</a></span>";
 			$strPreviousPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, (DBO()->Page->CurrentPage->Value - 1), $intFilterId);
-			$strPreviousPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPreviousPageHref'>&lt;&nbsp;Previous</a></span>";
+			$strPreviousPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPreviousPageHref' style='color:blue; text-decoration: none;'>&lt;&nbsp;Previous</a></span>";
 		}
 		else
 		{
@@ -198,9 +199,9 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		{
 			// Not currently on the last page
 			$strLastPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, DBO()->Page->LastPage->Value, $intFilterId);
-			$strLastPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strLastPageHref'>Last&nbsp;&gt;&gt;</a></span>";
+			$strLastPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strLastPageHref' style='color:blue; text-decoration: none;'>Last&nbsp;&gt;&gt;</a></span>";
 			$strNextPageHref 	= Href()->ViewUnbilledChargesForService($intServiceId, (DBO()->Page->CurrentPage->Value + 1), $intFilterId);
-			$strNextPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strNextPageHref'>Next&nbsp;&gt;</a></span>";
+			$strNextPageLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strNextPageHref' style='color:blue; text-decoration: none;'>Next&nbsp;&gt;</a></span>";
 		}
 		else
 		{

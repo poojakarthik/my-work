@@ -366,6 +366,16 @@
 		display: none;
 	}
 
+    .LoginBox 
+	{
+		width: 200px;
+		border: solid 1px #666666;
+		padding: 3px;
+		font-family: "Nimbus Sans L", "Tahoma";
+		height: 25px;
+	}
+
+
 /**************************************************************************/
 /* POSITIONS													  		  */
 /**************************************************************************/
@@ -443,8 +453,9 @@
 		padding-right:       0px;
 		padding-bottom:      5px;
 		
-		border:              solid 1px #D1D1D1;
+		/*border:              solid 1px #D1D1D1;
 		background-color:    #F3F3F3;
+		*/
 		/*width:				 425px;*/
 	}
 	

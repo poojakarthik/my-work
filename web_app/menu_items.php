@@ -66,7 +66,30 @@ class MenuItems
 	 * @property
 	 */
 	public $strLabel;
-	
+
+	//------------------------------------------------------------------------//
+	// MainPage
+	//------------------------------------------------------------------------//
+	/**
+	 * MainPage()
+	 *
+	 * Compiles the url to be executed when the MainPage menu item is clicked
+	 *
+	 * Compiles the url to be executed when the MainPage menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string						action to be executed when the MainPage menu item is clicked
+	 *
+	 * @method
+	 */
+	function MainPage()
+	{
+		$this->strLabel	= "Main Page";
+		
+		return "index.html";
+	}
+
+
 	//------------------------------------------------------------------------//
 	// Console
 	//------------------------------------------------------------------------//
@@ -112,6 +135,32 @@ class MenuItems
 		
 		return "vixen.php/Console/Console/?Account.Id=$intAccountId";
 	}
+
+	//------------------------------------------------------------------------//
+	// LogoutUser
+	//------------------------------------------------------------------------//
+	/**
+	 * LogoutUser()
+	 *
+	 * Compiles the url to be executed when the LogoutUser menu item is clicked
+	 *
+	 * Compiles the url to be executed when the LogoutUser menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @return	string						action to be executed when the LogoutUser menu item is clicked
+	 *
+	 * @method
+	 */
+	function LogoutUser()
+	{
+		//$this->strLabel	= "Logout";
+		//return "vixen.php/Console/Logout/";
+		
+		$this->strLabel	= "Logout";
+		
+		return "javascript:Vixen.Ajax.CallAppTemplate(\"Console\", \"Logout\")";
+	}
+
 
 	//------------------------------------------------------------------------//
 	// ViewUnbilledChargesForService
@@ -162,7 +211,32 @@ class MenuItems
 		
 		return "vixen.php/Account/ViewUnbilledCharges/?Account.Id=$intAccountId";
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// ViewInvoicesAndPayments
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewInvoicesAndPayments()
+	 *
+	 * Compiles the url to be executed when the ViewInvoicesAndPayments menu item is clicked
+	 *
+	 * Compiles the url to be executed when the ViewInvoicesAndPayments menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intAccountId		Account id to load
+	 *
+	 * @return	string						action to be executed when the ViewInvoicesAndPayments menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewInvoicesAndPayments($intAccountId)
+	{
+		$this->strLabel	= "Invoices and Payments";
+		
+		return "vixen.php/Account/ListInvoicesAndPayments/?Account.Id=$intAccountId";
+	}
+
+
 	//------------------------------------------------------------------------//
 	// DownloadInvoicePDF
 	//------------------------------------------------------------------------//
