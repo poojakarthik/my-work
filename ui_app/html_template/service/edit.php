@@ -80,18 +80,20 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->ClosedOn->RenderHidden();
 		DBO()->Service->CreatedOn->RenderHidden();
 		DBO()->Service->CurrentFNN->RenderHidden();
+		DBO()->Service->Account->RenderHidden();
 		
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderInput();
 		DBO()->Service->FNNConfirm->RenderInput();
 
-
-		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_ADSL)
+		// load cost centre details
+		DBL()->CostCentre->Account = DBO()->Service->Account->Value;
+		DBL()->CostCentre->Load();
+	
+		//if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_ADSL)
+		if (DBL()->CostCentre->RecordCount() > 0)
 		{
-			
-			DBL()->CostCentre->Account = DBO()->Service->Account->Value;
-			DBL()->CostCentre->Load();
 			
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Cost Centre:</div>\n";
@@ -172,67 +174,62 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		{
 			echo "<div class='Seperator'></div>\n";
 			echo "<h2 class='service'>Inbound Details</h2>\n";
+			DBO()->ServiceInboundDetail->Id->RenderHidden();
+			DBO()->ServiceInboundDetail->AnswerPoint->RenderHidden();
+			DBO()->ServiceInboundDetail->Configuration->RenderHidden();
 			
-			DBL()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
-			DBL()->ServiceInboundDetail->Load();
-			
-			foreach (DBL()->ServiceInboundDetail as $dboServiceInboundDetail)
-			{
-				$dboServiceInboundDetail->AnswerPoint->RenderInput();
-				$dboServiceInboundDetail->Configuration->RenderInput();
-			}
+			DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
+			DBO()->ServiceInboundDetail->Configuration->RenderInput();
 		}
 		
 		
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
-			DBL()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
-			DBL()->ServiceMobileDetail->Load();
+			//DBL()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
+			//DBL()->ServiceMobileDetail->Load();
 		
 			// note it is assumed that we will only retrieve one record
-			foreach (DBL()->ServiceMobileDetail as $dboServiceMobileDetail)
-			{
-				echo "<div class='Seperator'></div>\n";
-				echo "<h2 class='service'>Mobile Details</h2>\n";
-				$dboServiceMobileDetail->SimPUK->RenderInput();
-				$dboServiceMobileDetail->SimESN->RenderInput();
-								
-				$arrState = array();
-				$arrState[SERVICE_STATE_TYPE_ACT] = "Australian Capital Territory";
-				$arrState['NSW'] = "New South Wales";
-				$arrState['VIC'] = "Victoria";
-				$arrState['SA'] = "South Australia";
-				$arrState['WA'] = "Western Australia";
-				$arrState['TAS'] = "Tasmania";
-				$arrState['NT'] = "Northern Territory";
-				$arrState['QLD'] = "Queensland";
-				
-				echo "<div class='DefaultElement'>\n";
-				echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
-				echo "   <div class='DefaultOutput'>\n";
-				echo "      <select name='ServiceMobileDetail.SimState' style='width:180px'>\n";
+			echo "<div class='Seperator'></div>\n";
+			echo "<h2 class='service'>Mobile Details</h2>\n";
+			DBO()->ServiceMobileDetail->Id->RenderHidden();
+			DBO()->ServiceMobileDetail->SimPUK->RenderInput();
+			DBO()->ServiceMobileDetail->SimESN->RenderInput();
+							
+			$arrState = array();
+			$arrState[SERVICE_STATE_TYPE_ACT] = "Australian Capital Territory";
+			$arrState[SERVICE_STATE_TYPE_NSW] = "New South Wales";
+			$arrState[SERVICE_STATE_TYPE_VIC] = "Victoria";
+			$arrState[SERVICE_STATE_TYPE_SA] = "South Australia";
+			$arrState[SERVICE_STATE_TYPE_WA] = "Western Australia";
+			$arrState[SERVICE_STATE_TYPE_TAS] = "Tasmania";
+			$arrState[SERVICE_STATE_TYPE_NT] = "Northern Territory";
+			$arrState[SERVICE_STATE_TYPE_QLD] = "Queensland";
 			
-				foreach ($arrState as $strKey=>$strStateSelection)
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select name='ServiceMobileDetail.SimState' style='width:180px'>\n";
+		
+			foreach ($arrState as $strKey=>$strStateSelection)
+			{
+				if (DBO()->ServiceMobileDetail->SimState->Value == $strKey)
 				{
-					if ($dboServiceMobileDetail->SimState->Value == $strKey)
-					{
-						// this is the currently selected combobox option
-						echo "		<option value='". $strKey . "' selected='selected'>$strStateSelection</option>\n";
-					}
-					else
-					{
-						// this is currently not the selected combobox option
-						echo "		<option value='". $strKey . "'>$strStateSelection</option>\n";
-					}
+					// this is the currently selected combobox option
+					echo "		<option value='". $strKey . "' selected='selected'>$strStateSelection</option>\n";
 				}
-				
-				echo "      </select>\n";
-				echo "   </div>\n";
-				echo "</div>\n";
-				
-				$dboServiceMobileDetail->DOB->RenderInput();				
-				$dboServiceMobileDetail->Comments->RenderInput();		
+				else
+				{
+					// this is currently not the selected combobox option
+					echo "		<option value='". $strKey . "'>$strStateSelection</option>\n";
+				}
 			}
+			
+			echo "      </select>\n";
+			echo "   </div>\n";
+			echo "</div>\n";
+			
+			DBO()->ServiceMobileDetail->DOB->RenderInput();				
+			DBO()->ServiceMobileDetail->Comments->RenderInput();		
 		}
 		echo "<div class='Seperator'></div>\n";			
 		echo "<div class='Right'>\n";

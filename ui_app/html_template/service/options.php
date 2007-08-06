@@ -103,7 +103,7 @@ class HtmlTemplateserviceoptions extends HtmlTemplate
 		echo "<div class='Narrow-Form'>\n";
 	
 		$strEditServiceLink = Href()->EditService(DBO()->Service->Id->Value);
-		echo "<li>[TODO] refer to edit contact page<a href='$strEditServiceLink'>Edit Service Details</a></li>\n";
+		echo "<li><a href='$strEditServiceLink'>Edit Service Details</a></li>\n";
 		
 		echo "<li>[TODO] View Unbilled Charges</li>\n";
 		echo "<li>[TODO] View Recurring Adjustments</li>\n";

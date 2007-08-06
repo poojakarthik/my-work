@@ -1519,6 +1519,12 @@ class OutputMasks
 	 */
 	function ShortDate($strMySqlDate)
 	{
+		// Don't change the date if it is alread in the format DD/MM/YYYY
+		if (Validate("ShortDate", $strMySqlDate))
+		{
+			return $strMySqlDate;
+		}
+	
 		$arrDate = explode("-", $strMySqlDate);
 		
 		if (count($arrDate) > 1)
@@ -1527,7 +1533,7 @@ class OutputMasks
 		}
 		else
 		{
-			$strDate = "not defined";
+			$strDate = $strMySqlDate;
 		}
 		return $strDate;
 	}

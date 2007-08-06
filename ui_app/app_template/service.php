@@ -125,6 +125,29 @@ class AppTemplateservice extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	function add()
+	{
+		$pagePerms = PERMISSION_ADMIN;
+		
+		// Should probably check user authorization here
+		AuthenticatedUser()->CheckAuth();
+		
+		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			// Add extra functionality for super-users
+		}
+
+		
+
+		// Context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+		
+		// Breadcrumb menu	
+		$this->LoadPage('service_add');
+	}
+	
 	function edit()
 	{
 		$pagePerms = PERMISSION_ADMIN;
@@ -233,87 +256,98 @@ class AppTemplateservice extends ApplicationTemplate
 				$arrUpdateProperties[] = "ClosedOn";
 				$arrUpdateProperties[] = "ClosedBy";
 			}
+			if (DBO()->Service->CostCentre->Value !== NULL)
+			{
+				if (DBO()->Service->CostCentre->Value == 0)
+				{
+					DBO()->Service->CostCentre = NULL;
+				}
+				$arrUpdateProperties[] = "CostCentre";
+			}
 			
 			//TODO! If the service is being updated, an automatic note should be generated describing what happened
 			// Check if the existing system does this
 			
 			// Save the changes to the Service Table, if count($arrUpdateProperties) > 0
-			//TODO! (Start the transaction here)
+
+			// Declare the transaction
+			TransactionStart();
 			
-				else
-				{
-					// all validation done and ok to write to database
-					switch(DBO()->Service->ServiceType->Value)
-					{
-						case SERVICE_TYPE_MOBILE:
-							$strColumnsToUpdate = "FNN";
-							break;
-						case SERVICE_TYPE_INBOUND:
-							if (DBO()->ServiceInboundDetails->AnswerPoint->Value == "")
-							{
-								//
-							}elseif (DBO()->ServiceInboundDetails->Configuration->Value == "")
-							{
-								//
-							}
-							else
-							{
-								//
-							}
-							break;
-						case SERVICE_TYPE_LANDLINE:
-							$strColumnsToUpdate = "FNN";
-							beak;
-						case SERVICE_TYPE_ADSL:
-							$strColumnsToUpdate = "FNN, CostCentre";
-							break;
-					}
-				}
-				DBO()->Service->SetColumns($strColumnsToUpdate);
-				
-				Ajax()->AddCommand("Alert", "Service # and Confirm Service # the same, commit to database");
-				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
-				return TRUE;
-				
-				// case statements multiple SERVICE_TYPE
-				
-				// then commit to database (one line)
-			}
-			// Check if we have to activate or de-activate the service
-			// TODO 			
-			
-			// if the FNN hasn't changed but user has selected archive this service
-			// --------------------------------------------------------------------
-			
-			/*
-			
-			if ()
+			if (count($arrUpdateProperties) > 0)
 			{
-				//($bolUpdateFNN)//||
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "bolUpdateFNN entered", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
-			
-				// Everything has been validated on the form, so commit it to the database
-				//DBO()->Service->SetColumns($strColumnsToUpdate);
-				/*if($bolUpdateArchive)
+				// Declare columns to update
+				DBO()->Service->SetColumns($arrUpdateProperties);			
+				// Save the service to the service table of the vixen database
+				if (!DBO()->Service->Save())
 				{
-					//check which checkbox is selected
-					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "bolUpdateArchive entered", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+					// The service did not save
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Updating the service details failed, unexpectedly");
 					return TRUE;
 				}
 			}
-
-			*/
-
-			if (!DBO()->Service->Save())
+			
+			// handle other details such as mobile phone and inbound call details
+			//TODO! check that the mobile details are valid if not use transaction rollback etc
+			
+			// handle mobile phone details			
+			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 			{
-				// The Service failed to update
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Updating the service details failed, unexpectedly", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
-				return TRUE;
+				if (DBO()->ServiceMobileDetail->IsInvalid())
+				{
+					// The form has not passed initial validation
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					return TRUE;
+				}
+				// set DOB to MySql date format
+				DBO()->ServiceMobileDetail->DOB = ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
+				// set columns to update
+				
+				// not saving correctly 'Service' represented in database as 0
+				
+				DBO()->ServiceMobileDetail->SetColumns("SimPUK, SimESN, SimState, DOB, Comments");
+				if (!DBO()->ServiceMobileDetail->Save())
+				{
+					// The ServiceMobileDetail did not save
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Updating the mobile details failed, unexpectedly");
+					return TRUE;
+				}
+				// the mobile details saved successfully
 			}
 			
-			// The service details were successfully saved so go back to the last page
+			// handle inbound call details
+			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
+			{
+				if (DBO()->ServiceInboundDetail->IsInvalid())
+				{
+					// The form has not passed initial validation
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					return TRUE;
+				}
+				// set columns to update
+				DBO()->ServiceInboundDetail->SetColumns("AnswerPoint, Configuration");
+				if (!DBO()->ServiceInboundDetail->Save())
+				{
+					// The InboundDetail did not save
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Updating the inbound details failed, unexpectedly");
+					return TRUE;
+				}
+				// the inbound details saved successfully
+			}
+			
+			// all details regarding the service have been successfully updated
+			
+			// Commit the transaction
+			TransactionCommit();
 			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service details were successfully updated", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
 			return TRUE;
+
 		}
 		
 		if (!DBO()->Service->Load())
@@ -322,7 +356,32 @@ class AppTemplateservice extends ApplicationTemplate
 			$this->LoadPage('error');
 			return FALSE;
 		}
+	
+		// load mobile detail
+		// HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! 
+		// We are loading this record from the database twice because you can only load a DBObject if you know the value for the Id property
+		// and we want to use the record's Service property.  Functionality should be added to the DBObject class so that you can
+		// specify the property, or group of properties to use, to locate the record you want
+		DBL()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
+		DBL()->ServiceMobileDetail->Load();
+		DBL()->ServiceMobileDetail->rewind();
+		
+		$dboServiceMobileDetail = DBL()->ServiceMobileDetail->current();
+		
+		DBO()->ServiceMobileDetail->Id = $dboServiceMobileDetail->Id->Value;
+		DBO()->ServiceMobileDetail->Load();
 
+		// load inbound detail
+		DBL()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
+		DBL()->ServiceInboundDetail->Load();
+		DBL()->ServiceInboundDetail->rewind();
+		
+		$dboServiceInboundDetail = DBL()->ServiceInboundDetail->current();
+		
+		DBO()->ServiceInboundDetail->Id = $dboServiceInboundDetail->Id->Value;
+		DBO()->ServiceInboundDetail->Load();
+		
+		// END OF HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! 
 		
 		// Store the current FNN to check between states that the FNN textbox has been changed
 		DBO()->Service->CurrentFNN = DBO()->Service->FNN->Value;
