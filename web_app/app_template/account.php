@@ -266,10 +266,13 @@ class AppTemplateAccount extends ApplicationTemplate
 		if (!DBO()->Account->Load())
 		{
 			// The account could not be loaded
-			$strErrorMsg = "ERROR: The account with account id: ". DBO()->Account->Id->Value ." could not be found";
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strErrorMsg, "Location" => Href()->Console()));
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
+			DBO()->Error->Message = "The account with account id: ". DBO()->Account->Id->value ." could not be found";
+			$this->LoadPage('error');
 			return TRUE;
 		}
+		
 		
 		// Check that the user can view this account
 		$bolUserCanViewAccount = FALSE;
@@ -290,7 +293,10 @@ class AppTemplateAccount extends ApplicationTemplate
 		if (!$bolUserCanViewAccount)
 		{
 			// The user does not have permission to view any information about the requested account
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: You do not have permission to view the details of account# ". DBO()->Account->Id->Value, "Location" => Href()->Console()));
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
+			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value;
+			$this->LoadPage('Error');
 			return TRUE;
 		}
 		
@@ -299,9 +305,11 @@ class AppTemplateAccount extends ApplicationTemplate
 		{
 			// Try to pull the Invoice PDF
 			$strInvoice = GetPDF(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value);
-			header ("Content-Type: application/pdf");
+			$strInvoiceFilename = GetPdfFilename(DBO()->Account->Id->Value, DBO()->Invoice->Year->Value, DBO()->Invoice->Month->Value);
+			header("Content-Type: application/pdf");
+			header("Content-Disposition: attachment; filename=\"$strInvoiceFilename\"");
 			echo $strInvoice;
-			exit;
+			die;
 		}
 		else
 		{
@@ -309,14 +317,15 @@ class AppTemplateAccount extends ApplicationTemplate
 			$intUnixTime = mktime(0, 0, 0, DBO()->Invoice->Month->Value, 0, DBO()->Invoice->Year->Value);
 			$strDate = date("F, Y", $intUnixTime);
 
-			$strErrorMsg = "ERROR: Could not find the pdf relating to the $strDate invoice for Account# ". DBO()->Account->Id->Value;
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strErrorMsg, "Location" => Href()->Console()));
+			BreadCrumb()->Console();
+			BreadCrumb()->SetCurrentPage("Error");
+			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value;
+			$this->LoadPage('Error');
 			return TRUE;
 		}
 		
 		return TRUE;
 	}
-	
 	
 	//----- DO NOT REMOVE -----//
 	

@@ -883,6 +883,7 @@ function ListPDF($intAccount)
 	
 	return $arrReturn;
 }
+
 //------------------------------------------------------------------------//
 // GetPDF
 //------------------------------------------------------------------------//
@@ -908,6 +909,7 @@ function GetPDF($intAccount, $intYear, $intMonth)
 	
 	// GLOB for account filename
 	$arrInvoices = glob("/home/vixen_invoices/".$intYear."/".$intMonth."/".$intAccount."_*.pdf");
+	
 	if (count($arrInvoices) == 0 || $arrInvoices === FALSE)
 	{
 		// Either glob had an error, or the filename doesn't exist
@@ -2585,5 +2587,45 @@ function InvoicePDFExists($intAccountId, $intYear, $intMonth)
 	}
 	return FALSE;
 }
+
+//------------------------------------------------------------------------//
+// GetPdfFilename
+//------------------------------------------------------------------------//
+/**
+ * GetPdfFilename()
+ * 
+ * Return the filename of a PDF invoice in a string
+ * 
+ * Return the filename of a PDF invoice in a string for the specified account, year, and month
+ * 
+ * @param	int		$intAccount			Account to find PDFs for
+ * @param	int		$intYear			Year to match
+ * @param	int		$intMonth			Month to match
+ *
+ * @return	mixed						string: filename of the PDF invoice
+ * 										FALSE: there was an error
+ * 
+ * @function
+ */
+function GetPdfFilename($intAccount, $intYear, $intMonth)
+{
+	$arrReturn = Array();
+	
+	// GLOB for account filename
+	$arrInvoices = glob("/home/vixen_invoices/".$intYear."/".$intMonth."/".$intAccount."_*.pdf");
+	
+	if (count($arrInvoices) == 0 || $arrInvoices === FALSE)
+	{
+		// Either glob had an error, or the filename doesn't exist
+		return FALSE;
+	}
+	
+	//grab the filename
+	$strFilename = explode("/", $arrInvoices[0]);
+	$strFilename = $strFilename[(count($strFilename)-1)];
+	
+	return $strFilename;
+}
+
 
 ?>

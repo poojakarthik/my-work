@@ -243,9 +243,9 @@ class MenuItems
 	/**
 	 * DownloadInvoicePDF()
 	 *
-	 * Compiles the javascript to be executed when the DownloadInvoicePDF menu item is triggered
+	 * Compiles the url to be executed when the DownloadInvoicePDF menu item is triggered
 	 *
-	 * Compiles the javascript to be executed when the DownloadInvoicePDF menu item is triggered
+	 * Compiles the url to be executed when the DownloadInvoicePDF menu item is triggered
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 * 
 	 * @param	int		$intAccountId		Account id that the invoice belongs to
@@ -260,16 +260,7 @@ class MenuItems
 	{
 		$this->strLabel	= "Download Invoice Pdf";
 		
-		// Setup data to send
-		$arrData['Account']['Id']		= $intAccountId;
-		$arrData['Invoice']['Year']		= $intYear;
-		$arrData['Invoice']['Month']	= $intMonth;
-		
-		// Convert to JSON notation
-		$strJsonCode = Json()->encode($arrData);
-		
-		return "javascript:Vixen.Ajax.CallAppTemplate(\"Account\", \"DownloadInvoicePDF\", $strJsonCode)";
-		//return "vixen.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth";
+		return "vixen.php/Account/DownloadInvoicePDF/?Account.Id=$intAccountId&Invoice.Year=$intYear&Invoice.Month=$intMonth";
 	}
 	
 	//------------------------------------------------------------------------//

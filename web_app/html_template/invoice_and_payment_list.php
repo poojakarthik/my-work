@@ -185,11 +185,11 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 				$intInvoiceYear 	= (int)date("Y", $intInvoiceDate);
 				$intInvoiceMonth 	= (int)date("m", $intInvoiceDate);
 				
-				if (InvoicePDFExists(DBO()->Account->Id->Value, $intInvoiceMonth, $intInvoiceYear))
+				if (InvoicePDFExists(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth))
 				{
 					// The pdf exists
 					// Build "download invoice pdf" link
-					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Value, $intInvoiceYear, $intInvoiceMonth);
+					$strInvoicePdfHref 	= Href()->DownloadInvoicePDF(DBO()->Account->Id->Value, $intInvoiceYear, $intInvoiceMonth);
 					$strInvoicePdfLabel	= "<span class='DefaultOutputSpan Default'><a href='$strInvoicePdfHref'><img src='img/template/pdf.png' title='Download PDF Invoice' /></a></span>";
 				}
 				else
@@ -230,7 +230,7 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 		}
 		
 		// Render the table
-		Table()->InvoicesAndPayments->RowHighlighting = TRUE;
+		//Table()->InvoicesAndPayments->RowHighlighting = TRUE;
 		Table()->InvoicesAndPayments->Render();
 		
 		echo "<div class='Seperator'></div>\n";
