@@ -44,6 +44,8 @@
  */
 class DBObject extends DBObjectBase
 {
+	public $_objWhere;
+	public $Where;
 	public $_strIdColumn 	= 'Id';
 	public $_arrColumns 	= Array();
 	public $_strTable		= '';
@@ -113,6 +115,13 @@ class DBObject extends DBObjectBase
 		{
 			$this->_strIdColumn = $this->_arrDefine['IdColumn'];
 		}
+		
+		// set up where object
+		$this->_objWhere = new DbWhere();
+		
+		// set up a public ref to the where object
+		$this->Where = $this->_objWhere;
+		
 		
 		// validate the object (considering nothing has been actually loaded into the object
 		// this should just set $_bolValid to TRUE
@@ -406,6 +415,8 @@ class DBObject extends DBObjectBase
 	 */
 	function Clean()
 	{
+		$this->_objWhere->Clean();
+		$this->SetColumns();
 		$this->_arrProperties 	= Array();
 		$this->_arrResult		= Array();
 		$this->_arrValid 		= Array();
@@ -432,21 +443,35 @@ class DBObject extends DBObjectBase
 	 */
 	 function Load($intId = NULL, $strType='LoadData')
 	 {
-		// Set Id
-		$intId = (int)$intId;
-		if (!$intId)
+		// get data
+		if ($this->_objWhere->GetString())
 		{
-			$intId = (int)$this->_arrProperties[$this->_strIdColumn];
+			// WHERE clause has been declared so use it, but only retrieve one record maximum
+			$arrResults = $this->Select($this->_strTable, $this->_arrColumns, $this->_objWhere, 0, 1);
+			
+			// $this->Select() returns an array of records, even though there will only ever be 1 record at the most
+			$arrResult = $arrResults[0];
 		}
-
-		// Make sure we have an Id
-		if (!$intId)
+		else
 		{
-			return FALSE;
+			// WHERE clause has not been defined so retrieve the record based on the value of the Id property
+
+			// Set Id
+			$intId = (int)$intId;
+			if (!$intId)
+			{
+				$intId = (int)$this->_arrProperties[$this->_strIdColumn];
+			}
+	
+			// Make sure we have an Id
+			if (!$intId)
+			{
+				return FALSE;
+			}
+
+			$arrResult = $this->SelectById($this->_strTable, $this->_arrColumns, $intId);
 		}
 		
-		// get data
-		$arrResult = $this->SelectById($this->_strTable, $this->_arrColumns, $intId);
 		if (!empty($arrResult))
 		{
 			// load the data into the object

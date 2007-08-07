@@ -450,6 +450,26 @@ class DbWhere
 
 		return $this->_strWhere;
 	}
+	
+	//------------------------------------------------------------------------//
+	// Clean
+	//------------------------------------------------------------------------//
+	/**
+	 * Clean()
+	 *
+	 * Empties the contents of the where clause
+	 *
+	 * Empties the contents of the where clause
+	 *
+	 * @return	void
+	 * @method
+	 */
+	function Clean()
+	{
+		$this->_strWhere = '';
+		$this->_arrWhere = Array();
+	}
+	
 }
 
 ?>

@@ -128,6 +128,8 @@ class AppTemplateAccount extends ApplicationTemplate
 		// This is currently handled in HtmlTemplateAccountServiceList->Render() 
 		// I wanted to use the following block of code, but you can't add anything to a DBList within a foreach loop because
 		// with the current implementation of the iterator interface for DBListBase, everything is returned as copies instead of references.
+		//Update: Having tested the DBList, it turns out you can add properties to DBObjects that make up a DBList, during a foreach loop.
+		//I don't know why the following code was failing.  It probably has something to do with the StatementSelect query
 		/*
 		$selCurrentPlan = new StatementSelect('ServiceRatePlan AS srpT INNER JOIN RatePlan AS rpT ON srpT.RatePlan = rpT.Id', 
 										'srpT.Service, srpT.RatePlan, rpT.Name, rpT.Description', 
