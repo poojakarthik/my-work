@@ -93,6 +93,8 @@ define('HTML_CONTEXT_ACCOUNT_NOTE',		300);
 define('HTML_CONTEXT_CONTACT_NOTE',		301);
 define('HTML_CONTEXT_CONTACT_ADD',		200);
 define('HTML_CONTEXT_CONTACT_EDIT',		201);
+define('HTML_CONTEXT_SERVICE_ADD',		400);
+define('HTML_CONTEXT_SERVICE_EDIT',		401);
 
 // Target Types - used to determine how to handle an ajax call
 define("TARGET_TYPE_DIV", 	"Div");

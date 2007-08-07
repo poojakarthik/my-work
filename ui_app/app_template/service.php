@@ -138,14 +138,101 @@ class AppTemplateservice extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 
-		
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
 
+		if (SubmittedForm("AddService","Save"))
+		{
+			if (DBO()->Service->IsInvalid())
+			{
+				// The form has not passed initial validation
+				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+				return TRUE;
+			}
+			
+			if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
+			{
+				// This is entered if the FNN is different from FNNConfirm 
+				// i.e. a typo when entering on the form
+				// -------------------------------------------------------				
+			
+				DBO()->Service->FNN->SetToInvalid();
+				DBO()->Service->FNNConfirm->SetToInvalid();
+				Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Service # and Confirm Service # must be the same");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+				return TRUE;
+			}
+			
+			// Make sure the new FNN is valid for the service type
+			$intServiceType = ServiceType(DBO()->Service->FNN->Value);
+			if ($intServiceType != DBO()->Service->ServiceType->Value)
+			{
+				// The FNN is invalid for the services servicetype, output an appropriate message
+				DBO()->Service->FNN->SetToInvalid();
+				Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+				return TRUE;
+			}
+			
+			// Test if the FNN is currently not being used
+			$strWhere = "FNN LIKE \"". DBO()->Service->FNN->Value . "\"";
+			DBL()->Service->Where->SetString($strWhere);
+			DBL()->Service->Load();
+			if (DBL()->Service->RecordCount() > 0)
+			{	
+				DBO()->Service->FNN->SetToInvalid();
+				DBO()->Service->FNNConfirm->SetToInvalid();
+				Ajax()->AddCommand("Alert", "This Service Number already exists in the Database");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+				return TRUE;
+			}	
+			
+			// Test if the costcentre is null i.e. nothing selected set the database to NULL
+			if (DBO()->Service->CostCentre->Value == 0)
+			{
+				DBO()->Service->CostCentre = NULL;
+			}	
+			// all properties are valid. now set remaining properties of the record
+			DBO()->Service->AccountGroup	= DBO()->Account->AccountGroup->Value;
+			DBO()->Service->Account			= DBO()->Account->Id->Value;
+			//DBO()->Service->EtechId			= NULL;
+			DBO()->Service->CreatedOn		= GetCurrentDateForMySQL();
+			DBO()->Service->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
+			DBO()->Service->CappedCharge	= 0;
+			DBO()->Service->UncappedCharge	= 0;
+			
+			DBO()->Service->SetColumns("Id, FNN, ServiceType, Indial100, AccountGroup, Account, CostCentre, CappedCharge, UncappedCharge, CreatedOn, CreatedBy");
+
+			if (!DBO()->Service->Save())
+			{
+				// inserting records into the database failed unexpectedly
+				Ajax()->AddCommand("Alert", "ERROR: saving this service failed, unexpectedly");
+				return TRUE;
+			}
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "This service was successfully created", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			return TRUE;
+
+		}
+		
 		// Context menu
 		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
 		
 		// Breadcrumb menu	
-		$this->LoadPage('service_add');
+		
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
+		{
+			$this->LoadPage('service_edit');
+		}
+		else
+		{
+			$this->LoadPage('service_add');
+		}
 	}
 	
 	function edit()
@@ -169,7 +256,7 @@ class AppTemplateservice extends ApplicationTemplate
 			{
 				// The form has not passed initial validation
 				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
 				return TRUE;
 			}
 			
@@ -189,7 +276,7 @@ class AppTemplateservice extends ApplicationTemplate
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
 					Ajax()->AddCommand("Alert", "*Could not save the service.  Service # and Confirm Service # must be the same");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
 					return TRUE;
 				}
 				
@@ -200,7 +287,7 @@ class AppTemplateservice extends ApplicationTemplate
 					// The FNN is invalid for the services servicetype, output an appropriate message
 					DBO()->Service->FNN->SetToInvalid();
 					Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
 					return TRUE;
 				}
 				
@@ -213,7 +300,7 @@ class AppTemplateservice extends ApplicationTemplate
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
 					Ajax()->AddCommand("Alert", "This Service Number already exists in the Database");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
 					return TRUE;
 				}
 				
@@ -298,7 +385,7 @@ class AppTemplateservice extends ApplicationTemplate
 					// The form has not passed initial validation
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
 					return TRUE;
 				}
 				// set DOB to MySql date format
@@ -326,7 +413,7 @@ class AppTemplateservice extends ApplicationTemplate
 					// The form has not passed initial validation
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
 					return TRUE;
 				}
 				// set columns to update
