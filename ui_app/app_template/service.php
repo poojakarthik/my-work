@@ -147,7 +147,15 @@ class AppTemplateservice extends ApplicationTemplate
 
 		if (SubmittedForm("AddService","Save"))
 		{
-			if (DBO()->Service->IsInvalid())
+			if (DBO()->Service->ServiceType->Value != SERVICE_TYPE_MOBILE)
+			{
+				// sets the invalid to valid on the DBO within the servicemobiledetail field
+				// i.e. if the user hasn't chosen mobile as the service type
+				DBO()->ServiceMobileDetail->Clean();
+			}
+			
+			// test initial validation of fields
+			if (DBO()->Service->IsInvalid() || ((DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE) && (DBO()->ServiceMobileDetail->IsInvalid())))
 			{
 				// The form has not passed initial validation
 				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
@@ -155,52 +163,59 @@ class AppTemplateservice extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
+			// only validate the FNN if it has been supplied
+			if (DBO()->Service->FNN->Value != "")
 			{
-				// This is entered if the FNN is different from FNNConfirm 
-				// i.e. a typo when entering on the form
-				// -------------------------------------------------------				
-			
-				DBO()->Service->FNN->SetToInvalid();
-				DBO()->Service->FNNConfirm->SetToInvalid();
-				Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Service # and Confirm Service # must be the same");
-				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
-				return TRUE;
+				if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
+				{
+					// This is entered if the FNN is different from FNNConfirm 
+					// i.e. a typo when entering on the form
+					// -------------------------------------------------------				
+				
+					DBO()->Service->FNN->SetToInvalid();
+					DBO()->Service->FNNConfirm->SetToInvalid();
+					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Service # and Confirm Service # must be the same");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+					return TRUE;
+				}
+				
+				// Make sure the new FNN is valid for the service type
+				$intServiceType = ServiceType(DBO()->Service->FNN->Value);
+				if ($intServiceType != DBO()->Service->ServiceType->Value)
+				{
+					// The FNN is invalid for the services servicetype, output an appropriate message
+					DBO()->Service->FNN->SetToInvalid();
+					Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+					return TRUE;
+				}
+				
+				// Test that the FNN is currently not being used
+				$strWhere = "FNN LIKE \"". DBO()->Service->FNN->Value . "\"";
+				DBL()->Service->Where->SetString($strWhere);
+				DBL()->Service->Load();
+				if (DBL()->Service->RecordCount() > 0)
+				{	
+					DBO()->Service->FNN->SetToInvalid();
+					DBO()->Service->FNNConfirm->SetToInvalid();
+					Ajax()->AddCommand("Alert", "This Service Number already exists in the Database");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+					return TRUE;
+				}	
 			}
 			
-			// Make sure the new FNN is valid for the service type
-			$intServiceType = ServiceType(DBO()->Service->FNN->Value);
-			if ($intServiceType != DBO()->Service->ServiceType->Value)
-			{
-				// The FNN is invalid for the services servicetype, output an appropriate message
-				DBO()->Service->FNN->SetToInvalid();
-				Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
-				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
-				return TRUE;
-			}
-			
-			// Test if the FNN is currently not being used
-			$strWhere = "FNN LIKE \"". DBO()->Service->FNN->Value . "\"";
-			DBL()->Service->Where->SetString($strWhere);
-			DBL()->Service->Load();
-			if (DBL()->Service->RecordCount() > 0)
-			{	
-				DBO()->Service->FNN->SetToInvalid();
-				DBO()->Service->FNNConfirm->SetToInvalid();
-				Ajax()->AddCommand("Alert", "This Service Number already exists in the Database");
-				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
-				return TRUE;
-			}	
-			
-			// Test if the costcentre is null i.e. nothing selected set the database to NULL
+			// Test that the costcentre is null i.e. nothing selected set the database to NULL
 			if (DBO()->Service->CostCentre->Value == 0)
 			{
 				DBO()->Service->CostCentre = NULL;
 			}	
-			// all properties are valid. now set remaining properties of the record
+			// all properties are valid. now set remaining properties of the record service record
+			if (DBO()->Service->ServiceType->Value != SERVICE_TYPE_LAND_LINE)
+			{
+				DBO()->Service->Indial100 = 0;
+			}
 			DBO()->Service->AccountGroup	= DBO()->Account->AccountGroup->Value;
 			DBO()->Service->Account			= DBO()->Account->Id->Value;
-			//DBO()->Service->EtechId			= NULL;
 			DBO()->Service->CreatedOn		= GetCurrentDateForMySQL();
 			DBO()->Service->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
 			DBO()->Service->CappedCharge	= 0;
@@ -208,13 +223,61 @@ class AppTemplateservice extends ApplicationTemplate
 			
 			DBO()->Service->SetColumns("Id, FNN, ServiceType, Indial100, AccountGroup, Account, CostCentre, CappedCharge, UncappedCharge, CreatedOn, CreatedBy");
 
+			// Start the transaction
+			TransactionStart();
+
+			// Save the Service record
 			if (!DBO()->Service->Save())
 			{
 				// inserting records into the database failed unexpectedly
+				TransactionRollback();
 				Ajax()->AddCommand("Alert", "ERROR: saving this service failed, unexpectedly");
 				return TRUE;
 			}
-			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "This service was successfully created", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			
+			// The service record was successfully saved.  Now add the record specific to the type of service
+			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
+			{
+				// Service is a mobile phone.  Add record to ServiceMobileDetail table
+				DBO()->ServiceMobileDetail->Account			= DBO()->Account->Id->Value;
+				DBO()->ServiceMobileDetail->AccountGroup	= DBO()->Account->AccountGroup->Value;
+				DBO()->ServiceMobileDetail->Service			= DBO()->Service->Id->Value;
+				DBO()->ServiceMobileDetail->DOB				= ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
+				DBO()->ServiceMobileDetail->SetColumns("Id, AccountGroup, Account, Service, SimPUK, SimESN, SimState, DOB, Comments");
+				
+				// Save the ServiceMobileDetail record
+				if (!DBO()->ServiceMobileDetail->Save())
+				{
+					// inserting the record into the database failed unexpectedly
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: saving this service failed, unexpectedly");
+					return TRUE;
+				}
+			}
+
+			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
+			{
+				// Service is an inbound 1300/1800 number.  Add record to ServiceInboundDetail table
+				DBO()->ServiceInboundDetail->Service		= DBO()->Service->Id->Value;
+				DBO()->ServiceInboundDetail->Complex		= 0;
+				DBO()->ServiceInboundDetail->SetColumns("Id, Service, AnswerPoint, Complex, Configuration");				
+			
+				// Save the ServiceInboundDetail record
+				if (!DBO()->ServiceInboundDetail->Save())
+				{
+					// inserting the record into the database failed unexpectedly
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: saving this service failed, unexpectedly");
+					return TRUE;
+				}				
+			}
+
+			// All records defining the service have successfully been inserted into the database
+			
+			// commit the transaction
+			TransactionCommit();
+
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "This service was successfully created", "Location" => Href()->ViewAccount(DBO()->Account->Id->Value)));
 			return TRUE;
 
 		}
@@ -250,8 +313,6 @@ class AppTemplateservice extends ApplicationTemplate
 
 		if (SubmittedForm("EditService","Apply Changes"))
 		{
-			//$bolUpdateFNN = FALSE;
-			//$bolUpdateArchiveStatus = FALSE;
 			if (DBO()->Service->IsInvalid())
 			{
 				// The form has not passed initial validation
@@ -260,7 +321,6 @@ class AppTemplateservice extends ApplicationTemplate
 				return TRUE;
 			}
 			
-			$bolUpdateFNN = FALSE;
 			if (DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value)
 			{		
 				// This is entered if the FNN entered is different to the 
@@ -304,9 +364,6 @@ class AppTemplateservice extends ApplicationTemplate
 					return TRUE;
 				}
 				
-				// the new FNN is valid flag it to update in the service record in the database
-				$bolUpdateFNN = TRUE;
-				
 				// Declare properties to update
 				$arrUpdateProperties[] = "FNN";
 			}
@@ -325,6 +382,11 @@ class AppTemplateservice extends ApplicationTemplate
 				// Declare properties to update
 				$arrUpdateProperties[] = "ClosedOn";
 				$arrUpdateProperties[] = "ClosedBy";
+				
+				// Define system generated note
+				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+				$strNote = "Service archived on $strDateTime by $strUserName";
 			}
 			if (DBO()->Service->ActivateService->Value)
 			{
@@ -334,14 +396,15 @@ class AppTemplateservice extends ApplicationTemplate
 				// set ClosedOn date to null
 				DBO()->Service->ClosedOn = NULL;
 				
-				// set ClosedBy to null
-				DBO()->Service->ClosedBy = NULL;
-				
 				//TODO! probably need to run EnableELB
 				
 				// Declare properties to update
 				$arrUpdateProperties[] = "ClosedOn";
-				$arrUpdateProperties[] = "ClosedBy";
+				
+				// Define system generated note
+				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+				$strNote = "Service unarchived on $strDateTime by $strUserName";
 			}
 			if (DBO()->Service->CostCentre->Value !== NULL)
 			{
@@ -351,9 +414,6 @@ class AppTemplateservice extends ApplicationTemplate
 				}
 				$arrUpdateProperties[] = "CostCentre";
 			}
-			
-			//TODO! If the service is being updated, an automatic note should be generated describing what happened
-			// Check if the existing system does this
 			
 			// Save the changes to the Service Table, if count($arrUpdateProperties) > 0
 
@@ -373,9 +433,6 @@ class AppTemplateservice extends ApplicationTemplate
 					return TRUE;
 				}
 			}
-			
-			// handle other details such as mobile phone and inbound call details
-			//TODO! check that the mobile details are valid if not use transaction rollback etc
 			
 			// handle mobile phone details			
 			if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
@@ -429,7 +486,29 @@ class AppTemplateservice extends ApplicationTemplate
 			}
 			
 			// all details regarding the service have been successfully updated
-			
+
+			// Add an automatic note if the service has been archived or unarchived
+			if ($strNote)
+			{
+				DBO()->Note->Note = $strNote;
+				DBO()->Note->Account = DBO()->Service->Account->Value;
+				DBO()->Note->AccountGroup = DBO()->Service->AccountGroup->Value;
+				DBO()->Note->Service = DBO()->Service->Id->Value;
+				DBO()->Note->Contact = NULL;
+				DBO()->Note->Emplpyee = AuthenticatedUser()->_arrUser['Id'];
+				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
+				DBO()->Note->NoteType = SYSTEM_NOTE;
+				
+				// Save the note
+				if (!DBO()->Note->Save())
+				{
+					// The automatic system note did not save
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", "ERROR: Saving the automatic system note failed, unexpectedly.  The service has not been updated");
+					return TRUE;
+				}
+			}
+
 			// Commit the transaction
 			TransactionCommit();
 			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service details were successfully updated", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
@@ -445,30 +524,12 @@ class AppTemplateservice extends ApplicationTemplate
 		}
 	
 		// load mobile detail
-		// HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! 
-		// We are loading this record from the database twice because you can only load a DBObject if you know the value for the Id property
-		// and we want to use the record's Service property.  Functionality should be added to the DBObject class so that you can
-		// specify the property, or group of properties to use, to locate the record you want
-		DBL()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
-		DBL()->ServiceMobileDetail->Load();
-		DBL()->ServiceMobileDetail->rewind();
-		
-		$dboServiceMobileDetail = DBL()->ServiceMobileDetail->current();
-		
-		DBO()->ServiceMobileDetail->Id = $dboServiceMobileDetail->Id->Value;
+		DBO()->ServiceMobileDetail->Where->Service = DBO()->Service->Id->Value;
 		DBO()->ServiceMobileDetail->Load();
 
 		// load inbound detail
-		DBL()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
-		DBL()->ServiceInboundDetail->Load();
-		DBL()->ServiceInboundDetail->rewind();
-		
-		$dboServiceInboundDetail = DBL()->ServiceInboundDetail->current();
-		
-		DBO()->ServiceInboundDetail->Id = $dboServiceInboundDetail->Id->Value;
+		DBO()->ServiceInboundDetail->Where->Service = DBO()->Service->Id->Value;
 		DBO()->ServiceInboundDetail->Load();
-		
-		// END OF HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! HACK! 
 		
 		// Store the current FNN to check between states that the FNN textbox has been changed
 		DBO()->Service->CurrentFNN = DBO()->Service->FNN->Value;

@@ -459,7 +459,37 @@ class MenuItems
 		
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddNotePopupId\", \"medium\", \"Note\", \"AddAccount\", $strJsonCode)";
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// AddServiceNote
+	//------------------------------------------------------------------------//
+	/**
+	 * AddServiceNote()
+	 *
+	 * Compiles the javascript to be executed when the AddServiceNote menu item is clicked
+	 *
+	 * Compiles the javascript to be executed when the AddServiceNote menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 * 
+	 * @param	int		$intId		id of the account associated with the note to add
+	 *
+	 * @return	string				action to be executed when the AddServiceNotes menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddServiceNote($intId)
+	{
+		$this->strLabel	= "add service note";
+		
+		// Setup data to send
+		$arrData['Objects']['Service']['Id'] = $intId;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"AddServicePopupId\", \"medium\", \"Note\", \"AddService\", $strJsonCode)";
+	}
+
 	//------------------------------------------------------------------------//
 	// EmailPDFInvoice
 	//------------------------------------------------------------------------//

@@ -106,17 +106,26 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			case '". SERVICE_TYPE_MOBILE ."':
 				// hide any details not required for a mobile and display the mobile details
 				document.getElementById('InboundDetailDiv').style.display='none';
+				document.getElementById('LandlineDetailDiv').style.display='none';
 				document.getElementById('MobileDetailDiv').style.display='inline';
 				break;
 			case '". SERVICE_TYPE_INBOUND ."':
 				// hide any details not required for inbound services and show the inbound services details
 				document.getElementById('MobileDetailDiv').style.display='none';
+				document.getElementById('LandlineDetailDiv').style.display='none';
 				document.getElementById('InboundDetailDiv').style.display='inline';
+				break;
+			case '". SERVICE_TYPE_LAND_LINE ."':
+				// hide any details not required for inbound services and show the inbound services details
+				document.getElementById('MobileDetailDiv').style.display='none';
+				document.getElementById('InboundDetailDiv').style.display='none';
+				document.getElementById('LandlineDetailDiv').style.display='inline';
 				break;
 			default:
 				// hide all extra details
 				document.getElementById('MobileDetailDiv').style.display='none';
 				document.getElementById('InboundDetailDiv').style.display='none';
+				document.getElementById('LandlineDetailDiv').style.display='none';
 				break;
 		}";
 		
@@ -207,10 +216,28 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "</div>\n";		
 		}
 		
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
+		{
+			echo "<div id='LandlineDetailDiv'>\n";
+		}
+		else
+		{
+			echo "<div id='LandlineDetailDiv' style='display:none'>\n";			
+		}
 		DBO()->Service->Indial100->RenderInput();
+		echo "</div>\n";
 		
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
+		{
+			// show extra inbound detail div
+			echo "<div id='InboundDetailDiv'>\n";
+		}
+		else
+		{
+			// hide extra inbound detail div
+			echo "<div id='InboundDetailDiv' style='display:none;'>\n";
+		}
 		// handle extra inbound phone details
-		echo "<div id='InboundDetailDiv' style='display:none;'>\n";
 		echo "<div class='Seperator'></div>\n";
 		echo "<h2 class='service'>Inbound Details</h2>\n";
 		DBO()->ServiceInboundDetail->Id->RenderHidden();
@@ -312,6 +339,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->CreatedOn->RenderHidden();
 		DBO()->Service->CurrentFNN->RenderHidden();
 		DBO()->Service->Account->RenderHidden();
+		DBO()->Service->AccountGroup->RenderHidden();
 		
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	

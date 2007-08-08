@@ -67,7 +67,7 @@ class AppTemplateNote extends ApplicationTemplate
 		
 		// Setup all DBO and DBL objects required for the page
 		
-		// Check what sort of notes you want to retrieve (ie Account notes, or Contact Notes)
+		// Check what sort of notes you want to retrieve (ie Account notes, Contact Notes or Service Notes)
 		switch (DBO()->Note->NoteClass->Value)
 		{
 			case NOTE_CLASS_ACCOUNT_NOTES:
@@ -75,6 +75,9 @@ class AppTemplateNote extends ApplicationTemplate
 				break;
 			case NOTE_CLASS_CONTACT_NOTES:
 				$strWhere = "Contact=" . DBO()->Note->NoteGroupId->Value;
+				break;
+			case NOTE_CLASS_SERVICE_NOTES:
+				$strWhere = "Service=" . DBO()->Note->NoteGroupId->Value;
 				break;
 			default:
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
@@ -273,5 +276,85 @@ class AppTemplateNote extends ApplicationTemplate
 
 		return TRUE;
 	}	
-	
+
+	function AddService()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+
+		// The account should already be set up as a DBObject
+		if (!DBO()->Service->Load())
+		{
+			Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+			Ajax()->AddCommand("AlertReload", "The service with service id: '". DBO()->Service->Id->Value ."' could not be found");
+			return TRUE;
+		}
+		
+		
+		// check if a new note is being submitted
+		if (SubmittedForm('AddNote', 'Add Note'))
+		{
+			// Only add the note if it is not invalid
+			if (!DBO()->Note->IsInvalid())
+			{
+				// Set the properties for the new note
+				DBO()->Note->AccountGroup	= DBO()->Service->AccountGroup->Value;
+				
+				if (DBO()->Note->IsAccountNote->Value)
+				{
+					DBO()->Note->Account	= DBO()->Service->Account->Value;
+				}
+				
+				// User's details
+				DBO()->Note->Employee = AuthenticatedUser()->_arrUser['Id'];
+				
+				// Time stamp
+				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
+				
+				// Set the Note's contact
+				DBO()->Note->Contact = DBO()->Service->Id->Value;
+								
+				// DBO()->Note->Note should already be set
+				// DBO()->Note->NoteType should already be set
+				// DBO()->Note->Service is not set
+				
+				// Save the note to the Note table of the vixen database
+				if (!DBO()->Note->Save())
+				{
+					// The note could not be saved
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("AlertReload", "ERROR: The note did not save.");
+					return TRUE;
+				}
+				else
+				{
+					// The note was successfully saved
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+					Ajax()->AddCommand("AlertReload", "The note has been successfully added.");
+					return TRUE;
+				}
+			}
+			else
+			{
+				// Something was invalid
+				DBO()->Status->Message = "The Note could not be saved. Invalid fields are highlighted.";
+			}
+		}
+		
+		// Load DBO and DBL objects required of the page
+		// Get all Note Types
+		DBL()->AvailableNoteTypes->SetTable("NoteType");
+		DBL()->AvailableNoteTypes->Load();
+		
+		// Get the services's account details
+		DBO()->Account->Id = DBO()->Service->Account->Value;
+		DBO()->Account->Load();
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('note_add_service');
+
+		return TRUE;
+	}	
+
 }
