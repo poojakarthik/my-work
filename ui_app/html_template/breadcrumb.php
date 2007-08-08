@@ -101,15 +101,24 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 	 */
 	function Render()
 	{
-		// The 3 spaces at the end of the below string are there intentionally and should not be removed
-		$strHtmlCode = "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n   ";
+		// The 6 spaces at the end of the below string are there intentionally and should not be removed
+		$strHtmlCode = "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n      ";
 		foreach (DBO()->BreadCrumb AS $objProperty)
 		{
-			$strHtmlCode .= "<a href ='".$objProperty->Value."'>".$objProperty->Label."</a> / ";
+			$strHtmlCode .= "<a href ='".$objProperty->Value."' style='color:blue; text-decoration: none;'>".$objProperty->Label."</a> &gt; ";
 		}
 		
-		// Remove the last 3 chars from html code
-		$strHtmlCode = substr($strHtmlCode, 0, -3);
+		// Remove the last 6 chars from html code
+		$strHtmlCode = substr($strHtmlCode, 0, -6);
+		
+		// Add the current page as a breadcrumb
+		$mixCurrentPage = BreadCrumb()->GetCurrentPage();
+		if ($mixCurrentPage !== FALSE)
+		{
+			// the current page has been defined.  Attach it to the bread crumb trail
+			$strHtmlCode .= " &gt; $mixCurrentPage";
+		}
+		
 		$strHtmlCode .= "\n</div>\n";
 		
 		echo $strHtmlCode;

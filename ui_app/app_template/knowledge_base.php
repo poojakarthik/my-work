@@ -45,96 +45,121 @@ class AppTemplateKnowledgeBase extends ApplicationTemplate
 {
 
 	//------------------------------------------------------------------------//
-	// ViewDocument
+	// ViewArticle
 	//------------------------------------------------------------------------//
 	/**
-	 * ViewDocument()
+	 * ViewArticle()
 	 *
-	 * Performs the logic for the knowledge_base_doc_view.php webpage
+	 * Performs the logic for the knowledge_base_view_article.php webpage
 	 * 
-	 * Performs the logic for the knowledge_base_doc_view.php webpage
+	 * Performs the logic for the knowledge_base_view_article.php webpage
 	 *
 	 * @return		bool
 	 * @method
 	 *
 	 */
-	function ViewDocument()
+	function ViewArticle()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
-
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
 		// context menu
-		ContextMenu()->Contact_Retrieve->Account->View_Account(1);
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
 		
-		// add to breadcrumb menu
-		BreadCrumb()->ViewAccount(1000006574);
-		BreadCrumb()->ViewService(1, '0787321549');
+		// breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->Knowledge_Base();
+		BreadCrumb()->SetCurrentPage("View Article");
 		
-		// retrieve the requested document...
-		// The contents of $_GET is set up in the DBO() object within SubmittedData::Get() which has already
-		// been called within Application::Load
-		// however the actual DBO()->...->Load() method is not run
-		// This is only set up for the GET variables defined in the format "Object_Property=value"
-		// ie knowledge_base_doc_view.php?KnowledgeBase_Id=1
+		// retrieve the requested document
 		if (!DBO()->KnowledgeBase->Load())
 		{
-			// the document was not specified so display an appropriate error message and return them to the document selection page
-			//$this->LoadPage('knowledge_base_doc_select');
-			//echo("<br> The document requested could not be found");
 			DBO()->Error->Message = "The document requested could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
+		
+		$strId = DBO()->KnowledgeBase->Id->Value;
+		$strId = str_pad($strId, 7, "kb00000", STR_PAD_LEFT);
+		DBO()->KnowledgeBase->ArticleId = $strId;
 		
 		// retrieve all related documents (relationships between documents are defined in the table KnowledgeBaseLink)
 		DBL()->KnowledgeBase->Where->Set("Id IN (SELECT ArticleRight FROM KnowledgeBaseLink WHERE ArticleLeft = <Id>)
 										OR
 										Id IN (SELECT ArticleLeft FROM KnowledgeBaseLink WHERE ArticleRight = <Id>)", 
 										Array('Id'=>DBO()->KnowledgeBase->Id->Value));
-		DBL()->KnowledgeBase->SetColumns(Array("Id", "Title"));
+		DBL()->KnowledgeBase->SetColumns("Id, Title, Abstract, CreatedOn, LastUpdated");
 		DBL()->KnowledgeBase->Load();
 
-		// Load the name of the employee who created the KnowledgeBase document
-		if (DBO()->KnowledgeBase->CreatedBy->Value)
+		// Set the properly formatted Id for each article
+		foreach (DBL()->KnowledgeBase as $dboArticle)
 		{
-			DBO()->Employee->Id = DBO()->KnowledgeBase->CreatedBy->Value;
-			DBO()->Employee->Load();
-			
-			// check that an author could be found
-			if (!DBO()->Employee->IsInvalid())
-			{
-				// the author was found
-				DBO()->KnowledgeBase->Author = DBO()->Employee->FirstName->Value . " " . DBO()->Employee->LastName->Value;
-			}
-			else
-			{
-				// the author could not be found so just output their employee id
-				DBO()->KnowledgeBase->Author = "employee id: ". DBO()->KnowledgeBase->CreatedBy->Value;
-			}
+			$strId = $dboArticle->Id->Value;
+			$strId = str_pad($strId, 7, "kb00000", STR_PAD_LEFT);
+			$dboArticle->ArticleId = $strId;
 		}
-		
-		// Load the name of the employee who authorised the KnowledgeBase document
-		if (DBO()->KnowledgeBase->AuthorisedBy->Value)
-		{
-			DBO()->Employee->Id = DBO()->KnowledgeBase->AuthorisedBy->Value;
-			DBO()->Employee->Load();
-			
-			// check that an authoriser could be found
-			if (!DBO()->Employee->IsInvalid())
-			{
-				// the authoriser was found
-				DBO()->KnowledgeBase->Authoriser = DBO()->Employee->FirstName->Value . " " . DBO()->Employee->LastName->Value;
-			}
-			else
-			{
-				// the authoriser could not be found so just output their employee id
-				DBO()->KnowledgeBase->Authoriser = "employee id: ". DBO()->KnowledgeBase->AuthorisedBy->Value;
-			}
-		}
+
 		// All data relating to the document has been retrieved from the database so now load the page template
 		$this->LoadPage('knowledge_base_doc_view');
 		
 		return TRUE;
 	}
+	
+	//------------------------------------------------------------------------//
+	// ListArticles
+	//------------------------------------------------------------------------//
+	/**
+	 * ListArticles()
+	 *
+	 * Performs the logic for the knowledge_base_list_articles.php webpage
+	 * 
+	 * Performs the logic for the knowledge_base_list_articles.php webpage
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function ListArticles()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
+		// context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+		
+		// breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SetCurrentPage("Knowledge Base");
+		
+		
+		// Setup all DBO and DBL objects required for the page
+		DBL()->KnowledgeBase->SetColumns("Id, Title, Abstract, CreatedOn, LastUpdated");
+		DBL()->KnowledgeBase->OrderBy("Id");
+		if (!DBL()->KnowledgeBase->Load())
+		{
+			DBO()->Error->Message = "The list of Knowledge Base articles could not be retrieved from the database";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		// Set the properly formatted Id for each article
+		foreach (DBL()->KnowledgeBase as $dboArticle)
+		{
+			$strId = $dboArticle->Id->Value;
+			$strId = str_pad($strId, 7, "kb00000", STR_PAD_LEFT);
+			$dboArticle->ArticleId = $strId;
+		}
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('knowledge_base_list_articles');
+
+		return TRUE;
+	}
+	
+	
 }
 ?>

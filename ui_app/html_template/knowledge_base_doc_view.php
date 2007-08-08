@@ -85,8 +85,8 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 		$this->_intContext = $intContext;
 		
 		// Load all java script specific to the page here
-		$this->LoadJavascript("dhtml");
 		$this->LoadJavascript("highlight");
+		$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -103,25 +103,43 @@ class HtmlTemplateKnowledgeBaseDocView extends HtmlTemplate
 	 */
 	function Render()
 	{	
-		echo "<div class='WideContent'>\n";
+		echo "<div class='WideColumn'>\n";
 	
-		foreach (DBO()->KnowledgeBase AS $strProperty=>$objValue)
+		DBO()->KnowledgeBase->Title->RenderOutput();
+		DBO()->KnowledgeBase->CreatedOn->RenderOutput();
+		if (DBO()->KnowledgeBase->LastUpdated->Value)
 		{
-			$objValue->RenderOutput();
+			DBO()->KnowledgeBase->LastUpdated->RenderOutput();
+		}
+		DBO()->KnowledgeBase->CreatedBy->RenderCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+		if (DBO()->KnowledgeBase->AuthorisedBy->Value)
+		{
+			// display the name of the employee who authorised the article
+			DBO()->KnowledgeBase->AuthorisedBy->RenderCallback("GetEmployeeName", NULL, RENDER_OUTPUT);
+		}
+		else
+		{
+			if (!DBO()->KnowledgeBase->AuthorisedOn->Value)
+			{
+				// Only display this if there isn't an AuthorisedOn date
+				DBO()->KnowledgeBase->AuthorisedBy->RenderArbitrary("This article has not yet been authorised", RENDER_OUTPUT);
+			}
+		}
+	
+		// only display the AuthorisedOn date if there is one
+		if (DBO()->KnowledgeBase->AuthorisedOn->Value)
+		{
+			DBO()->KnowledgeBase->AuthorisedOn->RenderOutput();
 		}
 		
+		// Display the contents of the article
+		echo "<div class='Seperator'></div>\n";
+		DBO()->KnowledgeBase->Content->RenderValue();
 		
-		// Output links to all related documents
-		// have the link label be the id and title of the document  "title (id:123)"
 		
-		foreach (DBL()->KnowledgeBase AS $dboKnowledgeBase)
-		{
-			echo "<br><b>Related Article: </b>";
-			echo "<A href='knowledge_base_doc_view.php?KnowledgeBase.Id=". $dboKnowledgeBase->Id->Value ."'>".$dboKnowledgeBase->Title->Value . " (doc id: ". $dboKnowledgeBase->Id->Value .")"."</A>" ."\n";
-		}
+		echo "<div class='Seperator'></div>\n";
 		
 		echo "</div>\n";
-		
 	}
 }
 

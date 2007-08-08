@@ -553,7 +553,8 @@
 	h2.Employee,
 	h2.Email,
 	h2.Permissions,
-	h2.Bug
+	h2.Bug,
+	h2.Article
 	{
 		background-repeat:		no-repeat;
 		background-position:	bottom left;
@@ -697,6 +698,10 @@
 		background-image:              url('img/template/lady-debug.png');
 	}
 	
+	h2.Article
+	{
+		background-image:				url('img/template/article.png');
+	}
 
 /**************************************************************************/
 /* HEADER															  	  */

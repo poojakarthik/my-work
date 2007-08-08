@@ -553,7 +553,7 @@ function GetEmployeeName($intEmployeeId)
 	}
 	else
 	{
-		$strName = NULL;
+		$strName = "";
 	}
 
 	return $strName;

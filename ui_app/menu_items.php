@@ -741,6 +741,51 @@ class MenuItems
 	}
 
 	//------------------------------------------------------------------------//
+	// KnowledgeBase
+	//------------------------------------------------------------------------//
+	/**
+	 * KnowledgeBase()
+	 *
+	 * Compiles the Href to be executed when the KnowledgeBase menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the KnowledgeBase menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
+	 * @return	string				Href to be executed when the KnowledgeBase menu item is clicked
+	 *
+	 * @method
+	 */
+	function KnowledgeBase()
+	{
+		$this->strLabel = "Knowledge Base";
+		return "vixen.php/KnowledgeBase/ListArticles/";
+	}	
+
+	//------------------------------------------------------------------------//
+	// ViewKnowledgeBaseArticle
+	//------------------------------------------------------------------------//
+	/**
+	 * ViewKnowledgeBaseArticle()
+	 *
+	 * Compiles the Href to be executed when the ViewKnowledgeBaseArticle menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ViewKnowledgeBaseArticle menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
+	 * @param	int			$intId		id of the knowledge base article to view
+	 *
+	 * @return	string					Href to be executed when the ViewKnowledgeBaseArticle menu item is clicked
+	 *
+	 * @method
+	 */
+	function ViewKnowledgeBaseArticle($intId)
+	{
+		$this->strLabel = "Article";
+		return "vixen.php/KnowledgeBase/ViewArticle/?KnowledgeBase.Id=$intId";
+	}
+
+
+	//------------------------------------------------------------------------//
 	// BreadCrumb
 	//------------------------------------------------------------------------//
 	/**
@@ -806,6 +851,7 @@ class MenuItems
 				return "logout.php";
 				break;
 			case "AdminConsole":
+				$this->strLabel = "Admin Console";
 				return "console.php";
 				break;
 			default;
