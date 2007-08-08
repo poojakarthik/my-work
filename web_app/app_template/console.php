@@ -158,6 +158,7 @@ class AppTemplateConsole extends ApplicationTemplate
 	{
 		AuthenticatedUser()->LogoutClient();
 		
+		// Redirect the user to the main page of the website
 		Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "Logout successful", "Location" => Href()->MainPage()));
 		
 		return TRUE;
