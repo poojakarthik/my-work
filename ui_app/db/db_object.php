@@ -470,6 +470,9 @@ class DBObject extends DBObjectBase
 			}
 
 			$arrResult = $this->SelectById($this->_strTable, $this->_arrColumns, $intId);
+			
+			// set Id
+			$this->_arrProperties[$this->_strIdColumn] = $intId;
 		}
 		
 		if (!empty($arrResult))
@@ -483,9 +486,6 @@ class DBObject extends DBObjectBase
 			$this->_bolValid = FALSE;
 			$bolReturn = FALSE;
 		}
-		
-		// set Id
-		$this->_arrProperties[$this->_strIdColumn] = $intId;
 		
 		return $bolReturn;
 	 }
