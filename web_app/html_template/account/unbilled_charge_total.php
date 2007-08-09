@@ -51,12 +51,6 @@ class HtmlTemplateAccountUnbilledChargeTotal extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		// Load all java script specific to the page here
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
-		//$this->LoadJavascript("tooltip");
-		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -74,10 +68,9 @@ class HtmlTemplateAccountUnbilledChargeTotal extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='WideContent'>\n";
-		echo "<h2 class='Adjustment'>Unbilled Charges for Account# ". DBO()->Account->Id->Value ."</h2>\n";
+		//echo "<h2 class='Adjustment'>Unbilled Charges for Account# ". DBO()->Account->Id->Value ."</h2>\n";
 		
 		// Display the details of the nominated account
-		//echo "<h2 class='Account'>Account Details</h2>\n";
 		if (DBO()->Account->BusinessName->Value)
 		{
 			DBO()->Account->BusinessName->RenderOutput();
@@ -86,9 +79,6 @@ class HtmlTemplateAccountUnbilledChargeTotal extends HtmlTemplate
 		{
 			DBO()->Account->TradingName->RenderOutput();
 		}
-		
-		// Display the current unbilled Total for this account (unbilled charges + unbilled CDRs)
-		DBO()->Account->CurrentUnbilledTotal->RenderOutput();
 		
 		echo "<div class='Seperator'></div>\n";
 		

@@ -37,7 +37,7 @@ $this->Page->SetName('Console');
 $this->Page->SetLayout('4column');
 
 // add the Html Objects to their respective columns
-$this->Page->AddObject('Console', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+//$this->Page->AddObject('Console', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('AccountDetails', COLUMN_TWO, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ConsoleOptions', COLUMN_THREE, HTML_CONTEXT_DEFAULT);
 

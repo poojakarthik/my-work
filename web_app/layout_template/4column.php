@@ -44,19 +44,22 @@ $this->RenderClientHeader();
 		<div id="Logo" class="Left sectionContent">
 			<img src="img/header.jpg" width="597" height="95" />
 		</div>
-		<div id="Logout" class="Right sectionContent">
+	</div>
+	<div class="sectionContent">
+		<div class="MenuContainer">
+			<?php $this->RenderBreadCrumbMenu();?>
+			
 			<?php
 				//display the logout link
 				$strUserName	= AuthenticatedUser()->_arrUser['UserName'];
 				$strLogoutHref	= Href()->LogoutUser();
 				$strLogoutLink	= "<a href='$strLogoutHref' style='color:blue; text-decoration: none;'>logout</a>";
-				echo "<span class='DefaultOutputSpan Default'>$strUserName ($strLogoutLink)</span>\n";
+				echo "<span style='float:right;margin-right:1px;'>$strUserName ($strLogoutLink)</span>\n";
 			?>
+			
 		</div>
 	</div>
-	<div class="sectionContent">
-		<?php $this->RenderBreadCrumbMenu();?>
-	</div>
+	<h1> <?php echo $this->_strPageName; ?></h1>
 	<div class="clear"></div>
 		<div id='PageBody'>
 			<?php 

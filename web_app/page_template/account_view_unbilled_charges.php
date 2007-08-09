@@ -38,7 +38,7 @@ $strLayout = '1Column';
 $this->Page->SetLayout($strLayout);
 
 // Add each html object to the appropriate column
-$this->Page->AddObject('AccountUnbilledChargeTotal', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
+//$this->Page->AddObject('AccountUnbilledChargeTotal', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('UnbilledChargeList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('AccountServiceList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 

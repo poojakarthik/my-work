@@ -100,13 +100,23 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='PopupLarge'>\n";
-		echo "<h2 class='Adjustment'>Add Recurring Adjustment</h2>\n";
 		
 		$this->FormStart("AddRecurringAdjustment", "Adjustment", "AddRecurring");
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
 		DBO()->Account->Id->RenderHidden();
 		//DBO()->ChargeType->Id->RenderHidden();
+		
+		if (DBO()->Service->Id->Value)
+		{
+			echo "<h2 class='Adjustment'>Add Service Recurring Adjustment</h2>\n";
+			DBO()->Service->Id->RenderHidden();
+		}
+		else
+		{
+			echo "<h2 class='Adjustment'>Add Recurring Adjustment</h2>\n";
+		}
+		
 		
 		// Display account details
 		DBO()->Account->Id->RenderOutput();
@@ -121,7 +131,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		// create a combobox containing all the charge types
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Adjustment:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Adjustment:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <select id='ChargeTypeCombo' onchange='Vixen.ValidateRecurringAdjustment.DeclareChargeType(this.value)'>\n";
 		foreach (DBL()->ChargeTypesAvailable as $dboChargeType)
@@ -209,7 +219,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		// create the TimesToCharge textbox
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>Times to Charge</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Times to Charge</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
 		echo "      <input type='text' id='TimesToCharge' value='' class='DefaultInputTextSmall' onkeyup='Vixen.ValidateRecurringAdjustment.TimesChargedChanged(event)'></input>\n";
 		echo "   </div>\n";
@@ -217,7 +227,7 @@ class HtmlTemplateRecurringAdjustmentAdd extends HtmlTemplate
 		
 		// create the EndDate label
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'>End Date:</div>\n";
+		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;End Date:</div>\n";
 		echo "   <div id='EndDate' class='DefaultOutput'>&nbsp;</div>\n";
 		echo "</div>\n";
 		

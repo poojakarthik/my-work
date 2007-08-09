@@ -75,19 +75,9 @@ class HtmlTemplateConsole extends HtmlTemplate
 	{
 		echo "<div class='NarrowContent'>\n";
 		
-		
-		// For the console page, we need display some of the contact's details
-		// We need to display account details for each account that the contact belongs to.
-		// This will usually just be the one account, but we have to make provisions for multiple accounts
-		// You may want to display the account details differently if they have more than one account
-		// each account listed should have a link to a page listing all the details for that account
-		
-		
-		//TODO! INSERT A LOG OUT BUTTON
-		
 		echo "<h2 class='Console'>Console</h2>\n";
 		
-		$strWelcome = "Welcome " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
+		$strWelcome = "&nbsp;&nbsp;Welcome " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
 		
 		echo "<span class='DefaultOutputSpan Default'>$strWelcome</span>";
 		

@@ -103,9 +103,11 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 	{
 		// The 6 spaces at the end of the below string are there intentionally and should not be removed
 		$strHtmlCode = "<div Id='VixenBreadCrumb' Class='BreadCrumbMenu'>\n      ";
+		$intCrumbCount = 0;
 		foreach (DBO()->BreadCrumb AS $objProperty)
 		{
 			$strHtmlCode .= "<a href ='".$objProperty->Value."' style='color:blue; text-decoration: none;'>".$objProperty->Label."</a> &gt; ";
+			$intCrumbCount++;
 		}
 		
 		// Remove the last 6 chars from html code
@@ -116,7 +118,16 @@ class HtmlTemplateBreadCrumb extends HtmlTemplate
 		if ($mixCurrentPage !== FALSE)
 		{
 			// the current page has been defined.  Attach it to the bread crumb trail
-			$strHtmlCode .= " &gt; $mixCurrentPage";
+			if ($intCrumbCount)
+			{
+				// Attach it to the end of the bread crumb trail
+				$strHtmlCode .= " &gt; $mixCurrentPage";
+			}
+			else
+			{
+				// There are no other bread crumbs
+				$strHtmlCode .= "$mixCurrentPage";
+			}
 		}
 		
 		$strHtmlCode .= "\n</div>\n";

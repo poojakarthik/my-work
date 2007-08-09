@@ -54,9 +54,6 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
-		//$this->LoadJavascript("tooltip");
-		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -88,10 +85,11 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		}
 		DBO()->Account->ABN->RenderOutput();
 		
-		DBO()->Account->Balance->RenderOutput();
+		DBO()->Account->CustomerBalance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->CurrentUnbilledTotal->RenderOutput();
 		
+		DBO()->Account->UnbilledAdjustments->RenderOutput();
+		DBO()->Account->UnbilledCDRs->RenderOutput();
 		
 		echo "<div class='Seperator'></div>\n";
 		

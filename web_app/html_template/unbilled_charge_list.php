@@ -78,7 +78,7 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 				
 		Table()->Adjustments->SetHeader("Date", "Code", "Description", "Amount (inc GST)", "&nbsp;");
 		Table()->Adjustments->SetWidth("10%", "15%", "50%", "20%", "5%");
-		Table()->Adjustments->SetAlignment("left", "left", "left", "right", "left");
+		Table()->Adjustments->SetAlignment("left", "left", "left", "right", "center");
 		
 		// Declare variable to store the Total adjustments
 		$fltTotalAdjustments = 0;
@@ -86,19 +86,24 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 		// add the rows
 		foreach (DBL()->Charge as $dboCharge)
 		{
-			Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
-											$dboCharge->ChargeType->AsValue(),
-											$dboCharge->Description->AsValue(),
-											$dboCharge->Amount->AsCallback("AddGST"),
-											$dboCharge->Nature->AsValue());
 
 			if ($dboCharge->Nature->Value == NATURE_DR)
 			{
+				Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
+											$dboCharge->ChargeType->AsValue(),
+											$dboCharge->Description->AsValue(),
+											$dboCharge->Amount->AsCallback("AddGST"),
+											"&nbsp;");
 				// Add the charge to the total adjustments
 				$fltTotalAdjustments += $dboCharge->Amount->Value;
 			}
 			else
 			{
+				Table()->Adjustments->AddRow($dboCharge->CreatedOn->AsValue(),
+											$dboCharge->ChargeType->AsValue(),
+											$dboCharge->Description->AsValue(),
+											$dboCharge->Amount->AsCallback("AddGST"),
+											"<span class='DefaultOutputSpan Default'>". NATURE_CR ."</span>");
 				// Subtract the charge from the total adjustments
 				$fltTotalAdjustments -= $dboCharge->Amount->Value;
 			}
@@ -116,16 +121,25 @@ class HtmlTemplateUnbilledChargeList extends HtmlTemplate
 		}
 		else
 		{
+			if ($fltTotalAdjustments < 0)
+			{
+				// Make the value positive and mark it as a credit
+				$fltTotalAdjustments = $fltTotalAdjustments * (-1);
+				$strNature = "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>". NATURE_CR ."</span>";
+			}
+			else
+			{
+				$strNature = "&nbsp;";
+			}
+		
 			// Append the total to the table
 			$strTotal				= "<span class='DefaultOutputSpan Default' style='font-weight:bold;'>Total Adjustments:</span>\n";
 			$strTotalAdjustments	= "<span class='DefaultOutputSpan Currency' style='font-weight:bold;'>". OutputMask()->MoneyValue($fltTotalAdjustments, 2, TRUE) ."</span>\n";
 			
-			Table()->Adjustments->AddRow($strTotal, $strTotalAdjustments, "&nbsp;");
-			Table()->Adjustments->SetRowAlignment("left", "right", "&nbsp;");
+			Table()->Adjustments->AddRow($strTotal, $strTotalAdjustments, $strNature);
+			Table()->Adjustments->SetRowAlignment("left", "right", "center");
 			Table()->Adjustments->SetRowColumnSpan(3, 1, 1);
 		}
-		
-		// You may want to Append a row to the end of this table which displays the total value of the adjustments
 		
 		Table()->Adjustments->Render();
 		

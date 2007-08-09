@@ -76,7 +76,7 @@ class AppTemplateAdjustment extends ApplicationTemplate
 		// Check if the adjustment relates to a particular service
 		if (DBO()->Service->Id->Value)
 		{
-			// A service has been specified, load it
+			// A service has been specified.  Load it, to check that it actually exists
 			if (!DBO()->Service->Load())
 			{
 				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
@@ -209,7 +209,19 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			Ajax()->AddCommand("AlertReload", "The account with account id: '". DBO()->Account->Id->value ."' could not be found");
 			return TRUE;
 		}
-		
+
+		// Check if the adjustment relates to a particular service
+		if (DBO()->Service->Id->Value)
+		{
+			// A service has been specified.  Load it, to check that it actually exists
+			if (!DBO()->Service->Load())
+			{
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", "The service with service id: '". DBO()->Service->Id->value ."' could not be found");
+				return TRUE;
+			}
+		}
+
 		// check if an adjustment is being submitted
 		if (SubmittedForm('AddRecurringAdjustment', 'Add Adjustment'))
 		{
@@ -232,8 +244,11 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				DBO()->RecurringCharge->AccountGroup	= DBO()->Account->AccountGroup->Value;
 				
 				// Service details
-				DBO()->RecurringCharge->Service			= NULL;
-				
+				if (DBO()->Service->Id->Value)
+				{
+					DBO()->RecurringCharge->Service		= DBO()->Service->Id->Value;
+				}
+
 				// User's details
 				DBO()->RecurringCharge->CreatedBy		= AuthenticatedUser()->_arrUser['Id'];
 				

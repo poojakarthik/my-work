@@ -86,21 +86,6 @@ class AppTemplateConsole extends ApplicationTemplate
 		// Load the clients primary account
 		DBO()->Account->Load();
 		
-		// Calculate the Account Balance
-		DBO()->Account->Balance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
-
-		// Calculate the Account Overdue Amount
-		DBO()->Account->Overdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
-		
-		// Calculate the Account's total unbilled adjustments
-		$fltTotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
-		
-		// Calculate the total unbilled CDRs for the account
-		$fltTotalUnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value));
-		
-		// Calculate the current unbilled total for the account
-		DBO()->Account->CurrentUnbilledTotal = $fltTotalUnbilledAdjustments + $fltTotalUnbilledCDRs;
-		
 		// If the user can view all accounts in their account group then load these too
 		if (DBO()->Contact->CustomerContact->Value)
 		{
@@ -134,7 +119,29 @@ class AppTemplateConsole extends ApplicationTemplate
 			$this->LoadPage('Error');
 			return FALSE;
 		}
-				
+
+		// Calculate the Account Balance
+		DBO()->Account->CustomerBalance = $this->Framework->GetAccountBalance(DBO()->Account->Id->Value);
+		
+		// Calculate the Account Overdue Amount
+		$fltOverdue = $this->Framework->GetOverdueBalance(DBO()->Account->Id->Value);
+		if ($fltOverdue < 0)
+		{
+			$fltOverdue = 0;
+		}
+		DBO()->Account->Overdue = $fltOverdue;
+		
+		// Calculate the Account's total unbilled adjustments (inc GST)
+		DBO()->Account->UnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
+		
+		// Calculate the total unbilled CDRs for the account (inc GST)
+		DBO()->Account->UnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value));
+		
+		// Setup BreadCrumb Menu
+		//BreadCrumb()->Console();
+		$strWelcome = "Welcome " . DBO()->Contact->FirstName->Value ." ". DBO()->Contact->LastName->Value .". You are currently logged into your account\n";
+		BreadCrumb()->SetCurrentPage($strWelcome);
+		
 		$this->LoadPage('console');
 
 		return TRUE;

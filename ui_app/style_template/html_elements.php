@@ -572,6 +572,21 @@ class HTMLElements
 					
 					$mixValue = OutputMask()->MoneyValue($mixValue, 2, TRUE);
 					break;
+				case "Currency2DecWithNegAsCR":
+					// remove the dollar sign if it is already present
+					$mixValue = ltrim($mixValue, '$');
+					
+					if ($mixValue < 0)
+					{
+						// Remove the negative sign and append "CR" to the formatted value
+						$mixValue = $mixValue * (-1);
+						$mixValue = OutputMask()->MoneyValue($mixValue, 2, TRUE) . " CR";
+					}
+					else
+					{
+						$mixValue = OutputMask()->MoneyValue($mixValue, 2, TRUE);
+					}
+					break;
 				default:
 					// Try running the name of the output mask, as a method of OutputMask()
 					$mixValue = OutputMask()->{$strMask}($mixValue);

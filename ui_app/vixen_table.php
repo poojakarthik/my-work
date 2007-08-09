@@ -850,7 +850,9 @@ class VixenTable
 				{
 					// colspan values have been declared for this row
 					$strColSpan = "colspan='". $objRow['ColSpans'][$intColCount] ."'";
-					//$strWidth = "";
+					
+					// If using ColSpans do not use row widths
+					$strWidth = "";
 				}
 				
 				echo "<td $strWidth $strAlignment $strColSpan>";

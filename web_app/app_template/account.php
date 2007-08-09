@@ -101,18 +101,6 @@ class AppTemplateAccount extends ApplicationTemplate
 			return FALSE;
 		}
 		
-		// Calculate the unbilled total for the account (including GST)
-		// The unbilled total = TotalUnbilledAdjustments(Account adjustments and Service adjustments) + sum of unbilled CDRs for each service
-		
-		// Calculate the Account's total unbilled adjustments (Account Adjustments and Service Adjustments)(this function already includes GST)
-		$fltTotalUnbilledAdjustments = $this->Framework->GetUnbilledCharges(DBO()->Account->Id->Value);
-		
-		// Calculate the total unbilled CDRs for the account
-		$fltTotalUnbilledCDRs = AddGST(UnbilledAccountCDRTotal(DBO()->Account->Id->Value));
-		
-		// Calculate the current unbilled total for the account
-		DBO()->Account->CurrentUnbilledTotal = $fltTotalUnbilledAdjustments + $fltTotalUnbilledCDRs;
-
 		// Retrieve all unbilled adjustments for the account
 		$strWhere  = "(Account = ". DBO()->Account->Id->Value .")";
 		$strWhere .= " AND (Status = ". CHARGE_APPROVED .")";
@@ -163,7 +151,7 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
-		BreadCrumb()->SetCurrentPage("Account Charges");
+		BreadCrumb()->SetCurrentPage("Account Charges - " . DBO()->Account->BusinessName->Value);
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_view_unbilled_charges');

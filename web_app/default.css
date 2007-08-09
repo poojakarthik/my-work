@@ -40,16 +40,19 @@
 	
 	h1
 	{
-		color:                #006599;
+		float:					left;
+		/*color:					#006599;*/
+		color:					#000000;
+		width:					850px;
 		
-		font-size:            18pt;
+		font-size:				18pt;
 		
-		margin-top:           0;
+		margin-top:				5px;
 		
-		margin-bottom:			20px;
+		margin-bottom:			10px;
 		padding-bottom:			5px;
 		
-		border-bottom:			solid 1px #006599;
+		/*border-bottom:			solid 1px #006599;*/
 	}
 	
 	h2
@@ -604,8 +607,27 @@
 		float:				left;
 		position: 			absolute;
 		/*height:				20px;*/
-		font-size:			9pt;
+		font-size:			10pt;
 		
+	}
+	
+	.MenuContainer
+	{
+		border:              solid 1px #090999;
+		background-color:    #D5E0F8;
+		
+		padding-left:			5px;
+		padding-right:			5px;
+
+		margin-top:			5px;
+		margin-bottom:		5px;
+		height:				25px;
+	}
+	
+	.LogoutContainer
+	{
+		float:				right;
+		/*margin-right:		0px;*/
 	}
 	
 	.MenuIcon
@@ -646,7 +668,7 @@
 	h2.Bug
 	{
 		background-repeat:		no-repeat;
-		background-position:	bottom left;
+		background-position:	center left;
 		padding-left:			22px;
 		margin-bottom:			5px;
 		height:					21px;

@@ -54,9 +54,6 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		
 		// Load all java script specific to the page here
 		$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
-		//$this->LoadJavascript("tooltip");
-		
 	}
 	
 	//------------------------------------------------------------------------//
@@ -74,7 +71,7 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 	function Render()
 	{
 		echo "<div class='WideContent'>\n";
-		echo "<h2 class='CDR'>Call Information</h2>\n";
+		echo "<h2 class='CDR'>Unbilled Calls</h2>\n";
 		
 		// This is used to store the various record types that a CDR can be
 		$arrRecordTypes = Array();
@@ -91,6 +88,7 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		// Retrieve all the record type definitions and store it in an associative array
 		// This information could have been linked to DBL()->CDR through joined tables but is probably much faster this way
 		DBL()->RecordType->ServiceType = DBO()->Service->ServiceType->Value;
+		DBL()->RecordType->OrderBy("Name");
 		DBL()->RecordType->Load();
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
@@ -124,9 +122,9 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 		echo "</div>\n";
 		
 		
-		Table()->CDRs->SetHeader("Time", "Called Party", "Duration", "&nbsp;", "Charge (inc GST)");
-		Table()->CDRs->SetWidth("30%", "30%", "20%", "5%", "15%");
-		Table()->CDRs->SetAlignment("left", "left", "left", "left", "right");
+		Table()->CDRs->SetHeader("Time", "Called Party", "Duration", "Charge (inc GST)", "&nbsp;");
+		Table()->CDRs->SetWidth("30%", "30%", "20%", "16%", "4%");
+		Table()->CDRs->SetAlignment("left", "left", "left", "right", "center");
 		
 		// add the rows
 		foreach (DBL()->CDR as $dboCDR)
@@ -153,7 +151,7 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 			// If it is a credit then we want to flag it as such
 			if ($dboCDR->Credit->Value)
 			{
-				$strCredit = $dboCDR->Credit->AsValue();
+				$strCredit = "<span class='DefaultOutputSpan Default'>". NATURE_CR ."</span>";
 			}
 			else
 			{
@@ -163,8 +161,9 @@ class HtmlTemplateServiceCDRList extends HtmlTemplate
 			Table()->CDRs->AddRow($dboCDR->StartDatetime->AsValue(),
 									$dboCDR->Destination->AsValue(),
 									$strDuration,
-									$strCredit,
-									$dboCDR->Charge->AsCallback("AddGST"));
+									$dboCDR->Charge->AsCallback("AddGST"),
+									$strCredit
+									);
 		}
 		
 		if (Table()->CDRs->RowCount() == 0)
