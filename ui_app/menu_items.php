@@ -157,7 +157,29 @@ class MenuItems
 	{
 		return "vixen.php/Service/Edit/?Service.Id=$intId";
 	}	
-	
+
+	//------------------------------------------------------------------------//
+	// ChangePlan
+	//------------------------------------------------------------------------//
+	/**
+	 * ChangePlan()
+	 *
+	 * Compiles the Href to be executed when the ChangePlan menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the ChangePlan menu item is clicked
+	 * Also compiles the label to use if it is being used as a BreadCrumb.
+	 *
+	 * @param	int		$intId		id of the service to view
+	 *
+	 * @return	string				Href to be executed when the ChangePlan menu item is clicked
+	 *
+	 * @method
+	 */
+	function ChangePlan($intId)
+	{
+		return "vixen.php/Plan/Change/?Service.Id=$intId";
+	}	
+
 	//------------------------------------------------------------------------//
 	// ViewContact
 	//------------------------------------------------------------------------//

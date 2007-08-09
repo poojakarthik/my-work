@@ -172,6 +172,31 @@ class AppTemplatePlan extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 		
+		if (SubmittedForm("ChangePlan","Change Plan"))
+		{
+			// check if the selected plan is the same as the previous plan if it is don't commit to database
+			// just refresh page i.e. go back a page
+			if (DBO()->NewPlan->Id->Value == DBO()->RatePlan->Id->Value)
+			{
+				echo "no commit to database required as plans are the same\n";
+			}
+			else
+			{
+				DBO()->RatePlan->Id					= DBO()->Account->AccountGroup->Value;
+				DBO()->RatePlan->Name				= DBO()->Account->Id->Value;
+				DBO()->RatePlan->Description		= GetCurrentDateForMySQL();
+				DBO()->RatePlan->ServiceType 		= DBO()->NewPlan->Id->Value;
+				DBO()->RatePlan->Shared				= 0;
+				DBO()->RatePlan->MinMonthly			= 0;
+				DBO()->RatePlan->ChargeCap 			=
+				DBO()->RatePlan->UsageCap 			=
+				DBO()->RatePlan->ARchived 			=
+
+			
+				DBO()->Service->SetColumns("Id, Name, Description, ServiceType, Shared, MinMonthly, ChargeCap, UsageCap, Archived");
+			}
+		}		
+		
 		if (!DBO()->Service->Load())
 		{
 			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ."you were attempting to view could not be found";

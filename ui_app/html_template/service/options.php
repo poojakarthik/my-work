@@ -107,7 +107,9 @@ class HtmlTemplateserviceoptions extends HtmlTemplate
 		
 		echo "<li>[TODO] View Unbilled Charges</li>\n";
 		echo "<li>[TODO] View Recurring Adjustments</li>\n";
-		echo "<li>[TODO] Change Plan</li>\n";
+		
+		$strChangePlanLink = Href()->ChangePlan(DBO()->Service->Id->Value);
+		echo "<li><a href='$strChangePlanLink'>Change Plan</a></li>\n";
 		echo "<li>[TODO] Change of Lessee</li>\n";
 		
 		$strAddServiceNoteLink = Href()->AddServiceNote(DBO()->Service->Id->Value);
