@@ -78,6 +78,8 @@ class HtmlTemplateAccountList extends HtmlTemplate
 		// display all accounts that the user can view, if there is more than one
 		if ((DBO()->Contact->CustomerContact->Value) && (DBL()->Account->RecordCount()))
 		{
+			echo "<H2 class='Accounts'>Available Accounts</H2>";
+		
 			Table()->Accounts->SetHeader("Account#", "BusinessName", "Trading Name");
 			Table()->Accounts->SetAlignment("Left", "Left", "Left");
 			Table()->Accounts->SetWidth("15%", "45%", "40%");

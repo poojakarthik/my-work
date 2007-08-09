@@ -452,7 +452,7 @@
 	{
 		margin:              0;
 		padding-top:         5px;
-		padding-left:        5px;
+		padding-left:        0px;
 		padding-right:       0px;
 		padding-bottom:      5px;
 		
@@ -613,15 +613,21 @@
 	
 	.MenuContainer
 	{
-		border:              solid 1px #090999;
-		background-color:    #D5E0F8;
+		border:				solid 1px #090999;
+		background-color:	#D5E0F8;
 		
-		padding-left:			5px;
-		padding-right:			5px;
+		padding-left:		5px;
+		padding-right:		5px;
 
 		margin-top:			5px;
 		margin-bottom:		5px;
+		/* HACK HACK HACK *****************************************************
+		 * I shouldn't have to specify the height of this div, but when I don't
+		 * to collapses to have no height and any divs that are placed in it,
+		 * are rendered underneath it
+		 */
 		height:				25px;
+		/* HACK HACK HACK *****************************************************/
 	}
 	
 	.LogoutContainer

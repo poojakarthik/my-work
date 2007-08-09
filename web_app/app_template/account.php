@@ -151,7 +151,7 @@ class AppTemplateAccount extends ApplicationTemplate
 
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
-		BreadCrumb()->SetCurrentPage("Account Charges - " . DBO()->Account->BusinessName->Value);
+		BreadCrumb()->SetCurrentPage("Account Charges - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_view_unbilled_charges');
