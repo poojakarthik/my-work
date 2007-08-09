@@ -113,7 +113,9 @@ class HtmlTemplateserviceoptions extends HtmlTemplate
 		$strAddServiceNoteLink = Href()->AddServiceNote(DBO()->Service->Id->Value);
 		echo "<li><a href='$strAddServiceNoteLink'>Add Service Note</a></li>\n";		
 		
-		echo "<li>[TODO AJAX] Add Adjustment</li>\n";
+		$strAddAdjustmentLink = Href()->AddAdjustment(DBO()->Service->Account->Value, DBO()->Service->Id->Value);
+		echo "<li><a href='$strAddAdjustmentLink'>Add Adjustment</a></li>\n";
+	
 		echo "<li>[TODO AJAX] Add Recurring Adjustment</li>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";

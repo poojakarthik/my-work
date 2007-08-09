@@ -159,4 +159,41 @@ class AppTemplatePlan extends ApplicationTemplate
 	
 	}
 	
+	function Change()
+	{		
+		$pagePerms = PERMISSION_ADMIN;
+		
+		// Should probably check user authorization here
+		AuthenticatedUser()->CheckAuth();
+		
+		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			// Add extra functionality for super-users
+		}
+		
+		if (!DBO()->Service->Load())
+		{
+			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ."you were attempting to view could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		DBO()->Account->Id = DBO()->Service->Account->Value;
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . "associated with this service";
+			$this->LoadPage('error');
+			return FALSE;
+		}		
+
+		// Context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+		
+		$this->LoadPage('plan_change');
+
+		return TRUE;
+	
+	}
+	
 }
