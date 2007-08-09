@@ -101,16 +101,20 @@ class HtmlTemplateAdjustmentAdd extends HtmlTemplate
 	{	
 		//$this->LoadAjaxJavascript("validate_adjustment");
 		echo "<div class='PopupMedium'>\n";
-		echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
-		
-		// HACK HACK HACK
-		// currently this javascript file has to be included here, otherwise it is not instantiated before other calls
-		// to it get executed
-		//echo "<script type='text/javascript' src='javascript/validate_adjustment.js'></script>\n";
 		
 		$this->FormStart("AddAdjustment", "Adjustment", "Add");
 		
 		// include all the properties necessary to add the record, which shouldn't have controls visible on the form
+		if (DBO()->Service->Id->Value)
+		{
+			echo "<h2 class='Adjustment'>Add Service Adjustment</h2>\n";
+			DBO()->Service->Id->RenderHidden();
+		}
+		else
+		{
+			echo "<h2 class='Adjustment'>Add Adjustment</h2>\n";
+		}
+		
 		DBO()->Account->Id->RenderHidden();
 		
 		// Display account details

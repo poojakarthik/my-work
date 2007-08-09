@@ -73,6 +73,19 @@ class AppTemplateAdjustment extends ApplicationTemplate
 			return TRUE;
 		}
 		
+		// Check if the adjustment relates to a particular service
+		if (DBO()->Service->Id->Value)
+		{
+			// A service has been specified, load it
+			if (!DBO()->Service->Load())
+			{
+				Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
+				Ajax()->AddCommand("AlertReload", "The service with service id: '". DBO()->Service->Id->value ."' could not be found");
+				return TRUE;
+			}
+			
+		}
+		
 		// check if an adjustment is being submitted
 		if (SubmittedForm('AddAdjustment', 'Add Adjustment'))
 		{
@@ -91,6 +104,12 @@ class AppTemplateAdjustment extends ApplicationTemplate
 				// Account details
 				DBO()->Charge->Account		= DBO()->Account->Id->Value;
 				DBO()->Charge->AccountGroup	= DBO()->Account->AccountGroup->Value;
+				
+				// Service details
+				if (DBO()->Service->Id->Value)
+				{
+					DBO()->Charge->Service	= DBO()->Service->Id->Value;
+				}
 				
 				// User's details
 				$dboUser 					= GetAuthenticatedUserDBObject();
