@@ -177,11 +177,28 @@ class HtmlTemplateAdjustmentList extends HtmlTemplate
 			// add indexes
 			Table()->AdjustmentTable->AddIndex("InvoiceRun", $dboCharge->InvoiceRun->Value);
 		}
-		
-		// Link other tables to this one
-		Table()->AdjustmentTable->LinkTable("InvoiceTable", "InvoiceRun");
-		
-		Table()->AdjustmentTable->RowHighlighting = TRUE;
+
+		if (DBL()->Charge->RecordCount() == 0)
+		{
+			// There are no adjustments to stick in this table
+			Table()->AdjustmentTable->AddRow("<span class='DefaultOutputSpan Default'>No adjustments to display</span>");
+			Table()->AdjustmentTable->SetRowAlignment("left");
+			if ($bolHasAdminPerm)
+			{
+				Table()->AdjustmentTable->SetRowColumnSpan(5);
+			}
+			else
+			{
+				Table()->AdjustmentTable->SetRowColumnSpan(4);
+			}
+		}
+		else
+		{
+			// Link other tables to this one
+			Table()->AdjustmentTable->LinkTable("InvoiceTable", "InvoiceRun");
+			Table()->AdjustmentTable->RowHighlighting = TRUE;
+		}
+
 		Table()->AdjustmentTable->Render();
 		
 		// button to add an adjustment

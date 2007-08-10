@@ -179,10 +179,21 @@ class HtmlTemplateInvoiceList extends HtmlTemplate
 			// Add the row index
 			Table()->InvoiceTable->AddIndex("InvoiceRun", $dboInvoice->InvoiceRun->Value);
 		}
-		Table()->InvoiceTable->LinkTable("PaymentTable", "InvoiceRun");
-		Table()->InvoiceTable->LinkTable("AdjustmentTable", "InvoiceRun");
 		
-		Table()->InvoiceTable->RowHighlighting = TRUE;
+		if (DBL()->Invoice->RecordCount() == 0)
+		{
+			// There are no invoices to stick in this table
+			Table()->InvoiceTable->AddRow("<span class='DefaultOutputSpan Default'>No invoices to display</span>");
+			Table()->InvoiceTable->SetRowAlignment("left");
+			Table()->InvoiceTable->SetRowColumnSpan(9);
+		}
+		else
+		{
+			// Link this table to the Payments table and the Adjustments table
+			Table()->InvoiceTable->LinkTable("PaymentTable", "InvoiceRun");
+			Table()->InvoiceTable->LinkTable("AdjustmentTable", "InvoiceRun");
+			Table()->InvoiceTable->RowHighlighting = TRUE;
+		}
 		
 		Table()->InvoiceTable->Render();
 		//echo "</div>\n";

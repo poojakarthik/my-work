@@ -83,7 +83,14 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		{
 			DBO()->Account->TradingName->RenderOutput();
 		}
-		DBO()->Account->ABN->RenderOutput();
+		if (trim(DBO()->Account->ABN->Value))
+		{
+			DBO()->Account->ABN->RenderOutput();
+		}
+		if (trim(DBO()->Account->ACN->Value))
+		{
+			DBO()->Account->ACN->RenderOutput();
+		}
 		
 		DBO()->Account->CustomerBalance->RenderOutput();
 		DBO()->Account->Overdue->RenderOutput();

@@ -900,10 +900,10 @@ class VixenTable
 					
 					foreach ($objRow['Index'] as $strIndexName=>$arrValues)
 					{
-						echo "objIndex. " .$strIndexName. " = Array();";
+						echo "objIndex." .$strIndexName. " = Array();";
 						foreach ($arrValues as $strValue)
 						{
-							echo "objIndex. " .$strIndexName. ".push('" .$strValue. "');";
+							echo "objIndex." .$strIndexName. ".push('" .$strValue. "');";
 						}
 					}
 					echo "objRow.index = objIndex;";
@@ -946,7 +946,7 @@ class VixenTable
 				echo "objLink." . $strTableName . " = Array();\n";
 				foreach ($arrIndexes AS $strIndex)
 				{
-					echo "objLink. " . $strTableName . ".push('" . $strIndex . "');\n";
+					echo "objLink." . $strTableName . ".push('" . $strIndex . "');\n";
 				}
 			}
 			echo $strVixenTable . ".link = objLink;\n";

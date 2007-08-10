@@ -53,6 +53,20 @@
 						<div style='padding-left:200; padding-top:100'>
 							<table>
 								<tr>
+									<td colspan=2>
+										<?php
+											if (DBO()->Login->Failed->Value)
+											{
+												echo "<span class='DefaultOutputSpan Default'>Incorrect login details.  Please try again.</span>";
+											}
+											else
+											{
+												echo "<span class='DefaultOutputSpan Default'>&nbsp;</span>";
+											}
+										?>
+									</td>
+								</tr>
+								<tr>
 									<td>
 										<label for="UserName" style='font-size: 10pt;'>Username:</label>
 									</td>

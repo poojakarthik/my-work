@@ -648,6 +648,7 @@ class Application
 			else
 			{
 				// Could not find the user.  Login failed.
+				DBO()->Login->Failed = 1;
 				$bolLoggedIn = FALSE;
 			}
 		}

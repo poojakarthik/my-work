@@ -273,8 +273,27 @@ class HtmlTemplateAccountPaymentList extends HtmlTemplate
 			$strToolTipHtml .= $dboPayment->Balance->AsOutput();
 			Table()->PaymentTable->SetToolTip($strToolTipHtml);
 		}
-		Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
-		Table()->PaymentTable->RowHighlighting = TRUE;
+		
+		if (DBL()->Payment->RecordCount() == 0)
+		{
+			// There are no payments to stick in this table
+			Table()->PaymentTable->AddRow("<span class='DefaultOutputSpan Default'>No payments to display</span>");
+			Table()->PaymentTable->SetRowAlignment("left");
+			if ($bolHasAdminPerm)
+			{
+				Table()->PaymentTable->SetRowColumnSpan(4);
+			}
+			else
+			{
+				Table()->PaymentTable->SetRowColumnSpan(3);
+			}
+		}
+		else
+		{
+			// Link this table to the invoice table
+			Table()->PaymentTable->LinkTable("InvoiceTable", "InvoiceRun");
+			Table()->PaymentTable->RowHighlighting = TRUE;
+		}
 		
 		Table()->PaymentTable->Render();
 		

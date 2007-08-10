@@ -145,20 +145,32 @@ class HtmlTemplateRecurringAdjustmentList extends HtmlTemplate
 			{
 				Table()->RecurringAdjustmentTable->AddRow($dboRecurringCharge->CreatedOn->AsValue(), $dboRecurringCharge->Description->AsValue());
 			}
+			
 			// add tooltip
 			$strToolTipHtml = $dboRecurringCharge->LastChargedOn->AsOutput();
 			$strToolTipHtml .= $dboRecurringCharge->TotalCharged->AsCallback("AddGST", NULL, RENDER_OUTPUT, CONTEXT_INCLUDES_GST);
 			
 			Table()->RecurringAdjustmentTable->SetToolTip($strToolTipHtml);
-			
-			// add indexes
-			//TODO! 
 		}		
 		
-		// Link other tables to this one
-		//TODO!
-		
-		Table()->RecurringAdjustmentTable->RowHighlighting = TRUE;
+		if (DBL()->RecurringCharge->RecordCount() == 0)
+		{
+			// There are no adjustments to stick in this table
+			Table()->RecurringAdjustmentTable->AddRow("<span class='DefaultOutputSpan Default'>No recurring adjustments to display</span>");
+			Table()->RecurringAdjustmentTable->SetRowAlignment("left");
+			if ($bolHasAdminPerm)
+			{
+				Table()->RecurringAdjustmentTable->SetRowColumnSpan(3);
+			}
+			else
+			{
+				Table()->RecurringAdjustmentTable->SetRowColumnSpan(2);
+			}
+		}
+		else
+		{
+			Table()->RecurringAdjustmentTable->RowHighlighting = TRUE;
+		}
 
 		Table()->RecurringAdjustmentTable->Render();
 		

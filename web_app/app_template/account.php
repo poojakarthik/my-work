@@ -111,47 +111,20 @@ class AppTemplateAccount extends ApplicationTemplate
 		// Retrieve all Services for the account
 		DBL()->Service->Account = DBO()->Account->Id->Value;
 		DBL()->Service->Load();
-		
-		// Find the current Plan for each service and the current unbilled charges and CDRs for each service
-		// This is currently handled in HtmlTemplateAccountServiceList->Render() 
-		// I wanted to use the following block of code, but you can't add anything to a DBList within a foreach loop because
-		// with the current implementation of the iterator interface for DBListBase, everything is returned as copies instead of references.
-		//Update: Having tested the DBList, it turns out you can add properties to DBObjects that make up a DBList, during a foreach loop.
-		//I don't know why the following code was failing.  It probably has something to do with the StatementSelect query
-		/*
-		$selCurrentPlan = new StatementSelect('ServiceRatePlan AS srpT INNER JOIN RatePlan AS rpT ON srpT.RatePlan = rpT.Id', 
-										'srpT.Service, srpT.RatePlan, rpT.Name, rpT.Description', 
-										'(srpT.Service = <Service>) AND (Now() BETWEEN srpT.StartDatetime AND srpT.EndDatetime)', 
-										'srpT.StartDatetime DESC',	1);
-		
-		// For each service, find the current rate plan and the name of the current rate plan AND the total unbilled charges and CDRs
-		foreach (DBL()->Service as &$dboService)
-		{
-			// Find the rateplan for the service
-			$selCurrentPlan->Execute(Array("Service" => $dboService->Id->Value));
-			
-			// this can return 0 or 1 records
-			if ($selCurrentPlan->Count() == 1)
-			{
-				//There is a current plan for this record
-				$arrCurrentPlan = $selCurrentPlan->Fetch();
-				$dboService->CurrentPlan 		= $arrCurrentPlan['RatePlan'];
-				$dboService->CurrentPlanName 	= $arrCurrentPlan['Name'];
-				$dboService->TotalUnbilled 		= AddGST(UnbilledServiceCDRTotal($dboService->Id->Value) + UnbilledServiceChargeTotal($dboService->Id->Value));
-			}
-			else
-			{
-				//There is no rateplan for this service
-				$dboService->CurrentPlan 		= NULL;
-				$dboService->CurrentPlanName 	= NULL;
-				$dboService->TotalUnbilled 		= NULL;
-			}
-		}
-		*/
 
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
-		BreadCrumb()->SetCurrentPage("Account Charges - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
+		if (DBO()->Account->BusinessName->Value)
+		{
+			// Display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Account Charges - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
+		}
+		else
+		{
+			// Don't display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Account Charges");
+		}
+		
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('account_view_unbilled_charges');
@@ -218,13 +191,23 @@ class AppTemplateAccount extends ApplicationTemplate
 		DBL()->Invoice->Account = DBO()->Account->Id->Value;
 		DBL()->Invoice->OrderBy("CreatedOn DESC");
 		DBL()->Invoice->Load();
+		
 		DBL()->Payment->Account = DBO()->Account->Id->Value;
 		DBL()->Payment->OrderBy("PaidOn DESC");
 		DBL()->Payment->Load();
 		
 		// Breadcrumb menu
 		BreadCrumb()->LoadAccountInConsole(DBO()->Account->Id->Value);
-		BreadCrumb()->SetCurrentPage("Invoices and Payments");
+		if (DBO()->Account->BusinessName->Value)
+		{
+			// Display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Invoices and Payments - " . substr(DBO()->Account->BusinessName->Value, 0, 60));
+		}
+		else
+		{
+			// Don't display the business name in the bread crumb menu
+			BreadCrumb()->SetCurrentPage("Invoices and Payments");
+		}
 
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('list_invoices_and_payments');
@@ -309,7 +292,7 @@ class AppTemplateAccount extends ApplicationTemplate
 
 			BreadCrumb()->Console();
 			BreadCrumb()->SetCurrentPage("Error");
-			DBO()->Error->Message = "ERROR: The user does not have permission to view account# ". DBO()->Account->Id->Value;
+			DBO()->Error->Message = "ERROR: The pdf of the $strDate invoice could not be found";
 			$this->LoadPage('Error');
 			return TRUE;
 		}
