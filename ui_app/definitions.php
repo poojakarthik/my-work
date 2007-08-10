@@ -119,6 +119,8 @@ define("PERMISSION_OPERATOR"			, 0x4);		$arrPermissions[PERMISSION_OPERATOR]	= "
 define("PERMISSION_SALES"				, 0x8);		$arrPermissions[PERMISSION_SALES]		= "Sales";			// 8
 define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "Accounts";		// 16
 													$GLOBALS['Permissions']	= $arrPermissions;
+// This is used in the datbase to represent an "end Date" or "Closed on date" that should never be reached
+define('END_OF_TIME', 	'9999-12-31 23:59:59');
 
 
 ?>

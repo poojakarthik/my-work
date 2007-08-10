@@ -178,23 +178,70 @@ class AppTemplatePlan extends ApplicationTemplate
 			// just refresh page i.e. go back a page
 			if (DBO()->NewPlan->Id->Value == DBO()->RatePlan->Id->Value)
 			{
-				echo "no commit to database required as plans are the same\n";
+				// The new plan is the same as the existing plan, exit gracefully
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "No update has been saved as the new plan is the same as the previous plan", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				return TRUE;
 			}
-			else
-			{
-				DBO()->RatePlan->Id					= DBO()->Account->AccountGroup->Value;
-				DBO()->RatePlan->Name				= DBO()->Account->Id->Value;
-				DBO()->RatePlan->Description		= GetCurrentDateForMySQL();
-				DBO()->RatePlan->ServiceType 		= DBO()->NewPlan->Id->Value;
-				DBO()->RatePlan->Shared				= 0;
-				DBO()->RatePlan->MinMonthly			= 0;
-				DBO()->RatePlan->ChargeCap 			=
-				DBO()->RatePlan->UsageCap 			=
-				DBO()->RatePlan->ARchived 			=
-
 			
-				DBO()->Service->SetColumns("Id, Name, Description, ServiceType, Shared, MinMonthly, ChargeCap, UsageCap, Archived");
+			// Declare the new plan for the service
+			// Retrieve the rate groups belonging to the rate plan
+			DBL()->RatePlanRateGroup->RatePlan = DBO()->NewPlan->Id->Value;
+			DBL()->RatePlanRateGroup->Load();
+			
+			// For each Rate Group, save a record to the ServiceRateGroup table
+			// Define constant properties for these records
+			DBO()->ServiceRateGroup->Service 		= DBO()->Service->Id->Value;
+			DBO()->ServiceRateGroup->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
+			DBO()->ServiceRateGroup->CreatedOn 		= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRateGroup->StartDatetime 	= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRateGroup->EndDatetime 	= END_OF_TIME;
+			
+			// Start the database transaction
+			TransactionStart();
+			
+			foreach (DBL()->RatePlanRateGroup as $dboRatePlanRateGroup)
+			{
+				// Set the id of the record to null, so that it is inserted as a new record when saved
+				DBO()->ServiceRateGroup->Id = 0;
+				DBO()->ServiceRateGroup->RateGroup = $dboRatePlanRateGroup->RateGroup->Value;
+				
+				// Save the record to the ServiceRateGroup table
+				if (!DBO()->ServiceRateGroup->Save())
+				{
+					// Could not save the record. Exit gracefully
+					TransactionRollback();
+					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRateGroup table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+					return TRUE;
+				}
 			}
+			
+			// Insert a record into the ServiceRatePlan table
+			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
+			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
+			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
+			//TODO! 
+			// We want the CreatedOn and StartDatetime to be equal to the exact time the record is added
+			// to the database.  This might differ from the time that this code is executed.
+			// If the StartDatetime is in the future, then the function "GetCurrentPlan" will
+			// not retrieve it because it will think the plan hasn't started yet.
+			DBO()->ServiceRatePlan->CreatedOn 		= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->StartDatetime 	= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
+			
+			if (!DBO()->ServiceRatePlan->Save())
+			{
+				// Could not save the record. Exit gracefully
+				TransactionRollback();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRatePlan table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				return TRUE;
+			}
+			
+			//TODO! Do automatic provisioning here
+			
+			// The change of plan has been declared in the database.  Commit the transaction
+			TransactionCommit();
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service's plan has been successfully changed", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			return TRUE;
 		}		
 		
 		if (!DBO()->Service->Load())
@@ -209,7 +256,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . "associated with this service";
 			$this->LoadPage('error');
 			return FALSE;
-		}		
+		}
 
 		// Context menu
 		ContextMenu()->Admin_Console();
