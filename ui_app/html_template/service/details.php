@@ -16,7 +16,7 @@
  * @class	HtmlTemplateservicedetails
  * @extends	HtmlTemplate
  */
-class HtmlTemplateservicedetails extends HtmlTemplate
+class HtmlTemplateServiceDetails extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -73,8 +73,8 @@ class HtmlTemplateservicedetails extends HtmlTemplate
 	{
 		switch ($this->_intContext)
 		{
-			case HTML_CONTEXT_LEDGER_DETAIL:
-				$this->_RenderLedgerDetail();
+			case HTML_CONTEXT_MINIMUM_DETAIL:
+				$this->_RenderMinimumDetail();
 				break;
 			case HTML_CONTEXT_FULL_DETAIL:
 				$this->_RenderFullDetail();
@@ -83,6 +83,30 @@ class HtmlTemplateservicedetails extends HtmlTemplate
 				$this->_RenderFullDetail();
 				break;
 		}
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderMinimumDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderMinimumDetail()
+	 *
+	 * Render this HTML Template with minimum service detail
+	 *
+	 * Render this HTML Template with minimum service detail
+	 *
+	 * @method
+	 */
+	private function _RenderMinimumDetail()
+	{
+		echo "<h2 class='service'>Service Details</h2>\n";
+		echo "<div class='Narrow-Form'>\n";
+		DBO()->Account->Id->RenderOutput();
+		DBO()->Account->BusinessName->RenderOutput();
+		DBO()->Service->Id->RenderOutput();
+		DBO()->Service->FNN->RenderOutput();		
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";	
 	}
 
 	//------------------------------------------------------------------------//

@@ -13,7 +13,5 @@ $this->Page->SetLayout($strLayout);
 //EXAMPLE:
 $id = $this->Page->AddObject('ServiceAccount', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
-//$this->Page->AddObject('ServiceAdjustment', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
-//$this->Page->AddObject('ServiceRecAdjustment', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ServiceOptions', COLUMN_TWO, HTML_CONTEXT_DEFAULT);
 ?>
