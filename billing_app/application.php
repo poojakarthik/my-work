@@ -708,7 +708,7 @@
 			}
 			
 			// calculate initial invoice total and total owing
-			$fltTotal		= $fltTotalDebits - $fltTotalCredits;
+			$fltTotal		= ceil(($fltTotalDebits - $fltTotalCredits) * 100) / 100;
 			$fltTax			= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
 			$fltBalance		= $fltTotal + $fltTax;
 			$fltTotalOwing	= $fltBalance + $fltAccountBalance;
@@ -759,7 +759,7 @@
 			}
 			
 			// recalculate initial invoice total and total owing
-			$fltTotal		= $fltTotalDebits - $fltTotalCredits;
+			$fltTotal		= ceil(($fltTotalDebits - $fltTotalCredits) * 100) / 100;
 			$fltTax			= ceil(($fltTotal / TAX_RATE_GST) * 100) / 100;
 			$fltBalance		= $fltTotal + $fltTax;
 			$fltTotalOwing	= $fltBalance + $fltAccountBalance;
@@ -930,7 +930,7 @@
 		$this->_rptBillingReport->AddMessage(MSG_UPDATE_CDRS."\t", FALSE);
 		$arrUpdateData = Array();
 		$arrUpdateData['Status'] = CDR_INVOICED;
-		$updCDRStatus = new StatementUpdate("CDR", "Status = ".CDR_TEMP_INVOICE, $arrUpdateData);
+		$updCDRStatus = new StatementUpdate("CDR USE INDEX (Status)", "Status = ".CDR_TEMP_INVOICE, $arrUpdateData);
 		if($updCDRStatus->Execute($arrUpdateData, Array()) === FALSE)
 		{			
 			// Report and fail out
