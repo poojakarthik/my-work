@@ -769,14 +769,15 @@
 	input.InputSubmit,
 	input.InputSubmitDisabled
 	{
-		background-repeat:   repeat-x;
+		background-repeat:	repeat-x;
 		
-		font-weight:         bold;
+		font-weight:		bold;
 		
-		padding-top:         3px;
-		padding-left:        6px;
-		padding-right:       6px;
-		padding-bottom:      3px;
+		margin:				3px;
+		padding-top:		3px;
+		padding-left:		6px;
+		padding-right:		6px;
+		padding-bottom:		3px;
 		font-size:			10pt;
 	}
 	

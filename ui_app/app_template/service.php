@@ -39,27 +39,27 @@
  *
  *
  * @package	ui_app
- * @class	AppTemplateservice
+ * @class	AppTemplateService
  * @extends	ApplicationTemplate
  */
-class AppTemplateservice extends ApplicationTemplate
+class AppTemplateService extends ApplicationTemplate
 {
 
 	//------------------------------------------------------------------------//
-	// view
+	// View
 	//------------------------------------------------------------------------//
 	/**
-	 * view()
+	 * View()
 	 *
-	 * Performs the logic for the service_view.php webpage
+	 * Performs the logic for viewing a service
 	 * 
-	 * Performs the logic for the service_view.php webpage
+	 * Performs the logic for viewing a service
 	 *
 	 * @return		void
-	 * @method		view
+	 * @method		View
 	 *
 	 */
-	function view()
+	function View()
 	{
 		$pagePerms = PERMISSION_ADMIN;
 		
@@ -72,26 +72,17 @@ class AppTemplateservice extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 
-		// Context menu
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
-		
-		// Breadcrumb menu
-				
 		// Setup all DBO and DBL objects required for the page
-		
-		//EXAMPLE:
-		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Service->Load())
 		{
-			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ."you were attempting to view could not be found";
+			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
 		DBO()->Account->Id = DBO()->Service->Account->Value;
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . "associated with this service";
+			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service";
 			$this->LoadPage('error');
 			return FALSE;
 		}
@@ -110,22 +101,40 @@ class AppTemplateservice extends ApplicationTemplate
 			DBO()->RatePlan->Load();
 		}
 		
-		// Calculate unbilled charges (this includes all unbilled Adjustments(charges) and CDRs)
-		// TODO test that the functionality works on catwalk with the CDR table
-		//$fltUnbilledAdjustments					= UnbilledServiceChargeTotal(DBO()->Service->Id->Value);
-		$fltUnbilledAdjustments					= UnbilledServiceChargeTotal(33260);
+		// Calculate unbilled charges (this includes all unbilled Adjustments(charges) and CDRs for the service)
+		$fltUnbilledAdjustments					= UnbilledServiceChargeTotal(DBO()->Service->Id->Value);
 		$fltUnbilledCDRs						= UnbilledServiceCDRTotal(DBO()->Service->Id->Value);
 		DBO()->Service->TotalUnbilledCharges 	= AddGST($fltUnbilledAdjustments + $fltUnbilledCDRs);
 		
+		// Context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
 		
-		
+		// Breadcrumb menu
+		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
+		BreadCrumb()->SetCurrentPage("Service");
+
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('service_view');
 
 		return TRUE;
 	}
 	
-	function add()
+	//------------------------------------------------------------------------//
+	// Add
+	//------------------------------------------------------------------------//
+	/**
+	 * Add()
+	 *
+	 * Performs the logic for adding a service
+	 * 
+	 * Performs the logic for adding a service
+	 *
+	 * @return		void
+	 * @method		Add
+	 *
+	 */
+	function Add()
 	{
 		$pagePerms = PERMISSION_ADMIN;
 		
@@ -140,7 +149,7 @@ class AppTemplateservice extends ApplicationTemplate
 
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
+			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
@@ -159,7 +168,7 @@ class AppTemplateservice extends ApplicationTemplate
 			{
 				// The form has not passed initial validation
 				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+				Ajax()->RenderHtmlTemplate("ServiceAdd", HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
 				return TRUE;
 			}
 			
@@ -175,7 +184,7 @@ class AppTemplateservice extends ApplicationTemplate
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
 					Ajax()->AddCommand("Alert", "ERROR: Could not save the service.  Service # and Confirm Service # must be the same");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+					Ajax()->RenderHtmlTemplate("ServiceAdd", HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
 					return TRUE;
 				}
 				
@@ -186,7 +195,7 @@ class AppTemplateservice extends ApplicationTemplate
 					// The FNN is invalid for the services servicetype, output an appropriate message
 					DBO()->Service->FNN->SetToInvalid();
 					Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+					Ajax()->RenderHtmlTemplate("ServiceAdd", HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
 					return TRUE;
 				}
 				
@@ -199,7 +208,7 @@ class AppTemplateservice extends ApplicationTemplate
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
 					Ajax()->AddCommand("Alert", "This Service Number already exists in the Database");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+					Ajax()->RenderHtmlTemplate("ServiceAdd", HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
 					return TRUE;
 				}	
 			}
@@ -286,7 +295,9 @@ class AppTemplateservice extends ApplicationTemplate
 		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
 		
-		// Breadcrumb menu	
+		// Breadcrumb menu
+		BreadCrumb()->ViewAccount(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Add Service");
 		
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
 		{
@@ -298,7 +309,22 @@ class AppTemplateservice extends ApplicationTemplate
 		}
 	}
 	
-	function edit()
+	
+	//------------------------------------------------------------------------//
+	// Edit
+	//------------------------------------------------------------------------//
+	/**
+	 * Edit()
+	 *
+	 * Performs the logic for editting a service
+	 * 
+	 * Performs the logic for editting a service
+	 *
+	 * @return		void
+	 * @method		Edit
+	 *
+	 */
+	function Edit()
 	{
 		$pagePerms = PERMISSION_ADMIN;
 		
@@ -317,26 +343,33 @@ class AppTemplateservice extends ApplicationTemplate
 			{
 				// The form has not passed initial validation
 				Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
+				Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 				return TRUE;
 			}
 			
+			DBO()->Service->FNN = trim(DBO()->Service->FNN->Value);
+			DBO()->Service->FNNConfirm = trim(DBO()->Service->FNNConfirm->Value);
+			
 			if (DBO()->Service->FNN->Value != DBO()->Service->CurrentFNN->Value)
 			{		
-				// This is entered if the FNN entered is different to the 
-				// current FNN i.e. the user has entered a new FNN
-				// ------------------------------------------------------
-		
+				// The user wants to change the FNN
 				if (DBO()->Service->FNN->Value != DBO()->Service->FNNConfirm->Value)
 				{
-					// This is entered if the FNN is different from FNNConfirm 
-					// i.e. a typo when entering on the form
-					// -------------------------------------------------------				
-				
+					// The FNN wasn't re-entered correctly
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
-					Ajax()->AddCommand("Alert", "*Could not save the service.  Service # and Confirm Service # must be the same");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
+					Ajax()->AddCommand("Alert", "Could not save the service.  Service # and Confirm Service # must be the same");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
+					return TRUE;
+				}
+				
+				// Check that the FFN is valid
+				if (!isValidFNN(DBO()->Service->FNN->Value))
+				{
+					// The FNN is invalid
+					DBO()->Service->FNN->SetToInvalid();
+					Ajax()->AddCommand("Alert", "The FNN is not a valid Australian Full National Number");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
 				
@@ -344,23 +377,26 @@ class AppTemplateservice extends ApplicationTemplate
 				$intServiceType = ServiceType(DBO()->Service->FNN->Value);
 				if ($intServiceType != DBO()->Service->ServiceType->Value)
 				{
-					// The FNN is invalid for the services servicetype, output an appropriate message
+					// The FNN is invalid for the services ServiceType.
 					DBO()->Service->FNN->SetToInvalid();
 					Ajax()->AddCommand("Alert", "The FNN is invalid for the service type");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
 				
-				// Test if the FNN is currently not being used
-				$strWhere = "FNN LIKE \"". DBO()->Service->FNN->Value . "\"";
-				DBL()->Service->Where->SetString($strWhere);
+				// Check that the FNN is not currently being used
+				// Retrieve all service records that are currently using the FNN
+				$strWhere = "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())";
+				$arrWhere = Array("FNN" => DBO()->Service->FNN->Value);
+				DBL()->Service->Where->Set($strWhere, $arrWhere);
 				DBL()->Service->Load();
 				if (DBL()->Service->RecordCount() > 0)
 				{	
+					// The FNN is currently being used
 					DBO()->Service->FNN->SetToInvalid();
 					DBO()->Service->FNNConfirm->SetToInvalid();
-					Ajax()->AddCommand("Alert", "This Service Number already exists in the Database");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
+					Ajax()->AddCommand("Alert", "This Service FNN is currently being used by another service");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
 				
@@ -377,6 +413,7 @@ class AppTemplateservice extends ApplicationTemplate
 				DBO()->Service->ClosedOn = GetCurrentDateForMySQL();
 				// set closedby to authenticated user ID
 				DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
+				
 				//TODO! probably need to run DisableELB
 				
 				// Declare properties to update
@@ -392,6 +429,8 @@ class AppTemplateservice extends ApplicationTemplate
 			{
 				// we want to activate this service
 				$bolActivateService = TRUE;
+				
+				// Check if the FNN has been used by any other service since this was last active
 				
 				// set ClosedOn date to null
 				DBO()->Service->ClosedOn = NULL;
@@ -442,7 +481,7 @@ class AppTemplateservice extends ApplicationTemplate
 					// The form has not passed initial validation
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
 				// set DOB to MySql date format
@@ -470,7 +509,7 @@ class AppTemplateservice extends ApplicationTemplate
 					// The form has not passed initial validation
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", "Could not save the service.  Invalid fields are highlighted");
-					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_SERVICE_EDIT, "ServiceEditDiv");
+					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
 				// set columns to update
@@ -490,70 +529,263 @@ class AppTemplateservice extends ApplicationTemplate
 			// Add an automatic note if the service has been archived or unarchived
 			if ($strNote)
 			{
-				DBO()->Note->Note = $strNote;
-				DBO()->Note->Account = DBO()->Service->Account->Value;
-				DBO()->Note->AccountGroup = DBO()->Service->AccountGroup->Value;
-				DBO()->Note->Service = DBO()->Service->Id->Value;
-				DBO()->Note->Contact = NULL;
-				DBO()->Note->Emplpyee = AuthenticatedUser()->_arrUser['Id'];
-				DBO()->Note->Datetime = GetCurrentDateAndTimeForMySQL();
-				DBO()->Note->NoteType = SYSTEM_NOTE;
-				
-				// Save the note
-				if (!DBO()->Note->Save())
-				{
-					// The automatic system note did not save
-					TransactionRollback();
-					Ajax()->AddCommand("Alert", "ERROR: Saving the automatic system note failed, unexpectedly.  The service has not been updated");
-					return TRUE;
-				}
+				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 			}
 
 			// Commit the transaction
 			TransactionCommit();
 			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service details were successfully updated", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
 			return TRUE;
-
 		}
 		
+		// Load the service record
 		if (!DBO()->Service->Load())
 		{
-			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->Value ."you were attempting to view could not be found";
+			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->Value ." you were attempting to view could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
 	
-		// load mobile detail
-		DBO()->ServiceMobileDetail->Where->Service = DBO()->Service->Id->Value;
-		DBO()->ServiceMobileDetail->Load();
-
-		// load inbound detail
-		DBO()->ServiceInboundDetail->Where->Service = DBO()->Service->Id->Value;
-		DBO()->ServiceInboundDetail->Load();
+		// load mobile detail if the service is a mobile
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
+		{
+			DBO()->ServiceMobileDetail->Where->Service = DBO()->Service->Id->Value;
+			DBO()->ServiceMobileDetail->Load();
+		}
+		
+		// load inbound detail if the service is an inbound 1300/1800
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
+		{
+			DBO()->ServiceInboundDetail->Where->Service = DBO()->Service->Id->Value;
+			DBO()->ServiceInboundDetail->Load();
+		}
 		
 		// Store the current FNN to check between states that the FNN textbox has been changed
 		DBO()->Service->CurrentFNN = DBO()->Service->FNN->Value;
 
-		// Check if the service has been closed and if so check the checkbox
-		
-			/*if (($intClosedOn > $intTodaysDate))
-			{
-				DBO()->Service->Archive = ;
-			}*/
-		//}
-		
 		// Load context menu items specific to the View Service page
 		// Context menu
 		ContextMenu()->Admin_Console();
 		ContextMenu()->Logout();
 
 		// Bread Crumb Menu
+		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
 		BreadCrumb()->View_Service(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
+		BreadCrumb()->SetCurrentPage("Edit Service");
 
 		// Declare which page to use
 		$this->LoadPage('service_edit');
 		return TRUE;
 	}	
+	
+	//------------------------------------------------------------------------//
+	// ChangePlan
+	//------------------------------------------------------------------------//
+	/**
+	 * ChangePlan()
+	 *
+	 * Performs the logic for changing a service's plan
+	 * 
+	 * Performs the logic for changing a service's plan
+	 *
+	 * @return		void
+	 * @method		ChangePlan
+	 *
+	 */
+	function ChangePlan()
+	{		
+		$pagePerms = PERMISSION_ADMIN;
+		
+		// Should probably check user authorization here
+		AuthenticatedUser()->CheckAuth();
+		
+		AuthenticatedUser()->PermissionOrDie($pagePerms);	// dies if no permissions
+		if (AuthenticatedUser()->UserHasPerm(USER_PERMISSION_GOD))
+		{
+			// Add extra functionality for super-users
+		}
+		
+		if (SubmittedForm("ChangePlan","Change Plan"))
+		{
+			// check if the selected plan is the same as the previous plan if it is don't commit to database
+			// just refresh page i.e. go back a page
+			if (DBO()->NewPlan->Id->Value == DBO()->RatePlan->Id->Value)
+			{
+				// The new plan is the same as the existing plan, exit gracefully
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "No update has been saved as the new plan is the same as the previous plan", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				return TRUE;
+			}
+			
+			// Change the service's plan
+			// Start the database transaction
+			TransactionStart();
+
+			// All current ServiceRateGroup and ServiceRatePlan records must have EndDatetime set to NOW()
+			$arrUpdate = Array('EndDatetime' => new MySQLFunction("NOW()"));
+			$updServiceRateGroup = new StatementUpdate("ServiceRateGroup", "Service = <Service> AND EndDatetime > NOW()", $arrUpdate);
+			if (!$updServiceRateGroup->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value)))
+			{
+				// Could not update records in ServiceRateGroup table. Exit gracefully
+				TransactionRollback();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating the current plan's rate groups to end today)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				return TRUE;
+			}
+			
+			$updServiceRatePlan = new StatementUpdate("ServiceRatePlan", "Service = <Service> AND EndDatetime > NOW()", $arrUpdate);
+			if (!$updServiceRatePlan->Execute($arrUpdate, Array("Service"=>DBO()->Service->Id->Value)))
+			{
+				// Could not update records in ServiceRatePlan table. Exit gracefully
+				TransactionRollback();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error updating the current plan to end today)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				return TRUE;
+			}
+			
+			// Declare the new plan for the service
+			// Retrieve the rate groups belonging to the rate plan
+			DBL()->RatePlanRateGroup->RatePlan = DBO()->NewPlan->Id->Value;
+			DBL()->RatePlanRateGroup->Load();
+			
+			// For each Rate Group, save a record to the ServiceRateGroup table
+			// Define constant properties for these records
+			DBO()->ServiceRateGroup->Service 		= DBO()->Service->Id->Value;
+			DBO()->ServiceRateGroup->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
+			DBO()->ServiceRateGroup->CreatedOn 		= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRateGroup->StartDatetime 	= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRateGroup->EndDatetime 	= END_OF_TIME;
+			
+			
+			foreach (DBL()->RatePlanRateGroup as $dboRatePlanRateGroup)
+			{
+				// Set the id of the record to null, so that it is inserted as a new record when saved
+				DBO()->ServiceRateGroup->Id = 0;
+				DBO()->ServiceRateGroup->RateGroup = $dboRatePlanRateGroup->RateGroup->Value;
+				
+				// Save the record to the ServiceRateGroup table
+				if (!DBO()->ServiceRateGroup->Save())
+				{
+					// Could not save the record. Exit gracefully
+					TransactionRollback();
+					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRateGroup table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+					return TRUE;
+				}
+			}
+			
+			// Insert a record into the ServiceRatePlan table
+			DBO()->ServiceRatePlan->Service 		= DBO()->Service->Id->Value;
+			DBO()->ServiceRatePlan->RatePlan 		= DBO()->NewPlan->Id->Value;
+			DBO()->ServiceRatePlan->CreatedBy 		= AuthenticatedUser()->_arrUser['Id'];
+			DBO()->ServiceRatePlan->CreatedOn 		= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->StartDatetime 	= GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->EndDatetime 	= END_OF_TIME;
+			
+			if (!DBO()->ServiceRatePlan->Save())
+			{
+				// Could not save the record. Exit gracefully
+				TransactionRollback();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "ERROR: Saving the plan change to the database failed, unexpectedly<br>(Error adding to ServiceRatePlan table)", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+				return TRUE;
+			}
+			
+			//TODO! Do automatic provisioning here
+			
+			// Add a system note describing the change of plan
+			DBO()->Service->Load();
+			DBO()->RatePlan->Load();
+			DBO()->NewPlan->SetTable("RatePlan");
+			DBO()->NewPlan->Load();
+			if (DBO()->Service->FNN->Value)
+			{
+				$strFNN = "Service with FNN# ". DBO()->Service->FNN->Value ." has had its plan changed from '";
+			}
+			else
+			{
+				$strFNN = "The service's plan has been changed from '";
+			}
+			$strNote = $strFNN . DBO()->RatePlan->Name->Value ."' to '". DBO()->NewPlan->Name->Value ."'";
+			SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
+			
+			// All changes to the database, required to define the plan change, have been completed
+			// Commit the transaction
+			TransactionCommit();
+			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service's plan has been successfully changed", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
+			return TRUE;
+		}		
+		
+		// Retrieve the service details
+		if (!DBO()->Service->Load())
+		{
+			DBO()->Error->Message = "The Service id: ". DBO()->Service->Id->value ." you were attempting to view could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+		
+		// Retrieve the Account Details
+		DBO()->Account->Id = DBO()->Service->Account->Value;
+		if (!DBO()->Account->Load())
+		{
+			DBO()->Error->Message = "Can not find Account: ". DBO()->Service->Account->Value . " associated with this service";
+			$this->LoadPage('error');
+			return FALSE;
+		}
+
+		// BreadCrumb menu
+		BreadCrumb()->ViewAccount(DBO()->Service->Account->Value);
+		BreadCrumb()->ViewService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
+		BreadCrumb()->SetCurrentPage("Change Plan");
+
+		// Context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+		
+		$this->LoadPage('plan_change');
+
+		return TRUE;
+	
+	}
+	
+	
+	// This is used when unarchiving a service to check if its FNN has since been used by another service
+	// It returns a status (defined in ui_app/definitions.php) which will be used to determine whether the 
+	// Service can be unarchived, or a new service is required
+	private function _GetFNNStatus($intService, $strFNN)
+	{
+		// Retrieve any services that are currently using $strFNN but aren't $intService
+		$selFNN = new StatementSelect("Service", "*", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())");
+		
+		if ($selFNN->Execute(Array('FNN' => $strFNN)))
+		{
+			// At least one record was returned, which means the FNN is currently in use by an active service
+			return FNN_CURRENTLY_IN_USE;
+		}
+		
+		// Check if the FNN has been used by another archived service since $intService was archived
+		//TODO! Joel, this is where you are up to
+		$selFNN
+	
+		
+		$selFNN = new StatementSelect("Service", "*", "FNN=<FNN> AND Service != <Service>");
+		$intRecCount = $selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService));
+		
+		if (!$intRecCount)
+		{
+			// The Service is free to use the FNN
+			return FNN_AVAILABLE;
+		}
+		
+		$selFNN = New StatementSelect("Service", "*", "FNN=<FNN>");
+		
+		$arrServices = $selFNN->FetchAll();
+		
+		foreach ($arrServices = )
+		
+		$arrService = $selFNN->Fetch();
+		
+		if ($selFNN->Execute())
+		{
+			// The FNN is currently being used 
+		}
+	}
+	
 	
 	//----- DO NOT REMOVE -----//
 	

@@ -86,7 +86,7 @@ class MenuItems
 	 */
 	function ViewAccount($intId)
 	{
-		$this->strLabel	= "acc: $intId";
+		$this->strLabel	= "Account: $intId";
 		return "account_view.php?Id=$intId";
 	}
 
@@ -169,7 +169,7 @@ class MenuItems
 	 * Compiles the Href to be executed when the ChangePlan menu item is clicked
 	 * Also compiles the label to use if it is being used as a BreadCrumb.
 	 *
-	 * @param	int		$intId		id of the service to view
+	 * @param	int		$intId		id of the service to change the plan on
 	 *
 	 * @return	string				Href to be executed when the ChangePlan menu item is clicked
 	 *
@@ -177,7 +177,7 @@ class MenuItems
 	 */
 	function ChangePlan($intId)
 	{
-		return "vixen.php/Plan/Change/?Service.Id=$intId";
+		return "vixen.php/Service/ChangePlan/?Service.Id=$intId";
 	}	
 
 	//------------------------------------------------------------------------//
@@ -224,7 +224,16 @@ class MenuItems
 	 */
 	function ViewService($intId, $strFNN=NULL)
 	{
-		$this->strLabel	= "service : $strFNN";
+		if (!$strFNN || trim($strFNN) == "")
+		{
+			$this->strLabel = "Service";
+		}
+		else
+		{
+			$this->strLabel	= "Service: $strFNN";
+			
+		}
+		
 		return "vixen.php/Service/View/?Service.Id=$intId";
 	}
 	

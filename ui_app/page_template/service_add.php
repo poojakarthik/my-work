@@ -8,5 +8,5 @@ $this->Page->SetName('Add Service Details');
 
 $strLayout = '1Column';
 $this->Page->SetLayout($strLayout);
-$this->Page->AddObject('ServiceEdit', COLUMN_ONE, HTML_CONTEXT_SERVICE_ADD, "ServiceAddDiv");
+$this->Page->AddObject('ServiceAdd', COLUMN_ONE, HTML_CONTEXT_DEFAULT, "ServiceAddDiv");
 ?>

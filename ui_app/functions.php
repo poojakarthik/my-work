@@ -593,7 +593,7 @@ function SubmittedForm($strFormId, $strButtonId=NULL)
  */
 function GetCurrentDateForMySQL()
 {
-	return date("Y-m-d");
+	return date("Y-m-d", strtotime(GetCurrentDateAndTimeForMySQL()));
 }
 
 //------------------------------------------------------------------------//
@@ -634,15 +634,7 @@ function ConvertUserDateToMySqlDate($strUserDate)
  */
 function ConvertMySQLDateToUnixTimeStamp($strUserDate)
 {
-	if ($strUserDate == NULL)
-	{
-		return $strUserDate;
-	}
-	else
-	{
-		$arrDate = explode("-", $strUserDate);
-		return(mktime(0,0,0,$arrDate[1],$arrDate[2],$arrDate[0]));
-	}
+	return strtotime($strUserDate);
 }
 
 //------------------------------------------------------------------------//
@@ -662,7 +654,7 @@ function ConvertMySQLDateToUnixTimeStamp($strUserDate)
  */
 function GetCurrentTimeForMySQL()
 {
-	return date("H:i:s");
+	return date("H:i:s", strtotime(GetCurrentDateAndTimeForMySQL()));
 }
 
 //------------------------------------------------------------------------//
@@ -674,15 +666,21 @@ function GetCurrentTimeForMySQL()
  * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
  *
  * Retrieves the current date and time in the format that MySql expects datetime attributes to be in
+ * This current time is taken from the database
  *
  * @return	mix					current date and time as a string, properly formatted for MySql
  *								(YYYY-MM-DD HH:MM:SS)
- *
  * @function
  */
 function GetCurrentDateAndTimeForMySQL()
 {
-	return GetCurrentDateForMySQL() ." ". GetCurrentTimeForMySQL();
+	// HACK HACK HACK!!!
+	// StatementSelect doesn't work unless you specify a table name
+	$selDatetime = new StatementSelect("Account", Array("CurrentTime" => "NOW()"));
+	$selDatetime->Execute();
+	$arrDatetime = $selDatetime->Fetch();
+
+	return $arrDatetime['CurrentTime'];
 }
 
 //------------------------------------------------------------------------//
@@ -705,5 +703,43 @@ function OutputMask()
 	return Singleton::Instance('OutputMasks');
 }
 
+//------------------------------------------------------------------------//
+// SaveSystemNote
+//------------------------------------------------------------------------//
+/**
+ * SaveSystemNote()
+ *
+ * Saves a system note to the Note table
+ *
+ * Saves a system note to the Note table
+ *
+ * @param	string		$strNote			message to save
+ * @param	int			$intAccountGroup	Account Group the note applies to
+ * @param 	int			$intAccount			[optional] Account the note applies to
+ * @param	int			$intContact			[optional] Contact the note applies to
+ * @param	int			$intService			[optional] Service the note applies to
+ *
+ * @return	boolean							TRUE if the note could be saved, else FALSE
+ *
+ * @function
+ * 
+ */
+function SaveSystemNote($strNote, $intAccountGroup, $intAccount=NULL, $intContact=NULL, $intService=NULL)
+{
+	$arrNote = Array(
+		'Note'			=> $strNote,
+		'AccountGroup'	=> $intAccountGroup,
+		'Contact'		=> $intContact,
+		'Account'		=> $intAccount,
+		'Service'		=> $intService,
+		'Employee'		=> AuthenticatedUser()->_arrUser['Id'],
+		'Datetime'		=> new MySQLFunction("NOW()"),
+		'NoteType'		=> SYSTEM_NOTE
+	);
+
+	$insNote = new StatementInsert("Note", $arrNote);
+	
+	return (bool)$insNote->Execute($arrNote);
+}
 
 ?>

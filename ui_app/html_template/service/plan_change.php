@@ -13,7 +13,7 @@
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplatePlanDetails
+ * @class	HtmlTemplatePlanChange
  * @extends	HtmlTemplate
  */
 class HtmlTemplateServicePlanChange extends HtmlTemplate
@@ -51,10 +51,6 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 	function __construct($intContext)
 	{
 		$this->_intContext = $intContext;
-		
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -79,7 +75,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 	
 		echo "<h2 class='plan'>Plan Details</h2>\n";
 		echo "<div class='Narrow-Form'>\n";
-		$this->FormStart("ChangePlan", "Plan", "Change");		
+		$this->FormStart("ChangePlan", "Service", "ChangePlan");		
 								
 		$mixServicePlan = GetCurrentPlan(DBO()->Service->Id->Value)	;
 		if ($mixServicePlan === FALSE)
@@ -124,12 +120,20 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 			echo "      </select>\n";
 			echo "   </div>\n";
 			echo "</div>";
-		}		
-		echo "<input type='button' class='InputSubmit' value='View Plan Details' onClick=\"$strViewPlanButtonJavascript\"></input>\n";
+		}
+		echo "<div class='Right'>\n";
+		echo "   <input type='button' class='InputSubmit' value='View Plan Details' onClick=\"$strViewPlanButtonJavascript\"></input>\n";
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
+		echo "<div class='SmallSeperator'></div>\n";
+		echo "</div>\n";
+		
+		echo "<div class='Right'>\n";
 		$this->AjaxSubmit("Change Plan");
+		echo "</div>\n";
+		
 		$this->FormEnd();
+		
 	}
 }
 

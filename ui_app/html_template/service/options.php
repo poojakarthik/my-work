@@ -68,7 +68,7 @@ class HtmlTemplateServiceOptions extends HtmlTemplate
 	function Render()
 	{
 		echo "<h2 class='options'>Service Options</h2>\n";
-		echo "<div class='Narrow-Form'>\n";
+		echo "<div class='NarrowColumn'>\n";
 	
 		$strEditServiceLink = Href()->EditService(DBO()->Service->Id->Value);
 		echo "<li><a href='$strEditServiceLink'>Edit Service Details</a></li>\n";
