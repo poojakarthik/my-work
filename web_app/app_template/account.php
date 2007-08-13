@@ -188,11 +188,14 @@ class AppTemplateAccount extends ApplicationTemplate
 		}
 		
 		// Retrieve all Invoices and all Payments for the account
+		$strWhere = "Account = <Account> AND (Status != ". INVOICE_TEMP .")";
 		DBL()->Invoice->Account = DBO()->Account->Id->Value;
 		DBL()->Invoice->OrderBy("CreatedOn DESC");
 		DBL()->Invoice->Load();
 		
-		DBL()->Payment->Account = DBO()->Account->Id->Value;
+		$strWhere = "Account = <Account> AND (Status = ". PAYMENT_PAYING ." OR Status = ". PAYMENT_FINISHED .")";
+		$arrWhere = Array('Account' => DBO()->Account->Id->Value);
+		DBL()->Payment->Where->Set($strWhere, $arrWhere);
 		DBL()->Payment->OrderBy("PaidOn DESC");
 		DBL()->Payment->Load();
 		

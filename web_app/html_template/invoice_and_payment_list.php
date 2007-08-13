@@ -117,10 +117,10 @@ class HtmlTemplateInvoiceAndPaymentList extends HtmlTemplate
 			if ($fltDebit < 0)
 			{
 				// The invoice value (Total + Tax) should be listed in the Credit column
-				// Change $fltDebit from a negative value to a positive value
-				$fltDebit					= $fltDebit * (-1.0);
-				$arrRecord['Credit']		= $dboInvoice->Total->AsArbitrary($fltDebit);
-				$arrRecord['CreditValue'] 	= $fltDebit;
+				// Convert $fltDebit to Credit
+				$fltCredit					= $fltDebit * (-1.0);
+				$arrRecord['Credit']		= $dboInvoice->Total->AsArbitrary($fltCredit);
+				$arrRecord['CreditValue'] 	= $fltCredit;
 				$arrRecord['Debit']			= "&nbsp;";
 				$arrRecord['DebitValue'] 	= 0;
 			}
