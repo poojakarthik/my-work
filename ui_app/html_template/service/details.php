@@ -79,10 +79,35 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 			case HTML_CONTEXT_FULL_DETAIL:
 				$this->_RenderFullDetail();
 				break;
+			case HTML_CONTEXT_BARE_DETAIL:
+				$this->_RenderBareDetail();
+				break;				
 			default:
 				$this->_RenderFullDetail();
 				break;
 		}
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderBareDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderBareDetail()
+	 *
+	 * Render this HTML Template with bare service detail
+	 *
+	 * Render this HTML Template with bare service detail
+	 *
+	 * @method
+	 */
+	private function _RenderBareDetail()
+	{
+		echo "<h2 class='service'>Service Details</h2>\n";
+		echo "<div class='Narrow-Form'>\n";
+		DBO()->Account->Id->RenderOutput();
+		DBO()->Service->FNN->RenderOutput();		
+		echo "</div>\n";
+		echo "<div class='Seperator'></div>\n";	
 	}
 
 	//------------------------------------------------------------------------//
