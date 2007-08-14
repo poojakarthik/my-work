@@ -606,10 +606,19 @@ class AppTemplateService extends ApplicationTemplate
 		// Retrieve all rate groups currently used by this service
 		// TODO! This currently doesn't work properly if any extra rate groups have been added to this service
 		// Rich is working on the proper query to use, to find this information
-		$strServiceId = DBO()->Service->Id->Value;
-		$strWhere = "Service = $strServiceId AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service = $strServiceId)";
-		DBL()->ServiceRateGroup->Where->SetString($strWhere);
-		DBL()->ServiceRateGroup->Load();
+		//DBL()->ServiceRateGroup->SetColumns(Array(""));
+		
+		$strWhere = "RateGroup.Id in (SELECT RateGroup FROM ServiceRateGroup WHERE Service = <Service> AND StartDatetime = (SELECT MAX(StartDatetime)	FROM ServiceRatePlan WHERE Service = <Service>))";
+		DBL()->RateGroup->Where->Set($strWhere, Array('Service' => DBO()->Service->Id->Value));
+		$arrColumns = Array();
+		$arrColumns['Id'] = "RateGroup.Id";
+		$arrColumns['Name'] = "RateGroup.Name";
+		$arrColumns['Description'] = "RateGroup.Description";
+		$arrColumns['Fleet'] = "RateGroup.Fleet";
+		$arrColumns['RecordTypeName'] = "RecordType.Name";
+		DBL()->RateGroup->SetColumns($arrColumns);
+		DBL()->RateGroup->SetTable("RateGroup INNER JOIN RecordType ON RateGroup.RecordType = RecordType.Id");
+		DBL()->RateGroup->Load();
 		
 		// Load context menu items specific to the View Service page
 		// Context menu
@@ -822,7 +831,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		// Check if the FNN has been used by another archived service since $intService was archived
 		//TODO! Joel, this is where you are up to
-		$selFNN
+		//$selFNN
 	
 		
 		$selFNN = new StatementSelect("Service", "*", "FNN=<FNN> AND Service != <Service>");
@@ -838,7 +847,7 @@ class AppTemplateService extends ApplicationTemplate
 		
 		$arrServices = $selFNN->FetchAll();
 		
-		foreach ($arrServices = )
+		//foreach ($arrServices = )
 		
 		$arrService = $selFNN->Fetch();
 		

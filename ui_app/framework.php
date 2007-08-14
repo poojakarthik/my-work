@@ -1525,7 +1525,14 @@ class OutputMasks
 			return $strMySqlDate;
 		}
 	
-		$arrDate = explode("-", $strMySqlDate);
+		// The following line can't handle dates like 9999-12-31
+		//$strDate = date("Y-m-d", strtotime($strMySqlDate));
+		
+		// if it is a date and time, then just grab the date
+		$arrDate = explode(" ", $strMySqlDate);
+		
+		// split the date into year, month and day
+		$arrDate = explode("-", $arrDate[0]);
 		
 		if (count($arrDate) > 1)
 		{
