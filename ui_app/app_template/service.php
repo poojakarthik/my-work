@@ -425,26 +425,9 @@ class AppTemplateService extends ApplicationTemplate
 				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 				$strNote = "Service archived on $strDateTime by $strUserName";
 			}
-			if (DBO()->Service->ActivateService->Value)
-			{
-				// we want to activate this service
-				$bolActivateService = TRUE;
-				
-				// Check if the FNN has been used by any other service since this was last active
-				
-				// set ClosedOn date to null
-				DBO()->Service->ClosedOn = NULL;
-				
-				//TODO! probably need to run EnableELB
-				
-				// Declare properties to update
-				$arrUpdateProperties[] = "ClosedOn";
-				
-				// Define system generated note
-				$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-				$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-				$strNote = "Service unarchived on $strDateTime by $strUserName";
-			}
+			//**************************************************************************************************************************************
+			// NOTE! I was originally handling the ActivateService logic here, but have decided to handle it last, as it is the most complex
+			//**************************************************************************************************************************************
 			if (DBO()->Service->CostCentre->Value !== NULL)
 			{
 				if (DBO()->Service->CostCentre->Value == 0)
@@ -526,12 +509,161 @@ class AppTemplateService extends ApplicationTemplate
 			
 			// all details regarding the service have been successfully updated
 
+			// Handle unarchiving a service
+			if (DBO()->Service->ActivateService->Value)
+			{
+				// Reload the Service object
+				//NOTE! This is being done
+				//DBO()->Service->Load();
+				// we want to activate this service
+				//$bolActivateService = TRUE;
+				//DBO()->Service->SetColumns();
+				
+				// Check if the FNN has been used by any other service since this was last active
+				$intFNNStatus = $this->_GetFNNStatus(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
+				
+				//TODO! Change these to a switch statement
+				if ($intFNNStatus == FNN_CURRENTLY_IN_USE)
+				{
+					// Can't activate the service because the FNN is currently being used by another service
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", 	"ERROR: Cannot activate this service as the FNN: ". DBO()->Service->FNN->Value .
+													" is currently being used by another service.". 
+													"<br>The other service must be archived before this service can be activated");
+					return TRUE;
+				}
+				elseif ($intFNNStatus == FNN_HAS_NOT_BEEN_USED)
+				{
+					// The FNN has not been used since this service was archived
+					DBO()->Service->ClosedOn = NULL;
+					
+					DBO()->Service->SetColumns("ClosedOn");
+					if (!DBO()->Service->Save())
+					{
+						// Could not update the service record to mark that it has been un-archived
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: activating the service failed, unexpectedly");
+						return TRUE;
+					}
+					
+					//I am assuming I don't have to do anything to the ServiceRatePlan and ServiceRateGroup tables
+					
+					// Define system generated note
+					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+					$strNote = "Service unarchived on $strDateTime by $strUserName";
+				}
+				elseif ($intFNNStatus == FNN_HAS_SINCE_BEEN_USED)
+				{
+					// The FNN has been used by another service, since this service was last archived
+					// Now both services are archived.  Create a new service
+					$intOldServiceId = DBO()->Service->Id->Value;
+					DBO()->Service->SetColumns();
+					DBO()->Service->Load();  // The currently archived service
+					// By setting the Id to zero, a new record will be inserted when the Save method is executed
+					DBO()->Service->Id			= 0;
+					DBO()->Service->CreatedOn	= GetCurrentDateForMySQL();
+					DBO()->Service->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
+					DBO()->Service->ClosedOn	= NULL;
+					DBO()->Service->ClosedBy	= NULL;
+					DBO()->Service->Save();
+					
+					// Save extra service details like mobile details, and inbound details and 
+					if (DBO()->Service->ServiceType == SERVICE_TYPE_MOBILE)
+					{
+						DBO()->ServiceMobileDetail->Where->Service = $intOldServiceId;
+						if (DBO()->ServiceMobileDetail->Load())
+						{
+							DBO()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
+							DBO()->ServiceMobileDetail->Id = 0;
+							DBO()->ServiceMobileDetail->Save();
+						}
+					}
+					elseif (DBO()->Service->ServiceType == SERVICE_TYPE_INBOUND)
+					{
+						DBO()->ServiceInboundDetail->Where->Service = $intOldServiceId;
+						if (DBO()->ServiceInboundDetail->Load())
+						{
+							DBO()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
+							DBO()->ServiceInboundDetail->Id = 0;
+							DBO()->ServiceInboundDetail->Save();
+						}
+					}
+					if (DBO()->Service->Indial100->Value)
+					{
+						// This will perform an insert query for each new recorded added to the ServiceExtension table.  It could have been done
+						// with just one query if StatementInsert could accomodate SELECT querys for the VALUES clause
+						DBL()->ServiceExtension->Service = $intOldServiceId;
+						DBL()->ServiceExtension->Load();
+						foreach (DBL()->ServiceExtension as $dboServiceExtension)
+						{
+							$dboServiceExtension->Service = DBO()->Service->Id->Value;
+							$dboServiceExtension->Id = 0;
+							$dboServiceExtension->Save();
+						}
+					}
+					
+					// Copy the most recent RatePlan and RateGroup records from the old service to the new service
+					//TODO! use a StatementInsert object for this.
+					// The query will be of the form 
+					/*
+						INSERT INTO ServiceRateGroup (Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime)
+						SELECT {DBO()->Service->Id->Value}, RateGroup, <Employee>, CreatedOn, StartDatetime, EndDateTime
+						FROM ServiceRateGroup
+						WHERE Service = $intOldServiceId
+				
+					I don't think the StatementInsert class can accomodate INSERT queries that contain SELECT statements
+					*/
+					
+					// Give the new service the same RatePlan as the old service
+					// (MAYBE I SHOULD JUST COPY THE ENTIRE RatePlan HISTORY of the old service)
+					$strWhere = "Service=<Service> AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service=<Service> AND NOW() BETWEEN StartDatetime AND EndDatetime)";
+					DBO()->ServicePlan->Where->Set($strWhere, Array('Service' => $intOldServiceId));
+					if (DBO()->ServicePlan->Load())
+					{
+						// Save the record for the new plan
+						DBO()->ServicePlan->Service = DBO()->Service->Id->Value;
+						DBO()->ServicePlan->Id = 0;
+						DBO()->ServicePlan->Save();
+					}
+					else
+					{
+						// The archived service does not have a plan that is still considered active
+					}
+					
+					//Give the new service the same RateGroups as the old service
+					//TODO! This is where you got up to on Tuesday
+					
+					//TODO!!! If I stick all this "ACTIVATE SERVICE" logic in a single function, then it could have a return boolean
+					//and if that return boolean is FALSE then you could rollback the entire transaction and notify the user that
+					//the service could not be ACTIVATED and nothing was saved.  
+					
+					
+					// Make a new service based on the one you are trying to activate.  Make sure you copy all its Extended detail (mobile, inbound etc)
+					// its current rateplan and current rate groups.  I don't know if we have to bother checking if the rate plan is currently active
+					// and that all the rate groups are currently active
+					
+					//I think this could best be done with StatementInsert objects
+					
+					
+				}
+				
+				// set ClosedOn date to null
+				DBO()->Service->ClosedOn = NULL;
+				
+				//TODO! probably need to run EnableELB
+				
+				// Declare properties to update
+				$arrUpdateProperties[] = "ClosedOn";
+				
+			}
+
 			// Add an automatic note if the service has been archived or unarchived
 			if ($strNote)
 			{
 				SaveSystemNote($strNote, DBO()->Service->AccountGroup->Value, DBO()->Service->Account->Value, NULL, DBO()->Service->Id->Value);
 			}
-
+			
 			// Commit the transaction
 			TransactionCommit();
 			Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The service details were successfully updated", "Location" => Href()->ViewService(DBO()->Service->Id->Value)));
@@ -580,8 +712,7 @@ class AppTemplateService extends ApplicationTemplate
 	
 	function ViewPlan()
 	{
-		// Should probably check user authorization here
-		//TODO!include user authorisation
+		// Check user authorization here
 		AuthenticatedUser()->CheckAuth();
 
 		//DBO()->RatePlan->Id = GetCurrentPlan(DBO()->Service->Id->Value);
@@ -821,6 +952,8 @@ class AppTemplateService extends ApplicationTemplate
 	private function _GetFNNStatus($intService, $strFNN)
 	{
 		// Retrieve any services that are currently using $strFNN but aren't $intService
+		// I should not have to check that Id != $intService because this will only be used when unarchiving a service so $intService will be 
+		// archived, and we are only retrieving records that are currently active
 		$selFNN = new StatementSelect("Service", "*", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())");
 		
 		if ($selFNN->Execute(Array('FNN' => $strFNN)))
@@ -830,31 +963,15 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Check if the FNN has been used by another archived service since $intService was archived
-		//TODO! Joel, this is where you are up to
-		//$selFNN
+		$selFNN = new StatementSelect("Service", "*", "FNN=<FNN> AND Id != <Service> AND ClosedOn > (SELECT Max(ClosedOn) FROM Service WHERE Id=<Service>)");
+		if ($selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService)))
+		{
+			// At least one record was returned, which means the FNN has been used by another archived service, since $intService was archived
+			return FNN_HAS_SINCE_BEEN_USED;
+		}
 	
-		
-		$selFNN = new StatementSelect("Service", "*", "FNN=<FNN> AND Service != <Service>");
-		$intRecCount = $selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService));
-		
-		if (!$intRecCount)
-		{
-			// The Service is free to use the FNN
-			return FNN_AVAILABLE;
-		}
-		
-		$selFNN = New StatementSelect("Service", "*", "FNN=<FNN>");
-		
-		$arrServices = $selFNN->FetchAll();
-		
-		//foreach ($arrServices = )
-		
-		$arrService = $selFNN->Fetch();
-		
-		if ($selFNN->Execute())
-		{
-			// The FNN is currently being used 
-		}
+		// If we have gotten this far, then the FNN has not been used since $intService was archived
+		return FNN_HAS_NOT_BEEN_USED;
 	}
 	
 	//----- DO NOT REMOVE -----//
