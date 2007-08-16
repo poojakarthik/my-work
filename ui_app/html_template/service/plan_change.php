@@ -75,7 +75,7 @@ class HtmlTemplateServicePlanChange extends HtmlTemplate
 	
 		echo "<h2 class='plan'>Plan Details</h2>\n";
 		echo "<div class='Narrow-Form'>\n";
-		$this->FormStart("ChangePlan", "Service", "ChangePlan");		
+		$this->FormStart("ChangePlan", "Service", "ChangePlan");
 								
 		$mixServicePlan = GetCurrentPlan(DBO()->Service->Id->Value)	;
 		if ($mixServicePlan === FALSE)

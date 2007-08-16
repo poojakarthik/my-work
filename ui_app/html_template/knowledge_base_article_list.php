@@ -1,5 +1,11 @@
 <?php
 //----------------------------------------------------------------------------//
+// (c) copyright 2007 VOIPTEL Pty Ltd
+//
+// NOT FOR EXTERNAL DISTRIBUTION
+//----------------------------------------------------------------------------//
+
+//----------------------------------------------------------------------------//
 // HtmlTemplateKnowledgeBaseArticleList
 //----------------------------------------------------------------------------//
 /**
@@ -12,7 +18,7 @@
  *
  * @prefix	<prefix>
  *
- * @package	web_app
+ * @package	ui_app
  * @class	HtmlTemplateKnowledgeBaseArticleList
  * @extends	HtmlTemplate
  */

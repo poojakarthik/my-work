@@ -437,11 +437,34 @@ class AppTemplateService extends ApplicationTemplate
 				$arrUpdateProperties[] = "CostCentre";
 			}
 			
-			// Save the changes to the Service Table, if count($arrUpdateProperties) > 0
 
 			// Declare the transaction
 			TransactionStart();
-			
+
+			if (DBO()->Service->ELB->Value !== NULL)
+			{
+				if (DBO()->Service->ELB->Value)
+				{
+					//DBO()->Service->ELB->Value === 1
+					if (!$this->Framework->EnableELB(DBO()->Service->Id->Value))
+					{
+						//EnableELB failed
+						//TODO! output appropriate error message
+					}
+				}
+				else
+				{
+					//DBO()->Service->ELB->Value === 0
+					if (!$this->Framework->DisableELB(DBO()->Service->Id->Value))
+					{
+						//DisableELB failed
+						//TODO! output appropriate error message
+					}
+				}
+			}
+
+			// Save the changes to the Service Table, if count($arrUpdateProperties) > 0
+
 			if (count($arrUpdateProperties) > 0)
 			{
 				// Declare columns to update
@@ -512,15 +535,8 @@ class AppTemplateService extends ApplicationTemplate
 			// Handle unarchiving a service
 			if (DBO()->Service->ActivateService->Value)
 			{
-				// Reload the Service object
-				//NOTE! This is being done
-				//DBO()->Service->Load();
-				// we want to activate this service
-				//$bolActivateService = TRUE;
-				//DBO()->Service->SetColumns();
-				
 				// Check if the FNN has been used by any other service since this was last active
-				$intFNNStatus = $this->_GetFNNStatus(DBO()->Service->Id->Value, DBO()->Service->FNN->Value);
+				$intFNNStatus = $this->_GetFNNStatus(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->ClosedOn->Value);
 				
 				//TODO! Change these to a switch statement
 				if ($intFNNStatus == FNN_CURRENTLY_IN_USE)
@@ -568,94 +584,97 @@ class AppTemplateService extends ApplicationTemplate
 					DBO()->Service->ClosedBy	= NULL;
 					DBO()->Service->Save();
 					
-					// Save extra service details like mobile details, and inbound details and 
-					if (DBO()->Service->ServiceType == SERVICE_TYPE_MOBILE)
+					// Save extra service details like mobile details, and inbound details and address details
+					switch (DBO()->Service->ServiceType->Value)
 					{
-						DBO()->ServiceMobileDetail->Where->Service = $intOldServiceId;
-						if (DBO()->ServiceMobileDetail->Load())
-						{
-							DBO()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
-							DBO()->ServiceMobileDetail->Id = 0;
-							DBO()->ServiceMobileDetail->Save();
-						}
+						case SERVICE_TYPE_MOBILE:
+							DBO()->ServiceMobileDetail->Where->Service = $intOldServiceId;
+							if (DBO()->ServiceMobileDetail->Load())
+							{
+								DBO()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
+								DBO()->ServiceMobileDetail->Id = 0;
+								DBO()->ServiceMobileDetail->Save();
+							}
+							break;
+						case SERVICE_TYPE_INBOUND:
+							DBO()->ServiceInboundDetail->Where->Service = $intOldServiceId;
+							if (DBO()->ServiceInboundDetail->Load())
+							{
+								DBO()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
+								DBO()->ServiceInboundDetail->Id = 0;
+								DBO()->ServiceInboundDetail->Save();
+							}
+							break;
+						case SERVICE_TYPE_LAND_LINE:
+							DBO()->ServiceAddress->Where->Service = $intOldServiceId;
+							if (DBO()->ServiceAddress->Load())
+							{
+								DBO()->ServiceAddress->Service = DBO()->Service->Id->Value;
+								DBO()->ServiceAddress->Id = 0;
+								DBO()->ServiceAddress->Save();
+							}
+							if (DBO()->Service->Indial100->Value)
+							{
+								// This will perform an insert query for each new record added to the ServiceExtension table.  It could have been done
+								// with just one query if StatementInsert could accomodate SELECT querys for the VALUES clause
+								DBL()->ServiceExtension->Service = $intOldServiceId;
+								DBL()->ServiceExtension->Load();
+								foreach (DBL()->ServiceExtension as $dboServiceExtension)
+								{
+									$dboServiceExtension->Service = DBO()->Service->Id->Value;
+									$dboServiceExtension->Id = 0;
+									$dboServiceExtension->Save();
+								}
+							}
+							break;
+						default:
+							break;
 					}
-					elseif (DBO()->Service->ServiceType == SERVICE_TYPE_INBOUND)
-					{
-						DBO()->ServiceInboundDetail->Where->Service = $intOldServiceId;
-						if (DBO()->ServiceInboundDetail->Load())
-						{
-							DBO()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
-							DBO()->ServiceInboundDetail->Id = 0;
-							DBO()->ServiceInboundDetail->Save();
-						}
-					}
-					if (DBO()->Service->Indial100->Value)
-					{
-						// This will perform an insert query for each new recorded added to the ServiceExtension table.  It could have been done
-						// with just one query if StatementInsert could accomodate SELECT querys for the VALUES clause
-						DBL()->ServiceExtension->Service = $intOldServiceId;
-						DBL()->ServiceExtension->Load();
-						foreach (DBL()->ServiceExtension as $dboServiceExtension)
-						{
-							$dboServiceExtension->Service = DBO()->Service->Id->Value;
-							$dboServiceExtension->Id = 0;
-							$dboServiceExtension->Save();
-						}
-					}
-					
-					// Copy the most recent RatePlan and RateGroup records from the old service to the new service
-					//TODO! use a StatementInsert object for this.
-					// The query will be of the form 
-					/*
-						INSERT INTO ServiceRateGroup (Service, RateGroup, CreatedBy, CreatedOn, StartDatetime, EndDatetime)
-						SELECT {DBO()->Service->Id->Value}, RateGroup, <Employee>, CreatedOn, StartDatetime, EndDateTime
-						FROM ServiceRateGroup
-						WHERE Service = $intOldServiceId
-				
-					I don't think the StatementInsert class can accomodate INSERT queries that contain SELECT statements
-					*/
 					
 					// Give the new service the same RatePlan as the old service
-					// (MAYBE I SHOULD JUST COPY THE ENTIRE RatePlan HISTORY of the old service)
-					$strWhere = "Service=<Service> AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service=<Service> AND NOW() BETWEEN StartDatetime AND EndDatetime)";
-					DBO()->ServicePlan->Where->Set($strWhere, Array('Service' => $intOldServiceId));
-					if (DBO()->ServicePlan->Load())
+					$strWhere = "Service=<OldService> AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service=<OldService> AND NOW() BETWEEN StartDatetime AND EndDatetime)";
+					DBO()->ServiceRatePlan->Where->Set($strWhere, Array('OldService' => $intOldServiceId));
+					if (DBO()->ServiceRatePlan->Load())
 					{
 						// Save the record for the new plan
-						DBO()->ServicePlan->Service = DBO()->Service->Id->Value;
-						DBO()->ServicePlan->Id = 0;
-						DBO()->ServicePlan->Save();
+						$strOldStartDatetime = DBO()->ServiceRatePlan->StartDatetime->Value;
+						$strNow = GetCurrentDateAndTimeForMySQL();
+						DBO()->ServiceRatePlan->Service = DBO()->Service->Id->Value;
+						
+						DBO()->ServiceRatePlan->CreatedOn = $strNow;
+						DBO()->ServiceRatePlan->StartDatetime = $strNow;
+						DBO()->ServiceRatePlan->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
+						DBO()->ServiceRatePlan->Id = 0;
+						DBO()->ServiceRatePlan->Save();
+	
+						// Give the new service all the RateGroups of the old service, where StartDatetime >= DBO()->ServiceRatePlan->StartDatetime->Value
+						// When adding a plan in the old system, records were added to ServiceRateGroup before the record was added to ServiceRatePlan.
+						// The discrepancy in the start times shouldn't be any more than a couple of seconds, but just to be on the safe side, I'm 
+						// retrieving all records added to the ServiceRateGroup table that were added up to a day before the current plan was added 
+						// to the ServiceRatePlan table
+						$strWhere = "Service=<OldService> AND StartDatetime > SUBTIME(<OldPlanStartDatetime>, SEC_TO_TIME(60*60*24))";
+						DBL()->ServiceRateGroup->Where->Set($strWhere, Array('OldService' => $intOldServiceId, 'OldPlanStartDatetime' => $strOldStartDatetime));
+						DBL()->ServiceRateGroup->Load();
+						foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
+						{
+							$dboServiceRateGroup->Service = DBO()->Service->Id->Value;
+							$dboServiceRateGroup->CreatedOn = $strNow;
+							$dboServiceRateGroup->StartDatetime = $strNow;
+							$dboServiceRateGroup->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
+							$dboServiceRateGroup->Id = 0;
+							$dboServiceRateGroup->Save();
+						}
 					}
 					else
 					{
 						// The archived service does not have a plan that is still considered active
 					}
 					
-					//Give the new service the same RateGroups as the old service
-					//TODO! This is where you got up to on Tuesday
-					
-					//TODO!!! If I stick all this "ACTIVATE SERVICE" logic in a single function, then it could have a return boolean
-					//and if that return boolean is FALSE then you could rollback the entire transaction and notify the user that
-					//the service could not be ACTIVATED and nothing was saved.  
-					
-					
-					// Make a new service based on the one you are trying to activate.  Make sure you copy all its Extended detail (mobile, inbound etc)
-					// its current rateplan and current rate groups.  I don't know if we have to bother checking if the rate plan is currently active
-					// and that all the rate groups are currently active
-					
-					//I think this could best be done with StatementInsert objects
-					
-					
+					// Define system generated note
+					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
+					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
+					$strNote = "Service unarchived on $strDateTime by $strUserName";
 				}
-				
-				// set ClosedOn date to null
-				DBO()->Service->ClosedOn = NULL;
-				
-				//TODO! probably need to run EnableELB
-				
-				// Declare properties to update
-				$arrUpdateProperties[] = "ClosedOn";
-				
 			}
 
 			// Add an automatic note if the service has been archived or unarchived
@@ -961,12 +980,12 @@ class AppTemplateService extends ApplicationTemplate
 	// This is used when unarchiving a service to check if its FNN has since been used by another service
 	// It returns a status (defined in ui_app/definitions.php) which will be used to determine whether the 
 	// Service can be unarchived, or a new service is required
-	private function _GetFNNStatus($intService, $strFNN)
+	private function _GetFNNStatus($intService, $strFNN, $strClosedOn)
 	{
 		// Retrieve any services that are currently using $strFNN but aren't $intService
 		// I should not have to check that Id != $intService because this will only be used when unarchiving a service so $intService will be 
 		// archived, and we are only retrieving records that are currently active
-		$selFNN = new StatementSelect("Service", "*", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())");
+		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())");
 		
 		if ($selFNN->Execute(Array('FNN' => $strFNN)))
 		{
@@ -975,8 +994,8 @@ class AppTemplateService extends ApplicationTemplate
 		}
 		
 		// Check if the FNN has been used by another archived service since $intService was archived
-		$selFNN = new StatementSelect("Service", "*", "FNN=<FNN> AND Id != <Service> AND ClosedOn > (SELECT Max(ClosedOn) FROM Service WHERE Id=<Service>)");
-		if ($selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService)))
+		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND Id != <Service> AND ClosedOn > <ClosedOn>");
+		if ($selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService, 'ClosedOn' => $strClosedOn)))
 		{
 			// At least one record was returned, which means the FNN has been used by another archived service, since $intService was archived
 			return FNN_HAS_SINCE_BEEN_USED;
@@ -985,6 +1004,98 @@ class AppTemplateService extends ApplicationTemplate
 		// If we have gotten this far, then the FNN has not been used since $intService was archived
 		return FNN_HAS_NOT_BEEN_USED;
 	}
+	
+	//------------------------------------------------------------------------//
+	// BulkSetPlanForUnplanned
+	//------------------------------------------------------------------------//
+	/**
+	 * BulkSetPlanForUnplanned()
+	 *
+	 * Performs the logic for declaring plans for all services that have an FNN but no current plan
+	 * 
+	 * Performs the logic for declaring plans for all services that have an FNN but no current plan
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function BulkSetPlanForUnplanned()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_OPERATOR);
+		
+		//check if the form was submitted
+		if (SubmittedForm('SetPlans', 'Submit Changes'))
+		{
+			TransactionStart();
+			
+			$mixReturn = $this->_BulkSetPlans();
+			if ($mixReturn === TRUE)
+			{
+				TransactionCommit();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert"=>"Plans have been successfully set", "Location" => Href()->Admin_Console()));
+				return TRUE;
+			}
+			elseif ($mixReturn === FALSE)
+			{
+				TransactionRollback();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert"=>"ERROR: Commiting changes to the database failed, unexpectedly", "Location" => Href()->Admin_Console()));
+				return TRUE;
+			}
+			else
+			{
+				TransactionRollback();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert"=>"ERROR: Commiting changes to the database failed, unexpectedly", "Location" => Href()->Admin_Console()));
+				return TRUE;
+			}
+		}
+		
+		// context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+		
+		// breadcrumb menu
+		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
+		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SetCurrentPage("Services Without Plans");
+		
+		
+		// Retrieve the list of services that currently don't have an active plan
+		$strWhere = "ServiceType >= 100 AND ServiceType <= 104 AND ClosedOn IS NULL AND Id NOT IN (SELECT Service FROM ServiceRatePlan WHERE NOW( ) BETWEEN StartDatetime AND EndDatetime)";
+		DBL()->Service->Where->Set($strWhere);
+		DBL()->Service->Load();
+		
+		// retrieve a list of all plans for each type of service
+		DBL()->RatePlan->Archived = 0;
+		DBL()->RatePlan->OrderBy("Name");
+		DBL()->RatePlan->Load();
+		
+		// All required data has been retrieved from the database so now load the page template
+		$this->LoadPage('set_unplanned_services');
+
+		return TRUE;
+	}
+	
+	function _BulkSetPlans()
+	{
+		foreach (DBO()->Service as $strService=>$objNewPlan)
+		{
+			if ($objNewPlan->Value)
+			{
+				// A plan has been declared for the service
+				$intServiceId = str_replace("NewPlan", "", $strService);
+				if (!ChangePlan($intServiceId, $objNewPlan->Value))
+				{
+					// The plan couldn't declared for some reason
+					return FALSE;
+				}
+			}
+			return TRUE;
+		}
+	}
+	
 	
 	//----- DO NOT REMOVE -----//
 	
