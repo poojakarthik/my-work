@@ -776,9 +776,21 @@ class AppTemplateService extends ApplicationTemplate
 		//DBL()->RatePlan->Load();
 	
 		$this->LoadPage('view_rate_group');
-
 		return TRUE;
 	}	
+	
+	function ViewRates()
+	{
+		// logic for loading the view groups on the drop down div
+		// last line should be a loadpage that loads the logic into a html page
+		$strSearchString = DBO()->Rate->SearchString->Value;
+		$strWhere = "Name like '%$strSearchString%' AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup=<RateGroupId>)";
+		DBL()->Rate->Where->Set($strWhere, Array('RateGroupId' => DBO()->RateGroup->Id->Value));
+		DBL()->Rate->Load();
+		
+		$this->LoadPage('rate_search_results');
+		return TRUE;		
+	}
 	
 	//------------------------------------------------------------------------//
 	// ChangePlan

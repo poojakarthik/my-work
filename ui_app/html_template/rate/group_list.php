@@ -85,7 +85,7 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 		$this->LoadJavascript("retractable");
 		$this->LoadJavascript("tooltip");
 	}
-	
+
 	//------------------------------------------------------------------------//
 	// Render
 	//------------------------------------------------------------------------//
@@ -99,6 +99,28 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 	 * @method
 	 */
 	function Render()
+	{
+		switch ($this->_intContext)
+		{
+			case HTML_CONTEXT_NORMAL_DETAIL:
+				$this->_RenderNormalDetail();
+				break;
+		}
+	}
+
+	//------------------------------------------------------------------------//
+	// _RenderNormalDetail
+	//------------------------------------------------------------------------//
+	/**
+	 * _RenderNormalDetail()
+	 *
+	 * Render this HTML Template
+	 *
+	 * Render this HTML Template
+	 *
+	 * @method
+	 */
+	function _RenderNormalDetail()
 	{	
 		// Render each of the account invoices
 		echo "<h2 class='Invoice'>Rate Groups</h2>\n";
@@ -144,11 +166,11 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 			//$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
 			
 			// Add this row to Invoice table
-			Table()->RateGroupTable->AddRow(	$dboRateGroup->Id->Value,
-												$dboRateGroup->Name->Value, 
-												$dboRateGroup->Description->Value, 
-												$dboRateGroup->Fleet->Value,
-												$dboRateGroup->RecordTypeName->Value);
+			Table()->RateGroupTable->AddRow(	$dboRateGroup->Id->AsValue(),
+												$dboRateGroup->Name->AsValue(), 
+												$dboRateGroup->Description->AsValue(), 
+												$dboRateGroup->Fleet->AsValue(),
+												$dboRateGroup->RecordTypeName->AsValue());
 			
 			//Retrieve the Rate information for this RateGroup
 			$strWhere = "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)";
@@ -206,31 +228,39 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 			else
 			{
 				// There are more than 10 rates for this RateGroup.  
-				// Display a serach box and button.  The results of which will be displayed in a popup
+				// Display a search box and button.  The results of which will be displayed in a popup
 				//TODO! begin and end AJAX to open rates in popup window
+				$intRateGroupId = $dboRateGroup->Id->Value;
 				
-				$strBasicDetailHtml = "<div class='VixenTableDetail'>\n";
-				$strBasicDetailHtml .= "<table width='100%' border=0 cellspacing=0 cellpadding=0>\n";
+				$strOnClick = "javascript:
+							var objObject = {};
+							objObject.Objects = {};
+							objObject.Objects.RateGroup = {};
+							objObject.Objects.Rate = {};
+							objObject.Objects.Rate.SearchString = document.getElementById('SearchString_$intRateGroupId').value;
+							objObject.Objects.RateGroup.Id = $intRateGroupId;
+							Vixen.Popup.ShowAjaxPopup('RateGroupSearchId', 'large', 'Service', 'ViewRates', objObject);
+							";
+				
+				$strBasicDetailHtml =  "<div class='VixenTableDetail'>\n";
+				$strBasicDetailHtml .= "<table width='60%' border='0' cellspacing='0' cellpadding='0'>\n";
 				$strBasicDetailHtml .= "	<tr>\n";
-				$strBasicDetailHtml .=	"		<td>\n";			
-				
-				$strBasicDetailHtml .= "			<input type=text size=10>\n";
-					
+				$strBasicDetailHtml .= "		<td>\n";
+				$strBasicDetailHtml .= "			Search through rates:";
+				$strBasicDetailHtml .= "		</td>\n";
+				$strBasicDetailHtml .= "		<td>\n";			
+				$strBasicDetailHtml .= "			<input type=text size=10 id='SearchString_$intRateGroupId'>\n";
 				$strBasicDetailHtml .= "		</td>\n";
 				$strBasicDetailHtml .= "		<td>\n";
-				
-				$strBasicDetailHtml .= "			<input type=button value='ok'>\n";
-				
+				$strBasicDetailHtml .= "			<input type='button' value='View Rates' class='InputSubmit' onclick=\"$strOnClick\"></input>\n";
 				$strBasicDetailHtml .= "		</td>\n";
-				$strBasicDetailHtml .=	"	</tr>\n";					
+				$strBasicDetailHtml .= "	</tr>\n";					
 				$strBasicDetailHtml .= "</table>\n";
 				$strBasicDetailHtml .= "</div>\n";
 				
 				Table()->RateGroupTable->SetDetail($strBasicDetailHtml);
 			}
-			
-			
-			
+					
 			//Set the drop down detail
 			/*$strDetailHtml = "<div class='VixenTableDetail'>\n";
 			$strDetailHtml .= $dboInvoice->DueOn->AsOutput();
