@@ -461,11 +461,11 @@
 				$this->_arrCurrentImportFile['FileType'] = $intFileType;
 				
 				// Set Imported Status based on File Type
-				if (in_array($intFileType, $GLOBALS['*arrConstant']['CDRType']))
+				if (array_key_exists($intFileType, $GLOBALS['*arrConstant']['CDRType']))
 				{
 					$this->_arrCurrentImportFile['Status'] = CDRFILE_WAITING;
 				}
-				elseif (in_array($intFileType, $GLOBALS['*arrConstant']['ProvisioningType']))
+				elseif (array_key_exists($intFileType, $GLOBALS['*arrConstant']['ProvisioningType']))
 				{
 					$this->_arrCurrentImportFile['Status'] = PROVFILE_WAITING;
 				}
