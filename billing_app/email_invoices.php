@@ -19,8 +19,8 @@ LoadApplication();
 $appBilling = new ApplicationBilling($arrConfig);
 
 // execute bill
-$strPath = "/home/vixen_invoices/".date("Y/n/", strtotime("-1 month", time()));
-//$strPath = "/home/richdavis/Desktop/2007-07-03-Email-PDFs.zip_FILES/";
+//$strPath = "/home/vixen_invoices/".date("Y/n/", strtotime("-1 month", time()));
+$strPath = "/home/richdavis/Desktop/Invoices/July 07";
 $bolResponse = $appBilling->EmailInvoicePDFs($strPath);
 
 $appBilling->FinaliseReport();
