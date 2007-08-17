@@ -26,11 +26,11 @@ CliEcho("\n[ Generating Debug Data ]\n");
 // Email Invoice Total Data
 CliEcho(" + Calculating Profit Data...");
 //if ($arrResponse = $appBilling->CalculateProfitData())
-if ($arrResponse = $appBilling->CalculateProfitData("468865b79ffa3", TRUE))
+if ($arrResponse = $appBilling->CalculateProfitData("46afb6cf2f619", TRUE))
 {
 	
 	CliEcho(" + Calculating Debug Data...");
-	//$selBillingDebug = new StatementSelect("InvoiceTemp", "DueOn, COUNT(Id) AS InvoiceCount, SUM(Total) + SUM(Tax) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR Invoice.TotalOwing != 0)", "DueOn", NULL, "DueOn");
+	//$selBillingDebug = new StatementSelect("InvoiceTemp", "DueOn, COUNT(Id) AS InvoiceCount, SUM(Total) + SUM(Tax) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR InvoiceTemp.TotalOwing != 0)", "DueOn", NULL, "DueOn");
 	$selBillingDebug = new StatementSelect("Invoice", "DueOn, COUNT(Id) AS InvoiceCount, (SUM(Total) + SUM(Tax)) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR Invoice.TotalOwing != 0)", "DueOn", NULL, "DueOn");
 	$selBillingDebug->Execute($arrResponse);
 	$arrBillingDebug = $selBillingDebug->FetchAll();
@@ -100,7 +100,13 @@ if ($arrResponse = $appBilling->CalculateProfitData("468865b79ffa3", TRUE))
 	$emlMail =& Mail::factory('mail');
 	
 	// Send the email
-	$strEmail = 'rich@voiptelsystems.com.au, jared@telcoblue.com.au';
+	$strEmail = 'rich@voiptelsystems.com.au, ' .
+				'jared@telcoblue.com.au, ' .
+				'dan@fhcc.com.au, ' .
+				'paula@telcoblue.com.au, ' .
+				'kaywan@telcoblue.com.au, ' .
+				'julie@telcoblue.com.au, ' .
+				'mark@yellowbilling.com.au';
 	if (!$emlMail->send($strEmail, $strHeaders, $strBody))
 	{
 		CliEcho("Email Failed!");
