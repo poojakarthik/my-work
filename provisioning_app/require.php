@@ -50,4 +50,10 @@ VixenRequire($strModuleDir."aapt/import_module_aapt_eoe.php");
 VixenRequire($strModuleDir."aapt/import_module_aapt_lsd.php");
 VixenRequire($strModuleDir."aapt/import_module_aapt_reject.php");
 
+// New Modules
+
+VixenRequire($strModuleDir."import_base.php");
+
+VixenRequire($strModuleDir."unitel/import_dsc.php");
+
  ?>

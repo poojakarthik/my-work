@@ -54,7 +54,7 @@
 	 * 
 	 * @param	array	$arrConfig				Configuration array
 	 *
-	 * @return	ApplicationCollection
+	 * @return	ApplicationProvisioning
 	 *
 	 * @method
 	 */
@@ -62,9 +62,12 @@
  	{
  		parent::__construct();
  		
- 		// Init Modules
+ 		// Init  Export Modules
  		// FIXME: Use Customer Config.  For now, use all modules
+ 		//$this->_arrExportModules[CARRIER_UNITEL]	[REQUEST_FULL_SERVICE]	= new ExportUnitelDailyOrder();
  		
+ 		// Init Import Modules
+ 		$this->_arrImportModules[PRV_UNITEL_DAILY_STATUS_RPT]	= new ImportUnitelDSC();
  	}
  	
  	//------------------------------------------------------------------------//
@@ -85,20 +88,48 @@
 	function Import()
  	{
  		// Statements
- 		$selImport		= new StatementSelect("FileImport", "*", "Status = ".PROVFILE_WAITING);
- 		$insResponse	= new StatementInsert("ProvisioningResponse");
+ 		$arrCols				= Array();
+		$arrCols['Id']			= NULL;
+		$arrCols['Response']	= NULL;
+		$arrCols['LastUpdated']	= NULL;
+ 		$ubiRequest			= new StatementUpdateById("ProvisioningRequest", $arrCols);
+ 		
+ 		$selImport			= new StatementSelect("FileImport", "*", "Status = ".PROVFILE_WAITING);
+ 		$selServiceCarrier	= new StatementSelect("Service", "Carrier, CarrierPreselect", "Id = <Service>");
+ 		
+ 		$arrCols				= $this->db->FetchClean("ProvisioningResponse");
+		$arrCols['ImportedOn']	= new MySQLFunction("NOW()");
+ 		$insResponse		= new StatementInsert("ProvisioningResponse", $arrCols);
+ 		
+ 		$arrData = Array();
+ 		$arrData['Status']			= PROVFILE_COMPLETE;
+ 		$arrData['NormalisedOn']	= new MySQLFunction("NOW()");
+ 		$ubiFileImport		= new StatementUpdateById("FileImport", $arrData);
+ 		
  		
  		// Select all Provisioning Files waiting to be imported
  		$selImport->Execute();
- 		$arrFiles = $selImport->FetchAll();
  		
  		// For each File
+ 		$arrDelinquents = Array();
  		while ($arrFile = $selImport->Fetch())
  		{
+ 			CliEcho("\nOpening {$arrFile['FileName']}...");
+ 			
+ 			// Is there a module?
+ 			if (!$this->_arrImportModules[$arrFile['FileType']])
+ 			{
+ 				// TODO: Error
+ 				CliEcho("\t* No module found");
+ 				continue;
+ 			}
+	 			
 	 		// Open File for Reading
 	 		if (!@$ptrFile = fopen($arrFile['Location'], 'r'))
 	 		{
 	 			// TODO: Error!
+ 				CliEcho("\t* Unable to read file '{$arrFile['Location']}'");
+	 			continue;
 	 		}
 	 		
 	 		// Read file
@@ -109,33 +140,78 @@
 	 		}
 	 		
 	 		// Run File PreProcessor
-	 		$arrFileContent = $this->arrImportModules[$arrFile['Carrier']]->PreProcess($arrFile['FileType'], $arrRawContent);
+	 		$arrFileContent = $this->_arrImportModules[$arrFile['FileType']]->PreProcess($arrRawContent);
+	 		//Debug($arrFileContent);
 	 		
 	 		// Process Lines
 	 		foreach ($arrFileContent as $strLine)
 	 		{
 	 			// Normalise line
-	 			$arrNormalised = $this->arrImportModules[$arrFile['Carrier']]->Normalise($arrFile['FileType'], $arrRawContent);
+	 			$arrNormalised = $this->_arrImportModules[$arrFile['FileType']]->Normalise($strLine);
+	 			
+	 			// Add generic fields
+	 			$arrNormalised['Carrier']		= $this->_arrImportModules[$arrFile['FileType']]->intCarrier;
+	 			$arrNormalised['Raw']			= $strLine;
+	 			$arrNormalised['ImportedOn']	= new MySQLFunction("NOW()");
+	 			$arrNormalised['FileImport']	= $arrFile['Id'];
 	 			
 	 			// Is this a valid record?
 	 			switch ($arrNormalised['Status'])
 	 			{
-	 				case RESPONSE_OTHER:
-	 					// The line is not a response (Header or Footer)
-	 					continue;
+	 				case RESPONSE_STATUS_BAD_OWNER:
+	 					$arrDelinquents[$arrNormalised['FNN']]++;
 	 					break;
+	 					
+	 				case RESPONSE_STATUS_CANT_NORMALISE:
+	 					Debug("Unhandled Error!");
+	 					break;
+	 					
+	 				default:
+	 					$arrNormalised['Status'] = RESPONSE_STATUS_IMPORTED;
 	 			}
 	 			
 		 		// Attempt to link to a Request
-		 		$arrNormalised = $this->_LinkToRequest($arrNormalised);
+		 		if ($arrNormalised['Request'] = $this->_arrImportModules[$arrFile['FileType']]->LinkToRequest($arrNormalised))
+		 		{
+		 			// Update Request Table if needed
+		 			$arrRequest = Array();
+		 			$arrRequest['Id']			= $arrNormalised['Request'];
+		 			$arrRequest['Response']		= $arrNormalised['Id'];
+		 			$arrRequest['LastUpdated']	= $arrNormalised['EffectiveDate'];
+		 			$ubiRequest->Execute($arrRequest);
+		 		}
+		 		
+	 			$selServiceCarrier->Execute($arrNormalised);
+				$arrServiceCarrier = $selServiceCarrier->Fetch();
+				switch ($arrNormalised['Type'])
+				{
+					case REQUEST_LOSS_FULL:
+						if ($arrNormalised['Carrier'] != $arrServiceCarrier['Carrier'])
+						{
+							$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
+						}
+						break;
+						
+					case REQUEST_LOSS_PRESELECT:
+						if ($arrNormalised['Carrier'] != $arrServiceCarrier['CarrierPreselect'])
+						{
+							$arrNormalised['Status'] = RESPONSE_STATUS_REDUNDANT;
+						}
+						break;
+				}
+		 		
+		 		// Update the Service (if needed)
+		 		//$this->_UpdateService($arrNormalised);
 		 		
 		 		// Insert into ProvisioningResponse Table
 		 		$insResponse->Execute($arrNormalised);
-		 		
-		 		// Update the Service (if needed)
-		 		$this->_UpdateService($arrNormalised);
+		 		//Debug($insResponse->Error());
 	 		}
 	 		
+	 		// Update FileImport
+	 		$arrFile['Status']			= PROVFILE_COMPLETE;
+	 		$arrFile['NormalisedOn']	= new MySQLFunction("NOW()");
+	 		$ubiFileImport->Execute($arrFile);
  		}
  	}
  	
@@ -156,7 +232,31 @@
 	 */
 	function Export()
 	{
- 	
+ 		// Statements
+ 		$arrCols = Array();
+ 		$arrCols['Status']	= NULL;
+ 		$arrCols['Detail']	= NULL;
+ 		$ubiRequest		= new StatementUpdateById("ProvisioningRequest", $arrCols);
+ 		$selRequests	= new StatementSelect("ProvisioningRequest", "*", "Status = ".REQUEST_STATUS_WAITING);
+ 		
+ 		// Select all Requests waiting to be sent out
+ 		$selRequests->Execute();
+ 		
+ 		// Loop through Requests
+ 		while ($arrRequest = $selRequests->Fetch())
+ 		{
+			// Prepare output for this request
+			$arrRequest = $this->_Output($arrRequest);
+			
+			// Update Request Status and Details
+			$ubiRequest->Execute($arrRequest);
+ 		}
+ 		
+ 		// Finalise files
+ 		foreach ($this->_arrOutputModules as $prvModule)
+ 		{
+ 			$prvModule->Export();
+ 		}
 	}
 	
 	//------------------------------------------------------------------------//
@@ -175,11 +275,17 @@
 	 *
 	 * @method
 	 */
-	function SOAPRequest()
+	function SOAPRequest($intService, $intCarrier, $intRequestType)
 	{
- 	
- 	
- 	
- 	
+ 		// Add ProvisioningRequest entry
+ 		
+ 		// Communicate with SOAP server
+ 		$arrResponse = $this->arrSOAPModules[$intCarrier]->Request($intService, $intRequestType);
+ 		
+ 		// Add ProvisioningResponse entry
+ 		
+ 		// If successful, update Service
+ 		
+ 		// Return message & Status
 	}
  }
