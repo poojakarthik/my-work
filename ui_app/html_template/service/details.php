@@ -155,13 +155,12 @@ class HtmlTemplateServiceDetails extends HtmlTemplate
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		
 	
-		
-		DBO()->Service->Indial100->RenderOutput();
-		if (DBO()->Service->Indial100->Value)
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
-			// only render the Extensive Level Billing boolean, if the service is an Indial100
+			DBO()->Service->Indial100->RenderOutput();
 			DBO()->Service->ELB->RenderOutput();
 		}
+		
 		DBO()->Service->CreatedOn->RenderOutput();
 		DBO()->Service->ClosedOn->RenderOutput();
 		DBO()->Service->TotalUnbilledCharges->RenderOutput();

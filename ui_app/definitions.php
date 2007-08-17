@@ -124,11 +124,5 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "
 define('END_OF_TIME', 	'9999-12-31 23:59:59');
 
 
-// Constants used to define the status of an FNN when unarchiving a service
-define("FNN_CURRENTLY_IN_USE", 100);
-define("FNN_HAS_SINCE_BEEN_USED", 101);
-define("FNN_HAS_NOT_BEEN_USED", 102);
-
-
 
 ?>

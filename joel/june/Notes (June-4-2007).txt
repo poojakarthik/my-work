@@ -1,0 +1,38 @@
+With regard to the bread crumbs menu, you might want to display variables in the link,
+differently to how they will have to be used in the HREF link.
+
+For example a service is a 10 digit number, but you might want to space it
+in the label.
+
+label = Service: 07 3250 4200
+HREF = view_service.php?Service.Id=0732504200
+
+I would need to store an input mask for each variable in a breadcrumb
+Jared said we don't have to bother with this, at this stage.
+
+
+
+For information regarding AJAX, visit http://developer.mozilla.org/
+
+
+
+Once a conflict has been resolved in svn type:
+svn resolved path/file
+
+
+
+TODO:
+create a page (in php) to display a single knowledge base article
+using the ui_app framework
+
+have the url use:
+
+view_kb_doc.php?KnowledgeBase.Id=123456
+
+
+Regarding tomorrow (5th of June):
+You are currently working on the HTML Template object called HTMLTemplateKnowledgeBaseDocView
+and the Layout Template, 1Column
+
+http://localhost/joel/vixen/ui_app/knowledge_base_doc_view?KnowledgeBase_Id=2
+

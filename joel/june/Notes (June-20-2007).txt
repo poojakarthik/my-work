@@ -1,0 +1,50 @@
+I think I should include $arrParams['Type']   (either "Output" or "Input") again
+so that checkboxes and radiobuttons can be rendered as disabled checkboxes and radiobuttons.
+HtmlTemplates->RadioButtons() could render the control as disabled, if rendering it as an output property
+A property that could be displayed as radio buttons could have 2 contexts defined in UIAppDocumentation.
+One which renders it as disabled radio buttons, and one which renders it as a label.
+(DONE 20th June)
+
+Amount applied = Payment.Amount - Payment.Balance
+unless if the Payment has been reversed (check the status) in which case
+Amount applied = 0
+
+TODO
+look at Payments class to see what payments are retrieved (based on their status)
+It should probably only be PAYMENT_WAITING, PAYMENT_PAYING, PAYMENT_FINISHED and PAYMENT_REVERSED
+Check out the classes located in intranet_app/classes/payments/
+None of the stuff in this directory looks relevant
+
+TODO
+Work on the context menu
+
+The drop down list of invoices for a given payment (in the drop down details of the payment table)
+Should be ordered by invoice number.  It is currently ordered by descending id of the InvoicePayments table
+you will have to sort the list of invoices.
+(FIXED it now orders them by invoice Id)(DONE 20th June)
+
+In the Invoice Table:
+	Invoice.Tax is always 10% of Invoice.Total
+
+In the current Invoice table of the View Invoices and Payments screen of vixen:
+	Total of this bill = Invoice.Tax + Invoice.Total
+
+TODO
+I am concerned about how the spacing of properties is done when they are displayed as "Label : Value"
+We want to make the spacing as small as possible, while still displaying the entire label, and having all the 
+values left justified
+
+TODO
+Also we should be able to specify the absolute width of a VixenTable
+We should be able to define a VixenTable to have an absolute width, or a width relative to the tables contents,
+or a width that fills the available space in the column of the page
+Perhaps the width of each column in a page, should be specified in the page template.
+
+TODO
+Implement column widths and alignments in VixenTable (might require java script modification)
+Look up how table widths and column alignments work in HTML
+
+
+Check out yesterday's notes
+
+

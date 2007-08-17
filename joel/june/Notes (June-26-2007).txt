@@ -1,0 +1,34 @@
+Finish the "Add Adjustment" popup and don't forget to add doc blocks to your javascript
+
+
+TODO
+Add a "view source" button to the header of the popup windows which will only display if you are in debug mode.
+If you click on the button, it should open a page with the source code of the popup window.
+When defining an anchor, if you set target='_blank', it will open the href in a new window.  Target defaults to "_self"
+which opens the href in the current window.  You will use this to open the source code in a separate window.
+
+
+
+When you are converting a php data structure to JSON notation, I think you have to make sure that you
+escape all the apostrophes properly.
+Actualy, when you pass Json code to a javascript function in the form:
+<script type='text/javascript'>Vixen.menu.Render($strJsonCode);</script>
+You do not have to encapsulate $strJsonCode in apostrophes.
+I'm pretty sure Json()->encode handles apostrophes just fine.
+
+
+TODO
+We need a function that will return the employee Id of the currently logged in employee.
+TODO
+make a function called AuthenticatedEmployee() which returns a DBObject containing the record from the Employee table
+relating to the currently logged in user.
+I called it GetAuthenticatedUserDBObject() as there was already a method called AuthenticatedUser() which returned
+the singleton Application object.
+Currently GetAuthenticatedUserDBObject() includes a HACK.  It will only ever return details for Employee.Id = 29, which is me.
+
+
+
+TODO TOMORROW
+check out http://www.irt.org/articles/js069/index.htm for math functions in javascript
+
+I am currently working on VixenValidateAdjustmentClass.IsValidForm validating the data

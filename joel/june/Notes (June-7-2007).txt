@@ -1,0 +1,98 @@
+ToDo:
+Make sure everything in ui_app has an appropriate docblock
+Flesh out the Validate::DateAndTime() method
+start on the Invoice and Payment page
+create all the empty files that you need 
+then create all the UiAppDocumentation data necessary (the first 6 items on the spec sheet)
+
+
+
+
+Check out the existing web app to see if you can pull any html code that will help
+the presentation of the KnowledgeBase Document viewer.
+
+When Sean comes in, ask him how the authentication methods can be used with the 
+KnowledgeBase Document viewer.  Currently the KnowledgeBase Document Viewer has no
+user authentication.
+
+Start working out what needs to go on the "Invoice and Payment" screen.
+
+
+
+
+Files that have complete docblocks:
+ui_app/application_loader.php
+ui_app/framework.php
+ui_app/functions.php
+ui_app/db_object.php
+ui_app/db_list.php
+
+
+
+the constructor for the SubmittedData class makes reference to a data attribute
+that doesn't exist.  What is the point?
+
+
+$_REQUEST is a global array storing all data that is stored in $_GET, $_POST, $_COOKIE
+
+
+find out how AJAX works
+
+
+
+If you're thinking of something to do, work out various display options for properties
+(columns of tables of the database) and how these should be defined in the UiAppDocumentation
+tables.
+
+define some validation for single properties
+There is a Validation class in ui_app/framework.php which has functions to validate
+various things such as "RegexValidate", "UnsignedNonZeroInteger".  This is what should
+be stored in the ValidationRule column of the UiAppDocumentation table.  Either a regex
+or the name of the Validation method to use, to validate the property.
+
+
+Files that are needed to implement the Invoice and Payment screen:
+
+File							Contents of file						Added
+
+ui_app/account_ledger.php				loads the application (what the url points to)			yes
+ui_app/app_template/account.php			AppTemplateAccount::Ledger()    (Application Template)		already existed
+ui_app/page_template/account_ledger.php		Page Template for the account_ledger webpage			yes
+ui_app/layout_template/2column.php			Layout Template (as per spec sheet)				yes
+ui_app/html_template/accountdetails.php		HtmlTemplateAccountDetails					already existed
+ui_app/html_template/account_options.php		HtmlTemplateAccountOptions					yes
+ui_app/html_template/account_invoices.php		HtmlTemplateAccountInvoicesList (assuming there is only 	yes
+							ever one way of displaying account invoices and that
+							is to display them as a list)
+ui_app/html_template/account_payments.php		HtmlTemplateAccountPayments					yes
+ui_app/html_template/account_adjustments.php		HtmlTemplateAccountAdjustments					yes
+ui_app/html_template/account_recurring_adjustments	HtmlTemplateAccountRecurringAdjustments			yes
+
+
+With the Layout Templates, we have 1column.php, 2column.php and 3column.php.  Will these always have the exact same column widths?
+We could always have more specific names for them, such as 2column_thin_fat.php, 2column_fat_thin.php
+Should html_template/accountdetails.php be renamed to account_details.php so that it conforms to our naming conventions?
+Jared's answer: They will always be the same width, so 1column, 2column, 3column will suffice.
+
+With respect to the Account Details Html Template object (HtmlTemplateAccountDetails) won't there be scenarios where you want to
+use this Html object, but not want to display all the account details, or not want to user to be able to change the details?
+How will this be handled?  Will it utilise the multiple contexts and the UiAppDocumentation data?
+Jared's answer: Each HtmlTemplate now has a public data member called $_intContext which is set up in the constructor
+by a passed parameter.  So now, in the page templates, when you add a html object to the page, you have to specify what 
+context it will be used in.  The context constants are defined in application_loader.php
+The Html object Templates will now use $_intContext to work out what context they are being used, and will load the appropriate
+java script and the appropriate private render method.
+
+
+TODO! sometime when you get a chance
+Should the HTML Templates be split into more subdirectorys?  I have a feeling there will be quite a lot of them.
+Jared's answer: yes, do this.  You will have to update the autoloader function to handle it though.
+in the autoloader, if there is a directory matching the name of the first token after the _template token, then
+go into that subdirectory and find the file you want.
+HtmlTemplateAccountRecurringAdjustments will be located in html_template/account/recurring_adjustments.php
+
+Ask Jared if html_template/account_invoices.php should be called html_template/account_invoices_list.php
+Make sure this issue is resolved before adding any of these files to svn
+
+
+

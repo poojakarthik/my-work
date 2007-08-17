@@ -1,0 +1,32 @@
+With respect to the JSON object storing Commands that can be processed by Axaj.js:
+
+The structure of the object will be:
+Check out the stuff on the board.
+
+
+
+//JSON<size>
+[
+	{
+	'command': ''
+	'data': ''
+	},
+	{
+	'command': 'html'
+	'parent': 'body'
+	'data': "<div>...</div>"
+	}
+]
+
+ob_start()
+ob_clean()
+Object->Render()
+$strHtml = ob_get_clean()
+ob_end_flush()
+
+CHECK OUT THIS LINE TO FIX THE FOCUS EXCEPTION THROWING THING: <input type="text" autocomplete="off" name="fname"> etc.
+
+
+CDR = Customer Data Record
+Service and equiptment records
+full national number

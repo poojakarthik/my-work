@@ -1,0 +1,52 @@
+Unbilled Total:
+
+Overdue and Unbilled Total don't have a fixed width font at the moment
+DONE
+
+ON THE CONSOLE PAGE
+Include:
+
+Current Balance: Just the balance from invoices (don't include the charges)  can be -ve (if -ve put CR)
+DONE
+
+Overdue: if -ve then convert to 0
+DONE
+
+Unbilled calls: if -ve then convert to positive and display CR
+DONE
+
+Unbilled Adjustments  can be -ve (CR)
+DONE
+
+ON THE Unbilled Charges for Account page
+remove the Unbilled Total
+DONE
+
+add credit to the table totals, if -ve
+DONE
+
+ON the Unbilled charges for service page:
+display the FNN of the service
+DONE
+
+Call Information should be changed to "Unbilled Calls"
+DONE
+
+your list of call types to filter by, in the HtmlTemplateServiceCdrList, should be in alphabetical order.
+DONE
+
+I should probably fix up the H1 title for this website.  It is currently not being displayed.
+DONE
+
+Fix the popup.js so it doesn't say "Vixen Intranet App"
+DONE
+
+
+SHOULD THE LIST OF SERVICES SHOW SERVICES THAT ARE INACTIVE? It currently does
+07-08-2007: Show the date it was closed
+
+TODO when you get back
+Fix up the breadcrumb menu and logout button
+(Done, although in a hacky fashion)
+
+HtmlTemplateAccountUnbilledChargeTotal just displays the Account name and Trading name if they exist

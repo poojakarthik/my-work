@@ -233,6 +233,10 @@ class HTMLElements
 		{
 			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
 		}
+		else
+		{
+			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
+		}
 		$strHtml .= "   {$strLabel} : </div>\n";
 		$strHtml .= "</div>\n";
 		
@@ -453,6 +457,87 @@ class HTMLElements
 		
 		return $strHtml;
 	}
+
+	//------------------------------------------------------------------------//
+	// CheckBox2
+	//------------------------------------------------------------------------//
+	/**
+	 * CheckBox2()
+	 * 
+	 * Creates a check box, but arranges the label and checkbox just like the function InputText does
+	 * 
+	 * Creates a check box, but arranges the label and checkbox just like the function InputText does
+	 * Returns a formatted HTML div tag, using data from an array to build
+	 * the element's attributes like class, id and value
+	 *
+	 * @param	array	$arrParams			parameters to use when building the
+	 * 										checkbox (see above for format).
+	 * @return	string						html code
+	 *
+	 * @method
+	 */
+	function CheckBox2($arrParams)
+	{
+		$strLabel = $arrParams['Definition']['Label'];
+		
+		// determine whether the checkbox should be checked
+		$strChecked = "";
+		if ($arrParams['Value'])
+		{
+			$strChecked	= "checked";
+			$intValue	= 1;
+		}
+		else
+		{
+			$intValue = 0;
+		}
+		
+		// determine whether the checkbox should be disabled
+		$strDisabled = "";
+		if ($arrParams['Type'] != RENDER_INPUT)
+		{
+			$strDisabled	= "disabled";
+		}
+
+		// create the name and id for the radio button
+		$strName 	= $arrParams['Object'] .".". $arrParams['Property'];
+	
+
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		if ($arrParams['Required'])
+		{
+			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
+		}		
+		$strHtml .= "      <input type='checkbox' class='{$arrParams['Definition']['BaseClass']}InputText {$arrParams['Definition']['Class']}' id='$strName' $strChecked $strDisabled \n";
+		
+		// include the onchange javascript to handle the changing of the checkbox
+		// 
+		$strHtml .= "         onchange='javascript:\n";
+		$strHtml .= "            if (this.checked)\n";
+		$strHtml .= "            {\n";
+		$strHtml .= "               document.getElementById(\"{$strName}_hidden\").value = 1;\n";
+		$strHtml .= "            }\n";
+		$strHtml .= "            else\n";
+		$strHtml .= "            {\n";
+		$strHtml .= "               document.getElementById(\"{$strName}_hidden\").value = 0;\n";
+		$strHtml .= "            }'\n";
+		$strHtml .= "      ></input>\n";
+		$strHtml .= "   <div id='{$arrParams['Object']}.{$arrParams['Property']}.Label' class='{$arrParams['Definition']['BaseClass']}Label'>\n";
+		if ($arrParams['Required'])
+		{
+			$strHtml .= "      <span class='RequiredInput'>*</span>\n";
+		}
+		else
+		{
+			$strHtml .= "      <span class='RequiredInput'>&nbsp;</span>\n";
+		}
+		$strHtml .= "   {$strLabel} : </div>\n";
+		$strHtml .= "      <input type='hidden' id='{$strName}_hidden' name='$strName' value='$intValue'></input>\n";
+		$strHtml .= "</div>\n";
+		
+		return $strHtml;
+	}
+
 
 	//------------------------------------------------------------------------//
 	// RadioButtons

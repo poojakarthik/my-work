@@ -1,0 +1,14 @@
+TODO
+Now that I have binded a hidden input to all checkboxes, make sure that this works with Vixen.Ajax.SendForm().
+I think it should work fine because the checkbox won't have a name, and therefore its name won't be in the format Object.Property.
+(DONE) (it works fine)
+
+TODO
+check that DBObject->Save() will handle updating only a few columns of a record
+DONE (You have to make sure you call DBObject->SetColumns before you do save)
+
+ASK JARED ABOUT THIS!!! (from last Friday)
+I have a feeling there will be situations where we will want to attach javascript to an event on a radiobutton or checkbox, but
+if we use the RenderInput method to render the checkbox or radio, we can't specify things like "onclick" or "onchange".  Can we 
+specify these after the RenderInput so long as we associate it with the id or name of the Property?
+

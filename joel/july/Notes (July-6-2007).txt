@@ -1,0 +1,14 @@
+If that javascript problem happens where the browser is using an old version of the javascript
+go into Tools->Clear Private Data and clear the cache data
+
+
+
+Things to know about recurring adjustments:
+	If RecurringChargeType.Fixed == 1 then you can not change anything else about the recurring charge
+
+
+
+I could add event listeners to the popups that make sure tabbing always stays on the popup, and enter keys are properly processed.
+
+
+

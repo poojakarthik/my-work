@@ -414,8 +414,6 @@ class AppTemplateService extends ApplicationTemplate
 				// set closedby to authenticated user ID
 				DBO()->Service->ClosedBy = AuthenticatedUser()->_arrUser['Id'];
 				
-				//TODO! probably need to run DisableELB
-				
 				// Declare properties to update
 				$arrUpdateProperties[] = "ClosedOn";
 				$arrUpdateProperties[] = "ClosedBy";
@@ -449,7 +447,9 @@ class AppTemplateService extends ApplicationTemplate
 					if (!$this->Framework->EnableELB(DBO()->Service->Id->Value))
 					{
 						//EnableELB failed
-						//TODO! output appropriate error message
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: Enabling ELB failed, unexpectedly.  All modifications to the service have been aborted");
+						return TRUE;
 					}
 				}
 				else
@@ -458,7 +458,9 @@ class AppTemplateService extends ApplicationTemplate
 					if (!$this->Framework->DisableELB(DBO()->Service->Id->Value))
 					{
 						//DisableELB failed
-						//TODO! output appropriate error message
+						TransactionRollback();
+						Ajax()->AddCommand("Alert", "ERROR: Disabling ELB failed, unexpectedly.  All modifications to the service have been aborted");
+						return TRUE;
 					}
 				}
 			}
@@ -490,12 +492,11 @@ class AppTemplateService extends ApplicationTemplate
 					Ajax()->RenderHtmlTemplate("ServiceEdit", HTML_CONTEXT_DEFAULT, "ServiceEditDiv");
 					return TRUE;
 				}
+				
 				// set DOB to MySql date format
 				DBO()->ServiceMobileDetail->DOB = ConvertUserDateToMySqlDate(DBO()->ServiceMobileDetail->DOB->Value);
+				
 				// set columns to update
-				
-				// not saving correctly 'Service' represented in database as 0
-				
 				DBO()->ServiceMobileDetail->SetColumns("SimPUK, SimESN, SimState, DOB, Comments");
 				if (!DBO()->ServiceMobileDetail->Save())
 				{
@@ -535,142 +536,17 @@ class AppTemplateService extends ApplicationTemplate
 			// Handle unarchiving a service
 			if (DBO()->Service->ActivateService->Value)
 			{
-				// Check if the FNN has been used by any other service since this was last active
-				$intFNNStatus = $this->_GetFNNStatus(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->ClosedOn->Value);
-				
-				//TODO! Change these to a switch statement
-				if ($intFNNStatus == FNN_CURRENTLY_IN_USE)
+				$mixResult = $this->_ActivateService(DBO()->Service->Id->Value, DBO()->Service->FNN->Value, DBO()->Service->ClosedOn->Value);
+				if ($mixResult !== TRUE && $mixResult !== FALSE)
 				{
-					// Can't activate the service because the FNN is currently being used by another service
+					// Activating the service failed, and an error message has been returned
 					TransactionRollback();
-					Ajax()->AddCommand("Alert", 	"ERROR: Cannot activate this service as the FNN: ". DBO()->Service->FNN->Value .
-													" is currently being used by another service.". 
-													"<br>The other service must be archived before this service can be activated");
+					Ajax()->AddCommand("Alert", $mixResult);
 					return TRUE;
 				}
-				elseif ($intFNNStatus == FNN_HAS_NOT_BEEN_USED)
+				if ($mixResult === TRUE)
 				{
-					// The FNN has not been used since this service was archived
-					DBO()->Service->ClosedOn = NULL;
-					
-					DBO()->Service->SetColumns("ClosedOn");
-					if (!DBO()->Service->Save())
-					{
-						// Could not update the service record to mark that it has been un-archived
-						TransactionRollback();
-						Ajax()->AddCommand("Alert", "ERROR: activating the service failed, unexpectedly");
-						return TRUE;
-					}
-					
-					//I am assuming I don't have to do anything to the ServiceRatePlan and ServiceRateGroup tables
-					
-					// Define system generated note
-					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
-					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
-					$strNote = "Service unarchived on $strDateTime by $strUserName";
-				}
-				elseif ($intFNNStatus == FNN_HAS_SINCE_BEEN_USED)
-				{
-					// The FNN has been used by another service, since this service was last archived
-					// Now both services are archived.  Create a new service
-					$intOldServiceId = DBO()->Service->Id->Value;
-					DBO()->Service->SetColumns();
-					DBO()->Service->Load();  // The currently archived service
-					// By setting the Id to zero, a new record will be inserted when the Save method is executed
-					DBO()->Service->Id			= 0;
-					DBO()->Service->CreatedOn	= GetCurrentDateForMySQL();
-					DBO()->Service->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
-					DBO()->Service->ClosedOn	= NULL;
-					DBO()->Service->ClosedBy	= NULL;
-					DBO()->Service->Save();
-					
-					// Save extra service details like mobile details, and inbound details and address details
-					switch (DBO()->Service->ServiceType->Value)
-					{
-						case SERVICE_TYPE_MOBILE:
-							DBO()->ServiceMobileDetail->Where->Service = $intOldServiceId;
-							if (DBO()->ServiceMobileDetail->Load())
-							{
-								DBO()->ServiceMobileDetail->Service = DBO()->Service->Id->Value;
-								DBO()->ServiceMobileDetail->Id = 0;
-								DBO()->ServiceMobileDetail->Save();
-							}
-							break;
-						case SERVICE_TYPE_INBOUND:
-							DBO()->ServiceInboundDetail->Where->Service = $intOldServiceId;
-							if (DBO()->ServiceInboundDetail->Load())
-							{
-								DBO()->ServiceInboundDetail->Service = DBO()->Service->Id->Value;
-								DBO()->ServiceInboundDetail->Id = 0;
-								DBO()->ServiceInboundDetail->Save();
-							}
-							break;
-						case SERVICE_TYPE_LAND_LINE:
-							DBO()->ServiceAddress->Where->Service = $intOldServiceId;
-							if (DBO()->ServiceAddress->Load())
-							{
-								DBO()->ServiceAddress->Service = DBO()->Service->Id->Value;
-								DBO()->ServiceAddress->Id = 0;
-								DBO()->ServiceAddress->Save();
-							}
-							if (DBO()->Service->Indial100->Value)
-							{
-								// This will perform an insert query for each new record added to the ServiceExtension table.  It could have been done
-								// with just one query if StatementInsert could accomodate SELECT querys for the VALUES clause
-								DBL()->ServiceExtension->Service = $intOldServiceId;
-								DBL()->ServiceExtension->Load();
-								foreach (DBL()->ServiceExtension as $dboServiceExtension)
-								{
-									$dboServiceExtension->Service = DBO()->Service->Id->Value;
-									$dboServiceExtension->Id = 0;
-									$dboServiceExtension->Save();
-								}
-							}
-							break;
-						default:
-							break;
-					}
-					
-					// Give the new service the same RatePlan as the old service
-					$strWhere = "Service=<OldService> AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service=<OldService> AND NOW() BETWEEN StartDatetime AND EndDatetime)";
-					DBO()->ServiceRatePlan->Where->Set($strWhere, Array('OldService' => $intOldServiceId));
-					if (DBO()->ServiceRatePlan->Load())
-					{
-						// Save the record for the new plan
-						$strOldStartDatetime = DBO()->ServiceRatePlan->StartDatetime->Value;
-						$strNow = GetCurrentDateAndTimeForMySQL();
-						DBO()->ServiceRatePlan->Service = DBO()->Service->Id->Value;
-						
-						DBO()->ServiceRatePlan->CreatedOn = $strNow;
-						DBO()->ServiceRatePlan->StartDatetime = $strNow;
-						DBO()->ServiceRatePlan->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
-						DBO()->ServiceRatePlan->Id = 0;
-						DBO()->ServiceRatePlan->Save();
-	
-						// Give the new service all the RateGroups of the old service, where StartDatetime >= DBO()->ServiceRatePlan->StartDatetime->Value
-						// When adding a plan in the old system, records were added to ServiceRateGroup before the record was added to ServiceRatePlan.
-						// The discrepancy in the start times shouldn't be any more than a couple of seconds, but just to be on the safe side, I'm 
-						// retrieving all records added to the ServiceRateGroup table that were added up to a day before the current plan was added 
-						// to the ServiceRatePlan table
-						$strWhere = "Service=<OldService> AND StartDatetime > SUBTIME(<OldPlanStartDatetime>, SEC_TO_TIME(60*60*24))";
-						DBL()->ServiceRateGroup->Where->Set($strWhere, Array('OldService' => $intOldServiceId, 'OldPlanStartDatetime' => $strOldStartDatetime));
-						DBL()->ServiceRateGroup->Load();
-						foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
-						{
-							$dboServiceRateGroup->Service = DBO()->Service->Id->Value;
-							$dboServiceRateGroup->CreatedOn = $strNow;
-							$dboServiceRateGroup->StartDatetime = $strNow;
-							$dboServiceRateGroup->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
-							$dboServiceRateGroup->Id = 0;
-							$dboServiceRateGroup->Save();
-						}
-					}
-					else
-					{
-						// The archived service does not have a plan that is still considered active
-					}
-					
-					// Define system generated note
+					// Activating the service was successfull. Define system generated note
 					$strDateTime = OutputMask()->LongDateAndTime(GetCurrentDateAndTimeForMySQL());
 					$strUserName = GetEmployeeName(AuthenticatedUser()->_arrUser['Id']);
 					$strNote = "Service unarchived on $strDateTime by $strUserName";
@@ -709,6 +585,16 @@ class AppTemplateService extends ApplicationTemplate
 		{
 			DBO()->ServiceInboundDetail->Where->Service = DBO()->Service->Id->Value;
 			DBO()->ServiceInboundDetail->Load();
+		}
+		
+		// Set up the ELB checkbox, if service is an indial100
+		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE && DBO()->Service->Indial100->Value)
+		{
+			// Check if ELB is currently Enabled or Disabled
+			DBL()->ServiceExtension->Service = DBO()->Service->Id->Value;
+			DBL()->ServiceExtension->Archived = 0;
+			DBL()->ServiceExtension->Load();
+			DBO()->Service->ELB = (bool)DBL()->ServiceExtension->RecordCount();
 		}
 		
 		// Store the current FNN to check between states that the FNN textbox has been changed
@@ -976,33 +862,147 @@ class AppTemplateService extends ApplicationTemplate
 	
 	}
 	
-	
-	// This is used when unarchiving a service to check if its FNN has since been used by another service
-	// It returns a status (defined in ui_app/definitions.php) which will be used to determine whether the 
-	// Service can be unarchived, or a new service is required
-	private function _GetFNNStatus($intService, $strFNN, $strClosedOn)
+	private function _ActivateService($intService, $strFNN, $strClosedOn)
 	{
-		// Retrieve any services that are currently using $strFNN but aren't $intService
-		// I should not have to check that Id != $intService because this will only be used when unarchiving a service so $intService will be 
-		// archived, and we are only retrieving records that are currently active
+		// Check if the FNN is currently in use
 		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND (ClosedOn IS NULL OR ClosedOn >= NOW())");
 		
 		if ($selFNN->Execute(Array('FNN' => $strFNN)))
 		{
 			// At least one record was returned, which means the FNN is currently in use by an active service
-			return FNN_CURRENTLY_IN_USE;
+			return 	"ERROR: Cannot activate this service as the FNN: $strFNN is currently being used by another service.". 
+					"<br>The other service must be archived before this service can be activated";
 		}
 		
 		// Check if the FNN has been used by another archived service since $intService was archived
 		$selFNN = new StatementSelect("Service", "Id", "FNN=<FNN> AND Id != <Service> AND ClosedOn > <ClosedOn>");
-		if ($selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService, 'ClosedOn' => $strClosedOn)))
+		if ($selFNN->Execute(Array('FNN' => $strFNN, 'Service' => $intService, 'ClosedOn' => $strClosedOn)) == 0)
 		{
-			// At least one record was returned, which means the FNN has been used by another archived service, since $intService was archived
-			return FNN_HAS_SINCE_BEEN_USED;
+			// The FNN has not been used since this service was archived.  Unarchive the service
+			DBO()->ArchivedService->SetTable("Service");
+			DBO()->ArchivedService->SetColumns("Id, ClosedOn");
+			DBO()->ArchivedService->Id = $intService;
+			DBO()->ArchivedService->ClosedOn = $strClosedOn;
+			if (!DBO()->ArchivedService->Save())
+			{
+				// There was an error while trying to unarchive the service
+				return "ERROR: Unarchiving the service failed, unexpectedly";
+			}
+			
+			// Service was unarchived successfully
+			return TRUE;
 		}
-	
-		// If we have gotten this far, then the FNN has not been used since $intService was archived
-		return FNN_HAS_NOT_BEEN_USED;
+		
+		// The FNN has been used by another service, since this service was last archived
+		// Now both services are archived.  Create a new service
+		$intOldServiceId = $intService;
+		DBO()->NewService->SetTable("Service");
+		DBO()->NewService->SetColumns();
+		DBO()->NewService->Id = $intOldServiceId;
+		DBO()->NewService->Load();
+		
+		// By setting the Id to zero, a new record will be inserted when the Save method is executed
+		DBO()->NewService->Id			= 0;
+		DBO()->NewService->CreatedOn	= GetCurrentDateForMySQL();
+		DBO()->NewService->CreatedBy	= AuthenticatedUser()->_arrUser['Id'];
+		DBO()->NewService->ClosedOn	= NULL;
+		DBO()->NewService->ClosedBy	= NULL;
+		if (!DBO()->NewService->Save())
+		{
+			return "ERROR: Unarchiving the service failed, unexpectedly";
+		}
+		
+		// Save extra service details like mobile details, and inbound details and address details
+		switch (DBO()->NewService->ServiceType->Value)
+		{
+			case SERVICE_TYPE_MOBILE:
+				DBO()->NewServiceMobileDetail->Where->Service = $intOldServiceId;
+				DBO()->NewServiceMobileDetail->SetTable("ServiceMobileDetail");
+				if (DBO()->NewServiceMobileDetail->Load())
+				{
+					DBO()->NewServiceMobileDetail->Service = DBO()->NewService->Id->Value;
+					DBO()->NewServiceMobileDetail->Id = 0;
+					DBO()->NewServiceMobileDetail->Save();
+				}
+				break;
+			case SERVICE_TYPE_INBOUND:
+				DBO()->NewServiceInboundDetail->Where->Service = $intOldServiceId;
+				DBO()->NewServiceInboundDetail->SetTable("ServiceInboundDetail");
+				if (DBO()->NewServiceInboundDetail->Load())
+				{
+					DBO()->NewServiceInboundDetail->Service = DBO()->NewService->Id->Value;
+					DBO()->NewServiceInboundDetail->Id = 0;
+					DBO()->NewServiceInboundDetail->Save();
+				}
+				break;
+			case SERVICE_TYPE_LAND_LINE:
+				DBO()->NewServiceAddress->Where->Service = $intOldServiceId;
+				DBO()->NewServiceAddress->SetTable("ServiceAddress");
+				if (DBO()->NewServiceAddress->Load())
+				{
+					DBO()->NewServiceAddress->Service = DBO()->NewService->Id->Value;
+					DBO()->NewServiceAddress->Id = 0;
+					DBO()->NewServiceAddress->Save();
+				}
+				if (DBO()->NewService->Indial100->Value)
+				{
+					// This will perform an insert query for each new record added to the ServiceExtension table.  It could have been done
+					// with just one query if StatementInsert could accomodate SELECT querys for the VALUES clause
+					DBL()->NewServiceExtension->Service = $intOldServiceId;
+					DBL()->NewServiceExtension->SetTable("ServiceExtension");
+					DBL()->NewServiceExtension->Load();
+					foreach (DBL()->NewServiceExtension as $dboServiceExtension)
+					{
+						$dboServiceExtension->Service = DBO()->NewService->Id->Value;
+						$dboServiceExtension->Id = 0;
+						$dboServiceExtension->Save();
+					}
+				}
+				break;
+			default:
+				break;
+		}
+		
+		// Give the new service the same RatePlan as the old service
+		$strWhere = "Service=<OldService> AND StartDatetime = (SELECT MAX(StartDatetime) FROM ServiceRatePlan WHERE Service=<OldService> AND NOW() BETWEEN StartDatetime AND EndDatetime)";
+		DBO()->ServiceRatePlan->Where->Set($strWhere, Array('OldService' => $intOldServiceId));
+		if (DBO()->ServiceRatePlan->Load())
+		{
+			// Save the record for the new plan
+			$strOldStartDatetime = DBO()->ServiceRatePlan->StartDatetime->Value;
+			$strNow = GetCurrentDateAndTimeForMySQL();
+			DBO()->ServiceRatePlan->Service = DBO()->NewService->Id->Value;
+			
+			DBO()->ServiceRatePlan->CreatedOn = $strNow;
+			DBO()->ServiceRatePlan->StartDatetime = $strNow;
+			DBO()->ServiceRatePlan->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
+			DBO()->ServiceRatePlan->Id = 0;
+			DBO()->ServiceRatePlan->Save();
+
+			// Give the new service all the RateGroups of the old service, where StartDatetime >= DBO()->ServiceRatePlan->StartDatetime->Value
+			// When adding a plan in the old system, records were added to ServiceRateGroup before the record was added to ServiceRatePlan.
+			// The discrepancy in the start times shouldn't be any more than a couple of seconds, but just to be on the safe side, I'm 
+			// retrieving all records added to the ServiceRateGroup table that were added up to a day before the current plan was added 
+			// to the ServiceRatePlan table
+			$strWhere = "Service=<OldService> AND StartDatetime > SUBTIME(<OldPlanStartDatetime>, SEC_TO_TIME(60*60*24))";
+			DBL()->ServiceRateGroup->Where->Set($strWhere, Array('OldService' => $intOldServiceId, 'OldPlanStartDatetime' => $strOldStartDatetime));
+			DBL()->ServiceRateGroup->Load();
+			foreach (DBL()->ServiceRateGroup as $dboServiceRateGroup)
+			{
+				$dboServiceRateGroup->Service = DBO()->NewService->Id->Value;
+				$dboServiceRateGroup->CreatedOn = $strNow;
+				$dboServiceRateGroup->StartDatetime = $strNow;
+				$dboServiceRateGroup->CreatedBy = AuthenticatedUser()->_arrUser['Id'];
+				$dboServiceRateGroup->Id = 0;
+				$dboServiceRateGroup->Save();
+			}
+		}
+		else
+		{
+			// The archived service does not have a plan that is still considered active
+		}
+		
+		return TRUE;
 	}
 	
 	//------------------------------------------------------------------------//

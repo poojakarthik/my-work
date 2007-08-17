@@ -1,0 +1,52 @@
+Fix up the problem with saving the account details if the details you are updating do not change.
+(DONE)
+
+Checkout My Notes.txt located in this directory
+
+Fix up the messages that say invalid fields are highlighted in red.
+(DONE)
+
+
+Let the user click on buttons, and check that it's performing the button action and not just submitting the form.
+(DONE)
+
+
+Declare which fields are manditory.
+(DONE)
+
+
+Fix up the initial input element to focus on, when a popup opens.
+(DONE)
+
+With the message popups, the ok button should get focus.
+(DONE)
+
+
+If you have time, make that account_ledger.php redirector file that jared wants made in intranet_app
+(Nathan is working on this)
+(DONE)
+
+Problems with the version on catwalk:
+
+I noticed there are a few money value fields in the existing system that are colored depending on whether 
+their value is positive, negative or zero.  We have only done this for the account balance.
+This includes the invoices table.
+
+Should the buttons in the invoices Vixen Table always show up?
+
+When you add a recurring adjustment in the old system, it sets CreatedOn, StartedOn and LastChargedOn to today's date.
+I have updated the new system to do this too.
+
+When a recurring charge is added in the existing system, it sets LastChargedOn to the current date, but sets TotalRecursions to 0.  
+Should it be doing this?
+
+When a debit charge is added in the existing system, it sets ChargedOn to the current date and it sets Status to CHARGE_WAITING (100)
+In the new system we set Status to 101 for debit adjustments and Status = 100 for credit adjustments
+
+I have updated the app template methods that add charges and recurring charges so that they set all the date fields the same as 
+the existing system does, but I have not changed the Charge.status issue for debit charges.
+
+Adding a payment looks like it's doing the same thing in both systems
+
+(all these issues have been resolved; regarding descripancies between how the old system and new system operate)
+

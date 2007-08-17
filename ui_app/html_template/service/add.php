@@ -111,7 +111,7 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Service Type:</div>\n";
 		echo "   <div class='DefaultOutput'>\n";
-		echo "      <select name='Service.ServiceType' style='width:150px' onchange=\"$strServiceTypeComboOnChange\">\n";
+		echo "      <select name='Service.ServiceType' style='width:152px' onchange=\"$strServiceTypeComboOnChange\">\n";
 		
 		$arrServiceType = array();
 		$arrServiceType[SERVICE_TYPE_LAND_LINE]	= GetConstantDescription(SERVICE_TYPE_LAND_LINE, "ServiceType");
@@ -194,6 +194,11 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 			echo "<div id='LandlineDetailDiv' style='display:none'>\n";			
 		}
 		DBO()->Service->Indial100->RenderInput();
+		DBO()->Service->ELB->RenderInput();
+		
+		// Display all the address details required to setup a landline
+		//TODO! Joel You were last working on this on Friday 17th, August.  It was the last thing you were working on before you packed up the springhill office
+		
 		echo "</div>\n";  // LandlineDetailDiv
 		
 		// Inbound 1300/1800 specific details

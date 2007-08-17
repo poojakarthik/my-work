@@ -1,0 +1,45 @@
+Create the MenuItem method "ViewNotes"
+
+A module should be made to load the required notes into DBL()->Note and DBL()->NoteType.
+You might want to load all notes for a given account, or service, or just load notes for an account that have NoteType=System Notice
+
+Things to do via AJAX: (on the invoices and payments screen)
+Notes
+Add adjustment
+Add recurring Adjustment
+Add Payment
+
+
+TODO
+Make a new layout template for popups which will just be one column and no title or BreadcrumbMenu or ContextMenu
+(DONE)
+Make a page template for View Notes
+(DONE)
+Make a Menu Item method for View Notes which returns the string "javascript:ShowAjaxPopup(strSize, 'Notes.View', $strParams)"
+(DONE)
+
+where $strParams is in JSON notation such as:
+{
+	'Objects':
+		{
+			'Account':
+				{
+					'Id': 1000163204
+				}
+		}
+}
+or rather: "{'Objects':{'Account':{'Id': 1000163204}}}"
+Make an application template for Notes, with a method called View. 
+	This loads DBL()->Note and DBL()->NoteType
+	SubmittedData::Ajax() which is called in Application::AjaxLoad (which is called from the javascript ShowAjaxPopup(...))
+		should have defined DBO()->Account->Id = 1000163204 (but not loaded it)
+(DONE)
+
+Make ShowAjaxPopup javascript
+(DONE)
+This will be called from whatever handles the context menu
+
+
+TODO ON MONDAY
+The application template Note.View is currently loading an error page.  Get this working.
+(DONE (on Monday))

@@ -1,0 +1,41 @@
+Stick a nature column between "code" and "Amount" within the Adjustments table on the InvoicesAndPayments page.
+(DONE)
+minx will require a new version of ui_app/html_template/adjustment/list.php
+Do you want this done for the recurring adjustment table?
+
+Fix the root menu of the context menu
+(DONE)
+minx will require the new version of ui_app/javascript/menu.js
+
+Fix up the horizontal scrolling issue.
+Or possibly make the screen smaller.
+(THIS HAS NOT BEEN FIXED YET)
+
+
+BUG!
+I'm pretty sure the user's session is expiring 20 minutes after they log in, regardless of whether they are being active or not.
+(I've looked through the code, and checked the session details in the database and it looks like it's working fine)
+BUG!
+I don't think the cookie's expiration time is being updated each time Authoriasation is done.
+(FIXED)
+minx will require the new version of ui_app/application.php
+
+
+Do we still need to fix up that problem with the javascript loader using the path "../ui_app/"?
+(We wont be fixing it at the moment)
+
+TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! 
+Stick doc blocks in everything (php and javascript)
+
+
+There is a bug in the payments table; when a payment is reversed the amount is being displayed as the amount of the payment.
+It should be displaying zero.
+(FIXED Reversed payments are now marked as reversed in the table)
+minx will require the new version of ui_app/html_template/account/payment_list.php
+
+
+Files that have proper doc blocks through them:
+ui_app/app_template/
+	TODO!
+
+

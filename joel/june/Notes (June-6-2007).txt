@@ -1,0 +1,32 @@
+I also have to add UIAppDocumentation for employee Id, FirstName, LastName
+because I don't want to display these with accompanying labels, use the context NO_LABEL
+which the label() method will check and supress labels.
+
+
+Problem to solve:
+How would I flag the data attributes DBO()->KnowledgeBase->CreatedBy and 
+DBO()->KnowledgeBase->AuthorisedBy so that they are not printed out if RenderOutput() is
+called on them?
+Answer: If these properties aren't defined in the UiAppDocumentation table of the database
+then they can't be displayed with RenderOutput() or RenderInput();
+
+
+BreadCrumbsFramework::ShowInfo needs to be changed
+I also need to add docblocks to the BreadCrumbsFramework class and the MenuItems class
+DONE
+
+
+Things what I've done, Gov'
+implemented BreadCrumbsFramework::ShowInfo() and ::Info()
+stuck docblocks in the MenuItems and BReadCrumbsFramework classes
+fixed the DBObject::Info() method so that it now also outputs property definition data
+fixed the DBObject::ShowInfo method so that it now also outputs property definition data
+fixed the DBList::ShowInfo method so that it now also outputs property definition data
+Updated the docblocks in:
+	html_template/breadcrumb.php
+
+
+
+
+The knowledge base document viewer does not currently authenticate the user.  I guess this should be added.
+

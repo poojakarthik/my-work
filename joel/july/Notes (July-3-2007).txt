@@ -1,0 +1,81 @@
+
+POTENTIAL PROBLEM (from last Friday)
+The mode is specifed as a parameter to HtmlTemplate->AjaxSubmit, but it is not used in this function;
+I think we should pass the value specified for in $intOutputMode to Ajax.SendForm, which then sets objSend.HtmlMode
+We also don't currently handle the case where $objSubmit->Mode != HTML_MODE within Application->AjaxLoad() nor do we
+handle the reply in Ajax.
+objObject.HtmlMode is set to TRUE in Ajax.Send() if objObject.TargetType is equal to "Div" or "Popup".
+
+
+TODO AS SOON AS POSSIBLE!!! (from last Friday)
+fix up that "ajaxError is not defined" bullshit
+
+
+TODO
+The "Add Adjustment" button on the popup, should not be handling the reply as a popup.
+
+
+TODO
+Check out the DBObject->Save().  It is not currently saving the charge record.  Make a php script to test adding a record to this
+table, because it is hard to test withing a popup.
+(DONE) (Save is working now. It was always working)
+
+
+http://localhost/joel/vixen/ui_app/vixen.php/Adjustment/InsertAdjustment/?Account.Id=1000163204&ChargeType.Id=5&Charge.Amount=100&Charge.Invoice=3000310907&Charge.Notes=ThisBetterFuckingWork&VixenFormId=AddAdjustment&VixenButtonId=AddAdjustment
+
+
+
+Currently, if you create a popup which loads using AJAXLoad, Vixen.Ajax.Send will set HtmlMode to TRUE; the mode in the ApplicationTemplate
+will also be set to HTML_MODE.
+
+
+Vixen.Ajax.HandleReply case "Popup" is being handled twice
+
+The first time it is handled is when the "Add Adjustment" menu item is being selected
+
+!!!
+The second time it is being handled is when the "Add Adjustment" button (on the popup) is being selected.  I think we
+should use the DIV here.
+
+I should include some sort of status message on the Add Adjustment popup, which will notify the user if the adjustment
+was added correctly and display an appropriate error message if it did not.
+
+I should include a "Close button" on the Add Adjustment popup.  If a record has been added then it wil refresh to page after
+the popup has been closed.
+
+BUG!!!
+Things screw up when I press enter on one of the text boxes
+
+
+This should be the structure of the ajax reply if it isn't html
+//JSON
+{
+	{
+		'Type':'Location',
+		'Data':'Vixen.php/Account/View/Account.Id=1234'
+	},
+	{
+		'Type':'DoSomething',
+		'Data':
+		{
+			'data require of DoSomething'
+		}
+	}
+}
+
+We would load this into a javascript object using Eval and then iterate through this in the same fashion as
+the handle_reply method of aphplix.js
+
+We will also require functions in php which help build this JSON object.
+functions such as:
+JSCommand('Location', 'Vixen.php/Account/View/?Account.Id=1234')
+
+Note that you can either return HTML code or a JSON object (listing commands to execute), but not both.
+
+TODO TODO TODO
+Get the validation of the Add Adjustment page working.  Make sure it displays an appropraite msg/errorMsg and
+have to set focus to the first invalid property (This will have to be done with javascript code included in the HtmlTemplate Render method)
+It should also close the page. (or maybe not)
+
+
+

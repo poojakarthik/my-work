@@ -1,0 +1,32 @@
+The constructor of the submitted_data class (found in application_loader.php)
+is called __Construct when it should be called __construct
+
+Also the class submitted_data should probably be called SubmittedData
+
+
+
+DBOFramework::$_arrProperty stores an array of DBObjects.  Shouldn't this 
+be called $_arrObjects so as not to confuse "Objects" and "Properties"?
+
+
+The DBList looks like it's working but because it stores an array of DBObjects
+and because they store $_arrDefine (the documentation) isn't this a big waste of memory?
+Especially considering you can retrieve the same data using Config->Get(...) which caches
+it.
+perhaps DBObject::$_arrDefine could be a pointer to the definition structure within the
+Config class?
+See the line "$this->_arrDefine = Config()->Get('Dbo', $strName);" in DBObject::__construct
+
+
+
+
+
+
+Once a conflict has been resolved in svn type:
+svn resolved path/file
+
+
+TODO:
+Complete the Info() and ShowInfo() methods of the ContextMenuFramework class
+Complete docblocks for this class and the MenuToken class
+

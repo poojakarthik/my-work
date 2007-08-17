@@ -1,0 +1,49 @@
+
+
+
+One of the commands that Ajax()->AddCommand() should handle, could be "UpdateDiv" where you specify the Id of the Div and 
+what you want to update about it.
+
+You are currently working within Add.php  (HtmlTemplateAdjustmentAdd class)
+and AppTemplateAdjustment::Add();
+
+
+TODO
+Check out the TODOs in Add.php
+DONE
+
+I think that "Enter" key on the popup problem is occuring because the form action is being triggered instead of the button's action.
+I might have to stick some javascript in HtmlTemplate->FormStart which adds an onkeypress event listener to the form.
+(This has been fixed)
+
+TODO
+When the "Add Adjustment" popup is closed, the Invoices and Payments page should reload if an adjustment has been added.
+Vixen.Popup.ShowAjaxPopup could return a bool stating whether the calling page will require reloading, which can be 
+handled by the next bit of javascript.  Actually I don't think this will work, because the code that runs ShowAjaxPopup
+won't wait for it to return anything.
+
+
+The Add Adjustment popup is at a state where I now want to move on to another popup
+
+Vixen.Popup.ShowAjaxPopup should probably have a listener to listen for when the popup is closed, so that it can reload
+the calling page, if required.
+
+When you first enter the Make Payment page:
+	DBO()->Account->Id is set
+	DBO()->AccountGroup->Id is not set
+	AccountComboBox is displaying the "Apply to AccountGroup" option
+	
+When you select a single account from the AccountComboBox:
+	DBO()->Account->Id 
+
+TODO TOMORROW
+I should probably change DBO()->AccountToApplyTo->Id to DBO()->Payment->AccountToApplyTo, but I think
+it might try and save this value when you do DBO()->Payment->Save(). Find out if it does.
+I can do this so long as a explicitly set the columns to use during the save, using DBO()->Payment->SetColumns()
+(This issue has been resolved)
+
+TODO
+Does adding a payment or an adjustment create an automatic note?
+(Apparantly not)
+
+

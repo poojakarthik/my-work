@@ -170,6 +170,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 		$this->AjaxSubmit("Apply Changes");
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
+		echo "<div class='SmallSeperator'></div>\n";
 		echo "</div>\n";
 		echo "<div class='SmallSeperator'></div>\n";
 		

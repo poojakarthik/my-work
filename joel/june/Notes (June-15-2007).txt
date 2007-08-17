@@ -1,0 +1,28 @@
+Change the files that are used for account_ledger
+
+Old filename						New Filename
+account_ledger.php					invoices_and_payments.php
+page_template/account_ledger.php			page_template/invoices_and_payments.php
+html_template/account/invoices.php			html_template/invoice/list.php
+html_template/account/payments.php			html_template/account/payment_list.php
+html_template/account/adjustments.php			html_template/adjustment/list.php
+html_template/account/recurring_adjustments.php	html_template/recurring_adjustment_list.php
+
+payments.php should be changed to payment_list.php and can live in html_templates/account along with enter_payment.php and delete_payment.php
+invoices.php should be moved to html_template/invoice/list.php
+(DONE)
+
+
+For CompuGlobalHyperMegaNet
+Have a record in InvoicePayments that links a single InvoiceRun to 2 Payment IDs
+(DONE)
+
+
+
+
+Check out yesterday's notes.
+
+
+Stick docblocks in vixen_table.php
+(DONE)
+

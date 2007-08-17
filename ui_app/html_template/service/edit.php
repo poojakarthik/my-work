@@ -78,12 +78,17 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 		DBO()->Service->CurrentFNN->RenderHidden();
 		DBO()->Service->Account->RenderHidden();
 		DBO()->Service->AccountGroup->RenderHidden();
+		DBO()->Service->Indial100->RenderHidden();
 		
 		DBO()->Service->Id->RenderOutput();
 		DBO()->Service->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);	
 		DBO()->Service->FNN->RenderInput();
 		DBO()->Service->FNNConfirm->RenderInput();
-
+		if (DBO()->Service->Indial100->Value)
+		{
+			DBO()->Service->ELB->RenderInput();
+		}
+		
 		// load cost centre details
 		DBL()->CostCentre->Account = DBO()->Service->Account->Value;
 		DBL()->CostCentre->Load();
@@ -196,7 +201,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			echo "<div class='DefaultElement'>\n";
 			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;State:</div>\n";
 			echo "   <div class='DefaultOutput'>\n";
-			echo "      <select name='ServiceMobileDetail.SimState' style='width:200px'>\n";
+			echo "      <select name='ServiceMobileDetail.SimState' style='width:152px'>\n";
 		
 			foreach ($arrState as $strKey=>$strStateSelection)
 			{
@@ -219,6 +224,7 @@ class HtmlTemplateServiceEdit extends HtmlTemplate
 			DBO()->ServiceMobileDetail->DOB->RenderInput();				
 			DBO()->ServiceMobileDetail->Comments->RenderInput();		
 		}
+		
 		echo "</div>";  // Narrow-Form
 		
 		echo "<div class='Right'>\n";

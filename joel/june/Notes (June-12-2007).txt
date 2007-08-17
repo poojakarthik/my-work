@@ -1,0 +1,70 @@
+In token we are going to have a method called ::RenderValue which just echos the value of the property, from the database
+(DONE)
+
+Make changes to the UiAppDocumentationOptions table so that it can handle the following: (DONE)
+
+Value	Mask
+0 	= "..."
+-1	= "..."
+1	= "..."
+all
+other	= "Do not charge LP fee for next <value> months"
+
+That note I put on my phone:
+	Options table will have inputlabel and outputlabel
+DONE (but not yet implemented within the Render methods of PropertyToken) (now completely DONE)
+
+Make a new table with the columns: ConditionalContexts
+Object			string
+Property		string
+ConditionValue		string
+ConditionOperator	string	 (for example <=, >, ==, !=)
+Context			string
+
+The idea of the table is that it can declare the context that a property will be rendered with, based on the condition.
+Which means that within an object, properties should be able to be rendered with their own unique context.
+For example, Account Balance will need to be rendered in different colors depending on whether it is positive or 
+negative.
+Within RenderIO we need to search this new table (or an earlier pull from the table) for the correct
+context to use.  If there are any properties that have been created and added to the DBO, we have to make sure that their
+Documentation data can be pulled from the database. (I'm pretty sure it currently is.  When you define the name of a DBO,
+it finds all UiAppDocumentation related to that table name.  Just make sure any properties that you add to the DBO (within 
+the AppTemplate) have documentation defined and associated with the appropriate object).  You will have to make sure
+that the new ConditionalContexts table data is pulled from within the DBO constructor, it gets documentation data from 
+the Config global object.  Make sure you can easily define these "added" properties within the AppTemplate.
+(DONE)
+
+
+With regard to using the ConditionalContexts table to determine the proper context to use, the conditions will be tested
+in the order that they appear in the table. (ordered by id).  This should allow the defining of ranges of values.
+If there is conditionalContext data, but none of the conditions are satisfied, then it should default to the default
+context (context = 0).  (it defaults to what the HtmlTemplate programmer specifies in the call to ::RenderOutput or ::RenderInput)
+Should the HtmlTemplate programmer be able to override these conditions?  No.  Currently, any defined conditional contexts will
+take precedence over the ones passed through ::RenderOutput and ::RenderInput
+(DONE)
+
+I implemented another OutputType in HtmlTemplates called ::OutputLabel which uses the property's OutputLabel to output the value.
+This has been used in HtmlTemplateKnowledgeBaseDocView for displaying the author's name
+
+Can I think of any scenario that cannot currently be defined by the UIAppDocumentation tables?
+
+
+divide the options selecting code into 2 private methods of HtmlElements
+one will encapsulate the str_replace code and the other will encapsulate the rest so that you pass it $arrParams and it returns a single value.
+make sure that it always checks that OutputLabel != NULL as some records in UIAppDocumentationOptions might have a value defined
+but not require an OutputLabel.  (although sticking <value> in OutputLabel will solve this problem)
+(DONE) I think
+
+
+What I will be doing this morning:
+Implementing the changes to the UiAppDocumentationOptions table
+(both the database and in the code)
+(DONE)
+
+test that you can pull data from the database, add data attributes to the
+DBO (including presentation data) and save data back to the database.
+(NOT TESTED YET)
+
+READ ME TOMORROW!!!
+check out the Label method of HtmlElements.  Currently it only outputs the accompanying label if context == 0.
+I think this is a hack and should be handled differently
