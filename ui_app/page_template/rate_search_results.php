@@ -11,5 +11,5 @@ $this->Page->SetLayout($strLayout);
 
 // Add each html object to the appropriate column
 //EXAMPLE:
-$this->Page->AddObject('RateList', COLUMN_ONE, HTML_CONTEXT_EXTRA_DETAIL);
+$this->Page->AddObject('RateList', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 ?>

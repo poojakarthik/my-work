@@ -11,7 +11,6 @@ $this->Page->SetLayout($strLayout);
 
 // Add each html object to the appropriate column
 //EXAMPLE:
-//$id = $this->Page->AddObject('ServiceAccount', COLUMN_ONE, HTML_CONTEXT_DEFAULT);
 $this->Page->AddObject('ServiceDetails', COLUMN_ONE, HTML_CONTEXT_BARE_DETAIL);
 $this->Page->AddObject('PlanDetails', COLUMN_ONE, HTML_CONTEXT_FULL_DETAIL);
 $this->Page->AddObject('RateGroupList', COLUMN_ONE, HTML_CONTEXT_NORMAL_DETAIL);

@@ -112,9 +112,6 @@ class HtmlTemplatePlanDetails extends HtmlTemplate
 			DBO()->RatePlan->MinMonthly->RenderOutput();
 			DBO()->RatePlan->ChargeCap->RenderOutput();
 			DBO()->RatePlan->UsageCap->RenderOutput();
-
-			//DBO()->Service->FNN->RenderOutput();
-			//DBO()->Service->Account->RenderOutput();
 		}
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";

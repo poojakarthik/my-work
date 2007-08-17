@@ -100,32 +100,57 @@ class HtmlTemplateRateList extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch ($this->_intContext)
+		echo "<div class='PopupLarge'>\n";
+		echo "<div  style='overflow:auto; height:300px'>\n";
+		echo "<h2 class='Plan'>Rate List</h2>\n";
+		
+		Table()->RateTable->SetHeader("Name", "Days Available", "Start Time", "End Time");
+		Table()->RateTable->SetAlignment("Left", "Left", "Left", "Left");
+		Table()->RateTable->SetWidth("30%", "49%", "11%", "10%");
+	
+		foreach (DBL()->Rate as $dboRate)
 		{
-			case HTML_CONTEXT_EXTRA_DETAIL:
-				$this->_RenderExtraDetail();
-				break;
+			$strDaysAvailable = $dboRate->Monday->AsValue().
+								$dboRate->Tuesday->AsValue().
+								$dboRate->Wednesday->AsValue().
+								$dboRate->Thursday->AsValue().
+								$dboRate->Friday->AsValue().
+								$dboRate->Saturday->AsValue().
+								$dboRate->Sunday->AsValue();
+								
+			Table()->RateTable->AddRow(	$dboRate->Name->AsValue(),
+										$strDaysAvailable,
+										$dboRate->StartTime->AsValue(), 
+										$dboRate->EndTime->AsValue());
+			
+			//drop down div component for each row
+			$strBasicDetailHtml =  "<div class='VixenTableDetail'>\n";
+			$strBasicDetailHtml .= "<table width='100%' border='0' cellspacing='0' cellpadding='0'>\n";
+			$strBasicDetailHtml .= "	<tr>\n";
+			$strBasicDetailHtml .= "		<td>\n";
+			
+			//drop down div details still need to add flagfall min charge service type and record type
+			$strBasicDetailHtml .= $dboRate->Description->AsValue();
+			$strBasicDetailHtml .= "<br>\n";
+			$strBasicDetailHtml .= $dboRate->RecordType->AsValue();	
+			$strBasicDetailHtml .= "<br>\n";			
+			$strBasicDetailHtml .= $dboRate->ServiceType->AsValue();
+			$strBasicDetailHtml .= "<br>\n";
+			$strBasicDetailHtml .= $dboRate->Description->AsValue();			
+			
+			$strBasicDetailHtml .= "		</td>\n";
+			$strBasicDetailHtml .= "	</tr>\n";			
+			$strBasicDetailHtml .= "</table>\n";
+			$strBasicDetailHtml .= "</div>\n";
+				
+			Table()->RateTable->SetDetail($strBasicDetailHtml);							
+										
 		}
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderExtraDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderExtraDetail()
-	 *
-	 * Render this HTML Template
-	 *
-	 * Render this HTML Template
-	 *
-	 * @method
-	 */
-	function _RenderExtraDetail()
-	{
-		echo "extra information<br>";
-		echo DBO()->Rate->SearchString->Value;
-		DBO()->RateGroup->Id->RenderOutput();
-		// html display logic not really code logic
+		
+		Table()->RateTable->Render();
+		echo "</div>\n";
+		echo "<div class='SmallSeperator'></div>";
+		echo "</div>\n";
 	}
 }
 

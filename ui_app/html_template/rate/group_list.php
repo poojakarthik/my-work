@@ -132,39 +132,6 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 		
 		foreach (DBL()->RateGroup as $dboRateGroup)
 		{
-			// build the links 
-			//$intDate = strtotime("-1 month", strtotime($dboInvoice->CreatedOn->Value));
-			//$intYear = (int)date("Y", $intDate);
-			//$intMonth = (int)date("m", $intDate);
-			
-			// check if a pdf exists for the invoice
-			//if (InvoicePdfExists($dboInvoice->Account->Value, $intYear, $intMonth))
-			//{
-				// The pdf exists
-				// Build "view invoice pdf" link
-				//$strPdfHref 	= Href()->ViewInvoicePdf($dboInvoice->Account->Value, $intYear, $intMonth);
-				//$strPdfLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strPdfHref'><img src='img/template/pdf.png' title='View PDF Invoice' /></a></span>";
-				
-				// build "Email invoice pdf" link
-				//$strEmailHref 	= Href()->EmailPDFInvoice($dboInvoice->Account->Value, $intYear, $intMonth);
-				//$strEmailLabel 	= "<span class='DefaultOutputSpan Default'><a href='$strEmailHref'><img src='img/template/email.png' title='Email PDF Invoice' /></a></span>";
-			//}
-			//else
-			//{
-				// don't allow the user to view the pdf for this invoice (or email it) because it doesn't exist
-				//$strPdfLabel	= "&nbsp;";
-				//$strEmailLabel	= "&nbsp;";
-			//}
-			
-			// build the "View Invoice Details" link
-			//$strViewInvoiceHref = Href()->ViewInvoice($dboInvoice->Id->Value);
-			//$strViewInvoiceLabel = "<span class='DefaultOutputSpan Default'><a href='$strViewInvoiceHref'><img src='img/template/invoice.png' title='View Invoice Details' /></a></span>";
-			
-			// calculate Invoice Amount
-			//$dboInvoice->Amount = $dboInvoice->Total->Value + $dboInvoice->Tax->Value;
-			// calculate AppliedAmount
-			//$dboInvoice->AppliedAmount = $dboInvoice->Amount->Value - $dboInvoice->Balance->Value;
-			
 			// Add this row to Invoice table
 			Table()->RateGroupTable->AddRow(	$dboRateGroup->Id->AsValue(),
 												$dboRateGroup->Name->AsValue(), 
@@ -176,7 +143,7 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 			$strWhere = "Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroupId>)";
 			DBL()->Rate->Where->Set($strWhere, Array('RateGroupId' => $dboRateGroup->Id->Value));
 			DBL()->Rate->Load();
-			if (DBL()->Rate->RecordCount() <= 2)
+			if (DBL()->Rate->RecordCount() <= 10)
 			{
 				// Add the rate information to the DropDown div for the row
 				// Set the drop down detail
@@ -186,28 +153,22 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				foreach (DBL()->Rate as $dboRate)
 				{
 					$strDetailHtml .= "   <tr>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "      <td width='35%'>\n";
 					$strDetailHtml .= $dboRate->Name->AsValue();
 					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "      <td width='35%'>\n";
 					$strDetailHtml .= $dboRate->Monday->AsValue();
-					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "&nbsp;";
 					$strDetailHtml .= $dboRate->Tuesday->AsValue();
-					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "&nbsp;";
 					$strDetailHtml .= $dboRate->Wednesday->AsValue();
-					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "&nbsp;";
 					$strDetailHtml .= $dboRate->Thursday->AsValue();
-					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "&nbsp;";
 					$strDetailHtml .= $dboRate->Friday->AsValue();
-					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "&nbsp;";
 					$strDetailHtml .= $dboRate->Saturday->AsValue();
-					$strDetailHtml .= "      </td>\n";
-					$strDetailHtml .= "      <td>\n";
+					$strDetailHtml .= "&nbsp;";
 					$strDetailHtml .= $dboRate->Sunday->AsValue();
 					$strDetailHtml .= "      </td>\n";
 					$strDetailHtml .= "      <td>\n";
@@ -227,9 +188,7 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 			}
 			else
 			{
-				// There are more than 10 rates for this RateGroup.  
-				// Display a search box and button.  The results of which will be displayed in a popup
-				//TODO! begin and end AJAX to open rates in popup window
+				// there is more than 10 rate plans shown
 				$intRateGroupId = $dboRateGroup->Id->Value;
 				
 				$strOnClick = "javascript:
@@ -243,15 +202,15 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 							";
 				
 				$strBasicDetailHtml =  "<div class='VixenTableDetail'>\n";
-				$strBasicDetailHtml .= "<table width='60%' border='0' cellspacing='0' cellpadding='0'>\n";
+				$strBasicDetailHtml .= "<table width='100%' border='0' cellspacing='0' cellpadding='0'>\n";
 				$strBasicDetailHtml .= "	<tr>\n";
-				$strBasicDetailHtml .= "		<td>\n";
-				$strBasicDetailHtml .= "			Search through rates:";
+				$strBasicDetailHtml .= "		<td width='15%' alignment='left'>\n";
+				$strBasicDetailHtml .= "			<span class='DefaultOutputSpan Default'>Search through rates:</span>";
 				$strBasicDetailHtml .= "		</td>\n";
-				$strBasicDetailHtml .= "		<td>\n";			
-				$strBasicDetailHtml .= "			<input type=text size=10 id='SearchString_$intRateGroupId'>\n";
+				$strBasicDetailHtml .= "		<td width='25%' alignment='left'>\n";			
+				$strBasicDetailHtml .= "			<input type=text size=10 id='SearchString_$intRateGroupId' class='DefaultOutputSpan Default' style='width:200px'>\n";
 				$strBasicDetailHtml .= "		</td>\n";
-				$strBasicDetailHtml .= "		<td>\n";
+				$strBasicDetailHtml .= "		<td width='60%' alignment='left'>\n";
 				$strBasicDetailHtml .= "			<input type='button' value='View Rates' class='InputSubmit' onclick=\"$strOnClick\"></input>\n";
 				$strBasicDetailHtml .= "		</td>\n";
 				$strBasicDetailHtml .= "	</tr>\n";					
@@ -260,55 +219,11 @@ class HtmlTemplateRateGroupList extends HtmlTemplate
 				
 				Table()->RateGroupTable->SetDetail($strBasicDetailHtml);
 			}
-					
-			//Set the drop down detail
-			/*$strDetailHtml = "<div class='VixenTableDetail'>\n";
-			$strDetailHtml .= $dboInvoice->DueOn->AsOutput();
-			if ($dboInvoice->SettledOn->Value)
-			{
-				$strDetailHtml .= $dboInvoice->SettledOn->AsOutput();
-			}
-			$strDetailHtml .= $dboInvoice->Credits->AsOutput();
-			$strDetailHtml .= $dboInvoice->Debits->AsOutput();
-			$strDetailHtml .= $dboInvoice->Total->AsOutput();
-			$strDetailHtml .= $dboInvoice->Tax->AsOutput();
-			$strDetailHtml .= $dboInvoice->TotalOwing->AsOutput();
-			$strDetailHtml .= $dboInvoice->Balance->AsOutput();
-			if ($dboInvoice->Disputed->Value > 0)//does this include GST??????
-			{
-				$strDetailHtml .= $dboInvoice->Disputed->AsOutput();
-			}
-			$strDetailHtml .= $dboInvoice->AccountBalance->AsOutput();
-			$strDetailHtml .= "</div>\n";
-			
-			Table()->InvoiceTable->SetDetail($strDetailHtml);
-			
-			// Add the row index
-			Table()->InvoiceTable->AddIndex("InvoiceRun", $dboInvoice->InvoiceRun->Value);
-			*/
 		}
-		/*
-		if (DBL()->Invoice->RecordCount() == 0)
-		{
-			// There are no invoices to stick in this table
-			Table()->InvoiceTable->AddRow("<span class='DefaultOutputSpan Default'>No invoices to display</span>");
-			Table()->InvoiceTable->SetRowAlignment("left");
-			Table()->InvoiceTable->SetRowColumnSpan(9);
-		}
-		else
-		{
-			// Link this table to the Payments table and the Adjustments table
-			Table()->InvoiceTable->LinkTable("PaymentTable", "InvoiceRun");
-			Table()->InvoiceTable->LinkTable("AdjustmentTable", "InvoiceRun");
-			Table()->InvoiceTable->RowHighlighting = TRUE;
-		}
-		
-		*/
 		
 		Table()->RateGroupTable->Render();
 		echo "</div>\n";
 		echo "<div class='Seperator'></div>\n";
-		
 	}
 }
 
