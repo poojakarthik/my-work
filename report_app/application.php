@@ -565,8 +565,24 @@
  		
  		// Integer format (make sure it doesn't show exponentials for large ints)
 		$fmtInteger =& $wkbWorkbook->addFormat();
-		$fmtInteger->setNumFormat('00');
+		$fmtInteger->setNumFormat('0');
 		$arrFormat['Integer']		= $fmtInteger;
+		
+ 		// Bold Integer format (make sure it doesn't show exponentials for large ints)
+		$fmtIntegerBold =& $wkbWorkbook->addFormat();
+		$fmtIntegerBold->setNumFormat('0');
+		$fmtIntegerBold->SetBold();
+		$arrFormat['IntegerBold']		= $fmtIntegerBold;
+		
+ 		// Total Integer format (make sure it doesn't show exponentials for large ints)
+		$fmtIntegerTotal =& $wkbWorkbook->addFormat();
+		$fmtIntegerTotal->setNumFormat('0');
+		$fmtIntegerTotal->setBold();
+		$fmtIntegerTotal->setTopColor('black');
+		$fmtIntegerTotal->setTop(1);
+		$arrFormat['IntegerTotal']		= $fmtIntegerTotal;
+		
+		
 		
 		// Bold Text
 		$fmtBold		= $wkbWorkbook->addFormat();
