@@ -452,6 +452,16 @@ $GLOBALS['*arrConstant']	['RequestStatus']	[304]	['Description']	= 'Cancelled';
 $GLOBALS['*arrConstant']	['RequestStatus']	[305]	['Constant']	= 'REQUEST_STATUS_DUPLICATE';
 $GLOBALS['*arrConstant']	['RequestStatus']	[305]	['Description']	= 'Duplicated (Ignored)';
 
+$GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Constant']	= 'RESPONSE_STATUS_CANT_NORMALISE';
+$GLOBALS['*arrConstant']	['ResponseStatus']	[400]	['Description']	= 'Unable to Normalise';
+$GLOBALS['*arrConstant']	['ResponseStatus']	[401]	['Constant']	= 'RESPONSE_STATUS_BAD_OWNER';
+$GLOBALS['*arrConstant']	['ResponseStatus']	[401]	['Description']	= 'Unable to Find Owner';
+$GLOBALS['*arrConstant']	['ResponseStatus']	[402]	['Constant']	= 'RESPONSE_STATUS_IMPORTED';
+$GLOBALS['*arrConstant']	['ResponseStatus']	[402]	['Description']	= 'Successfully Imported';
+$GLOBALS['*arrConstant']	['ResponseStatus']	[403]	['Constant']	= 'RESPONSE_STATUS_REDUNDANT';
+$GLOBALS['*arrConstant']	['ResponseStatus']	[403]	['Description']	= 'Redundant';
+
+
 // Provisioning Request Status
 /*define("REQUEST_DIRECTION_OUTGOING"		, 0);
 define("REQUEST_DIRECTION_INCOMING"		, 1);*/
@@ -510,6 +520,12 @@ $GLOBALS['*arrConstant']	['Request']	[908]	['Constant']	= 'REQUEST_BAR_HARD';
 $GLOBALS['*arrConstant']	['Request']	[908]	['Description']	= 'Activate Hard Bar';
 $GLOBALS['*arrConstant']	['Request']	[909]	['Constant']	= 'REQUEST_UNBAR_HARD';
 $GLOBALS['*arrConstant']	['Request']	[909]	['Description']	= 'Remove Hard Bar';
+$GLOBALS['*arrConstant']	['Request']	[910]	['Constant']	= 'REQUEST_LOSS_FULL';
+$GLOBALS['*arrConstant']	['Request']	[910]	['Description']	= 'Full Service Lost';
+$GLOBALS['*arrConstant']	['Request']	[911]	['Constant']	= 'REQUEST_LOSS_PRESELECT';
+$GLOBALS['*arrConstant']	['Request']	[911]	['Description']	= 'Preselection Lost';
+$GLOBALS['*arrConstant']	['Request']	[912]	['Constant']	= 'REQUEST_CHANGE_ADDRESS';
+$GLOBALS['*arrConstant']	['Request']	[912]	['Description']	= 'Address Changed';
 
 // Provisioning Line Actions (Log)
 /*define("LINE_ACTION_OTHER"				, 600);

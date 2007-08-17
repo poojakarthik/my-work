@@ -35,10 +35,29 @@
 // run setup_scripts/config.sh as root to add a default config file
 if (!@include_once("/etc/vixen/vixen.conf"))
 {
-	echo "Missing config script";
+	echo "Missing database config script";
 	die;
 }
 
 $GLOBALS['**arrVixenConfig'] = Array();
 
+// Billing Config
+$arrBillingConfig = Array();
+
+	// Billing-Time modules						Class						Property
+		// Late Payment Fee
+		$arrBillingConfig['BillingTimeModules']	['ChargeLatePayment']		['Amount']			= 17.27;
+		$arrBillingConfig['BillingTimeModules']	['ChargeLatePayment']		['MinimumOverdue']	= 10.0;
+		// Non-DDR Fee
+		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Amount']			= 2.50;
+		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['MinimumTotal']	= 2.50;
+		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Code']			= "AP250";
+		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Description']		= "Account Processing Fee";
+	
+	// Printing
+	$arrBillingConfig['PrintingModule']	['Class']				= "BillingModulePrint";
+	$arrBillingConfig['PrintingModule']	['SendMinimumTotal']	= 5.0;
+	$arrBillingConfig['PrintingModule']	['AlwaysEmailBill']		= TRUE;
+	
+	
 ?>

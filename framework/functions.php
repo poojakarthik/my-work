@@ -1684,27 +1684,7 @@ function VixenRequire($strFilename)
 	// Make sure we have a base path to work from
 	if (!$GLOBALS['**strVixenBasePath'])
 	{
-		if (defined(VIXEN_BASE_DIR))
-		{
-			$GLOBALS['**strVixenBasePath'] = VIXEN_BASE_DIR;
-		}
-		else
-		{
-			// Interpret current dir
-			$arrPath = explode('/', getcwd());
-			$strVixenRoot	= "/";
-			$strCurrent		= "";
-			foreach ($arrPath as $strDir)
-			{
-				$strCurrent .= "$strDir/";
-				if ($strDir === "vixen")
-				{
-					$strVixenRoot = $strCurrent;
-				}
-			}
-			
-			$GLOBALS['**strVixenBasePath'] = $strVixenRoot;
-		}
+		GetVixenBase();
 	}
 	
 	require_once($GLOBALS['**strVixenBasePath'].$strFilename);
@@ -1834,13 +1814,20 @@ function LoadApplication($strApplication=NULL)
 		LoadFramework();
 	}
 	
-	// no application specified
-	$strApplicationDir = '';
-	if (!$strApplication)
+	// application specified
+	$strApplicationDir = $GLOBALS['**strVixenBasePath'];
+	if ($strApplication)
 	{
-		// load from current dir
-		$strApplicationDir = '';
+		// Load from different dir
+		$strApplicationDir .= $strApplication;
+	}
+	else
+	{
+		// Load from this dir
 		require_once("require.php");
+		require_once("application.php");
+		require_once("definitions.php");
+		require_once("config.php");
 		return TRUE;
 	}
 	
@@ -2628,4 +2615,46 @@ function GetPdfFilename($intAccount, $intYear, $intMonth)
 }
 
 
+ 
+ 
+//------------------------------------------------------------------------//
+// FindFNNOwner
+//------------------------------------------------------------------------//
+/**
+ * FindFNNOwner()
+ *
+ * Finds the owner of a given FNN for a given date and time
+ *
+ * Finds the owner of a given FNN for a given date and time
+ * 
+ * @param	string	$strFNN				FNN to find owner for
+ * @param	string	$strDatetime		Date to find owner on
+ *
+ * @return	bool					
+ *
+ * @method
+ */
+ function FindFNNOwner($strFNN, $strDate)
+ {
+	$selFindOwner 			= new StatementSelect("Service", "AccountGroup, Account, Id AS Service", "FNN = <fnn> AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+	$selFindOwnerIndial100	= new StatementSelect("Service", "AccountGroup, Account, Id AS Service", "(FNN LIKE <fnn>) AND (Indial100 = TRUE)AND (CAST(<date> AS DATE) BETWEEN CreatedOn AND ClosedOn OR ISNULL(ClosedOn))", "CreatedOn DESC, Account DESC", "1");
+	
+ 	$intResult = $selFindOwner->Execute(Array("fnn" => $strFNN, "date" => $strDate));
+ 	if ($arrResult = $selFindOwner->Fetch())
+ 	{
+ 		return $arrResult;
+ 	}
+ 	else
+ 	{
+ 		$arrParams['fnn']	= substr($strFNN, 0, -2) . "__";
+ 		$arrParams['date']	= $strDate;
+ 		$intResult = $selFindOwnerIndial100->Execute($arrParams);
+ 		if(($arrResult = $selFindOwnerIndial100->Fetch()))
+ 		{
+ 			return $arrResult;
+ 		}
+ 	}
+ 	
+ 	return FALSE;
+ }
 ?>
