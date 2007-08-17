@@ -39,10 +39,10 @@ TODO! I AM STILL WORKING ON THIS!
 The last thing I was working on, on Monday, was the logic behind unarchiving a service
 private function _GetFNNStatus($intService, $strFNN)
 I looked at the EnableELB() functions and can't see why they would be fucking up.  I also can't intuitively work out, when EnableELB
-and DisableELB should be executed.
+and DisableELB should be executed. (17-08-2007: I've now accomodated these)
 ASSUMPTION: I have assumed that if the user is unarchiving a service, they have not also tried to change the FNN.  I might eventually
 have to accomodate this scenario.
-WHAT happens if between the user choosing to archive the service and pressing commit, some else has archived the same service?
+WHAT happens if between the user choosing to archive the service and pressing commit, someone else has archived the same service?
 
 
 
@@ -53,6 +53,8 @@ $this->_ChangePlan($intService, $intRatePlan)
 It will change the ClosedOn date to NOW() for all records in ServiceRateGroup and ServiceRatePlan relating to $intService, 
 and then copy the new records into these two tables.
 DO THIS AFTER YOU HAVE PERFECTED THE LOGIC FOR UNARCHIVING A SERVICE
+Don't make it change the ClosedOn datetime in ServiceRatePlan and ServiceRateGroup
+
 
 
 

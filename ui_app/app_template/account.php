@@ -172,6 +172,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		//TODO! define what goes in the breadcrumb menu (assuming this page uses one)
 		//BreadCrumb()->Invoices_And_Payments(DBO()->Account->Id->Value);
 		BreadCrumb()->View_Account(DBO()->Account->Id->Value);
+		BreadCrumb()->SetCurrentPage("Invoices and Payments");
 		
 		
 		// Setup all DBO and DBL objects required for the page

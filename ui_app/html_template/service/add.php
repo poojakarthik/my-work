@@ -184,6 +184,8 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 			echo "</div>\n";		
 		}
 		
+		echo "</div>\n"; // Narrow-Form
+		
 		// Land line specific details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_LAND_LINE)
 		{
@@ -193,13 +195,17 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		{
 			echo "<div id='LandlineDetailDiv' style='display:none'>\n";			
 		}
+		echo "<h2 class='Service'>Landline Details</h2>\n";
+		echo "<div class='Narrow-Form'>\n";
+
 		DBO()->Service->Indial100->RenderInput();
 		DBO()->Service->ELB->RenderInput();
 		
 		// Display all the address details required to setup a landline
 		//TODO! Joel You were last working on this on Friday 17th, August.  It was the last thing you were working on before you packed up the springhill office
-		
-		echo "</div>\n";  // LandlineDetailDiv
+		DBO()->ServiceAddress->Residential->RenderInput();
+		echo "</div>\n"; // Narrow-Form
+		echo "</div>\n"; // LandlineDetailDiv
 		
 		// Inbound 1300/1800 specific details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_INBOUND)
@@ -213,15 +219,16 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 			echo "<div id='InboundDetailDiv' style='display:none;'>\n";
 		}
 		// handle extra inbound phone details
-		echo "<div class='Seperator'></div>\n";
 		echo "<h2 class='service'>Inbound Details</h2>\n";
+		echo "<div class='Narrow-Form'>\n";
 		DBO()->ServiceInboundDetail->Id->RenderHidden();
 		DBO()->ServiceInboundDetail->AnswerPoint->RenderHidden();
 		DBO()->ServiceInboundDetail->Configuration->RenderHidden();
 		
 		DBO()->ServiceInboundDetail->AnswerPoint->RenderInput();
 		DBO()->ServiceInboundDetail->Configuration->RenderInput();
-		echo "</div>\n";  // InboundDetailDiv
+		echo "</div>\n"; // Narrow-Form
+		echo "</div>\n"; // InboundDetailDiv
 		
 		// handle extra mobile phone details
 		if (DBO()->Service->ServiceType->Value == SERVICE_TYPE_MOBILE)
@@ -234,8 +241,8 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 			// hide the mobile detail div
 			echo "<div id='MobileDetailDiv' style='display:none;'>\n";
 		}
-		echo "<div class='Seperator'></div>\n";
 		echo "<h2 class='service'>Mobile Details</h2>\n";
+		echo "<div class='Narrow-Form'>\n";
 		DBO()->ServiceMobileDetail->SimPUK->RenderInput();
 		DBO()->ServiceMobileDetail->SimESN->RenderInput();
 						
@@ -274,9 +281,10 @@ class HtmlTemplateServiceAdd extends HtmlTemplate
 		
 		DBO()->ServiceMobileDetail->DOB->RenderInput();				
 		DBO()->ServiceMobileDetail->Comments->RenderInput();
+		echo "</div>\n"; // Narrow-Form
 		echo "</div>\n"; // MobileDetailDiv
 		
-		echo "</div>\n";  // Narrow-Form
+		
 		echo "<div class='Right'>\n";
 		$this->AjaxSubmit("Save");
 		echo "</div>\n";

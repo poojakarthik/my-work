@@ -569,7 +569,7 @@ class HTMLElements
 		
 		if (!is_array($arrParams['Definition']['Options']))
 		{
-			return "HtmlElements->Radio: ERROR: no options are specified for property {$arrParams['Object']}.{$arrParams['Property']}";
+			return "HtmlElements->RadioButtons: ERROR: no options are specified for property {$arrParams['Object']}.{$arrParams['Property']}";
 		}
 
 		// determine whether the radio buttons should be disabled
@@ -597,8 +597,7 @@ class HTMLElements
 
 			// create the name and id for the radio button
 			$strName 	= $arrParams['Object'] .".". $arrParams['Property'];
-			//$strId		= $strRadioName ."(". $arrOption['Value'] .")";
-			$strId		= $strRadioName ."_". $arrOption['Value'];
+			$strId		= $strName ."_". $arrOption['Value'];
 			
 			// define the button
 			$strHtml .= "   <table border=0 cellspacing=0 cellpadding=0 class='{$arrParams['Definition']['BaseClass']}InputRadioButtons {$arrParams['Definition']['Class']}'>\n";
