@@ -2602,10 +2602,10 @@
 		}
 		
 		// Date hack for invoice run on the 30th
-		$arrDate = explode('-', $arrInvoiceRun['BillDate']);
+		$arrDate = explode('-', $arrInvoiceRun['BillingDate']);
 		if ((int)$arrDate[2] >= 28)
 		{
-			$arrInvoiceRun['BillDate'] = date("Y-m-d", strtotime("+1 month", strtotime("{$arrDate[0]}-$arrDate[1]-01")));
+			$arrInvoiceRun['BillingDate'] = date("Y-m-d", strtotime("+1 month", strtotime("{$arrDate[0]}-$arrDate[1]-01")));
 		}
 		
 		// Insert data to DB if flag is set & using committed invoices
