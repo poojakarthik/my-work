@@ -484,7 +484,7 @@ class HTMLElements
 		$strChecked = "";
 		if ($arrParams['Value'])
 		{
-			$strChecked	= "checked";
+			$strChecked	= "checked='checked'";
 			$intValue	= 1;
 		}
 		else
@@ -496,14 +496,14 @@ class HTMLElements
 		$strDisabled = "";
 		if ($arrParams['Type'] != RENDER_INPUT)
 		{
-			$strDisabled	= "disabled";
+			$strDisabled	= "disabled='disabled'";
 		}
 
 		// create the name and id for the radio button
 		$strName 	= $arrParams['Object'] .".". $arrParams['Property'];
 	
 
-		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element'>\n";
+		$strHtml  = "<div class='{$arrParams['Definition']['BaseClass']}Element' style='height:22px;'>\n";
 		if ($arrParams['Required'])
 		{
 			$strHtml .= "      <span class='RequiredInput'>*</span>\n";

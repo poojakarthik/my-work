@@ -1,9 +1,9 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplateContactDetails
+// HtmlTemplateContactEdit
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplateContactDetails
+ * HtmlTemplateContactEdit
  *
  * A specific HTML Template object
  *
@@ -13,7 +13,7 @@
  * @prefix	<prefix>
  *
  * @package	ui_app
- * @class	HtmlTemplateContactDetails
+ * @class	HtmlTemplateContactEdit
  * @extends	HtmlTemplate
  */
 class HtmlTemplateContactEdit extends HtmlTemplate

@@ -27,14 +27,14 @@
  */
 
 //----------------------------------------------------------------------------//
-// AppTemplatecontact
+// AppTemplateContact
 //----------------------------------------------------------------------------//
 /**
- * AppTemplatecontact
+ * AppTemplateContact
  *
- * The AppTemplatecontact class
+ * The AppTemplateContact class
  *
- * The AppTemplatecontact class.  This incorporates all logic for all pages
+ * The AppTemplateContact class.  This incorporates all logic for all pages
  * relating to contacts
  *
  *

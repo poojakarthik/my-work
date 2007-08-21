@@ -2062,7 +2062,7 @@ class AjaxFramework
 		// Create the Html Template object
 		$strClassName = "HtmlTemplate$strHtmlTemplate";
 		$objHtmlTemplate = new $strClassName($intContext, $intContainerDivId);
-		
+
 		// Capture the rendered html code
 		$objHtmlTemplate->Render();
 		$strHtmlCode = ob_get_contents();

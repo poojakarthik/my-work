@@ -7,16 +7,16 @@
 
 
 //----------------------------------------------------------------------------//
-// plans
+// plan
 //----------------------------------------------------------------------------//
 /**
- * plans
+ * plan
  *
  * contains all ApplicationTemplate extended classes relating to Available Plans functionality
  *
  * contains all ApplicationTemplate extended classes relating to Available Plans functionality
  *
- * @file		plans.php
+ * @file		plan.php
  * @language	PHP
  * @package		framework
  * @author		Ross
@@ -157,6 +157,107 @@ class AppTemplatePlan extends ApplicationTemplate
 
 		return TRUE;
 	
+	}
+	
+	
+	//------------------------------------------------------------------------//
+	// Add
+	//------------------------------------------------------------------------//
+	/**
+	 * Add()
+	 *
+	 * Performs the logic for the Add Rate Plan webpage
+	 * 
+	 * Performs the logic for the Add Rate Plan webpage
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	function Add()
+	{
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		// Handle form submittion
+		if (SubmittedForm('RatePlan', 'Commit'))
+		{
+			TransactionStart();
+			
+			$mixResult = $this->_AddPlan();
+			if ($mixResult !== TRUE && $mixResult !== FALSE)
+			{
+				// Adding the plan failed, and an error message has been returned
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", $mixResult);  //THIS ISN'T BEING DISPLAYED AND IT LOOKS LIKE THE PAGE IS RELOADING
+				return TRUE;
+			}
+			elseif ($mixResult === TRUE)
+			{
+				// Adding the plan was successfull
+				TransactionCommit();
+				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The plan has been successfully added", "Location" => Href()->AdminConsole()));
+				return TRUE;
+			}
+			else
+			{
+				// Adding the plan failed, and no error message was specified
+				// I would hope this condition never takes place
+				TransactionRollback();
+				Ajax()->AddCommand("Alert", "ERROR: Adding the plan failed, unexpectedly");
+			}
+		}
+		
+		
+		// context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+		
+		// breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SetCurrentPage("Add Rate Plan");
+	
+		$this->LoadPage('rate_plan_add');
+
+		return TRUE;
+	
+	}
+	
+	// This will handle form validation and commiting the plan to the database
+	private function _AddPlan()
+	{
+		// Validate the fields
+		if (DBO()->RatePlan->IsInvalid())
+		{
+			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DEFAULT, "PlanDiv");
+			return "ERROR: Invalid fields are highlighted";
+		}
+		
+		// Check that a rate group has been defined for each RecordType that has been marked as required
+		
+		//Save the plan to the database
+		return TRUE;
+	}
+	
+	// This retrieves all data required of the HtmlTemplate, PlanDeclareRateGroups, and renders the template using an ajax command
+	function GetPlanDeclareRateGroupsHtmlTemplate()
+	{
+		if (!DBO()->RatePlan->ServiceType->Value)
+		{
+			// A service type was not actually chosen 
+			Ajax()->RenderHtmlTemplate("PlanDeclareRateGroups", HTML_CONTEXT_NO_DETAIL, "RateGroupsDiv");
+			return TRUE;
+		}
+	
+		// Find all RecordTypes required of this ServiceType
+		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
+		DBL()->RecordType->OrderBy("Name");
+		DBL()->RecordType->Load();
+		
+		$intNumTypes = DBL()->RecordType->RecordCount();
+		Ajax()->RenderHtmlTemplate("PlanDeclareRateGroups", HTML_CONTEXT_DEFAULT, "RateGroupsDiv");
+		return TRUE;
 	}
 	
 	

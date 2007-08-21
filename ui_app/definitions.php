@@ -90,6 +90,7 @@ define('HTML_CONTEXT_FULL_DETAIL',		101);
 define('HTML_CONTEXT_MINIMUM_DETAIL',	102);
 define('HTML_CONTEXT_LEDGER_DETAIL',	103);
 define('HTML_CONTEXT_BARE_DETAIL',		104);
+define('HTML_CONTEXT_NO_DETAIL',		105);
 define('HTML_CONTEXT_ACCOUNT_NOTE',		300);
 define('HTML_CONTEXT_CONTACT_NOTE',		301);
 define('HTML_CONTEXT_CONTACT_ADD',		200);
@@ -98,6 +99,9 @@ define('HTML_CONTEXT_SERVICE_ADD',		400);
 define('HTML_CONTEXT_SERVICE_EDIT',		401);
 define('HTML_CONTEXT_RELATED_ARTICLES', 101);
 define('HTML_CONTEXT_SERVICE_NOTE',		402);
+define('HTML_CONTEXT_FORM_START',		110);
+define('HTML_CONTEXT_FORM_END',			111);
+
 
 // Target Types - used to determine how to handle an ajax call
 define("TARGET_TYPE_DIV", 	"Div");
@@ -122,7 +126,5 @@ define("PERMISSION_ACCOUNTS"			, 0x10);	$arrPermissions[PERMISSION_ACCOUNTS]	= "
 													$GLOBALS['Permissions']	= $arrPermissions;
 // This is used in the datbase to represent an "end Date" or "Closed on date" that should never be reached
 define('END_OF_TIME', 	'9999-12-31 23:59:59');
-
-
 
 ?>

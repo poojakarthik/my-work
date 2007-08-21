@@ -409,6 +409,7 @@ function VixenAjaxClass()
 				case "ReplaceDivContents":
 					// The html code defined in objInput[intKey].Data will be placed in the declared Container Div
 					// The current contents of the Container Div will be destroyed
+					// TODO! Make sure this doesn't change the order of the elements belonging to the parent element of the one you want to change
 				
 					// retrieve the current container div element
 					var elmOldContainer = document.getElementById(objInput[intKey].ContainerDivId);
@@ -422,14 +423,12 @@ function VixenAjaxClass()
 					var elmNewContainer = document.createElement('div');
 					elmNewContainer.setAttribute('Id', objInput[intKey].ContainerDivId);
 					elmNewContainer.innerHTML = objInput[intKey].Data;
-					
+
 					// Retrieve the parent element of the current container div element
 					var elmParent = elmOldContainer.parentNode;
-					
-					// Remove the old content div and add the new one
-					elmParent.removeChild(elmOldContainer);
-					elmParent.appendChild(elmNewContainer);
-					
+
+					// Replace the element
+					elmParent.replaceChild(elmNewContainer, elmOldContainer);
 					break;
 				case "AppendHtmlToElement":
 					// The html code defined in objInput[intKey].Data will be Appended to the end of innerHtml of the parent element

@@ -265,7 +265,8 @@
 		border:				solid 1px #000000;
 	}
 	
-	
+	.DefaultInputSpan,
+	.DefaultInvalidInputSpan,
 	.DefaultOutputSpan,
 	.DefaultInvalidOutputSpan
 	{
@@ -276,6 +277,11 @@
 		left:				0px;
 		top:				0px;
 		overflow:			hidden;
+	}
+	
+	.DefaultInvalidInputSpan
+	{
+		background-color:	#FA8072;
 	}
 	
 	.DefaultInvalidOutputSpan
@@ -389,6 +395,18 @@
 		/*background-color:    #F3F3F3;*/
 		width:				 300px;
 	}
+	
+	.WideColumn
+	{
+		margin:              0;
+		padding-top:         0px;
+		padding-left:        0px;
+		padding-right:       0px;
+		padding-bottom:      0px;
+		
+		width:				 950px;
+	}
+	
 	
 	.Wide-Form
 	{
