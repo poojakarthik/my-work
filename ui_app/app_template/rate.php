@@ -59,7 +59,7 @@ class AppTemplaterate extends ApplicationTemplate
 	 * @method		add
 	 *
 	 */
-	function add()
+	function Add()
 	{
 		$pagePerms = PERMISSION_ADMIN;
 		
@@ -80,14 +80,58 @@ class AppTemplaterate extends ApplicationTemplate
 				
 		// Setup all DBO and DBL objects required for the page
 		
-		//EXAMPLE:
-		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
-		if (!DBO()->Account->Load())
+		/*if (DBO()->Rate->ServiceType->Value == NULL)
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
+			DBO()->Error->Message = "The ServiceType could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}
+		if (DBO()->RecordType->Id->Value == NULL)
+		{
+			DBO()->Error->Message = "The RecordType could not be found";
+			$this->LoadPage('error');
+			return FALSE;
+		}*/
+
+		if (SubmittedForm("AddRate","Add"))
+		{
+			// test initial validation of fields
+			if (DBO()->Rate->IsInvalid())
+			{
+				// The form has not passed initial validation
+				Ajax()->AddCommand("Alert", "Could not save the rate.  Invalid fields are highlighted");
+				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+				return TRUE;
+			}		
+			
+			//if ((DBO()->Rate->Name->Value == 0) || (DBO()->Rate->Name->Value == ''))
+			if (!trim(DBO()->Rate->Name->Value))
+			{
+				$mixRateName = DBO()->Rate->Name->Value;
+			
+				DBO()->Rate->Name->SetToInvalid();
+				Ajax()->AddCommand("Alert", "The Name is invalid for this Rate<br>Rate.Name = '$mixRateName'");
+				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+				return TRUE;				
+			}
+			
+			// Check if a rate with the same name and isn't archived exists
+			$strWhere = "NAME LIKE \"". DBO()->Rate->Name->Value . "\"" . "AND ARCHIVED = 0";
+			DBL()->Rate->Where->SetString($strWhere);
+			DBL()->Rate->Load();
+			if (DBL()->Rate->RecordCount() > 0)
+			{	
+				DBO()->Rate->Name->SetToInvalid();
+				Ajax()->AddCommand("Alert", "This RateName already exists in the Database");
+				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+				return TRUE;
+			}
+			
+		}
+
+		// Validate if the REcordType and/or ServiceType are empty
+
+		
 		
 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('rate_add');

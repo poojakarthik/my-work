@@ -102,6 +102,16 @@ define('HTML_CONTEXT_SERVICE_NOTE',		402);
 define('HTML_CONTEXT_FORM_START',		110);
 define('HTML_CONTEXT_FORM_END',			111);
 
+// constants for the cap/excess rates used within the rate add page
+define('RATE_CAP_NO_CAP', 100);
+define('RATE_CAP_CAP_UNITS', 101);
+define('RATE_CAP_COST', 102);
+define('RATE_CAP_NO_CAP_LIMITS', 103);
+define('RATE_CAP_LIMIT', 104);
+define('RATE_CAP_USAGE', 105);
+define('RATE_CAP_EXS_RATE_PER_UNIT', 106);
+define('RATE_CAP_EXS_MARKUP', 107);
+define('RATE_CAP_EXS_PERCENTAGE', 108);
 
 // Target Types - used to determine how to handle an ajax call
 define("TARGET_TYPE_DIV", 	"Div");

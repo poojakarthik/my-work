@@ -71,106 +71,154 @@ class HtmlTemplaterateadd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		switch ($this->_intContext)
+		// define javascript to be triggered when the Cap and Excess radiobuttons changed
+		$strRateCapOnClick = 
+		"switch (this.value)
 		{
-			case HTML_CONTEXT_LEDGER_DETAIL:
-				$this->_RenderLedgerDetail();
+			case '". RATE_CAP_NO_CAP ."':
+				// hide any details not required for a no cap
+				document.getElementById('CapDetailDiv').style.display='none';
+				//document.getElementById('ExcessDetailDiv').style.display='none';
 				break;
-			case HTML_CONTEXT_FULL_DETAIL:
-				$this->_RenderFullDetail();
+			case '". RATE_CAP_CAP_UNITS ."':
+				// show any details required for a cap
+				document.getElementById('CapDetailDiv').style.display='inline';
+				// check if the capusage is clicked if it is display the excessdetail div
 				break;
-			default:
-				$this->_RenderFullDetail();
+			case '". RATE_CAP_CAP_COST ."':
+				// show any details required for a cap
+				document.getElementById('CapDetailDiv').style.display='inline';
+				// check if the capusage is clicked if it is display the excessdetail div
 				break;
-		}
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderFullDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderFullDetail()
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * Render this HTML Template with full detail
-	 *
-	 * @method
-	 */
-	private function _RenderFullDetail()
-	{
-		echo "<h2 class='rate'>rate add</h2>\n";
-		?>
-		
-		<!--EXAMPLE:
-		<div class='Narrow-Form'>
-			<table border='0' cellpadding='3' cellspacing='0'>
-				<?php
-				/*foreach (DBO()->Account AS $strProperty=>$objValue)
-				{	
-					echo "<tr>\n";
-					$objValue->RenderOutput();
-					echo "</tr>\n";
-				}*/
-				?>
-			</table>
-		</div>
-		-->
-		<div class='Seperator'></div>
-		<?php
-
-	}
-
-	//------------------------------------------------------------------------//
-	// _RenderLedgerDetail
-	//------------------------------------------------------------------------//
-	/**
-	 * _RenderLedgerDetail()
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * Render this HTML Template with ledger detail
-	 *
-	 * @method
-	 */
-	private function _RenderLedgerDetail()
-	{
-		echo "<h2 class='rate'>rate add</h2>\n";
-		
-		//EXAMPLE:
-		/*
+			case '". RATE_CAP_NO_CAP_LIMITS ."':
+				// hide any details not required for a no cap
+				document.getElementById('ExcessDetailDiv').style.display='none';
+				break;	
+			case '". RATE_CAP_CAP_LIMIT ."':
+				// hide any details not required for a no cap
+				document.getElementById('ExcessDetailDiv').style.display='none';
+				break;							
+			case '". RATE_CAP_CAP_USAGE ."':
+				// show any details required for a cap
+				document.getElementById('ExcessDetailDiv').style.display='inline';
+				break;
+		}";
+	
 		echo "<div class='NarrowContent'>\n";
+		$this->FormStart("AddRate", "Rate", "Add");
 		
-		// Declare the start of the form
-		$this->FormStart('AccountDetails', 'Account', 'InvoicesAndPayments');
+		// Load the RecordType record relating to this rate
+		DBO()->RecordType->Load();
 		
-		// Render the Id of the Account as a hidden input
-		DBO()->Account->Id->RenderHidden();
-
-		// Render the details of the Account
-		DBO()->Account->Id->RenderOutput();
-		DBO()->Account->BusinessName->RenderOutput();
-		DBO()->Account->Balance->RenderOutput();
-		DBO()->Account->Overdue->RenderOutput();
-		DBO()->Account->TotalUnbilledAdjustments->RenderOutput();
-
-
-		// Render the properties that can be changed
-		DBO()->Account->DisableDDR->RenderInput();
-		DBO()->Account->DisableLatePayment->RenderInput();
+		DBO()->Rate->ServiceType->RenderHidden();
+		DBO()->RecordType->Id->RenderHidden();
 		
-		// Render the submit button
+		DBO()->Rate->Name->RenderInput();
+		DBO()->Rate->ServiceType->RenderCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT);
+		DBO()->RecordType->Name->RenderOutput();
+		
+		echo "<div class='Seperator'></div>\n";
+		
+		DBO()->Rate->StartTime->RenderInput();
+		DBO()->Rate->EndTime->RenderInput();
+
+		echo "<div class='Seperator'></div>\n";
+		
+		echo "<table border=1 cellpadding=3 cellspacing=0>\n";
+		echo "	<tr>\n";
+		echo "		<td>MON";
+		echo "		</td>\n";
+		echo "		<td>TUE";
+		echo "		</td>\n";
+		echo "		<td>WED";
+		echo "		</td>\n";
+		echo "		<td>THU";
+		echo "		</td>\n";
+		echo "		<td>FRI";
+		echo "		</td>\n";
+		echo "		<td>SAT";
+		echo "		</td>\n";
+		echo "		<td>SUN";
+		echo "		</td>";
+		echo "	</tr>\n";
+		echo "	<tr>";
+		echo "		<td>";
+		echo "			<input type='checkbox' id='Rate.Monday' $strChecked $strDisabled></input>";
+		echo "		</td><td>";
+		echo "			<input type='checkbox' id='Rate.Tuesday' $strChecked $strDisabled></input>";
+		echo "		</td><td>";
+		echo "			<input type='checkbox' id='Rate.Wednesday' $strChecked $strDisabled></input>";
+		echo "		</td><td>";
+		echo "			<input type='checkbox' id='Rate.Thursday' $strChecked $strDisabled></input>";
+		echo "		</td><td>";
+		echo "			<input type='checkbox' id='Rate.Friday' $strChecked $strDisabled></input>";
+		echo "		</td><td>";
+		echo "			<input type='checkbox' id='Rate.Saturday' $strChecked $strDisabled></input>";
+		echo "		</td><td>";
+		echo "			<input type='checkbox' id='Rate.Sunday' $strChecked $strDisabled></input>";
+		echo "		</td>";
+		echo "	</tr>";
+		echo "</table>";
+		
+		echo "<div class='Seperator'></div>\n";		
+		DBO()->Rate->StdUnits->RenderInput();	
+
+		echo "<input type='radio' name='Rate.ChargeType' value='Rate.StdRatePerUnit' checked>";
+		DBO()->Rate->StdRatePerUnit->RenderInput();
+		echo "<input type='radio' name='Rate.ChargeType' value='Rate.StdMarkup'>";
+		DBO()->Rate->StdMarkup->RenderInput();
+		echo "<input type='radio' name='Rate.ChargeType' value='Rate.StdPercentage'>";
+		DBO()->Rate->StdPercentage->RenderInput();
+		
+		echo "<div class='Seperator'></div>\n";	
+		DBO()->Rate->StdMinCharge->RenderInput();
+		DBO()->Rate->StdFlagFall->RenderInput();
+		
+		echo "<div class='Seperator'></div>\n";		
+	
+		echo "<input type='radio' name='Rate.CapCalculation' value='".RATE_CAP_NO_CAP."' checked onchange=\"$strRateCapOnClick\">No Cap<br>";
+		echo "<input type='radio' name='Rate.CapCalculation' value='".RATE_CAP_CAP_UNITS."' onchange=\"$strRateCapOnClick\">";		
+		DBO()->Rate->CapUnits->RenderInput();
+		echo "<input type='radio' name='Rate.CapCalculation' value='".RATE_CAP_CAP_COST."' onchange=\"$strRateCapOnClick\">";
+		DBO()->Rate->CapCost->RenderInput();
+
+			// cap usage and cap limit specific detail
+			echo "<div id='CapDetailDiv' style='display:none'>\n";
+			echo "<div class='Seperator'></div>\n";		
+	
+			echo "<input type='radio' name='Rate.CapLimitting' value='".RATE_CAP_NO_CAP_LIMITS."' checked onchange=\"$strRateCapOnClick\">No Cap Limits<br>";
+			echo "<input type='radio' name='Rate.CapLimitting' value='".RATE_CAP_CAP_LIMIT."' onchange=\"$strRateCapOnClick\">";		
+			DBO()->Rate->CapLimit->RenderInput();
+			echo "<input type='radio' name='Rate.CapLimitting' value='".RATE_CAP_CAP_USAGE."' onchange=\"$strRateCapOnClick\">";
+			DBO()->Rate->CapUsage->RenderInput();		
+			echo "</div>\n";
+
+			// excess rate and markup specific detail
+			echo "<div id='ExcessDetailDiv' style='display:none'>\n";
+			echo "<div class='Seperator'></div>\n";		
+	
+			DBO()->Rate->ExsUnits->RenderInput();
+			echo "<input type='radio' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_RATE_PER_UNIT."' checked>No Cap Limits<br>";
+			DBO()->Rate->ExsRatePerUnit->RenderInput();
+			echo "<input type='radio' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_MARKUP."'>";		
+			DBO()->Rate->ExsMarkup->RenderInput();
+			echo "<input type='radio' name='Rate.ExsChargeType' value='".RATE_CAP_EXS_PERCENTAGE."'>";
+			DBO()->Rate->ExsPercentage->RenderInput();	
+			DBO()->Rate->ExsFlagfall->RenderInput();	
+			echo "</div>\n";
+
+		echo "<div class='Seperator'></div>\n";	
+
+		DBO()->Rate->Prorate->RenderInput();
+		DBO()->Rate->Fleet->RenderInput();
+		DBO()->Rate->Uncapped->RenderInput();		
+		
+		echo "</div>\n";
 		echo "<div class='Right'>\n";
-		$this->Submit("Apply Changes");
+		$this->AjaxSubmit("Add");
 		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "<div class='Seperator'></div>\n";
-		echo "</div>\n";
-		echo "<div class='Seperator'></div>\n";
 		
-		// Declare the end of the form
 		$this->FormEnd();
-		*/
 	}
 }
 
