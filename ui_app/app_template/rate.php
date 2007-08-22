@@ -19,7 +19,7 @@
  * @file		rate.php
  * @language	PHP
  * @package		framework
- * @author		Sean, Jared 'flame' Herbohn
+ * @author		Ross Mullen
  * @version		7.05
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
@@ -104,7 +104,7 @@ class AppTemplaterate extends ApplicationTemplate
 				return TRUE;
 			}		
 			
-			//if ((DBO()->Rate->Name->Value == 0) || (DBO()->Rate->Name->Value == ''))
+			// Check if the name is valid
 			if (!trim(DBO()->Rate->Name->Value))
 			{
 				$mixRateName = DBO()->Rate->Name->Value;
@@ -126,14 +126,129 @@ class AppTemplaterate extends ApplicationTemplate
 				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
 				return TRUE;
 			}
+		
+			switch (DBO()->Rate->ChargeType->Value)
+			{
+				case RATE_CAP_STANDARD_RATE_PER_UNIT:
+					// validate rate charge
+					if (!Validate('IsMoneyValue', DBO()->Rate->StdRatePerUnit->Value))
+					{
+						DBO()->Rate->StdRatePerUnit->SetToInvalid();
+						Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						return TRUE;
+					}
+					break;
+				case RATE_CAP_STANDARD_MARKUP:
+					// validate standard markup
+					if (!Validate('IsMoneyValue', DBO()->Rate->StdMarkup->Value))
+					{
+						DBO()->Rate->StdMarkup->SetToInvalid();
+						Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						return TRUE;
+					}
+					break;
+				case RATE_CAP_STANDARD_PERCENTAGE:
+					// validate percentage markup
+					if (!Validate('IsMoneyValue', DBO()->Rate->StdPercentage->Value))
+					{
+						DBO()->Rate->StdPercentage->SetToInvalid();
+						Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						return TRUE;
+					}
+					break;
+			}
+		
+			switch (DBO()->Rate->CapCalculation->Value)
+			{
+				case RATE_CAP_CAP_COST:
+					// validate cap cost
+					if (!Validate('IsMoneyValue', DBO()->Rate->CapCost->Value))
+					{
+						Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						DBO()->Rate->CapCost->SetToInvalid();
+						return TRUE;
+					}
+					break;
+				case RATE_CAP_CAP_UNITS:
+					// validate cap units
+					if (!Validate('IsMoneyValue', DBO()->Rate->CapUnits->Value))
+					{
+						Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+						DBO()->Rate->CapUnits->SetToInvalid();
+						return TRUE;
+					}
+					break;
+			}
 			
-		}
-
-		// Validate if the REcordType and/or ServiceType are empty
-
-		
-		
-		// All required data has been retrieved from the database so now load the page template
+			if ((DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST)||(DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS))
+			{		
+				// validate caplimitting values
+				switch (DBO()->Rate->CapLimitting->Value)
+				{
+					case RATE_CAP_NO_CAP_LIMITS:
+						// no further validation is required break
+						break;
+					case RATE_CAP_CAP_LIMIT:
+						// validate cap limit
+						if (!Validate('IsMoneyValue', DBO()->Rate->CapLimit->Value))
+						{
+							DBO()->Rate->CapLimit->SetToInvalid();
+							Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+							Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+							return TRUE;
+						}
+						break;
+					case RATE_CAP_CAP_USAGE:
+						// validate cap usage and excess
+						// flag if invalid
+						// bu dont return allow to continue through the following lines
+						if (!Validate('IsMoneyValue', DBO()->Rate->CapUsage->Value))
+						{
+							DBO()->Rate->CapUsage->SetToInvalid();
+						}
+						switch (DBO()->Rate->ExsChargeType->Value)
+						{
+							case RATE_CAP_EXS_RATE_PER_UNIT:
+								// validate excess rate
+								if (!Validate('IsMoneyValue', DBO()->Rate->ExsRatePerUnit->Value))
+								{
+									DBO()->Rate->ExsRatePerUnit->SetToInvalid();
+									Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+									Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+									return TRUE;
+								}
+								break;
+							case RATE_CAP_EXS_MARKUP:
+								// validate markup
+								if (!Validate('IsMoneyValue', DBO()->Rate->ExsMarkup->Value))
+								{
+									DBO()->Rate->ExsMarkup->SetToInvalid();
+									Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+									Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+									return TRUE;
+								}
+								break;
+							case RATE_CAP_EXS_PERCENTAGE:
+								// validate percentage
+								if (!Validate('IsMoneyValue', DBO()->Rate->ExsPercentage->Value))
+								{
+									DBO()->Rate->ExsPercentage->SetToInvalid();
+									Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
+									Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+									return TRUE;
+								}
+								break;
+						}
+						break;
+				}
+			}
+		}	
+ 		// All required data has been retrieved from the database so now load the page template
 		$this->LoadPage('rate_add');
 
 		return TRUE;
