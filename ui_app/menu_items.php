@@ -887,7 +887,7 @@ class MenuItems
 				break;
 			case "AdminConsole":
 				$this->strLabel = "Admin Console";
-				return "console.php";
+				return "console_admin.php";
 				break;
 			default;
 				return "[insert generic HREF here]";

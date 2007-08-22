@@ -126,6 +126,8 @@ class PropertyToken
 			// The property's validity
 			case "valid":
 				return $this->_dboOwner->_arrValid[$this->_strProperty];
+			case "isset":
+				return isset($this->_dboOwner->_arrProperties[$this->_strProperty]);
 		}
 		
 		// Do we have a Define property by this name?

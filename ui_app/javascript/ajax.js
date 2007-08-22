@@ -192,7 +192,7 @@ function VixenAjaxClass()
 			objSend.Objects[strObjectName][strPropertyName] = mixValue;
 		}			
 
-		/*	
+		/*
 		// Output each Object.Property stored in objSend.Objects
 		for (strObject in objSend.Objects)
 		{

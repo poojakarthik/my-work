@@ -92,7 +92,8 @@
 	{
 		margin-left:		75px;
 		margin-top:			20px;
-		width:				950px;
+		/*width:				950px;*/
+		width:				875px;
 	}
 
 	div#PopupPageBody
@@ -396,6 +397,9 @@
 		width:				 300px;
 	}
 	
+	/* This should not be used anymore as the width of the entire page is specified in PageBoy and then the columns are defined
+	   within a table, using percentages as their widths
+	*/
 	.WideColumn
 	{
 		margin:              0;
@@ -404,7 +408,7 @@
 		padding-right:       0px;
 		padding-bottom:      0px;
 		
-		width:				 950px;
+		width:				 875px;
 	}
 	
 	
@@ -413,12 +417,14 @@
 		margin:              0;
 		padding-top:         5px;
 		padding-left:        5px;
-		padding-right:       0px;
+		padding-right:       5px;
 		padding-bottom:      5px;
 		
 		border:              solid 1px #D1D1D1;
 		background-color:    #F3F3F3;
-		width:				 875px;
+		
+		/* The width of the form should be dictated by the width of the page body which in this case is 875px wide */
+		/*width:				 863px;*/ /*875 - (padding-left + pading-right) - (2 pixels of border) */
 	}
 	
 	.Narrow-Form

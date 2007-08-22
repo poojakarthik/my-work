@@ -181,7 +181,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		// Handle form submittion
-		if (SubmittedForm('RatePlan', 'Commit'))
+		if (SubmittedForm('AddPlan', 'Commit'))
 		{
 			TransactionStart();
 			
@@ -190,22 +190,21 @@ class AppTemplatePlan extends ApplicationTemplate
 			{
 				// Adding the plan failed, and an error message has been returned
 				TransactionRollback();
-				Ajax()->AddCommand("Alert", $mixResult);  //THIS ISN'T BEING DISPLAYED AND IT LOOKS LIKE THE PAGE IS RELOADING
+				Ajax()->AddCommand("Alert", $mixResult);
 				return TRUE;
 			}
-			elseif ($mixResult === TRUE)
+			elseif ($mixResult === FALSE)
+			{
+				// Adding the plan failed, and no error message was specified, so it is assumed approraite actions have already taken place
+				TransactionRollback();
+				return TRUE;
+			}
+			else
 			{
 				// Adding the plan was successfull
 				TransactionCommit();
 				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The plan has been successfully added", "Location" => Href()->AdminConsole()));
 				return TRUE;
-			}
-			else
-			{
-				// Adding the plan failed, and no error message was specified
-				// I would hope this condition never takes place
-				TransactionRollback();
-				Ajax()->AddCommand("Alert", "ERROR: Adding the plan failed, unexpectedly");
 			}
 		}
 		
@@ -230,13 +229,107 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Validate the fields
 		if (DBO()->RatePlan->IsInvalid())
 		{
-			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DEFAULT, "PlanDiv");
+			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: Invalid fields are highlighted";
+		}
+		if (!DBO()->RatePlan->ServiceType->Value)
+		{
+			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+			return "ERROR: A service type must be selected";
+		}
+		
+		// Make sure the name of the rate plan isn't currently in use
+		DBO()->ExistingRatePlan->Where->Name = DBO()->RatePlan->Name->Value;
+		DBO()->ExistingRatePlan->SetTable("RatePlan");
+		if (DBO()->ExistingRatePlan->Load())
+		{
+			// A rate plan with the same name already exists
+			DBO()->RatePlan->Name->SetToInvalid();
+			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+			return "ERROR: A Rate Plan named '". DBO()->RatePlan->Name->Value ."' already exists.<br>Please choose a unique name";
 		}
 		
 		// Check that a rate group has been defined for each RecordType that has been marked as required
+		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
+		DBL()->RecordType->Load();
 		
-		//Save the plan to the database
+		$arrRateGroups = Array();
+
+		// Find the declared rate group for each RecordType required of the RatePlan
+		foreach (DBL()->RecordType as $dboRecordType)
+		{
+			$intRateGroup = NULL;
+			$intFleetRateGroup = NULL;
+			
+			// Build the name of the object storing the Rate Group details for this particular record type
+			$strObject = "RateGroup" . $dboRecordType->Id->Value;
+			if (DBO()->{$strObject}->RateGroupId->IsSet)
+			{
+				// A RateGroup has been specified for this ServiceType
+				$intRateGroup = DBO()->{$strObject}->RateGroupId->Value;
+				$intFleetRateGroup = DBO()->{$strObject}->FleetRateGroupId->Value;
+				
+				// Check if a rate group has not been chosen for this record type, but is required
+				if (($intRateGroup == 0) && ($dboRecordType->Required->Value == TRUE))
+				{
+					// A rate group is required but hasn't been specified
+					return "ERROR: Not all required rate groups have been specified";
+				}
+				elseif ($intRateGroup > 0)
+				{
+					// add the rategroup to the list of rate groups
+					$arrRateGroups[] = $intRateGroup;
+				}
+				
+				if ($intFleetRateGroup > 0)
+				{
+					// Add the fleet rate group to the list of rate groups
+					$arrRateGroups[] = $intFleetRateGroup;
+				}
+			}
+			elseif ($dboRecordType->Required->Value == TRUE)
+			{
+				// The RatePlan requires a RateGroup of this RecordType, but one has not been declared
+				//NOTE! This is only run if the RecordType was not associated with the ServiceType before loading the RateGroupDiv contents
+				$this->GetPlanDeclareRateGroupsHtmlTemplate();
+				return "ERROR: strObject = '$strObject' intRecCount=$intRecCount objectsChecked=$strObjectsChecked A new record type has been associated with this service type, since you chose the service type of the plan";
+			}
+			else
+			{
+				// A RateGroup associated with the RecordType, was not specified and not required
+				continue;
+			}
+		}
+		
+		// All validation has completed and the fields are valid
+		// Setup the remaing fields required of a RatePlan record
+		DBO()->RatePlan->MinMonthly	= ltrim(DBO()->RatePlan->MinMonthly->Value, "$");
+		DBO()->RatePlan->ChargeCap	= ltrim(DBO()->RatePlan->ChargeCap->Value, "$");
+		DBO()->RatePlan->UsageCap	= ltrim(DBO()->RatePlan->UsageCap->Value, "$");
+		DBO()->RatePlan->Archived	= 0;
+		
+		// Save the plan to the database
+		if (!DBO()->RatePlan->Save())
+		{
+			// Saving failed
+			return "ERROR: Saving the RatePlan to the RatePlan database table failed, unexpectedly";
+		}
+		
+		// Save each of the RateGroups associated with the RatePlan to the RatePlanRateGroup table
+		foreach ($arrRateGroups as $intRateGroup)
+		{
+			DBO()->RatePlanRateGroup->Id = 0;
+			DBO()->RatePlanRateGroup->RatePlan = DBO()->RatePlan->Id->Value;
+			DBO()->RatePlanRateGroup->RateGroup = $intRateGroup;
+			
+			if (!DBO()->RatePlanRateGroup->Save())
+			{
+				// Saving failed
+				return "ERROR: Saving one of the RateGroup - RatePlan associations failed, unexpectedly<br>The RatePlan has not been saved";
+			}
+		}
+		
+		// Everything has been saved
 		return TRUE;
 	}
 	
@@ -246,17 +339,22 @@ class AppTemplatePlan extends ApplicationTemplate
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{
 			// A service type was not actually chosen 
-			Ajax()->RenderHtmlTemplate("PlanDeclareRateGroups", HTML_CONTEXT_NO_DETAIL, "RateGroupsDiv");
+			Ajax()->RenderHtmlTemplate("PlanAdd", HTML_CONTEXT_RATE_GROUPS_EMPTY, "RateGroupsDiv");
 			return TRUE;
 		}
 	
-		// Find all RecordTypes required of this ServiceType
+		// Find all RecordTypes belonging to this ServiceType
 		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
 		DBL()->RecordType->OrderBy("Name");
 		DBL()->RecordType->Load();
 		
-		$intNumTypes = DBL()->RecordType->RecordCount();
-		Ajax()->RenderHtmlTemplate("PlanDeclareRateGroups", HTML_CONTEXT_DEFAULT, "RateGroupsDiv");
+		// Find all Rate Groups for this ServiceType that aren't archived (archived can equal, 0 (not archived), 1 (archived) or 2 (not yet committed/draft))
+		$strWhere = "ServiceType = <ServiceType> AND Archived != 1";
+		DBL()->RateGroup->Where->Set($strWhere, Array('ServiceType' => DBO()->RatePlan->ServiceType->Value));
+		DBL()->RateGroup->OrderBy("Name");
+		DBL()->RateGroup->Load();
+		
+		Ajax()->RenderHtmlTemplate("PlanAdd", HTML_CONTEXT_RATE_GROUPS, "RateGroupsDiv");
 		return TRUE;
 	}
 	
