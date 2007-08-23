@@ -143,7 +143,7 @@ class HtmlTemplateAccountDetails extends HtmlTemplate
 
 		// Use a table to stick the account details and the checkbox and radio buttons next to each other
 
-		echo "<table border=0 cellspacing=0 cellpadding=0>\n";
+		echo "<table border='0' cellspacing='0' cellpadding='0'>\n";
 		echo "   <tr>\n";
 		echo "      <td width='65%'>\n";
 		// Render the details of the Account

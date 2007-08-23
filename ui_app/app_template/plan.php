@@ -20,7 +20,7 @@
  * @language	PHP
  * @package		framework
  * @author		Ross
- * @version		
+ * @version		7.08
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
@@ -223,7 +223,22 @@ class AppTemplatePlan extends ApplicationTemplate
 	
 	}
 	
-	// This will handle form validation and commiting the plan to the database
+	//------------------------------------------------------------------------//
+	// _AddPlan
+	//------------------------------------------------------------------------//
+	/**
+	 * _AddPlan()
+	 *
+	 * Performs validation and saving the records to the database, required for defining a RatePlan
+	 * 
+	 * Performs validation and saving the records to the database, required for defining a RatePlan
+	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
+	 *
+	 * @return		mix				returns TRUE if the new RatePlan saved successfully, else it returns
+	 *								a specific error message detailing why the RatePlan could not be saved
+	 * @method
+	 *
+	 */
 	private function _AddPlan()
 	{
 		// Validate the fields
@@ -333,8 +348,22 @@ class AppTemplatePlan extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	// This retrieves all data required of the HtmlTemplate, PlanDeclareRateGroups, and renders the template using an ajax command
-	function GetPlanDeclareRateGroupsHtmlTemplate()
+	//------------------------------------------------------------------------//
+	// GetRateGroupsForm
+	//------------------------------------------------------------------------//
+	/**
+	 * GetRateGroupsForm()
+	 *
+	 * Renders the Rate Groups delaration section of the "Add Rate Plan" form, via an ajax command
+	 * 
+	 * Renders the Rate Groups delaration section of the "Add Rate Plan" form, via an ajax command
+	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
+	 *
+	 * @return		bool			TRUE if successfull
+	 * @method
+	 *
+	 */
+	function GetRateGroupsForm()
 	{
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{
@@ -354,7 +383,17 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RateGroup->OrderBy("Name");
 		DBL()->RateGroup->Load();
 		
+		// Render the html template
 		Ajax()->RenderHtmlTemplate("PlanAdd", HTML_CONTEXT_RATE_GROUPS, "RateGroupsDiv");
+		
+		// Set the focus to the Rate Group combobox of the first RecordType to display
+		if (DBL()->RecordType->RecordCount() > 0)
+		{
+			DBL()->RecordType->rewind();
+			$dboFirstRecordType = DBL()->RecordType->current();
+			$strElement = "RateGroup" . $dboFirstRecordType->Id->Value . ".RateGroupId";
+			Ajax()->AddCommand("SetFocus", $strElement);
+		}
 		return TRUE;
 	}
 	

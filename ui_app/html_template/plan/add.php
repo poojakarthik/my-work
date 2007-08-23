@@ -82,10 +82,6 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
-		
-		//$this->LoadJavascript("dhtml");
-		//$this->LoadJavascript("highlight");
-		//$this->LoadJavascript("retractable");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -124,7 +120,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			$this->_RenderPlanDetails();
 			echo "</div>\n";
 	
-			// Stick in the div container for the PlanDeclareRateGroups html template
+			// Stick in the div container for the DeclareRateGroups table
 			echo "<div id='RateGroupsDiv'></div>\n";
 			
 			// create the buttons
@@ -140,14 +136,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	
 	
 	//------------------------------------------------------------------------//
-	// _RenderFormStart
+	// _RenderPlanDetails
 	//------------------------------------------------------------------------//
 	/**
-	 * _RenderFormStart()
+	 * _RenderPlanDetails()
 	 *
-	 * Render this HTML Template
+	 * Renders the Plan details section of the form
 	 *
-	 * Render this HTML Template
+	 * Renders the Plan details section of the form
 	 *
 	 * @method
 	 */
@@ -158,20 +154,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 							var objObjects = {};
 							objObjects.RatePlan = {};
 							objObjects.RatePlan.ServiceType = this.value;
-							Vixen.Ajax.CallAppTemplate('Plan', 'GetPlanDeclareRateGroupsHtmlTemplate', objObjects);
+							Vixen.Ajax.CallAppTemplate('Plan', 'GetRateGroupsForm', objObjects);
 							";
 	
 		echo "<h2 class='Plan'>Plan Details</h2>\n";
 		echo "<div class='Wide-Form'>\n";
 
-		if (DBO()->RatePlan->IsInvalid())
-		{
-			$bolApplyOutputMask = FALSE;
-		}
-		else
-		{
-			$bolApplyOutputMask = TRUE;
-		}
+		// Only apply the output mask if the DBO()->RatePlan is not invalid
+		$bolApplyOutputMask = !DBO()->RatePlan->IsInvalid();
 
 		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
@@ -211,9 +201,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	/**
 	 * _RenderRateGroups()
 	 *
-	 * Render this HTML Template
+	 * Renders the Rate Groups section of the form
 	 *
-	 * Render this HTML Template
+	 * Renders the Rate Groups section of the form
 	 *
 	 * @method
 	 */
@@ -289,7 +279,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			$strFleetRateGroupCell .= "   </div>\n";
 			$strFleetRateGroupCell .= "</div>\n";
 			
-			$strActionsCell = "Add New";
+			$strAddRateGroupHref = Href()->AddRateGroupToRatePlan($dboRecordType->Id->Value);
+			$strActionsCell = "<span class='DefaultOutputSpan'><a href='$strAddRateGroupHref' style='color:blue; text-decoration: none;'>Add New</a></span>";
 			
 			// Add this row to the table
 			Table()->RateGroups->AddRow($strRequiredCell, $strRecordTypeCell, $strRateGroupCell, $strFleetRateGroupCell, $strActionsCell);

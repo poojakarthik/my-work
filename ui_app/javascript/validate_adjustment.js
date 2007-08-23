@@ -16,7 +16,7 @@
  * This class is currently used by the "Add Adjustment" popup
  * 
  *
- * @file		validate_adjustment.php
+ * @file		validate_adjustment.js
  * @language	PHP
  * @package		ui_app
  * @author		Joel Dawkins

@@ -295,6 +295,57 @@ class MenuItems
 		return "javascript:Vixen.Popup.ShowAjaxPopup(\"Employee{$intId}EditPopup\", \"medium\", \"Employee\", \"Edit\", $strJsonCode)";
 
 	}
+	
+	//------------------------------------------------------------------------//
+	// AddRateGroupToRatePlan
+	//------------------------------------------------------------------------//
+	/**
+	 * AddRateGroupToRatePlan()
+	 *
+	 * Compiles the Href to be executed when the AddRateGroupToRatePlan menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddRateGroupToRatePlan menu item is clicked
+	 * This will not compile a bread crumb label because the AddRateGroup functionality is in a popup
+	 * 
+	 * @param	int		$intRecordType		record type that the Rate Group will belong to
+	 *
+	 * @return	string						Href to be executed when the AddRateGroupToRatePlan menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddRateGroupToRatePlan($intRecordType)
+	{
+		// Setup data to send
+		$arrData['Objects']['RecordType']['Id'] = $intRecordType;
+		
+		// This is used to flag that the Rate Group will be added to a Rate Plan
+		$arrDate['Objects']['RateGroup']['AddToRatePlan'] = TRUE;
+		
+		// Convert to JSON notation
+		$strJsonCode = Json()->encode($arrData);
+		
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", $strJsonCode)";
+	}
+	
+	//------------------------------------------------------------------------//
+	// AddRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * AddRateGroup()
+	 *
+	 * Compiles the Href to be executed when the AddRateGroup menu item is clicked
+	 *
+	 * Compiles the Href to be executed when the AddRateGroup menu item is clicked
+	 * This will not compile a bread crumb label because the AddRateGroup functionality is in a popup
+	 * 
+	 * @return	string				Href to be executed when the AddRateGroup menu item is clicked
+	 *
+	 * @method
+	 */
+	function AddRateGroup()
+	{
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", \"\")";
+	}
 
 	//------------------------------------------------------------------------//
 	// AddAssociatedAccount

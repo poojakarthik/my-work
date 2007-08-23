@@ -147,6 +147,9 @@ class HTMLElements
 		
 		$strValue = $this->BuildInputValue($arrParams);
 		$strValue = nl2br($strValue);
+		
+		// convert any apostrophe's into &#39;
+		$strValue = str_replace("'", "&#39;", $strValue);
 
 		$strName	= "{$arrParams['Object']}.{$arrParams['Property']}";
 		$strId		= "{$arrParams['Object']}.{$arrParams['Property']}";

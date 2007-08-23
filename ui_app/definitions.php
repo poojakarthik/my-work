@@ -104,6 +104,7 @@ define('HTML_CONTEXT_RELATED_ARTICLES', 	101);
 define('HTML_CONTEXT_SERVICE_NOTE',			402);
 define('HTML_CONTEXT_RATE_GROUPS', 			501);
 define('HTML_CONTEXT_RATE_GROUPS_EMPTY',	502);
+define('HTML_CONTEXT_RATES', 				503);
 
 // constants for the cap/excess rates used within the rate add page
 define('RATE_CAP_NO_CAP', 100);
