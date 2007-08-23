@@ -104,17 +104,6 @@ class AppTemplaterate extends ApplicationTemplate
 				return TRUE;
 			}		
 			
-			// Check if the name is valid
-			if (!trim(DBO()->Rate->Name->Value))
-			{
-				$mixRateName = DBO()->Rate->Name->Value;
-			
-				DBO()->Rate->Name->SetToInvalid();
-				Ajax()->AddCommand("Alert", "The Name is invalid for this Rate<br>Rate.Name = '$mixRateName'");
-				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
-				return TRUE;				
-			}
-			
 			// Check if a rate with the same name and isn't archived exists
 			$strWhere = "NAME LIKE \"". DBO()->Rate->Name->Value . "\"" . "AND ARCHIVED = 0";
 			DBL()->Rate->Where->SetString($strWhere);

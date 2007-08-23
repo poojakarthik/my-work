@@ -1,3 +1,4 @@
+	
 /**************************************************************************/
 /* ViXen CSS file														  */
 /*																		  */
@@ -1031,3 +1032,96 @@
 		vertical-align:	text-top;
 		/*border:			1px solid #000000;*/
 	}
+
+/*------------------*/
+
+
+#weekScheduler_Container{
+	width:576px;
+	border: inset 1px buttonface;
+}
+
+div#weekScheduler_Hours,
+div#weekScheduler_Meridians {
+	width: 576px;
+	height: 27px;
+}
+
+div#weekScheduler_Meridians div
+{
+	width:286px;
+	float:left;
+	background-color:buttonface;
+	border: 1px outset buttonface;
+	height:25px;
+	text-align: center;
+	font-size: 8pt;
+	cursor: default;
+}
+
+div#weekScheduler_Hours div {
+	width:22px;
+	float:left;
+	background-color:buttonface;
+	border: 1px outset buttonface;
+	height:25px;
+	font-size: 8pt;
+	cursor: default;
+}
+
+div#weekScheduler_Content
+{
+	height: 38px;
+	width: 576px;
+	overflow: hidden;
+}
+
+div#weekScheduler_Content div.weekScheduler_SelectableTime
+{
+	border: outset 1px #FFFFFF;
+	background-color: #FFFFFF;
+	width:22px;
+	height: 38px;
+	float:left;
+}
+
+/* Appointment Information */
+
+div.Appointment
+{
+	border: solid 0px #FF6600;
+	width:24px;
+	height: 38px;
+	background-color: #45a0f3;
+}
+
+div.Appointment div.Moving
+{
+	position: absolute;
+	cursor: move;
+	width: 5.5px;
+	height: 38px;
+	top: 0;
+	left: 0;
+	background-color: #006599;
+}
+
+div.Appointment div.Resize
+{
+	position: absolute;
+	cursor: e-resize;
+	width: 5.5px;
+	height: 38px;
+	right: 0;
+	background-color: #006599;
+}
+/*
+div#Excess
+{
+	display: none;
+}
+
+div#CapLimit
+{
+	display: none;
+}*/

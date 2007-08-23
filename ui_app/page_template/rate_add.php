@@ -4,7 +4,7 @@
 // to put into each column on the page
 
 // Set the page title
-$this->Page->SetName('rate add');
+$this->Page->SetName('Add a new Rate');
 
 $strLayout = '1Column';
 $this->Page->SetLayout($strLayout);
