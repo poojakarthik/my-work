@@ -2585,11 +2585,13 @@
 		if ($strInvoiceRun)
 		{
 			// Committed Invoice
+			$strTable		= "Invoice";
 			$selInvoiceData	= new StatementSelect("Invoice", "InvoiceRun, CreatedOn AS BillingDate, SUM(Total) AS BillInvoiced, SUM(Tax) AS BillTax, COUNT(Id) AS InvoiceCount", "InvoiceRun = <InvoiceRun>", "CreatedOn", NULL, "InvoiceRun");
 		}
 		else
 		{
 			// Temp Invoice
+			$strTable		= "InvoiceTemp";
 			$selInvoiceData	= new StatementSelect("InvoiceTemp", "InvoiceRun, CreatedOn AS BillingDate, SUM(Total) AS BillInvoiced, SUM(Tax) AS BillTax, COUNT(Id) AS InvoiceCount", "1", "CreatedOn", NULL, "InvoiceRun");
 		}
 		if (!$selInvoiceData->Execute(Array('InvoiceRun' => $strInvoiceRun)))
@@ -2613,11 +2615,28 @@
 		}
 		
 		// Date hack for invoice run on the 30th
+		$strCreatedOn = $arrInvoiceRun['BillingDate'];
 		$arrDate = explode('-', $arrInvoiceRun['BillingDate']);
 		if ((int)$arrDate[2] >= 28)
 		{
 			$arrInvoiceRun['BillingDate'] = date("Y-m-d", strtotime("+1 month", strtotime("{$arrDate[0]}-$arrDate[1]-01")));
 		}
+		
+		// Outstanding Totals
+		$selThisOutstanding		= new StatementSelect($strTable, "SUM(Balance) AS Balance", "InvoiceRun = <InvoiceRun>");
+		$selLastOutstanding		= new StatementSelect("Invoice", "SUM(Balance) AS Balance", "CreatedOn < <CreatedOn>", "CreatedOn DESC", 1, "InvoiceRun");
+		$selTotalOutstanding	= new StatementSelect("Invoice", "SUM(Balance) AS Balance", "CreatedOn < <CreatedOn>");
+		$selThisOutstanding->Execute($arrInvoiceRun);
+		$selLastOutstanding->Execute(Array('CreatedOn' => $strCreatedOn));
+		$selTotalOutstanding->Execute(Array('CreatedOn' => $strCreatedOn));
+		$arrThisOutstanding		= $selThisOutstanding->Fetch();
+		$arrLastOutstanding		= $selLastOutstanding->Fetch();
+		$arrTotalOutstanding	= $selTotalOutstanding->Fetch();
+		$arrBalanceData['TotalBalance']		= $arrThisOutstanding['Balance'];
+		$arrBalanceData['TotalOutstanding']	= $selTotalOutstanding['Balance'];
+		$arrBalanceData['PreviousBalance']	= $selLastOutstanding['Balance'];
+		
+		$arrInvoiceRun['BalanceData'] = serialize($arrBalanceData);
 		
 		// Insert data to DB if flag is set & using committed invoices
 		if ($bolInsert && $strInvoiceRun)
