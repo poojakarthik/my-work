@@ -764,6 +764,16 @@
 			$fltBalance		= $fltTotal + $fltTax;
 			$fltTotalOwing	= $fltBalance + $fltAccountBalance;
 			
+			// Determine Delivery Method
+			if ($fltTotal+$fltTax >= BILLING_MINIMUM_TOTAL || $fltTotalOwing >= BILLING_MINIMUM_TOTAL || $arrAccount['BillingMethod'] == BILLING_METHOD_EMAIL)
+			{
+				$intDeliveryMethod	= $arrAccount['BillingMethod'];
+			}
+			else
+			{
+				$intDeliveryMethod	= BILLING_METHOD_DO_NOT_SEND;
+			}
+			
 			// get new values, and write to temporary invoice table
 			$arrInvoiceData['Credits']			= $fltTotalCredits;
 			$arrInvoiceData['Debits']			= $fltTotalDebits;
@@ -772,6 +782,7 @@
 			$arrInvoiceData['TotalOwing']		= $fltTotalOwing;
 			$arrInvoiceData['Balance']			= $fltBalance;
 			$arrInvoiceData['AccountBalance']	= $fltAccountBalance;
+			$arrInvoiceData['DeliveryMethod']	= $intDeliveryMethod;
 			
 			$arrAccountReturn['FinalInvoiceData'] = $arrInvoiceData;
 			

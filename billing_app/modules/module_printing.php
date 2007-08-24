@@ -784,14 +784,7 @@
 		//--------------------------------------------------------------------//
 		
 		// add invoice footer (18)
-		if ($arrInvoiceDetails['Total']+$arrInvoiceDetails['Tax'] >= BILLING_MINIMUM_TOTAL || $arrInvoiceDetails['TotalOwing'] >= BILLING_MINIMUM_TOTAL || $arrCustomerData['DeliveryMethod'] == BILLING_METHOD_EMAIL)
-		{
-			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= $arrCustomerData['DeliveryMethod'];
-		}
-		else
-		{
-			$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= BILLING_METHOD_DO_NOT_SEND;
-		}
+		$arrDefine['InvoiceFooter']	['Delivery']	['Value']	= $arrInvoiceDetails['DeliveryMethod'];
 		$this->_arrFileData[] = $arrDefine['InvoiceFooter'];
 		
 		// Process and implode the data so it can be inserted into the DB
