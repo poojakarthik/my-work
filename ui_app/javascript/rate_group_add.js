@@ -130,9 +130,25 @@ function VixenRateGroupAddClass()
 				elmRecordTypeCombo.appendChild(elmNewOption);
 			}
 		}
+
+		// Remove the contents of the Rate Selector Control
+		var elmAvailableRatesCombo = document.getElementById("AvailableRatesCombo");
 		
+		// Empty its current contents (there is probably a more elegant way of doing this)
+		while (elmAvailableRatesCombo.childNodes.length > 0)
+		{
+			elmAvailableRatesCombo.removeChild(elmAvailableRatesCombo.childNodes[0]);
+		}
+
+		var elmSelectedRatesCombo = document.getElementById("SelectedRatesCombo");
 		
-		
+		// Empty its current contents (there is probably a more elegant way of doing this)
+		//var arrOldOptions = elmRecordTypeCombo.getElementsByTagName("option");
+		while (elmSelectedRatesCombo.childNodes.length > 0)
+		{
+			elmSelectedRatesCombo.removeChild(elmSelectedRatesCombo.childNodes[0]);
+		}
+
 		return TRUE;
 	}
 	
@@ -166,17 +182,24 @@ function VixenRateGroupAddClass()
 		Vixen.Ajax.CallAppTemplate("RateGroup", "SetRateSelectorControl", objObjects);
 	}
 
-	// Opens the Add Rate popup window
+	//------------------------------------------------------------------------//
+	// AddNewRate
+	//------------------------------------------------------------------------//
+	/**
+	 * AddNewRate
+	 *
+	 * Opens the Add New Rate popup window
+	 *  
+	 * Opens the Add New Rate popup window
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.AddNewRate = function()
 	{
 		// Get the currently selected RecordType and ServiceType
 		var intRecordType	= document.getElementById("RecordTypeCombo").value;
 		var intServiceType	= document.getElementById("ServiceTypeCombo").value;
-
-		//DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! 
-		alert("RecordType = " + intRecordType + " ServiceType = " + intServiceType);
-		return;
-		//DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE! DEBUG CODE!
 
 		var objObjects = {};
 		objObjects.RecordType = {};
@@ -186,8 +209,6 @@ function VixenRateGroupAddClass()
 		
 		Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
 	}
-
-
 }
 
 // instanciate the objects

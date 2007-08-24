@@ -195,7 +195,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type:</div>\n";
 		echo "      <select id='ServiceTypeCombo' name='RateGroup.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='Vixen.RateGroupAdd.ChangeServiceType(this.value)'>\n";
-		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
+		echo "         <option value='0' selected='selected'>&nbsp;</option>";
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
 		{
 			// Check if this is the currently selected ServiceType
@@ -209,7 +209,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Record Type:</div>\n";
 		echo "      <select id='RecordTypeCombo' name='RateGroup.RecordType' class='DefaultInputComboBox' style='width:250px;' onchange='Vixen.RateGroupAdd.ChangeRecordType(this.value)'>\n";
-		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
+		echo "         <option value='0' selected='selected'>&nbsp;</option>";
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
 		
@@ -232,7 +232,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		
 		// Define the data required of the javascript that handles events and validation of this form
 		$strJsonCode = Json()->encode($arrRecordTypes);
-		
+
 		// Initialise the javascript object
 		echo "<script type='text/javascript'>Vixen.RateGroupAdd.InitialiseForm($strJsonCode);</script>\n";
 		if ($intServiceType != 0)
@@ -271,22 +271,27 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		$strSelectedRates = "";
 
 		// Work out which column each of the rates should go
-		foreach (DBL()->Rates as $dboRate)
+		//NOTE: The value of DBO()->Rates->ArrRates->Value is an array.  
+		//This list of rates should be done as a DBList, but this method drastically cuts down the amount of memory required
+		if (DBO()->Rates->ArrRates->Value)
 		{
-			$intRateId = $dboRate->Id->Value;
-			$intRateName = $dboRate->Name->Value;
-			if ($dboRate->Selected->Value == TRUE)
+			foreach (DBO()->Rates->ArrRates->Value as $arrRate)
 			{
-				// The rate is currently selected
-				$strSelectedRates .= "<option value='$intRateId'>$intRateName</option>\n";
-			}
-			else
-			{
-				// The rate is not selected
-				$strAvailableRates .= "<option value='$intRateId'>$intRateName</option>\n";
+				$intRateId = $arrRate['Id'];
+				$intRateName = $arrRate['Name'];
+				if (isset($arrRate['Selected']) && $arrRate['Selected'] == TRUE)
+				{
+					// The rate is currently selected
+					$strSelectedRates .= "<option value='$intRateId'>$intRateName</option>";
+				}
+				else
+				{
+					// The rate is not selected
+					$strAvailableRates .= "<option value='$intRateId'>$intRateName</option>";
+				}
 			}
 		}
-
+		
 		// Draw the controls in a table to space them
 		echo "<table border='0' cellspacing='0' cellpadding='0' width='100%'>\n";
 		
@@ -298,13 +303,13 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "<tr>\n";
 
 		// Draw the Available Rates multi-select combo box
-		echo "   <td>\n";
-		echo "      <div class='DefaultElement'>\n";
-		echo "         <select size='10' multiple='multiple' id='AvailableRatesCombo' name='AvailableRates.Id' class='DefaultInputComboBox' style='left:0px;width:300px;'>\n";
+		echo "<td>\n";
+		echo "<div class='DefaultElement'>\n";
+		echo "<select size='10' multiple='multiple' id='AvailableRatesCombo' name='AvailableRates.Id' class='DefaultInputComboBox' style='left:0px;width:300px;'>";
 		echo $strAvailableRates;
-		echo "         </select>\n";
-		echo "      </div>\n";
-		echo "   </td>\n";
+		echo "</select>\n";
+		echo "</div>\n";
+		echo "</td>\n";
 		
 		// Draw the buttons 
 		//TODO!
@@ -313,21 +318,21 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "   </td>\n";
 		
 		// Draw the Selected Rates multi-select combo box
-		echo "   <td>\n";
-		echo "      <div class='DefaultElement'>\n";
-		echo "         <select size='10' multiple='multiple' id='SelectedRatesCombo' name='SelectedRates.Id' class='DefaultInputComboBox' style='left:0px;width:300px;'>\n";
+		echo "<td>\n";
+		echo "<div class='DefaultElement'>\n";
+		echo "<select size='10' multiple='multiple' id='SelectedRatesCombo' name='SelectedRates.Id' class='DefaultInputComboBox' style='left:0px;width:300px;'>";
 		echo $strSelectedRates;
-		echo "         </select>\n";
-		echo "      </div>\n";
-		echo "   </td>\n";
+		echo "</select>\n";
+		echo "</div>\n";
+		echo "</td>\n";
 		
 		echo "</tr>\n";
 		
 		// Draw the buttons ("Add New Rate" and "View Rate Summary")
 		echo "<tr>\n";
 		echo "<td colspan='3' align='right'>\n";
-		//echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.AddNewRate()\"></input>\n";
-		//echo "<input type='button' value='Preview Rate Summary' class='InputSubmit' onclick=\"javascript: alert('Dont forget to do this');\"></input>\n";
+		echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.AddNewRate()\"></input>\n";
+		echo "<input type='button' value='Preview Rate Summary' class='InputSubmit' onclick=\"javascript: alert('Dont forget to do this');\"></input>\n";
 		echo "</td>";
 		echo "</tr>\n";
 

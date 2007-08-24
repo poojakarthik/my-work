@@ -94,16 +94,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			}
 		}
 		
-/*		
-		if (DBO()->RecordType->Id->Value)
-		{
-			// A record type has been selected, load all the rates and mark them as not having been selected
-			$strWhere = "RecordType = <RecordType> AND Archived != 1";
-			DBL()->Rates->SetTable("Rate");
-			DBL()->Rates->Where->Set($strWhere, Array("RecordType" => DBO()->RecordType->Id->Value));
-			DBL()->Rates->Load();
-		}
-*/		
 		$this->LoadPage('rate_group_add');
 
 		return TRUE;
@@ -114,10 +104,33 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	function SetRateSelectorControl()
 	{
 		// Retrieve all available Rates for the specified RecordType
+		//NOTE: This was originally done using a DBList, however some retrievals were returning 11000+ records and was exeeding
+		//the allocated memory for the script (crashed after allocating about 103MB) the DBList itself required 80MB when
+		//returning all properties of all records, and 40MB when just returning the Id and Name of each rate.
+		//Now the entire record set is being loaded into a 2D array and placed in a DBObject so that it can be referenced with the Html Template
+		/*
 		$strWhere = "RecordType = <RecordType> AND Archived != 1";
 		DBL()->Rates->SetTable("Rate");
 		DBL()->Rates->Where->Set($strWhere, Array("RecordType" => DBO()->RecordType->Id->Value));
 		DBL()->Rates->Load();
+		*/
+		
+		$selRates = new StatementSelect("Rate", "Id, Name", "RecordType=<RecordType>", "Name", NULL);
+		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
+		$arrRecords = $selRates->FetchAll();
+		
+		$arrRates = Array();
+		$arrRate = Array();
+		foreach ($arrRecords as $arrRecord)
+		{
+			$arrRate['Id'] = $arrRecord['Id'];
+			$arrRate['Name'] = $arrRecord['Name'];
+			
+			$arrRates[] = $arrRate;
+		}
+		
+		DBO()->Rates->ArrRates = $arrRates;
+		
 		
 		Ajax()->RenderHtmlTemplate("RateGroupAdd", HTML_CONTEXT_RATES, "RateSelectorControlDiv");
 		return TRUE;
