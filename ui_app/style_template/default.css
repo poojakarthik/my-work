@@ -909,8 +909,8 @@
 	{
 		margin:              0;
 		padding-top:         0px;
-		padding-left:        0px;
-		padding-right:       0px;
+		padding-left:        3px;
+		padding-right:       3px;
 		padding-bottom:      0px;
 		
 		/*border:              solid 1px #D1D1D1;*/
@@ -925,7 +925,8 @@
 
 	.PopupLarge
 	{
-		width:				 690px;
+		/*width:				 690px;*/
+		width:		auto;
 	}
 	
 	#overlay {
@@ -1081,7 +1082,7 @@ div#weekScheduler_Content div.weekScheduler_SelectableTime
 	border: outset 1px #FFFFFF;
 	background-color: #FFFFFF;
 	width:22px;
-	height: 38px;
+	height: 36px;
 	float:left;
 }
 

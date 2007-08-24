@@ -6,7 +6,8 @@
 // Set the page title
 $this->Page->SetName('Add a new Rate');
 
-$strLayout = '1Column';
+$strLayout = 'popup_layout';
+//$strLayout = '1Column';
 $this->Page->SetLayout($strLayout);
 
 // Add each html object to the appropriate column

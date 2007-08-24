@@ -72,27 +72,6 @@ class AppTemplaterate extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 
-		// Context menu
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
-		
-		// Breadcrumb menu
-				
-		// Setup all DBO and DBL objects required for the page
-		
-		/*if (DBO()->Rate->ServiceType->Value == NULL)
-		{
-			DBO()->Error->Message = "The ServiceType could not be found";
-			$this->LoadPage('error');
-			return FALSE;
-		}
-		if (DBO()->RecordType->Id->Value == NULL)
-		{
-			DBO()->Error->Message = "The RecordType could not be found";
-			$this->LoadPage('error');
-			return FALSE;
-		}*/
-
 		if (SubmittedForm("AddRate","Add"))
 		{
 			// test initial validation of fields
@@ -114,6 +93,30 @@ class AppTemplaterate extends ApplicationTemplate
 				Ajax()->AddCommand("Alert", "This RateName already exists in the Database");
 				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
 				return TRUE;
+			}
+		
+			$intDaySelected = FALSE;
+			$arrDaysofWeek = array('Monday' => 'Rate.Monday',
+								'Tuesday' => 'Rate.Tuesday',
+								'Wednesday' => 'Rate.Wednesday',
+								'Thursday' => 'Rate.Thursday',
+								'Friday' => 'Rate.Friday',
+								'Saturday' => 'Rate.Saturday',
+								'Sunday' => 'Rate.Sunday');
+			
+			// validate that atleast one day in the week has been checked
+			foreach ($arrDaysofWeek as $key => $value)
+			{
+				if (DBO()->Rate->$key->Value)
+				{
+					$intDaySelected = TRUE;
+				}
+			}
+			if (!$intDaySelected)
+			{
+				Ajax()->AddCommand("Alert", "Atleast one day in the week has to be clicked");
+				Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
+				return TRUE;			
 			}
 		
 			switch (DBO()->Rate->ChargeType->Value)
@@ -156,9 +159,9 @@ class AppTemplaterate extends ApplicationTemplate
 					// validate cap cost
 					if (!Validate('IsMoneyValue', DBO()->Rate->CapCost->Value))
 					{
+						DBO()->Rate->CapCost->SetToInvalid();
 						Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
 						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
-						DBO()->Rate->CapCost->SetToInvalid();
 						return TRUE;
 					}
 					break;
@@ -166,9 +169,9 @@ class AppTemplaterate extends ApplicationTemplate
 					// validate cap units
 					if (!Validate('IsMoneyValue', DBO()->Rate->CapUnits->Value))
 					{
+						DBO()->Rate->CapUnits->SetToInvalid();
 						Ajax()->AddCommand("Alert", "The value entered is not a correct monetary value");
 						Ajax()->RenderHtmlTemplate("RateAdd", HTML_CONTEXT_DEFAULT, "RateAddDiv");
-						DBO()->Rate->CapUnits->SetToInvalid();
 						return TRUE;
 					}
 					break;
@@ -236,8 +239,66 @@ class AppTemplaterate extends ApplicationTemplate
 						break;
 				}
 			}
+			
+			//strip all $ signs off values
+			DBO()->Rate->StdRatePerUnit = (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_RATE_PER_UNIT) ? ltrim(DBO()->Rate->StdRatePerUnit->Value, "$") : 0;
+			DBO()->Rate->StdMarkup = (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_MARKUP) ? ltrim(DBO()->Rate->StdMarkup->Value, "$") : 0;
+			DBO()->Rate->StdPercentage = (DBO()->Rate->ChargeType->Value == RATE_CAP_STANDARD_PERCENTAGE) ? ltrim(DBO()->Rate->StdPercentage->Value, "$") : 0;
+			
+			DBO()->Rate->CapUnits = (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS) ? DBO()->Rate->CapUnits->Value : 0;
+			DBO()->Rate->CapCost = (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST) ? ltrim(DBO()->Rate->CapCost->Value, "$") : 0;
+			
+			//not trapping for no cap?? does it need to??
+			DBO()->Rate->CapLimit = (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? ltrim(DBO()->Rate->CapLimit->Value, "$") : 0;
+			DBO()->Rate->CapUsage = (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE) ? DBO()->Rate->CapCost->Value : 0;
+			
+			DBO()->Rate->ExsRatePerUnit = (DBO()->Rate->ExsRatePerUnit->Value == RATE_CAP_EXS_RATE_PER_UNIT) ? ltrim(DBO()->Rate->ExsRatePerUnit->Value, "$") : 0;
+			DBO()->Rate->ExsMarkup = (DBO()->Rate->ExsMarkup->Value == RATE_CAP_EXS_MARKUP) ? ltrim(DBO()->Rate->ExsMarkupt->Value, "$") : 0;
+			DBO()->Rate->ExsPercentage = (DBO()->Rate->ExsPercentage->Value == RATE_CAP_EXS_PERCENTAGE) ? DBO()->Rate->CapLimit->Value : 0;
+					
+			DBO()->Rate->Save();		
+					
+			// setcolums doesnt do anything except specify which columns to update
+			// instead do each record that needs additional work done, makes sense to me will rephrase later
+			
+			// all valdiation done so commit to database
+			/*DBO()->Rate->SetColumns("Name,
+									Description, 
+									ServiceType, 
+									RecordType, 
+									StartTime, 
+									EndTime, 
+									Monday, 
+									Tuesday, 
+									Wednesday, 
+									Thursday, 
+									Friday,
+									Saturday,
+									Sunday,
+									StdUnits,
+									StdRatePerUnit,
+									StdMarkup,
+									StdPercentage,
+									StdMinCharge,
+									StdFlagfall,
+									CapUnits,
+									CapCost,
+									CapUsage,
+									CapLimit,
+									ExsUnits,
+									ExsRatePerUnit,
+									ExsMarkup,
+									ExsPercentage,
+									ExsFlagfall,
+									Prorate,
+									Fleet,
+									Uncapped");
+									*/
+									//save what is left
 		}	
  		// All required data has been retrieved from the database so now load the page template
+
+
 		$this->LoadPage('rate_add');
 
 		return TRUE;

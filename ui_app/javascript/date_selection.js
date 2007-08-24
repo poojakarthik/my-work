@@ -47,7 +47,6 @@
 				this.objContainer.style.position = "relative";
 				this.objContainer = document.getElementById ("weekScheduler_Content").appendChild (this.objContainer);
 				
-				//alert(this.objContainer);
 				
 				this.objBar_Moving = document.createElement ("DIV");
 				this.objBar_Moving = this.objContainer.appendChild (this.objBar_Moving);
@@ -323,7 +322,7 @@
 	}
 	
 	var draggingObject = new dragging ();
-	
+
 	window.addEventListener (
 		"load",
 		function ()
@@ -333,64 +332,6 @@
 			);
 			
 			
-			var elements = document.getElementsByTagName ("INPUT");
-			
-			for (var i=0; i < elements.length; ++i)
-			{
-				var elm = elements.item (i);
-				
-				if (elm.getAttribute ("name") == "CapCalculation")
-				{
-					if (elm.checked === true)
-					{
-						document.getElementById ("CapLimit").style.display = ((elm.value == "") ? "none" : "block");
-					}
-					
-					
-					elm.addEventListener (
-						"keyup",
-						function (e)
-						{
-							document.getElementById ("CapLimit").style.display = ((e.target.value == "") ? "none" : "block");
-						},
-						true
-					);
-					
-					elm.addEventListener (
-						"click",
-						function (e)
-						{
-							document.getElementById ("CapLimit").style.display = ((e.target.value == "") ? "none" : "block");
-						},
-						true
-					);
-				}
-				else if (elm.getAttribute ("name") == "CapLimiting")
-				{
-					if (elm.checked === true)
-					{
-						document.getElementById ("Excess").style.display = ((elm.value != "CapUsage") ? "none" : "block");
-					}
-					
-					elm.addEventListener (
-						"keyup",
-						function (e)
-						{
-							document.getElementById ("Excess").style.display = ((e.target.value != "CapUsage") ? "none" : "block");
-						},
-						true
-					);
-					
-					elm.addEventListener (
-						"click",
-						function (e)
-						{
-							document.getElementById ("Excess").style.display = ((e.target.value != "CapUsage") ? "none" : "block");
-						},
-						true
-					);
-				}
-			}
 			
 		},
 		true
