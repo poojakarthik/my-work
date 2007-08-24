@@ -195,7 +195,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 			elseif ($mixResult === FALSE)
 			{
-				// Adding the plan failed, and no error message was specified, so it is assumed approraite actions have already taken place
+				// Adding the plan failed, and no error message was specified, so it is assumed appropraite actions have already taken place
 				TransactionRollback();
 				return TRUE;
 			}
@@ -206,6 +206,11 @@ class AppTemplatePlan extends ApplicationTemplate
 				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The plan has been successfully added", "Location" => Href()->AdminConsole()));
 				return TRUE;
 			}
+		}
+		
+		if (SubmittedForm('AddPlan', 'Save as Draft'))
+		{
+			//TODO!
 		}
 		
 		

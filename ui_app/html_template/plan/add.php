@@ -165,7 +165,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 
 		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->Shared->RenderInput(2);
+		DBO()->RatePlan->Shared->RenderInput(2);  //BUG:If this is checked then the conditional contexts make it render using context 1 instead of this one
 		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
@@ -179,14 +179,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
 		{
-			if (DBO()->RatePlan->ServiceType->Value == $intKey)
-			{
-				echo "         <option value='". $intKey ."' selected='selected'>". $arrValue['Description'] ."</option>\n";
-			}
-			else
-			{
-				echo "         <option value='". $intKey ."'>". $arrValue['Description'] ."</option>\n";
-			}
+			// Flag the option as being selected if it is the currently selected ServiceType
+			$strSelected = (DBO()->RatePlan->ServiceType->Value == $intKey) ? "selected='selected'" : "";
+			echo "         <option value='". $intKey ."' $strSelected>". $arrValue['Description'] ."</option>\n";
 		}
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement

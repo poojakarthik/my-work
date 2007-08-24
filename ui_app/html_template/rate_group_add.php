@@ -129,6 +129,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			// create the buttons
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<div class='Right'>\n";
+			$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 			$this->AjaxSubmit("Save as Draft");
 			$this->AjaxSubmit("Commit");
 			echo "</div>\n";
@@ -170,7 +171,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 
 		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RateGroup->Fleet->RenderInput();
+		DBO()->RateGroup->Fleet->RenderInput(CONTEXT_DEFAULT, TRUE);
 
 
 		// Set the record type and service type, if they have already been defined
@@ -305,22 +306,24 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Draw the Available Rates multi-select combo box
 		echo "<td>\n";
 		echo "<div class='DefaultElement'>\n";
-		echo "<select size='10' multiple='multiple' id='AvailableRatesCombo' name='AvailableRates.Id' class='DefaultInputComboBox' style='left:0px;width:300px;'>";
+		echo "<select size='15' multiple='multiple' id='AvailableRatesCombo' class='DefaultInputComboBox' style='left:0px;width:300px;'>";
 		echo $strAvailableRates;
 		echo "</select>\n";
 		echo "</div>\n";
 		echo "</td>\n";
 		
-		// Draw the buttons 
-		//TODO!
-		echo "   <td>\n";
-		echo "      <span class='DefaultOutputSpan'>B<br> Go Here</span>\n";
-		echo "   </td>\n";
+		// Draw the buttons
+		//TODO! These aren't lining up properly
+		echo "<td align='center'>\n";		
+		$this->Button(">>", "Vixen.RateGroupAdd.MoveSelectedOptions(\"AvailableRatesCombo\", \"SelectedRatesCombo\");");
+		echo "<br /><br />\n";
+		$this->Button("<<", "Vixen.RateGroupAdd.MoveSelectedOptions(\"SelectedRatesCombo\", \"AvailableRatesCombo\");");
+		echo "</td>\n";
 		
 		// Draw the Selected Rates multi-select combo box
 		echo "<td>\n";
 		echo "<div class='DefaultElement'>\n";
-		echo "<select size='10' multiple='multiple' id='SelectedRatesCombo' name='SelectedRates.Id' class='DefaultInputComboBox' style='left:0px;width:300px;'>";
+		echo "<select size='15' multiple='multiple' valueIsList='valueIsList' id='SelectedRatesCombo' name='SelectedRates.ArrId' class='DefaultInputComboBox' style='left:0px;width:300px;'>";
 		echo $strSelectedRates;
 		echo "</select>\n";
 		echo "</div>\n";
@@ -330,8 +333,10 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		
 		// Draw the buttons ("Add New Rate" and "View Rate Summary")
 		echo "<tr>\n";
-		echo "<td colspan='3' align='right'>\n";
+		echo "<td align='left'>\n";
 		echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.AddNewRate()\"></input>\n";
+		echo "</td>\n";
+		echo "<td colspan='2' align='right'>\n";
 		echo "<input type='button' value='Preview Rate Summary' class='InputSubmit' onclick=\"javascript: alert('Dont forget to do this');\"></input>\n";
 		echo "</td>";
 		echo "</tr>\n";

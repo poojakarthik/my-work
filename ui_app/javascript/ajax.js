@@ -136,30 +136,29 @@ function VixenAjaxClass()
 					}
 					break;
 				case "select-multiple":
-					//if not null then calculate only whats in the list
-					//if null only calculate highlighted values in the list
+					// Check if the "valueIsList" attribute has been specified for the multi-select combobox
 					if (objFormElement.elements[intKey].getAttribute('valueIsList')==null)
 					{
-						//select only highlighted items in list
-						var intSelections = 0;
+						//mixValue will be an array storing each of the highlighted values
+						mixValue = new Array();
 						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
 						{
 							if (objFormElement.elements[intKey].options[intInnerKey].selected)
 							{
-								intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+								mixValue.push(objFormElement.elements[intKey].options[intInnerKey].value);
 							}
 						}
-						mixValue = intSelections;
 						break;
 					}
 					else
 					{
-						var intSelections = 0;
+						// mixValue will be an array storing the value of each item in the list
+						mixValue = new Array();
+						
 						for (intInnerKey = 0; intInnerKey < objFormElement.elements[intKey].length; intInnerKey++)
 						{
-							intSelections += parseInt(objFormElement.elements[intKey].options[intInnerKey].value);
+							mixValue.push(objFormElement.elements[intKey].options[intInnerKey].value);
 						}
-						mixValue = intSelections;
 						break;
 					}
 				case "checkbox":

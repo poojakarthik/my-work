@@ -104,10 +104,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	function SetRateSelectorControl()
 	{
 		// Retrieve all available Rates for the specified RecordType
-		//NOTE: This was originally done using a DBList, however some retrievals were returning 11000+ records and was exeeding
+		//NOTE: This was originally done using a DBList, however some retrievals were returning 11000+ records and was exceeding
 		//the allocated memory for the script (crashed after allocating about 103MB) the DBList itself required 80MB when
 		//returning all properties of all records, and 40MB when just returning the Id and Name of each rate.
-		//Now the entire record set is being loaded into a 2D array and placed in a DBObject so that it can be referenced with the Html Template
+		//Now the entire record set is being loaded into a 2D array and placed in a DBObject so that it can be referenced within the Html Template
 		/*
 		$strWhere = "RecordType = <RecordType> AND Archived != 1";
 		DBL()->Rates->SetTable("Rate");
@@ -155,109 +155,72 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	private function _AddRateGroup()
 	{
 		// Validate the fields
-		if (DBO()->RatePlan->IsInvalid())
+		if (DBO()->RateGroup->IsInvalid())
 		{
-			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
 			return "ERROR: Invalid fields are highlighted";
 		}
-		if (!DBO()->RatePlan->ServiceType->Value)
+		if (!DBO()->RateGroup->ServiceType->Value)
 		{
-			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
-			return "ERROR: A service type must be selected";
+			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
+			return "ERROR: A Service Type must be selected";
 		}
-		
-		// Make sure the name of the rate plan isn't currently in use
-		DBO()->ExistingRatePlan->Where->Name = DBO()->RatePlan->Name->Value;
-		DBO()->ExistingRatePlan->SetTable("RatePlan");
-		if (DBO()->ExistingRatePlan->Load())
+		if (!DBO()->RateGroup->RecordType->Value)
 		{
-			// A rate plan with the same name already exists
-			DBO()->RatePlan->Name->SetToInvalid();
-			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
-			return "ERROR: A Rate Plan named '". DBO()->RatePlan->Name->Value ."' already exists.<br>Please choose a unique name";
+			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
+			return "ERROR: A Record Type must be selected";
 		}
-		
-		// Check that a rate group has been defined for each RecordType that has been marked as required
-		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
-		DBL()->RecordType->Load();
-		
-		$arrRateGroups = Array();
-
-		// Find the declared rate group for each RecordType required of the RatePlan
-		foreach (DBL()->RecordType as $dboRecordType)
-		{
-			$intRateGroup = NULL;
-			$intFleetRateGroup = NULL;
-			
-			// Build the name of the object storing the Rate Group details for this particular record type
-			$strObject = "RateGroup" . $dboRecordType->Id->Value;
-			if (DBO()->{$strObject}->RateGroupId->IsSet)
-			{
-				// A RateGroup has been specified for this ServiceType
-				$intRateGroup = DBO()->{$strObject}->RateGroupId->Value;
-				$intFleetRateGroup = DBO()->{$strObject}->FleetRateGroupId->Value;
 				
-				// Check if a rate group has not been chosen for this record type, but is required
-				if (($intRateGroup == 0) && ($dboRecordType->Required->Value == TRUE))
-				{
-					// A rate group is required but hasn't been specified
-					return "ERROR: Not all required rate groups have been specified";
-				}
-				elseif ($intRateGroup > 0)
-				{
-					// add the rategroup to the list of rate groups
-					$arrRateGroups[] = $intRateGroup;
-				}
-				
-				if ($intFleetRateGroup > 0)
-				{
-					// Add the fleet rate group to the list of rate groups
-					$arrRateGroups[] = $intFleetRateGroup;
-				}
-			}
-			elseif ($dboRecordType->Required->Value == TRUE)
-			{
-				// The RatePlan requires a RateGroup of this RecordType, but one has not been declared
-				//NOTE! This is only run if the RecordType was not associated with the ServiceType before loading the RateGroupDiv contents
-				$this->GetPlanDeclareRateGroupsHtmlTemplate();
-				return "ERROR: strObject = '$strObject' intRecCount=$intRecCount objectsChecked=$strObjectsChecked A new record type has been associated with this service type, since you chose the service type of the plan";
-			}
-			else
-			{
-				// A RateGroup associated with the RecordType, was not specified and not required
-				continue;
-			}
-		}
-		
-		// All validation has completed and the fields are valid
-		// Setup the remaing fields required of a RatePlan record
-		DBO()->RatePlan->MinMonthly	= ltrim(DBO()->RatePlan->MinMonthly->Value, "$");
-		DBO()->RatePlan->ChargeCap	= ltrim(DBO()->RatePlan->ChargeCap->Value, "$");
-		DBO()->RatePlan->UsageCap	= ltrim(DBO()->RatePlan->UsageCap->Value, "$");
-		DBO()->RatePlan->Archived	= 0;
-		
-		// Save the plan to the database
-		if (!DBO()->RatePlan->Save())
+		// Make sure the name of the rate group isn't currently in use
+		DBO()->ExistingRateGroup->Where->Name = DBO()->RateGroup->Name->Value;
+		DBO()->ExistingRateGroup->SetTable("RateGroup");
+		if (DBO()->ExistingRateGroup->Load())
 		{
-			// Saving failed
-			return "ERROR: Saving the RatePlan to the RatePlan database table failed, unexpectedly";
+			// A rate group with the same name already exists
+			DBO()->RateGroup->Name->SetToInvalid();
+			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
+			return "ERROR: A Rate Group named '". DBO()->RateGroup->Name->Value ."' already exists.<br>Please choose a unique name";
 		}
 		
-		// Save each of the RateGroups associated with the RatePlan to the RatePlanRateGroup table
-		foreach ($arrRateGroups as $intRateGroup)
+		// Make sure there are rates specified (This should be handled by the next validation step (checking that a rate covers all hours of all days))
+		if (!DBO()->SelectedRates->ArrId->Value)
 		{
-			DBO()->RatePlanRateGroup->Id = 0;
-			DBO()->RatePlanRateGroup->RatePlan = DBO()->RatePlan->Id->Value;
-			DBO()->RatePlanRateGroup->RateGroup = $intRateGroup;
-			
-			if (!DBO()->RatePlanRateGroup->Save())
+			// No rates have been specified
+			return "ERROR: No rates have been added to the rate group";
+		}
+		
+		// Check that the selected Rates Cover all hours of the week and don't overlap unless they are destination based
+		//TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! 
+		
+		
+		// All Validation is complete
+		
+		// Retrieve the list of rates to add to the rate group
+		$arrRates = DBO()->SelectedRates->ArrId->Value;
+		
+		// Add the RateGroup record
+		DBO()->RateGroup->Archived = 0;
+		
+		if (!DBO()->RateGroup->Save())
+		{
+			return "ERROR: Saving the RateGroup record to the database failed, unexpectedly.<br />The Rate Group has not been saved";
+		}
+		
+		// Add a record to the RateGroupRate table for each rate associated with this rategroup
+		// StatementInsert is being used rather than a DBObject, as it is quicker, and this could require about 1000 records being added
+		$insRateGroupRate = new StatementInsert("RateGroupRate");
+		$arrInsertValues = Array("RateGroup" => DBO()->RateGroup->Id->Value);
+		foreach ($arrRates as $intRate)
+		{
+			$arrInsertValues['Rate'] = $intRate;
+			if (!$insRateGroupRate->Execute($arrInsertValues))
 			{
-				// Saving failed
-				return "ERROR: Saving one of the RateGroup - RatePlan associations failed, unexpectedly<br>The RatePlan has not been saved";
+				// Inserting one of the records failed
+				return "ERROR: Saving a record to the RateGroupRate table of the database failed, unexpectedly.<br />The Rate Group has not been saved";
 			}
 		}
 		
-		// Everything has been saved
+		// The Rate Group has been saved successfully
 		return TRUE;
 	}
 	

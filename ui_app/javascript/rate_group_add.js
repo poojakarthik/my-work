@@ -211,6 +211,81 @@ function VixenRateGroupAddClass()
 		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
 		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
 	}
+	
+	//------------------------------------------------------------------------//
+	// MoveSelectedOptions
+	//------------------------------------------------------------------------//
+	/**
+	 * MoveSelectedOptions
+	 *
+	 * Removes the highlighted options from the the source combobox and puts them in the destination combobox
+	 *  
+	 * Removes the highlighted options from the the source combobox and puts them in the destination combobox
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.MoveSelectedOptions = function(strSourceComboId, strDestinationComboId)
+	{
+		var elmSourceCombo = document.getElementById(strSourceComboId);
+		var elmDestinationCombo = document.getElementById(strDestinationComboId);
+		var i = 0;
+		
+		while (elmSourceCombo.options[i] != null)
+		{
+			if (elmSourceCombo.options[i].selected)
+			{
+				// unselect the option
+				elmSourceCombo.options[i].selected = FALSE;
+				
+				// remove the option from the source and stick it in the destination combobox
+				this.MoveOption(elmSourceCombo.options[i], elmSourceCombo, elmDestinationCombo);
+			}
+			else
+			{
+				// move the index along one
+				i++;
+			}
+		}
+	}
+	
+	this.MoveOption = function(elmOption, elmSourceCombo, elmDestinationCombo)
+	{
+		// Remove the option from the source combo
+		elmSourceCombo.removeChild(elmOption);
+		
+		// Stick it in the destination combo so that the alphabetical order of the options is preserved
+		for (var i=0; i < elmDestinationCombo.options.length; i++)
+		{
+			if (elmOption.text < elmDestinationCombo.options[i].text)
+			{
+				elmDestinationCombo.insertBefore(elmOption, elmDestinationCombo.options[i]);
+				return;
+			}
+		}
+		
+		// If it has gotten this far then add the element to the end of the list of options
+		elmDestinationCombo.appendChild(elmOption);
+		return;
+	}
+	
+	//------------------------------------------------------------------------//
+	// UnselectRates
+	//------------------------------------------------------------------------//
+	/**
+	 * UnselectRates
+	 *
+	 * Removes the highlighted rates from the SelectedRatesCombo and puts them in the AvailableRatesCombo
+	 *  
+	 * Removes the highlighted rates from the SelectedRatesCombo and puts them in the AvailableRatesCombo
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.UnselectRates = function()
+	{
+	}
+	
 }
 
 // instanciate the objects
