@@ -202,12 +202,14 @@ function VixenRateGroupAddClass()
 		var intServiceType	= document.getElementById("ServiceTypeCombo").value;
 
 		var objObjects = {};
-		objObjects.RecordType = {};
-		objObjects.RecordType.Id = intRecordType;
-		objObjects.ServiceType = {};
-		objObjects.ServiceType.Id = intServiceType;
+		objObjects.Objects = {};
+		objObjects.Objects.RecordType = {};
+		objObjects.Objects.RecordType.Id = intRecordType;
+		objObjects.Objects.ServiceType = {};
+		objObjects.Objects.ServiceType.Id = intServiceType;
 		
-		Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
+		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
 	}
 }
 
