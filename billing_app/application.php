@@ -2633,8 +2633,8 @@
 		$arrLastOutstanding		= $selLastOutstanding->Fetch();
 		$arrTotalOutstanding	= $selTotalOutstanding->Fetch();
 		$arrBalanceData['TotalBalance']		= $arrThisOutstanding['Balance'];
-		$arrBalanceData['TotalOutstanding']	= $selTotalOutstanding['Balance'];
-		$arrBalanceData['PreviousBalance']	= $selLastOutstanding['Balance'];
+		$arrBalanceData['TotalOutstanding']	= $arrTotalOutstanding['Balance'];
+		$arrBalanceData['PreviousBalance']	= $arrLastOutstanding['Balance'];
 		
 		$arrInvoiceRun['BalanceData'] = serialize($arrBalanceData);
 		
