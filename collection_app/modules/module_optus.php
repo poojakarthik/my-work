@@ -226,10 +226,10 @@
 		if ($arrCurrent = next($this->_arrFiles))
 		{
 			// Do we already have this file?
-			if ($this->_selFileExists->Execute($arrCurrent))
+			if ($this->_selFileExists->Execute(Array('FileName' => substr($arrCurrent['FileName'], -4))))
 			{
 				// Yes, recursively call until we find a new file (or FALSE)
-				return Download($strDestination);
+				return $this->Download($strDestination);
 			}
 			
 			// Download the file
