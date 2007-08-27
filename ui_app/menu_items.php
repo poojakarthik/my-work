@@ -324,7 +324,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", $strJsonCode)";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", $strJsonCode, \"modeless\")";
 	}
 	
 	//------------------------------------------------------------------------//
@@ -344,7 +344,7 @@ class MenuItems
 	 */
 	function AddRateGroup()
 	{
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", \"\")";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", \"\", \"modeless\")";
 	}
 
 	//------------------------------------------------------------------------//

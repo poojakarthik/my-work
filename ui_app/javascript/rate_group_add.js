@@ -130,18 +130,15 @@ function VixenRateGroupAddClass()
 			}
 		}
 
-		// Remove the contents of the Rate Selector Control
+		// Remove the contents of the Rate Selector Control (AvailableRatesCombo)
 		var elmAvailableRatesCombo = document.getElementById("AvailableRatesCombo");
-		
-		// Empty its current contents 
 		while (elmAvailableRatesCombo.childNodes.length > 0)
 		{
 			elmAvailableRatesCombo.removeChild(elmAvailableRatesCombo.childNodes[0]);
 		}
 
+		// Remove the contents of the SelectedRatesCombo
 		var elmSelectedRatesCombo = document.getElementById("SelectedRatesCombo");
-		
-		// Empty its current contents
 		while (elmSelectedRatesCombo.childNodes.length > 0)
 		{
 			elmSelectedRatesCombo.removeChild(elmSelectedRatesCombo.childNodes[0]);
@@ -209,7 +206,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.CallingPage.AddRateGroup = true;
 		
 		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
-		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects, "modeless");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -288,7 +285,7 @@ function VixenRateGroupAddClass()
 	}
 	
 	// Updates the AvailableRatesCombo with this new rate, and selects it
-	this.ChooseRate = function(intId, strDescription, strName, intRecordType)
+	this.ChooseRate = function(intId, strDescription, strName, intRecordType, bolIsDraft)
 	{
 		//alert("RateGroupId = " + intId + " Description = " + strDescription + " RecordType = " + intRecordType + " Fleet = " + bolFleet);
 		
@@ -307,6 +304,13 @@ function VixenRateGroupAddClass()
 		elmNewOption.text = strDescription;
 		elmNewOption.title = strName;
 		elmNewOption.selected = TRUE;
+		
+		// If the Rate is a draft then flag it as such
+		if (bolIsDraft)
+		{
+			//FIXIT! currently this will fuck with the alphabetical ordering of the options
+			elmNewOption.text = "[DRAFT] - " + elmNewOption.text;
+		}
 
 		// Stick it in the combo so that the alphabetical order of the options is preserved
 		for (var i=0; i < elmCombo.options.length; i++)

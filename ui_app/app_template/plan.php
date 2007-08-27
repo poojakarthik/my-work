@@ -218,7 +218,17 @@ class AppTemplatePlan extends ApplicationTemplate
 				{
 					// The plan was successfully saved to the database
 					TransactionCommit();
-					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The plan has been successfully added", "Location" => Href()->AdminConsole()));
+					
+					// Work out which page called this one
+					if (DBO()->CallingPage->Href->Value)
+					{
+						$strCallingPage = DBO()->CallingPage->Href->Value;
+					}
+					else
+					{
+						$strCallingPage = Href()->AdminConsole();
+					}
+					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The plan has been successfully added", "Location" => $strCallingPage));
 					return TRUE;
 				}
 			}

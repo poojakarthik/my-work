@@ -331,7 +331,7 @@ function VixenAjaxClass()
 						}
 						else
 						{
-							Vixen.Popup.Create(objObject.strId, strReply, objObject.strSize, "centre", "modal");
+							Vixen.Popup.Create(objObject.strId, strReply, objObject.strSize, "centre", objObject.WindowType);
 						}
 						break;
 					case "Div":

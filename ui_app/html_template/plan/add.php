@@ -118,6 +118,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			// Set Up the form for adding a rate plan
 			$this->FormStart("AddPlan", "Plan", "Add");
 			
+			// Render the value of the page that called this one, so we can return to it, once the plan has been committed
+			DBO()->CallingPage->Href->RenderHidden();
+			
 			echo "<div id='RatePlanDetailsId'>\n";
 			$this->_RenderPlanDetails();
 			echo "</div>\n";

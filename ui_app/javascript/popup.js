@@ -18,6 +18,12 @@ function VixenPopupClass()
 	this.strContentCode = "";
 	this.strLocationOnClose = "";
 	
+	// This stores a stack of zIndex values of each popup openned modally so 
+	// that we can keep a track of where to place the div overlay, when a modal
+	// popup is closed, but there are still modal popups on the screen
+	//TODO! implement the use of this
+	this.arrPopupZIndex = new Array;
+	
 	this.ViewContentCode = function()
 	{
 		//Vixen.debug = TRUE;
@@ -323,11 +329,19 @@ function VixenPopupClass()
 		}
 	}
 	
-	this.ShowAjaxPopup = function(strId, strSize, strClass, strMethod, objParams)
+	this.ShowAjaxPopup = function(strId, strSize, strClass, strMethod, objParams, strWindowType)
 	{
 		objParams.strSize 		= strSize;
 		objParams.strId 		= strId;
 		objParams.TargetType 	= "Popup";
+		if (strWindowType == undefined)
+		{
+			objParams.WindowType = "modal";
+		}
+		else
+		{
+			objParams.WindowType = strWindowType;
+		}
 		
 		objParams.Class = strClass;
 		objParams.Method = strMethod;

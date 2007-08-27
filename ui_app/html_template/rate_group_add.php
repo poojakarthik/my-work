@@ -119,6 +119,8 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			// Include the flag which specifies whether this Rate Group will be added to a RatePlan
 			DBO()->CallingPage->AddRatePlan->RenderHidden();
 			
+			DBO()->RateGroup->Id->RenderHidden();
+			
 			echo "<div id='RateGroupDetailsId'>\n";
 			$this->_RenderRateGroupDetails();
 			echo "</div>\n";
@@ -157,19 +159,8 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	 */
 	private function _RenderRateGroupDetails()
 	{
-		// Define javascript to execute when a value is selected in the ServiceTypeCombo
-		$strServiceTypeOnChange = "javascript: 
-							var objObjects = {};
-							objObjects.RatePlan = {};
-							objObjects.RatePlan.ServiceType = this.value;
-							Vixen.Ajax.CallAppTemplate('Plan', 'GetRateGroupsForm', objObjects);
-							";
-	
 		echo "<h2 class='Plan'>Rate Group Details</h2>\n";
 		echo "<div class='Wide-Form'>\n";
-
-		// Render Hidden Values
-		DBO()->RateGroup->AddToRatePlan->RenderHidden();
 
 		// Only apply the output mask if the DBO()->RateGroup is not invalid
 		$bolApplyOutputMask = !DBO()->RateGroup->IsInvalid();

@@ -68,42 +68,78 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Handle form submittion
 		if (SubmittedForm('RateGroup', 'Commit'))
 		{
-			TransactionStart();
-			
-			$mixResult = $this->_AddRateGroup();
+			$mixResult = $this->_ValidateRateGroup();
 			if ($mixResult !== TRUE && $mixResult !== FALSE)
 			{
-				// Adding the RateGroup failed, and an error message has been returned
-				TransactionRollback();
+				// The RateGroup did not pass validation and an error message has been returned
 				Ajax()->AddCommand("Alert", $mixResult);
 				return TRUE;
 			}
 			elseif ($mixResult === FALSE)
 			{
-				// Adding the RateGroup failed, and no error message was specified, so it is assumed approraite actions have already taken place
-				TransactionRollback();
+				// The RateGroup did not pass validation.  No error message was specified, so it is assumed appropriate action has already taken place
 				return TRUE;
 			}
 			else
 			{
-				// Adding the RateGroup was successfull
-				TransactionCommit();
+				// The RateGroup passed validation. Save it.
+				TransactionStart();
 				
-				// Check if this rate is being added to a rate plan
-				if (DBO()->CallingPage->AddRatePlan->Value)
+				$mixResult = $this->_SaveRateGroup();
+				if ($mixResult !== TRUE && $mixResult !== FALSE)
 				{
-					// This popup was called from the "Add Rate Plan" page.  We have to update the appropriate combobox within the "Add Rate Plan" page
-					$this->_UpdateAddRatePlanPage();
+					// Saving the RateGroup failed, and an error message has been returned
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", $mixResult);
+					return TRUE;
+				}
+				elseif ($mixResult === FALSE)
+				{
+					// Saving the RateGroup failed, and no error message was specified, so it is assumed approraite actions have already taken place
+					TransactionRollback();
 					return TRUE;
 				}
 				else
 				{
-					// Close the popup normally
-					Ajax()->AddCommand("Alert", "The RateGroup has been successfully added");
-					Ajax()->AddCommand("ClosePopup", "RateGroupPopup");
-					return TRUE;
+					// Saving the RateGroup was successfull
+					TransactionCommit();
+					
+					// Check if this rate is being added to a rate plan
+					if (DBO()->CallingPage->AddRatePlan->Value)
+					{
+						// This popup was called from the "Add Rate Plan" page.  We have to update the appropriate combobox within the "Add Rate Plan" page
+						$this->_UpdateAddRatePlanPage();
+						return TRUE;
+					}
+					else
+					{
+						// Close the popup normally
+						Ajax()->AddCommand("Alert", "The RateGroup has been successfully Saved");
+						Ajax()->AddCommand("ClosePopup", "RateGroupPopup");
+						return TRUE;
+					}
 				}
+				
 			}
+		
+		
+		}
+		
+		// Check if we are to display an existing RateGroup or if we are adding a new one
+		if (DBO()->RateGroup->Id->Value)
+		{
+			// We want to display an existing RateGroup
+			if (!DBO()->RateGroup->Load())
+			{
+				// Could not load the RateGroup
+				Ajax()->AddCommand("Alert", "ERROR: The RateGroup could not be found");
+				return TRUE;
+			}
+		}
+		else
+		{
+			// We want to add a new RateGroup
+			DBO()->RateGroup->Id = 0;
 		}
 		
 		$this->LoadPage('rate_group_add');
@@ -115,19 +151,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	// It is a precondition that DBO()->RecordType->Id->Value has been set
 	function SetRateSelectorControl()
 	{
-		// Retrieve all available Rates for the specified RecordType
-		//NOTE: This was originally done using a DBList, however some retrievals were returning 11000+ records and was exceeding
-		//the allocated memory for the script (crashed after allocating about 103MB) the DBList itself required 80MB when
-		//returning all properties of all records, and 40MB when just returning the Id and Name of each rate.
-		//Now the entire record set is being loaded into a 2D array and placed in a DBObject so that it can be referenced within the Html Template
-		/*
-		$strWhere = "RecordType = <RecordType> AND Archived != 1";
-		DBL()->Rates->SetTable("Rate");
-		DBL()->Rates->Where->Set($strWhere, Array("RecordType" => DBO()->RecordType->Id->Value));
-		DBL()->Rates->Load();
-		*/
-		
-		$selRates = new StatementSelect("Rate", "Id, Name, Description", "RecordType=<RecordType>", "Name", NULL);
+		$selRates = new StatementSelect("Rate", "Id, Name, Description, Archived", "RecordType=<RecordType> AND Archived != 1", "Description", NULL);
 		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
 		$arrRecords = $selRates->FetchAll();
 		
@@ -161,6 +185,12 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				$arrRate['Description'] = "Weekend - " . $arrRate['Description'];
 			}
 			
+			if ($arrRate['Archived'] == 2)
+			{
+				// Flag the rate as being a Draft
+				$arrRate['Description'] = "[DRAFT] - " . $arrRate['Description'];
+			}
+			
 			$arrRates[] = $arrRate;
 		}
 		
@@ -171,23 +201,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	//------------------------------------------------------------------------//
-	// _AddRateGroup
-	//------------------------------------------------------------------------//
-	/**
-	 * _AddRateGroup()
-	 *
-	 * Performs validation and saving the records to the database, required for defining a RateGroup
-	 * 
-	 * Performs validation and saving the records to the database, required for defining a RateGroup
-	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
-	 *
-	 * @return		mix				returns TRUE if the new RateGroup saved successfully, else it returns
-	 *								a specific error message detailing why the RateGroup could not be saved
-	 * @method
-	 *
-	 */
-	private function _AddRateGroup()
+	private function _ValidateRateGroup()
 	{
 		// Validate the fields
 		if (DBO()->RateGroup->IsInvalid())
@@ -217,7 +231,28 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		//TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! 
 		
 		
-		// All Validation is complete
+		// All Validation is complete, the RateGroup is valid
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _SaveRateGroup
+	//------------------------------------------------------------------------//
+	/**
+	 * _SaveRateGroup()
+	 *
+	 * Performs saving the records to the database, required for defining a RateGroup
+	 * 
+	 * Performs saving the records to the database, required for defining a RateGroup
+	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
+	 *
+	 * @return		mix				returns TRUE if the new RateGroup saved successfully, else it returns
+	 *								a specific error message detailing why the RateGroup could not be saved
+	 * @method
+	 *
+	 */
+	private function _SaveRateGroup()
+	{
 		
 		// Retrieve the list of rates to add to the rate group
 		$arrRates = DBO()->SelectedRates->ArrId->Value;
