@@ -72,7 +72,7 @@ function VixenRateGroupAddClass()
 	 *											structure:
 	 *											arrRecordTypes[].Id
 	 *															.ServiceType
-	 *															.Name
+	 *															.Description
 	 * @return	void
 	 * @method
 	 */
@@ -106,11 +106,10 @@ function VixenRateGroupAddClass()
 		// Set up the contents of the Service Type combobox
 		var elmRecordTypeCombo = document.getElementById("RecordTypeCombo");
 		
-		// Empty its current contents (there is probably a more elegant way of doing this)
-		var arrOldOptions = elmRecordTypeCombo.getElementsByTagName("option");
-		while (arrOldOptions.length > 0)
+		// Empty its current contents 
+		while (elmRecordTypeCombo.childNodes.length > 0)
 		{
-			arrOldOptions[0].parentNode.removeChild(arrOldOptions[0]);
+			elmRecordTypeCombo.removeChild(elmRecordTypeCombo.childNodes[0]);
 		}
 
 		// Stick in the empty option
@@ -126,7 +125,7 @@ function VixenRateGroupAddClass()
 			{
 				elmNewOption = document.createElement('option');
 				elmNewOption.setAttribute('value', this._arrRecordTypes[i].Id);
-				elmNewOption.innerHTML = this._arrRecordTypes[i].Name;
+				elmNewOption.innerHTML = this._arrRecordTypes[i].Description;
 				elmRecordTypeCombo.appendChild(elmNewOption);
 			}
 		}
@@ -134,7 +133,7 @@ function VixenRateGroupAddClass()
 		// Remove the contents of the Rate Selector Control
 		var elmAvailableRatesCombo = document.getElementById("AvailableRatesCombo");
 		
-		// Empty its current contents (there is probably a more elegant way of doing this)
+		// Empty its current contents 
 		while (elmAvailableRatesCombo.childNodes.length > 0)
 		{
 			elmAvailableRatesCombo.removeChild(elmAvailableRatesCombo.childNodes[0]);
@@ -142,8 +141,7 @@ function VixenRateGroupAddClass()
 
 		var elmSelectedRatesCombo = document.getElementById("SelectedRatesCombo");
 		
-		// Empty its current contents (there is probably a more elegant way of doing this)
-		//var arrOldOptions = elmRecordTypeCombo.getElementsByTagName("option");
+		// Empty its current contents
 		while (elmSelectedRatesCombo.childNodes.length > 0)
 		{
 			elmSelectedRatesCombo.removeChild(elmSelectedRatesCombo.childNodes[0]);
@@ -207,6 +205,8 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.RecordType.Id = intRecordType;
 		objObjects.Objects.ServiceType = {};
 		objObjects.Objects.ServiceType.Id = intServiceType;
+		objObjects.Objects.CallingPage = {};
+		objObjects.Objects.CallingPage.AddRateGroup = true;
 		
 		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
 		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
@@ -249,6 +249,24 @@ function VixenRateGroupAddClass()
 		}
 	}
 	
+	//------------------------------------------------------------------------//
+	// MoveOption
+	//------------------------------------------------------------------------//
+	/**
+	 * MoveOption
+	 *
+	 * Removes the option from the source combo and sticks it in the destination combo, preserving alphabetical order
+	 *  
+	 * Removes the option from the source combo and sticks it in the destination combo, preserving alphabetical order
+	 *
+	 * @param	object	elmOption				option element to be removed from elmSourceCombo and placed in elmDestinationCombo
+	 * @param	object	elmSourceCombo			combo box which elmOption currently belongs to.  This isn't actually needed because 
+	 *											you could just reference is as elmOption.parent
+	 * @param	object	elmDestinationCombo		combo box to add elmOption to
+	 *
+	 * @return	void
+	 * @method
+	 */
 	this.MoveOption = function(elmOption, elmSourceCombo, elmDestinationCombo)
 	{
 		// Remove the option from the source combo
@@ -269,21 +287,41 @@ function VixenRateGroupAddClass()
 		return;
 	}
 	
-	//------------------------------------------------------------------------//
-	// UnselectRates
-	//------------------------------------------------------------------------//
-	/**
-	 * UnselectRates
-	 *
-	 * Removes the highlighted rates from the SelectedRatesCombo and puts them in the AvailableRatesCombo
-	 *  
-	 * Removes the highlighted rates from the SelectedRatesCombo and puts them in the AvailableRatesCombo
-	 *
-	 * @return	void
-	 * @method
-	 */
-	this.UnselectRates = function()
+	// Updates the AvailableRatesCombo with this new rate, and selects it
+	this.ChooseRate = function(intId, strDescription, strName, intRecordType)
 	{
+		//alert("RateGroupId = " + intId + " Description = " + strDescription + " RecordType = " + intRecordType + " Fleet = " + bolFleet);
+		
+		// if intRecordType is not the same as the one currently selected then don't do anything
+		if (intRecordType != document.getElementById('RecordTypeCombo').value)
+		{
+			return;
+		}
+
+		// Get the AvailableRatesCombo combo box
+		var elmCombo = document.getElementById("AvailableRatesCombo");
+		
+		// create a new option element
+		var elmNewOption = document.createElement('option');
+		elmNewOption.value = intId;
+		elmNewOption.text = strDescription;
+		elmNewOption.title = strName;
+		elmNewOption.selected = TRUE;
+
+		// Stick it in the combo so that the alphabetical order of the options is preserved
+		for (var i=0; i < elmCombo.options.length; i++)
+		{
+			if (elmNewOption.text < elmCombo.options[i].text)
+			{
+				// insert the new option just before the current one
+				elmCombo.insertBefore(elmNewOption, elmCombo.options[i]);
+				return;
+			}
+		}
+		
+		// The option should either be the last in the list, or there are no other options in the list.  Append the option to the end of the list
+		elmCombo.appendChild(elmNewOption);
+		elmCombo.focus();
 	}
 	
 }

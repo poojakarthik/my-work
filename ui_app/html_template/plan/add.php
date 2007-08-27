@@ -82,6 +82,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	{
 		$this->_intContext = $intContext;
 		$this->_strContainerDivId = $strId;
+		
+		$this->LoadJavascript("rate_plan_add");
 	}
 	
 	//------------------------------------------------------------------------//
@@ -149,14 +151,6 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	 */
 	private function _RenderPlanDetails()
 	{
-		// Define javascript to execute when a value is selected in the ServiceTypeCombo
-		$strServiceTypeOnChange = "javascript: 
-							var objObjects = {};
-							objObjects.RatePlan = {};
-							objObjects.RatePlan.ServiceType = this.value;
-							Vixen.Ajax.CallAppTemplate('Plan', 'GetRateGroupsForm', objObjects);
-							";
-	
 		echo "<h2 class='Plan'>Plan Details</h2>\n";
 		echo "<div class='Wide-Form'>\n";
 
@@ -165,17 +159,47 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 
 		DBO()->RatePlan->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->Shared->RenderInput(2);  //BUG:If this is checked then the conditional contexts make it render using context 1 instead of this one
+		DBO()->RatePlan->Shared->RenderInput(2, TRUE);  //BUG:If this is checked then the conditional contexts make it render using context 1 instead of this one
 		DBO()->RatePlan->MinMonthly->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->ChargeCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RatePlan->UsageCap->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->CarrierFullService->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
-		DBO()->RatePlan->CarrierPreselection->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
+		
+		// Retrieve a list of carriers
+		DBL()->Carrier->OrderBy(Name);
+		DBL()->Carrier->Load();
+		
+		// Build the CarrierFullService combo box
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Carrier Full Service :</div>\n";
+		echo "      <select id='CarrierFullServiceCombo' name='RatePlan.CarrierFullService' class='DefaultInputComboBox' style='width:152px;'>\n";
+		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
+		foreach (DBL()->Carrier as $dboCarrier)
+		{
+			// Flag the option as being selected if it is the currently selected CarrierFullService
+			$strSelected = (DBO()->RatePlan->CarrierFullService->Value == $dboCarrier->Id->Value) ? "selected='selected'" : "";
+			echo "         <option value='". $dboCarrier->Id->Value ."' $strSelected>". $dboCarrier->Name->Value ."</option>\n";
+		}
+		echo "      </select>\n";
+		echo "</div>\n"; // DefaultElement
+		
+		// Build the CarrierPreselection combo box
+		echo "<div class='DefaultElement'>\n";
+		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Carrier Preselection :</div>\n";
+		echo "      <select id='CarrierPreselectionCombo' name='RatePlan.CarrierPreselection' class='DefaultInputComboBox' style='width:152px;'>\n";
+		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
+		foreach (DBL()->Carrier as $dboCarrier)
+		{
+			// Flag the option as being selected if it is the currently selected CarrierFullService
+			$strSelected = (DBO()->RatePlan->CarrierPreselection->Value == $dboCarrier->Id->Value) ? "selected='selected'" : "";
+			echo "         <option value='". $dboCarrier->Id->Value ."' $strSelected>". $dboCarrier->Name->Value ."</option>\n";
+		}
+		echo "      </select>\n";
+		echo "</div>\n"; // DefaultElement
 		
 		// Build the ServiceType Combobox
 		echo "<div class='DefaultElement'>\n";
-		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type:</div>\n";
-		echo "      <select id='ServiceTypeCombo' name='RatePlan.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange=\"$strServiceTypeOnChange\">\n";
+		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type :</div>\n";
+		echo "      <select id='ServiceTypeCombo' name='RatePlan.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='javascript: Vixen.RatePlanAdd.ChangeServiceType(this.value);'>\n";
 		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
 		{
@@ -219,7 +243,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 				$strRequiredCell = "<span class='RequiredInput'>*</span>";
 			}
 			
-			$strRecordTypeCell = $dboRecordType->Name->AsValue();
+			$strRecordTypeCell = $dboRecordType->Description->AsValue();
 			
 			// Build the RateGroup Combobox
 			$strObject		= "RateGroup" . $dboRecordType->Id->Value;
@@ -232,16 +256,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			{
 				if (($dboRateGroup->RecordType->Value == $dboRecordType->Id->Value) && ($dboRateGroup->Fleet->Value == FALSE))
 				{
-					if (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value)
-					{
-						// This option is currently selected
-						$strRateGroupCell .= "         <option value='". $dboRateGroup->Id->Value ."' selected='selected'>". $dboRateGroup->Name->AsValue() ."</option>\n";
-					}
-					else
-					{
-						// This option is not selected
-						$strRateGroupCell .= "         <option value='". $dboRateGroup->Id->Value ."'>". $dboRateGroup->Name->AsValue() ."</option>\n";
-					}
+					// Flag this option as being selected if it is the currently selected RateGroup for this RecordType
+					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
+					$strRateGroupCell .= "         <option value='". $dboRateGroup->Id->Value ."' $strSelected>". $dboRateGroup->Description->AsValue() ."</option>\n";
 				}
 			}
 			$strRateGroupCell .= "      </select>\n";
@@ -258,16 +275,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			{
 				if (($dboRateGroup->RecordType->Value == $dboRecordType->Id->Value) && ($dboRateGroup->Fleet->Value == TRUE))
 				{
-					if (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value)
-					{
-						// This option is currently selected
-						$strFleetRateGroupCell .= "         <option value='". $dboRateGroup->Id->Value ."' selected='selected'>". $dboRateGroup->Name->AsValue() ."</option>\n";
-					}
-					else
-					{
-						// This option is not selected
-						$strFleetRateGroupCell .= "         <option value='". $dboRateGroup->Id->Value ."'>". $dboRateGroup->Name->AsValue() ."</option>\n";
-					}
+					// Flag this option as being selected if it is the currently selected Fleet RateGroup for this RecordType
+					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
+					$strFleetRateGroupCell .= "         <option value='". $dboRateGroup->Id->Value ."' $strSelected>". $dboRateGroup->Description->AsValue() ."</option>\n";
 				}
 			}
 			$strFleetRateGroupCell .= "      </select>\n";

@@ -101,8 +101,6 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div class='PopupLarge'>\n";
-
 		switch ($this->_intContext)
 		{
 		case HTML_CONTEXT_DETAILS:
@@ -113,9 +111,13 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			break;
 		case HTML_CONTEXT_DEFAULT:
 		default:
+			echo "<div class='PopupLarge'>\n";
+		
 			// Set Up the form for adding a rate group
 			$this->FormStart("RateGroup", "RateGroup", "Add");
-			
+		
+			// Include the flag which specifies whether this Rate Group will be added to a RatePlan
+			DBO()->CallingPage->AddRatePlan->RenderHidden();
 			
 			echo "<div id='RateGroupDetailsId'>\n";
 			$this->_RenderRateGroupDetails();
@@ -133,11 +135,11 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			$this->AjaxSubmit("Save as Draft");
 			$this->AjaxSubmit("Commit");
 			echo "</div>\n";
-			$this->FormEnd();			
+			$this->FormEnd();
+			
+			echo "</div>\n"; // PopupLarge
 			break;
 		}
-		
-		echo "</div>\n"; // PopupLarge
 	}
 	
 	
@@ -166,13 +168,15 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "<h2 class='Plan'>Rate Group Details</h2>\n";
 		echo "<div class='Wide-Form'>\n";
 
+		// Render Hidden Values
+		DBO()->RateGroup->AddToRatePlan->RenderHidden();
+
 		// Only apply the output mask if the DBO()->RateGroup is not invalid
 		$bolApplyOutputMask = !DBO()->RateGroup->IsInvalid();
 
 		DBO()->RateGroup->Name->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RateGroup->Description->RenderInput(CONTEXT_DEFAULT, TRUE, $bolApplyOutputMask);
 		DBO()->RateGroup->Fleet->RenderInput(CONTEXT_DEFAULT, TRUE);
-
 
 		// Set the record type and service type, if they have already been defined
 		$intServiceType	= 0;
@@ -219,14 +223,14 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		DBL()->RecordType->OrderBy("Name");
 		DBL()->RecordType->Load();
 		
-		// Load all the record types into an array.  This will by javascript to populate the RecordTypeCombo when a Service Type has been selected
+		// Load all the record types into an array.  This will be used by javascript to populate the RecordTypeCombo when a Service Type has been selected
 		$arrRecordTypes = Array();
 		$arrRecordType = Array();
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
 			$arrRecordType['Id'] = $dboRecordType->Id->Value;
 			$arrRecordType['ServiceType'] = $dboRecordType->ServiceType->Value;
-			$arrRecordType['Name'] = $dboRecordType->Name->Value;
+			$arrRecordType['Description'] = $dboRecordType->Description->Value;
 			
 			$arrRecordTypes[] = $arrRecordType;
 		}
@@ -279,16 +283,17 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			foreach (DBO()->Rates->ArrRates->Value as $arrRate)
 			{
 				$intRateId = $arrRate['Id'];
-				$intRateName = $arrRate['Name'];
+				$strRateName = $arrRate['Name'];
+				$strDescription = $arrRate['Description'];
 				if (isset($arrRate['Selected']) && $arrRate['Selected'] == TRUE)
 				{
 					// The rate is currently selected
-					$strSelectedRates .= "<option value='$intRateId'>$intRateName</option>";
+					$strSelectedRates .= "<option value='$intRateId' title='$strRateName'>$strDescription</option>";
 				}
 				else
 				{
 					// The rate is not selected
-					$strAvailableRates .= "<option value='$intRateId'>$intRateName</option>";
+					$strAvailableRates .= "<option value='$intRateId' title='$strRateName'>$strDescription</option>";
 				}
 			}
 		}

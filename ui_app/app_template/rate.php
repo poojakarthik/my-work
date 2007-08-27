@@ -88,10 +88,24 @@ class AppTemplaterate extends ApplicationTemplate
 				return TRUE;
 			}
 			else
-			{		
-				TransactionCommit();			
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The rate has been successfully added", "Location" => Href()->AdminConsole()));
-				return TRUE;			
+			{	
+				// Commit the database transaction
+				TransactionCommit();
+				
+				// Check if this rate is being added to a rate group
+				if (DBO()->CallingPage->AddRateGroup->Value)
+				{
+					// This popup was called from the "Add Rate Group" page.  We have to update the appropriate combobox within the "Add Rate Group" page
+					$this->_UpdateAddRateGroupPage();
+					return TRUE;
+				}
+				else
+				{
+					// Close the popup normally
+					Ajax()->AddCommand("Alert", "The Rate has been successfully added");
+					Ajax()->AddCommand("ClosePopup", "AddRatePopup");
+					return TRUE;
+				}
 			}
 		}
 
@@ -151,6 +165,21 @@ class AppTemplaterate extends ApplicationTemplate
 
 		$this->LoadPage('rate_add');
 		return TRUE;
+	}
+	
+	// This is used to update the "Add Rate Group" page, when a rate has been added and the "Add Rate" popup window is closed
+	private function _UpdateAddRateGroupPage()
+	{
+		Ajax()->AddCommand("ClosePopup", "{$this->_objAjax->strId}");
+		Ajax()->AddCommand("Alert", "The Rate was successfully saved");
+		
+		$intRateId		= DBO()->Rate->Id->Value;
+		$strDescription	= str_replace("\"", "'", DBO()->Rate->Description->Value);
+		$strName		= str_replace("\"", "'", DBO()->Rate->Name->Value);
+		$intRecordType	= DBO()->Rate->RecordType->Value;
+		
+		$strJavascript = "Vixen.RateGroupAdd.ChooseRate($intRateId, \"$strDescription\", \"$strName\", $intRecordType);";
+		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	
 	private function _ValidatePlan()

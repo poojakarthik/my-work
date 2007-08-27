@@ -319,7 +319,7 @@ class MenuItems
 		$arrData['Objects']['RecordType']['Id'] = $intRecordType;
 		
 		// This is used to flag that the Rate Group will be added to a Rate Plan
-		$arrDate['Objects']['RateGroup']['AddToRatePlan'] = TRUE;
+		$arrData['Objects']['CallingPage']['AddRatePlan'] = TRUE;
 		
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);

@@ -461,6 +461,13 @@ function VixenAjaxClass()
 					
 					elmElement.focus();
 					break;
+				case "ExecuteJavascript":
+					// This probably isn't the safest way to do this. 
+					// This block of code may keep executing before the code in objInput[intKey].Data is finished executing, which may cause problems
+					//alert("About to execute some javascript");
+					eval(objInput[intKey].Data);
+					//alert("Finished executing the javascript");
+					break;
 				default:
 					alert("Command: (default case)\nError: Don't know how to process command type '" + objInput[intKey].Type + "'");
 					break;

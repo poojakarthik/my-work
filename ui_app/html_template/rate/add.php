@@ -79,6 +79,9 @@ class HtmlTemplaterateadd extends HtmlTemplate
 		$strRateCapOnClick = 'Vixen.RateAdd.RateCapOnChange(this.value)';
 		$this->FormStart("AddRate", "Rate", "Add");
 		
+		// Include the flag which specifies whether this Rate will be added to a RateGroup
+		DBO()->CallingPage->AddRateGroup->RenderHidden();
+		
 		// Load the RecordType record relating to this rate
 		DBO()->RecordType->Id = DBO()->Rate->RecordType->Value;
 		DBO()->RecordType->Load();

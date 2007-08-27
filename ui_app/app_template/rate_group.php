@@ -88,9 +88,21 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			{
 				// Adding the RateGroup was successfull
 				TransactionCommit();
-				Ajax()->AddCommand("Alert", "The RateGroup has been successfully added");
-				Ajax()->AddCommand("ClosePopup", "RateGroupPopup");
-				return TRUE;
+				
+				// Check if this rate is being added to a rate plan
+				if (DBO()->CallingPage->AddRatePlan->Value)
+				{
+					// This popup was called from the "Add Rate Plan" page.  We have to update the appropriate combobox within the "Add Rate Plan" page
+					$this->_UpdateAddRatePlanPage();
+					return TRUE;
+				}
+				else
+				{
+					// Close the popup normally
+					Ajax()->AddCommand("Alert", "The RateGroup has been successfully added");
+					Ajax()->AddCommand("ClosePopup", "RateGroupPopup");
+					return TRUE;
+				}
 			}
 		}
 		
@@ -115,7 +127,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		DBL()->Rates->Load();
 		*/
 		
-		$selRates = new StatementSelect("Rate", "Id, Name", "RecordType=<RecordType>", "Name", NULL);
+		$selRates = new StatementSelect("Rate", "Id, Name, Description", "RecordType=<RecordType>", "Name", NULL);
 		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
 		$arrRecords = $selRates->FetchAll();
 		
@@ -125,6 +137,29 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		{
 			$arrRate['Id'] = $arrRecord['Id'];
 			$arrRate['Name'] = $arrRecord['Name'];
+			$arrRate['Description'] = $arrRecord['Description'];
+
+			// If the name contains "BH", "Morning", "Evening" or "Weekend", then we want to add this to the begining of the description
+			if (stripos($arrRate['Name'], "BH") !== FALSE)
+			{
+				// The rate is a "Business Hours" rate
+				$arrRate['Description'] = "BH - " . $arrRate['Description'];
+			}
+			elseif (stripos($arrRate['Name'], "Evening") !== FALSE)
+			{
+				// The rate is an "Evening" rate
+				$arrRate['Description'] = "Evening - " . $arrRate['Description'];
+			}
+			elseif (stripos($arrRate['Name'], "Morning") !== FALSE)
+			{
+				// The rate is a "Morning" rate
+				$arrRate['Description'] = "Morning - " . $arrRate['Description'];
+			}
+			elseif (stripos($arrRate['Name'], "Weekend") !== FALSE)
+			{
+				// The rate is a "Weekend" rate
+				$arrRate['Description'] = "Weekend - " . $arrRate['Description'];
+			}
 			
 			$arrRates[] = $arrRate;
 		}
@@ -171,17 +206,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			return "ERROR: A Record Type must be selected";
 		}
 				
-		// Make sure the name of the rate group isn't currently in use
-		DBO()->ExistingRateGroup->Where->Name = DBO()->RateGroup->Name->Value;
-		DBO()->ExistingRateGroup->SetTable("RateGroup");
-		if (DBO()->ExistingRateGroup->Load())
-		{
-			// A rate group with the same name already exists
-			DBO()->RateGroup->Name->SetToInvalid();
-			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
-			return "ERROR: A Rate Group named '". DBO()->RateGroup->Name->Value ."' already exists.<br>Please choose a unique name";
-		}
-		
 		// Make sure there are rates specified (This should be handled by the next validation step (checking that a rate covers all hours of all days))
 		if (!DBO()->SelectedRates->ArrId->Value)
 		{
@@ -198,9 +222,13 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// Retrieve the list of rates to add to the rate group
 		$arrRates = DBO()->SelectedRates->ArrId->Value;
 		
-		// Add the RateGroup record
+		// Define values for all fields that have not already been specified
 		DBO()->RateGroup->Archived = 0;
 		
+		// Declare which fields you want to set
+		DBO()->RateGroup->SetColumns("Name, Description, RecordType, ServiceType, Fleet, Archived");
+		
+		// Add the RateGroup Record
 		if (!DBO()->RateGroup->Save())
 		{
 			return "ERROR: Saving the RateGroup record to the database failed, unexpectedly.<br />The Rate Group has not been saved";
@@ -222,6 +250,22 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		// The Rate Group has been saved successfully
 		return TRUE;
+	}
+	
+	// Updates the "Add Rate Plan" page
+	function _UpdateAddRatePlanPage()
+	{
+		Ajax()->AddCommand("ClosePopup", "{$this->_objAjax->strId}");
+		Ajax()->AddCommand("Alert", "The Rate Group was successfully committed to the database");
+		
+		$intRateGroupId = DBO()->RateGroup->Id->Value;
+		// if the Description contains any double quotes, it will screw up, so convert them to single quotes.  Although I don't know why it would contain any of these in the first place
+		$strDescription = str_replace("\"", "'", DBO()->RateGroup->Description->Value);
+		$intRecordType = DBO()->RateGroup->RecordType->Value;
+		$bolFleet = DBO()->RateGroup->Fleet->Value ? 1 : 0;
+		
+		$strJavascript = "Vixen.RatePlanAdd.ChooseRateGroup($intRateGroupId, \"$strDescription\", $intRecordType, $bolFleet);";
+		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	
 }

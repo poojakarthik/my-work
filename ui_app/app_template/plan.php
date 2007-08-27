@@ -183,28 +183,44 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Handle form submittion
 		if (SubmittedForm('AddPlan', 'Commit'))
 		{
-			TransactionStart();
-			
-			$mixResult = $this->_AddPlan();
+			// Validate the plan
+			$mixResult = $this->_ValidatePlan();
 			if ($mixResult !== TRUE && $mixResult !== FALSE)
 			{
-				// Adding the plan failed, and an error message has been returned
-				TransactionRollback();
+				// The plan is invalid and an error message has been returned
 				Ajax()->AddCommand("Alert", $mixResult);
 				return TRUE;
 			}
 			elseif ($mixResult === FALSE)
 			{
-				// Adding the plan failed, and no error message was specified, so it is assumed appropraite actions have already taken place
-				TransactionRollback();
+				// The plan is invalid and no error message was specified, so it is assumed appropraite actions have already taken place
 				return TRUE;
 			}
 			else
 			{
-				// Adding the plan was successfull
-				TransactionCommit();
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The plan has been successfully added", "Location" => Href()->AdminConsole()));
-				return TRUE;
+				// The plan is valid.  Save it to the database
+				TransactionStart();
+				$mixResult = $this->_AddPlan();
+				if ($mixResult !== TRUE && $mixResult !== FALSE)
+				{
+					// Adding the plan failed, and an error message has been returned
+					TransactionRollback();
+					Ajax()->AddCommand("Alert", $mixResult);
+					return TRUE;
+				}
+				elseif ($mixResult === FALSE)
+				{
+					// Adding the plan failed, and no error message was specified, so it is assumed appropraite actions have already taken place
+					TransactionRollback();
+					return TRUE;
+				}
+				else
+				{
+					// The plan was successfully saved to the database
+					TransactionCommit();
+					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The plan has been successfully added", "Location" => Href()->AdminConsole()));
+					return TRUE;
+				}
 			}
 		}
 		
@@ -229,22 +245,24 @@ class AppTemplatePlan extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
-	// _AddPlan
+	// _ValidatePlan
 	//------------------------------------------------------------------------//
 	/**
-	 * _AddPlan()
+	 * _ValidatePlan()
 	 *
-	 * Performs validation and saving the records to the database, required for defining a RatePlan
+	 * Validates the Rate Plan
 	 * 
-	 * Performs validation and saving the records to the database, required for defining a RatePlan
+	 * Validates the Rate Plan
 	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
 	 *
-	 * @return		mix				returns TRUE if the new RatePlan saved successfully, else it returns
-	 *								a specific error message detailing why the RatePlan could not be saved
+	 * @param		bool	$bolSaveAsDraft		TRUE if the plan is to be saved as a draft, FALSE if the plan is to be committed to the database
+	 *
+	 * @return		mix							returns TRUE if the new RatePlan saved successfully, else it returns
+	 *											a specific error message detailing why the RatePlan could not be saved
 	 * @method
 	 *
 	 */
-	private function _AddPlan()
+	private function _ValidatePlan($bolSaveAsDraft=FALSE)
 	{
 		// Validate the fields
 		if (DBO()->RatePlan->IsInvalid())
@@ -252,11 +270,22 @@ class AppTemplatePlan extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: Invalid fields are highlighted";
 		}
+		if (!DBO()->RatePlan->CarrierFullService->Value)
+		{
+			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+			return "ERROR: A Full Service Carrier must be selected";
+		}
+		if (!DBO()->RatePlan->CarrierPreselection->Value)
+		{
+			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
+			return "ERROR: A Carrier Preselection must be selected";
+		}
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: A service type must be selected";
 		}
+		
 		
 		// Make sure the name of the rate plan isn't currently in use
 		DBO()->ExistingRatePlan->Where->Name = DBO()->RatePlan->Name->Value;
@@ -321,12 +350,49 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 		}
 		
-		// All validation has completed and the fields are valid
+		// Save the list of Rate Groups to associate with the Rate Plan
+		DBO()->RateGroups->ArrayOfRateGroupIds = $arrRateGroups;
+		
+		
+		// All validation has been completed successfully
+		return TRUE;
+	}
+	
+	//------------------------------------------------------------------------//
+	// _AddPlan
+	//------------------------------------------------------------------------//
+	/**
+	 * _AddPlan()
+	 *
+	 * Saves the records to the database, required for defining a RatePlan
+	 * 
+	 * Saves the records to the database, required for defining a RatePlan
+	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
+	 *
+	 * @param		bool	$bolSaveAsDraft		TRUE if the plan is to be saved as a draft, FALSE if the plan is to be committed to the database
+	 *
+	 * @return		mix							returns TRUE if the new RatePlan saved successfully, else it returns
+	 *											a specific error message detailing why the RatePlan could not be saved
+	 * @method
+	 *
+	 */
+	private function _AddPlan($bolDraft=FALSE)
+	{
 		// Setup the remaing fields required of a RatePlan record
 		DBO()->RatePlan->MinMonthly	= ltrim(DBO()->RatePlan->MinMonthly->Value, "$");
 		DBO()->RatePlan->ChargeCap	= ltrim(DBO()->RatePlan->ChargeCap->Value, "$");
 		DBO()->RatePlan->UsageCap	= ltrim(DBO()->RatePlan->UsageCap->Value, "$");
-		DBO()->RatePlan->Archived	= 0;
+		if ($bolDraft)
+		{
+			// Flag the plan as being a draft
+			DBO()->RatePlan->Archived = 2;
+		}
+		else
+		{
+			// The plan is not being saved as a draft
+			DBO()->RatePlan->Archived = 0;
+		}
+			
 		
 		// Save the plan to the database
 		if (!DBO()->RatePlan->Save())
@@ -336,6 +402,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		}
 		
 		// Save each of the RateGroups associated with the RatePlan to the RatePlanRateGroup table
+		$arrRateGroups = DBO()->RateGroups->ArrayOfRateGroupIds->Value;  // This object was built in _ValidatePlan()
 		foreach ($arrRateGroups as $intRateGroup)
 		{
 			DBO()->RatePlanRateGroup->Id = 0;
@@ -385,7 +452,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Find all Rate Groups for this ServiceType that aren't archived (archived can equal, 0 (not archived), 1 (archived) or 2 (not yet committed/draft))
 		$strWhere = "ServiceType = <ServiceType> AND Archived != 1";
 		DBL()->RateGroup->Where->Set($strWhere, Array('ServiceType' => DBO()->RatePlan->ServiceType->Value));
-		DBL()->RateGroup->OrderBy("Name");
+		DBL()->RateGroup->OrderBy("Description");
 		DBL()->RateGroup->Load();
 		
 		// Render the html template
