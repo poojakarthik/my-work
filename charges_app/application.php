@@ -207,7 +207,7 @@
 				$arrData['Service']			= $arrCharge['Service'];
 				$arrData['CreatedBy']		= $arrCharge['CreatedBy'];
 				$arrData['CreatedOn']		= $arrCharge['CreatedOn'];
-				$arrData['ApprovedBy']		= $arrCharge['ApprovedBy'];
+				$arrData['ApprovedBy']		= $arrCharge['CreatedBy'];
 				$arrData['ChargeType']		= $arrCharge['ChargeType'];
 				$arrData['Description']		= $arrCharge['Description'];
 				$arrData['ChargedOn']		= $strDate;
