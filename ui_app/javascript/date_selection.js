@@ -53,6 +53,9 @@
 				this.objBar_Moving.objWeekPlanner = this.objWeekPlanner;
 				this.objBar_Moving.className = "Moving";
 
+				//document.getElementById("Rate.StartTime").enabled = false;
+				//document.getElementById("Rate.EndTime").enabled = false;
+				//document.getElementById("Rate.Duration").enabled = false;
 				
 
 				this.objBar_Moving.addEventListener (

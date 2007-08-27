@@ -80,17 +80,51 @@ class HtmlTemplaterateadd extends HtmlTemplate
 		$this->FormStart("AddRate", "Rate", "Add");
 		
 		// Load the RecordType record relating to this rate
+		DBO()->RecordType->Id = DBO()->Rate->RecordType->Value;
 		DBO()->RecordType->Load();
 		
+		DBO()->Rate->ServiceType = DBO()->RecordType->ServiceType->Value;
+		
 		DBO()->Rate->ServiceType->RenderHidden();
-		DBO()->RecordType->Id->RenderHidden();
+		DBO()->Rate->RecordType->RenderHidden();
+		if (DBO()->Rate->Id->Value)
+		{
+			DBO()->Rate->Id->RenderHidden();
+		}
 		
 		echo "<div class='NarrowContent'>\n";
 		echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 		echo "<tr><td width='2%' rowspan=10>&nbsp;</td><td width='98%'>".DBO()->Rate->Name->AsInput()."</td></tr>\n";
 		echo "<tr><td>".DBO()->Rate->Description->AsInput()."</td></tr>\n";
 		echo "<tr><td>".DBO()->Rate->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT)."</td></tr>\n";
-		echo "<tr><td>".DBO()->RecordType->Name->AsOutput()."</td></tr>\n";
+		echo "<tr><td>".DBO()->RecordType->Description->AsOutput()."</td></tr>\n";
+		
+		// check context of recordtype and compare with destination
+		// Retrieve destinations associated with this Record Type
+		$selDestinations = new StatementSelect("Destination", "Code, Description", "Context=<Context>", "Description");
+		$selDestinations->Execute(Array('Context' => DBO()->RecordType->Context->Value));
+		$arrDestinations = $selDestinations->FetchAll();
+		
+		if (count($arrDestinations) > 0)
+		{
+			echo "<div class='DefaultElement'>\n";
+			echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Destination:</div>\n";
+			echo "   <div class='DefaultOutput'>\n";
+			echo "      <select name='Rate.Destination' style='width:250px'>\n";
+			echo "         <option value='0'>&nbsp;</option>";
+			foreach ($arrDestinations as $arrDestination)
+			{
+				// flag this option as being selected, if it is the currently selected destination
+				$strSelected = (DBO()->Rate->Destination->Value == $arrDestination['Code']) ? "selected='selected'" : "";
+				echo "         <option value='". $arrDestination['Code'] ."' $strSelected>". $arrDestination['Description'] ."</option>";
+			}
+
+			echo "      </select>\n";
+			echo "   </div>\n";
+			echo "</div>\n";		
+		}
+		
+
 		echo "<tr><td>".DBO()->Rate->StartTime->AsInput()."</td></tr>\n";
 		echo "<tr><td>".DBO()->Rate->EndTime->AsInput()."</td></tr>\n";
 		echo "<tr><td>".DBO()->Rate->Duration->AsInput()."</td></tr>\n";
@@ -183,7 +217,7 @@ class HtmlTemplaterateadd extends HtmlTemplate
 			echo "</td><td><input type='checkbox' name='Rate.Thursday'". (DBO()->Rate->Thursday->Value == TRUE ? "checked='checked'" : "") ."></input>";
 			echo "</td><td><input type='checkbox' name='Rate.Friday'". (DBO()->Rate->Friday->Value == TRUE ? "checked='checked'" : "") ."></input>";
 			echo "</td><td><input type='checkbox' name='Rate.Saturday'". (DBO()->Rate->Saturday->Value == TRUE ? "checked='checked'" : "") ."></input>";
-			echo "</td><td><input type='checkbox' iname='Rate.Sunday'". (DBO()->Rate->Sunday->Value == TRUE ? "checked='checked'" : "") ."></input>";
+			echo "</td><td><input type='checkbox' name='Rate.Sunday'". (DBO()->Rate->Sunday->Value == TRUE ? "checked='checked'" : "") ."></input>";
 			echo "</td></tr>\n";
 			echo "</table>\n";
 					
@@ -216,7 +250,7 @@ class HtmlTemplaterateadd extends HtmlTemplate
 		echo "<tr><td><input type='radio' name='Rate.ChargeType' value='".RATE_CAP_STANDARD_MARKUP."'". ($mixChargeStatus == RATE_CAP_STANDARD_MARKUP ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->StdMarkup->AsInput()."</td><td><span class='DefaultOutputSpan'>per Standard Unit</span></td></tr>\n";
 		echo "<tr><td><input type='radio' name='Rate.ChargeType' value='".RATE_CAP_STANDARD_PERCENTAGE."'". ($mixChargeStatus == RATE_CAP_STANDARD_PERCENTAGE ? "checked='checked'" : "") ."></td><td>".DBO()->Rate->StdPercentage->AsInput()."</td><td>&nbsp;</td></tr>\n";
 		echo "<tr><td>&nbsp;</td><td>".DBO()->Rate->StdMinCharge->AsInput()."</td><td>&nbsp;</td></tr>\n";
-		echo "<tr><td>&nbsp;</td><td>".DBO()->Rate->StdFlagFall->AsInput()."</td><td>&nbsp;</td></tr>\n";
+		echo "<tr><td>&nbsp;</td><td>".DBO()->Rate->StdFlagfall->AsInput()."</td><td>&nbsp;</td></tr>\n";
 		echo "</table>\n";
 		echo "</div>\n";
 		
@@ -299,8 +333,9 @@ class HtmlTemplaterateadd extends HtmlTemplate
 
 		echo "<div class='Seperator'></div>\n";	
 
-		echo "<div class='Left'>\n";
+		echo "<div class='right'>\n";
 			$this->AjaxSubmit("Add");
+			$this->AjaxSubmit("Save as Draft");
 		echo "</div>\n";
 		$this->FormEnd();
 		echo "</div>\n"; // PopupLarge
