@@ -950,6 +950,8 @@ $GLOBALS['*arrConstant']	['BillingMethod']	[1]	['Constant']	= 'BILLING_METHOD_EM
 $GLOBALS['*arrConstant']	['BillingMethod']	[1]	['Description']	= 'Email';
 $GLOBALS['*arrConstant']	['BillingMethod']	[2]	['Constant']	= 'BILLING_METHOD_DO_NOT_SEND';
 $GLOBALS['*arrConstant']	['BillingMethod']	[2]	['Description']	= 'Do Not Send';
+$GLOBALS['*arrConstant']	['BillingMethod']	[3]	['Constant']	= 'BILLING_METHOD_EMAIL_SENT';
+$GLOBALS['*arrConstant']	['BillingMethod']	[3]	['Description']	= 'Email Sent';
 
 // Billing Types
 /*define("BILLING_TYPE_DIRECT_DEBIT"		, 1);
