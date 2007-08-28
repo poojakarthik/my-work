@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // rating application
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once('../framework/require.php');
+$arrConfig = LoadApplication();
 
 echo "<pre>\n";
 

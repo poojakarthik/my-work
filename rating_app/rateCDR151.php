@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // rating a single CDR
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once('../framework/require.php');
+$arrConfig = LoadApplication();
 
 // load rating class
 $appRating = new ApplicationRating($arrConfig);

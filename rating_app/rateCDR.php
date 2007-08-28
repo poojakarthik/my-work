@@ -8,7 +8,8 @@
 //----------------------------------------------------------------------------//
 // rating a single CDR
 //----------------------------------------------------------------------------//
-require_once('application_loader.php');
+require_once('../framework/require.php');
+$arrConfig = LoadApplication();
 
 $intCDR = (int)$_REQUEST['id'];
 if (!$intCDR)
