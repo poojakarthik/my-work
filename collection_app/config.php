@@ -107,6 +107,7 @@
 		$arrConfig['Define']["AAPT"]	["Name"]						= "AAPT";
 		$arrConfig['Define']["AAPT"]	["Carrier"]						= CARRIER_AAPT;
  		$arrConfig['Define']["AAPT"]	["Type"]						= COLLECTION_TYPE_AAPT;
+ 		$arrConfig['Define']["AAPT"]	["AlwaysUnique"]				= TRUE;
  		$arrConfig['Define']["AAPT"]	["Server"]						= "https://wholesalebbs.aapt.com.au/";
  		$arrConfig['Define']["AAPT"]	["Username"]					= "telcoblue";
  		$arrConfig['Define']["AAPT"]	["PWord"]						= "zbj6v04ls";
