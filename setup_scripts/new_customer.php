@@ -80,7 +80,7 @@ $arrDirectory['invoices']	['Perms']	= "777";
 // Log
 $arrDirectory['log']	['Owner']	= "www-data";
 $arrDirectory['log']	['Group']	= "www-data";
-$arrDirectory['log']	['Perms']	= "744";
+$arrDirectory['log']	['Perms']	= "700";
 $arrDirectory['log']	['SubDir']	[]	= "billing_app";
 $arrDirectory['log']	['SubDir']	[]	= "charges_app";
 $arrDirectory['log']	['SubDir']	[]	= "collection_app";
@@ -94,34 +94,118 @@ $arrDirectory['log']	['SubDir']	[]	= "rating_app";
 $strHomeBase	= "/home/vixen/$strCustomer";
 
 // Header
-CliEcho("+-----------------------------+");
-CliEcho("| viXen Directory Setup v7.08 |");
-CliEcho("+-----------------------------+");
+CliEcho("\t\t+----------------------------+");
+CliEcho("\t\t| viXen Customer Setup v7.08 |");
+CliEcho("\t\t+----------------------------+");
+
+//----------------------------------------------------------------------------//
+// Config Setup
+//----------------------------------------------------------------------------//
+Debug("[ CONFIG SETUP ]");
+Debug("Creating Customer Config File '/etc/vixen/$strCustomer'");
+
+// Is there aready a config (and therefore an instance)
+if (file_exists("/etc/vixen/$strCustomer.conf"))
+{
+	CliEcho("!!WARNING!! Instance '$strCustomer' already exists. Overwrite?  You will lose ALL data if you continue (y/[N])? ", FALSE);
+	while (true)
+	{
+		$strInput = trim(strtoupper(fgets(STDIN)));
+		if ($strInput == 'Y')
+		{
+			// Overwrite
+			Debug("Overwriting previous config...");
+			break;
+		}
+		elseif ($strInput == 'N' || !$strInput)
+		{
+			// exit
+			Debug("Customer Setup Aborted by User!");
+			die;
+		}
+		else
+		{
+			CliEcho("Invalid Input ('$strInput')! Overwrite (y/[N])? ", FALSE);
+		}
+	}
+}
+
+// Open template & export files
+$ptrTemplate	= fopen("customer.conf", 'r');
+$ptrExport		= fopen("/etc/vixen/$strCustomer.conf", 'w');
+
+// write each line to new file, filling in placeholders
+while ($strLine = fgets($ptrTemplate))
+{
+	fwrite($ptrExport, str_replace('<customer>', $strCustomer, $strLine));
+}
+
+// Close files
+fclose($ptrTemplate);
+fclose($ptrExport);
+
+//----------------------------------------------------------------------------//
+// Directory Setup
+//----------------------------------------------------------------------------//
 
 // Create Directories
-Debug("Creating viXen directories for '$strCustomer'...");
+Debug("[ DIRECTORY SETUP ]");
+
+Debug(" * Clearing viXen directories for '$strCustomer'...");
+foreach ($arrDirectory as $strDir=>$arrProperties)
+{	
+	// Remove subdirectories
+	if ($arrProperties['SubDir'])
+	{
+		// Remove sub dirs in reverse order
+		$strSubDir = end($arrProperties['SubDir']);
+		while ($strSubDir)
+		{
+			// Remove dir, and get next dir to remove
+			@unlink("$strHomeBase/$strDir/$strSubDir/*");
+			@rmdir("$strHomeBase/$strDir/$strSubDir");
+			$strSubDir = prev($arrProperties['SubDir']);
+		}
+	}
+	
+	// Remove parent dir
+	@unlink("$strHomeBase/$strDir/*");
+	@rmdir("$strHomeBase/$strDir");
+}
+
+
+Debug(" * Creating viXen directories for '$strCustomer'...");
+@unlink("$strHomeBase/*");
+@rmdir("$strHomeBase");
+mkdir("$strHomeBase/");
 foreach ($arrDirectory as $strDir=>$arrProperties)
 {
 	// Create parent dir
-	CliEcho("\nCreating directory '$strHomeBase/$strDir'...");
-	//mkdir("$strHomeBase/$strDir");
+	CliEcho("\n\t + Creating directory '$strHomeBase/$strDir/'...");
+	mkdir("$strHomeBase/$strDir");
 	
 	// Create subdirectories
 	if ($arrProperties['SubDir'])
 	{
 		foreach ($arrProperties['SubDir'] as $strSubDir)
-		{
+		{			
 			// Create sub dir
-			CliEcho("\tCreating subdirectory '$strHomeBase/$strDir/$strSubDir'...");
-			//mkdir("$strHomeBase/$strDir/$strSubDir");
+			CliEcho("\t\t + Creating subdirectory '$strHomeBase/$strDir/$strSubDir'...");
+			mkdir("$strHomeBase/$strDir/$strSubDir");
 		}
 	}
 	
 	// Set ownership and permissions
-	CliEcho("Setting '$strDir' Owner and Permissions...");
-	//shell_exec("chown -R {$arrProperties['Owner']}.{$arrProperties['Group']} $strHomeBase/$strDir");
-	//shell_exec("chmod -R {$arrProperties['Perms']} $strHomeBase/$strDir");
+	CliEcho("\t\t * Setting '$strDir' Owner and Permissions...");
+	shell_exec("chown -R {$arrProperties['Owner']}.{$arrProperties['Group']} $strHomeBase/$strDir");
+	shell_exec("chmod -R {$arrProperties['Perms']} $strHomeBase/$strDir");
 }
 
-Debug("Setup complete!");
+Debug(" # Directory Setup complete!");
+
+//----------------------------------------------------------------------------//
+// Database Setup
+//----------------------------------------------------------------------------//
+Debug("[ DATABASE SETUP ]");
+// TODO
 ?>
