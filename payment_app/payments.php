@@ -9,7 +9,7 @@
 // import and process payments
 //----------------------------------------------------------------------------//
 require_once('../framework/require.php');
-LoadApplication();
+$arrConfig = LoadApplication();
 
 // Application entry point - create an instance of the application object
 $appPayment = new ApplicationPayment($arrConfig);

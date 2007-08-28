@@ -9,7 +9,7 @@
 // normalisation application
 //----------------------------------------------------------------------------//
 require_once('../framework/require.php');
-LoadApplication();
+$arrConfig = LoadApplication();
 
 // set addresses for report
 $mixEmailAddress = 'flame@telcoblue.com.au';

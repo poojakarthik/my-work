@@ -1801,9 +1801,9 @@ function LoadFramework($strFrameworkDir=NULL)
  * 
  * Load the application.
  *
- * @param	str	$strApplication		The directory of the application (default: NULL)
+ * @param	string	$strApplication		The directory of the application (default: NULL)
  *
- * @incomplete
+ * @return	array						Configuration array from application's config.php
  * @function
  */
 function LoadApplication($strApplication=NULL)
@@ -1828,7 +1828,7 @@ function LoadApplication($strApplication=NULL)
 		require_once("application.php");
 		require_once("definitions.php");
 		require_once("config.php");
-		return TRUE;
+		return $arrConfig;
 	}
 	
 	// set application dir
@@ -1839,7 +1839,7 @@ function LoadApplication($strApplication=NULL)
 	VixenRequire($strApplicationDir."application.php");
 	VixenRequire($strApplicationDir."definitions.php");
 	VixenRequire($strApplicationDir."config.php");
-	return TRUE;
+	return $arrConfig;
 }
 
 //------------------------------------------------------------------------//

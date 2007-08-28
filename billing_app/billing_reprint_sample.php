@@ -13,7 +13,7 @@
 
 // load application
 require_once("../framework/require.php");
-LoadApplication();
+$arrConfig = LoadApplication();
  
 // load remote copy
 VixenRequire('framework/remote_copy.php');

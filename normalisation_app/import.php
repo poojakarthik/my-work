@@ -9,7 +9,7 @@
 // normalisation application
 //----------------------------------------------------------------------------//
 require_once('../framework/require.php');
-LoadApplication();
+$arrConfig = LoadApplication();
 
 // Check for command line args
 $intLimit = ((int)trim($argv[1])) ? (int)trim($argv[1]) : NULL;

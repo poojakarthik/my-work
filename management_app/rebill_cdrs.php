@@ -26,7 +26,7 @@
  */
  
 require_once("../framework/require.php");
-LoadApplication();
+$arrConfig = LoadApplication();
 
 $appManagement = new ApplicationManagement($arrConfig);
 $appManagement->RebillCDRs(37935, 39225, "2007-02-13");

@@ -9,7 +9,7 @@
 // add special charges
 //----------------------------------------------------------------------------//
 require_once("../framework/require.php");
-LoadApplication();
+$arrConfig = LoadApplication();
 
 // Application entry point - create an instance of the application object
 $appCharge = new ApplicationCharge($arrConfig);
