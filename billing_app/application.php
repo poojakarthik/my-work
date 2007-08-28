@@ -356,7 +356,7 @@
 		$arrUpdateData['InvoiceRun']	= '';
 		$arrUpdateData['Status']		= '';
 		$updChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
-		$selCDRTotals		= new StatementSelect(	"(CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)) JOIN ServiceRatePlan SRP ON Service.Id = SRP.Service",
+		$selCDRTotals		= new StatementSelect(	"(CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)) JOIN ServiceRatePlan SRP ON CDR.Service = SRP.Service",
 													"SUM(CASE WHEN Rate.Uncapped THEN CDR.Charge ELSE 0 END) AS UncappedCharge, " .
 													"SUM(CASE WHEN Rate.Uncapped THEN CDR.Cost ELSE 0 END) AS UncappedCost, " .
 													"SUM(CASE WHEN Rate.Uncapped THEN 0 ELSE CDR.Charge END) AS CappedCharge, " .
