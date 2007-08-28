@@ -160,7 +160,7 @@ class AppTemplaterate extends ApplicationTemplate
 		 
 		// doesnt entirely function correctly when loading rates 
 		// hard coded value for a record within the rate table change as necessary
-		DBO()->Rate->Id = 8;
+		//DBO()->Rate->Id = 8;
 		// check if the Id of a rate has been supplied and if so load the rate
 		if (DBO()->Rate->Id->Value)
 		{
@@ -189,8 +189,9 @@ class AppTemplaterate extends ApplicationTemplate
 		$strDescription	= str_replace("\"", "'", DBO()->Rate->Description->Value);
 		$strName		= str_replace("\"", "'", DBO()->Rate->Name->Value);
 		$intRecordType	= DBO()->Rate->RecordType->Value;
+		$bolDraft		= (DBO()->Rate->Archived->Value == 2) ? 1 : 0;
 		
-		$strJavascript = "Vixen.RateGroupAdd.ChooseRate($intRateId, \"$strDescription\", \"$strName\", $intRecordType);";
+		$strJavascript = "Vixen.RateGroupAdd.ChooseRate($intRateId, \"$strDescription\", \"$strName\", $intRecordType, $bolDraft);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	

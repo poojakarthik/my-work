@@ -181,7 +181,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		// Handle form submittion
-		if (SubmittedForm('AddPlan', 'Commit'))
+		if (SubmittedForm('AddPlan', 'Commit') || SubmittedForm('AddPlan', 'Save as Draft'))
 		{
 			// Validate the plan
 			$mixResult = $this->_ValidatePlan();
@@ -200,17 +200,17 @@ class AppTemplatePlan extends ApplicationTemplate
 			{
 				// The plan is valid.  Save it to the database
 				TransactionStart();
-				$mixResult = $this->_AddPlan();
+				$mixResult = $this->_SavePlan();
 				if ($mixResult !== TRUE && $mixResult !== FALSE)
 				{
-					// Adding the plan failed, and an error message has been returned
+					// Saving the plan failed, and an error message has been returned
 					TransactionRollback();
 					Ajax()->AddCommand("Alert", $mixResult);
 					return TRUE;
 				}
 				elseif ($mixResult === FALSE)
 				{
-					// Adding the plan failed, and no error message was specified, so it is assumed appropraite actions have already taken place
+					// Saving the plan failed, and no error message was specified, so it is assumed appropraite actions have already taken place
 					TransactionRollback();
 					return TRUE;
 				}
@@ -228,16 +228,40 @@ class AppTemplatePlan extends ApplicationTemplate
 					{
 						$strCallingPage = Href()->AdminConsole();
 					}
-					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The plan has been successfully added", "Location" => $strCallingPage));
+					
+					// Set the message appropriate to the action
+					if (DBO()->Plan->Archived->Value == 0)
+					{
+						$strSuccessMsg = "The plan has been successfully saved";
+					}
+					else
+					{
+						$strSuccessMsg = "The plan has been successfully saved as a draft";
+					}
+					Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => $strSuccessMsg, "Location" => $strCallingPage));
 					return TRUE;
 				}
 			}
 		}
 		
-		if (SubmittedForm('AddPlan', 'Save as Draft'))
+		// Check if we are to display an existing RatePlan or if we are adding a new one
+		if (DBO()->RatePlan->Id->Value)
 		{
-			//TODO!
+			// We want to display an existing RatePlan
+			if (!DBO()->RatePlan->Load())
+			{
+				// Could not load the RatePlan
+				DBO()->Error->Message = "The RatePlan with id:". DBO()->RatePlan->Id->value ." could not be found";
+				$this->LoadPage('error');
+				return FALSE;
+			}
 		}
+		else
+		{
+			// We want to add a new RatePlan
+			DBO()->RatePlan->Id = 0;
+		}
+		
 		
 		
 		// context menu
@@ -298,6 +322,7 @@ class AppTemplatePlan extends ApplicationTemplate
 		
 		
 		// Make sure the name of the rate plan isn't currently in use
+		/* I don't think the name of the rate plan has to be unique
 		DBO()->ExistingRatePlan->Where->Name = DBO()->RatePlan->Name->Value;
 		DBO()->ExistingRatePlan->SetTable("RatePlan");
 		if (DBO()->ExistingRatePlan->Load())
@@ -307,6 +332,7 @@ class AppTemplatePlan extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: A Rate Plan named '". DBO()->RatePlan->Name->Value ."' already exists.<br>Please choose a unique name";
 		}
+		*/
 		
 		// Check that a rate group has been defined for each RecordType that has been marked as required
 		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
@@ -361,7 +387,16 @@ class AppTemplatePlan extends ApplicationTemplate
 		}
 		
 		// Save the list of Rate Groups to associate with the Rate Plan
-		DBO()->RateGroups->ArrayOfRateGroupIds = $arrRateGroups;
+		// Retrieve a list of all the Rate Groups associated with the Rate Plan
+		$strWhere = "Id IN (";
+		foreach ($arrRateGroups as $intRateGroup)
+		{
+			$strWhere .= "$intRateGroup, ";
+		}
+		$strWhere = substr($strWhere, 0, -2);
+		$strWhere .= ")";
+		DBL()->RateGroup->Where->SetString($strWhere);
+		DBL()->RateGroup->Load();
 		
 		
 		// All validation has been completed successfully
@@ -369,10 +404,10 @@ class AppTemplatePlan extends ApplicationTemplate
 	}
 	
 	//------------------------------------------------------------------------//
-	// _AddPlan
+	// _SavePlan
 	//------------------------------------------------------------------------//
 	/**
-	 * _AddPlan()
+	 * _SavePlan()
 	 *
 	 * Saves the records to the database, required for defining a RatePlan
 	 * 
@@ -386,13 +421,14 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * @method
 	 *
 	 */
-	private function _AddPlan($bolDraft=FALSE)
+	private function _SavePlan()
 	{
 		// Setup the remaing fields required of a RatePlan record
 		DBO()->RatePlan->MinMonthly	= ltrim(DBO()->RatePlan->MinMonthly->Value, "$");
 		DBO()->RatePlan->ChargeCap	= ltrim(DBO()->RatePlan->ChargeCap->Value, "$");
 		DBO()->RatePlan->UsageCap	= ltrim(DBO()->RatePlan->UsageCap->Value, "$");
-		if ($bolDraft)
+		
+		if (SubmittedForm('AddPlan', 'Save as Draft'))
 		{
 			// Flag the plan as being a draft
 			DBO()->RatePlan->Archived = 2;
@@ -402,7 +438,6 @@ class AppTemplatePlan extends ApplicationTemplate
 			// The plan is not being saved as a draft
 			DBO()->RatePlan->Archived = 0;
 		}
-			
 		
 		// Save the plan to the database
 		if (!DBO()->RatePlan->Save())
@@ -411,18 +446,45 @@ class AppTemplatePlan extends ApplicationTemplate
 			return "ERROR: Saving the RatePlan to the RatePlan database table failed, unexpectedly";
 		}
 		
+		// Remove all records from the RatePlanRateGroup table where RatePlan == DBO()->RatePlan->Id->Value
+		$delRatePlanRateGroup = new Query();
+		$delRatePlanRateGroup->Execute("DELETE FROM RatePlanRateGroup WHERE RatePlan = " . DBO()->RatePlan->Id->Value);
+
 		// Save each of the RateGroups associated with the RatePlan to the RatePlanRateGroup table
-		$arrRateGroups = DBO()->RateGroups->ArrayOfRateGroupIds->Value;  // This object was built in _ValidatePlan()
-		foreach ($arrRateGroups as $intRateGroup)
+		$arrRateGroups = Array();
+		DBO()->RatePlanRateGroup->RatePlan = DBO()->RatePlan->Id->Value;
+		foreach (DBL()->RateGroup as $dboRateGroup)
 		{
 			DBO()->RatePlanRateGroup->Id = 0;
-			DBO()->RatePlanRateGroup->RatePlan = DBO()->RatePlan->Id->Value;
-			DBO()->RatePlanRateGroup->RateGroup = $intRateGroup;
+			DBO()->RatePlanRateGroup->RateGroup = $dboRateGroup->Id->Value;
 			
 			if (!DBO()->RatePlanRateGroup->Save())
 			{
 				// Saving failed
-				return "ERROR: Saving one of the RateGroup - RatePlan associations failed, unexpectedly<br>The RatePlan has not been saved";
+				return "ERROR: Saving one of the RateGroup - RatePlan associations failed, unexpectedly.<br />The RatePlan has not been saved";
+			}
+			
+			// This array is used to commit draft RateGroups and draft Rates used by this RatePlan, but only if the RatePlan is being committed
+			$arrRateGroups[] = $dboRateGroup->Id->Value;
+		}
+		
+		// If the RatePlan is being committed then all draft RateGroups used by it must be commited and all draft Rates
+		// used by the draft RateGroups must be committed
+		if (SubmittedForm('AddPlan', 'Commit'))
+		{
+			$strRateGroups 	= implode(',', $arrRateGroups);
+			$arrUpdate		= Array("Archived" => 0);
+			$updRateGroups 	= new StatementUpdate("RateGroup", "Archived = 2 AND Id IN ($strRateGroups)", $arrUpdate);
+			$updRates 		= new StatementUpdate("Rate", "Archived = 2 AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup IN ($strRateGroups))", $arrUpdate);
+			
+			if ($updRateGroups->Execute($arrUpdate, NULL) === FALSE)
+			{
+				return "ERROR: Commiting one of the Draft Rate Groups, used by this Rate Plan, failed.<br />The RatePlan has not been saved";
+			}
+			
+			if ($updRates->Execute($arrUpdate, NULL) === FALSE)
+			{
+				return "ERROR: Commiting one of the Draft Rates, used by this Rate Plan, failed.<br />The RatePlan has not been saved";
 			}
 		}
 		

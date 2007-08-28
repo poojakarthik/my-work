@@ -73,7 +73,7 @@ class HtmlTemplaterateadd extends HtmlTemplate
 	 */
 	function Render()
 	{
-		echo "<div  style='overflow:auto; height:500px'>\n";
+		echo "<div  style='overflow:auto; height:600px'>\n";
 		echo "<div class='PopupLarge' style='width:auto;'>\n";
 		// define javascript to be triggered when the Cap and Excess radiobuttons change
 		$strRateCapOnClick = 'Vixen.RateAdd.RateCapOnChange(this.value)';

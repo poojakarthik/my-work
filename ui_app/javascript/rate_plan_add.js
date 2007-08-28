@@ -81,12 +81,12 @@ function VixenRatePlanAddClass()
 	 * @param	string	strDescription	Description of the Rate Group (used to identify it in the combo box)
 	 * @param	int		intRecordType	Record Type of the Rate Group (used to work out which combo box it belongs to)
 	 * @param	bol		bolFleet		flags whether it is a Fleet Rate Group or Regular Rate group (used to work out which combo box it belongs to)
+	 * @param	bol		bolDraft		flags whether it is a draft Rate Group or not
 	 *
 	 * @return	void
 	 * @method
 	 */
-	// This is called by the "Add Rate Group" popup page, when a rate group has been added and we want to use it in the Rate Plan currently being defined
-	this.ChooseRateGroup = function(intId, strDescription, intRecordType, bolFleet)
+	this.ChooseRateGroup = function(intId, strDescription, intRecordType, bolFleet, bolDraft)
 	{
 		var strComboId;
 		
@@ -116,7 +116,24 @@ function VixenRatePlanAddClass()
 		elmNewRateGroupOption.value = intId;
 		elmNewRateGroupOption.text = strDescription;
 		elmNewRateGroupOption.selected = TRUE;
+		
+		if (bolDraft)
+		{
+			elmNewRateGroupOption.text = "[DRAFT] - " + elmNewRateGroupOption.text;
+			elmNewRateGroupOption.setAttribute('draft', 'draft');
+		}
 
+		// Remove the old option from the combo box, if it exists
+		for (var i=0; i < elmRateGroupCombo.options.length; i++)
+		{
+			if (elmRateGroupCombo.options[i].value == elmNewRateGroupOption.value)
+			{
+				// Destroy the old one
+				elmRateGroupCombo.removeChild(elmRateGroupCombo.options[i]);
+				break;
+			}
+		}
+		
 		// Stick it in the combo so that the alphabetical order of the options is preserved
 		// i starts at 1 because we don't want to do a comparision between the new option, and the blank option
 		for (var i=1; i < elmRateGroupCombo.options.length; i++)
@@ -134,6 +151,54 @@ function VixenRatePlanAddClass()
 		elmRateGroupCombo.appendChild(elmNewRateGroupOption);
 		elmRateGroupCombo.focus();
 	}
+	
+	// Used to open the Edit Rate Group Popup
+	this.EditRateGroup = function(intRecordType, bolFleet)
+	{
+		var elmRateGroupCombo;
+		var strRateGroupCombo;
+		// Find the Rate Group that the user wants to edit
+		// Only draft Rate Groups can be editted
+		if (bolFleet)
+		{
+			strRateGroupCombo = "RateGroup" + intRecordType + ".FleetRateGroupId";
+		}
+		else
+		{
+			strRateGroupCombo = "RateGroup" + intRecordType + ".RateGroupId";
+		}
+
+		elmRateGroupCombo = document.getElementById(strRateGroupCombo);
+		
+		if (elmRateGroupCombo.value == 0)
+		{
+			// A Rate Group has not been selected
+			alert("No Rate Group has been selected");
+			return;
+		}
+		
+		var elmRateGroupOption = elmRateGroupCombo.options[elmRateGroupCombo.selectedIndex];
+		
+		// Only allow the user to edit the Rate Group if it is a draft rate group
+		if (elmRateGroupOption.getAttribute('draft'))
+		{
+			// The Rate Group is a draft. Open the Edit Rate Group popup
+			var objObjects = {};
+			objObjects.Objects = {};
+			objObjects.Objects.RateGroup = {};
+			objObjects.Objects.RateGroup.Id = elmRateGroupOption.value;
+			objObjects.Objects.CallingPage = {};
+			objObjects.Objects.CallingPage.AddRatePlan = true;
+			
+			Vixen.Popup.ShowAjaxPopup("AddRateGroupPopup", "large", "RateGroup", "Add", objObjects, "modeless");
+		}
+		else
+		{
+			alert("The currently selected Rate Group is not a draft");
+		}
+		
+	}
+	
 	
 }
 

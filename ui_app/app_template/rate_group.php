@@ -66,7 +66,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
 		// Handle form submittion
-		if (SubmittedForm('RateGroup', 'Commit'))
+		if (SubmittedForm('RateGroup', 'Commit') || SubmittedForm('RateGroup', 'Save as Draft'))
 		{
 			$mixResult = $this->_ValidateRateGroup();
 			if ($mixResult !== TRUE && $mixResult !== FALSE)
@@ -104,7 +104,17 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					// Saving the RateGroup was successfull
 					TransactionCommit();
 					
-					// Check if this rate is being added to a rate plan
+					Ajax()->AddCommand("ClosePopup", "{$this->_objAjax->strId}");
+					if (SubmittedForm('RateGroup', 'Commit'))
+					{
+						Ajax()->AddCommand("Alert", "The Rate Group was successfully committed to the database");
+					}
+					else
+					{
+						Ajax()->AddCommand("Alert", "The Rate Group was successfully saved as a draft");
+					}
+
+					// Check if this popup was called from the "Add Rate Plan" page
 					if (DBO()->CallingPage->AddRatePlan->Value)
 					{
 						// This popup was called from the "Add Rate Plan" page.  We have to update the appropriate combobox within the "Add Rate Plan" page
@@ -114,15 +124,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					else
 					{
 						// Close the popup normally
-						Ajax()->AddCommand("Alert", "The RateGroup has been successfully Saved");
-						Ajax()->AddCommand("ClosePopup", "RateGroupPopup");
 						return TRUE;
 					}
 				}
-				
 			}
-		
-		
 		}
 		
 		// Check if we are to display an existing RateGroup or if we are adding a new one
@@ -149,12 +154,21 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	
 	// Draws the Rate Selector Control used in the "Add Rate Group" form
 	// It is a precondition that DBO()->RecordType->Id->Value has been set
+	// DBO()->RateGroup->Id->Value can also be set
 	function SetRateSelectorControl()
 	{
 		$selRates = new StatementSelect("Rate", "Id, Name, Description, Archived", "RecordType=<RecordType> AND Archived != 1", "Description", NULL);
 		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
 		$arrRecords = $selRates->FetchAll();
-		
+
+		// If a RateGroup.Id has been specified then we want to mark which of these rates belong to it
+		if (DBO()->RateGroup->Id->Value)
+		{
+			$selRateGroupRates = new StatementSelect("RateGroupRate", "Id, RateGroup, Rate", "RateGroup=<RateGroup>", NULL, NULL);
+			$selRateGroupRates->Execute(Array("RateGroup" => DBO()->RateGroup->Id->Value));
+			$arrRateGroupRates = $selRateGroupRates->FetchAll();
+		}
+
 		$arrRates = Array();
 		$arrRate = Array();
 		foreach ($arrRecords as $arrRecord)
@@ -189,6 +203,26 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			{
 				// Flag the rate as being a Draft
 				$arrRate['Description'] = "[DRAFT] - " . $arrRate['Description'];
+				$arrRate['Draft'] = TRUE;
+			}
+			else
+			{
+				$arrRate['Draft'] = FALSE;
+			}
+			
+			// Check if this Rate currently belongs to the specified RateGroup
+			$arrRate['Selected'] = FALSE;
+			if (DBO()->RateGroup->Id->Value)
+			{
+				foreach ($arrRateGroupRates as $arrRateGroupRate)
+				{
+					if ($arrRateGroupRate['Rate'] == $arrRate['Id'])
+					{
+						// This Rate belongs to the RateGroup
+						$arrRate['Selected'] = TRUE;
+						break;
+					}
+				}
 			}
 			
 			$arrRates[] = $arrRate;
@@ -201,8 +235,18 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	// Validates the Rate Group
 	private function _ValidateRateGroup()
 	{
+		/* 
+		 * Validation process:
+		 *		Check that a Name and Description have been declared	(implemented)
+		 *		Check that a service type has been declared				(implemented)
+		 *		Check that a record type has been declared				(implemented)
+		 *		For every distination associated with the context of the RecordType of the RateGroup:
+		 *			Check that every minute of every day of the week is accounted for by a Rate and there are no overlaps
+		 */
+	
 		// Validate the fields
 		if (DBO()->RateGroup->IsInvalid())
 		{
@@ -229,6 +273,16 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		// Check that the selected Rates Cover all hours of the week and don't overlap unless they are destination based
 		//TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! 
+		$strWhere = "Id IN (";
+		foreach (DBO()->SelectedRates->ArrId->Value as $intId)
+		{
+			$strWhere .= "$intId, ";
+		}
+		$strWhere = substr($strWhere, 0, -2);
+		$strWhere .= ")";
+		DBL()->Rate->Where->SetString($strWhere);
+		DBL()->Rate->Load();
+		
 		
 		
 		// All Validation is complete, the RateGroup is valid
@@ -253,12 +307,31 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 */
 	private function _SaveRateGroup()
 	{
-		
-		// Retrieve the list of rates to add to the rate group
-		$arrRates = DBO()->SelectedRates->ArrId->Value;
+		/* 
+		 * Saving process:
+		 *		Set up values for properties of the RateGroup object that are not already defined										(DONE)
+		 *		Save the record to the RateGroup table 																					(DONE)
+		 *		Remove any records in the RateGroupRate table relating to this rate group 												(DONE)
+		 *		For each rate belonging to this Rate Group:
+		 *			add a record to the RateGroupRate table																				(DONE)
+		 *		For each draft rate belonging to this Rate Group:
+		 *			update the Archived property of the Rate in the Rate table so that it is now a committed Rate, not a draft rate		(DONE)
+		 */
+	
+	
+		// Retrieve the list of rates to add to the rate group (we are now using DBL()->Rate)
+		//$arrRates = DBO()->SelectedRates->ArrId->Value;
 		
 		// Define values for all fields that have not already been specified
-		DBO()->RateGroup->Archived = 0;
+		if (SubmittedForm('RateGroup', 'Save as Draft'))
+		{
+			// Flag it as a draft
+			DBO()->RateGroup->Archived = 2;
+		}
+		else
+		{
+			DBO()->RateGroup->Archived = 0;
+		}
 		
 		// Declare which fields you want to set
 		DBO()->RateGroup->SetColumns("Name, Description, RecordType, ServiceType, Fleet, Archived");
@@ -269,19 +342,46 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			return "ERROR: Saving the RateGroup record to the database failed, unexpectedly.<br />The Rate Group has not been saved";
 		}
 		
+		// Remove all records from the RateGroupRate table where RateGroup == DBO()->RateGroup->Id->Value
+		$delRateGroupRate = new Query();
+		$delRateGroupRate->Execute("DELETE FROM RateGroupRate WHERE RateGroup = " . DBO()->RateGroup->Id->Value);
+				
 		// Add a record to the RateGroupRate table for each rate associated with this rategroup
 		// StatementInsert is being used rather than a DBObject, as it is quicker, and this could require about 1000 records being added
 		$insRateGroupRate = new StatementInsert("RateGroupRate");
 		$arrInsertValues = Array("RateGroup" => DBO()->RateGroup->Id->Value);
-		foreach ($arrRates as $intRate)
+		foreach (DBL()->Rate as $dboRate)
 		{
-			$arrInsertValues['Rate'] = $intRate;
+			$arrInsertValues['Rate'] = $dboRate->Id->Value;
 			if (!$insRateGroupRate->Execute($arrInsertValues))
 			{
 				// Inserting one of the records failed
 				return "ERROR: Saving a record to the RateGroupRate table of the database failed, unexpectedly.<br />The Rate Group has not been saved";
 			}
 		}
+		
+		// If the RateGroup is being committed to the database, as opposed to being saved, make sure all its associated rates are also committed
+		if (DBO()->RateGroup->Archived == 0)
+		{
+			// The Rate Group is being saved
+			$arrUpdate = Array("Archived" => 0);
+			$updRates = new StatementUpdate("Rate", "Id = <Id>", $arrUpdate);
+			foreach (DBL()->Rate as $dboRate)
+			{
+				if ($dboRate->Archived->Value != 2)
+				{
+					// The rate is not a draft, so we don't have to update it
+					continue;
+				}
+				
+				if ($updRates->Execute($arrUpdate, Array("Id" => $dboRate->Id->Value) === FALSE))
+				{
+					// Updating the Rate table failed
+					return "ERROR: A problem occurred committing draft rates used by this Rate Group. <br />The Rate Group has not been saved";
+				}
+			}
+		}
+		
 		
 		// The Rate Group has been saved successfully
 		return TRUE;
@@ -290,16 +390,14 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	// Updates the "Add Rate Plan" page
 	function _UpdateAddRatePlanPage()
 	{
-		Ajax()->AddCommand("ClosePopup", "{$this->_objAjax->strId}");
-		Ajax()->AddCommand("Alert", "The Rate Group was successfully committed to the database");
-		
 		$intRateGroupId = DBO()->RateGroup->Id->Value;
 		// if the Description contains any double quotes, it will screw up, so convert them to single quotes.  Although I don't know why it would contain any of these in the first place
 		$strDescription = str_replace("\"", "'", DBO()->RateGroup->Description->Value);
 		$intRecordType = DBO()->RateGroup->RecordType->Value;
 		$bolFleet = DBO()->RateGroup->Fleet->Value ? 1 : 0;
+		$bolDraft = (DBO()->RateGroup->Archived->Value == 2) ? 1 : 0;
 		
-		$strJavascript = "Vixen.RatePlanAdd.ChooseRateGroup($intRateGroupId, \"$strDescription\", $intRecordType, $bolFleet);";
+		$strJavascript = "Vixen.RatePlanAdd.ChooseRateGroup($intRateGroupId, \"$strDescription\", $intRecordType, $bolFleet, $bolDraft);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	

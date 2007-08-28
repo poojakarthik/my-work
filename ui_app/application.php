@@ -233,7 +233,7 @@ class Application
 	
 		// validate all submitted objects
 		// Note that while $objSubmit->Get() and ->POST set up the submitted objects, they have not actually 
-		// been loaded from the database, so validating them at this stage should always return TRUE
+		// been loaded from the database
 		DBO()->Validate();
 
 		// Create AppTemplate Object

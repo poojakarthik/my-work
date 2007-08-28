@@ -121,6 +121,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			// Render the value of the page that called this one, so we can return to it, once the plan has been committed
 			DBO()->CallingPage->Href->RenderHidden();
 			
+			DBO()->RatePlan->Id->RenderHidden();
+			
 			echo "<div id='RatePlanDetailsId'>\n";
 			$this->_RenderPlanDetails();
 			echo "</div>\n";
@@ -200,9 +202,15 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		echo "</div>\n"; // DefaultElement
 		
 		// Build the ServiceType Combobox
+		if (DBO()->RatePlan->Id->Value > 0)
+		{
+			// Disable the ServiceType Combobox
+			$strServiceTypeDisabled = "disabled='disabled'";
+		}
+		
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type :</div>\n";
-		echo "      <select id='ServiceTypeCombo' name='RatePlan.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='javascript: Vixen.RatePlanAdd.ChangeServiceType(this.value);'>\n";
+		echo "      <select id='ServiceTypeCombo' name='RatePlan.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='javascript: Vixen.RatePlanAdd.ChangeServiceType(this.value);' $strServiceTypeDisabled>\n";
 		echo "         <option value='0' selected='selected'>&nbsp;</option>\n";
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
 		{
@@ -212,6 +220,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		}
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
+
+		// Initialise the Rate Groups specified
+		echo "<script type='text/javascript'>Vixen.RatePlanAdd.ChangeServiceType($intServiceType);</script>\n";
 		
 		echo "</div>\n"; // Narrow-Form
 		echo "<div class='SmallSeperator'></div>\n";
@@ -233,9 +244,9 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 	{
 		// Render a table for the user to specify a Rate Group for each Record Type required of the Service Type
 		echo "<h2 class='Plan'>Rate Groups</h2>\n";
-		Table()->RateGroups->SetHeader("&nbsp;", "Record Type", "Rate Group", "Fleet Rate Group", "&nbsp;");
-		Table()->RateGroups->SetWidth("1%", "29%", "30%", "30%", "10%");
-		Table()->RateGroups->SetAlignment("Center", "Left", "Left", "Left", "Center");
+		Table()->RateGroups->SetHeader("&nbsp;", "Record Type", "Rate Group", "&nbsp;", "Fleet Rate Group", "&nbsp;", "&nbsp;");
+		Table()->RateGroups->SetWidth("1%", "24%", "30%", "5%", "30%", "5%", "5%");
+		Table()->RateGroups->SetAlignment("Center", "Left", "Left", "Center", "Left", "Center", "Center");
 		
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
@@ -259,14 +270,33 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			{
 				if (($dboRateGroup->RecordType->Value == $dboRecordType->Id->Value) && ($dboRateGroup->Fleet->Value == FALSE))
 				{
+					// Flag the RateGroup option as being a draft, if it is one
+					if ($dboRateGroup->Archived->Value == 2)
+					{
+						// The Rate Group is currently saved as a draft.  Flag it as such
+						$strDraft = "draft='draft'";
+						
+						$strDescription = "<span class='DefaultOutputSpan'>[DRAFT] - ". $dboRateGroup->Description->Value ."</span>";
+					}
+					else
+					{
+						// The Rate Group is not a draft
+						$strDraft = "";
+						$strDescription = "<span class='DefaultOutputSpan'>". $dboRateGroup->Description->Value ."</span>";
+					}
+					
 					// Flag this option as being selected if it is the currently selected RateGroup for this RecordType
 					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
-					$strRateGroupCell .= "         <option value='". $dboRateGroup->Id->Value ."' $strSelected>". $dboRateGroup->Description->AsValue() ."</option>\n";
+					$strRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strDescription ."</option>";
 				}
 			}
 			$strRateGroupCell .= "      </select>\n";
 			$strRateGroupCell .= "   </div>\n";
 			$strRateGroupCell .= "</div>\n";
+			
+			// Build the Edit Rate Group Button
+			$strEditRateGroupHref = "javascript: Vixen.RatePlanAdd.EditRateGroup(". $dboRecordType->Id->Value .", false)";
+			$strEditRateGroupCell = "<span class='DefaultOutputSpan'><a href='$strEditRateGroupHref' style='color:blue; text-decoration: none;'>Edit</a></span>";
 			
 			// Build the FleetRateGroup Combobox
 			$strProperty	= "FleetRateGroupId";
@@ -278,20 +308,40 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			{
 				if (($dboRateGroup->RecordType->Value == $dboRecordType->Id->Value) && ($dboRateGroup->Fleet->Value == TRUE))
 				{
+					// Flag the RateGroup option as being a draft, if it is one
+					if ($dboRateGroup->Archived->Value == 2)
+					{
+						// The Rate Group is currently saved as a draft.  Flag it as such
+						$strDraft = "draft='draft'";
+						
+						$strDescription = "<span class='DefaultOutputSpan'>[DRAFT] - ". $dboRateGroup->Description->Value ."</span>";
+					}
+					else
+					{
+						// The Rate Group is not a draft
+						$strDraft = "";
+						$strDescription = "<span class='DefaultOutputSpan'>". $dboRateGroup->Description->Value ."</span>";
+					}
+					
 					// Flag this option as being selected if it is the currently selected Fleet RateGroup for this RecordType
 					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
-					$strFleetRateGroupCell .= "         <option value='". $dboRateGroup->Id->Value ."' $strSelected>". $dboRateGroup->Description->AsValue() ."</option>\n";
+					$strFleetRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strDescription ."</option>";
 				}
 			}
 			$strFleetRateGroupCell .= "      </select>\n";
 			$strFleetRateGroupCell .= "   </div>\n";
 			$strFleetRateGroupCell .= "</div>\n";
-			
+
+			// Build the Edit Fleet Rate Group Button
+			$strEditRateGroupHref = "javascript: Vixen.RatePlanAdd.EditRateGroup(". $dboRecordType->Id->Value .", true)";
+			$strEditFleetRateGroupCell = "<span class='DefaultOutputSpan'><a href='$strEditRateGroupHref' style='color:blue; text-decoration: none;'>Edit</a></span>";
+
+			// Build the Add Rate Group Button
 			$strAddRateGroupHref = Href()->AddRateGroupToRatePlan($dboRecordType->Id->Value);
-			$strActionsCell = "<span class='DefaultOutputSpan'><a href='$strAddRateGroupHref' style='color:blue; text-decoration: none;'>Add New</a></span>";
+			$strActionsCell = "<span class='DefaultOutputSpan'><a href='$strAddRateGroupHref' style='color:blue; text-decoration: none;'>New</a></span>";
 			
 			// Add this row to the table
-			Table()->RateGroups->AddRow($strRequiredCell, $strRecordTypeCell, $strRateGroupCell, $strFleetRateGroupCell, $strActionsCell);
+			Table()->RateGroups->AddRow($strRequiredCell, $strRecordTypeCell, $strRateGroupCell, $strEditRateGroupCell, $strFleetRateGroupCell, $strEditFleetRateGroupCell, $strActionsCell);
 		}
 		
 		if (DBL()->RecordType->RecordCount() == 0)
@@ -300,7 +350,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			// There are no RecordTypes required for the ServiceType chosen
 			Table()->RateGroups->AddRow("<span class='DefaultOutputSpan Default'>No Record Types required for Service Type: $strServiceType</span>");
 			Table()->RateGroups->SetRowAlignment("left");
-			Table()->RateGroups->SetRowColumnSpan(5);
+			Table()->RateGroups->SetRowColumnSpan(7);
 		}
 		
 		Table()->RateGroups->Render();

@@ -179,7 +179,7 @@ class AppTemplateAccount extends ApplicationTemplate
 		// The account should already be set up as a DBObject because it will be specified as a GET variable or a POST variable
 		if (!DBO()->Account->Load())
 		{
-			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ."could not be found";
+			DBO()->Error->Message = "The account with account id:". DBO()->Account->Id->value ." could not be found";
 			$this->LoadPage('error');
 			return FALSE;
 		}

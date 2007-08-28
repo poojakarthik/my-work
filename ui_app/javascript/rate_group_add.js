@@ -169,10 +169,20 @@ function VixenRateGroupAddClass()
 		var elmRecordTypeCombo = document.getElementById("RecordTypeCombo");
 		elmRecordTypeCombo.value = intRecordType;
 		
+		// check if we are showing this for a draft RateGroup
+		var intRateGroupId = document.getElementById("RateGroup.Id").value;
+		
 		// Set up the Rate selector control
 		var objObjects = {};
 		objObjects.RecordType = {};
 		objObjects.RecordType.Id = intRecordType;
+		
+		if (intRateGroupId > 0)
+		{
+			// pass the RateGroup.Id as well
+			objObjects.RateGroup = {};
+			objObjects.RateGroup.Id = intRateGroupId;
+		}
 		
 		Vixen.Ajax.CallAppTemplate("RateGroup", "SetRateSelectorControl", objObjects);
 	}
@@ -310,6 +320,17 @@ function VixenRateGroupAddClass()
 		{
 			//FIXIT! currently this will fuck with the alphabetical ordering of the options
 			elmNewOption.text = "[DRAFT] - " + elmNewOption.text;
+			elmNewOption.setAttribute('draft', 'draft');
+		}
+
+		// If it was already in the list of Available Rates then remove the old option element
+		for (var i=0; i < elmCombo.options.length; i++)
+		{
+			if (elmNewOption.value == elmCombo.options[i].value)
+			{
+				elmCombo.removeChild(elmCombo.options[i]);
+				break;
+			}
 		}
 
 		// Stick it in the combo so that the alphabetical order of the options is preserved

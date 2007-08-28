@@ -133,7 +133,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			// create the buttons
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<div class='Right'>\n";
-			$this->Button("Close", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+			$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
 			$this->AjaxSubmit("Save as Draft");
 			$this->AjaxSubmit("Commit");
 			echo "</div>\n";
@@ -181,16 +181,27 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		if (DBO()->RateGroup->RecordType->Value)
 		{
 			$intRecordType = DBO()->RateGroup->RecordType->Value;
+			
+			// Disable the RecordType Combo if we are editting an existing RateGroup
+			if (DBO()->RateGroup->Id->Value > 0)
+			{
+				$strRecordTypeDisabled = "disabled='disabled'";
+			}
 		}
 		if (DBO()->RateGroup->ServiceType->Value)
 		{
 			$intServiceType = DBO()->RateGroup->ServiceType->Value;
+			// Disable the RecordType Combo if we are editting an existing RateGroup
+			if (DBO()->RateGroup->Id->Value > 0)
+			{
+				$strServiceTypeDisabled = "disabled='disabled'";
+			}
 		}
 		
 		// Build the ServiceType Combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Service Type:</div>\n";
-		echo "      <select id='ServiceTypeCombo' name='RateGroup.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='Vixen.RateGroupAdd.ChangeServiceType(this.value)'>\n";
+		echo "      <select id='ServiceTypeCombo' name='RateGroup.ServiceType' class='DefaultInputComboBox' style='width:152px;' onchange='Vixen.RateGroupAdd.ChangeServiceType(this.value) $strServiceTypeDisabled'>\n";
 		echo "         <option value='0' selected='selected'>&nbsp;</option>";
 		foreach ($GLOBALS['*arrConstant']['ServiceType'] as $intKey=>$arrValue)
 		{
@@ -204,7 +215,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		// Build the RecordType Combobox
 		echo "<div class='DefaultElement'>\n";
 		echo "   <div class='DefaultLabel'><span class='RequiredInput'>*&nbsp;</span>Record Type:</div>\n";
-		echo "      <select id='RecordTypeCombo' name='RateGroup.RecordType' class='DefaultInputComboBox' style='width:250px;' onchange='Vixen.RateGroupAdd.ChangeRecordType(this.value)'>\n";
+		echo "      <select id='RecordTypeCombo' name='RateGroup.RecordType' class='DefaultInputComboBox' style='width:250px;' onchange='Vixen.RateGroupAdd.ChangeRecordType(this.value)' $strRecordTypeDisabled>\n";
 		echo "         <option value='0' selected='selected'>&nbsp;</option>";
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
@@ -276,15 +287,24 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				$intRateId = $arrRate['Id'];
 				$strRateName = $arrRate['Name'];
 				$strDescription = $arrRate['Description'];
+				if ($arrRate['Draft'])
+				{
+					$strDraft = "draft='draft'";
+				}
+				else
+				{
+					$strDraft = "";
+				}
+				
 				if (isset($arrRate['Selected']) && $arrRate['Selected'] == TRUE)
 				{
 					// The rate is currently selected
-					$strSelectedRates .= "<option value='$intRateId' title='$strRateName'>$strDescription</option>";
+					$strSelectedRates .= "<option value='$intRateId' title='$strRateName' $strDraft>$strDescription</option>";
 				}
 				else
 				{
 					// The rate is not selected
-					$strAvailableRates .= "<option value='$intRateId' title='$strRateName'>$strDescription</option>";
+					$strAvailableRates .= "<option value='$intRateId' title='$strRateName' $strDraft>$strDescription</option>";
 				}
 			}
 		}
