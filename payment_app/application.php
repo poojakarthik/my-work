@@ -398,6 +398,15 @@
 	 */
 	 function Process()
 	 {
+		// Check to see if we're in the middle of a Billing Run
+		$selTempInvoice = new StatementSelect("InvoiceTemp", "Id", 1);
+		if ($selTempInvoice->Execute())
+		{
+			// Don't process payments, there is a Temp Invoice Run
+			$this->_rptPaymentReport->AddMessage("WARNING: There is a Billing Run occurring.  No payments will be processed until this is complete.");
+			return FALSE;
+		}
+		
 		// get all payments
 		$intCount = $this->_selGetNormalisedPayments->Execute();
 		$this->_intProcessCount = $intCount;
