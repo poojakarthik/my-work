@@ -19,7 +19,7 @@ LoadApplication();
 $appBilling = new ApplicationBilling($arrConfig);
 
 // execute bill
-//$bolResponse = $appBilling->Execute();
+$bolResponse = $appBilling->Execute();
 
 CliEcho("\n[ Generating Debug Data ]\n");
 
@@ -100,13 +100,15 @@ if ($arrResponse = $appBilling->CalculateProfitData("46afb6cf2f619", TRUE))
 	$emlMail =& Mail::factory('mail');
 	
 	// Send the email
-	$strEmail = 'rich@voiptelsystems.com.au, ' .
+	/*$strEmail = 'rich@voiptelsystems.com.au, ' .
 				'jared@telcoblue.com.au, ' .
 				'dan@fhcc.com.au, ' .
 				'paula@telcoblue.com.au, ' .
 				'kaywan@telcoblue.com.au, ' .
 				'julie@telcoblue.com.au, ' .
-				'mark@yellowbilling.com.au';
+				'mark@yellowbilling.com.au';*/
+	$strEmail	= 'rich@voiptelsystems.com.au';
+
 	if (!$emlMail->send($strEmail, $strHeaders, $strBody))
 	{
 		CliEcho("Email Failed!");
