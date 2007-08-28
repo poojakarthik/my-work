@@ -128,8 +128,20 @@ class AppTemplaterate extends ApplicationTemplate
 			else
 			{		
 				TransactionCommit();			
-				Ajax()->AddCommand("AlertAndRelocate", Array("Alert" => "The rate has been successfully added", "Location" => Href()->AdminConsole()));
-				return TRUE;			
+				// Check if this rate is being added to a rate group
+				if (DBO()->CallingPage->AddRateGroup->Value)
+				{
+					// This popup was called from the "Add Rate Group" page.  We have to update the appropriate combobox within the "Add Rate Group" page
+					$this->_UpdateAddRateGroupPage();
+					return TRUE;
+				}
+				else
+				{
+					// Close the popup normally
+					Ajax()->AddCommand("Alert", "The Rate has been successfully saved as a draft");
+					Ajax()->AddCommand("ClosePopup", "AddRatePopup");
+					return TRUE;
+				}			
 			}		
 		
 			/*DBO()->Rate->Archived = 2;
@@ -148,7 +160,7 @@ class AppTemplaterate extends ApplicationTemplate
 		 
 		// doesnt entirely function correctly when loading rates 
 		// hard coded value for a record within the rate table change as necessary
-//		DBO()->Rate->Id = 4;
+		DBO()->Rate->Id = 8;
 		// check if the Id of a rate has been supplied and if so load the rate
 		if (DBO()->Rate->Id->Value)
 		{
@@ -180,6 +192,10 @@ class AppTemplaterate extends ApplicationTemplate
 		
 		$strJavascript = "Vixen.RateGroupAdd.ChooseRate($intRateId, \"$strDescription\", \"$strName\", $intRecordType);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
+	}
+	
+	private function _SavePlan()
+	{
 	}
 	
 	private function _ValidatePlan()
@@ -405,20 +421,19 @@ class AppTemplaterate extends ApplicationTemplate
 		DBO()->Rate->ExsPercentage = (is_numeric(DBO()->Rate->ExsPercentage->Value)) ? DBO()->Rate->ExsPercentage->Value : 0;
 		DBO()->Rate->ExsFlagfall = (Validate('IsMoneyValue', DBO()->Rate->ExsFlagfall->Value)) ? ltrim(DBO()->Rate->ExsFlagfall->Value, '$') : 0;
 		
-		//$strStatusMessage = '';
-		//if (SubmittedForm("AddRate","Save as Draft"))
-		//{
-		//	DBO()->Rate->Archived = 2;
-		//	$strStatusMessage = 'Archived';
-		//}
-		//else
-		//{
-		DBO()->Rate->Archived = 0;
-		//	$strStatusMessage = 'Saved';
-		//}
-	
-		DBO()->Rate->Destination = 0;
+		if (SubmittedForm("AddRate","Save as Draft"))
+		{
+			DBO()->Rate->Id = DBO()->Rate->Id->Value;
+			DBO()->Rate->Archived = 2;
+		}
+		
+		if (SubmittedForm("AddRate","Add"))
+		{
+			DBO()->Rate->Archived = 0;
+		}
+		
 		DBO()->Rate->PassThrough = 0;
+	
 	
 		if (!DBO()->Rate->Save())
 		{

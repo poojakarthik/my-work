@@ -127,7 +127,6 @@ class HtmlTemplaterateadd extends HtmlTemplate
 			echo "</div>\n";		
 		}
 		
-
 		echo "<tr><td>".DBO()->Rate->StartTime->AsInput()."</td></tr>\n";
 		echo "<tr><td>".DBO()->Rate->EndTime->AsInput()."</td></tr>\n";
 		echo "<tr><td>".DBO()->Rate->Duration->AsInput()."</td></tr>\n";
@@ -300,6 +299,12 @@ class HtmlTemplaterateadd extends HtmlTemplate
 				echo "<tr><td width='2%'><input type='radio' name='Rate.CapLimitting' value='".RATE_CAP_CAP_USAGE."'". ($mixCapStatus == RATE_CAP_CAP_USAGE ? "checked='checked'" : "") ." onchange=\"$strRateCapOnClick\"></td><td>".DBO()->Rate->CapUsage->AsInput()."</td></tr>\n";
 				echo "</table>\n";		
 			echo "</div>\n";	
+
+		$bolShowExcessDiv = TRUE;
+		if ((DBO()->Rate->ExsUnits->Value == 0)||(DBO()->Rate->ExsRatePerUnit->Value == 0)||(DBO()->Rate->ExsFlagfall->Value == 0)||(DBO()->Rate->ExsPercentage->Value == 0)||(DBO()->Rate->ExsMarkup->Value == 0))
+		{
+			$bolShowExcessDiv = FALSE;
+		}
 
 		if (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE)
 		{	
