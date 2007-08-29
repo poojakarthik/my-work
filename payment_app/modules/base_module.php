@@ -267,6 +267,25 @@
 	 {
 	 	return $this->_arrRawData[$strKey];
 	 }
+	
+	//------------------------------------------------------------------------//
+	// FetchRawComplete
+	//------------------------------------------------------------------------//
+	/**
+	 * FetchRawComplete()
+	 *
+	 * Fetches raw Payment array
+	 *
+	 * Fetches raw Payment array
+	 *
+	 * @return	array					raw array					
+	 *
+	 * @method
+	 */
+	 public function FetchRawComplete()
+	 {
+	 	return $this->_arrRawData;
+	 }
 	 
 	//------------------------------------------------------------------------//
 	// _NewPayment

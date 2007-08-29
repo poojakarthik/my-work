@@ -51,7 +51,7 @@
  		
  		// Define file format
  		$this->_strDelimiter	= "|";
- 		$this->_strEnclosedBy	= "\"";
+ 		$this->_strEnclosedBy	= '"';
  		
  		$arrDefine['Bank']					['Index']	= 0;
  		$arrDefine['ABN']					['Index']	= 1;
@@ -132,9 +132,17 @@
  			return PAYMENT_CANT_NORMALISE_FOOTER;
  		}
  		
+ 		// Check to see if there are quotes enclosing
+ 		if (stripos($strPaymentRecord, '"') !== 0)
+ 		{
+ 			return PAYMENT_CANT_NORMALISE_INVALID;
+ 		}
+	 	
  		// BPay are idiots, so parse the file first, changing it from comma-delimited to pipe-delimited
- 		$strRawRecord = str_replace("\",", "\"|", $strPaymentRecord);
- 		$strRawRecord = str_replace(",\"", "|\"", $strRawRecord);
+	 	$strRawRecord = str_replace("\",", "\"|", $strPaymentRecord);
+	 	$strRawRecord = str_replace(",\"", "|\"", $strRawRecord);
+ 		
+ 		Debug($strRawRecord);
  		
  		// Split the parsed record
  		$this->_SplitRaw($strRawRecord);
