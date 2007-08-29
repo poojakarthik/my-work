@@ -114,13 +114,14 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			break;
 		case HTML_CONTEXT_DEFAULT:
 		default:
-			// Render the start of the form
+			// This should only ever be run the first time the Add Rate Plan page is rendered
 			// Set Up the form for adding a rate plan
 			$this->FormStart("AddPlan", "Plan", "Add");
 			
 			// Render the value of the page that called this one, so we can return to it, once the plan has been committed
 			DBO()->CallingPage->Href->RenderHidden();
 			
+			// Include the Id of the RatePlan as a hidden input.  This will be zero when adding a new plan
 			DBO()->RatePlan->Id->RenderHidden();
 			
 			echo "<div id='RatePlanDetailsId'>\n";
@@ -136,7 +137,12 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			$this->AjaxSubmit("Save as Draft");
 			$this->AjaxSubmit("Commit");
 			echo "</div>\n";
-			$this->FormEnd();			
+			$this->FormEnd();
+			
+			// Initialise the Rate Groups Assocciated with this form
+			$intServiceType = DBO()->RatePlan->ServiceType->Value;
+			echo "<script type='text/javascript'>Vixen.RatePlanAdd.ChangeServiceType(". $intServiceType .");</script>\n";
+			
 			break;
 		}
 	}
@@ -220,9 +226,6 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 		}
 		echo "      </select>\n";
 		echo "</div>\n"; // DefaultElement
-
-		// Initialise the Rate Groups specified
-		echo "<script type='text/javascript'>Vixen.RatePlanAdd.ChangeServiceType($intServiceType);</script>\n";
 		
 		echo "</div>\n"; // Narrow-Form
 		echo "<div class='SmallSeperator'></div>\n";
@@ -288,6 +291,10 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					
 					// Flag this option as being selected if it is the currently selected RateGroup for this RecordType
 					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
+					if (!DBO()->{$strObject}->{$strProperty}->IsSet && $dboRateGroup->Selected->IsSet)
+					{
+						$strSelected = "selected='selected'";
+					}
 					$strRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strName ."</option>";
 				}
 			}

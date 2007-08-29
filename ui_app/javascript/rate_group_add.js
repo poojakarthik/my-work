@@ -76,9 +76,17 @@ function VixenRateGroupAddClass()
 	 * @return	void
 	 * @method
 	 */
-	this.InitialiseForm = function(arrRecordTypes)
+	this.InitialiseForm = function(arrRecordTypes, bolIsDraft)
 	{
 		this._arrRecordTypes = arrRecordTypes;
+		
+		// If the RateGroup is a draft then disable the Fleet Checkbox, Service Type Combobox and the Record Type combobox
+		if (bolIsDraft)
+		{
+			document.getElementById("RateGroup.Fleet").disabled		= true;
+			document.getElementById("ServiceTypeCombo").disabled	= true;
+			document.getElementById("RecordTypeCombo").disabled		= true;
+		}
 	}
 	
 	//------------------------------------------------------------------------//

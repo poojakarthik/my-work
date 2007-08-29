@@ -60,9 +60,18 @@ function VixenRatePlanAddClass()
 	 */
 	this.ChangeServiceType = function(intServiceType)
 	{
+		var intRatePlanId = document.getElementById("RatePlan.Id").value;
+		
 		var objObjects = {};
 		objObjects.RatePlan = {};
 		objObjects.RatePlan.ServiceType = intServiceType;
+		
+		if (intRatePlanId > 0)
+		{
+			// We are displaying a draft rate group, and want to show all its associated Rate Groups
+			objObjects.RatePlan.Id = intRatePlanId;
+		}
+		
 		Vixen.Ajax.CallAppTemplate('Plan', 'GetRateGroupsForm', objObjects);
 	}
 	

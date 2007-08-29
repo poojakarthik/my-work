@@ -526,6 +526,29 @@ class AppTemplatePlan extends ApplicationTemplate
 		DBL()->RateGroup->OrderBy("Description");
 		DBL()->RateGroup->Load();
 		
+		if (DBO()->RatePlan->Id->Value)
+		{
+			// Find all the RateGroups currently used by this RatePlan
+			DBL()->RatePlanRateGroup->RatePlan = DBO()->RatePlan->Id->Value;
+			DBL()->RatePlanRateGroup->Load();
+			
+			// Mark the RateGroups that are currently used
+			foreach (DBL()->RatePlanRateGroup as $dboRatePlanRateGroup)
+			{
+				foreach (DBL()->RateGroup as $dboRateGroup)
+				{
+					if ($dboRatePlanRateGroup->RateGroup->Value == $dboRateGroup->Id->Value)
+					{
+						// Mark this rate group as being selected
+						$dboRateGroup->Selected = TRUE;
+					}
+				}
+			}
+		}
+		
+		
+		
+		
 		// Render the html template
 		Ajax()->RenderHtmlTemplate("PlanAdd", HTML_CONTEXT_RATE_GROUPS, "RateGroupsDiv");
 		
