@@ -135,7 +135,7 @@
 		
 		
 		// FIXME: Uncomment this
-/*
+
 		// TESTING DEFINITIONS
 		$strTestUsername	= "download";
 		$strTestPassword	= "password";
@@ -143,7 +143,7 @@
 		$strTestServer		= "10.11.12.13";
 		
 		// Unitel Landline and S&E Definition
-		$strUnitelTestDir = "2007/apr/";
+		$strUnitelTestDir = strtolower(date("Y/M"));
 		$arrConfig['Define']["RSLCOM"]	["Name"]							= "RSLCOM";
 		$arrConfig['Define']["RSLCOM"]	["Carrier"]							= CARRIER_UNITEL;
  		$arrConfig['Define']["RSLCOM"]	["Type"]							= COLLECTION_TYPE_FTP;
@@ -159,7 +159,7 @@
 		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_STATUS_RPT]	= PRV_UNITEL_DAILY_STATUS_RPT;
 		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_BASKETS]		= PRV_UNITEL_BASKETS_RPT;
 		//$arrConfig['Define']["RSLCOM"]	["FileType"][REGEX_RSL_PRESELECTION]= PRV_UNITEL_PRESELECTION_RPT;
-
+/*
 		// Unitel Landline and S&E Definition
 		//$strUnitelTestDir = "2007/apr/";
 		$arrConfig['Define']["Commander"]	["Name"]							= "Commander";
@@ -214,7 +214,7 @@
 		$arrConfig['Define']["Payments"]	["Name"]															= "Payments";
 		$arrConfig['Define']["Payments"]	["Carrier"]															= CARRIER_PAYMENT;
  		$arrConfig['Define']["Payments"]	["Type"]															= COLLECTION_TYPE_FTP;
- 		$arrConfig['Define']["Payments"]	["Server"]															= "192.168.1.13";
+ 		$arrConfig['Define']["Payments"]	["Server"]															= "10.11.12.13";
  		$arrConfig['Define']["Payments"]	["Username"]														= "telcoblue";
  		$arrConfig['Define']["Payments"]	["PWord"]															= "vixen1245";
  		$arrConfig['Define']["Payments"]	["Dir"][]															= 'payment/bill_express';
