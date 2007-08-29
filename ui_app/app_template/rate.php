@@ -160,7 +160,7 @@ class AppTemplaterate extends ApplicationTemplate
 		 
 		// doesnt entirely function correctly when loading rates 
 		// hard coded value for a record within the rate table change as necessary
-		//DBO()->Rate->Id = 8;
+		//DBO()->Rate->Id = 14;
 		// check if the Id of a rate has been supplied and if so load the rate
 		if (DBO()->Rate->Id->Value)
 		{
@@ -168,6 +168,7 @@ class AppTemplaterate extends ApplicationTemplate
 		}
 		else
 		{
+			DBO()->Rate->Id = 0;
 			// Check if a ServiceType or RecordType was passed through to this method
 			if (DBO()->RecordType->Id->Value)
 			{
@@ -182,7 +183,7 @@ class AppTemplaterate extends ApplicationTemplate
 	// This is used to update the "Add Rate Group" page, when a rate has been added and the "Add Rate" popup window is closed
 	private function _UpdateAddRateGroupPage()
 	{
-		Ajax()->AddCommand("ClosePopup", "{$this->_objAjax->strId}");
+		Ajax()->AddCommand("ClosePopup", "AddRatePopup");
 		Ajax()->AddCommand("Alert", "The Rate was successfully saved");
 		
 		$intRateId		= DBO()->Rate->Id->Value;
@@ -421,6 +422,11 @@ class AppTemplaterate extends ApplicationTemplate
 		DBO()->Rate->ExsMarkup = (Validate('IsMoneyValue', DBO()->Rate->ExsMarkup->Value)) ? ltrim(DBO()->Rate->ExsMarkup->Value, '$') : 0;
 		DBO()->Rate->ExsPercentage = (is_numeric(DBO()->Rate->ExsPercentage->Value)) ? DBO()->Rate->ExsPercentage->Value : 0;
 		DBO()->Rate->ExsFlagfall = (Validate('IsMoneyValue', DBO()->Rate->ExsFlagfall->Value)) ? ltrim(DBO()->Rate->ExsFlagfall->Value, '$') : 0;
+		
+		if (!DBO()->Rate->Destination->IsSet)
+		{
+			DBO()->Rate->Destination = 0;
+		}
 		
 		if (SubmittedForm("AddRate","Save as Draft"))
 		{

@@ -120,7 +120,6 @@
 				}				
 				
 				//check for array length if zero dont do this code				
-				
 				var IntStartTimeDuration = parseInt(arrStartTime[0]+arrStartTime[1]);
 				var IntEndTimeDuration = parseInt(arrEndTime[0]+arrEndTime[1]);
 				
@@ -143,7 +142,6 @@
 				}
 				
 				var StrTimeDuration = strDurationHours + ":" + strDurationMinutes;
-								
 								
 				document.getElementById("Rate.Duration").value = StrTimeDuration; 
 				
@@ -186,7 +184,7 @@
 				startMinute = (Math.floor (intX / intSnap) * 15) % 60;
 				
 				durationHours = Math.floor (Math.ceil (intW / intSnap * 15) / 60);
-				durationMinutes = ((Math.floor (intW / intSnap) * 15) % 60) - 1;
+				durationMinutes = ((Math.floor (intW / intSnap) * 15) % 60);
 				
 				if (durationMinutes == -1)
 				{
@@ -194,8 +192,8 @@
 					durationMinutes = 59;
 				}
 				
-				ceaseHour = Math.floor (((startHour * 60) + (durationHours * 60) + startMinute + durationMinutes) / 60);
-				ceaseMinute = Math.floor (((startHour * 60) + (durationHours * 60) + startMinute + durationMinutes) % 60);
+				ceaseHour = Math.floor (((startHour * 60) + (durationHours * 60) + startMinute + durationMinutes - 1) / 60);
+				ceaseMinute = Math.floor (((startHour * 60) + (durationHours * 60) + startMinute + durationMinutes - 1) % 60);
 				
 				if (startMinute.toString ().length == 1)
 				{
@@ -226,7 +224,7 @@
 				{				
 					durationHours = "0" + durationHours.toString();
 				}
-				
+			
 				// update the values in the textbox
 				document.getElementById("Rate.StartTime").value = startHour + ":" + startMinute;
 				document.getElementById("Rate.EndTime").value = ceaseHour + ":" + ceaseMinute;
