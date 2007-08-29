@@ -78,7 +78,7 @@ function VixenRatePlanAddClass()
 	 * This is called by the "Add Rate Group" popup when a rate group has been added and the popup closes
 	 *
 	 * @param	int		intId			Id of the Rate Group
-	 * @param	string	strDescription	Description of the Rate Group (used to identify it in the combo box)
+	 * @param	string	strName			Name of the Rate Group (used to identify it in the combo box)
 	 * @param	int		intRecordType	Record Type of the Rate Group (used to work out which combo box it belongs to)
 	 * @param	bol		bolFleet		flags whether it is a Fleet Rate Group or Regular Rate group (used to work out which combo box it belongs to)
 	 * @param	bol		bolDraft		flags whether it is a draft Rate Group or not
@@ -86,7 +86,7 @@ function VixenRatePlanAddClass()
 	 * @return	void
 	 * @method
 	 */
-	this.ChooseRateGroup = function(intId, strDescription, intRecordType, bolFleet, bolDraft)
+	this.ChooseRateGroup = function(intId, strName, intRecordType, bolFleet, bolDraft)
 	{
 		var strComboId;
 		
@@ -114,7 +114,7 @@ function VixenRatePlanAddClass()
 		// create a new option element
 		var elmNewRateGroupOption = document.createElement('option');
 		elmNewRateGroupOption.value = intId;
-		elmNewRateGroupOption.text = strDescription;
+		elmNewRateGroupOption.text = strName;
 		elmNewRateGroupOption.selected = TRUE;
 		
 		if (bolDraft)

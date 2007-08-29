@@ -320,19 +320,26 @@ class AppTemplatePlan extends ApplicationTemplate
 			return "ERROR: A service type must be selected";
 		}
 		
-		
 		// Make sure the name of the rate plan isn't currently in use
-		/* I don't think the name of the rate plan has to be unique
-		DBO()->ExistingRatePlan->Where->Name = DBO()->RatePlan->Name->Value;
-		DBO()->ExistingRatePlan->SetTable("RatePlan");
-		if (DBO()->ExistingRatePlan->Load())
+		if (DBO()->RatePlan->Id->Value == 0)
 		{
-			// A rate plan with the same name already exists
+			// The RatePlan name should not be in the database
+			$strWhere = "Name=<Name>";
+		}
+		else
+		{
+			// We are working with an already saved draft.  Check that the New name is not used by any other RatePlan
+			$strWhere = "Name=<Name> AND Id != ". DBO()->RatePlan->Id->Value;
+		}
+		$selRatePlanName = new StatementSelect("RatePlan", "Id", $strWhere);
+		if ($selRatePlanName->Execute(Array("Name" => DBO()->RatePlan->Name->Value)) > 0)
+		{
+			// The Name is already being used by another rate plan
 			DBO()->RatePlan->Name->SetToInvalid();
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
-			return "ERROR: A Rate Plan named '". DBO()->RatePlan->Name->Value ."' already exists.<br>Please choose a unique name";
+			return "ERROR: This name is already used by another Plan<br />Please choose a unique name";
 		}
-		*/
+		
 		
 		// Check that a rate group has been defined for each RecordType that has been marked as required
 		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
@@ -386,18 +393,10 @@ class AppTemplatePlan extends ApplicationTemplate
 			}
 		}
 		
-		// Save the list of Rate Groups to associate with the Rate Plan
 		// Retrieve a list of all the Rate Groups associated with the Rate Plan
-		$strWhere = "Id IN (";
-		foreach ($arrRateGroups as $intRateGroup)
-		{
-			$strWhere .= "$intRateGroup, ";
-		}
-		$strWhere = substr($strWhere, 0, -2);
-		$strWhere .= ")";
+		$strWhere = "Id IN (". implode(",", $arrRateGroups) .")";
 		DBL()->RateGroup->Where->SetString($strWhere);
 		DBL()->RateGroup->Load();
-		
 		
 		// All validation has been completed successfully
 		return TRUE;

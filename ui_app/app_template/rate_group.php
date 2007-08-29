@@ -95,7 +95,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 				}
 				elseif ($mixResult === FALSE)
 				{
-					// Saving the RateGroup failed, and no error message was specified, so it is assumed approraite actions have already taken place
+					// Saving the RateGroup failed, and no error message was specified, so it is assumed appropraite actions have already taken place
 					TransactionRollback();
 					return TRUE;
 				}
@@ -104,7 +104,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					// Saving the RateGroup was successfull
 					TransactionCommit();
 					
-					Ajax()->AddCommand("ClosePopup", "{$this->_objAjax->strId}");
+					Ajax()->AddCommand("ClosePopup", $this->_objAjax->strId);
 					if (SubmittedForm('RateGroup', 'Commit'))
 					{
 						Ajax()->AddCommand("Alert", "The Rate Group was successfully committed to the database");
@@ -176,33 +176,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			$arrRate['Id'] = $arrRecord['Id'];
 			$arrRate['Name'] = $arrRecord['Name'];
 			$arrRate['Description'] = $arrRecord['Description'];
-
-			// If the name contains "BH", "Morning", "Evening" or "Weekend", then we want to add this to the begining of the description
-			if (stripos($arrRate['Name'], "BH") !== FALSE)
-			{
-				// The rate is a "Business Hours" rate
-				$arrRate['Description'] = "BH - " . $arrRate['Description'];
-			}
-			elseif (stripos($arrRate['Name'], "Evening") !== FALSE)
-			{
-				// The rate is an "Evening" rate
-				$arrRate['Description'] = "Evening - " . $arrRate['Description'];
-			}
-			elseif (stripos($arrRate['Name'], "Morning") !== FALSE)
-			{
-				// The rate is a "Morning" rate
-				$arrRate['Description'] = "Morning - " . $arrRate['Description'];
-			}
-			elseif (stripos($arrRate['Name'], "Weekend") !== FALSE)
-			{
-				// The rate is a "Weekend" rate
-				$arrRate['Description'] = "Weekend - " . $arrRate['Description'];
-			}
 			
 			if ($arrRate['Archived'] == 2)
 			{
 				// Flag the rate as being a Draft
-				$arrRate['Description'] = "[DRAFT] - " . $arrRate['Description'];
 				$arrRate['Draft'] = TRUE;
 			}
 			else
@@ -243,6 +220,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		 *		Check that a Name and Description have been declared	(implemented)
 		 *		Check that a service type has been declared				(implemented)
 		 *		Check that a record type has been declared				(implemented)
+		 *		Check that the Name is unique when compared with all other Rate Groups	
 		 *		For every distination associated with the context of the RecordType of the RateGroup:
 		 *			Check that every minute of every day of the week is accounted for by a Rate and there are no overlaps
 		 */
@@ -263,7 +241,28 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
 			return "ERROR: A Record Type must be selected";
 		}
-				
+		
+		// Check that the name is unique
+		if (DBO()->RateGroup->Id->Value == 0)
+		{
+			// The Rate Group name should not be in the database
+			$strWhere = "Name=<Name>";
+		}
+		else
+		{
+			// We are working with an already saved draft.  Check that the New name is not used by any other RateGroup
+			$strWhere = "Name=<Name> AND Id != ". DBO()->RateGroup->Id->Value;
+		}
+		$selRateGroupName = new StatementSelect("RateGroup", "Id", $strWhere);
+		if ($selRateGroupName->Execute(Array("Name" => DBO()->RateGroup->Name->Value)) > 0)
+		{
+			// The Name is already being used by another rate group
+			DBO()->RateGroup->Name->SetToInvalid();
+			Ajax()->RenderHtmlTemplate('RateGroupAdd', HTML_CONTEXT_DETAILS, "RateGroupDetailsId");
+			return "ERROR: This name is already used by another RateGroup<br />Please choose a unique name";
+		}
+		
+		
 		// Make sure there are rates specified (This should be handled by the next validation step (checking that a rate covers all hours of all days))
 		if (!DBO()->SelectedRates->ArrId->Value)
 		{
@@ -391,13 +390,13 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	function _UpdateAddRatePlanPage()
 	{
 		$intRateGroupId = DBO()->RateGroup->Id->Value;
-		// if the Description contains any double quotes, it will screw up, so convert them to single quotes.  Although I don't know why it would contain any of these in the first place
-		$strDescription = str_replace("\"", "'", DBO()->RateGroup->Description->Value);
+		// All special chars have to be converted to their html safe versions
+		$strName = htmlspecialchars(DBO()->RateGroup->Name->Value, ENT_QUOTES);
 		$intRecordType = DBO()->RateGroup->RecordType->Value;
 		$bolFleet = DBO()->RateGroup->Fleet->Value ? 1 : 0;
 		$bolDraft = (DBO()->RateGroup->Archived->Value == 2) ? 1 : 0;
 		
-		$strJavascript = "Vixen.RatePlanAdd.ChooseRateGroup($intRateGroupId, \"$strDescription\", $intRecordType, $bolFleet, $bolDraft);";
+		$strJavascript = "Vixen.RatePlanAdd.ChooseRateGroup($intRateGroupId, \"$strName\", $intRecordType, $bolFleet, $bolDraft);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	

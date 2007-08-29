@@ -165,7 +165,7 @@ function VixenRateGroupAddClass()
 	this.ChangeRecordType = function(intRecordType)
 	{
 		// If this is being explicitly executed from code then the record type details will not actually be the 
-		// currently selected ones. Therefore we have to do it manually.  There is probably a better way of doing this.
+		// currently selected ones. Therefore we have to do it manually.
 		var elmRecordTypeCombo = document.getElementById("RecordTypeCombo");
 		elmRecordTypeCombo.value = intRecordType;
 		
@@ -177,6 +177,7 @@ function VixenRateGroupAddClass()
 		objObjects.RecordType = {};
 		objObjects.RecordType.Id = intRecordType;
 		
+		// If the RateGroup already has an Id then it is a draft
 		if (intRateGroupId > 0)
 		{
 			// pass the RateGroup.Id as well
@@ -311,8 +312,8 @@ function VixenRateGroupAddClass()
 		// create a new option element
 		var elmNewOption = document.createElement('option');
 		elmNewOption.value = intId;
-		elmNewOption.text = strDescription;
-		elmNewOption.title = strName;
+		elmNewOption.text = strName;
+		elmNewOption.title = strDescription;
 		elmNewOption.selected = TRUE;
 		
 		// If the Rate is a draft then flag it as such

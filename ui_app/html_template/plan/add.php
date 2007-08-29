@@ -275,19 +275,20 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					{
 						// The Rate Group is currently saved as a draft.  Flag it as such
 						$strDraft = "draft='draft'";
-						
-						$strDescription = "<span class='DefaultOutputSpan'>[DRAFT] - ". $dboRateGroup->Description->Value ."</span>";
+						$strName = "[DRAFT] - ". htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
+						$strName = "<span class='DefaultOutputSpan'>$strName</span>";
 					}
 					else
 					{
 						// The Rate Group is not a draft
 						$strDraft = "";
-						$strDescription = "<span class='DefaultOutputSpan'>". $dboRateGroup->Description->Value ."</span>";
+						$strName = htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
+						$strName = "<span class='DefaultOutputSpan'>$strName</span>";
 					}
 					
 					// Flag this option as being selected if it is the currently selected RateGroup for this RecordType
 					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
-					$strRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strDescription ."</option>";
+					$strRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strName ."</option>";
 				}
 			}
 			$strRateGroupCell .= "      </select>\n";
@@ -313,19 +314,20 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					{
 						// The Rate Group is currently saved as a draft.  Flag it as such
 						$strDraft = "draft='draft'";
-						
-						$strDescription = "<span class='DefaultOutputSpan'>[DRAFT] - ". $dboRateGroup->Description->Value ."</span>";
+						$strName = "[DRAFT] - ". htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
+						$strName = "<span class='DefaultOutputSpan'>$strName</span>";
 					}
 					else
 					{
 						// The Rate Group is not a draft
 						$strDraft = "";
-						$strDescription = "<span class='DefaultOutputSpan'>". $dboRateGroup->Description->Value ."</span>";
+						$strName = htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
+						$strName = "<span class='DefaultOutputSpan'>$strName</span>";
 					}
 					
 					// Flag this option as being selected if it is the currently selected Fleet RateGroup for this RecordType
 					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
-					$strFleetRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strDescription ."</option>";
+					$strFleetRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strName ."</option>";
 				}
 			}
 			$strFleetRateGroupCell .= "      </select>\n";

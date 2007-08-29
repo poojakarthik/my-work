@@ -284,27 +284,26 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		{
 			foreach (DBO()->Rates->ArrRates->Value as $arrRate)
 			{
-				$intRateId = $arrRate['Id'];
-				$strRateName = $arrRate['Name'];
-				$strDescription = $arrRate['Description'];
+				$intRateId 		= $arrRate['Id'];
+				// All special chars have to be converted to their html safe versions
+				$strRateName 	= htmlspecialchars($arrRate['Name'], ENT_QUOTES);
+				$strDescription = htmlspecialchars($arrRate['Description'], ENT_QUOTES);
+				$strDraft 		= "";
 				if ($arrRate['Draft'])
 				{
 					$strDraft = "draft='draft'";
-				}
-				else
-				{
-					$strDraft = "";
+					$strRateName  = "[DRAFT] - " . $strRateName;
 				}
 				
 				if (isset($arrRate['Selected']) && $arrRate['Selected'] == TRUE)
 				{
 					// The rate is currently selected
-					$strSelectedRates .= "<option value='$intRateId' title='$strRateName' $strDraft>$strDescription</option>";
+					$strSelectedRates .= "<option value='$intRateId' title='$strDescription' $strDraft>$strRateName</option>";
 				}
 				else
 				{
 					// The rate is not selected
-					$strAvailableRates .= "<option value='$intRateId' title='$strRateName' $strDraft>$strDescription</option>";
+					$strAvailableRates .= "<option value='$intRateId' title='$strDescription' $strDraft>$strRateName</option>";
 				}
 			}
 		}

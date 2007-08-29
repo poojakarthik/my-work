@@ -187,8 +187,10 @@ class AppTemplaterate extends ApplicationTemplate
 		Ajax()->AddCommand("Alert", "The Rate was successfully saved");
 		
 		$intRateId		= DBO()->Rate->Id->Value;
-		$strDescription	= str_replace("\"", "'", DBO()->Rate->Description->Value);
-		$strName		= str_replace("\"", "'", DBO()->Rate->Name->Value);
+		
+		// All special chars have to be converted to their html safe versions
+		$strDescription	= htmlspecialchars(DBO()->Rate->Description->Value, ENT_QUOTES);
+		$strName		= htmlspecialchars(DBO()->Rate->Name->Value, ENT_QUOTES);
 		$intRecordType	= DBO()->Rate->RecordType->Value;
 		$bolDraft		= (DBO()->Rate->Archived->Value == 2) ? 1 : 0;
 		
@@ -430,7 +432,6 @@ class AppTemplaterate extends ApplicationTemplate
 		
 		if (SubmittedForm("AddRate","Save as Draft"))
 		{
-			DBO()->Rate->Id = DBO()->Rate->Id->Value;
 			DBO()->Rate->Archived = 2;
 		}
 		
