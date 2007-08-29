@@ -48,28 +48,58 @@ function VixenRateAddClass()
 	const RATE_CAP_NO_CAP_LIMITS = 103;
 	const RATE_CAP_CAP_LIMIT = 104;
 	const RATE_CAP_CAP_USAGE = 105;
+	
+	const RATE_CHARGES_SHOW = 112;
+	const RATE_CHARGES_HIDE = 113;
 	//------------------------------------------------------------------------//
 	// InitialiseForm
 	//------------------------------------------------------------------------//
 	/**
 	 * InitialiseForm
 	 *
-	 * Sets the member variable storing data relating to all RecordTypes
+	 * Prepares the form when initially loaded
 	 *
-	 * Sets the member variable storing data relating to all RecordTypes
+	 * Prepares the form when initially loaded
+	 * Responsible for registering event listeners for the various controls in the popup, that need them
 	 *
-	 * @param	array		arrRecordTypes		array storing all RecordType data
-	 *											structure:
-	 *											arrRecordTypes[].Id
-	 *															.ServiceType
-	 *															.Name
 	 * @return	void
 	 * @method
 	 */
-	//this.InitialiseForm = function(arrRecordTypes)
-	//{
-	//	this._arrRecordTypes = arrRecordTypes;
-	//}
+	this.InitialiseForm = function()
+	{
+		document.getElementById("Rate.StartTime").disabled="true";
+		document.getElementById("Rate.EndTime").disabled="true";
+		document.getElementById("Rate.Duration").disabled="true";
+		
+		document.getElementById("Rate.StartTime").style.color = "#000000";
+		document.getElementById("Rate.EndTime").style.color = "#000000";
+		document.getElementById("Rate.Duration").style.color = "#000000";
+
+		var elmPassThroughCheckbox = document.getElementById("Rate.PassThrough");
+
+		elmPassThroughCheckbox.addEventListener("change", PassThroughOnChange, false);
+		
+		//  Initialise what is visible on the form
+		PassThroughOnChange();
+	}
+	
+	// This should only be visible from within this class, so we don't have to worry about its name conflicting with any
+	// other javascript functions that are loaded in memory.  I would have made it a method of the class, but then
+	// it wouldn't work properly as an event listener
+	function PassThroughOnChange()
+	{
+		var elmPassThroughCheckbox = document.getElementById("Rate.PassThrough");
+		
+		if (elmPassThroughCheckbox.checked)
+		{
+			Vixen.RateAdd.RateCapOnChange(RATE_CHARGES_HIDE);
+		}
+		else
+		{
+			Vixen.RateAdd.RateCapOnChange(RATE_CHARGES_SHOW);
+		}
+	}
+	
 	
 	this.RateCapOnChange = function(intRateCap)
 	{
@@ -101,9 +131,22 @@ function VixenRateAddClass()
 				// show the excess details required for a cap
 				document.getElementById('ExcessDetailDiv').style.display='inline';
 				break;
+			case RATE_CHARGES_SHOW:
+				document.getElementById('RateDetailDiv').style.display = 'inline';
+				document.getElementById('CapMainDetailDiv').style.display = 'inline';
+				document.getElementById('CapDetailDiv').style.display = 'none';
+				document.getElementById('ExcessDetailDiv').style.display = 'none';				
+				break;
+			case RATE_CHARGES_HIDE:
+				document.getElementById('RateDetailDiv').style.display = 'none';
+				document.getElementById('CapMainDetailDiv').style.display = 'none';
+				document.getElementById('CapDetailDiv').style.display = 'none';
+				document.getElementById('ExcessDetailDiv').style.display = 'none';
+				break;
 		}
 	}
 }
+
 
 // instantiate the object
 Vixen.RateAdd = new VixenRateAddClass;

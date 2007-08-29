@@ -121,6 +121,9 @@ define('RATE_CAP_STANDARD_RATE_PER_UNIT', 109);
 define('RATE_CAP_STANDARD_MARKUP', 110);
 define('RATE_CAP_STANDARD_PERCENTAGE', 111);
 
+define('RATE_CHARGES_SHOW', 112);
+define('RATE_CHARGES_HIDE', 113);
+
 // Target Types - used to determine how to handle an ajax call
 define("TARGET_TYPE_DIV", 	"Div");
 define("TARGET_TYPE_POPUP",	"Popup");

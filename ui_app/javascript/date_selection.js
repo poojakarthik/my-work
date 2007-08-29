@@ -46,7 +46,6 @@
 				this.objBar_Moving.objWeekPlanner = this.objWeekPlanner;
 				this.objBar_Moving.className = "Moving";
 
-
 				//setting left most block of movable time block
 				var strStartTime = document.getElementById("Rate.StartTime").value;
 				var arrStartTime = new Array();
@@ -226,8 +225,8 @@
 				}
 			
 				// update the values in the textbox
-				document.getElementById("Rate.StartTime").value = startHour + ":" + startMinute;
-				document.getElementById("Rate.EndTime").value = ceaseHour + ":" + ceaseMinute;
+				document.getElementById("Rate.StartTime").value = startHour + ":" + startMinute + ":00";
+				document.getElementById("Rate.EndTime").value = ceaseHour + ":" + ceaseMinute + ":59";
 				document.getElementById("Rate.Duration").value = durationHours + ":" + durationMinutes;
 			}
 			this.init();
