@@ -278,7 +278,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					{
 						// The Rate Group is currently saved as a draft.  Flag it as such
 						$strDraft = "draft='draft'";
-						$strName = "[DRAFT] - ". htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
+						$strName = "DRAFT: ". htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
 						$strName = "<span class='DefaultOutputSpan'>$strName</span>";
 					}
 					else

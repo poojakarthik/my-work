@@ -280,13 +280,17 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 				$strRateName 	= htmlspecialchars($arrRate['Name'], ENT_QUOTES);
 				$strDescription = htmlspecialchars($arrRate['Description'], ENT_QUOTES);
 				$strDraft 		= "";
+				if ($arrRate['Fleet'])
+				{
+					$strRateName = "Fleet: " . $strRateName;
+				}
 				if ($arrRate['Draft'])
 				{
 					$strDraft = "draft='draft'";
-					$strRateName  = "[DRAFT] - " . $strRateName;
+					$strRateName  = "DRAFT: " . $strRateName;
 				}
 				
-				if (isset($arrRate['Selected']) && $arrRate['Selected'] == TRUE)
+				if ($arrRate['Selected'])
 				{
 					// The rate is currently selected
 					$strSelectedRates .= "<option value='$intRateId' title='$strDescription' $strDraft>$strRateName</option>";
@@ -341,6 +345,7 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "<tr>\n";
 		echo "<td align='left'>\n";
 		echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.AddNewRate()\"></input>\n";
+		echo "<input type='button' value='Edit Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.EditRate()\"></input>\n";
 		echo "</td>\n";
 		echo "<td colspan='2' align='right'>\n";
 		echo "<input type='button' value='Preview Rate Summary' class='InputSubmit' onclick=\"javascript: alert('Dont forget to do this');\"></input>\n";

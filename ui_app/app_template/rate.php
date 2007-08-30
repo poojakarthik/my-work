@@ -45,10 +45,10 @@
  *
  *
  * @package	ui_app
- * @class	AppTemplaterate
+ * @class	AppTemplateRate
  * @extends	ApplicationTemplate
  */
-class AppTemplaterate extends ApplicationTemplate
+class AppTemplateRate extends ApplicationTemplate
 {
 
 	//------------------------------------------------------------------------//
@@ -182,21 +182,37 @@ class AppTemplaterate extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	// This is used to update the "Add Rate Group" page, when a rate has been added and the "Add Rate" popup window is closed
+
+	//------------------------------------------------------------------------//
+	// _UpdateAddRateGroupPage
+	//------------------------------------------------------------------------//
+	/**
+	 * _UpdateAddRateGroupPage()
+	 *
+	 * Executes javascript associated with the "Add Rate Group" page, in order to update it, after a Rate has been saved
+	 * 
+	 * Executes javascript associated with the "Add Rate Group" page, in order to update it, after a Rate has been saved
+	 * It is assumed DBO()->Rate contains a valid Rate
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
 	private function _UpdateAddRateGroupPage()
 	{
 		Ajax()->AddCommand("ClosePopup", "AddRatePopup");
 		Ajax()->AddCommand("Alert", "The Rate was successfully saved");
 		
-		$intRateId		= DBO()->Rate->Id->Value;
+		$arrRate['Id']			= DBO()->Rate->Id->Value;
+		$arrRate['Description']	= DBO()->Rate->Description->Value;
+		$arrRate['Name']		= DBO()->Rate->Name->Value;
+		$arrRate['RecordType'] 	= DBO()->Rate->RecordType->Value;
+		$arrRate['Draft']		= (DBO()->Rate->Archived->Value == 2) ? 1 : 0;
+		$arrRate['Fleet']		= (DBO()->Rate->Fleet->Value == TRUE) ? 1 : 0;
 		
-		// All special chars have to be converted to their html safe versions
-		$strDescription	= htmlspecialchars(DBO()->Rate->Description->Value, ENT_QUOTES);
-		$strName		= htmlspecialchars(DBO()->Rate->Name->Value, ENT_QUOTES);
-		$intRecordType	= DBO()->Rate->RecordType->Value;
-		$bolDraft		= (DBO()->Rate->Archived->Value == 2) ? 1 : 0;
+		$objRate = Json()->encode($arrRate);
 		
-		$strJavascript = "Vixen.RateGroupAdd.ChooseRate($intRateId, \"$strDescription\", \"$strName\", $intRecordType, $bolDraft);";
+		$strJavascript = "Vixen.RateGroupAdd.AddRatePopupOnClose($objRate);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	

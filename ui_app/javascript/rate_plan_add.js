@@ -76,40 +76,37 @@ function VixenRatePlanAddClass()
 	}
 	
 	//------------------------------------------------------------------------//
-	// ChooseRateGroup
+	// AddRateGroupPopupOnClose
 	//------------------------------------------------------------------------//
 	/**
-	 * ChooseRateGroup
+	 * AddRateGroupPopupOnClose
 	 *
-	 * This is executed to add a new rate group to its appropriate combo box, and make it the selected rate group for its record type
+	 * This is executed when the "Add Rate Group" popup is closed and it needs to update the "Add Rate Plan" page
 	 *  
-	 * This is executed to add a new rate group to its appropriate combo box, and make it the selected rate group for its record type
+	 * This is executed when the "Add Rate Group" popup is closed and it needs to update the "Add Rate Plan" page
 	 * This is called by the "Add Rate Group" popup when a rate group has been added and the popup closes
 	 *
-	 * @param	int		intId			Id of the Rate Group
-	 * @param	string	strName			Name of the Rate Group (used to identify it in the combo box)
-	 * @param	int		intRecordType	Record Type of the Rate Group (used to work out which combo box it belongs to)
-	 * @param	bol		bolFleet		flags whether it is a Fleet Rate Group or Regular Rate group (used to work out which combo box it belongs to)
-	 * @param	bol		bolDraft		flags whether it is a draft Rate Group or not
+	 * @param	object	objRateGroup	Defines a new Rate Group.  It contains the properties:
+	 *									Id, Name, RecordType, Fleet, Draft
 	 *
 	 * @return	void
 	 * @method
 	 */
-	this.ChooseRateGroup = function(intId, strName, intRecordType, bolFleet, bolDraft)
+	this.AddRateGroupPopupOnClose = function(objRateGroup)
 	{
 		var strComboId;
 		
-		//alert("RateGroupId = " + intId + " Description = " + strDescription + " RecordType = " + intRecordType + " Fleet = " + bolFleet);
+		//alert("RateGroupId = " + objRateGroup.Id + " Name = " + objRateGroup.Name + " RecordType = " + objRateGroup.RecordType + " Fleet = " + objRateGroup.Fleet);
 		
-		if (bolFleet)
+		if (objRateGroup.Fleet)
 		{
 			// The rate group is a fleet rate group
-			strComboId = "RateGroup" + intRecordType + ".FleetRateGroupId";
+			strComboId = "RateGroup" + objRateGroup.RecordType + ".FleetRateGroupId";
 		}
 		else
 		{
 			// The rate group is not a fleet rate group
-			strComboId = "RateGroup" + intRecordType + ".RateGroupId";
+			strComboId = "RateGroup" + objRateGroup.RecordType + ".RateGroupId";
 		}
 		
 		// Get the combo box associated with this particular record type
@@ -121,14 +118,14 @@ function VixenRatePlanAddClass()
 		}
 		
 		// create a new option element
-		var elmNewRateGroupOption = document.createElement('option');
-		elmNewRateGroupOption.value = intId;
-		elmNewRateGroupOption.text = strName;
-		elmNewRateGroupOption.selected = TRUE;
+		var elmNewRateGroupOption		= document.createElement('option');
+		elmNewRateGroupOption.value		= objRateGroup.Id;
+		elmNewRateGroupOption.text		= objRateGroup.Name;
+		elmNewRateGroupOption.selected	= TRUE;
 		
-		if (bolDraft)
+		if (objRateGroup.Draft)
 		{
-			elmNewRateGroupOption.text = "[DRAFT] - " + elmNewRateGroupOption.text;
+			elmNewRateGroupOption.text = "DRAFT: " + elmNewRateGroupOption.text;
 			elmNewRateGroupOption.setAttribute('draft', 'draft');
 		}
 
@@ -151,6 +148,7 @@ function VixenRatePlanAddClass()
 			{
 				// insert the new option just before the current one
 				elmRateGroupCombo.insertBefore(elmNewRateGroupOption, elmRateGroupCombo.options[i]);
+				elmRateGroupCombo.selectedIndex = elmNewRateGroupOption.index;
 				elmRateGroupCombo.focus();
 				return;
 			}
@@ -158,6 +156,7 @@ function VixenRatePlanAddClass()
 		
 		// The option should either be the last in the list, or there are no other options in the list.  Append the option to the end of the list
 		elmRateGroupCombo.appendChild(elmNewRateGroupOption);
+		elmRateGroupCombo.selectedIndex = elmNewRateGroupOption.index;
 		elmRateGroupCombo.focus();
 	}
 	

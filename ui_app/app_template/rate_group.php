@@ -152,66 +152,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		return TRUE;
 	}
 	
-	// Draws the Rate Selector Control used in the "Add Rate Group" form
-	// It is a precondition that DBO()->RecordType->Id->Value has been set
-	// DBO()->RateGroup->Id->Value can also be set
-	function SetRateSelectorControl()
-	{
-		$selRates = new StatementSelect("Rate", "Id, Name, Description, Archived", "RecordType=<RecordType> AND Archived != 1", "Description", NULL);
-		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
-		$arrRecords = $selRates->FetchAll();
-
-		// If a RateGroup.Id has been specified then we want to mark which of these rates belong to it
-		if (DBO()->RateGroup->Id->Value)
-		{
-			$selRateGroupRates = new StatementSelect("RateGroupRate", "Id, RateGroup, Rate", "RateGroup=<RateGroup>", NULL, NULL);
-			$selRateGroupRates->Execute(Array("RateGroup" => DBO()->RateGroup->Id->Value));
-			$arrRateGroupRates = $selRateGroupRates->FetchAll();
-		}
-
-		$arrRates = Array();
-		$arrRate = Array();
-		foreach ($arrRecords as $arrRecord)
-		{
-			$arrRate['Id'] = $arrRecord['Id'];
-			$arrRate['Name'] = $arrRecord['Name'];
-			$arrRate['Description'] = $arrRecord['Description'];
-			
-			if ($arrRate['Archived'] == 2)
-			{
-				// Flag the rate as being a Draft
-				$arrRate['Draft'] = TRUE;
-			}
-			else
-			{
-				$arrRate['Draft'] = FALSE;
-			}
-			
-			// Check if this Rate currently belongs to the specified RateGroup
-			$arrRate['Selected'] = FALSE;
-			if (DBO()->RateGroup->Id->Value)
-			{
-				foreach ($arrRateGroupRates as $arrRateGroupRate)
-				{
-					if ($arrRateGroupRate['Rate'] == $arrRate['Id'])
-					{
-						// This Rate belongs to the RateGroup
-						$arrRate['Selected'] = TRUE;
-						break;
-					}
-				}
-			}
-			
-			$arrRates[] = $arrRate;
-		}
-		
-		DBO()->Rates->ArrRates = $arrRates;
-		
-		
-		Ajax()->RenderHtmlTemplate("RateGroupAdd", HTML_CONTEXT_RATES, "RateSelectorControlDiv");
-		return TRUE;
-	}
-	
 	// Validates the Rate Group
 	private function _ValidateRateGroup()
 	{
@@ -385,18 +325,102 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// The Rate Group has been saved successfully
 		return TRUE;
 	}
-	
-	// Updates the "Add Rate Plan" page
-	function _UpdateAddRatePlanPage()
+
+	//------------------------------------------------------------------------//
+	// SetRateSelectorControl
+	//------------------------------------------------------------------------//
+	/**
+	 * SetRateSelectorControl()
+	 *
+	 * Draws the Rate Selector Control used in the "Add Rate Group" form
+	 * 
+	 * Draws the Rate Selector Control used in the "Add Rate Group" form
+	 * This will only work with the "Add Rate Group" popup webpage as it assumes specific DBObjects have been defined within DBO()
+	 * This function expects DBO()->RecordType->Id to be set, as it only displays the Rates for a specified RecordType
+	 * If DBO()->RateGroup->Id is set then it will flag which Rates are currently used by the RateGroup
+	 *
+	 * @return		bool			TRUE
+	 * @method
+	 *
+	 */
+	function SetRateSelectorControl()
 	{
-		$intRateGroupId = DBO()->RateGroup->Id->Value;
-		// All special chars have to be converted to their html safe versions
-		$strName = htmlspecialchars(DBO()->RateGroup->Name->Value, ENT_QUOTES);
-		$intRecordType = DBO()->RateGroup->RecordType->Value;
-		$bolFleet = DBO()->RateGroup->Fleet->Value ? 1 : 0;
-		$bolDraft = (DBO()->RateGroup->Archived->Value == 2) ? 1 : 0;
+		$selRates = new StatementSelect("Rate", "Id, Name, Description, Fleet, Archived", "RecordType=<RecordType> AND Archived != 1", "Description", NULL);
+		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
+		$arrRecords = $selRates->FetchAll();
+
+		// If a RateGroup.Id has been specified then we want to mark which of these rates belong to it
+		if (DBO()->RateGroup->Id->Value)
+		{
+			$selRateGroupRates = new StatementSelect("RateGroupRate", "Id, RateGroup, Rate", "RateGroup=<RateGroup>", NULL, NULL);
+			$selRateGroupRates->Execute(Array("RateGroup" => DBO()->RateGroup->Id->Value));
+			$arrRateGroupRates = $selRateGroupRates->FetchAll();
+		}
+
+		$arrRates = Array();
+		$arrRate = Array();
+		foreach ($arrRecords as $arrRecord)
+		{
+			$arrRate['Id']			= $arrRecord['Id'];
+			$arrRate['Name']		= $arrRecord['Name'];
+			$arrRate['Description']	= $arrRecord['Description'];
+			$arrRate['Draft']		= ($arrRecord['Archived'] == 2);
+			$arrRate['Fleet']		= ($arrRecord['Fleet'] == 1);
+			
+			// Check if this Rate currently belongs to the specified RateGroup
+			$arrRate['Selected']	= FALSE;
+			if (DBO()->RateGroup->Id->Value)
+			{
+				foreach ($arrRateGroupRates as $arrRateGroupRate)
+				{
+					if ($arrRateGroupRate['Rate'] == $arrRate['Id'])
+					{
+						// This Rate belongs to the RateGroup
+						$arrRate['Selected'] = TRUE;
+						break;
+					}
+				}
+			}
+			
+			// Add the rate to the list of rates
+			$arrRates[] = $arrRate;
+		}
 		
-		$strJavascript = "Vixen.RatePlanAdd.ChooseRateGroup($intRateGroupId, \"$strName\", $intRecordType, $bolFleet, $bolDraft);";
+		// Wrap the list of rates in a property of a DBObject so that it is accessible by HtmlTemplates
+		DBO()->Rates->ArrRates = $arrRates;
+		
+		// Render the RateSelectorControl HtmlTemplate
+		Ajax()->RenderHtmlTemplate("RateGroupAdd", HTML_CONTEXT_RATES, "RateSelectorControlDiv");
+		return TRUE;
+	}
+
+
+	//------------------------------------------------------------------------//
+	// _UpdateAddRatePlanPage
+	//------------------------------------------------------------------------//
+	/**
+	 * _UpdateAddRatePlanPage()
+	 *
+	 * Executes javascript associated with the "Add Rate Plan" page, in order to update it, after a Rate Group has been saved
+	 * 
+	 * Executes javascript associated with the "Add Rate Plan" page, in order to update it, after a Rate Group has been saved
+	 * It is assumed DBO()->RateGroup contains a valid RateGroup
+	 *
+	 * @return		void
+	 * @method
+	 *
+	 */
+	private function _UpdateAddRatePlanPage()
+	{
+		$arrRateGroup['Id'] = DBO()->RateGroup->Id->Value;
+		$arrRateGroup['Name'] = DBO()->RateGroup->Name->Value;
+		$arrRateGroup['RecordType'] = DBO()->RateGroup->RecordType->Value;
+		$arrRateGroup['Fleet'] = DBO()->RateGroup->Fleet->Value ? 1 : 0;
+		$arrRateGroup['Draft'] = (DBO()->RateGroup->Archived->Value == 2) ? 1 : 0;
+
+		$objRateGroup = Json()->encode($arrRateGroup);
+		
+		$strJavascript = "Vixen.RatePlanAdd.AddRateGroupPopupOnClose($objRateGroup);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	

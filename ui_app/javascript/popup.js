@@ -349,6 +349,21 @@ function VixenPopupClass()
 		Vixen.Ajax.Send(objParams);
 	}
 	
+	// Replicates the functionality of the standard javascript "alert" function
+	// the parameter strSize is optional and defaults to "medium"
+	this.Alert = function(strMessage, strSize)
+	{
+		// set a default value for strSize
+		if (strSize == null)
+		{
+			strSize = "medium";
+		}
+	
+		strContent =	"<p><div align='center'>" + strMessage + 
+						"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\")'><br></div>\n" +
+						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
+		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
+	}
 	
 }
 

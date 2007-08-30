@@ -44,6 +44,25 @@
  */
 class AppTemplatePlan extends ApplicationTemplate
 {
+
+	//------------------------------------------------------------------------//
+	// _arrRateGroups
+	//------------------------------------------------------------------------//
+	/**
+	 * _arrRateGroups
+	 *
+	 * List of RateGroups that will be associated with a Rate Plan, when saving a RatePlan
+	 *
+	 * List of RateGroups that will be associated with a Rate Plan, when saving a RatePlan
+	 * This is modified by the _ValidatePlan method and used by the _SavePlan method
+	 *
+	 * @type		array
+	 *
+	 * @property
+	 */
+	private $_arrRateGroups = Array();
+	
+
 	function View()
 	{
 		if (SubmittedForm("RatePlanFilter"))
@@ -289,8 +308,6 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * Validates the Rate Plan
 	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
 	 *
-	 * @param		bool	$bolSaveAsDraft		TRUE if the plan is to be saved as a draft, FALSE if the plan is to be committed to the database
-	 *
 	 * @return		mix							returns TRUE if the new RatePlan saved successfully, else it returns
 	 *											a specific error message detailing why the RatePlan could not be saved
 	 * @method
@@ -298,29 +315,44 @@ class AppTemplatePlan extends ApplicationTemplate
 	 */
 	private function _ValidatePlan($bolSaveAsDraft=FALSE)
 	{
-		// Validate the fields
+		/* 
+		 * Validation process:
+		 *		V1: Check that a Name and Description have been declared						(implemented via UiAppDocumentation table of database)
+		 *		V1: Check that the MinCharge, ChargeCap and UsageCap are valid monetary values	(implemented via UiAppDocumentation table of database)
+		 *		V2: Check that CarrierFullService and CarrierPreselection have been declared	(implemented)
+		 *		V3: Check that a service type has been declared									(implemented)
+		 *		V4: Check that the Name is unique when compared with all other Rate Plans (including all archived and draft plans)	(implemented)
+		 *		V5: Check that a non-fleet Rate Group has been declared for each RecordType which is Required						(implemented)
+		 */
+	
+		// V1: Validate the fields
 		if (DBO()->RatePlan->IsInvalid())
 		{
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: Invalid fields are highlighted";
 		}
+		
+		// V2: CarrierFullService
 		if (!DBO()->RatePlan->CarrierFullService->Value)
 		{
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: A Full Service Carrier must be selected";
 		}
+		// V2: CarrierPreselection
 		if (!DBO()->RatePlan->CarrierPreselection->Value)
 		{
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: A Carrier Preselection must be selected";
 		}
+		
+		// V3: ServiceType
 		if (!DBO()->RatePlan->ServiceType->Value)
 		{
 			Ajax()->RenderHtmlTemplate('PlanAdd', HTML_CONTEXT_DETAILS, "RatePlanDetailsId");
 			return "ERROR: A service type must be selected";
 		}
 		
-		// Make sure the name of the rate plan isn't currently in use
+		// V4: Make sure the name of the rate plan isn't currently in use
 		if (DBO()->RatePlan->Id->Value == 0)
 		{
 			// The RatePlan name should not be in the database
@@ -341,12 +373,10 @@ class AppTemplatePlan extends ApplicationTemplate
 		}
 		
 		
-		// Check that a rate group has been defined for each RecordType that has been marked as required
+		// V5: Check that a rate group has been defined for each RecordType that has been marked as required
 		DBL()->RecordType->ServiceType = DBO()->RatePlan->ServiceType->Value;
 		DBL()->RecordType->Load();
 		
-		$arrRateGroups = Array();
-
 		// Find the declared rate group for each RecordType required of the RatePlan
 		foreach (DBL()->RecordType as $dboRecordType)
 		{
@@ -370,20 +400,20 @@ class AppTemplatePlan extends ApplicationTemplate
 				elseif ($intRateGroup > 0)
 				{
 					// add the rategroup to the list of rate groups
-					$arrRateGroups[] = $intRateGroup;
+					$this->_arrRateGroups[] = $intRateGroup;
 				}
 				
 				if ($intFleetRateGroup > 0)
 				{
 					// Add the fleet rate group to the list of rate groups
-					$arrRateGroups[] = $intFleetRateGroup;
+					$this->_arrRateGroups[] = $intFleetRateGroup;
 				}
 			}
 			elseif ($dboRecordType->Required->Value == TRUE)
 			{
 				// The RatePlan requires a RateGroup of this RecordType, but one has not been declared
 				//NOTE! This is only run if the RecordType was not associated with the ServiceType before loading the RateGroupDiv contents
-				$this->GetPlanDeclareRateGroupsHtmlTemplate();
+				$this->GetRateGroupsForm();
 				return "ERROR: strObject = '$strObject' intRecCount=$intRecCount objectsChecked=$strObjectsChecked A new record type has been associated with this service type, since you chose the service type of the plan";
 			}
 			else
@@ -392,11 +422,6 @@ class AppTemplatePlan extends ApplicationTemplate
 				continue;
 			}
 		}
-		
-		// Retrieve a list of all the Rate Groups associated with the Rate Plan
-		$strWhere = "Id IN (". implode(",", $arrRateGroups) .")";
-		DBL()->RateGroup->Where->SetString($strWhere);
-		DBL()->RateGroup->Load();
 		
 		// All validation has been completed successfully
 		return TRUE;
@@ -413,8 +438,6 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * Saves the records to the database, required for defining a RatePlan
 	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
 	 *
-	 * @param		bool	$bolSaveAsDraft		TRUE if the plan is to be saved as a draft, FALSE if the plan is to be committed to the database
-	 *
 	 * @return		mix							returns TRUE if the new RatePlan saved successfully, else it returns
 	 *											a specific error message detailing why the RatePlan could not be saved
 	 * @method
@@ -422,7 +445,21 @@ class AppTemplatePlan extends ApplicationTemplate
 	 */
 	private function _SavePlan()
 	{
-		// Setup the remaing fields required of a RatePlan record
+		/* 
+		 * Saving process:
+		 *		S1: Set up values for properties of the RatePlan object that are not already defined, or not in their database correct format
+		 *		S2: Save the record to the RatePlan table
+		 *		S3: Remove any records in the RatePlanRateGroup table
+		 *		S4: For each RateGroup belonging to this RatePlan:
+		 *				add a record to the RatePlanRateGroup table
+		 *		S5: If the RatePlan is being Committed: (not being saved as a draft)
+		 *				For each draft RateGroup belonging to this RatePlan:
+		 *					update the Archived property of the RateGroup in the RateGroup table so that it is now a committed RateGroup, not a draft
+		 *					For each draft Rate belonging to the draft RateGroup:
+		 *						update the Archived property of the Rate in the Rate table so that it is now a committed Rate, not a draft
+		 */
+	
+		// S1: Setup the remaing fields required of a RatePlan record
 		DBO()->RatePlan->MinMonthly	= ltrim(DBO()->RatePlan->MinMonthly->Value, "$");
 		DBO()->RatePlan->ChargeCap	= ltrim(DBO()->RatePlan->ChargeCap->Value, "$");
 		DBO()->RatePlan->UsageCap	= ltrim(DBO()->RatePlan->UsageCap->Value, "$");
@@ -438,40 +475,36 @@ class AppTemplatePlan extends ApplicationTemplate
 			DBO()->RatePlan->Archived = 0;
 		}
 		
-		// Save the plan to the database
+		// S2: Save the plan to the database
 		if (!DBO()->RatePlan->Save())
 		{
 			// Saving failed
 			return "ERROR: Saving the RatePlan to the RatePlan database table failed, unexpectedly";
 		}
 		
-		// Remove all records from the RatePlanRateGroup table where RatePlan == DBO()->RatePlan->Id->Value
+		// S3: Remove all records from the RatePlanRateGroup table where RatePlan == DBO()->RatePlan->Id->Value
 		$delRatePlanRateGroup = new Query();
 		$delRatePlanRateGroup->Execute("DELETE FROM RatePlanRateGroup WHERE RatePlan = " . DBO()->RatePlan->Id->Value);
 
-		// Save each of the RateGroups associated with the RatePlan to the RatePlanRateGroup table
-		$arrRateGroups = Array();
+		// S4: Save each of the RateGroups associated with the RatePlan to the RatePlanRateGroup table
 		DBO()->RatePlanRateGroup->RatePlan = DBO()->RatePlan->Id->Value;
-		foreach (DBL()->RateGroup as $dboRateGroup)
+		foreach ($this->_arrRateGroups as $intRateGroup)
 		{
 			DBO()->RatePlanRateGroup->Id = 0;
-			DBO()->RatePlanRateGroup->RateGroup = $dboRateGroup->Id->Value;
+			DBO()->RatePlanRateGroup->RateGroup = $intRateGroup;
 			
 			if (!DBO()->RatePlanRateGroup->Save())
 			{
 				// Saving failed
 				return "ERROR: Saving one of the RateGroup - RatePlan associations failed, unexpectedly.<br />The RatePlan has not been saved";
 			}
-			
-			// This array is used to commit draft RateGroups and draft Rates used by this RatePlan, but only if the RatePlan is being committed
-			$arrRateGroups[] = $dboRateGroup->Id->Value;
 		}
 		
-		// If the RatePlan is being committed then all draft RateGroups used by it must be commited and all draft Rates
+		// S5: If the RatePlan is being committed then all draft RateGroups used by it must be commited and all draft Rates
 		// used by the draft RateGroups must be committed
-		if (SubmittedForm('AddPlan', 'Commit'))
+		if ((SubmittedForm('AddPlan', 'Commit')) && (count($this->_arrRateGroups) > 0))
 		{
-			$strRateGroups 	= implode(',', $arrRateGroups);
+			$strRateGroups 	= implode(',', $this->_arrRateGroups);
 			$arrUpdate		= Array("Archived" => 0);
 			$updRateGroups 	= new StatementUpdate("RateGroup", "Archived = 2 AND Id IN ($strRateGroups)", $arrUpdate);
 			$updRates 		= new StatementUpdate("Rate", "Archived = 2 AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup IN ($strRateGroups))", $arrUpdate);
@@ -501,6 +534,8 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * 
 	 * Renders the Rate Groups delaration section of the "Add Rate Plan" form, via an ajax command
 	 * This will only work with the "Add Rate Plan" webpage as it assumes specific DBObjects have been defined within DBO()
+	 * This function expects DBO()->ServiceType->Id to be set, as it only displays the RateGroups for the RecordTypes belonging to the ServiceType
+	 * If DBO()->RatePlan->Id is set then it will flag which RateGroups are currently used by the RatePlan
 	 *
 	 * @return		bool			TRUE if successfull
 	 * @method
@@ -545,9 +580,6 @@ class AppTemplatePlan extends ApplicationTemplate
 				}
 			}
 		}
-		
-		
-		
 		
 		// Render the html template
 		Ajax()->RenderHtmlTemplate("PlanAdd", HTML_CONTEXT_RATE_GROUPS, "RateGroupsDiv");
