@@ -365,6 +365,32 @@ function VixenPopupClass()
 		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
 	}
 	
+	//TODO! This functionality doesn't currently work
+	this._intButtonSelected = null;
+	this.ConfirmBox = function(strMessage, strSize)
+	{
+		// set a default value for strSize
+		if (strSize == null)
+		{
+			strSize = "medium";
+		}
+	
+		this._intButtonSelected = null;
+		
+		strContent =	"<p><div align='center'>" + strMessage + 
+						"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");Vixen.Popup._intButtonSelected = \"Ok\";'><br></div>\n" +
+						"<p><input type='button' id='VixenAlertOkButton' value='Cancel' onClick='Vixen.Popup.Close(\"VixenAlertBox\");Vixen.Popup._intButtonSelected = \"Cancel\";'><br></div>\n" +
+						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
+		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'modal');
+	
+		while (this._intButtonSelected == null)
+		{
+			// loop until a button is pressed
+		}
+		
+		return this._intButtonSelected;
+	}
+	
 }
 
 // Create an instance of the Vixen menu class

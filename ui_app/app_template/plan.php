@@ -199,6 +199,14 @@ class AppTemplatePlan extends ApplicationTemplate
 		AuthenticatedUser()->CheckAuth();
 		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
 		
+		// context menu
+		ContextMenu()->Admin_Console();
+		ContextMenu()->Logout();
+		
+		// breadcrumb menu
+		BreadCrumb()->Admin_Console();
+		BreadCrumb()->SetCurrentPage("Add Rate Plan");
+		
 		// Handle form submittion
 		if (SubmittedForm('AddPlan', 'Commit') || SubmittedForm('AddPlan', 'Save as Draft'))
 		{
@@ -274,6 +282,15 @@ class AppTemplatePlan extends ApplicationTemplate
 				$this->LoadPage('error');
 				return FALSE;
 			}
+			
+			// Make sure the Rate Plan is a draft
+			if (DBO()->RatePlan->Archived->Value != ARCHIVE_STATUS_DRAFT)
+			{
+				// Can't edit the Rate Plan
+				DBO()->Error->Message = "The RatePlan with id:". DBO()->RatePlan->Id->value ." and Name \"". DBO()->RatePlan->Name->Value ."\" is not a draft and therefore cannot be edited";
+				$this->LoadPage('error');
+				return FALSE;
+			}
 		}
 		else
 		{
@@ -281,16 +298,6 @@ class AppTemplatePlan extends ApplicationTemplate
 			DBO()->RatePlan->Id = 0;
 		}
 		
-		
-		
-		// context menu
-		ContextMenu()->Admin_Console();
-		ContextMenu()->Logout();
-		
-		// breadcrumb menu
-		BreadCrumb()->Admin_Console();
-		BreadCrumb()->SetCurrentPage("Add Rate Plan");
-	
 		$this->LoadPage('rate_plan_add');
 
 		return TRUE;
@@ -576,6 +583,7 @@ class AppTemplatePlan extends ApplicationTemplate
 					{
 						// Mark this rate group as being selected
 						$dboRateGroup->Selected = TRUE;
+						break;
 					}
 				}
 			}

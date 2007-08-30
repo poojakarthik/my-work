@@ -989,7 +989,7 @@ class HtmlTemplate extends BaseTemplate
 		$strName = "VixenButton_". str_replace(" ", "", $strLabel);
 		//$strId = rand();
 		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
-		echo "<input type='button' class='$strStyleClass' id='$strName' name='$strName' value='$strLabel' onClick='$strHref'></input>\n";
+		echo "<input type='button' class='$strStyleClass' id='$strName' name='$strName' value='$strLabel' onclick='$strHref'></input>\n";
 	}
 	
 	// You may wish to include $strTarget as a parameter as it is what is used to determine

@@ -181,7 +181,7 @@ function VixenRatePlanAddClass()
 		if (elmRateGroupCombo.value == 0)
 		{
 			// A Rate Group has not been selected
-			alert("No Rate Group has been selected");
+			Vixen.Popup.Alert("No Rate Group has been selected");
 			return;
 		}
 		

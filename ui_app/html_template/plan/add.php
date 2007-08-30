@@ -131,9 +131,12 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			// Stick in the div container for the DeclareRateGroups table
 			echo "<div id='RateGroupsDiv'></div>\n";
 			
-			// create the buttons
+			// Create the buttons
+			// Workout where to go if the user clicks on the Cancel button
+			$strOnCancelRelocation = (DBO()->CallingPage->Href->IsSet) ? DBO()->CallingPage->Href->Value : Href()->AdminConsole();
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<div class='Right'>\n";
+			$this->Button("Cancel", "location.href=\"$strOnCancelRelocation\"");
 			$this->AjaxSubmit("Save as Draft");
 			$this->AjaxSubmit("Commit");
 			echo "</div>\n";
@@ -290,11 +293,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					}
 					
 					// Flag this option as being selected if it is the currently selected RateGroup for this RecordType
-					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
-					if (!DBO()->{$strObject}->{$strProperty}->IsSet && $dboRateGroup->Selected->IsSet)
-					{
-						$strSelected = "selected='selected'";
-					}
+					$strSelected = (!DBO()->{$strObject}->{$strProperty}->IsSet && $dboRateGroup->Selected->IsSet) ? "selected='selected'" : "";
 					$strRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strName ."</option>";
 				}
 			}
@@ -321,7 +320,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					{
 						// The Rate Group is currently saved as a draft.  Flag it as such
 						$strDraft = "draft='draft'";
-						$strName = "[DRAFT] - ". htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
+						$strName = "DRAFT: ". htmlspecialchars($dboRateGroup->Name->Value, ENT_QUOTES);
 						$strName = "<span class='DefaultOutputSpan'>$strName</span>";
 					}
 					else
@@ -333,7 +332,7 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 					}
 					
 					// Flag this option as being selected if it is the currently selected Fleet RateGroup for this RecordType
-					$strSelected = (DBO()->{$strObject}->{$strProperty}->Value == $dboRateGroup->Id->Value) ? "selected='selected'" : "";
+					$strSelected = (!DBO()->{$strObject}->{$strProperty}->IsSet && $dboRateGroup->Selected->IsSet) ? "selected='selected'" : "";
 					$strFleetRateGroupCell .= "<option value='". $dboRateGroup->Id->Value ."' $strSelected $strDraft>". $strName ."</option>";
 				}
 			}

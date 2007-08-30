@@ -212,17 +212,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		// Check that the selected Rates Cover all hours of the week and don't overlap unless they are destination based
 		//TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! 
-		$strWhere = "Id IN (";
-		foreach (DBO()->SelectedRates->ArrId->Value as $intId)
-		{
-			$strWhere .= "$intId, ";
-		}
-		$strWhere = substr($strWhere, 0, -2);
-		$strWhere .= ")";
+		$strWhere = "Id IN (". implode(",", DBO()->SelectedRates->ArrId->Value) .")";
 		DBL()->Rate->Where->SetString($strWhere);
 		DBL()->Rate->Load();
-		
-		
 		
 		// All Validation is complete, the RateGroup is valid
 		return TRUE;
@@ -300,6 +292,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// If the RateGroup is being committed to the database, as opposed to being saved, make sure all its associated rates are also committed
+		//TODO! This can be done using just 1 update query.  Check out how it is done in AppTemplatePlan->_SavePlan()
 		if (DBO()->RateGroup->Archived == 0)
 		{
 			// The Rate Group is being saved
@@ -423,5 +416,11 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strJavascript = "Vixen.RatePlanAdd.AddRateGroupPopupOnClose($objRateGroup);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
+	
+	private function _CheckTheRatesCoverAllTimesOfWeekForAllDestinations()
+	{
+		//TODO!
+	}
+	
 	
 }

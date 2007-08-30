@@ -29,7 +29,18 @@
  */
 
 // set the page title
-$this->Page->SetName('Add Rate Plan');
+if (DBO()->RatePlan->Id->Value > 0)
+{
+	// We are displaying a draft Rate Plan
+	$strPageName = "Edit Draft Rate Plan";
+}
+else
+{
+	// We want to add a new rate plan
+	$strPageName = "Add Rate Plan";
+}
+
+$this->Page->SetName($strPageName);
 
 // set the layout template for the page.
 $this->Page->SetLayout('1Column');
