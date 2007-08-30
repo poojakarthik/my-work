@@ -20,17 +20,11 @@
  * @language	PHP
  * @package		framework
  * @author		Ross Mullen
- * @version		7.05
+ * @version		7.08
  * @copyright	2007 VOIPTEL Pty Ltd
  * @license		NOT FOR EXTERNAL DISTRIBUTION
  *
  */
-
-/*==============================================================================
- My commenting helps with my understanding with the program, do not rephrase 
- or reword them unless absolutely necessary and then in plain understandable
- english!
-==============================================================================*/
 
 //----------------------------------------------------------------------------//
 // AppTemplaterate
@@ -50,20 +44,21 @@
  */
 class AppTemplateRate extends ApplicationTemplate
 {
-
 	//------------------------------------------------------------------------//
-	// add
+	// Add
 	//------------------------------------------------------------------------//
 	/**
-	 * add()
+	 * Add()
 	 *
-	 * Performs the logic for the rate_add.php webpage
-	 * 
-	 * Performs the logic for the rate_add.php webpage
+	 * Performs all the logic for adding a new rate
 	 *
-	 * @return		void
-	 * @method		add
+	 * Performs all the logic for adding a new rate, determines which of the 3
+	 * buttons has been pressed and process validation dependant upon this
 	 *
+	 * @param	void
+	 * @return	void
+	 *
+	 * @method
 	 */
 	function Add()
 	{
@@ -160,7 +155,7 @@ class AppTemplateRate extends ApplicationTemplate
 		}
 		 
 		// a removable hard coded value for a record within the rate table, change as necessary
-		//DBO()->Rate->Id = 14;
+		DBO()->Rate->Id = 12807;
 		
 		
 		// check if the Id of a rate has been supplied and if so load the rate
@@ -215,7 +210,23 @@ class AppTemplateRate extends ApplicationTemplate
 		$strJavascript = "Vixen.RateGroupAdd.AddRatePopupOnClose($objRate);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
-	
+
+	//------------------------------------------------------------------------//
+	// _ValidateAndSaveRate
+	//------------------------------------------------------------------------//
+	/**
+	 * _ValidateAndSaveRate()
+	 *
+	 * Validates the form, and flags any invalid fields
+	 *
+	 * Validates the form, and flags any invalid fields, also applies masks
+	 * before attempting to save to the database
+	 *
+	 * @param	void
+	 * @return	string	a string error message
+	 *
+	 * @method
+	 */
 	private function _ValidateAndSaveRate()
 	{
 		if (!DBO()->Rate->PassThrough->Value)
@@ -415,21 +426,21 @@ class AppTemplateRate extends ApplicationTemplate
 		
 		if (DBO()->Rate->PassThrough->Value)
 		{
-			DBO()->Rate->StdUnits = 0;
+			DBO()->Rate->StdUnits 		= 0;
 			DBO()->Rate->StdRatePerUnit = 0;
-			DBO()->Rate->StdMarkup = 0;
-			DBO()->Rate->StdPercentage = 0;
-			DBO()->Rate->StdMinCharge = 0;
-			DBO()->Rate->StdFlagfall = 0;
-			DBO()->Rate->CapUnits = 0;
-			DBO()->Rate->CapCost = 0;
-			DBO()->Rate->CapLimit = 0;
-			DBO()->Rate->CapUsage = 0;
+			DBO()->Rate->StdMarkup 		= 0;
+			DBO()->Rate->StdPercentage 	= 0;
+			DBO()->Rate->StdMinCharge 	= 0;
+			DBO()->Rate->StdFlagfall 	= 0;
+			DBO()->Rate->CapUnits 		= 0;
+			DBO()->Rate->CapCost 		= 0;
+			DBO()->Rate->CapLimit 		= 0;
+			DBO()->Rate->CapUsage 		= 0;
 			DBO()->Rate->ExsRatePerUnit = 0;
-			DBO()->Rate->ExsMarkup = 0;
-			DBO()->Rate->ExsPercentage = 0;
-			DBO()->Rate->ExsFlagfall = 0;
-			DBO()->Rate->ExsUnits = 0;
+			DBO()->Rate->ExsMarkup 		= 0;
+			DBO()->Rate->ExsPercentage 	= 0;
+			DBO()->Rate->ExsFlagfall 	= 0;
+			DBO()->Rate->ExsUnits 		= 0;
 		}
 		else
 		{		
@@ -441,7 +452,6 @@ class AppTemplateRate extends ApplicationTemplate
 			DBO()->Rate->CapUnits = (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS) ? DBO()->Rate->CapUnits->Value : 0;
 			DBO()->Rate->CapCost = (DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST) ? ltrim(DBO()->Rate->CapCost->Value, '$') : 0;
 			
-			//not trapping for no cap?? does it need to??
 			DBO()->Rate->CapLimit = (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_LIMIT) ? ltrim(DBO()->Rate->CapLimit->Value, '$') : 0;
 			DBO()->Rate->CapUsage = (DBO()->Rate->CapLimitting->Value == RATE_CAP_CAP_USAGE) ? DBO()->Rate->CapCost->Value : 0;
 			

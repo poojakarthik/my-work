@@ -1,9 +1,9 @@
 <?php
 //----------------------------------------------------------------------------//
-// HtmlTemplaterateadd
+// HtmlTemplateRateAdd
 //----------------------------------------------------------------------------//
 /**
- * HtmlTemplaterateadd
+ * HtmlTemplateRateAdd
  *
  * A specific HTML Template object
  *
@@ -17,13 +17,7 @@
  * @extends	HtmlTemplate
  */
  
- /*============================================================================
- My commenting helps with my understanding with the program, do not rephrase 
- or reword them unless absolutely necessary and then in plain understandable
- english!
- =============================================================================*/
- 
-class HtmlTemplaterateadd extends HtmlTemplate
+class HtmlTemplateRateAdd extends HtmlTemplate
 {
 	//------------------------------------------------------------------------//
 	// _intContext
@@ -97,17 +91,25 @@ class HtmlTemplaterateadd extends HtmlTemplate
 			
 			DBO()->Rate->ServiceType->RenderHidden();
 			DBO()->Rate->RecordType->RenderHidden();
+			
+			$strHeading = "";
 			if (DBO()->Rate->Id->Value)
 			{
 				DBO()->Rate->Id->RenderHidden();
+				$strHeading = "Update existing draft rate";
+			}
+			else
+			{
+				$strHeading = "Add new rate";
 			}
 			
+			echo "<h2 class='Plan'>".$strHeading."</h2>\n";
 			echo "<div class='NarrowContent'>\n"; //beginning of the DIV for the rate name and duration
 				echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
-				echo "<tr><td width='2%' rowspan=10>&nbsp;</td><td width='98%'>".DBO()->Rate->Name->AsInput()."</td></tr>\n";
-				echo "<tr><td>".DBO()->Rate->Description->AsInput()."</td></tr>\n";
-				echo "<tr><td>".DBO()->Rate->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT)."</td></tr>\n";
-				echo "<tr><td>".DBO()->RecordType->Description->AsOutput()."</td></tr>\n";
+				echo "<tr><td width='2%' rowspan=10>&nbsp;</td><td width='98%'>".DBO()->Rate->Name->AsInput(CONTEXT_DEFAULT, TRUE)."</td></tr>\n";
+				echo "<tr><td>".DBO()->Rate->Description->AsInput(CONTEXT_DEFAULT,TRUE)."</td></tr>\n";
+				echo "<tr><td>".DBO()->Rate->ServiceType->AsCallback("GetConstantDescription", Array("ServiceType"), RENDER_OUTPUT, CONTEXT_DEFAULT)."</td></tr>\n";
+				echo "<tr><td>".DBO()->RecordType->Description->AsOutput(CONTEXT_DEFAULT,TRUE)."</td></tr>\n";
 				
 				// check context of recordtype and compare with destination
 				// Retrieve destinations associated with this Record Type
@@ -118,7 +120,7 @@ class HtmlTemplaterateadd extends HtmlTemplate
 				if (count($arrDestinations) > 0)
 				{
 					echo "<div class='DefaultElement'>\n"; //beginning of the DIV for the drop-down destination
-					echo "   <div class='DefaultLabel'>&nbsp;&nbsp;Destination:</div>\n"; //beginning and end of the DIV for the destination label
+					echo "   <div class='DefaultLabel'><span class='RequiredInput'>*</span> Destination:</div>\n"; //beginning and end of the DIV for the destination label
 					echo "   <div class='DefaultOutput'>\n"; //beginning of the DIV for the drop-down destination1
 					echo "      <select name='Rate.Destination' style='width:250px'>\n";
 					echo "         <option value='0'>&nbsp;</option>";
@@ -344,6 +346,16 @@ class HtmlTemplaterateadd extends HtmlTemplate
 					$bolShowExcessDiv = TRUE;
 				}
 		
+		
+// minor problem when loading a plan, doesn't expand the hidden DIV's
+echo("->>>".DBO()->Rate->ExsUnits->Value." - ".DBO()->Rate->ExsRatePerUnit->Value." - ".DBO()->Rate->ExsFlagfall->Value." - ".DBO()->Rate->ExsPercentage->Value." - ".DBO()->Rate->ExsMarkup->Value);
+//------------------------------------------------------------------
+if (DBO()->Rate->ExsRatePerUnit->Value != 0)
+{
+	echo "entered";
+}
+
+
 				if ((DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_COST)||(DBO()->Rate->CapCalculation->Value == RATE_CAP_CAP_UNITS)||$bolShowExcessDiv)
 				{	
 					$mixCapStatus = DBO()->Rate->CapLimitting->Value;

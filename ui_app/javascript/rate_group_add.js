@@ -15,6 +15,16 @@
  * javascript required of the "Add Rate Group" popup webpage
  * 
  *
+ * javascript required of the "Add Rate Group" popup webpage
+ *
+ * javascript required of the "Add Rate Group" popup webpage
+ * 
+ *
+ * javascript required of the "Add Rate Group" popup webpage
+ *
+ * javascript required of the "Add Rate Group" popup webpage
+ * 
+ *
  * @file		rate_group_add.js
  * @language	PHP
  * @package		ui_app
