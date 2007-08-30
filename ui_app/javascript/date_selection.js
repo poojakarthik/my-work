@@ -55,7 +55,7 @@
 				var StrStartMinutes = arrStartTime[1];				
 				var StrStartSeconds = arrStartTime[2];
 				
-				// using base10 as the output for hours/mins/secs
+				// using base10 as the output for hours/mins
 				var IntStartHours = (parseInt(StrStartHours,10)*24);
 				var IntStartMinutes = (parseInt(StrStartMinutes,10));
 
@@ -63,6 +63,11 @@
 
 				// determines how much to increase the block, each hour is 24px in size
 				// and half and quarter hour are divisions of this
+				// 
+				// 1hr 		= 24px
+				// 45mins	= 18px
+				// 30mins	= 12px
+				// 15mins	= 6px	
 				switch(IntStartMinutes)
 				{
 					case 0:
@@ -95,7 +100,7 @@
 				var IntEndMinutes = (parseInt(StrEndMinutes,10));
 				
 				// how much to set the width of the time block as in endhours minus the start hours
-				// gives which 'hour' the time block is in, a switch statement then determines how 
+				// gives which 'hour' the time block ends in, a switch statement then determines how 
 				// much to increment the minutes
 				this.objContainer.style.width = (IntEndHours - IntStartHours);
 								
@@ -118,7 +123,6 @@
 						break;
 				}				
 				
-				//check for array length if zero dont do this code				
 				var IntStartTimeDuration = parseInt(arrStartTime[0]+arrStartTime[1]);
 				var IntEndTimeDuration = parseInt(arrEndTime[0]+arrEndTime[1]);
 				

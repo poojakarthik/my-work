@@ -26,6 +26,12 @@
  *
  */
 
+/*==============================================================================
+ My commenting helps with my understanding with the program, do not rephrase 
+ or reword them unless absolutely necessary and then in plain understandable
+ english!
+==============================================================================*/
+
 //----------------------------------------------------------------------------//
 // AppTemplaterate
 //----------------------------------------------------------------------------//
@@ -72,10 +78,17 @@ class AppTemplaterate extends ApplicationTemplate
 			// Add extra functionality for super-users
 		}
 
-		if (SubmittedForm("AddRate","Add"))
+		if (SubmittedForm("AddRate","Cancel"))
+		{
+			// cancel code
+		}
+		
+		// The form is being submitted via an AJAX submit the name of the form is 'AddRate'
+		// and the method to call wtihin this class is 'Add'
+		if (SubmittedForm("AddRate","Commit"))
 		{
 			TransactionStart();
-			$mixResult = $this->_ValidatePlan();
+			$mixResult = $this->_ValidateAndSaveRate();
 			if ($mixResult !== TRUE && $mixResult !== FALSE)
 			{
 				TransactionRollback();
@@ -109,11 +122,12 @@ class AppTemplaterate extends ApplicationTemplate
 			}
 		}
 
-		// TODO save as draft
+		// If the button clicked is 'Save as Draft' perform the same validation as to the 'Add'
+		// yet different validation is done within the '_ValidationPlan()'
 		if (SubmittedForm("AddRate","Save as Draft"))
 		{
 			TransactionStart();
-			$mixResult = $this->_ValidatePlan();
+			$mixResult = $this->_ValidateAndSaveRate();
 			if ($mixResult !== TRUE && $mixResult !== FALSE)
 			{
 				TransactionRollback();
@@ -143,24 +157,12 @@ class AppTemplaterate extends ApplicationTemplate
 					return TRUE;
 				}			
 			}		
-		
-			/*DBO()->Rate->Archived = 2;
-			if (!DBO()->Rate->Save())
-			{
-				Ajax()->AddCommand("Alert", "ERROR: saving this rate failed, unexpectedly");
-				return TRUE;	
-			}
-			else
-			{
-				Ajax()->AddCommand("Alert", "rate has been sucessfully archived");
-				return TRUE;				
-			}*/
-			
 		}
 		 
-		// doesnt entirely function correctly when loading rates 
-		// hard coded value for a record within the rate table change as necessary
+		// a removable hard coded value for a record within the rate table, change as necessary
 		//DBO()->Rate->Id = 14;
+		
+		
 		// check if the Id of a rate has been supplied and if so load the rate
 		if (DBO()->Rate->Id->Value)
 		{
@@ -198,11 +200,7 @@ class AppTemplaterate extends ApplicationTemplate
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
 	
-	private function _SavePlan()
-	{
-	}
-	
-	private function _ValidatePlan()
+	private function _ValidateAndSaveRate()
 	{
 		if (!DBO()->Rate->PassThrough->Value)
 		{
@@ -217,7 +215,7 @@ class AppTemplaterate extends ApplicationTemplate
 		}
 		
 		// Check if a rate with the same name and isn't archived exists
-		$strWhere = "NAME LIKE \"". DBO()->Rate->Name->Value . "\"" . "AND ARCHIVED = 0";
+		$strWhere = "NAME LIKE \"". DBO()->Rate->Name->Value. "\"";//. "AND ARCHIVED = 0";
 		DBL()->Rate->Where->SetString($strWhere);
 		DBL()->Rate->Load();
 		if ((DBL()->Rate->RecordCount() > 0)&&(!SubmittedForm("AddRate","Save as Draft")))
@@ -464,7 +462,7 @@ class AppTemplaterate extends ApplicationTemplate
 			DBO()->Rate->Archived = 2;
 		}
 		
-		if (SubmittedForm("AddRate","Add"))
+		if (SubmittedForm("AddRate","Commit"))
 		{
 			DBO()->Rate->Archived = 0;
 		}
