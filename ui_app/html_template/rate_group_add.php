@@ -104,13 +104,16 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		switch ($this->_intContext)
 		{
 		case HTML_CONTEXT_DETAILS:
+			// Just draw the "Rate Group Details" part of the form
 			$this->_RenderRateGroupDetails();
 			break;
 		case HTML_CONTEXT_RATES:
+			// Just draw the "Rate Selector control" part of the form
 			$this->_RenderRateSelectorControl();
 			break;
 		case HTML_CONTEXT_DEFAULT:
 		default:
+			// This should only be called when the popup window is initially drawn
 			echo "<div class='PopupLarge'>\n";
 		
 			// Set Up the form for adding a rate group
@@ -341,14 +344,14 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		
 		echo "</tr>\n";
 		
-		// Draw the buttons ("Add New Rate" and "View Rate Summary")
+		// Draw the buttons ("Add New Rate", "Edit Rate" and "View Rate Summary")
 		echo "<tr>\n";
 		echo "<td align='left'>\n";
 		echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.AddNewRate()\"></input>\n";
 		echo "<input type='button' value='Edit Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.EditRate()\"></input>\n";
 		echo "</td>\n";
 		echo "<td colspan='2' align='right'>\n";
-		echo "<input type='button' value='Preview Rate Summary' class='InputSubmit' onclick=\"javascript: alert('Dont forget to do this');\"></input>\n";
+		echo "<input type='button' value='Preview Rate Summary' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.PreviewRateSummary()\"></input>\n";
 		echo "</td>";
 		echo "</tr>\n";
 

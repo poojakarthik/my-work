@@ -307,6 +307,46 @@ function VixenRateGroupAddClass()
 
 
 	//------------------------------------------------------------------------//
+	// PreviewRateSummary
+	//------------------------------------------------------------------------//
+	/**
+	 * PreviewRateSummary
+	 *
+	 * Opens the Preview Rate Summary popup window
+	 *  
+	 * Opens the Preview Rate Summary popup window
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.PreviewRateSummary = function()
+	{
+		// Retrieve the list of rates currently selected for this Rate Group
+		var arrSelectedRates = new Array();
+		
+		var elmSelectedRatesCombo = document.getElementById("SelectedRatesCombo");
+		
+		for (var i=0; i < elmSelectedRatesCombo.options.length; i++)
+		{
+			if (elmSelectedRatesCombo.options[i].selected)
+			{
+				arrSelectedRates.push(elmSelectedRatesCombo.options[i].value);
+			}
+		}
+		
+		// Stick this array in DBO()->SelectedRates->ArrId
+		var objObjects = {};
+		objObjects.Objects = {};
+		objObjects.Objects.SelectedRates = {};
+		objObjects.Objects.SelectedRates.ArrId = arrSelectedRates;
+		objObjects.Objects.CallingPage = {};
+		objObjects.Objects.CallingPage.AddRateGroup = true;
+		
+		// Execute that application template that creates the popup
+		Vixen.Popup.ShowAjaxPopup("PreviewRateSummaryPopup", "large", "RateGroup", "PreviewRateSummary", objObjects, "modeless");
+	}
+
+	//------------------------------------------------------------------------//
 	// MoveSelectedOptions
 	//------------------------------------------------------------------------//
 	/**
