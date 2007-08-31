@@ -44,14 +44,18 @@ $arrMonthBeforeLast	= $selProfitData->Fetch();
 $arrProfitData['ThisMonth']['LastInvoiceRun']	= $arrProfitData['LastMonth']['InvoiceRun'];
 $arrProfitData['LastMonth']['LastInvoiceRun']	= $arrMonthBeforeLast['InvoiceRun'];
 
-/*CreateReportRatePlan($arrProfitData);
-CreateReportAdjustmentSummary($arrProfitData);
-CreateReportServiceSummary($arrProfitData);
-CreateReportCustomerSummary($arrProfitData);
-CreateReportRecurringAdjustments($arrProfitData);
-CreateReportAdjustmentsByEmployee($arrProfitData);
-CreateReportInvoiceSummary($arrProfitData);*/
-die;
+CreateReportRatePlan($arrProfitData);
+//CreateReportAdjustmentSummary($arrProfitData);
+//CreateReportServiceSummary($arrProfitData);
+//CreateReportCustomerSummary($arrProfitData);
+//CreateReportRecurringAdjustments($arrProfitData);
+//CreateReportAdjustmentsByEmployee($arrProfitData);
+//CreateReportInvoiceSummary($arrProfitData);
+//die;
+
+
+
+
 
 
 //------------------------------------------------------------------------//
@@ -282,13 +286,17 @@ function CreateReportRatePlan($arrProfitData)
 	$arrCols['MeanCallCost']		= "AVG(CDR.Cost)";
 	$arrCols['MeanCallCharge']		= "AVG(CDR.Charge)";
 	$arrCols['TotalCallDuration']	= "SUM(CDR.Units)";
-	$arrCols['TotalCallCount'	]	= "COUNT(CDR.Id)";
+	$arrCols['TotalCallCount']		= "COUNT(CDR.Id)";
 	$arrCols['TotalCost']			= "SUM(CDR.Cost)";
 	$arrCols['TotalCharged']		= "SUM(CDR.Charge)";
-	$selCallSummary	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.InvoiceRun = <InvoiceRun> AND CDR.RecordType = <RecordType>");
+	$selCallSummary	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.InvoiceRun = <InvoiceRun> AND ServiceTotal.InvoiceRun = <InvoiceRun> AND CDR.RecordType = <RecordType> AND CDR.Credit = 0");
+	
+	$selCallCredits	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.InvoiceRun = <InvoiceRun> AND ServiceTotal.InvoiceRun = <InvoiceRun> AND CDR.Credit = 1");
+	
 	$selRatePlans	= new StatementSelect("RatePlan", "*", "Archived != 1", "ServiceType");
 	$selMeanSpend	= new StatementSelect("ServiceTypeTotal STT JOIN ServiceTotal ST USING (InvoiceRun, Service)", "AVG(STT.Charge) AS MeanServiceSpend", "ST.InvoiceRun = <InvoiceRun> AND ST.RatePlan = <RatePlan> AND STT.RecordType = <RecordType>");
 	
+	$selMeanCredit	= new StatementSelect("CDR JOIN ServiceTotal ST USING (InvoiceRun, Service)", "SUM(CDR.Charge) AS TotalServiceCredit", "ST.InvoiceRun = <InvoiceRun> AND ST.RatePlan = <RatePlan> AND CDR.RecordType = <RecordType> AND Credit = 1");
 	
 	Debug("Creating Workbook...");
 	
@@ -416,10 +424,10 @@ function CreateReportRatePlan($arrProfitData)
 				$wksWorksheet->writeNumber(8	, $intCol, $arrPlanSummary['CurrentServices']	, $arrFormat['Integer']);
 				$wksWorksheet->writeNumber(9	, $intCol, $arrPlanSummary['ServicesGained']	, $arrFormat['Integer']);
 				$wksWorksheet->writeNumber(10	, $intCol, $arrPlanSummary['ServicesLost']		, $arrFormat['Integer']);
-				$wksWorksheet->writeNumber(11	, $intCol, $arrPlanSummary['MeanCustomerSpend']	, $arrFormat['Currency']);
-				$wksWorksheet->writeNumber(12	, $intCol, $arrPlanSummary['TotalCost']			, $arrFormat['Currency']);
-				$wksWorksheet->writeNumber(13	, $intCol, $arrPlanSummary['TotalBilled']		, $arrFormat['Currency']);
-				$wksWorksheet->writeNumber(14	, $intCol, $fltProfit							, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber(11	, $intCol, $arrPlanSummary['MeanCustomerSpend']	, $arrFormat['CreditDebit']);
+				$wksWorksheet->writeNumber(12	, $intCol, $arrPlanSummary['TotalCost']			, $arrFormat['CreditDebit']);
+				$wksWorksheet->writeNumber(13	, $intCol, $arrPlanSummary['TotalBilled']		, $arrFormat['CreditDebit']);
+				$wksWorksheet->writeNumber(14	, $intCol, $fltProfit							, $arrFormat['CreditDebit']);
 				
 				if ($intCol == 7)
 				{
@@ -441,7 +449,6 @@ function CreateReportRatePlan($arrProfitData)
 			
 			// Write Call Type Breakdown
 			Debug("\tGetting Call Types...");
-			$selCallTypes->Execute(Array('RatePlan' => $arrRatePlan['Id']));
 			
 			$wksWorksheet->writeString(17, 0, "Call Type Summary"		, $arrFormat['Title']);
 			
@@ -459,10 +466,13 @@ function CreateReportRatePlan($arrProfitData)
 			$wksWorksheet->writeString($intRow, 5, "Total Call Duration", $arrFormat['ColTitle']);
 			$wksWorksheet->writeString($intRow, 6, "Total Call Count"	, $arrFormat['ColTitle']);
 			$wksWorksheet->writeString($intRow, 7, "Total Cost"			, $arrFormat['ColTitle']);
-			$wksWorksheet->writeString($intRow, 8, "Total Charged"		, $arrFormat['ColTitle']);
+			$wksWorksheet->writeString($intRow, 8, "Total Rated"		, $arrFormat['ColTitle']);
 			$wksWorksheet->writeString($intRow, 9, "Profit Margin"		, $arrFormat['ColTitle']);
 			
-			while ($arrCallType = $selCallTypes->Fetch())
+			$selCallTypes->Execute(Array('RatePlan' => $arrRatePlan['Id']));
+			$arrCallTypes	= $selCallTypes->FetchAll();
+			$arrCallTypes[]	= Array('Credit' => TRUE, 'Description' => "Call Credits", 'DisplayType' => RECORD_DISPLAY_CALL);
+			foreach ($arrCallTypes as $arrCallType)
 			{
 				$intRow++;
 				$i = $intRow + 1;
@@ -470,19 +480,39 @@ function CreateReportRatePlan($arrProfitData)
 				
 				// Get Call Type Summary
 				$arrCallType['InvoiceRun'] = $arrProfitData['ThisMonth']['InvoiceRun'];
-				$selCallSummary->Execute($arrCallType);
-				$arrCallSummary = $selCallSummary->Fetch();
-				
-				$selMeanSpend->Execute($arrCallType);
-				$arrCallSummary = array_merge($arrCallSummary, $selMeanSpend->Fetch());
+				if (!$arrCallType['Credit'])
+				{
+					$selCallSummary->Execute($arrCallType);
+					$arrCallSummary = $selCallSummary->Fetch();
+					
+					$selMeanSpend->Execute($arrCallType);
+					$arrCallSummary = array_merge($arrCallSummary, $selMeanSpend->Fetch());
+				}
+				else
+				{
+					// Credit Totals
+					$intCallCredits			= $selCallCredits->Execute($arrCallType);
+					$intTotalCredits		= $selMeanCredit->Execute($arrCallType);
+					$arrCallSummary			= $selCallCredits->Fetch($arrCallType);
+					$arrCallSummary['MeanServiceSpend']	= 0;
+					while ($arrTotalCredit = $selMeanCredit->Fetch())
+					{
+						$arrCallSummary['MeanServiceSpend'] -= $arrTotalCredit['TotalServiceCredit'];
+					}
+					$arrCallSummary['MeanServiceSpend'] /= $intTotalCredits;
+					$arrCallSummary['MeanCallCost']		= 0 - $arrCallSummary['MeanCallCost'];
+					$arrCallSummary['MeanCallCharge']	= 0 - $arrCallSummary['MeanCallCharge'];
+					$arrCallSummary['TotalCost']		= 0 - $arrCallSummary['TotalCost'];
+					$arrCallSummary['TotalCharged']		= 0 - $arrCallSummary['TotalCharged'];
+				}
 			
 				$wksWorksheet->writeString($intRow, 0, $arrCallType['Description']);
-				$wksWorksheet->writeNumber($intRow, 2, $arrCallSummary['MeanCallCost']		, $arrFormat['Currency']);
-				$wksWorksheet->writeNumber($intRow, 3, $arrCallSummary['MeanCallCharge']	, $arrFormat['Currency']);
-				$wksWorksheet->writeNumber($intRow, 4, $arrCallSummary['MeanServiceSpend']	, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber($intRow, 2, $arrCallSummary['MeanCallCost']		, $arrFormat['CreditDebit']);
+				$wksWorksheet->writeNumber($intRow, 3, $arrCallSummary['MeanCallCharge']	, $arrFormat['CreditDebit']);
+				$wksWorksheet->writeNumber($intRow, 4, $arrCallSummary['MeanServiceSpend']	, $arrFormat['CreditDebit']);
 				$wksWorksheet->writeNumber($intRow, 6, $arrCallSummary['TotalCallCount']	, $arrFormat['Integer']);
-				$wksWorksheet->writeNumber($intRow, 7, $arrCallSummary['TotalCost']			, $arrFormat['Currency']);
-				$wksWorksheet->writeNumber($intRow, 8, $arrCallSummary['TotalCharged']		, $arrFormat['Currency']);
+				$wksWorksheet->writeNumber($intRow, 7, $arrCallSummary['TotalCost']			, $arrFormat['CreditDebit']);
+				$wksWorksheet->writeNumber($intRow, 8, $arrCallSummary['TotalCharged']		, $arrFormat['CreditDebit']);
 				$wksWorksheet->writeFormula($intRow, 9, "=IF(AND(I$i <> 0, NOT(I$i = \"N/A\")), (I$i - H$i) / ABS(I$i), \"N/A\")", $arrFormat['Percentage']);
 				
 				// Display Types
@@ -731,14 +761,18 @@ function CreateReportAdjustmentSummary($arrProfitData)
 
 
 function CreateReportServiceSummary($arrProfitData)
-{
-	$arrCols = Array();
-	$arrCols['ServicesOpen']	= "COUNT(CASE WHEN Service.ClosedOn IS NULL THEN Service.Id ELSE NULL END)";
-	$arrCols['ServicesClosed']	= "COUNT(CASE WHEN (Service.ClosedOn IS NOT NULL OR Account.Archived != 0) THEN Service.Id ELSE NULL END)";
-	$arrCols['ServicesActive']	= "COUNT(CASE WHEN ((ServiceTotal.Debit > 0 OR ServiceTotal.UncappedCharge > 0 OR ServiceTotal.CappedCharge > 0) AND ServiceTotal.Debit IS NOT NULL) THEN Service.Id ELSE NULL END)";
-	$selServicesByStatus	= new StatementSelect(	"(Service LEFT JOIN ServiceTotal ON Service.Id = ServiceTotal.Service) JOIN Account ON Account.Id = Service.Account",
-													$arrCols,
-													"ServiceTotal.InvoiceRun = <InvoiceRun>");
+{													
+	$selServicesClosed		= new StatementSelect(	"Service",
+													"Id",
+													"Id NOT IN (SELECT Service FROM ServiceTotal WHERE InvoiceRun = <InvoiceRun>)");
+													
+	$selServicesOpen		= new StatementSelect(	"ServiceTotal",
+													"Id",
+													"InvoiceRun = <InvoiceRun>");
+	
+	$selServicesActive		= new StatementSelect(	"ServiceTotal",
+													"Id",
+													"(ServiceTotal.Debit > 0 OR ServiceTotal.UncappedCharge > 0 OR ServiceTotal.CappedCharge > 0) AND ServiceTotal.Debit IS NOT NULL AND ServiceTotal.InvoiceRun = <InvoiceRun>");
 													
 	$selServicesByType		= new StatementSelect("Service LEFT JOIN ServiceTotal ON Service.Id = ServiceTotal.Service", "Service.ServiceType AS ServiceType, COUNT(Service.Id) AS ServiceCount", "ServiceTotal.InvoiceRun = <InvoiceRun>", "Service.ServiceType", NULL, "Service.ServiceType");
 	
@@ -817,13 +851,14 @@ function CreateReportServiceSummary($arrProfitData)
 		// Service Status Summary
 		$intServicesLost	= $selServicesLost->Execute($arrData);
 		$intServicesGained	= $selServicesGained->Execute($arrData);
-		$selServicesByStatus->Execute($arrData);
-		$arrServicesByStatus = $selServicesByStatus->Fetch();
-		$wksWorksheet->writeString(8, $intCol, $arrServicesByStatus['ServicesActive']	, $arrFormat['Integer']);
-		$wksWorksheet->writeString(9, $intCol, $arrServicesByStatus['ServicesOpen']		, $arrFormat['Integer']);
-		$wksWorksheet->writeString(10, $intCol, $arrServicesByStatus['ServicesClosed']	, $arrFormat['Integer']);
-		$wksWorksheet->writeString(11, $intCol, $intServicesLost						, $arrFormat['Integer']);
-		$wksWorksheet->writeString(12, $intCol, $intServicesGained						, $arrFormat['Integer']);
+		$intServicesOpen	= $selServicesOpen->Execute($arrData);
+		$intServicesClosed	= $selServicesClosed->Execute($arrData);
+		$intServicesActive	= $selServicesActive->Execute($arrData);
+		$wksWorksheet->writeNumber(8, $intCol, $intServicesActive	, $arrFormat['Integer']);
+		$wksWorksheet->writeNumber(9, $intCol, $intServicesOpen		, $arrFormat['Integer']);
+		$wksWorksheet->writeNumber(10, $intCol, $intServicesClosed	, $arrFormat['Integer']);
+		$wksWorksheet->writeNumber(11, $intCol, $intServicesLost	, $arrFormat['Integer']);
+		$wksWorksheet->writeNumber(12, $intCol, $intServicesGained	, $arrFormat['Integer']);
 		
 		// Service Type Summary
 		$selServicesByType->Execute($arrData);
@@ -832,15 +867,15 @@ function CreateReportServiceSummary($arrProfitData)
 			switch ($arrServiceType['ServiceType'])
 			{
 				case SERVICE_TYPE_LAND_LINE:
-					$wksWorksheet->writeString(15, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(15, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
 					break;
 					
 				case SERVICE_TYPE_MOBILE:
-					$wksWorksheet->writeString(16, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(16, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
 					break;
 					
 				case SERVICE_TYPE_INBOUND:
-					$wksWorksheet->writeString(17, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
+					$wksWorksheet->writeNumber(17, $intCol, $arrServiceType['ServiceCount']	, $arrFormat['Integer']);
 					break;
 			}
 		}
@@ -936,7 +971,7 @@ function CreateReportCustomerSummary($arrProfitData)
 	$wksWorksheet->writeString(15, 0, "Customers with X Services Summary"	, $arrFormat['Title']);
 	$wksWorksheet->writeString(15, 2, "This Month"							, $arrFormat['TitleItalic']);
 	$wksWorksheet->writeString(15, 3, "Last Month"							, $arrFormat['TitleItalic']);
-	$wksWorksheet->writeString(15, 4, "% Change"							, $arrFormat['TitleItalic']);
+	$wksWorksheet->writeString(15, 4, "% of Total"							, $arrFormat['TitleItalic']);
 	
 	$intCol = 2;
 	$arrServiceCount = Array();
@@ -1050,7 +1085,8 @@ function CreateReportCustomerSummary($arrProfitData)
 	
 	for ($i = 17; $i <= $intRow; $i++)
 	{
-		$wksWorksheet->writeFormula($i-1, 4, "=IF(AND(C$i <> 0, NOT(C$i = \"N/A\")), (C$i - D$i) / ABS(C$i), \"N/A\")", $arrFormat['Percentage']);
+		Debug("=C$i / SUM(C17:C$intRow)");
+		$wksWorksheet->writeFormula($i-1, 4, "=C$i / SUM(C17:C$intRow)", $arrFormat['Percentage']);
 	}
 	
 	// Set Column Widths

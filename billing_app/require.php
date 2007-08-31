@@ -32,6 +32,7 @@ $strModuleDir = "billing_app/modules/";
 // load printing modules
 VixenRequire($strModuleDir."module_printing.php");
 VixenRequire($strModuleDir."module_etech.php");
+VixenRequire($strModuleDir."module_reports.php");
 
 // load charge modules
 VixenRequire($strModuleDir."charge_base.php");

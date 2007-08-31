@@ -91,7 +91,7 @@ class BillingModuleReports
  	{
  		if (method_exists($this, "_Report$strReportName"))
  		{
- 			return call_user_method($this, "Report$strReportName");
+ 			return call_user_method("_Report$strReportName", $this);
  		}
  		else
  		{
@@ -340,7 +340,7 @@ class BillingModuleReports
 		$selServicesGained	= new StatementSelect("ServiceTotal ST", "ST.Id", "ST.InvoiceRun = <InvoiceRun> AND ST.Service NOT IN (SELECT ST2.Service FROM ServiceTotal ST2 WHERE ST2.InvoiceRun = <LastInvoiceRun>)");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**strCustomer']}/reports/".date("Y/m/")."Service_Summary.xls";
+		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Service_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -488,8 +488,8 @@ class BillingModuleReports
 		$arrCols['CurrentCustomers']	= "COUNT(DISTINCT ServiceTotal.Account)";
 		$arrCols['CurrentServices']		= "COUNT(ServiceTotal.Id)";
 		$arrCols['MeanCustomerSpend']	= "AVG(TotalCharge)";
-		$arrCols['TotalCost']			= "SUM(CappedCost + UncappedCost)";
-		$arrCols['TotalRated']			= "SUM(CappedCharge + UncappedCharge)";
+		$arrCols['TotalCost']			= "SUM(ServiceTotal.CappedCost + ServiceTotal.UncappedCost)";
+		$arrCols['TotalRated']			= "SUM(ServiceTotal.CappedCharge + ServiceTotal.UncappedCharge)";
 		$arrCols['TotalBilled']			= "SUM(TotalCharge)";
 		$selPlanSummary = new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
 												$arrCols,
@@ -533,7 +533,7 @@ class BillingModuleReports
 			$strServiceType = str_replace(' ', '_', GetConstantDescription($intServiceType, 'ServiceType'));
 			$strServiceType = str_replace('/', '_', $strServiceType);
 			$strServiceType = str_replace('\\', '_', $strServiceType);
-			$strFilename	= "/home/vixen/{$GLOBALS['**strCustomer']}/reports/".date("Y/m/")."Plan_Summary_with_Breakdown_($strServiceType).xls";
+			$strFilename	= "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Plan_Summary_with_Breakdown_($strServiceType).xls";
 			$arrFilenames[]	= $strFilename;
 			@unlink($strFilename);
 			$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
@@ -790,7 +790,7 @@ class BillingModuleReports
 
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**strCustomer']}/reports/".date("Y/m/")."Adjustment_Summary.xls";
+		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Adjustment_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -993,7 +993,7 @@ class BillingModuleReports
 		$selCustomersGained	= new StatementSelect("Account", "Id", "Archived = 0 AND CreatedOn BETWEEN SUBDATE(<BillingDate>, INTERVAL 1 MONTH) AND <BillingDate>");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**strCustomer']}/reports/".date("Y/m/")."Customer_Summary.xls";
+		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Customer_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -1214,7 +1214,7 @@ class BillingModuleReports
 												"RecurringCharge.ChargeType");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**strCustomer']}/reports/".date("Y/m/")."Recurring_Adjustment_Summary.xls";
+		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Recurring_Adjustment_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -1469,7 +1469,7 @@ class BillingModuleReports
 		$selAdjustments	= new StatementSelect("Charge JOIN Employee ON Charge.CreatedBy = Employee.Id", $arrCols, "InvoiceRun = <InvoiceRun>", "Charge.Nature", NULL, "Charge.CreatedBy, Charge.Description");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**strCustomer']}/reports/".date("Y/m/")."Adjustments_by_Employee_Summary.xls";
+		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Adjustments_by_Employee_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		
@@ -1624,7 +1624,7 @@ class BillingModuleReports
 		$selLastInvoiceTotal	= new StatementSelect("InvoiceRun", "BillInvoiced+BillTax AS GrandTotal", "InvoiceRun = <LastInvoiceRun>");
 		
 		// Create Workbook
-		$strFilename = "/home/vixen/{$GLOBALS['**strCustomer']}/reports/".date("Y/m/")."Invoice_Summary.xls";
+		$strFilename = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()))."Invoice_Summary.xls";
 		@unlink($strFilename);
 		$wkbWorkbook = new Spreadsheet_Excel_Writer($strFilename);
 		

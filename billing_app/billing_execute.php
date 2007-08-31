@@ -23,31 +23,64 @@ $bolResponse = $appBilling->Execute();
 
 // Email Invoice Total Data
 CliEcho(" + Calculating Profit Data...");
-if ($arrProfitData = $appBilling->CalculateProfitData())
+
+$selProfitData = new StatementSelect("InvoiceRun", "*", "BillingDate < <BillingDate>", "BillingDate DESC", 1);
+$arrProfitData['ThisMonth']	= $GLOBALS['appBilling']->CalculateProfitData();
+$selProfitData->Execute($arrProfitData['ThisMonth']);
+$arrProfitData['LastMonth']	= $selProfitData->Fetch();
+$selProfitData->Execute($arrProfitData['LastMonth']);
+$arrMonthBeforeLast	= $selProfitData->Fetch();	
+$arrProfitData['ThisMonth']['LastInvoiceRun']	= $arrProfitData['LastMonth']['InvoiceRun'];
+$arrProfitData['LastMonth']['LastInvoiceRun']	= $arrMonthBeforeLast['InvoiceRun'];
+
+if ($arrProfitData['ThisMonth'] && $arrProfitData['LastMonth'])
 {
 	//Generate Management Reports
 	$bilManagementReports = new BillingModuleReports($arrProfitData);
 	
+	// Make sure directory exists
+	$strPath = "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time()));
+	$strProgressivePath = '';
+	foreach (explode('/', $strPath) as $strPart)
+	{
+		if ($strPart)
+		{
+			$strProgressivePath .= '/' . $strPart;
+			//CliEcho("Trying to make '$strProgressivePath'... ", FALSE);
+			if (!@mkdir($strProgressivePath))
+			{
+				//CliEcho("[ FAILED ]\n");
+			}
+			else
+			{
+				//CliEcho("[   OK   ]\n");
+			}
+		}
+	}
+	@mkdir("/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/", strtotime("-1 month", time())), 0777);
+	$strFilename	= "/home/vixen/{$GLOBALS['**arrCustomerConfig']['Customer']}/reports/".date("Y/m/")."Plan_Summary_with_Breakdown_($strServiceType).xls";
+	
 	$arrReports = Array();
-	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
-	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
-	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
-	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('RecurringAdjustmentsSummary'));
-	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
-	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('RecurringAdjustmentsSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
+	$arrReports	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
 	
 	// Email Management Reports	
-	$strContent		= "Please find attached the Management Reports for ".date("Y-m-d")."\n\nYellow Billing Services";
+	$strContent		= "Please find attached the Management Reports for ".date("Y-m-d H:i:s")."\n\nYellow Billing Services";
 	$arrHeaders = Array	(
 							'From'		=> "billing@telcoblue.com.au",
-							'Subject'	=> "Management Reports for ".date("Y-m-d")
+							'Subject'	=> "Management Reports for ".date("Y-m-d H:i:s")
 						);
 	$mimMime = new Mail_mime("\n");
 	$mimMime->setTXTBody($strContent);
 	
 	foreach ($arrReports as $strPath)
 	{
-		$mimMime->addAttachment($strPath, 'application/x-msexcel');
+		//Debug($strPath);
+		Debug($mimMime->addAttachment($strPath, 'application/x-msexcel'));
 	}
 	
 	$strBody = $mimMime->get();
@@ -55,7 +88,7 @@ if ($arrProfitData = $appBilling->CalculateProfitData())
 	$emlMail =& Mail::factory('mail');
 	
 	// Send the email
-	/*$strEmail = 'rich@voiptelsystems.com.au, ' .
+	$strEmail = 'rich@voiptelsystems.com.au, ' .
 				'jared@telcoblue.com.au, ' .
 				'turdminator@hotmail.com, ' .
 				'aphplix@gmail.com, ' .
@@ -63,8 +96,8 @@ if ($arrProfitData = $appBilling->CalculateProfitData())
 				'paula@telcoblue.com.au, ' .
 				'kaywan@telcoblue.com.au, ' .
 				'julie@telcoblue.com.au, ' .
-				'mark@yellowbilling.com.au';*/
-	$strEmail	= 'rich@voiptelsystems.com.au';
+				'mark@yellowbilling.com.au';
+	//$strEmail	= 'rich@voiptelsystems.com.au, turdminator@hotmail.com';
 
 	if (!$emlMail->send($strEmail, $strHeaders, $strBody))
 	{

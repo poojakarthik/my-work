@@ -104,6 +104,17 @@ $arrAccounts[]	= 1000160250;
 // Telco Blue
 $arrAccounts[]	= 1000154811;
 
+// New Mobile Plan Accounts
+$arrAccounts[]	= 1000162273;
+$arrAccounts[]	= 1000164826;
+$arrAccounts[]	= 1000164618;
+$arrAccounts[]	= 1000164236;
+$arrAccounts[]	= 1000162139;
+
+// Recurring Charges
+$arrAccounts[]	= 1000158996;
+$arrAccounts[]	= 1000164686;
+
 // reprint
 $bolResponse = $appBilling->PrintSampleAccounts($arrAccounts);
 
@@ -211,9 +222,9 @@ while (($intLastDownload + 60) > time())
 chdir($strDownloadDir);
 $strZipname = date("F", strtotime("-1 day", time()))." Signoff Samples"; 
 echo shell_exec("zip -qj '$strZipname' *.pdf");
-echo shell_exec("zipsplit -n 5242880 '$strZipname'");
+echo shell_exec("zipsplit -n 5242880 \"$strZipname\"");
 
-/*
+
 // Email
 $arrHeaders = Array	(
 						'From'		=> "billing@telcoblue.com.au",
@@ -227,9 +238,12 @@ $strHeaders = $mimMime->headers($arrHeaders);
 $emlMail =& Mail::factory('mail');
 
 // Send the email
-$strEmail = "adele.k@telcoblue.com.au, andrew.p@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rich@voiptelsystems.com.au";
+$strEmail = "jade@wxc.com.au, adele.k@telcoblue.com.au, andrew.p@telcoblue.com.au, mshield@telcoblue.com.au, jared@telcoblue.com.au, rich@voiptelsystems.com.au, turdminator@hotmail.com, aphplix@gmail.com";
 $emlMail->send($strEmail, $strHeaders, $strBody);
-*/
+
+
+// Send to Paula home
+// TODO
 
 // finished
 echo("\n\n-- End of Billing --\n");
