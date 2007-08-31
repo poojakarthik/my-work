@@ -674,15 +674,21 @@ class HTMLElements
 						$mixValue = OutputMask()->MoneyValue($mixValue, 2, TRUE);
 					}
 					break;
-				default:
-					// Try running the name of the output mask, as a method of OutputMask()
-					$mixValue = OutputMask()->{$strMask}($mixValue);
-					break;
 				case "Currency4DecPlaces":
 					// remove the dollar sign if it is already present
 					$mixValue = ltrim($mixValue, '$');
 					
 					$mixValue = OutputMask()->MoneyValue($mixValue, 4, TRUE);
+					break;
+				case "Currency8DecPlaces":
+					// remove the dollar sign if it is already present
+					$mixValue = ltrim($mixValue, '$');
+					
+					$mixValue = OutputMask()->MoneyValue($mixValue, 8, TRUE);
+					break;
+				default:
+					// Try running the name of the output mask, as a method of OutputMask()
+					$mixValue = OutputMask()->{$strMask}($mixValue);
 					break;
 			}
 		}

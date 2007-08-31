@@ -274,6 +274,9 @@ class AppTemplatePlan extends ApplicationTemplate
 		// Check if we are to display an existing RatePlan or if we are adding a new one
 		if (DBO()->RatePlan->Id->Value)
 		{
+			// Update the Breadcrumb menu
+			BreadCrumb()->SetCurrentPage("Edit Draft Rate Plan");
+			
 			// We want to display an existing RatePlan
 			if (!DBO()->RatePlan->Load())
 			{

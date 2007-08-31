@@ -292,28 +292,17 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// If the RateGroup is being committed to the database, as opposed to being saved, make sure all its associated rates are also committed
-		//TODO! This can be done using just 1 update query.  Check out how it is done in AppTemplatePlan->_SavePlan()
-		if (DBO()->RateGroup->Archived == 0)
+		if (DBO()->RateGroup->Archived->Value == 0)
 		{
-			// The Rate Group is being saved
 			$arrUpdate = Array("Archived" => 0);
-			$updRates = new StatementUpdate("Rate", "Id = <Id>", $arrUpdate);
-			foreach (DBL()->Rate as $dboRate)
+			$updRates = new StatementUpdate("Rate", "Archived = 2 AND Id IN (SELECT Rate FROM RateGroupRate WHERE RateGroup = <RateGroup>)", $arrUpdate);
+			
+			if ($updRates->Execute($arrUpdate, Array("RateGroup" => DBO()->RateGroup->Id->Value)) === FALSE)
 			{
-				if ($dboRate->Archived->Value != 2)
-				{
-					// The rate is not a draft, so we don't have to update it
-					continue;
-				}
-				
-				if ($updRates->Execute($arrUpdate, Array("Id" => $dboRate->Id->Value) === FALSE))
-				{
-					// Updating the Rate table failed
-					return "ERROR: A problem occurred committing draft rates used by this Rate Group. <br />The Rate Group has not been saved";
-				}
+				// Updating the Rate table failed
+				return "ERROR: A problem occurred committing draft rates used by this Rate Group. <br />The Rate Group has not been saved";
 			}
 		}
-		
 		
 		// The Rate Group has been saved successfully
 		return TRUE;

@@ -155,7 +155,7 @@ class AppTemplateRate extends ApplicationTemplate
 		}
 		 
 		// a removable hard coded value for a record within the rate table, change as necessary
-		DBO()->Rate->Id = 12807;
+		//DBO()->Rate->Id = 12807;
 		
 		
 		// check if the Id of a rate has been supplied and if so load the rate
@@ -440,7 +440,7 @@ class AppTemplateRate extends ApplicationTemplate
 			DBO()->Rate->ExsMarkup 		= 0;
 			DBO()->Rate->ExsPercentage 	= 0;
 			DBO()->Rate->ExsFlagfall 	= 0;
-			DBO()->Rate->ExsUnits 		= 0;
+			DBO()->Rate->ExsUnits 		= 1;  // This defaults to 1.  I don't know why, that's just how it is for every rate in the database
 		}
 		else
 		{		
@@ -471,7 +471,7 @@ class AppTemplateRate extends ApplicationTemplate
 			DBO()->Rate->CapLimit = (Validate('IsMoneyValue', DBO()->Rate->CapLimit->Value)) ? ltrim(DBO()->Rate->CapLimit->Value, '$') : 0;
 			DBO()->Rate->CapUsage = (is_numeric(DBO()->Rate->CapUsage->Value)) ? DBO()->Rate->CapUsage->Value : 0;
 	
-			DBO()->Rate->ExsUnits = (is_numeric(DBO()->Rate->ExsUnits->Value)) ? DBO()->Rate->ExsUnits->Value : 0;
+			DBO()->Rate->ExsUnits = (is_numeric(DBO()->Rate->ExsUnits->Value)) ? DBO()->Rate->ExsUnits->Value : 1;  //Defaults to 1 if not included
 			DBO()->Rate->ExsRatePerUnit = (Validate('IsMoneyValue', DBO()->Rate->ExsRatePerUnit->Value)) ? ltrim(DBO()->Rate->ExsRatePerUnit->Value, '$') : 0;
 			DBO()->Rate->ExsMarkup = (Validate('IsMoneyValue', DBO()->Rate->ExsMarkup->Value)) ? ltrim(DBO()->Rate->ExsMarkup->Value, '$') : 0;
 			DBO()->Rate->ExsPercentage = (is_numeric(DBO()->Rate->ExsPercentage->Value)) ? DBO()->Rate->ExsPercentage->Value : 0;
