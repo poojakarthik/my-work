@@ -154,9 +154,10 @@ class AppTemplateRate extends ApplicationTemplate
 			}		
 		}
 		 
+		//**********************
 		// a removable hard coded value for a record within the rate table, change as necessary
 		//DBO()->Rate->Id = 12807;
-		
+		//**********************
 		
 		// check if the Id of a rate has been supplied and if so load the rate
 		if (DBO()->Rate->Id->Value)
@@ -177,6 +178,24 @@ class AppTemplateRate extends ApplicationTemplate
 		return TRUE;
 	}
 	
+	//------------------------------------------------------------------------//
+	// Preview
+	//------------------------------------------------------------------------//
+	/**
+	 * Preview()
+	 *
+	 * 
+	 * 
+	 * 
+	 *
+	 *
+	 * 
+	 *
+	 */
+	private function Preview()
+	{
+
+	}
 
 	//------------------------------------------------------------------------//
 	// _UpdateAddRateGroupPage

@@ -98,6 +98,8 @@ function VixenRateAddClass()
 		{
 			Vixen.RateAdd.RateCapOnChange(RATE_CHARGES_SHOW);
 		}
+		// problem when the form is initialised its resetting the value of showing the hidden DIVs
+		// check that the input boxs have no values in them if they do do not hide them
 	}
 	
 	
@@ -134,14 +136,30 @@ function VixenRateAddClass()
 			case RATE_CHARGES_SHOW:
 				document.getElementById('RateDetailDiv').style.display = 'inline';
 				document.getElementById('CapMainDetailDiv').style.display = 'inline';
-				document.getElementById('CapDetailDiv').style.display = 'none';
-				document.getElementById('ExcessDetailDiv').style.display = 'none';				
+				
+				var ArrFormElements = [];
+				ArrFormElements[1] = "Rate.CapLimit";
+				ArrFormElements[2] = "Rate.CapUsage";
+				
+				ArrFormElements[3] = "Rate.ExsUnits";
+				ArrFormElements[4] = "Rate.ExsRatePerUnit";
+				ArrFormElements[5] = "Rate.ExsMarkup";
+				ArrFormElements[6] = "Rate.ExsPercentage";
+				ArrFormElements[7] = "Rate.ExsFlagfall";
+							
+				for (var intCounter = 1; intCounter <= ArrFormElements.length; intCounter++)
+				{
+					if (document.getElementById(ArrFormElements[intCounter]).value != "" && document.getElementById(ArrFormElements[intCounter]).value.indexOf("0.0") == -1)
+					{
+						document.getElementById('CapDetailDiv').style.display='inline';
+						document.getElementById('ExcessDetailDiv').style.display='inline'
+					}
+				}
+				
 				break;
 			case RATE_CHARGES_HIDE:
 				document.getElementById('RateDetailDiv').style.display = 'none';
 				document.getElementById('CapMainDetailDiv').style.display = 'none';
-				document.getElementById('CapDetailDiv').style.display = 'none';
-				document.getElementById('ExcessDetailDiv').style.display = 'none';
 				break;
 		}
 	}

@@ -308,6 +308,12 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		return TRUE;
 	}
 
+	function PreviewRateSummary()
+	{
+		//passes list of rate id's and the calling page id
+		//TODO prepare a mockup of the actual page
+	}
+
 	//------------------------------------------------------------------------//
 	// SetRateSelectorControl
 	//------------------------------------------------------------------------//
