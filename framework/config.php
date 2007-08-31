@@ -39,7 +39,10 @@ if (!@include_once("/etc/vixen/vixen.conf"))
 	die;
 }
 
-$GLOBALS['**arrVixenConfig'] = Array();
+$GLOBALS['**arrCustomerConfig'] = Array();
+
+// General Config
+$GLOBALS['**arrCustomerConfig']	['Customer']	= "telcoblue";
 
 // Billing Config
 $arrBillingConfig = Array();
@@ -49,9 +52,9 @@ $arrBillingConfig = Array();
 		$arrBillingConfig['BillingTimeModules']	['ChargeLatePayment']		['Amount']			= 17.27;
 		$arrBillingConfig['BillingTimeModules']	['ChargeLatePayment']		['MinimumOverdue']	= 10.0;
 		// Non-DDR Fee
-		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Amount']			= 2.50;
-		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['MinimumTotal']	= 2.50;
-		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Code']			= "AP250";
+		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Amount']			= 2.75;
+		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['MinimumTotal']	= 2.75;
+		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Code']			= "AP275";
 		$arrBillingConfig['BillingTimeModules']	['ChargeNonDirectDebit']	['Description']		= "Account Processing Fee";
 	
 	// Printing
@@ -59,5 +62,17 @@ $arrBillingConfig = Array();
 	$arrBillingConfig['PrintingModule']	['SendMinimumTotal']	= 5.0;
 	$arrBillingConfig['PrintingModule']	['AlwaysEmailBill']		= TRUE;
 	
+		// Bill Inserts
+		$arrBillingConfig['PrintingModule']	['Inserts']	[0]			= "directdebit_telcoblue.pdf";
+		$arrBillingConfig['PrintingModule']	['Inserts']	[1]			= "directdebit_voicetalk.pdf";
+		$arrBillingConfig['PrintingModule']	['Inserts']	[2]			= NULL;
+		$arrBillingConfig['PrintingModule']	['Inserts']	[3]			= NULL;
+		$arrBillingConfig['PrintingModule']	['Inserts']	[4]			= NULL;
+		$arrBillingConfig['PrintingModule']	['Inserts']	[5]			= NULL;
 	
+	$arrBillingConfig['PrintingModule']	['SpecialOffer1']			= "Dear Customer, There is a minor adjustment to some of our service charges of up to 68c. However, while this has been unavoidable, you can rest assured that our call rates and customer service still remain as exceptional as ever!  ";
+	$arrBillingConfig['PrintingModule']	['SpecialOffer2']			= "For your convenience we have included a direct debit application form should you wish to pay by this method, simply fill in your EFT or credit card details and fax to the Customer Service Team on 1300 733 393";
+		
+$GLOBALS['**arrCustomerConfig']	['Billing']	= 	$arrBillingConfig;
+
 ?>
