@@ -62,6 +62,9 @@
 		// Set up the database reference
 		$this->db = $ptrThisDB;
 		
+		// Customer Config
+		$this->_arrConfig = $GLOBALS['**arrCustomerConfig']['PrintingModule'];
+		
 		// Init member variables
 		$this->_strFilename		= NULL;
 		$this->_strSampleFile	= NULL;
@@ -348,10 +351,29 @@
 		
 		// build output
 		$arrDefine['InvoiceDetails']	['InvoiceGroup']	['Value']	= $arrCustomerData['CustomerGroup'];
-		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";								// FIXME: Actually determine these?  At a later date.
 		$arrDefine['InvoiceDetails']	['BillPeriod']		['Value']	= date("F y", strtotime("-1 month", strtotime($arrInvoiceDetails['CreatedOn'])));
 		$arrDefine['InvoiceDetails']	['IssueDate']		['Value']	= date("j M Y", strtotime($arrInvoiceDetails['CreatedOn']));
 		$arrDefine['InvoiceDetails']	['AccountNo']		['Value']	= $arrInvoiceDetails['Account'];
+		
+		// FIXME: Invoice Inserts (do this properly)
+		$arrInserts = array_fill(0, 6, '0');
+		if ($arrCustomerData['BillingType'] == BILLING_TYPE_ACCOUNT)
+		{
+			switch ($arrCustomerData['CustomerGroup'])
+			{
+				case CUSTOMER_GROUP_VOICETALK:
+					$arrInserts[0]	= '1';
+					break;
+					
+				default:
+					$arrInserts[1]	= '1';
+					break;					
+					
+			}
+			$arrInserts[0]	= '1';
+		}
+		$arrDefine['InvoiceDetails']	['Inserts']			['Value']	= "000000";
+		
 		if($bolHasBillHistory)
 		{
 			// Display the previous bill details
@@ -519,8 +541,8 @@
 		$arrDefine['PaymentData']		['AddressLine4']	['Value']	= $arrDefine['InvoiceDetails']['AddressLine4']['Value'];
 		$arrDefine['PaymentData']		['AddressLine5']	['Value']	= "{$arrDefine['InvoiceDetails']['Suburb']['Value']}   {$arrDefine['InvoiceDetails']['State']['Value']}   {$arrDefine['InvoiceDetails']['Postcode']['Value']}";
 		$arrDefine['PaymentData']		['PaymentMethod']	['Value']	= $arrCustomerData['BillingType'];
-		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= "";
-		$arrDefine['PaymentData']		['SpecialOffer2']	['Value']	= "";
+		$arrDefine['PaymentData']		['SpecialOffer1']	['Value']	= $this->_arrConfig['SpecialOffer1'];
+		$arrDefine['PaymentData']		['SpecialOffer2']	['Value']	= $this->_arrConfig['SpecialOffer2'];
 		$this->_arrFileData[] = $arrDefine['PaymentData'];
 		
 		

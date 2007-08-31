@@ -489,6 +489,7 @@ class BillingModuleReports
 		$arrCols['CurrentServices']		= "COUNT(ServiceTotal.Id)";
 		$arrCols['MeanCustomerSpend']	= "AVG(TotalCharge)";
 		$arrCols['TotalCost']			= "SUM(CappedCost + UncappedCost)";
+		$arrCols['TotalRated']			= "SUM(CappedCharge + UncappedCharge)";
 		$arrCols['TotalBilled']			= "SUM(TotalCharge)";
 		$selPlanSummary = new StatementSelect(	"Service JOIN ServiceTotal ON Service.Id = ServiceTotal.Service",
 												$arrCols,
@@ -504,12 +505,17 @@ class BillingModuleReports
 		$arrCols['MeanCallCost']		= "AVG(CDR.Cost)";
 		$arrCols['MeanCallCharge']		= "AVG(CDR.Charge)";
 		$arrCols['TotalCallDuration']	= "SUM(CDR.Units)";
-		$arrCols['TotalCallCount'	]	= "COUNT(CDR.Id)";
+		$arrCols['TotalCallCount']		= "COUNT(CDR.Id)";
 		$arrCols['TotalCost']			= "SUM(CDR.Cost)";
 		$arrCols['TotalCharged']		= "SUM(CDR.Charge)";
-		$selCallSummary	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.InvoiceRun = <InvoiceRun> AND CDR.RecordType = <RecordType>");
+		$selCallSummary	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.InvoiceRun = <InvoiceRun> AND ServiceTotal.InvoiceRun = <InvoiceRun> AND CDR.RecordType = <RecordType> AND CDR.Credit = 0");
+		
+		$selCallCredits	= new StatementSelect("CDR JOIN ServiceTotal ON ServiceTotal.Service = CDR.Service", $arrCols, "ServiceTotal.RatePlan = <RatePlan> AND CDR.InvoiceRun = <InvoiceRun> AND ServiceTotal.InvoiceRun = <InvoiceRun> AND CDR.Credit = 1");
+		
 		$selRatePlans	= new StatementSelect("RatePlan", "*", "Archived != 1", "ServiceType");
 		$selMeanSpend	= new StatementSelect("ServiceTypeTotal STT JOIN ServiceTotal ST USING (InvoiceRun, Service)", "AVG(STT.Charge) AS MeanServiceSpend", "ST.InvoiceRun = <InvoiceRun> AND ST.RatePlan = <RatePlan> AND STT.RecordType = <RecordType>");
+		
+		$selMeanCredit	= new StatementSelect("CDR JOIN ServiceTotal ST USING (InvoiceRun, Service)", "SUM(CDR.Charge) AS TotalServiceCredit", "ST.InvoiceRun = <InvoiceRun> AND ST.RatePlan = <RatePlan> AND CDR.RecordType = <RecordType> AND Credit = 1");
 		
 		// For each non-Archived RatePlan
 		$intPlanCount = $selRatePlans->Execute();
@@ -598,13 +604,14 @@ class BillingModuleReports
 				$wksWorksheet->writeString(10, 0, "Services Lost"		, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(11, 0, "Mean Customer Spend"	, $arrFormat['TextBold']);
 				$wksWorksheet->writeString(12, 0, "Total Cost"			, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(13, 0, "Total Billed"		, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(14, 0, "Total Profit"		, $arrFormat['TextBold']);
-				$wksWorksheet->writeString(15, 0, "Profit Margin"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(13, 0, "Total Rated"			, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(14, 0, "Total Billed"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(15, 0, "Total Profit"		, $arrFormat['TextBold']);
+				$wksWorksheet->writeString(16, 0, "Profit Margin"		, $arrFormat['TextBold']);
 				
 				for ($i = 0; $i <= 9; $i++)
 				{
-					$wksWorksheet->writeBlank(16, $i, $arrFormat['Spacer']);
+					$wksWorksheet->writeBlank(17, $i, $arrFormat['Spacer']);
 				}
 				
 				// Write Plan Summary
@@ -626,40 +633,39 @@ class BillingModuleReports
 					$wksWorksheet->writeNumber(8	, $intCol, $arrPlanSummary['CurrentServices']	, $arrFormat['Integer']);
 					$wksWorksheet->writeNumber(9	, $intCol, $arrPlanSummary['ServicesGained']	, $arrFormat['Integer']);
 					$wksWorksheet->writeNumber(10	, $intCol, $arrPlanSummary['ServicesLost']		, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber(11	, $intCol, $arrPlanSummary['MeanCustomerSpend']	, $arrFormat['Currency']);
-					$wksWorksheet->writeNumber(12	, $intCol, $arrPlanSummary['TotalCost']			, $arrFormat['Currency']);
-					$wksWorksheet->writeNumber(13	, $intCol, $arrPlanSummary['TotalBilled']		, $arrFormat['Currency']);
-					$wksWorksheet->writeNumber(14	, $intCol, $fltProfit							, $arrFormat['Currency']);
+					$wksWorksheet->writeNumber(11	, $intCol, $arrPlanSummary['MeanCustomerSpend']	, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(12	, $intCol, $arrPlanSummary['TotalCost']			, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(13	, $intCol, $arrPlanSummary['TotalRated']		, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(14	, $intCol, $arrPlanSummary['TotalBilled']		, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber(15	, $intCol, $fltProfit							, $arrFormat['CreditDebit']);
 					
 					if ($intCol == 7)
 					{
-						$wksWorksheet->writeFormula(15	, $intCol, "=IF(AND(H14 <> 0, NOT(H14 = \"N/A\")), (H14 - H13) / ABS(H14), \"N/A\")"			, $arrFormat['Percentage']);
+						$wksWorksheet->writeFormula(16	, $intCol, "=IF(AND(H15 <> 0, NOT(H15 = \"N/A\")), (H15 - H13) / ABS(H15), \"N/A\")"			, $arrFormat['Percentage']);
 					}
 					else
 					{
-						$wksWorksheet->writeFormula(15	, $intCol, "=IF(AND(I14 <> 0, NOT(I14 = \"N/A\")), (I14 - I13) / ABS(I14), \"N/A\")"			, $arrFormat['Percentage']);
+						$wksWorksheet->writeFormula(16	, $intCol, "=IF(AND(I15 <> 0, NOT(I15 = \"N/A\")), (I15 - I13) / ABS(I15), \"N/A\")"			, $arrFormat['Percentage']);
 					}
 					
 					$intCol++;
 				}
 				
 				// Write Plan Summary '% Change' Fields
-				for ($i = 8; $i <= 16; $i++)
+				for ($i = 8; $i <= 17; $i++)
 				{
 					$wksWorksheet->writeFormula($i-1, 9, "=IF(AND(H$i <> 0, NOT(H$i = \"N/A\")), (H$i - I$i) / ABS(H$i), \"N/A\")", $arrFormat['Percentage']);
 				}
 				
 				// Write Call Type Breakdown
-				$selCallTypes->Execute(Array('RatePlan' => $arrRatePlan['Id']));
-				
-				$wksWorksheet->writeString(17, 0, "Call Type Summary"		, $arrFormat['Title']);
+				$wksWorksheet->writeString(18, 0, "Call Type Summary"		, $arrFormat['Title']);
 				
 				for ($i = 1; $i <= 9; $i++)
 				{
-					$wksWorksheet->writeBlank(17, $i, $arrFormat['BlankUnderline']);
+					$wksWorksheet->writeBlank(18, $i, $arrFormat['BlankUnderline']);
 				}
 				
-				$intRow = 18;
+				$intRow = 19;
 				$wksWorksheet->writeString($intRow, 0, "Call Type"			, $arrFormat['ColTitle']);
 				$wksWorksheet->writeString($intRow, 1, "Mean Call Duration"	, $arrFormat['ColTitle']);
 				$wksWorksheet->writeString($intRow, 2, "Mean Call Cost"		, $arrFormat['ColTitle']);
@@ -668,29 +674,52 @@ class BillingModuleReports
 				$wksWorksheet->writeString($intRow, 5, "Total Call Duration", $arrFormat['ColTitle']);
 				$wksWorksheet->writeString($intRow, 6, "Total Call Count"	, $arrFormat['ColTitle']);
 				$wksWorksheet->writeString($intRow, 7, "Total Cost"			, $arrFormat['ColTitle']);
-				$wksWorksheet->writeString($intRow, 8, "Total Charged"		, $arrFormat['ColTitle']);
+				$wksWorksheet->writeString($intRow, 8, "Total Rated"		, $arrFormat['ColTitle']);
 				$wksWorksheet->writeString($intRow, 9, "Profit Margin"		, $arrFormat['ColTitle']);
-				
-				while ($arrCallType = $selCallTypes->Fetch())
+			
+				$selCallTypes->Execute(Array('RatePlan' => $arrRatePlan['Id']));
+				$arrCallTypes	= $selCallTypes->FetchAll();
+				$arrCallTypes[]	= Array('Credit' => TRUE, 'Description' => "Call Credits", 'DisplayType' => RECORD_DISPLAY_CALL);
+				foreach ($arrCallTypes as $arrCallType)
 				{
 					$intRow++;
 					$i = $intRow + 1;
 					
 					// Get Call Type Summary
 					$arrCallType['InvoiceRun'] = $this->_arrProfitData['ThisMonth']['InvoiceRun'];
-					$selCallSummary->Execute($arrCallType);
-					$arrCallSummary = $selCallSummary->Fetch();
-					
-					$selMeanSpend->Execute($arrCallType);
-					$arrCallSummary = array_merge($arrCallSummary, $selMeanSpend->Fetch());
+					if (!$arrCallType['Credit'])
+					{
+						$selCallSummary->Execute($arrCallType);
+						$arrCallSummary = $selCallSummary->Fetch();
+						
+						$selMeanSpend->Execute($arrCallType);
+						$arrCallSummary = array_merge($arrCallSummary, $selMeanSpend->Fetch());
+					}
+					else
+					{
+						// Credit Totals
+						$intCallCredits			= $selCallCredits->Execute($arrCallType);
+						$intTotalCredits		= $selMeanCredit->Execute($arrCallType);
+						$arrCallSummary			= $selCallCredits->Fetch($arrCallType);
+						$arrCallSummary['MeanServiceSpend']	= 0;
+						while ($arrTotalCredit = $selMeanCredit->Fetch())
+						{
+							$arrCallSummary['MeanServiceSpend'] -= $arrTotalCredit['TotalServiceCredit'];
+						}
+						$arrCallSummary['MeanServiceSpend'] /= $intTotalCredits;
+						$arrCallSummary['MeanCallCost']		= 0 - $arrCallSummary['MeanCallCost'];
+						$arrCallSummary['MeanCallCharge']	= 0 - $arrCallSummary['MeanCallCharge'];
+						$arrCallSummary['TotalCost']		= 0 - $arrCallSummary['TotalCost'];
+						$arrCallSummary['TotalCharged']		= 0 - $arrCallSummary['TotalCharged'];
+					}
 				
 					$wksWorksheet->writeString($intRow, 0, $arrCallType['Description']);
-					$wksWorksheet->writeNumber($intRow, 2, $arrCallSummary['MeanCallCost']		, $arrFormat['Currency']);
-					$wksWorksheet->writeNumber($intRow, 3, $arrCallSummary['MeanCallCharge']	, $arrFormat['Currency']);
-					$wksWorksheet->writeNumber($intRow, 4, $arrCallSummary['MeanServiceSpend']	, $arrFormat['Currency']);
+					$wksWorksheet->writeNumber($intRow, 2, $arrCallSummary['MeanCallCost']		, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber($intRow, 3, $arrCallSummary['MeanCallCharge']	, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber($intRow, 4, $arrCallSummary['MeanServiceSpend']	, $arrFormat['CreditDebit']);
 					$wksWorksheet->writeNumber($intRow, 6, $arrCallSummary['TotalCallCount']	, $arrFormat['Integer']);
-					$wksWorksheet->writeNumber($intRow, 7, $arrCallSummary['TotalCost']			, $arrFormat['Currency']);
-					$wksWorksheet->writeNumber($intRow, 8, $arrCallSummary['TotalCharged']		, $arrFormat['Currency']);
+					$wksWorksheet->writeNumber($intRow, 7, $arrCallSummary['TotalCost']			, $arrFormat['CreditDebit']);
+					$wksWorksheet->writeNumber($intRow, 8, $arrCallSummary['TotalCharged']		, $arrFormat['CreditDebit']);
 					$wksWorksheet->writeFormula($intRow, 9, "=IF(AND(I$i <> 0, NOT(I$i = \"N/A\")), (I$i - H$i) / ABS(I$i), \"N/A\")", $arrFormat['Percentage']);
 					
 					// Display Types

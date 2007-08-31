@@ -21,14 +21,73 @@ $appBilling = new ApplicationBilling($arrConfig);
 // execute bill
 $bolResponse = $appBilling->Execute();
 
-CliEcho("\n[ Generating Debug Data ]\n");
-
 // Email Invoice Total Data
 CliEcho(" + Calculating Profit Data...");
-//if ($arrResponse = $appBilling->CalculateProfitData())
+if ($arrProfitData = $appBilling->CalculateProfitData())
+{
+	//Generate Management Reports
+	$bilManagementReports = new BillingModuleReports($arrProfitData);
+	
+	$arrReports = Array();
+	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('ServiceSummary'));
+	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('PlanSummary'));
+	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentSummary'));
+	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('RecurringAdjustmentsSummary'));
+	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('AdjustmentsByEmployeeSummary'));
+	$arrReports[]	= array_merge($arrReports, $bilManagementReports->CreateReport('InvoiceSummary'));
+	
+	// Email Management Reports	
+	$strContent		= "Please find attached the Management Reports for ".date("Y-m-d")."\n\nYellow Billing Services";
+	$arrHeaders = Array	(
+							'From'		=> "billing@telcoblue.com.au",
+							'Subject'	=> "Management Reports for ".date("Y-m-d")
+						);
+	$mimMime = new Mail_mime("\n");
+	$mimMime->setTXTBody($strContent);
+	
+	foreach ($arrReports as $strPath)
+	{
+		$mimMime->addAttachment($strPath, 'application/x-msexcel');
+	}
+	
+	$strBody = $mimMime->get();
+	$strHeaders = $mimMime->headers($arrHeaders);
+	$emlMail =& Mail::factory('mail');
+	
+	// Send the email
+	/*$strEmail = 'rich@voiptelsystems.com.au, ' .
+				'jared@telcoblue.com.au, ' .
+				'turdminator@hotmail.com, ' .
+				'aphplix@gmail.com, ' .
+				'dan@fhcc.com.au, ' .
+				'paula@telcoblue.com.au, ' .
+				'kaywan@telcoblue.com.au, ' .
+				'julie@telcoblue.com.au, ' .
+				'mark@yellowbilling.com.au';*/
+	$strEmail	= 'rich@voiptelsystems.com.au';
+
+	if (!$emlMail->send($strEmail, $strHeaders, $strBody))
+	{
+		CliEcho("Email Failed!");
+	}
+}
+else
+{
+	CliEcho("No data in InvoiceTemp table!!");
+}
+
+$appBilling->FinaliseReport();
+
+// finished
+echo("\n\n-- End of Billing --\n");
+echo "</pre>";
+die();
+
+
+
+/*
 if ($arrResponse = $appBilling->CalculateProfitData("46afb6cf2f619", TRUE))
 {
-	
 	CliEcho(" + Calculating Debug Data...");
 	//$selBillingDebug = new StatementSelect("InvoiceTemp", "DueOn, COUNT(Id) AS InvoiceCount, SUM(Total) + SUM(Tax) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR InvoiceTemp.TotalOwing != 0)", "DueOn", NULL, "DueOn");
 	$selBillingDebug = new StatementSelect("Invoice", "DueOn, COUNT(Id) AS InvoiceCount, (SUM(Total) + SUM(Tax)) AS TotalInvoiced, SUM(TotalOwing) AS TotalOwing", "InvoiceRun = <InvoiceRun> AND (Total != 0 OR Invoice.TotalOwing != 0)", "DueOn", NULL, "DueOn");
@@ -87,43 +146,6 @@ if ($arrResponse = $appBilling->CalculateProfitData("46afb6cf2f619", TRUE))
 					"\t+ Misc Debit\t\tCount: {$arrChargeDebug['OtherDRCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['OtherDRTotal'])."\n\n" .
 					"\t+ Total Credit\t\tCount: {$arrChargeDebug['CRCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['CRTotal'])."\n" .
 					"\t+ Total Debit\t\tCount: {$arrChargeDebug['DRCount']};\tTotal: \$".sprintf("%01.2f", $arrChargeDebug['DRTotal'])."\n";
-	
-	$arrHeaders = Array	(
-							'From'		=> "billing@telcoblue.com.au",
-							'Subject'	=> "Billing::Execute Debugging Data for ".date("Y-m-d")
-						);
-	
-	$mimMime = new Mail_mime("\n");
-	$mimMime->setTXTBody($strContent);
-	$strBody = $mimMime->get();
-	$strHeaders = $mimMime->headers($arrHeaders);
-	$emlMail =& Mail::factory('mail');
-	
-	// Send the email
-	/*$strEmail = 'rich@voiptelsystems.com.au, ' .
-				'jared@telcoblue.com.au, ' .
-				'dan@fhcc.com.au, ' .
-				'paula@telcoblue.com.au, ' .
-				'kaywan@telcoblue.com.au, ' .
-				'julie@telcoblue.com.au, ' .
-				'mark@yellowbilling.com.au';*/
-	$strEmail	= 'rich@voiptelsystems.com.au';
-
-	if (!$emlMail->send($strEmail, $strHeaders, $strBody))
-	{
-		CliEcho("Email Failed!");
-	}
-}
-else
-{
-	CliEcho("No data in InvoiceTemp table!!");
-}
-
-$appBilling->FinaliseReport();
-
-// finished
-echo("\n\n-- End of Billing --\n");
-echo "</pre>";
-die();
+	*/
 
 ?>

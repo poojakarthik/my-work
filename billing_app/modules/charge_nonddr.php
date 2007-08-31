@@ -90,7 +90,10 @@
 														"AccountGroup = <AccountGroup> AND " .
 														"Archived = 0");
 		
-		$this->_strChargeType	= "AP250";
+		// Config
+		$this->_arrConfig = $GLOBALS['**arrCustomerConfig']['BillingTimeModules']['ChargeNonDirectDebit'];
+		
+		$this->_strChargeType	= $this->_arrConfig['Code'];
  	}
  	
  	
@@ -139,7 +142,7 @@
  		}
  		
  		// Is the Invoice Total > NON_DDR_MINIMUM_CHARGE?
- 		if ($arrInvoice['Total'] < NON_DDR_MINIMUM_CHARGE)
+ 		if ($arrInvoice['Total'] < $this->_arrConfig['MinimumTotal'])
  		{
  			// Yes, return TRUE
  			return TRUE;
@@ -155,11 +158,11 @@
  		// Yes, add the charge
 		$arrCharge = Array();
 		$arrCharge['Nature']		= 'DR';
-		$arrCharge['Description']	= "Account Processing Fee";
-		$arrCharge['ChargeType']	= $this->_strChargeType;
+		$arrCharge['Description']	= $this->_arrConfig['Description'];
+		$arrCharge['ChargeType']	= $this->_arrConfig['Code'];
 		$arrCharge['ChargedOn']		= date("Y-m-d");
 		$arrCharge['CreatedOn']		= date("Y-m-d");
-		$arrCharge['Amount']		= 2.50;
+		$arrCharge['Amount']		= $this->_arrConfig['Amount'];
 		$arrCharge['Status']		= CHARGE_TEMP_INVOICE;
 		$arrCharge['Notes']			= "Automatically Added Charge";
 		$arrCharge['Account'] 		= $arrAccount['Id'];
