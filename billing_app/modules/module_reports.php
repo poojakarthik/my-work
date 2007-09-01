@@ -1612,6 +1612,16 @@ class BillingModuleReports
 	 */
 	protected function _ReportInvoiceSummary()
 	{
+		$selInvoiceTemp 		= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>");
+		if ($selInvoiceTemp->Execute($this->_arrProfitData['ThisMonth']))
+		{
+			$strTable	= "InvoiceTemp";
+		}
+		else
+		{
+			$strTable	= "Invoice";
+		}
+		
 		$arrCols = Array();
 		$arrCols['InvoiceCount']	= "COUNT(Id)";
 		$arrCols['PostedCount']		= "COUNT(CASE WHEN DeliveryMethod = 0 THEN Id ELSE NULL END)";
@@ -1620,7 +1630,7 @@ class BillingModuleReports
 		$arrCols['PostedTotal']		= "SUM(CASE WHEN DeliveryMethod = 0 THEN Total+Tax ELSE 0 END)";
 		$arrCols['EmailedTotal']	= "SUM(CASE WHEN DeliveryMethod IN (1, 3) THEN Total+Tax ELSE 0 END)";
 		$arrCols['WithheldTotal']	= "SUM(CASE WHEN DeliveryMethod = 2 THEN Total+Tax ELSE 0 END)";
-		$selDeliveryBreakdown	= new StatementSelect("Invoice", $arrCols, "InvoiceRun = <InvoiceRun>");
+		$selDeliveryBreakdown	= new StatementSelect($strTable, $arrCols, "InvoiceRun = <InvoiceRun>");
 		$selLastInvoiceTotal	= new StatementSelect("InvoiceRun", "BillInvoiced+BillTax AS GrandTotal", "InvoiceRun = <LastInvoiceRun>");
 		
 		// Create Workbook
@@ -1751,7 +1761,7 @@ class BillingModuleReports
 				$arrLastInvoiceTotal = $selLastInvoiceTotal->Fetch();
 				$fltTotalOutstanding			= $arrBalanceData['TotalBalance'] + $arrBalanceData['TotalOutstanding'];
 				$fltTotalOutstandingExInvoice	= $arrBalanceData['TotalOutstanding'];
-				$fltReceived					= ($arrLastInvoiceTotal['GrandTotal'] - $arrBalanceData['PreviousBalance']) / $arrLastInvoiceTotal['GrandTotal'];
+				$fltReceived					= (($arrData['BillTotal'] + $arrData['BillTax']) - $arrBalanceData['PreviousBalance']) / $arrLastInvoiceTotal['GrandTotal'];
 			}
 			
 			$wksWorksheet->write(25, $intCol, $fltTotalOutstanding			, $arrFormat['Currency']);
