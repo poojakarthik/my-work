@@ -1796,6 +1796,8 @@ class BillingModuleReports
 		// Close Workbook
 		$wkbWorkbook->close();
 		chmod($strFilename, 0777);
+		
+		return Array($strFilename);
 	}
 }
 ?>
