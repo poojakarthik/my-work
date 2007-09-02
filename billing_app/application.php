@@ -166,6 +166,7 @@
 		$this->arrInvoiceData 	['AccountBalance']	= NULL;
 		$this->arrInvoiceData 	['Status']			= NULL;
 		$this->arrInvoiceData 	['InvoiceRun']		= NULL;
+		$this->arrInvoiceData 	['DeliveryMethod']	= NULL;
 		$this->insTempInvoice						= new StatementInsert("InvoiceTemp", $this->arrInvoiceData 	);
 		$this->insServiceTotal						= new StatementInsert("ServiceTotal");
 		
