@@ -1613,24 +1613,6 @@ class BillingModuleReports
 	protected function _ReportInvoiceSummary()
 	{
 		$selInvoiceTemp 		= new StatementSelect("InvoiceTemp", "Id", "InvoiceRun = <InvoiceRun>");
-		if ($selInvoiceTemp->Execute($this->_arrProfitData['ThisMonth']))
-		{
-			$strTable	= "InvoiceTemp";
-		}
-		else
-		{
-			$strTable	= "Invoice";
-		}
-		
-		$arrCols = Array();
-		$arrCols['InvoiceCount']	= "COUNT(Id)";
-		$arrCols['PostedCount']		= "COUNT(CASE WHEN DeliveryMethod = 0 THEN Id ELSE NULL END)";
-		$arrCols['EmailedCount']	= "COUNT(CASE WHEN DeliveryMethod IN (1, 3) THEN Id ELSE NULL END)";
-		$arrCols['WithheldCount']	= "COUNT(CASE WHEN DeliveryMethod = 2 THEN Id ELSE NULL END)";
-		$arrCols['PostedTotal']		= "SUM(CASE WHEN DeliveryMethod = 0 THEN Total+Tax ELSE 0 END)";
-		$arrCols['EmailedTotal']	= "SUM(CASE WHEN DeliveryMethod IN (1, 3) THEN Total+Tax ELSE 0 END)";
-		$arrCols['WithheldTotal']	= "SUM(CASE WHEN DeliveryMethod = 2 THEN Total+Tax ELSE 0 END)";
-		$selDeliveryBreakdown	= new StatementSelect($strTable, $arrCols, "InvoiceRun = <InvoiceRun>");
 		$selLastInvoiceTotal	= new StatementSelect("InvoiceRun", "BillInvoiced+BillTax AS GrandTotal", "InvoiceRun = <LastInvoiceRun>");
 		
 		// Create Workbook
@@ -1711,6 +1693,24 @@ class BillingModuleReports
 		$intCol = 2;
 		foreach ($this->_arrProfitData as $arrData)
 		{
+			if ($selInvoiceTemp->Execute($arrData))
+			{
+				$strTable	= "InvoiceTemp";
+			}
+			else
+			{
+				$strTable	= "Invoice";
+			}
+			$arrCols = Array();
+			$arrCols['InvoiceCount']	= "COUNT(Id)";
+			$arrCols['PostedCount']		= "COUNT(CASE WHEN DeliveryMethod = 0 THEN Id ELSE NULL END)";
+			$arrCols['EmailedCount']	= "COUNT(CASE WHEN DeliveryMethod IN (1, 3) THEN Id ELSE NULL END)";
+			$arrCols['WithheldCount']	= "COUNT(CASE WHEN DeliveryMethod = 2 THEN Id ELSE NULL END)";
+			$arrCols['PostedTotal']		= "SUM(CASE WHEN DeliveryMethod = 0 THEN Total+Tax ELSE 0 END)";
+			$arrCols['EmailedTotal']	= "SUM(CASE WHEN DeliveryMethod IN (1, 3) THEN Total+Tax ELSE 0 END)";
+			$arrCols['WithheldTotal']	= "SUM(CASE WHEN DeliveryMethod = 2 THEN Total+Tax ELSE 0 END)";
+			$selDeliveryBreakdown	= new StatementSelect($strTable, $arrCols, "InvoiceRun = <InvoiceRun>");
+			
 			// Header
 			$wksWorksheet->writeString(3, $intCol, date("d/m/Y", strtotime($arrData['BillingDate'])));
 			$wksWorksheet->writeString(4, $intCol, date("F Y", strtotime("-1 month", strtotime($arrData['BillingDate']))));
