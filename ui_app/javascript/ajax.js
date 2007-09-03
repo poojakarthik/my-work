@@ -209,13 +209,16 @@ function VixenAjaxClass()
 	// AJAX Send
 	this.Send = function(objObject)
 	{
-for (strObject in objObject.Objects)
-{
-	for (strProperty in objObject.Objects[strObject])
-	{
-		alert("objObject.Objects."+ strObject +"."+ strProperty +" = "+ objObject.Objects[strObject][strProperty]);
-	}
-}
+		/*
+		for (strObject in objObject.Objects)
+		{
+			for (strProperty in objObject.Objects[strObject])
+			{
+				alert("objObject.Objects."+ strObject +"."+ strProperty +" = "+ objObject.Objects[strObject][strProperty]);
+			}
+		}
+		*/
+		
 		// store our object before sending, along with a transaction ID
 		//this.objData = objObject;
 

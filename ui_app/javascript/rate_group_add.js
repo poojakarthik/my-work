@@ -322,11 +322,8 @@ function VixenRateGroupAddClass()
 		var bolHasSelectedRates = FALSE;
 		for (var i=0; i < elmSelectedRatesCombo.options.length; i++)
 		{
-			if (elmSelectedRatesCombo.options[i].selected)
-			{
-				arrSelectedRates.push(elmSelectedRatesCombo.options[i].value);
-				bolHasSelectedRates = TRUE;
-			}
+			arrSelectedRates.push(elmSelectedRatesCombo.options[i].value);
+			bolHasSelectedRates = TRUE;
 		}
 		
 		// If no rates are selected then don't do anything

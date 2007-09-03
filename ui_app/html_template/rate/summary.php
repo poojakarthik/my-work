@@ -119,10 +119,10 @@ return;
 			echo "<td colspan='4' align='center' style='font-size: xx-small;' width='4%'>".$i."</td>";
 		}
 		echo "</tr>\n";
-		foreach ($arrRateSummary as $strWeekday=>$arrInterval)
+		foreach ($arrRateSummary as $strWeekday=>$arrIntervals)
 		{
 			echo "<tr><td style='font-size: xx-small;'>". $strWeekday ."</td>";
-			foreach ($arrInterval as $intIntervalStatus)
+			foreach ($arrIntervals as $intIntervalStatus)
 			{
 				switch ($intIntervalStatus)
 				{
@@ -139,10 +139,10 @@ return;
 						$strCellColor = "#FFFFFF";
 						break;
 				}
+				//$strCellStyle = "style='border: solid thin #C0C0C0; border-left-style: none; border-bottom-style:". ($intKey != count($arrWeekdays)? "none" : "solid");
+				$strCellStyle = "style='border: solid thin #C0C0C0; border-left-style: solid; border-bottom-style:solid; background-color:$strCellColor;'";
+				echo "<td $strCellStyle>&nbsp;</td>";
 			}
-			//$strCellStyle = "style='border: solid thin #C0C0C0; border-left-style: none; border-bottom-style:". ($intKey != count($arrWeekdays)? "none" : "solid");
-			$strCellStyle = "style='border: solid thin #C0C0C0; border-left-style: solid; border-bottom-style:solid; background-color:$strCellColor;'";
-			echo "<td $strCellStyle>&nbsp;</td>";
 			echo "</tr>\n";
 		}
 		echo "<tr><td>&nbsp;</td><td colspan='96' style='border-top-color: #C0C0C0; border-top-width: thin; border-top-style: solid'>&nbsp;</td></tr>\n";

@@ -355,7 +355,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		for ($i=0; $i < 96; $i++)
 		{
 			// This integer will represent how many rates cover the interval
-			$arrIntervals[$i] = 0;  
+			$arrIntervals[$i] = 0;
 		}
 		foreach ($arrWeekdays as $strWeekday)
 		{
@@ -412,7 +412,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					for ($intInterval=0; $intInterval < 96; $intInterval++)
 					{
 						// Check if the rate applies to the interval
-						$bolCovered = $this->_IsIntervalCoveredByRate($i, $intStartTime, $intEndTime);
+						$bolCovered = $this->_IsIntervalCoveredByRate($intInterval, $intStartTime, $intEndTime);
 						
 						if ($bolCovered)
 						{
@@ -432,7 +432,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// If the number of rates covering any given interval is equal to the number of destinations then it is correctly allocated.
 		// If the number of rates covering any given interval is less than the number of destinations then it is under-allocated.
 		// If the number of rates covering any given interval is greater than the number of destinations then it is over-allocated.
-		
+//Debug($arrAllocationsPerDestination[0]['Tuesday']);
 		// This will store the summary of the week
 		$arrRateSummary = Array();
 		
