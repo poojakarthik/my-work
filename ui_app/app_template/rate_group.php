@@ -10,6 +10,8 @@
 // rate_group
 //----------------------------------------------------------------------------//
 /**
+ * rate_group-------------------------------------------------//
+/**
  * rate_group
  *
  * contains all ApplicationTemplate extended classes relating to Rate Group functionality
