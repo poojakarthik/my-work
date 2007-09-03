@@ -358,7 +358,7 @@
 		$arrUpdateData['InvoiceRun']	= '';
 		$arrUpdateData['Status']		= '';
 		$updChargeStatus	= new StatementUpdate("Charge", "Account = <Account> AND (Status = ".CHARGE_TEMP_INVOICE." OR Status = ".CHARGE_APPROVED.")", $arrUpdateData);
-		$selCDRTotals		= new StatementSelect(	"(CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)) JOIN ServiceRatePlan SRP ON CDR.Service = SRP.Service",
+		$selCDRTotals		= new StatementSelect(	"CDR USE INDEX (Service_2) JOIN Rate ON (CDR.Rate = Rate.Id)",
 													"SUM(CASE WHEN Rate.Uncapped THEN CDR.Charge ELSE 0 END) AS UncappedCharge, " .
 													"SUM(CASE WHEN Rate.Uncapped THEN CDR.Cost ELSE 0 END) AS UncappedCost, " .
 													"SUM(CASE WHEN Rate.Uncapped THEN 0 ELSE CDR.Charge END) AS CappedCharge, " .
@@ -2688,21 +2688,25 @@
 			Debug("No Temporary Invoice found!  Aborting...");
 			return;
 		}
-		$arrInvoiceRun = $selFindTempInvoice->Fetch();
-		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
+		$arrInvoiceRun			= $selFindTempInvoice->Fetch();
+		$strInvoiceRun			= $arrInvoiceRun['InvoiceRun'];
+		$this->_strInvoiceRun	= $strInvoiceRun;
 		
 		$qryDelete = new Query();
 		
 		// for each account
 		foreach ($arrAccounts as $intAccount)
 		{
-			//----------------------------------------------------------------//
-			// REMOVE DATA
-			//----------------------------------------------------------------//
-			$qryDelete->Execute("DELETE FROM InvoiceTemp		WHERE Account = $intAccount");
-			$qryDelete->Execute("DELETE FROM ServiceTypeTotal	WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
-			$qryDelete->Execute("DELETE FROM ServiceTotal		WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
-			$qryDelete->Execute("DELETE FROM InvoiceOutput		WHERE Account = $intAccount");
+			if ((int)$intAccount > 1000000000)
+			{
+				//----------------------------------------------------------------//
+				// REMOVE DATA
+				//----------------------------------------------------------------//
+				$qryDelete->Execute("DELETE FROM InvoiceTemp		WHERE Account = $intAccount");
+				$qryDelete->Execute("DELETE FROM ServiceTypeTotal	WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
+				$qryDelete->Execute("DELETE FROM ServiceTotal		WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
+				$qryDelete->Execute("DELETE FROM InvoiceOutput		WHERE Account = $intAccount");
+			}
 		}
 		
 		//----------------------------------------------------------------//
@@ -2720,7 +2724,11 @@
 		$arrAccountDetails = $selAccountDetails->FetchAll();
 		
 		// Generate the invoice
-		$this->GenerateInvoices($arrAccountDetails);
+		$arrInfo = $this->GenerateInvoices($arrAccountDetails, FALSE, TRUE);
+		
+		// DEBUG
+		Debug($arrInfo);
+		return;
 		
 		// Generate output data
 		$selInvoice = new StatementSelect("InvoiceTemp", "*", "Account = <Account>");
@@ -2741,6 +2749,5 @@
 		$arrReportLines['<Fail>']	= $this->intFailed;
 		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
 	}
- }
-
+}
 ?>
