@@ -16,7 +16,7 @@
  * 
  *
  * @file		rate_add.js
- * @language	PHP
+ * @language	Javascript
  * @package		ui_app
  * @author		Ross Mullen
  * @version		7.08

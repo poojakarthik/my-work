@@ -16,7 +16,7 @@
  * 
  *
  * @file		rate_plan_add.js
- * @language	PHP
+ * @language	Javascript
  * @package		ui_app
  * @author		Joel 'MagnumSwordFortress' Dawkins
  * @version		7.08

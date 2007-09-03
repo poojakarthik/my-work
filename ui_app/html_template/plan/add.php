@@ -136,7 +136,8 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			$strOnCancelRelocation = (DBO()->CallingPage->Href->IsSet) ? DBO()->CallingPage->Href->Value : Href()->AdminConsole();
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<div class='Right'>\n";
-			$this->Button("Cancel", "location.href=\"$strOnCancelRelocation\"");
+			//$this->Button("Cancel", "location.href=\"$strOnCancelRelocation\"");
+			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to abort adding this rate plan?\")");
 			$this->AjaxSubmit("Save as Draft");
 			$this->AjaxSubmit("Commit");
 			echo "</div>\n";

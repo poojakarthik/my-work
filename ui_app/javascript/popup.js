@@ -365,30 +365,63 @@ function VixenPopupClass()
 		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'autohide');
 	}
 	
-	//TODO! This functionality doesn't currently work
-	this._intButtonSelected = null;
-	this.ConfirmBox = function(strMessage, strSize)
+	// Confirm box
+	this.Confirm = function(strMessage, mixOkOnClick, mixCancelOnClick, strSize, strOkCaption, strCancelCaption)
 	{
-		// set a default value for strSize
-		if (strSize == null)
-		{
-			strSize = "medium";
-		}
-	
-		this._intButtonSelected = null;
+		// set default values
+		strSize = (strSize == null) ? "medium" : strSize;
+		strOkCaption = (strOkCaption == null) ? "Ok" : strOkCaption;
+		strCancelCaption = (strCancelCaption == null) ? "Cancel" : strCancelCaption;
 		
-		strContent =	"<p><div align='center'>" + strMessage + 
-						"<p><input type='button' id='VixenAlertOkButton' value='OK' onClick='Vixen.Popup.Close(\"VixenAlertBox\");Vixen.Popup._intButtonSelected = \"Ok\";'><br></div>\n" +
-						"<p><input type='button' id='VixenAlertOkButton' value='Cancel' onClick='Vixen.Popup.Close(\"VixenAlertBox\");Vixen.Popup._intButtonSelected = \"Cancel\";'><br></div>\n" +
-						"<script type='text/javascript'>document.getElementById('VixenAlertOkButton').focus()</script>\n";
-		Vixen.Popup.Create('VixenAlertBox', strContent, strSize, 'centre', 'modal');
-	
-		while (this._intButtonSelected == null)
-		{
-			// loop until a button is pressed
-		}
 		
-		return this._intButtonSelected;
+		strOkBtnHtml		= "<input type='button' id='VixenConfirmOkButton' value='" + strOkCaption + "'>";
+		strCancelBtnHtml	= "<input type='button' id='VixenConfirmCancelButton' value='" + strCancelCaption + "'>";
+		
+		strContent =	"<table border='0' width='100%'>" + 
+						"<tr><td colspan='2' align='center'>" + strMessage + "</td></tr>" +
+						"<tr><td align='center'>" + strOkBtnHtml + "</td>" + 
+						"<td align='center'>" + strCancelBtnHtml + "</td></tr>";
+		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
+		
+		// get references to the Ok and Cancel buttons and attach the event listeners
+		var elmOkButton = document.getElementById("VixenConfirmOkButton");
+		var elmCancelButton = document.getElementById("VixenConfirmCancelButton");
+		
+		if (typeof(mixOkOnClick) == 'function')
+		{
+			// the button action is a function
+			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); mixOkBtnOnClick;}, false);
+		}
+		else if (typeof(mixOkOnClick) == 'string')
+		{
+			// the button action is code stored as a string
+			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); eval(mixOkBtnOnClick);}, false);
+		}
+		else
+		{
+			// No valid action was declared for the ok button.
+			elmOkButton.addEventListener("click", function() {alert("No action has been declared"); Vixen.Popup.Close("VixenConfirmBox");}, false);
+		}
+
+		if (typeof(mixCancelOnClick) == 'function')
+		{
+			// the button action is a function
+			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); mixCancelBtnOnClick;}, false);
+		}
+		else if (typeof(mixCancelOnClick) == 'string')
+		{
+			// the button action is code stored as a string
+			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); eval(mixCancelBtnOnClick);}, false);
+		}
+		else if (mixCancelOnClick == null)
+		{
+			// No action was specified so just close the popup
+			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox");}, false);
+		}
+
+		
+		// set focus to the Ok button
+		elmOkButton.focus();
 	}
 	
 }
