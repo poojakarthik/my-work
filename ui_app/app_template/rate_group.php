@@ -211,9 +211,28 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		// Check that the selected Rates cover all hours of the week and don't overlap unless they are destination based
-		//TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! 
-		
-		//$this->_BuildRateSummary(DBO()->SelectedRates->ArrId)
+		$arrRateSummary = $this->_BuildRateSummary(DBO()->RateGroup->RecordType->Value, DBO()->SelectedRates->ArrId->Value);
+		foreach ($arrRateSummary as $arrIntervals)
+		{
+			foreach ($arrIntervals as $intIntervalStatus)
+			{
+				switch ($intIntervalStatus)
+				{
+					case RATE_ALLOCATION_STATUS_OVER_ALLOCATED:
+						return "ERROR: An over allocation of rates has been detected<br />Please review the rate summary";
+						break;
+					case RATE_ALLOCATION_STATUS_UNDER_ALLOCATED:
+						// Under allocations are only allowed if the RateGroup is a Fleet Rate Group
+						if (DBO()->RateGroup->Fleet->Value != TRUE)
+						{
+							return "ERROR: An under allocation of rates has been detected<br />Please review the rate summary";
+						}
+						break;
+					default:
+						break;
+				}
+			}
+		}
 		
 		$strWhere = "Id IN (". implode(",", DBO()->SelectedRates->ArrId->Value) .")";
 		DBL()->Rate->Where->SetString($strWhere);
@@ -252,10 +271,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		 *			update the Archived property of the Rate in the Rate table so that it is now a committed Rate, not a draft rate		(DONE)
 		 */
 	
-	
-		// Retrieve the list of rates to add to the rate group (we are now using DBL()->Rate)
-		//$arrRates = DBO()->SelectedRates->ArrId->Value;
-		
 		// Define values for all fields that have not already been specified
 		if (SubmittedForm('RateGroup', 'Save as Draft'))
 		{
@@ -320,9 +335,9 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	/**
 	 * PreviewRateSummary()
 	 *
-	 * Displays the Rate Summary for a RateGroup, in a popup
+	 * Displays the Rate Summary, for a RateGroup, in a popup
 	 * 
-	 * Displays the Rate Summary for a RateGroup, in a popup
+	 * Displays the Rate Summary, for a RateGroup, in a popup
 	 *
 	 * @return		void
 	 *
@@ -345,7 +360,23 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$this->LoadPage('rate_summary');
 	}
 	
-	// Returns the $arrAllocationsPerDestination[Destination][Weekday][Interval] = intNumOfRatesAppliedToThisInterval structure
+	//------------------------------------------------------------------------//
+	// _BuildRateSummary
+	//------------------------------------------------------------------------//
+	/**
+	 * _BuildRateSummary()
+	 *
+	 * Builds the Rate Summary as a multi-dimensional array
+	 * 
+	 * Builds the Rate Summary as a multi-dimensional array
+	 *
+	 * @return		array		$arrAllocationsPerDestination[DestinationCode][strWeekday][intInterval] = intNumOfRatesAppliedToThisInterval
+	 *							If the RecordType is not associated with any destinations then the first array index will just have 
+	 *							one element accessed by $arrAllocationsPerDestination[0]
+	 *
+	 * @method
+	 *
+	 */
 	private function _BuildRateSummary($intRecordType, $arrRateIds)
 	{
 		// Build the structure which will store what times of the week are covered
@@ -398,21 +429,29 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$arrRates = $selRates->FetchAll();
 		
 		// Loop through each rate, and mark each interval that it covers
+		$intMidnight = mktime(0, 0, 0);
 		foreach ($arrRates as $arrRate)
 		{
-			// Convert the start time and end time into unix times (seconds)
-			$intStartTime = strtotime($arrRate['StartTime']);
-			$intEndTime = strtotime($arrRate['EndTime']);
+			// Convert the start time and end time into seconds relative to midnight
+			$intStartTime = strtotime($arrRate['StartTime']) - $intMidnight;
+			$intEndTime = strtotime($arrRate['EndTime']) - $intMidnight;
 			
 			foreach ($arrWeekdays as $strWeekday)
 			{
 				if ($arrRate[$strWeekday] == 1)
 				{
 					// The rate is applied to this day.  Check which intervals of the day it applies to
+					// There are 96 15 minute intervals in a day
 					for ($intInterval=0; $intInterval < 96; $intInterval++)
 					{
-						// Check if the rate applies to the interval
-						$bolCovered = $this->_IsIntervalCoveredByRate($intInterval, $intStartTime, $intEndTime);
+						// Check if the rate applies to this interval
+						// $intStartOfInterval	= interval * 15 minutes * 60 seconds
+						// $intEndOfInterval	= $intStartOfInterval + ((15 minutes * 60 seconds) - 1 second)
+
+						$intStartOfInterval		= ($intInterval * 15 * 60);
+						$intEndOfInterval		= $intStartOfInterval + 899;
+						
+						$bolCovered = ($intStartTime <= $intStartOfInterval && $intEndTime >= $intEndOfInterval);
 						
 						if ($bolCovered)
 						{
@@ -432,7 +471,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		// If the number of rates covering any given interval is equal to the number of destinations then it is correctly allocated.
 		// If the number of rates covering any given interval is less than the number of destinations then it is under-allocated.
 		// If the number of rates covering any given interval is greater than the number of destinations then it is over-allocated.
-//Debug($arrAllocationsPerDestination[0]['Tuesday']);
+
 		// This will store the summary of the week
 		$arrRateSummary = Array();
 		
@@ -476,22 +515,6 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		}
 		
 		return $arrRateSummary;
-	}
-	
-	
-	// $intInterval is the 15 minute time interval after midnight that we are testing whether or not it is covered.
-	// for example if $intInterval = 0 then it represents the first 15 minutes after midnight (00:00:00 to 00:14:59am)
-	// if $intInterval = 1 then this represents 00:15:00am to 00:29:59am (the second 15 minute interval after midnight), etc
-	// $intStartTime and $intEndTime are in unix time (seconds after 1970) 
-	private function _IsIntervalCoveredByRate($intInterval, $intStartTime, $intEndTime)
-	{
-		$intMidnight = mktime(0, 0, 0);
-		
-		// $intStartOfInterval = interval * 15 minutes * 60 seconds + intMidnight
-		$intStartOfInterval	= ($intInterval * 15 * 60) + $intMidnight;
-		$intEndOfInterval	= $intStartOfInterval + 899;   //((60 sec * 15 minutes) - 1 second)
-		
-		return ($intStartTime <= $intStartOfInterval && $intEndTime >= $intEndOfInterval);
 	}
 
 	//------------------------------------------------------------------------//
