@@ -210,8 +210,11 @@ class AppTemplateRateGroup extends ApplicationTemplate
 			return "ERROR: No rates have been added to the rate group";
 		}
 		
-		// Check that the selected Rates Cover all hours of the week and don't overlap unless they are destination based
+		// Check that the selected Rates cover all hours of the week and don't overlap unless they are destination based
 		//TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! TODO! 
+		
+		//$this->_BuildRateSummary(DBO()->SelectedRates->ArrId)
+		
 		$strWhere = "Id IN (". implode(",", DBO()->SelectedRates->ArrId->Value) .")";
 		DBL()->Rate->Where->SetString($strWhere);
 		DBL()->Rate->Load();
@@ -275,7 +278,10 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		
 		// Remove all records from the RateGroupRate table where RateGroup == DBO()->RateGroup->Id->Value
 		$delRateGroupRate = new Query();
-		$delRateGroupRate->Execute("DELETE FROM RateGroupRate WHERE RateGroup = " . DBO()->RateGroup->Id->Value);
+		if ($delRateGroupRate->Execute("DELETE FROM RateGroupRate WHERE RateGroup = " . DBO()->RateGroup->Id->Value) === FALSE)
+		{
+			return "ERROR: Deleting old records from the RateGroupRate table failed, unexpectedly.<br />The Rate Group has not been saved";
+		}
 				
 		// Add a record to the RateGroupRate table for each rate associated with this rategroup
 		// StatementInsert is being used rather than a DBObject, as it is quicker, and this could require about 1000 records being added
@@ -308,11 +314,184 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		return TRUE;
 	}
 
+	//------------------------------------------------------------------------//
+	// PreviewRateSummary
+	//------------------------------------------------------------------------//
+	/**
+	 * PreviewRateSummary()
+	 *
+	 * Displays the Rate Summary for a RateGroup, in a popup
+	 * 
+	 * Displays the Rate Summary for a RateGroup, in a popup
+	 *
+	 * @return		void
+	 *
+	 * @method
+	 *
+	 */
 	function PreviewRateSummary()
 	{
-		//passes list of rate id's and the calling page id
-		//TODO prepare a mockup of the actual page using the array printed out
+		//passes list of rate id's, the RecordType of the RateGroup and the calling page id
+		// Check user authorization and permissions
+		AuthenticatedUser()->CheckAuth();
+		AuthenticatedUser()->PermissionOrDie(PERMISSION_ADMIN);
+		
+		// Build the RateSummary
+		$arrRateSummary = $this->_BuildRateSummary(DBO()->RecordType->Id->Value, DBO()->SelectedRates->ArrId->Value);
+		
+		// The rate summary has to be wrapped in a DBObject so that it can be accessible from the Html Template that displays the summary
+		DBO()->RateSummary->ArrSummary = $arrRateSummary;
+		
 		$this->LoadPage('rate_summary');
+	}
+	
+	// Returns the $arrAllocationsPerDestination[Destination][Weekday][Interval] = intNumOfRatesAppliedToThisInterval structure
+	private function _BuildRateSummary($intRecordType, $arrRateIds)
+	{
+		// Build the structure which will store what times of the week are covered
+		$arrWeekdays = Array("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
+		$arrIntervals = Array();
+		$arrAllocations = Array();
+		for ($i=0; $i < 96; $i++)
+		{
+			// This integer will represent how many rates cover the interval
+			$arrIntervals[$i] = 0;  
+		}
+		foreach ($arrWeekdays as $strWeekday)
+		{
+			$arrAllocations[$strWeekday] = $arrIntervals;
+		}
+		$arrAllocationsPerDestination = Array();
+		//The key of $arrIntervals represents the 15minute interval after midnight.  The Value of $arrIntervals[interval] represents
+		//how many of the rates cover this particular interval.  For example if $arrIntervals[2] = 4 then this means the third time interval
+		//(00:30:00 to 00:44:59) has 4 rates that cover it.
+		
+		// We need to retrieve a list of all destinations, if the rates are subject to destinations
+		$selRecordType = new StatementSelect("RecordType", "Id, Context", "Id = <Id>");
+		$selRecordType->Execute(Array("Id" => $intRecordType));
+		$arrRecordType = $selRecordType->Fetch();
+		
+		if ($arrRecordType['Context'] != 0)
+		{
+			// The RateGroups of this RecordType must have a rate covering all times of the week for all destinations
+			
+			// Retrieve a list of destinations
+			$selDestinations = new StatementSelect("Destination", "Code, Context", "Context = <Context>");
+			$selDestinations->Execute(Array("Context" => $arrRecordType['Context']));
+			$arrDestinations = $selDestinations->FetchAll();
+			
+			foreach ($arrDestinations as $arrDestination)
+			{
+				$arrAllocationsPerDestination[$arrDestination['Code']] = $arrAllocations;
+			}
+		}
+		else
+		{
+			// The RecordType does not make use of Destinations
+			$arrAllocationsPerDestination[0] = $arrAllocations;
+		}
+		
+		// Retrieve the rates selected
+		$strWhere = "Id IN (". implode(",", $arrRateIds) .")";
+		$selRates = new StatementSelect("Rate", "Id, StartTime, EndTime, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, Destination", $strWhere);
+		$selRates->Execute();
+		$arrRates = $selRates->FetchAll();
+		
+		// Loop through each rate, and mark each interval that it covers
+		foreach ($arrRates as $arrRate)
+		{
+			// Convert the start time and end time into unix times (seconds)
+			$intStartTime = strtotime($arrRate['StartTime']);
+			$intEndTime = strtotime($arrRate['EndTime']);
+			
+			foreach ($arrWeekdays as $strWeekday)
+			{
+				if ($arrRate[$strWeekday] == 1)
+				{
+					// The rate is applied to this day.  Check which intervals of the day it applies to
+					for ($intInterval=0; $intInterval < 96; $intInterval++)
+					{
+						// Check if the rate applies to the interval
+						$bolCovered = $this->_IsIntervalCoveredByRate($i, $intStartTime, $intEndTime);
+						
+						if ($bolCovered)
+						{
+							// Increment the counter which counts how many rates are applied to this time interval
+							$arrAllocationsPerDestination[$arrRate['Destination']][$strWeekday][$intInterval] += 1;
+						}
+					}
+				}
+			}
+		}
+		
+		// We now have a structure which stores the total number of rates which are applied to each interval of each day, 
+		// for each destination associated with the RecordType
+		// $arrRateSummary[Destination][Weekday][Interval] = intNumOfRatesAppliedToThisInterval
+
+		// For each interval, add the number of rates covering it together (across destinations).  
+		// If the number of rates covering any given interval is equal to the number of destinations then it is correctly allocated.
+		// If the number of rates covering any given interval is less than the number of destinations then it is under-allocated.
+		// If the number of rates covering any given interval is greater than the number of destinations then it is over-allocated.
+		
+		// This will store the summary of the week
+		$arrRateSummary = Array();
+		
+
+		foreach ($arrAllocationsPerDestination as $arrAllocations)
+		{
+			foreach ($arrAllocations as $strWeekday=>$arrIntervals)
+			{
+				foreach ($arrIntervals as $intInterval=>$intRateCount)
+				{
+					// Add the number of Rates to the running total number of rates, for the interval
+					$arrRateSummary[$strWeekday][$intInterval] += $intRateCount;
+				}
+			}
+		}
+		
+		// Store how many rates should be applied to each interval
+		$intNumOfDestinations = count($arrAllocationsPerDestination);
+		
+		foreach ($arrRateSummary as $strWeekday=>$arrIntervals)
+		{
+			foreach ($arrIntervals as $intInterval=>$intRateCount)
+			{
+				// Check that the correct number of rates have been applied to the interval
+				if ($intRateCount == $intNumOfDestinations)
+				{
+					// The interval has been properly allocated
+					$arrRateSummary[$strWeekday][$intInterval] = RATE_ALLOCATION_STATUS_ALLOCATED;
+				}
+				elseif ($intIntervalRateCount < $intNumOfDestinations)
+				{
+					// The interval has been under-allocated
+					$arrRateSummary[$strWeekday][$intInterval] = RATE_ALLOCATION_STATUS_UNDER_ALLOCATED;
+				}
+				else
+				{
+					// The interval has been over-allocated
+					$arrRateSummary[$strWeekday][$intInterval] = RATE_ALLOCATION_STATUS_OVER_ALLOCATED;
+				}
+			}
+		}
+		
+		return $arrRateSummary;
+	}
+	
+	
+	// $intInterval is the 15 minute time interval after midnight that we are testing whether or not it is covered.
+	// for example if $intInterval = 0 then it represents the first 15 minutes after midnight (00:00:00 to 00:14:59am)
+	// if $intInterval = 1 then this represents 00:15:00am to 00:29:59am (the second 15 minute interval after midnight), etc
+	// $intStartTime and $intEndTime are in unix time (seconds after 1970) 
+	private function _IsIntervalCoveredByRate($intInterval, $intStartTime, $intEndTime)
+	{
+		$intMidnight = mktime(0, 0, 0);
+		
+		// $intStartOfInterval = interval * 15 minutes * 60 seconds + intMidnight
+		$intStartOfInterval	= ($intInterval * 15 * 60) + $intMidnight;
+		$intEndOfInterval	= $intStartOfInterval + 899;   //((60 sec * 15 minutes) - 1 second)
+		
+		return ($intStartTime <= $intStartOfInterval && $intEndTime >= $intEndOfInterval);
 	}
 
 	//------------------------------------------------------------------------//
@@ -334,7 +513,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	 */
 	function SetRateSelectorControl()
 	{
-		$selRates = new StatementSelect("Rate", "Id, Name, Description, Fleet, Archived", "RecordType=<RecordType> AND Archived != 1", "Description", NULL);
+		$selRates = new StatementSelect("Rate", "Id, Name, Description, Fleet, Archived", "RecordType=<RecordType> AND Archived != 1", "Name", NULL);
 		$selRates->Execute(Array("RecordType" => DBO()->RecordType->Id->Value));
 		$arrRecords = $selRates->FetchAll();
 

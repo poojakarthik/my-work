@@ -15,16 +15,6 @@
  * javascript required of the "Add Rate Group" popup webpage
  * 
  *
- * javascript required of the "Add Rate Group" popup webpage
- *
- * javascript required of the "Add Rate Group" popup webpage
- * 
- *
- * javascript required of the "Add Rate Group" popup webpage
- *
- * javascript required of the "Add Rate Group" popup webpage
- * 
- *
  * @file		rate_group_add.js
  * @language	PHP
  * @package		ui_app
@@ -97,6 +87,9 @@ function VixenRateGroupAddClass()
 			document.getElementById("ServiceTypeCombo").disabled	= true;
 			document.getElementById("RecordTypeCombo").disabled		= true;
 		}
+		
+		// Set the focus to the Name text field
+		document.getElementById("RateGroup.Name").focus();
 	}
 	
 	//------------------------------------------------------------------------//
@@ -326,19 +319,33 @@ function VixenRateGroupAddClass()
 		
 		var elmSelectedRatesCombo = document.getElementById("SelectedRatesCombo");
 		
+		var bolHasSelectedRates = FALSE;
 		for (var i=0; i < elmSelectedRatesCombo.options.length; i++)
 		{
 			if (elmSelectedRatesCombo.options[i].selected)
 			{
 				arrSelectedRates.push(elmSelectedRatesCombo.options[i].value);
+				bolHasSelectedRates = TRUE;
 			}
 		}
+		
+		// If no rates are selected then don't do anything
+		if (!bolHasSelectedRates)
+		{
+			Vixen.Popup.Alert("Please select some rates");
+			return;
+		}
+		
+		// Retrieve the RecordType currently selected
+		intRecordType = document.getElementById("RateGroup.RecordType").value;
 		
 		// Stick this array in DBO()->SelectedRates->ArrId
 		var objObjects = {};
 		objObjects.Objects = {};
 		objObjects.Objects.SelectedRates = {};
 		objObjects.Objects.SelectedRates.ArrId = arrSelectedRates;
+		objObjects.Objects.RecordType = {};
+		objObjects.Objects.RecordType.Id = intRecordType;
 		objObjects.Objects.CallingPage = {};
 		objObjects.Objects.CallingPage.AddRateGroup = true;
 		

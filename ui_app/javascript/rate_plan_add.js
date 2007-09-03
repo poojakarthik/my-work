@@ -202,7 +202,7 @@ function VixenRatePlanAddClass()
 		}
 		else
 		{
-			alert("The currently selected Rate Group is not a draft");
+			Vixen.Popup.Alert("The currently selected Rate Group is not a draft");
 		}
 		
 	}
