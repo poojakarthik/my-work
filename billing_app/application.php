@@ -2681,7 +2681,7 @@
 			return FALSE;
 		}
 		
-		// get temp invoice run id
+		/*// get temp invoice run id
 		$selFindTempInvoice = new StatementSelect("InvoiceTemp", "DISTINCT InvoiceRun", 1);
 		if (!$selFindTempInvoice->Execute())
 		{
@@ -2725,12 +2725,11 @@
 		
 		// Generate the invoice
 		$arrInfo = $this->GenerateInvoices($arrAccountDetails, FALSE, TRUE);
+		*/
 		
-		// DEBUG
-		Debug($arrInfo);
-		return;
-		
-		// Generate output data
+		//----------------------------------------------------------------//
+		// REGENERATE OUTPUT DATA
+		//----------------------------------------------------------------//
 		$selInvoice = new StatementSelect("InvoiceTemp", "*", "Account = <Account>");
 		if ($bolReprint)
 		{
@@ -2738,16 +2737,10 @@
 			{
 				$selInvoice->Execute(Array('Account' => $intAccount));
 				$arrInvoice = $selInvoice->Fetch();
+				CliEcho(" + Generating Output for $intAccount...");
 				$this->_arrBillOutput[BILL_PRINT]->AddInvoice($arrInvoice);
 			}
 		}
-		
-		// Finish off Billing Report
-		$arrReportLines['<Total>']	= $this->intPassed + $this->intFailed;
-		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
-		$arrReportLines['<Pass>']	= $this->intPassed;
-		$arrReportLines['<Fail>']	= $this->intFailed;
-		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
 	}
 }
 ?>
