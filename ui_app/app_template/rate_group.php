@@ -311,7 +311,8 @@ class AppTemplateRateGroup extends ApplicationTemplate
 	function PreviewRateSummary()
 	{
 		//passes list of rate id's and the calling page id
-		//TODO prepare a mockup of the actual page
+		//TODO prepare a mockup of the actual page using the array printed out
+		$this->LoadPage('rate_summary');
 	}
 
 	//------------------------------------------------------------------------//

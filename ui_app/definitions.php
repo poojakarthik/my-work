@@ -134,6 +134,11 @@ define('RENDER_VALUE',	"Value");
 define('RENDER_OUTPUT',	"Output");
 define('RENDER_INPUT',	"Input");
 
+// Properties for the summary popup table (Rate Allocation Status)
+define('RATE_ALLOCATION_STATUS_UNDER_ALLOCATED', 0);
+define('RATE_ALLOCATION_STATUS_ALLOCATED', 1);
+define('RATE_ALLOCATION_STATUS_OVER_ALLOCATED', 2);
+
 // constant Employee Ids
 define('SYSTEM_EMPLOYEE_ID',	0);
 define('SYSTEM_EMPLOYEE_NAME', 	"Automated System");

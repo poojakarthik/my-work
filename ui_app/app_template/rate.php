@@ -192,9 +192,10 @@ class AppTemplateRate extends ApplicationTemplate
 	 * 
 	 *
 	 */
-	private function Preview()
+	function Summary()
 	{
-
+		$this->LoadPage('rate_summary');
+		return TRUE;
 	}
 
 	//------------------------------------------------------------------------//
