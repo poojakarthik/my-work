@@ -462,7 +462,7 @@ class AppTemplateRateGroup extends ApplicationTemplate
 					// The interval has been properly allocated
 					$arrRateSummary[$strWeekday][$intInterval] = RATE_ALLOCATION_STATUS_ALLOCATED;
 				}
-				elseif ($intIntervalRateCount < $intNumOfDestinations)
+				elseif ($intRateCount < $intNumOfDestinations)
 				{
 					// The interval has been under-allocated
 					$arrRateSummary[$strWeekday][$intInterval] = RATE_ALLOCATION_STATUS_UNDER_ALLOCATED;

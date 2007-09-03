@@ -110,8 +110,8 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		
 		echo "<div class='PopupLarge' style='overflow:auto; height:300px; width:auto;'>\n";
 		//echo "<div class='NarrowColumn'>\n";
-Debug($arrRateSummary);
-return;
+//Debug($arrRateSummary);
+//return;
 		echo "<table width='100%' border='0' cellpadding='0' cellspacing='0'>\n";
 		echo "<tr><td>&nbsp;</td>";
 		for ($i = 0; $i<24; $i++)
@@ -140,7 +140,8 @@ return;
 						break;
 				}
 				//$strCellStyle = "style='border: solid thin #C0C0C0; border-left-style: none; border-bottom-style:". ($intKey != count($arrWeekdays)? "none" : "solid");
-				$strCellStyle = "style='border: solid thin #C0C0C0; border-left-style: solid; border-bottom-style:solid; background-color:$strCellColor;'";
+				//$strCellStyle = "style='border: solid thin #C0C0C0; border-left-style: solid; border-bottom-style:solid; background-color:$strCellColor;'";
+				$strCellStyle = "style='border: solid thin #000000; border-left-style: solid; border-bottom-style:solid; background-color:$strCellColor;'";
 				echo "<td $strCellStyle>&nbsp;</td>";
 			}
 			echo "</tr>\n";
