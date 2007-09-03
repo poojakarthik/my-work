@@ -337,7 +337,7 @@ function VixenRateGroupAddClass()
 		}
 		
 		// Retrieve the RecordType currently selected
-		intRecordType = document.getElementById("RateGroup.RecordType").value;
+		intRecordType = document.getElementById("RecordTypeCombo").value;
 		
 		// Stick this array in DBO()->SelectedRates->ArrId
 		var objObjects = {};
