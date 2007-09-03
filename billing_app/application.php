@@ -329,12 +329,13 @@
 	 * @param	array	$arrAccount		Indexed array of accounts to generate invoices for
 	 * @param	bool	$bolReturnData	Return the Invoice data as an array instead of inserting into the
 	 * 									database.
+	 * @param	bool	$bolRegenerate	Regenerate a Temp Invoice instead of create a new one
 	 *
 	 * @return			bool
 	 *
 	 * @method
 	 */
-	function GenerateInvoices($arrAccounts, $bolReturnData = FALSE)
+	function GenerateInvoices($arrAccounts, $bolReturnData = FALSE, $bolRegenerate = FALSE)
 	{
 		$arrReturnData = Array();
 		
@@ -376,18 +377,23 @@
 			$arrAccountReturn = Array();
 			
 			$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
-			//$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
 			
-			// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
-			$this->arrCDRCols['InvoiceRun'] = $this->_strInvoiceRun;
-			if(!$this->updCDRs->Execute($this->arrCDRCols, Array('Account' => $arrAccount['Id'])))
+			// Link CDRs if creating a new Invoice
+			if (!$bolRegenerate)
 			{
-				// Report and continue
-				//$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
-			}
-			else
-			{
-				//$this->_rptBillingReport->AddMessage(MSG_OK);
+				//$this->_rptBillingReport->AddMessage(MSG_LINK_CDRS, FALSE);
+				
+				// Set status of CDR_RATED CDRs for this account to CDR_TEMP_INVOICE
+				$this->arrCDRCols['InvoiceRun'] = $this->_strInvoiceRun;
+				if(!$this->updCDRs->Execute($this->arrCDRCols, Array('Account' => $arrAccount['Id'])))
+				{
+					// Report and continue
+					//$this->_rptBillingReport->AddMessageVariables("\t\t".MSG_IGNORE.MSG_LINE_FAILED, Array('<Reason>' => "No billable CDRs for this account"));
+				}
+				else
+				{
+					//$this->_rptBillingReport->AddMessage(MSG_OK);
+				}
 			}
 			
 			// SERVICE TYPE TOTALS
@@ -454,22 +460,24 @@
 			
 			// Mark Credits and Debits for this account to this Invoice Run
 			//$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
-			
-			$arrUpdateData = Array();
-			$arrUpdateData['InvoiceRun']	= $this->_strInvoiceRun;
-			$arrUpdateData['Status']		= CHARGE_TEMP_INVOICE;
-			if($updChargeStatus->Execute($arrUpdateData, Array('Account' => $arrAccount['Id'])) === FALSE)
+			if (!$bolRegenerate)
 			{
-				// Report and fail out
-				$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
-				$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
-				$this->_rptBillingReport->AddMessage(MSG_FAILED);
-				continue;
-			}
-			else
-			{
-				// Report and continue
-				//$this->_rptBillingReport->AddMessage(MSG_OK);
+				$arrUpdateData = Array();
+				$arrUpdateData['InvoiceRun']	= $this->_strInvoiceRun;
+				$arrUpdateData['Status']		= CHARGE_TEMP_INVOICE;
+				if($updChargeStatus->Execute($arrUpdateData, Array('Account' => $arrAccount['Id'])) === FALSE)
+				{
+					// Report and fail out
+					$this->_rptBillingReport->AddMessageVariables(MSG_ACCOUNT_TITLE, Array('<AccountNo>' => $arrAccount['Id']));
+					$this->_rptBillingReport->AddMessage(MSG_UPDATE_CHARGES, FALSE);
+					$this->_rptBillingReport->AddMessage(MSG_FAILED);
+					continue;
+				}
+				else
+				{
+					// Report and continue
+					//$this->_rptBillingReport->AddMessage(MSG_OK);
+				}
 			}
 			
 			// for each service belonging to this account
@@ -726,26 +734,29 @@
 			$arrAccountReturn['InitialInvoiceData'] = $arrInvoiceData;
 			
 			// Add in modular charges
-			foreach ($this->_arrChargeModules as $chgModule)
+			if (!$bolRegenerate)
 			{
-				// Generate charge
-				$mixResult = $chgModule->Generate($arrInvoiceData, $arrAccount);
-				
-				// Add to totals
-				if (!is_bool($mixResult))
+				foreach ($this->_arrChargeModules as $chgModule)
 				{
-					if ($mixResult < 0)
-					{
-						// Credit
-						$fltTotalCredits	+= $mixResult;
-					}
-					else
-					{
-						// Debit
-						$fltTotalDebits		+= $mixResult;
-					}
+					// Generate charge
+					$mixResult = $chgModule->Generate($arrInvoiceData, $arrAccount);
 					
-					$arrAccountReturn['ChargeModules'][] = $mixResult;
+					// Add to totals
+					if (!is_bool($mixResult))
+					{
+						if ($mixResult < 0)
+						{
+							// Credit
+							$fltTotalCredits	+= $mixResult;
+						}
+						else
+						{
+							// Debit
+							$fltTotalDebits		+= $mixResult;
+						}
+						
+						$arrAccountReturn['ChargeModules'][] = $mixResult;
+					}
 				}
 			}
 			
@@ -2644,7 +2655,92 @@
 		$arrInvoiceRun['ProfitMargin']	= round((($arrInvoiceRun['BillInvoiced'] - $arrInvoiceRun['BillCost']) / abs($arrInvoiceRun['BillInvoiced'])) * 100, 2)."%";
 		return $arrInvoiceRun;
 	 }
+	
+	
+	//------------------------------------------------------------------------//
+	// RegenerateAccounts
+	//------------------------------------------------------------------------//
+	/**
+	 * RegenerateAccounts()
+	 *
+	 * Regenerates Invoice Data for a set of Accounts
+	 *
+	 * Regenerates Invoice Data for a set of Accounts
+	 *
+	 * @param	array	$arrAccounts				Indexed array of account id's to execute
+	 * @param	boolean	$bolReprint		[optional]	Reprint Invoice Output Data (default = FALSE)
+	 *
+	 * @return	integer	$intInvoices				Number of Invoices generated
+	 *
+	 * @method
+	 */
+ 	function RegenerateAccounts($arrAccounts, $bolReprint = FALSE)
+ 	{		
+		if (!is_array($arrAccounts))
+		{
+			return FALSE;
+		}
+		
+		// get temp invoice run id
+		$selFindTempInvoice = new StatementSelect("InvoiceTemp", "DISTINCT InvoiceRun", 1);
+		if (!$selFindTempInvoice->Execute())
+		{
+			Debug("No Temporary Invoice found!  Aborting...");
+			return;
+		}
+		$arrInvoiceRun = $selFindTempInvoice->Fetch();
+		$strInvoiceRun = $arrInvoiceRun['InvoiceRun'];
+		
+		$qryDelete = new Query();
+		
+		// for each account
+		foreach ($arrAccounts as $intAccount)
+		{
+			//----------------------------------------------------------------//
+			// REMOVE DATA
+			//----------------------------------------------------------------//
+			$qryDelete->Execute("DELETE FROM InvoiceTemp		WHERE Account = $intAccount");
+			$qryDelete->Execute("DELETE FROM ServiceTypeTotal	WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
+			$qryDelete->Execute("DELETE FROM ServiceTotal		WHERE Account = $intAccount AND InvoiceRun = '$strInvoiceRun'");
+			$qryDelete->Execute("DELETE FROM InvoiceOutput		WHERE Account = $intAccount");
+		}
+		
+		//----------------------------------------------------------------//
+		// REGENERATE DATA
+		//----------------------------------------------------------------//
+		// Select Account Details
+		$strAccounts = implode(', ', $arrAccounts);
+		$selAccountDetails	= new StatementSelect("Account", "*", "Id IN ($strAccounts)");
+		if (!$selAccountDetails->Execute())
+		{
+			Debug("Error retrieving account data for $intAccount... : ".$selAccountDetails->Error());
+		}
+		
+		// FetchAll will automatically put it in an indexed array for us
+		$arrAccountDetails = $selAccountDetails->FetchAll();
+		
+		// Generate the invoice
+		$this->GenerateInvoices($arrAccountDetails);
+		
+		// Generate output data
+		$selInvoice = new StatementSelect("InvoiceTemp", "*", "Account = <Account>");
+		if ($bolReprint)
+		{
+			foreach ($arrAccounts as $intAccount)
+			{
+				$selInvoice->Execute(Array('Account' => $intAccount));
+				$arrInvoice = $selInvoice->Fetch();
+				$this->_arrBillOutput[BILL_PRINT]->AddInvoice($arrInvoice);
+			}
+		}
+		
+		// Finish off Billing Report
+		$arrReportLines['<Total>']	= $this->intPassed + $this->intFailed;
+		$arrReportLines['<Time>']	= $this->Framework->SplitWatch();
+		$arrReportLines['<Pass>']	= $this->intPassed;
+		$arrReportLines['<Fail>']	= $this->intFailed;
+		$this->_rptBillingReport->AddMessageVariables(MSG_BUILD_REPORT, $arrReportLines);
+	}
  }
-
 
 ?>
