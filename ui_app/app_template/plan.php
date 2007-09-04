@@ -188,6 +188,9 @@ class AppTemplatePlan extends ApplicationTemplate
 	 * Performs the logic for the Add Rate Plan webpage
 	 * 
 	 * Performs the logic for the Add Rate Plan webpage
+	 * Initial DBObjects that can be set through GET or POST variables are:
+	 *		DBO()->RatePlan->Id			If you want to edit an existing draft Rate Plan
+	 *		DBO()->CallingPage->Href	If you want to specify the href of the page that called this one
 	 *
 	 * @return		void
 	 * @method

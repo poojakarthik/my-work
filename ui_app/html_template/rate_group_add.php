@@ -136,9 +136,20 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 			// create the buttons
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<div class='Right'>\n";
-			$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
-			$this->AjaxSubmit("Save as Draft");
-			$this->AjaxSubmit("Commit");
+			
+			// The old method, before confirmation boxes were implemented
+			//$this->Button("Cancel", "Vixen.Popup.Close(\"{$this->_objAjax->strId}\");");
+			//$this->AjaxSubmit("Save as Draft");  
+			//$this->AjaxSubmit("Commit");
+
+			// The new method
+			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to Cancel?\", Vixen.RateGroupAdd.Close, null, null, \"Yes\", \"No\")");
+			$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate Group as a Draft?\", Vixen.RateGroupAdd.SaveAsDraft)");
+			$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate Group?<br />The Rate Group cannot be edited once it is committed\", Vixen.RateGroupAdd.Commit)");
+			
+			// Javascript methods Vixen.RateGroupAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
+			echo "<input type='hidden' id='AddRateGroupPopupId' value='{$this->_objAjax->strId}'></input>\n";
+			
 			echo "</div>\n";
 			$this->FormEnd();
 			

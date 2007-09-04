@@ -439,9 +439,18 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 		echo "</div>\n"; // unknown closing DIV leave in as without it doesn't format correctly
 
 		echo "<div class='right'>\n";
-			$this->Button("Cancel", "Vixen.Popup.Close(\"AddRatePopup\");");
-			$this->AjaxSubmit("Save as Draft");
-			$this->AjaxSubmit("Commit");
+			// The old way of doing the buttons; before confirmation boxes were implemented
+			//$this->Button("Cancel", "Vixen.Popup.Close(\"AddRatePopup\");");
+			//$this->AjaxSubmit("Save as Draft");
+			//$this->AjaxSubmit("Commit");
+			// The new method
+			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to Cancel?\", Vixen.RateAdd.Close, null, null, \"Yes\", \"No\")");
+			$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate as a Draft?\", Vixen.RateAdd.SaveAsDraft)");
+			$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate?<br />The Rate cannot be edited once it is committed\", Vixen.RateAdd.Commit)");
+			
+			// Javascript methods Vixen.RateAdd.SaveAsDraft, .Commit and .ClosePopup need to know the Id of the Popup
+			echo "<input type='hidden' id='AddRatePopupId' value='{$this->_objAjax->strId}'></input>\n";
+			
 		echo "</div>\n";
 		$this->FormEnd();
 		

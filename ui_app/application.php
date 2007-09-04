@@ -17,7 +17,6 @@
  * contains the Application class and the __autoload function.
  * The __autoload function is used to dynamically include a php file
  * required to instantiate a class
- * Also currently contains all constants required of ui_app
  * 
  *
  * @file		application.php
@@ -1019,6 +1018,8 @@ class HtmlTemplate extends BaseTemplate
 		
 		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenPopupButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}')\"></input>\n";
 	}
+	
+	
 
 	//------------------------------------------------------------------------//
 	// SetMode
@@ -1328,7 +1329,7 @@ class SubmittedData
 	 * Attempts to convert AJAX data into DBObjects in DBO()
 	 * Also handles the submitted form's Id and the submitted button's Id
 	 *
-	 * @return	boolean
+	 * @return	object
 	 *
 	 * @method
 	 */
@@ -1369,6 +1370,7 @@ class SubmittedData
 				}
 			}
 		}
+		
 		return $objAjax;
 		//return FALSE;
 	}

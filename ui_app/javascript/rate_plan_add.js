@@ -207,6 +207,55 @@ function VixenRatePlanAddClass()
 		
 	}
 	
+	this.ReturnToCallingPage = function()
+	{
+		// There should be a hidden input value called CallingPage.Href storing the href of the page that called this one
+		var elmCallingPage = document.getElementById("CallingPage.Href");
+		
+		if (elmCallingPage.value == '')
+		{
+			// No calling page has been specified. Use the history object to go back one page
+			window.history.go(-1);
+		}
+		else
+		{
+			// A calling page has been specified
+			location.href = elmCallingPage.value;
+		}
+	}
+	
+	//------------------------------------------------------------------------//
+	// AddRateGroupPopupOnClose
+	//------------------------------------------------------------------------//
+	/**
+	 * AddRateGroupPopupOnClose
+	 *
+	 * This is executed when the "Add Rate Group" popup is closed and it needs to update the "Add Rate Plan" page
+	 *  
+	 * This is executed when the "Add Rate Group" popup is closed and it needs to update the "Add Rate Plan" page
+	 * This is called by the "Add Rate Group" popup when a rate group has been added and the popup closes
+	 *
+	 * @param	object	objRateGroup	Defines a new Rate Group.  It contains the properties:
+	 *									Id, Name, RecordType, Fleet, Draft
+	 *
+	 * @return	void
+	 * @method
+	 */
+	// This is executed to save the RatePlan as a draft
+	this.SaveAsDraft = function()
+	{
+		// Execute AppTemplatePlan->Add() and make sure all the input elements of the form are sent
+		Vixen.Ajax.SendForm("VixenForm_AddPlan", "Save as Draft", "Plan", "Add");
+	}
+	
+	// This is executed to save the RatePlan as a committed RatePlan
+	this.Commit = function()
+	{
+		// Execute AppTemplatePlan->Add() and make sure all the input elements of the form are sent
+		Vixen.Ajax.SendForm("VixenForm_AddPlan", "Commit", "Plan", "Add");
+	}
+	
+	
 	
 }
 

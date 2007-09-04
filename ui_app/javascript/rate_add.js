@@ -163,6 +163,69 @@ function VixenRateAddClass()
 				break;
 		}
 	}
+	
+	//------------------------------------------------------------------------//
+	// SaveAsDraft
+	//------------------------------------------------------------------------//
+	/**
+	 * SaveAsDraft
+	 *
+	 * This is executed when the SaveAsDraft button is clicked and then the user confirms that they want to go through with it
+	 *  
+	 * This is executed when the SaveAsDraft button is clicked and then the user confirms that they want to go through with it
+	 * It submits the form
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.SaveAsDraft = function()
+	{
+		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
+		Vixen.Ajax.SendForm("VixenForm_AddRate", "Save as Draft", "Rate", "Add", "", document.getElementById("AddRatePopupId").value);
+	}
+	
+	//------------------------------------------------------------------------//
+	// Commit
+	//------------------------------------------------------------------------//
+	/**
+	 * Commit
+	 *
+	 * This is executed when the Commit button is clicked and then the user confirms that they want to go through with it
+	 *  
+	 * This is executed when the Commit button is clicked and then the user confirms that they want to go through with it
+	 * It submits the form
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.Commit = function()
+	{
+		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
+		//TODO! I shouldn't have to hardcode the id of the form.  This isn't very elegant because the form's id and the 
+		//AppTemplate and method are defined in more than one place
+		Vixen.Ajax.SendForm("VixenForm_AddRate", "Commit", "Rate", "Add", "", document.getElementById("AddRatePopupId").value);
+	}
+	
+	//------------------------------------------------------------------------//
+	// Close
+	//------------------------------------------------------------------------//
+	/**
+	 * Close
+	 *
+	 * This is executed when the Cancel button is clicked and then the user confirms that they want to go through with it
+	 *  
+	 * This is executed when the Cancel button is clicked and then the user confirms that they want to go through with it
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.Close = function()
+	{
+		// The PopupId, containing this form, has been rendered as a hidden
+		Vixen.Popup.Close(document.getElementById("AddRatePopupId").value);
+	}
+	
+	
 }
 
 

@@ -378,7 +378,7 @@ function VixenPopupClass()
 		strCancelBtnHtml	= "<input type='button' id='VixenConfirmCancelButton' value='" + strCancelCaption + "'>";
 		
 		strContent =	"<table border='0' width='100%'>" + 
-						"<tr><td colspan='2' align='center'>" + strMessage + "</td></tr>" +
+						"<tr><td colspan='2' align='center'><span class='DefaultOutputSpan'>" + strMessage + "</span></td></tr>" +
 						"<tr><td align='center'>" + strOkBtnHtml + "</td>" + 
 						"<td align='center'>" + strCancelBtnHtml + "</td></tr>";
 		Vixen.Popup.Create('VixenConfirmBox', strContent, strSize, 'centre', 'modal');
@@ -390,12 +390,12 @@ function VixenPopupClass()
 		if (typeof(mixOkOnClick) == 'function')
 		{
 			// the button action is a function
-			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); mixOkBtnOnClick;}, false);
+			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); mixOkOnClick();}, false);
 		}
 		else if (typeof(mixOkOnClick) == 'string')
 		{
 			// the button action is code stored as a string
-			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); eval(mixOkBtnOnClick);}, false);
+			elmOkButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); eval(mixOkOnClick);}, false);
 		}
 		else
 		{
@@ -406,12 +406,12 @@ function VixenPopupClass()
 		if (typeof(mixCancelOnClick) == 'function')
 		{
 			// the button action is a function
-			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); mixCancelBtnOnClick;}, false);
+			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); mixCancelOnClick();}, false);
 		}
 		else if (typeof(mixCancelOnClick) == 'string')
 		{
 			// the button action is code stored as a string
-			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); eval(mixCancelBtnOnClick);}, false);
+			elmCancelButton.addEventListener("click", function() {Vixen.Popup.Close("VixenConfirmBox"); eval(mixCancelOnClick);}, false);
 		}
 		else if (mixCancelOnClick == null)
 		{

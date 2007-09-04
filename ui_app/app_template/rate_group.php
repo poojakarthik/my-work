@@ -616,11 +616,4 @@ class AppTemplateRateGroup extends ApplicationTemplate
 		$strJavascript = "Vixen.RatePlanAdd.AddRateGroupPopupOnClose($objRateGroup);";
 		Ajax()->AddCommand("ExecuteJavascript", $strJavascript);
 	}
-	
-	private function _CheckTheRatesCoverAllTimesOfWeekForAllDestinations()
-	{
-		//TODO!
-	}
-	
-	
 }

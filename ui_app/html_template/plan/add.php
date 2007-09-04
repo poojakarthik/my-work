@@ -132,14 +132,13 @@ class HtmlTemplatePlanAdd extends HtmlTemplate
 			echo "<div id='RateGroupsDiv'></div>\n";
 			
 			// Create the buttons
-			// Workout where to go if the user clicks on the Cancel button
-			$strOnCancelRelocation = (DBO()->CallingPage->Href->IsSet) ? DBO()->CallingPage->Href->Value : Href()->AdminConsole();
 			echo "<div class='SmallSeperator'></div>\n";
 			echo "<div class='Right'>\n";
-			//$this->Button("Cancel", "location.href=\"$strOnCancelRelocation\"");
-			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to abort adding this rate plan?\")");
-			$this->AjaxSubmit("Save as Draft");
-			$this->AjaxSubmit("Commit");
+			$this->Button("Cancel", "Vixen.Popup.Confirm(\"Are you sure you want to abort adding this rate plan?\", Vixen.RatePlanAdd.ReturnToCallingPage)");
+			//$this->AjaxSubmit("Save as Draft");
+			$this->Button("Save as Draft", "Vixen.Popup.Confirm(\"Are you sure you want to save this Rate Plan as a Draft?\", Vixen.RatePlanAdd.SaveAsDraft)");
+			//$this->AjaxSubmit("Commit");
+			$this->Button("Commit", "Vixen.Popup.Confirm(\"Are you sure you want to commit this Rate Plan?<br />The Rate Plan cannot be edited once it is committed\", Vixen.RatePlanAdd.Commit)");
 			echo "</div>\n";
 			$this->FormEnd();
 			
