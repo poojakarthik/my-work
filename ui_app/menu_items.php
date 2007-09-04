@@ -324,7 +324,7 @@ class MenuItems
 		// Convert to JSON notation
 		$strJsonCode = Json()->encode($arrData);
 		
-		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", $strJsonCode, \"modeless\")";
+		return "javascript:Vixen.Popup.ShowAjaxPopup(\"RateGroupPopup\", \"large\", \"RateGroup\", \"Add\", $strJsonCode)";
 	}
 	
 	//------------------------------------------------------------------------//

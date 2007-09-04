@@ -18,11 +18,10 @@ function VixenPopupClass()
 	this.strContentCode = "";
 	this.strLocationOnClose = "";
 	
-	// This stores a stack of zIndex values of each popup openned modally so 
+	// This stores a stack of zIndex values of the overlay div for each popup openned modally so 
 	// that we can keep a track of where to place the div overlay, when a modal
 	// popup is closed, but there are still modal popups on the screen
-	//TODO! implement the use of this
-	this.arrPopupZIndex = new Array;
+	this.arrOverlayZIndexHistory = new Array;
 	
 	this.ViewContentCode = function()
 	{
@@ -86,7 +85,7 @@ function VixenPopupClass()
 	{
 		// set the location to relocate to, when the popup is closed.
 		// If null, then a page reload is not performed
-		// currently this only works when strModel == autohide 
+		// currently this only works when strModal == autohide 
 		this.strLocationOnClose = strLocationOnClose;
 	
 		// Try to find a previous popup
@@ -149,10 +148,22 @@ function VixenPopupClass()
 		switch (strModal)
 		{
 			case "modal":
-			{
+			{				
 				// Create a div to capture all events
-				elmOverlay = document.createElement('div');
-				elmOverlay.setAttribute('Id', 'overlay');
+				
+				// But first check if this overlay div already exists
+				var  elmOverlay = document.getElementById("overlay");
+				if (elmOverlay == null)
+				{
+					// the overlay div does not currently exist, so create it
+					elmOverlay = document.createElement('div');
+					elmOverlay.setAttribute('Id', 'overlay');
+				}
+				else
+				{
+					// record the current zIndex of the elmOverlay
+					this.arrOverlayZIndexHistory.push(elmOverlay.style.zIndex);
+				}
 				
 				elmOverlay.style.zIndex = ++dragObj.zIndex;
 				
@@ -167,11 +178,18 @@ function VixenPopupClass()
 				// (Not like how document.body.offsetHeight does, anyway)
 				// The Vixen title bar always resizes horizontally to fit the window, maybe you should check out how it does it
 				elmOverlay.style.width	= Math.max(document.body.offsetWidth, window.innerWidth);
-				elmRoot.appendChild(elmOverlay);
+				
+				if (this.arrOverlayZIndexHistory.length == 0)
+				{
+					// elmOverlay has not been added to the document tree yet
+					// I don't know what happens if you try to append an element to a parent that already has the element as a child.
+					elmRoot.appendChild(elmOverlay);
+				}
+				
+				// flag this popup as being modal
+				elmPopup.setAttribute("modal", "modal");
+				
                 break;
-				
-				
-				
 			}
 			case "modeless":
 			{
@@ -313,19 +331,29 @@ function VixenPopupClass()
 	
 	this.Close = function(strId)
 	{
-		var objClose = document.getElementById('VixenPopup__' + strId);
-		if (objClose)
+		var elmPopup = document.getElementById('VixenPopup__' + strId);
+		if (elmPopup)
 		{
 			//objClose.removeEventListener('mousedown', OpenHandler, false);
-			objClose.parentNode.removeChild(objClose);
-			document.body.style.overflow = "visible";
+			elmPopup.parentNode.removeChild(elmPopup);
+			document.body.style.overflow = "visible"; // Why is this done?
 			
 		}
-		// If it was modal (overlay hiding everything)
-		var elmOverlay = document.getElementById('overlay');
-		if (elmOverlay)
+		
+		// If the popup was modal, then move the overlay div to its previous zIndex
+		if (elmPopup.hasAttribute("modal"))
 		{
-			elmOverlay.parentNode.removeChild(elmOverlay);
+			var elmOverlay = document.getElementById("overlay");
+			if (this.arrOverlayZIndexHistory.length != 0)
+			{
+				// Set the zIndex of the overlay to its previous zIndex
+				elmOverlay.style.zIndex = this.arrOverlayZIndexHistory.pop();
+			}
+			else
+			{
+				// remove elmOverlay alltogether
+				elmOverlay.parentNode.removeChild(elmOverlay);
+			}
 		}
 	}
 	

@@ -263,10 +263,6 @@ function VixenRateGroupAddClass()
 	 */
 	this.AddNewRateExisting = function(intRateId)
 	{
-		// Get the currently selected RecordType and ServiceType
-		//var intRecordType	= document.getElementById("RecordTypeCombo").value;
-		//var intServiceType	= document.getElementById("ServiceTypeCombo").value;
-
 		var objObjects = {};
 		objObjects.Objects = {};
 		objObjects.Objects.Rate = {};
@@ -277,8 +273,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.Action = {};
 		objObjects.Objects.Action.CreateNewBasedOnOld = true;
 		
-		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
-		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects, "modeless");
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -308,7 +303,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.CallingPage.AddRateGroup = true;
 		
 		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
-		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects, "modeless");
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -375,7 +370,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.CallingPage = {};
 		objObjects.Objects.CallingPage.AddRateGroup = true;
 		
-		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects, "modeless");
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects);
 	}
 
 
@@ -427,7 +422,7 @@ function VixenRateGroupAddClass()
 		objObjects.Objects.CallingPage.AddRateGroup = true;
 		
 		// Execute that application template that creates the popup
-		Vixen.Popup.ShowAjaxPopup("PreviewRateSummaryPopup", "large", "RateGroup", "PreviewRateSummary", objObjects, "modeless");
+		Vixen.Popup.ShowAjaxPopup("PreviewRateSummaryPopup", "large", "RateGroup", "PreviewRateSummary", objObjects);
 	}
 
 	//------------------------------------------------------------------------//
