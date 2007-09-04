@@ -528,7 +528,8 @@ function VixenRateGroupAddClass()
 	this.SaveAsDraft = function()
 	{
 		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
-		Vixen.Ajax.SendForm("VixenForm_RateGroup", "Save as Draft", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
+		var strFormId = "VixenForm_" + document.getElementById("VixenFormId").value;
+		Vixen.Ajax.SendForm(strFormId, "Save as Draft", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
 	}
 	
 	//------------------------------------------------------------------------//
@@ -550,7 +551,8 @@ function VixenRateGroupAddClass()
 		// Execute AppTemplateRateGroup->Add() and make sure all the input elements of the form are sent
 		//TODO! I shouldn't have to hardcode the id of the form.  This isn't very elegant because the form's id and the 
 		//AppTemplate and method are defined in more than one place
-		Vixen.Ajax.SendForm("VixenForm_RateGroup", "Commit", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
+		var strFormId = "VixenForm_" + document.getElementById("VixenFormId").value;
+		Vixen.Ajax.SendForm(strFormId, "Commit", "RateGroup", "Add", "", document.getElementById("AddRateGroupPopupId").value);
 	}
 	
 	//------------------------------------------------------------------------//

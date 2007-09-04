@@ -245,14 +245,16 @@ function VixenRatePlanAddClass()
 	this.SaveAsDraft = function()
 	{
 		// Execute AppTemplatePlan->Add() and make sure all the input elements of the form are sent
-		Vixen.Ajax.SendForm("VixenForm_AddPlan", "Save as Draft", "Plan", "Add");
+		var strFormId = "VixenForm_" + document.getElementById("VixenFormId").value;
+		Vixen.Ajax.SendForm(strFormId, "Save as Draft", "Plan", "Add");
 	}
 	
 	// This is executed to save the RatePlan as a committed RatePlan
 	this.Commit = function()
 	{
 		// Execute AppTemplatePlan->Add() and make sure all the input elements of the form are sent
-		Vixen.Ajax.SendForm("VixenForm_AddPlan", "Commit", "Plan", "Add");
+		var strFormId = "VixenForm_" + document.getElementById("VixenFormId").value;
+		Vixen.Ajax.SendForm(strFormId, "Commit", "Plan", "Add");
 	}
 	
 	

@@ -968,7 +968,7 @@ class HtmlTemplate extends BaseTemplate
 		
 		echo "<form id='{$this->_strForm}' method='post' action='vixen.php/$strTemplate/$strMethod/$strParams'>\n";
 		//echo "<form id='{$this->_strForm}' method='get' action='vixen.php/$strTemplate/$strMethod'>\n";
-		echo "<input type='hidden' value='$strId' name='VixenFormId'>\n";
+		echo "<input type='hidden' value='$strId' id='VixenFormId' name='VixenFormId'>\n";
 	}
 	
 	function FormEnd()
@@ -978,7 +978,6 @@ class HtmlTemplate extends BaseTemplate
 	
 	function Submit($strLabel, $strStyleClass="InputSubmit")
 	{
-		
 		//echo "<submit name='VixenButtonId' class='$strStyleClass' value='$strLabel'></submit>\n";
 		echo "<input type='submit' class='$strStyleClass' name='VixenButtonId' value='$strLabel'></input>\n";
 	}
@@ -1016,7 +1015,7 @@ class HtmlTemplate extends BaseTemplate
 			$strTarget = $strTargetType;
 		}
 		
-		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenPopupButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}')\"></input>\n";
+		echo "<input type='button' value='$strLabel' class='$strStyleClass' name='VixenButtonId' onclick=\"Vixen.Ajax.SendForm('{$this->_strForm}', '$strLabel','$strTemplate', '$strMethod', '$strTarget', '$strId', '$strSize', '{$this->_strContainerDivId}')\"></input>\n";
 	}
 	
 	

@@ -135,7 +135,7 @@ function VixenPopupClass()
 		// set the content of the popup
 		elmPopup.innerHTML = strContent;
 		
-		// Add the popup to the PopupFolder element
+		// Add the popup to the PopupHolder element
 		elmRoot = document.getElementById('PopupHolder');
 		elmRoot.appendChild(elmPopup);
 		
