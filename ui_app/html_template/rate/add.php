@@ -96,11 +96,15 @@ class HtmlTemplateRateAdd extends HtmlTemplate
 			if (DBO()->Rate->Id->Value)
 			{
 				DBO()->Rate->Id->RenderHidden();
-				$strHeading = "Update existing draft rate";
+				$strHeading = "Update Existing Draft Rate";
+			}
+			elseif (DBO()->Action->CreateNewBasedOnOld->Value)
+			{
+				$strHeading = "Create new Rate based on Exisiting Rate";				
 			}
 			else
 			{
-				$strHeading = "Add new rate";
+				$strHeading = "Add New Rate";
 			}
 			
 			echo "<h2 class='Plan'>".$strHeading."</h2>\n";

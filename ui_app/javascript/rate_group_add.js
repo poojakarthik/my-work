@@ -200,7 +200,87 @@ function VixenRateGroupAddClass()
 	}
 
 	//------------------------------------------------------------------------//
-	// AddNewRate
+	// RateChooser
+	//------------------------------------------------------------------------//
+	/**
+	 * RateChooser
+	 *
+	 * -
+	 *  
+	 * -
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.RateChooser = function()
+	{
+		var elmAvailableRatesCombo = document.getElementById("AvailableRatesCombo");
+		
+		var intSelectedIndex = -1;
+		// Make sure only 1 rate is selected and that it is a draft rate
+		for (var i=0; i < elmAvailableRatesCombo.options.length; i++)
+		{
+			if (elmAvailableRatesCombo.options[i].selected)
+			{
+				// the current option is selected, check if a previous option has been selected
+				if (intSelectedIndex != -1)
+				{
+					// multiple options have been selected
+					this.AddNewRate();
+					return;
+				}
+				else
+				{
+					// this is the first of the selected rates in the AvailableRatesCombo
+					intSelectedIndex = i;
+					this.AddNewRateExisting(elmAvailableRatesCombo.options[i].value);
+					return;
+				}				
+			}
+		}
+		
+		// Either no rates are selected or just one is selected in the AvailableRatesCombo
+		if (intSelectedIndex == -1)
+		{
+			// No rate is selected
+			this.AddNewRate();
+			return;
+		}
+	}
+
+	//------------------------------------------------------------------------//
+	// AddNewRateExisting
+	//------------------------------------------------------------------------//
+	/**
+	 * AddNewRateExisting
+	 *
+	 * Opens the Add New Rate popup window
+	 *  
+	 * Opens the Add New Rate popup window
+	 *
+	 * @return	void
+	 * @method
+	 */
+	this.AddNewRateExisting = function(intRateId)
+	{
+		// Get the currently selected RecordType and ServiceType
+		//var intRecordType	= document.getElementById("RecordTypeCombo").value;
+		//var intServiceType	= document.getElementById("ServiceTypeCombo").value;
+
+		var objObjects = {};
+		objObjects.Objects = {};
+		objObjects.Objects.Rate = {};
+		objObjects.Objects.Rate.Id = intRateId;
+		objObjects.Objects.CallingPage = {};
+		objObjects.Objects.CallingPage.AddRateGroup = true;
+		
+		objObjects.Objects.Action = {};
+		objObjects.Objects.Action.CreateNewBasedOnOld = true;
+		
+		//Vixen.Ajax.CallAppTemplate("Rate", "Add", objObjects);
+		Vixen.Popup.ShowAjaxPopup("AddRatePopup", "large", "Rate", "Add", objObjects, "modeless");
+	}
+	
 	//------------------------------------------------------------------------//
 	/**
 	 * AddNewRate

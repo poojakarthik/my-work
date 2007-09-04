@@ -356,9 +356,10 @@ class HtmlTemplateRateGroupAdd extends HtmlTemplate
 		echo "</tr>\n";
 		
 		// Draw the buttons ("Add New Rate", "Edit Rate" and "View Rate Summary")
+		// also used for adding a rate based on an existing
 		echo "<tr>\n";
 		echo "<td align='left'>\n";
-		echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.AddNewRate()\"></input>\n";
+		echo "<input type='button' value='Add New Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.RateChooser()\"></input>\n";
 		echo "<input type='button' value='Edit Rate' class='InputSubmit' onclick=\"Vixen.RateGroupAdd.EditRate()\"></input>\n";
 		echo "</td>\n";
 		echo "<td colspan='2' align='right'>\n";

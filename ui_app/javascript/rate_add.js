@@ -137,19 +137,22 @@ function VixenRateAddClass()
 				document.getElementById('RateDetailDiv').style.display = 'inline';
 				document.getElementById('CapMainDetailDiv').style.display = 'inline';
 				
-				var ArrFormElements = [];
-				ArrFormElements[1] = "Rate.CapLimit";
-				ArrFormElements[2] = "Rate.CapUsage";
+				// array of form elements that require validation
+				// note to self array idex should always be from 0
 				
-				ArrFormElements[3] = "Rate.ExsUnits";
-				ArrFormElements[4] = "Rate.ExsRatePerUnit";
-				ArrFormElements[5] = "Rate.ExsMarkup";
-				ArrFormElements[6] = "Rate.ExsPercentage";
-				ArrFormElements[7] = "Rate.ExsFlagfall";
+				var arrFormElements = new Array;
+				arrFormElements[0] = "Rate.CapLimit";
+				arrFormElements[1] = "Rate.CapUsage";
+				
+				arrFormElements[2] = "Rate.ExsUnits";
+				arrFormElements[3] = "Rate.ExsRatePerUnit";
+				arrFormElements[4] = "Rate.ExsMarkup";
+				arrFormElements[5] = "Rate.ExsPercentage";
+				arrFormElements[6] = "Rate.ExsFlagfall";
 							
-				for (var intCounter = 1; intCounter <= ArrFormElements.length; intCounter++)
+				for (var intCounter = 1; intCounter < arrFormElements.length; intCounter++)
 				{
-					if (document.getElementById(ArrFormElements[intCounter]).value != "" && document.getElementById(ArrFormElements[intCounter]).value.indexOf("0.0") == -1)
+					if (document.getElementById(arrFormElements[intCounter]).value != "" && document.getElementById(arrFormElements[intCounter]).value.indexOf("0.0") == -1)
 					{
 						document.getElementById('CapDetailDiv').style.display='inline';
 						document.getElementById('ExcessDetailDiv').style.display='inline'
