@@ -680,7 +680,7 @@ class AppTemplateService extends ApplicationTemplate
 		// same with the payments list
 		//DBL()->RatePlan->Load();
 	
-		$this->LoadPage('view_rate_group');
+		$this->LoadPage('service_plan_view');
 		return TRUE;
 	}	
 	

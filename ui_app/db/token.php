@@ -413,10 +413,15 @@ class PropertyToken
 	 * @param	int		$intContext		[optional] context in which the property will be displayed
 	 * @return	mixed					html code, or NULL
 	 * @method
+	 *
+	 * always sets the context to zero
 	 */
-	private function _Value($intContext=CONTEXT_DEFAULT)
+	private function _Value($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=FALSE)
 	{
-		$intContext = $this->_CalculateContext($intContext);
+		if ($bolUseConditionalContext)
+		{
+			$intContext = $this->_CalculateContext($intContext);
+		}
 
 		// require a definition
 		if (!$this->_dboOwner->_arrDefine[$this->_strProperty][$intContext])
@@ -446,9 +451,9 @@ class PropertyToken
 	 * @return	mixed					property's value
 	 * @method
 	 */
-	function RenderValue($intContext=CONTEXT_DEFAULT)
+	function RenderValue($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=FALSE)
 	{
-		echo $this->_Value($intContext);
+		echo $this->_Value($intContext, $bolUseConditionalContext);
 		
 		return $this->_dboOwner->_arrProperties[$this->_strProperty];
 	}
@@ -468,9 +473,9 @@ class PropertyToken
 	 * @return	string					html code
 	 * @method
 	 */
-	function AsValue($intContext=CONTEXT_DEFAULT)
+	function AsValue($intContext=CONTEXT_DEFAULT, $bolUseConditionalContext=FALSE)
 	{
-		return $this->_Value($intContext);
+		return $this->_Value($intContext, $bolUseConditionalContext);
 	}
 
 	//------------------------------------------------------------------------//

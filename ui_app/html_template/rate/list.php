@@ -110,13 +110,13 @@ class HtmlTemplateRateList extends HtmlTemplate
 	
 		foreach (DBL()->Rate as $dboRate)
 		{
-			$strDaysAvailable = $dboRate->Monday->AsValue().
-								$dboRate->Tuesday->AsValue().
-								$dboRate->Wednesday->AsValue().
-								$dboRate->Thursday->AsValue().
-								$dboRate->Friday->AsValue().
-								$dboRate->Saturday->AsValue().
-								$dboRate->Sunday->AsValue();
+			$strDaysAvailable = $dboRate->Monday->AsValue(CONTEXT_DEFAULT,TRUE).
+								$dboRate->Tuesday->AsValue(CONTEXT_DEFAULT,TRUE).
+								$dboRate->Wednesday->AsValue(CONTEXT_DEFAULT,TRUE).
+								$dboRate->Thursday->AsValue(CONTEXT_DEFAULT,TRUE).
+								$dboRate->Friday->AsValue(CONTEXT_DEFAULT,TRUE).
+								$dboRate->Saturday->AsValue(CONTEXT_DEFAULT,TRUE).
+								$dboRate->Sunday->AsValue(CONTEXT_DEFAULT,TRUE);
 								
 			Table()->RateTable->AddRow(	$dboRate->Name->AsValue(),
 										$strDaysAvailable,

@@ -83,10 +83,10 @@
 				</td>
 			</tr>
 			<!-- If Admin... -->
-			<xsl:choose>
+			 <xsl:choose>
 			<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Admin']) = 1">
-				<!-- Administrative Console -->
-				<tr>
+				 <!-- Administrative Console --> 
+				 <tr>
 					<td>
 						<a href="console_admin.php">
 							<img src="img/template/admin_console.png" title="Administrative Console" class="MenuIcon" />
@@ -102,8 +102,8 @@
 				</tr>
 			</xsl:when>
 			<!-- If Accounts... -->
-			<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Accounts']) = 1">
-				<!-- Administrative Console -->
+			<xsl:when test="count(/Response/Authentication/AuthenticatedEmployee/AuthenticatedEmployeePrivileges/Permissions/Permission[Name='Accounts']) = 1"> 
+				<!-- Administrative Console --> 
 				<tr>
 					<td>
 						<a href="console_admin.php">
@@ -117,8 +117,8 @@
 						<br />
 						Additional Accounts Options.
 					</td>
-				</tr>
-			</xsl:when>
+				</tr> 
+			</xsl:when> 
 			</xsl:choose>
 			<!-- User Manual -->
 			<tr>

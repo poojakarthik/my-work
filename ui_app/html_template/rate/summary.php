@@ -107,7 +107,7 @@ class HtmlTemplateRateSummary extends HtmlTemplate
 		echo "<tr><td>&nbsp;</td>";
 		for ($i = 0; $i<24; $i++)
 		{
-			echo "<td colspan='4' align='center' style='font-size: xx-small;' width='4%'>".$i."</td>";
+			echo "<td colspan='4' align='center' style='font-size: xx-small; border-left-width: thin; border-left-style: solid; border-left-color: #C4C4C4;' width='4%'>".$i."</td>";
 		}
 		echo "</tr>\n";
 		foreach ($arrRateSummary as $strWeekday=>$arrIntervals)

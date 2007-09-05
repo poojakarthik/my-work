@@ -115,13 +115,13 @@ class HtmlTemplatePlanRates extends HtmlTemplate
 				// The Days Available indicator needs to contain formatting (as this indicates
 				// whether or not it is available on that day), with line breaks removed
 				// eg Mo Tu We Th Fr Sa Su
-				$strDaysAvailable = DBO()->Rate->Monday->AsValue() . " " . 
-									DBO()->Rate->Tuesday->AsValue() . " " . 
-									DBO()->Rate->Wednesday->AsValue() . " " . 
-									DBO()->Rate->Thursday->AsValue() . " " . 
-									DBO()->Rate->Friday->AsValue() . " " . 
-									DBO()->Rate->Saturday->AsValue() . " " . 
-									DBO()->Rate->Sunday->AsValue();
+				$strDaysAvailable = DBO()->Rate->Monday->AsValue(CONTEXT_DEFAULT, TRUE) . " " . 
+									DBO()->Rate->Tuesday->AsValue(CONTEXT_DEFAULT, TRUE) . " " . 
+									DBO()->Rate->Wednesday->AsValue(CONTEXT_DEFAULT, TRUE) . " " . 
+									DBO()->Rate->Thursday->AsValue(CONTEXT_DEFAULT, TRUE) . " " . 
+									DBO()->Rate->Friday->AsValue(CONTEXT_DEFAULT, TRUE) . " " . 
+									DBO()->Rate->Saturday->AsValue(CONTEXT_DEFAULT, TRUE) . " " . 
+									DBO()->Rate->Sunday->AsValue(CONTEXT_DEFAULT, TRUE);
 				$strDaysAvailable = str_replace("\n", "", $strDaysAvailable);
 				
 				// Time available, formatted nicely

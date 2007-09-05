@@ -746,106 +746,106 @@
 	
 	h2.CDR
 	{
-		background-image:              url('../img/template/cdr.png');
+		background-image:              url('../img/template/cdr_small.png');
 	}
 	
 	h2.Plan
 	{
-		background-image:              url('../img/template/plan.png');
+		background-image:              url('../img/template/plan_small.png');
 	}
 	
 	h2.Date
 	{
-		background-image:              url('../img/template/date.png');
+		background-image:              url('../img/template/date_small.png');
 	}
 	
 	h2.Payment
 	{
-		background-image:              url('../img/template/payment.png');
+		background-image:              url('../img/template/payment_small.png');
 	}
 	
 	h2.Adjustment
 	{
-		background-image:              url('../img/template/charge.png');
+		background-image:              url('../img/template/charge_small.png');
 	}
 	h2.Address
 	{
-		background-image:              url('../img/template/address.png');
+		background-image:              url('../img/template/address_small.png');
 	}
 	
 	h2.Provisioning
 	{
-		background-image:              url('../img/template/provisioning.png');
+		background-image:              url('../img/template/provisioning_small.png');
 	}
 	
 	h2.PDF
 	{
-		background-image:              url('../img/template/pdf.png');
+		background-image:              url('../img/template/pdf_small.png');
 	}
 	
 	h2.Archive
 	{
-		background-image:              url('../img/template/archive.png');
+		background-image:              url('../img/template/archive_small.png');
 	}
 	
 	h2.Notes
 	{
-		background-image:              url('../img/template/note.png');
+		background-image:              url('../img/template/note_small.png');
 	}
 	
 	h2.Note
 	{
-		background-image:              url('../img/template/note.png');
+		background-image:              url('../img/template/note_small.png');
 	}
 	
 	h2.Services
 	{
-		background-image:              url('../img/template/service.png');
+		background-image:              url('../img/template/service_small.png');
 	}
 	
 	h2.Service
 	{
-		background-image:              url('../img/template/service.png');
+		background-image:              url('../img/template/service_small.png');
 	}
 	
 	h2.Contacts
 	{
-		background-image:              url('../img/template/contacts.png');
+		background-image:              url('../img/template/contacts_small.png');
 	}
 	
 	h2.Contact
 	{
-		background-image:              url('../img/template/contact.png');
+		background-image:              url('../img/template/contact_small.png');
 	}
 	
 	h2.Accounts
 	{
-		background-image:              url('../img/template/accounts.png');
+		background-image:              url('../img/template/accounts_small.png');
 	}
 	
 	h2.Account
 	{
-		background-image:              url('../img/template/account.png');
+		background-image:              url('../img/template/account_small.png');
 	}
 	
 	h2.Options
 	{
-		background-image:              url('../img/template/options.png');
+		background-image:              url('../img/template/options_small.png');
 	}
 	
 	h2.Invoice
 	{
-		background-image:              url('../img/template/invoice.png');
+		background-image:              url('../img/template/invoice_small.png');
 	}
 	
 	h2.Admin
 	{
-		background-image:              url('../img/template/admin_console.png');
+		background-image:              url('../img/template/admin_console_small.png');
 	}
 	
 	h2.Report
 	{
-		background-image:              url('../img/template/report.png');
+		background-image:              url('../img/template/report_small.png');
 	}
 	
 	h2.CostCentre
@@ -855,7 +855,7 @@
 	
 	h2.Bug
 	{
-		background-image:              url('../img/template/lady-debug.png');
+		background-image:              url('../img/template/lady-debug_small.png');
 	}
 	
 	.Menu_Button
